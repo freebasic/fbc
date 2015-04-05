@@ -10,6 +10,11 @@
 #   - fbc sources are retrieved from Git; you can specify the exact commit to
 #     build, the default is "master".
 #
+# The standalone fbc is built in the same directory as the normal fbc, by just
+# rebuilding src/compiler/obj/fbc.o (that's all that's affected by
+# ENABLE_STANDALONE, except for the directory layout). This way we avoid
+# unnecessary full rebuilds.
+#
 # ./build.sh <target> [<fbc-commit>]
 #
 # <target> can be one of:
@@ -229,16 +234,12 @@ linux*)
 
 	# fbc sources
 	cp -R ../input/fbc fbc
-	cp -R ../input/fbc fbcsa
-	cd fbc   && git reset --hard "$fbccommit" && cd ..
-	cd fbcsa && git reset --hard "$fbccommit" && cd ..
-	echo "prefix := `pwd -W`"     > fbc/config.mk
-	echo "ENABLE_STANDALONE := 1" > fbcsa/config.mk
+	cd fbc && git reset --hard "$fbccommit" && cd ..
+	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
 	if [ $fbtarget = win64 ]; then
 		echo "TARGET_ARCH := x86_64" >> fbc/config.mk
-		echo "TARGET_ARCH := x86_64" >> fbcsa/config.mk
 	fi
 	;;
 esac
@@ -257,40 +258,10 @@ esac
 function dosbuild() {
 	dospath=`pwd -W`
 
-	cat <<EOF > open-djgpp.bat
-set DJGPP=$dospath/djgpp.env
-set PATH=$dospath/bin;%PATH%
-cmd
-EOF
-
 	cat <<EOF > build.bat
 @echo off
-
 set DJGPP=$dospath/djgpp.env
 set PATH=$dospath/bin
-
-echo build PATH = %PATH%
-echo.
-
-echo uname:
-uname
-if ERRORLEVEL 1 exit /b
-echo.
-
-echo make --version:
-make --version
-if ERRORLEVEL 1 exit /b
-echo.
-
-echo gcc --version:
-gcc --version
-if ERRORLEVEL 1 exit /b
-echo.
-
-echo gcc -print-file-name=libgcc.a:
-gcc -print-file-name=libgcc.a
-if ERRORLEVEL 1 exit /b
-echo.
 
 echo bootstrapping normal fbc:
 cd fbc
@@ -309,45 +280,43 @@ if ERRORLEVEL 1 exit /b
 make install
 if ERRORLEVEL 1 exit /b
 cd ..
+EOF
 
-echo building standalone fbc:
-cd fbcsa
-make
+	cat <<EOF > buildsa.bat
+@echo off
+set DJGPP=$dospath/djgpp.env
+set PATH=$dospath/bin
+
+cd fbc
+make ENABLE_STANDALONE=1
 if ERRORLEVEL 1 exit /b
 cd ..
 EOF
 
 	cmd /c build.bat
 
-	echo
-	echo "copying binutils/libs/etc."
-	echo
+	echo "building standalone fbc:"
+	rm fbc/src/compiler/obj/fbc.o
+	cmd /c buildsa.bat
 
-	mkdir -p fbcsa/bin/dos
-	cp bin/ar.exe bin/as.exe bin/gdb.exe bin/gprof.exe bin/ld.exe fbcsa/bin/dos/
-	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbcsa/lib/dos/
-	cp lib/libstdcxx.a fbcsa/lib/dos/libstdcx.a
-	cp lib/libsupcxx.a fbcsa/lib/dos/libsupcx.a
-	cp lib/gcc/djgpp/4.92/libgcc.a fbcsa/lib/dos/
+	mkdir -p fbc/bin/dos
+	cp bin/ar.exe bin/as.exe bin/gdb.exe bin/gprof.exe bin/ld.exe fbc/bin/dos/
+	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
+	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
+	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
+	cp lib/gcc/djgpp/4.92/libgcc.a fbc/lib/dos/
 
 	cd fbc
 	make bindist TARGET_OS=dos DISABLE_DOCS=1
-	cd ..
-	cd fbcsa
-	make bindist TARGET_OS=dos
+	make bindist TARGET_OS=dos ENABLE_STANDALONE=1
 	cd ..
 
-	mv fbc/*.zip fbcsa/*.zip                    ../output
-	mv   fbc/contrib/manifest/fbc-dos.lst       ../output
-	mv fbcsa/contrib/manifest/FreeBASIC-dos.lst ../output
+	cp fbc/*.zip ../output
+	cp fbc/contrib/manifest/fbc-dos.lst       ../output
+	cp fbc/contrib/manifest/FreeBASIC-dos.lst ../output
 }
 
 function linuxbuild() {
-	echo
-	echo "uname = `uname`"
-	echo "gcc -print-file-name=libgcc.a = `gcc -print-file-name=libgcc.a`"
-	echo
-
 	cd fbc
 	echo
 	echo "bootstrapping normal fbc"
@@ -364,8 +333,6 @@ function linuxbuild() {
 	cd fbc && make bindist && cd ..
 	cp fbc/*.tar.* ../output
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
-
-	cd ..
 }
 
 function windowsbuild() {
@@ -373,13 +340,6 @@ function windowsbuild() {
 	# its gcc and not one from the host
 	origPATH="$PATH"
 	export PATH="$PWD/bin:$PATH"
-
-	echo
-	echo "build PATH = $PATH"
-	echo "uname = `uname`"
-	echo "which gcc = `which gcc`"
-	echo "gcc -print-file-name=libgcc.a = `gcc -print-file-name=libgcc.a`"
-	echo
 
 	echo
 	echo "building libffi"
@@ -413,28 +373,25 @@ function windowsbuild() {
 	make
 	cd ..
 
-	cd fbcsa
+	cd fbc
 	echo
 	echo "building standalone fbc"
 	echo
-	make
+	rm src/compiler/obj/fbc.o
+	make ENABLE_STANDALONE=1
 	cd ..
 
-	echo
-	echo "copying binutils/libs/etc."
-	echo
+	mkdir -p fbc/bin/$fbtarget
+	cp bin/ar.exe		fbc/bin/$fbtarget
+	cp bin/as.exe		fbc/bin/$fbtarget
+	cp bin/dlltool.exe	fbc/bin/$fbtarget
+	cp bin/gprof.exe	fbc/bin/$fbtarget
+	cp bin/ld.exe		fbc/bin/$fbtarget
 
-	mkdir -p fbcsa/bin/$fbtarget
-	cp bin/ar.exe			fbcsa/bin/$fbtarget
-	cp bin/as.exe			fbcsa/bin/$fbtarget
-	cp bin/dlltool.exe		fbcsa/bin/$fbtarget
-	cp bin/gprof.exe		fbcsa/bin/$fbtarget
-	cp bin/ld.exe			fbcsa/bin/$fbtarget
-
-	cd fbcsa && make mingw-libs && cd ..
+	cd fbc && make mingw-libs ENABLE_STANDALONE=1 && cd ..
 
 	if [ $fbtarget = "win32" ]; then
-		cd fbcsa/lib/win32 && make && cd ../../..
+		cd fbc/lib/win32 && make && cd ../../..
 	fi
 
 	case "$target" in
@@ -442,47 +399,48 @@ function windowsbuild() {
 		# Take MinGW.org's gdb, because the gdb from the MinGW-w64 toolchain has much more
 		# dependencies (e.g. Python for scripting purposes) which we probably don't want/need.
 		# (this should probably be reconsidered someday)
-		cp mingworg-gdb/bin/gdb.exe			fbcsa/bin/win32
-		cp mingworg-gdb/bin/libgcc_s_dw2-1.dll		fbcsa/bin/win32
-		cp mingworg-gdb/bin/zlib1.dll			fbcsa/bin/win32
+		cp mingworg-gdb/bin/gdb.exe		fbc/bin/win32
+		cp mingworg-gdb/bin/libgcc_s_dw2-1.dll	fbc/bin/win32
+		cp mingworg-gdb/bin/zlib1.dll		fbc/bin/win32
 		;;
 	win32-mingworg)
-		cp bin/gdb.exe			fbcsa/bin/win32
-		cp bin/libgcc_s_dw2-1.dll	fbcsa/bin/win32
-		cp bin/zlib1.dll		fbcsa/bin/win32
+		cp bin/gdb.exe			fbc/bin/win32
+		cp bin/libgcc_s_dw2-1.dll	fbc/bin/win32
+		cp bin/zlib1.dll		fbc/bin/win32
 		;;
 	win64)
-		cp bin/gcc.exe fbcsa/bin/win64
-		cp --parents libexec/gcc/x86_64-w64-mingw32/4.9.2/cc1.exe fbcsa/bin
+		cp bin/gcc.exe fbc/bin/win64
+		cp --parents libexec/gcc/x86_64-w64-mingw32/4.9.2/cc1.exe fbc/bin
 		;;
 	esac
 
 	# TODO: GoRC.exe should really be taken from its homepage
 	# <http://www.godevtool.com/>, but it was offline today
-	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbcsa/bin/$fbtarget
+	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
 
-	cp "$libffi_build"/.libs/libffi.a	fbcsa/lib/$fbtarget
+	cp "$libffi_build"/.libs/libffi.a	fbc/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,
 	# but it shouldn't hurt either)
-	strip -g fbcsa/bin/$fbtarget/*
+	strip -g fbc/bin/$fbtarget/*
 
+	cd fbc
 	case "$target" in
 	win32|win64)
-		cd fbc && make bindist DISABLE_DOCS=1 && cd ..
-		cd fbcsa && make bindist && cd ..
+		make bindist DISABLE_DOCS=1
+		make bindist ENABLE_STANDALONE=1
 		;;
 	win32-mingworg)
-		cd fbc && make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg && cd ..
-		cd fbcsa && make bindist FBPACKSUFFIX=-mingworg && cd ..
+		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg
+		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=-mingworg
 		;;
 	esac
+	cd ..
 
-	cp   fbc/*.zip   fbc/*.7z	../output
-	cp fbcsa/*.zip fbcsa/*.7z	../output
-	cp   fbc/contrib/manifest/fbc-$target.lst		../output
-	cp fbcsa/contrib/manifest/FreeBASIC-$target.lst	../output
+	cp fbc/*.zip fbc/*.7z ../output
+	cp fbc/contrib/manifest/fbc-$target.lst		../output
+	cp fbc/contrib/manifest/FreeBASIC-$target.lst	../output
 
 	export PATH="$origPATH"
 	cd ..
