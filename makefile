@@ -755,14 +755,17 @@ bindist:
 	# (needed anyways to avoid tarbombs)
 	mkdir -p $(packbin) $(packinc) $(packlib)
 
-	# Copy fbc, binutils etc. (standalone), includes, libs (including the
-	# non-FB ones for standalone)
+	# Copy fbc, binutils + gcc's libexec/.../cc1.exe (standalone), includes,
+	# libs (including the non-FB ones for standalone)
 	cp $(FBC_EXE) $(packbin)
 	cp -r $(rootdir)inc/* $(packinc)
   ifdef ENABLE_STANDALONE
 	mkdir -p $(FBPACKAGE)/bin/$(FBTARGET)
 	cp bin/$(FBTARGET)/* $(FBPACKAGE)/bin/$(FBTARGET)
 	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o lib/$(FBTARGET)/*.x $(packlib)
+	if [ -d bin/libexec ]; then \
+		cp -R bin/libexec $(FBPACKAGE)/bin; \
+	fi
   else
 	cp $(RTL_LIBS) $(GFX_LIBS) $(packlib)
   endif
