@@ -726,7 +726,7 @@ declare sub glGetPixelMapuiv(byval map as GLenum, byval values as GLuint ptr)
 declare sub glGetPixelMapusv(byval map as GLenum, byval values as GLushort ptr)
 declare sub glGetPointerv(byval pname as GLenum, byval params as GLvoid ptr ptr)
 declare sub glGetPolygonStipple(byval mask as GLubyte ptr)
-declare function glGetString(byval name as GLenum) as const GLubyte ptr
+declare function glGetString(byval name as GLenum) as const zstring ptr
 declare sub glGetTexEnvfv(byval target as GLenum, byval pname as GLenum, byval params as GLfloat ptr)
 declare sub glGetTexEnviv(byval target as GLenum, byval pname as GLenum, byval params as GLint ptr)
 declare sub glGetTexGendv(byval coord as GLenum, byval pname as GLenum, byval params as GLdouble ptr)
