@@ -607,7 +607,7 @@ declare sub glPushClientAttrib(byval mask as GLbitfield)
 declare sub glPopClientAttrib()
 declare function glRenderMode(byval mode as GLenum) as GLint
 declare function glGetError() as GLenum
-declare function glGetString(byval name as GLenum) as const GLubyte ptr
+declare function glGetString(byval name as GLenum) as const zstring ptr
 declare sub glFinish()
 declare sub glFlush()
 declare sub glHint(byval target as GLenum, byval mode as GLenum)

@@ -16,9 +16,9 @@ extern "Windows"
 	#define gluErrorStringWIN(errCode) cast(LPCWSTR, gluErrorString(errCode))
 #endif
 
-declare function gluErrorString(byval errCode as GLenum) as const GLubyte ptr
+declare function gluErrorString(byval errCode as GLenum) as const zstring ptr
 declare function gluErrorUnicodeStringEXT(byval errCode as GLenum) as const wstring ptr
-declare function gluGetString(byval name as GLenum) as const GLubyte ptr
+declare function gluGetString(byval name as GLenum) as const zstring ptr
 declare sub gluOrtho2D(byval left as GLdouble, byval right as GLdouble, byval bottom as GLdouble, byval top as GLdouble)
 declare sub gluPerspective(byval fovy as GLdouble, byval aspect as GLdouble, byval zNear as GLdouble, byval zFar as GLdouble)
 declare sub gluPickMatrix(byval x as GLdouble, byval y as GLdouble, byval width as GLdouble, byval height as GLdouble, byval viewport as GLint ptr)

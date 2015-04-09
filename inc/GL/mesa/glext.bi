@@ -853,7 +853,7 @@ type PFNGLCLEARBUFFERIVPROC as sub(byval buffer as GLenum, byval drawbuffer as G
 type PFNGLCLEARBUFFERUIVPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLuint ptr)
 type PFNGLCLEARBUFFERFVPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLfloat ptr)
 type PFNGLCLEARBUFFERFIPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval depth as GLfloat, byval stencil as GLint)
-type PFNGLGETSTRINGIPROC as function(byval name as GLenum, byval index as GLuint) as const GLubyte ptr
+type PFNGLGETSTRINGIPROC as function(byval name as GLenum, byval index as GLuint) as const zstring ptr
 type PFNGLISRENDERBUFFERPROC as function(byval renderbuffer as GLuint) as GLboolean
 type PFNGLBINDRENDERBUFFERPROC as sub(byval target as GLenum, byval renderbuffer as GLuint)
 type PFNGLDELETERENDERBUFFERSPROC as sub(byval n as GLsizei, byval renderbuffers as const GLuint ptr)
@@ -939,7 +939,7 @@ type PFNGLISVERTEXARRAYPROC as function(byval array as GLuint) as GLboolean
 	declare sub glClearBufferuiv(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLuint ptr)
 	declare sub glClearBufferfv(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLfloat ptr)
 	declare sub glClearBufferfi(byval buffer as GLenum, byval drawbuffer as GLint, byval depth as GLfloat, byval stencil as GLint)
-	declare function glGetStringi(byval name as GLenum, byval index as GLuint) as const GLubyte ptr
+	declare function glGetStringi(byval name as GLenum, byval index as GLuint) as const zstring ptr
 	declare function glIsRenderbuffer(byval renderbuffer as GLuint) as GLboolean
 	declare sub glBindRenderbuffer(byval target as GLenum, byval renderbuffer as GLuint)
 	declare sub glDeleteRenderbuffers(byval n as GLsizei, byval renderbuffers as const GLuint ptr)

@@ -194,7 +194,7 @@ declare function gluBuild2DMipmapLevels(byval target as GLenum, byval internalFo
 declare function gluBuild2DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
 declare function gluBuild3DMipmapLevels(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval level as GLint, byval base as GLint, byval max as GLint, byval data as const any ptr) as GLint
 declare function gluBuild3DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
-declare function gluCheckExtension(byval extName as const GLubyte ptr, byval extString as const GLubyte ptr) as GLboolean
+declare function gluCheckExtension(byval extName as const zstring ptr, byval extString as const zstring ptr) as GLboolean
 declare sub gluCylinder(byval quad as GLUquadric ptr, byval base as GLdouble, byval top as GLdouble, byval height as GLdouble, byval slices as GLint, byval stacks as GLint)
 declare sub gluDeleteNurbsRenderer(byval nurb as GLUnurbs ptr)
 declare sub gluDeleteQuadric(byval quad as GLUquadric ptr)
@@ -204,9 +204,9 @@ declare sub gluEndCurve(byval nurb as GLUnurbs ptr)
 declare sub gluEndPolygon(byval tess as GLUtesselator ptr)
 declare sub gluEndSurface(byval nurb as GLUnurbs ptr)
 declare sub gluEndTrim(byval nurb as GLUnurbs ptr)
-declare function gluErrorString(byval error as GLenum) as const GLubyte ptr
+declare function gluErrorString(byval error as GLenum) as const zstring ptr
 declare sub gluGetNurbsProperty(byval nurb as GLUnurbs ptr, byval property as GLenum, byval data as GLfloat ptr)
-declare function gluGetString(byval name as GLenum) as const GLubyte ptr
+declare function gluGetString(byval name as GLenum) as const zstring ptr
 declare sub gluGetTessProperty(byval tess as GLUtesselator ptr, byval which as GLenum, byval data as GLdouble ptr)
 declare sub gluLoadSamplingMatrices(byval nurb as GLUnurbs ptr, byval model as const GLfloat ptr, byval perspective as const GLfloat ptr, byval view as const GLint ptr)
 declare sub gluLookAt(byval eyeX as GLdouble, byval eyeY as GLdouble, byval eyeZ as GLdouble, byval centerX as GLdouble, byval centerY as GLdouble, byval centerZ as GLdouble, byval upX as GLdouble, byval upY as GLdouble, byval upZ as GLdouble)
