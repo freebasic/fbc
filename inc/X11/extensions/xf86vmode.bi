@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXxf86vm-1.1.4
+
 #pragma once
 
 #include once "crt/long.bi"

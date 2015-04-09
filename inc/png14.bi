@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libpng-1.4.16
+
 #pragma once
 
 #inclib "png"

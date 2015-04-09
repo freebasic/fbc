@@ -1,3 +1,5 @@
+'' FreeBASIC binding for mingw-w64-v3.3.0
+
 #pragma once
 
 #define E_PROP_ID_UNSUPPORTED cast(HRESULT, &h80070490)

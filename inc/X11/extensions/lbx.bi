@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xextproto-7.3.0
+
 #pragma once
 
 #define _LBX_H_

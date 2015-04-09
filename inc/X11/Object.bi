@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXt-1.1.4
+
 #pragma once
 
 '' The following symbols have been renamed:

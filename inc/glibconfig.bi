@@ -1,3 +1,5 @@
+'' FreeBASIC binding for glib-2.42.2
+
 #pragma once
 
 #if defined(__FB_LINUX__) and defined(__FB_64BIT__)

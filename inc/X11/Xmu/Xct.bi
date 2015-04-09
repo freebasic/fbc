@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXmu-1.1.2
+
 #pragma once
 
 #include once "crt/long.bi"

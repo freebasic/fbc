@@ -1,3 +1,5 @@
+'' FreeBASIC binding for CUnit-2.1-3
+
 #pragma once
 
 #include once "CUnit.bi"

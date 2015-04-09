@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXmu-1.1.2
+
 #pragma once
 
 const CIE_A_u = 0.2560

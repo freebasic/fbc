@@ -1,3 +1,5 @@
+'' FreeBASIC binding for recordproto-1.14.2
+
 #pragma once
 
 #include once "crt/long.bi"

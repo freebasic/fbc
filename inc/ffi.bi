@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libffi-3.1
+
 #pragma once
 
 #inclib "ffi"

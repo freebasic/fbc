@@ -1,3 +1,5 @@
+'' FreeBASIC binding for randrproto-1.4.1
+
 #pragma once
 
 #include once "crt/long.bi"

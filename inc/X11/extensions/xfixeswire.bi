@@ -1,3 +1,5 @@
+'' FreeBASIC binding for fixesproto-5.0
+
 #pragma once
 
 #include once "crt/long.bi"

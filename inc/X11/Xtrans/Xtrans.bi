@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xtrans-1.3.5
+
 #pragma once
 
 #ifndef __FB_64BIT__

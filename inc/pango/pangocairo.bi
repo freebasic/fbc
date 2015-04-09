@@ -1,3 +1,5 @@
+'' FreeBASIC binding for pango-1.36.8
+
 #pragma once
 
 #inclib "pangocairo-1.0"

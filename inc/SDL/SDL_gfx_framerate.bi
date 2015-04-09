@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL_gfx-2.0.13
+
 #pragma once
 
 #inclib "SDL_gfx"

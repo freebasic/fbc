@@ -1,3 +1,5 @@
+'' FreeBASIC binding for lua-5.2.3
+
 #pragma once
 
 #inclib "lua"

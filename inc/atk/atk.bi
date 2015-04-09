@@ -1,3 +1,5 @@
+'' FreeBASIC binding for atk-2.14.0
+
 #pragma once
 
 #inclib "atk-1.0"

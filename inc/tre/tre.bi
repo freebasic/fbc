@@ -1,3 +1,5 @@
+'' FreeBASIC binding for tre-0.8.0
+
 #pragma once
 
 #inclib "tre"

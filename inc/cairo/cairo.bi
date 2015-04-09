@@ -1,3 +1,5 @@
+'' FreeBASIC binding for cairo-1.14.2
+
 #pragma once
 
 #inclib "cairo"

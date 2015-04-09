@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXfixes-5.0.1
+
 #pragma once
 
 #include once "crt/long.bi"

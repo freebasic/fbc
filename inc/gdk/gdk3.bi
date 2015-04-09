@@ -1,3 +1,5 @@
+'' FreeBASIC binding for gtk+-3.14.10
+
 #pragma once
 
 #inclib "gdk-3"

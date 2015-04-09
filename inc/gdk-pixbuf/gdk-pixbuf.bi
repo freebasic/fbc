@@ -1,3 +1,5 @@
+'' FreeBASIC binding for gdk-pixbuf-2.30.8
+
 #pragma once
 
 #inclib "gdk_pixbuf-2.0"

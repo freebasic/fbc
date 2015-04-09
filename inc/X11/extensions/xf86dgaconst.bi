@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xf86dgaproto-2.1
+
 #pragma once
 
 #include once "crt/long.bi"

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for glib-2.42.2
+
 #pragma once
 
 #inclib "gmodule-2.0"

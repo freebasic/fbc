@@ -1,3 +1,5 @@
+'' FreeBASIC binding for gtkglext-1.2.0
+
 #pragma once
 
 #ifdef __FB_WIN32__

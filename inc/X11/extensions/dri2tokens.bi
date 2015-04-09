@@ -1,3 +1,5 @@
+'' FreeBASIC binding for dri2proto-2.8
+
 #pragma once
 
 #define _DRI2_TOKENS_H_

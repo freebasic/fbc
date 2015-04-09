@@ -1,3 +1,5 @@
+'' FreeBASIC binding for gtk+-2.24.27
+
 #pragma once
 
 #ifdef __FB_WIN32__

@@ -3,6 +3,7 @@ Version 1.02.1
 [changed]
 
 [added]
+- Package name + version to all the new/updated bindings
 
 [fixed]
 

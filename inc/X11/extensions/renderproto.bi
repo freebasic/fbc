@@ -1,3 +1,5 @@
+'' FreeBASIC binding for renderproto-0.11.1
+
 #pragma once
 
 #include once "X11/Xmd.bi"

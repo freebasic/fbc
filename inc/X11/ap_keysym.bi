@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xproto-7.0.27
+
 #pragma once
 
 const apXK_LineDel = &h1000FF00

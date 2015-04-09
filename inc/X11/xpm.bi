@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXpm-3.5.11
+
 #pragma once
 
 #include once "crt/long.bi"

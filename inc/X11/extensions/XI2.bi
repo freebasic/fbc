@@ -1,3 +1,5 @@
+'' FreeBASIC binding for inputproto-2.3.1
+
 #pragma once
 
 #include once "crt/long.bi"

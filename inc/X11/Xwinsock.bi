@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xproto-7.0.27
+
 #pragma once
 
 #ifdef __FB_WIN32__

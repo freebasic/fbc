@@ -1,3 +1,5 @@
+'' FreeBASIC binding for fcgi-2.4.1-SNAP-0311112127
+
 #pragma once
 
 #inclib "fcgi"

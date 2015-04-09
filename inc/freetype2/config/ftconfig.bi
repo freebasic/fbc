@@ -1,3 +1,5 @@
+'' FreeBASIC binding for freetype-2.5.5
+
 #pragma once
 
 #if defined(__FB_LINUX__) and defined(__FB_64BIT__)

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for videoproto-2.3.2
+
 #pragma once
 
 #include once "X11/Xmd.bi"

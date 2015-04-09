@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL2-2.0.3
+
 #pragma once
 
 #inclib "SDL2"
