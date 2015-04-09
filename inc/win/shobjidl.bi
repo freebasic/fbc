@@ -7179,6 +7179,7 @@ type IContextMenuCB as IContextMenuCB_
 	declare sub IBandHost_DestroyBand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define SID_SBandHost IID_IBandHost
 	type EXPLORERPANE as GUID
+	type REFEXPLORERPANE as const EXPLORERPANE const ptr
 	#define __IExplorerPaneVisibility_INTERFACE_DEFINED__
 
 	type _EXPLORERPANESTATE as long

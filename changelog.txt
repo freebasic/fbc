@@ -8,6 +8,7 @@ Version 1.03.0
 [fixed]
 - 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
 - 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
+- 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing
 
 
 Version 1.02.0
