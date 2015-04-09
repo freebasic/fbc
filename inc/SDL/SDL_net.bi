@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL_net-1.2.8
+
 #pragma once
 
 #inclib "SDL_net"

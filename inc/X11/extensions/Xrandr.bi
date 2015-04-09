@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXrandr-1.4.2
+
 #pragma once
 
 #include once "crt/long.bi"

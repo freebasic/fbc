@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL-1.2.15
+
 #pragma once
 
 #inclib "SDL"

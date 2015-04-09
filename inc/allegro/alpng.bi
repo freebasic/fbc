@@ -1,3 +1,5 @@
+'' FreeBASIC binding for alpng13
+
 #pragma once
 
 #inclib "alpng"

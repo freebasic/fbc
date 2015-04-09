@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXdmcp-1.1.2
+
 #pragma once
 
 #include once "X11/Xmd.bi"

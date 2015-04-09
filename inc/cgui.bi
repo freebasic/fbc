@@ -1,3 +1,5 @@
+'' FreeBASIC binding for cgui-2.0.3
+
 #pragma once
 
 #inclib "cgui"

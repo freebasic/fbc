@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXft-2.3.2
+
 #pragma once
 
 #include once "X11/Xfuncproto.bi"

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL2_image-2.0.0
+
 #pragma once
 
 #inclib "SDL2_image"

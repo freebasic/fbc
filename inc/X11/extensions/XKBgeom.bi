@@ -1,3 +1,5 @@
+'' FreeBASIC binding for kbproto-1.0.6
+
 #pragma once
 
 #include once "X11/extensions/XKBstr.bi"

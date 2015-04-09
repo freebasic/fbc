@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libX11-1.6.3
+
 #pragma once
 
 #include once "X11/Xlib.bi"

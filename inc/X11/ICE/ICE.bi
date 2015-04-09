@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libICE-1.0.9
+
 #pragma once
 
 #define _ICE_H_

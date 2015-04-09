@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xextproto-7.3.0
+
 #pragma once
 
 const _XTESTEXT1CONST_H = 1

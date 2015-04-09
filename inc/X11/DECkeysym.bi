@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xproto-7.0.27
+
 #pragma once
 
 const DXK_ring_accent = &h1000FEB0

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for cfe-3.5.0.src
+
 #pragma once
 
 #include once "crt/long.bi"

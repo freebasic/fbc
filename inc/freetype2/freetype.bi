@@ -1,3 +1,5 @@
+'' FreeBASIC binding for freetype-2.5.5
+
 #pragma once
 
 #inclib "freetype"

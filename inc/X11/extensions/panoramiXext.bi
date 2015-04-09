@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXinerama-1.1.3
+
 #pragma once
 
 #include once "X11/Xfuncproto.bi"

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL_mixer-1.2.12
+
 #pragma once
 
 #inclib "SDL_mixer"

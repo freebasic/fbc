@@ -1,3 +1,5 @@
+'' FreeBASIC binding for PDCurses-3.4
+
 #pragma once
 
 #inclib "pdcurses"

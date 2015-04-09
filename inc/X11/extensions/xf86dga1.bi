@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXxf86dga-1.1.4
+
 #pragma once
 
 #include once "X11/Xfuncproto.bi"

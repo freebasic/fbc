@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXau-1.0.8
+
 #pragma once
 
 #include once "crt/long.bi"

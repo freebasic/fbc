@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXv-1.0.10
+
 #pragma once
 
 #include once "crt/long.bi"

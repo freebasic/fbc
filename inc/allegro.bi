@@ -1,3 +1,5 @@
+'' FreeBASIC binding for allegro-4.4.2
+
 #pragma once
 
 #inclib "alleg"

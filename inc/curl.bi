@@ -1,3 +1,5 @@
+'' FreeBASIC binding for curl-7.39.0
+
 #pragma once
 
 #inclib "curl"

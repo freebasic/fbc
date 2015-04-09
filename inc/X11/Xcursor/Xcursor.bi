@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXcursor-1.1.14
+
 #pragma once
 
 #include once "crt/long.bi"

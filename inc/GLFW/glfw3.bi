@@ -1,3 +1,5 @@
+'' FreeBASIC binding for glfw-3.1.1
+
 #pragma once
 
 #if defined(__FB_WIN32__) and defined(GLFW_DLL)

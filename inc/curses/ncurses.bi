@@ -1,3 +1,5 @@
+'' FreeBASIC binding for ncurses-5.9
+
 #pragma once
 
 #inclib "curses"

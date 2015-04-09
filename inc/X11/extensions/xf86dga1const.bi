@@ -1,3 +1,5 @@
+'' FreeBASIC binding for xf86dgaproto-2.1
+
 #pragma once
 
 #define _XF86DGA1CONST_H_

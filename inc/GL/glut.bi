@@ -1,3 +1,5 @@
+'' FreeBASIC binding for glut-3.7
+
 #pragma once
 
 #ifdef __FB_WIN32__

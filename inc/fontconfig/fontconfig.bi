@@ -1,3 +1,5 @@
+'' FreeBASIC binding for fontconfig-2.11.1
+
 #pragma once
 
 #include once "crt/sys/types.bi"

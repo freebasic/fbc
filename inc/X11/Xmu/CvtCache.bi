@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXmu-1.1.2
+
 #pragma once
 
 #include once "X11/Xmu/DisplayQue.bi"

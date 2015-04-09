@@ -1,3 +1,5 @@
+'' FreeBASIC binding for algif_1.3
+
 #pragma once
 
 #inclib "algif"

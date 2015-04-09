@@ -1,3 +1,5 @@
+'' FreeBASIC binding for liblbxutil-1.1.0
+
 #pragma once
 
 #include once "crt/sys/types.bi"

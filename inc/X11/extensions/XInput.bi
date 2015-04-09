@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXi-1.7.4
+
 #pragma once
 
 #include once "crt/long.bi"

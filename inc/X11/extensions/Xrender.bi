@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libXrender-0.9.8
+
 #pragma once
 
 #include once "crt/long.bi"

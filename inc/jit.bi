@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libjit-a8293e141b79c28734a3633a81a43f92f29fc2d7
+
 #pragma once
 
 #inclib "jit"

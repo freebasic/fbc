@@ -1,3 +1,5 @@
+'' FreeBASIC binding for zlib-1.2.8
+
 #pragma once
 
 #inclib "z"

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libiconv-1.14
+
 #pragma once
 
 #include once "crt/stddef.bi"

@@ -1,3 +1,5 @@
+'' FreeBASIC binding for libSM-1.2.2
+
 #pragma once
 
 #define _SM_H_

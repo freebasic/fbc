@@ -1,3 +1,5 @@
+'' FreeBASIC binding for SDL2_ttf-2.0.12
+
 #pragma once
 
 #inclib "SDL2_ttf"

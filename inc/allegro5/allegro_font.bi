@@ -1,3 +1,5 @@
+'' FreeBASIC binding for allegro-5.0.11
+
 #pragma once
 
 #if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
