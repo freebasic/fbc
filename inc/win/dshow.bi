@@ -19,6 +19,6 @@
 #define __DSHOW_INCLUDED__
 #define AM_NOVTABLE
 #define NO_SHLWAPI_STRFCNS
-#define NUMELMS(array) (sizeof((array)) / sizeof((array)[0]))
+#define NUMELMS(array) (ubound(array) - lbound(array) + 1)
 const OATRUE = -1
 const OAFALSE = 0

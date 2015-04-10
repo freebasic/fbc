@@ -343,7 +343,12 @@ declare sub XtSetMappedWhenManaged(byval as Widget, byval as byte)
 declare function XtNameToWidget(byval as Widget, byval as const zstring ptr) as Widget
 declare function XtWindowToWidget(byval as Display ptr, byval as Window) as Widget
 declare function XtGetClassExtension(byval as WidgetClass, byval as Cardinal, byval as XrmQuark, byval as clong, byval as Cardinal) as XtPointer
-#define XtSetArg(arg, n, d) '' TODO: ((void)( (arg).name = (n), (arg).value = (XtArgVal)(d) ))
+#macro XtSetArg(arg, n, d)
+	scope
+		(arg).name = (n)
+		(arg).value = cast(XtArgVal, d)
+	end scope
+#endmacro
 declare function XtMergeArgLists(byval as ArgList, byval as Cardinal, byval as ArgList, byval as Cardinal) as ArgList
 #define XtVaNestedList "XtVaNestedList"
 #define XtVaTypedArg "XtVaTypedArg"
@@ -431,8 +436,8 @@ const XtUnspecifiedShellInt = -1
 #define XtDefaultBackground "XtDefaultBackground"
 #define XtDefaultFont "XtDefaultFont"
 #define XtDefaultFontSet "XtDefaultFontSet"
-#define XtOffset(p_type, field) '' TODO: ((Cardinal) (((char *) (&(((p_type)NULL)->field))) - ((char *) NULL)))
-#define XtOffsetOf(s_type, field) '' TODO: XtOffset(s_type*,field)
+#define XtOffset(p_type, field) cast(Cardinal, cptr(byte ptr, @cast(p_type, NULL)->field) - cptr(byte ptr, NULL))
+#define XtOffsetOf(s_type, field) XtOffset(s_type ptr, field)
 
 type _XtCheckpointTokenRec
 	save_type as long

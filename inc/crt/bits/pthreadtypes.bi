@@ -110,7 +110,7 @@ end union
 
 #ifdef __FB_64BIT__
 	const __PTHREAD_MUTEX_HAVE_PREV = 1
-	#define __PTHREAD_SPINS '' TODO: 0, 0
+	#define __PTHREAD_SPINS 0, 0
 #else
 	#define __spins __elision_data.__espins
 	#define __elision __elision_data.__elision
@@ -186,7 +186,7 @@ union pthread_rwlock_t
 end union
 
 #ifdef __FB_64BIT__
-	#define __PTHREAD_RWLOCK_ELISION_EXTRA '' TODO: 0, { 0, 0, 0, 0, 0, 0, 0 }
+	#define __PTHREAD_RWLOCK_ELISION_EXTRA 0, { 0, 0, 0, 0, 0, 0, 0 }
 	const __PTHREAD_RWLOCK_INT_FLAGS_SHARED = 1
 #else
 	const __PTHREAD_RWLOCK_ELISION_EXTRA = 0
