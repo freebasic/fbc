@@ -286,6 +286,16 @@ type IPersistMoniker_
 	lpVtbl as IPersistMonikerVtbl ptr
 end type
 
+#define IPersistMoniker_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistMoniker_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistMoniker_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistMoniker_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistMoniker_IsDirty(This) (This)->lpVtbl->IsDirty(This)
+#define IPersistMoniker_Load(This, fFullyAvailable, pimkName, pibc, grfMode) (This)->lpVtbl->Load(This, fFullyAvailable, pimkName, pibc, grfMode)
+#define IPersistMoniker_Save(This, pimkName, pbc, fRemember) (This)->lpVtbl->Save(This, pimkName, pbc, fRemember)
+#define IPersistMoniker_SaveCompleted(This, pimkName, pibc) (This)->lpVtbl->SaveCompleted(This, pimkName, pibc)
+#define IPersistMoniker_GetCurMoniker(This, ppimkName) (This)->lpVtbl->GetCurMoniker(This, ppimkName)
+
 declare function IPersistMoniker_GetClassID_Proxy(byval This as IPersistMoniker ptr, byval pClassID as CLSID ptr) as HRESULT
 declare sub IPersistMoniker_GetClassID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistMoniker_IsDirty_Proxy(byval This as IPersistMoniker ptr) as HRESULT
@@ -326,6 +336,10 @@ type IMonikerProp_
 	lpVtbl as IMonikerPropVtbl ptr
 end type
 
+#define IMonikerProp_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMonikerProp_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMonikerProp_Release(This) (This)->lpVtbl->Release(This)
+#define IMonikerProp_PutProperty(This, mkp, val) (This)->lpVtbl->PutProperty(This, mkp, val)
 declare function IMonikerProp_PutProperty_Proxy(byval This as IMonikerProp ptr, byval mkp as MONIKERPROPERTY, byval val as LPCWSTR) as HRESULT
 declare sub IMonikerProp_PutProperty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPBINDPROTOCOL_DEFINED
@@ -345,6 +359,10 @@ type IBindProtocol_
 	lpVtbl as IBindProtocolVtbl ptr
 end type
 
+#define IBindProtocol_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBindProtocol_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBindProtocol_Release(This) (This)->lpVtbl->Release(This)
+#define IBindProtocol_CreateBinding(This, szUrl, pbc, ppb) (This)->lpVtbl->CreateBinding(This, szUrl, pbc, ppb)
 declare function IBindProtocol_CreateBinding_Proxy(byval This as IBindProtocol ptr, byval szUrl as LPCWSTR, byval pbc as IBindCtx ptr, byval ppb as IBinding ptr ptr) as HRESULT
 declare sub IBindProtocol_CreateBinding_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPBINDING_DEFINED
@@ -367,6 +385,16 @@ end type
 type IBinding_
 	lpVtbl as IBindingVtbl ptr
 end type
+
+#define IBinding_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBinding_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBinding_Release(This) (This)->lpVtbl->Release(This)
+#define IBinding_Abort(This) (This)->lpVtbl->Abort(This)
+#define IBinding_Suspend(This) (This)->lpVtbl->Suspend(This)
+#define IBinding_Resume(This) (This)->lpVtbl->Resume(This)
+#define IBinding_SetPriority(This, nPriority) (This)->lpVtbl->SetPriority(This, nPriority)
+#define IBinding_GetPriority(This, pnPriority) (This)->lpVtbl->GetPriority(This, pnPriority)
+#define IBinding_GetBindResult(This, pclsidProtocol, pdwResult, pszResult, pdwReserved) (This)->lpVtbl->GetBindResult(This, pclsidProtocol, pdwResult, pszResult, pdwReserved)
 
 declare function IBinding_Abort_Proxy(byval This as IBinding ptr) as HRESULT
 declare sub IBinding_Abort_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -636,6 +664,18 @@ type IBindStatusCallback_
 	lpVtbl as IBindStatusCallbackVtbl ptr
 end type
 
+#define IBindStatusCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBindStatusCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBindStatusCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IBindStatusCallback_OnStartBinding(This, dwReserved, pib) (This)->lpVtbl->OnStartBinding(This, dwReserved, pib)
+#define IBindStatusCallback_GetPriority(This, pnPriority) (This)->lpVtbl->GetPriority(This, pnPriority)
+#define IBindStatusCallback_OnLowResource(This, reserved) (This)->lpVtbl->OnLowResource(This, reserved)
+#define IBindStatusCallback_OnProgress(This, ulProgress, ulProgressMax, ulStatusCode, szStatusText) (This)->lpVtbl->OnProgress(This, ulProgress, ulProgressMax, ulStatusCode, szStatusText)
+#define IBindStatusCallback_OnStopBinding(This, hresult, szError) (This)->lpVtbl->OnStopBinding(This, hresult, szError)
+#define IBindStatusCallback_GetBindInfo(This, grfBINDF, pbindinfo) (This)->lpVtbl->GetBindInfo(This, grfBINDF, pbindinfo)
+#define IBindStatusCallback_OnDataAvailable(This, grfBSCF, dwSize, pformatetc, pstgmed) (This)->lpVtbl->OnDataAvailable(This, grfBSCF, dwSize, pformatetc, pstgmed)
+#define IBindStatusCallback_OnObjectAvailable(This, riid, punk) (This)->lpVtbl->OnObjectAvailable(This, riid, punk)
+
 declare function IBindStatusCallback_OnStartBinding_Proxy(byval This as IBindStatusCallback ptr, byval dwReserved as DWORD, byval pib as IBinding ptr) as HRESULT
 declare sub IBindStatusCallback_OnStartBinding_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBindStatusCallback_GetPriority_Proxy(byval This as IBindStatusCallback ptr, byval pnPriority as LONG ptr) as HRESULT
@@ -710,6 +750,19 @@ type IBindStatusCallbackEx_
 	lpVtbl as IBindStatusCallbackExVtbl ptr
 end type
 
+#define IBindStatusCallbackEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBindStatusCallbackEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBindStatusCallbackEx_Release(This) (This)->lpVtbl->Release(This)
+#define IBindStatusCallbackEx_OnStartBinding(This, dwReserved, pib) (This)->lpVtbl->OnStartBinding(This, dwReserved, pib)
+#define IBindStatusCallbackEx_GetPriority(This, pnPriority) (This)->lpVtbl->GetPriority(This, pnPriority)
+#define IBindStatusCallbackEx_OnLowResource(This, reserved) (This)->lpVtbl->OnLowResource(This, reserved)
+#define IBindStatusCallbackEx_OnProgress(This, ulProgress, ulProgressMax, ulStatusCode, szStatusText) (This)->lpVtbl->OnProgress(This, ulProgress, ulProgressMax, ulStatusCode, szStatusText)
+#define IBindStatusCallbackEx_OnStopBinding(This, hresult, szError) (This)->lpVtbl->OnStopBinding(This, hresult, szError)
+#define IBindStatusCallbackEx_GetBindInfo(This, grfBINDF, pbindinfo) (This)->lpVtbl->GetBindInfo(This, grfBINDF, pbindinfo)
+#define IBindStatusCallbackEx_OnDataAvailable(This, grfBSCF, dwSize, pformatetc, pstgmed) (This)->lpVtbl->OnDataAvailable(This, grfBSCF, dwSize, pformatetc, pstgmed)
+#define IBindStatusCallbackEx_OnObjectAvailable(This, riid, punk) (This)->lpVtbl->OnObjectAvailable(This, riid, punk)
+#define IBindStatusCallbackEx_GetBindInfoEx(This, grfBINDF, pbindinfo, grfBINDF2, pdwReserved) (This)->lpVtbl->GetBindInfoEx(This, grfBINDF, pbindinfo, grfBINDF2, pdwReserved)
+
 declare function IBindStatusCallbackEx_RemoteGetBindInfoEx_Proxy(byval This as IBindStatusCallbackEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as RemBINDINFO ptr, byval pstgmed as RemSTGMEDIUM ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare sub IBindStatusCallbackEx_RemoteGetBindInfoEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBindStatusCallbackEx_GetBindInfoEx_Proxy(byval This as IBindStatusCallbackEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as BINDINFO ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
@@ -731,6 +784,10 @@ type IAuthenticate_
 	lpVtbl as IAuthenticateVtbl ptr
 end type
 
+#define IAuthenticate_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAuthenticate_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAuthenticate_Release(This) (This)->lpVtbl->Release(This)
+#define IAuthenticate_Authenticate(This, phwnd, pszUsername, pszPassword) (This)->lpVtbl->Authenticate(This, phwnd, pszUsername, pszPassword)
 declare function IAuthenticate_Authenticate_Proxy(byval This as IAuthenticate ptr, byval phwnd as HWND ptr, byval pszUsername as LPWSTR ptr, byval pszPassword as LPWSTR ptr) as HRESULT
 declare sub IAuthenticate_Authenticate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPAUTHENTICATIONEX_DEFINED
@@ -767,6 +824,11 @@ type IAuthenticateEx_
 	lpVtbl as IAuthenticateExVtbl ptr
 end type
 
+#define IAuthenticateEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAuthenticateEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAuthenticateEx_Release(This) (This)->lpVtbl->Release(This)
+#define IAuthenticateEx_Authenticate(This, phwnd, pszUsername, pszPassword) (This)->lpVtbl->Authenticate(This, phwnd, pszUsername, pszPassword)
+#define IAuthenticateEx_AuthenticateEx(This, phwnd, pszUsername, pszPassword, pauthinfo) (This)->lpVtbl->AuthenticateEx(This, phwnd, pszUsername, pszPassword, pauthinfo)
 declare function IAuthenticateEx_AuthenticateEx_Proxy(byval This as IAuthenticateEx ptr, byval phwnd as HWND ptr, byval pszUsername as LPWSTR ptr, byval pszPassword as LPWSTR ptr, byval pauthinfo as AUTHENTICATEINFO ptr) as HRESULT
 declare sub IAuthenticateEx_AuthenticateEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPHTTPNEGOTIATE_DEFINED
@@ -786,6 +848,12 @@ end type
 type IHttpNegotiate_
 	lpVtbl as IHttpNegotiateVtbl ptr
 end type
+
+#define IHttpNegotiate_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHttpNegotiate_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHttpNegotiate_Release(This) (This)->lpVtbl->Release(This)
+#define IHttpNegotiate_BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders) (This)->lpVtbl->BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders)
+#define IHttpNegotiate_OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders) (This)->lpVtbl->OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders)
 
 declare function IHttpNegotiate_BeginningTransaction_Proxy(byval This as IHttpNegotiate ptr, byval szURL as LPCWSTR, byval szHeaders as LPCWSTR, byval dwReserved as DWORD, byval pszAdditionalHeaders as LPWSTR ptr) as HRESULT
 declare sub IHttpNegotiate_BeginningTransaction_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -810,6 +878,12 @@ type IHttpNegotiate2_
 	lpVtbl as IHttpNegotiate2Vtbl ptr
 end type
 
+#define IHttpNegotiate2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHttpNegotiate2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHttpNegotiate2_Release(This) (This)->lpVtbl->Release(This)
+#define IHttpNegotiate2_BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders) (This)->lpVtbl->BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders)
+#define IHttpNegotiate2_OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders) (This)->lpVtbl->OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders)
+#define IHttpNegotiate2_GetRootSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetRootSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved)
 declare function IHttpNegotiate2_GetRootSecurityId_Proxy(byval This as IHttpNegotiate2 ptr, byval pbSecurityId as UBYTE ptr, byval pcbSecurityId as DWORD ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IHttpNegotiate2_GetRootSecurityId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPHTTPNEGOTIATE3_DEFINED
@@ -832,6 +906,13 @@ type IHttpNegotiate3_
 	lpVtbl as IHttpNegotiate3Vtbl ptr
 end type
 
+#define IHttpNegotiate3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHttpNegotiate3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHttpNegotiate3_Release(This) (This)->lpVtbl->Release(This)
+#define IHttpNegotiate3_BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders) (This)->lpVtbl->BeginningTransaction(This, szURL, szHeaders, dwReserved, pszAdditionalHeaders)
+#define IHttpNegotiate3_OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders) (This)->lpVtbl->OnResponse(This, dwResponseCode, szResponseHeaders, szRequestHeaders, pszAdditionalRequestHeaders)
+#define IHttpNegotiate3_GetRootSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetRootSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved)
+#define IHttpNegotiate3_GetSerializedClientCertContext(This, ppbCert, pcbCert) (This)->lpVtbl->GetSerializedClientCertContext(This, ppbCert, pcbCert)
 declare function IHttpNegotiate3_GetSerializedClientCertContext_Proxy(byval This as IHttpNegotiate3 ptr, byval ppbCert as UBYTE ptr ptr, byval pcbCert as DWORD ptr) as HRESULT
 declare sub IHttpNegotiate3_GetSerializedClientCertContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPWININETFILESTREAM_DEFINED
@@ -851,6 +932,12 @@ end type
 type IWinInetFileStream_
 	lpVtbl as IWinInetFileStreamVtbl ptr
 end type
+
+#define IWinInetFileStream_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWinInetFileStream_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWinInetFileStream_Release(This) (This)->lpVtbl->Release(This)
+#define IWinInetFileStream_SetHandleForUnlock(This, hWinInetLockHandle, dwReserved) (This)->lpVtbl->SetHandleForUnlock(This, hWinInetLockHandle, dwReserved)
+#define IWinInetFileStream_SetDeleteFile(This, dwReserved) (This)->lpVtbl->SetDeleteFile(This, dwReserved)
 
 declare function IWinInetFileStream_SetHandleForUnlock_Proxy(byval This as IWinInetFileStream ptr, byval hWinInetLockHandle as DWORD_PTR, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IWinInetFileStream_SetHandleForUnlock_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -873,6 +960,10 @@ type IWindowForBindingUI_
 	lpVtbl as IWindowForBindingUIVtbl ptr
 end type
 
+#define IWindowForBindingUI_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWindowForBindingUI_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWindowForBindingUI_Release(This) (This)->lpVtbl->Release(This)
+#define IWindowForBindingUI_GetWindow(This, rguidReason, phwnd) (This)->lpVtbl->GetWindow(This, rguidReason, phwnd)
 declare function IWindowForBindingUI_GetWindow_Proxy(byval This as IWindowForBindingUI ptr, byval rguidReason as const GUID const ptr, byval phwnd as HWND ptr) as HRESULT
 declare sub IWindowForBindingUI_GetWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPCODEINSTALL_DEFINED
@@ -909,6 +1000,11 @@ type ICodeInstall_
 	lpVtbl as ICodeInstallVtbl ptr
 end type
 
+#define ICodeInstall_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICodeInstall_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICodeInstall_Release(This) (This)->lpVtbl->Release(This)
+#define ICodeInstall_GetWindow(This, rguidReason, phwnd) (This)->lpVtbl->GetWindow(This, rguidReason, phwnd)
+#define ICodeInstall_OnCodeInstallProblem(This, ulStatusCode, szDestination, szSource, dwReserved) (This)->lpVtbl->OnCodeInstallProblem(This, ulStatusCode, szDestination, szSource, dwReserved)
 declare function ICodeInstall_OnCodeInstallProblem_Proxy(byval This as ICodeInstall ptr, byval ulStatusCode as ULONG, byval szDestination as LPCWSTR, byval szSource as LPCWSTR, byval dwReserved as DWORD) as HRESULT
 declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -997,6 +1093,35 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	type IUri_
 		lpVtbl as IUriVtbl ptr
 	end type
+
+	#define IUri_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUri_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUri_Release(This) (This)->lpVtbl->Release(This)
+	#define IUri_GetPropertyBSTR(This, uriProp, pbstrProperty, dwFlags) (This)->lpVtbl->GetPropertyBSTR(This, uriProp, pbstrProperty, dwFlags)
+	#define IUri_GetPropertyLength(This, uriProp, pcchProperty, dwFlags) (This)->lpVtbl->GetPropertyLength(This, uriProp, pcchProperty, dwFlags)
+	#define IUri_GetPropertyDWORD(This, uriProp, pdwProperty, dwFlags) (This)->lpVtbl->GetPropertyDWORD(This, uriProp, pdwProperty, dwFlags)
+	#define IUri_HasProperty(This, uriProp, pfHasProperty) (This)->lpVtbl->HasProperty(This, uriProp, pfHasProperty)
+	#define IUri_GetAbsoluteUri(This, pbstrAbsoluteUri) (This)->lpVtbl->GetAbsoluteUri(This, pbstrAbsoluteUri)
+	#define IUri_GetAuthority(This, pbstrAuthority) (This)->lpVtbl->GetAuthority(This, pbstrAuthority)
+	#define IUri_GetDisplayUri(This, pbstrDisplayString) (This)->lpVtbl->GetDisplayUri(This, pbstrDisplayString)
+	#define IUri_GetDomain(This, pbstrDomain) (This)->lpVtbl->GetDomain(This, pbstrDomain)
+	#define IUri_GetExtension(This, pbstrExtension) (This)->lpVtbl->GetExtension(This, pbstrExtension)
+	#define IUri_GetFragment(This, pbstrFragment) (This)->lpVtbl->GetFragment(This, pbstrFragment)
+	#define IUri_GetHost(This, pbstrHost) (This)->lpVtbl->GetHost(This, pbstrHost)
+	#define IUri_GetPassword(This, pbstrPassword) (This)->lpVtbl->GetPassword(This, pbstrPassword)
+	#define IUri_GetPath(This, pbstrPath) (This)->lpVtbl->GetPath(This, pbstrPath)
+	#define IUri_GetPathAndQuery(This, pbstrPathAndQuery) (This)->lpVtbl->GetPathAndQuery(This, pbstrPathAndQuery)
+	#define IUri_GetQuery(This, pbstrQuery) (This)->lpVtbl->GetQuery(This, pbstrQuery)
+	#define IUri_GetRawUri(This, pbstrRawUri) (This)->lpVtbl->GetRawUri(This, pbstrRawUri)
+	#define IUri_GetSchemeName(This, pbstrSchemeName) (This)->lpVtbl->GetSchemeName(This, pbstrSchemeName)
+	#define IUri_GetUserInfo(This, pbstrUserInfo) (This)->lpVtbl->GetUserInfo(This, pbstrUserInfo)
+	#define IUri_GetUserName(This, pbstrUserName) (This)->lpVtbl->GetUserName(This, pbstrUserName)
+	#define IUri_GetHostType(This, pdwHostType) (This)->lpVtbl->GetHostType(This, pdwHostType)
+	#define IUri_GetPort(This, pdwPort) (This)->lpVtbl->GetPort(This, pdwPort)
+	#define IUri_GetScheme(This, pdwScheme) (This)->lpVtbl->GetScheme(This, pdwScheme)
+	#define IUri_GetZone(This, pdwZone) (This)->lpVtbl->GetZone(This, pdwZone)
+	#define IUri_GetProperties(This, pdwFlags) (This)->lpVtbl->GetProperties(This, pdwFlags)
+	#define IUri_IsEqual(This, pUri, pfEqual) (This)->lpVtbl->IsEqual(This, pUri, pfEqual)
 
 	declare function IUri_GetPropertyBSTR_Proxy(byval This as IUri ptr, byval uriProp as Uri_PROPERTY, byval pbstrProperty as BSTR ptr, byval dwFlags as DWORD) as HRESULT
 	declare sub IUri_GetPropertyBSTR_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1117,6 +1242,10 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		lpVtbl as IUriContainerVtbl ptr
 	end type
 
+	#define IUriContainer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUriContainer_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUriContainer_Release(This) (This)->lpVtbl->Release(This)
+	#define IUriContainer_GetIUri(This, ppIUri) (This)->lpVtbl->GetIUri(This, ppIUri)
 	declare function IUriContainer_GetIUri_Proxy(byval This as IUriContainer ptr, byval ppIUri as IUri ptr ptr) as HRESULT
 	declare sub IUriContainer_GetIUri_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IUriBuilder_INTERFACE_DEFINED__
@@ -1161,6 +1290,33 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	type IUriBuilder_
 		lpVtbl as IUriBuilderVtbl ptr
 	end type
+
+	#define IUriBuilder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUriBuilder_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUriBuilder_Release(This) (This)->lpVtbl->Release(This)
+	#define IUriBuilder_CreateUriSimple(This, dwAllowEncodingPropertyMask, dwReserved, ppIUri) (This)->lpVtbl->CreateUriSimple(This, dwAllowEncodingPropertyMask, dwReserved, ppIUri)
+	#define IUriBuilder_CreateUri(This, dwCreateFlags, dwAllowEncodingPropertyMask, dwReserved, ppIUri) (This)->lpVtbl->CreateUri(This, dwCreateFlags, dwAllowEncodingPropertyMask, dwReserved, ppIUri)
+	#define IUriBuilder_CreateUriWithFlags(This, dwCreateFlags, dwUriBuilderFlags, dwAllowEncodingPropertyMask, dwReserved, ppIUri) (This)->lpVtbl->CreateUriWithFlags(This, dwCreateFlags, dwUriBuilderFlags, dwAllowEncodingPropertyMask, dwReserved, ppIUri)
+	#define IUriBuilder_GetIUri(This, ppIUri) (This)->lpVtbl->GetIUri(This, ppIUri)
+	#define IUriBuilder_SetIUri(This, pIUri) (This)->lpVtbl->SetIUri(This, pIUri)
+	#define IUriBuilder_GetFragment(This, pcchFragment, ppwzFragment) (This)->lpVtbl->GetFragment(This, pcchFragment, ppwzFragment)
+	#define IUriBuilder_GetHost(This, pcchHost, ppwzHost) (This)->lpVtbl->GetHost(This, pcchHost, ppwzHost)
+	#define IUriBuilder_GetPassword(This, pcchPassword, ppwzPassword) (This)->lpVtbl->GetPassword(This, pcchPassword, ppwzPassword)
+	#define IUriBuilder_GetPath(This, pcchPath, ppwzPath) (This)->lpVtbl->GetPath(This, pcchPath, ppwzPath)
+	#define IUriBuilder_GetPort(This, pfHasPort, pdwPort) (This)->lpVtbl->GetPort(This, pfHasPort, pdwPort)
+	#define IUriBuilder_GetQuery(This, pcchQuery, ppwzQuery) (This)->lpVtbl->GetQuery(This, pcchQuery, ppwzQuery)
+	#define IUriBuilder_GetSchemeName(This, pcchSchemeName, ppwzSchemeName) (This)->lpVtbl->GetSchemeName(This, pcchSchemeName, ppwzSchemeName)
+	#define IUriBuilder_GetUserName(This, pcchUserName, ppwzUserName) (This)->lpVtbl->GetUserName(This, pcchUserName, ppwzUserName)
+	#define IUriBuilder_SetFragment(This, pwzNewValue) (This)->lpVtbl->SetFragment(This, pwzNewValue)
+	#define IUriBuilder_SetHost(This, pwzNewValue) (This)->lpVtbl->SetHost(This, pwzNewValue)
+	#define IUriBuilder_SetPassword(This, pwzNewValue) (This)->lpVtbl->SetPassword(This, pwzNewValue)
+	#define IUriBuilder_SetPath(This, pwzNewValue) (This)->lpVtbl->SetPath(This, pwzNewValue)
+	#define IUriBuilder_SetPort(This, fHasPort, dwNewValue) (This)->lpVtbl->SetPort(This, fHasPort, dwNewValue)
+	#define IUriBuilder_SetQuery(This, pwzNewValue) (This)->lpVtbl->SetQuery(This, pwzNewValue)
+	#define IUriBuilder_SetSchemeName(This, pwzNewValue) (This)->lpVtbl->SetSchemeName(This, pwzNewValue)
+	#define IUriBuilder_SetUserName(This, pwzNewValue) (This)->lpVtbl->SetUserName(This, pwzNewValue)
+	#define IUriBuilder_RemoveProperties(This, dwPropertyMask) (This)->lpVtbl->RemoveProperties(This, dwPropertyMask)
+	#define IUriBuilder_HasBeenModified(This, pfModified) (This)->lpVtbl->HasBeenModified(This, pfModified)
 
 	declare function IUriBuilder_CreateUriSimple_Proxy(byval This as IUriBuilder ptr, byval dwAllowEncodingPropertyMask as DWORD, byval dwReserved as DWORD_PTR, byval ppIUri as IUri ptr ptr) as HRESULT
 	declare sub IUriBuilder_CreateUriSimple_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1224,6 +1380,12 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		lpVtbl as IUriBuilderFactoryVtbl ptr
 	end type
 
+	#define IUriBuilderFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUriBuilderFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUriBuilderFactory_Release(This) (This)->lpVtbl->Release(This)
+	#define IUriBuilderFactory_CreateIUriBuilder(This, dwFlags, dwReserved, ppIUriBuilder) (This)->lpVtbl->CreateIUriBuilder(This, dwFlags, dwReserved, ppIUriBuilder)
+	#define IUriBuilderFactory_CreateInitializedIUriBuilder(This, dwFlags, dwReserved, ppIUriBuilder) (This)->lpVtbl->CreateInitializedIUriBuilder(This, dwFlags, dwReserved, ppIUriBuilder)
+
 	declare function IUriBuilderFactory_CreateIUriBuilder_Proxy(byval This as IUriBuilderFactory ptr, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR, byval ppIUriBuilder as IUriBuilder ptr ptr) as HRESULT
 	declare sub IUriBuilderFactory_CreateIUriBuilder_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IUriBuilderFactory_CreateInitializedIUriBuilder_Proxy(byval This as IUriBuilderFactory ptr, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR, byval ppIUriBuilder as IUriBuilder ptr ptr) as HRESULT
@@ -1247,6 +1409,11 @@ end type
 type IWinInetInfo_
 	lpVtbl as IWinInetInfoVtbl ptr
 end type
+
+#define IWinInetInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWinInetInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWinInetInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IWinInetInfo_QueryOption(This, dwOption, pBuffer, pcbBuf) (This)->lpVtbl->QueryOption(This, dwOption, pBuffer, pcbBuf)
 
 declare function IWinInetInfo_RemoteQueryOption_Proxy(byval This as IWinInetInfo ptr, byval dwOption as DWORD, byval pBuffer as UBYTE ptr, byval pcbBuf as DWORD ptr) as HRESULT
 declare sub IWinInetInfo_RemoteQueryOption_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1272,6 +1439,11 @@ type IHttpSecurity_
 	lpVtbl as IHttpSecurityVtbl ptr
 end type
 
+#define IHttpSecurity_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHttpSecurity_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHttpSecurity_Release(This) (This)->lpVtbl->Release(This)
+#define IHttpSecurity_GetWindow(This, rguidReason, phwnd) (This)->lpVtbl->GetWindow(This, rguidReason, phwnd)
+#define IHttpSecurity_OnSecurityProblem(This, dwProblem) (This)->lpVtbl->OnSecurityProblem(This, dwProblem)
 declare function IHttpSecurity_OnSecurityProblem_Proxy(byval This as IHttpSecurity ptr, byval dwProblem as DWORD) as HRESULT
 declare sub IHttpSecurity_OnSecurityProblem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPWININETHTTPINFO_DEFINED
@@ -1291,6 +1463,12 @@ end type
 type IWinInetHttpInfo_
 	lpVtbl as IWinInetHttpInfoVtbl ptr
 end type
+
+#define IWinInetHttpInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWinInetHttpInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWinInetHttpInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IWinInetHttpInfo_QueryOption(This, dwOption, pBuffer, pcbBuf) (This)->lpVtbl->QueryOption(This, dwOption, pBuffer, pcbBuf)
+#define IWinInetHttpInfo_QueryInfo(This, dwOption, pBuffer, pcbBuf, pdwFlags, pdwReserved) (This)->lpVtbl->QueryInfo(This, dwOption, pBuffer, pcbBuf, pdwFlags, pdwReserved)
 
 declare function IWinInetHttpInfo_RemoteQueryInfo_Proxy(byval This as IWinInetHttpInfo ptr, byval dwOption as DWORD, byval pBuffer as UBYTE ptr, byval pcbBuf as DWORD ptr, byval pdwFlags as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare sub IWinInetHttpInfo_RemoteQueryInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1312,6 +1490,10 @@ type IWinInetHttpTimeouts_
 	lpVtbl as IWinInetHttpTimeoutsVtbl ptr
 end type
 
+#define IWinInetHttpTimeouts_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWinInetHttpTimeouts_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWinInetHttpTimeouts_Release(This) (This)->lpVtbl->Release(This)
+#define IWinInetHttpTimeouts_GetRequestTimeouts(This, pdwConnectTimeout, pdwSendTimeout, pdwReceiveTimeout) (This)->lpVtbl->GetRequestTimeouts(This, pdwConnectTimeout, pdwSendTimeout, pdwReceiveTimeout)
 declare function IWinInetHttpTimeouts_GetRequestTimeouts_Proxy(byval This as IWinInetHttpTimeouts ptr, byval pdwConnectTimeout as DWORD ptr, byval pdwSendTimeout as DWORD ptr, byval pdwReceiveTimeout as DWORD ptr) as HRESULT
 declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -1333,6 +1515,10 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 		lpVtbl as IWinInetCacheHintsVtbl ptr
 	end type
 
+	#define IWinInetCacheHints_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IWinInetCacheHints_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IWinInetCacheHints_Release(This) (This)->lpVtbl->Release(This)
+	#define IWinInetCacheHints_SetCacheExtension(This, pwzExt, pszCacheFile, pcbCacheFile, pdwWinInetError, pdwReserved) (This)->lpVtbl->SetCacheExtension(This, pwzExt, pszCacheFile, pcbCacheFile, pdwWinInetError, pdwReserved)
 	declare function IWinInetCacheHints_SetCacheExtension_Proxy(byval This as IWinInetCacheHints ptr, byval pwzExt as LPCWSTR, byval pszCacheFile as LPVOID, byval pcbCacheFile as DWORD ptr, byval pdwWinInetError as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 	declare sub IWinInetCacheHints_SetCacheExtension_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define _LPWININETCACHEHINTS2_DEFINED
@@ -1353,6 +1539,11 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 		lpVtbl as IWinInetCacheHints2Vtbl ptr
 	end type
 
+	#define IWinInetCacheHints2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IWinInetCacheHints2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IWinInetCacheHints2_Release(This) (This)->lpVtbl->Release(This)
+	#define IWinInetCacheHints2_SetCacheExtension(This, pwzExt, pszCacheFile, pcbCacheFile, pdwWinInetError, pdwReserved) (This)->lpVtbl->SetCacheExtension(This, pwzExt, pszCacheFile, pcbCacheFile, pdwWinInetError, pdwReserved)
+	#define IWinInetCacheHints2_SetCacheExtension2(This, pwzExt, pwzCacheFile, pcchCacheFile, pdwWinInetError, pdwReserved) (This)->lpVtbl->SetCacheExtension2(This, pwzExt, pwzCacheFile, pcchCacheFile, pdwWinInetError, pdwReserved)
 	declare function IWinInetCacheHints2_SetCacheExtension2_Proxy(byval This as IWinInetCacheHints2 ptr, byval pwzExt as LPCWSTR, byval pwzCacheFile as wstring ptr, byval pcchCacheFile as DWORD ptr, byval pdwWinInetError as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 	declare sub IWinInetCacheHints2_SetCacheExtension2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -1378,6 +1569,13 @@ end type
 type IBindHost_
 	lpVtbl as IBindHostVtbl ptr
 end type
+
+#define IBindHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBindHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBindHost_Release(This) (This)->lpVtbl->Release(This)
+#define IBindHost_CreateMoniker(This, szName, pBC, ppmk, dwReserved) (This)->lpVtbl->CreateMoniker(This, szName, pBC, ppmk, dwReserved)
+#define IBindHost_MonikerBindToStorage(This, pMk, pBC, pBSC, riid, ppvObj) (This)->lpVtbl->MonikerBindToStorage(This, pMk, pBC, pBSC, riid, ppvObj)
+#define IBindHost_MonikerBindToObject(This, pMk, pBC, pBSC, riid, ppvObj) (This)->lpVtbl->MonikerBindToObject(This, pMk, pBC, pBSC, riid, ppvObj)
 
 declare function IBindHost_CreateMoniker_Proxy(byval This as IBindHost ptr, byval szName as LPOLESTR, byval pBC as IBindCtx ptr, byval ppmk as IMoniker ptr ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IBindHost_CreateMoniker_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1441,6 +1639,9 @@ type IInternet_
 	lpVtbl as IInternetVtbl ptr
 end type
 
+#define IInternet_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternet_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternet_Release(This) (This)->lpVtbl->Release(This)
 #define _LPIINTERNETBINDINFO
 #define __IInternetBindInfo_INTERFACE_DEFINED__
 type IInternetBindInfo as IInternetBindInfo_
@@ -1488,6 +1689,12 @@ type IInternetBindInfo_
 	lpVtbl as IInternetBindInfoVtbl ptr
 end type
 
+#define IInternetBindInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetBindInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetBindInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetBindInfo_GetBindInfo(This, grfBINDF, pbindinfo) (This)->lpVtbl->GetBindInfo(This, grfBINDF, pbindinfo)
+#define IInternetBindInfo_GetBindString(This, ulStringType, ppwzStr, cEl, pcElFetched) (This)->lpVtbl->GetBindString(This, ulStringType, ppwzStr, cEl, pcElFetched)
+
 declare function IInternetBindInfo_GetBindInfo_Proxy(byval This as IInternetBindInfo ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as BINDINFO ptr) as HRESULT
 declare sub IInternetBindInfo_GetBindInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetBindInfo_GetBindString_Proxy(byval This as IInternetBindInfo ptr, byval ulStringType as ULONG, byval ppwzStr as LPOLESTR ptr, byval cEl as ULONG, byval pcElFetched as ULONG ptr) as HRESULT
@@ -1511,6 +1718,12 @@ type IInternetBindInfoEx_
 	lpVtbl as IInternetBindInfoExVtbl ptr
 end type
 
+#define IInternetBindInfoEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetBindInfoEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetBindInfoEx_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetBindInfoEx_GetBindInfo(This, grfBINDF, pbindinfo) (This)->lpVtbl->GetBindInfo(This, grfBINDF, pbindinfo)
+#define IInternetBindInfoEx_GetBindString(This, ulStringType, ppwzStr, cEl, pcElFetched) (This)->lpVtbl->GetBindString(This, ulStringType, ppwzStr, cEl, pcElFetched)
+#define IInternetBindInfoEx_GetBindInfoEx(This, grfBINDF, pbindinfo, grfBINDF2, pdwReserved) (This)->lpVtbl->GetBindInfoEx(This, grfBINDF, pbindinfo, grfBINDF2, pdwReserved)
 declare function IInternetBindInfoEx_GetBindInfoEx_Proxy(byval This as IInternetBindInfoEx ptr, byval grfBINDF as DWORD ptr, byval pbindinfo as BINDINFO ptr, byval grfBINDF2 as DWORD ptr, byval pdwReserved as DWORD ptr) as HRESULT
 declare sub IInternetBindInfoEx_GetBindInfoEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPIINTERNETPROTOCOLROOT_DEFINED
@@ -1574,6 +1787,16 @@ type IInternetProtocolRoot_
 	lpVtbl as IInternetProtocolRootVtbl ptr
 end type
 
+#define IInternetProtocolRoot_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetProtocolRoot_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetProtocolRoot_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetProtocolRoot_Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved) (This)->lpVtbl->Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved)
+#define IInternetProtocolRoot_Continue(This, pProtocolData) (This)->lpVtbl->Continue(This, pProtocolData)
+#define IInternetProtocolRoot_Abort(This, hrReason, dwOptions) (This)->lpVtbl->Abort(This, hrReason, dwOptions)
+#define IInternetProtocolRoot_Terminate(This, dwOptions) (This)->lpVtbl->Terminate(This, dwOptions)
+#define IInternetProtocolRoot_Suspend(This) (This)->lpVtbl->Suspend(This)
+#define IInternetProtocolRoot_Resume(This) (This)->lpVtbl->Resume(This)
+
 declare function IInternetProtocolRoot_Start_Proxy(byval This as IInternetProtocolRoot ptr, byval szUrl as LPCWSTR, byval pOIProtSink as IInternetProtocolSink ptr, byval pOIBindInfo as IInternetBindInfo ptr, byval grfPI as DWORD, byval dwReserved as HANDLE_PTR) as HRESULT
 declare sub IInternetProtocolRoot_Start_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocolRoot_Continue_Proxy(byval This as IInternetProtocolRoot ptr, byval pProtocolData as PROTOCOLDATA ptr) as HRESULT
@@ -1612,6 +1835,20 @@ type IInternetProtocol_
 	lpVtbl as IInternetProtocolVtbl ptr
 end type
 
+#define IInternetProtocol_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetProtocol_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetProtocol_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetProtocol_Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved) (This)->lpVtbl->Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved)
+#define IInternetProtocol_Continue(This, pProtocolData) (This)->lpVtbl->Continue(This, pProtocolData)
+#define IInternetProtocol_Abort(This, hrReason, dwOptions) (This)->lpVtbl->Abort(This, hrReason, dwOptions)
+#define IInternetProtocol_Terminate(This, dwOptions) (This)->lpVtbl->Terminate(This, dwOptions)
+#define IInternetProtocol_Suspend(This) (This)->lpVtbl->Suspend(This)
+#define IInternetProtocol_Resume(This) (This)->lpVtbl->Resume(This)
+#define IInternetProtocol_Read(This, pv, cb, pcbRead) (This)->lpVtbl->Read(This, pv, cb, pcbRead)
+#define IInternetProtocol_Seek(This, dlibMove, dwOrigin, plibNewPosition) (This)->lpVtbl->Seek(This, dlibMove, dwOrigin, plibNewPosition)
+#define IInternetProtocol_LockRequest(This, dwOptions) (This)->lpVtbl->LockRequest(This, dwOptions)
+#define IInternetProtocol_UnlockRequest(This) (This)->lpVtbl->UnlockRequest(This)
+
 declare function IInternetProtocol_Read_Proxy(byval This as IInternetProtocol ptr, byval pv as any ptr, byval cb as ULONG, byval pcbRead as ULONG ptr) as HRESULT
 declare sub IInternetProtocol_Read_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocol_Seek_Proxy(byval This as IInternetProtocol ptr, byval dlibMove as LARGE_INTEGER, byval dwOrigin as DWORD, byval plibNewPosition as ULARGE_INTEGER ptr) as HRESULT
@@ -1648,6 +1885,20 @@ declare sub IInternetProtocol_UnlockRequest_Stub(byval This as IRpcStubBuffer pt
 		lpVtbl as IInternetProtocolExVtbl ptr
 	end type
 
+	#define IInternetProtocolEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInternetProtocolEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInternetProtocolEx_Release(This) (This)->lpVtbl->Release(This)
+	#define IInternetProtocolEx_Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved) (This)->lpVtbl->Start(This, szUrl, pOIProtSink, pOIBindInfo, grfPI, dwReserved)
+	#define IInternetProtocolEx_Continue(This, pProtocolData) (This)->lpVtbl->Continue(This, pProtocolData)
+	#define IInternetProtocolEx_Abort(This, hrReason, dwOptions) (This)->lpVtbl->Abort(This, hrReason, dwOptions)
+	#define IInternetProtocolEx_Terminate(This, dwOptions) (This)->lpVtbl->Terminate(This, dwOptions)
+	#define IInternetProtocolEx_Suspend(This) (This)->lpVtbl->Suspend(This)
+	#define IInternetProtocolEx_Resume(This) (This)->lpVtbl->Resume(This)
+	#define IInternetProtocolEx_Read(This, pv, cb, pcbRead) (This)->lpVtbl->Read(This, pv, cb, pcbRead)
+	#define IInternetProtocolEx_Seek(This, dlibMove, dwOrigin, plibNewPosition) (This)->lpVtbl->Seek(This, dlibMove, dwOrigin, plibNewPosition)
+	#define IInternetProtocolEx_LockRequest(This, dwOptions) (This)->lpVtbl->LockRequest(This, dwOptions)
+	#define IInternetProtocolEx_UnlockRequest(This) (This)->lpVtbl->UnlockRequest(This)
+	#define IInternetProtocolEx_StartEx(This, pUri, pOIProtSink, pOIBindInfo, grfPI, dwReserved) (This)->lpVtbl->StartEx(This, pUri, pOIProtSink, pOIBindInfo, grfPI, dwReserved)
 	declare function IInternetProtocolEx_StartEx_Proxy(byval This as IInternetProtocolEx ptr, byval pUri as IUri ptr, byval pOIProtSink as IInternetProtocolSink ptr, byval pOIBindInfo as IInternetBindInfo ptr, byval grfPI as DWORD, byval dwReserved as HANDLE_PTR) as HRESULT
 	declare sub IInternetProtocolEx_StartEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -1670,6 +1921,14 @@ end type
 type IInternetProtocolSink_
 	lpVtbl as IInternetProtocolSinkVtbl ptr
 end type
+
+#define IInternetProtocolSink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetProtocolSink_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetProtocolSink_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetProtocolSink_Switch(This, pProtocolData) (This)->lpVtbl->Switch(This, pProtocolData)
+#define IInternetProtocolSink_ReportProgress(This, ulStatusCode, szStatusText) (This)->lpVtbl->ReportProgress(This, ulStatusCode, szStatusText)
+#define IInternetProtocolSink_ReportData(This, grfBSCF, ulProgress, ulProgressMax) (This)->lpVtbl->ReportData(This, grfBSCF, ulProgress, ulProgressMax)
+#define IInternetProtocolSink_ReportResult(This, hrResult, dwError, szResult) (This)->lpVtbl->ReportResult(This, hrResult, dwError, szResult)
 
 declare function IInternetProtocolSink_Switch_Proxy(byval This as IInternetProtocolSink ptr, byval pProtocolData as PROTOCOLDATA ptr) as HRESULT
 declare sub IInternetProtocolSink_Switch_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1697,6 +1956,13 @@ end type
 type IInternetProtocolSinkStackable_
 	lpVtbl as IInternetProtocolSinkStackableVtbl ptr
 end type
+
+#define IInternetProtocolSinkStackable_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetProtocolSinkStackable_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetProtocolSinkStackable_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetProtocolSinkStackable_SwitchSink(This, pOIProtSink) (This)->lpVtbl->SwitchSink(This, pOIProtSink)
+#define IInternetProtocolSinkStackable_CommitSwitch(This) (This)->lpVtbl->CommitSwitch(This)
+#define IInternetProtocolSinkStackable_RollbackSwitch(This) (This)->lpVtbl->RollbackSwitch(This)
 
 declare function IInternetProtocolSinkStackable_SwitchSink_Proxy(byval This as IInternetProtocolSinkStackable ptr, byval pOIProtSink as IInternetProtocolSink ptr) as HRESULT
 declare sub IInternetProtocolSinkStackable_SwitchSink_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1735,6 +2001,17 @@ type IInternetSession_
 	lpVtbl as IInternetSessionVtbl ptr
 end type
 
+#define IInternetSession_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetSession_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetSession_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetSession_RegisterNameSpace(This, pCF, rclsid, pwzProtocol, cPatterns, ppwzPatterns, dwReserved) (This)->lpVtbl->RegisterNameSpace(This, pCF, rclsid, pwzProtocol, cPatterns, ppwzPatterns, dwReserved)
+#define IInternetSession_UnregisterNameSpace(This, pCF, pszProtocol) (This)->lpVtbl->UnregisterNameSpace(This, pCF, pszProtocol)
+#define IInternetSession_RegisterMimeFilter(This, pCF, rclsid, pwzType) (This)->lpVtbl->RegisterMimeFilter(This, pCF, rclsid, pwzType)
+#define IInternetSession_UnregisterMimeFilter(This, pCF, pwzType) (This)->lpVtbl->UnregisterMimeFilter(This, pCF, pwzType)
+#define IInternetSession_CreateBinding(This, pBC, szUrl, pUnkOuter, ppUnk, ppOInetProt, dwOption) (This)->lpVtbl->CreateBinding(This, pBC, szUrl, pUnkOuter, ppUnk, ppOInetProt, dwOption)
+#define IInternetSession_SetSessionOption(This, dwOption, pBuffer, dwBufferLength, dwReserved) (This)->lpVtbl->SetSessionOption(This, dwOption, pBuffer, dwBufferLength, dwReserved)
+#define IInternetSession_GetSessionOption(This, dwOption, pBuffer, pdwBufferLength, dwReserved) (This)->lpVtbl->GetSessionOption(This, dwOption, pBuffer, pdwBufferLength, dwReserved)
+
 declare function IInternetSession_RegisterNameSpace_Proxy(byval This as IInternetSession ptr, byval pCF as IClassFactory ptr, byval rclsid as const IID const ptr, byval pwzProtocol as LPCWSTR, byval cPatterns as ULONG, byval ppwzPatterns as const LPCWSTR ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IInternetSession_RegisterNameSpace_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetSession_UnregisterNameSpace_Proxy(byval This as IInternetSession ptr, byval pCF as IClassFactory ptr, byval pszProtocol as LPCWSTR) as HRESULT
@@ -1767,6 +2044,12 @@ type IInternetThreadSwitch_
 	lpVtbl as IInternetThreadSwitchVtbl ptr
 end type
 
+#define IInternetThreadSwitch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetThreadSwitch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetThreadSwitch_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetThreadSwitch_Prepare(This) (This)->lpVtbl->Prepare(This)
+#define IInternetThreadSwitch_Continue(This) (This)->lpVtbl->Continue(This)
+
 declare function IInternetThreadSwitch_Prepare_Proxy(byval This as IInternetThreadSwitch ptr) as HRESULT
 declare sub IInternetThreadSwitch_Prepare_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetThreadSwitch_Continue_Proxy(byval This as IInternetThreadSwitch ptr) as HRESULT
@@ -1788,6 +2071,12 @@ end type
 type IInternetPriority_
 	lpVtbl as IInternetPriorityVtbl ptr
 end type
+
+#define IInternetPriority_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetPriority_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetPriority_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetPriority_SetPriority(This, nPriority) (This)->lpVtbl->SetPriority(This, nPriority)
+#define IInternetPriority_GetPriority(This, pnPriority) (This)->lpVtbl->GetPriority(This, pnPriority)
 
 declare function IInternetPriority_SetPriority_Proxy(byval This as IInternetPriority ptr, byval nPriority as LONG) as HRESULT
 declare sub IInternetPriority_SetPriority_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1867,6 +2156,14 @@ end type
 type IInternetProtocolInfo_
 	lpVtbl as IInternetProtocolInfoVtbl ptr
 end type
+
+#define IInternetProtocolInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetProtocolInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetProtocolInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetProtocolInfo_ParseUrl(This, pwzUrl, ParseAction, dwParseFlags, pwzResult, cchResult, pcchResult, dwReserved) (This)->lpVtbl->ParseUrl(This, pwzUrl, ParseAction, dwParseFlags, pwzResult, cchResult, pcchResult, dwReserved)
+#define IInternetProtocolInfo_CombineUrl(This, pwzBaseUrl, pwzRelativeUrl, dwCombineFlags, pwzResult, cchResult, pcchResult, dwReserved) (This)->lpVtbl->CombineUrl(This, pwzBaseUrl, pwzRelativeUrl, dwCombineFlags, pwzResult, cchResult, pcchResult, dwReserved)
+#define IInternetProtocolInfo_CompareUrl(This, pwzUrl1, pwzUrl2, dwCompareFlags) (This)->lpVtbl->CompareUrl(This, pwzUrl1, pwzUrl2, dwCompareFlags)
+#define IInternetProtocolInfo_QueryInfo(This, pwzUrl, OueryOption, dwQueryFlags, pBuffer, cbBuffer, pcbBuf, dwReserved) (This)->lpVtbl->QueryInfo(This, pwzUrl, OueryOption, dwQueryFlags, pBuffer, cbBuffer, pcbBuf, dwReserved)
 
 declare function IInternetProtocolInfo_ParseUrl_Proxy(byval This as IInternetProtocolInfo ptr, byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwParseFlags as DWORD, byval pwzResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IInternetProtocolInfo_ParseUrl_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2070,6 +2367,12 @@ type IInternetSecurityMgrSite_
 	lpVtbl as IInternetSecurityMgrSiteVtbl ptr
 end type
 
+#define IInternetSecurityMgrSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetSecurityMgrSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetSecurityMgrSite_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetSecurityMgrSite_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IInternetSecurityMgrSite_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+
 declare function IInternetSecurityMgrSite_GetWindow_Proxy(byval This as IInternetSecurityMgrSite ptr, byval phwnd as HWND ptr) as HRESULT
 declare sub IInternetSecurityMgrSite_GetWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetSecurityMgrSite_EnableModeless_Proxy(byval This as IInternetSecurityMgrSite ptr, byval fEnable as WINBOOL) as HRESULT
@@ -2151,6 +2454,18 @@ type IInternetSecurityManager_
 	lpVtbl as IInternetSecurityManagerVtbl ptr
 end type
 
+#define IInternetSecurityManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetSecurityManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetSecurityManager_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetSecurityManager_SetSecuritySite(This, pSite) (This)->lpVtbl->SetSecuritySite(This, pSite)
+#define IInternetSecurityManager_GetSecuritySite(This, ppSite) (This)->lpVtbl->GetSecuritySite(This, ppSite)
+#define IInternetSecurityManager_MapUrlToZone(This, pwszUrl, pdwZone, dwFlags) (This)->lpVtbl->MapUrlToZone(This, pwszUrl, pdwZone, dwFlags)
+#define IInternetSecurityManager_GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved)
+#define IInternetSecurityManager_ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved) (This)->lpVtbl->ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved)
+#define IInternetSecurityManager_QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved) (This)->lpVtbl->QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved)
+#define IInternetSecurityManager_SetZoneMapping(This, dwZone, lpszPattern, dwFlags) (This)->lpVtbl->SetZoneMapping(This, dwZone, lpszPattern, dwFlags)
+#define IInternetSecurityManager_GetZoneMappings(This, dwZone, ppenumString, dwFlags) (This)->lpVtbl->GetZoneMappings(This, dwZone, ppenumString, dwFlags)
+
 declare function IInternetSecurityManager_SetSecuritySite_Proxy(byval This as IInternetSecurityManager ptr, byval pSite as IInternetSecurityMgrSite ptr) as HRESULT
 declare sub IInternetSecurityManager_SetSecuritySite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetSecurityManager_GetSecuritySite_Proxy(byval This as IInternetSecurityManager ptr, byval ppSite as IInternetSecurityMgrSite ptr ptr) as HRESULT
@@ -2193,6 +2508,18 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 		lpVtbl as IInternetSecurityManagerExVtbl ptr
 	end type
 
+	#define IInternetSecurityManagerEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInternetSecurityManagerEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInternetSecurityManagerEx_Release(This) (This)->lpVtbl->Release(This)
+	#define IInternetSecurityManagerEx_SetSecuritySite(This, pSite) (This)->lpVtbl->SetSecuritySite(This, pSite)
+	#define IInternetSecurityManagerEx_GetSecuritySite(This, ppSite) (This)->lpVtbl->GetSecuritySite(This, ppSite)
+	#define IInternetSecurityManagerEx_MapUrlToZone(This, pwszUrl, pdwZone, dwFlags) (This)->lpVtbl->MapUrlToZone(This, pwszUrl, pdwZone, dwFlags)
+	#define IInternetSecurityManagerEx_GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved)
+	#define IInternetSecurityManagerEx_ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved) (This)->lpVtbl->ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved)
+	#define IInternetSecurityManagerEx_QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved) (This)->lpVtbl->QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved)
+	#define IInternetSecurityManagerEx_SetZoneMapping(This, dwZone, lpszPattern, dwFlags) (This)->lpVtbl->SetZoneMapping(This, dwZone, lpszPattern, dwFlags)
+	#define IInternetSecurityManagerEx_GetZoneMappings(This, dwZone, ppenumString, dwFlags) (This)->lpVtbl->GetZoneMappings(This, dwZone, ppenumString, dwFlags)
+	#define IInternetSecurityManagerEx_ProcessUrlActionEx(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags) (This)->lpVtbl->ProcessUrlActionEx(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags)
 	declare function IInternetSecurityManagerEx_ProcessUrlActionEx_Proxy(byval This as IInternetSecurityManagerEx ptr, byval pwszUrl as LPCWSTR, byval dwAction as DWORD, byval pPolicy as UBYTE ptr, byval cbPolicy as DWORD, byval pContext as UBYTE ptr, byval cbContext as DWORD, byval dwFlags as DWORD, byval dwReserved as DWORD, byval pdwOutFlags as DWORD ptr) as HRESULT
 	declare sub IInternetSecurityManagerEx_ProcessUrlActionEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define _LPINTERNETSECURITYMANANGEREx2_DEFINED
@@ -2222,6 +2549,23 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 		lpVtbl as IInternetSecurityManagerEx2Vtbl ptr
 	end type
 
+	#define IInternetSecurityManagerEx2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInternetSecurityManagerEx2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInternetSecurityManagerEx2_Release(This) (This)->lpVtbl->Release(This)
+	#define IInternetSecurityManagerEx2_SetSecuritySite(This, pSite) (This)->lpVtbl->SetSecuritySite(This, pSite)
+	#define IInternetSecurityManagerEx2_GetSecuritySite(This, ppSite) (This)->lpVtbl->GetSecuritySite(This, ppSite)
+	#define IInternetSecurityManagerEx2_MapUrlToZone(This, pwszUrl, pdwZone, dwFlags) (This)->lpVtbl->MapUrlToZone(This, pwszUrl, pdwZone, dwFlags)
+	#define IInternetSecurityManagerEx2_GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetSecurityId(This, pwszUrl, pbSecurityId, pcbSecurityId, dwReserved)
+	#define IInternetSecurityManagerEx2_ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved) (This)->lpVtbl->ProcessUrlAction(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved)
+	#define IInternetSecurityManagerEx2_QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved) (This)->lpVtbl->QueryCustomPolicy(This, pwszUrl, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved)
+	#define IInternetSecurityManagerEx2_SetZoneMapping(This, dwZone, lpszPattern, dwFlags) (This)->lpVtbl->SetZoneMapping(This, dwZone, lpszPattern, dwFlags)
+	#define IInternetSecurityManagerEx2_GetZoneMappings(This, dwZone, ppenumString, dwFlags) (This)->lpVtbl->GetZoneMappings(This, dwZone, ppenumString, dwFlags)
+	#define IInternetSecurityManagerEx2_ProcessUrlActionEx(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags) (This)->lpVtbl->ProcessUrlActionEx(This, pwszUrl, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags)
+	#define IInternetSecurityManagerEx2_MapUrlToZoneEx2(This, pUri, pdwZone, dwFlags, ppwszMappedUrl, pdwOutFlags) (This)->lpVtbl->MapUrlToZoneEx2(This, pUri, pdwZone, dwFlags, ppwszMappedUrl, pdwOutFlags)
+	#define IInternetSecurityManagerEx2_ProcessUrlActionEx2(This, pUri, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags) (This)->lpVtbl->ProcessUrlActionEx2(This, pUri, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved, pdwOutFlags)
+	#define IInternetSecurityManagerEx2_GetSecurityIdEx2(This, pUri, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetSecurityIdEx2(This, pUri, pbSecurityId, pcbSecurityId, dwReserved)
+	#define IInternetSecurityManagerEx2_QueryCustomPolicyEx2(This, pUri, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved) (This)->lpVtbl->QueryCustomPolicyEx2(This, pUri, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved)
+
 	declare function IInternetSecurityManagerEx2_MapUrlToZoneEx2_Proxy(byval This as IInternetSecurityManagerEx2 ptr, byval pUri as IUri ptr, byval pdwZone as DWORD ptr, byval dwFlags as DWORD, byval ppwszMappedUrl as LPWSTR ptr, byval pdwOutFlags as DWORD ptr) as HRESULT
 	declare sub IInternetSecurityManagerEx2_MapUrlToZoneEx2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IInternetSecurityManagerEx2_ProcessUrlActionEx2_Proxy(byval This as IInternetSecurityManagerEx2 ptr, byval pUri as IUri ptr, byval dwAction as DWORD, byval pPolicy as UBYTE ptr, byval cbPolicy as DWORD, byval pContext as UBYTE ptr, byval cbContext as DWORD, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR, byval pdwOutFlags as DWORD ptr) as HRESULT
@@ -2246,6 +2590,13 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 	type IZoneIdentifier_
 		lpVtbl as IZoneIdentifierVtbl ptr
 	end type
+
+	#define IZoneIdentifier_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IZoneIdentifier_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IZoneIdentifier_Release(This) (This)->lpVtbl->Release(This)
+	#define IZoneIdentifier_GetId(This, pdwZone) (This)->lpVtbl->GetId(This, pdwZone)
+	#define IZoneIdentifier_SetId(This, dwZone) (This)->lpVtbl->SetId(This, dwZone)
+	#define IZoneIdentifier_Remove(This) (This)->lpVtbl->Remove(This)
 
 	declare function IZoneIdentifier_GetId_Proxy(byval This as IZoneIdentifier ptr, byval pdwZone as DWORD ptr) as HRESULT
 	declare sub IZoneIdentifier_GetId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2272,6 +2623,13 @@ end type
 type IInternetHostSecurityManager_
 	lpVtbl as IInternetHostSecurityManagerVtbl ptr
 end type
+
+#define IInternetHostSecurityManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetHostSecurityManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetHostSecurityManager_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetHostSecurityManager_GetSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved) (This)->lpVtbl->GetSecurityId(This, pbSecurityId, pcbSecurityId, dwReserved)
+#define IInternetHostSecurityManager_ProcessUrlAction(This, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved) (This)->lpVtbl->ProcessUrlAction(This, dwAction, pPolicy, cbPolicy, pContext, cbContext, dwFlags, dwReserved)
+#define IInternetHostSecurityManager_QueryCustomPolicy(This, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved) (This)->lpVtbl->QueryCustomPolicy(This, guidKey, ppPolicy, pcbPolicy, pContext, cbContext, dwReserved)
 
 declare function IInternetHostSecurityManager_GetSecurityId_Proxy(byval This as IInternetHostSecurityManager ptr, byval pbSecurityId as UBYTE ptr, byval pcbSecurityId as DWORD ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IInternetHostSecurityManager_GetSecurityId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2556,6 +2914,22 @@ type IInternetZoneManager_
 	lpVtbl as IInternetZoneManagerVtbl ptr
 end type
 
+#define IInternetZoneManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInternetZoneManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInternetZoneManager_Release(This) (This)->lpVtbl->Release(This)
+#define IInternetZoneManager_GetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->GetZoneAttributes(This, dwZone, pZoneAttributes)
+#define IInternetZoneManager_SetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->SetZoneAttributes(This, dwZone, pZoneAttributes)
+#define IInternetZoneManager_GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg)
+#define IInternetZoneManager_SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg)
+#define IInternetZoneManager_GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+#define IInternetZoneManager_SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+#define IInternetZoneManager_PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags) (This)->lpVtbl->PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags)
+#define IInternetZoneManager_LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags) (This)->lpVtbl->LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags)
+#define IInternetZoneManager_CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags) (This)->lpVtbl->CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags)
+#define IInternetZoneManager_GetZoneAt(This, dwEnum, dwIndex, pdwZone) (This)->lpVtbl->GetZoneAt(This, dwEnum, dwIndex, pdwZone)
+#define IInternetZoneManager_DestroyZoneEnumerator(This, dwEnum) (This)->lpVtbl->DestroyZoneEnumerator(This, dwEnum)
+#define IInternetZoneManager_CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved) (This)->lpVtbl->CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved)
+
 declare function IInternetZoneManager_GetZoneAttributes_Proxy(byval This as IInternetZoneManager ptr, byval dwZone as DWORD, byval pZoneAttributes as ZONEATTRIBUTES ptr) as HRESULT
 declare sub IInternetZoneManager_GetZoneAttributes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetZoneManager_SetZoneAttributes_Proxy(byval This as IInternetZoneManager ptr, byval dwZone as DWORD, byval pZoneAttributes as ZONEATTRIBUTES ptr) as HRESULT
@@ -2611,6 +2985,24 @@ declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as I
 		lpVtbl as IInternetZoneManagerExVtbl ptr
 	end type
 
+	#define IInternetZoneManagerEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInternetZoneManagerEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInternetZoneManagerEx_Release(This) (This)->lpVtbl->Release(This)
+	#define IInternetZoneManagerEx_GetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->GetZoneAttributes(This, dwZone, pZoneAttributes)
+	#define IInternetZoneManagerEx_SetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->SetZoneAttributes(This, dwZone, pZoneAttributes)
+	#define IInternetZoneManagerEx_GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx_SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx_GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx_SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx_PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags) (This)->lpVtbl->PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags)
+	#define IInternetZoneManagerEx_LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags) (This)->lpVtbl->LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags)
+	#define IInternetZoneManagerEx_CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags) (This)->lpVtbl->CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags)
+	#define IInternetZoneManagerEx_GetZoneAt(This, dwEnum, dwIndex, pdwZone) (This)->lpVtbl->GetZoneAt(This, dwEnum, dwIndex, pdwZone)
+	#define IInternetZoneManagerEx_DestroyZoneEnumerator(This, dwEnum) (This)->lpVtbl->DestroyZoneEnumerator(This, dwEnum)
+	#define IInternetZoneManagerEx_CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved) (This)->lpVtbl->CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved)
+	#define IInternetZoneManagerEx_GetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags) (This)->lpVtbl->GetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags)
+	#define IInternetZoneManagerEx_SetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags) (This)->lpVtbl->SetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags)
+
 	declare function IInternetZoneManagerEx_GetZoneActionPolicyEx_Proxy(byval This as IInternetZoneManagerEx ptr, byval dwZone as DWORD, byval dwAction as DWORD, byval pPolicy as UBYTE ptr, byval cbPolicy as DWORD, byval urlZoneReg as URLZONEREG, byval dwFlags as DWORD) as HRESULT
 	declare sub IInternetZoneManagerEx_GetZoneActionPolicyEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IInternetZoneManagerEx_SetZoneActionPolicyEx_Proxy(byval This as IInternetZoneManagerEx ptr, byval dwZone as DWORD, byval dwAction as DWORD, byval pPolicy as UBYTE ptr, byval cbPolicy as DWORD, byval urlZoneReg as URLZONEREG, byval dwFlags as DWORD) as HRESULT
@@ -2650,6 +3042,28 @@ declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as I
 	type IInternetZoneManagerEx2_
 		lpVtbl as IInternetZoneManagerEx2Vtbl ptr
 	end type
+
+	#define IInternetZoneManagerEx2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInternetZoneManagerEx2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInternetZoneManagerEx2_Release(This) (This)->lpVtbl->Release(This)
+	#define IInternetZoneManagerEx2_GetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->GetZoneAttributes(This, dwZone, pZoneAttributes)
+	#define IInternetZoneManagerEx2_SetZoneAttributes(This, dwZone, pZoneAttributes) (This)->lpVtbl->SetZoneAttributes(This, dwZone, pZoneAttributes)
+	#define IInternetZoneManagerEx2_GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneCustomPolicy(This, dwZone, guidKey, ppPolicy, pcbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx2_SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneCustomPolicy(This, dwZone, guidKey, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx2_GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->GetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx2_SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg) (This)->lpVtbl->SetZoneActionPolicy(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg)
+	#define IInternetZoneManagerEx2_PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags) (This)->lpVtbl->PromptAction(This, dwAction, hwndParent, pwszUrl, pwszText, dwPromptFlags)
+	#define IInternetZoneManagerEx2_LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags) (This)->lpVtbl->LogAction(This, dwAction, pwszUrl, pwszText, dwLogFlags)
+	#define IInternetZoneManagerEx2_CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags) (This)->lpVtbl->CreateZoneEnumerator(This, pdwEnum, pdwCount, dwFlags)
+	#define IInternetZoneManagerEx2_GetZoneAt(This, dwEnum, dwIndex, pdwZone) (This)->lpVtbl->GetZoneAt(This, dwEnum, dwIndex, pdwZone)
+	#define IInternetZoneManagerEx2_DestroyZoneEnumerator(This, dwEnum) (This)->lpVtbl->DestroyZoneEnumerator(This, dwEnum)
+	#define IInternetZoneManagerEx2_CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved) (This)->lpVtbl->CopyTemplatePoliciesToZone(This, dwTemplate, dwZone, dwReserved)
+	#define IInternetZoneManagerEx2_GetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags) (This)->lpVtbl->GetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags)
+	#define IInternetZoneManagerEx2_SetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags) (This)->lpVtbl->SetZoneActionPolicyEx(This, dwZone, dwAction, pPolicy, cbPolicy, urlZoneReg, dwFlags)
+	#define IInternetZoneManagerEx2_GetZoneAttributesEx(This, dwZone, pZoneAttributes, dwFlags) (This)->lpVtbl->GetZoneAttributesEx(This, dwZone, pZoneAttributes, dwFlags)
+	#define IInternetZoneManagerEx2_GetZoneSecurityState(This, dwZoneIndex, fRespectPolicy, pdwState, pfPolicyEncountered) (This)->lpVtbl->GetZoneSecurityState(This, dwZoneIndex, fRespectPolicy, pdwState, pfPolicyEncountered)
+	#define IInternetZoneManagerEx2_GetIESecurityState(This, fRespectPolicy, pdwState, pfPolicyEncountered, fNoCache) (This)->lpVtbl->GetIESecurityState(This, fRespectPolicy, pdwState, pfPolicyEncountered, fNoCache)
+	#define IInternetZoneManagerEx2_FixUnsecureSettings(This) (This)->lpVtbl->FixUnsecureSettings(This)
 
 	declare function IInternetZoneManagerEx2_GetZoneAttributesEx_Proxy(byval This as IInternetZoneManagerEx2 ptr, byval dwZone as DWORD, byval pZoneAttributes as ZONEATTRIBUTES ptr, byval dwFlags as DWORD) as HRESULT
 	declare sub IInternetZoneManagerEx2_GetZoneAttributesEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2720,6 +3134,14 @@ type ISoftDistExt_
 	lpVtbl as ISoftDistExtVtbl ptr
 end type
 
+#define ISoftDistExt_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISoftDistExt_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISoftDistExt_Release(This) (This)->lpVtbl->Release(This)
+#define ISoftDistExt_ProcessSoftDist(This, szCDFURL, pSoftDistElement, lpsdi) (This)->lpVtbl->ProcessSoftDist(This, szCDFURL, pSoftDistElement, lpsdi)
+#define ISoftDistExt_GetFirstCodeBase(This, szCodeBase, dwMaxSize) (This)->lpVtbl->GetFirstCodeBase(This, szCodeBase, dwMaxSize)
+#define ISoftDistExt_GetNextCodeBase(This, szCodeBase, dwMaxSize) (This)->lpVtbl->GetNextCodeBase(This, szCodeBase, dwMaxSize)
+#define ISoftDistExt_AsyncInstallDistributionUnit(This, pbc, pvReserved, flags, lpcbh) (This)->lpVtbl->AsyncInstallDistributionUnit(This, pbc, pvReserved, flags, lpcbh)
+
 declare function ISoftDistExt_ProcessSoftDist_Proxy(byval This as ISoftDistExt ptr, byval szCDFURL as LPCWSTR, byval pSoftDistElement as IXMLElement ptr, byval lpsdi as LPSOFTDISTINFO) as HRESULT
 declare sub ISoftDistExt_ProcessSoftDist_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ISoftDistExt_GetFirstCodeBase_Proxy(byval This as ISoftDistExt ptr, byval szCodeBase as LPWSTR ptr, byval dwMaxSize as LPDWORD) as HRESULT
@@ -2748,6 +3170,12 @@ type ICatalogFileInfo_
 	lpVtbl as ICatalogFileInfoVtbl ptr
 end type
 
+#define ICatalogFileInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICatalogFileInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICatalogFileInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ICatalogFileInfo_GetCatalogFile(This, ppszCatalogFile) (This)->lpVtbl->GetCatalogFile(This, ppszCatalogFile)
+#define ICatalogFileInfo_GetJavaTrust(This, ppJavaTrust) (This)->lpVtbl->GetJavaTrust(This, ppJavaTrust)
+
 declare function ICatalogFileInfo_GetCatalogFile_Proxy(byval This as ICatalogFileInfo ptr, byval ppszCatalogFile as LPSTR ptr) as HRESULT
 declare sub ICatalogFileInfo_GetCatalogFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICatalogFileInfo_GetJavaTrust_Proxy(byval This as ICatalogFileInfo ptr, byval ppJavaTrust as any ptr ptr) as HRESULT
@@ -2770,6 +3198,13 @@ end type
 type IDataFilter_
 	lpVtbl as IDataFilterVtbl ptr
 end type
+
+#define IDataFilter_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDataFilter_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDataFilter_Release(This) (This)->lpVtbl->Release(This)
+#define IDataFilter_DoEncode(This, dwFlags, lInBufferSize, pbInBuffer, lOutBufferSize, pbOutBuffer, lInBytesAvailable, plInBytesRead, plOutBytesWritten, dwReserved) (This)->lpVtbl->DoEncode(This, dwFlags, lInBufferSize, pbInBuffer, lOutBufferSize, pbOutBuffer, lInBytesAvailable, plInBytesRead, plOutBytesWritten, dwReserved)
+#define IDataFilter_DoDecode(This, dwFlags, lInBufferSize, pbInBuffer, lOutBufferSize, pbOutBuffer, lInBytesAvailable, plInBytesRead, plOutBytesWritten, dwReserved) (This)->lpVtbl->DoDecode(This, dwFlags, lInBufferSize, pbInBuffer, lOutBufferSize, pbOutBuffer, lInBytesAvailable, plInBytesRead, plOutBytesWritten, dwReserved)
+#define IDataFilter_SetEncodingLevel(This, dwEncLevel) (This)->lpVtbl->SetEncodingLevel(This, dwEncLevel)
 
 declare function IDataFilter_DoEncode_Proxy(byval This as IDataFilter ptr, byval dwFlags as DWORD, byval lInBufferSize as LONG, byval pbInBuffer as UBYTE ptr, byval lOutBufferSize as LONG, byval pbOutBuffer as UBYTE ptr, byval lInBytesAvailable as LONG, byval plInBytesRead as LONG ptr, byval plOutBytesWritten as LONG ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IDataFilter_DoEncode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2813,6 +3248,12 @@ end type
 type IEncodingFilterFactory_
 	lpVtbl as IEncodingFilterFactoryVtbl ptr
 end type
+
+#define IEncodingFilterFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEncodingFilterFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEncodingFilterFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IEncodingFilterFactory_FindBestFilter(This, pwzCodeIn, pwzCodeOut, info, ppDF) (This)->lpVtbl->FindBestFilter(This, pwzCodeIn, pwzCodeOut, info, ppDF)
+#define IEncodingFilterFactory_GetDefaultFilter(This, pwzCodeIn, pwzCodeOut, ppDF) (This)->lpVtbl->GetDefaultFilter(This, pwzCodeIn, pwzCodeOut, ppDF)
 
 declare function IEncodingFilterFactory_FindBestFilter_Proxy(byval This as IEncodingFilterFactory ptr, byval pwzCodeIn as LPCWSTR, byval pwzCodeOut as LPCWSTR, byval info as DATAINFO, byval ppDF as IDataFilter ptr ptr) as HRESULT
 declare sub IEncodingFilterFactory_FindBestFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2865,6 +3306,10 @@ type IWrappedProtocol_
 	lpVtbl as IWrappedProtocolVtbl ptr
 end type
 
+#define IWrappedProtocol_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWrappedProtocol_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWrappedProtocol_Release(This) (This)->lpVtbl->Release(This)
+#define IWrappedProtocol_GetWrapperCode(This, pnCode, dwReserved) (This)->lpVtbl->GetWrapperCode(This, pnCode, dwReserved)
 declare function IWrappedProtocol_GetWrapperCode_Proxy(byval This as IWrappedProtocol ptr, byval pnCode as LONG ptr, byval dwReserved as DWORD_PTR) as HRESULT
 declare sub IWrappedProtocol_GetWrapperCode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPGETBINDHANDLE_DEFINED
@@ -2893,6 +3338,10 @@ type IGetBindHandle_
 	lpVtbl as IGetBindHandleVtbl ptr
 end type
 
+#define IGetBindHandle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IGetBindHandle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IGetBindHandle_Release(This) (This)->lpVtbl->Release(This)
+#define IGetBindHandle_GetBindHandle(This, enumRequestedHandle, pRetHandle) (This)->lpVtbl->GetBindHandle(This, enumRequestedHandle, pRetHandle)
 declare function IGetBindHandle_GetBindHandle_Proxy(byval This as IGetBindHandle ptr, byval enumRequestedHandle as BINDHANDLETYPES, byval pRetHandle as HANDLE ptr) as HRESULT
 declare sub IGetBindHandle_GetBindHandle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _XHRPLUGGABLEPROTOCOL_DEFINED
@@ -2920,6 +3369,11 @@ end type
 type IBindCallbackRedirect_
 	lpVtbl as IBindCallbackRedirectVtbl ptr
 end type
+
+#define IBindCallbackRedirect_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBindCallbackRedirect_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBindCallbackRedirect_Release(This) (This)->lpVtbl->Release(This)
+#define IBindCallbackRedirect_Redirect(This, lpcUrl, vbCancel) (This)->lpVtbl->Redirect(This, lpcUrl, vbCancel)
 
 declare function IBindCallbackRedirect_Redirect_Proxy(byval This as IBindCallbackRedirect ptr, byval lpcUrl as LPCWSTR, byval vbCancel as VARIANT_BOOL ptr) as HRESULT
 declare sub IBindCallbackRedirect_Redirect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

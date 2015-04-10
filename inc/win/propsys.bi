@@ -59,6 +59,10 @@ type IInitializeWithFile_
 	lpVtbl as IInitializeWithFileVtbl ptr
 end type
 
+#define IInitializeWithFile_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeWithFile_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeWithFile_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeWithFile_Initialize(This, pszFilePath, grfMode) (This)->lpVtbl->Initialize(This, pszFilePath, grfMode)
 declare function IInitializeWithFile_Initialize_Proxy(byval This as IInitializeWithFile ptr, byval pszFilePath as LPCWSTR, byval grfMode as DWORD) as HRESULT
 declare sub IInitializeWithFile_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IInitializeWithStream_INTERFACE_DEFINED__
@@ -75,6 +79,11 @@ end type
 type IInitializeWithStream_
 	lpVtbl as IInitializeWithStreamVtbl ptr
 end type
+
+#define IInitializeWithStream_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeWithStream_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeWithStream_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeWithStream_Initialize(This, pstream, grfMode) (This)->lpVtbl->Initialize(This, pstream, grfMode)
 
 declare function IInitializeWithStream_RemoteInitialize_Proxy(byval This as IInitializeWithStream ptr, byval pstream as IStream ptr, byval grfMode as DWORD) as HRESULT
 declare sub IInitializeWithStream_RemoteInitialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -98,6 +107,15 @@ end type
 type IPropertyStore_
 	lpVtbl as IPropertyStoreVtbl ptr
 end type
+
+#define IPropertyStore_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyStore_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyStore_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyStore_GetCount(This, cProps) (This)->lpVtbl->GetCount(This, cProps)
+#define IPropertyStore_GetAt(This, iProp, pkey) (This)->lpVtbl->GetAt(This, iProp, pkey)
+#define IPropertyStore_GetValue(This, key, pv) (This)->lpVtbl->GetValue(This, key, pv)
+#define IPropertyStore_SetValue(This, key, propvar) (This)->lpVtbl->SetValue(This, key, propvar)
+#define IPropertyStore_Commit(This) (This)->lpVtbl->Commit(This)
 
 declare function IPropertyStore_GetCount_Proxy(byval This as IPropertyStore ptr, byval cProps as DWORD ptr) as HRESULT
 declare sub IPropertyStore_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -127,6 +145,14 @@ end type
 type INamedPropertyStore_
 	lpVtbl as INamedPropertyStoreVtbl ptr
 end type
+
+#define INamedPropertyStore_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INamedPropertyStore_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INamedPropertyStore_Release(This) (This)->lpVtbl->Release(This)
+#define INamedPropertyStore_GetNamedValue(This, pszName, ppropvar) (This)->lpVtbl->GetNamedValue(This, pszName, ppropvar)
+#define INamedPropertyStore_SetNamedValue(This, pszName, propvar) (This)->lpVtbl->SetNamedValue(This, pszName, propvar)
+#define INamedPropertyStore_GetNameCount(This, pdwCount) (This)->lpVtbl->GetNameCount(This, pdwCount)
+#define INamedPropertyStore_GetNameAt(This, iProp, pbstrName) (This)->lpVtbl->GetNameAt(This, iProp, pbstrName)
 
 declare function INamedPropertyStore_GetNamedValue_Proxy(byval This as INamedPropertyStore ptr, byval pszName as LPCWSTR, byval ppropvar as PROPVARIANT ptr) as HRESULT
 declare sub INamedPropertyStore_GetNamedValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -168,6 +194,12 @@ type IObjectWithPropertyKey_
 	lpVtbl as IObjectWithPropertyKeyVtbl ptr
 end type
 
+#define IObjectWithPropertyKey_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectWithPropertyKey_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectWithPropertyKey_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectWithPropertyKey_SetPropertyKey(This, key) (This)->lpVtbl->SetPropertyKey(This, key)
+#define IObjectWithPropertyKey_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+
 declare function IObjectWithPropertyKey_SetPropertyKey_Proxy(byval This as IObjectWithPropertyKey ptr, byval key as const PROPERTYKEY const ptr) as HRESULT
 declare sub IObjectWithPropertyKey_SetPropertyKey_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IObjectWithPropertyKey_GetPropertyKey_Proxy(byval This as IObjectWithPropertyKey ptr, byval pkey as PROPERTYKEY ptr) as HRESULT
@@ -197,6 +229,12 @@ type IPropertyChange_
 	lpVtbl as IPropertyChangeVtbl ptr
 end type
 
+#define IPropertyChange_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyChange_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyChange_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyChange_SetPropertyKey(This, key) (This)->lpVtbl->SetPropertyKey(This, key)
+#define IPropertyChange_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyChange_ApplyToPropVariant(This, propvarIn, ppropvarOut) (This)->lpVtbl->ApplyToPropVariant(This, propvarIn, ppropvarOut)
 declare function IPropertyChange_ApplyToPropVariant_Proxy(byval This as IPropertyChange ptr, byval propvarIn as const PROPVARIANT const ptr, byval ppropvarOut as PROPVARIANT ptr) as HRESULT
 declare sub IPropertyChange_ApplyToPropVariant_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IPropertyChangeArray_INTERFACE_DEFINED__
@@ -219,6 +257,17 @@ end type
 type IPropertyChangeArray_
 	lpVtbl as IPropertyChangeArrayVtbl ptr
 end type
+
+#define IPropertyChangeArray_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyChangeArray_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyChangeArray_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyChangeArray_GetCount(This, pcOperations) (This)->lpVtbl->GetCount(This, pcOperations)
+#define IPropertyChangeArray_GetAt(This, iIndex, riid, ppv) (This)->lpVtbl->GetAt(This, iIndex, riid, ppv)
+#define IPropertyChangeArray_InsertAt(This, iIndex, ppropChange) (This)->lpVtbl->InsertAt(This, iIndex, ppropChange)
+#define IPropertyChangeArray_Append(This, ppropChange) (This)->lpVtbl->Append(This, ppropChange)
+#define IPropertyChangeArray_AppendOrReplace(This, ppropChange) (This)->lpVtbl->AppendOrReplace(This, ppropChange)
+#define IPropertyChangeArray_RemoveAt(This, iIndex) (This)->lpVtbl->RemoveAt(This, iIndex)
+#define IPropertyChangeArray_IsKeyInArray(This, key) (This)->lpVtbl->IsKeyInArray(This, key)
 
 declare function IPropertyChangeArray_GetCount_Proxy(byval This as IPropertyChangeArray ptr, byval pcOperations as UINT ptr) as HRESULT
 declare sub IPropertyChangeArray_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -249,6 +298,10 @@ type IPropertyStoreCapabilities_
 	lpVtbl as IPropertyStoreCapabilitiesVtbl ptr
 end type
 
+#define IPropertyStoreCapabilities_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyStoreCapabilities_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyStoreCapabilities_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyStoreCapabilities_IsPropertyWritable(This, key) (This)->lpVtbl->IsPropertyWritable(This, key)
 declare function IPropertyStoreCapabilities_IsPropertyWritable_Proxy(byval This as IPropertyStoreCapabilities ptr, byval key as const PROPERTYKEY const ptr) as HRESULT
 declare sub IPropertyStoreCapabilities_IsPropertyWritable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IPropertyStoreCache_INTERFACE_DEFINED__
@@ -282,6 +335,19 @@ end type
 type IPropertyStoreCache_
 	lpVtbl as IPropertyStoreCacheVtbl ptr
 end type
+
+#define IPropertyStoreCache_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyStoreCache_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyStoreCache_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyStoreCache_GetCount(This, cProps) (This)->lpVtbl->GetCount(This, cProps)
+#define IPropertyStoreCache_GetAt(This, iProp, pkey) (This)->lpVtbl->GetAt(This, iProp, pkey)
+#define IPropertyStoreCache_GetValue(This, key, pv) (This)->lpVtbl->GetValue(This, key, pv)
+#define IPropertyStoreCache_SetValue(This, key, propvar) (This)->lpVtbl->SetValue(This, key, propvar)
+#define IPropertyStoreCache_Commit(This) (This)->lpVtbl->Commit(This)
+#define IPropertyStoreCache_GetState(This, key, pstate) (This)->lpVtbl->GetState(This, key, pstate)
+#define IPropertyStoreCache_GetValueAndState(This, key, ppropvar, pstate) (This)->lpVtbl->GetValueAndState(This, key, ppropvar, pstate)
+#define IPropertyStoreCache_SetState(This, key, state) (This)->lpVtbl->SetState(This, key, state)
+#define IPropertyStoreCache_SetValueAndState(This, key, ppropvar, state) (This)->lpVtbl->SetValueAndState(This, key, ppropvar, state)
 
 declare function IPropertyStoreCache_GetState_Proxy(byval This as IPropertyStoreCache ptr, byval key as const PROPERTYKEY const ptr, byval pstate as PSC_STATE ptr) as HRESULT
 declare sub IPropertyStoreCache_GetState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -319,6 +385,15 @@ type IPropertyEnumType_
 	lpVtbl as IPropertyEnumTypeVtbl ptr
 end type
 
+#define IPropertyEnumType_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyEnumType_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyEnumType_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyEnumType_GetEnumType(This, penumtype) (This)->lpVtbl->GetEnumType(This, penumtype)
+#define IPropertyEnumType_GetValue(This, ppropvar) (This)->lpVtbl->GetValue(This, ppropvar)
+#define IPropertyEnumType_GetRangeMinValue(This, ppropvarMin) (This)->lpVtbl->GetRangeMinValue(This, ppropvarMin)
+#define IPropertyEnumType_GetRangeSetValue(This, ppropvarSet) (This)->lpVtbl->GetRangeSetValue(This, ppropvarSet)
+#define IPropertyEnumType_GetDisplayText(This, ppszDisplay) (This)->lpVtbl->GetDisplayText(This, ppszDisplay)
+
 declare function IPropertyEnumType_GetEnumType_Proxy(byval This as IPropertyEnumType ptr, byval penumtype as PROPENUMTYPE ptr) as HRESULT
 declare sub IPropertyEnumType_GetEnumType_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyEnumType_GetValue_Proxy(byval This as IPropertyEnumType ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
@@ -349,6 +424,15 @@ type IPropertyEnumType2_
 	lpVtbl as IPropertyEnumType2Vtbl ptr
 end type
 
+#define IPropertyEnumType2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyEnumType2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyEnumType2_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyEnumType2_GetEnumType(This, penumtype) (This)->lpVtbl->GetEnumType(This, penumtype)
+#define IPropertyEnumType2_GetValue(This, ppropvar) (This)->lpVtbl->GetValue(This, ppropvar)
+#define IPropertyEnumType2_GetRangeMinValue(This, ppropvarMin) (This)->lpVtbl->GetRangeMinValue(This, ppropvarMin)
+#define IPropertyEnumType2_GetRangeSetValue(This, ppropvarSet) (This)->lpVtbl->GetRangeSetValue(This, ppropvarSet)
+#define IPropertyEnumType2_GetDisplayText(This, ppszDisplay) (This)->lpVtbl->GetDisplayText(This, ppszDisplay)
+#define IPropertyEnumType2_GetImageReference(This, ppszImageRes) (This)->lpVtbl->GetImageReference(This, ppszImageRes)
 declare function IPropertyEnumType2_GetImageReference_Proxy(byval This as IPropertyEnumType2 ptr, byval ppszImageRes as LPWSTR ptr) as HRESULT
 declare sub IPropertyEnumType2_GetImageReference_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IPropertyEnumTypeList_INTERFACE_DEFINED__
@@ -368,6 +452,14 @@ end type
 type IPropertyEnumTypeList_
 	lpVtbl as IPropertyEnumTypeListVtbl ptr
 end type
+
+#define IPropertyEnumTypeList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyEnumTypeList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyEnumTypeList_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyEnumTypeList_GetCount(This, pctypes) (This)->lpVtbl->GetCount(This, pctypes)
+#define IPropertyEnumTypeList_GetAt(This, itype, riid, ppv) (This)->lpVtbl->GetAt(This, itype, riid, ppv)
+#define IPropertyEnumTypeList_GetConditionAt(This, nIndex, riid, ppv) (This)->lpVtbl->GetConditionAt(This, nIndex, riid, ppv)
+#define IPropertyEnumTypeList_FindMatchingIndex(This, propvarCmp, pnIndex) (This)->lpVtbl->FindMatchingIndex(This, propvarCmp, pnIndex)
 
 declare function IPropertyEnumTypeList_GetCount_Proxy(byval This as IPropertyEnumTypeList ptr, byval pctypes as UINT ptr) as HRESULT
 declare sub IPropertyEnumTypeList_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -534,6 +626,31 @@ type IPropertyDescription_
 	lpVtbl as IPropertyDescriptionVtbl ptr
 end type
 
+#define IPropertyDescription_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescription_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescription_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescription_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyDescription_GetCanonicalName(This, ppszName) (This)->lpVtbl->GetCanonicalName(This, ppszName)
+#define IPropertyDescription_GetPropertyType(This, pvartype) (This)->lpVtbl->GetPropertyType(This, pvartype)
+#define IPropertyDescription_GetDisplayName(This, ppszName) (This)->lpVtbl->GetDisplayName(This, ppszName)
+#define IPropertyDescription_GetEditInvitation(This, ppszInvite) (This)->lpVtbl->GetEditInvitation(This, ppszInvite)
+#define IPropertyDescription_GetTypeFlags(This, mask, ppdtFlags) (This)->lpVtbl->GetTypeFlags(This, mask, ppdtFlags)
+#define IPropertyDescription_GetViewFlags(This, ppdvFlags) (This)->lpVtbl->GetViewFlags(This, ppdvFlags)
+#define IPropertyDescription_GetDefaultColumnWidth(This, pcxChars) (This)->lpVtbl->GetDefaultColumnWidth(This, pcxChars)
+#define IPropertyDescription_GetDisplayType(This, pdisplaytype) (This)->lpVtbl->GetDisplayType(This, pdisplaytype)
+#define IPropertyDescription_GetColumnState(This, pcsFlags) (This)->lpVtbl->GetColumnState(This, pcsFlags)
+#define IPropertyDescription_GetGroupingRange(This, pgr) (This)->lpVtbl->GetGroupingRange(This, pgr)
+#define IPropertyDescription_GetRelativeDescriptionType(This, prdt) (This)->lpVtbl->GetRelativeDescriptionType(This, prdt)
+#define IPropertyDescription_GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2) (This)->lpVtbl->GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2)
+#define IPropertyDescription_GetSortDescription(This, psd) (This)->lpVtbl->GetSortDescription(This, psd)
+#define IPropertyDescription_GetSortDescriptionLabel(This, fDescending, ppszDescription) (This)->lpVtbl->GetSortDescriptionLabel(This, fDescending, ppszDescription)
+#define IPropertyDescription_GetAggregationType(This, paggtype) (This)->lpVtbl->GetAggregationType(This, paggtype)
+#define IPropertyDescription_GetConditionType(This, pcontype, popDefault) (This)->lpVtbl->GetConditionType(This, pcontype, popDefault)
+#define IPropertyDescription_GetEnumTypeList(This, riid, ppv) (This)->lpVtbl->GetEnumTypeList(This, riid, ppv)
+#define IPropertyDescription_CoerceToCanonicalValue(This, ppropvar) (This)->lpVtbl->CoerceToCanonicalValue(This, ppropvar)
+#define IPropertyDescription_FormatForDisplay(This, propvar, pdfFlags, ppszDisplay) (This)->lpVtbl->FormatForDisplay(This, propvar, pdfFlags, ppszDisplay)
+#define IPropertyDescription_IsValueCanonical(This, propvar) (This)->lpVtbl->IsValueCanonical(This, propvar)
+
 declare function IPropertyDescription_GetPropertyKey_Proxy(byval This as IPropertyDescription ptr, byval pkey as PROPERTYKEY ptr) as HRESULT
 declare sub IPropertyDescription_GetPropertyKey_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescription_GetCanonicalName_Proxy(byval This as IPropertyDescription ptr, byval ppszName as LPWSTR ptr) as HRESULT
@@ -614,6 +731,31 @@ type IPropertyDescription2_
 	lpVtbl as IPropertyDescription2Vtbl ptr
 end type
 
+#define IPropertyDescription2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescription2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescription2_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescription2_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyDescription2_GetCanonicalName(This, ppszName) (This)->lpVtbl->GetCanonicalName(This, ppszName)
+#define IPropertyDescription2_GetPropertyType(This, pvartype) (This)->lpVtbl->GetPropertyType(This, pvartype)
+#define IPropertyDescription2_GetDisplayName(This, ppszName) (This)->lpVtbl->GetDisplayName(This, ppszName)
+#define IPropertyDescription2_GetEditInvitation(This, ppszInvite) (This)->lpVtbl->GetEditInvitation(This, ppszInvite)
+#define IPropertyDescription2_GetTypeFlags(This, mask, ppdtFlags) (This)->lpVtbl->GetTypeFlags(This, mask, ppdtFlags)
+#define IPropertyDescription2_GetViewFlags(This, ppdvFlags) (This)->lpVtbl->GetViewFlags(This, ppdvFlags)
+#define IPropertyDescription2_GetDefaultColumnWidth(This, pcxChars) (This)->lpVtbl->GetDefaultColumnWidth(This, pcxChars)
+#define IPropertyDescription2_GetDisplayType(This, pdisplaytype) (This)->lpVtbl->GetDisplayType(This, pdisplaytype)
+#define IPropertyDescription2_GetColumnState(This, pcsFlags) (This)->lpVtbl->GetColumnState(This, pcsFlags)
+#define IPropertyDescription2_GetGroupingRange(This, pgr) (This)->lpVtbl->GetGroupingRange(This, pgr)
+#define IPropertyDescription2_GetRelativeDescriptionType(This, prdt) (This)->lpVtbl->GetRelativeDescriptionType(This, prdt)
+#define IPropertyDescription2_GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2) (This)->lpVtbl->GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2)
+#define IPropertyDescription2_GetSortDescription(This, psd) (This)->lpVtbl->GetSortDescription(This, psd)
+#define IPropertyDescription2_GetSortDescriptionLabel(This, fDescending, ppszDescription) (This)->lpVtbl->GetSortDescriptionLabel(This, fDescending, ppszDescription)
+#define IPropertyDescription2_GetAggregationType(This, paggtype) (This)->lpVtbl->GetAggregationType(This, paggtype)
+#define IPropertyDescription2_GetConditionType(This, pcontype, popDefault) (This)->lpVtbl->GetConditionType(This, pcontype, popDefault)
+#define IPropertyDescription2_GetEnumTypeList(This, riid, ppv) (This)->lpVtbl->GetEnumTypeList(This, riid, ppv)
+#define IPropertyDescription2_CoerceToCanonicalValue(This, ppropvar) (This)->lpVtbl->CoerceToCanonicalValue(This, ppropvar)
+#define IPropertyDescription2_FormatForDisplay(This, propvar, pdfFlags, ppszDisplay) (This)->lpVtbl->FormatForDisplay(This, propvar, pdfFlags, ppszDisplay)
+#define IPropertyDescription2_IsValueCanonical(This, propvar) (This)->lpVtbl->IsValueCanonical(This, propvar)
+#define IPropertyDescription2_GetImageReferenceForValue(This, propvar, ppszImageRes) (This)->lpVtbl->GetImageReferenceForValue(This, propvar, ppszImageRes)
 declare function IPropertyDescription2_GetImageReferenceForValue_Proxy(byval This as IPropertyDescription2 ptr, byval propvar as const PROPVARIANT const ptr, byval ppszImageRes as LPWSTR ptr) as HRESULT
 declare sub IPropertyDescription2_GetImageReferenceForValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IPropertyDescriptionAliasInfo_INTERFACE_DEFINED__
@@ -652,6 +794,33 @@ end type
 type IPropertyDescriptionAliasInfo_
 	lpVtbl as IPropertyDescriptionAliasInfoVtbl ptr
 end type
+
+#define IPropertyDescriptionAliasInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescriptionAliasInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescriptionAliasInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescriptionAliasInfo_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyDescriptionAliasInfo_GetCanonicalName(This, ppszName) (This)->lpVtbl->GetCanonicalName(This, ppszName)
+#define IPropertyDescriptionAliasInfo_GetPropertyType(This, pvartype) (This)->lpVtbl->GetPropertyType(This, pvartype)
+#define IPropertyDescriptionAliasInfo_GetDisplayName(This, ppszName) (This)->lpVtbl->GetDisplayName(This, ppszName)
+#define IPropertyDescriptionAliasInfo_GetEditInvitation(This, ppszInvite) (This)->lpVtbl->GetEditInvitation(This, ppszInvite)
+#define IPropertyDescriptionAliasInfo_GetTypeFlags(This, mask, ppdtFlags) (This)->lpVtbl->GetTypeFlags(This, mask, ppdtFlags)
+#define IPropertyDescriptionAliasInfo_GetViewFlags(This, ppdvFlags) (This)->lpVtbl->GetViewFlags(This, ppdvFlags)
+#define IPropertyDescriptionAliasInfo_GetDefaultColumnWidth(This, pcxChars) (This)->lpVtbl->GetDefaultColumnWidth(This, pcxChars)
+#define IPropertyDescriptionAliasInfo_GetDisplayType(This, pdisplaytype) (This)->lpVtbl->GetDisplayType(This, pdisplaytype)
+#define IPropertyDescriptionAliasInfo_GetColumnState(This, pcsFlags) (This)->lpVtbl->GetColumnState(This, pcsFlags)
+#define IPropertyDescriptionAliasInfo_GetGroupingRange(This, pgr) (This)->lpVtbl->GetGroupingRange(This, pgr)
+#define IPropertyDescriptionAliasInfo_GetRelativeDescriptionType(This, prdt) (This)->lpVtbl->GetRelativeDescriptionType(This, prdt)
+#define IPropertyDescriptionAliasInfo_GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2) (This)->lpVtbl->GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2)
+#define IPropertyDescriptionAliasInfo_GetSortDescription(This, psd) (This)->lpVtbl->GetSortDescription(This, psd)
+#define IPropertyDescriptionAliasInfo_GetSortDescriptionLabel(This, fDescending, ppszDescription) (This)->lpVtbl->GetSortDescriptionLabel(This, fDescending, ppszDescription)
+#define IPropertyDescriptionAliasInfo_GetAggregationType(This, paggtype) (This)->lpVtbl->GetAggregationType(This, paggtype)
+#define IPropertyDescriptionAliasInfo_GetConditionType(This, pcontype, popDefault) (This)->lpVtbl->GetConditionType(This, pcontype, popDefault)
+#define IPropertyDescriptionAliasInfo_GetEnumTypeList(This, riid, ppv) (This)->lpVtbl->GetEnumTypeList(This, riid, ppv)
+#define IPropertyDescriptionAliasInfo_CoerceToCanonicalValue(This, ppropvar) (This)->lpVtbl->CoerceToCanonicalValue(This, ppropvar)
+#define IPropertyDescriptionAliasInfo_FormatForDisplay(This, propvar, pdfFlags, ppszDisplay) (This)->lpVtbl->FormatForDisplay(This, propvar, pdfFlags, ppszDisplay)
+#define IPropertyDescriptionAliasInfo_IsValueCanonical(This, propvar) (This)->lpVtbl->IsValueCanonical(This, propvar)
+#define IPropertyDescriptionAliasInfo_GetSortByAlias(This, riid, ppv) (This)->lpVtbl->GetSortByAlias(This, riid, ppv)
+#define IPropertyDescriptionAliasInfo_GetAdditionalSortByAliases(This, riid, ppv) (This)->lpVtbl->GetAdditionalSortByAliases(This, riid, ppv)
 
 declare function IPropertyDescriptionAliasInfo_GetSortByAlias_Proxy(byval This as IPropertyDescriptionAliasInfo ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyDescriptionAliasInfo_GetSortByAlias_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -717,6 +886,35 @@ type IPropertyDescriptionSearchInfo_
 	lpVtbl as IPropertyDescriptionSearchInfoVtbl ptr
 end type
 
+#define IPropertyDescriptionSearchInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescriptionSearchInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescriptionSearchInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescriptionSearchInfo_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyDescriptionSearchInfo_GetCanonicalName(This, ppszName) (This)->lpVtbl->GetCanonicalName(This, ppszName)
+#define IPropertyDescriptionSearchInfo_GetPropertyType(This, pvartype) (This)->lpVtbl->GetPropertyType(This, pvartype)
+#define IPropertyDescriptionSearchInfo_GetDisplayName(This, ppszName) (This)->lpVtbl->GetDisplayName(This, ppszName)
+#define IPropertyDescriptionSearchInfo_GetEditInvitation(This, ppszInvite) (This)->lpVtbl->GetEditInvitation(This, ppszInvite)
+#define IPropertyDescriptionSearchInfo_GetTypeFlags(This, mask, ppdtFlags) (This)->lpVtbl->GetTypeFlags(This, mask, ppdtFlags)
+#define IPropertyDescriptionSearchInfo_GetViewFlags(This, ppdvFlags) (This)->lpVtbl->GetViewFlags(This, ppdvFlags)
+#define IPropertyDescriptionSearchInfo_GetDefaultColumnWidth(This, pcxChars) (This)->lpVtbl->GetDefaultColumnWidth(This, pcxChars)
+#define IPropertyDescriptionSearchInfo_GetDisplayType(This, pdisplaytype) (This)->lpVtbl->GetDisplayType(This, pdisplaytype)
+#define IPropertyDescriptionSearchInfo_GetColumnState(This, pcsFlags) (This)->lpVtbl->GetColumnState(This, pcsFlags)
+#define IPropertyDescriptionSearchInfo_GetGroupingRange(This, pgr) (This)->lpVtbl->GetGroupingRange(This, pgr)
+#define IPropertyDescriptionSearchInfo_GetRelativeDescriptionType(This, prdt) (This)->lpVtbl->GetRelativeDescriptionType(This, prdt)
+#define IPropertyDescriptionSearchInfo_GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2) (This)->lpVtbl->GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2)
+#define IPropertyDescriptionSearchInfo_GetSortDescription(This, psd) (This)->lpVtbl->GetSortDescription(This, psd)
+#define IPropertyDescriptionSearchInfo_GetSortDescriptionLabel(This, fDescending, ppszDescription) (This)->lpVtbl->GetSortDescriptionLabel(This, fDescending, ppszDescription)
+#define IPropertyDescriptionSearchInfo_GetAggregationType(This, paggtype) (This)->lpVtbl->GetAggregationType(This, paggtype)
+#define IPropertyDescriptionSearchInfo_GetConditionType(This, pcontype, popDefault) (This)->lpVtbl->GetConditionType(This, pcontype, popDefault)
+#define IPropertyDescriptionSearchInfo_GetEnumTypeList(This, riid, ppv) (This)->lpVtbl->GetEnumTypeList(This, riid, ppv)
+#define IPropertyDescriptionSearchInfo_CoerceToCanonicalValue(This, ppropvar) (This)->lpVtbl->CoerceToCanonicalValue(This, ppropvar)
+#define IPropertyDescriptionSearchInfo_FormatForDisplay(This, propvar, pdfFlags, ppszDisplay) (This)->lpVtbl->FormatForDisplay(This, propvar, pdfFlags, ppszDisplay)
+#define IPropertyDescriptionSearchInfo_IsValueCanonical(This, propvar) (This)->lpVtbl->IsValueCanonical(This, propvar)
+#define IPropertyDescriptionSearchInfo_GetSearchInfoFlags(This, ppdsiFlags) (This)->lpVtbl->GetSearchInfoFlags(This, ppdsiFlags)
+#define IPropertyDescriptionSearchInfo_GetColumnIndexType(This, ppdciType) (This)->lpVtbl->GetColumnIndexType(This, ppdciType)
+#define IPropertyDescriptionSearchInfo_GetProjectionString(This, ppszProjection) (This)->lpVtbl->GetProjectionString(This, ppszProjection)
+#define IPropertyDescriptionSearchInfo_GetMaxSize(This, pcbMaxSize) (This)->lpVtbl->GetMaxSize(This, pcbMaxSize)
+
 declare function IPropertyDescriptionSearchInfo_GetSearchInfoFlags_Proxy(byval This as IPropertyDescriptionSearchInfo ptr, byval ppdsiFlags as PROPDESC_SEARCHINFO_FLAGS ptr) as HRESULT
 declare sub IPropertyDescriptionSearchInfo_GetSearchInfoFlags_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescriptionSearchInfo_GetColumnIndexType_Proxy(byval This as IPropertyDescriptionSearchInfo ptr, byval ppdciType as PROPDESC_COLUMNINDEX_TYPE ptr) as HRESULT
@@ -761,6 +959,31 @@ type IPropertyDescriptionRelatedPropertyInfo_
 	lpVtbl as IPropertyDescriptionRelatedPropertyInfoVtbl ptr
 end type
 
+#define IPropertyDescriptionRelatedPropertyInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescriptionRelatedPropertyInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescriptionRelatedPropertyInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescriptionRelatedPropertyInfo_GetPropertyKey(This, pkey) (This)->lpVtbl->GetPropertyKey(This, pkey)
+#define IPropertyDescriptionRelatedPropertyInfo_GetCanonicalName(This, ppszName) (This)->lpVtbl->GetCanonicalName(This, ppszName)
+#define IPropertyDescriptionRelatedPropertyInfo_GetPropertyType(This, pvartype) (This)->lpVtbl->GetPropertyType(This, pvartype)
+#define IPropertyDescriptionRelatedPropertyInfo_GetDisplayName(This, ppszName) (This)->lpVtbl->GetDisplayName(This, ppszName)
+#define IPropertyDescriptionRelatedPropertyInfo_GetEditInvitation(This, ppszInvite) (This)->lpVtbl->GetEditInvitation(This, ppszInvite)
+#define IPropertyDescriptionRelatedPropertyInfo_GetTypeFlags(This, mask, ppdtFlags) (This)->lpVtbl->GetTypeFlags(This, mask, ppdtFlags)
+#define IPropertyDescriptionRelatedPropertyInfo_GetViewFlags(This, ppdvFlags) (This)->lpVtbl->GetViewFlags(This, ppdvFlags)
+#define IPropertyDescriptionRelatedPropertyInfo_GetDefaultColumnWidth(This, pcxChars) (This)->lpVtbl->GetDefaultColumnWidth(This, pcxChars)
+#define IPropertyDescriptionRelatedPropertyInfo_GetDisplayType(This, pdisplaytype) (This)->lpVtbl->GetDisplayType(This, pdisplaytype)
+#define IPropertyDescriptionRelatedPropertyInfo_GetColumnState(This, pcsFlags) (This)->lpVtbl->GetColumnState(This, pcsFlags)
+#define IPropertyDescriptionRelatedPropertyInfo_GetGroupingRange(This, pgr) (This)->lpVtbl->GetGroupingRange(This, pgr)
+#define IPropertyDescriptionRelatedPropertyInfo_GetRelativeDescriptionType(This, prdt) (This)->lpVtbl->GetRelativeDescriptionType(This, prdt)
+#define IPropertyDescriptionRelatedPropertyInfo_GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2) (This)->lpVtbl->GetRelativeDescription(This, propvar1, propvar2, ppszDesc1, ppszDesc2)
+#define IPropertyDescriptionRelatedPropertyInfo_GetSortDescription(This, psd) (This)->lpVtbl->GetSortDescription(This, psd)
+#define IPropertyDescriptionRelatedPropertyInfo_GetSortDescriptionLabel(This, fDescending, ppszDescription) (This)->lpVtbl->GetSortDescriptionLabel(This, fDescending, ppszDescription)
+#define IPropertyDescriptionRelatedPropertyInfo_GetAggregationType(This, paggtype) (This)->lpVtbl->GetAggregationType(This, paggtype)
+#define IPropertyDescriptionRelatedPropertyInfo_GetConditionType(This, pcontype, popDefault) (This)->lpVtbl->GetConditionType(This, pcontype, popDefault)
+#define IPropertyDescriptionRelatedPropertyInfo_GetEnumTypeList(This, riid, ppv) (This)->lpVtbl->GetEnumTypeList(This, riid, ppv)
+#define IPropertyDescriptionRelatedPropertyInfo_CoerceToCanonicalValue(This, ppropvar) (This)->lpVtbl->CoerceToCanonicalValue(This, ppropvar)
+#define IPropertyDescriptionRelatedPropertyInfo_FormatForDisplay(This, propvar, pdfFlags, ppszDisplay) (This)->lpVtbl->FormatForDisplay(This, propvar, pdfFlags, ppszDisplay)
+#define IPropertyDescriptionRelatedPropertyInfo_IsValueCanonical(This, propvar) (This)->lpVtbl->IsValueCanonical(This, propvar)
+#define IPropertyDescriptionRelatedPropertyInfo_GetRelatedProperty(This, pszRelationshipName, riid, ppv) (This)->lpVtbl->GetRelatedProperty(This, pszRelationshipName, riid, ppv)
 declare function IPropertyDescriptionRelatedPropertyInfo_GetRelatedProperty_Proxy(byval This as IPropertyDescriptionRelatedPropertyInfo ptr, byval pszRelationshipName as LPCWSTR, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyDescriptionRelatedPropertyInfo_GetRelatedProperty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -798,6 +1021,19 @@ type IPropertySystem_
 	lpVtbl as IPropertySystemVtbl ptr
 end type
 
+#define IPropertySystem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertySystem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertySystem_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertySystem_GetPropertyDescription(This, propkey, riid, ppv) (This)->lpVtbl->GetPropertyDescription(This, propkey, riid, ppv)
+#define IPropertySystem_GetPropertyDescriptionByName(This, pszCanonicalName, riid, ppv) (This)->lpVtbl->GetPropertyDescriptionByName(This, pszCanonicalName, riid, ppv)
+#define IPropertySystem_GetPropertyDescriptionListFromString(This, pszPropList, riid, ppv) (This)->lpVtbl->GetPropertyDescriptionListFromString(This, pszPropList, riid, ppv)
+#define IPropertySystem_EnumeratePropertyDescriptions(This, filterOn, riid, ppv) (This)->lpVtbl->EnumeratePropertyDescriptions(This, filterOn, riid, ppv)
+#define IPropertySystem_FormatForDisplay(This, key, propvar, pdff, pszText, cchText) (This)->lpVtbl->FormatForDisplay(This, key, propvar, pdff, pszText, cchText)
+#define IPropertySystem_FormatForDisplayAlloc(This, key, propvar, pdff, ppszDisplay) (This)->lpVtbl->FormatForDisplayAlloc(This, key, propvar, pdff, ppszDisplay)
+#define IPropertySystem_RegisterPropertySchema(This, pszPath) (This)->lpVtbl->RegisterPropertySchema(This, pszPath)
+#define IPropertySystem_UnregisterPropertySchema(This, pszPath) (This)->lpVtbl->UnregisterPropertySchema(This, pszPath)
+#define IPropertySystem_RefreshPropertySchema(This) (This)->lpVtbl->RefreshPropertySchema(This)
+
 declare function IPropertySystem_GetPropertyDescription_Proxy(byval This as IPropertySystem ptr, byval propkey as const PROPERTYKEY const ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertySystem_GetPropertyDescription_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertySystem_GetPropertyDescriptionByName_Proxy(byval This as IPropertySystem ptr, byval pszCanonicalName as LPCWSTR, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -832,6 +1068,12 @@ type IPropertyDescriptionList_
 	lpVtbl as IPropertyDescriptionListVtbl ptr
 end type
 
+#define IPropertyDescriptionList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyDescriptionList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyDescriptionList_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyDescriptionList_GetCount(This, pcElem) (This)->lpVtbl->GetCount(This, pcElem)
+#define IPropertyDescriptionList_GetAt(This, iElem, riid, ppv) (This)->lpVtbl->GetAt(This, iElem, riid, ppv)
+
 declare function IPropertyDescriptionList_GetCount_Proxy(byval This as IPropertyDescriptionList ptr, byval pcElem as UINT ptr) as HRESULT
 declare sub IPropertyDescriptionList_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyDescriptionList_GetAt_Proxy(byval This as IPropertyDescriptionList ptr, byval iElem as UINT, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -851,6 +1093,12 @@ end type
 type IPropertyStoreFactory_
 	lpVtbl as IPropertyStoreFactoryVtbl ptr
 end type
+
+#define IPropertyStoreFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyStoreFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyStoreFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyStoreFactory_GetPropertyStore(This, flags, pUnkFactory, riid, ppv) (This)->lpVtbl->GetPropertyStore(This, flags, pUnkFactory, riid, ppv)
+#define IPropertyStoreFactory_GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv) (This)->lpVtbl->GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv)
 
 declare function IPropertyStoreFactory_GetPropertyStore_Proxy(byval This as IPropertyStoreFactory ptr, byval flags as GETPROPERTYSTOREFLAGS, byval pUnkFactory as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IPropertyStoreFactory_GetPropertyStore_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -873,6 +1121,12 @@ type IDelayedPropertyStoreFactory_
 	lpVtbl as IDelayedPropertyStoreFactoryVtbl ptr
 end type
 
+#define IDelayedPropertyStoreFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDelayedPropertyStoreFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDelayedPropertyStoreFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IDelayedPropertyStoreFactory_GetPropertyStore(This, flags, pUnkFactory, riid, ppv) (This)->lpVtbl->GetPropertyStore(This, flags, pUnkFactory, riid, ppv)
+#define IDelayedPropertyStoreFactory_GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv) (This)->lpVtbl->GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv)
+#define IDelayedPropertyStoreFactory_GetDelayedPropertyStore(This, flags, dwStoreId, riid, ppv) (This)->lpVtbl->GetDelayedPropertyStore(This, flags, dwStoreId, riid, ppv)
 declare function IDelayedPropertyStoreFactory_GetDelayedPropertyStore_Proxy(byval This as IDelayedPropertyStoreFactory ptr, byval flags as GETPROPERTYSTOREFLAGS, byval dwStoreId as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IDelayedPropertyStoreFactory_GetDelayedPropertyStore_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -904,6 +1158,13 @@ type IPersistSerializedPropStorage_
 	lpVtbl as IPersistSerializedPropStorageVtbl ptr
 end type
 
+#define IPersistSerializedPropStorage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistSerializedPropStorage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistSerializedPropStorage_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistSerializedPropStorage_SetFlags(This, flags) (This)->lpVtbl->SetFlags(This, flags)
+#define IPersistSerializedPropStorage_SetPropertyStorage(This, psps, cb) (This)->lpVtbl->SetPropertyStorage(This, psps, cb)
+#define IPersistSerializedPropStorage_GetPropertyStorage(This, ppsps, pcb) (This)->lpVtbl->GetPropertyStorage(This, ppsps, pcb)
+
 declare function IPersistSerializedPropStorage_SetFlags_Proxy(byval This as IPersistSerializedPropStorage ptr, byval flags as PERSIST_SPROPSTORE_FLAGS) as HRESULT
 declare sub IPersistSerializedPropStorage_SetFlags_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistSerializedPropStorage_SetPropertyStorage_Proxy(byval This as IPersistSerializedPropStorage ptr, byval psps as PCUSERIALIZEDPROPSTORAGE, byval cb as DWORD) as HRESULT
@@ -929,6 +1190,15 @@ type IPersistSerializedPropStorage2_
 	lpVtbl as IPersistSerializedPropStorage2Vtbl ptr
 end type
 
+#define IPersistSerializedPropStorage2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistSerializedPropStorage2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistSerializedPropStorage2_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistSerializedPropStorage2_SetFlags(This, flags) (This)->lpVtbl->SetFlags(This, flags)
+#define IPersistSerializedPropStorage2_SetPropertyStorage(This, psps, cb) (This)->lpVtbl->SetPropertyStorage(This, psps, cb)
+#define IPersistSerializedPropStorage2_GetPropertyStorage(This, ppsps, pcb) (This)->lpVtbl->GetPropertyStorage(This, ppsps, pcb)
+#define IPersistSerializedPropStorage2_GetPropertyStorageSize(This, pcb) (This)->lpVtbl->GetPropertyStorageSize(This, pcb)
+#define IPersistSerializedPropStorage2_GetPropertyStorageBuffer(This, psps, cb, pcbWritten) (This)->lpVtbl->GetPropertyStorageBuffer(This, psps, cb, pcbWritten)
+
 declare function IPersistSerializedPropStorage2_GetPropertyStorageSize_Proxy(byval This as IPersistSerializedPropStorage2 ptr, byval pcb as DWORD ptr) as HRESULT
 declare sub IPersistSerializedPropStorage2_GetPropertyStorageSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistSerializedPropStorage2_GetPropertyStorageBuffer_Proxy(byval This as IPersistSerializedPropStorage2 ptr, byval psps as SERIALIZEDPROPSTORAGE ptr, byval cb as DWORD, byval pcbWritten as DWORD ptr) as HRESULT
@@ -948,6 +1218,10 @@ type IPropertySystemChangeNotify_
 	lpVtbl as IPropertySystemChangeNotifyVtbl ptr
 end type
 
+#define IPropertySystemChangeNotify_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertySystemChangeNotify_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertySystemChangeNotify_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertySystemChangeNotify_SchemaRefreshed(This) (This)->lpVtbl->SchemaRefreshed(This)
 declare function IPropertySystemChangeNotify_SchemaRefreshed_Proxy(byval This as IPropertySystemChangeNotify ptr) as HRESULT
 declare sub IPropertySystemChangeNotify_SchemaRefreshed_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __ICreateObject_INTERFACE_DEFINED__
@@ -965,6 +1239,10 @@ type ICreateObject_
 	lpVtbl as ICreateObjectVtbl ptr
 end type
 
+#define ICreateObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateObject_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateObject_CreateObject(This, clsid, pUnkOuter, riid, ppv) (This)->lpVtbl->CreateObject(This, clsid, pUnkOuter, riid, ppv)
 declare function ICreateObject_CreateObject_Proxy(byval This as ICreateObject ptr, byval clsid as const IID const ptr, byval pUnkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub ICreateObject_CreateObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 const PKEY_PIDSTR_MAX = 10

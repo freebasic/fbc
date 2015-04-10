@@ -507,6 +507,34 @@ type IWbemClassObject_
 	lpVtbl as IWbemClassObjectVtbl ptr
 end type
 
+#define IWbemClassObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemClassObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemClassObject_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemClassObject_GetQualifierSet(This, ppQualSet) (This)->lpVtbl->GetQualifierSet(This, ppQualSet)
+#define IWbemClassObject_Get(This, wszName, lFlags, pVal, pType, plFlavor) (This)->lpVtbl->Get(This, wszName, lFlags, pVal, pType, plFlavor)
+#define IWbemClassObject_Put(This, wszName, lFlags, pVal, Type) (This)->lpVtbl->Put(This, wszName, lFlags, pVal, Type)
+#define IWbemClassObject_Delete(This, wszName) (This)->lpVtbl->Delete(This, wszName)
+#define IWbemClassObject_GetNames(This, wszQualifierName, lFlags, pQualifierVal, pNames) (This)->lpVtbl->GetNames(This, wszQualifierName, lFlags, pQualifierVal, pNames)
+#define IWbemClassObject_BeginEnumeration(This, lEnumFlags) (This)->lpVtbl->BeginEnumeration(This, lEnumFlags)
+#define IWbemClassObject_Next(This, lFlags, strName, pVal, pType, plFlavor) (This)->lpVtbl->Next(This, lFlags, strName, pVal, pType, plFlavor)
+#define IWbemClassObject_EndEnumeration(This) (This)->lpVtbl->EndEnumeration(This)
+#define IWbemClassObject_GetPropertyQualifierSet(This, wszProperty, ppQualSet) (This)->lpVtbl->GetPropertyQualifierSet(This, wszProperty, ppQualSet)
+#define IWbemClassObject_Clone(This, ppCopy) (This)->lpVtbl->Clone(This, ppCopy)
+#define IWbemClassObject_GetObjectText(This, lFlags, pstrObjectText) (This)->lpVtbl->GetObjectText(This, lFlags, pstrObjectText)
+#define IWbemClassObject_SpawnDerivedClass(This, lFlags, ppNewClass) (This)->lpVtbl->SpawnDerivedClass(This, lFlags, ppNewClass)
+#define IWbemClassObject_SpawnInstance(This, lFlags, ppNewInstance) (This)->lpVtbl->SpawnInstance(This, lFlags, ppNewInstance)
+#define IWbemClassObject_CompareTo(This, lFlags, pCompareTo) (This)->lpVtbl->CompareTo(This, lFlags, pCompareTo)
+#define IWbemClassObject_GetPropertyOrigin(This, wszName, pstrClassName) (This)->lpVtbl->GetPropertyOrigin(This, wszName, pstrClassName)
+#define IWbemClassObject_InheritsFrom(This, strAncestor) (This)->lpVtbl->InheritsFrom(This, strAncestor)
+#define IWbemClassObject_GetMethod(This, wszName, lFlags, ppInSignature, ppOutSignature) (This)->lpVtbl->GetMethod(This, wszName, lFlags, ppInSignature, ppOutSignature)
+#define IWbemClassObject_PutMethod(This, wszName, lFlags, pInSignature, pOutSignature) (This)->lpVtbl->PutMethod(This, wszName, lFlags, pInSignature, pOutSignature)
+#define IWbemClassObject_DeleteMethod(This, wszName) (This)->lpVtbl->DeleteMethod(This, wszName)
+#define IWbemClassObject_BeginMethodEnumeration(This, lEnumFlags) (This)->lpVtbl->BeginMethodEnumeration(This, lEnumFlags)
+#define IWbemClassObject_NextMethod(This, lFlags, pstrName, ppInSignature, ppOutSignature) (This)->lpVtbl->NextMethod(This, lFlags, pstrName, ppInSignature, ppOutSignature)
+#define IWbemClassObject_EndMethodEnumeration(This) (This)->lpVtbl->EndMethodEnumeration(This)
+#define IWbemClassObject_GetMethodQualifierSet(This, wszMethod, ppQualSet) (This)->lpVtbl->GetMethodQualifierSet(This, wszMethod, ppQualSet)
+#define IWbemClassObject_GetMethodOrigin(This, wszMethodName, pstrClassName) (This)->lpVtbl->GetMethodOrigin(This, wszMethodName, pstrClassName)
+
 declare function IWbemClassObject_GetQualifierSet_Proxy(byval This as IWbemClassObject ptr, byval ppQualSet as IWbemQualifierSet ptr ptr) as HRESULT
 declare sub IWbemClassObject_GetQualifierSet_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemClassObject_Get_Proxy(byval This as IWbemClassObject ptr, byval wszName as LPCWSTR, byval lFlags as long, byval pVal as VARIANT ptr, byval pType as CIMTYPE ptr, byval plFlavor as long ptr) as HRESULT
@@ -603,6 +631,44 @@ type IWbemObjectAccess_
 	lpVtbl as IWbemObjectAccessVtbl ptr
 end type
 
+#define IWbemObjectAccess_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemObjectAccess_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemObjectAccess_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemObjectAccess_GetQualifierSet(This, ppQualSet) (This)->lpVtbl->GetQualifierSet(This, ppQualSet)
+#define IWbemObjectAccess_Get(This, wszName, lFlags, pVal, pType, plFlavor) (This)->lpVtbl->Get(This, wszName, lFlags, pVal, pType, plFlavor)
+#define IWbemObjectAccess_Put(This, wszName, lFlags, pVal, Type) (This)->lpVtbl->Put(This, wszName, lFlags, pVal, Type)
+#define IWbemObjectAccess_Delete(This, wszName) (This)->lpVtbl->Delete(This, wszName)
+#define IWbemObjectAccess_GetNames(This, wszQualifierName, lFlags, pQualifierVal, pNames) (This)->lpVtbl->GetNames(This, wszQualifierName, lFlags, pQualifierVal, pNames)
+#define IWbemObjectAccess_BeginEnumeration(This, lEnumFlags) (This)->lpVtbl->BeginEnumeration(This, lEnumFlags)
+#define IWbemObjectAccess_Next(This, lFlags, strName, pVal, pType, plFlavor) (This)->lpVtbl->Next(This, lFlags, strName, pVal, pType, plFlavor)
+#define IWbemObjectAccess_EndEnumeration(This) (This)->lpVtbl->EndEnumeration(This)
+#define IWbemObjectAccess_GetPropertyQualifierSet(This, wszProperty, ppQualSet) (This)->lpVtbl->GetPropertyQualifierSet(This, wszProperty, ppQualSet)
+#define IWbemObjectAccess_Clone(This, ppCopy) (This)->lpVtbl->Clone(This, ppCopy)
+#define IWbemObjectAccess_GetObjectText(This, lFlags, pstrObjectText) (This)->lpVtbl->GetObjectText(This, lFlags, pstrObjectText)
+#define IWbemObjectAccess_SpawnDerivedClass(This, lFlags, ppNewClass) (This)->lpVtbl->SpawnDerivedClass(This, lFlags, ppNewClass)
+#define IWbemObjectAccess_SpawnInstance(This, lFlags, ppNewInstance) (This)->lpVtbl->SpawnInstance(This, lFlags, ppNewInstance)
+#define IWbemObjectAccess_CompareTo(This, lFlags, pCompareTo) (This)->lpVtbl->CompareTo(This, lFlags, pCompareTo)
+#define IWbemObjectAccess_GetPropertyOrigin(This, wszName, pstrClassName) (This)->lpVtbl->GetPropertyOrigin(This, wszName, pstrClassName)
+#define IWbemObjectAccess_InheritsFrom(This, strAncestor) (This)->lpVtbl->InheritsFrom(This, strAncestor)
+#define IWbemObjectAccess_GetMethod(This, wszName, lFlags, ppInSignature, ppOutSignature) (This)->lpVtbl->GetMethod(This, wszName, lFlags, ppInSignature, ppOutSignature)
+#define IWbemObjectAccess_PutMethod(This, wszName, lFlags, pInSignature, pOutSignature) (This)->lpVtbl->PutMethod(This, wszName, lFlags, pInSignature, pOutSignature)
+#define IWbemObjectAccess_DeleteMethod(This, wszName) (This)->lpVtbl->DeleteMethod(This, wszName)
+#define IWbemObjectAccess_BeginMethodEnumeration(This, lEnumFlags) (This)->lpVtbl->BeginMethodEnumeration(This, lEnumFlags)
+#define IWbemObjectAccess_NextMethod(This, lFlags, pstrName, ppInSignature, ppOutSignature) (This)->lpVtbl->NextMethod(This, lFlags, pstrName, ppInSignature, ppOutSignature)
+#define IWbemObjectAccess_EndMethodEnumeration(This) (This)->lpVtbl->EndMethodEnumeration(This)
+#define IWbemObjectAccess_GetMethodQualifierSet(This, wszMethod, ppQualSet) (This)->lpVtbl->GetMethodQualifierSet(This, wszMethod, ppQualSet)
+#define IWbemObjectAccess_GetMethodOrigin(This, wszMethodName, pstrClassName) (This)->lpVtbl->GetMethodOrigin(This, wszMethodName, pstrClassName)
+#define IWbemObjectAccess_GetPropertyHandle(This, wszPropertyName, pType, plHandle) (This)->lpVtbl->GetPropertyHandle(This, wszPropertyName, pType, plHandle)
+#define IWbemObjectAccess_WritePropertyValue(This, lHandle, lNumBytes, aData) (This)->lpVtbl->WritePropertyValue(This, lHandle, lNumBytes, aData)
+#define IWbemObjectAccess_ReadPropertyValue(This, lHandle, lBufferSize, plNumBytes, aData) (This)->lpVtbl->ReadPropertyValue(This, lHandle, lBufferSize, plNumBytes, aData)
+#define IWbemObjectAccess_ReadDWORD(This, lHandle, pdw) (This)->lpVtbl->ReadDWORD(This, lHandle, pdw)
+#define IWbemObjectAccess_WriteDWORD(This, lHandle, dw) (This)->lpVtbl->WriteDWORD(This, lHandle, dw)
+#define IWbemObjectAccess_ReadQWORD(This, lHandle, pqw) (This)->lpVtbl->ReadQWORD(This, lHandle, pqw)
+#define IWbemObjectAccess_WriteQWORD(This, lHandle, pw) (This)->lpVtbl->WriteQWORD(This, lHandle, pw)
+#define IWbemObjectAccess_GetPropertyInfoByHandle(This, lHandle, pstrName, pType) (This)->lpVtbl->GetPropertyInfoByHandle(This, lHandle, pstrName, pType)
+#define IWbemObjectAccess_Lock(This, lFlags) (This)->lpVtbl->Lock(This, lFlags)
+#define IWbemObjectAccess_Unlock(This, lFlags) (This)->lpVtbl->Unlock(This, lFlags)
+
 declare function IWbemObjectAccess_GetPropertyHandle_Proxy(byval This as IWbemObjectAccess ptr, byval wszPropertyName as LPCWSTR, byval pType as CIMTYPE ptr, byval plHandle as long ptr) as HRESULT
 declare sub IWbemObjectAccess_GetPropertyHandle_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemObjectAccess_WritePropertyValue_Proxy(byval This as IWbemObjectAccess ptr, byval lHandle as long, byval lNumBytes as long, byval aData as const ubyte ptr) as HRESULT
@@ -642,6 +708,17 @@ end type
 type IWbemQualifierSet_
 	lpVtbl as IWbemQualifierSetVtbl ptr
 end type
+
+#define IWbemQualifierSet_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemQualifierSet_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemQualifierSet_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemQualifierSet_Get(This, wszName, lFlags, pVal, plFlavor) (This)->lpVtbl->Get(This, wszName, lFlags, pVal, plFlavor)
+#define IWbemQualifierSet_Put(This, wszName, pVal, lFlavor) (This)->lpVtbl->Put(This, wszName, pVal, lFlavor)
+#define IWbemQualifierSet_Delete(This, wszName) (This)->lpVtbl->Delete(This, wszName)
+#define IWbemQualifierSet_GetNames(This, lFlags, pNames) (This)->lpVtbl->GetNames(This, lFlags, pNames)
+#define IWbemQualifierSet_BeginEnumeration(This, lFlags) (This)->lpVtbl->BeginEnumeration(This, lFlags)
+#define IWbemQualifierSet_Next(This, lFlags, pstrName, pVal, plFlavor) (This)->lpVtbl->Next(This, lFlags, pstrName, pVal, plFlavor)
+#define IWbemQualifierSet_EndEnumeration(This) (This)->lpVtbl->EndEnumeration(This)
 
 declare function IWbemQualifierSet_Get_Proxy(byval This as IWbemQualifierSet ptr, byval wszName as LPCWSTR, byval lFlags as long, byval pVal as VARIANT ptr, byval plFlavor as long ptr) as HRESULT
 declare sub IWbemQualifierSet_Get_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -698,6 +775,33 @@ end type
 type IWbemServices_
 	lpVtbl as IWbemServicesVtbl ptr
 end type
+
+#define IWbemServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemServices_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemServices_OpenNamespace(This, strNamespace, lFlags, pCtx, ppWorkingNamespace, ppResult) (This)->lpVtbl->OpenNamespace(This, strNamespace, lFlags, pCtx, ppWorkingNamespace, ppResult)
+#define IWbemServices_CancelAsyncCall(This, pSink) (This)->lpVtbl->CancelAsyncCall(This, pSink)
+#define IWbemServices_QueryObjectSink(This, lFlags, ppResponseHandler) (This)->lpVtbl->QueryObjectSink(This, lFlags, ppResponseHandler)
+#define IWbemServices_GetObject(This, strObjectPath, lFlags, pCtx, ppObject, ppCallResult) (This)->lpVtbl->GetObject(This, strObjectPath, lFlags, pCtx, ppObject, ppCallResult)
+#define IWbemServices_GetObjectAsync(This, strObjectPath, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->GetObjectAsync(This, strObjectPath, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_PutClass(This, pObject, lFlags, pCtx, ppCallResult) (This)->lpVtbl->PutClass(This, pObject, lFlags, pCtx, ppCallResult)
+#define IWbemServices_PutClassAsync(This, pObject, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->PutClassAsync(This, pObject, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_DeleteClass(This, strClass, lFlags, pCtx, ppCallResult) (This)->lpVtbl->DeleteClass(This, strClass, lFlags, pCtx, ppCallResult)
+#define IWbemServices_DeleteClassAsync(This, strClass, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->DeleteClassAsync(This, strClass, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_CreateClassEnum(This, strSuperclass, lFlags, pCtx, ppEnum) (This)->lpVtbl->CreateClassEnum(This, strSuperclass, lFlags, pCtx, ppEnum)
+#define IWbemServices_CreateClassEnumAsync(This, strSuperclass, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->CreateClassEnumAsync(This, strSuperclass, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_PutInstance(This, pInst, lFlags, pCtx, ppCallResult) (This)->lpVtbl->PutInstance(This, pInst, lFlags, pCtx, ppCallResult)
+#define IWbemServices_PutInstanceAsync(This, pInst, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->PutInstanceAsync(This, pInst, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_DeleteInstance(This, strObjectPath, lFlags, pCtx, ppCallResult) (This)->lpVtbl->DeleteInstance(This, strObjectPath, lFlags, pCtx, ppCallResult)
+#define IWbemServices_DeleteInstanceAsync(This, strObjectPath, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->DeleteInstanceAsync(This, strObjectPath, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_CreateInstanceEnum(This, strFilter, lFlags, pCtx, ppEnum) (This)->lpVtbl->CreateInstanceEnum(This, strFilter, lFlags, pCtx, ppEnum)
+#define IWbemServices_CreateInstanceEnumAsync(This, strFilter, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->CreateInstanceEnumAsync(This, strFilter, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_ExecQuery(This, strQueryLanguage, strQuery, lFlags, pCtx, ppEnum) (This)->lpVtbl->ExecQuery(This, strQueryLanguage, strQuery, lFlags, pCtx, ppEnum)
+#define IWbemServices_ExecQueryAsync(This, strQueryLanguage, strQuery, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->ExecQueryAsync(This, strQueryLanguage, strQuery, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_ExecNotificationQuery(This, strQueryLanguage, strQuery, lFlags, pCtx, ppEnum) (This)->lpVtbl->ExecNotificationQuery(This, strQueryLanguage, strQuery, lFlags, pCtx, ppEnum)
+#define IWbemServices_ExecNotificationQueryAsync(This, strQueryLanguage, strQuery, lFlags, pCtx, pResponseHandler) (This)->lpVtbl->ExecNotificationQueryAsync(This, strQueryLanguage, strQuery, lFlags, pCtx, pResponseHandler)
+#define IWbemServices_ExecMethod(This, strObjectPath, strMethodName, lFlags, pCtx, pInParams, ppOutParams, ppCallResult) (This)->lpVtbl->ExecMethod(This, strObjectPath, strMethodName, lFlags, pCtx, pInParams, ppOutParams, ppCallResult)
+#define IWbemServices_ExecMethodAsync(This, strObjectPath, strMethodName, lFlags, pCtx, pInParams, pResponseHandler) (This)->lpVtbl->ExecMethodAsync(This, strObjectPath, strMethodName, lFlags, pCtx, pInParams, pResponseHandler)
 
 declare function IWbemServices_OpenNamespace_Proxy(byval This as IWbemServices ptr, byval strNamespace as const BSTR, byval lFlags as long, byval pCtx as IWbemContext ptr, byval ppWorkingNamespace as IWbemServices ptr ptr, byval ppResult as IWbemCallResult ptr ptr) as HRESULT
 declare sub IWbemServices_OpenNamespace_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -760,6 +864,10 @@ type IWbemLocator_
 	lpVtbl as IWbemLocatorVtbl ptr
 end type
 
+#define IWbemLocator_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemLocator_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemLocator_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemLocator_ConnectServer(This, strNetworkResource, strUser, strPassword, strLocale, lSecurityFlags, strAuthority, pCtx, ppNamespace) (This)->lpVtbl->ConnectServer(This, strNetworkResource, strUser, strPassword, strLocale, lSecurityFlags, strAuthority, pCtx, ppNamespace)
 declare function IWbemLocator_ConnectServer_Proxy(byval This as IWbemLocator ptr, byval strNetworkResource as const BSTR, byval strUser as const BSTR, byval strPassword as const BSTR, byval strLocale as const BSTR, byval lSecurityFlags as long, byval strAuthority as const BSTR, byval pCtx as IWbemContext ptr, byval ppNamespace as IWbemServices ptr ptr) as HRESULT
 declare sub IWbemLocator_ConnectServer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IWbemObjectSink_INTERFACE_DEFINED__
@@ -776,6 +884,12 @@ end type
 type IWbemObjectSink_
 	lpVtbl as IWbemObjectSinkVtbl ptr
 end type
+
+#define IWbemObjectSink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemObjectSink_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemObjectSink_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemObjectSink_Indicate(This, lObjectCount, apObjArray) (This)->lpVtbl->Indicate(This, lObjectCount, apObjArray)
+#define IWbemObjectSink_SetStatus(This, lFlags, hResult, strParam, pObjParam) (This)->lpVtbl->SetStatus(This, lFlags, hResult, strParam, pObjParam)
 
 declare function IWbemObjectSink_Indicate_Proxy(byval This as IWbemObjectSink ptr, byval lObjectCount as long, byval apObjArray as IWbemClassObject ptr ptr) as HRESULT
 declare sub IWbemObjectSink_Indicate_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -798,6 +912,15 @@ end type
 type IEnumWbemClassObject_
 	lpVtbl as IEnumWbemClassObjectVtbl ptr
 end type
+
+#define IEnumWbemClassObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumWbemClassObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumWbemClassObject_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumWbemClassObject_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumWbemClassObject_Next(This, lTimeout, uCount, apObjects, puReturned) (This)->lpVtbl->Next(This, lTimeout, uCount, apObjects, puReturned)
+#define IEnumWbemClassObject_NextAsync(This, uCount, pSink) (This)->lpVtbl->NextAsync(This, uCount, pSink)
+#define IEnumWbemClassObject_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
+#define IEnumWbemClassObject_Skip(This, lTimeout, nCount) (This)->lpVtbl->Skip(This, lTimeout, nCount)
 
 declare function IEnumWbemClassObject_Reset_Proxy(byval This as IEnumWbemClassObject ptr) as HRESULT
 declare sub IEnumWbemClassObject_Reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -825,6 +948,14 @@ end type
 type IWbemCallResult_
 	lpVtbl as IWbemCallResultVtbl ptr
 end type
+
+#define IWbemCallResult_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemCallResult_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemCallResult_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemCallResult_GetResultObject(This, lTimeout, ppResultObject) (This)->lpVtbl->GetResultObject(This, lTimeout, ppResultObject)
+#define IWbemCallResult_GetResultString(This, lTimeout, pstrResultString) (This)->lpVtbl->GetResultString(This, lTimeout, pstrResultString)
+#define IWbemCallResult_GetResultServices(This, lTimeout, ppServices) (This)->lpVtbl->GetResultServices(This, lTimeout, ppServices)
+#define IWbemCallResult_GetCallStatus(This, lTimeout, plStatus) (This)->lpVtbl->GetCallStatus(This, lTimeout, plStatus)
 
 declare function IWbemCallResult_GetResultObject_Proxy(byval This as IWbemCallResult ptr, byval lTimeout as long, byval ppResultObject as IWbemClassObject ptr ptr) as HRESULT
 declare sub IWbemCallResult_GetResultObject_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -855,6 +986,19 @@ end type
 type IWbemContext_
 	lpVtbl as IWbemContextVtbl ptr
 end type
+
+#define IWbemContext_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemContext_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemContext_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemContext_Clone(This, ppNewCopy) (This)->lpVtbl->Clone(This, ppNewCopy)
+#define IWbemContext_GetNames(This, lFlags, pNames) (This)->lpVtbl->GetNames(This, lFlags, pNames)
+#define IWbemContext_BeginEnumeration(This, lFlags) (This)->lpVtbl->BeginEnumeration(This, lFlags)
+#define IWbemContext_Next(This, lFlags, pstrName, pValue) (This)->lpVtbl->Next(This, lFlags, pstrName, pValue)
+#define IWbemContext_EndEnumeration(This) (This)->lpVtbl->EndEnumeration(This)
+#define IWbemContext_SetValue(This, wszName, lFlags, pValue) (This)->lpVtbl->SetValue(This, wszName, lFlags, pValue)
+#define IWbemContext_GetValue(This, wszName, lFlags, pValue) (This)->lpVtbl->GetValue(This, wszName, lFlags, pValue)
+#define IWbemContext_DeleteValue(This, wszName, lFlags) (This)->lpVtbl->DeleteValue(This, wszName, lFlags)
+#define IWbemContext_DeleteAll(This) (This)->lpVtbl->DeleteAll(This)
 
 declare function IWbemContext_Clone_Proxy(byval This as IWbemContext ptr, byval ppNewCopy as IWbemContext ptr ptr) as HRESULT
 declare sub IWbemContext_Clone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -889,6 +1033,10 @@ type IUnsecuredApartment_
 	lpVtbl as IUnsecuredApartmentVtbl ptr
 end type
 
+#define IUnsecuredApartment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUnsecuredApartment_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUnsecuredApartment_Release(This) (This)->lpVtbl->Release(This)
+#define IUnsecuredApartment_CreateObjectStub(This, pObject, ppStub) (This)->lpVtbl->CreateObjectStub(This, pObject, ppStub)
 declare function IUnsecuredApartment_CreateObjectStub_Proxy(byval This as IUnsecuredApartment ptr, byval pObject as IUnknown ptr, byval ppStub as IUnknown ptr ptr) as HRESULT
 declare sub IUnsecuredApartment_CreateObjectStub_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IWbemUnsecuredApartment_INTERFACE_DEFINED__
@@ -907,6 +1055,11 @@ type IWbemUnsecuredApartment_
 	lpVtbl as IWbemUnsecuredApartmentVtbl ptr
 end type
 
+#define IWbemUnsecuredApartment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemUnsecuredApartment_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemUnsecuredApartment_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemUnsecuredApartment_CreateObjectStub(This, pObject, ppStub) (This)->lpVtbl->CreateObjectStub(This, pObject, ppStub)
+#define IWbemUnsecuredApartment_CreateSinkStub(This, pSink, dwFlags, wszReserved, ppStub) (This)->lpVtbl->CreateSinkStub(This, pSink, dwFlags, wszReserved, ppStub)
 declare function IWbemUnsecuredApartment_CreateSinkStub_Proxy(byval This as IWbemUnsecuredApartment ptr, byval pSink as IWbemObjectSink ptr, byval dwFlags as DWORD, byval wszReserved as LPCWSTR, byval ppStub as IWbemObjectSink ptr ptr) as HRESULT
 declare sub IWbemUnsecuredApartment_CreateSinkStub_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IWbemStatusCodeText_INTERFACE_DEFINED__
@@ -924,6 +1077,12 @@ end type
 type IWbemStatusCodeText_
 	lpVtbl as IWbemStatusCodeTextVtbl ptr
 end type
+
+#define IWbemStatusCodeText_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemStatusCodeText_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemStatusCodeText_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemStatusCodeText_GetErrorCodeText(This, hRes, LocaleId, lFlags, MessageText) (This)->lpVtbl->GetErrorCodeText(This, hRes, LocaleId, lFlags, MessageText)
+#define IWbemStatusCodeText_GetFacilityCodeText(This, hRes, LocaleId, lFlags, MessageText) (This)->lpVtbl->GetFacilityCodeText(This, hRes, LocaleId, lFlags, MessageText)
 
 declare function IWbemStatusCodeText_GetErrorCodeText_Proxy(byval This as IWbemStatusCodeText ptr, byval hRes as HRESULT, byval LocaleId as LCID, byval lFlags as long, byval MessageText as BSTR ptr) as HRESULT
 declare sub IWbemStatusCodeText_GetErrorCodeText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -944,6 +1103,12 @@ end type
 type IWbemBackupRestore_
 	lpVtbl as IWbemBackupRestoreVtbl ptr
 end type
+
+#define IWbemBackupRestore_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemBackupRestore_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemBackupRestore_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemBackupRestore_Backup(This, strBackupToFile, lFlags) (This)->lpVtbl->Backup(This, strBackupToFile, lFlags)
+#define IWbemBackupRestore_Restore(This, strRestoreFromFile, lFlags) (This)->lpVtbl->Restore(This, strRestoreFromFile, lFlags)
 
 declare function IWbemBackupRestore_Backup_Proxy(byval This as IWbemBackupRestore ptr, byval strBackupToFile as LPCWSTR, byval lFlags as long) as HRESULT
 declare sub IWbemBackupRestore_Backup_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -967,6 +1132,14 @@ type IWbemBackupRestoreEx_
 	lpVtbl as IWbemBackupRestoreExVtbl ptr
 end type
 
+#define IWbemBackupRestoreEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemBackupRestoreEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemBackupRestoreEx_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemBackupRestoreEx_Backup(This, strBackupToFile, lFlags) (This)->lpVtbl->Backup(This, strBackupToFile, lFlags)
+#define IWbemBackupRestoreEx_Restore(This, strRestoreFromFile, lFlags) (This)->lpVtbl->Restore(This, strRestoreFromFile, lFlags)
+#define IWbemBackupRestoreEx_Pause(This) (This)->lpVtbl->Pause(This)
+#define IWbemBackupRestoreEx_Resume(This) (This)->lpVtbl->Resume(This)
+
 declare function IWbemBackupRestoreEx_Pause_Proxy(byval This as IWbemBackupRestoreEx ptr) as HRESULT
 declare sub IWbemBackupRestoreEx_Pause_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWbemBackupRestoreEx_Resume_Proxy(byval This as IWbemBackupRestoreEx ptr) as HRESULT
@@ -986,6 +1159,10 @@ type IWbemRefresher_
 	lpVtbl as IWbemRefresherVtbl ptr
 end type
 
+#define IWbemRefresher_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemRefresher_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemRefresher_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemRefresher_Refresh(This, lFlags) (This)->lpVtbl->Refresh(This, lFlags)
 declare function IWbemRefresher_Refresh_Proxy(byval This as IWbemRefresher ptr, byval lFlags as long) as HRESULT
 declare sub IWbemRefresher_Refresh_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IWbemHiPerfEnum_INTERFACE_DEFINED__
@@ -1005,6 +1182,14 @@ end type
 type IWbemHiPerfEnum_
 	lpVtbl as IWbemHiPerfEnumVtbl ptr
 end type
+
+#define IWbemHiPerfEnum_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemHiPerfEnum_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemHiPerfEnum_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemHiPerfEnum_AddObjects(This, lFlags, uNumObjects, apIds, apObj) (This)->lpVtbl->AddObjects(This, lFlags, uNumObjects, apIds, apObj)
+#define IWbemHiPerfEnum_RemoveObjects(This, lFlags, uNumObjects, apIds) (This)->lpVtbl->RemoveObjects(This, lFlags, uNumObjects, apIds)
+#define IWbemHiPerfEnum_GetObjects(This, lFlags, uNumObjects, apObj, puReturned) (This)->lpVtbl->GetObjects(This, lFlags, uNumObjects, apObj, puReturned)
+#define IWbemHiPerfEnum_RemoveAll(This, lFlags) (This)->lpVtbl->RemoveAll(This, lFlags)
 
 declare function IWbemHiPerfEnum_AddObjects_Proxy(byval This as IWbemHiPerfEnum ptr, byval lFlags as long, byval uNumObjects as ULONG, byval apIds as long ptr, byval apObj as IWbemObjectAccess ptr ptr) as HRESULT
 declare sub IWbemHiPerfEnum_AddObjects_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -1032,6 +1217,15 @@ end type
 type IWbemConfigureRefresher_
 	lpVtbl as IWbemConfigureRefresherVtbl ptr
 end type
+
+#define IWbemConfigureRefresher_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemConfigureRefresher_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemConfigureRefresher_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemConfigureRefresher_AddObjectByPath(This, pNamespace, wszPath, lFlags, pContext, ppRefreshable, plId) (This)->lpVtbl->AddObjectByPath(This, pNamespace, wszPath, lFlags, pContext, ppRefreshable, plId)
+#define IWbemConfigureRefresher_AddObjectByTemplate(This, pNamespace, pTemplate, lFlags, pContext, ppRefreshable, plId) (This)->lpVtbl->AddObjectByTemplate(This, pNamespace, pTemplate, lFlags, pContext, ppRefreshable, plId)
+#define IWbemConfigureRefresher_AddRefresher(This, pRefresher, lFlags, plId) (This)->lpVtbl->AddRefresher(This, pRefresher, lFlags, plId)
+#define IWbemConfigureRefresher_Remove(This, lId, lFlags) (This)->lpVtbl->Remove(This, lId, lFlags)
+#define IWbemConfigureRefresher_AddEnum(This, pNamespace, wszClassName, lFlags, pContext, ppEnum, plId) (This)->lpVtbl->AddEnum(This, pNamespace, wszClassName, lFlags, pContext, ppEnum, plId)
 
 declare function IWbemConfigureRefresher_AddObjectByPath_Proxy(byval This as IWbemConfigureRefresher ptr, byval pNamespace as IWbemServices ptr, byval wszPath as LPCWSTR, byval lFlags as long, byval pContext as IWbemContext ptr, byval ppRefreshable as IWbemClassObject ptr ptr, byval plId as long ptr) as HRESULT
 declare sub IWbemConfigureRefresher_AddObjectByPath_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -1072,6 +1266,10 @@ type IWbemShutdown_
 	lpVtbl as IWbemShutdownVtbl ptr
 end type
 
+#define IWbemShutdown_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemShutdown_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemShutdown_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemShutdown_Shutdown(This, uReason, uMaxMilliseconds, pCtx) (This)->lpVtbl->Shutdown(This, uReason, uMaxMilliseconds, pCtx)
 declare function IWbemShutdown_Shutdown_Proxy(byval This as IWbemShutdown ptr, byval uReason as LONG, byval uMaxMilliseconds as ULONG, byval pCtx as IWbemContext ptr) as HRESULT
 declare sub IWbemShutdown_Shutdown_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
@@ -1110,6 +1308,12 @@ end type
 type IWbemObjectTextSrc_
 	lpVtbl as IWbemObjectTextSrcVtbl ptr
 end type
+
+#define IWbemObjectTextSrc_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWbemObjectTextSrc_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWbemObjectTextSrc_Release(This) (This)->lpVtbl->Release(This)
+#define IWbemObjectTextSrc_GetText(This, lFlags, pObj, uObjTextFormat, pCtx, strText) (This)->lpVtbl->GetText(This, lFlags, pObj, uObjTextFormat, pCtx, strText)
+#define IWbemObjectTextSrc_CreateFromText(This, lFlags, strText, uObjTextFormat, pCtx, pNewObj) (This)->lpVtbl->CreateFromText(This, lFlags, strText, uObjTextFormat, pCtx, pNewObj)
 
 declare function IWbemObjectTextSrc_GetText_Proxy(byval This as IWbemObjectTextSrc ptr, byval lFlags as long, byval pObj as IWbemClassObject ptr, byval uObjTextFormat as ULONG, byval pCtx as IWbemContext ptr, byval strText as BSTR ptr) as HRESULT
 declare sub IWbemObjectTextSrc_GetText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -1166,6 +1370,13 @@ end type
 type IMofCompiler_
 	lpVtbl as IMofCompilerVtbl ptr
 end type
+
+#define IMofCompiler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMofCompiler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMofCompiler_Release(This) (This)->lpVtbl->Release(This)
+#define IMofCompiler_CompileFile(This, FileName, ServerAndNamespace, User, Authority, Password, lOptionFlags, lClassFlags, lInstanceFlags, pInfo) (This)->lpVtbl->CompileFile(This, FileName, ServerAndNamespace, User, Authority, Password, lOptionFlags, lClassFlags, lInstanceFlags, pInfo)
+#define IMofCompiler_CompileBuffer(This, BuffSize, pBuffer, ServerAndNamespace, User, Authority, Password, lOptionFlags, lClassFlags, lInstanceFlags, pInfo) (This)->lpVtbl->CompileBuffer(This, BuffSize, pBuffer, ServerAndNamespace, User, Authority, Password, lOptionFlags, lClassFlags, lInstanceFlags, pInfo)
+#define IMofCompiler_CreateBMOF(This, TextFileName, BMOFFileName, ServerAndNamespace, lOptionFlags, lClassFlags, lInstanceFlags, pInfo) (This)->lpVtbl->CreateBMOF(This, TextFileName, BMOFFileName, ServerAndNamespace, lOptionFlags, lClassFlags, lInstanceFlags, pInfo)
 
 declare function IMofCompiler_CompileFile_Proxy(byval This as IMofCompiler ptr, byval FileName as LPWSTR, byval ServerAndNamespace as LPWSTR, byval User as LPWSTR, byval Authority as LPWSTR, byval Password as LPWSTR, byval lOptionFlags as LONG, byval lClassFlags as LONG, byval lInstanceFlags as LONG, byval pInfo as WBEM_COMPILE_STATUS_INFO ptr) as HRESULT
 declare sub IMofCompiler_CompileFile_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

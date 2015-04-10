@@ -418,6 +418,22 @@ type IPropertyStorage_
 	lpVtbl as IPropertyStorageVtbl ptr
 end type
 
+#define IPropertyStorage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyStorage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyStorage_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyStorage_ReadMultiple(This, cpspec, rgpspec, rgpropvar) (This)->lpVtbl->ReadMultiple(This, cpspec, rgpspec, rgpropvar)
+#define IPropertyStorage_WriteMultiple(This, cpspec, rgpspec, rgpropvar, propidNameFirst) (This)->lpVtbl->WriteMultiple(This, cpspec, rgpspec, rgpropvar, propidNameFirst)
+#define IPropertyStorage_DeleteMultiple(This, cpspec, rgpspec) (This)->lpVtbl->DeleteMultiple(This, cpspec, rgpspec)
+#define IPropertyStorage_ReadPropertyNames(This, cpropid, rgpropid, rglpwstrName) (This)->lpVtbl->ReadPropertyNames(This, cpropid, rgpropid, rglpwstrName)
+#define IPropertyStorage_WritePropertyNames(This, cpropid, rgpropid, rglpwstrName) (This)->lpVtbl->WritePropertyNames(This, cpropid, rgpropid, rglpwstrName)
+#define IPropertyStorage_DeletePropertyNames(This, cpropid, rgpropid) (This)->lpVtbl->DeletePropertyNames(This, cpropid, rgpropid)
+#define IPropertyStorage_Commit(This, grfCommitFlags) (This)->lpVtbl->Commit(This, grfCommitFlags)
+#define IPropertyStorage_Revert(This) (This)->lpVtbl->Revert(This)
+#define IPropertyStorage_Enum(This, ppenum) (This)->lpVtbl->Enum(This, ppenum)
+#define IPropertyStorage_SetTimes(This, pctime, patime, pmtime) (This)->lpVtbl->SetTimes(This, pctime, patime, pmtime)
+#define IPropertyStorage_SetClass(This, clsid) (This)->lpVtbl->SetClass(This, clsid)
+#define IPropertyStorage_Stat(This, pstatpsstg) (This)->lpVtbl->Stat(This, pstatpsstg)
+
 declare function IPropertyStorage_ReadMultiple_Proxy(byval This as IPropertyStorage ptr, byval cpspec as ULONG, byval rgpspec as const PROPSPEC ptr, byval rgpropvar as PROPVARIANT ptr) as HRESULT
 declare sub IPropertyStorage_ReadMultiple_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyStorage_WriteMultiple_Proxy(byval This as IPropertyStorage ptr, byval cpspec as ULONG, byval rgpspec as const PROPSPEC ptr, byval rgpropvar as const PROPVARIANT ptr, byval propidNameFirst as PROPID) as HRESULT
@@ -462,6 +478,14 @@ type IPropertySetStorage_
 	lpVtbl as IPropertySetStorageVtbl ptr
 end type
 
+#define IPropertySetStorage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertySetStorage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertySetStorage_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertySetStorage_Create(This, rfmtid, pclsid, grfFlags, grfMode, ppprstg) (This)->lpVtbl->Create(This, rfmtid, pclsid, grfFlags, grfMode, ppprstg)
+#define IPropertySetStorage_Open(This, rfmtid, grfMode, ppprstg) (This)->lpVtbl->Open(This, rfmtid, grfMode, ppprstg)
+#define IPropertySetStorage_Delete(This, rfmtid) (This)->lpVtbl->Delete(This, rfmtid)
+#define IPropertySetStorage_Enum(This, ppenum) (This)->lpVtbl->Enum(This, ppenum)
+
 declare function IPropertySetStorage_Create_Proxy(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr, byval pclsid as const CLSID ptr, byval grfFlags as DWORD, byval grfMode as DWORD, byval ppprstg as IPropertyStorage ptr ptr) as HRESULT
 declare sub IPropertySetStorage_Create_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertySetStorage_Open_Proxy(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr, byval grfMode as DWORD, byval ppprstg as IPropertyStorage ptr ptr) as HRESULT
@@ -487,6 +511,14 @@ end type
 type IEnumSTATPROPSTG_
 	lpVtbl as IEnumSTATPROPSTGVtbl ptr
 end type
+
+#define IEnumSTATPROPSTG_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumSTATPROPSTG_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumSTATPROPSTG_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumSTATPROPSTG_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumSTATPROPSTG_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumSTATPROPSTG_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumSTATPROPSTG_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumSTATPROPSTG_RemoteNext_Proxy(byval This as IEnumSTATPROPSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumSTATPROPSTG_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -515,6 +547,14 @@ end type
 type IEnumSTATPROPSETSTG_
 	lpVtbl as IEnumSTATPROPSETSTGVtbl ptr
 end type
+
+#define IEnumSTATPROPSETSTG_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumSTATPROPSETSTG_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumSTATPROPSETSTG_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumSTATPROPSETSTG_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumSTATPROPSETSTG_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumSTATPROPSETSTG_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumSTATPROPSETSTG_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumSTATPROPSETSTG_RemoteNext_Proxy(byval This as IEnumSTATPROPSETSTG ptr, byval celt as ULONG, byval rgelt as STATPROPSETSTG ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumSTATPROPSETSTG_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

@@ -604,6 +604,17 @@ type IHTMLFiltersCollection_
 	lpVtbl as IHTMLFiltersCollectionVtbl ptr
 end type
 
+#define IHTMLFiltersCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFiltersCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFiltersCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFiltersCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFiltersCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFiltersCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFiltersCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFiltersCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLFiltersCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLFiltersCollection_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
+
 declare function IHTMLFiltersCollection_get_length_Proxy(byval This as IHTMLFiltersCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLFiltersCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFiltersCollection_get__newEnum_Proxy(byval This as IHTMLFiltersCollection ptr, byval p as IUnknown ptr ptr) as HRESULT
@@ -2585,6 +2596,39 @@ type IHTMLEventObj_
 	lpVtbl as IHTMLEventObjVtbl ptr
 end type
 
+#define IHTMLEventObj_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEventObj_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEventObj_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEventObj_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLEventObj_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLEventObj_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLEventObj_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLEventObj_get_srcElement(This, p) (This)->lpVtbl->get_srcElement(This, p)
+#define IHTMLEventObj_get_altKey(This, p) (This)->lpVtbl->get_altKey(This, p)
+#define IHTMLEventObj_get_ctrlKey(This, p) (This)->lpVtbl->get_ctrlKey(This, p)
+#define IHTMLEventObj_get_shiftKey(This, p) (This)->lpVtbl->get_shiftKey(This, p)
+#define IHTMLEventObj_put_returnValue(This, v) (This)->lpVtbl->put_returnValue(This, v)
+#define IHTMLEventObj_get_returnValue(This, p) (This)->lpVtbl->get_returnValue(This, p)
+#define IHTMLEventObj_put_cancelBubble(This, v) (This)->lpVtbl->put_cancelBubble(This, v)
+#define IHTMLEventObj_get_cancelBubble(This, p) (This)->lpVtbl->get_cancelBubble(This, p)
+#define IHTMLEventObj_get_fromElement(This, p) (This)->lpVtbl->get_fromElement(This, p)
+#define IHTMLEventObj_get_toElement(This, p) (This)->lpVtbl->get_toElement(This, p)
+#define IHTMLEventObj_put_keyCode(This, v) (This)->lpVtbl->put_keyCode(This, v)
+#define IHTMLEventObj_get_keyCode(This, p) (This)->lpVtbl->get_keyCode(This, p)
+#define IHTMLEventObj_get_button(This, p) (This)->lpVtbl->get_button(This, p)
+#define IHTMLEventObj_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLEventObj_get_qualifier(This, p) (This)->lpVtbl->get_qualifier(This, p)
+#define IHTMLEventObj_get_reason(This, p) (This)->lpVtbl->get_reason(This, p)
+#define IHTMLEventObj_get_x(This, p) (This)->lpVtbl->get_x(This, p)
+#define IHTMLEventObj_get_y(This, p) (This)->lpVtbl->get_y(This, p)
+#define IHTMLEventObj_get_clientX(This, p) (This)->lpVtbl->get_clientX(This, p)
+#define IHTMLEventObj_get_clientY(This, p) (This)->lpVtbl->get_clientY(This, p)
+#define IHTMLEventObj_get_offsetX(This, p) (This)->lpVtbl->get_offsetX(This, p)
+#define IHTMLEventObj_get_offsetY(This, p) (This)->lpVtbl->get_offsetY(This, p)
+#define IHTMLEventObj_get_screenX(This, p) (This)->lpVtbl->get_screenX(This, p)
+#define IHTMLEventObj_get_screenY(This, p) (This)->lpVtbl->get_screenY(This, p)
+#define IHTMLEventObj_get_srcFilter(This, p) (This)->lpVtbl->get_srcFilter(This, p)
+
 declare function IHTMLEventObj_get_srcElement_Proxy(byval This as IHTMLEventObj ptr, byval p as IHTMLElement ptr ptr) as HRESULT
 declare sub IHTMLEventObj_get_srcElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLEventObj_get_altKey_Proxy(byval This as IHTMLEventObj ptr, byval p as VARIANT_BOOL ptr) as HRESULT
@@ -2651,6 +2695,12 @@ type IElementBehaviorSite_
 	lpVtbl as IElementBehaviorSiteVtbl ptr
 end type
 
+#define IElementBehaviorSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSite_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSite_GetElement(This, ppElement) (This)->lpVtbl->GetElement(This, ppElement)
+#define IElementBehaviorSite_RegisterNotification(This, lEvent) (This)->lpVtbl->RegisterNotification(This, lEvent)
+
 declare function IElementBehaviorSite_GetElement_Proxy(byval This as IElementBehaviorSite ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
 declare sub IElementBehaviorSite_GetElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IElementBehaviorSite_RegisterNotification_Proxy(byval This as IElementBehaviorSite ptr, byval lEvent as LONG) as HRESULT
@@ -2671,6 +2721,13 @@ end type
 type IElementBehavior_
 	lpVtbl as IElementBehaviorVtbl ptr
 end type
+
+#define IElementBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehavior_Init(This, pBehaviorSite) (This)->lpVtbl->Init(This, pBehaviorSite)
+#define IElementBehavior_Notify(This, lEvent, pVar) (This)->lpVtbl->Notify(This, lEvent, pVar)
+#define IElementBehavior_Detach(This) (This)->lpVtbl->Detach(This)
 
 declare function IElementBehavior_Init_Proxy(byval This as IElementBehavior ptr, byval pBehaviorSite as IElementBehaviorSite ptr) as HRESULT
 declare sub IElementBehavior_Init_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -2693,6 +2750,10 @@ type IElementBehaviorFactory_
 	lpVtbl as IElementBehaviorFactoryVtbl ptr
 end type
 
+#define IElementBehaviorFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorFactory_FindBehavior(This, bstrBehavior, bstrBehaviorUrl, pSite, ppBehavior) (This)->lpVtbl->FindBehavior(This, bstrBehavior, bstrBehaviorUrl, pSite, ppBehavior)
 declare function IElementBehaviorFactory_FindBehavior_Proxy(byval This as IElementBehaviorFactory ptr, byval bstrBehavior as BSTR, byval bstrBehaviorUrl as BSTR, byval pSite as IElementBehaviorSite ptr, byval ppBehavior as IElementBehavior ptr ptr) as HRESULT
 declare sub IElementBehaviorFactory_FindBehavior_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorSiteOM_INTERFACE_DEFINED__
@@ -2714,6 +2775,16 @@ end type
 type IElementBehaviorSiteOM_
 	lpVtbl as IElementBehaviorSiteOMVtbl ptr
 end type
+
+#define IElementBehaviorSiteOM_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteOM_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteOM_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteOM_RegisterEvent(This, pchEvent, lFlags, plCookie) (This)->lpVtbl->RegisterEvent(This, pchEvent, lFlags, plCookie)
+#define IElementBehaviorSiteOM_GetEventCookie(This, pchEvent, plCookie) (This)->lpVtbl->GetEventCookie(This, pchEvent, plCookie)
+#define IElementBehaviorSiteOM_FireEvent(This, lCookie, pEventObject) (This)->lpVtbl->FireEvent(This, lCookie, pEventObject)
+#define IElementBehaviorSiteOM_CreateEventObject(This, ppEventObject) (This)->lpVtbl->CreateEventObject(This, ppEventObject)
+#define IElementBehaviorSiteOM_RegisterName(This, pchName) (This)->lpVtbl->RegisterName(This, pchName)
+#define IElementBehaviorSiteOM_RegisterUrn(This, pchUrn) (This)->lpVtbl->RegisterUrn(This, pchUrn)
 
 declare function IElementBehaviorSiteOM_RegisterEvent_Proxy(byval This as IElementBehaviorSiteOM ptr, byval pchEvent as LPOLESTR, byval lFlags as LONG, byval plCookie as LONG ptr) as HRESULT
 declare sub IElementBehaviorSiteOM_RegisterEvent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -2744,6 +2815,13 @@ type IElementBehaviorRender_
 	lpVtbl as IElementBehaviorRenderVtbl ptr
 end type
 
+#define IElementBehaviorRender_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorRender_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorRender_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorRender_Draw(This, hdc, lLayer, pRect, pReserved) (This)->lpVtbl->Draw(This, hdc, lLayer, pRect, pReserved)
+#define IElementBehaviorRender_GetRenderInfo(This, plRenderInfo) (This)->lpVtbl->GetRenderInfo(This, plRenderInfo)
+#define IElementBehaviorRender_HitTestPoint(This, pPoint, pReserved, pbHit) (This)->lpVtbl->HitTestPoint(This, pPoint, pReserved, pbHit)
+
 declare function IElementBehaviorRender_Draw_Proxy(byval This as IElementBehaviorRender ptr, byval hdc as HDC, byval lLayer as LONG, byval pRect as RECT ptr, byval pReserved as IUnknown ptr) as HRESULT
 declare sub IElementBehaviorRender_Draw_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IElementBehaviorRender_GetRenderInfo_Proxy(byval This as IElementBehaviorRender ptr, byval plRenderInfo as LONG ptr) as HRESULT
@@ -2766,6 +2844,13 @@ end type
 type IElementBehaviorSiteRender_
 	lpVtbl as IElementBehaviorSiteRenderVtbl ptr
 end type
+
+#define IElementBehaviorSiteRender_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteRender_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteRender_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteRender_Invalidate(This, pRect) (This)->lpVtbl->Invalidate(This, pRect)
+#define IElementBehaviorSiteRender_InvalidateRenderInfo(This) (This)->lpVtbl->InvalidateRenderInfo(This)
+#define IElementBehaviorSiteRender_InvalidateStyle(This) (This)->lpVtbl->InvalidateStyle(This)
 
 declare function IElementBehaviorSiteRender_Invalidate_Proxy(byval This as IElementBehaviorSiteRender ptr, byval pRect as RECT ptr) as HRESULT
 declare sub IElementBehaviorSiteRender_Invalidate_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -2969,6 +3054,193 @@ end type
 type IHTMLStyle_
 	lpVtbl as IHTMLStyleVtbl ptr
 end type
+
+#define IHTMLStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyle_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyle_put_fontFamily(This, v) (This)->lpVtbl->put_fontFamily(This, v)
+#define IHTMLStyle_get_fontFamily(This, p) (This)->lpVtbl->get_fontFamily(This, p)
+#define IHTMLStyle_put_fontStyle(This, v) (This)->lpVtbl->put_fontStyle(This, v)
+#define IHTMLStyle_get_fontStyle(This, p) (This)->lpVtbl->get_fontStyle(This, p)
+#define IHTMLStyle_put_fontVariant(This, v) (This)->lpVtbl->put_fontVariant(This, v)
+#define IHTMLStyle_get_fontVariant(This, p) (This)->lpVtbl->get_fontVariant(This, p)
+#define IHTMLStyle_put_fontWeight(This, v) (This)->lpVtbl->put_fontWeight(This, v)
+#define IHTMLStyle_get_fontWeight(This, p) (This)->lpVtbl->get_fontWeight(This, p)
+#define IHTMLStyle_put_fontSize(This, v) (This)->lpVtbl->put_fontSize(This, v)
+#define IHTMLStyle_get_fontSize(This, p) (This)->lpVtbl->get_fontSize(This, p)
+#define IHTMLStyle_put_font(This, v) (This)->lpVtbl->put_font(This, v)
+#define IHTMLStyle_get_font(This, p) (This)->lpVtbl->get_font(This, p)
+#define IHTMLStyle_put_color(This, v) (This)->lpVtbl->put_color(This, v)
+#define IHTMLStyle_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLStyle_put_background(This, v) (This)->lpVtbl->put_background(This, v)
+#define IHTMLStyle_get_background(This, p) (This)->lpVtbl->get_background(This, p)
+#define IHTMLStyle_put_backgroundColor(This, v) (This)->lpVtbl->put_backgroundColor(This, v)
+#define IHTMLStyle_get_backgroundColor(This, p) (This)->lpVtbl->get_backgroundColor(This, p)
+#define IHTMLStyle_put_backgroundImage(This, v) (This)->lpVtbl->put_backgroundImage(This, v)
+#define IHTMLStyle_get_backgroundImage(This, p) (This)->lpVtbl->get_backgroundImage(This, p)
+#define IHTMLStyle_put_backgroundRepeat(This, v) (This)->lpVtbl->put_backgroundRepeat(This, v)
+#define IHTMLStyle_get_backgroundRepeat(This, p) (This)->lpVtbl->get_backgroundRepeat(This, p)
+#define IHTMLStyle_put_backgroundAttachment(This, v) (This)->lpVtbl->put_backgroundAttachment(This, v)
+#define IHTMLStyle_get_backgroundAttachment(This, p) (This)->lpVtbl->get_backgroundAttachment(This, p)
+#define IHTMLStyle_put_backgroundPosition(This, v) (This)->lpVtbl->put_backgroundPosition(This, v)
+#define IHTMLStyle_get_backgroundPosition(This, p) (This)->lpVtbl->get_backgroundPosition(This, p)
+#define IHTMLStyle_put_backgroundPositionX(This, v) (This)->lpVtbl->put_backgroundPositionX(This, v)
+#define IHTMLStyle_get_backgroundPositionX(This, p) (This)->lpVtbl->get_backgroundPositionX(This, p)
+#define IHTMLStyle_put_backgroundPositionY(This, v) (This)->lpVtbl->put_backgroundPositionY(This, v)
+#define IHTMLStyle_get_backgroundPositionY(This, p) (This)->lpVtbl->get_backgroundPositionY(This, p)
+#define IHTMLStyle_put_wordSpacing(This, v) (This)->lpVtbl->put_wordSpacing(This, v)
+#define IHTMLStyle_get_wordSpacing(This, p) (This)->lpVtbl->get_wordSpacing(This, p)
+#define IHTMLStyle_put_letterSpacing(This, v) (This)->lpVtbl->put_letterSpacing(This, v)
+#define IHTMLStyle_get_letterSpacing(This, p) (This)->lpVtbl->get_letterSpacing(This, p)
+#define IHTMLStyle_put_textDecoration(This, v) (This)->lpVtbl->put_textDecoration(This, v)
+#define IHTMLStyle_get_textDecoration(This, p) (This)->lpVtbl->get_textDecoration(This, p)
+#define IHTMLStyle_put_textDecorationNone(This, v) (This)->lpVtbl->put_textDecorationNone(This, v)
+#define IHTMLStyle_get_textDecorationNone(This, p) (This)->lpVtbl->get_textDecorationNone(This, p)
+#define IHTMLStyle_put_textDecorationUnderline(This, v) (This)->lpVtbl->put_textDecorationUnderline(This, v)
+#define IHTMLStyle_get_textDecorationUnderline(This, p) (This)->lpVtbl->get_textDecorationUnderline(This, p)
+#define IHTMLStyle_put_textDecorationOverline(This, v) (This)->lpVtbl->put_textDecorationOverline(This, v)
+#define IHTMLStyle_get_textDecorationOverline(This, p) (This)->lpVtbl->get_textDecorationOverline(This, p)
+#define IHTMLStyle_put_textDecorationLineThrough(This, v) (This)->lpVtbl->put_textDecorationLineThrough(This, v)
+#define IHTMLStyle_get_textDecorationLineThrough(This, p) (This)->lpVtbl->get_textDecorationLineThrough(This, p)
+#define IHTMLStyle_put_textDecorationBlink(This, v) (This)->lpVtbl->put_textDecorationBlink(This, v)
+#define IHTMLStyle_get_textDecorationBlink(This, p) (This)->lpVtbl->get_textDecorationBlink(This, p)
+#define IHTMLStyle_put_verticalAlign(This, v) (This)->lpVtbl->put_verticalAlign(This, v)
+#define IHTMLStyle_get_verticalAlign(This, p) (This)->lpVtbl->get_verticalAlign(This, p)
+#define IHTMLStyle_put_textTransform(This, v) (This)->lpVtbl->put_textTransform(This, v)
+#define IHTMLStyle_get_textTransform(This, p) (This)->lpVtbl->get_textTransform(This, p)
+#define IHTMLStyle_put_textAlign(This, v) (This)->lpVtbl->put_textAlign(This, v)
+#define IHTMLStyle_get_textAlign(This, p) (This)->lpVtbl->get_textAlign(This, p)
+#define IHTMLStyle_put_textIndent(This, v) (This)->lpVtbl->put_textIndent(This, v)
+#define IHTMLStyle_get_textIndent(This, p) (This)->lpVtbl->get_textIndent(This, p)
+#define IHTMLStyle_put_lineHeight(This, v) (This)->lpVtbl->put_lineHeight(This, v)
+#define IHTMLStyle_get_lineHeight(This, p) (This)->lpVtbl->get_lineHeight(This, p)
+#define IHTMLStyle_put_marginTop(This, v) (This)->lpVtbl->put_marginTop(This, v)
+#define IHTMLStyle_get_marginTop(This, p) (This)->lpVtbl->get_marginTop(This, p)
+#define IHTMLStyle_put_marginRight(This, v) (This)->lpVtbl->put_marginRight(This, v)
+#define IHTMLStyle_get_marginRight(This, p) (This)->lpVtbl->get_marginRight(This, p)
+#define IHTMLStyle_put_marginBottom(This, v) (This)->lpVtbl->put_marginBottom(This, v)
+#define IHTMLStyle_get_marginBottom(This, p) (This)->lpVtbl->get_marginBottom(This, p)
+#define IHTMLStyle_put_marginLeft(This, v) (This)->lpVtbl->put_marginLeft(This, v)
+#define IHTMLStyle_get_marginLeft(This, p) (This)->lpVtbl->get_marginLeft(This, p)
+#define IHTMLStyle_put_margin(This, v) (This)->lpVtbl->put_margin(This, v)
+#define IHTMLStyle_get_margin(This, p) (This)->lpVtbl->get_margin(This, p)
+#define IHTMLStyle_put_paddingTop(This, v) (This)->lpVtbl->put_paddingTop(This, v)
+#define IHTMLStyle_get_paddingTop(This, p) (This)->lpVtbl->get_paddingTop(This, p)
+#define IHTMLStyle_put_paddingRight(This, v) (This)->lpVtbl->put_paddingRight(This, v)
+#define IHTMLStyle_get_paddingRight(This, p) (This)->lpVtbl->get_paddingRight(This, p)
+#define IHTMLStyle_put_paddingBottom(This, v) (This)->lpVtbl->put_paddingBottom(This, v)
+#define IHTMLStyle_get_paddingBottom(This, p) (This)->lpVtbl->get_paddingBottom(This, p)
+#define IHTMLStyle_put_paddingLeft(This, v) (This)->lpVtbl->put_paddingLeft(This, v)
+#define IHTMLStyle_get_paddingLeft(This, p) (This)->lpVtbl->get_paddingLeft(This, p)
+#define IHTMLStyle_put_padding(This, v) (This)->lpVtbl->put_padding(This, v)
+#define IHTMLStyle_get_padding(This, p) (This)->lpVtbl->get_padding(This, p)
+#define IHTMLStyle_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLStyle_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLStyle_put_borderTop(This, v) (This)->lpVtbl->put_borderTop(This, v)
+#define IHTMLStyle_get_borderTop(This, p) (This)->lpVtbl->get_borderTop(This, p)
+#define IHTMLStyle_put_borderRight(This, v) (This)->lpVtbl->put_borderRight(This, v)
+#define IHTMLStyle_get_borderRight(This, p) (This)->lpVtbl->get_borderRight(This, p)
+#define IHTMLStyle_put_borderBottom(This, v) (This)->lpVtbl->put_borderBottom(This, v)
+#define IHTMLStyle_get_borderBottom(This, p) (This)->lpVtbl->get_borderBottom(This, p)
+#define IHTMLStyle_put_borderLeft(This, v) (This)->lpVtbl->put_borderLeft(This, v)
+#define IHTMLStyle_get_borderLeft(This, p) (This)->lpVtbl->get_borderLeft(This, p)
+#define IHTMLStyle_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLStyle_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLStyle_put_borderTopColor(This, v) (This)->lpVtbl->put_borderTopColor(This, v)
+#define IHTMLStyle_get_borderTopColor(This, p) (This)->lpVtbl->get_borderTopColor(This, p)
+#define IHTMLStyle_put_borderRightColor(This, v) (This)->lpVtbl->put_borderRightColor(This, v)
+#define IHTMLStyle_get_borderRightColor(This, p) (This)->lpVtbl->get_borderRightColor(This, p)
+#define IHTMLStyle_put_borderBottomColor(This, v) (This)->lpVtbl->put_borderBottomColor(This, v)
+#define IHTMLStyle_get_borderBottomColor(This, p) (This)->lpVtbl->get_borderBottomColor(This, p)
+#define IHTMLStyle_put_borderLeftColor(This, v) (This)->lpVtbl->put_borderLeftColor(This, v)
+#define IHTMLStyle_get_borderLeftColor(This, p) (This)->lpVtbl->get_borderLeftColor(This, p)
+#define IHTMLStyle_put_borderWidth(This, v) (This)->lpVtbl->put_borderWidth(This, v)
+#define IHTMLStyle_get_borderWidth(This, p) (This)->lpVtbl->get_borderWidth(This, p)
+#define IHTMLStyle_put_borderTopWidth(This, v) (This)->lpVtbl->put_borderTopWidth(This, v)
+#define IHTMLStyle_get_borderTopWidth(This, p) (This)->lpVtbl->get_borderTopWidth(This, p)
+#define IHTMLStyle_put_borderRightWidth(This, v) (This)->lpVtbl->put_borderRightWidth(This, v)
+#define IHTMLStyle_get_borderRightWidth(This, p) (This)->lpVtbl->get_borderRightWidth(This, p)
+#define IHTMLStyle_put_borderBottomWidth(This, v) (This)->lpVtbl->put_borderBottomWidth(This, v)
+#define IHTMLStyle_get_borderBottomWidth(This, p) (This)->lpVtbl->get_borderBottomWidth(This, p)
+#define IHTMLStyle_put_borderLeftWidth(This, v) (This)->lpVtbl->put_borderLeftWidth(This, v)
+#define IHTMLStyle_get_borderLeftWidth(This, p) (This)->lpVtbl->get_borderLeftWidth(This, p)
+#define IHTMLStyle_put_borderStyle(This, v) (This)->lpVtbl->put_borderStyle(This, v)
+#define IHTMLStyle_get_borderStyle(This, p) (This)->lpVtbl->get_borderStyle(This, p)
+#define IHTMLStyle_put_borderTopStyle(This, v) (This)->lpVtbl->put_borderTopStyle(This, v)
+#define IHTMLStyle_get_borderTopStyle(This, p) (This)->lpVtbl->get_borderTopStyle(This, p)
+#define IHTMLStyle_put_borderRightStyle(This, v) (This)->lpVtbl->put_borderRightStyle(This, v)
+#define IHTMLStyle_get_borderRightStyle(This, p) (This)->lpVtbl->get_borderRightStyle(This, p)
+#define IHTMLStyle_put_borderBottomStyle(This, v) (This)->lpVtbl->put_borderBottomStyle(This, v)
+#define IHTMLStyle_get_borderBottomStyle(This, p) (This)->lpVtbl->get_borderBottomStyle(This, p)
+#define IHTMLStyle_put_borderLeftStyle(This, v) (This)->lpVtbl->put_borderLeftStyle(This, v)
+#define IHTMLStyle_get_borderLeftStyle(This, p) (This)->lpVtbl->get_borderLeftStyle(This, p)
+#define IHTMLStyle_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLStyle_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLStyle_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLStyle_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLStyle_put_styleFloat(This, v) (This)->lpVtbl->put_styleFloat(This, v)
+#define IHTMLStyle_get_styleFloat(This, p) (This)->lpVtbl->get_styleFloat(This, p)
+#define IHTMLStyle_put_clear(This, v) (This)->lpVtbl->put_clear(This, v)
+#define IHTMLStyle_get_clear(This, p) (This)->lpVtbl->get_clear(This, p)
+#define IHTMLStyle_put_display(This, v) (This)->lpVtbl->put_display(This, v)
+#define IHTMLStyle_get_display(This, p) (This)->lpVtbl->get_display(This, p)
+#define IHTMLStyle_put_visibility(This, v) (This)->lpVtbl->put_visibility(This, v)
+#define IHTMLStyle_get_visibility(This, p) (This)->lpVtbl->get_visibility(This, p)
+#define IHTMLStyle_put_listStyleType(This, v) (This)->lpVtbl->put_listStyleType(This, v)
+#define IHTMLStyle_get_listStyleType(This, p) (This)->lpVtbl->get_listStyleType(This, p)
+#define IHTMLStyle_put_listStylePosition(This, v) (This)->lpVtbl->put_listStylePosition(This, v)
+#define IHTMLStyle_get_listStylePosition(This, p) (This)->lpVtbl->get_listStylePosition(This, p)
+#define IHTMLStyle_put_listStyleImage(This, v) (This)->lpVtbl->put_listStyleImage(This, v)
+#define IHTMLStyle_get_listStyleImage(This, p) (This)->lpVtbl->get_listStyleImage(This, p)
+#define IHTMLStyle_put_listStyle(This, v) (This)->lpVtbl->put_listStyle(This, v)
+#define IHTMLStyle_get_listStyle(This, p) (This)->lpVtbl->get_listStyle(This, p)
+#define IHTMLStyle_put_whiteSpace(This, v) (This)->lpVtbl->put_whiteSpace(This, v)
+#define IHTMLStyle_get_whiteSpace(This, p) (This)->lpVtbl->get_whiteSpace(This, p)
+#define IHTMLStyle_put_top(This, v) (This)->lpVtbl->put_top(This, v)
+#define IHTMLStyle_get_top(This, p) (This)->lpVtbl->get_top(This, p)
+#define IHTMLStyle_put_left(This, v) (This)->lpVtbl->put_left(This, v)
+#define IHTMLStyle_get_left(This, p) (This)->lpVtbl->get_left(This, p)
+#define IHTMLStyle_get_position(This, p) (This)->lpVtbl->get_position(This, p)
+#define IHTMLStyle_put_zIndex(This, v) (This)->lpVtbl->put_zIndex(This, v)
+#define IHTMLStyle_get_zIndex(This, p) (This)->lpVtbl->get_zIndex(This, p)
+#define IHTMLStyle_put_overflow(This, v) (This)->lpVtbl->put_overflow(This, v)
+#define IHTMLStyle_get_overflow(This, p) (This)->lpVtbl->get_overflow(This, p)
+#define IHTMLStyle_put_pageBreakBefore(This, v) (This)->lpVtbl->put_pageBreakBefore(This, v)
+#define IHTMLStyle_get_pageBreakBefore(This, p) (This)->lpVtbl->get_pageBreakBefore(This, p)
+#define IHTMLStyle_put_pageBreakAfter(This, v) (This)->lpVtbl->put_pageBreakAfter(This, v)
+#define IHTMLStyle_get_pageBreakAfter(This, p) (This)->lpVtbl->get_pageBreakAfter(This, p)
+#define IHTMLStyle_put_cssText(This, v) (This)->lpVtbl->put_cssText(This, v)
+#define IHTMLStyle_get_cssText(This, p) (This)->lpVtbl->get_cssText(This, p)
+#define IHTMLStyle_put_pixelTop(This, v) (This)->lpVtbl->put_pixelTop(This, v)
+#define IHTMLStyle_get_pixelTop(This, p) (This)->lpVtbl->get_pixelTop(This, p)
+#define IHTMLStyle_put_pixelLeft(This, v) (This)->lpVtbl->put_pixelLeft(This, v)
+#define IHTMLStyle_get_pixelLeft(This, p) (This)->lpVtbl->get_pixelLeft(This, p)
+#define IHTMLStyle_put_pixelWidth(This, v) (This)->lpVtbl->put_pixelWidth(This, v)
+#define IHTMLStyle_get_pixelWidth(This, p) (This)->lpVtbl->get_pixelWidth(This, p)
+#define IHTMLStyle_put_pixelHeight(This, v) (This)->lpVtbl->put_pixelHeight(This, v)
+#define IHTMLStyle_get_pixelHeight(This, p) (This)->lpVtbl->get_pixelHeight(This, p)
+#define IHTMLStyle_put_posTop(This, v) (This)->lpVtbl->put_posTop(This, v)
+#define IHTMLStyle_get_posTop(This, p) (This)->lpVtbl->get_posTop(This, p)
+#define IHTMLStyle_put_posLeft(This, v) (This)->lpVtbl->put_posLeft(This, v)
+#define IHTMLStyle_get_posLeft(This, p) (This)->lpVtbl->get_posLeft(This, p)
+#define IHTMLStyle_put_posWidth(This, v) (This)->lpVtbl->put_posWidth(This, v)
+#define IHTMLStyle_get_posWidth(This, p) (This)->lpVtbl->get_posWidth(This, p)
+#define IHTMLStyle_put_posHeight(This, v) (This)->lpVtbl->put_posHeight(This, v)
+#define IHTMLStyle_get_posHeight(This, p) (This)->lpVtbl->get_posHeight(This, p)
+#define IHTMLStyle_put_cursor(This, v) (This)->lpVtbl->put_cursor(This, v)
+#define IHTMLStyle_get_cursor(This, p) (This)->lpVtbl->get_cursor(This, p)
+#define IHTMLStyle_put_clip(This, v) (This)->lpVtbl->put_clip(This, v)
+#define IHTMLStyle_get_clip(This, p) (This)->lpVtbl->get_clip(This, p)
+#define IHTMLStyle_put_filter(This, v) (This)->lpVtbl->put_filter(This, v)
+#define IHTMLStyle_get_filter(This, p) (This)->lpVtbl->get_filter(This, p)
+#define IHTMLStyle_setAttribute(This, strAttributeName, AttributeValue, lFlags) (This)->lpVtbl->setAttribute(This, strAttributeName, AttributeValue, lFlags)
+#define IHTMLStyle_getAttribute(This, strAttributeName, lFlags, AttributeValue) (This)->lpVtbl->getAttribute(This, strAttributeName, lFlags, AttributeValue)
+#define IHTMLStyle_removeAttribute(This, strAttributeName, lFlags, pfSuccess) (This)->lpVtbl->removeAttribute(This, strAttributeName, lFlags, pfSuccess)
+#define IHTMLStyle_toString(This, String) (This)->lpVtbl->toString(This, String)
 
 declare function IHTMLStyle_put_fontFamily_Proxy(byval This as IHTMLStyle ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyle_put_fontFamily_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -3409,6 +3681,77 @@ type IHTMLStyle2_
 	lpVtbl as IHTMLStyle2Vtbl ptr
 end type
 
+#define IHTMLStyle2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyle2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyle2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyle2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyle2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyle2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyle2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyle2_put_tableLayout(This, v) (This)->lpVtbl->put_tableLayout(This, v)
+#define IHTMLStyle2_get_tableLayout(This, p) (This)->lpVtbl->get_tableLayout(This, p)
+#define IHTMLStyle2_put_borderCollapse(This, v) (This)->lpVtbl->put_borderCollapse(This, v)
+#define IHTMLStyle2_get_borderCollapse(This, p) (This)->lpVtbl->get_borderCollapse(This, p)
+#define IHTMLStyle2_put_direction(This, v) (This)->lpVtbl->put_direction(This, v)
+#define IHTMLStyle2_get_direction(This, p) (This)->lpVtbl->get_direction(This, p)
+#define IHTMLStyle2_put_behavior(This, v) (This)->lpVtbl->put_behavior(This, v)
+#define IHTMLStyle2_get_behavior(This, p) (This)->lpVtbl->get_behavior(This, p)
+#define IHTMLStyle2_setExpression(This, propname, expression, language) (This)->lpVtbl->setExpression(This, propname, expression, language)
+#define IHTMLStyle2_getExpression(This, propname, expression) (This)->lpVtbl->getExpression(This, propname, expression)
+#define IHTMLStyle2_removeExpression(This, propname, pfSuccess) (This)->lpVtbl->removeExpression(This, propname, pfSuccess)
+#define IHTMLStyle2_put_position(This, v) (This)->lpVtbl->put_position(This, v)
+#define IHTMLStyle2_get_position(This, p) (This)->lpVtbl->get_position(This, p)
+#define IHTMLStyle2_put_unicodeBidi(This, v) (This)->lpVtbl->put_unicodeBidi(This, v)
+#define IHTMLStyle2_get_unicodeBidi(This, p) (This)->lpVtbl->get_unicodeBidi(This, p)
+#define IHTMLStyle2_put_bottom(This, v) (This)->lpVtbl->put_bottom(This, v)
+#define IHTMLStyle2_get_bottom(This, p) (This)->lpVtbl->get_bottom(This, p)
+#define IHTMLStyle2_put_right(This, v) (This)->lpVtbl->put_right(This, v)
+#define IHTMLStyle2_get_right(This, p) (This)->lpVtbl->get_right(This, p)
+#define IHTMLStyle2_put_pixelBottom(This, v) (This)->lpVtbl->put_pixelBottom(This, v)
+#define IHTMLStyle2_get_pixelBottom(This, p) (This)->lpVtbl->get_pixelBottom(This, p)
+#define IHTMLStyle2_put_pixelRight(This, v) (This)->lpVtbl->put_pixelRight(This, v)
+#define IHTMLStyle2_get_pixelRight(This, p) (This)->lpVtbl->get_pixelRight(This, p)
+#define IHTMLStyle2_put_posBottom(This, v) (This)->lpVtbl->put_posBottom(This, v)
+#define IHTMLStyle2_get_posBottom(This, p) (This)->lpVtbl->get_posBottom(This, p)
+#define IHTMLStyle2_put_posRight(This, v) (This)->lpVtbl->put_posRight(This, v)
+#define IHTMLStyle2_get_posRight(This, p) (This)->lpVtbl->get_posRight(This, p)
+#define IHTMLStyle2_put_imeMode(This, v) (This)->lpVtbl->put_imeMode(This, v)
+#define IHTMLStyle2_get_imeMode(This, p) (This)->lpVtbl->get_imeMode(This, p)
+#define IHTMLStyle2_put_rubyAlign(This, v) (This)->lpVtbl->put_rubyAlign(This, v)
+#define IHTMLStyle2_get_rubyAlign(This, p) (This)->lpVtbl->get_rubyAlign(This, p)
+#define IHTMLStyle2_put_rubyPosition(This, v) (This)->lpVtbl->put_rubyPosition(This, v)
+#define IHTMLStyle2_get_rubyPosition(This, p) (This)->lpVtbl->get_rubyPosition(This, p)
+#define IHTMLStyle2_put_rubyOverhang(This, v) (This)->lpVtbl->put_rubyOverhang(This, v)
+#define IHTMLStyle2_get_rubyOverhang(This, p) (This)->lpVtbl->get_rubyOverhang(This, p)
+#define IHTMLStyle2_put_layoutGridChar(This, v) (This)->lpVtbl->put_layoutGridChar(This, v)
+#define IHTMLStyle2_get_layoutGridChar(This, p) (This)->lpVtbl->get_layoutGridChar(This, p)
+#define IHTMLStyle2_put_layoutGridLine(This, v) (This)->lpVtbl->put_layoutGridLine(This, v)
+#define IHTMLStyle2_get_layoutGridLine(This, p) (This)->lpVtbl->get_layoutGridLine(This, p)
+#define IHTMLStyle2_put_layoutGridMode(This, v) (This)->lpVtbl->put_layoutGridMode(This, v)
+#define IHTMLStyle2_get_layoutGridMode(This, p) (This)->lpVtbl->get_layoutGridMode(This, p)
+#define IHTMLStyle2_put_layoutGridType(This, v) (This)->lpVtbl->put_layoutGridType(This, v)
+#define IHTMLStyle2_get_layoutGridType(This, p) (This)->lpVtbl->get_layoutGridType(This, p)
+#define IHTMLStyle2_put_layoutGrid(This, v) (This)->lpVtbl->put_layoutGrid(This, v)
+#define IHTMLStyle2_get_layoutGrid(This, p) (This)->lpVtbl->get_layoutGrid(This, p)
+#define IHTMLStyle2_put_wordBreak(This, v) (This)->lpVtbl->put_wordBreak(This, v)
+#define IHTMLStyle2_get_wordBreak(This, p) (This)->lpVtbl->get_wordBreak(This, p)
+#define IHTMLStyle2_put_lineBreak(This, v) (This)->lpVtbl->put_lineBreak(This, v)
+#define IHTMLStyle2_get_lineBreak(This, p) (This)->lpVtbl->get_lineBreak(This, p)
+#define IHTMLStyle2_put_textJustify(This, v) (This)->lpVtbl->put_textJustify(This, v)
+#define IHTMLStyle2_get_textJustify(This, p) (This)->lpVtbl->get_textJustify(This, p)
+#define IHTMLStyle2_put_textJustifyTrim(This, v) (This)->lpVtbl->put_textJustifyTrim(This, v)
+#define IHTMLStyle2_get_textJustifyTrim(This, p) (This)->lpVtbl->get_textJustifyTrim(This, p)
+#define IHTMLStyle2_put_textKashida(This, v) (This)->lpVtbl->put_textKashida(This, v)
+#define IHTMLStyle2_get_textKashida(This, p) (This)->lpVtbl->get_textKashida(This, p)
+#define IHTMLStyle2_put_textAutospace(This, v) (This)->lpVtbl->put_textAutospace(This, v)
+#define IHTMLStyle2_get_textAutospace(This, p) (This)->lpVtbl->get_textAutospace(This, p)
+#define IHTMLStyle2_put_overflowX(This, v) (This)->lpVtbl->put_overflowX(This, v)
+#define IHTMLStyle2_get_overflowX(This, p) (This)->lpVtbl->get_overflowX(This, p)
+#define IHTMLStyle2_put_overflowY(This, v) (This)->lpVtbl->put_overflowY(This, v)
+#define IHTMLStyle2_get_overflowY(This, p) (This)->lpVtbl->get_overflowY(This, p)
+#define IHTMLStyle2_put_accelerator(This, v) (This)->lpVtbl->put_accelerator(This, v)
+#define IHTMLStyle2_get_accelerator(This, p) (This)->lpVtbl->get_accelerator(This, p)
+
 declare function IHTMLStyle2_put_tableLayout_Proxy(byval This as IHTMLStyle2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyle2_put_tableLayout_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyle2_get_tableLayout_Proxy(byval This as IHTMLStyle2 ptr, byval p as BSTR ptr) as HRESULT
@@ -3583,6 +3926,44 @@ type IHTMLStyle3_
 	lpVtbl as IHTMLStyle3Vtbl ptr
 end type
 
+#define IHTMLStyle3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyle3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyle3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyle3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyle3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyle3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyle3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyle3_put_layoutFlow(This, v) (This)->lpVtbl->put_layoutFlow(This, v)
+#define IHTMLStyle3_get_layoutFlow(This, p) (This)->lpVtbl->get_layoutFlow(This, p)
+#define IHTMLStyle3_put_zoom(This, v) (This)->lpVtbl->put_zoom(This, v)
+#define IHTMLStyle3_get_zoom(This, p) (This)->lpVtbl->get_zoom(This, p)
+#define IHTMLStyle3_put_wordWrap(This, v) (This)->lpVtbl->put_wordWrap(This, v)
+#define IHTMLStyle3_get_wordWrap(This, p) (This)->lpVtbl->get_wordWrap(This, p)
+#define IHTMLStyle3_put_textUnderlinePosition(This, v) (This)->lpVtbl->put_textUnderlinePosition(This, v)
+#define IHTMLStyle3_get_textUnderlinePosition(This, p) (This)->lpVtbl->get_textUnderlinePosition(This, p)
+#define IHTMLStyle3_put_scrollbarBaseColor(This, v) (This)->lpVtbl->put_scrollbarBaseColor(This, v)
+#define IHTMLStyle3_get_scrollbarBaseColor(This, p) (This)->lpVtbl->get_scrollbarBaseColor(This, p)
+#define IHTMLStyle3_put_scrollbarFaceColor(This, v) (This)->lpVtbl->put_scrollbarFaceColor(This, v)
+#define IHTMLStyle3_get_scrollbarFaceColor(This, p) (This)->lpVtbl->get_scrollbarFaceColor(This, p)
+#define IHTMLStyle3_put_scrollbar3dLightColor(This, v) (This)->lpVtbl->put_scrollbar3dLightColor(This, v)
+#define IHTMLStyle3_get_scrollbar3dLightColor(This, p) (This)->lpVtbl->get_scrollbar3dLightColor(This, p)
+#define IHTMLStyle3_put_scrollbarShadowColor(This, v) (This)->lpVtbl->put_scrollbarShadowColor(This, v)
+#define IHTMLStyle3_get_scrollbarShadowColor(This, p) (This)->lpVtbl->get_scrollbarShadowColor(This, p)
+#define IHTMLStyle3_put_scrollbarHighlightColor(This, v) (This)->lpVtbl->put_scrollbarHighlightColor(This, v)
+#define IHTMLStyle3_get_scrollbarHighlightColor(This, p) (This)->lpVtbl->get_scrollbarHighlightColor(This, p)
+#define IHTMLStyle3_put_scrollbarDarkShadowColor(This, v) (This)->lpVtbl->put_scrollbarDarkShadowColor(This, v)
+#define IHTMLStyle3_get_scrollbarDarkShadowColor(This, p) (This)->lpVtbl->get_scrollbarDarkShadowColor(This, p)
+#define IHTMLStyle3_put_scrollbarArrowColor(This, v) (This)->lpVtbl->put_scrollbarArrowColor(This, v)
+#define IHTMLStyle3_get_scrollbarArrowColor(This, p) (This)->lpVtbl->get_scrollbarArrowColor(This, p)
+#define IHTMLStyle3_put_scrollbarTrackColor(This, v) (This)->lpVtbl->put_scrollbarTrackColor(This, v)
+#define IHTMLStyle3_get_scrollbarTrackColor(This, p) (This)->lpVtbl->get_scrollbarTrackColor(This, p)
+#define IHTMLStyle3_put_writingMode(This, v) (This)->lpVtbl->put_writingMode(This, v)
+#define IHTMLStyle3_get_writingMode(This, p) (This)->lpVtbl->get_writingMode(This, p)
+#define IHTMLStyle3_put_textAlignLast(This, v) (This)->lpVtbl->put_textAlignLast(This, v)
+#define IHTMLStyle3_get_textAlignLast(This, p) (This)->lpVtbl->get_textAlignLast(This, p)
+#define IHTMLStyle3_put_textKashidaSpace(This, v) (This)->lpVtbl->put_textKashidaSpace(This, v)
+#define IHTMLStyle3_get_textKashidaSpace(This, p) (This)->lpVtbl->get_textKashidaSpace(This, p)
+
 declare function IHTMLStyle3_put_layoutFlow_Proxy(byval This as IHTMLStyle3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyle3_put_layoutFlow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyle3_get_layoutFlow_Proxy(byval This as IHTMLStyle3 ptr, byval p as BSTR ptr) as HRESULT
@@ -3664,6 +4045,18 @@ end type
 type IHTMLStyle4_
 	lpVtbl as IHTMLStyle4Vtbl ptr
 end type
+
+#define IHTMLStyle4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyle4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyle4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyle4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyle4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyle4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyle4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyle4_put_textOverflow(This, v) (This)->lpVtbl->put_textOverflow(This, v)
+#define IHTMLStyle4_get_textOverflow(This, p) (This)->lpVtbl->get_textOverflow(This, p)
+#define IHTMLStyle4_put_minHeight(This, v) (This)->lpVtbl->put_minHeight(This, v)
+#define IHTMLStyle4_get_minHeight(This, p) (This)->lpVtbl->get_minHeight(This, p)
 
 declare function IHTMLStyle4_put_textOverflow_Proxy(byval This as IHTMLStyle4 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyle4_put_textOverflow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -3852,6 +4245,176 @@ end type
 type IHTMLRuleStyle_
 	lpVtbl as IHTMLRuleStyleVtbl ptr
 end type
+
+#define IHTMLRuleStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRuleStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRuleStyle_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRuleStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRuleStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRuleStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRuleStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRuleStyle_put_fontFamily(This, v) (This)->lpVtbl->put_fontFamily(This, v)
+#define IHTMLRuleStyle_get_fontFamily(This, p) (This)->lpVtbl->get_fontFamily(This, p)
+#define IHTMLRuleStyle_put_fontStyle(This, v) (This)->lpVtbl->put_fontStyle(This, v)
+#define IHTMLRuleStyle_get_fontStyle(This, p) (This)->lpVtbl->get_fontStyle(This, p)
+#define IHTMLRuleStyle_put_fontVariant(This, v) (This)->lpVtbl->put_fontVariant(This, v)
+#define IHTMLRuleStyle_get_fontVariant(This, p) (This)->lpVtbl->get_fontVariant(This, p)
+#define IHTMLRuleStyle_put_fontWeight(This, v) (This)->lpVtbl->put_fontWeight(This, v)
+#define IHTMLRuleStyle_get_fontWeight(This, p) (This)->lpVtbl->get_fontWeight(This, p)
+#define IHTMLRuleStyle_put_fontSize(This, v) (This)->lpVtbl->put_fontSize(This, v)
+#define IHTMLRuleStyle_get_fontSize(This, p) (This)->lpVtbl->get_fontSize(This, p)
+#define IHTMLRuleStyle_put_font(This, v) (This)->lpVtbl->put_font(This, v)
+#define IHTMLRuleStyle_get_font(This, p) (This)->lpVtbl->get_font(This, p)
+#define IHTMLRuleStyle_put_color(This, v) (This)->lpVtbl->put_color(This, v)
+#define IHTMLRuleStyle_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLRuleStyle_put_background(This, v) (This)->lpVtbl->put_background(This, v)
+#define IHTMLRuleStyle_get_background(This, p) (This)->lpVtbl->get_background(This, p)
+#define IHTMLRuleStyle_put_backgroundColor(This, v) (This)->lpVtbl->put_backgroundColor(This, v)
+#define IHTMLRuleStyle_get_backgroundColor(This, p) (This)->lpVtbl->get_backgroundColor(This, p)
+#define IHTMLRuleStyle_put_backgroundImage(This, v) (This)->lpVtbl->put_backgroundImage(This, v)
+#define IHTMLRuleStyle_get_backgroundImage(This, p) (This)->lpVtbl->get_backgroundImage(This, p)
+#define IHTMLRuleStyle_put_backgroundRepeat(This, v) (This)->lpVtbl->put_backgroundRepeat(This, v)
+#define IHTMLRuleStyle_get_backgroundRepeat(This, p) (This)->lpVtbl->get_backgroundRepeat(This, p)
+#define IHTMLRuleStyle_put_backgroundAttachment(This, v) (This)->lpVtbl->put_backgroundAttachment(This, v)
+#define IHTMLRuleStyle_get_backgroundAttachment(This, p) (This)->lpVtbl->get_backgroundAttachment(This, p)
+#define IHTMLRuleStyle_put_backgroundPosition(This, v) (This)->lpVtbl->put_backgroundPosition(This, v)
+#define IHTMLRuleStyle_get_backgroundPosition(This, p) (This)->lpVtbl->get_backgroundPosition(This, p)
+#define IHTMLRuleStyle_put_backgroundPositionX(This, v) (This)->lpVtbl->put_backgroundPositionX(This, v)
+#define IHTMLRuleStyle_get_backgroundPositionX(This, p) (This)->lpVtbl->get_backgroundPositionX(This, p)
+#define IHTMLRuleStyle_put_backgroundPositionY(This, v) (This)->lpVtbl->put_backgroundPositionY(This, v)
+#define IHTMLRuleStyle_get_backgroundPositionY(This, p) (This)->lpVtbl->get_backgroundPositionY(This, p)
+#define IHTMLRuleStyle_put_wordSpacing(This, v) (This)->lpVtbl->put_wordSpacing(This, v)
+#define IHTMLRuleStyle_get_wordSpacing(This, p) (This)->lpVtbl->get_wordSpacing(This, p)
+#define IHTMLRuleStyle_put_letterSpacing(This, v) (This)->lpVtbl->put_letterSpacing(This, v)
+#define IHTMLRuleStyle_get_letterSpacing(This, p) (This)->lpVtbl->get_letterSpacing(This, p)
+#define IHTMLRuleStyle_put_textDecoration(This, v) (This)->lpVtbl->put_textDecoration(This, v)
+#define IHTMLRuleStyle_get_textDecoration(This, p) (This)->lpVtbl->get_textDecoration(This, p)
+#define IHTMLRuleStyle_put_textDecorationNone(This, v) (This)->lpVtbl->put_textDecorationNone(This, v)
+#define IHTMLRuleStyle_get_textDecorationNone(This, p) (This)->lpVtbl->get_textDecorationNone(This, p)
+#define IHTMLRuleStyle_put_textDecorationUnderline(This, v) (This)->lpVtbl->put_textDecorationUnderline(This, v)
+#define IHTMLRuleStyle_get_textDecorationUnderline(This, p) (This)->lpVtbl->get_textDecorationUnderline(This, p)
+#define IHTMLRuleStyle_put_textDecorationOverline(This, v) (This)->lpVtbl->put_textDecorationOverline(This, v)
+#define IHTMLRuleStyle_get_textDecorationOverline(This, p) (This)->lpVtbl->get_textDecorationOverline(This, p)
+#define IHTMLRuleStyle_put_textDecorationLineThrough(This, v) (This)->lpVtbl->put_textDecorationLineThrough(This, v)
+#define IHTMLRuleStyle_get_textDecorationLineThrough(This, p) (This)->lpVtbl->get_textDecorationLineThrough(This, p)
+#define IHTMLRuleStyle_put_textDecorationBlink(This, v) (This)->lpVtbl->put_textDecorationBlink(This, v)
+#define IHTMLRuleStyle_get_textDecorationBlink(This, p) (This)->lpVtbl->get_textDecorationBlink(This, p)
+#define IHTMLRuleStyle_put_verticalAlign(This, v) (This)->lpVtbl->put_verticalAlign(This, v)
+#define IHTMLRuleStyle_get_verticalAlign(This, p) (This)->lpVtbl->get_verticalAlign(This, p)
+#define IHTMLRuleStyle_put_textTransform(This, v) (This)->lpVtbl->put_textTransform(This, v)
+#define IHTMLRuleStyle_get_textTransform(This, p) (This)->lpVtbl->get_textTransform(This, p)
+#define IHTMLRuleStyle_put_textAlign(This, v) (This)->lpVtbl->put_textAlign(This, v)
+#define IHTMLRuleStyle_get_textAlign(This, p) (This)->lpVtbl->get_textAlign(This, p)
+#define IHTMLRuleStyle_put_textIndent(This, v) (This)->lpVtbl->put_textIndent(This, v)
+#define IHTMLRuleStyle_get_textIndent(This, p) (This)->lpVtbl->get_textIndent(This, p)
+#define IHTMLRuleStyle_put_lineHeight(This, v) (This)->lpVtbl->put_lineHeight(This, v)
+#define IHTMLRuleStyle_get_lineHeight(This, p) (This)->lpVtbl->get_lineHeight(This, p)
+#define IHTMLRuleStyle_put_marginTop(This, v) (This)->lpVtbl->put_marginTop(This, v)
+#define IHTMLRuleStyle_get_marginTop(This, p) (This)->lpVtbl->get_marginTop(This, p)
+#define IHTMLRuleStyle_put_marginRight(This, v) (This)->lpVtbl->put_marginRight(This, v)
+#define IHTMLRuleStyle_get_marginRight(This, p) (This)->lpVtbl->get_marginRight(This, p)
+#define IHTMLRuleStyle_put_marginBottom(This, v) (This)->lpVtbl->put_marginBottom(This, v)
+#define IHTMLRuleStyle_get_marginBottom(This, p) (This)->lpVtbl->get_marginBottom(This, p)
+#define IHTMLRuleStyle_put_marginLeft(This, v) (This)->lpVtbl->put_marginLeft(This, v)
+#define IHTMLRuleStyle_get_marginLeft(This, p) (This)->lpVtbl->get_marginLeft(This, p)
+#define IHTMLRuleStyle_put_margin(This, v) (This)->lpVtbl->put_margin(This, v)
+#define IHTMLRuleStyle_get_margin(This, p) (This)->lpVtbl->get_margin(This, p)
+#define IHTMLRuleStyle_put_paddingTop(This, v) (This)->lpVtbl->put_paddingTop(This, v)
+#define IHTMLRuleStyle_get_paddingTop(This, p) (This)->lpVtbl->get_paddingTop(This, p)
+#define IHTMLRuleStyle_put_paddingRight(This, v) (This)->lpVtbl->put_paddingRight(This, v)
+#define IHTMLRuleStyle_get_paddingRight(This, p) (This)->lpVtbl->get_paddingRight(This, p)
+#define IHTMLRuleStyle_put_paddingBottom(This, v) (This)->lpVtbl->put_paddingBottom(This, v)
+#define IHTMLRuleStyle_get_paddingBottom(This, p) (This)->lpVtbl->get_paddingBottom(This, p)
+#define IHTMLRuleStyle_put_paddingLeft(This, v) (This)->lpVtbl->put_paddingLeft(This, v)
+#define IHTMLRuleStyle_get_paddingLeft(This, p) (This)->lpVtbl->get_paddingLeft(This, p)
+#define IHTMLRuleStyle_put_padding(This, v) (This)->lpVtbl->put_padding(This, v)
+#define IHTMLRuleStyle_get_padding(This, p) (This)->lpVtbl->get_padding(This, p)
+#define IHTMLRuleStyle_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLRuleStyle_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLRuleStyle_put_borderTop(This, v) (This)->lpVtbl->put_borderTop(This, v)
+#define IHTMLRuleStyle_get_borderTop(This, p) (This)->lpVtbl->get_borderTop(This, p)
+#define IHTMLRuleStyle_put_borderRight(This, v) (This)->lpVtbl->put_borderRight(This, v)
+#define IHTMLRuleStyle_get_borderRight(This, p) (This)->lpVtbl->get_borderRight(This, p)
+#define IHTMLRuleStyle_put_borderBottom(This, v) (This)->lpVtbl->put_borderBottom(This, v)
+#define IHTMLRuleStyle_get_borderBottom(This, p) (This)->lpVtbl->get_borderBottom(This, p)
+#define IHTMLRuleStyle_put_borderLeft(This, v) (This)->lpVtbl->put_borderLeft(This, v)
+#define IHTMLRuleStyle_get_borderLeft(This, p) (This)->lpVtbl->get_borderLeft(This, p)
+#define IHTMLRuleStyle_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLRuleStyle_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLRuleStyle_put_borderTopColor(This, v) (This)->lpVtbl->put_borderTopColor(This, v)
+#define IHTMLRuleStyle_get_borderTopColor(This, p) (This)->lpVtbl->get_borderTopColor(This, p)
+#define IHTMLRuleStyle_put_borderRightColor(This, v) (This)->lpVtbl->put_borderRightColor(This, v)
+#define IHTMLRuleStyle_get_borderRightColor(This, p) (This)->lpVtbl->get_borderRightColor(This, p)
+#define IHTMLRuleStyle_put_borderBottomColor(This, v) (This)->lpVtbl->put_borderBottomColor(This, v)
+#define IHTMLRuleStyle_get_borderBottomColor(This, p) (This)->lpVtbl->get_borderBottomColor(This, p)
+#define IHTMLRuleStyle_put_borderLeftColor(This, v) (This)->lpVtbl->put_borderLeftColor(This, v)
+#define IHTMLRuleStyle_get_borderLeftColor(This, p) (This)->lpVtbl->get_borderLeftColor(This, p)
+#define IHTMLRuleStyle_put_borderWidth(This, v) (This)->lpVtbl->put_borderWidth(This, v)
+#define IHTMLRuleStyle_get_borderWidth(This, p) (This)->lpVtbl->get_borderWidth(This, p)
+#define IHTMLRuleStyle_put_borderTopWidth(This, v) (This)->lpVtbl->put_borderTopWidth(This, v)
+#define IHTMLRuleStyle_get_borderTopWidth(This, p) (This)->lpVtbl->get_borderTopWidth(This, p)
+#define IHTMLRuleStyle_put_borderRightWidth(This, v) (This)->lpVtbl->put_borderRightWidth(This, v)
+#define IHTMLRuleStyle_get_borderRightWidth(This, p) (This)->lpVtbl->get_borderRightWidth(This, p)
+#define IHTMLRuleStyle_put_borderBottomWidth(This, v) (This)->lpVtbl->put_borderBottomWidth(This, v)
+#define IHTMLRuleStyle_get_borderBottomWidth(This, p) (This)->lpVtbl->get_borderBottomWidth(This, p)
+#define IHTMLRuleStyle_put_borderLeftWidth(This, v) (This)->lpVtbl->put_borderLeftWidth(This, v)
+#define IHTMLRuleStyle_get_borderLeftWidth(This, p) (This)->lpVtbl->get_borderLeftWidth(This, p)
+#define IHTMLRuleStyle_put_borderStyle(This, v) (This)->lpVtbl->put_borderStyle(This, v)
+#define IHTMLRuleStyle_get_borderStyle(This, p) (This)->lpVtbl->get_borderStyle(This, p)
+#define IHTMLRuleStyle_put_borderTopStyle(This, v) (This)->lpVtbl->put_borderTopStyle(This, v)
+#define IHTMLRuleStyle_get_borderTopStyle(This, p) (This)->lpVtbl->get_borderTopStyle(This, p)
+#define IHTMLRuleStyle_put_borderRightStyle(This, v) (This)->lpVtbl->put_borderRightStyle(This, v)
+#define IHTMLRuleStyle_get_borderRightStyle(This, p) (This)->lpVtbl->get_borderRightStyle(This, p)
+#define IHTMLRuleStyle_put_borderBottomStyle(This, v) (This)->lpVtbl->put_borderBottomStyle(This, v)
+#define IHTMLRuleStyle_get_borderBottomStyle(This, p) (This)->lpVtbl->get_borderBottomStyle(This, p)
+#define IHTMLRuleStyle_put_borderLeftStyle(This, v) (This)->lpVtbl->put_borderLeftStyle(This, v)
+#define IHTMLRuleStyle_get_borderLeftStyle(This, p) (This)->lpVtbl->get_borderLeftStyle(This, p)
+#define IHTMLRuleStyle_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLRuleStyle_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLRuleStyle_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLRuleStyle_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLRuleStyle_put_styleFloat(This, v) (This)->lpVtbl->put_styleFloat(This, v)
+#define IHTMLRuleStyle_get_styleFloat(This, p) (This)->lpVtbl->get_styleFloat(This, p)
+#define IHTMLRuleStyle_put_clear(This, v) (This)->lpVtbl->put_clear(This, v)
+#define IHTMLRuleStyle_get_clear(This, p) (This)->lpVtbl->get_clear(This, p)
+#define IHTMLRuleStyle_put_display(This, v) (This)->lpVtbl->put_display(This, v)
+#define IHTMLRuleStyle_get_display(This, p) (This)->lpVtbl->get_display(This, p)
+#define IHTMLRuleStyle_put_visibility(This, v) (This)->lpVtbl->put_visibility(This, v)
+#define IHTMLRuleStyle_get_visibility(This, p) (This)->lpVtbl->get_visibility(This, p)
+#define IHTMLRuleStyle_put_listStyleType(This, v) (This)->lpVtbl->put_listStyleType(This, v)
+#define IHTMLRuleStyle_get_listStyleType(This, p) (This)->lpVtbl->get_listStyleType(This, p)
+#define IHTMLRuleStyle_put_listStylePosition(This, v) (This)->lpVtbl->put_listStylePosition(This, v)
+#define IHTMLRuleStyle_get_listStylePosition(This, p) (This)->lpVtbl->get_listStylePosition(This, p)
+#define IHTMLRuleStyle_put_listStyleImage(This, v) (This)->lpVtbl->put_listStyleImage(This, v)
+#define IHTMLRuleStyle_get_listStyleImage(This, p) (This)->lpVtbl->get_listStyleImage(This, p)
+#define IHTMLRuleStyle_put_listStyle(This, v) (This)->lpVtbl->put_listStyle(This, v)
+#define IHTMLRuleStyle_get_listStyle(This, p) (This)->lpVtbl->get_listStyle(This, p)
+#define IHTMLRuleStyle_put_whiteSpace(This, v) (This)->lpVtbl->put_whiteSpace(This, v)
+#define IHTMLRuleStyle_get_whiteSpace(This, p) (This)->lpVtbl->get_whiteSpace(This, p)
+#define IHTMLRuleStyle_put_top(This, v) (This)->lpVtbl->put_top(This, v)
+#define IHTMLRuleStyle_get_top(This, p) (This)->lpVtbl->get_top(This, p)
+#define IHTMLRuleStyle_put_left(This, v) (This)->lpVtbl->put_left(This, v)
+#define IHTMLRuleStyle_get_left(This, p) (This)->lpVtbl->get_left(This, p)
+#define IHTMLRuleStyle_get_position(This, p) (This)->lpVtbl->get_position(This, p)
+#define IHTMLRuleStyle_put_zIndex(This, v) (This)->lpVtbl->put_zIndex(This, v)
+#define IHTMLRuleStyle_get_zIndex(This, p) (This)->lpVtbl->get_zIndex(This, p)
+#define IHTMLRuleStyle_put_overflow(This, v) (This)->lpVtbl->put_overflow(This, v)
+#define IHTMLRuleStyle_get_overflow(This, p) (This)->lpVtbl->get_overflow(This, p)
+#define IHTMLRuleStyle_put_pageBreakBefore(This, v) (This)->lpVtbl->put_pageBreakBefore(This, v)
+#define IHTMLRuleStyle_get_pageBreakBefore(This, p) (This)->lpVtbl->get_pageBreakBefore(This, p)
+#define IHTMLRuleStyle_put_pageBreakAfter(This, v) (This)->lpVtbl->put_pageBreakAfter(This, v)
+#define IHTMLRuleStyle_get_pageBreakAfter(This, p) (This)->lpVtbl->get_pageBreakAfter(This, p)
+#define IHTMLRuleStyle_put_cssText(This, v) (This)->lpVtbl->put_cssText(This, v)
+#define IHTMLRuleStyle_get_cssText(This, p) (This)->lpVtbl->get_cssText(This, p)
+#define IHTMLRuleStyle_put_cursor(This, v) (This)->lpVtbl->put_cursor(This, v)
+#define IHTMLRuleStyle_get_cursor(This, p) (This)->lpVtbl->get_cursor(This, p)
+#define IHTMLRuleStyle_put_clip(This, v) (This)->lpVtbl->put_clip(This, v)
+#define IHTMLRuleStyle_get_clip(This, p) (This)->lpVtbl->get_clip(This, p)
+#define IHTMLRuleStyle_put_filter(This, v) (This)->lpVtbl->put_filter(This, v)
+#define IHTMLRuleStyle_get_filter(This, p) (This)->lpVtbl->get_filter(This, p)
+#define IHTMLRuleStyle_setAttribute(This, strAttributeName, AttributeValue, lFlags) (This)->lpVtbl->setAttribute(This, strAttributeName, AttributeValue, lFlags)
+#define IHTMLRuleStyle_getAttribute(This, strAttributeName, lFlags, AttributeValue) (This)->lpVtbl->getAttribute(This, strAttributeName, lFlags, AttributeValue)
+#define IHTMLRuleStyle_removeAttribute(This, strAttributeName, lFlags, pfSuccess) (This)->lpVtbl->removeAttribute(This, strAttributeName, lFlags, pfSuccess)
 
 declare function IHTMLRuleStyle_put_fontFamily_Proxy(byval This as IHTMLRuleStyle ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLRuleStyle_put_fontFamily_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -4255,6 +4818,74 @@ type IHTMLRuleStyle2_
 	lpVtbl as IHTMLRuleStyle2Vtbl ptr
 end type
 
+#define IHTMLRuleStyle2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRuleStyle2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRuleStyle2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRuleStyle2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRuleStyle2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRuleStyle2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRuleStyle2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRuleStyle2_put_tableLayout(This, v) (This)->lpVtbl->put_tableLayout(This, v)
+#define IHTMLRuleStyle2_get_tableLayout(This, p) (This)->lpVtbl->get_tableLayout(This, p)
+#define IHTMLRuleStyle2_put_borderCollapse(This, v) (This)->lpVtbl->put_borderCollapse(This, v)
+#define IHTMLRuleStyle2_get_borderCollapse(This, p) (This)->lpVtbl->get_borderCollapse(This, p)
+#define IHTMLRuleStyle2_put_direction(This, v) (This)->lpVtbl->put_direction(This, v)
+#define IHTMLRuleStyle2_get_direction(This, p) (This)->lpVtbl->get_direction(This, p)
+#define IHTMLRuleStyle2_put_behavior(This, v) (This)->lpVtbl->put_behavior(This, v)
+#define IHTMLRuleStyle2_get_behavior(This, p) (This)->lpVtbl->get_behavior(This, p)
+#define IHTMLRuleStyle2_put_position(This, v) (This)->lpVtbl->put_position(This, v)
+#define IHTMLRuleStyle2_get_position(This, p) (This)->lpVtbl->get_position(This, p)
+#define IHTMLRuleStyle2_put_unicodeBidi(This, v) (This)->lpVtbl->put_unicodeBidi(This, v)
+#define IHTMLRuleStyle2_get_unicodeBidi(This, p) (This)->lpVtbl->get_unicodeBidi(This, p)
+#define IHTMLRuleStyle2_put_bottom(This, v) (This)->lpVtbl->put_bottom(This, v)
+#define IHTMLRuleStyle2_get_bottom(This, p) (This)->lpVtbl->get_bottom(This, p)
+#define IHTMLRuleStyle2_put_right(This, v) (This)->lpVtbl->put_right(This, v)
+#define IHTMLRuleStyle2_get_right(This, p) (This)->lpVtbl->get_right(This, p)
+#define IHTMLRuleStyle2_put_pixelBottom(This, v) (This)->lpVtbl->put_pixelBottom(This, v)
+#define IHTMLRuleStyle2_get_pixelBottom(This, p) (This)->lpVtbl->get_pixelBottom(This, p)
+#define IHTMLRuleStyle2_put_pixelRight(This, v) (This)->lpVtbl->put_pixelRight(This, v)
+#define IHTMLRuleStyle2_get_pixelRight(This, p) (This)->lpVtbl->get_pixelRight(This, p)
+#define IHTMLRuleStyle2_put_posBottom(This, v) (This)->lpVtbl->put_posBottom(This, v)
+#define IHTMLRuleStyle2_get_posBottom(This, p) (This)->lpVtbl->get_posBottom(This, p)
+#define IHTMLRuleStyle2_put_posRight(This, v) (This)->lpVtbl->put_posRight(This, v)
+#define IHTMLRuleStyle2_get_posRight(This, p) (This)->lpVtbl->get_posRight(This, p)
+#define IHTMLRuleStyle2_put_imeMode(This, v) (This)->lpVtbl->put_imeMode(This, v)
+#define IHTMLRuleStyle2_get_imeMode(This, p) (This)->lpVtbl->get_imeMode(This, p)
+#define IHTMLRuleStyle2_put_rubyAlign(This, v) (This)->lpVtbl->put_rubyAlign(This, v)
+#define IHTMLRuleStyle2_get_rubyAlign(This, p) (This)->lpVtbl->get_rubyAlign(This, p)
+#define IHTMLRuleStyle2_put_rubyPosition(This, v) (This)->lpVtbl->put_rubyPosition(This, v)
+#define IHTMLRuleStyle2_get_rubyPosition(This, p) (This)->lpVtbl->get_rubyPosition(This, p)
+#define IHTMLRuleStyle2_put_rubyOverhang(This, v) (This)->lpVtbl->put_rubyOverhang(This, v)
+#define IHTMLRuleStyle2_get_rubyOverhang(This, p) (This)->lpVtbl->get_rubyOverhang(This, p)
+#define IHTMLRuleStyle2_put_layoutGridChar(This, v) (This)->lpVtbl->put_layoutGridChar(This, v)
+#define IHTMLRuleStyle2_get_layoutGridChar(This, p) (This)->lpVtbl->get_layoutGridChar(This, p)
+#define IHTMLRuleStyle2_put_layoutGridLine(This, v) (This)->lpVtbl->put_layoutGridLine(This, v)
+#define IHTMLRuleStyle2_get_layoutGridLine(This, p) (This)->lpVtbl->get_layoutGridLine(This, p)
+#define IHTMLRuleStyle2_put_layoutGridMode(This, v) (This)->lpVtbl->put_layoutGridMode(This, v)
+#define IHTMLRuleStyle2_get_layoutGridMode(This, p) (This)->lpVtbl->get_layoutGridMode(This, p)
+#define IHTMLRuleStyle2_put_layoutGridType(This, v) (This)->lpVtbl->put_layoutGridType(This, v)
+#define IHTMLRuleStyle2_get_layoutGridType(This, p) (This)->lpVtbl->get_layoutGridType(This, p)
+#define IHTMLRuleStyle2_put_layoutGrid(This, v) (This)->lpVtbl->put_layoutGrid(This, v)
+#define IHTMLRuleStyle2_get_layoutGrid(This, p) (This)->lpVtbl->get_layoutGrid(This, p)
+#define IHTMLRuleStyle2_put_textAutospace(This, v) (This)->lpVtbl->put_textAutospace(This, v)
+#define IHTMLRuleStyle2_get_textAutospace(This, p) (This)->lpVtbl->get_textAutospace(This, p)
+#define IHTMLRuleStyle2_put_wordBreak(This, v) (This)->lpVtbl->put_wordBreak(This, v)
+#define IHTMLRuleStyle2_get_wordBreak(This, p) (This)->lpVtbl->get_wordBreak(This, p)
+#define IHTMLRuleStyle2_put_lineBreak(This, v) (This)->lpVtbl->put_lineBreak(This, v)
+#define IHTMLRuleStyle2_get_lineBreak(This, p) (This)->lpVtbl->get_lineBreak(This, p)
+#define IHTMLRuleStyle2_put_textJustify(This, v) (This)->lpVtbl->put_textJustify(This, v)
+#define IHTMLRuleStyle2_get_textJustify(This, p) (This)->lpVtbl->get_textJustify(This, p)
+#define IHTMLRuleStyle2_put_textJustifyTrim(This, v) (This)->lpVtbl->put_textJustifyTrim(This, v)
+#define IHTMLRuleStyle2_get_textJustifyTrim(This, p) (This)->lpVtbl->get_textJustifyTrim(This, p)
+#define IHTMLRuleStyle2_put_textKashida(This, v) (This)->lpVtbl->put_textKashida(This, v)
+#define IHTMLRuleStyle2_get_textKashida(This, p) (This)->lpVtbl->get_textKashida(This, p)
+#define IHTMLRuleStyle2_put_overflowX(This, v) (This)->lpVtbl->put_overflowX(This, v)
+#define IHTMLRuleStyle2_get_overflowX(This, p) (This)->lpVtbl->get_overflowX(This, p)
+#define IHTMLRuleStyle2_put_overflowY(This, v) (This)->lpVtbl->put_overflowY(This, v)
+#define IHTMLRuleStyle2_get_overflowY(This, p) (This)->lpVtbl->get_overflowY(This, p)
+#define IHTMLRuleStyle2_put_accelerator(This, v) (This)->lpVtbl->put_accelerator(This, v)
+#define IHTMLRuleStyle2_get_accelerator(This, p) (This)->lpVtbl->get_accelerator(This, p)
+
 declare function IHTMLRuleStyle2_put_tableLayout_Proxy(byval This as IHTMLRuleStyle2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLRuleStyle2_put_tableLayout_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLRuleStyle2_get_tableLayout_Proxy(byval This as IHTMLRuleStyle2 ptr, byval p as BSTR ptr) as HRESULT
@@ -4423,6 +5054,44 @@ type IHTMLRuleStyle3_
 	lpVtbl as IHTMLRuleStyle3Vtbl ptr
 end type
 
+#define IHTMLRuleStyle3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRuleStyle3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRuleStyle3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRuleStyle3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRuleStyle3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRuleStyle3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRuleStyle3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRuleStyle3_put_layoutFlow(This, v) (This)->lpVtbl->put_layoutFlow(This, v)
+#define IHTMLRuleStyle3_get_layoutFlow(This, p) (This)->lpVtbl->get_layoutFlow(This, p)
+#define IHTMLRuleStyle3_put_zoom(This, v) (This)->lpVtbl->put_zoom(This, v)
+#define IHTMLRuleStyle3_get_zoom(This, p) (This)->lpVtbl->get_zoom(This, p)
+#define IHTMLRuleStyle3_put_wordWrap(This, v) (This)->lpVtbl->put_wordWrap(This, v)
+#define IHTMLRuleStyle3_get_wordWrap(This, p) (This)->lpVtbl->get_wordWrap(This, p)
+#define IHTMLRuleStyle3_put_textUnderlinePosition(This, v) (This)->lpVtbl->put_textUnderlinePosition(This, v)
+#define IHTMLRuleStyle3_get_textUnderlinePosition(This, p) (This)->lpVtbl->get_textUnderlinePosition(This, p)
+#define IHTMLRuleStyle3_put_scrollbarBaseColor(This, v) (This)->lpVtbl->put_scrollbarBaseColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarBaseColor(This, p) (This)->lpVtbl->get_scrollbarBaseColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarFaceColor(This, v) (This)->lpVtbl->put_scrollbarFaceColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarFaceColor(This, p) (This)->lpVtbl->get_scrollbarFaceColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbar3dLightColor(This, v) (This)->lpVtbl->put_scrollbar3dLightColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbar3dLightColor(This, p) (This)->lpVtbl->get_scrollbar3dLightColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarShadowColor(This, v) (This)->lpVtbl->put_scrollbarShadowColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarShadowColor(This, p) (This)->lpVtbl->get_scrollbarShadowColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarHighlightColor(This, v) (This)->lpVtbl->put_scrollbarHighlightColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarHighlightColor(This, p) (This)->lpVtbl->get_scrollbarHighlightColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarDarkShadowColor(This, v) (This)->lpVtbl->put_scrollbarDarkShadowColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarDarkShadowColor(This, p) (This)->lpVtbl->get_scrollbarDarkShadowColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarArrowColor(This, v) (This)->lpVtbl->put_scrollbarArrowColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarArrowColor(This, p) (This)->lpVtbl->get_scrollbarArrowColor(This, p)
+#define IHTMLRuleStyle3_put_scrollbarTrackColor(This, v) (This)->lpVtbl->put_scrollbarTrackColor(This, v)
+#define IHTMLRuleStyle3_get_scrollbarTrackColor(This, p) (This)->lpVtbl->get_scrollbarTrackColor(This, p)
+#define IHTMLRuleStyle3_put_writingMode(This, v) (This)->lpVtbl->put_writingMode(This, v)
+#define IHTMLRuleStyle3_get_writingMode(This, p) (This)->lpVtbl->get_writingMode(This, p)
+#define IHTMLRuleStyle3_put_textAlignLast(This, v) (This)->lpVtbl->put_textAlignLast(This, v)
+#define IHTMLRuleStyle3_get_textAlignLast(This, p) (This)->lpVtbl->get_textAlignLast(This, p)
+#define IHTMLRuleStyle3_put_textKashidaSpace(This, v) (This)->lpVtbl->put_textKashidaSpace(This, v)
+#define IHTMLRuleStyle3_get_textKashidaSpace(This, p) (This)->lpVtbl->get_textKashidaSpace(This, p)
+
 declare function IHTMLRuleStyle3_put_layoutFlow_Proxy(byval This as IHTMLRuleStyle3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLRuleStyle3_put_layoutFlow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLRuleStyle3_get_layoutFlow_Proxy(byval This as IHTMLRuleStyle3 ptr, byval p as BSTR ptr) as HRESULT
@@ -4505,6 +5174,18 @@ type IHTMLRuleStyle4_
 	lpVtbl as IHTMLRuleStyle4Vtbl ptr
 end type
 
+#define IHTMLRuleStyle4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRuleStyle4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRuleStyle4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRuleStyle4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRuleStyle4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRuleStyle4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRuleStyle4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRuleStyle4_put_textOverflow(This, v) (This)->lpVtbl->put_textOverflow(This, v)
+#define IHTMLRuleStyle4_get_textOverflow(This, p) (This)->lpVtbl->get_textOverflow(This, p)
+#define IHTMLRuleStyle4_put_minHeight(This, v) (This)->lpVtbl->put_minHeight(This, v)
+#define IHTMLRuleStyle4_get_minHeight(This, p) (This)->lpVtbl->get_minHeight(This, p)
+
 declare function IHTMLRuleStyle4_put_textOverflow_Proxy(byval This as IHTMLRuleStyle4 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLRuleStyle4_put_textOverflow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLRuleStyle4_get_textOverflow_Proxy(byval This as IHTMLRuleStyle4 ptr, byval p as BSTR ptr) as HRESULT
@@ -4531,6 +5212,13 @@ type DispHTMLStyle_
 	lpVtbl as DispHTMLStyleVtbl ptr
 end type
 
+#define DispHTMLStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLStyle_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLStyle as const CLSID
 #define __DispHTMLRuleStyle_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLRuleStyle as const IID
@@ -4550,6 +5238,13 @@ type DispHTMLRuleStyle_
 	lpVtbl as DispHTMLRuleStyleVtbl ptr
 end type
 
+#define DispHTMLRuleStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLRuleStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLRuleStyle_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLRuleStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLRuleStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLRuleStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLRuleStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLRuleStyle as const CLSID
 #define __IHTMLRenderStyle_INTERFACE_DEFINED__
 extern IID_IHTMLRenderStyle as const IID
@@ -4586,6 +5281,32 @@ end type
 type IHTMLRenderStyle_
 	lpVtbl as IHTMLRenderStyleVtbl ptr
 end type
+
+#define IHTMLRenderStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRenderStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRenderStyle_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRenderStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRenderStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRenderStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRenderStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRenderStyle_put_textLineThroughStyle(This, v) (This)->lpVtbl->put_textLineThroughStyle(This, v)
+#define IHTMLRenderStyle_get_textLineThroughStyle(This, p) (This)->lpVtbl->get_textLineThroughStyle(This, p)
+#define IHTMLRenderStyle_put_textUnderlineStyle(This, v) (This)->lpVtbl->put_textUnderlineStyle(This, v)
+#define IHTMLRenderStyle_get_textUnderlineStyle(This, p) (This)->lpVtbl->get_textUnderlineStyle(This, p)
+#define IHTMLRenderStyle_put_textEffect(This, v) (This)->lpVtbl->put_textEffect(This, v)
+#define IHTMLRenderStyle_get_textEffect(This, p) (This)->lpVtbl->get_textEffect(This, p)
+#define IHTMLRenderStyle_put_textColor(This, v) (This)->lpVtbl->put_textColor(This, v)
+#define IHTMLRenderStyle_get_textColor(This, p) (This)->lpVtbl->get_textColor(This, p)
+#define IHTMLRenderStyle_put_textBackgroundColor(This, v) (This)->lpVtbl->put_textBackgroundColor(This, v)
+#define IHTMLRenderStyle_get_textBackgroundColor(This, p) (This)->lpVtbl->get_textBackgroundColor(This, p)
+#define IHTMLRenderStyle_put_textDecorationColor(This, v) (This)->lpVtbl->put_textDecorationColor(This, v)
+#define IHTMLRenderStyle_get_textDecorationColor(This, p) (This)->lpVtbl->get_textDecorationColor(This, p)
+#define IHTMLRenderStyle_put_renderingPriority(This, v) (This)->lpVtbl->put_renderingPriority(This, v)
+#define IHTMLRenderStyle_get_renderingPriority(This, p) (This)->lpVtbl->get_renderingPriority(This, p)
+#define IHTMLRenderStyle_put_defaultTextSelection(This, v) (This)->lpVtbl->put_defaultTextSelection(This, v)
+#define IHTMLRenderStyle_get_defaultTextSelection(This, p) (This)->lpVtbl->get_defaultTextSelection(This, p)
+#define IHTMLRenderStyle_put_textDecoration(This, v) (This)->lpVtbl->put_textDecoration(This, v)
+#define IHTMLRenderStyle_get_textDecoration(This, p) (This)->lpVtbl->get_textDecoration(This, p)
 
 declare function IHTMLRenderStyle_put_textLineThroughStyle_Proxy(byval This as IHTMLRenderStyle ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLRenderStyle_put_textLineThroughStyle_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -4641,6 +5362,13 @@ type DispHTMLRenderStyle_
 	lpVtbl as DispHTMLRenderStyleVtbl ptr
 end type
 
+#define DispHTMLRenderStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLRenderStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLRenderStyle_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLRenderStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLRenderStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLRenderStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLRenderStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLRenderStyle as const CLSID
 #define __IHTMLCurrentStyle_INTERFACE_DEFINED__
 extern IID_IHTMLCurrentStyle as const IID
@@ -4750,6 +5478,105 @@ end type
 type IHTMLCurrentStyle_
 	lpVtbl as IHTMLCurrentStyleVtbl ptr
 end type
+
+#define IHTMLCurrentStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCurrentStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCurrentStyle_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCurrentStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLCurrentStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLCurrentStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLCurrentStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLCurrentStyle_get_position(This, p) (This)->lpVtbl->get_position(This, p)
+#define IHTMLCurrentStyle_get_styleFloat(This, p) (This)->lpVtbl->get_styleFloat(This, p)
+#define IHTMLCurrentStyle_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLCurrentStyle_get_backgroundColor(This, p) (This)->lpVtbl->get_backgroundColor(This, p)
+#define IHTMLCurrentStyle_get_fontFamily(This, p) (This)->lpVtbl->get_fontFamily(This, p)
+#define IHTMLCurrentStyle_get_fontStyle(This, p) (This)->lpVtbl->get_fontStyle(This, p)
+#define IHTMLCurrentStyle_get_fontVariant(This, p) (This)->lpVtbl->get_fontVariant(This, p)
+#define IHTMLCurrentStyle_get_fontWeight(This, p) (This)->lpVtbl->get_fontWeight(This, p)
+#define IHTMLCurrentStyle_get_fontSize(This, p) (This)->lpVtbl->get_fontSize(This, p)
+#define IHTMLCurrentStyle_get_backgroundImage(This, p) (This)->lpVtbl->get_backgroundImage(This, p)
+#define IHTMLCurrentStyle_get_backgroundPositionX(This, p) (This)->lpVtbl->get_backgroundPositionX(This, p)
+#define IHTMLCurrentStyle_get_backgroundPositionY(This, p) (This)->lpVtbl->get_backgroundPositionY(This, p)
+#define IHTMLCurrentStyle_get_backgroundRepeat(This, p) (This)->lpVtbl->get_backgroundRepeat(This, p)
+#define IHTMLCurrentStyle_get_borderLeftColor(This, p) (This)->lpVtbl->get_borderLeftColor(This, p)
+#define IHTMLCurrentStyle_get_borderTopColor(This, p) (This)->lpVtbl->get_borderTopColor(This, p)
+#define IHTMLCurrentStyle_get_borderRightColor(This, p) (This)->lpVtbl->get_borderRightColor(This, p)
+#define IHTMLCurrentStyle_get_borderBottomColor(This, p) (This)->lpVtbl->get_borderBottomColor(This, p)
+#define IHTMLCurrentStyle_get_borderTopStyle(This, p) (This)->lpVtbl->get_borderTopStyle(This, p)
+#define IHTMLCurrentStyle_get_borderRightStyle(This, p) (This)->lpVtbl->get_borderRightStyle(This, p)
+#define IHTMLCurrentStyle_get_borderBottomStyle(This, p) (This)->lpVtbl->get_borderBottomStyle(This, p)
+#define IHTMLCurrentStyle_get_borderLeftStyle(This, p) (This)->lpVtbl->get_borderLeftStyle(This, p)
+#define IHTMLCurrentStyle_get_borderTopWidth(This, p) (This)->lpVtbl->get_borderTopWidth(This, p)
+#define IHTMLCurrentStyle_get_borderRightWidth(This, p) (This)->lpVtbl->get_borderRightWidth(This, p)
+#define IHTMLCurrentStyle_get_borderBottomWidth(This, p) (This)->lpVtbl->get_borderBottomWidth(This, p)
+#define IHTMLCurrentStyle_get_borderLeftWidth(This, p) (This)->lpVtbl->get_borderLeftWidth(This, p)
+#define IHTMLCurrentStyle_get_left(This, p) (This)->lpVtbl->get_left(This, p)
+#define IHTMLCurrentStyle_get_top(This, p) (This)->lpVtbl->get_top(This, p)
+#define IHTMLCurrentStyle_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLCurrentStyle_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLCurrentStyle_get_paddingLeft(This, p) (This)->lpVtbl->get_paddingLeft(This, p)
+#define IHTMLCurrentStyle_get_paddingTop(This, p) (This)->lpVtbl->get_paddingTop(This, p)
+#define IHTMLCurrentStyle_get_paddingRight(This, p) (This)->lpVtbl->get_paddingRight(This, p)
+#define IHTMLCurrentStyle_get_paddingBottom(This, p) (This)->lpVtbl->get_paddingBottom(This, p)
+#define IHTMLCurrentStyle_get_textAlign(This, p) (This)->lpVtbl->get_textAlign(This, p)
+#define IHTMLCurrentStyle_get_textDecoration(This, p) (This)->lpVtbl->get_textDecoration(This, p)
+#define IHTMLCurrentStyle_get_display(This, p) (This)->lpVtbl->get_display(This, p)
+#define IHTMLCurrentStyle_get_visibility(This, p) (This)->lpVtbl->get_visibility(This, p)
+#define IHTMLCurrentStyle_get_zIndex(This, p) (This)->lpVtbl->get_zIndex(This, p)
+#define IHTMLCurrentStyle_get_letterSpacing(This, p) (This)->lpVtbl->get_letterSpacing(This, p)
+#define IHTMLCurrentStyle_get_lineHeight(This, p) (This)->lpVtbl->get_lineHeight(This, p)
+#define IHTMLCurrentStyle_get_textIndent(This, p) (This)->lpVtbl->get_textIndent(This, p)
+#define IHTMLCurrentStyle_get_verticalAlign(This, p) (This)->lpVtbl->get_verticalAlign(This, p)
+#define IHTMLCurrentStyle_get_backgroundAttachment(This, p) (This)->lpVtbl->get_backgroundAttachment(This, p)
+#define IHTMLCurrentStyle_get_marginTop(This, p) (This)->lpVtbl->get_marginTop(This, p)
+#define IHTMLCurrentStyle_get_marginRight(This, p) (This)->lpVtbl->get_marginRight(This, p)
+#define IHTMLCurrentStyle_get_marginBottom(This, p) (This)->lpVtbl->get_marginBottom(This, p)
+#define IHTMLCurrentStyle_get_marginLeft(This, p) (This)->lpVtbl->get_marginLeft(This, p)
+#define IHTMLCurrentStyle_get_clear(This, p) (This)->lpVtbl->get_clear(This, p)
+#define IHTMLCurrentStyle_get_listStyleType(This, p) (This)->lpVtbl->get_listStyleType(This, p)
+#define IHTMLCurrentStyle_get_listStylePosition(This, p) (This)->lpVtbl->get_listStylePosition(This, p)
+#define IHTMLCurrentStyle_get_listStyleImage(This, p) (This)->lpVtbl->get_listStyleImage(This, p)
+#define IHTMLCurrentStyle_get_clipTop(This, p) (This)->lpVtbl->get_clipTop(This, p)
+#define IHTMLCurrentStyle_get_clipRight(This, p) (This)->lpVtbl->get_clipRight(This, p)
+#define IHTMLCurrentStyle_get_clipBottom(This, p) (This)->lpVtbl->get_clipBottom(This, p)
+#define IHTMLCurrentStyle_get_clipLeft(This, p) (This)->lpVtbl->get_clipLeft(This, p)
+#define IHTMLCurrentStyle_get_overflow(This, p) (This)->lpVtbl->get_overflow(This, p)
+#define IHTMLCurrentStyle_get_pageBreakBefore(This, p) (This)->lpVtbl->get_pageBreakBefore(This, p)
+#define IHTMLCurrentStyle_get_pageBreakAfter(This, p) (This)->lpVtbl->get_pageBreakAfter(This, p)
+#define IHTMLCurrentStyle_get_cursor(This, p) (This)->lpVtbl->get_cursor(This, p)
+#define IHTMLCurrentStyle_get_tableLayout(This, p) (This)->lpVtbl->get_tableLayout(This, p)
+#define IHTMLCurrentStyle_get_borderCollapse(This, p) (This)->lpVtbl->get_borderCollapse(This, p)
+#define IHTMLCurrentStyle_get_direction(This, p) (This)->lpVtbl->get_direction(This, p)
+#define IHTMLCurrentStyle_get_behavior(This, p) (This)->lpVtbl->get_behavior(This, p)
+#define IHTMLCurrentStyle_getAttribute(This, strAttributeName, lFlags, AttributeValue) (This)->lpVtbl->getAttribute(This, strAttributeName, lFlags, AttributeValue)
+#define IHTMLCurrentStyle_get_unicodeBidi(This, p) (This)->lpVtbl->get_unicodeBidi(This, p)
+#define IHTMLCurrentStyle_get_right(This, p) (This)->lpVtbl->get_right(This, p)
+#define IHTMLCurrentStyle_get_bottom(This, p) (This)->lpVtbl->get_bottom(This, p)
+#define IHTMLCurrentStyle_get_imeMode(This, p) (This)->lpVtbl->get_imeMode(This, p)
+#define IHTMLCurrentStyle_get_rubyAlign(This, p) (This)->lpVtbl->get_rubyAlign(This, p)
+#define IHTMLCurrentStyle_get_rubyPosition(This, p) (This)->lpVtbl->get_rubyPosition(This, p)
+#define IHTMLCurrentStyle_get_rubyOverhang(This, p) (This)->lpVtbl->get_rubyOverhang(This, p)
+#define IHTMLCurrentStyle_get_textAutospace(This, p) (This)->lpVtbl->get_textAutospace(This, p)
+#define IHTMLCurrentStyle_get_lineBreak(This, p) (This)->lpVtbl->get_lineBreak(This, p)
+#define IHTMLCurrentStyle_get_wordBreak(This, p) (This)->lpVtbl->get_wordBreak(This, p)
+#define IHTMLCurrentStyle_get_textJustify(This, p) (This)->lpVtbl->get_textJustify(This, p)
+#define IHTMLCurrentStyle_get_textJustifyTrim(This, p) (This)->lpVtbl->get_textJustifyTrim(This, p)
+#define IHTMLCurrentStyle_get_textKashida(This, p) (This)->lpVtbl->get_textKashida(This, p)
+#define IHTMLCurrentStyle_get_blockDirection(This, p) (This)->lpVtbl->get_blockDirection(This, p)
+#define IHTMLCurrentStyle_get_layoutGridChar(This, p) (This)->lpVtbl->get_layoutGridChar(This, p)
+#define IHTMLCurrentStyle_get_layoutGridLine(This, p) (This)->lpVtbl->get_layoutGridLine(This, p)
+#define IHTMLCurrentStyle_get_layoutGridMode(This, p) (This)->lpVtbl->get_layoutGridMode(This, p)
+#define IHTMLCurrentStyle_get_layoutGridType(This, p) (This)->lpVtbl->get_layoutGridType(This, p)
+#define IHTMLCurrentStyle_get_borderStyle(This, p) (This)->lpVtbl->get_borderStyle(This, p)
+#define IHTMLCurrentStyle_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLCurrentStyle_get_borderWidth(This, p) (This)->lpVtbl->get_borderWidth(This, p)
+#define IHTMLCurrentStyle_get_padding(This, p) (This)->lpVtbl->get_padding(This, p)
+#define IHTMLCurrentStyle_get_margin(This, p) (This)->lpVtbl->get_margin(This, p)
+#define IHTMLCurrentStyle_get_accelerator(This, p) (This)->lpVtbl->get_accelerator(This, p)
+#define IHTMLCurrentStyle_get_overflowX(This, p) (This)->lpVtbl->get_overflowX(This, p)
+#define IHTMLCurrentStyle_get_overflowY(This, p) (This)->lpVtbl->get_overflowY(This, p)
+#define IHTMLCurrentStyle_get_textTransform(This, p) (This)->lpVtbl->get_textTransform(This, p)
 
 declare function IHTMLCurrentStyle_get_position_Proxy(byval This as IHTMLCurrentStyle ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLCurrentStyle_get_position_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -4969,6 +5796,32 @@ type IHTMLCurrentStyle2_
 	lpVtbl as IHTMLCurrentStyle2Vtbl ptr
 end type
 
+#define IHTMLCurrentStyle2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCurrentStyle2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCurrentStyle2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCurrentStyle2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLCurrentStyle2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLCurrentStyle2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLCurrentStyle2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLCurrentStyle2_get_layoutFlow(This, p) (This)->lpVtbl->get_layoutFlow(This, p)
+#define IHTMLCurrentStyle2_get_wordWrap(This, p) (This)->lpVtbl->get_wordWrap(This, p)
+#define IHTMLCurrentStyle2_get_textUnderlinePosition(This, p) (This)->lpVtbl->get_textUnderlinePosition(This, p)
+#define IHTMLCurrentStyle2_get_hasLayout(This, p) (This)->lpVtbl->get_hasLayout(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarBaseColor(This, p) (This)->lpVtbl->get_scrollbarBaseColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarFaceColor(This, p) (This)->lpVtbl->get_scrollbarFaceColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbar3dLightColor(This, p) (This)->lpVtbl->get_scrollbar3dLightColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarShadowColor(This, p) (This)->lpVtbl->get_scrollbarShadowColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarHighlightColor(This, p) (This)->lpVtbl->get_scrollbarHighlightColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarDarkShadowColor(This, p) (This)->lpVtbl->get_scrollbarDarkShadowColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarArrowColor(This, p) (This)->lpVtbl->get_scrollbarArrowColor(This, p)
+#define IHTMLCurrentStyle2_get_scrollbarTrackColor(This, p) (This)->lpVtbl->get_scrollbarTrackColor(This, p)
+#define IHTMLCurrentStyle2_get_writingMode(This, p) (This)->lpVtbl->get_writingMode(This, p)
+#define IHTMLCurrentStyle2_get_zoom(This, p) (This)->lpVtbl->get_zoom(This, p)
+#define IHTMLCurrentStyle2_get_filter(This, p) (This)->lpVtbl->get_filter(This, p)
+#define IHTMLCurrentStyle2_get_textAlignLast(This, p) (This)->lpVtbl->get_textAlignLast(This, p)
+#define IHTMLCurrentStyle2_get_textKashidaSpace(This, p) (This)->lpVtbl->get_textKashidaSpace(This, p)
+#define IHTMLCurrentStyle2_get_isBlock(This, p) (This)->lpVtbl->get_isBlock(This, p)
+
 declare function IHTMLCurrentStyle2_get_layoutFlow_Proxy(byval This as IHTMLCurrentStyle2 ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLCurrentStyle2_get_layoutFlow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLCurrentStyle2_get_wordWrap_Proxy(byval This as IHTMLCurrentStyle2 ptr, byval p as BSTR ptr) as HRESULT
@@ -5027,6 +5880,18 @@ type IHTMLCurrentStyle3_
 	lpVtbl as IHTMLCurrentStyle3Vtbl ptr
 end type
 
+#define IHTMLCurrentStyle3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCurrentStyle3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCurrentStyle3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCurrentStyle3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLCurrentStyle3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLCurrentStyle3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLCurrentStyle3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLCurrentStyle3_get_textOverflow(This, p) (This)->lpVtbl->get_textOverflow(This, p)
+#define IHTMLCurrentStyle3_get_minHeight(This, p) (This)->lpVtbl->get_minHeight(This, p)
+#define IHTMLCurrentStyle3_get_wordSpacing(This, p) (This)->lpVtbl->get_wordSpacing(This, p)
+#define IHTMLCurrentStyle3_get_whiteSpace(This, p) (This)->lpVtbl->get_whiteSpace(This, p)
+
 declare function IHTMLCurrentStyle3_get_textOverflow_Proxy(byval This as IHTMLCurrentStyle3 ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLCurrentStyle3_get_textOverflow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLCurrentStyle3_get_minHeight_Proxy(byval This as IHTMLCurrentStyle3 ptr, byval p as VARIANT ptr) as HRESULT
@@ -5053,6 +5918,13 @@ type DispHTMLCurrentStyle_
 	lpVtbl as DispHTMLCurrentStyleVtbl ptr
 end type
 
+#define DispHTMLCurrentStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLCurrentStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLCurrentStyle_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLCurrentStyle_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLCurrentStyle_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLCurrentStyle_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLCurrentStyle_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLCurrentStyle as const CLSID
 #define __IHTMLElement_INTERFACE_DEFINED__
 extern IID_IHTMLElement as const IID
@@ -5157,6 +6029,101 @@ end type
 type IHTMLElement_
 	lpVtbl as IHTMLElementVtbl ptr
 end type
+
+#define IHTMLElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElement_setAttribute(This, strAttributeName, AttributeValue, lFlags) (This)->lpVtbl->setAttribute(This, strAttributeName, AttributeValue, lFlags)
+#define IHTMLElement_getAttribute(This, strAttributeName, lFlags, AttributeValue) (This)->lpVtbl->getAttribute(This, strAttributeName, lFlags, AttributeValue)
+#define IHTMLElement_removeAttribute(This, strAttributeName, lFlags, pfSuccess) (This)->lpVtbl->removeAttribute(This, strAttributeName, lFlags, pfSuccess)
+#define IHTMLElement_put_className(This, v) (This)->lpVtbl->put_className(This, v)
+#define IHTMLElement_get_className(This, p) (This)->lpVtbl->get_className(This, p)
+#define IHTMLElement_put_id(This, v) (This)->lpVtbl->put_id(This, v)
+#define IHTMLElement_get_id(This, p) (This)->lpVtbl->get_id(This, p)
+#define IHTMLElement_get_tagName(This, p) (This)->lpVtbl->get_tagName(This, p)
+#define IHTMLElement_get_parentElement(This, p) (This)->lpVtbl->get_parentElement(This, p)
+#define IHTMLElement_get_style(This, p) (This)->lpVtbl->get_style(This, p)
+#define IHTMLElement_put_onhelp(This, v) (This)->lpVtbl->put_onhelp(This, v)
+#define IHTMLElement_get_onhelp(This, p) (This)->lpVtbl->get_onhelp(This, p)
+#define IHTMLElement_put_onclick(This, v) (This)->lpVtbl->put_onclick(This, v)
+#define IHTMLElement_get_onclick(This, p) (This)->lpVtbl->get_onclick(This, p)
+#define IHTMLElement_put_ondblclick(This, v) (This)->lpVtbl->put_ondblclick(This, v)
+#define IHTMLElement_get_ondblclick(This, p) (This)->lpVtbl->get_ondblclick(This, p)
+#define IHTMLElement_put_onkeydown(This, v) (This)->lpVtbl->put_onkeydown(This, v)
+#define IHTMLElement_get_onkeydown(This, p) (This)->lpVtbl->get_onkeydown(This, p)
+#define IHTMLElement_put_onkeyup(This, v) (This)->lpVtbl->put_onkeyup(This, v)
+#define IHTMLElement_get_onkeyup(This, p) (This)->lpVtbl->get_onkeyup(This, p)
+#define IHTMLElement_put_onkeypress(This, v) (This)->lpVtbl->put_onkeypress(This, v)
+#define IHTMLElement_get_onkeypress(This, p) (This)->lpVtbl->get_onkeypress(This, p)
+#define IHTMLElement_put_onmouseout(This, v) (This)->lpVtbl->put_onmouseout(This, v)
+#define IHTMLElement_get_onmouseout(This, p) (This)->lpVtbl->get_onmouseout(This, p)
+#define IHTMLElement_put_onmouseover(This, v) (This)->lpVtbl->put_onmouseover(This, v)
+#define IHTMLElement_get_onmouseover(This, p) (This)->lpVtbl->get_onmouseover(This, p)
+#define IHTMLElement_put_onmousemove(This, v) (This)->lpVtbl->put_onmousemove(This, v)
+#define IHTMLElement_get_onmousemove(This, p) (This)->lpVtbl->get_onmousemove(This, p)
+#define IHTMLElement_put_onmousedown(This, v) (This)->lpVtbl->put_onmousedown(This, v)
+#define IHTMLElement_get_onmousedown(This, p) (This)->lpVtbl->get_onmousedown(This, p)
+#define IHTMLElement_put_onmouseup(This, v) (This)->lpVtbl->put_onmouseup(This, v)
+#define IHTMLElement_get_onmouseup(This, p) (This)->lpVtbl->get_onmouseup(This, p)
+#define IHTMLElement_get_document(This, p) (This)->lpVtbl->get_document(This, p)
+#define IHTMLElement_put_title(This, v) (This)->lpVtbl->put_title(This, v)
+#define IHTMLElement_get_title(This, p) (This)->lpVtbl->get_title(This, p)
+#define IHTMLElement_put_language(This, v) (This)->lpVtbl->put_language(This, v)
+#define IHTMLElement_get_language(This, p) (This)->lpVtbl->get_language(This, p)
+#define IHTMLElement_put_onselectstart(This, v) (This)->lpVtbl->put_onselectstart(This, v)
+#define IHTMLElement_get_onselectstart(This, p) (This)->lpVtbl->get_onselectstart(This, p)
+#define IHTMLElement_scrollIntoView(This, varargStart) (This)->lpVtbl->scrollIntoView(This, varargStart)
+#define IHTMLElement_contains(This, pChild, pfResult) (This)->lpVtbl->contains(This, pChild, pfResult)
+#define IHTMLElement_get_sourceIndex(This, p) (This)->lpVtbl->get_sourceIndex(This, p)
+#define IHTMLElement_get_recordNumber(This, p) (This)->lpVtbl->get_recordNumber(This, p)
+#define IHTMLElement_put_lang(This, v) (This)->lpVtbl->put_lang(This, v)
+#define IHTMLElement_get_lang(This, p) (This)->lpVtbl->get_lang(This, p)
+#define IHTMLElement_get_offsetLeft(This, p) (This)->lpVtbl->get_offsetLeft(This, p)
+#define IHTMLElement_get_offsetTop(This, p) (This)->lpVtbl->get_offsetTop(This, p)
+#define IHTMLElement_get_offsetWidth(This, p) (This)->lpVtbl->get_offsetWidth(This, p)
+#define IHTMLElement_get_offsetHeight(This, p) (This)->lpVtbl->get_offsetHeight(This, p)
+#define IHTMLElement_get_offsetParent(This, p) (This)->lpVtbl->get_offsetParent(This, p)
+#define IHTMLElement_put_innerHTML(This, v) (This)->lpVtbl->put_innerHTML(This, v)
+#define IHTMLElement_get_innerHTML(This, p) (This)->lpVtbl->get_innerHTML(This, p)
+#define IHTMLElement_put_innerText(This, v) (This)->lpVtbl->put_innerText(This, v)
+#define IHTMLElement_get_innerText(This, p) (This)->lpVtbl->get_innerText(This, p)
+#define IHTMLElement_put_outerHTML(This, v) (This)->lpVtbl->put_outerHTML(This, v)
+#define IHTMLElement_get_outerHTML(This, p) (This)->lpVtbl->get_outerHTML(This, p)
+#define IHTMLElement_put_outerText(This, v) (This)->lpVtbl->put_outerText(This, v)
+#define IHTMLElement_get_outerText(This, p) (This)->lpVtbl->get_outerText(This, p)
+#define IHTMLElement_insertAdjacentHTML(This, where, html) (This)->lpVtbl->insertAdjacentHTML(This, where, html)
+#define IHTMLElement_insertAdjacentText(This, where, text) (This)->lpVtbl->insertAdjacentText(This, where, text)
+#define IHTMLElement_get_parentTextEdit(This, p) (This)->lpVtbl->get_parentTextEdit(This, p)
+#define IHTMLElement_get_isTextEdit(This, p) (This)->lpVtbl->get_isTextEdit(This, p)
+#define IHTMLElement_click(This) (This)->lpVtbl->click(This)
+#define IHTMLElement_get_filters(This, p) (This)->lpVtbl->get_filters(This, p)
+#define IHTMLElement_put_ondragstart(This, v) (This)->lpVtbl->put_ondragstart(This, v)
+#define IHTMLElement_get_ondragstart(This, p) (This)->lpVtbl->get_ondragstart(This, p)
+#define IHTMLElement_toString(This, String) (This)->lpVtbl->toString(This, String)
+#define IHTMLElement_put_onbeforeupdate(This, v) (This)->lpVtbl->put_onbeforeupdate(This, v)
+#define IHTMLElement_get_onbeforeupdate(This, p) (This)->lpVtbl->get_onbeforeupdate(This, p)
+#define IHTMLElement_put_onafterupdate(This, v) (This)->lpVtbl->put_onafterupdate(This, v)
+#define IHTMLElement_get_onafterupdate(This, p) (This)->lpVtbl->get_onafterupdate(This, p)
+#define IHTMLElement_put_onerrorupdate(This, v) (This)->lpVtbl->put_onerrorupdate(This, v)
+#define IHTMLElement_get_onerrorupdate(This, p) (This)->lpVtbl->get_onerrorupdate(This, p)
+#define IHTMLElement_put_onrowexit(This, v) (This)->lpVtbl->put_onrowexit(This, v)
+#define IHTMLElement_get_onrowexit(This, p) (This)->lpVtbl->get_onrowexit(This, p)
+#define IHTMLElement_put_onrowenter(This, v) (This)->lpVtbl->put_onrowenter(This, v)
+#define IHTMLElement_get_onrowenter(This, p) (This)->lpVtbl->get_onrowenter(This, p)
+#define IHTMLElement_put_ondatasetchanged(This, v) (This)->lpVtbl->put_ondatasetchanged(This, v)
+#define IHTMLElement_get_ondatasetchanged(This, p) (This)->lpVtbl->get_ondatasetchanged(This, p)
+#define IHTMLElement_put_ondataavailable(This, v) (This)->lpVtbl->put_ondataavailable(This, v)
+#define IHTMLElement_get_ondataavailable(This, p) (This)->lpVtbl->get_ondataavailable(This, p)
+#define IHTMLElement_put_ondatasetcomplete(This, v) (This)->lpVtbl->put_ondatasetcomplete(This, v)
+#define IHTMLElement_get_ondatasetcomplete(This, p) (This)->lpVtbl->get_ondatasetcomplete(This, p)
+#define IHTMLElement_put_onfilterchange(This, v) (This)->lpVtbl->put_onfilterchange(This, v)
+#define IHTMLElement_get_onfilterchange(This, p) (This)->lpVtbl->get_onfilterchange(This, p)
+#define IHTMLElement_get_children(This, p) (This)->lpVtbl->get_children(This, p)
+#define IHTMLElement_get_all(This, p) (This)->lpVtbl->get_all(This, p)
 
 declare function IHTMLElement_setAttribute_Proxy(byval This as IHTMLElement ptr, byval strAttributeName as BSTR, byval AttributeValue as VARIANT, byval lFlags as LONG) as HRESULT
 declare sub IHTMLElement_setAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5358,6 +6325,22 @@ type IHTMLRect_
 	lpVtbl as IHTMLRectVtbl ptr
 end type
 
+#define IHTMLRect_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRect_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRect_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRect_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRect_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRect_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRect_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRect_put_left(This, v) (This)->lpVtbl->put_left(This, v)
+#define IHTMLRect_get_left(This, p) (This)->lpVtbl->get_left(This, p)
+#define IHTMLRect_put_top(This, v) (This)->lpVtbl->put_top(This, v)
+#define IHTMLRect_get_top(This, p) (This)->lpVtbl->get_top(This, p)
+#define IHTMLRect_put_right(This, v) (This)->lpVtbl->put_right(This, v)
+#define IHTMLRect_get_right(This, p) (This)->lpVtbl->get_right(This, p)
+#define IHTMLRect_put_bottom(This, v) (This)->lpVtbl->put_bottom(This, v)
+#define IHTMLRect_get_bottom(This, p) (This)->lpVtbl->get_bottom(This, p)
+
 declare function IHTMLRect_put_left_Proxy(byval This as IHTMLRect ptr, byval v as long) as HRESULT
 declare sub IHTMLRect_put_left_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLRect_get_left_Proxy(byval This as IHTMLRect ptr, byval p as long ptr) as HRESULT
@@ -5394,6 +6377,17 @@ end type
 type IHTMLRectCollection_
 	lpVtbl as IHTMLRectCollectionVtbl ptr
 end type
+
+#define IHTMLRectCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLRectCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLRectCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLRectCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLRectCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLRectCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLRectCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLRectCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLRectCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLRectCollection_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
 
 declare function IHTMLRectCollection_get_length_Proxy(byval This as IHTMLRectCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLRectCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5438,6 +6432,34 @@ end type
 type IHTMLDOMNode_
 	lpVtbl as IHTMLDOMNodeVtbl ptr
 end type
+
+#define IHTMLDOMNode_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMNode_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMNode_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMNode_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMNode_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMNode_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMNode_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMNode_get_nodeType(This, p) (This)->lpVtbl->get_nodeType(This, p)
+#define IHTMLDOMNode_get_parentNode(This, p) (This)->lpVtbl->get_parentNode(This, p)
+#define IHTMLDOMNode_hasChildNodes(This, fChildren) (This)->lpVtbl->hasChildNodes(This, fChildren)
+#define IHTMLDOMNode_get_childNodes(This, p) (This)->lpVtbl->get_childNodes(This, p)
+#define IHTMLDOMNode_get_attributes(This, p) (This)->lpVtbl->get_attributes(This, p)
+#define IHTMLDOMNode_insertBefore(This, newChild, refChild, node) (This)->lpVtbl->insertBefore(This, newChild, refChild, node)
+#define IHTMLDOMNode_removeChild(This, oldChild, node) (This)->lpVtbl->removeChild(This, oldChild, node)
+#define IHTMLDOMNode_replaceChild(This, newChild, oldChild, node) (This)->lpVtbl->replaceChild(This, newChild, oldChild, node)
+#define IHTMLDOMNode_cloneNode(This, fDeep, clonedNode) (This)->lpVtbl->cloneNode(This, fDeep, clonedNode)
+#define IHTMLDOMNode_removeNode(This, fDeep, removed) (This)->lpVtbl->removeNode(This, fDeep, removed)
+#define IHTMLDOMNode_swapNode(This, otherNode, swappedNode) (This)->lpVtbl->swapNode(This, otherNode, swappedNode)
+#define IHTMLDOMNode_replaceNode(This, replacement, replaced) (This)->lpVtbl->replaceNode(This, replacement, replaced)
+#define IHTMLDOMNode_appendChild(This, newChild, node) (This)->lpVtbl->appendChild(This, newChild, node)
+#define IHTMLDOMNode_get_nodeName(This, p) (This)->lpVtbl->get_nodeName(This, p)
+#define IHTMLDOMNode_put_nodeValue(This, v) (This)->lpVtbl->put_nodeValue(This, v)
+#define IHTMLDOMNode_get_nodeValue(This, p) (This)->lpVtbl->get_nodeValue(This, p)
+#define IHTMLDOMNode_get_firstChild(This, p) (This)->lpVtbl->get_firstChild(This, p)
+#define IHTMLDOMNode_get_lastChild(This, p) (This)->lpVtbl->get_lastChild(This, p)
+#define IHTMLDOMNode_get_previousSibling(This, p) (This)->lpVtbl->get_previousSibling(This, p)
+#define IHTMLDOMNode_get_nextSibling(This, p) (This)->lpVtbl->get_nextSibling(This, p)
 
 declare function IHTMLDOMNode_get_nodeType_Proxy(byval This as IHTMLDOMNode ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLDOMNode_get_nodeType_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5498,6 +6520,14 @@ type IHTMLDOMNode2_
 	lpVtbl as IHTMLDOMNode2Vtbl ptr
 end type
 
+#define IHTMLDOMNode2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMNode2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMNode2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMNode2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMNode2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMNode2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMNode2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMNode2_get_ownerDocument(This, p) (This)->lpVtbl->get_ownerDocument(This, p)
 declare function IHTMLDOMNode2_get_ownerDocument_Proxy(byval This as IHTMLDOMNode2 ptr, byval p as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLDOMNode2_get_ownerDocument_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLDOMAttribute_INTERFACE_DEFINED__
@@ -5521,6 +6551,18 @@ end type
 type IHTMLDOMAttribute_
 	lpVtbl as IHTMLDOMAttributeVtbl ptr
 end type
+
+#define IHTMLDOMAttribute_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMAttribute_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMAttribute_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMAttribute_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMAttribute_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMAttribute_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMAttribute_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMAttribute_get_nodeName(This, p) (This)->lpVtbl->get_nodeName(This, p)
+#define IHTMLDOMAttribute_put_nodeValue(This, v) (This)->lpVtbl->put_nodeValue(This, v)
+#define IHTMLDOMAttribute_get_nodeValue(This, p) (This)->lpVtbl->get_nodeValue(This, p)
+#define IHTMLDOMAttribute_get_specified(This, p) (This)->lpVtbl->get_specified(This, p)
 
 declare function IHTMLDOMAttribute_get_nodeName_Proxy(byval This as IHTMLDOMAttribute ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLDOMAttribute_get_nodeName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5566,6 +6608,33 @@ end type
 type IHTMLDOMAttribute2_
 	lpVtbl as IHTMLDOMAttribute2Vtbl ptr
 end type
+
+#define IHTMLDOMAttribute2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMAttribute2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMAttribute2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMAttribute2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMAttribute2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMAttribute2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMAttribute2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMAttribute2_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLDOMAttribute2_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLDOMAttribute2_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLDOMAttribute2_get_expando(This, p) (This)->lpVtbl->get_expando(This, p)
+#define IHTMLDOMAttribute2_get_nodeType(This, p) (This)->lpVtbl->get_nodeType(This, p)
+#define IHTMLDOMAttribute2_get_parentNode(This, p) (This)->lpVtbl->get_parentNode(This, p)
+#define IHTMLDOMAttribute2_get_childNodes(This, p) (This)->lpVtbl->get_childNodes(This, p)
+#define IHTMLDOMAttribute2_get_firstChild(This, p) (This)->lpVtbl->get_firstChild(This, p)
+#define IHTMLDOMAttribute2_get_lastChild(This, p) (This)->lpVtbl->get_lastChild(This, p)
+#define IHTMLDOMAttribute2_get_previousSibling(This, p) (This)->lpVtbl->get_previousSibling(This, p)
+#define IHTMLDOMAttribute2_get_nextSibling(This, p) (This)->lpVtbl->get_nextSibling(This, p)
+#define IHTMLDOMAttribute2_get_attributes(This, p) (This)->lpVtbl->get_attributes(This, p)
+#define IHTMLDOMAttribute2_get_ownerDocument(This, p) (This)->lpVtbl->get_ownerDocument(This, p)
+#define IHTMLDOMAttribute2_insertBefore(This, newChild, refChild, node) (This)->lpVtbl->insertBefore(This, newChild, refChild, node)
+#define IHTMLDOMAttribute2_replaceChild(This, newChild, oldChild, node) (This)->lpVtbl->replaceChild(This, newChild, oldChild, node)
+#define IHTMLDOMAttribute2_removeChild(This, oldChild, node) (This)->lpVtbl->removeChild(This, oldChild, node)
+#define IHTMLDOMAttribute2_appendChild(This, newChild, node) (This)->lpVtbl->appendChild(This, newChild, node)
+#define IHTMLDOMAttribute2_hasChildNodes(This, fChildren) (This)->lpVtbl->hasChildNodes(This, fChildren)
+#define IHTMLDOMAttribute2_cloneNode(This, fDeep, clonedNode) (This)->lpVtbl->cloneNode(This, fDeep, clonedNode)
 
 declare function IHTMLDOMAttribute2_get_name_Proxy(byval This as IHTMLDOMAttribute2 ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLDOMAttribute2_get_name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5628,6 +6697,19 @@ type IHTMLDOMTextNode_
 	lpVtbl as IHTMLDOMTextNodeVtbl ptr
 end type
 
+#define IHTMLDOMTextNode_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMTextNode_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMTextNode_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMTextNode_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMTextNode_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMTextNode_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMTextNode_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMTextNode_put_data(This, v) (This)->lpVtbl->put_data(This, v)
+#define IHTMLDOMTextNode_get_data(This, p) (This)->lpVtbl->get_data(This, p)
+#define IHTMLDOMTextNode_toString(This, String) (This)->lpVtbl->toString(This, String)
+#define IHTMLDOMTextNode_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLDOMTextNode_splitText(This, offset, pRetNode) (This)->lpVtbl->splitText(This, offset, pRetNode)
+
 declare function IHTMLDOMTextNode_put_data_Proxy(byval This as IHTMLDOMTextNode ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDOMTextNode_put_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDOMTextNode_get_data_Proxy(byval This as IHTMLDOMTextNode ptr, byval p as BSTR ptr) as HRESULT
@@ -5661,6 +6743,19 @@ type IHTMLDOMTextNode2_
 	lpVtbl as IHTMLDOMTextNode2Vtbl ptr
 end type
 
+#define IHTMLDOMTextNode2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMTextNode2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMTextNode2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMTextNode2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMTextNode2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMTextNode2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMTextNode2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMTextNode2_substringData(This, offset, Count, pbstrsubString) (This)->lpVtbl->substringData(This, offset, Count, pbstrsubString)
+#define IHTMLDOMTextNode2_appendData(This, bstrstring) (This)->lpVtbl->appendData(This, bstrstring)
+#define IHTMLDOMTextNode2_insertData(This, offset, bstrstring) (This)->lpVtbl->insertData(This, offset, bstrstring)
+#define IHTMLDOMTextNode2_deleteData(This, offset, Count) (This)->lpVtbl->deleteData(This, offset, Count)
+#define IHTMLDOMTextNode2_replaceData(This, offset, Count, bstrstring) (This)->lpVtbl->replaceData(This, offset, Count, bstrstring)
+
 declare function IHTMLDOMTextNode2_substringData_Proxy(byval This as IHTMLDOMTextNode2 ptr, byval offset as long, byval Count as long, byval pbstrsubString as BSTR ptr) as HRESULT
 declare sub IHTMLDOMTextNode2_substringData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDOMTextNode2_appendData_Proxy(byval This as IHTMLDOMTextNode2 ptr, byval bstrstring as BSTR) as HRESULT
@@ -5690,6 +6785,14 @@ type IHTMLDOMImplementation_
 	lpVtbl as IHTMLDOMImplementationVtbl ptr
 end type
 
+#define IHTMLDOMImplementation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMImplementation_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMImplementation_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMImplementation_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMImplementation_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMImplementation_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMImplementation_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMImplementation_hasFeature(This, bstrfeature, version, pfHasFeature) (This)->lpVtbl->hasFeature(This, bstrfeature, version, pfHasFeature)
 declare function IHTMLDOMImplementation_hasFeature_Proxy(byval This as IHTMLDOMImplementation ptr, byval bstrfeature as BSTR, byval version as VARIANT, byval pfHasFeature as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLDOMImplementation_hasFeature_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLDOMAttribute_DISPINTERFACE_DEFINED__
@@ -5710,6 +6813,13 @@ type DispHTMLDOMAttribute_
 	lpVtbl as DispHTMLDOMAttributeVtbl ptr
 end type
 
+#define DispHTMLDOMAttribute_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDOMAttribute_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDOMAttribute_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDOMAttribute_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDOMAttribute_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDOMAttribute_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDOMAttribute_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDOMAttribute as const CLSID
 #define __DispHTMLDOMTextNode_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLDOMTextNode as const IID
@@ -5729,6 +6839,13 @@ type DispHTMLDOMTextNode_
 	lpVtbl as DispHTMLDOMTextNodeVtbl ptr
 end type
 
+#define DispHTMLDOMTextNode_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDOMTextNode_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDOMTextNode_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDOMTextNode_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDOMTextNode_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDOMTextNode_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDOMTextNode_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDOMTextNode as const CLSID
 #define __DispHTMLDOMImplementation_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLDOMImplementation as const IID
@@ -5748,6 +6865,13 @@ type DispHTMLDOMImplementation_
 	lpVtbl as DispHTMLDOMImplementationVtbl ptr
 end type
 
+#define DispHTMLDOMImplementation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDOMImplementation_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDOMImplementation_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDOMImplementation_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDOMImplementation_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDOMImplementation_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDOMImplementation_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDOMImplementation as const CLSID
 #define __IHTMLAttributeCollection_INTERFACE_DEFINED__
 extern IID_IHTMLAttributeCollection as const IID
@@ -5769,6 +6893,17 @@ end type
 type IHTMLAttributeCollection_
 	lpVtbl as IHTMLAttributeCollectionVtbl ptr
 end type
+
+#define IHTMLAttributeCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAttributeCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAttributeCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAttributeCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAttributeCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAttributeCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAttributeCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAttributeCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLAttributeCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLAttributeCollection_item(This, name, pdisp) (This)->lpVtbl->item(This, name, pdisp)
 
 declare function IHTMLAttributeCollection_get_length_Proxy(byval This as IHTMLAttributeCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLAttributeCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -5797,6 +6932,17 @@ type IHTMLAttributeCollection2_
 	lpVtbl as IHTMLAttributeCollection2Vtbl ptr
 end type
 
+#define IHTMLAttributeCollection2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAttributeCollection2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAttributeCollection2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAttributeCollection2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAttributeCollection2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAttributeCollection2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAttributeCollection2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAttributeCollection2_getNamedItem(This, bstrName, newretNode) (This)->lpVtbl->getNamedItem(This, bstrName, newretNode)
+#define IHTMLAttributeCollection2_setNamedItem(This, ppNode, newretNode) (This)->lpVtbl->setNamedItem(This, ppNode, newretNode)
+#define IHTMLAttributeCollection2_removeNamedItem(This, bstrName, newretNode) (This)->lpVtbl->removeNamedItem(This, bstrName, newretNode)
+
 declare function IHTMLAttributeCollection2_getNamedItem_Proxy(byval This as IHTMLAttributeCollection2 ptr, byval bstrName as BSTR, byval newretNode as IHTMLDOMAttribute ptr ptr) as HRESULT
 declare sub IHTMLAttributeCollection2_getNamedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLAttributeCollection2_setNamedItem_Proxy(byval This as IHTMLAttributeCollection2 ptr, byval ppNode as IHTMLDOMAttribute ptr, byval newretNode as IHTMLDOMAttribute ptr ptr) as HRESULT
@@ -5824,6 +6970,17 @@ type IHTMLDOMChildrenCollection_
 	lpVtbl as IHTMLDOMChildrenCollectionVtbl ptr
 end type
 
+#define IHTMLDOMChildrenCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDOMChildrenCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDOMChildrenCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDOMChildrenCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDOMChildrenCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDOMChildrenCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDOMChildrenCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDOMChildrenCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLDOMChildrenCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLDOMChildrenCollection_item(This, index, ppItem) (This)->lpVtbl->item(This, index, ppItem)
+
 declare function IHTMLDOMChildrenCollection_get_length_Proxy(byval This as IHTMLDOMChildrenCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLDOMChildrenCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDOMChildrenCollection_get__newEnum_Proxy(byval This as IHTMLDOMChildrenCollection ptr, byval p as IUnknown ptr ptr) as HRESULT
@@ -5848,6 +7005,13 @@ type DispHTMLAttributeCollection_
 	lpVtbl as DispHTMLAttributeCollectionVtbl ptr
 end type
 
+#define DispHTMLAttributeCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLAttributeCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLAttributeCollection_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLAttributeCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLAttributeCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLAttributeCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLAttributeCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLAttributeCollection as const CLSID
 #define __DispDOMChildrenCollection_DISPINTERFACE_DEFINED__
 extern DIID_DispDOMChildrenCollection as const IID
@@ -5867,6 +7031,13 @@ type DispDOMChildrenCollection_
 	lpVtbl as DispDOMChildrenCollectionVtbl ptr
 end type
 
+#define DispDOMChildrenCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispDOMChildrenCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispDOMChildrenCollection_Release(This) (This)->lpVtbl->Release(This)
+#define DispDOMChildrenCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispDOMChildrenCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispDOMChildrenCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispDOMChildrenCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_DOMChildrenCollection as const CLSID
 #define __HTMLElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLElementEvents2 as const IID
@@ -5886,6 +7057,13 @@ type HTMLElementEvents2_
 	lpVtbl as HTMLElementEvents2Vtbl ptr
 end type
 
+#define HTMLElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLElementEvents as const IID
 type HTMLElementEvents as HTMLElementEvents_
@@ -5904,6 +7082,13 @@ type HTMLElementEvents_
 	lpVtbl as HTMLElementEventsVtbl ptr
 end type
 
+#define HTMLElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLElementCollection_INTERFACE_DEFINED__
 extern IID_IHTMLElementCollection as const IID
 type IHTMLElementCollection as IHTMLElementCollection_
@@ -5927,6 +7112,20 @@ end type
 type IHTMLElementCollection_
 	lpVtbl as IHTMLElementCollectionVtbl ptr
 end type
+
+#define IHTMLElementCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElementCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElementCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElementCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElementCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElementCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElementCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElementCollection_toString(This, String) (This)->lpVtbl->toString(This, String)
+#define IHTMLElementCollection_put_length(This, v) (This)->lpVtbl->put_length(This, v)
+#define IHTMLElementCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLElementCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLElementCollection_item(This, name, index, pdisp) (This)->lpVtbl->item(This, name, index, pdisp)
+#define IHTMLElementCollection_tags(This, tagName, pdisp) (This)->lpVtbl->tags(This, tagName, pdisp)
 
 declare function IHTMLElementCollection_toString_Proxy(byval This as IHTMLElementCollection ptr, byval String as BSTR ptr) as HRESULT
 declare sub IHTMLElementCollection_toString_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6055,6 +7254,112 @@ end type
 type IHTMLElement2_
 	lpVtbl as IHTMLElement2Vtbl ptr
 end type
+
+#define IHTMLElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElement2_get_scopeName(This, p) (This)->lpVtbl->get_scopeName(This, p)
+#define IHTMLElement2_setCapture(This, containerCapture) (This)->lpVtbl->setCapture(This, containerCapture)
+#define IHTMLElement2_releaseCapture(This) (This)->lpVtbl->releaseCapture(This)
+#define IHTMLElement2_put_onlosecapture(This, v) (This)->lpVtbl->put_onlosecapture(This, v)
+#define IHTMLElement2_get_onlosecapture(This, p) (This)->lpVtbl->get_onlosecapture(This, p)
+#define IHTMLElement2_componentFromPoint(This, x, y, component) (This)->lpVtbl->componentFromPoint(This, x, y, component)
+#define IHTMLElement2_doScroll(This, component) (This)->lpVtbl->doScroll(This, component)
+#define IHTMLElement2_put_onscroll(This, v) (This)->lpVtbl->put_onscroll(This, v)
+#define IHTMLElement2_get_onscroll(This, p) (This)->lpVtbl->get_onscroll(This, p)
+#define IHTMLElement2_put_ondrag(This, v) (This)->lpVtbl->put_ondrag(This, v)
+#define IHTMLElement2_get_ondrag(This, p) (This)->lpVtbl->get_ondrag(This, p)
+#define IHTMLElement2_put_ondragend(This, v) (This)->lpVtbl->put_ondragend(This, v)
+#define IHTMLElement2_get_ondragend(This, p) (This)->lpVtbl->get_ondragend(This, p)
+#define IHTMLElement2_put_ondragenter(This, v) (This)->lpVtbl->put_ondragenter(This, v)
+#define IHTMLElement2_get_ondragenter(This, p) (This)->lpVtbl->get_ondragenter(This, p)
+#define IHTMLElement2_put_ondragover(This, v) (This)->lpVtbl->put_ondragover(This, v)
+#define IHTMLElement2_get_ondragover(This, p) (This)->lpVtbl->get_ondragover(This, p)
+#define IHTMLElement2_put_ondragleave(This, v) (This)->lpVtbl->put_ondragleave(This, v)
+#define IHTMLElement2_get_ondragleave(This, p) (This)->lpVtbl->get_ondragleave(This, p)
+#define IHTMLElement2_put_ondrop(This, v) (This)->lpVtbl->put_ondrop(This, v)
+#define IHTMLElement2_get_ondrop(This, p) (This)->lpVtbl->get_ondrop(This, p)
+#define IHTMLElement2_put_onbeforecut(This, v) (This)->lpVtbl->put_onbeforecut(This, v)
+#define IHTMLElement2_get_onbeforecut(This, p) (This)->lpVtbl->get_onbeforecut(This, p)
+#define IHTMLElement2_put_oncut(This, v) (This)->lpVtbl->put_oncut(This, v)
+#define IHTMLElement2_get_oncut(This, p) (This)->lpVtbl->get_oncut(This, p)
+#define IHTMLElement2_put_onbeforecopy(This, v) (This)->lpVtbl->put_onbeforecopy(This, v)
+#define IHTMLElement2_get_onbeforecopy(This, p) (This)->lpVtbl->get_onbeforecopy(This, p)
+#define IHTMLElement2_put_oncopy(This, v) (This)->lpVtbl->put_oncopy(This, v)
+#define IHTMLElement2_get_oncopy(This, p) (This)->lpVtbl->get_oncopy(This, p)
+#define IHTMLElement2_put_onbeforepaste(This, v) (This)->lpVtbl->put_onbeforepaste(This, v)
+#define IHTMLElement2_get_onbeforepaste(This, p) (This)->lpVtbl->get_onbeforepaste(This, p)
+#define IHTMLElement2_put_onpaste(This, v) (This)->lpVtbl->put_onpaste(This, v)
+#define IHTMLElement2_get_onpaste(This, p) (This)->lpVtbl->get_onpaste(This, p)
+#define IHTMLElement2_get_currentStyle(This, p) (This)->lpVtbl->get_currentStyle(This, p)
+#define IHTMLElement2_put_onpropertychange(This, v) (This)->lpVtbl->put_onpropertychange(This, v)
+#define IHTMLElement2_get_onpropertychange(This, p) (This)->lpVtbl->get_onpropertychange(This, p)
+#define IHTMLElement2_getClientRects(This, pRectCol) (This)->lpVtbl->getClientRects(This, pRectCol)
+#define IHTMLElement2_getBoundingClientRect(This, pRect) (This)->lpVtbl->getBoundingClientRect(This, pRect)
+#define IHTMLElement2_setExpression(This, propname, expression, language) (This)->lpVtbl->setExpression(This, propname, expression, language)
+#define IHTMLElement2_getExpression(This, propname, expression) (This)->lpVtbl->getExpression(This, propname, expression)
+#define IHTMLElement2_removeExpression(This, propname, pfSuccess) (This)->lpVtbl->removeExpression(This, propname, pfSuccess)
+#define IHTMLElement2_put_tabIndex(This, v) (This)->lpVtbl->put_tabIndex(This, v)
+#define IHTMLElement2_get_tabIndex(This, p) (This)->lpVtbl->get_tabIndex(This, p)
+#define IHTMLElement2_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLElement2_put_accessKey(This, v) (This)->lpVtbl->put_accessKey(This, v)
+#define IHTMLElement2_get_accessKey(This, p) (This)->lpVtbl->get_accessKey(This, p)
+#define IHTMLElement2_put_onblur(This, v) (This)->lpVtbl->put_onblur(This, v)
+#define IHTMLElement2_get_onblur(This, p) (This)->lpVtbl->get_onblur(This, p)
+#define IHTMLElement2_put_onfocus(This, v) (This)->lpVtbl->put_onfocus(This, v)
+#define IHTMLElement2_get_onfocus(This, p) (This)->lpVtbl->get_onfocus(This, p)
+#define IHTMLElement2_put_onresize(This, v) (This)->lpVtbl->put_onresize(This, v)
+#define IHTMLElement2_get_onresize(This, p) (This)->lpVtbl->get_onresize(This, p)
+#define IHTMLElement2_blur(This) (This)->lpVtbl->blur(This)
+#define IHTMLElement2_addFilter(This, pUnk) (This)->lpVtbl->addFilter(This, pUnk)
+#define IHTMLElement2_removeFilter(This, pUnk) (This)->lpVtbl->removeFilter(This, pUnk)
+#define IHTMLElement2_get_clientHeight(This, p) (This)->lpVtbl->get_clientHeight(This, p)
+#define IHTMLElement2_get_clientWidth(This, p) (This)->lpVtbl->get_clientWidth(This, p)
+#define IHTMLElement2_get_clientTop(This, p) (This)->lpVtbl->get_clientTop(This, p)
+#define IHTMLElement2_get_clientLeft(This, p) (This)->lpVtbl->get_clientLeft(This, p)
+#define IHTMLElement2_attachEvent(This, event, pDisp, pfResult) (This)->lpVtbl->attachEvent(This, event, pDisp, pfResult)
+#define IHTMLElement2_detachEvent(This, event, pDisp) (This)->lpVtbl->detachEvent(This, event, pDisp)
+#define IHTMLElement2_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLElement2_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLElement2_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLElement2_put_onrowsdelete(This, v) (This)->lpVtbl->put_onrowsdelete(This, v)
+#define IHTMLElement2_get_onrowsdelete(This, p) (This)->lpVtbl->get_onrowsdelete(This, p)
+#define IHTMLElement2_put_onrowsinserted(This, v) (This)->lpVtbl->put_onrowsinserted(This, v)
+#define IHTMLElement2_get_onrowsinserted(This, p) (This)->lpVtbl->get_onrowsinserted(This, p)
+#define IHTMLElement2_put_oncellchange(This, v) (This)->lpVtbl->put_oncellchange(This, v)
+#define IHTMLElement2_get_oncellchange(This, p) (This)->lpVtbl->get_oncellchange(This, p)
+#define IHTMLElement2_put_dir(This, v) (This)->lpVtbl->put_dir(This, v)
+#define IHTMLElement2_get_dir(This, p) (This)->lpVtbl->get_dir(This, p)
+#define IHTMLElement2_createControlRange(This, range) (This)->lpVtbl->createControlRange(This, range)
+#define IHTMLElement2_get_scrollHeight(This, p) (This)->lpVtbl->get_scrollHeight(This, p)
+#define IHTMLElement2_get_scrollWidth(This, p) (This)->lpVtbl->get_scrollWidth(This, p)
+#define IHTMLElement2_put_scrollTop(This, v) (This)->lpVtbl->put_scrollTop(This, v)
+#define IHTMLElement2_get_scrollTop(This, p) (This)->lpVtbl->get_scrollTop(This, p)
+#define IHTMLElement2_put_scrollLeft(This, v) (This)->lpVtbl->put_scrollLeft(This, v)
+#define IHTMLElement2_get_scrollLeft(This, p) (This)->lpVtbl->get_scrollLeft(This, p)
+#define IHTMLElement2_clearAttributes(This) (This)->lpVtbl->clearAttributes(This)
+#define IHTMLElement2_mergeAttributes(This, mergeThis) (This)->lpVtbl->mergeAttributes(This, mergeThis)
+#define IHTMLElement2_put_oncontextmenu(This, v) (This)->lpVtbl->put_oncontextmenu(This, v)
+#define IHTMLElement2_get_oncontextmenu(This, p) (This)->lpVtbl->get_oncontextmenu(This, p)
+#define IHTMLElement2_insertAdjacentElement(This, where, insertedElement, inserted) (This)->lpVtbl->insertAdjacentElement(This, where, insertedElement, inserted)
+#define IHTMLElement2_applyElement(This, apply, where, applied) (This)->lpVtbl->applyElement(This, apply, where, applied)
+#define IHTMLElement2_getAdjacentText(This, where, text) (This)->lpVtbl->getAdjacentText(This, where, text)
+#define IHTMLElement2_replaceAdjacentText(This, where, newText, oldText) (This)->lpVtbl->replaceAdjacentText(This, where, newText, oldText)
+#define IHTMLElement2_get_canHaveChildren(This, p) (This)->lpVtbl->get_canHaveChildren(This, p)
+#define IHTMLElement2_addBehavior(This, bstrUrl, pvarFactory, pCookie) (This)->lpVtbl->addBehavior(This, bstrUrl, pvarFactory, pCookie)
+#define IHTMLElement2_removeBehavior(This, cookie, pfResult) (This)->lpVtbl->removeBehavior(This, cookie, pfResult)
+#define IHTMLElement2_get_runtimeStyle(This, p) (This)->lpVtbl->get_runtimeStyle(This, p)
+#define IHTMLElement2_get_behaviorUrns(This, p) (This)->lpVtbl->get_behaviorUrns(This, p)
+#define IHTMLElement2_put_tagUrn(This, v) (This)->lpVtbl->put_tagUrn(This, v)
+#define IHTMLElement2_get_tagUrn(This, p) (This)->lpVtbl->get_tagUrn(This, p)
+#define IHTMLElement2_put_onbeforeeditfocus(This, v) (This)->lpVtbl->put_onbeforeeditfocus(This, v)
+#define IHTMLElement2_get_onbeforeeditfocus(This, p) (This)->lpVtbl->get_onbeforeeditfocus(This, p)
+#define IHTMLElement2_get_readyStateValue(This, p) (This)->lpVtbl->get_readyStateValue(This, p)
+#define IHTMLElement2_getElementsByTagName(This, v, pelColl) (This)->lpVtbl->getElementsByTagName(This, v, pelColl)
 
 declare function IHTMLElement2_get_scopeName_Proxy(byval This as IHTMLElement2 ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLElement2_get_scopeName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6313,6 +7618,57 @@ type IHTMLElement3_
 	lpVtbl as IHTMLElement3Vtbl ptr
 end type
 
+#define IHTMLElement3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElement3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElement3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElement3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElement3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElement3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElement3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElement3_mergeAttributes(This, mergeThis, pvarFlags) (This)->lpVtbl->mergeAttributes(This, mergeThis, pvarFlags)
+#define IHTMLElement3_get_isMultiLine(This, p) (This)->lpVtbl->get_isMultiLine(This, p)
+#define IHTMLElement3_get_canHaveHTML(This, p) (This)->lpVtbl->get_canHaveHTML(This, p)
+#define IHTMLElement3_put_onlayoutcomplete(This, v) (This)->lpVtbl->put_onlayoutcomplete(This, v)
+#define IHTMLElement3_get_onlayoutcomplete(This, p) (This)->lpVtbl->get_onlayoutcomplete(This, p)
+#define IHTMLElement3_put_onpage(This, v) (This)->lpVtbl->put_onpage(This, v)
+#define IHTMLElement3_get_onpage(This, p) (This)->lpVtbl->get_onpage(This, p)
+#define IHTMLElement3_put_inflateBlock(This, v) (This)->lpVtbl->put_inflateBlock(This, v)
+#define IHTMLElement3_get_inflateBlock(This, p) (This)->lpVtbl->get_inflateBlock(This, p)
+#define IHTMLElement3_put_onbeforedeactivate(This, v) (This)->lpVtbl->put_onbeforedeactivate(This, v)
+#define IHTMLElement3_get_onbeforedeactivate(This, p) (This)->lpVtbl->get_onbeforedeactivate(This, p)
+#define IHTMLElement3_setActive(This) (This)->lpVtbl->setActive(This)
+#define IHTMLElement3_put_contentEditable(This, v) (This)->lpVtbl->put_contentEditable(This, v)
+#define IHTMLElement3_get_contentEditable(This, p) (This)->lpVtbl->get_contentEditable(This, p)
+#define IHTMLElement3_get_isContentEditable(This, p) (This)->lpVtbl->get_isContentEditable(This, p)
+#define IHTMLElement3_put_hideFocus(This, v) (This)->lpVtbl->put_hideFocus(This, v)
+#define IHTMLElement3_get_hideFocus(This, p) (This)->lpVtbl->get_hideFocus(This, p)
+#define IHTMLElement3_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLElement3_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLElement3_get_isDisabled(This, p) (This)->lpVtbl->get_isDisabled(This, p)
+#define IHTMLElement3_put_onmove(This, v) (This)->lpVtbl->put_onmove(This, v)
+#define IHTMLElement3_get_onmove(This, p) (This)->lpVtbl->get_onmove(This, p)
+#define IHTMLElement3_put_oncontrolselect(This, v) (This)->lpVtbl->put_oncontrolselect(This, v)
+#define IHTMLElement3_get_oncontrolselect(This, p) (This)->lpVtbl->get_oncontrolselect(This, p)
+#define IHTMLElement3_fireEvent(This, bstrEventName, pvarEventObject, pfCancelled) (This)->lpVtbl->fireEvent(This, bstrEventName, pvarEventObject, pfCancelled)
+#define IHTMLElement3_put_onresizestart(This, v) (This)->lpVtbl->put_onresizestart(This, v)
+#define IHTMLElement3_get_onresizestart(This, p) (This)->lpVtbl->get_onresizestart(This, p)
+#define IHTMLElement3_put_onresizeend(This, v) (This)->lpVtbl->put_onresizeend(This, v)
+#define IHTMLElement3_get_onresizeend(This, p) (This)->lpVtbl->get_onresizeend(This, p)
+#define IHTMLElement3_put_onmovestart(This, v) (This)->lpVtbl->put_onmovestart(This, v)
+#define IHTMLElement3_get_onmovestart(This, p) (This)->lpVtbl->get_onmovestart(This, p)
+#define IHTMLElement3_put_onmoveend(This, v) (This)->lpVtbl->put_onmoveend(This, v)
+#define IHTMLElement3_get_onmoveend(This, p) (This)->lpVtbl->get_onmoveend(This, p)
+#define IHTMLElement3_put_onmouseenter(This, v) (This)->lpVtbl->put_onmouseenter(This, v)
+#define IHTMLElement3_get_onmouseenter(This, p) (This)->lpVtbl->get_onmouseenter(This, p)
+#define IHTMLElement3_put_onmouseleave(This, v) (This)->lpVtbl->put_onmouseleave(This, v)
+#define IHTMLElement3_get_onmouseleave(This, p) (This)->lpVtbl->get_onmouseleave(This, p)
+#define IHTMLElement3_put_onactivate(This, v) (This)->lpVtbl->put_onactivate(This, v)
+#define IHTMLElement3_get_onactivate(This, p) (This)->lpVtbl->get_onactivate(This, p)
+#define IHTMLElement3_put_ondeactivate(This, v) (This)->lpVtbl->put_ondeactivate(This, v)
+#define IHTMLElement3_get_ondeactivate(This, p) (This)->lpVtbl->get_ondeactivate(This, p)
+#define IHTMLElement3_dragDrop(This, pfRet) (This)->lpVtbl->dragDrop(This, pfRet)
+#define IHTMLElement3_get_glyphMode(This, p) (This)->lpVtbl->get_glyphMode(This, p)
+
 declare function IHTMLElement3_mergeAttributes_Proxy(byval This as IHTMLElement3 ptr, byval mergeThis as IHTMLElement ptr, byval pvarFlags as VARIANT ptr) as HRESULT
 declare sub IHTMLElement3_mergeAttributes_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLElement3_get_isMultiLine_Proxy(byval This as IHTMLElement3 ptr, byval p as VARIANT_BOOL ptr) as HRESULT
@@ -6429,6 +7785,26 @@ type IHTMLElement4_
 	lpVtbl as IHTMLElement4Vtbl ptr
 end type
 
+#define IHTMLElement4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElement4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElement4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElement4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElement4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElement4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElement4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElement4_put_onmousewheel(This, v) (This)->lpVtbl->put_onmousewheel(This, v)
+#define IHTMLElement4_get_onmousewheel(This, p) (This)->lpVtbl->get_onmousewheel(This, p)
+#define IHTMLElement4_normalize(This) (This)->lpVtbl->normalize(This)
+#define IHTMLElement4_getAttributeNode(This, bstrname, ppAttribute) (This)->lpVtbl->getAttributeNode(This, bstrname, ppAttribute)
+#define IHTMLElement4_setAttributeNode(This, pattr, ppretAttribute) (This)->lpVtbl->setAttributeNode(This, pattr, ppretAttribute)
+#define IHTMLElement4_removeAttributeNode(This, pattr, ppretAttribute) (This)->lpVtbl->removeAttributeNode(This, pattr, ppretAttribute)
+#define IHTMLElement4_put_onbeforeactivate(This, v) (This)->lpVtbl->put_onbeforeactivate(This, v)
+#define IHTMLElement4_get_onbeforeactivate(This, p) (This)->lpVtbl->get_onbeforeactivate(This, p)
+#define IHTMLElement4_put_onfocusin(This, v) (This)->lpVtbl->put_onfocusin(This, v)
+#define IHTMLElement4_get_onfocusin(This, p) (This)->lpVtbl->get_onfocusin(This, p)
+#define IHTMLElement4_put_onfocusout(This, v) (This)->lpVtbl->put_onfocusout(This, v)
+#define IHTMLElement4_get_onfocusout(This, p) (This)->lpVtbl->get_onfocusout(This, p)
+
 declare function IHTMLElement4_put_onmousewheel_Proxy(byval This as IHTMLElement4 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLElement4_put_onmousewheel_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLElement4_get_onmousewheel_Proxy(byval This as IHTMLElement4 ptr, byval p as VARIANT ptr) as HRESULT
@@ -6469,6 +7845,12 @@ type IHTMLElementRender_
 	lpVtbl as IHTMLElementRenderVtbl ptr
 end type
 
+#define IHTMLElementRender_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElementRender_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElementRender_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElementRender_DrawToDC(This, hDC) (This)->lpVtbl->DrawToDC(This, hDC)
+#define IHTMLElementRender_SetDocumentPrinter(This, bstrPrinterName, hDC) (This)->lpVtbl->SetDocumentPrinter(This, bstrPrinterName, hDC)
+
 declare function IHTMLElementRender_DrawToDC_Proxy(byval This as IHTMLElementRender ptr, byval hDC as HDC) as HRESULT
 declare sub IHTMLElementRender_DrawToDC_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLElementRender_SetDocumentPrinter_Proxy(byval This as IHTMLElementRender ptr, byval bstrPrinterName as BSTR, byval hDC as HDC) as HRESULT
@@ -6492,6 +7874,16 @@ end type
 type IHTMLUniqueName_
 	lpVtbl as IHTMLUniqueNameVtbl ptr
 end type
+
+#define IHTMLUniqueName_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLUniqueName_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLUniqueName_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLUniqueName_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLUniqueName_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLUniqueName_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLUniqueName_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLUniqueName_get_uniqueNumber(This, p) (This)->lpVtbl->get_uniqueNumber(This, p)
+#define IHTMLUniqueName_get_uniqueID(This, p) (This)->lpVtbl->get_uniqueID(This, p)
 
 declare function IHTMLUniqueName_get_uniqueNumber_Proxy(byval This as IHTMLUniqueName ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLUniqueName_get_uniqueNumber_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6520,6 +7912,20 @@ end type
 type IHTMLDatabinding_
 	lpVtbl as IHTMLDatabindingVtbl ptr
 end type
+
+#define IHTMLDatabinding_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDatabinding_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDatabinding_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDatabinding_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDatabinding_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDatabinding_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDatabinding_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDatabinding_put_dataFld(This, v) (This)->lpVtbl->put_dataFld(This, v)
+#define IHTMLDatabinding_get_dataFld(This, p) (This)->lpVtbl->get_dataFld(This, p)
+#define IHTMLDatabinding_put_dataSrc(This, v) (This)->lpVtbl->put_dataSrc(This, v)
+#define IHTMLDatabinding_get_dataSrc(This, p) (This)->lpVtbl->get_dataSrc(This, p)
+#define IHTMLDatabinding_put_dataFormatAs(This, v) (This)->lpVtbl->put_dataFormatAs(This, v)
+#define IHTMLDatabinding_get_dataFormatAs(This, p) (This)->lpVtbl->get_dataFormatAs(This, p)
 
 declare function IHTMLDatabinding_put_dataFld_Proxy(byval This as IHTMLDatabinding ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDatabinding_put_dataFld_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6552,6 +7958,14 @@ type IHTMLDocument_
 	lpVtbl as IHTMLDocumentVtbl ptr
 end type
 
+#define IHTMLDocument_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDocument_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDocument_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDocument_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDocument_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDocument_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDocument_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDocument_get_Script(This, p) (This)->lpVtbl->get_Script(This, p)
 declare function IHTMLDocument_get_Script_Proxy(byval This as IHTMLDocument ptr, byval p as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLDocument_get_Script_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLElementDefaults_INTERFACE_DEFINED__
@@ -6592,6 +8006,35 @@ end type
 type IHTMLElementDefaults_
 	lpVtbl as IHTMLElementDefaultsVtbl ptr
 end type
+
+#define IHTMLElementDefaults_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElementDefaults_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElementDefaults_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElementDefaults_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElementDefaults_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElementDefaults_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElementDefaults_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElementDefaults_get_style(This, p) (This)->lpVtbl->get_style(This, p)
+#define IHTMLElementDefaults_put_tabStop(This, v) (This)->lpVtbl->put_tabStop(This, v)
+#define IHTMLElementDefaults_get_tabStop(This, p) (This)->lpVtbl->get_tabStop(This, p)
+#define IHTMLElementDefaults_put_viewInheritStyle(This, v) (This)->lpVtbl->put_viewInheritStyle(This, v)
+#define IHTMLElementDefaults_get_viewInheritStyle(This, p) (This)->lpVtbl->get_viewInheritStyle(This, p)
+#define IHTMLElementDefaults_put_viewMasterTab(This, v) (This)->lpVtbl->put_viewMasterTab(This, v)
+#define IHTMLElementDefaults_get_viewMasterTab(This, p) (This)->lpVtbl->get_viewMasterTab(This, p)
+#define IHTMLElementDefaults_put_scrollSegmentX(This, v) (This)->lpVtbl->put_scrollSegmentX(This, v)
+#define IHTMLElementDefaults_get_scrollSegmentX(This, p) (This)->lpVtbl->get_scrollSegmentX(This, p)
+#define IHTMLElementDefaults_put_scrollSegmentY(This, v) (This)->lpVtbl->put_scrollSegmentY(This, v)
+#define IHTMLElementDefaults_get_scrollSegmentY(This, p) (This)->lpVtbl->get_scrollSegmentY(This, p)
+#define IHTMLElementDefaults_put_isMultiLine(This, v) (This)->lpVtbl->put_isMultiLine(This, v)
+#define IHTMLElementDefaults_get_isMultiLine(This, p) (This)->lpVtbl->get_isMultiLine(This, p)
+#define IHTMLElementDefaults_put_contentEditable(This, v) (This)->lpVtbl->put_contentEditable(This, v)
+#define IHTMLElementDefaults_get_contentEditable(This, p) (This)->lpVtbl->get_contentEditable(This, p)
+#define IHTMLElementDefaults_put_canHaveHTML(This, v) (This)->lpVtbl->put_canHaveHTML(This, v)
+#define IHTMLElementDefaults_get_canHaveHTML(This, p) (This)->lpVtbl->get_canHaveHTML(This, p)
+#define IHTMLElementDefaults_putref_viewLink(This, v) (This)->lpVtbl->putref_viewLink(This, v)
+#define IHTMLElementDefaults_get_viewLink(This, p) (This)->lpVtbl->get_viewLink(This, p)
+#define IHTMLElementDefaults_put_frozen(This, v) (This)->lpVtbl->put_frozen(This, v)
+#define IHTMLElementDefaults_get_frozen(This, p) (This)->lpVtbl->get_frozen(This, p)
 
 declare function IHTMLElementDefaults_get_style_Proxy(byval This as IHTMLElementDefaults ptr, byval p as IHTMLStyle ptr ptr) as HRESULT
 declare sub IHTMLElementDefaults_get_style_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6653,6 +8096,13 @@ type DispHTMLDefaults_
 	lpVtbl as DispHTMLDefaultsVtbl ptr
 end type
 
+#define DispHTMLDefaults_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDefaults_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDefaults_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDefaults_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDefaults_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDefaults_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDefaults_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDefaults as const CLSID
 #define __IHTCDefaultDispatch_INTERFACE_DEFINED__
 extern IID_IHTCDefaultDispatch as const IID
@@ -6675,6 +8125,18 @@ end type
 type IHTCDefaultDispatch_
 	lpVtbl as IHTCDefaultDispatchVtbl ptr
 end type
+
+#define IHTCDefaultDispatch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCDefaultDispatch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCDefaultDispatch_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCDefaultDispatch_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCDefaultDispatch_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCDefaultDispatch_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCDefaultDispatch_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCDefaultDispatch_get_element(This, p) (This)->lpVtbl->get_element(This, p)
+#define IHTCDefaultDispatch_createEventObject(This, eventObj) (This)->lpVtbl->createEventObject(This, eventObj)
+#define IHTCDefaultDispatch_get_defaults(This, p) (This)->lpVtbl->get_defaults(This, p)
+#define IHTCDefaultDispatch_get_document(This, p) (This)->lpVtbl->get_document(This, p)
 
 declare function IHTCDefaultDispatch_get_element_Proxy(byval This as IHTCDefaultDispatch ptr, byval p as IHTMLElement ptr ptr) as HRESULT
 declare sub IHTCDefaultDispatch_get_element_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6705,6 +8167,17 @@ type IHTCPropertyBehavior_
 	lpVtbl as IHTCPropertyBehaviorVtbl ptr
 end type
 
+#define IHTCPropertyBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCPropertyBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCPropertyBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCPropertyBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCPropertyBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCPropertyBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCPropertyBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCPropertyBehavior_fireChange(This) (This)->lpVtbl->fireChange(This)
+#define IHTCPropertyBehavior_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTCPropertyBehavior_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+
 declare function IHTCPropertyBehavior_fireChange_Proxy(byval This as IHTCPropertyBehavior ptr) as HRESULT
 declare sub IHTCPropertyBehavior_fireChange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTCPropertyBehavior_put_value_Proxy(byval This as IHTCPropertyBehavior ptr, byval v as VARIANT) as HRESULT
@@ -6729,6 +8202,13 @@ type IHTCMethodBehavior_
 	lpVtbl as IHTCMethodBehaviorVtbl ptr
 end type
 
+#define IHTCMethodBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCMethodBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCMethodBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCMethodBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCMethodBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCMethodBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCMethodBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTCEventBehavior_INTERFACE_DEFINED__
 extern IID_IHTCEventBehavior as const IID
 type IHTCEventBehavior as IHTCEventBehavior_
@@ -6748,6 +8228,14 @@ type IHTCEventBehavior_
 	lpVtbl as IHTCEventBehaviorVtbl ptr
 end type
 
+#define IHTCEventBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCEventBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCEventBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCEventBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCEventBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCEventBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCEventBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCEventBehavior_fire(This, pvar) (This)->lpVtbl->fire(This, pvar)
 declare function IHTCEventBehavior_fire_Proxy(byval This as IHTCEventBehavior ptr, byval pvar as IHTMLEventObj ptr) as HRESULT
 declare sub IHTCEventBehavior_fire_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTCAttachBehavior_INTERFACE_DEFINED__
@@ -6769,6 +8257,16 @@ end type
 type IHTCAttachBehavior_
 	lpVtbl as IHTCAttachBehaviorVtbl ptr
 end type
+
+#define IHTCAttachBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCAttachBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCAttachBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCAttachBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCAttachBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCAttachBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCAttachBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCAttachBehavior_fireEvent(This, evt) (This)->lpVtbl->fireEvent(This, evt)
+#define IHTCAttachBehavior_detachEvent(This) (This)->lpVtbl->detachEvent(This)
 
 declare function IHTCAttachBehavior_fireEvent_Proxy(byval This as IHTCAttachBehavior ptr, byval evt as IDispatch ptr) as HRESULT
 declare sub IHTCAttachBehavior_fireEvent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6793,6 +8291,14 @@ type IHTCAttachBehavior2_
 	lpVtbl as IHTCAttachBehavior2Vtbl ptr
 end type
 
+#define IHTCAttachBehavior2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCAttachBehavior2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCAttachBehavior2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCAttachBehavior2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCAttachBehavior2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCAttachBehavior2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCAttachBehavior2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCAttachBehavior2_fireEvent(This, evt) (This)->lpVtbl->fireEvent(This, evt)
 declare function IHTCAttachBehavior2_fireEvent_Proxy(byval This as IHTCAttachBehavior2 ptr, byval evt as VARIANT) as HRESULT
 declare sub IHTCAttachBehavior2_fireEvent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTCDescBehavior_INTERFACE_DEFINED__
@@ -6814,6 +8320,16 @@ end type
 type IHTCDescBehavior_
 	lpVtbl as IHTCDescBehaviorVtbl ptr
 end type
+
+#define IHTCDescBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTCDescBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTCDescBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTCDescBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTCDescBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTCDescBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTCDescBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTCDescBehavior_get_urn(This, p) (This)->lpVtbl->get_urn(This, p)
+#define IHTCDescBehavior_get_name(This, p) (This)->lpVtbl->get_name(This, p)
 
 declare function IHTCDescBehavior_get_urn_Proxy(byval This as IHTCDescBehavior ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTCDescBehavior_get_urn_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6837,6 +8353,13 @@ type DispHTCDefaultDispatch_
 	lpVtbl as DispHTCDefaultDispatchVtbl ptr
 end type
 
+#define DispHTCDefaultDispatch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCDefaultDispatch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCDefaultDispatch_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCDefaultDispatch_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCDefaultDispatch_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCDefaultDispatch_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCDefaultDispatch_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCDefaultDispatch as const CLSID
 #define __DispHTCPropertyBehavior_DISPINTERFACE_DEFINED__
 extern DIID_DispHTCPropertyBehavior as const IID
@@ -6856,6 +8379,13 @@ type DispHTCPropertyBehavior_
 	lpVtbl as DispHTCPropertyBehaviorVtbl ptr
 end type
 
+#define DispHTCPropertyBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCPropertyBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCPropertyBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCPropertyBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCPropertyBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCPropertyBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCPropertyBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCPropertyBehavior as const CLSID
 #define __DispHTCMethodBehavior_DISPINTERFACE_DEFINED__
 extern DIID_DispHTCMethodBehavior as const IID
@@ -6875,6 +8405,13 @@ type DispHTCMethodBehavior_
 	lpVtbl as DispHTCMethodBehaviorVtbl ptr
 end type
 
+#define DispHTCMethodBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCMethodBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCMethodBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCMethodBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCMethodBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCMethodBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCMethodBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCMethodBehavior as const CLSID
 #define __DispHTCEventBehavior_DISPINTERFACE_DEFINED__
 extern DIID_DispHTCEventBehavior as const IID
@@ -6894,6 +8431,13 @@ type DispHTCEventBehavior_
 	lpVtbl as DispHTCEventBehaviorVtbl ptr
 end type
 
+#define DispHTCEventBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCEventBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCEventBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCEventBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCEventBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCEventBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCEventBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCEventBehavior as const CLSID
 #define __DispHTCAttachBehavior_DISPINTERFACE_DEFINED__
 extern DIID_DispHTCAttachBehavior as const IID
@@ -6913,6 +8457,13 @@ type DispHTCAttachBehavior_
 	lpVtbl as DispHTCAttachBehaviorVtbl ptr
 end type
 
+#define DispHTCAttachBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCAttachBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCAttachBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCAttachBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCAttachBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCAttachBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCAttachBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCAttachBehavior as const CLSID
 #define __DispHTCDescBehavior_DISPINTERFACE_DEFINED__
 extern DIID_DispHTCDescBehavior as const IID
@@ -6932,6 +8483,13 @@ type DispHTCDescBehavior_
 	lpVtbl as DispHTCDescBehaviorVtbl ptr
 end type
 
+#define DispHTCDescBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTCDescBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTCDescBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTCDescBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTCDescBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTCDescBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTCDescBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTCDescBehavior as const CLSID
 #define __IHTMLUrnCollection_INTERFACE_DEFINED__
 extern IID_IHTMLUrnCollection as const IID
@@ -6952,6 +8510,16 @@ end type
 type IHTMLUrnCollection_
 	lpVtbl as IHTMLUrnCollectionVtbl ptr
 end type
+
+#define IHTMLUrnCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLUrnCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLUrnCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLUrnCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLUrnCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLUrnCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLUrnCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLUrnCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLUrnCollection_item(This, index, ppUrn) (This)->lpVtbl->item(This, index, ppUrn)
 
 declare function IHTMLUrnCollection_get_length_Proxy(byval This as IHTMLUrnCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLUrnCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -6978,6 +8546,16 @@ type IHTMLGenericElement_
 	lpVtbl as IHTMLGenericElementVtbl ptr
 end type
 
+#define IHTMLGenericElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLGenericElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLGenericElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLGenericElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLGenericElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLGenericElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLGenericElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLGenericElement_get_recordset(This, p) (This)->lpVtbl->get_recordset(This, p)
+#define IHTMLGenericElement_namedRecordset(This, dataMember, hierarchy, ppRecordset) (This)->lpVtbl->namedRecordset(This, dataMember, hierarchy, ppRecordset)
+
 declare function IHTMLGenericElement_get_recordset_Proxy(byval This as IHTMLGenericElement ptr, byval p as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLGenericElement_get_recordset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLGenericElement_namedRecordset_Proxy(byval This as IHTMLGenericElement ptr, byval dataMember as BSTR, byval hierarchy as VARIANT ptr, byval ppRecordset as IDispatch ptr ptr) as HRESULT
@@ -7000,6 +8578,13 @@ type DispHTMLGenericElement_
 	lpVtbl as DispHTMLGenericElementVtbl ptr
 end type
 
+#define DispHTMLGenericElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLGenericElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLGenericElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLGenericElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLGenericElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLGenericElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLGenericElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLGenericElement as const CLSID
 #define __IHTMLStyleSheetRule_INTERFACE_DEFINED__
 extern IID_IHTMLStyleSheetRule as const IID
@@ -7022,6 +8607,18 @@ end type
 type IHTMLStyleSheetRule_
 	lpVtbl as IHTMLStyleSheetRuleVtbl ptr
 end type
+
+#define IHTMLStyleSheetRule_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheetRule_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheetRule_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheetRule_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheetRule_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheetRule_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheetRule_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheetRule_put_selectorText(This, v) (This)->lpVtbl->put_selectorText(This, v)
+#define IHTMLStyleSheetRule_get_selectorText(This, p) (This)->lpVtbl->get_selectorText(This, p)
+#define IHTMLStyleSheetRule_get_style(This, p) (This)->lpVtbl->get_style(This, p)
+#define IHTMLStyleSheetRule_get_readOnly(This, p) (This)->lpVtbl->get_readOnly(This, p)
 
 declare function IHTMLStyleSheetRule_put_selectorText_Proxy(byval This as IHTMLStyleSheetRule ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyleSheetRule_put_selectorText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7051,6 +8648,16 @@ type IHTMLStyleSheetRulesCollection_
 	lpVtbl as IHTMLStyleSheetRulesCollectionVtbl ptr
 end type
 
+#define IHTMLStyleSheetRulesCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheetRulesCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheetRulesCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheetRulesCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheetRulesCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheetRulesCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheetRulesCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheetRulesCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLStyleSheetRulesCollection_item(This, index, ppHTMLStyleSheetRule) (This)->lpVtbl->item(This, index, ppHTMLStyleSheetRule)
+
 declare function IHTMLStyleSheetRulesCollection_get_length_Proxy(byval This as IHTMLStyleSheetRulesCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLStyleSheetRulesCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyleSheetRulesCollection_item_Proxy(byval This as IHTMLStyleSheetRulesCollection ptr, byval index as long, byval ppHTMLStyleSheetRule as IHTMLStyleSheetRule ptr ptr) as HRESULT
@@ -7077,6 +8684,16 @@ type IHTMLStyleSheetPage_
 	lpVtbl as IHTMLStyleSheetPageVtbl ptr
 end type
 
+#define IHTMLStyleSheetPage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheetPage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheetPage_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheetPage_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheetPage_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheetPage_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheetPage_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheetPage_get_selector(This, p) (This)->lpVtbl->get_selector(This, p)
+#define IHTMLStyleSheetPage_get_pseudoClass(This, p) (This)->lpVtbl->get_pseudoClass(This, p)
+
 declare function IHTMLStyleSheetPage_get_selector_Proxy(byval This as IHTMLStyleSheetPage ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLStyleSheetPage_get_selector_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyleSheetPage_get_pseudoClass_Proxy(byval This as IHTMLStyleSheetPage ptr, byval p as BSTR ptr) as HRESULT
@@ -7100,6 +8717,16 @@ end type
 type IHTMLStyleSheetPagesCollection_
 	lpVtbl as IHTMLStyleSheetPagesCollectionVtbl ptr
 end type
+
+#define IHTMLStyleSheetPagesCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheetPagesCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheetPagesCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheetPagesCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheetPagesCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheetPagesCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheetPagesCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheetPagesCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLStyleSheetPagesCollection_item(This, index, ppHTMLStyleSheetPage) (This)->lpVtbl->item(This, index, ppHTMLStyleSheetPage)
 
 declare function IHTMLStyleSheetPagesCollection_get_length_Proxy(byval This as IHTMLStyleSheetPagesCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLStyleSheetPagesCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7127,6 +8754,17 @@ end type
 type IHTMLStyleSheetsCollection_
 	lpVtbl as IHTMLStyleSheetsCollectionVtbl ptr
 end type
+
+#define IHTMLStyleSheetsCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheetsCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheetsCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheetsCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheetsCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheetsCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheetsCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheetsCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLStyleSheetsCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLStyleSheetsCollection_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
 
 declare function IHTMLStyleSheetsCollection_get_length_Proxy(byval This as IHTMLStyleSheetsCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLStyleSheetsCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7172,6 +8810,35 @@ end type
 type IHTMLStyleSheet_
 	lpVtbl as IHTMLStyleSheetVtbl ptr
 end type
+
+#define IHTMLStyleSheet_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheet_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheet_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheet_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheet_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheet_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheet_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheet_put_title(This, v) (This)->lpVtbl->put_title(This, v)
+#define IHTMLStyleSheet_get_title(This, p) (This)->lpVtbl->get_title(This, p)
+#define IHTMLStyleSheet_get_parentStyleSheet(This, p) (This)->lpVtbl->get_parentStyleSheet(This, p)
+#define IHTMLStyleSheet_get_owningElement(This, p) (This)->lpVtbl->get_owningElement(This, p)
+#define IHTMLStyleSheet_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLStyleSheet_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLStyleSheet_get_readOnly(This, p) (This)->lpVtbl->get_readOnly(This, p)
+#define IHTMLStyleSheet_get_imports(This, p) (This)->lpVtbl->get_imports(This, p)
+#define IHTMLStyleSheet_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLStyleSheet_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLStyleSheet_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLStyleSheet_get_id(This, p) (This)->lpVtbl->get_id(This, p)
+#define IHTMLStyleSheet_addImport(This, bstrURL, lIndex, plIndex) (This)->lpVtbl->addImport(This, bstrURL, lIndex, plIndex)
+#define IHTMLStyleSheet_addRule(This, bstrSelector, bstrStyle, lIndex, plNewIndex) (This)->lpVtbl->addRule(This, bstrSelector, bstrStyle, lIndex, plNewIndex)
+#define IHTMLStyleSheet_removeImport(This, lIndex) (This)->lpVtbl->removeImport(This, lIndex)
+#define IHTMLStyleSheet_removeRule(This, lIndex) (This)->lpVtbl->removeRule(This, lIndex)
+#define IHTMLStyleSheet_put_media(This, v) (This)->lpVtbl->put_media(This, v)
+#define IHTMLStyleSheet_get_media(This, p) (This)->lpVtbl->get_media(This, p)
+#define IHTMLStyleSheet_put_cssText(This, v) (This)->lpVtbl->put_cssText(This, v)
+#define IHTMLStyleSheet_get_cssText(This, p) (This)->lpVtbl->get_cssText(This, p)
+#define IHTMLStyleSheet_get_rules(This, p) (This)->lpVtbl->get_rules(This, p)
 
 declare function IHTMLStyleSheet_put_title_Proxy(byval This as IHTMLStyleSheet ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyleSheet_put_title_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7235,6 +8902,16 @@ type IHTMLStyleSheet2_
 	lpVtbl as IHTMLStyleSheet2Vtbl ptr
 end type
 
+#define IHTMLStyleSheet2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleSheet2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleSheet2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleSheet2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleSheet2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleSheet2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleSheet2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleSheet2_get_pages(This, p) (This)->lpVtbl->get_pages(This, p)
+#define IHTMLStyleSheet2_addPageRule(This, bstrSelector, bstrStyle, lIndex, plNewIndex) (This)->lpVtbl->addPageRule(This, bstrSelector, bstrStyle, lIndex, plNewIndex)
+
 declare function IHTMLStyleSheet2_get_pages_Proxy(byval This as IHTMLStyleSheet2 ptr, byval p as IHTMLStyleSheetPagesCollection ptr ptr) as HRESULT
 declare sub IHTMLStyleSheet2_get_pages_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyleSheet2_addPageRule_Proxy(byval This as IHTMLStyleSheet2 ptr, byval bstrSelector as BSTR, byval bstrStyle as BSTR, byval lIndex as long, byval plNewIndex as long ptr) as HRESULT
@@ -7257,6 +8934,13 @@ type DispHTMLStyleSheet_
 	lpVtbl as DispHTMLStyleSheetVtbl ptr
 end type
 
+#define DispHTMLStyleSheet_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLStyleSheet_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLStyleSheet_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLStyleSheet_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLStyleSheet_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLStyleSheet_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLStyleSheet_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLStyleSheet as const CLSID
 extern CLSID_HTMLStyleSheetsCollection as const CLSID
 #define __HTMLLinkElementEvents2_DISPINTERFACE_DEFINED__
@@ -7277,6 +8961,13 @@ type HTMLLinkElementEvents2_
 	lpVtbl as HTMLLinkElementEvents2Vtbl ptr
 end type
 
+#define HTMLLinkElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLLinkElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLLinkElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLLinkElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLLinkElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLLinkElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLLinkElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLLinkElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLLinkElementEvents as const IID
 type HTMLLinkElementEvents as HTMLLinkElementEvents_
@@ -7295,6 +8986,13 @@ type HTMLLinkElementEvents_
 	lpVtbl as HTMLLinkElementEventsVtbl ptr
 end type
 
+#define HTMLLinkElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLLinkElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLLinkElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLLinkElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLLinkElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLLinkElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLLinkElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLLinkElement_INTERFACE_DEFINED__
 extern IID_IHTMLLinkElement as const IID
 type IHTMLLinkElement as IHTMLLinkElement_
@@ -7332,6 +9030,34 @@ end type
 type IHTMLLinkElement_
 	lpVtbl as IHTMLLinkElementVtbl ptr
 end type
+
+#define IHTMLLinkElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLinkElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLinkElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLinkElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLinkElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLinkElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLinkElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLinkElement_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLLinkElement_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLLinkElement_put_rel(This, v) (This)->lpVtbl->put_rel(This, v)
+#define IHTMLLinkElement_get_rel(This, p) (This)->lpVtbl->get_rel(This, p)
+#define IHTMLLinkElement_put_rev(This, v) (This)->lpVtbl->put_rev(This, v)
+#define IHTMLLinkElement_get_rev(This, p) (This)->lpVtbl->get_rev(This, p)
+#define IHTMLLinkElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLLinkElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLLinkElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLLinkElement_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLLinkElement_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLLinkElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLLinkElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLLinkElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLLinkElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLLinkElement_get_styleSheet(This, p) (This)->lpVtbl->get_styleSheet(This, p)
+#define IHTMLLinkElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLLinkElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLLinkElement_put_media(This, v) (This)->lpVtbl->put_media(This, v)
+#define IHTMLLinkElement_get_media(This, p) (This)->lpVtbl->get_media(This, p)
 
 declare function IHTMLLinkElement_put_href_Proxy(byval This as IHTMLLinkElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLinkElement_put_href_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7393,6 +9119,16 @@ type IHTMLLinkElement2_
 	lpVtbl as IHTMLLinkElement2Vtbl ptr
 end type
 
+#define IHTMLLinkElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLinkElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLinkElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLinkElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLinkElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLinkElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLinkElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLinkElement2_put_target(This, v) (This)->lpVtbl->put_target(This, v)
+#define IHTMLLinkElement2_get_target(This, p) (This)->lpVtbl->get_target(This, p)
+
 declare function IHTMLLinkElement2_put_target_Proxy(byval This as IHTMLLinkElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLinkElement2_put_target_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLLinkElement2_get_target_Proxy(byval This as IHTMLLinkElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -7418,6 +9154,18 @@ end type
 type IHTMLLinkElement3_
 	lpVtbl as IHTMLLinkElement3Vtbl ptr
 end type
+
+#define IHTMLLinkElement3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLinkElement3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLinkElement3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLinkElement3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLinkElement3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLinkElement3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLinkElement3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLinkElement3_put_charset(This, v) (This)->lpVtbl->put_charset(This, v)
+#define IHTMLLinkElement3_get_charset(This, p) (This)->lpVtbl->get_charset(This, p)
+#define IHTMLLinkElement3_put_hreflang(This, v) (This)->lpVtbl->put_hreflang(This, v)
+#define IHTMLLinkElement3_get_hreflang(This, p) (This)->lpVtbl->get_hreflang(This, p)
 
 declare function IHTMLLinkElement3_put_charset_Proxy(byval This as IHTMLLinkElement3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLinkElement3_put_charset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7445,6 +9193,13 @@ type DispHTMLLinkElement_
 	lpVtbl as DispHTMLLinkElementVtbl ptr
 end type
 
+#define DispHTMLLinkElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLLinkElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLLinkElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLLinkElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLLinkElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLLinkElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLLinkElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLLinkElement as const CLSID
 #define __IHTMLTxtRange_INTERFACE_DEFINED__
 extern IID_IHTMLTxtRange as const IID
@@ -7493,6 +9248,44 @@ end type
 type IHTMLTxtRange_
 	lpVtbl as IHTMLTxtRangeVtbl ptr
 end type
+
+#define IHTMLTxtRange_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTxtRange_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTxtRange_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTxtRange_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTxtRange_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTxtRange_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTxtRange_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTxtRange_get_htmlText(This, p) (This)->lpVtbl->get_htmlText(This, p)
+#define IHTMLTxtRange_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLTxtRange_get_text(This, p) (This)->lpVtbl->get_text(This, p)
+#define IHTMLTxtRange_parentElement(This, parent) (This)->lpVtbl->parentElement(This, parent)
+#define IHTMLTxtRange_duplicate(This, Duplicate) (This)->lpVtbl->duplicate(This, Duplicate)
+#define IHTMLTxtRange_inRange(This, Range, InRange) (This)->lpVtbl->inRange(This, Range, InRange)
+#define IHTMLTxtRange_isEqual(This, Range, IsEqual) (This)->lpVtbl->isEqual(This, Range, IsEqual)
+#define IHTMLTxtRange_scrollIntoView(This, fStart) (This)->lpVtbl->scrollIntoView(This, fStart)
+#define IHTMLTxtRange_collapse(This, Start) (This)->lpVtbl->collapse(This, Start)
+#define IHTMLTxtRange_expand(This, Unit, Success) (This)->lpVtbl->expand(This, Unit, Success)
+#define IHTMLTxtRange_move(This, Unit, Count, ActualCount) (This)->lpVtbl->move(This, Unit, Count, ActualCount)
+#define IHTMLTxtRange_moveStart(This, Unit, Count, ActualCount) (This)->lpVtbl->moveStart(This, Unit, Count, ActualCount)
+#define IHTMLTxtRange_moveEnd(This, Unit, Count, ActualCount) (This)->lpVtbl->moveEnd(This, Unit, Count, ActualCount)
+#define IHTMLTxtRange_select(This) (This)->lpVtbl->select(This)
+#define IHTMLTxtRange_pasteHTML(This, html) (This)->lpVtbl->pasteHTML(This, html)
+#define IHTMLTxtRange_moveToElementText(This, element) (This)->lpVtbl->moveToElementText(This, element)
+#define IHTMLTxtRange_setEndPoint(This, how, SourceRange) (This)->lpVtbl->setEndPoint(This, how, SourceRange)
+#define IHTMLTxtRange_compareEndPoints(This, how, SourceRange, ret) (This)->lpVtbl->compareEndPoints(This, how, SourceRange, ret)
+#define IHTMLTxtRange_findText(This, String, count, Flags, Success) (This)->lpVtbl->findText(This, String, count, Flags, Success)
+#define IHTMLTxtRange_moveToPoint(This, x, y) (This)->lpVtbl->moveToPoint(This, x, y)
+#define IHTMLTxtRange_getBookmark(This, Boolmark) (This)->lpVtbl->getBookmark(This, Boolmark)
+#define IHTMLTxtRange_moveToBookmark(This, Bookmark, Success) (This)->lpVtbl->moveToBookmark(This, Bookmark, Success)
+#define IHTMLTxtRange_queryCommandSupported(This, cmdID, pfRet) (This)->lpVtbl->queryCommandSupported(This, cmdID, pfRet)
+#define IHTMLTxtRange_queryCommandEnabled(This, cmdID, pfRet) (This)->lpVtbl->queryCommandEnabled(This, cmdID, pfRet)
+#define IHTMLTxtRange_queryCommandState(This, cmdID, pfRet) (This)->lpVtbl->queryCommandState(This, cmdID, pfRet)
+#define IHTMLTxtRange_queryCommandIndeterm(This, cmdID, pfRet) (This)->lpVtbl->queryCommandIndeterm(This, cmdID, pfRet)
+#define IHTMLTxtRange_queryCommandText(This, cmdID, pcmdText) (This)->lpVtbl->queryCommandText(This, cmdID, pcmdText)
+#define IHTMLTxtRange_queryCommandValue(This, cmdID, pcmdValue) (This)->lpVtbl->queryCommandValue(This, cmdID, pcmdValue)
+#define IHTMLTxtRange_execCommand(This, cmdID, showUI, value, pfRet) (This)->lpVtbl->execCommand(This, cmdID, showUI, value, pfRet)
+#define IHTMLTxtRange_execCommandShowHelp(This, cmdID, pfRet) (This)->lpVtbl->execCommandShowHelp(This, cmdID, pfRet)
 
 declare function IHTMLTxtRange_get_htmlText_Proxy(byval This as IHTMLTxtRange ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLTxtRange_get_htmlText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7578,6 +9371,20 @@ type IHTMLTextRangeMetrics_
 	lpVtbl as IHTMLTextRangeMetricsVtbl ptr
 end type
 
+#define IHTMLTextRangeMetrics_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTextRangeMetrics_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTextRangeMetrics_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTextRangeMetrics_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTextRangeMetrics_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTextRangeMetrics_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTextRangeMetrics_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTextRangeMetrics_get_offsetTop(This, p) (This)->lpVtbl->get_offsetTop(This, p)
+#define IHTMLTextRangeMetrics_get_offsetLeft(This, p) (This)->lpVtbl->get_offsetLeft(This, p)
+#define IHTMLTextRangeMetrics_get_boundingTop(This, p) (This)->lpVtbl->get_boundingTop(This, p)
+#define IHTMLTextRangeMetrics_get_boundingLeft(This, p) (This)->lpVtbl->get_boundingLeft(This, p)
+#define IHTMLTextRangeMetrics_get_boundingWidth(This, p) (This)->lpVtbl->get_boundingWidth(This, p)
+#define IHTMLTextRangeMetrics_get_boundingHeight(This, p) (This)->lpVtbl->get_boundingHeight(This, p)
+
 declare function IHTMLTextRangeMetrics_get_offsetTop_Proxy(byval This as IHTMLTextRangeMetrics ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLTextRangeMetrics_get_offsetTop_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTextRangeMetrics_get_offsetLeft_Proxy(byval This as IHTMLTextRangeMetrics ptr, byval p as long ptr) as HRESULT
@@ -7610,6 +9417,16 @@ type IHTMLTextRangeMetrics2_
 	lpVtbl as IHTMLTextRangeMetrics2Vtbl ptr
 end type
 
+#define IHTMLTextRangeMetrics2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTextRangeMetrics2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTextRangeMetrics2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTextRangeMetrics2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTextRangeMetrics2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTextRangeMetrics2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTextRangeMetrics2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTextRangeMetrics2_getClientRects(This, pRectCol) (This)->lpVtbl->getClientRects(This, pRectCol)
+#define IHTMLTextRangeMetrics2_getBoundingClientRect(This, pRect) (This)->lpVtbl->getBoundingClientRect(This, pRect)
+
 declare function IHTMLTextRangeMetrics2_getClientRects_Proxy(byval This as IHTMLTextRangeMetrics2 ptr, byval pRectCol as IHTMLRectCollection ptr ptr) as HRESULT
 declare sub IHTMLTextRangeMetrics2_getClientRects_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTextRangeMetrics2_getBoundingClientRect_Proxy(byval This as IHTMLTextRangeMetrics2 ptr, byval pRect as IHTMLRect ptr ptr) as HRESULT
@@ -7635,6 +9452,17 @@ type IHTMLTxtRangeCollection_
 	lpVtbl as IHTMLTxtRangeCollectionVtbl ptr
 end type
 
+#define IHTMLTxtRangeCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTxtRangeCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTxtRangeCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTxtRangeCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTxtRangeCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTxtRangeCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTxtRangeCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTxtRangeCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLTxtRangeCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLTxtRangeCollection_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
+
 declare function IHTMLTxtRangeCollection_get_length_Proxy(byval This as IHTMLTxtRangeCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLTxtRangeCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTxtRangeCollection_get__newEnum_Proxy(byval This as IHTMLTxtRangeCollection ptr, byval p as IUnknown ptr ptr) as HRESULT
@@ -7659,6 +9487,13 @@ type HTMLFormElementEvents2_
 	lpVtbl as HTMLFormElementEvents2Vtbl ptr
 end type
 
+#define HTMLFormElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLFormElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLFormElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLFormElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLFormElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLFormElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLFormElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLFormElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLFormElementEvents as const IID
 type HTMLFormElementEvents as HTMLFormElementEvents_
@@ -7677,6 +9512,13 @@ type HTMLFormElementEvents_
 	lpVtbl as HTMLFormElementEventsVtbl ptr
 end type
 
+#define HTMLFormElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLFormElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLFormElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLFormElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLFormElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLFormElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLFormElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLFormElement_INTERFACE_DEFINED__
 extern IID_IHTMLFormElement as const IID
 type IHTMLFormElement as IHTMLFormElement_
@@ -7718,6 +9560,38 @@ end type
 type IHTMLFormElement_
 	lpVtbl as IHTMLFormElementVtbl ptr
 end type
+
+#define IHTMLFormElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFormElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFormElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFormElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFormElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFormElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFormElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFormElement_put_action(This, v) (This)->lpVtbl->put_action(This, v)
+#define IHTMLFormElement_get_action(This, p) (This)->lpVtbl->get_action(This, p)
+#define IHTMLFormElement_put_dir(This, v) (This)->lpVtbl->put_dir(This, v)
+#define IHTMLFormElement_get_dir(This, p) (This)->lpVtbl->get_dir(This, p)
+#define IHTMLFormElement_put_encoding(This, v) (This)->lpVtbl->put_encoding(This, v)
+#define IHTMLFormElement_get_encoding(This, p) (This)->lpVtbl->get_encoding(This, p)
+#define IHTMLFormElement_put_method(This, v) (This)->lpVtbl->put_method(This, v)
+#define IHTMLFormElement_get_method(This, p) (This)->lpVtbl->get_method(This, p)
+#define IHTMLFormElement_get_elements(This, p) (This)->lpVtbl->get_elements(This, p)
+#define IHTMLFormElement_put_target(This, v) (This)->lpVtbl->put_target(This, v)
+#define IHTMLFormElement_get_target(This, p) (This)->lpVtbl->get_target(This, p)
+#define IHTMLFormElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLFormElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLFormElement_put_onsubmit(This, v) (This)->lpVtbl->put_onsubmit(This, v)
+#define IHTMLFormElement_get_onsubmit(This, p) (This)->lpVtbl->get_onsubmit(This, p)
+#define IHTMLFormElement_put_onreset(This, v) (This)->lpVtbl->put_onreset(This, v)
+#define IHTMLFormElement_get_onreset(This, p) (This)->lpVtbl->get_onreset(This, p)
+#define IHTMLFormElement_submit(This) (This)->lpVtbl->submit(This)
+#define IHTMLFormElement_reset(This) (This)->lpVtbl->reset(This)
+#define IHTMLFormElement_put_length(This, v) (This)->lpVtbl->put_length(This, v)
+#define IHTMLFormElement_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLFormElement_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLFormElement_item(This, name, index, pdisp) (This)->lpVtbl->item(This, name, index, pdisp)
+#define IHTMLFormElement_tags(This, tagName, pdisp) (This)->lpVtbl->tags(This, tagName, pdisp)
 
 declare function IHTMLFormElement_put_action_Proxy(byval This as IHTMLFormElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFormElement_put_action_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7788,6 +9662,17 @@ type IHTMLFormElement2_
 	lpVtbl as IHTMLFormElement2Vtbl ptr
 end type
 
+#define IHTMLFormElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFormElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFormElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFormElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFormElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFormElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFormElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFormElement2_put_acceptCharset(This, v) (This)->lpVtbl->put_acceptCharset(This, v)
+#define IHTMLFormElement2_get_acceptCharset(This, p) (This)->lpVtbl->get_acceptCharset(This, p)
+#define IHTMLFormElement2_urns(This, urn, pdisp) (This)->lpVtbl->urns(This, urn, pdisp)
+
 declare function IHTMLFormElement2_put_acceptCharset_Proxy(byval This as IHTMLFormElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFormElement2_put_acceptCharset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFormElement2_get_acceptCharset_Proxy(byval This as IHTMLFormElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -7813,6 +9698,14 @@ type IHTMLFormElement3_
 	lpVtbl as IHTMLFormElement3Vtbl ptr
 end type
 
+#define IHTMLFormElement3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFormElement3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFormElement3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFormElement3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFormElement3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFormElement3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFormElement3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFormElement3_namedItem(This, name, pdisp) (This)->lpVtbl->namedItem(This, name, pdisp)
 declare function IHTMLFormElement3_namedItem_Proxy(byval This as IHTMLFormElement3 ptr, byval name as BSTR, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLFormElement3_namedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLSubmitData_INTERFACE_DEFINED__
@@ -7835,6 +9728,17 @@ end type
 type IHTMLSubmitData_
 	lpVtbl as IHTMLSubmitDataVtbl ptr
 end type
+
+#define IHTMLSubmitData_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSubmitData_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSubmitData_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSubmitData_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSubmitData_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSubmitData_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSubmitData_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSubmitData_appendNameValuePair(This, name, value) (This)->lpVtbl->appendNameValuePair(This, name, value)
+#define IHTMLSubmitData_appendNameFilePair(This, name, filename) (This)->lpVtbl->appendNameFilePair(This, name, filename)
+#define IHTMLSubmitData_appendItemSeparator(This) (This)->lpVtbl->appendItemSeparator(This)
 
 declare function IHTMLSubmitData_appendNameValuePair_Proxy(byval This as IHTMLSubmitData ptr, byval name as BSTR, byval value as BSTR) as HRESULT
 declare sub IHTMLSubmitData_appendNameValuePair_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7860,6 +9764,13 @@ type DispHTMLFormElement_
 	lpVtbl as DispHTMLFormElementVtbl ptr
 end type
 
+#define DispHTMLFormElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFormElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFormElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFormElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFormElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFormElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFormElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFormElement as const CLSID
 #define __HTMLControlElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLControlElementEvents2 as const IID
@@ -7879,6 +9790,13 @@ type HTMLControlElementEvents2_
 	lpVtbl as HTMLControlElementEvents2Vtbl ptr
 end type
 
+#define HTMLControlElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLControlElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLControlElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLControlElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLControlElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLControlElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLControlElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLControlElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLControlElementEvents as const IID
 type HTMLControlElementEvents as HTMLControlElementEvents_
@@ -7897,6 +9815,13 @@ type HTMLControlElementEvents_
 	lpVtbl as HTMLControlElementEventsVtbl ptr
 end type
 
+#define HTMLControlElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLControlElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLControlElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLControlElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLControlElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLControlElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLControlElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLControlElement_INTERFACE_DEFINED__
 extern IID_IHTMLControlElement as const IID
 type IHTMLControlElement as IHTMLControlElement_
@@ -7932,6 +9857,32 @@ end type
 type IHTMLControlElement_
 	lpVtbl as IHTMLControlElementVtbl ptr
 end type
+
+#define IHTMLControlElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLControlElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLControlElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLControlElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLControlElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLControlElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLControlElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLControlElement_put_tabIndex(This, v) (This)->lpVtbl->put_tabIndex(This, v)
+#define IHTMLControlElement_get_tabIndex(This, p) (This)->lpVtbl->get_tabIndex(This, p)
+#define IHTMLControlElement_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLControlElement_put_accessKey(This, v) (This)->lpVtbl->put_accessKey(This, v)
+#define IHTMLControlElement_get_accessKey(This, p) (This)->lpVtbl->get_accessKey(This, p)
+#define IHTMLControlElement_put_onblur(This, v) (This)->lpVtbl->put_onblur(This, v)
+#define IHTMLControlElement_get_onblur(This, p) (This)->lpVtbl->get_onblur(This, p)
+#define IHTMLControlElement_put_onfocus(This, v) (This)->lpVtbl->put_onfocus(This, v)
+#define IHTMLControlElement_get_onfocus(This, p) (This)->lpVtbl->get_onfocus(This, p)
+#define IHTMLControlElement_put_onresize(This, v) (This)->lpVtbl->put_onresize(This, v)
+#define IHTMLControlElement_get_onresize(This, p) (This)->lpVtbl->get_onresize(This, p)
+#define IHTMLControlElement_blur(This) (This)->lpVtbl->blur(This)
+#define IHTMLControlElement_addFilter(This, pUnk) (This)->lpVtbl->addFilter(This, pUnk)
+#define IHTMLControlElement_removeFilter(This, pUnk) (This)->lpVtbl->removeFilter(This, pUnk)
+#define IHTMLControlElement_get_clientHeight(This, p) (This)->lpVtbl->get_clientHeight(This, p)
+#define IHTMLControlElement_get_clientWidth(This, p) (This)->lpVtbl->get_clientWidth(This, p)
+#define IHTMLControlElement_get_clientTop(This, p) (This)->lpVtbl->get_clientTop(This, p)
+#define IHTMLControlElement_get_clientLeft(This, p) (This)->lpVtbl->get_clientLeft(This, p)
 
 declare function IHTMLControlElement_put_tabIndex_Proxy(byval This as IHTMLControlElement ptr, byval v as short) as HRESULT
 declare sub IHTMLControlElement_put_tabIndex_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -7987,6 +9938,13 @@ type IHTMLTextElement_
 	lpVtbl as IHTMLTextElementVtbl ptr
 end type
 
+#define IHTMLTextElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTextElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTextElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTextElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTextElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTextElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTextElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __DispHTMLTextElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTextElement as const IID
 type DispHTMLTextElement as DispHTMLTextElement_
@@ -8005,6 +9963,13 @@ type DispHTMLTextElement_
 	lpVtbl as DispHTMLTextElementVtbl ptr
 end type
 
+#define DispHTMLTextElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTextElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTextElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTextElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTextElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTextElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTextElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTextElement as const CLSID
 #define __HTMLTextContainerEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLTextContainerEvents2 as const IID
@@ -8024,6 +9989,13 @@ type HTMLTextContainerEvents2_
 	lpVtbl as HTMLTextContainerEvents2Vtbl ptr
 end type
 
+#define HTMLTextContainerEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLTextContainerEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLTextContainerEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLTextContainerEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLTextContainerEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLTextContainerEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLTextContainerEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLTextContainerEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLTextContainerEvents as const IID
 type HTMLTextContainerEvents as HTMLTextContainerEvents_
@@ -8042,6 +10014,13 @@ type HTMLTextContainerEvents_
 	lpVtbl as HTMLTextContainerEventsVtbl ptr
 end type
 
+#define HTMLTextContainerEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLTextContainerEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLTextContainerEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLTextContainerEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLTextContainerEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLTextContainerEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLTextContainerEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLTextContainer_INTERFACE_DEFINED__
 extern IID_IHTMLTextContainer as const IID
 type IHTMLTextContainer as IHTMLTextContainer_
@@ -8068,6 +10047,23 @@ end type
 type IHTMLTextContainer_
 	lpVtbl as IHTMLTextContainerVtbl ptr
 end type
+
+#define IHTMLTextContainer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTextContainer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTextContainer_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTextContainer_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTextContainer_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTextContainer_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTextContainer_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTextContainer_createControlRange(This, range) (This)->lpVtbl->createControlRange(This, range)
+#define IHTMLTextContainer_get_scrollHeight(This, p) (This)->lpVtbl->get_scrollHeight(This, p)
+#define IHTMLTextContainer_get_scrollWidth(This, p) (This)->lpVtbl->get_scrollWidth(This, p)
+#define IHTMLTextContainer_put_scrollTop(This, v) (This)->lpVtbl->put_scrollTop(This, v)
+#define IHTMLTextContainer_get_scrollTop(This, p) (This)->lpVtbl->get_scrollTop(This, p)
+#define IHTMLTextContainer_put_scrollLeft(This, v) (This)->lpVtbl->put_scrollLeft(This, v)
+#define IHTMLTextContainer_get_scrollLeft(This, p) (This)->lpVtbl->get_scrollLeft(This, p)
+#define IHTMLTextContainer_put_onscroll(This, v) (This)->lpVtbl->put_onscroll(This, v)
+#define IHTMLTextContainer_get_onscroll(This, p) (This)->lpVtbl->get_onscroll(This, p)
 
 declare function IHTMLTextContainer_createControlRange_Proxy(byval This as IHTMLTextContainer ptr, byval range as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLTextContainer_createControlRange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8120,6 +10116,29 @@ type IHTMLControlRange_
 	lpVtbl as IHTMLControlRangeVtbl ptr
 end type
 
+#define IHTMLControlRange_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLControlRange_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLControlRange_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLControlRange_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLControlRange_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLControlRange_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLControlRange_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLControlRange_select(This) (This)->lpVtbl->select(This)
+#define IHTMLControlRange_add(This, item) (This)->lpVtbl->add(This, item)
+#define IHTMLControlRange_remove(This, index) (This)->lpVtbl->remove(This, index)
+#define IHTMLControlRange_item(This, index, pdisp) (This)->lpVtbl->item(This, index, pdisp)
+#define IHTMLControlRange_scrollIntoView(This, varargStart) (This)->lpVtbl->scrollIntoView(This, varargStart)
+#define IHTMLControlRange_queryCommandSupported(This, cmdID, pfRet) (This)->lpVtbl->queryCommandSupported(This, cmdID, pfRet)
+#define IHTMLControlRange_queryCommandEnabled(This, cmdID, pfRet) (This)->lpVtbl->queryCommandEnabled(This, cmdID, pfRet)
+#define IHTMLControlRange_queryCommandState(This, cmdID, pfRet) (This)->lpVtbl->queryCommandState(This, cmdID, pfRet)
+#define IHTMLControlRange_queryCommandIndeterm(This, cmdID, pfRet) (This)->lpVtbl->queryCommandIndeterm(This, cmdID, pfRet)
+#define IHTMLControlRange_queryCommandText(This, cmdID, pcmdText) (This)->lpVtbl->queryCommandText(This, cmdID, pcmdText)
+#define IHTMLControlRange_queryCommandValue(This, cmdID, pcmdValue) (This)->lpVtbl->queryCommandValue(This, cmdID, pcmdValue)
+#define IHTMLControlRange_execCommand(This, cmdID, showUI, value, pfRet) (This)->lpVtbl->execCommand(This, cmdID, showUI, value, pfRet)
+#define IHTMLControlRange_execCommandShowHelp(This, cmdID, pfRet) (This)->lpVtbl->execCommandShowHelp(This, cmdID, pfRet)
+#define IHTMLControlRange_commonParentElement(This, parent) (This)->lpVtbl->commonParentElement(This, parent)
+#define IHTMLControlRange_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+
 declare function IHTMLControlRange_select_Proxy(byval This as IHTMLControlRange ptr) as HRESULT
 declare sub IHTMLControlRange_select_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLControlRange_add_Proxy(byval This as IHTMLControlRange ptr, byval item as IHTMLControlElement ptr) as HRESULT
@@ -8169,6 +10188,14 @@ type IHTMLControlRange2_
 	lpVtbl as IHTMLControlRange2Vtbl ptr
 end type
 
+#define IHTMLControlRange2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLControlRange2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLControlRange2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLControlRange2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLControlRange2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLControlRange2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLControlRange2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLControlRange2_addElement(This, item) (This)->lpVtbl->addElement(This, item)
 declare function IHTMLControlRange2_addElement_Proxy(byval This as IHTMLControlRange2 ptr, byval item as IHTMLElement ptr) as HRESULT
 declare sub IHTMLControlRange2_addElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __HTMLImgEvents2_DISPINTERFACE_DEFINED__
@@ -8189,6 +10216,13 @@ type HTMLImgEvents2_
 	lpVtbl as HTMLImgEvents2Vtbl ptr
 end type
 
+#define HTMLImgEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLImgEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLImgEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLImgEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLImgEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLImgEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLImgEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLImgEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLImgEvents as const IID
 type HTMLImgEvents as HTMLImgEvents_
@@ -8207,6 +10241,13 @@ type HTMLImgEvents_
 	lpVtbl as HTMLImgEventsVtbl ptr
 end type
 
+#define HTMLImgEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLImgEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLImgEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLImgEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLImgEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLImgEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLImgEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLImgElement_INTERFACE_DEFINED__
 extern IID_IHTMLImgElement as const IID
 type IHTMLImgElement as IHTMLImgElement_
@@ -8272,6 +10313,62 @@ end type
 type IHTMLImgElement_
 	lpVtbl as IHTMLImgElementVtbl ptr
 end type
+
+#define IHTMLImgElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLImgElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLImgElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLImgElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLImgElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLImgElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLImgElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLImgElement_put_isMap(This, v) (This)->lpVtbl->put_isMap(This, v)
+#define IHTMLImgElement_get_isMap(This, p) (This)->lpVtbl->get_isMap(This, p)
+#define IHTMLImgElement_put_useMap(This, v) (This)->lpVtbl->put_useMap(This, v)
+#define IHTMLImgElement_get_useMap(This, p) (This)->lpVtbl->get_useMap(This, p)
+#define IHTMLImgElement_get_mimeType(This, p) (This)->lpVtbl->get_mimeType(This, p)
+#define IHTMLImgElement_get_fileSize(This, p) (This)->lpVtbl->get_fileSize(This, p)
+#define IHTMLImgElement_get_fileCreatedDate(This, p) (This)->lpVtbl->get_fileCreatedDate(This, p)
+#define IHTMLImgElement_get_fileModifiedDate(This, p) (This)->lpVtbl->get_fileModifiedDate(This, p)
+#define IHTMLImgElement_get_fileUpdatedDate(This, p) (This)->lpVtbl->get_fileUpdatedDate(This, p)
+#define IHTMLImgElement_get_protocol(This, p) (This)->lpVtbl->get_protocol(This, p)
+#define IHTMLImgElement_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLImgElement_get_nameProp(This, p) (This)->lpVtbl->get_nameProp(This, p)
+#define IHTMLImgElement_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLImgElement_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLImgElement_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLImgElement_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLImgElement_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLImgElement_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
+#define IHTMLImgElement_put_alt(This, v) (This)->lpVtbl->put_alt(This, v)
+#define IHTMLImgElement_get_alt(This, p) (This)->lpVtbl->get_alt(This, p)
+#define IHTMLImgElement_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLImgElement_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLImgElement_put_lowsrc(This, v) (This)->lpVtbl->put_lowsrc(This, v)
+#define IHTMLImgElement_get_lowsrc(This, p) (This)->lpVtbl->get_lowsrc(This, p)
+#define IHTMLImgElement_put_vrml(This, v) (This)->lpVtbl->put_vrml(This, v)
+#define IHTMLImgElement_get_vrml(This, p) (This)->lpVtbl->get_vrml(This, p)
+#define IHTMLImgElement_put_dynsrc(This, v) (This)->lpVtbl->put_dynsrc(This, v)
+#define IHTMLImgElement_get_dynsrc(This, p) (This)->lpVtbl->get_dynsrc(This, p)
+#define IHTMLImgElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLImgElement_get_complete(This, p) (This)->lpVtbl->get_complete(This, p)
+#define IHTMLImgElement_put_loop(This, v) (This)->lpVtbl->put_loop(This, v)
+#define IHTMLImgElement_get_loop(This, p) (This)->lpVtbl->get_loop(This, p)
+#define IHTMLImgElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLImgElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLImgElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLImgElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLImgElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLImgElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLImgElement_put_onabort(This, v) (This)->lpVtbl->put_onabort(This, v)
+#define IHTMLImgElement_get_onabort(This, p) (This)->lpVtbl->get_onabort(This, p)
+#define IHTMLImgElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLImgElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLImgElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLImgElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLImgElement_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLImgElement_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLImgElement_put_start(This, v) (This)->lpVtbl->put_start(This, v)
+#define IHTMLImgElement_get_start(This, p) (This)->lpVtbl->get_start(This, p)
 
 declare function IHTMLImgElement_put_isMap_Proxy(byval This as IHTMLImgElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLImgElement_put_isMap_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8389,6 +10486,16 @@ type IHTMLImgElement2_
 	lpVtbl as IHTMLImgElement2Vtbl ptr
 end type
 
+#define IHTMLImgElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLImgElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLImgElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLImgElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLImgElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLImgElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLImgElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLImgElement2_put_longDesc(This, v) (This)->lpVtbl->put_longDesc(This, v)
+#define IHTMLImgElement2_get_longDesc(This, p) (This)->lpVtbl->get_longDesc(This, p)
+
 declare function IHTMLImgElement2_put_longDesc_Proxy(byval This as IHTMLImgElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLImgElement2_put_longDesc_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLImgElement2_get_longDesc_Proxy(byval This as IHTMLImgElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -8412,6 +10519,14 @@ type IHTMLImageElementFactory_
 	lpVtbl as IHTMLImageElementFactoryVtbl ptr
 end type
 
+#define IHTMLImageElementFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLImageElementFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLImageElementFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLImageElementFactory_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLImageElementFactory_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLImageElementFactory_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLImageElementFactory_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLImageElementFactory_create(This, width, height, __MIDL_0011) (This)->lpVtbl->create(This, width, height, __MIDL_0011)
 declare function IHTMLImageElementFactory_create_Proxy(byval This as IHTMLImageElementFactory ptr, byval width as VARIANT, byval height as VARIANT, byval __MIDL_0011 as IHTMLImgElement ptr ptr) as HRESULT
 declare sub IHTMLImageElementFactory_create_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLImg_DISPINTERFACE_DEFINED__
@@ -8432,6 +10547,13 @@ type DispHTMLImg_
 	lpVtbl as DispHTMLImgVtbl ptr
 end type
 
+#define DispHTMLImg_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLImg_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLImg_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLImg_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLImg_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLImg_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLImg_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLImg as const CLSID
 extern CLSID_HTMLImageElementFactory as const CLSID
 #define __IHTMLBodyElement_INTERFACE_DEFINED__
@@ -8486,6 +10608,49 @@ end type
 type IHTMLBodyElement_
 	lpVtbl as IHTMLBodyElementVtbl ptr
 end type
+
+#define IHTMLBodyElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBodyElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBodyElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBodyElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBodyElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBodyElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBodyElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBodyElement_put_background(This, v) (This)->lpVtbl->put_background(This, v)
+#define IHTMLBodyElement_get_background(This, p) (This)->lpVtbl->get_background(This, p)
+#define IHTMLBodyElement_put_bgProperties(This, v) (This)->lpVtbl->put_bgProperties(This, v)
+#define IHTMLBodyElement_get_bgProperties(This, p) (This)->lpVtbl->get_bgProperties(This, p)
+#define IHTMLBodyElement_put_leftMargin(This, v) (This)->lpVtbl->put_leftMargin(This, v)
+#define IHTMLBodyElement_get_leftMargin(This, p) (This)->lpVtbl->get_leftMargin(This, p)
+#define IHTMLBodyElement_put_topMargin(This, v) (This)->lpVtbl->put_topMargin(This, v)
+#define IHTMLBodyElement_get_topMargin(This, p) (This)->lpVtbl->get_topMargin(This, p)
+#define IHTMLBodyElement_put_rightMargin(This, v) (This)->lpVtbl->put_rightMargin(This, v)
+#define IHTMLBodyElement_get_rightMargin(This, p) (This)->lpVtbl->get_rightMargin(This, p)
+#define IHTMLBodyElement_put_bottomMargin(This, v) (This)->lpVtbl->put_bottomMargin(This, v)
+#define IHTMLBodyElement_get_bottomMargin(This, p) (This)->lpVtbl->get_bottomMargin(This, p)
+#define IHTMLBodyElement_put_noWrap(This, v) (This)->lpVtbl->put_noWrap(This, v)
+#define IHTMLBodyElement_get_noWrap(This, p) (This)->lpVtbl->get_noWrap(This, p)
+#define IHTMLBodyElement_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLBodyElement_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLBodyElement_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLBodyElement_get_text(This, p) (This)->lpVtbl->get_text(This, p)
+#define IHTMLBodyElement_put_link(This, v) (This)->lpVtbl->put_link(This, v)
+#define IHTMLBodyElement_get_link(This, p) (This)->lpVtbl->get_link(This, p)
+#define IHTMLBodyElement_put_vLink(This, v) (This)->lpVtbl->put_vLink(This, v)
+#define IHTMLBodyElement_get_vLink(This, p) (This)->lpVtbl->get_vLink(This, p)
+#define IHTMLBodyElement_put_aLink(This, v) (This)->lpVtbl->put_aLink(This, v)
+#define IHTMLBodyElement_get_aLink(This, p) (This)->lpVtbl->get_aLink(This, p)
+#define IHTMLBodyElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLBodyElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLBodyElement_put_onunload(This, v) (This)->lpVtbl->put_onunload(This, v)
+#define IHTMLBodyElement_get_onunload(This, p) (This)->lpVtbl->get_onunload(This, p)
+#define IHTMLBodyElement_put_scroll(This, v) (This)->lpVtbl->put_scroll(This, v)
+#define IHTMLBodyElement_get_scroll(This, p) (This)->lpVtbl->get_scroll(This, p)
+#define IHTMLBodyElement_put_onselect(This, v) (This)->lpVtbl->put_onselect(This, v)
+#define IHTMLBodyElement_get_onselect(This, p) (This)->lpVtbl->get_onselect(This, p)
+#define IHTMLBodyElement_put_onbeforeunload(This, v) (This)->lpVtbl->put_onbeforeunload(This, v)
+#define IHTMLBodyElement_get_onbeforeunload(This, p) (This)->lpVtbl->get_onbeforeunload(This, p)
+#define IHTMLBodyElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLBodyElement_put_background_Proxy(byval This as IHTMLBodyElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBodyElement_put_background_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8579,6 +10744,18 @@ type IHTMLBodyElement2_
 	lpVtbl as IHTMLBodyElement2Vtbl ptr
 end type
 
+#define IHTMLBodyElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBodyElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBodyElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBodyElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBodyElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBodyElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBodyElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBodyElement2_put_onbeforeprint(This, v) (This)->lpVtbl->put_onbeforeprint(This, v)
+#define IHTMLBodyElement2_get_onbeforeprint(This, p) (This)->lpVtbl->get_onbeforeprint(This, p)
+#define IHTMLBodyElement2_put_onafterprint(This, v) (This)->lpVtbl->put_onafterprint(This, v)
+#define IHTMLBodyElement2_get_onafterprint(This, p) (This)->lpVtbl->get_onafterprint(This, p)
+
 declare function IHTMLBodyElement2_put_onbeforeprint_Proxy(byval This as IHTMLBodyElement2 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLBodyElement2_put_onbeforeprint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLBodyElement2_get_onbeforeprint_Proxy(byval This as IHTMLBodyElement2 ptr, byval p as VARIANT ptr) as HRESULT
@@ -8605,6 +10782,13 @@ type DispHTMLBody_
 	lpVtbl as DispHTMLBodyVtbl ptr
 end type
 
+#define DispHTMLBody_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBody_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBody_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBody_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBody_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBody_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBody_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBody as const CLSID
 #define __IHTMLFontElement_INTERFACE_DEFINED__
 extern IID_IHTMLFontElement as const IID
@@ -8629,6 +10813,20 @@ end type
 type IHTMLFontElement_
 	lpVtbl as IHTMLFontElementVtbl ptr
 end type
+
+#define IHTMLFontElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFontElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFontElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFontElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFontElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFontElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFontElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFontElement_put_color(This, v) (This)->lpVtbl->put_color(This, v)
+#define IHTMLFontElement_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLFontElement_put_face(This, v) (This)->lpVtbl->put_face(This, v)
+#define IHTMLFontElement_get_face(This, p) (This)->lpVtbl->get_face(This, p)
+#define IHTMLFontElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLFontElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
 
 declare function IHTMLFontElement_put_color_Proxy(byval This as IHTMLFontElement ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLFontElement_put_color_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8660,6 +10858,13 @@ type DispHTMLFontElement_
 	lpVtbl as DispHTMLFontElementVtbl ptr
 end type
 
+#define DispHTMLFontElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFontElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFontElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFontElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFontElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFontElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFontElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFontElement as const CLSID
 #define __HTMLAnchorEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLAnchorEvents2 as const IID
@@ -8679,6 +10884,13 @@ type HTMLAnchorEvents2_
 	lpVtbl as HTMLAnchorEvents2Vtbl ptr
 end type
 
+#define HTMLAnchorEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLAnchorEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLAnchorEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLAnchorEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLAnchorEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLAnchorEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLAnchorEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLAnchorEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLAnchorEvents as const IID
 type HTMLAnchorEvents as HTMLAnchorEvents_
@@ -8697,6 +10909,13 @@ type HTMLAnchorEvents_
 	lpVtbl as HTMLAnchorEventsVtbl ptr
 end type
 
+#define HTMLAnchorEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLAnchorEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLAnchorEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLAnchorEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLAnchorEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLAnchorEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLAnchorEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLAnchorElement_INTERFACE_DEFINED__
 extern IID_IHTMLAnchorElement as const IID
 type IHTMLAnchorElement as IHTMLAnchorElement_
@@ -8755,6 +10974,55 @@ end type
 type IHTMLAnchorElement_
 	lpVtbl as IHTMLAnchorElementVtbl ptr
 end type
+
+#define IHTMLAnchorElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAnchorElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAnchorElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAnchorElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAnchorElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAnchorElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAnchorElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAnchorElement_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLAnchorElement_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLAnchorElement_put_target(This, v) (This)->lpVtbl->put_target(This, v)
+#define IHTMLAnchorElement_get_target(This, p) (This)->lpVtbl->get_target(This, p)
+#define IHTMLAnchorElement_put_rel(This, v) (This)->lpVtbl->put_rel(This, v)
+#define IHTMLAnchorElement_get_rel(This, p) (This)->lpVtbl->get_rel(This, p)
+#define IHTMLAnchorElement_put_rev(This, v) (This)->lpVtbl->put_rev(This, v)
+#define IHTMLAnchorElement_get_rev(This, p) (This)->lpVtbl->get_rev(This, p)
+#define IHTMLAnchorElement_put_urn(This, v) (This)->lpVtbl->put_urn(This, v)
+#define IHTMLAnchorElement_get_urn(This, p) (This)->lpVtbl->get_urn(This, p)
+#define IHTMLAnchorElement_put_Methods(This, v) (This)->lpVtbl->put_Methods(This, v)
+#define IHTMLAnchorElement_get_Methods(This, p) (This)->lpVtbl->get_Methods(This, p)
+#define IHTMLAnchorElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLAnchorElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLAnchorElement_put_host(This, v) (This)->lpVtbl->put_host(This, v)
+#define IHTMLAnchorElement_get_host(This, p) (This)->lpVtbl->get_host(This, p)
+#define IHTMLAnchorElement_put_hostname(This, v) (This)->lpVtbl->put_hostname(This, v)
+#define IHTMLAnchorElement_get_hostname(This, p) (This)->lpVtbl->get_hostname(This, p)
+#define IHTMLAnchorElement_put_pathname(This, v) (This)->lpVtbl->put_pathname(This, v)
+#define IHTMLAnchorElement_get_pathname(This, p) (This)->lpVtbl->get_pathname(This, p)
+#define IHTMLAnchorElement_put_port(This, v) (This)->lpVtbl->put_port(This, v)
+#define IHTMLAnchorElement_get_port(This, p) (This)->lpVtbl->get_port(This, p)
+#define IHTMLAnchorElement_put_protocol(This, v) (This)->lpVtbl->put_protocol(This, v)
+#define IHTMLAnchorElement_get_protocol(This, p) (This)->lpVtbl->get_protocol(This, p)
+#define IHTMLAnchorElement_put_search(This, v) (This)->lpVtbl->put_search(This, v)
+#define IHTMLAnchorElement_get_search(This, p) (This)->lpVtbl->get_search(This, p)
+#define IHTMLAnchorElement_put_hash(This, v) (This)->lpVtbl->put_hash(This, v)
+#define IHTMLAnchorElement_get_hash(This, p) (This)->lpVtbl->get_hash(This, p)
+#define IHTMLAnchorElement_put_onblur(This, v) (This)->lpVtbl->put_onblur(This, v)
+#define IHTMLAnchorElement_get_onblur(This, p) (This)->lpVtbl->get_onblur(This, p)
+#define IHTMLAnchorElement_put_onfocus(This, v) (This)->lpVtbl->put_onfocus(This, v)
+#define IHTMLAnchorElement_get_onfocus(This, p) (This)->lpVtbl->get_onfocus(This, p)
+#define IHTMLAnchorElement_put_accessKey(This, v) (This)->lpVtbl->put_accessKey(This, v)
+#define IHTMLAnchorElement_get_accessKey(This, p) (This)->lpVtbl->get_accessKey(This, p)
+#define IHTMLAnchorElement_get_protocolLong(This, p) (This)->lpVtbl->get_protocolLong(This, p)
+#define IHTMLAnchorElement_get_mimeType(This, p) (This)->lpVtbl->get_mimeType(This, p)
+#define IHTMLAnchorElement_get_nameProp(This, p) (This)->lpVtbl->get_nameProp(This, p)
+#define IHTMLAnchorElement_put_tabIndex(This, v) (This)->lpVtbl->put_tabIndex(This, v)
+#define IHTMLAnchorElement_get_tabIndex(This, p) (This)->lpVtbl->get_tabIndex(This, p)
+#define IHTMLAnchorElement_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLAnchorElement_blur(This) (This)->lpVtbl->blur(This)
 
 declare function IHTMLAnchorElement_put_href_Proxy(byval This as IHTMLAnchorElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAnchorElement_put_href_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8866,6 +11134,24 @@ type IHTMLAnchorElement2_
 	lpVtbl as IHTMLAnchorElement2Vtbl ptr
 end type
 
+#define IHTMLAnchorElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAnchorElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAnchorElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAnchorElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAnchorElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAnchorElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAnchorElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAnchorElement2_put_charset(This, v) (This)->lpVtbl->put_charset(This, v)
+#define IHTMLAnchorElement2_get_charset(This, p) (This)->lpVtbl->get_charset(This, p)
+#define IHTMLAnchorElement2_put_coords(This, v) (This)->lpVtbl->put_coords(This, v)
+#define IHTMLAnchorElement2_get_coords(This, p) (This)->lpVtbl->get_coords(This, p)
+#define IHTMLAnchorElement2_put_hreflang(This, v) (This)->lpVtbl->put_hreflang(This, v)
+#define IHTMLAnchorElement2_get_hreflang(This, p) (This)->lpVtbl->get_hreflang(This, p)
+#define IHTMLAnchorElement2_put_shape(This, v) (This)->lpVtbl->put_shape(This, v)
+#define IHTMLAnchorElement2_get_shape(This, p) (This)->lpVtbl->get_shape(This, p)
+#define IHTMLAnchorElement2_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLAnchorElement2_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+
 declare function IHTMLAnchorElement2_put_charset_Proxy(byval This as IHTMLAnchorElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAnchorElement2_put_charset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLAnchorElement2_get_charset_Proxy(byval This as IHTMLAnchorElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -8904,6 +11190,13 @@ type DispHTMLAnchorElement_
 	lpVtbl as DispHTMLAnchorElementVtbl ptr
 end type
 
+#define DispHTMLAnchorElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLAnchorElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLAnchorElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLAnchorElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLAnchorElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLAnchorElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLAnchorElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLAnchorElement as const CLSID
 #define __HTMLLabelEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLLabelEvents2 as const IID
@@ -8923,6 +11216,13 @@ type HTMLLabelEvents2_
 	lpVtbl as HTMLLabelEvents2Vtbl ptr
 end type
 
+#define HTMLLabelEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLLabelEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLLabelEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLLabelEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLLabelEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLLabelEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLLabelEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLLabelEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLLabelEvents as const IID
 type HTMLLabelEvents as HTMLLabelEvents_
@@ -8941,6 +11241,13 @@ type HTMLLabelEvents_
 	lpVtbl as HTMLLabelEventsVtbl ptr
 end type
 
+#define HTMLLabelEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLLabelEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLLabelEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLLabelEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLLabelEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLLabelEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLLabelEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLLabelElement_INTERFACE_DEFINED__
 extern IID_IHTMLLabelElement as const IID
 type IHTMLLabelElement as IHTMLLabelElement_
@@ -8962,6 +11269,18 @@ end type
 type IHTMLLabelElement_
 	lpVtbl as IHTMLLabelElementVtbl ptr
 end type
+
+#define IHTMLLabelElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLabelElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLabelElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLabelElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLabelElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLabelElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLabelElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLabelElement_put_htmlFor(This, v) (This)->lpVtbl->put_htmlFor(This, v)
+#define IHTMLLabelElement_get_htmlFor(This, p) (This)->lpVtbl->get_htmlFor(This, p)
+#define IHTMLLabelElement_put_accessKey(This, v) (This)->lpVtbl->put_accessKey(This, v)
+#define IHTMLLabelElement_get_accessKey(This, p) (This)->lpVtbl->get_accessKey(This, p)
 
 declare function IHTMLLabelElement_put_htmlFor_Proxy(byval This as IHTMLLabelElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLabelElement_put_htmlFor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -8990,6 +11309,14 @@ type IHTMLLabelElement2_
 	lpVtbl as IHTMLLabelElement2Vtbl ptr
 end type
 
+#define IHTMLLabelElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLabelElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLabelElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLabelElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLabelElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLabelElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLabelElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLabelElement2_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 declare function IHTMLLabelElement2_get_form_Proxy(byval This as IHTMLLabelElement2 ptr, byval p as IHTMLFormElement ptr ptr) as HRESULT
 declare sub IHTMLLabelElement2_get_form_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLLabelElement_DISPINTERFACE_DEFINED__
@@ -9010,6 +11337,13 @@ type DispHTMLLabelElement_
 	lpVtbl as DispHTMLLabelElementVtbl ptr
 end type
 
+#define DispHTMLLabelElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLLabelElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLLabelElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLLabelElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLLabelElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLLabelElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLLabelElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLLabelElement as const CLSID
 #define __IHTMLListElement_INTERFACE_DEFINED__
 extern IID_IHTMLListElement as const IID
@@ -9029,6 +11363,13 @@ type IHTMLListElement_
 	lpVtbl as IHTMLListElementVtbl ptr
 end type
 
+#define IHTMLListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLListElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLListElement2_INTERFACE_DEFINED__
 extern IID_IHTMLListElement2 as const IID
 type IHTMLListElement2 as IHTMLListElement2_
@@ -9048,6 +11389,16 @@ end type
 type IHTMLListElement2_
 	lpVtbl as IHTMLListElement2Vtbl ptr
 end type
+
+#define IHTMLListElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLListElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLListElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLListElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLListElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLListElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLListElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLListElement2_put_compact(This, v) (This)->lpVtbl->put_compact(This, v)
+#define IHTMLListElement2_get_compact(This, p) (This)->lpVtbl->get_compact(This, p)
 
 declare function IHTMLListElement2_put_compact_Proxy(byval This as IHTMLListElement2 ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLListElement2_put_compact_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9071,6 +11422,13 @@ type DispHTMLListElement_
 	lpVtbl as DispHTMLListElementVtbl ptr
 end type
 
+#define DispHTMLListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLListElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLListElement as const CLSID
 #define __IHTMLUListElement_INTERFACE_DEFINED__
 extern IID_IHTMLUListElement as const IID
@@ -9093,6 +11451,18 @@ end type
 type IHTMLUListElement_
 	lpVtbl as IHTMLUListElementVtbl ptr
 end type
+
+#define IHTMLUListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLUListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLUListElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLUListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLUListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLUListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLUListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLUListElement_put_compact(This, v) (This)->lpVtbl->put_compact(This, v)
+#define IHTMLUListElement_get_compact(This, p) (This)->lpVtbl->get_compact(This, p)
+#define IHTMLUListElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLUListElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
 
 declare function IHTMLUListElement_put_compact_Proxy(byval This as IHTMLUListElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLUListElement_put_compact_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9120,6 +11490,13 @@ type DispHTMLUListElement_
 	lpVtbl as DispHTMLUListElementVtbl ptr
 end type
 
+#define DispHTMLUListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLUListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLUListElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLUListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLUListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLUListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLUListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLUListElement as const CLSID
 #define __IHTMLOListElement_INTERFACE_DEFINED__
 extern IID_IHTMLOListElement as const IID
@@ -9144,6 +11521,20 @@ end type
 type IHTMLOListElement_
 	lpVtbl as IHTMLOListElementVtbl ptr
 end type
+
+#define IHTMLOListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOListElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOListElement_put_compact(This, v) (This)->lpVtbl->put_compact(This, v)
+#define IHTMLOListElement_get_compact(This, p) (This)->lpVtbl->get_compact(This, p)
+#define IHTMLOListElement_put_start(This, v) (This)->lpVtbl->put_start(This, v)
+#define IHTMLOListElement_get_start(This, p) (This)->lpVtbl->get_start(This, p)
+#define IHTMLOListElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLOListElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
 
 declare function IHTMLOListElement_put_compact_Proxy(byval This as IHTMLOListElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLOListElement_put_compact_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9175,6 +11566,13 @@ type DispHTMLOListElement_
 	lpVtbl as DispHTMLOListElementVtbl ptr
 end type
 
+#define DispHTMLOListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLOListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLOListElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLOListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLOListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLOListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLOListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLOListElement as const CLSID
 #define __IHTMLLIElement_INTERFACE_DEFINED__
 extern IID_IHTMLLIElement as const IID
@@ -9197,6 +11595,18 @@ end type
 type IHTMLLIElement_
 	lpVtbl as IHTMLLIElementVtbl ptr
 end type
+
+#define IHTMLLIElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLIElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLIElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLIElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLIElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLIElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLIElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLIElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLLIElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLLIElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLLIElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
 
 declare function IHTMLLIElement_put_type_Proxy(byval This as IHTMLLIElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLIElement_put_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9224,6 +11634,13 @@ type DispHTMLLIElement_
 	lpVtbl as DispHTMLLIElementVtbl ptr
 end type
 
+#define DispHTMLLIElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLLIElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLLIElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLLIElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLLIElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLLIElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLLIElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLLIElement as const CLSID
 #define __IHTMLBlockElement_INTERFACE_DEFINED__
 extern IID_IHTMLBlockElement as const IID
@@ -9244,6 +11661,16 @@ end type
 type IHTMLBlockElement_
 	lpVtbl as IHTMLBlockElementVtbl ptr
 end type
+
+#define IHTMLBlockElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBlockElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBlockElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBlockElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBlockElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBlockElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBlockElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBlockElement_put_clear(This, v) (This)->lpVtbl->put_clear(This, v)
+#define IHTMLBlockElement_get_clear(This, p) (This)->lpVtbl->get_clear(This, p)
 
 declare function IHTMLBlockElement_put_clear_Proxy(byval This as IHTMLBlockElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBlockElement_put_clear_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9271,6 +11698,18 @@ type IHTMLBlockElement2_
 	lpVtbl as IHTMLBlockElement2Vtbl ptr
 end type
 
+#define IHTMLBlockElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBlockElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBlockElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBlockElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBlockElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBlockElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBlockElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBlockElement2_put_cite(This, v) (This)->lpVtbl->put_cite(This, v)
+#define IHTMLBlockElement2_get_cite(This, p) (This)->lpVtbl->get_cite(This, p)
+#define IHTMLBlockElement2_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLBlockElement2_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+
 declare function IHTMLBlockElement2_put_cite_Proxy(byval This as IHTMLBlockElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBlockElement2_put_cite_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLBlockElement2_get_cite_Proxy(byval This as IHTMLBlockElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -9297,6 +11736,13 @@ type DispHTMLBlockElement_
 	lpVtbl as DispHTMLBlockElementVtbl ptr
 end type
 
+#define DispHTMLBlockElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBlockElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBlockElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBlockElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBlockElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBlockElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBlockElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBlockElement as const CLSID
 #define __IHTMLDivElement_INTERFACE_DEFINED__
 extern IID_IHTMLDivElement as const IID
@@ -9319,6 +11765,18 @@ end type
 type IHTMLDivElement_
 	lpVtbl as IHTMLDivElementVtbl ptr
 end type
+
+#define IHTMLDivElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDivElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDivElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDivElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDivElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDivElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDivElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDivElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLDivElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLDivElement_put_noWrap(This, v) (This)->lpVtbl->put_noWrap(This, v)
+#define IHTMLDivElement_get_noWrap(This, p) (This)->lpVtbl->get_noWrap(This, p)
 
 declare function IHTMLDivElement_put_align_Proxy(byval This as IHTMLDivElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDivElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9346,6 +11804,13 @@ type DispHTMLDivElement_
 	lpVtbl as DispHTMLDivElementVtbl ptr
 end type
 
+#define DispHTMLDivElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDivElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDivElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDivElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDivElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDivElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDivElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDivElement as const CLSID
 #define __IHTMLDDElement_INTERFACE_DEFINED__
 extern IID_IHTMLDDElement as const IID
@@ -9366,6 +11831,16 @@ end type
 type IHTMLDDElement_
 	lpVtbl as IHTMLDDElementVtbl ptr
 end type
+
+#define IHTMLDDElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDDElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDDElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDDElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDDElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDDElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDDElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDDElement_put_noWrap(This, v) (This)->lpVtbl->put_noWrap(This, v)
+#define IHTMLDDElement_get_noWrap(This, p) (This)->lpVtbl->get_noWrap(This, p)
 
 declare function IHTMLDDElement_put_noWrap_Proxy(byval This as IHTMLDDElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLDDElement_put_noWrap_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9389,6 +11864,13 @@ type DispHTMLDDElement_
 	lpVtbl as DispHTMLDDElementVtbl ptr
 end type
 
+#define DispHTMLDDElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDDElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDDElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDDElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDDElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDDElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDDElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDDElement as const CLSID
 #define __IHTMLDTElement_INTERFACE_DEFINED__
 extern IID_IHTMLDTElement as const IID
@@ -9409,6 +11891,16 @@ end type
 type IHTMLDTElement_
 	lpVtbl as IHTMLDTElementVtbl ptr
 end type
+
+#define IHTMLDTElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDTElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDTElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDTElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDTElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDTElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDTElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDTElement_put_noWrap(This, v) (This)->lpVtbl->put_noWrap(This, v)
+#define IHTMLDTElement_get_noWrap(This, p) (This)->lpVtbl->get_noWrap(This, p)
 
 declare function IHTMLDTElement_put_noWrap_Proxy(byval This as IHTMLDTElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLDTElement_put_noWrap_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9432,6 +11924,13 @@ type DispHTMLDTElement_
 	lpVtbl as DispHTMLDTElementVtbl ptr
 end type
 
+#define DispHTMLDTElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDTElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDTElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDTElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDTElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDTElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDTElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDTElement as const CLSID
 #define __IHTMLBRElement_INTERFACE_DEFINED__
 extern IID_IHTMLBRElement as const IID
@@ -9452,6 +11951,16 @@ end type
 type IHTMLBRElement_
 	lpVtbl as IHTMLBRElementVtbl ptr
 end type
+
+#define IHTMLBRElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBRElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBRElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBRElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBRElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBRElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBRElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBRElement_put_clear(This, v) (This)->lpVtbl->put_clear(This, v)
+#define IHTMLBRElement_get_clear(This, p) (This)->lpVtbl->get_clear(This, p)
 
 declare function IHTMLBRElement_put_clear_Proxy(byval This as IHTMLBRElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBRElement_put_clear_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9475,6 +11984,13 @@ type DispHTMLBRElement_
 	lpVtbl as DispHTMLBRElementVtbl ptr
 end type
 
+#define DispHTMLBRElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBRElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBRElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBRElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBRElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBRElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBRElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBRElement as const CLSID
 #define __IHTMLDListElement_INTERFACE_DEFINED__
 extern IID_IHTMLDListElement as const IID
@@ -9495,6 +12011,16 @@ end type
 type IHTMLDListElement_
 	lpVtbl as IHTMLDListElementVtbl ptr
 end type
+
+#define IHTMLDListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDListElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDListElement_put_compact(This, v) (This)->lpVtbl->put_compact(This, v)
+#define IHTMLDListElement_get_compact(This, p) (This)->lpVtbl->get_compact(This, p)
 
 declare function IHTMLDListElement_put_compact_Proxy(byval This as IHTMLDListElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLDListElement_put_compact_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9518,6 +12044,13 @@ type DispHTMLDListElement_
 	lpVtbl as DispHTMLDListElementVtbl ptr
 end type
 
+#define DispHTMLDListElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDListElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDListElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDListElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDListElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDListElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDListElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDListElement as const CLSID
 #define __IHTMLHRElement_INTERFACE_DEFINED__
 extern IID_IHTMLHRElement as const IID
@@ -9546,6 +12079,24 @@ end type
 type IHTMLHRElement_
 	lpVtbl as IHTMLHRElementVtbl ptr
 end type
+
+#define IHTMLHRElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLHRElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLHRElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLHRElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLHRElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLHRElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLHRElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLHRElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLHRElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLHRElement_put_color(This, v) (This)->lpVtbl->put_color(This, v)
+#define IHTMLHRElement_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLHRElement_put_noShade(This, v) (This)->lpVtbl->put_noShade(This, v)
+#define IHTMLHRElement_get_noShade(This, p) (This)->lpVtbl->get_noShade(This, p)
+#define IHTMLHRElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLHRElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLHRElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLHRElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
 
 declare function IHTMLHRElement_put_align_Proxy(byval This as IHTMLHRElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLHRElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9585,6 +12136,13 @@ type DispHTMLHRElement_
 	lpVtbl as DispHTMLHRElementVtbl ptr
 end type
 
+#define DispHTMLHRElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLHRElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLHRElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLHRElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLHRElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLHRElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLHRElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLHRElement as const CLSID
 #define __IHTMLParaElement_INTERFACE_DEFINED__
 extern IID_IHTMLParaElement as const IID
@@ -9605,6 +12163,16 @@ end type
 type IHTMLParaElement_
 	lpVtbl as IHTMLParaElementVtbl ptr
 end type
+
+#define IHTMLParaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLParaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLParaElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLParaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLParaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLParaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLParaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLParaElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLParaElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLParaElement_put_align_Proxy(byval This as IHTMLParaElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLParaElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9628,6 +12196,13 @@ type DispHTMLParaElement_
 	lpVtbl as DispHTMLParaElementVtbl ptr
 end type
 
+#define DispHTMLParaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLParaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLParaElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLParaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLParaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLParaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLParaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLParaElement as const CLSID
 #define __IHTMLElementCollection2_INTERFACE_DEFINED__
 extern IID_IHTMLElementCollection2 as const IID
@@ -9648,6 +12223,14 @@ type IHTMLElementCollection2_
 	lpVtbl as IHTMLElementCollection2Vtbl ptr
 end type
 
+#define IHTMLElementCollection2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElementCollection2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElementCollection2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElementCollection2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElementCollection2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElementCollection2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElementCollection2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElementCollection2_urns(This, urn, pdisp) (This)->lpVtbl->urns(This, urn, pdisp)
 declare function IHTMLElementCollection2_urns_Proxy(byval This as IHTMLElementCollection2 ptr, byval urn as VARIANT, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLElementCollection2_urns_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLElementCollection3_INTERFACE_DEFINED__
@@ -9669,6 +12252,14 @@ type IHTMLElementCollection3_
 	lpVtbl as IHTMLElementCollection3Vtbl ptr
 end type
 
+#define IHTMLElementCollection3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLElementCollection3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLElementCollection3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLElementCollection3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLElementCollection3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLElementCollection3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLElementCollection3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLElementCollection3_namedItem(This, name, pdisp) (This)->lpVtbl->namedItem(This, name, pdisp)
 declare function IHTMLElementCollection3_namedItem_Proxy(byval This as IHTMLElementCollection3 ptr, byval name as BSTR, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLElementCollection3_namedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLElementCollection_DISPINTERFACE_DEFINED__
@@ -9689,6 +12280,13 @@ type DispHTMLElementCollection_
 	lpVtbl as DispHTMLElementCollectionVtbl ptr
 end type
 
+#define DispHTMLElementCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLElementCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLElementCollection_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLElementCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLElementCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLElementCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLElementCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLElementCollection as const CLSID
 #define __IHTMLHeaderElement_INTERFACE_DEFINED__
 extern IID_IHTMLHeaderElement as const IID
@@ -9709,6 +12307,16 @@ end type
 type IHTMLHeaderElement_
 	lpVtbl as IHTMLHeaderElementVtbl ptr
 end type
+
+#define IHTMLHeaderElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLHeaderElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLHeaderElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLHeaderElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLHeaderElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLHeaderElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLHeaderElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLHeaderElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLHeaderElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLHeaderElement_put_align_Proxy(byval This as IHTMLHeaderElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLHeaderElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9732,6 +12340,13 @@ type DispHTMLHeaderElement_
 	lpVtbl as DispHTMLHeaderElementVtbl ptr
 end type
 
+#define DispHTMLHeaderElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLHeaderElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLHeaderElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLHeaderElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLHeaderElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLHeaderElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLHeaderElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLHeaderElement as const CLSID
 #define __HTMLSelectElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLSelectElementEvents2 as const IID
@@ -9751,6 +12366,13 @@ type HTMLSelectElementEvents2_
 	lpVtbl as HTMLSelectElementEvents2Vtbl ptr
 end type
 
+#define HTMLSelectElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLSelectElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLSelectElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLSelectElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLSelectElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLSelectElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLSelectElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLSelectElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLSelectElementEvents as const IID
 type HTMLSelectElementEvents as HTMLSelectElementEvents_
@@ -9769,6 +12391,13 @@ type HTMLSelectElementEvents_
 	lpVtbl as HTMLSelectElementEventsVtbl ptr
 end type
 
+#define HTMLSelectElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLSelectElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLSelectElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLSelectElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLSelectElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLSelectElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLSelectElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLSelectElement_INTERFACE_DEFINED__
 extern IID_IHTMLSelectElement as const IID
 type IHTMLSelectElement as IHTMLSelectElement_
@@ -9810,6 +12439,38 @@ end type
 type IHTMLSelectElement_
 	lpVtbl as IHTMLSelectElementVtbl ptr
 end type
+
+#define IHTMLSelectElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSelectElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSelectElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSelectElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSelectElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSelectElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSelectElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSelectElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLSelectElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
+#define IHTMLSelectElement_put_multiple(This, v) (This)->lpVtbl->put_multiple(This, v)
+#define IHTMLSelectElement_get_multiple(This, p) (This)->lpVtbl->get_multiple(This, p)
+#define IHTMLSelectElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLSelectElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLSelectElement_get_options(This, p) (This)->lpVtbl->get_options(This, p)
+#define IHTMLSelectElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLSelectElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLSelectElement_put_selectedIndex(This, v) (This)->lpVtbl->put_selectedIndex(This, v)
+#define IHTMLSelectElement_get_selectedIndex(This, p) (This)->lpVtbl->get_selectedIndex(This, p)
+#define IHTMLSelectElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLSelectElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLSelectElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLSelectElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLSelectElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLSelectElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLSelectElement_add(This, element, before) (This)->lpVtbl->add(This, element, before)
+#define IHTMLSelectElement_remove(This, index) (This)->lpVtbl->remove(This, index)
+#define IHTMLSelectElement_put_length(This, v) (This)->lpVtbl->put_length(This, v)
+#define IHTMLSelectElement_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLSelectElement_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLSelectElement_item(This, name, index, pdisp) (This)->lpVtbl->item(This, name, index, pdisp)
+#define IHTMLSelectElement_tags(This, tagName, pdisp) (This)->lpVtbl->tags(This, tagName, pdisp)
 
 declare function IHTMLSelectElement_put_size_Proxy(byval This as IHTMLSelectElement ptr, byval v as long) as HRESULT
 declare sub IHTMLSelectElement_put_size_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9878,6 +12539,14 @@ type IHTMLSelectElement2_
 	lpVtbl as IHTMLSelectElement2Vtbl ptr
 end type
 
+#define IHTMLSelectElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSelectElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSelectElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSelectElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSelectElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSelectElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSelectElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSelectElement2_urns(This, urn, pdisp) (This)->lpVtbl->urns(This, urn, pdisp)
 declare function IHTMLSelectElement2_urns_Proxy(byval This as IHTMLSelectElement2 ptr, byval urn as VARIANT, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLSelectElement2_urns_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLSelectElement4_INTERFACE_DEFINED__
@@ -9899,6 +12568,14 @@ type IHTMLSelectElement4_
 	lpVtbl as IHTMLSelectElement4Vtbl ptr
 end type
 
+#define IHTMLSelectElement4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSelectElement4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSelectElement4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSelectElement4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSelectElement4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSelectElement4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSelectElement4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSelectElement4_namedItem(This, name, pdisp) (This)->lpVtbl->namedItem(This, name, pdisp)
 declare function IHTMLSelectElement4_namedItem_Proxy(byval This as IHTMLSelectElement4 ptr, byval name as BSTR, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLSelectElement4_namedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLSelectElement_DISPINTERFACE_DEFINED__
@@ -9919,6 +12596,13 @@ type DispHTMLSelectElement_
 	lpVtbl as DispHTMLSelectElementVtbl ptr
 end type
 
+#define DispHTMLSelectElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLSelectElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLSelectElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLSelectElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLSelectElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLSelectElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLSelectElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLSelectElement as const CLSID
 #define __IHTMLSelectionObject_INTERFACE_DEFINED__
 extern IID_IHTMLSelectionObject as const IID
@@ -9941,6 +12625,18 @@ end type
 type IHTMLSelectionObject_
 	lpVtbl as IHTMLSelectionObjectVtbl ptr
 end type
+
+#define IHTMLSelectionObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSelectionObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSelectionObject_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSelectionObject_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSelectionObject_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSelectionObject_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSelectionObject_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSelectionObject_createRange(This, range) (This)->lpVtbl->createRange(This, range)
+#define IHTMLSelectionObject_empty(This) (This)->lpVtbl->empty(This)
+#define IHTMLSelectionObject_clear(This) (This)->lpVtbl->clear(This)
+#define IHTMLSelectionObject_get_type(This, p) (This)->lpVtbl->get_type(This, p)
 
 declare function IHTMLSelectionObject_createRange_Proxy(byval This as IHTMLSelectionObject ptr, byval range as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLSelectionObject_createRange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -9969,6 +12665,16 @@ end type
 type IHTMLSelectionObject2_
 	lpVtbl as IHTMLSelectionObject2Vtbl ptr
 end type
+
+#define IHTMLSelectionObject2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSelectionObject2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSelectionObject2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSelectionObject2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSelectionObject2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSelectionObject2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSelectionObject2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSelectionObject2_createRangeCollection(This, rangeCollection) (This)->lpVtbl->createRangeCollection(This, rangeCollection)
+#define IHTMLSelectionObject2_get_typeDetail(This, p) (This)->lpVtbl->get_typeDetail(This, p)
 
 declare function IHTMLSelectionObject2_createRangeCollection_Proxy(byval This as IHTMLSelectionObject2 ptr, byval rangeCollection as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLSelectionObject2_createRangeCollection_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10002,6 +12708,25 @@ end type
 type IHTMLOptionElement_
 	lpVtbl as IHTMLOptionElementVtbl ptr
 end type
+
+#define IHTMLOptionElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOptionElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOptionElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOptionElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOptionElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOptionElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOptionElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOptionElement_put_selected(This, v) (This)->lpVtbl->put_selected(This, v)
+#define IHTMLOptionElement_get_selected(This, p) (This)->lpVtbl->get_selected(This, p)
+#define IHTMLOptionElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLOptionElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLOptionElement_put_defaultSelected(This, v) (This)->lpVtbl->put_defaultSelected(This, v)
+#define IHTMLOptionElement_get_defaultSelected(This, p) (This)->lpVtbl->get_defaultSelected(This, p)
+#define IHTMLOptionElement_put_index(This, v) (This)->lpVtbl->put_index(This, v)
+#define IHTMLOptionElement_get_index(This, p) (This)->lpVtbl->get_index(This, p)
+#define IHTMLOptionElement_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLOptionElement_get_text(This, p) (This)->lpVtbl->get_text(This, p)
+#define IHTMLOptionElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 
 declare function IHTMLOptionElement_put_selected_Proxy(byval This as IHTMLOptionElement ptr, byval v as VARIANT_BOOL) as HRESULT
 declare sub IHTMLOptionElement_put_selected_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10045,6 +12770,16 @@ type IHTMLOptionElement3_
 	lpVtbl as IHTMLOptionElement3Vtbl ptr
 end type
 
+#define IHTMLOptionElement3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOptionElement3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOptionElement3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOptionElement3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOptionElement3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOptionElement3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOptionElement3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOptionElement3_put_label(This, v) (This)->lpVtbl->put_label(This, v)
+#define IHTMLOptionElement3_get_label(This, p) (This)->lpVtbl->get_label(This, p)
+
 declare function IHTMLOptionElement3_put_label_Proxy(byval This as IHTMLOptionElement3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLOptionElement3_put_label_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLOptionElement3_get_label_Proxy(byval This as IHTMLOptionElement3 ptr, byval p as BSTR ptr) as HRESULT
@@ -10068,6 +12803,14 @@ type IHTMLOptionElementFactory_
 	lpVtbl as IHTMLOptionElementFactoryVtbl ptr
 end type
 
+#define IHTMLOptionElementFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOptionElementFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOptionElementFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOptionElementFactory_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOptionElementFactory_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOptionElementFactory_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOptionElementFactory_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOptionElementFactory_create(This, text, value, defaultselected, selected, __MIDL_0012) (This)->lpVtbl->create(This, text, value, defaultselected, selected, __MIDL_0012)
 declare function IHTMLOptionElementFactory_create_Proxy(byval This as IHTMLOptionElementFactory ptr, byval text as VARIANT, byval value as VARIANT, byval defaultselected as VARIANT, byval selected as VARIANT, byval __MIDL_0012 as IHTMLOptionElement ptr ptr) as HRESULT
 declare sub IHTMLOptionElementFactory_create_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLOptionElement_DISPINTERFACE_DEFINED__
@@ -10088,6 +12831,13 @@ type DispHTMLOptionElement_
 	lpVtbl as DispHTMLOptionElementVtbl ptr
 end type
 
+#define DispHTMLOptionElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLOptionElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLOptionElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLOptionElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLOptionElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLOptionElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLOptionElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLOptionElement as const CLSID
 extern CLSID_HTMLOptionElementFactory as const CLSID
 #define __HTMLButtonElementEvents2_DISPINTERFACE_DEFINED__
@@ -10108,6 +12858,13 @@ type HTMLButtonElementEvents2_
 	lpVtbl as HTMLButtonElementEvents2Vtbl ptr
 end type
 
+#define HTMLButtonElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLButtonElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLButtonElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLButtonElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLButtonElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLButtonElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLButtonElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLButtonElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLButtonElementEvents as const IID
 type HTMLButtonElementEvents as HTMLButtonElementEvents_
@@ -10126,6 +12883,13 @@ type HTMLButtonElementEvents_
 	lpVtbl as HTMLButtonElementEventsVtbl ptr
 end type
 
+#define HTMLButtonElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLButtonElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLButtonElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLButtonElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLButtonElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLButtonElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLButtonElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputTextElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputTextElementEvents2 as const IID
 type HTMLInputTextElementEvents2 as HTMLInputTextElementEvents2_
@@ -10144,6 +12908,13 @@ type HTMLInputTextElementEvents2_
 	lpVtbl as HTMLInputTextElementEvents2Vtbl ptr
 end type
 
+#define HTMLInputTextElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputTextElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputTextElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputTextElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputTextElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputTextElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputTextElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLOptionButtonElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLOptionButtonElementEvents2 as const IID
 type HTMLOptionButtonElementEvents2 as HTMLOptionButtonElementEvents2_
@@ -10162,6 +12933,13 @@ type HTMLOptionButtonElementEvents2_
 	lpVtbl as HTMLOptionButtonElementEvents2Vtbl ptr
 end type
 
+#define HTMLOptionButtonElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLOptionButtonElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLOptionButtonElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLOptionButtonElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLOptionButtonElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLOptionButtonElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLOptionButtonElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputFileElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputFileElementEvents2 as const IID
 type HTMLInputFileElementEvents2 as HTMLInputFileElementEvents2_
@@ -10180,6 +12958,13 @@ type HTMLInputFileElementEvents2_
 	lpVtbl as HTMLInputFileElementEvents2Vtbl ptr
 end type
 
+#define HTMLInputFileElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputFileElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputFileElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputFileElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputFileElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputFileElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputFileElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputImageEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputImageEvents2 as const IID
 type HTMLInputImageEvents2 as HTMLInputImageEvents2_
@@ -10198,6 +12983,13 @@ type HTMLInputImageEvents2_
 	lpVtbl as HTMLInputImageEvents2Vtbl ptr
 end type
 
+#define HTMLInputImageEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputImageEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputImageEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputImageEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputImageEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputImageEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputImageEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputTextElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputTextElementEvents as const IID
 type HTMLInputTextElementEvents as HTMLInputTextElementEvents_
@@ -10216,6 +13008,13 @@ type HTMLInputTextElementEvents_
 	lpVtbl as HTMLInputTextElementEventsVtbl ptr
 end type
 
+#define HTMLInputTextElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputTextElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputTextElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputTextElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputTextElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputTextElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputTextElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLOptionButtonElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLOptionButtonElementEvents as const IID
 type HTMLOptionButtonElementEvents as HTMLOptionButtonElementEvents_
@@ -10234,6 +13033,13 @@ type HTMLOptionButtonElementEvents_
 	lpVtbl as HTMLOptionButtonElementEventsVtbl ptr
 end type
 
+#define HTMLOptionButtonElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLOptionButtonElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLOptionButtonElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLOptionButtonElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLOptionButtonElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLOptionButtonElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLOptionButtonElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputFileElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputFileElementEvents as const IID
 type HTMLInputFileElementEvents as HTMLInputFileElementEvents_
@@ -10252,6 +13058,13 @@ type HTMLInputFileElementEvents_
 	lpVtbl as HTMLInputFileElementEventsVtbl ptr
 end type
 
+#define HTMLInputFileElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputFileElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputFileElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputFileElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputFileElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputFileElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputFileElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLInputImageEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLInputImageEvents as const IID
 type HTMLInputImageEvents as HTMLInputImageEvents_
@@ -10270,6 +13083,13 @@ type HTMLInputImageEvents_
 	lpVtbl as HTMLInputImageEventsVtbl ptr
 end type
 
+#define HTMLInputImageEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLInputImageEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLInputImageEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLInputImageEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLInputImageEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLInputImageEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLInputImageEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLInputElement_INTERFACE_DEFINED__
 extern IID_IHTMLInputElement as const IID
 type IHTMLInputElement as IHTMLInputElement_
@@ -10352,6 +13172,79 @@ end type
 type IHTMLInputElement_
 	lpVtbl as IHTMLInputElementVtbl ptr
 end type
+
+#define IHTMLInputElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLInputElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLInputElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLInputElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLInputElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLInputElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLInputElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLInputElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
+#define IHTMLInputElement_put_maxLength(This, v) (This)->lpVtbl->put_maxLength(This, v)
+#define IHTMLInputElement_get_maxLength(This, p) (This)->lpVtbl->get_maxLength(This, p)
+#define IHTMLInputElement_select(This) (This)->lpVtbl->select(This)
+#define IHTMLInputElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLInputElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLInputElement_put_onselect(This, v) (This)->lpVtbl->put_onselect(This, v)
+#define IHTMLInputElement_get_onselect(This, p) (This)->lpVtbl->get_onselect(This, p)
+#define IHTMLInputElement_put_defaultValue(This, v) (This)->lpVtbl->put_defaultValue(This, v)
+#define IHTMLInputElement_get_defaultValue(This, p) (This)->lpVtbl->get_defaultValue(This, p)
+#define IHTMLInputElement_put_readOnly(This, v) (This)->lpVtbl->put_readOnly(This, v)
+#define IHTMLInputElement_get_readOnly(This, p) (This)->lpVtbl->get_readOnly(This, p)
+#define IHTMLInputElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
+#define IHTMLInputElement_put_indeterminate(This, v) (This)->lpVtbl->put_indeterminate(This, v)
+#define IHTMLInputElement_get_indeterminate(This, p) (This)->lpVtbl->get_indeterminate(This, p)
+#define IHTMLInputElement_put_defaultChecked(This, v) (This)->lpVtbl->put_defaultChecked(This, v)
+#define IHTMLInputElement_get_defaultChecked(This, p) (This)->lpVtbl->get_defaultChecked(This, p)
+#define IHTMLInputElement_put_checked(This, v) (This)->lpVtbl->put_checked(This, v)
+#define IHTMLInputElement_get_checked(This, p) (This)->lpVtbl->get_checked(This, p)
+#define IHTMLInputElement_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLInputElement_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLInputElement_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLInputElement_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLInputElement_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLInputElement_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
+#define IHTMLInputElement_put_alt(This, v) (This)->lpVtbl->put_alt(This, v)
+#define IHTMLInputElement_get_alt(This, p) (This)->lpVtbl->get_alt(This, p)
+#define IHTMLInputElement_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLInputElement_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLInputElement_put_lowsrc(This, v) (This)->lpVtbl->put_lowsrc(This, v)
+#define IHTMLInputElement_get_lowsrc(This, p) (This)->lpVtbl->get_lowsrc(This, p)
+#define IHTMLInputElement_put_vrml(This, v) (This)->lpVtbl->put_vrml(This, v)
+#define IHTMLInputElement_get_vrml(This, p) (This)->lpVtbl->get_vrml(This, p)
+#define IHTMLInputElement_put_dynsrc(This, v) (This)->lpVtbl->put_dynsrc(This, v)
+#define IHTMLInputElement_get_dynsrc(This, p) (This)->lpVtbl->get_dynsrc(This, p)
+#define IHTMLInputElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLInputElement_get_complete(This, p) (This)->lpVtbl->get_complete(This, p)
+#define IHTMLInputElement_put_loop(This, v) (This)->lpVtbl->put_loop(This, v)
+#define IHTMLInputElement_get_loop(This, p) (This)->lpVtbl->get_loop(This, p)
+#define IHTMLInputElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLInputElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLInputElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLInputElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLInputElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLInputElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLInputElement_put_onabort(This, v) (This)->lpVtbl->put_onabort(This, v)
+#define IHTMLInputElement_get_onabort(This, p) (This)->lpVtbl->get_onabort(This, p)
+#define IHTMLInputElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLInputElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLInputElement_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLInputElement_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLInputElement_put_start(This, v) (This)->lpVtbl->put_start(This, v)
+#define IHTMLInputElement_get_start(This, p) (This)->lpVtbl->get_start(This, p)
 
 declare function IHTMLInputElement_put_type_Proxy(byval This as IHTMLInputElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLInputElement_put_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10505,6 +13398,18 @@ type IHTMLInputElement2_
 	lpVtbl as IHTMLInputElement2Vtbl ptr
 end type
 
+#define IHTMLInputElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputElement2_put_accept(This, v) (This)->lpVtbl->put_accept(This, v)
+#define IHTMLInputElement2_get_accept(This, p) (This)->lpVtbl->get_accept(This, p)
+#define IHTMLInputElement2_put_useMap(This, v) (This)->lpVtbl->put_useMap(This, v)
+#define IHTMLInputElement2_get_useMap(This, p) (This)->lpVtbl->get_useMap(This, p)
+
 declare function IHTMLInputElement2_put_accept_Proxy(byval This as IHTMLInputElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLInputElement2_put_accept_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLInputElement2_get_accept_Proxy(byval This as IHTMLInputElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -10541,6 +13446,25 @@ end type
 type IHTMLInputButtonElement_
 	lpVtbl as IHTMLInputButtonElementVtbl ptr
 end type
+
+#define IHTMLInputButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputButtonElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputButtonElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLInputButtonElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLInputButtonElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputButtonElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputButtonElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLInputButtonElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLInputButtonElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputButtonElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputButtonElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLInputButtonElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLInputButtonElement_get_type_Proxy(byval This as IHTMLInputButtonElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLInputButtonElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10592,6 +13516,25 @@ end type
 type IHTMLInputHiddenElement_
 	lpVtbl as IHTMLInputHiddenElementVtbl ptr
 end type
+
+#define IHTMLInputHiddenElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputHiddenElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputHiddenElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputHiddenElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputHiddenElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputHiddenElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputHiddenElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputHiddenElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputHiddenElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLInputHiddenElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLInputHiddenElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputHiddenElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputHiddenElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLInputHiddenElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLInputHiddenElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputHiddenElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputHiddenElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLInputHiddenElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLInputHiddenElement_get_type_Proxy(byval This as IHTMLInputHiddenElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLInputHiddenElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10656,6 +13599,38 @@ end type
 type IHTMLInputTextElement_
 	lpVtbl as IHTMLInputTextElementVtbl ptr
 end type
+
+#define IHTMLInputTextElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputTextElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputTextElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputTextElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputTextElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputTextElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputTextElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputTextElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputTextElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLInputTextElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLInputTextElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputTextElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputTextElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLInputTextElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLInputTextElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputTextElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputTextElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLInputTextElement_put_defaultValue(This, v) (This)->lpVtbl->put_defaultValue(This, v)
+#define IHTMLInputTextElement_get_defaultValue(This, p) (This)->lpVtbl->get_defaultValue(This, p)
+#define IHTMLInputTextElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLInputTextElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
+#define IHTMLInputTextElement_put_maxLength(This, v) (This)->lpVtbl->put_maxLength(This, v)
+#define IHTMLInputTextElement_get_maxLength(This, p) (This)->lpVtbl->get_maxLength(This, p)
+#define IHTMLInputTextElement_select(This) (This)->lpVtbl->select(This)
+#define IHTMLInputTextElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLInputTextElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLInputTextElement_put_onselect(This, v) (This)->lpVtbl->put_onselect(This, v)
+#define IHTMLInputTextElement_get_onselect(This, p) (This)->lpVtbl->get_onselect(This, p)
+#define IHTMLInputTextElement_put_readOnly(This, v) (This)->lpVtbl->put_readOnly(This, v)
+#define IHTMLInputTextElement_get_readOnly(This, p) (This)->lpVtbl->get_readOnly(This, p)
+#define IHTMLInputTextElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLInputTextElement_get_type_Proxy(byval This as IHTMLInputTextElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLInputTextElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10742,6 +13717,33 @@ type IHTMLInputFileElement_
 	lpVtbl as IHTMLInputFileElementVtbl ptr
 end type
 
+#define IHTMLInputFileElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputFileElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputFileElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputFileElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputFileElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputFileElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputFileElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputFileElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputFileElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputFileElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputFileElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLInputFileElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLInputFileElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputFileElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputFileElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLInputFileElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLInputFileElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
+#define IHTMLInputFileElement_put_maxLength(This, v) (This)->lpVtbl->put_maxLength(This, v)
+#define IHTMLInputFileElement_get_maxLength(This, p) (This)->lpVtbl->get_maxLength(This, p)
+#define IHTMLInputFileElement_select(This) (This)->lpVtbl->select(This)
+#define IHTMLInputFileElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLInputFileElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLInputFileElement_put_onselect(This, v) (This)->lpVtbl->put_onselect(This, v)
+#define IHTMLInputFileElement_get_onselect(This, p) (This)->lpVtbl->get_onselect(This, p)
+#define IHTMLInputFileElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLInputFileElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+
 declare function IHTMLInputFileElement_get_type_Proxy(byval This as IHTMLInputFileElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLInputFileElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLInputFileElement_put_name_Proxy(byval This as IHTMLInputFileElement ptr, byval v as BSTR) as HRESULT
@@ -10815,6 +13817,32 @@ end type
 type IHTMLOptionButtonElement_
 	lpVtbl as IHTMLOptionButtonElementVtbl ptr
 end type
+
+#define IHTMLOptionButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOptionButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOptionButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOptionButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOptionButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOptionButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOptionButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOptionButtonElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLOptionButtonElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLOptionButtonElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLOptionButtonElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLOptionButtonElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLOptionButtonElement_put_checked(This, v) (This)->lpVtbl->put_checked(This, v)
+#define IHTMLOptionButtonElement_get_checked(This, p) (This)->lpVtbl->get_checked(This, p)
+#define IHTMLOptionButtonElement_put_defaultChecked(This, v) (This)->lpVtbl->put_defaultChecked(This, v)
+#define IHTMLOptionButtonElement_get_defaultChecked(This, p) (This)->lpVtbl->get_defaultChecked(This, p)
+#define IHTMLOptionButtonElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLOptionButtonElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLOptionButtonElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLOptionButtonElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLOptionButtonElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLOptionButtonElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLOptionButtonElement_put_indeterminate(This, v) (This)->lpVtbl->put_indeterminate(This, v)
+#define IHTMLOptionButtonElement_get_indeterminate(This, p) (This)->lpVtbl->get_indeterminate(This, p)
+#define IHTMLOptionButtonElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 
 declare function IHTMLOptionButtonElement_put_value_Proxy(byval This as IHTMLOptionButtonElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLOptionButtonElement_put_value_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -10908,6 +13936,53 @@ end type
 type IHTMLInputImage_
 	lpVtbl as IHTMLInputImageVtbl ptr
 end type
+
+#define IHTMLInputImage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLInputImage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLInputImage_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLInputImage_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLInputImage_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLInputImage_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLInputImage_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLInputImage_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLInputImage_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLInputImage_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLInputImage_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLInputImage_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLInputImage_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLInputImage_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLInputImage_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLInputImage_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
+#define IHTMLInputImage_put_alt(This, v) (This)->lpVtbl->put_alt(This, v)
+#define IHTMLInputImage_get_alt(This, p) (This)->lpVtbl->get_alt(This, p)
+#define IHTMLInputImage_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLInputImage_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLInputImage_put_lowsrc(This, v) (This)->lpVtbl->put_lowsrc(This, v)
+#define IHTMLInputImage_get_lowsrc(This, p) (This)->lpVtbl->get_lowsrc(This, p)
+#define IHTMLInputImage_put_vrml(This, v) (This)->lpVtbl->put_vrml(This, v)
+#define IHTMLInputImage_get_vrml(This, p) (This)->lpVtbl->get_vrml(This, p)
+#define IHTMLInputImage_put_dynsrc(This, v) (This)->lpVtbl->put_dynsrc(This, v)
+#define IHTMLInputImage_get_dynsrc(This, p) (This)->lpVtbl->get_dynsrc(This, p)
+#define IHTMLInputImage_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLInputImage_get_complete(This, p) (This)->lpVtbl->get_complete(This, p)
+#define IHTMLInputImage_put_loop(This, v) (This)->lpVtbl->put_loop(This, v)
+#define IHTMLInputImage_get_loop(This, p) (This)->lpVtbl->get_loop(This, p)
+#define IHTMLInputImage_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLInputImage_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLInputImage_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLInputImage_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLInputImage_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLInputImage_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLInputImage_put_onabort(This, v) (This)->lpVtbl->put_onabort(This, v)
+#define IHTMLInputImage_get_onabort(This, p) (This)->lpVtbl->get_onabort(This, p)
+#define IHTMLInputImage_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLInputImage_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLInputImage_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLInputImage_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLInputImage_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLInputImage_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLInputImage_put_start(This, v) (This)->lpVtbl->put_start(This, v)
+#define IHTMLInputImage_get_start(This, p) (This)->lpVtbl->get_start(This, p)
 
 declare function IHTMLInputImage_get_type_Proxy(byval This as IHTMLInputImage ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLInputImage_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11005,6 +14080,13 @@ type DispHTMLInputElement_
 	lpVtbl as DispHTMLInputElementVtbl ptr
 end type
 
+#define DispHTMLInputElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLInputElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLInputElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLInputElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLInputElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLInputElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLInputElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLInputElement as const CLSID
 #define __IHTMLTextAreaElement_INTERFACE_DEFINED__
 extern IID_IHTMLTextAreaElement as const IID
@@ -11049,6 +14131,40 @@ end type
 type IHTMLTextAreaElement_
 	lpVtbl as IHTMLTextAreaElementVtbl ptr
 end type
+
+#define IHTMLTextAreaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTextAreaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTextAreaElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTextAreaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTextAreaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTextAreaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTextAreaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTextAreaElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLTextAreaElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLTextAreaElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLTextAreaElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLTextAreaElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLTextAreaElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLTextAreaElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLTextAreaElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLTextAreaElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLTextAreaElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLTextAreaElement_put_defaultValue(This, v) (This)->lpVtbl->put_defaultValue(This, v)
+#define IHTMLTextAreaElement_get_defaultValue(This, p) (This)->lpVtbl->get_defaultValue(This, p)
+#define IHTMLTextAreaElement_select(This) (This)->lpVtbl->select(This)
+#define IHTMLTextAreaElement_put_onchange(This, v) (This)->lpVtbl->put_onchange(This, v)
+#define IHTMLTextAreaElement_get_onchange(This, p) (This)->lpVtbl->get_onchange(This, p)
+#define IHTMLTextAreaElement_put_onselect(This, v) (This)->lpVtbl->put_onselect(This, v)
+#define IHTMLTextAreaElement_get_onselect(This, p) (This)->lpVtbl->get_onselect(This, p)
+#define IHTMLTextAreaElement_put_readOnly(This, v) (This)->lpVtbl->put_readOnly(This, v)
+#define IHTMLTextAreaElement_get_readOnly(This, p) (This)->lpVtbl->get_readOnly(This, p)
+#define IHTMLTextAreaElement_put_rows(This, v) (This)->lpVtbl->put_rows(This, v)
+#define IHTMLTextAreaElement_get_rows(This, p) (This)->lpVtbl->get_rows(This, p)
+#define IHTMLTextAreaElement_put_cols(This, v) (This)->lpVtbl->put_cols(This, v)
+#define IHTMLTextAreaElement_get_cols(This, p) (This)->lpVtbl->get_cols(This, p)
+#define IHTMLTextAreaElement_put_wrap(This, v) (This)->lpVtbl->put_wrap(This, v)
+#define IHTMLTextAreaElement_get_wrap(This, p) (This)->lpVtbl->get_wrap(This, p)
+#define IHTMLTextAreaElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLTextAreaElement_get_type_Proxy(byval This as IHTMLTextAreaElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLTextAreaElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11120,6 +14236,13 @@ type DispHTMLTextAreaElement_
 	lpVtbl as DispHTMLTextAreaElementVtbl ptr
 end type
 
+#define DispHTMLTextAreaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTextAreaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTextAreaElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTextAreaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTextAreaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTextAreaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTextAreaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTextAreaElement as const CLSID
 #define __DispHTMLRichtextElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLRichtextElement as const IID
@@ -11139,6 +14262,13 @@ type DispHTMLRichtextElement_
 	lpVtbl as DispHTMLRichtextElementVtbl ptr
 end type
 
+#define DispHTMLRichtextElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLRichtextElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLRichtextElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLRichtextElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLRichtextElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLRichtextElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLRichtextElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLRichtextElement as const CLSID
 #define __IHTMLButtonElement_INTERFACE_DEFINED__
 extern IID_IHTMLButtonElement as const IID
@@ -11168,6 +14298,25 @@ end type
 type IHTMLButtonElement_
 	lpVtbl as IHTMLButtonElementVtbl ptr
 end type
+
+#define IHTMLButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLButtonElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLButtonElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLButtonElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLButtonElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLButtonElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLButtonElement_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLButtonElement_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLButtonElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLButtonElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLButtonElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLButtonElement_createTextRange(This, range) (This)->lpVtbl->createTextRange(This, range)
 
 declare function IHTMLButtonElement_get_type_Proxy(byval This as IHTMLButtonElement ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLButtonElement_get_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11209,6 +14358,13 @@ type DispHTMLButtonElement_
 	lpVtbl as DispHTMLButtonElementVtbl ptr
 end type
 
+#define DispHTMLButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLButtonElement as const CLSID
 #define __HTMLMarqueeElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLMarqueeElementEvents2 as const IID
@@ -11228,6 +14384,13 @@ type HTMLMarqueeElementEvents2_
 	lpVtbl as HTMLMarqueeElementEvents2Vtbl ptr
 end type
 
+#define HTMLMarqueeElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLMarqueeElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLMarqueeElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLMarqueeElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLMarqueeElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLMarqueeElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLMarqueeElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLMarqueeElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLMarqueeElementEvents as const IID
 type HTMLMarqueeElementEvents as HTMLMarqueeElementEvents_
@@ -11246,6 +14409,13 @@ type HTMLMarqueeElementEvents_
 	lpVtbl as HTMLMarqueeElementEventsVtbl ptr
 end type
 
+#define HTMLMarqueeElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLMarqueeElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLMarqueeElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLMarqueeElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLMarqueeElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLMarqueeElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLMarqueeElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLMarqueeElement_INTERFACE_DEFINED__
 extern IID_IHTMLMarqueeElement as const IID
 type IHTMLMarqueeElement as IHTMLMarqueeElement_
@@ -11293,6 +14463,44 @@ end type
 type IHTMLMarqueeElement_
 	lpVtbl as IHTMLMarqueeElementVtbl ptr
 end type
+
+#define IHTMLMarqueeElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLMarqueeElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLMarqueeElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLMarqueeElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLMarqueeElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLMarqueeElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLMarqueeElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLMarqueeElement_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLMarqueeElement_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLMarqueeElement_put_scrollDelay(This, v) (This)->lpVtbl->put_scrollDelay(This, v)
+#define IHTMLMarqueeElement_get_scrollDelay(This, p) (This)->lpVtbl->get_scrollDelay(This, p)
+#define IHTMLMarqueeElement_put_direction(This, v) (This)->lpVtbl->put_direction(This, v)
+#define IHTMLMarqueeElement_get_direction(This, p) (This)->lpVtbl->get_direction(This, p)
+#define IHTMLMarqueeElement_put_behavior(This, v) (This)->lpVtbl->put_behavior(This, v)
+#define IHTMLMarqueeElement_get_behavior(This, p) (This)->lpVtbl->get_behavior(This, p)
+#define IHTMLMarqueeElement_put_scrollAmount(This, v) (This)->lpVtbl->put_scrollAmount(This, v)
+#define IHTMLMarqueeElement_get_scrollAmount(This, p) (This)->lpVtbl->get_scrollAmount(This, p)
+#define IHTMLMarqueeElement_put_loop(This, v) (This)->lpVtbl->put_loop(This, v)
+#define IHTMLMarqueeElement_get_loop(This, p) (This)->lpVtbl->get_loop(This, p)
+#define IHTMLMarqueeElement_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLMarqueeElement_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLMarqueeElement_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLMarqueeElement_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
+#define IHTMLMarqueeElement_put_onfinish(This, v) (This)->lpVtbl->put_onfinish(This, v)
+#define IHTMLMarqueeElement_get_onfinish(This, p) (This)->lpVtbl->get_onfinish(This, p)
+#define IHTMLMarqueeElement_put_onstart(This, v) (This)->lpVtbl->put_onstart(This, v)
+#define IHTMLMarqueeElement_get_onstart(This, p) (This)->lpVtbl->get_onstart(This, p)
+#define IHTMLMarqueeElement_put_onbounce(This, v) (This)->lpVtbl->put_onbounce(This, v)
+#define IHTMLMarqueeElement_get_onbounce(This, p) (This)->lpVtbl->get_onbounce(This, p)
+#define IHTMLMarqueeElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLMarqueeElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLMarqueeElement_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLMarqueeElement_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLMarqueeElement_put_trueSpeed(This, v) (This)->lpVtbl->put_trueSpeed(This, v)
+#define IHTMLMarqueeElement_get_trueSpeed(This, p) (This)->lpVtbl->get_trueSpeed(This, p)
+#define IHTMLMarqueeElement_start(This) (This)->lpVtbl->start(This)
+#define IHTMLMarqueeElement_stop(This) (This)->lpVtbl->stop(This)
 
 declare function IHTMLMarqueeElement_put_bgColor_Proxy(byval This as IHTMLMarqueeElement ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLMarqueeElement_put_bgColor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11372,6 +14580,13 @@ type DispHTMLMarqueeElement_
 	lpVtbl as DispHTMLMarqueeElementVtbl ptr
 end type
 
+#define DispHTMLMarqueeElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLMarqueeElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLMarqueeElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLMarqueeElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLMarqueeElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLMarqueeElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLMarqueeElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLMarqueeElement as const CLSID
 #define __IHTMLHtmlElement_INTERFACE_DEFINED__
 extern IID_IHTMLHtmlElement as const IID
@@ -11392,6 +14607,16 @@ end type
 type IHTMLHtmlElement_
 	lpVtbl as IHTMLHtmlElementVtbl ptr
 end type
+
+#define IHTMLHtmlElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLHtmlElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLHtmlElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLHtmlElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLHtmlElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLHtmlElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLHtmlElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLHtmlElement_put_version(This, v) (This)->lpVtbl->put_version(This, v)
+#define IHTMLHtmlElement_get_version(This, p) (This)->lpVtbl->get_version(This, p)
 
 declare function IHTMLHtmlElement_put_version_Proxy(byval This as IHTMLHtmlElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLHtmlElement_put_version_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11417,6 +14642,16 @@ type IHTMLHeadElement_
 	lpVtbl as IHTMLHeadElementVtbl ptr
 end type
 
+#define IHTMLHeadElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLHeadElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLHeadElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLHeadElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLHeadElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLHeadElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLHeadElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLHeadElement_put_profile(This, v) (This)->lpVtbl->put_profile(This, v)
+#define IHTMLHeadElement_get_profile(This, p) (This)->lpVtbl->get_profile(This, p)
+
 declare function IHTMLHeadElement_put_profile_Proxy(byval This as IHTMLHeadElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLHeadElement_put_profile_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLHeadElement_get_profile_Proxy(byval This as IHTMLHeadElement ptr, byval p as BSTR ptr) as HRESULT
@@ -11440,6 +14675,16 @@ end type
 type IHTMLTitleElement_
 	lpVtbl as IHTMLTitleElementVtbl ptr
 end type
+
+#define IHTMLTitleElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTitleElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTitleElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTitleElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTitleElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTitleElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTitleElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTitleElement_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLTitleElement_get_text(This, p) (This)->lpVtbl->get_text(This, p)
 
 declare function IHTMLTitleElement_put_text_Proxy(byval This as IHTMLTitleElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTitleElement_put_text_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11472,6 +14717,24 @@ end type
 type IHTMLMetaElement_
 	lpVtbl as IHTMLMetaElementVtbl ptr
 end type
+
+#define IHTMLMetaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLMetaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLMetaElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLMetaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLMetaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLMetaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLMetaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLMetaElement_put_httpEquiv(This, v) (This)->lpVtbl->put_httpEquiv(This, v)
+#define IHTMLMetaElement_get_httpEquiv(This, p) (This)->lpVtbl->get_httpEquiv(This, p)
+#define IHTMLMetaElement_put_content(This, v) (This)->lpVtbl->put_content(This, v)
+#define IHTMLMetaElement_get_content(This, p) (This)->lpVtbl->get_content(This, p)
+#define IHTMLMetaElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLMetaElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLMetaElement_put_url(This, v) (This)->lpVtbl->put_url(This, v)
+#define IHTMLMetaElement_get_url(This, p) (This)->lpVtbl->get_url(This, p)
+#define IHTMLMetaElement_put_charset(This, v) (This)->lpVtbl->put_charset(This, v)
+#define IHTMLMetaElement_get_charset(This, p) (This)->lpVtbl->get_charset(This, p)
 
 declare function IHTMLMetaElement_put_httpEquiv_Proxy(byval This as IHTMLMetaElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLMetaElement_put_httpEquiv_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11513,6 +14776,16 @@ type IHTMLMetaElement2_
 	lpVtbl as IHTMLMetaElement2Vtbl ptr
 end type
 
+#define IHTMLMetaElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLMetaElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLMetaElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLMetaElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLMetaElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLMetaElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLMetaElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLMetaElement2_put_scheme(This, v) (This)->lpVtbl->put_scheme(This, v)
+#define IHTMLMetaElement2_get_scheme(This, p) (This)->lpVtbl->get_scheme(This, p)
+
 declare function IHTMLMetaElement2_put_scheme_Proxy(byval This as IHTMLMetaElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLMetaElement2_put_scheme_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLMetaElement2_get_scheme_Proxy(byval This as IHTMLMetaElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -11538,6 +14811,18 @@ end type
 type IHTMLBaseElement_
 	lpVtbl as IHTMLBaseElementVtbl ptr
 end type
+
+#define IHTMLBaseElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBaseElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBaseElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBaseElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBaseElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBaseElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBaseElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBaseElement_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLBaseElement_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLBaseElement_put_target(This, v) (This)->lpVtbl->put_target(This, v)
+#define IHTMLBaseElement_get_target(This, p) (This)->lpVtbl->get_target(This, p)
 
 declare function IHTMLBaseElement_put_href_Proxy(byval This as IHTMLBaseElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBaseElement_put_href_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11569,6 +14854,18 @@ type IHTMLIsIndexElement_
 	lpVtbl as IHTMLIsIndexElementVtbl ptr
 end type
 
+#define IHTMLIsIndexElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLIsIndexElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLIsIndexElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLIsIndexElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLIsIndexElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLIsIndexElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLIsIndexElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLIsIndexElement_put_prompt(This, v) (This)->lpVtbl->put_prompt(This, v)
+#define IHTMLIsIndexElement_get_prompt(This, p) (This)->lpVtbl->get_prompt(This, p)
+#define IHTMLIsIndexElement_put_action(This, v) (This)->lpVtbl->put_action(This, v)
+#define IHTMLIsIndexElement_get_action(This, p) (This)->lpVtbl->get_action(This, p)
+
 declare function IHTMLIsIndexElement_put_prompt_Proxy(byval This as IHTMLIsIndexElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLIsIndexElement_put_prompt_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLIsIndexElement_get_prompt_Proxy(byval This as IHTMLIsIndexElement ptr, byval p as BSTR ptr) as HRESULT
@@ -11596,6 +14893,14 @@ type IHTMLIsIndexElement2_
 	lpVtbl as IHTMLIsIndexElement2Vtbl ptr
 end type
 
+#define IHTMLIsIndexElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLIsIndexElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLIsIndexElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLIsIndexElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLIsIndexElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLIsIndexElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLIsIndexElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLIsIndexElement2_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 declare function IHTMLIsIndexElement2_get_form_Proxy(byval This as IHTMLIsIndexElement2 ptr, byval p as IHTMLFormElement ptr ptr) as HRESULT
 declare sub IHTMLIsIndexElement2_get_form_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLNextIdElement_INTERFACE_DEFINED__
@@ -11617,6 +14922,16 @@ end type
 type IHTMLNextIdElement_
 	lpVtbl as IHTMLNextIdElementVtbl ptr
 end type
+
+#define IHTMLNextIdElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLNextIdElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLNextIdElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLNextIdElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLNextIdElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLNextIdElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLNextIdElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLNextIdElement_put_n(This, v) (This)->lpVtbl->put_n(This, v)
+#define IHTMLNextIdElement_get_n(This, p) (This)->lpVtbl->get_n(This, p)
 
 declare function IHTMLNextIdElement_put_n_Proxy(byval This as IHTMLNextIdElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLNextIdElement_put_n_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11640,6 +14955,13 @@ type DispHTMLHtmlElement_
 	lpVtbl as DispHTMLHtmlElementVtbl ptr
 end type
 
+#define DispHTMLHtmlElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLHtmlElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLHtmlElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLHtmlElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLHtmlElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLHtmlElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLHtmlElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLHtmlElement as const CLSID
 #define __DispHTMLHeadElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLHeadElement as const IID
@@ -11659,6 +14981,13 @@ type DispHTMLHeadElement_
 	lpVtbl as DispHTMLHeadElementVtbl ptr
 end type
 
+#define DispHTMLHeadElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLHeadElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLHeadElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLHeadElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLHeadElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLHeadElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLHeadElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLHeadElement as const CLSID
 #define __DispHTMLTitleElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTitleElement as const IID
@@ -11678,6 +15007,13 @@ type DispHTMLTitleElement_
 	lpVtbl as DispHTMLTitleElementVtbl ptr
 end type
 
+#define DispHTMLTitleElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTitleElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTitleElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTitleElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTitleElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTitleElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTitleElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTitleElement as const CLSID
 #define __DispHTMLMetaElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLMetaElement as const IID
@@ -11697,6 +15033,13 @@ type DispHTMLMetaElement_
 	lpVtbl as DispHTMLMetaElementVtbl ptr
 end type
 
+#define DispHTMLMetaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLMetaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLMetaElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLMetaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLMetaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLMetaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLMetaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLMetaElement as const CLSID
 #define __DispHTMLBaseElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLBaseElement as const IID
@@ -11716,6 +15059,13 @@ type DispHTMLBaseElement_
 	lpVtbl as DispHTMLBaseElementVtbl ptr
 end type
 
+#define DispHTMLBaseElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBaseElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBaseElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBaseElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBaseElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBaseElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBaseElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBaseElement as const CLSID
 #define __DispHTMLIsIndexElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLIsIndexElement as const IID
@@ -11735,6 +15085,13 @@ type DispHTMLIsIndexElement_
 	lpVtbl as DispHTMLIsIndexElementVtbl ptr
 end type
 
+#define DispHTMLIsIndexElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLIsIndexElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLIsIndexElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLIsIndexElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLIsIndexElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLIsIndexElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLIsIndexElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLIsIndexElement as const CLSID
 #define __DispHTMLNextIdElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLNextIdElement as const IID
@@ -11754,6 +15111,13 @@ type DispHTMLNextIdElement_
 	lpVtbl as DispHTMLNextIdElementVtbl ptr
 end type
 
+#define DispHTMLNextIdElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLNextIdElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLNextIdElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLNextIdElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLNextIdElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLNextIdElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLNextIdElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLNextIdElement as const CLSID
 #define __IHTMLBaseFontElement_INTERFACE_DEFINED__
 extern IID_IHTMLBaseFontElement as const IID
@@ -11778,6 +15142,20 @@ end type
 type IHTMLBaseFontElement_
 	lpVtbl as IHTMLBaseFontElementVtbl ptr
 end type
+
+#define IHTMLBaseFontElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBaseFontElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBaseFontElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBaseFontElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBaseFontElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBaseFontElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBaseFontElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBaseFontElement_put_color(This, v) (This)->lpVtbl->put_color(This, v)
+#define IHTMLBaseFontElement_get_color(This, p) (This)->lpVtbl->get_color(This, p)
+#define IHTMLBaseFontElement_put_face(This, v) (This)->lpVtbl->put_face(This, v)
+#define IHTMLBaseFontElement_get_face(This, p) (This)->lpVtbl->get_face(This, p)
+#define IHTMLBaseFontElement_put_size(This, v) (This)->lpVtbl->put_size(This, v)
+#define IHTMLBaseFontElement_get_size(This, p) (This)->lpVtbl->get_size(This, p)
 
 declare function IHTMLBaseFontElement_put_color_Proxy(byval This as IHTMLBaseFontElement ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLBaseFontElement_put_color_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11809,6 +15187,13 @@ type DispHTMLBaseFontElement_
 	lpVtbl as DispHTMLBaseFontElementVtbl ptr
 end type
 
+#define DispHTMLBaseFontElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBaseFontElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBaseFontElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBaseFontElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBaseFontElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBaseFontElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBaseFontElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBaseFontElement as const CLSID
 #define __IHTMLUnknownElement_INTERFACE_DEFINED__
 extern IID_IHTMLUnknownElement as const IID
@@ -11828,6 +15213,13 @@ type IHTMLUnknownElement_
 	lpVtbl as IHTMLUnknownElementVtbl ptr
 end type
 
+#define IHTMLUnknownElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLUnknownElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLUnknownElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLUnknownElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLUnknownElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLUnknownElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLUnknownElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __DispHTMLUnknownElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLUnknownElement as const IID
 type DispHTMLUnknownElement as DispHTMLUnknownElement_
@@ -11846,6 +15238,13 @@ type DispHTMLUnknownElement_
 	lpVtbl as DispHTMLUnknownElementVtbl ptr
 end type
 
+#define DispHTMLUnknownElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLUnknownElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLUnknownElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLUnknownElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLUnknownElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLUnknownElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLUnknownElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLUnknownElement as const CLSID
 #define __IOmHistory_INTERFACE_DEFINED__
 extern IID_IOmHistory as const IID
@@ -11868,6 +15267,18 @@ end type
 type IOmHistory_
 	lpVtbl as IOmHistoryVtbl ptr
 end type
+
+#define IOmHistory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOmHistory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOmHistory_Release(This) (This)->lpVtbl->Release(This)
+#define IOmHistory_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IOmHistory_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IOmHistory_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IOmHistory_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IOmHistory_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IOmHistory_back(This, pvargdistance) (This)->lpVtbl->back(This, pvargdistance)
+#define IOmHistory_forward(This, pvargdistance) (This)->lpVtbl->forward(This, pvargdistance)
+#define IOmHistory_go(This, pvargdistance) (This)->lpVtbl->go(This, pvargdistance)
 
 declare function IOmHistory_get_length_Proxy(byval This as IOmHistory ptr, byval p as short ptr) as HRESULT
 declare sub IOmHistory_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11896,6 +15307,14 @@ type IHTMLMimeTypesCollection_
 	lpVtbl as IHTMLMimeTypesCollectionVtbl ptr
 end type
 
+#define IHTMLMimeTypesCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLMimeTypesCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLMimeTypesCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLMimeTypesCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLMimeTypesCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLMimeTypesCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLMimeTypesCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLMimeTypesCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
 declare function IHTMLMimeTypesCollection_get_length_Proxy(byval This as IHTMLMimeTypesCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLMimeTypesCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLPluginsCollection_INTERFACE_DEFINED__
@@ -11917,6 +15336,16 @@ end type
 type IHTMLPluginsCollection_
 	lpVtbl as IHTMLPluginsCollectionVtbl ptr
 end type
+
+#define IHTMLPluginsCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPluginsCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPluginsCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPluginsCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLPluginsCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLPluginsCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLPluginsCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLPluginsCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLPluginsCollection_refresh(This, reload) (This)->lpVtbl->refresh(This, reload)
 
 declare function IHTMLPluginsCollection_get_length_Proxy(byval This as IHTMLPluginsCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLPluginsCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -11948,6 +15377,23 @@ end type
 type IHTMLOpsProfile_
 	lpVtbl as IHTMLOpsProfileVtbl ptr
 end type
+
+#define IHTMLOpsProfile_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOpsProfile_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOpsProfile_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOpsProfile_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOpsProfile_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOpsProfile_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOpsProfile_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOpsProfile_addRequest(This, name, reserved, success) (This)->lpVtbl->addRequest(This, name, reserved, success)
+#define IHTMLOpsProfile_clearRequest(This) (This)->lpVtbl->clearRequest(This)
+#define IHTMLOpsProfile_doRequest(This, usage, fname, domain, path, expire, reserved) (This)->lpVtbl->doRequest(This, usage, fname, domain, path, expire, reserved)
+#define IHTMLOpsProfile_getAttribute(This, name, value) (This)->lpVtbl->getAttribute(This, name, value)
+#define IHTMLOpsProfile_setAttribute(This, name, value, prefs, success) (This)->lpVtbl->setAttribute(This, name, value, prefs, success)
+#define IHTMLOpsProfile_commitChanges(This, success) (This)->lpVtbl->commitChanges(This, success)
+#define IHTMLOpsProfile_addReadRequest(This, name, reserved, success) (This)->lpVtbl->addReadRequest(This, name, reserved, success)
+#define IHTMLOpsProfile_doReadRequest(This, usage, fname, domain, path, expire, reserved) (This)->lpVtbl->doReadRequest(This, usage, fname, domain, path, expire, reserved)
+#define IHTMLOpsProfile_doWriteRequest(This, success) (This)->lpVtbl->doWriteRequest(This, success)
 
 declare function IHTMLOpsProfile_addRequest_Proxy(byval This as IHTMLOpsProfile ptr, byval name as BSTR, byval reserved as VARIANT, byval success as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLOpsProfile_addRequest_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -12004,6 +15450,34 @@ end type
 type IOmNavigator_
 	lpVtbl as IOmNavigatorVtbl ptr
 end type
+
+#define IOmNavigator_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOmNavigator_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOmNavigator_Release(This) (This)->lpVtbl->Release(This)
+#define IOmNavigator_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IOmNavigator_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IOmNavigator_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IOmNavigator_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IOmNavigator_get_appCodeName(This, p) (This)->lpVtbl->get_appCodeName(This, p)
+#define IOmNavigator_get_appName(This, p) (This)->lpVtbl->get_appName(This, p)
+#define IOmNavigator_get_appVersion(This, p) (This)->lpVtbl->get_appVersion(This, p)
+#define IOmNavigator_get_userAgent(This, p) (This)->lpVtbl->get_userAgent(This, p)
+#define IOmNavigator_javaEnabled(This, enabled) (This)->lpVtbl->javaEnabled(This, enabled)
+#define IOmNavigator_taintEnabled(This, enabled) (This)->lpVtbl->taintEnabled(This, enabled)
+#define IOmNavigator_get_mimeTypes(This, p) (This)->lpVtbl->get_mimeTypes(This, p)
+#define IOmNavigator_get_plugins(This, p) (This)->lpVtbl->get_plugins(This, p)
+#define IOmNavigator_get_cookieEnabled(This, p) (This)->lpVtbl->get_cookieEnabled(This, p)
+#define IOmNavigator_get_opsProfile(This, p) (This)->lpVtbl->get_opsProfile(This, p)
+#define IOmNavigator_toString(This, string) (This)->lpVtbl->toString(This, string)
+#define IOmNavigator_get_cpuClass(This, p) (This)->lpVtbl->get_cpuClass(This, p)
+#define IOmNavigator_get_systemLanguage(This, p) (This)->lpVtbl->get_systemLanguage(This, p)
+#define IOmNavigator_get_browserLanguage(This, p) (This)->lpVtbl->get_browserLanguage(This, p)
+#define IOmNavigator_get_userLanguage(This, p) (This)->lpVtbl->get_userLanguage(This, p)
+#define IOmNavigator_get_platform(This, p) (This)->lpVtbl->get_platform(This, p)
+#define IOmNavigator_get_appMinorVersion(This, p) (This)->lpVtbl->get_appMinorVersion(This, p)
+#define IOmNavigator_get_connectionSpeed(This, p) (This)->lpVtbl->get_connectionSpeed(This, p)
+#define IOmNavigator_get_onLine(This, p) (This)->lpVtbl->get_onLine(This, p)
+#define IOmNavigator_get_userProfile(This, p) (This)->lpVtbl->get_userProfile(This, p)
 
 declare function IOmNavigator_get_appCodeName_Proxy(byval This as IOmNavigator ptr, byval p as BSTR ptr) as HRESULT
 declare sub IOmNavigator_get_appCodeName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -12083,6 +15557,34 @@ type IHTMLLocation_
 	lpVtbl as IHTMLLocationVtbl ptr
 end type
 
+#define IHTMLLocation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLocation_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLocation_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLocation_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLocation_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLocation_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLocation_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLocation_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLLocation_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLLocation_put_protocol(This, v) (This)->lpVtbl->put_protocol(This, v)
+#define IHTMLLocation_get_protocol(This, p) (This)->lpVtbl->get_protocol(This, p)
+#define IHTMLLocation_put_host(This, v) (This)->lpVtbl->put_host(This, v)
+#define IHTMLLocation_get_host(This, p) (This)->lpVtbl->get_host(This, p)
+#define IHTMLLocation_put_hostname(This, v) (This)->lpVtbl->put_hostname(This, v)
+#define IHTMLLocation_get_hostname(This, p) (This)->lpVtbl->get_hostname(This, p)
+#define IHTMLLocation_put_port(This, v) (This)->lpVtbl->put_port(This, v)
+#define IHTMLLocation_get_port(This, p) (This)->lpVtbl->get_port(This, p)
+#define IHTMLLocation_put_pathname(This, v) (This)->lpVtbl->put_pathname(This, v)
+#define IHTMLLocation_get_pathname(This, p) (This)->lpVtbl->get_pathname(This, p)
+#define IHTMLLocation_put_search(This, v) (This)->lpVtbl->put_search(This, v)
+#define IHTMLLocation_get_search(This, p) (This)->lpVtbl->get_search(This, p)
+#define IHTMLLocation_put_hash(This, v) (This)->lpVtbl->put_hash(This, v)
+#define IHTMLLocation_get_hash(This, p) (This)->lpVtbl->get_hash(This, p)
+#define IHTMLLocation_reload(This, flag) (This)->lpVtbl->reload(This, flag)
+#define IHTMLLocation_replace(This, bstr) (This)->lpVtbl->replace(This, bstr)
+#define IHTMLLocation_assign(This, bstr) (This)->lpVtbl->assign(This, bstr)
+#define IHTMLLocation_toString(This, string) (This)->lpVtbl->toString(This, string)
+
 declare function IHTMLLocation_put_href_Proxy(byval This as IHTMLLocation ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLocation_put_href_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLLocation_get_href_Proxy(byval This as IHTMLLocation ptr, byval p as BSTR ptr) as HRESULT
@@ -12151,6 +15653,17 @@ type IHTMLBookmarkCollection_
 	lpVtbl as IHTMLBookmarkCollectionVtbl ptr
 end type
 
+#define IHTMLBookmarkCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBookmarkCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBookmarkCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBookmarkCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBookmarkCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBookmarkCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBookmarkCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBookmarkCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLBookmarkCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLBookmarkCollection_item(This, index, pVarBookmark) (This)->lpVtbl->item(This, index, pVarBookmark)
+
 declare function IHTMLBookmarkCollection_get_length_Proxy(byval This as IHTMLBookmarkCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLBookmarkCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLBookmarkCollection_get__newEnum_Proxy(byval This as IHTMLBookmarkCollection ptr, byval p as IUnknown ptr ptr) as HRESULT
@@ -12181,6 +15694,21 @@ end type
 type IHTMLDataTransfer_
 	lpVtbl as IHTMLDataTransferVtbl ptr
 end type
+
+#define IHTMLDataTransfer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDataTransfer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDataTransfer_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDataTransfer_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDataTransfer_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDataTransfer_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDataTransfer_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDataTransfer_setData(This, format, data, pret) (This)->lpVtbl->setData(This, format, data, pret)
+#define IHTMLDataTransfer_getData(This, format, pvarRet) (This)->lpVtbl->getData(This, format, pvarRet)
+#define IHTMLDataTransfer_clearData(This, format, pret) (This)->lpVtbl->clearData(This, format, pret)
+#define IHTMLDataTransfer_put_dropEffect(This, v) (This)->lpVtbl->put_dropEffect(This, v)
+#define IHTMLDataTransfer_get_dropEffect(This, p) (This)->lpVtbl->get_dropEffect(This, p)
+#define IHTMLDataTransfer_put_effectAllowed(This, v) (This)->lpVtbl->put_effectAllowed(This, v)
+#define IHTMLDataTransfer_get_effectAllowed(This, p) (This)->lpVtbl->get_effectAllowed(This, p)
 
 declare function IHTMLDataTransfer_setData_Proxy(byval This as IHTMLDataTransfer ptr, byval format as BSTR, byval data as VARIANT ptr, byval pret as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLDataTransfer_setData_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -12269,6 +15797,70 @@ end type
 type IHTMLEventObj2_
 	lpVtbl as IHTMLEventObj2Vtbl ptr
 end type
+
+#define IHTMLEventObj2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEventObj2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEventObj2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEventObj2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLEventObj2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLEventObj2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLEventObj2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLEventObj2_setAttribute(This, strAttributeName, AttributeValue, lFlags) (This)->lpVtbl->setAttribute(This, strAttributeName, AttributeValue, lFlags)
+#define IHTMLEventObj2_getAttribute(This, strAttributeName, lFlags, AttributeValue) (This)->lpVtbl->getAttribute(This, strAttributeName, lFlags, AttributeValue)
+#define IHTMLEventObj2_removeAttribute(This, strAttributeName, lFlags, pfSuccess) (This)->lpVtbl->removeAttribute(This, strAttributeName, lFlags, pfSuccess)
+#define IHTMLEventObj2_put_propertyName(This, v) (This)->lpVtbl->put_propertyName(This, v)
+#define IHTMLEventObj2_get_propertyName(This, p) (This)->lpVtbl->get_propertyName(This, p)
+#define IHTMLEventObj2_putref_bookmarks(This, v) (This)->lpVtbl->putref_bookmarks(This, v)
+#define IHTMLEventObj2_get_bookmarks(This, p) (This)->lpVtbl->get_bookmarks(This, p)
+#define IHTMLEventObj2_putref_recordset(This, v) (This)->lpVtbl->putref_recordset(This, v)
+#define IHTMLEventObj2_get_recordset(This, p) (This)->lpVtbl->get_recordset(This, p)
+#define IHTMLEventObj2_put_dataFld(This, v) (This)->lpVtbl->put_dataFld(This, v)
+#define IHTMLEventObj2_get_dataFld(This, p) (This)->lpVtbl->get_dataFld(This, p)
+#define IHTMLEventObj2_putref_boundElements(This, v) (This)->lpVtbl->putref_boundElements(This, v)
+#define IHTMLEventObj2_get_boundElements(This, p) (This)->lpVtbl->get_boundElements(This, p)
+#define IHTMLEventObj2_put_repeat(This, v) (This)->lpVtbl->put_repeat(This, v)
+#define IHTMLEventObj2_get_repeat(This, p) (This)->lpVtbl->get_repeat(This, p)
+#define IHTMLEventObj2_put_srcUrn(This, v) (This)->lpVtbl->put_srcUrn(This, v)
+#define IHTMLEventObj2_get_srcUrn(This, p) (This)->lpVtbl->get_srcUrn(This, p)
+#define IHTMLEventObj2_putref_srcElement(This, v) (This)->lpVtbl->putref_srcElement(This, v)
+#define IHTMLEventObj2_get_srcElement(This, p) (This)->lpVtbl->get_srcElement(This, p)
+#define IHTMLEventObj2_put_altKey(This, v) (This)->lpVtbl->put_altKey(This, v)
+#define IHTMLEventObj2_get_altKey(This, p) (This)->lpVtbl->get_altKey(This, p)
+#define IHTMLEventObj2_put_ctrlKey(This, v) (This)->lpVtbl->put_ctrlKey(This, v)
+#define IHTMLEventObj2_get_ctrlKey(This, p) (This)->lpVtbl->get_ctrlKey(This, p)
+#define IHTMLEventObj2_put_shiftKey(This, v) (This)->lpVtbl->put_shiftKey(This, v)
+#define IHTMLEventObj2_get_shiftKey(This, p) (This)->lpVtbl->get_shiftKey(This, p)
+#define IHTMLEventObj2_putref_fromElement(This, v) (This)->lpVtbl->putref_fromElement(This, v)
+#define IHTMLEventObj2_get_fromElement(This, p) (This)->lpVtbl->get_fromElement(This, p)
+#define IHTMLEventObj2_putref_toElement(This, v) (This)->lpVtbl->putref_toElement(This, v)
+#define IHTMLEventObj2_get_toElement(This, p) (This)->lpVtbl->get_toElement(This, p)
+#define IHTMLEventObj2_put_button(This, v) (This)->lpVtbl->put_button(This, v)
+#define IHTMLEventObj2_get_button(This, p) (This)->lpVtbl->get_button(This, p)
+#define IHTMLEventObj2_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLEventObj2_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLEventObj2_put_qualifier(This, v) (This)->lpVtbl->put_qualifier(This, v)
+#define IHTMLEventObj2_get_qualifier(This, p) (This)->lpVtbl->get_qualifier(This, p)
+#define IHTMLEventObj2_put_reason(This, v) (This)->lpVtbl->put_reason(This, v)
+#define IHTMLEventObj2_get_reason(This, p) (This)->lpVtbl->get_reason(This, p)
+#define IHTMLEventObj2_put_x(This, v) (This)->lpVtbl->put_x(This, v)
+#define IHTMLEventObj2_get_x(This, p) (This)->lpVtbl->get_x(This, p)
+#define IHTMLEventObj2_put_y(This, v) (This)->lpVtbl->put_y(This, v)
+#define IHTMLEventObj2_get_y(This, p) (This)->lpVtbl->get_y(This, p)
+#define IHTMLEventObj2_put_clientX(This, v) (This)->lpVtbl->put_clientX(This, v)
+#define IHTMLEventObj2_get_clientX(This, p) (This)->lpVtbl->get_clientX(This, p)
+#define IHTMLEventObj2_put_clientY(This, v) (This)->lpVtbl->put_clientY(This, v)
+#define IHTMLEventObj2_get_clientY(This, p) (This)->lpVtbl->get_clientY(This, p)
+#define IHTMLEventObj2_put_offsetX(This, v) (This)->lpVtbl->put_offsetX(This, v)
+#define IHTMLEventObj2_get_offsetX(This, p) (This)->lpVtbl->get_offsetX(This, p)
+#define IHTMLEventObj2_put_offsetY(This, v) (This)->lpVtbl->put_offsetY(This, v)
+#define IHTMLEventObj2_get_offsetY(This, p) (This)->lpVtbl->get_offsetY(This, p)
+#define IHTMLEventObj2_put_screenX(This, v) (This)->lpVtbl->put_screenX(This, v)
+#define IHTMLEventObj2_get_screenX(This, p) (This)->lpVtbl->get_screenX(This, p)
+#define IHTMLEventObj2_put_screenY(This, v) (This)->lpVtbl->put_screenY(This, v)
+#define IHTMLEventObj2_get_screenY(This, p) (This)->lpVtbl->get_screenY(This, p)
+#define IHTMLEventObj2_putref_srcFilter(This, v) (This)->lpVtbl->putref_srcFilter(This, v)
+#define IHTMLEventObj2_get_srcFilter(This, p) (This)->lpVtbl->get_srcFilter(This, p)
+#define IHTMLEventObj2_get_dataTransfer(This, p) (This)->lpVtbl->get_dataTransfer(This, p)
 
 declare function IHTMLEventObj2_setAttribute_Proxy(byval This as IHTMLEventObj2 ptr, byval strAttributeName as BSTR, byval AttributeValue as VARIANT, byval lFlags as LONG) as HRESULT
 declare sub IHTMLEventObj2_setAttribute_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -12416,6 +16008,30 @@ type IHTMLEventObj3_
 	lpVtbl as IHTMLEventObj3Vtbl ptr
 end type
 
+#define IHTMLEventObj3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEventObj3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEventObj3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEventObj3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLEventObj3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLEventObj3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLEventObj3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLEventObj3_get_contentOverflow(This, p) (This)->lpVtbl->get_contentOverflow(This, p)
+#define IHTMLEventObj3_put_shiftLeft(This, v) (This)->lpVtbl->put_shiftLeft(This, v)
+#define IHTMLEventObj3_get_shiftLeft(This, p) (This)->lpVtbl->get_shiftLeft(This, p)
+#define IHTMLEventObj3_put_altLeft(This, v) (This)->lpVtbl->put_altLeft(This, v)
+#define IHTMLEventObj3_get_altLeft(This, p) (This)->lpVtbl->get_altLeft(This, p)
+#define IHTMLEventObj3_put_ctrlLeft(This, v) (This)->lpVtbl->put_ctrlLeft(This, v)
+#define IHTMLEventObj3_get_ctrlLeft(This, p) (This)->lpVtbl->get_ctrlLeft(This, p)
+#define IHTMLEventObj3_get_imeCompositionChange(This, p) (This)->lpVtbl->get_imeCompositionChange(This, p)
+#define IHTMLEventObj3_get_imeNotifyCommand(This, p) (This)->lpVtbl->get_imeNotifyCommand(This, p)
+#define IHTMLEventObj3_get_imeNotifyData(This, p) (This)->lpVtbl->get_imeNotifyData(This, p)
+#define IHTMLEventObj3_get_imeRequest(This, p) (This)->lpVtbl->get_imeRequest(This, p)
+#define IHTMLEventObj3_get_imeRequestData(This, p) (This)->lpVtbl->get_imeRequestData(This, p)
+#define IHTMLEventObj3_get_keyboardLayout(This, p) (This)->lpVtbl->get_keyboardLayout(This, p)
+#define IHTMLEventObj3_get_behaviorCookie(This, p) (This)->lpVtbl->get_behaviorCookie(This, p)
+#define IHTMLEventObj3_get_behaviorPart(This, p) (This)->lpVtbl->get_behaviorPart(This, p)
+#define IHTMLEventObj3_get_nextPage(This, p) (This)->lpVtbl->get_nextPage(This, p)
+
 declare function IHTMLEventObj3_get_contentOverflow_Proxy(byval This as IHTMLEventObj3 ptr, byval p as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLEventObj3_get_contentOverflow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLEventObj3_put_shiftLeft_Proxy(byval This as IHTMLEventObj3 ptr, byval v as VARIANT_BOOL) as HRESULT
@@ -12467,6 +16083,14 @@ type IHTMLEventObj4_
 	lpVtbl as IHTMLEventObj4Vtbl ptr
 end type
 
+#define IHTMLEventObj4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEventObj4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEventObj4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEventObj4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLEventObj4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLEventObj4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLEventObj4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLEventObj4_get_wheelDelta(This, p) (This)->lpVtbl->get_wheelDelta(This, p)
 declare function IHTMLEventObj4_get_wheelDelta_Proxy(byval This as IHTMLEventObj4 ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLEventObj4_get_wheelDelta_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispCEventObj_DISPINTERFACE_DEFINED__
@@ -12487,6 +16111,13 @@ type DispCEventObj_
 	lpVtbl as DispCEventObjVtbl ptr
 end type
 
+#define DispCEventObj_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispCEventObj_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispCEventObj_Release(This) (This)->lpVtbl->Release(This)
+#define DispCEventObj_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispCEventObj_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispCEventObj_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispCEventObj_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_CEventObj as const CLSID
 #define __HTMLWindowEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLWindowEvents2 as const IID
@@ -12506,6 +16137,13 @@ type HTMLWindowEvents2_
 	lpVtbl as HTMLWindowEvents2Vtbl ptr
 end type
 
+#define HTMLWindowEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLWindowEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLWindowEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLWindowEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLWindowEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLWindowEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLWindowEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLWindowEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLWindowEvents as const IID
 type HTMLWindowEvents as HTMLWindowEvents_
@@ -12524,6 +16162,13 @@ type HTMLWindowEvents_
 	lpVtbl as HTMLWindowEventsVtbl ptr
 end type
 
+#define HTMLWindowEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLWindowEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLWindowEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLWindowEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLWindowEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLWindowEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLWindowEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLDocument2_INTERFACE_DEFINED__
 extern IID_IHTMLDocument2 as const IID
 type IHTMLDocument2 as IHTMLDocument2_
@@ -12651,6 +16296,123 @@ end type
 type IHTMLDocument2_
 	lpVtbl as IHTMLDocument2Vtbl ptr
 end type
+
+#define IHTMLDocument2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDocument2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDocument2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDocument2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDocument2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDocument2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDocument2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDocument2_get_Script(This, p) (This)->lpVtbl->get_Script(This, p)
+#define IHTMLDocument2_get_all(This, p) (This)->lpVtbl->get_all(This, p)
+#define IHTMLDocument2_get_body(This, p) (This)->lpVtbl->get_body(This, p)
+#define IHTMLDocument2_get_activeElement(This, p) (This)->lpVtbl->get_activeElement(This, p)
+#define IHTMLDocument2_get_images(This, p) (This)->lpVtbl->get_images(This, p)
+#define IHTMLDocument2_get_applets(This, p) (This)->lpVtbl->get_applets(This, p)
+#define IHTMLDocument2_get_links(This, p) (This)->lpVtbl->get_links(This, p)
+#define IHTMLDocument2_get_forms(This, p) (This)->lpVtbl->get_forms(This, p)
+#define IHTMLDocument2_get_anchors(This, p) (This)->lpVtbl->get_anchors(This, p)
+#define IHTMLDocument2_put_title(This, v) (This)->lpVtbl->put_title(This, v)
+#define IHTMLDocument2_get_title(This, p) (This)->lpVtbl->get_title(This, p)
+#define IHTMLDocument2_get_scripts(This, p) (This)->lpVtbl->get_scripts(This, p)
+#define IHTMLDocument2_put_designMode(This, v) (This)->lpVtbl->put_designMode(This, v)
+#define IHTMLDocument2_get_designMode(This, p) (This)->lpVtbl->get_designMode(This, p)
+#define IHTMLDocument2_get_selection(This, p) (This)->lpVtbl->get_selection(This, p)
+#define IHTMLDocument2_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLDocument2_get_frames(This, p) (This)->lpVtbl->get_frames(This, p)
+#define IHTMLDocument2_get_embeds(This, p) (This)->lpVtbl->get_embeds(This, p)
+#define IHTMLDocument2_get_plugins(This, p) (This)->lpVtbl->get_plugins(This, p)
+#define IHTMLDocument2_put_alinkColor(This, v) (This)->lpVtbl->put_alinkColor(This, v)
+#define IHTMLDocument2_get_alinkColor(This, p) (This)->lpVtbl->get_alinkColor(This, p)
+#define IHTMLDocument2_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLDocument2_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLDocument2_put_fgColor(This, v) (This)->lpVtbl->put_fgColor(This, v)
+#define IHTMLDocument2_get_fgColor(This, p) (This)->lpVtbl->get_fgColor(This, p)
+#define IHTMLDocument2_put_linkColor(This, v) (This)->lpVtbl->put_linkColor(This, v)
+#define IHTMLDocument2_get_linkColor(This, p) (This)->lpVtbl->get_linkColor(This, p)
+#define IHTMLDocument2_put_vlinkColor(This, v) (This)->lpVtbl->put_vlinkColor(This, v)
+#define IHTMLDocument2_get_vlinkColor(This, p) (This)->lpVtbl->get_vlinkColor(This, p)
+#define IHTMLDocument2_get_referrer(This, p) (This)->lpVtbl->get_referrer(This, p)
+#define IHTMLDocument2_get_location(This, p) (This)->lpVtbl->get_location(This, p)
+#define IHTMLDocument2_get_lastModified(This, p) (This)->lpVtbl->get_lastModified(This, p)
+#define IHTMLDocument2_put_URL(This, v) (This)->lpVtbl->put_URL(This, v)
+#define IHTMLDocument2_get_URL(This, p) (This)->lpVtbl->get_URL(This, p)
+#define IHTMLDocument2_put_domain(This, v) (This)->lpVtbl->put_domain(This, v)
+#define IHTMLDocument2_get_domain(This, p) (This)->lpVtbl->get_domain(This, p)
+#define IHTMLDocument2_put_cookie(This, v) (This)->lpVtbl->put_cookie(This, v)
+#define IHTMLDocument2_get_cookie(This, p) (This)->lpVtbl->get_cookie(This, p)
+#define IHTMLDocument2_put_expando(This, v) (This)->lpVtbl->put_expando(This, v)
+#define IHTMLDocument2_get_expando(This, p) (This)->lpVtbl->get_expando(This, p)
+#define IHTMLDocument2_put_charset(This, v) (This)->lpVtbl->put_charset(This, v)
+#define IHTMLDocument2_get_charset(This, p) (This)->lpVtbl->get_charset(This, p)
+#define IHTMLDocument2_put_defaultCharset(This, v) (This)->lpVtbl->put_defaultCharset(This, v)
+#define IHTMLDocument2_get_defaultCharset(This, p) (This)->lpVtbl->get_defaultCharset(This, p)
+#define IHTMLDocument2_get_mimeType(This, p) (This)->lpVtbl->get_mimeType(This, p)
+#define IHTMLDocument2_get_fileSize(This, p) (This)->lpVtbl->get_fileSize(This, p)
+#define IHTMLDocument2_get_fileCreatedDate(This, p) (This)->lpVtbl->get_fileCreatedDate(This, p)
+#define IHTMLDocument2_get_fileModifiedDate(This, p) (This)->lpVtbl->get_fileModifiedDate(This, p)
+#define IHTMLDocument2_get_fileUpdatedDate(This, p) (This)->lpVtbl->get_fileUpdatedDate(This, p)
+#define IHTMLDocument2_get_security(This, p) (This)->lpVtbl->get_security(This, p)
+#define IHTMLDocument2_get_protocol(This, p) (This)->lpVtbl->get_protocol(This, p)
+#define IHTMLDocument2_get_nameProp(This, p) (This)->lpVtbl->get_nameProp(This, p)
+#define IHTMLDocument2_write(This, psarray) (This)->lpVtbl->write(This, psarray)
+#define IHTMLDocument2_writeln(This, psarray) (This)->lpVtbl->writeln(This, psarray)
+#define IHTMLDocument2_open(This, url, name, features, replace, pomWindowResult) (This)->lpVtbl->open(This, url, name, features, replace, pomWindowResult)
+#define IHTMLDocument2_close(This) (This)->lpVtbl->close(This)
+#define IHTMLDocument2_clear(This) (This)->lpVtbl->clear(This)
+#define IHTMLDocument2_queryCommandSupported(This, cmdID, pfRet) (This)->lpVtbl->queryCommandSupported(This, cmdID, pfRet)
+#define IHTMLDocument2_queryCommandEnabled(This, cmdID, pfRet) (This)->lpVtbl->queryCommandEnabled(This, cmdID, pfRet)
+#define IHTMLDocument2_queryCommandState(This, cmdID, pfRet) (This)->lpVtbl->queryCommandState(This, cmdID, pfRet)
+#define IHTMLDocument2_queryCommandIndeterm(This, cmdID, pfRet) (This)->lpVtbl->queryCommandIndeterm(This, cmdID, pfRet)
+#define IHTMLDocument2_queryCommandText(This, cmdID, pcmdText) (This)->lpVtbl->queryCommandText(This, cmdID, pcmdText)
+#define IHTMLDocument2_queryCommandValue(This, cmdID, pcmdValue) (This)->lpVtbl->queryCommandValue(This, cmdID, pcmdValue)
+#define IHTMLDocument2_execCommand(This, cmdID, showUI, value, pfRet) (This)->lpVtbl->execCommand(This, cmdID, showUI, value, pfRet)
+#define IHTMLDocument2_execCommandShowHelp(This, cmdID, pfRet) (This)->lpVtbl->execCommandShowHelp(This, cmdID, pfRet)
+#define IHTMLDocument2_createElement(This, eTag, newElem) (This)->lpVtbl->createElement(This, eTag, newElem)
+#define IHTMLDocument2_put_onhelp(This, v) (This)->lpVtbl->put_onhelp(This, v)
+#define IHTMLDocument2_get_onhelp(This, p) (This)->lpVtbl->get_onhelp(This, p)
+#define IHTMLDocument2_put_onclick(This, v) (This)->lpVtbl->put_onclick(This, v)
+#define IHTMLDocument2_get_onclick(This, p) (This)->lpVtbl->get_onclick(This, p)
+#define IHTMLDocument2_put_ondblclick(This, v) (This)->lpVtbl->put_ondblclick(This, v)
+#define IHTMLDocument2_get_ondblclick(This, p) (This)->lpVtbl->get_ondblclick(This, p)
+#define IHTMLDocument2_put_onkeyup(This, v) (This)->lpVtbl->put_onkeyup(This, v)
+#define IHTMLDocument2_get_onkeyup(This, p) (This)->lpVtbl->get_onkeyup(This, p)
+#define IHTMLDocument2_put_onkeydown(This, v) (This)->lpVtbl->put_onkeydown(This, v)
+#define IHTMLDocument2_get_onkeydown(This, p) (This)->lpVtbl->get_onkeydown(This, p)
+#define IHTMLDocument2_put_onkeypress(This, v) (This)->lpVtbl->put_onkeypress(This, v)
+#define IHTMLDocument2_get_onkeypress(This, p) (This)->lpVtbl->get_onkeypress(This, p)
+#define IHTMLDocument2_put_onmouseup(This, v) (This)->lpVtbl->put_onmouseup(This, v)
+#define IHTMLDocument2_get_onmouseup(This, p) (This)->lpVtbl->get_onmouseup(This, p)
+#define IHTMLDocument2_put_onmousedown(This, v) (This)->lpVtbl->put_onmousedown(This, v)
+#define IHTMLDocument2_get_onmousedown(This, p) (This)->lpVtbl->get_onmousedown(This, p)
+#define IHTMLDocument2_put_onmousemove(This, v) (This)->lpVtbl->put_onmousemove(This, v)
+#define IHTMLDocument2_get_onmousemove(This, p) (This)->lpVtbl->get_onmousemove(This, p)
+#define IHTMLDocument2_put_onmouseout(This, v) (This)->lpVtbl->put_onmouseout(This, v)
+#define IHTMLDocument2_get_onmouseout(This, p) (This)->lpVtbl->get_onmouseout(This, p)
+#define IHTMLDocument2_put_onmouseover(This, v) (This)->lpVtbl->put_onmouseover(This, v)
+#define IHTMLDocument2_get_onmouseover(This, p) (This)->lpVtbl->get_onmouseover(This, p)
+#define IHTMLDocument2_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLDocument2_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLDocument2_put_onafterupdate(This, v) (This)->lpVtbl->put_onafterupdate(This, v)
+#define IHTMLDocument2_get_onafterupdate(This, p) (This)->lpVtbl->get_onafterupdate(This, p)
+#define IHTMLDocument2_put_onrowexit(This, v) (This)->lpVtbl->put_onrowexit(This, v)
+#define IHTMLDocument2_get_onrowexit(This, p) (This)->lpVtbl->get_onrowexit(This, p)
+#define IHTMLDocument2_put_onrowenter(This, v) (This)->lpVtbl->put_onrowenter(This, v)
+#define IHTMLDocument2_get_onrowenter(This, p) (This)->lpVtbl->get_onrowenter(This, p)
+#define IHTMLDocument2_put_ondragstart(This, v) (This)->lpVtbl->put_ondragstart(This, v)
+#define IHTMLDocument2_get_ondragstart(This, p) (This)->lpVtbl->get_ondragstart(This, p)
+#define IHTMLDocument2_put_onselectstart(This, v) (This)->lpVtbl->put_onselectstart(This, v)
+#define IHTMLDocument2_get_onselectstart(This, p) (This)->lpVtbl->get_onselectstart(This, p)
+#define IHTMLDocument2_elementFromPoint(This, x, y, elementHit) (This)->lpVtbl->elementFromPoint(This, x, y, elementHit)
+#define IHTMLDocument2_get_parentWindow(This, p) (This)->lpVtbl->get_parentWindow(This, p)
+#define IHTMLDocument2_get_styleSheets(This, p) (This)->lpVtbl->get_styleSheets(This, p)
+#define IHTMLDocument2_put_onbeforeupdate(This, v) (This)->lpVtbl->put_onbeforeupdate(This, v)
+#define IHTMLDocument2_get_onbeforeupdate(This, p) (This)->lpVtbl->get_onbeforeupdate(This, p)
+#define IHTMLDocument2_put_onerrorupdate(This, v) (This)->lpVtbl->put_onerrorupdate(This, v)
+#define IHTMLDocument2_get_onerrorupdate(This, p) (This)->lpVtbl->get_onerrorupdate(This, p)
+#define IHTMLDocument2_toString(This, String) (This)->lpVtbl->toString(This, String)
+#define IHTMLDocument2_createStyleSheet(This, bstrHref, lIndex, ppnewStyleSheet) (This)->lpVtbl->createStyleSheet(This, bstrHref, lIndex, ppnewStyleSheet)
 
 declare function IHTMLDocument2_get_all_Proxy(byval This as IHTMLDocument2 ptr, byval p as IHTMLElementCollection ptr ptr) as HRESULT
 declare sub IHTMLDocument2_get_all_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -12887,6 +16649,16 @@ type IHTMLFramesCollection2_
 	lpVtbl as IHTMLFramesCollection2Vtbl ptr
 end type
 
+#define IHTMLFramesCollection2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFramesCollection2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFramesCollection2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFramesCollection2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFramesCollection2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFramesCollection2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFramesCollection2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFramesCollection2_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
+#define IHTMLFramesCollection2_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+
 declare function IHTMLFramesCollection2_item_Proxy(byval This as IHTMLFramesCollection2 ptr, byval pvarIndex as VARIANT ptr, byval pvarResult as VARIANT ptr) as HRESULT
 declare sub IHTMLFramesCollection2_item_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFramesCollection2_get_length_Proxy(byval This as IHTMLFramesCollection2 ptr, byval p as long ptr) as HRESULT
@@ -12978,6 +16750,84 @@ end type
 type IHTMLWindow2_
 	lpVtbl as IHTMLWindow2Vtbl ptr
 end type
+
+#define IHTMLWindow2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLWindow2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLWindow2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLWindow2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLWindow2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLWindow2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLWindow2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLWindow2_item(This, pvarIndex, pvarResult) (This)->lpVtbl->item(This, pvarIndex, pvarResult)
+#define IHTMLWindow2_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLWindow2_get_frames(This, p) (This)->lpVtbl->get_frames(This, p)
+#define IHTMLWindow2_put_defaultStatus(This, v) (This)->lpVtbl->put_defaultStatus(This, v)
+#define IHTMLWindow2_get_defaultStatus(This, p) (This)->lpVtbl->get_defaultStatus(This, p)
+#define IHTMLWindow2_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLWindow2_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLWindow2_setTimeout(This, expression, msec, language, timerID) (This)->lpVtbl->setTimeout(This, expression, msec, language, timerID)
+#define IHTMLWindow2_clearTimeout(This, timerID) (This)->lpVtbl->clearTimeout(This, timerID)
+#define IHTMLWindow2_alert(This, message) (This)->lpVtbl->alert(This, message)
+#define IHTMLWindow2_confirm(This, message, confirmed) (This)->lpVtbl->confirm(This, message, confirmed)
+#define IHTMLWindow2_prompt(This, message, defstr, textdata) (This)->lpVtbl->prompt(This, message, defstr, textdata)
+#define IHTMLWindow2_get_Image(This, p) (This)->lpVtbl->get_Image(This, p)
+#define IHTMLWindow2_get_location(This, p) (This)->lpVtbl->get_location(This, p)
+#define IHTMLWindow2_get_history(This, p) (This)->lpVtbl->get_history(This, p)
+#define IHTMLWindow2_close(This) (This)->lpVtbl->close(This)
+#define IHTMLWindow2_put_opener(This, v) (This)->lpVtbl->put_opener(This, v)
+#define IHTMLWindow2_get_opener(This, p) (This)->lpVtbl->get_opener(This, p)
+#define IHTMLWindow2_get_navigator(This, p) (This)->lpVtbl->get_navigator(This, p)
+#define IHTMLWindow2_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLWindow2_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLWindow2_get_parent(This, p) (This)->lpVtbl->get_parent(This, p)
+#define IHTMLWindow2_open(This, url, name, features, replace, pomWindowResult) (This)->lpVtbl->open(This, url, name, features, replace, pomWindowResult)
+#define IHTMLWindow2_get_self(This, p) (This)->lpVtbl->get_self(This, p)
+#define IHTMLWindow2_get_top(This, p) (This)->lpVtbl->get_top(This, p)
+#define IHTMLWindow2_get_window(This, p) (This)->lpVtbl->get_window(This, p)
+#define IHTMLWindow2_navigate(This, url) (This)->lpVtbl->navigate(This, url)
+#define IHTMLWindow2_put_onfocus(This, v) (This)->lpVtbl->put_onfocus(This, v)
+#define IHTMLWindow2_get_onfocus(This, p) (This)->lpVtbl->get_onfocus(This, p)
+#define IHTMLWindow2_put_onblur(This, v) (This)->lpVtbl->put_onblur(This, v)
+#define IHTMLWindow2_get_onblur(This, p) (This)->lpVtbl->get_onblur(This, p)
+#define IHTMLWindow2_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLWindow2_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLWindow2_put_onbeforeunload(This, v) (This)->lpVtbl->put_onbeforeunload(This, v)
+#define IHTMLWindow2_get_onbeforeunload(This, p) (This)->lpVtbl->get_onbeforeunload(This, p)
+#define IHTMLWindow2_put_onunload(This, v) (This)->lpVtbl->put_onunload(This, v)
+#define IHTMLWindow2_get_onunload(This, p) (This)->lpVtbl->get_onunload(This, p)
+#define IHTMLWindow2_put_onhelp(This, v) (This)->lpVtbl->put_onhelp(This, v)
+#define IHTMLWindow2_get_onhelp(This, p) (This)->lpVtbl->get_onhelp(This, p)
+#define IHTMLWindow2_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLWindow2_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLWindow2_put_onresize(This, v) (This)->lpVtbl->put_onresize(This, v)
+#define IHTMLWindow2_get_onresize(This, p) (This)->lpVtbl->get_onresize(This, p)
+#define IHTMLWindow2_put_onscroll(This, v) (This)->lpVtbl->put_onscroll(This, v)
+#define IHTMLWindow2_get_onscroll(This, p) (This)->lpVtbl->get_onscroll(This, p)
+#define IHTMLWindow2_get_document(This, p) (This)->lpVtbl->get_document(This, p)
+#define IHTMLWindow2_get_event(This, p) (This)->lpVtbl->get_event(This, p)
+#define IHTMLWindow2_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLWindow2_showModalDialog(This, dialog, varArgIn, varOptions, varArgOut) (This)->lpVtbl->showModalDialog(This, dialog, varArgIn, varOptions, varArgOut)
+#define IHTMLWindow2_showHelp(This, helpURL, helpArg, features) (This)->lpVtbl->showHelp(This, helpURL, helpArg, features)
+#define IHTMLWindow2_get_screen(This, p) (This)->lpVtbl->get_screen(This, p)
+#define IHTMLWindow2_get_Option(This, p) (This)->lpVtbl->get_Option(This, p)
+#define IHTMLWindow2_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLWindow2_get_closed(This, p) (This)->lpVtbl->get_closed(This, p)
+#define IHTMLWindow2_blur(This) (This)->lpVtbl->blur(This)
+#define IHTMLWindow2_scroll(This, x, y) (This)->lpVtbl->scroll(This, x, y)
+#define IHTMLWindow2_get_clientInformation(This, p) (This)->lpVtbl->get_clientInformation(This, p)
+#define IHTMLWindow2_setInterval(This, expression, msec, language, timerID) (This)->lpVtbl->setInterval(This, expression, msec, language, timerID)
+#define IHTMLWindow2_clearInterval(This, timerID) (This)->lpVtbl->clearInterval(This, timerID)
+#define IHTMLWindow2_put_offscreenBuffering(This, v) (This)->lpVtbl->put_offscreenBuffering(This, v)
+#define IHTMLWindow2_get_offscreenBuffering(This, p) (This)->lpVtbl->get_offscreenBuffering(This, p)
+#define IHTMLWindow2_execScript(This, code, language, pvarRet) (This)->lpVtbl->execScript(This, code, language, pvarRet)
+#define IHTMLWindow2_toString(This, String) (This)->lpVtbl->toString(This, String)
+#define IHTMLWindow2_scrollBy(This, x, y) (This)->lpVtbl->scrollBy(This, x, y)
+#define IHTMLWindow2_scrollTo(This, x, y) (This)->lpVtbl->scrollTo(This, x, y)
+#define IHTMLWindow2_moveTo(This, x, y) (This)->lpVtbl->moveTo(This, x, y)
+#define IHTMLWindow2_moveBy(This, x, y) (This)->lpVtbl->moveBy(This, x, y)
+#define IHTMLWindow2_resizeTo(This, x, y) (This)->lpVtbl->resizeTo(This, x, y)
+#define IHTMLWindow2_resizeBy(This, x, y) (This)->lpVtbl->resizeBy(This, x, y)
+#define IHTMLWindow2_get_external(This, p) (This)->lpVtbl->get_external(This, p)
 
 declare function IHTMLWindow2_get_frames_Proxy(byval This as IHTMLWindow2 ptr, byval p as IHTMLFramesCollection2 ptr ptr) as HRESULT
 declare sub IHTMLWindow2_get_frames_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -13146,6 +16996,27 @@ type IHTMLWindow3_
 	lpVtbl as IHTMLWindow3Vtbl ptr
 end type
 
+#define IHTMLWindow3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLWindow3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLWindow3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLWindow3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLWindow3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLWindow3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLWindow3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLWindow3_get_screenLeft(This, p) (This)->lpVtbl->get_screenLeft(This, p)
+#define IHTMLWindow3_get_screenTop(This, p) (This)->lpVtbl->get_screenTop(This, p)
+#define IHTMLWindow3_attachEvent(This, event, pDisp, pfResult) (This)->lpVtbl->attachEvent(This, event, pDisp, pfResult)
+#define IHTMLWindow3_detachEvent(This, event, pDisp) (This)->lpVtbl->detachEvent(This, event, pDisp)
+#define IHTMLWindow3_setTimeout(This, expression, msec, language, timerID) (This)->lpVtbl->setTimeout(This, expression, msec, language, timerID)
+#define IHTMLWindow3_setInterval(This, expression, msec, language, timerID) (This)->lpVtbl->setInterval(This, expression, msec, language, timerID)
+#define IHTMLWindow3_print(This) (This)->lpVtbl->print(This)
+#define IHTMLWindow3_put_onbeforeprint(This, v) (This)->lpVtbl->put_onbeforeprint(This, v)
+#define IHTMLWindow3_get_onbeforeprint(This, p) (This)->lpVtbl->get_onbeforeprint(This, p)
+#define IHTMLWindow3_put_onafterprint(This, v) (This)->lpVtbl->put_onafterprint(This, v)
+#define IHTMLWindow3_get_onafterprint(This, p) (This)->lpVtbl->get_onafterprint(This, p)
+#define IHTMLWindow3_get_clipboardData(This, p) (This)->lpVtbl->get_clipboardData(This, p)
+#define IHTMLWindow3_showModelessDialog(This, url, varArgIn, options, pDialog) (This)->lpVtbl->showModelessDialog(This, url, varArgIn, options, pDialog)
+
 declare function IHTMLWindow3_get_screenLeft_Proxy(byval This as IHTMLWindow3 ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLWindow3_get_screenLeft_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLWindow3_get_screenTop_Proxy(byval This as IHTMLWindow3 ptr, byval p as long ptr) as HRESULT
@@ -13207,6 +17078,32 @@ end type
 type IHTMLFrameBase_
 	lpVtbl as IHTMLFrameBaseVtbl ptr
 end type
+
+#define IHTMLFrameBase_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameBase_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameBase_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameBase_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameBase_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameBase_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameBase_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameBase_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLFrameBase_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLFrameBase_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLFrameBase_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLFrameBase_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLFrameBase_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLFrameBase_put_frameBorder(This, v) (This)->lpVtbl->put_frameBorder(This, v)
+#define IHTMLFrameBase_get_frameBorder(This, p) (This)->lpVtbl->get_frameBorder(This, p)
+#define IHTMLFrameBase_put_frameSpacing(This, v) (This)->lpVtbl->put_frameSpacing(This, v)
+#define IHTMLFrameBase_get_frameSpacing(This, p) (This)->lpVtbl->get_frameSpacing(This, p)
+#define IHTMLFrameBase_put_marginWidth(This, v) (This)->lpVtbl->put_marginWidth(This, v)
+#define IHTMLFrameBase_get_marginWidth(This, p) (This)->lpVtbl->get_marginWidth(This, p)
+#define IHTMLFrameBase_put_marginHeight(This, v) (This)->lpVtbl->put_marginHeight(This, v)
+#define IHTMLFrameBase_get_marginHeight(This, p) (This)->lpVtbl->get_marginHeight(This, p)
+#define IHTMLFrameBase_put_noResize(This, v) (This)->lpVtbl->put_noResize(This, v)
+#define IHTMLFrameBase_get_noResize(This, p) (This)->lpVtbl->get_noResize(This, p)
+#define IHTMLFrameBase_put_scrolling(This, v) (This)->lpVtbl->put_scrolling(This, v)
+#define IHTMLFrameBase_get_scrolling(This, p) (This)->lpVtbl->get_scrolling(This, p)
 
 declare function IHTMLFrameBase_put_src_Proxy(byval This as IHTMLFrameBase ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFrameBase_put_src_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -13271,6 +17168,24 @@ type IHTMLScreen_
 	lpVtbl as IHTMLScreenVtbl ptr
 end type
 
+#define IHTMLScreen_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLScreen_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLScreen_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLScreen_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLScreen_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLScreen_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLScreen_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLScreen_get_colorDepth(This, p) (This)->lpVtbl->get_colorDepth(This, p)
+#define IHTMLScreen_put_bufferDepth(This, v) (This)->lpVtbl->put_bufferDepth(This, v)
+#define IHTMLScreen_get_bufferDepth(This, p) (This)->lpVtbl->get_bufferDepth(This, p)
+#define IHTMLScreen_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLScreen_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLScreen_put_updateInterval(This, v) (This)->lpVtbl->put_updateInterval(This, v)
+#define IHTMLScreen_get_updateInterval(This, p) (This)->lpVtbl->get_updateInterval(This, p)
+#define IHTMLScreen_get_availHeight(This, p) (This)->lpVtbl->get_availHeight(This, p)
+#define IHTMLScreen_get_availWidth(This, p) (This)->lpVtbl->get_availWidth(This, p)
+#define IHTMLScreen_get_fontSmoothingEnabled(This, p) (This)->lpVtbl->get_fontSmoothingEnabled(This, p)
+
 declare function IHTMLScreen_get_colorDepth_Proxy(byval This as IHTMLScreen ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLScreen_get_colorDepth_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLScreen_put_bufferDepth_Proxy(byval This as IHTMLScreen ptr, byval v as long) as HRESULT
@@ -13313,6 +17228,18 @@ type IHTMLScreen2_
 	lpVtbl as IHTMLScreen2Vtbl ptr
 end type
 
+#define IHTMLScreen2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLScreen2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLScreen2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLScreen2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLScreen2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLScreen2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLScreen2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLScreen2_get_logicalXDPI(This, p) (This)->lpVtbl->get_logicalXDPI(This, p)
+#define IHTMLScreen2_get_logicalYDPI(This, p) (This)->lpVtbl->get_logicalYDPI(This, p)
+#define IHTMLScreen2_get_deviceXDPI(This, p) (This)->lpVtbl->get_deviceXDPI(This, p)
+#define IHTMLScreen2_get_deviceYDPI(This, p) (This)->lpVtbl->get_deviceYDPI(This, p)
+
 declare function IHTMLScreen2_get_logicalXDPI_Proxy(byval This as IHTMLScreen2 ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLScreen2_get_logicalXDPI_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLScreen2_get_logicalYDPI_Proxy(byval This as IHTMLScreen2 ptr, byval p as long ptr) as HRESULT
@@ -13341,6 +17268,16 @@ type IHTMLWindow4_
 	lpVtbl as IHTMLWindow4Vtbl ptr
 end type
 
+#define IHTMLWindow4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLWindow4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLWindow4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLWindow4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLWindow4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLWindow4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLWindow4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLWindow4_createPopup(This, varArgIn, ppPopup) (This)->lpVtbl->createPopup(This, varArgIn, ppPopup)
+#define IHTMLWindow4_get_frameElement(This, p) (This)->lpVtbl->get_frameElement(This, p)
+
 declare function IHTMLWindow4_createPopup_Proxy(byval This as IHTMLWindow4 ptr, byval varArgIn as VARIANT ptr, byval ppPopup as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLWindow4_createPopup_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLWindow4_get_frameElement_Proxy(byval This as IHTMLWindow4 ptr, byval p as IHTMLFrameBase ptr ptr) as HRESULT
@@ -13364,6 +17301,13 @@ type DispHTMLScreen_
 	lpVtbl as DispHTMLScreenVtbl ptr
 end type
 
+#define DispHTMLScreen_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLScreen_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLScreen_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLScreen_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLScreen_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLScreen_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLScreen_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLScreen as const CLSID
 #define __DispHTMLWindow2_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLWindow2 as const IID
@@ -13383,6 +17327,13 @@ type DispHTMLWindow2_
 	lpVtbl as DispHTMLWindow2Vtbl ptr
 end type
 
+#define DispHTMLWindow2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLWindow2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLWindow2_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLWindow2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLWindow2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLWindow2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLWindow2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLWindow2 as const CLSID
 #define __DispHTMLWindowProxy_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLWindowProxy as const IID
@@ -13402,6 +17353,13 @@ type DispHTMLWindowProxy_
 	lpVtbl as DispHTMLWindowProxyVtbl ptr
 end type
 
+#define DispHTMLWindowProxy_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLWindowProxy_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLWindowProxy_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLWindowProxy_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLWindowProxy_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLWindowProxy_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLWindowProxy_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLWindowProxy as const CLSID
 #define __HTMLDocumentEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLDocumentEvents2 as const IID
@@ -13421,6 +17379,13 @@ type HTMLDocumentEvents2_
 	lpVtbl as HTMLDocumentEvents2Vtbl ptr
 end type
 
+#define HTMLDocumentEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLDocumentEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLDocumentEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLDocumentEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLDocumentEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLDocumentEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLDocumentEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLDocumentEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLDocumentEvents as const IID
 type HTMLDocumentEvents as HTMLDocumentEvents_
@@ -13439,6 +17404,13 @@ type HTMLDocumentEvents_
 	lpVtbl as HTMLDocumentEventsVtbl ptr
 end type
 
+#define HTMLDocumentEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLDocumentEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLDocumentEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLDocumentEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLDocumentEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLDocumentEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLDocumentEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLDocument3_INTERFACE_DEFINED__
 extern IID_IHTMLDocument3 as const IID
 type IHTMLDocument3 as IHTMLDocument3_
@@ -13497,6 +17469,55 @@ end type
 type IHTMLDocument3_
 	lpVtbl as IHTMLDocument3Vtbl ptr
 end type
+
+#define IHTMLDocument3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDocument3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDocument3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDocument3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDocument3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDocument3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDocument3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDocument3_releaseCapture(This) (This)->lpVtbl->releaseCapture(This)
+#define IHTMLDocument3_recalc(This, fForce) (This)->lpVtbl->recalc(This, fForce)
+#define IHTMLDocument3_createTextNode(This, text, newTextNode) (This)->lpVtbl->createTextNode(This, text, newTextNode)
+#define IHTMLDocument3_get_documentElement(This, p) (This)->lpVtbl->get_documentElement(This, p)
+#define IHTMLDocument3_get_uniqueID(This, p) (This)->lpVtbl->get_uniqueID(This, p)
+#define IHTMLDocument3_attachEvent(This, event, pDisp, pfResult) (This)->lpVtbl->attachEvent(This, event, pDisp, pfResult)
+#define IHTMLDocument3_detachEvent(This, event, pDisp) (This)->lpVtbl->detachEvent(This, event, pDisp)
+#define IHTMLDocument3_put_onrowsdelete(This, v) (This)->lpVtbl->put_onrowsdelete(This, v)
+#define IHTMLDocument3_get_onrowsdelete(This, p) (This)->lpVtbl->get_onrowsdelete(This, p)
+#define IHTMLDocument3_put_onrowsinserted(This, v) (This)->lpVtbl->put_onrowsinserted(This, v)
+#define IHTMLDocument3_get_onrowsinserted(This, p) (This)->lpVtbl->get_onrowsinserted(This, p)
+#define IHTMLDocument3_put_oncellchange(This, v) (This)->lpVtbl->put_oncellchange(This, v)
+#define IHTMLDocument3_get_oncellchange(This, p) (This)->lpVtbl->get_oncellchange(This, p)
+#define IHTMLDocument3_put_ondatasetchanged(This, v) (This)->lpVtbl->put_ondatasetchanged(This, v)
+#define IHTMLDocument3_get_ondatasetchanged(This, p) (This)->lpVtbl->get_ondatasetchanged(This, p)
+#define IHTMLDocument3_put_ondataavailable(This, v) (This)->lpVtbl->put_ondataavailable(This, v)
+#define IHTMLDocument3_get_ondataavailable(This, p) (This)->lpVtbl->get_ondataavailable(This, p)
+#define IHTMLDocument3_put_ondatasetcomplete(This, v) (This)->lpVtbl->put_ondatasetcomplete(This, v)
+#define IHTMLDocument3_get_ondatasetcomplete(This, p) (This)->lpVtbl->get_ondatasetcomplete(This, p)
+#define IHTMLDocument3_put_onpropertychange(This, v) (This)->lpVtbl->put_onpropertychange(This, v)
+#define IHTMLDocument3_get_onpropertychange(This, p) (This)->lpVtbl->get_onpropertychange(This, p)
+#define IHTMLDocument3_put_dir(This, v) (This)->lpVtbl->put_dir(This, v)
+#define IHTMLDocument3_get_dir(This, p) (This)->lpVtbl->get_dir(This, p)
+#define IHTMLDocument3_put_oncontextmenu(This, v) (This)->lpVtbl->put_oncontextmenu(This, v)
+#define IHTMLDocument3_get_oncontextmenu(This, p) (This)->lpVtbl->get_oncontextmenu(This, p)
+#define IHTMLDocument3_put_onstop(This, v) (This)->lpVtbl->put_onstop(This, v)
+#define IHTMLDocument3_get_onstop(This, p) (This)->lpVtbl->get_onstop(This, p)
+#define IHTMLDocument3_createDocumentFragment(This, pNewDoc) (This)->lpVtbl->createDocumentFragment(This, pNewDoc)
+#define IHTMLDocument3_get_parentDocument(This, p) (This)->lpVtbl->get_parentDocument(This, p)
+#define IHTMLDocument3_put_enableDownload(This, v) (This)->lpVtbl->put_enableDownload(This, v)
+#define IHTMLDocument3_get_enableDownload(This, p) (This)->lpVtbl->get_enableDownload(This, p)
+#define IHTMLDocument3_put_baseUrl(This, v) (This)->lpVtbl->put_baseUrl(This, v)
+#define IHTMLDocument3_get_baseUrl(This, p) (This)->lpVtbl->get_baseUrl(This, p)
+#define IHTMLDocument3_get_childNodes(This, p) (This)->lpVtbl->get_childNodes(This, p)
+#define IHTMLDocument3_put_inheritStyleSheets(This, v) (This)->lpVtbl->put_inheritStyleSheets(This, v)
+#define IHTMLDocument3_get_inheritStyleSheets(This, p) (This)->lpVtbl->get_inheritStyleSheets(This, p)
+#define IHTMLDocument3_put_onbeforeeditfocus(This, v) (This)->lpVtbl->put_onbeforeeditfocus(This, v)
+#define IHTMLDocument3_get_onbeforeeditfocus(This, p) (This)->lpVtbl->get_onbeforeeditfocus(This, p)
+#define IHTMLDocument3_getElementsByName(This, v, pelColl) (This)->lpVtbl->getElementsByName(This, v, pelColl)
+#define IHTMLDocument3_getElementById(This, v, pel) (This)->lpVtbl->getElementById(This, v, pel)
+#define IHTMLDocument3_getElementsByTagName(This, v, pelColl) (This)->lpVtbl->getElementsByTagName(This, v, pelColl)
 
 declare function IHTMLDocument3_releaseCapture_Proxy(byval This as IHTMLDocument3 ptr) as HRESULT
 declare sub IHTMLDocument3_releaseCapture_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -13612,6 +17633,28 @@ type IHTMLDocument4_
 	lpVtbl as IHTMLDocument4Vtbl ptr
 end type
 
+#define IHTMLDocument4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDocument4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDocument4_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDocument4_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDocument4_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDocument4_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDocument4_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDocument4_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLDocument4_hasFocus(This, pfFocus) (This)->lpVtbl->hasFocus(This, pfFocus)
+#define IHTMLDocument4_put_onselectionchange(This, v) (This)->lpVtbl->put_onselectionchange(This, v)
+#define IHTMLDocument4_get_onselectionchange(This, p) (This)->lpVtbl->get_onselectionchange(This, p)
+#define IHTMLDocument4_get_namespaces(This, p) (This)->lpVtbl->get_namespaces(This, p)
+#define IHTMLDocument4_createDocumentFromUrl(This, bstrUrl, bstrOptions, newDoc) (This)->lpVtbl->createDocumentFromUrl(This, bstrUrl, bstrOptions, newDoc)
+#define IHTMLDocument4_put_media(This, v) (This)->lpVtbl->put_media(This, v)
+#define IHTMLDocument4_get_media(This, p) (This)->lpVtbl->get_media(This, p)
+#define IHTMLDocument4_createEventObject(This, pvarEventObject, ppEventObj) (This)->lpVtbl->createEventObject(This, pvarEventObject, ppEventObj)
+#define IHTMLDocument4_fireEvent(This, bstrEventName, pvarEventObject, pfCancelled) (This)->lpVtbl->fireEvent(This, bstrEventName, pvarEventObject, pfCancelled)
+#define IHTMLDocument4_createRenderStyle(This, v, ppIHTMLRenderStyle) (This)->lpVtbl->createRenderStyle(This, v, ppIHTMLRenderStyle)
+#define IHTMLDocument4_put_oncontrolselect(This, v) (This)->lpVtbl->put_oncontrolselect(This, v)
+#define IHTMLDocument4_get_oncontrolselect(This, p) (This)->lpVtbl->get_oncontrolselect(This, p)
+#define IHTMLDocument4_get_URLUnencoded(This, p) (This)->lpVtbl->get_URLUnencoded(This, p)
+
 declare function IHTMLDocument4_focus_Proxy(byval This as IHTMLDocument4 ptr) as HRESULT
 declare sub IHTMLDocument4_focus_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDocument4_hasFocus_Proxy(byval This as IHTMLDocument4 ptr, byval pfFocus as VARIANT_BOOL ptr) as HRESULT
@@ -13677,6 +17720,33 @@ type IHTMLDocument5_
 	lpVtbl as IHTMLDocument5Vtbl ptr
 end type
 
+#define IHTMLDocument5_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDocument5_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDocument5_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDocument5_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDocument5_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDocument5_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDocument5_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDocument5_put_onmousewheel(This, v) (This)->lpVtbl->put_onmousewheel(This, v)
+#define IHTMLDocument5_get_onmousewheel(This, p) (This)->lpVtbl->get_onmousewheel(This, p)
+#define IHTMLDocument5_get_doctype(This, p) (This)->lpVtbl->get_doctype(This, p)
+#define IHTMLDocument5_get_implementation(This, p) (This)->lpVtbl->get_implementation(This, p)
+#define IHTMLDocument5_createAttribute(This, bstrattrName, ppattribute) (This)->lpVtbl->createAttribute(This, bstrattrName, ppattribute)
+#define IHTMLDocument5_createComment(This, bstrdata, ppRetNode) (This)->lpVtbl->createComment(This, bstrdata, ppRetNode)
+#define IHTMLDocument5_put_onfocusin(This, v) (This)->lpVtbl->put_onfocusin(This, v)
+#define IHTMLDocument5_get_onfocusin(This, p) (This)->lpVtbl->get_onfocusin(This, p)
+#define IHTMLDocument5_put_onfocusout(This, v) (This)->lpVtbl->put_onfocusout(This, v)
+#define IHTMLDocument5_get_onfocusout(This, p) (This)->lpVtbl->get_onfocusout(This, p)
+#define IHTMLDocument5_put_onactivate(This, v) (This)->lpVtbl->put_onactivate(This, v)
+#define IHTMLDocument5_get_onactivate(This, p) (This)->lpVtbl->get_onactivate(This, p)
+#define IHTMLDocument5_put_ondeactivate(This, v) (This)->lpVtbl->put_ondeactivate(This, v)
+#define IHTMLDocument5_get_ondeactivate(This, p) (This)->lpVtbl->get_ondeactivate(This, p)
+#define IHTMLDocument5_put_onbeforeactivate(This, v) (This)->lpVtbl->put_onbeforeactivate(This, v)
+#define IHTMLDocument5_get_onbeforeactivate(This, p) (This)->lpVtbl->get_onbeforeactivate(This, p)
+#define IHTMLDocument5_put_onbeforedeactivate(This, v) (This)->lpVtbl->put_onbeforedeactivate(This, v)
+#define IHTMLDocument5_get_onbeforedeactivate(This, p) (This)->lpVtbl->get_onbeforedeactivate(This, p)
+#define IHTMLDocument5_get_compatMode(This, p) (This)->lpVtbl->get_compatMode(This, p)
+
 declare function IHTMLDocument5_put_onmousewheel_Proxy(byval This as IHTMLDocument5 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLDocument5_put_onmousewheel_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDocument5_get_onmousewheel_Proxy(byval This as IHTMLDocument5 ptr, byval p as VARIANT ptr) as HRESULT
@@ -13733,6 +17803,13 @@ type DispHTMLDocument_
 	lpVtbl as DispHTMLDocumentVtbl ptr
 end type
 
+#define DispHTMLDocument_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDocument_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDocument_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDocument_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDocument_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDocument_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDocument_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDocument as const CLSID
 #define __DWebBridgeEvents_DISPINTERFACE_DEFINED__
 extern DIID_DWebBridgeEvents as const IID
@@ -13752,6 +17829,13 @@ type DWebBridgeEvents_
 	lpVtbl as DWebBridgeEventsVtbl ptr
 end type
 
+#define DWebBridgeEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DWebBridgeEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DWebBridgeEvents_Release(This) (This)->lpVtbl->Release(This)
+#define DWebBridgeEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DWebBridgeEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DWebBridgeEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DWebBridgeEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IWebBridge_INTERFACE_DEFINED__
 extern IID_IWebBridge as const IID
 type IWebBridge as IWebBridge_
@@ -13778,6 +17862,23 @@ end type
 type IWebBridge_
 	lpVtbl as IWebBridgeVtbl ptr
 end type
+
+#define IWebBridge_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWebBridge_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWebBridge_Release(This) (This)->lpVtbl->Release(This)
+#define IWebBridge_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IWebBridge_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IWebBridge_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IWebBridge_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IWebBridge_put_URL(This, v) (This)->lpVtbl->put_URL(This, v)
+#define IWebBridge_get_URL(This, p) (This)->lpVtbl->get_URL(This, p)
+#define IWebBridge_put_Scrollbar(This, v) (This)->lpVtbl->put_Scrollbar(This, v)
+#define IWebBridge_get_Scrollbar(This, p) (This)->lpVtbl->get_Scrollbar(This, p)
+#define IWebBridge_put_embed(This, v) (This)->lpVtbl->put_embed(This, v)
+#define IWebBridge_get_embed(This, p) (This)->lpVtbl->get_embed(This, p)
+#define IWebBridge_get_event(This, p) (This)->lpVtbl->get_event(This, p)
+#define IWebBridge_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IWebBridge_AboutBox(This) (This)->lpVtbl->AboutBox(This)
 
 declare function IWebBridge_put_URL_Proxy(byval This as IWebBridge ptr, byval v as BSTR) as HRESULT
 declare sub IWebBridge_put_URL_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -13826,6 +17927,26 @@ end type
 type IWBScriptControl_
 	lpVtbl as IWBScriptControlVtbl ptr
 end type
+
+#define IWBScriptControl_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWBScriptControl_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWBScriptControl_Release(This) (This)->lpVtbl->Release(This)
+#define IWBScriptControl_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IWBScriptControl_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IWBScriptControl_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IWBScriptControl_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IWBScriptControl_raiseEvent(This, name, eventData) (This)->lpVtbl->raiseEvent(This, name, eventData)
+#define IWBScriptControl_bubbleEvent(This) (This)->lpVtbl->bubbleEvent(This)
+#define IWBScriptControl_setContextMenu(This, menuItemPairs) (This)->lpVtbl->setContextMenu(This, menuItemPairs)
+#define IWBScriptControl_put_selectableContent(This, v) (This)->lpVtbl->put_selectableContent(This, v)
+#define IWBScriptControl_get_selectableContent(This, p) (This)->lpVtbl->get_selectableContent(This, p)
+#define IWBScriptControl_get_frozen(This, p) (This)->lpVtbl->get_frozen(This, p)
+#define IWBScriptControl_put_scrollbar(This, v) (This)->lpVtbl->put_scrollbar(This, v)
+#define IWBScriptControl_get_scrollbar(This, p) (This)->lpVtbl->get_scrollbar(This, p)
+#define IWBScriptControl_get_version(This, p) (This)->lpVtbl->get_version(This, p)
+#define IWBScriptControl_get_visibility(This, p) (This)->lpVtbl->get_visibility(This, p)
+#define IWBScriptControl_put_onvisibilitychange(This, v) (This)->lpVtbl->put_onvisibilitychange(This, v)
+#define IWBScriptControl_get_onvisibilitychange(This, p) (This)->lpVtbl->get_onvisibilitychange(This, p)
 
 declare function IWBScriptControl_raiseEvent_Proxy(byval This as IWBScriptControl ptr, byval name as BSTR, byval eventData as VARIANT) as HRESULT
 declare sub IWBScriptControl_raiseEvent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -13884,6 +18005,28 @@ type IHTMLEmbedElement_
 	lpVtbl as IHTMLEmbedElementVtbl ptr
 end type
 
+#define IHTMLEmbedElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEmbedElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEmbedElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEmbedElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLEmbedElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLEmbedElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLEmbedElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLEmbedElement_put_hidden(This, v) (This)->lpVtbl->put_hidden(This, v)
+#define IHTMLEmbedElement_get_hidden(This, p) (This)->lpVtbl->get_hidden(This, p)
+#define IHTMLEmbedElement_get_palette(This, p) (This)->lpVtbl->get_palette(This, p)
+#define IHTMLEmbedElement_get_pluginspage(This, p) (This)->lpVtbl->get_pluginspage(This, p)
+#define IHTMLEmbedElement_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLEmbedElement_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLEmbedElement_put_units(This, v) (This)->lpVtbl->put_units(This, v)
+#define IHTMLEmbedElement_get_units(This, p) (This)->lpVtbl->get_units(This, p)
+#define IHTMLEmbedElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLEmbedElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLEmbedElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLEmbedElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLEmbedElement_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLEmbedElement_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+
 declare function IHTMLEmbedElement_put_hidden_Proxy(byval This as IHTMLEmbedElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLEmbedElement_put_hidden_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLEmbedElement_get_hidden_Proxy(byval This as IHTMLEmbedElement ptr, byval p as BSTR ptr) as HRESULT
@@ -13930,6 +18073,13 @@ type DispHTMLEmbed_
 	lpVtbl as DispHTMLEmbedVtbl ptr
 end type
 
+#define DispHTMLEmbed_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLEmbed_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLEmbed_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLEmbed_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLEmbed_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLEmbed_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLEmbed_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLEmbed as const CLSID
 #define __HTMLMapEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLMapEvents2 as const IID
@@ -13949,6 +18099,13 @@ type HTMLMapEvents2_
 	lpVtbl as HTMLMapEvents2Vtbl ptr
 end type
 
+#define HTMLMapEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLMapEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLMapEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLMapEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLMapEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLMapEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLMapEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLMapEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLMapEvents as const IID
 type HTMLMapEvents as HTMLMapEvents_
@@ -13967,6 +18124,13 @@ type HTMLMapEvents_
 	lpVtbl as HTMLMapEventsVtbl ptr
 end type
 
+#define HTMLMapEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLMapEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLMapEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLMapEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLMapEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLMapEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLMapEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLAreasCollection_INTERFACE_DEFINED__
 extern IID_IHTMLAreasCollection as const IID
 type IHTMLAreasCollection as IHTMLAreasCollection_
@@ -13991,6 +18155,21 @@ end type
 type IHTMLAreasCollection_
 	lpVtbl as IHTMLAreasCollectionVtbl ptr
 end type
+
+#define IHTMLAreasCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAreasCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAreasCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAreasCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAreasCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAreasCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAreasCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAreasCollection_put_length(This, v) (This)->lpVtbl->put_length(This, v)
+#define IHTMLAreasCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLAreasCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLAreasCollection_item(This, name, index, pdisp) (This)->lpVtbl->item(This, name, index, pdisp)
+#define IHTMLAreasCollection_tags(This, tagName, pdisp) (This)->lpVtbl->tags(This, tagName, pdisp)
+#define IHTMLAreasCollection_add(This, element, before) (This)->lpVtbl->add(This, element, before)
+#define IHTMLAreasCollection_remove(This, index) (This)->lpVtbl->remove(This, index)
 
 declare function IHTMLAreasCollection_put_length_Proxy(byval This as IHTMLAreasCollection ptr, byval v as long) as HRESULT
 declare sub IHTMLAreasCollection_put_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14025,6 +18204,14 @@ type IHTMLAreasCollection2_
 	lpVtbl as IHTMLAreasCollection2Vtbl ptr
 end type
 
+#define IHTMLAreasCollection2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAreasCollection2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAreasCollection2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAreasCollection2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAreasCollection2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAreasCollection2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAreasCollection2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAreasCollection2_urns(This, urn, pdisp) (This)->lpVtbl->urns(This, urn, pdisp)
 declare function IHTMLAreasCollection2_urns_Proxy(byval This as IHTMLAreasCollection2 ptr, byval urn as VARIANT, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLAreasCollection2_urns_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLAreasCollection3_INTERFACE_DEFINED__
@@ -14046,6 +18233,14 @@ type IHTMLAreasCollection3_
 	lpVtbl as IHTMLAreasCollection3Vtbl ptr
 end type
 
+#define IHTMLAreasCollection3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAreasCollection3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAreasCollection3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAreasCollection3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAreasCollection3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAreasCollection3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAreasCollection3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAreasCollection3_namedItem(This, name, pdisp) (This)->lpVtbl->namedItem(This, name, pdisp)
 declare function IHTMLAreasCollection3_namedItem_Proxy(byval This as IHTMLAreasCollection3 ptr, byval name as BSTR, byval pdisp as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLAreasCollection3_namedItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLMapElement_INTERFACE_DEFINED__
@@ -14068,6 +18263,17 @@ end type
 type IHTMLMapElement_
 	lpVtbl as IHTMLMapElementVtbl ptr
 end type
+
+#define IHTMLMapElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLMapElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLMapElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLMapElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLMapElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLMapElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLMapElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLMapElement_get_areas(This, p) (This)->lpVtbl->get_areas(This, p)
+#define IHTMLMapElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLMapElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
 
 declare function IHTMLMapElement_get_areas_Proxy(byval This as IHTMLMapElement ptr, byval p as IHTMLAreasCollection ptr ptr) as HRESULT
 declare sub IHTMLMapElement_get_areas_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14093,6 +18299,13 @@ type DispHTMLAreasCollection_
 	lpVtbl as DispHTMLAreasCollectionVtbl ptr
 end type
 
+#define DispHTMLAreasCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLAreasCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLAreasCollection_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLAreasCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLAreasCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLAreasCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLAreasCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLAreasCollection as const CLSID
 #define __DispHTMLMapElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLMapElement as const IID
@@ -14112,6 +18325,13 @@ type DispHTMLMapElement_
 	lpVtbl as DispHTMLMapElementVtbl ptr
 end type
 
+#define DispHTMLMapElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLMapElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLMapElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLMapElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLMapElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLMapElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLMapElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLMapElement as const CLSID
 #define __HTMLAreaEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLAreaEvents2 as const IID
@@ -14131,6 +18351,13 @@ type HTMLAreaEvents2_
 	lpVtbl as HTMLAreaEvents2Vtbl ptr
 end type
 
+#define HTMLAreaEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLAreaEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLAreaEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLAreaEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLAreaEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLAreaEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLAreaEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLAreaEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLAreaEvents as const IID
 type HTMLAreaEvents as HTMLAreaEvents_
@@ -14149,6 +18376,13 @@ type HTMLAreaEvents_
 	lpVtbl as HTMLAreaEventsVtbl ptr
 end type
 
+#define HTMLAreaEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLAreaEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLAreaEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLAreaEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLAreaEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLAreaEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLAreaEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLAreaElement_INTERFACE_DEFINED__
 extern IID_IHTMLAreaElement as const IID
 type IHTMLAreaElement as IHTMLAreaElement_
@@ -14200,6 +18434,48 @@ end type
 type IHTMLAreaElement_
 	lpVtbl as IHTMLAreaElementVtbl ptr
 end type
+
+#define IHTMLAreaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAreaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAreaElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAreaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAreaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAreaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAreaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAreaElement_put_shape(This, v) (This)->lpVtbl->put_shape(This, v)
+#define IHTMLAreaElement_get_shape(This, p) (This)->lpVtbl->get_shape(This, p)
+#define IHTMLAreaElement_put_coords(This, v) (This)->lpVtbl->put_coords(This, v)
+#define IHTMLAreaElement_get_coords(This, p) (This)->lpVtbl->get_coords(This, p)
+#define IHTMLAreaElement_put_href(This, v) (This)->lpVtbl->put_href(This, v)
+#define IHTMLAreaElement_get_href(This, p) (This)->lpVtbl->get_href(This, p)
+#define IHTMLAreaElement_put_target(This, v) (This)->lpVtbl->put_target(This, v)
+#define IHTMLAreaElement_get_target(This, p) (This)->lpVtbl->get_target(This, p)
+#define IHTMLAreaElement_put_alt(This, v) (This)->lpVtbl->put_alt(This, v)
+#define IHTMLAreaElement_get_alt(This, p) (This)->lpVtbl->get_alt(This, p)
+#define IHTMLAreaElement_put_noHref(This, v) (This)->lpVtbl->put_noHref(This, v)
+#define IHTMLAreaElement_get_noHref(This, p) (This)->lpVtbl->get_noHref(This, p)
+#define IHTMLAreaElement_put_host(This, v) (This)->lpVtbl->put_host(This, v)
+#define IHTMLAreaElement_get_host(This, p) (This)->lpVtbl->get_host(This, p)
+#define IHTMLAreaElement_put_hostname(This, v) (This)->lpVtbl->put_hostname(This, v)
+#define IHTMLAreaElement_get_hostname(This, p) (This)->lpVtbl->get_hostname(This, p)
+#define IHTMLAreaElement_put_pathname(This, v) (This)->lpVtbl->put_pathname(This, v)
+#define IHTMLAreaElement_get_pathname(This, p) (This)->lpVtbl->get_pathname(This, p)
+#define IHTMLAreaElement_put_port(This, v) (This)->lpVtbl->put_port(This, v)
+#define IHTMLAreaElement_get_port(This, p) (This)->lpVtbl->get_port(This, p)
+#define IHTMLAreaElement_put_protocol(This, v) (This)->lpVtbl->put_protocol(This, v)
+#define IHTMLAreaElement_get_protocol(This, p) (This)->lpVtbl->get_protocol(This, p)
+#define IHTMLAreaElement_put_search(This, v) (This)->lpVtbl->put_search(This, v)
+#define IHTMLAreaElement_get_search(This, p) (This)->lpVtbl->get_search(This, p)
+#define IHTMLAreaElement_put_hash(This, v) (This)->lpVtbl->put_hash(This, v)
+#define IHTMLAreaElement_get_hash(This, p) (This)->lpVtbl->get_hash(This, p)
+#define IHTMLAreaElement_put_onblur(This, v) (This)->lpVtbl->put_onblur(This, v)
+#define IHTMLAreaElement_get_onblur(This, p) (This)->lpVtbl->get_onblur(This, p)
+#define IHTMLAreaElement_put_onfocus(This, v) (This)->lpVtbl->put_onfocus(This, v)
+#define IHTMLAreaElement_get_onfocus(This, p) (This)->lpVtbl->get_onfocus(This, p)
+#define IHTMLAreaElement_put_tabIndex(This, v) (This)->lpVtbl->put_tabIndex(This, v)
+#define IHTMLAreaElement_get_tabIndex(This, p) (This)->lpVtbl->get_tabIndex(This, p)
+#define IHTMLAreaElement_focus(This) (This)->lpVtbl->focus(This)
+#define IHTMLAreaElement_blur(This) (This)->lpVtbl->blur(This)
 
 declare function IHTMLAreaElement_put_shape_Proxy(byval This as IHTMLAreaElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAreaElement_put_shape_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14287,6 +18563,13 @@ type DispHTMLAreaElement_
 	lpVtbl as DispHTMLAreaElementVtbl ptr
 end type
 
+#define DispHTMLAreaElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLAreaElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLAreaElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLAreaElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLAreaElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLAreaElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLAreaElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLAreaElement as const CLSID
 #define __IHTMLTableCaption_INTERFACE_DEFINED__
 extern IID_IHTMLTableCaption as const IID
@@ -14309,6 +18592,18 @@ end type
 type IHTMLTableCaption_
 	lpVtbl as IHTMLTableCaptionVtbl ptr
 end type
+
+#define IHTMLTableCaption_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableCaption_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableCaption_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableCaption_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableCaption_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableCaption_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableCaption_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableCaption_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTableCaption_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTableCaption_put_vAlign(This, v) (This)->lpVtbl->put_vAlign(This, v)
+#define IHTMLTableCaption_get_vAlign(This, p) (This)->lpVtbl->get_vAlign(This, p)
 
 declare function IHTMLTableCaption_put_align_Proxy(byval This as IHTMLTableCaption ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableCaption_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14336,6 +18631,13 @@ type DispHTMLTableCaption_
 	lpVtbl as DispHTMLTableCaptionVtbl ptr
 end type
 
+#define DispHTMLTableCaption_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTableCaption_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTableCaption_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTableCaption_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTableCaption_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTableCaption_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTableCaption_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTableCaption as const CLSID
 #define __IHTMLCommentElement_INTERFACE_DEFINED__
 extern IID_IHTMLCommentElement as const IID
@@ -14358,6 +18660,18 @@ end type
 type IHTMLCommentElement_
 	lpVtbl as IHTMLCommentElementVtbl ptr
 end type
+
+#define IHTMLCommentElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCommentElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCommentElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCommentElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLCommentElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLCommentElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLCommentElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLCommentElement_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLCommentElement_get_text(This, p) (This)->lpVtbl->get_text(This, p)
+#define IHTMLCommentElement_put_atomic(This, v) (This)->lpVtbl->put_atomic(This, v)
+#define IHTMLCommentElement_get_atomic(This, p) (This)->lpVtbl->get_atomic(This, p)
 
 declare function IHTMLCommentElement_put_text_Proxy(byval This as IHTMLCommentElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLCommentElement_put_text_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14393,6 +18707,22 @@ type IHTMLCommentElement2_
 	lpVtbl as IHTMLCommentElement2Vtbl ptr
 end type
 
+#define IHTMLCommentElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCommentElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCommentElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCommentElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLCommentElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLCommentElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLCommentElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLCommentElement2_put_data(This, v) (This)->lpVtbl->put_data(This, v)
+#define IHTMLCommentElement2_get_data(This, p) (This)->lpVtbl->get_data(This, p)
+#define IHTMLCommentElement2_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLCommentElement2_substringData(This, offset, Count, pbstrsubString) (This)->lpVtbl->substringData(This, offset, Count, pbstrsubString)
+#define IHTMLCommentElement2_appendData(This, bstrstring) (This)->lpVtbl->appendData(This, bstrstring)
+#define IHTMLCommentElement2_insertData(This, offset, bstrstring) (This)->lpVtbl->insertData(This, offset, bstrstring)
+#define IHTMLCommentElement2_deleteData(This, offset, Count) (This)->lpVtbl->deleteData(This, offset, Count)
+#define IHTMLCommentElement2_replaceData(This, offset, Count, bstrstring) (This)->lpVtbl->replaceData(This, offset, Count, bstrstring)
+
 declare function IHTMLCommentElement2_put_data_Proxy(byval This as IHTMLCommentElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLCommentElement2_put_data_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLCommentElement2_get_data_Proxy(byval This as IHTMLCommentElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -14427,6 +18757,13 @@ type DispHTMLCommentElement_
 	lpVtbl as DispHTMLCommentElementVtbl ptr
 end type
 
+#define DispHTMLCommentElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLCommentElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLCommentElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLCommentElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLCommentElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLCommentElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLCommentElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLCommentElement as const CLSID
 #define __IHTMLPhraseElement_INTERFACE_DEFINED__
 extern IID_IHTMLPhraseElement as const IID
@@ -14446,6 +18783,13 @@ type IHTMLPhraseElement_
 	lpVtbl as IHTMLPhraseElementVtbl ptr
 end type
 
+#define IHTMLPhraseElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPhraseElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPhraseElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPhraseElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLPhraseElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLPhraseElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLPhraseElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLPhraseElement2_INTERFACE_DEFINED__
 extern IID_IHTMLPhraseElement2 as const IID
 type IHTMLPhraseElement2 as IHTMLPhraseElement2_
@@ -14467,6 +18811,18 @@ end type
 type IHTMLPhraseElement2_
 	lpVtbl as IHTMLPhraseElement2Vtbl ptr
 end type
+
+#define IHTMLPhraseElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPhraseElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPhraseElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPhraseElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLPhraseElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLPhraseElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLPhraseElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLPhraseElement2_put_cite(This, v) (This)->lpVtbl->put_cite(This, v)
+#define IHTMLPhraseElement2_get_cite(This, p) (This)->lpVtbl->get_cite(This, p)
+#define IHTMLPhraseElement2_put_dateTime(This, v) (This)->lpVtbl->put_dateTime(This, v)
+#define IHTMLPhraseElement2_get_dateTime(This, p) (This)->lpVtbl->get_dateTime(This, p)
 
 declare function IHTMLPhraseElement2_put_cite_Proxy(byval This as IHTMLPhraseElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLPhraseElement2_put_cite_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14494,6 +18850,13 @@ type IHTMLSpanElement_
 	lpVtbl as IHTMLSpanElementVtbl ptr
 end type
 
+#define IHTMLSpanElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSpanElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSpanElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSpanElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSpanElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSpanElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSpanElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __DispHTMLPhraseElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLPhraseElement as const IID
 type DispHTMLPhraseElement as DispHTMLPhraseElement_
@@ -14512,6 +18875,13 @@ type DispHTMLPhraseElement_
 	lpVtbl as DispHTMLPhraseElementVtbl ptr
 end type
 
+#define DispHTMLPhraseElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLPhraseElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLPhraseElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLPhraseElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLPhraseElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLPhraseElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLPhraseElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLPhraseElement as const CLSID
 #define __DispHTMLSpanElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLSpanElement as const IID
@@ -14531,6 +18901,13 @@ type DispHTMLSpanElement_
 	lpVtbl as DispHTMLSpanElementVtbl ptr
 end type
 
+#define DispHTMLSpanElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLSpanElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLSpanElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLSpanElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLSpanElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLSpanElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLSpanElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLSpanElement as const CLSID
 #define __HTMLTableEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLTableEvents2 as const IID
@@ -14550,6 +18927,13 @@ type HTMLTableEvents2_
 	lpVtbl as HTMLTableEvents2Vtbl ptr
 end type
 
+#define HTMLTableEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLTableEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLTableEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLTableEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLTableEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLTableEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLTableEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLTableEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLTableEvents as const IID
 type HTMLTableEvents as HTMLTableEvents_
@@ -14568,6 +18952,13 @@ type HTMLTableEvents_
 	lpVtbl as HTMLTableEventsVtbl ptr
 end type
 
+#define HTMLTableEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLTableEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLTableEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLTableEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLTableEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLTableEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLTableEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLTableSection_INTERFACE_DEFINED__
 extern IID_IHTMLTableSection as const IID
 type IHTMLTableSection as IHTMLTableSection_
@@ -14594,6 +18985,23 @@ end type
 type IHTMLTableSection_
 	lpVtbl as IHTMLTableSectionVtbl ptr
 end type
+
+#define IHTMLTableSection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableSection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableSection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableSection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableSection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableSection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableSection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableSection_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTableSection_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTableSection_put_vAlign(This, v) (This)->lpVtbl->put_vAlign(This, v)
+#define IHTMLTableSection_get_vAlign(This, p) (This)->lpVtbl->get_vAlign(This, p)
+#define IHTMLTableSection_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLTableSection_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLTableSection_get_rows(This, p) (This)->lpVtbl->get_rows(This, p)
+#define IHTMLTableSection_insertRow(This, index, row) (This)->lpVtbl->insertRow(This, index, row)
+#define IHTMLTableSection_deleteRow(This, index) (This)->lpVtbl->deleteRow(This, index)
 
 declare function IHTMLTableSection_put_align_Proxy(byval This as IHTMLTableSection ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableSection_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14679,6 +19087,63 @@ end type
 type IHTMLTable_
 	lpVtbl as IHTMLTableVtbl ptr
 end type
+
+#define IHTMLTable_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTable_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTable_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTable_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTable_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTable_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTable_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTable_put_cols(This, v) (This)->lpVtbl->put_cols(This, v)
+#define IHTMLTable_get_cols(This, p) (This)->lpVtbl->get_cols(This, p)
+#define IHTMLTable_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLTable_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLTable_put_frame(This, v) (This)->lpVtbl->put_frame(This, v)
+#define IHTMLTable_get_frame(This, p) (This)->lpVtbl->get_frame(This, p)
+#define IHTMLTable_put_rules(This, v) (This)->lpVtbl->put_rules(This, v)
+#define IHTMLTable_get_rules(This, p) (This)->lpVtbl->get_rules(This, p)
+#define IHTMLTable_put_cellSpacing(This, v) (This)->lpVtbl->put_cellSpacing(This, v)
+#define IHTMLTable_get_cellSpacing(This, p) (This)->lpVtbl->get_cellSpacing(This, p)
+#define IHTMLTable_put_cellPadding(This, v) (This)->lpVtbl->put_cellPadding(This, v)
+#define IHTMLTable_get_cellPadding(This, p) (This)->lpVtbl->get_cellPadding(This, p)
+#define IHTMLTable_put_background(This, v) (This)->lpVtbl->put_background(This, v)
+#define IHTMLTable_get_background(This, p) (This)->lpVtbl->get_background(This, p)
+#define IHTMLTable_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLTable_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLTable_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLTable_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLTable_put_borderColorLight(This, v) (This)->lpVtbl->put_borderColorLight(This, v)
+#define IHTMLTable_get_borderColorLight(This, p) (This)->lpVtbl->get_borderColorLight(This, p)
+#define IHTMLTable_put_borderColorDark(This, v) (This)->lpVtbl->put_borderColorDark(This, v)
+#define IHTMLTable_get_borderColorDark(This, p) (This)->lpVtbl->get_borderColorDark(This, p)
+#define IHTMLTable_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTable_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTable_refresh(This) (This)->lpVtbl->refresh(This)
+#define IHTMLTable_get_rows(This, p) (This)->lpVtbl->get_rows(This, p)
+#define IHTMLTable_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLTable_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLTable_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLTable_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLTable_put_dataPageSize(This, v) (This)->lpVtbl->put_dataPageSize(This, v)
+#define IHTMLTable_get_dataPageSize(This, p) (This)->lpVtbl->get_dataPageSize(This, p)
+#define IHTMLTable_nextPage(This) (This)->lpVtbl->nextPage(This)
+#define IHTMLTable_previousPage(This) (This)->lpVtbl->previousPage(This)
+#define IHTMLTable_get_tHead(This, p) (This)->lpVtbl->get_tHead(This, p)
+#define IHTMLTable_get_tFoot(This, p) (This)->lpVtbl->get_tFoot(This, p)
+#define IHTMLTable_get_tBodies(This, p) (This)->lpVtbl->get_tBodies(This, p)
+#define IHTMLTable_get_caption(This, p) (This)->lpVtbl->get_caption(This, p)
+#define IHTMLTable_createTHead(This, head) (This)->lpVtbl->createTHead(This, head)
+#define IHTMLTable_deleteTHead(This) (This)->lpVtbl->deleteTHead(This)
+#define IHTMLTable_createTFoot(This, foot) (This)->lpVtbl->createTFoot(This, foot)
+#define IHTMLTable_deleteTFoot(This) (This)->lpVtbl->deleteTFoot(This)
+#define IHTMLTable_createCaption(This, caption) (This)->lpVtbl->createCaption(This, caption)
+#define IHTMLTable_deleteCaption(This) (This)->lpVtbl->deleteCaption(This)
+#define IHTMLTable_insertRow(This, index, row) (This)->lpVtbl->insertRow(This, index, row)
+#define IHTMLTable_deleteRow(This, index) (This)->lpVtbl->deleteRow(This, index)
+#define IHTMLTable_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLTable_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLTable_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
 
 declare function IHTMLTable_put_cols_Proxy(byval This as IHTMLTable ptr, byval v as long) as HRESULT
 declare sub IHTMLTable_put_cols_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14800,6 +19265,18 @@ type IHTMLTable2_
 	lpVtbl as IHTMLTable2Vtbl ptr
 end type
 
+#define IHTMLTable2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTable2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTable2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTable2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTable2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTable2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTable2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTable2_firstPage(This) (This)->lpVtbl->firstPage(This)
+#define IHTMLTable2_lastPage(This) (This)->lpVtbl->lastPage(This)
+#define IHTMLTable2_get_cells(This, p) (This)->lpVtbl->get_cells(This, p)
+#define IHTMLTable2_moveRow(This, indexFrom, indexTo, row) (This)->lpVtbl->moveRow(This, indexFrom, indexTo, row)
+
 declare function IHTMLTable2_firstPage_Proxy(byval This as IHTMLTable2 ptr) as HRESULT
 declare sub IHTMLTable2_firstPage_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTable2_lastPage_Proxy(byval This as IHTMLTable2 ptr) as HRESULT
@@ -14827,6 +19304,16 @@ end type
 type IHTMLTable3_
 	lpVtbl as IHTMLTable3Vtbl ptr
 end type
+
+#define IHTMLTable3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTable3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTable3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTable3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTable3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTable3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTable3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTable3_put_summary(This, v) (This)->lpVtbl->put_summary(This, v)
+#define IHTMLTable3_get_summary(This, p) (This)->lpVtbl->get_summary(This, p)
 
 declare function IHTMLTable3_put_summary_Proxy(byval This as IHTMLTable3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTable3_put_summary_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14857,6 +19344,22 @@ end type
 type IHTMLTableCol_
 	lpVtbl as IHTMLTableColVtbl ptr
 end type
+
+#define IHTMLTableCol_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableCol_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableCol_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableCol_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableCol_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableCol_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableCol_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableCol_put_span(This, v) (This)->lpVtbl->put_span(This, v)
+#define IHTMLTableCol_get_span(This, p) (This)->lpVtbl->get_span(This, p)
+#define IHTMLTableCol_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLTableCol_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLTableCol_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTableCol_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTableCol_put_vAlign(This, v) (This)->lpVtbl->put_vAlign(This, v)
+#define IHTMLTableCol_get_vAlign(This, p) (This)->lpVtbl->get_vAlign(This, p)
 
 declare function IHTMLTableCol_put_span_Proxy(byval This as IHTMLTableCol ptr, byval v as long) as HRESULT
 declare sub IHTMLTableCol_put_span_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14896,6 +19399,18 @@ type IHTMLTableCol2_
 	lpVtbl as IHTMLTableCol2Vtbl ptr
 end type
 
+#define IHTMLTableCol2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableCol2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableCol2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableCol2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableCol2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableCol2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableCol2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableCol2_put_ch(This, v) (This)->lpVtbl->put_ch(This, v)
+#define IHTMLTableCol2_get_ch(This, p) (This)->lpVtbl->get_ch(This, p)
+#define IHTMLTableCol2_put_chOff(This, v) (This)->lpVtbl->put_chOff(This, v)
+#define IHTMLTableCol2_get_chOff(This, p) (This)->lpVtbl->get_chOff(This, p)
+
 declare function IHTMLTableCol2_put_ch_Proxy(byval This as IHTMLTableCol2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableCol2_put_ch_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTableCol2_get_ch_Proxy(byval This as IHTMLTableCol2 ptr, byval p as BSTR ptr) as HRESULT
@@ -14923,6 +19438,14 @@ type IHTMLTableSection2_
 	lpVtbl as IHTMLTableSection2Vtbl ptr
 end type
 
+#define IHTMLTableSection2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableSection2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableSection2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableSection2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableSection2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableSection2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableSection2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableSection2_moveRow(This, indexFrom, indexTo, row) (This)->lpVtbl->moveRow(This, indexFrom, indexTo, row)
 declare function IHTMLTableSection2_moveRow_Proxy(byval This as IHTMLTableSection2 ptr, byval indexFrom as long, byval indexTo as long, byval row as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLTableSection2_moveRow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLTableSection3_INTERFACE_DEFINED__
@@ -14946,6 +19469,18 @@ end type
 type IHTMLTableSection3_
 	lpVtbl as IHTMLTableSection3Vtbl ptr
 end type
+
+#define IHTMLTableSection3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableSection3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableSection3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableSection3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableSection3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableSection3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableSection3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableSection3_put_ch(This, v) (This)->lpVtbl->put_ch(This, v)
+#define IHTMLTableSection3_get_ch(This, p) (This)->lpVtbl->get_ch(This, p)
+#define IHTMLTableSection3_put_chOff(This, v) (This)->lpVtbl->put_chOff(This, v)
+#define IHTMLTableSection3_get_chOff(This, p) (This)->lpVtbl->get_chOff(This, p)
 
 declare function IHTMLTableSection3_put_ch_Proxy(byval This as IHTMLTableSection3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableSection3_put_ch_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -14989,6 +19524,31 @@ end type
 type IHTMLTableRow_
 	lpVtbl as IHTMLTableRowVtbl ptr
 end type
+
+#define IHTMLTableRow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableRow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableRow_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableRow_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableRow_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableRow_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableRow_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableRow_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTableRow_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTableRow_put_vAlign(This, v) (This)->lpVtbl->put_vAlign(This, v)
+#define IHTMLTableRow_get_vAlign(This, p) (This)->lpVtbl->get_vAlign(This, p)
+#define IHTMLTableRow_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLTableRow_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLTableRow_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLTableRow_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLTableRow_put_borderColorLight(This, v) (This)->lpVtbl->put_borderColorLight(This, v)
+#define IHTMLTableRow_get_borderColorLight(This, p) (This)->lpVtbl->get_borderColorLight(This, p)
+#define IHTMLTableRow_put_borderColorDark(This, v) (This)->lpVtbl->put_borderColorDark(This, v)
+#define IHTMLTableRow_get_borderColorDark(This, p) (This)->lpVtbl->get_borderColorDark(This, p)
+#define IHTMLTableRow_get_rowIndex(This, p) (This)->lpVtbl->get_rowIndex(This, p)
+#define IHTMLTableRow_get_sectionRowIndex(This, p) (This)->lpVtbl->get_sectionRowIndex(This, p)
+#define IHTMLTableRow_get_cells(This, p) (This)->lpVtbl->get_cells(This, p)
+#define IHTMLTableRow_insertCell(This, index, row) (This)->lpVtbl->insertCell(This, index, row)
+#define IHTMLTableRow_deleteCell(This, index) (This)->lpVtbl->deleteCell(This, index)
 
 declare function IHTMLTableRow_put_align_Proxy(byval This as IHTMLTableRow ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableRow_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15044,6 +19604,16 @@ type IHTMLTableRow2_
 	lpVtbl as IHTMLTableRow2Vtbl ptr
 end type
 
+#define IHTMLTableRow2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableRow2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableRow2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableRow2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableRow2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableRow2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableRow2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableRow2_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLTableRow2_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+
 declare function IHTMLTableRow2_put_height_Proxy(byval This as IHTMLTableRow2 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLTableRow2_put_height_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTableRow2_get_height_Proxy(byval This as IHTMLTableRow2 ptr, byval p as VARIANT ptr) as HRESULT
@@ -15069,6 +19639,18 @@ end type
 type IHTMLTableRow3_
 	lpVtbl as IHTMLTableRow3Vtbl ptr
 end type
+
+#define IHTMLTableRow3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableRow3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableRow3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableRow3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableRow3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableRow3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableRow3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableRow3_put_ch(This, v) (This)->lpVtbl->put_ch(This, v)
+#define IHTMLTableRow3_get_ch(This, p) (This)->lpVtbl->get_ch(This, p)
+#define IHTMLTableRow3_put_chOff(This, v) (This)->lpVtbl->put_chOff(This, v)
+#define IHTMLTableRow3_get_chOff(This, p) (This)->lpVtbl->get_chOff(This, p)
 
 declare function IHTMLTableRow3_put_ch_Proxy(byval This as IHTMLTableRow3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableRow3_put_ch_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15099,6 +19681,18 @@ end type
 type IHTMLTableRowMetrics_
 	lpVtbl as IHTMLTableRowMetricsVtbl ptr
 end type
+
+#define IHTMLTableRowMetrics_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableRowMetrics_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableRowMetrics_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableRowMetrics_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableRowMetrics_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableRowMetrics_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableRowMetrics_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableRowMetrics_get_clientHeight(This, p) (This)->lpVtbl->get_clientHeight(This, p)
+#define IHTMLTableRowMetrics_get_clientWidth(This, p) (This)->lpVtbl->get_clientWidth(This, p)
+#define IHTMLTableRowMetrics_get_clientTop(This, p) (This)->lpVtbl->get_clientTop(This, p)
+#define IHTMLTableRowMetrics_get_clientLeft(This, p) (This)->lpVtbl->get_clientLeft(This, p)
 
 declare function IHTMLTableRowMetrics_get_clientHeight_Proxy(byval This as IHTMLTableRowMetrics ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLTableRowMetrics_get_clientHeight_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15150,6 +19744,39 @@ end type
 type IHTMLTableCell_
 	lpVtbl as IHTMLTableCellVtbl ptr
 end type
+
+#define IHTMLTableCell_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableCell_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableCell_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableCell_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableCell_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableCell_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableCell_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableCell_put_rowSpan(This, v) (This)->lpVtbl->put_rowSpan(This, v)
+#define IHTMLTableCell_get_rowSpan(This, p) (This)->lpVtbl->get_rowSpan(This, p)
+#define IHTMLTableCell_put_colSpan(This, v) (This)->lpVtbl->put_colSpan(This, v)
+#define IHTMLTableCell_get_colSpan(This, p) (This)->lpVtbl->get_colSpan(This, p)
+#define IHTMLTableCell_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLTableCell_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLTableCell_put_vAlign(This, v) (This)->lpVtbl->put_vAlign(This, v)
+#define IHTMLTableCell_get_vAlign(This, p) (This)->lpVtbl->get_vAlign(This, p)
+#define IHTMLTableCell_put_bgColor(This, v) (This)->lpVtbl->put_bgColor(This, v)
+#define IHTMLTableCell_get_bgColor(This, p) (This)->lpVtbl->get_bgColor(This, p)
+#define IHTMLTableCell_put_noWrap(This, v) (This)->lpVtbl->put_noWrap(This, v)
+#define IHTMLTableCell_get_noWrap(This, p) (This)->lpVtbl->get_noWrap(This, p)
+#define IHTMLTableCell_put_background(This, v) (This)->lpVtbl->put_background(This, v)
+#define IHTMLTableCell_get_background(This, p) (This)->lpVtbl->get_background(This, p)
+#define IHTMLTableCell_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLTableCell_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLTableCell_put_borderColorLight(This, v) (This)->lpVtbl->put_borderColorLight(This, v)
+#define IHTMLTableCell_get_borderColorLight(This, p) (This)->lpVtbl->get_borderColorLight(This, p)
+#define IHTMLTableCell_put_borderColorDark(This, v) (This)->lpVtbl->put_borderColorDark(This, v)
+#define IHTMLTableCell_get_borderColorDark(This, p) (This)->lpVtbl->get_borderColorDark(This, p)
+#define IHTMLTableCell_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLTableCell_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLTableCell_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLTableCell_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLTableCell_get_cellIndex(This, p) (This)->lpVtbl->get_cellIndex(This, p)
 
 declare function IHTMLTableCell_put_rowSpan_Proxy(byval This as IHTMLTableCell ptr, byval v as long) as HRESULT
 declare sub IHTMLTableCell_put_rowSpan_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15231,6 +19858,26 @@ type IHTMLTableCell2_
 	lpVtbl as IHTMLTableCell2Vtbl ptr
 end type
 
+#define IHTMLTableCell2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLTableCell2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLTableCell2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLTableCell2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLTableCell2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLTableCell2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLTableCell2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLTableCell2_put_abbr(This, v) (This)->lpVtbl->put_abbr(This, v)
+#define IHTMLTableCell2_get_abbr(This, p) (This)->lpVtbl->get_abbr(This, p)
+#define IHTMLTableCell2_put_axis(This, v) (This)->lpVtbl->put_axis(This, v)
+#define IHTMLTableCell2_get_axis(This, p) (This)->lpVtbl->get_axis(This, p)
+#define IHTMLTableCell2_put_ch(This, v) (This)->lpVtbl->put_ch(This, v)
+#define IHTMLTableCell2_get_ch(This, p) (This)->lpVtbl->get_ch(This, p)
+#define IHTMLTableCell2_put_chOff(This, v) (This)->lpVtbl->put_chOff(This, v)
+#define IHTMLTableCell2_get_chOff(This, p) (This)->lpVtbl->get_chOff(This, p)
+#define IHTMLTableCell2_put_headers(This, v) (This)->lpVtbl->put_headers(This, v)
+#define IHTMLTableCell2_get_headers(This, p) (This)->lpVtbl->get_headers(This, p)
+#define IHTMLTableCell2_put_scope(This, v) (This)->lpVtbl->put_scope(This, v)
+#define IHTMLTableCell2_get_scope(This, p) (This)->lpVtbl->get_scope(This, p)
+
 declare function IHTMLTableCell2_put_abbr_Proxy(byval This as IHTMLTableCell2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLTableCell2_put_abbr_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLTableCell2_get_abbr_Proxy(byval This as IHTMLTableCell2 ptr, byval p as BSTR ptr) as HRESULT
@@ -15273,6 +19920,13 @@ type DispHTMLTable_
 	lpVtbl as DispHTMLTableVtbl ptr
 end type
 
+#define DispHTMLTable_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTable_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTable_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTable_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTable_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTable_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTable_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTable as const CLSID
 #define __DispHTMLTableCol_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTableCol as const IID
@@ -15292,6 +19946,13 @@ type DispHTMLTableCol_
 	lpVtbl as DispHTMLTableColVtbl ptr
 end type
 
+#define DispHTMLTableCol_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTableCol_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTableCol_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTableCol_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTableCol_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTableCol_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTableCol_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTableCol as const CLSID
 #define __DispHTMLTableSection_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTableSection as const IID
@@ -15311,6 +19972,13 @@ type DispHTMLTableSection_
 	lpVtbl as DispHTMLTableSectionVtbl ptr
 end type
 
+#define DispHTMLTableSection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTableSection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTableSection_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTableSection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTableSection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTableSection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTableSection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTableSection as const CLSID
 #define __DispHTMLTableRow_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTableRow as const IID
@@ -15330,6 +19998,13 @@ type DispHTMLTableRow_
 	lpVtbl as DispHTMLTableRowVtbl ptr
 end type
 
+#define DispHTMLTableRow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTableRow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTableRow_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTableRow_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTableRow_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTableRow_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTableRow_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTableRow as const CLSID
 #define __DispHTMLTableCell_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLTableCell as const IID
@@ -15349,6 +20024,13 @@ type DispHTMLTableCell_
 	lpVtbl as DispHTMLTableCellVtbl ptr
 end type
 
+#define DispHTMLTableCell_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLTableCell_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLTableCell_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLTableCell_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLTableCell_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLTableCell_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLTableCell_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLTableCell as const CLSID
 #define __HTMLScriptEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLScriptEvents2 as const IID
@@ -15368,6 +20050,13 @@ type HTMLScriptEvents2_
 	lpVtbl as HTMLScriptEvents2Vtbl ptr
 end type
 
+#define HTMLScriptEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLScriptEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLScriptEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLScriptEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLScriptEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLScriptEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLScriptEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLScriptEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLScriptEvents as const IID
 type HTMLScriptEvents as HTMLScriptEvents_
@@ -15386,6 +20075,13 @@ type HTMLScriptEvents_
 	lpVtbl as HTMLScriptEventsVtbl ptr
 end type
 
+#define HTMLScriptEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLScriptEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLScriptEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLScriptEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLScriptEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLScriptEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLScriptEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLScriptElement_INTERFACE_DEFINED__
 extern IID_IHTMLScriptElement as const IID
 type IHTMLScriptElement as IHTMLScriptElement_
@@ -15418,6 +20114,29 @@ end type
 type IHTMLScriptElement_
 	lpVtbl as IHTMLScriptElementVtbl ptr
 end type
+
+#define IHTMLScriptElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLScriptElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLScriptElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLScriptElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLScriptElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLScriptElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLScriptElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLScriptElement_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLScriptElement_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLScriptElement_put_htmlFor(This, v) (This)->lpVtbl->put_htmlFor(This, v)
+#define IHTMLScriptElement_get_htmlFor(This, p) (This)->lpVtbl->get_htmlFor(This, p)
+#define IHTMLScriptElement_put_event(This, v) (This)->lpVtbl->put_event(This, v)
+#define IHTMLScriptElement_get_event(This, p) (This)->lpVtbl->get_event(This, p)
+#define IHTMLScriptElement_put_text(This, v) (This)->lpVtbl->put_text(This, v)
+#define IHTMLScriptElement_get_text(This, p) (This)->lpVtbl->get_text(This, p)
+#define IHTMLScriptElement_put_defer(This, v) (This)->lpVtbl->put_defer(This, v)
+#define IHTMLScriptElement_get_defer(This, p) (This)->lpVtbl->get_defer(This, p)
+#define IHTMLScriptElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLScriptElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLScriptElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLScriptElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLScriptElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
 
 declare function IHTMLScriptElement_put_src_Proxy(byval This as IHTMLScriptElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLScriptElement_put_src_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15469,6 +20188,16 @@ type IHTMLScriptElement2_
 	lpVtbl as IHTMLScriptElement2Vtbl ptr
 end type
 
+#define IHTMLScriptElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLScriptElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLScriptElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLScriptElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLScriptElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLScriptElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLScriptElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLScriptElement2_put_charset(This, v) (This)->lpVtbl->put_charset(This, v)
+#define IHTMLScriptElement2_get_charset(This, p) (This)->lpVtbl->get_charset(This, p)
+
 declare function IHTMLScriptElement2_put_charset_Proxy(byval This as IHTMLScriptElement2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLScriptElement2_put_charset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLScriptElement2_get_charset_Proxy(byval This as IHTMLScriptElement2 ptr, byval p as BSTR ptr) as HRESULT
@@ -15491,6 +20220,13 @@ type DispHTMLScriptElement_
 	lpVtbl as DispHTMLScriptElementVtbl ptr
 end type
 
+#define DispHTMLScriptElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLScriptElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLScriptElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLScriptElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLScriptElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLScriptElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLScriptElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLScriptElement as const CLSID
 #define __IHTMLNoShowElement_INTERFACE_DEFINED__
 extern IID_IHTMLNoShowElement as const IID
@@ -15510,6 +20246,13 @@ type IHTMLNoShowElement_
 	lpVtbl as IHTMLNoShowElementVtbl ptr
 end type
 
+#define IHTMLNoShowElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLNoShowElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLNoShowElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLNoShowElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLNoShowElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLNoShowElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLNoShowElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __DispHTMLNoShowElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLNoShowElement as const IID
 type DispHTMLNoShowElement as DispHTMLNoShowElement_
@@ -15528,6 +20271,13 @@ type DispHTMLNoShowElement_
 	lpVtbl as DispHTMLNoShowElementVtbl ptr
 end type
 
+#define DispHTMLNoShowElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLNoShowElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLNoShowElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLNoShowElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLNoShowElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLNoShowElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLNoShowElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLNoShowElement as const CLSID
 #define __HTMLObjectElementEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLObjectElementEvents2 as const IID
@@ -15547,6 +20297,13 @@ type HTMLObjectElementEvents2_
 	lpVtbl as HTMLObjectElementEvents2Vtbl ptr
 end type
 
+#define HTMLObjectElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLObjectElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLObjectElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLObjectElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLObjectElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLObjectElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLObjectElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLObjectElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLObjectElementEvents as const IID
 type HTMLObjectElementEvents as HTMLObjectElementEvents_
@@ -15565,6 +20322,13 @@ type HTMLObjectElementEvents_
 	lpVtbl as HTMLObjectElementEventsVtbl ptr
 end type
 
+#define HTMLObjectElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLObjectElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLObjectElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLObjectElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLObjectElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLObjectElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLObjectElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLObjectElement_INTERFACE_DEFINED__
 extern IID_IHTMLObjectElement as const IID
 type IHTMLObjectElement as IHTMLObjectElement_
@@ -15616,6 +20380,48 @@ end type
 type IHTMLObjectElement_
 	lpVtbl as IHTMLObjectElementVtbl ptr
 end type
+
+#define IHTMLObjectElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLObjectElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLObjectElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLObjectElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLObjectElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLObjectElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLObjectElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLObjectElement_get_object(This, p) (This)->lpVtbl->get_object(This, p)
+#define IHTMLObjectElement_get_classid(This, p) (This)->lpVtbl->get_classid(This, p)
+#define IHTMLObjectElement_get_data(This, p) (This)->lpVtbl->get_data(This, p)
+#define IHTMLObjectElement_putref_recordset(This, v) (This)->lpVtbl->putref_recordset(This, v)
+#define IHTMLObjectElement_get_recordset(This, p) (This)->lpVtbl->get_recordset(This, p)
+#define IHTMLObjectElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLObjectElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+#define IHTMLObjectElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLObjectElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLObjectElement_put_codeBase(This, v) (This)->lpVtbl->put_codeBase(This, v)
+#define IHTMLObjectElement_get_codeBase(This, p) (This)->lpVtbl->get_codeBase(This, p)
+#define IHTMLObjectElement_put_codeType(This, v) (This)->lpVtbl->put_codeType(This, v)
+#define IHTMLObjectElement_get_codeType(This, p) (This)->lpVtbl->get_codeType(This, p)
+#define IHTMLObjectElement_put_code(This, v) (This)->lpVtbl->put_code(This, v)
+#define IHTMLObjectElement_get_code(This, p) (This)->lpVtbl->get_code(This, p)
+#define IHTMLObjectElement_get_BaseHref(This, p) (This)->lpVtbl->get_BaseHref(This, p)
+#define IHTMLObjectElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLObjectElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLObjectElement_get_form(This, p) (This)->lpVtbl->get_form(This, p)
+#define IHTMLObjectElement_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLObjectElement_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+#define IHTMLObjectElement_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLObjectElement_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLObjectElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLObjectElement_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLObjectElement_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLObjectElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLObjectElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLObjectElement_put_altHtml(This, v) (This)->lpVtbl->put_altHtml(This, v)
+#define IHTMLObjectElement_get_altHtml(This, p) (This)->lpVtbl->get_altHtml(This, p)
+#define IHTMLObjectElement_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLObjectElement_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLObjectElement_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLObjectElement_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
 
 declare function IHTMLObjectElement_get_object_Proxy(byval This as IHTMLObjectElement ptr, byval p as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLObjectElement_get_object_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15708,6 +20514,19 @@ type IHTMLObjectElement2_
 	lpVtbl as IHTMLObjectElement2Vtbl ptr
 end type
 
+#define IHTMLObjectElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLObjectElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLObjectElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLObjectElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLObjectElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLObjectElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLObjectElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLObjectElement2_namedRecordset(This, dataMember, hierarchy, ppRecordset) (This)->lpVtbl->namedRecordset(This, dataMember, hierarchy, ppRecordset)
+#define IHTMLObjectElement2_put_classid(This, v) (This)->lpVtbl->put_classid(This, v)
+#define IHTMLObjectElement2_get_classid(This, p) (This)->lpVtbl->get_classid(This, p)
+#define IHTMLObjectElement2_put_data(This, v) (This)->lpVtbl->put_data(This, v)
+#define IHTMLObjectElement2_get_data(This, p) (This)->lpVtbl->get_data(This, p)
+
 declare function IHTMLObjectElement2_namedRecordset_Proxy(byval This as IHTMLObjectElement2 ptr, byval dataMember as BSTR, byval hierarchy as VARIANT ptr, byval ppRecordset as IDispatch ptr ptr) as HRESULT
 declare sub IHTMLObjectElement2_namedRecordset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLObjectElement2_put_classid_Proxy(byval This as IHTMLObjectElement2 ptr, byval v as BSTR) as HRESULT
@@ -15747,6 +20566,26 @@ end type
 type IHTMLObjectElement3_
 	lpVtbl as IHTMLObjectElement3Vtbl ptr
 end type
+
+#define IHTMLObjectElement3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLObjectElement3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLObjectElement3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLObjectElement3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLObjectElement3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLObjectElement3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLObjectElement3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLObjectElement3_put_archive(This, v) (This)->lpVtbl->put_archive(This, v)
+#define IHTMLObjectElement3_get_archive(This, p) (This)->lpVtbl->get_archive(This, p)
+#define IHTMLObjectElement3_put_alt(This, v) (This)->lpVtbl->put_alt(This, v)
+#define IHTMLObjectElement3_get_alt(This, p) (This)->lpVtbl->get_alt(This, p)
+#define IHTMLObjectElement3_put_declare(This, v) (This)->lpVtbl->put_declare(This, v)
+#define IHTMLObjectElement3_get_declare(This, p) (This)->lpVtbl->get_declare(This, p)
+#define IHTMLObjectElement3_put_standby(This, v) (This)->lpVtbl->put_standby(This, v)
+#define IHTMLObjectElement3_get_standby(This, p) (This)->lpVtbl->get_standby(This, p)
+#define IHTMLObjectElement3_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLObjectElement3_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLObjectElement3_put_useMap(This, v) (This)->lpVtbl->put_useMap(This, v)
+#define IHTMLObjectElement3_get_useMap(This, p) (This)->lpVtbl->get_useMap(This, p)
 
 declare function IHTMLObjectElement3_put_archive_Proxy(byval This as IHTMLObjectElement3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLObjectElement3_put_archive_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15798,6 +20637,22 @@ type IHTMLParamElement_
 	lpVtbl as IHTMLParamElementVtbl ptr
 end type
 
+#define IHTMLParamElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLParamElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLParamElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLParamElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLParamElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLParamElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLParamElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLParamElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLParamElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLParamElement_put_value(This, v) (This)->lpVtbl->put_value(This, v)
+#define IHTMLParamElement_get_value(This, p) (This)->lpVtbl->get_value(This, p)
+#define IHTMLParamElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLParamElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLParamElement_put_valueType(This, v) (This)->lpVtbl->put_valueType(This, v)
+#define IHTMLParamElement_get_valueType(This, p) (This)->lpVtbl->get_valueType(This, p)
+
 declare function IHTMLParamElement_put_name_Proxy(byval This as IHTMLParamElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLParamElement_put_name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLParamElement_get_name_Proxy(byval This as IHTMLParamElement ptr, byval p as BSTR ptr) as HRESULT
@@ -15832,6 +20687,13 @@ type DispHTMLObjectElement_
 	lpVtbl as DispHTMLObjectElementVtbl ptr
 end type
 
+#define DispHTMLObjectElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLObjectElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLObjectElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLObjectElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLObjectElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLObjectElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLObjectElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLObjectElement as const CLSID
 #define __DispHTMLParamElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLParamElement as const IID
@@ -15851,6 +20713,13 @@ type DispHTMLParamElement_
 	lpVtbl as DispHTMLParamElementVtbl ptr
 end type
 
+#define DispHTMLParamElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLParamElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLParamElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLParamElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLParamElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLParamElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLParamElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLParamElement as const CLSID
 #define __HTMLFrameSiteEvents2_DISPINTERFACE_DEFINED__
 extern DIID_HTMLFrameSiteEvents2 as const IID
@@ -15870,6 +20739,13 @@ type HTMLFrameSiteEvents2_
 	lpVtbl as HTMLFrameSiteEvents2Vtbl ptr
 end type
 
+#define HTMLFrameSiteEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLFrameSiteEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLFrameSiteEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLFrameSiteEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLFrameSiteEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLFrameSiteEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLFrameSiteEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLFrameSiteEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLFrameSiteEvents as const IID
 type HTMLFrameSiteEvents as HTMLFrameSiteEvents_
@@ -15888,6 +20764,13 @@ type HTMLFrameSiteEvents_
 	lpVtbl as HTMLFrameSiteEventsVtbl ptr
 end type
 
+#define HTMLFrameSiteEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLFrameSiteEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLFrameSiteEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLFrameSiteEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLFrameSiteEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLFrameSiteEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLFrameSiteEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLFrameBase2_INTERFACE_DEFINED__
 extern IID_IHTMLFrameBase2 as const IID
 type IHTMLFrameBase2 as IHTMLFrameBase2_
@@ -15913,6 +20796,22 @@ end type
 type IHTMLFrameBase2_
 	lpVtbl as IHTMLFrameBase2Vtbl ptr
 end type
+
+#define IHTMLFrameBase2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameBase2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameBase2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameBase2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameBase2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameBase2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameBase2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameBase2_get_contentWindow(This, p) (This)->lpVtbl->get_contentWindow(This, p)
+#define IHTMLFrameBase2_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLFrameBase2_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLFrameBase2_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLFrameBase2_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLFrameBase2_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLFrameBase2_put_allowTransparency(This, v) (This)->lpVtbl->put_allowTransparency(This, v)
+#define IHTMLFrameBase2_get_allowTransparency(This, p) (This)->lpVtbl->get_allowTransparency(This, p)
 
 declare function IHTMLFrameBase2_get_contentWindow_Proxy(byval This as IHTMLFrameBase2 ptr, byval p as IHTMLWindow2 ptr ptr) as HRESULT
 declare sub IHTMLFrameBase2_get_contentWindow_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -15950,6 +20849,16 @@ type IHTMLFrameBase3_
 	lpVtbl as IHTMLFrameBase3Vtbl ptr
 end type
 
+#define IHTMLFrameBase3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameBase3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameBase3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameBase3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameBase3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameBase3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameBase3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameBase3_put_longDesc(This, v) (This)->lpVtbl->put_longDesc(This, v)
+#define IHTMLFrameBase3_get_longDesc(This, p) (This)->lpVtbl->get_longDesc(This, p)
+
 declare function IHTMLFrameBase3_put_longDesc_Proxy(byval This as IHTMLFrameBase3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFrameBase3_put_longDesc_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFrameBase3_get_longDesc_Proxy(byval This as IHTMLFrameBase3 ptr, byval p as BSTR ptr) as HRESULT
@@ -15972,6 +20881,13 @@ type DispHTMLFrameBase_
 	lpVtbl as DispHTMLFrameBaseVtbl ptr
 end type
 
+#define DispHTMLFrameBase_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFrameBase_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFrameBase_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFrameBase_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFrameBase_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFrameBase_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFrameBase_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFrameBase as const CLSID
 #define __IHTMLFrameElement_INTERFACE_DEFINED__
 extern IID_IHTMLFrameElement as const IID
@@ -15992,6 +20908,16 @@ end type
 type IHTMLFrameElement_
 	lpVtbl as IHTMLFrameElementVtbl ptr
 end type
+
+#define IHTMLFrameElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameElement_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLFrameElement_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
 
 declare function IHTMLFrameElement_put_borderColor_Proxy(byval This as IHTMLFrameElement ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLFrameElement_put_borderColor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16019,6 +20945,18 @@ type IHTMLFrameElement2_
 	lpVtbl as IHTMLFrameElement2Vtbl ptr
 end type
 
+#define IHTMLFrameElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameElement2_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLFrameElement2_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLFrameElement2_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLFrameElement2_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+
 declare function IHTMLFrameElement2_put_height_Proxy(byval This as IHTMLFrameElement2 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLFrameElement2_put_height_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFrameElement2_get_height_Proxy(byval This as IHTMLFrameElement2 ptr, byval p as VARIANT ptr) as HRESULT
@@ -16045,6 +20983,13 @@ type DispHTMLFrameElement_
 	lpVtbl as DispHTMLFrameElementVtbl ptr
 end type
 
+#define DispHTMLFrameElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFrameElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFrameElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFrameElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFrameElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFrameElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFrameElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFrameElement as const CLSID
 #define __IHTMLIFrameElement_INTERFACE_DEFINED__
 extern IID_IHTMLIFrameElement as const IID
@@ -16069,6 +21014,20 @@ end type
 type IHTMLIFrameElement_
 	lpVtbl as IHTMLIFrameElementVtbl ptr
 end type
+
+#define IHTMLIFrameElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLIFrameElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLIFrameElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLIFrameElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLIFrameElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLIFrameElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLIFrameElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLIFrameElement_put_vspace(This, v) (This)->lpVtbl->put_vspace(This, v)
+#define IHTMLIFrameElement_get_vspace(This, p) (This)->lpVtbl->get_vspace(This, p)
+#define IHTMLIFrameElement_put_hspace(This, v) (This)->lpVtbl->put_hspace(This, v)
+#define IHTMLIFrameElement_get_hspace(This, p) (This)->lpVtbl->get_hspace(This, p)
+#define IHTMLIFrameElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLIFrameElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLIFrameElement_put_vspace_Proxy(byval This as IHTMLIFrameElement ptr, byval v as long) as HRESULT
 declare sub IHTMLIFrameElement_put_vspace_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16104,6 +21063,18 @@ type IHTMLIFrameElement2_
 	lpVtbl as IHTMLIFrameElement2Vtbl ptr
 end type
 
+#define IHTMLIFrameElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLIFrameElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLIFrameElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLIFrameElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLIFrameElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLIFrameElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLIFrameElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLIFrameElement2_put_height(This, v) (This)->lpVtbl->put_height(This, v)
+#define IHTMLIFrameElement2_get_height(This, p) (This)->lpVtbl->get_height(This, p)
+#define IHTMLIFrameElement2_put_width(This, v) (This)->lpVtbl->put_width(This, v)
+#define IHTMLIFrameElement2_get_width(This, p) (This)->lpVtbl->get_width(This, p)
+
 declare function IHTMLIFrameElement2_put_height_Proxy(byval This as IHTMLIFrameElement2 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLIFrameElement2_put_height_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLIFrameElement2_get_height_Proxy(byval This as IHTMLIFrameElement2 ptr, byval p as VARIANT ptr) as HRESULT
@@ -16130,6 +21101,13 @@ type DispHTMLIFrame_
 	lpVtbl as DispHTMLIFrameVtbl ptr
 end type
 
+#define DispHTMLIFrame_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLIFrame_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLIFrame_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLIFrame_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLIFrame_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLIFrame_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLIFrame_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLIFrame as const CLSID
 #define __IHTMLDivPosition_INTERFACE_DEFINED__
 extern IID_IHTMLDivPosition as const IID
@@ -16150,6 +21128,16 @@ end type
 type IHTMLDivPosition_
 	lpVtbl as IHTMLDivPositionVtbl ptr
 end type
+
+#define IHTMLDivPosition_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDivPosition_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDivPosition_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDivPosition_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDivPosition_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDivPosition_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDivPosition_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDivPosition_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLDivPosition_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLDivPosition_put_align_Proxy(byval This as IHTMLDivPosition ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDivPosition_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16175,6 +21163,16 @@ type IHTMLFieldSetElement_
 	lpVtbl as IHTMLFieldSetElementVtbl ptr
 end type
 
+#define IHTMLFieldSetElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFieldSetElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFieldSetElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFieldSetElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFieldSetElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFieldSetElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFieldSetElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFieldSetElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLFieldSetElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
+
 declare function IHTMLFieldSetElement_put_align_Proxy(byval This as IHTMLFieldSetElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFieldSetElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFieldSetElement_get_align_Proxy(byval This as IHTMLFieldSetElement ptr, byval p as BSTR ptr) as HRESULT
@@ -16198,6 +21196,14 @@ type IHTMLFieldSetElement2_
 	lpVtbl as IHTMLFieldSetElement2Vtbl ptr
 end type
 
+#define IHTMLFieldSetElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFieldSetElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFieldSetElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFieldSetElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFieldSetElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFieldSetElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFieldSetElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFieldSetElement2_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 declare function IHTMLFieldSetElement2_get_form_Proxy(byval This as IHTMLFieldSetElement2 ptr, byval p as IHTMLFormElement ptr ptr) as HRESULT
 declare sub IHTMLFieldSetElement2_get_form_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLLegendElement_INTERFACE_DEFINED__
@@ -16219,6 +21225,16 @@ end type
 type IHTMLLegendElement_
 	lpVtbl as IHTMLLegendElementVtbl ptr
 end type
+
+#define IHTMLLegendElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLegendElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLegendElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLegendElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLegendElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLegendElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLegendElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLegendElement_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLLegendElement_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLLegendElement_put_align_Proxy(byval This as IHTMLLegendElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLLegendElement_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16243,6 +21259,14 @@ type IHTMLLegendElement2_
 	lpVtbl as IHTMLLegendElement2Vtbl ptr
 end type
 
+#define IHTMLLegendElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLLegendElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLLegendElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLLegendElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLLegendElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLLegendElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLLegendElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLLegendElement2_get_form(This, p) (This)->lpVtbl->get_form(This, p)
 declare function IHTMLLegendElement2_get_form_Proxy(byval This as IHTMLLegendElement2 ptr, byval p as IHTMLFormElement ptr ptr) as HRESULT
 declare sub IHTMLLegendElement2_get_form_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __DispHTMLDivPosition_DISPINTERFACE_DEFINED__
@@ -16263,6 +21287,13 @@ type DispHTMLDivPosition_
 	lpVtbl as DispHTMLDivPositionVtbl ptr
 end type
 
+#define DispHTMLDivPosition_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLDivPosition_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLDivPosition_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLDivPosition_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLDivPosition_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLDivPosition_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLDivPosition_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLDivPosition as const CLSID
 #define __DispHTMLFieldSetElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLFieldSetElement as const IID
@@ -16282,6 +21313,13 @@ type DispHTMLFieldSetElement_
 	lpVtbl as DispHTMLFieldSetElementVtbl ptr
 end type
 
+#define DispHTMLFieldSetElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFieldSetElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFieldSetElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFieldSetElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFieldSetElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFieldSetElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFieldSetElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFieldSetElement as const CLSID
 #define __DispHTMLLegendElement_DISPINTERFACE_DEFINED__
 extern DIID_DispHTMLLegendElement as const IID
@@ -16301,6 +21339,13 @@ type DispHTMLLegendElement_
 	lpVtbl as DispHTMLLegendElementVtbl ptr
 end type
 
+#define DispHTMLLegendElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLLegendElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLLegendElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLLegendElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLLegendElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLLegendElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLLegendElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLLegendElement as const CLSID
 #define __IHTMLSpanFlow_INTERFACE_DEFINED__
 extern IID_IHTMLSpanFlow as const IID
@@ -16321,6 +21366,16 @@ end type
 type IHTMLSpanFlow_
 	lpVtbl as IHTMLSpanFlowVtbl ptr
 end type
+
+#define IHTMLSpanFlow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLSpanFlow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLSpanFlow_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLSpanFlow_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLSpanFlow_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLSpanFlow_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLSpanFlow_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLSpanFlow_put_align(This, v) (This)->lpVtbl->put_align(This, v)
+#define IHTMLSpanFlow_get_align(This, p) (This)->lpVtbl->get_align(This, p)
 
 declare function IHTMLSpanFlow_put_align_Proxy(byval This as IHTMLSpanFlow ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLSpanFlow_put_align_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16344,6 +21399,13 @@ type DispHTMLSpanFlow_
 	lpVtbl as DispHTMLSpanFlowVtbl ptr
 end type
 
+#define DispHTMLSpanFlow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLSpanFlow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLSpanFlow_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLSpanFlow_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLSpanFlow_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLSpanFlow_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLSpanFlow_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLSpanFlow as const CLSID
 #define __IHTMLFrameSetElement_INTERFACE_DEFINED__
 extern IID_IHTMLFrameSetElement as const IID
@@ -16382,6 +21444,34 @@ end type
 type IHTMLFrameSetElement_
 	lpVtbl as IHTMLFrameSetElementVtbl ptr
 end type
+
+#define IHTMLFrameSetElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameSetElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameSetElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameSetElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameSetElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameSetElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameSetElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameSetElement_put_rows(This, v) (This)->lpVtbl->put_rows(This, v)
+#define IHTMLFrameSetElement_get_rows(This, p) (This)->lpVtbl->get_rows(This, p)
+#define IHTMLFrameSetElement_put_cols(This, v) (This)->lpVtbl->put_cols(This, v)
+#define IHTMLFrameSetElement_get_cols(This, p) (This)->lpVtbl->get_cols(This, p)
+#define IHTMLFrameSetElement_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLFrameSetElement_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLFrameSetElement_put_borderColor(This, v) (This)->lpVtbl->put_borderColor(This, v)
+#define IHTMLFrameSetElement_get_borderColor(This, p) (This)->lpVtbl->get_borderColor(This, p)
+#define IHTMLFrameSetElement_put_frameBorder(This, v) (This)->lpVtbl->put_frameBorder(This, v)
+#define IHTMLFrameSetElement_get_frameBorder(This, p) (This)->lpVtbl->get_frameBorder(This, p)
+#define IHTMLFrameSetElement_put_frameSpacing(This, v) (This)->lpVtbl->put_frameSpacing(This, v)
+#define IHTMLFrameSetElement_get_frameSpacing(This, p) (This)->lpVtbl->get_frameSpacing(This, p)
+#define IHTMLFrameSetElement_put_name(This, v) (This)->lpVtbl->put_name(This, v)
+#define IHTMLFrameSetElement_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLFrameSetElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLFrameSetElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLFrameSetElement_put_onunload(This, v) (This)->lpVtbl->put_onunload(This, v)
+#define IHTMLFrameSetElement_get_onunload(This, p) (This)->lpVtbl->get_onunload(This, p)
+#define IHTMLFrameSetElement_put_onbeforeunload(This, v) (This)->lpVtbl->put_onbeforeunload(This, v)
+#define IHTMLFrameSetElement_get_onbeforeunload(This, p) (This)->lpVtbl->get_onbeforeunload(This, p)
 
 declare function IHTMLFrameSetElement_put_rows_Proxy(byval This as IHTMLFrameSetElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLFrameSetElement_put_rows_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16445,6 +21535,18 @@ type IHTMLFrameSetElement2_
 	lpVtbl as IHTMLFrameSetElement2Vtbl ptr
 end type
 
+#define IHTMLFrameSetElement2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFrameSetElement2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFrameSetElement2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFrameSetElement2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFrameSetElement2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFrameSetElement2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFrameSetElement2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFrameSetElement2_put_onbeforeprint(This, v) (This)->lpVtbl->put_onbeforeprint(This, v)
+#define IHTMLFrameSetElement2_get_onbeforeprint(This, p) (This)->lpVtbl->get_onbeforeprint(This, p)
+#define IHTMLFrameSetElement2_put_onafterprint(This, v) (This)->lpVtbl->put_onafterprint(This, v)
+#define IHTMLFrameSetElement2_get_onafterprint(This, p) (This)->lpVtbl->get_onafterprint(This, p)
+
 declare function IHTMLFrameSetElement2_put_onbeforeprint_Proxy(byval This as IHTMLFrameSetElement2 ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLFrameSetElement2_put_onbeforeprint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLFrameSetElement2_get_onbeforeprint_Proxy(byval This as IHTMLFrameSetElement2 ptr, byval p as VARIANT ptr) as HRESULT
@@ -16471,6 +21573,13 @@ type DispHTMLFrameSetSite_
 	lpVtbl as DispHTMLFrameSetSiteVtbl ptr
 end type
 
+#define DispHTMLFrameSetSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLFrameSetSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLFrameSetSite_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLFrameSetSite_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLFrameSetSite_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLFrameSetSite_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLFrameSetSite_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLFrameSetSite as const CLSID
 #define __IHTMLBGsound_INTERFACE_DEFINED__
 extern IID_IHTMLBGsound as const IID
@@ -16497,6 +21606,22 @@ end type
 type IHTMLBGsound_
 	lpVtbl as IHTMLBGsoundVtbl ptr
 end type
+
+#define IHTMLBGsound_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLBGsound_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLBGsound_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLBGsound_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLBGsound_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLBGsound_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLBGsound_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLBGsound_put_src(This, v) (This)->lpVtbl->put_src(This, v)
+#define IHTMLBGsound_get_src(This, p) (This)->lpVtbl->get_src(This, p)
+#define IHTMLBGsound_put_loop(This, v) (This)->lpVtbl->put_loop(This, v)
+#define IHTMLBGsound_get_loop(This, p) (This)->lpVtbl->get_loop(This, p)
+#define IHTMLBGsound_put_volume(This, v) (This)->lpVtbl->put_volume(This, v)
+#define IHTMLBGsound_get_volume(This, p) (This)->lpVtbl->get_volume(This, p)
+#define IHTMLBGsound_put_balance(This, v) (This)->lpVtbl->put_balance(This, v)
+#define IHTMLBGsound_get_balance(This, p) (This)->lpVtbl->get_balance(This, p)
 
 declare function IHTMLBGsound_put_src_Proxy(byval This as IHTMLBGsound ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLBGsound_put_src_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16532,6 +21657,13 @@ type DispHTMLBGsound_
 	lpVtbl as DispHTMLBGsoundVtbl ptr
 end type
 
+#define DispHTMLBGsound_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLBGsound_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLBGsound_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLBGsound_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLBGsound_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLBGsound_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLBGsound_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLBGsound as const CLSID
 #define __IHTMLFontNamesCollection_INTERFACE_DEFINED__
 extern IID_IHTMLFontNamesCollection as const IID
@@ -16553,6 +21685,17 @@ end type
 type IHTMLFontNamesCollection_
 	lpVtbl as IHTMLFontNamesCollectionVtbl ptr
 end type
+
+#define IHTMLFontNamesCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFontNamesCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFontNamesCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFontNamesCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFontNamesCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFontNamesCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFontNamesCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFontNamesCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLFontNamesCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLFontNamesCollection_item(This, index, pBstr) (This)->lpVtbl->item(This, index, pBstr)
 
 declare function IHTMLFontNamesCollection_get_length_Proxy(byval This as IHTMLFontNamesCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLFontNamesCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16581,6 +21724,18 @@ end type
 type IHTMLFontSizesCollection_
 	lpVtbl as IHTMLFontSizesCollectionVtbl ptr
 end type
+
+#define IHTMLFontSizesCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLFontSizesCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLFontSizesCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLFontSizesCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLFontSizesCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLFontSizesCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLFontSizesCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLFontSizesCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLFontSizesCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLFontSizesCollection_get_forFont(This, p) (This)->lpVtbl->get_forFont(This, p)
+#define IHTMLFontSizesCollection_item(This, index, plSize) (This)->lpVtbl->item(This, index, plSize)
 
 declare function IHTMLFontSizesCollection_get_length_Proxy(byval This as IHTMLFontSizesCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLFontSizesCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16634,6 +21789,41 @@ end type
 type IHTMLOptionsHolder_
 	lpVtbl as IHTMLOptionsHolderVtbl ptr
 end type
+
+#define IHTMLOptionsHolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOptionsHolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOptionsHolder_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOptionsHolder_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLOptionsHolder_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLOptionsHolder_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLOptionsHolder_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLOptionsHolder_get_document(This, p) (This)->lpVtbl->get_document(This, p)
+#define IHTMLOptionsHolder_get_fonts(This, p) (This)->lpVtbl->get_fonts(This, p)
+#define IHTMLOptionsHolder_put_execArg(This, v) (This)->lpVtbl->put_execArg(This, v)
+#define IHTMLOptionsHolder_get_execArg(This, p) (This)->lpVtbl->get_execArg(This, p)
+#define IHTMLOptionsHolder_put_errorLine(This, v) (This)->lpVtbl->put_errorLine(This, v)
+#define IHTMLOptionsHolder_get_errorLine(This, p) (This)->lpVtbl->get_errorLine(This, p)
+#define IHTMLOptionsHolder_put_errorCharacter(This, v) (This)->lpVtbl->put_errorCharacter(This, v)
+#define IHTMLOptionsHolder_get_errorCharacter(This, p) (This)->lpVtbl->get_errorCharacter(This, p)
+#define IHTMLOptionsHolder_put_errorCode(This, v) (This)->lpVtbl->put_errorCode(This, v)
+#define IHTMLOptionsHolder_get_errorCode(This, p) (This)->lpVtbl->get_errorCode(This, p)
+#define IHTMLOptionsHolder_put_errorMessage(This, v) (This)->lpVtbl->put_errorMessage(This, v)
+#define IHTMLOptionsHolder_get_errorMessage(This, p) (This)->lpVtbl->get_errorMessage(This, p)
+#define IHTMLOptionsHolder_put_errorDebug(This, v) (This)->lpVtbl->put_errorDebug(This, v)
+#define IHTMLOptionsHolder_get_errorDebug(This, p) (This)->lpVtbl->get_errorDebug(This, p)
+#define IHTMLOptionsHolder_get_unsecuredWindowOfDocument(This, p) (This)->lpVtbl->get_unsecuredWindowOfDocument(This, p)
+#define IHTMLOptionsHolder_put_findText(This, v) (This)->lpVtbl->put_findText(This, v)
+#define IHTMLOptionsHolder_get_findText(This, p) (This)->lpVtbl->get_findText(This, p)
+#define IHTMLOptionsHolder_put_anythingAfterFrameset(This, v) (This)->lpVtbl->put_anythingAfterFrameset(This, v)
+#define IHTMLOptionsHolder_get_anythingAfterFrameset(This, p) (This)->lpVtbl->get_anythingAfterFrameset(This, p)
+#define IHTMLOptionsHolder_sizes(This, fontName, pSizesCollection) (This)->lpVtbl->sizes(This, fontName, pSizesCollection)
+#define IHTMLOptionsHolder_openfiledlg(This, initFile, initDir, filter, title, pathName) (This)->lpVtbl->openfiledlg(This, initFile, initDir, filter, title, pathName)
+#define IHTMLOptionsHolder_savefiledlg(This, initFile, initDir, filter, title, pathName) (This)->lpVtbl->savefiledlg(This, initFile, initDir, filter, title, pathName)
+#define IHTMLOptionsHolder_choosecolordlg(This, initColor, rgbColor) (This)->lpVtbl->choosecolordlg(This, initColor, rgbColor)
+#define IHTMLOptionsHolder_showSecurityInfo(This) (This)->lpVtbl->showSecurityInfo(This)
+#define IHTMLOptionsHolder_isApartmentModel(This, object, fApartment) (This)->lpVtbl->isApartmentModel(This, object, fApartment)
+#define IHTMLOptionsHolder_getCharset(This, fontName, charset) (This)->lpVtbl->getCharset(This, fontName, charset)
+#define IHTMLOptionsHolder_get_secureConnectionInfo(This, p) (This)->lpVtbl->get_secureConnectionInfo(This, p)
 
 declare function IHTMLOptionsHolder_get_document_Proxy(byval This as IHTMLOptionsHolder ptr, byval p as IHTMLDocument2 ptr ptr) as HRESULT
 declare sub IHTMLOptionsHolder_get_document_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16707,6 +21897,13 @@ type HTMLStyleElementEvents2_
 	lpVtbl as HTMLStyleElementEvents2Vtbl ptr
 end type
 
+#define HTMLStyleElementEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLStyleElementEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLStyleElementEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLStyleElementEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLStyleElementEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLStyleElementEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLStyleElementEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __HTMLStyleElementEvents_DISPINTERFACE_DEFINED__
 extern DIID_HTMLStyleElementEvents as const IID
 type HTMLStyleElementEvents as HTMLStyleElementEvents_
@@ -16725,6 +21922,13 @@ type HTMLStyleElementEvents_
 	lpVtbl as HTMLStyleElementEventsVtbl ptr
 end type
 
+#define HTMLStyleElementEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLStyleElementEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLStyleElementEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLStyleElementEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLStyleElementEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLStyleElementEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLStyleElementEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLStyleElement_INTERFACE_DEFINED__
 extern IID_IHTMLStyleElement as const IID
 type IHTMLStyleElement as IHTMLStyleElement_
@@ -16756,6 +21960,28 @@ end type
 type IHTMLStyleElement_
 	lpVtbl as IHTMLStyleElementVtbl ptr
 end type
+
+#define IHTMLStyleElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleElement_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleElement_put_type(This, v) (This)->lpVtbl->put_type(This, v)
+#define IHTMLStyleElement_get_type(This, p) (This)->lpVtbl->get_type(This, p)
+#define IHTMLStyleElement_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLStyleElement_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLStyleElement_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLStyleElement_put_onload(This, v) (This)->lpVtbl->put_onload(This, v)
+#define IHTMLStyleElement_get_onload(This, p) (This)->lpVtbl->get_onload(This, p)
+#define IHTMLStyleElement_put_onerror(This, v) (This)->lpVtbl->put_onerror(This, v)
+#define IHTMLStyleElement_get_onerror(This, p) (This)->lpVtbl->get_onerror(This, p)
+#define IHTMLStyleElement_get_styleSheet(This, p) (This)->lpVtbl->get_styleSheet(This, p)
+#define IHTMLStyleElement_put_disabled(This, v) (This)->lpVtbl->put_disabled(This, v)
+#define IHTMLStyleElement_get_disabled(This, p) (This)->lpVtbl->get_disabled(This, p)
+#define IHTMLStyleElement_put_media(This, v) (This)->lpVtbl->put_media(This, v)
+#define IHTMLStyleElement_get_media(This, p) (This)->lpVtbl->get_media(This, p)
 
 declare function IHTMLStyleElement_put_type_Proxy(byval This as IHTMLStyleElement ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyleElement_put_type_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16803,6 +22029,13 @@ type DispHTMLStyleElement_
 	lpVtbl as DispHTMLStyleElementVtbl ptr
 end type
 
+#define DispHTMLStyleElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLStyleElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLStyleElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLStyleElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLStyleElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLStyleElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLStyleElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLStyleElement as const CLSID
 #define __IHTMLStyleFontFace_INTERFACE_DEFINED__
 extern IID_IHTMLStyleFontFace as const IID
@@ -16824,6 +22057,16 @@ type IHTMLStyleFontFace_
 	lpVtbl as IHTMLStyleFontFaceVtbl ptr
 end type
 
+#define IHTMLStyleFontFace_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLStyleFontFace_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLStyleFontFace_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLStyleFontFace_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLStyleFontFace_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLStyleFontFace_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLStyleFontFace_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLStyleFontFace_put_fontsrc(This, v) (This)->lpVtbl->put_fontsrc(This, v)
+#define IHTMLStyleFontFace_get_fontsrc(This, p) (This)->lpVtbl->get_fontsrc(This, p)
+
 declare function IHTMLStyleFontFace_put_fontsrc_Proxy(byval This as IHTMLStyleFontFace ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLStyleFontFace_put_fontsrc_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLStyleFontFace_get_fontsrc_Proxy(byval This as IHTMLStyleFontFace ptr, byval p as BSTR ptr) as HRESULT
@@ -16844,6 +22087,12 @@ end type
 type ICSSFilterSite_
 	lpVtbl as ICSSFilterSiteVtbl ptr
 end type
+
+#define ICSSFilterSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICSSFilterSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICSSFilterSite_Release(This) (This)->lpVtbl->Release(This)
+#define ICSSFilterSite_GetElement(This, Element) (This)->lpVtbl->GetElement(This, Element)
+#define ICSSFilterSite_FireOnFilterChangeEvent(This) (This)->lpVtbl->FireOnFilterChangeEvent(This)
 
 declare function ICSSFilterSite_GetElement_Proxy(byval This as ICSSFilterSite ptr, byval Element as IHTMLElement ptr ptr) as HRESULT
 declare sub ICSSFilterSite_GetElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16884,6 +22133,31 @@ end type
 type IMarkupPointer_
 	lpVtbl as IMarkupPointerVtbl ptr
 end type
+
+#define IMarkupPointer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupPointer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupPointer_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupPointer_OwningDoc(This, ppDoc) (This)->lpVtbl->OwningDoc(This, ppDoc)
+#define IMarkupPointer_Gravity(This, pGravity) (This)->lpVtbl->Gravity(This, pGravity)
+#define IMarkupPointer_SetGravity(This, Gravity) (This)->lpVtbl->SetGravity(This, Gravity)
+#define IMarkupPointer_Cling(This, pfCling) (This)->lpVtbl->Cling(This, pfCling)
+#define IMarkupPointer_SetCling(This, fCLing) (This)->lpVtbl->SetCling(This, fCLing)
+#define IMarkupPointer_Unposition(This) (This)->lpVtbl->Unposition(This)
+#define IMarkupPointer_IsPositioned(This, pfPositioned) (This)->lpVtbl->IsPositioned(This, pfPositioned)
+#define IMarkupPointer_GetContainer(This, ppContainer) (This)->lpVtbl->GetContainer(This, ppContainer)
+#define IMarkupPointer_MoveAdjacentToElement(This, pElement, eAdj) (This)->lpVtbl->MoveAdjacentToElement(This, pElement, eAdj)
+#define IMarkupPointer_MoveToPointer(This, pPointer) (This)->lpVtbl->MoveToPointer(This, pPointer)
+#define IMarkupPointer_MoveToContainer(This, pContainer, fAtStart) (This)->lpVtbl->MoveToContainer(This, pContainer, fAtStart)
+#define IMarkupPointer_Left(This, fMove, pContext, ppElement, pcch, pchText) (This)->lpVtbl->Left(This, fMove, pContext, ppElement, pcch, pchText)
+#define IMarkupPointer_Right(This, fMove, pContext, ppElement, pcch, pchText) (This)->lpVtbl->Right(This, fMove, pContext, ppElement, pcch, pchText)
+#define IMarkupPointer_CurrentScope(This, ppElemCurrent) (This)->lpVtbl->CurrentScope(This, ppElemCurrent)
+#define IMarkupPointer_IsLeftOf(This, pPointerThat, pfResult) (This)->lpVtbl->IsLeftOf(This, pPointerThat, pfResult)
+#define IMarkupPointer_IsLeftOfOrEqualTo(This, pPointerThat, pfResult) (This)->lpVtbl->IsLeftOfOrEqualTo(This, pPointerThat, pfResult)
+#define IMarkupPointer_IsRightOf(This, pPointerThat, pfResult) (This)->lpVtbl->IsRightOf(This, pPointerThat, pfResult)
+#define IMarkupPointer_IsRightOfOrEqualTo(This, pPointerThat, pfResult) (This)->lpVtbl->IsRightOfOrEqualTo(This, pPointerThat, pfResult)
+#define IMarkupPointer_IsEqualTo(This, pPointerThat, pfAreEqual) (This)->lpVtbl->IsEqualTo(This, pPointerThat, pfAreEqual)
+#define IMarkupPointer_MoveUnit(This, muAction) (This)->lpVtbl->MoveUnit(This, muAction)
+#define IMarkupPointer_FindText(This, pchFindText, dwFlags, pIEndMatch, pIEndSearch) (This)->lpVtbl->FindText(This, pchFindText, dwFlags, pIEndMatch, pIEndSearch)
 
 declare function IMarkupPointer_OwningDoc_Proxy(byval This as IMarkupPointer ptr, byval ppDoc as IHTMLDocument2 ptr ptr) as HRESULT
 declare sub IMarkupPointer_OwningDoc_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16941,10 +22215,15 @@ type IMarkupContainer_
 	lpVtbl as IMarkupContainerVtbl ptr
 end type
 
+#define IMarkupContainer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupContainer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupContainer_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupContainer_OwningDoc(This, ppDoc) (This)->lpVtbl->OwningDoc(This, ppDoc)
 declare function IMarkupContainer_OwningDoc_Proxy(byval This as IMarkupContainer ptr, byval ppDoc as IHTMLDocument2 ptr ptr) as HRESULT
 declare sub IMarkupContainer_OwningDoc_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IMarkupContainer2_INTERFACE_DEFINED__
 extern IID_IMarkupContainer2 as const IID
+
 type IMarkupContainer2 as IMarkupContainer2_
 type IHTMLChangeSink as IHTMLChangeSink_
 type IHTMLChangeLog as IHTMLChangeLog_
@@ -16965,6 +22244,17 @@ end type
 type IMarkupContainer2_
 	lpVtbl as IMarkupContainer2Vtbl ptr
 end type
+
+#define IMarkupContainer2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupContainer2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupContainer2_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupContainer2_OwningDoc(This, ppDoc) (This)->lpVtbl->OwningDoc(This, ppDoc)
+#define IMarkupContainer2_CreateChangeLog(This, pChangeSink, ppChangeLog, fForward, fBackward) (This)->lpVtbl->CreateChangeLog(This, pChangeSink, ppChangeLog, fForward, fBackward)
+#define IMarkupContainer2_RegisterForDirtyRange(This, pChangeSink, pdwCookie) (This)->lpVtbl->RegisterForDirtyRange(This, pChangeSink, pdwCookie)
+#define IMarkupContainer2_UnRegisterForDirtyRange(This, dwCookie) (This)->lpVtbl->UnRegisterForDirtyRange(This, dwCookie)
+#define IMarkupContainer2_GetAndClearDirtyRange(This, dwCookie, pIPointerBegin, pIPointerEnd) (This)->lpVtbl->GetAndClearDirtyRange(This, dwCookie, pIPointerBegin, pIPointerEnd)
+#define IMarkupContainer2_GetVersionNumber(This) (This)->lpVtbl->GetVersionNumber(This)
+#define IMarkupContainer2_GetMasterElement(This, ppElementMaster) (This)->lpVtbl->GetMasterElement(This, ppElementMaster)
 
 declare function IMarkupContainer2_CreateChangeLog_Proxy(byval This as IMarkupContainer2 ptr, byval pChangeSink as IHTMLChangeSink ptr, byval ppChangeLog as IHTMLChangeLog ptr ptr, byval fForward as WINBOOL, byval fBackward as WINBOOL) as HRESULT
 declare sub IMarkupContainer2_CreateChangeLog_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -16992,6 +22282,10 @@ type IHTMLChangeLog_
 	lpVtbl as IHTMLChangeLogVtbl ptr
 end type
 
+#define IHTMLChangeLog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLChangeLog_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLChangeLog_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLChangeLog_GetNextChange(This, pbBuffer, nBufferSize, pnRecordLength) (This)->lpVtbl->GetNextChange(This, pbBuffer, nBufferSize, pnRecordLength)
 declare function IHTMLChangeLog_GetNextChange_Proxy(byval This as IHTMLChangeLog ptr, byval pbBuffer as UBYTE ptr, byval nBufferSize as long, byval pnRecordLength as long ptr) as HRESULT
 declare sub IHTMLChangeLog_GetNextChange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLChangeSink_INTERFACE_DEFINED__
@@ -17008,6 +22302,10 @@ type IHTMLChangeSink_
 	lpVtbl as IHTMLChangeSinkVtbl ptr
 end type
 
+#define IHTMLChangeSink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLChangeSink_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLChangeSink_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLChangeSink_Notify(This) (This)->lpVtbl->Notify(This)
 declare function IHTMLChangeSink_Notify_Proxy(byval This as IHTMLChangeSink ptr) as HRESULT
 declare sub IHTMLChangeSink_Notify_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __ISegmentList_INTERFACE_DEFINED__
@@ -17027,6 +22325,13 @@ end type
 type ISegmentList_
 	lpVtbl as ISegmentListVtbl ptr
 end type
+
+#define ISegmentList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISegmentList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISegmentList_Release(This) (This)->lpVtbl->Release(This)
+#define ISegmentList_CreateIterator(This, ppIIter) (This)->lpVtbl->CreateIterator(This, ppIIter)
+#define ISegmentList_GetType(This, peType) (This)->lpVtbl->GetType(This, peType)
+#define ISegmentList_IsEmpty(This, pfEmpty) (This)->lpVtbl->IsEmpty(This, pfEmpty)
 
 declare function ISegmentList_CreateIterator_Proxy(byval This as ISegmentList ptr, byval ppIIter as ISegmentListIterator ptr ptr) as HRESULT
 declare sub ISegmentList_CreateIterator_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17051,6 +22356,14 @@ end type
 type ISegmentListIterator_
 	lpVtbl as ISegmentListIteratorVtbl ptr
 end type
+
+#define ISegmentListIterator_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISegmentListIterator_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISegmentListIterator_Release(This) (This)->lpVtbl->Release(This)
+#define ISegmentListIterator_Current(This, ppISegment) (This)->lpVtbl->Current(This, ppISegment)
+#define ISegmentListIterator_First(This) (This)->lpVtbl->First(This)
+#define ISegmentListIterator_IsDone(This) (This)->lpVtbl->IsDone(This)
+#define ISegmentListIterator_Advance(This) (This)->lpVtbl->Advance(This)
 
 declare function ISegmentListIterator_Current_Proxy(byval This as ISegmentListIterator ptr, byval ppISegment as ISegment ptr ptr) as HRESULT
 declare sub ISegmentListIterator_Current_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17086,6 +22399,22 @@ end type
 type IHTMLCaret_
 	lpVtbl as IHTMLCaretVtbl ptr
 end type
+
+#define IHTMLCaret_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLCaret_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLCaret_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLCaret_MoveCaretToPointer(This, pDispPointer, fScrollIntoView, eDir) (This)->lpVtbl->MoveCaretToPointer(This, pDispPointer, fScrollIntoView, eDir)
+#define IHTMLCaret_MoveCaretToPointerEx(This, pDispPointer, fVisible, fScrollIntoView, eDir) (This)->lpVtbl->MoveCaretToPointerEx(This, pDispPointer, fVisible, fScrollIntoView, eDir)
+#define IHTMLCaret_MoveMarkupPointerToCaret(This, pIMarkupPointer) (This)->lpVtbl->MoveMarkupPointerToCaret(This, pIMarkupPointer)
+#define IHTMLCaret_MoveDisplayPointerToCaret(This, pDispPointer) (This)->lpVtbl->MoveDisplayPointerToCaret(This, pDispPointer)
+#define IHTMLCaret_IsVisible(This, pIsVisible) (This)->lpVtbl->IsVisible(This, pIsVisible)
+#define IHTMLCaret_Show(This, fScrollIntoView) (This)->lpVtbl->Show(This, fScrollIntoView)
+#define IHTMLCaret_Hide(This) (This)->lpVtbl->Hide(This)
+#define IHTMLCaret_InsertText(This, pText, lLen) (This)->lpVtbl->InsertText(This, pText, lLen)
+#define IHTMLCaret_ScrollIntoView(This) (This)->lpVtbl->ScrollIntoView(This)
+#define IHTMLCaret_GetLocation(This, pPoint, fTranslate) (This)->lpVtbl->GetLocation(This, pPoint, fTranslate)
+#define IHTMLCaret_GetCaretDirection(This, peDir) (This)->lpVtbl->GetCaretDirection(This, peDir)
+#define IHTMLCaret_SetCaretDirection(This, eDir) (This)->lpVtbl->SetCaretDirection(This, eDir)
 
 declare function IHTMLCaret_MoveCaretToPointer_Proxy(byval This as IHTMLCaret ptr, byval pDispPointer as IDisplayPointer ptr, byval fScrollIntoView as WINBOOL, byval eDir as CARET_DIRECTION) as HRESULT
 declare sub IHTMLCaret_MoveCaretToPointer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17125,6 +22454,10 @@ type ISegment_
 	lpVtbl as ISegmentVtbl ptr
 end type
 
+#define ISegment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISegment_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISegment_Release(This) (This)->lpVtbl->Release(This)
+#define ISegment_GetPointers(This, pIStart, pIEnd) (This)->lpVtbl->GetPointers(This, pIStart, pIEnd)
 declare function ISegment_GetPointers_Proxy(byval This as ISegment ptr, byval pIStart as IMarkupPointer ptr, byval pIEnd as IMarkupPointer ptr) as HRESULT
 declare sub ISegment_GetPointers_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementSegment_INTERFACE_DEFINED__
@@ -17144,6 +22477,14 @@ end type
 type IElementSegment_
 	lpVtbl as IElementSegmentVtbl ptr
 end type
+
+#define IElementSegment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementSegment_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementSegment_Release(This) (This)->lpVtbl->Release(This)
+#define IElementSegment_GetPointers(This, pIStart, pIEnd) (This)->lpVtbl->GetPointers(This, pIStart, pIEnd)
+#define IElementSegment_GetElement(This, ppIElement) (This)->lpVtbl->GetElement(This, ppIElement)
+#define IElementSegment_SetPrimary(This, fPrimary) (This)->lpVtbl->SetPrimary(This, fPrimary)
+#define IElementSegment_IsPrimary(This, pfPrimary) (This)->lpVtbl->IsPrimary(This, pfPrimary)
 
 declare function IElementSegment_GetElement_Proxy(byval This as IElementSegment ptr, byval ppIElement as IHTMLElement ptr ptr) as HRESULT
 declare sub IElementSegment_GetElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17166,6 +22507,10 @@ type IHighlightSegment_
 	lpVtbl as IHighlightSegmentVtbl ptr
 end type
 
+#define IHighlightSegment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHighlightSegment_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHighlightSegment_Release(This) (This)->lpVtbl->Release(This)
+#define IHighlightSegment_GetPointers(This, pIStart, pIEnd) (This)->lpVtbl->GetPointers(This, pIStart, pIEnd)
 #define __IHighlightRenderingServices_INTERFACE_DEFINED__
 extern IID_IHighlightRenderingServices as const IID
 type IHighlightRenderingServices as IHighlightRenderingServices_
@@ -17182,6 +22527,13 @@ end type
 type IHighlightRenderingServices_
 	lpVtbl as IHighlightRenderingServicesVtbl ptr
 end type
+
+#define IHighlightRenderingServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHighlightRenderingServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHighlightRenderingServices_Release(This) (This)->lpVtbl->Release(This)
+#define IHighlightRenderingServices_AddSegment(This, pDispPointerStart, pDispPointerEnd, pIRenderStyle, ppISegment) (This)->lpVtbl->AddSegment(This, pDispPointerStart, pDispPointerEnd, pIRenderStyle, ppISegment)
+#define IHighlightRenderingServices_MoveSegmentToPointers(This, pISegment, pDispPointerStart, pDispPointerEnd) (This)->lpVtbl->MoveSegmentToPointers(This, pISegment, pDispPointerStart, pDispPointerEnd)
+#define IHighlightRenderingServices_RemoveSegment(This, pISegment) (This)->lpVtbl->RemoveSegment(This, pISegment)
 
 declare function IHighlightRenderingServices_AddSegment_Proxy(byval This as IHighlightRenderingServices ptr, byval pDispPointerStart as IDisplayPointer ptr, byval pDispPointerEnd as IDisplayPointer ptr, byval pIRenderStyle as IHTMLRenderStyle ptr, byval ppISegment as IHighlightSegment ptr ptr) as HRESULT
 declare sub IHighlightRenderingServices_AddSegment_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17207,6 +22559,15 @@ end type
 type ILineInfo_
 	lpVtbl as ILineInfoVtbl ptr
 end type
+
+#define ILineInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ILineInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ILineInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ILineInfo_get_x(This, p) (This)->lpVtbl->get_x(This, p)
+#define ILineInfo_get_baseLine(This, p) (This)->lpVtbl->get_baseLine(This, p)
+#define ILineInfo_get_textDescent(This, p) (This)->lpVtbl->get_textDescent(This, p)
+#define ILineInfo_get_textHeight(This, p) (This)->lpVtbl->get_textHeight(This, p)
+#define ILineInfo_get_lineDirection(This, p) (This)->lpVtbl->get_lineDirection(This, p)
 
 declare function ILineInfo_get_x_Proxy(byval This as ILineInfo ptr, byval p as long ptr) as HRESULT
 declare sub ILineInfo_get_x_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17249,6 +22610,29 @@ end type
 type IDisplayPointer_
 	lpVtbl as IDisplayPointerVtbl ptr
 end type
+
+#define IDisplayPointer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDisplayPointer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDisplayPointer_Release(This) (This)->lpVtbl->Release(This)
+#define IDisplayPointer_MoveToPoint(This, ptPoint, eCoordSystem, pElementContext, dwHitTestOptions, pdwHitTestResults) (This)->lpVtbl->MoveToPoint(This, ptPoint, eCoordSystem, pElementContext, dwHitTestOptions, pdwHitTestResults)
+#define IDisplayPointer_MoveUnit(This, eMoveUnit, lXPos) (This)->lpVtbl->MoveUnit(This, eMoveUnit, lXPos)
+#define IDisplayPointer_PositionMarkupPointer(This, pMarkupPointer) (This)->lpVtbl->PositionMarkupPointer(This, pMarkupPointer)
+#define IDisplayPointer_MoveToPointer(This, pDispPointer) (This)->lpVtbl->MoveToPointer(This, pDispPointer)
+#define IDisplayPointer_SetPointerGravity(This, eGravity) (This)->lpVtbl->SetPointerGravity(This, eGravity)
+#define IDisplayPointer_GetPointerGravity(This, peGravity) (This)->lpVtbl->GetPointerGravity(This, peGravity)
+#define IDisplayPointer_SetDisplayGravity(This, eGravity) (This)->lpVtbl->SetDisplayGravity(This, eGravity)
+#define IDisplayPointer_GetDisplayGravity(This, peGravity) (This)->lpVtbl->GetDisplayGravity(This, peGravity)
+#define IDisplayPointer_IsPositioned(This, pfPositioned) (This)->lpVtbl->IsPositioned(This, pfPositioned)
+#define IDisplayPointer_Unposition(This) (This)->lpVtbl->Unposition(This)
+#define IDisplayPointer_IsEqualTo(This, pDispPointer, pfIsEqual) (This)->lpVtbl->IsEqualTo(This, pDispPointer, pfIsEqual)
+#define IDisplayPointer_IsLeftOf(This, pDispPointer, pfIsLeftOf) (This)->lpVtbl->IsLeftOf(This, pDispPointer, pfIsLeftOf)
+#define IDisplayPointer_IsRightOf(This, pDispPointer, pfIsRightOf) (This)->lpVtbl->IsRightOf(This, pDispPointer, pfIsRightOf)
+#define IDisplayPointer_IsAtBOL(This, pfBOL) (This)->lpVtbl->IsAtBOL(This, pfBOL)
+#define IDisplayPointer_MoveToMarkupPointer(This, pPointer, pDispLineContext) (This)->lpVtbl->MoveToMarkupPointer(This, pPointer, pDispLineContext)
+#define IDisplayPointer_ScrollIntoView(This) (This)->lpVtbl->ScrollIntoView(This)
+#define IDisplayPointer_GetLineInfo(This, ppLineInfo) (This)->lpVtbl->GetLineInfo(This, ppLineInfo)
+#define IDisplayPointer_GetFlowElement(This, ppLayoutElement) (This)->lpVtbl->GetFlowElement(This, ppLayoutElement)
+#define IDisplayPointer_QueryBreaks(This, pdwBreaks) (This)->lpVtbl->QueryBreaks(This, pdwBreaks)
 
 declare function IDisplayPointer_MoveToPoint_Proxy(byval This as IDisplayPointer ptr, byval ptPoint as POINT, byval eCoordSystem as COORD_SYSTEM, byval pElementContext as IHTMLElement ptr, byval dwHitTestOptions as DWORD, byval pdwHitTestResults as DWORD ptr) as HRESULT
 declare sub IDisplayPointer_MoveToPoint_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17310,6 +22694,17 @@ type IDisplayServices_
 	lpVtbl as IDisplayServicesVtbl ptr
 end type
 
+#define IDisplayServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDisplayServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDisplayServices_Release(This) (This)->lpVtbl->Release(This)
+#define IDisplayServices_CreateDisplayPointer(This, ppDispPointer) (This)->lpVtbl->CreateDisplayPointer(This, ppDispPointer)
+#define IDisplayServices_TransformRect(This, pRect, eSource, eDestination, pIElement) (This)->lpVtbl->TransformRect(This, pRect, eSource, eDestination, pIElement)
+#define IDisplayServices_TransformPoint(This, pPoint, eSource, eDestination, pIElement) (This)->lpVtbl->TransformPoint(This, pPoint, eSource, eDestination, pIElement)
+#define IDisplayServices_GetCaret(This, ppCaret) (This)->lpVtbl->GetCaret(This, ppCaret)
+#define IDisplayServices_GetComputedStyle(This, pPointer, ppComputedStyle) (This)->lpVtbl->GetComputedStyle(This, pPointer, ppComputedStyle)
+#define IDisplayServices_ScrollRectIntoView(This, pIElement, rect) (This)->lpVtbl->ScrollRectIntoView(This, pIElement, rect)
+#define IDisplayServices_HasFlowLayout(This, pIElement, pfHasFlowLayout) (This)->lpVtbl->HasFlowLayout(This, pIElement, pfHasFlowLayout)
+
 declare function IDisplayServices_CreateDisplayPointer_Proxy(byval This as IDisplayServices ptr, byval ppDispPointer as IDisplayPointer ptr ptr) as HRESULT
 declare sub IDisplayServices_CreateDisplayPointer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDisplayServices_TransformRect_Proxy(byval This as IDisplayServices ptr, byval pRect as RECT ptr, byval eSource as COORD_SYSTEM, byval eDestination as COORD_SYSTEM, byval pIElement as IHTMLElement ptr) as HRESULT
@@ -17346,6 +22741,18 @@ type IHtmlDlgSafeHelper_
 	lpVtbl as IHtmlDlgSafeHelperVtbl ptr
 end type
 
+#define IHtmlDlgSafeHelper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHtmlDlgSafeHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHtmlDlgSafeHelper_Release(This) (This)->lpVtbl->Release(This)
+#define IHtmlDlgSafeHelper_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHtmlDlgSafeHelper_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHtmlDlgSafeHelper_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHtmlDlgSafeHelper_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHtmlDlgSafeHelper_choosecolordlg(This, initColor, rgbColor) (This)->lpVtbl->choosecolordlg(This, initColor, rgbColor)
+#define IHtmlDlgSafeHelper_getCharset(This, fontName, charset) (This)->lpVtbl->getCharset(This, fontName, charset)
+#define IHtmlDlgSafeHelper_get_Fonts(This, p) (This)->lpVtbl->get_Fonts(This, p)
+#define IHtmlDlgSafeHelper_get_BlockFormats(This, p) (This)->lpVtbl->get_BlockFormats(This, p)
+
 declare function IHtmlDlgSafeHelper_choosecolordlg_Proxy(byval This as IHtmlDlgSafeHelper ptr, byval initColor as VARIANT, byval rgbColor as VARIANT ptr) as HRESULT
 declare sub IHtmlDlgSafeHelper_choosecolordlg_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHtmlDlgSafeHelper_getCharset_Proxy(byval This as IHtmlDlgSafeHelper ptr, byval fontName as BSTR, byval charset as VARIANT ptr) as HRESULT
@@ -17375,6 +22782,17 @@ type IBlockFormats_
 	lpVtbl as IBlockFormatsVtbl ptr
 end type
 
+#define IBlockFormats_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBlockFormats_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBlockFormats_Release(This) (This)->lpVtbl->Release(This)
+#define IBlockFormats_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IBlockFormats_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IBlockFormats_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IBlockFormats_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IBlockFormats_get__NewEnum(This, p) (This)->lpVtbl->get__NewEnum(This, p)
+#define IBlockFormats_get_Count(This, p) (This)->lpVtbl->get_Count(This, p)
+#define IBlockFormats_Item(This, pvarIndex, pbstrBlockFormat) (This)->lpVtbl->Item(This, pvarIndex, pbstrBlockFormat)
+
 declare function IBlockFormats_get__NewEnum_Proxy(byval This as IBlockFormats ptr, byval p as IUnknown ptr ptr) as HRESULT
 declare sub IBlockFormats_get__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBlockFormats_get_Count_Proxy(byval This as IBlockFormats ptr, byval p as long ptr) as HRESULT
@@ -17402,6 +22820,17 @@ type IFontNames_
 	lpVtbl as IFontNamesVtbl ptr
 end type
 
+#define IFontNames_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFontNames_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFontNames_Release(This) (This)->lpVtbl->Release(This)
+#define IFontNames_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IFontNames_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IFontNames_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IFontNames_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IFontNames_get__NewEnum(This, p) (This)->lpVtbl->get__NewEnum(This, p)
+#define IFontNames_get_Count(This, p) (This)->lpVtbl->get_Count(This, p)
+#define IFontNames_Item(This, pvarIndex, pbstrFontName) (This)->lpVtbl->Item(This, pvarIndex, pbstrFontName)
+
 declare function IFontNames_get__NewEnum_Proxy(byval This as IFontNames ptr, byval p as IUnknown ptr ptr) as HRESULT
 declare sub IFontNames_get__NewEnum_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IFontNames_get_Count_Proxy(byval This as IFontNames ptr, byval p as long ptr) as HRESULT
@@ -17424,6 +22853,12 @@ type ICSSFilter_
 	lpVtbl as ICSSFilterVtbl ptr
 end type
 
+#define ICSSFilter_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICSSFilter_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICSSFilter_Release(This) (This)->lpVtbl->Release(This)
+#define ICSSFilter_SetSite(This, pSink) (This)->lpVtbl->SetSite(This, pSink)
+#define ICSSFilter_OnAmbientPropertyChange(This, dispid) (This)->lpVtbl->OnAmbientPropertyChange(This, dispid)
+
 declare function ICSSFilter_SetSite_Proxy(byval This as ICSSFilter ptr, byval pSink as ICSSFilterSite ptr) as HRESULT
 declare sub ICSSFilter_SetSite_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ICSSFilter_OnAmbientPropertyChange_Proxy(byval This as ICSSFilter ptr, byval dispid as LONG) as HRESULT
@@ -17443,6 +22878,10 @@ type ISecureUrlHost_
 	lpVtbl as ISecureUrlHostVtbl ptr
 end type
 
+#define ISecureUrlHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISecureUrlHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISecureUrlHost_Release(This) (This)->lpVtbl->Release(This)
+#define ISecureUrlHost_ValidateSecureUrl(This, pfAllow, pchUrlInQuestion, dwFlags) (This)->lpVtbl->ValidateSecureUrl(This, pfAllow, pchUrlInQuestion, dwFlags)
 declare function ISecureUrlHost_ValidateSecureUrl_Proxy(byval This as ISecureUrlHost ptr, byval pfAllow as WINBOOL ptr, byval pchUrlInQuestion as wstring ptr, byval dwFlags as DWORD) as HRESULT
 declare sub ISecureUrlHost_ValidateSecureUrl_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IMarkupServices_INTERFACE_DEFINED__
@@ -17478,6 +22917,30 @@ end type
 type IMarkupServices_
 	lpVtbl as IMarkupServicesVtbl ptr
 end type
+
+#define IMarkupServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupServices_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupServices_CreateMarkupPointer(This, ppPointer) (This)->lpVtbl->CreateMarkupPointer(This, ppPointer)
+#define IMarkupServices_CreateMarkupContainer(This, ppMarkupContainer) (This)->lpVtbl->CreateMarkupContainer(This, ppMarkupContainer)
+#define IMarkupServices_CreateElement(This, tagID, pchAttributes, ppElement) (This)->lpVtbl->CreateElement(This, tagID, pchAttributes, ppElement)
+#define IMarkupServices_CloneElement(This, pElemCloneThis, ppElementTheClone) (This)->lpVtbl->CloneElement(This, pElemCloneThis, ppElementTheClone)
+#define IMarkupServices_InsertElement(This, pElementInsert, pPointerStart, pPointerFinish) (This)->lpVtbl->InsertElement(This, pElementInsert, pPointerStart, pPointerFinish)
+#define IMarkupServices_RemoveElement(This, pElementRemove) (This)->lpVtbl->RemoveElement(This, pElementRemove)
+#define IMarkupServices_Remove(This, pPointerStart, pPointerFinish) (This)->lpVtbl->Remove(This, pPointerStart, pPointerFinish)
+#define IMarkupServices_Copy(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget) (This)->lpVtbl->Copy(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget)
+#define IMarkupServices_Move(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget) (This)->lpVtbl->Move(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget)
+#define IMarkupServices_InsertText(This, pchText, cch, pPointerTarget) (This)->lpVtbl->InsertText(This, pchText, cch, pPointerTarget)
+#define IMarkupServices_ParseString(This, pchHTML, dwFlags, ppContainerResult, ppPointerStart, ppPointerFinish) (This)->lpVtbl->ParseString(This, pchHTML, dwFlags, ppContainerResult, ppPointerStart, ppPointerFinish)
+#define IMarkupServices_ParseGlobal(This, hglobalHTML, dwFlags, ppContainerResult, pPointerStart, pPointerFinish) (This)->lpVtbl->ParseGlobal(This, hglobalHTML, dwFlags, ppContainerResult, pPointerStart, pPointerFinish)
+#define IMarkupServices_IsScopedElement(This, pElement, pfScoped) (This)->lpVtbl->IsScopedElement(This, pElement, pfScoped)
+#define IMarkupServices_GetElementTagId(This, pElement, ptagId) (This)->lpVtbl->GetElementTagId(This, pElement, ptagId)
+#define IMarkupServices_GetTagIDForName(This, bstrName, ptagId) (This)->lpVtbl->GetTagIDForName(This, bstrName, ptagId)
+#define IMarkupServices_GetNameForTagID(This, tagId, pbstrName) (This)->lpVtbl->GetNameForTagID(This, tagId, pbstrName)
+#define IMarkupServices_MovePointersToRange(This, pIRange, pPointerStart, pPointerFinish) (This)->lpVtbl->MovePointersToRange(This, pIRange, pPointerStart, pPointerFinish)
+#define IMarkupServices_MoveRangeToPointers(This, pPointerStart, pPointerFinish, pIRange) (This)->lpVtbl->MoveRangeToPointers(This, pPointerStart, pPointerFinish, pIRange)
+#define IMarkupServices_BeginUndoUnit(This, pchTitle) (This)->lpVtbl->BeginUndoUnit(This, pchTitle)
+#define IMarkupServices_EndUndoUnit(This) (This)->lpVtbl->EndUndoUnit(This)
 
 declare function IMarkupServices_CreateMarkupPointer_Proxy(byval This as IMarkupServices ptr, byval ppPointer as IMarkupPointer ptr ptr) as HRESULT
 declare sub IMarkupServices_CreateMarkupPointer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17556,6 +23019,33 @@ type IMarkupServices2_
 	lpVtbl as IMarkupServices2Vtbl ptr
 end type
 
+#define IMarkupServices2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupServices2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupServices2_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupServices2_CreateMarkupPointer(This, ppPointer) (This)->lpVtbl->CreateMarkupPointer(This, ppPointer)
+#define IMarkupServices2_CreateMarkupContainer(This, ppMarkupContainer) (This)->lpVtbl->CreateMarkupContainer(This, ppMarkupContainer)
+#define IMarkupServices2_CreateElement(This, tagID, pchAttributes, ppElement) (This)->lpVtbl->CreateElement(This, tagID, pchAttributes, ppElement)
+#define IMarkupServices2_CloneElement(This, pElemCloneThis, ppElementTheClone) (This)->lpVtbl->CloneElement(This, pElemCloneThis, ppElementTheClone)
+#define IMarkupServices2_InsertElement(This, pElementInsert, pPointerStart, pPointerFinish) (This)->lpVtbl->InsertElement(This, pElementInsert, pPointerStart, pPointerFinish)
+#define IMarkupServices2_RemoveElement(This, pElementRemove) (This)->lpVtbl->RemoveElement(This, pElementRemove)
+#define IMarkupServices2_Remove(This, pPointerStart, pPointerFinish) (This)->lpVtbl->Remove(This, pPointerStart, pPointerFinish)
+#define IMarkupServices2_Copy(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget) (This)->lpVtbl->Copy(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget)
+#define IMarkupServices2_Move(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget) (This)->lpVtbl->Move(This, pPointerSourceStart, pPointerSourceFinish, pPointerTarget)
+#define IMarkupServices2_InsertText(This, pchText, cch, pPointerTarget) (This)->lpVtbl->InsertText(This, pchText, cch, pPointerTarget)
+#define IMarkupServices2_ParseString(This, pchHTML, dwFlags, ppContainerResult, ppPointerStart, ppPointerFinish) (This)->lpVtbl->ParseString(This, pchHTML, dwFlags, ppContainerResult, ppPointerStart, ppPointerFinish)
+#define IMarkupServices2_ParseGlobal(This, hglobalHTML, dwFlags, ppContainerResult, pPointerStart, pPointerFinish) (This)->lpVtbl->ParseGlobal(This, hglobalHTML, dwFlags, ppContainerResult, pPointerStart, pPointerFinish)
+#define IMarkupServices2_IsScopedElement(This, pElement, pfScoped) (This)->lpVtbl->IsScopedElement(This, pElement, pfScoped)
+#define IMarkupServices2_GetElementTagId(This, pElement, ptagId) (This)->lpVtbl->GetElementTagId(This, pElement, ptagId)
+#define IMarkupServices2_GetTagIDForName(This, bstrName, ptagId) (This)->lpVtbl->GetTagIDForName(This, bstrName, ptagId)
+#define IMarkupServices2_GetNameForTagID(This, tagId, pbstrName) (This)->lpVtbl->GetNameForTagID(This, tagId, pbstrName)
+#define IMarkupServices2_MovePointersToRange(This, pIRange, pPointerStart, pPointerFinish) (This)->lpVtbl->MovePointersToRange(This, pIRange, pPointerStart, pPointerFinish)
+#define IMarkupServices2_MoveRangeToPointers(This, pPointerStart, pPointerFinish, pIRange) (This)->lpVtbl->MoveRangeToPointers(This, pPointerStart, pPointerFinish, pIRange)
+#define IMarkupServices2_BeginUndoUnit(This, pchTitle) (This)->lpVtbl->BeginUndoUnit(This, pchTitle)
+#define IMarkupServices2_EndUndoUnit(This) (This)->lpVtbl->EndUndoUnit(This)
+#define IMarkupServices2_ParseGlobalEx(This, hglobalHTML, dwFlags, pContext, ppContainerResult, pPointerStart, pPointerFinish) (This)->lpVtbl->ParseGlobalEx(This, hglobalHTML, dwFlags, pContext, ppContainerResult, pPointerStart, pPointerFinish)
+#define IMarkupServices2_ValidateElements(This, pPointerStart, pPointerFinish, pPointerTarget, pPointerStatus, ppElemFailBottom, ppElemFailTop) (This)->lpVtbl->ValidateElements(This, pPointerStart, pPointerFinish, pPointerTarget, pPointerStatus, ppElemFailBottom, ppElemFailTop)
+#define IMarkupServices2_SaveSegmentsToClipboard(This, pSegmentList, dwFlags) (This)->lpVtbl->SaveSegmentsToClipboard(This, pSegmentList, dwFlags)
+
 declare function IMarkupServices2_ParseGlobalEx_Proxy(byval This as IMarkupServices2 ptr, byval hglobalHTML as HGLOBAL, byval dwFlags as DWORD, byval pContext as IMarkupContainer ptr, byval ppContainerResult as IMarkupContainer ptr ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupServices2_ParseGlobalEx_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices2_ValidateElements_Proxy(byval This as IMarkupServices2 ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr, byval pPointerStatus as IMarkupPointer ptr, byval ppElemFailBottom as IHTMLElement ptr ptr, byval ppElemFailTop as IHTMLElement ptr ptr) as HRESULT
@@ -17577,6 +23067,10 @@ type IHTMLChangePlayback_
 	lpVtbl as IHTMLChangePlaybackVtbl ptr
 end type
 
+#define IHTMLChangePlayback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLChangePlayback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLChangePlayback_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLChangePlayback_ExecChange(This, pbRecord, fForward) (This)->lpVtbl->ExecChange(This, pbRecord, fForward)
 declare function IHTMLChangePlayback_ExecChange_Proxy(byval This as IHTMLChangePlayback ptr, byval pbRecord as UBYTE ptr, byval fForward as WINBOOL) as HRESULT
 declare sub IHTMLChangePlayback_ExecChange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IMarkupPointer2_INTERFACE_DEFINED__
@@ -17620,6 +23114,37 @@ type IMarkupPointer2_
 	lpVtbl as IMarkupPointer2Vtbl ptr
 end type
 
+#define IMarkupPointer2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupPointer2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupPointer2_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupPointer2_OwningDoc(This, ppDoc) (This)->lpVtbl->OwningDoc(This, ppDoc)
+#define IMarkupPointer2_Gravity(This, pGravity) (This)->lpVtbl->Gravity(This, pGravity)
+#define IMarkupPointer2_SetGravity(This, Gravity) (This)->lpVtbl->SetGravity(This, Gravity)
+#define IMarkupPointer2_Cling(This, pfCling) (This)->lpVtbl->Cling(This, pfCling)
+#define IMarkupPointer2_SetCling(This, fCLing) (This)->lpVtbl->SetCling(This, fCLing)
+#define IMarkupPointer2_Unposition(This) (This)->lpVtbl->Unposition(This)
+#define IMarkupPointer2_IsPositioned(This, pfPositioned) (This)->lpVtbl->IsPositioned(This, pfPositioned)
+#define IMarkupPointer2_GetContainer(This, ppContainer) (This)->lpVtbl->GetContainer(This, ppContainer)
+#define IMarkupPointer2_MoveAdjacentToElement(This, pElement, eAdj) (This)->lpVtbl->MoveAdjacentToElement(This, pElement, eAdj)
+#define IMarkupPointer2_MoveToPointer(This, pPointer) (This)->lpVtbl->MoveToPointer(This, pPointer)
+#define IMarkupPointer2_MoveToContainer(This, pContainer, fAtStart) (This)->lpVtbl->MoveToContainer(This, pContainer, fAtStart)
+#define IMarkupPointer2_Left(This, fMove, pContext, ppElement, pcch, pchText) (This)->lpVtbl->Left(This, fMove, pContext, ppElement, pcch, pchText)
+#define IMarkupPointer2_Right(This, fMove, pContext, ppElement, pcch, pchText) (This)->lpVtbl->Right(This, fMove, pContext, ppElement, pcch, pchText)
+#define IMarkupPointer2_CurrentScope(This, ppElemCurrent) (This)->lpVtbl->CurrentScope(This, ppElemCurrent)
+#define IMarkupPointer2_IsLeftOf(This, pPointerThat, pfResult) (This)->lpVtbl->IsLeftOf(This, pPointerThat, pfResult)
+#define IMarkupPointer2_IsLeftOfOrEqualTo(This, pPointerThat, pfResult) (This)->lpVtbl->IsLeftOfOrEqualTo(This, pPointerThat, pfResult)
+#define IMarkupPointer2_IsRightOf(This, pPointerThat, pfResult) (This)->lpVtbl->IsRightOf(This, pPointerThat, pfResult)
+#define IMarkupPointer2_IsRightOfOrEqualTo(This, pPointerThat, pfResult) (This)->lpVtbl->IsRightOfOrEqualTo(This, pPointerThat, pfResult)
+#define IMarkupPointer2_IsEqualTo(This, pPointerThat, pfAreEqual) (This)->lpVtbl->IsEqualTo(This, pPointerThat, pfAreEqual)
+#define IMarkupPointer2_MoveUnit(This, muAction) (This)->lpVtbl->MoveUnit(This, muAction)
+#define IMarkupPointer2_FindText(This, pchFindText, dwFlags, pIEndMatch, pIEndSearch) (This)->lpVtbl->FindText(This, pchFindText, dwFlags, pIEndMatch, pIEndSearch)
+#define IMarkupPointer2_IsAtWordBreak(This, pfAtBreak) (This)->lpVtbl->IsAtWordBreak(This, pfAtBreak)
+#define IMarkupPointer2_GetMarkupPosition(This, plMP) (This)->lpVtbl->GetMarkupPosition(This, plMP)
+#define IMarkupPointer2_MoveToMarkupPosition(This, pContainer, lMP) (This)->lpVtbl->MoveToMarkupPosition(This, pContainer, lMP)
+#define IMarkupPointer2_MoveUnitBounded(This, muAction, pIBoundary) (This)->lpVtbl->MoveUnitBounded(This, muAction, pIBoundary)
+#define IMarkupPointer2_IsInsideURL(This, pRight, pfResult) (This)->lpVtbl->IsInsideURL(This, pRight, pfResult)
+#define IMarkupPointer2_MoveToContent(This, pIElement, fAtStart) (This)->lpVtbl->MoveToContent(This, pIElement, fAtStart)
+
 declare function IMarkupPointer2_IsAtWordBreak_Proxy(byval This as IMarkupPointer2 ptr, byval pfAtBreak as WINBOOL ptr) as HRESULT
 declare sub IMarkupPointer2_IsAtWordBreak_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupPointer2_GetMarkupPosition_Proxy(byval This as IMarkupPointer2 ptr, byval plMP as long ptr) as HRESULT
@@ -17651,6 +23176,15 @@ type IMarkupTextFrags_
 	lpVtbl as IMarkupTextFragsVtbl ptr
 end type
 
+#define IMarkupTextFrags_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMarkupTextFrags_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMarkupTextFrags_Release(This) (This)->lpVtbl->Release(This)
+#define IMarkupTextFrags_GetTextFragCount(This, pcFrags) (This)->lpVtbl->GetTextFragCount(This, pcFrags)
+#define IMarkupTextFrags_GetTextFrag(This, iFrag, pbstrFrag, pPointerFrag) (This)->lpVtbl->GetTextFrag(This, iFrag, pbstrFrag, pPointerFrag)
+#define IMarkupTextFrags_RemoveTextFrag(This, iFrag) (This)->lpVtbl->RemoveTextFrag(This, iFrag)
+#define IMarkupTextFrags_InsertTextFrag(This, iFrag, bstrInsert, pPointerInsert) (This)->lpVtbl->InsertTextFrag(This, iFrag, bstrInsert, pPointerInsert)
+#define IMarkupTextFrags_FindTextFragFromMarkupPointer(This, pPointerFind, piFrag, pfFragFound) (This)->lpVtbl->FindTextFragFromMarkupPointer(This, pPointerFind, piFrag, pfFragFound)
+
 declare function IMarkupTextFrags_GetTextFragCount_Proxy(byval This as IMarkupTextFrags ptr, byval pcFrags as long ptr) as HRESULT
 declare sub IMarkupTextFrags_GetTextFragCount_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupTextFrags_GetTextFrag_Proxy(byval This as IMarkupTextFrags ptr, byval iFrag as long, byval pbstrFrag as BSTR ptr, byval pPointerFrag as IMarkupPointer ptr) as HRESULT
@@ -17676,6 +23210,10 @@ type IXMLGenericParse_
 	lpVtbl as IXMLGenericParseVtbl ptr
 end type
 
+#define IXMLGenericParse_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IXMLGenericParse_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IXMLGenericParse_Release(This) (This)->lpVtbl->Release(This)
+#define IXMLGenericParse_SetGenericParse(This, fDoGeneric) (This)->lpVtbl->SetGenericParse(This, fDoGeneric)
 declare function IXMLGenericParse_SetGenericParse_Proxy(byval This as IXMLGenericParse ptr, byval fDoGeneric as VARIANT_BOOL) as HRESULT
 declare sub IXMLGenericParse_SetGenericParse_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLEditHost_INTERFACE_DEFINED__
@@ -17693,6 +23231,10 @@ type IHTMLEditHost_
 	lpVtbl as IHTMLEditHostVtbl ptr
 end type
 
+#define IHTMLEditHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEditHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEditHost_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEditHost_SnapRect(This, pIElement, prcNew, eHandle) (This)->lpVtbl->SnapRect(This, pIElement, prcNew, eHandle)
 declare function IHTMLEditHost_SnapRect_Proxy(byval This as IHTMLEditHost ptr, byval pIElement as IHTMLElement ptr, byval prcNew as RECT ptr, byval eHandle as ELEMENT_CORNER) as HRESULT
 declare sub IHTMLEditHost_SnapRect_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLEditHost2_INTERFACE_DEFINED__
@@ -17711,6 +23253,11 @@ type IHTMLEditHost2_
 	lpVtbl as IHTMLEditHost2Vtbl ptr
 end type
 
+#define IHTMLEditHost2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEditHost2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEditHost2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEditHost2_SnapRect(This, pIElement, prcNew, eHandle) (This)->lpVtbl->SnapRect(This, pIElement, prcNew, eHandle)
+#define IHTMLEditHost2_PreDrag(This) (This)->lpVtbl->PreDrag(This)
 declare function IHTMLEditHost2_PreDrag_Proxy(byval This as IHTMLEditHost2 ptr) as HRESULT
 declare sub IHTMLEditHost2_PreDrag_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __ISequenceNumber_INTERFACE_DEFINED__
@@ -17728,6 +23275,10 @@ type ISequenceNumber_
 	lpVtbl as ISequenceNumberVtbl ptr
 end type
 
+#define ISequenceNumber_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISequenceNumber_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISequenceNumber_Release(This) (This)->lpVtbl->Release(This)
+#define ISequenceNumber_GetSequenceNumber(This, nCurrent, pnNew) (This)->lpVtbl->GetSequenceNumber(This, nCurrent, pnNew)
 declare function ISequenceNumber_GetSequenceNumber_Proxy(byval This as ISequenceNumber ptr, byval nCurrent as long, byval pnNew as long ptr) as HRESULT
 declare sub ISequenceNumber_GetSequenceNumber_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IIMEServices_INTERFACE_DEFINED__
@@ -17745,6 +23296,10 @@ type IIMEServices_
 	lpVtbl as IIMEServicesVtbl ptr
 end type
 
+#define IIMEServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IIMEServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IIMEServices_Release(This) (This)->lpVtbl->Release(This)
+#define IIMEServices_GetActiveIMM(This, ppActiveIMM) (This)->lpVtbl->GetActiveIMM(This, ppActiveIMM)
 declare function IIMEServices_GetActiveIMM_Proxy(byval This as IIMEServices ptr, byval ppActiveIMM as IActiveIMMApp ptr ptr) as HRESULT
 declare sub IIMEServices_GetActiveIMM_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __ISelectionServicesListener_INTERFACE_DEFINED__
@@ -17765,6 +23320,15 @@ end type
 type ISelectionServicesListener_
 	lpVtbl as ISelectionServicesListenerVtbl ptr
 end type
+
+#define ISelectionServicesListener_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISelectionServicesListener_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISelectionServicesListener_Release(This) (This)->lpVtbl->Release(This)
+#define ISelectionServicesListener_BeginSelectionUndo(This) (This)->lpVtbl->BeginSelectionUndo(This)
+#define ISelectionServicesListener_EndSelectionUndo(This) (This)->lpVtbl->EndSelectionUndo(This)
+#define ISelectionServicesListener_OnSelectedElementExit(This, pIElementStart, pIElementEnd, pIElementContentStart, pIElementContentEnd) (This)->lpVtbl->OnSelectedElementExit(This, pIElementStart, pIElementEnd, pIElementContentStart, pIElementContentEnd)
+#define ISelectionServicesListener_OnChangeType(This, eType, pIListener) (This)->lpVtbl->OnChangeType(This, eType, pIListener)
+#define ISelectionServicesListener_GetTypeDetail(This, pTypeDetail) (This)->lpVtbl->GetTypeDetail(This, pTypeDetail)
 
 declare function ISelectionServicesListener_BeginSelectionUndo_Proxy(byval This as ISelectionServicesListener ptr) as HRESULT
 declare sub ISelectionServicesListener_BeginSelectionUndo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17796,6 +23360,16 @@ type ISelectionServices_
 	lpVtbl as ISelectionServicesVtbl ptr
 end type
 
+#define ISelectionServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISelectionServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISelectionServices_Release(This) (This)->lpVtbl->Release(This)
+#define ISelectionServices_SetSelectionType(This, eType, pIListener) (This)->lpVtbl->SetSelectionType(This, eType, pIListener)
+#define ISelectionServices_GetMarkupContainer(This, ppIContainer) (This)->lpVtbl->GetMarkupContainer(This, ppIContainer)
+#define ISelectionServices_AddSegment(This, pIStart, pIEnd, ppISegmentAdded) (This)->lpVtbl->AddSegment(This, pIStart, pIEnd, ppISegmentAdded)
+#define ISelectionServices_AddElementSegment(This, pIElement, ppISegmentAdded) (This)->lpVtbl->AddElementSegment(This, pIElement, ppISegmentAdded)
+#define ISelectionServices_RemoveSegment(This, pISegment) (This)->lpVtbl->RemoveSegment(This, pISegment)
+#define ISelectionServices_GetSelectionServicesListener(This, ppISelectionServicesListener) (This)->lpVtbl->GetSelectionServicesListener(This, ppISelectionServicesListener)
+
 declare function ISelectionServices_SetSelectionType_Proxy(byval This as ISelectionServices ptr, byval eType as SELECTION_TYPE, byval pIListener as ISelectionServicesListener ptr) as HRESULT
 declare sub ISelectionServices_SetSelectionType_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISelectionServices_GetMarkupContainer_Proxy(byval This as ISelectionServices ptr, byval ppIContainer as IMarkupContainer ptr ptr) as HRESULT
@@ -17826,6 +23400,14 @@ type IHTMLEditDesigner_
 	lpVtbl as IHTMLEditDesignerVtbl ptr
 end type
 
+#define IHTMLEditDesigner_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEditDesigner_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEditDesigner_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEditDesigner_PreHandleEvent(This, inEvtDispId, pIEventObj) (This)->lpVtbl->PreHandleEvent(This, inEvtDispId, pIEventObj)
+#define IHTMLEditDesigner_PostHandleEvent(This, inEvtDispId, pIEventObj) (This)->lpVtbl->PostHandleEvent(This, inEvtDispId, pIEventObj)
+#define IHTMLEditDesigner_TranslateAccelerator(This, inEvtDispId, pIEventObj) (This)->lpVtbl->TranslateAccelerator(This, inEvtDispId, pIEventObj)
+#define IHTMLEditDesigner_PostEditorEventNotify(This, inEvtDispId, pIEventObj) (This)->lpVtbl->PostEditorEventNotify(This, inEvtDispId, pIEventObj)
+
 declare function IHTMLEditDesigner_PreHandleEvent_Proxy(byval This as IHTMLEditDesigner ptr, byval inEvtDispId as DISPID, byval pIEventObj as IHTMLEventObj ptr) as HRESULT
 declare sub IHTMLEditDesigner_PreHandleEvent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLEditDesigner_PostHandleEvent_Proxy(byval This as IHTMLEditDesigner ptr, byval inEvtDispId as DISPID, byval pIEventObj as IHTMLEventObj ptr) as HRESULT
@@ -17853,6 +23435,16 @@ end type
 type IHTMLEditServices_
 	lpVtbl as IHTMLEditServicesVtbl ptr
 end type
+
+#define IHTMLEditServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEditServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEditServices_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEditServices_AddDesigner(This, pIDesigner) (This)->lpVtbl->AddDesigner(This, pIDesigner)
+#define IHTMLEditServices_RemoveDesigner(This, pIDesigner) (This)->lpVtbl->RemoveDesigner(This, pIDesigner)
+#define IHTMLEditServices_GetSelectionServices(This, pIContainer, ppSelSvc) (This)->lpVtbl->GetSelectionServices(This, pIContainer, ppSelSvc)
+#define IHTMLEditServices_MoveToSelectionAnchor(This, pIStartAnchor) (This)->lpVtbl->MoveToSelectionAnchor(This, pIStartAnchor)
+#define IHTMLEditServices_MoveToSelectionEnd(This, pIEndAnchor) (This)->lpVtbl->MoveToSelectionEnd(This, pIEndAnchor)
+#define IHTMLEditServices_SelectRange(This, pStart, pEnd, eType) (This)->lpVtbl->SelectRange(This, pStart, pEnd, eType)
 
 declare function IHTMLEditServices_AddDesigner_Proxy(byval This as IHTMLEditServices ptr, byval pIDesigner as IHTMLEditDesigner ptr) as HRESULT
 declare sub IHTMLEditServices_AddDesigner_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17889,6 +23481,20 @@ end type
 type IHTMLEditServices2_
 	lpVtbl as IHTMLEditServices2Vtbl ptr
 end type
+
+#define IHTMLEditServices2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLEditServices2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLEditServices2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLEditServices2_AddDesigner(This, pIDesigner) (This)->lpVtbl->AddDesigner(This, pIDesigner)
+#define IHTMLEditServices2_RemoveDesigner(This, pIDesigner) (This)->lpVtbl->RemoveDesigner(This, pIDesigner)
+#define IHTMLEditServices2_GetSelectionServices(This, pIContainer, ppSelSvc) (This)->lpVtbl->GetSelectionServices(This, pIContainer, ppSelSvc)
+#define IHTMLEditServices2_MoveToSelectionAnchor(This, pIStartAnchor) (This)->lpVtbl->MoveToSelectionAnchor(This, pIStartAnchor)
+#define IHTMLEditServices2_MoveToSelectionEnd(This, pIEndAnchor) (This)->lpVtbl->MoveToSelectionEnd(This, pIEndAnchor)
+#define IHTMLEditServices2_SelectRange(This, pStart, pEnd, eType) (This)->lpVtbl->SelectRange(This, pStart, pEnd, eType)
+#define IHTMLEditServices2_MoveToSelectionAnchorEx(This, pIStartAnchor) (This)->lpVtbl->MoveToSelectionAnchorEx(This, pIStartAnchor)
+#define IHTMLEditServices2_MoveToSelectionEndEx(This, pIEndAnchor) (This)->lpVtbl->MoveToSelectionEndEx(This, pIEndAnchor)
+#define IHTMLEditServices2_FreezeVirtualCaretPos(This, fReCompute) (This)->lpVtbl->FreezeVirtualCaretPos(This, fReCompute)
+#define IHTMLEditServices2_UnFreezeVirtualCaretPos(This, fReset) (This)->lpVtbl->UnFreezeVirtualCaretPos(This, fReset)
 
 declare function IHTMLEditServices2_MoveToSelectionAnchorEx_Proxy(byval This as IHTMLEditServices2 ptr, byval pIStartAnchor as IDisplayPointer ptr) as HRESULT
 declare sub IHTMLEditServices2_MoveToSelectionAnchorEx_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -17935,6 +23541,29 @@ end type
 type IHTMLComputedStyle_
 	lpVtbl as IHTMLComputedStyleVtbl ptr
 end type
+
+#define IHTMLComputedStyle_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLComputedStyle_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLComputedStyle_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLComputedStyle_get_bold(This, p) (This)->lpVtbl->get_bold(This, p)
+#define IHTMLComputedStyle_get_italic(This, p) (This)->lpVtbl->get_italic(This, p)
+#define IHTMLComputedStyle_get_underline(This, p) (This)->lpVtbl->get_underline(This, p)
+#define IHTMLComputedStyle_get_overline(This, p) (This)->lpVtbl->get_overline(This, p)
+#define IHTMLComputedStyle_get_strikeOut(This, p) (This)->lpVtbl->get_strikeOut(This, p)
+#define IHTMLComputedStyle_get_subScript(This, p) (This)->lpVtbl->get_subScript(This, p)
+#define IHTMLComputedStyle_get_superScript(This, p) (This)->lpVtbl->get_superScript(This, p)
+#define IHTMLComputedStyle_get_explicitFace(This, p) (This)->lpVtbl->get_explicitFace(This, p)
+#define IHTMLComputedStyle_get_fontWeight(This, p) (This)->lpVtbl->get_fontWeight(This, p)
+#define IHTMLComputedStyle_get_fontSize(This, p) (This)->lpVtbl->get_fontSize(This, p)
+#define IHTMLComputedStyle_get_fontName(This, p) (This)->lpVtbl->get_fontName(This, p)
+#define IHTMLComputedStyle_get_hasBgColor(This, p) (This)->lpVtbl->get_hasBgColor(This, p)
+#define IHTMLComputedStyle_get_textColor(This, p) (This)->lpVtbl->get_textColor(This, p)
+#define IHTMLComputedStyle_get_backgroundColor(This, p) (This)->lpVtbl->get_backgroundColor(This, p)
+#define IHTMLComputedStyle_get_preFormatted(This, p) (This)->lpVtbl->get_preFormatted(This, p)
+#define IHTMLComputedStyle_get_direction(This, p) (This)->lpVtbl->get_direction(This, p)
+#define IHTMLComputedStyle_get_blockDirection(This, p) (This)->lpVtbl->get_blockDirection(This, p)
+#define IHTMLComputedStyle_get_OL(This, p) (This)->lpVtbl->get_OL(This, p)
+#define IHTMLComputedStyle_IsEqual(This, pComputedStyle, pfEqual) (This)->lpVtbl->IsEqual(This, pComputedStyle, pfEqual)
 
 declare function IHTMLComputedStyle_get_bold_Proxy(byval This as IHTMLComputedStyle ptr, byval p as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLComputedStyle_get_bold_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18002,6 +23631,13 @@ type HTMLNamespaceEvents_
 	lpVtbl as HTMLNamespaceEventsVtbl ptr
 end type
 
+#define HTMLNamespaceEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define HTMLNamespaceEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define HTMLNamespaceEvents_Release(This) (This)->lpVtbl->Release(This)
+#define HTMLNamespaceEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define HTMLNamespaceEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define HTMLNamespaceEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define HTMLNamespaceEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IHTMLNamespace_INTERFACE_DEFINED__
 extern IID_IHTMLNamespace as const IID
 type IHTMLNamespace as IHTMLNamespace_
@@ -18028,6 +23664,23 @@ end type
 type IHTMLNamespace_
 	lpVtbl as IHTMLNamespaceVtbl ptr
 end type
+
+#define IHTMLNamespace_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLNamespace_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLNamespace_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLNamespace_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLNamespace_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLNamespace_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLNamespace_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLNamespace_get_name(This, p) (This)->lpVtbl->get_name(This, p)
+#define IHTMLNamespace_get_urn(This, p) (This)->lpVtbl->get_urn(This, p)
+#define IHTMLNamespace_get_tagNames(This, p) (This)->lpVtbl->get_tagNames(This, p)
+#define IHTMLNamespace_get_readyState(This, p) (This)->lpVtbl->get_readyState(This, p)
+#define IHTMLNamespace_put_onreadystatechange(This, v) (This)->lpVtbl->put_onreadystatechange(This, v)
+#define IHTMLNamespace_get_onreadystatechange(This, p) (This)->lpVtbl->get_onreadystatechange(This, p)
+#define IHTMLNamespace_doImport(This, bstrImplementationUrl) (This)->lpVtbl->doImport(This, bstrImplementationUrl)
+#define IHTMLNamespace_attachEvent(This, event, pDisp, pfResult) (This)->lpVtbl->attachEvent(This, event, pDisp, pfResult)
+#define IHTMLNamespace_detachEvent(This, event, pDisp) (This)->lpVtbl->detachEvent(This, event, pDisp)
 
 declare function IHTMLNamespace_get_name_Proxy(byval This as IHTMLNamespace ptr, byval p as BSTR ptr) as HRESULT
 declare sub IHTMLNamespace_get_name_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18068,6 +23721,17 @@ type IHTMLNamespaceCollection_
 	lpVtbl as IHTMLNamespaceCollectionVtbl ptr
 end type
 
+#define IHTMLNamespaceCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLNamespaceCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLNamespaceCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLNamespaceCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLNamespaceCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLNamespaceCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLNamespaceCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLNamespaceCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLNamespaceCollection_item(This, index, ppNamespace) (This)->lpVtbl->item(This, index, ppNamespace)
+#define IHTMLNamespaceCollection_add(This, bstrNamespace, bstrUrn, implementationUrl, ppNamespace) (This)->lpVtbl->add(This, bstrNamespace, bstrUrn, implementationUrl, ppNamespace)
+
 declare function IHTMLNamespaceCollection_get_length_Proxy(byval This as IHTMLNamespaceCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLNamespaceCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLNamespaceCollection_item_Proxy(byval This as IHTMLNamespaceCollection ptr, byval index as VARIANT, byval ppNamespace as IDispatch ptr ptr) as HRESULT
@@ -18093,6 +23757,14 @@ end type
 type IHTMLPainter_
 	lpVtbl as IHTMLPainterVtbl ptr
 end type
+
+#define IHTMLPainter_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPainter_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPainter_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPainter_Draw(This, rcBounds, rcUpdate, lDrawFlags, hdc, pvDrawObject) (This)->lpVtbl->Draw(This, rcBounds, rcUpdate, lDrawFlags, hdc, pvDrawObject)
+#define IHTMLPainter_OnResize(This, size) (This)->lpVtbl->OnResize(This, size)
+#define IHTMLPainter_GetPainterInfo(This, pInfo) (This)->lpVtbl->GetPainterInfo(This, pInfo)
+#define IHTMLPainter_HitTestPoint(This, pt, pbHit, plPartID) (This)->lpVtbl->HitTestPoint(This, pt, pbHit, plPartID)
 
 declare function IHTMLPainter_Draw_Proxy(byval This as IHTMLPainter ptr, byval rcBounds as RECT, byval rcUpdate as RECT, byval lDrawFlags as LONG, byval hdc as HDC, byval pvDrawObject as LPVOID) as HRESULT
 declare sub IHTMLPainter_Draw_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18122,6 +23794,17 @@ end type
 type IHTMLPaintSite_
 	lpVtbl as IHTMLPaintSiteVtbl ptr
 end type
+
+#define IHTMLPaintSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPaintSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPaintSite_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPaintSite_InvalidatePainterInfo(This) (This)->lpVtbl->InvalidatePainterInfo(This)
+#define IHTMLPaintSite_InvalidateRect(This, prcInvalid) (This)->lpVtbl->InvalidateRect(This, prcInvalid)
+#define IHTMLPaintSite_InvalidateRegion(This, rgnInvalid) (This)->lpVtbl->InvalidateRegion(This, rgnInvalid)
+#define IHTMLPaintSite_GetDrawInfo(This, lFlags, pDrawInfo) (This)->lpVtbl->GetDrawInfo(This, lFlags, pDrawInfo)
+#define IHTMLPaintSite_TransformGlobalToLocal(This, ptGlobal, pptLocal) (This)->lpVtbl->TransformGlobalToLocal(This, ptGlobal, pptLocal)
+#define IHTMLPaintSite_TransformLocalToGlobal(This, ptLocal, pptGlobal) (This)->lpVtbl->TransformLocalToGlobal(This, ptLocal, pptGlobal)
+#define IHTMLPaintSite_GetHitTestCookie(This, plCookie) (This)->lpVtbl->GetHitTestCookie(This, plCookie)
 
 declare function IHTMLPaintSite_InvalidatePainterInfo_Proxy(byval This as IHTMLPaintSite ptr) as HRESULT
 declare sub IHTMLPaintSite_InvalidatePainterInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18155,6 +23838,14 @@ type IHTMLPainterEventInfo_
 	lpVtbl as IHTMLPainterEventInfoVtbl ptr
 end type
 
+#define IHTMLPainterEventInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPainterEventInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPainterEventInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPainterEventInfo_GetEventInfoFlags(This, plEventInfoFlags) (This)->lpVtbl->GetEventInfoFlags(This, plEventInfoFlags)
+#define IHTMLPainterEventInfo_GetEventTarget(This, ppElement) (This)->lpVtbl->GetEventTarget(This, ppElement)
+#define IHTMLPainterEventInfo_SetCursor(This, lPartID) (This)->lpVtbl->SetCursor(This, lPartID)
+#define IHTMLPainterEventInfo_StringFromPartID(This, lPartID, pbstrPart) (This)->lpVtbl->StringFromPartID(This, lPartID, pbstrPart)
+
 declare function IHTMLPainterEventInfo_GetEventInfoFlags_Proxy(byval This as IHTMLPainterEventInfo ptr, byval plEventInfoFlags as long ptr) as HRESULT
 declare sub IHTMLPainterEventInfo_GetEventInfoFlags_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLPainterEventInfo_GetEventTarget_Proxy(byval This as IHTMLPainterEventInfo ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
@@ -18178,6 +23869,10 @@ type IHTMLPainterOverlay_
 	lpVtbl as IHTMLPainterOverlayVtbl ptr
 end type
 
+#define IHTMLPainterOverlay_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPainterOverlay_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPainterOverlay_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPainterOverlay_OnMove(This, rcDevice) (This)->lpVtbl->OnMove(This, rcDevice)
 declare function IHTMLPainterOverlay_OnMove_Proxy(byval This as IHTMLPainterOverlay ptr, byval rcDevice as RECT) as HRESULT
 declare sub IHTMLPainterOverlay_OnMove_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLIPrintCollection_INTERFACE_DEFINED__
@@ -18200,6 +23895,17 @@ end type
 type IHTMLIPrintCollection_
 	lpVtbl as IHTMLIPrintCollectionVtbl ptr
 end type
+
+#define IHTMLIPrintCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLIPrintCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLIPrintCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLIPrintCollection_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLIPrintCollection_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLIPrintCollection_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLIPrintCollection_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLIPrintCollection_get_length(This, p) (This)->lpVtbl->get_length(This, p)
+#define IHTMLIPrintCollection_get__newEnum(This, p) (This)->lpVtbl->get__newEnum(This, p)
+#define IHTMLIPrintCollection_item(This, index, ppIPrint) (This)->lpVtbl->item(This, index, ppIPrint)
 
 declare function IHTMLIPrintCollection_get_length_Proxy(byval This as IHTMLIPrintCollection ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLIPrintCollection_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18224,6 +23930,14 @@ end type
 type IEnumPrivacyRecords_
 	lpVtbl as IEnumPrivacyRecordsVtbl ptr
 end type
+
+#define IEnumPrivacyRecords_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumPrivacyRecords_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumPrivacyRecords_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumPrivacyRecords_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumPrivacyRecords_GetSize(This, pSize) (This)->lpVtbl->GetSize(This, pSize)
+#define IEnumPrivacyRecords_GetPrivacyImpacted(This, pState) (This)->lpVtbl->GetPrivacyImpacted(This, pState)
+#define IEnumPrivacyRecords_Next(This, pbstrUrl, pbstrPolicyRef, pdwReserved, pdwPrivacyFlags) (This)->lpVtbl->Next(This, pbstrUrl, pbstrPolicyRef, pdwReserved, pdwPrivacyFlags)
 
 declare function IEnumPrivacyRecords_Reset_Proxy(byval This as IEnumPrivacyRecords ptr) as HRESULT
 declare sub IEnumPrivacyRecords_Reset_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18264,6 +23978,28 @@ end type
 type IHTMLDialog_
 	lpVtbl as IHTMLDialogVtbl ptr
 end type
+
+#define IHTMLDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDialog_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDialog_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDialog_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDialog_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDialog_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDialog_put_dialogTop(This, v) (This)->lpVtbl->put_dialogTop(This, v)
+#define IHTMLDialog_get_dialogTop(This, p) (This)->lpVtbl->get_dialogTop(This, p)
+#define IHTMLDialog_put_dialogLeft(This, v) (This)->lpVtbl->put_dialogLeft(This, v)
+#define IHTMLDialog_get_dialogLeft(This, p) (This)->lpVtbl->get_dialogLeft(This, p)
+#define IHTMLDialog_put_dialogWidth(This, v) (This)->lpVtbl->put_dialogWidth(This, v)
+#define IHTMLDialog_get_dialogWidth(This, p) (This)->lpVtbl->get_dialogWidth(This, p)
+#define IHTMLDialog_put_dialogHeight(This, v) (This)->lpVtbl->put_dialogHeight(This, v)
+#define IHTMLDialog_get_dialogHeight(This, p) (This)->lpVtbl->get_dialogHeight(This, p)
+#define IHTMLDialog_get_dialogArguments(This, p) (This)->lpVtbl->get_dialogArguments(This, p)
+#define IHTMLDialog_get_menuArguments(This, p) (This)->lpVtbl->get_menuArguments(This, p)
+#define IHTMLDialog_put_returnValue(This, v) (This)->lpVtbl->put_returnValue(This, v)
+#define IHTMLDialog_get_returnValue(This, p) (This)->lpVtbl->get_returnValue(This, p)
+#define IHTMLDialog_close(This) (This)->lpVtbl->close(This)
+#define IHTMLDialog_toString(This, String) (This)->lpVtbl->toString(This, String)
 
 declare function IHTMLDialog_put_dialogTop_Proxy(byval This as IHTMLDialog ptr, byval v as VARIANT) as HRESULT
 declare sub IHTMLDialog_put_dialogTop_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18315,6 +24051,18 @@ type IHTMLDialog2_
 	lpVtbl as IHTMLDialog2Vtbl ptr
 end type
 
+#define IHTMLDialog2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDialog2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDialog2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDialog2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDialog2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDialog2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDialog2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDialog2_put_status(This, v) (This)->lpVtbl->put_status(This, v)
+#define IHTMLDialog2_get_status(This, p) (This)->lpVtbl->get_status(This, p)
+#define IHTMLDialog2_put_resizable(This, v) (This)->lpVtbl->put_resizable(This, v)
+#define IHTMLDialog2_get_resizable(This, p) (This)->lpVtbl->get_resizable(This, p)
+
 declare function IHTMLDialog2_put_status_Proxy(byval This as IHTMLDialog2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDialog2_put_status_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDialog2_get_status_Proxy(byval This as IHTMLDialog2 ptr, byval p as BSTR ptr) as HRESULT
@@ -18345,6 +24093,18 @@ type IHTMLDialog3_
 	lpVtbl as IHTMLDialog3Vtbl ptr
 end type
 
+#define IHTMLDialog3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLDialog3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLDialog3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLDialog3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLDialog3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLDialog3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLDialog3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLDialog3_put_unadorned(This, v) (This)->lpVtbl->put_unadorned(This, v)
+#define IHTMLDialog3_get_unadorned(This, p) (This)->lpVtbl->get_unadorned(This, p)
+#define IHTMLDialog3_put_dialogHide(This, v) (This)->lpVtbl->put_dialogHide(This, v)
+#define IHTMLDialog3_get_dialogHide(This, p) (This)->lpVtbl->get_dialogHide(This, p)
+
 declare function IHTMLDialog3_put_unadorned_Proxy(byval This as IHTMLDialog3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLDialog3_put_unadorned_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLDialog3_get_unadorned_Proxy(byval This as IHTMLDialog3 ptr, byval p as BSTR ptr) as HRESULT
@@ -18374,6 +24134,18 @@ end type
 type IHTMLModelessInit_
 	lpVtbl as IHTMLModelessInitVtbl ptr
 end type
+
+#define IHTMLModelessInit_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLModelessInit_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLModelessInit_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLModelessInit_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLModelessInit_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLModelessInit_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLModelessInit_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLModelessInit_get_parameters(This, p) (This)->lpVtbl->get_parameters(This, p)
+#define IHTMLModelessInit_get_optionString(This, p) (This)->lpVtbl->get_optionString(This, p)
+#define IHTMLModelessInit_get_moniker(This, p) (This)->lpVtbl->get_moniker(This, p)
+#define IHTMLModelessInit_get_document(This, p) (This)->lpVtbl->get_document(This, p)
 
 declare function IHTMLModelessInit_get_parameters_Proxy(byval This as IHTMLModelessInit ptr, byval p as VARIANT ptr) as HRESULT
 declare sub IHTMLModelessInit_get_parameters_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18407,6 +24179,18 @@ type IHTMLPopup_
 	lpVtbl as IHTMLPopupVtbl ptr
 end type
 
+#define IHTMLPopup_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLPopup_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLPopup_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLPopup_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLPopup_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLPopup_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLPopup_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLPopup_show(This, x, y, w, h, pElement) (This)->lpVtbl->show(This, x, y, w, h, pElement)
+#define IHTMLPopup_hide(This) (This)->lpVtbl->hide(This)
+#define IHTMLPopup_get_document(This, p) (This)->lpVtbl->get_document(This, p)
+#define IHTMLPopup_get_isOpen(This, p) (This)->lpVtbl->get_isOpen(This, p)
+
 declare function IHTMLPopup_show_Proxy(byval This as IHTMLPopup ptr, byval x as long, byval y as long, byval w as long, byval h as long, byval pElement as VARIANT ptr) as HRESULT
 declare sub IHTMLPopup_show_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLPopup_hide_Proxy(byval This as IHTMLPopup ptr) as HRESULT
@@ -18433,6 +24217,13 @@ type DispHTMLPopup_
 	lpVtbl as DispHTMLPopupVtbl ptr
 end type
 
+#define DispHTMLPopup_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLPopup_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLPopup_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLPopup_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLPopup_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLPopup_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLPopup_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLPopup as const CLSID
 #define __IHTMLAppBehavior_INTERFACE_DEFINED__
 extern IID_IHTMLAppBehavior as const IID
@@ -18476,6 +24267,39 @@ end type
 type IHTMLAppBehavior_
 	lpVtbl as IHTMLAppBehaviorVtbl ptr
 end type
+
+#define IHTMLAppBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAppBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAppBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAppBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAppBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAppBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAppBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAppBehavior_put_applicationName(This, v) (This)->lpVtbl->put_applicationName(This, v)
+#define IHTMLAppBehavior_get_applicationName(This, p) (This)->lpVtbl->get_applicationName(This, p)
+#define IHTMLAppBehavior_put_version(This, v) (This)->lpVtbl->put_version(This, v)
+#define IHTMLAppBehavior_get_version(This, p) (This)->lpVtbl->get_version(This, p)
+#define IHTMLAppBehavior_put_icon(This, v) (This)->lpVtbl->put_icon(This, v)
+#define IHTMLAppBehavior_get_icon(This, p) (This)->lpVtbl->get_icon(This, p)
+#define IHTMLAppBehavior_put_singleInstance(This, v) (This)->lpVtbl->put_singleInstance(This, v)
+#define IHTMLAppBehavior_get_singleInstance(This, p) (This)->lpVtbl->get_singleInstance(This, p)
+#define IHTMLAppBehavior_put_minimizeButton(This, v) (This)->lpVtbl->put_minimizeButton(This, v)
+#define IHTMLAppBehavior_get_minimizeButton(This, p) (This)->lpVtbl->get_minimizeButton(This, p)
+#define IHTMLAppBehavior_put_maximizeButton(This, v) (This)->lpVtbl->put_maximizeButton(This, v)
+#define IHTMLAppBehavior_get_maximizeButton(This, p) (This)->lpVtbl->get_maximizeButton(This, p)
+#define IHTMLAppBehavior_put_border(This, v) (This)->lpVtbl->put_border(This, v)
+#define IHTMLAppBehavior_get_border(This, p) (This)->lpVtbl->get_border(This, p)
+#define IHTMLAppBehavior_put_borderStyle(This, v) (This)->lpVtbl->put_borderStyle(This, v)
+#define IHTMLAppBehavior_get_borderStyle(This, p) (This)->lpVtbl->get_borderStyle(This, p)
+#define IHTMLAppBehavior_put_sysMenu(This, v) (This)->lpVtbl->put_sysMenu(This, v)
+#define IHTMLAppBehavior_get_sysMenu(This, p) (This)->lpVtbl->get_sysMenu(This, p)
+#define IHTMLAppBehavior_put_caption(This, v) (This)->lpVtbl->put_caption(This, v)
+#define IHTMLAppBehavior_get_caption(This, p) (This)->lpVtbl->get_caption(This, p)
+#define IHTMLAppBehavior_put_windowState(This, v) (This)->lpVtbl->put_windowState(This, v)
+#define IHTMLAppBehavior_get_windowState(This, p) (This)->lpVtbl->get_windowState(This, p)
+#define IHTMLAppBehavior_put_showInTaskBar(This, v) (This)->lpVtbl->put_showInTaskBar(This, v)
+#define IHTMLAppBehavior_get_showInTaskBar(This, p) (This)->lpVtbl->get_showInTaskBar(This, p)
+#define IHTMLAppBehavior_get_commandLine(This, p) (This)->lpVtbl->get_commandLine(This, p)
 
 declare function IHTMLAppBehavior_put_applicationName_Proxy(byval This as IHTMLAppBehavior ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAppBehavior_put_applicationName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18555,6 +24379,24 @@ type IHTMLAppBehavior2_
 	lpVtbl as IHTMLAppBehavior2Vtbl ptr
 end type
 
+#define IHTMLAppBehavior2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAppBehavior2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAppBehavior2_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAppBehavior2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAppBehavior2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAppBehavior2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAppBehavior2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAppBehavior2_put_contextMenu(This, v) (This)->lpVtbl->put_contextMenu(This, v)
+#define IHTMLAppBehavior2_get_contextMenu(This, p) (This)->lpVtbl->get_contextMenu(This, p)
+#define IHTMLAppBehavior2_put_innerBorder(This, v) (This)->lpVtbl->put_innerBorder(This, v)
+#define IHTMLAppBehavior2_get_innerBorder(This, p) (This)->lpVtbl->get_innerBorder(This, p)
+#define IHTMLAppBehavior2_put_scroll(This, v) (This)->lpVtbl->put_scroll(This, v)
+#define IHTMLAppBehavior2_get_scroll(This, p) (This)->lpVtbl->get_scroll(This, p)
+#define IHTMLAppBehavior2_put_scrollFlat(This, v) (This)->lpVtbl->put_scrollFlat(This, v)
+#define IHTMLAppBehavior2_get_scrollFlat(This, p) (This)->lpVtbl->get_scrollFlat(This, p)
+#define IHTMLAppBehavior2_put_selection(This, v) (This)->lpVtbl->put_selection(This, v)
+#define IHTMLAppBehavior2_get_selection(This, p) (This)->lpVtbl->get_selection(This, p)
+
 declare function IHTMLAppBehavior2_put_contextMenu_Proxy(byval This as IHTMLAppBehavior2 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAppBehavior2_put_contextMenu_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLAppBehavior2_get_contextMenu_Proxy(byval This as IHTMLAppBehavior2 ptr, byval p as BSTR ptr) as HRESULT
@@ -18595,6 +24437,16 @@ type IHTMLAppBehavior3_
 	lpVtbl as IHTMLAppBehavior3Vtbl ptr
 end type
 
+#define IHTMLAppBehavior3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLAppBehavior3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLAppBehavior3_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLAppBehavior3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IHTMLAppBehavior3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IHTMLAppBehavior3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IHTMLAppBehavior3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IHTMLAppBehavior3_put_navigable(This, v) (This)->lpVtbl->put_navigable(This, v)
+#define IHTMLAppBehavior3_get_navigable(This, p) (This)->lpVtbl->get_navigable(This, p)
+
 declare function IHTMLAppBehavior3_put_navigable_Proxy(byval This as IHTMLAppBehavior3 ptr, byval v as BSTR) as HRESULT
 declare sub IHTMLAppBehavior3_put_navigable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLAppBehavior3_get_navigable_Proxy(byval This as IHTMLAppBehavior3 ptr, byval p as BSTR ptr) as HRESULT
@@ -18617,6 +24469,14 @@ type DispHTMLAppBehavior_
 	lpVtbl as DispHTMLAppBehaviorVtbl ptr
 end type
 
+#define DispHTMLAppBehavior_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispHTMLAppBehavior_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispHTMLAppBehavior_Release(This) (This)->lpVtbl->Release(This)
+#define DispHTMLAppBehavior_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispHTMLAppBehavior_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispHTMLAppBehavior_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispHTMLAppBehavior_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+
 extern CLSID_HTMLAppBehavior as const CLSID
 extern CLSID_OldHTMLDocument as const CLSID
 extern CLSID_OldHTMLFormElement as const CLSID
@@ -18638,6 +24498,13 @@ type DispIHTMLInputButtonElement_
 	lpVtbl as DispIHTMLInputButtonElementVtbl ptr
 end type
 
+#define DispIHTMLInputButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispIHTMLInputButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispIHTMLInputButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispIHTMLInputButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispIHTMLInputButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispIHTMLInputButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispIHTMLInputButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLInputButtonElement as const CLSID
 #define __DispIHTMLInputTextElement_DISPINTERFACE_DEFINED__
 extern DIID_DispIHTMLInputTextElement as const IID
@@ -18657,6 +24524,13 @@ type DispIHTMLInputTextElement_
 	lpVtbl as DispIHTMLInputTextElementVtbl ptr
 end type
 
+#define DispIHTMLInputTextElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispIHTMLInputTextElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispIHTMLInputTextElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispIHTMLInputTextElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispIHTMLInputTextElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispIHTMLInputTextElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispIHTMLInputTextElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLInputTextElement as const CLSID
 #define __DispIHTMLInputFileElement_DISPINTERFACE_DEFINED__
 extern DIID_DispIHTMLInputFileElement as const IID
@@ -18676,6 +24550,13 @@ type DispIHTMLInputFileElement_
 	lpVtbl as DispIHTMLInputFileElementVtbl ptr
 end type
 
+#define DispIHTMLInputFileElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispIHTMLInputFileElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispIHTMLInputFileElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispIHTMLInputFileElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispIHTMLInputFileElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispIHTMLInputFileElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispIHTMLInputFileElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLInputFileElement as const CLSID
 #define __DispIHTMLOptionButtonElement_DISPINTERFACE_DEFINED__
 extern DIID_DispIHTMLOptionButtonElement as const IID
@@ -18695,6 +24576,13 @@ type DispIHTMLOptionButtonElement_
 	lpVtbl as DispIHTMLOptionButtonElementVtbl ptr
 end type
 
+#define DispIHTMLOptionButtonElement_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispIHTMLOptionButtonElement_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispIHTMLOptionButtonElement_Release(This) (This)->lpVtbl->Release(This)
+#define DispIHTMLOptionButtonElement_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispIHTMLOptionButtonElement_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispIHTMLOptionButtonElement_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispIHTMLOptionButtonElement_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLOptionButtonElement as const CLSID
 #define __DispIHTMLInputImage_DISPINTERFACE_DEFINED__
 extern DIID_DispIHTMLInputImage as const IID
@@ -18714,6 +24602,13 @@ type DispIHTMLInputImage_
 	lpVtbl as DispIHTMLInputImageVtbl ptr
 end type
 
+#define DispIHTMLInputImage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DispIHTMLInputImage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DispIHTMLInputImage_Release(This) (This)->lpVtbl->Release(This)
+#define DispIHTMLInputImage_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DispIHTMLInputImage_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DispIHTMLInputImage_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DispIHTMLInputImage_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_HTMLInputImage as const CLSID
 #define __IElementNamespace_INTERFACE_DEFINED__
 extern IID_IElementNamespace as const IID
@@ -18730,6 +24625,10 @@ type IElementNamespace_
 	lpVtbl as IElementNamespaceVtbl ptr
 end type
 
+#define IElementNamespace_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementNamespace_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementNamespace_Release(This) (This)->lpVtbl->Release(This)
+#define IElementNamespace_AddTag(This, bstrTagName, lFlags) (This)->lpVtbl->AddTag(This, bstrTagName, lFlags)
 declare function IElementNamespace_AddTag_Proxy(byval This as IElementNamespace ptr, byval bstrTagName as BSTR, byval lFlags as LONG) as HRESULT
 declare sub IElementNamespace_AddTag_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementNamespaceTable_INTERFACE_DEFINED__
@@ -18747,6 +24646,10 @@ type IElementNamespaceTable_
 	lpVtbl as IElementNamespaceTableVtbl ptr
 end type
 
+#define IElementNamespaceTable_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementNamespaceTable_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementNamespaceTable_Release(This) (This)->lpVtbl->Release(This)
+#define IElementNamespaceTable_AddNamespace(This, bstrNamespace, bstrUrn, lFlags, pvarFactory) (This)->lpVtbl->AddNamespace(This, bstrNamespace, bstrUrn, lFlags, pvarFactory)
 declare function IElementNamespaceTable_AddNamespace_Proxy(byval This as IElementNamespaceTable ptr, byval bstrNamespace as BSTR, byval bstrUrn as BSTR, byval lFlags as LONG, byval pvarFactory as VARIANT ptr) as HRESULT
 declare sub IElementNamespaceTable_AddNamespace_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementNamespaceFactory_INTERFACE_DEFINED__
@@ -18764,6 +24667,10 @@ type IElementNamespaceFactory_
 	lpVtbl as IElementNamespaceFactoryVtbl ptr
 end type
 
+#define IElementNamespaceFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementNamespaceFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementNamespaceFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IElementNamespaceFactory_Create(This, pNamespace) (This)->lpVtbl->Create(This, pNamespace)
 declare function IElementNamespaceFactory_Create_Proxy(byval This as IElementNamespaceFactory ptr, byval pNamespace as IElementNamespace ptr) as HRESULT
 declare sub IElementNamespaceFactory_Create_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementNamespaceFactory2_INTERFACE_DEFINED__
@@ -18782,6 +24689,11 @@ type IElementNamespaceFactory2_
 	lpVtbl as IElementNamespaceFactory2Vtbl ptr
 end type
 
+#define IElementNamespaceFactory2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementNamespaceFactory2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementNamespaceFactory2_Release(This) (This)->lpVtbl->Release(This)
+#define IElementNamespaceFactory2_Create(This, pNamespace) (This)->lpVtbl->Create(This, pNamespace)
+#define IElementNamespaceFactory2_CreateWithImplementation(This, pNamespace, bstrImplementation) (This)->lpVtbl->CreateWithImplementation(This, pNamespace, bstrImplementation)
 declare function IElementNamespaceFactory2_CreateWithImplementation_Proxy(byval This as IElementNamespaceFactory2 ptr, byval pNamespace as IElementNamespace ptr, byval bstrImplementation as BSTR) as HRESULT
 declare sub IElementNamespaceFactory2_CreateWithImplementation_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementNamespaceFactoryCallback_INTERFACE_DEFINED__
@@ -18799,6 +24711,10 @@ type IElementNamespaceFactoryCallback_
 	lpVtbl as IElementNamespaceFactoryCallbackVtbl ptr
 end type
 
+#define IElementNamespaceFactoryCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementNamespaceFactoryCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementNamespaceFactoryCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IElementNamespaceFactoryCallback_Resolve(This, bstrNamespace, bstrTagName, bstrAttrs, pNamespace) (This)->lpVtbl->Resolve(This, bstrNamespace, bstrTagName, bstrAttrs, pNamespace)
 declare function IElementNamespaceFactoryCallback_Resolve_Proxy(byval This as IElementNamespaceFactoryCallback ptr, byval bstrNamespace as BSTR, byval bstrTagName as BSTR, byval bstrAttrs as BSTR, byval pNamespace as IElementNamespace ptr) as HRESULT
 declare sub IElementNamespaceFactoryCallback_Resolve_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorSiteOM2_INTERFACE_DEFINED__
@@ -18822,6 +24738,16 @@ type IElementBehaviorSiteOM2_
 	lpVtbl as IElementBehaviorSiteOM2Vtbl ptr
 end type
 
+#define IElementBehaviorSiteOM2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteOM2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteOM2_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteOM2_RegisterEvent(This, pchEvent, lFlags, plCookie) (This)->lpVtbl->RegisterEvent(This, pchEvent, lFlags, plCookie)
+#define IElementBehaviorSiteOM2_GetEventCookie(This, pchEvent, plCookie) (This)->lpVtbl->GetEventCookie(This, pchEvent, plCookie)
+#define IElementBehaviorSiteOM2_FireEvent(This, lCookie, pEventObject) (This)->lpVtbl->FireEvent(This, lCookie, pEventObject)
+#define IElementBehaviorSiteOM2_CreateEventObject(This, ppEventObject) (This)->lpVtbl->CreateEventObject(This, ppEventObject)
+#define IElementBehaviorSiteOM2_RegisterName(This, pchName) (This)->lpVtbl->RegisterName(This, pchName)
+#define IElementBehaviorSiteOM2_RegisterUrn(This, pchUrn) (This)->lpVtbl->RegisterUrn(This, pchUrn)
+#define IElementBehaviorSiteOM2_GetDefaults(This, ppDefaults) (This)->lpVtbl->GetDefaults(This, ppDefaults)
 declare function IElementBehaviorSiteOM2_GetDefaults_Proxy(byval This as IElementBehaviorSiteOM2 ptr, byval ppDefaults as IHTMLElementDefaults ptr ptr) as HRESULT
 declare sub IElementBehaviorSiteOM2_GetDefaults_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorCategory_INTERFACE_DEFINED__
@@ -18839,6 +24765,10 @@ type IElementBehaviorCategory_
 	lpVtbl as IElementBehaviorCategoryVtbl ptr
 end type
 
+#define IElementBehaviorCategory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorCategory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorCategory_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorCategory_GetCategory(This, ppchCategory) (This)->lpVtbl->GetCategory(This, ppchCategory)
 declare function IElementBehaviorCategory_GetCategory_Proxy(byval This as IElementBehaviorCategory ptr, byval ppchCategory as LPOLESTR ptr) as HRESULT
 declare sub IElementBehaviorCategory_GetCategory_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorSiteCategory_INTERFACE_DEFINED__
@@ -18856,6 +24786,10 @@ type IElementBehaviorSiteCategory_
 	lpVtbl as IElementBehaviorSiteCategoryVtbl ptr
 end type
 
+#define IElementBehaviorSiteCategory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteCategory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteCategory_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteCategory_GetRelatedBehaviors(This, lDirection, pchCategory, ppEnumerator) (This)->lpVtbl->GetRelatedBehaviors(This, lDirection, pchCategory, ppEnumerator)
 declare function IElementBehaviorSiteCategory_GetRelatedBehaviors_Proxy(byval This as IElementBehaviorSiteCategory ptr, byval lDirection as LONG, byval pchCategory as LPOLESTR, byval ppEnumerator as IEnumUnknown ptr ptr) as HRESULT
 declare sub IElementBehaviorSiteCategory_GetRelatedBehaviors_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorSubmit_INTERFACE_DEFINED__
@@ -18873,6 +24807,12 @@ end type
 type IElementBehaviorSubmit_
 	lpVtbl as IElementBehaviorSubmitVtbl ptr
 end type
+
+#define IElementBehaviorSubmit_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSubmit_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSubmit_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSubmit_GetSubmitInfo(This, pSubmitData) (This)->lpVtbl->GetSubmitInfo(This, pSubmitData)
+#define IElementBehaviorSubmit_Reset(This) (This)->lpVtbl->Reset(This)
 
 declare function IElementBehaviorSubmit_GetSubmitInfo_Proxy(byval This as IElementBehaviorSubmit ptr, byval pSubmitData as IHTMLSubmitData ptr) as HRESULT
 declare sub IElementBehaviorSubmit_GetSubmitInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18893,6 +24833,10 @@ type IElementBehaviorFocus_
 	lpVtbl as IElementBehaviorFocusVtbl ptr
 end type
 
+#define IElementBehaviorFocus_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorFocus_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorFocus_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorFocus_GetFocusRect(This, pRect) (This)->lpVtbl->GetFocusRect(This, pRect)
 declare function IElementBehaviorFocus_GetFocusRect_Proxy(byval This as IElementBehaviorFocus ptr, byval pRect as RECT ptr) as HRESULT
 declare sub IElementBehaviorFocus_GetFocusRect_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorLayout_INTERFACE_DEFINED__
@@ -18912,6 +24856,14 @@ end type
 type IElementBehaviorLayout_
 	lpVtbl as IElementBehaviorLayoutVtbl ptr
 end type
+
+#define IElementBehaviorLayout_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorLayout_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorLayout_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorLayout_GetSize(This, dwFlags, sizeContent, pptTranslateBy, pptTopLeft, psizeProposed) (This)->lpVtbl->GetSize(This, dwFlags, sizeContent, pptTranslateBy, pptTopLeft, psizeProposed)
+#define IElementBehaviorLayout_GetLayoutInfo(This, plLayoutInfo) (This)->lpVtbl->GetLayoutInfo(This, plLayoutInfo)
+#define IElementBehaviorLayout_GetPosition(This, lFlags, pptTopLeft) (This)->lpVtbl->GetPosition(This, lFlags, pptTopLeft)
+#define IElementBehaviorLayout_MapSize(This, psizeIn, prcOut) (This)->lpVtbl->MapSize(This, psizeIn, prcOut)
 
 declare function IElementBehaviorLayout_GetSize_Proxy(byval This as IElementBehaviorLayout ptr, byval dwFlags as LONG, byval sizeContent as SIZE, byval pptTranslateBy as POINT ptr, byval pptTopLeft as POINT ptr, byval psizeProposed as SIZE ptr) as HRESULT
 declare sub IElementBehaviorLayout_GetSize_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18936,6 +24888,10 @@ type IElementBehaviorLayout2_
 	lpVtbl as IElementBehaviorLayout2Vtbl ptr
 end type
 
+#define IElementBehaviorLayout2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorLayout2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorLayout2_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorLayout2_GetTextDescent(This, plDescent) (This)->lpVtbl->GetTextDescent(This, plDescent)
 declare function IElementBehaviorLayout2_GetTextDescent_Proxy(byval This as IElementBehaviorLayout2 ptr, byval plDescent as LONG ptr) as HRESULT
 declare sub IElementBehaviorLayout2_GetTextDescent_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorSiteLayout_INTERFACE_DEFINED__
@@ -18954,6 +24910,13 @@ end type
 type IElementBehaviorSiteLayout_
 	lpVtbl as IElementBehaviorSiteLayoutVtbl ptr
 end type
+
+#define IElementBehaviorSiteLayout_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteLayout_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteLayout_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteLayout_InvalidateLayoutInfo(This) (This)->lpVtbl->InvalidateLayoutInfo(This)
+#define IElementBehaviorSiteLayout_InvalidateSize(This) (This)->lpVtbl->InvalidateSize(This)
+#define IElementBehaviorSiteLayout_GetMediaResolution(This, psizeResolution) (This)->lpVtbl->GetMediaResolution(This, psizeResolution)
 
 declare function IElementBehaviorSiteLayout_InvalidateLayoutInfo_Proxy(byval This as IElementBehaviorSiteLayout ptr) as HRESULT
 declare sub IElementBehaviorSiteLayout_InvalidateLayoutInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -18976,6 +24939,10 @@ type IElementBehaviorSiteLayout2_
 	lpVtbl as IElementBehaviorSiteLayout2Vtbl ptr
 end type
 
+#define IElementBehaviorSiteLayout2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IElementBehaviorSiteLayout2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IElementBehaviorSiteLayout2_Release(This) (This)->lpVtbl->Release(This)
+#define IElementBehaviorSiteLayout2_GetFontInfo(This, plf) (This)->lpVtbl->GetFontInfo(This, plf)
 declare function IElementBehaviorSiteLayout2_GetFontInfo_Proxy(byval This as IElementBehaviorSiteLayout2 ptr, byval plf as LOGFONTW ptr) as HRESULT
 declare sub IElementBehaviorSiteLayout2_GetFontInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHostBehaviorInit_INTERFACE_DEFINED__
@@ -18992,6 +24959,11 @@ end type
 type IHostBehaviorInit_
 	lpVtbl as IHostBehaviorInitVtbl ptr
 end type
+
+#define IHostBehaviorInit_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHostBehaviorInit_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHostBehaviorInit_Release(This) (This)->lpVtbl->Release(This)
+#define IHostBehaviorInit_PopulateNamespaceTable(This) (This)->lpVtbl->PopulateNamespaceTable(This)
 
 declare function IHostBehaviorInit_PopulateNamespaceTable_Proxy(byval This as IHostBehaviorInit ptr) as HRESULT
 declare sub IHostBehaviorInit_PopulateNamespaceTable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

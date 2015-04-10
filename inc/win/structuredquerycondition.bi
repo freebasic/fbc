@@ -64,6 +64,11 @@ type IRichChunk_
 	lpVtbl as IRichChunkVtbl ptr
 end type
 
+#define IRichChunk_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IRichChunk_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IRichChunk_Release(This) (This)->lpVtbl->Release(This)
+#define IRichChunk_GetData(This, pFirstPos, pLength, ppsz, pValue) (This)->lpVtbl->GetData(This, pFirstPos, pLength, ppsz, pValue)
+
 declare function IRichChunk_RemoteGetData_Proxy(byval This as IRichChunk ptr, byval pFirstPos as ULONG ptr, byval pLength as ULONG ptr, byval ppsz as LPWSTR ptr, byval pValue as PROPVARIANT ptr) as HRESULT
 declare sub IRichChunk_RemoteGetData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRichChunk_GetData_Proxy(byval This as IRichChunk ptr, byval pFirstPos as ULONG ptr, byval pLength as ULONG ptr, byval ppsz as LPWSTR ptr, byval pValue as PROPVARIANT ptr) as HRESULT
@@ -93,6 +98,22 @@ end type
 type ICondition_
 	lpVtbl as IConditionVtbl ptr
 end type
+
+#define ICondition_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICondition_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICondition_Release(This) (This)->lpVtbl->Release(This)
+#define ICondition_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define ICondition_IsDirty(This) (This)->lpVtbl->IsDirty(This)
+#define ICondition_Load(This, pStm) (This)->lpVtbl->Load(This, pStm)
+#define ICondition_Save(This, pStm, fClearDirty) (This)->lpVtbl->Save(This, pStm, fClearDirty)
+#define ICondition_GetSizeMax(This, pcbSize) (This)->lpVtbl->GetSizeMax(This, pcbSize)
+#define ICondition_GetConditionType(This, pNodeType) (This)->lpVtbl->GetConditionType(This, pNodeType)
+#define ICondition_GetSubConditions(This, riid, ppv) (This)->lpVtbl->GetSubConditions(This, riid, ppv)
+#define ICondition_GetComparisonInfo(This, ppszPropertyName, pcop, ppropvar) (This)->lpVtbl->GetComparisonInfo(This, ppszPropertyName, pcop, ppropvar)
+#define ICondition_GetValueType(This, ppszValueTypeName) (This)->lpVtbl->GetValueType(This, ppszValueTypeName)
+#define ICondition_GetValueNormalization(This, ppszNormalization) (This)->lpVtbl->GetValueNormalization(This, ppszNormalization)
+#define ICondition_GetInputTerms(This, ppPropertyTerm, ppOperationTerm, ppValueTerm) (This)->lpVtbl->GetInputTerms(This, ppPropertyTerm, ppOperationTerm, ppValueTerm)
+#define ICondition_Clone(This, ppc) (This)->lpVtbl->Clone(This, ppc)
 
 declare function ICondition_GetConditionType_Proxy(byval This as ICondition ptr, byval pNodeType as CONDITION_TYPE ptr) as HRESULT
 declare sub ICondition_GetConditionType_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -139,6 +160,24 @@ end type
 type ICondition2_
 	lpVtbl as ICondition2Vtbl ptr
 end type
+
+#define ICondition2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICondition2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICondition2_Release(This) (This)->lpVtbl->Release(This)
+#define ICondition2_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define ICondition2_IsDirty(This) (This)->lpVtbl->IsDirty(This)
+#define ICondition2_Load(This, pStm) (This)->lpVtbl->Load(This, pStm)
+#define ICondition2_Save(This, pStm, fClearDirty) (This)->lpVtbl->Save(This, pStm, fClearDirty)
+#define ICondition2_GetSizeMax(This, pcbSize) (This)->lpVtbl->GetSizeMax(This, pcbSize)
+#define ICondition2_GetConditionType(This, pNodeType) (This)->lpVtbl->GetConditionType(This, pNodeType)
+#define ICondition2_GetSubConditions(This, riid, ppv) (This)->lpVtbl->GetSubConditions(This, riid, ppv)
+#define ICondition2_GetComparisonInfo(This, ppszPropertyName, pcop, ppropvar) (This)->lpVtbl->GetComparisonInfo(This, ppszPropertyName, pcop, ppropvar)
+#define ICondition2_GetValueType(This, ppszValueTypeName) (This)->lpVtbl->GetValueType(This, ppszValueTypeName)
+#define ICondition2_GetValueNormalization(This, ppszNormalization) (This)->lpVtbl->GetValueNormalization(This, ppszNormalization)
+#define ICondition2_GetInputTerms(This, ppPropertyTerm, ppOperationTerm, ppValueTerm) (This)->lpVtbl->GetInputTerms(This, ppPropertyTerm, ppOperationTerm, ppValueTerm)
+#define ICondition2_Clone(This, ppc) (This)->lpVtbl->Clone(This, ppc)
+#define ICondition2_GetLocale(This, ppszLocaleName) (This)->lpVtbl->GetLocale(This, ppszLocaleName)
+#define ICondition2_GetLeafConditionInfo(This, ppropkey, pcop, ppropvar) (This)->lpVtbl->GetLeafConditionInfo(This, ppropkey, pcop, ppropvar)
 
 declare function ICondition2_GetLocale_Proxy(byval This as ICondition2 ptr, byval ppszLocaleName as LPWSTR ptr) as HRESULT
 declare sub ICondition2_GetLocale_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

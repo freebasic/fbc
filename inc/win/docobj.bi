@@ -60,6 +60,13 @@ type IOleDocument_
 	lpVtbl as IOleDocumentVtbl ptr
 end type
 
+#define IOleDocument_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOleDocument_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOleDocument_Release(This) (This)->lpVtbl->Release(This)
+#define IOleDocument_CreateView(This, pIPSite, pstm, dwReserved, ppView) (This)->lpVtbl->CreateView(This, pIPSite, pstm, dwReserved, ppView)
+#define IOleDocument_GetDocMiscStatus(This, pdwStatus) (This)->lpVtbl->GetDocMiscStatus(This, pdwStatus)
+#define IOleDocument_EnumViews(This, ppEnum, ppView) (This)->lpVtbl->EnumViews(This, ppEnum, ppView)
+
 declare function IOleDocument_CreateView_Proxy(byval This as IOleDocument ptr, byval pIPSite as IOleInPlaceSite ptr, byval pstm as IStream ptr, byval dwReserved as DWORD, byval ppView as IOleDocumentView ptr ptr) as HRESULT
 declare sub IOleDocument_CreateView_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleDocument_GetDocMiscStatus_Proxy(byval This as IOleDocument ptr, byval pdwStatus as DWORD ptr) as HRESULT
@@ -83,6 +90,10 @@ type IOleDocumentSite_
 	lpVtbl as IOleDocumentSiteVtbl ptr
 end type
 
+#define IOleDocumentSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOleDocumentSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOleDocumentSite_Release(This) (This)->lpVtbl->Release(This)
+#define IOleDocumentSite_ActivateMe(This, pViewToActivate) (This)->lpVtbl->ActivateMe(This, pViewToActivate)
 declare function IOleDocumentSite_ActivateMe_Proxy(byval This as IOleDocumentSite ptr, byval pViewToActivate as IOleDocumentView ptr) as HRESULT
 declare sub IOleDocumentSite_ActivateMe_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define _LPOLEDOCUMENTVIEW_DEFINED
@@ -112,6 +123,23 @@ end type
 type IOleDocumentView_
 	lpVtbl as IOleDocumentViewVtbl ptr
 end type
+
+#define IOleDocumentView_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOleDocumentView_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOleDocumentView_Release(This) (This)->lpVtbl->Release(This)
+#define IOleDocumentView_SetInPlaceSite(This, pIPSite) (This)->lpVtbl->SetInPlaceSite(This, pIPSite)
+#define IOleDocumentView_GetInPlaceSite(This, ppIPSite) (This)->lpVtbl->GetInPlaceSite(This, ppIPSite)
+#define IOleDocumentView_GetDocument(This, ppunk) (This)->lpVtbl->GetDocument(This, ppunk)
+#define IOleDocumentView_SetRect(This, prcView) (This)->lpVtbl->SetRect(This, prcView)
+#define IOleDocumentView_GetRect(This, prcView) (This)->lpVtbl->GetRect(This, prcView)
+#define IOleDocumentView_SetRectComplex(This, prcView, prcHScroll, prcVScroll, prcSizeBox) (This)->lpVtbl->SetRectComplex(This, prcView, prcHScroll, prcVScroll, prcSizeBox)
+#define IOleDocumentView_Show(This, fShow) (This)->lpVtbl->Show(This, fShow)
+#define IOleDocumentView_UIActivate(This, fUIActivate) (This)->lpVtbl->UIActivate(This, fUIActivate)
+#define IOleDocumentView_Open(This) (This)->lpVtbl->Open(This)
+#define IOleDocumentView_CloseView(This, dwReserved) (This)->lpVtbl->CloseView(This, dwReserved)
+#define IOleDocumentView_SaveViewState(This, pstm) (This)->lpVtbl->SaveViewState(This, pstm)
+#define IOleDocumentView_ApplyViewState(This, pstm) (This)->lpVtbl->ApplyViewState(This, pstm)
+#define IOleDocumentView_Clone(This, pIPSiteNew, ppViewNew) (This)->lpVtbl->Clone(This, pIPSiteNew, ppViewNew)
 
 declare function IOleDocumentView_SetInPlaceSite_Proxy(byval This as IOleDocumentView ptr, byval pIPSite as IOleInPlaceSite ptr) as HRESULT
 declare sub IOleDocumentView_SetInPlaceSite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -158,6 +186,14 @@ type IEnumOleDocumentViews_
 	lpVtbl as IEnumOleDocumentViewsVtbl ptr
 end type
 
+#define IEnumOleDocumentViews_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumOleDocumentViews_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumOleDocumentViews_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumOleDocumentViews_Next(This, cViews, rgpView, pcFetched) (This)->lpVtbl->Next(This, cViews, rgpView, pcFetched)
+#define IEnumOleDocumentViews_Skip(This, cViews) (This)->lpVtbl->Skip(This, cViews)
+#define IEnumOleDocumentViews_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumOleDocumentViews_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
+
 declare function IEnumOleDocumentViews_RemoteNext_Proxy(byval This as IEnumOleDocumentViews ptr, byval cViews as ULONG, byval rgpView as IOleDocumentView ptr ptr, byval pcFetched as ULONG ptr) as HRESULT
 declare sub IEnumOleDocumentViews_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumOleDocumentViews_Skip_Proxy(byval This as IEnumOleDocumentViews ptr, byval cViews as ULONG) as HRESULT
@@ -185,6 +221,12 @@ end type
 type IContinueCallback_
 	lpVtbl as IContinueCallbackVtbl ptr
 end type
+
+#define IContinueCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IContinueCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IContinueCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IContinueCallback_FContinue(This) (This)->lpVtbl->FContinue(This)
+#define IContinueCallback_FContinuePrinting(This, nCntPrinted, nCurPage, pwszPrintStatus) (This)->lpVtbl->FContinuePrinting(This, nCntPrinted, nCurPage, pwszPrintStatus)
 
 declare function IContinueCallback_FContinue_Proxy(byval This as IContinueCallback ptr) as HRESULT
 declare sub IContinueCallback_FContinue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -239,6 +281,13 @@ end type
 type IPrint_
 	lpVtbl as IPrintVtbl ptr
 end type
+
+#define IPrint_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPrint_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPrint_Release(This) (This)->lpVtbl->Release(This)
+#define IPrint_SetInitialPageNum(This, nFirstPage) (This)->lpVtbl->SetInitialPageNum(This, nFirstPage)
+#define IPrint_GetPageInfo(This, pnFirstPage, pcPages) (This)->lpVtbl->GetPageInfo(This, pnFirstPage, pcPages)
+#define IPrint_Print(This, grfFlags, pptd, ppPageSet, pstgmOptions, pcallback, nFirstPage, pcPagesPrinted, pnLastPage) (This)->lpVtbl->Print(This, grfFlags, pptd, ppPageSet, pstgmOptions, pcallback, nFirstPage, pcPagesPrinted, pnLastPage)
 
 declare function IPrint_SetInitialPageNum_Proxy(byval This as IPrint ptr, byval nFirstPage as LONG) as HRESULT
 declare sub IPrint_SetInitialPageNum_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -434,6 +483,12 @@ type IOleCommandTarget_
 	lpVtbl as IOleCommandTargetVtbl ptr
 end type
 
+#define IOleCommandTarget_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOleCommandTarget_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOleCommandTarget_Release(This) (This)->lpVtbl->Release(This)
+#define IOleCommandTarget_QueryStatus(This, pguidCmdGroup, cCmds, prgCmds, pCmdText) (This)->lpVtbl->QueryStatus(This, pguidCmdGroup, cCmds, prgCmds, pCmdText)
+#define IOleCommandTarget_Exec(This, pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) (This)->lpVtbl->Exec(This, pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut)
+
 declare function IOleCommandTarget_QueryStatus_Proxy(byval This as IOleCommandTarget ptr, byval pguidCmdGroup as const GUID ptr, byval cCmds as ULONG, byval prgCmds as OLECMD ptr, byval pCmdText as OLECMDTEXT ptr) as HRESULT
 declare sub IOleCommandTarget_QueryStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOleCommandTarget_Exec_Proxy(byval This as IOleCommandTarget ptr, byval pguidCmdGroup as const GUID ptr, byval nCmdID as DWORD, byval nCmdexecopt as DWORD, byval pvaIn as VARIANT ptr, byval pvaOut as VARIANT ptr) as HRESULT
@@ -609,6 +664,10 @@ type IZoomEvents_
 	lpVtbl as IZoomEventsVtbl ptr
 end type
 
+#define IZoomEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IZoomEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IZoomEvents_Release(This) (This)->lpVtbl->Release(This)
+#define IZoomEvents_OnZoomPercentChanged(This, ulZoomPercent) (This)->lpVtbl->OnZoomPercentChanged(This, ulZoomPercent)
 declare function IZoomEvents_OnZoomPercentChanged_Proxy(byval This as IZoomEvents ptr, byval ulZoomPercent as ULONG) as HRESULT
 declare sub IZoomEvents_OnZoomPercentChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IProtectFocus_INTERFACE_DEFINED__
@@ -626,6 +685,10 @@ type IProtectFocus_
 	lpVtbl as IProtectFocusVtbl ptr
 end type
 
+#define IProtectFocus_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IProtectFocus_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IProtectFocus_Release(This) (This)->lpVtbl->Release(This)
+#define IProtectFocus_AllowFocusChange(This, pfAllow) (This)->lpVtbl->AllowFocusChange(This, pfAllow)
 declare function IProtectFocus_AllowFocusChange_Proxy(byval This as IProtectFocus ptr, byval pfAllow as WINBOOL ptr) as HRESULT
 declare sub IProtectFocus_AllowFocusChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define SID_SProtectFocus IID_IProtectFocus
@@ -646,6 +709,13 @@ end type
 type IProtectedModeMenuServices_
 	lpVtbl as IProtectedModeMenuServicesVtbl ptr
 end type
+
+#define IProtectedModeMenuServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IProtectedModeMenuServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IProtectedModeMenuServices_Release(This) (This)->lpVtbl->Release(This)
+#define IProtectedModeMenuServices_CreateMenu(This, phMenu) (This)->lpVtbl->CreateMenu(This, phMenu)
+#define IProtectedModeMenuServices_LoadMenu(This, pszModuleName, pszMenuName, phMenu) (This)->lpVtbl->LoadMenu(This, pszModuleName, pszMenuName, phMenu)
+#define IProtectedModeMenuServices_LoadMenuID(This, pszModuleName, wResourceID, phMenu) (This)->lpVtbl->LoadMenuID(This, pszModuleName, wResourceID, phMenu)
 
 declare function IProtectedModeMenuServices_CreateMenu_Proxy(byval This as IProtectedModeMenuServices ptr, byval phMenu as HMENU ptr) as HRESULT
 declare sub IProtectedModeMenuServices_CreateMenu_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

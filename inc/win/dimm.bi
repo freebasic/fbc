@@ -81,6 +81,14 @@ type IEnumRegisterWordA_
 	lpVtbl as IEnumRegisterWordAVtbl ptr
 end type
 
+#define IEnumRegisterWordA_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumRegisterWordA_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumRegisterWordA_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumRegisterWordA_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
+#define IEnumRegisterWordA_Next(This, ulCount, rgRegisterWord, pcFetched) (This)->lpVtbl->Next(This, ulCount, rgRegisterWord, pcFetched)
+#define IEnumRegisterWordA_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumRegisterWordA_Skip(This, ulCount) (This)->lpVtbl->Skip(This, ulCount)
+
 declare function IEnumRegisterWordA_Clone_Proxy(byval This as IEnumRegisterWordA ptr, byval ppEnum as IEnumRegisterWordA ptr ptr) as HRESULT
 declare sub IEnumRegisterWordA_Clone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumRegisterWordA_Next_Proxy(byval This as IEnumRegisterWordA ptr, byval ulCount as ULONG, byval rgRegisterWord as REGISTERWORDA ptr, byval pcFetched as ULONG ptr) as HRESULT
@@ -106,6 +114,14 @@ end type
 type IEnumRegisterWordW_
 	lpVtbl as IEnumRegisterWordWVtbl ptr
 end type
+
+#define IEnumRegisterWordW_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumRegisterWordW_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumRegisterWordW_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumRegisterWordW_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
+#define IEnumRegisterWordW_Next(This, ulCount, rgRegisterWord, pcFetched) (This)->lpVtbl->Next(This, ulCount, rgRegisterWord, pcFetched)
+#define IEnumRegisterWordW_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumRegisterWordW_Skip(This, ulCount) (This)->lpVtbl->Skip(This, ulCount)
 
 declare function IEnumRegisterWordW_Clone_Proxy(byval This as IEnumRegisterWordW ptr, byval ppEnum as IEnumRegisterWordW ptr ptr) as HRESULT
 declare sub IEnumRegisterWordW_Clone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -133,6 +149,14 @@ type IEnumInputContext_
 	lpVtbl as IEnumInputContextVtbl ptr
 end type
 
+#define IEnumInputContext_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumInputContext_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumInputContext_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumInputContext_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
+#define IEnumInputContext_Next(This, ulCount, rgInputContext, pcFetched) (This)->lpVtbl->Next(This, ulCount, rgInputContext, pcFetched)
+#define IEnumInputContext_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumInputContext_Skip(This, ulCount) (This)->lpVtbl->Skip(This, ulCount)
+
 declare function IEnumInputContext_Clone_Proxy(byval This as IEnumInputContext ptr, byval ppEnum as IEnumInputContext ptr ptr) as HRESULT
 declare sub IEnumInputContext_Clone_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IEnumInputContext_Next_Proxy(byval This as IEnumInputContext ptr, byval ulCount as ULONG, byval rgInputContext as HIMC ptr, byval pcFetched as ULONG ptr) as HRESULT
@@ -157,6 +181,12 @@ type IActiveIMMRegistrar_
 	lpVtbl as IActiveIMMRegistrarVtbl ptr
 end type
 
+#define IActiveIMMRegistrar_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIMMRegistrar_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIMMRegistrar_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIMMRegistrar_RegisterIME(This, rclsid, lgid, pszIconFile, pszDesc) (This)->lpVtbl->RegisterIME(This, rclsid, lgid, pszIconFile, pszDesc)
+#define IActiveIMMRegistrar_UnregisterIME(This, rclsid) (This)->lpVtbl->UnregisterIME(This, rclsid)
+
 declare function IActiveIMMRegistrar_RegisterIME_Proxy(byval This as IActiveIMMRegistrar ptr, byval rclsid as const IID const ptr, byval lgid as LANGID, byval pszIconFile as LPCWSTR, byval pszDesc as LPCWSTR) as HRESULT
 declare sub IActiveIMMRegistrar_RegisterIME_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMRegistrar_UnregisterIME_Proxy(byval This as IActiveIMMRegistrar ptr, byval rclsid as const IID const ptr) as HRESULT
@@ -179,6 +209,15 @@ end type
 type IActiveIMMMessagePumpOwner_
 	lpVtbl as IActiveIMMMessagePumpOwnerVtbl ptr
 end type
+
+#define IActiveIMMMessagePumpOwner_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIMMMessagePumpOwner_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIMMMessagePumpOwner_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIMMMessagePumpOwner_Start(This) (This)->lpVtbl->Start(This)
+#define IActiveIMMMessagePumpOwner_End(This) (This)->lpVtbl->End(This)
+#define IActiveIMMMessagePumpOwner_OnTranslateMessage(This, pMsg) (This)->lpVtbl->OnTranslateMessage(This, pMsg)
+#define IActiveIMMMessagePumpOwner_Pause(This, pdwCookie) (This)->lpVtbl->Pause(This, pdwCookie)
+#define IActiveIMMMessagePumpOwner_Resume(This, dwCookie) (This)->lpVtbl->Resume(This, dwCookie)
 
 declare function IActiveIMMMessagePumpOwner_Start_Proxy(byval This as IActiveIMMMessagePumpOwner ptr) as HRESULT
 declare sub IActiveIMMMessagePumpOwner_Start_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -271,6 +310,78 @@ end type
 type IActiveIMMApp_
 	lpVtbl as IActiveIMMAppVtbl ptr
 end type
+
+#define IActiveIMMApp_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIMMApp_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIMMApp_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIMMApp_AssociateContext(This, hWnd, hIME, phPrev) (This)->lpVtbl->AssociateContext(This, hWnd, hIME, phPrev)
+#define IActiveIMMApp_ConfigureIMEA(This, hKL, hWnd, dwMode, pData) (This)->lpVtbl->ConfigureIMEA(This, hKL, hWnd, dwMode, pData)
+#define IActiveIMMApp_ConfigureIMEW(This, hKL, hWnd, dwMode, pData) (This)->lpVtbl->ConfigureIMEW(This, hKL, hWnd, dwMode, pData)
+#define IActiveIMMApp_CreateContext(This, phIMC) (This)->lpVtbl->CreateContext(This, phIMC)
+#define IActiveIMMApp_DestroyContext(This, hIME) (This)->lpVtbl->DestroyContext(This, hIME)
+#define IActiveIMMApp_EnumRegisterWordA(This, hKL, szReading, dwStyle, szRegister, pData, pEnum) (This)->lpVtbl->EnumRegisterWordA(This, hKL, szReading, dwStyle, szRegister, pData, pEnum)
+#define IActiveIMMApp_EnumRegisterWordW(This, hKL, szReading, dwStyle, szRegister, pData, pEnum) (This)->lpVtbl->EnumRegisterWordW(This, hKL, szReading, dwStyle, szRegister, pData, pEnum)
+#define IActiveIMMApp_EscapeA(This, hKL, hIMC, uEscape, pData, plResult) (This)->lpVtbl->EscapeA(This, hKL, hIMC, uEscape, pData, plResult)
+#define IActiveIMMApp_EscapeW(This, hKL, hIMC, uEscape, pData, plResult) (This)->lpVtbl->EscapeW(This, hKL, hIMC, uEscape, pData, plResult)
+#define IActiveIMMApp_GetCandidateListA(This, hIMC, dwIndex, uBufLen, pCandList, puCopied) (This)->lpVtbl->GetCandidateListA(This, hIMC, dwIndex, uBufLen, pCandList, puCopied)
+#define IActiveIMMApp_GetCandidateListW(This, hIMC, dwIndex, uBufLen, pCandList, puCopied) (This)->lpVtbl->GetCandidateListW(This, hIMC, dwIndex, uBufLen, pCandList, puCopied)
+#define IActiveIMMApp_GetCandidateListCountA(This, hIMC, pdwListSize, pdwBufLen) (This)->lpVtbl->GetCandidateListCountA(This, hIMC, pdwListSize, pdwBufLen)
+#define IActiveIMMApp_GetCandidateListCountW(This, hIMC, pdwListSize, pdwBufLen) (This)->lpVtbl->GetCandidateListCountW(This, hIMC, pdwListSize, pdwBufLen)
+#define IActiveIMMApp_GetCandidateWindow(This, hIMC, dwIndex, pCandidate) (This)->lpVtbl->GetCandidateWindow(This, hIMC, dwIndex, pCandidate)
+#define IActiveIMMApp_GetCompositionFontA(This, hIMC, plf) (This)->lpVtbl->GetCompositionFontA(This, hIMC, plf)
+#define IActiveIMMApp_GetCompositionFontW(This, hIMC, plf) (This)->lpVtbl->GetCompositionFontW(This, hIMC, plf)
+#define IActiveIMMApp_GetCompositionStringA(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf) (This)->lpVtbl->GetCompositionStringA(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf)
+#define IActiveIMMApp_GetCompositionStringW(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf) (This)->lpVtbl->GetCompositionStringW(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf)
+#define IActiveIMMApp_GetCompositionWindow(This, hIMC, pCompForm) (This)->lpVtbl->GetCompositionWindow(This, hIMC, pCompForm)
+#define IActiveIMMApp_GetContext(This, hWnd, phIMC) (This)->lpVtbl->GetContext(This, hWnd, phIMC)
+#define IActiveIMMApp_GetConversionListA(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied) (This)->lpVtbl->GetConversionListA(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied)
+#define IActiveIMMApp_GetConversionListW(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied) (This)->lpVtbl->GetConversionListW(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied)
+#define IActiveIMMApp_GetConversionStatus(This, hIMC, pfdwConversion, pfdwSentence) (This)->lpVtbl->GetConversionStatus(This, hIMC, pfdwConversion, pfdwSentence)
+#define IActiveIMMApp_GetDefaultIMEWnd(This, hWnd, phDefWnd) (This)->lpVtbl->GetDefaultIMEWnd(This, hWnd, phDefWnd)
+#define IActiveIMMApp_GetDescriptionA(This, hKL, uBufLen, szDescription, puCopied) (This)->lpVtbl->GetDescriptionA(This, hKL, uBufLen, szDescription, puCopied)
+#define IActiveIMMApp_GetDescriptionW(This, hKL, uBufLen, szDescription, puCopied) (This)->lpVtbl->GetDescriptionW(This, hKL, uBufLen, szDescription, puCopied)
+#define IActiveIMMApp_GetGuideLineA(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult) (This)->lpVtbl->GetGuideLineA(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult)
+#define IActiveIMMApp_GetGuideLineW(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult) (This)->lpVtbl->GetGuideLineW(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult)
+#define IActiveIMMApp_GetIMEFileNameA(This, hKL, uBufLen, szFileName, puCopied) (This)->lpVtbl->GetIMEFileNameA(This, hKL, uBufLen, szFileName, puCopied)
+#define IActiveIMMApp_GetIMEFileNameW(This, hKL, uBufLen, szFileName, puCopied) (This)->lpVtbl->GetIMEFileNameW(This, hKL, uBufLen, szFileName, puCopied)
+#define IActiveIMMApp_GetOpenStatus(This, hIMC) (This)->lpVtbl->GetOpenStatus(This, hIMC)
+#define IActiveIMMApp_GetProperty(This, hKL, fdwIndex, pdwProperty) (This)->lpVtbl->GetProperty(This, hKL, fdwIndex, pdwProperty)
+#define IActiveIMMApp_GetRegisterWordStyleA(This, hKL, nItem, pStyleBuf, puCopied) (This)->lpVtbl->GetRegisterWordStyleA(This, hKL, nItem, pStyleBuf, puCopied)
+#define IActiveIMMApp_GetRegisterWordStyleW(This, hKL, nItem, pStyleBuf, puCopied) (This)->lpVtbl->GetRegisterWordStyleW(This, hKL, nItem, pStyleBuf, puCopied)
+#define IActiveIMMApp_GetStatusWindowPos(This, hIMC, pptPos) (This)->lpVtbl->GetStatusWindowPos(This, hIMC, pptPos)
+#define IActiveIMMApp_GetVirtualKey(This, hWnd, puVirtualKey) (This)->lpVtbl->GetVirtualKey(This, hWnd, puVirtualKey)
+#define IActiveIMMApp_InstallIMEA(This, szIMEFileName, szLayoutText, phKL) (This)->lpVtbl->InstallIMEA(This, szIMEFileName, szLayoutText, phKL)
+#define IActiveIMMApp_InstallIMEW(This, szIMEFileName, szLayoutText, phKL) (This)->lpVtbl->InstallIMEW(This, szIMEFileName, szLayoutText, phKL)
+#define IActiveIMMApp_IsIME(This, hKL) (This)->lpVtbl->IsIME(This, hKL)
+#define IActiveIMMApp_IsUIMessageA(This, hWndIME, msg, wParam, lParam) (This)->lpVtbl->IsUIMessageA(This, hWndIME, msg, wParam, lParam)
+#define IActiveIMMApp_IsUIMessageW(This, hWndIME, msg, wParam, lParam) (This)->lpVtbl->IsUIMessageW(This, hWndIME, msg, wParam, lParam)
+#define IActiveIMMApp_NotifyIME(This, hIMC, dwAction, dwIndex, dwValue) (This)->lpVtbl->NotifyIME(This, hIMC, dwAction, dwIndex, dwValue)
+#define IActiveIMMApp_RegisterWordA(This, hKL, szReading, dwStyle, szRegister) (This)->lpVtbl->RegisterWordA(This, hKL, szReading, dwStyle, szRegister)
+#define IActiveIMMApp_RegisterWordW(This, hKL, szReading, dwStyle, szRegister) (This)->lpVtbl->RegisterWordW(This, hKL, szReading, dwStyle, szRegister)
+#define IActiveIMMApp_ReleaseContext(This, hWnd, hIMC) (This)->lpVtbl->ReleaseContext(This, hWnd, hIMC)
+#define IActiveIMMApp_SetCandidateWindow(This, hIMC, pCandidate) (This)->lpVtbl->SetCandidateWindow(This, hIMC, pCandidate)
+#define IActiveIMMApp_SetCompositionFontA(This, hIMC, plf) (This)->lpVtbl->SetCompositionFontA(This, hIMC, plf)
+#define IActiveIMMApp_SetCompositionFontW(This, hIMC, plf) (This)->lpVtbl->SetCompositionFontW(This, hIMC, plf)
+#define IActiveIMMApp_SetCompositionStringA(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionStringA(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIMMApp_SetCompositionStringW(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionStringW(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIMMApp_SetCompositionWindow(This, hIMC, pCompForm) (This)->lpVtbl->SetCompositionWindow(This, hIMC, pCompForm)
+#define IActiveIMMApp_SetConversionStatus(This, hIMC, fdwConversion, fdwSentence) (This)->lpVtbl->SetConversionStatus(This, hIMC, fdwConversion, fdwSentence)
+#define IActiveIMMApp_SetOpenStatus(This, hIMC, fOpen) (This)->lpVtbl->SetOpenStatus(This, hIMC, fOpen)
+#define IActiveIMMApp_SetStatusWindowPos(This, hIMC, pptPos) (This)->lpVtbl->SetStatusWindowPos(This, hIMC, pptPos)
+#define IActiveIMMApp_SimulateHotKey(This, hWnd, dwHotKeyID) (This)->lpVtbl->SimulateHotKey(This, hWnd, dwHotKeyID)
+#define IActiveIMMApp_UnregisterWordA(This, hKL, szReading, dwStyle, szUnregister) (This)->lpVtbl->UnregisterWordA(This, hKL, szReading, dwStyle, szUnregister)
+#define IActiveIMMApp_UnregisterWordW(This, hKL, szReading, dwStyle, szUnregister) (This)->lpVtbl->UnregisterWordW(This, hKL, szReading, dwStyle, szUnregister)
+#define IActiveIMMApp_Activate(This, fRestoreLayout) (This)->lpVtbl->Activate(This, fRestoreLayout)
+#define IActiveIMMApp_Deactivate(This) (This)->lpVtbl->Deactivate(This)
+#define IActiveIMMApp_OnDefWindowProc(This, hWnd, Msg, wParam, lParam, plResult) (This)->lpVtbl->OnDefWindowProc(This, hWnd, Msg, wParam, lParam, plResult)
+#define IActiveIMMApp_FilterClientWindows(This, aaClassList, uSize) (This)->lpVtbl->FilterClientWindows(This, aaClassList, uSize)
+#define IActiveIMMApp_GetCodePageA(This, hKL, uCodePage) (This)->lpVtbl->GetCodePageA(This, hKL, uCodePage)
+#define IActiveIMMApp_GetLangId(This, hKL, plid) (This)->lpVtbl->GetLangId(This, hKL, plid)
+#define IActiveIMMApp_AssociateContextEx(This, hWnd, hIMC, dwFlags) (This)->lpVtbl->AssociateContextEx(This, hWnd, hIMC, dwFlags)
+#define IActiveIMMApp_DisableIME(This, idThread) (This)->lpVtbl->DisableIME(This, idThread)
+#define IActiveIMMApp_GetImeMenuItemsA(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult) (This)->lpVtbl->GetImeMenuItemsA(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult)
+#define IActiveIMMApp_GetImeMenuItemsW(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult) (This)->lpVtbl->GetImeMenuItemsW(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult)
+#define IActiveIMMApp_EnumInputContext(This, idThread, ppEnum) (This)->lpVtbl->EnumInputContext(This, idThread, ppEnum)
 
 declare function IActiveIMMApp_AssociateContext_Proxy(byval This as IActiveIMMApp ptr, byval hWnd as HWND, byval hIME as HIMC, byval phPrev as HIMC ptr) as HRESULT
 declare sub IActiveIMMApp_AssociateContext_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -510,6 +621,98 @@ type IActiveIMMIME_
 	lpVtbl as IActiveIMMIMEVtbl ptr
 end type
 
+#define IActiveIMMIME_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIMMIME_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIMMIME_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIMMIME_AssociateContext(This, hWnd, hIME, phPrev) (This)->lpVtbl->AssociateContext(This, hWnd, hIME, phPrev)
+#define IActiveIMMIME_ConfigureIMEA(This, hKL, hWnd, dwMode, pData) (This)->lpVtbl->ConfigureIMEA(This, hKL, hWnd, dwMode, pData)
+#define IActiveIMMIME_ConfigureIMEW(This, hKL, hWnd, dwMode, pData) (This)->lpVtbl->ConfigureIMEW(This, hKL, hWnd, dwMode, pData)
+#define IActiveIMMIME_CreateContext(This, phIMC) (This)->lpVtbl->CreateContext(This, phIMC)
+#define IActiveIMMIME_DestroyContext(This, hIME) (This)->lpVtbl->DestroyContext(This, hIME)
+#define IActiveIMMIME_EnumRegisterWordA(This, hKL, szReading, dwStyle, szRegister, pData, pEnum) (This)->lpVtbl->EnumRegisterWordA(This, hKL, szReading, dwStyle, szRegister, pData, pEnum)
+#define IActiveIMMIME_EnumRegisterWordW(This, hKL, szReading, dwStyle, szRegister, pData, pEnum) (This)->lpVtbl->EnumRegisterWordW(This, hKL, szReading, dwStyle, szRegister, pData, pEnum)
+#define IActiveIMMIME_EscapeA(This, hKL, hIMC, uEscape, pData, plResult) (This)->lpVtbl->EscapeA(This, hKL, hIMC, uEscape, pData, plResult)
+#define IActiveIMMIME_EscapeW(This, hKL, hIMC, uEscape, pData, plResult) (This)->lpVtbl->EscapeW(This, hKL, hIMC, uEscape, pData, plResult)
+#define IActiveIMMIME_GetCandidateListA(This, hIMC, dwIndex, uBufLen, pCandList, puCopied) (This)->lpVtbl->GetCandidateListA(This, hIMC, dwIndex, uBufLen, pCandList, puCopied)
+#define IActiveIMMIME_GetCandidateListW(This, hIMC, dwIndex, uBufLen, pCandList, puCopied) (This)->lpVtbl->GetCandidateListW(This, hIMC, dwIndex, uBufLen, pCandList, puCopied)
+#define IActiveIMMIME_GetCandidateListCountA(This, hIMC, pdwListSize, pdwBufLen) (This)->lpVtbl->GetCandidateListCountA(This, hIMC, pdwListSize, pdwBufLen)
+#define IActiveIMMIME_GetCandidateListCountW(This, hIMC, pdwListSize, pdwBufLen) (This)->lpVtbl->GetCandidateListCountW(This, hIMC, pdwListSize, pdwBufLen)
+#define IActiveIMMIME_GetCandidateWindow(This, hIMC, dwIndex, pCandidate) (This)->lpVtbl->GetCandidateWindow(This, hIMC, dwIndex, pCandidate)
+#define IActiveIMMIME_GetCompositionFontA(This, hIMC, plf) (This)->lpVtbl->GetCompositionFontA(This, hIMC, plf)
+#define IActiveIMMIME_GetCompositionFontW(This, hIMC, plf) (This)->lpVtbl->GetCompositionFontW(This, hIMC, plf)
+#define IActiveIMMIME_GetCompositionStringA(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf) (This)->lpVtbl->GetCompositionStringA(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf)
+#define IActiveIMMIME_GetCompositionStringW(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf) (This)->lpVtbl->GetCompositionStringW(This, hIMC, dwIndex, dwBufLen, plCopied, pBuf)
+#define IActiveIMMIME_GetCompositionWindow(This, hIMC, pCompForm) (This)->lpVtbl->GetCompositionWindow(This, hIMC, pCompForm)
+#define IActiveIMMIME_GetContext(This, hWnd, phIMC) (This)->lpVtbl->GetContext(This, hWnd, phIMC)
+#define IActiveIMMIME_GetConversionListA(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied) (This)->lpVtbl->GetConversionListA(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied)
+#define IActiveIMMIME_GetConversionListW(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied) (This)->lpVtbl->GetConversionListW(This, hKL, hIMC, pSrc, uBufLen, uFlag, pDst, puCopied)
+#define IActiveIMMIME_GetConversionStatus(This, hIMC, pfdwConversion, pfdwSentence) (This)->lpVtbl->GetConversionStatus(This, hIMC, pfdwConversion, pfdwSentence)
+#define IActiveIMMIME_GetDefaultIMEWnd(This, hWnd, phDefWnd) (This)->lpVtbl->GetDefaultIMEWnd(This, hWnd, phDefWnd)
+#define IActiveIMMIME_GetDescriptionA(This, hKL, uBufLen, szDescription, puCopied) (This)->lpVtbl->GetDescriptionA(This, hKL, uBufLen, szDescription, puCopied)
+#define IActiveIMMIME_GetDescriptionW(This, hKL, uBufLen, szDescription, puCopied) (This)->lpVtbl->GetDescriptionW(This, hKL, uBufLen, szDescription, puCopied)
+#define IActiveIMMIME_GetGuideLineA(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult) (This)->lpVtbl->GetGuideLineA(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult)
+#define IActiveIMMIME_GetGuideLineW(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult) (This)->lpVtbl->GetGuideLineW(This, hIMC, dwIndex, dwBufLen, pBuf, pdwResult)
+#define IActiveIMMIME_GetIMEFileNameA(This, hKL, uBufLen, szFileName, puCopied) (This)->lpVtbl->GetIMEFileNameA(This, hKL, uBufLen, szFileName, puCopied)
+#define IActiveIMMIME_GetIMEFileNameW(This, hKL, uBufLen, szFileName, puCopied) (This)->lpVtbl->GetIMEFileNameW(This, hKL, uBufLen, szFileName, puCopied)
+#define IActiveIMMIME_GetOpenStatus(This, hIMC) (This)->lpVtbl->GetOpenStatus(This, hIMC)
+#define IActiveIMMIME_GetProperty(This, hKL, fdwIndex, pdwProperty) (This)->lpVtbl->GetProperty(This, hKL, fdwIndex, pdwProperty)
+#define IActiveIMMIME_GetRegisterWordStyleA(This, hKL, nItem, pStyleBuf, puCopied) (This)->lpVtbl->GetRegisterWordStyleA(This, hKL, nItem, pStyleBuf, puCopied)
+#define IActiveIMMIME_GetRegisterWordStyleW(This, hKL, nItem, pStyleBuf, puCopied) (This)->lpVtbl->GetRegisterWordStyleW(This, hKL, nItem, pStyleBuf, puCopied)
+#define IActiveIMMIME_GetStatusWindowPos(This, hIMC, pptPos) (This)->lpVtbl->GetStatusWindowPos(This, hIMC, pptPos)
+#define IActiveIMMIME_GetVirtualKey(This, hWnd, puVirtualKey) (This)->lpVtbl->GetVirtualKey(This, hWnd, puVirtualKey)
+#define IActiveIMMIME_InstallIMEA(This, szIMEFileName, szLayoutText, phKL) (This)->lpVtbl->InstallIMEA(This, szIMEFileName, szLayoutText, phKL)
+#define IActiveIMMIME_InstallIMEW(This, szIMEFileName, szLayoutText, phKL) (This)->lpVtbl->InstallIMEW(This, szIMEFileName, szLayoutText, phKL)
+#define IActiveIMMIME_IsIME(This, hKL) (This)->lpVtbl->IsIME(This, hKL)
+#define IActiveIMMIME_IsUIMessageA(This, hWndIME, msg, wParam, lParam) (This)->lpVtbl->IsUIMessageA(This, hWndIME, msg, wParam, lParam)
+#define IActiveIMMIME_IsUIMessageW(This, hWndIME, msg, wParam, lParam) (This)->lpVtbl->IsUIMessageW(This, hWndIME, msg, wParam, lParam)
+#define IActiveIMMIME_NotifyIME(This, hIMC, dwAction, dwIndex, dwValue) (This)->lpVtbl->NotifyIME(This, hIMC, dwAction, dwIndex, dwValue)
+#define IActiveIMMIME_RegisterWordA(This, hKL, szReading, dwStyle, szRegister) (This)->lpVtbl->RegisterWordA(This, hKL, szReading, dwStyle, szRegister)
+#define IActiveIMMIME_RegisterWordW(This, hKL, szReading, dwStyle, szRegister) (This)->lpVtbl->RegisterWordW(This, hKL, szReading, dwStyle, szRegister)
+#define IActiveIMMIME_ReleaseContext(This, hWnd, hIMC) (This)->lpVtbl->ReleaseContext(This, hWnd, hIMC)
+#define IActiveIMMIME_SetCandidateWindow(This, hIMC, pCandidate) (This)->lpVtbl->SetCandidateWindow(This, hIMC, pCandidate)
+#define IActiveIMMIME_SetCompositionFontA(This, hIMC, plf) (This)->lpVtbl->SetCompositionFontA(This, hIMC, plf)
+#define IActiveIMMIME_SetCompositionFontW(This, hIMC, plf) (This)->lpVtbl->SetCompositionFontW(This, hIMC, plf)
+#define IActiveIMMIME_SetCompositionStringA(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionStringA(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIMMIME_SetCompositionStringW(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionStringW(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIMMIME_SetCompositionWindow(This, hIMC, pCompForm) (This)->lpVtbl->SetCompositionWindow(This, hIMC, pCompForm)
+#define IActiveIMMIME_SetConversionStatus(This, hIMC, fdwConversion, fdwSentence) (This)->lpVtbl->SetConversionStatus(This, hIMC, fdwConversion, fdwSentence)
+#define IActiveIMMIME_SetOpenStatus(This, hIMC, fOpen) (This)->lpVtbl->SetOpenStatus(This, hIMC, fOpen)
+#define IActiveIMMIME_SetStatusWindowPos(This, hIMC, pptPos) (This)->lpVtbl->SetStatusWindowPos(This, hIMC, pptPos)
+#define IActiveIMMIME_SimulateHotKey(This, hWnd, dwHotKeyID) (This)->lpVtbl->SimulateHotKey(This, hWnd, dwHotKeyID)
+#define IActiveIMMIME_UnregisterWordA(This, hKL, szReading, dwStyle, szUnregister) (This)->lpVtbl->UnregisterWordA(This, hKL, szReading, dwStyle, szUnregister)
+#define IActiveIMMIME_UnregisterWordW(This, hKL, szReading, dwStyle, szUnregister) (This)->lpVtbl->UnregisterWordW(This, hKL, szReading, dwStyle, szUnregister)
+#define IActiveIMMIME_GenerateMessage(This, hIMC) (This)->lpVtbl->GenerateMessage(This, hIMC)
+#define IActiveIMMIME_LockIMC(This, hIMC, ppIMC) (This)->lpVtbl->LockIMC(This, hIMC, ppIMC)
+#define IActiveIMMIME_UnlockIMC(This, hIMC) (This)->lpVtbl->UnlockIMC(This, hIMC)
+#define IActiveIMMIME_GetIMCLockCount(This, hIMC, pdwLockCount) (This)->lpVtbl->GetIMCLockCount(This, hIMC, pdwLockCount)
+#define IActiveIMMIME_CreateIMCC(This, dwSize, phIMCC) (This)->lpVtbl->CreateIMCC(This, dwSize, phIMCC)
+#define IActiveIMMIME_DestroyIMCC(This, hIMCC) (This)->lpVtbl->DestroyIMCC(This, hIMCC)
+#define IActiveIMMIME_LockIMCC(This, hIMCC, ppv) (This)->lpVtbl->LockIMCC(This, hIMCC, ppv)
+#define IActiveIMMIME_UnlockIMCC(This, hIMCC) (This)->lpVtbl->UnlockIMCC(This, hIMCC)
+#define IActiveIMMIME_ReSizeIMCC(This, hIMCC, dwSize, phIMCC) (This)->lpVtbl->ReSizeIMCC(This, hIMCC, dwSize, phIMCC)
+#define IActiveIMMIME_GetIMCCSize(This, hIMCC, pdwSize) (This)->lpVtbl->GetIMCCSize(This, hIMCC, pdwSize)
+#define IActiveIMMIME_GetIMCCLockCount(This, hIMCC, pdwLockCount) (This)->lpVtbl->GetIMCCLockCount(This, hIMCC, pdwLockCount)
+#define IActiveIMMIME_GetHotKey(This, dwHotKeyID, puModifiers, puVKey, phKL) (This)->lpVtbl->GetHotKey(This, dwHotKeyID, puModifiers, puVKey, phKL)
+#define IActiveIMMIME_SetHotKey(This, dwHotKeyID, uModifiers, uVKey, hKL) (This)->lpVtbl->SetHotKey(This, dwHotKeyID, uModifiers, uVKey, hKL)
+#define IActiveIMMIME_CreateSoftKeyboard(This, uType, hOwner, x, y, phSoftKbdWnd) (This)->lpVtbl->CreateSoftKeyboard(This, uType, hOwner, x, y, phSoftKbdWnd)
+#define IActiveIMMIME_DestroySoftKeyboard(This, hSoftKbdWnd) (This)->lpVtbl->DestroySoftKeyboard(This, hSoftKbdWnd)
+#define IActiveIMMIME_ShowSoftKeyboard(This, hSoftKbdWnd, nCmdShow) (This)->lpVtbl->ShowSoftKeyboard(This, hSoftKbdWnd, nCmdShow)
+#define IActiveIMMIME_GetCodePageA(This, hKL, uCodePage) (This)->lpVtbl->GetCodePageA(This, hKL, uCodePage)
+#define IActiveIMMIME_GetLangId(This, hKL, plid) (This)->lpVtbl->GetLangId(This, hKL, plid)
+#define IActiveIMMIME_KeybdEvent(This, lgidIME, bVk, bScan, dwFlags, dwExtraInfo) (This)->lpVtbl->KeybdEvent(This, lgidIME, bVk, bScan, dwFlags, dwExtraInfo)
+#define IActiveIMMIME_LockModal(This) (This)->lpVtbl->LockModal(This)
+#define IActiveIMMIME_UnlockModal(This) (This)->lpVtbl->UnlockModal(This)
+#define IActiveIMMIME_AssociateContextEx(This, hWnd, hIMC, dwFlags) (This)->lpVtbl->AssociateContextEx(This, hWnd, hIMC, dwFlags)
+#define IActiveIMMIME_DisableIME(This, idThread) (This)->lpVtbl->DisableIME(This, idThread)
+#define IActiveIMMIME_GetImeMenuItemsA(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult) (This)->lpVtbl->GetImeMenuItemsA(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult)
+#define IActiveIMMIME_GetImeMenuItemsW(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult) (This)->lpVtbl->GetImeMenuItemsW(This, hIMC, dwFlags, dwType, pImeParentMenu, pImeMenu, dwSize, pdwResult)
+#define IActiveIMMIME_EnumInputContext(This, idThread, ppEnum) (This)->lpVtbl->EnumInputContext(This, idThread, ppEnum)
+#define IActiveIMMIME_RequestMessageA(This, hIMC, wParam, lParam, plResult) (This)->lpVtbl->RequestMessageA(This, hIMC, wParam, lParam, plResult)
+#define IActiveIMMIME_RequestMessageW(This, hIMC, wParam, lParam, plResult) (This)->lpVtbl->RequestMessageW(This, hIMC, wParam, lParam, plResult)
+#define IActiveIMMIME_SendIMCA(This, hWnd, uMsg, wParam, lParam, plResult) (This)->lpVtbl->SendIMCA(This, hWnd, uMsg, wParam, lParam, plResult)
+#define IActiveIMMIME_SendIMCW(This, hWnd, uMsg, wParam, lParam, plResult) (This)->lpVtbl->SendIMCW(This, hWnd, uMsg, wParam, lParam, plResult)
+#define IActiveIMMIME_IsSleeping(This) (This)->lpVtbl->IsSleeping(This)
+
 declare function IActiveIMMIME_AssociateContext_Proxy(byval This as IActiveIMMIME ptr, byval hWnd as HWND, byval hIME as HIMC, byval phPrev as HIMC ptr) as HRESULT
 declare sub IActiveIMMIME_AssociateContext_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIMMIME_ConfigureIMEA_Proxy(byval This as IActiveIMMIME ptr, byval hKL as HKL, byval hWnd as HWND, byval dwMode as DWORD, byval pData as REGISTERWORDA ptr) as HRESULT
@@ -717,6 +920,27 @@ type IActiveIME_
 	lpVtbl as IActiveIMEVtbl ptr
 end type
 
+#define IActiveIME_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIME_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIME_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIME_Inquire(This, dwSystemInfoFlags, pIMEInfo, szWndClass, pdwPrivate) (This)->lpVtbl->Inquire(This, dwSystemInfoFlags, pIMEInfo, szWndClass, pdwPrivate)
+#define IActiveIME_ConversionList(This, hIMC, szSource, uFlag, uBufLen, pDest, puCopied) (This)->lpVtbl->ConversionList(This, hIMC, szSource, uFlag, uBufLen, pDest, puCopied)
+#define IActiveIME_Configure(This, hKL, hWnd, dwMode, pRegisterWord) (This)->lpVtbl->Configure(This, hKL, hWnd, dwMode, pRegisterWord)
+#define IActiveIME_Destroy(This, uReserved) (This)->lpVtbl->Destroy(This, uReserved)
+#define IActiveIME_Escape(This, hIMC, uEscape, pData, plResult) (This)->lpVtbl->Escape(This, hIMC, uEscape, pData, plResult)
+#define IActiveIME_SetActiveContext(This, hIMC, fFlag) (This)->lpVtbl->SetActiveContext(This, hIMC, fFlag)
+#define IActiveIME_ProcessKey(This, hIMC, uVirKey, lParam, pbKeyState) (This)->lpVtbl->ProcessKey(This, hIMC, uVirKey, lParam, pbKeyState)
+#define IActiveIME_Notify(This, hIMC, dwAction, dwIndex, dwValue) (This)->lpVtbl->Notify(This, hIMC, dwAction, dwIndex, dwValue)
+#define IActiveIME_Select(This, hIMC, fSelect) (This)->lpVtbl->Select(This, hIMC, fSelect)
+#define IActiveIME_SetCompositionString(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionString(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIME_ToAsciiEx(This, uVirKey, uScanCode, pbKeyState, fuState, hIMC, pdwTransBuf, puSize) (This)->lpVtbl->ToAsciiEx(This, uVirKey, uScanCode, pbKeyState, fuState, hIMC, pdwTransBuf, puSize)
+#define IActiveIME_RegisterWord(This, szReading, dwStyle, szString) (This)->lpVtbl->RegisterWord(This, szReading, dwStyle, szString)
+#define IActiveIME_UnregisterWord(This, szReading, dwStyle, szString) (This)->lpVtbl->UnregisterWord(This, szReading, dwStyle, szString)
+#define IActiveIME_GetRegisterWordStyle(This, nItem, pStyleBuf, puBufSize) (This)->lpVtbl->GetRegisterWordStyle(This, nItem, pStyleBuf, puBufSize)
+#define IActiveIME_EnumRegisterWord(This, szReading, dwStyle, szRegister, pData, ppEnum) (This)->lpVtbl->EnumRegisterWord(This, szReading, dwStyle, szRegister, pData, ppEnum)
+#define IActiveIME_GetCodePageA(This, uCodePage) (This)->lpVtbl->GetCodePageA(This, uCodePage)
+#define IActiveIME_GetLangId(This, plid) (This)->lpVtbl->GetLangId(This, plid)
+
 declare function IActiveIME_Inquire_Proxy(byval This as IActiveIME ptr, byval dwSystemInfoFlags as DWORD, byval pIMEInfo as IMEINFO ptr, byval szWndClass as LPWSTR, byval pdwPrivate as DWORD ptr) as HRESULT
 declare sub IActiveIME_Inquire_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IActiveIME_ConversionList_Proxy(byval This as IActiveIME ptr, byval hIMC as HIMC, byval szSource as LPWSTR, byval uFlag as UINT, byval uBufLen as UINT, byval pDest as CANDIDATELIST ptr, byval puCopied as UINT ptr) as HRESULT
@@ -783,6 +1007,29 @@ end type
 type IActiveIME2_
 	lpVtbl as IActiveIME2Vtbl ptr
 end type
+
+#define IActiveIME2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActiveIME2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActiveIME2_Release(This) (This)->lpVtbl->Release(This)
+#define IActiveIME2_Inquire(This, dwSystemInfoFlags, pIMEInfo, szWndClass, pdwPrivate) (This)->lpVtbl->Inquire(This, dwSystemInfoFlags, pIMEInfo, szWndClass, pdwPrivate)
+#define IActiveIME2_ConversionList(This, hIMC, szSource, uFlag, uBufLen, pDest, puCopied) (This)->lpVtbl->ConversionList(This, hIMC, szSource, uFlag, uBufLen, pDest, puCopied)
+#define IActiveIME2_Configure(This, hKL, hWnd, dwMode, pRegisterWord) (This)->lpVtbl->Configure(This, hKL, hWnd, dwMode, pRegisterWord)
+#define IActiveIME2_Destroy(This, uReserved) (This)->lpVtbl->Destroy(This, uReserved)
+#define IActiveIME2_Escape(This, hIMC, uEscape, pData, plResult) (This)->lpVtbl->Escape(This, hIMC, uEscape, pData, plResult)
+#define IActiveIME2_SetActiveContext(This, hIMC, fFlag) (This)->lpVtbl->SetActiveContext(This, hIMC, fFlag)
+#define IActiveIME2_ProcessKey(This, hIMC, uVirKey, lParam, pbKeyState) (This)->lpVtbl->ProcessKey(This, hIMC, uVirKey, lParam, pbKeyState)
+#define IActiveIME2_Notify(This, hIMC, dwAction, dwIndex, dwValue) (This)->lpVtbl->Notify(This, hIMC, dwAction, dwIndex, dwValue)
+#define IActiveIME2_Select(This, hIMC, fSelect) (This)->lpVtbl->Select(This, hIMC, fSelect)
+#define IActiveIME2_SetCompositionString(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen) (This)->lpVtbl->SetCompositionString(This, hIMC, dwIndex, pComp, dwCompLen, pRead, dwReadLen)
+#define IActiveIME2_ToAsciiEx(This, uVirKey, uScanCode, pbKeyState, fuState, hIMC, pdwTransBuf, puSize) (This)->lpVtbl->ToAsciiEx(This, uVirKey, uScanCode, pbKeyState, fuState, hIMC, pdwTransBuf, puSize)
+#define IActiveIME2_RegisterWord(This, szReading, dwStyle, szString) (This)->lpVtbl->RegisterWord(This, szReading, dwStyle, szString)
+#define IActiveIME2_UnregisterWord(This, szReading, dwStyle, szString) (This)->lpVtbl->UnregisterWord(This, szReading, dwStyle, szString)
+#define IActiveIME2_GetRegisterWordStyle(This, nItem, pStyleBuf, puBufSize) (This)->lpVtbl->GetRegisterWordStyle(This, nItem, pStyleBuf, puBufSize)
+#define IActiveIME2_EnumRegisterWord(This, szReading, dwStyle, szRegister, pData, ppEnum) (This)->lpVtbl->EnumRegisterWord(This, szReading, dwStyle, szRegister, pData, ppEnum)
+#define IActiveIME2_GetCodePageA(This, uCodePage) (This)->lpVtbl->GetCodePageA(This, uCodePage)
+#define IActiveIME2_GetLangId(This, plid) (This)->lpVtbl->GetLangId(This, plid)
+#define IActiveIME2_Sleep(This) (This)->lpVtbl->Sleep_(This)
+#define IActiveIME2_Unsleep(This, fDead) (This)->lpVtbl->Unsleep(This, fDead)
 
 declare function IActiveIME2_Sleep_Proxy(byval This as IActiveIME2 ptr) as HRESULT
 declare sub IActiveIME2_Sleep_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

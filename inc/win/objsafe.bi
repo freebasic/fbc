@@ -39,6 +39,12 @@ type IObjectSafety_
 	lpVtbl as IObjectSafetyVtbl ptr
 end type
 
+#define IObjectSafety_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectSafety_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectSafety_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectSafety_GetInterfaceSafetyOptions(This, riid, pdwSupportedOptions, pdwEnabledOptions) (This)->lpVtbl->GetInterfaceSafetyOptions(This, riid, pdwSupportedOptions, pdwEnabledOptions)
+#define IObjectSafety_SetInterfaceSafetyOptions(This, riid, dwOptionSetMask, dwEnabledOptions) (This)->lpVtbl->SetInterfaceSafetyOptions(This, riid, dwOptionSetMask, dwEnabledOptions)
+
 declare function IObjectSafety_GetInterfaceSafetyOptions_Proxy(byval This as IObjectSafety ptr, byval riid as const IID const ptr, byval pdwSupportedOptions as DWORD ptr, byval pdwEnabledOptions as DWORD ptr) as HRESULT
 declare sub IObjectSafety_GetInterfaceSafetyOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IObjectSafety_SetInterfaceSafetyOptions_Proxy(byval This as IObjectSafety ptr, byval riid as const IID const ptr, byval dwOptionSetMask as DWORD, byval dwEnabledOptions as DWORD) as HRESULT

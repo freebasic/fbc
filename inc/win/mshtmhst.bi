@@ -72,6 +72,10 @@ type IHostDialogHelper_
 	lpVtbl as IHostDialogHelperVtbl ptr
 end type
 
+#define IHostDialogHelper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHostDialogHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHostDialogHelper_Release(This) (This)->lpVtbl->Release(This)
+#define IHostDialogHelper_ShowHTMLDialog(This, hwndParent, pMk, pvarArgIn, pchOptions, pvarArgOut, punkHost) (This)->lpVtbl->ShowHTMLDialog(This, hwndParent, pMk, pvarArgIn, pchOptions, pvarArgOut, punkHost)
 declare function IHostDialogHelper_ShowHTMLDialog_Proxy(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
 declare sub IHostDialogHelper_ShowHTMLDialog_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 extern CLSID_HostDialogHelper as const GUID
@@ -164,6 +168,25 @@ type IDocHostUIHandler_
 	lpVtbl as IDocHostUIHandlerVtbl ptr
 end type
 
+#define IDocHostUIHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDocHostUIHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDocHostUIHandler_Release(This) (This)->lpVtbl->Release(This)
+#define IDocHostUIHandler_ShowContextMenu(This, dwID, ppt, pcmdtReserved, pdispReserved) (This)->lpVtbl->ShowContextMenu(This, dwID, ppt, pcmdtReserved, pdispReserved)
+#define IDocHostUIHandler_GetHostInfo(This, pInfo) (This)->lpVtbl->GetHostInfo(This, pInfo)
+#define IDocHostUIHandler_ShowUI(This, dwID, pActiveObject, pCommandTarget, pFrame, pDoc) (This)->lpVtbl->ShowUI(This, dwID, pActiveObject, pCommandTarget, pFrame, pDoc)
+#define IDocHostUIHandler_HideUI(This) (This)->lpVtbl->HideUI(This)
+#define IDocHostUIHandler_UpdateUI(This) (This)->lpVtbl->UpdateUI(This)
+#define IDocHostUIHandler_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+#define IDocHostUIHandler_OnDocWindowActivate(This, fActivate) (This)->lpVtbl->OnDocWindowActivate(This, fActivate)
+#define IDocHostUIHandler_OnFrameWindowActivate(This, fActivate) (This)->lpVtbl->OnFrameWindowActivate(This, fActivate)
+#define IDocHostUIHandler_ResizeBorder(This, prcBorder, pUIWindow, fRameWindow) (This)->lpVtbl->ResizeBorder(This, prcBorder, pUIWindow, fRameWindow)
+#define IDocHostUIHandler_TranslateAccelerator(This, lpMsg, pguidCmdGroup, nCmdID) (This)->lpVtbl->TranslateAccelerator(This, lpMsg, pguidCmdGroup, nCmdID)
+#define IDocHostUIHandler_GetOptionKeyPath(This, pchKey, dw) (This)->lpVtbl->GetOptionKeyPath(This, pchKey, dw)
+#define IDocHostUIHandler_GetDropTarget(This, pDropTarget, ppDropTarget) (This)->lpVtbl->GetDropTarget(This, pDropTarget, ppDropTarget)
+#define IDocHostUIHandler_GetExternal(This, ppDispatch) (This)->lpVtbl->GetExternal(This, ppDispatch)
+#define IDocHostUIHandler_TranslateUrl(This, dwTranslate, pchURLIn, ppchURLOut) (This)->lpVtbl->TranslateUrl(This, dwTranslate, pchURLIn, ppchURLOut)
+#define IDocHostUIHandler_FilterDataObject(This, pDO, ppDORet) (This)->lpVtbl->FilterDataObject(This, pDO, ppDORet)
+
 declare function IDocHostUIHandler_ShowContextMenu_Proxy(byval This as IDocHostUIHandler ptr, byval dwID as DWORD, byval ppt as POINT ptr, byval pcmdtReserved as IUnknown ptr, byval pdispReserved as IDispatch ptr) as HRESULT
 declare sub IDocHostUIHandler_ShowContextMenu_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDocHostUIHandler_GetHostInfo_Proxy(byval This as IDocHostUIHandler ptr, byval pInfo as DOCHOSTUIINFO ptr) as HRESULT
@@ -224,8 +247,28 @@ type IDocHostUIHandler2_
 	lpVtbl as IDocHostUIHandler2Vtbl ptr
 end type
 
+#define IDocHostUIHandler2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDocHostUIHandler2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDocHostUIHandler2_Release(This) (This)->lpVtbl->Release(This)
+#define IDocHostUIHandler2_ShowContextMenu(This, dwID, ppt, pcmdtReserved, pdispReserved) (This)->lpVtbl->ShowContextMenu(This, dwID, ppt, pcmdtReserved, pdispReserved)
+#define IDocHostUIHandler2_GetHostInfo(This, pInfo) (This)->lpVtbl->GetHostInfo(This, pInfo)
+#define IDocHostUIHandler2_ShowUI(This, dwID, pActiveObject, pCommandTarget, pFrame, pDoc) (This)->lpVtbl->ShowUI(This, dwID, pActiveObject, pCommandTarget, pFrame, pDoc)
+#define IDocHostUIHandler2_HideUI(This) (This)->lpVtbl->HideUI(This)
+#define IDocHostUIHandler2_UpdateUI(This) (This)->lpVtbl->UpdateUI(This)
+#define IDocHostUIHandler2_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+#define IDocHostUIHandler2_OnDocWindowActivate(This, fActivate) (This)->lpVtbl->OnDocWindowActivate(This, fActivate)
+#define IDocHostUIHandler2_OnFrameWindowActivate(This, fActivate) (This)->lpVtbl->OnFrameWindowActivate(This, fActivate)
+#define IDocHostUIHandler2_ResizeBorder(This, prcBorder, pUIWindow, fRameWindow) (This)->lpVtbl->ResizeBorder(This, prcBorder, pUIWindow, fRameWindow)
+#define IDocHostUIHandler2_TranslateAccelerator(This, lpMsg, pguidCmdGroup, nCmdID) (This)->lpVtbl->TranslateAccelerator(This, lpMsg, pguidCmdGroup, nCmdID)
+#define IDocHostUIHandler2_GetOptionKeyPath(This, pchKey, dw) (This)->lpVtbl->GetOptionKeyPath(This, pchKey, dw)
+#define IDocHostUIHandler2_GetDropTarget(This, pDropTarget, ppDropTarget) (This)->lpVtbl->GetDropTarget(This, pDropTarget, ppDropTarget)
+#define IDocHostUIHandler2_GetExternal(This, ppDispatch) (This)->lpVtbl->GetExternal(This, ppDispatch)
+#define IDocHostUIHandler2_TranslateUrl(This, dwTranslate, pchURLIn, ppchURLOut) (This)->lpVtbl->TranslateUrl(This, dwTranslate, pchURLIn, ppchURLOut)
+#define IDocHostUIHandler2_FilterDataObject(This, pDO, ppDORet) (This)->lpVtbl->FilterDataObject(This, pDO, ppDORet)
+#define IDocHostUIHandler2_GetOverrideKeyPath(This, pchKey, dw) (This)->lpVtbl->GetOverrideKeyPath(This, pchKey, dw)
 declare function IDocHostUIHandler2_GetOverrideKeyPath_Proxy(byval This as IDocHostUIHandler2 ptr, byval pchKey as LPOLESTR ptr, byval dw as DWORD) as HRESULT
 declare sub IDocHostUIHandler2_GetOverrideKeyPath_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
+
 extern CGID_DocHostCommandHandler as const GUID
 extern __MIDL_itf_mshtmhst_0279_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_mshtmhst_0279_v0_0_s_ifspec as RPC_IF_HANDLE
@@ -244,6 +287,10 @@ type ICustomDoc_
 	lpVtbl as ICustomDocVtbl ptr
 end type
 
+#define ICustomDoc_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICustomDoc_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICustomDoc_Release(This) (This)->lpVtbl->Release(This)
+#define ICustomDoc_SetUIHandler(This, pUIHandler) (This)->lpVtbl->SetUIHandler(This, pUIHandler)
 declare function ICustomDoc_SetUIHandler_Proxy(byval This as ICustomDoc ptr, byval pUIHandler as IDocHostUIHandler ptr) as HRESULT
 declare sub ICustomDoc_SetUIHandler_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IDocHostShowUI_INTERFACE_DEFINED__
@@ -261,6 +308,12 @@ end type
 type IDocHostShowUI_
 	lpVtbl as IDocHostShowUIVtbl ptr
 end type
+
+#define IDocHostShowUI_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDocHostShowUI_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDocHostShowUI_Release(This) (This)->lpVtbl->Release(This)
+#define IDocHostShowUI_ShowMessage(This, hwnd, lpstrText, lpstrCaption, dwType, lpstrHelpFile, dwHelpContext, plResult) (This)->lpVtbl->ShowMessage(This, hwnd, lpstrText, lpstrCaption, dwType, lpstrHelpFile, dwHelpContext, plResult)
+#define IDocHostShowUI_ShowHelp(This, hwnd, pszHelpFile, uCommand, dwData, ptMouse, pDispatchObjectHit) (This)->lpVtbl->ShowHelp(This, hwnd, pszHelpFile, uCommand, dwData, ptMouse, pDispatchObjectHit)
 
 declare function IDocHostShowUI_ShowMessage_Proxy(byval This as IDocHostShowUI ptr, byval hwnd as HWND, byval lpstrText as LPOLESTR, byval lpstrCaption as LPOLESTR, byval dwType as DWORD, byval lpstrHelpFile as LPOLESTR, byval dwHelpContext as DWORD, byval plResult as LRESULT ptr) as HRESULT
 declare sub IDocHostShowUI_ShowMessage_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -287,6 +340,12 @@ type IClassFactoryEx_
 	lpVtbl as IClassFactoryExVtbl ptr
 end type
 
+#define IClassFactoryEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IClassFactoryEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IClassFactoryEx_Release(This) (This)->lpVtbl->Release(This)
+#define IClassFactoryEx_CreateInstance(This, pUnkOuter, riid, ppvObject) (This)->lpVtbl->CreateInstance(This, pUnkOuter, riid, ppvObject)
+#define IClassFactoryEx_LockServer(This, fLock) (This)->lpVtbl->LockServer(This, fLock)
+#define IClassFactoryEx_CreateInstanceWithContext(This, punkContext, punkOuter, riid, ppv) (This)->lpVtbl->CreateInstanceWithContext(This, punkContext, punkOuter, riid, ppv)
 declare function IClassFactoryEx_CreateInstanceWithContext_Proxy(byval This as IClassFactoryEx ptr, byval punkContext as IUnknown ptr, byval punkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IClassFactoryEx_CreateInstanceWithContext_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLOMWindowServices_INTERFACE_DEFINED__
@@ -306,6 +365,14 @@ end type
 type IHTMLOMWindowServices_
 	lpVtbl as IHTMLOMWindowServicesVtbl ptr
 end type
+
+#define IHTMLOMWindowServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHTMLOMWindowServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHTMLOMWindowServices_Release(This) (This)->lpVtbl->Release(This)
+#define IHTMLOMWindowServices_moveTo(This, x, y) (This)->lpVtbl->moveTo(This, x, y)
+#define IHTMLOMWindowServices_moveBy(This, x, y) (This)->lpVtbl->moveBy(This, x, y)
+#define IHTMLOMWindowServices_resizeTo(This, x, y) (This)->lpVtbl->resizeTo(This, x, y)
+#define IHTMLOMWindowServices_resizeBy(This, x, y) (This)->lpVtbl->resizeBy(This, x, y)
 
 declare function IHTMLOMWindowServices_moveTo_Proxy(byval This as IHTMLOMWindowServices ptr, byval x as LONG, byval y as LONG) as HRESULT
 declare sub IHTMLOMWindowServices_moveTo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
