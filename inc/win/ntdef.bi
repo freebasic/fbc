@@ -400,7 +400,7 @@ type PGROUP_AFFINITY as _GROUP_AFFINITY ptr
 #define RTL_FIELD_SIZE(type, field) sizeof(cptr(type ptr, 0)->field)
 #define RTL_SIZEOF_THROUGH_FIELD(type, field) (FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field))
 #define RTL_CONTAINS_FIELD(Struct, Size, Field) ((cast(PCHAR, @(Struct)->Field) + sizeof((Struct)->Field)) <= (cast(PCHAR, (Struct)) + (Size)))
-#define RTL_NUMBER_OF_V1(A) (sizeof((A)) / sizeof((A)[0]))
+#define RTL_NUMBER_OF_V1(A) (ubound(A) - lbound(A) + 1)
 #define RTL_NUMBER_OF_V2(A) RTL_NUMBER_OF_V1(A)
 #define RTL_NUMBER_OF(A) RTL_NUMBER_OF_V1(A)
 #define ARRAYSIZE(A) RTL_NUMBER_OF_V2(A)

@@ -183,12 +183,12 @@ declare sub SDL_SetMainReady()
 #endif
 
 const SDL_ASSERT_LEVEL = 2
-#define SDL_TriggerBreakpoint() '' TODO: __asm__ __volatile__ ( "int $3\n\t" )
-#define SDL_FUNCTION __func__
+#define SDL_TriggerBreakpoint() asm int 3
+#define SDL_FUNCTION __FUNCTION__
 #define SDL_FILE __FILE__
 #define SDL_LINE __LINE__
 const SDL_NULL_WHILE_LOOP_CONDITION = 0
-#define SDL_disabled_assert(condition) '' TODO: do { (void) sizeof ((condition)); } while (SDL_NULL_WHILE_LOOP_CONDITION)
+#define SDL_disabled_assert(condition) scope : end scope
 
 type SDL_assert_state as long
 enum
@@ -210,7 +210,21 @@ type SDL_assert_data
 end type
 
 declare function SDL_ReportAssertion(byval as SDL_assert_data ptr, byval as const zstring ptr, byval as const zstring ptr, byval as long) as SDL_assert_state
-#define SDL_enabled_assert(condition) '' TODO: do { while ( !(condition) ) { static struct SDL_assert_data assert_data = { 0, 0, #condition, 0, 0, 0, 0 }; const SDL_assert_state state = SDL_ReportAssertion(&assert_data, SDL_FUNCTION, SDL_FILE, SDL_LINE); if (state == SDL_ASSERTION_RETRY) { continue; } else if (state == SDL_ASSERTION_BREAK) { SDL_TriggerBreakpoint(); } break; } } while (SDL_NULL_WHILE_LOOP_CONDITION)
+#macro SDL_enabled_assert(condition)
+	scope
+		while (condition) = 0
+			static as SDL_assert_data assert_data = ( 0, 0, @#condition, 0, 0, 0, 0 )
+			dim as const SDL_assert_state state = SDL_ReportAssertion(@assert_data, SDL_FUNCTION, SDL_FILE, SDL_LINE)
+			select case state
+			case SDL_ASSERTION_RETRY
+				continue while
+			case SDL_ASSERTION_BREAK
+				SDL_TriggerBreakpoint()
+			end select
+			exit while
+		wend
+	end scope
+#endmacro
 #define SDL_assert(condition) SDL_enabled_assert(condition)
 #define SDL_assert_release(condition) SDL_enabled_assert(condition)
 #define SDL_assert_paranoid(condition) SDL_disabled_assert(condition)
@@ -227,8 +241,7 @@ type SDL_SpinLock as long
 declare function SDL_AtomicTryLock(byval lock as SDL_SpinLock ptr) as SDL_bool
 declare sub SDL_AtomicLock(byval lock as SDL_SpinLock ptr)
 declare sub SDL_AtomicUnlock(byval lock as SDL_SpinLock ptr)
-
-#define SDL_CompilerBarrier() '' TODO: __asm__ __volatile__ ("" : : : "memory")
+#define SDL_CompilerBarrier() asm nop
 #define SDL_MemoryBarrierRelease() SDL_CompilerBarrier()
 #define SDL_MemoryBarrierAcquire() SDL_CompilerBarrier()
 
