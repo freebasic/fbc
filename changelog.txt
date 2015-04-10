@@ -11,6 +11,7 @@ Version 1.02.1
 - 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
 - 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing
 - bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
+- Windows API binding: DirectX headers missed some declarations and some didn't compile
 
 
 Version 1.02.0

@@ -9,7 +9,6 @@
 extern "Windows"
 
 #define __D3DRMOBJ_H__
-#define VIRTUAL
 extern CLSID_CDirect3DRMDevice as const GUID
 extern CLSID_CDirect3DRMViewport as const GUID
 extern CLSID_CDirect3DRMFrame as const GUID
