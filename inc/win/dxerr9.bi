@@ -5,6 +5,7 @@
 #inclib "dxerr9"
 
 #include once "_mingw_unicode.bi"
+#include once "dxerr8.bi"
 
 extern "Windows"
 
@@ -26,18 +27,5 @@ declare function DXGetErrorDescription9W(byval hr as HRESULT) as const wstring p
 #else
 	#define DXGetErrorDescription9 DXGetErrorDescription9A
 #endif
-
-declare function DXTraceA(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const zstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
-declare function DXTraceW(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const wstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
-
-#ifdef UNICODE
-	#define DXTrace DXTraceW
-#else
-	#define DXTrace DXTraceA
-#endif
-
-#define DXTRACE_MSG(str) __MSABI_LONG(0)
-#define DXTRACE_ERR(str, hr) (hr)
-#define DXTRACE_ERR_NOMSGBOX(str, hr) (hr)
 
 end extern

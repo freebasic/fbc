@@ -5,7 +5,6 @@
 #inclib "d3drm"
 
 #include once "ddraw.bi"
-#include once "d3drmobj.bi"
 
 extern "Windows"
 
@@ -13,6 +12,12 @@ extern "Windows"
 type IDirect3DRM as IDirect3DRM_
 type LPDIRECT3DRM as IDirect3DRM ptr
 type LPLPDIRECT3DRM as IDirect3DRM ptr ptr
+
+end extern
+
+#include once "d3drmobj.bi"
+
+extern "Windows"
 
 extern CLSID_CDirect3DRM as const GUID
 extern IID_IDirect3DRM as const GUID
