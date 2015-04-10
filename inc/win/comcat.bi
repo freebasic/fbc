@@ -66,6 +66,14 @@ type IEnumGUID_
 	lpVtbl as IEnumGUIDVtbl ptr
 end type
 
+#define IEnumGUID_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumGUID_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumGUID_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumGUID_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumGUID_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumGUID_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumGUID_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
+
 declare function IEnumGUID_RemoteNext_Proxy(byval This as IEnumGUID ptr, byval celt as ULONG, byval rgelt as GUID ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumGUID_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumGUID_Skip_Proxy(byval This as IEnumGUID ptr, byval celt as ULONG) as HRESULT
@@ -105,6 +113,14 @@ type IEnumCATEGORYINFO_
 	lpVtbl as IEnumCATEGORYINFOVtbl ptr
 end type
 
+#define IEnumCATEGORYINFO_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumCATEGORYINFO_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumCATEGORYINFO_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumCATEGORYINFO_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumCATEGORYINFO_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumCATEGORYINFO_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumCATEGORYINFO_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
+
 declare function IEnumCATEGORYINFO_Next_Proxy(byval This as IEnumCATEGORYINFO ptr, byval celt as ULONG, byval rgelt as CATEGORYINFO ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumCATEGORYINFO_Next_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumCATEGORYINFO_Skip_Proxy(byval This as IEnumCATEGORYINFO ptr, byval celt as ULONG) as HRESULT
@@ -134,6 +150,16 @@ end type
 type ICatRegister_
 	lpVtbl as ICatRegisterVtbl ptr
 end type
+
+#define ICatRegister_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICatRegister_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICatRegister_Release(This) (This)->lpVtbl->Release(This)
+#define ICatRegister_RegisterCategories(This, cCategories, rgCategoryInfo) (This)->lpVtbl->RegisterCategories(This, cCategories, rgCategoryInfo)
+#define ICatRegister_UnRegisterCategories(This, cCategories, rgcatid) (This)->lpVtbl->UnRegisterCategories(This, cCategories, rgcatid)
+#define ICatRegister_RegisterClassImplCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->RegisterClassImplCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_UnRegisterClassImplCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->UnRegisterClassImplCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_RegisterClassReqCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->RegisterClassReqCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_UnRegisterClassReqCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->UnRegisterClassReqCategories(This, rclsid, cCategories, rgcatid)
 
 declare function ICatRegister_RegisterCategories_Proxy(byval This as ICatRegister ptr, byval cCategories as ULONG, byval rgCategoryInfo as CATEGORYINFO ptr) as HRESULT
 declare sub ICatRegister_RegisterCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -168,6 +194,16 @@ end type
 type ICatInformation_
 	lpVtbl as ICatInformationVtbl ptr
 end type
+
+#define ICatInformation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICatInformation_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICatInformation_Release(This) (This)->lpVtbl->Release(This)
+#define ICatInformation_EnumCategories(This, lcid, ppenumCategoryInfo) (This)->lpVtbl->EnumCategories(This, lcid, ppenumCategoryInfo)
+#define ICatInformation_GetCategoryDesc(This, rcatid, lcid, pszDesc) (This)->lpVtbl->GetCategoryDesc(This, rcatid, lcid, pszDesc)
+#define ICatInformation_EnumClassesOfCategories(This, cImplemented, rgcatidImpl, cRequired, rgcatidReq, ppenumClsid) (This)->lpVtbl->EnumClassesOfCategories(This, cImplemented, rgcatidImpl, cRequired, rgcatidReq, ppenumClsid)
+#define ICatInformation_IsClassOfCategories(This, rclsid, cImplemented, rgcatidImpl, cRequired, rgcatidReq) (This)->lpVtbl->IsClassOfCategories(This, rclsid, cImplemented, rgcatidImpl, cRequired, rgcatidReq)
+#define ICatInformation_EnumImplCategoriesOfClass(This, rclsid, ppenumCatid) (This)->lpVtbl->EnumImplCategoriesOfClass(This, rclsid, ppenumCatid)
+#define ICatInformation_EnumReqCategoriesOfClass(This, rclsid, ppenumCatid) (This)->lpVtbl->EnumReqCategoriesOfClass(This, rclsid, ppenumCatid)
 
 declare function ICatInformation_EnumCategories_Proxy(byval This as ICatInformation ptr, byval lcid as LCID, byval ppenumCategoryInfo as IEnumCATEGORYINFO ptr ptr) as HRESULT
 declare sub ICatInformation_EnumCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

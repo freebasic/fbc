@@ -23,6 +23,10 @@ type IUnknown_
 	lpVtbl as IUnknownVtbl ptr
 end type
 
+#define IUnknown_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUnknown_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUnknown_Release(This) (This)->lpVtbl->Release(This)
+
 declare function IUnknown_QueryInterface_Proxy(byval This as IUnknown ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 declare sub IUnknown_QueryInterface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IUnknown_AddRef_Proxy(byval This as IUnknown ptr) as ULONG
@@ -48,6 +52,16 @@ end type
 type AsyncIUnknown_
 	lpVtbl as AsyncIUnknownVtbl ptr
 end type
+
+#define AsyncIUnknown_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define AsyncIUnknown_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define AsyncIUnknown_Release(This) (This)->lpVtbl->Release(This)
+#define AsyncIUnknown_Begin_QueryInterface(This, riid) (This)->lpVtbl->Begin_QueryInterface(This, riid)
+#define AsyncIUnknown_Finish_QueryInterface(This, ppvObject) (This)->lpVtbl->Finish_QueryInterface(This, ppvObject)
+#define AsyncIUnknown_Begin_AddRef(This) (This)->lpVtbl->Begin_AddRef(This)
+#define AsyncIUnknown_Finish_AddRef(This) (This)->lpVtbl->Finish_AddRef(This)
+#define AsyncIUnknown_Begin_Release(This) (This)->lpVtbl->Begin_Release(This)
+#define AsyncIUnknown_Finish_Release(This) (This)->lpVtbl->Finish_Release(This)
 
 declare function AsyncIUnknown_Begin_QueryInterface_Proxy(byval This as AsyncIUnknown ptr, byval riid as const IID const ptr) as HRESULT
 declare sub AsyncIUnknown_Begin_QueryInterface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -77,6 +91,12 @@ end type
 type IClassFactory_
 	lpVtbl as IClassFactoryVtbl ptr
 end type
+
+#define IClassFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IClassFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IClassFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IClassFactory_CreateInstance(This, pUnkOuter, riid, ppvObject) (This)->lpVtbl->CreateInstance(This, pUnkOuter, riid, ppvObject)
+#define IClassFactory_LockServer(This, fLock) (This)->lpVtbl->LockServer(This, fLock)
 
 declare function IClassFactory_RemoteCreateInstance_Proxy(byval This as IClassFactory ptr, byval riid as const IID const ptr, byval ppvObject as IUnknown ptr ptr) as HRESULT
 declare sub IClassFactory_RemoteCreateInstance_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

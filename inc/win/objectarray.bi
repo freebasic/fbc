@@ -30,6 +30,12 @@ type IObjectArray_
 	lpVtbl as IObjectArrayVtbl ptr
 end type
 
+#define IObjectArray_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectArray_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectArray_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectArray_GetCount(This, pcObjects) (This)->lpVtbl->GetCount(This, pcObjects)
+#define IObjectArray_GetAt(This, uiIndex, riid, ppv) (This)->lpVtbl->GetAt(This, uiIndex, riid, ppv)
+
 declare function IObjectArray_GetCount_Proxy(byval This as IObjectArray ptr, byval pcObjects as UINT ptr) as HRESULT
 declare sub IObjectArray_GetCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IObjectArray_GetAt_Proxy(byval This as IObjectArray ptr, byval uiIndex as UINT, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -53,6 +59,16 @@ end type
 type IObjectCollection_
 	lpVtbl as IObjectCollectionVtbl ptr
 end type
+
+#define IObjectCollection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectCollection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectCollection_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectCollection_GetCount(This, pcObjects) (This)->lpVtbl->GetCount(This, pcObjects)
+#define IObjectCollection_GetAt(This, uiIndex, riid, ppv) (This)->lpVtbl->GetAt(This, uiIndex, riid, ppv)
+#define IObjectCollection_AddObject(This, punk) (This)->lpVtbl->AddObject(This, punk)
+#define IObjectCollection_AddFromArray(This, poaSource) (This)->lpVtbl->AddFromArray(This, poaSource)
+#define IObjectCollection_RemoveObjectAt(This, uiIndex) (This)->lpVtbl->RemoveObjectAt(This, uiIndex)
+#define IObjectCollection_Clear(This) (This)->lpVtbl->Clear(This)
 
 declare function IObjectCollection_AddObject_Proxy(byval This as IObjectCollection ptr, byval punk as IUnknown ptr) as HRESULT
 declare sub IObjectCollection_AddObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

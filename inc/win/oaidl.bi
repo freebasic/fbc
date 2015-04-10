@@ -653,6 +653,33 @@ type ICreateTypeInfo_
 	lpVtbl as ICreateTypeInfoVtbl ptr
 end type
 
+#define ICreateTypeInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateTypeInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateTypeInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateTypeInfo_SetGuid(This, guid) (This)->lpVtbl->SetGuid(This, guid)
+#define ICreateTypeInfo_SetTypeFlags(This, uTypeFlags) (This)->lpVtbl->SetTypeFlags(This, uTypeFlags)
+#define ICreateTypeInfo_SetDocString(This, pStrDoc) (This)->lpVtbl->SetDocString(This, pStrDoc)
+#define ICreateTypeInfo_SetHelpContext(This, dwHelpContext) (This)->lpVtbl->SetHelpContext(This, dwHelpContext)
+#define ICreateTypeInfo_SetVersion(This, wMajorVerNum, wMinorVerNum) (This)->lpVtbl->SetVersion(This, wMajorVerNum, wMinorVerNum)
+#define ICreateTypeInfo_AddRefTypeInfo(This, pTInfo, phRefType) (This)->lpVtbl->AddRefTypeInfo(This, pTInfo, phRefType)
+#define ICreateTypeInfo_AddFuncDesc(This, index, pFuncDesc) (This)->lpVtbl->AddFuncDesc(This, index, pFuncDesc)
+#define ICreateTypeInfo_AddImplType(This, index, hRefType) (This)->lpVtbl->AddImplType(This, index, hRefType)
+#define ICreateTypeInfo_SetImplTypeFlags(This, index, implTypeFlags) (This)->lpVtbl->SetImplTypeFlags(This, index, implTypeFlags)
+#define ICreateTypeInfo_SetAlignment(This, cbAlignment) (This)->lpVtbl->SetAlignment(This, cbAlignment)
+#define ICreateTypeInfo_SetSchema(This, pStrSchema) (This)->lpVtbl->SetSchema(This, pStrSchema)
+#define ICreateTypeInfo_AddVarDesc(This, index, pVarDesc) (This)->lpVtbl->AddVarDesc(This, index, pVarDesc)
+#define ICreateTypeInfo_SetFuncAndParamNames(This, index, rgszNames, cNames) (This)->lpVtbl->SetFuncAndParamNames(This, index, rgszNames, cNames)
+#define ICreateTypeInfo_SetVarName(This, index, szName) (This)->lpVtbl->SetVarName(This, index, szName)
+#define ICreateTypeInfo_SetTypeDescAlias(This, pTDescAlias) (This)->lpVtbl->SetTypeDescAlias(This, pTDescAlias)
+#define ICreateTypeInfo_DefineFuncAsDllEntry(This, index, szDllName, szProcName) (This)->lpVtbl->DefineFuncAsDllEntry(This, index, szDllName, szProcName)
+#define ICreateTypeInfo_SetFuncDocString(This, index, szDocString) (This)->lpVtbl->SetFuncDocString(This, index, szDocString)
+#define ICreateTypeInfo_SetVarDocString(This, index, szDocString) (This)->lpVtbl->SetVarDocString(This, index, szDocString)
+#define ICreateTypeInfo_SetFuncHelpContext(This, index, dwHelpContext) (This)->lpVtbl->SetFuncHelpContext(This, index, dwHelpContext)
+#define ICreateTypeInfo_SetVarHelpContext(This, index, dwHelpContext) (This)->lpVtbl->SetVarHelpContext(This, index, dwHelpContext)
+#define ICreateTypeInfo_SetMops(This, index, bstrMops) (This)->lpVtbl->SetMops(This, index, bstrMops)
+#define ICreateTypeInfo_SetTypeIdldesc(This, pIdlDesc) (This)->lpVtbl->SetTypeIdldesc(This, pIdlDesc)
+#define ICreateTypeInfo_LayOut(This) (This)->lpVtbl->LayOut(This)
+
 declare function ICreateTypeInfo_SetGuid_Proxy(byval This as ICreateTypeInfo ptr, byval guid as const GUID const ptr) as HRESULT
 declare sub ICreateTypeInfo_SetGuid_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeInfo_SetTypeFlags_Proxy(byval This as ICreateTypeInfo ptr, byval uTypeFlags as UINT) as HRESULT
@@ -752,6 +779,48 @@ type ICreateTypeInfo2_
 	lpVtbl as ICreateTypeInfo2Vtbl ptr
 end type
 
+#define ICreateTypeInfo2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateTypeInfo2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateTypeInfo2_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateTypeInfo2_SetGuid(This, guid) (This)->lpVtbl->SetGuid(This, guid)
+#define ICreateTypeInfo2_SetTypeFlags(This, uTypeFlags) (This)->lpVtbl->SetTypeFlags(This, uTypeFlags)
+#define ICreateTypeInfo2_SetDocString(This, pStrDoc) (This)->lpVtbl->SetDocString(This, pStrDoc)
+#define ICreateTypeInfo2_SetHelpContext(This, dwHelpContext) (This)->lpVtbl->SetHelpContext(This, dwHelpContext)
+#define ICreateTypeInfo2_SetVersion(This, wMajorVerNum, wMinorVerNum) (This)->lpVtbl->SetVersion(This, wMajorVerNum, wMinorVerNum)
+#define ICreateTypeInfo2_AddRefTypeInfo(This, pTInfo, phRefType) (This)->lpVtbl->AddRefTypeInfo(This, pTInfo, phRefType)
+#define ICreateTypeInfo2_AddFuncDesc(This, index, pFuncDesc) (This)->lpVtbl->AddFuncDesc(This, index, pFuncDesc)
+#define ICreateTypeInfo2_AddImplType(This, index, hRefType) (This)->lpVtbl->AddImplType(This, index, hRefType)
+#define ICreateTypeInfo2_SetImplTypeFlags(This, index, implTypeFlags) (This)->lpVtbl->SetImplTypeFlags(This, index, implTypeFlags)
+#define ICreateTypeInfo2_SetAlignment(This, cbAlignment) (This)->lpVtbl->SetAlignment(This, cbAlignment)
+#define ICreateTypeInfo2_SetSchema(This, pStrSchema) (This)->lpVtbl->SetSchema(This, pStrSchema)
+#define ICreateTypeInfo2_AddVarDesc(This, index, pVarDesc) (This)->lpVtbl->AddVarDesc(This, index, pVarDesc)
+#define ICreateTypeInfo2_SetFuncAndParamNames(This, index, rgszNames, cNames) (This)->lpVtbl->SetFuncAndParamNames(This, index, rgszNames, cNames)
+#define ICreateTypeInfo2_SetVarName(This, index, szName) (This)->lpVtbl->SetVarName(This, index, szName)
+#define ICreateTypeInfo2_SetTypeDescAlias(This, pTDescAlias) (This)->lpVtbl->SetTypeDescAlias(This, pTDescAlias)
+#define ICreateTypeInfo2_DefineFuncAsDllEntry(This, index, szDllName, szProcName) (This)->lpVtbl->DefineFuncAsDllEntry(This, index, szDllName, szProcName)
+#define ICreateTypeInfo2_SetFuncDocString(This, index, szDocString) (This)->lpVtbl->SetFuncDocString(This, index, szDocString)
+#define ICreateTypeInfo2_SetVarDocString(This, index, szDocString) (This)->lpVtbl->SetVarDocString(This, index, szDocString)
+#define ICreateTypeInfo2_SetFuncHelpContext(This, index, dwHelpContext) (This)->lpVtbl->SetFuncHelpContext(This, index, dwHelpContext)
+#define ICreateTypeInfo2_SetVarHelpContext(This, index, dwHelpContext) (This)->lpVtbl->SetVarHelpContext(This, index, dwHelpContext)
+#define ICreateTypeInfo2_SetMops(This, index, bstrMops) (This)->lpVtbl->SetMops(This, index, bstrMops)
+#define ICreateTypeInfo2_SetTypeIdldesc(This, pIdlDesc) (This)->lpVtbl->SetTypeIdldesc(This, pIdlDesc)
+#define ICreateTypeInfo2_LayOut(This) (This)->lpVtbl->LayOut(This)
+#define ICreateTypeInfo2_DeleteFuncDesc(This, index) (This)->lpVtbl->DeleteFuncDesc(This, index)
+#define ICreateTypeInfo2_DeleteFuncDescByMemId(This, memid, invKind) (This)->lpVtbl->DeleteFuncDescByMemId(This, memid, invKind)
+#define ICreateTypeInfo2_DeleteVarDesc(This, index) (This)->lpVtbl->DeleteVarDesc(This, index)
+#define ICreateTypeInfo2_DeleteVarDescByMemId(This, memid) (This)->lpVtbl->DeleteVarDescByMemId(This, memid)
+#define ICreateTypeInfo2_DeleteImplType(This, index) (This)->lpVtbl->DeleteImplType(This, index)
+#define ICreateTypeInfo2_SetCustData(This, guid, pVarVal) (This)->lpVtbl->SetCustData(This, guid, pVarVal)
+#define ICreateTypeInfo2_SetFuncCustData(This, index, guid, pVarVal) (This)->lpVtbl->SetFuncCustData(This, index, guid, pVarVal)
+#define ICreateTypeInfo2_SetParamCustData(This, indexFunc, indexParam, guid, pVarVal) (This)->lpVtbl->SetParamCustData(This, indexFunc, indexParam, guid, pVarVal)
+#define ICreateTypeInfo2_SetVarCustData(This, index, guid, pVarVal) (This)->lpVtbl->SetVarCustData(This, index, guid, pVarVal)
+#define ICreateTypeInfo2_SetImplTypeCustData(This, index, guid, pVarVal) (This)->lpVtbl->SetImplTypeCustData(This, index, guid, pVarVal)
+#define ICreateTypeInfo2_SetHelpStringContext(This, dwHelpStringContext) (This)->lpVtbl->SetHelpStringContext(This, dwHelpStringContext)
+#define ICreateTypeInfo2_SetFuncHelpStringContext(This, index, dwHelpStringContext) (This)->lpVtbl->SetFuncHelpStringContext(This, index, dwHelpStringContext)
+#define ICreateTypeInfo2_SetVarHelpStringContext(This, index, dwHelpStringContext) (This)->lpVtbl->SetVarHelpStringContext(This, index, dwHelpStringContext)
+#define ICreateTypeInfo2_Invalidate(This) (This)->lpVtbl->Invalidate(This)
+#define ICreateTypeInfo2_SetName(This, szName) (This)->lpVtbl->SetName(This, szName)
+
 declare function ICreateTypeInfo2_DeleteFuncDesc_Proxy(byval This as ICreateTypeInfo2 ptr, byval index as UINT) as HRESULT
 declare sub ICreateTypeInfo2_DeleteFuncDesc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeInfo2_DeleteFuncDescByMemId_Proxy(byval This as ICreateTypeInfo2 ptr, byval memid as MEMBERID, byval invKind as INVOKEKIND) as HRESULT
@@ -807,6 +876,20 @@ type ICreateTypeLib_
 	lpVtbl as ICreateTypeLibVtbl ptr
 end type
 
+#define ICreateTypeLib_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateTypeLib_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateTypeLib_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateTypeLib_CreateTypeInfo(This, szName, tkind, ppCTInfo) (This)->lpVtbl->CreateTypeInfo(This, szName, tkind, ppCTInfo)
+#define ICreateTypeLib_SetName(This, szName) (This)->lpVtbl->SetName(This, szName)
+#define ICreateTypeLib_SetVersion(This, wMajorVerNum, wMinorVerNum) (This)->lpVtbl->SetVersion(This, wMajorVerNum, wMinorVerNum)
+#define ICreateTypeLib_SetGuid(This, guid) (This)->lpVtbl->SetGuid(This, guid)
+#define ICreateTypeLib_SetDocString(This, szDoc) (This)->lpVtbl->SetDocString(This, szDoc)
+#define ICreateTypeLib_SetHelpFileName(This, szHelpFileName) (This)->lpVtbl->SetHelpFileName(This, szHelpFileName)
+#define ICreateTypeLib_SetHelpContext(This, dwHelpContext) (This)->lpVtbl->SetHelpContext(This, dwHelpContext)
+#define ICreateTypeLib_SetLcid(This, lcid) (This)->lpVtbl->SetLcid(This, lcid)
+#define ICreateTypeLib_SetLibFlags(This, uLibFlags) (This)->lpVtbl->SetLibFlags(This, uLibFlags)
+#define ICreateTypeLib_SaveAllChanges(This) (This)->lpVtbl->SaveAllChanges(This)
+
 declare function ICreateTypeLib_CreateTypeInfo_Proxy(byval This as ICreateTypeLib ptr, byval szName as LPOLESTR, byval tkind as TYPEKIND, byval ppCTInfo as ICreateTypeInfo ptr ptr) as HRESULT
 declare sub ICreateTypeLib_CreateTypeInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeLib_SetName_Proxy(byval This as ICreateTypeLib ptr, byval szName as LPOLESTR) as HRESULT
@@ -856,6 +939,24 @@ type ICreateTypeLib2_
 	lpVtbl as ICreateTypeLib2Vtbl ptr
 end type
 
+#define ICreateTypeLib2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateTypeLib2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateTypeLib2_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateTypeLib2_CreateTypeInfo(This, szName, tkind, ppCTInfo) (This)->lpVtbl->CreateTypeInfo(This, szName, tkind, ppCTInfo)
+#define ICreateTypeLib2_SetName(This, szName) (This)->lpVtbl->SetName(This, szName)
+#define ICreateTypeLib2_SetVersion(This, wMajorVerNum, wMinorVerNum) (This)->lpVtbl->SetVersion(This, wMajorVerNum, wMinorVerNum)
+#define ICreateTypeLib2_SetGuid(This, guid) (This)->lpVtbl->SetGuid(This, guid)
+#define ICreateTypeLib2_SetDocString(This, szDoc) (This)->lpVtbl->SetDocString(This, szDoc)
+#define ICreateTypeLib2_SetHelpFileName(This, szHelpFileName) (This)->lpVtbl->SetHelpFileName(This, szHelpFileName)
+#define ICreateTypeLib2_SetHelpContext(This, dwHelpContext) (This)->lpVtbl->SetHelpContext(This, dwHelpContext)
+#define ICreateTypeLib2_SetLcid(This, lcid) (This)->lpVtbl->SetLcid(This, lcid)
+#define ICreateTypeLib2_SetLibFlags(This, uLibFlags) (This)->lpVtbl->SetLibFlags(This, uLibFlags)
+#define ICreateTypeLib2_SaveAllChanges(This) (This)->lpVtbl->SaveAllChanges(This)
+#define ICreateTypeLib2_DeleteTypeInfo(This, szName) (This)->lpVtbl->DeleteTypeInfo(This, szName)
+#define ICreateTypeLib2_SetCustData(This, guid, pVarVal) (This)->lpVtbl->SetCustData(This, guid, pVarVal)
+#define ICreateTypeLib2_SetHelpStringContext(This, dwHelpStringContext) (This)->lpVtbl->SetHelpStringContext(This, dwHelpStringContext)
+#define ICreateTypeLib2_SetHelpStringDll(This, szFileName) (This)->lpVtbl->SetHelpStringDll(This, szFileName)
+
 declare function ICreateTypeLib2_DeleteTypeInfo_Proxy(byval This as ICreateTypeLib2 ptr, byval szName as LPOLESTR) as HRESULT
 declare sub ICreateTypeLib2_DeleteTypeInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateTypeLib2_SetCustData_Proxy(byval This as ICreateTypeLib2 ptr, byval guid as const GUID const ptr, byval pVarVal as VARIANT ptr) as HRESULT
@@ -891,6 +992,14 @@ type IDispatch_
 	lpVtbl as IDispatchVtbl ptr
 end type
 
+#define IDispatch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDispatch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDispatch_Release(This) (This)->lpVtbl->Release(This)
+#define IDispatch_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IDispatch_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IDispatch_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IDispatch_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+
 declare function IDispatch_GetTypeInfoCount_Proxy(byval This as IDispatch ptr, byval pctinfo as UINT ptr) as HRESULT
 declare sub IDispatch_GetTypeInfoCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDispatch_GetTypeInfo_Proxy(byval This as IDispatch ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
@@ -919,6 +1028,14 @@ end type
 type IEnumVARIANT_
 	lpVtbl as IEnumVARIANTVtbl ptr
 end type
+
+#define IEnumVARIANT_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumVARIANT_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumVARIANT_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumVARIANT_Next(This, celt, rgVar, pCeltFetched) (This)->lpVtbl->Next(This, celt, rgVar, pCeltFetched)
+#define IEnumVARIANT_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumVARIANT_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumVARIANT_Clone(This, ppEnum) (This)->lpVtbl->Clone(This, ppEnum)
 
 declare function IEnumVARIANT_RemoteNext_Proxy(byval This as IEnumVARIANT ptr, byval celt as ULONG, byval rgVar as VARIANT ptr, byval pCeltFetched as ULONG ptr) as HRESULT
 declare sub IEnumVARIANT_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -968,6 +1085,12 @@ type ITypeComp_
 	lpVtbl as ITypeCompVtbl ptr
 end type
 
+#define ITypeComp_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeComp_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeComp_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeComp_Bind(This, szName, lHashVal, wFlags, ppTInfo, pDescKind, pBindPtr) (This)->lpVtbl->Bind(This, szName, lHashVal, wFlags, ppTInfo, pDescKind, pBindPtr)
+#define ITypeComp_BindType(This, szName, lHashVal, ppTInfo, ppTComp) (This)->lpVtbl->BindType(This, szName, lHashVal, ppTInfo, ppTComp)
+
 declare function ITypeComp_RemoteBind_Proxy(byval This as ITypeComp ptr, byval szName as LPOLESTR, byval lHashVal as ULONG, byval wFlags as WORD, byval ppTInfo as ITypeInfo ptr ptr, byval pDescKind as DESCKIND ptr, byval ppFuncDesc as LPFUNCDESC ptr, byval ppVarDesc as LPVARDESC ptr, byval ppTypeComp as ITypeComp ptr ptr, byval pDummy as CLEANLOCALSTORAGE ptr) as HRESULT
 declare sub ITypeComp_RemoteBind_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeComp_RemoteBindType_Proxy(byval This as ITypeComp ptr, byval szName as LPOLESTR, byval lHashVal as ULONG, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
@@ -1009,6 +1132,29 @@ end type
 type ITypeInfo_
 	lpVtbl as ITypeInfoVtbl ptr
 end type
+
+#define ITypeInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeInfo_GetTypeAttr(This, ppTypeAttr) (This)->lpVtbl->GetTypeAttr(This, ppTypeAttr)
+#define ITypeInfo_GetTypeComp(This, ppTComp) (This)->lpVtbl->GetTypeComp(This, ppTComp)
+#define ITypeInfo_GetFuncDesc(This, index, ppFuncDesc) (This)->lpVtbl->GetFuncDesc(This, index, ppFuncDesc)
+#define ITypeInfo_GetVarDesc(This, index, ppVarDesc) (This)->lpVtbl->GetVarDesc(This, index, ppVarDesc)
+#define ITypeInfo_GetNames(This, memid, rgBstrNames, cMaxNames, pcNames) (This)->lpVtbl->GetNames(This, memid, rgBstrNames, cMaxNames, pcNames)
+#define ITypeInfo_GetRefTypeOfImplType(This, index, pRefType) (This)->lpVtbl->GetRefTypeOfImplType(This, index, pRefType)
+#define ITypeInfo_GetImplTypeFlags(This, index, pImplTypeFlags) (This)->lpVtbl->GetImplTypeFlags(This, index, pImplTypeFlags)
+#define ITypeInfo_GetIDsOfNames(This, rgszNames, cNames, pMemId) (This)->lpVtbl->GetIDsOfNames(This, rgszNames, cNames, pMemId)
+#define ITypeInfo_Invoke(This, pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ITypeInfo_GetDocumentation(This, memid, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile) (This)->lpVtbl->GetDocumentation(This, memid, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile)
+#define ITypeInfo_GetDllEntry(This, memid, invKind, pBstrDllName, pBstrName, pwOrdinal) (This)->lpVtbl->GetDllEntry(This, memid, invKind, pBstrDllName, pBstrName, pwOrdinal)
+#define ITypeInfo_GetRefTypeInfo(This, hRefType, ppTInfo) (This)->lpVtbl->GetRefTypeInfo(This, hRefType, ppTInfo)
+#define ITypeInfo_AddressOfMember(This, memid, invKind, ppv) (This)->lpVtbl->AddressOfMember(This, memid, invKind, ppv)
+#define ITypeInfo_CreateInstance(This, pUnkOuter, riid, ppvObj) (This)->lpVtbl->CreateInstance(This, pUnkOuter, riid, ppvObj)
+#define ITypeInfo_GetMops(This, memid, pBstrMops) (This)->lpVtbl->GetMops(This, memid, pBstrMops)
+#define ITypeInfo_GetContainingTypeLib(This, ppTLib, pIndex) (This)->lpVtbl->GetContainingTypeLib(This, ppTLib, pIndex)
+#define ITypeInfo_ReleaseTypeAttr(This, pTypeAttr) (This)->lpVtbl->ReleaseTypeAttr(This, pTypeAttr)
+#define ITypeInfo_ReleaseFuncDesc(This, pFuncDesc) (This)->lpVtbl->ReleaseFuncDesc(This, pFuncDesc)
+#define ITypeInfo_ReleaseVarDesc(This, pVarDesc) (This)->lpVtbl->ReleaseVarDesc(This, pVarDesc)
 
 declare function ITypeInfo_RemoteGetTypeAttr_Proxy(byval This as ITypeInfo ptr, byval ppTypeAttr as LPTYPEATTR ptr, byval pDummy as CLEANLOCALSTORAGE ptr) as HRESULT
 declare sub ITypeInfo_RemoteGetTypeAttr_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1125,6 +1271,44 @@ type ITypeInfo2_
 	lpVtbl as ITypeInfo2Vtbl ptr
 end type
 
+#define ITypeInfo2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeInfo2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeInfo2_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeInfo2_GetTypeAttr(This, ppTypeAttr) (This)->lpVtbl->GetTypeAttr(This, ppTypeAttr)
+#define ITypeInfo2_GetTypeComp(This, ppTComp) (This)->lpVtbl->GetTypeComp(This, ppTComp)
+#define ITypeInfo2_GetFuncDesc(This, index, ppFuncDesc) (This)->lpVtbl->GetFuncDesc(This, index, ppFuncDesc)
+#define ITypeInfo2_GetVarDesc(This, index, ppVarDesc) (This)->lpVtbl->GetVarDesc(This, index, ppVarDesc)
+#define ITypeInfo2_GetNames(This, memid, rgBstrNames, cMaxNames, pcNames) (This)->lpVtbl->GetNames(This, memid, rgBstrNames, cMaxNames, pcNames)
+#define ITypeInfo2_GetRefTypeOfImplType(This, index, pRefType) (This)->lpVtbl->GetRefTypeOfImplType(This, index, pRefType)
+#define ITypeInfo2_GetImplTypeFlags(This, index, pImplTypeFlags) (This)->lpVtbl->GetImplTypeFlags(This, index, pImplTypeFlags)
+#define ITypeInfo2_GetIDsOfNames(This, rgszNames, cNames, pMemId) (This)->lpVtbl->GetIDsOfNames(This, rgszNames, cNames, pMemId)
+#define ITypeInfo2_Invoke(This, pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ITypeInfo2_GetDocumentation(This, memid, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile) (This)->lpVtbl->GetDocumentation(This, memid, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile)
+#define ITypeInfo2_GetDllEntry(This, memid, invKind, pBstrDllName, pBstrName, pwOrdinal) (This)->lpVtbl->GetDllEntry(This, memid, invKind, pBstrDllName, pBstrName, pwOrdinal)
+#define ITypeInfo2_GetRefTypeInfo(This, hRefType, ppTInfo) (This)->lpVtbl->GetRefTypeInfo(This, hRefType, ppTInfo)
+#define ITypeInfo2_AddressOfMember(This, memid, invKind, ppv) (This)->lpVtbl->AddressOfMember(This, memid, invKind, ppv)
+#define ITypeInfo2_CreateInstance(This, pUnkOuter, riid, ppvObj) (This)->lpVtbl->CreateInstance(This, pUnkOuter, riid, ppvObj)
+#define ITypeInfo2_GetMops(This, memid, pBstrMops) (This)->lpVtbl->GetMops(This, memid, pBstrMops)
+#define ITypeInfo2_GetContainingTypeLib(This, ppTLib, pIndex) (This)->lpVtbl->GetContainingTypeLib(This, ppTLib, pIndex)
+#define ITypeInfo2_ReleaseTypeAttr(This, pTypeAttr) (This)->lpVtbl->ReleaseTypeAttr(This, pTypeAttr)
+#define ITypeInfo2_ReleaseFuncDesc(This, pFuncDesc) (This)->lpVtbl->ReleaseFuncDesc(This, pFuncDesc)
+#define ITypeInfo2_ReleaseVarDesc(This, pVarDesc) (This)->lpVtbl->ReleaseVarDesc(This, pVarDesc)
+#define ITypeInfo2_GetTypeKind(This, pTypeKind) (This)->lpVtbl->GetTypeKind(This, pTypeKind)
+#define ITypeInfo2_GetTypeFlags(This, pTypeFlags) (This)->lpVtbl->GetTypeFlags(This, pTypeFlags)
+#define ITypeInfo2_GetFuncIndexOfMemId(This, memid, invKind, pFuncIndex) (This)->lpVtbl->GetFuncIndexOfMemId(This, memid, invKind, pFuncIndex)
+#define ITypeInfo2_GetVarIndexOfMemId(This, memid, pVarIndex) (This)->lpVtbl->GetVarIndexOfMemId(This, memid, pVarIndex)
+#define ITypeInfo2_GetCustData(This, guid, pVarVal) (This)->lpVtbl->GetCustData(This, guid, pVarVal)
+#define ITypeInfo2_GetFuncCustData(This, index, guid, pVarVal) (This)->lpVtbl->GetFuncCustData(This, index, guid, pVarVal)
+#define ITypeInfo2_GetParamCustData(This, indexFunc, indexParam, guid, pVarVal) (This)->lpVtbl->GetParamCustData(This, indexFunc, indexParam, guid, pVarVal)
+#define ITypeInfo2_GetVarCustData(This, index, guid, pVarVal) (This)->lpVtbl->GetVarCustData(This, index, guid, pVarVal)
+#define ITypeInfo2_GetImplTypeCustData(This, index, guid, pVarVal) (This)->lpVtbl->GetImplTypeCustData(This, index, guid, pVarVal)
+#define ITypeInfo2_GetDocumentation2(This, memid, lcid, pbstrHelpString, pdwHelpStringContext, pbstrHelpStringDll) (This)->lpVtbl->GetDocumentation2(This, memid, lcid, pbstrHelpString, pdwHelpStringContext, pbstrHelpStringDll)
+#define ITypeInfo2_GetAllCustData(This, pCustData) (This)->lpVtbl->GetAllCustData(This, pCustData)
+#define ITypeInfo2_GetAllFuncCustData(This, index, pCustData) (This)->lpVtbl->GetAllFuncCustData(This, index, pCustData)
+#define ITypeInfo2_GetAllParamCustData(This, indexFunc, indexParam, pCustData) (This)->lpVtbl->GetAllParamCustData(This, indexFunc, indexParam, pCustData)
+#define ITypeInfo2_GetAllVarCustData(This, index, pCustData) (This)->lpVtbl->GetAllVarCustData(This, index, pCustData)
+#define ITypeInfo2_GetAllImplTypeCustData(This, index, pCustData) (This)->lpVtbl->GetAllImplTypeCustData(This, index, pCustData)
+
 declare function ITypeInfo2_GetTypeKind_Proxy(byval This as ITypeInfo2 ptr, byval pTypeKind as TYPEKIND ptr) as HRESULT
 declare sub ITypeInfo2_GetTypeKind_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeInfo2_GetTypeFlags_Proxy(byval This as ITypeInfo2 ptr, byval pTypeFlags as ULONG ptr) as HRESULT
@@ -1213,6 +1397,20 @@ type ITypeLib_
 	lpVtbl as ITypeLibVtbl ptr
 end type
 
+#define ITypeLib_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeLib_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeLib_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeLib_GetTypeInfoCount(This) (This)->lpVtbl->GetTypeInfoCount(This)
+#define ITypeLib_GetTypeInfo(This, index, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, index, ppTInfo)
+#define ITypeLib_GetTypeInfoType(This, index, pTKind) (This)->lpVtbl->GetTypeInfoType(This, index, pTKind)
+#define ITypeLib_GetTypeInfoOfGuid(This, guid, ppTinfo) (This)->lpVtbl->GetTypeInfoOfGuid(This, guid, ppTinfo)
+#define ITypeLib_GetLibAttr(This, ppTLibAttr) (This)->lpVtbl->GetLibAttr(This, ppTLibAttr)
+#define ITypeLib_GetTypeComp(This, ppTComp) (This)->lpVtbl->GetTypeComp(This, ppTComp)
+#define ITypeLib_GetDocumentation(This, index, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile) (This)->lpVtbl->GetDocumentation(This, index, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile)
+#define ITypeLib_IsName(This, szNameBuf, lHashVal, pfName) (This)->lpVtbl->IsName(This, szNameBuf, lHashVal, pfName)
+#define ITypeLib_FindName(This, szNameBuf, lHashVal, ppTInfo, rgMemId, pcFound) (This)->lpVtbl->FindName(This, szNameBuf, lHashVal, ppTInfo, rgMemId, pcFound)
+#define ITypeLib_ReleaseTLibAttr(This, pTLibAttr) (This)->lpVtbl->ReleaseTLibAttr(This, pTLibAttr)
+
 declare function ITypeLib_RemoteGetTypeInfoCount_Proxy(byval This as ITypeLib ptr, byval pcTInfo as UINT ptr) as HRESULT
 declare sub ITypeLib_RemoteGetTypeInfoCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeLib_GetTypeInfo_Proxy(byval This as ITypeLib ptr, byval index as UINT, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
@@ -1274,6 +1472,24 @@ type ITypeLib2_
 	lpVtbl as ITypeLib2Vtbl ptr
 end type
 
+#define ITypeLib2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeLib2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeLib2_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeLib2_GetTypeInfoCount(This) (This)->lpVtbl->GetTypeInfoCount(This)
+#define ITypeLib2_GetTypeInfo(This, index, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, index, ppTInfo)
+#define ITypeLib2_GetTypeInfoType(This, index, pTKind) (This)->lpVtbl->GetTypeInfoType(This, index, pTKind)
+#define ITypeLib2_GetTypeInfoOfGuid(This, guid, ppTinfo) (This)->lpVtbl->GetTypeInfoOfGuid(This, guid, ppTinfo)
+#define ITypeLib2_GetLibAttr(This, ppTLibAttr) (This)->lpVtbl->GetLibAttr(This, ppTLibAttr)
+#define ITypeLib2_GetTypeComp(This, ppTComp) (This)->lpVtbl->GetTypeComp(This, ppTComp)
+#define ITypeLib2_GetDocumentation(This, index, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile) (This)->lpVtbl->GetDocumentation(This, index, pBstrName, pBstrDocString, pdwHelpContext, pBstrHelpFile)
+#define ITypeLib2_IsName(This, szNameBuf, lHashVal, pfName) (This)->lpVtbl->IsName(This, szNameBuf, lHashVal, pfName)
+#define ITypeLib2_FindName(This, szNameBuf, lHashVal, ppTInfo, rgMemId, pcFound) (This)->lpVtbl->FindName(This, szNameBuf, lHashVal, ppTInfo, rgMemId, pcFound)
+#define ITypeLib2_ReleaseTLibAttr(This, pTLibAttr) (This)->lpVtbl->ReleaseTLibAttr(This, pTLibAttr)
+#define ITypeLib2_GetCustData(This, guid, pVarVal) (This)->lpVtbl->GetCustData(This, guid, pVarVal)
+#define ITypeLib2_GetLibStatistics(This, pcUniqueNames, pcchUniqueNames) (This)->lpVtbl->GetLibStatistics(This, pcUniqueNames, pcchUniqueNames)
+#define ITypeLib2_GetDocumentation2(This, index, lcid, pbstrHelpString, pdwHelpStringContext, pbstrHelpStringDll) (This)->lpVtbl->GetDocumentation2(This, index, lcid, pbstrHelpString, pdwHelpStringContext, pbstrHelpStringDll)
+#define ITypeLib2_GetAllCustData(This, pCustData) (This)->lpVtbl->GetAllCustData(This, pCustData)
+
 declare function ITypeLib2_GetCustData_Proxy(byval This as ITypeLib2 ptr, byval guid as const GUID const ptr, byval pVarVal as VARIANT ptr) as HRESULT
 declare sub ITypeLib2_GetCustData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeLib2_RemoteGetLibStatistics_Proxy(byval This as ITypeLib2 ptr, byval pcUniqueNames as ULONG ptr, byval pcchUniqueNames as ULONG ptr) as HRESULT
@@ -1317,6 +1533,12 @@ type ITypeChangeEvents_
 	lpVtbl as ITypeChangeEventsVtbl ptr
 end type
 
+#define ITypeChangeEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeChangeEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeChangeEvents_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeChangeEvents_RequestTypeChange(This, changeKind, pTInfoBefore, pStrName, pfCancel) (This)->lpVtbl->RequestTypeChange(This, changeKind, pTInfoBefore, pStrName, pfCancel)
+#define ITypeChangeEvents_AfterTypeChange(This, changeKind, pTInfoAfter, pStrName) (This)->lpVtbl->AfterTypeChange(This, changeKind, pTInfoAfter, pStrName)
+
 declare function ITypeChangeEvents_RequestTypeChange_Proxy(byval This as ITypeChangeEvents ptr, byval changeKind as CHANGEKIND, byval pTInfoBefore as ITypeInfo ptr, byval pStrName as LPOLESTR, byval pfCancel as INT_ ptr) as HRESULT
 declare sub ITypeChangeEvents_RequestTypeChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITypeChangeEvents_AfterTypeChange_Proxy(byval This as ITypeChangeEvents ptr, byval changeKind as CHANGEKIND, byval pTInfoAfter as ITypeInfo ptr, byval pStrName as LPOLESTR) as HRESULT
@@ -1340,6 +1562,15 @@ end type
 type IErrorInfo_
 	lpVtbl as IErrorInfoVtbl ptr
 end type
+
+#define IErrorInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IErrorInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IErrorInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IErrorInfo_GetGUID(This, pGUID) (This)->lpVtbl->GetGUID(This, pGUID)
+#define IErrorInfo_GetSource(This, pBstrSource) (This)->lpVtbl->GetSource(This, pBstrSource)
+#define IErrorInfo_GetDescription(This, pBstrDescription) (This)->lpVtbl->GetDescription(This, pBstrDescription)
+#define IErrorInfo_GetHelpFile(This, pBstrHelpFile) (This)->lpVtbl->GetHelpFile(This, pBstrHelpFile)
+#define IErrorInfo_GetHelpContext(This, pdwHelpContext) (This)->lpVtbl->GetHelpContext(This, pdwHelpContext)
 
 declare function IErrorInfo_GetGUID_Proxy(byval This as IErrorInfo ptr, byval pGUID as GUID ptr) as HRESULT
 declare sub IErrorInfo_GetGUID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1371,6 +1602,15 @@ type ICreateErrorInfo_
 	lpVtbl as ICreateErrorInfoVtbl ptr
 end type
 
+#define ICreateErrorInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICreateErrorInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICreateErrorInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ICreateErrorInfo_SetGUID(This, rguid) (This)->lpVtbl->SetGUID(This, rguid)
+#define ICreateErrorInfo_SetSource(This, szSource) (This)->lpVtbl->SetSource(This, szSource)
+#define ICreateErrorInfo_SetDescription(This, szDescription) (This)->lpVtbl->SetDescription(This, szDescription)
+#define ICreateErrorInfo_SetHelpFile(This, szHelpFile) (This)->lpVtbl->SetHelpFile(This, szHelpFile)
+#define ICreateErrorInfo_SetHelpContext(This, dwHelpContext) (This)->lpVtbl->SetHelpContext(This, dwHelpContext)
+
 declare function ICreateErrorInfo_SetGUID_Proxy(byval This as ICreateErrorInfo ptr, byval rguid as const GUID const ptr) as HRESULT
 declare sub ICreateErrorInfo_SetGUID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICreateErrorInfo_SetSource_Proxy(byval This as ICreateErrorInfo ptr, byval szSource as LPOLESTR) as HRESULT
@@ -1397,6 +1637,10 @@ type ISupportErrorInfo_
 	lpVtbl as ISupportErrorInfoVtbl ptr
 end type
 
+#define ISupportErrorInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISupportErrorInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISupportErrorInfo_Release(This) (This)->lpVtbl->Release(This)
+#define ISupportErrorInfo_InterfaceSupportsErrorInfo(This, riid) (This)->lpVtbl->InterfaceSupportsErrorInfo(This, riid)
 declare function ISupportErrorInfo_InterfaceSupportsErrorInfo_Proxy(byval This as ISupportErrorInfo ptr, byval riid as const IID const ptr) as HRESULT
 declare sub ISupportErrorInfo_InterfaceSupportsErrorInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __ITypeFactory_INTERFACE_DEFINED__
@@ -1414,6 +1658,10 @@ type ITypeFactory_
 	lpVtbl as ITypeFactoryVtbl ptr
 end type
 
+#define ITypeFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeFactory_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeFactory_CreateFromTypeInfo(This, pTypeInfo, riid, ppv) (This)->lpVtbl->CreateFromTypeInfo(This, pTypeInfo, riid, ppv)
 declare function ITypeFactory_CreateFromTypeInfo_Proxy(byval This as ITypeFactory ptr, byval pTypeInfo as ITypeInfo ptr, byval riid as const IID const ptr, byval ppv as IUnknown ptr ptr) as HRESULT
 declare sub ITypeFactory_CreateFromTypeInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __ITypeMarshal_INTERFACE_DEFINED__
@@ -1433,6 +1681,14 @@ end type
 type ITypeMarshal_
 	lpVtbl as ITypeMarshalVtbl ptr
 end type
+
+#define ITypeMarshal_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITypeMarshal_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITypeMarshal_Release(This) (This)->lpVtbl->Release(This)
+#define ITypeMarshal_Size(This, pvType, dwDestContext, pvDestContext, pSize) (This)->lpVtbl->Size(This, pvType, dwDestContext, pvDestContext, pSize)
+#define ITypeMarshal_Marshal(This, pvType, dwDestContext, pvDestContext, cbBufferLength, pBuffer, pcbWritten) (This)->lpVtbl->Marshal(This, pvType, dwDestContext, pvDestContext, cbBufferLength, pBuffer, pcbWritten)
+#define ITypeMarshal_Unmarshal(This, pvType, dwFlags, cbBufferLength, pBuffer, pcbRead) (This)->lpVtbl->Unmarshal(This, pvType, dwFlags, cbBufferLength, pBuffer, pcbRead)
+#define ITypeMarshal_Free(This, pvType) (This)->lpVtbl->Free(This, pvType)
 
 declare function ITypeMarshal_Size_Proxy(byval This as ITypeMarshal ptr, byval pvType as PVOID, byval dwDestContext as DWORD, byval pvDestContext as PVOID, byval pSize as ULONG ptr) as HRESULT
 declare sub ITypeMarshal_Size_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1471,6 +1727,26 @@ end type
 type IRecordInfo_
 	lpVtbl as IRecordInfoVtbl ptr
 end type
+
+#define IRecordInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IRecordInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IRecordInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IRecordInfo_RecordInit(This, pvNew) (This)->lpVtbl->RecordInit(This, pvNew)
+#define IRecordInfo_RecordClear(This, pvExisting) (This)->lpVtbl->RecordClear(This, pvExisting)
+#define IRecordInfo_RecordCopy(This, pvExisting, pvNew) (This)->lpVtbl->RecordCopy(This, pvExisting, pvNew)
+#define IRecordInfo_GetGuid(This, pguid) (This)->lpVtbl->GetGuid(This, pguid)
+#define IRecordInfo_GetName(This, pbstrName) (This)->lpVtbl->GetName(This, pbstrName)
+#define IRecordInfo_GetSize(This, pcbSize) (This)->lpVtbl->GetSize(This, pcbSize)
+#define IRecordInfo_GetTypeInfo(This, ppTypeInfo) (This)->lpVtbl->GetTypeInfo(This, ppTypeInfo)
+#define IRecordInfo_GetField(This, pvData, szFieldName, pvarField) (This)->lpVtbl->GetField(This, pvData, szFieldName, pvarField)
+#define IRecordInfo_GetFieldNoCopy(This, pvData, szFieldName, pvarField, ppvDataCArray) (This)->lpVtbl->GetFieldNoCopy(This, pvData, szFieldName, pvarField, ppvDataCArray)
+#define IRecordInfo_PutField(This, wFlags, pvData, szFieldName, pvarField) (This)->lpVtbl->PutField(This, wFlags, pvData, szFieldName, pvarField)
+#define IRecordInfo_PutFieldNoCopy(This, wFlags, pvData, szFieldName, pvarField) (This)->lpVtbl->PutFieldNoCopy(This, wFlags, pvData, szFieldName, pvarField)
+#define IRecordInfo_GetFieldNames(This, pcNames, rgBstrNames) (This)->lpVtbl->GetFieldNames(This, pcNames, rgBstrNames)
+#define IRecordInfo_IsMatchingType(This, pRecordInfo) (This)->lpVtbl->IsMatchingType(This, pRecordInfo)
+#define IRecordInfo_RecordCreate(This) (This)->lpVtbl->RecordCreate(This)
+#define IRecordInfo_RecordCreateCopy(This, pvSource, ppvDest) (This)->lpVtbl->RecordCreateCopy(This, pvSource, ppvDest)
+#define IRecordInfo_RecordDestroy(This, pvRecord) (This)->lpVtbl->RecordDestroy(This, pvRecord)
 
 declare function IRecordInfo_RecordInit_Proxy(byval This as IRecordInfo ptr, byval pvNew as PVOID) as HRESULT
 declare sub IRecordInfo_RecordInit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1520,6 +1796,10 @@ type IErrorLog_
 	lpVtbl as IErrorLogVtbl ptr
 end type
 
+#define IErrorLog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IErrorLog_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IErrorLog_Release(This) (This)->lpVtbl->Release(This)
+#define IErrorLog_AddError(This, pszPropName, pExcepInfo) (This)->lpVtbl->AddError(This, pszPropName, pExcepInfo)
 declare function IErrorLog_AddError_Proxy(byval This as IErrorLog ptr, byval pszPropName as LPCOLESTR, byval pExcepInfo as EXCEPINFO ptr) as HRESULT
 declare sub IErrorLog_AddError_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IPropertyBag_INTERFACE_DEFINED__
@@ -1538,6 +1818,12 @@ end type
 type IPropertyBag_
 	lpVtbl as IPropertyBagVtbl ptr
 end type
+
+#define IPropertyBag_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyBag_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyBag_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyBag_Read(This, pszPropName, pVar, pErrorLog) (This)->lpVtbl->Read(This, pszPropName, pVar, pErrorLog)
+#define IPropertyBag_Write(This, pszPropName, pVar) (This)->lpVtbl->Write(This, pszPropName, pVar)
 
 declare function IPropertyBag_RemoteRead_Proxy(byval This as IPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr, byval pErrorLog as IErrorLog ptr, byval varType as DWORD, byval pUnkObj as IUnknown ptr) as HRESULT
 declare sub IPropertyBag_RemoteRead_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

@@ -29,6 +29,11 @@ type IServiceProvider_
 	lpVtbl as IServiceProviderVtbl ptr
 end type
 
+#define IServiceProvider_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IServiceProvider_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IServiceProvider_Release(This) (This)->lpVtbl->Release(This)
+#define IServiceProvider_QueryService(This, guidService, riid, ppvObject) (This)->lpVtbl->QueryService(This, guidService, riid, ppvObject)
+
 declare function IServiceProvider_RemoteQueryService_Proxy(byval This as IServiceProvider ptr, byval guidService as const GUID const ptr, byval riid as const IID const ptr, byval ppvObject as IUnknown ptr ptr) as HRESULT
 declare sub IServiceProvider_RemoteQueryService_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IServiceProvider_QueryService_Proxy(byval This as IServiceProvider ptr, byval guidService as const GUID const ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
