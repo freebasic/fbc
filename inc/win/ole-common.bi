@@ -1,3 +1,5 @@
+#pragma once
+
 extern "Windows"
 
 declare sub BSTR_UserFree(byval as ULONG ptr, byval as BSTR ptr)
