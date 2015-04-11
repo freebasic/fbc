@@ -182,17 +182,16 @@ void fb_hRecheckConsoleSize( int requery_cursorpos )
 	/* Try to query the terminal size */
 	/* Try TIOCGWINSZ */
 	struct winsize win = { 0, 0, 0, 0 };
-	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
+	if( ioctl( STDOUT_FILENO, TIOCGWINSZ, &win ) != 0 ) {
 #ifdef HOST_LINUX
-	if( win.ws_row == 0 || win.ws_col == 0 ) {
 		/* Try an escape sequence */
 		int r, c;
 		if( fb_hTermQuery( SEQ_QUERY_WINDOW, &r, &c ) ) {
 			win.ws_row = r;
 			win.ws_col = c;
 		}
-	}
 #endif
+	}
 
 	/* Fallback to defaults if all above queries failed */
 	/* Besides probably being correct, this also means we don't have to
