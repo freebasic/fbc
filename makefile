@@ -76,9 +76,10 @@
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
-#   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
+#   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)" to hard-code the prefix into fbc
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
+#   ENABLE_LIB64=1         use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
@@ -89,6 +90,7 @@
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
+#   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
@@ -334,6 +336,8 @@ endif
 #
 libsubdir := $(FBTARGET)
 ifdef ENABLE_STANDALONE
+  # Traditional standalone layout: fbc.exe at toplevel, libs in lib/<fbtarget>/,
+  # includes in inc/
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
   libdir         := lib/$(libsubdir)
@@ -345,13 +349,26 @@ else
   ifdef TARGET
     libsubdir := $(TARGET)
   endif
+
+  # With ENABLE_LIB64, put 64bit libs into
+  #    lib64/freebasic/<target>/
+  # instead of the default
+  #    lib/freebasic/<target>/
+  libdirname := lib
+  ifdef ENABLE_LIB64
+    ifneq ($(filter x86_64 aarch64,$(TARGET_ARCH)),)
+      libdirname := lib64
+    endif
+  endif
+
+  # Normal (non-standalone) setup: bin/fbc, include/freebasic/, lib[64]/freebasic/<target>/.
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
-  libdir         := lib/$(FBNAME)/$(libsubdir)
+  libdir         := $(libdirname)/$(FBNAME)/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   prefixbindir   := $(prefix)/bin
   prefixincdir   := $(prefix)/include/$(FBNAME)
-  prefixlibdir   := $(prefix)/lib/$(FBNAME)/$(libsubdir)
+  prefixlibdir   := $(prefix)/$(libdirname)/$(FBNAME)/$(libsubdir)
 endif
 fbcobjdir           := src/compiler/obj
 libfbobjdir         := src/rtlib/obj/$(libsubdir)
@@ -415,6 +432,9 @@ ifdef ENABLE_SUFFIX
 endif
 ifdef ENABLE_PREFIX
   ALLFBCFLAGS += -d 'ENABLE_PREFIX="$(prefix)"'
+endif
+ifdef ENABLE_LIB64
+  ALLFBCFLAGS += -d ENABLE_LIB64
 endif
 
 ALLFBCFLAGS += $(FBCFLAGS) $(FBFLAGS)

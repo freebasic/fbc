@@ -2315,6 +2315,13 @@ private sub fbcInit2( )
 	'' and libraries, to stay out of the way of the C ones in include/ and
 	'' lib/ and to conform to Linux distro packaging standards.
 	''
+	'' With ENABLE_LIB64, we put 64bit libs into
+	''    lib64/freebasic/<target>/
+	'' instead of the default
+	''    lib/freebasic/<target>/
+	'' lib/ is then used for 32bit libs only. This is useful for some Linux
+	'' distros which use lib/ and lib64/ this way.
+	''
 	'' - The paths are not terminated with [back]slashes here,
 	''   except for the bin/ path. fbcFindBin() expects to only have to
 	''   append the file name, for example:
@@ -2344,9 +2351,16 @@ private sub fbcInit2( )
 		fbname += ENABLE_SUFFIX
 	#endif
 
+	dim libdirname as string = "lib"
+	#ifdef ENABLE_LIB64
+		if( fbIs64Bit( ) ) then
+			libdirname = "lib64"
+		end if
+	#endif
+
 	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
-	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV
+	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV
 	if( len( fbc.target ) > 0 ) then
 		fbc.libpath += fbc.target
 	else
