@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -344,7 +344,7 @@ type DIDEVICEOBJECTINSTANCEA
 	wUsage as WORD
 	dwDimension as DWORD
 	wExponent as WORD
-	wEffects as WORD
+	wReserved as WORD
 end type
 
 type LPDIDEVICEOBJECTINSTANCEA as DIDEVICEOBJECTINSTANCEA ptr
@@ -365,7 +365,7 @@ type DIDEVICEOBJECTINSTANCEW
 	wUsage as WORD
 	dwDimension as DWORD
 	wExponent as WORD
-	wEffects as WORD
+	wReserved as WORD
 end type
 
 type LPDIDEVICEOBJECTINSTANCEW as DIDEVICEOBJECTINSTANCEW ptr

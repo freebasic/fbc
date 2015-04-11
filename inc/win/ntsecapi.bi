@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -644,6 +644,17 @@ type PLSA_ENUMERATION_INFORMATION as _LSA_ENUMERATION_INFORMATION ptr
 declare function LsaFreeMemory(byval Buffer as PVOID) as NTSTATUS
 declare function LsaClose(byval ObjectHandle as LSA_HANDLE) as NTSTATUS
 
+#if _WIN32_WINNT = &h0602
+	type _LSA_LAST_INTER_LOGON_INFO
+		LastSuccessfulLogon as LARGE_INTEGER
+		LastFailedLogon as LARGE_INTEGER
+		FailedAttemptCountSinceLastSuccessfulLogon as ULONG
+	end type
+
+	type LSA_LAST_INTER_LOGON_INFO as _LSA_LAST_INTER_LOGON_INFO
+	type PLSA_LAST_INTER_LOGON_INFO as _LSA_LAST_INTER_LOGON_INFO ptr
+#endif
+
 type _SECURITY_LOGON_SESSION_DATA
 	Size as ULONG
 	LogonId as LUID
@@ -657,6 +668,20 @@ type _SECURITY_LOGON_SESSION_DATA
 	LogonServer as LSA_UNICODE_STRING
 	DnsDomainName as LSA_UNICODE_STRING
 	Upn as LSA_UNICODE_STRING
+
+	#if _WIN32_WINNT = &h0602
+		UserFlags as ULONG
+		LastLogonInfo as LSA_LAST_INTER_LOGON_INFO
+		LogonScript as LSA_UNICODE_STRING
+		ProfilePath as LSA_UNICODE_STRING
+		HomeDirectory as LSA_UNICODE_STRING
+		HomeDirectoryDrive as LSA_UNICODE_STRING
+		LogoffTime as LARGE_INTEGER
+		KickOffTime as LARGE_INTEGER
+		PasswordLastSet as LARGE_INTEGER
+		PasswordCanChange as LARGE_INTEGER
+		PasswordMustChange as LARGE_INTEGER
+	#endif
 end type
 
 type SECURITY_LOGON_SESSION_DATA as _SECURITY_LOGON_SESSION_DATA

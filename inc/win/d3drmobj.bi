@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -771,7 +771,7 @@ type IDirect3DRMFrameVtbl_
 	GetClassName as function(byval This as IDirect3DRMFrame ptr, byval size as DWORD ptr, byval name as zstring ptr) as HRESULT
 	AddChild as function(byval This as IDirect3DRMFrame ptr, byval child as IDirect3DRMFrame ptr) as HRESULT
 	AddLight as function(byval This as IDirect3DRMFrame ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	AddMoveCallback as function(byval This as IDirect3DRMFrame ptr, byval as D3DRMFRAMEMOVECALLBACK, byval arg as any ptr) as HRESULT
+	AddMoveCallback as function(byval This as IDirect3DRMFrame ptr, byval cb as D3DRMFRAMEMOVECALLBACK, byval ctx as any ptr) as HRESULT
 	AddTransform as function(byval This as IDirect3DRMFrame ptr, byval as D3DRMCOMBINETYPE, byval as D3DVALUE ptr) as HRESULT
 	AddTranslation as function(byval This as IDirect3DRMFrame ptr, byval as D3DRMCOMBINETYPE, byval x as D3DVALUE, byval y as D3DVALUE, byval z as D3DVALUE) as HRESULT
 	AddScale as function(byval This as IDirect3DRMFrame ptr, byval as D3DRMCOMBINETYPE, byval sx as D3DVALUE, byval sy as D3DVALUE, byval sz as D3DVALUE) as HRESULT
@@ -798,7 +798,7 @@ type IDirect3DRMFrameVtbl_
 	Move as function(byval This as IDirect3DRMFrame ptr, byval delta as D3DVALUE) as HRESULT
 	DeleteChild as function(byval This as IDirect3DRMFrame ptr, byval child as IDirect3DRMFrame ptr) as HRESULT
 	DeleteLight as function(byval This as IDirect3DRMFrame ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	DeleteMoveCallback as function(byval This as IDirect3DRMFrame ptr, byval as D3DRMFRAMEMOVECALLBACK, byval arg as any ptr) as HRESULT
+	DeleteMoveCallback as function(byval This as IDirect3DRMFrame ptr, byval cb as D3DRMFRAMEMOVECALLBACK, byval ctx as any ptr) as HRESULT
 	DeleteVisual as function(byval This as IDirect3DRMFrame ptr, byval visual as IDirect3DRMVisual ptr) as HRESULT
 	GetSceneBackground as function(byval This as IDirect3DRMFrame ptr) as D3DCOLOR
 	GetSceneBackgroundDepth as function(byval This as IDirect3DRMFrame ptr, byval surface as IDirectDrawSurface ptr ptr) as HRESULT
@@ -918,7 +918,7 @@ type IDirect3DRMFrame2Vtbl_
 	GetClassName as function(byval This as IDirect3DRMFrame2 ptr, byval size as DWORD ptr, byval name as zstring ptr) as HRESULT
 	AddChild as function(byval This as IDirect3DRMFrame2 ptr, byval child as IDirect3DRMFrame ptr) as HRESULT
 	AddLight as function(byval This as IDirect3DRMFrame2 ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	AddMoveCallback as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMFRAMEMOVECALLBACK, byval arg as any ptr) as HRESULT
+	AddMoveCallback as function(byval This as IDirect3DRMFrame2 ptr, byval cb as D3DRMFRAMEMOVECALLBACK, byval ctx as any ptr) as HRESULT
 	AddTransform as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMCOMBINETYPE, byval as D3DVALUE ptr) as HRESULT
 	AddTranslation as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMCOMBINETYPE, byval x as D3DVALUE, byval y as D3DVALUE, byval z as D3DVALUE) as HRESULT
 	AddScale as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMCOMBINETYPE, byval sx as D3DVALUE, byval sy as D3DVALUE, byval sz as D3DVALUE) as HRESULT
@@ -945,7 +945,7 @@ type IDirect3DRMFrame2Vtbl_
 	Move as function(byval This as IDirect3DRMFrame2 ptr, byval delta as D3DVALUE) as HRESULT
 	DeleteChild as function(byval This as IDirect3DRMFrame2 ptr, byval child as IDirect3DRMFrame ptr) as HRESULT
 	DeleteLight as function(byval This as IDirect3DRMFrame2 ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	DeleteMoveCallback as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMFRAMEMOVECALLBACK, byval arg as any ptr) as HRESULT
+	DeleteMoveCallback as function(byval This as IDirect3DRMFrame2 ptr, byval cb as D3DRMFRAMEMOVECALLBACK, byval ctx as any ptr) as HRESULT
 	DeleteVisual as function(byval This as IDirect3DRMFrame2 ptr, byval visual as IDirect3DRMVisual ptr) as HRESULT
 	GetSceneBackground as function(byval This as IDirect3DRMFrame2 ptr) as D3DCOLOR
 	GetSceneBackgroundDepth as function(byval This as IDirect3DRMFrame2 ptr, byval surface as IDirectDrawSurface ptr ptr) as HRESULT
@@ -974,7 +974,7 @@ type IDirect3DRMFrame2Vtbl_
 	SetVelocity as function(byval This as IDirect3DRMFrame2 ptr, byval reference as IDirect3DRMFrame ptr, byval x as D3DVALUE, byval y as D3DVALUE, byval z as D3DVALUE, byval with_rotation as WINBOOL) as HRESULT
 	SetZbufferMode as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMZBUFFERMODE) as HRESULT
 	Transform as function(byval This as IDirect3DRMFrame2 ptr, byval d as D3DVECTOR ptr, byval s as D3DVECTOR ptr) as HRESULT
-	AddMoveCallback2 as function(byval This as IDirect3DRMFrame2 ptr, byval as D3DRMFRAMEMOVECALLBACK, byval arg as any ptr, byval flags as DWORD) as HRESULT
+	AddMoveCallback2 as function(byval This as IDirect3DRMFrame2 ptr, byval cb as D3DRMFRAMEMOVECALLBACK, byval ctx as any ptr, byval flags as DWORD) as HRESULT
 	GetBox as function(byval This as IDirect3DRMFrame2 ptr, byval box as D3DRMBOX ptr) as HRESULT
 	GetBoxEnable as function(byval This as IDirect3DRMFrame2 ptr) as WINBOOL
 	GetAxes as function(byval This as IDirect3DRMFrame2 ptr, byval dir as D3DVECTOR ptr, byval up as D3DVECTOR ptr) as HRESULT
@@ -1095,7 +1095,7 @@ type IDirect3DRMFrame3Vtbl_
 	GetClassName as function(byval This as IDirect3DRMFrame3 ptr, byval size as DWORD ptr, byval name as zstring ptr) as HRESULT
 	AddChild as function(byval This as IDirect3DRMFrame3 ptr, byval child as IDirect3DRMFrame3 ptr) as HRESULT
 	AddLight as function(byval This as IDirect3DRMFrame3 ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	AddMoveCallback as function(byval This as IDirect3DRMFrame3 ptr, byval as D3DRMFRAME3MOVECALLBACK, byval arg as any ptr, byval flags as DWORD) as HRESULT
+	AddMoveCallback as function(byval This as IDirect3DRMFrame3 ptr, byval cb as D3DRMFRAME3MOVECALLBACK, byval ctx as any ptr, byval flags as DWORD) as HRESULT
 	AddTransform as function(byval This as IDirect3DRMFrame3 ptr, byval as D3DRMCOMBINETYPE, byval as D3DVALUE ptr) as HRESULT
 	AddTranslation as function(byval This as IDirect3DRMFrame3 ptr, byval as D3DRMCOMBINETYPE, byval x as D3DVALUE, byval y as D3DVALUE, byval z as D3DVALUE) as HRESULT
 	AddScale as function(byval This as IDirect3DRMFrame3 ptr, byval as D3DRMCOMBINETYPE, byval sx as D3DVALUE, byval sy as D3DVALUE, byval sz as D3DVALUE) as HRESULT
@@ -1121,7 +1121,7 @@ type IDirect3DRMFrame3Vtbl_
 	Move as function(byval This as IDirect3DRMFrame3 ptr, byval delta as D3DVALUE) as HRESULT
 	DeleteChild as function(byval This as IDirect3DRMFrame3 ptr, byval child as IDirect3DRMFrame3 ptr) as HRESULT
 	DeleteLight as function(byval This as IDirect3DRMFrame3 ptr, byval light as IDirect3DRMLight ptr) as HRESULT
-	DeleteMoveCallback as function(byval This as IDirect3DRMFrame3 ptr, byval as D3DRMFRAME3MOVECALLBACK, byval arg as any ptr) as HRESULT
+	DeleteMoveCallback as function(byval This as IDirect3DRMFrame3 ptr, byval cb as D3DRMFRAME3MOVECALLBACK, byval ctx as any ptr) as HRESULT
 	DeleteVisual as function(byval This as IDirect3DRMFrame3 ptr, byval visual as IUnknown ptr) as HRESULT
 	GetSceneBackground as function(byval This as IDirect3DRMFrame3 ptr) as D3DCOLOR
 	GetSceneBackgroundDepth as function(byval This as IDirect3DRMFrame3 ptr, byval surface as IDirectDrawSurface ptr ptr) as HRESULT

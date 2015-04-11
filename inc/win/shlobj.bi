@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -17,6 +17,20 @@
 extern "Windows"
 
 #define _SHLOBJ_H_
+const CSIDL_FLAG_CREATE = &h8000
+const CSIDL_PERSONAL = &h0005
+const CSIDL_MYPICTURES = &h0027
+const CSIDL_APPDATA = &h001a
+const CSIDL_MYMUSIC = &h000d
+const CSIDL_MYVIDEO = &h000e
+
+type SHGFP_TYPE as long
+enum
+	SHGFP_TYPE_CURRENT = 0
+	SHGFP_TYPE_DEFAULT = 1
+end enum
+
+declare function SHGetFolderPathW(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPWSTR) as HRESULT
 declare function SHGetMalloc(byval ppMalloc as IMalloc ptr ptr) as HRESULT
 declare function SHAlloc(byval cb as SIZE_T_) as any ptr
 declare sub SHFree(byval pv as any ptr)
@@ -594,7 +608,6 @@ const CSIDL_INTERNET = &h0001
 const CSIDL_PROGRAMS = &h0002
 const CSIDL_CONTROLS = &h0003
 const CSIDL_PRINTERS = &h0004
-const CSIDL_PERSONAL = &h0005
 const CSIDL_FAVORITES = &h0006
 const CSIDL_STARTUP = &h0007
 const CSIDL_RECENT = &h0008
@@ -602,8 +615,6 @@ const CSIDL_SENDTO = &h0009
 const CSIDL_BITBUCKET = &h000a
 const CSIDL_STARTMENU = &h000b
 #define CSIDL_MYDOCUMENTS CSIDL_PERSONAL
-const CSIDL_MYMUSIC = &h000d
-const CSIDL_MYVIDEO = &h000e
 const CSIDL_DESKTOPDIRECTORY = &h0010
 const CSIDL_DRIVES = &h0011
 const CSIDL_NETWORK = &h0012
@@ -614,7 +625,6 @@ const CSIDL_COMMON_STARTMENU = &h0016
 const CSIDL_COMMON_PROGRAMS = &h0017
 const CSIDL_COMMON_STARTUP = &h0018
 const CSIDL_COMMON_DESKTOPDIRECTORY = &h0019
-const CSIDL_APPDATA = &h001a
 const CSIDL_PRINTHOOD = &h001b
 const CSIDL_LOCAL_APPDATA = &h001c
 const CSIDL_ALTSTARTUP = &h001d
@@ -627,7 +637,6 @@ const CSIDL_COMMON_APPDATA = &h0023
 const CSIDL_WINDOWS = &h0024
 const CSIDL_SYSTEM = &h0025
 const CSIDL_PROGRAM_FILES = &h0026
-const CSIDL_MYPICTURES = &h0027
 const CSIDL_PROFILE = &h0028
 const CSIDL_SYSTEMX86 = &h0029
 const CSIDL_PROGRAM_FILESX86 = &h002a
@@ -646,7 +655,6 @@ const CSIDL_RESOURCES_LOCALIZED = &h0039
 const CSIDL_COMMON_OEM_LINKS = &h003a
 const CSIDL_CDBURN_AREA = &h003b
 const CSIDL_COMPUTERSNEARME = &h003d
-const CSIDL_FLAG_CREATE = &h8000
 const CSIDL_FLAG_DONT_VERIFY = &h4000
 const CSIDL_FLAG_DONT_UNEXPAND = &h2000
 const CSIDL_FLAG_NO_ALIAS = &h1000
@@ -658,15 +666,7 @@ declare function SHCloneSpecialIDList(byval hwnd as HWND, byval csidl as long, b
 declare function SHGetSpecialFolderPathA(byval hwnd as HWND, byval pszPath as LPSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
 declare function SHGetSpecialFolderPathW(byval hwnd as HWND, byval pszPath as LPWSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
 declare sub SHFlushSFCache()
-
-type SHGFP_TYPE as long
-enum
-	SHGFP_TYPE_CURRENT = 0
-	SHGFP_TYPE_DEFAULT = 1
-end enum
-
 declare function SHGetFolderPathA(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPSTR) as HRESULT
-declare function SHGetFolderPathW(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPWSTR) as HRESULT
 declare function SHGetFolderLocation(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval ppidl as LPITEMIDLIST ptr) as HRESULT
 declare function SHSetFolderPathA(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCSTR) as HRESULT
 declare function SHSetFolderPathW(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCWSTR) as HRESULT

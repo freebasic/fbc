@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -80,26 +80,6 @@ extern "C"
 	#define __INTRINSIC_DEFINED___movsq
 #endif
 
-declare sub __int2c()
-#define __INTRINSIC_DEFINED___int2c
-declare sub __stosb(byval as ubyte ptr, byval as ubyte, byval as uinteger)
-#define __INTRINSIC_DEFINED___stosb
-declare sub __stosw(byval as ushort ptr, byval as ushort, byval as uinteger)
-#define __INTRINSIC_DEFINED___stosw
-declare sub __stosd(byval as ulong ptr, byval as ulong, byval as uinteger)
-#define __INTRINSIC_DEFINED___stosd
-declare function _interlockedbittestandset(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED__interlockedbittestandset
-declare function _interlockedbittestandreset(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED__interlockedbittestandreset
-declare function _interlockedbittestandcomplement(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED__interlockedbittestandcomplement
-declare function InterlockedBitTestAndSet(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED_InterlockedBitTestAndSet
-declare function InterlockedBitTestAndReset(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED_InterlockedBitTestAndReset
-declare function InterlockedBitTestAndComplement(byval a as long ptr, byval b as long) as ubyte
-#define __INTRINSIC_DEFINED_InterlockedBitTestAndComplement
 #define __INTRINSIC_DEFINED__InterlockedAnd
 #define __INTRINSIC_DEFINED__InterlockedOr
 #define __INTRINSIC_DEFINED__InterlockedXor
@@ -125,6 +105,26 @@ declare function _InterlockedCompareExchangePointer(byval Destination as any ptr
 #define __INTRINSIC_DEFINED__InterlockedCompareExchangePointer
 declare function _InterlockedExchangePointer(byval Target as any ptr ptr, byval Value as any ptr) as any ptr
 #define __INTRINSIC_DEFINED__InterlockedExchangePointer
+declare sub __int2c()
+#define __INTRINSIC_DEFINED___int2c
+declare sub __stosb(byval Dest as ubyte ptr, byval Data as ubyte, byval Count as uinteger)
+#define __INTRINSIC_DEFINED___stosb
+declare sub __stosw(byval Dest as ushort ptr, byval Data as ushort, byval Count as uinteger)
+#define __INTRINSIC_DEFINED___stosw
+declare sub __stosd(byval Dest as ulong ptr, byval Data as ulong, byval Count as uinteger)
+#define __INTRINSIC_DEFINED___stosd
+declare function _interlockedbittestandset(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED__interlockedbittestandset
+declare function _interlockedbittestandreset(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED__interlockedbittestandreset
+declare function _interlockedbittestandcomplement(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED__interlockedbittestandcomplement
+declare function InterlockedBitTestAndSet(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED_InterlockedBitTestAndSet
+declare function InterlockedBitTestAndReset(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED_InterlockedBitTestAndReset
+declare function InterlockedBitTestAndComplement(byval Base as long ptr, byval Offset as long) as ubyte
+#define __INTRINSIC_DEFINED_InterlockedBitTestAndComplement
 declare function _BitScanForward(byval Index as ulong ptr, byval Mask as ulong) as ubyte
 #define __INTRINSIC_DEFINED__BitScanForward
 declare function _BitScanReverse(byval Index as ulong ptr, byval Mask as ulong) as ubyte
@@ -178,39 +178,22 @@ declare sub __movsd(byval Dest as ulong ptr, byval Source as const ulong ptr, by
 
 #ifdef __FB_64BIT__
 	declare function __readcr0() as ulongint
-
 	#define __INTRINSIC_DEFINED___readcr0
-
 	declare function __readcr2() as ulongint
-
 	#define __INTRINSIC_DEFINED___readcr2
-
 	declare function __readcr3() as ulongint
-
 	#define __INTRINSIC_DEFINED___readcr3
-
 	declare function __readcr4() as ulongint
-
 	#define __INTRINSIC_DEFINED___readcr4
-
 	declare function __readcr8() as ulongint
-
 	#define __INTRINSIC_DEFINED___readcr8
-
 	declare sub __writecr0(byval as ulongint)
-
 	#define __INTRINSIC_DEFINED___writecr0
-
 	declare sub __writecr3(byval as ulongint)
-
 	#define __INTRINSIC_DEFINED___writecr3
-
 	declare sub __writecr4(byval as ulongint)
-
 	#define __INTRINSIC_DEFINED___writecr4
-
 	declare sub __writecr8(byval as ulongint)
-
 	#define __INTRINSIC_DEFINED___writecr8
 	#define __INTRINSIC_DEFINED__umul128
 	#define __INTRINSIC_DEFINED__mul128
@@ -219,100 +202,54 @@ declare sub __movsd(byval Dest as ulong ptr, byval Source as const ulong ptr, by
 #endif
 
 declare function __inbyte(byval Port as ushort) as ubyte
-
 #define __INTRINSIC_DEFINED___inbyte
-
 declare function __inword(byval Port as ushort) as ushort
-
 #define __INTRINSIC_DEFINED___inword
-
 declare function __indword(byval Port as ushort) as ulong
-
 #define __INTRINSIC_DEFINED___indword
-
 declare sub __outbyte(byval Port as ushort, byval Data_ as ubyte)
-
 #define __INTRINSIC_DEFINED___outbyte
-
 declare sub __outword(byval Port as ushort, byval Data_ as ushort)
-
 #define __INTRINSIC_DEFINED___outword
-
 declare sub __outdword(byval Port as ushort, byval Data_ as ulong)
-
 #define __INTRINSIC_DEFINED___outdword
-
 declare sub __inbytestring(byval Port as ushort, byval Buffer as ubyte ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___inbytestring
-
 declare sub __inwordstring(byval Port as ushort, byval Buffer as ushort ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___inwordstring
-
 declare sub __indwordstring(byval Port as ushort, byval Buffer as ulong ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___indwordstring
-
 declare sub __outbytestring(byval Port as ushort, byval Buffer as ubyte ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___outbytestring
-
 declare sub __outwordstring(byval Port as ushort, byval Buffer as ushort ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___outwordstring
-
 declare sub __outdwordstring(byval Port as ushort, byval Buffer as ulong ptr, byval Count as ulong)
-
 #define __INTRINSIC_DEFINED___outdwordstring
-
 declare sub __cpuid(byval CPUInfo as long ptr, byval InfoType as long)
-
 #define __INTRINSIC_DEFINED___cpuid
-
 declare function __readmsr(byval as ulong) as ulongint
-
 #define __INTRINSIC_DEFINED___readmsr
-
 declare sub __writemsr(byval as ulong, byval as ulongint)
-
 #define __INTRINSIC_DEFINED___writemsr
 
 #ifndef __FB_64BIT__
 	declare function __readcr0() as ulong
-
 	#define __INTRINSIC_DEFINED___readcr0
-
 	declare function __readcr2() as ulong
-
 	#define __INTRINSIC_DEFINED___readcr2
-
 	declare function __readcr3() as ulong
-
 	#define __INTRINSIC_DEFINED___readcr3
-
 	declare function __readcr4() as ulong
-
 	#define __INTRINSIC_DEFINED___readcr4
-
 	declare function __readcr8() as ulong
-
 	#define __INTRINSIC_DEFINED___readcr8
-
 	declare sub __writecr0(byval as ulong)
-
 	#define __INTRINSIC_DEFINED___writecr0
-
 	declare sub __writecr3(byval as ulong)
-
 	#define __INTRINSIC_DEFINED___writecr3
-
 	declare sub __writecr4(byval as ulong)
-
 	#define __INTRINSIC_DEFINED___writecr4
-
 	declare sub __writecr8(byval as ulong)
-
 	#define __INTRINSIC_DEFINED___writecr8
 #endif
 

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -30,7 +30,6 @@ extern CLSID_DirectMusicSynthSink as const GUID
 extern CLSID_DirectMusicSection as const GUID
 extern CLSID_DirectMusicAuditionTrack as const GUID
 extern CLSID_DirectMusicSegTriggerTrack as const GUID
-extern CLSID_DirectMusicAudioPath as const GUID
 extern CLSID_DirectMusicTemplate as const GUID
 extern CLSID_DirectMusicScriptAutoImpSegment as const GUID
 extern CLSID_AudioVBScript as const GUID

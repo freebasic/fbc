@@ -1,9 +1,10 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
 #inclib "comdlg32"
 
+#include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "prsht.bi"
 
@@ -783,6 +784,11 @@ const CF_PRINTERFONTS = &h2
 #define CF_SELECTSCRIPT __MSABI_LONG(&h400000)
 #define CF_NOSCRIPTSEL __MSABI_LONG(&h800000)
 #define CF_NOVERTFONTS __MSABI_LONG(&h1000000)
+
+#if _WIN32_WINNT = &h0602
+	#define CF_INACTIVEFONTS __MSABI_LONG(&h02000000)
+#endif
+
 const SIMULATED_FONTTYPE = &h8000
 const PRINTER_FONTTYPE = &h4000
 const SCREEN_FONTTYPE = &h2000
@@ -792,6 +798,11 @@ const REGULAR_FONTTYPE = &h400
 const PS_OPENTYPE_FONTTYPE = &h10000
 const TT_OPENTYPE_FONTTYPE = &h20000
 const TYPE1_FONTTYPE = &h40000
+
+#if _WIN32_WINNT = &h0602
+	const SYMBOL_FONTTYPE = &h80000
+#endif
+
 #define WM_CHOOSEFONT_GETLOGFONT (WM_USER + 1)
 #define WM_CHOOSEFONT_SETLOGFONT (WM_USER + 101)
 #define WM_CHOOSEFONT_SETFLAGS (WM_USER + 102)

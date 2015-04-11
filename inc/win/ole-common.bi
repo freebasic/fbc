@@ -46,5 +46,10 @@ declare sub STGMEDIUM_UserFree(byval as ULONG ptr, byval as STGMEDIUM ptr)
 declare function STGMEDIUM_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as STGMEDIUM ptr) as ubyte ptr
 declare function STGMEDIUM_UserSize(byval as ULONG ptr, byval as ULONG, byval as STGMEDIUM ptr) as ULONG
 declare function STGMEDIUM_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as STGMEDIUM ptr) as ubyte ptr
+type VARIANT as tagVARIANT
+declare function VARIANT_UserSize(byval as ULONG ptr, byval as ULONG, byval as VARIANT ptr) as ULONG
+declare function VARIANT_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
+declare function VARIANT_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
+declare sub VARIANT_UserFree(byval as ULONG ptr, byval as VARIANT ptr)
 
 end extern

@@ -1,7 +1,8 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
+#include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "sspi.bi"
 
@@ -21,6 +22,8 @@ enum
 	NameCanonicalEx = 9
 	NameServicePrincipal = 10
 	NameDnsDomain = 12
+	NameGivenName = 13
+	NameSurname = 14
 end enum
 
 type PEXTENDED_NAME_FORMAT as EXTENDED_NAME_FORMAT ptr

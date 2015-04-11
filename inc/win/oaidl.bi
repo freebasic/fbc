@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -172,7 +172,6 @@ const _FORCENAMELESSUNION = 1
 #define __VARIANT_NAME_3
 #define __tagBRECORD
 #define __VARIANT_NAME_4
-type VARIANT as tagVARIANT
 type IRecordInfo as IRecordInfo_
 
 type tagVARIANT
@@ -1839,10 +1838,6 @@ declare function LPSAFEARRAY_UserMarshal(byval as ULONG ptr, byval as ubyte ptr,
 declare function LPSAFEARRAY_UserSize(byval as ULONG ptr, byval as ULONG, byval as LPSAFEARRAY ptr) as ULONG
 declare function LPSAFEARRAY_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as LPSAFEARRAY ptr) as ubyte ptr
 declare sub LPSAFEARRAY_UserFree(byval as ULONG ptr, byval as LPSAFEARRAY ptr)
-declare function VARIANT_UserSize(byval as ULONG ptr, byval as ULONG, byval as VARIANT ptr) as ULONG
-declare function VARIANT_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare function VARIANT_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as VARIANT ptr) as ubyte ptr
-declare sub VARIANT_UserFree(byval as ULONG ptr, byval as VARIANT ptr)
 
 end extern
 

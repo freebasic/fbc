@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -883,7 +883,10 @@ type _DDSURFACEDESC2
 		dwLinearSize as DWORD
 	end union
 
-	dwBackBufferCount as DWORD
+	union
+		dwBackBufferCount as DWORD
+		dwDepth as DWORD
+	end union
 
 	union
 		dwMipMapCount as DWORD

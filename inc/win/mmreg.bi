@@ -1,8 +1,9 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
 #include once "mmsystem.bi"
+#include once "winapifamily.bi"
 
 extern "C"
 
@@ -687,7 +688,7 @@ const MM_ESS_AMMIDIIN = &h06
 const MM_ESS_MIXER = &h07
 const MM_ESS_AUX_CD = &h08
 const MM_ESS_MPU401_MIDIOUT = &h09
-const MM_ESS_MPU401_MIDIIN = &h0A
+const MM_ESS_MPU401_MIDIIN = &h0a
 const MM_ESS_ES488_WAVEOUT = &h10
 const MM_ESS_ES488_WAVEIN = &h11
 const MM_ESS_ES488_MIXER = &h12
@@ -698,12 +699,12 @@ const MM_ESS_ES1488_WAVEOUT = &h16
 const MM_ESS_ES1488_WAVEIN = &h17
 const MM_ESS_ES1488_MIXER = &h18
 const MM_ESS_ES1688_WAVEOUT = &h19
-const MM_ESS_ES1688_WAVEIN = &h1A
-const MM_ESS_ES1688_MIXER = &h1B
-const MM_ESS_ES1788_WAVEOUT = &h1C
-const MM_ESS_ES1788_WAVEIN = &h1D
-const MM_ESS_ES1788_MIXER = &h1E
-const MM_ESS_ES1888_WAVEOUT = &h1F
+const MM_ESS_ES1688_WAVEIN = &h1a
+const MM_ESS_ES1688_MIXER = &h1b
+const MM_ESS_ES1788_WAVEOUT = &h1c
+const MM_ESS_ES1788_WAVEIN = &h1d
+const MM_ESS_ES1788_MIXER = &h1e
+const MM_ESS_ES1888_WAVEOUT = &h1f
 const MM_ESS_ES1888_WAVEIN = &h20
 const MM_ESS_ES1888_MIXER = &h21
 const MM_ESS_ES1868_WAVEOUT = &h22
@@ -1323,7 +1324,13 @@ const MM_VKC_SERIAL_MIDIIN = &h0101
 const MM_VKC_MPU401_MIDIOUT = &h0200
 const MM_VKC_SERIAL_MIDIOUT = &h0201
 const MM_ZEFIRO_ZA2 = 2
+const MM_FHGIIS_MPEGLAYER3_DECODE = 9
 const MM_FHGIIS_MPEGLAYER3 = 10
+const MM_FHGIIS_MPEGLAYER3_LITE = 10
+const MM_FHGIIS_MPEGLAYER3_BASIC = 11
+const MM_FHGIIS_MPEGLAYER3_ADVANCED = 12
+const MM_FHGIIS_MPEGLAYER3_PROFESSIONAL = 13
+const MM_FHGIIS_MPEGLAYER3_ADVANCEDPLUS = 14
 const MM_QUICKNET_PJWAVEIN = 1
 const MM_QUICKNET_PJWAVEOUT = 2
 const MM_SICRESOURCE_SSO3D = 2
@@ -1592,6 +1599,8 @@ const MM_ALGOVISION_VB80AUX2 = 5
 #define RIFFINFO_ITCH mmioFOURCC(asc("I"), asc("T"), asc("C"), asc("H"))
 #define RIFFINFO_ISMP mmioFOURCC(asc("I"), asc("S"), asc("M"), asc("P"))
 #define RIFFINFO_IDIT mmioFOURCC(asc("I"), asc("D"), asc("I"), asc("T"))
+#define RIFFINFO_ITRK mmioFOURCC(asc("I"), asc("T"), asc("R"), asc("K"))
+#define RIFFINFO_ITOC mmioFOURCC(asc("I"), asc("T"), asc("O"), asc("C"))
 const WAVE_FORMAT_UNKNOWN = &h0000
 const WAVE_FORMAT_ADPCM = &h0002
 const WAVE_FORMAT_IEEE_FLOAT = &h0003
@@ -1601,7 +1610,8 @@ const WAVE_FORMAT_ALAW = &h0006
 const WAVE_FORMAT_MULAW = &h0007
 const WAVE_FORMAT_DTS = &h0008
 const WAVE_FORMAT_DRM = &h0009
-const WAVE_FORMAT_WMAVOICE9 = &h000A
+const WAVE_FORMAT_WMAVOICE9 = &h000a
+const WAVE_FORMAT_WMAVOICE10 = &h000b
 const WAVE_FORMAT_OKI_ADPCM = &h0010
 const WAVE_FORMAT_DVI_ADPCM = &h0011
 #define WAVE_FORMAT_IMA_ADPCM WAVE_FORMAT_DVI_ADPCM
@@ -1613,6 +1623,7 @@ const WAVE_FORMAT_DIGIFIX = &h0016
 const WAVE_FORMAT_DIALOGIC_OKI_ADPCM = &h0017
 const WAVE_FORMAT_MEDIAVISION_ADPCM = &h0018
 const WAVE_FORMAT_CU_CODEC = &h0019
+const WAVE_FORMAT_HP_DYN_VOICE = &h001a
 const WAVE_FORMAT_YAMAHA_ADPCM = &h0020
 const WAVE_FORMAT_SONARC = &h0021
 const WAVE_FORMAT_DSPGROUP_TRUESPEECH = &h0022
@@ -1632,13 +1643,16 @@ const WAVE_FORMAT_DIGIADPCM = &h0036
 const WAVE_FORMAT_CONTROL_RES_CR10 = &h0037
 const WAVE_FORMAT_NMS_VBXADPCM = &h0038
 const WAVE_FORMAT_CS_IMAADPCM = &h0039
-const WAVE_FORMAT_ECHOSC3 = &h003A
-const WAVE_FORMAT_ROCKWELL_ADPCM = &h003B
-const WAVE_FORMAT_ROCKWELL_DIGITALK = &h003C
-const WAVE_FORMAT_XEBEC = &h003D
+const WAVE_FORMAT_ECHOSC3 = &h003a
+const WAVE_FORMAT_ROCKWELL_ADPCM = &h003b
+const WAVE_FORMAT_ROCKWELL_DIGITALK = &h003c
+const WAVE_FORMAT_XEBEC = &h003d
 const WAVE_FORMAT_G721_ADPCM = &h0040
 const WAVE_FORMAT_G728_CELP = &h0041
 const WAVE_FORMAT_MSG723 = &h0042
+const WAVE_FORMAT_INTEL_G723_1 = &h0043
+const WAVE_FORMAT_INTEL_G729 = &h0044
+const WAVE_FORMAT_SHARP_G726 = &h0045
 const WAVE_FORMAT_MPEG = &h0050
 const WAVE_FORMAT_RT24 = &h0052
 const WAVE_FORMAT_PAC = &h0053
@@ -1650,6 +1664,7 @@ const WAVE_FORMAT_VOXWARE = &h0062
 const WAVE_FORMAT_CANOPUS_ATRAC = &h0063
 const WAVE_FORMAT_G726_ADPCM = &h0064
 const WAVE_FORMAT_G722_ADPCM = &h0065
+const WAVE_FORMAT_DSAT = &h0066
 const WAVE_FORMAT_DSAT_DISPLAY = &h0067
 const WAVE_FORMAT_VOXWARE_BYTE_ALIGNED = &h0069
 const WAVE_FORMAT_VOXWARE_AC8 = &h0070
@@ -1662,6 +1677,8 @@ const WAVE_FORMAT_VOXWARE_RT29HW = &h0076
 const WAVE_FORMAT_VOXWARE_VR12 = &h0077
 const WAVE_FORMAT_VOXWARE_VR18 = &h0078
 const WAVE_FORMAT_VOXWARE_TQ40 = &h0079
+const WAVE_FORMAT_VOXWARE_SC3 = &h007a
+const WAVE_FORMAT_VOXWARE_SC3_1 = &h007b
 const WAVE_FORMAT_SOFTSOUND = &h0080
 const WAVE_FORMAT_VOXWARE_TQ60 = &h0081
 const WAVE_FORMAT_MSRT24 = &h0082
@@ -1671,6 +1688,10 @@ const WAVE_FORMAT_DF_G726 = &h0085
 const WAVE_FORMAT_DF_GSM610 = &h0086
 const WAVE_FORMAT_ISIAUDIO = &h0088
 const WAVE_FORMAT_ONLIVE = &h0089
+const WAVE_FORMAT_MULTITUDE_FT_SX20 = &h008a
+const WAVE_FORMAT_INFOCOM_ITS_G721_ADPCM = &h008b
+const WAVE_FORMAT_CONVEDIA_G729 = &h008c
+const WAVE_FORMAT_CONGRUENCY = &h008d
 const WAVE_FORMAT_SBC24 = &h0091
 const WAVE_FORMAT_DOLBY_AC3_SPDIF = &h0092
 const WAVE_FORMAT_MEDIASONIC_G723 = &h0093
@@ -1678,12 +1699,19 @@ const WAVE_FORMAT_PROSODY_8KBPS = &h0094
 const WAVE_FORMAT_ZYXEL_ADPCM = &h0097
 const WAVE_FORMAT_PHILIPS_LPCBB = &h0098
 const WAVE_FORMAT_PACKED = &h0099
-const WAVE_FORMAT_MALDEN_PHONYTALK = &h00A0
-const WAVE_FORMAT_RAW_AAC1 = &h00FF
+const WAVE_FORMAT_MALDEN_PHONYTALK = &h00a0
+const WAVE_FORMAT_RACAL_RECORDER_GSM = &h00a1
+const WAVE_FORMAT_RACAL_RECORDER_G720_A = &h00a2
+const WAVE_FORMAT_RACAL_RECORDER_G723_1 = &h00a3
+const WAVE_FORMAT_RACAL_RECORDER_TETRA_ACELP = &h00a4
+const WAVE_FORMAT_NEC_AAC = &h00b0
+const WAVE_FORMAT_RAW_AAC1 = &h00ff
 const WAVE_FORMAT_RHETOREX_ADPCM = &h0100
 const WAVE_FORMAT_IRAT = &h0101
 const WAVE_FORMAT_VIVO_G723 = &h0111
 const WAVE_FORMAT_VIVO_SIREN = &h0112
+const WAVE_FORMAT_PHILIPS_CELP = &h0120
+const WAVE_FORMAT_PHILIPS_GRUNDIG = &h0121
 const WAVE_FORMAT_DIGITAL_G723 = &h0123
 const WAVE_FORMAT_SANYO_LD_ADPCM = &h0125
 const WAVE_FORMAT_SIPROLAB_ACEPLNET = &h0130
@@ -1692,7 +1720,10 @@ const WAVE_FORMAT_SIPROLAB_ACELP8V3 = &h0132
 const WAVE_FORMAT_SIPROLAB_G729 = &h0133
 const WAVE_FORMAT_SIPROLAB_G729A = &h0134
 const WAVE_FORMAT_SIPROLAB_KELVIN = &h0135
+const WAVE_FORMAT_VOICEAGE_AMR = &h0136
 const WAVE_FORMAT_G726ADPCM = &h0140
+const WAVE_FORMAT_DICTAPHONE_CELP68 = &h0141
+const WAVE_FORMAT_DICTAPHONE_CELP54 = &h0142
 const WAVE_FORMAT_QUALCOMM_PUREVOICE = &h0150
 const WAVE_FORMAT_QUALCOMM_HALFRATE = &h0151
 const WAVE_FORMAT_TUBGSM = &h0155
@@ -1705,40 +1736,148 @@ const WAVE_FORMAT_UNISYS_NAP_ADPCM = &h0170
 const WAVE_FORMAT_UNISYS_NAP_ULAW = &h0171
 const WAVE_FORMAT_UNISYS_NAP_ALAW = &h0172
 const WAVE_FORMAT_UNISYS_NAP_16K = &h0173
+const WAVE_FORMAT_SYCOM_ACM_SYC008 = &h0174
+const WAVE_FORMAT_SYCOM_ACM_SYC701_G726L = &h0175
+const WAVE_FORMAT_SYCOM_ACM_SYC701_CELP54 = &h0176
+const WAVE_FORMAT_SYCOM_ACM_SYC701_CELP68 = &h0177
+const WAVE_FORMAT_KNOWLEDGE_ADVENTURE_ADPCM = &h0178
+const WAVE_FORMAT_FRAUNHOFER_IIS_MPEG2_AAC = &h0180
+const WAVE_FORMAT_DTS_DS = &h0190
 const WAVE_FORMAT_CREATIVE_ADPCM = &h0200
 const WAVE_FORMAT_CREATIVE_FASTSPEECH8 = &h0202
 const WAVE_FORMAT_CREATIVE_FASTSPEECH10 = &h0203
 const WAVE_FORMAT_UHER_ADPCM = &h0210
+const WAVE_FORMAT_ULEAD_DV_AUDIO = &h0215
+const WAVE_FORMAT_ULEAD_DV_AUDIO_1 = &h0216
 const WAVE_FORMAT_QUARTERDECK = &h0220
 const WAVE_FORMAT_ILINK_VC = &h0230
 const WAVE_FORMAT_RAW_SPORT = &h0240
 const WAVE_FORMAT_ESST_AC3 = &h0241
+const WAVE_FORMAT_GENERIC_PASSTHRU = &h0249
 const WAVE_FORMAT_IPI_HSX = &h0250
 const WAVE_FORMAT_IPI_RPELP = &h0251
 const WAVE_FORMAT_CS2 = &h0260
 const WAVE_FORMAT_SONY_SCX = &h0270
+const WAVE_FORMAT_SONY_SCY = &h0271
+const WAVE_FORMAT_SONY_ATRAC3 = &h0272
+const WAVE_FORMAT_SONY_SPC = &h0273
+const WAVE_FORMAT_TELUM_AUDIO = &h0280
+const WAVE_FORMAT_TELUM_IA_AUDIO = &h0281
+const WAVE_FORMAT_NORCOM_VOICE_SYSTEMS_ADPCM = &h0285
 const WAVE_FORMAT_FM_TOWNS_SND = &h0300
+const WAVE_FORMAT_MICRONAS = &h0350
+const WAVE_FORMAT_MICRONAS_CELP833 = &h0351
 const WAVE_FORMAT_BTV_DIGITAL = &h0400
+const WAVE_FORMAT_INTEL_MUSIC_CODER = &h0401
+const WAVE_FORMAT_INDEO_AUDIO = &h0402
 const WAVE_FORMAT_QDESIGN_MUSIC = &h0450
+const WAVE_FORMAT_ON2_VP7_AUDIO = &h0500
+const WAVE_FORMAT_ON2_VP6_AUDIO = &h0501
 const WAVE_FORMAT_VME_VMPCM = &h0680
 const WAVE_FORMAT_TPC = &h0681
+const WAVE_FORMAT_LIGHTWAVE_LOSSLESS = &h08ae
 const WAVE_FORMAT_OLIGSM = &h1000
 const WAVE_FORMAT_OLIADPCM = &h1001
 const WAVE_FORMAT_OLICELP = &h1002
 const WAVE_FORMAT_OLISBC = &h1003
 const WAVE_FORMAT_OLIOPR = &h1004
 const WAVE_FORMAT_LH_CODEC = &h1100
+const WAVE_FORMAT_LH_CODEC_CELP = &h1101
+const WAVE_FORMAT_LH_CODEC_SBC8 = &h1102
+const WAVE_FORMAT_LH_CODEC_SBC12 = &h1103
+const WAVE_FORMAT_LH_CODEC_SBC16 = &h1104
 const WAVE_FORMAT_NORRIS = &h1400
+const WAVE_FORMAT_ISIAUDIO_2 = &h1401
 const WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS = &h1500
 const WAVE_FORMAT_MPEG_ADTS_AAC = &h1600
+const WAVE_FORMAT_MPEG_RAW_AAC = &h1601
 const WAVE_FORMAT_MPEG_LOAS = &h1602
+const WAVE_FORMAT_NOKIA_MPEG_ADTS_AAC = &h1608
+const WAVE_FORMAT_NOKIA_MPEG_RAW_AAC = &h1609
+const WAVE_FORMAT_VODAFONE_MPEG_ADTS_AAC = &h160a
+const WAVE_FORMAT_VODAFONE_MPEG_RAW_AAC = &h160b
 const WAVE_FORMAT_MPEG_HEAAC = &h1610
+const WAVE_FORMAT_VOXWARE_RT24_SPEECH = &h181c
+const WAVE_FORMAT_SONICFOUNDRY_LOSSLESS = &h1971
+const WAVE_FORMAT_INNINGS_TELECOM_ADPCM = &h1979
+const WAVE_FORMAT_LUCENT_SX8300P = &h1c07
+const WAVE_FORMAT_LUCENT_SX5363S = &h1c0c
+const WAVE_FORMAT_CUSEEME = &h1f03
+const WAVE_FORMAT_NTCSOFT_ALF2CM_ACM = &h1fc4
 const WAVE_FORMAT_DVM = &h2000
 const WAVE_FORMAT_DTS2 = &h2001
-const WAVE_FORMAT_EXTENSIBLE = &hFFFE
-const WAVE_FORMAT_DEVELOPMENT = &hFFFF
+const WAVE_FORMAT_MAKEAVIS = &h3313
+const WAVE_FORMAT_DIVIO_MPEG4_AAC = &h4143
+const WAVE_FORMAT_NOKIA_ADAPTIVE_MULTIRATE = &h4201
+const WAVE_FORMAT_DIVIO_G726 = &h4243
+const WAVE_FORMAT_LEAD_SPEECH = &h434c
+const WAVE_FORMAT_LEAD_VORBIS = &h564c
+const WAVE_FORMAT_WAVPACK_AUDIO = &h5756
+const WAVE_FORMAT_OGG_VORBIS_MODE_1 = &h674f
+const WAVE_FORMAT_OGG_VORBIS_MODE_2 = &h6750
+const WAVE_FORMAT_OGG_VORBIS_MODE_3 = &h6751
+const WAVE_FORMAT_OGG_VORBIS_MODE_1_PLUS = &h676f
+const WAVE_FORMAT_OGG_VORBIS_MODE_2_PLUS = &h6770
+const WAVE_FORMAT_OGG_VORBIS_MODE_3_PLUS = &h6771
+const WAVE_FORMAT_3COM_NBX = &h7000
+const WAVE_FORMAT_FAAD_AAC = &h706d
+const WAVE_FORMAT_GSM_AMR_CBR = &h7a21
+const WAVE_FORMAT_GSM_AMR_VBR_SID = &h7a22
+const WAVE_FORMAT_COMVERSE_INFOSYS_G723_1 = &ha100
+const WAVE_FORMAT_COMVERSE_INFOSYS_AVQSBC = &ha101
+const WAVE_FORMAT_COMVERSE_INFOSYS_SBC = &ha102
+const WAVE_FORMAT_SYMBOL_G729_A = &ha103
+const WAVE_FORMAT_VOICEAGE_AMR_WB = &ha104
+const WAVE_FORMAT_INGENIENT_G726 = &ha105
+const WAVE_FORMAT_MPEG4_AAC = &ha106
+const WAVE_FORMAT_ENCORE_G726 = &ha107
+const WAVE_FORMAT_ZOLL_ASAO = &ha108
+const WAVE_FORMAT_SPEEX_VOICE = &ha109
+const WAVE_FORMAT_VIANIX_MASC = &ha10a
+const WAVE_FORMAT_WM9_SPECTRUM_ANALYZER = &ha10b
+const WAVE_FORMAT_WMF_SPECTRUM_ANAYZER = &ha10c
+const WAVE_FORMAT_GSM_610 = &ha10d
+const WAVE_FORMAT_GSM_620 = &ha10e
+const WAVE_FORMAT_GSM_660 = &ha10f
+const WAVE_FORMAT_GSM_690 = &ha110
+const WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB = &ha111
+const WAVE_FORMAT_POLYCOM_G722 = &ha112
+const WAVE_FORMAT_POLYCOM_G728 = &ha113
+const WAVE_FORMAT_POLYCOM_G729_A = &ha114
+const WAVE_FORMAT_POLYCOM_SIREN = &ha115
+const WAVE_FORMAT_GLOBAL_IP_ILBC = &ha116
+const WAVE_FORMAT_RADIOTIME_TIME_SHIFT_RADIO = &ha117
+const WAVE_FORMAT_NICE_ACA = &ha118
+const WAVE_FORMAT_NICE_ADPCM = &ha119
+const WAVE_FORMAT_VOCORD_G721 = &ha11a
+const WAVE_FORMAT_VOCORD_G726 = &ha11b
+const WAVE_FORMAT_VOCORD_G722_1 = &ha11c
+const WAVE_FORMAT_VOCORD_G728 = &ha11d
+const WAVE_FORMAT_VOCORD_G729 = &ha11e
+const WAVE_FORMAT_VOCORD_G729_A = &ha11f
+const WAVE_FORMAT_VOCORD_G723_1 = &ha120
+const WAVE_FORMAT_VOCORD_LBC = &ha121
+const WAVE_FORMAT_NICE_G728 = &ha122
+const WAVE_FORMAT_FRACE_TELECOM_G729 = &ha123
+const WAVE_FORMAT_CODIAN = &ha124
+const WAVE_FORMAT_FLAC = &hf1ac
+const WAVE_FORMAT_EXTENSIBLE = &hfffe
+const WAVE_FORMAT_DEVELOPMENT = &hffff
+#define STATICGUIDOF(guid) STATIC_##guid
+
 extern KSDATAFORMAT_SUBTYPE_PCM as const GUID
 extern KSDATAFORMAT_SUBTYPE_IEEE_FLOAT as const GUID
+#define STATIC_KSDATAFORMAT_SUBTYPE_WAVEFORMATEX               &h00000000l, &h0000, &h0010, &h80, &h00, &h00, &haa, &h00, &h38, &h9b, &h71
+extern KSDATAFORMAT_SUBTYPE_WAVEFORMATEX as const GUID
+#macro INIT_WAVEFORMATEX_GUID(Guid, x)
+	scope
+		*(Guid) = KSDATAFORMAT_SUBTYPE_WAVEFORMATEX
+		(Guid)->Data1 = cast(USHORT, (x))
+	end scope
+#endmacro
+
+#define EXTRACT_WAVEFORMATEX_ID(Guid) cast(USHORT, (Guid)->Data1)
+#define IS_VALID_WAVEFORMATEX_GUID(Guid) (memcmp(cast(PUSHORT, @KSDATAFORMAT_SUBTYPE_WAVEFORMATEX) + 1, cast(PUSHORT, (Guid)) + 1, sizeof(GUID) - sizeof(USHORT)) = 0)
 #define _WAVEFORMATEXTENSIBLE_
 
 union WAVEFORMATEXTENSIBLE_Samples field = 1
@@ -1783,7 +1922,7 @@ const SPEAKER_TOP_FRONT_RIGHT = &h4000
 const SPEAKER_TOP_BACK_LEFT = &h8000
 const SPEAKER_TOP_BACK_CENTER = &h10000
 const SPEAKER_TOP_BACK_RIGHT = &h20000
-const SPEAKER_RESERVED = &h7FFC0000
+const SPEAKER_RESERVED = &h7ffc0000
 const SPEAKER_ALL = &h80000000
 
 type adpcmcoef_tag field = 1
@@ -1792,9 +1931,9 @@ type adpcmcoef_tag field = 1
 end type
 
 type ADPCMCOEFSET as adpcmcoef_tag
-type PADPCMCOEFSET as ADPCMCOEFSET ptr
-type NPADPCMCOEFSET as ADPCMCOEFSET ptr
-type LPADPCMCOEFSET as ADPCMCOEFSET ptr
+type PADPCMCOEFSET as adpcmcoef_tag ptr
+type NPADPCMCOEFSET as adpcmcoef_tag ptr
+type LPADPCMCOEFSET as adpcmcoef_tag ptr
 
 type adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1804,9 +1943,9 @@ type adpcmwaveformat_tag field = 1
 end type
 
 type ADPCMWAVEFORMAT as adpcmwaveformat_tag
-type PADPCMWAVEFORMAT as ADPCMWAVEFORMAT ptr
-type NPADPCMWAVEFORMAT as ADPCMWAVEFORMAT ptr
-type LPADPCMWAVEFORMAT as ADPCMWAVEFORMAT ptr
+type PADPCMWAVEFORMAT as adpcmwaveformat_tag ptr
+type NPADPCMWAVEFORMAT as adpcmwaveformat_tag ptr
+type LPADPCMWAVEFORMAT as adpcmwaveformat_tag ptr
 
 type drmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1816,9 +1955,9 @@ type drmwaveformat_tag field = 1
 end type
 
 type DRMWAVEFORMAT as drmwaveformat_tag
-type PDRMWAVEFORMAT as DRMWAVEFORMAT ptr
-type NPDRMWAVEFORMAT as DRMWAVEFORMAT ptr
-type LPDRMWAVEFORMAT as DRMWAVEFORMAT ptr
+type PDRMWAVEFORMAT as drmwaveformat_tag ptr
+type NPDRMWAVEFORMAT as drmwaveformat_tag ptr
+type LPDRMWAVEFORMAT as drmwaveformat_tag ptr
 
 type dvi_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1826,9 +1965,9 @@ type dvi_adpcmwaveformat_tag field = 1
 end type
 
 type DVIADPCMWAVEFORMAT as dvi_adpcmwaveformat_tag
-type PDVIADPCMWAVEFORMAT as DVIADPCMWAVEFORMAT ptr
-type NPDVIADPCMWAVEFORMAT as DVIADPCMWAVEFORMAT ptr
-type LPDVIADPCMWAVEFORMAT as DVIADPCMWAVEFORMAT ptr
+type PDVIADPCMWAVEFORMAT as dvi_adpcmwaveformat_tag ptr
+type NPDVIADPCMWAVEFORMAT as dvi_adpcmwaveformat_tag ptr
+type LPDVIADPCMWAVEFORMAT as dvi_adpcmwaveformat_tag ptr
 
 type ima_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1836,9 +1975,9 @@ type ima_adpcmwaveformat_tag field = 1
 end type
 
 type IMAADPCMWAVEFORMAT as ima_adpcmwaveformat_tag
-type PIMAADPCMWAVEFORMAT as IMAADPCMWAVEFORMAT ptr
-type NPIMAADPCMWAVEFORMAT as IMAADPCMWAVEFORMAT ptr
-type LPIMAADPCMWAVEFORMAT as IMAADPCMWAVEFORMAT ptr
+type PIMAADPCMWAVEFORMAT as ima_adpcmwaveformat_tag ptr
+type NPIMAADPCMWAVEFORMAT as ima_adpcmwaveformat_tag ptr
+type LPIMAADPCMWAVEFORMAT as ima_adpcmwaveformat_tag ptr
 
 type mediaspace_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1846,9 +1985,9 @@ type mediaspace_adpcmwaveformat_tag field = 1
 end type
 
 type MEDIASPACEADPCMWAVEFORMAT as mediaspace_adpcmwaveformat_tag
-type PMEDIASPACEADPCMWAVEFORMAT as MEDIASPACEADPCMWAVEFORMAT ptr
-type NPMEDIASPACEADPCMWAVEFORMAT as MEDIASPACEADPCMWAVEFORMAT ptr
-type LPMEDIASPACEADPCMWAVEFORMAT as MEDIASPACEADPCMWAVEFORMAT ptr
+type PMEDIASPACEADPCMWAVEFORMAT as mediaspace_adpcmwaveformat_tag ptr
+type NPMEDIASPACEADPCMWAVEFORMAT as mediaspace_adpcmwaveformat_tag ptr
+type LPMEDIASPACEADPCMWAVEFORMAT as mediaspace_adpcmwaveformat_tag ptr
 
 type sierra_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1856,9 +1995,9 @@ type sierra_adpcmwaveformat_tag field = 1
 end type
 
 type SIERRAADPCMWAVEFORMAT as sierra_adpcmwaveformat_tag
-type PSIERRAADPCMWAVEFORMAT as SIERRAADPCMWAVEFORMAT ptr
-type NPSIERRAADPCMWAVEFORMAT as SIERRAADPCMWAVEFORMAT ptr
-type LPSIERRAADPCMWAVEFORMAT as SIERRAADPCMWAVEFORMAT ptr
+type PSIERRAADPCMWAVEFORMAT as sierra_adpcmwaveformat_tag ptr
+type NPSIERRAADPCMWAVEFORMAT as sierra_adpcmwaveformat_tag ptr
+type LPSIERRAADPCMWAVEFORMAT as sierra_adpcmwaveformat_tag ptr
 
 type g723_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1867,45 +2006,45 @@ type g723_adpcmwaveformat_tag field = 1
 end type
 
 type G723_ADPCMWAVEFORMAT as g723_adpcmwaveformat_tag
-type PG723_ADPCMWAVEFORMAT as G723_ADPCMWAVEFORMAT ptr
-type NPG723_ADPCMWAVEFORMAT as G723_ADPCMWAVEFORMAT ptr
-type LPG723_ADPCMWAVEFORMAT as G723_ADPCMWAVEFORMAT ptr
+type PG723_ADPCMWAVEFORMAT as g723_adpcmwaveformat_tag ptr
+type NPG723_ADPCMWAVEFORMAT as g723_adpcmwaveformat_tag ptr
+type LPG723_ADPCMWAVEFORMAT as g723_adpcmwaveformat_tag ptr
 
 type digistdwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type DIGISTDWAVEFORMAT as digistdwaveformat_tag
-type PDIGISTDWAVEFORMAT as DIGISTDWAVEFORMAT ptr
-type NPDIGISTDWAVEFORMAT as DIGISTDWAVEFORMAT ptr
-type LPDIGISTDWAVEFORMAT as DIGISTDWAVEFORMAT ptr
+type PDIGISTDWAVEFORMAT as digistdwaveformat_tag ptr
+type NPDIGISTDWAVEFORMAT as digistdwaveformat_tag ptr
+type LPDIGISTDWAVEFORMAT as digistdwaveformat_tag ptr
 
 type digifixwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type DIGIFIXWAVEFORMAT as digifixwaveformat_tag
-type PDIGIFIXWAVEFORMAT as DIGIFIXWAVEFORMAT ptr
-type NPDIGIFIXWAVEFORMAT as DIGIFIXWAVEFORMAT ptr
-type LPDIGIFIXWAVEFORMAT as DIGIFIXWAVEFORMAT ptr
+type PDIGIFIXWAVEFORMAT as digifixwaveformat_tag ptr
+type NPDIGIFIXWAVEFORMAT as digifixwaveformat_tag ptr
+type LPDIGIFIXWAVEFORMAT as digifixwaveformat_tag ptr
 
 type creative_fastspeechformat_tag field = 1
 	ewf as WAVEFORMATEX
 end type
 
 type DIALOGICOKIADPCMWAVEFORMAT as creative_fastspeechformat_tag
-type PDIALOGICOKIADPCMWAVEFORMAT as DIALOGICOKIADPCMWAVEFORMAT ptr
-type NPDIALOGICOKIADPCMWAVEFORMAT as DIALOGICOKIADPCMWAVEFORMAT ptr
-type LPDIALOGICOKIADPCMWAVEFORMAT as DIALOGICOKIADPCMWAVEFORMAT ptr
+type PDIALOGICOKIADPCMWAVEFORMAT as creative_fastspeechformat_tag ptr
+type NPDIALOGICOKIADPCMWAVEFORMAT as creative_fastspeechformat_tag ptr
+type LPDIALOGICOKIADPCMWAVEFORMAT as creative_fastspeechformat_tag ptr
 
 type yamaha_adpmcwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type YAMAHA_ADPCMWAVEFORMAT as yamaha_adpmcwaveformat_tag
-type PYAMAHA_ADPCMWAVEFORMAT as YAMAHA_ADPCMWAVEFORMAT ptr
-type NPYAMAHA_ADPCMWAVEFORMAT as YAMAHA_ADPCMWAVEFORMAT ptr
-type LPYAMAHA_ADPCMWAVEFORMAT as YAMAHA_ADPCMWAVEFORMAT ptr
+type PYAMAHA_ADPCMWAVEFORMAT as yamaha_adpmcwaveformat_tag ptr
+type NPYAMAHA_ADPCMWAVEFORMAT as yamaha_adpmcwaveformat_tag ptr
+type LPYAMAHA_ADPCMWAVEFORMAT as yamaha_adpmcwaveformat_tag ptr
 
 type sonarcwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1913,9 +2052,9 @@ type sonarcwaveformat_tag field = 1
 end type
 
 type SONARCWAVEFORMAT as sonarcwaveformat_tag
-type PSONARCWAVEFORMAT as SONARCWAVEFORMAT ptr
-type NPSONARCWAVEFORMAT as SONARCWAVEFORMAT ptr
-type LPSONARCWAVEFORMAT as SONARCWAVEFORMAT ptr
+type PSONARCWAVEFORMAT as sonarcwaveformat_tag ptr
+type NPSONARCWAVEFORMAT as sonarcwaveformat_tag ptr
+type LPSONARCWAVEFORMAT as sonarcwaveformat_tag ptr
 
 type truespeechwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1925,45 +2064,45 @@ type truespeechwaveformat_tag field = 1
 end type
 
 type TRUESPEECHWAVEFORMAT as truespeechwaveformat_tag
-type PTRUESPEECHWAVEFORMAT as TRUESPEECHWAVEFORMAT ptr
-type NPTRUESPEECHWAVEFORMAT as TRUESPEECHWAVEFORMAT ptr
-type LPTRUESPEECHWAVEFORMAT as TRUESPEECHWAVEFORMAT ptr
+type PTRUESPEECHWAVEFORMAT as truespeechwaveformat_tag ptr
+type NPTRUESPEECHWAVEFORMAT as truespeechwaveformat_tag ptr
+type LPTRUESPEECHWAVEFORMAT as truespeechwaveformat_tag ptr
 
 type echosc1waveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type ECHOSC1WAVEFORMAT as echosc1waveformat_tag
-type PECHOSC1WAVEFORMAT as ECHOSC1WAVEFORMAT ptr
-type NPECHOSC1WAVEFORMAT as ECHOSC1WAVEFORMAT ptr
-type LPECHOSC1WAVEFORMAT as ECHOSC1WAVEFORMAT ptr
+type PECHOSC1WAVEFORMAT as echosc1waveformat_tag ptr
+type NPECHOSC1WAVEFORMAT as echosc1waveformat_tag ptr
+type LPECHOSC1WAVEFORMAT as echosc1waveformat_tag ptr
 
 type audiofile_af36waveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type AUDIOFILE_AF36WAVEFORMAT as audiofile_af36waveformat_tag
-type PAUDIOFILE_AF36WAVEFORMAT as AUDIOFILE_AF36WAVEFORMAT ptr
-type NPAUDIOFILE_AF36WAVEFORMAT as AUDIOFILE_AF36WAVEFORMAT ptr
-type LPAUDIOFILE_AF36WAVEFORMAT as AUDIOFILE_AF36WAVEFORMAT ptr
+type PAUDIOFILE_AF36WAVEFORMAT as audiofile_af36waveformat_tag ptr
+type NPAUDIOFILE_AF36WAVEFORMAT as audiofile_af36waveformat_tag ptr
+type LPAUDIOFILE_AF36WAVEFORMAT as audiofile_af36waveformat_tag ptr
 
 type aptxwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type APTXWAVEFORMAT as aptxwaveformat_tag
-type PAPTXWAVEFORMAT as APTXWAVEFORMAT ptr
-type NPAPTXWAVEFORMAT as APTXWAVEFORMAT ptr
-type LPAPTXWAVEFORMAT as APTXWAVEFORMAT ptr
+type PAPTXWAVEFORMAT as aptxwaveformat_tag ptr
+type NPAPTXWAVEFORMAT as aptxwaveformat_tag ptr
+type LPAPTXWAVEFORMAT as aptxwaveformat_tag ptr
 
 type audiofile_af10waveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type AUDIOFILE_AF10WAVEFORMAT as audiofile_af10waveformat_tag
-type PAUDIOFILE_AF10WAVEFORMAT as AUDIOFILE_AF10WAVEFORMAT ptr
-type NPAUDIOFILE_AF10WAVEFORMAT as AUDIOFILE_AF10WAVEFORMAT ptr
-type LPAUDIOFILE_AF10WAVEFORMAT as AUDIOFILE_AF10WAVEFORMAT ptr
+type PAUDIOFILE_AF10WAVEFORMAT as audiofile_af10waveformat_tag ptr
+type NPAUDIOFILE_AF10WAVEFORMAT as audiofile_af10waveformat_tag ptr
+type LPAUDIOFILE_AF10WAVEFORMAT as audiofile_af10waveformat_tag ptr
 
 type dolbyac2waveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1978,9 +2117,9 @@ type gsm610waveformat_tag field = 1
 end type
 
 type GSM610WAVEFORMAT as gsm610waveformat_tag
-type PGSM610WAVEFORMAT as GSM610WAVEFORMAT ptr
-type NPGSM610WAVEFORMAT as GSM610WAVEFORMAT ptr
-type LPGSM610WAVEFORMAT as GSM610WAVEFORMAT ptr
+type PGSM610WAVEFORMAT as gsm610waveformat_tag ptr
+type NPGSM610WAVEFORMAT as gsm610waveformat_tag ptr
+type LPGSM610WAVEFORMAT as gsm610waveformat_tag ptr
 
 type adpcmewaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1988,9 +2127,9 @@ type adpcmewaveformat_tag field = 1
 end type
 
 type ADPCMEWAVEFORMAT as adpcmewaveformat_tag
-type PADPCMEWAVEFORMAT as ADPCMEWAVEFORMAT ptr
-type NPADPCMEWAVEFORMAT as ADPCMEWAVEFORMAT ptr
-type LPADPCMEWAVEFORMAT as ADPCMEWAVEFORMAT ptr
+type PADPCMEWAVEFORMAT as adpcmewaveformat_tag ptr
+type NPADPCMEWAVEFORMAT as adpcmewaveformat_tag ptr
+type LPADPCMEWAVEFORMAT as adpcmewaveformat_tag ptr
 
 type contres_vqlpcwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -1998,9 +2137,9 @@ type contres_vqlpcwaveformat_tag field = 1
 end type
 
 type CONTRESVQLPCWAVEFORMAT as contres_vqlpcwaveformat_tag
-type PCONTRESVQLPCWAVEFORMAT as CONTRESVQLPCWAVEFORMAT ptr
-type NPCONTRESVQLPCWAVEFORMAT as CONTRESVQLPCWAVEFORMAT ptr
-type LPCONTRESVQLPCWAVEFORMAT as CONTRESVQLPCWAVEFORMAT ptr
+type PCONTRESVQLPCWAVEFORMAT as contres_vqlpcwaveformat_tag ptr
+type NPCONTRESVQLPCWAVEFORMAT as contres_vqlpcwaveformat_tag ptr
+type LPCONTRESVQLPCWAVEFORMAT as contres_vqlpcwaveformat_tag ptr
 
 type digirealwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2008,9 +2147,9 @@ type digirealwaveformat_tag field = 1
 end type
 
 type DIGIREALWAVEFORMAT as digirealwaveformat_tag
-type PDIGIREALWAVEFORMAT as DIGIREALWAVEFORMAT ptr
-type NPDIGIREALWAVEFORMAT as DIGIREALWAVEFORMAT ptr
-type LPDIGIREALWAVEFORMAT as DIGIREALWAVEFORMAT ptr
+type PDIGIREALWAVEFORMAT as digirealwaveformat_tag ptr
+type NPDIGIREALWAVEFORMAT as digirealwaveformat_tag ptr
+type LPDIGIREALWAVEFORMAT as digirealwaveformat_tag ptr
 
 type digiadpcmmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2018,9 +2157,9 @@ type digiadpcmmwaveformat_tag field = 1
 end type
 
 type DIGIADPCMWAVEFORMAT as digiadpcmmwaveformat_tag
-type PDIGIADPCMWAVEFORMAT as DIGIADPCMWAVEFORMAT ptr
-type NPDIGIADPCMWAVEFORMAT as DIGIADPCMWAVEFORMAT ptr
-type LPDIGIADPCMWAVEFORMAT as DIGIADPCMWAVEFORMAT ptr
+type PDIGIADPCMWAVEFORMAT as digiadpcmmwaveformat_tag ptr
+type NPDIGIADPCMWAVEFORMAT as digiadpcmmwaveformat_tag ptr
+type LPDIGIADPCMWAVEFORMAT as digiadpcmmwaveformat_tag ptr
 
 type contres_cr10waveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2028,9 +2167,9 @@ type contres_cr10waveformat_tag field = 1
 end type
 
 type CONTRESCR10WAVEFORMAT as contres_cr10waveformat_tag
-type PCONTRESCR10WAVEFORMAT as CONTRESCR10WAVEFORMAT ptr
-type NPCONTRESCR10WAVEFORMAT as CONTRESCR10WAVEFORMAT ptr
-type LPCONTRESCR10WAVEFORMAT as CONTRESCR10WAVEFORMAT ptr
+type PCONTRESCR10WAVEFORMAT as contres_cr10waveformat_tag ptr
+type NPCONTRESCR10WAVEFORMAT as contres_cr10waveformat_tag ptr
+type LPCONTRESCR10WAVEFORMAT as contres_cr10waveformat_tag ptr
 
 type nms_vbxadpcmmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2038,9 +2177,9 @@ type nms_vbxadpcmmwaveformat_tag field = 1
 end type
 
 type NMS_VBXADPCMWAVEFORMAT as nms_vbxadpcmmwaveformat_tag
-type PNMS_VBXADPCMWAVEFORMAT as NMS_VBXADPCMWAVEFORMAT ptr
-type NPNMS_VBXADPCMWAVEFORMAT as NMS_VBXADPCMWAVEFORMAT ptr
-type LPNMS_VBXADPCMWAVEFORMAT as NMS_VBXADPCMWAVEFORMAT ptr
+type PNMS_VBXADPCMWAVEFORMAT as nms_vbxadpcmmwaveformat_tag ptr
+type NPNMS_VBXADPCMWAVEFORMAT as nms_vbxadpcmmwaveformat_tag ptr
+type LPNMS_VBXADPCMWAVEFORMAT as nms_vbxadpcmmwaveformat_tag ptr
 
 type g721_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2048,9 +2187,9 @@ type g721_adpcmwaveformat_tag field = 1
 end type
 
 type G721_ADPCMWAVEFORMAT as g721_adpcmwaveformat_tag
-type PG721_ADPCMWAVEFORMAT as G721_ADPCMWAVEFORMAT ptr
-type NPG721_ADPCMWAVEFORMAT as G721_ADPCMWAVEFORMAT ptr
-type LPG721_ADPCMWAVEFORMAT as G721_ADPCMWAVEFORMAT ptr
+type PG721_ADPCMWAVEFORMAT as g721_adpcmwaveformat_tag ptr
+type NPG721_ADPCMWAVEFORMAT as g721_adpcmwaveformat_tag ptr
+type LPG721_ADPCMWAVEFORMAT as g721_adpcmwaveformat_tag ptr
 
 type mpeg1waveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2065,9 +2204,9 @@ type mpeg1waveformat_tag field = 1
 end type
 
 type MPEG1WAVEFORMAT as mpeg1waveformat_tag
-type PMPEG1WAVEFORMAT as MPEG1WAVEFORMAT ptr
-type NPMPEG1WAVEFORMAT as MPEG1WAVEFORMAT ptr
-type LPMPEG1WAVEFORMAT as MPEG1WAVEFORMAT ptr
+type PMPEG1WAVEFORMAT as mpeg1waveformat_tag ptr
+type NPMPEG1WAVEFORMAT as mpeg1waveformat_tag ptr
+type LPMPEG1WAVEFORMAT as mpeg1waveformat_tag ptr
 
 const ACM_MPEG_LAYER1 = &h0001
 const ACM_MPEG_LAYER2 = &h0002
@@ -2093,9 +2232,9 @@ type mpeglayer3waveformat_tag field = 1
 end type
 
 type MPEGLAYER3WAVEFORMAT as mpeglayer3waveformat_tag
-type PMPEGLAYER3WAVEFORMAT as MPEGLAYER3WAVEFORMAT ptr
-type NPMPEGLAYER3WAVEFORMAT as MPEGLAYER3WAVEFORMAT ptr
-type LPMPEGLAYER3WAVEFORMAT as MPEGLAYER3WAVEFORMAT ptr
+type PMPEGLAYER3WAVEFORMAT as mpeglayer3waveformat_tag ptr
+type NPMPEGLAYER3WAVEFORMAT as mpeglayer3waveformat_tag ptr
+type LPMPEGLAYER3WAVEFORMAT as mpeglayer3waveformat_tag ptr
 
 const MPEGLAYER3_ID_UNKNOWN = 0
 const MPEGLAYER3_ID_MPEG = 1
@@ -2104,15 +2243,84 @@ const MPEGLAYER3_FLAG_PADDING_ISO = &h00000000
 const MPEGLAYER3_FLAG_PADDING_ON = &h00000001
 const MPEGLAYER3_FLAG_PADDING_OFF = &h00000002
 
+type heaacwaveinfo_tag field = 1
+	wfx as WAVEFORMATEX
+	wPayloadType as WORD
+	wAudioProfileLevelIndication as WORD
+	wStructType as WORD
+	wReserved1 as WORD
+	dwReserved2 as DWORD
+end type
+
+type HEAACWAVEINFO as heaacwaveinfo_tag
+type PHEAACWAVEINFO as heaacwaveinfo_tag ptr
+type NPHEAACWAVEINFO as heaacwaveinfo_tag ptr
+type LPHEAACWAVEINFO as heaacwaveinfo_tag ptr
+
+type heaacwaveformat_tag field = 1
+	wfInfo as HEAACWAVEINFO
+	pbAudioSpecificConfig(0 to 0) as UBYTE
+end type
+
+type HEAACWAVEFORMAT as heaacwaveformat_tag
+type PHEAACWAVEFORMAT as heaacwaveformat_tag ptr
+type NPHEAACWAVEFORMAT as heaacwaveformat_tag ptr
+type LPHEAACWAVEFORMAT as heaacwaveformat_tag ptr
+
+const MM_MSFT_ACM_WMAUDIO = 39
+const MM_MSFT_ACM_MSAUDIO1 = 39
+const WMAUDIO_BITS_PER_SAMPLE = 16
+const WMAUDIO_MAX_CHANNELS = 2
+
+type msaudio1waveformat_tag field = 1
+	wfx as WAVEFORMATEX
+	wSamplesPerBlock as WORD
+	wEncodeOptions as WORD
+end type
+
+type MSAUDIO1WAVEFORMAT as msaudio1waveformat_tag
+type LPMSAUDIO1WAVEFORMAT as msaudio1waveformat_tag ptr
+#define MSAUDIO1_BITS_PER_SAMPLE WMAUDIO_BITS_PER_SAMPLE
+#define MSAUDIO1_MAX_CHANNELS WMAUDIO_MAX_CHANNELS
+#define MSAUDIO1_WFX_EXTRA_BYTES (sizeof(MSAUDIO1WAVEFORMAT) - sizeof(WAVEFORMATEX))
+const MM_MSFT_ACM_WMAUDIO2 = 101
+
+type wmaudio2waveformat_tag field = 1
+	wfx as WAVEFORMATEX
+	dwSamplesPerBlock as DWORD
+	wEncodeOptions as WORD
+	dwSuperBlockAlign as DWORD
+end type
+
+type WMAUDIO2WAVEFORMAT as wmaudio2waveformat_tag
+type LPWMAUDIO2WAVEFORMAT as wmaudio2waveformat_tag ptr
+#define WMAUDIO2_BITS_PER_SAMPLE WMAUDIO_BITS_PER_SAMPLE
+#define WMAUDIO2_MAX_CHANNELS WMAUDIO_MAX_CHANNELS
+#define WMAUDIO2_WFX_EXTRA_BYTES (sizeof(WMAUDIO2WAVEFORMAT) - sizeof(WAVEFORMATEX))
+
+type wmaudio3waveformat_tag field = 1
+	wfx as WAVEFORMATEX
+	wValidBitsPerSample as WORD
+	dwChannelMask as DWORD
+	dwReserved1 as DWORD
+	dwReserved2 as DWORD
+	wEncodeOptions as WORD
+	wReserved3 as WORD
+end type
+
+type WMAUDIO3WAVEFORMAT as wmaudio3waveformat_tag
+type LPWMAUDIO3WAVEFORMAT as wmaudio3waveformat_tag ptr
+#define WMAUDIO3_WFX_EXTRA_BYTES (sizeof(WMAUDIO3WAVEFORMAT) - sizeof(WAVEFORMATEX))
+
 type creative_adpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 	wRevision as WORD
 end type
 
 type CREATIVEADPCMWAVEFORMAT as creative_adpcmwaveformat_tag
-type PCREATIVEADPCMWAVEFORMAT as CREATIVEADPCMWAVEFORMAT ptr
-type NPCREATIVEADPCMWAVEFORMAT as CREATIVEADPCMWAVEFORMAT ptr
-type LPCREATIVEADPCMWAVEFORMAT as CREATIVEADPCMWAVEFORMAT ptr
+type PCREATIVEADPCMWAVEFORMAT as creative_adpcmwaveformat_tag ptr
+type NPCREATIVEADPCMWAVEFORMAT as creative_adpcmwaveformat_tag ptr
+type LPCREATIVEADPCMWAVEFORMAT as creative_adpcmwaveformat_tag ptr
 
 type creative_fastspeech8format_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2120,9 +2328,9 @@ type creative_fastspeech8format_tag field = 1
 end type
 
 type CREATIVEFASTSPEECH8WAVEFORMAT as creative_fastspeech8format_tag
-type PCREATIVEFASTSPEECH8WAVEFORMAT as CREATIVEFASTSPEECH8WAVEFORMAT ptr
-type NPCREATIVEFASTSPEECH8WAVEFORMAT as CREATIVEFASTSPEECH8WAVEFORMAT ptr
-type LPCREATIVEFASTSPEECH8WAVEFORMAT as CREATIVEFASTSPEECH8WAVEFORMAT ptr
+type PCREATIVEFASTSPEECH8WAVEFORMAT as creative_fastspeech8format_tag ptr
+type NPCREATIVEFASTSPEECH8WAVEFORMAT as creative_fastspeech8format_tag ptr
+type LPCREATIVEFASTSPEECH8WAVEFORMAT as creative_fastspeech8format_tag ptr
 
 type creative_fastspeech10format_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2130,9 +2338,9 @@ type creative_fastspeech10format_tag field = 1
 end type
 
 type CREATIVEFASTSPEECH10WAVEFORMAT as creative_fastspeech10format_tag
-type PCREATIVEFASTSPEECH10WAVEFORMAT as CREATIVEFASTSPEECH10WAVEFORMAT ptr
-type NPCREATIVEFASTSPEECH10WAVEFORMAT as CREATIVEFASTSPEECH10WAVEFORMAT ptr
-type LPCREATIVEFASTSPEECH10WAVEFORMAT as CREATIVEFASTSPEECH10WAVEFORMAT ptr
+type PCREATIVEFASTSPEECH10WAVEFORMAT as creative_fastspeech10format_tag ptr
+type NPCREATIVEFASTSPEECH10WAVEFORMAT as creative_fastspeech10format_tag ptr
+type LPCREATIVEFASTSPEECH10WAVEFORMAT as creative_fastspeech10format_tag ptr
 
 type fmtowns_snd_waveformat_tag field = 1
 	wfx as WAVEFORMATEX
@@ -2140,67 +2348,67 @@ type fmtowns_snd_waveformat_tag field = 1
 end type
 
 type FMTOWNS_SND_WAVEFORMAT as fmtowns_snd_waveformat_tag
-type PFMTOWNS_SND_WAVEFORMAT as FMTOWNS_SND_WAVEFORMAT ptr
-type NPFMTOWNS_SND_WAVEFORMAT as FMTOWNS_SND_WAVEFORMAT ptr
-type LPFMTOWNS_SND_WAVEFORMAT as FMTOWNS_SND_WAVEFORMAT ptr
+type PFMTOWNS_SND_WAVEFORMAT as fmtowns_snd_waveformat_tag ptr
+type NPFMTOWNS_SND_WAVEFORMAT as fmtowns_snd_waveformat_tag ptr
+type LPFMTOWNS_SND_WAVEFORMAT as fmtowns_snd_waveformat_tag ptr
 
 type oligsmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type OLIGSMWAVEFORMAT as oligsmwaveformat_tag
-type POLIGSMWAVEFORMAT as OLIGSMWAVEFORMAT ptr
-type NPOLIGSMWAVEFORMAT as OLIGSMWAVEFORMAT ptr
-type LPOLIGSMWAVEFORMAT as OLIGSMWAVEFORMAT ptr
+type POLIGSMWAVEFORMAT as oligsmwaveformat_tag ptr
+type NPOLIGSMWAVEFORMAT as oligsmwaveformat_tag ptr
+type LPOLIGSMWAVEFORMAT as oligsmwaveformat_tag ptr
 
 type oliadpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type OLIADPCMWAVEFORMAT as oliadpcmwaveformat_tag
-type POLIADPCMWAVEFORMAT as OLIADPCMWAVEFORMAT ptr
-type NPOLIADPCMWAVEFORMAT as OLIADPCMWAVEFORMAT ptr
-type LPOLIADPCMWAVEFORMAT as OLIADPCMWAVEFORMAT ptr
+type POLIADPCMWAVEFORMAT as oliadpcmwaveformat_tag ptr
+type NPOLIADPCMWAVEFORMAT as oliadpcmwaveformat_tag ptr
+type LPOLIADPCMWAVEFORMAT as oliadpcmwaveformat_tag ptr
 
 type olicelpwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type OLICELPWAVEFORMAT as olicelpwaveformat_tag
-type POLICELPWAVEFORMAT as OLICELPWAVEFORMAT ptr
-type NPOLICELPWAVEFORMAT as OLICELPWAVEFORMAT ptr
-type LPOLICELPWAVEFORMAT as OLICELPWAVEFORMAT ptr
+type POLICELPWAVEFORMAT as olicelpwaveformat_tag ptr
+type NPOLICELPWAVEFORMAT as olicelpwaveformat_tag ptr
+type LPOLICELPWAVEFORMAT as olicelpwaveformat_tag ptr
 
 type olisbcwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type OLISBCWAVEFORMAT as olisbcwaveformat_tag
-type POLISBCWAVEFORMAT as OLISBCWAVEFORMAT ptr
-type NPOLISBCWAVEFORMAT as OLISBCWAVEFORMAT ptr
-type LPOLISBCWAVEFORMAT as OLISBCWAVEFORMAT ptr
+type POLISBCWAVEFORMAT as olisbcwaveformat_tag ptr
+type NPOLISBCWAVEFORMAT as olisbcwaveformat_tag ptr
+type LPOLISBCWAVEFORMAT as olisbcwaveformat_tag ptr
 
 type olioprwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type OLIOPRWAVEFORMAT as olioprwaveformat_tag
-type POLIOPRWAVEFORMAT as OLIOPRWAVEFORMAT ptr
-type NPOLIOPRWAVEFORMAT as OLIOPRWAVEFORMAT ptr
-type LPOLIOPRWAVEFORMAT as OLIOPRWAVEFORMAT ptr
+type POLIOPRWAVEFORMAT as olioprwaveformat_tag ptr
+type NPOLIOPRWAVEFORMAT as olioprwaveformat_tag ptr
+type LPOLIOPRWAVEFORMAT as olioprwaveformat_tag ptr
 
 type csimaadpcmwaveformat_tag field = 1
 	wfx as WAVEFORMATEX
 end type
 
 type CSIMAADPCMWAVEFORMAT as csimaadpcmwaveformat_tag
-type PCSIMAADPCMWAVEFORMAT as CSIMAADPCMWAVEFORMAT ptr
-type NPCSIMAADPCMWAVEFORMAT as CSIMAADPCMWAVEFORMAT ptr
-type LPCSIMAADPCMWAVEFORMAT as CSIMAADPCMWAVEFORMAT ptr
+type PCSIMAADPCMWAVEFORMAT as csimaadpcmwaveformat_tag ptr
+type NPCSIMAADPCMWAVEFORMAT as csimaadpcmwaveformat_tag ptr
+type LPCSIMAADPCMWAVEFORMAT as csimaadpcmwaveformat_tag ptr
 
 #define _ACM_WAVEFILTER
 const WAVE_FILTER_UNKNOWN = &h0000
-const WAVE_FILTER_DEVELOPMENT = &hFFFF
+const WAVE_FILTER_DEVELOPMENT = &hffff
 
 type wavefilter_tag field = 1
 	cbStruct as DWORD
@@ -2210,9 +2418,9 @@ type wavefilter_tag field = 1
 end type
 
 type WAVEFILTER as wavefilter_tag
-type PWAVEFILTER as WAVEFILTER ptr
-type NPWAVEFILTER as WAVEFILTER ptr
-type LPWAVEFILTER as WAVEFILTER ptr
+type PWAVEFILTER as wavefilter_tag ptr
+type NPWAVEFILTER as wavefilter_tag ptr
+type LPWAVEFILTER as wavefilter_tag ptr
 const WAVE_FILTER_VOLUME = &h0001
 
 type wavefilter_volume_tag field = 1
@@ -2221,9 +2429,9 @@ type wavefilter_volume_tag field = 1
 end type
 
 type VOLUMEWAVEFILTER as wavefilter_volume_tag
-type PVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
-type NPVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
-type LPVOLUMEWAVEFILTER as VOLUMEWAVEFILTER ptr
+type PVOLUMEWAVEFILTER as wavefilter_volume_tag ptr
+type NPVOLUMEWAVEFILTER as wavefilter_volume_tag ptr
+type LPVOLUMEWAVEFILTER as wavefilter_volume_tag ptr
 const WAVE_FILTER_ECHO = &h0002
 
 type wavefilter_echo_tag field = 1
@@ -2233,9 +2441,9 @@ type wavefilter_echo_tag field = 1
 end type
 
 type ECHOWAVEFILTER as wavefilter_echo_tag
-type PECHOWAVEFILTER as ECHOWAVEFILTER ptr
-type NPECHOWAVEFILTER as ECHOWAVEFILTER ptr
-type LPECHOWAVEFILTER as ECHOWAVEFILTER ptr
+type PECHOWAVEFILTER as wavefilter_echo_tag ptr
+type NPECHOWAVEFILTER as wavefilter_echo_tag ptr
+type LPECHOWAVEFILTER as wavefilter_echo_tag ptr
 #define RIFFWAVE_inst mmioFOURCC(asc("i"), asc("n"), asc("s"), asc("t"))
 
 type tag_s_RIFFWAVE_inst field = 1
@@ -2278,65 +2486,65 @@ type EXBMINFOHEADER as tagEXBMINFOHEADER
 #define MJPG_DIB mmioFOURCC(asc("M"), asc("J"), asc("P"), asc("G"))
 const JPEG_PROCESS_BASELINE = 0
 #define AVIIF_CONTROLFRAME __MSABI_LONG(&h00000200)
-const JIFMK_SOF0 = &hFFC0
-const JIFMK_SOF1 = &hFFC1
-const JIFMK_SOF2 = &hFFC2
-const JIFMK_SOF3 = &hFFC3
-const JIFMK_SOF5 = &hFFC5
-const JIFMK_SOF6 = &hFFC6
-const JIFMK_SOF7 = &hFFC7
-const JIFMK_JPG = &hFFC8
-const JIFMK_SOF9 = &hFFC9
-const JIFMK_SOF10 = &hFFCA
-const JIFMK_SOF11 = &hFFCB
-const JIFMK_SOF13 = &hFFCD
-const JIFMK_SOF14 = &hFFCE
-const JIFMK_SOF15 = &hFFCF
-const JIFMK_DHT = &hFFC4
-const JIFMK_DAC = &hFFCC
-const JIFMK_RST0 = &hFFD0
-const JIFMK_RST1 = &hFFD1
-const JIFMK_RST2 = &hFFD2
-const JIFMK_RST3 = &hFFD3
-const JIFMK_RST4 = &hFFD4
-const JIFMK_RST5 = &hFFD5
-const JIFMK_RST6 = &hFFD6
-const JIFMK_RST7 = &hFFD7
-const JIFMK_SOI = &hFFD8
-const JIFMK_EOI = &hFFD9
-const JIFMK_SOS = &hFFDA
-const JIFMK_DQT = &hFFDB
-const JIFMK_DNL = &hFFDC
-const JIFMK_DRI = &hFFDD
-const JIFMK_DHP = &hFFDE
-const JIFMK_EXP = &hFFDF
-const JIFMK_APP0 = &hFFE0
-const JIFMK_APP1 = &hFFE1
-const JIFMK_APP2 = &hFFE2
-const JIFMK_APP3 = &hFFE3
-const JIFMK_APP4 = &hFFE4
-const JIFMK_APP5 = &hFFE5
-const JIFMK_APP6 = &hFFE6
-const JIFMK_APP7 = &hFFE7
-const JIFMK_JPG0 = &hFFF0
-const JIFMK_JPG1 = &hFFF1
-const JIFMK_JPG2 = &hFFF2
-const JIFMK_JPG3 = &hFFF3
-const JIFMK_JPG4 = &hFFF4
-const JIFMK_JPG5 = &hFFF5
-const JIFMK_JPG6 = &hFFF6
-const JIFMK_JPG7 = &hFFF7
-const JIFMK_JPG8 = &hFFF8
-const JIFMK_JPG9 = &hFFF9
-const JIFMK_JPG10 = &hFFFA
-const JIFMK_JPG11 = &hFFFB
-const JIFMK_JPG12 = &hFFFC
-const JIFMK_JPG13 = &hFFFD
-const JIFMK_COM = &hFFFE
-const JIFMK_TEM = &hFF01
-const JIFMK_RES = &hFF02
-const JIFMK_00 = &hFF00
-const JIFMK_FF = &hFFFF
+const JIFMK_SOF0 = &hffc0
+const JIFMK_SOF1 = &hffc1
+const JIFMK_SOF2 = &hffc2
+const JIFMK_SOF3 = &hffc3
+const JIFMK_SOF5 = &hffc5
+const JIFMK_SOF6 = &hffc6
+const JIFMK_SOF7 = &hffc7
+const JIFMK_JPG = &hffc8
+const JIFMK_SOF9 = &hffc9
+const JIFMK_SOF10 = &hffca
+const JIFMK_SOF11 = &hffcb
+const JIFMK_SOF13 = &hffcd
+const JIFMK_SOF14 = &hffce
+const JIFMK_SOF15 = &hffcf
+const JIFMK_DHT = &hffc4
+const JIFMK_DAC = &hffcc
+const JIFMK_RST0 = &hffd0
+const JIFMK_RST1 = &hffd1
+const JIFMK_RST2 = &hffd2
+const JIFMK_RST3 = &hffd3
+const JIFMK_RST4 = &hffd4
+const JIFMK_RST5 = &hffd5
+const JIFMK_RST6 = &hffd6
+const JIFMK_RST7 = &hffd7
+const JIFMK_SOI = &hffd8
+const JIFMK_EOI = &hffd9
+const JIFMK_SOS = &hffda
+const JIFMK_DQT = &hffdb
+const JIFMK_DNL = &hffdc
+const JIFMK_DRI = &hffdd
+const JIFMK_DHP = &hffde
+const JIFMK_EXP = &hffdf
+const JIFMK_APP0 = &hffe0
+const JIFMK_APP1 = &hffe1
+const JIFMK_APP2 = &hffe2
+const JIFMK_APP3 = &hffe3
+const JIFMK_APP4 = &hffe4
+const JIFMK_APP5 = &hffe5
+const JIFMK_APP6 = &hffe6
+const JIFMK_APP7 = &hffe7
+const JIFMK_JPG0 = &hfff0
+const JIFMK_JPG1 = &hfff1
+const JIFMK_JPG2 = &hfff2
+const JIFMK_JPG3 = &hfff3
+const JIFMK_JPG4 = &hfff4
+const JIFMK_JPG5 = &hfff5
+const JIFMK_JPG6 = &hfff6
+const JIFMK_JPG7 = &hfff7
+const JIFMK_JPG8 = &hfff8
+const JIFMK_JPG9 = &hfff9
+const JIFMK_JPG10 = &hfffa
+const JIFMK_JPG11 = &hfffb
+const JIFMK_JPG12 = &hfffc
+const JIFMK_JPG13 = &hfffd
+const JIFMK_COM = &hfffe
+const JIFMK_TEM = &hff01
+const JIFMK_RES = &hff02
+const JIFMK_00 = &hff00
+const JIFMK_FF = &hffff
 const JPEG_Y = 1
 const JPEG_YCbCr = 2
 const JPEG_RGB = 3
@@ -2357,27 +2565,5 @@ type JPEGINFOHEADER as tagJPEGINFOHEADER
 #define MIXERCONTROL_CONTROLTYPE_SRS_MTS (MIXERCONTROL_CONTROLTYPE_BOOLEAN + 6)
 #define MIXERCONTROL_CONTROLTYPE_SRS_ONOFF (MIXERCONTROL_CONTROLTYPE_BOOLEAN + 7)
 #define MIXERCONTROL_CONTROLTYPE_SRS_SYNTHSELECT (MIXERCONTROL_CONTROLTYPE_BOOLEAN + 8)
-
-#if _WIN32_WINNT = &h0602
-	type heaacwaveinfo_tag field = 1
-		wfx as WAVEFORMATEX
-		wPayloadType as WORD
-		wAudioProfileLevelIndication as WORD
-		wStructType as WORD
-		wReserved1 as WORD
-		dwReserved2 as DWORD
-	end type
-
-	type HEAACWAVEINFO as heaacwaveinfo_tag
-	type PHEAACWAVEINFO as heaacwaveinfo_tag ptr
-
-	type heaacwaveformat_tag field = 1
-		wfInfo as HEAACWAVEINFO
-		pbAudioSpecificConfig(0 to 0) as UBYTE
-	end type
-
-	type HEAACWAVEFORMAT as heaacwaveformat_tag
-	type PHEAACWAVEFORMAT as heaacwaveformat_tag ptr
-#endif
 
 end extern

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -483,7 +483,7 @@ end type
 #define IPropertySetStorage_Release(This) (This)->lpVtbl->Release(This)
 #define IPropertySetStorage_Create(This, rfmtid, pclsid, grfFlags, grfMode, ppprstg) (This)->lpVtbl->Create(This, rfmtid, pclsid, grfFlags, grfMode, ppprstg)
 #define IPropertySetStorage_Open(This, rfmtid, grfMode, ppprstg) (This)->lpVtbl->Open(This, rfmtid, grfMode, ppprstg)
-#define IPropertySetStorage_Delete(This, rfmtid) (This)->lpVtbl->Delete(This, rfmtid)
+#define IPropertySetStorage_Delete(This, rfmtid) (This)->lpVtbl->Delete_(This, rfmtid)
 #define IPropertySetStorage_Enum(This, ppenum) (This)->lpVtbl->Enum(This, ppenum)
 
 declare function IPropertySetStorage_Create_Proxy(byval This as IPropertySetStorage ptr, byval rfmtid as const IID const ptr, byval pclsid as const CLSID ptr, byval grfFlags as DWORD, byval grfMode as DWORD, byval ppprstg as IPropertyStorage ptr ptr) as HRESULT

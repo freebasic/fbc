@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -125,14 +125,14 @@ type IDirectPlay8AddressVtbl_
 	GetURLA as function(byval This as IDirectPlay8Address ptr, byval pszURL as zstring ptr, byval pdwNumChars as PDWORD) as HRESULT
 	GetSP as function(byval This as IDirectPlay8Address ptr, byval pguidSP as GUID ptr) as HRESULT
 	GetUserData as function(byval This as IDirectPlay8Address ptr, byval pvUserData as LPVOID, byval pdwBufferSize as PDWORD) as HRESULT
-	SetSP as function(byval This as IDirectPlay8Address ptr, byval pguidSP as const GUID const ptr) as HRESULT
-	SetUserData as function(byval This as IDirectPlay8Address ptr, byval pvUserData as const any const ptr, byval dwDataSize as const DWORD) as HRESULT
+	SetSP as function(byval This as IDirectPlay8Address ptr, byval pguidSP as const GUID ptr) as HRESULT
+	SetUserData as function(byval This as IDirectPlay8Address ptr, byval pvUserData as const any ptr, byval dwDataSize as DWORD) as HRESULT
 	GetNumComponents as function(byval This as IDirectPlay8Address ptr, byval pdwNumComponents as PDWORD) as HRESULT
-	GetComponentByName as function(byval This as IDirectPlay8Address ptr, byval pwszName as const wstring const ptr, byval pvBuffer as LPVOID, byval pdwBufferSize as PDWORD, byval pdwDataType as PDWORD) as HRESULT
-	GetComponentByIndex as function(byval This as IDirectPlay8Address ptr, byval dwComponentID as const DWORD, byval pwszName as wstring ptr, byval pdwNameLen as PDWORD, byval pvBuffer as any ptr, byval pdwBufferSize as PDWORD, byval pdwDataType as PDWORD) as HRESULT
-	AddComponent as function(byval This as IDirectPlay8Address ptr, byval pwszName as const wstring const ptr, byval lpvData as const any const ptr, byval dwDataSize as const DWORD, byval dwDataType as const DWORD) as HRESULT
+	GetComponentByName as function(byval This as IDirectPlay8Address ptr, byval pwszName as const wstring ptr, byval pvBuffer as LPVOID, byval pdwBufferSize as PDWORD, byval pdwDataType as PDWORD) as HRESULT
+	GetComponentByIndex as function(byval This as IDirectPlay8Address ptr, byval dwComponentID as DWORD, byval pwszName as wstring ptr, byval pdwNameLen as PDWORD, byval pvBuffer as any ptr, byval pdwBufferSize as PDWORD, byval pdwDataType as PDWORD) as HRESULT
+	AddComponent as function(byval This as IDirectPlay8Address ptr, byval pwszName as const wstring ptr, byval lpvData as const any ptr, byval dwDataSize as DWORD, byval dwDataType as DWORD) as HRESULT
 	GetDevice as function(byval This as IDirectPlay8Address ptr, byval pDevGuid as GUID ptr) as HRESULT
-	SetDevice as function(byval This as IDirectPlay8Address ptr, byval devGuid as const GUID const ptr) as HRESULT
+	SetDevice as function(byval This as IDirectPlay8Address ptr, byval devGuid as const GUID ptr) as HRESULT
 	BuildFromDirectPlay4Address as function(byval This as IDirectPlay8Address ptr, byval pvAddress as LPVOID, byval dwDataSize as DWORD) as HRESULT
 end type
 
@@ -168,9 +168,9 @@ type IDirectPlay8AddressIPVtbl_
 	QueryInterface as function(byval This as IDirectPlay8AddressIP ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8AddressIP ptr) as ULONG
 	Release as function(byval This as IDirectPlay8AddressIP ptr) as ULONG
-	BuildFromSockAddr as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as const SOCKADDR const ptr) as HRESULT
-	BuildAddress as function(byval This as IDirectPlay8AddressIP ptr, byval wszAddress as const wstring const ptr, byval usPort as const USHORT) as HRESULT
-	BuildLocalAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pguidAdapter as const GUID const ptr, byval usPort as const USHORT) as HRESULT
+	BuildFromSockAddr as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as const SOCKADDR ptr) as HRESULT
+	BuildAddress as function(byval This as IDirectPlay8AddressIP ptr, byval wszAddress as const wstring ptr, byval usPort as USHORT) as HRESULT
+	BuildLocalAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pguidAdapter as const GUID ptr, byval usPort as USHORT) as HRESULT
 	GetSockAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pSockAddr as SOCKADDR ptr, byval as PDWORD) as HRESULT
 	GetLocalAddress as function(byval This as IDirectPlay8AddressIP ptr, byval pguidAdapter as GUID ptr, byval pusPort as USHORT ptr) as HRESULT
 	GetAddress as function(byval This as IDirectPlay8AddressIP ptr, byval wszAddress as wstring ptr, byval pdwAddressLength as PDWORD, byval psPort as USHORT ptr) as HRESULT

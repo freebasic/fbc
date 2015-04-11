@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -11,6 +11,7 @@
 #include once "unknwn.bi"
 #include once "objidl.bi"
 #include once "oaidl.bi"
+#include once "winapifamily.bi"
 #include once "ocidl.bi"
 #include once "ddraw.bi"
 
@@ -26,8 +27,11 @@ extern "Windows"
 #define __IMediaFilter_FWD_DEFINED__
 #define __IBaseFilter_FWD_DEFINED__
 #define __IReferenceClock_FWD_DEFINED__
+#define __IReferenceClockTimerControl_FWD_DEFINED__
+#define __IReferenceClock2_FWD_DEFINED__
 #define __IMediaSample_FWD_DEFINED__
 #define __IMediaSample2_FWD_DEFINED__
+#define __IMediaSample2Config_FWD_DEFINED__
 #define __IMemAllocator_FWD_DEFINED__
 #define __IMemAllocatorCallbackTemp_FWD_DEFINED__
 #define __IMemAllocatorNotifyCallbackTemp_FWD_DEFINED__
@@ -50,6 +54,10 @@ extern "Windows"
 #define __ICaptureGraphBuilder_FWD_DEFINED__
 #define __IAMCopyCaptureFileProgress_FWD_DEFINED__
 #define __ICaptureGraphBuilder2_FWD_DEFINED__
+#define __IConfigAviMux_FWD_DEFINED__
+#define __IConfigInterleaving_FWD_DEFINED__
+#define __IAMClockSlave_FWD_DEFINED__
+#define __IAMCertifiedOutputProtection_FWD_DEFINED__
 #define __IFilterGraph2_FWD_DEFINED__
 #define __IStreamBuilder_FWD_DEFINED__
 #define __IAMStreamConfig_FWD_DEFINED__
@@ -58,18 +66,21 @@ extern "Windows"
 #define __IGraphVersion_FWD_DEFINED__
 #define __IResourceConsumer_FWD_DEFINED__
 #define __IResourceManager_FWD_DEFINED__
+#define __IAMStreamControl_FWD_DEFINED__
 #define __IKsPropertySet_FWD_DEFINED__
+#define __IMediaPropertyBag_FWD_DEFINED__
+#define __IPersistMediaPropertyBag_FWD_DEFINED__
 #define __ISeekingPassThru_FWD_DEFINED__
 #define __IAMFilterMiscFlags_FWD_DEFINED__
 #define __IAMGraphBuilderCallback_FWD_DEFINED__
-const CDEF_CLASS_DEFAULT = &h0001
-const CDEF_BYPASS_CLASS_MANAGER = &h0002
-const CDEF_MERIT_ABOVE_DO_NOT_USE = &h0008
-const CDEF_DEVMON_CMGR_DEVICE = &h0010
-const CDEF_DEVMON_DMO = &h0020
-const CDEF_DEVMON_PNP_DEVICE = &h0040
-const CDEF_DEVMON_FILTER = &h0080
-const CDEF_DEVMON_SELECTIVE_MASK = &h00f0
+const CDEF_CLASS_DEFAULT = &h1
+const CDEF_BYPASS_CLASS_MANAGER = &h2
+const CDEF_MERIT_ABOVE_DO_NOT_USE = &h8
+const CDEF_DEVMON_CMGR_DEVICE = &h10
+const CDEF_DEVMON_DMO = &h20
+const CDEF_DEVMON_PNP_DEVICE = &h40
+const CDEF_DEVMON_FILTER = &h80
+const CDEF_DEVMON_SELECTIVE_MASK = &hf0
 #define __ICreateDevEnum_INTERFACE_DEFINED__
 extern IID_ICreateDevEnum as const GUID
 type ICreateDevEnum as ICreateDevEnum_
@@ -522,6 +533,58 @@ declare sub IReferenceClock_AdvisePeriodic_Stub(byval This as IRpcStubBuffer ptr
 declare function IReferenceClock_Unadvise_Proxy(byval This as IReferenceClock ptr, byval dwAdviseCookie as DWORD_PTR) as HRESULT
 declare sub IReferenceClock_Unadvise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type PREFERENCECLOCK as IReferenceClock ptr
+#define __IReferenceClockTimerControl_INTERFACE_DEFINED__
+extern IID_IReferenceClockTimerControl as const GUID
+type IReferenceClockTimerControl as IReferenceClockTimerControl_
+
+type IReferenceClockTimerControlVtbl
+	QueryInterface as function(byval This as IReferenceClockTimerControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IReferenceClockTimerControl ptr) as ULONG
+	Release as function(byval This as IReferenceClockTimerControl ptr) as ULONG
+	SetDefaultTimerResolution as function(byval This as IReferenceClockTimerControl ptr, byval timerResolution as REFERENCE_TIME) as HRESULT
+	GetDefaultTimerResolution as function(byval This as IReferenceClockTimerControl ptr, byval pTimerResolution as REFERENCE_TIME ptr) as HRESULT
+end type
+
+type IReferenceClockTimerControl_
+	lpVtbl as IReferenceClockTimerControlVtbl ptr
+end type
+
+#define IReferenceClockTimerControl_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IReferenceClockTimerControl_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IReferenceClockTimerControl_Release(This) (This)->lpVtbl->Release(This)
+#define IReferenceClockTimerControl_SetDefaultTimerResolution(This, timerResolution) (This)->lpVtbl->SetDefaultTimerResolution(This, timerResolution)
+#define IReferenceClockTimerControl_GetDefaultTimerResolution(This, pTimerResolution) (This)->lpVtbl->GetDefaultTimerResolution(This, pTimerResolution)
+
+declare function IReferenceClockTimerControl_SetDefaultTimerResolution_Proxy(byval This as IReferenceClockTimerControl ptr, byval timerResolution as REFERENCE_TIME) as HRESULT
+declare sub IReferenceClockTimerControl_SetDefaultTimerResolution_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IReferenceClockTimerControl_GetDefaultTimerResolution_Proxy(byval This as IReferenceClockTimerControl ptr, byval pTimerResolution as REFERENCE_TIME ptr) as HRESULT
+declare sub IReferenceClockTimerControl_GetDefaultTimerResolution_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IReferenceClock2_INTERFACE_DEFINED__
+extern IID_IReferenceClock2 as const GUID
+type IReferenceClock2 as IReferenceClock2_
+
+type IReferenceClock2Vtbl
+	QueryInterface as function(byval This as IReferenceClock2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IReferenceClock2 ptr) as ULONG
+	Release as function(byval This as IReferenceClock2 ptr) as ULONG
+	GetTime as function(byval This as IReferenceClock2 ptr, byval pTime as REFERENCE_TIME ptr) as HRESULT
+	AdviseTime as function(byval This as IReferenceClock2 ptr, byval baseTime as REFERENCE_TIME, byval streamTime as REFERENCE_TIME, byval hEvent as HEVENT, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
+	AdvisePeriodic as function(byval This as IReferenceClock2 ptr, byval startTime as REFERENCE_TIME, byval periodTime as REFERENCE_TIME, byval hSemaphore as HSEMAPHORE, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
+	Unadvise as function(byval This as IReferenceClock2 ptr, byval dwAdviseCookie as DWORD_PTR) as HRESULT
+end type
+
+type IReferenceClock2_
+	lpVtbl as IReferenceClock2Vtbl ptr
+end type
+
+#define IReferenceClock2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IReferenceClock2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IReferenceClock2_Release(This) (This)->lpVtbl->Release(This)
+#define IReferenceClock2_GetTime(This, pTime) (This)->lpVtbl->GetTime(This, pTime)
+#define IReferenceClock2_AdviseTime(This, baseTime, streamTime, hEvent, pdwAdviseCookie) (This)->lpVtbl->AdviseTime(This, baseTime, streamTime, hEvent, pdwAdviseCookie)
+#define IReferenceClock2_AdvisePeriodic(This, startTime, periodTime, hSemaphore, pdwAdviseCookie) (This)->lpVtbl->AdvisePeriodic(This, startTime, periodTime, hSemaphore, pdwAdviseCookie)
+#define IReferenceClock2_Unadvise(This, dwAdviseCookie) (This)->lpVtbl->Unadvise(This, dwAdviseCookie)
+type PREFERENCECLOCK2 as IReferenceClock2 ptr
 #define __IMediaSample_INTERFACE_DEFINED__
 extern IID_IMediaSample as const GUID
 type IMediaSample as IMediaSample_
@@ -539,7 +602,7 @@ type IMediaSampleVtbl
 	IsPreroll as function(byval This as IMediaSample ptr) as HRESULT
 	SetPreroll as function(byval This as IMediaSample ptr, byval bIsPreroll as WINBOOL) as HRESULT
 	GetActualDataLength as function(byval This as IMediaSample ptr) as LONG
-	SetActualDataLength as function(byval This as IMediaSample ptr, byval length as LONG) as HRESULT
+	SetActualDataLength as function(byval This as IMediaSample ptr, byval a as LONG) as HRESULT
 	GetMediaType as function(byval This as IMediaSample ptr, byval ppMediaType as AM_MEDIA_TYPE ptr ptr) as HRESULT
 	SetMediaType as function(byval This as IMediaSample ptr, byval pMediaType as AM_MEDIA_TYPE ptr) as HRESULT
 	IsDiscontinuity as function(byval This as IMediaSample ptr) as HRESULT
@@ -564,7 +627,7 @@ end type
 #define IMediaSample_IsPreroll(This) (This)->lpVtbl->IsPreroll(This)
 #define IMediaSample_SetPreroll(This, bIsPreroll) (This)->lpVtbl->SetPreroll(This, bIsPreroll)
 #define IMediaSample_GetActualDataLength(This) (This)->lpVtbl->GetActualDataLength(This)
-#define IMediaSample_SetActualDataLength(This, length) (This)->lpVtbl->SetActualDataLength(This, length)
+#define IMediaSample_SetActualDataLength(This, a) (This)->lpVtbl->SetActualDataLength(This, a)
 #define IMediaSample_GetMediaType(This, ppMediaType) (This)->lpVtbl->GetMediaType(This, ppMediaType)
 #define IMediaSample_SetMediaType(This, pMediaType) (This)->lpVtbl->SetMediaType(This, pMediaType)
 #define IMediaSample_IsDiscontinuity(This) (This)->lpVtbl->IsDiscontinuity(This)
@@ -590,7 +653,7 @@ declare function IMediaSample_SetPreroll_Proxy(byval This as IMediaSample ptr, b
 declare sub IMediaSample_SetPreroll_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IMediaSample_GetActualDataLength_Proxy(byval This as IMediaSample ptr) as LONG
 declare sub IMediaSample_GetActualDataLength_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-declare function IMediaSample_SetActualDataLength_Proxy(byval This as IMediaSample ptr, byval length as LONG) as HRESULT
+declare function IMediaSample_SetActualDataLength_Proxy(byval This as IMediaSample ptr, byval a as LONG) as HRESULT
 declare sub IMediaSample_SetActualDataLength_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IMediaSample_GetMediaType_Proxy(byval This as IMediaSample ptr, byval ppMediaType as AM_MEDIA_TYPE ptr ptr) as HRESULT
 declare sub IMediaSample_GetMediaType_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -652,7 +715,7 @@ type IMediaSample2Vtbl
 	IsPreroll as function(byval This as IMediaSample2 ptr) as HRESULT
 	SetPreroll as function(byval This as IMediaSample2 ptr, byval bIsPreroll as WINBOOL) as HRESULT
 	GetActualDataLength as function(byval This as IMediaSample2 ptr) as LONG
-	SetActualDataLength as function(byval This as IMediaSample2 ptr, byval length as LONG) as HRESULT
+	SetActualDataLength as function(byval This as IMediaSample2 ptr, byval a as LONG) as HRESULT
 	GetMediaType as function(byval This as IMediaSample2 ptr, byval ppMediaType as AM_MEDIA_TYPE ptr ptr) as HRESULT
 	SetMediaType as function(byval This as IMediaSample2 ptr, byval pMediaType as AM_MEDIA_TYPE ptr) as HRESULT
 	IsDiscontinuity as function(byval This as IMediaSample2 ptr) as HRESULT
@@ -679,7 +742,7 @@ end type
 #define IMediaSample2_IsPreroll(This) (This)->lpVtbl->IsPreroll(This)
 #define IMediaSample2_SetPreroll(This, bIsPreroll) (This)->lpVtbl->SetPreroll(This, bIsPreroll)
 #define IMediaSample2_GetActualDataLength(This) (This)->lpVtbl->GetActualDataLength(This)
-#define IMediaSample2_SetActualDataLength(This, length) (This)->lpVtbl->SetActualDataLength(This, length)
+#define IMediaSample2_SetActualDataLength(This, a) (This)->lpVtbl->SetActualDataLength(This, a)
 #define IMediaSample2_GetMediaType(This, ppMediaType) (This)->lpVtbl->GetMediaType(This, ppMediaType)
 #define IMediaSample2_SetMediaType(This, pMediaType) (This)->lpVtbl->SetMediaType(This, pMediaType)
 #define IMediaSample2_IsDiscontinuity(This) (This)->lpVtbl->IsDiscontinuity(This)
@@ -694,7 +757,27 @@ declare sub IMediaSample2_GetProperties_Stub(byval This as IRpcStubBuffer ptr, b
 declare function IMediaSample2_SetProperties_Proxy(byval This as IMediaSample2 ptr, byval cbProperties as DWORD, byval pbProperties as const UBYTE ptr) as HRESULT
 declare sub IMediaSample2_SetProperties_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type PMEDIASAMPLE2 as IMediaSample2 ptr
+#define __IMediaSample2Config_INTERFACE_DEFINED__
+extern IID_IMediaSample2Config as const GUID
+type IMediaSample2Config as IMediaSample2Config_
 
+type IMediaSample2ConfigVtbl
+	QueryInterface as function(byval This as IMediaSample2Config ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IMediaSample2Config ptr) as ULONG
+	Release as function(byval This as IMediaSample2Config ptr) as ULONG
+	GetSurface as function(byval This as IMediaSample2Config ptr, byval ppDirect3DSurface9 as IUnknown ptr ptr) as HRESULT
+end type
+
+type IMediaSample2Config_
+	lpVtbl as IMediaSample2ConfigVtbl ptr
+end type
+
+#define IMediaSample2Config_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMediaSample2Config_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMediaSample2Config_Release(This) (This)->lpVtbl->Release(This)
+#define IMediaSample2Config_GetSurface(This, ppDirect3DSurface9) (This)->lpVtbl->GetSurface(This, ppDirect3DSurface9)
+declare function IMediaSample2Config_GetSurface_Proxy(byval This as IMediaSample2Config ptr, byval ppDirect3DSurface9 as IUnknown ptr ptr) as HRESULT
+declare sub IMediaSample2Config_GetSurface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 const AM_GBF_PREVFRAMESKIPPED = 1
 const AM_GBF_NOTASYNCPOINT = 2
 const AM_GBF_NOWAIT = 4
@@ -1020,20 +1103,18 @@ end enum
 #define __IAMVfwCompressDialogs_FWD_DEFINED__
 #define __IAMVideoCompression_FWD_DEFINED__
 #define __IAMVideoDecimationProperties_FWD_DEFINED__
-#define __IConfigAviMux_FWD_DEFINED__
-#define __IConfigInterleaving_FWD_DEFINED__
 #define __IDecimateVideoImage_FWD_DEFINED__
 #define __IDrawVideoImage_FWD_DEFINED__
 #define __IEnumStreamIdMap_FWD_DEFINED__
 #define __IMpeg2Demultiplexer_FWD_DEFINED__
 #define __IMPEG2StreamIdMap_FWD_DEFINED__
 
-type __WIDL_axextend_generated_name_00000000
+type __WIDL_strmif_generated_name_00000002
 	Clsid as CLSID
 	Name as LPWSTR
 end type
 
-type REGFILTER as __WIDL_axextend_generated_name_00000000
+type REGFILTER as __WIDL_strmif_generated_name_00000002
 #define __IEnumRegFilters_INTERFACE_DEFINED__
 extern IID_IEnumRegFilters as const GUID
 type IEnumRegFilters as IEnumRegFilters_
@@ -1130,14 +1211,14 @@ declare sub IFilterMapper_UnregisterPin_Stub(byval This as IRpcStubBuffer ptr, b
 declare function IFilterMapper_EnumMatchingFilters_Proxy(byval This as IFilterMapper ptr, byval ppEnum as IEnumRegFilters ptr ptr, byval dwMerit as DWORD, byval bInputNeeded as WINBOOL, byval clsInMaj as CLSID, byval clsInSub as CLSID, byval bRender as WINBOOL, byval bOututNeeded as WINBOOL, byval clsOutMaj as CLSID, byval clsOutSub as CLSID) as HRESULT
 declare sub IFilterMapper_EnumMatchingFilters_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-type __WIDL_axextend_generated_name_00000001
+type __WIDL_strmif_generated_name_00000003
 	clsMajorType as const CLSID ptr
 	clsMinorType as const CLSID ptr
 end type
 
-type REGPINTYPES as __WIDL_axextend_generated_name_00000001
+type REGPINTYPES as __WIDL_strmif_generated_name_00000003
 
-type __WIDL_axextend_generated_name_00000002
+type __WIDL_strmif_generated_name_00000004
 	strName as LPWSTR
 	bRendered as WINBOOL
 	bOutput as WINBOOL
@@ -1149,15 +1230,15 @@ type __WIDL_axextend_generated_name_00000002
 	lpMediaType as const REGPINTYPES ptr
 end type
 
-type REGFILTERPINS as __WIDL_axextend_generated_name_00000002
+type REGFILTERPINS as __WIDL_strmif_generated_name_00000004
 
-type __WIDL_axextend_generated_name_00000003
+type __WIDL_strmif_generated_name_00000005
 	clsMedium as CLSID
 	dw1 as DWORD
 	dw2 as DWORD
 end type
 
-type REGPINMEDIUM as __WIDL_axextend_generated_name_00000003
+type REGPINMEDIUM as __WIDL_strmif_generated_name_00000005
 
 enum
 	REG_PINFLAG_B_ZERO = &h1
@@ -1166,7 +1247,7 @@ enum
 	REG_PINFLAG_B_OUTPUT = &h8
 end enum
 
-type __WIDL_axextend_generated_name_00000004
+type __WIDL_strmif_generated_name_00000006
 	dwFlags as DWORD
 	cInstances as UINT
 	nMediaTypes as UINT
@@ -1176,9 +1257,9 @@ type __WIDL_axextend_generated_name_00000004
 	clsPinCategory as const CLSID ptr
 end type
 
-type REGFILTERPINS2 as __WIDL_axextend_generated_name_00000004
+type REGFILTERPINS2 as __WIDL_strmif_generated_name_00000006
 
-type __WIDL_axextend_generated_name_00000005
+type __WIDL_strmif_generated_name_00000007
 	dwVersion as DWORD
 	dwMerit as DWORD
 
@@ -1195,7 +1276,7 @@ type __WIDL_axextend_generated_name_00000005
 	end union
 end type
 
-type REGFILTER2 as __WIDL_axextend_generated_name_00000005
+type REGFILTER2 as __WIDL_strmif_generated_name_00000007
 #define __IFilterMapper2_INTERFACE_DEFINED__
 extern IID_IFilterMapper2 as const GUID
 type IFilterMapper2 as IFilterMapper2_
@@ -1562,12 +1643,12 @@ declare function IFileSinkFilter2_GetMode_Proxy(byval This as IFileSinkFilter2 p
 declare sub IFileSinkFilter2_GetMode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type PFILESINKFILTER2 as IFileSinkFilter2 ptr
 
-type __WIDL_axextend_generated_name_00000006 as long
+type __WIDL_strmif_generated_name_00000008 as long
 enum
 	AM_FILE_OVERWRITE = &h1
 end enum
 
-type AM_FILESINK_FLAGS as __WIDL_axextend_generated_name_00000006
+type AM_FILESINK_FLAGS as __WIDL_strmif_generated_name_00000008
 #define __IGraphBuilder_INTERFACE_DEFINED__
 extern IID_IGraphBuilder as const GUID
 type IGraphBuilder as IGraphBuilder_
@@ -1759,6 +1840,180 @@ declare function ICaptureGraphBuilder2_FindPin_Proxy(byval This as ICaptureGraph
 declare sub ICaptureGraphBuilder2_FindPin_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICaptureGraphBuilder2_FindInterface_Proxy(byval This as ICaptureGraphBuilder2 ptr, byval pCategory as const GUID ptr, byval pType as const GUID ptr, byval pf as IBaseFilter ptr, byval riid as const IID const ptr, byval ppint as any ptr ptr) as HRESULT
 declare function ICaptureGraphBuilder2_FindInterface_Stub(byval This as ICaptureGraphBuilder2 ptr, byval pCategory as const GUID ptr, byval pType as const GUID ptr, byval pf as IBaseFilter ptr, byval riid as const IID const ptr, byval ppint as IUnknown ptr ptr) as HRESULT
+#define __IConfigAviMux_INTERFACE_DEFINED__
+extern IID_IConfigAviMux as const GUID
+type IConfigAviMux as IConfigAviMux_
+
+type IConfigAviMuxVtbl
+	QueryInterface as function(byval This as IConfigAviMux ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IConfigAviMux ptr) as ULONG
+	Release as function(byval This as IConfigAviMux ptr) as ULONG
+	SetMasterStream as function(byval This as IConfigAviMux ptr, byval iStream as LONG) as HRESULT
+	GetMasterStream as function(byval This as IConfigAviMux ptr, byval pStream as LONG ptr) as HRESULT
+	SetOutputCompatibilityIndex as function(byval This as IConfigAviMux ptr, byval fOldIndex as WINBOOL) as HRESULT
+	GetOutputCompatibilityIndex as function(byval This as IConfigAviMux ptr, byval pfOldIndex as WINBOOL ptr) as HRESULT
+end type
+
+type IConfigAviMux_
+	lpVtbl as IConfigAviMuxVtbl ptr
+end type
+
+#define IConfigAviMux_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IConfigAviMux_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IConfigAviMux_Release(This) (This)->lpVtbl->Release(This)
+#define IConfigAviMux_SetMasterStream(This, iStream) (This)->lpVtbl->SetMasterStream(This, iStream)
+#define IConfigAviMux_GetMasterStream(This, pStream) (This)->lpVtbl->GetMasterStream(This, pStream)
+#define IConfigAviMux_SetOutputCompatibilityIndex(This, fOldIndex) (This)->lpVtbl->SetOutputCompatibilityIndex(This, fOldIndex)
+#define IConfigAviMux_GetOutputCompatibilityIndex(This, pfOldIndex) (This)->lpVtbl->GetOutputCompatibilityIndex(This, pfOldIndex)
+
+declare function IConfigAviMux_SetMasterStream_Proxy(byval This as IConfigAviMux ptr, byval iStream as LONG) as HRESULT
+declare sub IConfigAviMux_SetMasterStream_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigAviMux_GetMasterStream_Proxy(byval This as IConfigAviMux ptr, byval pStream as LONG ptr) as HRESULT
+declare sub IConfigAviMux_GetMasterStream_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigAviMux_SetOutputCompatibilityIndex_Proxy(byval This as IConfigAviMux ptr, byval fOldIndex as WINBOOL) as HRESULT
+declare sub IConfigAviMux_SetOutputCompatibilityIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigAviMux_GetOutputCompatibilityIndex_Proxy(byval This as IConfigAviMux ptr, byval pfOldIndex as WINBOOL ptr) as HRESULT
+declare sub IConfigAviMux_GetOutputCompatibilityIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IConfigInterleaving_INTERFACE_DEFINED__
+
+type InterleavingMode as long
+enum
+	INTERLEAVE_NONE = 0
+	INTERLEAVE_CAPTURE = 1
+	INTERLEAVE_FULL = 2
+	INTERLEAVE_NONE_BUFFERED = 3
+end enum
+
+extern IID_IConfigInterleaving as const GUID
+type IConfigInterleaving as IConfigInterleaving_
+
+type IConfigInterleavingVtbl
+	QueryInterface as function(byval This as IConfigInterleaving ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IConfigInterleaving ptr) as ULONG
+	Release as function(byval This as IConfigInterleaving ptr) as ULONG
+	put_Mode as function(byval This as IConfigInterleaving ptr, byval mode as InterleavingMode) as HRESULT
+	get_Mode as function(byval This as IConfigInterleaving ptr, byval pMode as InterleavingMode ptr) as HRESULT
+	put_Interleaving as function(byval This as IConfigInterleaving ptr, byval prtInterleave as const REFERENCE_TIME ptr, byval prtPreroll as const REFERENCE_TIME ptr) as HRESULT
+	get_Interleaving as function(byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
+end type
+
+type IConfigInterleaving_
+	lpVtbl as IConfigInterleavingVtbl ptr
+end type
+
+#define IConfigInterleaving_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IConfigInterleaving_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IConfigInterleaving_Release(This) (This)->lpVtbl->Release(This)
+#define IConfigInterleaving_put_Mode(This, mode) (This)->lpVtbl->put_Mode(This, mode)
+#define IConfigInterleaving_get_Mode(This, pMode) (This)->lpVtbl->get_Mode(This, pMode)
+#define IConfigInterleaving_put_Interleaving(This, prtInterleave, prtPreroll) (This)->lpVtbl->put_Interleaving(This, prtInterleave, prtPreroll)
+#define IConfigInterleaving_get_Interleaving(This, prtInterleave, prtPreroll) (This)->lpVtbl->get_Interleaving(This, prtInterleave, prtPreroll)
+
+declare function IConfigInterleaving_put_Mode_Proxy(byval This as IConfigInterleaving ptr, byval mode as InterleavingMode) as HRESULT
+declare sub IConfigInterleaving_put_Mode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigInterleaving_get_Mode_Proxy(byval This as IConfigInterleaving ptr, byval pMode as InterleavingMode ptr) as HRESULT
+declare sub IConfigInterleaving_get_Mode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigInterleaving_put_Interleaving_Proxy(byval This as IConfigInterleaving ptr, byval prtInterleave as const REFERENCE_TIME ptr, byval prtPreroll as const REFERENCE_TIME ptr) as HRESULT
+declare sub IConfigInterleaving_put_Interleaving_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConfigInterleaving_get_Interleaving_Proxy(byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
+declare sub IConfigInterleaving_get_Interleaving_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IAMClockSlave_INTERFACE_DEFINED__
+extern IID_IAMClockSlave as const GUID
+type IAMClockSlave as IAMClockSlave_
+
+type IAMClockSlaveVtbl
+	QueryInterface as function(byval This as IAMClockSlave ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IAMClockSlave ptr) as ULONG
+	Release as function(byval This as IAMClockSlave ptr) as ULONG
+	SetErrorTolerance as function(byval This as IAMClockSlave ptr, byval dwTolerance as DWORD) as HRESULT
+	GetErrorTolerance as function(byval This as IAMClockSlave ptr, byval pdwTolerance as DWORD ptr) as HRESULT
+end type
+
+type IAMClockSlave_
+	lpVtbl as IAMClockSlaveVtbl ptr
+end type
+
+#define IAMClockSlave_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAMClockSlave_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAMClockSlave_Release(This) (This)->lpVtbl->Release(This)
+#define IAMClockSlave_SetErrorTolerance(This, dwTolerance) (This)->lpVtbl->SetErrorTolerance(This, dwTolerance)
+#define IAMClockSlave_GetErrorTolerance(This, pdwTolerance) (This)->lpVtbl->GetErrorTolerance(This, pdwTolerance)
+
+declare function IAMClockSlave_SetErrorTolerance_Proxy(byval This as IAMClockSlave ptr, byval dwTolerance as DWORD) as HRESULT
+declare sub IAMClockSlave_SetErrorTolerance_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMClockSlave_GetErrorTolerance_Proxy(byval This as IAMClockSlave ptr, byval pdwTolerance as DWORD ptr) as HRESULT
+declare sub IAMClockSlave_GetErrorTolerance_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+
+type _AMCOPPSignature
+	Signature(0 to 255) as UBYTE
+end type
+
+type AMCOPPSignature as _AMCOPPSignature
+
+type _AMCOPPCommand
+	macKDI as GUID
+	guidCommandID as GUID
+	dwSequence as DWORD
+	bSizeData as DWORD
+	CommandData(0 to 4055) as UBYTE
+end type
+
+type AMCOPPCommand as _AMCOPPCommand
+type LPAMCOPPCommand as _AMCOPPCommand ptr
+
+type _AMCOPPStatusInput
+	rApp as GUID
+	guidStatusRequestID as GUID
+	dwSequence as DWORD
+	cbSizeData as DWORD
+	StatusData(0 to 4055) as UBYTE
+end type
+
+type AMCOPPStatusInput as _AMCOPPStatusInput
+type LPAMCOPPStatusInput as _AMCOPPStatusInput ptr
+
+type _AMCOPPStatusOutput
+	macKDI as GUID
+	cbSizeData as DWORD
+	COPPStatus(0 to 4075) as UBYTE
+end type
+
+type AMCOPPStatusOutput as _AMCOPPStatusOutput
+type LPAMCOPPStatusOutput as _AMCOPPStatusOutput ptr
+#define __IAMCertifiedOutputProtection_INTERFACE_DEFINED__
+extern IID_IAMCertifiedOutputProtection as const GUID
+type IAMCertifiedOutputProtection as IAMCertifiedOutputProtection_
+
+type IAMCertifiedOutputProtectionVtbl
+	QueryInterface as function(byval This as IAMCertifiedOutputProtection ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IAMCertifiedOutputProtection ptr) as ULONG
+	Release as function(byval This as IAMCertifiedOutputProtection ptr) as ULONG
+	KeyExchange as function(byval This as IAMCertifiedOutputProtection ptr, byval pRandom as GUID ptr, byval VarLenCertGH as UBYTE ptr ptr, byval pdwLengthCertGH as DWORD ptr) as HRESULT
+	SessionSequenceStart as function(byval This as IAMCertifiedOutputProtection ptr, byval pSig as AMCOPPSignature ptr) as HRESULT
+	ProtectionCommand as function(byval This as IAMCertifiedOutputProtection ptr, byval cmd as const AMCOPPCommand ptr) as HRESULT
+	ProtectionStatus as function(byval This as IAMCertifiedOutputProtection ptr, byval pStatusInput as const AMCOPPStatusInput ptr, byval pStatusOutput as AMCOPPStatusOutput ptr) as HRESULT
+end type
+
+type IAMCertifiedOutputProtection_
+	lpVtbl as IAMCertifiedOutputProtectionVtbl ptr
+end type
+
+#define IAMCertifiedOutputProtection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAMCertifiedOutputProtection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAMCertifiedOutputProtection_Release(This) (This)->lpVtbl->Release(This)
+#define IAMCertifiedOutputProtection_KeyExchange(This, pRandom, VarLenCertGH, pdwLengthCertGH) (This)->lpVtbl->KeyExchange(This, pRandom, VarLenCertGH, pdwLengthCertGH)
+#define IAMCertifiedOutputProtection_SessionSequenceStart(This, pSig) (This)->lpVtbl->SessionSequenceStart(This, pSig)
+#define IAMCertifiedOutputProtection_ProtectionCommand(This, cmd) (This)->lpVtbl->ProtectionCommand(This, cmd)
+#define IAMCertifiedOutputProtection_ProtectionStatus(This, pStatusInput, pStatusOutput) (This)->lpVtbl->ProtectionStatus(This, pStatusInput, pStatusOutput)
+
+declare function IAMCertifiedOutputProtection_KeyExchange_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pRandom as GUID ptr, byval VarLenCertGH as UBYTE ptr ptr, byval pdwLengthCertGH as DWORD ptr) as HRESULT
+declare sub IAMCertifiedOutputProtection_KeyExchange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMCertifiedOutputProtection_SessionSequenceStart_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pSig as AMCOPPSignature ptr) as HRESULT
+declare sub IAMCertifiedOutputProtection_SessionSequenceStart_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMCertifiedOutputProtection_ProtectionCommand_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval cmd as const AMCOPPCommand ptr) as HRESULT
+declare sub IAMCertifiedOutputProtection_ProtectionCommand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMCertifiedOutputProtection_ProtectionStatus_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pStatusInput as const AMCOPPStatusInput ptr, byval pStatusOutput as AMCOPPStatusOutput ptr) as HRESULT
+declare sub IAMCertifiedOutputProtection_ProtectionStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
 type _AM_RENSDEREXFLAGS as long
 enum
@@ -2128,6 +2383,53 @@ declare sub IResourceManager_SetFocus_Stub(byval This as IRpcStubBuffer ptr, byv
 declare function IResourceManager_ReleaseFocus_Proxy(byval This as IResourceManager ptr, byval pFocusObject as IUnknown ptr) as HRESULT
 declare sub IResourceManager_ReleaseFocus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
+type AM_STREAM_INFO_FLAGS as long
+enum
+	AM_STREAM_INFO_START_DEFINED = &h1
+	AM_STREAM_INFO_STOP_DEFINED = &h2
+	AM_STREAM_INFO_DISCARDING = &h4
+	AM_STREAM_INFO_STOP_SEND_EXTRA = &h10
+end enum
+
+type AM_STREAM_INFO
+	tStart as REFERENCE_TIME
+	tStop as REFERENCE_TIME
+	dwStartCookie as DWORD
+	dwStopCookie as DWORD
+	dwFlags as DWORD
+end type
+
+#define __IAMStreamControl_INTERFACE_DEFINED__
+extern IID_IAMStreamControl as const GUID
+type IAMStreamControl as IAMStreamControl_
+
+type IAMStreamControlVtbl
+	QueryInterface as function(byval This as IAMStreamControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IAMStreamControl ptr) as ULONG
+	Release as function(byval This as IAMStreamControl ptr) as ULONG
+	StartAt as function(byval This as IAMStreamControl ptr, byval ptStart as const REFERENCE_TIME ptr, byval dwCookie as DWORD) as HRESULT
+	StopAt as function(byval This as IAMStreamControl ptr, byval ptStop as const REFERENCE_TIME ptr, byval bSendExtra as WINBOOL, byval dwCookie as DWORD) as HRESULT
+	GetInfo as function(byval This as IAMStreamControl ptr, byval pInfo as AM_STREAM_INFO ptr) as HRESULT
+end type
+
+type IAMStreamControl_
+	lpVtbl as IAMStreamControlVtbl ptr
+end type
+
+#define IAMStreamControl_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAMStreamControl_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAMStreamControl_Release(This) (This)->lpVtbl->Release(This)
+#define IAMStreamControl_StartAt(This, ptStart, dwCookie) (This)->lpVtbl->StartAt(This, ptStart, dwCookie)
+#define IAMStreamControl_StopAt(This, ptStop, bSendExtra, dwCookie) (This)->lpVtbl->StopAt(This, ptStop, bSendExtra, dwCookie)
+#define IAMStreamControl_GetInfo(This, pInfo) (This)->lpVtbl->GetInfo(This, pInfo)
+
+declare function IAMStreamControl_StartAt_Proxy(byval This as IAMStreamControl ptr, byval ptStart as const REFERENCE_TIME ptr, byval dwCookie as DWORD) as HRESULT
+declare sub IAMStreamControl_StartAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMStreamControl_StopAt_Proxy(byval This as IAMStreamControl ptr, byval ptStop as const REFERENCE_TIME ptr, byval bSendExtra as WINBOOL, byval dwCookie as DWORD) as HRESULT
+declare sub IAMStreamControl_StopAt_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IAMStreamControl_GetInfo_Proxy(byval This as IAMStreamControl ptr, byval pInfo as AM_STREAM_INFO ptr) as HRESULT
+declare sub IAMStreamControl_GetInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+
 #define _IKsPropertySet_
 const KSPROPERTY_SUPPORT_GET = 1
 const KSPROPERTY_SUPPORT_SET = 2
@@ -2161,6 +2463,65 @@ declare function IKsPropertySet_Get_Proxy(byval This as IKsPropertySet ptr, byva
 declare sub IKsPropertySet_Get_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IKsPropertySet_QuerySupported_Proxy(byval This as IKsPropertySet ptr, byval guidPropSet as const GUID const ptr, byval dwPropID as DWORD, byval pTypeSupport as DWORD ptr) as HRESULT
 declare sub IKsPropertySet_QuerySupported_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IMediaPropertyBag_INTERFACE_DEFINED__
+type IMediaPropertyBag as IMediaPropertyBag_
+type LPMEDIAPROPERTYBAG as IMediaPropertyBag ptr
+extern IID_IMediaPropertyBag as const GUID
+
+type IMediaPropertyBagVtbl
+	QueryInterface as function(byval This as IMediaPropertyBag ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IMediaPropertyBag ptr) as ULONG
+	Release as function(byval This as IMediaPropertyBag ptr) as ULONG
+	Read as function(byval This as IMediaPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
+	Write as function(byval This as IMediaPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr) as HRESULT
+	EnumProperty as function(byval This as IMediaPropertyBag ptr, byval iProperty as ULONG, byval pvarPropertyName as VARIANT ptr, byval pvarPropertyValue as VARIANT ptr) as HRESULT
+end type
+
+type IMediaPropertyBag_
+	lpVtbl as IMediaPropertyBagVtbl ptr
+end type
+
+#define IMediaPropertyBag_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMediaPropertyBag_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMediaPropertyBag_Release(This) (This)->lpVtbl->Release(This)
+#define IMediaPropertyBag_Read(This, pszPropName, pVar, pErrorLog) (This)->lpVtbl->Read(This, pszPropName, pVar, pErrorLog)
+#define IMediaPropertyBag_Write(This, pszPropName, pVar) (This)->lpVtbl->Write(This, pszPropName, pVar)
+#define IMediaPropertyBag_EnumProperty(This, iProperty, pvarPropertyName, pvarPropertyValue) (This)->lpVtbl->EnumProperty(This, iProperty, pvarPropertyName, pvarPropertyValue)
+declare function IMediaPropertyBag_EnumProperty_Proxy(byval This as IMediaPropertyBag ptr, byval iProperty as ULONG, byval pvarPropertyName as VARIANT ptr, byval pvarPropertyValue as VARIANT ptr) as HRESULT
+declare sub IMediaPropertyBag_EnumProperty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPersistMediaPropertyBag_INTERFACE_DEFINED__
+type IPersistMediaPropertyBag as IPersistMediaPropertyBag_
+type LPPERSISTMEDIAPROPERTYBAG as IPersistMediaPropertyBag ptr
+extern IID_IPersistMediaPropertyBag as const GUID
+
+type IPersistMediaPropertyBagVtbl
+	QueryInterface as function(byval This as IPersistMediaPropertyBag ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPersistMediaPropertyBag ptr) as ULONG
+	Release as function(byval This as IPersistMediaPropertyBag ptr) as ULONG
+	GetClassID as function(byval This as IPersistMediaPropertyBag ptr, byval pClassID as CLSID ptr) as HRESULT
+	InitNew as function(byval This as IPersistMediaPropertyBag ptr) as HRESULT
+	Load as function(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
+	Save as function(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+end type
+
+type IPersistMediaPropertyBag_
+	lpVtbl as IPersistMediaPropertyBagVtbl ptr
+end type
+
+#define IPersistMediaPropertyBag_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistMediaPropertyBag_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistMediaPropertyBag_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistMediaPropertyBag_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistMediaPropertyBag_InitNew(This) (This)->lpVtbl->InitNew(This)
+#define IPersistMediaPropertyBag_Load(This, pPropBag, pErrorLog) (This)->lpVtbl->Load(This, pPropBag, pErrorLog)
+#define IPersistMediaPropertyBag_Save(This, pPropBag, fClearDirty, fSaveAllProperties) (This)->lpVtbl->Save(This, pPropBag, fClearDirty, fSaveAllProperties)
+
+declare function IPersistMediaPropertyBag_InitNew_Proxy(byval This as IPersistMediaPropertyBag ptr) as HRESULT
+declare sub IPersistMediaPropertyBag_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMediaPropertyBag_Load_Proxy(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
+declare sub IPersistMediaPropertyBag_Load_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMediaPropertyBag_Save_Proxy(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+declare sub IPersistMediaPropertyBag_Save_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __ISeekingPassThru_INTERFACE_DEFINED__
 extern IID_ISeekingPassThru as const GUID
 type ISeekingPassThru as ISeekingPassThru_
@@ -2237,17 +2598,13 @@ declare sub IAMGraphBuilderCallback_SelectedFilter_Stub(byval This as IRpcStubBu
 declare function IAMGraphBuilderCallback_CreatedFilter_Proxy(byval This as IAMGraphBuilderCallback ptr, byval pFil as IBaseFilter ptr) as HRESULT
 declare sub IAMGraphBuilderCallback_CreatedFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#define __IReferenceClock2_FWD_DEFINED__
 #define __IDistributorNotify_FWD_DEFINED__
-#define __IAMStreamControl_FWD_DEFINED__
 #define __IAMVideoControl_FWD_DEFINED__
 #define __IAMTuner_FWD_DEFINED__
 #define __IAMTunerNotification_FWD_DEFINED__
 #define __IBPCSatelliteTuner_FWD_DEFINED__
 #define __IAMTVAudio_FWD_DEFINED__
 #define __IAMTVAudioNotification_FWD_DEFINED__
-#define __IMediaPropertyBag_FWD_DEFINED__
-#define __IPersistMediaPropertyBag_FWD_DEFINED__
 #define __IAMStreamSelect_FWD_DEFINED__
 #define __IAMResourceControl_FWD_DEFINED__
 #define __IAMClockAdjust_FWD_DEFINED__
@@ -2258,13 +2615,11 @@ declare sub IAMGraphBuilderCallback_CreatedFilter_Stub(byval This as IRpcStubBuf
 #define __IDVRGB219_FWD_DEFINED__
 #define __IDVSplitter_FWD_DEFINED__
 #define __IRegisterServiceProvider_FWD_DEFINED__
-#define __IAMClockSlave_FWD_DEFINED__
 #define __ICodecAPI_FWD_DEFINED__
 #define __IGetCapabilitiesKey_FWD_DEFINED__
 #define __IEncoderAPI_FWD_DEFINED__
 #define __IVideoEncoder_FWD_DEFINED__
 #define __IAMDecoderCaps_FWD_DEFINED__
-#define __IAMCertifiedOutputProtection_FWD_DEFINED__
 #define __IDvdControl_FWD_DEFINED__
 #define __IDvdInfo_FWD_DEFINED__
 #define __IDvdCmd_FWD_DEFINED__
@@ -2299,31 +2654,6 @@ declare sub IAMGraphBuilderCallback_CreatedFilter_Stub(byval This as IRpcStubBuf
 #define __IAMPluginControl_FWD_DEFINED__
 extern __MIDL_itf_strmif_0125_v0_0_c_ifspec as RPC_IF_HANDLE
 extern __MIDL_itf_strmif_0125_v0_0_s_ifspec as RPC_IF_HANDLE
-#define __IReferenceClock2_INTERFACE_DEFINED__
-extern IID_IReferenceClock2 as const IID
-type IReferenceClock2 as IReferenceClock2_
-
-type IReferenceClock2Vtbl
-	QueryInterface as function(byval This as IReferenceClock2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IReferenceClock2 ptr) as ULONG
-	Release as function(byval This as IReferenceClock2 ptr) as ULONG
-	GetTime as function(byval This as IReferenceClock2 ptr, byval pTime as REFERENCE_TIME ptr) as HRESULT
-	AdviseTime as function(byval This as IReferenceClock2 ptr, byval baseTime as REFERENCE_TIME, byval streamTime as REFERENCE_TIME, byval hEvent as HEVENT, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
-	AdvisePeriodic as function(byval This as IReferenceClock2 ptr, byval startTime as REFERENCE_TIME, byval periodTime as REFERENCE_TIME, byval hSemaphore as HSEMAPHORE, byval pdwAdviseCookie as DWORD_PTR ptr) as HRESULT
-	Unadvise as function(byval This as IReferenceClock2 ptr, byval dwAdviseCookie as DWORD_PTR) as HRESULT
-end type
-
-type IReferenceClock2_
-	lpVtbl as IReferenceClock2Vtbl ptr
-end type
-
-#define IReferenceClock2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IReferenceClock2_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IReferenceClock2_Release(This) (This)->lpVtbl->Release(This)
-#define IReferenceClock2_GetTime(This, pTime) (This)->lpVtbl->GetTime(This, pTime)
-#define IReferenceClock2_AdviseTime(This, baseTime, streamTime, hEvent, pdwAdviseCookie) (This)->lpVtbl->AdviseTime(This, baseTime, streamTime, hEvent, pdwAdviseCookie)
-#define IReferenceClock2_AdvisePeriodic(This, startTime, periodTime, hSemaphore, pdwAdviseCookie) (This)->lpVtbl->AdvisePeriodic(This, startTime, periodTime, hSemaphore, pdwAdviseCookie)
-#define IReferenceClock2_Unadvise(This, dwAdviseCookie) (This)->lpVtbl->Unadvise(This, dwAdviseCookie)
 type PREFERENCECLOCK2 as IReferenceClock2 ptr
 #define __IDistributorNotify_INTERFACE_DEFINED__
 extern IID_IDistributorNotify as const IID
@@ -2363,136 +2693,6 @@ declare function IDistributorNotify_SetSyncSource_Proxy(byval This as IDistribut
 declare sub IDistributorNotify_SetSyncSource_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDistributorNotify_NotifyGraphChange_Proxy(byval This as IDistributorNotify ptr) as HRESULT
 declare sub IDistributorNotify_NotifyGraphChange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
-type __MIDL___MIDL_itf_strmif_0160_0001 as long
-enum
-	AM_STREAM_INFO_START_DEFINED = &h1
-	AM_STREAM_INFO_STOP_DEFINED = &h2
-	AM_STREAM_INFO_DISCARDING = &h4
-	AM_STREAM_INFO_STOP_SEND_EXTRA = &h10
-end enum
-
-type AM_STREAM_INFO_FLAGS as __MIDL___MIDL_itf_strmif_0160_0001
-
-type __MIDL___MIDL_itf_strmif_0160_0002
-	tStart as REFERENCE_TIME
-	tStop as REFERENCE_TIME
-	dwStartCookie as DWORD
-	dwStopCookie as DWORD
-	dwFlags as DWORD
-end type
-
-type AM_STREAM_INFO as __MIDL___MIDL_itf_strmif_0160_0002
-extern __MIDL_itf_strmif_0160_v0_0_c_ifspec as RPC_IF_HANDLE
-extern __MIDL_itf_strmif_0160_v0_0_s_ifspec as RPC_IF_HANDLE
-#define __IAMStreamControl_INTERFACE_DEFINED__
-extern IID_IAMStreamControl as const IID
-type IAMStreamControl as IAMStreamControl_
-
-type IAMStreamControlVtbl
-	QueryInterface as function(byval This as IAMStreamControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IAMStreamControl ptr) as ULONG
-	Release as function(byval This as IAMStreamControl ptr) as ULONG
-	StartAt as function(byval This as IAMStreamControl ptr, byval ptStart as const REFERENCE_TIME ptr, byval dwCookie as DWORD) as HRESULT
-	StopAt as function(byval This as IAMStreamControl ptr, byval ptStop as const REFERENCE_TIME ptr, byval bSendExtra as WINBOOL, byval dwCookie as DWORD) as HRESULT
-	GetInfo as function(byval This as IAMStreamControl ptr, byval pInfo as AM_STREAM_INFO ptr) as HRESULT
-end type
-
-type IAMStreamControl_
-	lpVtbl as IAMStreamControlVtbl ptr
-end type
-
-#define IAMStreamControl_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IAMStreamControl_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IAMStreamControl_Release(This) (This)->lpVtbl->Release(This)
-#define IAMStreamControl_StartAt(This, ptStart, dwCookie) (This)->lpVtbl->StartAt(This, ptStart, dwCookie)
-#define IAMStreamControl_StopAt(This, ptStop, bSendExtra, dwCookie) (This)->lpVtbl->StopAt(This, ptStop, bSendExtra, dwCookie)
-#define IAMStreamControl_GetInfo(This, pInfo) (This)->lpVtbl->GetInfo(This, pInfo)
-
-declare function IAMStreamControl_StartAt_Proxy(byval This as IAMStreamControl ptr, byval ptStart as const REFERENCE_TIME ptr, byval dwCookie as DWORD) as HRESULT
-declare sub IAMStreamControl_StartAt_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamControl_StopAt_Proxy(byval This as IAMStreamControl ptr, byval ptStop as const REFERENCE_TIME ptr, byval bSendExtra as WINBOOL, byval dwCookie as DWORD) as HRESULT
-declare sub IAMStreamControl_StopAt_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMStreamControl_GetInfo_Proxy(byval This as IAMStreamControl ptr, byval pInfo as AM_STREAM_INFO ptr) as HRESULT
-declare sub IAMStreamControl_GetInfo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#define __IConfigInterleaving_INTERFACE_DEFINED__
-
-type __MIDL_IConfigInterleaving_0001 as long
-enum
-	INTERLEAVE_NONE = 0
-	INTERLEAVE_CAPTURE
-	INTERLEAVE_FULL
-	INTERLEAVE_NONE_BUFFERED
-end enum
-
-type InterleavingMode as __MIDL_IConfigInterleaving_0001
-extern IID_IConfigInterleaving as const IID
-type IConfigInterleaving as IConfigInterleaving_
-
-type IConfigInterleavingVtbl
-	QueryInterface as function(byval This as IConfigInterleaving ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IConfigInterleaving ptr) as ULONG
-	Release as function(byval This as IConfigInterleaving ptr) as ULONG
-	put_Mode as function(byval This as IConfigInterleaving ptr, byval mode as InterleavingMode) as HRESULT
-	get_Mode as function(byval This as IConfigInterleaving ptr, byval pMode as InterleavingMode ptr) as HRESULT
-	put_Interleaving as function(byval This as IConfigInterleaving ptr, byval prtInterleave as const REFERENCE_TIME ptr, byval prtPreroll as const REFERENCE_TIME ptr) as HRESULT
-	get_Interleaving as function(byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
-end type
-
-type IConfigInterleaving_
-	lpVtbl as IConfigInterleavingVtbl ptr
-end type
-
-#define IConfigInterleaving_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IConfigInterleaving_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IConfigInterleaving_Release(This) (This)->lpVtbl->Release(This)
-#define IConfigInterleaving_put_Mode(This, mode) (This)->lpVtbl->put_Mode(This, mode)
-#define IConfigInterleaving_get_Mode(This, pMode) (This)->lpVtbl->get_Mode(This, pMode)
-#define IConfigInterleaving_put_Interleaving(This, prtInterleave, prtPreroll) (This)->lpVtbl->put_Interleaving(This, prtInterleave, prtPreroll)
-#define IConfigInterleaving_get_Interleaving(This, prtInterleave, prtPreroll) (This)->lpVtbl->get_Interleaving(This, prtInterleave, prtPreroll)
-
-declare function IConfigInterleaving_put_Mode_Proxy(byval This as IConfigInterleaving ptr, byval mode as InterleavingMode) as HRESULT
-declare sub IConfigInterleaving_put_Mode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_get_Mode_Proxy(byval This as IConfigInterleaving ptr, byval pMode as InterleavingMode ptr) as HRESULT
-declare sub IConfigInterleaving_get_Mode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_put_Interleaving_Proxy(byval This as IConfigInterleaving ptr, byval prtInterleave as const REFERENCE_TIME ptr, byval prtPreroll as const REFERENCE_TIME ptr) as HRESULT
-declare sub IConfigInterleaving_put_Interleaving_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigInterleaving_get_Interleaving_Proxy(byval This as IConfigInterleaving ptr, byval prtInterleave as REFERENCE_TIME ptr, byval prtPreroll as REFERENCE_TIME ptr) as HRESULT
-declare sub IConfigInterleaving_get_Interleaving_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#define __IConfigAviMux_INTERFACE_DEFINED__
-extern IID_IConfigAviMux as const IID
-type IConfigAviMux as IConfigAviMux_
-
-type IConfigAviMuxVtbl
-	QueryInterface as function(byval This as IConfigAviMux ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IConfigAviMux ptr) as ULONG
-	Release as function(byval This as IConfigAviMux ptr) as ULONG
-	SetMasterStream as function(byval This as IConfigAviMux ptr, byval iStream as LONG) as HRESULT
-	GetMasterStream as function(byval This as IConfigAviMux ptr, byval pStream as LONG ptr) as HRESULT
-	SetOutputCompatibilityIndex as function(byval This as IConfigAviMux ptr, byval fOldIndex as WINBOOL) as HRESULT
-	GetOutputCompatibilityIndex as function(byval This as IConfigAviMux ptr, byval pfOldIndex as WINBOOL ptr) as HRESULT
-end type
-
-type IConfigAviMux_
-	lpVtbl as IConfigAviMuxVtbl ptr
-end type
-
-#define IConfigAviMux_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IConfigAviMux_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IConfigAviMux_Release(This) (This)->lpVtbl->Release(This)
-#define IConfigAviMux_SetMasterStream(This, iStream) (This)->lpVtbl->SetMasterStream(This, iStream)
-#define IConfigAviMux_GetMasterStream(This, pStream) (This)->lpVtbl->GetMasterStream(This, pStream)
-#define IConfigAviMux_SetOutputCompatibilityIndex(This, fOldIndex) (This)->lpVtbl->SetOutputCompatibilityIndex(This, fOldIndex)
-#define IConfigAviMux_GetOutputCompatibilityIndex(This, pfOldIndex) (This)->lpVtbl->GetOutputCompatibilityIndex(This, pfOldIndex)
-
-declare function IConfigAviMux_SetMasterStream_Proxy(byval This as IConfigAviMux ptr, byval iStream as LONG) as HRESULT
-declare sub IConfigAviMux_SetMasterStream_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_GetMasterStream_Proxy(byval This as IConfigAviMux ptr, byval pStream as LONG ptr) as HRESULT
-declare sub IConfigAviMux_GetMasterStream_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_SetOutputCompatibilityIndex_Proxy(byval This as IConfigAviMux ptr, byval fOldIndex as WINBOOL) as HRESULT
-declare sub IConfigAviMux_SetOutputCompatibilityIndex_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IConfigAviMux_GetOutputCompatibilityIndex_Proxy(byval This as IConfigAviMux ptr, byval pfOldIndex as WINBOOL ptr) as HRESULT
-declare sub IConfigAviMux_GetOutputCompatibilityIndex_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 type __MIDL___MIDL_itf_strmif_0167_0001 as long
 enum
@@ -3504,67 +3704,6 @@ enum
 end enum
 
 type AMPROPERTY_PIN as __MIDL___MIDL_itf_strmif_0185_0001
-extern __MIDL_itf_strmif_0186_v0_0_c_ifspec as RPC_IF_HANDLE
-extern __MIDL_itf_strmif_0186_v0_0_s_ifspec as RPC_IF_HANDLE
-#define __IMediaPropertyBag_INTERFACE_DEFINED__
-type IMediaPropertyBag as IMediaPropertyBag_
-type LPMEDIAPROPERTYBAG as IMediaPropertyBag ptr
-extern IID_IMediaPropertyBag as const IID
-
-type IMediaPropertyBagVtbl
-	QueryInterface as function(byval This as IMediaPropertyBag ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IMediaPropertyBag ptr) as ULONG
-	Release as function(byval This as IMediaPropertyBag ptr) as ULONG
-	Read as function(byval This as IMediaPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
-	Write as function(byval This as IMediaPropertyBag ptr, byval pszPropName as LPCOLESTR, byval pVar as VARIANT ptr) as HRESULT
-	EnumProperty as function(byval This as IMediaPropertyBag ptr, byval iProperty as ULONG, byval pvarPropertyName as VARIANT ptr, byval pvarPropertyValue as VARIANT ptr) as HRESULT
-end type
-
-type IMediaPropertyBag_
-	lpVtbl as IMediaPropertyBagVtbl ptr
-end type
-
-#define IMediaPropertyBag_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IMediaPropertyBag_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IMediaPropertyBag_Release(This) (This)->lpVtbl->Release(This)
-#define IMediaPropertyBag_Read(This, pszPropName, pVar, pErrorLog) (This)->lpVtbl->Read(This, pszPropName, pVar, pErrorLog)
-#define IMediaPropertyBag_Write(This, pszPropName, pVar) (This)->lpVtbl->Write(This, pszPropName, pVar)
-#define IMediaPropertyBag_EnumProperty(This, iProperty, pvarPropertyName, pvarPropertyValue) (This)->lpVtbl->EnumProperty(This, iProperty, pvarPropertyName, pvarPropertyValue)
-declare function IMediaPropertyBag_EnumProperty_Proxy(byval This as IMediaPropertyBag ptr, byval iProperty as ULONG, byval pvarPropertyName as VARIANT ptr, byval pvarPropertyValue as VARIANT ptr) as HRESULT
-declare sub IMediaPropertyBag_EnumProperty_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#define __IPersistMediaPropertyBag_INTERFACE_DEFINED__
-type IPersistMediaPropertyBag as IPersistMediaPropertyBag_
-type LPPERSISTMEDIAPROPERTYBAG as IPersistMediaPropertyBag ptr
-extern IID_IPersistMediaPropertyBag as const IID
-
-type IPersistMediaPropertyBagVtbl
-	QueryInterface as function(byval This as IPersistMediaPropertyBag ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IPersistMediaPropertyBag ptr) as ULONG
-	Release as function(byval This as IPersistMediaPropertyBag ptr) as ULONG
-	GetClassID as function(byval This as IPersistMediaPropertyBag ptr, byval pClassID as CLSID ptr) as HRESULT
-	InitNew as function(byval This as IPersistMediaPropertyBag ptr) as HRESULT
-	Load as function(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
-	Save as function(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
-end type
-
-type IPersistMediaPropertyBag_
-	lpVtbl as IPersistMediaPropertyBagVtbl ptr
-end type
-
-#define IPersistMediaPropertyBag_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IPersistMediaPropertyBag_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IPersistMediaPropertyBag_Release(This) (This)->lpVtbl->Release(This)
-#define IPersistMediaPropertyBag_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
-#define IPersistMediaPropertyBag_InitNew(This) (This)->lpVtbl->InitNew(This)
-#define IPersistMediaPropertyBag_Load(This, pPropBag, pErrorLog) (This)->lpVtbl->Load(This, pPropBag, pErrorLog)
-#define IPersistMediaPropertyBag_Save(This, pPropBag, fClearDirty, fSaveAllProperties) (This)->lpVtbl->Save(This, pPropBag, fClearDirty, fSaveAllProperties)
-
-declare function IPersistMediaPropertyBag_InitNew_Proxy(byval This as IPersistMediaPropertyBag ptr) as HRESULT
-declare sub IPersistMediaPropertyBag_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPersistMediaPropertyBag_Load_Proxy(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
-declare sub IPersistMediaPropertyBag_Load_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IPersistMediaPropertyBag_Save_Proxy(byval This as IPersistMediaPropertyBag ptr, byval pPropBag as IMediaPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
-declare sub IPersistMediaPropertyBag_Save_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IAMPhysicalPinInfo_INTERFACE_DEFINED__
 extern IID_IAMPhysicalPinInfo as const IID
 type IAMPhysicalPinInfo as IAMPhysicalPinInfo_
@@ -4754,32 +4893,6 @@ end type
 #define IRegisterServiceProvider_RegisterService(This, guidService, pUnkObject) (This)->lpVtbl->RegisterService(This, guidService, pUnkObject)
 declare function IRegisterServiceProvider_RegisterService_Proxy(byval This as IRegisterServiceProvider ptr, byval guidService as const GUID const ptr, byval pUnkObject as IUnknown ptr) as HRESULT
 declare sub IRegisterServiceProvider_RegisterService_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-#define __IAMClockSlave_INTERFACE_DEFINED__
-extern IID_IAMClockSlave as const IID
-type IAMClockSlave as IAMClockSlave_
-
-type IAMClockSlaveVtbl
-	QueryInterface as function(byval This as IAMClockSlave ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IAMClockSlave ptr) as ULONG
-	Release as function(byval This as IAMClockSlave ptr) as ULONG
-	SetErrorTolerance as function(byval This as IAMClockSlave ptr, byval dwTolerance as DWORD) as HRESULT
-	GetErrorTolerance as function(byval This as IAMClockSlave ptr, byval pdwTolerance as DWORD ptr) as HRESULT
-end type
-
-type IAMClockSlave_
-	lpVtbl as IAMClockSlaveVtbl ptr
-end type
-
-#define IAMClockSlave_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IAMClockSlave_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IAMClockSlave_Release(This) (This)->lpVtbl->Release(This)
-#define IAMClockSlave_SetErrorTolerance(This, dwTolerance) (This)->lpVtbl->SetErrorTolerance(This, dwTolerance)
-#define IAMClockSlave_GetErrorTolerance(This, pdwTolerance) (This)->lpVtbl->GetErrorTolerance(This, pdwTolerance)
-
-declare function IAMClockSlave_SetErrorTolerance_Proxy(byval This as IAMClockSlave ptr, byval dwTolerance as DWORD) as HRESULT
-declare sub IAMClockSlave_SetErrorTolerance_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMClockSlave_GetErrorTolerance_Proxy(byval This as IAMClockSlave ptr, byval pdwTolerance as DWORD ptr) as HRESULT
-declare sub IAMClockSlave_GetErrorTolerance_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 type CodecAPIEventData
 	guid as GUID
@@ -5009,79 +5122,6 @@ end type
 #define IAMDecoderCaps_GetDecoderCaps(This, dwCapIndex, lpdwCap) (This)->lpVtbl->GetDecoderCaps(This, dwCapIndex, lpdwCap)
 declare function IAMDecoderCaps_GetDecoderCaps_Proxy(byval This as IAMDecoderCaps ptr, byval dwCapIndex as DWORD, byval lpdwCap as DWORD ptr) as HRESULT
 declare sub IAMDecoderCaps_GetDecoderCaps_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
-type _AMCOPPSignature
-	Signature(0 to 255) as UBYTE
-end type
-
-type AMCOPPSignature as _AMCOPPSignature
-
-type _AMCOPPCommand
-	macKDI as GUID
-	guidCommandID as GUID
-	dwSequence as DWORD
-	cbSizeData as DWORD
-	CommandData(0 to 4055) as UBYTE
-end type
-
-type AMCOPPCommand as _AMCOPPCommand
-type LPAMCOPPCommand as _AMCOPPCommand ptr
-
-type _AMCOPPStatusInput
-	rApp as GUID
-	guidStatusRequestID as GUID
-	dwSequence as DWORD
-	cbSizeData as DWORD
-	StatusData(0 to 4055) as UBYTE
-end type
-
-type AMCOPPStatusInput as _AMCOPPStatusInput
-type LPAMCOPPStatusInput as _AMCOPPStatusInput ptr
-
-type _AMCOPPStatusOutput
-	macKDI as GUID
-	cbSizeData as DWORD
-	COPPStatus(0 to 4075) as UBYTE
-end type
-
-type AMCOPPStatusOutput as _AMCOPPStatusOutput
-type LPAMCOPPStatusOutput as _AMCOPPStatusOutput ptr
-extern __MIDL_itf_strmif_0375_v0_0_c_ifspec as RPC_IF_HANDLE
-extern __MIDL_itf_strmif_0375_v0_0_s_ifspec as RPC_IF_HANDLE
-#define __IAMCertifiedOutputProtection_INTERFACE_DEFINED__
-extern IID_IAMCertifiedOutputProtection as const IID
-type IAMCertifiedOutputProtection as IAMCertifiedOutputProtection_
-
-type IAMCertifiedOutputProtectionVtbl
-	QueryInterface as function(byval This as IAMCertifiedOutputProtection ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
-	AddRef as function(byval This as IAMCertifiedOutputProtection ptr) as ULONG
-	Release as function(byval This as IAMCertifiedOutputProtection ptr) as ULONG
-	KeyExchange as function(byval This as IAMCertifiedOutputProtection ptr, byval pRandom as GUID ptr, byval VarLenCertGH as UBYTE ptr ptr, byval pdwLengthCertGH as DWORD ptr) as HRESULT
-	SessionSequenceStart as function(byval This as IAMCertifiedOutputProtection ptr, byval pSig as AMCOPPSignature ptr) as HRESULT
-	ProtectionCommand as function(byval This as IAMCertifiedOutputProtection ptr, byval cmd as const AMCOPPCommand ptr) as HRESULT
-	ProtectionStatus as function(byval This as IAMCertifiedOutputProtection ptr, byval pStatusInput as const AMCOPPStatusInput ptr, byval pStatusOutput as AMCOPPStatusOutput ptr) as HRESULT
-end type
-
-type IAMCertifiedOutputProtection_
-	lpVtbl as IAMCertifiedOutputProtectionVtbl ptr
-end type
-
-#define IAMCertifiedOutputProtection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
-#define IAMCertifiedOutputProtection_AddRef(This) (This)->lpVtbl->AddRef(This)
-#define IAMCertifiedOutputProtection_Release(This) (This)->lpVtbl->Release(This)
-#define IAMCertifiedOutputProtection_KeyExchange(This, pRandom, VarLenCertGH, pdwLengthCertGH) (This)->lpVtbl->KeyExchange(This, pRandom, VarLenCertGH, pdwLengthCertGH)
-#define IAMCertifiedOutputProtection_SessionSequenceStart(This, pSig) (This)->lpVtbl->SessionSequenceStart(This, pSig)
-#define IAMCertifiedOutputProtection_ProtectionCommand(This, cmd) (This)->lpVtbl->ProtectionCommand(This, cmd)
-#define IAMCertifiedOutputProtection_ProtectionStatus(This, pStatusInput, pStatusOutput) (This)->lpVtbl->ProtectionStatus(This, pStatusInput, pStatusOutput)
-
-declare function IAMCertifiedOutputProtection_KeyExchange_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pRandom as GUID ptr, byval VarLenCertGH as UBYTE ptr ptr, byval pdwLengthCertGH as DWORD ptr) as HRESULT
-declare sub IAMCertifiedOutputProtection_KeyExchange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCertifiedOutputProtection_SessionSequenceStart_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pSig as AMCOPPSignature ptr) as HRESULT
-declare sub IAMCertifiedOutputProtection_SessionSequenceStart_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCertifiedOutputProtection_ProtectionCommand_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval cmd as const AMCOPPCommand ptr) as HRESULT
-declare sub IAMCertifiedOutputProtection_ProtectionCommand_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IAMCertifiedOutputProtection_ProtectionStatus_Proxy(byval This as IAMCertifiedOutputProtection ptr, byval pStatusInput as const AMCOPPStatusInput ptr, byval pStatusOutput as AMCOPPStatusOutput ptr) as HRESULT
-declare sub IAMCertifiedOutputProtection_ProtectionStatus_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
 type tagDVD_DOMAIN as long
 enum

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -53,7 +53,7 @@ end type
 
 type OCPFIPARAMS as tagOCPFIPARAMS
 type LPOCPFIPARAMS as tagOCPFIPARAMS ptr
-#define FONTSIZE(n) (n##0000, 0)
+#define FONTSIZE_(n) (n##0000, 0)
 
 type tagFONTDESC
 	cbSizeofstruct as UINT

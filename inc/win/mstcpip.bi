@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -31,6 +31,7 @@ end type
 const RCVALL_OFF = 0
 const RCVALL_ON = 1
 const RCVALL_SOCKETLEVELONLY = 2
+const RCVALL_IPLEVEL = 3
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
 	type _SOCKET_SECURITY_PROTOCOL as long

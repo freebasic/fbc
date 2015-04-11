@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -12,12 +12,6 @@ const ISSP_LEVEL = 32
 const ISSP_MODE = 1
 type SEC_WCHAR as wstring
 type SEC_CHAR as zstring
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	type SECURITY_STATUS as LONG
-	#define __SECSTATUS_DEFINED__
-#endif
-
 #define SEC_TEXT __TEXT
 
 #ifdef UNICODE

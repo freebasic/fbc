@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -45,22 +45,41 @@ type D3DCOLOR as DWORD
 type LPD3DCOLOR as DWORD ptr
 #define D3DCOLOR_DEFINED
 
-type _D3DVECTOR
-	union
-		x as D3DVALUE
-		dvX as D3DVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DVECTOR
+		union
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
 
-	union
-		y as D3DVALUE
-		dvY as D3DVALUE
-	end union
+		union
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
 
-	union
-		z as D3DVALUE
-		dvZ as D3DVALUE
-	end union
-end type
+		union
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DVECTOR field = 4
+		union field = 4
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
+
+		union field = 4
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
+
+		union field = 4
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DVECTOR as _D3DVECTOR
 type LPD3DVECTOR as _D3DVECTOR ptr
@@ -73,274 +92,536 @@ type LPD3DTEXTUREHANDLE as DWORD ptr
 type D3DMATRIXHANDLE as DWORD
 type LPD3DMATRIXHANDLE as DWORD ptr
 
-type _D3DCOLORVALUE
-	union
-		r as D3DVALUE
-		dvR as D3DVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DCOLORVALUE
+		union
+			r as D3DVALUE
+			dvR as D3DVALUE
+		end union
 
-	union
-		g as D3DVALUE
-		dvG as D3DVALUE
-	end union
+		union
+			g as D3DVALUE
+			dvG as D3DVALUE
+		end union
 
-	union
-		b as D3DVALUE
-		dvB as D3DVALUE
-	end union
+		union
+			b as D3DVALUE
+			dvB as D3DVALUE
+		end union
 
-	union
-		a as D3DVALUE
-		dvA as D3DVALUE
-	end union
-end type
+		union
+			a as D3DVALUE
+			dvA as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DCOLORVALUE field = 4
+		union field = 4
+			r as D3DVALUE
+			dvR as D3DVALUE
+		end union
+
+		union field = 4
+			g as D3DVALUE
+			dvG as D3DVALUE
+		end union
+
+		union field = 4
+			b as D3DVALUE
+			dvB as D3DVALUE
+		end union
+
+		union field = 4
+			a as D3DVALUE
+			dvA as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DCOLORVALUE as _D3DCOLORVALUE
 type LPD3DCOLORVALUE as _D3DCOLORVALUE ptr
 
-type _D3DRECT
-	union
-		x1 as LONG
-		lX1 as LONG
-	end union
+#ifdef __FB_64BIT__
+	type _D3DRECT
+		union
+			x1 as LONG
+			lX1 as LONG
+		end union
 
-	union
-		y1 as LONG
-		lY1 as LONG
-	end union
+		union
+			y1 as LONG
+			lY1 as LONG
+		end union
 
-	union
-		x2 as LONG
-		lX2 as LONG
-	end union
+		union
+			x2 as LONG
+			lX2 as LONG
+		end union
 
-	union
-		y2 as LONG
-		lY2 as LONG
-	end union
-end type
+		union
+			y2 as LONG
+			lY2 as LONG
+		end union
+	end type
+#else
+	type _D3DRECT field = 4
+		union field = 4
+			x1 as LONG
+			lX1 as LONG
+		end union
+
+		union field = 4
+			y1 as LONG
+			lY1 as LONG
+		end union
+
+		union field = 4
+			x2 as LONG
+			lX2 as LONG
+		end union
+
+		union field = 4
+			y2 as LONG
+			lY2 as LONG
+		end union
+	end type
+#endif
 
 type D3DRECT as _D3DRECT
 type LPD3DRECT as _D3DRECT ptr
 
-type _D3DHVERTEX
-	dwFlags as DWORD
+#ifdef __FB_64BIT__
+	type _D3DHVERTEX
+		dwFlags as DWORD
 
-	union
-		hx as D3DVALUE
-		dvHX as D3DVALUE
-	end union
+		union
+			hx as D3DVALUE
+			dvHX as D3DVALUE
+		end union
 
-	union
-		hy as D3DVALUE
-		dvHY as D3DVALUE
-	end union
+		union
+			hy as D3DVALUE
+			dvHY as D3DVALUE
+		end union
 
-	union
-		hz as D3DVALUE
-		dvHZ as D3DVALUE
-	end union
-end type
+		union
+			hz as D3DVALUE
+			dvHZ as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DHVERTEX field = 4
+		dwFlags as DWORD
+
+		union field = 4
+			hx as D3DVALUE
+			dvHX as D3DVALUE
+		end union
+
+		union field = 4
+			hy as D3DVALUE
+			dvHY as D3DVALUE
+		end union
+
+		union field = 4
+			hz as D3DVALUE
+			dvHZ as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DHVERTEX as _D3DHVERTEX
 type LPD3DHVERTEX as _D3DHVERTEX ptr
 
-type _D3DTLVERTEX
-	union
-		sx as D3DVALUE
-		dvSX as D3DVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DTLVERTEX
+		union
+			sx as D3DVALUE
+			dvSX as D3DVALUE
+		end union
 
-	union
-		sy as D3DVALUE
-		dvSY as D3DVALUE
-	end union
+		union
+			sy as D3DVALUE
+			dvSY as D3DVALUE
+		end union
 
-	union
-		sz as D3DVALUE
-		dvSZ as D3DVALUE
-	end union
+		union
+			sz as D3DVALUE
+			dvSZ as D3DVALUE
+		end union
 
-	union
-		rhw as D3DVALUE
-		dvRHW as D3DVALUE
-	end union
+		union
+			rhw as D3DVALUE
+			dvRHW as D3DVALUE
+		end union
 
-	union
-		color as D3DCOLOR
-		dcColor as D3DCOLOR
-	end union
+		union
+			color as D3DCOLOR
+			dcColor as D3DCOLOR
+		end union
 
-	union
-		specular as D3DCOLOR
-		dcSpecular as D3DCOLOR
-	end union
+		union
+			specular as D3DCOLOR
+			dcSpecular as D3DCOLOR
+		end union
 
-	union
-		tu as D3DVALUE
-		dvTU as D3DVALUE
-	end union
+		union
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
 
-	union
-		tv as D3DVALUE
-		dvTV as D3DVALUE
-	end union
-end type
+		union
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DTLVERTEX field = 4
+		union field = 4
+			sx as D3DVALUE
+			dvSX as D3DVALUE
+		end union
+
+		union field = 4
+			sy as D3DVALUE
+			dvSY as D3DVALUE
+		end union
+
+		union field = 4
+			sz as D3DVALUE
+			dvSZ as D3DVALUE
+		end union
+
+		union field = 4
+			rhw as D3DVALUE
+			dvRHW as D3DVALUE
+		end union
+
+		union field = 4
+			color as D3DCOLOR
+			dcColor as D3DCOLOR
+		end union
+
+		union field = 4
+			specular as D3DCOLOR
+			dcSpecular as D3DCOLOR
+		end union
+
+		union field = 4
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
+
+		union field = 4
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DTLVERTEX as _D3DTLVERTEX
 type LPD3DTLVERTEX as _D3DTLVERTEX ptr
 
-type _D3DLVERTEX
-	union
-		x as D3DVALUE
-		dvX as D3DVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DLVERTEX
+		union
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
 
-	union
-		y as D3DVALUE
-		dvY as D3DVALUE
-	end union
+		union
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
 
-	union
-		z as D3DVALUE
-		dvZ as D3DVALUE
-	end union
+		union
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
 
-	dwReserved as DWORD
+		dwReserved as DWORD
 
-	union
-		color as D3DCOLOR
-		dcColor as D3DCOLOR
-	end union
+		union
+			color as D3DCOLOR
+			dcColor as D3DCOLOR
+		end union
 
-	union
-		specular as D3DCOLOR
-		dcSpecular as D3DCOLOR
-	end union
+		union
+			specular as D3DCOLOR
+			dcSpecular as D3DCOLOR
+		end union
 
-	union
-		tu as D3DVALUE
-		dvTU as D3DVALUE
-	end union
+		union
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
 
-	union
-		tv as D3DVALUE
-		dvTV as D3DVALUE
-	end union
-end type
+		union
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DLVERTEX field = 4
+		union field = 4
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
+
+		union field = 4
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
+
+		union field = 4
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
+
+		dwReserved as DWORD
+
+		union field = 4
+			color as D3DCOLOR
+			dcColor as D3DCOLOR
+		end union
+
+		union field = 4
+			specular as D3DCOLOR
+			dcSpecular as D3DCOLOR
+		end union
+
+		union field = 4
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
+
+		union field = 4
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DLVERTEX as _D3DLVERTEX
 type LPD3DLVERTEX as _D3DLVERTEX ptr
 
-type _D3DVERTEX
-	union
-		x as D3DVALUE
-		dvX as D3DVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DVERTEX
+		union
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
 
-	union
-		y as D3DVALUE
-		dvY as D3DVALUE
-	end union
+		union
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
 
-	union
-		z as D3DVALUE
-		dvZ as D3DVALUE
-	end union
+		union
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
 
-	union
-		nx as D3DVALUE
-		dvNX as D3DVALUE
-	end union
+		union
+			nx as D3DVALUE
+			dvNX as D3DVALUE
+		end union
 
-	union
-		ny as D3DVALUE
-		dvNY as D3DVALUE
-	end union
+		union
+			ny as D3DVALUE
+			dvNY as D3DVALUE
+		end union
 
-	union
-		nz as D3DVALUE
-		dvNZ as D3DVALUE
-	end union
+		union
+			nz as D3DVALUE
+			dvNZ as D3DVALUE
+		end union
 
-	union
-		tu as D3DVALUE
-		dvTU as D3DVALUE
-	end union
+		union
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
 
-	union
-		tv as D3DVALUE
-		dvTV as D3DVALUE
-	end union
-end type
+		union
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DVERTEX field = 4
+		union field = 4
+			x as D3DVALUE
+			dvX as D3DVALUE
+		end union
+
+		union field = 4
+			y as D3DVALUE
+			dvY as D3DVALUE
+		end union
+
+		union field = 4
+			z as D3DVALUE
+			dvZ as D3DVALUE
+		end union
+
+		union field = 4
+			nx as D3DVALUE
+			dvNX as D3DVALUE
+		end union
+
+		union field = 4
+			ny as D3DVALUE
+			dvNY as D3DVALUE
+		end union
+
+		union field = 4
+			nz as D3DVALUE
+			dvNZ as D3DVALUE
+		end union
+
+		union field = 4
+			tu as D3DVALUE
+			dvTU as D3DVALUE
+		end union
+
+		union field = 4
+			tv as D3DVALUE
+			dvTV as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DVERTEX as _D3DVERTEX
 type LPD3DVERTEX as _D3DVERTEX ptr
 
-type _D3DMATRIX
-	_11 as D3DVALUE
-	_12 as D3DVALUE
-	_13 as D3DVALUE
-	_14 as D3DVALUE
-	_21 as D3DVALUE
-	_22 as D3DVALUE
-	_23 as D3DVALUE
-	_24 as D3DVALUE
-	_31 as D3DVALUE
-	_32 as D3DVALUE
-	_33 as D3DVALUE
-	_34 as D3DVALUE
-	_41 as D3DVALUE
-	_42 as D3DVALUE
-	_43 as D3DVALUE
-	_44 as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DMATRIX
+		_11 as D3DVALUE
+		_12 as D3DVALUE
+		_13 as D3DVALUE
+		_14 as D3DVALUE
+		_21 as D3DVALUE
+		_22 as D3DVALUE
+		_23 as D3DVALUE
+		_24 as D3DVALUE
+		_31 as D3DVALUE
+		_32 as D3DVALUE
+		_33 as D3DVALUE
+		_34 as D3DVALUE
+		_41 as D3DVALUE
+		_42 as D3DVALUE
+		_43 as D3DVALUE
+		_44 as D3DVALUE
+	end type
+#else
+	type _D3DMATRIX field = 4
+		_11 as D3DVALUE
+		_12 as D3DVALUE
+		_13 as D3DVALUE
+		_14 as D3DVALUE
+		_21 as D3DVALUE
+		_22 as D3DVALUE
+		_23 as D3DVALUE
+		_24 as D3DVALUE
+		_31 as D3DVALUE
+		_32 as D3DVALUE
+		_33 as D3DVALUE
+		_34 as D3DVALUE
+		_41 as D3DVALUE
+		_42 as D3DVALUE
+		_43 as D3DVALUE
+		_44 as D3DVALUE
+	end type
+#endif
 
 type D3DMATRIX as _D3DMATRIX
 type LPD3DMATRIX as _D3DMATRIX ptr
 
-type _D3DVIEWPORT
-	dwSize as DWORD
-	dwX as DWORD
-	dwY as DWORD
-	dwWidth as DWORD
-	dwHeight as DWORD
-	dvScaleX as D3DVALUE
-	dvScaleY as D3DVALUE
-	dvMaxX as D3DVALUE
-	dvMaxY as D3DVALUE
-	dvMinZ as D3DVALUE
-	dvMaxZ as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DVIEWPORT
+		dwSize as DWORD
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvScaleX as D3DVALUE
+		dvScaleY as D3DVALUE
+		dvMaxX as D3DVALUE
+		dvMaxY as D3DVALUE
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#else
+	type _D3DVIEWPORT field = 4
+		dwSize as DWORD
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvScaleX as D3DVALUE
+		dvScaleY as D3DVALUE
+		dvMaxX as D3DVALUE
+		dvMaxY as D3DVALUE
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#endif
 
 type D3DVIEWPORT as _D3DVIEWPORT
 type LPD3DVIEWPORT as _D3DVIEWPORT ptr
 
-type _D3DVIEWPORT2
-	dwSize as DWORD
-	dwX as DWORD
-	dwY as DWORD
-	dwWidth as DWORD
-	dwHeight as DWORD
-	dvClipX as D3DVALUE
-	dvClipY as D3DVALUE
-	dvClipWidth as D3DVALUE
-	dvClipHeight as D3DVALUE
-	dvMinZ as D3DVALUE
-	dvMaxZ as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DVIEWPORT2
+		dwSize as DWORD
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvClipX as D3DVALUE
+		dvClipY as D3DVALUE
+		dvClipWidth as D3DVALUE
+		dvClipHeight as D3DVALUE
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#else
+	type _D3DVIEWPORT2 field = 4
+		dwSize as DWORD
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvClipX as D3DVALUE
+		dvClipY as D3DVALUE
+		dvClipWidth as D3DVALUE
+		dvClipHeight as D3DVALUE
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#endif
 
 type D3DVIEWPORT2 as _D3DVIEWPORT2
 type LPD3DVIEWPORT2 as _D3DVIEWPORT2 ptr
 
-type _D3DVIEWPORT7
-	dwX as DWORD
-	dwY as DWORD
-	dwWidth as DWORD
-	dwHeight as DWORD
-	dvMinZ as D3DVALUE
-	dvMaxZ as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DVIEWPORT7
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#else
+	type _D3DVIEWPORT7 field = 4
+		dwX as DWORD
+		dwY as DWORD
+		dwWidth as DWORD
+		dwHeight as DWORD
+		dvMinZ as D3DVALUE
+		dvMaxZ as D3DVALUE
+	end type
+#endif
 
 type D3DVIEWPORT7 as _D3DVIEWPORT7
 type LPD3DVIEWPORT7 as _D3DVIEWPORT7 ptr
@@ -394,91 +675,176 @@ const D3DSTATUS_ZNOTVISIBLE = &h01000000
 const D3DTRANSFORM_CLIPPED = &h00000001
 const D3DTRANSFORM_UNCLIPPED = &h00000002
 
-type _D3DTRANSFORMDATA
-	dwSize as DWORD
-	lpIn as any ptr
-	dwInSize as DWORD
-	lpOut as any ptr
-	dwOutSize as DWORD
-	lpHOut as D3DHVERTEX ptr
-	dwClip as DWORD
-	dwClipIntersection as DWORD
-	dwClipUnion as DWORD
-	drExtent as D3DRECT
-end type
+#ifdef __FB_64BIT__
+	type _D3DTRANSFORMDATA
+		dwSize as DWORD
+		lpIn as any ptr
+		dwInSize as DWORD
+		lpOut as any ptr
+		dwOutSize as DWORD
+		lpHOut as D3DHVERTEX ptr
+		dwClip as DWORD
+		dwClipIntersection as DWORD
+		dwClipUnion as DWORD
+		drExtent as D3DRECT
+	end type
+#else
+	type _D3DTRANSFORMDATA field = 4
+		dwSize as DWORD
+		lpIn as any ptr
+		dwInSize as DWORD
+		lpOut as any ptr
+		dwOutSize as DWORD
+		lpHOut as D3DHVERTEX ptr
+		dwClip as DWORD
+		dwClipIntersection as DWORD
+		dwClipUnion as DWORD
+		drExtent as D3DRECT
+	end type
+#endif
 
 type D3DTRANSFORMDATA as _D3DTRANSFORMDATA
 type LPD3DTRANSFORMDATA as _D3DTRANSFORMDATA ptr
 
-type _D3DLIGHTINGELEMENT
-	dvPosition as D3DVECTOR
-	dvNormal as D3DVECTOR
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHTINGELEMENT
+		dvPosition as D3DVECTOR
+		dvNormal as D3DVECTOR
+	end type
+#else
+	type _D3DLIGHTINGELEMENT field = 4
+		dvPosition as D3DVECTOR
+		dvNormal as D3DVECTOR
+	end type
+#endif
 
 type D3DLIGHTINGELEMENT as _D3DLIGHTINGELEMENT
 type LPD3DLIGHTINGELEMENT as _D3DLIGHTINGELEMENT ptr
 
-type _D3DMATERIAL
-	dwSize as DWORD
+#ifdef __FB_64BIT__
+	type _D3DMATERIAL
+		dwSize as DWORD
 
-	union
-		diffuse as D3DCOLORVALUE
-		dcvDiffuse as D3DCOLORVALUE
-	end union
+		union
+			diffuse as D3DCOLORVALUE
+			dcvDiffuse as D3DCOLORVALUE
+		end union
 
-	union
-		ambient as D3DCOLORVALUE
-		dcvAmbient as D3DCOLORVALUE
-	end union
+		union
+			ambient as D3DCOLORVALUE
+			dcvAmbient as D3DCOLORVALUE
+		end union
 
-	union
-		specular as D3DCOLORVALUE
-		dcvSpecular as D3DCOLORVALUE
-	end union
+		union
+			specular as D3DCOLORVALUE
+			dcvSpecular as D3DCOLORVALUE
+		end union
 
-	union
-		emissive as D3DCOLORVALUE
-		dcvEmissive as D3DCOLORVALUE
-	end union
+		union
+			emissive as D3DCOLORVALUE
+			dcvEmissive as D3DCOLORVALUE
+		end union
 
-	union
-		power as D3DVALUE
-		dvPower as D3DVALUE
-	end union
+		union
+			power as D3DVALUE
+			dvPower as D3DVALUE
+		end union
 
-	hTexture as D3DTEXTUREHANDLE
-	dwRampSize as DWORD
-end type
+		hTexture as D3DTEXTUREHANDLE
+		dwRampSize as DWORD
+	end type
+#else
+	type _D3DMATERIAL field = 4
+		dwSize as DWORD
+
+		union field = 4
+			diffuse as D3DCOLORVALUE
+			dcvDiffuse as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			ambient as D3DCOLORVALUE
+			dcvAmbient as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			specular as D3DCOLORVALUE
+			dcvSpecular as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			emissive as D3DCOLORVALUE
+			dcvEmissive as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			power as D3DVALUE
+			dvPower as D3DVALUE
+		end union
+
+		hTexture as D3DTEXTUREHANDLE
+		dwRampSize as DWORD
+	end type
+#endif
 
 type D3DMATERIAL as _D3DMATERIAL
 type LPD3DMATERIAL as _D3DMATERIAL ptr
 
-type _D3DMATERIAL7
-	union
-		diffuse as D3DCOLORVALUE
-		dcvDiffuse as D3DCOLORVALUE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DMATERIAL7
+		union
+			diffuse as D3DCOLORVALUE
+			dcvDiffuse as D3DCOLORVALUE
+		end union
 
-	union
-		ambient as D3DCOLORVALUE
-		dcvAmbient as D3DCOLORVALUE
-	end union
+		union
+			ambient as D3DCOLORVALUE
+			dcvAmbient as D3DCOLORVALUE
+		end union
 
-	union
-		specular as D3DCOLORVALUE
-		dcvSpecular as D3DCOLORVALUE
-	end union
+		union
+			specular as D3DCOLORVALUE
+			dcvSpecular as D3DCOLORVALUE
+		end union
 
-	union
-		emissive as D3DCOLORVALUE
-		dcvEmissive as D3DCOLORVALUE
-	end union
+		union
+			emissive as D3DCOLORVALUE
+			dcvEmissive as D3DCOLORVALUE
+		end union
 
-	union
-		power as D3DVALUE
-		dvPower as D3DVALUE
-	end union
-end type
+		union
+			power as D3DVALUE
+			dvPower as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DMATERIAL7 field = 4
+		union field = 4
+			diffuse as D3DCOLORVALUE
+			dcvDiffuse as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			ambient as D3DCOLORVALUE
+			dcvAmbient as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			specular as D3DCOLORVALUE
+			dcvSpecular as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			emissive as D3DCOLORVALUE
+			dcvEmissive as D3DCOLORVALUE
+		end union
+
+		union field = 4
+			power as D3DVALUE
+			dvPower as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DMATERIAL7 as _D3DMATERIAL7
 type LPD3DMATERIAL7 as _D3DMATERIAL7 ptr
@@ -493,39 +859,74 @@ enum
 	D3DLIGHT_FORCE_DWORD = &h7fffffff
 end enum
 
-type _D3DLIGHT
-	dwSize as DWORD
-	dltType as D3DLIGHTTYPE
-	dcvColor as D3DCOLORVALUE
-	dvPosition as D3DVECTOR
-	dvDirection as D3DVECTOR
-	dvRange as D3DVALUE
-	dvFalloff as D3DVALUE
-	dvAttenuation0 as D3DVALUE
-	dvAttenuation1 as D3DVALUE
-	dvAttenuation2 as D3DVALUE
-	dvTheta as D3DVALUE
-	dvPhi as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHT
+		dwSize as DWORD
+		dltType as D3DLIGHTTYPE
+		dcvColor as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+	end type
+#else
+	type _D3DLIGHT field = 4
+		dwSize as DWORD
+		dltType as D3DLIGHTTYPE
+		dcvColor as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+	end type
+#endif
 
 type D3DLIGHT as _D3DLIGHT
 type LPD3DLIGHT as _D3DLIGHT ptr
 
-type _D3DLIGHT7
-	dltType as D3DLIGHTTYPE
-	dcvDiffuse as D3DCOLORVALUE
-	dcvSpecular as D3DCOLORVALUE
-	dcvAmbient as D3DCOLORVALUE
-	dvPosition as D3DVECTOR
-	dvDirection as D3DVECTOR
-	dvRange as D3DVALUE
-	dvFalloff as D3DVALUE
-	dvAttenuation0 as D3DVALUE
-	dvAttenuation1 as D3DVALUE
-	dvAttenuation2 as D3DVALUE
-	dvTheta as D3DVALUE
-	dvPhi as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHT7
+		dltType as D3DLIGHTTYPE
+		dcvDiffuse as D3DCOLORVALUE
+		dcvSpecular as D3DCOLORVALUE
+		dcvAmbient as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+	end type
+#else
+	type _D3DLIGHT7 field = 4
+		dltType as D3DLIGHTTYPE
+		dcvDiffuse as D3DCOLORVALUE
+		dcvSpecular as D3DCOLORVALUE
+		dcvAmbient as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+	end type
+#endif
 
 type D3DLIGHT7 as _D3DLIGHT7
 type LPD3DLIGHT7 as _D3DLIGHT7 ptr
@@ -534,32 +935,60 @@ const D3DLIGHT_NO_SPECULAR = &h00000002
 #define D3DLIGHT_ALL (D3DLIGHT_ACTIVE or D3DLIGHT_NO_SPECULAR)
 #define D3DLIGHT_RANGE_MAX csng(sqrt(FLT_MAX))
 
-type _D3DLIGHT2
-	dwSize as DWORD
-	dltType as D3DLIGHTTYPE
-	dcvColor as D3DCOLORVALUE
-	dvPosition as D3DVECTOR
-	dvDirection as D3DVECTOR
-	dvRange as D3DVALUE
-	dvFalloff as D3DVALUE
-	dvAttenuation0 as D3DVALUE
-	dvAttenuation1 as D3DVALUE
-	dvAttenuation2 as D3DVALUE
-	dvTheta as D3DVALUE
-	dvPhi as D3DVALUE
-	dwFlags as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHT2
+		dwSize as DWORD
+		dltType as D3DLIGHTTYPE
+		dcvColor as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+		dwFlags as DWORD
+	end type
+#else
+	type _D3DLIGHT2 field = 4
+		dwSize as DWORD
+		dltType as D3DLIGHTTYPE
+		dcvColor as D3DCOLORVALUE
+		dvPosition as D3DVECTOR
+		dvDirection as D3DVECTOR
+		dvRange as D3DVALUE
+		dvFalloff as D3DVALUE
+		dvAttenuation0 as D3DVALUE
+		dvAttenuation1 as D3DVALUE
+		dvAttenuation2 as D3DVALUE
+		dvTheta as D3DVALUE
+		dvPhi as D3DVALUE
+		dwFlags as DWORD
+	end type
+#endif
 
 type D3DLIGHT2 as _D3DLIGHT2
 type LPD3DLIGHT2 as _D3DLIGHT2 ptr
 
-type _D3DLIGHTDATA
-	dwSize as DWORD
-	lpIn as D3DLIGHTINGELEMENT ptr
-	dwInSize as DWORD
-	lpOut as D3DTLVERTEX ptr
-	dwOutSize as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHTDATA
+		dwSize as DWORD
+		lpIn as D3DLIGHTINGELEMENT ptr
+		dwInSize as DWORD
+		lpOut as D3DTLVERTEX ptr
+		dwOutSize as DWORD
+	end type
+#else
+	type _D3DLIGHTDATA field = 4
+		dwSize as DWORD
+		lpIn as D3DLIGHTINGELEMENT ptr
+		dwInSize as DWORD
+		lpOut as D3DTLVERTEX ptr
+		dwOutSize as DWORD
+	end type
+#endif
 
 type D3DLIGHTDATA as _D3DLIGHTDATA
 type LPD3DLIGHTDATA as _D3DLIGHTDATA ptr
@@ -591,29 +1020,53 @@ end enum
 
 type D3DOPCODE as _D3DOPCODE
 
-type _D3DINSTRUCTION
-	bOpcode as UBYTE
-	bSize as UBYTE
-	wCount as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DINSTRUCTION
+		bOpcode as UBYTE
+		bSize as UBYTE
+		wCount as WORD
+	end type
+#else
+	type _D3DINSTRUCTION field = 4
+		bOpcode as UBYTE
+		bSize as UBYTE
+		wCount as WORD
+	end type
+#endif
 
 type D3DINSTRUCTION as _D3DINSTRUCTION
 type LPD3DINSTRUCTION as _D3DINSTRUCTION ptr
 
-type _D3DTEXTURELOAD
-	hDestTexture as D3DTEXTUREHANDLE
-	hSrcTexture as D3DTEXTUREHANDLE
-end type
+#ifdef __FB_64BIT__
+	type _D3DTEXTURELOAD
+		hDestTexture as D3DTEXTUREHANDLE
+		hSrcTexture as D3DTEXTUREHANDLE
+	end type
+#else
+	type _D3DTEXTURELOAD field = 4
+		hDestTexture as D3DTEXTUREHANDLE
+		hSrcTexture as D3DTEXTUREHANDLE
+	end type
+#endif
 
 type D3DTEXTURELOAD as _D3DTEXTURELOAD
 type LPD3DTEXTURELOAD as _D3DTEXTURELOAD ptr
 
-type _D3DPICKRECORD
-	bOpcode as UBYTE
-	bPad as UBYTE
-	dwOffset as DWORD
-	dvZ as D3DVALUE
-end type
+#ifdef __FB_64BIT__
+	type _D3DPICKRECORD
+		bOpcode as UBYTE
+		bPad as UBYTE
+		dwOffset as DWORD
+		dvZ as D3DVALUE
+	end type
+#else
+	type _D3DPICKRECORD field = 4
+		bOpcode as UBYTE
+		bPad as UBYTE
+		dwOffset as DWORD
+		dvZ as D3DVALUE
+	end type
+#endif
 
 type D3DPICKRECORD as _D3DPICKRECORD
 type LPD3DPICKRECORD as _D3DPICKRECORD ptr
@@ -634,10 +1087,17 @@ enum
 	D3DFILL_FORCE_DWORD = &h7fffffff
 end enum
 
-type _D3DLINEPATTERN
-	wRepeatFactor as WORD
-	wLinePattern as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DLINEPATTERN
+		wRepeatFactor as WORD
+		wLinePattern as WORD
+	end type
+#else
+	type _D3DLINEPATTERN field = 4
+		wRepeatFactor as WORD
+		wLinePattern as WORD
+	end type
+#endif
 
 type D3DLINEPATTERN as _D3DLINEPATTERN
 
@@ -958,46 +1418,86 @@ type D3DMATERIALCOLORSOURCE as _D3DMATERIALCOLORSOURCE
 #define D3DWRAPCOORD_3 __MSABI_LONG(&h00000008)
 #define D3DRENDERSTATE_STIPPLEPATTERN(y) (D3DRENDERSTATE_STIPPLEPATTERN00 + (y))
 
-type _D3DSTATE
-	union
-		dtstTransformStateType as D3DTRANSFORMSTATETYPE
-		dlstLightStateType as D3DLIGHTSTATETYPE
-		drstRenderStateType as D3DRENDERSTATETYPE
-	end union
+#ifdef __FB_64BIT__
+	type _D3DSTATE
+		union
+			dtstTransformStateType as D3DTRANSFORMSTATETYPE
+			dlstLightStateType as D3DLIGHTSTATETYPE
+			drstRenderStateType as D3DRENDERSTATETYPE
+		end union
 
-	union
-		dwArg(0 to 0) as DWORD
-		dvArg(0 to 0) as D3DVALUE
-	end union
-end type
+		union
+			dwArg(0 to 0) as DWORD
+			dvArg(0 to 0) as D3DVALUE
+		end union
+	end type
+#else
+	type _D3DSTATE field = 4
+		union field = 4
+			dtstTransformStateType as D3DTRANSFORMSTATETYPE
+			dlstLightStateType as D3DLIGHTSTATETYPE
+			drstRenderStateType as D3DRENDERSTATETYPE
+		end union
+
+		union field = 4
+			dwArg(0 to 0) as DWORD
+			dvArg(0 to 0) as D3DVALUE
+		end union
+	end type
+#endif
 
 type D3DSTATE as _D3DSTATE
 type LPD3DSTATE as _D3DSTATE ptr
 
-type _D3DMATRIXLOAD
-	hDestMatrix as D3DMATRIXHANDLE
-	hSrcMatrix as D3DMATRIXHANDLE
-end type
+#ifdef __FB_64BIT__
+	type _D3DMATRIXLOAD
+		hDestMatrix as D3DMATRIXHANDLE
+		hSrcMatrix as D3DMATRIXHANDLE
+	end type
+#else
+	type _D3DMATRIXLOAD field = 4
+		hDestMatrix as D3DMATRIXHANDLE
+		hSrcMatrix as D3DMATRIXHANDLE
+	end type
+#endif
 
 type D3DMATRIXLOAD as _D3DMATRIXLOAD
 type LPD3DMATRIXLOAD as _D3DMATRIXLOAD ptr
 
-type _D3DMATRIXMULTIPLY
-	hDestMatrix as D3DMATRIXHANDLE
-	hSrcMatrix1 as D3DMATRIXHANDLE
-	hSrcMatrix2 as D3DMATRIXHANDLE
-end type
+#ifdef __FB_64BIT__
+	type _D3DMATRIXMULTIPLY
+		hDestMatrix as D3DMATRIXHANDLE
+		hSrcMatrix1 as D3DMATRIXHANDLE
+		hSrcMatrix2 as D3DMATRIXHANDLE
+	end type
+#else
+	type _D3DMATRIXMULTIPLY field = 4
+		hDestMatrix as D3DMATRIXHANDLE
+		hSrcMatrix1 as D3DMATRIXHANDLE
+		hSrcMatrix2 as D3DMATRIXHANDLE
+	end type
+#endif
 
 type D3DMATRIXMULTIPLY as _D3DMATRIXMULTIPLY
 type LPD3DMATRIXMULTIPLY as _D3DMATRIXMULTIPLY ptr
 
-type _D3DPROCESSVERTICES
-	dwFlags as DWORD
-	wStart as WORD
-	wDest as WORD
-	dwCount as DWORD
-	dwReserved as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DPROCESSVERTICES
+		dwFlags as DWORD
+		wStart as WORD
+		wDest as WORD
+		dwCount as DWORD
+		dwReserved as DWORD
+	end type
+#else
+	type _D3DPROCESSVERTICES field = 4
+		dwFlags as DWORD
+		wStart as WORD
+		wDest as WORD
+		dwCount as DWORD
+		dwReserved as DWORD
+	end type
+#endif
 
 type D3DPROCESSVERTICES as _D3DPROCESSVERTICES
 type LPD3DPROCESSVERTICES as _D3DPROCESSVERTICES ptr
@@ -1122,74 +1622,140 @@ type D3DTEXTUREMIPFILTER as _D3DTEXTUREMIPFILTER
 #define D3DTRIFLAG_EDGEENABLE3 __MSABI_LONG(&h00000400)
 #define D3DTRIFLAG_EDGEENABLETRIANGLE ((D3DTRIFLAG_EDGEENABLE1 or D3DTRIFLAG_EDGEENABLE2) or D3DTRIFLAG_EDGEENABLE3)
 
-type _D3DTRIANGLE
-	union
-		v1 as WORD
-		wV1 as WORD
-	end union
+#ifdef __FB_64BIT__
+	type _D3DTRIANGLE
+		union
+			v1 as WORD
+			wV1 as WORD
+		end union
 
-	union
-		v2 as WORD
-		wV2 as WORD
-	end union
+		union
+			v2 as WORD
+			wV2 as WORD
+		end union
 
-	union
-		v3 as WORD
-		wV3 as WORD
-	end union
+		union
+			v3 as WORD
+			wV3 as WORD
+		end union
 
-	wFlags as WORD
-end type
+		wFlags as WORD
+	end type
+#else
+	type _D3DTRIANGLE field = 4
+		union field = 4
+			v1 as WORD
+			wV1 as WORD
+		end union
+
+		union field = 4
+			v2 as WORD
+			wV2 as WORD
+		end union
+
+		union field = 4
+			v3 as WORD
+			wV3 as WORD
+		end union
+
+		wFlags as WORD
+	end type
+#endif
 
 type D3DTRIANGLE as _D3DTRIANGLE
 type LPD3DTRIANGLE as _D3DTRIANGLE ptr
 
-type _D3DLINE
-	union
-		v1 as WORD
-		wV1 as WORD
-	end union
+#ifdef __FB_64BIT__
+	type _D3DLINE
+		union
+			v1 as WORD
+			wV1 as WORD
+		end union
 
-	union
-		v2 as WORD
-		wV2 as WORD
-	end union
-end type
+		union
+			v2 as WORD
+			wV2 as WORD
+		end union
+	end type
+#else
+	type _D3DLINE field = 4
+		union field = 4
+			v1 as WORD
+			wV1 as WORD
+		end union
+
+		union field = 4
+			v2 as WORD
+			wV2 as WORD
+		end union
+	end type
+#endif
 
 type D3DLINE as _D3DLINE
 type LPD3DLINE as _D3DLINE ptr
 
-type _D3DSPAN
-	wCount as WORD
-	wFirst as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DSPAN
+		wCount as WORD
+		wFirst as WORD
+	end type
+#else
+	type _D3DSPAN field = 4
+		wCount as WORD
+		wFirst as WORD
+	end type
+#endif
 
 type D3DSPAN as _D3DSPAN
 type LPD3DSPAN as _D3DSPAN ptr
 
-type _D3DPOINT
-	wCount as WORD
-	wFirst as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DPOINT
+		wCount as WORD
+		wFirst as WORD
+	end type
+#else
+	type _D3DPOINT field = 4
+		wCount as WORD
+		wFirst as WORD
+	end type
+#endif
 
 type D3DPOINT as _D3DPOINT
 type LPD3DPOINT as _D3DPOINT ptr
 
-type _D3DBRANCH
-	dwMask as DWORD
-	dwValue as DWORD
-	bNegate as WINBOOL
-	dwOffset as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DBRANCH
+		dwMask as DWORD
+		dwValue as DWORD
+		bNegate as WINBOOL
+		dwOffset as DWORD
+	end type
+#else
+	type _D3DBRANCH field = 4
+		dwMask as DWORD
+		dwValue as DWORD
+		bNegate as WINBOOL
+		dwOffset as DWORD
+	end type
+#endif
 
 type D3DBRANCH as _D3DBRANCH
 type LPD3DBRANCH as _D3DBRANCH ptr
 
-type _D3DSTATUS
-	dwFlags as DWORD
-	dwStatus as DWORD
-	drExtent as D3DRECT
-end type
+#ifdef __FB_64BIT__
+	type _D3DSTATUS
+		dwFlags as DWORD
+		dwStatus as DWORD
+		drExtent as D3DRECT
+	end type
+#else
+	type _D3DSTATUS field = 4
+		dwFlags as DWORD
+		dwStatus as DWORD
+		drExtent as D3DRECT
+	end type
+#endif
 
 type D3DSTATUS as _D3DSTATUS
 type LPD3DSTATUS as _D3DSTATUS ptr
@@ -1197,16 +1763,29 @@ type LPD3DSTATUS as _D3DSTATUS ptr
 #define D3DSETSTATUS_EXTENTS __MSABI_LONG(&h00000002)
 #define D3DSETSTATUS_ALL (D3DSETSTATUS_STATUS or D3DSETSTATUS_EXTENTS)
 
-type _D3DCLIPSTATUS
-	dwFlags as DWORD
-	dwStatus as DWORD
-	minx as single
-	maxx as single
-	miny as single
-	maxy as single
-	minz as single
-	maxz as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DCLIPSTATUS
+		dwFlags as DWORD
+		dwStatus as DWORD
+		minx as single
+		maxx as single
+		miny as single
+		maxy as single
+		minz as single
+		maxz as single
+	end type
+#else
+	type _D3DCLIPSTATUS field = 4
+		dwFlags as DWORD
+		dwStatus as DWORD
+		minx as single
+		maxx as single
+		miny as single
+		maxy as single
+		minz as single
+		maxz as single
+	end type
+#endif
 
 type D3DCLIPSTATUS as _D3DCLIPSTATUS
 type LPD3DCLIPSTATUS as _D3DCLIPSTATUS ptr
@@ -1214,28 +1793,51 @@ type LPD3DCLIPSTATUS as _D3DCLIPSTATUS ptr
 #define D3DCLIPSTATUS_EXTENTS2 __MSABI_LONG(&h00000002)
 #define D3DCLIPSTATUS_EXTENTS3 __MSABI_LONG(&h00000004)
 
-type D3DSTATS
-	dwSize as DWORD
-	dwTrianglesDrawn as DWORD
-	dwLinesDrawn as DWORD
-	dwPointsDrawn as DWORD
-	dwSpansDrawn as DWORD
-	dwVerticesProcessed as DWORD
-end type
+#ifdef __FB_64BIT__
+	type D3DSTATS
+		dwSize as DWORD
+		dwTrianglesDrawn as DWORD
+		dwLinesDrawn as DWORD
+		dwPointsDrawn as DWORD
+		dwSpansDrawn as DWORD
+		dwVerticesProcessed as DWORD
+	end type
+#else
+	type D3DSTATS field = 4
+		dwSize as DWORD
+		dwTrianglesDrawn as DWORD
+		dwLinesDrawn as DWORD
+		dwPointsDrawn as DWORD
+		dwSpansDrawn as DWORD
+		dwVerticesProcessed as DWORD
+	end type
+#endif
 
 type LPD3DSTATS as D3DSTATS ptr
 #define D3DEXECUTE_CLIPPED __MSABI_LONG(&h00000001)
 #define D3DEXECUTE_UNCLIPPED __MSABI_LONG(&h00000002)
 
-type _D3DEXECUTEDATA
-	dwSize as DWORD
-	dwVertexOffset as DWORD
-	dwVertexCount as DWORD
-	dwInstructionOffset as DWORD
-	dwInstructionLength as DWORD
-	dwHVertexOffset as DWORD
-	dsStatus as D3DSTATUS
-end type
+#ifdef __FB_64BIT__
+	type _D3DEXECUTEDATA
+		dwSize as DWORD
+		dwVertexOffset as DWORD
+		dwVertexCount as DWORD
+		dwInstructionOffset as DWORD
+		dwInstructionLength as DWORD
+		dwHVertexOffset as DWORD
+		dsStatus as D3DSTATUS
+	end type
+#else
+	type _D3DEXECUTEDATA field = 4
+		dwSize as DWORD
+		dwVertexOffset as DWORD
+		dwVertexCount as DWORD
+		dwInstructionOffset as DWORD
+		dwInstructionLength as DWORD
+		dwHVertexOffset as DWORD
+		dsStatus as D3DSTATUS
+	end type
+#endif
 
 type D3DEXECUTEDATA as _D3DEXECUTEDATA
 type LPD3DEXECUTEDATA as _D3DEXECUTEDATA ptr
@@ -1243,12 +1845,21 @@ const D3DPAL_FREE = &h00
 const D3DPAL_READONLY = &h40
 const D3DPAL_RESERVED = &h80
 
-type _D3DVERTEXBUFFERDESC
-	dwSize as DWORD
-	dwCaps as DWORD
-	dwFVF as DWORD
-	dwNumVertices as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DVERTEXBUFFERDESC
+		dwSize as DWORD
+		dwCaps as DWORD
+		dwFVF as DWORD
+		dwNumVertices as DWORD
+	end type
+#else
+	type _D3DVERTEXBUFFERDESC field = 4
+		dwSize as DWORD
+		dwCaps as DWORD
+		dwFVF as DWORD
+		dwNumVertices as DWORD
+	end type
+#endif
 
 type D3DVERTEXBUFFERDESC as _D3DVERTEXBUFFERDESC
 type LPD3DVERTEXBUFFERDESC as _D3DVERTEXBUFFERDESC ptr
@@ -1292,21 +1903,38 @@ const D3DFVF_RESERVED2 = &hf000
 #define D3DFVF_LVERTEX ((((D3DFVF_XYZ or D3DFVF_RESERVED1) or D3DFVF_DIFFUSE) or D3DFVF_SPECULAR) or D3DFVF_TEX1)
 #define D3DFVF_TLVERTEX (((D3DFVF_XYZRHW or D3DFVF_DIFFUSE) or D3DFVF_SPECULAR) or D3DFVF_TEX1)
 
-type _D3DDP_PTRSTRIDE
-	lpvData as any ptr
-	dwStride as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDP_PTRSTRIDE
+		lpvData as any ptr
+		dwStride as DWORD
+	end type
+#else
+	type _D3DDP_PTRSTRIDE field = 4
+		lpvData as any ptr
+		dwStride as DWORD
+	end type
+#endif
 
 type D3DDP_PTRSTRIDE as _D3DDP_PTRSTRIDE
 const D3DDP_MAXTEXCOORD = 8
 
-type _D3DDRAWPRIMITIVESTRIDEDDATA
-	position as D3DDP_PTRSTRIDE
-	normal as D3DDP_PTRSTRIDE
-	diffuse as D3DDP_PTRSTRIDE
-	specular as D3DDP_PTRSTRIDE
-	textureCoords(0 to 7) as D3DDP_PTRSTRIDE
-end type
+#ifdef __FB_64BIT__
+	type _D3DDRAWPRIMITIVESTRIDEDDATA
+		position as D3DDP_PTRSTRIDE
+		normal as D3DDP_PTRSTRIDE
+		diffuse as D3DDP_PTRSTRIDE
+		specular as D3DDP_PTRSTRIDE
+		textureCoords(0 to 7) as D3DDP_PTRSTRIDE
+	end type
+#else
+	type _D3DDRAWPRIMITIVESTRIDEDDATA field = 4
+		position as D3DDP_PTRSTRIDE
+		normal as D3DDP_PTRSTRIDE
+		diffuse as D3DDP_PTRSTRIDE
+		specular as D3DDP_PTRSTRIDE
+		textureCoords(0 to 7) as D3DDP_PTRSTRIDE
+	end type
+#endif
 
 type D3DDRAWPRIMITIVESTRIDEDDATA as _D3DDRAWPRIMITIVESTRIDEDDATA
 type LPD3DDRAWPRIMITIVESTRIDEDDATA as _D3DDRAWPRIMITIVESTRIDEDDATA ptr

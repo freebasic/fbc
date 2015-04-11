@@ -1,9 +1,10 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
 #inclib "wsnmp32"
 
+#include once "winapifamily.bi"
 #include once "crt/limits.bi"
 
 extern "Windows"
@@ -67,7 +68,7 @@ type smiLPCNTR64 as smiCNTR64 ptr
 const ASN_UNIVERSAL = &h00
 const ASN_APPLICATION = &h40
 const ASN_CONTEXT = &h80
-const ASN_PRIVATE = &hC0
+const ASN_PRIVATE = &hc0
 const ASN_PRIMITIVE = &h00
 const ASN_CONSTRUCTOR = &h20
 #define SNMP_SYNTAX_SEQUENCE ((ASN_UNIVERSAL or ASN_CONSTRUCTOR) or &h10)
@@ -116,6 +117,8 @@ const MAXOBJIDSTRSIZE = 1408
 #define SNMP_PDU_GETBULK ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h5)
 #define SNMP_PDU_INFORM ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h6)
 #define SNMP_PDU_TRAP ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h7)
+const SNMPLISTEN_USEENTITY_ADDR = 0
+const SNMPLISTEN_ALL_ADDR = 1
 const SNMP_TRAP_COLDSTART = 0
 const SNMP_TRAP_WARMSTART = 1
 const SNMP_TRAP_LINKDOWN = 2
@@ -215,6 +218,7 @@ declare function SnmpRecvMsg(byval session as HSNMP_SESSION, byval srcEntity as 
 declare function SnmpRegister(byval session as HSNMP_SESSION, byval srcEntity as HSNMP_ENTITY, byval dstEntity as HSNMP_ENTITY, byval context as HSNMP_CONTEXT, byval notification as smiLPCOID, byval state as smiUINT32) as SNMPAPI_STATUS
 declare function SnmpCreateSession(byval hWnd as HWND, byval wMsg as UINT, byval fCallBack as SNMPAPI_CALLBACK, byval lpClientData as LPVOID) as HSNMP_SESSION
 declare function SnmpListen(byval hEntity as HSNMP_ENTITY, byval lStatus as SNMPAPI_STATUS) as SNMPAPI_STATUS
+declare function SnmpListenEx(byval hEntity as HSNMP_ENTITY, byval lStatus as SNMPAPI_STATUS, byval nUseEntityAddr as smiUINT32) as SNMPAPI_STATUS
 declare function SnmpCancelMsg(byval session as HSNMP_SESSION, byval reqId as smiINT32) as SNMPAPI_STATUS
 declare function SnmpStartupEx(byval nMajorVersion as smiLPUINT32, byval nMinorVersion as smiLPUINT32, byval nLevel as smiLPUINT32, byval nTranslateMode as smiLPUINT32, byval nRetransmitMode as smiLPUINT32) as SNMPAPI_STATUS
 type PFNSNMPSTARTUPEX as function(byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32, byval as smiLPUINT32) as SNMPAPI_STATUS

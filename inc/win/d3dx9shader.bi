@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -26,7 +26,9 @@ const D3DXSHADER_OPTIMIZATION_LEVEL1 = &h0
 const D3DXSHADER_OPTIMIZATION_LEVEL2 = &hC000
 const D3DXSHADER_OPTIMIZATION_LEVEL3 = &h8000
 const D3DXSHADER_USE_LEGACY_D3DX9_31_DLL = &h10000
+const D3DXCONSTTABLE_LARGEADDRESSAWARE = &h20000
 type D3DXHANDLE as const zstring ptr
+type LPD3DXHANDLE as D3DXHANDLE ptr
 
 type _D3DXREGISTER_SET as long
 enum
@@ -171,6 +173,42 @@ end type
 #define ID3DXConstantTable_SetMatrixTransposeArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixTransposeArray(p, a, b, c, d)
 #define ID3DXConstantTable_SetMatrixTransposePointerArray(p, a, b, c, d) (p)->lpVtbl->SetMatrixTransposePointerArray(p, a, b, c, d)
 type LPD3DXCONSTANTTABLE as ID3DXConstantTable ptr
+type LPD3DXTEXTURESHADER as ID3DXTextureShader ptr
+extern IID_ID3DXTextureShader as const GUID
+type ID3DXTextureShaderVtbl as ID3DXTextureShaderVtbl_
+
+type ID3DXTextureShader
+	lpVtbl as ID3DXTextureShaderVtbl ptr
+end type
+
+type ID3DXTextureShaderVtbl_
+	QueryInterface as function(byval This as ID3DXTextureShader ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ID3DXTextureShader ptr) as ULONG
+	Release as function(byval This as ID3DXTextureShader ptr) as ULONG
+	GetFunction as function(byval This as ID3DXTextureShader ptr, byval ppFunction as ID3DXBuffer ptr ptr) as HRESULT
+	GetConstantBuffer as function(byval This as ID3DXTextureShader ptr, byval ppConstantBuffer as ID3DXBuffer ptr ptr) as HRESULT
+	GetDesc as function(byval This as ID3DXTextureShader ptr, byval pDesc as D3DXCONSTANTTABLE_DESC ptr) as HRESULT
+	GetConstantDesc as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pConstantDesc as D3DXCONSTANT_DESC ptr, byval pCount as UINT ptr) as HRESULT
+	GetConstant as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
+	GetConstantByName as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pName as const zstring ptr) as D3DXHANDLE
+	GetConstantElement as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval Index as UINT) as D3DXHANDLE
+	SetDefaults as function(byval This as ID3DXTextureShader ptr) as HRESULT
+	SetValue as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pData as const any ptr, byval Bytes as UINT) as HRESULT
+	SetBool as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval b as WINBOOL) as HRESULT
+	SetBoolArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pb as const WINBOOL ptr, byval Count as UINT) as HRESULT
+	SetInt as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval n as INT_) as HRESULT
+	SetIntArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pn as const INT_ ptr, byval Count as UINT) as HRESULT
+	SetFloat as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval f as FLOAT) as HRESULT
+	SetFloatArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pf as const FLOAT ptr, byval Count as UINT) as HRESULT
+	SetVector as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pVector as const D3DXVECTOR4 ptr) as HRESULT
+	SetVectorArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pVector as const D3DXVECTOR4 ptr, byval Count as UINT) as HRESULT
+	SetMatrix as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pMatrix as const D3DXMATRIX ptr) as HRESULT
+	SetMatrixArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pMatrix as const D3DXMATRIX ptr, byval Count as UINT) as HRESULT
+	SetMatrixPointerArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval ppMatrix as const D3DXMATRIX ptr ptr, byval Count as UINT) as HRESULT
+	SetMatrixTranspose as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pMatrix as const D3DXMATRIX ptr) as HRESULT
+	SetMatrixTransposeArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval pMatrix as const D3DXMATRIX ptr, byval Count as UINT) as HRESULT
+	SetMatrixTransposePointerArray as function(byval This as ID3DXTextureShader ptr, byval hConstant as D3DXHANDLE, byval ppMatrix as const D3DXMATRIX ptr ptr, byval Count as UINT) as HRESULT
+end type
 
 type _D3DXMACRO
 	Name as const zstring ptr
@@ -237,6 +275,7 @@ declare function D3DXAssembleShaderFromResourceW(byval module as HMODULE, byval 
 
 declare function D3DXAssembleShader(byval data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCompileShader(byval src_data as const zstring ptr, byval data_len as UINT, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval function_name as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXDisassembleShader(byval pShader as const DWORD ptr, byval EnableColorCode as WINBOOL, byval pComments as const zstring ptr, byval ppDisassembly as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCompileShaderFromFileA(byval filename as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 declare function D3DXCompileShaderFromFileW(byval filename as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval entrypoint as const zstring ptr, byval profile as const zstring ptr, byval flags as DWORD, byval shader as ID3DXBuffer ptr ptr, byval error_messages as ID3DXBuffer ptr ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 
@@ -276,6 +315,9 @@ declare function D3DXPreprocessShaderFromResourceW(byval module as HMODULE, byva
 
 declare function D3DXGetShaderConstantTableEx(byval byte_code as const DWORD ptr, byval flags as DWORD, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
 declare function D3DXGetShaderConstantTable(byval byte_code as const DWORD ptr, byval constant_table as ID3DXConstantTable ptr ptr) as HRESULT
+declare function D3DXGetShaderInputSemantics(byval pFunction as const DWORD ptr, byval pSemantics as D3DXSEMANTIC ptr, byval pCount as UINT ptr) as HRESULT
+declare function D3DXGetShaderOutputSemantics(byval pFunction as const DWORD ptr, byval pSemantics as D3DXSEMANTIC ptr, byval pCount as UINT ptr) as HRESULT
+declare function D3DXCreateTextureShader(byval pFunction as const DWORD ptr, byval ppTextureShader as ID3DXTextureShader ptr ptr) as HRESULT
 
 type _D3DXSHADER_CONSTANTTABLE
 	Size as DWORD
