@@ -91,18 +91,20 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 			end if
 
-			'' BYREF AS STRING and expression is a string literal?
-			if( (symbGetType( parser.currproc ) = FB_DATATYPE_STRING) and _
-			    (astGetStrLitSymbol( rhs ) <> NULL) ) then
-				'' Cannot be allowed, since a string literal is not
-				'' an FBSTRING descriptor...
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' Even though we'll only assign a pointer (it's byref afterall),
+			'' check the types as if it was a direct assignment. Advantages:
+			''  * errors instead of warnings
+			''  * nicer error messages such as "type mismatch" instead of
+			''    "suspicious pointer assignment" warnings (which don't make sense
+			''    since the pointer basically is an implementation detail)
+			if( astCheckByrefAssign( parser.currproc->typ, parser.currproc->subtype, rhs ) = FALSE ) then
+				errReport( FB_ERRMSG_TYPEMISMATCHINBYREFRESULTASSIGN )
 				astDelTree( rhs )
-				rhs = NULL
-			else
-				'' Implicit addrof due to BYREF
-				rhs = astNewADDROF( rhs )
+				rhs = astNewCONSTz( parser.currproc->typ, parser.currproc->subtype )
 			end if
+
+			'' Implicit addrof due to BYREF
+			rhs = astNewADDROF( rhs )
 		end if
 	else
 		rhs = cExpression( )
