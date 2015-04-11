@@ -56,7 +56,7 @@
 #   uninstall-includes          which don't need to be built)
 #
 #   gitdist    Create source code packages using "git archive"
-#   bindist    Create binary FB release packages from current built directory content
+#   bindist    Create binary FB release packages from current build directory content
 #   mingw-libs Standalone: Copy libraries from MinGW toolchain into lib/win32/ etc.
 #
 #   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
