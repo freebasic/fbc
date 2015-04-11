@@ -904,6 +904,13 @@ declare function astCheckASSIGNToType _
 		byval r as ASTNODE ptr _
 	) as integer
 
+declare function astCheckByrefAssign _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
 declare function astCheckConvNonPtrToPtr _
 	( _
 		byval to_dtype as integer, _

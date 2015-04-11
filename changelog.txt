@@ -14,6 +14,7 @@ Version 1.02.1
 - bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
 - Windows API binding: DirectX headers missed some declarations and some didn't compile
 - crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
+- #767: Illegal byref result assignments will now cause a proper error message, not just a warning
 
 
 Version 1.02.0
