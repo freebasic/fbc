@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -438,31 +438,31 @@ end enum
 
 type TYSPEC as tagTYSPEC
 
-type __WIDL_wtypes_generated_name_00000000_tagged_union_ByName
+type __WIDL_wtypes_generated_name_00000001_tagged_union_ByName
 	pPackageName as LPOLESTR
 	PolicyId as GUID
 end type
 
-type __WIDL_wtypes_generated_name_00000000_tagged_union_ByObjectId
+type __WIDL_wtypes_generated_name_00000001_tagged_union_ByObjectId
 	ObjectId as GUID
 	PolicyId as GUID
 end type
 
-union __WIDL_wtypes_generated_name_00000000_tagged_union
+union __WIDL_wtypes_generated_name_00000001_tagged_union
 	clsid as CLSID
 	pFileExt as LPOLESTR
 	pMimeType as LPOLESTR
 	pProgId as LPOLESTR
 	pFileName as LPOLESTR
-	ByName as __WIDL_wtypes_generated_name_00000000_tagged_union_ByName
-	ByObjectId as __WIDL_wtypes_generated_name_00000000_tagged_union_ByObjectId
+	ByName as __WIDL_wtypes_generated_name_00000001_tagged_union_ByName
+	ByObjectId as __WIDL_wtypes_generated_name_00000001_tagged_union_ByObjectId
 end union
 
-type __WIDL_wtypes_generated_name_00000000
+type __WIDL_wtypes_generated_name_00000001
 	tyspec as DWORD
-	tagged_union as __WIDL_wtypes_generated_name_00000000_tagged_union
+	tagged_union as __WIDL_wtypes_generated_name_00000001_tagged_union
 end type
 
-type uCLSSPEC as __WIDL_wtypes_generated_name_00000000
+type uCLSSPEC as __WIDL_wtypes_generated_name_00000001
 
 end extern

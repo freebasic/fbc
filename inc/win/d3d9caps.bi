@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -234,95 +234,188 @@ const D3DPS20_MIN_NUMINSTRUCTIONSLOTS = 96
 const D3DMIN30SHADERINSTRUCTIONS = 512
 const D3DMAX30SHADERINSTRUCTIONS = 32768
 
-type _D3DVSHADERCAPS2_0
-	Caps as DWORD
-	DynamicFlowControlDepth as INT_
-	NumTemps as INT_
-	StaticFlowControlDepth as INT_
-end type
+#ifdef __FB_64BIT__
+	type _D3DVSHADERCAPS2_0
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+	end type
+#else
+	type _D3DVSHADERCAPS2_0 field = 4
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+	end type
+#endif
 
 type D3DVSHADERCAPS2_0 as _D3DVSHADERCAPS2_0
 
-type _D3DPSHADERCAPS2_0
-	Caps as DWORD
-	DynamicFlowControlDepth as INT_
-	NumTemps as INT_
-	StaticFlowControlDepth as INT_
-	NumInstructionSlots as INT_
-end type
+#ifdef __FB_64BIT__
+	type _D3DPSHADERCAPS2_0
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+		NumInstructionSlots as INT_
+	end type
+#else
+	type _D3DPSHADERCAPS2_0 field = 4
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+		NumInstructionSlots as INT_
+	end type
+#endif
 
 type D3DPSHADERCAPS2_0 as _D3DPSHADERCAPS2_0
 
-type _D3DCAPS9
-	DeviceType as D3DDEVTYPE
-	AdapterOrdinal as UINT
-	Caps as DWORD
-	Caps2 as DWORD
-	Caps3 as DWORD
-	PresentationIntervals as DWORD
-	CursorCaps as DWORD
-	DevCaps as DWORD
-	PrimitiveMiscCaps as DWORD
-	RasterCaps_ as DWORD
-	ZCmpCaps as DWORD
-	SrcBlendCaps as DWORD
-	DestBlendCaps as DWORD
-	AlphaCmpCaps as DWORD
-	ShadeCaps as DWORD
-	TextureCaps as DWORD
-	TextureFilterCaps as DWORD
-	CubeTextureFilterCaps as DWORD
-	VolumeTextureFilterCaps as DWORD
-	TextureAddressCaps as DWORD
-	VolumeTextureAddressCaps as DWORD
-	LineCaps_ as DWORD
-	MaxTextureWidth as DWORD
-	MaxTextureHeight as DWORD
-	MaxVolumeExtent as DWORD
-	MaxTextureRepeat as DWORD
-	MaxTextureAspectRatio as DWORD
-	MaxAnisotropy as DWORD
-	MaxVertexW as single
-	GuardBandLeft as single
-	GuardBandTop as single
-	GuardBandRight as single
-	GuardBandBottom as single
-	ExtentsAdjust as single
-	StencilCaps as DWORD
-	FVFCaps as DWORD
-	TextureOpCaps as DWORD
-	MaxTextureBlendStages as DWORD
-	MaxSimultaneousTextures as DWORD
-	VertexProcessingCaps as DWORD
-	MaxActiveLights as DWORD
-	MaxUserClipPlanes as DWORD
-	MaxVertexBlendMatrices as DWORD
-	MaxVertexBlendMatrixIndex as DWORD
-	MaxPointSize as single
-	MaxPrimitiveCount as DWORD
-	MaxVertexIndex as DWORD
-	MaxStreams as DWORD
-	MaxStreamStride as DWORD
-	VertexShaderVersion as DWORD
-	MaxVertexShaderConst as DWORD
-	PixelShaderVersion as DWORD
-	PixelShader1xMaxValue as single
-	DevCaps2 as DWORD
-	MaxNpatchTessellationLevel as single
-	Reserved5 as DWORD
-	MasterAdapterOrdinal as UINT
-	AdapterOrdinalInGroup as UINT
-	NumberOfAdaptersInGroup as UINT
-	DeclTypes as DWORD
-	NumSimultaneousRTs as DWORD
-	StretchRectFilterCaps as DWORD
-	VS20Caps as D3DVSHADERCAPS2_0
-	PS20Caps as D3DPSHADERCAPS2_0
-	VertexTextureFilterCaps as DWORD
-	MaxVShaderInstructionsExecuted as DWORD
-	MaxPShaderInstructionsExecuted as DWORD
-	MaxVertexShader30InstructionSlots as DWORD
-	MaxPixelShader30InstructionSlots as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DCAPS9
+		DeviceType as D3DDEVTYPE
+		AdapterOrdinal as UINT
+		Caps as DWORD
+		Caps2 as DWORD
+		Caps3 as DWORD
+		PresentationIntervals as DWORD
+		CursorCaps as DWORD
+		DevCaps as DWORD
+		PrimitiveMiscCaps as DWORD
+		RasterCaps as DWORD
+		ZCmpCaps as DWORD
+		SrcBlendCaps as DWORD
+		DestBlendCaps as DWORD
+		AlphaCmpCaps as DWORD
+		ShadeCaps as DWORD
+		TextureCaps as DWORD
+		TextureFilterCaps as DWORD
+		CubeTextureFilterCaps as DWORD
+		VolumeTextureFilterCaps as DWORD
+		TextureAddressCaps as DWORD
+		VolumeTextureAddressCaps as DWORD
+		LineCaps as DWORD
+		MaxTextureWidth as DWORD
+		MaxTextureHeight as DWORD
+		MaxVolumeExtent as DWORD
+		MaxTextureRepeat as DWORD
+		MaxTextureAspectRatio as DWORD
+		MaxAnisotropy as DWORD
+		MaxVertexW as single
+		GuardBandLeft as single
+		GuardBandTop as single
+		GuardBandRight as single
+		GuardBandBottom as single
+		ExtentsAdjust as single
+		StencilCaps as DWORD
+		FVFCaps as DWORD
+		TextureOpCaps as DWORD
+		MaxTextureBlendStages as DWORD
+		MaxSimultaneousTextures as DWORD
+		VertexProcessingCaps as DWORD
+		MaxActiveLights as DWORD
+		MaxUserClipPlanes as DWORD
+		MaxVertexBlendMatrices as DWORD
+		MaxVertexBlendMatrixIndex as DWORD
+		MaxPointSize as single
+		MaxPrimitiveCount as DWORD
+		MaxVertexIndex as DWORD
+		MaxStreams as DWORD
+		MaxStreamStride as DWORD
+		VertexShaderVersion as DWORD
+		MaxVertexShaderConst as DWORD
+		PixelShaderVersion as DWORD
+		PixelShader1xMaxValue as single
+		DevCaps2 as DWORD
+		MaxNpatchTessellationLevel as single
+		Reserved5 as DWORD
+		MasterAdapterOrdinal as UINT
+		AdapterOrdinalInGroup as UINT
+		NumberOfAdaptersInGroup as UINT
+		DeclTypes as DWORD
+		NumSimultaneousRTs as DWORD
+		StretchRectFilterCaps as DWORD
+		VS20Caps as D3DVSHADERCAPS2_0
+		PS20Caps as D3DPSHADERCAPS2_0
+		VertexTextureFilterCaps as DWORD
+		MaxVShaderInstructionsExecuted as DWORD
+		MaxPShaderInstructionsExecuted as DWORD
+		MaxVertexShader30InstructionSlots as DWORD
+		MaxPixelShader30InstructionSlots as DWORD
+	end type
+#else
+	type _D3DCAPS9 field = 4
+		DeviceType as D3DDEVTYPE
+		AdapterOrdinal as UINT
+		Caps as DWORD
+		Caps2 as DWORD
+		Caps3 as DWORD
+		PresentationIntervals as DWORD
+		CursorCaps as DWORD
+		DevCaps as DWORD
+		PrimitiveMiscCaps as DWORD
+		RasterCaps as DWORD
+		ZCmpCaps as DWORD
+		SrcBlendCaps as DWORD
+		DestBlendCaps as DWORD
+		AlphaCmpCaps as DWORD
+		ShadeCaps as DWORD
+		TextureCaps as DWORD
+		TextureFilterCaps as DWORD
+		CubeTextureFilterCaps as DWORD
+		VolumeTextureFilterCaps as DWORD
+		TextureAddressCaps as DWORD
+		VolumeTextureAddressCaps as DWORD
+		LineCaps as DWORD
+		MaxTextureWidth as DWORD
+		MaxTextureHeight as DWORD
+		MaxVolumeExtent as DWORD
+		MaxTextureRepeat as DWORD
+		MaxTextureAspectRatio as DWORD
+		MaxAnisotropy as DWORD
+		MaxVertexW as single
+		GuardBandLeft as single
+		GuardBandTop as single
+		GuardBandRight as single
+		GuardBandBottom as single
+		ExtentsAdjust as single
+		StencilCaps as DWORD
+		FVFCaps as DWORD
+		TextureOpCaps as DWORD
+		MaxTextureBlendStages as DWORD
+		MaxSimultaneousTextures as DWORD
+		VertexProcessingCaps as DWORD
+		MaxActiveLights as DWORD
+		MaxUserClipPlanes as DWORD
+		MaxVertexBlendMatrices as DWORD
+		MaxVertexBlendMatrixIndex as DWORD
+		MaxPointSize as single
+		MaxPrimitiveCount as DWORD
+		MaxVertexIndex as DWORD
+		MaxStreams as DWORD
+		MaxStreamStride as DWORD
+		VertexShaderVersion as DWORD
+		MaxVertexShaderConst as DWORD
+		PixelShaderVersion as DWORD
+		PixelShader1xMaxValue as single
+		DevCaps2 as DWORD
+		MaxNpatchTessellationLevel as single
+		Reserved5 as DWORD
+		MasterAdapterOrdinal as UINT
+		AdapterOrdinalInGroup as UINT
+		NumberOfAdaptersInGroup as UINT
+		DeclTypes as DWORD
+		NumSimultaneousRTs as DWORD
+		StretchRectFilterCaps as DWORD
+		VS20Caps as D3DVSHADERCAPS2_0
+		PS20Caps as D3DPSHADERCAPS2_0
+		VertexTextureFilterCaps as DWORD
+		MaxVShaderInstructionsExecuted as DWORD
+		MaxPShaderInstructionsExecuted as DWORD
+		MaxVertexShader30InstructionSlots as DWORD
+		MaxPixelShader30InstructionSlots as DWORD
+	end type
+#endif
 
 type D3DCAPS9 as _D3DCAPS9

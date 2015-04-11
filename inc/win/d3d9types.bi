@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -210,14 +210,25 @@ end enum
 type D3DDECLTYPE as _D3DDECLTYPE
 #define D3DMAXDECLTYPE D3DDECLTYPE_UNUSED
 
-type _D3DVERTEXELEMENT9
-	Stream as WORD
-	Offset as WORD
-	as UBYTE Type
-	Method as UBYTE
-	Usage as UBYTE
-	UsageIndex as UBYTE
-end type
+#ifdef __FB_64BIT__
+	type _D3DVERTEXELEMENT9
+		Stream as WORD
+		Offset as WORD
+		as UBYTE Type
+		Method as UBYTE
+		Usage as UBYTE
+		UsageIndex as UBYTE
+	end type
+#else
+	type _D3DVERTEXELEMENT9 field = 4
+		Stream as WORD
+		Offset as WORD
+		as UBYTE Type
+		Method as UBYTE
+		Usage as UBYTE
+		UsageIndex as UBYTE
+	end type
+#endif
 
 type D3DVERTEXELEMENT9 as _D3DVERTEXELEMENT9
 type LPD3DVERTEXELEMENT9 as _D3DVERTEXELEMENT9 ptr
@@ -533,7 +544,6 @@ enum
 end enum
 
 type D3DBACKBUFFER_TYPE as _D3DBACKBUFFER_TYPE
-#define D3DPRESENT_BACK_BUFFER_MAX __MSABI_LONG(3)
 
 type _D3DBASISTYPE as long
 enum
@@ -1144,357 +1154,707 @@ type D3DSAMPLERSTATETYPE as _D3DSAMPLERSTATETYPE
 type D3DCOLOR as DWORD
 #define D3DCOLOR_DEFINED
 
-type _D3DADAPTER_IDENTIFIER9
-	Driver as zstring * 512
-	Description as zstring * 512
-	DeviceName as zstring * 32
-	DriverVersion_ as LARGE_INTEGER
-	VendorId as DWORD
-	DeviceId as DWORD
-	SubSysId as DWORD
-	Revision as DWORD
-	DeviceIdentifier as GUID
-	WHQLLevel as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DADAPTER_IDENTIFIER9
+		Driver as zstring * 512
+		Description as zstring * 512
+		DeviceName as zstring * 32
+		DriverVersion as LARGE_INTEGER
+		VendorId as DWORD
+		DeviceId as DWORD
+		SubSysId as DWORD
+		Revision as DWORD
+		DeviceIdentifier as GUID
+		WHQLLevel as DWORD
+	end type
+#else
+	type _D3DADAPTER_IDENTIFIER9 field = 4
+		Driver as zstring * 512
+		Description as zstring * 512
+		DeviceName as zstring * 32
+		DriverVersion as LARGE_INTEGER
+		VendorId as DWORD
+		DeviceId as DWORD
+		SubSysId as DWORD
+		Revision as DWORD
+		DeviceIdentifier as GUID
+		WHQLLevel as DWORD
+	end type
+#endif
 
 type D3DADAPTER_IDENTIFIER9 as _D3DADAPTER_IDENTIFIER9
 
-type _D3DBOX
-	Left as UINT
-	Top as UINT
-	Right as UINT
-	Bottom as UINT
-	Front as UINT
-	Back as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DBOX
+		Left as UINT
+		Top as UINT
+		Right as UINT
+		Bottom as UINT
+		Front as UINT
+		Back as UINT
+	end type
+#else
+	type _D3DBOX field = 4
+		Left as UINT
+		Top as UINT
+		Right as UINT
+		Bottom as UINT
+		Front as UINT
+		Back as UINT
+	end type
+#endif
 
 type D3DBOX as _D3DBOX
 
-type _D3DCLIPSTATUS9
-	ClipUnion as DWORD
-	ClipIntersection as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DCLIPSTATUS9
+		ClipUnion as DWORD
+		ClipIntersection as DWORD
+	end type
+#else
+	type _D3DCLIPSTATUS9 field = 4
+		ClipUnion as DWORD
+		ClipIntersection as DWORD
+	end type
+#endif
 
 type D3DCLIPSTATUS9 as _D3DCLIPSTATUS9
 
-type _D3DCOLORVALUE
-	r as single
-	g as single
-	b as single
-	a as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DCOLORVALUE
+		r as single
+		g as single
+		b as single
+		a as single
+	end type
+#else
+	type _D3DCOLORVALUE field = 4
+		r as single
+		g as single
+		b as single
+		a as single
+	end type
+#endif
 
 type D3DCOLORVALUE as _D3DCOLORVALUE
 #define D3DCOLORVALUE_DEFINED
 
-type _D3DDEVICE_CREATION_PARAMETERS
-	AdapterOrdinal as UINT
-	DeviceType as D3DDEVTYPE
-	hFocusWindow as HWND
-	BehaviorFlags as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVICE_CREATION_PARAMETERS
+		AdapterOrdinal as UINT
+		DeviceType as D3DDEVTYPE
+		hFocusWindow as HWND
+		BehaviorFlags as DWORD
+	end type
+#else
+	type _D3DDEVICE_CREATION_PARAMETERS field = 4
+		AdapterOrdinal as UINT
+		DeviceType as D3DDEVTYPE
+		hFocusWindow as HWND
+		BehaviorFlags as DWORD
+	end type
+#endif
 
 type D3DDEVICE_CREATION_PARAMETERS as _D3DDEVICE_CREATION_PARAMETERS
 
-type _D3DDEVINFO_D3D9BANDWIDTHTIMINGS
-	MaxBandwidthUtilized as single
-	FrontEndUploadMemoryUtilizedPercent as single
-	VertexRateUtilizedPercent as single
-	TriangleSetupRateUtilizedPercent as single
-	FillRateUtilizedPercent as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3D9BANDWIDTHTIMINGS
+		MaxBandwidthUtilized as single
+		FrontEndUploadMemoryUtilizedPercent as single
+		VertexRateUtilizedPercent as single
+		TriangleSetupRateUtilizedPercent as single
+		FillRateUtilizedPercent as single
+	end type
+#else
+	type _D3DDEVINFO_D3D9BANDWIDTHTIMINGS field = 4
+		MaxBandwidthUtilized as single
+		FrontEndUploadMemoryUtilizedPercent as single
+		VertexRateUtilizedPercent as single
+		TriangleSetupRateUtilizedPercent as single
+		FillRateUtilizedPercent as single
+	end type
+#endif
 
 type D3DDEVINFO_D3D9BANDWIDTHTIMINGS as _D3DDEVINFO_D3D9BANDWIDTHTIMINGS
 
-type _D3DDEVINFO_D3D9CACHEUTILIZATION
-	TextureCacheHitRate as single
-	PostTransformVertexCacheHitRate as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3D9CACHEUTILIZATION
+		TextureCacheHitRate as single
+		PostTransformVertexCacheHitRate as single
+	end type
+#else
+	type _D3DDEVINFO_D3D9CACHEUTILIZATION field = 4
+		TextureCacheHitRate as single
+		PostTransformVertexCacheHitRate as single
+	end type
+#endif
 
 type D3DDEVINFO_D3D9CACHEUTILIZATION as _D3DDEVINFO_D3D9CACHEUTILIZATION
 
-type _D3DDEVINFO_D3D9INTERFACETIMINGS
-	WaitingForGPUToUseApplicationResourceTimePercent as single
-	WaitingForGPUToAcceptMoreCommandsTimePercent as single
-	WaitingForGPUToStayWithinLatencyTimePercent as single
-	WaitingForGPUExclusiveResourceTimePercent as single
-	WaitingForGPUOtherTimePercent as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3D9INTERFACETIMINGS
+		WaitingForGPUToUseApplicationResourceTimePercent as single
+		WaitingForGPUToAcceptMoreCommandsTimePercent as single
+		WaitingForGPUToStayWithinLatencyTimePercent as single
+		WaitingForGPUExclusiveResourceTimePercent as single
+		WaitingForGPUOtherTimePercent as single
+	end type
+#else
+	type _D3DDEVINFO_D3D9INTERFACETIMINGS field = 4
+		WaitingForGPUToUseApplicationResourceTimePercent as single
+		WaitingForGPUToAcceptMoreCommandsTimePercent as single
+		WaitingForGPUToStayWithinLatencyTimePercent as single
+		WaitingForGPUExclusiveResourceTimePercent as single
+		WaitingForGPUOtherTimePercent as single
+	end type
+#endif
 
 type D3DDEVINFO_D3D9INTERFACETIMINGS as _D3DDEVINFO_D3D9INTERFACETIMINGS
 
-type _D3DDEVINFO_D3D9PIPELINETIMINGS
-	VertexProcessingTimePercent as single
-	PixelProcessingTimePercent as single
-	OtherGPUProcessingTimePercent as single
-	GPUIdleTimePercent as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3D9PIPELINETIMINGS
+		VertexProcessingTimePercent as single
+		PixelProcessingTimePercent as single
+		OtherGPUProcessingTimePercent as single
+		GPUIdleTimePercent as single
+	end type
+#else
+	type _D3DDEVINFO_D3D9PIPELINETIMINGS field = 4
+		VertexProcessingTimePercent as single
+		PixelProcessingTimePercent as single
+		OtherGPUProcessingTimePercent as single
+		GPUIdleTimePercent as single
+	end type
+#endif
 
 type D3DDEVINFO_D3D9PIPELINETIMINGS as _D3DDEVINFO_D3D9PIPELINETIMINGS
 
-type _D3DDEVINFO_D3D9STAGETIMINGS
-	MemoryProcessingPercent as single
-	ComputationProcessingPercent as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3D9STAGETIMINGS
+		MemoryProcessingPercent as single
+		ComputationProcessingPercent as single
+	end type
+#else
+	type _D3DDEVINFO_D3D9STAGETIMINGS field = 4
+		MemoryProcessingPercent as single
+		ComputationProcessingPercent as single
+	end type
+#endif
 
 type D3DDEVINFO_D3D9STAGETIMINGS as _D3DDEVINFO_D3D9STAGETIMINGS
 
-type D3DDEVINFO_VCACHE
-	Pattern as DWORD
-	OptMethod as DWORD
-	CacheSize as DWORD
-	MagicNumber as DWORD
-end type
+#ifdef __FB_64BIT__
+	type D3DDEVINFO_VCACHE
+		Pattern as DWORD
+		OptMethod as DWORD
+		CacheSize as DWORD
+		MagicNumber as DWORD
+	end type
 
-type D3DRESOURCESTATS
-	bThrashing as WINBOOL
-	ApproxBytesDownloaded as DWORD
-	NumEvicts as DWORD
-	NumVidCreates as DWORD
-	LastPri as DWORD
-	NumUsed as DWORD
-	NumUsedInVidMem as DWORD
-	WorkingSet as DWORD
-	WorkingSetBytes as DWORD
-	TotalManaged as DWORD
-	TotalBytes as DWORD
-end type
+	type D3DRESOURCESTATS
+		bThrashing as WINBOOL
+		ApproxBytesDownloaded as DWORD
+		NumEvicts as DWORD
+		NumVidCreates as DWORD
+		LastPri as DWORD
+		NumUsed as DWORD
+		NumUsedInVidMem as DWORD
+		WorkingSet as DWORD
+		WorkingSetBytes as DWORD
+		TotalManaged as DWORD
+		TotalBytes as DWORD
+	end type
 
-type _D3DDEVINFO_D3DRESOURCEMANAGER
-	stats(0 to (D3DRTYPE_INDEXBUFFER + 1) - 1) as D3DRESOURCESTATS
-end type
+	type _D3DDEVINFO_D3DRESOURCEMANAGER
+		stats(0 to (D3DRTYPE_INDEXBUFFER + 1) - 1) as D3DRESOURCESTATS
+	end type
+#else
+	type D3DDEVINFO_VCACHE field = 4
+		Pattern as DWORD
+		OptMethod as DWORD
+		CacheSize as DWORD
+		MagicNumber as DWORD
+	end type
+
+	type D3DRESOURCESTATS field = 4
+		bThrashing as WINBOOL
+		ApproxBytesDownloaded as DWORD
+		NumEvicts as DWORD
+		NumVidCreates as DWORD
+		LastPri as DWORD
+		NumUsed as DWORD
+		NumUsedInVidMem as DWORD
+		WorkingSet as DWORD
+		WorkingSetBytes as DWORD
+		TotalManaged as DWORD
+		TotalBytes as DWORD
+	end type
+
+	type _D3DDEVINFO_D3DRESOURCEMANAGER field = 4
+		stats(0 to (D3DRTYPE_INDEXBUFFER + 1) - 1) as D3DRESOURCESTATS
+	end type
+#endif
 
 type D3DDEVINFO_D3DRESOURCEMANAGER as _D3DDEVINFO_D3DRESOURCEMANAGER
 
-type _D3DDEVINFO_D3DVERTEXSTATS
-	NumRenderedTriangles as DWORD
-	NumExtraClippingTriangles as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_D3DVERTEXSTATS
+		NumRenderedTriangles as DWORD
+		NumExtraClippingTriangles as DWORD
+	end type
+#else
+	type _D3DDEVINFO_D3DVERTEXSTATS field = 4
+		NumRenderedTriangles as DWORD
+		NumExtraClippingTriangles as DWORD
+	end type
+#endif
 
 type D3DDEVINFO_D3DVERTEXSTATS as _D3DDEVINFO_D3DVERTEXSTATS
 
-type _D3DDISPLAYMODE
-	Width as UINT
-	Height as UINT
-	RefreshRate as UINT
-	Format as D3DFORMAT
-end type
+#ifdef __FB_64BIT__
+	type _D3DDISPLAYMODE
+		Width as UINT
+		Height as UINT
+		RefreshRate as UINT
+		Format as D3DFORMAT
+	end type
+#else
+	type _D3DDISPLAYMODE field = 4
+		Width as UINT
+		Height as UINT
+		RefreshRate as UINT
+		Format as D3DFORMAT
+	end type
+#endif
 
 type D3DDISPLAYMODE as _D3DDISPLAYMODE
 
-type _D3DGAMMARAMP
-	red(0 to 255) as WORD
-	green(0 to 255) as WORD
-	blue(0 to 255) as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DGAMMARAMP
+		red(0 to 255) as WORD
+		green(0 to 255) as WORD
+		blue(0 to 255) as WORD
+	end type
+#else
+	type _D3DGAMMARAMP field = 4
+		red(0 to 255) as WORD
+		green(0 to 255) as WORD
+		blue(0 to 255) as WORD
+	end type
+#endif
 
 type D3DGAMMARAMP as _D3DGAMMARAMP
 
-type _D3DINDEXBUFFER_DESC
-	Format as D3DFORMAT
-	as D3DRESOURCETYPE Type
-	Usage as DWORD
-	Pool as D3DPOOL
-	Size as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DINDEXBUFFER_DESC
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Size as UINT
+	end type
+#else
+	type _D3DINDEXBUFFER_DESC field = 4
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Size as UINT
+	end type
+#endif
 
 type D3DINDEXBUFFER_DESC as _D3DINDEXBUFFER_DESC
 
-type _D3DVECTOR
-	x as single
-	y as single
-	z as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DVECTOR
+		x as single
+		y as single
+		z as single
+	end type
+#else
+	type _D3DVECTOR field = 4
+		x as single
+		y as single
+		z as single
+	end type
+#endif
 
 type D3DVECTOR as _D3DVECTOR
 #define D3DVECTOR_DEFINED
 
-type _D3DLIGHT9
-	as D3DLIGHTTYPE Type
-	Diffuse as D3DCOLORVALUE
-	Specular as D3DCOLORVALUE
-	Ambient as D3DCOLORVALUE
-	Position as D3DVECTOR
-	Direction as D3DVECTOR
-	Range as single
-	Falloff as single
-	Attenuation0 as single
-	Attenuation1 as single
-	Attenuation2 as single
-	Theta as single
-	Phi as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHT9
+		as D3DLIGHTTYPE Type
+		Diffuse as D3DCOLORVALUE
+		Specular as D3DCOLORVALUE
+		Ambient as D3DCOLORVALUE
+		Position as D3DVECTOR
+		Direction as D3DVECTOR
+		Range as single
+		Falloff as single
+		Attenuation0 as single
+		Attenuation1 as single
+		Attenuation2 as single
+		Theta as single
+		Phi as single
+	end type
+#else
+	type _D3DLIGHT9 field = 4
+		as D3DLIGHTTYPE Type
+		Diffuse as D3DCOLORVALUE
+		Specular as D3DCOLORVALUE
+		Ambient as D3DCOLORVALUE
+		Position as D3DVECTOR
+		Direction as D3DVECTOR
+		Range as single
+		Falloff as single
+		Attenuation0 as single
+		Attenuation1 as single
+		Attenuation2 as single
+		Theta as single
+		Phi as single
+	end type
+#endif
 
 type D3DLIGHT9 as _D3DLIGHT9
 
-type _D3DLINEPATTERN
-	wRepeatFactor as WORD
-	wLinePattern as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DLINEPATTERN
+		wRepeatFactor as WORD
+		wLinePattern as WORD
+	end type
+#else
+	type _D3DLINEPATTERN field = 4
+		wRepeatFactor as WORD
+		wLinePattern as WORD
+	end type
+#endif
 
 type D3DLINEPATTERN as _D3DLINEPATTERN
 
-type _D3DLOCKED_BOX
-	RowPitch as INT_
-	SlicePitch as INT_
-	pBits as any ptr
-end type
+#ifdef __FB_64BIT__
+	type _D3DLOCKED_BOX
+		RowPitch as INT_
+		SlicePitch as INT_
+		pBits as any ptr
+	end type
+#else
+	type _D3DLOCKED_BOX field = 4
+		RowPitch as INT_
+		SlicePitch as INT_
+		pBits as any ptr
+	end type
+#endif
 
 type D3DLOCKED_BOX as _D3DLOCKED_BOX
 
-type _D3DLOCKED_RECT
-	Pitch as INT_
-	pBits as any ptr
-end type
+#ifdef __FB_64BIT__
+	type _D3DLOCKED_RECT
+		Pitch as INT_
+		pBits as any ptr
+	end type
+#else
+	type _D3DLOCKED_RECT field = 4
+		Pitch as INT_
+		pBits as any ptr
+	end type
+#endif
 
 type D3DLOCKED_RECT as _D3DLOCKED_RECT
 
-type _D3DMATERIAL9
-	Diffuse as D3DCOLORVALUE
-	Ambient as D3DCOLORVALUE
-	Specular as D3DCOLORVALUE
-	Emissive as D3DCOLORVALUE
-	Power as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DMATERIAL9
+		Diffuse as D3DCOLORVALUE
+		Ambient as D3DCOLORVALUE
+		Specular as D3DCOLORVALUE
+		Emissive as D3DCOLORVALUE
+		Power as single
+	end type
+#else
+	type _D3DMATERIAL9 field = 4
+		Diffuse as D3DCOLORVALUE
+		Ambient as D3DCOLORVALUE
+		Specular as D3DCOLORVALUE
+		Emissive as D3DCOLORVALUE
+		Power as single
+	end type
+#endif
 
 type D3DMATERIAL9 as _D3DMATERIAL9
 
-type _D3DMATRIX
-	union
-		type
-			_11 as single
-			_12 as single
-			_13 as single
-			_14 as single
-			_21 as single
-			_22 as single
-			_23 as single
-			_24 as single
-			_31 as single
-			_32 as single
-			_33 as single
-			_34 as single
-			_41 as single
-			_42 as single
-			_43 as single
-			_44 as single
-		end type
+#ifdef __FB_64BIT__
+	type _D3DMATRIX
+		union
+			type
+				_11 as single
+				_12 as single
+				_13 as single
+				_14 as single
+				_21 as single
+				_22 as single
+				_23 as single
+				_24 as single
+				_31 as single
+				_32 as single
+				_33 as single
+				_34 as single
+				_41 as single
+				_42 as single
+				_43 as single
+				_44 as single
+			end type
 
-		m(0 to 3, 0 to 3) as single
-	end union
-end type
+			m(0 to 3, 0 to 3) as single
+		end union
+	end type
+#else
+	type _D3DMATRIX field = 4
+		union field = 4
+			type field = 4
+				_11 as single
+				_12 as single
+				_13 as single
+				_14 as single
+				_21 as single
+				_22 as single
+				_23 as single
+				_24 as single
+				_31 as single
+				_32 as single
+				_33 as single
+				_34 as single
+				_41 as single
+				_42 as single
+				_43 as single
+				_44 as single
+			end type
+
+			m(0 to 3, 0 to 3) as single
+		end union
+	end type
+#endif
 
 type D3DMATRIX as _D3DMATRIX
 #define D3DMATRIX_DEFINED
 
-type _D3DPRESENT_PARAMETERS_
-	BackBufferWidth as UINT
-	BackBufferHeight as UINT
-	BackBufferFormat as D3DFORMAT
-	BackBufferCount as UINT
-	MultiSampleType as D3DMULTISAMPLE_TYPE
-	MultiSampleQuality as DWORD
-	SwapEffect as D3DSWAPEFFECT
-	hDeviceWindow as HWND
-	Windowed as WINBOOL
-	EnableAutoDepthStencil as WINBOOL
-	AutoDepthStencilFormat as D3DFORMAT
-	Flags as DWORD
-	FullScreen_RefreshRateInHz as UINT
-	PresentationInterval as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DPRESENT_PARAMETERS_
+		BackBufferWidth as UINT
+		BackBufferHeight as UINT
+		BackBufferFormat as D3DFORMAT
+		BackBufferCount as UINT
+		MultiSampleType as D3DMULTISAMPLE_TYPE
+		MultiSampleQuality as DWORD
+		SwapEffect as D3DSWAPEFFECT
+		hDeviceWindow as HWND
+		Windowed as WINBOOL
+		EnableAutoDepthStencil as WINBOOL
+		AutoDepthStencilFormat as D3DFORMAT
+		Flags as DWORD
+		FullScreen_RefreshRateInHz as UINT
+		PresentationInterval as UINT
+	end type
+#else
+	type _D3DPRESENT_PARAMETERS_ field = 4
+		BackBufferWidth as UINT
+		BackBufferHeight as UINT
+		BackBufferFormat as D3DFORMAT
+		BackBufferCount as UINT
+		MultiSampleType as D3DMULTISAMPLE_TYPE
+		MultiSampleQuality as DWORD
+		SwapEffect as D3DSWAPEFFECT
+		hDeviceWindow as HWND
+		Windowed as WINBOOL
+		EnableAutoDepthStencil as WINBOOL
+		AutoDepthStencilFormat as D3DFORMAT
+		Flags as DWORD
+		FullScreen_RefreshRateInHz as UINT
+		PresentationInterval as UINT
+	end type
+#endif
 
 type D3DPRESENT_PARAMETERS as _D3DPRESENT_PARAMETERS_
 
-type _D3DRANGE
-	Offset as UINT
-	Size as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DRANGE
+		Offset as UINT
+		Size as UINT
+	end type
+#else
+	type _D3DRANGE field = 4
+		Offset as UINT
+		Size as UINT
+	end type
+#endif
 
 type D3DRANGE as _D3DRANGE
 
-type _D3DRASTER_STATUS
-	InVBlank as WINBOOL
-	ScanLine as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DRASTER_STATUS
+		InVBlank as WINBOOL
+		ScanLine as UINT
+	end type
+#else
+	type _D3DRASTER_STATUS field = 4
+		InVBlank as WINBOOL
+		ScanLine as UINT
+	end type
+#endif
 
 type D3DRASTER_STATUS as _D3DRASTER_STATUS
 
-type _D3DRECT
-	x1 as LONG
-	y1 as LONG
-	x2 as LONG
-	y2 as LONG
-end type
+#ifdef __FB_64BIT__
+	type _D3DRECT
+		x1 as LONG
+		y1 as LONG
+		x2 as LONG
+		y2 as LONG
+	end type
+#else
+	type _D3DRECT field = 4
+		x1 as LONG
+		y1 as LONG
+		x2 as LONG
+		y2 as LONG
+	end type
+#endif
 
 type D3DRECT as _D3DRECT
 #define D3DRECT_DEFINED
 
-type _D3DRECTPATCH_INFO
-	StartVertexOffsetWidth as UINT
-	StartVertexOffsetHeight as UINT
-	Width as UINT
-	Height as UINT
-	Stride as UINT
-	Basis as D3DBASISTYPE
-	Degree as D3DDEGREETYPE
-end type
+#ifdef __FB_64BIT__
+	type _D3DRECTPATCH_INFO
+		StartVertexOffsetWidth as UINT
+		StartVertexOffsetHeight as UINT
+		Width as UINT
+		Height as UINT
+		Stride as UINT
+		Basis as D3DBASISTYPE
+		Degree as D3DDEGREETYPE
+	end type
+#else
+	type _D3DRECTPATCH_INFO field = 4
+		StartVertexOffsetWidth as UINT
+		StartVertexOffsetHeight as UINT
+		Width as UINT
+		Height as UINT
+		Stride as UINT
+		Basis as D3DBASISTYPE
+		Degree as D3DDEGREETYPE
+	end type
+#endif
 
 type D3DRECTPATCH_INFO as _D3DRECTPATCH_INFO
 
-type _D3DSURFACE_DESC
-	Format as D3DFORMAT
-	as D3DRESOURCETYPE Type
-	Usage as DWORD
-	Pool as D3DPOOL
-	MultiSampleType as D3DMULTISAMPLE_TYPE
-	MultiSampleQuality as DWORD
-	Width as UINT
-	Height as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DSURFACE_DESC
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		MultiSampleType as D3DMULTISAMPLE_TYPE
+		MultiSampleQuality as DWORD
+		Width as UINT
+		Height as UINT
+	end type
+#else
+	type _D3DSURFACE_DESC field = 4
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		MultiSampleType as D3DMULTISAMPLE_TYPE
+		MultiSampleQuality as DWORD
+		Width as UINT
+		Height as UINT
+	end type
+#endif
 
 type D3DSURFACE_DESC as _D3DSURFACE_DESC
 
-type _D3DTRIPATCH_INFO
-	StartVertexOffset as UINT
-	NumVertices as UINT
-	Basis as D3DBASISTYPE
-	Degree as D3DDEGREETYPE
-end type
+#ifdef __FB_64BIT__
+	type _D3DTRIPATCH_INFO
+		StartVertexOffset as UINT
+		NumVertices as UINT
+		Basis as D3DBASISTYPE
+		Degree as D3DDEGREETYPE
+	end type
+#else
+	type _D3DTRIPATCH_INFO field = 4
+		StartVertexOffset as UINT
+		NumVertices as UINT
+		Basis as D3DBASISTYPE
+		Degree as D3DDEGREETYPE
+	end type
+#endif
 
 type D3DTRIPATCH_INFO as _D3DTRIPATCH_INFO
 
-type _D3DVERTEXBUFFER_DESC
-	Format as D3DFORMAT
-	as D3DRESOURCETYPE Type
-	Usage as DWORD
-	Pool as D3DPOOL
-	Size as UINT
-	FVF as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DVERTEXBUFFER_DESC
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Size as UINT
+		FVF as DWORD
+	end type
+#else
+	type _D3DVERTEXBUFFER_DESC field = 4
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Size as UINT
+		FVF as DWORD
+	end type
+#endif
 
 type D3DVERTEXBUFFER_DESC as _D3DVERTEXBUFFER_DESC
 
-type _D3DVIEWPORT9
-	X as DWORD
-	Y as DWORD
-	Width as DWORD
-	Height as DWORD
-	MinZ as single
-	MaxZ as single
-end type
+#ifdef __FB_64BIT__
+	type _D3DVIEWPORT9
+		X as DWORD
+		Y as DWORD
+		Width as DWORD
+		Height as DWORD
+		MinZ as single
+		MaxZ as single
+	end type
+#else
+	type _D3DVIEWPORT9 field = 4
+		X as DWORD
+		Y as DWORD
+		Width as DWORD
+		Height as DWORD
+		MinZ as single
+		MaxZ as single
+	end type
+#endif
 
 type D3DVIEWPORT9 as _D3DVIEWPORT9
 
-type _D3DVOLUME_DESC
-	Format as D3DFORMAT
-	as D3DRESOURCETYPE Type
-	Usage as DWORD
-	Pool as D3DPOOL
-	Width as UINT
-	Height as UINT
-	Depth as UINT
-end type
+#ifdef __FB_64BIT__
+	type _D3DVOLUME_DESC
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Width as UINT
+		Height as UINT
+		Depth as UINT
+	end type
+#else
+	type _D3DVOLUME_DESC field = 4
+		Format as D3DFORMAT
+		as D3DRESOURCETYPE Type
+		Usage as DWORD
+		Pool as D3DPOOL
+		Width as UINT
+		Height as UINT
+		Depth as UINT
+	end type
+#endif
 
 type D3DVOLUME_DESC as _D3DVOLUME_DESC
 
@@ -1505,20 +1865,37 @@ enum
 	D3DSCANLINEORDERING_INTERLACED
 end enum
 
-type D3DDISPLAYMODEFILTER
-	Size as UINT
-	Format as D3DFORMAT
-	ScanLineOrdering as D3DSCANLINEORDERING
-end type
+#ifdef __FB_64BIT__
+	type D3DDISPLAYMODEFILTER
+		Size as UINT
+		Format as D3DFORMAT
+		ScanLineOrdering as D3DSCANLINEORDERING
+	end type
 
-type D3DDISPLAYMODEEX
-	Size as UINT
-	Width as UINT
-	Height as UINT
-	RefreshRate as UINT
-	Format as D3DFORMAT
-	ScanLineOrdering as D3DSCANLINEORDERING
-end type
+	type D3DDISPLAYMODEEX
+		Size as UINT
+		Width as UINT
+		Height as UINT
+		RefreshRate as UINT
+		Format as D3DFORMAT
+		ScanLineOrdering as D3DSCANLINEORDERING
+	end type
+#else
+	type D3DDISPLAYMODEFILTER field = 4
+		Size as UINT
+		Format as D3DFORMAT
+		ScanLineOrdering as D3DSCANLINEORDERING
+	end type
+
+	type D3DDISPLAYMODEEX field = 4
+		Size as UINT
+		Width as UINT
+		Height as UINT
+		RefreshRate as UINT
+		Format as D3DFORMAT
+		ScanLineOrdering as D3DSCANLINEORDERING
+	end type
+#endif
 
 type D3DDISPLAYROTATION as long
 enum
@@ -1539,13 +1916,23 @@ end enum
 
 type D3DCOMPOSERECTSOP as _D3DCOMPOSERECTSOP
 
-type _D3DPRESENTSTATS
-	PresentCount as UINT
-	PresentRefreshCount as UINT
-	SyncRefreshCount as UINT
-	SyncQPCTime as LARGE_INTEGER
-	SyncGPUTime as LARGE_INTEGER
-end type
+#ifdef __FB_64BIT__
+	type _D3DPRESENTSTATS
+		PresentCount as UINT
+		PresentRefreshCount as UINT
+		SyncRefreshCount as UINT
+		SyncQPCTime as LARGE_INTEGER
+		SyncGPUTime as LARGE_INTEGER
+	end type
+#else
+	type _D3DPRESENTSTATS field = 4
+		PresentCount as UINT
+		PresentRefreshCount as UINT
+		SyncRefreshCount as UINT
+		SyncQPCTime as LARGE_INTEGER
+		SyncGPUTime as LARGE_INTEGER
+	end type
+#endif
 
 type D3DPRESENTSTATS as _D3DPRESENTSTATS
 

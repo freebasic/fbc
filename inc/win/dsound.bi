@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -68,7 +68,21 @@ extern DSDEVID_DefaultPlayback as const GUID
 extern DSDEVID_DefaultCapture as const GUID
 extern DSDEVID_DefaultVoicePlayback as const GUID
 extern DSDEVID_DefaultVoiceCapture as const GUID
-extern DSDEVID_WinePlayback as const GUID
+extern GUID_DSFX_STANDARD_GARGLE as const GUID
+extern GUID_DSFX_STANDARD_CHORUS as const GUID
+extern GUID_DSFX_STANDARD_FLANGER as const GUID
+extern GUID_DSFX_STANDARD_ECHO as const GUID
+extern GUID_DSFX_STANDARD_DISTORTION as const GUID
+extern GUID_DSFX_STANDARD_COMPRESSOR as const GUID
+extern GUID_DSFX_STANDARD_PARAMEQ as const GUID
+extern GUID_DSFX_STANDARD_I3DL2REVERB as const GUID
+extern GUID_DSFX_WAVES_REVERB as const GUID
+extern GUID_DSCFX_CLASS_AEC as const GUID
+extern GUID_DSCFX_MS_AEC as const GUID
+extern GUID_DSCFX_SYSTEM_AEC as const GUID
+extern GUID_DSCFX_CLASS_NS as const GUID
+extern GUID_DSCFX_MS_NS as const GUID
+extern GUID_DSCFX_SYSTEM_NS as const GUID
 
 const _FACDS = &h878
 #define MAKE_DSHRESULT(code) MAKE_HRESULT(1, _FACDS, code)
@@ -174,6 +188,7 @@ const DSBCAPS_MUTE3DATMAXDISTANCE = &h00020000
 const DSBCAPS_LOCDEFER = &h00040000
 const DSBSIZE_MIN = 4
 const DSBSIZE_MAX = &hFFFFFFF
+const DSBSIZE_FX_MIN = 150
 const DSBPAN_LEFT = -10000
 const DSBPAN_CENTER = 0
 const DSBPAN_RIGHT = 10000
@@ -280,6 +295,7 @@ const DSSPEAKER_GEOMETRY_MAX = &h000000B4
 #define DSSPEAKER_GEOMETRY(a) cast(UBYTE, (cast(DWORD, (a)) shr 16) and &h00FF)
 const DS_CERTIFIED = &h00000000
 const DS_UNCERTIFIED = &h00000001
+#define DS3DALG_DEFAULT GUID_NULL
 
 type _DSCEFFECTDESC
 	dwSize as DWORD
@@ -538,6 +554,7 @@ type IDirectSoundBuffer8Vtbl_
 	GetObjectInPath as function(byval This as IDirectSoundBuffer8 ptr, byval rguidObject as const GUID const ptr, byval dwIndex as DWORD, byval rguidInterface as const GUID const ptr, byval ppObject as LPVOID ptr) as HRESULT
 end type
 
+extern GUID_All_Objects as const GUID
 #define IDirectSoundBuffer8_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
 #define IDirectSoundBuffer8_AddRef(p) (p)->lpVtbl->AddRef(p)
 #define IDirectSoundBuffer8_Release(p) (p)->lpVtbl->Release(p)
@@ -752,6 +769,7 @@ end type
 #define IDirectSound3DListener_SetRolloffFactor(p, a, b) (p)->lpVtbl->SetRolloffFactor(p, a, b)
 #define IDirectSound3DListener_SetVelocity(p, a, b, c, d) (p)->lpVtbl->SetVelocity(p, a, b, c, d)
 #define IDirectSound3DListener_CommitDeferredSettings(p) (p)->lpVtbl->CommitDeferredSettings(p)
+#define IDirectSound3DListener8 IDirectSound3DListener
 
 type _DS3DBUFFER
 	dwSize as DWORD
@@ -820,6 +838,7 @@ end type
 #define IDirectSound3DBuffer_SetMode(p, a, b) (p)->lpVtbl->SetMode(p, a, b)
 #define IDirectSound3DBuffer_SetPosition(p, a, b, c, d) (p)->lpVtbl->SetPosition(p, a, b, c, d)
 #define IDirectSound3DBuffer_SetVelocity(p, a, b, c, d) (p)->lpVtbl->SetVelocity(p, a, b, c, d)
+#define IDirectSound3DBuffer8 IDirectSound3DBuffer
 type IDirectSoundFullDuplexVtbl as IDirectSoundFullDuplexVtbl_
 
 type IDirectSoundFullDuplex

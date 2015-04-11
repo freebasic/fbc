@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -11,8 +11,8 @@ const MINGW_HAS_SECURE_API = 1
 #define _INC_CRTDEFS_MACRO
 #define __STRINGIFY(x) #x
 #define __MINGW64_STRINGIFY(x) __STRINGIFY(x)
-const __MINGW64_VERSION_MAJOR = 3
-const __MINGW64_VERSION_MINOR = 3
+const __MINGW64_VERSION_MAJOR = 4
+const __MINGW64_VERSION_MINOR = 0
 const __MINGW64_VERSION_RC = 0
 #define __MINGW64_VERSION_STR __MINGW64_STRINGIFY(__MINGW64_VERSION_MAJOR) "." __MINGW64_STRINGIFY(__MINGW64_VERSION_MINOR)
 #define __MINGW64_VERSION_STATE "stable"
@@ -43,7 +43,6 @@ const __MSVCRT_VERSION__ = &h0700
 #define __int16 short
 #define __int32 long
 #define __int64 longint
-const _CRT_PACKING = 8
 #define MINGW_SDK_INIT
 const __STDC_SECURE_LIB__ = cast(clong, 200411)
 #define __GOT_SECURE_LIB__ __STDC_SECURE_LIB__

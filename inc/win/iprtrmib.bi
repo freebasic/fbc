@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -6,6 +6,7 @@
 #include once "ipmib.bi"
 #include once "ipifcons.bi"
 #include once "udpmib.bi"
+#include once "tcpmib.bi"
 
 #define __ROUTING_IPRTRMIB_H__
 const IPRTRMGR_PID = 10000
@@ -447,7 +448,6 @@ const MIB_TCP_STATE_CLOSING = 9
 const MIB_TCP_STATE_LAST_ACK = 10
 const MIB_TCP_STATE_TIME_WAIT = 11
 const MIB_TCP_STATE_DELETE_TCB = 12
-type MIB_TCP_STATE as long
 
 type _MIB_TCPTABLE
 	dwNumEntries as DWORD

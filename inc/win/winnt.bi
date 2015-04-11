@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -749,6 +749,11 @@ const SUBLANG_KYRGYZ_KYRGYZSTAN = &h01
 const SUBLANG_LAO_LAO = &h01
 #define SUBLANG_LAO_LAO_PDR SUBLANG_LAO_LAO
 const SUBLANG_LATVIAN_LATVIA = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_LITHUANIAN_LITHUANIA = &h01
+#endif
+
 const SUBLANG_LITHUANIAN = &h01
 const SUBLANG_LOWER_SORBIAN_GERMANY = &h02
 const SUBLANG_LUXEMBOURGISH_LUXEMBOURG = &h01
@@ -773,6 +778,11 @@ const SUBLANG_PASHTO_AFGHANISTAN = &h01
 const SUBLANG_PERSIAN_IRAN = &h01
 const SUBLANG_POLISH_POLAND = &h01
 const SUBLANG_PORTUGUESE_BRAZILIAN = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_PORTUGUESE_PORTUGAL = &h02
+#endif
+
 const SUBLANG_PORTUGUESE = &h02
 const SUBLANG_PULAR_SENEGAL = &h02
 const SUBLANG_PUNJABI_INDIA = &h01
@@ -832,6 +842,11 @@ const SUBLANG_SPANISH_NICARAGUA = &h13
 const SUBLANG_SPANISH_PUERTO_RICO = &h14
 const SUBLANG_SPANISH_US = &h15
 const SUBLANG_SWAHILI_KENYA = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_SWEDISH_SWEDEN = &h01
+#endif
+
 const SUBLANG_SWEDISH = &h01
 const SUBLANG_SWEDISH_FINLAND = &h02
 const SUBLANG_SYRIAC = &h01
@@ -1339,7 +1354,12 @@ type CONTEXT as _CONTEXT
 	type PRUNTIME_FUNCTION as _RUNTIME_FUNCTION ptr
 	type PGET_RUNTIME_FUNCTION_CALLBACK as function(byval ControlPc as DWORD64, byval Context as PVOID) as PRUNTIME_FUNCTION
 	type POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK as function(byval Process as HANDLE, byval TableAddress as PVOID, byval Entries as PDWORD, byval Functions as PRUNTIME_FUNCTION ptr) as DWORD
+
 	#define OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK_EXPORT_NAME "OutOfProcessFunctionTableCallback"
+	const UNW_FLAG_NHANDLER = &h00
+	const UNW_FLAG_EHANDLER = &h01
+	const UNW_FLAG_UHANDLER = &h02
+	const UNW_FLAG_CHAININFO = &h04
 #else
 	type PCONTEXT as CONTEXT ptr
 #endif
@@ -7938,7 +7958,7 @@ end sub
 
 #ifdef __FB_64BIT__
 	private function GetCurrentFiber() as PVOID
-		return cast(PVOID, __readgsqword(cast(LONG, cast(LONG_PTR, @cptr(NT_TIB ptr, 0)->FiberData))))
+		return cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
 	end function
 
 	private function GetFiberData() as PVOID
@@ -7946,7 +7966,7 @@ end sub
 	end function
 
 	private function NtCurrentTeb() as _TEB ptr
-		return cptr(_TEB ptr, __readgsqword(cast(LONG, cast(LONG_PTR, @cptr(NT_TIB ptr, 0)->Self))))
+		return cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
 	end function
 #endif
 

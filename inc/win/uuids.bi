@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -23,7 +23,6 @@ extern MEDIATYPE_LMRT as const GUID
 extern MEDIATYPE_URL_STREAM as const GUID
 extern MEDIASUBTYPE_CLPL as const GUID
 extern MEDIASUBTYPE_YUYV as const GUID
-extern MEDIASUBTYPE_I420 as const GUID
 extern MEDIASUBTYPE_IYUV as const GUID
 extern MEDIASUBTYPE_YVU9 as const GUID
 extern MEDIASUBTYPE_Y411 as const GUID
@@ -418,7 +417,6 @@ extern MEDIATYPE_LMRT as const GUID
 extern MEDIATYPE_URL_STREAM as const GUID
 extern MEDIASUBTYPE_CLPL as const GUID
 extern MEDIASUBTYPE_YUYV as const GUID
-extern MEDIASUBTYPE_I420 as const GUID
 extern MEDIASUBTYPE_IYUV as const GUID
 extern MEDIASUBTYPE_YVU9 as const GUID
 extern MEDIASUBTYPE_Y411 as const GUID

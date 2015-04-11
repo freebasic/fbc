@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -159,6 +159,10 @@ const CONNECT_DEFERRED = &h00000400
 const CONNECT_RESERVED = &hFF000000
 const CONNECT_COMMANDLINE = &h00000800
 const CONNECT_CMD_SAVECRED = &h00001000
+
+#if _WIN32_WINNT = &h0602
+	const CONNECT_CRED_RESET = &h00002000
+#endif
 
 #ifdef UNICODE
 	#define WNetAddConnection WNetAddConnectionW

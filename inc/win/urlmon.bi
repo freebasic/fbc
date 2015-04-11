@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -313,7 +313,7 @@ declare sub IPersistMoniker_GetCurMoniker_Stub(byval This as IRpcStubBuffer ptr,
 type IMonikerProp as IMonikerProp_
 type LPMONIKERPROP as IMonikerProp ptr
 
-type __WIDL_urlmon_generated_name_00000000 as long
+type __WIDL_urlmon_generated_name_00000002 as long
 enum
 	MIMETYPEPROP = &h0
 	USE_SRC_URL = &h1
@@ -322,7 +322,7 @@ enum
 	POPUPLEVELPROP = &h4
 end enum
 
-type MONIKERPROPERTY as __WIDL_urlmon_generated_name_00000000
+type MONIKERPROPERTY as __WIDL_urlmon_generated_name_00000002
 extern IID_IMonikerProp as const GUID
 
 type IMonikerPropVtbl
@@ -414,7 +414,7 @@ declare function IBinding_GetBindResult_Stub(byval This as IBinding ptr, byval p
 #define __IBindStatusCallback_INTERFACE_DEFINED__
 type LPBINDSTATUSCALLBACK as IBindStatusCallback ptr
 
-type __WIDL_urlmon_generated_name_00000001 as long
+type __WIDL_urlmon_generated_name_00000003 as long
 enum
 	BINDVERB_GET = &h0
 	BINDVERB_POST = &h1
@@ -423,17 +423,17 @@ enum
 	BINDVERB_RESERVED1 = &h4
 end enum
 
-type BINDVERB as __WIDL_urlmon_generated_name_00000001
+type BINDVERB as __WIDL_urlmon_generated_name_00000003
 
-type __WIDL_urlmon_generated_name_00000002 as long
+type __WIDL_urlmon_generated_name_00000004 as long
 enum
 	BINDINFOF_URLENCODESTGMEDDATA = &h1
 	BINDINFOF_URLENCODEDEXTRAINFO = &h2
 end enum
 
-type BINDINFOF as __WIDL_urlmon_generated_name_00000002
+type BINDINFOF as __WIDL_urlmon_generated_name_00000004
 
-type __WIDL_urlmon_generated_name_00000003 as long
+type __WIDL_urlmon_generated_name_00000005 as long
 enum
 	BINDF_ASYNCHRONOUS = &h1
 	BINDF_ASYNCSTORAGE = &h2
@@ -468,16 +468,16 @@ enum
 	BINDF_RESERVED_8 = &h20000000
 end enum
 
-type BINDF as __WIDL_urlmon_generated_name_00000003
+type BINDF as __WIDL_urlmon_generated_name_00000005
 
-type __WIDL_urlmon_generated_name_00000004 as long
+type __WIDL_urlmon_generated_name_00000006 as long
 enum
 	URL_ENCODING_NONE = &h0
 	URL_ENCODING_ENABLE_UTF8 = &h10000000
 	URL_ENCODING_DISABLE_UTF8 = &h20000000
 end enum
 
-type URL_ENCODING as __WIDL_urlmon_generated_name_00000004
+type URL_ENCODING as __WIDL_urlmon_generated_name_00000006
 
 type _tagBINDINFO
 	cbSize as ULONG
@@ -537,7 +537,7 @@ end type
 type RemFORMATETC as tagRemFORMATETC
 type LPREMFORMATETC as tagRemFORMATETC ptr
 
-type __WIDL_urlmon_generated_name_00000005 as long
+type __WIDL_urlmon_generated_name_00000007 as long
 enum
 	BINDINFO_OPTIONS_WININETFLAG = &h10000
 	BINDINFO_OPTIONS_ENABLE_UTF8 = &h20000
@@ -556,9 +556,9 @@ enum
 	BINDINFO_OPTIONS_SHDOCVW_NAVIGATE = clng(&h80000000)
 end enum
 
-type BINDINFO_OPTIONS as __WIDL_urlmon_generated_name_00000005
+type BINDINFO_OPTIONS as __WIDL_urlmon_generated_name_00000007
 
-type __WIDL_urlmon_generated_name_00000006 as long
+type __WIDL_urlmon_generated_name_00000008 as long
 enum
 	BSCF_FIRSTDATANOTIFICATION = &h1
 	BSCF_INTERMEDIATEDATANOTIFICATION = &h2
@@ -569,7 +569,7 @@ enum
 	BSCF_64BITLENGTHDOWNLOAD = &h40
 end enum
 
-type BSCF as __WIDL_urlmon_generated_name_00000006
+type BSCF as __WIDL_urlmon_generated_name_00000008
 
 type tagBINDSTATUS as long
 enum
@@ -701,7 +701,7 @@ declare function IBindStatusCallback_OnDataAvailable_Stub(byval This as IBindSta
 type IBindStatusCallbackEx as IBindStatusCallbackEx_
 type LPBINDSTATUSCALLBACKEX as IBindStatusCallbackEx ptr
 
-type __WIDL_urlmon_generated_name_00000007 as long
+type __WIDL_urlmon_generated_name_00000009 as long
 enum
 	BINDF2_DISABLEBASICOVERHTTP = &h1
 	BINDF2_DISABLEAUTOCOOKIEHANDLING = &h2
@@ -728,7 +728,7 @@ enum
 	BINDF2_RESERVED_1 = &h80000000
 end enum
 
-type BINDF2 as __WIDL_urlmon_generated_name_00000007
+type BINDF2 as __WIDL_urlmon_generated_name_00000009
 extern IID_IBindStatusCallbackEx as const GUID
 
 type IBindStatusCallbackExVtbl
@@ -795,14 +795,14 @@ declare sub IAuthenticate_Authenticate_Stub(byval This as IRpcStubBuffer ptr, by
 type IAuthenticateEx as IAuthenticateEx_
 type LPAUTHENTICATIONEX as IAuthenticateEx ptr
 
-type __WIDL_urlmon_generated_name_00000008 as long
+type __WIDL_urlmon_generated_name_0000000A as long
 enum
 	AUTHENTICATEF_PROXY = &h1
 	AUTHENTICATEF_BASIC = &h2
 	AUTHENTICATEF_HTTP = &h4
 end enum
 
-type AUTHENTICATEF as __WIDL_urlmon_generated_name_00000008
+type AUTHENTICATEF as __WIDL_urlmon_generated_name_0000000A
 
 type _tagAUTHENTICATEINFO
 	dwFlags as DWORD
@@ -971,7 +971,7 @@ declare sub IWindowForBindingUI_GetWindow_Stub(byval This as IRpcStubBuffer ptr,
 type ICodeInstall as ICodeInstall_
 type LPCODEINSTALL as ICodeInstall ptr
 
-type __WIDL_urlmon_generated_name_00000009 as long
+type __WIDL_urlmon_generated_name_0000000B as long
 enum
 	CIP_DISK_FULL = 0
 	CIP_ACCESS_DENIED = 1
@@ -985,7 +985,7 @@ enum
 	CIP_NEED_REBOOT_UI_PERMISSION = 9
 end enum
 
-type CIP_STATUS as __WIDL_urlmon_generated_name_00000009
+type CIP_STATUS as __WIDL_urlmon_generated_name_0000000B
 extern IID_ICodeInstall as const GUID
 
 type ICodeInstallVtbl
@@ -1012,7 +1012,7 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 	#define _LPUri_DEFINED
 	#define __IUri_INTERFACE_DEFINED__
 
-	type __WIDL_urlmon_generated_name_0000000A as long
+	type __WIDL_urlmon_generated_name_0000000C as long
 	enum
 		Uri_PROPERTY_ABSOLUTE_URI = 0
 		Uri_PROPERTY_STRING_START = Uri_PROPERTY_ABSOLUTE_URI
@@ -1039,9 +1039,9 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		Uri_PROPERTY_DWORD_LAST = Uri_PROPERTY_ZONE
 	end enum
 
-	type Uri_PROPERTY as __WIDL_urlmon_generated_name_0000000A
+	type Uri_PROPERTY as __WIDL_urlmon_generated_name_0000000C
 
-	type __WIDL_urlmon_generated_name_0000000B as long
+	type __WIDL_urlmon_generated_name_0000000D as long
 	enum
 		Uri_HOST_UNKNOWN = 0
 		Uri_HOST_DNS = 1
@@ -1050,7 +1050,7 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		Uri_HOST_IDN = 4
 	end enum
 
-	type Uri_HOST_TYPE as __WIDL_urlmon_generated_name_0000000B
+	type Uri_HOST_TYPE as __WIDL_urlmon_generated_name_0000000D
 	extern IID_IUri as const GUID
 
 	type IUriVtbl
@@ -2392,7 +2392,7 @@ const MUTZ_FORCE_INTRANET_FLAGS = &h2000
 const MUTZ_IGNORE_ZONE_MAPPINGS = &h4000
 const MAX_SIZE_SECURITY_ID = 512
 
-type __WIDL_urlmon_generated_name_0000000C as long
+type __WIDL_urlmon_generated_name_0000000E as long
 enum
 	PUAF_DEFAULT = &h0
 	PUAF_NOUI = &h1
@@ -2417,23 +2417,23 @@ enum
 	PUAF_DRAGPROTOCOLCHECK = &h200000
 end enum
 
-type PUAF as __WIDL_urlmon_generated_name_0000000C
+type PUAF as __WIDL_urlmon_generated_name_0000000E
 
-type __WIDL_urlmon_generated_name_0000000D as long
+type __WIDL_urlmon_generated_name_0000000F as long
 enum
 	PUAFOUT_DEFAULT = &h0
 	PUAFOUT_ISLOCKZONEPOLICY = &h1
 end enum
 
-type PUAFOUT as __WIDL_urlmon_generated_name_0000000D
+type PUAFOUT as __WIDL_urlmon_generated_name_0000000F
 
-type __WIDL_urlmon_generated_name_0000000E as long
+type __WIDL_urlmon_generated_name_00000010 as long
 enum
 	SZM_CREATE = &h0
 	SZM_DELETE = &h1
 end enum
 
-type SZM_FLAGS as __WIDL_urlmon_generated_name_0000000E
+type SZM_FLAGS as __WIDL_urlmon_generated_name_00000010
 extern IID_IInternetSecurityManager as const GUID
 
 type IInternetSecurityManagerVtbl
@@ -2709,6 +2709,10 @@ const URLACTION_SHELL_SHELLEXECUTE = &h1806
 	const URLACTION_SHELL_ENHANCED_DRAGDROP_SECURITY = &h180B
 	const URLACTION_SHELL_EXTENSIONSECURITY = &h180C
 	const URLACTION_SHELL_SECURE_DRAGSOURCE = &h180D
+	const URLACTION_SHELL_REMOTEQUERY = &h180E
+	const URLACTION_SHELL_PREVIEW = &h180F
+	const URLACTION_SHELL_SHARE = &h1810
+	const URLACTION_SHELL_ALLOW_CROSS_SITE_SHARE = &h1811
 #endif
 
 const URLACTION_SHELL_CURR_MAX = &h1811
@@ -2758,6 +2762,7 @@ const URLPOLICY_CHANNEL_SOFTDIST_AUTOINSTALL = &h30000
 const URLACTION_CHANNEL_SOFTDIST_MAX = &h1Eff
 
 #if _WIN32_WINNT = &h0602
+	const URLACTION_DOTNET_USERCONTROLS = &h2005
 	const URLACTION_BEHAVIOR_MIN = &h2000
 	const URLACTION_BEHAVIOR_RUN = &h2000
 	const URLPOLICY_BEHAVIOR_CHECK_LIST = &h10000
@@ -2850,7 +2855,7 @@ enum
 	MAX_ZONE_DESCRIPTION = 200
 end enum
 
-type __WIDL_urlmon_generated_name_0000000F as long
+type __WIDL_urlmon_generated_name_00000011 as long
 enum
 	ZAFLAGS_CUSTOM_EDIT = &h1
 	ZAFLAGS_ADD_SITES = &h2
@@ -2866,7 +2871,7 @@ enum
 	ZAFLAGS_NO_CACHE = &h40000
 end enum
 
-type ZAFLAGS as __WIDL_urlmon_generated_name_0000000F
+type ZAFLAGS as __WIDL_urlmon_generated_name_00000011
 
 type _ZONEATTRIBUTES
 	cbSize as ULONG
@@ -3317,14 +3322,14 @@ declare sub IWrappedProtocol_GetWrapperCode_Stub(byval This as IRpcStubBuffer pt
 type IGetBindHandle as IGetBindHandle_
 type LPGETBINDHANDLE as IGetBindHandle ptr
 
-type __WIDL_urlmon_generated_name_00000010 as long
+type __WIDL_urlmon_generated_name_00000012 as long
 enum
 	BINDHANDLETYPES_APPCACHE = &h0
 	BINDHANDLETYPES_DEPENDENCY = &h1
 	BINDHANDLETYPES_COUNT = &h2
 end enum
 
-type BINDHANDLETYPES as __WIDL_urlmon_generated_name_00000010
+type BINDHANDLETYPES as __WIDL_urlmon_generated_name_00000012
 extern IID_IGetBindHandle as const GUID
 
 type IGetBindHandleVtbl

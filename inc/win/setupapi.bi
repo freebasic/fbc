@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -6,6 +6,7 @@
 
 #include once "_mingw_unicode.bi"
 #include once "commctrl.bi"
+#include once "oledlg.bi"
 
 extern "Windows"
 

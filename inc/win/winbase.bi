@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
@@ -13,6 +13,8 @@
 '' The following symbols have been renamed:
 ''     procedure Sleep => Sleep_
 ''     procedure Beep => Beep_
+''     #define GHND => GHND_
+''     #define GPTR => GPTR_
 
 extern "Windows"
 
@@ -887,6 +889,11 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 declare function DisableThreadLibraryCalls(byval hLibModule as HMODULE) as WINBOOL
 declare function FreeLibrary(byval hLibModule as HMODULE) as WINBOOL
 declare function GetProcAddress(byval hModule as HMODULE, byval lpProcName as LPCSTR) as FARPROC
+
+#if _WIN32_WINNT = &h0602
+	declare function FindStringOrdinal(byval dwFindStringOrdinalFlags as DWORD, byval lpStringSource as LPCWSTR, byval cchSource as long, byval lpStringValue as LPCWSTR, byval cchValue as long, byval bIgnoreCase as WINBOOL) as long
+#endif
+
 #define _MEMORYAPI_H_
 
 type _MEMORY_RESOURCE_NOTIFICATION_TYPE as long
@@ -1151,22 +1158,11 @@ declare sub ExitProcess(byval uExitCode as UINT)
 declare function TerminateProcess(byval hProcess as HANDLE, byval uExitCode as UINT) as WINBOOL
 declare function GetExitCodeProcess(byval hProcess as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
 declare function SwitchToThread() as WINBOOL
-declare function CreateThread(byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
 declare function CreateRemoteThread(byval hProcess as HANDLE, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
 declare function OpenThread(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval dwThreadId as DWORD) as HANDLE
-declare function SetThreadPriority(byval hThread as HANDLE, byval nPriority as long) as WINBOOL
 declare function SetThreadPriorityBoost(byval hThread as HANDLE, byval bDisablePriorityBoost as WINBOOL) as WINBOOL
 declare function GetThreadPriorityBoost(byval hThread as HANDLE, byval pDisablePriorityBoost as PBOOL) as WINBOOL
-declare function GetThreadPriority(byval hThread as HANDLE) as long
-declare sub ExitThread(byval dwExitCode as DWORD)
 declare function TerminateThread(byval hThread as HANDLE, byval dwExitCode as DWORD) as WINBOOL
-declare function GetExitCodeThread(byval hThread as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
-declare function SuspendThread(byval hThread as HANDLE) as DWORD
-declare function ResumeThread(byval hThread as HANDLE) as DWORD
-declare function TlsAlloc() as DWORD
-declare function TlsGetValue(byval dwTlsIndex as DWORD) as LPVOID
-declare function TlsSetValue(byval dwTlsIndex as DWORD, byval lpTlsValue as LPVOID) as WINBOOL
-declare function TlsFree(byval dwTlsIndex as DWORD) as WINBOOL
 declare function SetProcessShutdownParameters(byval dwLevel as DWORD, byval dwFlags as DWORD) as WINBOOL
 declare function GetProcessVersion(byval ProcessId as DWORD) as DWORD
 declare sub GetStartupInfoW(byval lpStartupInfo as LPSTARTUPINFOW)
@@ -1216,7 +1212,6 @@ declare function CreateProcessAsUserW(byval hToken as HANDLE, byval lpApplicatio
 	declare function SetProcessAffinityUpdateMode(byval hProcess as HANDLE, byval dwFlags as DWORD) as WINBOOL
 	declare function QueryProcessAffinityUpdateMode(byval hProcess as HANDLE, byval lpdwFlags as LPDWORD) as WINBOOL
 	declare function UpdateProcThreadAttribute(byval lpAttributeList as LPPROC_THREAD_ATTRIBUTE_LIST, byval dwFlags as DWORD, byval Attribute as DWORD_PTR, byval lpValue as PVOID, byval cbSize as SIZE_T_, byval lpPreviousValue as PVOID, byval lpReturnSize as PSIZE_T) as WINBOOL
-	declare function SetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER, byval lpPreviousIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 	declare function GetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 	declare sub GetCurrentProcessorNumberEx(byval ProcNumber as PPROCESSOR_NUMBER)
 	declare sub GetCurrentThreadStackLimits(byval LowLimit as PULONG_PTR, byval HighLimit as PULONG_PTR)
@@ -1232,6 +1227,22 @@ declare function IsProcessorFeaturePresent(byval ProcessorFeature as DWORD) as W
 
 #if _WIN32_WINNT = &h0602
 	declare sub FlushProcessWriteBuffers()
+#endif
+
+declare function CreateThread(byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
+declare function SetThreadPriority(byval hThread as HANDLE, byval nPriority as long) as WINBOOL
+declare function GetThreadPriority(byval hThread as HANDLE) as long
+declare sub ExitThread(byval dwExitCode as DWORD)
+declare function GetExitCodeThread(byval hThread as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
+declare function SuspendThread(byval hThread as HANDLE) as DWORD
+declare function ResumeThread(byval hThread as HANDLE) as DWORD
+declare function TlsAlloc() as DWORD
+declare function TlsGetValue(byval dwTlsIndex as DWORD) as LPVOID
+declare function TlsSetValue(byval dwTlsIndex as DWORD, byval lpTlsValue as LPVOID) as WINBOOL
+declare function TlsFree(byval dwTlsIndex as DWORD) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	declare function SetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER, byval lpPreviousIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 #endif
 
 #define _PROCESSTOPOLOGYAPI_H_
@@ -1734,12 +1745,12 @@ type PTP_WIN32_IO_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval
 #endif
 
 #define _THREADPOOLLEGACYAPISET_H_
+declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval Flags as ULONG) as WINBOOL
+declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function QueueUserWorkItem(byval Function as LPTHREAD_START_ROUTINE, byval Context as PVOID, byval Flags as ULONG) as WINBOOL
 declare function UnregisterWaitEx(byval WaitHandle as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function CreateTimerQueue() as HANDLE
-declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval Flags as ULONG) as WINBOOL
 declare function ChangeTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval DueTime as ULONG, byval Period as ULONG) as WINBOOL
-declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function DeleteTimerQueueEx(byval TimerQueue as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 #define _APISETUTIL_
 declare function EncodePointer(byval Ptr as PVOID) as PVOID
@@ -2033,8 +2044,8 @@ const GMEM_NOTIFY = &h4000
 #define GMEM_LOWER GMEM_NOT_BANKED
 const GMEM_VALID_FLAGS = &h7f72
 const GMEM_INVALID_HANDLE = &h8000
-#define GHND (GMEM_MOVEABLE or GMEM_ZEROINIT)
-#define GPTR (GMEM_FIXED or GMEM_ZEROINIT)
+#define GHND_ (GMEM_MOVEABLE or GMEM_ZEROINIT)
+#define GPTR_ (GMEM_FIXED or GMEM_ZEROINIT)
 #define GlobalLRUNewest(h) cast(HANDLE, (h))
 #define GlobalLRUOldest(h) cast(HANDLE, (h))
 #define GlobalDiscard(h) GlobalReAlloc((h), 0, GMEM_MOVEABLE)
@@ -2486,6 +2497,7 @@ declare function SetEnvironmentStringsA(byval NewEnvironment as LPCH) as WINBOOL
 #endif
 
 declare sub RaiseFailFastException(byval pExceptionRecord as PEXCEPTION_RECORD, byval pContextRecord as PCONTEXT, byval dwFlags as DWORD)
+declare function SetThreadIdealProcessor(byval hThread as HANDLE, byval dwIdealProcessor as DWORD) as DWORD
 const FIBER_FLAG_FLOAT_SWITCH = &h1
 declare function CreateFiber(byval dwStackSize as SIZE_T_, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
 declare function CreateFiberEx(byval dwStackCommitSize as SIZE_T_, byval dwStackReserveSize as SIZE_T_, byval dwFlags as DWORD, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
@@ -2495,7 +2507,6 @@ declare function ConvertThreadToFiberEx(byval lpParameter as LPVOID, byval dwFla
 declare function ConvertFiberToThread() as WINBOOL
 declare sub SwitchToFiber(byval lpFiber as LPVOID)
 declare function SetThreadAffinityMask(byval hThread as HANDLE, byval dwThreadAffinityMask as DWORD_PTR) as DWORD_PTR
-declare function SetThreadIdealProcessor(byval hThread as HANDLE, byval dwIdealProcessor as DWORD) as DWORD
 
 type _THREAD_INFORMATION_CLASS as long
 enum
@@ -2830,6 +2841,7 @@ const SHUTDOWN_NORETRY = &h1
 #endif
 
 declare function CreateSemaphoreW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR) as HANDLE
+declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 declare function OpenMutexA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function CreateSemaphoreA(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCSTR) as HANDLE
 declare function OpenSemaphoreA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
@@ -2847,7 +2859,6 @@ declare function CreateFileMappingA(byval hFile as HANDLE, byval lpFileMappingAt
 declare function OpenFileMappingA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function GetLogicalDriveStringsA(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
 declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
-declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 
 #ifdef UNICODE
 	#define CreateWaitableTimer CreateWaitableTimerW

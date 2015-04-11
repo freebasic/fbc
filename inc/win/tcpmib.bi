@@ -1,10 +1,12 @@
-'' FreeBASIC binding for mingw-w64-v3.3.0
+'' FreeBASIC binding for mingw-w64-v4.0.1
 
 #pragma once
 
 #define _INC_TCPMIB
 
 #if _WIN32_WINNT = &h0602
+	type MIB_TCP_STATE as long
+
 	type _TCP_CONNECTION_OFFLOAD_STATE as long
 	enum
 		TcpConnectionOffloadStateInHost = 0
