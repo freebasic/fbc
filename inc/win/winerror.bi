@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include once "_mingw.bi"
+
 #define _WINERROR_
 const FACILITY_WINDOWSUPDATE = 36
 const FACILITY_WINDOWS_CE = 24
