@@ -107,6 +107,14 @@ const DIFFERENCE = 11
 #define MINIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(1)
 #define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(16)
 
+#ifdef UNICODE
+	#define wvsprintf wvsprintfW
+	#define wsprintf wsprintfW
+#else
+	#define wvsprintf wvsprintfA
+	#define wsprintf wsprintfA
+#endif
+
 declare function wvsprintfA(byval as LPSTR, byval as LPCSTR, byval arglist as va_list) as long
 declare function wvsprintfW(byval as LPWSTR, byval as LPCWSTR, byval arglist as va_list) as long
 declare function wsprintfA cdecl(byval as LPSTR, byval as LPCSTR, ...) as long
