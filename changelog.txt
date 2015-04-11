@@ -6,6 +6,7 @@ Version 1.03.0
 - Package name + version to all the new/updated bindings
 - Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
 - Windows API binding updated to mingw-w64 4.0.1
+- IUP binding updated to 3.13
 
 [fixed]
 - 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)

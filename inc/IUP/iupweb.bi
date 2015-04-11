@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.11.2
+'' FreeBASIC binding for iup-3.13
 
 #pragma once
 

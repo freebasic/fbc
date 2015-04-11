@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.11.2
+'' FreeBASIC binding for iup-3.13
 
 #pragma once
 
@@ -22,5 +22,7 @@ declare function IupMatGetFloat(byval ih as Ihandle ptr, byval name as const zst
 declare sub IupMatSetfAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval format as const zstring ptr, ...)
 const IUP_PRIMARY = -1
 const IUP_SECONDARY = -2
+declare sub IupMatrixSetFormula(byval ih as Ihandle ptr, byval col as long, byval formula as const zstring ptr, byval init as const zstring ptr)
+declare sub IupMatrixSetDynamic(byval ih as Ihandle ptr, byval init as const zstring ptr)
 
 end extern

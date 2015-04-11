@@ -6,10 +6,10 @@
 	extern "C"
 #endif
 
-#define __IUPLUAGLCONTROLS_H
+#define __IUPLUA_PLOT_H
 
 #ifdef LUA_TNONE
-	declare function iupglcontrolslua_open(byval L as lua_State ptr) as long
+	declare function iup_plotlua_open(byval L as lua_State ptr) as long
 
 	end extern
 #endif
