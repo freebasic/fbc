@@ -2,6 +2,7 @@ Version 1.03.0
 
 [changed]
 - -print now only prints the information, and then stops the compiler
+- non-standalone builds: -target <gcctarget> no longer searches libs in lib/freebasic/<gcctarget>, but rather in the normal lib/freebasic/<fbtarget> directory. I.e. the directory layout for native or cross compiling is the same, making packaging and distribution easier.
 
 [added]
 - Package name + version to all the new/updated bindings

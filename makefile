@@ -346,14 +346,10 @@ ifdef ENABLE_STANDALONE
   prefixincdir   := $(prefix)/inc
   prefixlibdir   := $(prefix)/$(libdir)
 else
-  ifdef TARGET
-    libsubdir := $(TARGET)
-  endif
-
   # With ENABLE_LIB64, put 64bit libs into
-  #    lib64/freebasic/<target>/
+  #    lib64/freebasic/<fbtarget>/
   # instead of the default
-  #    lib/freebasic/<target>/
+  #    lib/freebasic/<fbtarget>/
   libdirname := lib
   ifdef ENABLE_LIB64
     ifneq ($(filter x86_64 aarch64,$(TARGET_ARCH)),)
@@ -361,7 +357,7 @@ else
     endif
   endif
 
-  # Normal (non-standalone) setup: bin/fbc, include/freebasic/, lib[64]/freebasic/<target>/.
+  # Normal (non-standalone) setup: bin/fbc, include/freebasic/, lib[64]/freebasic/<fbtarget>/.
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   libdir         := $(libdirname)/$(FBNAME)/$(libsubdir)

@@ -2296,10 +2296,8 @@ private sub fbcInit2( )
 	''
 	'' Normal has additional support for gcc targets (e.g. i686-pc-mingw32),
 	'' which have to be prefixed to the executable names of cross-compiling
-	'' tools in the bin/ directory (e.g. bin/i686-pc-mingw32-ld) and have
-	'' their own subdirs in lib/freebasic/ (containing the libfb.a etc.
-	'' built with that exact cross-compiler toolchain). For native
-	'' compilation, no target id is prefixed to bin/ tools at all.
+	'' tools in the bin/ directory (e.g. bin/i686-pc-mingw32-ld). However,
+	'' for native compilation, no target is prefixed to bin/ tools at all.
 	''
 	'' Normal uses include/freebasic/ and lib/freebasic/ to hold FB includes
 	'' and libraries, to stay out of the way of the C ones in include/ and
@@ -2350,12 +2348,7 @@ private sub fbcInit2( )
 
 	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
-	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV
-	if( len( fbc.target ) > 0 ) then
-		fbc.libpath += fbc.target
-	else
-		fbc.libpath += targetid
-	end if
+	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV + targetid
 #endif
 
 	if( fbc.verbose ) then
