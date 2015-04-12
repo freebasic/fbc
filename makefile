@@ -344,7 +344,7 @@ ifdef ENABLE_STANDALONE
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
   prefixbindir   := $(prefix)
   prefixincdir   := $(prefix)/inc
-  prefixlibdir   := $(prefix)/lib/$(libsubdir)
+  prefixlibdir   := $(prefix)/$(libdir)
 else
   ifdef TARGET
     libsubdir := $(TARGET)
@@ -368,7 +368,7 @@ else
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   prefixbindir   := $(prefix)/bin
   prefixincdir   := $(prefix)/include/$(FBNAME)
-  prefixlibdir   := $(prefix)/$(libdirname)/$(FBNAME)/$(libsubdir)
+  prefixlibdir   := $(prefix)/$(libdir)
 endif
 fbcobjdir           := src/compiler/obj
 libfbobjdir         := src/rtlib/obj/$(libsubdir)
