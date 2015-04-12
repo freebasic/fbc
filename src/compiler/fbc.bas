@@ -2230,13 +2230,21 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 	end select
 
-	'' -asm overrides the target's default
 	if( fbc.asmsyntax >= 0 ) then
+		'' -asm only applies to x86 and x86_64
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+		case else
+			errReportEx( FB_ERRMSG_ASMOPTIONGIVENFORNONX86, fbGetTargetId( ), -1 )
+		end select
+
 		'' -gen gas only supports -asm intel
 		if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
 		    (fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
 			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 		end if
+
+		'' -asm overrides the target's default
 		fbSetOption( FB_COMPOPT_ASMSYNTAX, fbc.asmsyntax )
 	end if
 
@@ -3231,7 +3239,7 @@ private sub hPrintOptions( )
 	print "  @<file>          Read more command line arguments from a file"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
-	print "  -asm att|intel   Set asm format (-gen gcc)"
+	print "  -asm att|intel   Set asm format (-gen gcc|llvm, x86 or x86_64 only)"
 	print "  -b <file>        Treat file as .bas input file"
 	print "  -c               Compile only, do not link"
 	print "  -C               Preserve temporary .o files"

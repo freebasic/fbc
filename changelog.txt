@@ -15,6 +15,7 @@ Version 1.02.1
 - Windows API binding: DirectX headers missed some declarations and some didn't compile
 - crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
 - #767: Illegal byref result assignments will now cause a proper error message, not just a warning
+- Using the -asm att|intel option for non-x86[_64] targets now triggers an error
 
 
 Version 1.02.0
