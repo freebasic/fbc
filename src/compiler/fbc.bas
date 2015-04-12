@@ -212,18 +212,6 @@ private sub hSetOutName( )
 end sub
 
 private sub fbcEnd( byval errnum as integer )
-	if( errnum = 0 ) then
-		select case( fbc.print )
-		case PRINT_HOST
-			print fbGetHostId( )
-		case PRINT_TARGET
-			print fbGetTargetId( )
-		case PRINT_X
-			hSetOutName( )
-			print fbc.outname
-		end select
-	end if
-
 	'' Clean up temporary files
 	dim as string ptr file = listGetHead( @fbc.temps )
 	while( file )
@@ -3354,23 +3342,32 @@ end sub
 		fbcEnd( 1 )
 	end if
 
+	fbcInit2( )
+
+	'' Answer -print query, if any, and stop
+	'' The -print option is intended to allow shell scripts, makefiles, etc.
+	'' to query information from fbc.
+	if( fbc.print >= 0 ) then
+		select case( fbc.print )
+		case PRINT_HOST
+			print fbGetHostId( )
+		case PRINT_TARGET
+			print fbGetTargetId( )
+		case PRINT_X
+			hSetOutName( )
+			print fbc.outname
+		end select
+		fbcEnd( 0 )
+	end if
+
 	'' Show help if there are no input files
 	if( (listGetHead( @fbc.modules   ) = NULL) and _
 	    (listGetHead( @fbc.objlist   ) = NULL) and _
 	    (listGetHead( @fbc.libs.list ) = NULL) and _
 	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
-		'' ... unless there was a -print option that could be answered
-		'' without compiling anything.
-		select case( fbc.print )
-		case PRINT_HOST, PRINT_TARGET, PRINT_X
-			fbcEnd( 0 )
-		end select
-
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if
-
-	fbcInit2( )
 
 	''
 	'' Compile .bas modules

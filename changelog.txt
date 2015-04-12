@@ -1,6 +1,7 @@
 Version 1.03.0
 
 [changed]
+- -print now only prints the information, and then stops the compiler
 
 [added]
 - Package name + version to all the new/updated bindings
