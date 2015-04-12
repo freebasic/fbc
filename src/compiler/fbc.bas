@@ -2795,9 +2795,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-mfpmath=sse -msse2 "
 		end if
 
-		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
-			ln += "-masm=intel "
-		end if
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+			if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+				ln += "-masm=intel "
+			end if
+		end select
 
 	case FB_BACKEND_LLVM
 		select case( fbGetCpuFamily( ) )
