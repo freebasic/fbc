@@ -20,6 +20,7 @@ enum
 	PRINT_HOST
 	PRINT_TARGET
 	PRINT_X
+	PRINT_FBLIBDIR
 end enum
 
 type FBC_EXTOPT
@@ -1649,6 +1650,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "host"   : fbc.print = PRINT_HOST
 		case "target" : fbc.print = PRINT_TARGET
 		case "x"      : fbc.print = PRINT_X
+		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -3268,6 +3270,7 @@ private sub hPrintOptions( )
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
 	print "  -print host|target  Display host/target system name"
+	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
 	print "  -r               Write out .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm) only"
@@ -3356,6 +3359,8 @@ end sub
 		case PRINT_X
 			hSetOutName( )
 			print fbc.outname
+		case PRINT_FBLIBDIR
+			print fbc.libpath
 		end select
 		fbcEnd( 0 )
 	end if

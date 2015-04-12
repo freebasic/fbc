@@ -9,6 +9,7 @@ Version 1.03.0
 - Windows API binding updated to mingw-w64 4.0.1
 - IUP binding updated to 3.13
 - #742: fbc can now use lib64/freebasic/... instead of lib/freebasic/ if built with ENABLE_LIB64=1
+- -print fblibdir option
 
 [fixed]
 - 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
