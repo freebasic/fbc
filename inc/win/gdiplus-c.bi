@@ -9,6 +9,12 @@
 #include once "basetyps.bi"
 #include once "ddraw.bi"
 
+'' The following symbols have been renamed:
+''     struct Size => Size_
+''     struct Point => Point_
+''     struct PointF => PointF_
+''     struct Rect => Rect_
+
 extern "Windows"
 
 #define __GDIPLUS_H
