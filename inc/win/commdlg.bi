@@ -53,6 +53,11 @@
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "prsht.bi"
+#include once "rpc.bi"
+#include once "rpcndr.bi"
+#include once "wtypesbase.bi"
+#include once "unknwnbase.bi"
+#include once "objidlbase.bi"
 
 extern "Windows"
 
