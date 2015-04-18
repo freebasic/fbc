@@ -1,4 +1,26 @@
 '' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   ntdef.h
+''
+''   This file is part of the ReactOS PSDK package.
+''
+''   Contributors:
+''     Created by Casper S. Hornstrup <chorns@users.sourceforge.net>
+''
+''   THIS SOFTWARE IS NOT COPYRIGHTED
+''
+''   This source code is offered for use in the public domain. You may
+''   use, modify or distribute it freely.
+''
+''   This code is distributed in the hope that it will be useful but
+''   WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+''   DISCLAIMED. This includes but is not limited to warranties of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
 #pragma once
 

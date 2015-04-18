@@ -1,4 +1,14 @@
 '' FreeBASIC binding for glut-3.7
+''
+'' based on the C header files:
+''   /* Copyright (c) Mark J. Kilgard, 1994, 1995, 1996, 1998. */
+''
+''   /* This program is freely distributable without licensing fees  and is
+''      provided without guarantee or warrantee expressed or  implied. This
+''      program is -not- in the public domain. */
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
 #pragma once
 
