@@ -35,6 +35,7 @@ type DLGPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as
 type TIMERPROC as sub(byval as HWND, byval as UINT, byval as UINT_PTR, byval as DWORD)
 type GRAYSTRINGPROC as function(byval as HDC, byval as LPARAM, byval as long) as WINBOOL
 type WNDENUMPROC as function(byval as HWND, byval as LPARAM) as WINBOOL
+type ENUMWINDOWSPROC as WNDENUMPROC  '' custom name for backwards-compatibility (it existed in old headers despite being undocumented)
 type HOOKPROC as function(byval code as long, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 type SENDASYNCPROC as sub(byval as HWND, byval as UINT, byval as ULONG_PTR, byval as LRESULT)
 type PROPENUMPROCA as function(byval as HWND, byval as LPCSTR, byval as HANDLE) as WINBOOL
