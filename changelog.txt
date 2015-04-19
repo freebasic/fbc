@@ -17,6 +17,7 @@ Version 1.02.1
 - #767: Illegal byref result assignments will now cause a proper error message, not just a warning
 - Using the -asm att|intel option for non-x86[_64] targets now triggers an error
 - C backend: -masm=... will now only be passed to gcc for x86[_64] targets
+- Screen didn't return an error code if it failed
 
 
 Version 1.02.0
