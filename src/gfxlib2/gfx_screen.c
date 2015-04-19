@@ -437,7 +437,7 @@ FBCALL int fb_GfxScreen
 
 	FB_GRAPHICS_UNLOCK( );
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+	return res;
 }
 
 FBCALL int fb_GfxScreenQB( int mode, int visible, int active )
