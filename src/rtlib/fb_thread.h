@@ -47,4 +47,4 @@ FBCALL void              fb_TlsFreeCtxTb( void );
        void              fb_TlsExit     ( void );
 #endif
 
-#define FB_TLSGETCTX(id) (FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, sizeof( FB_##id##CTX ) );
+#define FB_TLSGETCTX(id) ((FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, sizeof( FB_##id##CTX ) ))
