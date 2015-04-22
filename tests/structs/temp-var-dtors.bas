@@ -3222,6 +3222,29 @@ namespace tempUdtArg
 		function = type( x.i )
 	end function
 
+	type MyStaticVar
+		i as integer
+		declare constructor( byref as ClassUdt )
+	end type
+
+	constructor MyStaticVar( byref rhs as ClassUdt )
+	end constructor
+
+	sub staticVarInitExpr( )
+		'' Static var initialization is wrapped in an If block that
+		'' ensures that the static var is only initialized during the
+		'' first call. This must handle temp vars in the initialization
+		'' code properly.
+		static x1 as MyStaticVar = MyStaticVar( ClassUdt( 123 ) )
+	end sub
+
+	sub staticRedimBoundsExpr( )
+		'' Static dynamic arrays with non-constant array bounds
+		'' expressions, that will be initialized with a Redim call,
+		'' are also affected
+		static array(0 to fInteger( ClassUdt( 1 ) )) as integer
+	end sub
+
 	sub test cdecl( )
 		begin( )
 			select case( fInteger( ClassUdt( 111 ) ) )
@@ -3284,6 +3307,16 @@ namespace tempUdtArg
 			next
 			CU_ASSERT( count = 5 )
 		check( 1, 0, 1 )
+
+		begin( )
+			staticVarInitExpr( )  '' 1st call (init done here)
+			staticVarInitExpr( )  '' 2nd call (no init anymore)
+		check( 1, 0, 1 )
+
+		begin( )
+			staticRedimBoundsExpr( )  '' 1st call (init done here)
+			staticRedimBoundsExpr( )  '' 2nd call (no init anymore)
+		check( 1, 0, 1 )
 	end sub
 end namespace
 
@@ -3309,6 +3342,36 @@ namespace tempStringArg
 	function fPodUdt( byref s as string ) as PodUdt
 		function = type( valint( s ) )
 	end function
+
+	type MyStaticVar
+		i as integer
+		declare constructor( byref as string )
+	end type
+
+	constructor MyStaticVar( byref rhs as string )
+	end constructor
+
+	sub staticVarInitExpr( )
+		'' Static var initialization is wrapped in an If block that
+		'' ensures that the static var is only initialized during the
+		'' first call. This must handle temp vars in the initialization
+		'' code properly.
+		static x1 as MyStaticVar = MyStaticVar( "abc" )
+
+		'' This was fairly reliable in triggering a crash, so it's probably a good test
+		static x2(0 to ...) as MyStaticVar => { _
+			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", _
+			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", _
+			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"  _
+		}
+	end sub
+
+	sub staticRedimBoundsExpr( )
+		'' Static dynamic arrays with non-constant array bounds
+		'' expressions, that will be initialized with a Redim call,
+		'' are also affected
+		static array(0 to fInteger( "1" )) as integer
+	end sub
 
 	sub test cdecl( )
 		select case( fInteger( "111" ) )
@@ -3362,6 +3425,16 @@ namespace tempStringArg
 			next
 			CU_ASSERT( count = 5 )
 		end scope
+
+		'' Static initialization tests with temp strings: the code here
+		'' shouldn't crash (other than that we can't test much, since
+		'' we can't count calls to fb_StrDelete() etc. - but we have
+		'' the tempUdtArg tests for that anyways)
+		staticVarInitExpr( )  '' 1st call (init done here)
+		staticVarInitExpr( )  '' 2nd call (no init anymore)
+
+		staticRedimBoundsExpr( )  '' 1st call (init done here)
+		staticRedimBoundsExpr( )  '' 2nd call (no init anymore)
 	end sub
 end namespace
 
