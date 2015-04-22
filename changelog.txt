@@ -13,6 +13,7 @@ Version 1.03.0
 - -print fblibdir option
 - All the recently updated bindings now have copyright/license information
 - New libbzip2 binding (64bit-capable)
+- Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
 
 [fixed]
 - 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)

@@ -40,6 +40,64 @@ function symbAddConst _
 	function = sym
 end function
 
+'' Add new constant unless it already exists
+function symbReuseOrAddConst _
+	( _
+		byval id as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as FBVALUE ptr, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr
+
+	var sym = symbAddConst( id, dtype, subtype, value, attrib )
+	if( sym = NULL ) then
+		'' Duplicate definition; allow it if the existing symbol is also
+		'' a CONST and has the same dtype and value.
+		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), id, FB_SYMBCLASS_CONST, FALSE, FALSE )
+		assert( sym )
+
+		if( (sym->typ <> dtype) or (sym->subtype <> subtype) ) then
+			exit function
+		end if
+
+		select case( typeGetDtAndPtrOnly( dtype ) )
+		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			if( value->s <> sym->val.s ) then
+				exit function
+			end if
+
+			#if __FB_DEBUG__
+				assert( value->s->class = FB_SYMBCLASS_VAR )
+				assert( sym->val.s->class = FB_SYMBCLASS_VAR )
+				if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
+					assert( *value->s->var_.littextw = *sym->val.s->var_.littextw )
+				else
+					assert( *value->s->var_.littext = *sym->val.s->var_.littext )
+				end if
+			#endif
+
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			'' Redundant float CONSTs are disallowed for now,
+			'' because comparing floats is unreliable
+			exit function
+
+			'' TODO: compare with epsilon? probably still unreliable
+			'if( value->f <> sym->val.f ) then
+			'	exit function
+			'end if
+
+		case else
+			assert( typeGetClass( dtype ) = FB_DATACLASS_INTEGER )
+			if( value->i <> sym->val.i ) then
+				exit function
+			end if
+		end select
+	end if
+
+	function = sym
+end function
+
 ''
 '' Add or lookup a global var for the given value. The value string must
 '' uniquely represent the value and the type size, such that we can use it as

@@ -1141,6 +1141,15 @@ declare function symbAddConst _
 		byval attrib as integer = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
+declare function symbReuseOrAddConst _
+	( _
+		byval id as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as FBVALUE ptr, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr
+
 declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 
 declare function symbStructBegin _
