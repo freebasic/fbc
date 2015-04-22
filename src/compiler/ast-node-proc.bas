@@ -287,7 +287,7 @@ end function
 '' astNewLINK(), such that there is only one astAdd, to avoid the dtor list
 '' being flushed too early.
 ''
-'' Sometimes it's not obvious where the astAdd's there are because some astAdd's
+'' Sometimes it's not obvious where the astAdd's are because some astAdd's
 '' are "hidden" inside other functions such as astScopeBegin().
 ''
 '' astAddUnscoped() does not have this problem because it unsets
