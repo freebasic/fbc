@@ -18,6 +18,7 @@ Version 1.02.1
 - Using the -asm att|intel option for non-x86[_64] targets now triggers an error
 - C backend: -masm=... will now only be passed to gcc for x86[_64] targets
 - Screen didn't return an error code if it failed
+- Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
 
 
 Version 1.02.0

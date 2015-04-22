@@ -920,18 +920,46 @@ private function hWrapInStaticFlag( byval code as ASTNODE ptr ) as ASTNODE ptr
 	symbSetIsImplicit( flag )
 	t = astNewDECL( flag, TRUE )
 
+	'' Since this will wrap the initialization code in an If block, we have
+	'' to take special care of temp vars from the initialization
+	'' expression(s). Their dtors should no longer be called at the end of
+	'' the whole vardecl statement, but only on the initialization code
+	'' path.
+	''
+	'' Expressions parsed by cVarDecl():
+	''    * var initializers
+	''    * array bounds (exprTB) for Redim
+	''
+	'' These can all have temp vars, but luckily they all belong to the
+	'' initialization step, which means that we don't have to use dtor list
+	'' scopes/cookies for precise control, but can safely assume that the
+	'' *whole* dtor list represents these and only these expressions.
+	''
+	'' This is somewhat similar to astNewIIF()'s handling of true/false code
+	'' paths, except that here the expression(s) aren't split up into
+	'' multiple code paths, but rather "moved" into another code path as a
+	'' whole. (that's another reason why it shouldn't be necessary to use
+	'' dtor list scopes/cookies here)
+
 	'' if flag = 0 then
+	'' Building this branch without calling temp var dtors, because those
+	'' belong to the <code>, not to this branch condition. Luckily this
+	'' condition expression is trivial and won't have temp vars itself.
 	label = symbAddLabel( NULL )
 	t = astNewLINK( t, _
 		astBuildBranch( _
 			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
-			label, FALSE ) )
+			label, FALSE, TRUE ) )
 
 	'' flag = 1
 	t = astNewLINK( t, astBuildVarAssign( flag, 1 ) )
 
 	'' <code>
 	t = astNewLINK( t, code )
+
+	'' Destroy currently registered temp vars (should be only those from the
+	'' <code>) on this code path only
+	t = astNewLINK( t, astDtorListFlush( ) )
 
 	'' end if
 	function = astNewLINK( t, astNewLABEL( label ) )
@@ -1579,22 +1607,25 @@ function cVarDecl _
 		''
 		if( sym <> NULL ) then
 			if( token <> FB_TK_EXTERN ) then
+				'' Build a LINK'ed tree of all code that should
+				'' be astAdd'ed here in place of the vardecl.
+				'' (early astAdd's would cause problems with temp var dtors)
+				dim t as ASTNODE ptr
+
 				'' not declared already?
 				if( is_declared = FALSE ) then
 					dim as FBSYMBOL ptr desc = NULL
-					dim as ASTNODE ptr var_decl = NULL
 
 					'' Don't init if it's a temp FOR var, it will
 					'' have the start condition put into it.
-					var_decl = astNewDECL( sym, _
-							((initree = NULL) and (not is_fordecl)) )
+					t = astNewDECL( sym, ((initree = NULL) and (not is_fordecl)) )
 
 					'' add the descriptor too, if any
 					desc = symbGetArrayDescriptor( sym )
 					if( desc <> NULL ) then
 						'' Note: descriptor may not have an initree here, in case it's COMMON
 						'' FIXME: should probably not add DECL nodes for COMMONs/SHAREDs in the first place (not done for EXTERNs either)
-						var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
+						t = astNewLINK( t, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 					end if
 
 					'' handle arrays (must be done after adding the decl node)
@@ -1606,7 +1637,7 @@ function cVarDecl _
 
 							'' flush the decl node, safe to do here as it's a non-static
 							'' local var (and because the decl must be flushed first)
-							var_decl = hFlushDecl( var_decl )
+							t = hFlushDecl( t )
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
@@ -1615,7 +1646,7 @@ function cVarDecl _
 								''   even if unscoped, more so than to the array's own initializer.
 								'' * This must be LINK'ed to avoid astAdd() which would destroy temp vars from the
 								''   array initializer too early.
-								var_decl = astNewLINK( var_decl, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ) )
+								t = astNewLINK( t, astTypeIniFlush( desc, symbGetTypeIniTree( desc ), FALSE, AST_OPOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
 							end if
 						end if
@@ -1626,23 +1657,22 @@ function cVarDecl _
 
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 						'' flush the init tree (must be done after adding the decl node)
-						astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
+						t = hFlushInitializer( sym, t, initree, has_dtor )
 					'' unscoped
 					else
 						'' flush the init tree (must be done after adding the decl node)
-						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
+						astAddUnscoped( hFlushInitializer( sym, t, initree, has_dtor ) )
+						t = NULL
 
 						'' initializer as assignment?
 						if( assign_initree ) then
-							dim as ASTNODE ptr assign_vardecl = any
-
 							'' clear it before it's initialized?
 							if( symbGetVarHasDtor( sym ) ) then
-								astAdd( astBuildVarDtorCall( sym, TRUE ) )
+								t = astNewLINK( t, astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
 							'' use the initializer as an assignment
-							astAdd( astTypeIniFlush( sym, assign_initree, FALSE, AST_OPOPT_ISINI ) )
+							t = astNewLINK( t, astTypeIniFlush( sym, assign_initree, FALSE, AST_OPOPT_ISINI ) )
 						end if
 					end if
 				end if
@@ -1664,9 +1694,10 @@ function cVarDecl _
 						redimcall = hWrapInStaticFlag( redimcall )
 					end if
 
-					astAdd( redimcall )
-					redimcall = NULL
+					t = astNewLINK( t, redimcall )
 				end if
+
+				astAdd( t )
 			end if
 		end if
 
