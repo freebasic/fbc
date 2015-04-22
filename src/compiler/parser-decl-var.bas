@@ -891,7 +891,7 @@ private function hVarInit _
 end function
 
 '':::::
-function hFlushDecl _
+private function hFlushDecl _
 	( _
 		byval var_decl as ASTNODE ptr _
 	) as ASTNODE ptr
