@@ -662,9 +662,9 @@ type _LbxPolyText
 end type
 
 type xLbxPolyTextReq as _LbxPolyText
+const sz_xLbxPolyTextReq = 5
 type xLbxPolyText8Req as xLbxPolyTextReq
 type xLbxPolyText16Req as xLbxPolyTextReq
-
 const sz_xLbxPolyTextReq = 5
 const sz_xLbxPolyText8Req = 5
 const sz_xLbxPolyText16Req = 5
@@ -837,6 +837,7 @@ type _LbxListenToOneEvent
 end type
 
 type xLbxListenToOneEvent as _LbxListenToOneEvent
+const sz_xLbxListenToOneEvent = 32
 
 type _LbxListenToAllEvent
 	as UBYTE type

@@ -1003,6 +1003,7 @@ type SHCONTF as DWORD
 type SFGAOF as ULONG
 #define STR_BIND_FORCE_FOLDER_SHORTCUT_RESOLVE wstr("Force Folder Shortcut Resolve")
 #define STR_AVOID_DRIVE_RESTRICTION_POLICY wstr("Avoid Drive Restriction Policy")
+#define STR_AVOID_DRIVE_RESTRICTION_POLICY wstr("Avoid Drive Restriction Policy")
 #define STR_SKIP_BINDING_CLSID wstr("Skip Binding CLSID")
 #define STR_PARSE_PREFER_FOLDER_BROWSING wstr("Parse Prefer Folder Browsing")
 #define STR_DONT_PARSE_RELATIVE wstr("Don't Parse Relative")

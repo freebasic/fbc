@@ -792,7 +792,9 @@ declare sub png_error(byval png_ptr as png_structp, byval error_message as png_c
 declare sub png_chunk_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare sub png_chunk_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
+#undef png_benign_error
 declare sub png_benign_error(byval png_ptr as png_structp, byval warning_message as png_const_charp)
+#undef png_chunk_benign_error
 declare sub png_chunk_benign_error(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare sub png_set_benign_errors(byval png_ptr as png_structp, byval allowed as long)
 declare function png_get_valid(byval png_ptr as png_const_structp, byval info_ptr as png_const_infop, byval flag as png_uint_32) as png_uint_32

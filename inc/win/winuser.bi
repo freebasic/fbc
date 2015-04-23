@@ -1019,47 +1019,46 @@ type LPMSG as tagMSG ptr
 #define MAKEWPARAM(l, h) cast(WPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELPARAM(l, h) cast(LPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELRESULT(l, h) cast(LRESULT, cast(DWORD, MAKELONG(l, h)))
-
-#ifndef __FB_64BIT__
-	const GWL_WNDPROC = -4
-	const GWL_HINSTANCE = -6
-	const GWL_HWNDPARENT = -8
-#endif
-
+const GWL_WNDPROC = -4
+const GWL_HINSTANCE = -6
+const GWL_HWNDPARENT = -8
 const GWL_STYLE = -16
 const GWL_EXSTYLE = -20
+const GWL_USERDATA = -21
+const GWL_ID = -12
 
-#ifndef __FB_64BIT__
-	const GWL_USERDATA = -21
+#ifdef __FB_64BIT__
+	#undef GWL_WNDPROC
+	#undef GWL_HINSTANCE
+	#undef GWL_HWNDPARENT
+	#undef GWL_USERDATA
 #endif
 
-const GWL_ID = -12
 const GWLP_WNDPROC = -4
 const GWLP_HINSTANCE = -6
 const GWLP_HWNDPARENT = -8
 const GWLP_USERDATA = -21
 const GWLP_ID = -12
-
-#ifndef __FB_64BIT__
-	const GCL_MENUNAME = -8
-	const GCL_HBRBACKGROUND = -10
-	const GCL_HCURSOR = -12
-	const GCL_HICON = -14
-	const GCL_HMODULE = -16
-#endif
-
+const GCL_MENUNAME = -8
+const GCL_HBRBACKGROUND = -10
+const GCL_HCURSOR = -12
+const GCL_HICON = -14
+const GCL_HMODULE = -16
 const GCL_CBWNDEXTRA = -18
 const GCL_CBCLSEXTRA = -20
-
-#ifndef __FB_64BIT__
-	const GCL_WNDPROC = -24
-#endif
-
+const GCL_WNDPROC = -24
 const GCL_STYLE = -26
 const GCW_ATOM = -32
+const GCL_HICONSM = -34
 
-#ifndef __FB_64BIT__
-	const GCL_HICONSM = -34
+#ifdef __FB_64BIT__
+	#undef GCL_MENUNAME
+	#undef GCL_HBRBACKGROUND
+	#undef GCL_HCURSOR
+	#undef GCL_HICON
+	#undef GCL_HMODULE
+	#undef GCL_WNDPROC
+	#undef GCL_HICONSM
 #endif
 
 const GCLP_MENUNAME = -8
@@ -1328,6 +1327,7 @@ const PBT_APMRESUMEAUTOMATIC = &h0012
 	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
 #endif
 
+const WM_DEVICECHANGE = &h0219
 const WM_MDICREATE = &h0220
 const WM_MDIDESTROY = &h0221
 const WM_MDIACTIVATE = &h0222
@@ -1942,6 +1942,9 @@ const PM_NOYIELD = &h0002
 #define PM_QS_SENDMESSAGE (QS_SENDMESSAGE shl 16)
 declare function RegisterHotKey(byval hWnd as HWND, byval id as long, byval fsModifiers as UINT, byval vk as UINT) as WINBOOL
 declare function UnregisterHotKey(byval hWnd as HWND, byval id as long) as WINBOOL
+const MOD_ALT = &h0001
+const MOD_CONTROL = &h0002
+const MOD_SHIFT = &h0004
 const MOD_WIN = &h0008
 
 #if _WIN32_WINNT = &h0602
@@ -2024,7 +2027,19 @@ declare function BroadcastSystemMessageExW(byval flags as DWORD, byval lpInfo as
 declare function BroadcastSystemMessageA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 declare function BroadcastSystemMessageW(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 
+const BSM_ALLCOMPONENTS = &h00000000
+const BSM_VXDS = &h00000001
+const BSM_NETDRIVER = &h00000002
+const BSM_INSTALLABLEDRIVERS = &h00000004
+const BSM_APPLICATIONS = &h00000008
 const BSM_ALLDESKTOPS = &h00000010
+const BSF_QUERY = &h00000001
+const BSF_IGNORECURRENTTASK = &h00000002
+const BSF_FLUSHDISK = &h00000004
+const BSF_NOHANG = &h00000008
+const BSF_POSTMESSAGE = &h00000010
+const BSF_FORCEIFHUNG = &h00000020
+const BSF_NOTIMEOUTIFNOTHUNG = &h00000040
 const BSF_ALLOWSFW = &h00000080
 const BSF_SENDNOTIFYMESSAGE = &h00000100
 const BSF_RETURNHDESK = &h00000200
@@ -3930,6 +3945,7 @@ declare function CallNextHookEx(byval hhk as HHOOK, byval nCode as long, byval w
 #define MF_HELP __MSABI_LONG(&h00004000)
 #define MF_RIGHTJUSTIFY __MSABI_LONG(&h00004000)
 #define MF_MOUSESELECT __MSABI_LONG(&h00008000)
+#define MF_END __MSABI_LONG(&h00000080)
 #define MFT_STRING MF_STRING
 #define MFT_BITMAP MF_BITMAP
 #define MFT_MENUBARBREAK MF_MENUBARBREAK
@@ -4423,11 +4439,14 @@ const STN_ENABLE = 2
 const STN_DISABLE = 3
 const STM_MSGMAX = &h0174
 #define WC_DIALOG MAKEINTATOM(&h8002)
+const DWL_MSGRESULT = 0
+const DWL_DLGPROC = 4
+const DWL_USER = 8
 
-#ifndef __FB_64BIT__
-	const DWL_MSGRESULT = 0
-	const DWL_DLGPROC = 4
-	const DWL_USER = 8
+#ifdef __FB_64BIT__
+	#undef DWL_MSGRESULT
+	#undef DWL_DLGPROC
+	#undef DWL_USER
 #endif
 
 const DWLP_MSGRESULT = 0

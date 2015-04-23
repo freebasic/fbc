@@ -47,6 +47,7 @@
 extern "C"
 
 #define __G_IO_H__
+#define __GIO_GIO_H_INSIDE__
 #define __GIO_TYPES_H__
 #define __GIO_ENUMS_H__
 
@@ -5565,6 +5566,7 @@ declare sub g_notification_add_button_with_target_value(byval notification as GN
 declare sub g_notification_set_default_action(byval notification as GNotification ptr, byval detailed_action as const zstring ptr)
 declare sub g_notification_set_default_action_and_target(byval notification as GNotification ptr, byval action as const zstring ptr, byval target_format as const zstring ptr, ...)
 declare sub g_notification_set_default_action_and_target_value(byval notification as GNotification ptr, byval action as const zstring ptr, byval target as GVariant ptr)
+#undef __GIO_GIO_H_INSIDE__
 
 end extern
 

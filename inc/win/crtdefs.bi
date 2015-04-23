@@ -19,8 +19,6 @@
 #include once "crt/locale.bi"
 
 #define _INC_CRTDEFS
-#define _CRTNOALIAS
-#define _CRTRESTRICT
 
 type rsize_t as uinteger
 #define _RSIZE_T_DEFINED

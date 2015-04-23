@@ -241,7 +241,6 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 	declare function PowerWriteValueUnitsSpecifier(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 #endif
 
-#define _OVERRIDE_NTSTATUS_
 declare function CallNtPowerInformation(byval as POWER_INFORMATION_LEVEL, byval as PVOID, byval as ULONG, byval as PVOID, byval as ULONG) as LONG
 
 end extern

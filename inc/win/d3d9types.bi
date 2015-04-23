@@ -28,6 +28,12 @@
 #define D3DCLEAR_TARGET __MSABI_LONG(&h00000001)
 #define D3DCLEAR_ZBUFFER __MSABI_LONG(&h00000002)
 #define D3DCLEAR_STENCIL __MSABI_LONG(&h00000004)
+const D3DCLIPPLANE0 = 1 shl 0
+const D3DCLIPPLANE1 = 1 shl 1
+const D3DCLIPPLANE2 = 1 shl 2
+const D3DCLIPPLANE3 = 1 shl 3
+const D3DCLIPPLANE4 = 1 shl 4
+const D3DCLIPPLANE5 = 1 shl 5
 #define D3DCOLOR_ARGB(a, r, g, b) cast(D3DCOLOR, (((((a) and &hff) shl 24) or (((r) and &hff) shl 16)) or (((g) and &hff) shl 8)) or ((b) and &hff))
 #define D3DCOLOR_COLORVALUE(r, g, b, a) D3DCOLOR_RGBA(cast(DWORD, (r) * 255.f), cast(DWORD, (g) * 255.f), cast(DWORD, (b) * 255.f), cast(DWORD, (a) * 255.f))
 #define D3DCOLOR_RGBA(r, g, b, a) D3DCOLOR_ARGB(a, r, g, b)
@@ -278,6 +284,7 @@ const D3DISSUE_BEGIN = 1 shl 1
 const D3DISSUE_END = 1 shl 0
 const D3DGETDATA_FLUSH = 1 shl 0
 #define D3DDECL_END() (&hFF, 0, D3DDECLTYPE_UNUSED, 0, 0, 0)
+const D3DDP_MAXTEXCOORD = 8
 #define D3DVSD_MAKETOKENTYPE(TokenType) ((TokenType shl D3DVSD_TOKENTYPESHIFT) and D3DVSD_TOKENTYPEMASK)
 #define D3DVSD_CONST(ConstantAddress, Count) ((D3DVSD_MAKETOKENTYPE(D3DVSD_TOKEN_CONSTMEM) or ((Count) shl D3DVSD_CONSTCOUNTSHIFT)) or (ConstantAddress))
 #define D3DVSD_END() &hFFFFFFFF

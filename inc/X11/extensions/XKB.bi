@@ -109,6 +109,7 @@ const XkbAXN_AXKWarningMask = cast(clong, 1) shl 6
 const XkbAllAccessXEventsMask = &h7f
 #define XkbAllStateEventsMask XkbAllStateComponentsMask
 #define XkbAllMapEventsMask XkbAllMapComponentsMask
+#define XkbAllControlEventsMask XkbAllControlsMask
 #define XkbAllIndicatorEventsMask XkbAllIndicatorsMask
 #define XkbAllNameEventsMask XkbAllNamesMask
 #define XkbAllCompatMapEventsMask XkbAllCompatMask

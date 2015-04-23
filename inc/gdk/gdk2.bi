@@ -54,6 +54,7 @@
 extern "C"
 
 #define __GDK_H__
+#define __GDK_H_INSIDE__
 #define __GDK_APP_LAUNCH_CONTEXT_H__
 #define __GDK_SCREEN_H__
 #define __GDK_TYPES_H__
@@ -412,7 +413,9 @@ declare sub gdk_device_free_history(byval events as GdkTimeCoord ptr ptr, byval 
 declare function gdk_device_get_axis(byval device as GdkDevice ptr, byval axes as gdouble ptr, byval use as GdkAxisUse, byval value as gdouble ptr) as gboolean
 declare sub gdk_input_set_extension_events(byval window as GdkWindow ptr, byval mask as gint, byval mode as GdkExtensionMode)
 declare function gdk_device_get_core_pointer() as GdkDevice ptr
+
 #define GDK_TYPE_EVENT gdk_event_get_type()
+#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
 
 type GdkEventAny as _GdkEventAny
@@ -2333,11 +2336,10 @@ declare function gdk_visual_get_bits_per_rgb(byval visual as GdkVisual ptr) as g
 declare sub gdk_visual_get_red_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_green_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_blue_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
-
 #define gdk_visual_ref(v) g_object_ref(v)
 #define gdk_visual_unref(v) g_object_unref(v)
+#undef __GDK_H_INSIDE__
 #define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
-
 declare sub gdk_parse_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare sub gdk_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare function gdk_init_check(byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean

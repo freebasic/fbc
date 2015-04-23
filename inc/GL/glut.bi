@@ -92,6 +92,8 @@ const GLUT_FULLY_COVERED = 3
 const GLUT_RED = 0
 const GLUT_GREEN = 1
 const GLUT_BLUE = 2
+const GLUT_NORMAL = 0
+const GLUT_OVERLAY = 1
 
 #ifdef __FB_WIN32__
 	const GLUT_STROKE_ROMAN = cptr(any ptr, 0)

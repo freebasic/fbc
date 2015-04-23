@@ -62,10 +62,8 @@ extern "C"
 #define _SDL_platform_h
 
 #ifdef __FB_WIN32__
-	const __WIN32__ = 1
 	#define _SDL_config_win32_h
 #else
-	const __LINUX__ = 1
 	#define SDL_BYTEORDER SDL_LIL_ENDIAN
 #endif
 

@@ -74,6 +74,7 @@ const ANYSIZE_ARRAY = 1
 	#define MAX_NATURAL_ALIGNMENT sizeof(ULONGLONG)
 	const MEMORY_ALLOCATION_ALIGNMENT = 16
 #else
+	#undef ALIGNMENT_MACHINE
 	#define MAX_NATURAL_ALIGNMENT sizeof(DWORD)
 	const MEMORY_ALLOCATION_ALIGNMENT = 8
 #endif
@@ -332,10 +333,14 @@ type PDWORDLONG as DWORDLONG ptr
 #define RotateLeft64 _rotl64
 #define RotateRight32 _rotr
 #define RotateRight64 _rotr64
-
+#undef _rotl
+#undef _rotr
+declare function _rotl cdecl(byval Value as ulong, byval Shift as long) as ulong
+declare function _rotr cdecl(byval Value as ulong, byval Shift as long) as ulong
+#undef _rotl64
+#undef _rotr64
 declare function _rotl64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
 declare function _rotr64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
-
 const ANSI_NULL = cbyte(0)
 const UNICODE_NULL = cast(wchar_t, 0)
 #define UNICODE_STRING_MAX_BYTES cast(WORD, 65534)
@@ -1146,11 +1151,36 @@ type _TEB as _TEB_
 	#define InterlockedAnd _InterlockedAnd
 	#define InterlockedOr _InterlockedOr
 	#define InterlockedXor _InterlockedXor
+	#define InterlockedIncrement _InterlockedIncrement
+	#define InterlockedIncrementAcquire InterlockedIncrement
+	#define InterlockedIncrementRelease InterlockedIncrement
+	#define InterlockedDecrement _InterlockedDecrement
+	#define InterlockedDecrementAcquire InterlockedDecrement
+	#define InterlockedDecrementRelease InterlockedDecrement
 	#define InterlockedAdd _InterlockedAdd
+	#define InterlockedExchange _InterlockedExchange
+	#define InterlockedExchangeAdd _InterlockedExchangeAdd
+	#define InterlockedCompareExchange _InterlockedCompareExchange
+	#define InterlockedCompareExchangeAcquire InterlockedCompareExchange
+	#define InterlockedCompareExchangeRelease InterlockedCompareExchange
+	#define InterlockedAnd64 _InterlockedAnd64
 	#define InterlockedAndAffinity InterlockedAnd64
+	#define InterlockedOr64 _InterlockedOr64
 	#define InterlockedOrAffinity InterlockedOr64
+	#define InterlockedXor64 _InterlockedXor64
+	#define InterlockedIncrement64 _InterlockedIncrement64
+	#define InterlockedDecrement64 _InterlockedDecrement64
 	#define InterlockedAdd64 _InterlockedAdd64
+	#define InterlockedExchange64 _InterlockedExchange64
 	#define InterlockedExchangeAcquire64 InterlockedExchange64
+	#define InterlockedExchangeAdd64 _InterlockedExchangeAdd64
+	#define InterlockedCompareExchange64 _InterlockedCompareExchange64
+	#define InterlockedCompareExchangeAcquire64 InterlockedCompareExchange64
+	#define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
+	#define InterlockedExchangePointer _InterlockedExchangePointer
+	#define InterlockedCompareExchangePointer _InterlockedCompareExchangePointer
+	#define InterlockedCompareExchangePointerAcquire _InterlockedCompareExchangePointer
+	#define InterlockedCompareExchangePointerRelease _InterlockedCompareExchangePointer
 	#define InterlockedExchangeAddSizeT(a, b) InterlockedExchangeAdd64(cptr(LONG64 ptr, a), b)
 	#define InterlockedIncrementSizeT(a) InterlockedIncrement64(cptr(LONG64 ptr, a))
 	#define InterlockedDecrementSizeT(a) InterlockedDecrement64(cptr(LONG64 ptr, a))
@@ -3369,6 +3399,7 @@ const JOB_OBJECT_LIMIT_BREAKAWAY_OK = &h00000800
 const JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK = &h00001000
 const JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = &h00002000
 const JOB_OBJECT_LIMIT_SUBSET_AFFINITY = &h00004000
+const JOB_OBJECT_LIMIT_RESERVED3 = &h00008000
 const JOB_OBJECT_LIMIT_JOB_READ_BYTES = &h00010000
 const JOB_OBJECT_LIMIT_JOB_WRITE_BYTES = &h00020000
 const JOB_OBJECT_LIMIT_RATE_CONTROL = &h00040000
@@ -4226,18 +4257,15 @@ end enum
 
 type POWER_REQUEST_TYPE as _POWER_REQUEST_TYPE
 type PPOWER_REQUEST_TYPE as _POWER_REQUEST_TYPE ptr
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const PDCAP_D0_SUPPORTED = &h00000001
-	const PDCAP_D1_SUPPORTED = &h00000002
-	const PDCAP_D2_SUPPORTED = &h00000004
-	const PDCAP_D3_SUPPORTED = &h00000008
-	const PDCAP_WAKE_FROM_D0_SUPPORTED = &h00000010
-	const PDCAP_WAKE_FROM_D1_SUPPORTED = &h00000020
-	const PDCAP_WAKE_FROM_D2_SUPPORTED = &h00000040
-	const PDCAP_WAKE_FROM_D3_SUPPORTED = &h00000080
-	const PDCAP_WARM_EJECT_SUPPORTED = &h00000100
-#endif
+const PDCAP_D0_SUPPORTED = &h00000001
+const PDCAP_D1_SUPPORTED = &h00000002
+const PDCAP_D2_SUPPORTED = &h00000004
+const PDCAP_D3_SUPPORTED = &h00000008
+const PDCAP_WAKE_FROM_D0_SUPPORTED = &h00000010
+const PDCAP_WAKE_FROM_D1_SUPPORTED = &h00000020
+const PDCAP_WAKE_FROM_D2_SUPPORTED = &h00000040
+const PDCAP_WAKE_FROM_D3_SUPPORTED = &h00000080
+const PDCAP_WARM_EJECT_SUPPORTED = &h00000100
 
 type CM_Power_Data_s
 	PD_Size as DWORD

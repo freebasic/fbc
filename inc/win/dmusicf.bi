@@ -29,7 +29,6 @@
 #include once "mmsystem.bi"
 
 #define __WINE_DMUSIC_FILEFORMATS_H
-#define COM_NO_WINDOWS_H
 #define DMUS_FOURCC_GUID_CHUNK mmioFOURCC(asc("g"), asc("u"), asc("i"), asc("d"))
 #define DMUS_FOURCC_INFO_LIST mmioFOURCC(asc("I"), asc("N"), asc("F"), asc("O"))
 #define DMUS_FOURCC_UNFO_LIST mmioFOURCC(asc("U"), asc("N"), asc("F"), asc("O"))

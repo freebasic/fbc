@@ -37,6 +37,7 @@
 extern "C"
 
 #define __ATK_H__
+#define __ATK_H_INSIDE__
 #define __ATK_OBJECT_H__
 #define __ATK_VERSION_H__
 const ATK_MAJOR_VERSION = 2
@@ -55,6 +56,7 @@ const ATK_INTERFACE_AGE = 1
 #define ATK_VERSION_CUR_STABLE G_ENCODE_VERSION(ATK_MAJOR_VERSION, ATK_MINOR_VERSION)
 #define ATK_VERSION_PREV_STABLE G_ENCODE_VERSION(ATK_MAJOR_VERSION, ATK_MINOR_VERSION - 2)
 #define ATK_VERSION_MIN_REQUIRED ATK_VERSION_CUR_STABLE
+#undef ATK_VERSION_MAX_ALLOWED
 #define ATK_VERSION_MAX_ALLOWED ATK_VERSION_CUR_STABLE
 
 declare function atk_get_major_version() as guint
@@ -1478,6 +1480,7 @@ type _AtkWindowIface
 end type
 
 declare function atk_window_get_type() as GType
+#undef __ATK_H_INSIDE__
 
 end extern
 

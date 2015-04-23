@@ -37,3 +37,15 @@
 #include once "X11/Xmd.bi"
 
 #define _XF86VM_H_
+const CLKFLAG_PROGRAMABLE = 1
+const XF86VidModeNumberEvents = 0
+const XF86VidModeBadClock = 0
+const XF86VidModeBadHTimings = 1
+const XF86VidModeBadVTimings = 2
+const XF86VidModeModeUnsuitable = 3
+const XF86VidModeExtensionDisabled = 4
+const XF86VidModeClientNotLocal = 5
+const XF86VidModeZoomLocked = 6
+#define XF86VidModeNumberErrors (XF86VidModeZoomLocked + 1)
+const XF86VM_READ_PERMISSION = 1
+const XF86VM_WRITE_PERMISSION = 2

@@ -47,6 +47,7 @@
 extern "C"
 
 #define GDK_PIXBUF_H
+#define GDK_PIXBUF_H_INSIDE
 const GDK_PIXBUF_FEATURES_H = 1
 const GDK_PIXBUF_MAJOR = 2
 const GDK_PIXBUF_MINOR = 30
@@ -302,6 +303,7 @@ declare function gdk_interp_type_get_type() as GType
 #define GDK_TYPE_INTERP_TYPE gdk_interp_type_get_type()
 declare function gdk_pixbuf_rotation_get_type() as GType
 #define GDK_TYPE_PIXBUF_ROTATION gdk_pixbuf_rotation_get_type()
+#undef GDK_PIXBUF_H_INSIDE
 
 end extern
 

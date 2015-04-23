@@ -35,6 +35,7 @@
 
 #define _XFUNCS_H_
 #define _XFUNCS_H_INCLUDED_STRING_H
+#undef bzero
 #define bzero(b, len) memset(b, 0, len)
 
 #ifdef __FB_WIN32__

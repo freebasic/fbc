@@ -681,6 +681,7 @@ const NUM_EISA_RANGES = 4
 #define REGSTR_VAL_DPMS __TEXT("DPMS")
 #define REGSTR_VAL_RESUMERESET __TEXT("ResumeReset")
 #define REGSTR_VAL_DESCRIPTION __TEXT("Description")
+#define REGSTR_KEY_SYSTEM __TEXT("System")
 #define REGSTR_KEY_USER __TEXT("User")
 #define REGSTR_VAL_DPI __TEXT("dpi")
 #define REGSTR_VAL_PCICOPTIONS __TEXT("PCICOptions")

@@ -66,7 +66,9 @@ const ICMODE_FASTDECOMPRESS = 3
 const ICMODE_QUERY = 4
 const ICMODE_FASTCOMPRESS = 5
 const ICMODE_DRAW = 8
+#define AVIIF_LIST __MSABI_LONG(&h00000001)
 #define AVIIF_TWOCC __MSABI_LONG(&h00000002)
+#define AVIIF_KEYFRAME __MSABI_LONG(&h00000010)
 const ICQUALITY_LOW = 0
 const ICQUALITY_HIGH = 10000
 const ICQUALITY_DEFAULT = -1
@@ -215,6 +217,7 @@ type ICSETSTATUSPROC
 	Status as function(byval lParam as LPARAM, byval message as UINT, byval l as LONG) as LONG
 end type
 
+#define ICDECOMPRESS_HURRYUP __MSABI_LONG(&h80000000)
 #define ICDECOMPRESS_UPDATE __MSABI_LONG(&h40000000)
 #define ICDECOMPRESS_PREROLL __MSABI_LONG(&h20000000)
 #define ICDECOMPRESS_NULLFRAME __MSABI_LONG(&h10000000)
@@ -245,6 +248,9 @@ type ICDECOMPRESSEX
 	dySrc as long
 end type
 
+#define ICDRAW_QUERY __MSABI_LONG(&h00000001)
+#define ICDRAW_FULLSCREEN __MSABI_LONG(&h00000002)
+#define ICDRAW_HDC __MSABI_LONG(&h00000004)
 #define ICDRAW_ANIMATE __MSABI_LONG(&h00000008)
 #define ICDRAW_CONTINUE __MSABI_LONG(&h00000010)
 #define ICDRAW_MEMORYDC __MSABI_LONG(&h00000020)
@@ -270,6 +276,8 @@ type ICDRAWBEGIN
 	dwScale as DWORD
 end type
 
+#define ICDRAW_HURRYUP __MSABI_LONG(&h80000000)
+#define ICDRAW_UPDATE __MSABI_LONG(&h40000000)
 #define ICDRAW_PREROLL __MSABI_LONG(&h20000000)
 #define ICDRAW_NULLFRAME __MSABI_LONG(&h10000000)
 #define ICDRAW_NOTKEYFRAME __MSABI_LONG(&h08000000)
@@ -761,6 +769,7 @@ type IAVIPersistFileVtbl_
 end type
 
 type PAVIPERSISTFILE as IAVIPersistFile ptr
+#define PAVIFILE IAVIFile ptr
 type IAVIFileVtbl as IAVIFileVtbl_
 
 type IAVIFile
@@ -780,7 +789,9 @@ type IAVIFileVtbl_
 	DeleteStream as function(byval This as IAVIFile ptr, byval fccType as DWORD, byval lParam as LONG) as HRESULT
 end type
 
+#undef PAVIFILE
 type PAVIFILE as IAVIFile ptr
+#define PGETFRAME IGetFrame ptr
 type IGetFrameVtbl as IGetFrameVtbl_
 
 type IGetFrame
@@ -797,6 +808,7 @@ type IGetFrameVtbl_
 	SetFormat as function(byval This as IGetFrame ptr, byval lpbi as LPBITMAPINFOHEADER, byval lpBits as LPVOID, byval x as long, byval y as long, byval dx as long, byval dy as long) as HRESULT
 end type
 
+#undef PGETFRAME
 type PGETFRAME as IGetFrame ptr
 #define DEFINE_AVIGUID(name, l, w1, w2) DEFINE_GUID(name, l, w1, w2, &hC0, 0, 0, 0, 0, 0, 0, &h46)
 extern IID_IAVIFile as const GUID

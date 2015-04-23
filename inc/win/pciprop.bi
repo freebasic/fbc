@@ -165,6 +165,7 @@
 	const DevProp_PciExpressDevice_PayloadOrRequestSize_1024Bytes = 3
 	const DevProp_PciExpressDevice_PayloadOrRequestSize_2048Bytes = 4
 	const DevProp_PciExpressDevice_PayloadOrRequestSize_4096Bytes = 5
+	const DevProp_PciExpressDevice_LinkSpeed_TwoAndHalf_Gbps = 1
 	const DevProp_PciExpressDevice_LinkSpeed_Five_Gbps = 2
 	const DevProp_PciExpressDevice_LinkWidth_By_1 = 1
 	const DevProp_PciExpressDevice_LinkWidth_By_2 = 2

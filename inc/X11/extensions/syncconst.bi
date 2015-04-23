@@ -110,6 +110,22 @@ const XSyncCAEvents = cast(clong, 1) shl 5
 		(pv)->lo = 0
 	end scope
 #endmacro
+#define XSyncIntToValue(pv, i) _XSyncIntToValue(pv, i)
+#define XSyncIntsToValue(pv, l, h) _XSyncIntsToValue(pv, l, h)
+#define XSyncValueGreaterThan(a, b) _XSyncValueGreaterThan(a, b)
+#define XSyncValueLessThan(a, b) _XSyncValueLessThan(a, b)
+#define XSyncValueGreaterOrEqual(a, b) _XSyncValueGreaterOrEqual(a, b)
+#define XSyncValueLessOrEqual(a, b) _XSyncValueLessOrEqual(a, b)
+#define XSyncValueEqual(a, b) _XSyncValueEqual(a, b)
+#define XSyncValueIsNegative(v) _XSyncValueIsNegative(v)
+#define XSyncValueIsZero(a) _XSyncValueIsZero(a)
+#define XSyncValueIsPositive(v) _XSyncValueIsPositive(v)
+#define XSyncValueLow32(v) _XSyncValueLow32(v)
+#define XSyncValueHigh32(v) _XSyncValueHigh32(v)
+#define XSyncValueAdd(presult, a, b, poverflow) _XSyncValueAdd(presult, a, b, poverflow)
+#define XSyncValueSubtract(presult, a, b, poverflow) _XSyncValueSubtract(presult, a, b, poverflow)
+#define XSyncMaxValue(pv) _XSyncMaxValue(pv)
+#define XSyncMinValue(pv) _XSyncMinValue(pv)
 
 type XSyncValueType as long
 enum

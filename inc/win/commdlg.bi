@@ -684,6 +684,9 @@ const FR_HIDEUPDOWN = &h4000
 const FR_HIDEMATCHCASE = &h8000
 const FR_HIDEWHOLEWORD = &h10000
 const FR_RAW = &h20000
+const FR_MATCHDIAC = &h20000000
+const FR_MATCHKASHIDA = &h40000000
+const FR_MATCHALEFHAMZA = &h80000000
 declare function FindTextA(byval as LPFINDREPLACEA) as HWND
 declare function FindTextW(byval as LPFINDREPLACEW) as HWND
 

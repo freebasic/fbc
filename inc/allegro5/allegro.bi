@@ -58,6 +58,67 @@ extern "C"
 	#define _AL_DLL
 #endif
 
+#ifdef __FB_WIN32__
+	const ALLEGRO_MINGW32 = 1
+#else
+	const ALLEGRO_UNIX = 1
+#endif
+
+const ALLEGRO_HAVE_DIRENT_H = 1
+const ALLEGRO_HAVE_INTTYPES_H = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_LINUX_AWE_VOICE_H = 1
+	const ALLEGRO_HAVE_LINUX_INPUT_H = 1
+	const ALLEGRO_HAVE_LINUX_JOYSTICK_H = 1
+	const ALLEGRO_HAVE_LINUX_SOUNDCARD_H = 1
+	const ALLEGRO_HAVE_SOUNDCARD_H = 1
+#endif
+
+const ALLEGRO_HAVE_STDBOOL_H = 1
+const ALLEGRO_HAVE_STDINT_H = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_SV_PROCFS_H = 1
+#endif
+
+const ALLEGRO_HAVE_SYS_IO_H = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_SYS_SOUNDCARD_H = 1
+#endif
+
+const ALLEGRO_HAVE_SYS_STAT_H = 1
+const ALLEGRO_HAVE_SYS_TIME_H = 1
+const ALLEGRO_HAVE_TIME_H = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_SYS_UTSNAME_H = 1
+#endif
+
+const ALLEGRO_HAVE_SYS_TYPES_H = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_OSATOMIC_H = 1
+	const ALLEGRO_HAVE_SYS_INOTIFY_H = 1
+	const ALLEGRO_HAVE_SYS_TIMERFD_H = 1
+#endif
+
+const ALLEGRO_HAVE_GETEXECNAME = 1
+const ALLEGRO_HAVE_MKSTEMP = 1
+
+#ifdef __FB_LINUX__
+	const ALLEGRO_HAVE_MMAP = 1
+	const ALLEGRO_HAVE_MPROTECT = 1
+	const ALLEGRO_HAVE_SCHED_YIELD = 1
+	const ALLEGRO_HAVE_SYSCONF = 1
+#endif
+
+const ALLEGRO_HAVE_FSEEKO = 1
+const ALLEGRO_HAVE_FTELLO = 1
+const ALLEGRO_HAVE_VA_COPY = 1
+const ALLEGRO_LITTLE_ENDIAN = 1
+
 #if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
 	#define ALLEGRO_PLATFORM_STR "MinGW32.s"
 #elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
@@ -66,14 +127,28 @@ extern "C"
 
 #ifdef __FB_WIN32__
 	#define ALLEGRO_WINDOWS
-	#define ALLEGRO_LITTLE_ENDIAN
-	#define ENUM_CURRENT_SETTINGS (DWORD - 1)
+	#define ALLEGRO_I386
 #else
+	const ALLEGRO_WITH_XWINDOWS = 1
+	const ALLEGRO_XWINDOWS_WITH_XCURSOR = 1
+	const ALLEGRO_XWINDOWS_WITH_XF86VIDMODE = 1
+	const ALLEGRO_XWINDOWS_WITH_XINERAMA = 1
+	const ALLEGRO_XWINDOWS_WITH_XRANDR = 1
+	const ALLEGRO_XWINDOWS_WITH_XIM = 1
+	const ALLEGRO_LINUX = 1
 	#define ALLEGRO_PLATFORM_STR "Unix"
 #endif
 
 #define __al_included_allegro5_astdint_h
 #define __al_included_allegro5_astdbool_h
+#define ALLEGRO_GCC
+
+#ifdef __FB_64BIT__
+	#define ALLEGRO_AMD64
+#else
+	#define ALLEGRO_I386
+#endif
+
 #define READ3BYTES(p) _
 	( cptr(ubyte ptr, (p))[0]        or _
 	 (cptr(ubyte ptr, (p))[1] shl 8) or _

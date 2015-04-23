@@ -42,6 +42,7 @@ const _LIBICONV_VERSION_ = &h010E
 	extern _libiconv_version as long
 #endif
 
+#undef iconv_t
 #define iconv_t libiconv_t
 type libiconv_t as any ptr
 #define iconv_open libiconv_open

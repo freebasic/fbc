@@ -37,6 +37,23 @@
 extern "C"
 
 #define _SYNC_H_
+#undef XSyncIntToValue
+#undef XSyncIntsToValue
+#undef XSyncValueGreaterThan
+#undef XSyncValueLessThan
+#undef XSyncValueGreaterOrEqual
+#undef XSyncValueLessOrEqual
+#undef XSyncValueEqual
+#undef XSyncValueIsNegative
+#undef XSyncValueIsZero
+#undef XSyncValueIsPositive
+#undef XSyncValueLow32
+#undef XSyncValueHigh32
+#undef XSyncValueAdd
+#undef XSyncValueSubtract
+#undef XSyncMaxValue
+#undef XSyncMinValue
+
 declare sub XSyncIntToValue(byval as XSyncValue ptr, byval as long)
 declare sub XSyncIntsToValue(byval as XSyncValue ptr, byval as ulong, byval as long)
 declare function XSyncValueGreaterThan(byval as XSyncValue, byval as XSyncValue) as long

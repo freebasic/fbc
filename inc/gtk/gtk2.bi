@@ -66,6 +66,7 @@
 extern "C"
 
 #define __GTK_H__
+#define __GTK_H_INSIDE__
 #define __GTK_ABOUT_DIALOG_H__
 #define __GTK_DIALOG_H__
 #define __GTK_WINDOW_H__
@@ -12140,6 +12141,7 @@ declare sub gtk_tips_query_start_query(byval tips_query as GtkTipsQuery ptr)
 declare sub gtk_tips_query_stop_query(byval tips_query as GtkTipsQuery ptr)
 declare sub gtk_tips_query_set_caller(byval tips_query as GtkTipsQuery ptr, byval caller as GtkWidget ptr)
 declare sub gtk_tips_query_set_labels(byval tips_query as GtkTipsQuery ptr, byval label_inactive as const zstring ptr, byval label_no_tip as const zstring ptr)
+#undef __GTK_H_INSIDE__
 
 end extern
 

@@ -490,6 +490,7 @@ declare sub FcStrListFirst(byval list as FcStrList ptr)
 declare function FcStrListNext(byval list as FcStrList ptr) as FcChar8 ptr
 declare sub FcStrListDone(byval list as FcStrList ptr)
 declare function FcConfigParseAndLoad(byval config as FcConfig ptr, byval file as const FcChar8 ptr, byval complain as FcBool) as FcBool
+#undef FC_ATTRIBUTE_SENTINEL
 #define FcConfigGetRescanInverval FcConfigGetRescanInverval_REPLACE_BY_FcConfigGetRescanInterval
 #define FcConfigSetRescanInverval FcConfigSetRescanInverval_REPLACE_BY_FcConfigSetRescanInterval
 

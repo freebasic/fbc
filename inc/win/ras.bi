@@ -516,6 +516,9 @@ end type
 #define LPRASSLIPW RASSLIPW ptr
 #define LPRASSLIPA RASSLIPA ptr
 #define LPRASSLIP RASSLIP ptr
+
+const RASCCPCA_MPPC = &h00000006
+const RASCCPCA_STAC = &h00000005
 const RASCCPO_Compression = &h00000001
 const RASCCPO_HistoryLess = &h00000002
 const RASCCPO_Encryption56bit = &h00000010

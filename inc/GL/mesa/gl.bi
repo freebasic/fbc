@@ -984,6 +984,10 @@ type PFNGLTEXIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, by
 type PFNGLTEXSUBIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, byval xoffset as GLint, byval yoffset as GLint, byval zoffset as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval pixels as const GLvoid ptr)
 type PFNGLCOPYTEXSUBIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, byval xoffset as GLint, byval yoffset as GLint, byval zoffset as GLint, byval x as GLint, byval y as GLint, byval width as GLsizei, byval height as GLsizei)
 
+const GL_CONSTANT_COLOR = &h8001
+const GL_ONE_MINUS_CONSTANT_COLOR = &h8002
+const GL_CONSTANT_ALPHA = &h8003
+const GL_ONE_MINUS_CONSTANT_ALPHA = &h8004
 const GL_COLOR_TABLE = &h80D0
 const GL_POST_CONVOLUTION_COLOR_TABLE = &h80D1
 const GL_POST_COLOR_MATRIX_COLOR_TABLE = &h80D2
@@ -1049,6 +1053,11 @@ const GL_MINMAX_FORMAT = &h802F
 const GL_MINMAX_SINK = &h8030
 const GL_TABLE_TOO_LARGE = &h8031
 const GL_BLEND_EQUATION = &h8009
+const GL_MIN = &h8007
+const GL_MAX = &h8008
+const GL_FUNC_ADD = &h8006
+const GL_FUNC_SUBTRACT = &h800A
+const GL_FUNC_REVERSE_SUBTRACT = &h800B
 const GL_BLEND_COLOR = &h8005
 
 declare sub glColorTable(byval target as GLenum, byval internalformat as GLenum, byval width as GLsizei, byval format as GLenum, byval type as GLenum, byval table as const GLvoid ptr)
