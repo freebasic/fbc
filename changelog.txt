@@ -20,6 +20,7 @@ Version 1.02.1
 - C backend: -masm=... will now only be passed to gcc for x86[_64] targets
 - Screen didn't return an error code if it failed
 - Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
+- "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
 
 
 Version 1.02.0
