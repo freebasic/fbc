@@ -335,7 +335,10 @@ private function hBaseMemberAccess _
 	( _
 		_
 	) as ASTNODE ptr
-	
+
+	'' BASE
+	assert( lexGetToken( ) = FB_TK_BASE )
+
 	var proc = parser.currproc
 
 	'' not inside a method?
@@ -359,23 +362,19 @@ private function hBaseMemberAccess _
 			return astNewCONSTi( 0 )
 		end if
 
-		'' skip BASE
+		'' BASE
 		lexSkipToken( LEXCHECK_NOPERIOD )
 
-		'' skip '.'
-		lexSkipToken()
+		'' '.'
+		if( hMatch( CHAR_DOT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			hSkipStmt( )
+			return astNewCONSTi( 0 )
+		end if
 
 		'' (BASE '.')?
 		if( lexGetToken() <> FB_TK_BASE ) then
 			exit do
-		end if
-
-		'' '.'
-		if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
-			errReport( FB_ERRMSG_EXPECTEDPERIOD )
-			'' error recovery: skip stmt, return
-			hSkipStmt( )
-			return astNewCONSTi( 0 )
 		end if
 
 		base_ = symbGetSubtype( base_ )->udt.base
