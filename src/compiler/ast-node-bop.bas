@@ -1230,9 +1230,16 @@ function astNewBOP _
 		end if
 	end select
 
-	''::::::
-
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
+	''
+	'' ldtype/rdtype can be different for cases like SHL/SHR or pointer arithmetic,
+	'' but for the math, bitwise or relational operators, they will have been
+	'' promoted to the same type.
+	''
+	'' String concatenation/comparison operations won't be affected since
+	'' they don't use CONSTs (string literals are VARs). Even "str & int"
+	'' BOPs are already converted to "str + fb_IntToStr(int)".
+
 	if( astIsCONST( l ) and astIsCONST( r ) ) then
 		l = hConstBop( op, dtype, subtype, l, r )
 
@@ -1243,7 +1250,7 @@ function astNewBOP _
 
 		return l
 
-	elseif( astIsCONST( l ) and ldtype = rdtype and is_str = FALSE ) then
+	elseif( astIsCONST( l ) ) then
 		select case op
 		case AST_OP_ADD, AST_OP_MUL, _
 		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
