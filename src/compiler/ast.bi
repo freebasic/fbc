@@ -1385,8 +1385,6 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astCopy(dst, src) *dst = *src
 
-#define astSwap(dst, src) swap *dst, *src
-
 #define astGetClass(n) n->class
 
 #define astGetLeft( n ) n->l

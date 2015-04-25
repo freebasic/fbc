@@ -1301,7 +1301,7 @@ function astNewBOP _
 		if( do_swap ) then
 			swap ldtype, rdtype
 			swap ldclass, rdclass
-			astSwap( l, r )
+			swap l, r
 		end if
 	end if
 
