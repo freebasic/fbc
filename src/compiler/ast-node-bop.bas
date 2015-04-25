@@ -1307,6 +1307,32 @@ function astNewBOP _
 
 	if( astIsCONST( r ) ) then
 		select case op
+		case AST_OP_NE
+			'' Integer comparison (not a string/float one)?
+			if( (ldclass = FB_DATACLASS_INTEGER) and (rdclass = FB_DATACLASS_INTEGER) ) then
+				if( r->val.i = 0 ) then
+					''
+					'' x <> 0  =>  x  if x already is a boolean
+					''
+					'' but only if x is a relational BOP, for example:
+					''   (a <> b) <> 0  =>  a <> b
+					''
+					'' Generally there are more cases where this optimization could be done, for example:
+					''   (not a) <> 0  =>   not a   (at least if the <not a> has Integer type, i.e. boolean)
+					'' but then astBuildBranch() could be missing the BOP for doing an optimized conditional branch,
+					'' so it's probably better to only optimize if there will still be a BOP.
+					''
+					if( l->class = AST_NODECLASS_BOP ) then
+						select case( l->op.op )
+						case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
+						     AST_OP_LT, AST_OP_GE, AST_OP_LE
+							astDelNode( r )
+							return l
+						end select
+					end if
+				end if
+			end if
+
 		case AST_OP_ADD
 			select case( l->class )
 			case AST_NODECLASS_OFFSET
