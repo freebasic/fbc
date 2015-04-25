@@ -1344,21 +1344,13 @@ function astNewBOP _
 					'' (a <  b) = 0  =>  (a >= b)
 					'' etc.
 					if( l->class = AST_NODECLASS_BOP ) then
-						var optimize = FALSE
-
 						select case( l->op.op )
-						case AST_OP_EQ : l->op.op = AST_OP_NE : optimize = TRUE
-						case AST_OP_NE : l->op.op = AST_OP_EQ : optimize = TRUE
-						case AST_OP_GT : l->op.op = AST_OP_LE : optimize = TRUE
-						case AST_OP_LT : l->op.op = AST_OP_GE : optimize = TRUE
-						case AST_OP_GE : l->op.op = AST_OP_LT : optimize = TRUE
-						case AST_OP_LE : l->op.op = AST_OP_GT : optimize = TRUE
-						end select
-
-						if( optimize ) then
+						case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
+						     AST_OP_LT, AST_OP_GE, AST_OP_LE
+							l->op.op = astGetInverseLogOp( l->op.op )
 							astDelNode( r )
 							return l
-						end if
+						end select
 					end if
 				end if
 			end if
