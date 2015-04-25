@@ -163,7 +163,9 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIW
 	#define StrFormatByteSize StrFormatByteSizeW
 	#define StrFormatKBSize StrFormatKBSizeW
+	#define StrNCat StrNCatW
 	#define StrTrim StrTrimW
+	#define StrCatBuff StrCatBuffW
 	#define ChrCmpI ChrCmpIW
 	#define wvnsprintf wvnsprintfW
 	#define wnsprintf wnsprintfW
@@ -202,7 +204,9 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIA
 	#define StrFormatByteSize StrFormatByteSizeA
 	#define StrFormatKBSize StrFormatKBSizeA
+	#define StrNCat StrNCatA
 	#define StrTrim StrTrimA
+	#define StrCatBuff StrCatBuffA
 	#define ChrCmpI ChrCmpIA
 	#define wvnsprintf wvnsprintfA
 	#define wnsprintf wnsprintfA
@@ -242,23 +246,30 @@ declare function IntlStrEqWorkerW(byval fCaseSens as WINBOOL, byval lpString1 as
 #define PathIsHTMLFileW(pszPath) PathIsContentTypeW(pszPath, SZ_CONTENTTYPE_HTMLW)
 #define STIF_DEFAULT __MSABI_LONG(&h00000000)
 #define STIF_SUPPORT_HEX __MSABI_LONG(&h00000001)
+#define StrCatA lstrcatA
 #define StrCmpA lstrcmpA
 #define StrCmpIA lstrcmpiA
+#define StrCpyA lstrcpyA
 #define StrCpyNA lstrcpynA
 #define StrToLong StrToInt
 #define StrNCmp StrCmpN
 #define StrNCmpI StrCmpNI
 #define StrNCpy StrCpyN
+#define StrCatN StrNCat
 
 #ifdef UNICODE
 	#define StrCatBuff StrCatBuffW
+	#define StrCat StrCatW
 	#define StrCmp StrCmpW
 	#define StrCmpI StrCmpIW
+	#define StrCpy StrCpyW
 	#define StrCpyN StrCpyNW
 #else
 	#define StrCatBuff StrCatBuffA
+	#define StrCat lstrcatA
 	#define StrCmp lstrcmpA
 	#define StrCmpI lstrcmpiA
+	#define StrCpy lstrcpyA
 	#define StrCpyN lstrcpynA
 #endif
 
@@ -1096,9 +1107,11 @@ declare function AssocQueryKeyW(byval flags as ASSOCF, byval key as ASSOCKEY, by
 #endif
 
 #ifdef UNICODE
+	#define SHOpenRegStream SHOpenRegStreamW
 	#define SHOpenRegStream2 SHOpenRegStream2W
 	#define SHCreateStreamOnFile SHCreateStreamOnFileW
 #else
+	#define SHOpenRegStream SHOpenRegStreamA
 	#define SHOpenRegStream2 SHOpenRegStream2A
 	#define SHCreateStreamOnFile SHCreateStreamOnFileA
 #endif
@@ -1107,6 +1120,7 @@ declare function SHOpenRegStreamA(byval hkey as HKEY, byval pszSubkey as LPCSTR,
 declare function SHOpenRegStreamW(byval hkey as HKEY, byval pszSubkey as LPCWSTR, byval pszValue as LPCWSTR, byval grfMode as DWORD) as IStream ptr
 declare function SHOpenRegStream2A(byval hkey as HKEY, byval pszSubkey as LPCSTR, byval pszValue as LPCSTR, byval grfMode as DWORD) as IStream ptr
 declare function SHOpenRegStream2W(byval hkey as HKEY, byval pszSubkey as LPCWSTR, byval pszValue as LPCWSTR, byval grfMode as DWORD) as IStream ptr
+#undef SHOpenRegStream
 #define SHOpenRegStream SHOpenRegStream2
 declare function SHCreateStreamOnFileA(byval pszFile as LPCSTR, byval grfMode as DWORD, byval ppstm as IStream ptr ptr) as HRESULT
 declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode as DWORD, byval ppstm as IStream ptr ptr) as HRESULT

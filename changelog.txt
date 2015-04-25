@@ -13,7 +13,7 @@ Version 1.02.1
 - 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
 - 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing; wsprintf/wvsprintf declarations were missing; ole2.bi couldn't be included directly/alone anymore.
 - bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
-- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; shlwapi.bi #includes shlobj.bi again (for backwards compatibility).
+- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; shlwapi.bi #includes shlobj.bi again (for backwards compatibility), some #defines were missing (e.g. lstrcpy/lstrcat).
 - crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
 - #767: Illegal byref result assignments will now cause a proper error message, not just a warning
 - Using the -asm att|intel option for non-x86[_64] targets now triggers an error
