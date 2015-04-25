@@ -1333,6 +1333,36 @@ function astNewBOP _
 				end if
 			end if
 
+		case AST_OP_EQ
+			'' Integer comparison (not a string/float one)?
+			if( (ldclass = FB_DATACLASS_INTEGER) and (rdclass = FB_DATACLASS_INTEGER) ) then
+				if( r->val.i = 0 ) then
+					'' Solve out = 0 checks on relational BOPs: = 0 is a logical negation,
+					'' and we can solve it out by inverting the relational BOP.
+					'' (a <> b) = 0  =>  (a =  b)
+					'' (a =  b) = 0  =>  (a <> b)
+					'' (a <  b) = 0  =>  (a >= b)
+					'' etc.
+					if( l->class = AST_NODECLASS_BOP ) then
+						var optimize = FALSE
+
+						select case( l->op.op )
+						case AST_OP_EQ : l->op.op = AST_OP_NE : optimize = TRUE
+						case AST_OP_NE : l->op.op = AST_OP_EQ : optimize = TRUE
+						case AST_OP_GT : l->op.op = AST_OP_LE : optimize = TRUE
+						case AST_OP_LT : l->op.op = AST_OP_GE : optimize = TRUE
+						case AST_OP_GE : l->op.op = AST_OP_LT : optimize = TRUE
+						case AST_OP_LE : l->op.op = AST_OP_GT : optimize = TRUE
+						end select
+
+						if( optimize ) then
+							astDelNode( r )
+							return l
+						end if
+					end if
+				end if
+			end if
+
 		case AST_OP_ADD
 			select case( l->class )
 			case AST_NODECLASS_OFFSET

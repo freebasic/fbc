@@ -27,6 +27,27 @@ private sub test cdecl( )
 	checkNE0( a0 >= b0 )
 
 	checkNE0( not a0  )
+
+	#macro checkEQ0( expr, inverted )
+		scope
+			var result = (inverted)
+			CU_ASSERT( ((expr) = 0) = result )
+		end scope
+	#endmacro
+
+	checkEQ0( a0 =  0, a0 <> 0 )
+	checkEQ0( a0 <> 0, a0 =  0 )
+	checkEQ0( a0 <  0, a0 >= 0 )
+	checkEQ0( a0 <= 0, a0 >  0 )
+	checkEQ0( a0 >  0, a0 <= 0 )
+	checkEQ0( a0 >= 0, a0 <  0 )
+
+	checkEQ0( a0 =  b0, a0 <> b0 )
+	checkEQ0( a0 <> b0, a0 =  b0 )
+	checkEQ0( a0 <  b0, a0 >= b0 )
+	checkEQ0( a0 <= b0, a0 >  b0 )
+	checkEQ0( a0 >  b0, a0 <= b0 )
+	checkEQ0( a0 >= b0, a0 <  b0 )
 end sub
 
 private sub ctor( ) constructor
