@@ -2,7 +2,19 @@
 
 #pragma once
 
-#inclib "alleg"
+#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "alleg_s"
+#else
+	#inclib "alleg"
+#endif
+
+#ifdef __FB_LINUX__
+	#inclib "X11"
+	#inclib "Xext"
+	#inclib "Xpm"
+	#inclib "Xxf86vm"
+	#inclib "Xcursor"
+#endif
 
 #undef screen
 #undef circle
