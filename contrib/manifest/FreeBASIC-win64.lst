@@ -2028,6 +2028,7 @@ inc/win/sqltypes.bi
 inc/win/sqlucode.bi
 inc/win/sspi.bi
 inc/win/strmif.bi
+inc/win/strsafe.bi
 inc/win/structuredquerycondition.bi
 inc/win/subauth.bi
 inc/win/tcpestats.bi
@@ -2052,6 +2053,7 @@ inc/win/wincon.bi
 inc/win/wincrypt.bi
 inc/win/windef.bi
 inc/win/windns.bi
+inc/win/windowsx.bi
 inc/win/winefs.bi
 inc/win/winerror.bi
 inc/win/wingdi.bi

@@ -2679,6 +2679,7 @@ include/freebasic/win/sqltypes.bi
 include/freebasic/win/sqlucode.bi
 include/freebasic/win/sspi.bi
 include/freebasic/win/strmif.bi
+include/freebasic/win/strsafe.bi
 include/freebasic/win/structuredquerycondition.bi
 include/freebasic/win/subauth.bi
 include/freebasic/win/tcpestats.bi
@@ -2703,6 +2704,7 @@ include/freebasic/win/wincon.bi
 include/freebasic/win/wincrypt.bi
 include/freebasic/win/windef.bi
 include/freebasic/win/windns.bi
+include/freebasic/win/windowsx.bi
 include/freebasic/win/winefs.bi
 include/freebasic/win/winerror.bi
 include/freebasic/win/wingdi.bi
