@@ -1249,34 +1249,42 @@ function astNewBOP _
 		astDelNode( r )
 
 		return l
+	end if
 
-	elseif( astIsCONST( l ) ) then
+	'' CONST + x  =>  x + CONST
+	'' Moving CONSTs to the rhs (where possible) reduces the amount of code
+	'' needed in astOptimizeTree() etc., as from now on only the rhs needs
+	'' to be checked for being CONST (otherwise we'd always have to check
+	'' both sides).
+	if( astIsCONST( l ) ) then
+		var do_swap = FALSE
+
 		select case op
 		case AST_OP_ADD, AST_OP_MUL, _
 		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
 		     AST_OP_EQ, AST_OP_NE
 			'' ? OP c = c OP ?
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_GE
 			'' c >= ?  =  ? <= c
 			op = AST_OP_LE
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_GT
 			'' c > ?  =  ? < c
 			op = AST_OP_LT
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_LE
 			'' c <= ?  =  ? >= c
 			op = AST_OP_GE
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_LT
 			'' c < ?  =  ? > c
 			op = AST_OP_GT
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
@@ -1286,11 +1294,18 @@ function astNewBOP _
 			if( r = NULL ) then
 				return NULL
 			end if
-			astSwap( r, l )
 			op = AST_OP_ADD
+			do_swap = TRUE
 		end select
 
-	elseif( astIsCONST( r ) ) then
+		if( do_swap ) then
+			swap ldtype, rdtype
+			swap ldclass, rdclass
+			astSwap( l, r )
+		end if
+	end if
+
+	if( astIsCONST( r ) ) then
 		select case op
 		case AST_OP_ADD
 			select case( l->class )
