@@ -1266,3 +1266,13 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 	end select
 
 end function
+
+function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
+	if( n->class = AST_NODECLASS_BOP ) then
+		select case( n->op.op )
+		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
+		     AST_OP_LT, AST_OP_GE, AST_OP_LE
+			function = TRUE
+		end select
+	end if
+end function

@@ -1322,13 +1322,9 @@ function astNewBOP _
 					'' but then astBuildBranch() could be missing the BOP for doing an optimized conditional branch,
 					'' so it's probably better to only optimize if there will still be a BOP.
 					''
-					if( l->class = AST_NODECLASS_BOP ) then
-						select case( l->op.op )
-						case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
-						     AST_OP_LT, AST_OP_GE, AST_OP_LE
-							astDelNode( r )
-							return l
-						end select
+					if( astIsRelationalBop( l ) ) then
+						astDelNode( r )
+						return l
 					end if
 				end if
 			end if
@@ -1343,14 +1339,10 @@ function astNewBOP _
 					'' (a =  b) = 0  =>  (a <> b)
 					'' (a <  b) = 0  =>  (a >= b)
 					'' etc.
-					if( l->class = AST_NODECLASS_BOP ) then
-						select case( l->op.op )
-						case AST_OP_EQ, AST_OP_NE, AST_OP_GT, _
-						     AST_OP_LT, AST_OP_GE, AST_OP_LE
-							l->op.op = astGetInverseLogOp( l->op.op )
-							astDelNode( r )
-							return l
-						end select
+					if( astIsRelationalBop( l ) ) then
+						l->op.op = astGetInverseLogOp( l->op.op )
+						astDelNode( r )
+						return l
 					end if
 				end if
 			end if
