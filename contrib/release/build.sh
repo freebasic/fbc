@@ -220,6 +220,9 @@ bootfb_title=FreeBASIC-1.01.0-$fbtarget
 
 case $fbtarget in
 linux*)
+	# Special case: linux builds use the host gcc toolchain
+	echo "$(lsb_release -d -s), $(uname -m), $(gcc --version | head -1)" >> $buildinfo
+
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.tar.xz
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
