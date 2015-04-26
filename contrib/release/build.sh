@@ -54,6 +54,11 @@
 #
 set -e
 
+usage() {
+	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id>"
+	exit 1
+}
+
 target="$1"
 case "$target" in
 dos|linux-x86|linux-x86_64|win32|win64)
@@ -61,13 +66,13 @@ dos|linux-x86|linux-x86_64|win32|win64)
 win32-mingworg)
 	fbtarget=win32;;
 *)
-	echo "usage: ./build.sh [dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 [<commit>]]" && exit 1;;
+	usage;;
 esac
 
-case "$2" in
-"") fbccommit="master";;
-*)  fbccommit="$2";;
-esac
+fbccommit="$2"
+if [ -z "$fbccommit" ]; then
+	usage
+fi
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 mkdir -p input
