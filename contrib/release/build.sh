@@ -85,7 +85,7 @@ buildinfo=../output/buildinfo-$target.txt
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
 echo >> $buildinfo
 
-function download() {
+download() {
 	filename="$1"
 	url="$2"
 
@@ -104,11 +104,11 @@ function download() {
 	echo "$filename <$url>" >> $buildinfo
 }
 
-function download_mingw() {
+download_mingw() {
 	download "MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
 }
 
-function get_mingww64_toolchain() {
+get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 
@@ -126,7 +126,7 @@ case "$target" in
 dos)
 	DJGPP_MIRROR="ftp://ftp.fu-berlin.de/pc/languages/djgpp/"
 
-	function download_djgpp() {
+	download_djgpp() {
 		dir="$1"
 		package="$2"
 		mkdir -p ../input/DJGPP
@@ -166,7 +166,7 @@ win32)
 
 	mkdir -p ../input/MinGW.org
 	mkdir mingworg-gdb
-	function get_mingworggdb() {
+	get_mingworggdb() {
 		download_mingw "$1" 
 		tar xf "../input/MinGW.org/$1" -C mingworg-gdb
 	}
@@ -177,7 +177,7 @@ win32)
 win32-mingworg)
 	# Download & extract MinGW.org toolchain
 	mkdir -p ../input/MinGW.org
-	function download_extract_mingw() {
+	download_extract_mingw() {
 		download_mingw "$1" 
 		tar xf "../input/MinGW.org/$1"
 	}
@@ -258,7 +258,7 @@ win32|win64)
 	;;
 esac
 
-function dosbuild() {
+dosbuild() {
 	dospath=`pwd -W`
 
 	cat <<EOF > build.bat
@@ -319,7 +319,7 @@ EOF
 	cp fbc/contrib/manifest/FreeBASIC-dos.lst ../output
 }
 
-function linuxbuild() {
+linuxbuild() {
 	cd fbc
 	echo
 	echo "bootstrapping normal fbc"
@@ -338,7 +338,7 @@ function linuxbuild() {
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
 
-function windowsbuild() {
+windowsbuild() {
 	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
 	# its gcc and not one from the host
 	origPATH="$PATH"
