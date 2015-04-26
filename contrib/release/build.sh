@@ -89,6 +89,10 @@ cd ../..
 
 cd build
 
+buildinfo=../output/buildinfo-$target.txt
+echo "fbc $fbccommit $target, build based on:" > $buildinfo
+echo >> $buildinfo
+
 function download() {
 	filename="$1"
 	url="$2"
@@ -104,6 +108,8 @@ function download() {
 			exit 1
 		fi
 	fi
+
+	echo "$filename <$url>" >> $buildinfo
 }
 
 function download_mingw() {
