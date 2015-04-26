@@ -79,19 +79,6 @@ mkdir -p input
 mkdir -p output
 rm -rf build
 mkdir build
-
-echo "updating input/fbc repo"
-cd input
-if [ ! -d fbc ]; then
-	git clone https://github.com/freebasic/fbc.git
-fi
-cd fbc
-git fetch
-git fetch --tags
-git remote prune origin
-git reset --hard origin/master
-cd ../..
-
 cd build
 
 buildinfo=../output/buildinfo-$target.txt
@@ -221,6 +208,13 @@ win64)
 	;;
 esac
 
+get_fbc_sources() {
+	# fbc sources
+	download fbc-$fbccommit.tar.gz https://github.com/freebasic/fbc/archive/$fbccommit.tar.gz
+	tar xf ../input/fbc-$fbccommit.tar.gz
+	mv fbc-$fbccommit fbc
+}
+
 bootfb_title=FreeBASIC-1.01.0-$fbtarget
 
 case $fbtarget in
@@ -233,9 +227,7 @@ linux*)
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	tar xf ../input/$bootfb_package
 
-	# fbc sources
-	cp -R ../input/fbc .
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	get_fbc_sources
 
 	mkdir tempinstall
 	;;
@@ -245,9 +237,7 @@ linux*)
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	unzip -q ../input/$bootfb_package
 
-	# fbc sources
-	cp -R ../input/fbc fbc
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	get_fbc_sources
 	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
