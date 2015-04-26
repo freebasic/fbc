@@ -15,7 +15,7 @@
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
-# ./build.sh <target> [<fbc-commit>]
+# ./build.sh <target> <fbc-commit-id>
 #
 # <target> can be one of:
 #   dos
