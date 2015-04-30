@@ -1597,26 +1597,26 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	v2 = astLoad( r )
 
 	if( ast.doemit ) then
-		'' result type can be different, with boolean operations on floats
-		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( astGetDataType( n ), n->subtype )
-			vr->vector = n->vector
-		else
-			vr = NULL
-			v1->vector = n->vector
-		end if
-
-		'' execute the operation
+		'' ex=label? Then this is an optimized conditional branch
 		if( n->op.ex <> NULL ) then
-			'' hack! ex=label, vr being NULL 'll gen better code at IR..
+			vr = NULL
 			irEmitBOP( op, v1, v2, NULL, n->op.ex )
 		else
-			irEmitBOP( op, v1, v2, vr, NULL )
-		end if
+			'' result type can be different, with boolean operations on floats
+			if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
+				vr = irAllocVREG( astGetDataType( n ), n->subtype )
+				vr->vector = n->vector
+			else
+				vr = NULL
+				v1->vector = n->vector
+			end if
 
-		'' "var op= expr" optimizations
-		if( vr = NULL ) then
-			vr = v1
+			irEmitBOP( op, v1, v2, vr, NULL )
+
+			'' "var op= expr" optimizations
+			if( vr = NULL ) then
+				vr = v1
+			end if
 		end if
 	end if
 
