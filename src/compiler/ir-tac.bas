@@ -1240,10 +1240,14 @@ private sub hReuse _
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
     hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
+	'' Allow operand reg to be re-used as result reg (to avoid allocating yet another reg)
+	'' but only if the dtype is similar (same size, same signedness),
+	'' otherwise vr would have unintended properties which can affect code generation.
+
 	select case astGetOpClass( op )
 	case AST_NODECLASS_UOP
 		if( vr <> v1 ) then
-			if( vr_dtype = v1_dtype ) then
+			if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v1_dtype ) ) then
            		if( irGetDistance( v1 ) = IR_MAXDIST ) then
            			hRename( vr, v1 )
            		end if
@@ -1264,7 +1268,7 @@ private sub hReuse _
 
 		v1rename = FALSE
 		if( vr <> v1 ) then
-			if( vr_dtype = v1_dtype ) then
+			if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v1_dtype ) ) then
            		if( irGetDistance( v1 ) = IR_MAXDIST ) then
            			v1rename = TRUE
            		end if
@@ -1274,7 +1278,7 @@ private sub hReuse _
 		v2rename = FALSE
 		if( astGetOpIsCommutative( op ) ) then
 			if( vr <> v2 ) then
-				if( vr_dtype = v2_dtype ) then
+				if( typeGetSizeType( vr_dtype ) = typeGetSizeType( v2_dtype ) ) then
 					if( v2_typ <> IR_VREGTYPE_IMM ) then
            				if( irGetDistance( v2 ) = IR_MAXDIST ) then
            					v2rename = TRUE
