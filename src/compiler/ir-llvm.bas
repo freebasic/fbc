@@ -1758,6 +1758,11 @@ private sub hDoCall _
 		end if
 	end if
 
+	'' The LLVM call instruction must include the full function signature,
+	'' and it has to match the declaration. We have to emit this based on
+	'' the proc/param symbols - can't rely on the args, because our AST can
+	'' have args with different dtype than the params.
+
 	if( vr ) then
 		if( irIsREG( vr ) ) then
 			v0 = vr
@@ -1781,7 +1786,21 @@ private sub hDoCall _
 
 		varg = arg->vr
 		hLoadVreg( varg )
-		ln += hEmitType( varg->dtype, varg->subtype )
+
+		'' Emit param's dtype (to match the declaration), not the arg's
+		dim dtype as integer
+		dim subtype as FBSYMBOL ptr
+		if( arg->param ) then
+			symbGetRealParamDtype( arg->param, dtype, subtype )
+		else
+			dtype = varg->dtype
+			subtype = varg->subtype
+		end if
+		ln += hEmitType( dtype, subtype )
+
+		'' Convert arg to param's dtype if needed
+		_setVregDataType( varg, dtype, subtype )
+
 		ln += " "
 		ln += hVregToStr( varg )
 
