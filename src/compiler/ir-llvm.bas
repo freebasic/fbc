@@ -98,11 +98,6 @@ enum
 	SECTION_FOOT  '' debugging meta data
 end enum
 
-type IRCALLARG
-    vr as IRVREG ptr
-    level as integer
-end type
-
 enum
 	BUILTIN_MEMSET = 0
 	BUILTIN_MEMMOVE
@@ -154,7 +149,6 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 
 type IRLLVMCONTEXT
 	indent				as integer  '' current indentation used by hWriteLine()
-	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 
 	varini				as string
@@ -237,7 +231,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 
 private sub _init( )
 	irhlInit( )
-	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
 
@@ -251,7 +244,6 @@ private sub _init( )
 end sub
 
 private sub _end( )
-	listEnd( @ctx.callargs )
 	irhlEnd( )
 end sub
 
@@ -1711,22 +1703,6 @@ private sub _emitLoadRes _
 
 end sub
 
-private sub _emitPushArg _
-	( _
-		byval param as FBSYMBOL ptr, _
-		byval vr as IRVREG ptr, _
-		byval udtlen as longint, _
-		byval level as integer _
-	)
-
-    '' Remember for later, so during _emitCall[Ptr] we can emit the whole
-    '' call in one go
-    dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
-    arg->vr = vr
-    arg->level = level
-
-end sub
-
 private sub _emitAddr _
 	( _
 		byval op as integer, _
@@ -1799,7 +1775,7 @@ private sub hDoCall _
 	ln += *pname + "( "
 
 	'' args
-	arg = listGetTail( @ctx.callargs )
+	arg = listGetTail( @irhl.callargs )
 	while( arg andalso (arg->level = level) )
 		prev = listGetPrev( arg )
 
@@ -1809,7 +1785,7 @@ private sub hDoCall _
 		ln += " "
 		ln += hVregToStr( varg )
 
-		listDelNode( @ctx.callargs, arg )
+		listDelNode( @irhl.callargs, arg )
 
 		if( prev ) then
 			if( prev->level = level ) then
@@ -2225,7 +2201,7 @@ static as IR_VTBL irllvm_vtbl = _
 	NULL, _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
-	@_emitPushArg, _
+	@irhlEmitPushArg, _
 	@_emitAsmBegin, _
 	@_emitAsmText, _
 	@_emitAsmSymb, _

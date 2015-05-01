@@ -27,27 +27,41 @@ sub irEnd( )
 	ir.vtbl.end( )
 end sub
 
-type IRHLCONTEXT
-	regcount	as integer  '' vreg id counter
-	vregs		as TFLIST   '' IRVREG allocation
-end type
-
-dim shared hl as IRHLCONTEXT
+dim shared irhl as IRHLCONTEXT
 
 sub irhlInit( )
-	flistInit( @hl.vregs, IR_INITVREGNODES, sizeof( IRVREG ) )
+	flistInit( @irhl.vregs, IR_INITVREGNODES, sizeof( IRVREG ) )
+	listInit( @irhl.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
 end sub
 
 sub irhlEnd( )
-	flistEnd( @hl.vregs )
+	listEnd( @irhl.callargs )
+	flistEnd( @irhl.vregs )
 end sub
 
 sub irhlEmitProcBegin( )
-	hl.regcount = 0
+	irhl.regcount = 0
 end sub
 
 sub irhlEmitProcEnd( )
-	flistReset( @hl.vregs )
+	flistReset( @irhl.vregs )
+end sub
+
+sub irhlEmitPushArg _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byval vr as IRVREG ptr, _
+		byval udtlen as longint, _
+		byval level as integer _
+	)
+
+	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
+	'' call in one go
+	dim as IRCALLARG ptr arg = listNewNode( @irhl.callargs )
+	arg->param = param
+	arg->vr = vr
+	arg->level = level
+
 end sub
 
 function irhlNewVreg _
@@ -59,14 +73,14 @@ function irhlNewVreg _
 
 	dim as IRVREG ptr v = any
 
-	v = flistNewItem( @hl.vregs )
+	v = flistNewItem( @irhl.vregs )
 
 	v->typ = vtype
 	v->dtype = dtype
 	v->subtype = subtype
 	if( vtype = IR_VREGTYPE_REG ) then
-		v->reg = hl.regcount
-		hl.regcount += 1
+		v->reg = irhl.regcount
+		irhl.regcount += 1
 	else
 		v->reg = INVALID
 	end if

@@ -85,12 +85,6 @@
 #include once "lex.bi"
 #include once "ir-private.bi"
 
-type IRCALLARG
-	param	as FBSYMBOL ptr
-	vr	as IRVREG ptr
-	level	as integer
-end type
-
 '' The stack of nested sections allows us to go back and emit text to
 '' the headers of parent sections, while already working on emitting
 '' something else in an inner section.
@@ -176,7 +170,6 @@ type IRHLCCTX
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
 
-	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 	escapedinputfilename		as string
 	usedbuiltins			as uinteger  '' BUILTIN_*
@@ -254,7 +247,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 
 private sub _init( )
 	irhlInit( )
-	listInit( @ctx.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
@@ -273,7 +265,6 @@ private sub _end( )
 	listEnd( @ctx.exprcache )
 	listEnd( @ctx.exprnodes )
 	listEnd( @ctx.anonstack )
-	listEnd( @ctx.callargs )
 	irhlEnd( )
 end sub
 
@@ -2857,7 +2848,7 @@ private sub hDoCall _
 
 	'' Flush argument list
 	s += "( "
-	arg = listGetTail( @ctx.callargs )
+	arg = listGetTail( @irhl.callargs )
 	while( arg andalso (arg->level = level) )
 		dim as IRCALLARG ptr prev = listGetPrev( arg )
 
@@ -2876,7 +2867,7 @@ private sub hDoCall _
 
 		s += exprFlush( expr )
 
-		listDelNode( @ctx.callargs, arg )
+		listDelNode( @irhl.callargs, arg )
 
 		if( prev ) then
 			if( prev->level = level ) then
@@ -3440,23 +3431,6 @@ private sub _emitProcEnd _
 
 end sub
 
-private sub _emitPushArg _
-	( _
-		byval param as FBSYMBOL ptr, _
-		byval vr as IRVREG ptr, _
-		byval udtlen as longint, _
-		byval level as integer _
-	)
-
-	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
-	'' call in one go
-	dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
-	arg->param = param
-	arg->vr = vr
-	arg->level = level
-
-end sub
-
 private sub _emitScopeBegin( byval s as FBSYMBOL ptr )
 	sectionBegin( )
 	hWriteLine( "{", TRUE )
@@ -3493,7 +3467,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	NULL, _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
-	@_emitPushArg, _
+	@irhlEmitPushArg, _
 	@_emitAsmBegin, _
 	@_emitAsmText, _
 	@_emitAsmSymb, _
