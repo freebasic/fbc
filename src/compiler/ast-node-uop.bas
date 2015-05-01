@@ -269,6 +269,14 @@ function astNewUOP _
 		return o
 	end if
 
+	'' Optimize bitwise NOT on boolean expressions (where NOT = logical negation)
+	if( op = AST_OP_NOT ) then
+		if( astIsRelationalBop( o ) ) then
+			o->op.op = astGetInverseLogOp( o->op.op )
+			return o
+		end if
+	end if
+
 	if( irGetOption( IR_OPT_MISSINGOPS ) ) then
 		'' Call RTL function if backend doesn't support this op directly
 		if( irSupportsOp( op, dtype ) = FALSE ) then
