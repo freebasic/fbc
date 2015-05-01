@@ -628,6 +628,9 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 		'' start shadowing variables from parent scopes not earlier
 		'' than they should.
 		''
+		'' Parameters don't have to be allocated explicitly, because
+		'' they are allocated implicitly in C simply by being declared.
+		''
 		'' Behind the scenes, statics with dtors are actually emitted
 		'' during irProcAllocStaticVars() because they're special:
 		'' They're emitted as globals so the dtor wrappers can see them.
@@ -648,7 +651,7 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 		wend
 	else
 		''
-		'' ASM backend: All locals except statics or shared vars
+		'' ASM/LLVM backends: All locals except statics or shared vars
 		'' are allocated from here (i.e. the backend reserves the stack
 		'' space for them). Parameters are allocated from here too.
 		''
