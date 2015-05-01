@@ -1602,18 +1602,23 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 			vr = NULL
 			irEmitBOP( op, v1, v2, NULL, n->op.ex )
 		else
-			'' result type can be different, with boolean operations on floats
 			if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
+				'' Self-BOPs: Always re-use the lhs vreg to store the result,
+				'' that way no assignment is needed anymore,
+				'' at least from the x86 ASM backend's point of view.
 				vr = irAllocVREG( astGetDataType( n ), n->subtype )
 				vr->vector = n->vector
 			else
+				'' Normal BOPs: The result must be stored into a newly allocated vreg,
+				'' although the ASM backend may end up optimizing it out (hReuse()).
 				vr = NULL
 				v1->vector = n->vector
 			end if
 
 			irEmitBOP( op, v1, v2, vr, NULL )
 
-			'' "var op= expr" optimizations
+			'' Return vr to parent even for self-BOPs - this is probably useless at the moment though,
+			'' because FB self-BOPs can only be used as statements, not in expressions...
 			if( vr = NULL ) then
 				vr = v1
 			end if
