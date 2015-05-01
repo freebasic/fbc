@@ -169,4 +169,8 @@ declare function regDelClass _
 		byval this_ as REGCLASS ptr _
 	) as integer
 
+#if __FB_DEBUG__
+declare sub regDump2( byval this_ as REGCLASS ptr )
+#endif
+
 #endif '' __REG_BI__

@@ -11,6 +11,7 @@
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "reg.bi"
+#include once "emit.bi"
 
 '' internals
 
@@ -70,6 +71,30 @@ function regDelClass _
 	function = TRUE
 
 end function
+
+#if __FB_DEBUG__
+sub regDump2( byval this_ as REGCLASS ptr )
+	for i as integer = 0 to this_->regs - 1
+		print i & " " & emitDumpRegName( iif( this_->class = FB_DATACLASS_INTEGER, FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE ), i );
+
+		if( REG_ISUSED( this_->regctx.freeTB, i ) ) then
+			print ", used";
+		else
+			print ", free";
+		end if
+
+		if( this_->vregTB(i) ) then
+			print ", vreg=" & vregDump( this_->vregTB(i) );
+		else
+			print ", no vreg";
+		end if
+		if( this_->vauxparent(i) ) then
+			print ", vauxparent=" & vregDump( this_->vauxparent(i) );
+		end if
+		print
+	next
+end sub
+#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' non-stack registers allocator
