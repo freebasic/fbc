@@ -195,7 +195,7 @@ declare sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval ex as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr _
 	)
 
 '' globals
@@ -1349,7 +1349,7 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval ex as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr _
 	)
 
 	dim as string ln, falselabel
@@ -1392,7 +1392,7 @@ private sub _emitBop _
 		falselabel = *symbUniqueLabel( )
 		ln = "br i1 " + hVregToStr( vresult )
 		ln += ", "
-		ln += "label %" + *symbGetMangledName( ex )
+		ln += "label %" + *symbGetMangledName( label )
 		ln += ", "
 		ln += "label %" + falselabel
 		hWriteLine( ln )
