@@ -1031,7 +1031,7 @@ private function _allocVrPtr _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
+		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_PTR )
 		vr->vaux= va
 		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
