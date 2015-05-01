@@ -197,33 +197,31 @@ private sub regClear _
 
 end sub
 
-'':::::
 private function regFindFarest _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval size as integer _					'' in bytes
-	) as integer static
+		byval size as integer, _ '' in bytes
+		byval reservedreg as integer _
+	) as integer
 
-    dim as integer n, r
-    dim as uinteger maxdist
+	'' all regs must be used atm
 
-    '' all regs must be used atm
+	dim as uinteger maxdist = 0
+	var r = INVALID
+	for i as integer = 0 to this_->regs - 1
+		if( i <> reservedreg ) then
+			'' valid bits?
+			if( this_->regctx.sizeTB(i) and size ) then
+				if( maxdist < this_->regctx.nextTB(i) ) then
+					maxdist = this_->regctx.nextTB(i)
+					r = i
+				end if
+			end if
+		end if
+	next
 
-    maxdist = 0
-    r = INVALID
-    for n = 0 to this_->regs - 1
-		'' valid bits?
-		if( (this_->regctx.sizeTB(n) and size) <> 0 ) then
-    		''
-    		if( this_->regctx.nextTB(n) > maxdist ) then
-    			maxdist = this_->regctx.nextTB(n)
-    			r = n
-    		end if
-    	end if
-    next
-
+	assert( r <> INVALID )
 	function = r
-
 end function
 
 '':::::
@@ -239,12 +237,23 @@ private function regAllocate _
 
 	r = regPop( this_, size )
 	if( r = INVALID ) then
-		r = regFindFarest( this_, size )
+		'' No register free; need to spill something.
+		'' But don't spill our vaux if we have one (it doesn't make
+		'' sense to spill one half while trying to allocate the other).
+		'' In that case, we need to find something else to spill.
+		var reservedreg = INVALID
+		if( vreg->vaux andalso irIsREG( vreg->vaux ) ) then
+			reservedreg = vreg->vaux->reg
+		end if
+		r = regFindFarest( this_, size, reservedreg )
+
+		assert( vreg->vaux <> this_->vregTB(r) )  '' shouldn't spill vaux when trying to allocate vauxparent
+		assert( vauxparent <> this_->vregTB(r) )  '' shouldn't spill vauxparent when trying to allocate vaux
 
 		'' This will regFree() the register
 		irStoreVR( this_->vregTB(r), this_->vauxparent(r) )
 
-		'' So remove it from the free list
+		'' But remove it from the free list again, since we'll use it now
 		regPopReg( this_, r )
 	end if
 
