@@ -6,6 +6,7 @@
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "emit.bi"
+#include once "ir-private.bi"
 
 dim shared ir as IRCTX
 
