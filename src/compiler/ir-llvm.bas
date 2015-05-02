@@ -1529,8 +1529,8 @@ private sub _emitUop _
 			v1orig = *v1
 		end if
 
-		var lhs = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		_emitBop( AST_OP_SUB, lhs, v1, vr, NULL )
+		var zero = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
+		_emitBop( AST_OP_SUB, zero, v1, vr, NULL )
 
 		if( isself ) then
 			_emitStore( @v1orig, vr )
@@ -1541,8 +1541,8 @@ private sub _emitUop _
 
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by _emitBop().
-		var v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
-		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
+		var minusone = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
+		_emitBop( AST_OP_XOR, v1, minusone, vr, NULL )
 
 	case else
 		hBuiltInUop( op, v1, vr )
