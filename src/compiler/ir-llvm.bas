@@ -175,21 +175,17 @@ declare function hEmitType _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as string
-
 declare sub hEmitStruct( byval s as FBSYMBOL ptr )
-
 declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
 		byval ex as integer _
 	)
-
 declare function hVregToStr( byval vreg as IRVREG ptr ) as string
-declare sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-declare sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-
-declare sub _emitBop _
+declare sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+declare sub hEmitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+declare sub hEmitBop _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -248,7 +244,7 @@ private sub _end( )
 end sub
 
 private sub hWriteLine( byref ln as string )
-	if( ctx.indent > 0 ) then
+	if( (ctx.indent > 0) andalso (len( ln ) > 0) ) then
 		ln = string( ctx.indent, TABCHAR ) + ln
 	end if
 
@@ -265,11 +261,70 @@ private sub hWriteLine( byref ln as string )
 	end select
 end sub
 
+private sub hInternalCommand( byref message as string )
+	hWriteLine( "; " + message )
+end sub
+
+private sub hAstCommand( byref message as string )
+	hWriteLine( "" )
+	hInternalCommand( message )
+end sub
+
 private sub hWriteLabel( byval id as zstring ptr )
 	ctx.indent -= 1
 	hWriteLine( *id + ":" )
 	ctx.indent += 1
 end sub
+
+private function hSymName( byval sym as FBSYMBOL ptr ) as string
+	if( sym->id.alias ) then
+		function = *sym->id.alias
+	else
+		function = *symbGetName( sym )
+	end if
+end function
+
+private function vregPretty( byval v as IRVREG ptr ) as string
+	dim s as string
+
+	select case( v->typ )
+	case IR_VREGTYPE_IMM
+		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
+			s = str( v->value.f )
+		else
+			s = str( v->value.i )
+		end if
+
+	case IR_VREGTYPE_REG
+		if( v->sym ) then
+			s = hSymName( v->sym )
+		else
+			s = "vr" & v->reg
+		end if
+
+	case else
+		if( v->sym ) then
+			s = hSymName( v->sym )
+		end if
+	end select
+
+	if( v->vidx ) then
+		if( len( s ) > 0 ) then
+			s += "+"
+		end if
+		s += vregPretty( v->vidx )
+	end if
+	if( v->ofs ) then
+		s += "+" & v->ofs
+	end if
+	if( v->mult ) then
+		s += "*" & v->mult
+	end if
+
+	's += " " + typeDump( v->dtype, v->subtype )
+
+	function = s
+end function
 
 private function hEmitParamName( byval sym as FBSYMBOL ptr ) as string
 	function = *symbGetMangledName( sym ) + "$"
@@ -950,6 +1005,8 @@ private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 	dim as integer parammode = any
 	dim as FBSYMBOL ptr bydescrealsubtype = any
 
+	hAstCommand( "paramvar " + hSymName( sym ) )
+
 	''
 	'' Load the parameter values into local stack vars, to support taking
 	'' the address of the parameters on stack.
@@ -989,6 +1046,7 @@ private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 end sub
 
 private sub _procAllocLocal( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
+	hAstCommand( "localvar " + hSymName( sym ) )
 	hEmitVariable( sym )
 end sub
 
@@ -1013,7 +1071,7 @@ private sub _setVregDataType _
 
 	if( (v->dtype <> dtype) or (v->subtype <> subtype) ) then
 		temp0 = irhlAllocVreg( dtype, subtype )
-		_emitConvert( temp0, v )
+		hEmitConvert( temp0, v )
 		*v = *temp0
 	end if
 
@@ -1029,7 +1087,7 @@ private sub hAddOffset _
 
 	'' voffset = ptrtoint l
 	var voffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-	_emitConvert( voffset, v )
+	hEmitConvert( voffset, v )
 
 	if( ofs <> 0 ) then
 		'' voffset += <offset>
@@ -1037,7 +1095,7 @@ private sub hAddOffset _
 		'' can't do self-BOPs on REGs)
 		var vimmoffset = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs )
 		var vnewoffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-		_emitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
+		hEmitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
 		voffset = vnewoffset
 	end if
 
@@ -1294,6 +1352,8 @@ private function hVregToStr( byval v as IRVREG ptr ) as string
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )
+	hAstCommand( "label " + hSymName( label ) )
+
 	'' end current basic block
 	hWriteLine( "br label %" + *symbGetMangledName( label ) )
 
@@ -1369,7 +1429,7 @@ private function hGetBopCode _
 
 end function
 
-private sub hEmitBop _
+private sub hLoadOperandsAndWriteBop _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -1397,7 +1457,7 @@ private sub hEmitBop _
 
 end sub
 
-private sub _emitBop _
+private sub hEmitBop _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -1412,7 +1472,7 @@ private sub _emitBop _
 		vr = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
-		hEmitBop( op, v1, v2, vr, v1->dtype, v1->subtype )
+		hLoadOperandsAndWriteBop( op, v1, v2, vr, v1->dtype, v1->subtype )
 
 		'' The conditional branch in LLVM always needs both
 		'' true and false labels, to keep the proper basic
@@ -1451,7 +1511,7 @@ private sub _emitBop _
 		v1orig = *v1
 	end if
 
-	hEmitBop( op, v1, v2, vr, vr->dtype, vr->subtype )
+	hLoadOperandsAndWriteBop( op, v1, v2, vr, vr->dtype, vr->subtype )
 
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
@@ -1468,8 +1528,30 @@ private sub _emitBop _
 
 	'' store self-BOP result
 	if( isself ) then
-		_emitStore( @v1orig, vr )
+		hEmitStore( @v1orig, vr )
 	end if
+end sub
+
+private sub _emitBop _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval label as FBSYMBOL ptr _
+	)
+
+	var bopdump = vregPretty( v1 ) + " " + astDumpOp( op ) + " " + vregPretty( v2 )
+	if( label ) then
+		hAstCommand( "branchbop " + bopdump )
+	elseif( vr = NULL ) then
+		hAstCommand( "selfbop " + bopdump )
+	else
+		hAstCommand( "bop " + bopdump )
+	end if
+
+	hEmitBop( op, v1, v2, vr, label )
+
 end sub
 
 private sub hBuiltInUop _
@@ -1526,6 +1608,13 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
+	var uopdump = astDumpOp( op ) + " " + vregPretty( v1 )
+	if( vr = NULL ) then
+		hAstCommand( "selfuop " + uopdump )
+	else
+		hAstCommand( "uop " + uopdump )
+	end if
+
 	'' LLVM IR doesn't have unary operations, corresponding BOPs are
 	'' supposed to be used instead. However there are built-in functions
 	'' for sin() & co.
@@ -1542,13 +1631,13 @@ private sub _emitUop _
 			'' Need to allocate a result REG manually and then store
 			'' that into v1 later.
 			''
-			'' Unfortunately we can't let _emitBop() handle this,
+			'' Unfortunately we can't let hEmitBop() handle this,
 			'' because in case of a self-BOP it expects the lhs to
 			'' be the variable, while here it's the rhs. So we need
 			'' to do it manually, by always using a non-self-BOP.
 			''
-			'' Also, just like _emitBop(), we have to preserve the
-			'' "storable" version of v1, because _emitBop() may
+			'' Also, just like hEmitBop(), we have to preserve the
+			'' "storable" version of v1, because hEmitBop() may
 			'' overwrite it with the loaded version.
 			isself = TRUE
 			vr = irhlAllocVreg( v1->dtype, v1->subtype )
@@ -1556,19 +1645,19 @@ private sub _emitUop _
 		end if
 
 		var zero = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
-		_emitBop( AST_OP_SUB, zero, v1, vr, NULL )
+		hEmitBop( AST_OP_SUB, zero, v1, vr, NULL )
 
 		if( isself ) then
-			_emitStore( @v1orig, vr )
+			hEmitStore( @v1orig, vr )
 		end if
 
 	case AST_OP_NOT
 		'' vr = v1 xor -1
 
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
-		'' the lhs of the self-BOP as expected by _emitBop().
+		'' the lhs of the self-BOP as expected by hEmitBop().
 		var minusone = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
-		_emitBop( AST_OP_XOR, v1, minusone, vr, NULL )
+		hEmitBop( AST_OP_XOR, v1, minusone, vr, NULL )
 
 	case else
 		hBuiltInUop( op, v1, vr )
@@ -1576,7 +1665,7 @@ private sub _emitUop _
 
 end sub
 
-private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour,
 	'' because LLVM's fptosi/fptoui just truncate.
 	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
@@ -1693,24 +1782,32 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	hWriteLine( ln )
 
 	if( irIsREG( v1 ) = FALSE ) then
-		_emitStore( v1, v0 )
+		hEmitStore( v1, v0 )
 	end if
 end sub
 
-private sub _emitStore( byval l as IRVREG ptr, byval r as IRVREG ptr )
-	dim as string ln
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	hAstCommand( "conv " + vregPretty( v2 ) + " => " + vregPretty( v1 ) )
+	hEmitConvert( v1, v2 )
+end sub
 
+private sub hEmitStore( byval l as IRVREG ptr, byval r as IRVREG ptr )
 	hLoadVreg( r )
 	_setVregDataType( r, l->dtype, l->subtype )
 
 	hPrepareAddress( l )
 
-	ln = "store "
+	var ln = "store "
 	ln += hEmitType( typeDeref( l->dtype ), l->subtype ) + " "
 	ln += hVregToStr( r ) + ", "
 	ln += hEmitType( l->dtype, l->subtype ) + " "
 	ln += hVregToStr( l )
 	hWriteLine( ln )
+end sub
+
+private sub _emitStore( byval l as IRVREG ptr, byval r as IRVREG ptr )
+	hAstCommand( "store " + vregPretty( l ) + " := " + vregPretty( r ) )
+	hEmitStore( l, r )
 end sub
 
 private sub _emitSpillRegs( )
@@ -1726,6 +1823,8 @@ private sub _emitLoadRes _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr _
 	)
+
+	hAstCommand( "loadres " + vregPretty( v1 ) )
 
 	hLoadVreg( v1 )
 	_setVregDataType( v1, vr->dtype, vr->subtype )
@@ -1745,6 +1844,8 @@ private sub _emitAddr _
 
 	select case( op )
 	case AST_OP_ADDROF
+		hAstCommand( "addrof " + vregPretty( v1 ) )
+
 		'' There is no address-of operator in LLVM, because it only
 		'' uses addresses to access memory, i.e. everything is a
 		'' pointer already.
@@ -1756,6 +1857,7 @@ private sub _emitAddr _
 		_setVregDataType( v1, vr->dtype, vr->subtype )
 
 	case AST_OP_DEREF
+		hAstCommand( "deref " + vregPretty( v1 ) )
 		hLoadVreg( v1 )
 
 	end select
@@ -1816,6 +1918,7 @@ private sub hDoCall _
 		prev = listGetPrev( arg )
 
 		varg = arg->vr
+		hInternalCommand( "arg " + vregPretty( varg ) )
 		hLoadVreg( varg )
 
 		'' Emit param's dtype (to match the declaration), not the arg's
@@ -1852,7 +1955,7 @@ private sub hDoCall _
 
 	if( vr ) then
 		if( irIsREG( vr ) = FALSE ) then
-			_emitStore( vr, v0 )
+			hEmitStore( vr, v0 )
 		end if
 	end if
 end sub
@@ -1865,6 +1968,7 @@ private sub _emitCall _
 		byval level as integer _
 	)
 
+	hAstCommand( "call " + hSymName( proc ) + "()" )
 	hDoCall( symbGetMangledName( proc ), proc, bytestopop, vr, level )
 
 end sub
@@ -1881,17 +1985,20 @@ private sub _emitCallPtr _
 	assert( v1->dtype = typeAddrOf( FB_DATATYPE_FUNCTION ) )
 	assert( proc = v1->subtype )
 
+	hAstCommand( "callptr " + vregPretty( v1 ) )
 	hLoadVreg( v1 )
 	hDoCall( hVregToStr( v1 ), proc, bytestopop, vr, level )
 
 end sub
 
 private sub _emitJumpPtr( byval v1 as IRVREG ptr )
+	hAstCommand( "jumpptr " + vregPretty( v1 ) )
 	hLoadVreg( v1 )
 	hWriteLine( "goto *" & hVregToStr( v1 ) )
 end sub
 
 private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
+	hAstCommand( "goto " + hSymName( label ) )
 	'' GOTO label
 	assert( op = AST_OP_JMP )
 
@@ -1913,6 +2020,8 @@ private sub _emitJmpTb _
 		byval minval as ulongint, _
 		byval maxval as ulongint _
 	)
+
+	hAstCommand( "jmptb " + vregPretty( v1 ) )
 
 	dim as string ln
 
@@ -1950,6 +2059,13 @@ private sub _emitMem _
 	dim as string ln
 
 	ln = "call void "
+
+	select case( op )
+	case AST_OP_MEMCLEAR
+		hAstCommand( "memclear " + vregPretty( v1 ) )
+	case AST_OP_MEMMOVE
+		hAstCommand( "memmove " + vregPretty( v1 ) + " <= " + vregPretty( v2 ) )
+	end select
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
