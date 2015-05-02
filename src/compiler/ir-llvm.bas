@@ -1343,6 +1343,34 @@ private function hGetBopCode _
 
 end function
 
+private sub hEmitBop _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+	hLoadVreg( v1 )
+	hLoadVreg( v2 )
+	_setVregDataType( v1, dtype, subtype )
+	_setVregDataType( v2, dtype, subtype )
+
+	var ln = hVregToStr( vr )
+	ln += " = "
+	ln += *hGetBopCode( op, dtype )
+	ln += " "
+	ln += hEmitType( dtype, subtype )
+	ln += " "
+	ln += hVregToStr( v1 )
+	ln += ", "
+	ln += hVregToStr( v2 )
+	hWriteLine( ln )
+
+end sub
+
 private sub _emitBop _
 	( _
 		byval op as integer, _
@@ -1352,26 +1380,13 @@ private sub _emitBop _
 		byval label as FBSYMBOL ptr _
 	)
 
-	dim as string ln, falselabel
-
 	'' Conditional branch?
 	if( label ) then
 		assert( vr = NULL )
-		hLoadVreg( v1 )
-		hLoadVreg( v2 )
-		_setVregDataType( v2, v1->dtype, v1->subtype )
 		vr = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
-		ln = hVregToStr( vr ) + " = "
-		ln += *hGetBopCode( op, v1->dtype )
-		ln += " "
-		ln += hEmitType( v1->dtype, v1->subtype )
-		ln += " "
-		ln += hVregToStr( v1 )
-		ln += ", "
-		ln += hVregToStr( v2 )
-		hWriteLine( ln )
+		hEmitBop( op, v1, v2, vr, v1->dtype, v1->subtype )
 
 		'' The conditional branch in LLVM always needs both
 		'' true and false labels, to keep the proper basic
@@ -1380,8 +1395,8 @@ private sub _emitBop _
 		'' false label = the code right behind the branch
 
 		'' branch condition, truelabel, falselabel
-		falselabel = *symbUniqueLabel( )
-		ln = "br i1 " + hVregToStr( vr )
+		var falselabel = *symbUniqueLabel( )
+		var ln = "br i1 " + hVregToStr( vr )
 		ln += ", "
 		ln += "label %" + *symbGetMangledName( label )
 		ln += ", "
@@ -1410,27 +1425,13 @@ private sub _emitBop _
 		v1orig = *v1
 	end if
 
-	hLoadVreg( v1 )
-	hLoadVreg( v2 )
-	_setVregDataType( v1, vr->dtype, vr->subtype )
-	_setVregDataType( v2, vr->dtype, vr->subtype )
-
-	ln = hVregToStr( vr )
-	ln += " = "
-	ln += *hGetBopCode( op, vr->dtype )
-	ln += " "
-	ln += hEmitType( vr->dtype, vr->subtype )
-	ln += " "
-	ln += hVregToStr( v1 )
-	ln += ", "
-	ln += hVregToStr( v2 )
-	hWriteLine( ln )
+	hEmitBop( op, v1, v2, vr, vr->dtype, vr->subtype )
 
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
 	if( astOpIsRelational( op ) ) then
 		var vtemp = irhlAllocVreg( vr->dtype, vr->subtype )
-		ln = hVregToStr( vtemp )
+		var ln = hVregToStr( vtemp )
 		ln += " = sext "
 		ln += "i1 " + hVregToStr( vr )
 		ln += " to "
