@@ -1019,11 +1019,35 @@ private sub _setVregDataType _
 
 end sub
 
-private sub hPrepareAddress( byval v as IRVREG ptr )
-	dim as integer dtype = any, ofs = any
-	dim as FBSYMBOL ptr subtype = any
-	dim as IRVREG ptr vidx = any, temp0 = any
+private sub hAddOffset _
+	( _
+		byval v as IRVREG ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
 
+	'' voffset = ptrtoint l
+	var voffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
+	_emitConvert( voffset, v )
+
+	if( ofs <> 0 ) then
+		'' voffset += <offset>
+		'' (implemented as normal BOP, not self-BOP, because we
+		'' can't do self-BOPs on REGs)
+		var vimmoffset = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs )
+		var vnewoffset = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
+		_emitBop( AST_OP_ADD, voffset, vimmoffset, vnewoffset, NULL )
+		voffset = vnewoffset
+	end if
+
+	'' voffset = inttoptr voffset
+	_setVregDataType( voffset, dtype, subtype )
+
+	*v = *voffset
+end sub
+
+private sub hPrepareAddress( byval v as IRVREG ptr )
 	assert( (v->typ = IR_VREGTYPE_VAR) or _
 		(v->typ = IR_VREGTYPE_IDX) or _
 		(v->typ = IR_VREGTYPE_PTR) )
@@ -1031,36 +1055,24 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 	'' Treat memory access as address - turn it into a REG.
 	'' If there is an offset or index, it must be added on top of the
 	'' base address.
-	dtype = v->dtype
-	subtype = v->subtype
-	ofs = v->ofs
-	vidx = v->vidx
+	var addrdtype = typeAddrOf( v->dtype )
+	var addrsubtype = v->subtype
+	var ofs = v->ofs
+	var vidx = v->vidx
 
-	select case( v->typ )
-	case IR_VREGTYPE_PTR
+	if( irIsPTR( v ) ) then
 		assert( irIsREG( vidx ) )
 		*v = *vidx
-	case else
+	else
 		v->typ = IR_VREGTYPE_REG
-		v->dtype = typeAddrOf( v->dtype )
+		v->dtype = addrdtype
 		v->reg = INVALID
 		v->ofs = 0
-	end select
+	end if
 
+	'' TODO: handle vidx too
 	if( (vidx <> NULL) or (ofs <> 0) ) then
-		'' temp0 = ptrtoint l
-		temp0 = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-		_emitConvert( temp0, v )
-
-		if( ofs <> 0 ) then
-			'' temp0 add= <offset>
-			_emitBop( AST_OP_ADD, temp0, irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, ofs ), NULL, NULL )
-		end if
-
-		'' temp0 = inttoptr temp0
-		_setVregDataType( temp0, typeAddrOf( dtype ), subtype )
-
-		*v = *temp0
+		hAddOffset( v, addrdtype, addrsubtype, ofs )
 	end if
 end sub
 
@@ -1088,17 +1100,7 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		'' (no "loading" necessary, handled purely in hVregToStr())
 		''    @global
 		if( v->ofs <> 0 ) then
-			'' temp0 = ptrtoint v
-			temp0 = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
-			_emitConvert( temp0, v )
-
-			'' temp0 add= <offset>
-			_emitBop( AST_OP_ADD, temp0, irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, v->ofs ), NULL, NULL )
-
-			'' temp0 = inttoptr temp0
-			_setVregDataType( temp0, v->dtype, v->subtype )
-
-			*v = *temp0
+			hAddOffset( v, v->dtype, v->subtype, v->ofs )
 		end if
 
 	case else
