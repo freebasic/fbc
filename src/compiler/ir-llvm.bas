@@ -1353,7 +1353,6 @@ private sub _emitBop _
 	)
 
 	dim as string ln, falselabel
-	dim as IRVREG ptr vresult = any, vtemp = any
 
 	'' Conditional branch?
 	if( label ) then
@@ -1361,10 +1360,10 @@ private sub _emitBop _
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
 		_setVregDataType( v2, v1->dtype, v1->subtype )
-		vresult = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
+		vr = irhlAllocVreg( FB_DATATYPE_INTEGER, NULL )
 
 		'' condition = comparison expression
-		ln = hVregToStr( vresult ) + " = "
+		ln = hVregToStr( vr ) + " = "
 		ln += *hGetBopCode( op, v1->dtype )
 		ln += " "
 		ln += hEmitType( v1->dtype, v1->subtype )
@@ -1382,7 +1381,7 @@ private sub _emitBop _
 
 		'' branch condition, truelabel, falselabel
 		falselabel = *symbUniqueLabel( )
-		ln = "br i1 " + hVregToStr( vresult )
+		ln = "br i1 " + hVregToStr( vr )
 		ln += ", "
 		ln += "label %" + *symbGetMangledName( label )
 		ln += ", "
@@ -1394,27 +1393,33 @@ private sub _emitBop _
 		exit sub
 	end if
 
-	'' If a result REG was given, use it. Otherwise, it's a self-BOP, and
-	'' we need to allocate a result REG and then store that into v1 later.
-	if( vr ) then
-		'' vr = v1 bop b2
-		assert( irIsREG( vr ) )
-		vresult = vr
-	else
+	var isself = FALSE
+	dim v1orig as IRVREG
+
+	if( vr = NULL ) then
 		'' v1 bop= b2
-		vresult = irhlAllocVreg( v1->dtype, v1->subtype )
+		''
+		'' Self-BOP - have to allocate a vr manually and store that
+		'' into v1 later, because LLVM IR doesn't have self-BOPs.
+		''
+		'' Also, we have to preserve the "storable" version of v1 - as
+		'' a BOP operand it may loaded, turning it into a REG,
+		'' but for the store we need the original VAR etc.
+		isself = TRUE
+		vr = irhlAllocVreg( v1->dtype, v1->subtype )
+		v1orig = *v1
 	end if
 
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-	_setVregDataType( v1, vresult->dtype, vresult->subtype )
-	_setVregDataType( v2, vresult->dtype, vresult->subtype )
+	_setVregDataType( v1, vr->dtype, vr->subtype )
+	_setVregDataType( v2, vr->dtype, vr->subtype )
 
-	ln = hVregToStr( vresult )
+	ln = hVregToStr( vr )
 	ln += " = "
-	ln += *hGetBopCode( op, vresult->dtype )
+	ln += *hGetBopCode( op, vr->dtype )
 	ln += " "
-	ln += hEmitType( vresult->dtype, vresult->subtype )
+	ln += hEmitType( vr->dtype, vr->subtype )
 	ln += " "
 	ln += hVregToStr( v1 )
 	ln += ", "
@@ -1424,23 +1429,19 @@ private sub _emitBop _
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
 	if( astOpIsRelational( op ) ) then
-		vtemp = irhlAllocVreg( vresult->dtype, vresult->subtype )
+		var vtemp = irhlAllocVreg( vr->dtype, vr->subtype )
 		ln = hVregToStr( vtemp )
 		ln += " = sext "
-		ln += "i1 " + hVregToStr( vresult )
+		ln += "i1 " + hVregToStr( vr )
 		ln += " to "
-		ln += hEmitType( vresult->dtype, vresult->subtype )
+		ln += hEmitType( vr->dtype, vr->subtype )
 		hWriteLine( ln )
-		*vresult = *vtemp
+		*vr = *vtemp
 	end if
 
-	'' self-bop? (see above)
-	if( vr = NULL ) then
-		if( irIsREG( v1 ) ) then
-			*v1 = *vresult
-		else
-			_emitStore( v1, vresult )
-		end if
+	'' store self-BOP result
+	if( isself ) then
+		_emitStore( @v1orig, vr )
 	end if
 end sub
 
