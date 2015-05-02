@@ -2653,20 +2653,18 @@ private sub _emitBop _
 	l = exprNewVREG( v1 )
 	r = exprNewVREG( v2 )
 
-	select case as const( op )
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		if( vr = NULL ) then
-			'' Conditional branch
-			static as string s
-			s = "if( "
-			s += exprFlush( exprNewBOP( op, l, r ) )
-			s += " ) goto "
-			s += *symbGetMangledName( label )
-			s += ";"
-			hWriteLine( s )
-			exit sub
-		end if
-	end select
+	'' Conditional branch?
+	if( label ) then
+		assert( vr = NULL )
+		static as string s
+		s = "if( "
+		s += exprFlush( exprNewBOP( op, l, r ) )
+		s += " ) goto "
+		s += *symbGetMangledName( label )
+		s += ";"
+		hWriteLine( s )
+		exit sub
+	end if
 
 	if( vr = NULL ) then
 		vr = v1

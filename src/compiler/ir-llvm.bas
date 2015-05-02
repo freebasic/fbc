@@ -1356,7 +1356,6 @@ private sub _emitBop _
 	dim as IRVREG ptr vresult = any, vtemp = any
 	dim as integer is_comparison = any
 
-	'' Conditional branch?
 	select case( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		is_comparison = TRUE
@@ -1365,7 +1364,8 @@ private sub _emitBop _
 	end select
 
 	'' Conditional branch?
-	if( is_comparison and (vr = NULL) ) then
+	if( label ) then
+		assert( vr = NULL )
 		hLoadVreg( v1 )
 		hLoadVreg( v2 )
 		_setVregDataType( v2, v1->dtype, v1->subtype )
