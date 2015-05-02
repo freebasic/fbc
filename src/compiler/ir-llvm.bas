@@ -1499,8 +1499,6 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
-	dim as IRVREG ptr v2 = any, vresult = any
-
 	'' LLVM IR doesn't have unary operations, corresponding BOPs are
 	'' supposed to be used instead. However there are built-in functions
 	'' for sin() & co.
@@ -1508,28 +1506,33 @@ private sub _emitUop _
 	case AST_OP_NEG
 		'' vr = 0 - v1
 
-		'' If a result REG was given, use it. Otherwise, it's a self-UOP, and
-		'' we need to allocate a result REG and then store that into v1 later.
-		'' Unfortunately we can't let _emitBop() handle this stuff, because in
-		'' case of a self-BOP it expects the lhs to be the variable, while here
-		'' it's the rhs. So we need to do it manually, by always using a non-self-BOP.
-		if( vr ) then
-			assert( irIsREG( vr ) )
-			vresult = vr
-		else
-			vresult = irhlAllocVreg( v1->dtype, v1->subtype )
+		dim v1orig as IRVREG
+
+		var isself = FALSE
+		if( vr = NULL ) then
+			'' Self-UOP
+			''
+			'' Need to allocate a result REG manually and then store
+			'' that into v1 later.
+			''
+			'' Unfortunately we can't let _emitBop() handle this,
+			'' because in case of a self-BOP it expects the lhs to
+			'' be the variable, while here it's the rhs. So we need
+			'' to do it manually, by always using a non-self-BOP.
+			''
+			'' Also, just like _emitBop(), we have to preserve the
+			'' "storable" version of v1, because _emitBop() may
+			'' overwrite it with the loaded version.
+			isself = TRUE
+			vr = irhlAllocVreg( v1->dtype, v1->subtype )
+			v1orig = *v1
 		end if
 
-		v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )  '' 0 for the lhs
-		_emitBop( AST_OP_SUB, v2, v1, vresult, NULL )     '' v1/v2 swapped, v1 goes to rhs
+		var lhs = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, 0 )
+		_emitBop( AST_OP_SUB, lhs, v1, vr, NULL )
 
-		'' self-uop? (see above)
-		if( vr = NULL ) then
-			if( irIsREG( v1 ) ) then
-				*v1 = *vresult
-			else
-				_emitStore( v1, vresult )
-			end if
+		if( isself ) then
+			_emitStore( @v1orig, vr )
 		end if
 
 	case AST_OP_NOT
@@ -1537,7 +1540,7 @@ private sub _emitUop _
 
 		'' Just pass on as BOP. Works even for self-UOPs, as v1 will be
 		'' the lhs of the self-BOP as expected by _emitBop().
-		v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
+		var v2 = irhlAllocVrImm( FB_DATATYPE_INTEGER, NULL, -1 )
 		_emitBop( AST_OP_XOR, v1, v2, vr, NULL )
 
 	case else

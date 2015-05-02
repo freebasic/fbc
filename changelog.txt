@@ -33,7 +33,7 @@ Version 1.03.0
 - "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
 - LLVM backend: local vars were emitted twice
 - LLVM backend: the signature emitted for calls will now use the same param dtypes as in the declaration, as required by LLVM
-- LLVM backend: self-BOPs weren't working
+- LLVM backend: self-BOPs, and the self negation UOP, weren't working
 
 
 Version 1.02.0
