@@ -1577,11 +1577,6 @@ private sub _emitUop _
 end sub
 
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	dim as string ln
-	dim as integer ldtype = any, rdtype = any, lptr = any, rptr = any
-	dim as zstring ptr op = any
-	dim as IRVREG ptr v0 = any
-
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour,
 	'' because LLVM's fptosi/fptoui just truncate.
 	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
@@ -1589,10 +1584,10 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' Round v2 by calling llvm.nearbyint() and then using the result
 		'' as the new v2. This rounding does float to float, then we can feed
 		'' that into fptosi/fptoui to get the [u]int.
-		v0 = irhlAllocVreg( v2->dtype, v2->subtype )
+		var v0 = irhlAllocVreg( v2->dtype, v2->subtype )
 		hLoadVreg( v2 )
 
-		ln = hVregToStr( v0 ) + " = call "
+		var ln = hVregToStr( v0 ) + " = call "
 		if( v2->dtype = FB_DATATYPE_SINGLE ) then
 			builtins(BUILTIN_NEARBYINTF).used = TRUE
 			ln += "float @llvm.nearbyint.f32(float "
@@ -1607,10 +1602,11 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		*v2 = *v0
 	end if
 
-	ldtype = v1->dtype
-	rdtype = v2->dtype
+	var ldtype = v1->dtype
+	var rdtype = v2->dtype
 	assert( (ldtype <> rdtype) or (v1->subtype <> v2->subtype) )
 
+	dim op as zstring ptr
 	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
 		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			'' float to float (i.e. single <-> double)
@@ -1652,7 +1648,13 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				else
 					if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
 						'' same size ints, should happen only with signed <-> unsigned
-						op = @"bitcast"
+						if( typeGetSizeType( v1->dtype ) = typeGetSizeType( v2->dtype ) ) then
+							'' Do nothing for 32bit Long <-> 32bit Integer, etc.
+							op = NULL
+						else
+							'' signed <-> unsigned
+							op = @"bitcast"
+						end if
 					else
 						if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
 							op = @"trunc"
@@ -1669,6 +1671,12 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		end if
 	end if
 
+	if( op = NULL ) then
+		*v1 = *v2
+		exit sub
+	end if
+
+	dim v0 as IRVREG ptr
 	if( irIsREG( v1 ) ) then
 		v0 = v1
 	else
@@ -1678,7 +1686,7 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	hLoadVreg( v2 )
 	_setVregDataType( v2, v2->dtype, v2->subtype )
 
-	ln = hVregToStr( v0 ) + " = " + *op + " "
+	var ln = hVregToStr( v0 ) + " = " + *op + " "
 	ln += hEmitType( v2->dtype, v2->subtype )
 	ln += " " + hVregToStr( v2 ) + " to "
 	ln += hEmitType( v1->dtype, v1->subtype )
