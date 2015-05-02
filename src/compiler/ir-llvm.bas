@@ -1049,25 +1049,49 @@ end sub
 
 private sub hPrepareAddress( byval v as IRVREG ptr )
 	assert( (v->typ = IR_VREGTYPE_VAR) or _
+		(v->typ = IR_VREGTYPE_OFS) or _
 		(v->typ = IR_VREGTYPE_IDX) or _
 		(v->typ = IR_VREGTYPE_PTR) )
 
-	'' Treat memory access as address - turn it into a REG.
+	'' VAR - local var access
+	'' OFS - global symbol access
+	'' IDX - local array indexing
+	'' PTR - derefs
+	''
+	'' In LLVM, references to local/global vars are pointers (addresses)
+	'' implicitly, so we turn such vregs into pointers (without having to do
+	'' addrof operations), for use with LLVM's load/store operations, which
+	'' take addresses, not the memory itself.
+	''
 	'' If there is an offset or index, it must be added on top of the
 	'' base address.
+
 	var addrdtype = typeAddrOf( v->dtype )
 	var addrsubtype = v->subtype
 	var ofs = v->ofs
 	var vidx = v->vidx
+	var sym = v->sym
 
 	if( irIsPTR( v ) ) then
 		assert( irIsREG( vidx ) )
 		*v = *vidx
 	else
 		v->typ = IR_VREGTYPE_REG
-		v->dtype = addrdtype
 		v->reg = INVALID
+		''v->sym = NULL  '' leaving this for use by hVregToStr()
 		v->ofs = 0
+		v->vidx = NULL
+
+		if( sym ) then
+			v->dtype = typeAddrOf( sym->typ )
+			v->subtype = sym->subtype
+
+			'' May need to cast from symbol's type to vreg's type (e.g. for field accesses)
+			_setVregDataType( v, addrdtype, addrsubtype )
+		else
+			v->dtype = addrdtype
+			v->subtype = addrsubtype
+		end if
 	end if
 
 	'' TODO: handle vidx too
@@ -1077,9 +1101,6 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 end sub
 
 private sub hLoadVreg( byval v as IRVREG ptr )
-	dim as string ln
-	dim as IRVREG ptr temp0 = any
-
 	'' LLVM instructions take registers or immediates (including offsets,
 	'' i.e. addresses of globals/procedures),
 	'' anything else must be loaded into a register first.
@@ -1087,9 +1108,12 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 
 	select case( v->typ )
 	case IR_VREGTYPE_REG, IR_VREGTYPE_IMM
+		'' Ok as-is, no loading needed
 
 	case IR_VREGTYPE_OFS
-		'' global symbol address
+		'' global symbol address, no loading needed
+		'' (not even an explicit addrof is needed, since symbol
+		'' references are pointers implicitly)
 		''
 		'' with offset:
 		''    %0 = ptrtoint foo* @global to i32
@@ -1104,15 +1128,15 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		end if
 
 	case else
-		'' memory accesses: stack vars, arrays, ptr derefs
+		'' memory accesses: stack/global vars, arrays, ptr derefs
 		'' Get the address and then load the value stored there.
 
 		hPrepareAddress( v )
 
-		temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
+		assert( typeIsPtr( v->dtype ) )
+		var temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
 		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
 		*v = *temp0
-
 	end select
 end sub
 

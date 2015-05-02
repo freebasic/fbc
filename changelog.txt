@@ -34,7 +34,7 @@ Version 1.03.0
 - LLVM backend: local vars were emitted twice
 - LLVM backend: the signature emitted for calls will now use the same param dtypes as in the declaration, as required by LLVM
 - LLVM backend: self-BOPs, and the self negation UOP, weren't working
-- LLVM backend: pointer derefs/global var accesses with non-zero offsets (e.g. fields) were broken
+- LLVM backend: field accesses, pointer derefs, global var accesses, with or without offsets, were mostly broken
 
 
 Version 1.02.0
