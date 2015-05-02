@@ -393,6 +393,7 @@ enum AST_OPFLAGS
 	AST_OPFLAGS_SELF		= &h00000001			'' op=
 	AST_OPFLAGS_COMM		= &h00000002			'' commutative
 	AST_OPFLAGS_NORES		= &h00000004			'' no result (it's a SUB)
+	AST_OPFLAGS_RELATIONAL		= &h00000008  '' whether it's one of the relational BOPs
 end enum
 
 type AST_OPINFO
@@ -1443,13 +1444,10 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 
 #define astGetOpClass( op ) ast_opTB(op).class
-
 #define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)
-
 #define astGetOpIsSelf( op ) ((ast_opTB(op).flags and AST_OPFLAGS_SELF) <> 0)
-
 #define astGetOpNoResult( op ) ((ast_opTB(op).flags and AST_OPFLAGS_NORES) <> 0)
-
+#define astOpIsRelational( op ) ((ast_opTB(op).flags and AST_OPFLAGS_RELATIONAL) <> 0)
 #define astGetOpSelfVer( op ) ast_opTB(op).selfop
 
 #define astGetOpId( op ) ast_opTB(op).id

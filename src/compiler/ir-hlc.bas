@@ -1706,10 +1706,9 @@ private function typeCBop _
 	) as integer
 
 	'' Result of relational/comparison operators is int
-	select case( op )
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+	if( astOpIsRelational( op ) ) then
 		return FB_DATATYPE_LONG
-	end select
+	end if
 
 	'' This tries to do C operand type promotion (and is probably not
 	'' 100% accurate), in order to figure out the result type of BOP/UOP

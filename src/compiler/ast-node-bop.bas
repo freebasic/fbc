@@ -406,12 +406,8 @@ private function hCheckPointer _
 		return TRUE
 
 	'' relational op?
-	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-
-    	return TRUE
-
-    case else
-    	return FALSE
+	case else
+		return astOpIsRelational( op )
     end select
 
 end function
@@ -807,10 +803,8 @@ function astNewBOP _
 				end if
 			end select
 
-			select case as const op
 			'' concatenation?
-			case AST_OP_ADD
-
+			if( op = AST_OP_ADD ) then
 				'' both literals?
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
@@ -836,7 +830,7 @@ function astNewBOP _
 				'' to allow optimizations..
 
 			'' comparison?
-			case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+			elseif( astOpIsRelational( op ) ) then
 				'' both literals?
 				if( litsym <> NULL ) then
 					return hWstrLiteralCompare( op, l, r )
@@ -852,9 +846,9 @@ function astNewBOP _
 				rdclass = FB_DATACLASS_INTEGER
 
 			'' no other operation allowed
-			case else
+			else
 				exit function
-			end select
+			end if
 
 		'' One is not a string, but e.g. an integer. Disallow if the
 		'' other is not a DEREF'ed wchar ptr - this allows comparisons
@@ -902,9 +896,8 @@ function astNewBOP _
 			end if
 		end if
 
-		select case as const op
 		'' concatenation?
-		case AST_OP_ADD
+		if( op = AST_OP_ADD ) then
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralConcat( l, r )
@@ -921,7 +914,7 @@ function astNewBOP _
 			'' to allow optimizations..
 
 		'' comparison?
-		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+		elseif( astOpIsRelational( op ) ) then
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralCompare( op, l, r )
@@ -937,9 +930,9 @@ function astNewBOP _
 			rdclass = FB_DATACLASS_INTEGER
 
 		'' no other operation allowed
-		case else
+		else
 			exit function
-		end select
+		end if
 
     '' zstrings?
     elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _

@@ -1354,14 +1354,6 @@ private sub _emitBop _
 
 	dim as string ln, falselabel
 	dim as IRVREG ptr vresult = any, vtemp = any
-	dim as integer is_comparison = any
-
-	select case( op )
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		is_comparison = TRUE
-	case else
-		is_comparison = FALSE
-	end select
 
 	'' Conditional branch?
 	if( label ) then
@@ -1431,7 +1423,7 @@ private sub _emitBop _
 
 	'' LLVM comparison ops return i1, but we usually want i32,
 	'' so do an sign-extending cast (i1 -1 to i32 -1).
-	if( is_comparison ) then
+	if( astOpIsRelational( op ) ) then
 		vtemp = irhlAllocVreg( vresult->dtype, vresult->subtype )
 		ln = hVregToStr( vtemp )
 		ln += " = sext "

@@ -1590,10 +1590,9 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_BOP
 		'' can't be a relative op -- unless EMIT is changed to not assume
 		'' the res operand is a reg
-		select case as const r->op.op
-		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+		if( astOpIsRelational( r->op.op ) ) then
 			exit function
-		end select
+		end if
 
 	case else
 		exit function
