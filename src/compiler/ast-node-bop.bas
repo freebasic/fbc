@@ -393,21 +393,16 @@ private function hCheckPointer _
     select case op
     '' add op?
     case AST_OP_ADD, AST_OP_SUB
-
     	'' another pointer?
-    	if( typeIsPtr( dtype ) ) then
-    		return FALSE
-    	end if
-
-    	return TRUE
+		function = not typeIsPtr( dtype )
 
 	'' short-circuit ops?  operands will be checked against zero, so allow.
 	case AST_OP_ANDALSO, AST_OP_ORELSE
-		return TRUE
+		function = TRUE
 
 	'' relational op?
 	case else
-		return astOpIsRelational( op )
+		function = astOpIsRelational( op )
     end select
 
 end function
