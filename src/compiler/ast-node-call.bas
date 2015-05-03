@@ -456,7 +456,8 @@ end function
 
 function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
-	if( astIsDEREF( expr ) ) then
+	'' DEREF with expression? (and not just DEREF of a constant)
+	if( astIsDEREF( expr ) andalso expr->l ) then
 		if( astIsCALL( expr->l ) ) then
 			function = symbProcReturnsByref( expr->l->sym )
 		end if
