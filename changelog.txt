@@ -36,7 +36,7 @@ Version 1.03.0
 - LLVM backend: self-BOPs, and the self negation UOP, weren't working
 - LLVM backend: field accesses, pointer derefs, global var accesses, with or without offsets, were mostly broken
 - 1.00.0 regression: compiler crash on assignments with a dereferenced constant on the left side
-- C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
+- 1.00.0 regression: C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
 
 
 Version 1.02.0
