@@ -227,6 +227,36 @@ namespace stringArrayField
 	end sub
 end namespace
 
+namespace dynamicArrayOfPointers
+	'' -gen gcc regression test (handling of array descriptors if it's an
+	'' array of pointers)
+
+	dim shared as integer i0, i1
+
+	sub f( array(any) as integer ptr )
+		*array(0) = 123
+		*array(1) = 456
+		CU_ASSERT( *array(0) = 123 )
+		CU_ASSERT( *array(1) = 456 )
+	end sub
+
+	sub test cdecl( )
+		dim array(any) as integer ptr
+		redim array(0 to 1)
+		array(0) = @i0
+		array(1) = @i1
+		CU_ASSERT( i0 = 0 )
+		CU_ASSERT( i1 = 0 )
+
+		f( array() )
+		CU_ASSERT( i0 = 123 )
+		CU_ASSERT( i1 = 456 )
+
+		CU_ASSERT( *array(0) = 123 )
+		CU_ASSERT( *array(1) = 456 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/bydesc" )
 	fbcu.add_test( "#1 local array" , @test1.testLocal  )
@@ -246,6 +276,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "string array field, local array" , @stringArrayField.testLocalUdtArray  )
 	fbcu.add_test( "string array field, global"      , @stringArrayField.testGlobalUdt      )
 	fbcu.add_test( "string array field, global array", @stringArrayField.testGlobalUdtArray )
+	fbcu.add_test( "dynamicArrayOfPointers", @dynamicArrayOfPointers.test )
 end sub
 
 end namespace

@@ -1652,6 +1652,13 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
+	'' Dynamic array (fake dynamic array symbol)? Remap to array descriptor,
+	'' since that's what it will be emitted as.
+	if( symbIsVar( sym ) and symbIsDynamic( sym ) ) then
+		sym = sym->var_.array.desc
+		assert( sym )
+	end if
+
 	if( symbIsLabel( sym ) ) then
 		'' &&label is a void* in GCC
 		'' This is handled as a single SYM instead of ADDROF( SYM ),
@@ -1665,6 +1672,12 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		'' address of functions, not to call them, so the '&' is
 		'' part of the SYM.
 		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_FUNCTION ), sym )
+		n->sym = sym
+
+	'' Bydesc dynamic array param? Use descriptor type
+	elseif( symbIsParamBydesc( sym ) ) then
+		assert( sym->var_.array.desctype )
+		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_STRUCT ), sym->var_.array.desctype )
 		n->sym = sym
 
 	'' Array? Add CAST to make it a pointer to the first element,
