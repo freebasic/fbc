@@ -37,6 +37,7 @@ Version 1.03.0
 - LLVM backend: field accesses, pointer derefs, global var accesses, with or without offsets, were mostly broken
 - 1.00.0 regression: compiler crash on assignments with a dereferenced constant on the left side
 - 1.00.0 regression: C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
+- Better error recovery after byref function result assignment type mismatch errors
 
 
 Version 1.02.0

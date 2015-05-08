@@ -97,14 +97,20 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 			''  * nicer error messages such as "type mismatch" instead of
 			''    "suspicious pointer assignment" warnings (which don't make sense
 			''    since the pointer basically is an implementation detail)
-			if( astCheckByrefAssign( parser.currproc->typ, parser.currproc->subtype, rhs ) = FALSE ) then
+			if( astCheckByrefAssign( parser.currproc->typ, parser.currproc->subtype, rhs ) ) then
+				'' Implicit addrof due to BYREF
+				rhs = astNewADDROF( rhs )
+			else
 				errReport( FB_ERRMSG_TYPEMISMATCHINBYREFRESULTASSIGN )
 				astDelTree( rhs )
-				rhs = astNewCONSTz( parser.currproc->typ, parser.currproc->subtype )
+				'' Place-holder value to be assigned to the byref result pointer
+				'' Done separately from the astNewADDROF() on the main code path, because we
+				'' 1. shouldn't create a CONST and do astNewADDROF() on it
+				'' 2. would still get a zstring VAR if the result type is a string,
+				''    which would still trigger a "mismatch" warning which we don't want
+				''    during error recovery.
+				rhs = astNewCONSTz( typeAddrOf( parser.currproc->typ ), parser.currproc->subtype )
 			end if
-
-			'' Implicit addrof due to BYREF
-			rhs = astNewADDROF( rhs )
 		end if
 	else
 		rhs = cExpression( )
