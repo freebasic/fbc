@@ -1,6 +1,8 @@
 /* 'screen , pg, pg' (console, no gfx) function for DOS */
 
 #include "fb.h"
+#include "fb_private_console.h"
+#include <dpmi.h>
 
 /*:::::*/
 int fb_ConsolePageSet ( int active, int visible )
@@ -27,5 +29,3 @@ int fb_ConsolePageSet ( int active, int visible )
 
 	return res;
 }
-
-

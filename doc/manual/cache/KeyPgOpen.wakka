@@ -122,7 +122,7 @@ End If
 	- The //[[CompilerOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being ##"I"## for input, ##"O"## for output, ##"A"## for append, ##"R"## for random, ##"B"## for binary. 
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgErr Err with a list of error codes]]##
+	- ##[[KeyPgErr Err]]## (and [[TblRuntimeErrors a list of error codes]])
 	- ##[[KeyPgClose Close]]##
 	- ##[[KeyPgFreefile Freefile]]##
 	- ##[[KeyPgOpenCons Open Cons]]##, ##[[KeyPgOpenErr Open Err]]##, ##[[KeyPgOpenPipe Open Pipe]]##, ##[[KeyPgOpenLpt Open Lpt]]##, ##[[KeyPgOpenCom Open Com]]##, ##[[KeyPgOpenScrn Open Scrn]]##

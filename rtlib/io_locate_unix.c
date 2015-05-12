@@ -1,7 +1,7 @@
 /* locate (console, no gfx) function for Linux */
 
 #include "fb.h"
-
+#include "fb_private_console.h"
 
 /*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )

@@ -1,9 +1,53 @@
 {{fbdoc item="title" value="JNI, The Java Native Interface"}}----
-Standard programming interface for writing Java native methods and embedding the Java virtual machine* into native applications.
+Standard programming interface for writing Java native methods and embedding the Java virtual machine into native applications.
 
-Website: http://java.sun.com/j2se/1.4.2/docs/guide/jni/
-Platforms supported: Win32, Linux
+Website: [[http://download.oracle.com/javase/6/docs/technotes/guides/jni/index.html]], [[http://java.sun.com/docs/books/jni/]]
+Platforms supported: ""Win32"", Linux
 Headers to include: jni.bi
+Header version: from 2006
 
+{{fbdoc item="ex"}}
+
+	Three files:
+
+	- ##mylib.bas## - A DLL writting in ""FreeBASIC""
+
+	{{fbdoc item="filename" value="examples/manual/libraries/jni/mylib.bas"}}%%(freebasic)
+#include "jni.bi"
+	
+'' Note: The mangling must be "windows-ms" or the JRE won't find any function
+extern "windows-ms"
+	function Java_MyLib_add( env as JNIEnv ptr, obj as jobject, l as jint, r as jint ) as jint export
+		return l + r
+	end function
+end extern%%
+
+	- ##Mylib.java## - The Java class that represents the interface to the ""FreeBASIC"" code and ensures the ""FreeBASIC"" DLL is loaded
+
+	{{fbdoc item="filename" value="examples/manual/libraries/jni/Mylib.java"}}%%(cpp)
+class MyLib {
+	public native int add( int l, int r );
+	static {
+		System.loadLibrary( "mylib" );
+	}
+}
+%%
+
+	- ##Test.java## - The Java main() that uses the Mylib class
+
+	{{fbdoc item="filename" value="examples/manual/libraries/jni/mylib.bas"}}%%(cpp)
+class Test {
+	public static void main(String[] args) {
+		MyLib lib = new MyLib();
+		System.out.println( "2+2=" + lib.add( 2, 2 ) ); 
+	}
+}
+%%
+
+	Steps to test it:
+
+	- //Compile the ""FreeBASIC"" DLL:// ##fbc mylib.bas -dll##
+	- //Compile the two Java classes:// ##javac Mylib.java Test.java##
+	- //Run the ##Test## class:// ##java Test##
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

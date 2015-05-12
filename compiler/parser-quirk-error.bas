@@ -9,64 +9,43 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-''ErrorStmt 	=	ERROR Expression
-''				|   ERR '=' Expression .
-''
-function cErrorStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
-
-	dim as ASTNODE ptr expr
-
+'' ERROR Expression
+function cErrorStmt() as integer
 	function = FALSE
 
-	select case tk
+	lexSkipToken( )
 
-	'' ERROR Expression
-	case FB_TK_ERROR
-		lexSkipToken( )
+	'' Expression
+	dim as ASTNODE ptr expr
+	hMatchExpressionEx(expr, FB_DATATYPE_INTEGER)
 
-		'' Expression
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+	rtlErrorThrow(expr, lexLineNum(), env.inf.name)
 
-		rtlErrorThrow( expr, lexLineNum( ), env.inf.name )
-
-		function = TRUE
-
-	'' ERR '=' Expression
-	case FB_TK_ERR
-		lexSkipToken( )
-
-		'' '='
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-		'' Expression
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
-		rtlErrorSetnum( expr )
-
-		function = TRUE
-
-	end select
-
+	function = TRUE
 end function
 
-'':::::
-''cErrorFunct =   ERR .
-''
-function cErrorFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+'' ERR '=' Expression
+function cErrSetStmt() as integer
 	function = FALSE
 
+	lexSkipToken( )
+
+	'' '='
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDEQ )
+	end if
+
+	'' Expression
+	dim as ASTNODE ptr expr
+	hMatchExpressionEx(expr, FB_DATATYPE_INTEGER)
+
+	rtlErrorSetnum(expr)
+
+	function = TRUE
+end function
+
+'' ERR()
+function cErrorFunct() as ASTNODE ptr
 	'' ERR
 	lexSkipToken( )
 
@@ -76,9 +55,5 @@ function cErrorFunct _
 		hMatchRPRNT( )
 	end if
 
-	funcexpr = rtlErrorGetNum( )
-
-	function = TRUE
-
+	function = rtlErrorGetNum( )
 end function
-

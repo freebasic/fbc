@@ -19,9 +19,9 @@ Computes a valid color value for hi/truecolor modes
 	The combined color.
 
 {{fbdoc item="desc"}}
-	##//red//##, ##//green//## and ##//blue//## are components ranging ##0##..##255##.
+	##//red//##, ##//green//## and ##//blue//## are components ranging ##0##-##255##.
 
-	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&hAARRGGBB##, where ##RR##, ##GG## and ##BB## equal the values passed to this function, in hexadecimal format. ##AA## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//## and ##//BB//## equal the values passed to this function, in hexadecimal format. ##//AA//## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
 	It is possible to retrieve the red, green, blue and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd And]]## and ##[[KeyPgOpShiftRight Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine #Define]]## and use macros to do this.
 
 	**Note for Windows API programmers**: The macro named ##RGB## in the Windows references has been renamed ##BGR## in the FB headers for Windows to avoid collisions. 
@@ -64,7 +64,7 @@ Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Rgb""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

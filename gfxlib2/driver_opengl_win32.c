@@ -2,7 +2,7 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
-#include <GL/GL.h>
+#include "fb_gfx_gl.h"
 
 #ifndef WGL_ARB_pixel_format
 #define WGL_ARB_pixel_format
@@ -176,7 +176,6 @@ static int opengl_init(void)
 	DEVMODE mode;
 	DWORD style;
 	RECT rect;
-	HWND root;
 	UINT flags;
 	int x, y;
 	MONITORINFOEX monitor_info;
@@ -207,7 +206,6 @@ static int opengl_init(void)
 		}
 		style &= ~WS_OVERLAPPEDWINDOW;
 		style |= WS_POPUP;
-		root = HWND_TOPMOST;
 	}
 	else {
 		if (fb_win32.flags & DRIVER_NO_FRAME) {
@@ -220,7 +218,6 @@ static int opengl_init(void)
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
 		}
-		root = HWND_TOP;
 		flags |= SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING | SWP_NOZORDER;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);

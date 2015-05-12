@@ -1,6 +1,6 @@
 /* print raw data - no interpretation is done */
 
-#include "fb_con.h"
+#include "fb.h"
 
 #define FB_CONPRINTRAW fb_ConPrintRaw
 #define FB_TCHAR char

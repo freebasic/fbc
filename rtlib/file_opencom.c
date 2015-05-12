@@ -1,6 +1,5 @@
 /* open COMx */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

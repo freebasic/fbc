@@ -1,8 +1,7 @@
 /* parse a string date */
 
-#include <ctype.h>
-#include <stdlib.h>
 #include "fb.h"
+#include <ctype.h>
 
 /*:::::*/
 static int fb_hIsMonth( const char *text, size_t text_len, const char **end_text, int short_name, int localized )

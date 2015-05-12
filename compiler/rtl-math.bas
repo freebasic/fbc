@@ -8,6 +8,8 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
+declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
+
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
@@ -101,7 +103,7 @@
 		( _
 			@"randomize", @"fb_Randomize", _
 			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			@hRndCallback, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
 	 			( _
@@ -116,7 +118,7 @@
 		( _
 			@"rnd", @"fb_Rnd", _
 			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			@hRndCallback, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
@@ -378,9 +380,9 @@
 		), _
 		/' abs CDECL overload ( byval x as longint ) as longint '/ _
 		( _
-			@FB_RTL_abs, @"abs", _
+			@FB_RTL_abs, @"llabs", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -564,9 +566,9 @@
 		), _
 		/' ftosl cdecl ( byval x as single ) as long '/ _
 		( _
-			@FB_RTL_FTOSL, @"fb_ftosl", _
+			@FB_RTL_FTOSL, @FB_RTL_FTOSL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -576,9 +578,9 @@
 		), _
 		/' dtosl cdecl ( byval x as double ) as long '/ _
 		( _
-			@FB_RTL_DTOSL, @"fb_dtosl", _
+			@FB_RTL_DTOSL,@FB_RTL_DTOSL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -588,9 +590,9 @@
 		), _
 		/' ftosi cdecl ( byval x as single ) as integer '/ _
 		( _
-			@FB_RTL_FTOSI, @"fb_ftosi", _
+			@FB_RTL_FTOSI, @FB_RTL_FTOSI, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -600,9 +602,9 @@
 		), _
 		/' dtosi cdecl ( byval x as double ) as integer '/ _
 		( _
-			@FB_RTL_DTOSI, @"fb_dtosi", _
+			@FB_RTL_DTOSI, @FB_RTL_DTOSI, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -612,9 +614,9 @@
 		), _
 		/' ftoss cdecl ( byval x as single ) as short '/ _
 		( _
-			@FB_RTL_FTOSS, @"fb_ftoss", _
+			@FB_RTL_FTOSS, @FB_RTL_FTOSS, _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -624,9 +626,9 @@
 		), _
 		/' dtoss cdecl ( byval x as double ) as short '/ _
 		( _
-			@FB_RTL_DTOSS, @"fb_dtoss", _
+			@FB_RTL_DTOSS, @FB_RTL_DTOSS, _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -636,9 +638,9 @@
 		), _
 		/' ftosb cdecl ( byval x as single ) as byte '/ _
 		( _
-			@FB_RTL_FTOSB, @"fb_ftosb", _
+			@FB_RTL_FTOSB, @FB_RTL_FTOSB, _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -648,9 +650,9 @@
 		), _
 		/' dtosb cdecl ( byval x as double ) as byte '/ _
 		( _
-			@FB_RTL_DTOSB, @"fb_dtosb", _
+			@FB_RTL_DTOSB, @FB_RTL_DTOSB, _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -660,9 +662,9 @@
 		), _
 		/' ftoul cdecl ( byval x as single ) as long '/ _
 		( _
-			@FB_RTL_FTOUL, @"fb_ftoul", _
+			@FB_RTL_FTOUL, @FB_RTL_FTOUL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -672,9 +674,9 @@
 		), _
 		/' dtoul cdecl ( byval x as double ) as long '/ _
 		( _
-			@FB_RTL_DTOUL, @"fb_dtoul", _
+			@FB_RTL_DTOUL, @FB_RTL_DTOUL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -684,9 +686,9 @@
 		), _
 		/' ftoui cdecl ( byval x as single ) as integer '/ _
 		( _
-			@FB_RTL_FTOUI, @"fb_ftoui", _
+			@FB_RTL_FTOUI, @FB_RTL_FTOUI, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -696,9 +698,9 @@
 		), _
 		/' dtoui cdecl ( byval x as double ) as integer '/ _
 		( _
-			@FB_RTL_DTOUI, @"fb_dtoui", _
+			@FB_RTL_DTOUI, @FB_RTL_DTOUI, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -708,9 +710,9 @@
 		), _
 		/' ftous cdecl ( byval x as single ) as short '/ _
 		( _
-			@FB_RTL_FTOUS, @"fb_ftous", _
+			@FB_RTL_FTOUS, @FB_RTL_FTOUS, _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -720,9 +722,9 @@
 		), _
 		/' dtous cdecl ( byval x as double ) as short '/ _
 		( _
-			@FB_RTL_DTOUS, @"fb_dtous", _
+			@FB_RTL_DTOUS, @FB_RTL_DTOUS, _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -732,9 +734,9 @@
 		), _
 		/' ftoub cdecl ( byval x as single ) as byte '/ _
 		( _
-			@FB_RTL_FTOUB, @"fb_ftoub", _
+			@FB_RTL_FTOUB, @FB_RTL_FTOUB, _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -744,9 +746,9 @@
 		), _
 		/' dtoub cdecl ( byval x as double ) as byte '/ _
 		( _
-			@FB_RTL_DTOUB, @"fb_dtoub", _
+			@FB_RTL_DTOUB, @FB_RTL_DTOUB, _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -897,7 +899,7 @@ type_size:
 		'' wstring? multiply by sizeof(wchar) to get the
 		'' number of bytes, not of chars
 		if( dtype = FB_DATATYPE_WCHAR ) then
-			lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
+			lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 		end if
 
 	end if
@@ -1148,6 +1150,22 @@ function rtlMathFTOI _
 			sym = PROCLOOKUP( DTOUI )
 		end if
 
+	case FB_DATATYPE_LONG
+		'' TODO: Use longint versions when compiling for 64bit
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSI )
+		else
+			sym = PROCLOOKUP( DTOSI )
+		end if
+
+	case FB_DATATYPE_ULONG
+		'' TODO: Use longint versions when compiling for 64bit
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUI )
+		else
+			sym = PROCLOOKUP( DTOUI )
+		end if
+
 	case FB_DATATYPE_LONGINT
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSL )
@@ -1177,3 +1195,16 @@ function rtlMathFTOI _
 
 end function
 
+private function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
+	static as integer added = FALSE
+
+	if( added = FALSE ) then
+		added = TRUE
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			fbAddLib( "advapi32" )
+		end select
+	end if
+
+        return TRUE
+end function

@@ -1,6 +1,5 @@
 /* DATA core */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

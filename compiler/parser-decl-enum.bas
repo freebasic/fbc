@@ -11,15 +11,8 @@
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-private function hEnumConstDecl _
-	( _
-		byval id as zstring ptr, _
-		byref value as integer _
-	) as integer
-
-    dim as ASTNODE ptr expr = any
-
-	function = FALSE
+private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
+	dim as ASTNODE ptr expr = any
 
 	'' '='?
 	if( lexGetToken( ) = FB_TK_ASSIGN ) then
@@ -28,23 +21,17 @@ private function hEnumConstDecl _
 		'' ConstExpression
 		expr = cExpression( )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip till next ','
-				hSkipUntil( CHAR_COMMA )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDCONST )
+			'' error recovery: skip till next ','
+			hSkipUntil( CHAR_COMMA )
+			return
 		end if
 
 		if( astIsCONST( expr ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: no value change
-				astDelTree( expr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDCONST )
+			'' error recovery: no value change
+			astDelTree( expr )
+			return
 		end if
 
 		'' not an integer? (CHAR or WCHAR will fail in astIsCONST())
@@ -54,26 +41,15 @@ private function hEnumConstDecl _
 
 		value = astGetValueAsInt( expr )
 		astDelNode( expr )
-
-    end if
-
-	function = TRUE
-
-end function
+	end if
+end sub
 
 '':::::
 ''EnumBody      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator)+ .
 ''
-function cEnumBody _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval attrib as integer _
-	) as integer
-
+sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer value = any
-
-	function = FALSE
 
 	value = 0
 
@@ -102,9 +78,7 @@ function cEnumBody _
 						'' if inside a namespace, symbols can't contain periods (.)'s
 						if( symbIsGlobalNamespc( ) = FALSE ) then
   							if( lexGetPeriodPos( ) > 0 ) then
-  								if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-	  								exit function
-								end if
+  								errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 							end if
 						end if
 					end if
@@ -114,16 +88,12 @@ function cEnumBody _
 				case FB_TKCLASS_QUIRKWD
 					'' only if inside a ns and if not local
 					if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
-    					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    						exit function
-    					else
-    						'' error recovery: fake an id
-    						id = *hMakeTmpStr( )
-    					end if
-
-    				else
+						errReport( FB_ERRMSG_DUPDEFINITION )
+						'' error recovery: fake an id
+						id = *hMakeTmpStr( )
+					else
 						id = *lexGetText( )
-    				end if
+					end if
 
 				case else
 					exit do
@@ -132,14 +102,10 @@ function cEnumBody _
 				lexSkipToken( )
 
 				'' ConstDecl
-				if( hEnumConstDecl( @id, value ) = FALSE ) then
-					exit function
-				end if
+				hEnumConstDecl( @id, value )
 
 				if( symbAddEnumElement( s, @id, value, attrib ) = NULL ) then
-					if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-						exit function
-					end if
+					errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 				end if
 
 				value += 1
@@ -159,57 +125,32 @@ function cEnumBody _
 			hEmitCurrLine( )
 
 			if( cStmtSeparator( ) = FALSE ) then
-    			if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: skip until next line or stmt
-    				hSkipUntil( INVALID, TRUE )
-    			end if
+				errReport( FB_ERRMSG_EXPECTEDEOL )
+				'' error recovery: skip until next line or stmt
+				hSkipUntil( INVALID, TRUE )
 			end if
 		end select
-
 	loop
 
 	'' nothing added?
 	if( symbGetEnumElements( s ) = 0 ) then
-		if( errReport( FB_ERRMSG_NOELEMENTSDEFINED ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
 	end if
-
-    function = TRUE
-
-end function
+end sub
 
 '':::::
 ''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? EXPLICIT? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
-function cEnumDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias = any
-    dim as FBSYMBOL ptr parent = any, e = any
-
-	function = FALSE
+sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
+	static as zstring * FB_MAXNAMELEN+1 id
+	dim as FBSYMBOL ptr e = any
 
 	'' ENUM
 	lexSkipToken( )
 
-	'' don't allow explicit namespaces
-	parent = cParentId( )
-    if( parent <> NULL ) then
-		if( hDeclCheckParent( parent ) = FALSE ) then
-			exit function
-    	end if
-    else
-    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
-    end if
+	'' Namespace identifier if it matches the current namespace
+	cCurrentParentId()
 
 	'' ID?
 	select case lexGetClass( )
@@ -219,9 +160,7 @@ function cEnumDecl _
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
   				if( lexGetPeriodPos( ) > 0 ) then
-  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-	  					exit function
-					end if
+  					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
@@ -233,29 +172,14 @@ function cEnumDecl _
     	id = *hMakeTmpStrNL( )
     end select
 
-	'' (ALIAS LITSTR)?
-	palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-    	lexSkipToken( )
-
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-        else
-			lexEatToken( @id_alias )
-			palias = @id_alias
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	e = symbAddEnum( @id, palias, attrib )
 	if( e = NULL ) then
-    	if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: create a fake symbol
-    		e = symbAddEnum( hMakeTmpStr( ), NULL, FB_SYMBATTRIB_NONE )
-    	end if
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: create a fake symbol
+		e = symbAddEnum( hMakeTmpStr( ), NULL, FB_SYMBATTRIB_NONE )
 	end if
 
 	'' EXPLICIT?
@@ -272,12 +196,9 @@ function cEnumDecl _
 	hEmitCurrLine( )
 
 	if( cStmtSeparator( ) = FALSE ) then
-    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip until next line or stmt
-    		hSkipUntil( INVALID, TRUE )
-    	end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip until next line or stmt
+		hSkipUntil( INVALID, TRUE )
 	end if
 
 	'' if in BASIC mangling mode, start a new scope
@@ -286,37 +207,25 @@ function cEnumDecl _
 	end if
 
 	'' EnumBody
-	dim as integer res = cEnumBody( e, attrib )
+	cEnumBody( e, attrib )
 
 	'' close scope
 	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
 		symbNestEnd( FALSE )
 	end if
 
-	if( res = FALSE ) then
-		exit function
-	end if
-
 	'' END ENUM
 	if( lexGetToken( ) <> FB_TK_END ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDENDENUM ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip until next stmt
-    		hSkipStmt( )
-    	end if
-
+		errReport( FB_ERRMSG_EXPECTEDENDENUM )
+		'' error recovery: skip until next stmt
+		hSkipStmt( )
 	else
 		lexSkipToken( )
 
 		if( lexGetToken( ) <> FB_TK_ENUM ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDENDENUM ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip until next stmt
-    			hSkipStmt( )
-    		end if
-
+			errReport( FB_ERRMSG_EXPECTEDENDENUM )
+			'' error recovery: skip until next stmt
+			hSkipStmt( )
 		else
 			lexSkipToken( )
 
@@ -328,9 +237,4 @@ function cEnumDecl _
 			end if
 		end if
 	end if
-
-    ''
-	function = TRUE
-
-end function
-
+end sub

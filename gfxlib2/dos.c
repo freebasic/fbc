@@ -1,8 +1,8 @@
 /* list of dos gfx drivers and common code */
 
+#include "fb_gfx.h"
 #include "fb_gfx_dos.h"
-
-#include <limits.h>
+#include <pc.h>
 #include <sys/nearptr.h>
 
 /* timer ticks per second */

@@ -1,0 +1,94 @@
+{{fbdoc item="title" value="Macros"}}----
+
+Some terms used in the source code (Note the double meanings):
+	- ##macro##: The #defined/#macroed object that will be expanded to its replacement text
+	- ##macro##: a function-like macro, e.g. ###define m(a, b)##
+	- ##define##: an object-like macro, e.g. ###define simple##
+	- ##argless define## (should be called parameter-less): a function-like macro without parameters, e.g. ###define f()##
+
+{{fbdoc item="section" value="How macros are stored"}}
+
+	Macros are basically stored as raw text, not as token runs (as in GCC's libcpp for example). The body of simple #defines without parameters is stored as one string. Macros with parameters are stored as sequence of "macro tokens". There are three types of macro tokens:
+		- ##text("<text>")##
+				Raw text, but spaces and empty lines trimmed (like in a #define without parameters)
+		- ##textw("<wstring text>")##
+				Same as above, just for Unicode input.
+		- ##parameter(index)##
+				A macro parameter was used here in the declaration. The index specifies which one. During expansion, the text of argument(index) is inserted where the parameter was in the declaration.
+		- ##stringify_parameter(index)##
+				Same as above, except the argument will be stringified during expansion.
+			
+	Note: macro tokens are actually ''##symb.bi:FB_DEFTOK##'' structures, and they contain an id field holding on of the ''##FB_DEFTOK_TYPE_*##'' values to tell what they contain.
+	
+		%%For example:
+
+	#define add(x, y) x + y
+
+becomes:
+
+	parameter(0), text(" + "), parameter(1)
+
+And the expansion text will be:
+
+	argument(0) + " + " + argument(1)
+%%
+	
+	Storing macros as text is a fairly easy implementation, but it requires to re-parse the macro body over and over again. For example, since GCC works with preprocessing tokens and tokenruns, macros are stored as tokens, making expansion very fast, because there is no need to tokenize the macro body again 	and again. fbc's implementation is not as flexible and maybe not as efficient, but is less complex (regarding code and memory management) and has an upside too: Implementation of ##""##""## (PP token merge) is trivial. ##""##""## simply is omitted while recording the macro's body, where as in token runs the tokens need to be merged explicitly.
+
+{{fbdoc item="section" value="When are macros expanded?"}}
+
+	Because of token look ahead, macros must be expanded during tokenization, otherwise the wrong tokens might be loaded into the token queue. Afterall the parser should only get to see the final tokens, even during look ahead.
+	
+	In ''##lexNextToken()##'', each alphanumeric identifier is looked up in the symb module to check whether it is a keyword or a macro. Macros and keywords are kept in the same hash table. Note that macros cannot have the name of keywords; "#define integer" causes an error. If a macro is detected, it is immediately expanded, a process also called "loading" the macro (''##pp-define.bas:ppDefineLoad()##'').
+
+{{fbdoc item="section" value="Macro call parsing"}}
+
+	If the macro takes arguments, the macro "call" must be parsed, much like a function call, syntax-wise. Since macro expansion already happens in ''##lexNextToken()##'', the source of tokens, the parsing here is a little tricky. Forward movement is only possible by replacing (and losing) the current token. The token queue and token look ahead cannot be relied upon. Instead it can only replace the current token to move forward while parsing the macro's arguments.
+	
+	Since ''##lexNextToken()##'' is used to parse the arguments, macros in the arguments themselves are recursively macro-expanded while the arguments are being parsed and recorded in text form. The argument texts are stored for use during the expansion.
+	
+	So, a macro's arguments are expanded before that macro itself is expanded, which could be seen as both good and bad feature:
+	
+		%%#define stringify(s) #s
+stringify(__LINE__)%%
+	
+	results in ##2## in FB, but ##""__LINE__""## in C, because in C, macro parameters are not expanded when used with ##### or ##""##""##. In C, two macros have to be used to get the ##2##:
+	
+		%%#define stringize(s) #s
+#define stringify(s) stringize(s)
+stringify(__LINE__)%%
+
+{{fbdoc item="section" value="Putting together the macro expansion text"}}
+
+	The expansion text is a string build up from the macro's body tokens. For macro parameters, the argument text is retrieved from the argument array created by the macro call parser, using the indices stored in the parameter tokens. Parameter stringification is done here.
+	
+	There is a specialty for the builtin defines (##""__LINE__""##, ##""__FUNCTION__""##, ##""__FB_DEBUG__""##, etc.):
+	A callback is used to retrieve their "value". For example: ##""__LINE__""##'s callback simply returns a string containing the lexer's current line number.
+
+{{fbdoc item="section" value="Expansion"}}
+
+	The macro expansion text (##deftext##) is stored by the lexer, and now it will read characters from there for a while, instead of reading from the file input buffer. Skipping chars in the macro text is like skipping chars in the file input: Once skipped it's lost, there is no going back. So, there never is "old" (parsed) macro text, only the current char and to-be-parsed text. New macro text is prepended to the front of existing macro text. That way macros inside macros are expanded. 
+	
+	This implementation does not (easily) allow to detect macro recursion. It would be hard to keep track of which characters in the macro text buffer belong to which macro, but that would be needed to be able to push and pop macros properly. It could be done more easily with a token run implementation as seen in GCC's libcpp. However C doesn't allow recursive macros in the first place: In C, a macro's identifier is undefined (does not trigger expansion) inside that macro's body. That is not the case in fbc, because (again) a way to detect when a macro body ends is not implemented.
+	
+	Currently fbc only keeps track of the first (toplevel) macro expanded, because it's easy to detect when that specific macro's end is reached: as soon as there is no more macro text.
+	
+	That's why the recursion is detected here:
+	
+		%%#define a a
+a%%
+	
+	and here too:
+	
+		%%#define a b
+#define b a
+a%%
+	
+	but not here: (Note that fbc will run an infinite loop)
+	
+		%%#define a a
+#define m a
+m%%
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

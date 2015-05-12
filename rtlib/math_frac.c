@@ -1,7 +1,6 @@
 /* frac function for singles and doubles FRAC( x ) = x - INT( x ) */
 
 #include "fb.h"
-#include <math.h>
 
 
 /*:::::*/

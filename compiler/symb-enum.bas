@@ -96,8 +96,7 @@ end function
 '':::::
 sub symbDelEnum _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval s as FBSYMBOL ptr _
 	)
 
     if( s = NULL ) then
@@ -124,7 +123,7 @@ sub symbDelEnum _
 
 	''
 	if( symbGetMangling( s ) = FB_MANGLING_BASIC ) then
-		hashFree( @s->enum_.ns.hashtb.tb )
+		hashEnd( @s->enum_.ns.hashtb.tb )
 	end if
 
 	'' del the enum node

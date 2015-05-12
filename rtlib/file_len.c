@@ -2,13 +2,7 @@
 
 #include "fb.h"
 
-#include <stdio.h>
-
-
-fb_off_t fb_FileLenEx 
-	( 
-		const char *filename 
-	)
+fb_off_t fb_FileLenEx( const char *filename )
 {
 	FILE *fp;
 	fb_off_t len;
@@ -33,11 +27,7 @@ fb_off_t fb_FileLenEx
 	return 0;
 }
 
-
-FBCALL long long fb_FileLen
-	(
-		const char *filename
-	)
+FBCALL long long fb_FileLen( const char *filename )
 {
 	return fb_FileLenEx( filename );
 }

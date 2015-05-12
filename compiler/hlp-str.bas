@@ -32,7 +32,7 @@
 	end if														:_
                                                                 :_
 	if( dst_len <> src_len ) then                               :_
-		*dst = allocate( (src_len+1) * len( _type ) )    		:_
+		*dst = xallocate( (src_len+1) * len( _type ) )    		:_
 	end if
 
 '':::::
@@ -50,10 +50,10 @@
                                                                 :_
 	if( *dst = NULL ) then                                      :_
 		dst_len = 0                                             :_
-		*dst = allocate( (src_len+1) * len( _type ) )			:_
+		*dst = xallocate( (src_len+1) * len( _type ) )			:_
 	else                                                        :_
 		dst_len = len( **dst )									:_
-		*dst = reallocate( *dst, (dst_len+src_len+1) * len( _type ) ) :_
+		*dst = xreallocate( *dst, (dst_len+src_len+1) * len( _type ) ) :_
 	end if
 
 '':::::
@@ -185,7 +185,7 @@ function ZstrDup _
 
 	dim as zstring ptr dst
 
-	dst = allocate( len( *s ) + 1 )
+	dst = xallocate( len( *s ) + 1 )
 	*dst = *s
 
 	function = dst
@@ -200,7 +200,7 @@ function WstrDup _
 
 	dim as wstring ptr dst
 
-	dst = allocate( len( *s ) * len( wstring ) + len( wstring ) )
+	dst = xallocate( len( *s ) * len( wstring ) + len( wstring ) )
 	*dst = *s
 
 	function = dst
@@ -759,12 +759,13 @@ end function
 '':::::
 function hEscape _
 	( _
-		byval text as zstring ptr _
-	) as zstring ptr static
+		byval text as const zstring ptr _
+	) as const zstring ptr static
 
     static as DZSTRING res
     dim as integer c, octlen, lgt
-    dim as zstring ptr src, dst, src_end
+    dim as const zstring ptr src, /'dst,'/ src_end
+    dim as zstring ptr dst
 
     '' convert the internal escape sequences to GAS format
 
@@ -1013,7 +1014,7 @@ function hEscapeW _
 
 	'' convert the internal escape sequences to GAS format
 
-	wcharlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wcharlen = typeGetSize( FB_DATATYPE_WCHAR )
 
 	'' up to (4 * wcharlen) ascii chars can be used per unicode char
 	'' (up to one '\ooo' per byte of wchar)
@@ -1104,35 +1105,17 @@ function hEscapeW _
 
 end function
 
-'':::::
-function hEscapeUCN _
-	( _
-		byval text as wstring ptr _
-	) as zstring ptr
+function hEscapeToHexW( byval text as wstring ptr ) as string
+	dim as string result
+	dim as uinteger char = any
+	dim as integer length = any, wcharhexdigits = any, i = any
+	dim as wstring ptr src = any, src_end = any
 
-    static as DZSTRING res
-    dim as uinteger char = any, c = any
-    dim as integer lgt = any, i = any, wstrlen = any
-    dim as wstring ptr src = any, src_end = any
-    dim as zstring ptr dst = any
-
-	'' convert the internal escape sequences to GCC format
-
-	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
-	var u_char = iif( wstrlen = len( FB_INTEGERSIZE ), asc( "U" ), asc( "u" ) )
-
-	'' up to 6 ascii chars can be used p/ unicode char (\uxxxx) -- or \Uxxxxxxxx
-	lgt = len( *text )
-	if( lgt = 0 ) then
-		return NULL
-	end if
-
-	DZstrAllocate( res, lgt * (2+wstrlen*2) + 1 )
-
+	wcharhexdigits = typeGetSize( FB_DATATYPE_WCHAR ) * 2
+	length = len( *text )
 	src = text
-	dst = res.data
+	src_end = src + length
 
-	src_end = src + lgt
 	do while( src < src_end )
 		char = *src
 		src += 1
@@ -1173,58 +1156,10 @@ function hEscapeUCN _
 
 		end if
 
-		''
-		if( char < &h00A0 ) then
-			if( char < 32 ) then
-				*dst = CHAR_RSLASH
-				dst += 1
-				if( char < 8 ) then
-					dst[0] = CHAR_0 + char
-					dst += 1
-				else
-					dst[0] = CHAR_0 + (char shr 3)
-					dst[1] = CHAR_0 + (char and 7)
-					dst += 2
-				end if
-			else
-				*dst = char
-				dst += 1
-			end if
-
-		else
-			dst[0] = CHAR_RSLASH
-			dst[1] = u_char
-			dst += 2
-
-			if( wstrlen = len( FB_INTEGERSIZE ) ) then
-				for i = 0 to 3
-					*dst = CHAR_0
-					dst += 1
-				next
-			end if
-
-			for i = 3 to 0 step -1
-				'' x86 little-endian assumption
-				c = char and 15
-				if( c < 10 ) then
-					dst[i] = CHAR_0 + c
-				else
-					dst[i] = asc( "A" ) + (c - 10)
-				end if
-
-        		char shr= 4
-			next
-
-			dst += 4
-		end if
-
+		result += "\x" + hex( char, wcharhexdigits )
 	loop
 
-	'' null=term
-	*dst = 0
-
-	function = res.data
-
+	return result
 end function
 
 '':::::
@@ -1368,7 +1303,7 @@ function hGetWstrNull( ) as zstring ptr
     if( isset = FALSE ) then
     	isset = TRUE
     	nullseq = ""
-    	for i = 1 to symbGetDataSize( FB_DATATYPE_WCHAR )
+    	for i = 1 to typeGetSize( FB_DATATYPE_WCHAR )
     		nullseq += RSLASH + "0"
     	next
 	end if

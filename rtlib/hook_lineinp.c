@@ -1,12 +1,9 @@
 /* console line input function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
-FBCALL
-int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-				  int addquestion, int addnewline )
+FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
+                         int addquestion, int addnewline )
 {
     FB_LINEINPUTPROC lineinputproc;
 

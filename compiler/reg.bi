@@ -1,12 +1,10 @@
 #ifndef __REG_BI__
 #define __REG_BI__
 
-'#ifdef TARGET_X86
+'' TODO: x86 specific
 const REG_MAXREGS	= 8
 
 type REG_FREETB 	as integer
-
-'#endif
 
 #include once "ir.bi"
 

@@ -6,11 +6,11 @@
 	==- {{anchor name="item01|Which IDEs are available for Windows?"}}==
 	==- {{anchor name="item02|Can I get rid of the console / 'DOS' screen in a graphics application?"}}==
 	==- {{anchor name="item03|My GUI program does nothing when run / The program compiles but I get a permission denied error in the linker"}}==
-	==- {{anchor name="item04|How to debug ?"}}==
+	==- {{anchor name="item04|How can I debug my program?"}}==
 	==- {{anchor name="item05|Why Windows refuses to run my code using OUT and/or INP?"}}==
 	==- {{anchor name="item06|I get the error 'Cannot start blah.exe because xxxx.dll was not found.' or similar. What is missing?"}}==
-	==- {{anchor name="item07|Does FreeBASIC work with Windows Vista ?"}}==
-	==- {{anchor name="item08|Where can I find some tutorials on programming the Windows GUI ?"}}==
+	==- {{anchor name="item07|Does FreeBASIC work with Windows Vista/7?"}}==
+	==- {{anchor name="item08|Where can I find some tutorials on programming the Windows GUI?"}}==
 	==- {{anchor name="item09|Are there Windows GUI code builders for FB?"}}==	
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
@@ -44,7 +44,7 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item04"}}==How to debug ?==
+{{anchor name="item04"}}==How can I debug my program?==
 	""FreeBASIC"" can use any debugger compatible with GNU GDB. Insight ""Win32"" debugger is an user friendly wrapper for GDB. 
 	- Get Insight from [[http://prdownloads.sourceforge.net/dev-cpp/Insight_Binary.DevPak?download Dev-C++]]
 	- Rename the file to Insight.tar.bz2, and decompress it to an empty folder
@@ -65,32 +65,31 @@
 	You are trying to run a program using a third party library that resides in a dll not installed in your system.
 	""FreeBASIC"" comes with headers and wrappers required to code for a lot of third party libraries but does not provide the actual runtime dll files.
 	You have to download and install these from their home page. Find in [[http://www.freebasic.net/forum/viewtopic.php?t=788 the Links thread in the Libraries subforum]] the URL's of the home pages of the libraries provided. You need the binaries for ""Win32"" of the libraries. If you want to develop programs with the libs you will need the documentation too.
-	When releasing compiled code it's good etiquette to provide the third party dll's required to run it.
+	When releasing compiled code it is good etiquette to provide the third party dll's required to run it.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item07"}}==Does ""FreeBASIC"" work with Windows Vista ?==
+{{anchor name="item07"}}==Does ""FreeBASIC"" work with Windows Vista/7?==
 	Yes. (Write me!!!)
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item08"}}==Where can I find some tutorials on programming the Windows GUI ?==
+{{anchor name="item08"}}==Where can I find some tutorials on programming the Windows GUI?==
 	See the answers to this question in this [[http://www.freebasic.net/forum/viewtopic.php?p=89225 thread in the forum]]
 	More advanced use requires a frequent consultation of the reference at the [[http://msdn2.microsoft.com/en-us/library/aa139672.aspx Microsoft Developers Network]]. A local install of the API reference is possible, search Microsoft for the Platform SDK (a huge download) and install just the documentation.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item09"}}==Are there Windows GUI code builders for FB?==	
-	Yes there are some 3rd party developments generating Windows API code  from a windows designer à la Visual Basic. None of them is Open source:
-	    [[http://www.freewebs.com/fielden/ Jerry Fielden' Ezeegui]] uses a "graphical" textmode interface to let you build your code.
-	[[http://mrhx.ucoz.com/load/ mrhx Software's VISG]] has a more classical user interface.
+	Yes there are some 3rd party developments generating Windows API code from a windows designer &agrave; la Visual Basic:
+	[[http://www.freewebs.com/fielden/ Jerry Fielden' Ezeegui]] (freeware) uses a "graphical" textmode interface to let you build your code.
+	[[http://codege.org/projects/visg/ mrhx Software's VISG]] (GPL) has a more classical user interface.
 	Less helpful may be the graphical resource editors generating scripts for the resource compiler. Any editor generating scripts compatible with ""GoRC"" can be used, as the  one included with [[http://fbedit.freebasic.net/index.php FbEdit]]. Graphical resource editors are a great help in designing dialogs and menus, but they leave to you the task of writing the window procedures required to make them active.
-	
-	
+
 {{anchor name="item0|Back to top"}}
 
 {{fbdoc item="see"}}
-	[[CompilerFAQ Compiler FAQ]].
-	[[FaqPgrtlib FB Runtime Library FAQ]].
+	[[CompilerFAQ Compiler FAQ]]
+	[[FaqPgrtlib FB Runtime Library FAQ]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

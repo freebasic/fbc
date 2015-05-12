@@ -2,7 +2,7 @@
 Defines a procedure
 
 {{fbdoc item="syntax"}}##
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//statements//
 		...
 		[[[KeyPgReturn Return]]]
@@ -33,7 +33,9 @@ Defines a procedure
 
 	Parameters are the arguments passed to any statement.  For instance, if a user executes a statement as "##[[KeyPgPrint Print]] 4##", the value "4" is passed to the function "##[[KeyPgPrint Print]]##".  Parameters that need to be passed to a subroutine are supplied by one or more parameter arguments in the "##**Sub**##" keyword.  Creating a subroutine with "##**Sub** mysub(foo, bar)...**End Sub**##", allows the code in between "##**Sub**##" and "##**End Sub**##" to refer to the first passed argument as "foo" and the second passed argument as "bar".  If a parameter is given a default value, that parameter is optional.
 
-	Parameters must also have a supplied type, in the form "##//parameter// as //type//##".  If this is omitted, ##//type//## is assumed to be ##[[KeyPgInteger Integer]]##.  A passed value MUST be of the type specified.
+	In the default dialect //[[CompilerOptlang -lang fb]]//, parameters must also have a supplied type, in the form "##//parameter// as //type//##". Type suffixes are not allowed.
+
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects only, it will be given a default type if the type is not explicitly given either by name or by type suffix. The default type is ##[[KeyPgSingle Single]]## in the //[[CompilerOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[CompilerOptlang -lang fblite]]// dialect.
 
 	A subroutine can also specify how parameters are passed, either as "##[[KeyPgByref Byref]]##" or "##[[KeyPgByval Byval]]##", as shown in the syntax definition.  If a parameter is "##[[KeyPgByref Byref]]##", the parameter name literally becomes a reference to the original variable passed to the subroutine.  Any changes made to that variable will be reflected outside of the subroutine.  If a parameter is passed "##[[KeyPgByval Byval]]##", however, the value of any passed variable is copied into a new variable, and any changes made to it will not affect the original.  (Note: this does not currently apply to ##[[KeyPgString String]]##s, and "##[[KeyPgByval Byval]]##" should be avoided with them for the time being.)
 

@@ -1,6 +1,7 @@
 /* size of the screen buffer */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleGetScreenSizeEx( HANDLE hConsole, int *cols, int *rows )

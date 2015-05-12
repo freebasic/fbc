@@ -25,7 +25,9 @@ Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlong
 	A ##[[KeyPgUlongint Ulongint]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Culngint**## function rounds off the decimal part and returns a 64 bit ##[[KeyPgUlongint Ulongint]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger than 0 to 18 446 744 073 709 551 615. The name can be explained as 'Convert to Unsigned ""LoNG INTeger""'.
+	The ##**Culngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgUlongint Ulongint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##18## ##446## ##744## ##073## ##709## ##551## ##615##.
+
+	The name can be explained as 'Convert to Unsigned ""LoNG INTeger""'.
 
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValulng Valulng]]##.
 

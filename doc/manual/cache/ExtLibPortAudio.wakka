@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="PortAudio"}}----
+""PortAudio"" is a cross-platform audio I/O library that allows programs to access the system's audio devices to record or play sounds.
+
+Website: http://www.portaudio.com/
+Platforms supported: ""Win32"", Linux
+Headers to include: portaudio.bi
+Header version: from 2010, machine-translated only
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

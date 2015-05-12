@@ -130,7 +130,7 @@ Print x(c())
 	- In QBASIC, the return type could only specified with a suffix, not with ##AS TYPE##, and only allowed functions to return a built-in type.
 	- Return value can now be specified by a ##[[KeyPgReturn Return]]## statement.
 	- Function ##[[KeyPgOverload Overload]]##ing is supported in ""FreeBASIC"".
-	- The return value of ##[[KeyPgInteger Integer]]## functions (all integer types) can be ignored in the calling code.
+	- The return value of integer functions (all numeric types excluding the two floating-point types: single and double) can be ignored in the calling code.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##

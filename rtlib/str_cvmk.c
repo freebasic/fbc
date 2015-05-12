@@ -1,6 +1,5 @@
 /* CV# and MK#$ routines */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

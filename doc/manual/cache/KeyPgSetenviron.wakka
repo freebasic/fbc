@@ -2,20 +2,21 @@
 Sets a system environment variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varexpression// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Setenviron**( //varname// )
+	//result// = **Setenviron**( //varexpression// )
 ##
 {{fbdoc item="param"}}
-	##//varname//##
-		The name of the environment variable to set.
+	##//varexpression//##
+		Name and setting of an environment variable in the following (or equivalent) form: varname=varstring.
+		(varname being the name of the environment variable, and varstring being its text value to set)
 
 {{fbdoc item="ret"}}
 	Return zero (0) if successful, non-zero otherwise.
 
 {{fbdoc item="desc"}}
-	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver the FreeBASIC graphics library will use.
+	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver the ""FreeBASIC"" graphics library will use.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)

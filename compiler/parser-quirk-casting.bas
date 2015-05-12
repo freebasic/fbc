@@ -81,18 +81,13 @@ function cTypeConvExpr _
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-			return NULL
-		end if
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	end if
 
 	expr = cExpression( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			return NULL
-		else
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	if( dtype = FB_DATATYPE_BOOL32 ) then
@@ -115,27 +110,21 @@ function cTypeConvExpr _
 
 	select case op
 	case AST_OP_TOSIGNED
-		dtype = symbGetSignedType( astGetFullType( expr ) )
+		dtype = typeToSigned( astGetFullType( expr ) )
 	case AST_OP_TOUNSIGNED
-	    dtype = symbGetUnsignedType( astGetFullType( expr ) )
+	    dtype = typeToUnsigned( astGetFullType( expr ) )
 	end select
 
 	expr = astNewCONV( dtype, NULL, expr, INVALID, TRUE )
-    if( expr = NULL ) Then
-    	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
-    		return NULL
-		else
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    	end if
-    end if
+	if( expr = NULL ) Then
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			return NULL
-		else
-			hSkipUntil( CHAR_RPRNT, TRUE )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		hSkipUntil( CHAR_RPRNT, TRUE )
 	else
 		if isASM = FALSE then
 			lexSkipToken( )
@@ -167,30 +156,21 @@ function cAnonUDT _
 
         '' get UDT or intrinsic type
 		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
-
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
 			'' and the "type<foo'>'(bar)"....
-
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
 		end if
 
     	'' '>'
     	if( lexGetToken( ) <> FB_TK_GT ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '>'
-				hSkipUntil( FB_TK_GT, TRUE )
-			end if
-
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip until next '>'
+			hSkipUntil( FB_TK_GT, TRUE )
     	else
     		lexSkipToken( )
     	end if
@@ -211,21 +191,15 @@ function cAnonUDT _
 			end if
 
 	    	if( subtype = NULL ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a node
-					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: fake a node
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	    	end if
 
 	    	if( symbIsStruct( subtype ) = FALSE ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a node
-					return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				'' error recovery: fake a node
+				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 

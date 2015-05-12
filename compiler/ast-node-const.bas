@@ -60,17 +60,11 @@ function astNewCONSTi _
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->con.val.int = value
 
 	if( hTruncateInt( dtype, @n->con.val.int ) <> FALSE ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
-
-	n->defined = TRUE
 
 end function
 
@@ -87,12 +81,7 @@ function astNewCONSTf _
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->con.val.float = value
-	n->defined = TRUE
 
 end function
 
@@ -109,12 +98,7 @@ function astNewCONSTl _
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->con.val.long  = value
-	n->defined = TRUE
 
 end function
 
@@ -131,10 +115,6 @@ function astNewCONST _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -180,8 +160,6 @@ function astNewCONST _
 			n->con.val.int = 0
 		end if
 	end select
-
-	n->defined = TRUE
 
 end function
 
@@ -242,8 +220,8 @@ function astLoadCONST _
 				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 			end if
 
-		''
 		case else
+			'' bytes/shorts/integers/enums
 			return irAllocVRIMM( dtype, astGetSubtype( n ), n->con.val.int )
 		end select
 	end if

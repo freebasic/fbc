@@ -1,9 +1,6 @@
 /* get # function for strings */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size_t *bytesread )

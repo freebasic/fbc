@@ -69,8 +69,7 @@ end function
 '':::::
 sub symbDelNamespace _
 	( _
-		byval ns as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval ns as FBSYMBOL ptr _
 	)
 
     if( ns = NULL ) then
@@ -99,7 +98,7 @@ sub symbDelNamespace _
 	end if
 
 	''
-	hashFree( @ns->nspc.ns.hashtb.tb )
+	hashEnd( @ns->nspc.ns.hashtb.tb )
 
 	'' del node
 	symbFreeSymbol( ns )
@@ -191,13 +190,18 @@ private function hIsOnImportList _
 		byval dst_ns as FBSYMBOL ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( dst_ns )
-	do while( imp_ <> NULL )
-	    if( symbGetImportNamespc( imp_ ) = src_ns ) then
-	    	return TRUE
-	    end if
-		imp_ = symbGetImportNext( imp_ )
-	loop
+	if( symbGetCompExt( dst_ns ) <> NULL ) Then
+	
+		dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( dst_ns )
+		
+		do while( imp_ <> NULL )
+		    if( symbGetImportNamespc( imp_ ) = src_ns ) then
+		    	return TRUE
+		    end if
+			imp_ = symbGetImportNext( imp_ )
+		Loop
+	
+	End if
 
 	function = FALSE
 
@@ -266,8 +270,7 @@ end function
 sub symbNamespaceRemove _
 	( _
 		byval imp_ as FBSYMBOL ptr, _
-		byval hashonly as integer, _
-		byval is_tbdel as integer _
+		byval hashonly as integer _
 	)
 
 	if( symbGetImportNamespc( imp_ ) <> NULL ) then

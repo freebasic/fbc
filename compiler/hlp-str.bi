@@ -75,18 +75,15 @@ declare function hReEscapeW _
 
 declare function hEscape _
 	( _
-		byval text as zstring ptr _
-	) as zstring ptr
+		byval text as const zstring ptr _
+	) as const zstring ptr
 
 declare function hEscapeW _
 	( _
 		byval text as wstring ptr _
 	) as zstring ptr
 
-declare function hEscapeUCN _
-	( _
-		byval text as wstring ptr _
-	) as zstring ptr
+declare function hEscapeToHexW( byval text as wstring ptr ) as string
 
 declare function hUnescape _
 	( _
@@ -135,11 +132,11 @@ declare function hGetWstrNull _
 
 
 '':::::
-#define ZstrAllocate(chars) allocate( chars + 1 )
+#define ZstrAllocate(chars) xallocate( chars + 1 )
 
 #define ZstrFree(p) if( p <> NULL ) then : deallocate( p ) : end if
 
-#define WstrAllocate(chars) allocate( (chars + 1) * len( wstring ) )
+#define WstrAllocate(chars) xallocate( (chars + 1) * len( wstring ) )
 
 #define WstrFree(p) if( p <> NULL ) then : deallocate( p ) : end if
 

@@ -2,10 +2,207 @@
 A Free, High-Quality, and Portable Font Engine
 
 Website: http://www.freetype.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: freetype2/freetype.bi
-Example Usage: yes, in examples/libraries/freetype/
+Header version: 2.1.9
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/freetype2_1.bas"}}%%(freebasic)
+'' FreeType2 library test, by jofers
+
+#include "freetype2/freetype.bi" 
+
+const TTF_FONT = "Vera.ttf"
+
+dim as FT_Face face
+dim as FT_Library library
+
+#define CHECK_SUCCESS(call) if (call) then : print "Error: " + #call : end if
+
+if (FT_Init_FreeType(@library) <> 0) then
+	print "FT_Init_FreeType() failed"
+end if
+
+''
+'' Load a font and render an '@' character on to a bitmap
+''
+
+if (FT_New_Face(library, TTF_FONT, 0, @face) <> 0) then
+	print "FT_New_Face() failed"
+end if
+
+if (FT_Set_Pixel_Sizes(face, 0, 200) <> 0) then
+	print "FT_Set_Pixel_Sizes() failed"
+end if
+
+if (FT_Load_Char(face, asc("@"), FT_LOAD_DEFAULT) <> 0) then
+	print "FT_Load_Char() failed"
+end if
+
+if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL) <> 0) then
+	print "FT_Render_Glyph() failed"
+end if
+
+''
+'' Draw the rendered bitmap
+''
+
+screenres 320, 200, 32
+
+dim as FT_Bitmap ptr bitmap = @face->glyph->bitmap
+
+for y as integer = 0 to (bitmap->rows - 1)
+	for x as integer = 0 to (bitmap->width - 1)
+		dim as integer col = bitmap->buffer[y * bitmap->pitch + x]
+		pset(x, y), rgb(col, col, col)
+	next
+next
+
+sleep
+%%
+
+{{fbdoc item="filename" value="examples/manual/libraries/freetype2_2.bas"}}%%(freebasic)
+'' Drawing text onto an FB screen using FreeType2, by jofers
+
+#include "freetype2/freetype.bi"
+
+const TTF_FONT = "Vera.ttf"
+const SCREEN_W = 320
+const SCREEN_H = 240
+
+dim shared as integer pixelsize
+dim shared as FT_Library library
+dim shared as FT_Face font1
+
+sub draw_glyph _
+	( _
+		byval font as FT_Face, _
+		byval x as integer, _
+		byval y as integer, _
+		byval col as uinteger _
+	)
+
+	dim as FT_Bitmap ptr bitmap = @font->glyph->bitmap 
+
+	dim as ubyte ptr source = bitmap->buffer 
+	dim as integer h = bitmap->rows 
+	dim as integer pitch = SCREEN_W - bitmap->width 
+
+	dim as uinteger ptr p = cptr(uinteger ptr, screenptr()) + (y * SCREEN_W) + x 
+
+	while (h > 0)
+		dim as integer w = bitmap->width 
+		while (w > 0)
+			'' Doing alpha blending here
+			#define MASK_RB_32 &h00FF00FF
+			#define MASK_G_32  &h0000FF00
+
+			dim as uinteger srb = col and MASK_RB_32
+			dim as uinteger sg  = col and MASK_G_32
+
+			dim as uinteger dcol = p[0]
+			dim as uinteger drb = dcol and MASK_RB_32
+			dim as uinteger dg  = dcol and MASK_G_32
+
+			dim as integer alpha = source[0]
+			srb = ((srb - drb) * alpha) shr 8
+			sg  = ((sg - dg) * alpha) shr 8
+
+			*p = ((drb + srb) and MASK_RB_32) or ((dg + sg) and MASK_G_32)
+
+			p += 1
+			source += 1
+			w -= 1
+		wend
+
+		h -= 1
+		p += pitch
+	wend
+end sub
+
+function print_text _
+	( _
+		byval x as integer, _
+		byval y as integer, _
+		byref text as string, _
+		byval font as FT_Face, _
+		byval size as integer, _
+		byval col as uinteger _
+	) as integer
+
+	'' Get rid of any alpha channel
+	col = (col shl 8) shr 8 
+
+	'' Set font size 
+	if (FT_Set_Pixel_Sizes(font, size, size) <> 0) then
+		return 0
+	end if
+	pixelsize = size 
+
+	'' Draw each character 
+	dim as FT_GlyphSlot slot = font->glyph 
+	dim as integer penx = x 
+	dim as integer peny = y 
+
+	for i as integer = 0 to len(text) - 1 
+		'' Load character index 
+		dim as FT_UInt index = FT_Get_Char_Index(font, text[i]) 
+
+		'' Load character glyph 
+		if (FT_Load_Glyph(font, index, FT_LOAD_DEFAULT) <> 0) then
+			return 0
+		end if
+
+		'' Render glyph 
+		if (FT_Render_Glyph(font->glyph, FT_RENDER_MODE_NORMAL) <> 0) then
+			return 0
+		end if
+
+		'' Do clipping
+		if ((penx + font->glyph->bitmap_left + font->glyph->bitmap.width) > SCREEN_W) then exit for
+		if ((peny - font->glyph->bitmap_top + font->glyph->bitmap.rows) > SCREEN_H) then exit for
+		if ((penx + font->glyph->bitmap_left) < 0) then exit for
+		if ((peny - font->glyph->bitmap_top) < 0) then exit for
+
+		'' Draw the glyph bitmap to the screen
+		draw_glyph(font, penx + font->glyph->bitmap_left, peny - font->glyph->bitmap_top, col)
+
+		penx += slot->advance.x shr 6 
+	next
+
+	return -1
+end function 
+
+	if (FT_Init_FreeType(@library) <> 0) then
+		print "FT_Init_FreeType() failed"
+		sleep
+		end 1
+	end if
+
+	if (FT_New_Face(library, TTF_FONT, 0, @font1) <> 0) then
+		print "FT_New_Face() failed (font file not found?)"
+		sleep
+		end 1
+	end if
+
+	screenres SCREEN_W, SCREEN_H, 32 
+
+	for x as integer = 0 to (SCREEN_W - 1)
+		for y as integer = 0 to (SCREEN_H - 1)
+			pset (x, y), x xor y
+		next
+	next
+
+	randomize(timer())
+
+	for x as integer = 1 to 20 
+		print_text(rnd() * 200, rnd() * 180 + 20, _
+				"Hello World!", font1, _
+				rnd() * 22 + 10, _
+				rgb(rnd() * 255, rnd() * 255, rnd() * 255))
+	next
+
+	sleep
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

@@ -19,6 +19,11 @@ declare function cLogAndExpression _
 		_
 	) as ASTNODE ptr
 
+declare function cIsExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
 '':::::
 ''Expression      =   LogExpression .
 ''
@@ -72,23 +77,17 @@ function cBoolExpression _
     	'' LogExpression
     	expr = cLogExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	logexpr = astNewBOP( op, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
 
     loop
@@ -133,23 +132,17 @@ function cLogExpression _
     	'' LogOrExpression
     	expr = cLogOrExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	logexpr = astNewBOP( op, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
 
     loop
@@ -186,23 +179,17 @@ function cLogOrExpression _
     	'' LogAndExpression
     	expr = cLogAndExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	logexpr = astNewBOP( AST_OP_OR, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
 
     loop
@@ -239,23 +226,17 @@ function cLogAndExpression _
     	'' RelExpression
     	expr = cRelExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	logexpr = astNewBOP( AST_OP_AND, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
 
     loop
@@ -265,7 +246,7 @@ function cLogAndExpression _
 end function
 
 '':::::
-''RelExpression   =   CatExpression ( (EQ | GT | LT | NE | LE | GE) CatExpression )* .
+''RelExpression   =   IsExpression ( (EQ | GT | LT | NE | LE | GE) IsExpression )* .
 ''
 function cRelExpression _
 	( _
@@ -275,8 +256,8 @@ function cRelExpression _
     dim as integer op = any
     dim as ASTNODE ptr expr = any, relexpr = any
 
-   	'' CatExpression
-   	relexpr = cCatExpression(  )
+   	'' IsExpression
+   	relexpr = cIsExpression(  )
    	if( relexpr = NULL ) then
    		return NULL
    	end if
@@ -309,30 +290,100 @@ function cRelExpression _
 
     	lexSkipToken( )
 
-    	'' CatExpression
-    	expr = cCatExpression(  )
+    	'' IsExpression
+    	expr = cIsExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
    		'' do operation
    		relexpr = astNewBOP( op, relexpr, expr )
 
     	if( relexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			relexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			relexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
     function = relexpr
+
+end function
+
+'':::::
+''IsExpression   =   CatExpression IS SymbolType .
+''
+function cIsExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
+   	'' CatExpression
+   	dim as ASTNODE ptr isexpr = cCatExpression(  )
+   	if( isexpr = NULL ) then
+   		return NULL
+   	end if
+
+    '' IS?
+    if( lexGetToken( ) <> FB_TK_IS ) then
+    	return isexpr
+	end if
+
+	'' must be a struct with RTTI info
+	if( astGetDataType( isexpr ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetHasRTTI( astGetSubtype( isexpr ) ) = FALSE ) then
+			errReport( FB_ERRMSG_TYPEHASNORTTI )
+			'' error recovery: fake a node
+			isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	else
+		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
+		'' error recovery: fake a node
+		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	lexSkipToken( )
+
+	'' SymbolType
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer lgt = any
+	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+		return NULL
+	end if
+
+	'' must be a struct type with RTTI info
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetHasRTTI( subtype ) = FALSE ) then
+			errReport( FB_ERRMSG_TYPEHASNORTTI )
+			'' error recovery: fake a node
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		
+		elseif( symbGetUDTBaseLevel( subtype, astGetSubtype( isexpr ) ) = 0 ) then
+			errReport( FB_ERRMSG_TYPESARENOTRELATED )
+			'' error recovery: fake a node
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	else
+		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
+		'' error recovery: fake a node
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+	
+	'' point to the RTTI table
+	var expr = astNewVAR( subtype->udt.ext->rtti )
+	
+	'' do operation
+	isexpr = astNewBOP( AST_OP_IS, isexpr, expr )
+
+	if( isexpr = NULL ) Then
+		errReport( FB_ERRMSG_TYPEMISMATCH )
+		'' error recovery: fake a node
+		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+    function = isexpr
 
 end function
 
@@ -364,23 +415,17 @@ function cCatExpression _
 		'' AddExpression
     	expr = cAddExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' concatenate
     	catexpr = astNewBOP( AST_OP_CONCAT, catexpr, expr )
 
         if( catexpr = NULL ) then
-			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-            	return NULL
-   			else
-   				'' error recovery: fake a new node
-   				catexpr = astNewCONSTstr( NULL )
-   			end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a new node
+			catexpr = astNewCONSTstr( NULL )
         end if
 
 	loop
@@ -423,11 +468,8 @@ function cAddExpression _
     	'' ShiftExpression
     	expr = cShiftExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	addexpr = astNewBOP( op, _
@@ -437,12 +479,9 @@ function cAddExpression _
     						 AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
 
     	if( addexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			addexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			addexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
@@ -484,23 +523,17 @@ function cShiftExpression _
     	'' ModExpression
     	expr = cModExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	shiftexpr = astNewBOP( op, shiftexpr, expr )
 
     	if( shiftexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			shiftexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			shiftexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
@@ -536,23 +569,17 @@ function cModExpression _
     	'' IntDivExpression
     	expr = cIntDivExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	modexpr = astNewBOP( AST_OP_MOD, modexpr, expr )
 
     	if( modexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			modexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			modexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
@@ -588,23 +615,17 @@ function cIntDivExpression _
     	'' MultExpression
     	expr = cMultExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	idivexpr = astNewBOP( AST_OP_INTDIV, idivexpr, expr )
 
     	if( idivexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			idivexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			idivexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
@@ -646,23 +667,17 @@ function cMultExpression _
     	'' ExpExpression
     	expr = cExpExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	mulexpr = astNewBOP( op, mulexpr, expr )
 
     	if( mulexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			mulexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			mulexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
     loop
 
@@ -697,28 +712,20 @@ function cExpExpression _
     	'' NegNotExpression
     	expr = cNegNotExpression(  )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			return NULL
-    		else
-            	exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit do
     	end if
 
     	'' do operation
     	expexpr = astNewBOP( AST_OP_POW, expexpr, expr )
 
     	if( expexpr = NULL ) Then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake a node
-    			expexpr = astNewCONSTf( 0, FB_DATATYPE_DOUBLE )
-    		end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a node
+			expexpr = astNewCONSTf( 0, FB_DATATYPE_DOUBLE )
     	end if
     loop
 
     function = expexpr
 
 end function
-
-

@@ -3,10 +3,6 @@
 #ifndef __FB_GFX_MMX_H__
 #define __FB_GFX_MMX_H__
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_XBOX)
 #define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name :
 #define VAR(name)		.globl _##name ; _##name :
@@ -111,6 +107,5 @@
 #define CTX_PUTTER				104
 #define CTX_PUT_BPP				108
 #define CTX_FLAGS				112
-
 
 #endif

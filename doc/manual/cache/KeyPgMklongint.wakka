@@ -15,7 +15,7 @@ Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgSt
 	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgLongint longint]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a ##[[KeyPgLongint Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint Cvlonging]]##
+	Does a binary copy  from a ##[[KeyPgLongint Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint Cvlongint]]##
 
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 

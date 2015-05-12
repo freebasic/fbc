@@ -263,19 +263,18 @@ sub rtlErrorModEnd( )
 
 end sub
 
-
-'':::::
-function rtlErrorCheck _
-	( _
-		byval resexpr as ASTNODE ptr, _
-		byval reslabel as FBSYMBOL ptr, _
-		byval linenum as integer _
-	) as integer
-
+function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 	dim as ASTNODE ptr proc = any, param = any, dst = any
-	dim as FBSYMBOL ptr nxtlabel = any
+	dim as FBSYMBOL ptr nxtlabel = any, reslabel = any
 
 	function = FALSE
+
+	if( env.clopt.resumeerr ) then
+		reslabel = symbAddLabel( NULL )
+		astAdd( astNewLABEL( reslabel ) )
+	else
+		reslabel = NULL
+	end if
 
 	if( env.clopt.errorcheck = FALSE ) then
 		astAdd( resexpr )
@@ -300,7 +299,7 @@ function rtlErrorCheck _
 	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
     '' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( lexLineNum(), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 

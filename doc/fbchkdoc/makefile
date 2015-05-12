@@ -108,7 +108,7 @@ samps$(EXEEXT): $(SAMPS_SRCS) $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $(SAMPS_SRCS) $(FBLFLAGS) -x $@
 
 $(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
-	$(FBC) -lib -x funcs $(LIBFUNCS_SRC) $(FBCFLAGS)
+	$(FBC) -lib -x $@ $(LIBFUNCS_SRC) $(FBCFLAGS)
 
 $(LIBFBDOC):
 	cd $(LIBFBDOC_DIR) && make

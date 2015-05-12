@@ -12,7 +12,7 @@ Sets the executable subsystem
 	The ##-s## compiler option specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a ##gui## subsystem prevents the console window from appearing behind the program window.
 
 {{fbdoc item="target"}}
-	- Supported in the Windows platform only.
+	- Supported on Windows and Cygwin only.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

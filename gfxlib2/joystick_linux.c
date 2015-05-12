@@ -1,13 +1,9 @@
 /* joystick handling, linux */
 
 #include "fb_gfx.h"
-
 #include "fb_gfx_linux.h"
-
-#include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-
 
 /* From linux/joystick.h */
 

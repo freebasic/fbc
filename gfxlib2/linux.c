@@ -1,13 +1,10 @@
 /* list of linux gfx drivers */
 
 #include "fb_gfx.h"
-
 #ifndef DISABLE_X
 #include "fb_gfx_x11.h"
 #endif
-
 #include "fb_gfx_linux.h"
-#include <unistd.h>
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 #ifndef DISABLE_X

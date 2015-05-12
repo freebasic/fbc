@@ -8,7 +8,12 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-#include once "fb-bfd-bridge.bi"
+#ifdef ENABLE_FBBFD
+	#define __BFD_VER__ ENABLE_FBBFD
+	#include once "bfd.bi"
+#else
+	#include once "bfd-wrapper.bi"
+#endif
 
 declare function hProcessObject _
 	( _
@@ -70,7 +75,7 @@ function fbObjInfoReadLib _
 		byval addLib as FB_CALLBACK_ADDLIB, _
 		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
 		byval addOption as FB_CALLBACK_ADDOPTION, _
-		byval libpathlist as TLIST ptr _
+		byval libpaths as TLIST ptr _
 	) as integer
 
 	hInitialize( )
@@ -82,20 +87,18 @@ function fbObjInfoReadLib _
 	filename =  "lib" + *libName + ".a"
 
 	'' try finding it at the lib paths
-	dim as FBS_LIB ptr path = listGetHead( libpathlist )
-	do while( path <> NULL )
-
-		libfile = *path->name
-		libfile += FB_HOST_PATHDIV + filename
+	dim as TSTRSETITEM ptr path = listGetHead(libpaths)
+	while (path)
+		libfile = path->s + FB_HOST_PATHDIV + filename
 		if( hFileExists( libfile ) ) then
 #if defined( DEBUG_BFD )
 			print "BFD found library """ & libfile & """"
 #endif
-			exit do
+			exit while
 		end if
 
-		path = listGetnext( path )
-	loop
+		path = listGetNext(path)
+	wend
 
 	'' not found?
 	if( path = NULL ) then
@@ -147,15 +150,14 @@ end function
 '':::::
 private function hFillSection _
 	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr, _
+		byval libs as TLIST ptr, _
+		byval libpaths as TLIST ptr, _
 		byref size as integer _
 	) as byte ptr
 
 	static as integer buf_size = 0
 	static as byte ptr buf_ini = NULL
 	dim as integer header_emitted = FALSE
-	dim as integer buf_len = 0
 	dim as byte ptr buf_end = buf_ini + buf_size
 	dim as byte ptr buf_ptr = buf_ini
 
@@ -165,7 +167,7 @@ private function hFillSection _
 	if( buf_ptr + (bytes) >= buf_end ) then
 		buf_size += iif( (bytes) > 64, bytes, 64 )
 		buf_ptr -= cast( long, buf_ini )
-		buf_ini = reallocate( buf_ini, buf_size )
+		buf_ini = xreallocate( buf_ini, buf_size )
 		buf_end = buf_ini + buf_size
 		buf_ptr += cast( long, buf_ini )
 	end if
@@ -191,47 +193,47 @@ private function hFillSection _
 #endmacro
 
 	'' libraries
-	dim as FBS_LIB ptr nlib = listGetHead( liblist )
-	if( nlib <> NULL ) then
+	dim as TSTRSETITEM ptr i = listGetHead(libs)
+	if (i) then
 		hEmitInfoHeader( )
 
-        hWriteByte( FB_INFOSEC_LIB )
+		hWriteByte( FB_INFOSEC_LIB )
 		do
-            '' never add a default one
-            if( nlib->isdefault = FALSE ) then
-            	dim as integer lgt = len( *nlib->name )
-            	hWriteByte( lgt )
-            	hWriteStr( *nlib->name, lgt )
+			'' Not default?
+			if (i->userdata = FALSE) then
+				dim as integer length = len(i->s)
+				hWriteByte(length)
+				hWriteStr(i->s, length)
 #if defined( DEBUG_BFD )
-            	print "BFD wrote library: " & *nlib->name
+				print "BFD wrote library: " & i->s
 #endif
-            end if
+			end if
 
-			nlib = listGetNext( nlib )
-		loop while( nlib <> NULL )
+			i = listGetNext(i)
+		loop while (i)
 
 		hWriteByte( 0 )
 	end if
 
 	'' paths
-	dim as FBS_LIB ptr npath = listGetHead( libpathlist )
-	if( npath <> NULL ) then
+	i = listGetHead(libpaths)
+	if (i) then
 		hEmitInfoHeader( )
 
-        hWriteByte( FB_INFOSEC_PTH )
+		hWriteByte( FB_INFOSEC_PTH )
 		do
-            '' never add a default one
-            if( npath->isdefault = FALSE ) then
-            	dim as integer lgt = len( *npath->name )
-            	hWriteByte( lgt )
-            	hWriteStr( *npath->name, lgt )
+			'' Not default?
+			if (i->userdata = FALSE) then
+				dim as integer length = len(i->s)
+				hWriteByte(length)
+				hWriteStr(i->s, length)
 #if defined( DEBUG_BFD )
-            	print "BFD wrote lib path: " & *nlib->name
+				print "BFD wrote lib path: " & i->s
 #endif
-            end if
+			end if
 
-			npath = listGetNext( npath )
-		loop while( npath <> NULL )
+			i = listGetNext(i)
+		loop while (i)
 
 		hWriteByte( 0 )
 	end if
@@ -278,11 +280,9 @@ end function
 '':::::
 function fbObjInfoWriteObj _
 	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
+		byval libs as TLIST ptr, _
+		byval libpaths as TLIST ptr _
 	) as integer
-
-	'' note: both lists of FBS_LIB
 
 	dim as bfd ptr objf = bfd_openw( FB_INFOSEC_OBJNAME, NULL )
 	if( objf = NULL ) then
@@ -312,7 +312,7 @@ function fbObjInfoWriteObj _
 						   SEC_HAS_CONTENTS )
 	'' fill it
     dim as integer size = 0
-    dim as byte ptr buf = hFillSection( liblist, libpathlist, size )
+    dim as byte ptr buf = hFillSection(libs, libpaths, size)
 
     '' save the contents
     if( (buf <> NULL) and (size > 0) ) then
@@ -407,8 +407,6 @@ function hProcessCmdList _
 	) as integer
 
 	dim as byte ptr p = buf_ini
-	dim as zstring ptr value = any
-	dim as FB_COMPOPT opt = any
 
 	'' for each entry..
 	do while( p < buf_end )
@@ -421,16 +419,13 @@ function hProcessCmdList _
 
 		select case *cast( zstring ptr, p )
 		case "-mt"
-			opt = FB_COMPOPT_MULTITHREADED
-			value = NULL
+			addOption( FB_COMPOPT_MULTITHREADED, NULL, objName )
 
 		case "-lang"
-			opt = FB_COMPOPT_LANG
-			value = p + len( "-lang" ) + 1
+			dim as zstring ptr value = p + len( "-lang" ) + 1
 			lgt += len( *value ) + 1
+			addOption( FB_COMPOPT_LANG, value, objName )
 		end select
-
-		addOption( opt, value, objName )
 
 	  	p += lgt + 1
 	loop
@@ -481,7 +476,7 @@ private function hProcessObject _
   	static as integer buf_len = 0
 
   	if( (buf_ini = NULL) or (size > buf_len) ) then
-  		buf_ini = reallocate( buf_ini, size )
+  		buf_ini = xreallocate( buf_ini, size )
   		buf_len = size
   	end if
 
@@ -512,19 +507,19 @@ private function hProcessObject _
       	select case as const id
       	case FB_INFOSEC_LIB
 #if defined( DEBUG_BFD )
-      		print "BFD found a library in " & *objName
+      		print "found libraries in " & *objName
 #endif
 	  		p += hProcessLibList( p, buf_end, addLib, objName )
 
       	case FB_INFOSEC_PTH
 #if defined( DEBUG_BFD )
-      		print "BFD found a path in " & *objName
+      		print "found paths in " & *objName
 #endif
 	  		p += hProcessLibPathList( p, buf_end, addLibPath, objName )
 
       	case FB_INFOSEC_CMD
 #if defined( DEBUG_BFD )
-      		print "BFD found a command in " & *objName
+      		print "found options in " & *objName
 #endif
 	  		p += hProcessCmdList( p, buf_end, addOption, objName )
 

@@ -3,53 +3,32 @@
 #ifndef __FB_GFX_WIN32_H__
 #define __FB_GFX_WIN32_H__
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-
-#ifndef WM_XBUTTONDOWN
-#ifdef WM_MOUSELAST
-#undef WM_MOUSELAST
-#endif
-#define WM_XBUTTONDOWN 523
-#define WM_XBUTTONUP 524
-#define WM_XBUTTONDBLCLK 525
-#define WM_MOUSEHWHEEL 526
-#define WM_MOUSELAST 527
-#endif
-
-#ifndef MK_XBUTTON1
-#define MK_XBUTTON1	32
-#define MK_XBUTTON2	64
-#endif
 
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
 
-#ifndef LWA_COLORKEY
-#define LWA_COLORKEY	0x00000001
-#endif
-
-#ifndef MONITOR_DEFAULTTONEAREST
-#define MONITOR_DEFAULTTONEAREST 0x00000002
-#endif
-
-typedef struct FLASHWINFO {
+/* This must match the original FLASHWINFO from the Win32 headers.
+   MinGW-w64 declares it *all* the time, while MinGW does it only if the
+   proper _WIN32_WINNT was set, but we do not want to do that. And since we
+   cannot check for a struct using #ifdef, we have to use our own renamed
+   version of it. */
+typedef struct {
 	UINT cbSize;
 	HWND hwnd;
 	DWORD dwFlags;
 	UINT uCount;
 	DWORD dwTimeout;
-} FLASHWINFO, *PFLASHWINFO;
+} FB_FLASHWINFO, *PFB_FLASHWINFO;
 
 typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
 typedef HMONITOR (WINAPI *MONITORFROMPOINT)(POINT pt, DWORD dwFlags);
-typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
+typedef BOOL (WINAPI *FLASHWINDOWEX)(PFB_FLASHWINFO pwfi);
 typedef BOOL (WINAPI *_TRACKMOUSEEVENT)(TRACKMOUSEEVENT *);
 typedef BOOL (WINAPI *GETMONITORINFO)(HMONITOR hMonitor, LPMONITORINFO lpmi);
 typedef LONG (WINAPI *CHANGEDISPLAYSETTINGSEX)(LPCTSTR lpszDeviceName, LPDEVMODE lpDevMode, HWND hwnd, DWORD dwflags, LPVOID lParam);
 
-typedef struct WIN32DRIVER
-{
+typedef struct {
 	int version;
 	HINSTANCE hinstance;
 	WNDCLASS wndclass;
@@ -64,9 +43,13 @@ typedef struct WIN32DRIVER
 	int (*init)(void);
 	void (*exit)(void);
 	void (*paint)(void);
-	void (*thread)(HANDLE running_event);
+#ifdef HOST_MINGW
+	unsigned int WINAPI (*thread)( void *param );
+#else
+	DWORD WINAPI (*thread)( LPVOID param );
+#endif
 	int mouse_clip;
-	
+
 	/* user32 procs */
 	SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 	MONITORFROMWINDOW MonitorFromWindow;
@@ -77,14 +60,12 @@ typedef struct WIN32DRIVER
 	CHANGEDISPLAYSETTINGSEX ChangeDisplaySettingsEx;
 } WIN32DRIVER;
 
-
 extern WIN32DRIVER fb_win32;
 #ifndef HOST_CYGWIN
 extern GFXDRIVER fb_gfxDriverDirectDraw;
 #endif
 extern GFXDRIVER fb_gfxDriverGDI;
 extern GFXDRIVER fb_gfxDriverOpenGL;
-
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void fb_hHandleMessages(void);

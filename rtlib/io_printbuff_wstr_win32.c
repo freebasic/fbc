@@ -1,10 +1,7 @@
 /* low-level print to console function for Windows */
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "fb_con.h"
+#include "fb.h"
+#include "fb_private_console.h"
 
 typedef struct _fb_PrintInfo {
     fb_Rect         rWindow;

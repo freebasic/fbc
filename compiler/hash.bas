@@ -4,12 +4,11 @@
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
 #include once "hash.bi"
-#include once "list.bi"
 #include once "hlp.bi"
 
-type HASHCTX
-	refcnt		as integer
-	itemlist    as TLIST
+type HASHITEMPOOL
+	as integer refcount
+	as TLIST list
 end type
 
 
@@ -17,58 +16,47 @@ declare function 	hashNewItem	( byval list as HASHLIST ptr ) as HASHITEM ptr
 declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 								  byval item as HASHITEM ptr )
 
-''globals
-	dim shared ctx as HASHCTX
+dim shared as HASHITEMPOOL itempool
 
 
-'':::::
-sub hashInit _
-	( _
-		byval initnodes as integer _
-	)
-
-	ctx.refcnt += 1
-	if( ctx.refcnt > 1 ) then
+private sub lazyInit()
+	itempool.refcount += 1
+	if (itempool.refcount > 1) then
 		exit sub
 	end if
+
+	const INITIAL_ITEMS = 8096
 
 	'' allocate the initial item list pool
-	listNew( @ctx.itemlist, initnodes, len( HASHITEM ), LIST_FLAGS_NOCLEAR )
-
+	listInit(@itempool.list, INITIAL_ITEMS, sizeof(HASHITEM), LIST_FLAGS_NOCLEAR)
 end sub
 
-'':::::
-sub hashEnd
-
-	ctx.refcnt -= 1
-	if( ctx.refcnt > 0 ) then
+private sub lazyEnd()
+	itempool.refcount -= 1
+	if (itempool.refcount > 0) then
 		exit sub
 	end if
 
-	listFree( @ctx.itemlist )
-
+	listEnd(@itempool.list)
 end sub
 
-'':::::
-sub hashNew _
+sub hashInit _
 	( _
 		byval hash as THASH ptr, _
 		byval nodes as integer, _
 		byval delstr as integer _
 	)
 
+	lazyInit()
+
 	'' allocate a fixed list of internal linked-lists
-	hash->list = callocate( nodes * len( HASHLIST ) )
+	hash->list = xcallocate( nodes * len( HASHLIST ) )
 	hash->nodes = nodes
 	hash->delstr = delstr
 
 end sub
 
-''::::::
-sub hashFree _
-	( _
-		byval hash as THASH ptr _
-	)
+sub hashEnd(byval hash as THASH ptr)
 
     dim as integer i = any
     dim as HASHITEM ptr item = any, nxt = any
@@ -113,32 +101,24 @@ sub hashFree _
 	deallocate( hash->list )
 	hash->list = NULL
 
+	lazyEnd()
+
 end sub
 
-'':::::
-function hashHash _
-	( _
-		byval symbol as zstring ptr _
-	) as uinteger
-
-	dim as uinteger index = any
-	dim as integer i = any
-
-	index = 0
-
-	for i = 0 to len( *symbol )-1
-		index = symbol[i] + (index shl 5) - index
-	next
-
-	function = index
-
+function hashHash(byval s as const zstring ptr) as uinteger
+	dim as uinteger index = 0
+	while (s[0])
+		index = s[0] + (index shl 5) - index
+		s += 1
+	wend
+	return index
 end function
 
 ''::::::
 function hashLookupEx _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval index as uinteger _
 	) as any ptr
 
@@ -186,7 +166,7 @@ private function hashNewItem _
 	dim as HASHITEM ptr item = any
 
 	'' add a new node
-	item = listNewNode( @ctx.itemlist )
+	item = listNewNode( @itempool.list )
 
 	'' add it to the internal linked-list
 	if( list->tail <> NULL ) then
@@ -234,7 +214,7 @@ private sub hashDelItem _
 	end if
 
 	'' remove node
-	listDelNode( @ctx.itemlist, item )
+	listDelNode( @itempool.list, item )
 
 end sub
 
@@ -242,7 +222,7 @@ end sub
 function hashAdd _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval userdata as any ptr, _
 		byval index as uinteger _
 	) as HASHITEM ptr
@@ -301,3 +281,52 @@ sub hashDel _
 
 end sub
 
+sub strsetAdd _
+	( _
+		byval set as TSTRSET ptr, _
+		byref s as const string, _
+		byval userdata as integer _
+	)
+
+	dim as TSTRSETITEM ptr i = hashLookup(@set->hash, s)
+
+	'' Already exists?
+	if (i) then
+		exit sub
+	end if
+
+	'' Add new
+	i = listNewNode(@set->list)
+	i->s = s
+	i->userdata = userdata
+
+	'' No need to pass in a NULL pointer or an empty string
+	if (len(i->s) = 0) then
+		exit sub
+	end if
+
+	hashAdd(@set->hash, strptr(i->s), i, hashHash(strptr(i->s)))
+end sub
+
+sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)
+	dim as TSTRSETITEM ptr i = listGetHead(@source->list)
+	while (i)
+		strsetAdd(target, i->s, i->userdata)
+		i = listGetNext(i)
+	wend
+end sub
+
+sub strsetInit(byval set as TSTRSET ptr, byval nodes as integer)
+	listInit(@set->list, nodes, sizeof(TSTRSETITEM))
+	hashInit(@set->hash, nodes)
+end sub
+
+sub strsetEnd(byval set as TSTRSET ptr)
+	hashEnd(@set->hash)
+	dim as TSTRSETITEM ptr i = listGetHead(@set->list)
+	while (i)
+		i->s = ""
+		i = listGetNext(i)
+	wend
+	listEnd(@set->list)
+end sub

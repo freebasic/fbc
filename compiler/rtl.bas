@@ -22,6 +22,7 @@ declare sub			rtlProfileModInit	( )
 declare sub			rtlStringModInit	( )
 declare sub			rtlSystemModInit	( )
 declare sub			rtlGosubModInit		( )
+declare sub			rtlOOPModInit		( )
 
 declare sub			rtlArrayModEnd		( )
 declare sub			rtlConsoleModEnd	( )
@@ -37,6 +38,7 @@ declare sub			rtlProfileModEnd	( )
 declare sub			rtlStringModEnd		( )
 declare sub			rtlSystemModEnd		( )
 declare sub			rtlGosubModEnd		( )
+declare sub			rtlOOPModEnd		( )
 
 
 type RTLCTX
@@ -51,7 +53,7 @@ end type
 '':::::
 sub rtlInit static
 
-	listNew( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
@@ -67,12 +69,14 @@ sub rtlInit static
 	rtlStringModInit( )
 	rtlSystemModInit( )
 	rtlGosubModInit( )
+	rtlOOPModInit( )
 
 end sub
 
 '':::::
 sub rtlEnd
 
+	rtlOOPModEnd( )
 	rtlGosubModEnd( )
 	rtlSystemModEnd( )
 	rtlStringModEnd( )
@@ -88,7 +92,7 @@ sub rtlEnd
 	rtlConsoleModEnd( )
 	rtlArrayModEnd( )
 
-	listFree( @ctx.arglist )
+	listEnd( @ctx.arglist )
 
 	'' reset the table as the pointers will change if
 	'' the compiler is reinitialized
@@ -118,8 +122,8 @@ sub rtlAddIntrinsicProcs _
         end if
 
 		dim as integer doadd = TRUE
-		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
-			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
+		if( procdef->options and FB_RTL_OPT_MT ) then
+			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
 		end if
 
 		if( doadd ) then
@@ -191,12 +195,8 @@ sub rtlAddIntrinsicProcs _
 										inner_param_len = FB_POINTERSIZE
 									end if
 
-									symbAddProcParam( inner_proc, _
-													  NULL, NULL, _
-													  .dtype, NULL, inner_param_len, _
-													  .mode, _
-													  inner_attrib, _
-													  inner_param_optval )
+									symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, _
+									                  .mode, inner_attrib, inner_param_optval )
 								end with
 							next
 
@@ -210,11 +210,9 @@ sub rtlAddIntrinsicProcs _
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddPrototype( inner_proc, _
-															NULL, hMakeTmpStrNL( ), NULL, _
-															.dtype, NULL, _
-															0, env.target.fbcall, _
-															FB_SYMBOPT_DECLARING )
+								subtype = symbAddPrototype( inner_proc, NULL, hMakeTmpStrNL( ), _
+								                           .dtype, NULL, 0, env.target.fbcall, _
+								                           FB_SYMBOPT_DECLARING )
 
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
@@ -247,11 +245,8 @@ sub rtlAddIntrinsicProcs _
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					var parm = symbAddProcParam( proc, _
-					                             NULL, NULL, _
-					                             .dtype, subtype, _
-					                             lgt, .mode, _
-					                             attrib, param_optval )
+					var parm = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, _
+					                             .mode, attrib, param_optval )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( parm )
@@ -271,7 +266,7 @@ sub rtlAddIntrinsicProcs _
 			end if
 
 			''
-			dim as zstring ptr pname = procdef->name
+			dim as const zstring ptr pname = procdef->name
 
 			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
 			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
@@ -295,20 +290,15 @@ sub rtlAddIntrinsicProcs _
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-				proc = symbAddPrototype( proc, _
-								 	 	 pname, procdef->alias, NULL, _
-								 	 	 procdef->dtype, NULL, _
-								 	 	 attrib, callconv, _
-								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				proc = symbAddPrototype( proc, pname, procdef->alias, _
+				                         procdef->dtype, NULL, attrib, callconv, _
+				                         FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
 			else
-				proc = symbAddOperator( proc, _
-										cast( AST_OP, pname ), NULL, NULL, _
-    						    		procdef->dtype, NULL, _
-    					        		attrib or FB_SYMBATTRIB_OPERATOR, _
-    					        		callconv, _
-    					        		FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				proc = symbAddOperator( proc, cast(AST_OP, pname), NULL, _
+				                        procdef->dtype, NULL, attrib or FB_SYMBATTRIB_OPERATOR, callconv, _
+				                        FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
     			if( proc <> NULL ) then
     				symbGetMangling( proc ) = FB_MANGLING_CPP
@@ -321,8 +311,8 @@ sub rtlAddIntrinsicProcs _
 					symbSetIsThrowable( proc )
 				end if
 
-				if( (procdef->options and FB_RTL_OPT_DUPDECL) <> 0 ) then
-					symbSetIsDupDecl( proc )
+				if( (procdef->options and FB_RTL_OPT_IRHLCBUILTIN) <> 0 ) then
+					symbSetIsIrHlcBuiltin( proc )
 				end if
 
 				if( (procdef->options and FB_RTL_OPT_GCCBUILTIN) <> 0 ) then
@@ -346,7 +336,7 @@ end sub
 '':::::
 function rtlProcLookup _
 	( _
-		byval pname as zstring ptr, _
+		byval pname as const zstring ptr, _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 
@@ -441,7 +431,7 @@ end function
 function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr s = any
@@ -457,14 +447,7 @@ function rtlCalcExprLen _
 	case FB_DATATYPE_STRUCT
 		s = astGetSubtype( expr )
 		if( s <> NULL ) then
-			'' if it's a type field that's an udt, no padding is
-			'' ever added, unpadlen must be always TRUE
-			if( astIsFIELD( expr ) ) then
-				unpadlen = TRUE
-			end if
-
-			function = symbGetUDTLen( s, unpadlen )
-
+			function = symbCalcLen( dtype, s, unpadlen )
 		else
 			function = 0
 		end if

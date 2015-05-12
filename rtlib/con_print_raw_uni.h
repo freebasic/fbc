@@ -1,7 +1,5 @@
 /* print raw data - no interpretation is done */
 
-#include "fb_con.h"
-
 void FB_CONPRINTRAW
 	(
 		fb_ConHooks *handle,

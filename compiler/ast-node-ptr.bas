@@ -71,11 +71,7 @@ function astNewDEREF _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DEREF, dtype, subtype )
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	n->l = l
+	n->l = l    '' Can be NULL e.g. if it was a constant
 	n->ptr.ofs = ofs
 
 	function = n
@@ -107,8 +103,8 @@ function astLoadDEREF _
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
-			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
-			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
+			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
 
 			vp = irAllocVREG( typeAddrOf( astGetDataType( n ) ), n->subtype )
 			irEmitADDR( AST_OP_DEREF, v1, vp )

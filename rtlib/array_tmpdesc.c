@@ -1,11 +1,8 @@
 /*!!!REMOVEME!!!*/
 /* temp descriptor core, for array fields passed by descriptor */
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stddef.h>
 #include "fb.h"
-
+#include <stddef.h>
 
 /**********
  * temp array descriptors

@@ -26,9 +26,6 @@ function astNewLABEL _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LABEL, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->sym = sym
 	n->lbl.flush = doflush
@@ -77,9 +74,6 @@ function astNewLIT _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LIT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
@@ -118,9 +112,6 @@ function astNewASM _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->asm.head = listhead
 
@@ -193,9 +184,6 @@ function astNewDBG _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->dbg.op = op
 	n->dbg.ex = ex
@@ -232,9 +220,6 @@ function astNewNOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NOP, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	function = n
 
@@ -266,9 +251,6 @@ function astNewNIDXARRAY _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NIDXARRAY, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = expr
 
@@ -299,7 +281,7 @@ end function
 
 type NameInfo
 	'' fullname as zstring ptr
-	name as zstring ptr
+	name as const zstring ptr
 	'' value as integer
 end type
 
@@ -352,7 +334,6 @@ dim shared dbg_astNodeClassNames( 0 to AST_CLASSES-1 ) as NameInfo = _
 	( /' @"AST_NODECLASS_VAR"              , '/ @"VAR"              /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_IDX"              , '/ @"IDX"              /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_FIELD"            , '/ @"FIELD"            /' , 0 '/ ), _
-	( /' @"AST_NODECLASS_ENUM"             , '/ @"ENUM"             /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_DEREF"            , '/ @"DEREF"            /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_LABEL"            , '/ @"LABEL"            /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_ARG"              , '/ @"ARG"              /' , 0 '/ ), _
@@ -375,8 +356,9 @@ dim shared dbg_astNodeClassNames( 0 to AST_CLASSES-1 ) as NameInfo = _
 	( /' @"AST_NODECLASS_TYPEINI_ASSIGN"   , '/ @"TYPEINI_ASSIGN"   /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_TYPEINI_CTORCALL" , '/ @"TYPEINI_CTORCALL" /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_TYPEINI_CTORLIST" , '/ @"TYPEINI_CTORLIST" /' , 0 '/ ), _
-	( /' @"AST_NODECLASS_PROC"             , '/ @"PROC"             /' , 0 '/ ), _
-	( /' @"AST_NODECLASS_NAMESPC"          , '/ @"NAMESPC"          /' , 0 '/ ) _
+	( /' @"AST_NODECLASS_TYPEINI_SCOPEINI" , '/ @"TYPEINI_SCOPEINI" /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_TYPEINI_SCOPEEND" , '/ @"TYPEINI_SCOPEEND" /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_PROC"             , '/ @"PROC"             /' , 0 '/ ) _
 }
 
 ''
@@ -432,6 +414,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_NE"              , '/ @"<>"           /' , 0 '/ ), _
 	( /' @"AST_OP_GE"              , '/ @">="           /' , 0 '/ ), _
 	( /' @"AST_OP_LE"              , '/ @"<="           /' , 0 '/ ), _
+	( /' @"AST_OP_IS"              , '/ @"IS"           /' , 0 '/ ), _
 	( /' @"AST_OP_NOT"             , '/ @"NOT"          /' , 0 '/ ), _
 	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
 	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _

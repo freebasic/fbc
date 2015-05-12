@@ -13,7 +13,7 @@ Called automatically when a class or user defined type is created
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
 
 {{fbdoc item="desc"}}
 	##**Constructor**## methods are called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable is created.
@@ -26,7 +26,9 @@ Called automatically when a class or user defined type is created
 
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
 
-	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew New]]## operator.
+	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew New]]## operator. See examples below for different constructor syntaxes.
+
+	//Note: Constructor can be also called directly from the ##typename## instance, as the other member methods (Sub) and with the same syntax (using a member access operator). The object instance, already existing (no new memory allocation), is just reconstructed.//
 
 {{fbdoc item="ex"}}
 Simple constructor example for beginners.

@@ -1,19 +1,132 @@
 Version 0.24.0:
 
 [changed]
-- System triplets are now used (like gcc/binutils), instead of the previous nested target-specific subdirectories
+- -target option now accepts system triplets (known from gcc/binutils), note: -target win32 will now look for bin/win32-ld[.exe] instead of bin/win32/ld[.exe]
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
-- fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which relies on a modified ldscript)
+- fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
+- __FB_UNIX__ and __FB_PCOS__ now work like the other target defines (check via #ifdef)
+- All cross-compilation targets are now always enabled in the compiler
+- -o now also affects .rc and .xpm input files (useful to change the file names of the temporary objects)
+- -o must now clearly be specified in front or behind of the corresponding input file, for example: "fbc 1.bas 2.bas -o 1.o -o 2.o" no longer works, but "fbc -o 1.o 1.bas" is possible now
+- -x used with -lib now sets the library file name
+- "No newline at end of file" warning removed
+- 'PALETTE index, r, g, b' now uses 8-bit precision on each color value
+- The __FB_MIN_VERSION__() macro is no longer changed to ____FB_MIN_VERSION__() for -lang qb
+- SWAP no longer accepts function calls
+- ImageCreate() and Reset(streamno) now set the runtime error code, which can be retrieved with Err()
+- Allow CONST STRING parameters in string.bi/datetime.bi functions
+- wstring Input is now subject to the same 4096 characters length limit like the normal [z]string Input
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
 - __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
+- fbc can now be built for installation into MinGW/DJGPP
+- Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
+- The .def file generated when building a DLL is now preserved if -R was given
+- Single inheritance for classes: TYPE Child EXTENDS Parent
+- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
+- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
+- 'fbc -static' option to tell the linker to link against static libraries if installed
+- CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
+- "Real" Rnd() algorithm (activate via 'Randomize(, 5)') using Win32 Crypto APIs or Linux /dev/urandom
+- New headers for many audio-related libraries (some experimental): libsndfile 1.0.X, libVLC 1.1.x, mpg123 library, MediaInfo, PortAudio, Flite 1.4, libmodplug 0.8.8.4
+- New experimental X11 headers
+- Updated headers for GNU gettext/libintl 0.17
+- New algif and alpng headers for Allegro
+- New header for the UUID library from e2fsprogs
+- New headers for json-c
+- New headers for the GNU dbm library
+- acmStreamOpen() declaration to win/msacm.bi
+- New header file: win/ddk/mmddk.bi
+- New headers for compression and archive handling libraries: libzip 0.10, libbzip2 1.0.6, liblzma 5.0.2, zlib 1.2.6
+- Updated headers for wx-c 0.9.2
+- New headers for libjit 1.0.0 and libffi 3.0.10
+- New headers for the Chipmunk 4.1.0 physics library
+- Updated headers for CGUI 2.0.1
+- New headers for IUP 3.5
+- Updated header for SQLite3 3.7.8
+- Updated headers for OpenAL 1.13 and ALUT 1.1.0
+- Updated header for FreeImage 3.15.1
+- Updated header for QuickLZ 1.50
+- Updated header for PDcurses 3.4
+- Updated header for libcaca 0.99 beta17
+- Updated headers for OpenGL, including new freeglut headers
+- Updated header for BASS 2.4
+- Updated header for ODE 0.11.1
+- Updated header for libcurl 7.24.0
+- New header for SQLiteExtensions 3.6.23.1
+- Updated headers for GTK+ 2.24 and 3.2.2, including gdk-pixbuf 2.25.0, gtkglext 1.2.0, ATK 1.33.6, Cairo 1.10.2, Pango 1.29.5, glib 2.31.4
+- Updated header for Mini-XML 2.7 header update
+- New header for ZeroMQ 2.1.10
+- Updated header for cryptlib 3.4.1
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
 - FBC should give an error if EOF reached while parsing code inside an #IF block
-- Possible crashes in date() and now() if the system time couldn't be retrieved
+- Possible crashes in Date(), Now(), FileDateTime() if the system time couldn't be interpreted
 - #3398498: VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
+- #3404250: *.a input files being wrongly passed to ld as -l*.a
+- Compiler crash on 'cast(T ptr, 0)->x'
+- #2828675: UDT fields not having tail padding (ABI now changed to match GCC)
+- #3422768: pp under -gen gcc complaining about va_arg/va_next tokens even if not used as the actual macros
+- #2188864: Compiler crash on out of memory
+- #3453953: GOTO/GOSUB allowed keywords as labels
+- The #LANG metacommand was not allowed in disabled preprocessor blocks
+- -gen gcc crash on 'if funcptr then ...'
+- #3441855: SWAP allowed incompatible data types
+- #3465650: Compiler crash after showing error for using array element as FOR loop iterator
+- #3434928: Incomplete null op optimization breaking assumptions made for conditional jumps
+- #3320650: gfx functions didn't accept CONST source images (DRAW STRING font, PUT/GET/POINT() source)
+- False positive syntax errors after '#ifdef namespaceid' (and also #ifndef, #undef and #if defined())
+- #3446210: SELECT CASE leaking its temporary (w)string if not reaching END SELECT (e.g. EXIT FUNCTION from inside a CASE block)
+- Temporarily reset console during Unix dylibload() and dylibfree(), to properly restore terminal state at exit
+- VAR initialized from a STRING * N variable created a STRING * 0 instead of a dynamic STRING
+- -gen gcc: abs(longint) was just abs(integer)
+- 'PALETTE index, r, g, b' wasn't behaving as expected on some obscure SCREEN modes
+- Built-in macros are now working in -lang qb (__RGB(), __BIT(), __ASSERT(), ...)
+- ERASE crashed on arrays of UDTs with constructor but no destructor
+- Internal compiler error in cases like: '*(@cast(ubyte, byte_var_or_array_element) + 1)'
+- SWAP allowed [z|w]strings marked as CONST
+- #3215431: SWAP on byte/short array elements could generate bad code
+- SWAP on bitfields now works with -gen gcc (caused internal compiler error), and won't use extra temp vars anymore
+- 'SWAP a, b' could produce different results than 'SWAP b, a'
+- SWAP on operands with different sizes could generate bad code
+- #2824381: UDTs with methods inside module-level scope blocks caused compiler crash instead of error message
+- EDI/ESI registers could be used without being preserved, when clearing local UDTs/strings/arrays > 16 bytes or copying UDTs > 16 bytes. The bug showed up when other parts of the function used EDI/ESI too (for example "plongint[indexvar] = longintvar").
+- Procedure pointers could be dereferenced using the '*' operator
+- #3476028: SWAP/LET() assignments allowed modification of string literals/constants
+- SWAP on strings failed/produced bad results when strings had different lengths
+- #3476021: SWAP didn't clear fixed-length string remainders
+- GFX_SHAPED_WINDOW didn't work properly on some modern Linux systems (thanks Sisophon2001 for the fix)
+- Wrong error message when calling non-const method on const UDT
+- Shell() on Unix didn't return the proper shell exit code
+- Memory leak and possible race condition in console Line Input function
+- Infinite loop in Line Input on files opened with Encoding when reaching EOF without newline
+- Bsave()'s length parameter wasn't unsigned like in the gfxlib
+- Win32 ScreenControl GET_WINDOW_POS with minimized window could cause it to be locked up that way
+- "array too big for stack" warning was shown for static arrays
+- ScreenRes was truncating the screen's text width/height (columns/rows) to 0..255, causing incorrect Print'ing or even a division-by-zero crash during Print
+- C backend: gcc warnings about pointer assignments from BOPs
+- C backend: compiler crash on circular dependency between UDT and function pointer typedef
+- Buffer overflow in wstring Input
+- Input to dereferenced wstring ptr wasn't reading in anything
+- #3510684: Array descriptors for arrays declared inside Extern blocks weren't always given an alias name, causing the mangled name for emitting to be wrong (under C++ mangling) or empty (under all other non-default manglings)
+- #3496522: crt/sys/linux/types.bi contained wrong typedefs (int64_t being just integer etc.)
+- Missing GET/PUT "UDT with var-len fields" warning when nested UDT fields had var-len fields
+- GLUT/Windows headers compatibility issues
+- win/commctrl.bi: TabCtrl_AdjustRect() and TabCtrl_SetImageList()
+- win/winsock[2].bi: FD_CLR() macros were broken
+- C backend: procedures using Pascal were treated as Cdecl
+- C backend: Missing padding elements in multi-dimensional global array initializers
+- C backend: didn't allow float-to-Long/Ulong casts
+- C backend: float to uinteger conversions truncated to integer
+- C backend: The 'as any ptr' overloads of bin/oct/hex didn't work unless the 'as integer' versions were used in the same module
+- Wrong declarations of some the built-in wbin(), bin(), woct() overloads
+- Buffer overflow in wbin()
+- C backend: Pointer fields pointing to the parent UDT itself were always emitted as having a single PTR only, even if it was a PTR PTR etc.
+- C backend: Taking address of module-level labels was broken (used by module-level error handling code)
+- C backend: Wstring literals outside variable initializers were emitted assuming sizeof(wstring) = 2, causing buffer overflows on Linux (where sizeof(wstring) = 4)
+- C backend: wchar type didn't match gcc's, breaking global fixed-length wstring initializers
 
 
 Version 0.23.0:

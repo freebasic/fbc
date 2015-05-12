@@ -1,11 +1,8 @@
 /* print functions */
 
-#include <stdio.h>
 #include "fb.h"
 
 #define FB_PRINT_BUFFER_SIZE 2048
-
-#include <stdlib.h>
 
 static void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x )
 {

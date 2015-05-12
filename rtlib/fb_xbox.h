@@ -1,34 +1,27 @@
 /* common XBOX definitions. */
 
-#ifndef __FB_XBOX__
-#define __FB_XBOX__
-
-#define FBCALL __stdcall
-
-#include <stdarg.h>
 #include <hal/xbox.h>
 #include <hal/fileio.h>
 
-/* WinNT constants - !!!FIXME!!! these belong in openxdk headers */
+#define FBCALL __stdcall
 
-#define Executive 0
-
-#define KernelMode 0
-#define UserMode 1
-
-/* end WinNT constants */
-
+/* newline for console/file I/O */
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")
 
-typedef int FB_DIRCTX; /* dummy to make fb.h happy */
+/* newline for printer I/O */
+#define FB_BINARY_NEWLINE "\r\n"
+#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
 
-typedef long fb_off_t;
-
-#define FB_THREADID HANDLE
+#define FB_LL_FMTMOD "ll"
 
 #define FB_DYLIB HANDLE
 
-extern HANDLE __fb_in_handle, __fb_out_handle;
+typedef long fb_off_t;
+#define fseeko(stream, offset, whence) fseek(stream, offset, whence)
+#define ftello(stream)                 ftell(stream)
 
-#endif
+/* WinNT constants - !!!FIXME!!! these belong in openxdk headers */
+#define Executive 0
+#define KernelMode 0
+#define UserMode 1

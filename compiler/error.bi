@@ -1,6 +1,3 @@
-#ifndef __ERROR_BI__
-#define __ERROR_BI__
-
 type FBSYMBOL_ as FBSYMBOL
 
 '' errors
@@ -21,7 +18,6 @@ enum FB_ERRMSG
 	FB_ERRMSG_EXPECTEDNEXT
 	FB_ERRMSG_EXPECTEDVAR
 	FB_ERRMSG_EXPECTEDIDENTIFIER		= FB_ERRMSG_EXPECTEDVAR
-	FB_ERRMSG_TABLESFULL
 	FB_ERRMSG_EXPECTEDMINUS
 	FB_ERRMSG_EXPECTEDCOMMA
 	FB_ERRMSG_SYNTAXERROR
@@ -192,6 +188,7 @@ enum FB_ERRMSG
 	FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR
 	FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED
 	FB_ERRMSG_PROCPROTOTYPENOTSTATIC
+	FB_ERRMSG_PROCPROTOTYPENOTCONST
 	FB_ERRMSG_OPERATORCANTBESTATIC
 	FB_ERRMSG_PARAMMUSTBEANINTEGER
 	FB_ERRMSG_PARAMMUSTBEAPOINTER
@@ -217,6 +214,7 @@ enum FB_ERRMSG
 	FB_ERRMSG_NOELEMENTSDEFINED
 	FB_ERRMSG_NONSCOPEDENUM
 	FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBESTATIC
+	FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBECONST
 	FB_ERRMSG_INVALIDINITIALIZER
 	FB_ERRMSG_NOOOPINFUNCTIONS
 	FB_ERRMSG_EXPECTEDUDT
@@ -230,7 +228,7 @@ enum FB_ERRMSG
 	FB_ERRMSG_EXPECTEDPTRORPOINTER
 	FB_ERRMSG_TOOMANYPTRINDIRECTIONS
 	FB_ERRMSG_DYNAMICARRAYSCANTBECONST
-	FB_ERRMSG_NONCONSTUDTTOCONSTMETHOD
+	FB_ERRMSG_CONSTUDTTONONCONSTMETHOD
 	FB_ERRMSG_ELEMENTSMUSTBEEMPTY
 	FB_ERRMSG_NOGOSUB
 	FB_ERRMSG_INVALIDLANG
@@ -242,7 +240,18 @@ enum FB_ERRMSG
 	FB_ERRMSG_EXPECTEDRELOP
 	FB_ERRMSG_STMTUNSUPPORTEDINGCC
 	FB_ERRMSG_TOOMANYLABELS
+    FB_ERRMSG_UNSUPPORTEDFUNCTION
+    FB_ERRMSG_EXPECTEDSUB
 	FB_ERRMSG_EXPECTEDPPENDIF
+	FB_ERRMSG_RCFILEWRONGTARGET
+	FB_ERRMSG_OBJFILEWITHOUTINPUTFILE
+	FB_ERRMSG_EXPECTEDCLASSTYPE
+	FB_ERRMSG_ILLEGALOUTSIDEAMETHOD
+	FB_ERRMSG_CLASSNOTDERIVED
+	FB_ERRMSG_CLASSWITHOUTCTOR
+	FB_ERRMSG_TYPEHASNORTTI
+	FB_ERRMSG_TYPESARENOTRELATED
+	FB_ERRMSG_TYPEMUSTBEAUDT
 
 	FB_ERRMSGS
 end enum
@@ -258,7 +267,6 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSG_NUMBERTOOBIG
 	FB_WARNINGMSG_LITSTRINGTOOBIG
 	FB_WARNINGMSG_POINTERFIELDS
-	FB_WARNINGMSG_DYNAMICFIELDS
 	FB_WARNINGMSG_IMPLICITALLOCATION
 	FB_WARNINGMSG_NOCLOSINGQUOTE
 	FB_WARNINGMSG_NOFUNCTIONRESULT
@@ -282,43 +290,9 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSG_IFFOUNDAFTERELSE
 	FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE
 	FB_WARNINGMSG_BYVALASSTRING
-	FB_WARNINGMSG_NONEWLINEATENDOFFILE
 
 	FB_WARNINGMSGS
 end enum
-
-'' runtime errors
-'' Note: must match with rtlib/fb_error.h
-enum FB_RTERROR
-	FB_RTERROR_OK = 0
-	FB_RTERROR_ILLEGALFUNCTIONCALL
-	FB_RTERROR_FILENOTFOUND
-	FB_RTERROR_FILEIO
-	FB_RTERROR_OUTOFMEM
-	FB_RTERROR_ILLEGALRESUME
-	FB_RTERROR_OUTOFBOUNDS
-	FB_RTERROR_NULLPTR
-	FB_RTERROR_NOPRIVILEDGES
-	FB_RTERROR_SIGINT
-	FB_RTERROR_SIGILL
-	FB_RTERROR_SIGFPE
-	FB_RTERROR_SIGSEGV
-	FB_RTERROR_SIGTERM
-	FB_RTERROR_SIGABRT
-	FB_RTERROR_SIGQUIT
-	FB_RTERROR_RETURNWITHOUTGOSUB
-	FB_RTERROR_ENDOFFILE
-end enum
-
-#include once "hash.bi"
-
-type FB_ERRCTX
-	cnt				as integer
-	lastmsg 		as integer
-	lastline		as integer
-	laststmt		as integer
-	undefhash		as THASH				'' undefined symbols
-end type
 
 enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_NONE 		= &h00000000
@@ -329,52 +303,49 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
 end enum
 
-declare	sub errInit _
-	( _
-	)
+declare sub errInit()
+declare sub errEnd()
+declare sub errHideFurtherErrors()
+declare function errGetCount() as integer
 
-declare	sub errEnd _
-	( _
-	)
-
-declare function errReportEx _
+declare sub errReportEx _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
-		byval customText as zstring ptr = 0 _
-	) as integer
+		byval customText as const zstring ptr = 0 _
+	)
 
-declare function errReport _
+declare sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
-		byval customText as zstring ptr = 0 _
-	) as integer
+		byval customText as const zstring ptr = 0 _
+	)
 
 declare sub errReportWarn _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr = NULL, _
+		byval msgex as const zstring ptr = NULL, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)
 
 declare sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr = NULL, _
+		byval msgex as const zstring ptr = NULL, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)
 
-declare function errReportParam _
+declare sub errReportParam _
 	( _
 		byval proc as FBSYMBOL_ ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
-	) as integer
+	)
 
 declare sub errReportParamWarn _
 	( _
@@ -384,38 +355,15 @@ declare sub errReportParamWarn _
 		byval msgnum as integer _
 	)
 
-declare function errReportUndef _
+declare sub errReportUndef _
 	( _
 		byval errnum as integer, _
 		byval id as zstring ptr _
-	) as integer
+	)
 
-declare function errReportNotAllowed _
+declare sub errReportNotAllowed _
 	( _
 		byval opt as FB_LANG_OPT, _
 		byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
 		byval msgex as zstring ptr = NULL _
-	) as integer
-
-declare function errFatal _
-	( _
-	) as integer
-
-
-''
-'' macros
-''
-#define errGetLast( ) iif( errctx.cnt >= env.clopt.maxerrors, _
-						   errctx.lastmsg, _
-						   cint(FB_ERRMSG_OK) )
-
-#define errGetCount( ) errctx.cnt
-
-
-''
-'' inter-module globals
-''
-extern errctx as FB_ERRCTX
-
-
-#endif ''__ERROR_BI__
+	)

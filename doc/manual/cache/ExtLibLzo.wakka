@@ -1,9 +1,56 @@
 {{fbdoc item="title" value="LZO"}}----
 LZO is a compression library offering fast compression and very fast decompression.
 
-Website: http://freshmeat.net/redir/lzo/6066/url_homepage/lzo
-Platforms supported: Win32, Linux, DOS
-Headers to include: LZO/lzo.bi
+Website: [[http://www.oberhumer.com/opensource/lzo/]]
+Platforms supported: ""Win32"", Linux, DOS
+Headers to include: lzo/lzo.bi
+Header version: 2.02
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/lzo.bas"}}%%(freebasic)
+#include "lzo/lzo1x.bi"
+
+dim inbuf as zstring ptr = @"string to compress (or not, since it's so short)"
+dim inlen as integer = len(*inbuf) + 1
+dim complen as lzo_uint = 100
+dim compbuf as zstring ptr = allocate(complen)
+dim decomplen as lzo_uint = 100
+dim decompbuf as zstring ptr = allocate(decomplen)
+dim workmem as any ptr
+
+print "initializing LZO: ";
+if lzo_init() = 0 then
+	print "ok"
+else
+	print "failed!"
+	end 1
+end if
+
+print "compressing '" & *inbuf & "': ";
+
+workmem = allocate(LZO1X_1_15_MEM_COMPRESS)
+
+if lzo1x_1_15_compress(inbuf, inlen, compbuf, @complen, workmem) = 0 then
+	print "ok (" & inlen & " bytes in, " & complen & " bytes compressed)"
+else
+	print "failed!"
+	end 1
+end if
+
+deallocate(workmem)
+
+print "decompressing: ";
+
+workmem = allocate(LZO1X_MEM_DECOMPRESS)
+
+if lzo1x_decompress(compbuf, complen, decompbuf, @decomplen, NULL) = 0 then
+	print "ok: '" & *decompbuf & "' (" & complen & " bytes compressed, " & decomplen & " bytes decompressed)"
+else
+	print "failed!"
+	end 1
+end if
+
+deallocate(workmem)
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -263,13 +263,13 @@ private sub hCONVConstEval64 _
 		'' when expanding to 64bit, we must take care of signedness of source operand
 
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
-			if( symbIsSigned( v->dtype ) ) then
+			if( typeIsSigned( v->dtype ) ) then
 				v->con.val.long = clngint( v->con.val.int )
 			else
 				v->con.val.long = clngint( cuint( v->con.val.int ) )
 			end if
 		else
-			if( symbIsSigned( v->dtype ) ) then
+			if( typeIsSigned( v->dtype ) ) then
 				v->con.val.long = culngint( v->con.val.int )
 			else
 				v->con.val.long = culngint( cuint( v->con.val.int ) )
@@ -318,47 +318,90 @@ end sub
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
 		byval expr_dtype as integer, _
 		byval expr as ASTNODE ptr _
 	) as integer
 
 	function = FALSE
 
-	'' to pointer? only allow integers..
+	'' to pointer? only allow integers and pointers
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32
+			return TRUE
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
-			 if( astIsCONST( expr ) ) then
-				if( astGetValueAsInt( expr ) <> 0 ) then
-					exit function
-				end if
-			 else
-				exit function
-			 end if
-
-		case else
-			if( typeIsPtr( expr_dtype ) = FALSE ) then
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
+			if( astIsCONST( expr ) = FALSE ) then
 				exit function
 			end if
+			return (astGetValueAsInt( expr ) = 0)
+
+		case FB_DATATYPE_POINTER
+			'' Both are pointers, fall through to checks below
+
+		case else
+			exit function
 		end select
 
-	'' from pointer? only allow integers..
+	'' from pointer? only allow integers and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			return TRUE
+
+		case FB_DATATYPE_POINTER
+			'' Both are pointers, fall through to checks below
 
 		case else
-			if( typeIsPtr( to_dtype ) = FALSE ) then
-				exit function
-			end if
+			exit function
 		end select
+	else
+		'' No pointers at all, nothing to do
+		return TRUE
 	end if
+
+	'' Both are pointers
+	'' if any of them is a derived class, only allow cast to a base or derived
+	if( typeGetDtOnly( to_dtype ) = FB_DATATYPE_STRUCT ) then
+		if( to_subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else			
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
+
+	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
+		if( expr->subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
 
 	function = TRUE
 
@@ -376,20 +419,20 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? can't convert..
+	'' UDT? only upcasting supported by now
 	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		exit function
+		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
 	end if
 
 	ldtype = astGetFullType( l )
 
 	'' string? neither
-	if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
+	if( typeGetClass( ldtype ) = FB_DATACLASS_STRING ) then
 		exit function
 	end if
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
@@ -458,9 +501,13 @@ function astNewCONV _
 	select case as const typeGet( to_dtype )
 	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
 	'' to cast to be most precise possible) and strings
-	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, _
-		 FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
 		exit function
+		 
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
+			exit function
+		End If
 
 	case else
 		select case typeGet( ldtype )
@@ -471,7 +518,7 @@ function astNewCONV _
 
 	end select
 
-	ldclass = symbGetDataClass( ldtype )
+	ldclass = typeGetClass( ldtype )
 
 	select case op
 	'' sign conversion?
@@ -483,7 +530,7 @@ function astNewCONV _
 	end select
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
@@ -531,16 +578,11 @@ function astNewCONV _
 			hCONVConstEvalBool( to_dtype, l )
 
 		case else
-			'' byte's, short's, int's and enum's
+			'' bytes/shorts/integers/enum
 			hCONVConstEvalInt( to_dtype, l )
 		end select
 
-		if( to_dtype <> FB_DATATYPE_ENUM ) then
-			l->class = AST_NODECLASS_CONST
-		else
-			l->class = AST_NODECLASS_ENUM
-		end if
-
+		l->class = AST_NODECLASS_CONST
 		astGetFullType( l ) = to_dtype
 		l->subtype = to_subtype
 		return l
@@ -551,18 +593,29 @@ function astNewCONV _
 
 	'' high-level IR? always convert..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-	    '' special case: if it's a float to int, use a builtin function
-	    if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
-        	return rtlMathFTOI( l, to_dtype )
-        end if
-
+		'' special case: if it's a float to int, use a builtin function
+		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
+			return rtlMathFTOI( l, to_dtype )
+		else
+			select case( typeGetDtAndPtrOnly( to_dtype ) )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+				'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
+				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
+			end select
+		end if
 	else
-		'' only convert if the classes are different (ie, floating<->integer)
-		'' or if sizes are different (ie, byte<->int)
-		if( ldclass = symbGetDataClass( to_dtype ) ) then
-			if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+		'' only convert if the classes are different (ie, floating<->integer) or
+		'' if sizes are different (ie, byte<->int)
+		if( ldclass = typeGetClass( to_dtype ) ) then
+			select case typeGet( to_dtype )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
+				'' do nothing
 				doconv = FALSE
-			end if
+			case else
+				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
+					doconv = FALSE
+				end if
+			End Select
 		end if
 
 	'' special rules for converting booleans and bitfields ...
@@ -587,8 +640,8 @@ function astNewCONV _
 	end select
 
 		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
-			if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
-				if( symbGetDataSize( ldtype ) <> symbGetDataSize( to_dtype ) ) then
+			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
 					doConv = TRUE
 				end if
 			end if
@@ -608,12 +661,8 @@ function astNewCONV _
 		end if
 	end if
 
-
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->l = l
 	n->cast.doconv = doconv

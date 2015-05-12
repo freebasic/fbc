@@ -41,22 +41,24 @@ end sub
 '':::::
 ''SelConstStmtBegin =   SELECT CASE AS CONST Expression{int} .
 ''
-function cSelConstStmtBegin( ) as integer
+sub cSelConstStmtBegin()
     dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
 
-	function = FALSE
+	'' Open outer scope (perhaps not really needed, but done to match the
+	'' normal SELECT CASE, also the scope might help with stack usage)
+	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
+	if( outerscopenode = NULL ) then
+		errReport( FB_ERRMSG_RECLEVELTOODEEP )
+	end if
 
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	if( astGetDataClass( expr ) <> FB_DATACLASS_INTEGER ) then
@@ -76,12 +78,9 @@ function cSelConstStmtBegin( ) as integer
 	end if
 
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
@@ -94,9 +93,6 @@ function cSelConstStmtBegin( ) as integer
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	if( sym = NULL ) then
-		exit function
-	end if
 
 	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
 	if( expr <> NULL ) then
@@ -118,10 +114,8 @@ function cSelConstStmtBegin( ) as integer
 	stk->select.const_.maxval = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
-
-	function = TRUE
-
-end function
+	stk->select.outerscopenode = outerscopenode
+end sub
 
 '':::::
 private function hSelConstAddCase _
@@ -174,17 +168,11 @@ end function
 '':::::
 ''cSelConstStmtNext =   CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 ''
-function cSelConstStmtNext _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer
-
+sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 	dim as ASTNODE ptr expr1, expr2
 	dim as uinteger value, tovalue, maxval, minval
 	dim as FBSYMBOL ptr label
 	dim as integer swtbase
-
-	function = FALSE
 
 	'' CASE
 	lexSkipToken( )
@@ -211,7 +199,7 @@ function cSelConstStmtNext _
 
 		stk->select.casecnt = -1
 
-		return TRUE
+		return
 	end if
 
 	'' ConstExpression{int} ((',' | TO) ConstExpression{int})*
@@ -223,25 +211,19 @@ function cSelConstStmtNext _
 	do
 		expr1 = cExpression( )
 		if( expr1 = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		if( astIsCONST( expr1 ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ',' and fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				astDelTree( expr1 )
-				expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			errReport( FB_ERRMSG_EXPECTEDCONST )
+			'' error recovery: skip until next ',' and fake an expr
+			if( lexGetToken( ) <> FB_TK_TO ) then
+				hSkipUntil( CHAR_COMMA )
 			end if
+			astDelTree( expr1 )
+			expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		value = astGetValueAsInt( expr1 )
@@ -256,23 +238,17 @@ function cSelConstStmtNext _
 
 			expr2 = cExpression( )
 			if( expr2 = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: skip until next ',' and fake an expr
+				hSkipUntil( CHAR_COMMA )
+				expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
 			if( astIsCONST( expr2 ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					astDelTree( expr2 )
-					expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				'' error recovery: fake an expr
+				astDelTree( expr2 )
+				expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
 			tovalue = astGetValueAsInt( expr2 )
@@ -286,29 +262,21 @@ function cSelConstStmtNext _
 					maxval = value
 				end if
 
-				 '' too big?
-				 if( (minval > maxval) or _
-				 	 (maxval - minval > FB_MAXSWTCASERANGE) or _
-				 	 (culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+				'' too big?
+				if( (minval > maxval) or _
+					(maxval - minval > FB_MAXSWTCASERANGE) or _
+					(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-				 	if( errReport( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
-				 		exit function
-
-				 	else
-						'' error recovery: reset values
-						minval = stk->select.const_.minval
-						maxval = stk->select.const_.maxval
-				 	end if
-
-				 else
+					errReport( FB_ERRMSG_RANGETOOLARGE )
+					'' error recovery: reset values
+					minval = stk->select.const_.minval
+					maxval = stk->select.const_.maxval
+				else
 					'' add item
 					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-						if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_DUPDEFINITION )
 					end if
-				 end if
-
+				end if
 			next
 
 		else
@@ -324,20 +292,14 @@ function cSelConstStmtNext _
 				(maxval - minval > FB_MAXSWTCASERANGE) or _
 				(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-				if( errReport( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: reset values
-					minval = stk->select.const_.minval
-					maxval = stk->select.const_.maxval
-				end if
-
+				errReport( FB_ERRMSG_RANGETOOLARGE )
+				'' error recovery: reset values
+				minval = stk->select.const_.minval
+				maxval = stk->select.const_.maxval
 			else
 				'' add item
 				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_DUPDEFINITION )
 				end if
 			end if
 
@@ -355,15 +317,12 @@ function cSelConstStmtNext _
 	stk->scopenode = astScopeBegin( )
 
 	stk->select.casecnt += 1
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''SelConstStmtEnd =   END SELECT .
 ''
-function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
+sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 	dim as uinteger minval, maxval, value
 	dim as FBSYMBOL ptr deflabel, tbsym
 	dim as ASTNODE ptr expr, idxexpr
@@ -451,9 +410,11 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     '' emit exit label
     astAdd( astNewLABEL( stk->select.endlabel ) )
 
+	'' Close the outer scope block
+	if( stk->select.outerscopenode <> NULL ) then
+		astScopeEnd( stk->select.outerscopenode )
+	end if
+
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

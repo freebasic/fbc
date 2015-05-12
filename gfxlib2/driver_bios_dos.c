@@ -1,10 +1,9 @@
 /* BIOS gfx driver */
 
+#include "fb_gfx.h"
 #include "fb_gfx_dos.h"
 #include <go32.h>
 #include <pc.h>
-#include <dpmi.h>
-#include <sys/farptr.h>
 
 typedef void (*fnUpdate)(void);
 

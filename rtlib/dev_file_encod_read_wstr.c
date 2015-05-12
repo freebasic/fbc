@@ -1,12 +1,8 @@
 /* UTF-encoded input for file devices */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileReadEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars )
+int fb_DevFileReadEncodWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars )
 {
     FILE *fp;
     size_t chars;

@@ -1,6 +1,5 @@
 /* erase function for dynamic arrays */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

@@ -1,36 +1,36 @@
 {{fbdoc item="title" value="FreeBASIC and QBasic"}}----
 
 ==FreeBASIC the Successor==
-	FreeBASIC is designed as an official successor of sorts to a high level compiler for MS-DOS titled "QuickBASIC", which compiled BASIC code, an easy-to-read programming language created in 1964 by John Kemeny and Thomas Kurtz.  "QB" was packaged with a user-friendly IDE and interpreter that made it very easy to write custom applications.  This line of products is officially continued today in the form of "Visual Basic", part of Microsoft's Visual Studio .NET programming suite.
+	""FreeBASIC"" is designed as an official successor of sorts to a high level compiler for MS-DOS titled "[[QuickBASIC]]", which compiled BASIC code, an easy-to-read programming language created in 1964 by John Kemeny and Thomas Kurtz.  "QB" was packaged with a user-friendly IDE and interpreter that made it very easy to write custom applications.  This line of products is officially continued today in the form of "Visual Basic", part of Microsoft's Visual Studio .NET programming suite.
 
 
 ==Microsoft and BASIC Products==
-	Microsoft and BASIC extend far prior to QuickBASIC.  In fact, Microsoft's first product was a small BASIC interpreter for Altair computers released in 1975, and until the early 1980s Microsoft was known only as a language vendor.  They ported their BASIC software to several different personal computers at the time and made decent business doing it.
+	Microsoft and BASIC extend far prior to ""QuickBASIC"".  In fact, Microsoft's first product was a small BASIC interpreter for Altair computers released in 1975, and until the early 1980s Microsoft was known only as a language vendor.  They ported their BASIC software to several different personal computers at the time and made decent business doing it.
 
 	In August of 1981 Microsoft released the next major step in its BASIC line, "Advanced BASIC", as part of a commission for IBM's PC-DOS, and is more often called by its executable name, BASICA.EXE.  For Microsoft's new MS-DOS, they released GW-BASIC, which was, for the most part, a port of BASICA that did not require IBM's Basic ROM included with its systems.
 
-	BASICA and GW-BASIC are interpreters.  Interpreters read source code and "interpret" it into computer code as it is read.  This is useful, but slow.  Microsoft, in 1983, released BASCOM for MS-DOS.  BASCOM compiled BASIC code into native machine code, which ran much faster than interpreted code.  This was repackaged with an IDE and released as QuickBASIC in 1985.
+	BASICA and GW-BASIC are interpreters.  Interpreters read source code and "interpret" it into computer code as it is read.  This is useful, but slow.  Microsoft, in 1983, released BASCOM for MS-DOS.  BASCOM compiled BASIC code into native machine code, which ran much faster than interpreted code.  This was repackaged with an IDE and released as ""QuickBASIC"" in 1985.
 
 
-==QuickBASIC==
-	From 1985 to 1992, QuickBASIC was the primary BASIC product, released by Microsoft and using BASCOM, and later the Microsoft BASIC Compiler.  In 1991, a slimmed down interpreter often thought to be the missing "QuickBASIC 5.0" was packaged with MS-DOS 5.0 and released as "QBasic 1.1".
+==""QuickBASIC""==
+	From 1985 to 1992, ""QuickBASIC"" was the primary BASIC product, released by Microsoft and using BASCOM, and later the Microsoft BASIC Compiler.  In 1991, a slimmed down interpreter often thought to be the missing """QuickBASIC"" 5.0" was packaged with MS-DOS 5.0 and released as "QBasic 1.1".
 
-	QuickBASIC as a BASIC dialect provides a loose standard for modern BASIC compilers.  It abolishes the need for line numbers as a used in previous BASIC interpreters, is case sensitive and has keywords that are in plain English.  QuickBASIC also featured a runtime library, a library compiled by default and usable in source code, with many useful commands.
+	""QuickBASIC"" as a BASIC dialect provides a loose standard for modern BASIC compilers.  It abolishes the need for line numbers as a used in previous BASIC interpreters, is case sensitive and has keywords that are in plain English.  ""QuickBASIC"" also featured a runtime library, a library compiled by default and usable in source code, with many useful commands.
 
-	In 1991, Microsoft combined a drag-and-drop GUI designer made in 1988 called 'Ruby' with QuickBASIC.  This product was called "Visual Basic", and marks the beginning of the end of QuickBASIC.  Microsoft released one last version of QuickBASIC called "Visual Basic for DOS" in 1992, and discontinued the product forever.
+	In 1991, Microsoft combined a drag-and-drop GUI designer made in 1988 called 'Ruby' with ""QuickBASIC"".  This product was called "Visual Basic", and marks the beginning of the end of ""QuickBASIC"".  Microsoft released one last version of ""QuickBASIC"" called "Visual Basic for DOS" in 1992, and discontinued the product forever.
 
 
 ==The Internet and QBasic's Second Wind==
-	Because the "QBasic 1.1" interpreter was packaged with MS-DOS, it was released with every copy of DOS until its dying days, Windows 3.1, and even Windows 95, 98 and ME.  With the wild success of Windows, QBasic became the most widely available programming tool available for Microsoft operating systems.  
+	Because the "QBasic 1.1" interpreter was packaged with MS-DOS, it was released with every copy of DOS until its dying days, Windows 3.1, and even Windows 95, 98 and ME.  With the wild success of Windows, ""QBasic"" became the most widely available programming tool available for Microsoft operating systems.  
 
-	When the World Wide Web became popular in the mid-90s, many hobbyist programmers made websites dedicated to QuickBASIC not as an application tool, but as a platform for their demos and games.  Many assembly libraries were created for it after Microsoft dropped support, and as these demos and games became more elaborate, so did the "QB Community".  From the mid-90s, through the new millennium to today, QuickBASIC has enjoyed a small but present cult following.  
+	When the World Wide Web became popular in the mid-90s, many hobbyist programmers made websites dedicated to ""QuickBASIC"" not as an application tool, but as a platform for their demos and games.  Many assembly libraries were created for it after Microsoft dropped support, and as these demos and games became more elaborate, so did the "QB Community".  From the mid-90s, through the new millennium to today, ""QuickBASIC"" has enjoyed a small but present cult following.  
 
-	Andre Victor, FreeBASIC's creator, was first known over the internet as the author of several extensions to QuickBASIC in the form of libraries.  He created routines to improve the speed of floating point operations, access the internet, use SVGA graphics, and provide powerful QBasic language programming features.  In the late summer of 2004, he began work on a 32-bit compiler using Visual Basic for DOS.
+	Andre Victor, ""FreeBASIC""'s creator, was first known over the internet as the author of several extensions to ""QuickBASIC"" in the form of libraries.  He created routines to improve the speed of floating point operations, access the internet, use SVGA graphics, and provide powerful ""QBasic"" language programming features.  In the late summer of 2004, he began work on a 32-bit compiler using Visual Basic for DOS.
 
 
-==FreeBASIC is Born==
-	FreeBASIC was first programmed in VB-DOS, with the goal of compiling itself.  Because of this, both its syntax and runtime library are designed to emulate QB's syntax and runtime as far as it is practical in a 32-bit Windows environment.  For the most part, the two dialects are extremely similar, and most code can be ported with little or no modification, though in some cases routines reliant on 16-bit DOS must be rewritten.  The resulting compiler shares a greater similarity to QB than any compiler on the market, including Visual Basic.
+==""FreeBASIC"" is Born==
+	""FreeBASIC"" was first programmed in VB-DOS, with the goal of compiling itself.  Because of this, both its syntax and runtime library are designed to emulate QB's syntax and runtime as far as it is practical in a 32-bit Windows environment.  For the most part, the two dialects are extremely similar, and most code can be ported with little or no modification, though in some cases routines reliant on 16-bit DOS must be rewritten.  The resulting compiler shares a greater similarity to QB than any compiler on the market, including Visual Basic.
 
-	Because of its open source, its well-written code and its similarity to QB, FreeBASIC has become popular among the "QB Community" and its boundaries continue to grow as it receives more attention and gathers more features that promise to move BASIC into the future.
+	Because of its open source, its well-written code and its similarity to QB, ""FreeBASIC"" has become popular among the "QB Community" and its boundaries continue to grow as it receives more attention and gathers more features that promise to move BASIC into the future.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

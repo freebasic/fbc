@@ -1,8 +1,6 @@
 /* print [#] function (byte) */
 
-#include <stdio.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL void fb_PrintByte ( int fnum, char val, int mask )

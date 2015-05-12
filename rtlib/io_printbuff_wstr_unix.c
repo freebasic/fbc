@@ -1,6 +1,7 @@
 /* low-level print to console function for wstrings */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 #define ENTER_UTF8  "\e%G"
 #define EXIT_UTF8   "\e%@"

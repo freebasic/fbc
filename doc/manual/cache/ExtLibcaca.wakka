@@ -2,8 +2,9 @@
 A colour ASCII art library.
 
 Website: http://libcaca.zoy.org/
-Platforms supported: Win32, Linux, DOS
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: caca.bi
+Header version: 0.99 beta17
 Example Usage: yes, in examples/libraries/caca/
 
 

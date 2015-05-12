@@ -1,21 +1,12 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-static char *hWrapper
-	( 
-		char *buffer, 
-		size_t count, 
-		FILE *fp 
-	)
+static char *hWrapper( char *buffer, size_t count, FILE *fp )
 {
     return fgets( buffer, count, fp );
 }
 
-/*:::::*/
 int fb_DevFileReadLineDumb
 	( 
 		FILE *fp, 
@@ -121,12 +112,7 @@ int fb_DevFileReadLineDumb
 
 }
 
-/*:::::*/
-int fb_DevFileReadLine
-	( 
-		struct _FB_FILE *handle, 
-		FBSTRING *dst 
-	)
+int fb_DevFileReadLine( FB_FILE *handle, FBSTRING *dst )
 {
     int res;
     FILE *fp;

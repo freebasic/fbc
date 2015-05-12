@@ -1,7 +1,5 @@
 /* bin$ routine for long long's */
 
-
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

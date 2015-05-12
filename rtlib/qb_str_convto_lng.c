@@ -4,8 +4,6 @@
  * than the one that has to be allocated to fit _itoa and _gvct buffers.
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 

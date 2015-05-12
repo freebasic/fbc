@@ -1,12 +1,10 @@
 /* input$|line input entrypoint, default to console mode */
 
 #include "fb.h"
-#include <stdio.h>
 
 /*:::::*/
 char *fb_ReadString( char *buffer, int len, FILE *f )
 {
-
 	if( f != stdin )
 		return fgets( buffer, len, f );
 	else {
@@ -15,5 +13,4 @@ char *fb_ReadString( char *buffer, int len, FILE *f )
 		else
 			return fb_ConsoleReadStr( buffer, len );
 	}
-
 }

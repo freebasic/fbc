@@ -2,15 +2,15 @@
 Specifies a //stdcall//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Stdcall** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Stdcall** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Stdcall** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgSub Sub]]
 	
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Stdcall** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##

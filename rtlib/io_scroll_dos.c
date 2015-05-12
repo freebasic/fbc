@@ -1,7 +1,9 @@
 /* console scrolling for when VIEW is used for DOS */
 
 #include "fb.h"
+#include "fb_private_console.h"
 #include <dpmi.h>
+#include <go32.h>
 
 unsigned short fb_hSetCursorPos( int col, int row );
 

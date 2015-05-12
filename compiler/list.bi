@@ -1,6 +1,8 @@
 #ifndef __LIST_BI__
 #define __LIST_BI__
 
+#include once "common.bi"
+
 enum LIST_FLAGS
 	LIST_FLAGS_NONE				= &h00000000
 
@@ -35,18 +37,15 @@ type TLIST
 	flags	as LIST_FLAGS
 end type
 
-declare function listNew _
+declare sub listInit _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer, _
 		byval nodelen as integer, _
 		byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
-	) as integer
+	)
 
-declare function listFree _
-	( _
-		byval list as TLIST ptr _
-	) as integer
+declare sub listEnd(byval list as TLIST ptr)
 
 declare function listNewNode _
 	( _
@@ -59,11 +58,11 @@ declare sub listDelNode _
 		byval node as any ptr _
 	)
 
-declare function listAllocTB _
+declare sub listAllocTB _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer _
-	) as integer
+	)
 
 declare function listGetHead _
 	( _
@@ -84,5 +83,8 @@ declare function listGetNext _
 	( _
 		byval node as any ptr _
 	) as any ptr
+
+declare sub strlistAppend(byval list as TLIST ptr, byref s as string)
+declare sub strlistInit(byval list as TLIST ptr, byval nodes as integer)
 
 #endif '' __LIST_BI__

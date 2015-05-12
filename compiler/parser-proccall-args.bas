@@ -12,13 +12,13 @@
 '':::::
 sub parserProcCallInit( )
 
-	listNew( @parser.ovlarglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listInit( @parser.ovlarglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 sub parserProcCallEnd( )
 
-	listFree( @parser.ovlarglist )
+	listEnd( @parser.ovlarglist )
 
 end sub
 
@@ -58,25 +58,9 @@ private function hProcArg _
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
-
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym    = oldsym
-			parser.ctx_dtype = old_dtype
-			exit function
-		end if
-
 		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			expr = NULL
-
 		else
-			'' failed and expr not null?
-			if( expr <> NULL ) then
-				parser.ctxsym    = oldsym
-				parser.ctx_dtype = old_dtype
-				exit function
-			end if
-
 			'' check for BYVAL if it's the first param, due the optional ()'s
 			if( (argnum = 0) and (amode = INVALID) ) then
 				'' BYVAL?
@@ -86,7 +70,6 @@ private function hProcArg _
 				end if
 			end if
 		end if
-
 	end if
 
 	parser.ctxsym    = oldsym
@@ -95,52 +78,40 @@ private function hProcArg _
 	if( expr = NULL ) then
 		'' check if argument is optional
 		if( symbGetIsOptional( param ) = FALSE ) then
-			if( pmode <> FB_PARAMMODE_VARARG ) then
-				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTz( symbGetType( param ), symbGetSubType( param ) )
-				end if
-
-			else
+			if( pmode = FB_PARAMMODE_VARARG ) then
 				exit function
 			end if
+			errReport( FB_ERRMSG_ARGCNTMISMATCH )
+			'' error recovery: fake an expr
+			expr = astNewCONSTz( symbGetType( param ), symbGetSubType( param ) )
 		end if
-
 	else
 		'' '('')'?
 		if( pmode = FB_PARAMMODE_BYDESC ) then
 			if( lexGetToken( ) = CHAR_LPRNT ) then
 				if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
 					if( amode <> INVALID ) then
-						if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
 					end if
 					lexSkipToken( )
 					lexSkipToken( )
 					amode = FB_PARAMMODE_BYDESC
 				end if
 			end if
-    	end if
-
-    end if
+		end if
+	end if
 
 	''
 	if( amode <> INVALID ) then
 		if( amode <> pmode ) then
-            if( pmode <> FB_PARAMMODE_VARARG ) then
-            	'' allow BYVAL params passed to BYREF/BYDESC args
-            	'' (to pass NULL to pointers and so on)
-            	if( amode <> FB_PARAMMODE_BYVAL ) then
+			if( pmode <> FB_PARAMMODE_VARARG ) then
+				'' allow BYVAL params passed to BYREF/BYDESC args
+				'' (to pass NULL to pointers and so on)
+				if( amode <> FB_PARAMMODE_BYVAL ) then
 					if( amode <> pmode ) then
-						if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: discard arg mode
-							amode = pmode
-						end if
+						errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
+						'' error recovery: discard arg mode
+						amode = pmode
 					end if
 				end if
 			end if
@@ -154,17 +125,15 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-private function hOvlProcArg _
+private sub hOvlProcArg _
 	( _
 		byval argnum as integer, _
 		byval arg as FB_CALL_ARG ptr, _
 		byval options as FB_PARSEROPT _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr oldsym = any
 	dim as integer old_dtype = any
-
-	function = FALSE
 
 	arg->expr = NULL
 	arg->mode = INVALID
@@ -182,26 +151,10 @@ private function hOvlProcArg _
 	'' Expression
 	arg->expr = cExpression( )
 	if( arg->expr = NULL ) then
-
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym    = oldsym
-			parser.ctx_dtype = old_dtype
-			exit function
-		end if
-
 		'' function? assume as optional..
 		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			arg->expr = NULL
-
 		else
-			'' failed and expr not null?
-			if( arg->expr <> NULL ) then
-				parser.ctxsym    = oldsym
-				parser.ctx_dtype = old_dtype
-				exit function
-			end if
-
 			'' check for BYVAL if it's the first param, due the optional ()'s
 			if( (argnum = 0) and (arg->mode = INVALID) ) then
 				'' BYVAL?
@@ -211,7 +164,6 @@ private function hOvlProcArg _
 				end if
 			end if
 		end if
-
 	end if
 
 	parser.ctxsym    = oldsym
@@ -223,21 +175,15 @@ private function hOvlProcArg _
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
 				if( arg->mode <> INVALID ) then
-					if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE )then
-						exit function
-					end if
+					errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
 				end if
 				lexSkipToken( )
 				lexSkipToken( )
 				arg->mode = FB_PARAMMODE_BYDESC
 			end if
 		end if
-
-    end if
-
-	function = TRUE
-
-end function
+	end if
+end sub
 
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
@@ -271,31 +217,22 @@ private function hOvlProcArgList _
 		do
 			'' count mismatch?
 			if( args > params ) then
-				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-					exit function
+				errReport( FB_ERRMSG_ARGCNTMISMATCH )
+				'' error recovery: skip until next stmt or ')'
+				if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
+					hSkipUntil( CHAR_RPRNT )
 				else
-					'' error recovery: skip until next stmt or ')'
-					if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
-						hSkipUntil( CHAR_RPRNT )
-					else
-						hSkipStmt( )
-					end if
-
-					args -= 1
-					exit do
+					hSkipStmt( )
 				end if
+
+				args -= 1
+				exit do
 			end if
 
 			'' alloc a new arg
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
-			if( hOvlProcArg( args - init_args, arg, options ) = FALSE ) then
-				'' not an error? (could be an optional)
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )
-					exit function
-				end if
-			end if
+			hOvlProcArg( args - init_args, arg, options )
 
 			'' ','?
 			if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -338,28 +275,20 @@ private function hOvlProcArgList _
 		end if
 
 		errReportParam( proc, 0, NULL, err_num )
-
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-		end if
+		'' error recovery: fake an expr
+		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 	end if
 
 	proc = ovlproc
 
 	'' check visibility
 	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
-		if( errReportEx( iif( symbIsConstructor( proc ), _
-							  FB_ERRMSG_NOACCESSTOCTOR, _
-							  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
-						 symbGetFullProcName( proc ) ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-		end if
+		errReportEx( iif( symbIsConstructor( proc ), _
+		                  FB_ERRMSG_NOACCESSTOCTOR, _
+		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+		             symbGetFullProcName( proc ) )
+		'' error recovery: fake an expr
+		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 	end if
 
     '' method?
@@ -369,12 +298,9 @@ private function hOvlProcArgList _
 			'' is this really a static access or just a method call from
 			'' another method in the same class?
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
-				if( errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-				end if
+				errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE )
+				'' error recovery: fake an expr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 
 			'' pass the instance ptr of the current method
@@ -387,7 +313,6 @@ private function hOvlProcArgList _
 
 		'' re-add the instance ptr
 		args += 1
-
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -407,13 +332,10 @@ private function hOvlProcArgList _
         nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
-			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr (don't try to fake an arg,
-				'' different modes and param types like "as any" would break AST)
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-			end if
+			errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
+			'' error recovery: fake an expr (don't try to fake an arg,
+			'' different modes and param types like "as any" would break AST)
+			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 		end if
 
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
@@ -466,15 +388,12 @@ function cProcArgList _
 
 	'' check visibility
 	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
-		if( errReportEx( iif( symbIsConstructor( proc ), _
-							  FB_ERRMSG_NOACCESSTOCTOR, _
-							  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
-						 symbGetFullProcName( proc ) ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-		end if
+		errReportEx( iif( symbIsConstructor( proc ), _
+		                  FB_ERRMSG_NOACCESSTOCTOR, _
+		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
+		             symbGetFullProcName( proc ) )
+		'' error recovery: fake an expr
+		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 	end if
 
     '' method?
@@ -485,12 +404,9 @@ function cProcArgList _
 			'' is this really a static access or just a method call from
 			'' another method in the same class?
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
-				if( errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-				end if
+				errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE )
+				'' error recovery: fake an expr
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 
 			'' pass the instance ptr of the current method
@@ -500,7 +416,6 @@ function cProcArgList _
 								symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
-
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -548,12 +463,9 @@ function cProcArgList _
 				lexSkipToken( )
 				'' ')'
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT, TRUE )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDRPRNT )
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT, TRUE )
 				else
 					lexSkipToken( )
 				end if
@@ -568,36 +480,7 @@ function cProcArgList _
 			'' count mismatch?
 			if( args >= params ) then
 				if( param->param.mode <> FB_PARAMMODE_VARARG ) then
-					if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next stmt or ')'
-						if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
-							hSkipUntil( CHAR_RPRNT )
-						else
-							hSkipStmt( )
-						end if
-
-						args -= 1
-						exit do
-					end if
-				end if
-			end if
-
-			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
-				'' not an error? (could be an optional)
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				else
-					exit do
-				end if
-			end if
-
-			'' add to tree
-			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				else
+					errReport( FB_ERRMSG_ARGCNTMISMATCH )
 					'' error recovery: skip until next stmt or ')'
 					if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 						hSkipUntil( CHAR_RPRNT )
@@ -605,11 +488,28 @@ function cProcArgList _
 						hSkipStmt( )
 					end if
 
-					'' don't try to fake an arg, different modes and param
-					'' types like "as any" would break AST
-					astDelTree( procexpr )
-					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+					args -= 1
+					exit do
 				end if
+			end if
+
+			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
+				exit do
+			end if
+
+			'' add to tree
+			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
+				'' error recovery: skip until next stmt or ')'
+				if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
+					hSkipUntil( CHAR_RPRNT )
+				else
+					hSkipStmt( )
+				end if
+
+				'' don't try to fake an arg, different modes and param
+				'' types like "as any" would break AST
+				astDelTree( procexpr )
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 
 			'' next
@@ -631,13 +531,10 @@ function cProcArgList _
 
 		'' not optional?
 		if( symbGetIsOptional( param ) = FALSE ) then
-			if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				astDelTree( procexpr )
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-			end if
+			errReport( FB_ERRMSG_ARGCNTMISMATCH )
+			'' error recovery: fake an expr
+			astDelTree( procexpr )
+			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 		end if
 
 		'' add to tree
@@ -653,5 +550,3 @@ function cProcArgList _
 	function = procexpr
 
 end function
-
-

@@ -7,7 +7,7 @@ Specifies that string literals should be processed for C-like escape sequences b
 {{fbdoc item="desc"}}
 	##**Option Escape**## is a statement that causes string literals to be processed for C-like escape sequences by default. Normally, escape sequences have no effect in string literals unless the string is prefixed with the  [[KeyPgOpPpEscape ! operator (Escaped String Literal)]]. This default remains in effect for the rest of the module in which ##**Option Escape**## is used, and can be overridden by prefixing string literals with the [[KeyPgOpPpNoescape $ operator (Non-Escaped String Literal)]].
 
-	See [[ProPgLiterals Literals]] in the Programmer's Guide to learn more about escape sequences.
+	See [[ProPgLiterals Literals]] in the [[CatPgProgrammer Programmer's Guide]] to learn more about escape sequences.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/switches/option-escape.bas"}}%%(freebasic)

@@ -38,12 +38,13 @@ Conditional statement block
 	example of expression lists:
 	{{table columns="2" cellpadding="1" cells="Case 1 ;constant;Case 5.4 To 10.1;range;Case Is > 3;bigger than-smaller than;Case 1, 3, 5, 7 to 9;match against a set of values;Case x ;value of a variable"}}
 
-	If ##**As Const**## is used, only ##[[KeyPgInteger Integer]]## constants can be evaluated and the expression list supports single constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
+	If ##**As Const**## is used, only integer constants (all numeric constants excluding the two floating-point constants: single and double) can be evaluated and the expression list supports simple constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
 
 	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.  However, the size of the range of values is limited, and the largest value in the range may be no higher than the smallest value + 4096.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/control/select.bas"}}%%(freebasic)
+
+	{{fbdoc item="filename" value="examples/manual/control/select.bas"}}%%(freebasic)
 dim choice as integer
 
 input "Choose a number between 1 and 10: "; choice
@@ -60,6 +61,69 @@ case 5 to 10
 case else
 	print "number is outside the 1-10 range"
 end select
+%%
+	
+	{{fbdoc item="filename" value="examples/manual/control/select-speed.bas"}}%%(freebasic)
+'' SELECT CASE vs. SELECT CASE AS CONST speed test
+
+const N = 50000000
+
+dim as integer dummy = 0
+dim as double t = timer()
+
+for i as integer = 1 to N
+	select case i
+	case 1, 3, 5, 7, 9
+		dummy += 1
+	case 2, 4, 6, 8, 10
+		dummy += 1
+	case 11 to 20
+		dummy += 1
+	case 21 to 30
+		dummy += 1
+	case 31
+		dummy += 1
+	case 32
+		dummy += 1
+	case 33
+		dummy += 1
+	case is >= 34
+		dummy += 1
+	case else
+		print "can't happen"
+	end select
+next
+
+print using "SELECT CASE: ##.### seconds"; timer() - t
+t = timer()
+
+for i as integer = 1 to N
+	select case as const i
+	case 1, 3, 5, 7, 9
+		dummy += 1
+	case 2, 4, 6, 8, 10
+		dummy += 1
+	case 11 to 20
+		dummy += 1
+	case 21 to 30
+		dummy += 1
+	case 31
+		dummy += 1
+	case 32
+		dummy += 1
+	case 33
+		dummy += 1
+	case else
+		if( i >= 34 ) then
+			dummy += 1
+		else
+			print "can't happen"
+		end if
+	end select
+next
+
+print using "SELECT CASE AS CONST: ##.### seconds"; timer() - t
+sleep
 %%
 
 {{fbdoc item="diff"}}

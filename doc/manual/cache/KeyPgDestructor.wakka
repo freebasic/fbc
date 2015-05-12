@@ -26,6 +26,8 @@ Called automatically when a class or user defined type goes out of scope or is d
 
 	Since the ##[[KeyPgEnd End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd End]]## statement is used to terminate the program.
 
+	//Note: Destructor can be also called directly from the ##typename## instance, as the other member methods (Sub) and with the same syntax (using a member access operator). The object instance, always existing (no memory deallocation), is just destructed. This syntax is useful in case of Operator Placement New usage (memory not allocated by New, but just object instance construction) instead of Delete usage (only way to object instance destruction without memory deallocation).//
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/destructor.bas"}}%%(freebasic)
 type T

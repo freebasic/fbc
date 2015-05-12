@@ -19,13 +19,12 @@
 function symbStructBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
-		byval align as integer _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr s
+		byval align as integer, _
+		byval base_ as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
     function = NULL
 
@@ -37,12 +36,12 @@ function symbStructBegin _
     	end if
     end if
 
-    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   NULL, _
-    				   NULL, NULL, _
-    				   FB_SYMBCLASS_STRUCT, _
-    				   id, id_alias, _
-    				   FB_DATATYPE_STRUCT, NULL )
+    var s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   	   NULL, _
+    				   	   NULL, NULL, _
+    				   	   FB_SYMBCLASS_STRUCT, _
+    				   	   id, id_alias, _
+    				   	   FB_DATATYPE_STRUCT, NULL )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -80,6 +79,23 @@ function symbStructBegin _
 	s->udt.dbg.typenum = INVALID
 
 	s->udt.ext = NULL
+	
+	'' extending another UDT?
+	if( base_ <> NULL ) then
+		static as FBARRAYDIM dTB(0 to 0)
+		
+		s->udt.base = symbAddField( s, "$fb_base", 0, dTB(), FB_DATATYPE_STRUCT, base_, symbGetLen( base_ ), 0 )
+		
+		symbSetIsUnique( s )
+		symbNestBegin( s, FALSE )
+		symbNamespaceImportEx( base_, s )
+		
+		if( symbGetHasRTTI( base_ ) ) then
+			symbSetHasRTTI( s )
+		End If
+	else
+		s->udt.base = NULL
+	End If
 
 	function = s
 
@@ -223,14 +239,7 @@ function symbAddField _
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( dtype, subtype, TRUE )
-
-	'' or use the non-padded len if it's a non-array UDT field (for array
-	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-		if( dimensions = 0 ) then
-			lgt = subtype->udt.unpadlgt
-		end if
+		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
     '' check if the parent ofs must be updated
@@ -277,13 +286,13 @@ function symbAddField _
 						'' remap type
 						select case lgt
 						case 1
-							if( symbIsSigned( dtype ) ) then
+							if( typeIsSigned( dtype ) ) then
 								dtype = FB_DATATYPE_BYTE
 							else
 								dtype = FB_DATATYPE_UBYTE
 							end if
 						case 2
-							if( symbIsSigned( dtype ) ) then
+							if( typeIsSigned( dtype ) ) then
 								dtype = FB_DATATYPE_SHORT
 							else
 								dtype = FB_DATATYPE_USHORT
@@ -375,7 +384,7 @@ function symbAddField _
 
 	select case as const typeGet( dtype )
 	'' var-len string fields? must add a ctor, copyctor and dtor
-    case FB_DATATYPE_STRING
+	case FB_DATATYPE_STRING
 		'' if it's an anon udt, it or parent is an UNION
 		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
 									  FB_UDTOPT_ISANON)) <> 0 ) then
@@ -386,8 +395,14 @@ function symbAddField _
 			symbSetUDTHasPtrField( parent )
 		end if
 
-    '' struct with a ctor or dtor? must add a ctor or dtor too
-    case FB_DATATYPE_STRUCT
+	'' struct with a ctor or dtor? must add a ctor or dtor too
+	case FB_DATATYPE_STRUCT
+		'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
+		'' parent if this field has it.
+		if( symbGetUDTHasPtrField( subtype ) ) then
+			symbSetUDTHasPtrField( base_parent )
+		end if
+
 		if( symbGetCompDefCtor( subtype ) <> NULL ) then
 			'' if it's an anon udt, it or parent is an UNION
 			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
@@ -396,7 +411,7 @@ function symbAddField _
 			else
 				symbSetUDTHasCtorField( parent )
 			end if
-    	end if
+		end if
 
 		if( symbGetHasDtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
@@ -406,13 +421,13 @@ function symbAddField _
 			else
 				symbSetUDTHasDtorField( parent )
 			end if
-    	end if
+		end if
 
 	end select
 
 	'' check pointers
 	if( typeIsPtr( dtype ) ) then
-		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
+		symbSetUDTHasPtrField( base_parent )
 	end if
 
 	'' struct?
@@ -425,7 +440,7 @@ function symbAddField _
 		'' update the bit position, wrapping around
 		if( bits > 0 ) then
 			parent->udt.bitpos += bits
-			parent->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
+			parent->udt.bitpos and= (typeGetBits( dtype ) - 1)
 		end if
 
 	'' union..
@@ -520,14 +535,14 @@ sub symbInsertInnerUDT _
 
 	'' struct? update ofs + len
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
-		parent->ofs += inner->udt.unpadlgt
+		parent->ofs += inner->lgt
 		parent->lgt = parent->ofs
 
 	'' union.. update len, if bigger
 	else
 		parent->ofs = 0
-		if( inner->udt.unpadlgt > parent->lgt ) then
-			parent->lgt = inner->udt.unpadlgt
+		if( inner->lgt > parent->lgt ) then
+			parent->lgt = inner->lgt
 		end if
 	end if
 
@@ -662,12 +677,18 @@ end function
 '':::::
 sub symbStructEnd _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval isnested as integer _
 	) static
 
     dim as integer pad
 
-	'' save length w/o padding
+	'' end nesting?
+	if( isnested ) then
+		symbNestEnd( FALSE )
+	end if
+
+	'' save length without the tail padding added below
 	sym->udt.unpadlgt = sym->lgt
 
 	'' do round?
@@ -739,8 +760,7 @@ end function
 '':::::
 sub symbDelStruct _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval s as FBSYMBOL ptr _
 	)
 
     if( s = NULL ) then
@@ -794,7 +814,7 @@ sub symbDelStruct _
 
 	''
 	if( (s->udt.options and FB_UDTOPT_ISANON) = 0 ) then
-		hashFree( @s->udt.ns.hashtb.tb )
+		hashEnd( @s->udt.ns.hashtb.tb )
 	end if
 
 	'' del the udt node
@@ -805,21 +825,6 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function symbGetUDTLen _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval unpadlen as integer _
-	) as integer static
-
-	if( unpadlen ) then
-		function = s->udt.unpadlgt
-	else
-		function = s->lgt
-	end if
-
-end function
 
 '':::::
 function symbGetUDTFirstElm _
@@ -1006,4 +1011,50 @@ function symbIsUDTReturnedInRegs _
 
 end function
 
+'':::::
+function symbGetUDTBaseLevel _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as integer
+	
+	if( s = NULL or baseSym = NULL ) then
+		return 0
+	end if
+	
+	var level = 1
+	do until( s->udt.base = NULL )
+		if( s->udt.base->subtype = baseSym ) then
+			return level
+		End If
+		
+		s = s->udt.base->subtype
+		level += 1 
+	Loop
+	
+	return 0
+	
+End Function
 
+'':::::
+function symbGetUDTBaseSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+	
+	if( s = NULL or baseSym = NULL ) then
+		return NULL
+	end if
+	
+	do until( s->udt.base = NULL )
+		if( s->udt.base->subtype = baseSym ) then
+			return s->udt.base 
+		End If
+		
+		s = s->udt.base->subtype
+	Loop
+	
+	return NULL
+	
+End Function

@@ -1,6 +1,5 @@
 /* read stmt for wstring's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

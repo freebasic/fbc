@@ -1,7 +1,5 @@
 /* line input function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 #define BUFFER_LEN 1024
@@ -131,4 +129,3 @@ FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len, int fillrem )
 {
     return fb_hFileLineInputEx( FB_FILE_TO_HANDLE(fnum), dst, dst_len, fillrem );
 }
-

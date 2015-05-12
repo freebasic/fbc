@@ -10,10 +10,10 @@ Left-justifies a string
 	**Lset** //dst_udt//, //src_udt//
 ##
 {{fbdoc item="param"}}
-	##//src//##
-		String variable to receive the data.
 	##//dst//##
-		Source string to get the data.
+		Source ##[[KeyPgString String]]## to get the data.
+	##//src//##
+		String ##[[KeyPgString String]]## to receive the data.
 	##//dst_udt//##
 		User defined ##[[KeyPgType Type]]## to receive the data.	
 	##//src_udt//##
@@ -22,7 +22,7 @@ Left-justifies a string
 {{fbdoc item="desc"}}
 	##**Lset**## left justifies text into the string buffer ##//dst//##, filling the left part of the string with ##//src//## and the right part with spaces. The string buffer size is not modified.
 
-	For compatibility with QBasic, ##**Lset**## can also copy a user defined type variable into another one. The copy is made byte for byte, without any care for fields or alignment. It's up to the programmer to take care for the  validity of the result.
+	For compatibility with ""QBasic"", ##**Lset**## can also copy a user defined type variable into another one. The copy is made byte for byte, without any care for fields or alignment. It's up to the programmer to take care for the  validity of the result.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/lset.bas"}}%%(freebasic)

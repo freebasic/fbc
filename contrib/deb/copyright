@@ -1,7 +1,7 @@
 License of the FreeBASIC Compiler:
 
 FreeBASIC - A multi-platform 32-bit BASIC Compiler
-Copyright (C) 2004-2011 The FreeBASIC development team.
+Copyright (C) 2004-2012 The FreeBASIC development team.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ License of the FreeBASIC Runtime Library:
 -----------------------------------------
 
 libfb - FreeBASIC's runtime library
-Copyright (C) 2004-2011 The FreeBASIC development team.
+Copyright (C) 2004-2012 The FreeBASIC development team.
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public

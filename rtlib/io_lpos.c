@@ -1,6 +1,5 @@
 /* Returns the printers X position */
 
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="gettext"}}----
+An internationalization library/toolchain
+
+Website: http://www.gnu.org/software/gettext/gettext.html
+Platforms supported: ""Win32"", Linux, DOS
+Headers to include: libintl.bi, gettext-po.bi
+Header version: from 2010, 0.17
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

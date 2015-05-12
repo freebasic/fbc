@@ -1,142 +1,169 @@
-.TH FBC 1 "2011-05-02" "FreeBASIC Compiler 0.24.0" "FreeBASIC Compiler"
+.TH FBC 1 "2012-01-09" "FreeBASIC Compiler 0.24.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
 Compiles BASIC source code files to native code.
 .SH SYNOPSIS
-.B fbc \fR[\fIoptions\fR] \fIinputlist\fR
+.B fbc \fR[\fIoptions\fR] \fIinput-files\fR
 
 .SH OPTIONS
 .F
 .TP
-.I inputlist\fR
-\fB*.a\fR = library, \fB*.o\fR = object, \fB*.bas\fR = source, \fB*.xpm\fR = icon resource
+.I input-files\fR
+\fB*.a\fR = library, \fB*.o\fR = object, \fB*.bas\fR = source, \fB*.rc\fR = win32 resource script, \fB*.res\fR = win32 compiled resource, \fB*.xpm\fR = X11 icon resource
 .TP
 \fB\@\fIfile\fR
-Read (additional) command-line options from a file
+Read more command line arguments from a file
 .TP
-\fB\-a \fIname\fR
-Add an object file to linker's list
+\fB\-a\fR \fIfile\fR
+Treat file as .o/.a input file
 .TP
-\fB\-arch \fItype\fR
+\fB\-arch\fR \fItype\fR
 Set target architecture (default: \fB486\fR)
 .TP
-\fB\-b \fIname\fR
-Add a source file to compilation
+\fB\-b\fR \fIfile\fR
+Treat file as .bas input file
 .TP
 \fB\-c\fR
 Compile only, do not link
 .TP
 \fB\-C\fR
-Do not delete the object files(s)
+Preserve temporary .o files
 .TP
-\fB\-d \fIname\fR[\fB=\fIval\fR]
-Add a preprocessor define
+\fB\-d\fR \fIname\fR[\fB=\fIval\fR]
+Add a global #define
 .TP
 \fB\-dll\fR
 Same as \fB\-dylib\fR
 .TP
 \fB\-dylib\fR
-Create a shared library
+Create a Win32 DLL or Linux/*BSD shared library
 .TP
 \fB\-e\fR
-Add error checking
+Enable runtime error checking
 .TP
 \fB\-ex\fR
-Add error checking with RESUME support
+\fB-e\fR plus RESUME support
 .TP
 \fB\-exx\fR
-Same as above plus array bounds and null\-pointer checking
+\fB-ex\fR plus array bounds/null-pointer checking
 .TP
 \fB\-export\fR
 Export symbols for dynamic linkage
 .TP
-\fB\-forcelang \fIname\fR
-Select language compatibility, overriding #lang/$lang in code 
+\fB\-forcelang\fR \fIname\fR
+Override #lang statements in source code
+.TP
+\fB\-fpmode\fR \fIfast\fR|\fIprecise\fR
+Select floating-point math accuracy/speed
+.TP
+\fB\-fpu\fR \fIx87\fR|\fIsse\fR
+Set target FPU
 .TP
 \fB\-g\fR
 Add debug info
 .TP
-\fB\-gen \fIbackend\fR
-Allows to set the compiler backend to either 'gas' (the default) or 'gcc'
+\fB\-gen\fR \fIgas\fR|\fIgcc\fR
+Select code generation backend
 .TP
-\fB\-i \fIname\fR
-Add a path to search for include files
+\fB\-i\fR \fIpath\fR
+Add an include file search path
 .TP
-\fB\-include \fIname\fR
-Include a header file on each source compiled
+\fB\-include\fR \fIfile\fR
+Pre-#include a file for each input .bas
 .TP
-\fB\-l \fIname\fR
-Add a library file to linker's list
+\fB\-l\fR \fIname\fR
+Link in a library
 .TP
-\fB\-lang \fIname\fR
-Select language compatibility: \fBfb\fR (default), \fBdeprecated\fR, \fBqb\fR
+\fB\-lang\fR \fIname\fR
+Select FB dialect: \fBfb\fR (default), \fBdeprecated\fR, \fBqb\fR
 .TP
 \fB\-lib\fR
 Create a static library
 .TP
-\fB\-m \fIname\fR
-Main file without extension, the entry point (default: 1st .bas on list)
+\fB\-m\fR \fIname\fR
+Set main module (default if not -c: first input .bas)
 .TP
-\fB\-map \fIname\fR
-Save the linking map to file name
+\fB\-map\fR \fIfile\fR
+Save linking map to file
 .TP
-\fB\-maxerr \fIval\fR
-Only stop parsing if \fIval\fR errors occurred
+\fB\-maxerr\fR \fIn\fR
+Only show \fIn\fR errors
 .TP
 \fB\-mt\fR
-Link with thread\-safe runtime library
+Use thread-safe FB runtime
 .TP
 \fB\-nodeflibs\fR
 Do not include the default libraries
 .TP
 \fB\-noerrline\fR
-Do not show source line where error occured
+Do not show source context in error messages
 .TP
-\fB\-o \fIname\fR
-Set output name (in the same number as source files)
+\fB\-o\fR \fIfile\fR
+Set .o file name for corresponding input .bas
 .TP
-\fB\-p \fIname\fR
-Add a path to search for libraries
+\fB\-O\fR \fIvalue\fR
+Optimization level (default: 0)
+.TP
+\fB\-p \fIpath\fR
+Add a library search path
 .TP
 \fB\-pp\fR
-Emit the preprocessed input file only, do not compile
+Write out preprocessed input file (.pp.bas) only
 .TP
-\fB\-prefix \fIpath\fR
+\fB\-prefix\fR \fIpath\fR
 Set the compiler prefix path
 .TP
 \fB\-profile\fR
 Enable function profiling
 .TP
 \fB\-r\fR
-Write asm files(s) only, do not compile or link
+Like -c, but write out .asm/.c only, do not assemble
 .TP
 \fB\-R\fR
-Do not delete the asm file(s)
+Preserve temporary non-.o files (.asm/.c etc.)
+.TP
+\fB\-s\fR \fIconsole\fR|\fIgui\fR
+Select win32 subsystem
+.TP
+\fB\-static\fR
+Prefer static libraries over dynamic ones when linking
+.TP
+\fB\-t\fR \fIvalue\fR
+Set Win32/DOS .exe stack size in kbytes, default: 1024
+.TP
+\fB\-target\fR \fIname\fR
+Set cross-compilation target
+.TP
+\fB\-title\fR \fIname\fR
+Set XBE display title (XBox)
 .TP
 \fB\-v\fR
 Be verbose
 .TP
-\fB\-vec \fIlevel\fR
-Set level of vector optimizations enabled by the compiler (default: 0)
+\fB\-vec \fIn\fR
+Automatic vectorization level (default: 0)
 .TP
 \fB\-version\fR
 Show compiler version
 .TP
-\fB\-w \fIvalue\fR
+\fB\-w\fR \fIall\fR|\fIpedantic\fR\fIn\fR
 Set min warning level: \fBall\fR, \fBpedantic\fR, or an integer
 .TP
-\fB\-Wa \fIopt\fR
-Pass options to GAS (separated by commas)
+\fB\-Wa\fR \fIa,b,c\fR
+Pass options to GAS
 .TP
-\fB\-Wc \fIopt\fR
-Pass options to GCC (separated by commas)
+\fB\-Wc\fR \fIa,b,c\fR
+Pass options to GCC (with -gen gcc)
 .TP
-\fB\-Wl \fIopt\fR
-Pass options to LD (separated by commas)
+\fB\-Wl\fR \fIa,b,c\fR
+Pass options to LD
 .TP
-\fB\-x \fIname\fR
-Set executable/library name
+\fB\-x \fIfile\fR
+Set output executable/library file name
+.TP
+\fB\-z gosub-setjmp\fR
+Use setjmp/longjmp to implement GOSUB
 
 .SH ENVIRONMENT
 .IP AS
@@ -149,7 +176,7 @@ The full language specification and help is available in wiki format at
 .B 
 http://www.freebasic.net/wiki/
 .SH COPYRIGHT
-Copyright \(co 2004\-2011 The FreeBASIC Development Team
+Copyright \(co 2004\-2012 The FreeBASIC Development Team
 .br
 This is free software.  You may redistribute copies of it under the terms of
 the GNU General Public License <http://www.gnu.org/licenses/gpl.html>.

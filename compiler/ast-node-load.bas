@@ -15,21 +15,15 @@ function astNewLOAD _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval isresult as integer _
-	) as ASTNODE ptr static
-
-    dim n as ASTNODE ptr
+	) as ASTNODE ptr
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_LOAD, dtype )
-	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
+	dim as ASTNODE ptr n = astNewNode( AST_NODECLASS_LOAD, dtype )
 
 	n->l  = l
 	n->lod.isres = isresult
 
+	function = n
 end function
 
 '':::::

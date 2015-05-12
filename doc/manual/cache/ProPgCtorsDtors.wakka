@@ -26,7 +26,7 @@ In charge of the creation and destruction of objects.
 	Copy constructors are only called when creating and initializing object instances. Assignment to objects is handled by the ##[[KeyPgOperator member operator let]]##.
 
 {{anchor name="CALLCTOR"}}{{fbdoc item="section" value="Calling constructors"}}
-	Unlike other member procedures, constructors cannot be called directly from an object instance. Instead, a constructor is specified in a ##[[KeyPgDim Dim]]## statement either with an initializer or without one, or in a ##[[KeyPgOpNew New]]## statement with or without arguments.
+	Unlike other member procedures, constructors are generally not called directly from an object instance. Instead, a constructor is specified in a ##[[KeyPgDim Dim]]## statement either with an initializer or without one, or in a ##[[KeyPgOpNew New]]## statement with or without arguments.
 
 	When specifying an initializer for an object, the name of the type followed by any arguments it requires is used.
 

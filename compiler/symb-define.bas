@@ -18,7 +18,7 @@
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
-	name			as zstring ptr
+	name			as const zstring ptr
 	value			as zstring ptr
 	flags			as integer
 	proc			as DEFCALLBACK
@@ -314,13 +314,11 @@ sub symbDefineInit _
 		byval ismain as integer _
 	)
 
-	static as string value
-	dim as zstring ptr def = any
+	dim as string value
+	dim as const zstring ptr def = any
 
-	'' lists
-	listNew( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
-
-	listNew( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
 	'' add the pre-defines
 	for i as integer = 0 to SYMB_MAXDEFINES-1
@@ -339,15 +337,34 @@ sub symbDefineInit _
 		               FALSE, defTb(i).proc, defTb(i).flags )
 	next
 
-	'' add "target" define
-	def = env.target.define
+	'' Add __FB_<target>__ define
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		def = @"__FB_CYGWIN__"
+	case FB_COMPTARGET_DARWIN
+		def = @"__FB_DARWIN__"
+	case FB_COMPTARGET_DOS
+		def = @"__FB_DOS__"
+	case FB_COMPTARGET_FREEBSD
+		def = @"__FB_FREEBSD__"
+	case FB_COMPTARGET_LINUX
+		def = @"__FB_LINUX__"
+	case FB_COMPTARGET_NETBSD
+		def = @"__FB_NETBSD__"
+	case FB_COMPTARGET_OPENBSD
+		def = @"__FB_OPENBSD__"
+	case FB_COMPTARGET_WIN32
+		def = @"__FB_WIN32__"
+	case else
+		assert(fbGetOption(FB_COMPOPT_TARGET) = FB_COMPTARGET_XBOX)
+		def = @"__FB_XBOX__"
+	end select
 
 	symbAddDefine( def, NULL, 0 )
 
-	'' add __FB_UNIX__ / __FB_PCOS__ defines, if necessary
-
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case /'FB_COMPTARGET_BEOS,'/ _  '' TODO: update when new targets have been added
+	'' add __FB_UNIX__ / __FB_PCOS__ defines, as necessary
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case /'FB_COMPTARGET_BEOS,'/ _
 	     FB_COMPTARGET_CYGWIN, _
 	     FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, _
@@ -356,48 +373,16 @@ sub symbDefineInit _
 	     FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
 
-#if 0 '' "#ifdef" check (more consistent with other defines)
-
 		symbAddDefine( @"__FB_UNIX__", NULL, 0 )
 
-#elseif 1 '' "#if" check (compromise, "#if not" will fail)
-
-		symbAddDefine( @"__FB_UNIX__", @"-1", 2 )
-
-#else '' "#if" check (0.21.0 compatible)
-
-		symbAddDefine( @"__FB_UNIX__", @"-1", 2 )
-	case else
-		symbAddDefine( @"__FB_UNIX__", @"0", 1 )
-
-#endif
-
-	end select
-
-	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_DOS, _
 	     /'FB_COMPTARGET_OS2,'/ _
 	     /'FB_COMPTARGET_SYMBIAN,'/ _
 	     FB_COMPTARGET_WIN32
 
-#if 0 '' "#ifdef" check (more consistent with other defines)
-
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 
-#elseif 1 '' "#if" check (compromise, "#if not" will fail)
-
-		symbAddDefine( @"__FB_PCOS__", @"-1", 2 )
-
-#else '' "#if" check (0.21.0 compatible)
-
-		symbAddDefine( @"__FB_PCOS__", @"-1", 2 )
-	case else
-		symbAddDefine( @"__FB_PCOS__", @"0", 1 )
-
-#endif
-
 	end select
-
 
 	'' add "main" define
 	if( ismain ) then
@@ -416,7 +401,7 @@ sub symbDefineInit _
 	'' macro params
 	symb.def.param = 0
 
-	hashNew( @symb.def.paramhash, FB_MAXDEFINEARGS )
+	hashInit( @symb.def.paramhash, FB_MAXDEFINEARGS )
 
 end sub
 
@@ -424,21 +409,19 @@ end sub
 sub symbDefineEnd( )
 
 	'' macro params
-	hashFree( @symb.def.paramhash )
+	hashEnd( @symb.def.paramhash )
 
 	symb.def.param = 0
 
-	'' lists
-	listFree( @symb.def.paramlist )
-
-	listFree( @symb.def.toklist )
+	listEnd( @symb.def.paramlist )
+	listEnd( @symb.def.toklist )
 
 end sub
 
 '':::::
 function symbAddDefine _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
@@ -516,7 +499,7 @@ end function
 '':::::
 function symbAddDefineMacro _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr, _
@@ -565,7 +548,7 @@ end sub
 function symbAddDefineParam _
 	( _
 		byval lastparam as FB_DEFPARAM ptr, _
-		byval id as zstring ptr _
+		byval id as const zstring ptr _
 	) as FB_DEFPARAM ptr static
 
     dim as FB_DEFPARAM ptr param
@@ -574,9 +557,6 @@ function symbAddDefineParam _
     function = NULL
 
     param = listNewNode( @symb.def.paramlist )
-    if( param = NULL ) then
-    	exit function
-    end if
 
 	if( lastparam <> NULL ) then
 		lastparam->next = param
@@ -632,9 +612,6 @@ function symbAddDefineTok _
     function = NULL
 
     t = listNewNode( @symb.def.toklist )
-    if( t = NULL ) then
-    	exit function
-    end if
 
 	if( lasttok <> NULL ) then
 		lasttok->next = t
@@ -715,8 +692,7 @@ end sub
 '':::::
 function symbDelDefine _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval s as FBSYMBOL ptr _
 	) as integer
 
     function = FALSE

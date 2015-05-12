@@ -77,7 +77,7 @@ declare function hGetDataType _
 		14 _                                    '' fix-len string
 	}
 
-	dim shared stabsTB(0 to 17) as zstring ptr = _
+	dim shared stabsTB(0 to 17) as const zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
@@ -126,10 +126,10 @@ end sub
 private sub hEmitSTABS _
 	( _
 		byval _type as integer, _
-		byval _string as zstring ptr, _
+		byval _string as const zstring ptr, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr = @"0" _
+		byval _value as const zstring ptr = @"0" _
 	) static
 
 	dim as string ostr
@@ -155,7 +155,7 @@ private function hMakeSTABN _
 		byval _type as integer, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr _
+		byval _value as const zstring ptr _
 	) as zstring ptr static
 
 	static as string ostr
@@ -179,7 +179,7 @@ private sub hEmitSTABN _
 		byval _type as integer, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr = @"0" _
+		byval _value as const zstring ptr = @"0" _
 	) static
 
 
@@ -496,30 +496,17 @@ sub edbgProcEmitBegin _
 
 end sub
 
-'':::::
-private sub hDeclArgs _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr s
-
-	s = symbGetProcSymbTbHead( proc )
-	do while( s <> NULL )
-
-    	if( symbIsVar( s ) ) then
-			'' an argument?
-    		if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    			  				FB_SYMBATTRIB_PARAMBYVAL or _
-    			  				FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
-
-				edbgEmitProcArg( s )
+private sub hDeclArgs(byval proc as FBSYMBOL ptr)
+	dim as FBSYMBOL ptr s = symbGetProcSymbTbHead( proc )
+	while (s)
+		if (symbIsVar(s)) then
+			'' Parameter?
+			if (symbIsParam(s)) then
+				edbgEmitProcArg(s)
 			end if
 		end if
-
 		s = s->next
-	loop
-
+	wend
 end sub
 
 '':::::

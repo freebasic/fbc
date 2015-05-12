@@ -1,11 +1,8 @@
 /* wstring to ascii file writing function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* src, size_t chars )
+int fb_DevFileWriteWstr( FB_FILE *handle, const FB_WCHAR* src, size_t chars )
 {
     FILE *fp;
     char *buffer;

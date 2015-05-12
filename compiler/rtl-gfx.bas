@@ -5,7 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 #include once "ast.bi"
 #include once "lex.bi"
 #include once "rtl.bi"
@@ -606,7 +605,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer, byval pal as any ptr = NULL ) as integer '/ _
+		/' fb_GfxBsave( byref filename as string, byval src as any ptr, byval length as uinteger = 0, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
 			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
@@ -620,7 +619,7 @@ declare function hPorts_cb _
  					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+ 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 				( _
  					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
@@ -1559,7 +1558,7 @@ private function hPorts_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "advapi32" )
+			fbAddLib("advapi32")
 		end select
 	end if
 
@@ -1580,7 +1579,7 @@ function rtlMultinput_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "user32" )
+			fbAddLib("user32")
 		end select
 	end if
 
@@ -1594,14 +1593,36 @@ private function hGfxlib_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer added = FALSE
 
-	if( libsadded = FALSE ) then
-		libsAdded = TRUE
+	if (added = FALSE) then
+		added = TRUE
 
-		symbAddLib( "fbgfx" )
+		fbAddLib("fbgfx")
 
-		fbc.vtbl.addGfxLibs( )
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			fbAddLib("user32")
+			fbAddLib("gdi32")
+			fbAddLib("winmm")
+
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+
+			#if defined(__FB_LINUX__) or _
+			    defined(__FB_FREEBSD__) or _
+			    defined(__FB_OPENBSD__) or _
+			    defined(__FB_NETBSD__)
+				fbAddLibPath("/usr/X11R6/lib")
+			#endif
+
+			fbAddLib("X11")
+			fbAddLib("Xext")
+			fbAddLib("Xpm")
+			fbAddLib("Xrandr")
+			fbAddLib("Xrender")
+
+		end select
 
 	end if
 
@@ -1614,51 +1635,33 @@ private function hGetPutter _
 		byval mode as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any
 
 	select case as const mode
-
 	case FBGFX_PUTMODE_TRANS
 		proc = PROCLOOKUP( GFXPUTTRANS )
-
 	case FBGFX_PUTMODE_PSET
 		proc = PROCLOOKUP( GFXPUTPSET )
-
 	case FBGFX_PUTMODE_PRESET
 		proc = PROCLOOKUP( GFXPUTPRESET )
-
 	case FBGFX_PUTMODE_AND
 		proc = PROCLOOKUP( GFXPUTAND )
-
 	case FBGFX_PUTMODE_OR
 		proc = PROCLOOKUP( GFXPUTOR )
-
 	case FBGFX_PUTMODE_XOR
 		proc = PROCLOOKUP( GFXPUTXOR )
-
 	case FBGFX_PUTMODE_ALPHA
 		proc = PROCLOOKUP( GFXPUTALPHA )
-
 	case FBGFX_PUTMODE_BLEND
 		proc = PROCLOOKUP( GFXPUTBLEND )
-
 	case FBGFX_PUTMODE_ADD
 		proc = PROCLOOKUP( GFXPUTADD )
-
-	case FBGFX_PUTMODE_CUSTOM
+	case else
+		assert(mode = FBGFX_PUTMODE_CUSTOM)
 		proc = PROCLOOKUP( GFXPUTCUSTOM )
-
 	end select
 
-	''
-	n = astNewOFFSET( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
-
-	symbSetIsCalled( proc )
-
-
-	function = n
-
+	function = astBuildProcAddrof(proc)
 end function
 
 '':::::
@@ -2114,7 +2117,6 @@ function rtlGfxDrawString _
 
     dim as ASTNODE ptr proc = any, putter = any
     dim as integer targetmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2206,15 +2208,7 @@ function rtlGfxDrawString _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2483,7 +2477,6 @@ function rtlGfxPut _
 
     dim as ASTNODE ptr proc = any
     dim as integer targetmode = any, argmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2583,15 +2576,7 @@ function rtlGfxPut _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2612,7 +2597,6 @@ function rtlGfxGet _
 
     dim as ASTNODE ptr proc = any, descexpr = any
     dim as integer targetmode = any, argmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2688,15 +2672,7 @@ function rtlGfxGet _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2712,7 +2688,7 @@ function rtlGfxScreenSet _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -2766,15 +2742,7 @@ function rtlGfxScreenSet _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2787,7 +2755,6 @@ function rtlGfxScreenSetQB _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any
 
 	function = FALSE
 
@@ -2814,15 +2781,7 @@ function rtlGfxScreenSetQB _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 

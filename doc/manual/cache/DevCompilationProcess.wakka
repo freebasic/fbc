@@ -1,0 +1,99 @@
+An overview of what's basically happening during compilation on Windows:
+
+%%
+1. fbc started through terminal/command prompt           fbc started by IDE
+.  C:\FreeBASIC> fbc test.bas                            exec("C:\FreeBASIC\fbc.exe", "test.bas")
+.               \                                           /
+.                \      ,----------------------------------´
+.                 \    /
+.                  \  /
+.                   \/
+.                   |
+.                   |
+.                   |
+.                   V
+2. fbc.exe started, sees 'test.bas' on command line
+.                   |
+.                   V
+.  Read in 'test.bas', check for syntax/semantic errors,
+.  compile into asm, generate 'test.asm'
+.                   |
+.                   |
+.                   |
+.                   V
+3. Pass to as.exe (assembler) to create 'test.o' object file
+.                   |
+.                   |
+.                   |
+.                   |               Precompiled runtime libraries
+.                   |                    /
+.                   | ,-----------------´
+.                   |/
+.                   |
+.                   V
+4. Pass to ld.exe (linker) to create 'test.exe' executable
+%%
+
+An example of printing a number using a function from a library:
+
+%%
+1. test.bas:  print 123
+.    |
+.    |
+.    V
+2. test.asm:  push 1                             (Option telling it to print a newline character. <print 123;> wouldn't set this)
+.             push 123                           (The number to print)
+.             push 0                             (File to print into, as in <Print #n>, 0 means screen)
+.             call _fb_PrintInt@12
+.    |
+.    |
+.    V
+3. test.o     (assembled object referencing _fb_PrintInt@12)
+.    |
+.    |
+.    |
+.    |        libfb.a: io_print_int.o  (assembled object prodiving _fb_PrintInt@12)
+.    |                    /
+.    | ,-----------------´
+.    |/
+.    |
+.    V
+4. test.exe
+%%
+
+An example with a win32 system function used through an import library:
+
+%%
+1. test.bas:    #include once "windows.bi"
+.               MessageBox(NULL, "Text", "Title", MB_OK)
+.    |
+.    |
+.    V
+2. test.asm:  push 0                             (MB_OK)
+.             push offset _Literal2              ("Title")
+.             push offset _Literal1              ("Text")
+.             push 0                             (NULL)
+.             call _MessageBoxA@16
+.
+.             .section .data
+.             _Literal1: .ascii "Text\0"
+.             _Literal2: .ascii "Title\0"
+.    |
+.    |
+.    V
+3. test.o     (assembled object referencing _MessageBoxA@16)
+.    |
+.    |
+.    |        From the libuser32.dll.a import library:
+.    |        An assembled object prodiving a _MessageBoxA@16 stub,
+.    |        so later, when running test.exe, the system knows that user32.dll
+.    |        must be loaded to use the real MessageBox() function.
+.    |                    /
+.    | ,-----------------´
+.    |/
+.    |
+.    V
+4. test.exe
+%%
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

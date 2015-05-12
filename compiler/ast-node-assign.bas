@@ -63,8 +63,9 @@ private function hCheckUDTOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldclass as FB_DATACLASS, _
-		byval r as ASTNODE ptr, _
-		byval rdclass as FB_DATACLASS _
+		byref r as ASTNODE ptr, _
+		byval rdclass as FB_DATACLASS, _
+		byval checkOnly as integer = TRUE _ 
 	) as integer
 
 	dim as FBSYMBOL ptr proc = any
@@ -88,7 +89,15 @@ private function hCheckUDTOps _
 
    	'' different subtypes?
 	if( l->subtype <> r->subtype ) then
-		exit function
+		'' check if lhs is a base type of rhs
+		if( symbGetUDTBaseLevel( r->subtype, l->subtype ) = 0 ) then
+			exit function
+		End If
+		
+		'' cast to the base type
+		if( checkOnly = FALSE ) then
+			r = astNewCONV( astGetDataType( l ), l->subtype, r )
+		end if
 	end if
 
 	function = TRUE
@@ -187,15 +196,13 @@ private function hCheckZstringOps _
 end function
 
 '':::::
-private function hCheckEnumOps _
+private sub hCheckEnumOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldclass as FB_DATACLASS, _
 		byval r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS _
-	) as integer
-
-	function = FALSE
+	)
 
     '' not the same?
     if( astGetDataType( l ) <> astGetDataType( r ) ) then
@@ -205,42 +212,41 @@ private function hCheckEnumOps _
     	end if
     end if
 
-    function = TRUE
-
-end function
+end sub
 
 '':::::
-private function hCheckConstAndPointerOps _
+private sub hCheckConstAndPointerOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldtype as FB_DATATYPE, _
 		byval r as ASTNODE ptr, _
 		byval rdtype as FB_DATATYPE _
-	) as integer
-
-	function = FALSE
+	)
 
 	'' check constant
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
-		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-			exit function
-		else
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+		return
 	end if
 
 	if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
+			'' if both are UDT, a derived lhs can't be assigned from a base rhs
+			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
+				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then
+					errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+					return
+				end if
+			end if
 			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 		end if
+		
 	'' r-side expr is a ptr?
 	elseif( typeIsPtr( rdtype ) ) then
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 	end if
 
-    function = TRUE
-
-end function
+end sub
 
 '':::::
 function astCheckASSIGN _
@@ -259,8 +265,8 @@ function astCheckASSIGN _
 	rdfull = astGetFullType( r )
 	ldtype = typeGet( ldfull )
 	rdtype = typeGet( rdfull )
-	ldclass = symbGetDataClass( ldtype )
-	rdclass = symbGetDataClass( rdtype )
+	ldclass = typeGetClass( ldtype )
+	rdclass = typeGetClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -279,7 +285,7 @@ function astCheckASSIGN _
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
 			(rdtype = FB_DATATYPE_STRUCT) ) then
 
-		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
+		if( hCheckUDTOps( l, ldclass, r, rdclass, TRUE ) = FALSE ) then
 			exit function
 		end if
 
@@ -317,17 +323,11 @@ function astCheckASSIGN _
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
     		(rdtype = FB_DATATYPE_ENUM) ) then
-
-		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
-			exit function
-		end if
-
+		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
     '' check pointers
-	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
-		exit function
-	end if
+	hCheckConstAndPointerOps( l, ldfull, r, rdfull )
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
@@ -341,13 +341,13 @@ function astCheckASSIGN _
 				end if
 			end if
 
-			if( astCheckCONV( ldtype, l->subtype, r ) = FALSE ) then
+			if( astCheckCONV( ldfull, l->subtype, r ) = FALSE ) then
 				exit function
 			end if
 		end if
 	else
 		'' check for overflows
-		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
 				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
@@ -383,12 +383,12 @@ function astNewASSIGN _
 
 	ldfull = astGetFullType( l )
 	ldtype = typeGet( ldfull )
-	ldclass = symbGetDataClass( ldtype )
+	ldclass = typeGetClass( ldtype )
 	lsubtype = l->subtype
 
 	rdfull = astGetFullType( r )
 	rdtype = typeGet( rdfull )
-	rdclass = symbGetDataClass( rdtype )
+	rdclass = typeGetClass( rdtype )
 
 	'' 1st) check assign op overloading (unless the types are the same and
 	''      there's no clone function: just do a shallow copy)
@@ -468,7 +468,7 @@ function astNewASSIGN _
 
 	rdfull = astGetFullType( r )
 	rdtype = typeGet( rdfull )
-	rdclass = symbGetDataClass( rdtype )
+	rdclass = typeGetClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -493,7 +493,7 @@ function astNewASSIGN _
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
 			(rdtype = FB_DATATYPE_STRUCT) ) then
 
-		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
+		if( hCheckUDTOps( l, ldclass, r, rdclass, FALSE ) = FALSE ) then
 			exit function
 		end if
 
@@ -546,7 +546,7 @@ function astNewASSIGN _
             ldfull = symbGetUDTRetType( r->subtype )
             ldtype = typeGet( ldfull )
             lsubtype = NULL
-            ldclass = symbGetDataClass( ldtype )
+            ldclass = typeGetClass( ldtype )
             astSetType( l, ldfull, NULL )
 
             rdfull = ldfull
@@ -595,18 +595,12 @@ function astNewASSIGN _
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
     		(rdtype = FB_DATATYPE_ENUM) ) then
-
-		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
-			exit function
-		end if
-
+		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
     '' check pointers
     if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
-		if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
-			exit function
-		end if
+		hCheckConstAndPointerOps( l, ldfull, r, rdfull )
     end if
 
 	'' convert types if needed
@@ -641,7 +635,7 @@ function astNewASSIGN _
 		end if
 	else
 		'' check for overflows
-		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
 				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
@@ -653,10 +647,6 @@ function astNewASSIGN _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
-
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = l
 	n->r = r

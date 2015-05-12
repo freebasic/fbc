@@ -1,9 +1,6 @@
 /* print functions */
 
-#include <stdio.h>
 #include "fb.h"
-
-#include <stdlib.h>
 
 /*:::::*/
 void fb_PrintVoidEx ( FB_FILE *handle, int mask )

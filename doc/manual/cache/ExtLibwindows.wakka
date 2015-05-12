@@ -1,9 +1,8 @@
 {{fbdoc item="title" value="Windows API"}}----
-Standard API for all Windows Systems
+Standard API for all Windows Systems, used for example for creating Windows GUIs (forms and controls), socket programming, inter-process communication, and so much more.
 
-Website: http://msdn2.microsoft.com/en-us/library/aa383750.aspx
-Platforms supported: Win32, Linux (using WINE)
+Website: http://msdn.microsoft.com/en-us/library/ee663300.aspx
+Platforms supported: ""Win32"", Linux (using WINE)
 Headers to include: windows.bi
-
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

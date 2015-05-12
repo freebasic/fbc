@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="libsndfile"}}----
+libsndfile is a library allowing programs to access or modify audio files in various formats, for example .wav files, and also convert between them.
+
+Website: http://www.mega-nerd.com/libsndfile/
+Platforms supported: ""Win32"", Linux
+Headers to include: sndfile.bi
+Header version: 1.0.X
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -16,10 +16,10 @@
 ''									 | AssignmentOrPtrCall )?
 ''                    (STT_SEPARATOR Statement)* .
 ''
-function cStatement as integer
-
+sub cStatement()
 	'' ':'?
 	if( lexGetToken( ) = FB_TK_STMTSEP ) then
+		parser.stmt.cnt += 1
 		lexSkipToken( )
 	end if
 
@@ -36,16 +36,15 @@ function cStatement as integer
 			end if
 		end if
 
+		parser.stmt.cnt += 1
+
 		'' ':'?
 		if( lexGetToken( ) <> FB_TK_STMTSEP ) then
 			exit do
 		end if
 		lexSkipToken( )
 	loop
-
-	function = (errGetLast( ) = FB_ERRMSG_OK)
-
-end function
+end sub
 
 '':::
 ''SttSeparator    =   (STT_SEPARATOR | EOL)+ .
@@ -57,7 +56,8 @@ function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
 	do
 		select case lexGetToken( lexflags )
 		case FB_TK_STMTSEP, FB_TK_EOL
-        	lexSkipToken( lexflags )
+			parser.stmt.cnt += 1
+			lexSkipToken( lexflags )
 		case else
 			exit do
 		end select

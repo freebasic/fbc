@@ -1,7 +1,0 @@
-'' The makefile will append some configuration #defines and then #include this
-'' from the fbc command line into all files.
-
-#define NULL 0
-#define FALSE 0
-#define TRUE (-1)
-

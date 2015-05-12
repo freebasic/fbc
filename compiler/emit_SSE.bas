@@ -171,11 +171,11 @@ private sub _emitSTORF2L_SSE _
 	dim as integer sdsize
 
 	'' signed?
-	if( symbIsSigned( dvreg->dtype ) = 0) then exit sub
+	if( typeIsSigned( dvreg->dtype ) = 0) then exit sub
 
 	if( svreg->regFamily = IR_REG_SSE ) then
 
-		sdsize = symbGetDataSize( svreg->dtype )
+		sdsize = typeGetSize( svreg->dtype )
 		outp "sub esp" + COMMA + str( sdsize )
 
 		hPrepOperand( svreg, src )
@@ -214,11 +214,11 @@ private sub _emitSTORF2I_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case if the dst is uinteger
-	if( ( ddsize = FB_INTEGERSIZE ) and ( symbIsSigned( dvreg->dtype ) = 0 ) ) then
+	if( ( ddsize = FB_INTEGERSIZE ) and ( typeIsSigned( dvreg->dtype ) = 0 ) ) then
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
@@ -238,7 +238,7 @@ private sub _emitSTORF2I_SSE _
 	end if
 
 	'' special case if the dst is signed short
-	if( ddsize = 2 ) and ( symbIsSigned( dvreg->dtype ) ) then
+	if( ddsize = 2 ) and ( typeIsSigned( dvreg->dtype ) ) then
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
@@ -325,7 +325,7 @@ private sub _emitSTORL2F_SSE _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -351,7 +351,7 @@ private sub _emitSTORL2F_SSE _
 	'' not a reg or imm
 	else
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -386,11 +386,11 @@ private sub _emitSTORI2F_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	'' special case for unsigned integers
-	if( symbIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) Then
+	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) Then
 		hPUSH "0"
 		hPUSH src
 		outp "fild qword ptr [esp]"
@@ -418,7 +418,7 @@ private sub _emitSTORI2F_SSE _
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
 			outp "mov " + aux + COMMA + src
 		else
-			if( symbIsSigned( svreg->dtype ) ) then
+			if( typeIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
 				ostr = "movzx "
@@ -448,13 +448,12 @@ private sub hEmitStoreFreg2F_SSE _
 	) static
 
 	dim as string dst, src
-	dim as integer ddsize, sdsize
+	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst, , , FALSE )
 	hPrepOperand( svreg, src, , , FALSE )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( ( svreg->vector = 2 ) and ( ddsize > 4 ) ) then
 		outp "movupd " + dst + COMMA + src
@@ -483,16 +482,15 @@ private sub _emitSTORF2F_SSE _
 	) static
 
 	dim as string dst, src
-	dim as integer ddsize, sdsize, src_vec, dst_vec
+	dim as integer ddsize, sdsize, src_vec
 	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
-	dst_vec = ( dvreg->vector > 0 )
 	src_vec = ( svreg->vector > 0 )
 
 	if( svreg->typ = IR_VREGTYPE_REG ) then
@@ -597,7 +595,7 @@ private sub _emitLOADF2L_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( svreg->regFamily = IR_REG_SSE ) then
 		'' move float onto FPU stack
@@ -620,7 +618,7 @@ private sub _emitLOADF2L_SSE _
 
 	'' signed?
 	'' (handle ULONGINT here too - workaround for #2082801)
-	if( symbIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
+	if( typeIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
 
 		outp "sub esp, 8"
 
@@ -668,11 +666,11 @@ private sub _emitLOADF2I_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case unsigned integer
-	if( ( symbIsSigned( dvreg->dtype ) = FALSE ) and ( ddsize = 4 ) ) then
+	if( ( typeIsSigned( dvreg->dtype ) = FALSE ) and ( ddsize = 4 ) ) then
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
@@ -726,7 +724,7 @@ private sub _emitLOADF2I_SSE _
 		hPOP aux
 	else
 		suffix = chr( iif( sdsize > 4 , 100, 115 ) )
-		if( ( symbIsSigned( dvreg->dtype ) = TRUE ) and ( ddsize = 2 ) ) then
+		if( typeIsSigned( dvreg->dtype ) and ( ddsize = 2 ) ) then
 			if( svreg->typ <> IR_VREGTYPE_REG ) then
 				if( sdsize > 4 ) then
 					outp "movlpd xmm7" + COMMA + src
@@ -776,7 +774,7 @@ private sub _emitLOADL2F_SSE _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -804,7 +802,7 @@ private sub _emitLOADL2F_SSE _
 	else
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -817,7 +815,7 @@ private sub _emitLOADL2F_SSE _
 
 	end if
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	outp "sub esp" + COMMA + str( ddsize )
 	if( ddsize > 4 ) then
@@ -850,11 +848,11 @@ private sub _emitLOADI2F_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case for unsigned integers
-	if( symbIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) then
+	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) then
 		'' find a register
 		reg = hFindRegNotInVreg( svreg )
 		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
@@ -912,7 +910,7 @@ private sub _emitLOADI2F_SSE _
 		if( svreg->typ = IR_VREGTYPE_IMM ) or ( sdsize = FB_INTEGERSIZE ) then
 			outp "mov " + aux + COMMA + src
 		else
-			if( symbIsSigned( svreg->dtype ) ) then
+			if( typeIsSigned( svreg->dtype ) ) then
 				outp "movsx " + aux + COMMA + src
 			else
 				outp "movzx " + aux + COMMA + src
@@ -963,8 +961,8 @@ private sub _emitLOADF2F_SSE _
 		exit sub
 	end if
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( sdsize = ddsize ) then
 		if( svreg->vector ) then
@@ -1017,8 +1015,8 @@ private sub _emitMOVF_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( sdsize > 4 ) and ( ddsize <= 4 ) then
 		'' source is a double
@@ -1052,7 +1050,7 @@ private sub _emitSWZREPF_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	hPrepOperand( dvreg, dst )
 
@@ -1083,8 +1081,8 @@ private function hEmitConvertOperands_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	function = FALSE
 
@@ -1127,8 +1125,8 @@ private sub _emitADDF_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' if either operand is returned from a function, grab it from st(0)
 	returnSize = 0
@@ -1178,7 +1176,7 @@ private sub _emitADDF_SSE _
 		src = "xmm7"
 	end if
 
-	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' add them as double-precision
 			outp ostr + "d " + dst + COMMA + src
@@ -1208,8 +1206,8 @@ private sub _emitSUBF_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' if either operand is returned from a function, grab it from st(0)
 	returnSize = 0
@@ -1258,7 +1256,7 @@ private sub _emitSUBF_SSE _
 		src = "xmm7"
 	end if
 
-	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' subtract them as double-precision
 			outp ostr + "d " + dst + COMMA + src
@@ -1287,8 +1285,8 @@ private sub _emitMULF_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' if either operand is returned from a function, grab it from st(0)
 	returnSize = 0
@@ -1337,7 +1335,7 @@ private sub _emitMULF_SSE _
 		src = "xmm7"
 	end if
 	
-	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' multiply them as double-precision
 			outp ostr + "d " + dst + COMMA + src
@@ -1367,8 +1365,8 @@ private sub _emitDIVF_SSE _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' if either operand is returned from a function, grab it from st(0)
 	returnSize = 0
@@ -1417,7 +1415,7 @@ private sub _emitDIVF_SSE _
 		src = "xmm7"
 	end if
 	
-	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+	if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' divide them as double-precision
 			outp ostr + "d " + dst + COMMA + src
@@ -1448,8 +1446,8 @@ private sub _emitATN2_SSE _
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
-	sdsize = symbGetDataSize( svreg->dtype )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	adjustStack = FALSE
 	if( dvreg->typ = IR_VREGTYPE_REG ) then
@@ -1584,8 +1582,8 @@ private sub hCMPF_SSE _
 	dim as integer iseaxfree, isedxfree
 	dim as integer sdsize, ddsize, returnSize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -1797,7 +1795,7 @@ private sub _emitNEGF_SSE _
 	dim as FBSYMBOL ptr sym
 	dim as IRVREG ptr tempVreg
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
@@ -1842,7 +1840,7 @@ private sub _emitHADDF_SSE _
 
 	hPrepOperand( dvreg, dst )
 
-	if( symbGetDataSize( dvreg->dtype ) > 4 ) then
+	if( typeGetSize( dvreg->dtype ) > 4 ) then
 		outp "movhlps xmm7" + COMMA + dst
 		outp "addsd " + dst + COMMA + "xmm7"
 	else
@@ -1876,7 +1874,7 @@ private sub _emitABSF_SSE _
 	dim as FBSYMBOL ptr sym
 	dim as IRVREG ptr tempVreg
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
@@ -1923,7 +1921,7 @@ private sub _emitSGNF_SSE _
 	dim as IRVREG ptr tempVreg
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
@@ -2185,7 +2183,7 @@ private sub _emitSIN_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( ( ddsize = 4 ) and ( env.clopt.fpmode = FB_FPMODE_FAST ) ) then
 		_emitSINCOS_FAST_SSE dvreg, FALSE
@@ -2232,7 +2230,7 @@ private sub _emitASIN_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2279,7 +2277,7 @@ private sub _emitCOS_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( ( ddsize = 4 ) and ( env.clopt.fpmode = FB_FPMODE_FAST ) ) then
 		_emitSINCOS_FAST_SSE dvreg, TRUE
@@ -2327,7 +2325,7 @@ private sub _emitACOS_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2375,7 +2373,7 @@ private sub _emitTAN_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2417,7 +2415,7 @@ private sub _emitATAN_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2460,7 +2458,7 @@ private sub _emitSQRT_SSE _
 	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
@@ -2495,7 +2493,7 @@ private sub _emitRSQRT_SSE _
 	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
@@ -2530,7 +2528,7 @@ private sub _emitRCP_SSE _
 	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst )
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
 		outp "sub esp" + COMMA + str( ddsize )
@@ -2567,7 +2565,7 @@ private sub _emitLOG_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2610,7 +2608,7 @@ private sub _emitEXP_SSE _
 	dim as string dst
 	dim as integer ddsize
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
 	if( dvreg->regFamily = IR_REG_SSE ) then
@@ -2666,7 +2664,7 @@ private sub _emitFLOOR_SSE _
 	dim as FBSYMBOL ptr sym
 	dim as IRVREG ptr vreg
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
 		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
@@ -2729,7 +2727,7 @@ private sub _emitFIX_SSE _
 	dim as FBSYMBOL ptr neg1_sym, absval_sym
 	dim as IRVREG ptr neg1_vreg, absval_vreg
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
 		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
@@ -2811,7 +2809,7 @@ private sub _emitFRAC_SSE _
 	dim as FBSYMBOL ptr neg1_sym, absval_sym
 	dim as IRVREG ptr neg1_vreg, absval_vreg
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
 		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
@@ -2906,7 +2904,7 @@ private sub _emitPUSHF_SSE _
 
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
 		if( svreg->dtype = FB_DATATYPE_SINGLE ) then
@@ -2956,7 +2954,7 @@ private sub _emitPOPF_SSE _
 
 	hPrepOperand( dvreg, dst )
 
-	dsize = symbGetDataSize( dvreg->dtype )
+	dsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->typ <> IR_VREGTYPE_REG ) then
 		if( dvreg->dtype = FB_DATATYPE_SINGLE ) then

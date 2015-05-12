@@ -1,6 +1,5 @@
 /* misc string routines */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

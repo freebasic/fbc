@@ -1,26 +1,13 @@
-/* Automatically created by makedata, to be used by gfx_data.c */
+/* Automatically created by makedata, to be used by data.c */
 /* Compressed internal font/palette data for FB graphics */
 
 #define DATA_FONT_8 0x00000000
-const FONT fb_font_8x8 = {8, 8, &internal_data[DATA_FONT_8]};
-
 #define DATA_FONT_14 0x00000800
-const FONT fb_font_8x14 = {8, 14, &internal_data[DATA_FONT_14]};
-
 #define DATA_FONT_16 0x00001600
-const FONT fb_font_8x16 = {8, 16, &internal_data[DATA_FONT_16]};
-
 #define DATA_PAL_2 0x00002600
-const PALETTE fb_palette_2 = {2, &internal_data[DATA_PAL_2]};
-
 #define DATA_PAL_16 0x00002606
-const PALETTE fb_palette_16 = {16, &internal_data[DATA_PAL_16]};
-
 #define DATA_PAL_64 0x00002636
-const PALETTE fb_palette_64 = {64, &internal_data[DATA_PAL_64]};
-
 #define DATA_PAL_256 0x000026F6
-const PALETTE fb_palette_256 = {256, &internal_data[DATA_PAL_256]};
 
 static const unsigned char compressed_data[] = {
     0x00, 0x00, 0x10, 0x01, 0x01, 0x10, 0x7E, 0x10, 0x08, 0xA5, 0x10, 0x08, 0xBD, 0x90, 0x09, 0x81,

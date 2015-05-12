@@ -6,25 +6,35 @@ Used in place of procedure parameter to pass a variable number of arguments, or 
 	
 	[[KeyPgDim dim]] //array_symbol// ([//lbound// [[KeyPgTo to]]] **...**) [[[KeyPgAs as]] [[DataType datatype]]] => { //expression_list// }
 	
-	[[KeyPgPpdefine #define]] //identifier//( [ //parameters//, ] //variadic_parameter//**...** ) //macro_text//
+	[[KeyPgPpdefine #define]] //identifier//( [ //parameters//, ] //variadic_parameter//**...** ) //body//
 ##
-
 {{fbdoc item="desc"}}
 	The ellipsis (three dots, ##**...**##) is used in procedure declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##. In the procedure body, ##[[KeyPgVaFirst va_first]]##, ##[[KeyPgVaArg va_arg]]## and ##[[KeyPgVaNext va_next]]## are used to handle the variable arguments.
+	Only numeric types and pointers are supported as parameters.  ##[[KeyPgString String]]##s can be passed, in which case a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## to the string data is taken.
 	
 	Using an ellipsis in place of the upper bound in an array declaration causes the upper bound to be set according to the data that appears in the ##//expression_list//##.  When the ellipsis is used in this manner, an initializer must appear, and cannot be ##[[KeyPgAny Any]]##.
 	
-	Using an ellipsis in a [[KeyPgPpdefine #define]] or [[KeyPgPpmacro #macro]] declaration allows to create a variadic macro, see [[KeyPgPpdefine #define]].
+	Using an ellipsis behind the last parameter in a ##[[KeyPgPpdefine #define]]## or ##[[KeyPgPpmacro #macro]]## declaration allows to create a variadic macro. This means it is possible to pass any number of arguments to the //variadic_parameter//, which can be used in the //body// as if it was a normal macro parameter. The //variadic_parameter// will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/ellipsis.bas"}}%%(freebasic)
-DECLARE FUNCTION FOO CDECL (X AS INTEGER, ...) AS INTEGER
+Declare Function foo Cdecl (x As Integer, ...) As Integer
 %%
 
-{{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/ellipsis.bas"}}%%(freebasic)
 Dim As Integer myarray(0 To ...) = {0, 1, 2, 3}
 Print Lbound(myarray), Ubound(myarray)   '' 0, 3
+%%
+
+{{fbdoc item="filename" value="examples/manual/prepro/variadic.bas"}}%%(freebasic)
+'' Using a variadic macro to wrap a variadic function
+#include "crt.bi"
+#define eprintf(format, args...) fprintf(stderr, format, args)
+eprintf(!"Hello from printf: %i %s %i\n", 5, "test", 123)
+
+'' LISP-like accessors allowing to modify comma-separated lists
+#define car(a, b...) a
+#define cdr(a, b...) b
 %%
 
 {{fbdoc item="diff"}}
@@ -37,5 +47,6 @@ Print Lbound(myarray), Ubound(myarray)   '' 0, 3
 	- ##[[KeyPgVaNext va_next]]##
 	- ##[[KeyPgDim dim]]##
 	- ##[[KeyPgStatic static]]##
+	- ##[[KeyPgPpdefine #define]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
+
+<glade-interface>
+
+<widget class="GtkWindow" id="window1">
+  <property name="visible">True</property>
+  <property name="title" translatable="yes">Glade FB test</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
+  <signal name="destroy" handler="on_window1_destroy" />
+
+  <child>
+	<widget class="GtkLayout" id="layout1">
+	  <property name="visible">True</property>
+	  <property name="width">400</property>
+	  <property name="height">400</property>
+
+	  <child>
+	    <widget class="GtkButton" id="button1">
+	      <property name="width_request">144</property>
+	      <property name="height_request">32</property>
+	      <property name="visible">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label" translatable="yes">Click Me!</property>
+	      <property name="use_underline">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <signal name="clicked" handler="on_button1_clicked" />
+	    </widget>
+	    <packing>
+	      <property name="x">30</property>
+	      <property name="y">70</property>
+	    </packing>
+	  </child>
+	</widget>
+      </child>
+</widget>
+
+</glade-interface>

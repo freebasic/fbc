@@ -4,6 +4,7 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
+#include <sys/shm.h>
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 

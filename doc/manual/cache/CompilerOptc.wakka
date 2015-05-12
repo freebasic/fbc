@@ -5,15 +5,13 @@ Compile and assemble source file only, do not link
 	**-c**
 ##
 {{fbdoc item="desc"}}
-	The ##**-c**## option specifies that any source files listed are to be compiled and assembled into object files, and not linked into an executable (the default behavior).
-
-	To compile the source files //file1.bas// and //file2.bas// into the object files //file1.o// and //apple.o//, type,
-
-		##fbc -c file1.bas file2.bas **-o** apple.o##
+	The ##**-c**## option specifies that any source files listed are to be compiled and assembled into object files, and not linked into an executable (the default behavior). When using the "-c" switch, "-m" must be specified when compiling a main source file.
 
 {{fbdoc item="see"}}
 	- [[CompilerOptcupp Compiler Option: -C]]
 	- [[CompilerOptr Compiler Option: -r]]
+	- [[CompilerOptm Compiler Option: -m]]
+	- [[CompilerOpto Compiler Option: -o]]
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

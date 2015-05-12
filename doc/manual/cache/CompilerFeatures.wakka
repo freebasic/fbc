@@ -3,7 +3,7 @@
 {{fbdoc item="section" value="BASIC compatibility"}}
 	- FreeBASIC is not a "new" BASIC language. You don't need to learn much new if you are familiar with any Microsoft-BASIC variant. You can use either ##"-lang qb"## for compatibility, or (default) ##"-lang fb"##  for some of the new features, but it also brings some restrictions and some similarity with the "C" programming language. See also [[CompilerDialects]].
 	- FreeBASIC is case-insensitive; explicit "main" procedure is not required; most of the graphic and console statements and procedures found in Microsoft QuickBASIC are implemented, et cetera.
-	- Only with ##"-lang qb"##: scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; ##[[KeyPgOnerror On Error]]## and ##[[KeyPgGosub Gosub]]## supported.
+	- Only with ##"-lang qb"##: scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; ##[[KeyPgGosub Gosub]]## supported.
 
 {{fbdoc item="section" value="Clean syntax"}}
 	- Only a small number of keywords have been added. All procedures are implemented as libraries, so for the most part, there are no new intrinsic routines, and therefore there is a low chance of having name duplication with old code.

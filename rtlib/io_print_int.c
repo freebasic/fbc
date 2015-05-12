@@ -1,8 +1,6 @@
 /* print [#] function (int) */
 
-#include <stdio.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL void fb_PrintInt ( int fnum, int val, int mask )

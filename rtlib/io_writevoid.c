@@ -1,6 +1,5 @@
 /* write [#] functions */
 
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

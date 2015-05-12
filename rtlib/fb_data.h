@@ -1,6 +1,3 @@
-#ifndef __FB_DATA_H__
-#define __FB_DATA_H__
-
 struct _FB_DATADESC {
 	short 					len;
 	union {
@@ -33,5 +30,3 @@ FBCALL void         fb_DataReadSingle   ( float *dst );
 FBCALL void         fb_DataReadDouble   ( double *dst );
 
        short        fb_DataGetLen       ( void );
-
-#endif /* __FB_DATA_H__ */

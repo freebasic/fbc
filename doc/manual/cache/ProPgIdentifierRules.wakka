@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Identifier Rules"}}----
-Naming conventions for FreeBASIC symbols.
+Naming conventions for ""FreeBASIC"" symbols.
 
 {{fbdoc item="desc"}}
 	An identifier is a symbolic name which uniquely identifies a [[ProPgVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##, within its [[ProPgVariableScope scope]] or ##[[KeyPgNamespace Namespace]]##.
@@ -13,7 +13,7 @@ Naming conventions for FreeBASIC symbols.
 	- ##%## for ##[[KeyPgInteger Integer]]##
 	- ##&## for ##[[KeyPgLong Long]]##
 	- ##!## for ##[[KeyPgSingle Single]]##
-	- ##### for ##[[KeyPgDouble Double]]##
+	- ##""#""## for ##[[KeyPgDouble Double]]##
 	- ##$## for ##[[KeyPgString String]]##
 
 	The use of these symbols is generally discouraged in and is not allowed in the //[[CompilerOptlang -lang fb]]// dialect (the default).

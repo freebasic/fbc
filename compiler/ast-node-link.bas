@@ -32,10 +32,6 @@ function astNewLINK _
 		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( r ), r->subtype )
 	end if
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
 	''
 	n->link.ret_left = ret_left
 	n->l = l

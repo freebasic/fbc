@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="Getting help with FreeBASIC"}}----
-There are several options available for getting help with FreeBASIC.
+There are several options available for getting help with ""FreeBASIC"".
 
 {{fbdoc item="section" value="The Manual"}}
-	This huge user's manual is full of information that can help you learn to write programs using FreeBASIC.  
+	This huge user's manual is full of information that can help you learn to write programs using ""FreeBASIC"".  
 
-	The manual is available online at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
+	The manual is available online at [[http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
 
-	If you are unfamiliar with FreeBASIC or the documentation, you may find these pages a good place to start:
+	If you are unfamiliar with ""FreeBASIC"" or the documentation, you may find these pages a good place to start:
 		- [[DocToc Table of Contents]]
 		- [[CatPgProgrammer Programmer's Guide]]
 		- [[ExtLibTOC Library Headers Index]]
@@ -17,21 +17,21 @@ There are several options available for getting help with FreeBASIC.
 
 	A downloadable manual (in CHM format) is available from the sourceforge project page at [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] which features a full table of contents, searching capabilities, an index, plus all the same content as the online version.
 
-	Searching the manual on or offline is an excellent place to start finding help about how to write and use FreeBASIC programs.
+	Searching the manual on or offline is an excellent place to start finding help about how to write and use ""FreeBASIC"" programs.
 
 {{fbdoc item="section" value="Examples and Source Code"}}
-	In the ./examples directory located where FreeBASIC was installed on your system are hundreds of examples to be compiled and run.  Most of the external library examples will need additional libraries to be downloaded to allow them to work.  See [[ExtLibTOC Library Headers Index]] for a full list.
+	In the ./examples directory located where ""FreeBASIC"" was installed on your system are hundreds of examples to be compiled and run.  Most of the external library examples will need additional libraries to be downloaded to allow them to work.  See [[ExtLibTOC Library Headers Index]] for a full list.
 
-	FreeBASIC's official code archive is located at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]].  This archive hosts user contributed libraries and tools and has links to source code located on other websites.
+	""FreeBASIC""'s official code archive is located at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]].  This archive hosts user contributed libraries and tools and has links to source code located on other websites.
 
 {{fbdoc item="section" value="Tutorials"}}
-	Community created tutorials about FreeBASIC can be found at [[http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials]].  Some selected tutorials are included in this manual.
+	Community created tutorials about ""FreeBASIC"" can be found at [[CommunityTutorials]].  Some selected tutorials are included in this manual.
 
 {{fbdoc item="section" value="FreeBASIC Forum"}}
 	An active community forum can be found at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]] with several sub-forums.  The forum has a search feature that can help you find answers to questions or problems that may have already been asked and solved.  First do a search for your problem, if you can't find the answer then post a message in one of the sub-forums.
 
 {{fbdoc item="section" value="Chat"}}
-	IRC or Internet Relay Chat is a great way to chat with the developers and other users, some of whom are very knowledgeable.  There are several ways to connect to IRC, if you know what you're doing simply join #freebasic on FreeNode.
+	IRC or Internet Relay Chat is a great way to chat with the developers and other users, some of whom are very knowledgeable.  There are several ways to connect to IRC, if you know what you're doing simply join #freebasic on ""FreeNode"".
 
 	If you haven't the foggiest what IRC is and you have Java installed, you can simply go [[http://www.freebasic.net/index.php/chat here]].
 

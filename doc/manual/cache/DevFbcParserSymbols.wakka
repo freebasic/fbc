@@ -1,0 +1,6 @@
+{{fbdoc item="title" value="Symbols"}}----
+
+	In order to be able to make the transition from tokens to AST, the parser needs to be able to recognize functions, variables, types, etc. The ''##symb##'' module keeps track of all these symbols and their namespaces and scopes. The parser can do lookups in the current scope, or in just specific namespaces. Many AST nodes have a corresponding symbol (e.g. variables and functions). 
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

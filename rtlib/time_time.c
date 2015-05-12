@@ -1,9 +1,7 @@
 /* time$ function */
 
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include "fb.h"
+#include <time.h>
 
 /*:::::*/
 FBCALL FBSTRING *fb_Time ( void )

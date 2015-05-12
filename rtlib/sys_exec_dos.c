@@ -1,9 +1,7 @@
 /* exec function for DOS */
 
 #include "fb.h"
-
 #include <process.h>
-#include <stdlib.h>
 
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )

@@ -34,7 +34,7 @@ Specifies text file to be opened for output mode
 		- ##**Write**## - the file can be opened simultaneously by other processes, but not for writing
 		- ##**Read Write**## - the file cannot be opened simultaneously by other processes (the default)
 
-	##//filenum//## Is a valid FreeBASIC file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile Freefile]]## function.
+	##//filenum//## Is a valid ""FreeBASIC"" file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile Freefile]]## function.
 
 
 {{fbdoc item="ex"}}

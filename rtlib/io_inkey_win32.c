@@ -1,6 +1,7 @@
 /* inkey$ function for Windows console mode apps */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )

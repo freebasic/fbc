@@ -34,9 +34,6 @@ function astNewFIELD _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->sym = sym
 	n->l = p

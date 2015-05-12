@@ -1,7 +1,5 @@
 /* input function core */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
@@ -118,6 +116,9 @@ int fb_FileInputNextToken
 		int *isfp
 	)
 {
+	/* max_chars does not include the null terminator, the buffer is
+	   assumed to be big enough to hold at least the null terminator */
+
     int c, len, isquote, hasamp, skipdelim;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 

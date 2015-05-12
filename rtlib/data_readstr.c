@@ -1,9 +1,6 @@
 /* read stmt for string's */
 
-#include <stdlib.h>
 #include "fb.h"
-
-FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem );
 
 /*:::::*/
 FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )

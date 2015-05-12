@@ -40,9 +40,9 @@ function emitInit _
 	hCallCtor( backend )
 
 	''
-	flistNew( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
+	flistInit( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
 
-	flistNew( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
+	flistInit( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
 	''
 	emit.inited = TRUE
@@ -69,7 +69,7 @@ end sub
 '':::::
 sub emitWriteStr _
 	( _
-		byval s as zstring ptr, _
+		byval s as const zstring ptr, _
 		byval addtab as integer _
 	)
 
@@ -247,8 +247,8 @@ end function
 '':::::
 sub emitWriteInfoSection _
 	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
+		byval libs as TLIST ptr, _
+		byval libpaths as TLIST ptr _
 	)
 
 	static as string byte_fld
@@ -267,7 +267,7 @@ sub emitWriteInfoSection _
 
 #macro hEmitInfoHeader( )
 	scope
-		dim as zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
+		dim as const zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
 		if( sec <> NULL ) then
 			emitWriteStr( *sec )
 		end if
@@ -285,40 +285,40 @@ sub emitWriteInfoSection _
 	end if
 
 	'' libraries
-	dim as FBS_LIB ptr nlib = listGetHead( liblist )
-	if( nlib <> NULL ) then
+	dim as TSTRSETITEM ptr i = listGetHead(libs)
+	if (i) then
 		hEmitInfoHeader( )
 
-        hWriteByte( FB_INFOSEC_LIB )
+		hWriteByte( FB_INFOSEC_LIB )
 		do
-            '' never add a default one
-            if( nlib->isdefault = FALSE ) then
-            	hWriteByte( len( *nlib->name ) )
-            	hWriteStr( *nlib->name )
-            end if
+			'' Not default?
+			if (i->userdata = FALSE) then
+				hWriteByte(len(i->s))
+				hWriteStr(i->s)
+			end if
 
-			nlib = listGetNext( nlib )
-		loop while( nlib <> NULL )
+			i = listGetNext(i)
+		loop while (i)
 
 		hWriteByte( 0 )
 	end if
 
 	'' paths
-	dim as FBS_LIB ptr npath = listGetHead( libpathlist )
-	if( npath <> NULL ) then
+	i = listGetHead(libpaths)
+	if (i) then
 		hEmitInfoHeader( )
 
-        hWriteByte( FB_INFOSEC_PTH )
+		hWriteByte( FB_INFOSEC_PTH )
 		do
-            '' never add a default one
-            if( npath->isdefault = FALSE ) then
-            	dim as zstring ptr txt = hEscape( *npath->name )
-            	hWriteByte( len( *npath->name ) )
-            	hWriteStr( *txt )
-            end if
+			'' Not default?
+			if (i->userdata = FALSE) then
+				dim as const zstring ptr txt = hEscape(i->s)
+				hWriteByte(len(i->s)) '' TODO: shouldn't this be len(*txt)?
+				hWriteStr(*txt)
+			end if
 
-			npath = listGetNext( npath )
-		loop while( npath <> NULL )
+			i = listGetNext(i)
+		loop while (i)
 
 		hWriteByte( 0 )
 	end if
@@ -381,7 +381,7 @@ private function hNewVR _
 	n->vector = v->vector
 
 	if( v->typ = IR_VREGTYPE_REG ) then
-		dclass = symbGetDataClass( v->dtype )
+		dclass = typeGetClass( v->dtype )
 		n->reg = emit.regTB(dclass)->getRealReg( emit.regTB(dclass), v->reg )
 		assert( n->reg <> INVALID )
 		EMIT_REGSETUSED( dclass, n->reg )
@@ -903,7 +903,7 @@ function emitMUL _
 		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
-		if( symbIsSigned( dvreg->dtype ) ) then
+		if( typeIsSigned( dvreg->dtype ) ) then
 			function = hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
 		else
 			function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )

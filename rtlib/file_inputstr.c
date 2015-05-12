@@ -1,9 +1,6 @@
 /* input$ function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )

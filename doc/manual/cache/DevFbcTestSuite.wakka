@@ -1,0 +1,76 @@
+{{fbdoc item="title" value="Compiling the test suite"}}----
+
+The ""FreeBASIC"" project has a suite of tests which ensure that bugs stay dead and that new bugs have a harder time of gaining a foothold. The test suite is written with the ""FreeBASIC"" port of the CUnit library (Thanks, stylin!).
+
+{{fbdoc item="section" value="Invocation"}}
+
+The tests are located in the tests subdirectory within the main ""FreeBASIC"" directory. Invoking with make will present the following help text:
+
+##
+$ make
+usage: make target [options]
+
+Targets: (using cunit):
+   cunit-tests
+   log-tests
+   failed-tests
+   check
+   mostlyclean
+   clean
+
+Targets: (bypassing cunit)
+   log-tests ALLOW_CUNIT=1
+   failed-tests ALLOW_CUNIT=1
+   mostlyclean ALLOW_CUNIT=1
+   clean ALLOW_CUNIT=1
+
+Options:
+   FBC=/path/fbc
+   FB_LANG=fb | fblite | qb | deprecated
+   DEBUG=1
+   EXTRAERR=1
+   ARCH=arch (default is 486)
+   OS=DOS
+   FPU=fpu | sse
+
+Targets: Configuration and Checks
+   check
+
+Example: make all available tests
+   make cunit-tests
+   make log-tests
+
+Example: make obj -lang qb tests
+   make log-tests FB_LANG=qb
+##
+
+When you make an invocation, such as:
+
+##make cunit-tests && make log-tests##
+
+Some initial generation of index files will take place, followed by the compilation of hundreds of tests. Be patient, it can take a while to run all of the tests...
+
+If you get an error message like: ##""FreeBASIC""/bin/linux/ld: cannot find -lcunit##
+
+This means you need to install the cunit library. On Ubuntu this looks like:
+
+##$ sudo apt-get install libcunit1-dev##
+
+{{fbdoc item="section" value="Known Failures"}}
+
+As of the writing of this document, the following tests are expected to fail on some platforms:
+
+##
+Suite fbc_tests.string_.format_, Test number format test had failures:
+	1. string/format.bas:168  - CU_ASSERT_EQUAL(sWanted,sResult)
+	2. string/format.bas:168  - CU_ASSERT_EQUAL(sWanted,sResult)
+	3. string/format.bas:168  - CU_ASSERT_EQUAL(sWanted,sResult)
+	4. string/format.bas:168  - CU_ASSERT_EQUAL(sWanted,sResult)
+##
+
+So if you get these failures, everything is normal. No other tests should ever fail, including log tests.
+
+Thank you for running the tests and contributing to make ""FreeBASIC"" a healthy compiler! Please report any other failures to http://www.freebasic.net/forum so we can investigate.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

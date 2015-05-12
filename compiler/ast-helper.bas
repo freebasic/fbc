@@ -186,16 +186,6 @@ function astBuildVarDeref _
 end function
 
 '':::::
-function astBuildVarDeref _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	function = astNewDEREF( expr )
-
-end function
-
-'':::::
 function astBuildVarAddrof _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -256,6 +246,13 @@ function astBuildVarDtorCall _
 		'' dyn string?
 		case FB_DATATYPE_STRING
 			function = rtlStrDelete( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
+
+		'' wchar ptr marked as "dynamic wstring"?
+		case typeAddrOf( FB_DATATYPE_WCHAR )
+			assert(symbGetIsWstring(s)) '' This check should be done in symbGetVarHasDtor() already
+			'' It points to a dynamically allocated wchar buffer
+			'' that must be deallocated.
+			function = rtlStrDelete( astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) )
 
 		'' struct or class?
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -665,17 +662,9 @@ end function
 '' procs
 ''
 
-'':::::
-function astBuildProcAddrof _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	function = astNewADDROF( astNewVAR( sym, _
-						   			  	0, _
-						   			  	FB_DATATYPE_FUNCTION, _
-						   			  	sym ) )
-
+function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
+	symbSetIsCalled(proc)
+	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
 '':::::
@@ -890,20 +879,17 @@ function astBuildMultiDeref _
 	do while( cnt > 0 )
 		if( typeIsPtr( dtype ) = FALSE ) then
 			if( symb.globOpOvlTb(AST_OP_DEREF).head = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					return NULL
-				else
-					exit do
-				end if
+				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				exit do
 			end if
 
 			'' check op overloading
-    		dim as FBSYMBOL ptr proc = any
-    		dim as FB_ERRMSG err_num = any
+			dim as FBSYMBOL ptr proc = any
+			dim as FB_ERRMSG err_num = any
 
 			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
 			if( proc <> NULL ) then
-    			'' build a proc call
+				'' build a proc call
 				expr = astBuildCall( proc, expr, NULL )
 				if( expr = NULL ) then
 					return NULL
@@ -911,28 +897,28 @@ function astBuildMultiDeref _
 
 				dtype = astGetFullType( expr )
 				subtype = astGetSubType( expr )
-
 			else
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					return NULL
-				else
-					exit do
-				end if
+				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				exit do
 			end if
-
-
 		else
 			dtype = typeDeref( dtype )
 
 			'' incomplete type?
 			select case typeGet( dtype )
 			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-					return NULL
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_BYTE
-				end if
+				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_BYTE
+
+			'' Function pointer?
+			case FB_DATATYPE_FUNCTION
+				'' Disallow dereferencing them with '*', because that would only access
+				'' the function's code, that's not a good idea.
+				'' (This is only a parser check though, using cast() it's still possible)
+				errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+				dtype = FB_DATATYPE_BYTE
+
 			end select
 
 			'' null pointer checking
@@ -1007,13 +993,11 @@ function astBuildArrayDescIniTree _
 					   			  				  FB_DATATYPE_INTEGER ) ), _
 					   	 elm )
 
-	astTypeIniSeparator( tree, NULL )
 	elm = symbGetNext( elm )
 
 	'' .ptr	= @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .size = len( array ) * elements( array )
@@ -1022,7 +1006,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .element_len	= len( array )
@@ -1031,7 +1014,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .dimensions = dims( array )
@@ -1040,7 +1022,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' setup dimTB
@@ -1064,7 +1045,6 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
@@ -1073,7 +1053,6 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
@@ -1085,10 +1064,6 @@ function astBuildArrayDescIniTree _
 			astTypeIniScopeEnd( tree, NULL )
 
 			d = d->next
-
-			if( d ) then
-				astTypeIniSeparator( tree, NULL )
-			end if
     	loop
 
     '' dynamic..

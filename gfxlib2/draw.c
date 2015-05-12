@@ -1,24 +1,18 @@
 /* DRAW command */
 
 #include "fb_gfx.h"
+#include <math.h>
 #include <ctype.h>
 
-#ifdef NAN
-#undef NAN
-#endif
-#define NAN		0x80000000
-
+#define FB_NAN		0x80000000
 #define SQRT_2		1.4142135623730950488016
-
 
 static float base_scale = 1.0, base_angle = 0.0;
 
-
-/*:::::*/
 static intptr_t parse_number(char **str)
 {
 	char *c = *str;
-	intptr_t n = NAN;
+	intptr_t n = FB_NAN;
 	int negative = FALSE;
 
 	while ((*c == ' ') || (*c == '\t') || (*c == '+') || (*c == '-'))
@@ -28,20 +22,18 @@ static intptr_t parse_number(char **str)
 		c++;
 	}
 	while ((*c >= '0') && (*c <= '9')) {
-		if (n == NAN)
+		if (n == FB_NAN)
 			n = 0;
 		n = (n * 10) + (*c - '0');
 		c++;
 	}
 	*str = c;
-	if ((negative) && (n != NAN))
+	if ((negative) && (n != FB_NAN))
 		n = -n;
 
 	return n;
 }
 
-
-/*:::::*/
 FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
 	FB_GFXCTX *context = fb_hGetContext();
@@ -55,7 +47,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 			fb_hStrDelTemp(command);
 		return;
 	}
-	
+
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -69,7 +61,6 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 	for (c = command->data; *c;) {
 		switch (toupper(*c)) {
-
 			case 'B':
 				c++;
 				draw = FALSE;
@@ -82,21 +73,21 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 			case 'C':
 				c++;
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				context->fg_color = fb_hFixColor(context->target_bpp, value1);
 				break;
 
 			case 'S':
 				c++;
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				base_scale = (float)value1 / 4.0;
 				break;
 
 			case 'A':
 				c++;
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				base_angle = (float)(value1 & 0x3) * PI * 0.5;
 				break;
@@ -106,7 +97,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if (toupper(*c) != 'A')
 					goto error;
 				c++;
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				base_angle = (float)value1 * PI / 180.0;
 				break;
@@ -114,8 +105,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 			case 'X':
 				c++;
 				/* Here we could be more severe with checking, but it's unlikely our substring
-				 * resides at location NAN (0x80000000) */
-				if ((value1 = parse_number(&c)) == NAN)
+				 * resides at location FB_NAN (0x80000000) */
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				context->last_x = x - 0.5;
 				context->last_y = y - 0.5;
@@ -128,12 +119,12 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 
 			case 'P':
 				c++;
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				value2 = value1;
 				if (*c == ',') {
 					c++;
-					if ((value2 = parse_number(&c)) == NAN)
+					if ((value2 = parse_number(&c)) == FB_NAN)
 						goto error;
 				}
 				DRIVER_UNLOCK();
@@ -150,11 +141,11 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				{
 					rel = TRUE;
 				}
-				if ((value1 = parse_number(&c)) == NAN)
+				if ((value1 = parse_number(&c)) == FB_NAN)
 					goto error;
 				if (*c++ != ',')
 					goto error;
-				if ((value2 = parse_number(&c)) == NAN)
+				if ((value2 = parse_number(&c)) == FB_NAN)
 					goto error;
 				x2 = (float)value1;
 				y2 = (float)value2;
@@ -193,12 +184,12 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				if ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'))
 					scale = SQRT_2;
 				c++;
-				if ((value1 = parse_number(&c)) != NAN)
+				if ((value1 = parse_number(&c)) != FB_NAN)
 					length = value1;
 				else
 					length = 1;
 				break;
-			
+
 			default:
 				c++;
 				break;

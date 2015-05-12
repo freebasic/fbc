@@ -1,15 +1,8 @@
 /* detects EOF for file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileEof
-	(
-		struct _FB_FILE *handle
-	)
+int fb_DevFileEof( FB_FILE *handle )
 {
     int res;
     FILE *fp;
@@ -46,7 +39,7 @@ int fb_DevFileEof
 		else if( handle->mode == FB_FILE_MODE_INPUT )
 		{
         	int has_size = handle->hooks->pfnTell!=NULL && handle->hooks->pfnSeek!=NULL;
-        	/* note: fseek() is unreliable in text-mode, sise must be calculated
+        	/* note: fseek() is unreliable in text-mode, size must be calculated
                  	 re-opening the file in binary mode */
         	if( has_size )
         		if( ftell( fp ) >= handle->size )

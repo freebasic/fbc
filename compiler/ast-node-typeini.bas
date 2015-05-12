@@ -29,10 +29,6 @@ function astTypeIniBegin _
 					subtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->typeini.ofs = ofs
 
 	dim as integer add_scope = FALSE
@@ -290,26 +286,6 @@ function astTypeIniScopeEnd _
 
 	n = hAddNode( tree, _
 				  AST_NODECLASS_TYPEINI_SCOPEEND, _
-				  FB_DATATYPE_INVALID, _
-				  NULL )
-
-	n->sym = sym
-
-	function = n
-
-end function
-
-'':::::
-function astTypeIniSeparator _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr n = any
-
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_SEPARATOR, _
 				  FB_DATATYPE_INVALID, _
 				  NULL )
 
@@ -689,13 +665,10 @@ private function hFlushTreeStatic _
     		irEmitVARINIPAD( n->typeini.bytes )
 
     	case AST_NODECLASS_TYPEINI_SCOPEINI
-    		irEmitVARINISCOPEINI( basesym, n->sym )
+			irEmitVARINISCOPEBEGIN( )
 
     	case AST_NODECLASS_TYPEINI_SCOPEEND
-    		irEmitVARINISCOPEEND( basesym, n->sym )
-
-    	case AST_NODECLASS_TYPEINI_SEPARATOR
-    		irEmitVARINISEPARATOR( basesym, n->sym )
+			irEmitVARINISCOPEEND( )
 
     	case else
 			hFlushExprStatic( n, basesym )
@@ -878,8 +851,8 @@ private function hExprIsConst _
 		if( astIsOFFSET( expr ) ) then
 
 			'' different types?
-			if( (symbGetDataClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
-				(symbGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
+			if( (typeGetClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
+				(typeGetSize( sdtype ) <> FB_POINTERSIZE) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if

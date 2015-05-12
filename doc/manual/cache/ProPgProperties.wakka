@@ -1,0 +1,352 @@
+{{fbdoc item="title" value="Properties"}}----
+
+Properties are a special mix of member variable and member procedure. They provide a way to set or retrieve values of an object, through normal looking assignments or member accesses, but also let the object perform actions if it needs to update itself.
+
+**{{anchor name="BASIC|Basic properties"}}**
+	Declaring and using setter and getter properties.
+**{{anchor name="INDEXED|Indexed properties"}}**
+	Properties with an additional parameter.
+
+{{anchor name="BASIC"}}{{fbdoc item="section" value="Basic properties"}}
+
+	A property is declared similar to a [[ProPgMemberProcedures member procedure]], except that the [[KeyPgProperty Property]] keyword is used instead of ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##. For example, let's consider a window class for a windowing system or GUI library.
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties1.bas"}}%%(freebasic)
+type Window
+private:
+	as string title_
+end type
+
+dim as Window w
+%%
+	
+	In order to set the window's title, a //setter// property can be added:
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties2.bas"}}%%(freebasic)
+type Window
+	declare property title(byref s as string)
+private:
+	as string title_
+end type
+
+property Window.title(byref s as string)
+	this.title_ = s
+end property
+
+dim as Window w
+w.title = "My Window"
+%%
+	
+	It is very similar to a member [[KeyPgSub Sub]], as it takes a parameter and updates the object to the new state based on the parameter. However, the syntax for sending this parameter is a basic assignment, not a function call. By assigning the new value to the ##title## property, the property procedure will automatically be called with the given new value, and can update the window to reflect the change. It is up to the object how to represent the property state internally.
+	
+	By design, properties can only be assigned one value at a time, and as a result the property procedure can not have more than one parameter.
+	
+	After setting the window title, it should also be possible to retrieve it. Here is how to add a //getter// property:
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties3.bas"}}%%(freebasic)
+type Window
+	'' setter
+	declare property title(byref s as string)
+	'' getter
+	declare property title() as string
+private:
+	as string title_
+end type
+
+'' setter
+property Window.title(byref s as string)
+	this.title_ = s
+end property
+
+'' getter
+property Window.title() as string
+	return this.title_
+end property
+
+dim as Window w
+w.title = "My Window"
+print w.title
+%%
+	
+	The getter is very similar to a [[KeyPgFunction Function]]. It is supposed to return the current value of the property, and it allows the current value to be calculated from other internal values, if needed. Note that both //setter// and //getter// use the same identifier, indicating they handle the same property.
+	
+	Just like [[ProPgMemberProcedures method overloading]], it is possible to specify multiple setters, provided they have different parameter types:
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties4.bas"}}%%(freebasic)
+type Window
+	declare property title(byref s as string)
+	declare property title(byval i as integer)
+	declare property title() as string
+private:
+	as string title_
+end type
+
+property Window.title(byref s as string)
+	this.title_ = s
+end property
+
+property Window.title(byval i as integer)
+	this.title_ = "Number: " & i
+end property
+
+property Window.title() as string
+	return this.title_
+end property
+
+dim as Window w
+w.title = "My Window"
+print w.title
+w.title = 5
+print w.title
+%%
+	
+	In comparison to this example of properties, here is similar code that does not use properties:
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties5-counter-example.bas"}}%%(freebasic)
+type Window
+	declare sub set_title(byref s as string)
+	declare sub set_title(byval i as integer)
+	declare function get_title() as string
+private:
+	as string title
+end type
+
+sub Window.set_title(byref s as string)
+	this.title = s
+end sub
+
+sub Window.set_title(byval i as integer)
+	this.title = "Number: " & i
+end sub
+
+function Window.get_title() as string
+	return this.title
+end function
+
+dim as Window w
+w.set_title("My Window")
+print w.get_title()
+w.set_title(5)
+print w.get_title()
+%%
+	
+	The code is basically the same, only the syntax is different. Properties are specifically designed to combine the setter/getter concept and the language's normal way of literally [[CatPgOpAssignment assigning]] and [[CatPgOpTypeclass accessing]] values to a class' member variables. It is up to the programmers to decide which way they prefer.
+	
+	Here is an example demonstrating a text user interface window class allowing to set position and title using properties:
+	
+	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties-tui.bas"}}%%(freebasic)
+namespace tui
+	type point
+		dim as integer x, y
+	end type
+
+	type char
+		dim as ubyte value
+		dim as ubyte color
+	end type
+
+	type window
+		'' public
+		declare constructor _
+			( _
+				x as integer = 1, y as integer = 1, _
+				w as integer = 20, h as integer = 5, _
+				title as zstring ptr = 0 _
+			)
+		
+		declare destructor
+
+		declare sub show
+
+		'' title property
+		declare property title as string
+		declare property title( new_title as string )
+
+		'' position properties
+		declare property x as integer
+		declare property x( new_x as integer )
+
+		declare property y as integer
+		declare property y( new_y as integer )
+
+	private:
+		declare sub redraw
+		declare sub remove
+		declare sub drawtitle
+
+		dim as string p_title
+		dim as point pos
+		dim as point siz
+	end type
+
+	constructor window _
+		( _
+			x_ as integer, y_ as integer, _
+			w_ as integer, h_ as integer, _
+			title_ as zstring ptr _
+		)
+
+		pos.x = x_
+		pos.y = y_
+		siz.x = w_
+		siz.y = h_
+
+		if( title_ = 0 ) then
+			title_ = @"untitled"
+		end if
+
+		p_title = *title_
+	end constructor
+
+	destructor window
+		color 7, 0
+		cls
+	end destructor
+
+	property window.title as string
+		title = p_title
+	end property
+
+	property window.title( new_title as string )
+		p_title = new_title
+		drawtitle
+	end property
+
+	property window.x as integer
+		return pos.x
+	end property
+
+	property window.x( new_x as integer )
+		remove
+		pos.x = new_x
+		redraw
+	end property
+
+	property window.y as integer
+		property = pos.y
+	end property
+
+	property window.y( new_y as integer )
+		remove
+		pos.y = new_y
+		redraw
+	end property
+
+	sub window.show
+		redraw
+	end sub
+
+	sub window.drawtitle
+		locate pos.y, pos.x
+		color 15, 1
+		print space( siz.x );
+		locate pos.y, pos.x + (siz.x \ 2) - (len( p_title ) \ 2)
+		print p_title;
+	end sub
+
+	sub window.remove
+		color 0, 0
+		var sp = space( siz.x )
+		for i as integer = pos.y to pos.y + siz.y - 1
+			locate i, pos.x
+			print sp;
+		next
+	end sub
+
+	sub window.redraw
+		drawtitle
+		color 8, 7
+		var sp = space( siz.x )
+		for i as integer = pos.y + 1 to pos.y + siz.y - 1
+			locate i, pos.x
+			print sp;
+		next
+	end sub
+end namespace
+
+dim win as tui.window = tui.window( 3, 5, 50, 15 )
+
+win.show
+sleep 500
+
+win.title = "Window 1"
+sleep 250
+win.x = win.x + 10
+sleep 250
+
+win.title = "Window 2"
+sleep 250
+win.y = win.y - 2
+sleep 250
+
+locate 25, 1
+color 7, 0
+print "Press any key...";
+
+sleep
+%%
+	
+	Note how updating the window's position or title automatically causes the window to be redrawn.
+
+{{anchor name="INDEXED"}}{{fbdoc item="section" value="Indexed properties"}}
+
+	Properties can have an additional parameter that is called an ##index## (currently only one additional parameter is allowed). The index is specified in parentheses behind the property's name, as if the property was an array (with only one dimension). For example:
+	
+		{{fbdoc item="filename" value="examples/manual/proguide/udt/properties-indexed.bas"}}%%(freebasic)
+type IntArray
+	'' setters
+	declare property value(index as integer, value as integer)
+	declare property value(index as string, value as integer)
+	declare property value(index as integer, value as string)
+	declare property value(index as string, value as string)
+
+	'' getters
+	declare property value(index as integer) as integer
+	declare property value(index as string) as integer
+
+private:
+	dim as integer data_(0 to 9)
+end type
+
+property IntArray.value(index as integer) as integer
+	return this.data_(index)
+end property
+
+property IntArray.value(index as string) as integer
+	return this.data_(cint(index))
+end property
+
+property IntArray.value(index as integer, value as integer)
+	this.data_(index) = value
+end property
+
+property IntArray.value(index as string, value as integer)
+	this.data_(cint(index)) = value
+end property
+
+property IntArray.value(index as integer, value as string)
+	this.data_(index) = cint(value)
+end property
+
+property IntArray.value(index as string, value as string)
+	this.data_(cint(index)) = cint(value)
+end property
+
+dim a as IntArray
+
+a.value(0) = 1234
+a.value("1") = 5678
+a.value(2) = "-1234"
+a.value("3") = "-5678"
+
+print a.value(0)
+print a.value("1")
+print a.value(2)
+print a.value("3")
+
+sleep
+%%
+	
+	This simulates an integer array that can be assigned strings, and even be indexed with strings. See KeyPgProperty for another example.
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -230,26 +230,25 @@ sub rtlMemModInit( )
 
 	'' remap the new/new[] size param, size_t can be unsigned (int | long),
 	'' making the mangling incompatible..
-    dim as integer dtype = symbGetCStdType( FB_CSTDTYPE_SIZET )
 
-#macro hRemap(op, dtype)
-    scope
-    	dim as FBSYMBOL ptr sym = any
+#macro hRemap(op)
+	scope
+		dim as FBSYMBOL ptr sym = any
 		sym = symbGetCompOpOvlHead( NULL, op )
-    	if( sym <> NULL ) then
-    		sym = symbGetProcHeadParam( sym )
-    		if( sym <> NULL ) then
-    			symbGetFullType( sym ) = dtype
-    		end if
-    	end if
-    end scope
+		if( sym <> NULL ) then
+			sym = symbGetProcHeadParam( sym )
+			if( sym <> NULL ) then
+				symbGetFullType( sym ) = env.target.size_t_type
+			end if
+		end if
+	end scope
 #endmacro
 
 	'' new
-	hRemap( AST_OP_NEW, dtype )
+	hRemap( AST_OP_NEW )
 
-    '' new[]
-    hRemap( AST_OP_NEW_VEC, dtype )
+	'' new[]
+	hRemap( AST_OP_NEW_VEC )
 
 end sub
 
@@ -340,135 +339,31 @@ function rtlMemSwap _
 		byval src as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as integer bytes = any, src_dtype = any, dst_dtype = any
+	function = FALSE
 
-    function = FALSE
+	dim as ASTNODE ptr proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
-	src_dtype = astGetDataType( src )
-	dst_dtype = astGetDataType( dst )
+	'' always calc len before pushing the param
+	dim as integer bytes = rtlCalcExprLen( dst, TRUE )
 
-	select case src_dtype
-	case FB_DATATYPE_STRUCT
-		'' returned in registers?
-		if( astIsCALL( src ) ) then
-			dim as FBSYMBOL ptr subtype = src->subtype
-			'' patch type
-			if( symbIsUDTReturnedInRegs( subtype ) ) then
-				astSetType( src, symbGetUDTRetType( subtype ), NULL )
-			end if
-		end if
-
-	'case FB_DATATYPE_CLASS
-		' ...
-	end select
-
-	'' simple type?
-	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	dim as integer l_bf = astIsBITFIELD( dst ), r_bf = astIsBITFIELD( src )
-	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst ) or (l_bf or r_bf)) ) then
-
-		dim as ASTNODE ptr d = any, s = any
-		dim as FBSYMBOL ptr l_sym = any, r_sym = any, tmpvar = any
-
-		'' left-side is bitfield...
-		if( l_bf ) then
-
-			'' allocate temp var
-			dst_dtype = symbGetFullType( astGetSubtype( astGetLeft( dst ) ) )
-			l_sym = symbAddTempVar( dst_dtype )
-
-			'' left-side references temp var
-			d = astNewVAR( l_sym )
-
-			'' assign bitfield to temp var
-			astAdd( astNewASSIGN( d, astCloneTree( dst ) ) )
-
-		else
-			'' left-side references tree
-			d = dst
-		end if
-
-		'' high-level IR? use a temp var...
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		    tmpvar = symbAddTempVar( dst_dtype, astGetSubType( d ) )
-			astAdd( astNewASSIGN( astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ), _
-                                  astCloneTree( d ) ) )
-		else
-			'' push left-side
-			astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
-		end if
-
-		'' right-side is bitfield...
-		if( r_bf ) then
-
-			'' allocate temp var
-			r_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( src ) ) ) )
-
-			'' right-side references temp var
-			s = astNewVAR( r_sym )
-
-			'' assign bitfield to temp var
-			astAdd( astNewASSIGN( s, astCloneTree( src ) ) )
-
-		else
-			'' right-side references tree
-			s = src
-		end if
-
-		'' left-side = right-side
-		astAdd( astNewASSIGN( dst, astCloneTree( s ) ) )
-
-		'' right-side is bitfield...
-		if( r_bf ) then
-
-			'' pop to temp var
-			s = astNewVAR( r_sym )
-			astAdd( astNewSTACK( AST_OP_POP, s ) )
-
-			'' assign to right-side from temp var
-			astAdd( astNewASSIGN( src, astCloneTree( s ) ) )
-
-		else
-			'' high-level IR? use a temp var...
-			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-				astAdd( astNewASSIGN( src, _
-                                      astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ) ) )
-			else
-				'' pop to right-side
-				astAdd( astNewSTACK( AST_OP_POP, src ) )
-			end if
-		end if
-
+	'' dst as any
+	if( astNewARG( proc, dst ) = NULL ) then
 		exit function
 	end if
 
-	''
-    proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
+	'' src as any
+	if( astNewARG( proc, src ) = NULL ) then
+		exit function
+	end if
 
-    '' always calc len before pushing the param
-    bytes = rtlCalcExprLen( dst )
+	'' byval bytes as integer
+	if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		exit function
+	end if
 
-    '' dst as any
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
+	astAdd( proc )
 
-    '' src as any
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
-
-    '' byval bytes as integer
-    if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
-
-    ''
-    astAdd( proc )
-
-    function = TRUE
-
+	function = TRUE
 end function
 
 '':::::

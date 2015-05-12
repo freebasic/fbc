@@ -135,11 +135,6 @@ declare function astLoadSTACK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astLoadENUM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
 declare function astLoadLABEL _
 	( _
 		byval n as ASTNODE ptr _
@@ -217,9 +212,7 @@ declare sub astDelCALL _
 	)
 
 
-
-'' globals
-	dim shared as ASTCTX ast
+dim shared as ASTCTX ast
 
 	'' same order as AST_NODECLASS
 	dim shared ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO => _
@@ -242,7 +235,6 @@ declare sub astDelCALL _
 		( @astLoadVAR           , TRUE  ), _    '' AST_NODECLASS_VAR
 		( @astLoadIDX           , TRUE  ), _    '' AST_NODECLASS_IDX
 		( @astLoadFIELD         , TRUE  ), _    '' AST_NODECLASS_FIELD
-		( @astLoadENUM          , FALSE ), _    '' AST_NODECLASS_ENUM
 		( @astLoadDEREF         , TRUE  ), _    '' AST_NODECLASS_DEREF
 		( @astLoadLABEL         , FALSE ), _    '' AST_NODECLASS_LABEL
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_ARG
@@ -267,734 +259,143 @@ declare sub astDelCALL _
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_CTORLIST
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEINI
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEEND
-		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SEPARATOR
-		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_PROC
-		( @astLoadNOP           , FALSE ) _     '' AST_NODECLASS_NAMESPC
+		( @astLoadNOP           , TRUE  )  _    '' AST_NODECLASS_PROC
 	}
 
-	'' same order as AST_OP
-	dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
-	{ _
-		/' AST_OP_ASSIGN '/ _
-		( _
-			AST_NODECLASS_ASSIGN, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"let" _
-		), _
-		/' AST_OP_ADD_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"+=", _
-			AST_OP_ADD _
-		), _
-		/' AST_OP_SUB_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"-=", _
-			AST_OP_SUB _
-		), _
-		/' AST_OP_MUL_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"*=", _
-			AST_OP_MUL _
-		), _
-		/' AST_OP_DIV_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"/=", _
-			AST_OP_DIV _
-		), _
-		/' AST_OP_INTDIV_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"/=", _
-			AST_OP_INTDIV _
-		), _
-		/' AST_OP_MOD_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"mod=", _
-			AST_OP_MOD _
-		), _
-		/' AST_OP_AND_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"and=", _
-			AST_OP_AND _
-		), _
-		/' AST_OP_OR_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"or=", _
-			AST_OP_OR _
-		), _
-		/' AST_OP_ANDALSO_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"andalso=", _
-			AST_OP_ANDALSO _
-		), _
-		/' AST_OP_ORELSE_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"orelse=", _
-			AST_OP_ORELSE _
-		), _
-		/' AST_OP_XOR_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"xor=", _
-			AST_OP_XOR _
-		), _
-		/' AST_OP_EQV_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"eqv=", _
-			AST_OP_EQV _
-		), _
-		/' AST_OP_IMP_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"imp=", _
-			AST_OP_IMP _
-		), _
-		/' AST_OP_SHL_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"shl=", _
-			AST_OP_SHL _
-		), _
-		/' AST_OP_SHR_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"shr=", _
-			AST_OP_SHR _
-		), _
-		/' AST_OP_POW_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"pow=", _
-			AST_OP_POW _
-		), _
-		/' AST_OP_CONCAT_SELF '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"&=", _
-			AST_OP_CONCAT _
-		), _
-		/' AST_OP_NEW_SELF '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_SELF, _
-			@"new" _
-		), _
-		/' AST_OP_NEW_VEC_SELF '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_SELF, _
-			@"new[]" _
-		), _
-		/' AST_OP_DEL_SELF '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"delete" _
-		), _
-		/' AST_OP_DEL_VEC_SELF '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"delete[]" _
-		), _
-		/' AST_OP_ADDROF '/ _
-		( _
-			AST_NODECLASS_ADDROF, _
-			AST_OPFLAGS_SELF, _
-			@"@" _
-		), _
-		/' AST_OP_FOR '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-			@"for" _
-		), _
-		/' AST_OP_STEP '/ _
-        ( _
-        	AST_NODECLASS_COMP, _
-            AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, _
-            @"step" _
-		), _
-		/' AST_OP_NEXT '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_SELF, _
-			@"next" _
-		), _
-		/' AST_OP_CAST '/ _
-		( _
-			AST_NODECLASS_CONV, _
-			AST_OPFLAGS_SELF, _
-			@"cast" _
-		), _
-		/' AST_OP_ADD '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"+", _
-			AST_OP_ADD_SELF _
-		), _
-		/' AST_OP_SUB '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"-", _
-			AST_OP_SUB_SELF _
-		), _
-		/' AST_OP_MUL '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"*", _
-			AST_OP_MUL_SELF _
-		), _
-		/' AST_OP_DIV '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"/", _
-			AST_OP_DIV_SELF _
-		), _
-		/' AST_OP_INTDIV '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"/", _
-			AST_OP_INTDIV_SELF _
-		), _
-		/' AST_OP_MOD '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"mod", _
-			AST_OP_MOD_SELF _
-		), _
-		/' AST_OP_AND '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"and", _
-			AST_OP_AND_SELF _
-		), _
-		/' AST_OP_OR '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"or", _
-			AST_OP_OR_SELF _
-		), _
-		/' AST_OP_ANDALSO '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"andalso", _
-			AST_OP_ANDALSO_SELF _
-		), _
-		/' AST_OP_ORELSE '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"orelse", _
-			AST_OP_ORELSE_SELF _
-		), _
-		/' AST_OP_XOR '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_COMM, _
-			@"xor", _
-			AST_OP_XOR_SELF _
-		), _
-		/' AST_OP_EQV '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"eqv", _
-			AST_OP_EQV_SELF _
-		), _
-		/' AST_OP_IMP '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"imp", _
-			AST_OP_IMP_SELF _
-		), _
-		/' AST_OP_SHL '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"shl", _
-			AST_OP_SHL_SELF _
-		), _
-		/' AST_OP_SHR '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"shr", _
-			AST_OP_SHR_SELF _
-		), _
-		/' AST_OP_POW '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"pow", _
-			AST_OP_POW_SELF _
-		), _
-		/' AST_OP_CONCAT '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"&", _
-			AST_OP_CONCAT_SELF _
-		), _
-		/' AST_OP_EQ '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_COMM, _
-			@"=" _
-		), _
-		/' AST_OP_GT '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_NONE, _
-			@">" _
-		), _
-		/' AST_OP_LT '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_NONE, _
-			@"<" _
-		), _
-		/' AST_OP_NE '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_COMM, _
-			@"<>" _
-		), _
-		/' AST_OP_GE '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_NONE, _
-			@">=" _
-		), _
-		/' AST_OP_LE '/ _
-		( _
-			AST_NODECLASS_COMP, _
-			AST_OPFLAGS_NONE, _
-			@"<=" _
-		), _
-		/' AST_OP_NOT '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"not" _
-		), _
-		/' AST_OP_PLUS '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"+" _
-		), _
-		/' AST_OP_NEG '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"-" _
-		), _
-		/' AST_OP_HADD '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"HADD" _
-		), _
-		/' AST_OP_ABS '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"abs" _
-		), _
-		/' AST_OP_SGN '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"sgn" _
-		), _
-		/' AST_OP_SIN '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"sin" _
-		), _
-		/' AST_OP_ASIN '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"asin" _
-		), _
-		/' AST_OP_COS '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"cos" _
-		), _
-		/' AST_OP_ACOS '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"acos" _
-		), _
-		/' AST_OP_TAN '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"tan" _
-		), _
-		/' AST_OP_ATAN '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"atan" _
-		), _
-		/' AST_OP_ATN2 '/ _
-		( _
-			AST_NODECLASS_BOP, _
-			AST_OPFLAGS_NONE, _
-			@"atn2" _
-		), _
-		/' AST_OP_SQRT '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"sqr" _
-		), _
-		/' AST_OP_RSQRT '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"rsqrt" _
-		), _
-		/' AST_OP_RCP '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"rcp" _
-		), _
-		/' AST_OP_LOG '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"log" _
-		), _
-		/' AST_OP_EXP '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"exp" _
-		), _
-		/' AST_OP_FLOOR '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"int" _
-		), _
-		/' AST_OP_FIX '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"fix" _
-		), _
-		/' AST_OP_FRAC '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"frac" _
-		), _
-		/' AST_OP_SWZ_REPEAT '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"swzrep" _
-		), _
-		/' AST_OP_DEREF '/ _
-		( _
-			AST_NODECLASS_ADDROF, _
-			AST_OPFLAGS_NONE, _
-			@"*" _
-		), _
-		/' AST_OP_FLDDEREF '/ _
-		( _
-			AST_NODECLASS_ADDROF, _
-			AST_OPFLAGS_NONE, _
-			@"->" _
-		), _
-		/' AST_OP_NEW '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"new" _
-		), _
-		/' AST_OP_NEW_VEC '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"new[]" _
-		), _
-		/' AST_OP_DEL '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"delete" _
-		), _
-		/' AST_OP_DEL_VEC '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"delete[]" _
-		), _
-		/' AST_OP_TOINT '/ _
-		( _
-			AST_NODECLASS_CONV, _
-			AST_OPFLAGS_NONE, _
-			@"cint" _
-		), _
-		/' AST_OP_TOFLT '/ _
-		( _
-			AST_NODECLASS_CONV, _
-			AST_OPFLAGS_NONE, _
-			@"cflt" _
-		), _
-		/' AST_OP_TOBOOL '/ _
-		( _
-			AST_NODECLASS_CONV, _
-			AST_OPFLAGS_NONE, _
-			@"cbool" _
-		), _
-		/' AST_OP_LOAD '/ _
-		( _
-			AST_NODECLASS_LOAD, _
-			AST_OPFLAGS_NONE, _
-			@"load" _
-		), _
-		/' AST_OP_LOADRES '/ _
-		( _
-			AST_NODECLASS_LOAD, _
-			AST_OPFLAGS_NONE, _
-			@"lres" _
-		), _
-		/' AST_OP_SPILLREGS '/ _
-		( _
-			AST_NODECLASS_ASSIGN, _
-			AST_OPFLAGS_NONE, _
-			@"spill" _
-		), _
-		/' AST_OP_PUSH '/ _
-		( _
-			AST_NODECLASS_STACK, _
-			AST_OPFLAGS_NONE, _
-			@"push" _
-		), _
-		/' AST_OP_POP '/ _
-		( _
-			AST_NODECLASS_STACK, _
-			AST_OPFLAGS_NONE, _
-			@"pop" _
-		), _
-		/' AST_OP_PUSHUDT '/ _
-		( _
-			AST_NODECLASS_STACK, _
-			AST_OPFLAGS_NONE, _
-			@"pudt" _
-		), _
-		/' AST_OP_STACKALIGN '/ _
-		( _
-			AST_NODECLASS_STACK, _
-			AST_OPFLAGS_NONE, _
-			@"stka" _
-		), _
-		/' AST_OP_JEQ '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jeq" _
-		), _
-		/' AST_OP_JGT '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jgt" _
-		), _
-		/' AST_OP_JLT '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jlt" _
-		), _
-		/' AST_OP_JNE '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jne" _
-		), _
-		/' AST_OP_JGE '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jge" _
-		), _
-		/' AST_OP_JLE '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jle" _
-		), _
-		/' AST_OP_JMP '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"jmp" _
-		), _
-		/' AST_OP_CALL '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"call" _
-		), _
-		/' AST_OP_LABEL '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"lbl" _
-		), _
-		/' AST_OP_RET '/ _
-		( _
-			AST_NODECLASS_BRANCH, _
-			AST_OPFLAGS_NONE, _
-			@"ret" _
-		), _
-		/' AST_OP_CALLFUNC '/ _
-		( _
-			AST_NODECLASS_CALL, _
-			AST_OPFLAGS_NONE, _
-			@"calf" _
-		), _
-		/' AST_OP_CALLPTR '/ _
-		( _
-			AST_NODECLASS_CALL, _
-			AST_OPFLAGS_NONE, _
-			@"calp" _
-		), _
-		/' AST_OP_JUMPPTR '/ _
-		( _
-			AST_NODECLASS_CALL, _
-			AST_OPFLAGS_NONE, _
-			@"jmpp" _
-		), _
-		/' AST_OP_MEMMOVE '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"mmov" _
-		), _
-		/' AST_OP_MEMSWAP '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"mswp" _
-		), _
-		/' AST_OP_MEMCLEAR '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"mclr" _
-		), _
-		/' AST_OP_STKCLEAR '/ _
-		( _
-			AST_NODECLASS_MEM, _
-			AST_OPFLAGS_NONE, _
-			@"stkc" _
-		), _
-		/' AST_OP_DBG_LINEINI '/ _
-		( _
-			AST_NODECLASS_DBG, _
-			AST_OPFLAGS_NONE, _
-			@"lini" _
-		), _
-		/' AST_OP_DBG_LINEEND '/ _
-		( _
-			AST_NODECLASS_DBG, _
-			AST_OPFLAGS_NONE, _
-			@"lend" _
-		), _
-		/' AST_OP_DBG_SCOPEINI '/ _
-		( _
-			AST_NODECLASS_DBG, _
-			AST_OPFLAGS_NONE, _
-			@"sini" _
-		), _
-		/' AST_OP_DBG_SCOPEEND '/ _
-		( _
-			AST_NODECLASS_DBG, _
-			AST_OPFLAGS_NONE, _
-			@"send" _
-		), _
-		/' AST_OP_LIT_COMMENT '/ _
-		( _
-			AST_NODECLASS_LIT, _
-			AST_OPFLAGS_NONE, _
-			@"rem" _
-		), _
-		/' AST_OP_LIT_ASM '/ _
-		( _
-			AST_NODECLASS_LIT, _
-			AST_OPFLAGS_NONE, _
-			@"asm" _
-		) _
-	}
+'' same order as AST_OP
+dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
+{ _
+	(AST_NODECLASS_ASSIGN, AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"let"                     ), _ '' AST_OP_ASSIGN
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"+="      , AST_OP_ADD    ), _ '' AST_OP_ADD_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"-="      , AST_OP_SUB    ), _ '' AST_OP_SUB_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"*="      , AST_OP_MUL    ), _ '' AST_OP_MUL_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"/="      , AST_OP_DIV    ), _ '' AST_OP_DIV_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"/="      , AST_OP_INTDIV ), _ '' AST_OP_INTDIV_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"mod="    , AST_OP_MOD    ), _ '' AST_OP_MOD_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"and="    , AST_OP_AND    ), _ '' AST_OP_AND_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"or="     , AST_OP_OR     ), _ '' AST_OP_OR_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"andalso=", AST_OP_ANDALSO), _ '' AST_OP_ANDALSO_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"orelse=" , AST_OP_ORELSE ), _ '' AST_OP_ORELSE_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"xor="    , AST_OP_XOR    ), _ '' AST_OP_XOR_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"eqv="    , AST_OP_EQV    ), _ '' AST_OP_EQV_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"imp="    , AST_OP_IMP    ), _ '' AST_OP_IMP_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"shl="    , AST_OP_SHL    ), _ '' AST_OP_SHL_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"shr="    , AST_OP_SHR    ), _ '' AST_OP_SHR_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"pow="    , AST_OP_POW    ), _ '' AST_OP_POW_SELF
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"&="      , AST_OP_CONCAT ), _ '' AST_OP_CONCAT_SELF
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF, @"new"                          ), _ '' AST_OP_NEW_SELF
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF, @"new[]"                        ), _ '' AST_OP_NEW_VEC_SELF
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"delete"  ), _ '' AST_OP_DEL_SELF
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"delete[]"), _ '' AST_OP_DEL_VEC_SELF
+	(AST_NODECLASS_ADDROF, AST_OPFLAGS_SELF, @"@"                            ), _ '' AST_OP_ADDROF
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"for"     ), _ '' AST_OP_FOR
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF or AST_OPFLAGS_NORES, @"step"    ), _ '' AST_OP_STEP
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_SELF, @"next"                         ), _ '' AST_OP_NEXT
+	(AST_NODECLASS_CONV  , AST_OPFLAGS_SELF, @"cast"                         ), _ '' AST_OP_CAST
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"+"      , AST_OP_ADD_SELF     ), _ '' AST_OP_ADD
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"-"      , AST_OP_SUB_SELF     ), _ '' AST_OP_SUB
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"*"      , AST_OP_MUL_SELF     ), _ '' AST_OP_MUL
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"/"      , AST_OP_DIV_SELF     ), _ '' AST_OP_DIV
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"/"      , AST_OP_INTDIV_SELF  ), _ '' AST_OP_INTDIV
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"mod"    , AST_OP_MOD_SELF     ), _ '' AST_OP_MOD
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"and"    , AST_OP_AND_SELF     ), _ '' AST_OP_AND
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"or"     , AST_OP_OR_SELF      ), _ '' AST_OP_OR
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"andalso", AST_OP_ANDALSO_SELF ), _ '' AST_OP_ANDALSO
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"orelse" , AST_OP_ORELSE_SELF  ), _ '' AST_OP_ORELSE
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_COMM, @"xor"    , AST_OP_XOR_SELF     ), _ '' AST_OP_XOR
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"eqv"    , AST_OP_EQV_SELF     ), _ '' AST_OP_EQV
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"imp"    , AST_OP_IMP_SELF     ), _ '' AST_OP_IMP
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"shl"    , AST_OP_SHL_SELF     ), _ '' AST_OP_SHL
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"shr"    , AST_OP_SHR_SELF     ), _ '' AST_OP_SHR
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"pow"    , AST_OP_POW_SELF     ), _ '' AST_OP_POW
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"&"      , AST_OP_CONCAT_SELF  ), _ '' AST_OP_CONCAT
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_COMM, @"="       ), _ '' AST_OP_EQ
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @">"       ), _ '' AST_OP_GT
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @"<"       ), _ '' AST_OP_LT
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_COMM, @"<>"      ), _ '' AST_OP_NE
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @">="      ), _ '' AST_OP_GE
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @"<="      ), _ '' AST_OP_LE
+	(AST_NODECLASS_COMP  , AST_OPFLAGS_NONE, @"is"      ), _ '' AST_OP_IS
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"not"     ), _ '' AST_OP_NOT
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"+"       ), _ '' AST_OP_PLUS
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"-"       ), _ '' AST_OP_NEG
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"HADD"    ), _ '' AST_OP_HADD
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"abs"     ), _ '' AST_OP_ABS
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"sgn"     ), _ '' AST_OP_SGN
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"sin"     ), _ '' AST_OP_SIN
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"asin"    ), _ '' AST_OP_ASIN
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"cos"     ), _ '' AST_OP_COS
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"acos"    ), _ '' AST_OP_ACOS
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"tan"     ), _ '' AST_OP_TAN
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"atan"    ), _ '' AST_OP_ATAN
+	(AST_NODECLASS_BOP   , AST_OPFLAGS_NONE, @"atn2"    ), _ '' AST_OP_ATAN2
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"sqr"     ), _ '' AST_OP_SQRT
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"rsqrt"   ), _ '' AST_OP_RSQRT
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"rcp"     ), _ '' AST_OP_RCP
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"log"     ), _ '' AST_OP_LOG
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"exp"     ), _ '' AST_OP_EXP
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"int"     ), _ '' AST_OP_FLOOR
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"fix"     ), _ '' AST_OP_FIX
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"frac"    ), _ '' AST_OP_FRAC
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"swzrep"  ), _ '' AST_OP_SWZ_REPEAT
+	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"*"       ), _ '' AST_OP_DEREF
+	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"->"      ), _ '' AST_OP_FLDDEREF
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new"     ), _ '' AST_OP_NEW
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new[]"   ), _ '' AST_OP_NEW_VEC
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete"  ), _ '' AST_OP_DEL
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete[]"), _ '' AST_OP_DEL_VEC
+	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cint"    ), _ '' AST_OP_TOINT
+	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cflt"    ), _ '' AST_OP_TOFLT
+	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cbool"   ), _ '' AST_OP_TOBOOL
+	(AST_NODECLASS_LOAD  , AST_OPFLAGS_NONE, @"load"    ), _ '' AST_OP_LOAD
+	(AST_NODECLASS_LOAD  , AST_OPFLAGS_NONE, @"lres"    ), _ '' AST_OP_LOADRES
+	(AST_NODECLASS_ASSIGN, AST_OPFLAGS_NONE, @"spill"   ), _ '' AST_OP_SPILLREGS
+	(AST_NODECLASS_STACK , AST_OPFLAGS_NONE, @"push"    ), _ '' AST_OP_PUSH
+	(AST_NODECLASS_STACK , AST_OPFLAGS_NONE, @"pop"     ), _ '' AST_OP_POP
+	(AST_NODECLASS_STACK , AST_OPFLAGS_NONE, @"pudt"    ), _ '' AST_OP_PUSHUDT
+	(AST_NODECLASS_STACK , AST_OPFLAGS_NONE, @"stka"    ), _ '' AST_OP_STACKALIGN
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jeq"     ), _ '' AST_OP_JEQ
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jgt"     ), _ '' AST_OP_JGT
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jlt"     ), _ '' AST_OP_JLT
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jne"     ), _ '' AST_OP_JNE
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jge"     ), _ '' AST_OP_JGE
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jle"     ), _ '' AST_OP_JLE
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"jmp"     ), _ '' AST_OP_JMP
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"call"    ), _ '' AST_OP_CALL
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"lbl"     ), _ '' AST_OP_LABEL
+	(AST_NODECLASS_BRANCH, AST_OPFLAGS_NONE, @"ret"     ), _ '' AST_OP_RET
+	(AST_NODECLASS_CALL  , AST_OPFLAGS_NONE, @"calf"    ), _ '' AST_OP_CALLFUNC
+	(AST_NODECLASS_CALL  , AST_OPFLAGS_NONE, @"calp"    ), _ '' AST_OP_CALLPTR
+	(AST_NODECLASS_CALL  , AST_OPFLAGS_NONE, @"jmpp"    ), _ '' AST_OP_JUMPPTR
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mmov"    ), _ '' AST_OP_MEMMOVE
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mswp"    ), _ '' AST_OP_MEMSWAP
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mclr"    ), _ '' AST_OP_MEMCLEAR
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"stkc"    ), _ '' AST_OP_STKCLEAR
+	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"lini"    ), _ '' AST_OP_DBG_LINEINI
+	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"lend"    ), _ '' AST_OP_DBG_LINEEND
+	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"sini"    ), _ '' AST_OP_DBG_SCOPEINI
+	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"send"    ), _ '' AST_OP_DBG_SCOPEEND
+	(AST_NODECLASS_LIT   , AST_OPFLAGS_NONE, @"rem"     ), _ '' AST_OP_LIT_COMMENT
+	(AST_NODECLASS_LIT   , AST_OPFLAGS_NONE, @"asm"     )  _ '' AST_OP_ASM
+}
 
-	dim shared as uinteger ast_bitmaskTB( 0 to ... ) = _
-	{ _
-		0, _
-		1, 3, 7, 15, 31, 63, 127, 255, _
-		511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, _
-        131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, _
-        33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
-	}
+dim shared as uinteger ast_bitmaskTB( 0 to ... ) = _
+{ _
+	0, _
+	1, 3, 7, 15, 31, 63, 127, 255, _
+	511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, _
+	131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, _
+	33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
+}
 
 '':::::
 sub astInit static
 
 	''
-    listNew( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
+    listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ''
     ast.doemit = TRUE
-    ast.isopt = FALSE
     ast.typeinicnt = 0
     ast.currblock = NULL
 
@@ -1020,7 +421,7 @@ sub astEnd static
     astCallEnd( )
 
 	''
-	listFree( @ast.astTB )
+	listEnd( @ast.astTB )
 
 end sub
 
@@ -1167,11 +568,9 @@ function astNewNode _
 		byval class_ as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
-
-	n = listNewNode( @ast.astTB )
+	dim as ASTNODE ptr n = listNewNode( @ast.astTB )
 
 	astInitNode( n, class_, dtype, subtype )
 
@@ -1192,21 +591,6 @@ sub astDelNode _
 	listDelNode( @ast.astTB, n )
 
 end sub
-
-'':::::
-function astIsADDR _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer static
-
-	select case n->class
-	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-		return TRUE
-	case else
-		return FALSE
-	end select
-
-end function
 
 '':::::
 function astGetInverseLogOp _

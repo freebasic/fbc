@@ -93,14 +93,8 @@ end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
-	init as function _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-	end as sub _
-	( _
-	)
+	init as sub(byval backend as FB_BACKEND)
+	end as sub()
 
 	flush as sub _
 	( _
@@ -146,7 +140,7 @@ type IR_VTBL
 
 	procGetFrameRegName as function _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	scopeBegin as sub _
 	( _
@@ -158,10 +152,7 @@ type IR_VTBL
 		byval s as FBSYMBOL ptr _
 	)
 
-	procAllocStaticVars as function _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
+	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
 
 	emit as sub _
 	( _
@@ -233,21 +224,7 @@ type IR_VTBL
 		byval label as FBSYMBOL ptr _
 	)
 
-	emitInfoSection as sub _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
 	emitBop as sub _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
-	emitBopEx as sub _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -360,39 +337,12 @@ type IR_VTBL
 		byval ex as integer _
 	)
 
-	emitVarIniBegin as sub _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	emitVarIniEnd as sub _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	emitVarIniI as sub _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	)
-
-	emitVarIniF as sub _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	)
-
-	emitVarIniI64 as sub _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	)
-
-	emitVarIniOfs as sub _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
-	)
+	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
+	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
+	emitVarIniI as sub( byval dtype as integer, byval value as integer )
+	emitVarIniF as sub( byval dtype as integer, byval value as double )
+	emitVarIniI64 as sub( byval dtype as integer, byval value as longint )
+	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
 
 	emitVarIniStr as sub _
 	( _
@@ -408,28 +358,9 @@ type IR_VTBL
 		byval litlgt as integer _
 	)
 
-	emitVarIniPad as sub _
-	( _
-		byval bytes as integer _
-	)
-
-	emitVarIniScopeBegin as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
-
-	emitVarIniScopeEnd as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
-
-	emitVarIniSeparator as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
+	emitVarIniPad as sub( byval bytes as integer )
+	emitVarIniScopeBegin as sub( )
+	emitVarIniScopeEnd as sub( )
 
 	allocVreg as function _
 	( _
@@ -559,25 +490,10 @@ end type
 ''
 ''
 ''
-declare function irInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-declare sub irEnd _
-	( _
-	)
-
-declare function irGetVRDataClass _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer
-
-declare function irGetVRDataSize _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer
-
+declare sub irTAC_ctor()
+declare sub irHLC_ctor()
+declare sub irInit(byval backend as FB_BACKEND)
+declare sub irEnd()
 
 ''
 '' macros
@@ -650,11 +566,9 @@ declare function irGetVRDataSize _
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
 
-#define irEmitVARINISCOPEINI(basesym, s) ir.vtbl.emitVarIniScopeBegin( basesym, s )
+#define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
 
-#define irEmitVARINISCOPEEND(basesym, s) ir.vtbl.emitVarIniScopeEnd( basesym, s )
-
-#define irEmitVARINISEPARATOR(basesym, s) ir.vtbl.emitVarIniSeparator( basesym, s )
+#define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 
@@ -670,8 +584,6 @@ declare function irGetVRDataSize _
 
 #define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
 
-#define irEmitInfoSection( liblist, libpathlist ) ir.vtbl.emitInfoSection( liblist, libpathlist )
-
 #define irFlush() ir.vtbl.flush( )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
@@ -682,9 +594,7 @@ declare function irGetVRDataSize _
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
-#define irEmitBOP(op, v1, v2, vr) ir.vtbl.emitBop( op, v1, v2, vr )
-
-#define irEmitBOPEx(op, v1, v2, vr, ex) ir.vtbl.emitBopEx( op, v1, v2, vr, ex )
+#define irEmitBOP( op, v1, v2, vr, ex ) ir.vtbl.emitBop( op, v1, v2, vr, ex )
 
 #define irEmitUOP(op, v1, vr) ir.vtbl.emitUop( op, v1, vr )
 

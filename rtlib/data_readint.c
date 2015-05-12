@@ -1,6 +1,5 @@
 /* read stmt for integer's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

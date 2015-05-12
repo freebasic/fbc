@@ -34,10 +34,8 @@ private function hDoAssign _
 
     dim as ASTNODE lside = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
 
 	dtype = symbGetFullType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype = typeDeref( dtype )
@@ -52,20 +50,15 @@ private function hDoAssign _
     	'' check if it's a cast
     	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
     	if( expr = NULL ) then
-
 			'' hand it back...
 			if( no_fake ) then
 				exit function
 			end if
 
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-	        	return FALSE
-	        else
-	        	'' error recovery: create a fake expression
-	        	astDelTree( expr )
-	        	expr = astNewCONSTz( dtype )
-
-	        end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			'' error recovery: create a fake expression
+			astDelTree( expr )
+			expr = astNewCONSTz( dtype )
 		end if
 	end if
 
@@ -101,22 +94,16 @@ private function hElmInit _
 
 	'' invalid expression
 	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until ',' and create a fake expression
+		hSkipUntil( CHAR_COMMA )
 
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip until ',' and create a fake expression
-			hSkipUntil( CHAR_COMMA )
-
-            '' generate an expression matching the symbol's type
-			dim as integer dtype = symbGetType( ctx.sym )
-			dim as FBSYMBOL ptr subtype = symbGetSubtype( ctx.sym )
-			if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-				dtype = typeDeref( dtype )
-			end if
-			expr = astNewCONSTz( dtype )
-
+		'' generate an expression matching the symbol's type
+		dim as integer dtype = symbGetType( ctx.sym )
+		if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
+			dtype = typeDeref( dtype )
 		end if
+		expr = astNewCONSTz( dtype )
 	end if
 
 	'' to hand it back if necessary
@@ -155,23 +142,16 @@ private function hArrayInit _
 
 		ctx.dimcnt += 1
 
-		'' open a scope only if it's the first dim -- used by the gcc emitter
-		if( ctx.dimcnt = 1 ) then
-			astTypeIniScopeBegin( ctx.tree, ctx.sym )
-		end if
+		astTypeIniScopeBegin( ctx.tree, ctx.sym )
 
 		'' too many dimensions?
 		if( ctx.dimcnt > dimensions ) then
-			if( errReport( iif( dimensions > 0, _
-								FB_ERRMSG_TOOMANYEXPRESSIONS, _
-								FB_ERRMSG_EXPECTEDARRAY ) ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '}'
-				hSkipUntil( CHAR_RBRACE, TRUE )
-				ctx.dim_ = NULL
-			end if
-
+			errReport( iif( dimensions > 0, _
+			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
+			                FB_ERRMSG_EXPECTEDARRAY ) )
+			'' error recovery: skip until next '}'
+			hSkipUntil( CHAR_RBRACE, TRUE )
+			ctx.dim_ = NULL
 		else
 			'' first dim?
 			if( ctx.dim_ = NULL ) then
@@ -184,19 +164,15 @@ private function hArrayInit _
 
 			isarray = TRUE
 		end if
-
 	else
 		'' not the last dimension?
 		if( ctx.dimcnt < dimensions ) then
-			if( errReport( FB_ERRMSG_EXPECTEDLBRACKET ) = FALSE ) then
-				exit function
+			errReport( FB_ERRMSG_EXPECTEDLBRACKET )
+			ctx.dimcnt += 1
+			if( ctx.dim_ = NULL ) then
+				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
 			else
-				ctx.dimcnt += 1
-				if( ctx.dim_ = NULL ) then
-					ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
-				else
-					ctx.dim_ = ctx.dim_->next
-				end if
+				ctx.dim_ = ctx.dim_->next
 			end if
 		end if
 	end if
@@ -229,7 +205,6 @@ private function hArrayInit _
 			if( hArrayInit( ctx ) = FALSE ) then
 				exit function
 			end if
-
 		else
 			select case as const dtype
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -265,11 +240,11 @@ private function hArrayInit _
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			exit do
 		end if
-
-        astTypeIniSeparator( ctx.tree, ctx.sym )
 	loop
 
-	'' pad
+	'' Any array elements not initialized by this '{...}'?
+	'' Then default-initialize/zero them. With multi-dimensional arrays,
+	'' this may happen "in the middle" of the array.
 	elements -= elm_cnt
 	if( elements > 0 ) then
 		'' not the last dimension?
@@ -307,25 +282,16 @@ private function hArrayInit _
 			astTypeIniAddPad( ctx.tree, pad_lgt )
 			astTypeIniGetOfs( ctx.tree ) += pad_lgt
 		end if
-
 	end if
 
 	if( isarray ) then
-
-		'' close the scope only if it's the first dim -- used by the gcc emitter
-		if( ctx.dimcnt = 1 ) then
-			astTypeIniScopeEnd( ctx.tree, ctx.sym )
-		end if
+		astTypeIniScopeEnd( ctx.tree, ctx.sym )
 
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next '}'
-				hSkipUntil( CHAR_RBRACE, TRUE )
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			'' error recovery: skip until next '}'
+			hSkipUntil( CHAR_RBRACE, TRUE )
 		else
 			lexSkipToken( )
 		end if
@@ -362,13 +328,9 @@ private function hUDTInit _
 	    '' Expression
 	    expr = cExpression( )
 	    if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				rec_cnt -= 1
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	    end if
 
 		'' array passed by descriptor?
@@ -406,23 +368,14 @@ private function hUDTInit _
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-
-		if( rec_cnt > 1 ) then
-			'' get lookahead
-			dim as integer lookie = lexGetLookAhead( 1 ), is_ok = TRUE
-
-			'' if it's a comma, set to leave one for the parent func
-			'' (see below)
-			if( lookie = CHAR_COMMA ) then
-				comma = TRUE
-			end if
-
-			parenth = FALSE
-		else
+		if( rec_cnt <= 1 ) then
 			rec_cnt -= 1
 			return hElmInit( ctx )
 		end if
 
+		'' ','? Leave one for the parent func (see below)
+		comma = (lexGetLookAhead(1) = CHAR_COMMA)
+		parenth = FALSE
 	else
 		astTypeIniScopeBegin( ctx.tree, ctx.sym )
 	end if
@@ -458,17 +411,14 @@ private function hUDTInit _
 	elm_cnt = 1
 	do
 		if( elm_cnt > elements ) then
-			if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
-				rec_cnt -= 1
-				exit function
-			else
-				'' error recovery: jump out
-				exit do
-			end if
+			errReport( FB_ERRMSG_TOOMANYEXPRESSIONS )
+			'' error recovery: jump out
+			exit do
 		end if
 
 		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
+			'' Padding between fields (due to structure layout)
 			pad_lgt = elm_ofs - lgt
 			if( pad_lgt > 0 ) then
 				astTypeIniAddPad( ctx.tree, pad_lgt )
@@ -527,13 +477,9 @@ private function hUDTInit _
 			'' ')'
 			if( parenth ) then
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						rec_cnt -= 1
-						exit function
-					else
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT, TRUE )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDRPRNT )
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT, TRUE )
 				end if
 				lexSkipToken( )
 			end if
@@ -572,21 +518,14 @@ private function hUDTInit _
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			exit do
 		end if
-
-        astTypeIniSeparator( ctx.tree, ctx.sym )
 	loop
 
 	'' ')'
 	if( parenth ) then
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				rec_cnt -= 1
-				ctx = old_ctx
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		else
 			lexSkipToken( )
 			astTypeIniScopeEnd( ctx.tree, ctx.sym )
@@ -596,15 +535,13 @@ private function hUDTInit _
 	'' restore parent
 	ctx = old_ctx
 
-	''
+	'' Padding at the end of the UDT -- this zeroes tail padding bytes,
+	'' and also any uninitialized fields.
 	dim as integer sym_len = symbCalcLen( dtype, subtype )
-
-	'' pad
 	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
 		astTypeIniAddPad( ctx.tree, pad_lgt )
 	end if
-
 	astTypeIniGetOfs( ctx.tree ) = baseofs + sym_len
 
 	rec_cnt -= 1
@@ -682,5 +619,3 @@ function cInitializer _
 	function = iif( res, ctx.tree, NULL )
 
 end function
-
-

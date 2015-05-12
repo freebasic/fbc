@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="2.20"/>
+  <object class="GtkWindow" id="WinMain">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Preferences</property>
+    <signal name="delete-event" handler="gtk_main_quit" swapped="no"/>
+    <child>
+      <object class="GtkVBox" id="AllDaGoodies">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">6</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkNotebook" id="Preferences">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="border_width">6</property>
+            <child>
+              <object class="GtkVBox" id="LocationOptions">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="border_width">6</property>
+                <child>
+                  <object class="GtkHBox" id="hbox1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkVBox" id="vbox1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="border_width">6</property>
+                        <child>
+                          <object class="GtkRadioButton" id="Here">
+                            <property name="label" translatable="yes">_Here</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="xalign">0</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">There</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="There">
+                            <property name="label" translatable="yes">_There</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_action_appearance">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="xalign">0</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkColorButton" id="colorbutton1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFontButton" id="fontbutton1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_action_appearance">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFileChooserButton" id="filechooserbutton1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="HelloButton">
+                    <property name="label">Hello</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="can_default">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="use_stock">True</property>
+                    <signal name="clicked" handler="on_ClickButton_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Bu_ttons</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkColorSelection" id="ColorSelection">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="border_width">6</property>
+                <property name="has_palette">True</property>
+                <property name="has_opacity_control">True</property>
+                <property name="current_color">#dad911101110</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Color</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="border_width">6</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTextView" id="textview1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="left_margin">6</property>
+                    <property name="right_margin">6</property>
+                    <property name="buffer">textbuffer1</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label3">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="vbox2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkCalendar" id="calendar3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="year">2011</property>
+                    <property name="month">9</property>
+                    <property name="day">5</property>
+                    <property name="show_week_numbers">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="image2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Cale_nda_r</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">3</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFontSelection" id="fontselection1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="border_width">6</property>
+                <property name="spacing">12</property>
+              </object>
+              <packing>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label5">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">F_onts</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">4</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserWidget" id="filechooserwidget1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="border_width">6</property>
+              </object>
+              <packing>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label6">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Files</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">5</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow2">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="border_width">6</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkViewport" id="viewport1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImage" id="image1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="pixbuf">FreeBasic.png</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">6</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label7">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Image</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">6</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow3">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTreeView" id="treeview1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="border_width">6</property>
+                    <property name="model">liststore1</property>
+                    <property name="rules_hint">True</property>
+                    <property name="search_column">1</property>
+                    <property name="show_expanders">False</property>
+                    <property name="rubber_banding">True</property>
+                    <property name="tooltip_column">2</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="treeview-selection1"/>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                        <property name="resizable">True</property>
+                        <property name="title" translatable="yes">Decimal</property>
+                        <property name="clickable">True</property>
+                        <property name="alignment">1</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">0</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext1">
+                            <property name="xalign">1</property>
+                            <property name="size_points">16</property>
+                          </object>
+                          <attributes>
+                            <attribute name="background">3</attribute>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn2">
+                        <property name="resizable">True</property>
+                        <property name="title" translatable="yes">Characters</property>
+                        <property name="clickable">True</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">1</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext2">
+                            <property name="editable">True</property>
+                          </object>
+                          <attributes>
+                            <attribute name="foreground">3</attribute>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn3">
+                        <property name="resizable">True</property>
+                        <property name="title" translatable="yes">Roman numerals</property>
+                        <property name="clickable">True</property>
+                        <property name="alignment">0.5</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">5</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext3">
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn" id="treeviewcolumn4">
+                        <property name="resizable">True</property>
+                        <property name="title" translatable="yes">German</property>
+                        <property name="clickable">True</property>
+                        <property name="alignment">1</property>
+                        <property name="reorderable">True</property>
+                        <property name="sort_indicator">True</property>
+                        <property name="sort_column_id">4</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="cellrenderertext4">
+                            <property name="xalign">1</property>
+                            <property name="style">italic</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">4</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="position">7</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label8">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Listview</property>
+                <property name="use_underline">True</property>
+              </object>
+              <packing>
+                <property name="position">7</property>
+                <property name="tab_fill">False</property>
+                <property name="reorderable">True</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHSeparator" id="hseparator1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkHButtonBox" id="hbuttonbox2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="border_width">6</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="QuitButton">
+                <property name="label">gtk-quit</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="gtk_main_quit" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name number -->
+      <column type="gint"/>
+      <!-- column-name chararters -->
+      <column type="gchararray"/>
+      <!-- column-name Minihilfe -->
+      <column type="gchararray"/>
+      <!-- column-name color -->
+      <column type="gchararray"/>
+      <!-- column-name German -->
+      <column type="gchararray"/>
+      <!-- column-name Roman -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">0</col>
+        <col id="1" translatable="yes">zero</col>
+        <col id="2" translatable="yes">Your tooltip for number zero</col>
+        <col id="3" translatable="yes">red</col>
+        <col id="4" translatable="yes">Null</col>
+        <col id="5" translatable="yes"></col>
+      </row>
+      <row>
+        <col id="0">1</col>
+        <col id="1" translatable="yes">one</col>
+        <col id="2" translatable="yes">Your tooltip for number one</col>
+        <col id="3" translatable="yes">green</col>
+        <col id="4" translatable="yes">Eins</col>
+        <col id="5" translatable="yes">I</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1" translatable="yes">two</col>
+        <col id="2" translatable="yes">Your tooltip for number two</col>
+        <col id="3" translatable="yes">grey</col>
+        <col id="4" translatable="yes">Zwei</col>
+        <col id="5" translatable="yes">II</col>
+      </row>
+      <row>
+        <col id="0">3</col>
+        <col id="1" translatable="yes">three</col>
+        <col id="2" translatable="yes">Your tooltip for number three</col>
+        <col id="3" translatable="yes">brown</col>
+        <col id="4" translatable="yes">Drei</col>
+        <col id="5" translatable="yes">III</col>
+      </row>
+      <row>
+        <col id="0">4</col>
+        <col id="1" translatable="yes">four</col>
+        <col id="2" translatable="yes">Your tooltip for number four</col>
+        <col id="3" translatable="yes">orange</col>
+        <col id="4" translatable="yes">Vier</col>
+        <col id="5" translatable="yes">IV</col>
+      </row>
+      <row>
+        <col id="0">5</col>
+        <col id="1" translatable="yes">five</col>
+        <col id="2" translatable="yes">Your tooltip for number five</col>
+        <col id="3" translatable="yes">yellow</col>
+        <col id="4" translatable="yes">Fünf</col>
+        <col id="5" translatable="yes">V</col>
+      </row>
+      <row>
+        <col id="0">6</col>
+        <col id="1" translatable="yes">six</col>
+        <col id="2" translatable="yes">Your tooltip for number six</col>
+        <col id="3" translatable="yes">blue</col>
+        <col id="4" translatable="yes">Sechs</col>
+        <col id="5" translatable="yes">VI</col>
+      </row>
+      <row>
+        <col id="0">7</col>
+        <col id="1" translatable="yes">seven</col>
+        <col id="2" translatable="yes">Your tooltip for number seven</col>
+        <col id="3" translatable="yes">magenta</col>
+        <col id="4" translatable="yes">Sieben</col>
+        <col id="5" translatable="yes">VII</col>
+      </row>
+      <row>
+        <col id="0">8</col>
+        <col id="1" translatable="yes">eight</col>
+        <col id="2" translatable="yes">Your tooltip for number eight</col>
+        <col id="3" translatable="yes">cyan</col>
+        <col id="4" translatable="yes">Acht</col>
+        <col id="5" translatable="yes">VIII</col>
+      </row>
+      <row>
+        <col id="0">9</col>
+        <col id="1" translatable="yes">nine</col>
+        <col id="2" translatable="yes">Your tooltip for number nine</col>
+        <col id="3" translatable="yes">gold</col>
+        <col id="4" translatable="yes">Neun</col>
+        <col id="5" translatable="yes">IX</col>
+      </row>
+      <row>
+        <col id="0">10</col>
+        <col id="1" translatable="yes">ten</col>
+        <col id="2" translatable="yes">Your tooltip for number ten</col>
+        <col id="3" translatable="yes">red</col>
+        <col id="4" translatable="yes">Zehn</col>
+        <col id="5" translatable="yes">X</col>
+      </row>
+      <row>
+        <col id="0">11</col>
+        <col id="1" translatable="yes">eleven</col>
+        <col id="2" translatable="yes">Your tooltip for number eleven</col>
+        <col id="3" translatable="yes">blue</col>
+        <col id="4" translatable="yes">Elf</col>
+        <col id="5" translatable="yes">XI</col>
+      </row>
+      <row>
+        <col id="0">12</col>
+        <col id="1" translatable="yes">twelve</col>
+        <col id="2" translatable="yes">Your tooltip for number twelve</col>
+        <col id="3" translatable="yes">green</col>
+        <col id="4" translatable="yes">Zwölf</col>
+        <col id="5" translatable="yes">XII</col>
+      </row>
+      <row>
+        <col id="0">13</col>
+        <col id="1" translatable="yes">thirteen</col>
+        <col id="2" translatable="yes">Your tooltip for number thirteen</col>
+        <col id="3" translatable="yes">orange</col>
+        <col id="4" translatable="yes">Dreizehn</col>
+        <col id="5" translatable="yes">XIII</col>
+      </row>
+      <row>
+        <col id="0">14</col>
+        <col id="1" translatable="yes">fourteen</col>
+        <col id="2" translatable="yes">Your tooltip for number fourteen</col>
+        <col id="3" translatable="yes">brown</col>
+        <col id="4" translatable="yes">Vierzehn</col>
+        <col id="5" translatable="yes">XIV</col>
+      </row>
+      <row>
+        <col id="0">15</col>
+        <col id="1" translatable="yes">fifteen</col>
+        <col id="2" translatable="yes">Your tooltip for number fifteen</col>
+        <col id="3" translatable="yes">magenta</col>
+        <col id="4" translatable="yes">Fünfzehn</col>
+        <col id="5" translatable="yes">XV</col>
+      </row>
+      <row>
+        <col id="0">16</col>
+        <col id="1" translatable="yes">sixteen</col>
+        <col id="2" translatable="yes">Your tooltip for number sixteen</col>
+        <col id="3" translatable="yes">gold</col>
+        <col id="4" translatable="yes">Sechszehn</col>
+        <col id="5" translatable="yes">XVI</col>
+      </row>
+      <row>
+        <col id="0">17</col>
+        <col id="1" translatable="yes">seventeen</col>
+        <col id="2" translatable="yes">Your tooltip for number seventeen</col>
+        <col id="3" translatable="yes">azure</col>
+        <col id="4" translatable="yes">Siebzehn</col>
+        <col id="5" translatable="yes">XVII</col>
+      </row>
+      <row>
+        <col id="0">18</col>
+        <col id="1" translatable="yes">eighteen</col>
+        <col id="2" translatable="yes">Your tooltip for number eighteen</col>
+        <col id="3" translatable="yes">blue</col>
+        <col id="4" translatable="yes">Achtzehn</col>
+        <col id="5" translatable="yes">XVIII</col>
+      </row>
+      <row>
+        <col id="0">19</col>
+        <col id="1" translatable="yes">nineteen</col>
+        <col id="2" translatable="yes">Your tooltip for number nineteen</col>
+        <col id="3" translatable="yes">green</col>
+        <col id="4" translatable="yes">Neunzehn</col>
+        <col id="5" translatable="yes">XIX</col>
+      </row>
+      <row>
+        <col id="0">20</col>
+        <col id="1" translatable="yes">twenty</col>
+        <col id="2" translatable="yes">Your tooltip for number twenty</col>
+        <col id="3" translatable="yes">orange</col>
+        <col id="4" translatable="yes">Zwanzig</col>
+        <col id="5" translatable="yes">XX</col>
+      </row>
+      <row>
+        <col id="0">21</col>
+        <col id="1" translatable="yes">twentyone</col>
+        <col id="2" translatable="yes">Your tooltip for number twentyone</col>
+        <col id="3" translatable="yes">gold</col>
+        <col id="4" translatable="yes">Einundzwanzig</col>
+        <col id="5" translatable="yes">XXI</col>
+      </row>
+      <row>
+        <col id="0">22</col>
+        <col id="1" translatable="yes">twentytwo</col>
+        <col id="2" translatable="yes">Your tooltip for number twentytwo</col>
+        <col id="3" translatable="yes">green</col>
+        <col id="4" translatable="yes">Zweiundzwanzig</col>
+        <col id="5" translatable="yes">XXII</col>
+      </row>
+      <row>
+        <col id="0">23</col>
+        <col id="1" translatable="yes">twentythree</col>
+        <col id="2" translatable="yes">Your tooltip for number twentythree</col>
+        <col id="3" translatable="yes">azure</col>
+        <col id="4" translatable="yes">Dreiundzwanzig</col>
+        <col id="5" translatable="yes">XXIII</col>
+      </row>
+      <row>
+        <col id="0">24</col>
+        <col id="1" translatable="yes">twentyfour</col>
+        <col id="2" translatable="yes">Your tooltip for number twentyfour</col>
+        <col id="3" translatable="yes">grey</col>
+        <col id="4" translatable="yes">Vierundzwanzig</col>
+        <col id="5" translatable="yes">XXIV</col>
+      </row>
+      <row>
+        <col id="0">25</col>
+        <col id="1" translatable="yes">twentyfive</col>
+        <col id="2" translatable="yes">Your tooltip for number twentyfive</col>
+        <col id="3" translatable="yes">blue</col>
+        <col id="4" translatable="yes">Fünfundzwanzig</col>
+        <col id="5" translatable="yes">XXV</col>
+      </row>
+      <row>
+        <col id="0">26</col>
+        <col id="1" translatable="yes">twentysix</col>
+        <col id="2" translatable="yes">Your tooltip for number twentysix</col>
+        <col id="3" translatable="yes">green</col>
+        <col id="4" translatable="yes">Sechsundzwanzig</col>
+        <col id="5" translatable="yes">XXVI</col>
+      </row>
+      <row>
+        <col id="0">27</col>
+        <col id="1" translatable="yes">twentyseven</col>
+        <col id="2" translatable="yes">Your tooltip for number twentyseven</col>
+        <col id="3" translatable="yes">thistle</col>
+        <col id="4" translatable="yes">Siebenundzwanzig</col>
+        <col id="5" translatable="yes">XXVII</col>
+      </row>
+      <row>
+        <col id="0">28</col>
+        <col id="1" translatable="yes">twentyeight</col>
+        <col id="2" translatable="yes">Your tooltip for number twentyeight</col>
+        <col id="3" translatable="yes">azure</col>
+        <col id="4" translatable="yes">Achtundzwanzig</col>
+        <col id="5" translatable="yes">XXVIII</col>
+      </row>
+      <row>
+        <col id="0">29</col>
+        <col id="1" translatable="yes">twentynine</col>
+        <col id="2" translatable="yes">Your tooltip for number twentynine</col>
+        <col id="3" translatable="yes">thistle</col>
+        <col id="4" translatable="yes">Neunundzwanzig</col>
+        <col id="5" translatable="yes">XXIX</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkTextBuffer" id="textbuffer1">
+    <property name="text" translatable="yes">Type your text here:
+
+</property>
+  </object>
+</interface>

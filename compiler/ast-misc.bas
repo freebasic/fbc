@@ -62,7 +62,7 @@ declare sub astReplaceSymbolOnCALL _
 sub astMiscInit
 
 	''
-	listNew( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 	ast.flushdtorlist = TRUE
 
@@ -77,9 +77,9 @@ end sub
 '':::::
 sub astMiscEnd
 
-	listFree( @ast.dtorlist )
+	listEnd( @ast.dtorlist )
 
-End sub
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree scanning
@@ -153,15 +153,11 @@ function astIsTreeEqual _
   	    	end if
 
 		case else
+			'' bytes/shorts/integers/enums
 			if( l->con.val.int <> r->con.val.int ) then
 				exit function
 			end if
 		end select
-
-	case AST_NODECLASS_ENUM
-		if( l->con.val.int <> r->con.val.int ) then
-			exit function
-		end if
 
 	case AST_NODECLASS_DEREF
 		if( l->ptr.ofs <> r->ptr.ofs ) then
@@ -300,8 +296,7 @@ function astIsSymbolOnTree _
 
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
-			if( (s->attrib and _
-				(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) > 0 ) then
+			if (symbIsParamBydescOrByref(s)) then
 				return TRUE
 			end if
 		end if
@@ -413,6 +408,21 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' const helpers
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function astIsConstant( byval expr as ASTNODE ptr ) as integer
+	'' Checks whether an expression is a CONST node (number literals,
+	'' numeric constants), an access to a constant symbol (string literals
+	'' and string constants are accessed through VAR nodes), or whether it
+	'' has CONST on its data type.
+
+	if( expr->sym ) then
+		if( symbIsConstant( expr->sym ) ) then
+			return TRUE
+		end if
+	end if
+
+	return (astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ))
+end function
 
 '':::::
 function astGetValueAsInt _
@@ -557,7 +567,7 @@ function astGetValueAsLongInt _
   	    end if
 
   	case else
-  		if( symbIsSigned( astGetDataType( n ) ) ) then
+  		if( typeIsSigned( astGetDataType( n ) ) ) then
   			function = clngint( astGetValInt( n ) )
   		else
   			function = clngint( cuint( astGetValInt( n ) ) )
@@ -703,7 +713,7 @@ function astCheckConst _
 
 chk_long:
 		'' unsigned constant?
-		if( symbIsSigned( astGetDataType( n ) ) = FALSE ) then
+		if( typeIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( dtype, NULL, n )
@@ -715,7 +725,7 @@ chk_long:
 
 chk_ulong:
 		'' signed constant?
-		if( symbIsSigned( astGetDataType( n ) ) ) then
+		if( typeIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( dtype, NULL, n )
@@ -789,24 +799,14 @@ function astPtrCheck _
 
 	edtype = astGetFullType( expr )
 
-	select case astGetClass( expr )
-	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
-    	'' expr not a pointer?
-    	if( typeIsPtr( edtype ) = FALSE ) then
-    		'' not NULL?
-    		if( astGetValInt( expr ) <> NULL ) then
-    			exit function
-    		else
-    			return TRUE
-    		end if
-    	end if
-
-	case else
-    	'' expr not a pointer?
-    	if( typeIsPtr( edtype ) = FALSE ) then
-    		exit function
-    	end if
-	end select
+	'' expr not a pointer?
+	if (typeIsPtr(edtype) = FALSE) then
+		'' Only ok if it's a 0 constant
+		if (astIsCONST(expr) = FALSE) then
+			exit function
+		end if
+		return (astGetValInt(expr) = 0)
+	end if
 
 	'' different constant masks?
 	if( strictcheck ) then
@@ -839,8 +839,8 @@ function astPtrCheck _
     	'' 4th) same size and class?
     	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
     		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
-    		if( symbGetDataSize( pdtype_np ) = symbGetDataSize( edtype_np ) ) then
-    			if( symbGetDataClass( pdtype_np ) = symbGetDataClass( edtype_np ) ) then
+    		if( typeGetSize( pdtype_np ) = typeGetSize( edtype_np ) ) then
+    			if( typeGetClass( pdtype_np ) = typeGetClass( edtype_np ) ) then
     				return TRUE
     			end if
     		end if
@@ -850,7 +850,7 @@ function astPtrCheck _
     end if
 
 	'' check sub types
-	function = symbIsEqual( psubtype, astGetSubType( expr ) )
+	function = symbIsEqual( astGetSubType( expr ), psubtype )
 
 end function
 
@@ -953,13 +953,14 @@ function astUpdComp2Branch _
 		return NULL
 	end if
 
-	'' the expr must be already optimized because the x86 flag assumptions done below
+	'' Optimize here already to ensure the toplevel BOP is final and can be
+	'' relied upon for x86 flag assumptions below
 	n = astOptimizeTree( n )
 
 	dtype = astGetDataType( n )
 
 	'' string? invalid..
-	if( symbGetDataClass( dtype ) = FB_DATACLASS_STRING ) then
+	if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
 		return NULL
 	end if
 
@@ -1103,7 +1104,7 @@ function astUpdComp2Branch _
   	   			end if
 
 			case else
-				expr = astNewCONSTi( 0, dtype )
+				expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
 			end select
 
 			hDoBranch( )
@@ -1148,7 +1149,7 @@ function astUpdComp2Branch _
 		if( call_dtors = FALSE ) then
 			dim as integer doopt = any
 
-			if( symbGetDataClass( dtype ) = FB_DATACLASS_INTEGER ) then
+			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
 				doopt = irGetOption( IR_OPT_CPU_BOPSETFLAGS )
 
 				if( doopt ) then
@@ -1165,6 +1166,8 @@ function astUpdComp2Branch _
 
 			if( doopt ) then
 				'' check if zero (ie= FALSE)
+				'' (relying on the flags set by the BOP; so it must
+				'' not be removed by later astAdd() optimizations)
 				return astNewBRANCH( iif( isinverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
 			end if
 		end if
@@ -1187,7 +1190,7 @@ function astUpdComp2Branch _
   	   	end if
 
 	case else
-		expr = astNewCONSTi( 0, dtype )
+		expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
 	end select
 
 	hDoBranch( )
@@ -1284,39 +1287,6 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' hacks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub astIncOffset _
-	( _
-		byval n as ASTNODE ptr, _
-		byval ofs as integer _
-	)
-
-	select case as const n->class
-	case AST_NODECLASS_VAR
-		n->var_.ofs += ofs
-
-	case AST_NODECLASS_IDX
-		n->idx.ofs += ofs
-
-	case AST_NODECLASS_DEREF
-		n->ptr.ofs += ofs
-
-	case AST_NODECLASS_LINK
-		if( n->link.ret_left ) then
-			astIncOffset( n->l, ofs )
-		else
-			astIncOffset( n->r, ofs )
-		end if
-
-	case AST_NODECLASS_FIELD
-		astIncOffset( n->l, ofs )
-
-	case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	end select
-
-end sub
 
 '':::::
 sub astSetType _

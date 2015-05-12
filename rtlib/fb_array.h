@@ -1,6 +1,3 @@
-#ifndef __FB_ARRAY_H__
-#define __FB_ARRAY_H__
-
 typedef struct _FBARRAYDIM {
     int             elements;
     int             lbound;
@@ -206,5 +203,3 @@ void fb_hArrayCtorObj
 		FB_DEFCTOR ctor,
 		int base_idx
 	);
-
-#endif /* __FB_ARRAY_H__ */

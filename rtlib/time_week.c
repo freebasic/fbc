@@ -1,7 +1,7 @@
 /* week functions */
 
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 void fb_hGetBeginOfWeek( int *pYear, int *pMonth, int *pDay,

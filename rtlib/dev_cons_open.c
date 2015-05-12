@@ -1,8 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 static FB_FILE_HOOKS hooks_dev_cons = {
@@ -20,7 +17,7 @@ static FB_FILE_HOOKS hooks_dev_cons = {
     fb_DevFileReadLineWstr
 };
 
-int fb_DevConsOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevConsOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
     switch ( handle->mode )
     {

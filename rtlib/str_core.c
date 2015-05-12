@@ -8,10 +8,8 @@
  *      destine string size can't be 0, as it is always known
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
 #include "fb.h"
+#include <stddef.h>
 
 /**********
  * temp string descriptors (string lock is assumed to be held in the thread-safe rlib version)
@@ -21,11 +19,7 @@ static FB_LIST tmpdsList = { 0 };
 
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTmpDesc
-	( 
-		void 
-	)
+FBCALL FBSTRING *fb_hStrAllocTmpDesc( void )
 {
 	FB_STR_TMPDESC *dsc;
 
@@ -45,8 +39,7 @@ FBCALL FBSTRING *fb_hStrAllocTmpDesc
 	return &dsc->desc;
 }
 
-/*:::::*/
-FBCALL void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
+static void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 {
 	fb_hListFreeElem( &tmpdsList,  &dsc->elem );
 
@@ -56,11 +49,7 @@ FBCALL void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 	dsc->desc.size = 0;
 }
 
-/*:::::*/
-FBCALL int fb_hStrDelTempDesc
-	( 
-		FBSTRING *str 
-	)
+FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
 {
     FB_STR_TMPDESC *item =
         (FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
@@ -81,12 +70,7 @@ FBCALL int fb_hStrDelTempDesc
 /* alloc every 32-bytes */
 #define hStrRoundSize( size ) (((size) + 31) & ~31)
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrAlloc
-	( 
-		FBSTRING *str, 
-		int size 
-	)
+FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, int size )
 {
 	int newsize = hStrRoundSize( size );
 	
@@ -110,13 +94,7 @@ FBCALL FBSTRING *fb_hStrAlloc
     return str;
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrRealloc
-	( 
-		FBSTRING *str, 
-		int size, 
-		int preserve 
-	)
+FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 {
 	int newsize = hStrRoundSize( size );
 	/* plus 12.5% more */
@@ -170,12 +148,7 @@ FBCALL FBSTRING *fb_hStrRealloc
     return str;
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTemp_NoLock
-	( 
-		FBSTRING *str, 
-		int size 
-	)
+FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
 {
     int try_alloc = str==NULL;
 
@@ -198,12 +171,7 @@ FBCALL FBSTRING *fb_hStrAllocTemp_NoLock
     return str;
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_hStrAllocTemp
-	( 
-		FBSTRING *str, 
-		int size 
-	)
+FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
 {
     FBSTRING *res;
 
@@ -216,11 +184,7 @@ FBCALL FBSTRING *fb_hStrAllocTemp
     return res;
 }
 
-/*:::::*/
-FBCALL int fb_hStrDelTemp_NoLock
-	( 
-		FBSTRING *str 
-	)
+FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
 {
 	if( str == NULL )
 		return -1;
@@ -233,11 +197,7 @@ FBCALL int fb_hStrDelTemp_NoLock
     return fb_hStrDelTempDesc( str );
 }
 
-/*:::::*/
-FBCALL int fb_hStrDelTemp
-	( 
-		FBSTRING *str 
-	)
+FBCALL int fb_hStrDelTemp( FBSTRING *str )
 {
 	int res;
 
@@ -250,13 +210,7 @@ FBCALL int fb_hStrDelTemp
 	return res;
 }
 
-/*:::::*/
-FBCALL void fb_hStrCopy
-	( 
-		char *dst, 
-		const char *src, 
-		int bytes 
-	)
+FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
 {
     if( (src != NULL) && (bytes > 0) )
     {
@@ -266,44 +220,3 @@ FBCALL void fb_hStrCopy
     /* add the null-term */
     *dst = 0;
 }
-
-
-/*:::::*/
-FBCALL char *fb_hStrSkipChar
-	( 
-		char *s, 
-		int len, 
-		int c 
-	)
-{
-	char *p = s;
-
-	if( s != NULL )
-		while( (--len >= 0) && ((int)*p == c) )
-			++p;
-
-    return p;
-}
-
-/*:::::*/
-FBCALL char *fb_hStrSkipCharRev
-	( 
-		char *s, 
-		int len, 
-		int c 
-	)
-{
-	char *p;
-
-	if( (s == NULL) || (len <= 0) )
-		return s;
-
-	p = &s[len-1];
-
-    /* fixed-len's are filled with null's as in PB, strip them too */
-    while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0) ) )
-		--p;
-
-    return p;
-}
-

@@ -1,7 +1,7 @@
 /* datediff function */
 
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL long long fb_DateDiff( FBSTRING *interval, double serial1, double serial2,

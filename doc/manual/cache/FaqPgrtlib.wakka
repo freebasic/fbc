@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Frequently Asked FB Runtime Library Questions"}}----
 
 {{anchor name="item0"}}
-**FreeBASIC Runtime Library questions:**
+**""FreeBASIC"" Runtime Library questions:**
 
 	==- {{anchor name="item1|How do I play sound?"}}==
 	==- {{anchor name="item2|How do I access the serial ports?"}}==
@@ -13,7 +13,7 @@
 
 ----
 
-@@**FreeBASIC Runtime Library questions**@@
+@@**""FreeBASIC"" Runtime Library questions**@@
 
 {{anchor name="item1"}}== How do I play sound?==
 	Of the QB's sound keywords only BEEP is implemented in FB. 
@@ -53,14 +53,14 @@
 
 ~&This item is written as of 01.30.2007.
 
-	A FreeBASIC [[KeyPgString String]] is essentially a built-in user-defined type that, among other things, contains a pointer to the string data and it's length. This type is called a 'descriptor' internally, and it is this descriptor that is passed to procedures when it's parameters are passed by reference.
-	When passed by value, however, the actual string data is passed, not the descriptor. Internally, the string data is terminated with the NULL character (chr(0)). When the temporary [[KeyPgString String]] is created for the procedure, FreeBASIC copies the string data passed up until the first NULL character. If the [[KeyPgString String]] argument passed contained NULL characters within the string, then the rest of the string data after the first NULL is not copied, and the string is truncated. You also run the risk of writing outside the bounds of the allocated memory.
+	A ""FreeBASIC"" [[KeyPgString String]] is essentially a built-in user-defined type that, among other things, contains a pointer to the string data and it's length. This type is called a 'descriptor' internally, and it is this descriptor that is passed to procedures when it's parameters are passed by reference.
+	When passed by value, however, the actual string data is passed, not the descriptor. Internally, the string data is terminated with the NULL character (chr(0)). When the temporary [[KeyPgString String]] is created for the procedure, ""FreeBASIC"" copies the string data passed up until the first NULL character. If the [[KeyPgString String]] argument passed contained NULL characters within the string, then the rest of the string data after the first NULL is not copied, and the string is truncated. You also run the risk of writing outside the bounds of the allocated memory.
 	This behavior will eventually be fixed to act as it should: a temporary descriptor will be created for the procedure and a 'deep copy' of it's fields will be made (notably, the entire string data itself will be copied into new memory, and the new descriptor will point to that memory).
 	To be safe, pass [[KeyPgString Strings]] by reference. If you need to simulate the correct behavior of passing a [[KeyPgString String]] by value, either 1) create a temporary [[KeyPgString String]], initialize it with the [[KeyPgString String]] you want to pass and pass the temporary by reference, or 2) pass the [[KeyPgString String]] by reference and have the procedure create and initialize a temporary [[KeyPgString String]] and work with the temporary.
 
 {{anchor name="item0|Back to top"}}
 
-See also:
+{{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]]
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 and

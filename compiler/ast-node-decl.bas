@@ -134,7 +134,6 @@ end function
 '':::::
 function astNewDECL _
 	( _
-		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
 		byval no_ctorcall as integer _
@@ -144,14 +143,8 @@ function astNewDECL _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
-	select case symclass
-	case FB_SYMBCLASS_VAR
-		n->l = hCallCtor( sym, initree, no_ctorcall )
-	end select
+	n->l = hCallCtor( sym, initree, no_ctorcall )
 
 	function = n
 

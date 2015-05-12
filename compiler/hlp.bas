@@ -5,7 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 #include once "ir.bi"
 #include once "lex.bi"
 #include once "dstr.bi"
@@ -216,12 +215,13 @@ end function
 '':::::
 sub hUcase _
 	( _
-		byval src as zstring ptr, _
+		byval src as const zstring ptr, _
 		byval dst as zstring ptr _
 	) static
 
     dim as integer c
-    dim as zstring ptr s, d
+    dim as const zstring ptr s
+    dim as zstring ptr d
 
 	s = src
 	d = dst
@@ -409,7 +409,7 @@ function hRevertSlash _
     dim as integer i, c
 
 	if( allocnew ) then
-		res = allocate( len( *src ) + 1 )
+		res = xallocate( len( *src ) + 1 )
 
 		for i = 0 to len( *src )-1
 			c = src[i]
@@ -434,6 +434,21 @@ function hRevertSlash _
 
 	end if
 
+end function
+
+function pathStripDiv(byref path as string) as string
+	dim as integer length = len(path)
+	if (length > 0) then
+		select case (path[length])
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+		case asc("/"), asc("\")
+#else
+		case asc("/")
+#endif
+			return left(path, length - 1)
+		end select
+	end if
+	return path
 end function
 
 '':::::
@@ -640,9 +655,6 @@ end function
 
 '' :::::
 function hEnvDir( ) as string static
-
-	dim as string path
-
 #if defined(__FB_WIN32__) Or defined(__FB_DOS__)
   #define hIsAbsolutePath( path ) path[1] = asc(":")
 #else
@@ -651,36 +663,17 @@ function hEnvDir( ) as string static
 
 	'' absolute path given?
 	if( hIsAbsolutePath( env.inf.name ) ) then
-    	'' leave path, with trailing slash
-		path = hStripFilename( env.inf.name )
-
-		'' remove trailing slash
-		path = left( path, len( path ) - 1 )
-
-		function = path
-
+		function = pathStripDiv(hStripFilename(env.inf.name))
 	else
 		'' relative path
-
 		'' not in the original directory?
 		if( instr( env.inf.name, "/" ) > 0 ) then
-			'' leave path, with trailing slash
-			path = hStripFilename( env.inf.name )
-
-			'' remove trailing slash
-			path = left( path, len( path ) - 1 )
-
-			'' add leading slash
-			path = FB_HOST_PATHDIV + path
-
+			function = hCurDir() + FB_HOST_PATHDIV + _
+			           pathStripDiv(hStripFilename(env.inf.name))
 		else
-			path = ""
+			function = hCurDir()
 		end if
-
-		function = hCurDir( ) + path
-
 	end if
-
 end function
 
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer
@@ -700,3 +693,22 @@ function hIsValidSymbolName( byval sym as zstring ptr ) as integer
 	function = TRUE
 
 end function
+
+'' Checks whether a string starts with and ends in [double-]quotes.
+private function strIsQuoted(byref s as string) as integer
+	dim as integer last = len(s) - 1
+	if (last < 1) then
+		return FALSE
+	end if
+
+	return (((s[0] = asc("""")) and (s[last] = asc(""""))) or _
+	        ((s[0] = asc("'" )) and (s[last] = asc("'" ))))
+end function
+
+function strUnquote(byref s as string) as string
+	if (strIsQuoted(s)) then
+		return mid(s, 2, len(s) - 2)
+	end if
+	return s
+end function
+

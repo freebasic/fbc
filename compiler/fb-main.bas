@@ -24,25 +24,20 @@ const fbdllreason = "__FB_DLLREASON__"
 	proc = symbPreAddProc( NULL )
 
 	'' instance
-	symbAddProcParam( proc, "__FB_DLLINSTANCE__", NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  0, NULL )
+	symbAddProcParam( proc, "__FB_DLLINSTANCE__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reason
-	param = symbAddProcParam( proc, fbdllreason, NULL, _
-					  		  FB_DATATYPE_UINT, NULL, _
-					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  		  0, NULL )
+	param = symbAddProcParam( proc, fbdllreason, FB_DATATYPE_UINT, NULL, _
+	                          FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reserved
-	symbAddProcParam( proc, "__FB_DLLRESERVED__", NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	symbAddProcParam( proc, "__FB_DLLRESERVED__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
-	proc = symbAddProc( proc, NULL, "DllMain", NULL, _
+	proc = symbAddProc( proc, NULL, "DllMain", _
 						FB_DATATYPE_INTEGER, NULL, _
 						FB_SYMBATTRIB_PUBLIC, _
 						env.target.stdcall )
@@ -95,7 +90,7 @@ private sub hDllMainBegin_GlobCtor ( )
    	dim as ASTNODE ptr main, procnode
 
 	'' sub ctor cdecl( )
-	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE, _
 						FB_FUNCMODE_CDECL )
@@ -149,16 +144,12 @@ const fbargv = "__FB_ARGV__"
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	env.main.argc = symbAddProcParam( proc, fbargc, NULL, _
-					  			   	  FB_DATATYPE_INTEGER, NULL, _
-					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  0, NULL )
+	env.main.argc = symbAddProcParam( proc, fbargc, FB_DATATYPE_INTEGER, NULL, _
+	                                  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' argv
-	env.main.argv = symbAddProcParam( proc, fbargv, NULL, _
-					  				  typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  0, NULL )
+	env.main.argv = symbAddProcParam( proc, fbargv, typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
@@ -172,7 +163,7 @@ const fbargv = "__FB_ARGV__"
 	end if
 
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
-	env.main.proc = symbAddProc( proc, NULL, id, NULL, _
+	env.main.proc = symbAddProc( proc, NULL, id, _
 								 FB_DATATYPE_INTEGER, NULL, _
 								 attrib, _
 								 FB_FUNCMODE_CDECL )
@@ -206,7 +197,7 @@ private sub hModLevelBegin( )
 
 	'' sub modlevel cdecl( ) constructor
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
-								 "{modlevel}", fbGetModuleEntry( ), NULL, _
+								 "{modlevel}", fbGetModuleEntry( ), _
 								 FB_DATATYPE_VOID, NULL, _
 								 FB_SYMBATTRIB_PRIVATE, _
 								 FB_FUNCMODE_CDECL )

@@ -1,23 +1,18 @@
 /* GOSUB support */
 
-#include <stdlib.h>
 #include <setjmp.h>
 #include "fb.h"
 
 /* slow but easy to manage dynamic GOSUB call-stack */
-struct gosubnode
-{
+typedef struct gosubnode {
 	jmp_buf buf;
 	struct gosubnode *next;
-}; 
-typedef struct gosubnode GOSUBNODE;
+} GOSUBNODE;
 
 /* the gosub context allocated in auto-local storage by the compiler */
-struct gosubctx
-{
+typedef struct {
 	GOSUBNODE *top;
-};
-typedef struct gosubctx GOSUBCTX;
+} GOSUBCTX;
 
 /*
 	NOTES:

@@ -1,7 +1,5 @@
 /* input function for float's and double's */
 
-#define _ISOC99_SOURCE
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

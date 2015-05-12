@@ -1,6 +1,5 @@
 /* chrw$ routine */
 
-#include <stdarg.h>
 #include "fb.h"
 
 /*:::::*/

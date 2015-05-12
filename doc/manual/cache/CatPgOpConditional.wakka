@@ -9,11 +9,13 @@ The relational operators perform comparisons between the values of two operands.
 	Compares the inequality relation of two operands.
 =={{fbdoc item="keyword" value="KeyPgOpLessThan|Operator < (Less than)"}}==
 	Compares the less than relation of two operands.
-<<>>=={{fbdoc item="keyword" value="KeyPgOpLessThanOrEqual|Operator <= (Less than or equal)"}}==
+=={{fbdoc item="keyword" value="KeyPgOpLessThanOrEqual|Operator <= (Less than or equal)"}}==
 	Compares the less than or equal relation of two operands.
 =={{fbdoc item="keyword" value="KeyPgOpGreaterThanOrEqual|Operator >= (Greater than or equal)"}}==
 	Compares the greater than or equal relation of two operands.
 =={{fbdoc item="keyword" value="KeyPgOpGreaterThan|Operator > (Greater than)"}}==
 	Compares the greater than relation of two operands.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpIs|Operator Is (Run-time type information)"}}==
+	Checks whether an object is of a certain type.
 >>::c::
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

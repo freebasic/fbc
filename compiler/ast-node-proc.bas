@@ -58,11 +58,6 @@ declare sub hCallDtors _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare sub hDestroyVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
 declare sub hGenStaticInstancesDtors _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -81,7 +76,7 @@ sub astProcListInit( )
 	ast.proc.curr = NULL
 
 	''
-	listNew( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
 	ast.globinst.ctorcnt = 0
 	ast.globinst.dtorcnt = 0
 
@@ -92,7 +87,7 @@ sub astProcListEnd( )
 
 	ast.globinst.dtorcnt = 0
 	ast.globinst.ctorcnt = 0
-	listFree( @ast.globinst.list )
+	listEnd( @ast.globinst.list )
 
 	''
 	ast.proc.head = NULL
@@ -189,7 +184,7 @@ private sub hProcFlush _
 		irEmitPROCBEGIN( sym, p->block.initlabel )
 
 		'' allocate the non-static local variables on stack
-		symbProcAllocLocalVars( sym )
+		astScopeAllocLocals(symbGetProcSymbTbHead(sym))
 	end if
 
 	'' flush nodes
@@ -624,9 +619,7 @@ function astProcEnd _
 		'' if the function body is empty, no ctor initialization will be done
 		hCheckCtor( n )
 
-		'' del local dynamic arrays and var-len strings (see the note in
-		'' the top, procs don't create an implicit scope block)
-		hDestroyVars( sym )
+		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 
 		'' dtor?
 		if( symbIsDestructor( sym ) ) then
@@ -638,8 +631,8 @@ function astProcEnd _
    	''
    	astAdd( astNewLABEL( n->block.exitlabel ) )
 
-	'' check undefined local labels
-	res = (symbCheckLocalLabels( ) = 0)
+	'' Check for any undefined labels (labels can be forward references)
+	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res = TRUE ) then
 		'' update proc's breaks list, adding calls to destructors when needed
@@ -1059,29 +1052,84 @@ private sub hCallFieldCtors _
     do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
-			'' part of an union?
-			if( symbGetIsUnionField( fld ) ) then
-				fld = hClearUnionFields( this_, fld )
-
-				'' skip next
-				continue do
-
-			else
-				'' not initialized?
-				if( symbGetTypeIniTree( fld ) = NULL ) then
-					hCallFieldCtor( this_, fld )
-
-				'' flush the tree..
+			
+			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
+			If( fld <> parent->udt.base ) Then
+			
+				'' part of an union?
+				if( symbGetIsUnionField( fld ) ) then
+					fld = hClearUnionFields( this_, fld )
+	
+					'' skip next
+					continue do
+	
 				else
-					hFlushFieldInitTree( this_, fld )
-				end if
-			end if
+					'' not initialized?
+					if( symbGetTypeIniTree( fld ) = NULL ) then
+						hCallFieldCtor( this_, fld )
+	
+					'' flush the tree..
+					else
+						hFlushFieldInitTree( this_, fld )
+					end if
+				end If
+			
+			End If
 		end if
 
 		fld = fld->next
 	loop
 
 end sub
+
+'':::::
+private sub hCallBaseCtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _		
+	)
+	
+	if( parent->udt.base = NULL ) then
+		exit sub
+	End If
+	
+	var ctor = symbGetCompDefCtor( symbGetSubtype( parent->udt.base ) )
+	
+	if( ctor = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+	hCallFieldCtor( this_, parent->udt.base )
+
+End Sub
+
+'':::::
+private sub hInitVtable _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _		
+	)
+	
+	if( symbGetHasRTTI( parent ) = FALSE ) then
+		exit sub
+	End If
+	
+	if( parent->udt.ext = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+    '' this.pvt = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) ) 
+    astAdd( _ 
+    	astNewASSIGN( _ 
+    		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
+    		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+    				astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) ) )
+
+End Sub
 
 '':::::
 private sub hCallCtors _
@@ -1094,12 +1142,63 @@ private sub hCallCtors _
 	parent = symbGetNamespace( proc )
 
 	'' 1st) base ctors
-    '' ...
+    hCallBaseCtors( parent, proc ) 
 
 	'' 2nd) field ctors
     hCallFieldCtors( parent, proc )
+    
+    '' 3rd) setup de vtable ptr
+    hInitVtable( parent, proc )
 
 end sub
+
+'':::::
+private sub hCallFieldDtor _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	)		
+
+	select case symbGetType( fld )
+	case FB_DATATYPE_STRING
+
+		var fldexpr = astBuildInstPtr( this_, fld )
+
+    	'' not an array?
+    	if( (symbGetArrayDimensions( fld ) = 0) or _
+    		(symbGetArrayElements( fld ) = 1) ) then
+
+    		astAdd( rtlStrDelete( fldexpr ) )
+
+		'' array..
+		else
+	    	astAdd( rtlArrayStrErase( fldexpr ) )
+		end if
+
+	case FB_DATATYPE_STRUCT
+    	var subtype = symbGetSubtype( fld )
+
+    	'' has a dtor too?
+    	if( symbGetHasDtor( subtype ) ) then
+
+    		'' not an array?
+    		if( (symbGetArrayDimensions( fld ) = 0) or _
+    			(symbGetArrayElements( fld ) = 1) ) then
+
+    			'' dtor( this.field )
+    			astAdd( astBuildDtorCall( subtype, _
+    									  astBuildInstPtr( this_, fld ) ) )
+
+    		'' array..
+    		else
+    			hCallCtorList( FALSE, this_, fld )
+    		end if
+
+    	end if
+
+	end Select
+
+End Sub
 
 '':::::
 private sub hCallFieldDtors _
@@ -1120,51 +1219,39 @@ private sub hCallFieldDtors _
 
 		if( symbIsField( fld ) ) then
 
-			select case symbGetType( fld )
-			case FB_DATATYPE_STRING
-				dim as ASTNODE ptr fldexpr
+			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
+			If( fld <> parent->udt.base ) Then
 
-        		fldexpr = astBuildInstPtr( this_, fld )
-
-            	'' not an array?
-            	if( (symbGetArrayDimensions( fld ) = 0) or _
-            		(symbGetArrayElements( fld ) = 1) ) then
-
-            		astAdd( rtlStrDelete( fldexpr ) )
-
-        		'' array..
-        		else
-        	    	astAdd( rtlArrayStrErase( fldexpr ) )
-				end if
-
-			case FB_DATATYPE_STRUCT
-            	dim as FBSYMBOL ptr subtype
-
-            	subtype = symbGetSubtype( fld )
-
-            	'' has a dtor too?
-            	if( symbGetHasDtor( subtype ) ) then
-
-            		'' not an array?
-            		if( (symbGetArrayDimensions( fld ) = 0) or _
-            			(symbGetArrayElements( fld ) = 1) ) then
-
-            			'' dtor( this.field )
-            			astAdd( astBuildDtorCall( subtype, _
-            									  astBuildInstPtr( this_, fld ) ) )
-
-            		'' array..
-            		else
-            			hCallCtorList( FALSE, this_, fld )
-            		end if
-
-            	end if
-
-			end select
+				hCallFieldDtor( this_, fld )
+				
+			End if
 		end if
 
 		fld = fld->prev
 	loop
+
+end sub
+
+'':::::
+private sub hCallBaseDtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	)
+	
+	if( parent->udt.base = NULL ) then
+		exit sub
+	End If
+	
+	var dtor = symbGetCompDtor( symbGetSubtype( parent->udt.base ) )
+	
+	if( dtor = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+	hCallFieldDtor( this_, parent->udt.base )
 
 end sub
 
@@ -1182,31 +1269,7 @@ private sub hCallDtors _
     hCallFieldDtors( parent, proc )
 
 	'' 2nd) base dtors
-	'' ...
-
-end sub
-
-'':::::
-private sub hDestroyVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr s = any
-
-	'' for each var (in inverse order)
-	s = symbGetProcSymbTb( proc ).tail
-    do while( s <> NULL )
-    	'' variable?
-    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
-			'' has a dtor?
-			if( symbGetVarHasDtor( s ) ) then
-				astAdd( astBuildVarDtorCall( s, TRUE ) )
-			end if
-    	end if
-
-    	s = s->prev
-    loop
+	hCallBaseDtors( parent, proc )
 
 end sub
 
@@ -1282,7 +1345,7 @@ private sub hGenStaticInstancesDtors _
     loop
 
     '' destroy list
-    listFree( dtorlist )
+    listEnd( dtorlist )
     deallocate( proc->proc.ext->statdtor )
     proc->proc.ext->statdtor = NULL
 
@@ -1302,19 +1365,16 @@ function astProcAddStaticInstance _
 
 	'' create a new list
 	if( dtorlist = NULL ) then
-		dtorlist = callocate( len( TLIST ) )
+		dtorlist = xcallocate( len( TLIST ) )
 		parser.currproc->proc.ext->statdtor = dtorlist
 
-		listNew( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
+		listInit( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
 	end if
 
     ''
     wrap = listNewNode( dtorlist )
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
-						NULL, _
-						NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
@@ -1368,10 +1428,8 @@ private function hGlobCtorBegin _
     dim as FBSYMBOL ptr proc = any
     dim as ASTNODE ptr n = any
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-						NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )

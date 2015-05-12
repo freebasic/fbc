@@ -1,7 +1,5 @@
 /* string assigning function */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

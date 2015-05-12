@@ -1,8 +1,6 @@
 /* assertion functions */
 
 #include "fb.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 /*:::::*/
 static void printmsg( char *filename, int linenum, char *funcname, char *expression )

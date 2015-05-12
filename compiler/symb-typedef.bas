@@ -13,7 +13,7 @@
 '':::::
 sub symbFwdRefInit( )
 
-	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
 
 	symb.fwdrefcnt = 0
 
@@ -22,7 +22,7 @@ end sub
 '':::::
 sub symbFwdRefEnd( )
 
-	listFree( @symb.fwdlist )
+	listEnd( @symb.fwdlist )
 
 end sub
 
@@ -150,7 +150,9 @@ private sub hFixForwardRef _
         dtype = FB_DATATYPE_ENUM
         subtype = sym
 
-    case FB_SYMBCLASS_TYPEDEF
+    case else
+		assert(symbIsTypedef(sym))
+
         '' For an enum/struct the dtype will simply be FB_DATATYPE_ENUM/STRUCT,
         '' but for a typedef, it can contain PTR's and CONST's, and the type
         '' can be anything, even another FB_DATATYPE_FWDREF.
@@ -160,8 +162,6 @@ private sub hFixForwardRef _
         '' replace the fwdref. Afterall there is no typedef data type.
         subtype = symbGetSubtype( sym )
 
-    case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     end select
 
     '' Cycle through the forward ref's list of users

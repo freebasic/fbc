@@ -32,6 +32,71 @@ Retrieves information about an image
 	It can also provide the size of the image in memory, which is useful for allocating memory to copy the existing image, or to write the image to a file.
 
 {{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/pixelptr.bas"}}%%(freebasic)
+'' pixelptr(): use imageinfo() to find the pointer to a pixel in the image
+'' returns null on error or x,y out of bounds
+function pixelptr(byval img as any ptr, byval x as integer, byval y as integer) as any ptr
+
+	dim as integer w, h, bypp, pitch
+	dim as any ptr pixdata
+	dim as integer success
+	
+	success = (imageinfo(img, w, h, bypp, pitch, pixdata) = 0)
+	
+	if success then
+	    if x < 0 or x >= w then return 0
+	    if y < 0 or y >= h then return 0
+	    return pixdata + y * pitch + x * bypp
+	else
+	    return 0
+	end if
+	
+end function
+
+'' usage example:
+
+'' 320*200 graphics screen, 8 bits per pixel
+screenres 320, 200, 8
+
+dim as any ptr ip '' image pointer
+
+dim as byte ptr pp '' pixel pointer (use byte for 8 bits per pixel)
+
+ip = imagecreate(32, 32) '' create an image (32*32, 8 bits per pixel)
+
+if ip <> 0 then
+
+	'' draw a pattern on the image
+	for y as integer = 0 to 31
+
+	    for x as integer = y - 5 to y + 5 step 5
+
+	        '' find the pointer to pixel at x,y position
+	        '' note: this is inefficient to do for every pixel!
+	        pp = pixelptr(ip, x, y)
+
+	        '' if success, plot a value at the pixel
+	        if (pp <> 0) then *pp = 15
+
+	    next x
+
+	next y
+
+	'' put the image and draw a border around it
+	put (10, 10), ip, pset
+	line (9, 9)-step(33, 33), 4, b
+
+	'' destroy the image to reclaim memory
+	imagedestroy ip
+
+else
+	print "Error creating image!"
+end if
+
+sleep
+%%
+{{image class="center" title="Output image for pixelptr() example" url="/images/pixelptr.png"}}
+
 {{fbdoc item="filename" value="examples/manual/gfx/imageinfo.bas"}}%%(freebasic)
 '' Create 32-bit graphics screen and image.
 screenres 320, 200, 32
@@ -64,7 +129,6 @@ imagedestroy( image )
 sleep
 %%
 {{image class="center" title="Output image for ImageInfo example" url="/images/imageinfo.png"}}
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imageinfo""**##.

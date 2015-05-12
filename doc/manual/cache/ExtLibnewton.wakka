@@ -1,10 +1,9 @@
 {{fbdoc item="title" value="Newton"}}----
-Integrated solution for real time simulation of physics environments. 
+The Newton Physics Engine is an integrated solution for real time simulation of physics environments. 
 
 Website: http://newtondynamics.com/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: Newton.bi
-
+Header version: from 2005
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

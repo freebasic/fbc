@@ -1,6 +1,5 @@
 /* ERASE function for static arrays of objects */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

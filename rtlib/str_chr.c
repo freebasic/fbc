@@ -1,7 +1,5 @@
 /* chr$ routine */
 
-#include <stdlib.h>
-#include <stdarg.h>
 #include "fb.h"
 
 /*:::::*/

@@ -51,9 +51,7 @@ private function hGlobalId _
     if( (options and FB_IDOPT_ISDECL) <> 0 ) then
     	'' different name spaces?
     	if( symbIsGlobalNamespc( ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    			exit function
-    		end if
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
     	end if
     end if
 
@@ -130,6 +128,8 @@ function cIdentifier _
 		byref base_parent as FBSYMBOL ptr, _
 		byval options as FB_IDOPT _
 	) as FBSYMCHAIN ptr
+
+	assert((options and FB_IDOPT_DONTCHKPERIOD) = 0)
 
     dim as FBSYMCHAIN ptr chain_ = any
     dim as FBSYMBOL ptr parent = any
@@ -211,9 +211,7 @@ function cIdentifier _
 		if( parent <> NULL ) then
 			if( symbCheckAccess( parent, sym ) = FALSE ) then
 				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
-					if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
-						return NULL
-					end if
+					errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 				end if
 			end if
 		end if
@@ -222,18 +220,16 @@ function cIdentifier _
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
     		'' if it's a namespace, the '.' is obligatory, the
     		'' namespace itself isn't a composite type
+			'' The only exception to that is namespaces appearing
+			'' in preprocessor expressions in #ifdef or #undef etc.
+			'' Those don't pass FB_IDOPT_SHOWERROR, and they skip
+			'' this last namespace id manually (like any other id),
+			'' because for them, this is not a syntax error.
     		if( symbGetClass( sym ) = FB_SYMBCLASS_NAMESPACE ) then
-    			'' skip id
-    			lexSkipToken( LEXCHECK_NOPERIOD )
-
-    			if( (options and FB_IDOPT_DONTCHKPERIOD) <> 0 ) then
-    				exit do
-    			end if
-
     			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
-    				if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
-    					return NULL
-    				end if
+					'' skip id
+					lexSkipToken( LEXCHECK_NOPERIOD )
+					errReport( FB_ERRMSG_EXPECTEDPERIOD )
     			end if
     		end if
 
@@ -244,9 +240,7 @@ function cIdentifier _
     		'' not in BASIC mangling mode?
     		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
     			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
-    				if( errReport( FB_ERRMSG_NONSCOPEDENUM ) = FALSE ) then
-    					return NULL
-    				end if
+					errReport( FB_ERRMSG_NONSCOPEDENUM )
     			end if
     			exit do
     		end if
@@ -410,9 +404,7 @@ function cParentId _
     	'' check visibility
 		if( parent <> NULL ) then
 			if( symbCheckAccess( parent, sym ) = FALSE ) then
-				if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
-					return NULL
-				end if
+				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if
 		end if
 
@@ -425,22 +417,16 @@ function cParentId _
     			exit do
     		end if
 
-    		if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
-    			return NULL
-    		else
-    			exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			exit do
     	end if
 
-    	if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
-    		'' not in BASIC mangling mode?
-    		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
-    			if( errReport( FB_ERRMSG_NONSCOPEDENUM ) = FALSE ) then
-    				return NULL
-    			else
-    				exit do
-    			end if
-    		end if
+		if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
+			'' not in BASIC mangling mode?
+			if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
+				errReport( FB_ERRMSG_NONSCOPEDENUM )
+				exit do
+			end if
 		end if
 
     	'' skip id
@@ -464,18 +450,12 @@ function cParentId _
     			exit do
     		end if
 
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			return NULL
-    		else
-    			exit do
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			exit do
 
     	case else
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			return NULL
-    		else
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     			exit do
-    		end if
     	end select
 
     	chain_ = symbLookupAt( sym, lexGetText( ), FALSE )
@@ -488,4 +468,27 @@ function cParentId _
 
 end function
 
+sub cCurrentParentId()
+	'' Parse namespace prefix(es) on an identifier in a declaration,
+	'' then complain if it doesn't match the current namespace.
+	'' This is part of requiring declarations to be written inside a
+	'' namespace block in order to add them to a namespace.
 
+	dim as FBSYMBOL ptr s = cParentId()
+	if( s = NULL ) then
+		return
+	end if
+
+	select case symbGetClass( s )
+	case FB_SYMBCLASS_NAMESPACE
+		if( s <> symbGetCurrentNamespc( ) ) then
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
+		end if
+
+	case FB_SYMBCLASS_CLASS
+		if( s <> symbGetCurrentNamespc( ) ) then
+			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+		end if
+
+	end select
+end sub

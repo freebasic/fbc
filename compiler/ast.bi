@@ -29,7 +29,6 @@ enum AST_NODECLASS
 	AST_NODECLASS_VAR
 	AST_NODECLASS_IDX
 	AST_NODECLASS_FIELD
-	AST_NODECLASS_ENUM
 	AST_NODECLASS_DEREF
 	AST_NODECLASS_LABEL
 	AST_NODECLASS_ARG
@@ -59,10 +58,8 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_CTORLIST
 	AST_NODECLASS_TYPEINI_SCOPEINI
 	AST_NODECLASS_TYPEINI_SCOPEEND
-	AST_NODECLASS_TYPEINI_SEPARATOR
 
 	AST_NODECLASS_PROC
-	AST_NODECLASS_NAMESPC
 
 	AST_CLASSES
 end enum
@@ -235,8 +232,6 @@ type ASTNODE
 	dtype			as integer
 	subtype			as FBSYMBOL ptr
 
-	defined 		as integer						'' only true for constants
-
 	sym				as FBSYMBOL ptr					'' attached symbol
 
 	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
@@ -317,7 +312,6 @@ type ASTCTX
 	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
 
 	doemit			as integer
-	isopt			as integer
 
 	typeinicnt		as integer
 
@@ -337,7 +331,7 @@ end enum
 type AST_OPINFO
 	class			as AST_NODECLASS
 	flags 			as AST_OPFLAGS
-	id				as zstring ptr
+	id				as const zstring ptr
 	selfop			as AST_OP						'' self version
 end type
 
@@ -345,13 +339,6 @@ type AST_LOADCB as function _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
-
-type AST_SETTYPECB as sub _
-	( _
-		byval n as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	)
 
 type AST_CLASSINFO
 	loadcb			as AST_LOADCB
@@ -399,16 +386,13 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-declare function astIsADDR _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
 declare sub astCONST2FBValue _
 	( _
 		byval dst as FBVALUE ptr, _
 		byval expr as ASTNODE ptr _
 	)
+
+declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
 
 declare function astGetValueAsInt _
 	( _
@@ -479,25 +463,15 @@ declare sub astScopeEnd _
 		byval s as ASTNODE ptr _
 	)
 
-declare function astScopeBreak _
-	( _
-		byval tolabel as FBSYMBOL ptr _
-	) as integer
+declare sub astScopeBreak(byval tolabel as FBSYMBOL ptr)
 
 declare function astScopeUpdBreakList _
 	( _
 		byval proc as ASTNODE ptr _
 	) as integer
 
-declare function astNamespaceBegin _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare sub astNamespaceEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
+declare sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
+declare sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
 
 declare function astAdd _
 	( _
@@ -690,9 +664,7 @@ declare function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr, _
-		byval dtype as integer = FB_DATATYPE_INVALID, _
-		byval mode as integer = INVALID _
+		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewADDROF _
@@ -721,11 +693,6 @@ declare function astNewIIF _
 		byval falsexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astNewOFFSET _
-	( _
-		byval v as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _
@@ -737,12 +704,6 @@ declare function astNewSTACK _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astNewENUM _
-	( _
-		byval value as integer, _
-		byval enum as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewLABEL _
@@ -819,7 +780,6 @@ declare function astNewPTRCHK _
 
 declare function astNewDECL _
 	( _
-		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
 		byval no_ctorcall as integer = FALSE _
@@ -935,12 +895,6 @@ declare function astTypeIniScopeEnd _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astTypeIniSeparator _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -1039,11 +993,6 @@ declare function astRemSideFx _
 declare function astBuildVarAddrof _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astBuildVarDeref overload _
-	( _
-		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astBuildVarDeref _
@@ -1181,10 +1130,7 @@ declare function astBuildTypeIniCtorList _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildProcAddrof _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 
 declare function astBuildProcBegin _
 	( _
@@ -1281,12 +1227,6 @@ declare sub astDtorListClear _
 	( _
 	)
 
-declare sub astIncOffset _
-	( _
-		byval n as ASTNODE ptr, _
-		byval ofs as integer _
-	)
-
 declare sub astSetType _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1299,11 +1239,7 @@ declare function astGetOFFSETChildOfs _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astGetCALLResUDT _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval onlyvars as integer = FALSE _
-	) as ASTNODE ptr
+declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 
 declare function astFindLocalSymbol _
 	( _
@@ -1315,18 +1251,18 @@ declare sub astGosubAddInit _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare function astGosubAddJmp _
+declare sub astGosubAddJmp _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval l as FBSYMBOL ptr _
-	) as integer
+	)
 
-declare function astGosubAddJumpPtr _
+declare sub astGosubAddJumpPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) as integer
+	)
 
 declare function astGosubAddReturn _
 	( _
@@ -1334,10 +1270,7 @@ declare function astGosubAddReturn _
 		byval l as FBSYMBOL ptr _
 	) as integer
 
-declare function astGosubAddExit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
+declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
 declare function astLoadIIF _
 	( _
@@ -1357,7 +1290,6 @@ declare function hTruncateInt _
 	    n->class            = class_           :_
 	    astGetFullType( n ) = dtype            :_
 	    n->subtype          = subtype          :_
-	    n->defined          = FALSE            :_
 	    n->l                = NULL             :_
 	    n->r                = NULL             :_
 	    n->sym              = NULL             :_
@@ -1377,7 +1309,7 @@ declare function hTruncateInt _
 
 #define astGetNext( n ) n->next
 
-#define astIsCONST(n) n->defined
+#define astIsCONST(n) (n->class = AST_NODECLASS_CONST)
 
 #define astIsVAR(n) (n->class = AST_NODECLASS_VAR)
 
@@ -1414,9 +1346,7 @@ declare function hTruncateInt _
 
 #define astGetSubtype(n) n->subtype
 
-#define astGetDataClass(n) symbGetDataClass( astGetDataType( n ) )
-
-#define astGetDataSize(n) symbGetDataSize( astGetDataType( n ) )
+#define astGetDataClass(n) typeGetClass( astGetDataType( n ) )
 
 #define astGetSymbol(n)	n->sym
 

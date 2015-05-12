@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Operator New"}}----
-Operator to dynamically allocate memory and construct data of a specified type
+Operator to dynamically allocate memory and construct data of a specified type.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **new** ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -30,6 +30,8 @@ Operator to dynamically allocate memory and construct data of a specified type
 
 	##**New[]**## is the array-version of the ##**New**## operator and allocates enough memory for the specified number of objects.  The default constructor for the type will be used to set the initial values for each item.
 
+	The ##**New**## or ##**New[]**## operator cannot be directly used with ##[[KeyPgString String]]##, but works with ##[[KeyPgType UDT]]## containing string.
+
 	Objects created with ##**New**## must be freed with ##[[KeyPgOpDelete Delete]]##. Memory allocated with ##**New[]**## must be freed with ##**Delete[]**##, the array-version of ##[[KeyPgOpDelete Delete]]##. You cannot mix and match the different versions of the operators.
 
 	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##new datatype(any)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors.
@@ -44,7 +46,7 @@ end type
 
 scope
 
-	' Create and initialize a Rational, and store it's address.
+	' Create and initialize a "rational" and store its address.
 	dim p as Rational ptr = new Rational(3, 4)
 
 	print p->numerator & "/" & p->denominator
@@ -56,7 +58,7 @@ end scope
 
 scope
 
-	' Allocate memory for 100 integers, store the address of the first one.
+	' Allocate memory for 100 integers and store the address of the first one.
 	dim p as integer ptr = new integer[100]
 
 	' Assign some values to the integers in the array.

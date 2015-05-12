@@ -932,7 +932,7 @@ function rtlPrint _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
-    dim as integer mask = any, args = any
+    dim as integer mask = any
 
     function = FALSE
 
@@ -942,7 +942,6 @@ function rtlPrint _
 		else
 			f = PROCLOOKUP( PRINTVOID )
 		end if
-		args = 2
 	else
 
 		'' UDT? try to convert to string with type casting op overloading
@@ -1092,6 +1091,7 @@ function rtlPrint _
 				end if
 			end if
 
+			'' cast(ulong, pointer) should always work
 			expr = astNewCONV( FB_DATATYPE_ULONG, NULL, expr )
 
 		case else
@@ -1099,7 +1099,8 @@ function rtlPrint _
 
 		end select
 
-		args = 3
+		'' Must have an expression for the call with 3 args
+		assert(expr)
 	end if
 
     ''
@@ -1538,22 +1539,11 @@ function rtlWidthDev _
     	exit function
     end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	dim reslabel as FBSYMBOL ptr
-
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1570,8 +1560,8 @@ function rtlPrinter_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "winspool" )
-			symbAddLib( "gdi32" )
+			fbAddLib("winspool")
+			fbAddLib("gdi32")
 		end select
 
 	end if

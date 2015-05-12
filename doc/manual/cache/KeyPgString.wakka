@@ -7,7 +7,12 @@ Standard data type: 8 bit character string
 {{fbdoc item="desc"}}
 	A ##**String**## is an array of characters.
 
-	A ##**String**## declared without the ##//size//## parameter is dynamically resized depending on the length of the string. The length can range from 0 bytes to 2 gigabytes. A descriptor contains a pointer to the actual string and the length of the string. ##[[KeyPgOpVarptr Varptr]]## will return a pointer to the descriptor, while ##[[KeyPgOpStrptr Strptr]]## will point to the actual string.
+	A ##**String**## declared without the ##//size//## parameter is dynamically resized depending on the length of the string. The length can range from 0 bytes to 2 gigabytes. A descriptor contains a pointer to the actual string, the length of the string, and the amount of space allocated for it. ##[[KeyPgOpVarptr Varptr]]## will return a pointer to the descriptor, while ##[[KeyPgOpStrptr Strptr]]## will point to the actual string.
+	
+	Because of the hidden descriptor with a ##**String**##, manual allocation of space, for example using the memory allocation function ##[[KeyPgCallocate Callocate]]## (preferentially), for a ##**String**## is not encouraged. The common way to ensure a certain amount of space is reserved for a ##**String**##, to prevent unnecessary allocations inside a loop for instance, is to use the ##[[KeyPgSpace Space]]## or ##[[KeyPgStringFunction String]]## functions.
+
+	Nevertheless if necessary, dynamic allocation may be carefully used by means of the memory allocation functions ##[[KeyPgAllocate Allocate]]##, ##[[KeyPgCallocate Callocate]]##, ##[[KeyPgReallocate Reallocate]]## (see precautions for use) and string pointer (which is a pointer to a string descriptor, not string data). When memory is allocated to hold string descriptors, the string must always be destroyed (setting to ##"####"##) before deallocate each string descriptor (allowing to deallocate the memory taken up by the string data), otherwise, it is not possible to deallocate it later, and it may induce memory leak in the program continuation. 
+
 	Despite the use of the descriptor, an implicit ##NULL## character (##[[KeyPgChr chr]](0)##) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.  ""FreeBASIC""'s internal functions will ignore this character, and not treat it as part of the string.
 
 	A ##**String**## declared with a ##//fixed size//## is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
@@ -15,7 +20,7 @@ Standard data type: 8 bit character string
 
 	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
 
-	Note: When passing ##**String**##s as parameters to ##[[KeyPgSub Sub]]##s, they should always be passed by reference (##[[KeyPgByref ByRef]]##).  Currently, ##[[KeyPgByval ByVal]]## does not pass a copy of the string, but a ##[[KeyPgPtr Pointer]]## to the string data.  This can cause unexpected behavior.
+	Note: When passing ##**String**##s as parameters to ##[[CatPgProcedures Procedures]]##, they should always be passed by reference (##[[KeyPgByref ByRef]]##).  Currently, ##[[KeyPgByval ByVal]]## does not pass a copy of the string, but a ##[[KeyPgPtr Pointer]]## to the string data.  This can cause unexpected behavior including ##**String**## corruption. If you wish to prevent the value of the ##**String**## from being modified you should add the ##[[KeyPgConstQualifier Const Qualifier]]## to the relevant parameter.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/string.bas"}}%%(freebasic)
@@ -31,6 +36,21 @@ a = "Hello"
 Dim b$
 b$ = "World"
 
+''Reserving space for a string
+var mybigstring = space(1024)
+
+''Explicitly destroying a string
+mybigstring = ""
+
+''Const qualifier preventing string from being modified
+sub silly_print( byref printme as const string )
+	print ".o0( " & printme & " )0o."
+	'next line will cause error if uncommented
+	'printme = "silly printed"
+end sub
+
+silly_print( "Hello FreeBASIC!" )
+
 '' Fixed-length
 Dim c As String * 32
 c = "Hello World"
@@ -43,6 +63,7 @@ c = "Hello World"
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStringFunction String (Function)]]##
+	- ##[[KeyPgSpace Space]]##
 	- ##[[KeyPgZstring Zstring]]##
 	- ##[[KeyPgWstring Wstring]]##
 	- ##[[KeyPgStr Str]]##

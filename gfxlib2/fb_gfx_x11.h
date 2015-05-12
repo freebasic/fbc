@@ -5,9 +5,6 @@
 #ifndef __FB_GFX_X11_H__
 #define __FB_GFX_X11_H__
 
-#include <pthread.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/xpm.h>
@@ -43,7 +40,7 @@ extern X11DRIVER fb_x11;
 extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
 
-extern void *fb_program_icon;
+extern char **fb_program_icon;
 
 void fb_hX11WaitUnmapped(Window w);
 

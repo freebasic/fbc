@@ -1,8 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 int fb_hDevFileSeekStart
@@ -31,13 +28,7 @@ static FB_FILE_HOOKS hooks_dev_file = {
 };
 
 
-/*:::::*/
-int fb_DevFileOpen
-	(
-		struct _FB_FILE *handle,
-		const char *filename,
-		size_t fname_len
-	)
+int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
 {
     FILE *fp = NULL;
     char *openmask;
@@ -50,7 +41,7 @@ int fb_DevFileOpen
     fname[fname_len] = 0;
 
     /* Convert directory separators to whatever the current platform supports */
-    fb_hConvertPath( fname, fname_len );
+    fb_hConvertPath( fname );
 
     handle->hooks = &hooks_dev_file;
 

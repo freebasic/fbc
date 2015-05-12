@@ -1,9 +1,7 @@
 /* input function for signed shorts */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputShort( short *dst )

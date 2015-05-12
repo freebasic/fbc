@@ -2,11 +2,11 @@
 Specifies a procedure having internal linkage
 
 {{fbdoc item="syntax"}}##
-	**Private** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	**Private** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgSub Sub]]
 	
-	**Private** [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	**Private** [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##

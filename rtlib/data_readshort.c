@@ -1,6 +1,5 @@
 /* read stmt for short's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

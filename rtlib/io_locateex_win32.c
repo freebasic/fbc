@@ -1,9 +1,7 @@
 /* locate (console, no gfx) function for Windows */
 
 #include "fb.h"
-
-int fb_ConsoleGetRawX( void );
-int fb_ConsoleGetRawY( void );
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleLocateRawEx( HANDLE hConsole, int row, int col, int cursor )

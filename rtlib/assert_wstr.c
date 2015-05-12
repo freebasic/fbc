@@ -1,8 +1,6 @@
 /* assertion functions */
 
 #include "fb.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 FBCALL void fb_PrintWstr ( int fnum, const FB_WCHAR *s, int mask );
 

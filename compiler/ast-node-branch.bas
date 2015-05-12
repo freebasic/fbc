@@ -33,10 +33,6 @@ function astNewBRANCH _
 	n = astNewNode( AST_NODECLASS_BRANCH, dtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->l = l
 	n->op.op = op
 	n->op.ex = label
@@ -101,9 +97,6 @@ function astNewJMPTB_Label _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_JMPTB, dtype )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->jmptb.op = AST_JMPTB_LABEL
 	n->jmptb.label = label

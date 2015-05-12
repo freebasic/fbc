@@ -29,22 +29,22 @@ Graphics statement to draw a circle
 
 	##//target//## specifies buffer to draw on.  ##//target//## may be an image created with ##[[KeyPgImagecreate Imagecreate]]## or ##[[KeyPgGetgraphics Get (Graphics)]]##.  If omitted, ##//target//## defaults to the screen's current work page.  (See ##[[KeyPgScreenset Screenset]]##)
 
-	The center of the shape will be placed on the destination surface at ##(//X//,//Y//)##. 
+	The center of the shape will be placed on the destination surface at ##(//x//, //y//)##. 
 	
-	##//Radius//## denotes the radius of the shape. If aspect ratio is used, the biggest radius must be given here.
+	##//Radius//## denotes the radius of the shape. If ##//aspect//## ratio is not ##1.0##, the biggest radius must be given here.
 
 	##//Color//## denotes the color attribute, which is mode specific (see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details). If omitted, the current foreground color as set by the ##[[KeyPgColor Color]]## statement is used.
 
-	The ##STEP## option specifies that ##//X//## and ##//Y//## are offsets relative to the current graphics cursor position.
+	The ##STEP## option specifies that ##//x//## and ##//y//## are offsets relative to the current graphics cursor position.
 
-	##//start//## and ##//end//## are angles are in ##[[ProPgRadians radians]]##. These can range -2PI to 2PI; if you specify a negative angle, its value is changed sign and a line is drawn from the center up to that point in the arc. End angle can be less than start angle. If you do not specify start and end, a full circle/ellipse is drawn; if you you specify start but not end, end is assumed to be 2PI; if you specify end but not start, start is assumed to be 0.
+	##//start//## and ##//end//## are angles are in ##[[ProPgRadians radians]]##. These can range ##-2*PI## to ##2*PI##, where ##PI## is the constant &pi;, approximately ##3.141593##; if you specify a negative angle, its value is changed sign and a line is drawn from the center up to that point in the arc. ##//end//## angle can be less than ##//start//##. If you do not specify ##//start//## and ##//end//##, a full circle/ellipse is drawn; if you you specify ##//start//## but not ##//end//##, ##//end//## is assumed to be ##2*PI##; if you specify ##//end//## but not ##//start//##, ##//start//## is assumed to be ##0.0##.
 
-	##//aspect//## is the aspect ratio, or the ratio of the y radius over the x radius. The default value is the value required to draw a perfect circle on the screen, keeping pixel aspect ratio in mind. This value can be calculated as follows:
+	##//aspect//## is the aspect ratio, or the ratio of the y radius over the x radius. If omitted, the default for ##[[KeyPgScreenres ScreenRes]]## modes is ##1.0##, while for ##[[KeyPgScreengraphics Screen]]## modes the default value is the value required to draw a perfect circle on the screen, keeping the pixel aspect ratio in mind. This value can be calculated as follows:
 	
-	##ratio = (y_radius / x_radius) * pixel_aspect_ratio##
+	##//ratio// = (//y_radius// / //x_radius//) * //pixel_aspect_ratio//##
 	
-	Where pixel_aspect_ratio is the ratio of the current mode width over the current mode height, assuming a 4:3 standard monitor. If aspect ratio is less than 1, radius is the x radius; if aspect is more or equal to 1, radius is the y radius.
-	'f' is the fill flag. If you specify this flag, the circle/ellipse will be filled with the selected color. This has no effect if you're drawing an arc.
+	Where ##//pixel_aspect_ratio//## is the ratio of the current mode width over the current mode height, assuming a 4:3 standard monitor. If aspect ratio is less than ##1.0##, radius is the x radius; if aspect is more or equal to ##1.0##, radius is the y radius.
+	##F## is the fill flag. If you specify this flag, the circle/ellipse will be filled with the selected color. This has no effect if you're drawing an arc.
 	
 	Custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## affect the drawing operation; clipping set by ##[[KeyPgViewgraphics View]]## also applies. When ##**Circle**## finishes drawing, the current graphics cursor position is set to the supplied center.
 
@@ -70,7 +70,7 @@ sleep
 {{fbdoc item="diff"}}
 	- ##//target//## is new to ""FreeBASIC""
 	- The ""FreeBASIC"" implementation uses a different algorithm for ellipse/arc drawing than QB, so the result may not be equal to QB for every pixel.
-	- The F flag to draw filled circles/ellipses is new to ""FreeBASIC"".
+	- The ##//F//## flag to draw filled circles/ellipses is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##

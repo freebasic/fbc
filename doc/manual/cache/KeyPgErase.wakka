@@ -9,10 +9,10 @@ Statement to erase arrays
 ##
 {{fbdoc item="param"}}
 	##//array//##
-		An array to be erase.
+		An array to be erased.
 
 {{fbdoc item="desc"}}
-	Erases the element data of one or more variable-length arrays from memory, or clears (initializes) all elements in a fixed-length array.
+	Erases the element data of one or more variable-length arrays from memory, or clears (re-initializes) all elements in a fixed-length array.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)

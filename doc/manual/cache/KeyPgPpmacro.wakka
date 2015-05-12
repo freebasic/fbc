@@ -2,25 +2,16 @@
 Preprocessor directive to define a multiline macro
 
 {{fbdoc item="syntax"}}##
-	**#macro** //macro_name//( [ //parameters// ] )
-		//macro body//
+	**#macro** //identifier//( [ //parameters// ] )
+		//body//
 	**#endmacro**
 	
-	**#macro** //macro_name//( [ //parameters//, ] //variadic_parameter//[[KeyPgDots ...]] )
-		//macro body//
+	**#macro** //identifier//( [ //parameters//, ] //[[KeyPgDots variadic_parameter...]]// )
+		//body//
 	**#endmacro**
 ##
 {{fbdoc item="desc"}}
-	##**#macro**## defines a function like macro where ##//macro body//## may span multiple lines.
-
-	Parameters supplied to the function like macro are substituted where they occur in the ##//macro body//##.  The entire ##//macro body//## is substituted where ever ##//macro_name//## appears in the source code.  The number of parameters supplied to a macro must match the number of parameters in its ##**#macro**## definition.
-	
-	Using ##[[KeyPgDots ...]]## (an ellipsis) behind the last parameter of a macro allows to create a variadic macro, see [[KeyPgPpdefine #define]].
-
-	The ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## preprocessor conditionals can test if ##//macro_name//## exists or does not exist.
-
-	The ##[[KeyPgPpundef #undef]]## preprocessor directive will undefine a macro so that it may be redefined with another definition.
-	Macro substitution can be checked by using the -g -r switches. The compiler doesn't erase the intermediate .asm file where the code actually sent to the compiler can be seen close to its translation into assembler.
+	##**#macro**## is the multi-line version of ##[[KeyPgPpdefine #define]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)
@@ -38,10 +29,10 @@ print Print1( "Hello", "World" )
 {{fbdoc item="filename" value="examples/manual/prepro/macro2.bas"}}%%(freebasic)
 '' macro as multiple statements
 #macro Print2( a, b )
-  print a;
-  print " ";
-  print b;
-  print "!"
+	print a;
+	print " ";
+	print b;
+	print "!"
 #endmacro
 
 Print2( "Hello", "World" )
@@ -55,13 +46,7 @@ Print2( "Hello", "World" )
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseif]]## 
-	- ##[[KeyPgPpendif #endif]]## 
 	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
 	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgDefined defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

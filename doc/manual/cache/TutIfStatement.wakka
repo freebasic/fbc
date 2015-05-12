@@ -117,7 +117,7 @@ It is important to close each block properly with an End If when opened by an If
 
 === The IIF Function  ===
 
-The Iif, or “immediate If” function returns one of two numeric values based on an expression. You can think if the Iif function as an in-line If statement that acts as a function call.
+The Iif, or "immediate If" function returns one of two numeric values based on an expression. You can think if the Iif function as an in-line If statement that acts as a function call.
 
 %%(freebasic)
 Value = Iif(<expression>, numeric_value_if_true, numeric_value_if_false)

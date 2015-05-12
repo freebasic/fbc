@@ -9,7 +9,7 @@ Declares a user-defined type.
 		...
 	**End Type**
 
-	**Type** //typename// [ [[KeyPgField Field]] = //alignment// ]
+	**Type** //typename// [ [[KeyPgExtends Extends]] //base_typename// ] [ [[KeyPgField Field]] = //alignment// ]
 		[ [[KeyPgVisPrivate Private]]: ]
 		[ [[KeyPgVisPublic Public]]: ]
 		[ [[KeyPgVisProtected Protected]]: ]
@@ -36,7 +36,7 @@ Declares a user-defined type.
 	##//array subscripts//##
 		Subscripts to declare a fixed-length array.
 	##//bits//##
-		Number of bits a data field occupies.
+		Number of bits a data field occupies (only valid for integer numeric data-types up to 32-bit types).
 	##//initializer//##
 		Default initializer for the data field.
 	##//operatorname//##
@@ -53,18 +53,20 @@ Declares a user-defined type.
 
 	An anonymous ##[[KeyPgUnion Union]]## can be nested in a ##**Type**## declaration.
 
+	##[[KeyPgExtends Extends]]## can optionally be used to create a user-defined type that is derived from another type and inherits its members.
+	
 	The optional ##[[KeyPgField Field]]=//number//## when given will change the default field alignment. ##[[KeyPgField Field]]=1## will disable any alignment, making the ##**Type**## contiguous in memory. 
-
+	
 	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
-
+	
 	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already declared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
-
+	
 	Data fields may have an optional default ##//initializer//## value.  This default value initializes the data field immediately before any constructor is called.
-
+	
 	##[[KeyPgStaticMember Static]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that no hidden ##[[KeyPgThis This]]## parameter is to be passed to the member procedure.
-
+	
 	##[[KeyPgConstMember Const]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that the hidden ##[[KeyPgThis This]]## parameter is to be considered read-only.
-
+	
 	 **Warning** Special care must be taken when using a user defined type for file I/O.  It is recommended to use ##Field = 1## for such cases, and it may be required to read files created by other applications.
 	UDTs that contain pointers to data should not be written to file as-is: when the data is read later, the pointers will almost certainly be invalid, and the data they pointed to will no longer be available.  Instead, custom input/output routines should be used, to save the allocated data in a different format in the file.  This includes UDTs containing variable-length strings.
 	Additionally, reading fixed length strings in UDT's from files is problematic: at present, fixed-length strings contain an extra NULL character on the end.  To preserve alignment the field would need to be declared with one char less than the actual size and accessing the field by its name makes the last character unavailable.  It also means there may be potential problems passing the string to functions that expect the NULL character to be there.
@@ -154,6 +156,7 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 	- ##[[KeyPgTypeof Typeof]]##
 	- ##[[KeyPgOffsetof OffsetOf]]##
 	- ##[[KeyPgField Field]]##
+	- ##[[KeyPgExtends Extends]]##
 	- ##[[KeyPgWith With]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

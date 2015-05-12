@@ -228,7 +228,7 @@ The curly brackets signify that this is an array initialization, while the paren
 
 === Using the -exx Compiler Switch ===
 
-The -exx compiler switch will enable error and bounds checking within your program. If you go outside the bounds of an array within your program, the compiler will generate an “out of bounds” error while the program is running. 
+The -exx compiler switch will enable error and bounds checking within your program. If you go outside the bounds of an array within your program, the compiler will generate an "out of bounds" error while the program is running. 
 
 This is a great help in debugging your program, and finding problems associated with arrays. -exx will also  inform of you of Null pointer assignments, so it is quite useful when working with pointers as well. 
 

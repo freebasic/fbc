@@ -1,9 +1,6 @@
 /* print # function (formating is done at io_prn) */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 int fb_hFilePrintBufferWstrEx

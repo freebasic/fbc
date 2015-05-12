@@ -35,7 +35,7 @@ end sub
    end 0
 %%
 
-Although in this case it is unnecessary - since 1. the pointer is not a reference to another pointer, 2. no other pointers point to the deallocated memory and 3. the function immediately exits afterward - setting the pointer to null is a good habit to get into. If the function deallocated memory from a pointer that was passed in by reference, for instance, the pointer that was used in the function call will be rendered invalid, and it is up to the caller to either reassign the pointer or set it to null. Example 3 shows how to correctly handle this kind of situation, and the next example shows the effects of deallocating memory with multiple references.
+Although in this case it is unnecessary since the function immediately exits afterwards, setting the pointer to null is a good habit to get into. If the function deallocated memory from a pointer that was passed in by reference, for instance, the pointer that was used in the function call will be rendered invalid, and it is up to the caller to either reassign the pointer or set it to null. Example 3 shows how to correctly handle this kind of situation, and the next example shows the effects of deallocating memory with multiple references.
 
 In the following example, a different pointer is used to free previously allocated memory.
 

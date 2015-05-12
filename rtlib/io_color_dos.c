@@ -1,7 +1,6 @@
 /* color (console, no gfx) function for DOS */
 
 #include "fb.h"
-#include "fb_colors.h"
 #include <pc.h>
 
 static int last_bc = FB_COLOR_BLACK,
@@ -23,11 +22,8 @@ int fb_ConsoleColor( int fc, int bc, int flags )
 	return cur;
 }
 
-/*:::::*/
 int fb_ConsoleGetColorAtt( void )
 {
 	/* !!!FIXME!!! there must be an attribute for each page */
-
 	return ScreenAttrib;
-
 }

@@ -1,13 +1,11 @@
 /* low-level print to console function for DOS */
 
 #include "fb.h"
-#include "fb_con.h"
+#include "fb_private_console.h"
 #include <unistd.h>
-#include <string.h>
-#include <malloc.h>
-#include <sys/farptr.h>
 #include <go32.h>
-#include <pc.h>
+#include <dpmi.h>
+#include <sys/farptr.h>
 
 unsigned short fb_hSetCursorPos( int col, int row );
 

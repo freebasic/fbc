@@ -12,6 +12,8 @@ Procedures for working with multithreaded applications.
 	Procedures that deal with mutexes.
 
 <<{{anchor name="THREADS"}}{{fbdoc item="section" value="Threads"}}
+	=={{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}==
+		Starts a procedure with parameters in a separate thread of execution.
 	=={{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}==
 		Starts a procedure in a separate thread of execution.
 	=={{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}==

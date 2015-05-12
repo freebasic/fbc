@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="libogg"}}----
+Ogg multimedia container format creation/decoder library
+
+Website: http://www.xiph.org/ogg/
+Platforms supported: ""Win32"", Linux
+Headers to include: ogg/ogg.bi
+Header version: from 2007
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

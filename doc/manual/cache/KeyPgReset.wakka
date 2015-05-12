@@ -12,12 +12,12 @@ Closes all open files, or resets standard I/O handles.
 ##
 {{fbdoc item="param"}}
 	##//streamno//##
-		The stream number, 0 for stdin or 1 for stdout to reset.
+		The stream number, ##0## for stdin or ##1## for stdout to reset.
 
 {{fbdoc item="desc"}}
 	##**Reset**##, when called with no arguments, closes all disk files.
 
-	##**Reset**##, when called with the ##//streamno//## argument, will reset the redirected or piped streams associated with stdin (0), or stdout (1).  Passing any value for ##//streamno//## other than 0 or 1 has no effect.
+	##**Reset**##, when called with the ##//streamno//## argument, will reset the redirected or piped streams associated with stdin (##0##), or stdout (##1##).  Passing any value for ##//streamno//## other than ##0## or ##1## has no effect.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/reset.bas"}}%%(freebasic)

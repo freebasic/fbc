@@ -1,12 +1,9 @@
 /* serial port access for Linux */
 
-#include <termios.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "fb.h"
+#include <sys/ioctl.h>
 #include <signal.h>
-#include <sys/types.h>
-#include <sys/select.h>
+#include <fcntl.h>
 
 /* Uncomment HAS_LOCKDEV to active lock file funcionality, not forget
  * compile whith -llockdev
@@ -15,8 +12,6 @@
 #ifdef HAS_LOCKDEV
 #include <lockdev.h>
 #endif
-
-#include "fb.h"
 
 #define BUFFERSIZE	BUFSIZ*16
 #define ENDSPD		111111
@@ -108,12 +103,12 @@ static speed_t get_speed
 
 /*:::::*/
 int fb_SerialOpen
-	( 
-		struct _FB_FILE *handle,
-        int iPort, 
-        FB_SERIAL_OPTIONS *options,
-        const char *pszDevice, 
-        void **ppvHandle 
+	(
+		FB_FILE *handle,
+		int iPort,
+		FB_SERIAL_OPTIONS *options,
+		const char *pszDevice,
+		void **ppvHandle
 	)
 {
     int res = FB_RTERROR_OK;
@@ -393,12 +388,7 @@ int fb_SerialOpen
 }
 
 /*:::::*/
-int fb_SerialGetRemaining 
-	( 
-		struct _FB_FILE *handle, 
-        void *pvHandle, 
-        fb_off_t *pLength 
-	)
+int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 {
     int rBytes;
     int SerialFD;
@@ -416,11 +406,11 @@ int fb_SerialGetRemaining
 
 /*:::::*/
 int fb_SerialWrite
-	( 
-		struct _FB_FILE *handle, 
-        void *pvHandle, 
-        const void *data, 
-        size_t length 
+	(
+		FB_FILE *handle,
+		void *pvHandle,
+		const void *data,
+		size_t length
 	)
 {
     ssize_t rlng=0;
@@ -442,17 +432,11 @@ int fb_SerialWrite
 }
 
 /*:::::*/
-int fb_SerialRead
-	( 
-		struct _FB_FILE *handle, 
-        void *pvHandle, 
-        void *data, 
-        size_t *pLength 
-	)
+int fb_SerialRead( FB_FILE *handle, void *pvHandle, void *data, size_t *pLength )
 {
     LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
     int SerialFD;
-    size_t count = 0;
+    ssize_t count = 0;
     fd_set rfds;
     struct timeval tmout;
 
@@ -479,11 +463,7 @@ int fb_SerialRead
 }
 
 /*:::::*/
-int fb_SerialClose
-	( 
-		struct _FB_FILE *handle, 
-        void *pvHandle 
-	)
+int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 {
     int SerialFD;
     struct termios oserp;

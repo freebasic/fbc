@@ -1,6 +1,5 @@
 /* generic internal dynamic lists */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /** Initializes a list.

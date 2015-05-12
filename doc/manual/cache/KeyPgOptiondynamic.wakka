@@ -5,7 +5,7 @@ Specifies variable-length array declarations
 	**Option Dynamic**
 ##
 {{fbdoc item="desc"}}
-	##**Option Dynamic**## is a statement that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which ##**Option Dynamic**## is used, and can be overridden with ##[[KeyPgOptionstatic Option Static]]##.
+	##**Option Dynamic**## is a statement that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which ##**Option Dynamic**## is used, and can be overridden with ##[[KeyPgOptionstatic Option Static]]##.  It is equivalent to the ##[[KeyPgMetaDynamic '$Dynamic]]## metacommand.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-dynamic.bas"}}%%(freebasic)
@@ -29,7 +29,8 @@ ReDim bar(199) As Integer   ' resize the array
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]##
-	- [[KeyPgMetaDynamic $Dynamic]]
+	- ##[[KeyPgMetaDynamic '$Dynamic]]##
+	- ##[[KeyPgMetaDynamic '$Static]]##
 	- ##[[KeyPgOptionstatic Option Static]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgRedim Redim]]##

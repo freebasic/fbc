@@ -1,7 +1,7 @@
 /* cls (console, no gfx) function for Linux */
 
 #include "fb.h"
-
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleClear( int mode )
@@ -30,5 +30,3 @@ void fb_ConsoleClear( int mode )
 	__fb_con.cur_y = start;
 	__fb_con.cur_x = 1;
 }
-
-

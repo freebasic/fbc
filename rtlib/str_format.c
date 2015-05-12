@@ -1,10 +1,7 @@
 /* format function */
 
-#include <stdlib.h>
-#include <float.h>
-#include <math.h>
-#include <string.h>
 #include "fb.h"
+#include <math.h>
 
 typedef enum _eMaskType {
     eMT_Unknown = 0,

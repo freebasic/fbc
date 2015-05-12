@@ -5,11 +5,13 @@
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
 
+	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 
 {{fbdoc item="section" value="Referencing"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
 	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
+	- {{fbdoc item="keyword" value="KeyPgBase|BASE"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|Type Alias"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 

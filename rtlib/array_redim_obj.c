@@ -1,7 +1,5 @@
 /* redim function */
 
-#include <stdlib.h>
-#include <stdarg.h>
 #include "fb.h"
 
 /*:::::*/

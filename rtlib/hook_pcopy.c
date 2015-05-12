@@ -1,6 +1,7 @@
 /* pcopy entrypoint, default to console mode */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 FBCALL int fb_PageCopy( int src, int dst )

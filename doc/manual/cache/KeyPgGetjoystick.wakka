@@ -30,14 +30,14 @@ Reads buttons and axis information from attached gaming devices
 		eighth axis value
 
 {{fbdoc item="ret"}}
-	0 on success or 1 on failure.  All of the axis positions are returned in floating point format.
+	##0## on success or ##1## on failure.  All of the axis positions are returned in floating point format.
 
 {{fbdoc item="desc"}}
-	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between 0 and 15. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button.
+	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between ##0## and ##15##. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button.
 
 	A single precision value between ##-1.0## and ##1.0## is returned for each valid axis.  If the axis does not exist for the controller, a value of ##-1000.00## is returned.
 
-	##**Getjoystick**## will return 0 upon successful completion; It will return 1 upon failure. Failure can be caused by specifying an illegal joystick number, specifying a joystick which doesn't exist, or a failure in the joystick API.
+	##**Getjoystick**## will return ##0## upon successful completion; It will return ##1## upon failure. Failure can be caused by specifying an illegal joystick number, specifying a joystick which doesn't exist, or a failure in the joystick API.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getjoystick.bas"}}%%(freebasic)

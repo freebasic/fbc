@@ -1,7 +1,8 @@
 /* Windows thread creation and destruction */
 
-#include <process.h>
 #include "fb.h"
+#include "fb_private_thread.h"
+#include <process.h>
 
 /* thread proxy to user's thread proc */
 #ifdef HOST_MINGW
@@ -21,51 +22,29 @@ static DWORD WINAPI threadproc( LPVOID param )
 	return 1;
 }
 
-/*:::::*/
 FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
 {
-	FBTHREAD *thread;
-#ifdef HOST_MINGW
-	unsigned int dwThreadId;
-#else
-    DWORD dwThreadId;
-#endif
-
-	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
+	FBTHREAD *thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
 	if( thread == NULL )
 		return NULL;
 
-    thread->proc	= proc;
-    thread->param 	= param;
+	thread->proc = proc;
+	thread->param = param;
 
 #ifdef HOST_MINGW
-    thread->id = (HANDLE)_beginthreadex( NULL, 
-    									 stack_size, 
-    									 threadproc, 
-    									 (void *)thread, 
-    									 0, 
-    									 &dwThreadId );
+	thread->id = (HANDLE)_beginthreadex( NULL, stack_size, threadproc, (void *)thread, 0, NULL );
 #else
-    {
-        thread->id = CreateThread( NULL,
-                                   stack_size,
-                                   threadproc,
-                                   (void*)thread,
-                                   0,
-                                   &dwThreadId );
-    }
+	thread->id = CreateThread( NULL, stack_size, threadproc, (void*)thread, 0, NULL );
 #endif
 
-    if( thread->id == NULL )
-    {
-    	free( thread );
-    	return NULL;
-    }
+	if( thread->id == NULL ) {
+		free( thread );
+		thread = NULL;
+	}
 
 	return thread;
 }
 
-/*:::::*/
 FBCALL void fb_ThreadWait( FBTHREAD *thread )
 {
 	if( thread == NULL )

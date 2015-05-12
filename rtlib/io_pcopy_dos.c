@@ -1,9 +1,10 @@
 /* pcopy (console, no gfx) function for DOS */
 
 #include "fb.h"
+#include "fb_private_console.h"
+#include <go32.h>
 
-/*:::::*/
-int fb_ConsolePageCopy	( int src, int dst )
+int fb_ConsolePageCopy( int src, int dst )
 {
 	/* use current? */
 	if( src < 0 )
@@ -26,5 +27,3 @@ int fb_ConsolePageCopy	( int src, int dst )
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-
-

@@ -2,7 +2,7 @@
 Small C library for creating CGI programs for Websites.
 
 Website: http://directory.fsf.org/cgi-util.html
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: cgi-util.bi
 
 
