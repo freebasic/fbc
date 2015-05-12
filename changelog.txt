@@ -35,6 +35,7 @@ Version 1.03.0
 - LLVM backend: the signature emitted for calls will now use the same param dtypes as in the declaration, as required by LLVM
 - LLVM backend: self-BOPs, and the self negation UOP, weren't working
 - LLVM backend: field accesses, pointer derefs, global var accesses, with or without offsets, were mostly broken
+- LLVM backend: procedure pointers weren't implemented properly
 - 1.00.0 regression: compiler crash on assignments with a dereferenced constant on the left side
 - 1.00.0 regression: C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
 - Better error recovery after byref function result assignment type mismatch errors

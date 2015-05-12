@@ -359,7 +359,8 @@ end function
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval is_proto as integer _
+		byval is_proto as integer, _
+		byval is_type as integer _
 	) as string
 
 	dim as string ln
@@ -376,8 +377,10 @@ private function hEmitProcHeader _
 
 	ln += " "
 
-	'' @id
-	ln += *symbGetMangledName( proc )
+	if( is_type = FALSE ) then
+		'' @id
+		ln += *symbGetMangledName( proc )
+	end if
 
 	'' Parameter list
 	ln += "( "
@@ -422,13 +425,15 @@ private function hEmitProcHeader _
 
 	ln += " )"
 
-	'' Function attributes
-	'' TODO: clang emits this for C code, seems good for us too, but if
-	'' there will be exceptions, this must be removed...
-	ln += " nounwind"
+	if( is_type = FALSE ) then
+		'' Function attributes
+		'' TODO: clang emits this for C code, seems good for us too, but if
+		'' there will be exceptions, this must be removed...
+		ln += " nounwind"
 
-	if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
-		ln += " naked"
+		if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
+			ln += " naked"
+		end if
 	end if
 
 	function = ln
@@ -475,12 +480,6 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s )
-
-	case FB_SYMBCLASS_PROC
-		if( symbGetIsFuncPtr( s ) ) then
-			hWriteLine( "typedef " + hEmitProcHeader( s, TRUE ) + "*" )
-			symbSetIsEmitted( s )
-		end if
 
 	end select
 
@@ -744,7 +743,7 @@ private sub hMaybeEmitProcProto( byval s as FBSYMBOL ptr )
 
 	var oldsection = ctx.section
 	ctx.section = SECTION_HEAD
-	hWriteLine( "declare " + hEmitProcHeader( s, TRUE ) )
+	hWriteLine( "declare " + hEmitProcHeader( s, TRUE, FALSE ) )
 	ctx.section = oldsection
 end sub
 
@@ -1234,8 +1233,7 @@ private function hEmitType _
 	case FB_DATATYPE_FUNCTION
 		assert( ptrcount > 0 )
 		ptrcount -= 1
-		hEmitUDT( subtype )
-		s = *symbGetMangledName( subtype )
+		s = hEmitProcHeader( subtype, TRUE, TRUE ) + "*"
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' Emit ubyte instead of char,
@@ -2311,7 +2309,7 @@ private sub _emitProcBegin _
 		ln += "private "
 		''ln += "internal "
 	end if
-	ln += hEmitProcHeader( proc, FALSE )
+	ln += hEmitProcHeader( proc, FALSE, FALSE )
 
 	hWriteLine( ln )
 
