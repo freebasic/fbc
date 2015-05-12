@@ -1255,14 +1255,6 @@ declare function symbAddScope _
 		byval backnode as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddBitField _
-	( _
-		byval bitpos as integer, _
-		byval bits as integer, _
-		byval dtype as integer, _
-		byval lgt as integer _
-	) as FBSYMBOL ptr
-
 declare function symbAddNamespace _
 	( _
 		byval id as zstring ptr, _

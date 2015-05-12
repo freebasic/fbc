@@ -432,7 +432,7 @@ FBC_BAS := \
   rtl rtl-array rtl-console rtl-data rtl-error rtl-file rtl-gfx rtl-gosub \
   rtl-macro rtl-math rtl-mem rtl-oop rtl-print rtl-profile rtl-string \
   rtl-system rtl-system-thread \
-  stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
+  stack symb symb-comp symb-const symb-data symb-define \
   symb-enum symb-keyword symb-label symb-mangling symb-namespace \
   symb-proc symb-scope symb-struct symb-typedef symb-var
 
