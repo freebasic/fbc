@@ -19,7 +19,7 @@ Outputs formatted text to the screen
 
 	{{fbdoc item="section" value="String formatting"}}
 
-		{{table columns="2" cellpadding="2" cells="Marker;Formatting;!;prints the first character of a string;\   \;prints as many characters of a string as occuppied between the pair \ \;&;prints the entire string"}}
+		{{table columns="2" cellpadding="2" cells="Marker;Formatting;!;prints the first character of a string;\   \;prints as many characters of a string as occupied between the pair \ \;&;prints the entire string"}}
 
 	{{fbdoc item="section" value="Numeric formatting"}}
 
@@ -27,7 +27,7 @@ Outputs formatted text to the screen
 
 	All of the special marker characters can be escaped by preceding them with the underscore character ##"_"##, allowing them to be printed directly.  For example, ##"_!"## is printed as ##"!"##, and ##"_""""_"## is printed as ##"_"##.
 
-	If a numerical value cannot fit in the number of digits indicated by the format string, the formatting is adapted to fit the number, possibly switching to sientific notation, and the number is printed preceded by the percent ##"%"## character. E.g., the number ##1234## with a ##//formatstring//## of ##"""##.##"""## would be printed as ##"%1234.00"##.
+	If a numerical value cannot fit in the number of digits indicated by the format string, the formatting is adapted to fit the number, possibly switching to scientific notation, and the number is printed preceded by the percent ##"%"## character. E.g., the number ##1234## with a ##//formatstring//## of ##"""##.##"""## would be printed as ##"%1234.00"##.
 
 	All other characters within the format string are printed as they appear.
 

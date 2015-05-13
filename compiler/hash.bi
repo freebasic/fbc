@@ -1,11 +1,10 @@
 #ifndef __HASH_BI__
 #define __HASH_BI__
 
-const HASH_INITENTRYNODES	= 1000
-const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
+#include once "list.bi"
 
 type HASHITEM
-	name		as zstring ptr			'' shared
+	name		as const zstring ptr			'' shared
 	data		as any ptr				'' user data
 	prev		as HASHITEM ptr
 	next		as HASHITEM ptr
@@ -24,28 +23,16 @@ end type
 
 declare sub hashInit _
 	( _
-		byval initnodes as integer = HASH_INITITEMNODES _
-	)
-
-declare sub hashEnd	 _
-	( _
-	)
-
-declare sub hashNew _
-	( _
 		byval hash as THASH ptr, _
 		byval nodes as integer, _
 		byval delstr as integer = FALSE _
 	)
 
-declare sub hashFree _
-	( _
-		byval hash as THASH ptr _
-	)
+declare sub hashEnd(byval hash as THASH ptr)
 
 declare function hashHash _
 	( _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as uinteger
 
 declare function hashLookup _
@@ -57,14 +44,14 @@ declare function hashLookup _
 declare function hashLookupEx _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval index as uinteger _
 	) as any ptr
 
 declare function hashAdd _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval userdata as any ptr, _
 		byval index as uinteger _
 	) as HASHITEM ptr
@@ -75,5 +62,25 @@ declare sub hashDel _
 		byval item as HASHITEM ptr, _
 		byval index as uinteger _
 	)
+
+type TSTRSETITEM
+	as string s
+	as integer userdata
+end type
+
+type TSTRSET
+	as TLIST list
+	as THASH hash
+end type
+
+declare sub strsetAdd _
+	( _
+		byval set as TSTRSET ptr, _
+		byref s as const string, _
+		byval userdata as integer _
+	)
+declare sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)
+declare sub strsetInit(byval set as TSTRSET ptr, byval nodes as integer)
+declare sub strsetEnd(byval set as TSTRSET ptr)
 
 #endif '' __HASH_BI__

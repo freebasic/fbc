@@ -273,7 +273,7 @@ private function hPrepConst _
 	end if
 
     ''
-	dtype = symbMaxDataType( v->dtype, astGetDataType( r ) )
+	dtype = typeMax( v->dtype, astGetDataType( r ) )
 
 	'' same? don't convert..
 	if( dtype = FB_DATATYPE_INVALID ) then
@@ -576,7 +576,7 @@ private sub hOptConstAccum2 _
 			'' update the node data type
 			l = n->l
 			r = n->r
-			dtype = symbMaxDataType( astGetDataType( l ), astGetDataType( r ) )
+			dtype = typeMax( astGetDataType( l ), astGetDataType( r ) )
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				if( typeGet( dtype ) <> typeGet( l->dtype ) ) then
 					n->l = astNewCONV( dtype, r->subtype, l )
@@ -903,59 +903,109 @@ private sub hOptConstIdxMult _
 	end if
 
 	'' convert to integer if needed
-	if( (symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
-	    (symbGetDataSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
+	if( (typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
+	    (typeGetSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
 		n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
 end sub
 
-'':::::
-private function hOptDerefAddr _
+private function astIncOffset _
 	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval ofs as integer _
+	) as integer
 
+	select case as const n->class
+	case AST_NODECLASS_VAR
+		n->var_.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_IDX
+		n->idx.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_DEREF
+		n->ptr.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			function = astIncOffset( n->l, ofs )
+		else
+			function = astIncOffset( n->r, ofs )
+		end if
+
+	case AST_NODECLASS_FIELD
+		function = astIncOffset( n->l, ofs )
+
+	case AST_NODECLASS_CONV
+		'' There can be CONV nodes here, in cases like:
+		''      dim as integer i(0 to 1)
+		''      print *(@cast(long, i(0)) + offset)
+		''
+		'' (when 1. the cast() is added because it's a different dtype,
+		'' and 2. the @ accepts the cast() because it's doconv = FALSE
+		'' because the dtypes are similar enough/have the same size,
+		'' and 3. the offset is <> 0)
+		''
+		'' but also field access after upcasting of derived UDTs:
+		''      print cast(BaseUDT, udt).foo
+		'' if foo's offset is <> 0.
+
+		if (n->cast.doconv = FALSE) then
+			function = astIncOffset( n->l, ofs )
+		else
+			function = FALSE
+		end if
+
+	case else
+		function = FALSE
+	end select
+
+end function
+
+private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = n->l
+	dim as integer ofs = 0
 
 	select case l->class
 	case AST_NODECLASS_OFFSET
-		dim as integer dtype = astGetFullType( n )
-		dim as FBSYMBOL ptr subtype = n->subtype
-
 		'' newBOP() will optimize ofs + const nodes, but we can't use the full
 		'' ofs.ofs value because it has computed already the child's (var/idx) ofs
-		dim as integer ofs = n->ptr.ofs + _
-							 l->ofs.ofs - astGetOFFSETChildOfs( l->l )
+		ofs = l->ofs.ofs - astGetOFFSETChildOfs( l->l )
 
-		astDelNode( n )
-		n = l->l
-		astDelNode( l )
-
-		astSetType( n, dtype, subtype )
-		if( ofs <> 0 ) then
-			astIncOffset( n, ofs )
-		end if
-
-	'' convert *@expr to expr
 	case AST_NODECLASS_ADDROF
-		dim as integer dtype = astGetFullType( n )
-		dim as FBSYMBOL ptr subtype = n->subtype
-		dim as integer ofs = n->ptr.ofs
 
-		astDelNode( n )
-		n = l->l
-		astDelNode( l )
-
-		astSetType( n, dtype, subtype )
-		if( ofs <> 0 ) then
-			astIncOffset( n, ofs )
-		end if
-
+	case else
+		return n
 	end select
 
-	function = n
+	assert( astIsDEREF(n) )
+	ofs += n->ptr.ofs
 
+	'' *(@[expr] +   0)    ->    [expr]
+	'' *(@[expr] + ofs)    ->    [expr+ofs]
+
+	'' If the deref uses an <> 0 offset then try to include that into
+	'' any child var/idx/deref nodes. If that's not possible, then this
+	'' optimization can't be done.
+	if( ofs <> 0 ) then
+		if( astIncOffset( l->l, ofs ) = FALSE ) then
+			return n
+		end if
+	end if
+
+	dim as integer dtype = astGetFullType( n )
+	dim as FBSYMBOL ptr subtype = n->subtype
+
+	astDelNode( n )
+	n = l->l
+	astDelNode( l )
+
+	astSetType( n, dtype, subtype )
+
+	function = n
 end function
 
 '':::::
@@ -1066,73 +1116,279 @@ private function hOptConstIDX _
 
 end function
 
-'':::::
-private function hOptFieldsCalc _
+private function astSetBitfield _
 	( _
-		byval n as ASTNODE ptr, _
-		byval parent as ASTNODE ptr _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l = any, r = any
+	dim as FBSYMBOL ptr s = any
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptFieldsCalc( l, n )
+	''
+	''    l<bitfield> = r
+	'' becomes:
+	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
+	''
+
+	s = l->subtype
+	assert( symbGetClass( s ) = FB_SYMBCLASS_BITFIELD )
+
+	select case s->bitfld.typ
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		astGetFullType( l ) = typeJoin( symbGetFullType( s ), FB_DATATYPE_UINT )
+		l->subtype = NULL
+	case else
+		'' Remap type from bitfield to short/integer/etc., whichever was given
+		'' on the bitfield, to do a "full" field access.
+		astGetFullType( l ) = symbGetFullType( s )
+		l->subtype = s->subtype
+	end select
+
+	'' l is reused on the rhs and thus must be duplicated
+	l = astCloneTree( l )
+
+	'' Apply a mask to retrieve all bits but the bitfield's ones
+	l = astNewBOP( AST_OP_AND, l, _
+	               astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
+	                             FB_DATATYPE_UINT ) )
+
+	'' This ensures the bitfield is zeroed & clean before the new value
+	'' is ORed in below. Since the new value may contain zeroes while the
+	'' old values may have one-bits, the OR alone wouldn't necessarily
+	'' overwrite the old value.
+
+	'' boolean bitfield? - do a bool conversion before the bitfield store
+	select case s->bitfld.typ
+	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		if( r->class <> AST_NODECLASS_CONV ) then
+			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
+			astGetCASTDoConv( r ) = FALSE
+		end if
+		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
+
+		r = astNewBOP( AST_OP_AND, r, _
+					   astNewCONSTi( (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
+				   				 FB_DATATYPE_UINT ) )
+	case else
+		'' Truncate r if it's too big, ensuring the OR below won't touch any
+		'' other bits outside the target bitfield.
+		r = astNewBOP( AST_OP_AND, r, _
+			       astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+
+		'' Move r into position if the bitfield doesn't lie at the beginning of
+		'' the accessed field.
+		if( s->bitfld.bitpos > 0 ) then
+			r = astNewBOP( AST_OP_SHL, r, _
+				       astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
+		end if
+	end select
+
+	'' OR in the new bitfield value r
+	function = astNewBOP( AST_OP_OR, l, r )
+end function
+
+private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
+	dim as integer dtype = l->dtype
+	dim as FBSYMBOL ptr s = l->subtype
+	dim as integer boolconv = any
+
+	'' Remap type from bitfield to short/integer/etc, while keeping in
+	'' mind that the bitfield may have been casted, so the FIELD's type
+	'' can't just be discarded.
+	'' if boolean make sure the bool conversion is after the bitfield access
+	select case typeGet( s->typ )
+	case FB_DATATYPE_BOOL8
+		l->dtype = typeJoin( l->dtype, FB_DATATYPE_BYTE )
+		l->subtype = NULL
+		boolconv = TRUE
+	case FB_DATATYPE_BOOL32
+		l->dtype = typeJoin( l->dtype, FB_DATATYPE_INTEGER )
+		l->subtype = NULL
+		boolconv = TRUE
+	case else
+		l->dtype = typeJoin( dtype, s->typ )
+		l->subtype = s->subtype
+		boolconv = FALSE
+	end select
+
+	'' Shift into position, other bits to the right are shifted out
+	if( s->bitfld.bitpos > 0 ) then
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos, dtype ) )
 	end if
 
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptFieldsCalc( r, n )
+	'' Mask out other bits to the left
+	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
+
+	'' do boolean conversion after bitfield access
+	if( boolconv ) then
+		l->dtype = typeJoin( l->dtype, s->typ )
+		l->subtype = s->subtype
+		l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
-	'' (@((@foo + offsetof(bar))->bar) + offsetof(baz)))->baz to
-    if( n->class = AST_NODECLASS_FIELD ) then
-    	l = n->l
+	function = l
+end function
 
-    	if( l->class = AST_NODECLASS_DEREF ) then
-	    	dim as ASTNODE ptr ll = l->l
-	    	if( ll->class = AST_NODECLASS_BOP ) then
-	    		dim as ASTNODE ptr lll = ll->l
-	    		if( lll->class = AST_NODECLASS_ADDROF ) then
-	    			dim as ASTNODE ptr llll = lll->l
-	    			if( llll->class = AST_NODECLASS_FIELD ) then
-		    			dim as ASTNODE ptr lllll = llll->l
-		    			if( lllll->class = AST_NODECLASS_DEREF ) then
-		    				l->l = astNewBOP( AST_OP_ADD, _
-		    						   	   	  lllll->l, _
-		    						   	   	  ll->r )
-		    				astDelNode( ll )
-		    				astDelNode( lll )
-		    				astDelNode( llll )
-		    				astDelNode( lllll )
-		    			end if
-		    		end if
-	    		end if
-	    	end if
-    	else
+private function hRemoveFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
 
-	    	'' resolve bitfields before deleting the field, because
-	    	'' otherwise that'd only happen in LoadFIELD/LoadASSIGN,
-	    	'' which won't get called since the field node is destroyed.
-            if( parent ) then
-                if( parent->class = AST_NODECLASS_ASSIGN ) then
-                    astUpdateBitfieldAssignment( n, parent->r )
-                else
-                    astUpdateFieldAccess( l )
-                    astDelNode( n )
-                    n = l
-                end if
-            else
-                astDelNode( n )
-                n = l
-            end if
+	if( n = NULL ) then
+		return NULL
+	end if
 
-    	end if
-    end if
+	'' Remove FIELD nodes and add code for bitfield accesses/assignments
+	'' where needed. FIELD nodes aren't doing anything during emitting,
+	'' but are just needed for the handling of bitfields.
+
+	select case( n->class )
+	case AST_NODECLASS_ASSIGN
+		'' Assigning to a bitfield?
+		if( n->l->class = AST_NODECLASS_FIELD ) then
+			select case( astGetDataType( n->l->l ) )
+			case FB_DATATYPE_BITFIELD
+				'' Delete and link out the FIELD
+				astDelNode( n->l )
+				n->l = n->l->l
+
+				'' The lhs' type is adjusted, and the new rhs
+				'' is returned.
+				n->r = astSetBitfield( n->l, n->r )
+
+			case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+				'' $$JRM
+				n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
+			end select
+		end if
+
+		n->l = hRemoveFIELDs( n->l )
+		n->r = hRemoveFIELDs( n->r )
+
+	case AST_NODECLASS_FIELD
+		l = n->l
+		select case( astGetDataType( l ) )
+		case FB_DATATYPE_BITFIELD
+			l = astAccessBitfield( l )
+			n = hGetBitField( n, astGetFullType( n ) )
+		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+			l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( l ) ), NULL, l )
+		end select
+
+		'' Delete and link out the FIELD
+		astDelNode( n )
+		n = l
+
+		n = hRemoveFIELDs( n )
+
+	case else
+		n->l = hRemoveFIELDs( n->l )
+		n->r = hRemoveFIELDs( n->r )
+	end select
 
 	function = n
+end function
 
+private function hMergeNestedFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->l = hMergeNestedFIELDs( n->l )
+	n->r = hMergeNestedFIELDs( n->r )
+
+	if( astIsFIELD( n ) ) then
+		l = n->l
+
+		'' This is the pattern for field accesses:
+		''
+		''    udt.field
+		''
+		'' =  *(@udt + offsetof(field))
+		''
+		'' =  FIELD( DEREF( BOP( +, ADDROF( udt ), offsetof(field) ) ) )
+		''
+		''
+		'' Nested field accesses will look like:
+		''
+		''    udt.a.b
+		''
+		'' =  *(@udt.a + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''                 ADDROF  offsetof(b)
+		''                    /
+		''                udt.a
+		''
+		'' =  *(@*(@udt + offsetof(a)) + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''                 ADDROF  offsetof(b)    *2*
+		''                    /
+		''                 FIELD
+		''                   |
+		''                 DEREF
+		''                   |
+		''          *1*    + BOP
+		''                  / \
+		''             ADDROF  offsetof(a)
+		''                /
+		''              udt
+		''
+		'' The extra ADDROF/DEREF cancel each other out, and by
+		'' removing the ADDROF/FIELD/DEREF combo, the whole tree
+		'' can be optimized to:
+		''
+		'' =  *(@udt + offsetof(a) + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''          *1*    + BOP   offsetof(b)    *2*
+		''                   / \
+		''              ADDROF  offsetof(a)
+		''                 /
+		''               udt
+		''
+
+		dim as ASTNODE ptr ll = l->l
+		'' Note: DEREF.l can be NULL in case it was dereferencing a constant
+		if( astIsDEREF( l ) and (ll <> NULL) ) then
+			if( ll->class = AST_NODECLASS_BOP ) then
+				assert( astIsBOP( ll, AST_OP_ADD ) )
+				dim as ASTNODE ptr lll = ll->l
+				if( lll->class = AST_NODECLASS_ADDROF ) then
+					dim as ASTNODE ptr llll = lll->l
+					if( astIsFIELD( llll ) ) then
+						dim as ASTNODE ptr lllll = llll->l
+						dim as ASTNODE ptr llllll = lllll->l
+						if( astIsDEREF( lllll ) and (llllll <> NULL) ) then
+							l->l = astNewBOP( AST_OP_ADD, llllll, ll->r )
+							astDelNode( ll )
+							astDelNode( lll )
+							astDelNode( llll )
+							astDelNode( lllll )
+						end if
+					end if
+				end if
+			end if
+		end if
+	end if
+
+	function = n
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1279,10 +1535,10 @@ private sub hDivToShift_Signed _
 
 	dtype = astGetFullType( l )
 
-	bits = symbGetDataBits( dtype ) - 1
+	bits = typeGetBits( dtype ) - 1
 	'' bytes are converted to int's..
 	if( bits = 7 ) then
-		bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
+		bits = typeGetBits( FB_DATATYPE_INTEGER ) - 1
 	end if
 
 	l_cpy = astCloneTree( l )
@@ -1294,7 +1550,7 @@ private sub hDivToShift_Signed _
 						   astNewBOP( AST_OP_ADD, _
 									  l_cpy, _
 									  astNewBOP( AST_OP_SHR, _
-												 astNewCONV( symbGetUnsignedType( dtype ), _
+												 astNewCONV( typeToUnsigned( dtype ), _
 															 NULL, _
 															 l, _
 															 AST_OP_TOUNSIGNED _
@@ -1353,8 +1609,8 @@ private sub hOptToShift _
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
 			if( astIsCONST( r ) ) then
-				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-					if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+					if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 						const_val = r->con.val.int
 						if( const_val > 0 ) then
 							const_val = hToPow2( const_val )
@@ -1369,7 +1625,7 @@ private sub hOptToShift _
 								case AST_OP_INTDIV
 									if( const_val <= 32 ) then
 										l = n->l
-										if( symbIsSigned( astGetDataType( l ) ) = FALSE ) then
+										if( typeIsSigned( astGetDataType( l ) ) = FALSE ) then
 											n->op.op = AST_OP_SHR
 											r->con.val.int = const_val
 										else
@@ -1379,7 +1635,7 @@ private sub hOptToShift _
 
 								case AST_OP_MOD
 									'' unsigned types only
-									if( symbIsSigned( astGetDataType( n->l ) ) = FALSE ) then
+									if( typeIsSigned( astGetDataType( n->l ) ) = FALSE ) then
 										n->op.op = AST_OP_AND
 										r->con.val.int -= 1
 									end if
@@ -1417,8 +1673,13 @@ private function hOptNullOp _
 	dim as integer keep_l = any, keep_r = any
 
 	if( n = NULL ) then
-		return n
+		return NULL
 	end if
+
+	'' Eliminate nops in child nodes first, then perhaps we can eliminate
+	'' the current (parent) one too.
+	n->l = hOptNullOp( n->l )
+	n->r = hOptNullOp( n->r )
 
 	'' convert 'a * 0'    to '0'**
 	''         'a MOD 1'  to '0'*
@@ -1446,7 +1707,6 @@ private function hOptNullOp _
 	''** convert 'a * 0' to 'a AND 0' to optimize speed without changing side-effects
 
 	if( n->class = AST_NODECLASS_BOP ) then
-
 		op = n->op.op
 		l = n->l
 		r = n->r
@@ -1455,9 +1715,9 @@ private function hOptNullOp _
 		keep_l = ( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL )
 		keep_r = ( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL )
 
-		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+		if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
-				if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
 				else
 					v = r->con.val.long
@@ -1477,11 +1737,11 @@ private function hOptNullOp _
 					elseif( v = 1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_MOD
-					if( ( v = 1 ) or ( ( v = -1 ) and ( symbIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
+					if( ( v = 1 ) or ( ( v = -1 ) and ( typeIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
 						if( keep_l = FALSE ) then
 							r->con.val.int = 0
 							astDelTree( l )
@@ -1495,7 +1755,7 @@ private function hOptNullOp _
 					if( v = 1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_ADD, AST_OP_SUB, _
@@ -1504,7 +1764,7 @@ private function hOptNullOp _
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_IMP
@@ -1520,7 +1780,7 @@ private function hOptNullOp _
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					elseif( v = -1 ) then
 						if( keep_l = FALSE ) then
 							astDelTree( l )
@@ -1533,7 +1793,7 @@ private function hOptNullOp _
 					if( v = -1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					elseif( v = 0 ) then
 						if( keep_l = FALSE ) then
 							astDelTree( l )
@@ -1545,7 +1805,7 @@ private function hOptNullOp _
 				end select
 
 			elseif( astIsCONST( l ) ) then
-				if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
 					v = l->con.val.int
 				else
 					v = l->con.val.long
@@ -1567,19 +1827,7 @@ private function hOptNullOp _
 		end if
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptNullOp( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptNullOp( r )
-	end if
-
 	function = n
-
 end function
 
 ''::::
@@ -1610,7 +1858,7 @@ private function hOptLogic _
 		r = n->r
 	end if
 
-	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
 		if( astIsUOP( n, AST_OP_NOT ) ) then
 			if( astIsUOP( l, AST_OP_NOT ) ) then
@@ -1623,12 +1871,12 @@ private function hOptLogic _
 				n = hOptLogic( m )
 
 			elseif( astIsBOP( l, AST_OP_XOR ) ) then
-				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 					if( astIsCONST( l->l ) ) then
 						'' convert:
 						'' not (const xor x)    to    (not const) xor x
 
-						if( symbGetDataSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
 							v = l->l->con.val.int
 						else
 							v = l->l->con.val.long
@@ -1642,7 +1890,7 @@ private function hOptLogic _
 						'' convert:
 						'' not (x xor const)    to    x xor (not const)
 
-						if( symbGetDataSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
 							v = l->r->con.val.int
 						else
 							v = l->r->con.val.long
@@ -1658,7 +1906,7 @@ private function hOptLogic _
 
 		elseif( n->class = AST_NODECLASS_BOP ) then
 
-			if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 				op = n->op.op
 				select case op
 				case AST_OP_OR, AST_OP_AND, AST_OP_XOR
@@ -1710,7 +1958,7 @@ private function hOptLogic _
 						'' const or  (not x)    to    not ((not const) and x)
 						'' const xor (not x)    to    (not const) xor x
 
-						if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
 							v = l->con.val.int
 						else
 							v = l->con.val.long
@@ -1734,7 +1982,7 @@ private function hOptLogic _
 						'' (not x) or  const    to    not (x and (not const))
 						'' (not x) xor const    to    x xor (not const)
 
-						if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 							v = r->con.val.int
 						else
 							v = r->con.val.long
@@ -1817,14 +2065,14 @@ private function hDoOptRemConv _
 						end if
 
 						'' can't be a longint
-						if( symbGetDataSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
+						if( typeGetSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
 							dorem = FALSE
 
 							select case as const t->class
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( symbIsSigned( astGetDataType( t ) ) ) then
+								if( typeIsSigned( astGetDataType( t ) ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -1979,11 +2227,8 @@ private function hIsMultStrConcat _
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
-				if( (sym->attrib and _
-					(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
-
+				if (symbIsParamBydescOrByref(sym) = FALSE) then
 					function = (astIsSymbolOnTree( sym, r ) = FALSE)
-
 				end if
 			end if
 
@@ -2027,9 +2272,7 @@ private function hOptStrAssignment _
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l )
 				if( sym <> NULL ) then
-					if( (sym->attrib and _
-						(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
-
+					if (symbIsParamBydescOrByref(sym) = FALSE) then
 						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if
@@ -2146,7 +2389,7 @@ function astOptAssignment _
 		return hOptStrAssignment( n, l, r )
 	end select
 
-	dclass = symbGetDataClass( dtype )
+	dclass = typeGetClass( dtype )
 	if( dclass = FB_DATACLASS_INTEGER ) then
 		if( irGetOption( IR_OPT_CPU_BOPSELF ) = FALSE ) then
 			exit function
@@ -2157,7 +2400,7 @@ function astOptAssignment _
 			'' try to optimize if a constant is being assigned to a float var
   			if( astIsCONST( r ) ) then
   				if( dclass = FB_DATACLASS_FPOINT ) then
-					if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
+					if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )
 					end if
 				end if
@@ -2168,7 +2411,7 @@ function astOptAssignment _
 	end if
 
 	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
-	if( symbGetDataSize( dtype ) = 1 ) then
+	if( typeGetSize( dtype ) = 1 ) then
 		exit function
 	end if
 
@@ -2212,7 +2455,7 @@ function astOptAssignment _
 	end select
 
 	'' node result is an integer too?
-	if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
 		exit function
 	end if
 
@@ -2369,28 +2612,18 @@ private function hOptReciprocal _
 
 end function
 
-''::::
-function astOptimizeTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
+	'' The order of calls below matters!
 
-	'' high-level IR? don't do anything..
+	'' Optimize nested field accesses
+	n = hMergeNestedFIELDs( n )
+
+	'' Remove FIELD nodes and expand them to bitfield access/assignment
+	'' code where needed
+	n = hRemoveFIELDs( n )
+
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		return hOptConstIDX( n )
-	end if
-
-	'' calls must be done in the order below
-	ast.isopt = TRUE
-
-	/'
-	if( irGetOption( IR_OPT_REMCASTING ) ) then
-		n = hOptRemCasting( n )
-	end if
-	'/
-
-	if( irGetOption( IR_OPT_NESTEDFIELDS ) ) then
-		n = hOptFieldsCalc( n, NULL )
 	end if
 
 	n = hOptAssocADD( n )
@@ -2423,10 +2656,5 @@ function astOptimizeTree _
 		n = hOptReciprocal( n )
 	end if
 
-	ast.isopt = FALSE
-
 	function = n
-
 end function
-
-

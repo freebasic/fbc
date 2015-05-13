@@ -31,7 +31,7 @@ function astNewIIF _
 	false_dtype = astGetFullType( falsexpr )
 
     '' string? invalid
-    select case symbGetDataClass( true_dtype )
+    select case typeGetClass( true_dtype )
     case FB_DATACLASS_STRING
     	exit function
     case FB_DATACLASS_INTEGER
@@ -41,7 +41,7 @@ function astNewIIF _
     	end select
     end select
 
-    select case symbGetDataClass( false_dtype )
+    select case typeGetClass( false_dtype )
     case FB_DATACLASS_STRING
     	exit function
     case FB_DATACLASS_INTEGER
@@ -68,7 +68,7 @@ function astNewIIF _
     		exit function
     	end if
     	
-    	if( symbMaxDataType( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
+    	if( typeMax( true_dtype, false_dtype ) <> FB_DATATYPE_INVALID ) then
     		exit function
     	end if
     	
@@ -84,10 +84,6 @@ function astNewIIF _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_IIF, true_dtype, truexpr->subtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->sym = symbAddTempVar( true_dtype, _
 							 truexpr->subtype, _

@@ -2,8 +2,131 @@
 Embeddable javascript engine.
 
 Website: http://www.mozilla.org/js/spidermonkey/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: spidermonkey/jsapi.bi
+Header version: from 2006
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/spidermonkey1.bas"}}%%(freebasic)
+'' Evaluating javascript code
+#include once "spidermonkey/jsapi.bi"
+
+dim shared as JSClass global_class = _
+( _
+	@"global", 0, _
+	@JS_PropertyStub, @JS_PropertyStub, @JS_PropertyStub, @JS_PropertyStub, _
+	@JS_EnumerateStub, @JS_ResolveStub, @JS_ConvertStub, @JS_FinalizeStub _
+)
+
+dim as JSRuntime ptr rt = JS_NewRuntime(1048576 /'memory limit'/)
+dim as JSContext ptr cx = JS_NewContext(rt, 4096 /'stack size'/)
+dim as JSObject ptr global = JS_NewObject(cx, @global_class, NULL, NULL) 
+
+JS_InitStandardClasses(cx, global)
+
+'' This string could also be read in from a file or as part of HTTP data etc.
+const TEST_SCRIPT = _
+	!"function fact(n)           \n" + _
+	!"{                          \n" + _
+	!"    if (n <= 1)            \n" + _
+	!"        return 1;          \n" + _
+	!"                           \n" + _
+	!"    return n * fact(n - 1);\n" + _
+	!"}                          \n" + _
+	!"                           \n" + _
+	!"    fact(5)                \n"
+
+dim as jsval rval
+if (JS_EvaluateScript(cx, global, TEST_SCRIPT, len(TEST_SCRIPT), "localhost", 1, @rval) = 0) then
+	print "JS_EvaluateScript failed"
+	sleep
+	end 1
+end if
+
+print "result: " & *JS_GetStringBytes(JS_ValueToString(cx, rval))
+
+JS_DestroyContext(cx)
+JS_DestroyRuntime(rt)
+%%
+
+{{fbdoc item="filename" value="examples/manual/libraries/spidermonkey2.bas"}}%%(freebasic)
+'' Callback example: Functions that are used by the Javascript code,
+'' but are implemented in FB.
+#include once "spidermonkey/jsapi.bi"
+
+dim shared as JSClass global_class = _
+( _
+	@"global", 0, _
+	@JS_PropertyStub, @JS_PropertyStub, @JS_PropertyStub, @JS_PropertyStub, _
+	@JS_EnumerateStub, @JS_ResolveStub, @JS_ConvertStub, @JS_FinalizeStub _
+)
+
+private function print_callback cdecl _
+	( _
+		byval cx as JSContext ptr, _
+		byval obj as JSObject ptr, _
+		byval argc as uintN, _
+		byval argv as jsval ptr, _
+		byval rval as jsval ptr _
+	) as JSBool
+
+	if (argc < 1) then
+		return 0
+	end if
+
+	print *JS_GetStringBytes(JS_ValueToString(cx, argv[0]))
+
+	return 1
+end function
+
+private function ucase_callback cdecl _
+	( _
+		byval cx as JSContext ptr, _
+		byval obj as JSObject ptr, _
+		byval argc as uintN, _
+		byval argv as jsval ptr, _
+		byval rval as jsval ptr _
+	) as JSBool
+	
+	if (argc < 1) then
+		return 0
+	end if
+	
+	'' Get the first argument
+	dim as zstring ptr arg1 = JS_GetStringBytes(JS_ValueToString(cx, argv[0]))
+   
+	'' Get a buffer for the result string
+	dim as zstring ptr result = JS_malloc(cx, len(*arg1) + 1)
+
+	'' Do the work
+	*result = ucase(*arg1)
+
+	'' Return it in rval
+	*rval = STRING_TO_JSVAL(JS_NewString(cx, result, len(*result)))
+
+	return 1
+end function
+
+	dim as JSRuntime ptr rt = JS_NewRuntime(1048576 /'memory limit'/)
+	dim as JSContext ptr cx = JS_NewContext(rt, 4096 /'stack size'/)
+	dim as JSObject ptr global = JS_NewObject(cx, @global_class, NULL, NULL) 
+
+	JS_InitStandardClasses(cx, global)
+
+	JS_DefineFunction(cx, global, "print", @print_callback, 1, 0) 
+	JS_DefineFunction(cx, global, "ucase", @ucase_callback, 1, 0) 
+
+	const TEST_SCRIPT = "print(ucase('hello'));" 
+
+	dim as jsval rval
+	if (JS_EvaluateScript(cx, global, TEST_SCRIPT, len(TEST_SCRIPT), "localhost", 1, @rval) = 0) then
+		print "JS_EvaluateScript failed"
+		sleep
+		end 1
+	end if
+
+	JS_DestroyContext(cx)
+	JS_DestroyRuntime(rt)
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

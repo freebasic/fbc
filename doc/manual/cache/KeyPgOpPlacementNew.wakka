@@ -26,9 +26,13 @@ Operator to construct an object at a specified memory address.
 {{fbdoc item="desc"}}
 	The ##**Placement New**## operator constructs a specified data type at the specified memory location. 
 
+	The ##**Placement New**## operator cannot be directly used with ##[[KeyPgString String]]##, but works with ##[[KeyPgType UDT]]## containing string.
+
 	For simple types, like integers, an initial value can be given. For types without constructors, initial values can be specified for each field. Types that have constructors can have their constructors called by ##**Placement New**## as well. If no initializers are given, the default values for those types will be set.
 
-	Memory is **not** allocated when using the ##**Placement New**## operator. Instead, the memory at the specified ##//address//## is used.  It is incorrect to call ##[[KeyPgOpDelete Delete]]## on the address. See examples below for proper //placement new// usage.
+	Memory is **not** allocated when using the ##**Placement New**## operator. Instead, the memory at the specified ##//address//## is used.
+	It is incorrect to call ##[[KeyPgOpDelete Delete]]## on the address (otherwise, the memory is deallocated). The proper way is to only call the destructor (with syntax as for a member method, using member access operator).
+	See examples below for proper //placement new// usage.
 
 	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##new(address) datatype(any)## will not initialize the data.  This is only valid on data types that do not have constructors.
 

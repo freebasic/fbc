@@ -1,7 +1,7 @@
 /* 'screen , pg, pg' (console, no gfx) function for Windows */
 
 #include "fb.h"
-#include "fb_colors.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 HANDLE fb_hConsoleCreateBuffer( void )

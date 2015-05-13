@@ -109,6 +109,241 @@ For i As FileIter = "./" To ""
 	print i.fileName
 Next
 %%
+Another example working with strings:
+{{fbdoc item="filename" value="examples/manual/udt/step-char-iterator.bas"}}%%(freebasic)
+type CharIterator
+	'' used to build a step var
+	declare constructor( byval r as zstring ptr )
+	
+	'' implicit step versions
+	declare operator for ( )
+	declare operator step( )
+	declare operator next( byref end_cond as CharIterator ) as integer
+	
+	'' explicit step versions
+	declare operator for ( byref step_var as CharIterator )
+	declare operator step( byref step_var as CharIterator )
+	declare operator next( byref end_cond as CharIterator, byref step_var as CharIterator ) as integer
+	
+	'' give the current "value"    
+	declare operator cast( ) as string
+	
+	private:	
+		'' data
+		value as string
+		
+		'' This member isn't necessary - we could use
+		'' the step variable on each iteration - 
+		'' but we choose this method, since we have
+		'' to compare strings otherwise. See below.
+		is_up as integer
+end type
+
+constructor CharIterator( byval r as zstring ptr )
+	value = *r
+end constructor
+
+operator CharIterator.cast( ) as string
+	operator = value
+end operator
+
+'' implicit step versions
+'' 
+'' In this example, we interpret implicit step
+'' to always mean 'up'
+operator CharIterator.for( )
+	print "implicit step"
+end operator
+
+operator CharIterator.step( )
+	value[0] += 1
+end operator 
+
+operator CharIterator.next( byref end_cond as CharIterator ) as integer
+	return this.value <= end_cond.value
+end operator
+
+'' explicit step versions
+'' 
+'' In this example, we calculate the direction
+'' at FOR, but since the step var is passed to
+'' each operator, we have the choice to also calculate
+'' it "on-the-fly". For strings such as this, repeated comparison
+'' may penalize, but if you're working with simpler types,
+'' then you may prefer to avoid the overhead of 
+'' an 'is_up' variable.
+operator CharIterator.for( byref step_var as CharIterator )
+	print "explicit step"
+	is_up = (step_var.value = "up")
+end operator
+
+operator CharIterator.step( byref step_var as CharIterator )
+	if( is_up ) then
+		value[0] += 1
+	else
+		value[0] -= 1
+	end if
+end operator 
+
+operator CharIterator.next( byref end_cond as CharIterator, byref step_var as CharIterator ) as integer
+	if( this.is_up ) then
+		return this.value <= end_cond.value
+	else
+		return this.value >= end_cond.value
+	end if
+end operator
+
+for i as CharIterator = "a" to "z"
+	print i; " ";
+next
+print "done"
+
+for i as CharIterator = "a" to "z" step "up"
+	print i; " ";
+next
+print "done"
+
+for i as CharIterator = "z" to "a" step "down"
+	print i; " ";
+next
+print "done"
+
+for i as CharIterator = "z" to "a" step "up"
+	print i; " ";
+next
+print "done"
+%%
+Iterating with fractions:
+{{fbdoc item="filename" value="examples/manual/udt/step-fraction-iterator.bas"}}%%(freebasic)
+type fraction
+	'' Used to build a step var
+	declare constructor( byval n as integer, byval d as integer )
+
+	'' Implicit step versions
+	declare operator for ( )
+	declare operator step( )
+	declare operator next( byref end_cond as fraction ) as integer
+
+	'' Explicit step versions
+	declare operator for ( byref step_var as fraction )
+	declare operator step( byref step_var as fraction )
+	declare operator next( byref end_cond as fraction, byref step_var as fraction ) as integer
+
+	'' Give the current "value"    
+	declare operator cast( ) as double
+	declare operator cast( ) as string
+
+	private:
+		as integer num, den
+end type
+
+constructor fraction( byval n as integer, byval d as integer )
+	this.num = n : this.den = d
+end constructor
+
+operator fraction.cast( ) as double
+	operator = num / den
+end operator
+
+operator fraction.cast( ) as string
+	operator = num & "/" & den
+end operator
+
+'' Some fraction functions
+Function gcd( Byval n As Integer, Byval m As Integer ) As Integer
+	Dim As Integer t
+		While m <> 0
+			t = m
+			m = n Mod m
+			n = t
+		Wend
+	Return n
+End Function
+
+Function lcd( Byval n As Integer, Byval m As Integer ) As Integer
+	Return (n * m) / gcd( n, m )
+End Function
+
+''
+'' Implicit step versions
+'' 
+'' In this example, we interpret implicit step
+'' to mean 1
+''
+operator fraction.for( )
+	print "implicit step"
+end operator
+
+operator fraction.step( )
+	var lowest = lcd( this.den, 1 )
+
+	var mult_factor = this.den / lowest
+	dim as fraction step_temp = fraction( 1, 1 )
+	
+	this.num *= mult_factor
+	this.den *= mult_factor
+	
+	step_temp.num *= lowest
+	step_temp.den *= lowest
+	
+	this.num += step_temp.num
+end operator 
+
+operator fraction.next( byref end_cond as fraction ) as integer
+	return this <= end_cond
+end operator
+
+''
+'' Explicit step versions
+'' 
+operator fraction.for( byref step_var as fraction )
+	print "explicit step"
+end operator
+
+operator fraction.step( byref step_var as fraction )
+	var lowest = lcd( this.den, step_var.den )
+	var mult_factor = this.den / lowest
+	dim as fraction step_temp = step_var
+
+	this.num *= mult_factor
+	this.den *= mult_factor
+
+	mult_factor = step_temp.den / lowest
+
+	step_temp.num *= mult_factor
+	step_temp.den *= mult_factor
+
+	this.num += step_temp.num
+end operator 
+
+operator fraction.next( byref end_cond as fraction, byref step_var as fraction ) as integer
+	if(( step_var.num < 0 ) or ( step_var.den < 0 ) ) then
+		return this >= end_cond
+	else
+		return this <= end_cond
+	end if
+end operator
+
+for i as fraction = fraction(1,1) to fraction(4,1)
+	print i; " ";
+next
+print "done"
+
+for i as fraction = fraction(1,4) to fraction(1,1) step fraction(1,4)
+	print i; " ";
+next
+print "done"
+
+for i as fraction = fraction(4,4) to fraction(1,4) step fraction(-1,4)
+	print i; " ";
+next
+print "done"
+
+for i as fraction = fraction(4,4) to fraction(1,4)
+	print i; " ";
+next
+print "done"
+%%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 

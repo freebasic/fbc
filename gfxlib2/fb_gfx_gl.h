@@ -3,20 +3,16 @@
 #ifndef __FB_GFX_GL_H__
 #define __FB_GFX_GL_H__
 
-#include <GL/gl.h>
-
-#ifdef __cplusplus
-extern "C" {
+#if defined HOST_DARWIN && (defined(__APPLE__) || defined(MACOSX))
+	#include <OpenGL/gl.h>
+	/* Mac GL headers don't define APIENTRY, so we do it manually */
+	#define APIENTRY
+#else
+	#include <GL/gl.h>
 #endif
+#include "../rtlib/fb_private_hdynload.h"
 
 #define FBGL_EXTENSIONS_STRING_SIZE		16384
-
-#define FBGL_TEXTURE					0x1
-#define FBGL_BLEND						0x2
-
-#ifndef GL_BGRA
-#define GL_BGRA   0x80E1
-#endif
 
 #ifndef GL_ARB_multisample
 #define GL_ARB_multisample
@@ -60,7 +56,6 @@ typedef struct FB_GL {
     char						extensions[FBGL_EXTENSIONS_STRING_SIZE];
 } FB_GL;
 
-
 typedef struct FB_GL_PARAMS {
 	int color_bits;
 	int color_red_bits;
@@ -77,9 +72,12 @@ typedef struct FB_GL_PARAMS {
 	int num_samples;
 } FB_GL_PARAMS;
 
+extern FB_GL __fb_gl;
+extern FB_GL_PARAMS __fb_gl_params;
 
-#ifdef __cplusplus
-}
-#endif
+extern void fb_hGL_NormalizeParameters(int gl_options);
+extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
+extern int fb_hGL_ExtensionSupported(const char *extension);
+extern void *fb_hGL_GetProcAddress(const char *proc);
 
 #endif

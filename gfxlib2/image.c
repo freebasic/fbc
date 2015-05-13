@@ -2,26 +2,28 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 static void *gfx_imagecreate(int width, int height, unsigned int color, int depth, int flags, int usenewheader)
 {
 	FB_GFXCTX *context = fb_hGetContext();
 	PUT_HEADER *image;
 	int size, pitch, header_size = 4;
 	int bpp;
-	
-	if ((!__fb_gfx) || (width <= 0) || (height <= 0))
+
+	if ((!__fb_gfx) || (width <= 0) || (height <= 0)) {
+		fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		return NULL;
-	
+	}
+
 	if (depth > 0) {
 		bpp = BYTES_PER_PIXEL(depth);
-		if ((bpp != 1) && (bpp != 2) && (bpp != 4))
+		if ((bpp != 1) && (bpp != 2) && (bpp != 4)) {
+			fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 			return NULL;
+		}
 	}
 	else
 		bpp = __fb_gfx->bpp;
-	
+
 	if (flags & DEFAULT_COLOR_1) {
 		switch (bpp) {
 			case 1: color = 0; break;
@@ -33,17 +35,21 @@ static void *gfx_imagecreate(int width, int height, unsigned int color, int dept
 		if (bpp == 2)
 			color = ((color & 0xF8) >> 3) | ((color & 0xFC00) >> 5) | ((color & 0xF80000) >> 8);
 	}
-	
+
 	pitch = width * bpp;
 	if (usenewheader) {
 		header_size = sizeof(PUT_HEADER);
 		pitch = (pitch + 0xF) & ~0xF;
 	}
 	size = pitch * height;
-	
+
 	/* 0xF for the para alignment, p_size is sizeof(void *) rounded up to % 16 for the storage for the original pointer */
 	int p_size = (sizeof(void *) + 0xF) & 0xF;
 	void *tmp = malloc(size + header_size + p_size + 0xF);
+	if (tmp == NULL) {
+		fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+		return NULL;
+	}
 
 	image = (PUT_HEADER *)(((intptr_t)tmp + p_size + 0xF) & ~0xF);
 	((void **)image)[-1] = tmp;
@@ -65,25 +71,22 @@ static void *gfx_imagecreate(int width, int height, unsigned int color, int dept
 	fb_hPrepareTarget(context, (void *)image);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 	context->pixel_set((unsigned char *)image + header_size, color, (pitch * height) / bpp);
-	
+
+	fb_ErrorSetNum( FB_RTERROR_OK );
 	return image;
 }
 
-/*:::::*/
 FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags)
 {
 	return gfx_imagecreate( width, height, color, depth, flags, TRUE );
 }
 
-/*:::::*/
 FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags)
 {
 	return gfx_imagecreate( width, height, color, depth, flags, FALSE );
 }
 
-/*:::::*/
 FBCALL void fb_GfxImageDestroy(void *image)
 {
 	free(((void **)image)[-1]);
 }
-

@@ -1,6 +1,7 @@
-#include <stdlib.h>
-#include <float.h>
+/* console window stuff */
+
 #include "fb.h"
+#include "fb_private_console.h"
 
 static SMALL_RECT srRealConsoleWindow;
 

@@ -1,0 +1,39 @@
+LIBRARY     SDL_TTF.DLL
+
+EXPORTS
+    TTF_ByteSwappedUNICODE         @1   
+    TTF_CloseFont                  @2   
+    TTF_FontAscent                 @3   
+    TTF_FontDescent                @4   
+    TTF_FontFaceFamilyName         @5   
+    TTF_FontFaceIsFixedWidth       @6   
+    TTF_FontFaceStyleName          @7   
+    TTF_FontFaces                  @8   
+    TTF_FontHeight                 @9   
+    TTF_FontLineSkip               @10  
+    TTF_GetFontStyle               @11  
+    TTF_GlyphMetrics               @12  
+    TTF_Init                       @13  
+    TTF_Linked_Version             @14  
+    TTF_OpenFont                   @15  
+    TTF_OpenFontIndex              @16  
+    TTF_OpenFontIndexRW            @17  
+    TTF_OpenFontRW                 @18  
+    TTF_Quit                       @19  
+    TTF_RenderGlyph_Blended        @20  
+    TTF_RenderGlyph_Shaded         @21  
+    TTF_RenderGlyph_Solid          @22  
+    TTF_RenderText_Blended         @23  
+    TTF_RenderText_Shaded          @24  
+    TTF_RenderText_Solid           @25  
+    TTF_RenderUNICODE_Blended      @26  
+    TTF_RenderUNICODE_Shaded       @27  
+    TTF_RenderUNICODE_Solid        @28  
+    TTF_RenderUTF8_Blended         @29  
+    TTF_RenderUTF8_Shaded          @30  
+    TTF_RenderUTF8_Solid           @31  
+    TTF_SetFontStyle               @32  
+    TTF_SizeText                   @33  
+    TTF_SizeUNICODE                @34  
+    TTF_SizeUTF8                   @35  
+    TTF_WasInit                    @36  

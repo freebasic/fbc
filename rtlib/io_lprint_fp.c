@@ -1,8 +1,6 @@
 /* print [#] function (floating point) */
 
-#include <stdio.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL void fb_LPrintSingle ( int fnum, float val, int mask )

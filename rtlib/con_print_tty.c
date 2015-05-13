@@ -1,7 +1,6 @@
 /* print text data - using TTY (teletype) interpretation */
 
-#include <string.h>
-#include "fb_con.h"
+#include "fb.h"
 
 #define FB_CONPRINTTTY                  fb_ConPrintTTY
 #define FB_CONPRINTRAW                  fb_ConPrintRaw

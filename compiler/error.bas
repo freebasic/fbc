@@ -7,10 +7,19 @@
 #include once "ir.bi"
 #include once "lex.bi"
 #include once "parser.bi"
+#include once "hash.bi"
+
+type FB_ERRCTX
+	cnt				as integer
+	hide_further_messages		as integer
+	lastline		as integer
+	laststmt		as integer
+	undefhash		as THASH				'' undefined symbols
+end type
 
 type FBWARNING
 	level		as integer
-	text		as zstring ptr
+	text		as const zstring ptr
 end type
 
 
@@ -29,7 +38,6 @@ end type
 		( 1, @"Literal number too big, truncated" ), _
 		( 1, @"Literal string too big, truncated" ), _
 		( 0, @"UDT with pointer or var-len string fields" ), _
-		( 0, @"UDT with var-len string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
 		( 0, @"Function result was not explicitly set" ), _
@@ -52,11 +60,10 @@ end type
 		( 0, @"Directive ignored after first pass" ), _
 		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
 		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
-		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ), _
-		( 0, @"No newline at end of file" ) _
+		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ) _
 	}
 
-	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
+	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
 	{ _
 		@"Argument count mismatch", _
 		@"Expected End-of-File", _
@@ -72,7 +79,6 @@ end type
 		@"Expected 'TO'", _
 		@"Expected 'NEXT'", _
 		@"Expected identifier", _
-		@"Internal: Tables Full!", _
 		@"Expected '-'", _
 		@"Expected ','", _
 		@"Syntax error", _
@@ -212,7 +218,7 @@ end type
 		@"Illegal outside a DESTRUCTOR block", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _
-		@"Call to another constructor must be the first statement", _
+		@"Call to another constructor or a base class constructor must be the first statement", _
 		@"The constructor or destructor calling convention must be CDECL", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
@@ -243,6 +249,7 @@ end type
 		@"Only static members can be accessed from static functions", _
 		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
 		@"The function prototype wasn't declared as STATIC", _
+		@"The function prototype wasn't declared as CONST", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
@@ -268,6 +275,7 @@ end type
 		@"An ENUM, TYPE or UNION cannot be empty", _
 		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
 		@"Only member functions can be static", _
+		@"Only member functions can be const", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
@@ -281,7 +289,7 @@ end type
 		@"Expected 'PTR' or 'POINTER'", _
 		@"Too many levels of pointer indirection", _
 		@"Dynamic arrays can't be const", _
-		@"Non-const UDT cannot invoke const method", _
+		@"Const UDT cannot invoke non-const method", _
 		@"Elements must be empty for strings and arrays", _
 		@"GOSUB disabled, use 'OPTION GOSUB' to enable", _
 		@"Invalid -lang", _
@@ -293,59 +301,55 @@ end type
 		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
 		@"Unsupported statement in -gen gcc mode", _
 		@"Too many labels", _
-		@"Expected '#ENDIF'" _
+        @"Unsupported function", _
+        @"Expected sub", _
+		@"Expected '#ENDIF'", _
+		@"Resource file given for target system that does not support them", _
+		@"-o <file> option without corresponding input file", _
+		@"TYPE can only extend other TYPE symbols", _
+		@"Illegal outside a CLASS, TYPE or UNION method", _
+		@"CLASS, TYPE or UNION not derived", _
+		@"CLASS, TYPE or UNION has no constructor", _
+		@"Symbol type has no Run-Time Type Info (RTTI)", _
+		@"Types have no hierarchical relation", _
+		@"Expected a CLASS, TYPE or UNION symbol type" _
 	}
 
 
-'':::::
-sub errInit
-
+sub errInit()
 	errctx.cnt = 0
-	errctx.lastmsg = FB_ERRMSG_OK
+	errctx.hide_further_messages = FALSE
 	errctx.lastline = -1
 	errctx.laststmt = -1
 
 	'' alloc the undefined symbols tb, used to not report them more than once
-	hashInit( )
-	hashNew( @errctx.undefhash, 64, TRUE )
-
+	hashInit( @errctx.undefhash, 64, TRUE )
 end sub
 
-'':::::
-sub errEnd
-
-	hashFree( @errctx.undefhash )
-	hashEnd( )
-
+sub errEnd()
+	hashEnd( @errctx.undefhash )
 end sub
 
-'':::::
-function errFatal( ) as integer
+sub errHideFurtherErrors()
+	errctx.hide_further_messages = TRUE
+end sub
 
-	'' infinite? never fatal..
-	if( env.clopt.maxerrors = FB_ERR_INFINITE ) then
-		function = TRUE
-
-	'' else, make the parser stop
-	else
-		errctx.cnt = env.clopt.maxerrors
-		function = FALSE
-	end if
-
+function errGetCount() as integer
+	return errctx.cnt
 end function
 
 '':::::
 private sub hPrintErrMsg _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval options as FB_ERRMSGOPT, _
 		byval linenum as integer, _
 		byval showerror as integer = TRUE, _
-		byval customText as zstring ptr = 0 _
+		byval customText as const zstring ptr = 0 _
 	) static
 
-    dim as zstring ptr msg
+    dim as const zstring ptr msg
     dim as string token_pos
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
@@ -420,49 +424,43 @@ private sub hPrintErrMsg _
 end sub
 
 '':::::
-function errReportEx _
+sub errReportEx _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
 		byval options as FB_ERRMSGOPT, _
-		byval customText as zstring ptr _
-	) as integer
+		byval customText as const zstring ptr _
+	)
 
-    '' too many errors?
-    if( errctx.cnt >= env.clopt.maxerrors ) then
-    	return FALSE
-    end if
+	'' Don't show if already too many errors displayed
+	if (errctx.hide_further_messages) then
+		exit sub
+	end if
 
 	if( linenum = 0 ) then
-		if( env.clopt.showsusperrors = FALSE ) then
-			'' only one error per stmt
-			if( parser.stmt.cnt = errctx.laststmt ) then
-				return TRUE
-			end if
+		'' only one error per stmt
+		if( parser.stmt.cnt = errctx.laststmt ) then
+			exit sub
 		end if
 
 		if( lex.ctx <> NULL ) then
 			linenum = lexLineNum( )
 		end if
 
-		errctx.lastmsg = errnum
 		errctx.lastline = linenum
-    	errctx.laststmt = parser.stmt.cnt
+		errctx.laststmt = parser.stmt.cnt
 	end if
 
-    hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror, customText )
+	hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror, customText )
 
 	errctx.cnt += 1
 
-    if( errctx.cnt >= env.clopt.maxerrors ) then
+	if( errctx.cnt >= env.clopt.maxerrors ) then
 		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, 0, linenum, FALSE )
-		function = FALSE
-	else
-		function = TRUE
+		errHideFurtherErrors()
 	end if
-
-end function
+end sub
 
 '':::::
 private function hAddToken _
@@ -507,22 +505,22 @@ private function hAddToken _
 end function
 
 '':::::
-function errReport _
+sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
-		byval customText as zstring ptr _
-	) as integer
+		byval customText as const zstring ptr _
+	)
 
-	function = errReportEx( errnum, hAddToken( isbefore, FALSE ), , , customText )
+	errReportEx( errnum, hAddToken( isbefore, FALSE ), , , customText )
 
-end function
+end sub
 
 '':::::
 sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
 		byval options as FB_ERRMSGOPT _
 	)
@@ -581,7 +579,7 @@ end sub
 sub errReportWarn _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval options as FB_ERRMSGOPT _
 	)
 
@@ -590,12 +588,12 @@ sub errReportWarn _
 end sub
 
 '':::::
-function errReportNotAllowed _
+sub errReportNotAllowed _
 	( _
 		byval opt as FB_LANG_OPT, _
 		byval errnum as integer, _
 		byval msgex as zstring ptr _
-	) as integer
+	)
 
 	dim as string msg = ""
 	dim as integer i, langs
@@ -613,9 +611,9 @@ function errReportNotAllowed _
 
 	msg += hAddToken( FALSE, langs > 0, msgex )
 
-	function = errReportEx( errnum, msg, , FB_ERRMSGOPT_NONE )
+	errReportEx( errnum, msg, , FB_ERRMSGOPT_NONE )
 
-end function
+end sub
 
 '':::::
 private function hReportMakeDesc _
@@ -722,13 +720,13 @@ private function hReportMakeDesc _
 end function
 
 '':::::
-function errReportParam _
+sub errReportParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
-	) as integer
+	)
 
 	static as any ptr lastproc = NULL
 	static as integer lastpnum = -1
@@ -744,7 +742,7 @@ function errReportParam _
 	'' don't report more than one error in a single param
 	if( proc = lastproc ) then
 		if( pnum = lastpnum ) then
-			return TRUE
+			exit sub
 		end if
 
 		cnt = errctx.cnt
@@ -753,7 +751,7 @@ function errReportParam _
 	'' new param, take as a new statement
 	errctx.laststmt = -1
 
-	function = errReportEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+	errReportEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
 
 	'' if it's the same proc, n-param errors will count as just one
 	if( proc = lastproc ) then
@@ -763,7 +761,7 @@ function errReportParam _
 	lastproc = proc
 	lastpnum = pnum
 
-end function
+end sub
 
 '':::::
 sub errReportParamWarn _
@@ -786,11 +784,11 @@ sub errReportParamWarn _
 end sub
 
 '':::::
-function errReportUndef _
+sub errReportUndef _
 	( _
 		byval errnum as integer, _
 		byval id as zstring ptr _
-	) as integer
+	)
 
 	dim as uinteger hash
 	dim as zstring ptr id_cpy
@@ -798,7 +796,7 @@ function errReportUndef _
 	'' already reported?
 	hash = hashHash( id )
 	if( hashLookupEx( @errctx.undefhash, id, hash ) <> NULL ) then
-		return errctx.cnt < env.clopt.maxerrors
+		exit sub
 	end if
 
 	'' add to hash and report the error
@@ -807,6 +805,6 @@ function errReportUndef _
 
 	hashAdd( @errctx.undefhash, id_cpy, id_cpy, hash )
 
-	function = errReportEx( errnum, id )
+	errReportEx( errnum, id )
 
-end function
+end sub

@@ -2,8 +2,6 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 int fb_GfxWidth(int w, int h)
 {
 	int font_w, font_h;
@@ -29,20 +27,20 @@ int fb_GfxWidth(int w, int h)
 	
 	switch( font_w ) {
 	case 8:
-		switch (font_h) {
+		switch( font_h ) {
 		case 8:
-			font = &fb_font_8x8;
+			font = &__fb_font[FB_FONT_8];
 			break;
 		case 14:
-			font = &fb_font_8x14;
+			font = &__fb_font[FB_FONT_14];
 			break;
 		case 16:
-			font = &fb_font_8x16;
+			font = &__fb_font[FB_FONT_16];
 			break;
 		}
 		break;
 	}
-	
+
 	if (font) {
 		/* Update font data */
 		__fb_gfx->text_w = w;

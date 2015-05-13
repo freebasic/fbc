@@ -11,12 +11,9 @@
 '':::::
 #macro hParseRPNT( )
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip until next ')'
-    		hSkipUntil( CHAR_RPRNT, TRUE )
-    	end if
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		'' error recovery: skip until next ')'
+		hSkipUntil( CHAR_RPRNT, TRUE )
 	else
 		lexSkipToken( )
 	end if
@@ -42,13 +39,7 @@ function cFunctionCall _
 
 	dim as FB_PARSEROPT options = FB_PARSEROPT_ISFUNC
 
-	'' method call?
-	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-		arg->expr = thisexpr
-		arg->mode = hGetInstPtrMode( thisexpr )
-		options or= FB_PARSEROPT_HASINSTPTR
-	end if
+    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -58,9 +49,7 @@ function cFunctionCall _
 		'' '('? indexed..
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			if( symbGetUDTHasIdxGetProp( symbGetParent( sym ) ) = FALSE ) then
-				if( errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_PROPERTYHASNOIDXGETMETHOD, TRUE )
 			end if
 
 			lexSkipToken( )
@@ -76,9 +65,7 @@ function cFunctionCall _
 		'' not indexed..
 		else
 			if( symbGetUDTHasGetProp( symbGetParent( sym ) ) = FALSE ) then
-    			if( errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD ) = FALSE ) then
-    				exit function
-    			end if
+				errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD )
 			end if
 
 			'' no args
@@ -122,13 +109,10 @@ function cFunctionCall _
 
 	'' is it really a function?
 	if( astGetDataType( funcexpr ) = FB_DATATYPE_VOID ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: remove the SUB call, return a fake node
-			astDelTree( funcexpr )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: remove the SUB call, return a fake node
+		astDelTree( funcexpr )
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	''
@@ -228,12 +212,9 @@ function cCtorCall _
 	if( isprnt ) then
 		'' ')'?
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				return FALSE
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		else
 			lexSkipToken( )
 		end if
@@ -241,13 +222,11 @@ function cCtorCall _
 
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
-
 		if( symbGetHasDtor( sym ) ) then
 			astDtorListAdd( tmp )
 		end if
 
 		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
-
 	else
 		function = procexpr
 	end if

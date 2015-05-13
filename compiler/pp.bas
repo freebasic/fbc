@@ -16,20 +16,16 @@
 				   LEXCHECK_NOSYMBOL)
 
 type SYMBKWD
-	name			as zstring ptr
+	name			as const zstring ptr
 	id				as integer
 	sym				as FBSYMBOL ptr
 end type
 
-declare function ppInclude					( ) as integer
-
-declare function ppIncLib					( ) as integer
-
-declare function ppLibPath					( ) as integer
-
-declare function ppLine						( ) as integer
-
-declare function ppLang						( ) as integer
+declare sub ppInclude()
+declare sub ppIncLib()
+declare sub ppLibPath()
+declare sub ppLine()
+declare sub ppLang()
 
 '' globals
 	dim shared as PP_CTX pp
@@ -62,9 +58,6 @@ const SYMB_MAXKEYWORDS = 24
 ''::::
 sub ppInit( )
     dim as integer i
-
-	''
-	hashInit( )
 
 	'' create a fake namespace
     pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
@@ -121,8 +114,7 @@ sub ppEnd( )
     next
 
 	symbCompFreeExt( pp.kwdns.nspc.ns.ext )
-	hashFree( @pp.kwdns.nspc.ns.hashtb.tb )
-	hashEnd( )
+	hashEnd( @pp.kwdns.nspc.ns.hashtb.tb )
 
 end sub
 
@@ -179,8 +171,6 @@ end sub
 ''
 function ppParse( ) as integer
 
-	function = FALSE
-
     '' note: when adding any new PP symbol, update ppSkip() too
     select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
@@ -209,14 +199,10 @@ function ppParse( ) as integer
     		'' don't remove if it was defined inside any namespace (any
     		'' USING reference to that ns would break its linked-list)
     		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
-    			if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
-    				exit function
-    			end if
+				errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
     		else
     			if( symbGetCantUndef( sym ) ) then
-    				if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
-    					exit function
-    				end if
+					errReport( FB_ERRMSG_CANTUNDEF )
     			else
     				symbDelSymbol( sym )
     			end if
@@ -250,40 +236,45 @@ function ppParse( ) as integer
 	'' ERROR LITERAL*
 	case FB_TK_PP_ERROR
 		lexSkipToken( )
-		return errReportEx( -1, *ppReadLiteral( ) )
+		errReportEx( -1, *ppReadLiteral( ) )
+		return TRUE
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_PP_INCLUDE
 		lexSkipToken( )
-		function = ppInclude( )
+		ppInclude()
+		function = TRUE
 
 	'' INCLIB LIT_STR
 	case FB_TK_PP_INCLIB
 		lexSkipToken( )
-        function = ppIncLib( )
+		ppIncLib()
+		function = TRUE
 
 	'' LIBPATH LIT_STR
 	case FB_TK_PP_LIBPATH
 		lexSkipToken( )
-		function = ppLibPath( )
+		ppLibPath()
+		function = TRUE
 
 	'' PRAGMA ...
 	case FB_TK_PP_PRAGMA
 		lexSkipToken( )
-		function = ppPragma( )
+		ppPragma()
+		function = TRUE
 
 	case FB_TK_PP_LINE
 		lexSkipToken( )
-		function = ppLine( )
+		ppLine()
+		function = TRUE
 
 	case FB_TK_PP_LANG
 		lexSkipToken( )
-		function = ppLang( )
+		ppLang( )
+		function = TRUE
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
 	end select
 
 	'' Comment?
@@ -295,12 +286,9 @@ function ppParse( ) as integer
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
 		if( lexGetToken( ) <> FB_TK_EOF ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-				return FALSE
-			else
-				'' error recovery: skip until next line
-				hSkipUntil( FB_TK_EOL )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEOL )
+			'' error recovery: skip until next line
+			hSkipUntil( FB_TK_EOL )
 		end if
 	end if
 
@@ -309,11 +297,9 @@ end function
 '':::::
 '' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
 ''
-private function ppInclude( ) as integer
+private sub ppInclude()
     static as zstring * FB_MAXPATHLEN+1 incfile
     dim as integer isonce = any
-
-	function = FALSE
 
 	'' ONCE?
 	isonce = FALSE
@@ -324,87 +310,56 @@ private function ppInclude( ) as integer
 	end if
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip
-			lexSkipToken( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		return
 	end if
 
 	lexEatToken( incfile )
 
-	function = fbIncludeFile( incfile, isonce )
-
-end function
+	fbIncludeFile( incfile, isonce )
+end sub
 
 '':::::
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
-private function ppIncLib( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 libfile
-
+private sub ppIncLib()
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip
-			lexSkipToken( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		return
 	end if
 
-	lexEatToken( libfile )
-
-	function = symbAddLib( libfile ) <> NULL
-
-end function
+	fbAddLib(lexGetText())
+	lexSkipToken()
+end sub
 
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
-private function ppLibPath( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 path
-
+private sub ppLibPath()
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip
-			lexSkipToken( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		return
 	end if
 
-	lexEatToken( path )
-
-	if( symbAddLibPath( path ) = FALSE ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-			return FALSE
-		end if
-	end if
-
-	function = TRUE
-
-end function
+	fbAddLibPath(lexGetText())
+	lexSkipToken()
+end sub
 
 '':::::
 '' ppLine		=   '#'LINE LIT_NUM LIT_STR?
 ''
-private function ppLine( ) as integer
-
-	function = FALSE
-
+private sub ppLine()
 	'' LIT_NUM
 	if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip
-			hSkipUntil( FB_TK_EOL )
-		end if
-
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		hSkipUntil( FB_TK_EOL )
 	else
 		lex.ctx->linenum = valint( *lexGetText( ) )
 		lexSkipToken( )
@@ -415,28 +370,20 @@ private function ppLine( ) as integer
     		lexSkipToken( )
 		end if
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' ppLang		=   '#'LANG LIT_STR
 ''
-private function ppLang( ) as integer
+private sub ppLang()
     static as zstring * FB_MAXPATHLEN+1 opt
 	dim as FB_LANG id = any
 
-	function = FALSE
-
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip
-			lexSkipToken( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		return
 	end if
 
 	lexEatToken( opt )
@@ -444,20 +391,11 @@ private function ppLang( ) as integer
 	id = fbGetLangId( @opt )
 
 	if( id = FB_LANG_INVALID ) then
-		if( errReport( FB_ERRMSG_INVALIDLANG ) = FALSE ) then
-			return FALSE
-		end if
-
+		errReport( FB_ERRMSG_INVALIDLANG )
 	else
-		'' fbChangeOption will return FALSE if we should stop
-		'' parsing and TRUE if we should continue.
-
-		function = fbChangeOption( FB_COMPOPT_LANG, id )
-
+		fbChangeOption( FB_COMPOPT_LANG, id )
 	end if
-
-
-end function
+end sub
 
 '':::::
 private sub hRtrimMacroText _
@@ -757,37 +695,30 @@ function ppTypeOf _
 	( _
 	) as zstring ptr
 
-    function = FALSE
-
 	'' get type's name
 	dim as zstring ptr res
 	dim as integer dtype, lgt
 	dim as FBSYMBOL ptr subtype
 
-    '' '('
+	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	else
 		lexSkipToken( LEXCHECK_NODEFINE )
 	end if
 
-	if( cTypeOf( dtype, subtype, lgt ) = TRUE ) then
-		res = symbTypeToStr( dtype, subtype, lgt )
-	end if
+	cTypeOf( dtype, subtype, lgt )
+
+	res = symbTypeToStr( dtype, subtype, lgt )
 	if( res ) then
 		*res = ucase( *res )
 	end if
 
-    '' ')'
+	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip until next ')'
-			hSkipUntil( CHAR_RPRNT )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		'' error recovery: skip until next ')'
+		hSkipUntil( CHAR_RPRNT )
 	else
 		lexSkipToken( LEXCHECK_NODEFINE )
 	end if

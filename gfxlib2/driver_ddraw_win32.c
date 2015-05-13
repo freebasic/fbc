@@ -9,18 +9,19 @@
 #include <ddraw.h>
 #include <dinput.h>
 
-#define DX_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) const GUID n GUID_SECT = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
-
-/* These are taken off the DirectX headers */
-DX_GUID( IID_IDirectDraw2, 0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
-DX_GUID( GUID_Key,         0x55728220,0xD33C,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-DX_GUID( GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-
+/* Normally these globals are found in -ldxguid, but we don't link that into
+   FB programs because MinGW's libdxguid.a contains lots of other such globals
+   and all of them in one object resulting in lots of unnecessary bloat.
+   So we declare these manually here. They must be renamed from the originals
+   too to prevent collisions with the DirectX/MinGW[-w64] headers. */
+#define DX_GUID(id,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) static const GUID id = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+DX_GUID( __fb_IID_IDirectDraw2, 0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
+DX_GUID( __fb_GUID_Key,         0x55728220,0xD33C,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
+DX_GUID( __fb_GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_wait_vsync(void);
 static int *driver_fetch_modes(int depth, int *size);
-
 
 GFXDRIVER fb_gfxDriverDirectDraw =
 {
@@ -40,7 +41,6 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	NULL			/* void (*poll_events)(void); */
 };
 
-
 typedef struct MODESLIST {
 	int depth;
 	int size;
@@ -54,7 +54,6 @@ typedef struct DEVENUMDATA {
 
 static int directx_init(void);
 static void directx_exit(void);
-
 
 /* We don't want to directly link with DDRAW.DLL and DINPUT.DLL,
  * as this way generated exes will not depend on them to run.
@@ -83,13 +82,11 @@ static RECT rect;
 static int win_x, win_y, display_offset, wait_vsync = FALSE;
 static HANDLE vsync_event = NULL;
 
-
-/*:::::*/
 static void restore_surfaces(void)
 {
 	HRESULT result;
-	FLASHWINFO fwinfo;
-	
+	FB_FLASHWINFO fwinfo;
+
 	result = IDirectDrawSurface_IsLost(lpDDS);
 	while (result == DDERR_SURFACELOST) {
 		if (lpDDS_back != lpDDS)
@@ -102,7 +99,7 @@ static void restore_surfaces(void)
 				directx_exit();
 				Sleep(300);
 			}
-			
+
 			if (fb_win32.FlashWindowEx) {
 				/* stop our window to flash */
 				fwinfo.cbSize = sizeof(fwinfo);
@@ -115,8 +112,6 @@ static void restore_surfaces(void)
 	}
 }
 
-
-/*:::::*/
 static void directx_paint(void)
 {
 	RECT src, dest;
@@ -142,8 +137,6 @@ static void directx_paint(void)
 	} while (result == DDERR_SURFACELOST);
 }
 
-
-/*:::::*/
 static int calc_comp_height( int h )
 {
 	if( h < 240 )
@@ -160,18 +153,17 @@ static int calc_comp_height( int h )
 		return 0;
 }
 
-/*:::::*/
 static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm)
 {
 	if (hm == fb_win32.monitor && lpGUID) {
 		((DEVENUMDATA *)lpContext)->guid = *lpGUID;
 		((DEVENUMDATA *)lpContext)->success = TRUE;
 		return 0;
-	} else
+	} else {
 		return 1;
+	}
 }
 
-/*:::::*/
 static int directx_init(void)
 {
 	LPDIRECTDRAW lpDD1 = NULL;
@@ -209,18 +201,15 @@ static int directx_init(void)
 	
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || (fb_win32.monitor == NULL) || !DirectDrawEnumerateEx ||
 	    (DirectDrawEnumerateEx(ddenum_callback, &dev_enum_data, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK) ||
-	    !dev_enum_data.success )
-	{
+	    !dev_enum_data.success ) {
 		ddGUID = NULL;
-	}
-	else
-	{
+	} else {
 		ddGUID = &dev_enum_data.guid;
 	}
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(ddGUID, &lpDD1, NULL) != DD_OK))
 		return -1;
-	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
+	res = IDirectDraw_QueryInterface(lpDD1, &__fb_IID_IDirectDraw2, (LPVOID)&lpDD);
 	IDirectDraw_Release(lpDD1);
 	if (res != DD_OK)
 		return -1;
@@ -259,17 +248,15 @@ static int directx_init(void)
 				height = calc_comp_height( height );
 				if( height == 0 )
 					return -1;
-			}
-			else
+			} else {
 				break;
+			}
 		}
 		display_offset = ((height - fb_win32.h) >> 1);
-	}
-	else {
+	} else {
 		if (fb_win32.flags & DRIVER_NO_FRAME) {
 			style = WS_POPUP | WS_VISIBLE;
-		}
-		else {
+		} else {
 			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
@@ -306,9 +293,9 @@ static int directx_init(void)
 		desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
 		if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
 			return -1;
-	}
-	else
+	} else {
 		lpDDS_back = lpDDS;
+	}
 
 	format.dwSize = sizeof(format);
 	if (IDirectDrawSurface_GetPixelFormat(lpDDS, &format) != DD_OK)
@@ -340,12 +327,12 @@ static int directx_init(void)
 	vsync_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	for (i = 0; i < 256; i++) {
-		__c_rgodfDIKeyboard[i].pguid = &GUID_Key;
+		__c_rgodfDIKeyboard[i].pguid = &__fb_GUID_Key;
 		__c_rgodfDIKeyboard[i].dwOfs = i;
 		__c_rgodfDIKeyboard[i].dwType = 0x8000000C | (i << 8);
 		__c_rgodfDIKeyboard[i].dwFlags = 0;
 	}
-	if (IDirectInput_CreateDevice(lpDI, &GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
+	if (IDirectInput_CreateDevice(lpDI, &__fb_GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
 		return -1;
 	if (IDirectInputDevice_SetDataFormat(lpDID, &__c_dfDIKeyboard) != DI_OK)
 		return -1;
@@ -355,8 +342,6 @@ static int directx_init(void)
 	return 0;
 }
 
-
-/*:::::*/
 static void directx_exit(void)
 {
 	DDBLTFX bltfx;
@@ -420,16 +405,19 @@ static void directx_exit(void)
 	}
 }
 
-
-/*:::::*/
-static void directx_thread(HANDLE running_event)
+#ifdef HOST_MINGW
+static unsigned int WINAPI directx_thread( void *param )
+#else
+static DWORD WINAPI directx_thread( LPVOID param )
+#endif
 {
+	HANDLE running_event = param;
 	DDSURFACEDESC desc;
 	HRESULT result;
 	unsigned char keystate[256];
 	int i;
 
-	if (directx_init()) return;
+	if (directx_init()) return 1;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
@@ -479,10 +467,10 @@ static void directx_thread(HANDLE running_event)
 
 		fb_hWin32Unlock();
 	}
+
+	return 1;
 }
 
-
-/*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
@@ -496,12 +484,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 
 	win_x = (GetSystemMetrics(SM_CXSCREEN) - w) >> 1;
 	win_y = (GetSystemMetrics(SM_CYSCREEN) - h) >> 1;
-	
+
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }
 
-
-/*:::::*/
 static void driver_wait_vsync(void)
 {
 	ResetEvent(vsync_event);
@@ -513,8 +499,6 @@ static void driver_wait_vsync(void)
 	SetEvent(vsync_event);
 }
 
-
-/*:::::*/
 static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 {
 	MODESLIST *modes = (MODESLIST *)data;
@@ -531,8 +515,6 @@ static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 	return DDENUMRET_OK;
 }
 
-
-/*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
 	MODESLIST modes = { depth, 0, NULL };
@@ -551,14 +533,13 @@ static int *driver_fetch_modes(int depth, int *size)
 			FreeLibrary(library);
 			return NULL;
 		}
-		res = IDirectDraw_QueryInterface(dd1, &IID_IDirectDraw2, (LPVOID)&dd2);
+		res = IDirectDraw_QueryInterface(dd1, &__fb_IID_IDirectDraw2, (LPVOID)&dd2);
 		IDirectDraw_Release(dd1);
 		if (res != DD_OK) {
 			FreeLibrary(library);
 			return NULL;
 		}
-	}
-	else {
+	} else {
 		dd2 = lpDD;
 	}
 	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)

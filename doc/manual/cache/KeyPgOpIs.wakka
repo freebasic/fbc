@@ -1,0 +1,87 @@
+{{fbdoc item="title" value="Operator Is (Run-time type information)"}}----
+Checks whether an object is compatible to a type derived from its type
+
+{{fbdoc item="syntax"}}##
+	//result// = //expression// **Is**  //typename//
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		The expression to check, an object of a type that is directly or indirectly derived from ##[[KeyPgObject Object]]##.
+	##//typename//##
+		The child type to check for. This type must be directly or indirectly derived from the type of //expression//.
+
+{{fbdoc item="ret"}}
+	Returns negative one (##-1##) if the expression is an object of type ##//typename//## or one of its derived types, or zero (##0##) if it's an object of an incompatible type.
+
+{{fbdoc item="desc"}}
+	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on run-time type information, it can only be used with types that are derived from the built-in ##[[KeyPgObject Object]]## type. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/is.bas"}}%%(freebasic)
+type Vehicle extends object
+	as string name
+end type
+
+type Car extends Vehicle
+end type
+
+type Cabriolet extends Car
+end type
+
+type Bike extends Vehicle
+end type
+
+sub identify(byval p as object ptr)
+	print "Identifying:"
+
+	'' Not a Vehicle object?
+	if not (*p is Vehicle) then
+		print , "unknown object"
+		return
+	end if
+
+	'' The cast is safe, because we know it's a Vehicle object
+	print , "name: " & cptr(Vehicle ptr, p)->name
+
+	if *p is Car then
+		print , "It's a car"
+	end if
+
+	if *p is Cabriolet then
+		print , "It's a cabriolet"
+	end if
+
+	if *p is Bike then
+		print , "It's a bike"
+	end if
+end sub
+
+dim as Car ford
+ford.name = "Ford"
+identify(@ford)
+
+dim as Cabriolet porsche
+porsche.name = "Porsche"
+identify(@porsche)
+
+dim as Bike mountainbike
+mountainbike.name = "Mountain Bike"
+identify(@mountainbike)
+
+dim as Vehicle v
+v.name = "some unknown vehicle"
+identify(@v)
+
+dim as Object o
+identify(@o)
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgObject Object]]##
+	- ##[[KeyPgIs Is (Select Case)]]##
+ 
+{{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

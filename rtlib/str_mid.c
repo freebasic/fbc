@@ -1,7 +1,5 @@
 /* mid$ function */
 
-#include <stddef.h>
-#include <string.h>
 #include "fb.h"
 
 

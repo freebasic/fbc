@@ -1,8 +1,5 @@
 /* print text data - using TTY (teletype) interpretation */
 
-#include <string.h>
-#include "fb_con.h"
-
 #ifndef OUTPUT_BUFFER_SIZE
 #define OUTPUT_BUFFER_SIZE 1024
 #endif
@@ -25,6 +22,8 @@ void FB_CONPRINTTTY
     size_t IndexText;
     int fGotNewCoordinate = FALSE;
     int BorderWidth = pBorder->Right - pBorder->Left + 1;
+
+    DBG_ASSERT( BorderWidth != 0 );
 
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 

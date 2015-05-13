@@ -56,10 +56,6 @@ function astNewBOUNDCHK _
 	n = astNewNode( AST_NODECLASS_BOUNDCHK, FB_DATATYPE_INTEGER, NULL )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->l = l
 
 	n->sym = symbAddTempVar( astGetDataType( l ), l->subtype, FALSE, FALSE )
@@ -111,7 +107,7 @@ function astLoadBOUNDCHK _
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, _
+    	irEmitBOP( AST_OP_EQ, _
     				 vr, _
     				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
     				 NULL, _
@@ -153,10 +149,6 @@ function astNewPTRCHK _
 	subtype = l->subtype
 	n = astNewNode( AST_NODECLASS_PTRCHK, dtype, subtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->l = l
 
@@ -203,7 +195,7 @@ function astLoadPTRCHK _
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, _
+    	irEmitBOP( AST_OP_EQ, _
     				 vr, _
     				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
     				 NULL, _

@@ -78,14 +78,29 @@ sub test_4 cdecl ()
 
 end sub
 
-private sub ctor () constructor
+sub testNested cdecl( )
+	type A
+		as integer i : 1
+	end type
 
+	type B
+		as A a
+	end type
+
+	dim as B b
+
+	b.a.i = 1
+
+	CU_ASSERT( b.a.i = 1 )
+end sub
+
+private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.structs.bitfield_access")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("test_2", @test_2)
 	fbcu.add_test("test_3", @test_3)
 	fbcu.add_test("test_4", @test_4)
-
+	fbcu.add_test("Nested field access", @testNested)
 end sub
 
 end namespace

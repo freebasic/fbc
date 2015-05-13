@@ -1,15 +1,14 @@
 /* COMx device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
-                             const char *filename,
-                             size_t filename_len,
-                             size_t *pPort )
+int fb_DevComTestProtocolEx
+	(
+		FB_FILE *handle,
+		const char *filename,
+		size_t filename_len,
+		size_t *pPort
+	)
 {
     char ch;
     size_t i, port;
@@ -51,11 +50,12 @@ int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
     return TRUE;
 }
 
-/*:::::*/
-int fb_DevComTestProtocol( struct _FB_FILE *handle,
-                           const char *filename,
-                           size_t filename_len )
+int fb_DevComTestProtocol
+	(
+		FB_FILE *handle,
+		const char *filename,
+		size_t filename_len
+	)
 {
     return fb_DevComTestProtocolEx( handle, filename, filename_len, NULL );
 }
-

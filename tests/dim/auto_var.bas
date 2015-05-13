@@ -40,21 +40,30 @@ end sub
 
 sub test_str cdecl
 	var s1 = "fOObAR"
-	
+
 	dim as string ts = "fOObAR"
 	var s2 = ts
-	
+
 	dim as zstring * 6+1 tz = "fOObAR"
 	var s3 = tz
 
 	dim as zstring ptr tpz = @"fOObAR"
 	var s4 = *tpz
-	
+
+	dim as string * 6 fixstr = "fOObAR"
+	var s5 = fixstr
+
 	CU_ASSERT_EQUAL( s1, "fOObAR" )
 	CU_ASSERT_EQUAL( s2, "fOObAR" )
 	CU_ASSERT_EQUAL( s3, "fOObAR" )
 	CU_ASSERT_EQUAL( s4, "fOObAR" )
-	
+	CU_ASSERT_EQUAL( s5, "fOObAR" )
+
+	CU_ASSERT_EQUAL( len(s1), 6 )
+	CU_ASSERT_EQUAL( len(s2), 6 )
+	CU_ASSERT_EQUAL( len(s3), 6 )
+	CU_ASSERT_EQUAL( len(s4), 6 )
+	CU_ASSERT_EQUAL( len(s5), 6 )
 end sub
 
 private sub ctor () constructor

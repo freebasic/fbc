@@ -44,9 +44,6 @@ function astNewMEM _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_MEM, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->mem.op = op
 	n->l = l
@@ -77,18 +74,16 @@ private function hCallCtorList _
 	tree = astBuildVarAssign( iter, ptr_expr )
 
 	'' for cnt = 0 to elements-1
-	tree = astBuildForBeginEx( tree, cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	'' ctor( *iter )
-	tree = astNewLINK( tree, _
-					   astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 	'' iter += 1
-    tree = astNewLINK( tree, _
-    				   astBuildVarInc( iter, 1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
-    '' next
-    tree = astBuildForEndEx( tree, cnt, label, 1, elmts_expr )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, elmts_expr )
 
 	function = tree
 
@@ -262,14 +257,14 @@ private function hNewOp _
 		'' call default ctor?
 		if( init_expr = NULL ) then
 			init_expr = astBuildCtorCall( subtype, _
-								  		  astBuildVarDeref( ptr_expr ) )
+								  		  astNewDEREF( ptr_expr ) )
 
 		'' explicit ctor call, patch it..
 		else
             '' check if a ctor call (because error recovery)..
 			if( astIsCALLCTOR( init_expr ) ) then
                	init_expr = astPatchCtorCall( astCALLCTORToCALL( init_expr ), _
-               						  		  astBuildVarDeref( ptr_expr ) )
+               						  		  astNewDEREF( ptr_expr ) )
             end if
 		end if
 	end if
@@ -319,22 +314,16 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildVarAssign( iter, ptr_expr ) )
 
 	'' for cnt = 0 to elmts-1
-	tree = astBuildForBeginEx( tree, cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	'' iter -= 1
-    tree = astNewLINK( tree, _
-    				   astBuildVarInc( iter, -1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
 
 	'' dtor( *iter )
-	tree = astNewLINK( tree, _
-					   astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
 
-    '' next
-    tree = astBuildForEndEx( tree, _
-    						 cnt, _
-    						 label, _
-    						 1, _
-    						 astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ) )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ) )
 
 	function = tree
 
@@ -390,7 +379,7 @@ private function hDelOp _
 		else
 			tree = astNewLINK( tree, _
 							   astBuildDtorCall( subtype, _
-								  	astBuildVarDeref( astCloneTree( ptr_expr ) ) ) )
+								  	astNewDEREF( astCloneTree( ptr_expr ) ) ) )
 		end if
 
 	end if

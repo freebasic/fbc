@@ -2,38 +2,39 @@
 
 {{anchor name="item0"}}
 
-**FreeBASIC Graphics Library questions:**
+**""FreeBASIC"" Graphics Library questions:**
 	==- {{anchor name="item1|How can I link/use Gfxlib?"}}==
 	==- {{anchor name="item2|What about the fbgfx.bi header file?"}}==
-	==- {{anchor name="item3|How are GET/PUT arrays managed?"}}==
-	==- {{anchor name="item4|Why is BSAVE/BLOAD crashing?"}}==
+	==- {{anchor name="item3|How are Get/Put arrays managed?"}}==
+	==- {{anchor name="item4|Why is Bsave/Bload crashing?"}}==
 	==- {{anchor name="item5|How can I get the red, green, blue, or alpha component of a colour?"}}==
 	==- {{anchor name="item6|How can I make the 'x' button in the window header close my application?"}}==
-	==- {{anchor name="item7|Can't run programs using SCREEN 13 or 14 in fullscreen !"}}==
+	==- {{anchor name="item7|Can't run programs using Screen 13 or 14 in fullscreen !"}}==
+	==- {{anchor name="item8|Why does Imagecreate return a NULL pointer?"}}==
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
 
 ----
 
-@@**FreeBASIC Graphics Library questions**@@
+@@**""FreeBASIC"" Graphics Library questions**@@
 
 {{anchor name="item1"}}==How can I link/use Gfxlib?==
-	Gfxlib is "built in" into the language, it is not necessary to include any .bi file or to link any library explicitly. FreeBASIC detects you want to use Gfxlib when it finds a [[KeyPgScreengraphics SCREEN]] or [[KeyPgScreenres SCREENRES]] instruction. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
+	Gfxlib is "built in" into the language, it is not necessary to include any .bi file or to link any library explicitly. ""FreeBASIC"" detects you want to use Gfxlib when you use the [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]] statements. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==What about the ##fbgfx.bi## header file?==
-	The ##fbgfx.bi## header file is available for inclusion by your program, and contains constant and type definitions that may be helpful to the programmer when using Gfxlib. You do not have to explicitly include this file to use Gfxlib however; the header is only available as an aid. Contents include [[KeyPgScreengraphics SCREEN]] / [[KeyPgScreenres SCREENRES]] mode flag constants, definitions of [[GfxScancodes Keyboard scancodes]] and more.
+	The ##fbgfx.bi## header file is available for inclusion by your program, and contains constant and type definitions that may be helpful to the programmer when using Gfxlib. You do not have to explicitly include this file to use Gfxlib however; the header is only available as an aid. It contains the constants for the mode flags that can be passed to [[KeyPgScreengraphics Screen]] and [[KeyPgScreenres Screenres]], and also definitions of [[GfxScancodes Keyboard scancodes]] and the [[GfxInternalFormats fb.Image buffer structure]].
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item3"}}==How are GET/PUT arrays managed?==
-	In FreeBASIC, images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data, for details see [[GfxInternalFormats]] .
+{{anchor name="item3"}}==How are Get/Put arrays managed?==
+	In ""FreeBASIC"", images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data, for details see [[GfxInternalFormats]] .
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item4"}}==Why is BSAVE/BLOAD crashing?==
-	BSAVE/BLOAD can only be used to load and save graphics screens in FreeBASIC. It can't be used to save a text mode screen. To load and save an array check this [[FaqPgbloadworkaround snippet using file GET/PUT]] .
+{{anchor name="item4"}}==Why is Bsave/Bload crashing?==
+	Bsave/Bload can only be used to load and save graphics screens in ""FreeBASIC"". It can't be used to save a text mode screen. To load and save an array check this [[FaqPgbloadworkaround snippet using file Get/Put]] .
 
 {{anchor name="item0|Back to top"}}
 
@@ -62,7 +63,7 @@ Alpha = rgb_a(c)
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item6"}}==How can I make the 'x' button in the window header close my application?==
-	In windowed graphics mode you can test for the press of the window's X (close) button with ##[[KeyPgInkey Inkey]]##. This applies to Win32 and Linux, in DOS there is no "X" button.
+	In windowed graphics mode you can test for the press of the window's X (close) button with ##[[KeyPgInkey Inkey]]##, checking for the value Chr( 255 ) + "k" (which is also the code returned for Alt+F4). This applies to ""Win32"" and Linux, in DOS there is no "X" button.
 	
 	Here is a small example:
 
@@ -77,19 +78,25 @@ Do
 Loop Until key = Chr(27) Or key = Chr(255, 107) 'escape or x-button
 %%
 
-	NOTE: If you use an old version of FreeBASIC, you may have to use Chr( 255 ) + "X"
+	Note: If you use an old version of ""FreeBASIC"", you may have to use Chr( 255 ) + "X".
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item7"}}==Can't run programs using SCREEN 13 or 14 in fullscreen !==
-	It's a hardware/driver limitation (Win32 and Linux only ?). Video cards don't implement those low resolution graphic modes nowadays. If fullscreen is required you should rewrite it using at least SCREEN 17 or 18, or a resolution of 640x480 or higher to be sure modern hardware can handle it.
+{{anchor name="item7"}}==Can't run programs using Screen 13 or 14 in full-screen!==
+	It's a hardware/driver limitation (""Win32"" and Linux only?). Video cards don't implement those low resolution graphic modes nowadays. If full-screen is required you should rewrite it using at least Screen 17 or 18, or a resolution of 640x480 or higher to be sure modern hardware can handle it.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item8"}}==Why does Imagecreate return a NULL pointer?==
+	[[KeyPgImagecreate Imagecreate]] needs to create an image buffer that fits the current screen's pixel format, and it cannot do so if there is no screen mode setup yet, so it returns NULL, very likely resulting in a NULL pointer access later on that crashes the program.
+	
+	This is known to happen when Imagecreate is called //before// the graphics library was initialized with a call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]], as may happen when Imagecreate is called in a global constructor that is invoked before the Screen or Screenres call in the main part of the program. In such a case it is necessary to move the screen initialization into a constructor too, and have it execute before the image-creating constructors.
 
 {{anchor name="item0|Back to top"}}
 
 {{fbdoc item="see"}}
-	- [[CompilerFAQ Compiler FAQ]].
-	- [[FaqPgrtlib FB Runtime Library FAQ]].
+	- [[CompilerFAQ Compiler FAQ]]
+	- [[FaqPgrtlib FB Runtime Library FAQ]]
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

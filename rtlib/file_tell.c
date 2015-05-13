@@ -1,9 +1,6 @@
 /* TELL() and TELL */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 fb_off_t fb_FileTellEx( FB_FILE *handle )
@@ -43,4 +40,3 @@ FBCALL long long fb_FileTell( int fnum )
 {
     return fb_FileTellEx( FB_FILE_TO_HANDLE(fnum) );
 }
-

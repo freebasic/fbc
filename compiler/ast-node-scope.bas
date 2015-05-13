@@ -24,11 +24,6 @@ declare sub hDelLocals _
 		byval check_backward as integer _
 	)
 
-declare sub hDestroyVars _
-	( _
-		byval scp as FBSYMBOL ptr _
-	)
-
 '':::::
 function astScopeBegin _
 	( _
@@ -42,15 +37,14 @@ function astScopeBegin _
 		return NULL
 	end if
 
-	''
 	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
-    n = astAdd( n )
+	'' Assuming the astAdd() adds the SCOPEBEGIN without reallocating it
+	'' or similar, because it's still referenced afterwards!
+	'' astAdd() could theoretically LINK it with other statements though,
+	'' that's why we can't use "n = astAdd( n )".
+	astAdd( n )
 
-	''
 	s = symbAddScope( n )
 
     '' change to scope's symbol tb
@@ -98,15 +92,8 @@ private sub hAddToBreakList _
 
 end sub
 
-'':::::
-function astScopeBreak _
-	( _
-		byval target as FBSYMBOL ptr _
-	) as integer
-
+sub astScopeBreak(byval target as FBSYMBOL ptr)
 	dim as ASTNODE ptr n = any
-
-	function = FALSE
 
 	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, FB_DATATYPE_INVALID, NULL )
 
@@ -119,14 +106,12 @@ function astScopeBreak _
 	'' the branch node is added, not the break itself, any
 	'' destructor will be added before this node when
 	'' processing the proc's branch list
-	n->l = astAdd( astNewBRANCH( AST_OP_JMP, target ) )
+	'' Same concerns apply as for the astAdd() of SCOPEBEGIN above
+	n->l = astNewBRANCH( AST_OP_JMP, target )
+	astAdd( n->l )
 
-	''
 	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 sub astScopeEnd _
@@ -136,6 +121,8 @@ sub astScopeEnd _
 
 	dim as FBSYMBOL ptr s = any
 
+	assert( n->class = AST_NODECLASS_SCOPEBEGIN )
+
 	s = n->sym
 
 	'' must update the stmt count or any internal label
@@ -144,13 +131,11 @@ sub astScopeEnd _
 
 	n->block.endstmt = parser.stmt.cnt
 
-	'' free dynamic vars
-	hDestroyVars( s )
+	astScopeDestroyVars(symbGetScopeSymbTb(s).tail)
 
 	'' remove symbols from hash table
 	symbDelScopeTb( s )
 
-	''
 	irScopeEnd( s )
 
 	'' back to preview symbol tb
@@ -160,14 +145,14 @@ sub astScopeEnd _
 	parser.currblock = ast.currblock->sym
 	parser.scope -= 1
 
-	''
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
 
 	n = astNewNode( AST_NODECLASS_SCOPEEND, FB_DATATYPE_INVALID )
 
-    n = astAdd( n )
+	'' Same concerns apply as for the astAdd() of SCOPEBEGIN above
+	astAdd( n )
 
-    n->sym = s
+	n->sym = s
 
 end sub
 
@@ -207,12 +192,12 @@ function astScopeUpdBreakList _
 end function
 
 '':::::
-private function hBranchError _
+private sub hBranchError _
 	( _
 		byval errnum as integer, _
 		byval n as ASTNODE ptr, _
 		byval s as FBSYMBOL ptr = NULL _
-	) as integer static
+	) static
 
 	dim as integer showerror
 	dim as string msg
@@ -240,11 +225,10 @@ private function hBranchError _
 		msg += *symbGetName( s )
 	end if
 
-	function = errReportEx( errnum, msg, n->break.linenum )
+	errReportEx( errnum, msg, n->break.linenum )
 
 	env.clopt.showerror = showerror
-
-end function
+end sub
 
 '':::::
 private sub hBranchWarning _
@@ -312,14 +296,13 @@ private function hFindCommonParent _
 
 end function
 
-'':::::
-private function hCheckCrossing _
+private sub hCheckCrossing _
 	( _
 		byval n as ASTNODE ptr, _
 		byval blk as FBSYMBOL ptr, _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr s = any
 	dim as integer stmt = any
@@ -341,9 +324,7 @@ private function hCheckCrossing _
     		if( stmt > top_stmt ) then
     			if( stmt < bot_stmt ) then
     				if( symbGetVarHasCtor( s ) ) then
-    					if( hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s ) = FALSE ) then
-    						return FALSE
-    					end if
+						hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s )
 
     				else
     					'' not static, shared or temp?
@@ -362,17 +343,13 @@ private function hCheckCrossing _
 
     	s = s->next
     loop
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private function hCheckScopeLocals _
+private sub hCheckScopeLocals _
 	( _
 		byval n as ASTNODE ptr, _
 		byval top_parent as FBSYMBOL ptr = NULL _
-	) as integer
+	)
 
     dim as FBSYMBOL ptr label = any, blk = any
     dim as integer label_stmt = any, branch_stmt = any
@@ -388,34 +365,26 @@ private function hCheckScopeLocals _
 
     blk = symbGetLabelParent( label )
     do
-    	'' check for any var allocated between the block's
-    	'' beginning and the branch
-    	if( hCheckCrossing( n, blk, 0, label_stmt ) = FALSE ) then
-    		return FALSE
-    	end if
+		'' check for any var allocated between the block's
+		'' beginning and the branch
+		hCheckCrossing( n, blk, 0, label_stmt )
 
 		if( symbGetSymbtb( blk ) = NULL ) then
 			exit do
 		end if
 
-    	blk = symbGetParent( blk )
+		blk = symbGetParent( blk )
 
-    	'' same parent?
-    	if( blk = top_parent ) then
-    		'' forward?
+		'' same parent?
+		if( blk = top_parent ) then
+			'' forward?
 			if( label_stmt > branch_stmt ) then
-    			if( hCheckCrossing( n, blk, branch_stmt, label_stmt ) = FALSE ) then
-    				return FALSE
-    			end if
-    		end if
-
-    		exit do
-    	end if
-    loop
-
-	function = TRUE
-
-end function
+				hCheckCrossing( n, blk, branch_stmt, label_stmt )
+			end if
+			exit do
+		end if
+	loop
+end sub
 
 '':::::
 private sub hDestroyBlockLocals _
@@ -588,11 +557,7 @@ private function hCheckBranch _
     	'' jumping to a child block?
     	if( label_scope > branch_scope ) then
            	'' any locals?
-			if( hCheckScopeLocals( n ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-       		end if
+			hCheckScopeLocals( n )
 
     		'' backward?
     		if( label_stmt <= branch_stmt ) then
@@ -608,11 +573,7 @@ private function hCheckBranch _
     		'' forward..
     		else
     			'' crossing any declaration?
-    			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
-       				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       					exit function
-       				end if
-    			end if
+				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
     		end if
     	end if
 
@@ -631,12 +592,7 @@ private function hCheckBranch _
 		'' not a parent block?
         if( isparent = FALSE ) then
 			'' any locals?
-			if( hCheckScopeLocals( n, _
-								   hFindCommonParent( branch_parent, label_parent ) ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-       		end if
+			hCheckScopeLocals( n, hFindCommonParent( branch_parent, label_parent ) )
        	end if
 
    	'' proc level..
@@ -648,11 +604,7 @@ private function hCheckBranch _
    	   	'' forward?
    		if( label_stmt > branch_stmt ) then
    			'' crossing any declaration?
-   			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-   			end if
+				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
    		end if
    	end if
 
@@ -664,28 +616,50 @@ private function hCheckBranch _
 
 end function
 
-'':::::
-private sub hDestroyVars _
-	( _
-		byval scp as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr s = any
-
-	'' for each symbol declared inside the SCOPE block (in reverse order)..
-	s = symbGetScopeSymbTb( scp ).tail
-    do while( s <> NULL )
-    	'' variable?
-    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
+sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
+	'' For each symbol declared inside the block (in reverse order)
+	dim as FBSYMBOL ptr s = symtbtail
+	while (s)
+		'' variable?
+		if (symbIsVar(s)) then
 			'' has a dtor?
 			if( symbGetVarHasDtor( s ) ) then
-    			astAdd( astBuildVarDtorCall( s, TRUE ) )
-    		end if
-    	end if
+				astAdd( astBuildVarDtorCall( s, TRUE ) )
+			end if
+		end if
+		s = s->prev
+	wend
+end sub
 
-    	s = s->prev
-    loop
+sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
+	'' Used for both scope and proc locals/statics
 
+	'' For the C emitter, let static vars be allocated here too, so they're
+	'' emitted inside the procedure. The irProcAllocStaticVars() later does
+	'' nothing.
+	'' Otherwise for the ASM emitter, ignore static vars here via the
+	'' filter mask; irProcAllocStaticVars() will handle them later.
+	dim as integer mask = any
+	if (irGetOption(IR_OPT_HIGHLEVEL)) then
+		mask = FB_SYMBATTRIB_SHARED
+	else
+		mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+	end if
+
+	dim as FBSYMBOL ptr s = symtbhead
+	while (s)
+		'' non-shared/static variable?
+		if (symbIsVar(s) andalso ((s->attrib and mask) = 0)) then
+			'' Procedure parameter?
+			if (symbIsParam(s)) then
+				s->ofs = irProcAllocArg(parser.currproc, s, iif(symbIsParamByVal(s), s->lgt, FB_POINTERSIZE))
+			else
+				s->ofs = irProcAllocLocal(parser.currproc, s, s->lgt * symbGetArrayElements(s))
+			end if
+			symbSetVarIsAllocated(s)
+		end if
+		s = s->next
+	wend
 end sub
 
 '':::::
@@ -704,7 +678,7 @@ function astLoadSCOPEBEGIN _
 		irEmitSCOPEBEGIN( s )
 	end if
 
-	symbScopeAllocLocals( s )
+	astScopeAllocLocals(symbGetScopeSymbTbHead(s))
 
 	function = NULL
 
@@ -729,5 +703,3 @@ function astLoadSCOPEEND _
     function = NULL
 
 end function
-
-

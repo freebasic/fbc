@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENGLPROC"}}----
-Gets the address of an OpenGL procedure
+Gets the address of an [[OpenGL]] procedure
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenGLProc""** ( [[KeyPgByref byref]] procname [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -9,7 +9,7 @@ Gets the address of an OpenGL procedure
 		name of the procedure to retrieve the address of
 
 {{fbdoc item="desc"}}
-	This function can be used to get the address of any OpenGL procedure, to be used to retrieve the pointers to new functions associated with OpenGL extensions. If given procedure named ##//procname//## cannot be found, ##**screenglproc**## will return NULL (0).
+	This function can be used to get the address of any ""OpenGL"" procedure, to be used to retrieve the pointers to new functions associated with ""OpenGL"" extensions. If given procedure named ##//procname//## cannot be found, ##**screenglproc**## will return NULL (##0##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenglproc.bas"}}%%(freebasic)

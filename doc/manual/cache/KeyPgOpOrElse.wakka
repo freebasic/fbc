@@ -52,6 +52,7 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAndAlso AndAlso]]##
+	- ##[[KeyPgOpOr Or]]##
 	- [[TblTruth Operator Truth Tables]]
 
 {{fbdoc item="back" value="CatPgOpShortCircuit|Short Circuit Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

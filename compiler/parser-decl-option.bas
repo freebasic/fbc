@@ -7,7 +7,7 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 
-declare function hUndefSymbol( ) as integer
+declare sub hUndefSymbol()
 
 '':::::
 ''OptDecl         =   OPTION (BYVAL|DYNAMIC|STATIC|GOSUB|EXPLICIT|PRIVATE|ESCAPE|BASE NUM_LIT|NOKEYWORD ...|NOGOSUB)
@@ -17,9 +17,7 @@ function cOptDecl as integer
 	function = FALSE
 
 	if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
-		if( errReportNotAllowed( FB_LANG_OPT_OPTION ) = FALSE ) then
-			exit function
-		end if
+		errReportNotAllowed( FB_LANG_OPT_OPTION )
 	end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
@@ -44,9 +42,7 @@ function cOptDecl as integer
 
 	case FB_TK_GOSUB
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
-				exit function
-			end if
+			errReportNotAllowed( FB_LANG_OPT_GOSUB )
 		else
 			env.opt.gosub = TRUE
 		end if
@@ -77,12 +73,9 @@ function cOptDecl as integer
 			lexSkipToken( )
 
 			if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt
-					hSkipStmt( )
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR )
+				'' error recovery: skip stmt
+				hSkipStmt( )
 			else
 				env.opt.base = valint( *lexGetText( ) )
 				lexSkipToken( )
@@ -92,9 +85,7 @@ function cOptDecl as integer
 			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
-                if( hUndefSymbol( ) = FALSE ) then
-                	exit function
-                end if
+				hUndefSymbol()
 
 				'' ','?
 				if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -106,9 +97,7 @@ function cOptDecl as integer
 
 		case "NOGOSUB"
 			if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-				if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
-					exit function
-				end if
+				errReportNotAllowed( FB_LANG_OPT_GOSUB )
 			else
 				env.opt.gosub = FALSE
 			end if
@@ -116,9 +105,7 @@ function cOptDecl as integer
 			lexSkipToken( )
 
 		case else
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end select
 
 	end select
@@ -127,18 +114,13 @@ function cOptDecl as integer
 
 end function
 
-'':::::
-private function hUndefSymbol( ) as integer
+private sub hUndefSymbol()
 	dim s as FBSYMBOL ptr
-
-	function = FALSE
 
 	select case as const lexGetClass( LEXCHECK_NODEFINE )
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 		if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		end if
 
 		lexSkipToken( )
@@ -147,72 +129,47 @@ private function hUndefSymbol( ) as integer
 		'' proc?
 		s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_PROC )
 		if( s <> NULL ) then
-
 			'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
 			if( symbGetIsRTL( s ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				end if
-
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			else
 				'' don't remove if it was defined inside any namespace (any
 				'' USING ref to that ns would break its linked-list)
 				if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
-					if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
-						exit function
-					end if
-
+					errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
 				else
 					if( symbGetCantUndef( s ) ) then
-						if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_CANTUNDEF )
 					else
 						symbDelPrototype( s )
 					end if
 				end if
 			end if
-
 		else
 			'' macro?
 			s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
 			if( s = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				end if
-
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			else
 				'' don't remove if it was defined inside any namespace (any
 				'' USING ref to that ns would break its linked-list)
 				if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
-					if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
-						exit function
-					end if
-
+					errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
 				else
 					if( symbGetCantUndef( s ) ) then
-						if( errReport( FB_ERRMSG_CANTUNDEF ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_CANTUNDEF )
 					else
 						symbDelDefine( s )
 					end if
 				end if
 			end if
-
 		end if
 
 		lexSkipToken( )
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip until next ','
-			hSkipUntil( CHAR_COMMA )
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip until next ','
+		hSkipUntil( CHAR_COMMA )
 	end select
-
-	function = TRUE
-
-end function
+end sub

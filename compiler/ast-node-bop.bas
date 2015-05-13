@@ -188,13 +188,7 @@ private function hWStrLiteralCompare _
 
 end function
 
-'':::::
-private function hToStr _
-	( _
-		byref l as ASTNODE ptr, _
-		byref r as ASTNODE ptr _
-	) as integer
-
+private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
 	dim as integer ldtype = any, rdtype = any
 
 	ldtype = astGetDataType( l )
@@ -207,15 +201,12 @@ private function hToStr _
 
     '' not a string..
     case else
-    	l = rtlToStr( l, FALSE )
-   		if( l = NULL ) then
-   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   				return FALSE
-   			else
-   				'' error recovery: fake a new node
-   				l = astNewCONSTstr( NULL )
-   			end if
-    	end if
+		l = rtlToStr( l, FALSE )
+		if( l = NULL ) then
+				errReport( FB_ERRMSG_TYPEMISMATCH )
+				'' error recovery: fake a new node
+				l = astNewCONSTstr( NULL )
+		end if
     end select
 
 
@@ -234,18 +225,12 @@ private function hToStr _
    		end if
 
    		if( r = NULL ) then
-   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   				return FALSE
-   			else
-  				'' error recovery: fake a new node
-				r = astNewCONSTstr( NULL )
-			end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a new node
+			r = astNewCONSTstr( NULL )
    		end if
    	end select
-
-   	function = TRUE
-
-end function
+end sub
 
 '':::::
 private sub hBOPConstFoldInt _
@@ -660,7 +645,7 @@ private function hDoPointerArith _
     edtype = astGetDataType( e )
 
     '' not integer class?
-    if( symbGetDataClass( edtype ) <> FB_DATACLASS_INTEGER ) then
+    if( typeGetClass( edtype ) <> FB_DATACLASS_INTEGER ) then
     	exit function
 
     '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
@@ -863,6 +848,19 @@ end function
 #endmacro
 
 '':::::
+private function hCmpDynType _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
+	
+	'' all checks already done at parser level
+	
+	return rtlOOPIsTypeOf( l, r )
+	
+End Function
+
+'':::::
 function astNewBOP _
 	( _
 		byval op as integer, _
@@ -885,18 +883,20 @@ function astNewBOP _
 
 	is_str = FALSE
 
-	'' special case..
-	if( op = AST_OP_CONCAT ) then
-		if( hToStr( l, r ) = FALSE ) then
-			exit function
-		end if
+	'' special cases..
+	select case op
+	case AST_OP_CONCAT
+		hToStr( l, r )
 		op = AST_OP_ADD
-	end if
+
+	case AST_OP_IS
+		return hCmpDynType( l, r )
+	End Select
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
-	ldclass = symbGetDataClass( ldtype )
-	rdclass = symbGetDataClass( rdtype )
+	ldclass = typeGetClass( ldtype )
+	rdclass = typeGetClass( rdtype )
 
 	'' UDT's? try auto-coercion
 	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
@@ -1159,9 +1159,9 @@ function astNewBOP _
     ''::::::
 
 	'' convert byte to int
-	if( symbGetDataSize( ldtype ) = 1 ) then
+	if( typeGetSize( ldtype ) = 1 ) then
 		if( is_str = FALSE ) then
-			if( symbIsSigned( ldtype ) ) then
+			if( typeIsSigned( ldtype ) ) then
 				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
 			else
 				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
@@ -1170,9 +1170,9 @@ function astNewBOP _
 		end if
 	end if
 
-	if( symbGetDataSize( rdtype ) = 1 ) then
+	if( typeGetSize( rdtype ) = 1 ) then
 		if( is_str = FALSE ) then
-			if( symbIsSigned( rdtype ) ) then
+			if( typeIsSigned( rdtype ) ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 			else
 				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
@@ -1245,7 +1245,7 @@ function astNewBOP _
     '' convert types to the most precise if needed
 	if( ldtype <> rdtype ) then
 
-		dtype = symbMaxDataType( ldtype, rdtype )
+		dtype = typeMax( ldtype, rdtype )
 
 		'' don't convert?
 		if( dtype = FB_DATATYPE_INVALID ) then
@@ -1334,7 +1334,7 @@ function astNewBOP _
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
 			select case astGetValueAsULongint( r )
-				case is >= symbGetDataSize( ldtype ) * 8
+				case is >= typeGetSize( ldtype ) * 8
 					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
 			end select
 		end if
@@ -1479,7 +1479,7 @@ function astNewBOP _
 					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
 						' A pow should always promote l and r to
 						' float, and return a float
-						if( symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
+						if( typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
 							l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, l )
 						end if
 						astDelNode( r )
@@ -1551,9 +1551,6 @@ function astNewBOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )
-	if( n = NULL ) then
-		exit function
-	end if
 
 	'' fill it
 	n->l = l
@@ -1707,9 +1704,9 @@ function astLoadBOP _
 		'' execute the operation
 		if( n->op.ex <> NULL ) then
 			'' hack! ex=label, vr being NULL 'll gen better code at IR..
-			irEmitBOPEx( op, v1, v2, NULL, n->op.ex )
+			irEmitBOP( op, v1, v2, NULL, n->op.ex )
 		else
-			irEmitBOPEx( op, v1, v2, vr, NULL )
+			irEmitBOP( op, v1, v2, vr, NULL )
 		end if
 
 		'' "var op= expr" optimizations

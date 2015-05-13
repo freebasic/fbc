@@ -4,17 +4,17 @@
 
 dim shared as integer ctors = 0, dtors = 0
 
-type object
+type T
 	as integer a
 	declare constructor()
 	declare destructor()
 end type
 
-constructor object()
+constructor T()
 	ctors += 1
 end constructor
 
-destructor object()
+destructor T()
 	dtors += 1
 end destructor
 
@@ -24,7 +24,7 @@ sub check () destructor
 	if( dtors <> 1 ) then end 2
 end sub
 
-dim as object obj
+dim as T obj
 dim as integer i = 0
 
 do

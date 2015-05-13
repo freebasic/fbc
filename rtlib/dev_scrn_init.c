@@ -1,7 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 static FB_FILE_HOOKS hooks_dev_scrn_null = { 0 };

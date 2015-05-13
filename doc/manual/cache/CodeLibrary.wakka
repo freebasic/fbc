@@ -1,6 +1,4 @@
-FB Code Lib, V0.01b.  ""FreeBASIC"" Code, Games, and Libraries.  Written in ""FreeBASIC"", by ""FreeBASIC"" Community Members.
-
-If you're looking for a code snippet demonstrating compiler features or how to use a certain library, check out your local ##**""FreeBASIC Compiler\examples""**## directory, which contains hundreds of source code snippets and examples.
+ ""FreeBASIC"" Code, Games, and Libraries.  Written in ""FreeBASIC"", by ""FreeBASIC"" Community Members.
 
 <<{{anchor name="EDITOR"}}{{fbdoc item="section" value="Code Editors & IDEs "}}
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit, an IDE for FB by KetilO (Win32)]]
@@ -32,7 +30,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 
 	==Formats==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8024 PNG_LOAD by yetifoot]]
-	[[http://www.freebasic.net/arch/category.php?id=6 JPEG image loader by Antoni]]
+	[[http://www.freebasic.net/___old_site/arch/category.php?id=6 JPEG image loader by Antoni]]
 
 	==3D==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8724 Tree Generation by Zamaster]]
@@ -49,7 +47,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=11 Using FMod In-Game by shiftlynx]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=20477 Using the PC Speaker by several]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9226 Wave synthesizer by Zamaster]]
-		
+
 {{anchor name="MATH"}}{{fbdoc item="section" value="Math Code"}}
 	[[http://sourceforge.net/projects/fbmath/ FBMath by jdebord]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4135 Pixel-Perfect Collision Detection by 1000101]]
@@ -60,6 +58,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9501 Minicalc textmode calculator by KristopherWindsor]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=75713 BCD arithmetics by srvaldez]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=49695 10Byte extended float by srvaldez, included in FB examples]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=26794 CRC Calculation by Fragmeister]]
 
 	==Physics simulation==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3167 Atom smash simulation by coderjeff]]
@@ -86,6 +85,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 
 <<>>{{anchor name="GAME"}}{{fbdoc item="section" value="FreeBASIC Games"}}
 	[[http://games.freebasic.net/ FreeBASIC Games Directory by Lachie Dazdarian]]
+	
 	==Featured Games:==
 	[[http://csgp.suret.net/ Cute Short Game Project by redcrab]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3931 Kingdoms by Piptol]]
@@ -115,8 +115,14 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6574 Text Input by Pritchard & sir_mud]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6847 ConLib Console library with PCopy by cha0s]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7744 Lock Mouse to Grid Positions by Pritchard]]
+	
+	==Serial Port==
+	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 Drive a Parallax servo controller by phishguy]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=34643 Modbus device finder by Antoni]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=3132 Serial port terminal program by Antoni]]
 
 {{anchor name="OSSPEC"}}{{fbdoc item="section" value="OS Specific Code"}}
+	
 	==Windows==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=1173 Screen Saver Kit (WIN) by jofers]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=5942 ServiceFB (Win) by zerospeed]]
@@ -145,12 +151,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8981 "GetDiskFreeSpaceEx" Check for disk total/free space on FAT32 by DOS386]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4899 DPMI host detection version/capabilities by DrV]]
 
-{{anchor name="OTHER"}}{{fbdoc item="section" value="Miscellaneous Code"}}
-	[[http://code.google.com/p/fb-extended-lib/ FreeBASIC Extended Library]]
-	
-	[[http://www.freebasic.net/forum/viewtopic.php?t=7441 FB  CAD by owen]]
-	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]
+{{anchor name="DATASTRUCT"}}{{fbdoc item="section" value="Data structures and special-purpose UDTs"}}
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8935 Boolean Type by Imortis]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8226 Associative Arrays by jofers]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8823 Safe FBstring Type by stylin]]
@@ -158,21 +159,20 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3545 FreeBASIC Memory Leak Detector by DrV & Others]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6576 Auto-deallocating 'Smart' Pointers by stylin]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9463 UDTs for Properties by Pritchard]]
+
+{{anchor name="OTHER"}}{{fbdoc item="section" value="Miscellaneous Code"}}
+	[[http://code.google.com/p/fb-extended-lib/ FreeBASIC Extended Library]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7441 FB  CAD by owen]]
+	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8504 Portable way to add a resource to a program  by voodooattack]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 CPU Identification by MichaelW]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4221 Cpu Cycle counter for benchmarking of code by MichaelW]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=84902&highlight=#84902 Use of the FBGfx built-in LZW routines by Lillo]]
 	[[http://rapidq.phatcode.net/tutorial/Freebasic_DLL_tutorial.html Using FB dll's in RapidQ programs by JohnK]]
 
-	==Serial Port==
-	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 Drive a Parallax servo controller by phishguy]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=34643 Modbus device finder by Antoni]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=3132 Serial port terminal program by Antoni]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=26794 CRC Calculation by Fragmeister]]
-
-		
 {{anchor name="SITES"}}{{fbdoc item="section" value="Community Websites/Links"}}
-	[[http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibTOC External Library Documentation]]
+	[[ExtLibTOC External Library Documentation]]
 	[[http://www.sourceforge.net/ Sourceforge]]
 	[[http://report.freebasic.info/ The FreeBASIC Report]]
 	[[http://games.freebasic.net/ FreeBASIC Games Directory]]

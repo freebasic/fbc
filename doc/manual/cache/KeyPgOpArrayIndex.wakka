@@ -20,7 +20,7 @@ Returns a reference to an element in an array
 {{fbdoc item="desc"}}
 	This operator returns a reference to an element in an array. For multidimensional arrays, multiple indexes must be specified (up to the total number of dimensions of the array).
 
-	For any one dimension //d// in array //a//, any index outside of the range (##[[KeyPgLbound Lbound]](//a//(), //d//), [[KeyPgUbound Ubound]](//a//(), //d//)##) will result in a runtime error.
+	For any dimension ##//d//## in array ##//a//##, any index less than ##[[KeyPgLbound Lbound]](//a//, //d//)## or greater than ##[[KeyPgUbound Ubound]](//a//, //d//)## will result in a runtime error.
 
 {{fbdoc item="ex"}}
 

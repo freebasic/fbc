@@ -1,8 +1,7 @@
 /* Convert a strings character set to another character set. */
 
 #include "fb.h"
-#include <stddef.h>
-#include <stdlib.h>
+#include "fb_private_intl.h"
 
 static
 FBSTRING *fb_hIntlConvertToWC(FBSTRING *source, UINT source_cp )

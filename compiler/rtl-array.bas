@@ -307,20 +307,11 @@ sub rtlArrayModEnd( )
 
 end sub
 
-'':::::
-private function hBuildProcPtr _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	if( proc = NULL ) then
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
-
-	function = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc ) )
-
-	symbSetIsCalled( proc )
-
+	function = astBuildProcAddrof(proc)
 end function
 
 '':::::
@@ -337,7 +328,7 @@ function rtlArrayRedim _
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, reslabel = any, ctor = any, dtor = any
+    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any
     dim as integer dtype = any
 
     function = FALSE
@@ -457,16 +448,7 @@ function rtlArrayRedim _
     	end if
 	next
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-    ''
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -572,15 +554,15 @@ function rtlArrayClear _
     	exit function
     end if
 
-	if( dtor = NULL ) then
+	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval isvarlen as integer
 		if( astNewARG( proc, _
 					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
 					   				 FB_DATATYPE_INTEGER ), _
 					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    else
+			exit function
+		end if
+	else
 		if( check_access ) then
 			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )

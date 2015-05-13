@@ -3,56 +3,9 @@
 #ifndef __FB_GFX_H__
 #define __FB_GFX_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-#ifndef DISABLE_OPENGL
-#include "fb_gfx_gl.h"
-#endif
-
 #include "../rtlib/fb.h"
-#include "../rtlib/fb_error.h"
-#include "../rtlib/fb_scancodes.h"
 
-#ifdef PI
-#undef PI
-#endif
 #define PI			3.1415926535897932384626
-
-#ifdef MIN
-#undef MIN
-#endif
-#define MIN(a,b)		((a) < (b) ? (a) : (b))
-
-#ifdef MAX
-#undef MAX
-#endif
-#define MAX(a,b)		((a) > (b) ? (a) : (b))
-
-#ifdef MID
-#undef MID
-#endif
-#define MID(a,b,c)		MIN(MAX((a), (b)), (c))
-
-#ifdef SWAP
-#undef SWAP
-#endif
-#define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
-
-#ifdef HOST_X86
- #define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
- #define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
-#else
- #define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
- #define RORW1(num)      RORW(num, 1)
-#endif
 
 #define BYTES_PER_PIXEL(d)		(((d) + 7) / 8)
 #define BPP_MASK(b)				((int)((1LL << ((b) << 3)) - 1))
@@ -220,17 +173,14 @@ extern "C" {
 
 #define POLL_EVENTS					200
 
-
 typedef void (BLITTER)(unsigned char *, int);
 typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
 typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, int, BLENDER *, void *);
-
 
 typedef struct _GFX_CHAR_CELL {
     FB_WCHAR ch;
     unsigned fg, bg;
 } GFX_CHAR_CELL;
-
 
 struct _EVENT {
 	int type;
@@ -249,7 +199,6 @@ struct _EVENT {
 	};
 } __attribute__((__packed__));
 typedef struct _EVENT EVENT;
-
 
 typedef struct FB_GFXCTX {
 	int id;
@@ -281,7 +230,6 @@ typedef struct FB_GFXCTX {
     int flags;
 } FB_GFXCTX;
 
-
 typedef struct FBGFX
 {
 	int id;									/**< Mode id number for contexts identification */
@@ -311,11 +259,10 @@ typedef struct FBGFX
 	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
     EVENT *event_queue;						/**< The OS events queue array */
     int event_head, event_tail;				/**< Indices for the head and tail event in the array */
-    struct _FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
+	FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
 	volatile int flags;						/**< Status flags */
 	int lock_count;							/**<Reference count for SCREENLOCK/UNLOCK */
 } FBGFX;
-
 
 typedef struct GFXDRIVER
 {
@@ -470,13 +417,11 @@ typedef struct GFXDRIVER
 	void (*poll_events)(void);
 } GFXDRIVER;
 
-
 typedef struct PALETTE
 {
 	const int colors;
 	const unsigned char *data;
 } PALETTE;
-
 
 typedef struct FONT
 {
@@ -484,7 +429,6 @@ typedef struct FONT
     const int h;
 	const unsigned char *data;
 } FONT;
-
 
 struct _PUT_HEADER {
 	union {
@@ -499,16 +443,11 @@ struct _PUT_HEADER {
 	unsigned int width;
 	unsigned int height;
 	unsigned int pitch;
-#ifndef DISABLE_OPENGL
-	GLuint tex;
-#else
-	unsigned int no_tex;
-#endif
+	unsigned int tex;
 	char _reserved[8];
 	unsigned char data[0];
 } __attribute__((__packed__));
 typedef struct _PUT_HEADER PUT_HEADER;
-
 
 /* Global variables */
 extern FBGFX *__fb_gfx;
@@ -521,11 +460,26 @@ extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *__fb_color_conv_16to32;
 extern char *__fb_window_title;
-#ifndef DISABLE_OPENGL
-extern FB_GL __fb_gl;
-extern FB_GL_PARAMS __fb_gl_params;
-#endif
-#include "fb_gfx_data.h"
+
+/* must match data.c */
+enum {
+	FB_FONT_8 = 0,
+	FB_FONT_14,
+	FB_FONT_16,
+	FB_FONT_COUNT
+};
+
+/* must match data.c */
+enum {
+	FB_PALETTE_2 = 0,
+	FB_PALETTE_16,
+	FB_PALETTE_64,
+	FB_PALETTE_256,
+	FB_PALETTE_COUNT
+};
+
+extern const FONT __fb_font[FB_FONT_COUNT];
+extern const PALETTE __fb_palette[FB_PALETTE_COUNT];
 
 /* Internal functions */
 extern FB_GFXCTX *fb_hGetContext(void);
@@ -558,10 +512,6 @@ extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern int fb_hGetWindowHandle(void);
-extern void fb_hGL_NormalizeParameters(int gl_options);
-extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
-extern int fb_hGL_ExtensionSupported(const char *extension);
-extern void *fb_hGL_GetProcAddress(const char *proc);
 
 
 /* Public API */
@@ -606,7 +556,7 @@ extern FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal);
 extern FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal);
 extern FBCALL void *fb_GfxGetGLProcAddress(const char *proc);
 
-/* Public API - QB compatibility*/
+/* Public API - QB compatibility */
 extern FBCALL int fb_GfxStickQB( int n );
 extern FBCALL int fb_GfxStrigQB( int n );
 
@@ -676,9 +626,5 @@ FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsign
  */
 #define FB_GFX_GET_CHARSET() \
     "CP437"
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

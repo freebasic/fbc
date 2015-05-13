@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="Purpose"}}----
+
+''##fb.bas##'': Main module for the compiler, parent module for parser/lexer/AST/IR/emitters, toplevel file & include file handling
+''##parser*.bas##'': Parsing/compilation functions: lexer tokens -> AST nodes.
+''##symb*.bas##'': Symbol tables and lookup, namespace/scope handling.
+''##rtl*.bas##'': Helpers to build AST calls to rtlib/gfxlib functions.
+
+	The structure of the parser has a very close relation to the [[FbGrammar FreeBASIC grammar]]. Basically there is a parsing function for every element of the grammar.
+
+	The parser retrieves tokens from the lexer and validates the input source code. Most error messages (besides command line and file access errors) come from here. Additionally the parser functions build up the corresponding AST. This is the heart of the compilation process.
+
+	Many of the parser's (or rather compiler's) functions (prefixed with a 'c') parse and skip the grammar element they represent, or show an error if they don't find it. The parser is fairly recursive, mostly because of the expression parser and the #include parsing.
+
+==__From parsing to emitting__==
+
+	When parsing code a corresponding AST is built up to represent the program. The AST is used to represent executable code, but also to hold temporary expressions, for example the values of constants or the initializers found while parsing type or procedure declarations. The AST does //not// contain nodes for code flow constructs like IF, DO/LOOP, GOTO, RETURN, EXIT DO, etc., but it contains labels and branches. Likewise, several operations (like IIF(), ANDALSO, ORELSE, field dereference, member access) are replaced by the corresponding set of lower-level operations in the AST.
+	
+	After parsing a function, the AST for this function is optimized, and then emitted recursively via ''##astLoad*()##'' calls on each node, from the top down. Note that each AST node has its own implementation of ''##astLoad()##''.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

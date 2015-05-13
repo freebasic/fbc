@@ -23,8 +23,8 @@ type FB_CALLBACK_ADDOPTION as sub _
 
 declare function fbObjInfoWriteObj _
 	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
+		byval libs as TLIST ptr, _
+		byval libpaths as TLIST ptr _
 	) as integer
 
 declare function fbObjInfoReadObj _
@@ -41,7 +41,7 @@ declare function fbObjInfoReadLib _
 		byval addLib as FB_CALLBACK_ADDLIB, _
 		byval addLibPath as FB_CALLBACK_ADDLIBPATH, _
 		byval addOption as FB_CALLBACK_ADDOPTION, _
-		byval libpathlist as TLIST ptr _
+		byval libpaths as TLIST ptr _
 	) as integer
 
 #endif '' __FB_OBJ_BI__

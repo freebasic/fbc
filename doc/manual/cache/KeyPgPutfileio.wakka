@@ -22,7 +22,7 @@ Writes data from a buffer to a file
 		When putting ##[[KeyPgString String]]##s, the number of bytes written is the same as the number of bytes in the string data.  ##//amount//## is not allowed.
 		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
 	##//amount//##
-		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.=====
+		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.
 
 {{fbdoc item="ret"}}
 	##0## on success; nonzero on error. "disk full" is considered as an error, and results in return code ##3##. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 

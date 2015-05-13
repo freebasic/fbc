@@ -1,12 +1,8 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileTell( struct _FB_FILE *handle, fb_off_t *pOffset )
+int fb_DevFileTell( FB_FILE *handle, fb_off_t *pOffset )
 {
 	FILE *fp;
 

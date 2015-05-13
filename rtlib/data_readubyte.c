@@ -1,6 +1,5 @@
 /* read stmt for ubyte's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

@@ -1,9 +1,7 @@
 /* input function for signed long long's */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputLongint( long long *dst )

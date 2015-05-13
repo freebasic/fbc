@@ -1,13 +1,17 @@
 /* dir$ implementation */
 
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "fb.h"
+#include <sys/stat.h>
+#include <dirent.h>
 
+typedef struct _FB_DIRCTX {
+	int in_use;
+	int attrib;
+	DIR *dir;
+	char filespec[MAX_PATH];
+	char dirname[MAX_PATH];
+} FB_DIRCTX;
 
-/*:::::*/
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
@@ -16,8 +20,6 @@ static void close_dir ( void )
 	ctx->in_use = FALSE;
 }
 
-
-/*:::::*/
 static int get_attrib ( char *name, struct stat *info )
 {
 	int attrib = 0, mask;
@@ -47,8 +49,6 @@ static int get_attrib ( char *name, struct stat *info )
 	return attrib;
 }
 
-
-/*:::::*/
 static int match_spec( char *name )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
@@ -94,7 +94,6 @@ static int match_spec( char *name )
 	return TRUE;
 }
 
-/*:::::*/
 static char *find_next ( int *attrib )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
@@ -113,12 +112,12 @@ static char *find_next ( int *attrib )
 		}
 		name = entry->d_name;
 		strcpy( buffer, ctx->dirname );
-		strncat( buffer, name, MAX_PATH );
+		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
-		
+
 		if( stat( buffer, &info ) )
 			continue;
-		
+
 		*attrib = get_attrib( name, &info );
 	}
 	while( ( *attrib & ~ctx->attrib ) || !match_spec( name ) );
@@ -126,8 +125,6 @@ static char *find_next ( int *attrib )
 	return name;
 }
 
-
-/*:::::*/
 FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 {
 	FB_DIRCTX *ctx;
@@ -241,7 +238,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 	return res;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_DirNext ( int *attrib )
 {
 	static FBSTRING fname = { 0 };

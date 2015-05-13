@@ -29,25 +29,19 @@ function cMidStmt _
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 	dim as FBSYMBOL ptr sym = astGetSymbol( expr1 )
-	
 	if( sym = NULL ) then
 		'' deref... 
 		select case as const astGetClass( expr1 )
 		case AST_NODECLASS_DEREF
 			sym = iif( astGetLeft( expr1 ), astGetSymbol( astGetLeft( expr1 ) ), NULL )
-			
 		end select
 	end if
-		
+
 	if( sym = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 	else
 		if( symbIsConstant( sym ) or typeIsConst( astGetFullType( expr1 ) ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	 	end if
 	end if
 
@@ -64,9 +58,7 @@ function cMidStmt _
 	hMatchRPRNT( )
 
 	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 
 	hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
@@ -80,11 +72,7 @@ end function
 
 '':::::
 '' LRsetStmt		=	LSET|RSET String|UDT (','|'=') Expression|UDT
-function cLRSetStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
-
+function cLRSetStmt(byval tk as FB_TOKEN) as integer
     dim as ASTNODE ptr dstexpr = any, srcexpr = any
     dim as integer dtype1 = any, dtype2 = any
     dim as FBSYMBOL ptr dst = any, src = any
@@ -99,12 +87,9 @@ function cLRSetStmt _
 	'' Expression
 	dstexpr = cVarOrDeref( )
 	if( dstexpr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			dstexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake a var
+		dstexpr = CREATEFAKEID( )
 	end if
 
 	dtype1 = astGetDataType( dstexpr )
@@ -114,54 +99,40 @@ function cLRSetStmt _
 		 FB_DATATYPE_STRUCT
 
 		if( is_rset and (dtype1 = FB_DATATYPE_STRUCT) ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: do lset instead
-				is_rset = FALSE
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: do lset instead
+			is_rset = FALSE
 		end if
 
 		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
 
 		if( sym = NULL ) then
 			'' deref... 
-			select case as const astGetClass( dstexpr )
-			case AST_NODECLASS_DEREF
+			if (astGetClass( dstexpr ) = AST_NODECLASS_DEREF) then
 				sym = iif( astGetLeft( dstexpr ), astGetSymbol( astGetLeft( dstexpr ) ), NULL )
-				
-			end select
+			end if
 		end if
 
 		if( sym = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 		else
 			if( symbIsConstant( sym ) or typeIsConst( astGetFullType( dstexpr ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			end if
 		end if
 
 	case else
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			astDelTree( dstexpr )
-			dstexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a var
+		astDelTree( dstexpr )
+		dstexpr = CREATEFAKEID( )
 	end select
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
-        if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-				exit function
-			end if
-        end if
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
+		end if
 	end if
 
 	'' Expression
@@ -174,40 +145,31 @@ function cLRSetStmt _
 		 FB_DATATYPE_STRUCT
 
 	case else
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			astDelTree( srcexpr )
-			srcexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a var
+		astDelTree( srcexpr )
+		srcexpr = CREATEFAKEID( )
 	end select
 
 	if( (dtype1 = FB_DATATYPE_STRUCT) or _
 		(dtype2 = FB_DATATYPE_STRUCT) ) then
 
 		if( dtype1 <> dtype2 ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' no error recovery: stmt already parsed
-				astDelTree( srcexpr )
-				astDelTree( dstexpr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' no error recovery: stmt already parsed
+			astDelTree( srcexpr )
+			astDelTree( dstexpr )
+			return TRUE
 		end if
 
 		dst = astGetSymbol( dstexpr )
 		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' no error recovery: stmt already parsed
-				astDelTree( srcexpr )
-				astDelTree( dstexpr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' no error recovery: stmt already parsed
+			astDelTree( srcexpr )
+			astDelTree( dstexpr )
+			return TRUE
 		end if
 
 		function = rtlMemCopyClear( dstexpr, symbGetUDTUnpadLen( dst->subtype ), _
@@ -218,20 +180,12 @@ function cLRSetStmt _
 
 end function
 
-'':::::
-private function cStrCHR _
-	( _
-		byref funcexpr as ASTNODE ptr, _
-		byval is_wstr as integer _
-	) as integer
-
+private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 	static as zstring * 32*6+1 zs
 	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
 	dim as integer v = any, i = any, cnt = any, isconst = any
 	dim as ASTNODE ptr exprtb(0 to 31) = any, expr = any
-
-	function = FALSE
 
 	hMatchLPRNT( )
 
@@ -249,7 +203,6 @@ private function cStrCHR _
 	'' if wstring, check if compile-time conversion can be done
 	if( is_wstr and (env.target.wchar.doconv = FALSE) ) then
 		isconst = FALSE
-
 	else
 		'' constant? evaluate at compile-time
 		isconst = TRUE
@@ -257,7 +210,7 @@ private function cStrCHR _
 			if( astIsCONST( exprtb(i) ) = FALSE ) then
 				isconst = FALSE
 				exit for
-        	end if
+			end if
 
         	'' when the constant value is 0, we must not handle
             '' this as a constant string
@@ -307,39 +260,20 @@ private function cStrCHR _
 		next
 
 		if( is_wstr = FALSE ) then
-			funcexpr = astNewVAR( symbAllocStrConst( zs, cnt ), _
-								  0, _
-								  FB_DATATYPE_CHAR )
+			function = astNewVAR( symbAllocStrConst( zs, cnt ), 0, FB_DATATYPE_CHAR )
 		else
-			funcexpr = astNewVAR( symbAllocWstrConst( ws, cnt ), _
-								  0, _
-								  FB_DATATYPE_WCHAR )
+			function = astNewVAR( symbAllocWstrConst( ws, cnt ), 0, FB_DATATYPE_WCHAR )
 		end if
-
-    else
-
-		funcexpr = rtlStrChr( cnt, exprtb(), is_wstr )
-
+	else
+		function = rtlStrChr( cnt, exprtb(), is_wstr )
 	end if
-
-	function = funcexpr <> NULL
-
 end function
 
-'':::::
-private function cStrASC _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-    dim as ASTNODE ptr expr1 = any, posexpr = any
-    dim as integer p = any
-    dim as FBSYMBOL ptr litsym = any
-
-	function = FALSE
+private function cStrASC() as ASTNODE ptr
+	dim as ASTNODE ptr expr1 = any, posexpr = any
+	dim as integer p = any
 
 	hMatchLPRNT( )
-
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 	'' (',' Expression)?
@@ -352,7 +286,7 @@ private function cStrASC _
 	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
-	litsym = NULL
+	dim as FBSYMBOL ptr litsym = NULL
 	select case astGetDataType( expr1 )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr1 )
@@ -363,7 +297,6 @@ private function cStrASC _
         if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
 			(env.target.wchar.doconv  = FALSE) ) then
 			p = -1
-
 		else
 			'' pos is an constant too?
 			if( posexpr <> NULL ) then
@@ -374,11 +307,9 @@ private function cStrASC _
 					if( p < 0 ) then
 						p = 0
 					end if
-
 				else
 					p = -1
 				end if
-
 			else
 				p = 1
 			end if
@@ -389,27 +320,21 @@ private function cStrASC _
 			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
 				'' remove internal escape format
 				dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
-				funcexpr = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
-
+				function = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_UINT )
 			'' wstring..
-	    	else
+			else
 				'' ditto
 				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ) )
-				funcexpr = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
+				function = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_UINT )
 			end if
-
-	    	astDelNode( expr1 )
-	    	expr1 = NULL
-	    end if
-
+			astDelNode( expr1 )
+			expr1 = NULL
+		end if
 	end if
 
 	if( expr1 <> NULL ) then
-		funcexpr = rtlStrAsc( expr1, posexpr )
+		function = rtlStrAsc( expr1, posexpr )
 	end if
-
-	function = funcexpr <> NULL
-
 end function
 
 '':::::
@@ -420,121 +345,101 @@ end function
 '' 				|   CVSHORT   '(' Expression{str} ')'
 '' 				|   CVLONGINT '(' Expression{str} ')'
 ''
-function cCVXFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+	'' CVD | CVS | CVI | CVL | CVSHORT | CVLONGINT
+	lexSkipToken( )
 
-	function = FALSE
-	
+	'' '('
+	hMatchLPRNT( )
+
+	'' string expression
 	dim as ASTNODE ptr expr1 = any
+	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+
+	'' ')'
+	hMatchRPRNT( )
+
+	'' constant? evaluate at compile-time
+	dim as FBSYMBOL ptr litsym = NULL
+	select case astGetDataType( expr1 )
+	case FB_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr1 )
+	end select
+
+	dim as integer allowconst = TRUE
+
+	'' determine return type (use this to determine function name)
 	dim as FB_DATATYPE functype = any
-	dim as integer allowconst = any
+	select case as const tk
+	case FB_TK_CVD
+		functype = FB_DATATYPE_DOUBLE
+		allowconst = FALSE
+	case FB_TK_CVS
+		functype = FB_DATATYPE_SINGLE
+		allowconst = FALSE
+	case FB_TK_CVI
+		functype = fbLangGetType( INTEGER )
+	case FB_TK_CVL
+		functype = fbLangGetType( LONG )
+	case FB_TK_CVSHORT
+		functype = FB_DATATYPE_SHORT
+	case else
+		assert(tk = FB_TK_CVLONGINT)
+		functype = FB_DATATYPE_LONGINT
+	end select
+
 	dim as zstring ptr zs = any
 	dim as integer zslen = any
+	if( (allowconst <> FALSE) and (litsym <> NULL) ) then
+		'' remove internal escape format
+		zs = hUnescape( symbGetVarLitText( litsym ) )
+		zslen = len( *zs )
+	else
+		zs = NULL
+		zslen = 0
+	end if
 
-	select case as const tk
-
-	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _ 
-	     FB_TK_CVSHORT, FB_TK_CVLONGINT
-	     
-		lexSkipToken( )
-
-		hMatchLPRNT( )
-
-		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
-		hMatchRPRNT( )
-		
-	    dim as FBSYMBOL ptr litsym = any
-		
-		'' constant? evaluate at compile-time
-		litsym = NULL
-		select case astGetDataType( expr1 )
-		case FB_DATATYPE_CHAR
-			litsym = astGetStrLitSymbol( expr1 )
+	dim as ASTNODE ptr funcexpr = NULL
+	if( zslen >= typeGetSize( functype ) ) then
+		select case as const functype
+		case FB_DATATYPE_DOUBLE
+			funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
+		case FB_DATATYPE_SINGLE
+			funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+			funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
+		case FB_DATATYPE_SHORT
+			funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
+		case FB_DATATYPE_LONGINT
+			funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
+		end select
+		astDelNode( expr1 )
+	else
+		select case as const functype
+		case FB_DATATYPE_DOUBLE
+			funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
+		case FB_DATATYPE_SINGLE
+			funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+			funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
+		case FB_DATATYPE_SHORT
+			funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
+		case FB_DATATYPE_LONGINT
+			funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
 		end select
 
-		allowconst = TRUE
-
-		'' determine return type (use this to determine function name)
-		select case as const tk
-		case FB_TK_CVD
-			functype = FB_DATATYPE_DOUBLE
-			allowconst = FALSE
-		case FB_TK_CVS
-			functype = FB_DATATYPE_SINGLE
-			allowconst = FALSE
-		case FB_TK_CVI
-			functype = fbLangGetType( INTEGER )
-		case FB_TK_CVL
-			functype = fbLangGetType( LONG )
-		case FB_TK_CVSHORT
-			functype = FB_DATATYPE_SHORT
-		case FB_TK_CVLONGINT
-			functype = FB_DATATYPE_LONGINT
-		end select
-
-		if( (allowconst <> FALSE) and (litsym <> NULL) ) then
-			'' remove internal escape format
-			zs = hUnescape( symbGetVarLitText( litsym ) )
-			zslen = len( *zs )
-		else
-			zs = NULL
-			zslen = 0
+		'' byref expr as string
+		if( astNewARG( funcexpr, expr1 ) = NULL ) then
+			funcexpr = NULL
 		end if
+	end if
 
-		if( zslen >= symbGetDataSize( functype ) ) then
+	if( funcexpr <> NULL ) then
+		funcexpr = astNewCONV( functype, NULL, funcexpr )
+	end if
 
-			select case as const functype
-			case FB_DATATYPE_DOUBLE
-				funcexpr = astNewCONSTf( cvd( *zs ), FB_DATATYPE_DOUBLE )
-			case FB_DATATYPE_SINGLE
-				funcexpr = astNewCONSTf( cvs( *zs ), FB_DATATYPE_SINGLE )
-			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-				funcexpr = astNewCONSTi( cvl( *zs ), FB_DATATYPE_INTEGER )
-			case FB_DATATYPE_SHORT
-				funcexpr = astNewCONSTi( cvshort( *zs ), FB_DATATYPE_SHORT )
-			case FB_DATATYPE_LONGINT
-				funcexpr = astNewCONSTl( cvlongint( *zs ), FB_DATATYPE_LONGINT )
-				
-			end select
-
-	    	astDelNode( expr1 )
-	    	expr1 = NULL
-
-		end if
-        
-        if( expr1 <> NULL ) then
-			select case as const functype
-			case FB_DATATYPE_DOUBLE
-				funcexpr = astNewCALL( PROCLOOKUP( CVD ) )
-			case FB_DATATYPE_SINGLE
-				funcexpr = astNewCALL( PROCLOOKUP( CVS ) )
-			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-				funcexpr = astNewCALL( PROCLOOKUP( CVL ) )
-			case FB_DATATYPE_SHORT
-				funcexpr = astNewCALL( PROCLOOKUP( CVSHORT ) )
-			case FB_DATATYPE_LONGINT
-				funcexpr = astNewCALL( PROCLOOKUP( CVLONGINT ) )
-			end select
-		    
-		    '' byref expr as string
-		    if( astNewARG( funcexpr, expr1 ) = NULL ) then
-		    	funcexpr = NULL
-		    end if
-		end if
-
-		if( funcexpr <> NULL ) then
-			funcexpr = astNewCONV( functype, NULL, funcexpr )
-		end if
-
-		function = (funcexpr <> NULL)
-
-	end select
+	function = funcexpr
 end function
-
 
 '':::::
 '' cMKXFunct	=	MKD       '(' Expression{double}  ')'
@@ -544,104 +449,85 @@ end function
 '' 				|   MKSHORT   '(' Expression{short}   ')'
 '' 				|   MKLONGINT '(' Expression{longint} ')'
 ''
-function cMKXFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+	lexSkipToken( )
 
-	function = FALSE
-	
+	hMatchLPRNT( )
+
 	dim as ASTNODE ptr expr1 = any
-	
-	select case as const tk
+	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
-	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _ 
-	     FB_TK_MKSHORT, FB_TK_MKLONGINT
-	     
-		#macro doMKX( token )
-			select case as const astGetDataType( expr1 )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
-		
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				funcexpr = astNewCONSTstr( str( token( astGetValueAsDouble( expr1 ) ) ) )
-		
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
-				else
-					funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
-				end if
-		
-			case else
+	hMatchRPRNT( )
+
+	dim as ASTNODE ptr funcexpr = NULL
+
+	#macro doMKX( token )
+		select case as const astGetDataType( expr1 )
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			funcexpr = astNewCONSTstr( str( token( astGetValueAsDouble( expr1 ) ) ) )
+		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			if( FB_LONGSIZE = len( integer ) ) then
 				funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
-			end select
-		#endmacro
-		
-		lexSkipToken( )
+			else
+				funcexpr = astNewCONSTstr( str( token( astGetValueAsLongint( expr1 ) ) ) )
+			end if
+		case else
+			funcexpr = astNewCONSTstr( str( token( astGetValueAsInt( expr1 ) ) ) )
+		end select
+	#endmacro
 
-		hMatchLPRNT( )
+'	'' I don't know how to do this properly, the NULLs ruin it.
+'	'' constant? eval at compile-time
+'	if( astIsCONST( expr1 ) ) then
+'		select case as const tk
+'		case FB_TK_MKD
+'			doMKX( mkd )
+'		case FB_TK_MKS
+'			doMKX( mks )
+'		case FB_TK_MKI
+'			doMKX( mki )
+'		case FB_TK_MKL
+'			doMKX( mkl )
+'		case FB_TK_MKSHORT
+'			doMKX( mkshort )
+'		case FB_TK_MKLONGINT
+'			doMKX( mklongint )
+'		end select
+'		astDelNode( expr1 )
+'		expr1 = NULL
+'	end if
 
-		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
-		hMatchRPRNT( )
-		
-	    dim as FBSYMBOL ptr litsym = any
-
-'       '' I don't know how to do this properly, the NULLs ruin it.
-'       		
-'		'' constant? eval at compile-time
-'		if( astIsCONST( expr1 ) = TRUE ) then
-'		
-'			select case as const tk
-'			case FB_TK_MKD
-'				doMKX( mkd )
-'			case FB_TK_MKS
-'				doMKX( mks )
-'			case FB_TK_MKI, FB_TK_MKL
-'				doMKX( mki )
-'			case FB_TK_MKSHORT
-'				doMKX( mkshort )
-'			case FB_TK_MKLONGINT
-'				doMKX( mklongint )
-'			end select
-'
-'	    	astDelNode( expr1 )
-'	    	expr1 = NULL
-'		
-'		end if
-		
-        if( expr1 <> NULL ) then
-			select case as const tk
-			case FB_TK_MKD
-				funcexpr = astNewCALL( PROCLOOKUP( MKD ) )
-			case FB_TK_MKS
-				funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
-			case FB_TK_MKI
-				select case fbLangGetType( INTEGER )
-				case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
-					funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
-				case FB_DATATYPE_SHORT
-					funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
-				end select
-			case FB_TK_MKL
-				funcexpr = astNewCALL( PROCLOOKUP( MKL ) )
-			case FB_TK_MKSHORT
+	if( expr1 <> NULL ) then
+		select case as const tk
+		case FB_TK_MKD
+			funcexpr = astNewCALL( PROCLOOKUP( MKD ) )
+		case FB_TK_MKS
+			funcexpr = astNewCALL( PROCLOOKUP( MKS ) )
+		case FB_TK_MKI
+			select case fbLangGetType( INTEGER )
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG
+				funcexpr = astNewCALL( PROCLOOKUP( MKI ) )
+			case FB_DATATYPE_SHORT
 				funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
-			case FB_TK_MKLONGINT
-				funcexpr = astNewCALL( PROCLOOKUP( MKLONGINT ) )
 			end select
-		    
-		    '' byval expr as {type}
-		    if( astNewARG( funcexpr, expr1 ) = NULL ) then
-		    	funcexpr = NULL
-		    end if
+		case FB_TK_MKL
+			funcexpr = astNewCALL( PROCLOOKUP( MKL ) )
+		case FB_TK_MKSHORT
+			funcexpr = astNewCALL( PROCLOOKUP( MKSHORT ) )
+		case else
+			assert(tk = FB_TK_MKLONGINT)
+			funcexpr = astNewCALL( PROCLOOKUP( MKLONGINT ) )
+		end select
+
+		'' byval expr as {type}
+		if( astNewARG( funcexpr, expr1 ) = NULL ) then
+			funcexpr = NULL
 		end if
+	end if
 
-		function = (funcexpr <> NULL)
-
-	end select
+	function = funcexpr
 end function
 
 
@@ -653,16 +539,11 @@ end function
 ''              |   INSTRREV '(' Expression{str}, "ANY"? Expression{str} (',' Expression{int})? ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
 ''
-function cStringFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+	dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any
+	dim as integer dclass = any, dtype = any, is_any = any, is_wstr = any
 
-    dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any
-    dim as integer dclass = any, dtype = any, is_any = any, is_wstr = any
-
-	function = FALSE
+	function = NULL
 
 	select case tk
 	'' W|STR '(' Expression{int|float|double|wstring} ')'
@@ -671,58 +552,43 @@ function cStringFunct _
 		lexSkipToken( )
 
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
-
 		hMatchRPRNT( )
 
 		if( is_wstr = FALSE ) then
-			funcexpr = rtlToStr( expr1, fbLangIsSet( FB_LANG_QB ) )
+			expr1 = rtlToStr( expr1, fbLangIsSet( FB_LANG_QB ) )
 		else
-			funcexpr = rtlToWstr( expr1 )
+			expr1 = rtlToWstr( expr1 )
+		end if
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = expr1
 
 	'' MID '(' Expression ',' Expression (',' Expression)? ')'
 	case FB_TK_MID
 		lexSkipToken( )
 
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
 		hMatchCOMMA( )
-
 		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
-
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
 			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
-
 		hMatchRPRNT( )
 
-		funcexpr = rtlStrMid( expr1, expr2, expr3 )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+		expr1 = rtlStrMid( expr1, expr2, expr3 )
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
-		function = TRUE
+		function = expr1
 
 	'' W|STRING '(' Expression ',' Expression{int|str} ')'
 	case FB_TK_STRING, FB_TK_WSTRING
@@ -730,206 +596,119 @@ function cStringFunct _
 		lexSkipToken( )
 
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
-
 		hMatchCOMMA( )
-
 		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
-
 		hMatchRPRNT( )
 
 		if( is_wstr = FALSE ) then
-			funcexpr = rtlStrFill( expr1, expr2 )
+			expr1 = rtlStrFill( expr1, expr2 )
 		else
-			funcexpr = rtlWstrFill( expr1, expr2 )
+			expr1 = rtlWstrFill( expr1, expr2 )
+		end if
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = expr1
 
 	'' W|CHR '(' Expression (',' Expression )* ')'
 	case FB_TK_CHR, FB_TK_WCHR
 		is_wstr = (tk = FB_TK_WCHR)
 		lexSkipToken( )
 
-		function = cStrCHR( funcexpr, is_wstr )
+		function = cStrCHR(is_wstr)
 
 	'' ASC '(' Expression (',' Expression)? ')'
 	case FB_TK_ASC
 		lexSkipToken( )
 
-		function = cStrASC( funcexpr )
+		function = cStrASC()
 
-    case FB_TK_INSTR
-        lexSkipToken( )
+	case FB_TK_INSTR
+		lexSkipToken( )
 
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
-
 		hMatchCOMMA( )
-
-        is_any = hMatch( FB_TK_ANY )
-
+		is_any = hMatch( FB_TK_ANY )
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
-
-        expr3 = NULL
-        if( is_any = FALSE ) then
-        	if( hMatch( CHAR_COMMA ) ) then
-                is_any = hMatch( FB_TK_ANY )
-                hMatchExpressionEx( expr3, FB_DATATYPE_STRING )
-            end if
-        end if
-
-        if( expr3 = NULL ) then
-            expr3 = expr2
-            expr2 = expr1
-			expr1 = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
-        end if
-
-		hMatchRPRNT( )
-
-		funcexpr = rtlStrInstr( expr1, expr2, expr3, is_any )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+		expr3 = NULL
+		if( is_any = FALSE ) then
+			if( hMatch( CHAR_COMMA ) ) then
+				is_any = hMatch( FB_TK_ANY )
+				hMatchExpressionEx( expr3, FB_DATATYPE_STRING )
 			end if
 		end if
+		if( expr3 = NULL ) then
+			expr3 = expr2
+			expr2 = expr1
+			expr1 = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+		end if
+		hMatchRPRNT( )
 
-		function = TRUE
+		expr1 = rtlStrInstr( expr1, expr2, expr3, is_any )
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+		end if
+
+		function = expr1
 
 	case FB_TK_INSTRREV
 		lexSkipToken( )
 
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
 		hMatchCOMMA( )
-
 		is_any = hMatch( FB_TK_ANY )
-
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
-
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
 			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
-
 		hMatchRPRNT( )
 
-		funcexpr = rtlStrInstrRev( expr3, expr1, expr2, is_any )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+		expr1 = rtlStrInstrRev( expr3, expr1, expr2, is_any )
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
-		function = TRUE
+		function = expr1
 
-    case FB_TK_TRIM
-        lexSkipToken( )
+	case FB_TK_TRIM, FB_TK_LTRIM, FB_TK_RTRIM
+		lexSkipToken( )
 
-        hMatchLPRNT( )
+		hMatchLPRNT( )
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+		if( hMatch( CHAR_COMMA ) ) then
+			is_any = hMatch( FB_TK_ANY )
+			hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
+		else
+			is_any = FALSE
+			expr2 = NULL
+		end if
+		hMatchRPRNT( )
 
-        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+		select case (tk)
+		case FB_TK_TRIM
+			expr1 = rtlStrTrim( expr1, expr2, is_any )
+		case FB_TK_LTRIM
+			expr1 = rtlStrLTrim( expr1, expr2, is_any )
+		case FB_TK_RTRIM
+			expr1 = rtlStrRTrim( expr1, expr2, is_any )
+		end select
 
-        if( hMatch( CHAR_COMMA ) ) then
-            is_any = hMatch( FB_TK_ANY )
-	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
-        else
-            is_any = FALSE
-            expr2 = NULL
-        end if
-
-        hMatchRPRNT( )
-
-		funcexpr = rtlStrTrim( expr1, expr2, is_any )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+		if( expr1 = NULL ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
-		function = TRUE
-
-    case FB_TK_RTRIM
-        lexSkipToken( )
-
-        hMatchLPRNT( )
-
-        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
-        if( hMatch( CHAR_COMMA ) ) then
-            is_any = hMatch( FB_TK_ANY )
-	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
-        else
-            is_any = FALSE
-            expr2 = NULL
-        end if
-
-        hMatchRPRNT( )
-
-		funcexpr = rtlStrRTrim( expr1, expr2, is_any )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
-
-    case FB_TK_LTRIM
-        lexSkipToken( )
-
-        hMatchLPRNT( )
-
-        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
-
-        if( hMatch( CHAR_COMMA ) ) then
-            is_any = hMatch( FB_TK_ANY )
-	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
-        else
-            is_any = FALSE
-            expr2 = NULL
-        end if
-
-        hMatchRPRNT( )
-
-		funcexpr = rtlStrLTrim( expr1, expr2, is_any )
-
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = expr1
 
 	end select
 
 end function
-

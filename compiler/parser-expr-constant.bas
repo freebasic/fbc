@@ -27,9 +27,6 @@ function cConstantEx _
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   		return astNewVAR( symbGetConstValStr( sym ), 0, dtype )
 
-  	case FB_DATATYPE_ENUM
-  		return astNewENUM( symbGetConstValInt( sym ), subtype )
-
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   		return astNewCONSTl( symbGetConstValLong( sym ), dtype )
 
@@ -44,7 +41,8 @@ function cConstantEx _
   		end if
 
   	case else
-  		return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
+		'' bytes/shorts/integers/enums
+		return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
 
   	end select
 

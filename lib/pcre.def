@@ -1,0 +1,27 @@
+LIBRARY libpcre-0.dll
+EXPORTS
+pcre_callout            	@1 DATA
+pcre_compile            	@2
+pcre_compile2           	@3
+pcre_config             	@4
+pcre_copy_named_substring	@5
+pcre_copy_substring     	@6
+pcre_dfa_exec           	@7
+pcre_exec               	@8
+pcre_free               	@9 DATA
+pcre_free_substring     	@10
+pcre_free_substring_list	@11
+pcre_fullinfo           	@12
+pcre_get_named_substring	@13
+pcre_get_stringnumber   	@14
+pcre_get_stringtable_entries	@15
+pcre_get_substring      	@16
+pcre_get_substring_list 	@17
+pcre_info               	@18
+pcre_maketables         	@19
+pcre_malloc             	@20 DATA
+pcre_refcount           	@21
+pcre_stack_free         	@22 DATA
+pcre_stack_malloc       	@23 DATA
+pcre_study              	@24
+pcre_version            	@25

@@ -1,7 +1,18 @@
 /* Linux console mouse functions implementation */
 
 #include "fb.h"
-#include "fb_linux.h"
+#include "fb_private_console.h"
+#include "fb_private_hdynload.h"
+
+#ifdef DISABLE_GPM
+
+int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
+{
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+}
+
+#else
+
 #include <gpm.h>
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);
@@ -9,21 +20,18 @@ typedef int (*GPM_CLOSE)(void);
 typedef int (*GPM_GETEVENT)(Gpm_Event *);
 
 typedef struct {
-    GPM_OPEN Open;
-    GPM_CLOSE Close;
-    GPM_GETEVENT GetEvent;
-    int *fd;
+	GPM_OPEN Open;
+	GPM_CLOSE Close;
+	GPM_GETEVENT GetEvent;
+	int *fd;
 } GPM_FUNCS;
 
-
-static void *gpm_lib = NULL;
+static FB_DYLIB gpm_lib = NULL;
 static GPM_FUNCS gpm = { NULL };
 static Gpm_Connect conn;
 static int has_focus = TRUE;
 static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_buttons = 0;
 
-
-/*:::::*/
 static void mouse_update(int cb, int cx, int cy)
 {
 	if (has_focus) {
@@ -33,8 +41,7 @@ static void mouse_update(int cb, int cx, int cy)
 				mouse_z--;
 			else
 				mouse_z++;
-		}
-		else {
+		} else {
 			if (cb >= 0x40)
 				cb -= 0x20;
 			switch (cb) {
@@ -49,8 +56,6 @@ static void mouse_update(int cb, int cx, int cy)
 	}
 }
 
-
-/*:::::*/
 static void mouse_handler(void)
 {
 	Gpm_Event event;
@@ -64,8 +69,7 @@ static void mouse_handler(void)
 			if (!has_focus)
 				mouse_buttons = 0;
 			has_focus = TRUE;
-		}
-		else {
+		} else {
 			if (has_focus) {
 				mouse_x = -1;
 				mouse_y = -1;
@@ -76,10 +80,10 @@ static void mouse_handler(void)
 		return;
 	}
 #endif
-	
+
 	FD_ZERO(&set);
 	FD_SET(*gpm.fd, &set);
-	
+
 	while ((select(FD_SETSIZE, &set, NULL, NULL, &tv) > 0) && (count < 16)) {
 		if (gpm.GetEvent(&event) > 0) {
 			mouse_x += event.dx;
@@ -98,15 +102,13 @@ static void mouse_handler(void)
 	}
 }
 
-
-/*:::::*/
 static int mouse_init(void)
 {
-    const char *funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd", NULL };
-    
+	const char *funcs[] = { "Gpm_Open", "Gpm_Close", "Gpm_GetEvent", "gpm_fd", NULL };
+
 	if (__fb_con.inited == INIT_CONSOLE) {
-	    gpm_lib = fb_hDynLoad("libgpm.so.1", funcs, (void **)&gpm);
-	    if (!gpm_lib)
+		gpm_lib = fb_hDynLoad("libgpm.so.1", funcs, (void **)&gpm);
+		if (!gpm_lib)
 			return -1;
 
 		conn.eventMask = ~0;
@@ -114,7 +116,7 @@ static int mouse_init(void)
 		conn.maxMod = ~0;
 		conn.minMod = 0;
 		if (gpm.Open(&conn, 0) < 0) {
-		    fb_hDynUnload(&gpm_lib);
+			fb_hDynUnload(&gpm_lib);
 			return -1;
 		}
 	}
@@ -128,8 +130,6 @@ static int mouse_init(void)
 	return 0;
 }
 
-
-/*:::::*/
 static void mouse_exit(void)
 {
 	if (__fb_con.inited == INIT_CONSOLE) {
@@ -147,50 +147,49 @@ static void mouse_exit(void)
 	__fb_con.mouse_exit = NULL;
 }
 
-
-/*:::::*/
 int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	int temp_z, temp_buttons;
-	
+
 	if (!__fb_con.inited)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
+
 	if (!z)
 		z = &temp_z;
 	if (!buttons)
 		buttons = &temp_buttons;
 
 	BG_LOCK();
-	
+
 	if (!__fb_con.mouse_handler) {
 		if (!mouse_init()) {
 			__fb_con.mouse_init = mouse_init;
 			__fb_con.mouse_exit = mouse_exit;
 			__fb_con.mouse_handler = mouse_handler;
-		}
-		else {
+		} else {
 			*x = *y = *z = *buttons = -1;
 			BG_UNLOCK();
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
 	}
+
 	if (__fb_con.inited != INIT_CONSOLE)
 		fb_hGetCh(FALSE);
+
 	*x = mouse_x;
 	*y = mouse_y;
 	*z = mouse_z;
 	*buttons = mouse_buttons;
 	*clip = 0;
-	
+
 	BG_UNLOCK();
-	
+
 	return FB_RTERROR_OK;
 }
 
+#endif
 
-/*:::::*/
-int fb_ConsoleSetMouse(int x, int y, int cursor, int clip)
+int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {
-	return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }

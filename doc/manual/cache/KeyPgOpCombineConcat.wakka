@@ -19,7 +19,7 @@ Appends and assigns a string onto another string
 {{fbdoc item="desc"}}
 	This operator appends one string onto another. The right-hand side expression (##//rhs//##) is converted to a string before concatenation. It is functionally equivalent to,
 ##
-		//lhs// = //lhs// [[KeyPgOpAdd &]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpConcatConvert &]] //rhs//
 ##
 	where the result is assigned back to the left-hand side string.
 

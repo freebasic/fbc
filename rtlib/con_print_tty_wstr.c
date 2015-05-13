@@ -1,7 +1,6 @@
 /* print wide text data - using TTY (teletype) interpretation */
 
-#include <string.h>
-#include "fb_con.h"
+#include "fb.h"
 
 #define FB_CONPRINTTTY                  fb_ConPrintTTYWstr
 #define FB_CONPRINTRAW                  fb_ConPrintRawWstr

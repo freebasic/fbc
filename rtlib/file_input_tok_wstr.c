@@ -1,14 +1,9 @@
 /* input function core */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-static FB_WCHAR hReadChar
-	(
-		FB_INPUTCTX *ctx
-	)
+static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -118,6 +113,9 @@ void fb_FileInputNextTokenWstr
 		int is_string
 	)
 {
+	/* max_chars does not include the null terminator, the buffer is
+	   assumed to be big enough to hold at least the null terminator */
+
     int len, isquote, skipdelim;
     FB_WCHAR c;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
@@ -200,4 +198,3 @@ exit:
 	if( skipdelim )
 		hSkipDelimiter( ctx, c );
 }
-

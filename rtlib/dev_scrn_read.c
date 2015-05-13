@@ -1,11 +1,8 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
+int fb_DevScrnRead( FB_FILE *handle, void* value, size_t *pLength )
 {
     size_t length;
     DEV_SCRN_INFO *info;
@@ -53,14 +50,11 @@ int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
-/*:::::*/
-static int hReadFromStdin( struct _FB_FILE *handle, void* dst, size_t *pLength )
+static int hReadFromStdin( FB_FILE *handle, void* dst, size_t *pLength )
 {
     return fb_DevFileRead( NULL, dst, pLength );
 }
 
-/*:::::*/
 void fb_DevScrnInit_Read( void )
 {
 	fb_DevScrnInit_NoOpen( );

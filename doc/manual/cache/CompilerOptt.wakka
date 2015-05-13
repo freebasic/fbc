@@ -12,7 +12,7 @@ Set stack size in kilobytes
 	The ##-t## compiler option sets the stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
 
 {{fbdoc item="target"}}
-	- Supported on Windows and DOS platforms only.
+	- Supported on Windows, Cygwin and DOS only.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

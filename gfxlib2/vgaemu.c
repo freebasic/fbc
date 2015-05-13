@@ -2,11 +2,8 @@
 
 #include "fb_gfx.h"
 
-
 static int idx = 0, shift = 2, color = 0;
 
-
-/*:::::*/
 int fb_GfxIn(unsigned short port)
 {
 	int value = -1;
@@ -38,8 +35,6 @@ int fb_GfxIn(unsigned short port)
 	return value;
 }
 
-
-/*:::::*/
 int fb_GfxOut(unsigned short port, unsigned char value)
 {
 	int i, r, g, b;
@@ -60,7 +55,7 @@ int fb_GfxOut(unsigned short port, unsigned char value)
 			color |= ((value & 0x3F) << shift);
 			shift += 8;
 			if (shift > 18) {
-				if (__fb_gfx->default_palette == &fb_palette_256)
+				if (__fb_gfx->default_palette == &__fb_palette[FB_PALETTE_256])
 					fb_GfxPalette(idx, (color >> 2) & 0x3F3F3F, -1, -1);
 				else {
 					DRIVER_LOCK();

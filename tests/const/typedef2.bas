@@ -12,11 +12,11 @@ enum bar
 	___
 end enum
 
-dim as const foo kah
+dim as const foo kah = (0)
 kah.__ = 69
 
-dim as blah kah2
+dim as blah kah2 = (0)
 kah2.__ = 69
 
-dim as const integer bar_
+dim as const integer bar_ = 0
 bar_ = 69

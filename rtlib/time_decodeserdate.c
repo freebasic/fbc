@@ -1,7 +1,7 @@
 /* functions to decode a serial date number */
 
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL void fb_hDateDecodeSerial ( double serial,

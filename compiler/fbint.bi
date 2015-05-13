@@ -7,6 +7,9 @@
 
 #include once "fb.bi"
 
+const FB_MINSTACKSIZE = 32 * 1024
+const FB_DEFSTACKSIZE = 1024 * 1024
+
 const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
 
@@ -24,18 +27,18 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-''
-#if defined(TARGET_X86)
+'' TODO: x86 specific
 const FB_INTEGERSIZE		= 4
 const FB_POINTERSIZE		= 4
 const FB_LONGSIZE			= FB_POINTERSIZE
-#elseif defined(TARGET_X86_64)
-const FB_INTEGERSIZE		= 4
-const FB_POINTERSIZE		= 8
-const FB_LONGSIZE			= 8 '' FIXME - windows x64 long is 4 bytes
-#else
-#error unsupported target cpu
-#endif
+
+'' x86_64
+''const FB_INTEGERSIZE = 4
+''const FB_POINTERSIZE = 8
+''const FB_LONGSIZE    = 8
+'' But on win32 (ok, win64):
+''const FB_LONGSIZE    = 4
+'' These cannot be hard coded since we have -target and -arch options
 
 '' array descriptor
 type FB_ARRAYDESC
@@ -133,6 +136,28 @@ enum FBOPENKIND
     FB_FILE_TYPE_LPT
     FB_FILE_TYPE_COM
     FB_FILE_TYPE_QB
+end enum
+
+'' FB runtime errors (same as rtlib/fb_error.h)
+enum FB_RTERROR
+	FB_RTERROR_OK = 0
+	FB_RTERROR_ILLEGALFUNCTIONCALL
+	FB_RTERROR_FILENOTFOUND
+	FB_RTERROR_FILEIO
+	FB_RTERROR_OUTOFMEM
+	FB_RTERROR_ILLEGALRESUME
+	FB_RTERROR_OUTOFBOUNDS
+	FB_RTERROR_NULLPTR
+	FB_RTERROR_NOPRIVILEDGES
+	FB_RTERROR_SIGINT
+	FB_RTERROR_SIGILL
+	FB_RTERROR_SIGFPE
+	FB_RTERROR_SIGSEGV
+	FB_RTERROR_SIGTERM
+	FB_RTERROR_SIGABRT
+	FB_RTERROR_SIGQUIT
+	FB_RTERROR_RETURNWITHOUTGOSUB
+	FB_RTERROR_ENDOFFILE
 end enum
 
 ''
@@ -339,6 +364,9 @@ enum FB_TOKEN
 	FB_TK_DESTRUCTOR
 	FB_TK_OPERATOR
 	FB_TK_PROPERTY
+	FB_TK_EXTENDS
+	FB_TK_IMPLEMENTS
+	FB_TK_BASE
 
 	FB_TK_BOOLEAN
 	FB_TK_BYTE
@@ -504,8 +532,10 @@ enum FB_TOKEN
 	FB_TK_PAINT
 	FB_TK_DRAW
 	FB_TK_IMAGECREATE
+    
+    FB_TK_THREADCALL
 
-	FB_TOKENS = FB_TK_IMAGECREATE - FB_TK_EOF
+	FB_TOKENS = FB_TK_THREADCALL - FB_TK_EOF
 end enum
 
 '' single char tokens
@@ -580,20 +610,16 @@ type FBTARGET_WCHAR
 end type
 
 type FBTARGET
+	size_t_type		as FB_DATATYPE
 	wchar			as FBTARGET_WCHAR
-	triplet         as zstring ptr                          '' Default triplet for this target, can be empty (normally just if it's the native target)
-	define		as zstring ptr				'' __FB_target__ preprocessor define name
-	entrypoint		as zstring ptr				'' entry point of executable (usually "main")
 	underprefix		as integer					'' whether symbols are prefixed with an underscore
-	constsection	as zstring ptr				'' linker section to use for constant data
-	omitsectiondirective	as integer					'' whether to omit .section before section names in the assembly output
 
-    '' Tells what the target-specific FBCALL really is, must match the rtlib
-    fbcall          as FB_FUNCMODE
+	'' Target-specific default calling convention, must match the rtlib's FBCALL
+	fbcall          as FB_FUNCMODE
 
-    '' Remap FB_FUNCMODE_STDCALL to FB_FUNCMODE_STDCALL_MS on non-Windows
-    '' systems, to emit stdcall functions without @N, like gcc does.
-    stdcall         as FB_FUNCMODE
+	'' Remap FB_FUNCMODE_STDCALL to FB_FUNCMODE_STDCALL_MS on non-Windows
+	'' systems, to emit stdcall functions without @N, like gcc does.
+	stdcall         as FB_FUNCMODE
 end type
 
 type FBOPTION
@@ -640,13 +666,22 @@ type FB_LANG_CTX
 end type
 
 type FBENV
+	'' Global fb interface data
+	predefines		as TLIST
+	preincludes		as TLIST
+	includepaths		as TLIST
+
+	clopt			as FBCMMLINEOPT				'' cmm-line options
+	target			as FBTARGET					'' target specific
+
+	'' Parse-specific things
+
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
 
 	ppfile_num		as integer					'' -pp output file
 
 	'' include files
-	incpaths		as integer
 	incfilehash		as THASH
 	inconcehash		as THASH
 	includerec		as integer					'' >0 if parsing an include file
@@ -654,18 +689,22 @@ type FBENV
 	main			as FBMAIN
 
 	lang			as FB_LANG_CTX				'' language supported features
-	clopt			as FBCMMLINEOPT				'' cmm-line options
-	cloptexpl		as FBCMMLINEOPTEXPL			'' cmm-line options explicitly set
-	target			as FBTARGET					'' target specific
 
 	opt				as FBOPTION					'' context-sensitive options
 
 	restarts		as integer					'' number of parser restarts
 	dorestart		as integer					'' request parser restart
+
+	'' Lists to collect #inclibs and #libpaths
+	libs			as TSTRSET
+	libpaths		as TSTRSET
 end type
 
 
 #include once "hlp.bi"
+
+declare sub fbAddLib(byval libname as zstring ptr)
+declare sub fbAddLibPath(byval path as zstring ptr)
 
 ''
 '' macros

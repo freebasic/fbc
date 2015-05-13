@@ -1,11 +1,8 @@
 /* LPTx device */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+int fb_DevLptWrite( FB_FILE *handle, const void* value, size_t valuelen )
 {
     int res;
 
@@ -17,4 +14,3 @@ int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t valuelen 
 
 	return res;
 }
-

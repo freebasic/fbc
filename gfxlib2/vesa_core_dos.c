@@ -2,7 +2,10 @@
  * Partially based on Allegro src/dos/vesa.c
  */
 
+#include "fb_gfx.h"
 #include "fb_gfx_dos.h"
+#include <go32.h>
+#include <sys/farptr.h>
 
 VesaPMInfo *fb_dos_vesa_pm_info = NULL;
 intptr_t fb_dos_vesa_pm_bank_switcher = 0;

@@ -33,7 +33,7 @@ Example:
 '' 320x200x8, with 3 pages
 screen 13,,3
 
-'' image for page #1
+'' image for working page #1 (visible page #0)
 screenset 1, 0
 cls
 circle( 160, 100 ), 90, 1 ,,,, f
@@ -41,7 +41,7 @@ circle( 160, 100 ), 90, 15
 print "Press 2 to copy page #2 to visible page"
 print "Press escape to exit"
 
-'' image for page #2
+'' image for working page #2 (visible page #0)
 screenset 2, 0
 cls
 line( 50, 50 )-( 270, 150 ), 2, bf
@@ -49,7 +49,7 @@ line( 50, 50 )-( 270, 150 ), 15, b
 print "Press 1 to copy page #1 to visible page"
 print "Press escape to exit"
 
-'' page #0 is the visible page
+'' page #0 is the working page (visible page #0)
 screenset 0, 0
 cls
 print "Press 1 to copy page #1 to visible page"

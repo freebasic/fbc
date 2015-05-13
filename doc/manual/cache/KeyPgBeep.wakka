@@ -19,6 +19,6 @@ Beep
 	-  In QB, this was a single tone noise generated through the PC speaker. Now this might not be the case.
 
 {{fbdoc item="see"}}
-	- [[KeyPgOut]] - producing sound using CPU ports
+	- ##[[KeyPgOut Out]]## - producing sound using CPU ports
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,5 +1,6 @@
 /* banked VESA gfx driver */
 
+#include "fb_gfx.h"
 #include "fb_gfx_dos.h"
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);

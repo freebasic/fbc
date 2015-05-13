@@ -20,14 +20,14 @@ Plots a single pixel
 
 	##(//x, y//)## are the coordinates of the pixel.  ##STEP## if present, indicates that ##(//x, y//)## coordinates are relative to the graphics cursor position.  If omitted, ##(//x, y//)## are relative to the upper left-hand corner of ##//target//##.  The x and y coordinates are affected by the last call to the ##[[KeyPgViewgraphics View (Graphics)]]## and ##[[KeyPgWindow Window]]## statements, and respect the current clipping region as set by the ##[[KeyPgViewgraphics View (Graphics)]]## statement.
 
-	##//color//## specifies the color attribute.  If omitted, ##//color//## defaults to the current foreground color.  See ##[[KeyPgColor Color]]##.  ##//color//## is graphics mode specific, see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details.
+	##//color//## specifies the color attribute, as an 8-bit palette index in 8 bpp indexed modes, a 24-bit RGB value in 16 bpp modes (upper 8 bits of the integer unused, limited precision of R,G,B), and a 32-bit RGB or RGBA value in 32 bpp modes (upper 8 bits unused or holding Alpha). Note that it does NOT accept a 16-bit value (5 bits R + 6 bits G + 5 bits B).  If omitted, ##//color//## defaults to the current foreground color.
 
-	Optimization note: while **Pset** and the opposite ##[[KeyPgPoint Point]]## provide valid results, they are very slow. Much better performance can be achieved by using ##[[KeyPgPoke Poke]]## after calculating the address yourself from values obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##, or even more usig inline ASM.
+	Speed note: while ##**PSet**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##/##[[KeyPgScreenptr ScreenPtr]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/pset.bas"}}%%(freebasic)
-' Set an appropriate Screen mode.
-Screen 14
+' Set an appropriate screen mode - 320 x 240 x 8bpp indexed color
+Screenres 320, 240, 8
 
 ' Plot a pixel at the coordinates 100, 100, Color 15. (white)
 Pset (100, 100), 15
@@ -52,17 +52,19 @@ Locate 1: Print "Pixel plotted at 150 + 60, 150 + 60"
 ' Wait for a keypress
 Sleep
 
-' Close the program
+' Explicit end of program
 End
 %%
 
 {{fbdoc item="diff"}}
 	- ##//target//## is new to ""FreeBASIC""
+	- In 16 bpp and 32 bpp modes, a 32-bit value is required instead of an 8-bit palette index
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPoint Point]]## - read out pixels 
-	- ##[[KeyPgPreset PReset]]## 
+	- ##[[KeyPgPoint Point]]## - read out pixels
+	- ##[[KeyPgPreset PReset]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
+	- ##[[GfxInternalFormats Internal pixel formats]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -8,25 +8,6 @@
 #include once "parser.bi"
 
 '':::::
-private function hCheckScope _
-	( _
-	) as integer
-
-	if( parser.scope = FB_MAINSCOPE ) then
-		return TRUE
-	end if
-
-	if( fbIsModLevel( ) = FALSE ) then
-		errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
-	else
-		errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
-	end if
-
-	function = FALSE
-
-end function
-
-'':::::
 ''Declaration     =   ConstDecl | TypeDecl | VariableDecl | ProcDecl | DefDecl | OptDecl.
 ''
 function cDeclaration _
@@ -118,19 +99,28 @@ function cDeclaration _
 		end if
 
 	case FB_TK_CONST
-		function = cConstDecl( attrib )
+		select case as const lexGetLookAhead( 1 )
+		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
+		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
+			function = cProcStmtBegin( attrib )
+
+		case else
+			function = cConstDecl( attrib )
+		end select
 
 	case FB_TK_TYPE, FB_TK_UNION
 		function = cTypeDecl( attrib )
 
 	case FB_TK_ENUM
-		function = cEnumDecl( attrib )
+		cEnumDecl( attrib )
+		function = TRUE
 
 	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN
 		function = cVariableDecl( attrib )
 
 	case FB_TK_VAR
-		function = cAutoVarDecl( attrib )
+		cAutoVarDecl( attrib )
+		function = TRUE
 
 	case else
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
@@ -141,35 +131,3 @@ function cDeclaration _
 	end select
 
 end function
-
-'':::::
-function hDeclCheckParent _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-	function = FALSE
-
-	select case symbGetClass( s )
-	case FB_SYMBCLASS_NAMESPACE
-		if( s <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-	case FB_SYMBCLASS_CLASS
-    	if( s <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
-				exit function
-			end if
-    	end if
-
-	end select
-
-	function = TRUE
-
-end function
-
-
-

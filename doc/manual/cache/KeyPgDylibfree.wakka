@@ -15,14 +15,7 @@ Unloads a dynamic link library from memory
 	##**Dylibfree**## is used to release at runtime libraries previously linked to your program with ##[[KeyPgDylibload Dylibload]]##. The argument is the handle to the library returned by ##[[KeyPgDylibload Dylibload]]##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/module/dylibfree.bas"}}%%(freebasic)
-Dim hndl As Any Ptr
-
-hndl=DyLibLoad("MYLIB.DLL")
-' ...
-DyLibFree(hndl)
-
-%%
+	See the dynamic loading example on the [[ProPgSharedLibraries Shared Libraries]] page.
 
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.

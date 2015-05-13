@@ -1,9 +1,13 @@
 /* print using function */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "fb.h"
+#include <math.h>
+
+typedef struct {
+	int       chars;
+	char     *ptr;
+	FBSTRING  fmtstr;
+} FB_PRINTUSGCTX;
 
 #define BUFFERLEN 2048
 #define MIN_EXPDIGS 3
@@ -102,12 +106,7 @@
 
 static int fb_PrintUsingFmtStr( int fnum );
 
-
-/*:::::*/
-FBCALL int fb_PrintUsingInit
-	(
-		FBSTRING *fmtstr
-	)
+FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
     FB_PRINTUSGCTX *ctx;
 
@@ -124,11 +123,7 @@ FBCALL int fb_PrintUsingInit
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
-FBCALL int fb_PrintUsingEnd
-	(
-		int fnum
-	)
+FBCALL int fb_PrintUsingEnd( int fnum )
 {
 	FB_PRINTUSGCTX *ctx;
 
@@ -147,7 +142,6 @@ FBCALL int fb_PrintUsingEnd
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
 static unsigned long long hPow10_ULL( int n )
 {
 
@@ -164,7 +158,6 @@ static unsigned long long hPow10_ULL( int n )
 	return ret;
 }
 
-/*:::::*/
 static int hLog10_ULL( unsigned long long a )
 {
 	int ret = 0;
@@ -190,7 +183,6 @@ static int hLog10_ULL( unsigned long long a )
 	return ret;
 }
 
-/*:::::*/
 static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
 {
 	unsigned long long b, ret;
@@ -208,11 +200,7 @@ static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
 	return ret;
 }
 
-/*:::::*/
-static int fb_PrintUsingFmtStr
-	(
-		int fnum
-	)
+static int fb_PrintUsingFmtStr( int fnum )
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
@@ -301,14 +289,7 @@ static int fb_PrintUsingFmtStr
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
-/*:::::*/
-FBCALL int fb_PrintUsingStr
-	(
-		int fnum,
-		FBSTRING *s,
-		int mask
-	)
+FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
@@ -434,7 +415,6 @@ FBCALL int fb_PrintUsingStr
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*::::*/
 static int hPrintNumber
 	(
 		int fnum,
@@ -517,7 +497,7 @@ static int hPrintNumber
 			/* if first two characters, change padding to asterisks, else exit */
 			if( (intdigs == 0 && decdigs == -1) )
 			{
-				DBG_ASSERT( nc == '*' );
+				DBG_ASSERT( c == '*' );
 				padchar = CHAR_STAR;
 				++intdigs;
 			}
@@ -542,7 +522,7 @@ static int hPrintNumber
 			{
 				if( !adddollar )
 				{	/* first one */
-					DBG_ASSERT( nc == '$' ); /* otherwise, shouldn't have been brought here */
+					DBG_ASSERT( c == '$' ); /* otherwise, shouldn't have been brought here */
 					adddollar = 1;
 				}
 				else
@@ -1110,7 +1090,6 @@ static int hPrintNumber
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
 static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 {
 	DBG_ASSERT( value >= 0.0 );
@@ -1224,15 +1203,8 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 #endif
 }
 
-/*:::::*/
-FBCALL int fb_PrintUsingDouble
-	(
-		int fnum,
-		double value,
-		int mask
-	)
+FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 {
-
 	int val_exp;
 	int flags;
 	unsigned long long val_ull = 1;
@@ -1263,18 +1235,10 @@ FBCALL int fb_PrintUsingDouble
 	}
 
 	return hPrintNumber( fnum, val_ull, val_exp, flags, mask );
-
 }
 
-/*:::::*/
-FBCALL int fb_PrintUsingSingle
-	(
-		int fnum,
-		float value_f,
-		int mask
-	)
+FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 {
-
 	int val_exp;
 	int flags;
 	unsigned long long val_ull = 1;
@@ -1305,31 +1269,15 @@ FBCALL int fb_PrintUsingSingle
 	}
 
 	return hPrintNumber( fnum, val_ull, val_exp, flags, mask );
-
 }
 
-/*:::::*/
-FBCALL int fb_PrintUsingULongint
-	(
-		int fnum,
-		unsigned long long value_ull,
-		int mask
-	)
+FBCALL int fb_PrintUsingULongint( int fnum, unsigned long long value_ull, int mask )
 {
-
 	return hPrintNumber( fnum, value_ull, 0, 0, mask );
-
 }
 
-/*:::::*/
-FBCALL int fb_PrintUsingLongint
-	(
-		int fnum,
-		long long val_ll,
-		int mask
-	)
+FBCALL int fb_PrintUsingLongint( int fnum, long long val_ll, int mask )
 {
-
 	int flags;
 	unsigned long long val_ull;
 
@@ -1343,7 +1291,6 @@ FBCALL int fb_PrintUsingLongint
 		flags = 0;
 		val_ull = val_ll;
 	}
-	
-	return hPrintNumber( fnum, val_ull, 0, flags, mask );
 
+	return hPrintNumber( fnum, val_ull, 0, flags, mask );
 }

@@ -9,45 +9,28 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-''::::
-function cConstExprValue _
-	( _
-		byref value as integer _
-	) as integer
-
-	dim as ASTNODE ptr expr
-
-	function = FALSE
+sub cConstExprValue(byref value as integer)
+	dim as ASTNODE ptr expr = any
 
 	expr = cEqInParentsOnlyExpr( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an value
-			value = 0
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an value
+		value = 0
+		return
+	end if
 
-	else
-		if( astIsCONST( expr ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an value
-				astDelTree( expr )
-				value = 0
-				return TRUE
-			end if
-		end if
+	if( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		'' error recovery: fake an value
+		astDelTree( expr )
+		value = 0
+		return
 	end if
 
 	value = astGetValueAsInt( expr )
 	astDelNode( expr )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 function cSymbolTypeFuncPtr _
@@ -69,21 +52,14 @@ function cSymbolTypeFuncPtr _
 	proc = symbPreAddProc( NULL )
 
 	'' Parameters?
-	if( cParameters( NULL, proc, mode, TRUE ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( NULL, proc, mode, TRUE )
 
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
 
 		'' if it was SUB, don't allow a return type
 		if( isfunction = FALSE ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-
+			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
 			subtype = NULL
 		
@@ -93,50 +69,36 @@ function cSymbolTypeFuncPtr _
 			lexSkipToken( )
 
 			if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_INTEGER
-					subtype = NULL
-				end if
-			end if
-			'' check for invalid types
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				if( errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_INTEGER
-					subtype = NULL
-				end if
-
-			case FB_DATATYPE_VOID
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = typeAddrOf( dtype )
-					subtype = NULL
-				end if
-			end select
-
-			proc->proc.returnMethod = cProcReturnMethod( dtype )
-
-		end if
-
-	else
-		'' if it's a function and type was not given, it can't be guessed
-		if( isfunction ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRESTYPE ) = FALSE ) then
-				exit function
-			else
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
 			end if
 
+			'' check for invalid types
+			select case as const typeGet( dtype )
+			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
+
+			case FB_DATATYPE_VOID
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' error recovery: fake a type
+				dtype = typeAddrOf( dtype )
+				subtype = NULL
+			end select
+
+			proc->proc.returnMethod = cProcReturnMethod( dtype )
+		end if
+	else
+		'' if it's a function and type was not given, it can't be guessed
+		if( isfunction ) then
+			errReport( FB_ERRMSG_EXPECTEDRESTYPE )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
 		else
 			dtype = FB_DATATYPE_VOID
 			subtype = NULL
@@ -147,16 +109,12 @@ function cSymbolTypeFuncPtr _
 
 end function
 
-
-'':::::
-function cTypeOf _
+sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer = NULL _
-	) as integer
-
-	function = FALSE
+	)
 
 	dim as ASTNODE ptr expr = NULL
 	dim as integer is_type = any
@@ -171,33 +129,29 @@ function cTypeOf _
 		is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
 	end if
 
-	'' is it a normal type?
-	if( is_type = FALSE ) then
-		fbSetCheckArray( FALSE )
-
-		expr = cExpression( )
-		if( expr = NULL ) then
-			fbSetCheckArray( TRUE )
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-
-		end if
-
-		fbSetCheckArray( TRUE )
-	else
-		'' everything okay
-		return TRUE
+	'' Just a type? then cSymbolType() did the work
+	if (is_type) then
+		return
 	end if
+
+	'' Parse and check expression
+
+	fbSetCheckArray( FALSE )
+
+	expr = cExpression( )
+	if( expr = NULL ) then
+		fbSetCheckArray( TRUE )
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	fbSetCheckArray( TRUE )
 
 	if( astIsCONST( expr ) ) then
 		lgt 	= rtlCalcExprLen( expr, FALSE )
 		dtype	= astGetDataType( expr )
 		subtype = astGetSubType( expr )
-
 	else
 		'' ugly hack to deal with arrays w/o indexes
 		if( astIsNIDXARRAY( expr ) ) then
@@ -249,10 +203,7 @@ function cTypeOf _
 	end if
 
 	astDelTree( expr )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
@@ -293,31 +244,21 @@ function cSymbolType _
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDLPRNT )
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
 		'' datatype
-		if( cTypeOf( dtype, subtype, lgt ) = FALSE ) then
-			return FALSE
-		end if
+		cTypeOf( dtype, subtype, lgt )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
-
 	else
-
 		'' CONST?
 		if( lexGetToken( ) = FB_TK_CONST ) then
 			lexSkipToken( )
@@ -459,7 +400,6 @@ function cSymbolType _
 		case else
 			dim as FBSYMCHAIN ptr chain_ = NULL
 			dim as FBSYMBOL ptr base_parent = any
-			dim as integer id_options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT
 			dim as integer check_id = TRUE
 
 			if( parser.stmt.with.sym <> NULL ) then
@@ -469,16 +409,11 @@ function cSymbolType _
 				end if
 			end if
 
-			if( check_id = TRUE ) then
-				chain_ = cIdentifier( base_parent, id_options )
+			if( check_id ) then
+				chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 			end if
 
-			if( chain_ = NULL ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-
-			else
+			if( chain_ ) then
 				do
 					dim as FBSYMBOL ptr sym = chain_->sym
 					do
@@ -547,9 +482,7 @@ function cSymbolType _
 				dtype = FB_DATATYPE_ULONGINT
 
 			case else
-				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 			end select
 		end if
 	end if
@@ -559,9 +492,7 @@ function cSymbolType _
 		lexSkipToken( )
 
 		'' expr
-		if( cConstExprValue( lgt ) = FALSE ) then
-			exit function
-		end if
+		cConstExprValue( lgt )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING
@@ -570,12 +501,9 @@ function cSymbolType _
 
 			'' min 1 char (+ null-term)
 			if( lgt <= 1 ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a len
-					lgt = 2
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: fake a len
+				lgt = 2
 			end if
 
 			'' remap type
@@ -584,12 +512,9 @@ function cSymbolType _
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			'' min 1 char
 			if( lgt < 1 ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a len
-					lgt = 1
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: fake a len
+				lgt = 1
 			end if
 
 			'' note: len of "wstring * expr" symbols will be actually
@@ -597,13 +522,11 @@ function cSymbolType _
 			''		 always use symbGetWstrLen( ) to retrieve the
 			''		 len in characters, not the bytes
 			if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
-				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
+				lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 			end if
 
 		case else
-			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 
 		end select
 
@@ -611,7 +534,6 @@ function cSymbolType _
 		if( is_const ) then
 			dtype = typeSetIsConst( dtype )
 		end if
-
 	else
 		'' const?
 		if( is_const ) then
@@ -628,9 +550,7 @@ function cSymbolType _
 				select case lexGetToken( )
 				case FB_TK_PTR, FB_TK_POINTER
 					if( ptr_cnt >= FB_DT_PTRLEVELS ) then
-						if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
 					else
 						dtype = typeSetIsConst( typeAddrOf( dtype ) )
 						ptr_cnt += 1
@@ -639,19 +559,14 @@ function cSymbolType _
 					lexSkipToken( )
 
 				case else
-					if( errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER ) = FALSE ) then
-						exit function
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER )
 					exit do
 				end select
 
 			'' PTR|POINTER?
 			case FB_TK_PTR, FB_TK_POINTER
 				if( ptr_cnt >= FB_DT_PTRLEVELS ) then
-					if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
 				else
 					dtype = typeAddrOf( dtype )
 					ptr_cnt += 1
@@ -667,19 +582,15 @@ function cSymbolType _
 
 	if( ptr_cnt > 0 ) then
 		lgt = FB_POINTERSIZE
-
 	else
 		'' can't have forward typedef's if they aren't pointers
 		if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
 			'' forward types are allowed in func prototypes with byref params
 			if( (options and FB_SYMBTYPEOPT_ALLOWFORWARD) = 0 ) then
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = typeAddrOf( FB_DATATYPE_VOID )
-					subtype = NULL
-				end if
+				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+				'' error recovery: fake a type
+				dtype = typeAddrOf( FB_DATATYPE_VOID )
+				subtype = NULL
 			end if
 
 		elseif( lgt <= 0 ) then
@@ -687,16 +598,12 @@ function cSymbolType _
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
 				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
-					if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: make pointer
-						dtype = typeAddrOf( dtype )
-						lgt = FB_POINTERSIZE
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDPOINTER )
+					'' error recovery: make pointer
+					dtype = typeAddrOf( dtype )
+					lgt = FB_POINTERSIZE
 				else
-					lgt = symbGetDataSize( dtype )
+					lgt = typeGetSize( dtype )
 				end if
 			end select
 		end if
@@ -705,5 +612,3 @@ function cSymbolType _
 	function = TRUE
 
 end function
-
-

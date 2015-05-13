@@ -170,7 +170,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 {{fbdoc item="section" value="Graphics"}}
 	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
-	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (GRAPHICS PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgCircle|CIRCLE"}}
 	- {{fbdoc item="keyword" value="KeyPgCls|CLS"}}
 	- {{fbdoc item="keyword" value="KeyPgColor|COLOR"}}
@@ -184,7 +184,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgImageInfo|IMAGEINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgLinegraphics|LINE"}}
-	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
 	- {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}}
@@ -212,7 +212,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgTransGfx|TRANS (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}
-	- {{fbdoc item="keyword" value="KeyPgXorGfx|XOR (GRAPHICS PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgXorGfx|XOR (Graphics PUT)"}}
 
 {{fbdoc item="section" value="Hardware access"}}
 	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
@@ -343,6 +343,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 
@@ -381,6 +382,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Predefined symbols"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
@@ -528,7 +530,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
-	- {{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING(Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING (Function)"}}
 
 {{fbdoc item="section" value="String and number conversion"}}
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}

@@ -4,17 +4,8 @@
 #define __FB_GFX_DOS_H__
 
 #include "fb_gfx.h"
-#include "../rtlib/fb_dos.h"
 
-#include <conio.h>
 #include <dpmi.h>
-#include <go32.h>
-#include <pc.h>
-#include <sys/farptr.h>
-#include <sys/nearptr.h>
-#include <sys/movedata.h>
-
-#include "vga.h"
 #include "vesa.h"
 
 /* macros */

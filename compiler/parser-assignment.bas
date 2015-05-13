@@ -11,14 +11,14 @@
 '':::::
 sub parserLetInit
 
-	listNew( @parser.stmt.let.list, 16, len( FB_LETSTMT_NODE ) )
+	listInit( @parser.stmt.let.list, 16, len( FB_LETSTMT_NODE ) )
 
 end sub
 
 '':::::
 sub parserLetEnd
 
-    listFree( @parser.stmt.let.list )
+    listEnd( @parser.stmt.let.list )
 
 end sub
 
@@ -32,15 +32,6 @@ function cOperator _
 
     function = INVALID
 
-    '' right class?
-    select case lexGetClass( )
-    case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-
-    case else
-    	exit function
-	end select
-
-    ''
     select case as const lexGetToken( )
     case FB_TK_AND
     	op = AST_OP_AND
@@ -259,31 +250,28 @@ function cOperator _
 	case FB_TK_NEW, FB_TK_DELETE
 
 		if( (options and FB_OPEROPTS_SELF) = 0 ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
-    	dim as integer is_new = (lexGetToken( ) = FB_TK_NEW)
+		dim as integer is_new = (lexGetToken( ) = FB_TK_NEW)
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
-    	'' '['?
-    	if( lexGetToken( ) = CHAR_LBRACKET ) then
-        	lexSkipToken( )
+		'' '['?
+		if( lexGetToken( ) = CHAR_LBRACKET ) then
+			lexSkipToken( )
 
 			'' ']'
-        	if( lexGetToken( ) <> CHAR_RBRACKET ) then
-        		if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-        			exit function
-        		end if
-        	else
-        		lexSkipToken( )
-        	end if
+			if( lexGetToken( ) <> CHAR_RBRACKET ) then
+				errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			else
+				lexSkipToken( )
+			end if
 
-        	return iif( is_new, AST_OP_NEW_VEC_SELF, AST_OP_DEL_VEC_SELF )
-
-        else
-    		return iif( is_new, AST_OP_NEW_SELF, AST_OP_DEL_SELF )
-    	end if
+			return iif( is_new, AST_OP_NEW_VEC_SELF, AST_OP_DEL_VEC_SELF )
+		else
+			return iif( is_new, AST_OP_NEW_SELF, AST_OP_DEL_SELF )
+		end if
 
 	case FB_TK_FOR
 		if( (options and FB_OPEROPTS_SELF) = 0 ) then
@@ -309,40 +297,37 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_NEXT
 
+	case CHAR_PLUS
+		op = AST_OP_ADD
+
+	case CHAR_MINUS
+		op = AST_OP_SUB
+
+	case CHAR_RSLASH
+		op = AST_OP_INTDIV
+
+	case CHAR_CARET
+		op = AST_OP_MUL
+
+	case CHAR_SLASH
+		op = AST_OP_DIV
+
+	case CHAR_CART
+		op = AST_OP_POW
+
+	case CHAR_AMP
+		op = AST_OP_CONCAT
+
+	case FB_TK_ADDROFCHAR
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_ADDROF
+
 	case else
-   		select case as const lexGetToken( )
-   		case CHAR_PLUS
-   			op = AST_OP_ADD
-
-		case CHAR_MINUS
-        	op = AST_OP_SUB
-
-        case CHAR_RSLASH
-        	op = AST_OP_INTDIV
-
-		case CHAR_CARET
-        	op = AST_OP_MUL
-
-        case CHAR_SLASH
-        	op = AST_OP_DIV
-
-        case CHAR_CART
-        	op = AST_OP_POW
-
-        case CHAR_AMP
-        	op = AST_OP_CONCAT
-
-        case FB_TK_ADDROFCHAR
-    		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
-    			exit function
-    		end if
-
-    		lexSkipToken( )
-    		return AST_OP_ADDROF
-
-        case else
-        	exit function
-        end select
+		exit function
 	end select
 
     lexSkipToken( )
@@ -362,133 +347,68 @@ function cOperator _
 
 end function
 
-'':::::
-private function hDoAssignment _
-	( _
-		byval op as integer, _
-		byval lhs as ASTNODE ptr, _
-		byval rhs as ASTNODE ptr _
-	) as integer
-
-	function = FALSE
-
-	'' const?
-	if( typeIsConst( astGetFullType( lhs ) ) ) then
-    	return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-	end if
-
-    '' BOP?
-    if( op <> INVALID ) then
-    	'' do lvalue op= expr
-    	lhs = astNewSelfBOP( op, _
-    					  	 lhs, _
-    					  	 rhs, _
-    					  	 NULL, _
-    					  	 AST_OPOPT_LPTRARITH )
-
-    	if( lhs = NULL ) then
-    		if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
-    			exit function
-    		end if
-    	else
-    		astAdd( lhs )
-    	end if
-
-	else
-    	'' do lvalue = expr
-    	lhs = astNewASSIGN( lhs, rhs )
-
-    	if( lhs = NULL ) then
-			if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-				exit function
-			end if
-		else
-			astAdd( lhs )
-		end if
-    end if
-
-    function = TRUE
-
-end function
-
-'':::::
-function cAssignment _
-	( _
-		byval assgexpr as ASTNODE ptr _
-	) as integer
-
-	dim as ASTNODE ptr expr = any
-	dim as integer op = any, dtype = any
-
-	function = FALSE
-
-	'' constant?
-	dim as FBSYMBOL ptr sym = astGetSymbol( assgexpr )
-	if( sym <> NULL ) then
-		if( symbIsConstant( sym ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-				exit function
-			end if
-		end if
-	else
-		'' type variable?
-		if( astIsConst( assgexpr ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-				exit function
-			end if
-		end if
+sub cAssignment( byval l as ASTNODE ptr )
+	if( astIsConstant( l ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
 	'' '='?
-    op = INVALID
-    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	'' BOP?
-    	op = cOperator( FB_OPEROPTS_NONE )
+	dim as integer op = INVALID
+	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		'' BOP?
+		op = cOperator( FB_OPEROPTS_NONE )
 
 		'' '='?
-    	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip stmt
-    			hSkipStmt( )
-    			return TRUE
-    		end if
-    	end if
+		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+			errReport( FB_ERRMSG_EXPECTEDEQ )
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return
+		end if
 
-    	lexSkipToken( )
+		'' get the self version
+		op = astGetOpSelfVer( op )
+	end if
 
-    	'' get the self version
-    	op = astGetOpSelfVer( op )
+	'' '='
+	lexSkipToken( )
+
+	'' set the context symbol to allow taking the address of overloaded
+	'' procs and also to allow anonymous UDT's
+	parser.ctxsym    = astGetSubType( l )
+	parser.ctx_dtype = astGetDataType( l )
+
+	'' Expression
+	dim as ASTNODE ptr r = cExpression( )
+	if( r = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until next stmt
+		hSkipStmt( )
+		return
+	end if
+
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = FB_DATATYPE_INVALID
+
+	'' BOP?
+	if( op <> INVALID ) then
+		'' l op= r
+		l = astNewSelfBOP( op, l, r, NULL, AST_OPOPT_LPTRARITH )
+		if (l) then
+			astAdd(l)
+		else
+			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		end if
 	else
-    	lexSkipToken( )
-    end if
-
-    '' set the context symbol to allow taking the address of overloaded
-    '' procs and also to allow anonymous UDT's
-    parser.ctxsym    = astGetSubType( assgexpr )
-    parser.ctx_dtype = astGetDataType( assgexpr )
-
-    '' Expression
-    expr = cExpression( )
-    if( expr = NULL ) then
-       	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-       		parser.ctxsym = NULL
-       		parser.ctx_dtype = FB_DATATYPE_INVALID
-       		exit function
-       	else
-    		'' error recovery: skip until next stmt
-    		hSkipStmt( )
-    		return TRUE
-       	end if
-    end if
-
-    parser.ctxsym    = NULL
-    parser.ctx_dtype = FB_DATATYPE_INVALID
-
-	function = hDoAssignment( op, assgexpr, expr )
-
-end function
+		'' l = r
+		l = astNewASSIGN( l, r )
+		if (l) then
+			astAdd(l)
+		else
+			errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+		end if
+	end if
+end sub
 
 '':::::
 function cAssignmentOrPtrCallEx _
@@ -517,32 +437,27 @@ function cAssignmentOrPtrCallEx _
 
     '' ordinary assignment?
     if( astIsCALL( t ) = FALSE ) then
-    	return cAssignment( expr )
+		cAssignment( expr )
+		return TRUE
     end if
 
 	'' calling a function ptr..
 
 	'' can the result be skipped?
-	if( symbGetDataClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
-		if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip call
-			astDelTree( expr )
-			return TRUE
-		end if
+	if( typeGetClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
+		errReport( FB_ERRMSG_VARIABLEREQUIRED )
+		'' error recovery: skip call
+		astDelTree( expr )
+		return TRUE
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
     	select case astGetDataType( t )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip call
-				astDelTree( expr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_VARIABLEREQUIRED )
+			'' error recovery: skip call
+			astDelTree( expr )
+			return TRUE
 		end select
 	end if
 
@@ -559,7 +474,7 @@ end function
 private function hCard2Ord _
 	( _
 		byval num as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	select case num
 	case 1
@@ -576,16 +491,9 @@ private function hCard2Ord _
 
 end function
 
-'':::::
-private function hReportLetError _
-	( _
-		byval errnum as integer, _
-		byval elmnum as integer _
-	) as integer
-
-	function = errReportEx( errnum, "at the " + *hCard2Ord( elmnum ) + " element of LET()" )
-
-end function
+private sub hReportLetError(byval errnum as integer, byval elmnum as integer)
+	errReportEx( errnum, "at the " + *hCard2Ord( elmnum ) + " element of LET()" )
+end sub
 
 '':::::
 private function hAssignFromField _
@@ -598,49 +506,37 @@ private function hAssignFromField _
 
 	'' data member?
 	if( symbIsField( fld ) = FALSE ) then
-       	if( hReportLetError( FB_ERRMSG_NOTADATAMEMBER, num ) = FALSE ) then
-       		return NULL
-       	else
-       		'' error recovery
-       		astDelTree( lhs )
-       		return astNewNOP( )
-       	end if
+		hReportLetError( FB_ERRMSG_NOTADATAMEMBER, num )
+		'' error recovery
+		astDelTree( lhs )
+		return astNewNOP( )
 	end if
 
     '' check visibility
 	if( symbCheckAccess( symbGetSubtype( fld ), fld ) = FALSE ) then
-		if( hReportLetError( FB_ERRMSG_ILLEGALMEMBERACCESS, num ) = FALSE ) then
-       		return NULL
-       	else
-       		'' error recovery
-       		astDelTree( lhs )
-       		return astNewNOP()
-		end if
+		hReportLetError( FB_ERRMSG_ILLEGALMEMBERACCESS, num )
+		'' error recovery
+		astDelTree( lhs )
+		return astNewNOP()
 	end if
 
 	/'' valid data type?
     select case typeGet( symbGetType( fld ) )
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	if( symbGetUDTIsUnion( fld ) then
-       		if( hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num ) = FALSE ) then
-       			return NULL
-       		else
-       			'' error recovery
-       			astDelTree( lhs )
-       			return astNewNOP()
-       		end if
-       	end if
+		if( symbGetUDTIsUnion( fld ) then
+			hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num )
+			'' error recovery
+			astDelTree( lhs )
+			return astNewNOP()
+		end if
 	end select
 	'/
 
 	if( symbGetArrayDimensions( fld ) <> 0 ) then
-       	if( hReportLetError( FB_ERRMSG_ARRAYSNOTALLOWED, num ) = FALSE ) then
-       		return NULL
-       	else
-       		'' error recovery
-       		astDelTree( lhs )
-       		return astNewNOP()
-       	end if
+		hReportLetError( FB_ERRMSG_ARRAYSNOTALLOWED, num )
+		'' error recovery
+		astDelTree( lhs )
+		return astNewNOP()
 	end if
 
 	'' build field access
@@ -650,14 +546,11 @@ private function hAssignFromField _
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
 	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
 
-    expr = astNewASSIGN( lhs, expr )
-    if( expr = NULL ) then
-		if( hReportLetError( FB_ERRMSG_ILLEGALASSIGNMENT, num ) = FALSE ) then
-			return NULL
-		else
-       		'' error recovery
-       		return astNewNOP()
-       	end if
+	expr = astNewASSIGN( lhs, expr )
+	if( expr = NULL ) then
+		hReportLetError( FB_ERRMSG_ILLEGALASSIGNMENT, num )
+		'' error recovery
+		return astNewNOP()
 	end if
 
 	function = expr
@@ -692,9 +585,7 @@ function cAssignmentOrPtrCall _
     '' LET..
     if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
     	if( lexGetLookAhead( 1 ) <> CHAR_LPRNT ) then
-    		if( errReportNotAllowed( FB_LANG_OPT_LET ) = FALSE ) then
-    			exit function
-    		end if
+			errReportNotAllowed( FB_LANG_OPT_LET )
     	else
     		ismult = TRUE
     		lexSkipToken( )
@@ -707,20 +598,17 @@ function cAssignmentOrPtrCall _
 
 	lexSkipToken( )
 
-    '' single?
-    if( ismult = FALSE ) then
-       	expr = cVarOrDeref( )
+	'' single?
+	if( ismult = FALSE ) then
+		expr = cVarOrDeref( )
 		if( expr = NULL ) then
-       		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-       			exit function
-       		else
-       			'' error recovery: skip stmt
-       			hSkipStmt( )
-       			return TRUE
-       		end if
-       	else
-       		return cAssignment( expr )
-       	end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' error recovery: skip stmt
+			hSkipStmt( )
+		else
+			cAssignment( expr )
+		end if
+		return TRUE
 	end if
 
 	'' multiple..
@@ -733,8 +621,8 @@ function cAssignmentOrPtrCall _
         node->expr = cVarOrDeref( )
         if( node->expr <> NULL ) then
 			'' const?
-			if( typeIsConst( astGetFullType( node->expr ) ) ) then
-    			return errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+			if( astIsConstant( node->expr ) ) then
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			end if
 
         	exprcnt += 1
@@ -748,76 +636,56 @@ function cAssignmentOrPtrCall _
         lexSkipToken( )
 	loop
 
-    if( exprcnt = 0 ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-        	exit function
-        end if
+	if( exprcnt = 0 ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 	end if
 
-    '' ')'?
-    if( lexGetToken( ) <> CHAR_RPRNT ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-        	exit function
-        else
-        	'' error recovery: skip until next ')'
-        	hSkipUntil( CHAR_RPRNT )
-        end if
+	'' ')'?
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		'' error recovery: skip until next ')'
+		hSkipUntil( CHAR_RPRNT )
 	else
-    	lexSkipToken( )
+		lexSkipToken( )
 	end if
 
-    '' '='?
-    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip stmt
-    		hSkipStmt( )
-    	end if
+	'' '='?
+	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		errReport( FB_ERRMSG_EXPECTEDEQ )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		expr = NULL
+	else
+		lexSkipToken( )
 
-    	expr = NULL
-
-    else
-    	lexSkipToken( )
-
-    	'' Expression?
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip until next stmt
-    			hSkipStmt( )
-       		end if
+		'' Expression?
+		expr = cExpression( )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: skip until next stmt
+			hSkipStmt( )
 		end if
 	end if
 
+	if( expr <> NULL ) then
+		select case astGetDataType( expr )
+		case FB_DATATYPE_STRUCT
+			if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
+				errReport( FB_ERRMSG_UNIONSNOTALLOWED )
+				'' error recovery:
+				astDelTree( expr )
+				expr = NULL
+			end if
 
-    if( expr <> NULL ) then
-    	select case astGetDataType( expr )
-    	case FB_DATATYPE_STRUCT
-    		if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
-       			if( errReport( FB_ERRMSG_UNIONSNOTALLOWED ) = FALSE ) then
-       				exit function
-       			else
-    				'' error recovery:
-    				astDelTree( expr )
-    				expr = NULL
-       			end if
-       		end if
+		''case FB_DATATYPE_CLASS
 
-    	''case FB_DATATYPE_CLASS
-
-    	case else
-    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery:
-    			astDelTree( expr )
-    			expr = NULL
-    		end if
-    	end select
-    end if
+		case else
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery:
+			astDelTree( expr )
+			expr = NULL
+		end select
+	end if
 
 	if( expr = NULL ) then
         do
@@ -835,7 +703,7 @@ function cAssignmentOrPtrCall _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr, TRUE )
+		expr = astGetCALLResUDT( expr )
 	end if
 
 	dim as FBSYMBOL ptr tmp = NULL
@@ -860,10 +728,7 @@ function cAssignmentOrPtrCall _
 
         '' EOL?
         if( fld = NULL ) then
-       		if( errReport( FB_ERRMSG_TOOMANYELEMENTS ) = FALSE ) then
-       			exit function
-       		end if
-
+			errReport( FB_ERRMSG_TOOMANYELEMENTS )
        	else
     		exprcnt += 1
 
@@ -889,4 +754,3 @@ function cAssignmentOrPtrCall _
 	function = TRUE
 
 end function
-

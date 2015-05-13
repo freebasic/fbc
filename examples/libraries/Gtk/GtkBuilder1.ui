@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="2.20"/>
+  <object class="GtkWindow" id="WinMain">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Glade FB test</property>
+    <signal name="delete-event" handler="gtk_main_quit" swapped="no"/>
+    <child>
+      <object class="GtkLayout" id="layout1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="width">400</property>
+        <property name="height">400</property>
+        <child>
+          <object class="GtkButton" id="ClickButton">
+            <property name="label" translatable="yes">Click Me!</property>
+            <property name="width_request">144</property>
+            <property name="height_request">32</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_underline">True</property>
+            <signal name="clicked" handler="on_ClickButton_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">30</property>
+            <property name="y">70</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

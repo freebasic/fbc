@@ -16,7 +16,6 @@ Gets the hour of day from a [[ProPgDates Date Serial]]
 	Returns the hour from a variable containing a date in [[ProPgDates Date Serial]] format.
 
 {{fbdoc item="desc"}}
-. 
 	The compiler will not recognize this function unless ##vbcompat.bi## is included.
 
 {{fbdoc item="ex"}}

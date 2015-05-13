@@ -28,7 +28,7 @@ function astGetOFFSETChildOfs _
 end function
 
 '':::::
-function astNewOFFSET _
+private function astNewOFFSET _
 	( _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -43,10 +43,6 @@ function astNewOFFSET _
 	n = astNewNode( AST_NODECLASS_OFFSET, _
 					typeAddrOf( astGetFullType( l ) ), _
 					l->subtype )
-
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	'' must preserve the node or optimizations at newDEREF() will fail
 	n->l = l
@@ -285,9 +281,6 @@ function astNewADDROF _
 	n = astNewNode( AST_NODECLASS_ADDROF, _
 					typeAddrOf( astGetFullType( l ) ), _
 					subtype )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->op.op = AST_OP_ADDROF
 	n->l = l
@@ -315,8 +308,8 @@ function astLoadADDROF _
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
-			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
-			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
+			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
 
 			vr = irAllocVREG( astGetDataType( n ), n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )

@@ -17,7 +17,7 @@ enum KWD_OPTION
 end enum
 
 type SYMBKWD
-	name			as zstring ptr
+	name			as const zstring ptr
 	id				as integer
     class			as integer
     opt             as KWD_OPTION
@@ -148,6 +148,9 @@ end type
         ( @"OPERATOR"   , FB_TK_OPERATOR    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"PROPERTY"   , FB_TK_PROPERTY    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"CLASS"      , FB_TK_CLASS       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"EXTENDS"    , FB_TK_EXTENDS     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"IMPLEMENTS" , FB_TK_IMPLEMENTS  , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+		( @"BASE"    	, FB_TK_BASE     	, FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _        
         ( @"VAR"        , FB_TK_VAR         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"IIF"        , FB_TK_IIF         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"VA_FIRST"   , FB_TK_VA_FIRST    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
@@ -259,6 +262,7 @@ end type
         ( @"PAINT"      , FB_TK_PAINT       , FB_TKCLASS_QUIRKWD ), _
         ( @"DRAW"       , FB_TK_DRAW        , FB_TKCLASS_QUIRKWD ), _
         ( @"IMAGECREATE", FB_TK_IMAGECREATE	, FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
+        ( @"THREADCALL", FB_TK_THREADCALL   , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
         ( NULL ) _
 	}
 
@@ -270,7 +274,7 @@ sub symbKeywordInit( )
 	do until( kwdTb(i).name = NULL )
 
 		'' add the '__' prefix if the kwd wasn't present in QB and we are in '-lang qb' mode
-		dim as zstring ptr kname = kwdTb(i).name
+		dim as const zstring ptr kname = kwdTb(i).name
 		if( (kwdTb(i).opt and KWD_OPTION_NO_QB) <> 0 ) then
 			if( fbLangIsSet( FB_LANG_QB ) ) then
 				static as string tmp
@@ -307,7 +311,7 @@ end sub
 '':::::
 function symbAddKeyword _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval id as integer, _
 		byval class_ as integer, _
 		byval hashtb as FBHASHTB ptr, _
@@ -339,8 +343,7 @@ end function
 '':::::
 function symbDelKeyword _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval s as FBSYMBOL ptr _
 	) as integer
 
     function = FALSE

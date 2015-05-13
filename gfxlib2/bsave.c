@@ -1,6 +1,9 @@
 /* BSAVE support. */
 
 #include "fb_gfx.h"
+#ifdef HOST_WIN32
+	#include <windows.h>
+#endif
 
 typedef struct BMP_HEADER
 {
@@ -154,7 +157,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *p
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
-	fb_hConvertPath(buffer, strlen(buffer));
+	fb_hConvertPath(buffer);
 
 	f = fopen(buffer, "wb");
 	if (!f) {
@@ -169,7 +172,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *p
 	if ((p) && (!strcasecmp(p + 1, "bmp")))
 		result = save_bmp(context, f, src, pal);
 	else {
-		if ((size < 0) || ((size == 0) && (src))) {
+		if ((size == 0) && src) {
 			fclose(f);
 			fb_hStrDelTemp(filename);
 			return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );

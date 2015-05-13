@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="Tokens"}}----
+
+{{fbdoc item="section" value="Interface"}}
+
+	The basic public interface of the lexer is from ''##lex.bas##'':
+		- ''##lexGetToken()##'': Retrieve current token's id, an FB_TK_* value.
+		- ''##lexGetLookAhead(N)##'': Look ahead N tokens
+		- ''##lexSkipToken()##'': Go to next token
+		- ''##lexGetText()##'': Returns a zstring ptr to the text of the current token, e.g. string/number literals (their values are retrieved like this), or the text representation of other tokens (e.g. operators).
+		- some more ''##lexGet*()##'' accessors to data of the current token
+		- ''##lexPeekLine()##'': Used by error reporting to retrieve the current line of code.
+
+{{fbdoc item="section" value="Current token + look ahead tokens"}}
+
+	Tokens are a pretty short-living thing. There only is the current token and a few look ahead tokens in the token queue. That's all the parser needs to decipher FB code. The usual pattern is to check the current token, decide what to do next based on what it is, then skip it and move on. Backward movement is not possible. The file name, line number and token position shown during error reporting also comes from the current lexer state. 
+	
+	The token queue is a static array of tokens, containing space for the current 	token plus the few look ahead tokens. The token structures contain fairly huge (static) buffers for token text. Each token has a pointer to the next one, so they form a circular list. This is a cheap way to move forward and skip tokens, without having to take care of an array index. Copying around the tokens themselves is out of question, because of the huge text buffers. The "head" points to the current token; the next "k" tokens are look ahead tokens; the rest is unused. When skipping we simply do "head = head->next". Unless the new head already contains a token (from some look ahead done before), we load a new token into the new current token struct (via lexNextToken()). Look ahead works by loading the following tokens in the queue (but without skipping the current one).
+
+{{fbdoc item="section" value="Tokenization"}}
+	''##lex.bas:lexNextToken()##''
+	
+	The lexer breaks down the file input into tokens. A token conceptually is an identifier, a keyword, a string literal, a number literal, an operator, EOL or EOF, or other characters like parentheses and commas. Each token as an unique value assigned to it that the parser will use to identify it, instead of doing string comparisons (which would be too slow).
+	
+	''##lexNextToken()##'' uses the current char, and if needed also the look ahead char, to parse the input. Number and string literals are handled here too. Alphanumeric identifiers are looked up in the ''##symb##'' hash table, which will tell whether it's a keyword, a macro, or another FB symbol (type, procedure, variable, ...). 
+	
+	Identifiers containing dots (QB compatibility) and identifier type suffixes (as in stringvar$) are handled here too (but not namespace/structure member access). Tokens can have a data type associated with them. That is also used with number literals, which can have type suffixes (as in ##&hFFFFFFFFFFFFFFFFull##).
+
+{{fbdoc item="section" value="Side note on single-line comments"}}
+
+	Quite unusual, single-line comments are handled by the parser instead of being skipped in the lexer. This is done so that usage of ##REM## can easily be restricted as in QB, afterall REM is more like a statement than a comment. Besides that, comments can contain QB meta statements, so comments cannot just be ignored. Note that the parser will still skip the rest of a comment (without tokenizing it), if it does not find a QB meta statement.
+	
+	(Multi-line comments are completely handled during tokenization though.)
+
+{{fbdoc item="section" value="File input"}}
+	''##lex.bas:hReadChar()##''
+	
+	The input file is opened in ''##fb.bas:fbCompile()##''; the file number is stored in the global ''##env##'' context (similar for #includes in ''##fb.bas:fbIncludeFile()##''). The lexer uses the file number from the ''##env##'' context to read input from. It has a static zstring buffer that is used to stream the file contents (instead of reading character per character), and for Unicode input, the lexer uses a wstring buffer and decodes UTF32 or UTF8 to UTF16. The lexer advances through the chars in the buffer and then reads in the next chunk from the file. EOF is represented by returning a NULL character.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

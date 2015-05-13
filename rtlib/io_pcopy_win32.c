@@ -1,11 +1,9 @@
 /* pcopy (console, no gfx) function for Windows */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
-HANDLE fb_hConsoleCreateBuffer( void );
-
-/*:::::*/
-int fb_ConsolePageCopy ( int src, int dst )
+int fb_ConsolePageCopy( int src, int dst )
 {
 	fb_hConsoleGetHandle( FALSE );
 
@@ -54,5 +52,3 @@ int fb_ConsolePageCopy ( int src, int dst )
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-
-

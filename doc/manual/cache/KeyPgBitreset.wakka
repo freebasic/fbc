@@ -33,7 +33,7 @@ print hex(bitreset(&h8000000000000001,63))
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Bitreset""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC"".

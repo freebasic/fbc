@@ -49,6 +49,10 @@ Do
 
 	    Case Chr$(27): Print "Escape"
 
+	    Case Chr$(9): Print "Tab"
+
+	    Case Chr$(8): Print "Backspace"
+
 	    Case Chr$(32) To Chr$(127)
 	        Print "Printable character: " & k
 
@@ -63,6 +67,12 @@ Do
 	    Case EXTCHAR & "O": Print "Down Left / End"
 	    Case EXTCHAR & "P": Print "Down"
 	    Case EXTCHAR & "Q": Print "Down Right / PgDn"
+
+	    Case EXTCHAR & "R": Print "Insert"
+	    Case EXTCHAR & "S": Print "Delete"
+
+
+	    Case EXTCHAR & "k": Print "Close window / Alt-F4"
 
 	    Case EXTCHAR & Chr$(59) To EXTCHAR & Chr$(68)
 	        Print "Function key: F" & Asc(k, 2) - 58
@@ -94,7 +104,7 @@ Loop
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang qb]]// dialect.
-	- QBasic returned a ##[[KeyPgChr Chr]](0)## as the first character for an extended key, but FreeBASIC returns ##[[KeyPgChr Chr]](255)## as the first character in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- QBasic returned a ##[[KeyPgChr Chr]](0)## as the first character for an extended key, but ""FreeBASIC"" returns ##[[KeyPgChr Chr]](255)## as the first character in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSleep Sleep]]##

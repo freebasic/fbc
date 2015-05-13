@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="Chipmunk Physics"}}----
+Chipmunk is a physics library designed specifically for 2D games.
+
+Website: http://chipmunk-physics.net/
+Platforms supported: ""Win32"", Linux
+Headers to include: chipmunk/chipmunk.bi
+Header version: 4.1.0
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

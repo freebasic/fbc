@@ -1,12 +1,8 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileUnlock( struct _FB_FILE *handle, fb_off_t position, fb_off_t size )
+int fb_DevFileUnlock( FB_FILE *handle, fb_off_t position, fb_off_t size )
 {
 	int 	res;
 	FILE 	*fp;
@@ -17,7 +13,6 @@ int fb_DevFileUnlock( struct _FB_FILE *handle, fb_off_t position, fb_off_t size 
 	FB_LOCK();
 
 	fp = (FILE*) handle->opaque;
-
 	if( fp == NULL ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevScrnReadLineWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_chars )
+int fb_DevScrnReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, int dst_chars )
 {
     int res;
     FBSTRING temp = { 0 };
@@ -20,7 +19,6 @@ int fb_DevScrnReadLineWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_char
     return res;
 }
 
-/*:::::*/
 void fb_DevScrnInit_ReadLineWstr( void )
 {
 	fb_DevScrnInit_NoOpen( );

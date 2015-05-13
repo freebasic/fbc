@@ -1,7 +1,9 @@
 /* helper functions for internationalization support */
 
-#include <stddef.h>
 #include "fb.h"
+#include "fb_private_intl.h"
+#include <dpmi.h>
+#include <go32.h>
 
 int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo )
 {

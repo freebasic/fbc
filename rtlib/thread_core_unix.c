@@ -1,7 +1,7 @@
 /* Linux (pthreads) thread creation and destruction */
 
-#include <pthread.h>
 #include "fb.h"
+#include "fb_private_thread.h"
 
 /* thread proxy to user's thread proc */
 static void *threadproc( void *param )

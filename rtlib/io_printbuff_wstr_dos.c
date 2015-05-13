@@ -1,7 +1,6 @@
 /* low-level print to console function for wstrings */
 
 #include "fb.h"
-#include "fb_con.h"
 
 /*:::::*/
 void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )

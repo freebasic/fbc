@@ -76,20 +76,13 @@ private function hAllocTB _
 
 	'' allocate the pool
 	if( stk->clear ) then
-		nodetb = callocate( nodes * stk->nodelen )
+		nodetb = xcallocate( nodes * stk->nodelen )
 	else
-		nodetb = allocate( nodes * stk->nodelen )
-	end if
-	if( nodetb = NULL ) then
-		exit function
+		nodetb = xallocate( nodes * stk->nodelen )
 	end if
 
 	'' and the pool ctrl struct
-	tb = allocate( len( TSTACKTB ) )
-	if( tb = NULL ) then
-		deallocate( nodetb )
-		exit function
-	end if
+	tb = xallocate( len( TSTACKTB ) )
 
 	'' add the ctrl struct to pool list
 	if( stk->tbhead = NULL ) then

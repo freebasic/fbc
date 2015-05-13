@@ -1,8 +1,5 @@
 /* detects EOF for file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
@@ -27,8 +24,7 @@ void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
     info->length = len;
 }
 
-/*:::::*/
-int fb_DevScrnEof( struct _FB_FILE *handle )
+int fb_DevScrnEof( FB_FILE *handle )
 {
     DEV_SCRN_INFO *info;
     int       got_data;
@@ -45,5 +41,3 @@ int fb_DevScrnEof( struct _FB_FILE *handle )
     }
 	return !got_data;
 }
-
-

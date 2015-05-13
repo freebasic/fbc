@@ -2,6 +2,8 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_dos.h"
+#include <pc.h>
+#include <go32.h>
 
 #define JOY_PORT 0x201
 #define JOY_AXIS1 0x1

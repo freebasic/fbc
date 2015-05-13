@@ -1,11 +1,8 @@
 /* LPTx device */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevLptClose( struct _FB_FILE *handle )
+int fb_DevLptClose( FB_FILE *handle )
 {
     int res;
     DEV_LPT_INFO *devInfo;
@@ -31,4 +28,3 @@ int fb_DevLptClose( struct _FB_FILE *handle )
 
 	return res;
 }
-

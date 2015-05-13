@@ -1,21 +1,13 @@
 /* libfb initialization */
 
-#include <stdlib.h>
 #include "fb.h"
 
-/* globals */
-int __fb_is_inicnt = 0;
-
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
+static int __fb_is_inicnt = 0;
 
-
-/*:::::*/
-void fb_hRtInit ( void )
+/* called from fbrt0 */
+void fb_hRtInit( void )
 {
-#ifdef ENABLE_MT
-	int i;
-#endif
-
 	/* already initialized? */
 	++__fb_is_inicnt;
 	if( __fb_is_inicnt != 1 )
@@ -28,19 +20,45 @@ void fb_hRtInit ( void )
 	fb_hInit( );
 
 #ifdef ENABLE_MT
-	/* allocate thread local storage keys */
-	for( i = 0; i < FB_TLSKEYS; i++ )
-		FB_TLSALLOC( __fb_ctx.tls_ctxtb[i] );
+	fb_TlsInit( );
 #endif
-
 }
 
-/*:::::*/
-FBCALL void fb_Init ( int argc, char **argv, int lang )
+/* called from fbrt0 */
+void fb_hRtExit( void )
 {
-	/* note: fb_RtInit() will be called from fbrt0 */
+	--__fb_is_inicnt;
+	if( __fb_is_inicnt != 0 )
+		return;
 
+	/* atexit() can't be used because if OPEN is called in a global ctor inside 
+	   a shared-lib and any other file function is called in the respective global
+	   dtor, it would be already reseted - the atexit() chain is called before the 
+	   global dtors one*/
+	fb_FileReset( );
+
+	/* os-dep termination */
+	fb_hEnd( 0 );
+
+#ifdef ENABLE_MT
+	fb_TlsExit( );
+#endif
+
+	/* if an error has to be displayed, do it now */
+	if( __fb_ctx.error_msg )
+		fputs( __fb_ctx.error_msg, stderr );
+}
+
+/* called by FB program */
+FBCALL void fb_Init( int argc, char **argv, int lang )
+{
 	__fb_ctx.argc = argc;
 	__fb_ctx.argv = argv;
 	__fb_ctx.lang = lang;
+}
+
+/* called by FB program */
+FBCALL void fb_End( int errlevel )
+{
+	exit( errlevel );
 }

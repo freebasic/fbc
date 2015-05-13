@@ -1,6 +1,5 @@
 /* dynamic arrays core */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

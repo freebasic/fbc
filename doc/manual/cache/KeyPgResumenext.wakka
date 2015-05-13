@@ -33,7 +33,7 @@ Resume Next ' execution jumps to 'Print "ending..."' line, but j is now in an un
 %%
 
 {{fbdoc item="lang"}}
-	-  ON ERROR is not supported in the //[[CompilerOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
+	-  RESUME NEXT is not supported in the //[[CompilerOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
 {{fbdoc item="filename" value="examples/manual/check/KeyPgResumenext_1.bas"}}%%(freebasic)
 If Open( "text" For Input As #1 ) <> 0 Then
   Print "Unable to open file"

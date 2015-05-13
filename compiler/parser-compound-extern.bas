@@ -16,36 +16,31 @@ function cExternStmtBegin _
 
     dim as FB_CMPSTMTSTK ptr stk = any
     dim as integer mangling = any
-    dim as FBS_LIB ptr library = any
-    dim as zstring ptr litstr = any
+    dim as const zstring ptr litstr = any
 
 	function = FALSE
 
-    if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
-    	errReportNotAllowed( FB_LANG_OPT_EXTERN )
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_EXTERN )
-    	exit function
-    end if
+	if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
+		errReportNotAllowed( FB_LANG_OPT_EXTERN )
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_EXTERN )
+		exit function
+	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_EXTERN ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_EXTERN )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_EXTERN ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_EXTERN )
+		exit function
+	end if
 
 	'' EXTERN
 	lexSkipToken( )
 
 	'' "mangling spec"
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: assume it's "C"
-			litstr = @"c"
-            
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: assume it's "C"
+		litstr = @"c"
 	else
 		litstr = lexGetText( )
 	end if
@@ -68,29 +63,15 @@ function cExternStmtBegin _
         lexSkipToken( )
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: assume it's "C"
-			mangling = FB_MANGLING_CDECL
-            lexSkipToken( )
-		end if
-	end select
-
-    library = NULL
-	if( lexGetToken( ) = FB_TK_LIB ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: assume it's "C"
+		mangling = FB_MANGLING_CDECL
 		lexSkipToken( )
 
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
+	end select
 
-		else
-			library = symbAddLib( lexGetText( ) )
-			lexSkipToken( )
-		end if
-	end if
+	'' [LIB "string"]
+	cLibAttribute()
 
 	''
 	stk = cCompStmtPush( FB_TK_EXTERN, _
@@ -99,9 +80,6 @@ function cExternStmtBegin _
 
 	stk->ext.lastmang = parser.mangling
 	parser.mangling = mangling
-
-	stk->ext.lastlib = library
-	parser.currlib = library
 
 	function = TRUE
 
@@ -125,12 +103,9 @@ function cExternStmtEnd as integer
 	lexSkipToken( )
 
 	'' pop from stmt stack
-	parser.currlib = stk->ext.lastlib
 	parser.mangling = stk->ext.lastmang
 	cCompStmtPop( stk )
 
 	function = TRUE
 
 end function
-
-

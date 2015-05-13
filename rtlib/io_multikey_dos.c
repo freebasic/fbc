@@ -1,12 +1,11 @@
 /* multikey function for DOS console mode apps */
 
 #include "fb.h"
-#include "fb_scancodes.h"
-
-#include <stdlib.h>
-#include <dpmi.h>
-#include <go32.h>
+#include "fb_private_console.h"
 #include <pc.h>
+#include <go32.h>
+#include <dpmi.h>
+#include <sys/farptr.h>
 
 void (*__fb_dos_multikey_hook)(int scancode, int flags) = NULL;
 

@@ -1,7 +1,5 @@
 /* temp string descriptor allocation for zstring's */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

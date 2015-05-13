@@ -2,11 +2,12 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_InputWstr( FB_WCHAR *dst, int dst_chars )
+FBCALL int fb_InputWstr( FB_WCHAR *str, int length )
 {
-	fb_FileInputNextTokenWstr( dst, dst_chars, TRUE );
+	FB_WCHAR buffer[FB_INPUT_MAXSTRINGLEN+1];
 
+	fb_FileInputNextTokenWstr( buffer, FB_INPUT_MAXSTRINGLEN, TRUE );
+
+	fb_WstrAssign( str, length, buffer );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-

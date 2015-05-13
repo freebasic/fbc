@@ -35,7 +35,7 @@ End If
 %%
 
 {{fbdoc item="diff"}}
-	- In QB, NAME required AS rather than a comma between the old and new names.
+	- In QB, NAME required AS rather than a comma between the old and new names.  This is because NAME was a language keyword rather than a function.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgKill Kill]]##

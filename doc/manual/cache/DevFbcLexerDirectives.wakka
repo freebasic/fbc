@@ -1,0 +1,137 @@
+{{fbdoc item="title" value="Directive parsing"}}----
+
+Preprocessor directives (###if##, ###define##, ###include##, etc.) are parsed during ''##lex.bas:lexSkipToken()##'' by calling ''##pp.bas:ppCheck()##''. After moving to the next token (or loading a new token), ''##ppCheck()##'' will check whether the new current token is a ##'#'##. If so it will also check whether the previous token was an ##EOL##. If so, it found a ##'#'## at line begin, and directly parses the PP directive, using the same ''##lexGetToken()##''/''##lexSkipToken()##'' interface used by the parser. This is necessary because some PP directives result in parser functions being called, for example ''##parser-identifier.bas:cIdentifier()##'' is used by the ###ifdef## parser, to recognize variables etc.:
+
+	%%dim as integer i
+#ifdef i
+#print yes, the variable will be recognized
+#endif%%
+
+So, ''##lexSkipToken()##'' is recursive because of the PP. ''##ppCheck()##'' will only call ''##pp.bas:ppParse()##'' for //toplevel// calls to ''##lexSkipToken()##'', but not if it was called recursively from the PP. This lets the PP parse multi-line directives like #macro ... #endmacro or skip #if ... #endif blocks without "executing" the directives those structures may contain. Note that unlike C, FB allows macros to contain PP directives.
+
+As a result, every time the FB parser skips an EOL, ''##lexSkipToken()##'' might detect a ##'#'## at line begin and handle then call the PP to let it parse that directive. It may "silently" parse more lines, and the parser stays fully unaware that the PP directives are even there. The PP parsing launched from ''##lexSkipToken()##'' might even encounter an ###include## and call ''##fb.bas:fbIncludeFile()##'' to parse it immediately, recursively starting a ''##parser-toplevel.bas:cProgram()##'' for that #include file. The parser has to be able to handle the recursion that might happen during every ''##lexSkipToken()##'' at ##EOL##, but luckily that is not a big deal. The parser needs a stack to keep track of compound statements anyways.
+
+Note that PP directives are not handled during token look ahead (''##lex.bas:lexGetLookAhead()##''). If the parser were to look ahead across ##EOL##, it could very well see a PP directive. Luckily though looking ahead across lines is never necessary.
+
+{{fbdoc item="section" value="Macro expansion in PP directives"}}
+
+	The beginning of directives, the keyword following the ##'#'##, is parsed without macro expansion. This means redefining PP keywords (intentionally) has no effect on the PP directives. For example: 
+	
+		%%#define define foo
+#define bar baz%%
+	
+	will //not// intermediately be seen as:
+	
+		%%#foo bar baz%%
+	
+	Directives like ###if## & co. make use of the PP expression parser, which does expand macros. Afterall that's the point of PP expressions. For example:
+		%%#define foo 1
+#if foo = 1
+#endif%%
+	
+	The ###define## and ###macro## directives don't do macro expansion at all. A macro's body is recorded as-is.
+
+{{fbdoc item="section" value="#define/#macro parsing"}}
+
+	''##pp.bas:ppDefine()##'' first parses the macro's identifier. If there is a ##'('## following, without space in between, then the parameter list is parsed too. 
+	
+	Then the macro body is parsed. For each token, its text representation is retrieved via ''##lexGetText()##'', and it is appended to the macro body text. Space is preserved (but trimmed); comments are left out; in multi-line #macros empty lines are removed.
+	
+	If the macro has parameters, the macro tokens will be created (as discussed in Macro Expansion). To do that, the macro parameters are added to a temporary hash table, which associates the parameter names to their indices. Then, identifiers in the 	macro body are looked up, and when a parameter is recognized, a parameter(index) macro token is created, instead of appending the token to the previous text() macro token (or creating a new text() for it). After that  parameter(index), if there is other text again, a new text() macro token is created.
+	
+	Using ##### on a parameter results in the creation of a stringify_parameter(index) macro token. The PP merge operator ##""##""## is simply ommitted from the macro body, so ##""a##b""## becomes ##ab## in a text() macro token. All normal text before/after/between parameters goes into text() macro tokens.
+	
+		%%For example:
+
+#define add(x, y) foo bar x + y
+
+And the actions of the #define/#macro parser will be:
+
+'add'    - The macro's name
+'(' following the name, without space in between: Parse the parameter list.
+	'x'    - Parameter 0.
+	','    - Next parameter.
+	'y'    - Parameter 1.
+	')'    - End of parameter list.
+Create the macro body in form of macro tokens.
+' '    - Create new text(" ").
+'foo'  - Append "foo".
+' '    - Append " ".
+'bar'  - Append "bar".
+' '    - Append " ".
+'x'    - Is parameter 0, create new param(0).
+' '    - Create new text(" ").
+'+'    - Append "+".
+' '    - Append " ".
+'y'    - Is parameter 1, create new param(1).
+EOL    - End of macro body.
+
+Resulting in this macro body:
+
+text(" foo bar "), param(0), text(" + "), param(1)
+%%
+	
+	The #define parser allows macros to be redefined, if the body is the same. For example: 
+	
+		%%#define a 1
+#define a 1%%
+	
+	does not result in a duplicated definition. However this would:
+	
+		%%#define a 1
+#define a 2%%
+	
+	Since those are pure text #defines, the comparison is the bodies is a simple string comparison. This feature is not implemented for macros with parameters currently.
+
+{{fbdoc item="section" value="PP expressions"}}
+
+	The preprocessor has its own (but fairly small and simple) expression parser (''##pp-cond.bas:ppExpression()##''). It works much like ''##parser-expression.bas:cExpression()##'', except instead of creating AST nodes, ''##ppExpression()##'' immediately evaluates the expressions.
+
+{{fbdoc item="section" value="PP skipping"}}
+
+	The preprocessor uses a simple stack to manage ###if##/###endif## blocks. Those can be nested, and there may be #includes in them, but they cannot go across files. False blocks (#if 0, or the #else of an #if 1) are immediately skipped when parsing the #if 0 or the #else (''##pp-cond.bas:ppSkip()##''), before returning to ''##lexSkipToken()##''.
+	
+	For example:
+	
+		%%#if 1           (push to stack: is_true = TRUE, #else not visited yet, return to lexSkipToken())
+
+...     (will be parsed)
+
+#else           1) Set the #else visited flag for the current stack node,
+	       so further #else's are not allowed.
+	    2) Since the current stack node has is_true = TRUE,
+	       that means the #else block must be skipped, -> call ppSkip().
+
+...     (skipped in ppSkip())
+
+#endif          (parsed from ppSkip(), skipping ends, ppSkip() returns to #else parser,
+	     which returns to lexSkipToken())%%
+	
+	Note that there are a few tricky bits about PP skipping. Since macros are allowed to contain PP directives, macro expansion must be done even during PP skipping, because an #else or #endif could be inside a multi-line macro. Also, multi-line #macro declarations are not handled during PP skipping. 	That means, something like this:
+	
+		%%#if 0
+#macro test()
+#endif
+#endmacro%%
+	
+	will be seen as:
+	
+		%%#if 0
+ #macro test()
+#endif
+#endmacro%%
+	
+	Resulting in an error (#endmacro without #macro).
+	
+	So, this:
+	
+		%%#if 0
+#macro test()
+	#endif
+#endmacro
+#endif%%
+	
+	will not work as suggested by the indentation.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

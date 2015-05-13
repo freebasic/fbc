@@ -1,8 +1,7 @@
 /* parse a string time */
 
-#include <ctype.h>
-#include <stdlib.h>
 #include "fb.h"
+#include <ctype.h>
 
 /*:::::*/
 static int fb_hCheckAMPM( const char *text, size_t *pLength )

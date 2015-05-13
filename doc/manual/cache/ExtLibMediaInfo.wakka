@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="MediaInfo"}}----
+""MediaInfo"" is a cross-platform library allowing you to read out technical and tag information from audio and video files in various formats.
+
+Website: http://mediainfo.sourceforge.net/
+Platforms supported: ""Win32"", Linux
+Headers to include: ""MediaInfo.bi""
+Header version: from October 2011
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

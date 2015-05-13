@@ -1,6 +1,5 @@
 /* generic internal lists based on static arrays */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /** Initializes a list.

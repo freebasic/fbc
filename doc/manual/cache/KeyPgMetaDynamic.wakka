@@ -7,7 +7,7 @@ Metacommand to change the way arrays are allocated
 	[[KeyPgRem rem]] **$Dynamic**
 ##
 {{fbdoc item="desc"}}
-	**'$Dynamic** is metacommand that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which **'$Dynamic** is used, and can be overridden with ##[[KeyPgMetaStatic $Static]]##.
+	**'$Dynamic** is a metacommand that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which **'$Dynamic** is used, and can be overridden with ##[[KeyPgMetaStatic '$Static]]##.  It is equivalent to the ##[[KeyPgOptiondynamic Option Dynamic]]## statement.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/dynamic.bas"}}%%(freebasic)

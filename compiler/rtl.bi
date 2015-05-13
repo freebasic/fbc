@@ -141,6 +141,8 @@
 
 #define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
 
+#define FB_RTL_ISTYPEOF					"fb_IsTypeOf"
+
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
@@ -158,7 +160,6 @@
 #define FB_RTL_DATAREADUBYTE 			"fb_DataReadUByte"
 #define FB_RTL_DATAREADUSHORT 			"fb_DataReadUShort"
 #define FB_RTL_DATAREADUINT 			"fb_DataReadUInt"
-#define FB_RTL_DATAREADPTR 				"fb_DataReadPtr"
 #define FB_RTL_DATAREADULONGINT 		"fb_DataReadULongint"
 #define FB_RTL_DATAREADSINGLE 			"fb_DataReadSingle"
 #define FB_RTL_DATAREADDOUBLE 			"fb_DataReadDouble"
@@ -392,6 +393,9 @@
 #define FB_RTL_FTOUL                    "fb_ftoul"
 #define FB_RTL_DTOUL                    "fb_dtoul"
 
+#define FB_RTL_THREADCALL               "fb_ThreadCall"
+
+
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
@@ -531,6 +535,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYBOUNDCHK
 
 	FB_RTL_IDX_NULLPTRCHK
+	
+	FB_RTL_IDX_ISTYPEOF
 
 	FB_RTL_IDX_CPUDETECT
 	FB_RTL_IDX_INIT
@@ -549,7 +555,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DATAREADUBYTE
 	FB_RTL_IDX_DATAREADUSHORT
 	FB_RTL_IDX_DATAREADUINT
-	FB_RTL_IDX_DATAREADPTR
 	FB_RTL_IDX_DATAREADULONGINT
 	FB_RTL_IDX_DATAREADSINGLE
 	FB_RTL_IDX_DATAREADDOUBLE
@@ -779,6 +784,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
+    FB_RTL_IDX_THREADCALL
+
 	FB_RTL_INDEXES
 end enum
 
@@ -787,7 +794,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_OVER		  = &h00000001					'' overloaded
 	FB_RTL_OPT_ERROR	  = &h00000002					'' returns an error
 	FB_RTL_OPT_MT		  = &h00000004					'' needs the multithreaded rtlib
-	FB_RTL_OPT_VBSYMB	  = &h00000008                  '' vb-only
+
 	FB_RTL_OPT_DBGONLY	  = &h00000010                  '' -g only
 	FB_RTL_OPT_OPERATOR	  = &h00000020
 	FB_RTL_OPT_STRSUFFIX  = &h00000040                  '' has a $ suffix (-lang qb only)
@@ -795,9 +802,26 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
- 	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
+	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
+end enum
+
+enum FB_RTL_TCTYPES
+    FB_RTL_TCTYPES_STDCALL,
+    FB_RTL_TCTYPES_CDECL,
+    FB_RTL_TCTYPES_BYTE,
+    FB_RTL_TCTYPES_UBYTE,
+    FB_RTL_TCTYPES_SHORT,
+    FB_RTL_TCTYPES_USHORT,
+    FB_RTL_TCTYPES_INTEGER,
+    FB_RTL_TCTYPES_UINTEGER,
+    FB_RTL_TCTYPES_LONGINT,
+    FB_RTL_TCTYPES_ULONGINT,
+    FB_RTL_TCTYPES_SINGLE,
+    FB_RTL_TCTYPES_DOUBLE,
+    FB_RTL_TCTYPES_TYPE,
+    FB_RTL_TCTYPES_PTR
 end enum
 
 type FB_RTL_PARAMDEF
@@ -809,27 +833,14 @@ type FB_RTL_PARAMDEF
 end type
 
 type FB_RTL_PROCDEF
-	name		as zstring ptr
-	alias		as zstring ptr
+	name		as const zstring ptr
+	alias		as const zstring ptr
 	dtype		as FB_DATATYPE
 	callconv	as FB_FUNCMODE
 	callback	as FBRTLCALLBACK
 	options		as FB_RTL_OPT
 	params		as integer
 	paramTb(0 to 15) as FB_RTL_PARAMDEF
-end type
-
-type FB_RTL_MACROTOKEN
-	type		as FB_DEFTOK_TYPE
-	data		as any ptr
-end type
-
-type FB_RTL_MACRODEF
-	name		as zstring ptr
-	options		as FB_RTL_OPT
-	params		as integer
-	paramTb(0 to 3) as zstring ptr
-	tokenTb(0 to 11) as FB_RTL_MACROTOKEN
 end type
 
 declare sub rtlInit _
@@ -845,14 +856,9 @@ declare sub rtlAddIntrinsicProcs _
 		byval procdef as FB_RTL_PROCDEF ptr _
 	)
 
-declare sub rtlAddIntrinsicMacros _
-	( _
-		byval macdef as FB_RTL_MACRODEF ptr _
-	)
-
 declare function rtlProcLookup _
 	( _
-		byval pname as zstring ptr, _
+		byval pname as const zstring ptr, _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 
@@ -866,7 +872,7 @@ declare function rtlOvlProcCall _
 declare function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval realsize as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer
 
 declare function rtlCalcStrLen _
@@ -1258,6 +1264,12 @@ declare function rtlMemDeleteOp _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+declare function rtlOOPIsTypeOf _
+	( _
+		byval inst as ASTNODE ptr, _
+		byval rtti as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function rtlPrint _
 	( _
 		byval fileexpr as ASTNODE ptr, _
@@ -1473,12 +1485,7 @@ declare function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-declare function rtlErrorCheck _
-	( _
-		byval resexpr as ASTNODE ptr, _
-		byval reslabel as FBSYMBOL ptr, _
-		byval linenum as integer _
-	) as integer
+declare function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 
 declare sub rtlErrorThrow _
 	( _
@@ -1784,6 +1791,8 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
+    
+declare function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
 
 const FBGFX_PUTMODE_TRANS  = 0

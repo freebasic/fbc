@@ -1,12 +1,8 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileFlush( struct _FB_FILE *handle )
+int fb_DevFileFlush( FB_FILE *handle )
 {
     FILE *fp;
 

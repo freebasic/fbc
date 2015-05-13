@@ -1,6 +1,5 @@
 /* print [#] wstring functions */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

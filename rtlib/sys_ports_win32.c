@@ -2,6 +2,7 @@
 
 #include "fb.h"
 #include "fbportio/fbportio.h"
+#include <windows.h>
 #include <winioctl.h>
 
 // Pull in the auto-generated data...
@@ -9,8 +10,6 @@
 
 static int inited = FALSE;
 
-
-/*:::::*/
 static void remove_driver( void )
 {
 	SC_HANDLE manager, service;
@@ -28,22 +27,21 @@ static void remove_driver( void )
 	}
 }
 
-
-/*:::::*/
 static SC_HANDLE install_driver( SC_HANDLE manager )
 {
 	SC_HANDLE service = NULL;
-	FILE *f;
 	char driver_filename[MAX_PATH];
-	
+
 	remove_driver( );
-	
+
 	if( GetSystemDirectory( driver_filename, MAX_PATH ) ) {
-		strncat( driver_filename, "\\Drivers\\fbportio.sys", MAX_PATH-1 );
-		f = fopen( driver_filename, "wb" );
+		strncat( driver_filename, "\\Drivers\\fbportio.sys", MAX_PATH - strlen( driver_filename ) - 1 );
+		driver_filename[MAX_PATH-1] = '\0';
+
+		FILE *f = fopen( driver_filename, "wb" );
 		fwrite( fbportio_driver, FBPORTIO_DRIVER_SIZE, 1, f );
 		fclose( f );
-		
+
 		service = CreateService( manager, "fbportio", "fbportio",
 			SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
 			"System32\\Drivers\\fbportio.sys", NULL, NULL, NULL, NULL, NULL );
@@ -51,8 +49,6 @@ static SC_HANDLE install_driver( SC_HANDLE manager )
 	return service;
 }
 
-
-/*:::::*/
 static void start_driver( void )
 {
 	SC_HANDLE manager, service;
@@ -73,8 +69,6 @@ static void start_driver( void )
 	}
 }
 
-
-/*:::::*/
 static int init_ports( void )
 {
 	OSVERSIONINFO ver_info;
@@ -136,8 +130,6 @@ static int init_ports( void )
 	return TRUE;
 }
 
-
-/*:::::*/
 int fb_hIn( unsigned short port )
 {
 	unsigned char value;
@@ -152,8 +144,6 @@ int fb_hIn( unsigned short port )
 	return (int)value;
 }
 
-
-/*:::::*/
 int fb_hOut( unsigned short port, unsigned char value )
 {
 	if( !inited )
@@ -165,4 +155,3 @@ int fb_hOut( unsigned short port, unsigned char value )
 	
 	return FB_RTERROR_OK;
 }
-

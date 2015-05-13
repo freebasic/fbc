@@ -1,14 +1,10 @@
 /* dos printer driver */
 
-#include <stdio.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-/* _DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */
+/* DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */
 
-int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
+int fb_PrinterOpen( DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
 {
     int result;
     char filename[64];
@@ -35,7 +31,7 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
     return result;
 }
 
-int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length )
+int fb_PrinterWrite( DEV_LPT_INFO *devInfo, const void *data, size_t length )
 {
     FILE *fp = (FILE*) devInfo->driver_opaque;
     if( fwrite( data, length, 1, fp ) != 1 ) {
@@ -44,7 +40,7 @@ int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t len
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
+int fb_PrinterWriteWstr( DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
 {
     /* !!!FIXME!!! no support for unicode output */
 
@@ -58,7 +54,7 @@ int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, si
     return fb_PrinterWrite( devInfo, (void *)temp, length );
 }
 
-int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
+int fb_PrinterClose( DEV_LPT_INFO *devInfo )
 {
     FILE *fp = (FILE*) devInfo->driver_opaque;
 

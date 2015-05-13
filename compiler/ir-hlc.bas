@@ -29,14 +29,12 @@ type IRHLCCTX
 	lblcnt				as integer
 	tmpcnt				as integer
 	vregTB				as TFLIST
-	forwardlist			as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
 
-	ini_isfixstrarray	as integer
-	ini_strdata			as string
-	ini_iswstr			as integer
+	varini				as string
+	variniscopelevel		as integer
 
 	section				as section_e   ' current section to write to
 	head_txt			as string      ' buffer for header text
@@ -44,17 +42,22 @@ type IRHLCCTX
 	foot_txt			as string      ' buffer for footer text
 end type
 
-enum DT2STR_OPTION
-	DT2STR_OPTION_STRINGRETFIX			= &h00000001
-	DT2STR_OPTION_VOIDPARAMFIX			= &h00000002
+enum EMITTYPE_OPTIONS
+	'' Used to turn string into string* on function results
+	EMITTYPE_ISRESULT = &h00000001
+
+	'' Adds an extra * for byref params and in some other places
+	'' (should be used instead of hEmitType( typeAddrOf( dtype ), ... )
+	'' because that could overflow the dtype's pointer count)
+	EMITTYPE_ADDPTR   = &h00000002
 end enum
 
-declare function hDtypeToStr _
+declare function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as DT2STR_OPTION = 0 _
-	) as zstring ptr
+		byval options as EMITTYPE_OPTIONS = 0 _
+	) as string
 
 declare function hVregToStr _
 	( _
@@ -62,16 +65,7 @@ declare function hVregToStr _
 		byval addcast as integer = TRUE _
 	) as string
 
-declare sub hEmitStruct _
-	( _
-		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
-	)
-
-declare sub hEmitFuncPtrProto _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
+declare sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 declare sub _emitDBG _
 	( _
@@ -80,12 +74,11 @@ declare sub _emitDBG _
 		byval ex as integer _
 	)
 
-
 '' globals
 dim shared as IRHLCCTX ctx
 
 '' same order as FB_DATATYPE
-dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
     @"void"     , _ '' void
     @"bool8"    , _ '' boolean byte
@@ -115,15 +108,9 @@ dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
     @"void *"     _ '' pointer
 }
 
-'':::::
-private function _init _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistNew( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
-	listNew( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+private sub _init(byval backend as FB_BACKEND)
+	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				 IR_OPT_CPU_BOPSELF or _
@@ -135,18 +122,11 @@ private function _init _
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private sub _end
-
-	listFree( @ctx.callargs )
-	flistFree( @ctx.forwardlist )
-	flistFree( @ctx.vregTB )
-
+private sub _end()
+	listEnd( @ctx.callargs )
+	flistEnd( @ctx.vregTB )
 end sub
 
 '':::::
@@ -212,18 +192,132 @@ private sub hWriteLine _
 
 end sub
 
-private function hCallConvToStr _
+enum EMITPROC_OPTIONS
+	EMITPROC_ISPROTO   = &h1
+	EMITPROC_ISPROCPTR = &h2
+end enum
+
+private function hEmitProcHeader _
 	( _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval options as EMITPROC_OPTIONS _
 	) as string
 
-	function = ""
+	dim as string ln
 
-	select case as const symbGetProcMode( proc )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-        return " __attribute__((__stdcall__)) "
+	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
+		if( symbIsPrivate( proc ) ) then
+			ln += "static "
+		end if
+	end if
+
+	'' Function result type (is 'void' for subs)
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
+
+	''
+	'' Calling convention if needed (for function pointers it's usually not
+	'' put in this place, but should work nonetheless)
+	''
+	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
+	'' arguments are pushed left-to-right (same order as written in code,
+	'' not reversed like Cdecl/Stdcall).
+	'' The symbGetProc*Param() macros take care of changing the order when
+	'' cycling through parameters of Pascal functions. Together with Stdcall
+	'' this results in a double-reverse resulting in the proper ABI.
+	''
+	select case as const( symbGetProcMode( proc ) )
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		ln += " __attribute__((stdcall))"
 	end select
 
+	ln += " "
+
+	'' Identifier
+	if( options and EMITPROC_ISPROCPTR ) then
+		ln += "(*"
+	end if
+	ln += *symbGetMangledName( proc )
+	if( options and EMITPROC_ISPROCPTR ) then
+		ln += ")"
+	end if
+
+	'' Parameter list
+	ln += "( "
+
+	'' If returning a struct, there's an extra parameter
+	dim as FBSYMBOL ptr hidden = NULL
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
+			if( options and EMITPROC_ISPROTO ) then
+				hidden = symbGetSubType( proc )
+				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
+			else
+				hidden = proc->proc.ext->res
+				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
+				ln += " " + *symbGetMangledName( hidden )
+			end if
+
+			if( symbGetProcParams( proc ) > 0 ) then
+				ln += ", "
+			end if
+		end if
+	end if
+
+	var param = symbGetProcLastParam( proc )
+
+	if( (hidden = NULL) and (param = NULL) ) then
+		ln += "void"
+	end if
+
+	while( param )
+		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+			ln += "..."
+		else
+			var pvar = iif( options and EMITPROC_ISPROTO, param, symbGetParamVar( param ) )
+			var dtype = symbGetType( pvar )
+			var subtype = symbGetSubType( pvar )
+			dim as EMITTYPE_OPTIONS type_options = 0
+
+			select case( param->param.mode )
+			case FB_PARAMMODE_BYVAL
+				select case( symbGetType( param ) )
+				'' byval string? it's actually an pointer to a zstring
+				case FB_DATATYPE_STRING
+					type_options = EMITTYPE_ADDPTR
+					dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					'' has a dtor, copy ctor or virtual methods? it's a copy..
+					if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+						type_options = EMITTYPE_ADDPTR
+					end if
+				end select
+
+			case FB_PARAMMODE_BYREF
+				type_options = EMITTYPE_ADDPTR
+
+			case FB_PARAMMODE_BYDESC
+				type_options = EMITTYPE_ADDPTR
+				dtype = FB_DATATYPE_STRUCT
+				subtype = symb.arrdesctype
+			end select
+
+			ln += hEmitType( dtype, subtype, type_options )
+
+			if( (options and EMITPROC_ISPROTO) = 0 ) then
+				ln += " " + *symbGetMangledName( pvar )
+			end if
+		end if
+
+		param = symbGetProcPrevParam( proc, param )
+		if( param ) then
+			ln += ", "
+		end if
+	wend
+
+	ln += " )"
+
+	function = ln
 end function
 
 private function hGetUDTName _
@@ -241,7 +335,11 @@ private function hGetUDTName _
     	ns = symbGetNamespace( ns )
     loop
 
-    sig += *symbGetName( s )
+    if( s->id.alias <> NULL ) then
+    	sig += *s->id.alias
+    else
+    	sig += *symbGetName( s )
+    EndIf
 
     if( need_original_name = FALSE ) then
         '' see the HACK in hEmitStruct()
@@ -258,12 +356,12 @@ end function
 private sub hEmitUDT _
 	( _
 		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
+		byval is_ptr as integer _
 	)
 
-    if( s = NULL ) then
-        return
-    end if
+	if( s = NULL ) then
+		return
+	end if
 
 	if( symbGetIsEmitted( s ) ) then
 		return
@@ -274,116 +372,97 @@ private sub hEmitUDT _
 		ctx.section = SECTION_HEAD
 	end if
 
- 	select case as const symbGetClass( s )
- 	case FB_SYMBCLASS_ENUM
-        symbSetIsEmitted( s )
- 		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
+	select case as const symbGetClass( s )
+	case FB_SYMBCLASS_ENUM
+		symbSetIsEmitted( s )
+		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
 
- 	case FB_SYMBCLASS_STRUCT
- 		hEmitStruct( s, is_ptr )
+	case FB_SYMBCLASS_STRUCT
+		hEmitStruct( s, is_ptr )
 
- 	case FB_SYMBCLASS_PROC
- 		if( symbGetIsFuncPtr( s ) ) then
- 			hEmitFuncPtrProto( s )
- 		end if
+	case FB_SYMBCLASS_PROC
+		if( symbGetIsFuncPtr( s ) ) then
+			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ), TRUE )
+			symbSetIsEmitted( s )
+		end if
 
- 	end select
+	end select
 
- 	ctx.section = oldsection
+	ctx.section = oldsection
 end sub
 
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
-private function hEmitArrayDecl( byval s as FBSYMBOL ptr ) as string
+private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
+	dim as string s
 
-    dim as integer n = 0
+	'' Emit all array dimensions individually
+	'' (This lets array initializers rely on gcc to fill uninitialized
+	'' elements with zeroes)
+	select case( symbGetClass( sym ) )
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		if( (symbGetIsDynamic( sym ) = FALSE) and _
+		    (symbGetArrayDimensions( sym ) <> 0) ) then
+			dim as FBVARDIM ptr d = symbGetArrayFirstDim( sym )
+			while( d )
+				'' elements = ubound( array, d ) - lbound( array, d ) + 1
+				s += "[" + str( d->upper - d->lower + 1 ) + "]"
+				d = d->next
+			wend
+		end if
+	end select
 
-    if( symbIsArray( s ) ) then
-        '' Count of *all* elements in the whole array (not just one dimension)
-        n = symbGetArrayElements( s )
-        assert( n > 0 )
-    end if
+	'' If it's a fixed-length string, add an extra array dimension
+	'' (zstring * 5 becomes char[5])
+	dim as integer length = 0
+	select case( symbGetType( sym ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		length = symbGetStrLen( sym )
+	case FB_DATATYPE_WCHAR
+		length = symbGetWstrLen( sym )
+	end select
+	if( length > 0 ) then
+		s += "[" + str( length ) + "]"
+	end if
 
-    '' Emit fixlen strings as arrays
-    '' Note: these may or may not be arrays of fixlen strings
-    select case as const symbGetType( s )
-    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-        if( n > 0 ) then
-            n *= symbGetStrLen( s )
-        else
-            n = symbGetStrLen( s )
-        end if
-
-    case FB_DATATYPE_WCHAR
-        if( n > 0 ) then
-            n *= symbGetWstrLen( s )
-        else
-            n = symbGetWstrLen( s )
-        end if
-
-    end select
-
-    if( n > 0 ) then
-        return "[" & n & "]"
-    end if
-
-    return ""
-
+	function = s
 end function
 
-'':::::
-private sub hEmitVar _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval isInit as integer = FALSE _
-	)
+private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
+	dim as string ln
 
-    hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
+	'' Shared (not Local) or Static, but not Common/Public/Extern?
+	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
+	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
+		ln += "static "
+	end if
 
-	var attrib = symbGetAttrib( s )
+	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	ln += " " + *symbGetMangledName( sym )
+	ln += hEmitArrayDecl( sym )
 
-    var is_extern = (attrib and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
+	if( symbIsImport( sym ) ) then
+		ln += " __attribute__((dllimport))"
+	end if
 
-    var sign = ""
-    if( is_extern = FALSE ) then
-    	if( symbIsLocal( s ) = FALSE or symbIsStatic( s ) ) then
-    		sign = "static "
-    	end if
-    end if
+	'' allocation modifier
+	if( symbIsCommon( sym ) ) then
+		hWriteLine( "extern " + ln, TRUE )
+		ln += " __attribute__((common))"
+	elseif( symbGetAttrib( sym ) and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
+		hWriteLine( "extern " + ln, TRUE )
 
-    sign += *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s )
-
-    sign += hEmitArrayDecl( s )
-
-    ''
-    if( symbIsImport( s ) ) then
-    	sign += " __attribute__((dllimport))"
-    end if
-
-    '' allocation modifier
-    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-      	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0 ) then
-       		hWriteLine( "extern " & sign, TRUE )
-
-			'' just an extern that was never allocated? exit..
-			if( symbIsExtern( s ) ) then
-				return
-			end if
-
+		'' just an extern that was never allocated? exit..
+		if( symbIsExtern( sym ) ) then
+			return
 		end if
-	else
-       	hWriteLine( "extern " & sign, TRUE )
-    	sign += " __attribute__((common))"
-    end if
+	end if
 
-	'' emit
-    if( not isInit ) then
-    	hWriteLine( sign, TRUE )
-    else
-    	hWriteLine( sign & " = ", FALSE )
-    end if
+	if( varini ) then
+		ln += " = " + *varini
+	end if
 
+	hWriteLine( ln )
 end sub
-
 
 '':::::
 private sub hEmitVariable _
@@ -423,8 +502,6 @@ private sub hEmitVariable _
 			end if
 		end if
 
-        hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
-
 		astTypeIniFlush( s->var_.initree, _
 						 s, _
 						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
@@ -443,125 +520,15 @@ private sub hEmitVariable _
 		return
 	end if
 
-	hEmitVar( s )
+	hEmitVar( s, NULL )
 
 end sub
 
-''::::
-private function hEmitFuncParams _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval isproto as integer = TRUE _
-	) as string
-
-	''
-	dim as FBSYMBOL ptr hidden_param = NULL
-	select case symbGetType( proc )
-	case FB_DATATYPE_STRUCT
-		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
-        	if( isproto = FALSE ) then
-        		hidden_param = proc->proc.ext->res
-        	else
-        		hidden_param = symbGetSubType( proc )
-        	end if
-		end if
-	end select
-
-	''
-	if( symbGetProcParams( proc ) = 0 and hidden_param = NULL ) then
-		return "( void )"
-	end if
-
-	var params = "( "
-
-	if( hidden_param ) then
-		params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), _
-		                        iif( isproto = FALSE, symbGetSubtype( hidden_param ), hidden_param ) )
-
-		if( isproto = FALSE ) then
-			params += " " & *symbGetMangledName( hidden_param )
-		end if
-
-		if( proc->proc.params > 0 ) then
-			params += ", "
-		end if
-	end if
-
-	var param = symbGetProcLastParam( proc )
-	do while param
-
-    	var is_byref = FALSE
-
-		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-			params += "..."
-
-    	else
-    		var pvar = iif( isproto, param, symbGetParamVar( param ) )
-
-    		var dtype = symbGetType( pvar )
-    		var subtype = symbGetSubType( pvar )
-
-			select case param->param.mode
-			case FB_PARAMMODE_BYVAL
-    			select case symbGetType( param )
-    			'' byval string? it's actually an pointer to a zstring
-    			case FB_DATATYPE_STRING
-    				is_byref = TRUE
-    				dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    				'' has a dtor, copy ctor or virtual methods? it's a copy..
-    				if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-    					is_byref = TRUE
-    				end if
-    			end select
-
-			case FB_PARAMMODE_BYREF
-				is_byref = TRUE
-
-			case FB_PARAMMODE_BYDESC
-				dtype = FB_DATATYPE_STRUCT
-				subtype = symb.arrdesctype
-				is_byref = TRUE
-			end select
-
-            hEmitUDT( subtype, typeIsPtr( symbGetType( pvar ) ) or is_byref )
-
-			params += *hDtypeToStr( dtype, subtype )
-
-			if( is_byref ) then
-				params += " *"
-			end if
-
-			if( isproto = FALSE ) then
-				if( is_byref = FALSE ) then
-					params += " "
-				end if
-				params += *symbGetMangledName( pvar )
-			end if
-
-		end if
-
-		param = symbGetProcPrevParam( proc, param )
-		if param then
-			params += ", "
-		end if
-
-	loop
-
-	params += " )"
-
-	function = params
-
-end function
-
-''::::
 private sub hEmitFuncProto _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval checkcalled as integer = TRUE _
 	)
-
 
 	if( checkcalled and not symbGetIsCalled( s ) ) then
 		return
@@ -571,8 +538,9 @@ private sub hEmitFuncProto _
 		return
 	end if
 
-	'' overloaded procs pointing to the same symbol (used by the RTL)?
-	if( symbGetIsDupDecl( s ) ) then
+	'' One of our built-in FTOI routines? Those are declared by
+	'' hEmitFTOIBuiltins(), not here.
+	if( symbGetIsIrHlcBuiltin( s ) ) then
 		return
 	end if
 
@@ -597,25 +565,8 @@ private sub hEmitFuncProto _
 
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
 					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE, TRUE )
-
 	else
-
-		var str_static = ""
-
-		if( symbIsPrivate( s ) ) then
-			str_static = "static "
-		end if
-
-        hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
-
-		var ln = str_static & _
-			   	 *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
-					 		   symbGetSubType( s ), _
-							   DT2STR_OPTION_STRINGRETFIX ) & _
-				 " " & hCallConvToStr( s ) & *symbGetMangledName( s )
-
-
-		ln += hEmitFuncParams( s )
+		dim as string ln = hEmitProcHeader( s, EMITPROC_ISPROTO )
 
 		if( symbGetIsGlobalCtor( s ) ) then
 			ln += " __attribute__ ((constructor)) "
@@ -630,32 +581,6 @@ private sub hEmitFuncProto _
 
 end sub
 
-''::::
-private sub hEmitFuncPtrProto _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-    hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
-    var params = hEmitFuncParams( s )
-
-    '' Emitted in the meantime?
-    if( symbGetIsEmitted( s ) ) then
-        return
-    end if
-
-	hWriteLine( "typedef " & _
-			    *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
-				 			  symbGetSubType( s ), _
-				 			  DT2STR_OPTION_STRINGRETFIX ) & _
-				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
-				params, TRUE )
-
-    symbSetIsEmitted( s )
-
-end sub
-
-''::::
 private sub hEmitStruct _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -680,7 +605,6 @@ private sub hEmitStruct _
             if( symbGetIsAccessed( s ) = FALSE ) then
                 symbSetIsAccessed( s )
                 hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ), TRUE )
-                *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
             end if
 
             return
@@ -696,7 +620,7 @@ private sub hEmitStruct _
 	'' check every field, for non-emitted subtypes
 	var e = symbGetUDTFirstElm( s )
 	do while( e <> NULL )
-        hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
+		hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
 		e = symbGetUDTNextElm( e )
 	loop
 
@@ -731,35 +655,17 @@ private sub hEmitStruct _
 
 	'' Write out the elements
 	ctx.identcnt += 1
-
 	e = symbGetUDTFirstElm( s )
+	dim as string ln
 	do while( e <> NULL )
-        var subtype = symbGetSubtype( e )
-
-        var ln = ""
-        if( subtype <> s ) then
-        	ln = *hDtypeToStr( symbGetType( e ), subtype ) + " "
-        else
-        	ln = tname + " _" + id + " *"
-        end if
-
-        ln += *symbGetName( e )
-
-        ln += hEmitArrayDecl( e )
-
-        /' the bitfield calcs are done by FB
-        if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-        	ln += " :" & subtype->bitfld.bits
-        end if
-        '/
-
-        ln += attrib
-
-        hWriteLine( ln, TRUE )
-
+		ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+		ln += " "
+		ln += *symbGetName( e )
+		ln += hEmitArrayDecl( e )
+		ln += attrib
+		hWriteLine( ln, TRUE )
 		e = symbGetUDTNextElm( e )
 	loop
-
 	ctx.identcnt -= 1
 
     '' Close UDT body
@@ -771,13 +677,12 @@ private sub hEmitStruct _
     '' references to self (this))
 	e = symbGetCompSymbTb( s ).head
 	do while( e <> NULL )
-    	'' method?
-    	if( symbGetClass( e ) = FB_SYMBCLASS_PROC ) then
+		'' method?
+		if( symbIsProc( e ) ) then
 			if( symbGetIsFuncPtr( e ) = FALSE ) then
 				hEmitFuncProto( e, FALSE )
 			end if
-    	end if
-
+		end if
     	e = e->next
     loop
 
@@ -833,23 +738,6 @@ private sub hEmitDataStmt _
 end sub
 
 '':::::
-private sub hEmitForwardDecls( )
-
-	if( ctx.forwardlist.lastitem = NULL ) then
-		return
-	end if
-
-	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
-	do while( s <> NULL )
-        hEmitUDT( s, FALSE )
-		s = flistGetNext( s )
-	loop
-
-	flistReset( @ctx.forwardlist )
-
-end sub
-
-'':::::
 private sub hEmitTypedefs( )
 
 	'' typedef's for debugging
@@ -867,41 +755,24 @@ private sub hEmitTypedefs( )
 	hWriteLine( "typedef char bool8" )
 	hWriteLine( "typedef int bool32" )
 
-    '' Target-dependant wchar type
-    dim as string wchartype
-
-    select case as const env.target.wchar.type
-    case FB_DATATYPE_UBYTE      '' DOS
-        wchartype = "ubyte"
-    case FB_DATATYPE_USHORT     '' Windows, cygwin
-        wchartype = "ushort"
-    case FB_DATATYPE_UINT       '' Linux & co
-        wchartype = "uinteger"
-    case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    hWriteLine( "typedef " + wchartype + " wchar", TRUE )
+	'' Target-dependant wchar type
+	dim as string wchartype
+	select case as const( env.target.wchar.type )
+	case FB_DATATYPE_UBYTE      '' DOS
+		wchartype = "ubyte"
+	case FB_DATATYPE_USHORT     '' Windows, cygwin
+		wchartype = "ushort"
+	case else                   '' Linux & co
+		'' Normally our wstring type is unsigned, but gcc's wchar_t
+		'' is signed, and we must the exact same or else fixed-length
+		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
+		'' (If this is a problem, then VarIniWstr must be changed to
+		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
+		wchartype = "integer"
+	end select
+	hWriteLine( "typedef " + wchartype + " wchar", TRUE )
 
 end sub
-
-'':::::
-private function hProcIsUsed _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)  as integer
-
-	do while( proc <> NULL )
-		if( symbGetIsCalled( proc ) ) then
-			return TRUE
-		end if
-
-		proc = symbGetProcOvlNext( proc )
-	loop
-
-	return FALSE
-
-end function
 
 private sub hWriteFTOI _
 	( _
@@ -913,18 +784,18 @@ private sub hWriteFTOI _
 	dim as string rtype_str, rtype_suffix
 	select case rtype
 	case FB_DATATYPE_INTEGER
-		rtype_str = "int"
+		rtype_str = "integer"
 		rtype_suffix = "l"
 
 	case FB_DATATYPE_LONGINT
-		rtype_str = "long long int"
+		rtype_str = "longint"
 		rtype_suffix = "q"
 	end select
 
 	dim as string ptype_str, ptype_suffix
 	select case ptype
 	case FB_DATATYPE_SINGLE
-		ptype_str = "float"
+		ptype_str = "single"
 		ptype_suffix = "s"
 
 	case FB_DATATYPE_DOUBLE
@@ -932,8 +803,7 @@ private sub hWriteFTOI _
 		ptype_suffix = "l"
 	end select
 
-
-#ifdef TARGET_X86
+	'' TODO: x86 specific
 	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
 				!"\tvolatile " & rtype_str & !" result;\n" & _
 				!"\t__asm__ (\n" & _
@@ -944,35 +814,51 @@ private sub hWriteFTOI _
 				!"\t);\n" & _
 				!"\treturn result;\n" & _
 				!"}", FALSE )
-#else
-	#error !!!WRITEME!!!
-#endif
 
 end sub
 
 private sub hEmitFTOIBuiltins( )
+	'' Special conversion routines for:
+	''    single/double -> [unsigned] byte/short/integer/longint
+	'' (which one will be used where is determined at AST/RTL)
+	''
+	'' Simple C casting as in '(int)floatvar' cannot be used because it
+	'' just truncates instead of rounding to nearest.
+	''
+	'' There are at max 4 routines generated:
+	''    single -> int
+	''    single -> longint
+	''    double -> int
+	''    double -> longint
+	'' and all other cases reuse those.
+	''
+	'' A special case to watch out for: float -> unsigned int conversions.
+	'' When converting to unsigned integer, it has to be converted to
+	'' longint first, to avoid truncating to signed integer. That's a
+	'' limitation of the ASM routines, and the ASM emitter is having the
+	'' same problem, see emit_x86.bas:_emitLOADF2I() & co.
 
 	'' single
 	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
+	    symbGetIsCalled( PROCLOOKUP( FTOUL ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
 		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (unsigned long long int)fb_ftosl( v )", FALSE, TRUE )
-	end if
-
-	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
+		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (unsigned int)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", FALSE, TRUE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
+		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
@@ -980,38 +866,38 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (unsigned short)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	'' double
 	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
+	    symbGetIsCalled( PROCLOOKUP( DTOUL ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
 		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (unsigned long long int)fb_dtosl( v )", FALSE, TRUE )
-	end if
-
-	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
+		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (unsigned int)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", FALSE, TRUE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
+		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
@@ -1019,23 +905,16 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (unsigned short)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", FALSE, TRUE )
 	end if
-
-end sub
-
-'':::::
-private sub hEmitBuiltins( )
-
-	hEmitFTOIBuiltins( )
 
 end sub
 
@@ -1061,8 +940,6 @@ private function _emitBegin _
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
 	ctx.linenum = 0
-	ctx.ini_isfixstrarray = FALSE
-	ctx.ini_iswstr = FALSE
 
 	ctx.section = SECTION_HEAD
 
@@ -1089,7 +966,7 @@ private sub _emitEnd _
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
 
-	hEmitBuiltins( )
+	hEmitFTOIBuiltins( )
 
 	hEmitDataStmt( )
 
@@ -1098,8 +975,6 @@ private sub _emitEnd _
 
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
-
-	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
@@ -1205,7 +1080,7 @@ end function
 '':::::
 private function _procGetFrameRegName _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
@@ -1229,17 +1104,9 @@ private sub _scopeEnd _
 
 end sub
 
-'':::::
-private function _procAllocStaticVars _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
-
+private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
 	/' do nothing '/
-
-	function = 0
-
-end function
+end sub
 
 '':::::
 private function _makeTmpStr _
@@ -1465,128 +1332,100 @@ private sub hLoadVreg _
 
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-private function hDtypeToStr _
+private function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as DT2STR_OPTION = 0 _
-	) as zstring ptr
+		byval options as EMITTYPE_OPTIONS = 0 _
+	) as string
 
-	static as string res
+	dim as string s
+	dim as integer ptrcount_fb = typeGetPtrCnt( dtype )
+	dtype = typeGetDtOnly( dtype )
 
-	dim as integer ptrcnt = 0
-
-	dim as integer dt = typeGet( dtype )
-	if( dt = FB_DATATYPE_POINTER ) then
-		ptrcnt = typeGetPtrCnt( dtype )
-		dtype = typeGetDtOnly( dtype )
-	else
-		dtype = dt
+	dim as integer ptrcount_c = ptrcount_fb
+	if( options and EMITTYPE_ADDPTR ) then
+		ptrcount_c += 1
 	end if
 
-	select case as const dtype
-	case FB_DATATYPE_STRUCT
-		if( subtype = NULL ) then
-			res = "void"
+	select case as const( dtype )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+		if( subtype ) then
+			hEmitUDT( subtype, (ptrcount_c > 0) )
+			s = hGetUDTName( subtype )
+		elseif( dtype = FB_DATATYPE_ENUM ) then
+			s = *dtypeName(FB_DATATYPE_INTEGER)
 		else
-            hEmitUDT( subtype, (ptrcnt > 0) )
-			res = hGetUDTName( subtype )
-		end if
-
-	case FB_DATATYPE_ENUM
-		if( subtype = NULL ) then
-			res = *dtypeName(FB_DATATYPE_INTEGER)
-		else
-            hEmitUDT( subtype, (ptrcnt > 0) )
-			res = hGetUDTName( subtype )
+			s = "void"
 		end if
 
 	case FB_DATATYPE_FUNCTION
-        assert( subtype <> NULL )
-		res = *symbGetMangledName( subtype )
-		ptrcnt -= 1
+		ptrcount_c -= 1
+		hEmitUDT( subtype, (ptrcount_c > 0) )
+		s = *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		res = *dtypeName(dtype)
-		if( (options and DT2STR_OPTION_STRINGRETFIX) <> 0 ) then
-			if( ptrcnt = 0 ) then
-				ptrcnt = 1
-			end if
-		end if
-
-	case FB_DATATYPE_VOID
-		res = *dtypeName(dtype)
-		if( (options and DT2STR_OPTION_VOIDPARAMFIX) <> 0 ) then
-			if( ptrcnt = 0 ) then
-				ptrcnt = 1
+		s = *dtypeName(dtype)
+		if( options and EMITTYPE_ISRESULT ) then
+			if( ptrcount_fb = 0 ) then
+				ptrcount_c += 1
 			end if
 		end if
 
 	case FB_DATATYPE_BITFIELD
-        if( subtype <> NULL ) then
-        	res = *dtypeName(symbGetType( subtype ))
-        else
-        	res = "integer"
-        end if
+		if( subtype ) then
+			s = *dtypeName(symbGetType( subtype ))
+		else
+			s = *dtypeName(FB_DATATYPE_INTEGER)
+		end if
 
 	case else
-		res = *dtypeName(dtype)
+		s = *dtypeName(dtype)
 	end select
 
-	if( ptrcnt > 0 ) then
-		for i as integer = 0 to ptrcnt - 1
-			res += "*"
-		next
+	if( ptrcount_c > 0 ) then
+		s += string( ptrcount_c, "*" )
 	end if
 
-	function = strptr( res )
-
+	function = s
 end function
 
-'':::::
 private function hEmitInt( byval value as integer ) as string
+	dim as string s = str(value)
 
-    if( value < 0 ) then
-        '' Convert -5 to '((-4)-1)', to prevent GCC warnings for INT_MIN
-        return "((-" & (abs(value) - 1) & ") - 1)"
-    end if
+	if( value = -2147483648u ) then
+		'' Prevent GCC warnings for INT_MIN:
+		'' The '-' minus sign doesn't count as part of the number
+		'' literal, and 2147483648 is too big for an integer, so it
+		'' must be marked as unsigned.
+		s += "u"
+	end if
 
-    return str( value )
-
+	return s
 end function
 
-'':::::
 private function hEmitUint( byval value as uinteger ) as string
-
-    return str( value ) + "u"
-
+	return str(value) + "u"
 end function
 
-'':::::
 private function hEmitLong( byval value as longint ) as string
+	dim as string s = str(value)
 
-    if( value < 0 ) then
-        '' Ditto, prevent warnings for LLONG_MIN
-        return "((-" & (abs(value) - 1) & "ll) - 1)"
-    end if
+	if( value = -9223372036854775808ull ) then
+		'' Ditto, prevent warnings for LLONG_MIN
+		s += "u"
+	end if
 
-    return str( value ) + "ll"
+	s += "ll"
 
+	return s
 end function
 
-'':::::
 private function hEmitUlong( byval value as ulongint ) as string
-
-    return str( value ) + "ull"
-
+	return str(value) + "ull"
 end function
 
-'':::::
 private function hEmitSingle( byval value as single ) as string
-
 	dim as string s = str( value )
 
 	'' Same considerations as for doubles (see below), and besides,
@@ -1598,12 +1437,9 @@ private function hEmitSingle( byval value as single ) as string
 	end if
 
 	return s & "f"
-
 end function
 
-'':::::
 private function hEmitDouble( byval value as double ) as string
-
 	dim as string s = str( value )
 
 	'' This can be something like '1', '0.1, or '1e-100'.
@@ -1617,29 +1453,32 @@ private function hEmitDouble( byval value as double ) as string
 	end if
 
 	return s
-
 end function
 
-'':::::
+private sub hAddrOfSymbol( byval sym as FBSYMBOL ptr, byref s as string )
+	s += "&"
+	'' Use && to get the address of labels (used by error handling code)
+	if( symbIsLabel( sym ) ) then
+		s += "&"
+	end if
+end sub
+
 private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
 
 	dim as string expr
 
 	'' For literal strings, just print the text, not the label
 	if( symbGetIsLiteral( sym ) ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_CHAR
+		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+			expr += "L"""
+			expr += hEscapeToHexW( symbGetVarLitTextW( sym ) )
+			expr += """"
+		else
 			expr += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
-		case FB_DATATYPE_WCHAR
-            '' wstr("a") becomes (wchar *)"\141\0\0"
-            '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
-		case else
-			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-		end select
+		end if
 	else
-        expr += "&"
-        '' Name of the array that's being accessed, or the function in @func, etc
+		hAddrOfSymbol( sym, expr )
+		'' Name of the array that's being accessed, or the function in @func, etc
 		expr += *symbGetMangledName( sym )
 	end if
 
@@ -1652,7 +1491,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
             expr = "((ubyte *)" + expr + " + " + str( ofs ) + ")"
         end if
 
-        expr = "(" + *hDtypeToStr( symbGetType( sym ), symbGetSubtype( sym ) ) + " *)" + expr
+        expr = "(" + hEmitType( symbGetType( sym ), symbGetSubtype( sym ), EMITTYPE_ADDPTR ) + ")" + expr
     end if
 
     return expr
@@ -1685,53 +1524,46 @@ private function hVregToStr _
 										typeIsPtr( symbGetType( vreg->sym ) )
 
 				if( is_ptr = FALSE ) then
-					operand = "*("
-				else
-					if( addcast ) then
-						operand = "("
-					end if
-				end if
+					operand += "*("
+					operand += hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR )
+					operand += ")("
 
-				if( is_ptr = FALSE or addcast ) then
-					operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
-				end if
-
-				if( is_ptr = FALSE ) then
-					operand += "*)("
-
-					'' offset or idx? pointer arith is done at the ast..
+					'' offset or idx?
 					if( vreg->ofs <> 0 or vreg->vidx <> NULL ) then
+						'' Cast to byte ptr to work around C's pointer arithmetic
+						'' (this handles constant offsets)
 						operand += "(ubyte *)"
 					end if
 
-                    '' Emit && to get the address value of labels (used by -exx code)
-                    if( symbIsLabel( vreg->sym ) ) then
-                        operand += "&"
-                    end if
-
-                    operand += "&"
+					hAddrOfSymbol( vreg->sym, operand )
 				else
 					if( addcast ) then
-						operand += ")("
-					else
 						operand += "("
+						operand += hEmitType( vreg->dtype, vreg->subtype )
+						operand += ")"
 					end if
+					operand += "("
 				end if
 
 				do_deref = TRUE
-
 			else
 				do_deref = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
 
-				var deref = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)"
+				var deref = "*(" + hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR ) + ")"
 
-				'' No addrof (&) for array access
 				if( symbGetArrayDimensions( vreg->sym ) ) then
 					do_deref = TRUE
 					operand += deref
+					'' Same cast to byte ptr for array access as below,
+					'' but no addrof (&), because doing &array would give
+					'' a pointer to the array, not to the first element,
+					'' which is a different data type, which would cause
+					'' unnecessary warnings...
 					operand += "((ubyte *)"
 				elseif( do_deref ) then
 					operand += deref
+					'' Cast to byte ptr to work around C's pointer arithmetic
+					'' (this handles constant offsets)
 					operand += "((ubyte *)&"
 				end if
 			end if
@@ -1741,10 +1573,9 @@ private function hVregToStr _
 
 		'' ptr?
 		else
-			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)((ubyte *)"
+			operand = "*(" + hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR ) + ")((ubyte *)"
 			do_deref = TRUE
 			add_plus = FALSE
-
 		end if
 
 		if( vreg->vidx <> NULL ) then
@@ -1773,7 +1604,7 @@ private function hVregToStr _
 		return hEmitOffset( vreg->sym, vreg->ofs )
 
 	case IR_VREGTYPE_IMM
-        var s = "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")"
+		var s = "(" + hEmitType( vreg->dtype, vreg->subtype ) + ")"
 
 		select case as const vreg->dtype
 		case FB_DATATYPE_LONGINT
@@ -1836,16 +1667,6 @@ private sub _emitLabel _
 end sub
 
 '':::::
-private sub _emitLabelNF _
-	( _
-		byval label as FBSYMBOL ptr _
-	)
-
-	hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
-
-end sub
-
-'':::::
 private sub _emitReturn _
 	( _
 		byval bytestopop as integer _
@@ -1882,34 +1703,33 @@ private sub _emitJmpTb _
 end sub
 
 '':::::
-private sub _emitInfoSection _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
 private sub hEmitVregExpr _
 	( _
 		byval vr as IRVREG ptr, _
 		byref expr as string, _
-		byval is_call as integer = FALSE _
+		byval is_call as integer = FALSE, _
+		byval add_cast as integer = TRUE _
 	)
 
 	if( irIsREG( vr ) ) then
 		var ln = ""
-		var typ = *hDtypeToStr( vr->dtype, vr->subtype )
 		var id = hVregToStr( vr )
 
-		if( is_call ) then
-			ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
+		if( add_cast = FALSE ) then
+			if( is_call ) then
+				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+			else
+				ln = "#define " & id & " ((" & expr & "))"
+			end if
 		else
-			ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
-		end if
+			var typ = hEmitType( vr->dtype, vr->subtype )
+
+			if( is_call ) then
+				ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
+			else
+				ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
+			end if
+		End If
 
 		hWriteLine( ln, FALSE, TRUE )
 	else
@@ -1966,62 +1786,75 @@ private function hBOPToStr _
 end function
 
 '':::::
-private function hEmitBOP _
-    ( _
-		byval op as integer, _
-		byref l as string, _
-		byref r as string _
-    ) as string
-
-    dim as string bop = l + hBOPToStr( op ) + r
-
-    select case as const op
-    case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_GE, AST_OP_LE
-        '' Add a negation in order to convert the "boolean" 1 to -1 (0 stays 0)
-        bop = "(-(" + bop + "))"
-    end select
-
-    return bop
-
-end function
-
-'':::::
 private sub hWriteBOP _
 	( _
 		byval op as integer, _
 		byval vr as IRVREG ptr, _
 		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
+		byval v2 as IRVREG ptr, _
+		byval is_comparison as integer _
 	)
 
-	dim as string lcast, rcast
+	dim as string bop
 
 	if( vr = NULL ) then
 		vr = v1
 	end if
 
-	' look for pointer artithmatic, as FB expects it all to be 1 based
-	if typeGetPtrCnt( v1->dtype ) > 0 then
-		lcast += "(ubyte *)"
-	end if
-	if typeGetPtrCnt( v2->dtype ) > 0 then
-		rcast += "(ubyte *)"
+	dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
+	dim as integer lptr = (is_ptr_arith and typeIsPtr( v1->dtype ))
+	dim as integer rptr = (is_ptr_arith and typeIsPtr( v2->dtype ))
+
+	'' Must work-around C's boolean logic values and convert the "boolean"
+	'' 1 to -1 while 0 stays 0 to match FB.
+	if( is_comparison ) then
+		bop += "(-("
 	end if
 
-	'' look for /, floating point divide
+	'' After casting to ubyte ptr for the BOP, cast back to original type
+	if( lptr or rptr ) then
+		bop += "(" + hEmitType( vr->dtype, vr->subtype ) + ")("
+	end if
+
+	'' Left operand:
+	'' Cast to byte ptr to work around C's pointer arithmetic
+	if( lptr ) then
+		bop += "(ubyte *)"
+	end if
+	'' Ensure '/' means floating point divide by casting to float
+	'' For AST_OP_INTDIV this is not needed, since the AST will already
+	'' cast both operands to integer before doing the intdiv.
 	if( op = AST_OP_DIV ) then
-		lcast += "(double)"
-		rcast += "(double)"
+		bop += "(double)"
+	end if
+	bop += hVregToStr( v1 )
+
+	'' Operation
+	bop += hBOPToStr( op )
+
+	'' Right operand - same checks as for left one above
+	if( rptr ) then
+		bop += "(ubyte *)"
+	end if
+	if( op = AST_OP_DIV ) then
+		bop += "(double)"
+	end if
+	bop += hVregToStr( v2 )
+
+	'' Close parentheses from above
+	if( lptr or rptr ) then
+		bop += ")"
+	end if
+	if( is_comparison ) then
+		bop += "))"
 	end if
 
-	hEmitVregExpr( vr, hEmitBOP( op, _
-                                 lcast + hVregToStr( v1 ), _
-                                 rcast + hVregToStr( v2 ) ) )
+	hEmitVregExpr( vr, bop )
 
 end sub
 
 '':::::
-private sub _emitBopEx _
+private sub _emitBop _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -2038,7 +1871,7 @@ private sub _emitBopEx _
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
 		AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
 		AST_OP_XOR
-		hWriteBOP( op, vr, v1, v2 )
+		hWriteBOP( op, vr, v1, v2, FALSE )
 
 	case AST_OP_EQV
 		if( vr = NULL ) then
@@ -2059,31 +1892,22 @@ private sub _emitBopEx _
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr <> NULL ) then
-			hWriteBOP( op, vr, v1, v2 )
+			'' Comparison expression
+			hWriteBOP( op, vr, v1, v2, TRUE )
 		else
-			hWriteLine( "if (" + hEmitBOP( op, _
-                                           hVregToStr( v1 ), _
-                                           hVregToStr( v2 ) ) + _
-                        ") goto " + _
-						*symbGetMangledName( ex ) _
-					)
+			'' Conditional branch
+			dim as string ln
+			ln += "if ("
+			ln += hVregToStr( v1 )
+			ln += hBOPToStr( op )
+			ln += hVregToStr( v2 )
+			ln += ") goto "
+			ln += *symbGetMangledName( ex )
+			hWriteLine( ln )
 		end if
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
 	end select
-
-end sub
-
-'':::::
-private sub _emitBop _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
-	_emitBopEx( op, v1, v2, vr, NULL )
 
 end sub
 
@@ -2140,9 +1964,9 @@ private sub _emitConvert _
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 
-    hEmitUDT( to_subtype, typeIsPtr( to_dtype ) )
-
-    hEmitVregExpr( v1, hVregToStr( v2 ) )
+	var add_cast = typeGet( to_dtype ) <> FB_DATATYPE_STRUCT
+	
+	hEmitVregExpr( v1, hVregToStr( v2, add_cast ), FALSE, add_cast )
 
 end sub
 
@@ -2440,292 +2264,119 @@ private sub _emitASM _
 
 end sub
 
-'':::::
-private sub _emitVarIniBegin _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	hEmitVar( sym, TRUE )
-
-	ctx.identcnt += 1
-
+private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
+	ctx.varini = ""
+	ctx.variniscopelevel = 0
 end sub
 
-'':::::
-private sub _emitVarIniEnd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	ctx.identcnt -= 1
-
-	hWriteLine( "", TRUE, TRUE )
-
+private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
+	hEmitVar( sym, ctx.varini )
+	ctx.varini = ""
 end sub
 
-'':::::
-private sub _emitVarIniI _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_UINT, FB_DATATYPE_ULONG
-        '' Treat as unsigned
-        s = hEmitUint( value )
-
-    case else
-        s = hEmitInt( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub hVarIniSeparator( )
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.varini += ", "
+	end if
 end sub
 
-'':::::
-private sub _emitVarIniF _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_SINGLE
-        s = hEmitSingle( value )
-
-    case else
-        s = hEmitDouble( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+	if( typeIsSigned( dtype ) ) then
+		ctx.varini += hEmitInt( value )
+	else
+		ctx.varini += hEmitUint( value )
+	end if
+	hVarIniSeparator( )
 end sub
 
-'':::::
-private sub _emitVarIniI64 _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_ULONGINT, FB_DATATYPE_ULONG
-        '' Treat as unsigned
-        s = hEmitUlong( value )
-
-    case else
-        s = hEmitLong( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub _emitVarIniF( byval dtype as integer, byval value as double )
+	if( dtype = FB_DATATYPE_SINGLE ) then
+		ctx.varini += hEmitSingle( value )
+	else
+		ctx.varini += hEmitDouble( value )
+	end if
+	hVarIniSeparator( )
 end sub
 
-'':::::
-private sub _emitVarIniOfs _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
-	)
+private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
+	if( typeIsSigned( dtype ) ) then
+		ctx.varini += hEmitLong( value )
+	else
+		ctx.varini += hEmitUlong( value )
+	end if
+	hVarIniSeparator( )
+end sub
 
-	hWriteLine( hEmitOffset( sym, ofs ), FALSE, TRUE )
-
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+	ctx.varini += "(void*)" + hEmitOffset( sym, ofs )
+	hVarIniSeparator( )
 end sub
 
 private sub hEmitVarIniStr _
 	( _
 		byval totlgt as integer, _
-		byref s as string, _
-		byval litlgt as integer, _
-        byval is_wstr as integer _
+		byref litstr as const zstring ptr, _
+		byval litlgt as integer _
 	)
 
-    '' String literal too long? (GCC would show a warning)
-    if( totlgt < litlgt ) then
-        '' Cut off; may be empty afterwards
-        s = left( s, totlgt )
-    ''elseif( totlgt > litlgt ) then
-        '' Too short, remaining space will be filled with 0's by GCC
-    end if
+	dim as string s = *litstr
 
-	if( ctx.ini_isfixstrarray ) then
-        '' Fixed-length string arrays are just emitted as a simple [w]char array,
-        '' not as a 2D array, so the whole initializer needs to be merged into
-        '' one string, which then has to contain terminating/padding \0's.
-
-        s = """" + s
-        if( is_wstr ) then
-            s = "L" + s
-        end if
-
-        '' NULL terminator
-        s += $"\0"
-
-        '' If too short, add padding 0's, to fill this one element of the
-        '' fixed-length string array.
-        for i as integer = litlgt to totlgt - 1
-            s += $"\0"
-        next
-
-        s += """"
-
-		ctx.ini_strdata += s
-    else
-        '' Simple fixed-length string initialized from string literal
-        s = """" + s + """"
-        if( is_wstr ) then
-            s = "L" + s
-        end if
-
-		hWriteLine( s, FALSE, TRUE )
+	'' String literal too long? (GCC would show a warning)
+	if( totlgt < litlgt ) then
+		'' Cut off; may be empty afterwards
+		s = left( s, totlgt )
+	''elseif( totlgt > litlgt ) then
+		'' Too short, remaining space will be filled with 0's by GCC
 	end if
+
+	'' Simple fixed-length string initialized from string literal
+	ctx.varini += """" + s + """"
+	hVarIniSeparator( )
 
 end sub
 
-'':::::
 private sub _emitVarIniStr _
 	( _
 		byval totlgt as integer, _
 		byval litstr as zstring ptr, _
 		byval litlgt as integer _
 	)
-
-    static as string s
-
-    s = *hEscape( litstr )
-
-    hEmitVarIniStr( totlgt, s, litlgt, FALSE )
-
+	'' "..."
+	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
 end sub
 
-'':::::
 private sub _emitVarIniWstr _
 	( _
 		byval totlgt as integer, _
 		byval litstr as wstring ptr, _
 		byval litlgt as integer _
 	)
-
-    static as string s
-
-    s = *hEscapeUCN( litstr )
-
-    hEmitVarIniStr( totlgt, s, litlgt, TRUE )
-
+	'' L"..."
+	ctx.varini += "L"
+	hEmitVarIniStr( totlgt, hEscapeToHexW( litstr ), litlgt )
 end sub
 
-'':::::
-private sub _emitVarIniPad _
-	( _
-		byval bytes as integer _
-	)
-
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		return
-	end if
-
-	if( ctx.ini_iswstr ) then
-		bytes \= symbGetDataSize( FB_DATATYPE_WCHAR )
-	end if
-
-	if( bytes <= 0 ) then
-		return
-	end if
-
-    static as string pad
-
-    pad = """"
-
-	do while( bytes > 0 )
-		pad += $"\0"
-		bytes -= 1
-	loop
-
-    pad += """"
-
-	ctx.ini_strdata += pad
-
+private sub _emitVarIniPad( byval bytes as integer )
+	'' Nothing to do -- we're using {...} for structs and each array
+	'' dimension, and gcc will zero-initialize any uninitialized elements,
+	'' aswell as add padding between fields etc. where needed.
 end sub
 
-'':::::
-private function hIsFixStrArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-	if( sym <> NULL andalso symbGetArrayDimensions( sym ) > 0 ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return TRUE
-		end select
-	end if
-
-	return FALSE
-
-end function
-
-'':::::
-private sub _emitVarIniScopeBegin _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	ctx.ini_isfixstrarray = hIsFixStrArray( sym )
-
-	if( ctx.ini_isfixstrarray ) then
-		ctx.ini_iswstr = (symbGetType( sym ) = FB_DATATYPE_WCHAR)
-		ctx.ini_strdata = ""
-    else
-		hWriteLine( "{", FALSE )
-	end if
-
+private sub _emitVarIniScopeBegin( )
+	ctx.variniscopelevel += 1
+	ctx.varini += "{ "
 end sub
 
-'':::::
-private sub _emitVarIniScopeEnd _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	if( ctx.ini_isfixstrarray ) then
-		ctx.ini_isfixstrarray = FALSE
-
-        '' Cut off last \0, since there is an implicit NULL already...
-		if( len( ctx.ini_strdata ) >= 4 ) then
-			ctx.ini_strdata = left( ctx.ini_strdata, len( ctx.ini_strdata ) - 3 ) + """"
-		end if
-
-		hWriteLine( ctx.ini_strdata )
-    else
-		hWriteLine( "}", FALSE )
+private sub _emitVarIniScopeEnd( )
+	'' Trim separator at the end, to make the output look a bit more clean
+	'' (this isn't needed though, since the extra comma is allowed in C)
+	if( right( ctx.varini, 2 ) = ", " ) then
+		ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
 	end if
 
-end sub
-
-'':::::
-private sub _emitVarIniSeparator _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	if( hIsFixStrArray( sym ) = FALSE ) then
-		hWriteLine( ", ", FALSE, TRUE )
-	end if
-
+	ctx.varini += " }"
+	ctx.variniscopelevel -= 1
+	hVarIniSeparator( )
 end sub
 
 '':::::
@@ -2735,8 +2386,6 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	dim as string ln
-
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
@@ -2744,29 +2393,16 @@ private sub _emitProcBegin _
 		ctx.linenum = 0
 	end if
 
-
+	dim as string ln
 	if( symbIsExport( proc ) ) then
 		ln += "__declspec(dllexport) "
 	end if
-
-
-	if( symbIsPublic( proc ) = FALSE ) then
-		ln += "static "
-	end if
-
-	''
-    hEmitUDT( symbGetSubType( proc ), typeIsPtr( symbGetType( proc ) ) )
-
-	ln += *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
-	ln += hCallConvToStr( proc ) & " "
 
 	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
 		ln += "__attribute__ ((naked)) "
 	end if
 
-	ln += *symbGetMangledName( proc )
-
-	ln += hEmitFuncParams( proc, FALSE )
+	ln += hEmitProcHeader( proc, 0 )
 
 	hWriteLine( ln, FALSE, TRUE )
 
@@ -2874,11 +2510,7 @@ private sub _xchgTOS _
 
 end sub
 
-'':::::
-function irHLC_ctor _
-	( _
-	) as integer
-
+sub irHLC_ctor()
 	static as IR_VTBL _vtbl = _
 	( _
 		@_init, _
@@ -2898,7 +2530,7 @@ function irHLC_ctor _
 		@_emit, _
 		@_emitConvert, _
 		@_emitLabel, _
-		@_emitLabelNF, _
+		@_emitLabel, _
 		@_emitReturn, _
 		@_emitProcBegin, _
 		@_emitProcEnd, _
@@ -2906,9 +2538,7 @@ function irHLC_ctor _
 		@_emitASM, _
 		@_emitComment, _
 		@_emitJmpTb, _
-		@_emitInfoSection, _
 		@_emitBop, _
-		@_emitBopEx, _
 		@_emitUop, _
 		@_emitStore, _
 		@_emitSpillRegs, _
@@ -2937,7 +2567,6 @@ function irHLC_ctor _
 		@_emitVarIniPad, _
 		@_emitVarIniScopeBegin, _
 		@_emitVarIniScopeEnd, _
-		@_emitVarIniSeparator, _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _
@@ -2955,9 +2584,4 @@ function irHLC_ctor _
 	)
 
 	ir.vtbl = _vtbl
-
-	'errReportEx( FB_ERRMSG_INTERNAL, "the ir module for -gen gcc isn't implemented yet" )
-
-	function = TRUE
-
-end function
+end sub

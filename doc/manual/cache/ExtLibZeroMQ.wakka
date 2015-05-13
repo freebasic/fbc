@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="ZeroMQ"}}----
+High-performance asynchronous messaging library
+
+Website: http://www.zeromq.org/
+Platforms supported: ""Win32"", Linux
+Headers to include: zmq/zmq.bi
+Header version: 2.1.10
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

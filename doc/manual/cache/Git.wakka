@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="Tips on how to use Git"}}----
+
+{{fbdoc item="section" value="Git on Linux"}}
+
+	Install the ##git## and ##git-gui## packages (might be called different depending on the distro), then clone the repository, resulting in a new fbc/ directory containing the source code:
+		
+		%%cd ~
+ls
+git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbc
+cd fbc/
+gitk --all
+git gui &
+%%
+		
+	To get nice anti-aliased fonts in git-gui and gitk on Debian/Ubuntu, you might need to install [[http://www.tcl.tk/ Tcl/Tk]] version 8.5 and enable it explicitly:
+			
+		%%apt-get install tcl8.5 tk8.5
+update-alternatives --config wish
+%%
+
+
+{{fbdoc item="section" value="Linux file explorer integration"}}
+
+	[[http://rabbitvcs.org/ RabbitVCS]] is a useful tool that acts as GUI frontend for several programs such as Git. It can integrate into the Nautilus file explorer much like ""TortoiseSVN"" on Windows. Install the ##rabbitvcs-nautilus## package on Debian/Ubuntu to get it.
+
+
+{{fbdoc item="section" value="MsysGit on Windows"}}
+
+	Download the latest ##Git-*-preview*.exe## installer from https://code.google.com/p/msysgit/, and install it. The recommended setting for ##core.autocrlf## is ##true##, so that the FB source code in the working tree will have CRLF line endings. By default ""MsysGit"" will add some useful context-menu (right-click menu) entries for directories in the Explorer (it's the git-cheetah shell extension actually).
+	
+	After the installation, right click on your Desktop or somewhere in the Explorer and select "Git Gui" to bring up the Git Clone window. Here you can enter the Git clone URL of the fbc repository and the directory in which the clone should go. Note: Right-clicking and selecting //Git Gui// on directories that already //are// Git repositories will bring up the git-gui commit tool known from Linux.
+	
+	Alternatively, you can use the //Git Bash// terminal that comes with ""MsysGit"" and provides a Unixy shell environment based on MSYS, allowing you to work with Git much like you would on Linux. For example, open Git Bash, then:
+	
+		%%cd /c
+ls
+git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbc
+cd fbc/
+gitk --all
+git gui &
+%%
+
+
+{{fbdoc item="section" value="TortoiseGit on Windows"}}
+
+	Download the latest version from https://code.google.com/p/tortoisegit/ and install it. It works like ""TortoiseSVN"", i.e. all interaction is done through the Explorer right-click menu.
+
+
+{{fbdoc item="back" value="DevToc|Table of Contents"}}

@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="OBJECT"}}----
+Built-in type providing run-time type information
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType type]] **object**
+		[[KeyPgType as]] fb_BaseVT [[KeyPgPtr ptr]] vtable_ptr
+		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]]()
+	[[KeyPgEnd end]] [[KeyPgType type]]
+##
+{{fbdoc item="usage"}}##
+	[[KeyPgType type]] //typename// [[KeyPgExtends extends]] **object**
+	[[KeyPgEnd end]] [[KeyPgType type]]
+
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **object**
+##
+{{fbdoc item="desc"}}
+	**Object** is a built-in type which provides run-time type information for all types derived from it using ##[[KeyPgExtends Extends]]##, allowing them to be used with ##[[KeyPgOpIs Operator Is]]##.
+
+{{fbdoc item="ex"}}
+	See the ##[[KeyPgOpIs Operator Is]]## page
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Object""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpIs Operator Is]]##
+	- ##[[KeyPgExtends Extends]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

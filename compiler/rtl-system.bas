@@ -9,6 +9,7 @@
 #include once "rtl.bi"
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
+declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
@@ -160,7 +161,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 	), _
 		/' run ( byref exename as string, byref arguments as string = "" ) as integer '/ _
 		( _
-			@"run", @"fb_RunEx", _
+			@"run", @"fb_Run", _
 	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
@@ -388,6 +389,32 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
+        /' threadcall cdecl ( byval proc as any ptr, byval abi as integer, 
+            byval stack_size as integer, byval num_args as integer, 
+            byval num_args as integer, ... ) as any ptr '/ _
+        ( _
+            @"fb_ThreadCall", @"fb_ThreadCall", _
+            typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
+            @hThreadCall_cb, FB_RTL_OPT_MT or FB_RTL_OPT_NOQB, _
+            5, _
+            { _
+                ( _
+                    typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+                ), _
+                ( _
+                    FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+                ), _
+                ( _
+                    FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+                ), _
+                ( _
+                    FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+                ), _
+                ( _
+                    FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
+                ) _
+           } _
+        ), _
 		/' mutexcreate ( ) as any ptr '/ _
 		( _
 			@"mutexcreate", @"fb_MutexCreate", _
@@ -796,6 +823,8 @@ function rtlExitApp _
 
     astAdd( proc )
 
+	function = TRUE
+
 end function
 
 '':::::
@@ -808,6 +837,22 @@ private function hMultithread_cb _
 
 	return TRUE
 
+end function
+
+'':::::
+private function hThreadCall_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+    static as integer libsAdded = FALSE
+
+	if( libsadded = FALSE ) then
+		libsAdded = TRUE
+		fbAddLib( "ffi" )
+	end if
+
+        return hMultithread_cb( sym )
 end function
 
 '':::::

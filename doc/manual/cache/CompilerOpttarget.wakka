@@ -9,27 +9,20 @@ Set the target platform for cross compilation
 		The target platform. (See below)
 
 {{fbdoc item="desc"}}
-	The ##-target## compiler option is used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed in the /lib/ and /bin/ directories for cross compilation to work.
-
-	This option is only available if the compiler was built with cross compilation support.
-
-	Possible targets:
-		##cygwin##
-		##darwin##
-		##dos##
-		##freebsd##
-		##linux##
-		##netbsd##
-		##openbsd##
-		##win32##
-		##xbox##
-
-{{fbdoc item="target"}}
-	- Only available in versions fbc that have had cross compilation support enabled at configure time before building the compiler.  Not all binary distributions will have the same cross compilation targets supported.
-	- The FreeBASIC package for DOS can be used as a cross compilation tool set when compiling from Windows to a DOS target.
+	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed in the lib/ and bin/ directories for cross compilation to work.
+	
+	//platform// is the system name that is prefixed to the names of the compilation tools and also the name of the lib/ directory. It can be a system triplet such as ##i686-pc-mingw32## as known from gcc/binutils, or something as simple as ##dos## or ##win32##. The compiler expects to find compilation tools and libraries named after this //platform// name.
+	
+	For example, in order to use ##-target dos## with the FB-win32 fbc, there must be ##bin/dos-{as,ar,ld}.exe## and ##dos-lib/*## (with the FB DOS libraries) installed in the FB-win32 directory.
+	
+	For example, to cross-compile from Debian to ""Win32"":
+		- Install Debian's mingw32 cross-compiling toolchain (##gcc-mingw32##), so the ##i586-mingw32msvc-{as,ar,ld,gcc,dlltool}## tools are available.
+		- Install FB win32 libraries in ##lib/i586-mingw32msvc-freebasic/##. Those can be built from the FB source via ##make TARGET=i586-mingw32msvc##, or they can be taken from the FB win32 release, as long as it's the same FB version.
+		- Now you can use ##-target i586-mingw32msvc## to cross-compile.
+	
+	""FreeBASIC"" generally supports these target systems at the moment: Cygwin, Darwin, DOS (DJGPP), ""FreeBSD"", Linux, ""NetBSD"", ""OpenBSD"", ""Win32"" (""MinGW""), Xbox.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
-   

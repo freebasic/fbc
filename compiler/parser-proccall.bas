@@ -14,6 +14,16 @@ declare function hCtorChain	_
 		_
 	) as integer
 
+declare function hBaseCtorCall _
+	( _
+		_
+	) as integer
+
+declare function hBaseMemberAccess _
+	( _
+		_
+	) as integer
+
 declare function hForwardCall _
 	( _
 		_
@@ -34,13 +44,10 @@ function cAssignFunctResult _
 
     res = symbGetProcResult( proc )
     if( res = NULL ) then
-    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip stmt, return
-    		hSkipStmt( )
-    		return TRUE
-    	end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
     end if
 
     subtype = symbGetSubType( proc )
@@ -59,9 +66,7 @@ function cAssignFunctResult _
 	if( is_return ) then
 		if( symbGetProcStatAssignUsed( proc ) ) then
 			if( has_defctor ) then
-				if( errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED ) = FALSE ) then
-					return FALSE
-				end if
+				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
 			end if
 		end if
 
@@ -70,9 +75,7 @@ function cAssignFunctResult _
 	else
 		if( symbGetProcStatReturnUsed( proc ) ) then
 			if( has_defctor ) then
-				if( errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED ) = FALSE ) then
-					return FALSE
-				end if
+				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
 			end if
 		end if
 
@@ -89,13 +92,10 @@ function cAssignFunctResult _
 	if( rhs = NULL ) then
 		parser.ctxsym    = NULL
 		parser.ctx_dtype = FB_DATATYPE_INVALID
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-    		'' error recovery: skip stmt, return
-    		hSkipStmt( )
-    		return TRUE
-    	end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	parser.ctxsym    = NULL
@@ -136,22 +136,51 @@ function cAssignFunctResult _
 
     dim as ASTNODE ptr expr = any
 
-    '' do the assignment
-    expr = astNewASSIGN( astBuildProcResultVar( proc, res ), rhs )
-    if( expr = NULL ) then
-   		astDelTree( rhs )
-
-   		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT ) = FALSE ) then
-   			exit function
-   		end if
-
-   	else
-   		astAdd( expr )
-   	end if
+	'' do the assignment
+	expr = astNewASSIGN( astBuildProcResultVar( proc, res ), rhs )
+	if( expr = NULL ) then
+		astDelTree( rhs )
+		errReport( FB_ERRMSG_ILLEGALASSIGNMENT )
+	else
+		astAdd( expr )
+	end if
 
     function = TRUE
 
 end function
+
+sub hMethodCallAddInstPtrOvlArg _
+    ( _
+        byval proc as FBSYMBOL ptr, _
+        byval thisexpr as ASTNODE ptr, _
+        byval arg_list as FB_CALL_ARG_LIST ptr, _
+        byval options as FB_PARSEROPT ptr _
+    )
+
+    '' Only for method calls
+    if( thisexpr = NULL ) then
+        return
+    end if
+
+    '' The proc given here can be a method with THIS pointer or a static
+    '' member proc, depending on which was declared/found first, but it's
+    '' not known yet whether the exact overload that's going to be called
+    '' will be static or not. So the thisexpr needs to be preserved here,
+    '' the rest is done after the args were parsed.
+
+    dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+    
+    dim as FBSYMBOL ptr parent = symbGetParent( proc )
+    if( astGetSubtype( thisexpr ) <> parent ) then
+        thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
+    end if
+    
+    arg->expr = thisexpr
+    arg->mode = hGetInstPtrMode( thisexpr )
+
+    *options or= FB_PARSEROPT_HASINSTPTR
+
+end sub
 
 '':::::
 function cProcCall _
@@ -164,7 +193,6 @@ function cProcCall _
 	) as ASTNODE ptr
 
 	dim as integer dtype = any, is_propset = FALSE
-	dim as FBSYMBOL ptr reslabel = any
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
@@ -172,13 +200,7 @@ function cProcCall _
 
 	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
 
-	'' method call?
-	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-		arg->expr = thisexpr
-		arg->mode = hGetInstPtrMode( thisexpr )
-		options or= FB_PARSEROPT_HASINSTPTR
-	end if
+    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -194,12 +216,9 @@ function cProcCall _
 			'' index expr
 			dim as ASTNODE ptr expr = cExpression( )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
 			dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
@@ -208,12 +227,9 @@ function cProcCall _
 
 			'' ')'
 			if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: skip until next ')'
-    				hSkipUntil( CHAR_RPRNT, TRUE )
-    			end if
+				errReport( FB_ERRMSG_EXPECTEDRPRNT )
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			else
 				lexSkipToken( )
 			end if
@@ -228,8 +244,8 @@ function cProcCall _
 				end if
 			else
 				if( symbGetUDTHasSetProp( symbGetParent( sym ) ) = FALSE ) then
-    				errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD )
-    				exit function
+					errReport( FB_ERRMSG_PROPERTYHASNOSETMETHOD )
+					exit function
 				end if
 			end if
 
@@ -248,8 +264,8 @@ function cProcCall _
 				end if
             else
 				if( symbGetUDTHasGetProp( symbGetParent( sym ) ) = FALSE ) then
-    				errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD )
-    				exit function
+					errReport( FB_ERRMSG_PROPERTYHASNOGETMETHOD )
+					exit function
 				end if
 			end if
 
@@ -276,9 +292,7 @@ function cProcCall _
 	if( checkprnts ) then
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 	end if
 
@@ -294,18 +308,13 @@ function cProcCall _
 
 	'' ')'
 	if( (checkprnts) or (parser.prntcnt > 0) ) then
-
 		'' --parent cnt
 		parser.prntcnt -= 1
 
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		elseif( parser.prntcnt > 0 ) then
 			'' error recovery: skip until all ')'s are found
 			do while( parser.prntcnt > 0 )
@@ -313,7 +322,6 @@ function cProcCall _
 				parser.prntcnt -= 1
 			loop
 		end if
-
 	end if
 
 	fbSetPrntOptional( FALSE )
@@ -337,23 +345,19 @@ function cProcCall _
 
 	'' can proc's result be skipped?
 	if( dtype <> FB_DATATYPE_VOID ) then
-		if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
-			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) <> FALSE ) then
-				'' error recovery: skip
-				astDelTree( procexpr )
-			end if
-
+		if( typeGetClass( dtype ) <> FB_DATACLASS_INTEGER ) then
+			errReport( FB_ERRMSG_VARIABLEREQUIRED )
+			'' error recovery: skip
+			astDelTree( procexpr )
 			exit function
 
-    	'' CHAR and WCHAR literals are also from the INTEGER class
-    	else
-    		select case as const dtype
-    		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) <> FALSE ) then
-					'' error recovery: skip
-					astDelTree( procexpr )
-				end if
-
+		'' CHAR and WCHAR literals are also from the INTEGER class
+		else
+			select case as const dtype
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				errReport( FB_ERRMSG_VARIABLEREQUIRED )
+				'' error recovery: skip
+				astDelTree( procexpr )
 				exit function
 			end select
 		end if
@@ -363,14 +367,7 @@ function cProcCall _
 	sym = astGetSymbol( procexpr )
 	if( sym <> NULL ) then
 		if( symbGetIsThrowable( sym ) ) then
-    		if( env.clopt.resumeerr ) then
-				reslabel = symbAddLabel( NULL )
-    			astAdd( astNewLABEL( reslabel ) )
-    		else
-    			reslabel = NULL
-    		end if
-
-			rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
+			rtlErrorCheck( procexpr )
 			exit function
 		end if
 	end if
@@ -423,14 +420,11 @@ private function hProcSymbol _
 	if( do_call ) then
 		dim as ASTNODE ptr expr = any
 		expr = cProcCall( base_parent, sym, NULL, NULL )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
 		'' assignment of a function deref?
 		if( expr <> NULL ) then
-			return cAssignment( expr )
-	    end if
+			cAssignment( expr )
+		end if
 
 		return TRUE
 	end if
@@ -439,24 +433,18 @@ private function hProcSymbol _
 
 	'' CALL?
 	if( iscall ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt, return
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	'' check if name is valid (or if overloaded)
 	if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt, return
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	'' skip the '='
@@ -488,16 +476,13 @@ private function hVarSymbol _
 	'' CALL?
 	if( iscall ) then
 		'' not a ptr call?
-	    if( astIsCALL( expr ) = FALSE ) then
-	    	astDelTree( expr )
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip stmt, return
-				hSkipStmt( )
-				return TRUE
-			end if
-	    end if
+		if( astIsCALL( expr ) = FALSE ) then
+			astDelTree( expr )
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
 	end if
 
 	function = cAssignmentOrPtrCallEx( expr )
@@ -672,39 +657,30 @@ private function hAssignOrCall _
 				if( do_call ) then
 					dim as ASTNODE ptr expr = any
 					expr = cProcCall( base_parent, sym, NULL, NULL )
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
 
 					'' assignment of a function deref?
 					if( expr <> NULL ) then
-						return cAssignment( expr )
-	       			end if
+						cAssignment( expr )
+					end if
 
-	       			return TRUE
+					return TRUE
 
 				'' ID '=' Expression
 				else
 	            	'' CALL?
 	            	if( iscall ) then
-						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: skip stmt, return
-							hSkipStmt( )
-							return TRUE
-						end if
+						errReport( FB_ERRMSG_SYNTAXERROR )
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
 	            	end if
 
 	            	'' check if name is valid (or if overloaded)
 					if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: skip stmt, return
-							hSkipStmt( )
-							return TRUE
-						end if
+						errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
 					end if
 
 	       			'' skip the '='
@@ -726,7 +702,7 @@ private function hAssignOrCall _
 	        			exit function
 	        		end if
 	        	else
-	        		expr = cImplicitDataMember( chain_, TRUE )
+	        		expr = cImplicitDataMember( base_parent, chain_, TRUE )
 	        		if( expr = NULL ) then
 	        			exit function
 	        		end if
@@ -737,13 +713,10 @@ private function hAssignOrCall _
 	    			'' not a ptr call?
 	    			if( astIsCALL( expr ) = FALSE ) then
 	    				astDelTree( expr )
-						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: skip stmt, return
-							hSkipStmt( )
-							return TRUE
-						end if
+						errReport( FB_ERRMSG_SYNTAXERROR )
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
 	    			end if
 	    		end if
 
@@ -821,9 +794,6 @@ function cProcCallOrAssign _
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
 		return hAssignOrCall( base_parent, chain_, FALSE )
 
@@ -836,25 +806,17 @@ function cProcCallOrAssign _
 			'' no need to check for '=', that was done already by Declaration()
 
 			if( fbIsModLevel( ) ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt, return
-					hSkipStmt( )
-					return TRUE
-				end if
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION )
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
 			end if
 
 			'' useless check.. don't allow FUNCTION inside OPERATOR or PROPERTY
 			if( symbIsOperator( parser.currproc ) ) then
-				if( errReport( FB_ERRMSG_EXPECTEDOPERATOR ) = FALSE ) then
-					exit function
-				end if
-
+				errReport( FB_ERRMSG_EXPECTEDOPERATOR )
 			elseif( symbIsProperty( parser.currproc ) ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPROPERTY ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDPROPERTY )
 			end if
 
 			lexSkipToken( )
@@ -867,13 +829,10 @@ function cProcCallOrAssign _
 
 			'' not inside an OPERATOR function?
 			if( symbIsOperator( parser.currproc ) = FALSE ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt, return
-					hSkipStmt( )
-					return TRUE
-				end if
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR )
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
 			end if
 
 			lexSkipToken( )
@@ -887,19 +846,13 @@ function cProcCallOrAssign _
 			'' no need to check for '=', that was done already by Declaration()
 
 			if( fbIsModLevel( ) ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt, return
-					hSkipStmt( )
-					return TRUE
-				end if
-
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
 			else
 				if( symbIsProperty( parser.currproc ) = FALSE ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
 				end if
 			end if
 
@@ -913,28 +866,32 @@ function cProcCallOrAssign _
 
 			'' not inside a ctor?
 			if( symbIsConstructor( parser.currproc ) = FALSE ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt, return
-					hSkipStmt( )
-					return TRUE
-				end if
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
 			end if
 
 			return hCtorChain( )
+
+		'' BASE?
+		case FB_TK_BASE
+
+			'' accessing a base member?
+			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+				return hBaseMemberAccess( )
+			else
+				return hBaseCtorCall( )
+			End If
 
 		'' CALL?
 		case FB_TK_CALL
 
     		if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
-    			if( errReportNotAllowed( FB_LANG_OPT_CALL ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: skip stmt
-    				hSkipStmt( )
-    				return TRUE
-    			end if
+				errReportNotAllowed( FB_LANG_OPT_CALL )
+				'' error recovery: skip stmt
+				hSkipStmt( )
+				return TRUE
     		end if
 
     		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
@@ -948,7 +905,8 @@ function cProcCallOrAssign _
 				return hAssignOrCall( base_parent, chain_, TRUE )
 			end if
 
-			return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			return TRUE
 
 		end select
 
@@ -956,7 +914,8 @@ function cProcCallOrAssign _
 
   		select case lexGetToken( )
   		case FB_TK_DELETE
-  			return cOperatorDelete( )
+			cOperatorDelete()
+  			return TRUE
   		end select
 
 	case FB_TKCLASS_DELIMITER
@@ -1002,9 +961,7 @@ private function hCtorChain _
 
 	'' not the first stmt?
 	if( symbGetIsCtorInited( proc ) ) then
-		if( errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT ) = FALSE ) then
-			return FALSE
-		end if
+		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
 	end if
 
 	'' CONSTRUCTOR
@@ -1012,11 +969,13 @@ private function hCtorChain _
 
 	ctor_head = symbGetCompCtorHead( parent )
 	if( ctor_head = NULL ) then
-		return FALSE
+		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
 	end if
 
-	'' this must be set before doing any AST call, or the ctor
-	'' initialization would be trigged
+	'' Tell astProcEnd() to omit the default init code at the top of ctors
 	symbSetIsCtorInited( proc )
 
 	this_ = symbGetProcHeadParam( proc )
@@ -1028,16 +987,120 @@ private function hCtorChain _
 
 	cProcCall( NULL, ctor_head, NULL, this_expr )
 
-	function = (errGetLast( ) = FB_ERRMSG_OK)
+	function = TRUE
 
 end function
 
-'':::::
-function hForwardCall _
-	( _
-		_
-	) as integer
+private function hBaseCtorCall() as integer
+	dim as FBSYMBOL ptr proc = any, parent = any, ctor_head = any
 
+	proc = parser.currproc
+
+	'' not inside a ctor?
+	if( symbIsConstructor( proc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+	if( base_ = NULL ) then
+		errReport( FB_ERRMSG_CLASSNOTDERIVED )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+	
+	'' not the first stmt?
+	if( symbGetIsCtorInited( proc ) ) then
+		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	ctor_head = symbGetCompCtorHead( symbGetSubtype( base_ ) )
+	if( ctor_head = NULL ) then
+		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	'' BASE
+	lexSkipToken( )
+
+	'' Tell astProcEnd() to omit the default init code at the top of ctors
+	symbSetIsCtorInited( proc )
+
+	var this_ = symbGetProcHeadParam( proc )
+	if( this_ = NULL ) then
+		return FALSE
+	end if
+
+	var this_expr = astBuildInstPtr( symbGetParamVar( this_ ), base_ )
+
+	cProcCall( NULL, ctor_head, NULL, this_expr )
+
+	function = TRUE
+end function
+
+'' BaseMemberAccess  =  (BASE '.')+ ID
+private function hBaseMemberAccess() as integer
+	var proc = parser.currproc
+
+	'' not inside a method?
+	if( symbIsMethod( proc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	var parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+
+	do
+		if( base_ = NULL ) then
+			errReport( FB_ERRMSG_CLASSNOTDERIVED )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+
+		'' skip BASE
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' skip '.'
+		lexSkipToken()
+	
+		'' (BASE '.')?
+		if( lexGetToken() <> FB_TK_BASE ) then
+			exit do
+		end if
+
+		'' '.'
+		if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+
+		base_ = symbGetSubtype( base_ )->udt.base
+	loop
+
+	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
+	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
+end function
+
+function hForwardCall() as integer
 	function = FALSE
 
 	select case lexGetClass( )
@@ -1046,29 +1109,23 @@ function hForwardCall _
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
   				if( lexGetPeriodPos( ) > 0 ) then
-  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-		  				exit function
-					end if
+					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
 
 	case else
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) <> FALSE ) then
-			'' error recovery: skip until next '('
-			hSkipUntil( CHAR_LPRNT )
-		end if
-
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: skip until next '('
+		hSkipUntil( CHAR_LPRNT )
 		exit function
 	end select
 
 	dim as string id = *lexGetText( )
 
 	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
-    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    		exit function
-    	end if
-    end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	end if
 
     lexSkipToken( )
 
@@ -1109,15 +1166,9 @@ function hForwardCall _
 		end select
 
         ''
-		if( symbAddProcParam( proc, _
-							  NULL, NULL, _
-						  	  dtype, NULL, _
-						  	  symbCalcProcParamLen( typeGet( dtype ), _
-						  	  						NULL, _
-						  	  						mode ), _
-						  	  mode, _
-						  	  0, _
-						  	  NULL ) = NULL ) then
+		if( symbAddProcParam( proc, NULL, dtype, NULL, _
+		                      symbCalcProcParamLen( typeGet( dtype ), NULL, mode ), _
+		                      mode, 0, NULL ) = NULL ) then
 			exit do
 		end if
 
@@ -1136,26 +1187,19 @@ function hForwardCall _
 	'' ')'?
 	if( check_prnt ) then
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		else
 			lexSkipToken( )
 		end if
 	end if
 
     ''
-    proc = symbAddPrototype( proc, id, NULL, NULL, _
-    						 FB_DATATYPE_VOID, NULL, 0, _
-    					     env.target.fbcall )
+    proc = symbAddPrototype( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, env.target.fbcall )
 
     if( proc = NULL ) then
-    	if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-    		exit function
-    	end if
+		errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
     end if
 
     ''

@@ -3,6 +3,7 @@
 #include "fb.h"
 
 #ifndef DISABLE_X
+#include "fb_private_hdynload.h"
 #include <X11/Xlib.h>
 
 typedef Display *(*XOPENDISPLAY)(char *);
@@ -16,11 +17,10 @@ typedef struct {
 } X_FUNCS;
 
 static int ref_count = 0;
-static void *xlib;
+static FB_DYLIB xlib;
 static X_FUNCS X = { NULL };
 static Display *display;
 static Window xterm_window;
-
 #endif
 
 /*:::::*/

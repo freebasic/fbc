@@ -14,7 +14,7 @@ Temporarily transfers execution to an external program
 		The command-line arguments to be passed to the program.
 
 {{fbdoc item="ret"}}
-	The exit status of the program, or negative one (-1) if the program could not be executed.
+	The exit status of the program, or negative one (""-1"") if the program could not be executed.
 
 {{fbdoc item="desc"}}
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Exec**##.

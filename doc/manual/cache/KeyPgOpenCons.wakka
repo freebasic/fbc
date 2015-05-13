@@ -32,7 +32,7 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
 	//(##1##) Illegal function call//
-		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
+		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that ##//filenumber//## is free.
 		
 		
 {{fbdoc item="ex"}}

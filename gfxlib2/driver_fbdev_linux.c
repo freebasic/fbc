@@ -1,13 +1,14 @@
 /* Framebuffer device gfx driver */
 
 #include "fb_gfx.h"
-
 #include "fb_gfx_linux.h"
-#include <time.h>
-#include <linux/fb.h>
+#include "../rtlib/fb_private_console.h"
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <linux/fb.h>
+#include <pthread.h>
 
 #ifndef FB_AUX_VGA_PLANES_VGA4
 #define FB_AUX_VGA_PLANES_VGA4	0
@@ -493,9 +494,9 @@ got_mode:
 	if ((mode.bits_per_pixel == 4) && (depth == 8)) {
 		/* set safe palette */
 		for (i = 0; i < 16; i++) {
-			r = cmap.red[i] = fb_palette_16.data[(i * 3) + 2] << 8;
-			g = cmap.green[i] = fb_palette_16.data[(i * 3) + 1] << 8;
-			b = cmap.blue[i] = fb_palette_16.data[(i * 3)] << 8;
+			r = cmap.red[i]   = __fb_palette[FB_PALETTE_16].data[(i * 3) + 2] << 8;
+			g = cmap.green[i] = __fb_palette[FB_PALETTE_16].data[(i * 3) + 1] << 8;
+			b = cmap.blue[i]  = __fb_palette[FB_PALETTE_16].data[(i * 3)    ] << 8;
 			__fb_gfx->device_palette[i] = (r >> 8) | g | (b << 8);
 		}
 		ioctl(device_fd, FBIOPUTCMAP, &cmap);

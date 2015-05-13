@@ -1,7 +1,7 @@
 /* get size (console, no gfx) function for Linux */
 
 #include "fb.h"
-
+#include "fb_private_console.h"
 
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )

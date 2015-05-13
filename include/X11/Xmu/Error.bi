@@ -1,0 +1,14 @@
+''
+''
+'' Error -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __Error_bi__
+#define __Error_bi__
+
+declare function XmuSimpleErrorHandler cdecl alias "XmuSimpleErrorHandler" (byval dpy as Display ptr, byval errorp as XErrorEvent ptr) as integer
+
+#endif

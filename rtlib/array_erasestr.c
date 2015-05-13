@@ -1,6 +1,5 @@
 /* ERASE for dynamic arrays of var-len strings */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

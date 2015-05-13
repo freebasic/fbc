@@ -1,14 +1,16 @@
 {{fbdoc item="title" value="FreeImage"}}----
-FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications. FreeImage is easy to use, fast, multithreading safe, compatible with all 32-bit versions of Windows, and cross-platform (works both with Linux and Mac OS X).
+""FreeImage"" is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications. ""FreeImage"" is easy to use, fast, multithreading safe, compatible with all 32-bit versions of Windows, and cross-platform (works both with Linux and Mac OS X).
 
 Website: http://freeimage.sourceforge.net/
-Platforms supported: Win32, Linux
-Headers to include: FreeImage.bi
+Platforms supported: ""Win32"", Linux
+Headers to include: ""FreeImage.bi""
+Header version: 3.15.1
 Example included: yes, in examples/gfx/freeimage.bas
 
-Here follows an example of using FreeImage in FreeBASIC.  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/ FreeImage site]].
-
-##{{fbdoc item="filename" value="examples/manual/extras/freeimage.bas"}}%%(freebasic)
+{{fbdoc item="ex"}}
+Here follows an example of using ""FreeImage"" in ""FreeBASIC"".  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/ FreeImage site]].
+	
+{{fbdoc item="filename" value="examples/manual/extras/freeimage.bas"}}%%(freebasic)
 '' Code example for loading all common image types using FreeImage.
 '' The example loads an image passed as a command line argument.
 
@@ -92,6 +94,6 @@ else
 end if
 
 sleep
-%%##
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

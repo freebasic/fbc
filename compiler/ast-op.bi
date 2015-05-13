@@ -1,7 +1,7 @@
 #ifndef __AST_OP_BI__
 #define __AST_OP_BI__
 
-'' if changed, update ast_opTB at ast.bas
+'' if changed, update ast.bas:ast_opTB() and ast-node-misc.bas:dbg_astNodeOpNames()
 enum AST_OP
 	'' ini self ops (see below: AST_OP_SELFBASE and AST_OP_SELFOPS)
 	AST_OP_ASSIGN		= 0
@@ -57,6 +57,7 @@ enum AST_OP
 	AST_OP_NE
 	AST_OP_GE
 	AST_OP_LE
+	AST_OP_IS
 
 	AST_OP_NOT
 	AST_OP_PLUS

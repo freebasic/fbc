@@ -1,8 +1,6 @@
 /*!!!REMOVEME!!!*/
 /* descriptor set, for non-dynamic local arrays */
 
-#include <stdlib.h>
-#include <stdarg.h>
 #include "fb.h"
 
 

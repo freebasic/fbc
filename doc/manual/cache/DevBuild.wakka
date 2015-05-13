@@ -1,0 +1,361 @@
+{{fbdoc item="title" value="Getting the FreeBASIC source code and compiling it"}}----
+
+The source code of ""FreeBASIC"" is maintained on Sourceforge using the Git version control system, which allows different developers to work on the source code at the same time and later combine their work. It is possible for users to download this source code using anonymous read access and compile it using GNU development tools.
+
+Compiling the development version is not recommended for most users. ""FreeBASIC"" is a self-hosting compiler, still in active development, so there will be times when the current development version cannot be compiled by the last official release. Note also that the procedures for building the compiler described here may change with future versions of ""FreeBASIC"".
+
+On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users will usually have the required development tools installed on their system already. The Cygwin build may be useful for Windows users wishing to access Linux libraries in windows. The DOS build is normally compiled on Windows using DJGPP. Advanced users may be able to cross-compile between other builds, but the correct development tools and libraries would be needed, and it has not been widely tested.
+
+
+**{{anchor name="PREVIOUS|Previous guides (for compiling FB 0.23 and earlier)"}}**
+**{{anchor name="SOURCE|Getting the current source code"}}**
+**{{anchor name="SETUP|Setting up the environment"}}**
+**{{anchor name="COMPILE|Compiling FreeBASIC"}}**
+**{{anchor name="ALONEDOS|Making a self-contained DOS version (like the FB-dos release)"}}**
+**{{anchor name="ALONEWIN32|Making a self-contained Win32 version (like the FB-win32 release)"}}**
+**{{anchor name="RECOMPILE|Getting source code updates and recompiling"}}**
+**{{anchor name="DEBUG|Recompiling fbc for debugging purposes"}}**
+**{{anchor name="CONFIG|Compilation options"}}**
+**{{anchor name="PROBLEMS|Known problems"}}**
+
+
+{{anchor name="PREVIOUS"}}{{fbdoc item="section" value="Previous guides (for compiling FB 0.23 [versions on or before September 20, 2011] and earlier)"}}
+
+	{{fbdoc item="keyword" value="SVNCygwin|Compiling from SVN for Cygwin"}}
+	{{fbdoc item="keyword" value="SVNWin32MSYS|Compiling from SVN for Win32, using MSYS on Win32"}}
+	{{fbdoc item="keyword" value="SVNLinux|Compiling from SVN for Linux"}}
+	{{fbdoc item="keyword" value="SVNDOSWin32|Compiling from SVN for DOS on Win32"}}
+	{{fbdoc item="keyword" value="SVNFreeBSD|Compiling from SVN for FreeBSD"}}
+
+
+{{anchor name="SOURCE"}}{{fbdoc item="section" value="Getting the current source code"}}
+
+	The current source (""FreeBASIC"" 0.24 [versions after September 20, 2011]) is available from these Git repositories:
+	
+		Web view of main fbc/fbc repository: http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=summary
+		Git clone URL: ##""git://fbc.git.sourceforge.net/gitroot/fbc/fbc""##
+
+		Github mirror: https://github.com/freebasic/fbc
+		Git clone URL: ##""https://github.com/freebasic/fbc.git""##
+	
+	If you need help with installing or using Git, search the web or check out the few [[Git Git tips here]].
+	(Typical usage after installation: "git clone git://...")
+
+
+{{anchor name="SETUP"}}{{fbdoc item="section" value="Setting up the environment"}}
+
+	The ""FreeBASIC"" compiler is self-hosting, and a working ""FreeBASIC"" installation is needed to compile it, while ##gcc## is needed to compile the ""FreeBASIC"" runtime libraries. It should be possible to compile the current development version of ##fbc## using ""FreeBASIC"" 0.21 or up.
+	
+	
+	==DOS==
+	
+		The DOS version of ""FreeBASIC"" is typically compiled on Windows, using a DOS ""FreeBASIC"" and DJGPP. The DJGPP packages can be found on the [[http://www.delorie.com/djgpp/getting.html DJGPP homepage]]. ""FreeBASIC"" needs djdev204.zip from DJGPP 2.04 (DJGPP downloads directory: ##[[http://www.delorie.com/pub/djgpp/beta/v2/ beta/v2/]]##), but for the others it should be ok to use the ones from DJGPP 2.03 (DJGPP downloads directory: ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/ current/v2gnu/]]##). Setup DJGPP by extracting everything into ##C:\DJGPP## and adding an environment variable named "DJGPP", set to ##C:\DJGPP\djgpp.env##.
+		
+			- ##binutils## (##bnu*b.zip##, ##bnu*a.zip##)
+			- ##bash## (##bsh*.zip##)
+			- ##djdev## (##djdev*.zip##) - //pick up djdev204.zip or later from the ##beta/## directory//
+			- ##fileutils## (##fil*.zip##)
+			- ##gcc## (##gcc*b.zip##)
+			- ##gpp## (##gpp*b.zip##)
+			- ##gettext## (##gtxt*b.zip##) - //libintl, for libbfd//
+			- ##make## (##mak*b.zip##)
+			- ##shellutils## (##shl*b.zip##)
+			- ##textutils## (##txt*b.zip##)
+			- ##zlib## (##zlib*b.zip##) - //zlib, for libbfd, from the ##[[http://www.delorie.com/pub/djgpp/current/v2tk/ current/v2tk/]]## directory//
+		
+		For example when working in parallel with ""MinGW"", it can be useful to use a batch script to launch a terminal with the DJGPP tools in its PATH environment variable, instead of modifying your system's global PATH environment variable:
+		
+			%%set DJGPP=C:\DJGPP\djgpp.env
+set PATH=C:\DJGPP\bin;%PATH%
+set PATH=C:\FBDOS;%PATH%
+cd C:\
+cmd%%
+	
+	
+	==Linux==
+	
+		This assumes a 32bit (x86) Linux system, however it should also be possible to crosscompile the (still only 32bit) ""FreeBASIC"" on a 64bit system, but the steps might be different. Roughly these Debian packages should be needed (with Fedora names in parentheses):
+		
+			- ##gcc##
+			- ##""g++""## (##""gcc-c++""##)
+			- ##binutils##
+			- ##binutils-dev## (##binutils-devel## or ##binutils-static##) - //libbfd for fbc's objinfo feature//
+			- ##make##
+			- ##libncurses-dev## (##ncurses-devel##) - //curses headers for the rtlib//
+			- ##libx11-dev## (##libX11-devel##) - //X11 headers for gfxlib2//
+			- ##libxext-dev## (##libXext-devel##)
+			- ##libxpm-dev## (##libXpm-devel##)
+			- ##libxrandr-dev## (##libXrandr-devel##)
+			- ##libxrender-dev## (##libXrender-devel##)
+			- ##libgpm-dev## (##gpm-devel##) - //General purpose mouse library headers for the rtlib//
+			- ##freeglut3-dev## (##freeglut-devel##) - //""OpenGL"" headers for gfxlib2//
+			- ##libffi-dev## (##ffi-devel##) - //foreign function interface for ##[[KeyPgThreadcall ThreadCall]]##//
+		
+		On 64bit Debian/Ubuntu, these packages should do the trick (To do: test and update):
+		
+			- ##ia32-libs-dev##
+			- ##libc6-dev-i386##
+			- ##gcc-multilib##
+			- ##""g++-multilib""##
+			- ##lib32ncurses5-dev##
+	
+	
+	==Windows==
+	
+		To install [[http://www.mingw.org MinGW/MSYS]], download the latest version of the [[http://sourceforge.net/projects/mingw/files/Installer/mingw-get/ mingw-get program]] and extract it into ##""C:\MinGW""##. After that open a command prompt (cmd.exe) and run:
+		
+			%%cd C:\MinGW\bin
+mingw-get update
+mingw-get upgrade
+mingw-get install <package-name>
+%%
+		
+		The following packages are needed:
+		
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-core]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-g++]]## (only needed to get ""libsupc++.a"")
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/binutils/ binutils]]## (binutils, and binutils-dev for libbfd)
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/mingw-rt/ mingwrt]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/w32api/ w32api]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gettext/ gettext-dev]]## (libintl for libbfd)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/ msys-core]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/bash/ bash]]## (terminal/shell)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/coreutils/ msys-coreutils]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/findutils/ msys-findutils]]## (xargs for running the test suite)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/make/ msys-make]]##
+		
+		After installing, you can open a ""MinGW"" shell (MSYS bash) by running ##""C:\MinGW\msys\1.0\msys.bat""## (you can create a shortcut to it too).
+		
+		To use ""MinGW/MSYS"" programs from other shells (for example the cmd.exe command prompt), add both ##""C:\MinGW\bin""## and ##""C:\MinGW\msys\1.0\bin""## to the system's global PATH environment variable.
+		
+		To update an existing ""MinGW/MSYS"" installation:
+		
+			%%mingw-get update
+mingw-get upgrade
+mingw-get upgrade <package-name>
+%%
+		
+		
+		In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##C:\""MinGW""\include##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
+		
+		Note: It is most likely also possible to use other GCC-for-""Win32"" ports like [[http://tdm-gcc.tdragon.net/ TDM-GCC]] or [[http://mingw-w64.sourceforge.net/ MinGW-w64]], since they usually are almost identical. Things like different exception handling or 64bit support currently do not matter for ""FreeBASIC"". TDM-GCC was successfully used for the ""FreeBASIC"" 0.21 - 0.23 releases, and is currently preferred because it's configured for setjump/longjump exception handling rather than dwarf2, making its libraries and thus FB programs smaller. To use FB with TDM-GCC, compile with the ENABLE_TDMGCC makefile option.
+
+
+{{anchor name="COMPILE"}}{{fbdoc item="section" value="Compiling FreeBASIC"}}
+
+	By default the compilation process creates a compiler that is intended to be installed into a unix-like directory tree such as ##/usr## or ##/usr/local## on Linux, or ##""C:\MinGW""## for the Windows version, or ##C:\DJGPP## for the DOS version.
+	
+	To compile ""FreeBASIC"", open a terminal (command prompt) and change to directory containing the ""FreeBASIC"" source code, then run:
+	
+		%%make%%
+	
+	The newly built compiler and run-time libraries will be placed in a build directory called ##new/##. This is a basically valid ""FreeBASIC"" installation, allowing it to be tested immediately, although on DOS and Windows there are additional steps necessary to get a fully working ""FreeBASIC"" tree.
+	
+	To install into ##/usr/local## on Linux:
+	
+		%%make install%%
+	
+	To install into ##""C:\MinGW""## on Windows:
+	
+		%%make install prefix=c:/mingw%%
+	
+	To install the DOS version:
+	
+		1) %%make install prefix=c:/djgpp%%
+		
+		1) Copy the modified ##libc.a## from the latest ""FreeBASIC-dos"" release into ##C:\DJGPP\lib\freebas##
+
+
+{{anchor name="ALONEDOS"}}{{fbdoc item="section" value="Making a self-contained DOS version (like the FB-dos release)"}}
+
+	The DOS version is typically compiled using DJGPP on Windows. Assuming the source code is in ##C:\fbc##:
+	
+		%%cd c:/fbc
+make clean
+# (This is added to config.mk so you don't have to retype it for every 'make' or 'make clean' etc.)
+echo "ENABLE_STANDALONE=1" > config.mk
+make clean
+make
+%%
+	
+	After the compilation, the following files need to be copied into the ##C:\fbc\new## tree:
+	
+		1) Copy to ##""C:\fbc\new\bin""##:
+			- ##C:\DJGPP\bin\{ar,as,ld}.exe##
+		
+		1) Copy to ##""C:\fbc\new\lib""##:
+			- ##C:\DJGPP\lib\{crt0,gcrt0}.o##
+			- ##C:\DJGPP\lib\lib{emu,m}.a##
+			- ##C:\DJGPP\lib\gcc\djgpp\version\lib{gcc,supcxx}.a##, and rename ##libsupcxx.a## to ##libsupcx.a## (8.3 file name)
+			- ##C:\DJGPP\lib\lib{bfd,iberty,intl,z}.a## //(For recompiling ""FreeBASIC"" using this tree)//
+			- The modified ##libc.a## from the latest ""FreeBASIC"" release //(Note: To use the libc.a from DJGPP, the _main.o it contains needs to be replaced with the one compiled from ##contrib/djgpp/libc/crt0/_main.c## from the fbc source code, to fix a bug in the original version from DJGPP)//
+			- and any additional libraries you want to use
+	
+	After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
+
+
+{{anchor name="ALONEWIN32"}}{{fbdoc item="section" value="Making a self-contained Win32 version (like the FB-win32 release)"}}
+
+	Assuming the source code is in ##C:\fbc##:
+	
+		%%cd /c/fbc
+make clean
+# (This is added to config.mk so you don't have to retype it for every 'make' or 'make clean' etc.)
+echo "ENABLE_STANDALONE=1" > config.mk
+make clean
+make
+%%
+	
+	After the compilation, the following files need to be copied into the ##C:\fbc\new## tree:
+	
+		1) Copy to ##""C:\fbc\new\bin""##:
+			- ##""C:\MinGW\bin\{ar,as,dlltool,ld}.exe""##
+			- ##""GoRC.exe""## (from [[http://www.godevtool.com/]] or the previous ""FreeBASIC"" release)
+		
+		1) Copy to ##""C:\fbc\new\lib""##:
+			- ##""C:\MinGW\lib\{crt2,dllcrt2,gcrt2}.o""##
+			- ##""C:\MinGW\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
+			- ##""C:\MinGW\lib\gcc\mingw32\version\{crtbegin,crtend}.o""##
+			- ##""C:\MinGW\lib\gcc\mingw32\version\lib{gcc,supc++}.a""##
+			- ##""C:\MinGW\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(Rename to ##lib*.dll.a## if preferred)//
+			- ##""C:\MinGW\lib\lib{bfd,iberty,intl}.a""## //(For recompiling ""FreeBASIC"" using this tree)//
+			- and any additional libraries you want to use
+	
+	After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
+
+
+{{anchor name="RECOMPILE"}}{{fbdoc item="section" value="Getting source code updates and recompiling"}}
+
+	To download updates made available in the fbc Git repository, you can do a pull, either using your preferred graphical Git tool, or in a terminal:
+	
+		%%git pull%%
+	
+	To take a look at incoming changes //before// applying them, do this:
+	
+		%%
+# Update remote branches
+git fetch
+
+# Take a look
+gitk --all
+
+# Everything looks ok? Then merge the remote branch into the current branch to apply the update.
+git merge origin/master
+%%
+	
+	Rebuilding is as easy as:
+	
+		%%make%%
+	
+	Note: If compilation options (like ENABLE_STANDALONE) were used for the previous build, it's necessary to specify them again this time. If they are set in ##config.mk## then they will be automatically set again.
+
+
+{{anchor name="DEBUG"}}{{fbdoc item="section" value="Recompiling fbc for debugging purposes"}}
+
+	%%make clean-compiler
+make FBFLAGS=-exx%%
+
+
+{{anchor name="CONFIG"}}{{fbdoc item="section" value="Compilation options"}}
+
+	There are several compilation options that can be specified to the FB makefile via command line or inside a config.mk file that the makefile #includes. See also ##make help## for a full list. Many of these are intended for developing.
+	
+		- ##FBFLAGS='-g -exx'##
+			Sets extra options to be used when compiling fbc, for example to build a debug fbc.
+		
+		- ##CFLAGS='-g -O0'##
+			Sets extra options that are used when compiling rtlib and gfxlib2.
+		
+		- ##new=new-foo##
+			Change the build directory name. The default is ##new/##. This can be used to make multiple builds in one source tree.
+		
+		- ##prefix=c:/mingw##
+			Changes the /usr/local prefix to something else. Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
+		
+		- ##TARGET=i686-pc-mingw32##
+			To cross-compile the compiler and/or the runtime libraries to run on the specified host system. The system name will be inserted into the lib/ or lib/freebasic/ directory name to allow installing multiple target-specific FB runtimes in parallel.
+			
+			For example, on a Debian GNU/Linux system with the i586-mingw32msvc-gcc cross-compiler installed, it's possible to cross-compile a win32 FB like this:
+			%%# Build the win32 runtime (gfxlib2 is not needed for the compiler, but for other FB programs)
+make rtlib TARGET=i586-mingw32msvc
+make gfxlib2 TARGET=i586-mingw32msvc
+
+# Install it
+make install TARGET=i586-mingw32msvc
+
+# Then the win32 fbc (linking against the just built win32 runtime)
+make compiler TARGET=i586-mingw32msvc
+%%
+		
+		- ##SUFFIX=foo##
+			Append a suffix to the fbc executable's and lib/ directories' names. This allows installing multiple versions of compiler and runtime in parallel. Note: The include/ directory name is not affected, and the FB headers are always shared by all installed FB versions (FB's headers and their directory layouts are designed to be able to do that).
+		
+		- ##SUFFIX2=foo##
+			Similar to ##SUFFIX##, except that this is a second suffix that will only be added to fbc executable's name, allowing to install multiple fbcs in parallel, but have them all use the same set of runtime libraries. Useful to quickly test changes to the compiler, without overwriting the stable fbc or having to rebuilt the runtime libraries.
+		
+		- ##ENABLE_STANDALONE=1##
+			Intended for building self-contained installations (like the win32/dos FB releases), where fbc.exe is located in the toplevel directory, instead of bin/. This also changes some behavior in the compiler, and affects the include/ and lib/ directory layout.
+		
+		- ##ENABLE_PREFIX=1##
+			Allows hard-coding the ##prefix## into the compiler, instead of letting it use exepath() to be relocatable.
+		
+		- ##ENABLE_FBBFD=217##
+			Makes fbc use FB ##bfd.bi## headers to use libbfd directly, instead of using a wrapper around the system's original ##bfd.h##. The specified version must match the version of the libbfd that this fbc will be linked with (because the libbfd ABI is very unstable).
+		
+		- ##DISABLE_OBJINFO=1##
+			If specified fbc will not use libbfd at all, at the cost of the [[DevObjinfo objinfo feature]] being disabled. This is useful in environments (e.g. Debian unstable) where the shared libbfd is updated frequently, as fbc will no longer depend on a specific libbfd version/soname.
+		
+		- ##ENABLE_TDMGCC=1## (win32 only)
+			This causes FB to be built for TDM-GCC rather than the mingw.org GCC. Currently the only difference this makes is that when built for TDM-GCC, fbc doesn't try to link in libgcc_eh into FB programs.
+
+
+{{anchor name="PROBLEMS"}}{{fbdoc item="section" value="Known problems"}}
+
+	{{fbdoc item="subsect" value="Win32 rtlib compilation error: _controlfp, _PC_64 undeclared"}}
+	
+		%%CC new/libfb/hinit_win32.o
+rtlib/hinit_win32.c: In function 'fb_hInit':
+rtlib/hinit_win32.c:21:5: warning: implicit declaration of function '_controlfp' [-Wimplicit-function-declaration]
+rtlib/hinit_win32.c:21:17: error: '_PC_64' undeclared (first use in this function)
+%%
+		
+		Both the ""MinGW runtime"" and ""MinGW GCC"" have a ##float.h## header, and in some setups the GCC one is found before the ""MinGW"" one, causing the above errors. This issue shows up with some ""MinGW"" setups, for example gcc-core-4.6.1 + mingwrt-3.20, while for example gcc-core-4.5.2 + mingwrt-3.18 (a previous installation made with mingw-get) works fine. This problem also shows up with mingw32 cross compiler on Debian (gcc 4.4.4, mingwrt 3.13).
+		
+		Easiest temporary fix: Append ###include_next <float.h>## to ##""C:\MinGW\lib\gcc\mingw32\version\include\float.h""##
+		
+		See also:
+			- The comments at the top of ##""C:\MinGW\include\float.h""##
+			- ""MinGW GCC 4.6.1 bug report"": https://sourceforge.net/tracker/?func=detail&aid=3414086&group_id=2435&atid=102435
+			- ""MinGW patch tracker, 2010"": https://sourceforge.net/tracker/?func=detail&aid=3011968&group_id=2435&atid=302435
+			- http://lists.nongnu.org/archive/html/mingw-cross-env-list/2010-06/msg00038.html
+			- http://gcc.gnu.org/ml/gcc-patches/2010-01/msg01034.html
+			- https://sourceforge.net/mailarchive/message.php?msg_id=28122574
+	
+	
+	{{fbdoc item="subsect" value="Warning: .drectve ... unrecognized when linking fbc"}}
+		
+		%%CC new/compiler/bfd-wrapper.o
+LINK new/bin/fbc.exe
+Warning: .drectve `-aligncomm:"_FB_bfd_format",2 ' 
+Warning: .drectve `-aligncomm:"_FB_bfd_architecture",2' unrecognized
+%%
+		
+		This happens when fbc's C libbfd wrapper module (##bfd-wrapper.c##) is used and compiled with a modern GCC (such as GCC 4.5.x, 2010), and the new fbc.exe is being linked by the old ld 2.15 (2005) from the current ""FreeBASIC-win32"" releases. The old ld complains about not knowing some sections that were added to later binutils. 
+		
+		This is not known to cause any issue besides the warning, and can be solved by replacing the old ld.exe in the ""FreeBASIC-win32"" installation by a newer one from ""MinGW"".
+	
+	
+	{{fbdoc item="subsect" value="Newly built fbc crashes inside a bfd_*() function from libbfd"}}
+	
+		This is typically caused by libbfd header/library version mismatches. Note that FB 0.23 dos/win32/linux-standalone comes with libbfd.a 2.17, while the system's libbfd.a/bfd.h probably is a much later version (for example 2.21). There are three ways to handle this situation:
+		
+			- Use ##ENABLE_FBBFD=217## to compile against libbfd 2.17 headers instead of the system's bfd.h (and make sure to link against libbfd.a 2.17)
+			- Replace FB's libbfd.a by the one from the system
+			- Use ##DISABLE_OBJINFO=1## to avoid libbfd completely
+	
+	{{fbdoc item="subsect" value="MinGW binutils ld versions 2.18 to 2.21"}}
+	
+		fbc triggers a bug in the mentioned linker versions causing it to produce broken binaries. It's fixed in binutils 2.21.1 and up.
+		
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

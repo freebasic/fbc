@@ -8,25 +8,25 @@ Returns the first argument in a variable argument list
 	The ##**va_first**## function initializes a [[ProPgPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/procs/va_first.bas"}}%%(freebasic)
-FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
-	DIM ARG AS ANY PTR 
-	DIM SUM AS DOUBLE = 0
-	DIM i AS INTEGER
+{{fbdoc item="filename" value="examples/manual/procs/vararg1.bas"}}%%(freebasic)
+Function average Cdecl(count as Integer, ... ) As Double
+	Dim arg As Any Ptr
+	Dim sum As Double = 0
+	Dim i As Integer
 	
-	ARG = VA_FIRST()
+	arg = Va_First()
 
-	FOR i = 1 TO COUNT
-	    SUM += VA_ARG(ARG, DOUBLE)
-	    ARG = VA_NEXT(ARG,DOUBLE)
-	NEXT i
-	RETURN SUM/COUNT
+	For i = 1 To count
+	    sum += Va_Arg(arg, Double)
+	    arg = Va_Next(arg, Double)
+	Next
+	
+	Return sum / count
 end function
 
-PRINT AVG (4, 3.4,5.0,3.2,4.1)
-PRINT AVG (2, 65.2,454.65481)
-
-SLEEP
+Print average(4, 3.4,5.0,3.2,4.1)
+Print average(2, 65.2,454.65481)
+Sleep
 %%
 
 The output would look like:
@@ -35,6 +35,76 @@ The output would look like:
 259.927405
 %%
 
+{{fbdoc item="filename" value="examples/manual/procs/vararg2.bas}}%%(freebasic)
+'' Example of a simple custom printf
+sub myprintf cdecl(byref formatstring as string, ...)
+	'' Get the pointer to the first var-arg
+	dim as any ptr arg = va_first()
+
+	'' For each char in format string...
+	dim as ubyte ptr p = strptr(formatstring)
+	dim as integer todo = len(formatstring)
+	while (todo > 0)
+		dim as integer char = *p
+		p += 1
+		todo -= 1
+
+		'' Is it a format char?
+		if (char = asc("%")) then
+			if (todo = 0) then
+				'' % at the end
+				print "%";
+				exit while
+			end if
+
+			'' The next char should tell the type
+			char = *p
+			p += 1
+			todo -= 1
+
+			'' Print var-arg, depending on the type
+			select case char
+			'' integer?
+			case asc("i")
+				print str(va_arg(arg, integer));
+				'' Note, different from C: va_next() must be
+				'' used as va_arg() won't update the pointer.
+				arg = va_next(arg, integer)
+
+			'' long integer? (64-bit)
+			case asc("l")
+				print str(va_arg(arg, longint));
+				arg = va_next(arg, longint)
+
+			'' single or double?
+			'' Note: because the C ABI, all singles passed on
+			'' var-args are converted to doubles.
+			case asc( "f" ), asc( "d" )
+				print str(va_arg(arg, double));
+				arg = va_next(arg, double)
+
+			'' string?
+			case asc("s")
+				'' Strings are passed byval, so the length is unknown
+				print *va_arg(arg, zstring ptr);
+				arg = va_next(arg, zstring ptr)
+
+			end select
+
+		'' Ordinary char, just print as-is
+		else
+			print chr( char );
+		end if
+	wend
+end sub
+
+	dim as string s = "bar"
+
+	myprintf(!"integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s\n", _
+	         1, 1ll shl 32, 2.2, 3.3, "foo", s)
+
+	sleep
+%%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Va_first""**##.

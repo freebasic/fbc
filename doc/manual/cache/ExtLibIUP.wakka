@@ -2,10 +2,9 @@
 Portable toolkit for building graphical user interfaces.
 
 Website: http://www.tecgraf.puc-rio.br/iup/
-Platforms supported: Win32, Linux
-Headers to include: iup/iup.bi
-Version: 2.3.0
+Platforms supported: ""Win32"", Linux
+Headers to include: IUP/iup.bi, IUP3/iup.bi
+Header version: 2.3.0, 3.5 (Lua part missing at the moment)
 Example Usage: yes, in examples/libraries/IUP/
-
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

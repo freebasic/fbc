@@ -1,7 +1,7 @@
 /* helper functions for internationalization support */
 
-#include <stddef.h>
 #include "fb.h"
+#include "fb_private_intl.h"
 
 const FB_LOCALE_INFOS __fb_locale_infos[] = {
     {

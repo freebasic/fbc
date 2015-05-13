@@ -5,7 +5,7 @@ Standard data type: 32 bit signed
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**
 ##
 {{fbdoc item="desc"}}
-	32-bit signed whole-number data type. Can hold values from -2147483648 to 2147483647.
+	32-bit signed whole-number data type. Can hold values from -2147483648 to 2147483647.  (See ##[[KeyPgLongint Longint]]## for 64-bit integers.)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/integer.bas"}}%%(freebasic)
@@ -21,11 +21,12 @@ Standard data type: 32 bit signed
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Integer**## data type is 16-bit.
 
 {{fbdoc item="diff"}}
-	- The INTEGER type is 16-bit wide in QB.
+	- The INTEGER type is 16 bits wide in QB.
 	- None, if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLong Long]]##
+	- ##[[KeyPgLongint Longint]]##
 	- ##[[KeyPgUinteger Uinteger]]##
 	- ##[[KeyPgCint Cint]]##
 

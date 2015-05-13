@@ -1,7 +1,5 @@
 /* input function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 FBCALL int fb_FileInput( int fnum );

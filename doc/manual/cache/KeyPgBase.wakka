@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="BASE"}}----
+Provides explicit access to base type members in methods of a ##[[KeyPgType Type]]##
+
+{{fbdoc item="syntax"}}##
+	**base**.//member//
+	**base** [ .**base** ... ] .//member//
+//or//
+	**base**()
+##
+{{fbdoc item="desc"}}
+	##**Base**## provides a way to explicitly access members of a specific base type, in the context of methods of a user-defined type derived from another type using ##[[KeyPgExtends Extends]]##. This is especially useful when local variables or members of a derived type override a base type's members if they are using the same identifiers. ##**Base**## then allows unambiguous access to the base type. By using ##**Base**## repeatedly, as in ##base.base.base.member##, it is possible to access any desired base type, in case there are multiple levels of inheritance.
+	
+	##**Base**## can also be used to call base type constructors from within a derived type's constructors, in order to ensure the base type is properly initialized. Currently this appears to be a shortcut for ##**Base**.[[KeyPgConstructor Constructor]]()##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/base.bas"}}%%(freebasic)
+type Parent
+	as integer a
+	declare constructor(byval as integer)
+	declare sub show()
+end type
+
+constructor Parent(byval a as integer)
+	this.a = a
+end constructor
+
+sub Parent.show()
+	print "parent", a
+end sub
+
+type Child extends Parent
+	as integer a
+	declare constructor(byval as integer)
+	declare sub show()
+end type
+
+constructor Child(byval a as integer)
+	'' Call base type's constructor
+	base(a * 2)
+	this.a = a
+end constructor
+
+sub Child.show()
+	'' Call base type's show() method, not ours
+	base.show()
+	
+	'' Show both a fields, the base type's and ours'
+	print "child", base.a, a
+end sub
+
+dim as Child x = Child(3)
+x.show()
+%%
+{{fbdoc item="lang"}}
+	- Methods are only supported in the //[[CompilerOptlang -lang fb]]// dialect, hence ##**Base**## has no function in other dialects.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThis This]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgOptionBase Option Base]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

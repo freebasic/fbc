@@ -1,6 +1,7 @@
 /* CIRCLE statement */
 
 #include "fb_gfx.h"
+#include <math.h>
 
 
 /*:::::*/

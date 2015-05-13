@@ -8,7 +8,6 @@
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "lex.bi"
-#include once "parser.bi"
 #include once "pp.bi"
 
 declare sub 		lexReadUTF8				( )
@@ -1619,7 +1618,6 @@ re_read:
 			else
 				t->after_space = TRUE
 				UPDATE_LINENUM( )
-				parser.stmt.cnt += 1
 				islinecont = FALSE
 				continue do
 			end if
@@ -1963,14 +1961,12 @@ private sub hMultiLineComment( ) static
 			end if
 
 			UPDATE_LINENUM()
-			parser.stmt.cnt += 1
 
 		'' EOL?
 		case CHAR_LF
 			lexEatChar( )
 
 			UPDATE_LINENUM( )
-			parser.stmt.cnt += 1
 
 		'' '/'?
 		case CHAR_SLASH
@@ -2208,15 +2204,7 @@ sub lexSkipToken _
     select case lex.ctx->head->id
     case FB_TK_EOL
     	UPDATE_LINENUM( )
-    	parser.stmt.cnt += 1
 
-	case FB_TK_EOF
-		'' fixes bug #2102417 (scope exit problems if
-		'' program ends on LOOP/WEND with no EOL)
-		parser.stmt.cnt += 1
-
-    case FB_TK_STMTSEP
-    	parser.stmt.cnt += 1
     end select
 
 	'' if no macro text been read, reset

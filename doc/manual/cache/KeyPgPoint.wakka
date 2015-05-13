@@ -18,42 +18,51 @@ Returns the color attribute of a specified pixel coordinate
 		the type of screen coordinate to return: one of the values ##0##, ##1##, ##2##, ##3##
 
 {{fbdoc item="ret"}}
-	If the ##//x//, //y//## coordinates of a pixel are provided **##Point##** returns the color attribute at the specified coordinates.
-	If the argument is a function index, **##Point##** returns one of the graphics cursor coordinates set by the last graphics command. 
+	If the ##//x//, //y//## coordinates of a pixel are provided **##Point##** returns the color attribute at the specified coordinates, as an 8-bit palette index in 8 bpp indexed modes, a 24-bit RGB value in 16 bpp modes (upper 8 bits of the integer unused, limited precision of R,G,B), and a 32-bit RGB or RGBA value in 32 bpp modes (upper 8 bits unused or holding Alpha).  Note that it does NOT return a 16-bit value (5 bits R + 6 bits G + 5 bits B).
+
+	If the argument is a function index, **##Point##** returns one of the graphics cursor coordinates set by the last graphics command.
  
 	{{table columns="2" cellpadding="1" cells="Argument; Value Returned ; 0;The current physical x coordinate.;1;The current physical y coordinate.; 2;The current view x coordinate. This returns the same value as the POINT(0) function if the WINDOW statement has not been used.;3;The current view y coordinate. This returns the same value as the POINT(1) function if the WINDOW statement has not been used."}}
-
 
 {{fbdoc item="desc"}}
 	""GfxLib"" Function with two different uses. 
 	If supplied with two coordinates it reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of the ##//buffer//##, if supplied. 
 	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and an ##[[KeyPgRgb RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
-	
+
 	If supplied with a single value it returns the one of the coordinates of the graphics cursor as set by the last graphics command executed. If the last command was executed in a buffer, the values returned will be coordinates in the buffer. Arguments out of the range ##0##-##3## will return ##0##.
 
-	The function ##**Point**## does not work in text modes. 
+	The function ##**Point**## does not work in text modes.
 
-	Optimization note: while **Point** and the opposite ##[[KeyPgPset Pset]]## provide valid results, they are very slow. Much better performance can be achieved by using ##[[KeyPgPeek Peek]]## after calculating the address yourself from values obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##, or even more usig inline ASM.
+	Speed note: while ##**Point**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##/##[[KeyPgScreenptr ScreenPtr]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/point.bas"}}%%(freebasic)
-screen 13 
-line (10,10)-(100,100),12
+' Set an appropriate screen mode - 320 x 240 x 8bpp indexed color
+screenres 320, 240, 8
+
+' Draw a line using color 12 (light red)
+line (20,20)-(100,100), 12
+
+' Print the color of a point on the line
 print point(20,20)
-%%
+
+' Sleep before the program closes
+sleep%%
+
 **Output:**
 %%
 12
 %%
 {{fbdoc item="diff"}}
 	- ##//buffer//## is new to ""FreeBASIC""
-	- In SVGA modes, a 32-bit RGB value is returned
+	- In 16 bpp and 32 bpp modes, a 32-bit value is returned instead of an 8-bit palette index
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPset Pset]]##
+	- ##[[KeyPgPset Pset]]## - write pixels
 	- ##[[KeyPgPmap Pmap]]##
 	- ##[[KeyPgColor Color]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
+	- ##[[GfxInternalFormats Internal pixel formats]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

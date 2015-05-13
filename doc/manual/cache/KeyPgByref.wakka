@@ -31,7 +31,7 @@ end
 %%
 
 {{fbdoc item="lang"}}
-	- In //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
+	- In //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]## and user-defined ##[[KeyPgType Type]]## which are passed ##[[KeyPgByref Byref]]## by default.
 	- In //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention.
 
 {{fbdoc item="diff"}}

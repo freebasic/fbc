@@ -2,7 +2,7 @@
 Cross-platform Graphical User Interface library
 
 Website: http://www.gtk.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: gtk/gtk.bi
 Example Usage: yes, in examples/libraries/Gtk/
 

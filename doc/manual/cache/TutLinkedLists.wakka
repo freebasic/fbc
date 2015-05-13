@@ -31,7 +31,7 @@ declare function ListGetNext(list as listnode ptr) as listnode ptr
 declare function ListGetPrev(list as listnode ptr) as listnode ptr
 declare function ListGetData(list as listnode ptr) as any ptr
 declare function ListRemove(list as listnode ptr, bDelete as integer = 0) as listnode ptr
-declare function ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
+declare sub ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
 %%
 Edit: Hmm, it doesn't seem to like my use of "Rem" in a function. It compiles fine though.
 
@@ -40,7 +40,7 @@ You can see that there is a function to create a linked list, to add an item, to
 The function ""ListCreate"" looks like this:
 %%(freebasic)
 ' CREATE
-function ListCreate() as any ptr
+function ListCreate() as listnode ptr
 	dim as listnode ptr pTemp
 	pTemp = callocate(len(listnode))
 	' CAllocate automatically zeroes memory.
@@ -103,13 +103,13 @@ The next functions are ""ListGetFirst"" and ""ListGetLast"". I implemented them 
 %%(freebasic)
 ' GETFIRST, GETLAST
 
-function ListGetFirst(list as listnode ptr) as any ptr
+function ListGetFirst(list as listnode ptr) as listnode ptr
 	if (list = 0) then return 0
 
 	return list->pNext
 end function
 
-function ListGetLast(list as listnode ptr) as any ptr
+function ListGetLast(list as listnode ptr) as listnode ptr
 	dim as listnode ptr pTemp
 
 	if (list = 0) then return 0
@@ -132,13 +132,13 @@ The next 3 functions are just helper functions, and could be easily accomplished
 %%(freebasic)
 ' GETNEXT, GETPREV
 
-function ListGetNext(list as listnode ptr) as any ptr
+function ListGetNext(list as listnode ptr) as listnode ptr
 	if (list = 0) then return 0
 
 	return list->pNext
 end function
 
-function ListGetPrev(list as listnode ptr) as any ptr
+function ListGetPrev(list as listnode ptr) as listnode ptr
 	' can't do anything to a null list
 	if (list = 0) then return 0
 	' this is needed for below
@@ -169,7 +169,7 @@ The final two functions remove nodes from the list.
 %%(freebasic)
 ' REMOVE, REMOVEALL
 
-function ListRemove(list as listnode ptr, bDelete as integer = 0) as any ptr
+function ListRemove(list as listnode ptr, bDelete as integer = 0) as listnode ptr
 	dim as listnode ptr pPrev
 	dim as listnode ptr pNext
 
@@ -192,19 +192,17 @@ function ListRemove(list as listnode ptr, bDelete as integer = 0) as any ptr
 	return pNext
 end function
 
-function ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
+sub ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
 	dim as listnode ptr node
 
 	node = list
-	if (list = 0) then return 0
+	if (list = 0) then return
 
 	while (node <> 0)
 		if ((node->pData <> 0) and (bDelete <> 0)) then deallocate node->pData
 		node = ListRemove(node)
 	wend
-
-	return
-end function
+end sub
 %%
 
 The ""ListRemove"" function has two jobs: To remove the node you specified, and to link the two surrounding nodes together. You can see that it stores a previous and next pointer to do this. The optional parameter, bDelete, specifies if the data item should be deleted. If you are just storing integers, or even structures with no pointers in them, you can pass 1 for this parameter and the item will be deleted for you. But if you have a structure with pointers in it, the best idea is to delete all the data yourself and have ""ListRemove"" only handle the list part to ensure that there is no memory loss. The listnode pointer is deallocated regardless of whether or not you told it to delete the data.
@@ -216,173 +214,171 @@ so it has been changed.
 That's it, here's the whole file that includes a sample at the top of how to use them. This is my first time writing a tutorial, so feel free to leave comments on ways I could improve. Also, if you catch a bug in my code (I found a couple while writing this), please let me know. Feel free to edit the bug out also, but I'd like to know about it too.
 
 %%(freebasic)
-type listnode
-	as any ptr pData
-	as listnode ptr pNext
-	as listnode ptr pPrev
-end type
+Type listnode
+	As Any Ptr pData
+	As listnode Ptr pNext
+	As listnode Ptr pPrev
+End Type
 
-declare function ListCreate() as listnode ptr
-declare function ListAdd(list as listnode ptr, item as any ptr) as any ptr
-declare function ListAddHead(list as listnode ptr, item as any ptr) as any ptr
-declare function ListGetFirst(list as listnode ptr) as listnode ptr
-declare function ListGetLast(list as listnode ptr) as listnode ptr
-declare function ListGetNext(list as listnode ptr) as listnode ptr
-declare function ListGetPrev(list as listnode ptr) as listnode ptr
-declare function ListGetData(list as listnode ptr) as any ptr
-declare function ListRemove(list as listnode ptr, bDelete as integer = 0) as listnode ptr
-declare function ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
+Declare Function ListCreate() As listnode Ptr
+Declare Function ListAdd(list As listnode Ptr, item As Any Ptr) As Any Ptr
+Declare Function ListAddHead(list As listnode Ptr, item As Any Ptr) As Any Ptr
+Declare Function ListGetFirst(list As listnode Ptr) As listnode Ptr
+Declare Function ListGetLast(list As listnode Ptr) As listnode Ptr
+Declare Function ListGetNext(list As listnode Ptr) As listnode Ptr
+Declare Function ListGetPrev(list As listnode Ptr) As listnode Ptr
+Declare Function ListGetData(list As listnode Ptr) As Any Ptr
+Declare Function ListRemove(list As listnode Ptr, bDelete As Integer = 0) As listnode Ptr
+Declare Sub ListRemoveAll(list As listnode Ptr, bDelete As Integer = 0)
 
-dim as listnode ptr list, node
-dim as integer ptr item
+Dim As listnode Ptr list, node
+Dim As Integer Ptr item
 list = ListCreate()
-item = ListAdd(list, callocate(len(integer)))
+item = ListAdd(list, Callocate(Len(Integer)))
 *item = 4
-item = ListAdd(list, callocate(len(integer)))
+item = ListAdd(list, Callocate(Len(Integer)))
 *item = 44
 item = 0 ' just to show it works
 node = ListGetFirst(list)
 
-while node <> 0
-	print "found item"
+While node <> 0
+	Print "found item"
 	item = ListGetData(node)
-	print *item
+	Print *item
 	node = ListRemove(node,1)
-wend
+Wend
 
-while inkey$ = "" : wend
+While InKey$ = "" : Wend
 
 ' CREATE
-function ListCreate() as any ptr
-	dim as listnode ptr pTemp
-	pTemp = callocate(len(listnode))
+Function ListCreate() As listnode Ptr
+	Dim As listnode Ptr pTemp
+	pTemp = Callocate(Len(listnode))
 	' CAllocate automatically zeroes memory.
 
-	return pTemp
-end function
+	Return pTemp
+End Function
 
 ' ADD, ADDHEAD
 
-function ListAdd(list as listnode ptr, item as any ptr) as any ptr
-	dim as listnode ptr pTemp
+Function ListAdd(list As listnode Ptr, item As Any Ptr) As Any Ptr
+	Dim As listnode Ptr pTemp
 
-	if (list = 0) then return item
+	If (list = 0) Then Return item
 
 	pTemp = ListGetLast(list)
 
-	pTemp->pNext = callocate(len(listnode))
+	pTemp->pNext = Callocate(Len(listnode))
 	pTemp->pNext->pPrev = pTemp
 	pTemp->pNext->pData = item
 
-	return item
-end function
+	Return item
+End Function
 
-function ListAddHead(list as listnode ptr, item as any ptr) as any ptr
-	dim as listnode ptr pTemp
+Function ListAddHead(list As listnode Ptr, item As Any Ptr) As Any Ptr
+	Dim As listnode Ptr pTemp
 
-	if (list = 0) then return item
+	If (list = 0) Then Return item
 
 	pTemp = list->pNext
-	list->pNext = callocate(len(listnode))
+	list->pNext = Callocate(Len(listnode))
 
 	list->pNext->pPrev = list
 	list->pNext->pData = item
 	list->pNext->pNext = pTemp
 
-	if (pTemp <> 0) then
-		pTemp->pPrev = list->pNext
-	end if
+	If (pTemp <> 0) Then
+	    pTemp->pPrev = list->pNext
+	End If
 
-	return item
-end function
+	Return item
+End Function
 
 ' GETFIRST, GETLAST
 
-function ListGetFirst(list as listnode ptr) as any ptr
-	if (list = 0) then return 0
+Function ListGetFirst(list As listnode Ptr) As listnode Ptr
+	If (list = 0) Then Return 0
 
-	return list->pNext
-end function
+	Return list->pNext
+End Function
 
-function ListGetLast(list as listnode ptr) as any ptr
-	dim as listnode ptr pTemp
+Function ListGetLast(list As listnode Ptr) As listnode Ptr
+	Dim As listnode Ptr pTemp
 
-	if (list = 0) then return 0
+	If (list = 0) Then Return 0
 
 	pTemp = list
-	while (pTemp->pNext <> 0)
-		pTemp = pTemp->pNext
-	wend
+	While (pTemp->pNext <> 0)
+	    pTemp = pTemp->pNext
+	Wend
 
-	return pTemp
-end function
+	Return pTemp
+End Function
 
 ' GETNEXT, GETPREV
 
-function ListGetNext(list as listnode ptr) as any ptr
-	if (list = 0) then return 0
+Function ListGetNext(list As listnode Ptr) As listnode Ptr
+	If (list = 0) Then Return 0
 
-	return list->pNext
-end function
+	Return list->pNext
+End Function
 
-function ListGetPrev(list as listnode ptr) as any ptr
+Function ListGetPrev(list As listnode Ptr) As listnode Ptr
 	' can't do anything to a null list
-	if (list = 0) then return 0
+	If (list = 0) Then Return 0
 	' this is needed for below
-	if (list->pPrev = 0) then return 0
+	If (list->pPrev = 0) Then Return 0
 	' since the list starts with a null node (pPrev and pData = 0),
 	' the first should be the one right after the real first.
-	if (list->pPrev->pPrev = 0) then return 0
+	If (list->pPrev->pPrev = 0) Then Return 0
 
-	return list->pPrev
-end function
+	Return list->pPrev
+End Function
 
 ' GETDATA
 
-function ListGetData(list as listnode ptr) as any ptr
-	if (list = 0) then return 0
+Function ListGetData(list As listnode Ptr) As Any Ptr
+	If (list = 0) Then Return 0
 
-	return list->pData
-end function
+	Return list->pData
+End Function
 
 ' REMOVE, REMOVEALL
 
-function ListRemove(list as listnode ptr, bDelete as integer = 0) as any ptr
-	dim as listnode ptr pPrev
-	dim as listnode ptr pNext
+Function ListRemove(list As listnode Ptr, bDelete As Integer = 0) As listnode Ptr
+	Dim As listnode Ptr pPrev
+	Dim As listnode Ptr pNext
 
-	if (list = 0) then return 0
+	If (list = 0) Then Return 0
 
 	pPrev = list->pPrev
 	pNext = list->pNext
 
-	if ((list->pData <> 0) and (bDelete <> 0)) then deallocate list->pData
+	If ((list->pData <> 0) And (bDelete <> 0)) Then DeAllocate list->pData
 
-	deallocate list
+	DeAllocate list
 
-	if (pPrev <> 0) then
-		pPrev->pNext = pNext
-	end if
-	if (pNext <> 0) then
-		pNext->pPrev = pPrev
-	end if
+	If (pPrev <> 0) Then
+	    pPrev->pNext = pNext
+	End If
+	If (pNext <> 0) Then
+	    pNext->pPrev = pPrev
+	End If
 
-	return pNext
-end function
+	Return pNext
+End Function
 
-function ListRemoveAll(list as listnode ptr, bDelete as integer = 0)
-	dim as listnode ptr node
+Sub ListRemoveAll(list As listnode Ptr, bDelete As Integer = 0)
+	Dim As listnode Ptr node
 
 	node = list
-	if (list = 0) then return 0
+	If (list = 0) Then Return
 
-	while (node <> 0)
-		if ((node->pData <> 0) and (bDelete <> 0)) then deallocate node->pData
-		node = ListRemove(node)
-	wend
-
-	return
-end function
+	While (node <> 0)
+	    If ((node->pData <> 0) And (bDelete <> 0)) Then DeAllocate node->pData
+	    node = ListRemove(node)
+	Wend
+End Sub
 %%
 
 If you haven't noticed already, ""ListAdd"" and ""ListAddHead"" return a pointer to the data you inputted. The sample code (see above) shows how to use this functionality. ""ListRemove"" returns a pointer to next node. That's how ""ListRemoveAll"" removes the nodes. ""ListRemoveAll"" is the only function that doesn't return anything. There is no need, since the whole list will be empty after you have called it.

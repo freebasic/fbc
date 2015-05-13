@@ -2,24 +2,24 @@
 Specifies that a procedure name can be overloaded
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgSub Sub]]
 	
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//..procedure body..//
 	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	In procedure declarations, **Overload** allows procedure names to be overloaded, that is, other procedures can then be declared with the same name if their parameter lists are unique. Two parameter lists are unique if they contain a different number of parameters, or have parameters of different types. Note that this means that two or more procedures cannot be declared with the same name if they differ in return type alone.
+	In procedure declarations, ##**Overload**## allows procedure names to be overloaded, that is, other procedures can then be declared with the same name if their parameter lists are unique. Two parameter lists are unique if they contain a different number of parameters, or have parameters of different types. Note that this means that two or more procedures cannot be declared with the same name if they differ in return type alone.
 
-	Once a procedure name has been declared overloaded, further declarations using the name need not specify *Overload*, but it is allowed.
+	Once a procedure name has been declared overloaded, further declarations using the name need not specify ##**Overload**##, but it is allowed.
 
-	**Overload** is not necessary in member procedure declarations, as they are always implicitly overloaded.
+	##**Overload**## is not necessary in member procedure declarations, as they are always implicitly overloaded.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/overload.bas"}}%%(freebasic)

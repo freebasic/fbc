@@ -1,18 +1,12 @@
 /* LPTx device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
-static 
-FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
+static FB_FILE *fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
 {
   size_t i;
 	/* Test if the printer is already open. */
-	for( i=0;
-			 i<FB_MAX_FILES;
-			 ++i )
+	for( i=0; i<FB_MAX_FILES; ++i )
 	{
 		FB_FILE *handle = __fb_ctx.fileTB + i;
 		if( handle->type == FB_FILE_TYPE_PRINTER )
@@ -35,11 +29,10 @@ FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
 			}
 		}
 	}
-	return( NULL );
+	return NULL;
 }
 
-static
-char * fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
+static char *fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
 {
 	if( lpt_proto )
 	{
@@ -47,9 +40,9 @@ char * fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
 		strcpy( p, lpt_proto->proto );
 		strcat( p, ":" );
 		strcat( p, lpt_proto->name );
-		return( p );
+		return p;
 	}
-	return( NULL );
+	return NULL;
 }
 
 static FB_FILE_HOOKS hooks_dev_lpt = {
@@ -199,4 +192,3 @@ int fb_DevPrinterGetOffset( const char *pszDevice )
     return cur;
 
 }
-

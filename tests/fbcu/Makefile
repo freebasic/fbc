@@ -78,7 +78,7 @@ FBC_CFLAGS += -m $(FBCU_)
 
 #:: linker flags
 
-FBC_LFLAGS := -lib -x $(FBCU_)
+FBC_LFLAGS := -lib -x $(LIB_FILE)
 
 #:: rules
 

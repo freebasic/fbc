@@ -77,7 +77,8 @@ Const upperbound = 10
 Dim array(upperbound) As Single
 %%
 
-	Multidimensional arrays can be declared as well.  and are stored in row-major order: values with the same last index are contiguous. (This is different from QB's default).  The maximum number of dimensions of a multidimensional array is 8. 
+	Multidimensional arrays can be declared as well, and are stored in this definite order: values differing only in the last index are contiguous (row-major order).
+	The maximum number of dimensions of a multidimensional array is 8. 
 
 {{fbdoc item="filename" value="examples/manual/check/KeyPgDim_4.bas"}}%%(freebasic)
 '' declare a three-dimensional array of single 
@@ -174,7 +175,7 @@ Dim s2 As String        '' variable length string
 Dim s3 As ZString Ptr   '' zstring
 
 s1 = "Hello World!"
-s2 = "Hello World from FreeBasic!"
+s2 = "Hello World from FreeBASIC!"
 s3 = Allocate( Len( s2 ) + 1 )
 *s3 = s2
 
@@ -205,7 +206,7 @@ Deallocate(s3)
 {{fbdoc item="diff"}}
 	- Variable Initializers are new to ""FreeBASIC"".
 	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to ""FreeBASIC"".
-	- Multidimensional arrays are stored in row-major order in ""FreeBASIC"", they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
+	- Multidimensional arrays are stored in this definite order: values differing only in the last index are contiguous (row-major order), they were stored in opposite order in QB by default: values differing only in the first index were contiguous (column-major order).
 	- Variable length arrays up to 2 ""GiB"" in size are possible in ""FreeBASIC"". In QB, ##$STATIC## arrays were limited to 64 ""KiB"" , or to the DOS memory available (several 100 ""KiB"" at best) if made ##$DYNAMIC## and ///AH// was used.
 	- The ellipsis form for upper bounds is new to ""FreeBASIC"".
 

@@ -1,9 +1,8 @@
 /* exec function for Windows */
 
-#include <stdlib.h>
-#include <string.h>
-#include <process.h>
 #include "fb.h"
+#include "fb_private_console.h"
+#include <process.h>
 
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )

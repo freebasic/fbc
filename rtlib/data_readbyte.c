@@ -1,6 +1,5 @@
 /* read stmt for byte's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

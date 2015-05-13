@@ -1,9 +1,7 @@
 /* size of the console window */
 
-#include <stdlib.h>
 #include "fb.h"
-
-void fb_InitConsoleWindow( void );
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleGetMaxWindowSize( int *cols, int *rows )

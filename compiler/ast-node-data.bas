@@ -36,9 +36,6 @@ function astDataStmtBegin _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->data.elmts = 0
 
@@ -57,9 +54,6 @@ function astDataStmtStore _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = expr
 	n->r = NULL
@@ -170,7 +164,6 @@ sub astDataStmtEnd _
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-    	astTypeIniSeparator( initree, NULL )
     	elm = symbGetNext( elm )
 
         '' .node = expr
@@ -182,10 +175,6 @@ sub astDataStmtEnd _
 		dim as ASTNODE ptr nxt = n->r
 		astDelNode( n )
 		n = nxt
-
-		if( n ) then
-			astTypeIniSeparator( initree, NULL )
-		end if
 	next
 
     ''

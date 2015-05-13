@@ -178,7 +178,6 @@ function rtlGosubReturn _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim reslabel as FBSYMBOL ptr = any
 
 	function = NULL
 
@@ -189,14 +188,7 @@ function rtlGosubReturn _
     	exit function
     end if
 
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-    function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+    function = iif( rtlErrorCheck( proc ), proc, NULL )
 
 end function
 

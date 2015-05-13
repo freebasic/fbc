@@ -24,12 +24,12 @@ Converts a number to a Unicode octal representation
 		Desired number of digits in the returned string.
 
 {{fbdoc item="ret"}}
-	The Unicode octal representation of the number, truncated or padded with zeros ("0") to the specified number of digits, if specified.
+	The Unicode octal representation of the number, truncated or padded with zeros (##"0"##) to fit the number of digits, if specified.
 
 {{fbdoc item="desc"}}
-	Returns the octal [[KeyPgWstring Wstring]] (Unicode) representation of ##//number//##. Octal digits range from 0 to 7.
+	Returns the octal ##[[KeyPgWstring Wstring]]## (Unicode) representation of ##//number//##. Octal digits range from ##0## to ##7##.
 
-	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	If you specify ##//digits//## > ##0##, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte byte]]##, 6 for ##[[KeyPgShort short]]##, 11 for ##[[KeyPgInteger integer]]##, and 22 for ##[[KeyPgLongint longint]]##)
 
@@ -52,7 +52,7 @@ print Woct(54321, 8)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Woct""**##.
 
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not supported in the DOS port of FreeBASIC.
+	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
 
 {{fbdoc item="diff"}}
 	- In QBASIC Unicode was not supported.

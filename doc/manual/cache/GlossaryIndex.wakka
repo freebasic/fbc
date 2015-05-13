@@ -181,10 +181,10 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 ======----{{anchor name="G"}} G----======
 
 **get/put buffer**
-	See: Image Buffer. An image buffer in FreeBASIC's native format.
+	See: Image Buffer. An image buffer in ""FreeBASIC""'s native format.
 
-**graphics primitive**
-	A graphics primitive is another term for common shapes like circles and rectangles.
+**GIT**
+	The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB now. (see also CVS , SVN and [[Git]]).
 
 **global variable**
 	A variable that is visible to all procedures within a module, across multiple modules, or both. See ##[[KeyPgCommon Common]]## and ##[[KeyPgExtern Extern]]##.
@@ -193,8 +193,11 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A mass collaboration project with the primary goal to provide a free and non-proprietary Unix-like operating system.
 
 **GPL**
-	Short hand for GNU General Public License: a free, copyleft license for software and other kinds of works.
-		
+	Short hand for GNU General Public License: a license for software and other kinds of works. Open source, obligates the user to keep the project open source and under the GPL.
+
+**graphics primitive**
+	A graphics primitive is another term for common shapes like circles and rectangles.
+
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="H"}} H----======
@@ -203,7 +206,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A data structure that associates keys with values allowing for efficient look-up of values based on a given key.
 
 **header**
-	When talking about a collection of data, this is generally the first part of that data that describes the rest. When talking about (header) files, this refers to an include file. In FreeBASIC the file extension '.bi' is usually used.
+	When talking about a collection of data, this is generally the first part of that data that describes the rest. When talking about (header) files, this refers to an include file. In ""FreeBASIC"" the file extension '.bi' is usually used.
 
 **heap**
 	The area of memory (free store) provided by the runtime library (and operating system) from which the program can dynamically allocate memory.  See ##[[KeyPgAllocate Allocate]]##.
@@ -328,7 +331,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A data type used to hold addresses. The kind of pointer determines how the data at the address is interpreted when the pointer is dereferenced, or when used with ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##. See ##[[ProPgPointers Pointers]]##.
 
 **preprocessor**
-	The FreeBASIC preprocessor is responsible for expanding Macros and replacing Defined values with their values.
+	The ""FreeBASIC"" preprocessor is responsible for expanding Macros and replacing Defined values with their values.
 
 **procedure**
 	A generic name for any block of code that can be called from somewhere else in a program.  See ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##.
@@ -400,7 +403,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A procedure defined using ##[[KeyPgSub Sub]]##, optionally taking parameters and not returning a value.
 
 **SVN**
-	Subversion. A version control system that allows users to keep track of changes made to sources and documents. All the users can browse and download sources here:  [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/ fbc.svn.sf.net/viewvc/fbc/trunk]] , but only developers have write access as well. (see also CVS)
+	Subversion. A version control system that allows users to keep track of changes made to sources and documents. Used by FB in the past. (see also CVS and GIT)
 
 **SWIG**
 	A tool that automatically translates C headers to FreeBASIC (although not always perfectly).
@@ -455,14 +458,14 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A message displayed by the compiler during compilation that suggests there may be potential problems with the current code.
    
 **wiki**
-	An on-line system that provides a set of pages containing information that can be viewed and modified by the public. In this context, it is typically used to refer to the FreeBASIC on line documentation.
+	An on-line system that provides a set of pages containing information that can be viewed and modified by the public. In this context, it is typically used to refer to the ""FreeBASIC"" on line documentation.
 
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="X"}} X----======
 
 **x86**
-	Refers to the instruction set compatible with the 80386 (and later) CPU architecture.
+	Refers to the instruction set compatible with the 8086 (and later) CPU architecture, ""FreeBASIC"" only supports 80386 and later.
 
 @@{{anchor name="Index|Back to top"}}@@
 

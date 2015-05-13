@@ -2,7 +2,6 @@
 /* descriptor reset, for dynamic local arrays */
 
 #include "fb.h"
-#include <limits.h>
 
 /*:::::*/
 FBCALL void fb_ArrayResetDesc

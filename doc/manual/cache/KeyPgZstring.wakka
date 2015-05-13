@@ -6,13 +6,13 @@ Standard data type: 8 bit character string
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Zstring** [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="desc"}}
-	A ##**Zstring**## is a C-style fixed-size array of chars.  It has no descriptor so it's faster to pass it as an argument to functions. FreeBASIC avoids any overflow that could occur, by truncating the contents.
+	A ##**Zstring**## is a C-style fixed-size array of chars.  It has no descriptor so its length is calculated faster to pass it as an argument to functions. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
 
-	A ##**Zstring**## [[KeyPgPtr ptr]] can point to a standard ##**Zstring**##, also can be used to implement an "user-managed" ##**Zstring**##, in this case ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## must be used to size-resize-dispose it and is up  to the user to avoid overflows . 
+	A ##**Zstring** [[KeyPgPtr ptr]]## can point to a standard ##**Zstring**##, also can be used to implement an "user-managed" ##**Zstring**##, in this case ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## must be used to size-resize-dispose it and is up  to the user to avoid overflows . 
 	
-	The end of the string is marked by a character 0 ASCII, this is automatically managed by the FreeBASIC string handling functions. A character 0 ASCII must never enter in the text of a ##**Zstring**## or it will be truncated, as no descriptor exists . 
+	The end of the string is marked by a null character (##0## ASCII). This is automatically added by the ""FreeBASIC"" string handling functions.  A null character will be appended when the string is created, and the length will be calculated by scanning the string for the first null character. A null character (e.g. ##[[KeyPgChr Chr]](0)##) may never be contained in the text of a ##**Zstring**## or the rest of the string will be truncated.
 	
-	In a ##**Zstring**##, ##[[KeyPgLen Len]]## returns the size of the contained string and ##[[KeyPgSizeof Sizeof]]## returns the space allocated to the ##**Zstring**##.
+	In a ##**Zstring**##, ##[[KeyPgLen Len]]## returns the size of the contained string and ##[[KeyPgSizeof Sizeof]]## returns the space allocated to the ##**Zstring**##.  ##[[KeyPgSizeof Sizeof]]## only works if the size is known by the compiler, i.e. a fixed-size ##**Zstring**## variable is passed directly, not as a dereferenced pointer or a ##[[KeyPgByref Byref]]## function argument.
 	
 	This type is provided for easy interfacing with C libraries and to also replace the fixed-length strings, that can't be managed through pointers. Any intrinsic string functions like ##[[KeyPgLeft Left]]## will work with ##**Zstring**##'s too, plus any string operator.
 

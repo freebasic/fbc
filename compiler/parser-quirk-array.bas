@@ -9,198 +9,247 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-''ArrayStmt   	  =   ERASE ID (',' ID)*;
-''				  |   SWAP Variable, Variable .
-''
-function cArrayStmt _
+'' EraseStmt = ERASE ID (',' ID)*
+function cEraseStmt() as integer
+	lexSkipToken( )
+
+	do
+		var expr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipUntil( CHAR_COMMA )
+		else
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( expr ) ) then
+				var expr2 = astGetLeft( expr )
+				astDelNode( expr )
+				expr = expr2
+			end if
+
+			'' array?
+			var s = astGetSymbol( expr )
+			if( s <> NULL ) then
+				if( symbIsArray( s ) = FALSE ) then
+					s = NULL
+				end if
+			end if
+
+			if( s = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDARRAY )
+				hSkipUntil( CHAR_COMMA )
+			else
+				if( typeIsConst( astGetFullType( expr ) ) ) then
+					errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+				end if
+
+				if( symbGetIsDynamic( s ) ) then
+					expr = rtlArrayErase( expr )
+				else
+					expr = rtlArrayClear( expr, TRUE )
+				end if
+
+				astAdd( expr )
+			end if
+		end if
+
+	'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+	function = TRUE
+end function
+
+private function hMakeRef _
 	( _
-		byval tk as FB_TOKEN _
-	) as integer
+		byval t as ASTNODE ptr, _
+		byval pexpr as ASTNODE ptr ptr _
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr1, expr2
+	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
+	'' expression with side-effects to that, and replaces the expression
+	'' with an access to that temp var. Effectively this causes the
+	'' expression with side-effects to be used only once.
+	''
+	'' However, here we're taking a reference to the expression instead of
+	'' storing its result, otherwise SWAP would overwrite the temp var,
+	'' not the actual data. This also means LINK nodes must be used,
+	'' because we don't support references across statements...
 
-	function = FALSE
+	var dtype = typeAddrof( astGetFullType( (*pexpr) ) )
+	var subtype = astGetSubType( (*pexpr) )
 
-	select case tk
-	case FB_TK_ERASE
-		lexSkipToken( )
+	'' var ref
+	var ref = symbAddTempVar( dtype, subtype, FALSE, FALSE )
 
-		do
-			expr1 = cVarOrDeref( FALSE )
-			if( expr1 = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				else
-					hSkipUntil( CHAR_COMMA )
-				end if
+	'' ref = @expr
+	function = astNewLINK( t, astNewASSIGN( astNewVAR( ref, , dtype, subtype ), astNewADDROF( *pexpr ) ) )
 
-			else
-				'' ugly hack to deal with arrays w/o indexes
-				if( astIsNIDXARRAY( expr1 ) ) then
-					expr2 = astGetLeft( expr1 )
-					astDelNode( expr1 )
-					expr1 = expr2
-				end if
+	'' Use *ref instead of the original expr
+	*pexpr = astNewDEREF( astNewVAR( ref, , dtype, subtype ) )
 
-				'' array?
-    			s = astGetSymbol( expr1 )
-    			if( s <> NULL ) then
-    				if( symbIsArray( s ) = FALSE ) then
-    					s = NULL
-    				end if
-    			end if
+end function
 
-				if( s = NULL ) then
-					if( errReport( FB_ERRMSG_EXPECTEDARRAY ) = FALSE ) then
-						exit function
-					else
-						hSkipUntil( CHAR_COMMA )
-					end if
+'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
+function cSwapStmt() as integer
+	lexSkipToken( )
 
-				else
-					
-					if( typeIsConst( astGetFullType( expr1 ) ) ) then
-						if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-							exit function
-						end if
-					end if
-					
-					if( symbGetIsDynamic( s ) ) then
-						expr1 = rtlArrayErase( expr1 )
-					else
-						expr1 = rtlArrayClear( expr1, TRUE )
-					end if
+	var l = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
+	if( l = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		hSkipStmt( )
+		return TRUE
+	end if
 
-					astAdd( expr1 )
+	if( astIsConstant( l ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+	end if
 
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
-				end if
-			end if
+	hMatchCOMMA( )
 
-		'' ','?
-		loop while( hMatch( CHAR_COMMA ) )
+	var r = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
+	if( r = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		astDelTree( l )
+		hSkipStmt( )
+		return TRUE
+	end if
 
-		function = TRUE
+	if( astIsConstant( r ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+	end if
 
-	'' SWAP Variable, Variable
-	case FB_TK_SWAP
-		lexSkipToken( )
+	dim as integer ldtype = astGetDataType( l )
+	dim as integer rdtype = astGetDataType( r )
 
-		expr1 = cVarOrDeref(  )
-		if( expr1 = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
-		end if
-
-		hMatchCOMMA( )
-
-		expr2 = cVarOrDeref(  )
-		if( expr2 = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				astDelTree( expr1 )
-				hSkipStmt( )
-				return true
-			end if
-		end if
-
-		select case as const astGetDataType( expr1 )
+	select case ldtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		select case rdtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-
-			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					astDelTree( expr1 )
-					astDelTree( expr2 )
-				end if
-
-			else
-				function = rtlStrSwap( expr1, expr2 )
-			end if
-
-		case FB_DATATYPE_WCHAR
-			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					astDelTree( expr1 )
-					astDelTree( expr2 )
-				end if
-
-			else
-				function = rtlWstrSwap( expr1, expr2 )
-			end if
-
+			function = rtlStrSwap( l, r )
 		case else
-			'' don't allow any consts...
-			if( typeIsConst( astGetFullType( expr1 ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-					exit function
-				end if
-			end if
-			if( typeIsConst( astGetFullType( expr2 ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-					exit function
-				end if
-			end if
-			
-			function = rtlMemSwap( expr1, expr2 )
+			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end select
-
+		exit function
 	end select
 
+	if( ldtype = FB_DATATYPE_WCHAR ) then
+		if( rdtype = FB_DATATYPE_WCHAR ) then
+			function = rtlWstrSwap( l, r )
+		else
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+		end if
+		exit function
+	end if
+
+	'' Check for invalid types by checking whether a raw assignment
+	'' would work (raw because astCheckASSIGN() doesn't check
+	'' operator overloads)
+	dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( l ), astGetSubtype( l ) )
+	dim as integer ok = astCheckASSIGN( fakelhs, r )
+	astDelTree( fakelhs )
+	if( ok = FALSE ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH )
+		exit function
+	end if
+
+	if( (ldtype = FB_DATATYPE_STRUCT) or (rdtype = FB_DATATYPE_STRUCT) ) then
+		assert( ldtype = FB_DATATYPE_STRUCT )
+		assert( rdtype = FB_DATATYPE_STRUCT )
+		assert( astGetSubtype( l ) = astGetSubtype( r ) )
+		return rtlMemSwap( l, r )
+	end if
+
+	''
+	'' For the ASM backend SWAP can be done with PUSH/POP, if...
+	''
+	'' - it's on integers or floats (structs handled above)
+	''
+	'' - neither side is a bitfield (for those we always have to use a
+	''   temp var, to get the bitfield accesses built properly)
+	''
+	'' - both side's types have the same size, otherwise we may push 4
+	''   bytes and pop 8, or similar.
+	''
+	'' - it's either both integer or both float, so we don't swap between
+	''   integer and float this way. The ASSIGN converts differently than
+	''   the POP, so you'd get different results depending on whether it's
+	''   <SWAP i, f> or <SWAP f, i>.
+	''
+	dim as integer use_pushpop = TRUE
+	use_pushpop and= (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE)
+	use_pushpop and= (typeGetSize( ldtype ) = typeGetSize( rdtype ))
+	use_pushpop and= (typeGetClass( ldtype ) = typeGetClass( rdtype ))
+	use_pushpop and= (astIsBITFIELD( l ) = FALSE)
+	use_pushpop and= (astIsBITFIELD( r ) = FALSE)
+
+	'' A scope to enclose the temp vars
+	dim as ASTNODE ptr scopenode = astScopeBegin( )
+	dim as ASTNODE ptr t = NULL
+
+	'' Side effects? Then use references to be able to read/write...
+	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
+		t = hMakeRef( t, @l )
+	end if
+
+	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
+		t = hMakeRef( t, @r )
+	end if
+
+	if( use_pushpop ) then
+		'' push clone( l )
+		t = astNewLINK( t, astNewSTACK( AST_OP_PUSH, astCloneTree( l ) ) )
+
+		'' l = clone( r )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+
+		'' pop r
+		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
+	else
+		var lfulldtype = astGetFullType( l )
+		var lsubtype = astGetSubType( l )
+
+		'' var temp = clone( l )
+		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE, FALSE )
+		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp, , lfulldtype, lsubtype ), astCloneTree( l ) ) )
+
+		'' l = clone( r )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+
+		'' r = temp
+		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp, , lfulldtype, lsubtype ) ) )
+	end if
+
+	astAdd( t )
+	astScopeEnd( scopenode )
+	function = TRUE
 end function
 
 '':::::
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
-function cArrayFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
 	dim as integer is_lbound = any
 	dim as FBSYMBOL ptr s = any
 
-	function = FALSE
+	function = NULL
 
 	select case tk
 
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		if( tk = FB_TK_LBOUND ) then
-			is_lbound = TRUE
-		else
-			is_lbound = FALSE
-		end if
+		is_lbound = (tk = FB_TK_LBOUND)
 		lexSkipToken( )
 
 		'' '('
 		hMatchLPRNT( )
 
 		'' ID
-		arrayexpr = cVarOrDeref( FALSE )
+		arrayexpr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
 		if( arrayexpr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')' and fake an expr
-				hSkipUntil( CHAR_RPRNT, TRUE )
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' error recovery: skip until next ')' and fake an expr
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' ugly hack to deal with arrays w/o indexes
@@ -219,14 +268,10 @@ function cArrayFunct _
 		end if
 
 		if( s = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')' and fake an expr
-				hSkipUntil( CHAR_RPRNT, TRUE )
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			'' error recovery: skip until next ')' and fake an expr
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' (',' Expression)?
@@ -239,11 +284,6 @@ function cArrayFunct _
 		'' ')'
 		hMatchRPRNT( )
 
-		funcexpr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
-
-		function = funcexpr <> NULL
-
+		function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
 	end select
-
 end function
-

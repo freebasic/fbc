@@ -1,10 +1,7 @@
 /* LPTx device */
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
+#include <ctype.h>
 
 /** Tests for the right file name for LPT access.
  *
@@ -16,12 +13,12 @@
  * - LPT:printer_name,EMU=?,TITLE=?,OPT=?, ...
  */
 
-/*:::::*/
-int fb_DevLptParseProtocol( 
-	DEV_LPT_PROTOCOL ** lpt_proto_out, 
-	const char * proto_raw, 
-	size_t proto_raw_len,  
-	int subst_prn
+int fb_DevLptParseProtocol
+	(
+		DEV_LPT_PROTOCOL ** lpt_proto_out,
+		const char * proto_raw,
+		size_t proto_raw_len,
+		int subst_prn
 	)
 {
 	char *p, *ptail, *pc, *pe;
@@ -144,15 +141,11 @@ int fb_DevLptParseProtocol(
 	return TRUE;
 }
 
-/*:::::*/
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevLptTestProtocol( FB_FILE *handle, const char *filename, size_t filename_len )
 {
-
 	DEV_LPT_PROTOCOL *lpt_proto;
 	int ret = fb_DevLptParseProtocol( &lpt_proto, filename, filename_len, FALSE );
 	if( lpt_proto )
 		free( lpt_proto );
 	return ret;
-
 }
-

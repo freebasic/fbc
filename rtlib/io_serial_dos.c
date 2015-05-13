@@ -1,6 +1,10 @@
 /* serial port driver for Dos */
 
 #include "fb.h"
+#include <dos.h>
+#include <pc.h>
+#include <go32.h>
+#include <dpmi.h>
 
 /* PIC port addresses. */
 #define ICU_BASE	0x20
@@ -125,7 +129,7 @@ static int UART_set_data_format( unsigned int baseaddr,
 	int parity, int data, int stop );
 static int comm_isr( unsigned irq );
 static int comm_init( int com_num, unsigned int baseaddr, int irq );
-static int comm_exit( int com_num );
+static void comm_exit( int com_num );
 
 #ifndef FB_MANAGED_IRQ	
 
@@ -710,14 +714,13 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	return TRUE;
 }
 
-static int comm_exit( int com_num )
+static void comm_exit( int com_num )
 {
 	comm_props_t *cp;
 	irq_props_t *ip;
 	int tmp, i;
 
-	if( com_num < 1 || com_num > MAX_COMM )
-		return FALSE;
+	DBG_ASSERT( com_num >= 1 && com_num < MAX_COMM );
 
 	cp = COMM_PROPS(com_num);
 
@@ -776,8 +779,6 @@ static int comm_exit( int com_num )
 		ip->usecount--;
 
 	comm_init_release();
-
-	return TRUE;
 }
 
 
@@ -851,7 +852,6 @@ int comm_open( int com_num,
 int comm_close( int com_num )
 {
 	comm_props_t *cp;
-	int ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
@@ -861,7 +861,7 @@ int comm_close( int com_num )
 	if( cp->inuse == FALSE )
 		return FALSE;
 
-	ret = comm_exit( com_num );
+	comm_exit( com_num );
 
 	cp->inuse = FALSE;
 
@@ -916,9 +916,14 @@ int comm_bytes_remaining( int com_num )
 }
 
 /*:::::*/
-int fb_SerialOpen( struct _FB_FILE *handle,
-				   int iPort, FB_SERIAL_OPTIONS *options,
-				   const char *pszDevice, void **ppvHandle )
+int fb_SerialOpen
+	(
+		FB_FILE *handle,
+		int iPort,
+		FB_SERIAL_OPTIONS *options,
+		const char *pszDevice,
+		void **ppvHandle
+	)
 {
 	int ret, flags = 0;
 
@@ -985,8 +990,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialGetRemaining( struct _FB_FILE *handle, 
-						   void *pvHandle, long *pLength )
+int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, long *pLength )
 {
 	int bytes;
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
@@ -1002,8 +1006,13 @@ int fb_SerialGetRemaining( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialWrite( struct _FB_FILE *handle, 
-					void *pvHandle, const void *data, size_t length )
+int fb_SerialWrite
+	(
+		FB_FILE *handle,
+		void *pvHandle,
+		const void *data,
+		size_t length
+	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	unsigned char * p = (unsigned char *)data;
@@ -1021,8 +1030,13 @@ int fb_SerialWrite( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialRead( struct _FB_FILE *handle, 
-				   void *pvHandle, void *data, size_t *pLength )
+int fb_SerialRead
+	(
+		FB_FILE *handle,
+		void *pvHandle,
+		void *data,
+		size_t *pLength
+	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	int n = *pLength, ch, i, count = 0;
@@ -1047,8 +1061,7 @@ int fb_SerialRead( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialClose( struct _FB_FILE *handle, 
-					void *pvHandle )
+int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	comm_close( pInfo->com_num );

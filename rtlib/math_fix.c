@@ -1,7 +1,6 @@
 /* fix function for singles and doubles FIX( x ) = SGN( x ) * INT( ABS( x ) ) */
 
 #include "fb.h"
-#include <math.h>
 
 
 /*:::::*/

@@ -22,8 +22,6 @@ Divides and assigns a value to a variable
 ##
 		//lhs// = //lhs// [[KeyPgOpDivide /]] //rhs//
 ##
-	The right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
-
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

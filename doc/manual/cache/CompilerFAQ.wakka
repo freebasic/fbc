@@ -104,7 +104,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future (0.23). At the moment (version 0.22) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented. For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]] and [[http://www.freebasic.net/forum/viewtopic.php?t=17571 Forum t=17571 "New fbc branch ('inheritance') on sourceforge (fbc SVN)"]].
+	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future (0.23). At the moment (version 0.22) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented. For more information see: [[TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]] and [[http://www.freebasic.net/forum/viewtopic.php?t=17571 Forum t=17571 "New fbc branch ('inheritance') on sourceforge (fbc SVN)"]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -172,7 +172,7 @@
 	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with two underscores.  For example, ##Getmouse## can be called by using ##_####_Getmouse##
 	-##lang fblite## offers ""FreeBASIC"" language compatibility, with a more QBASIC-compatible coding style.
 
-	See [[http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects Compiler Dialects]] for details.
+	See [[CompilerDialects Compiler Dialects]] for details.
 
 {{anchor name="item0|Back to top"}}
 

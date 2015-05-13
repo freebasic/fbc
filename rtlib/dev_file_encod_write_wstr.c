@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+int fb_DevFileWriteEncodWstr( FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
 {
     FILE *fp;
     char *encod_buffer;

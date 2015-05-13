@@ -17,7 +17,11 @@ type functype as function( ) as funcudt ptr
 type udttype
 	fparray  as functype ptr
 end type
-	
+
+type DerivedClass extends object
+	as integer abc
+end type
+
 function realfunc( ) as funcudt ptr
 	static as funcudt t = ( TEST_VAL )
 
@@ -41,6 +45,10 @@ sub test cdecl ()
 	
 	CU_ASSERT( cast(udttype ptr, *cast(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
 	
+
+	'' Bug #3269771 regression test (casting derived class pointers to integers)
+	dim as DerivedClass ptr pclass
+	dim as ulong l = culng(pclass)
 end sub
 
 private sub ctor () constructor

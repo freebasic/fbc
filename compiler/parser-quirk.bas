@@ -26,8 +26,6 @@ function cQuirkStmt _
 		byval tk as FB_TOKEN = INVALID _
 	) as integer
 
-	dim as integer res = any
-
 	function = FALSE
 
 	if( tk = INVALID ) then
@@ -51,6 +49,8 @@ function cQuirkStmt _
 		end select
 	end if
 
+	dim as integer res = FALSE
+
 	select case as const tk
 	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
 		CHECK_CODEMASK( )
@@ -64,9 +64,13 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cDataStmt( tk )
 
-	case FB_TK_ERASE, FB_TK_SWAP
+	case FB_TK_ERASE
 		CHECK_CODEMASK( )
-		res = cArrayStmt( tk )
+		res = cEraseStmt()
+
+	case FB_TK_SWAP
+		CHECK_CODEMASK( )
+		res = cSwapStmt()
 
 	case FB_TK_LINE
 		CHECK_CODEMASK( )
@@ -91,15 +95,19 @@ function cQuirkStmt _
 
 	case FB_TK_WRITE
 		CHECK_CODEMASK( )
-		res = cWriteStmt( )
+		res = cWriteStmt()
 
-	case FB_TK_ERROR, FB_TK_ERR
+	case FB_TK_ERROR
 		CHECK_CODEMASK( )
-		res = cErrorStmt( tk )
+		res = cErrorStmt()
+
+	case FB_TK_ERR
+		CHECK_CODEMASK( )
+		res = cErrSetStmt()
 
 	case FB_TK_VIEW
 		CHECK_CODEMASK( )
-		res = cViewStmt( )
+		res = (cViewStmt(FALSE) <> NULL)
 
 	case FB_TK_MID
 		CHECK_CODEMASK( )
@@ -109,9 +117,9 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cLRSetStmt( tk )
 
-    case FB_TK_WIDTH
-        CHECK_CODEMASK( )
-        res = cWidthStmt( FALSE ) <> NULL
+	case FB_TK_WIDTH
+		CHECK_CODEMASK( )
+		res = cWidthStmt( FALSE ) <> NULL
 
 	case FB_TK_COLOR
 		CHECK_CODEMASK( )
@@ -123,14 +131,10 @@ function cQuirkStmt _
 			res = cComment( )
 		end if
 
-	case else
-		res = FALSE
 	end select
 
 	if( res = FALSE ) then
-		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			res = cGfxStmt( tk )
-		end if
+		res = cGfxStmt( tk )
 	end if
 
 	function = res
@@ -140,91 +144,77 @@ end function
 '':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
-function cQuirkFunction _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as integer res = FALSE
+function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 	dim as ASTNODE ptr funcexpr = NULL
 	dim as FB_TOKEN tk = sym->key.id
 
 	select case as const tk
 	case FB_TK_MKD, FB_TK_MKS, FB_TK_MKI, FB_TK_MKL, _
 	     FB_TK_MKSHORT, FB_TK_MKLONGINT
-
-		res = cMKXFunct( tk, funcexpr )
+		funcexpr = cMKXFunct(tk)
 
 	case FB_TK_CVD, FB_TK_CVS, FB_TK_CVI, FB_TK_CVL, _
 	     FB_TK_CVSHORT, FB_TK_CVLONGINT
-
-		res = cCVXFunct( tk, funcexpr )
+		funcexpr = cCVXFunct(tk)
 
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
 		 FB_TK_CHR, FB_TK_WCHR, _
 		 FB_TK_ASC, FB_TK_INSTR, FB_TK_INSTRREV, _
 		 FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
-
-		res = cStringFunct( tk, funcexpr )
+		funcexpr = cStringFunct(tk)
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, FB_TK_LEN, FB_TK_SIZEOF, _
 		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
 		 FB_TK_SQR, FB_TK_LOG, FB_TK_EXP, FB_TK_ATAN2, FB_TK_INT
-
-		res = cMathFunct( tk, funcexpr )
+		funcexpr = cMathFunct(tk, FALSE)
 
 	case FB_TK_PEEK
-		res = cPeekFunct( funcexpr )
+		funcexpr = cPeekFunct()
 
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		res = cArrayFunct( tk, funcexpr )
+		funcexpr = cArrayFunct(tk)
 
 	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
-		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
-
-		res = cFileFunct( tk, funcexpr )
+	     FB_TK_GET, FB_TK_PUT, FB_TK_NAME
+		funcexpr = cFileFunct(tk)
 
 	case FB_TK_ERR
-		res = cErrorFunct( funcexpr )
+		funcexpr = cErrorFunct()
 
 	case FB_TK_IIF
-		res = cIIFFunct( funcexpr )
+		funcexpr = cIIFFunct()
 
 	case FB_TK_VA_FIRST
-				res = cVAFunct( funcexpr )
+		funcexpr = cVAFunct()
 
 	case FB_TK_CBYTE, FB_TK_CSHORT, FB_TK_CINT, FB_TK_CLNG, FB_TK_CLNGINT, _
-		 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNG, FB_TK_CULNGINT, _
-		 FB_TK_CSNG, FB_TK_CDBL, _
-		 FB_TK_CSIGN, FB_TK_CUNSG, FB_TK_CBOOL
-
+	     FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNG, FB_TK_CULNGINT, _
+	     FB_TK_CSNG, FB_TK_CDBL, FB_TK_CSIGN, FB_TK_CUNSG, FB_TK_CBOOL
 		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE
 		return cAnonUDT( )
 
 	case FB_TK_VIEW
-		res = cViewStmt( TRUE, funcexpr )
+		funcexpr = cViewStmt(TRUE)
 
-    case FB_TK_WIDTH
-        funcexpr = cWidthStmt( TRUE )
-        res = funcexpr <> NULL
+	case FB_TK_WIDTH
+		funcexpr = cWidthStmt( TRUE )
 
 	case FB_TK_COLOR
 		funcexpr = cColorStmt( TRUE )
-		res = funcexpr <> NULL
 
 	case FB_TK_SCREEN, FB_TK_SCREENQB
-		res = cScreenFunct( funcexpr )
+		funcexpr = cScreenFunct()
 
+	case FB_TK_THREADCALL
+		funcexpr = cThreadCallFunc()
+        
 	end select
 
-	if( res = FALSE ) then
-		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			funcexpr = cGfxFunct( tk )
-		end if
+	if( funcexpr = NULL ) then
+		funcexpr = cGfxFunct( tk )
 	end if
 
 	function = funcexpr
-
 end function
