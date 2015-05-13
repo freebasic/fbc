@@ -89,12 +89,10 @@ sub astUpdateFieldAssignment _
 	case FB_DATATYPE_BITFIELD
 
 		'' l is a field node, use its left child instead
-		r = astSetBitField( astGetLeft( l ), r )
 		r = astSetBitField( lchild, r )
 
 		'' the field node can be removed
 		astDelNode( l )
-		l = astGetLeft( l )
 		l = lchild
 
 	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
