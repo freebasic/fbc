@@ -315,36 +315,51 @@ private sub hCONVConstEvalBool _
 end sub
 
 '':::::
+private function hGetTypeMismatchErrMsg( byval options as AST_CONVOPT ) as integer
+	if( options and AST_CONVOPT_PTRONLY ) then
+		function = FB_ERRMSG_EXPECTEDPOINTER
+	else
+		function = FB_ERRMSG_TYPEMISMATCH
+	end if
+end function
+
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval expr_dtype as integer, _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
 	) as integer
 
-	function = FALSE
+	function = FB_ERRMSG_OK
 
 	'' to pointer? only allow integers and pointers
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32
-			return TRUE
+			'' Allow integer/long-to-pointer casts
+			exit function
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
-			if( astIsCONST( expr ) = FALSE ) then
-				exit function
+			if( astIsCONST( expr ) ) then
+				if( astGetValueAsInt( expr ) = 0 ) then
+					'' Allow 0-to-pointer casts
+					exit function
+				end if
 			end if
-			return (astGetValueAsInt( expr ) = 0)
+
+			return hGetTypeMismatchErrMsg( options )
 
 		case FB_DATATYPE_POINTER
 			'' Both are pointers, fall through to checks below
 
 		case else
-			exit function
+			'' Nothing else allowed (strings, structs)
+			return hGetTypeMismatchErrMsg( options )
 		end select
 
 	'' from pointer? only allow integers and pointers
@@ -352,58 +367,66 @@ private function hCheckPtr _
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			return TRUE
+			'' Allow pointer-to-integer/long casts
+			exit function
 
 		case FB_DATATYPE_POINTER
 			'' Both are pointers, fall through to checks below
 
 		case else
-			exit function
+			'' Nothing else allowed (strings, structs)
+			return hGetTypeMismatchErrMsg( options )
 		end select
 	else
 		'' No pointers at all, nothing to do
-		return TRUE
+		exit function
 	end if
 
+	''
 	'' Both are pointers
-	'' if any of them is a derived class, only allow cast to a base or derived
+	''
+	'' If any of them is a pointer to a derived class,
+	'' only allow casting to a pointer to a class from that
+	'' inheritance hierarchy, or ANY PTR.
+	''
+
+	'' To derived pointer?
 	if( typeGetDtOnly( to_dtype ) = FB_DATATYPE_STRUCT ) then
 		if( to_subtype->udt.base <> NULL ) then
 			if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_STRUCT ) then
 				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
-					exit function
+					return FB_ERRMSG_CASTDERIVEDPTRFROMINCOMPATIBLE
 				end if
 			else			
 				'' not a upcasting?
 				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
 					'' try downcasting..
 					if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
-						exit function
+						return FB_ERRMSG_CASTDERIVEDPTRFROMUNRELATED
 					End If
 				End If
 			end if
 		End If
 	End If
 
+	'' From derived pointer?
 	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
 		if( expr->subtype->udt.base <> NULL ) then
 			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
 				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
-					exit function
+					return FB_ERRMSG_CASTDERIVEDPTRTOINCOMPATIBLE
 				end if
 			else
 				'' not a upcasting?
 				if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
 					'' try downcasting..
 					if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
-						exit function
+						return FB_ERRMSG_CASTDERIVEDPTRTOUNRELATED
 					End If
 				End If
 			end if
 		End If
 	End If
-
-	function = TRUE
 
 end function
 
@@ -432,7 +455,7 @@ function astCheckCONV _
 	end if
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l, 0 ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
@@ -477,14 +500,16 @@ function astNewCONV _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
-		byval op as AST_OP, _
-		byval check_str as integer _
+		byval options as AST_CONVOPT, _
+		byval perrmsg as integer ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-	dim as integer ldclass = any, ldtype = any
+	dim as integer ldclass = any, ldtype = any, errmsg = any
 
-	function = NULL
+	if( perrmsg ) then
+		*perrmsg = FB_ERRMSG_OK
+	end if
 
 	ldtype = astGetFullType( l )
 
@@ -520,32 +545,33 @@ function astNewCONV _
 
 	ldclass = typeGetClass( ldtype )
 
-	select case op
 	'' sign conversion?
-	case AST_OP_TOSIGNED, AST_OP_TOUNSIGNED
+	if( options and AST_CONVOPT_SIGNCONV ) then
 		'' float? invalid
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			exit function
 		end if
-	end select
+	end if
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
+	errmsg = hCheckPtr( to_dtype, to_subtype, ldtype, l, options )
+	if( errmsg <> FB_ERRMSG_OK ) then
+		if( perrmsg ) then
+			*perrmsg = errmsg
+		end if
 		exit function
 	end if
 
 	'' string?
-	if( check_str ) then
+	if( options and AST_CONVOPT_CHECKSTR ) then
 		select case as const typeGet( ldtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return rtlStrToVal( l, to_dtype )
 		end select
-
 	else
 		if( ldclass = FB_DATACLASS_STRING ) then
 			exit function
-
 		'' CHAR and WCHAR literals are also from the INTEGER class
 		else
 			select case typeGet( ldtype )
@@ -639,7 +665,7 @@ function astNewCONV _
 		end select
 	end select
 
-		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+		if( irGetOption( IR_OPT_FPUCONV ) ) then
 			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
 				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
 					doConv = TRUE

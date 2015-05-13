@@ -50,7 +50,7 @@
 #define WITH2(objName, pDisp, szMember, arg1, arg2) _
 	scope																						:_
 		DISPATCH_OBJ(objName)																	:_
-		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2) ) then
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2)) ) then
 
 #define WITH3(objName, pDisp, szMember, arg1, arg2, arg3) _
 	scope 																						:_

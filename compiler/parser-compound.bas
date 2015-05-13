@@ -163,10 +163,8 @@ end function
 '':::::
 ''EndStatement	  =	  END Expression? .
 ''
-function cEndStatement as integer
-	dim as ASTNODE ptr errlevel
-
-	function = FALSE
+function cEndStatement( ) as integer
+	dim as ASTNODE ptr errlevel = any
 
 	'' END
 	lexSkipToken( )
@@ -175,15 +173,12 @@ function cEndStatement as integer
   	select case as const lexGetToken( )
   	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
   		 FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
-  		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-
+		errlevel = NULL
   	case else
   		errlevel = cExpression( )
   	end select
 
-    ''
 	function = rtlExitApp( errlevel )
-
 end function
 
 '':::::

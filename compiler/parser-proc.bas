@@ -476,8 +476,14 @@ private function hDoNesting _
 
 end function
 
-private sub cNakedAttribute(byval pattrib as integer ptr)
-	if (hMatchText("NAKED")) then
+private sub cNakedAttribute( byval pattrib as integer ptr )
+	if( ucase( *lexGetText( ) ) = "NAKED" ) then
+		'' Naked isn't supported by the C backend, because gcc doesn't
+		'' support __attribute__((naked)) on x86.
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC )
+		end if
+		lexSkipToken( )
 		*pattrib or= FB_SYMBATTRIB_NAKED
 	end if
 end sub
@@ -758,9 +764,6 @@ function cProcHeader _
 		symbSetProcPriority( proc, priority )
 
     end if
-
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
 
     function = proc
 
@@ -1474,9 +1477,6 @@ function cOperatorHeader _
 		end if
 	end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
     function = proc
 
 end function
@@ -1827,9 +1827,6 @@ function cPropertyHeader _
     	end if
     end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
 	setUdtPropertyFlags(parent, is_indexed, is_get)
 
     function = proc
@@ -2033,25 +2030,15 @@ function cCtorHeader _
     	end if
 	end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
     function = proc
 
 end function
 
-'':::::
-''ProcStmtBegin	  =	  (PRIVATE|PUBLIC)? STATIC?
-''						(SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
-''
-function cProcStmtBegin _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+'' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
+''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
+function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer tkn = any, is_nested = any
     dim as FBSYMBOL ptr proc = any
-    dim as ASTNODE ptr procnode = any
     dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
@@ -2159,38 +2146,20 @@ function cProcStmtBegin _
 	end if
 
 	'' emit proc setup
-	procnode = astProcBegin( proc, FALSE )
-	if( procnode = NULL ) then
-		exit function
-	end if
+	astProcBegin( proc, FALSE )
 
 	'' push to stmt stack
-	stk = cCompStmtPush( FB_TK_FUNCTION, _
-						 FB_CMPSTMT_MASK_DEFAULT or FB_CMPSTMT_MASK_DATA )
-
+	stk = cCompStmtPush( FB_TK_FUNCTION, FB_CMPSTMT_MASK_DEFAULT or FB_CMPSTMT_MASK_DATA )
 	stk->proc.tkn = tkn
-	stk->proc.node = procnode
 	stk->proc.is_nested = is_nested
-
-	stk->proc.cmplabel = NULL
-	stk->proc.endlabel = astGetProcExitlabel( procnode )
-
-	'' init
-	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
 
 	function = TRUE
-
 end function
 
-'':::::
-''ProcStmtEnd	  =	  END (SUB | FUNCTION) .
-''
-function cProcStmtEnd _
-	( _
-		_
-	) as integer static
-
-	dim as FB_CMPSTMTSTK ptr stk
+'' ProcStmtEnd  =  END (SUB | FUNCTION) .
+function cProcStmtEnd( ) as integer
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -2235,7 +2204,7 @@ function cProcStmtEnd _
 	end if
 
     '' always finish
-	function = astProcEnd( stk->proc.node, FALSE )
+	function = astProcEnd( FALSE )
 
 	'' was the namespace changed?
 	if( stk->proc.is_nested ) then

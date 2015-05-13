@@ -61,17 +61,15 @@ private sub hAddRhsParam _
 
 end sub
 
-'':::::
 private function hProcBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
-		byval attrib as FB_SYMBATTRIB, _
 		byval add_rhs as integer, _
-		byref proc as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+		byval attrib as FB_SYMBATTRIB _
+	) as FBSYMBOL ptr
 
-	dim as ASTNODE ptr node
+	dim as FBSYMBOL ptr proc = any
 
 	symbNestBegin( parent, TRUE )
 
@@ -102,46 +100,25 @@ private function hProcBegin _
 		                        FB_SYMBOPT_DECLARING )
 	end if
 
-    ''
-	node = astProcBegin( proc, FALSE )
+	astProcBegin( proc, FALSE )
 
-    symbSetProcIncFile( proc, env.inf.incfile )
-
-   	astAdd( astNewLABEL( astGetProcInitlabel( node ) ) )
-
-	function = node
-
+	function = proc
 end function
 
-'':::::
-private sub hProcEnd _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval node as ASTNODE ptr _
-	)
-
+private sub hProcEnd( )
 	'' end cons|destructor
-	astProcEnd( node, FALSE )
-
+	astProcEnd( FALSE )
 	symbNestEnd( TRUE )
-
 end sub
 
-':::::
-private sub hCopyCtorBody _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr this_, src
+private sub hCopyCtorBody( byval proc as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr this_ = any, src = any
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	src = symbGetParamVar( symbGetProcTailParam( proc ) )
 
-    '' assign op overload will do the rest
-
+	'' assign op overload will do the rest
     astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
-
 end sub
 
 '':::::
@@ -150,19 +127,13 @@ private sub hAddCtor _
 		byval sym as FBSYMBOL ptr, _
 		byval is_ctor as integer, _
 		byval is_copyctor as integer _
-	) static
+	)
 
-	dim as ASTNODE ptr proc_node
-	dim as FBSYMBOL ptr proc
+	dim as FBSYMBOL ptr proc = any
 
-    proc_node = hProcBegin( sym, _
-    						INVALID, _
-    						iif( is_ctor, _
-    							 FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR, _
-    							 FB_SYMBATTRIB_DESTRUCTOR ), _
-    						is_copyctor, _
-    						proc )
-
+	proc = hProcBegin( sym, INVALID, is_copyctor, _
+	                   iif( is_ctor, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR, _
+	                                 FB_SYMBATTRIB_DESTRUCTOR ) )
 
 	'' call to the static ctor will be added by the ast
 
@@ -172,7 +143,7 @@ private sub hAddCtor _
 
 	'' ditto for the dtor's
 
-	hProcEnd( sym, proc_node )
+	hProcEnd( )
 
 	'' hasC|Dtor flags will be set by symbAddCtor()
 
@@ -190,7 +161,7 @@ private sub hAddRTTI _
 	var mname = *symbGetMangledName( sym )
 	
 	if( sym->udt.ext = NULL ) then
-		sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+		sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 	end if
 
 	'' create a virtual-table struct (extends $fb_BaseVT)
@@ -393,54 +364,25 @@ private sub hCloneBody _
 
 end sub
 
-'':::::
-private sub hAddClone _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	dim as ASTNODE ptr proc_node
-	dim as FBSYMBOL ptr proc
-
-    proc_node = hProcBegin( sym, _
-    						AST_OP_ASSIGN, _
-    						FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR, _
-    						TRUE, _
-    						proc )
-
+private sub hAddClone( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr proc = any
+	proc = hProcBegin( sym, AST_OP_ASSIGN, TRUE, _
+	                   FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
 	hCloneBody( sym, proc )
-
-	hProcEnd( sym, proc_node )
-
+	hProcEnd( )
 	symbSetCantUndef( sym )
-
 end sub
 
-'':::::
-sub symbCompAddDefDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) 
-	
+sub symbCompAddDefDtor( byval sym as FBSYMBOL ptr )
 	hAddCtor( sym, FALSE, FALSE )
-	
 end sub
 
-'':::::
-sub symbCompAddDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) 
-	
+sub symbCompAddDefCtor( byval sym as FBSYMBOL ptr )
 	hAddCtor( sym, TRUE, FALSE )
-	
 end sub
 
-'':::::
-sub symbCompAddDefMembers _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
+sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
+	dim as integer base_without_defaultctor = any
 
 	'' RTTI?
 	if( symbGetHasRTTI( sym ) ) then
@@ -448,37 +390,74 @@ sub symbCompAddDefMembers _
 		if( sym <> symb.rtti.fb_object ) then
 			hAddRTTI( sym )
 		end if
-	End if
-	
-	'' has fields with ctors?
-	if( symbGetUDTHasCtorField( sym ) ) then
-		'' any ctor explicitly defined?
-		if( symbGetHasCtor( sym ) = FALSE ) then
-			'' no default ctor?
-			if( symbGetCompDefCtor( sym ) = NULL ) then
-				hAddCtor( sym, TRUE, FALSE )
-			end if
-		end if
+	end if
 
-		'' must be defined before the copy ctor
+	''
+	'' If this UDT has fields with ctors, we have to make sure to add
+	'' default and copy ctors aswell as a dtor and a Let operator to the
+	'' parent, if the user didn't do that yet. This ensures the fields'
+	'' ctors/dtors will be called and also that they will be copied
+	'' correctly: In case they have Let overloads themselves, we can't just
+	'' do the default memcpy(). (If the parent already has a Let overload,
+	'' we can assume it's correct already)
+	''
+	'' Besides that, in case there were any field initializers specified,
+	'' we want to add a default constructor if there isn't any constructor
+	'' yet, to ensure the field initializers are getting used.
+	''
+
+	'' Derived?
+	if( sym->udt.base ) then
+		assert( symbIsField( sym->udt.base ) )
+		assert( symbGetType( sym->udt.base ) = FB_DATATYPE_STRUCT )
+		assert( symbIsStruct( sym->udt.base->subtype ) )
+		'' No default ctor?
+		base_without_defaultctor = (symbGetCompDefCtor( sym->udt.base->subtype ) = NULL)
+	else
+		base_without_defaultctor = FALSE
+	end if
+
+	'' Ctor/inited fields and no ctor yet?
+	if( (symbGetUDTHasCtorField( sym ) or symbGetUDTHasInitedField( sym )) and _
+	    (not symbGetHasCtor( sym )) ) then
+		if( base_without_defaultctor ) then
+			'' Cannot implicitly generate a default ctor,
+			'' show a nicer error message than astProcEnd() would.
+			'' It would report the missing BASE() initializer,
+			'' but from here we can show a more useful error.
+			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
+		else
+			'' Add default ctor
+			hAddCtor( sym, TRUE, FALSE )
+		end if
+	end if
+
+	if( symbGetUDTHasCtorField( sym ) ) then
+		'' Let operator (must be defined before the copy ctor)
 		if( symbGetCompCloneProc( sym ) = NULL ) then
 			hAddClone( sym )
 		end if
 
+		'' Copy ctor
 		if( symbGetCompCopyCtor( sym ) = NULL ) then
-			hAddCtor( sym, TRUE, TRUE )
+			if( base_without_defaultctor ) then
+				'' Cannot implicitly generate a copy ctor,
+				'' same as with default ctor above.
+				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
+			else
+				hAddCtor( sym, TRUE, TRUE )
+			end if
 		end if
-
 	end if
 
 	'' has fields with dtors?
 	if( symbGetUDTHasDtorField( sym ) ) then
 		'' no default dtor explicitly defined?
 		if( symbGetCompDtor( sym ) = NULL ) then
+			'' Dtor
 			hAddCtor( sym, FALSE, FALSE )
 		end if
 	end if
-	
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1316,7 +1295,7 @@ sub symbCompRTTIInit()
 
 	'' update the obj struct RTTI (used to create the link with base classes)
 	if( obj->udt.ext = NULL ) then
-		obj->udt.ext = callocate( sizeof( FB_STRUCTEXT ) )
+		obj->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
 	end if
 
 	obj->udt.ext->rtti = objRTTI     

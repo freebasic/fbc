@@ -225,7 +225,7 @@ declare function DestroyPropertySheetPage alias "DestroyPropertySheetPage" (byva
 #define PropSheet_Apply(d) SendMessage(d,PSM_APPLY,0,0)
 #define PropSheet_CancelToClose(d) SendMessage(d,PSM_CANCELTOCLOSE,0,0)
 #define PropSheet_Changed(d,w) SendMessage(d,PSM_CHANGED,cuint( w),0)
-#define PropSheet_GetCurrentPageHwnd(d) cptr(HWND, SendMessage(d,PSM_GETCURRENTPAGEHWND,0,0)
+#define PropSheet_GetCurrentPageHwnd(d) cptr(HWND, SendMessage(d,PSM_GETCURRENTPAGEHWND,0,0))
 #define PropSheet_GetTabControl(d) cptr(HWND, SendMessage(d,PSM_GETTABCONTROL,0,0))
 #define PropSheet_IsDialogMessage(d,m) SendMessage(d,PSM_ISDIALOGMESSAGE,0,cint( m))
 #define PropSheet_PressButton(d,i) SendMessage(d,PSM_PRESSBUTTON,i,0)

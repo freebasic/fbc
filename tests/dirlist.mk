@@ -33,6 +33,7 @@ structs \
 swap \
 threads \
 typedef \
+visibility \
 wstring
 
 DIRLIST_QB := \

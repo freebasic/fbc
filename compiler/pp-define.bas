@@ -70,7 +70,7 @@ private function hLoadMacro _
     dim as FB_DEFTOK ptr dt = any
     dim as FBTOKEN t = any
     dim as LEXPP_ARGTB ptr argtb = any
-    dim as integer prntcnt = any, num = any, doskip = any, reached_vararg = any, is_variadic = any
+	dim as integer prntcnt = any, num = any, reached_vararg = any, is_variadic = any
     dim as zstring ptr argtext = any
     static as string text
 
@@ -103,9 +103,10 @@ private function hLoadMacro _
     is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
 	'' for each arg
-	num = 0
+	num = 0   '' num represents the current last cleared/used entry in the argtb
 	do
-		if( argtb <> NULL ) then
+		if( argtb ) then
+			'' argtb entries must be cleared! (it's a NOCLEAR list)
 			DZstrZero( argtb->tb(num).text )
 		end if
 
@@ -131,21 +132,27 @@ private function hLoadMacro _
 			'' )
 			case CHAR_RPRNT
 				prntcnt -= 1
+				'' Closing ')'?
 				if( prntcnt = 0 ) then
 					exit do
 				end if
 
 			'' ,
 			case CHAR_COMMA
+				'' A comma indicates the next arg, so we should
+				'' end the current arg now, unless we're at the
+				'' "..." vararg, which just "absorbs" everything
+				'' until the closing ')'.
 				if( prntcnt = 1 ) then
-                    if( reached_vararg = FALSE ) then
-                        exit do
-                    end if
+					if( reached_vararg = FALSE ) then
+						exit do
+					end if
 				end if
 
-			''
 			case FB_TK_EOL, FB_TK_EOF
 				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				'' Recovery: pretend to be at the closing ')'
+				prntcnt = 0
 				exit do
 			end select
 
@@ -158,107 +165,98 @@ private function hLoadMacro _
 	    	end if
 		loop
 
-		''
-		if( argtb <> NULL ) then
-			'' trim
-			with argtb->tb(num)
-
-				if( .text.data = NULL ) then
-					'' Argument to '...' (variadic macros) can be empty
-					if( reached_vararg = FALSE ) then
-						hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-					end if
-				else
+		if( argtb ) then
+			with( argtb->tb(num) )
+				'' Arguments are allowed to be empty, so must check for NULL
+				if( .text.data ) then
+					'' Trim space
 					if( (.text.data[0][0] = CHAR_SPACE) or _
 						(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
 						DZstrAssign( .text, trim( *.text.data ) )
 					end if
 				end if
-
 			end with
 		end if
 
-		'' closing parentheses?
-		if( (prntcnt = 0) or reached_vararg ) then
+		'' Reached closing parentheses?
+		if( prntcnt = 0 ) then
+			'' End of param list not yet reached?
+			if( nextparam ) then
+				'' Too few args specified. This is an error, unless it's
+				'' only the "..." vararg param that wasn't given any arg.
+
+				'' Not the last param, or not variadic?
+				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
+					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+				end if
+
+				'' Clear any missing args
+				assert( num < (symbGetDefineParams( s ) - 1) )
+				do
+					num += 1
+					'' argtb entries must be cleared! (it's a NOCLEAR list)
+					DZstrZero( argtb->tb(num).text )
+				loop while( num < (symbGetDefineParams( s ) - 1) )
+			end if
+
 			exit do
 		end if
 
-		'' next
-		param = nextparam
-		num += 1
-
-		'' too many args?
-		if( param = NULL ) then
+		'' Reached end of param list?
+		if( nextparam = NULL ) then
+			'' Too many args specified
 			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 			'' error recovery: skip until next ')'
 			hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
 			exit do
 		end if
+
+		'' Next
+		param = nextparam
+		num += 1
 	loop
 
-	'' too few args?
-	doskip = FALSE
-    if( param <> NULL ) then
-        if( nextparam <> NULL ) then
-            '' Is the next param the last one and is it "..."?
-            if( (symbGetDefParamNext( nextparam ) = NULL) andalso is_variadic ) then
-                '' Nothing was passed for the "..." param (or else we wouldn't
-                '' arrive here), so it'll be empty. Just need to make sure the
-                '' argument text is cleared, or else it can contain data from the
-                '' previous expansion...
-                num += 1
-                if( argtb <> NULL ) then
-                    DZstrReset( argtb->tb(num).text )
-                end if
-            else
-			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-			doskip = TRUE
-            end if
-        end if
-    end if
-
-	''
 	text = ""
 
-	if( argtb <> NULL ) then
-		if( doskip = FALSE ) then
-			dt = symbGetDefineHeadToken( s )
-			do while( dt <> NULL )
-				select case as const symbGetDefTokType( dt )
-				'' parameter?
-				case FB_DEFTOK_TYPE_PARAM
-                    argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+	if( argtb ) then
+		dt = symbGetDefineHeadToken( s )
+		do while( dt )
+			select case as const( symbGetDefTokType( dt ) )
+			'' parameter?
+			case FB_DEFTOK_TYPE_PARAM
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-                    '' Only if not empty ("..." param can be empty)
-                    if( argtext <> NULL ) then
-                        text += *argtext
-                    end if
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					text += *argtext
+				end if
 
-				'' stringize parameter?
-				case FB_DEFTOK_TYPE_PARAMSTR
-                    argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+			'' stringize parameter?
+			case FB_DEFTOK_TYPE_PARAMSTR
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-                    '' Only if not empty ("..." param can be empty)
-                    if( argtext <> NULL ) then
-                        '' don't escape, preserve the sequencies as-is
-                        text += "$" + QUOTE
-                        text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
-                        text += QUOTE
-                    end if
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+					text += "$" + QUOTE
+					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+					text += QUOTE
+				end if
 
-				'' ordinary text..
-				case FB_DEFTOK_TYPE_TEX
-					text += *symbGetDefTokText( dt )
+			'' ordinary text..
+			case FB_DEFTOK_TYPE_TEX
+				text += *symbGetDefTokText( dt )
 
-				'' unicode text?
-				case FB_DEFTOK_TYPE_TEXW
-					text += str( *symbGetDefTokTextW( dt ) )
-				end select
+			'' unicode text?
+			case FB_DEFTOK_TYPE_TEXW
+				text += str( *symbGetDefTokTextW( dt ) )
+			end select
 
-				'' next
-				dt = symbGetDefTokNext( dt )
-			loop
-		end if
+			'' next
+			dt = symbGetDefTokNext( dt )
+		loop
 
 		'' free args text
 		do while( num > 0 )
@@ -267,11 +265,6 @@ private function hLoadMacro _
 		loop
 
 		listDelNode( @pp.argtblist, argtb )
-	end if
-
-	''
-	if( doskip ) then
-		return 0
 	end if
 
 	if( lex.ctx->deflen = 0 ) then
@@ -385,7 +378,7 @@ private function hLoadMacroW _
     dim as FB_DEFTOK ptr dt = any
     dim as FBTOKEN t = any
     dim as LEXPP_ARGTB ptr argtb = any
-    dim as integer prntcnt = any, lgt = any, num = any, doskip = any, reached_vararg = any, is_variadic = any
+	dim as integer prntcnt = any, lgt = any, num = any, reached_vararg = any, is_variadic = any
     dim as wstring ptr argtext = any
     static as DWSTRING text
 
@@ -418,9 +411,10 @@ private function hLoadMacroW _
     is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
 	'' for each arg
-	num = 0
+	num = 0    '' num represents the current last cleared/used entry in the argtb
 	do
-		if( argtb <> NULL ) then
+		if( argtb ) then
+			'' argtb entries must be cleared! (it's a NOCLEAR list)
 			DWstrZero( argtb->tb(num).textw )
 		end if
 
@@ -446,21 +440,28 @@ private function hLoadMacroW _
 			'' )
 			case CHAR_RPRNT
 				prntcnt -= 1
+				'' Closing ')'?
 				if( prntcnt = 0 ) then
 					exit do
 				end if
 
 			'' ,
 			case CHAR_COMMA
+				'' A comma indicates the next arg, so we should
+				'' end the current arg now, unless we're at the
+				'' "..." vararg, which just "absorbs" everything
+				'' until the closing ')'.
 				if( prntcnt = 1 ) then
-                    if( reached_vararg = FALSE ) then
-                        exit do
-                    end if
+					if( reached_vararg = FALSE ) then
+						exit do
+					end if
 				end if
 
 			''
 			case FB_TK_EOL, FB_TK_EOF
 				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				'' Recovery: pretend to be at the closing ')'
+				prntcnt = 0
 				exit do
 			end select
 
@@ -473,15 +474,11 @@ private function hLoadMacroW _
     		end if
 		loop
 
-		if( argtb <> NULL ) then
-			'' trim
-			with argtb->tb(num)
-				if( .textw.data = NULL ) then
-                    '' Argument to '...' (variadic macros) can be empty
-                    if( reached_vararg = FALSE ) then
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-                    end if
-				else
+		if( argtb ) then
+			with( argtb->tb(num) )
+				'' Arguments are allowed to be empty, so must check for NULL
+				if( .textw.data ) then
+					'' Trim space
 					if( (.textw.data[0][0] = CHAR_SPACE) or _
 						(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
 						DWstrAssign( .textw, trim( *.textw.data ) )
@@ -490,87 +487,86 @@ private function hLoadMacroW _
 			end with
 		end if
 
-		'' closing parentheses?
-		if( (prntcnt = 0) or reached_vararg ) then
+		'' Reached closing parentheses?
+		if( prntcnt = 0 ) then
+			'' End of param list not yet reached?
+			if( nextparam ) then
+				'' Too few args specified. This is an error, unless it's
+				'' only the "..." vararg param that wasn't given any arg.
+
+				'' Not the last param, or not variadic?
+				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
+					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+				end if
+
+				'' Clear any missing args
+				assert( num < (symbGetDefineParams( s ) - 1) )
+				do
+					num += 1
+					'' argtb entries must be cleared! (it's a NOCLEAR list)
+					DWstrZero( argtb->tb(num).textw )
+				loop while( num < (symbGetDefineParams( s ) - 1) )
+			end if
+
 			exit do
 		end if
 
-		'' next
-		param = nextparam
-		num += 1
-
-		'' too many args?
-		if( param = NULL ) then
+		'' Reached end of param list?
+		if( nextparam = NULL ) then
+			'' Too many args specified
 			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 			'' error recovery: skip until next ')'
 			hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
 			exit do
 		end if
-	loop
 
-	'' too few args?
-	doskip = FALSE
-    if( param <> NULL ) then
-        if( nextparam <> NULL ) then
-            '' Is the next param the last one and is it "..."?
-            if( (symbGetDefParamNext( nextparam ) = NULL) andalso is_variadic ) then
-                '' Nothing was passed for the "..." param (or else we wouldn't
-                '' arrive here), so it'll be empty. Just need to make sure the
-                '' argument text is cleared, or else it can contain data from the
-                '' previous expansion...
-                num += 1
-                if( argtb <> NULL ) then
-                    DWstrReset( argtb->tb(num).textw )
-                end if
-            else
-			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-			doskip = TRUE
-            end if
-        end if
-    end if
+		'' Next
+		param = nextparam
+		num += 1
+	loop
 
 	'' text = ""
 	DWstrAssign( text, NULL )
 
-	if( argtb <> NULL ) then
-		if( doskip = FALSE ) then
-			dt = symbGetDefineHeadToken( s )
-			do while( dt <> NULL )
-				select case as const symbGetDefTokType( dt )
-				'' parameter?
-				case FB_DEFTOK_TYPE_PARAM
-                    argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+	if( argtb ) then
+		dt = symbGetDefineHeadToken( s )
+		do while( dt )
+			select case as const( symbGetDefTokType( dt ) )
+			'' parameter?
+			case FB_DEFTOK_TYPE_PARAM
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-                    '' Only if not empty ("..." param can be empty)
-                    if( argtext <> NULL ) then
-                        DWstrConcatAssign( text, argtext )
-                    end if
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					DWstrConcatAssign( text, argtext )
+				end if
 
-				'' stringize parameter?
-				case FB_DEFTOK_TYPE_PARAMSTR
-                    argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+			'' stringize parameter?
+			case FB_DEFTOK_TYPE_PARAMSTR
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-                    '' Only if not empty ("..." param can be empty)
-                    if( argtext <> NULL ) then
-                        '' don't escape, preserve the sequencies as-is
-                        DWstrConcatAssign( text, "$" + QUOTE )
-                        DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
-                        DWstrConcatAssign( text, QUOTE )
-                    end if
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+					DWstrConcatAssign( text, "$" + QUOTE )
+					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+					DWstrConcatAssign( text, QUOTE )
+				end if
 
-				'' ordinary text..
-				case FB_DEFTOK_TYPE_TEX
-					DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
+			'' ordinary text..
+			case FB_DEFTOK_TYPE_TEX
+				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
 
-				'' unicode text?
-				case FB_DEFTOK_TYPE_TEXW
-               		DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
-				end select
+			'' unicode text?
+			case FB_DEFTOK_TYPE_TEXW
+				DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
+			end select
 
-				'' next
-				dt = symbGetDefTokNext( dt )
-			loop
-		end if
+			'' next
+			dt = symbGetDefTokNext( dt )
+		loop
 
 		'' free args text
 		do while( num > 0 )
@@ -579,11 +575,6 @@ private function hLoadMacroW _
 		loop
 
 		listDelNode( @pp.argtblist, argtb )
-	end if
-
-	''
-	if( doskip ) then
-		return NULL
 	end if
 
 	if( lex.ctx->deflen = 0 ) then

@@ -77,12 +77,7 @@ declare function hGetFileExt _
 		byval fname as zstring ptr _
 	) as string
 
-declare function hRevertSlash _
-	( _
-		byval s as zstring ptr, _
-		byval allocnew as integer, _
-		byval repchar as integer _
-	) as zstring ptr
+declare sub hReplaceSlash( byval s as zstring ptr, byval char as integer )
 
 declare function pathStripDiv(byref path as string) as string
 
@@ -106,13 +101,8 @@ declare function hCheckFileFormat _
 		byval f as integer _
 	) as integer
 
-declare function hCurDir _
-	( _
-	) as string
-
-declare function hEnvDir _
-	( _
-	) as string
+declare function hCurDir( ) as string
+declare function hEnvDir( ) as string
 
 declare function hHexUInt _
 	( _

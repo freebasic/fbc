@@ -147,7 +147,7 @@ private function hCheckWstringOps _
 
 		'' remap the type or the optimizer will
 		'' assume it's a string assignment
-		ldtype = typeJoin( ldtype, env.target.wchar.type )
+		ldtype = typeJoin( ldtype, env.target.wchar )
 
 	else
 		'' same as above..
@@ -155,7 +155,7 @@ private function hCheckWstringOps _
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, env.target.wchar.type )
+		rdtype = typeJoin( rdtype, env.target.wchar )
 	end if
 
 	function = TRUE
@@ -621,7 +621,7 @@ function astNewASSIGN _
 			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
 				if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
 					if( ldtype <> FB_DATATYPE_ULONGINT ) then
-						doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
+						doconv = irGetOption( IR_OPT_FPUCONV )
 					end if
 				end if
 			end if

@@ -1,11 +1,8 @@
 # include "fbcu.bi"
 
+namespace fbc_tests.overload_.simple
 
-
-
-namespace fbc_tests.overloads.simple
-
-enum RESULT	
+enum RESULT
 	RESULT_INT
 	RESULT_UINT
 	RESULT_SNG
@@ -32,9 +29,7 @@ end enum
 
 # macro D_PROC(ArgT_, ReturnValue_)
 function proc overload ( byval arg as ArgT_ ) as RESULT
-
 	function = ReturnValue_
-
 end function
 # endmacro
 
@@ -58,8 +53,7 @@ D_PROC(enum_b ptr, RESULT_ENUM_BPTR)
 
 # undef D_PROC
 
-sub test_simple cdecl ()
-
+sub test cdecl( )
 	dim intvar as integer
 	dim uintvar as uinteger
 	dim fltvar as single
@@ -67,7 +61,7 @@ sub test_simple cdecl ()
 	dim lngvar as longint
 	dim barvar as ENUM_A
 	dim bazvar as ENUM_B
-	
+
 	CU_ASSERT_EQUAL( proc( intvar ), RESULT_INT )
 	CU_ASSERT_EQUAL( proc( uintvar ), RESULT_UINT )
 	CU_ASSERT_EQUAL( proc( fltvar ), RESULT_SNG )
@@ -75,7 +69,7 @@ sub test_simple cdecl ()
 	CU_ASSERT_EQUAL( proc( lngvar ), RESULT_LNG )
 	CU_ASSERT_EQUAL( proc( barvar ), RESULT_ENUM_A )
 	CU_ASSERT_EQUAL( proc( bazvar ), RESULT_ENUM_B )
-	
+
 	dim intptrvar as integer ptr
 	dim uintptrvar as uinteger ptr
 	dim fltptrvar as single ptr
@@ -83,7 +77,7 @@ sub test_simple cdecl ()
 	dim lngptrvar as longint ptr
 	dim barptrvar as ENUM_A ptr
 	dim bazptrvar as ENUM_B ptr
-	
+
 	CU_ASSERT_EQUAL( proc( intptrvar ), RESULT_INTPTR )
 	CU_ASSERT_EQUAL( proc( uintptrvar ), RESULT_UINTPTR )
 	CU_ASSERT_EQUAL( proc( fltptrvar ), RESULT_SNGPTR )
@@ -91,17 +85,14 @@ sub test_simple cdecl ()
 	CU_ASSERT_EQUAL( proc( lngptrvar ), RESULT_LNGPTR )
 	CU_ASSERT_EQUAL( proc( barptrvar ), RESULT_ENUM_APTR )
 	CU_ASSERT_EQUAL( proc( bazptrvar ), RESULT_ENUM_BPTR )
-	
+
 	CU_ASSERT_EQUAL( proc( cdbl( intvar ) ), RESULT_DBL )
 	CU_ASSERT_EQUAL( proc( intvar + dblvar ), RESULT_DBL )
-	
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fb-tests-overload:simple")
-	fbcu.add_test("test_simple", @test_simple)
-
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/overload/simple" )
+	fbcu.add_test( "simple", @test )
 end sub
 
 end namespace

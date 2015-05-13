@@ -11,7 +11,7 @@ Declare Function wxHtmlHelpData_AddBook WXCALL Alias "wxHtmlHelpData_AddBook" (s
 Declare Function wxHtmlHelpData_FindPageByName WXCALL Alias "wxHtmlHelpData_FindPageByName" (self As wxHtmlHelpData Ptr, page As wxString Ptr) As wxString Ptr
 Declare Function wxHtmlHelpData_FindPageById WXCALL Alias "wxHtmlHelpData_FindPageById" (self As wxHtmlHelpData Ptr, id As wxInt) As wxString Ptr
 
-' class wxHtmlBookRecArray )(NOTE: that this does not return a copy but the value itself.)
+' class wxHtmlBookRecArray (NOTE: that this does not return a copy but the value itself.)
 Declare Function wxHtmlHelpData_GetBookRecArray WXCALL Alias "wxHtmlHelpData_GetBookRecArray" (self As wxHtmlHelpData Ptr) As wxHtmlBookRecArray Ptr
 Declare Function wxHtmlBookRecords_GetCount WXCALL Alias "wxHtmlBookRecords_GetCount" (self As wxHtmlBookRecArray Ptr) As wxInt
 Declare Function wxHtmlBookRecords_GetItem WXCALL Alias "wxHtmlBookRecords_GetItem" (self As wxHtmlBookRecArray Ptr, index As wxInt) As wxHtmlBookRecord Ptr

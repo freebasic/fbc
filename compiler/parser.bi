@@ -64,9 +64,7 @@ end type
 
 type FB_CMPSTMT_PROC
 	tkn				as FB_TOKEN
-	node			as ASTNODE ptr
 	is_nested		as integer
-	cmplabel		as FBSYMBOL ptr
 	endlabel		as FBSYMBOL ptr
 	last			as FB_CMPSTMTSTK_ ptr
 end type
@@ -327,11 +325,19 @@ declare function cInitializer _
 		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
+declare function cTypeOrExpression _
+	( _
+		byval is_len as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	) as ASTNODE ptr
+
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer = NULL _
+		byref lgt as integer _
 	)
 
 declare function cSymbolType _
@@ -499,23 +505,10 @@ declare function cSelectStmtEnd _
 declare sub cSelConstStmtBegin()
 declare sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
-
-declare function cProcStmtBegin _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
-declare function cProcStmtEnd _
-	( _
-		_
-	) as integer
-
+declare function cProcStmtBegin( byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE ) as integer
+declare function cProcStmtEnd( ) as integer
 declare sub cExitStatement()
-
-declare function cEndStatement _
-	( _
-		_
-	) as integer
+declare function cEndStatement( ) as integer
 
 declare sub cContinueStatement()
 declare sub cWithStmtBegin()
@@ -641,11 +634,6 @@ declare function cHighestPrecExpr _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-declare function cPtrTypeCastingExpr _
-	( _
-		_
-	) as ASTNODE ptr
-
 declare function cDerefExpression _
 	( _
 		_
@@ -725,15 +713,7 @@ declare function cQuirkFunction _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function cConstant _
-	( _
-		byval chain as FBSYMCHAIN ptr _
-	) as ASTNODE ptr
-
-declare function cConstantEx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function cEnumConstant _
 	( _
@@ -857,12 +837,7 @@ declare function cStrIdxOrMemberDeref _
 	) as ASTNODE ptr
 
 declare sub cAssignment(byval assgexpr as ASTNODE ptr)
-
-declare function cAssignFunctResult _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval is_return as integer _
-	) as integer
+declare function cAssignFunctResult( byval is_return as integer ) as integer
 
 declare function cGfxStmt _
 	( _

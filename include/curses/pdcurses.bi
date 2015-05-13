@@ -1055,7 +1055,7 @@ end extern
 #define untouchwin(w) wtouchln(w,0,w->_maxy,FALSE)
 #define waddch(w, c) PDC_chadd( w, c, not SP->raw_out, TRUE )
 #define waddchstr(w, c) waddchnstr( w, c, -1 )
-''''''' #define werase(w) wmove((w),0,0): wclrtobot(w))
+''''''' #define werase(w) wmove((w),0,0): wclrtobot(w)
 ''''''' #define wclear(w) w->_clear = TRUE: werase(w)
 #define wechochar(w,c) iif( waddch(w,c) = PDC_ERR, PDC_ERR, wrefresh(w) )
 #define winch(w) w->_y[w->_cury][w->_curx]

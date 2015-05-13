@@ -27,6 +27,19 @@ function astNewIIF _
 		exit function
 	end if
 
+	'' Constant condition?
+	if( astIsCONST( condexpr ) ) then
+		if( astCONSTIsTrue( condexpr ) ) then
+			astDelTree( falsexpr )
+			function = truexpr
+		else
+			astDelTree( truexpr )
+			function = falsexpr
+		end if
+		astDelTree( condexpr )
+		exit function
+	end if
+
 	true_dtype = astGetFullType( truexpr )
 	false_dtype = astGetFullType( falsexpr )
 

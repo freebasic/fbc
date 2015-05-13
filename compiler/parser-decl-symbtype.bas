@@ -109,45 +109,89 @@ function cSymbolTypeFuncPtr _
 
 end function
 
-sub cTypeOf _
+function cTypeOrExpression _
 	( _
+		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer = NULL _
-	)
+		byref lgt as integer _
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = NULL
-	dim as integer is_type = any
+	dim as ASTNODE ptr expr = any
+	dim as integer maybe_type = any
 
-	'' token after next is operator or '['? 
-	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR andalso lexGetLookAhead( 1 ) <> CHAR_STAR) _
-		orelse lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
-		'' disambiguation: types can't be followed by an operator
-		'' (note: can't check periods here, because it could be a namespace resolution, or '*' because it could be STRING * n)
-		is_type = FALSE
+	'' This is ambiguous because functions/variables may use the same name
+	'' as types, for example STRING and STRING(). The same can happen with
+	'' user-defined types/aliases.
+	'' Disambiguation:
+	''  - Types can't be followed by an operator, except for '*', which can
+	''    be used in 'STRING * N'. Note: we cannot check for {Z|W}STRING
+	''    followed by '*', because '*' also works with {z|w}string typedefs.
+	''  - Types can't be followed by '[' or '(', except for 'TYPEOF(...)'.
+	''  - Note: '.' doesn't make it an expression, because it could be a
+	''    type in a namespace.
+
+	maybe_type = TRUE
+
+	'' Token followed by an operator except '*'?
+	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) and _
+	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) ) then
+		maybe_type = FALSE
 	else
-		is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+		'' Check for some non-operator tokens
+		select case( lexGetLookAhead( 1 ) )
+		case CHAR_LBRACKET    '' [
+			maybe_type = FALSE
+		case CHAR_LPRNT       '' (
+			'' Not a TYPEOF though?
+			maybe_type = (lexGetToken( ) = FB_TK_TYPEOF)
+		end select
 	end if
 
-	'' Just a type? then cSymbolType() did the work
-	if (is_type) then
-		return
+	'' QB quirk: LEN() only takes expressions
+	if( maybe_type and is_len and fbLangIsSet( FB_LANG_QB ) ) then
+		maybe_type = FALSE
 	end if
 
-	'' Parse and check expression
+	if( maybe_type ) then
+		'' Parse as type
+		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) ) then
+			'' Successful -- it's a type, not an expression
+			return NULL
+		end if
+	end if
 
+	'' Parse as expression
 	fbSetCheckArray( FALSE )
-
 	expr = cExpression( )
+	fbSetCheckArray( TRUE )
 	if( expr = NULL ) then
-		fbSetCheckArray( TRUE )
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	fbSetCheckArray( TRUE )
+	function = expr
+end function
 
+sub cTypeOf _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	)
+
+	dim as ASTNODE ptr expr = any
+
+	'' Type or an Expression
+	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+
+	'' Was it a type?
+	if( expr = NULL ) then
+		exit sub
+	end if
+
+	'' Check the expression
 	if( astIsCONST( expr ) ) then
 		lgt 	= rtlCalcExprLen( expr, FALSE )
 		dtype	= astGetDataType( expr )

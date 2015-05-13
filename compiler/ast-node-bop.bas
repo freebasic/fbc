@@ -706,21 +706,11 @@ private function hDoPointerArith _
 			exit function
 		end if
 
-    	'' multiple by length
-		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+		'' multiple by length
+		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt ) )
 
-		'' do op, taking care with the arith if the IR is high-level (ie: the gcc emitter)
-		var n = astNewBOP( op, _
-					   	   iif( irGetOption( IR_OPT_HIGHLEVEL ), _
-					   			astNewCONV( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, p ), _
-					   			p ), _
-					   	   e )
-
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-			n = astNewCONV( astGetDataType( p ), astGetSubType( p ), n )
-		end if
-
-		function = n
+		'' do op
+		function = astNewBOP( op, p, e )
 
     case else
     	'' allow AND and OR??
@@ -963,14 +953,14 @@ function astNewBOP _
     if( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
     	(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
 
-		'' aren't both wstrings?
+		'' not both wstrings?
 		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			if( ldtype = FB_DATATYPE_WCHAR ) then
+			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
 				'' is right a string?
-				is_str = (rdclass = FB_DATACLASS_STRING) or (rdtype = FB_DATATYPE_CHAR)
+				is_str = (rdclass = FB_DATACLASS_STRING) or (typeGet( rdtype ) = FB_DATATYPE_CHAR)
 			else
 				'' is left a string?
-				is_str = (ldclass = FB_DATACLASS_STRING) or (ldtype = FB_DATATYPE_CHAR)
+				is_str = (ldclass = FB_DATACLASS_STRING) or (typeGet( ldtype ) = FB_DATATYPE_CHAR)
 			end if
 		else
 			is_str = TRUE
@@ -1001,18 +991,18 @@ function astNewBOP _
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
 					if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) or _
-						(env.target.wchar.doconv) ) then
+					    env.wchar_doconv ) then
 						return hWstrLiteralConcat( l, r )
 					end if
 				end if
 
-				'' both aren't wstrings?
+				'' not both wstrings?
 				if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 					return rtlWstrConcat( l, ldtype, r, rdtype )
 				end if
 
 				'' result will be always a wstring
-				ldtype = typeJoin( ldtype, FB_DATATYPE_WCHAR )
+				ldtype = typeUnsetIsConst( typeJoin( ldtype, FB_DATATYPE_WCHAR ) )
 				ldclass = FB_DATACLASS_INTEGER
 				rdtype = typeJoin( rdtype, ldtype )
 				rdclass = ldclass
@@ -1021,7 +1011,7 @@ function astNewBOP _
 				'' concatenation will only be done when loading,
 				'' to allow optimizations..
 
-			'' comparation?
+			'' comparison?
 			case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 				'' both literals?
 				if( litsym <> NULL ) then
@@ -1051,14 +1041,14 @@ function astNewBOP _
 				end if
 				'' remap the type or the optimizer can
 				'' make a wrong assumption
-				ldtype = typeJoin( ldtype, env.target.wchar.type )
+				ldtype = typeJoin( ldtype, env.target.wchar )
 
 			else
 				'' same as above..
 				if( r->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
-				rdtype = typeJoin( rdtype, env.target.wchar.type )
+				rdtype = typeJoin( rdtype, env.target.wchar )
 			end if
 		end if
 
@@ -1066,7 +1056,7 @@ function astNewBOP _
     elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
     		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
 
-		'' aren't both strings?
+		'' not both strings?
 		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
@@ -1101,7 +1091,7 @@ function astNewBOP _
 			end if
 
 			'' result will be always an var-len string
-			ldtype = typeJoin( ldtype, FB_DATATYPE_STRING )
+			ldtype = typeUnsetIsConst( typeJoin( ldtype, FB_DATATYPE_STRING ) )
 			ldclass = FB_DATACLASS_STRING
 			rdtype = typeJoin( rdtype, ldtype )
 			rdclass = ldclass
@@ -1110,7 +1100,7 @@ function astNewBOP _
 			'' concatenation will only be done when loading,
 			'' to allow optimizations..
 
-		'' comparation?
+		'' comparison?
 		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 			'' both literals?
 			if( litsym <> NULL ) then
@@ -1195,7 +1185,7 @@ function astNewBOP _
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
 			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
 
-			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+			if( irGetOption( IR_OPT_FPUCONV ) ) then
 				r = astNewCONV( rdtype, NULL, r )
 			else
 				'' if it's an int var, let the FPU do it
@@ -1254,7 +1244,7 @@ function astNewBOP _
 			'' the result type will be always a double
 			if( ldclass = FB_DATACLASS_FPOINT ) then
 
-				if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+				if( irGetOption( IR_OPT_FPUCONV ) ) then
 					dtype   = ldtype
 					subtype = l->subtype
 				else

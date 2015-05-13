@@ -8,9 +8,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function cCastingExpr _
-	( _
-	) as ASTNODE ptr
+declare function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
@@ -213,16 +211,22 @@ function cHighestPrecExpr _
 		case FB_TK_VARPTR, FB_TK_PROCPTR, FB_TK_SADD, FB_TK_STRPTR
 			return cAddrOfExpression( )
 
-		'' CastingExpr
+		'' CAST '(' DataType ',' Expression ')'
 		case FB_TK_CAST
-			expr = cCastingExpr( )
+			'' CAST
+			lexSkipToken( )
+
+			expr = hCast( 0 )
 			if( expr = NULL ) then
 				return NULL
 			end if
 
-		'' PtrTypeCastingExpr
+		'' CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
 		case FB_TK_CPTR
-			expr = cPtrTypeCastingExpr( )
+			'' CPTR
+			lexSkipToken( )
+
+			expr = hCast( AST_CONVOPT_PTRONLY )
 			if( expr = NULL ) then
 				return NULL
 			end if
@@ -247,15 +251,11 @@ function cHighestPrecExpr _
 
 end function
 
-'':::::
-private function hCast _
-	( _
-		byval ptronly as integer _
-	) as ASTNODE ptr
-
-    dim as integer dtype = any, lgt = any
-    dim as FBSYMBOL ptr subtype = any
-    dim as ASTNODE ptr expr = any
+'' '(' DataType ',' Expression ')'
+private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
+	dim as integer dtype = any, lgt = any, errmsg = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr expr = any
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -263,30 +263,29 @@ private function hCast _
 		'' error recovery: skip until ')', fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-	else
-		lexSkipToken( )
 	end if
+	lexSkipToken( )
 
-    '' DataType
-    if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	'' DataType
+	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip until ',', create a fake type
 		hSkipUntil( CHAR_COMMA )
 
-		if( ptronly ) then
+		if( options and AST_CONVOPT_PTRONLY ) then
 			dtype = typeAddrOf( FB_DATATYPE_VOID )
 		else
 			dtype = FB_DATATYPE_INTEGER
 		end if
 		subtype = NULL
-    end if
+	end if
 
 	'' check for invalid types
-	select case typeGet( dtype )
+	select case as const( typeGet( dtype ) )
 	case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		'' error recovery: create a fake type
-		if( ptronly ) then
+		if( options and AST_CONVOPT_PTRONLY ) then
 			dtype = typeAddrOf( FB_DATATYPE_VOID )
 		else
 			dtype = FB_DATATYPE_INTEGER
@@ -298,25 +297,21 @@ private function hCast _
 		 FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
 		 FB_DATATYPE_ENUM
 
-		if( ptronly) then
+		if( options and AST_CONVOPT_PTRONLY ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_CASTTONONPTR ) ) then
 				errReportWarn( FB_WARNINGMSG_CASTTONONPTR )
 			end if
 		end if
 
 	case FB_DATATYPE_POINTER
+		options or= AST_CONVOPT_PTRONLY
 
 	case else
-		if( ptronly) then
+		if( options and AST_CONVOPT_PTRONLY ) then
 			errReportWarn( FB_WARNINGMSG_CASTTONONPTR )
 		end if
 
 	end select
-
-
-	if( typeIsPtr( dtype ) ) then
-		ptronly = TRUE
-	end if
 
 	'' ','
 	if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -325,7 +320,7 @@ private function hCast _
 		lexSkipToken( )
 	end if
 
-	'' expression
+	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
@@ -333,15 +328,21 @@ private function hCast _
 		expr = astNewCONSTz( dtype, subtype )
 	end if
 
-	expr = astNewCONV( dtype, subtype, expr, INVALID, TRUE )
+	options or= AST_CONVOPT_CHECKSTR
+	expr = astNewCONV( dtype, subtype, expr, options, @errmsg )
+	if( expr = NULL ) then
+		if( errmsg = FB_ERRMSG_OK ) then
+			if( options and AST_CONVOPT_PTRONLY ) then
+				errmsg = FB_ERRMSG_EXPECTEDPOINTER
+			else
+				errmsg = FB_ERRMSG_TYPEMISMATCH
+			end if
+		end if
+		errReport( errmsg, TRUE )
 
-    if( expr = NULL ) Then
-		errReport( iif( ptronly, _
-		                FB_ERRMSG_EXPECTEDPOINTER, _
-		                FB_ERRMSG_TYPEMISMATCH ), TRUE )
 		'' error recovery: create a fake node
 		expr = astNewCONSTz( dtype, subtype )
-    end if
+	end if
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -353,37 +354,6 @@ private function hCast _
 	end if
 
 	function = expr
-
-end function
-
-'':::::
-'' CastingExpr	=	CAST '(' DataType ',' Expression ')'
-''
-function cCastingExpr _
-	( _
-		_
-	) as ASTNODE ptr
-
-	'' CAST
-	lexSkipToken( )
-
-	function = hCast( FALSE )
-
-end function
-
-'':::::
-'' PtrTypeCastingExpr	=   CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
-''
-function cPtrTypeCastingExpr _
-	( _
-		_
-	) as ASTNODE ptr
-
-	'' CPTR
-	lexSkipToken( )
-
-	function = hCast( TRUE )
-
 end function
 
 '':::::
@@ -460,7 +430,7 @@ private function hProcPtrBody _
 		return NULL
 	end if
 
-	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, symbGetFullProcName( proc ) )
 	end if
 

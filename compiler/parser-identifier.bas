@@ -209,7 +209,7 @@ function cIdentifier _
     	'' overloaded or the names duplicated, so that check can only
     	'' be done by specific functions)
 		if( parent <> NULL ) then
-			if( symbCheckAccess( parent, sym ) = FALSE ) then
+			if( symbCheckAccess( sym ) = FALSE ) then
 				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 					errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 				end if
@@ -401,9 +401,9 @@ function cParentId _
     		exit do
     	end select
 
-    	'' check visibility
+		'' check visibility
 		if( parent <> NULL ) then
-			if( symbCheckAccess( parent, sym ) = FALSE ) then
+			if( symbCheckAccess( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 			end if
 		end if

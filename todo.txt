@@ -1,8 +1,8 @@
 [ ] add a C backend
-	- MinGW gcc will always add the @N suffix on Stdcall procedures,
-	  thus STDCALL_MS and PASCAL procs will be mangled wrong on Win32.
-	  gcc doesn't seem to have any way to change this, only ld has
-	  --enable-stdcall-fixup (dangerous) and --kill-at (global, not per-function)
+	- MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
+	  rename symbols, however that doesn't work with DLL export tables:
+	  gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
+	  the leading underscore, causing ld errors
 	[x] address of labels (used by the error trapping) must be emitted with 2 "&"'s
 	[x] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
@@ -178,9 +178,6 @@
     - must support RETURN or FUNCTION = to set the result
     - must check the params if passed byval and if they have the right types
 
-[X] add the ... subscript when initializing array so
-    "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
-
 [ ] forward type defs used in byval parms of function ptr type defs shouldn't be an error
     - the prototype mangling must be updated when that occurs, but how to do that fast
       enough? the args would have to be linked to parent (the prototype), but updating
@@ -194,8 +191,6 @@
       side type
     - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
 
-[ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
-
 [ ] passing a temporary string to a zstring ptr should not make yet-another temporary
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d
@@ -207,17 +202,17 @@
       - := must be a new token because the "foo bar : baz" ambiguity
 
 *** *** *** *** ***
-[ ] all functions returning STRING should actually return the FBSTRING
-    object, but we can't code the it in g++, or in Linux we will need to
-    link (and include) the stdc++ lib, that's over 2.5MB big, so it must
-    be done in pure C, using the G++ ABI (ie: FBSTRING has a dtor, so it's
-    never returned or passed by value):
+[ ] All functions returning STRING should actually return the FBSTRING object
+    - it must be coded in plain C to avoid C++ dependencies
     - compiler has to allocate the descriptor as it does now following the gcc ABI
     - any function in the run-time library returning strings will have to be
       modified (chicken-egg problem)
-    - no more run-time allocation of temp descriptors (better with threads)
-    - no more STR_LOCK's (ditto)
-    - str_delete won't check for temp descriptors anymore
+    - allocated on stack instead of using temp descriptors,
+        - better with threads, as no more locking needed in the rtlib
+        - allows STRING results to be passed between multiple rtlibs without
+          memory leaks (e.g. returned from DLL)
+    - no more STR_LOCK's
+    - no more checks for temp descriptors in all rtlib procs taking STRINGs
 
 [ ] fixed-len strings compatible with QB:
     - no null-term, temporaries always created when passing to functions

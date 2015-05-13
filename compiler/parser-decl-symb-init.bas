@@ -258,8 +258,8 @@ private function hArrayInit _
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
-    			'' check visibility
-	    		if( symbCheckAccess( subtype, ctor ) = FALSE ) then
+				'' check visibility
+				if( symbCheckAccess( ctor ) = FALSE ) then
 					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 				end if
 			end if
@@ -428,12 +428,10 @@ private function hUDTInit _
 
 		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
 
-		if( symbCheckAccess( symbGetSubtype( elm ), _
-							 elm ) = FALSE ) then
-
+		if( symbCheckAccess( elm ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if
-        ctx.sym = elm
+		ctx.sym = elm
 
 		'' has ctor?
 		ctx.options and= not FB_INIOPT_ISOBJ

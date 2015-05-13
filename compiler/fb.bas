@@ -101,6 +101,20 @@ declare sub	parserSetCtx ( )
 		) _
 	}
 
+dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
+{ _
+	_ '' id       size_t             wchar               fbcall               stdcall
+	( @"win32"  , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNDERSCORE ), _
+	( @"cygwin" , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNIX or FB_TARGETOPT_UNDERSCORE ), _
+	( @"linux"  , FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ), _
+	( @"dos"    , FB_DATATYPE_ULONG, FB_DATATYPE_UBYTE , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNDERSCORE ), _
+	( @"xbox"   , FB_DATATYPE_ULONG, FB_DATATYPE_UINT  , FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNDERSCORE ), _
+	( @"freebsd", FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ), _
+	( @"openbsd", FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ), _
+	( @"darwin" , FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ), _
+	( @"netbsd" , FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ) _
+}
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -175,9 +189,9 @@ function fbGetLangName _
 
 end function
 
-sub fbInit(byval ismain as integer, byval restarts as integer)
-	strsetInit(@env.libs, FB_INITLIBNODES\4)
-	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
+sub fbInit( byval ismain as integer, byval restarts as integer )
+	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
+	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
 	env.restarts = restarts
 	env.dorestart = FALSE
@@ -187,11 +201,7 @@ sub fbInit(byval ismain as integer, byval restarts as integer)
 	env.includerec = 0
 	env.main.proc = NULL
 
-	if( env.clopt.lang = FB_LANG_FB ) then
-		env.opt.explicit = TRUE
-	else
-		env.opt.explicit = FALSE
-	end if
+	env.opt.explicit = (env.clopt.lang = FB_LANG_FB)
 
 	'' data type remapping
 	if( env.clopt.lang <> FB_LANG_QB ) then
@@ -223,14 +233,9 @@ sub fbInit(byval ismain as integer, byval restarts as integer)
 	env.opt.escapestr		= FALSE
 	env.opt.dynamic			= FALSE
 	env.opt.base = 0
+	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
-	if( env.clopt.lang <> FB_LANG_QB ) then
-		env.opt.gosub = FALSE
-	else
-		env.opt.gosub = TRUE
-	end if
-
-	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
+	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
 
 	parserSetCtx( )
 	symbInit( ismain )
@@ -268,48 +273,12 @@ sub fbEnd()
 	strsetEnd(@env.libpaths)
 end sub
 
-private sub setLangOptions()
+private sub updateLangOptions( )
 	env.lang.opt = langTb(env.clopt.lang).options
 end sub
 
-private sub setTargetOptions()
-	select case as const (env.clopt.target)
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_USHORT
-		env.target.wchar.size = 2
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_DOS
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UBYTE
-		env.target.wchar.size = 1
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_XBOX
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = TRUE
-
-	case else
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = FALSE
-
-	end select
-
-	select case as const (env.clopt.target)
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-		env.target.stdcall = FB_FUNCMODE_STDCALL
-
-	case else
-		env.target.fbcall = FB_FUNCMODE_CDECL
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	end select
+private sub updateTargetOptions( )
+	env.target = targetinfo(env.clopt.target)
 end sub
 
 sub fbGlobalInit()
@@ -343,8 +312,8 @@ sub fbGlobalInit()
 	env.clopt.pponly        = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
-	setLangOptions()
-	setTargetOptions()
+	updateLangOptions( )
+	updateTargetOptions( )
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -408,7 +377,7 @@ sub fbSetOption _
 
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
-		setTargetOptions()
+		updateTargetOptions( )
 
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
@@ -421,7 +390,7 @@ sub fbSetOption _
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
-		setLangOptions()
+		updateLangOptions( )
 
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
@@ -600,6 +569,10 @@ function fbIsCrossComp _
 
 end function
 
+function fbGetTargetId( ) as zstring ptr
+	function = env.target.id
+end function
+
 '':::::
 function fbGetEntryPoint( ) as string static
 
@@ -676,7 +649,8 @@ sub fbCompile _
 
 	dim as double tmr
 
-	env.inf.name = *hRevertSlash( infname, FALSE, asc(FB_HOST_PATHDIV) )
+	env.inf.name = *infname
+	hReplaceSlash( env.inf.name, asc( FB_HOST_PATHDIV ) )
 	env.inf.incfile	= NULL
 	env.inf.ismain = ismain
 
@@ -981,7 +955,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
-	hRevertSlash( incfile, FALSE, asc(FB_HOST_PATHDIV) )
+	hReplaceSlash( incfile, asc( FB_HOST_PATHDIV ) )
 
 	'' #include ONCE
 	if( isonce ) then

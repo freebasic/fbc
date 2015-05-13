@@ -314,6 +314,64 @@ private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astBuildProcAddrof(proc)
 end function
 
+private sub hCheckDefCtor _
+	( _
+		byval ctor as FBSYMBOL ptr, _
+		byval check_access as integer, _
+		byval is_erase as integer _
+	)
+
+	if( ctor = NULL ) then exit sub
+
+	assert( symbIsConstructor( ctor ) )
+
+	if( check_access ) then
+		if( symbCheckAccess( ctor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+		end if
+	end if
+
+	'' Check whether the given default ctor matches the rtlib's FB_DEFCTOR
+	if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASECTORMUSTBECDEL, _
+		                          FB_ERRMSG_REDIMCTORMUSTBECDEL ) )
+	end if
+
+	'' Must have only the THIS ptr parameter
+	if( symbGetProcParams( ctor ) <> 1 ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASECTORMUSTHAVEONEPARAM, _
+		                          FB_ERRMSG_REDIMCTORMUSTHAVEONEPARAM ) )
+	end if
+
+end sub
+
+private sub hCheckDtor _
+	( _
+		byval dtor as FBSYMBOL ptr, _
+		byval check_access as integer, _
+		byval is_erase as integer _
+	)
+
+	if( dtor = NULL ) then exit sub
+
+	assert( symbIsDestructor( dtor ) )
+
+	if( check_access ) then
+		if( symbCheckAccess( dtor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR )
+		end if
+	end if
+
+	'' Check whether the given dtor matches the rtlib's FB_DEFCTOR
+	if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASEDTORMUSTBECDEL, _
+		                          FB_ERRMSG_REDIMDTORMUSTBECDEL ) )
+	end if
+
+	assert( symbGetProcParams( dtor ) = 1 )
+
+end sub
+
 '':::::
 function rtlArrayRedim _
 	( _
@@ -328,7 +386,7 @@ function rtlArrayRedim _
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any
+    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any, subtype = any
     dim as integer dtype = any
 
     function = FALSE
@@ -338,8 +396,14 @@ function rtlArrayRedim _
 	'' only objects get instantiated
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
-		dtor = symbGetCompDtor( symbGetSubtype( s ) )
+		subtype = symbGetSubtype( s )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' Assuming there aren't any other ctors if there is no default one,
+		'' because if it were possible to declare such a dynamic array,
+		'' the rtlib couldn't REDIM it.
+		assert( iif( ctor = NULL, (symbGetHasCtor( subtype ) = FALSE) or (errGetCount( ) > 0), TRUE ) )
 	case else
 		ctor = NULL
 		dtor = NULL
@@ -390,27 +454,18 @@ function rtlArrayRedim _
     	end if
 
     else
-		if( ctor <> NULL ) then
-			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
+		hCheckDefCtor( ctor, FALSE, FALSE )
+		hCheckDtor( dtor, FALSE, FALSE )
 
-		if( dtor <> NULL ) then
-			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
-
-		'' byval ctor as sub()
+		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
     end if
 
 	'' byval dimensions as integer
@@ -492,23 +547,15 @@ function rtlArrayErase _
 					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
 					   				 FB_DATATYPE_INTEGER ), _
 					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    else
-		if( check_access ) then
-			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
-				errReport( FB_ERRMSG_NOACCESSTODTOR )
-			end if
+			exit function
 		end if
+	else
+		hCheckDtor( dtor, check_access, TRUE )
 
-		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-		end if
-
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
     end if
 
 	function = proc
@@ -527,7 +574,7 @@ function rtlArrayClear _
 	
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
-    dim as FBSYMBOL ptr ctor = any, dtor = any
+    dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
 
     function = NULL
 
@@ -536,8 +583,15 @@ function rtlArrayClear _
 	''
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		ctor = symbGetCompDefCtor( astGetSubtype( arrayexpr ) )
-		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+		subtype = astGetSubtype( arrayexpr )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' No default ctor, but others? Then the rtlib cannot just clear
+		'' that array of objects.
+		if( (ctor = NULL) and symbGetHasCtor( subtype ) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+		end if
 	case else
 		ctor = NULL
 		dtor = NULL
@@ -563,39 +617,24 @@ function rtlArrayClear _
 			exit function
 		end if
 	else
-		if( check_access ) then
-			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
-				errReport( FB_ERRMSG_NOACCESSTODTOR )
-			end if
-		end if
-		
-		if( ctor <> NULL ) then
-			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
+		hCheckDefCtor( ctor, check_access, TRUE )
+		hCheckDtor( dtor, check_access, TRUE )
 
-		if( dtor <> NULL ) then
-			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
-
-		'' byval ctor as sub()
+		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
 		'' byval dofill as integer
 		if( astNewARG( proc, astNewCONSTi( dofill, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    		exit function
-    	end if
-    end if
+			exit function
+		end if
+	end if
 
     function = proc
 
@@ -715,4 +754,3 @@ function rtlArrayBoundsCheck _
     function = proc
 
 end function
-

@@ -174,7 +174,7 @@ end type
 #define bfd_get_section_lma(bfd, ptr_) ((ptr_)->lma + 0)
 #define bfd_get_section_alignment(bfd, ptr_) ((ptr_)->alignment_power + 0)
 #define bfd_section_name(bfd, ptr_) (ptr_)->name
-#define bfd_section_size(bfd, ptr_) ((ptr_)->size
+#define bfd_section_size(bfd, ptr_) (ptr_)->size
 #define bfd_get_section_size(ptr_) (ptr_)->size
 #define bfd_section_vma(bfd, ptr_) (ptr_)->vma
 #define bfd_section_lma(bfd, ptr_) (ptr_)->lma
@@ -182,10 +182,10 @@ end type
 #define bfd_get_section_flags(bfd, ptr_) ((ptr_)->flags + 0)
 #define bfd_get_section_userdata(bfd, ptr_) ((ptr_)->userdata)
 #define bfd_is_com_section(ptr_) (((ptr_)->flags and SEC_IS_COMMON) <> 0)
-#define bfd_set_section_vma(bfd, ptr_, val) (ptr_)->vma = (ptr_)->lma = (val)): (ptr_)->user_set_vma = TRUE
+#define bfd_set_section_vma(bfd, ptr_, val) (ptr_)->lma = (val): (ptr_)->vma = (ptr_)->lma: (ptr_)->user_set_vma = TRUE
 #define bfd_set_section_alignment(bfd, ptr_, val) (ptr_)->alignment_power = (val)
 #define bfd_set_section_userdata(bfd, ptr_, val) (ptr_)->userdata = (val)
-#define bfd_get_section_limit(bfd, sec) iif((sec)->rawsize, (sec)->rawsize, (sec)->size) \ bfd_octets_per_byte (bfd))
+#define bfd_get_section_limit(bfd, sec) (iif((sec)->rawsize, (sec)->rawsize, (sec)->size) \ bfd_octets_per_byte (bfd))
 
 type stab_info
 	strings as bfd_strtab_hash ptr

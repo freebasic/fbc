@@ -99,7 +99,7 @@ type VARTYPE as ushort
 type VARIANT_BOOL as short
 type _VARIANT_BOOL as VARIANT_BOOL
 #define VARIANT_TRUE cshort(&hffff)
-#define VARIANT_FALSE cshort((0)
+#define VARIANT_FALSE cshort(0)
 
 type BSTR as OLECHAR ptr
 type wireBSTR as FLAGGED_WORD_BLOB ptr

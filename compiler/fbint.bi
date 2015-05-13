@@ -603,23 +603,18 @@ type FBFILE
 	format			as FBFILE_FORMAT
 end type
 
-type FBTARGET_WCHAR
-	type			as FB_DATATYPE
-	size			as integer
-	doconv			as integer					'' ok to convert literals at compile-time?
-end type
+enum FB_TARGETOPT
+	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
+	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
+end enum
 
 type FBTARGET
-	size_t_type		as FB_DATATYPE
-	wchar			as FBTARGET_WCHAR
-	underprefix		as integer					'' whether symbols are prefixed with an underscore
-
-	'' Target-specific default calling convention, must match the rtlib's FBCALL
-	fbcall          as FB_FUNCMODE
-
-	'' Remap FB_FUNCMODE_STDCALL to FB_FUNCMODE_STDCALL_MS on non-Windows
-	'' systems, to emit stdcall functions without @N, like gcc does.
-	stdcall         as FB_FUNCMODE
+	id              as zstring ptr
+	size_t          as FB_DATATYPE  '' size_t type
+	wchar           as FB_DATATYPE  '' Real wstring data type
+	fbcall          as FB_FUNCMODE  '' Default calling convention, must match the rtlib's FBCALL
+	stdcall         as FB_FUNCMODE  '' Calling convention to use for stdcall (stdcall or stdcallms)
+	options         as FB_TARGETOPT
 end type
 
 type FBOPTION
@@ -633,10 +628,7 @@ type FBOPTION
 end type
 
 type FBMAIN
-	node			as ASTNODE ptr
 	proc			as FBSYMBOL ptr
-	argc			as FBSYMBOL ptr
-	argv			as FBSYMBOL ptr
 	initnode		as ASTNODE ptr
 end type
 
@@ -673,6 +665,7 @@ type FBENV
 
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
+	wchar_doconv		as integer				'' ok to convert literals at compile-time?
 
 	'' Parse-specific things
 
@@ -699,7 +692,6 @@ type FBENV
 	libs			as TSTRSET
 	libpaths		as TSTRSET
 end type
-
 
 #include once "hlp.bi"
 

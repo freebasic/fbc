@@ -223,6 +223,17 @@
 	 	) _
 	 }
 
+private sub hUpdateNewOpSizeParamType( byval op as AST_OP )
+	dim as FBSYMBOL ptr sym = any
+	sym = symbGetCompOpOvlHead( NULL, op )
+	if( sym ) then
+		sym = symbGetProcHeadParam( sym )
+		if( sym ) then
+			symbGetFullType( sym ) = env.target.size_t
+		end if
+	end if
+end sub
+
 '':::::
 sub rtlMemModInit( )
 
@@ -231,24 +242,11 @@ sub rtlMemModInit( )
 	'' remap the new/new[] size param, size_t can be unsigned (int | long),
 	'' making the mangling incompatible..
 
-#macro hRemap(op)
-	scope
-		dim as FBSYMBOL ptr sym = any
-		sym = symbGetCompOpOvlHead( NULL, op )
-		if( sym <> NULL ) then
-			sym = symbGetProcHeadParam( sym )
-			if( sym <> NULL ) then
-				symbGetFullType( sym ) = env.target.size_t_type
-			end if
-		end if
-	end scope
-#endmacro
-
 	'' new
-	hRemap( AST_OP_NEW )
+	hUpdateNewOpSizeParamType( AST_OP_NEW )
 
 	'' new[]
-	hRemap( AST_OP_NEW_VEC )
+	hUpdateNewOpSizeParamType( AST_OP_NEW_VEC )
 
 end sub
 

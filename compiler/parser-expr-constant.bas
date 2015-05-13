@@ -8,14 +8,14 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-function cConstantEx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
+
+	'' check visibility
+	if( symbCheckAccess( sym ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+	end if
 
   	'' ID
   	lexSkipToken( )
@@ -45,25 +45,6 @@ function cConstantEx _
 		return astNewCONSTi( symbGetConstValInt( sym ), dtype, subtype )
 
   	end select
-
-end function
-
-'':::::
-'' Constant       = ID .
-''
-function cConstant _
-	( _
-		byval chain_ as FBSYMCHAIN ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr sym = any
-
-	sym = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
-	if( sym <> NULL ) then
-  		return cConstantEx( sym )
-  	else
-		return NULL
-  	end if
 
 end function
 

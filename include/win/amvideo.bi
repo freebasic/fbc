@@ -198,8 +198,8 @@ end type
 #define SIZE_PREHEADER (FIELD_OFFSET(VIDEOINFOHEADER,bmiHeader))
 #define SIZE_VIDEOHEADER (len(BITMAPINFOHEADER) + SIZE_PREHEADER)
 
-#define WIDTHBYTES(bits) ((cuint(bits)+31) and (not 31)) shr 3)
-#define DIBWIDTHBYTES(bi) cuint(WIDTHBYTES(cuitn(bi).biWidth * cuint(bi.biBitCount))
+#define WIDTHBYTES(bits) (((cuint(bits)+31) and (not 31)) shr 3)
+#define DIBWIDTHBYTES(bi) (cuint(WIDTHBYTES(cuitn(bi).biWidth * cuint(bi.biBitCount))
 #define _DIBSIZE(bi) (DIBWIDTHBYTES(bi) * cuint(bi.biHeight))
 #define DIBSIZE(bi) iif( bi.biHeight < 0, (-1)*(_DIBSIZE(bi)), _DIBSIZE(bi))
 

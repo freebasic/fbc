@@ -167,9 +167,9 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-	FB_SYMBATTRIB_VIS_PUBLIC	= &h02000000	'' class members only
-	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' /
-	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
+					''= &h02000000
+	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
+	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000
 	FB_SYMBATTRIB_ABSTRACT      = &h20000000
 	FB_SYMBATTRIB_VIRTUAL       = &h40000000
@@ -368,6 +368,8 @@ enum FB_DEFINE_FLAGS
 	FB_DEFINE_FLAGS_VARIADIC	= &h00000004
 end enum
 
+type FBS_DEFINE_PROC as function( ) as string
+
 type FBS_DEFINE
 	params			as integer
 	paramhead 		as FB_DEFPARAM ptr
@@ -380,7 +382,7 @@ type FBS_DEFINE
 
 	isargless		as integer
     flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
-	proc			as function( ) as string
+	proc			as FBS_DEFINE_PROC
 end type
 
 '' forward definition
@@ -414,6 +416,7 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASIDXGETPROPERTY	= &h0200
 	FB_UDTOPT_HASIDXSETPROPERTY	= &h0400
 	FB_UDTOPT_HASKWDFIELD		= &h0800
+	FB_UDTOPT_HASINITEDFIELD        = &h1000
 end enum
 
 type FB_STRUCT_DBG
@@ -551,6 +554,7 @@ type FB_PROCEXT
 	stmtnum			as integer
 	priority		as integer
 	gosub			as FB_PROCGSB
+	base_initree		as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
 end type
 
 type FB_PROCRTL
@@ -812,15 +816,7 @@ declare sub symbEnd _
 		_
 	)
 
-declare sub symbDataInit _
-	( _
-		_
-	)
-
-declare sub symbDataEnd _
-	( _
-		_
-	)
+declare sub symbDataInit( )
 
 declare function symbLookup _
 	( _
@@ -955,10 +951,7 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbGetProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr _
 	( _
@@ -988,7 +981,7 @@ declare function symbAddDefine _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as function() as string = NULL, _
+		byval proc as FBS_DEFINE_PROC = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
@@ -998,7 +991,7 @@ declare function symbAddDefineW _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as function() as string = NULL, _
+		byval proc as FBS_DEFINE_PROC = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
@@ -1221,10 +1214,7 @@ declare function symbPreAddProc _
 		byval symbol as zstring ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddProcResult _
-	( _
-		byval f as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbAddParam _
 	( _
@@ -1283,12 +1273,6 @@ declare sub symbSetArrayDimTb _
 		byval s as FBSYMBOL ptr, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	)
-
-declare sub symbSetProcIncFile _
-	( _
-		byval p as FBSYMBOL ptr, _
-		byval incf as zstring ptr _
 	)
 
 declare sub symbDelSymbolTb _
@@ -1731,15 +1715,8 @@ declare sub symbCompAddDefMembers _
 		byval sym as FBSYMBOL ptr _
 	)
 
-declare function symbAddGlobalCtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-declare function symbAddGlobalDtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
+declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 
 declare function symbCloneSymbol _
 	( _
@@ -1766,11 +1743,7 @@ declare function symbCloneLabel _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCheckAccess _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as integer
+declare function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbGetFullProcName _
 	( _
@@ -1862,12 +1835,6 @@ declare function symbGetUDTBaseLevel _
 		byval s as FBSYMBOL ptr, _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
-
-declare function symbGetUDTBaseSymbol _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval baseSym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
 
 
 ''
@@ -2224,6 +2191,9 @@ declare function symbGetUDTBaseSymbol _
 #define symbGetUDTHasKwdField(s) ((s->udt.options and FB_UDTOPT_HASKWDFIELD) <> 0)
 #define symbSetUDTHasKwdField(s) s->udt.options or= FB_UDTOPT_HASKWDFIELD
 
+#define symbSetUDTHasInitedField( s ) (s)->udt.options or= FB_UDTOPT_HASINITEDFIELD
+#define symbGetUDTHasInitedField( s ) (((s)->udt.options and FB_UDTOPT_HASINITEDFIELD) <> 0)
+
 #define symbGetUDTAlign(s) s->udt.align
 
 #define symbGetUDTElements(s) s->udt.elements
@@ -2428,12 +2398,6 @@ declare function symbGetUDTBaseSymbol _
 #define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
-
-#define symbIsVisPublic(s) ((s->attrib and FB_SYMBATTRIB_VIS_PUBLIC) <> 0)
-
-#define symbIsVisPrivate(s) ((s->attrib and FB_SYMBATTRIB_VIS_PRIVATE) <> 0)
-
-#define symbIsVisProtected(s) ((s->attrib and FB_SYMBATTRIB_VIS_PROTECTED) <> 0)
 
 #define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
 

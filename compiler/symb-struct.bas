@@ -83,19 +83,19 @@ function symbStructBegin _
 	'' extending another UDT?
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
-		
+
 		s->udt.base = symbAddField( s, "$fb_base", 0, dTB(), FB_DATATYPE_STRUCT, base_, symbGetLen( base_ ), 0 )
-		
+
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
 		symbNamespaceImportEx( base_, s )
-		
+
 		if( symbGetHasRTTI( base_ ) ) then
 			symbSetHasRTTI( s )
-		End If
+		end if
 	else
 		s->udt.base = NULL
-	End If
+	end if
 
 	function = s
 
@@ -107,22 +107,18 @@ private function hGetRealLen _
 		byval orglen as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
 	select case as const typeGet( dtype )
 	'' UDT? return its largest field len
 	case FB_DATATYPE_STRUCT
 		function = subtype->udt.lfldlen
 
-	'' zstring or fixed-len? size is actually sizeof(byte)
-	case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
-		function = 1
+	'' zstring/wstring/fixlen string? use the character size
+	case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR, FB_DATATYPE_WCHAR
+		function = typeGetSize( dtype )
 
-	'' wstring?
-	case FB_DATATYPE_WCHAR
-		function = env.target.wchar.size
-
-	'' var-len string: first field is a pointer
+	'' var-len string: largest field is the pointer at the front
 	case FB_DATATYPE_STRING
 		function = FB_POINTERSIZE
 
@@ -431,7 +427,7 @@ function symbAddField _
 			symbSetUDTHasPtrField( base_parent )
 		end if
 
-		if( symbGetCompDefCtor( subtype ) <> NULL ) then
+		if( symbGetHasCtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
 			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
 										  FB_UDTOPT_ISANON)) <> 0 ) then
@@ -1049,7 +1045,10 @@ function symbGetUDTBaseLevel _
 	if( s = NULL or baseSym = NULL ) then
 		return 0
 	end if
-	
+
+	assert( symbIsStruct( s ) )
+	assert( symbIsStruct( baseSym ) )
+
 	var level = 1
 	do until( s->udt.base = NULL )
 		if( s->udt.base->subtype = baseSym ) then
@@ -1061,28 +1060,5 @@ function symbGetUDTBaseLevel _
 	Loop
 	
 	return 0
-	
-End Function
-
-'':::::
-function symbGetUDTBaseSymbol _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval baseSym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-	
-	if( s = NULL or baseSym = NULL ) then
-		return NULL
-	end if
-	
-	do until( s->udt.base = NULL )
-		if( s->udt.base->subtype = baseSym ) then
-			return s->udt.base 
-		End If
-		
-		s = s->udt.base->subtype
-	Loop
-	
-	return NULL
 	
 End Function

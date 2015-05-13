@@ -1196,12 +1196,7 @@ function symbAddProcResultParam _
 
 end function
 
-'':::::
-function symbAddProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 
@@ -1236,7 +1231,6 @@ function symbAddProcResult _
 	symbSetIsDeclared( res )
 
 	function = res
-
 end function
 
 '':::::
@@ -1560,37 +1554,27 @@ private function hCalcTypesDiff _
 					return FB_OVLPROC_HALFMATCH
 				end if
 
-				'' param is an any ptr?
-				if( param_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+				'' Both are pointers (but they're different,
+				'' full match is already handled)
+				assert( arg_dtype <> param_dtype )
 
-					'' we return a full match only if they're both any
-					if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-						return FB_OVLPROC_FULLMATCH
-
-					'' other wise, it's a half match
-					'' the arg indirection level shouldn't matter (as in g++)
-					else
-						return FB_OVLPROC_HALFMATCH
-					end if
+				'' Any Ptr parameters can accept all pointer arguments, as in C++.
+				'' Additionally we also allow Any Ptr arguments to match all
+				'' pointer parameters, because we also allow such assignments,
+				'' unlike C++.
+				if( (param_dtype = typeAddrOf( FB_DATATYPE_VOID )) or _
+				    (arg_dtype = typeAddrOf( FB_DATATYPE_VOID )) ) then
+					return FB_OVLPROC_HALFMATCH
 				end if
 
-				'' arg is an any ptr?
-				if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-					'' not the same level of indirection?
-					if( param_ptrcnt > 1 ) then
-						return 0
-					end if
-
-					return FB_OVLPROC_FULLMATCH
-				end if
-
-				'' no match
+				'' Different pointer types aren't compatible at all though,
+				'' that would be dangerous.
 				return 0
 
-			'' param not a pointer, but is arg?
 			elseif( typeIsPtr( arg_dtype ) ) then
-				'' use an UINT instead or LONGINT will match if any..
-				arg_dtype = FB_DATATYPE_UINT
+				'' Param isn't a pointer, but arg is:
+				'' no match -- pointers don't match integers
+				return 0
 			end if
 
 			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
@@ -1753,9 +1737,7 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-
 		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-
 			'' same subtype? full match..
 			if( param_subtype = arg_subtype ) then
 				return FB_OVLPROC_FULLMATCH
@@ -1771,19 +1753,14 @@ private function hCheckOvlParam _
 					End Select
 				end if
 			end if
-
 		elseif( typeGetConstMask( param_dtype ) ) then
-
 			'' same subtype? ..
 			if( param_subtype = arg_subtype ) then
-
 				'' param is const but arg isn't?
 				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
 					return FB_OVLPROC_HALFMATCH
 				end if
-
 			end if
-
 		end if
 
 		'' if it's rtl, only if explicitly set
@@ -2096,10 +2073,9 @@ function symbFindSelfBopOvlProc _
 		if( *err_num <> FB_ERRMSG_OK ) then
 			errReport( *err_num, TRUE )
 		end if
-
 	else
-    	'' check visibility
-		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+		'' check visibility
+		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
 						 symbGetFullProcName( proc ) )
@@ -2193,8 +2169,8 @@ function symbFindSelfUopOvlProc _
 		end if
 
 	else
-    	'' check visibility
-		if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+		'' check visibility
+		if( symbCheckAccess( proc ) = FALSE ) then
 			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
 						 symbGetFullProcName( proc ) )
@@ -2355,15 +2331,12 @@ function symbFindCastOvlProc _
 		closest_proc = NULL
 
 	else
-    	if( closest_proc <> NULL ) then
-    		'' check visibility
-			if( symbCheckAccess( symbGetNamespace( closest_proc ), _
-								 closest_proc ) = FALSE ) then
-
+		if( closest_proc <> NULL ) then
+			'' check visibility
+			if( symbCheckAccess( closest_proc ) = FALSE ) then
 				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
 				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
 							 symbGetFullProcName( closest_proc ) )
-
 				closest_proc = NULL
 			end if
 		end if
@@ -2478,50 +2451,24 @@ private function hAddToGlobCtorList _
 
 end function
 
-'':::::
-function symbAddGlobalCtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-    symbSetIsGlobalCtor( proc )
-
+function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+	symbSetIsGlobalCtor( proc )
 	function = hAddToGlobCtorList( @symb.globctorlist, proc )
-
 end function
 
-'':::::
-function symbAddGlobalDtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-    symbSetIsGlobalDtor( proc )
-
+function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+	symbSetIsGlobalDtor( proc )
 	function = hAddToGlobCtorList( @symb.globdtorlist, proc )
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function symbGetProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-	if( proc = NULL ) then
-		return NULL
+function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( proc->proc.ext ) then
+		function = proc->proc.ext->res
 	end if
-
-	if( proc->proc.ext = NULL ) then
-		return NULL
-	end if
-
-	function = proc->proc.ext->res
-
 end function
 
 '':::::
@@ -2548,21 +2495,6 @@ function symbCalcParamLen _
 	function = lgt
 
 end function
-
-'':::::
-sub symbSetProcIncFile _
-	( _
-		byval p as FBSYMBOL ptr, _
-		byval incf as zstring ptr _
-	)
-
-	if( p->proc.ext = NULL ) then
-		p->proc.ext = symbAllocProcExt( )
-	end if
-
-	p->proc.ext->dbg.incfile = incf
-
-end sub
 
 '':::::
 private function hMangleFunctionPtr _

@@ -1121,7 +1121,7 @@ private sub hEmitExport( byval s as FBSYMBOL ptr )
         hEmitExportHeader( )
 
         dim as zstring ptr sname = symbGetMangledName( s )
-        if( env.target.underprefix ) then
+        if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
             sname += 1
         end if
 
@@ -6796,8 +6796,8 @@ private function _init _
 	''
 	hInitRegTB( )
 
-	'' wchar len depends on the target platform
-	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
+	'' Remap wchar to target-specific type
+	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar)
 
 	''
 	emit.keyinited 	= FALSE
@@ -6806,24 +6806,16 @@ private function _init _
 	emit.lastsection = INVALID
 	emit.lastpriority = INVALID
 
-	if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-		irSetOption( IR_OPT_CPU_BOPSELF or _
-					IR_OPT_FPU_CONVERTOPER or _
-					IR_OPT_CPU_BOPSETFLAGS or _
-					IR_OPT_ADDRCISC or _
-				 	IR_OPT_REUSEOPER or _
-					IR_OPT_IMMOPER )
-	else
-		irSetOption( IR_OPT_FPU_STACK or _
-					IR_OPT_CPU_BOPSELF or _
-					IR_OPT_CPU_BOPSETFLAGS or _
-					IR_OPT_ADDRCISC or _
-					IR_OPT_REUSEOPER or _
-					IR_OPT_IMMOPER )
+	dim as uinteger iroptions = _
+		IR_OPT_CPUSELFBOPS or IR_OPT_CPUBOPFLAGS or _
+		IR_OPT_ADDRCISC
 
+	if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+		iroptions or= IR_OPT_FPUCONV
 	end if
 
-    ''
+	irSetOption( iroptions )
+
 	edbgInit( )
 
 	function = TRUE
@@ -6832,8 +6824,6 @@ end function
 
 '':::::
 private sub _end
-
-	edbgEnd( )
 
 	''
 	emit.lastsection = INVALID

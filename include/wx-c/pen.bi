@@ -4,8 +4,8 @@
 #Include Once "common.bi"
 
 ' class wxPen
-Declare Function wxPen_ctor WXCALL Alias "wxPen_ctor" (col As wxColour Ptr, penWidth As wxInt = 1, style As wxUInt = wxSOLID) As wxPen Ptr
-Declare Function wxPen_ctorByName WXCALL Alias "wxPen_ctorByName" (nam As wxString Ptr, penWidth As wxInt = 1, style As wxUint = wxSOLID) As wxPen Ptr
+Declare Function wxPen_ctor WXCALL Alias "wxPen_ctor" (col As wxColour Ptr, penWidth As wxInt = 1, style As wxUInt = wxPenStyle.wxSOLID) As wxPen Ptr
+Declare Function wxPen_ctorByName WXCALL Alias "wxPen_ctorByName" (nam As wxString Ptr, penWidth As wxInt = 1, style As wxUint = wxPenStyle.wxSOLID) As wxPen Ptr
 Declare Sub wxPen_dtor WXCALL Alias "wxPen_dtor" (self As wxPen Ptr)
 Declare Function wxPen_clone WXCALL Alias "wxPen_clone" (other As wxPen Ptr) As wxPen Ptr
 Declare Function wxPen_Ok WXCALL Alias "wxPen_Ok" (self As wxPen Ptr) As wxBool

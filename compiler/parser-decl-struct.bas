@@ -187,24 +187,46 @@ private function hTypeEnumDecl _
 end function
 
 '':::::
-private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
+private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr defctor = any, subtype = any
+
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
-    	if( sym <> NULL ) then
-    		select case symbGetType( sym )
-    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    			'' has ctors?
-    			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    				'' but no default ctor defined?
-    				if( symbGetCompDefCtor( symbGetSubtype( sym ) ) = NULL ) then
-    					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-    				end if
-    			end if
-    		end select
-    	end if
+		'' No initializer
+
+		'' Check ctors/dtors
+		if( sym ) then
+			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+				subtype = symbGetSubtype( sym )
+
+				'' Does it have any constructors? (Then we must call one to initialize this field)
+				if( symbGetHasCtor( subtype ) ) then
+					'' Does it have a default constructor?
+					defctor = symbGetCompDefCtor( subtype )
+					if( defctor ) then
+						'' Check whether we have access
+						if( symbCheckAccess( defctor ) = FALSE ) then
+							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+						end if
+					else
+						'' It has constructors, but no default one -- we cannot initialize it
+						errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+					end if
+				end if
+
+				'' Does it have a destructor?
+				defctor = symbGetCompDtor( subtype )
+				if( defctor ) then
+					'' Check whether we have access
+					if( symbCheckAccess( defctor ) = FALSE ) then
+						errReport( FB_ERRMSG_NOACCESSTODTOR )
+					end if
+				end if
+			end if
+		end if
 
 		exit sub
 	end select
@@ -241,14 +263,6 @@ private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
-   			select case symbGetType( sym )
-   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				'' has a default ctor?
-				if( symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL ) then
-					errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
-				end if
-			end select
-
 			symbSetDontInit( sym )
 		end if
 
@@ -279,8 +293,10 @@ private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 	'' remove the temps from the dtors list if any was added
 	astDtorListClear( )
 
-	'' make sure a default ctor is added
-	symbSetUDTHasCtorField( parent )
+	'' Field initializers are only used in constructors (replacing the
+	'' implicit default initialization), so we make sure to add a default
+	'' constructor, if no constructor was specified.
+	symbSetUDTHasInitedField( parent )
 
 	if( initree ) then
 		symbSetTypeIniTree( sym, initree )
@@ -564,6 +580,49 @@ private function hTypeAdd _
 
 end function
 
+'' [FIELD '=' ConstExpression]
+private function cFieldAlignmentAttribute( ) as integer
+	'' FIELD
+	if( lexGetToken( ) <> FB_TK_FIELD ) then
+		return 0
+	end if
+
+	lexSkipToken( )
+
+	'' '='
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	end if
+
+	'' ConstExpression
+	dim as ASTNODE ptr expr = cExpression( )
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	if( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		'' error recovery: fake an expr
+		astDelTree( expr )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	'' follow the GCC 3.x ABI
+	dim as integer align = astGetValueAsInt( expr )
+	astDelNode( expr )
+	if( align < 0 ) then
+		align = 0
+	elseif( align > FB_INTEGERSIZE ) then
+		align = 0
+	elseif( align = 3 ) then
+		align = 2
+	end if
+
+	return align
+end function
+
 '':::::
 ''TypeBody      =   ( (UNION|TYPE Comment? SttSeparator
 ''					   ElementDecl
@@ -592,7 +651,7 @@ private function hTypeBody _
 
 			select case lexGetToken( )
 			case FB_TK_PUBLIC
-				attrib = FB_SYMBATTRIB_VIS_PUBLIC
+				attrib = FB_SYMBATTRIB_NONE
 			case FB_TK_PRIVATE
 				attrib = FB_SYMBATTRIB_VIS_PRIVATE
 			case FB_TK_PROTECTED
@@ -638,7 +697,8 @@ private function hTypeBody _
 		case FB_TK_TYPE, FB_TK_UNION
 			'' isn't it a field called TYPE|UNION?
 			select case as const lexGetLookAhead( 1 )
-			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
+			     FB_TK_FIELD
 
 decl_inner:		'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
@@ -658,8 +718,14 @@ decl_inner:		'' it's an anonymous inner UDT
 
 				lexSkipToken( )
 
+				'' [FIELD '=' ConstExpression]
+				dim as integer align = cFieldAlignmentAttribute( )
+				if( align = 0 ) then
+					align = symbGetUDTAlign( s )
+				end if
+
 				'' create a "temp" one
-				inner = hTypeAdd( s, NULL, NULL, isunion, symbGetUDTAlign( s ) )
+				inner = hTypeAdd( s, NULL, NULL, isunion, align )
 				if( inner = NULL ) then
 					exit function
 				end if
@@ -786,11 +852,10 @@ function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id
-    dim as ASTNODE ptr expr = any
-    dim as integer align, isunion, checkid = any
-    dim as FBSYMBOL ptr sym = any
-   	dim as FB_CMPSTMTSTK ptr stk = any
+	static as zstring * FB_MAXNAMELEN+1 id
+	dim as integer isunion = any, checkid = any
+	dim as FBSYMBOL ptr sym = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -875,42 +940,8 @@ function cTypeDecl _
 		end if
 	end if
 
-	'' (FIELD '=' Expression)?
-	if( lexGetToken( ) = FB_TK_FIELD ) then
-		lexSkipToken( )
-
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		end if
-
-		expr = cExpression( )
-		if( expr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-
-		if( astIsCONST( expr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDCONST )
-			'' error recovery: fake an expr
-			astDelTree( expr )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-
-  		'' follow the GCC 3.x ABI
-  		align = astGetValueAsInt( expr )
-  		astDelNode( expr )
-  		if( align < 0 ) then
-  			align = 0
-  		elseif( align > FB_INTEGERSIZE ) then
-  			align = 0
-  		elseif( align = 3 ) then
-  			align = 2
-  		end if
-
-	else
-		align = 0
-	end if
+	'' [FIELD '=' ConstExpression]
+	dim as integer align = cFieldAlignmentAttribute( )
 
 	'' start a new compound, or any EXTERN..END EXTERN used around this struct
 	'' would turn-off function mangling depending on the mode passed

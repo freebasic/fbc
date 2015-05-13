@@ -201,7 +201,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 	hMatchRPRNT( )
 
 	'' if wstring, check if compile-time conversion can be done
-	if( is_wstr and (env.target.wchar.doconv = FALSE) ) then
+	if( is_wstr and (env.wchar_doconv = FALSE) ) then
 		isconst = FALSE
 	else
 		'' constant? evaluate at compile-time
@@ -294,8 +294,8 @@ private function cStrASC() as ASTNODE ptr
 
 	if( litsym <> NULL ) then
 		'' if wstring, check if compile-time conversion can be done
-        if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
-			(env.target.wchar.doconv  = FALSE) ) then
+		if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
+		    (env.wchar_doconv = FALSE) ) then
 			p = -1
 		else
 			'' pos is an constant too?

@@ -167,23 +167,16 @@ function astBuildVarDtorCall _
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has dtor?
 			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-                dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
+				dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
 
-                if( check_access ) then
-					if( symbCheckAccess( subtype, _
-										 symbGetCompDtor( subtype ) ) = FALSE ) then
+				if( check_access ) then
+					if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
-                	end if
-                end if
+					end if
+				end if
 
-                function = astBuildDtorCall( subtype, _
-                							 astNewVAR( s, _
-                							 			0, _
-                							 			symbGetFullType( s ), _
-                							 			subtype ) )
-
+				function = astBuildDtorCall( subtype, astNewVAR( s, 0, symbGetFullType( s ), subtype ) )
 			end if
-
 		end select
 	end if
 
@@ -453,8 +446,8 @@ function astBuildImplicitCtorCall _
         return expr
 	end if
 
-    '' check visibility
-	if( symbCheckAccess( subtype, proc ) = FALSE ) then
+	'' check visibility
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if
 
@@ -513,34 +506,6 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	symbSetIsCalled(proc)
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
-
-'':::::
-function astBuildProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr n = any
-
-	n = astProcBegin( proc, FALSE )
-
-    symbSetProcIncFile( proc, env.inf.incfile )
-
-   	astAdd( astNewLABEL( astGetProcInitlabel( n ) ) )
-
-   	function = n
-
-end function
-
-'':::::
-sub astBuildProcEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
-	astProcEnd( n, FALSE )
-
-end sub
 
 '':::::
 function astBuildProcResultVar _
@@ -656,7 +621,8 @@ function astBuildInstPtrAtOffset _
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
 
-	'' it's always a param
+	'' THIS is a BYREF AS UDT parameter, the typeAddrOf() is needed to
+	'' make the expression be an UDT PTR.
 	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 
 	if( fld <> NULL ) then

@@ -218,13 +218,22 @@ end type
 		@"Illegal outside a DESTRUCTOR block", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _
-		@"Call to another constructor or a base class constructor must be the first statement", _
-		@"The constructor or destructor calling convention must be CDECL", _
+		@"CONSTRUCTOR() chain call not at top of constructor", _
+		@"BASE() initializer not at top of constructor", _
+		@"REDIM on UDT with non-CDECL constructor", _
+		@"REDIM on UDT with non-CDECL destructor", _
+		@"REDIM on UDT with non-parameterless default constructor", _
+		@"ERASE on UDT with non-CDECL constructor", _
+		@"ERASE on UDT with non-CDECL destructor", _
+		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
+		@"Base UDT without default constructor; missing BASE() initializer", _
+		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
+		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
 		@"Invalid priority attribute", _
 		@"PROPERTY GET should have no parameter, or just one if indexed", _
 		@"PROPERTY SET should have one parameter, or just two if indexed", _
@@ -243,6 +252,8 @@ end type
 		@"The default constructor has no public access", _
 		@"Constructor has no public access", _
 		@"Destructor has no public access", _
+		@"Accessing base UDT's private default constructor", _
+		@"Accessing base UDT's private destructor", _
 		@"Illegal non-static member access", _
 		@"Member cannot be static", _
 		@"Member isn't static", _
@@ -312,7 +323,11 @@ end type
 		@"CLASS, TYPE or UNION has no constructor", _
 		@"Symbol type has no Run-Time Type Info (RTTI)", _
 		@"Types have no hierarchical relation", _
-		@"Expected a CLASS, TYPE or UNION symbol type" _
+		@"Expected a CLASS, TYPE or UNION symbol type", _
+		@"Casting derived UDT pointer from incompatible pointer type", _
+		@"Casting derived UDT pointer from unrelated UDT pointer type", _
+		@"Casting derived UDT pointer to incompatible pointer type", _
+		@"Casting derived UDT pointer to unrelated UDT pointer type" _
 	}
 
 

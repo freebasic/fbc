@@ -107,7 +107,7 @@ function cOperatorNew _
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	else
 		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
-		i_expr = astNewCONV( FB_DATATYPE_UINT, elmts_expr->subtype, elmts_expr )
+		i_expr = astNewCONV( FB_DATATYPE_UINT, NULL, elmts_expr )
 		if( i_expr <> NULL ) Then
 			elmts_expr = i_expr
 		else
@@ -116,15 +116,8 @@ function cOperatorNew _
 		end if
 	end if
 
-	dim as integer is_addr
-
-	if( dtype = FB_DATATYPE_STRUCT ) then
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
-		is_addr = TRUE
-	else
-		'' temp pointer
-		tmp = symbAddTempVar( dtype, subtype, , FALSE )
-	end if
+	'' temp pointer
+	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
@@ -155,7 +148,7 @@ function cOperatorNew _
 					end if
 				else
 					'' check visibility
-					if( symbCheckAccess( subtype, ctor ) = FALSE ) then
+					if( symbCheckAccess( ctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 					end if
 				end if
@@ -184,12 +177,8 @@ function cOperatorNew _
 				else
 					lexSkipToken( )
 				end if
-        	else
-				if( is_addr ) then
-					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
-				else
-					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI )
-				end if
+			else
+				ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
 
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 
@@ -261,7 +250,7 @@ sub cOperatorDelete()
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
 
 	'' not a ptr?
-	if( typeGet( dtype ) = FALSE ) then
+	if( typeIsPtr( dtype ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDPOINTER )
 		hSkipStmt( )
 		return
@@ -279,7 +268,7 @@ sub cOperatorDelete()
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
 		if( dtor <> NULL ) then
-			if( symbCheckAccess( subtype, dtor ) = FALSE ) then
+			if( symbCheckAccess( dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
 			end if
 		end if

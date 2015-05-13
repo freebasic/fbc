@@ -865,7 +865,7 @@ private sub _emitVarIniWstr _
 
 	'' wstring * 1?
 	if( totlgt = 0 ) then
-		emitVARINIi( env.target.wchar.type, 0 )
+		emitVARINIi( env.target.wchar, 0 )
 		exit sub
 	end if
 
@@ -1017,7 +1017,7 @@ private function _allocVrImmF _
 	dim as IRVREG ptr vr = any
 
 	'' the FPU doesn't support immediates? create a temp const var_..
-	if( irGetOption( IR_OPT_FPU_IMMOPER ) = FALSE ) then
+	if( irGetOption( IR_OPT_FPUIMMEDIATES ) = FALSE ) then
 		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
 		return irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
 	end if
@@ -2240,7 +2240,7 @@ private sub hFlushCONVERT _
 
 		'' fp to fp conversion with source already on stack? do nothing..
 		if( v2_dclass = FB_DATACLASS_FPOINT ) then
-			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+			if( irGetOption( IR_OPT_FPUCONV ) ) then
 
 				v1->regFamily = v2->regFamily
 				if( v2->regFamily = IR_REG_FPU_STACK ) then exit sub

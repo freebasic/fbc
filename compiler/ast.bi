@@ -347,15 +347,15 @@ enum AST_INIOPT
 end enum
 
 
-declare sub astInit _
-	( _
-		_
-	)
-
-declare sub astEnd _
-	( _
-		_
-	)
+declare sub astInit( )
+declare sub astEnd( )
+declare sub astProcListInit( )
+declare sub astProcListEnd( )
+declare sub astCallInit( )
+declare sub astCallEnd( )
+declare sub astMiscInit( )
+declare sub astMiscEnd( )
+declare sub astDataStmtInit( )
 
 declare sub astDelNode _
 	( _
@@ -416,17 +416,8 @@ declare function astGetValueAsWstr _
 		byval n as ASTNODE ptr _
 	) as wstring ptr
 
-declare function astProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval ismain as integer = FALSE _
-	) as ASTNODE ptr
-
-declare function astProcEnd _
-	( _
-		byval p as ASTNODE ptr, _
-		byval callrtexit as integer = FALSE _
-	) as integer
+declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
+declare function astProcEnd( byval callrtexit as integer ) as integer
 
 declare sub astProcVectorize _
 	( _
@@ -473,13 +464,15 @@ declare function astAdd _
 declare function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
-		byval after_node as ASTNODE ptr _
+		byval ref as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare sub astAddUnscoped _
 	( _
 		byval n as ASTNODE ptr _
 	)
+
+declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astUpdComp2Branch _
 	( _
@@ -508,13 +501,19 @@ declare function astNewASSIGN _
 		byval options as AST_OPOPT = AST_OPOPT_NONE _
 	) as ASTNODE ptr
 
+enum AST_CONVOPT
+	AST_CONVOPT_SIGNCONV = &h1
+	AST_CONVOPT_CHECKSTR = &h2
+	AST_CONVOPT_PTRONLY  = &h4
+end enum
+
 declare function astNewCONV _
 	( _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
-		byval op as AST_OP = INVALID, _
-		byval check_str as integer = FALSE _
+		byval options as AST_CONVOPT = 0, _
+		byval perrmsg as integer ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewOvlCONV _
@@ -547,6 +546,8 @@ declare function astNewUOP _
 		byval op as integer, _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _
@@ -643,6 +644,17 @@ declare function astNewCALLCTOR _
 		byval procexpr as ASTNODE ptr, _
 		byval instptr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare sub astCloneCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval c as ASTNODE ptr _
+	)
+
+declare sub astDelCALL _
+	( _
+		byval n as ASTNODE ptr _
+	)
 
 declare function astNewARG _
 	( _
@@ -773,8 +785,7 @@ declare function astNewPTRCHK _
 declare function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr, _
-		byval no_ctorcall as integer = FALSE _
+		byval initree as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewNIDXARRAY _
@@ -1075,16 +1086,6 @@ declare function astBuildTypeIniCtorList _
 
 declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 
-declare function astBuildProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare sub astBuildProcEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
 declare function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1215,16 +1216,42 @@ declare function astGosubAddReturn _
 
 declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
-declare function astLoadIIF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
 declare function hTruncateInt _
 	( _
 		byval dtype as integer, _
 		byval value as integer ptr _
 	) as integer
+
+declare function astLoadNOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALLCTOR( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 ''
 '' macros
@@ -1293,8 +1320,6 @@ declare function hTruncateInt _
 
 #define astGetSymbol(n)	n->sym
 
-#define astGetProcInitlabel(n) n->block.initlabel
-
 #define astGetProcExitlabel(n) n->block.exitlabel
 
 #define astGetProc() ast.proc.curr
@@ -1341,6 +1366,12 @@ extern ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) as longi
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
 declare sub astDumpTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer = 0 _
+	)
+
+declare sub astDumpList _
 	( _
 		byval n as ASTNODE ptr, _
 		byval col as integer = 0 _

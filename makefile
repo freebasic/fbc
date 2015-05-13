@@ -249,11 +249,11 @@ endif
 
 ifdef ENABLE_STANDALONE
   override newbin     := $(new)
-  override newinclude := $(new)/include
-  override newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
+  override newinclude := $(new)/inc
+  override newlib     := $(new)/lib/$(TARGET_OS)$(SUFFIX)
   override prefixbin     := $(prefix)
-  override prefixinclude := $(prefix)/include
-  override prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
+  override prefixinclude := $(prefix)/inc
+  override prefixlib     := $(prefix)/lib/$(TARGET_OS)$(SUFFIX)
 else
   ifeq ($(TARGET_OS),dos)
     FB_NAME := freebas
@@ -279,7 +279,7 @@ override newlibfbmt  := $(new)/libfbmt
 override newlibfbgfx := $(new)/libfbgfx
 
 ifeq ($(TARGET_OS),dos)
-  # For DOS the ldscript is always needed, to fix the c/dtors otder
+  # For DOS the ldscript is always needed, to fix the c/dtors order
   override FB_LDSCRIPT := i386go32.x
   # Don't build libfbmt for DOS, and also no OpenGL support in libfbgfx
   DISABLE_MT := YesPlease
@@ -406,9 +406,9 @@ FBC_BAS := \
   ast ast-gosub ast-helper ast-misc \
   ast-node-addr ast-node-arg ast-node-assign ast-node-bop ast-node-branch \
   ast-node-call ast-node-check ast-node-const ast-node-conv ast-node-data \
-  ast-node-decl ast-node-field ast-node-idx ast-node-iif \
-  ast-node-link ast-node-load ast-node-mem ast-node-misc \
-  ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
+  ast-node-decl ast-node-idx ast-node-iif \
+  ast-node-mem ast-node-misc \
+  ast-node-proc ast-node-ptr ast-node-scope ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
   dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
   fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
@@ -1150,9 +1150,7 @@ $(HEADER_FILES): $(newinclude)/%.bi: include/%.bi
 
 .PHONY: rtlib
 rtlib: $(new) $(newlibfb)
-ifndef ENABLE_STANDALONE
 rtlib: $(new)/lib
-endif
 rtlib: $(newlib)
 ifdef FB_LDSCRIPT
 rtlib: $(newlib)/$(FB_LDSCRIPT)
@@ -1193,9 +1191,7 @@ $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 .PHONY: gfxlib2
 gfxlib2:
 gfxlib2: $(new) $(newlibfb)
-ifndef ENABLE_STANDALONE
 gfxlib2: $(new)/lib
-endif
 gfxlib2: $(newlib)
 gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 
@@ -1238,9 +1234,7 @@ install-gfxlib2: $(prefixlib)
 uninstall: uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib2
   # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
   # that we should remove if empty.
-  ifndef ENABLE_STANDALONE
 	-rmdir $(prefixlib)
-  endif
 
 uninstall-compiler:
 	rm -f $(prefixbin)/$(FBC_EXE)
@@ -1270,9 +1264,7 @@ clean: clean-compiler clean-headers clean-rtlib clean-gfxlib2
 	-rmdir $(newbin)
   endif
 	-rmdir $(newlib)
-  ifndef ENABLE_STANDALONE
 	-rmdir $(new)/lib
-  endif
 	-rmdir $(new)
 
 clean-compiler:

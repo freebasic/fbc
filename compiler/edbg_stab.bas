@@ -99,27 +99,11 @@ declare function hGetDataType _
 		NULL _
 	}
 
-'':::::
-sub	edbgInit( )
-
-    if( env.clopt.debug = FALSE ) then
-    	exit sub
-    end if
-
-	'' wchar len depends on the target platform
-	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar.type)
+sub edbgInit( )
+	'' Remap wchar to target-specific type
+	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar)
 
 	'' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
-
-end sub
-
-'':::::
-sub	edbgEnd( )
-
-    if( env.clopt.debug = FALSE ) then
-    	exit sub
-    end if
-
 end sub
 
 '':::::
@@ -243,16 +227,16 @@ sub edbgEmitHeader _
 
 	ctx.incfile 	= NULL
 
-	'' emit source file
+	'' emit source file name
     lname = *hMakeTmpStr( )
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
+
+	'' directory
     if( instr( *filename, "/" ) = 0 ) then
-    	dim as zstring ptr dirpath
-		dirpath = hRevertSlash( curdir() + "/", TRUE, asc(FB_HOST_PATHDIV) )
-    	hEmitSTABS( STAB_TYPE_SO, dirpath, 0, 0, lname )
-    	deallocate( dirpath )
+		hEmitSTABS( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
     end if
 
+	'' file name
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''

@@ -710,31 +710,16 @@ function rtlCpuCheck( ) as integer static
 end function
 
 '':::::
-function rtlInitSignals( ) as integer static
-    dim as ASTNODE ptr proc
-
-	function = FALSE
-
-	'' init( )
-    proc = astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL )
-
-    astAdd( proc )
-
-    function = TRUE
-
-end function
-
-'':::::
 function rtlInitApp _
 	( _
 		byval argc as ASTNODE ptr, _
-		byval argv as ASTNODE ptr, _
-		byval isdllmain as integer _
-	) as ASTNODE ptr static
+		byval argv as ASTNODE ptr _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc = any
+	dim as integer is_exe = any
 
-	function = NULL
+	is_exe = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
 
 	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
 		'' call __monstartup() on win32/cygwin if profiling
@@ -742,89 +727,54 @@ function rtlInitApp _
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			if( env.clopt.profile ) then
 				'' __monstartup()
-    			proc = rtlProfileCall_monstartup( )
-    			astAdd( proc )
+				rtlProfileCall_monstartup( )
 			end if
 		end select
 
-    	'' call default CRT0 constructors (only required for Win32)
+		'' call default CRT0 constructors (only required for Win32)
 		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 			'' __main()
-    		proc = astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL )
-    		astAdd( proc )
-    	end if
-    end if
-
-	'' init( argc, argv, lang )
-    proc = astNewCALL( PROCLOOKUP( INIT ), NULL )
-
-    '' argc
-    if( argc = NULL ) then
-    	argc = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
-    if( astNewARG( proc, argc ) = NULL ) then
-    	exit function
-    end if
-
-    '' argv
-    if( argv = NULL ) then
-    	argv = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
-    end if
-    if( astNewARG( proc, argv ) = NULL ) then
-    	exit function
-    end if
-
-	'' lang
-	if( astNewARG( proc, astNewCONSTi( env.clopt.lang, FB_DATATYPE_INTEGER ) ) = NULL ) then
-		exit function
+			astAdd( astNewCALL( PROCLOOKUP( INITCRTCTOR ), NULL ) )
+		end if
 	end if
 
-    astAdd( proc )
+	'' fb_Init( argc, argv, lang )
+	proc = astNewCALL( PROCLOOKUP( INIT ), NULL )
+	astNewARG( proc, argc )
+	astNewARG( proc, argv )
+	astNewARG( proc, astNewCONSTi( env.clopt.lang ) )
+	astAdd( proc )
 
-    function = proc
+	'' Error checking enabled and not a DLL?
+	if( env.clopt.errorcheck and is_exe ) then
+		'' fb_InitSignals( )
+		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-    '' if error checking is on, call initSignals
-    if( env.clopt.errorcheck ) then
-    	if( isdllmain = FALSE ) then
-    		rtlInitSignals( )
-    	end if
+		'' Check CPU type
+		rtlCpuCheck( )
 	end if
 
-    '' if error checking is on, check the CPU type
-    if( env.clopt.errorcheck ) then
-    	if( isdllmain = FALSE ) then
-    		rtlCpuCheck( )
-    	end if
-    end if
-
+	function = proc
 end function
 
-'':::::
-function rtlExitApp _
-	( _
-		byval errlevel as ASTNODE ptr _
-	) as integer static
-
-    dim as ASTNODE ptr proc
+function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    if( errlevel = NULL ) then
-    	errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	'' fb_End( errlevel )
+	proc = astNewCALL( PROCLOOKUP( END ), NULL )
 
-    '' end( level )
-    proc = astNewCALL( PROCLOOKUP( END ), NULL )
+	if( errlevel = NULL ) then
+		errlevel = astNewCONSTi( 0 )
+	end if
+	if( astNewARG( proc, errlevel ) = NULL ) then
+		exit function
+	end if
 
-    '' errlevel
-    if( astNewARG( proc, errlevel ) = NULL ) then
-    	exit function
-    end if
-
-    astAdd( proc )
+	astAdd( proc )
 
 	function = TRUE
-
 end function
 
 '':::::

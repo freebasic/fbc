@@ -31,44 +31,20 @@
 	 	) _
 	 }
 
-
-'':::::
 sub rtlProfileModInit( )
-
 	rtlAddIntrinsicProcs( @funcdata(0) )
-
 end sub
 
-'':::::
 sub rtlProfileModEnd( )
-
 	'' procs will be deleted when symbEnd is called
-
 end sub
 
-'':::::
 function rtlProfileCall_mcount( ) as ASTNODE ptr
-    dim as ASTNODE ptr proc
-
-	function = NULL
-
-    proc = astNewCALL( PROCLOOKUP( PROFILEMCOUNT ), NULL )
-
-  	function = proc
-
+	function = astNewCALL( PROCLOOKUP( PROFILEMCOUNT ), NULL )
 end function
 
-'':::::
-function rtlProfileCall_monstartup( ) as ASTNODE ptr
-    dim as ASTNODE ptr proc
-
-	function = NULL
-
+sub rtlProfileCall_monstartup( )
 	'' on mingw monstartup has two flavours 'monstartup(2)' and '_monstartup(0)'
 	'' we are using the _monstartup(0) taking 0 arguments.
-
-    proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL )
-
-  	function = proc
-
-end function
+	astAdd( astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL ) )
+end sub

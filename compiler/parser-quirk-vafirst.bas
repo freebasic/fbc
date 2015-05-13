@@ -59,7 +59,7 @@ function cVAFunct() as ASTNODE ptr
 		dim as ASTNODE ptr expr = astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubType( sym ) )
 		expr = astNewADDROF( expr )
 
-		'' Convert to ANY PTR, to hide that it's based on the last param...
+		'' Cast to ANY PTR to hide that it's based on the parameter
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
 		'' + FB_ROUNDLEN( paramlen( param ) )

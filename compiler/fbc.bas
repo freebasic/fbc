@@ -63,7 +63,7 @@ type FBCCTX
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
-	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
+	targetid 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
 	staticlink			as integer
@@ -76,14 +76,31 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
+enum
+	FBCTOOL_AS = 0
+	FBCTOOL_AR
+	FBCTOOL_LD
+	FBCTOOL_GCC
+	FBCTOOL_DLLTOOL
+	FBCTOOL_GORC
+	FBCTOOL_WINDRES
+	FBCTOOL_CXBE
+	FBCTOOL__COUNT
+end enum
+
+static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
+{ _
+	"as", "ar", "ld", "gcc", "dlltool", "GoRC", "windres", "cxbe" _
+}
+
+declare function fbcFindBin( byval tool as integer, byref path as string ) as integer
+
 declare function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
-		byref tool as string, _
+		byval tool as integer, _
 		byref ln as string _
 	) as integer
-
-declare function fbcFindBin(byval filename as zstring ptr) as string
 
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
@@ -108,22 +125,7 @@ private sub fbcInit( )
 
 	fbGlobalInit()
 
-	fbc.emitonly    = FALSE
-	fbc.compileonly = FALSE
-	fbc.preserveasm	= FALSE
-	fbc.preserveobj	= FALSE
-	fbc.verbose     = FALSE
-
-	fbc.mainname	= ""
-	fbc.mainset     = FALSE
-	fbc.mapfile     = ""
-	fbc.outname     = ""
-
-	fbc.extopt.gas	= ""
-	fbc.extopt.ld	= ""
-
 	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
-	fbc.objinf.mt   = FALSE
 end sub
 
 private sub fbcEnd(byval errnum as integer)
@@ -145,30 +147,6 @@ private sub fbcAddObj(byref file as string)
 	strlistAppend(@fbc.objlist, file)
 end sub
 
-private function hAddInfoObject as integer
-
-    if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
-    	safeKill( FB_INFOSEC_OBJNAME )
-    end if
-
-#ifndef DISABLE_OBJINFO
-    if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
-    	function = TRUE
-
-    '' and error occurred or there's no need for an info object, delete it
-    else
-		if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
-    		safeKill( FB_INFOSEC_OBJNAME )
-    	end if
-
-    	function = FALSE
-    end if
-#else
-	function = FALSE
-#endif
-
-end function
-
 private function archiveFiles() as integer
 	'' Determine the output archive's name if not given via -x
 	if (len(fbc.outname) = 0) then
@@ -182,12 +160,14 @@ private function archiveFiles() as integer
 	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
 
 #ifndef DISABLE_OBJINFO
-	'' the first object must be the info one
 	if( fbIsCrossComp( ) = FALSE ) then
-		if( hAddInfoObject( ) ) then
+		if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
+			'' The objinfo reader expects the fbctinf object to be
+			'' the first object file in libraries, so it must be
+			'' specified first on the archiver command line:
 			ln += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
-			fbcAddTemp(FB_INFOSEC_OBJNAME)
 		end if
+		fbcAddTemp( FB_INFOSEC_OBJNAME )
 	end if
 #endif
 
@@ -198,41 +178,32 @@ private function archiveFiles() as integer
 	wend
 
 	'' invoke ar
-	return fbcRunBin("archiving", fbcFindBin("ar"), ln)
+	return fbcRunBin( "archiving", FBCTOOL_AR, ln )
 end function
 
-function fbcFindGccLib(byref file as string) as string
+function fbcFindGccLib( byref file as string ) as string
 	dim as string found
 
-	'' Files in our lib/ directory have precedence, and are in fact
-	'' required for standalone builds.
+	'' The standalone build has all needed files in its own lib/, but
+	'' normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o are inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
+	'' find them via 'gcc -print-file-name=foo' (besides hard-coding
+	'' against a specific gcc target/version).
+
 	found = fbc.libpath + FB_HOST_PATHDIV + file
 
 #ifndef ENABLE_STANDALONE
+	'' The file in our lib/ has precedence
 	if( hFileExists( found ) ) then
 		return found
 	end if
 
-	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
-	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
-	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
-	'' a specific gcc target/version).
-	'' The normal build needs to ask gcc to find out where those files are,
-	'' while the standalone build is supposed to be standalone and have
-	'' everything in its own lib/ directory.
-	''
-	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
-	'' not the host gcc.)
-
-	dim as integer ff = any
-
-	function = ""
-
-	dim as string path = fbcFindBin("gcc")
-
+	'' Query the target-specific gcc
+	dim as string path
+	fbcFindBin( FBCTOOL_GCC, path )
 	path += " -m32 -print-file-name=" + file
 
-	ff = freefile()
+	dim as integer ff = freefile( )
 	if( open pipe( path, for input, as ff ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
@@ -242,16 +213,13 @@ function fbcFindGccLib(byref file as string) as string
 
 	close ff
 
-	dim as string fileonly = hStripPath( found )
-
-	if( found = fileonly ) then
+	if( found = hStripPath( found ) ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
 	end if
 #endif
 
 	function = found
-
 end function
 
 private sub fbcAddDefLibPath(byref path as string)
@@ -267,72 +235,80 @@ sub fbcAddLibPathFor(byref libname as string)
 	end if
 end sub
 
-function fbcFindBin(byval filename as zstring ptr) as string
-	'' Check for an environment variable.
-	'' (e.g. fbcFindBin("ld") will check the LD environment variable)
-	dim as string path = environ(ucase(*filename))
-	if (len(path) > 0) then
-		'' The environment variable is set, this should be it.
-		'' If this path doesn't work, then why did someone set the
-		'' variable that way?
-		return path
+function fbcFindBin( byval tool as integer, byref path as string ) as integer
+	static as integer lasttool = -1
+	static as string lastpath
+
+	function = TRUE
+
+	'' Re-use path from last time if possible
+	if( lasttool = tool ) then
+		path = lastpath
+		exit function
 	end if
 
-	'' Build the path to the program in our bin/ directory
-	path = fbc.binpath + FB_HOST_PATHDIV
-	path += fbc.triplet + *filename + FB_HOST_EXEEXT
+	'' a) Use the path from the corresponding environment variable if it's set
+	path = environ( ucase( toolnames(tool) ) )
+	if( len( path ) = 0 ) then
+		'' b) Try the path to the tool in our bin/ directory
+		path = fbc.binpath + FB_HOST_PATHDIV + fbc.targetid + toolnames(tool) + FB_HOST_EXEEXT
 
-#ifdef __FB_UNIX__
-	'' On *nix/*BSD, check whether the program exists in bin/, and fallback
-	'' to the system default otherwise, i.e. tools installed in the same
-	'' location are preferred, but not required.
-	if (hFileExists(path)) then
-		return path
+		#if defined( __FB_UNIX__ ) or (not defined( ENABLE_STANDALONE ))
+			'' c) If missing in bin/, try to invoke it without path
+			'' (relying on PATH)
+			if( hFileExists( path ) = FALSE ) then
+				function = FALSE
+				path = fbc.targetid + toolnames(tool) + FB_HOST_EXEEXT
+			end if
+		#endif
 	end if
 
-	'' Use the system default, it works with exec() on these systems.
-	return fbc.triplet + *filename + FB_HOST_EXEEXT
-#else
-	'' The programs must be reachable via relative or absolute path,
-	'' otherwise the CreateProcess() in exec() will fail.
-	return path
-#endif
+	lasttool = tool
+	lastpath = path
 end function
 
 function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
-		byref tool as string, _
+		byval tool as integer, _
 		byref ln as string _
 	) as integer
 
-	'' Note: We have to use exec(). shell() would require special care
-	'' with shell syntax (we'd have to quote escape chars in filenames
-	'' and such), and it's slower too.
+	dim as integer result = any
+	dim as string path
 
-	if (fbc.verbose) then
-		print *action & ": ", tool & " " & ln
+	result = fbcFindBin( tool, path )
+
+	if( fbc.verbose ) then
+		print *action + ": ", path + " " + ln
 	end if
 
-	dim as integer result = exec(tool, ln)
-	if (result = 0) then
-		return TRUE
-	end if
+	'' Always use exec() on Unix or for standalone because
+	'' - Unix exec() already searches the PATH, so shell() isn't needed,
+	'' - standalone doesn't use system-wide tools
+	#if defined( __FB_UNIX__ ) or defined( ENABLE_STANDALONE )
+		result = exec( path, ln )
+	#else
+		'' Found at bin/?
+		if( result ) then
+			result = exec( path, ln )
+		else
+			result = shell( path + " " + ln )
+		end if
+	#endif
 
-	'' A rather vague assumption on exec() return value:
-	''    -1 should be "not found"
-	if (result < 0) then
-		errReportEx(FB_ERRMSG_EXEMISSING, tool, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES)
+	if( result = 0 ) then
+		function = TRUE
+	elseif( result < 0 ) then
+		errReportEx( FB_ERRMSG_EXEMISSING, path, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
 	else
 		'' Report bad exit codes only in verbose mode; normally the
 		'' program should already have shown an error message, and the
 		'' exit code is only interesting for debugging purposes.
-		if (fbc.verbose) then
-			print *action & " failed: '" & tool & "' terminated with exit code " & result
+		if( fbc.verbose ) then
+			print *action + " failed: '" + path + "' terminated with exit code " + str( result )
 		end if
 	end if
-
-	return FALSE
 end function
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
@@ -386,27 +362,32 @@ private function clearDefList(byref deffile as string) as integer
 	return (name(cleaned, deffile) = 0)
 end function
 
-private function makeImpLib(byref dllname as string, byref deffile as string) as integer
+private function makeImpLib _
+	( _
+		byref dllname as string, _
+		byref deffile as string _
+	) as integer
+
 	'' for some weird reason, LD will declare all functions exported as if they were
 	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
-	if (clearDefList(deffile) = FALSE) then
-		return FALSE
+	if( clearDefList( deffile ) = FALSE ) then
+		exit function
 	end if
 
 	dim as string ln
-	ln += "--def " + QUOTE + deffile + QUOTE
-	ln += " --dllname " + QUOTE + hStripPath(fbc.outname) + QUOTE
-	ln += " --output-lib " + QUOTE + hStripFilename(fbc.outname) + "lib" + dllname + (".dll.a" + QUOTE)
+	ln += "--def """ + deffile + """"
+	ln += " --dllname """ + hStripPath( fbc.outname ) + """"
+	ln += " --output-lib """ + hStripFilename( fbc.outname ) + "lib" + dllname + ".dll.a"""
 
-	if (fbcRunBin("creating import library", fbcFindBin("dlltool"), ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "creating import library", FBCTOOL_DLLTOOL, ln ) = FALSE ) then
+		exit function
 	end if
 
-	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(deffile)
+	if( fbc.preserveasm = FALSE ) then
+		fbcAddTemp( deffile )
 	end if
 
-	return TRUE
+	function = TRUE
 end function
 
 '':::::
@@ -724,7 +705,7 @@ private function linkFiles() as integer
 #endif
 
 	'' invoke ld
-	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
+	if( fbcRunBin( "linking", FBCTOOL_LD, ldcline ) = FALSE ) then
 		exit function
 	end if
 
@@ -781,7 +762,7 @@ private function linkFiles() as integer
 			print "cxbe: ", cxbecline
 		end if
 
-		cxbepath = fbcFindBin("cxbe")
+		fbcFindBin( FBCTOOL_CXBE, cxbepath )
 
 		'' have to use shell instead of exec in order to use >nul
 		res = shell(cxbepath + " " + cxbecline)
@@ -800,6 +781,8 @@ private function linkFiles() as integer
 	function = TRUE
 
 end function
+
+#ifndef DISABLE_OBJINFO
 
 '':::::
 private sub objinf_addLibCb _
@@ -864,17 +847,7 @@ private sub objinf_addOption _
 
 end sub
 
-'':::::
-private function collectObjInfo _
-	( _
-	) as integer
-
-	'' cross-compiling? BFD can't be used..
-	if( fbIsCrossComp( ) ) then
-		return FALSE
-    end if
-
-#ifndef DISABLE_OBJINFO
+private sub collectObjInfo( )
 	scope
 		'' for each object passed in the cmd-line
 		dim as string ptr obj = listGetHead( @fbc.objlist )
@@ -901,16 +874,13 @@ private function collectObjInfo _
 			i = listGetNext(i)
 		wend
 	end scope
+end sub
 
-	function = TRUE
-#else
-	function = FALSE
-#endif
+#endif ''ndef DISABLE_OBJINFO
 
-end function
-
-private sub fbcErrorInvalidOption(byref arg as string)
+private sub hFatalInvalidOption( byref arg as string )
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+	fbcEnd( 1 )
 end sub
 
 private sub checkWaitingObjfile()
@@ -935,17 +905,15 @@ private sub addBas(byref basfile as string)
 	setIofile(listNewNode(@fbc.modules), basfile)
 end sub
 
-'' -target <triplet> parser
-private function parseTargetTriplet(byref triplet as string) as integer
-	'' To support the system triplets, we need to parse them,
-	'' to identify which target of ours it could mean (much like in the
-	'' FB makefile when cross-compiling FB).
-
-	'' Split the triplet into its components
+'' -target <id> parser
+private function parseTargetId( byref id as string ) as integer
+	'' To support GNU triplets, we need to parse them,
+	'' to identify which target of ours it could mean.
+	'' A triplet is made up of these components:
 	''    [arch-][vendor-]os[-...]
 
 	'' Cut off up to two leading components to get to the OS
-	dim as string os = triplet
+	dim as string os = id
 	for i as integer = 0 to 1
 		dim as integer j = instr(1, os, "-")
 		if (j = 0) then
@@ -1154,8 +1122,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "native"
 			value = FB_CPUTYPE_NATIVE
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_CPUTYPE, value )
@@ -1196,8 +1163,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
 		if( value = FB_LANG_INVALID ) then
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1213,8 +1179,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "FAST"
 			value = FB_FPMODE_FAST
 		case else
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPMODE, value )
@@ -1228,8 +1193,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "SSE"
 			value = FB_FPUTYPE_SSE
 		case else
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPUTYPE, value )
@@ -1246,8 +1210,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "gcc"
 			value = FB_BACKEND_GCC
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_BACKEND, value )
@@ -1264,8 +1227,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_LANG
 		dim as integer value = fbGetLangId( strptr(arg) )
 		if( value = FB_LANG_INVALID ) then
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1289,8 +1251,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		else
 			value = valint( arg )
 			if( value <= 0 ) then
-				value = 1
-				fbcErrorInvalidOption(arg)
+				hFatalInvalidOption( arg )
 			end if
 		end if
 
@@ -1327,7 +1288,6 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = valint(arg)
 			if (value < 0) then
 				value = 0
-				fbcErrorInvalidOption(arg)
 			elseif (value > 3) then
 				value = 3
 			end if
@@ -1346,6 +1306,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_PREFIX
 		fbc.prefix = pathStripDiv(arg)
+		hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
 
 	case OPT_PROFILE
 		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
@@ -1381,16 +1342,19 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		''    fbc -target i686-pc-mingw32
 		'' looks for:
 		''    bin/i686-pc-mingw32-ld[.exe]
-		fbc.triplet = arg + "-"
+		dim as string id = lcase( arg )
 
-		'' Identify the target
-		dim as integer comptarget = parseTargetTriplet(arg)
-		if (comptarget < 0) then
-			fbcErrorInvalidOption(arg)
-			return
+		'' Ignore it if it matches the host id; this adds backwards-
+		'' compatibility with fbc 0.23
+		if( id <> FB_HOST ) then
+			'' Identify the target
+			dim as integer comptarget = parseTargetId( id )
+			if( comptarget < 0 ) then
+				hFatalInvalidOption( arg )
+			end if
+			fbSetOption( FB_COMPOPT_TARGET, comptarget )
+			fbc.targetid = id + "-"
 		end if
-
-		fbSetOption( FB_COMPOPT_TARGET, comptarget )
 
 	case OPT_TITLE
 		fbc.xbe_title = arg
@@ -1409,8 +1373,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "2"
 			value = FB_VECTORIZE_INTRATREE
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_VECTORIZE, value )
@@ -1474,8 +1437,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "fast-bool"
 			value or= FB_EXTRAOPT_FAST_BOOL
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
@@ -1609,8 +1571,7 @@ private sub handleArg(byref arg as string)
 	if (fbc.optid >= 0) then
 		'' Complain about empty next argument
 		if (len(arg) = 0) then
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		handleOpt(fbc.optid, arg)
@@ -1630,16 +1591,14 @@ private sub handleArg(byref arg as string)
 		'' Complain about '-' only
 		if (cptr(ubyte ptr, opt)[0] = 0) then
 			'' Incomplete command line option
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Parse the option after the '-'
 		dim as integer optid = parseOption(opt)
 		if (optid < 0) then
 			'' Unrecognized command line option
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Does this option take a parameter?
@@ -1668,8 +1627,7 @@ private sub handleArg(byref arg as string)
 		'' Complain about '@' only
 		if (len(arg) = 0) then
 			'' Missing file name after '@'
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Recursively read in the additional options from the file
@@ -1705,16 +1663,14 @@ private sub handleArg(byref arg as string)
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
 			if (len(fbc.xpm.srcfile) > 0) then
-				fbcErrorInvalidOption(arg)
-				fbcEnd(1)
+				hFatalInvalidOption( arg )
 			end if
 
 			setIofile(@fbc.xpm, arg)
 
 		case else
 			'' Input file without or with unknown extension
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 
 		end select
 	end select
@@ -1800,8 +1756,7 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 	'' 'fbc foo.bas -o' this shows the error.
 	if (fbc.optid >= 0) then
 		'' Missing argument for command line option
-		fbcErrorInvalidOption(*argv[argc - 1])
-		fbcEnd(1)
+		hFatalInvalidOption( *argv[argc - 1] )
 	end if
 
 	'' In case there was an '-o <file>', but no corresponding input file,
@@ -1852,10 +1807,7 @@ end sub
 
 '' After command line parsing
 private sub fbcInit2()
-	'' Setup/calculate the paths to bin/ (needed when invoking helper
-	'' tools), include/ (needed when searching headers), and lib/ (needed
-	'' to find libraries when linking).
-	'' (See the makefile for some directory layout info)
+	'' Determine base/prefix path
 
 	'' Not already set from -prefix command line option?
 	if (len(fbc.prefix) = 0) then
@@ -1865,6 +1817,7 @@ private sub fbcInit2()
 		'' that if desired.
 		#ifdef ENABLE_PREFIX
 			fbc.prefix = ENABLE_PREFIX
+			hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
 		#else
 			fbc.prefix = exepath()
 			#ifndef ENABLE_STANDALONE
@@ -1877,24 +1830,49 @@ private sub fbcInit2()
 
 	fbc.prefix += FB_HOST_PATHDIV
 
-	fbc.binpath = fbc.prefix + "bin"
+	'' Setup/calculate the paths to bin/ (needed when invoking helper
+	'' tools), include/ (needed when searching headers), and lib/ (needed
+	'' to find libraries when linking).
+	''
+	'' Standalone:
+	''
+	'' bin/targetid/
+	'' inc/
+	'' lib/targetid[suffix]/
+	''
+	'' Normal:
+	''
+	'' bin/[targetid-]
+	'' include/freebasic/
+	'' lib/[targetid-]freebasic[suffix]/
+
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix
-	fbc.libpath = fbc.prefix
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV
 
 	#ifdef ENABLE_STANDALONE
-		'' include/
-		'' [triplet-]lib[-suffix]/
-		fbc.incpath += "include"
-		fbc.libpath += fbc.triplet + "lib"
+		'' Standalone always uses a target id in the bin/lib paths.
+		'' If none was given via -target then we have to choose a default one.
+		if( len( fbc.targetid ) > 0 ) then
+			fbc.binpath += fbc.targetid
+			fbc.libpath += fbc.targetid
+		else
+			fbc.binpath += *fbGetTargetId( )
+			fbc.libpath += *fbGetTargetId( )
+		end if
+		fbc.binpath += FB_HOST_PATHDIV
+		fbc.incpath += "inc"
 	#else
-		'' include/freebasic/
-		'' lib/[triplet-]freebasic[-suffix]/
+		if( len( fbc.targetid ) > 0 ) then
+			'' Separator between targetid and program filename
+			fbc.binpath += fbc.targetid + "-"
+			fbc.libpath += fbc.targetid + "-"
+		end if
 		fbc.incpath += "include" + FB_HOST_PATHDIV
-		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 			'' Our subdirectory in include/ and lib/ is usually called
 			'' freebasic/, but on DOS that's too long... of course almost
-			'' no target triplet or suffix can be used either.
+			'' no targetid or suffix can be used either.
 			'' (Note: When changing, update the makefile too)
 			fbc.incpath += "freebas"
 			fbc.libpath += "freebas"
@@ -1908,9 +1886,6 @@ private sub fbcInit2()
 		fbc.libpath += ENABLE_SUFFIX
 	#endif
 
-	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
 
 	'' Tell the compiler about the default include path (it's added after
 	'' the command line ones, so those will be searched first)
@@ -2200,22 +2175,14 @@ dim shared as const zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = 
 }
 
 private function assembleBas(byval module as FBCIOFILE ptr) as integer
-	static as string assembler
+	dim as integer tool = any
+	dim as string ln
 
 	function = FALSE
 
-	if (len(assembler) = 0) then
-		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
-			assembler = "gcc"
-		else
-			assembler = "as"
-		end if
-		assembler = fbcFindBin(assembler)
-	end if
+	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC ) then
+		tool = FBCTOOL_GCC
 
-	dim as string ln
-
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
 		ln += "-c -nostdlib -nostdinc " & _
 		      "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
 		      "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
@@ -2231,6 +2198,8 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 			ln += "-mfpmath=sse -msse2 "
 		end if
 	else
+		tool = FBCTOOL_AS
+
 		'' --32 because we only compile for 32bit right now
 		ln = "--32 "
 
@@ -2242,22 +2211,22 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 	ln += """" + getModuleAsmName(module) + """ "
 	ln += "-o """ + module->objfile + """"
 
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC ) then
 		ln += fbc.extopt.gcc
 	else
 		ln += fbc.extopt.gas
 	end if
 
-	if (fbcRunBin("assembling", assembler, ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "assembling", tool, ln ) = FALSE ) then
+		exit function
 	end if
 
-	fbcAddObj(module->objfile)
-	if (fbc.preserveobj = FALSE) then
-		fbcAddTemp(module->objfile)
+	fbcAddObj( module->objfile )
+	if( fbc.preserveobj = FALSE ) then
+		fbcAddTemp( module->objfile )
 	end if
 
-	return TRUE
+	function = TRUE
 end function
 
 private function assembleModules() as integer
@@ -2308,8 +2277,8 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	ln &= "/fo """ & rc->objfile & """"
 	ln &= " """ & rc->srcfile & """"
 
-	if (fbcRunBin("compiling rc", fbcFindBin("GoRC"), ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "compiling rc", FBCTOOL_GORC, ln ) = FALSE ) then
+		exit function
 	end if
 
 	'' restore the include env var
@@ -2329,11 +2298,10 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	'' Using binutils' windres for all other setups (e.g. cross-compiling
 	'' linux -> win32)
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
-	'' and that's not 100% compatible to GoRC (e.g. backslashes in
-	'' paths/filenames are seen as escape sequences by gcc, but not GoRC)
+	'' that may not be 100% compatible to GoRC.
 
 	'' *.o name based on input file name unless given via -o <file>
-	if (len(rc->objfile) = 0) then
+	if( len( rc->objfile ) = 0 ) then
 		'' Note: Appending instead of replacing, to avoid overwriting
 		'' an existing object file.
 		rc->objfile = rc->srcfile & ".o"
@@ -2343,7 +2311,7 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	ln &= " """ & rc->srcfile & """"
 	ln &= " """ & rc->objfile & """"
 
-	function = fbcRunBin("compiling rc", fbcFindBin("windres"), ln)
+	function = fbcRunBin( "compiling rc", FBCTOOL_WINDRES, ln )
 #endif
 
 	fbcAddObj(rc->objfile)
@@ -2666,10 +2634,14 @@ end sub
 	'' Set the default lib paths before scanning for other libs
 	setDefaultLibPaths()
 
+#ifndef DISABLE_OBJINFO
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
-	collectObjInfo()
+	if( fbIsCrossComp( ) = FALSE ) then
+		collectObjInfo( )
+	end if
+#endif
 
 	if (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_STATICLIB) then
 		if (archiveFiles() = FALSE) then

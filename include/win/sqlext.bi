@@ -858,7 +858,7 @@
 #define SQL_FN_TD_EXTRACT &h00100000L
 #define SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES1 146
 #define SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES2 147
-#define SQL_FUNC_EXISTS(exists, api) iif( *(cptr(UWORD ptr, exists) + (((api) shr 4) and (1 shr ((api) and 15))), SQL_TRUE, SQL_FALSE )
+#define SQL_FUNC_EXISTS(exists, api) iif( *(cptr(UWORD ptr, exists) + ((api) shr 4)) and (1 shl ((api) and 15)), SQL_TRUE, SQL_FALSE )
 #define SQL_GB_COLLATE &h0004
 #define SQL_HANDLE_SENV 5
 #define SQL_IK_ASC 1

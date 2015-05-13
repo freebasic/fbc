@@ -1545,40 +1545,24 @@ private sub hDivToShift_Signed _
 
 	if( const_val = 1 ) then
 		'' n + ( cunsg(n) shr bits )
-		n->l = astNewCONV( dtype, _
-						   NULL, _
-						   astNewBOP( AST_OP_ADD, _
-									  l_cpy, _
-									  astNewBOP( AST_OP_SHR, _
-												 astNewCONV( typeToUnsigned( dtype ), _
-															 NULL, _
-															 l, _
-															 AST_OP_TOUNSIGNED _
-														   ), _
-												 astNewCONSTi( bits, _
-															   FB_DATATYPE_INTEGER ), _
-											   ), _
-									), _
-						   AST_OP_TOSIGNED _
-						 )
+		n->l = astNewCONV( dtype, NULL, _
+				astNewBOP( AST_OP_ADD, _
+					l_cpy, _
+					astNewBOP( AST_OP_SHR, _
+						astNewCONV( typeToUnsigned( dtype ), NULL, l, AST_CONVOPT_SIGNCONV ), _
+						astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_SIGNCONV )
 	else
 		'' n + ( (n shr bits) and (1 shl const_val - 1) )
-		n->l = astNewCONV( dtype, _
-						   NULL, _
-						   astNewBOP( AST_OP_ADD, _
-									  l_cpy, _
-									  astNewBOP( AST_OP_AND, _
-												 astNewBOP( AST_OP_SHR, _
-															l, _
-															astNewCONSTi( bits, _
-																		  FB_DATATYPE_INTEGER ) _
-														  ), _
-												 astNewCONSTi( 1 shl const_val - 1, _
-															   FB_DATATYPE_INTEGER ), _
-											   ), _
-									), _
-						   AST_OP_TOSIGNED _
-						 )
+		n->l = astNewCONV( dtype, NULL, _
+				astNewBOP( AST_OP_ADD, _
+					l_cpy, _
+					astNewBOP( AST_OP_AND, _
+						astNewBOP( AST_OP_SHR, _
+							l, _
+							astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ), _
+						astNewCONSTi( 1 shl const_val - 1, FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_SIGNCONV )
 	end if
 
 	n->op.op = AST_OP_SHR
@@ -2034,15 +2018,13 @@ private function hOptLogic _
 
 end function
 
-
-'':::::
-private function hDoOptRemConv _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer dorem = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
 
 	'' convert l{float} op cast(float, r{var}) to l op r
 	if( n->class = AST_NODECLASS_BOP ) then
@@ -2090,36 +2072,10 @@ private function hDoOptRemConv _
 	end if
 
 	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hDoOptRemConv( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hDoOptRemConv( r )
-	end if
+	n->l = hDoOptRemConv( n->l )
+	n->r = hDoOptRemConv( n->r )
 
 	function = n
-
-end function
-
-'':::::
-private function hOptRemConv _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
-		return n
-	end if
-
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	function = hDoOptRemConv( n )
-
 end function
 
 '':::::
@@ -2391,12 +2347,11 @@ function astOptAssignment _
 
 	dclass = typeGetClass( dtype )
 	if( dclass = FB_DATACLASS_INTEGER ) then
-		if( irGetOption( IR_OPT_CPU_BOPSELF ) = FALSE ) then
+		if( irGetOption( IR_OPT_CPUSELFBOPS ) = FALSE ) then
 			exit function
 		end if
-
 	else
-		if( irGetOption( IR_OPT_FPU_BOPSELF ) = FALSE ) then
+		if( irGetOption( IR_OPT_FPUSELFBOPS ) = FALSE ) then
 			'' try to optimize if a constant is being assigned to a float var
   			if( astIsCONST( r ) ) then
   				if( dclass = FB_DATACLASS_FPOINT ) then
@@ -2622,10 +2577,6 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' code where needed
 	n = hRemoveFIELDs( n )
 
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		return hOptConstIDX( n )
-	end if
-
 	n = hOptAssocADD( n )
 
 	n = hOptAssocMUL( n )
@@ -2650,10 +2601,14 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n = hOptSelfCompare( n )
 
- 	n = hOptRemConv( n )
+	if( irGetOption( IR_OPT_FPUCONV ) = FALSE ) then
+		n = hDoOptRemConv( n )
+	end if
 
-	if( env.clopt.fpmode = FB_FPMODE_FAST ) then
-		n = hOptReciprocal( n )
+	if( irGetOption( IR_OPT_NOINLINEOPS ) = FALSE ) then
+		if( env.clopt.fpmode = FB_FPMODE_FAST ) then
+			n = hOptReciprocal( n )
+		end if
 	end if
 
 	function = n

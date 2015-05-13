@@ -11,16 +11,23 @@
 #include once "rtl.bi"
 #include once "symb.bi"
 
-':::::
-private sub hDllMainBegin_Win32 ( )
+private sub hCallMain( )
+	dim as ASTNODE ptr main = any
 
-    dim as FBSYMBOL ptr proc, label, param
-   	dim as ASTNODE ptr reason, main, procnode
-    dim as integer argn
+	'' main( 0, NULL )
+	main = astNewCALL( env.main.proc )
+	astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+	astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
 
-const fbdllreason = "__FB_DLLREASON__"
+	'' tell the emitter to not allocate a result
+	astSetType( main, FB_DATATYPE_VOID, NULL )
 
-	''
+	astAdd( main )
+end sub
+
+private sub hBuildDllMainWin32( )
+	dim as FBSYMBOL ptr proc = any, label = any, param = any
+
 	proc = symbPreAddProc( NULL )
 
 	'' instance
@@ -28,7 +35,7 @@ const fbdllreason = "__FB_DLLREASON__"
 	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reason
-	param = symbAddProcParam( proc, fbdllreason, FB_DATATYPE_UINT, NULL, _
+	param = symbAddProcParam( proc, "__FB_DLLREASON__", FB_DATATYPE_UINT, NULL, _
 	                          FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reserved
@@ -42,119 +49,64 @@ const fbdllreason = "__FB_DLLREASON__"
 						FB_SYMBATTRIB_PUBLIC, _
 						env.target.stdcall )
 
-    ''
-	procnode = astProcBegin( proc, FALSE )
+	astProcBegin( proc, FALSE )
 
-    symbSetProcIncFile( proc, NULL )
-
-	''
-   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
-
-   	'' function = TRUE
-   	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), _
-   									 0, symbGetFullType( proc ) ), _
-   						  astNewCONSTi( 1, symbGetType( proc ) ) ) )
+	'' function = TRUE
+	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), 0, symbGetFullType( proc ) ), _
+	                      astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
-
 	param = symbGetParamVar( param )
-	reason = astNewVAR( param, 0, symbGetFullType( param ) )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, _
-					   reason, _
-					   astNewCONSTi( 1, FB_DATATYPE_UINT ), _
-					   label, _
-					   AST_OPOPT_NONE ) )
+			astNewVAR( param, 0, symbGetFullType( param ) ), _
+			astNewCONSTi( 1, FB_DATATYPE_UINT ), _
+			label, AST_OPOPT_NONE ) )
 
-	''	main( 0, NULL )
-    main = astNewCALL( env.main.proc )
-    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
-
-	'' tell the emitter to not allocate a result
-	astSetType( main, FB_DATATYPE_VOID, NULL )
-
-    astAdd( main )
+	'' main( ... )
+	hCallMain( )
 
 	'' end if
-    astAdd( astNewLABEL( label ) )
+	astAdd( astNewLABEL( label ) )
 
-   	''
-   	astProcEnd( procnode, FALSE )
-
+	'' end function
+	astProcEnd( FALSE )
 end sub
 
-':::::
-private sub hDllMainBegin_GlobCtor ( )
-    dim as FBSYMBOL ptr proc, label
-   	dim as ASTNODE ptr main, procnode
+private sub hBuildDllMainCtor( )
+	dim as FBSYMBOL ptr proc = any
 
-	'' sub ctor cdecl( )
+	'' sub ctor cdecl( ) constructor
 	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
-						FB_DATATYPE_VOID, NULL, _
-						FB_SYMBATTRIB_PRIVATE, _
-						FB_FUNCMODE_CDECL )
-
-	procnode = astProcBegin( proc, FALSE )
-
-    symbSetProcIncFile( proc, NULL )
+	                    FB_DATATYPE_VOID, NULL, _
+	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )
 	symbAddGlobalCtor( proc )
+	astProcBegin( proc, FALSE )
 
-   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+	'' main( ... )
+	hCallMain( )
 
-	'' main( 0, NULL )
-    main = astNewCALL( env.main.proc )
-    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
-
-	'' tell the emitter to not allocate a result
-	astSetType( main, FB_DATATYPE_VOID, NULL )
-
-    astAdd( main )
-
-   	astProcEnd( procnode, FALSE )
-
+	'' end sub
+	astProcEnd( FALSE )
 end sub
 
-':::::
-private sub hDllMainBegin ( )
+private sub hMainBegin( )
+	dim as FBSYMBOL ptr proc = any
 
-	'' handle systems where main() or dllmain() won't be called automatically
-	select case env.clopt.target
-	case FB_COMPTARGET_WIN32
-		hDllMainBegin_Win32( )
-	case else
-		hDllMainBegin_GlobCtor( )
-	end select
-
-end sub
-
-':::::
-private sub hMainBegin _
-	( _
-		byval isdllmain as integer _
-	)
-
-    dim as FBSYMBOL ptr proc
-
-const fbargc = "__FB_ARGC__"
-const fbargv = "__FB_ARGV__"
-
-	''
 	proc = symbPreAddProc( NULL )
 
-	'' argc
-	env.main.argc = symbAddProcParam( proc, fbargc, FB_DATATYPE_INTEGER, NULL, _
-	                                  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	'' byval argc as integer
+	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_INTEGER, NULL, _
+	                  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
-	'' argv
-	env.main.argv = symbAddProcParam( proc, fbargv, typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	'' byval argv as zstring ptr ptr
+	symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
 	var id = fbGetEntryPoint( )
-	if( isdllmain ) then
+	if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		attrib = FB_SYMBATTRIB_PRIVATE
 		'' if it's high level, give it a random name
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
@@ -162,109 +114,62 @@ const fbargv = "__FB_ARGV__"
 		end if
 	end if
 
-	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
-	env.main.proc = symbAddProc( proc, NULL, id, _
-								 FB_DATATYPE_INTEGER, NULL, _
-								 attrib, _
-								 FB_FUNCMODE_CDECL )
+	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr ) as integer
+	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_INTEGER, NULL, _
+	                             attrib, FB_FUNCMODE_CDECL )
 
-    symbSetIsMainProc( env.main.proc )
+	'' Must be done before astProcBegin(), so it will add the fb_Init() call, etc.
+	symbSetIsMainProc( env.main.proc )
 
-    ''
-	env.main.node = astProcBegin( env.main.proc, TRUE )
-
-    symbSetProcIncFile( env.main.proc, NULL )
-
-	env.main.argc = symbGetParamVar( env.main.argc )
-	env.main.argv = symbGetParamVar( env.main.argv )
-
-	''
-    dim as ASTNODE ptr argc, argv
-
-	'' call fb_Init
-	argc = astNewVAR( env.main.argc, 0, symbGetFullType( env.main.argc ) )
-	argv = astNewVAR( env.main.argv, 0, symbGetFullType( env.main.argv ) )
-
-    '' init( argc, argv )
-    env.main.initnode = rtlInitApp( argc, argv, isdllmain )
-
-   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
-
+	astProcBegin( env.main.proc, TRUE )
 end sub
 
-':::::
 private sub hModLevelBegin( )
-
 	'' sub modlevel cdecl( ) constructor
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
 								 "{modlevel}", fbGetModuleEntry( ), _
 								 FB_DATATYPE_VOID, NULL, _
 								 FB_SYMBATTRIB_PRIVATE, _
 								 FB_FUNCMODE_CDECL )
+	symbAddGlobalCtor( env.main.proc )
+	symbSetIsCalled( env.main.proc )
+	symbSetIsModLevelProc( env.main.proc )
 
-    symbSetIsModLevelProc( env.main.proc )
-
-    symbAddGlobalCtor( env.main.proc )
-
-    ''
-	env.main.node = astProcBegin( env.main.proc, TRUE )
-
-    symbSetProcIncFile( env.main.proc, NULL )
-    symbSetIsCalled( env.main.proc )
-
-   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
-
+	astProcBegin( env.main.proc, TRUE )
 end sub
 
-'':::::
 sub fbMainBegin( )
 	if( env.outf.ismain ) then
-		hMainBegin( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
-
-		if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-			hDllMainBegin( )
-		end if
-
+		'' function main( ... )
+		hMainBegin( )
 	else
+		'' sub modlevel( ) constructor
 		hModLevelBegin( )
 	end if
 
+	'' Generate a DllMain() or global ctor that calls main()/modlevel() in DLLs/shared libs
+	if( env.outf.ismain and (env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB) ) then
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			hBuildDllMainWin32( )
+		else
+			hBuildDllMainCtor( )
+		end if
+	end if
 end sub
 
-'':::::
-private sub hMainEnd _
-	( _
-		byval isdllmain as integer _
-	)
-
-    '' set default data label (def label isn't global as it could clash with other
-    '' modules, so DataRestore alone can't figure out where to start)
-    if( astGetFirstDataStmtSymbol( ) <> NULL ) then
-    	rtlDataRestore( NULL, env.main.initnode )
-    end if
-
-	'' if main(), 0 will be returned to crt
-	astProcEnd( env.main.node, isdllmain = FALSE )
-
-end sub
-
-
-'':::::
-private sub hModLevelEnd( )
-
-	''
-	astProcEnd( env.main.node, FALSE )
-
-end sub
-
-'':::::
 sub fbMainEnd( )
+	dim as integer callrtexit = FALSE
 
-    if( env.outf.ismain ) then
-    	hMainEnd( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
+	if( env.outf.ismain ) then
+		'' set default data label (def label isn't global as it could clash with other
+		'' modules, so DataRestore alone can't figure out where to start)
+		if( astGetFirstDataStmtSymbol( ) <> NULL ) then
+			rtlDataRestore( NULL, env.main.initnode )
+		end if
 
-    else
-    	hModLevelEnd( )
-    end if
+		callrtexit = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
+	end if
 
+	'' end sub|function (main() or modlevel())
+	astProcEnd( callrtexit )
 end sub

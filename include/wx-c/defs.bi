@@ -1634,8 +1634,8 @@ End Enum
 
 ' Used to define the background mode in wx.DC.
 Enum wxBackgroundMode
-  SOLID       = 100
-  TRANSPARENT = 106
+  wxSOLID       = 100
+  wxTRANSPARENT = 106
 End Enum
 
 Enum wxFontStyle
@@ -2029,5 +2029,2167 @@ Enum wxSystemScreenType
   wxSYS_SCREEN_SMALL
   wxSYS_SCREEN_DESKTOP
 End Enum
+
+' ----------------------------------------------------------------------
+'  STC constants generated section {{{
+
+#Define wxSTC_INVALID_POSITION -1
+
+'  Define start of Scintilla messages To be greater than all Windows edit (EM_*) messages
+'  As many EM_ messages can be used although that use Is deprecated.
+#Define wxSTC_START 2000
+#Define wxSTC_OPTIONAL_START 3000
+#Define wxSTC_LEXER_START 4000
+#Define wxSTC_WS_INVISIBLE 0
+#Define wxSTC_WS_VISIBLEALWAYS 1
+#Define wxSTC_WS_VISIBLEAFTERINDENT 2
+#Define wxSTC_EOL_CRLF 0
+#Define wxSTC_EOL_CR 1
+#Define wxSTC_EOL_LF 2
+
+'  The SC_CP_UTF8 value can be used To enter Unicode mode.
+'  This Is the same value As CP_UTF8 in Windows
+#Define wxSTC_CP_UTF8 65001
+
+'  The SC_CP_DBCS value can be used To indicate a DBCS mode For GTK+.
+#Define wxSTC_CP_DBCS 1
+#Define wxSTC_MARKER_MAX 31
+#Define wxSTC_MARK_CIRCLE 0
+#Define wxSTC_MARK_ROUNDRECT 1
+#Define wxSTC_MARK_ARROW 2
+#Define wxSTC_MARK_SMALLRECT 3
+#Define wxSTC_MARK_SHORTARROW 4
+#Define wxSTC_MARK_EMPTY 5
+#Define wxSTC_MARK_ARROWDOWN 6
+#Define wxSTC_MARK_MINUS 7
+#Define wxSTC_MARK_PLUS 8
+
+'  Shapes used For outlining column.
+#Define wxSTC_MARK_VLINE 9
+#Define wxSTC_MARK_LCORNER 10
+#Define wxSTC_MARK_TCORNER 11
+#Define wxSTC_MARK_BOXPLUS 12
+#Define wxSTC_MARK_BOXPLUSCONNECTED 13
+#Define wxSTC_MARK_BOXMINUS 14
+#Define wxSTC_MARK_BOXMINUSCONNECTED 15
+#Define wxSTC_MARK_LCORNERCURVE 16
+#Define wxSTC_MARK_TCORNERCURVE 17
+#Define wxSTC_MARK_CIRCLEPLUS 18
+#Define wxSTC_MARK_CIRCLEPLUSCONNECTED 19
+#Define wxSTC_MARK_CIRCLEMINUS 20
+#Define wxSTC_MARK_CIRCLEMINUSCONNECTED 21
+
+'  Invisible mark that only sets the Line background color.
+#Define wxSTC_MARK_BACKGROUND 22
+#Define wxSTC_MARK_DOTDOTDOT 23
+#Define wxSTC_MARK_ARROWS 24
+#Define wxSTC_MARK_PIXMAP 25
+#Define wxSTC_MARK_FULLRECT 26
+#Define wxSTC_MARK_LEFTRECT 27
+#Define wxSTC_MARK_AVAILABLE 28
+#Define wxSTC_MARK_UNDERLINE 29
+#Define wxSTC_MARK_CHARACTER 10000
+
+'  Markers used For outlining column.
+#Define wxSTC_MARKNUM_FOLDEREND 25
+#Define wxSTC_MARKNUM_FOLDEROPENMID 26
+#Define wxSTC_MARKNUM_FOLDERMIDTAIL 27
+#Define wxSTC_MARKNUM_FOLDERTAIL 28
+#Define wxSTC_MARKNUM_FOLDERSUB 29
+#Define wxSTC_MARKNUM_FOLDER 30
+#Define wxSTC_MARKNUM_FOLDEROPEN 31
+#Define wxSTC_MASK_FOLDERS &hFE000000
+#Define wxSTC_MARGIN_SYMBOL 0
+#Define wxSTC_MARGIN_NUMBER 1
+#Define wxSTC_MARGIN_BACK 2
+#Define wxSTC_MARGIN_FORE 3
+#Define wxSTC_MARGIN_TEXT 4
+#Define wxSTC_MARGIN_RTEXT 5
+
+'  Styles in range 32..38 are predefined For parts of the UI And are Not used As normal styles.
+'  Style 39 Is For future use.
+#Define wxSTC_STYLE_DEFAULT 32
+#Define wxSTC_STYLE_LINENUMBER 33
+#Define wxSTC_STYLE_BRACELIGHT 34
+#Define wxSTC_STYLE_BRACEBAD 35
+#Define wxSTC_STYLE_CONTROLCHAR 36
+#Define wxSTC_STYLE_INDENTGUIDE 37
+#Define wxSTC_STYLE_CALLTIP 38
+#Define wxSTC_STYLE_LASTPREDEFINED 39
+#Define wxSTC_STYLE_MAX 255
+
+'  Character set identifiers are used in StyleSetCharacterSet.
+'  The values are the same As the Windows *_CHARSET values.
+#Define wxSTC_CHARSET_ANSI 0
+#Define wxSTC_CHARSET_DEFAULT 1
+#Define wxSTC_CHARSET_BALTIC 186
+#Define wxSTC_CHARSET_CHINESEBIG5 136
+#Define wxSTC_CHARSET_EASTEUROPE 238
+#Define wxSTC_CHARSET_GB2312 134
+#Define wxSTC_CHARSET_GREEK 161
+#Define wxSTC_CHARSET_HANGUL 129
+#Define wxSTC_CHARSET_MAC 77
+#Define wxSTC_CHARSET_OEM 255
+#Define wxSTC_CHARSET_RUSSIAN 204
+#Define wxSTC_CHARSET_CYRILLIC 1251
+#Define wxSTC_CHARSET_SHIFTJIS 128
+#Define wxSTC_CHARSET_SYMBOL 2
+#Define wxSTC_CHARSET_TURKISH 162
+#Define wxSTC_CHARSET_JOHAB 130
+#Define wxSTC_CHARSET_HEBREW 177
+#Define wxSTC_CHARSET_ARABIC 178
+#Define wxSTC_CHARSET_VIETNAMESE 163
+#Define wxSTC_CHARSET_THAI 222
+#Define wxSTC_CHARSET_8859_15 1000
+#Define wxSTC_CASE_MIXED 0
+#Define wxSTC_CASE_UPPER 1
+#Define wxSTC_CASE_LOWER 2
+
+'  Indicator style enumeration And some constants
+#Define wxSTC_INDIC_PLAIN 0
+#Define wxSTC_INDIC_SQUIGGLE 1
+#Define wxSTC_INDIC_TT 2
+#Define wxSTC_INDIC_DIAGONAL 3
+#Define wxSTC_INDIC_STRIKE 4
+#Define wxSTC_INDIC_HIDDEN 5
+#Define wxSTC_INDIC_BOX 6
+#Define wxSTC_INDIC_ROUNDBOX 7
+#Define wxSTC_INDIC_MAX 31
+#Define wxSTC_INDIC_CONTAINER 8
+#Define wxSTC_INDIC0_MASK &h20
+#Define wxSTC_INDIC1_MASK &h40
+#Define wxSTC_INDIC2_MASK &h80
+#Define wxSTC_INDICS_MASK &hE0
+#Define wxSTC_IV_NONE 0
+#Define wxSTC_IV_REAL 1
+#Define wxSTC_IV_LOOKFORWARD 2
+#Define wxSTC_IV_LOOKBOTH 3
+
+'  PrintColourMode - use same colours As screen.
+#Define wxSTC_PRINT_NORMAL 0
+
+'  PrintColourMode - invert the light value of each style For printing.
+#Define wxSTC_PRINT_INVERTLIGHT 1
+
+'  PrintColourMode - force black text On white background For printing.
+#Define wxSTC_PRINT_BLACKONWHITE 2
+
+'  PrintColourMode - text stays coloured, but all background Is forced To be white For printing.
+#Define wxSTC_PRINT_COLOURONWHITE 3
+
+'  PrintColourMode - only the default-background Is forced To be white For printing.
+#Define wxSTC_PRINT_COLOURONWHITEDEFAULTBG 4
+#Define wxSTC_FIND_WHOLEWORD 2
+#Define wxSTC_FIND_MATCHCASE 4
+#Define wxSTC_FIND_WORDSTART &h00100000
+#Define wxSTC_FIND_REGEXP &h00200000
+#Define wxSTC_FIND_POSIX &h00400000
+#Define wxSTC_FOLDLEVELBASE &h400
+#Define wxSTC_FOLDLEVELWHITEFLAG &h1000
+#Define wxSTC_FOLDLEVELHEADERFLAG &h2000
+#Define wxSTC_FOLDLEVELNUMBERMASK &h0FFF
+#Define wxSTC_FOLDFLAG_LINEBEFORE_EXPANDED &h0002
+#Define wxSTC_FOLDFLAG_LINEBEFORE_CONTRACTED &h0004
+#Define wxSTC_FOLDFLAG_LINEAFTER_EXPANDED &h0008
+#Define wxSTC_FOLDFLAG_LINEAFTER_CONTRACTED &h0010
+#Define wxSTC_FOLDFLAG_LEVELNUMBERS &h0040
+#Define wxSTC_TIME_FOREVER 10000000
+#Define wxSTC_WRAP_NONE 0
+#Define wxSTC_WRAP_WORD 1
+#Define wxSTC_WRAP_CHAR 2
+#Define wxSTC_WRAPVISUALFLAG_NONE &h0000
+#Define wxSTC_WRAPVISUALFLAG_END &h0001
+#Define wxSTC_WRAPVISUALFLAG_START &h0002
+#Define wxSTC_WRAPVISUALFLAGLOC_DEFAULT &h0000
+#Define wxSTC_WRAPVISUALFLAGLOC_END_BY_TEXT &h0001
+#Define wxSTC_WRAPVISUALFLAGLOC_START_BY_TEXT &h0002
+#Define wxSTC_WRAPINDENT_FIXED 0
+#Define wxSTC_WRAPINDENT_SAME 1
+#Define wxSTC_WRAPINDENT_INDENT 2
+#Define wxSTC_CACHE_NONE 0
+#Define wxSTC_CACHE_CARET 1
+#Define wxSTC_CACHE_PAGE 2
+#Define wxSTC_CACHE_DOCUMENT 3
+
+'  Control font anti-aliasing.
+#Define wxSTC_EFF_QUALITY_MASK &hF
+#Define wxSTC_EFF_QUALITY_DEFAULT 0
+#Define wxSTC_EFF_QUALITY_NON_ANTIALIASED 1
+#Define wxSTC_EFF_QUALITY_ANTIALIASED 2
+#Define wxSTC_EFF_QUALITY_LCD_OPTIMIZED 3
+#Define wxSTC_EDGE_NONE 0
+#Define wxSTC_EDGE_LINE 1
+#Define wxSTC_EDGE_BACKGROUND 2
+#Define wxSTC_STATUS_OK 0
+#Define wxSTC_STATUS_FAILURE 1
+#Define wxSTC_STATUS_BADALLOC 2
+#Define wxSTC_CURSORNORMAL -1
+#Define wxSTC_CURSORWAIT 4
+
+'  Constants For use With SetVisiblePolicy, similar To SetCaretPolicy.
+#Define wxSTC_VISIBLE_SLOP &h01
+#Define wxSTC_VISIBLE_STRICT &h04
+
+'  Caret policy, used by SetXCaretPolicy And SetYCaretPolicy.
+'  If CARET_SLOP Is set, we can define a slop value: caretSlop.
+'  This value defines an unwanted zone (UZ) where the caret is... unwanted.
+'  This zone Is Defined As a number of pixels near the vertical margins,
+'  And As a number of lines near the horizontal margins.
+'  By keeping the caret away from the edges, it Is seen within its context,
+'  so it Is likely that the identifier that the caret Is On can be completely seen,
+'  And that the current Line Is seen With some of the lines following it which are
+'  often dependent On that line.
+#Define wxSTC_CARET_SLOP &h01
+
+'  If CARET_STRICT Is set, the policy Is enforced... strictly.
+'  The caret Is centred On the display If slop Is Not set,
+'  And cannot go in the UZ If slop Is set.
+#Define wxSTC_CARET_STRICT &h04
+
+'  If CARET_JUMPS Is set, the display Is moved more energetically
+'  so the caret can move in the same direction longer before the policy Is applied again.
+#Define wxSTC_CARET_JUMPS &h10
+
+'  If CARET_EVEN Is Not set, instead of having symmetrical UZs,
+'  the Left And bottom UZs are extended up To Right And top UZs respectively.
+'  This way, we favour the displaying of useful information: the begining of lines,
+'  where most code reside, And the lines after the caret, eg. the body of a function.
+#Define wxSTC_CARET_EVEN &h08
+#Define wxSTC_SEL_STREAM 0
+#Define wxSTC_SEL_RECTANGLE 1
+#Define wxSTC_SEL_LINES 2
+#Define wxSTC_SEL_THIN 3
+#Define wxSTC_ALPHA_TRANSPARENT 0
+#Define wxSTC_ALPHA_OPAQUE 255
+#Define wxSTC_ALPHA_NOALPHA 256
+#Define wxSTC_CARETSTYLE_INVISIBLE 0
+#Define wxSTC_CARETSTYLE_LINE 1
+#Define wxSTC_CARETSTYLE_BLOCK 2
+#Define wxSTC_ANNOTATION_HIDDEN 0
+#Define wxSTC_ANNOTATION_STANDARD 1
+#Define wxSTC_ANNOTATION_BOXED 2
+#Define wxSTC_UNDO_MAY_COALESCE 1
+#Define wxSTC_SCVS_NONE 0
+#Define wxSTC_SCVS_RECTANGULARSELECTION 1
+#Define wxSTC_SCVS_USERACCESSIBLE 2
+
+'  Maximum value of keywordSet parameter of SetKeyWords.
+#Define wxSTC_KEYWORDSET_MAX 8
+
+'  Notifications
+'  Type of modification And the action which caused the modification.
+'  These are Defined As a Bit mask To make it easy To specify which notifications are wanted.
+'  One Bit Is set from each of SC_MOD_* And SC_PERFORMED_*.
+#Define wxSTC_MOD_INSERTTEXT &h1
+#Define wxSTC_MOD_DELETETEXT &h2
+#Define wxSTC_MOD_CHANGESTYLE &h4
+#Define wxSTC_MOD_CHANGEFOLD &h8
+#Define wxSTC_PERFORMED_USER &h10
+#Define wxSTC_PERFORMED_UNDO &h20
+#Define wxSTC_PERFORMED_REDO &h40
+#Define wxSTC_MULTISTEPUNDOREDO &h80
+#Define wxSTC_LASTSTEPINUNDOREDO &h100
+#Define wxSTC_MOD_CHANGEMARKER &h200
+#Define wxSTC_MOD_BEFOREINSERT &h400
+#Define wxSTC_MOD_BEFOREDELETE &h800
+#Define wxSTC_MULTILINEUNDOREDO &h1000
+#Define wxSTC_STARTACTION &h2000
+#Define wxSTC_MOD_CHANGEINDICATOR &h4000
+#Define wxSTC_MOD_CHANGELINESTATE &h8000
+#Define wxSTC_MOD_CHANGEMARGIN &h10000
+#Define wxSTC_MOD_CHANGEANNOTATION &h20000
+#Define wxSTC_MOD_CONTAINER &h40000
+#Define wxSTC_MODEVENTMASKALL &h7FFFF
+
+'  Symbolic key codes And modifier flags.
+'  ASCII And other printable characters below 256.
+'  Extended keys above 300.
+#Define wxSTC_KEY_DOWN 300
+#Define wxSTC_KEY_UP 301
+#Define wxSTC_KEY_LEFT 302
+#Define wxSTC_KEY_RIGHT 303
+#Define wxSTC_KEY_HOME 304
+#Define wxSTC_KEY_END 305
+#Define wxSTC_KEY_PRIOR 306
+#Define wxSTC_KEY_NEXT 307
+#Define wxSTC_KEY_DELETE 308
+#Define wxSTC_KEY_INSERT 309
+#Define wxSTC_KEY_ESCAPE 7
+#Define wxSTC_KEY_BACK 8
+#Define wxSTC_KEY_TAB 9
+#Define wxSTC_KEY_RETURN 13
+#Define wxSTC_KEY_ADD 310
+#Define wxSTC_KEY_SUBTRACT 311
+#Define wxSTC_KEY_DIVIDE 312
+#Define wxSTC_KEY_WIN 313
+#Define wxSTC_KEY_RWIN 314
+#Define wxSTC_KEY_MENU 315
+#Define wxSTC_SCMOD_NORM 0
+#Define wxSTC_SCMOD_SHIFT 1
+#Define wxSTC_SCMOD_CTRL 2
+#Define wxSTC_SCMOD_ALT 4
+#Define wxSTC_SCMOD_SUPER 8
+
+'  For SciLexer.h
+#Define wxSTC_LEX_CONTAINER 0
+#Define wxSTC_LEX_NULL 1
+#Define wxSTC_LEX_PYTHON 2
+#Define wxSTC_LEX_CPP 3
+#Define wxSTC_LEX_HTML 4
+#Define wxSTC_LEX_XML 5
+#Define wxSTC_LEX_PERL 6
+#Define wxSTC_LEX_SQL 7
+#Define wxSTC_LEX_VB 8
+#Define wxSTC_LEX_PROPERTIES 9
+#Define wxSTC_LEX_ERRORLIST 10
+#Define wxSTC_LEX_MAKEFILE 11
+#Define wxSTC_LEX_BATCH 12
+#Define wxSTC_LEX_XCODE 13
+#Define wxSTC_LEX_LATEX 14
+#Define wxSTC_LEX_LUA 15
+#Define wxSTC_LEX_DIFF 16
+#Define wxSTC_LEX_CONF 17
+#Define wxSTC_LEX_PASCAL 18
+#Define wxSTC_LEX_AVE 19
+#Define wxSTC_LEX_ADA 20
+#Define wxSTC_LEX_LISP 21
+#Define wxSTC_LEX_RUBY 22
+#Define wxSTC_LEX_EIFFEL 23
+#Define wxSTC_LEX_EIFFELKW 24
+#Define wxSTC_LEX_TCL 25
+#Define wxSTC_LEX_NNCRONTAB 26
+#Define wxSTC_LEX_BULLANT 27
+#Define wxSTC_LEX_VBSCRIPT 28
+#Define wxSTC_LEX_BAAN 31
+#Define wxSTC_LEX_MATLAB 32
+#Define wxSTC_LEX_SCRIPTOL 33
+#Define wxSTC_LEX_ASM 34
+#Define wxSTC_LEX_CPPNOCASE 35
+#Define wxSTC_LEX_FORTRAN 36
+#Define wxSTC_LEX_F77 37
+#Define wxSTC_LEX_CSS 38
+#Define wxSTC_LEX_POV 39
+#Define wxSTC_LEX_LOUT 40
+#Define wxSTC_LEX_ESCRIPT 41
+#Define wxSTC_LEX_PS 42
+#Define wxSTC_LEX_NSIS 43
+#Define wxSTC_LEX_MMIXAL 44
+#Define wxSTC_LEX_CLW 45
+#Define wxSTC_LEX_CLWNOCASE 46
+#Define wxSTC_LEX_LOT 47
+#Define wxSTC_LEX_YAML 48
+#Define wxSTC_LEX_TEX 49
+#Define wxSTC_LEX_METAPOST 50
+#Define wxSTC_LEX_POWERBASIC 51
+#Define wxSTC_LEX_FORTH 52
+#Define wxSTC_LEX_ERLANG 53
+#Define wxSTC_LEX_OCTAVE 54
+#Define wxSTC_LEX_MSSQL 55
+#Define wxSTC_LEX_VERILOG 56
+#Define wxSTC_LEX_KIX 57
+#Define wxSTC_LEX_GUI4CLI 58
+#Define wxSTC_LEX_SPECMAN 59
+#Define wxSTC_LEX_AU3 60
+#Define wxSTC_LEX_APDL 61
+#Define wxSTC_LEX_BASH 62
+#Define wxSTC_LEX_ASN1 63
+#Define wxSTC_LEX_VHDL 64
+#Define wxSTC_LEX_CAML 65
+#Define wxSTC_LEX_BLITZBASIC 66
+#Define wxSTC_LEX_PUREBASIC 67
+#Define wxSTC_LEX_HASKELL 68
+#Define wxSTC_LEX_PHPSCRIPT 69
+#Define wxSTC_LEX_TADS3 70
+#Define wxSTC_LEX_REBOL 71
+#Define wxSTC_LEX_SMALLTALK 72
+#Define wxSTC_LEX_FLAGSHIP 73
+#Define wxSTC_LEX_CSOUND 74
+#Define wxSTC_LEX_FREEBASIC 75
+#Define wxSTC_LEX_INNOSETUP 76
+#Define wxSTC_LEX_OPAL 77
+#Define wxSTC_LEX_SPICE 78
+#Define wxSTC_LEX_D 79
+#Define wxSTC_LEX_CMAKE 80
+#Define wxSTC_LEX_GAP 81
+#Define wxSTC_LEX_PLM 82
+#Define wxSTC_LEX_PROGRESS 83
+#Define wxSTC_LEX_ABAQUS 84
+#Define wxSTC_LEX_ASYMPTOTE 85
+#Define wxSTC_LEX_R 86
+#Define wxSTC_LEX_MAGIK 87
+#Define wxSTC_LEX_POWERSHELL 88
+#Define wxSTC_LEX_MYSQL 89
+#Define wxSTC_LEX_PO 90
+#Define wxSTC_LEX_TAL 91
+#Define wxSTC_LEX_COBOL 92
+#Define wxSTC_LEX_TACL 93
+#Define wxSTC_LEX_SORCUS 94
+#Define wxSTC_LEX_POWERPRO 95
+#Define wxSTC_LEX_NIMROD 96
+#Define wxSTC_LEX_SML 97
+#Define wxSTC_LEX_MARKDOWN 98
+
+'  When a lexer specifies its language As SCLEX_AUTOMATIC it receives a
+'  value assigned in sequence from SCLEX_AUTOMATIC+1.
+#Define wxSTC_LEX_AUTOMATIC 1000
+
+'  Lexical states For SCLEX_PYTHON
+#Define wxSTC_P_DEFAULT 0
+#Define wxSTC_P_COMMENTLINE 1
+#Define wxSTC_P_NUMBER 2
+#Define wxSTC_P_STRING 3
+#Define wxSTC_P_CHARACTER 4
+#Define wxSTC_P_WORD 5
+#Define wxSTC_P_TRIPLE 6
+#Define wxSTC_P_TRIPLEDOUBLE 7
+#Define wxSTC_P_CLASSNAME 8
+#Define wxSTC_P_DEFNAME 9
+#Define wxSTC_P_OPERATOR 10
+#Define wxSTC_P_IDENTIFIER 11
+#Define wxSTC_P_COMMENTBLOCK 12
+#Define wxSTC_P_STRINGEOL 13
+#Define wxSTC_P_WORD2 14
+#Define wxSTC_P_DECORATOR 15
+
+'  Lexical states For SCLEX_CPP
+#Define wxSTC_C_DEFAULT 0
+#Define wxSTC_C_COMMENT 1
+#Define wxSTC_C_COMMENTLINE 2
+#Define wxSTC_C_COMMENTDOC 3
+#Define wxSTC_C_NUMBER 4
+#Define wxSTC_C_WORD 5
+#Define wxSTC_C_STRING 6
+#Define wxSTC_C_CHARACTER 7
+#Define wxSTC_C_UUID 8
+#Define wxSTC_C_PREPROCESSOR 9
+#Define wxSTC_C_OPERATOR 10
+#Define wxSTC_C_IDENTIFIER 11
+#Define wxSTC_C_STRINGEOL 12
+#Define wxSTC_C_VERBATIM 13
+#Define wxSTC_C_REGEX 14
+#Define wxSTC_C_COMMENTLINEDOC 15
+#Define wxSTC_C_WORD2 16
+#Define wxSTC_C_COMMENTDOCKEYWORD 17
+#Define wxSTC_C_COMMENTDOCKEYWORDERROR 18
+#Define wxSTC_C_GLOBALCLASS 19
+
+'  Lexical states For SCLEX_D
+#Define wxSTC_D_DEFAULT 0
+#Define wxSTC_D_COMMENT 1
+#Define wxSTC_D_COMMENTLINE 2
+#Define wxSTC_D_COMMENTDOC 3
+#Define wxSTC_D_COMMENTNESTED 4
+#Define wxSTC_D_NUMBER 5
+#Define wxSTC_D_WORD 6
+#Define wxSTC_D_WORD2 7
+#Define wxSTC_D_WORD3 8
+#Define wxSTC_D_TYPEDEF 9
+#Define wxSTC_D_STRING 10
+#Define wxSTC_D_STRINGEOL 11
+#Define wxSTC_D_CHARACTER 12
+#Define wxSTC_D_OPERATOR 13
+#Define wxSTC_D_IDENTIFIER 14
+#Define wxSTC_D_COMMENTLINEDOC 15
+#Define wxSTC_D_COMMENTDOCKEYWORD 16
+#Define wxSTC_D_COMMENTDOCKEYWORDERROR 17
+#Define wxSTC_D_STRINGB 18
+#Define wxSTC_D_STRINGR 19
+#Define wxSTC_D_WORD5 20
+#Define wxSTC_D_WORD6 21
+#Define wxSTC_D_WORD7 22
+
+'  Lexical states For SCLEX_TCL
+#Define wxSTC_TCL_DEFAULT 0
+#Define wxSTC_TCL_COMMENT 1
+#Define wxSTC_TCL_COMMENTLINE 2
+#Define wxSTC_TCL_NUMBER 3
+#Define wxSTC_TCL_WORD_IN_QUOTE 4
+#Define wxSTC_TCL_IN_QUOTE 5
+#Define wxSTC_TCL_OPERATOR 6
+#Define wxSTC_TCL_IDENTIFIER 7
+#Define wxSTC_TCL_SUBSTITUTION 8
+#Define wxSTC_TCL_SUB_BRACE 9
+#Define wxSTC_TCL_MODIFIER 10
+#Define wxSTC_TCL_EXPAND 11
+#Define wxSTC_TCL_WORD 12
+#Define wxSTC_TCL_WORD2 13
+#Define wxSTC_TCL_WORD3 14
+#Define wxSTC_TCL_WORD4 15
+#Define wxSTC_TCL_WORD5 16
+#Define wxSTC_TCL_WORD6 17
+#Define wxSTC_TCL_WORD7 18
+#Define wxSTC_TCL_WORD8 19
+#Define wxSTC_TCL_COMMENT_BOX 20
+#Define wxSTC_TCL_BLOCK_COMMENT 21
+
+'  Lexical states For SCLEX_HTML, SCLEX_XML
+#Define wxSTC_H_DEFAULT 0
+#Define wxSTC_H_TAG 1
+#Define wxSTC_H_TAGUNKNOWN 2
+#Define wxSTC_H_ATTRIBUTE 3
+#Define wxSTC_H_ATTRIBUTEUNKNOWN 4
+#Define wxSTC_H_NUMBER 5
+#Define wxSTC_H_DOUBLESTRING 6
+#Define wxSTC_H_SINGLESTRING 7
+#Define wxSTC_H_OTHER 8
+#Define wxSTC_H_COMMENT 9
+#Define wxSTC_H_ENTITY 10
+
+'  XML And ASP
+#Define wxSTC_H_TAGEND 11
+#Define wxSTC_H_XMLSTART 12
+#Define wxSTC_H_XMLEND 13
+#Define wxSTC_H_SCRIPT 14
+#Define wxSTC_H_ASP 15
+#Define wxSTC_H_ASPAT 16
+#Define wxSTC_H_CDATA 17
+#Define wxSTC_H_QUESTION 18
+
+'  More HTML
+#Define wxSTC_H_VALUE 19
+
+'  X-Code
+#Define wxSTC_H_XCCOMMENT 20
+
+'  SGML
+#Define wxSTC_H_SGML_DEFAULT 21
+#Define wxSTC_H_SGML_COMMAND 22
+#Define wxSTC_H_SGML_1ST_PARAM 23
+#Define wxSTC_H_SGML_DOUBLESTRING 24
+#Define wxSTC_H_SGML_SIMPLESTRING 25
+#Define wxSTC_H_SGML_ERROR 26
+#Define wxSTC_H_SGML_SPECIAL 27
+#Define wxSTC_H_SGML_ENTITY 28
+#Define wxSTC_H_SGML_COMMENT 29
+#Define wxSTC_H_SGML_1ST_PARAM_COMMENT 30
+#Define wxSTC_H_SGML_BLOCK_DEFAULT 31
+
+'  Embedded Javascript
+#Define wxSTC_HJ_START 40
+#Define wxSTC_HJ_DEFAULT 41
+#Define wxSTC_HJ_COMMENT 42
+#Define wxSTC_HJ_COMMENTLINE 43
+#Define wxSTC_HJ_COMMENTDOC 44
+#Define wxSTC_HJ_NUMBER 45
+#Define wxSTC_HJ_WORD 46
+#Define wxSTC_HJ_KEYWORD 47
+#Define wxSTC_HJ_DOUBLESTRING 48
+#Define wxSTC_HJ_SINGLESTRING 49
+#Define wxSTC_HJ_SYMBOLS 50
+#Define wxSTC_HJ_STRINGEOL 51
+#Define wxSTC_HJ_REGEX 52
+
+'  ASP Javascript
+#Define wxSTC_HJA_START 55
+#Define wxSTC_HJA_DEFAULT 56
+#Define wxSTC_HJA_COMMENT 57
+#Define wxSTC_HJA_COMMENTLINE 58
+#Define wxSTC_HJA_COMMENTDOC 59
+#Define wxSTC_HJA_NUMBER 60
+#Define wxSTC_HJA_WORD 61
+#Define wxSTC_HJA_KEYWORD 62
+#Define wxSTC_HJA_DOUBLESTRING 63
+#Define wxSTC_HJA_SINGLESTRING 64
+#Define wxSTC_HJA_SYMBOLS 65
+#Define wxSTC_HJA_STRINGEOL 66
+#Define wxSTC_HJA_REGEX 67
+
+'  Embedded VBScript
+#Define wxSTC_HB_START 70
+#Define wxSTC_HB_DEFAULT 71
+#Define wxSTC_HB_COMMENTLINE 72
+#Define wxSTC_HB_NUMBER 73
+#Define wxSTC_HB_WORD 74
+#Define wxSTC_HB_STRING 75
+#Define wxSTC_HB_IDENTIFIER 76
+#Define wxSTC_HB_STRINGEOL 77
+
+'  ASP VBScript
+#Define wxSTC_HBA_START 80
+#Define wxSTC_HBA_DEFAULT 81
+#Define wxSTC_HBA_COMMENTLINE 82
+#Define wxSTC_HBA_NUMBER 83
+#Define wxSTC_HBA_WORD 84
+#Define wxSTC_HBA_STRING 85
+#Define wxSTC_HBA_IDENTIFIER 86
+#Define wxSTC_HBA_STRINGEOL 87
+
+'  Embedded Python
+#Define wxSTC_HP_START 90
+#Define wxSTC_HP_DEFAULT 91
+#Define wxSTC_HP_COMMENTLINE 92
+#Define wxSTC_HP_NUMBER 93
+#Define wxSTC_HP_STRING 94
+#Define wxSTC_HP_CHARACTER 95
+#Define wxSTC_HP_WORD 96
+#Define wxSTC_HP_TRIPLE 97
+#Define wxSTC_HP_TRIPLEDOUBLE 98
+#Define wxSTC_HP_CLASSNAME 99
+#Define wxSTC_HP_DEFNAME 100
+#Define wxSTC_HP_OPERATOR 101
+#Define wxSTC_HP_IDENTIFIER 102
+
+'  PHP
+#Define wxSTC_HPHP_COMPLEX_VARIABLE 104
+
+'  ASP Python
+#Define wxSTC_HPA_START 105
+#Define wxSTC_HPA_DEFAULT 106
+#Define wxSTC_HPA_COMMENTLINE 107
+#Define wxSTC_HPA_NUMBER 108
+#Define wxSTC_HPA_STRING 109
+#Define wxSTC_HPA_CHARACTER 110
+#Define wxSTC_HPA_WORD 111
+#Define wxSTC_HPA_TRIPLE 112
+#Define wxSTC_HPA_TRIPLEDOUBLE 113
+#Define wxSTC_HPA_CLASSNAME 114
+#Define wxSTC_HPA_DEFNAME 115
+#Define wxSTC_HPA_OPERATOR 116
+#Define wxSTC_HPA_IDENTIFIER 117
+
+'  PHP
+#Define wxSTC_HPHP_DEFAULT 118
+#Define wxSTC_HPHP_HSTRING 119
+#Define wxSTC_HPHP_SIMPLESTRING 120
+#Define wxSTC_HPHP_WORD 121
+#Define wxSTC_HPHP_NUMBER 122
+#Define wxSTC_HPHP_VARIABLE 123
+#Define wxSTC_HPHP_COMMENT 124
+#Define wxSTC_HPHP_COMMENTLINE 125
+#Define wxSTC_HPHP_HSTRING_VARIABLE 126
+#Define wxSTC_HPHP_OPERATOR 127
+
+'  Lexical states For SCLEX_PERL
+#Define wxSTC_PL_DEFAULT 0
+#Define wxSTC_PL_ERROR 1
+#Define wxSTC_PL_COMMENTLINE 2
+#Define wxSTC_PL_POD 3
+#Define wxSTC_PL_NUMBER 4
+#Define wxSTC_PL_WORD 5
+#Define wxSTC_PL_STRING 6
+#Define wxSTC_PL_CHARACTER 7
+#Define wxSTC_PL_PUNCTUATION 8
+#Define wxSTC_PL_PREPROCESSOR 9
+#Define wxSTC_PL_OPERATOR 10
+#Define wxSTC_PL_IDENTIFIER 11
+#Define wxSTC_PL_SCALAR 12
+#Define wxSTC_PL_ARRAY 13
+#Define wxSTC_PL_HASH 14
+#Define wxSTC_PL_SYMBOLTABLE 15
+#Define wxSTC_PL_VARIABLE_INDEXER 16
+#Define wxSTC_PL_REGEX 17
+#Define wxSTC_PL_REGSUBST 18
+#Define wxSTC_PL_LONGQUOTE 19
+#Define wxSTC_PL_BACKTICKS 20
+#Define wxSTC_PL_DATASECTION 21
+#Define wxSTC_PL_HERE_DELIM 22
+#Define wxSTC_PL_HERE_Q 23
+#Define wxSTC_PL_HERE_QQ 24
+#Define wxSTC_PL_HERE_QX 25
+#Define wxSTC_PL_STRING_Q 26
+#Define wxSTC_PL_STRING_QQ 27
+#Define wxSTC_PL_STRING_QX 28
+#Define wxSTC_PL_STRING_QR 29
+#Define wxSTC_PL_STRING_QW 30
+#Define wxSTC_PL_POD_VERB 31
+#Define wxSTC_PL_SUB_PROTOTYPE 40
+#Define wxSTC_PL_FORMAT_IDENT 41
+#Define wxSTC_PL_FORMAT 42
+
+'  Lexical states For SCLEX_RUBY
+#Define wxSTC_RB_DEFAULT 0
+#Define wxSTC_RB_ERROR 1
+#Define wxSTC_RB_COMMENTLINE 2
+#Define wxSTC_RB_POD 3
+#Define wxSTC_RB_NUMBER 4
+#Define wxSTC_RB_WORD 5
+#Define wxSTC_RB_STRING 6
+#Define wxSTC_RB_CHARACTER 7
+#Define wxSTC_RB_CLASSNAME 8
+#Define wxSTC_RB_DEFNAME 9
+#Define wxSTC_RB_OPERATOR 10
+#Define wxSTC_RB_IDENTIFIER 11
+#Define wxSTC_RB_REGEX 12
+#Define wxSTC_RB_GLOBAL 13
+#Define wxSTC_RB_SYMBOL 14
+#Define wxSTC_RB_MODULE_NAME 15
+#Define wxSTC_RB_INSTANCE_VAR 16
+#Define wxSTC_RB_CLASS_VAR 17
+#Define wxSTC_RB_BACKTICKS 18
+#Define wxSTC_RB_DATASECTION 19
+#Define wxSTC_RB_HERE_DELIM 20
+#Define wxSTC_RB_HERE_Q 21
+#Define wxSTC_RB_HERE_QQ 22
+#Define wxSTC_RB_HERE_QX 23
+#Define wxSTC_RB_STRING_Q 24
+#Define wxSTC_RB_STRING_QQ 25
+#Define wxSTC_RB_STRING_QX 26
+#Define wxSTC_RB_STRING_QR 27
+#Define wxSTC_RB_STRING_QW 28
+#Define wxSTC_RB_WORD_DEMOTED 29
+#Define wxSTC_RB_STDIN 30
+#Define wxSTC_RB_STDOUT 31
+#Define wxSTC_RB_STDERR 40
+#Define wxSTC_RB_UPPER_BOUND 41
+
+'  Lexical states For SCLEX_VB, SCLEX_VBSCRIPT, SCLEX_POWERBASIC
+#Define wxSTC_B_DEFAULT 0
+#Define wxSTC_B_COMMENT 1
+#Define wxSTC_B_NUMBER 2
+#Define wxSTC_B_KEYWORD 3
+#Define wxSTC_B_STRING 4
+#Define wxSTC_B_PREPROCESSOR 5
+#Define wxSTC_B_OPERATOR 6
+#Define wxSTC_B_IDENTIFIER 7
+#Define wxSTC_B_DATE 8
+#Define wxSTC_B_STRINGEOL 9
+#Define wxSTC_B_KEYWORD2 10
+#Define wxSTC_B_KEYWORD3 11
+#Define wxSTC_B_KEYWORD4 12
+#Define wxSTC_B_CONSTANT 13
+#Define wxSTC_B_ASM 14
+#Define wxSTC_B_LABEL 15
+#Define wxSTC_B_ERROR 16
+#Define wxSTC_B_HEXNUMBER 17
+#Define wxSTC_B_BINNUMBER 18
+
+'  Lexical states For SCLEX_PROPERTIES
+#Define wxSTC_PROPS_DEFAULT 0
+#Define wxSTC_PROPS_COMMENT 1
+#Define wxSTC_PROPS_SECTION 2
+#Define wxSTC_PROPS_ASSIGNMENT 3
+#Define wxSTC_PROPS_DEFVAL 4
+#Define wxSTC_PROPS_KEY 5
+
+'  Lexical states For SCLEX_LATEX
+#Define wxSTC_L_DEFAULT 0
+#Define wxSTC_L_COMMAND 1
+#Define wxSTC_L_TAG 2
+#Define wxSTC_L_MATH 3
+#Define wxSTC_L_COMMENT 4
+
+'  Lexical states For SCLEX_LUA
+#Define wxSTC_LUA_DEFAULT 0
+#Define wxSTC_LUA_COMMENT 1
+#Define wxSTC_LUA_COMMENTLINE 2
+#Define wxSTC_LUA_COMMENTDOC 3
+#Define wxSTC_LUA_NUMBER 4
+#Define wxSTC_LUA_WORD 5
+#Define wxSTC_LUA_STRING 6
+#Define wxSTC_LUA_CHARACTER 7
+#Define wxSTC_LUA_LITERALSTRING 8
+#Define wxSTC_LUA_PREPROCESSOR 9
+#Define wxSTC_LUA_OPERATOR 10
+#Define wxSTC_LUA_IDENTIFIER 11
+#Define wxSTC_LUA_STRINGEOL 12
+#Define wxSTC_LUA_WORD2 13
+#Define wxSTC_LUA_WORD3 14
+#Define wxSTC_LUA_WORD4 15
+#Define wxSTC_LUA_WORD5 16
+#Define wxSTC_LUA_WORD6 17
+#Define wxSTC_LUA_WORD7 18
+#Define wxSTC_LUA_WORD8 19
+
+'  Lexical states For SCLEX_ERRORLIST
+#Define wxSTC_ERR_DEFAULT 0
+#Define wxSTC_ERR_PYTHON 1
+#Define wxSTC_ERR_GCC 2
+#Define wxSTC_ERR_MS 3
+#Define wxSTC_ERR_CMD 4
+#Define wxSTC_ERR_BORLAND 5
+#Define wxSTC_ERR_PERL 6
+#Define wxSTC_ERR_NET 7
+#Define wxSTC_ERR_LUA 8
+#Define wxSTC_ERR_CTAG 9
+#Define wxSTC_ERR_DIFF_CHANGED 10
+#Define wxSTC_ERR_DIFF_ADDITION 11
+#Define wxSTC_ERR_DIFF_DELETION 12
+#Define wxSTC_ERR_DIFF_MESSAGE 13
+#Define wxSTC_ERR_PHP 14
+#Define wxSTC_ERR_ELF 15
+#Define wxSTC_ERR_IFC 16
+#Define wxSTC_ERR_IFORT 17
+#Define wxSTC_ERR_ABSF 18
+#Define wxSTC_ERR_TIDY 19
+#Define wxSTC_ERR_JAVA_STACK 20
+#Define wxSTC_ERR_VALUE 21
+
+'  Lexical states For SCLEX_BATCH
+#Define wxSTC_BAT_DEFAULT 0
+#Define wxSTC_BAT_COMMENT 1
+#Define wxSTC_BAT_WORD 2
+#Define wxSTC_BAT_LABEL 3
+#Define wxSTC_BAT_HIDE 4
+#Define wxSTC_BAT_COMMAND 5
+#Define wxSTC_BAT_IDENTIFIER 6
+#Define wxSTC_BAT_OPERATOR 7
+
+'  Lexical states For SCLEX_MAKEFILE
+#Define wxSTC_MAKE_DEFAULT 0
+#Define wxSTC_MAKE_COMMENT 1
+#Define wxSTC_MAKE_PREPROCESSOR 2
+#Define wxSTC_MAKE_IDENTIFIER 3
+#Define wxSTC_MAKE_OPERATOR 4
+#Define wxSTC_MAKE_TARGET 5
+#Define wxSTC_MAKE_IDEOL 9
+
+'  Lexical states For SCLEX_DIFF
+#Define wxSTC_DIFF_DEFAULT 0
+#Define wxSTC_DIFF_COMMENT 1
+#Define wxSTC_DIFF_COMMAND 2
+#Define wxSTC_DIFF_HEADER 3
+#Define wxSTC_DIFF_POSITION 4
+#Define wxSTC_DIFF_DELETED 5
+#Define wxSTC_DIFF_ADDED 6
+#Define wxSTC_DIFF_CHANGED 7
+
+'  Lexical states For SCLEX_CONF (Apache Configuration Files Lexer)
+#Define wxSTC_CONF_DEFAULT 0
+#Define wxSTC_CONF_COMMENT 1
+#Define wxSTC_CONF_NUMBER 2
+#Define wxSTC_CONF_IDENTIFIER 3
+#Define wxSTC_CONF_EXTENSION 4
+#Define wxSTC_CONF_PARAMETER 5
+#Define wxSTC_CONF_STRING 6
+#Define wxSTC_CONF_OPERATOR 7
+#Define wxSTC_CONF_IP 8
+#Define wxSTC_CONF_DIRECTIVE 9
+
+'  Lexical states For SCLEX_AVE, Avenue
+#Define wxSTC_AVE_DEFAULT 0
+#Define wxSTC_AVE_COMMENT 1
+#Define wxSTC_AVE_NUMBER 2
+#Define wxSTC_AVE_WORD 3
+#Define wxSTC_AVE_STRING 6
+#Define wxSTC_AVE_ENUM 7
+#Define wxSTC_AVE_STRINGEOL 8
+#Define wxSTC_AVE_IDENTIFIER 9
+#Define wxSTC_AVE_OPERATOR 10
+#Define wxSTC_AVE_WORD1 11
+#Define wxSTC_AVE_WORD2 12
+#Define wxSTC_AVE_WORD3 13
+#Define wxSTC_AVE_WORD4 14
+#Define wxSTC_AVE_WORD5 15
+#Define wxSTC_AVE_WORD6 16
+
+'  Lexical states For SCLEX_ADA
+#Define wxSTC_ADA_DEFAULT 0
+#Define wxSTC_ADA_WORD 1
+#Define wxSTC_ADA_IDENTIFIER 2
+#Define wxSTC_ADA_NUMBER 3
+#Define wxSTC_ADA_DELIMITER 4
+#Define wxSTC_ADA_CHARACTER 5
+#Define wxSTC_ADA_CHARACTEREOL 6
+#Define wxSTC_ADA_STRING 7
+#Define wxSTC_ADA_STRINGEOL 8
+#Define wxSTC_ADA_LABEL 9
+#Define wxSTC_ADA_COMMENTLINE 10
+#Define wxSTC_ADA_ILLEGAL 11
+
+'  Lexical states For SCLEX_BAAN
+#Define wxSTC_BAAN_DEFAULT 0
+#Define wxSTC_BAAN_COMMENT 1
+#Define wxSTC_BAAN_COMMENTDOC 2
+#Define wxSTC_BAAN_NUMBER 3
+#Define wxSTC_BAAN_WORD 4
+#Define wxSTC_BAAN_STRING 5
+#Define wxSTC_BAAN_PREPROCESSOR 6
+#Define wxSTC_BAAN_OPERATOR 7
+#Define wxSTC_BAAN_IDENTIFIER 8
+#Define wxSTC_BAAN_STRINGEOL 9
+#Define wxSTC_BAAN_WORD2 10
+
+'  Lexical states For SCLEX_LISP
+#Define wxSTC_LISP_DEFAULT 0
+#Define wxSTC_LISP_COMMENT 1
+#Define wxSTC_LISP_NUMBER 2
+#Define wxSTC_LISP_KEYWORD 3
+#Define wxSTC_LISP_KEYWORD_KW 4
+#Define wxSTC_LISP_SYMBOL 5
+#Define wxSTC_LISP_STRING 6
+#Define wxSTC_LISP_STRINGEOL 8
+#Define wxSTC_LISP_IDENTIFIER 9
+#Define wxSTC_LISP_OPERATOR 10
+#Define wxSTC_LISP_SPECIAL 11
+#Define wxSTC_LISP_MULTI_COMMENT 12
+
+'  Lexical states For SCLEX_EIFFEL And SCLEX_EIFFELKW
+#Define wxSTC_EIFFEL_DEFAULT 0
+#Define wxSTC_EIFFEL_COMMENTLINE 1
+#Define wxSTC_EIFFEL_NUMBER 2
+#Define wxSTC_EIFFEL_WORD 3
+#Define wxSTC_EIFFEL_STRING 4
+#Define wxSTC_EIFFEL_CHARACTER 5
+#Define wxSTC_EIFFEL_OPERATOR 6
+#Define wxSTC_EIFFEL_IDENTIFIER 7
+#Define wxSTC_EIFFEL_STRINGEOL 8
+
+'  Lexical states For SCLEX_NNCRONTAB (nnCron crontab Lexer)
+#Define wxSTC_NNCRONTAB_DEFAULT 0
+#Define wxSTC_NNCRONTAB_COMMENT 1
+#Define wxSTC_NNCRONTAB_TASK 2
+#Define wxSTC_NNCRONTAB_SECTION 3
+#Define wxSTC_NNCRONTAB_KEYWORD 4
+#Define wxSTC_NNCRONTAB_MODIFIER 5
+#Define wxSTC_NNCRONTAB_ASTERISK 6
+#Define wxSTC_NNCRONTAB_NUMBER 7
+#Define wxSTC_NNCRONTAB_STRING 8
+#Define wxSTC_NNCRONTAB_ENVIRONMENT 9
+#Define wxSTC_NNCRONTAB_IDENTIFIER 10
+
+'  Lexical states For SCLEX_FORTH (Forth Lexer)
+#Define wxSTC_FORTH_DEFAULT 0
+#Define wxSTC_FORTH_COMMENT 1
+#Define wxSTC_FORTH_COMMENT_ML 2
+#Define wxSTC_FORTH_IDENTIFIER 3
+#Define wxSTC_FORTH_CONTROL 4
+#Define wxSTC_FORTH_KEYWORD 5
+#Define wxSTC_FORTH_DEFWORD 6
+#Define wxSTC_FORTH_PREWORD1 7
+#Define wxSTC_FORTH_PREWORD2 8
+#Define wxSTC_FORTH_NUMBER 9
+#Define wxSTC_FORTH_STRING 10
+#Define wxSTC_FORTH_LOCALE 11
+
+'  Lexical states For SCLEX_MATLAB
+#Define wxSTC_MATLAB_DEFAULT 0
+#Define wxSTC_MATLAB_COMMENT 1
+#Define wxSTC_MATLAB_COMMAND 2
+#Define wxSTC_MATLAB_NUMBER 3
+#Define wxSTC_MATLAB_KEYWORD 4
+
+'  Single quoted String
+#Define wxSTC_MATLAB_STRING 5
+#Define wxSTC_MATLAB_OPERATOR 6
+#Define wxSTC_MATLAB_IDENTIFIER 7
+#Define wxSTC_MATLAB_DOUBLEQUOTESTRING 8
+
+'  Lexical states For SCLEX_SCRIPTOL
+#Define wxSTC_SCRIPTOL_DEFAULT 0
+#Define wxSTC_SCRIPTOL_WHITE 1
+#Define wxSTC_SCRIPTOL_COMMENTLINE 2
+#Define wxSTC_SCRIPTOL_PERSISTENT 3
+#Define wxSTC_SCRIPTOL_CSTYLE 4
+#Define wxSTC_SCRIPTOL_COMMENTBLOCK 5
+#Define wxSTC_SCRIPTOL_NUMBER 6
+#Define wxSTC_SCRIPTOL_STRING 7
+#Define wxSTC_SCRIPTOL_CHARACTER 8
+#Define wxSTC_SCRIPTOL_STRINGEOL 9
+#Define wxSTC_SCRIPTOL_KEYWORD 10
+#Define wxSTC_SCRIPTOL_OPERATOR 11
+#Define wxSTC_SCRIPTOL_IDENTIFIER 12
+#Define wxSTC_SCRIPTOL_TRIPLE 13
+#Define wxSTC_SCRIPTOL_CLASSNAME 14
+#Define wxSTC_SCRIPTOL_PREPROCESSOR 15
+
+'  Lexical states For SCLEX_ASM
+#Define wxSTC_ASM_DEFAULT 0
+#Define wxSTC_ASM_COMMENT 1
+#Define wxSTC_ASM_NUMBER 2
+#Define wxSTC_ASM_STRING 3
+#Define wxSTC_ASM_OPERATOR 4
+#Define wxSTC_ASM_IDENTIFIER 5
+#Define wxSTC_ASM_CPUINSTRUCTION 6
+#Define wxSTC_ASM_MATHINSTRUCTION 7
+#Define wxSTC_ASM_REGISTER 8
+#Define wxSTC_ASM_DIRECTIVE 9
+#Define wxSTC_ASM_DIRECTIVEOPERAND 10
+#Define wxSTC_ASM_COMMENTBLOCK 11
+#Define wxSTC_ASM_CHARACTER 12
+#Define wxSTC_ASM_STRINGEOL 13
+#Define wxSTC_ASM_EXTINSTRUCTION 14
+
+'  Lexical states For SCLEX_FORTRAN
+#Define wxSTC_F_DEFAULT 0
+#Define wxSTC_F_COMMENT 1
+#Define wxSTC_F_NUMBER 2
+#Define wxSTC_F_STRING1 3
+#Define wxSTC_F_STRING2 4
+#Define wxSTC_F_STRINGEOL 5
+#Define wxSTC_F_OPERATOR 6
+#Define wxSTC_F_IDENTIFIER 7
+#Define wxSTC_F_WORD 8
+#Define wxSTC_F_WORD2 9
+#Define wxSTC_F_WORD3 10
+#Define wxSTC_F_PREPROCESSOR 11
+#Define wxSTC_F_OPERATOR2 12
+#Define wxSTC_F_LABEL 13
+#Define wxSTC_F_CONTINUATION 14
+
+'  Lexical states For SCLEX_CSS
+#Define wxSTC_CSS_DEFAULT 0
+#Define wxSTC_CSS_TAG 1
+#Define wxSTC_CSS_CLASS 2
+#Define wxSTC_CSS_PSEUDOCLASS 3
+#Define wxSTC_CSS_UNKNOWN_PSEUDOCLASS 4
+#Define wxSTC_CSS_OPERATOR 5
+#Define wxSTC_CSS_IDENTIFIER 6
+#Define wxSTC_CSS_UNKNOWN_IDENTIFIER 7
+#Define wxSTC_CSS_VALUE 8
+#Define wxSTC_CSS_COMMENT 9
+#Define wxSTC_CSS_ID 10
+#Define wxSTC_CSS_IMPORTANT 11
+#Define wxSTC_CSS_DIRECTIVE 12
+#Define wxSTC_CSS_DOUBLESTRING 13
+#Define wxSTC_CSS_SINGLESTRING 14
+#Define wxSTC_CSS_IDENTIFIER2 15
+#Define wxSTC_CSS_ATTRIBUTE 16
+#Define wxSTC_CSS_IDENTIFIER3 17
+#Define wxSTC_CSS_PSEUDOELEMENT 18
+#Define wxSTC_CSS_EXTENDED_IDENTIFIER 19
+#Define wxSTC_CSS_EXTENDED_PSEUDOCLASS 20
+#Define wxSTC_CSS_EXTENDED_PSEUDOELEMENT 21
+
+'  Lexical states For SCLEX_POV
+#Define wxSTC_POV_DEFAULT 0
+#Define wxSTC_POV_COMMENT 1
+#Define wxSTC_POV_COMMENTLINE 2
+#Define wxSTC_POV_NUMBER 3
+#Define wxSTC_POV_OPERATOR 4
+#Define wxSTC_POV_IDENTIFIER 5
+#Define wxSTC_POV_STRING 6
+#Define wxSTC_POV_STRINGEOL 7
+#Define wxSTC_POV_DIRECTIVE 8
+#Define wxSTC_POV_BADDIRECTIVE 9
+#Define wxSTC_POV_WORD2 10
+#Define wxSTC_POV_WORD3 11
+#Define wxSTC_POV_WORD4 12
+#Define wxSTC_POV_WORD5 13
+#Define wxSTC_POV_WORD6 14
+#Define wxSTC_POV_WORD7 15
+#Define wxSTC_POV_WORD8 16
+
+'  Lexical states For SCLEX_LOUT
+#Define wxSTC_LOUT_DEFAULT 0
+#Define wxSTC_LOUT_COMMENT 1
+#Define wxSTC_LOUT_NUMBER 2
+#Define wxSTC_LOUT_WORD 3
+#Define wxSTC_LOUT_WORD2 4
+#Define wxSTC_LOUT_WORD3 5
+#Define wxSTC_LOUT_WORD4 6
+#Define wxSTC_LOUT_STRING 7
+#Define wxSTC_LOUT_OPERATOR 8
+#Define wxSTC_LOUT_IDENTIFIER 9
+#Define wxSTC_LOUT_STRINGEOL 10
+
+'  Lexical states For SCLEX_ESCRIPT
+#Define wxSTC_ESCRIPT_DEFAULT 0
+#Define wxSTC_ESCRIPT_COMMENT 1
+#Define wxSTC_ESCRIPT_COMMENTLINE 2
+#Define wxSTC_ESCRIPT_COMMENTDOC 3
+#Define wxSTC_ESCRIPT_NUMBER 4
+#Define wxSTC_ESCRIPT_WORD 5
+#Define wxSTC_ESCRIPT_STRING 6
+#Define wxSTC_ESCRIPT_OPERATOR 7
+#Define wxSTC_ESCRIPT_IDENTIFIER 8
+#Define wxSTC_ESCRIPT_BRACE 9
+#Define wxSTC_ESCRIPT_WORD2 10
+#Define wxSTC_ESCRIPT_WORD3 11
+
+'  Lexical states For SCLEX_PS
+#Define wxSTC_PS_DEFAULT 0
+#Define wxSTC_PS_COMMENT 1
+#Define wxSTC_PS_DSC_COMMENT 2
+#Define wxSTC_PS_DSC_VALUE 3
+#Define wxSTC_PS_NUMBER 4
+#Define wxSTC_PS_NAME 5
+#Define wxSTC_PS_KEYWORD 6
+#Define wxSTC_PS_LITERAL 7
+#Define wxSTC_PS_IMMEVAL 8
+#Define wxSTC_PS_PAREN_ARRAY 9
+#Define wxSTC_PS_PAREN_DICT 10
+#Define wxSTC_PS_PAREN_PROC 11
+#Define wxSTC_PS_TEXT 12
+#Define wxSTC_PS_HEXSTRING 13
+#Define wxSTC_PS_BASE85STRING 14
+#Define wxSTC_PS_BADSTRINGCHAR 15
+
+'  Lexical states For SCLEX_NSIS
+#Define wxSTC_NSIS_DEFAULT 0
+#Define wxSTC_NSIS_COMMENT 1
+#Define wxSTC_NSIS_STRINGDQ 2
+#Define wxSTC_NSIS_STRINGLQ 3
+#Define wxSTC_NSIS_STRINGRQ 4
+#Define wxSTC_NSIS_FUNCTION 5
+#Define wxSTC_NSIS_VARIABLE 6
+#Define wxSTC_NSIS_LABEL 7
+#Define wxSTC_NSIS_USERDEFINED 8
+#Define wxSTC_NSIS_SECTIONDEF 9
+#Define wxSTC_NSIS_SUBSECTIONDEF 10
+#Define wxSTC_NSIS_IFDEFINEDEF 11
+#Define wxSTC_NSIS_MACRODEF 12
+#Define wxSTC_NSIS_STRINGVAR 13
+#Define wxSTC_NSIS_NUMBER 14
+#Define wxSTC_NSIS_SECTIONGROUP 15
+#Define wxSTC_NSIS_PAGEEX 16
+#Define wxSTC_NSIS_FUNCTIONDEF 17
+#Define wxSTC_NSIS_COMMENTBOX 18
+
+'  Lexical states For SCLEX_MMIXAL
+#Define wxSTC_MMIXAL_LEADWS 0
+#Define wxSTC_MMIXAL_COMMENT 1
+#Define wxSTC_MMIXAL_LABEL 2
+#Define wxSTC_MMIXAL_OPCODE 3
+#Define wxSTC_MMIXAL_OPCODE_PRE 4
+#Define wxSTC_MMIXAL_OPCODE_VALID 5
+#Define wxSTC_MMIXAL_OPCODE_UNKNOWN 6
+#Define wxSTC_MMIXAL_OPCODE_POST 7
+#Define wxSTC_MMIXAL_OPERANDS 8
+#Define wxSTC_MMIXAL_NUMBER 9
+#Define wxSTC_MMIXAL_REF 10
+#Define wxSTC_MMIXAL_CHAR 11
+#Define wxSTC_MMIXAL_STRING 12
+#Define wxSTC_MMIXAL_REGISTER 13
+#Define wxSTC_MMIXAL_HEX 14
+#Define wxSTC_MMIXAL_OPERATOR 15
+#Define wxSTC_MMIXAL_SYMBOL 16
+#Define wxSTC_MMIXAL_INCLUDE 17
+
+'  Lexical states For SCLEX_CLW
+#Define wxSTC_CLW_DEFAULT 0
+#Define wxSTC_CLW_LABEL 1
+#Define wxSTC_CLW_COMMENT 2
+#Define wxSTC_CLW_STRING 3
+#Define wxSTC_CLW_USER_IDENTIFIER 4
+#Define wxSTC_CLW_INTEGER_CONSTANT 5
+#Define wxSTC_CLW_REAL_CONSTANT 6
+#Define wxSTC_CLW_PICTURE_STRING 7
+#Define wxSTC_CLW_KEYWORD 8
+#Define wxSTC_CLW_COMPILER_DIRECTIVE 9
+#Define wxSTC_CLW_RUNTIME_EXPRESSIONS 10
+#Define wxSTC_CLW_BUILTIN_PROCEDURES_FUNCTION 11
+#Define wxSTC_CLW_STRUCTURE_DATA_TYPE 12
+#Define wxSTC_CLW_ATTRIBUTE 13
+#Define wxSTC_CLW_STANDARD_EQUATE 14
+#Define wxSTC_CLW_ERROR 15
+#Define wxSTC_CLW_DEPRECATED 16
+
+'  Lexical states For SCLEX_LOT
+#Define wxSTC_LOT_DEFAULT 0
+#Define wxSTC_LOT_HEADER 1
+#Define wxSTC_LOT_BREAK 2
+#Define wxSTC_LOT_SET 3
+#Define wxSTC_LOT_PASS 4
+#Define wxSTC_LOT_FAIL 5
+#Define wxSTC_LOT_ABORT 6
+
+'  Lexical states For SCLEX_YAML
+#Define wxSTC_YAML_DEFAULT 0
+#Define wxSTC_YAML_COMMENT 1
+#Define wxSTC_YAML_IDENTIFIER 2
+#Define wxSTC_YAML_KEYWORD 3
+#Define wxSTC_YAML_NUMBER 4
+#Define wxSTC_YAML_REFERENCE 5
+#Define wxSTC_YAML_DOCUMENT 6
+#Define wxSTC_YAML_TEXT 7
+#Define wxSTC_YAML_ERROR 8
+#Define wxSTC_YAML_OPERATOR 9
+
+'  Lexical states For SCLEX_TEX
+#Define wxSTC_TEX_DEFAULT 0
+#Define wxSTC_TEX_SPECIAL 1
+#Define wxSTC_TEX_GROUP 2
+#Define wxSTC_TEX_SYMBOL 3
+#Define wxSTC_TEX_COMMAND 4
+#Define wxSTC_TEX_TEXT 5
+#Define wxSTC_METAPOST_DEFAULT 0
+#Define wxSTC_METAPOST_SPECIAL 1
+#Define wxSTC_METAPOST_GROUP 2
+#Define wxSTC_METAPOST_SYMBOL 3
+#Define wxSTC_METAPOST_COMMAND 4
+#Define wxSTC_METAPOST_TEXT 5
+#Define wxSTC_METAPOST_EXTRA 6
+
+'  Lexical states For SCLEX_ERLANG
+#Define wxSTC_ERLANG_DEFAULT 0
+#Define wxSTC_ERLANG_COMMENT 1
+#Define wxSTC_ERLANG_VARIABLE 2
+#Define wxSTC_ERLANG_NUMBER 3
+#Define wxSTC_ERLANG_KEYWORD 4
+#Define wxSTC_ERLANG_STRING 5
+#Define wxSTC_ERLANG_OPERATOR 6
+#Define wxSTC_ERLANG_ATOM 7
+#Define wxSTC_ERLANG_FUNCTION_NAME 8
+#Define wxSTC_ERLANG_CHARACTER 9
+#Define wxSTC_ERLANG_MACRO 10
+#Define wxSTC_ERLANG_RECORD 11
+#Define wxSTC_ERLANG_PREPROC 12
+#Define wxSTC_ERLANG_NODE_NAME 13
+#Define wxSTC_ERLANG_COMMENT_FUNCTION 14
+#Define wxSTC_ERLANG_COMMENT_MODULE 15
+#Define wxSTC_ERLANG_COMMENT_DOC 16
+#Define wxSTC_ERLANG_COMMENT_DOC_MACRO 17
+#Define wxSTC_ERLANG_ATOM_QUOTED 18
+#Define wxSTC_ERLANG_MACRO_QUOTED 19
+#Define wxSTC_ERLANG_RECORD_QUOTED 20
+#Define wxSTC_ERLANG_NODE_NAME_QUOTED 21
+#Define wxSTC_ERLANG_BIFS 22
+#Define wxSTC_ERLANG_MODULES 23
+#Define wxSTC_ERLANG_MODULES_ATT 24
+#Define wxSTC_ERLANG_UNKNOWN 31
+
+'  Lexical states For SCLEX_OCTAVE are identical To MatLab
+'  Lexical states For SCLEX_MSSQL
+#Define wxSTC_MSSQL_DEFAULT 0
+#Define wxSTC_MSSQL_COMMENT 1
+#Define wxSTC_MSSQL_LINE_COMMENT 2
+#Define wxSTC_MSSQL_NUMBER 3
+#Define wxSTC_MSSQL_STRING 4
+#Define wxSTC_MSSQL_OPERATOR 5
+#Define wxSTC_MSSQL_IDENTIFIER 6
+#Define wxSTC_MSSQL_VARIABLE 7
+#Define wxSTC_MSSQL_COLUMN_NAME 8
+#Define wxSTC_MSSQL_STATEMENT 9
+#Define wxSTC_MSSQL_DATATYPE 10
+#Define wxSTC_MSSQL_SYSTABLE 11
+#Define wxSTC_MSSQL_GLOBAL_VARIABLE 12
+#Define wxSTC_MSSQL_FUNCTION 13
+#Define wxSTC_MSSQL_STORED_PROCEDURE 14
+#Define wxSTC_MSSQL_DEFAULT_PREF_DATATYPE 15
+#Define wxSTC_MSSQL_COLUMN_NAME_2 16
+
+'  Lexical states For SCLEX_VERILOG
+#Define wxSTC_V_DEFAULT 0
+#Define wxSTC_V_COMMENT 1
+#Define wxSTC_V_COMMENTLINE 2
+#Define wxSTC_V_COMMENTLINEBANG 3
+#Define wxSTC_V_NUMBER 4
+#Define wxSTC_V_WORD 5
+#Define wxSTC_V_STRING 6
+#Define wxSTC_V_WORD2 7
+#Define wxSTC_V_WORD3 8
+#Define wxSTC_V_PREPROCESSOR 9
+#Define wxSTC_V_OPERATOR 10
+#Define wxSTC_V_IDENTIFIER 11
+#Define wxSTC_V_STRINGEOL 12
+#Define wxSTC_V_USER 19
+
+'  Lexical states For SCLEX_KIX
+#Define wxSTC_KIX_DEFAULT 0
+#Define wxSTC_KIX_COMMENT 1
+#Define wxSTC_KIX_STRING1 2
+#Define wxSTC_KIX_STRING2 3
+#Define wxSTC_KIX_NUMBER 4
+#Define wxSTC_KIX_VAR 5
+#Define wxSTC_KIX_MACRO 6
+#Define wxSTC_KIX_KEYWORD 7
+#Define wxSTC_KIX_FUNCTIONS 8
+#Define wxSTC_KIX_OPERATOR 9
+#Define wxSTC_KIX_IDENTIFIER 31
+
+'  Lexical states For SCLEX_GUI4CLI
+#Define wxSTC_GC_DEFAULT 0
+#Define wxSTC_GC_COMMENTLINE 1
+#Define wxSTC_GC_COMMENTBLOCK 2
+#Define wxSTC_GC_GLOBAL 3
+#Define wxSTC_GC_EVENT 4
+#Define wxSTC_GC_ATTRIBUTE 5
+#Define wxSTC_GC_CONTROL 6
+#Define wxSTC_GC_COMMAND 7
+#Define wxSTC_GC_STRING 8
+#Define wxSTC_GC_OPERATOR 9
+
+'  Lexical states For SCLEX_SPECMAN
+#Define wxSTC_SN_DEFAULT 0
+#Define wxSTC_SN_CODE 1
+#Define wxSTC_SN_COMMENTLINE 2
+#Define wxSTC_SN_COMMENTLINEBANG 3
+#Define wxSTC_SN_NUMBER 4
+#Define wxSTC_SN_WORD 5
+#Define wxSTC_SN_STRING 6
+#Define wxSTC_SN_WORD2 7
+#Define wxSTC_SN_WORD3 8
+#Define wxSTC_SN_PREPROCESSOR 9
+#Define wxSTC_SN_OPERATOR 10
+#Define wxSTC_SN_IDENTIFIER 11
+#Define wxSTC_SN_STRINGEOL 12
+#Define wxSTC_SN_REGEXTAG 13
+#Define wxSTC_SN_SIGNAL 14
+#Define wxSTC_SN_USER 19
+
+'  Lexical states For SCLEX_AU3
+#Define wxSTC_AU3_DEFAULT 0
+#Define wxSTC_AU3_COMMENT 1
+#Define wxSTC_AU3_COMMENTBLOCK 2
+#Define wxSTC_AU3_NUMBER 3
+#Define wxSTC_AU3_FUNCTION 4
+#Define wxSTC_AU3_KEYWORD 5
+#Define wxSTC_AU3_MACRO 6
+#Define wxSTC_AU3_STRING 7
+#Define wxSTC_AU3_OPERATOR 8
+#Define wxSTC_AU3_VARIABLE 9
+#Define wxSTC_AU3_SENT 10
+#Define wxSTC_AU3_PREPROCESSOR 11
+#Define wxSTC_AU3_SPECIAL 12
+#Define wxSTC_AU3_EXPAND 13
+#Define wxSTC_AU3_COMOBJ 14
+#Define wxSTC_AU3_UDF 15
+
+'  Lexical states For SCLEX_APDL
+#Define wxSTC_APDL_DEFAULT 0
+#Define wxSTC_APDL_COMMENT 1
+#Define wxSTC_APDL_COMMENTBLOCK 2
+#Define wxSTC_APDL_NUMBER 3
+#Define wxSTC_APDL_STRING 4
+#Define wxSTC_APDL_OPERATOR 5
+#Define wxSTC_APDL_WORD 6
+#Define wxSTC_APDL_PROCESSOR 7
+#Define wxSTC_APDL_COMMAND 8
+#Define wxSTC_APDL_SLASHCOMMAND 9
+#Define wxSTC_APDL_STARCOMMAND 10
+#Define wxSTC_APDL_ARGUMENT 11
+#Define wxSTC_APDL_FUNCTION 12
+
+'  Lexical states For SCLEX_BASH
+#Define wxSTC_SH_DEFAULT 0
+#Define wxSTC_SH_ERROR 1
+#Define wxSTC_SH_COMMENTLINE 2
+#Define wxSTC_SH_NUMBER 3
+#Define wxSTC_SH_WORD 4
+#Define wxSTC_SH_STRING 5
+#Define wxSTC_SH_CHARACTER 6
+#Define wxSTC_SH_OPERATOR 7
+#Define wxSTC_SH_IDENTIFIER 8
+#Define wxSTC_SH_SCALAR 9
+#Define wxSTC_SH_PARAM 10
+#Define wxSTC_SH_BACKTICKS 11
+#Define wxSTC_SH_HERE_DELIM 12
+#Define wxSTC_SH_HERE_Q 13
+
+'  Lexical states For SCLEX_ASN1
+#Define wxSTC_ASN1_DEFAULT 0
+#Define wxSTC_ASN1_COMMENT 1
+#Define wxSTC_ASN1_IDENTIFIER 2
+#Define wxSTC_ASN1_STRING 3
+#Define wxSTC_ASN1_OID 4
+#Define wxSTC_ASN1_SCALAR 5
+#Define wxSTC_ASN1_KEYWORD 6
+#Define wxSTC_ASN1_ATTRIBUTE 7
+#Define wxSTC_ASN1_DESCRIPTOR 8
+#Define wxSTC_ASN1_TYPE 9
+#Define wxSTC_ASN1_OPERATOR 10
+
+'  Lexical states For SCLEX_VHDL
+#Define wxSTC_VHDL_DEFAULT 0
+#Define wxSTC_VHDL_COMMENT 1
+#Define wxSTC_VHDL_COMMENTLINEBANG 2
+#Define wxSTC_VHDL_NUMBER 3
+#Define wxSTC_VHDL_STRING 4
+#Define wxSTC_VHDL_OPERATOR 5
+#Define wxSTC_VHDL_IDENTIFIER 6
+#Define wxSTC_VHDL_STRINGEOL 7
+#Define wxSTC_VHDL_KEYWORD 8
+#Define wxSTC_VHDL_STDOPERATOR 9
+#Define wxSTC_VHDL_ATTRIBUTE 10
+#Define wxSTC_VHDL_STDFUNCTION 11
+#Define wxSTC_VHDL_STDPACKAGE 12
+#Define wxSTC_VHDL_STDTYPE 13
+#Define wxSTC_VHDL_USERWORD 14
+
+'  Lexical states For SCLEX_CAML
+#Define wxSTC_CAML_DEFAULT 0
+#Define wxSTC_CAML_IDENTIFIER 1
+#Define wxSTC_CAML_TAGNAME 2
+#Define wxSTC_CAML_KEYWORD 3
+#Define wxSTC_CAML_KEYWORD2 4
+#Define wxSTC_CAML_KEYWORD3 5
+#Define wxSTC_CAML_LINENUM 6
+#Define wxSTC_CAML_OPERATOR 7
+#Define wxSTC_CAML_NUMBER 8
+#Define wxSTC_CAML_CHAR 9
+#Define wxSTC_CAML_WHITE 10
+#Define wxSTC_CAML_STRING 11
+#Define wxSTC_CAML_COMMENT 12
+#Define wxSTC_CAML_COMMENT1 13
+#Define wxSTC_CAML_COMMENT2 14
+#Define wxSTC_CAML_COMMENT3 15
+
+'  Lexical states For SCLEX_HASKELL
+#Define wxSTC_HA_DEFAULT 0
+#Define wxSTC_HA_IDENTIFIER 1
+#Define wxSTC_HA_KEYWORD 2
+#Define wxSTC_HA_NUMBER 3
+#Define wxSTC_HA_STRING 4
+#Define wxSTC_HA_CHARACTER 5
+#Define wxSTC_HA_CLASS 6
+#Define wxSTC_HA_MODULE 7
+#Define wxSTC_HA_CAPITAL 8
+#Define wxSTC_HA_DATA 9
+#Define wxSTC_HA_IMPORT 10
+#Define wxSTC_HA_OPERATOR 11
+#Define wxSTC_HA_INSTANCE 12
+#Define wxSTC_HA_COMMENTLINE 13
+#Define wxSTC_HA_COMMENTBLOCK 14
+#Define wxSTC_HA_COMMENTBLOCK2 15
+#Define wxSTC_HA_COMMENTBLOCK3 16
+
+'  Lexical states of SCLEX_TADS3
+#Define wxSTC_T3_DEFAULT 0
+#Define wxSTC_T3_X_DEFAULT 1
+#Define wxSTC_T3_PREPROCESSOR 2
+#Define wxSTC_T3_BLOCK_COMMENT 3
+#Define wxSTC_T3_LINE_COMMENT 4
+#Define wxSTC_T3_OPERATOR 5
+#Define wxSTC_T3_KEYWORD 6
+#Define wxSTC_T3_NUMBER 7
+#Define wxSTC_T3_IDENTIFIER 8
+#Define wxSTC_T3_S_STRING 9
+#Define wxSTC_T3_D_STRING 10
+#Define wxSTC_T3_X_STRING 11
+#Define wxSTC_T3_LIB_DIRECTIVE 12
+#Define wxSTC_T3_MSG_PARAM 13
+#Define wxSTC_T3_HTML_TAG 14
+#Define wxSTC_T3_HTML_DEFAULT 15
+#Define wxSTC_T3_HTML_STRING 16
+#Define wxSTC_T3_USER1 17
+#Define wxSTC_T3_USER2 18
+#Define wxSTC_T3_USER3 19
+#Define wxSTC_T3_BRACE 20
+
+'  Lexical states For SCLEX_REBOL
+#Define wxSTC_REBOL_DEFAULT 0
+#Define wxSTC_REBOL_COMMENTLINE 1
+#Define wxSTC_REBOL_COMMENTBLOCK 2
+#Define wxSTC_REBOL_PREFACE 3
+#Define wxSTC_REBOL_OPERATOR 4
+#Define wxSTC_REBOL_CHARACTER 5
+#Define wxSTC_REBOL_QUOTEDSTRING 6
+#Define wxSTC_REBOL_BRACEDSTRING 7
+#Define wxSTC_REBOL_NUMBER 8
+#Define wxSTC_REBOL_PAIR 9
+#Define wxSTC_REBOL_TUPLE 10
+#Define wxSTC_REBOL_BINARY 11
+#Define wxSTC_REBOL_MONEY 12
+#Define wxSTC_REBOL_ISSUE 13
+#Define wxSTC_REBOL_TAG 14
+#Define wxSTC_REBOL_FILE 15
+#Define wxSTC_REBOL_EMAIL 16
+#Define wxSTC_REBOL_URL 17
+#Define wxSTC_REBOL_DATE 18
+#Define wxSTC_REBOL_TIME 19
+#Define wxSTC_REBOL_IDENTIFIER 20
+#Define wxSTC_REBOL_WORD 21
+#Define wxSTC_REBOL_WORD2 22
+#Define wxSTC_REBOL_WORD3 23
+#Define wxSTC_REBOL_WORD4 24
+#Define wxSTC_REBOL_WORD5 25
+#Define wxSTC_REBOL_WORD6 26
+#Define wxSTC_REBOL_WORD7 27
+#Define wxSTC_REBOL_WORD8 28
+
+'  Lexical states For SCLEX_SQL
+#Define wxSTC_SQL_DEFAULT 0
+#Define wxSTC_SQL_COMMENT 1
+#Define wxSTC_SQL_COMMENTLINE 2
+#Define wxSTC_SQL_COMMENTDOC 3
+#Define wxSTC_SQL_NUMBER 4
+#Define wxSTC_SQL_WORD 5
+#Define wxSTC_SQL_STRING 6
+#Define wxSTC_SQL_CHARACTER 7
+#Define wxSTC_SQL_SQLPLUS 8
+#Define wxSTC_SQL_SQLPLUS_PROMPT 9
+#Define wxSTC_SQL_OPERATOR 10
+#Define wxSTC_SQL_IDENTIFIER 11
+#Define wxSTC_SQL_SQLPLUS_COMMENT 13
+#Define wxSTC_SQL_COMMENTLINEDOC 15
+#Define wxSTC_SQL_WORD2 16
+#Define wxSTC_SQL_COMMENTDOCKEYWORD 17
+#Define wxSTC_SQL_COMMENTDOCKEYWORDERROR 18
+#Define wxSTC_SQL_USER1 19
+#Define wxSTC_SQL_USER2 20
+#Define wxSTC_SQL_USER3 21
+#Define wxSTC_SQL_USER4 22
+#Define wxSTC_SQL_QUOTEDIDENTIFIER 23
+
+'  Lexical states For SCLEX_SMALLTALK
+#Define wxSTC_ST_DEFAULT 0
+#Define wxSTC_ST_STRING 1
+#Define wxSTC_ST_NUMBER 2
+#Define wxSTC_ST_COMMENT 3
+#Define wxSTC_ST_SYMBOL 4
+#Define wxSTC_ST_BINARY 5
+#Define wxSTC_ST_BOOL 6
+#Define wxSTC_ST_SELF 7
+#Define wxSTC_ST_SUPER 8
+#Define wxSTC_ST_NIL 9
+#Define wxSTC_ST_GLOBAL 10
+#Define wxSTC_ST_RETURN 11
+#Define wxSTC_ST_SPECIAL 12
+#Define wxSTC_ST_KWSEND 13
+#Define wxSTC_ST_ASSIGN 14
+#Define wxSTC_ST_CHARACTER 15
+#Define wxSTC_ST_SPEC_SEL 16
+
+'  Lexical states For SCLEX_FLAGSHIP (clipper)
+#Define wxSTC_FS_DEFAULT 0
+#Define wxSTC_FS_COMMENT 1
+#Define wxSTC_FS_COMMENTLINE 2
+#Define wxSTC_FS_COMMENTDOC 3
+#Define wxSTC_FS_COMMENTLINEDOC 4
+#Define wxSTC_FS_COMMENTDOCKEYWORD 5
+#Define wxSTC_FS_COMMENTDOCKEYWORDERROR 6
+#Define wxSTC_FS_KEYWORD 7
+#Define wxSTC_FS_KEYWORD2 8
+#Define wxSTC_FS_KEYWORD3 9
+#Define wxSTC_FS_KEYWORD4 10
+#Define wxSTC_FS_NUMBER 11
+#Define wxSTC_FS_STRING 12
+#Define wxSTC_FS_PREPROCESSOR 13
+#Define wxSTC_FS_OPERATOR 14
+#Define wxSTC_FS_IDENTIFIER 15
+#Define wxSTC_FS_DATE 16
+#Define wxSTC_FS_STRINGEOL 17
+#Define wxSTC_FS_CONSTANT 18
+#Define wxSTC_FS_ASM 19
+#Define wxSTC_FS_LABEL 20
+#Define wxSTC_FS_ERROR 21
+#Define wxSTC_FS_HEXNUMBER 22
+#Define wxSTC_FS_BINNUMBER 23
+
+'  Lexical states For SCLEX_CSOUND
+#Define wxSTC_CSOUND_DEFAULT 0
+#Define wxSTC_CSOUND_COMMENT 1
+#Define wxSTC_CSOUND_NUMBER 2
+#Define wxSTC_CSOUND_OPERATOR 3
+#Define wxSTC_CSOUND_INSTR 4
+#Define wxSTC_CSOUND_IDENTIFIER 5
+#Define wxSTC_CSOUND_OPCODE 6
+#Define wxSTC_CSOUND_HEADERSTMT 7
+#Define wxSTC_CSOUND_USERKEYWORD 8
+#Define wxSTC_CSOUND_COMMENTBLOCK 9
+#Define wxSTC_CSOUND_PARAM 10
+#Define wxSTC_CSOUND_ARATE_VAR 11
+#Define wxSTC_CSOUND_KRATE_VAR 12
+#Define wxSTC_CSOUND_IRATE_VAR 13
+#Define wxSTC_CSOUND_GLOBAL_VAR 14
+#Define wxSTC_CSOUND_STRINGEOL 15
+
+'  Lexical states For SCLEX_INNOSETUP
+#Define wxSTC_INNO_DEFAULT 0
+#Define wxSTC_INNO_COMMENT 1
+#Define wxSTC_INNO_KEYWORD 2
+#Define wxSTC_INNO_PARAMETER 3
+#Define wxSTC_INNO_SECTION 4
+#Define wxSTC_INNO_PREPROC 5
+#Define wxSTC_INNO_INLINE_EXPANSION 6
+#Define wxSTC_INNO_COMMENT_PASCAL 7
+#Define wxSTC_INNO_KEYWORD_PASCAL 8
+#Define wxSTC_INNO_KEYWORD_USER 9
+#Define wxSTC_INNO_STRING_DOUBLE 10
+#Define wxSTC_INNO_STRING_SINGLE 11
+#Define wxSTC_INNO_IDENTIFIER 12
+
+'  Lexical states For SCLEX_OPAL
+#Define wxSTC_OPAL_SPACE 0
+#Define wxSTC_OPAL_COMMENT_BLOCK 1
+#Define wxSTC_OPAL_COMMENT_LINE 2
+#Define wxSTC_OPAL_INTEGER 3
+#Define wxSTC_OPAL_KEYWORD 4
+#Define wxSTC_OPAL_SORT 5
+#Define wxSTC_OPAL_STRING 6
+#Define wxSTC_OPAL_PAR 7
+#Define wxSTC_OPAL_BOOL_CONST 8
+#Define wxSTC_OPAL_DEFAULT 32
+
+'  Lexical states For SCLEX_SPICE
+#Define wxSTC_SPICE_DEFAULT 0
+#Define wxSTC_SPICE_IDENTIFIER 1
+#Define wxSTC_SPICE_KEYWORD 2
+#Define wxSTC_SPICE_KEYWORD2 3
+#Define wxSTC_SPICE_KEYWORD3 4
+#Define wxSTC_SPICE_NUMBER 5
+#Define wxSTC_SPICE_DELIMITER 6
+#Define wxSTC_SPICE_VALUE 7
+#Define wxSTC_SPICE_COMMENTLINE 8
+
+'  Lexical states For SCLEX_CMAKE
+#Define wxSTC_CMAKE_DEFAULT 0
+#Define wxSTC_CMAKE_COMMENT 1
+#Define wxSTC_CMAKE_STRINGDQ 2
+#Define wxSTC_CMAKE_STRINGLQ 3
+#Define wxSTC_CMAKE_STRINGRQ 4
+#Define wxSTC_CMAKE_COMMANDS 5
+#Define wxSTC_CMAKE_PARAMETERS 6
+#Define wxSTC_CMAKE_VARIABLE 7
+#Define wxSTC_CMAKE_USERDEFINED 8
+#Define wxSTC_CMAKE_WHILEDEF 9
+#Define wxSTC_CMAKE_FOREACHDEF 10
+#Define wxSTC_CMAKE_IFDEFINEDEF 11
+#Define wxSTC_CMAKE_MACRODEF 12
+#Define wxSTC_CMAKE_STRINGVAR 13
+#Define wxSTC_CMAKE_NUMBER 14
+
+'  Lexical states For SCLEX_GAP
+#Define wxSTC_GAP_DEFAULT 0
+#Define wxSTC_GAP_IDENTIFIER 1
+#Define wxSTC_GAP_KEYWORD 2
+#Define wxSTC_GAP_KEYWORD2 3
+#Define wxSTC_GAP_KEYWORD3 4
+#Define wxSTC_GAP_KEYWORD4 5
+#Define wxSTC_GAP_STRING 6
+#Define wxSTC_GAP_CHAR 7
+#Define wxSTC_GAP_OPERATOR 8
+#Define wxSTC_GAP_COMMENT 9
+#Define wxSTC_GAP_NUMBER 10
+#Define wxSTC_GAP_STRINGEOL 11
+
+'  Lexical state For SCLEX_PLM
+#Define wxSTC_PLM_DEFAULT 0
+#Define wxSTC_PLM_COMMENT 1
+#Define wxSTC_PLM_STRING 2
+#Define wxSTC_PLM_NUMBER 3
+#Define wxSTC_PLM_IDENTIFIER 4
+#Define wxSTC_PLM_OPERATOR 5
+#Define wxSTC_PLM_CONTROL 6
+#Define wxSTC_PLM_KEYWORD 7
+
+'  Lexical state For SCLEX_PROGRESS
+#Define wxSTC_4GL_DEFAULT 0
+#Define wxSTC_4GL_NUMBER 1
+#Define wxSTC_4GL_WORD 2
+#Define wxSTC_4GL_STRING 3
+#Define wxSTC_4GL_CHARACTER 4
+#Define wxSTC_4GL_PREPROCESSOR 5
+#Define wxSTC_4GL_OPERATOR 6
+#Define wxSTC_4GL_IDENTIFIER 7
+#Define wxSTC_4GL_BLOCK 8
+#Define wxSTC_4GL_END 9
+#Define wxSTC_4GL_COMMENT1 10
+#Define wxSTC_4GL_COMMENT2 11
+#Define wxSTC_4GL_COMMENT3 12
+#Define wxSTC_4GL_COMMENT4 13
+#Define wxSTC_4GL_COMMENT5 14
+#Define wxSTC_4GL_COMMENT6 15
+#Define wxSTC_4GL_DEFAULT_ 16
+#Define wxSTC_4GL_NUMBER_ 17
+#Define wxSTC_4GL_WORD_ 18
+#Define wxSTC_4GL_STRING_ 19
+#Define wxSTC_4GL_CHARACTER_ 20
+#Define wxSTC_4GL_PREPROCESSOR_ 21
+#Define wxSTC_4GL_OPERATOR_ 22
+#Define wxSTC_4GL_IDENTIFIER_ 23
+#Define wxSTC_4GL_BLOCK_ 24
+#Define wxSTC_4GL_END_ 25
+#Define wxSTC_4GL_COMMENT1_ 26
+#Define wxSTC_4GL_COMMENT2_ 27
+#Define wxSTC_4GL_COMMENT3_ 28
+#Define wxSTC_4GL_COMMENT4_ 29
+#Define wxSTC_4GL_COMMENT5_ 30
+#Define wxSTC_4GL_COMMENT6_ 31
+
+'  Lexical states For SCLEX_ABAQUS
+#Define wxSTC_ABAQUS_DEFAULT 0
+#Define wxSTC_ABAQUS_COMMENT 1
+#Define wxSTC_ABAQUS_COMMENTBLOCK 2
+#Define wxSTC_ABAQUS_NUMBER 3
+#Define wxSTC_ABAQUS_STRING 4
+#Define wxSTC_ABAQUS_OPERATOR 5
+#Define wxSTC_ABAQUS_WORD 6
+#Define wxSTC_ABAQUS_PROCESSOR 7
+#Define wxSTC_ABAQUS_COMMAND 8
+#Define wxSTC_ABAQUS_SLASHCOMMAND 9
+#Define wxSTC_ABAQUS_STARCOMMAND 10
+#Define wxSTC_ABAQUS_ARGUMENT 11
+#Define wxSTC_ABAQUS_FUNCTION 12
+
+'  Lexical states For SCLEX_ASYMPTOTE
+#Define wxSTC_ASY_DEFAULT 0
+#Define wxSTC_ASY_COMMENT 1
+#Define wxSTC_ASY_COMMENTLINE 2
+#Define wxSTC_ASY_NUMBER 3
+#Define wxSTC_ASY_WORD 4
+#Define wxSTC_ASY_STRING 5
+#Define wxSTC_ASY_CHARACTER 6
+#Define wxSTC_ASY_OPERATOR 7
+#Define wxSTC_ASY_IDENTIFIER 8
+#Define wxSTC_ASY_STRINGEOL 9
+#Define wxSTC_ASY_COMMENTLINEDOC 10
+#Define wxSTC_ASY_WORD2 11
+
+'  Lexical states For SCLEX_R
+#Define wxSTC_R_DEFAULT 0
+#Define wxSTC_R_COMMENT 1
+#Define wxSTC_R_KWORD 2
+#Define wxSTC_R_BASEKWORD 3
+#Define wxSTC_R_OTHERKWORD 4
+#Define wxSTC_R_NUMBER 5
+#Define wxSTC_R_STRING 6
+#Define wxSTC_R_STRING2 7
+#Define wxSTC_R_OPERATOR 8
+#Define wxSTC_R_IDENTIFIER 9
+#Define wxSTC_R_INFIX 10
+#Define wxSTC_R_INFIXEOL 11
+
+'  Lexical state For SCLEX_MAGIKSF
+#Define wxSTC_MAGIK_DEFAULT 0
+#Define wxSTC_MAGIK_COMMENT 1
+#Define wxSTC_MAGIK_HYPER_COMMENT 16
+#Define wxSTC_MAGIK_STRING 2
+#Define wxSTC_MAGIK_CHARACTER 3
+#Define wxSTC_MAGIK_NUMBER 4
+#Define wxSTC_MAGIK_IDENTIFIER 5
+#Define wxSTC_MAGIK_OPERATOR 6
+#Define wxSTC_MAGIK_FLOW 7
+#Define wxSTC_MAGIK_CONTAINER 8
+#Define wxSTC_MAGIK_BRACKET_BLOCK 9
+#Define wxSTC_MAGIK_BRACE_BLOCK 10
+#Define wxSTC_MAGIK_SQBRACKET_BLOCK 11
+#Define wxSTC_MAGIK_UNKNOWN_KEYWORD 12
+#Define wxSTC_MAGIK_KEYWORD 13
+#Define wxSTC_MAGIK_PRAGMA 14
+#Define wxSTC_MAGIK_SYMBOL 15
+
+'  Lexical state For SCLEX_POWERSHELL
+#Define wxSTC_POWERSHELL_DEFAULT 0
+#Define wxSTC_POWERSHELL_COMMENT 1
+#Define wxSTC_POWERSHELL_STRING 2
+#Define wxSTC_POWERSHELL_CHARACTER 3
+#Define wxSTC_POWERSHELL_NUMBER 4
+#Define wxSTC_POWERSHELL_VARIABLE 5
+#Define wxSTC_POWERSHELL_OPERATOR 6
+#Define wxSTC_POWERSHELL_IDENTIFIER 7
+#Define wxSTC_POWERSHELL_KEYWORD 8
+#Define wxSTC_POWERSHELL_CMDLET 9
+#Define wxSTC_POWERSHELL_ALIAS 10
+
+'  Lexical state For SCLEX_MYSQL
+#Define wxSTC_MYSQL_DEFAULT 0
+#Define wxSTC_MYSQL_COMMENT 1
+#Define wxSTC_MYSQL_COMMENTLINE 2
+#Define wxSTC_MYSQL_VARIABLE 3
+#Define wxSTC_MYSQL_SYSTEMVARIABLE 4
+#Define wxSTC_MYSQL_KNOWNSYSTEMVARIABLE 5
+#Define wxSTC_MYSQL_NUMBER 6
+#Define wxSTC_MYSQL_MAJORKEYWORD 7
+#Define wxSTC_MYSQL_KEYWORD 8
+#Define wxSTC_MYSQL_DATABASEOBJECT 9
+#Define wxSTC_MYSQL_PROCEDUREKEYWORD 10
+#Define wxSTC_MYSQL_STRING 11
+#Define wxSTC_MYSQL_SQSTRING 12
+#Define wxSTC_MYSQL_DQSTRING 13
+#Define wxSTC_MYSQL_OPERATOR 14
+#Define wxSTC_MYSQL_FUNCTION 15
+#Define wxSTC_MYSQL_IDENTIFIER 16
+#Define wxSTC_MYSQL_QUOTEDIDENTIFIER 17
+#Define wxSTC_MYSQL_USER1 18
+#Define wxSTC_MYSQL_USER2 19
+#Define wxSTC_MYSQL_USER3 20
+#Define wxSTC_MYSQL_HIDDENCOMMAND 21
+
+'  Lexical state For SCLEX_PO
+#Define wxSTC_PO_DEFAULT 0
+#Define wxSTC_PO_COMMENT 1
+#Define wxSTC_PO_MSGID 2
+#Define wxSTC_PO_MSGID_TEXT 3
+#Define wxSTC_PO_MSGSTR 4
+#Define wxSTC_PO_MSGSTR_TEXT 5
+#Define wxSTC_PO_MSGCTXT 6
+#Define wxSTC_PO_MSGCTXT_TEXT 7
+#Define wxSTC_PO_FUZZY 8
+
+'  Lexical states For SCLEX_PASCAL
+#Define wxSTC_PAS_DEFAULT 0
+#Define wxSTC_PAS_IDENTIFIER 1
+#Define wxSTC_PAS_COMMENT 2
+#Define wxSTC_PAS_COMMENT2 3
+#Define wxSTC_PAS_COMMENTLINE 4
+#Define wxSTC_PAS_PREPROCESSOR 5
+#Define wxSTC_PAS_PREPROCESSOR2 6
+#Define wxSTC_PAS_NUMBER 7
+#Define wxSTC_PAS_HEXNUMBER 8
+#Define wxSTC_PAS_WORD 9
+#Define wxSTC_PAS_STRING 10
+#Define wxSTC_PAS_STRINGEOL 11
+#Define wxSTC_PAS_CHARACTER 12
+#Define wxSTC_PAS_OPERATOR 13
+#Define wxSTC_PAS_ASM 14
+
+'  Lexical state For SCLEX_SORCUS
+#Define wxSTC_SORCUS_DEFAULT 0
+#Define wxSTC_SORCUS_COMMAND 1
+#Define wxSTC_SORCUS_PARAMETER 2
+#Define wxSTC_SORCUS_COMMENTLINE 3
+#Define wxSTC_SORCUS_STRING 4
+#Define wxSTC_SORCUS_STRINGEOL 5
+#Define wxSTC_SORCUS_IDENTIFIER 6
+#Define wxSTC_SORCUS_OPERATOR 7
+#Define wxSTC_SORCUS_NUMBER 8
+#Define wxSTC_SORCUS_CONSTANT 9
+
+'  Lexical state For SCLEX_POWERPRO
+#Define wxSTC_POWERPRO_DEFAULT 0
+#Define wxSTC_POWERPRO_COMMENTBLOCK 1
+#Define wxSTC_POWERPRO_COMMENTLINE 2
+#Define wxSTC_POWERPRO_NUMBER 3
+#Define wxSTC_POWERPRO_WORD 4
+#Define wxSTC_POWERPRO_WORD2 5
+#Define wxSTC_POWERPRO_WORD3 6
+#Define wxSTC_POWERPRO_WORD4 7
+#Define wxSTC_POWERPRO_DOUBLEQUOTEDSTRING 8
+#Define wxSTC_POWERPRO_SINGLEQUOTEDSTRING 9
+#Define wxSTC_POWERPRO_LINECONTINUE 10
+#Define wxSTC_POWERPRO_OPERATOR 11
+#Define wxSTC_POWERPRO_IDENTIFIER 12
+#Define wxSTC_POWERPRO_STRINGEOL 13
+#Define wxSTC_POWERPRO_VERBATIM 14
+#Define wxSTC_POWERPRO_ALTQUOTE 15
+#Define wxSTC_POWERPRO_FUNCTION 16
+
+'  Lexical states For SCLEX_SML
+#Define wxSTC_SML_DEFAULT 0
+#Define wxSTC_SML_IDENTIFIER 1
+#Define wxSTC_SML_TAGNAME 2
+#Define wxSTC_SML_KEYWORD 3
+#Define wxSTC_SML_KEYWORD2 4
+#Define wxSTC_SML_KEYWORD3 5
+#Define wxSTC_SML_LINENUM 6
+#Define wxSTC_SML_OPERATOR 7
+#Define wxSTC_SML_NUMBER 8
+#Define wxSTC_SML_CHAR 9
+#Define wxSTC_SML_STRING 11
+#Define wxSTC_SML_COMMENT 12
+#Define wxSTC_SML_COMMENT1 13
+#Define wxSTC_SML_COMMENT2 14
+#Define wxSTC_SML_COMMENT3 15
+
+'  Lexical state For SCLEX_MARKDOWN
+#Define wxSTC_MARKDOWN_DEFAULT 0
+#Define wxSTC_MARKDOWN_LINE_BEGIN 1
+#Define wxSTC_MARKDOWN_STRONG1 2
+#Define wxSTC_MARKDOWN_STRONG2 3
+#Define wxSTC_MARKDOWN_EM1 4
+#Define wxSTC_MARKDOWN_EM2 5
+#Define wxSTC_MARKDOWN_HEADER1 6
+#Define wxSTC_MARKDOWN_HEADER2 7
+#Define wxSTC_MARKDOWN_HEADER3 8
+#Define wxSTC_MARKDOWN_HEADER4 9
+#Define wxSTC_MARKDOWN_HEADER5 10
+#Define wxSTC_MARKDOWN_HEADER6 11
+#Define wxSTC_MARKDOWN_PRECHAR 12
+#Define wxSTC_MARKDOWN_ULIST_ITEM 13
+#Define wxSTC_MARKDOWN_OLIST_ITEM 14
+#Define wxSTC_MARKDOWN_BLOCKQUOTE 15
+#Define wxSTC_MARKDOWN_STRIKEOUT 16
+#Define wxSTC_MARKDOWN_HRULE 17
+#Define wxSTC_MARKDOWN_LINK 18
+#Define wxSTC_MARKDOWN_CODE 19
+#Define wxSTC_MARKDOWN_CODE2 20
+#Define wxSTC_MARKDOWN_CODEBK 21
+
+' }}}
+' ----------------------------------------------------------------------
+
+' ----------------------------------------------------------------------
+'  Commands that can be bound To keystrokes section {{{
+
+
+'  Redoes the Next action On the undo history.
+#Define wxSTC_CMD_REDO 2011
+
+'  Select all the text in the document.
+#Define wxSTC_CMD_SELECTALL 2013
+
+'  Undo one action in the undo history.
+#Define wxSTC_CMD_UNDO 2176
+
+'  Cut the selection To the clipboard.
+#Define wxSTC_CMD_CUT 2177
+
+'  Copy the selection To the clipboard.
+#Define wxSTC_CMD_COPY 2178
+
+'  Paste the contents of the clipboard into the document replacing the selection.
+#Define wxSTC_CMD_PASTE 2179
+
+'  Clear the selection.
+#Define wxSTC_CMD_CLEAR 2180
+
+'  Move caret down one line.
+#Define wxSTC_CMD_LINEDOWN 2300
+
+'  Move caret down one Line extending selection To New caret position.
+#Define wxSTC_CMD_LINEDOWNEXTEND 2301
+
+'  Move caret up one line.
+#Define wxSTC_CMD_LINEUP 2302
+
+'  Move caret up one Line extending selection To New caret position.
+#Define wxSTC_CMD_LINEUPEXTEND 2303
+
+'  Move caret Left one character.
+#Define wxSTC_CMD_CHARLEFT 2304
+
+'  Move caret Left one character extending selection To New caret position.
+#Define wxSTC_CMD_CHARLEFTEXTEND 2305
+
+'  Move caret Right one character.
+#Define wxSTC_CMD_CHARRIGHT 2306
+
+'  Move caret Right one character extending selection To New caret position.
+#Define wxSTC_CMD_CHARRIGHTEXTEND 2307
+
+'  Move caret Left one word.
+#Define wxSTC_CMD_WORDLEFT 2308
+
+'  Move caret Left one word extending selection To New caret position.
+#Define wxSTC_CMD_WORDLEFTEXTEND 2309
+
+'  Move caret Right one word.
+#Define wxSTC_CMD_WORDRIGHT 2310
+
+'  Move caret Right one word extending selection To New caret position.
+#Define wxSTC_CMD_WORDRIGHTEXTEND 2311
+
+'  Move caret To first position On line.
+#Define wxSTC_CMD_HOME 2312
+
+'  Move caret To first position On Line extending selection To New caret position.
+#Define wxSTC_CMD_HOMEEXTEND 2313
+
+'  Move caret To last position On line.
+#Define wxSTC_CMD_LINEEND 2314
+
+'  Move caret To last position On Line extending selection To New caret position.
+#Define wxSTC_CMD_LINEENDEXTEND 2315
+
+'  Move caret To first position in document.
+#Define wxSTC_CMD_DOCUMENTSTART 2316
+
+'  Move caret To first position in document extending selection To New caret position.
+#Define wxSTC_CMD_DOCUMENTSTARTEXTEND 2317
+
+'  Move caret To last position in document.
+#Define wxSTC_CMD_DOCUMENTEND 2318
+
+'  Move caret To last position in document extending selection To New caret position.
+#Define wxSTC_CMD_DOCUMENTENDEXTEND 2319
+
+'  Move caret one page up.
+#Define wxSTC_CMD_PAGEUP 2320
+
+'  Move caret one page up extending selection To New caret position.
+#Define wxSTC_CMD_PAGEUPEXTEND 2321
+
+'  Move caret one page down.
+#Define wxSTC_CMD_PAGEDOWN 2322
+
+'  Move caret one page down extending selection To New caret position.
+#Define wxSTC_CMD_PAGEDOWNEXTEND 2323
+
+'  Switch from insert To overtype mode Or the reverse.
+#Define wxSTC_CMD_EDITTOGGLEOVERTYPE 2324
+
+'  Cancel Any modes such As Call tip Or auto-completion list display.
+#Define wxSTC_CMD_CANCEL 2325
+
+'  Delete the selection Or If no selection, the character before the caret.
+#Define wxSTC_CMD_DELETEBACK 2326
+
+'  If selection Is empty Or all On one Line replace the selection With a Tab character.
+'  If more than one Line selected, indent the lines.
+#Define wxSTC_CMD_TAB 2327
+
+'  Dedent the selected lines.
+#Define wxSTC_CMD_BACKTAB 2328
+
+'  Insert a New Line, may use a CRLF, CR Or LF depending On EOL mode.
+#Define wxSTC_CMD_NEWLINE 2329
+
+'  Insert a Form Feed character.
+#Define wxSTC_CMD_FORMFEED 2330
+
+'  Move caret To before first visible character On line.
+'  If already there move To first character On line.
+#Define wxSTC_CMD_VCHOME 2331
+
+'  Like VCHome but extending selection To New caret position.
+#Define wxSTC_CMD_VCHOMEEXTEND 2332
+
+'  Magnify the displayed text by increasing the sizes by 1 point.
+#Define wxSTC_CMD_ZOOMIN 2333
+
+'  Make the displayed text smaller by decreasing the sizes by 1 point.
+#Define wxSTC_CMD_ZOOMOUT 2334
+
+'  Delete the word To the Left of the caret.
+#Define wxSTC_CMD_DELWORDLEFT 2335
+
+'  Delete the word To the Right of the caret.
+#Define wxSTC_CMD_DELWORDRIGHT 2336
+
+'  Delete the word To the Right of the caret, but Not the trailing non-word characters.
+#Define wxSTC_CMD_DELWORDRIGHTEND 2518
+
+'  Cut the Line containing the caret.
+#Define wxSTC_CMD_LINECUT 2337
+
+'  Delete the Line containing the caret.
+#Define wxSTC_CMD_LINEDELETE 2338
+
+'  Switch the current Line With the previous.
+#Define wxSTC_CMD_LINETRANSPOSE 2339
+
+'  Duplicate the current line.
+#Define wxSTC_CMD_LINEDUPLICATE 2404
+
+'  Transform the selection To lower case.
+#Define wxSTC_CMD_LOWERCASE 2340
+
+'  Transform the selection To upper case.
+#Define wxSTC_CMD_UPPERCASE 2341
+
+'  Scroll the document down, keeping the caret visible.
+#Define wxSTC_CMD_LINESCROLLDOWN 2342
+
+'  Scroll the document up, keeping the caret visible.
+#Define wxSTC_CMD_LINESCROLLUP 2343
+
+'  Delete the selection Or If no selection, the character before the caret.
+'  Will Not Delete the character before at the start of a line.
+#Define wxSTC_CMD_DELETEBACKNOTLINE 2344
+
+'  Move caret To first position On display line.
+#Define wxSTC_CMD_HOMEDISPLAY 2345
+
+'  Move caret To first position On display Line extending selection To
+'  New caret position.
+#Define wxSTC_CMD_HOMEDISPLAYEXTEND 2346
+
+'  Move caret To last position On display line.
+#Define wxSTC_CMD_LINEENDDISPLAY 2347
+
+'  Move caret To last position On display Line extending selection To New
+'  caret position.
+#Define wxSTC_CMD_LINEENDDISPLAYEXTEND 2348
+
+'  These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+'  except they behave differently when word-wrap Is enabled:
+'  They go first To the start / End of the display Line, like (Home|LineEnd)Display
+'  The difference Is that, the cursor Is already at the Point, it goes On To the start
+'  Or End of the document Line, As appropriate For (Home|LineEnd|VCHome)(Extend)?.
+#Define wxSTC_CMD_HOMEWRAP 2349
+#Define wxSTC_CMD_HOMEWRAPEXTEND 2450
+#Define wxSTC_CMD_LINEENDWRAP 2451
+#Define wxSTC_CMD_LINEENDWRAPEXTEND 2452
+#Define wxSTC_CMD_VCHOMEWRAP 2453
+#Define wxSTC_CMD_VCHOMEWRAPEXTEND 2454
+
+'  Copy the Line containing the caret.
+#Define wxSTC_CMD_LINECOPY 2455
+
+'  Move To the previous change in capitalisation.
+#Define wxSTC_CMD_WORDPARTLEFT 2390
+
+'  Move To the previous change in capitalisation extending selection
+'  To New caret position.
+#Define wxSTC_CMD_WORDPARTLEFTEXTEND 2391
+
+'  Move To the change Next in capitalisation.
+#Define wxSTC_CMD_WORDPARTRIGHT 2392
+
+'  Move To the Next change in capitalisation extending selection
+'  To New caret position.
+#Define wxSTC_CMD_WORDPARTRIGHTEXTEND 2393
+
+'  Delete back from the current position To the start of the line.
+#Define wxSTC_CMD_DELLINELEFT 2395
+
+'  Delete forwards from the current position To the End of the line.
+#Define wxSTC_CMD_DELLINERIGHT 2396
+
+'  Move caret between paragraphs (delimited by empty lines).
+#Define wxSTC_CMD_PARADOWN 2413
+#Define wxSTC_CMD_PARADOWNEXTEND 2414
+#Define wxSTC_CMD_PARAUP 2415
+#Define wxSTC_CMD_PARAUPEXTEND 2416
+
+'  Move caret down one Line, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_LINEDOWNRECTEXTEND 2426
+
+'  Move caret up one Line, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_LINEUPRECTEXTEND 2427
+
+'  Move caret Left one character, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_CHARLEFTRECTEXTEND 2428
+
+'  Move caret Right one character, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_CHARRIGHTRECTEXTEND 2429
+
+'  Move caret To first position On Line, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_HOMERECTEXTEND 2430
+
+'  Move caret To before first visible character On line.
+'  If already there move To first character On line.
+'  In either Case, extend rectangular selection To New caret position.
+#Define wxSTC_CMD_VCHOMERECTEXTEND 2431
+
+'  Move caret To last position On Line, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_LINEENDRECTEXTEND 2432
+
+'  Move caret one page up, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_PAGEUPRECTEXTEND 2433
+
+'  Move caret one page down, extending rectangular selection To New caret position.
+#Define wxSTC_CMD_PAGEDOWNRECTEXTEND 2434
+
+'  Move caret To top of page, Or one page up If already at top of page.
+#Define wxSTC_CMD_STUTTEREDPAGEUP 2435
+
+'  Move caret To top of page, Or one page up If already at top of page, extending selection To New caret position.
+#Define wxSTC_CMD_STUTTEREDPAGEUPEXTEND 2436
+
+'  Move caret To bottom of page, Or one page down If already at bottom of page.
+#Define wxSTC_CMD_STUTTEREDPAGEDOWN 2437
+
+'  Move caret To bottom of page, Or one page down If already at bottom of page, extending selection To New caret position.
+#Define wxSTC_CMD_STUTTEREDPAGEDOWNEXTEND 2438
+
+'  Move caret Left one word, position cursor at End of word.
+#Define wxSTC_CMD_WORDLEFTEND 2439
+
+'  Move caret Left one word, position cursor at End of word, extending selection To New caret position.
+#Define wxSTC_CMD_WORDLEFTENDEXTEND 2440
+
+'  Move caret Right one word, position cursor at End of word.
+#Define wxSTC_CMD_WORDRIGHTEND 2441
+
+'  Move caret Right one word, position cursor at End of word, extending selection To New caret position.
+#Define wxSTC_CMD_WORDRIGHTENDEXTEND 2442
+
+' }}}
+' ----------------------------------------------------------------------
+
+    Enum
+        wxEVT_STC_CHANGE,
+        wxEVT_STC_STYLENEEDED,
+        wxEVT_STC_CHARADDED,
+        wxEVT_STC_SAVEPOINTREACHED,
+        wxEVT_STC_SAVEPOINTLEFT,
+        wxEVT_STC_ROMODIFYATTEMPT,
+        wxEVT_STC_KEY,
+        wxEVT_STC_DOUBLECLICK,
+        wxEVT_STC_UPDATEUI,
+        wxEVT_STC_MODIFIED,
+        wxEVT_STC_MACRORECORD,
+        wxEVT_STC_MARGINCLICK,
+        wxEVT_STC_NEEDSHOWN,
+        wxEVT_STC_PAINTED,
+        wxEVT_STC_USERLISTSELECTION,
+        wxEVT_STC_URIDROPPED,
+        wxEVT_STC_DWELLSTART,
+        wxEVT_STC_DWELLEND,
+        wxEVT_STC_START_DRAG,
+        wxEVT_STC_DRAG_OVER,
+        wxEVT_STC_DO_DROP,
+        wxEVT_STC_ZOOM,
+        wxEVT_STC_HOTSPOT_CLICK,
+        wxEVT_STC_HOTSPOT_DCLICK,
+        wxEVT_STC_CALLTIP_CLICK,
+        wxEVT_STC_AUTOCOMP_SELECTION,
+        wxEVT_STC_INDICATOR_CLICK,
+        wxEVT_STC_INDICATOR_RELEASE,
+        wxEVT_STC_AUTOCOMP_CANCELLED,
+        wxEVT_STC_AUTOCOMP_CHAR_DELETED
+    End Enum
 
 #EndIf ' __defs_bi__

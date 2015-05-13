@@ -10,48 +10,37 @@
 	'' same order as FB_DATATYPE
 	dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	{ _
-		(FB_DATACLASS_UNKNOWN, 0				, 0 				, FALSE, FB_DATATYPE_VOID		, @"void"		), _
+		(FB_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, FB_DATATYPE_VOID	, @"void"    	), _
 		(FB_DATACLASS_INTEGER, 1				, 8*1				, TRUE , FB_DATATYPE_BOOL8		, @"bool8"		), _
-		(FB_DATACLASS_INTEGER, 1				, 8*1				, TRUE , FB_DATATYPE_BYTE		, @"byte"		), _
-		(FB_DATACLASS_INTEGER, 1				, 8*1				, FALSE, FB_DATATYPE_UBYTE		, @"ubyte"		), _
-		(FB_DATACLASS_INTEGER, 1				, 8*1				, FALSE, FB_DATATYPE_UBYTE		, @"zstring"	), _
-		(FB_DATACLASS_INTEGER, 2				, 8*2				, TRUE , FB_DATATYPE_SHORT		, @"short"		), _
-		(FB_DATACLASS_INTEGER, 2				, 8*2				, FALSE, FB_DATATYPE_USHORT 	, @"ushort" 	), _
-		(FB_DATACLASS_INTEGER, 2				, 8*2				, FALSE, FB_DATATYPE_USHORT 	, @"wstring"	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , FB_DATATYPE_INTEGER	, @"integer"	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT		, @"uinteger"	), _
+		(FB_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , FB_DATATYPE_BYTE	, @"byte"  		), _
+		(FB_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, FB_DATATYPE_UBYTE  , @"ubyte" 		), _
+		(FB_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, FB_DATATYPE_UBYTE	, @"zstring" 	), _
+		(FB_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , FB_DATATYPE_SHORT 	, @"short" 		), _
+		(FB_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, FB_DATATYPE_USHORT	, @"ushort" 	), _
+		(FB_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, FB_DATATYPE_USHORT	, @"wstring" 	), _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , FB_DATATYPE_INTEGER, @"integer" 	), _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT 	, @"uinteger" 	), _
 		(FB_DATACLASS_INTEGER, 4				, 8*4				, TRUE , FB_DATATYPE_BOOL32 	, @"bool32" 	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , FB_DATATYPE_INTEGER	, @"enum"		), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT		, @"bitfield"	), _
-		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE 	, TRUE , FB_DATATYPE_LONG		, @"long"		), _
-		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE 	, FALSE, FB_DATATYPE_ULONG		, @"ulong"		), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2 , 8*FB_INTEGERSIZE*2, TRUE , FB_DATATYPE_LONGINT	, @"longint"	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2 , 8*FB_INTEGERSIZE*2, FALSE, FB_DATATYPE_ULONGINT	, @"ulongint"	), _
-		(FB_DATACLASS_FPOINT , 4				, 8*4				, TRUE , FB_DATATYPE_SINGLE 	, @"single" 	), _
-		(FB_DATACLASS_FPOINT , 8				, 8*8				, TRUE , FB_DATATYPE_DOUBLE 	, @"double" 	), _
-		(FB_DATACLASS_STRING , FB_STRDESCLEN	, 0 				, FALSE, FB_DATATYPE_STRING 	, @"string" 	), _
-		(FB_DATACLASS_STRING , 1				, 8*1				, FALSE, FB_DATATYPE_FIXSTR 	, @"string *"	), _
-		(FB_DATACLASS_UDT	 , 0				, 0 				, FALSE, FB_DATATYPE_STRUCT 	, @"type"		), _
-		(FB_DATACLASS_UDT	 , 0				, 0 				, FALSE, FB_DATATYPE_NAMESPC	, @"namepace"	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT		, @"function"	), _
-		(FB_DATACLASS_UNKNOWN, 0				, 0 				, FALSE, FB_DATATYPE_VOID		, @"fwdref" 	), _
-		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT		, @"pointer"	)  _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , FB_DATATYPE_INTEGER, @"enum"		), _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT   , @"bitfield"	), _
+		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE		, TRUE , FB_DATATYPE_LONG	, @"long" 		), _
+		(FB_DATACLASS_INTEGER, FB_LONGSIZE		, 8*FB_LONGSIZE		, FALSE, FB_DATATYPE_ULONG 	, @"ulong" 		), _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , FB_DATATYPE_LONGINT, @"longint"	), _
+		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, FB_DATATYPE_ULONGINT,@"ulongint"	), _
+		(FB_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , FB_DATATYPE_SINGLE	, @"single"		), _
+		(FB_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , FB_DATATYPE_DOUBLE	, @"double"		), _
+		(FB_DATACLASS_STRING , FB_STRDESCLEN	, 0					, FALSE, FB_DATATYPE_STRING	, @"string"		), _
+		(FB_DATACLASS_STRING , 1			 	, 8*1				, FALSE, FB_DATATYPE_FIXSTR	, @"string *"	), _
+		(FB_DATACLASS_UDT	 , 0			 	, 0					, FALSE, FB_DATATYPE_STRUCT , @"type"		), _
+		(FB_DATACLASS_UDT	 , 0			 	, 0					, FALSE, FB_DATATYPE_NAMESPC, @"namepace"	), _
+		(FB_DATACLASS_INTEGER, FB_POINTERSIZE	, 8*FB_POINTERSIZE	, FALSE, FB_DATATYPE_UINT	, @"function"	), _
+		(FB_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, FB_DATATYPE_VOID	, @"fwdref"		), _
+		(FB_DATACLASS_INTEGER, FB_POINTERSIZE	, 8*FB_POINTERSIZE	, FALSE, FB_DATATYPE_UINT	, @"pointer"	)  _
 	}
 
-
-'':::::
 sub symbDataInit( )
-
-	'' wchar len depends on the target platform
-	symb_dtypeTB(FB_DATATYPE_WCHAR) = symb_dtypeTB(env.target.wchar.type)
-
-end sub
-
-'':::::
-sub symbDataEnd( )
-
-	'' do nothing
-
+	'' Remap wchar to target-specific type
+	symb_dtypeTB(FB_DATATYPE_WCHAR) = symb_dtypeTB(env.target.wchar)
 end sub
 
 function typeMax _
@@ -224,14 +213,7 @@ function typeToSigned _
 		nd = FB_DATATYPE_INTEGER
 
 	case FB_DATATYPE_WCHAR
-		select case env.target.wchar.type
-		case FB_DATATYPE_UBYTE
-			nd = FB_DATATYPE_BYTE
-		case FB_DATATYPE_USHORT
-			nd = FB_DATATYPE_SHORT
-		case else
-			nd = FB_DATATYPE_INTEGER
-		end select
+		return typeToSigned( env.target.wchar )
 
 	case FB_DATATYPE_ULONG, FB_DATATYPE_POINTER
 		nd = FB_DATATYPE_LONG
@@ -242,7 +224,7 @@ function typeToSigned _
 	case else
 		nd = dtype
 	end select
-	
+
 	function = typeJoin( dtype, nd )
 
 end function

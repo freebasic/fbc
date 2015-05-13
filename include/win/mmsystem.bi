@@ -140,7 +140,7 @@
 #define SND_ALIAS_START 0
 #define	sndAlias(c0,c1)	(SND_ALIAS_START+cuint(c0) or (cuint(c1) shl 8))
 #define SND_ALIAS_SYSTEMASTERISK sndAlias(asc("S"),asc("*"))
-#define SND_ALIAS_SYSTEMQUESTION sndAlias(asc("S",asc("?"))
+#define SND_ALIAS_SYSTEMQUESTION sndAlias(asc("S"),asc("?"))
 #define SND_ALIAS_SYSTEMHAND sndAlias(asc("S"),asc("H"))
 #define SND_ALIAS_SYSTEMEXIT sndAlias(asc("S"),asc("E"))
 #define SND_ALIAS_SYSTEMSTART sndAlias(asc("S"),asc("S"))

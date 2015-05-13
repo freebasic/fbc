@@ -29,7 +29,7 @@ constructor TFoo(value as integer)
 end constructor
 
 constructor TFoo(baseValue as integer, value as integer)
-	base baseValue
+	base( baseValue )
 	fooField = value
 end constructor
 

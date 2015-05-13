@@ -450,22 +450,18 @@ private function hDeclDynArray _
    			'' could be an external..
    			sym = hDeclExternVar( sym, id, dtype, subtype, attrib, addsuffix, _
    								  dimensions, dTB() )
-
 		else
 			'' var already exists; dup checks
 
 			'' EXTERNal?
 			if( symbIsExtern( sym ) ) then
-
 				'' another EXTERN? (declared twice)
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
    					sym = NULL
-
 				else
 	   				'' define it...
 					hVarExtToPub( sym, attrib )
 				end if
-
 			'' [re]dim ()?
 			elseif( dimensions = -1 ) then
 				sym = NULL
@@ -497,48 +493,33 @@ private function hDeclDynArray _
 		return sym
 	end if
 
-	'' not an argument passed by descriptor or a common array?
+	if( (dtype <> symbGetFullType( sym )) or _
+	    (subtype <> symbGetSubType( sym )) ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
+		'' no error recovery, caller will take care of that
+		exit function
+	end if
+
+	'' Check dimensions, unless it's a bydesc param or a COMMON array,
+	'' then we don't know the dimensions at compile-time.
 	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
-
-		if( (dtype <> symbGetFullType( sym )) or _
-			(subtype <> symbGetSubType( sym )) ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, caller will take care of that
-    		exit function
-		end if
-
 		if( symbGetArrayDimensions( sym ) > 0 ) then
 			if( dimensions <> symbGetArrayDimensions( sym ) ) then
-    			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-    			'' no error recovery, ditto
-    			exit function
-    		end if
-		end if
-
-	'' else, can't check it's dimensions at compile-time
-	else
-		if( (dtype <> symbGetFullType( sym )) or _
-			(subtype <> symbGetSubType( sym )) ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, ditto
-    		exit function
+				errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+				'' no error recovery, ditto
+				exit function
+			end if
 		end if
 	end if
 
 	'' if COMMON, check for max dimensions used
 	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-		if( symbGetArrayDimensions( sym ) > -1 ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, caller will take care of that
-    		exit function
-    	else
+		if( dimensions > symbGetArrayDimensions( sym ) ) then
 			symbSetArrayDimensions( sym, dimensions )
 		end if
-
 	'' or if dims = -1 (cause of "DIM|REDIM array()")
 	elseif( symbGetArrayDimensions( sym ) = -1 ) then
 		symbSetArrayDimensions( sym, dimensions )
-
 	end if
 
     function = sym
@@ -745,15 +726,10 @@ end sub
 '':::::
 private function hVarInitDefault _
 	( _
-        byval sym as FBSYMBOL ptr, _
-        byval isdecl as integer, _
-        byval has_defctor as integer, _
-        byval has_dtor as integer,  _
-        byval opt as integer = FB_INIOPT_NONE _
+		byval sym as FBSYMBOL ptr, _
+		byval is_decl as integer, _
+		byval has_defctor as integer _
 	) as ASTNODE ptr
-
-    dim as integer attrib = any
-	dim as ASTNODE ptr initree = any
 
 	function = NULL
 
@@ -761,48 +737,38 @@ private function hVarInitDefault _
 		exit function
 	end if
 
-	attrib = symbGetAttrib( sym )
-
-	'' need initializer?
-	if( typeIsConst( symbGetFullType( sym ) ) ) then
-		'' not extern?
-		if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
-			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
-			'' error recovery: fake an expr
-			return astNewCONSTi( 0 )
-		end if
-
+	'' No default initialization for EXTERNs
+	'' (they're initialized when defined by corresponding DIM)
+	if( symbIsExtern( sym ) ) then
+		exit function
 	end if
 
-    '' ctor?
-    if( has_defctor ) then
-		'' not already declared, extern, common or dynamic?
-		if( isdecl = FALSE ) then
-			if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
-							  FB_SYMBATTRIB_COMMON or _
-							  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
+	'' If it's marked as CONST we require it to have an initializer,
+	'' because that's the only way for the coder to set the value.
+	if( typeIsConst( symbGetFullType( sym ) ) ) then
+		errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
+		'' error recovery: fake an expr
+		return astNewCONSTi( 0 )
+	end if
 
-    			'' check visibility
-	    		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
-	    		if( symbCheckAccess( subtype, _
-	    							 symbGetCompDefCtor( subtype ) ) = FALSE ) then
-
-					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
-				end if
-
-				function = astBuildTypeIniCtorList( sym )
+	'' Has default constructor?
+	if( has_defctor ) then
+		'' not already declared nor dynamic array?
+		if( (not is_decl) and ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_COMMON)) = 0) ) then
+			'' Check visibility
+			if( symbCheckAccess( symbGetCompDefCtor( symbGetSubtype( sym ) ) ) = FALSE ) then
+				errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+			end if
+			function = astBuildTypeIniCtorList( sym )
+		end if
+	else
+		'' Complain about lack of default ctor if there are others
+		if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			end if
 		end if
-
-    else
-    	'' no default ctor but other ctors defined?
-    	select case symbGetType( sym )
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-    		end if
-    	end select
-    end if
+	end if
 
 end function
 
@@ -827,10 +793,7 @@ end function
 private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
-        byval isdecl as integer, _
-        byval has_defctor as integer, _
-        byval has_dtor as integer,  _
-        byval opt as integer = FB_INIOPT_NONE _
+        byval isdecl as integer _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -882,11 +845,7 @@ private function hVarInit _
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
-			if( has_defctor or has_dtor ) then
-				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
-			else
-				symbSetDontInit( sym )
-			end if
+			symbSetDontInit( sym )
 		end if
 
 		'' ...or const-qualified vars
@@ -900,7 +859,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
+	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		'' fake an expression
 		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -1062,19 +1021,14 @@ private function hFlushInitializer _
 		byval sym as FBSYMBOL ptr, _
 		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_defctor as integer, _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 
-	'' has_defctor is unused -cha0s
-
 	'' object?
-    if( has_dtor ) then
-    	'' check visibility
-		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
-		if( symbCheckAccess( subtype, _
-							 symbGetCompDtor( subtype ) ) = FALSE ) then
-       		errReport( FB_ERRMSG_NOACCESSTODTOR )
+	if( has_dtor ) then
+		'' check visibility
+		if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( sym ) ) ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
 	end if
 
@@ -1315,7 +1269,6 @@ function hVarDeclEx _
     	if( is_multdecl = FALSE ) then
     		'' (AS SymbolType)?
     		if( lexGetToken( ) = FB_TK_AS ) then
-
     			if( dtype <> FB_DATATYPE_INVALID ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					dtype = FB_DATATYPE_INVALID
@@ -1348,14 +1301,8 @@ function hVarDeclEx _
     		end if
     	end if
 
-		''
-		sym = hLookupVar( parent, _
-						  chain_, _
-						  dtype, _
-						  is_typeless, _
-						  (suffix <> FB_DATATYPE_INVALID), _
-						  options )
-
+		sym = hLookupVar( parent, chain_, dtype, is_typeless, _
+		                  (suffix <> FB_DATATYPE_INVALID), options )
     	if( sym = NULL ) then
     		'' no symbol was found, check if an explicit namespace was given
     		if( parent <> NULL ) then
@@ -1365,7 +1312,6 @@ function hVarDeclEx _
     		end if
     	end if
 
-		''
 		if( dimensions > 0 ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
         	'' statement, then a DIM will work the same way as a REDIM
@@ -1411,7 +1357,6 @@ function hVarDeclEx _
 			end select
 		end if
 
-    	''
     	if( is_dynamic ) then
     		sym = hDeclDynArray( sym, id, palias, _
     							 dtype, subtype, is_typeless, _
@@ -1424,27 +1369,21 @@ function hVarDeclEx _
     							  dimensions, dTB() )
 		end if
 
-    	if( sym = NULL ) then
-    		is_decl = FALSE
-    	else
-    		is_decl = symbGetIsDeclared( sym )
-    	end if
+		dim as integer has_defctor = FALSE, has_dtor = FALSE
 
-   		''
-   		dim as integer has_defctor = FALSE, has_dtor = FALSE
-
-   		if( sym <> NULL ) then
-   			select case symbGetType( sym )
-   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( sym <> NULL ) then
+			is_decl = symbGetIsDeclared( sym )
+			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
 				'' has a default ctor?
 				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
 				'' dtor?
 				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
-			end select
-		end if
-
-		if( has_ellipsis and (sym <> NULL) ) then
-			sym->var_.array.has_ellipsis = TRUE
+			end if
+			if( has_ellipsis ) then
+				sym->var_.array.has_ellipsis = TRUE
+			end if
+		else
+			is_decl = FALSE
 		end if
 
 		'' check for an initializer
@@ -1457,7 +1396,7 @@ function hVarDeclEx _
 			'' '=' | '=>' ?
 			select case lexGetToken( )
 			case FB_TK_DBLEQ, FB_TK_EQ
-				initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+				initree = hVarInit( sym, is_decl )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
 					'' local?
@@ -1465,33 +1404,43 @@ function hVarDeclEx _
 												   FB_SYMBATTRIB_SHARED or _
 												   FB_SYMBATTRIB_COMMON)) = 0 ) then
 						doassign = TRUE
+
+						''
+						'' The variable will be unscoped, i.e. it needs a default initree
+						'' for the implicit declaration at procedure level, plus the assignment
+						'' with the initializer in the nested scope where it was defined.
+						''
+						''      scope
+						''          dim as integer i = 5
+						''      end scope
+						''
+						''  becomes:
+						''
+						''      dim as integer i
+						''      scope
+						''          i = 5
+						''      end scope
+						''
+						assign_initree = initree
+						initree = hVarInitDefault( sym, is_decl, has_defctor )
 					end if
 				end if
 
 			'' default initialization
 			case else
-
 				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 					exit function
 				end if
 
-				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
+				initree = hVarInitDefault( sym, is_decl, has_defctor )
 
 			end select
-
-			'' unscoped? then need a default initree, plus the assignment
-			if( doassign ) then
-				assign_initree = initree
-				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
-			end if
-
-	    else
-	    	initree = NULL
+		else
+			initree = NULL
 			assign_initree = NULL
 			doassign = FALSE
-
-	    end if
+		end if
 
 		'' add to AST
 		if( sym <> NULL ) then
@@ -1501,26 +1450,19 @@ function hVarDeclEx _
 
 			'' not declared already?
     		if( is_decl = FALSE ) then
-
     			'' don't init it if it's a temp FOR var, it
     			'' will have the start condition put into it...
     			if( is_fordecl ) then
    					symbSetDontInit( sym )
     			end if
 
-                '' Note: temporary (local) UDT FOR iterators will be constructed with
-                '' the FOR start value already, so tell astNewDECL() to omit the call
-                '' to the default constructor. (Other non-UDT temporary FOR variables
-                '' and also UDTs without default constructor will avoid initialization
-                '' due to the symbSetDontInit() above)
-				var_decl = astNewDECL( sym, initree, is_fordecl )
+				var_decl = astNewDECL( sym, initree )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
 					var_decl = astNewLINK( var_decl, astNewDECL( desc, symbGetTypeIniTree( desc ) ) )
 				end if
-
     		end if
 
 			'' handle arrays (must be done after adding the decl node)
@@ -1594,21 +1536,13 @@ function hVarDeclEx _
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 
             			'' flush the init tree (must be done after adding the decl node)
-						astAdd( hFlushInitializer( sym, _
-									   			   var_decl, _
-									   			   initree, _
-									   			   has_defctor, _
-									   			   has_dtor ) )
+						astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 					'' unscoped
 					else
 
 						'' flush the init tree (must be done after adding the decl node)
-						astAddUnscoped( hFlushInitializer( sym, _
-									   			   var_decl, _
-									   			   initree, _
-									   			   has_defctor, _
-									   			   has_dtor ) )
+						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
 						if( doassign ) then
@@ -2057,7 +1991,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-   		dim as integer has_defctor = FALSE, has_ctor = FALSE, has_dtor = FALSE
+		dim as integer has_ctor = FALSE, has_dtor = FALSE
 
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
@@ -2074,8 +2008,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			dtype = FB_DATATYPE_STRING
 
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a default ctor?
-			has_defctor = symbGetCompDefCtor( subtype ) <> NULL
 			'' any ctor?
 			has_ctor = symbGetHasCtor( subtype )
 			'' dtor?
@@ -2145,7 +2077,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 						expr = astNewCONSTi( 0 )
 		    	    	dtype = FB_DATATYPE_INTEGER
 		    	    	subtype = NULL
-						has_defctor = FALSE
 						has_dtor = FALSE
 					end if
 				end if
@@ -2163,8 +2094,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			symbSetIsDeclared( sym )
 
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, var_decl, initree, _
-			                           has_defctor, has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 		end if
 
