@@ -8,18 +8,19 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "lex.bi"
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' Bounds checking (l = index; r = call to checking func(lb, ub))
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astNewBOUNDCHK _
 	( _
 		byval l as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -53,24 +54,17 @@ function astNewBOUNDCHK _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_BOUNDCHK, FB_DATATYPE_INTEGER, NULL )
+	n = astNewNode( AST_NODECLASS_BOUNDCHK, l->dtype, l->subtype )
 	function = n
 
 	n->l = l
 
-	n->sym = symbAddTempVar( astGetDataType( l ), l->subtype, FALSE, FALSE )
+	n->sym = symbAddTempVar( l->dtype, l->subtype )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, _
-    									   0, _
-    									   FB_DATATYPE_INTEGER, _
-    									   NULL ), _
-    						 	lb, _
-    						 	ub, _
-    						 	linenum, _
-    						 	env.inf.name )
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym ), lb, ub, linenum, filename )
 
 end function
 
@@ -93,11 +87,7 @@ function astLoadBOUNDCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 FB_DATATYPE_INTEGER, _
-								 NULL ), _
-					  l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l )
 	astLoad( t )
 	astDelNode( t )
 
@@ -118,21 +108,30 @@ function astLoadBOUNDCHK _
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, FB_DATATYPE_INTEGER, NULL )
+	t = astNewVAR( n->sym )
 	function = astLoad( t )
 	astDelNode( t )
 
+end function
+
+function astBuildBOUNDCHK _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr _
+	) as ASTNODE ptr
+	function = astNewBOUNDCHK( expr, lb, ub, lexLineNum( ), env.inf.name )
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' null pointer checking (l = index; r = call to checking func)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astNewPTRCHK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -152,12 +151,10 @@ function astNewPTRCHK _
 
 	n->l = l
 
-	n->sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+	n->sym = symbAddTempVar( dtype, subtype )
 
-    '' check must be done using a function, see bounds checking
-    n->r = rtlNullPtrCheck( astNewVAR( n->sym, 0, dtype, subtype ), _
-    					 	linenum, _
-    					 	env.inf.name )
+	'' check must be done using a function, see bounds checking
+	n->r = rtlNullPtrCheck( astNewVAR( n->sym ), linenum, filename )
 
 end function
 
@@ -180,11 +177,7 @@ function astLoadPTRCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym, _
-								 0, _
-								 symbGetFullType( n->sym ), _
-								 symbGetSubType( n->sym ) ), _
-					  l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l )
 	astLoad( t )
 	astDelNode( t )
 
@@ -205,9 +198,12 @@ function astLoadPTRCHK _
     end if
 
 	'' re-load, see above
-	t = astNewVAR( n->sym, 0, symbGetFullType( n->sym ), symbGetSubType( n->sym ) )
+	t = astNewVAR( n->sym )
 	function = astLoad( t )
 	astDelNode( t )
 
 end function
 
+function astBuildPTRCHK( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	function = astNewPTRCHK( expr, lexLineNum( ), env.inf.name )
+end function

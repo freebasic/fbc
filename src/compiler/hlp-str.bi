@@ -83,8 +83,6 @@ declare function hEscapeW _
 		byval text as wstring ptr _
 	) as zstring ptr
 
-declare function hEscapeToHexW( byval text as wstring ptr ) as string
-
 declare function hUnescape _
 	( _
 		byval text as zstring ptr _
@@ -130,6 +128,13 @@ declare function hGetWstrNull _
 	( _
 	) as zstring ptr
 
+declare function hCharNeedsEscaping _
+	( _
+		byval ch as integer, _
+		byval quotechar as integer _
+	) as integer
+
+declare function hIsValidHexDigit( byval ch as integer ) as integer
 
 '':::::
 #define ZstrAllocate(chars) xallocate( chars + 1 )

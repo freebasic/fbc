@@ -1105,63 +1105,6 @@ function hEscapeW _
 
 end function
 
-function hEscapeToHexW( byval text as wstring ptr ) as string
-	dim as string result
-	dim as uinteger char = any
-	dim as integer length = any, wcharhexdigits = any, i = any
-	dim as wstring ptr src = any, src_end = any
-
-	wcharhexdigits = typeGetSize( FB_DATATYPE_WCHAR ) * 2
-	length = len( *text )
-	src = text
-	src_end = src + length
-
-	do while( src < src_end )
-		char = *src
-		src += 1
-
-		'' internal espace char?
-		if( char = FB_INTSCAPECHAR ) then
-			if( src >= src_end ) then exit do
-			char = *src
-			src += 1
-
-			'' octagonal? convert to integer..
-			'' note: it can be up to 6 digits due wchr()
-			'' when evaluated at compile-time
-			if( (char >= 1) and (char <= 6) ) then
-				i = char
-				char = 0
-
-				if( src + i > src_end ) then exit do
-
-				do while( i > 0 )
-					char = (char * 8) + (*src - CHAR_0)
-					src += 1
-					i -= 1
-				loop
-
-			else
-			    '' unicode 16-bit?
-			    if( char = asc( "u" ) ) then
-			    	if( src + 4 > src_end ) then exit do
-			    	char = hU16ToWchar( src )
-			    	src += 4
-
-                '' remap char as they will become a octagonal seq
-                else
-			    	char = hRemapChar( char )
-                end if
-			end if
-
-		end if
-
-		result += "\x" + hex( char, wcharhexdigits )
-	loop
-
-	return result
-end function
-
 '':::::
 function hUnescape _
 	( _
@@ -1312,4 +1255,21 @@ function hGetWstrNull( ) as zstring ptr
 
 end function
 
+function hCharNeedsEscaping _
+	( _
+		byval ch as integer, _
+		byval quotechar as integer _
+	) as integer
 
+	'' Any special char, backslashes and single/double quotes (depending on
+	'' context) must be escaped. Also any high (i.e. non-ASCII) codepage or
+	'' Unicode chars should be escaped, to be safe.
+	function = (ch < 32) or (ch >= 127) or _
+	           (ch = asc( $"\" )) or (ch = quotechar)
+end function
+
+function hIsValidHexDigit( byval ch as integer ) as integer
+	function = ((ch >= asc( "0" )) and (ch <= asc( "9" ))) or _
+	           ((ch >= asc( "a" )) and (ch <= asc( "f" ))) or _
+	           ((ch >= asc( "A" )) and (ch <= asc( "F" )))
+end function

@@ -21,13 +21,11 @@
  *  02111-1307  USA
  '/
 
-#inclib "caca"
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
-#include "caca.bi"
+#include "caca0.bi"
 
 /' Virtual buffer size '/
 #define XSIZ 256

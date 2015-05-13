@@ -1,55 +1,72 @@
-[ ] add a C backend
-	- MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
-	  rename symbols, however that doesn't work with DLL export tables:
-	  gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
-	  the leading underscore, causing ld errors
-	[x] address of labels (used by the error trapping) must be emitted with 2 "&"'s
-	[x] the forward typedefs can't have a temp name or the g++ mangling will be wrong
-	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
-	[x] SWAP
-	[x] UTF literal strings
-	[x] debugging support
-	[x] jump-tables (used in select as const)
-	[x] unitialized static and global vars must be zeroed (gas does that automatically because .comm is used)
-	[x] structs
-	    [x] can't change type of functions that return structs in registers, they must be handled by GCC
-	    [x] bitfields - note: ABI-dependent
-	    [x] non exported or extern vars should have an suffix ($) to not clash with gcc symbols
-	    	and to support structs with the same name
-	    [x] method protos must be emitted
-	    [x] handle forward references -- test the abstract (void *) ones
-	    [x] handle function pointers
-	    [x] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
-	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
-	[x] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
-	    - they are incompatible with C (va_next() doesn't exist), so disable the va_* in -gen gcc mode
-        [x] stdcall names shouldn't be mangled, but anything else should - at least
-            the g++ mangling uses no special characters
-	[x] how to handle VARINI###? pass it as a tree plus a callback?
-	[x] DATA arrays must be emitted in the inverse order because the forward ref links
-        [x] only accept inline asm in GCC format, pass as-is
-	[x] how to acccess fields?
-	  	foo.bar.baz would become:
-	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
-	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
-	  	even if structs are fully emitted
-	  	- (not so simple) solution: let the AST do it
-        [x] function calls must be passed complete to IR, with params
-	[x] can't use casting from fpoint to int type directly because C won't do rounding,
-	    use inline functions instead (inline ASM if x86)
-	[x] shared/module-level vars must be emitted before any proc
-	[x] scopes must be preserved or local vars won't work
-	[x] use GCC as a high-level assembler, no headers, nothing
-	[x] linking should still be done by us
-	[ ] if everything is solved, it would become much simpler to add a LLVM back-end as
-	    it's essentially a high-level ASM with virtual-regs
+o LLVM backend
+  - structs should be emitted as byte arrays, to let the FB side handle
+    packing/alignment, unless the fields must be emitted individually as with
+    the C backend due to global varinis with procptrs that can't be emitted in
+    form of raw bytes since they're not literal numbers/constants.
+     - LLVM has "type <{ fields... }>" for packed structs, but that's just
+       FIELD = 1, there is no direct way to do FIELD = 2 or 4.
+       clang uses a packed struct and then inserts padding fields (i8) manually.
+     - getelementptr can't be used anyways, since the AST lowers field accesses
+       to deref/bop/addrof, plus it doesn't work with bitfields anyways.
+       For now it should be ok to use bops and inttoptr/ptrtoint instructions,
+       to let the AST do address calculations, as with the C/ASM backends.
+     - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
+       (instead of a struct containing the biggest member only)
+  - Debugging metadata
+  - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
+    llc even has -x86-asm-syntax=intel (should find out how well it works)
+  - va_arg: Same issue as with C backend
 
-[ ] CONST qualifier
-    [x] ptr checking must be updated
-    [x] must check assignment
-    [x] must check overloading resolution and the proc dup check
-    [x] CONST member procedures ( declare CONST function|sub proc()... )
-    [ ] check consts with IIF
+o C backend
+  - MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
+    rename symbols, however that doesn't work with DLL export tables:
+    gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
+    the leading underscore, causing ld errors
+  - field accesses, pointer indexing, struct layout/field alignment, etc. is all
+    still calculated on the FB side
+     - i.e. the generated C code is ABI-dependant.
+     - sizeof()/offsetof() are evaluated purely on the FB side,
+       impossible to pass all constant expressions on to the C backend...
+       (constants, array bounds, fixstr lengths, multi-dim indexing, ...)
+  - va_* is too hard to translate to C:
+     - FB has    p = va_first( )   always returns pointer to head
+                 v = va_arg( p )   always returns arg value for given pointer
+                 p = va_next( p )  returns pointer to next arg
+     - C has     va_start( );      init
+                 v = va_arg( );    returns current arg value and moves to next
+                 va_end( );        end
+     - FB allows va_* to be used like a linked list, that's not possible in C
+
+o ABI
+  - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
+    instead of __cdecl as on Linux, even though GCC doesn't use MSVC's name
+    mangling [yet].
+    - FB can probably support __thiscall with C/LLVM backends pretty easily
+
+o static member vars
+  - allow STATIC IMPORT, like EXTERN IMPORT (extract common code from cVariableDecl())
+  - the varexpr used to access (if any) is discarded since it's a static access
+    for which no specific instance is needed; currently this will even discard
+    function calls with side effects, this should be fixed, the same happens
+    with other static accesses, i.e. constants/enums.
+	type UDT
+		static i as integer
+		dummy as integer
+	end type
+
+	dim UDT.i as integer
+
+	function f( ) as UDT
+		dim x as UDT
+		print "called"
+		function = x
+	end function
+
+	print f( ).i
+
+o -exx should catch...
+  - access to ERASEd or uninited (unREDIMed) dyn array
+  - out-of-bounds dimension argument given to lbound()/ubound()
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when
@@ -67,16 +84,18 @@
     - properties may need a __get/__set suffix
 
 [ ] STATIC
-    - add static data members, they must be initialized outside the TYPE|CLASS
     - allow all global operators to be declared as static methods so the private
       members could be accessed
 
 [ ] operator overloading:
     - add 'operator []' (or string-ish classes won't allow 'direct' char access)
-    - add support for functions returning references (reuse "BYREF") or the
-      '->' operator will be useless for UDT's with copy-ctors or dtors
-      as returning byval will make a deep copy
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
+
+o BYREF function results
+  - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
+  - "f( 1 ) = 2" will be parsed as "f( (1) = 2 )", could parse BYREF proc params
+    differently, e.g. with cEqInParensOnlyExpr(), or just always require ()'s
+    to call BYREF procs?
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
@@ -225,7 +244,6 @@
       declared as zstring ptr, what will need more changes in users' code, because
       the non-implicit pointer deref
 
-*** *** *** *** ***
 [ ] proc def:
     - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
     - to support params > 64k, "ret" can't be used
@@ -246,150 +264,53 @@
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
 
-[X] AndAlso and OrElse, short-circuit versions of And and Or
-    - pay attention to register spills if functions or complex expressions are
-      used in left or right sides
-
 [ ] inline functions
     - better than macros as they can be "turned off" when debugged
     - too hard to be added now due the register spills, IR must handle inter blocks and
       keep track of live vregs
 
-[ ] classes
-    - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
-    - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
-    [x] single inheritance (EXTENDS)
-	[ ] abstract classes and methods
-	[ ] interfaces (INTERFACE, IMPLEMENTS (or reuse EXTENDS?))
-    [ ] pure virtual methods
-    [ ] some support for RTTI
-		[ ] base IS some_derived 
-    [ ] down casting
-		[ ] static (base to derived)
-		[ ] dynamic (polymorphic) 
-    [ ] exceptions - with stack unwind support
+o rtlib
+  - The decimal separator used/recognized by the CRT float <-> string conversion
+    functions (strtod, wcstod, sprintf, swprintf) depends on the CRT's locale
+    setting (setlocale()), i.e. STR()/VAL() and other internal users of these
+    functions will break if anyone calls setlocale() for LC_NUMERIC or LC_ALL
+    and changes away from the '.' decimal separator (e.g. gtk_init() sets LC_ALL).
+    However FB should always use '.' for portability.
+    We'd need our own float <-> string routines (PRINT USING/FORMAT may have one
+    part of that already) to really fix this.
+    
+    
 
-	
----------------------------------------------------------------------------------
+o classes
+  - vtable lookup should handle THIS expression with side-effects
 
-G++ 4.x RTTI and VT formats in Win32:
+  - obvious calls to unimplemented ABSTRACTs should be disallowed,
+    i.e. if the THIS expression is a stack/global object that cannot have
+    overridden the ABSTRACT, in contrast to a object pointer or byref object
 
-- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
+  - INTERFACE ... END INTERFACE
+      - structs extending OBJECT, not allowing any fields, only methods
+      - all methods automatically are ABSTRACT
+		interface A
+			declare [abstract] sub bar( )
+		end interface
+      - IMPLEMENTS:
+		type Child [extends Parent] [implements A, B, C]
+        or allow just one interface?
+		type Child extends A
+      - multiple interfaces comes down to multiple inheritance (too hard?)
 
-- all structs are emited with: 
-	.globl [struct name]
-	.section rdata$[struct name],"dr" 
-	.linkonce same_size
+  - g++/clang++ emit vtables and implicit ctor/copyctor/dtor/let into one
+    section each allowing the linker to merge/discard duplicates:
+        .linkonce (COFF: http://sourceware.org/binutils/docs/as/Linkonce.html)
+        .section ...,comdat (ELF COMDAT groups: http://sourceware.org/binutils/docs-2.23/as/Section.html#Section)
+    fbc makes them PRIVATE currently; should it be changed to reduce .exe size?
 
-	struct RTTI {
-		void *stdlib_virtual_table;	-- __ZTVN10__cxxabiv117__class_type_infoE+8 if it's a base class; __ZTVN10__cxxabiv120__si_class_type_infoE+8 otherwise
-		char *mangled_class_name;
-		RTTI *base_class_RTTI;
-	};
-	
-	struct VT[mangled class name] {
-		void *null_pointer;
-		RTTI *rtti;
-		... virtual methods function pointers in the order they were found (including methods in the base classes first) ...
-	};
+  - what should CLASS keyword do? struct vs. class as in C++?
 
-- every class with virtual methods will have a hidden pointer to the VT, that is initialized by the constructor:
+  - Down casting
+     - static (base to derived)
+     - dynamic (polymorphic)
+	- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
 
-	struct or class SomeBaseClass  {
-		
-		VT[mangled class name] *vtp;
-		
-		SomeBaseClass()
-		{
-			vtp = __ZTV13SomeBaseClass+8;		-- hidden assignment, +8 to skip the two pointers at the beginning
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
-	};
-	
-- example:
-
-	struct VT13SomeBaseClass 
-	{
-		void *null_pointer;
-		RTTI *rtti;
-		void (PrintMe *)(int i);
-	};
-	
-	class SomeBaseClass
-	{
-		VT13SomeBaseClass *vtp;
-		
-		SomeBaseClass()
-		{
-			vtp = __ZTV13SomeBaseClass+8;
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
-	};
-
-	RTTI __ZTI13SomeBaseClass = 
-	{
-		__ZTVN10__cxxabiv117__class_type_infoE+8,
-		"13SomeBaseClass",
-		NULL
-	};
-	
-	VT13SomeBaseClass __ZTV13SomeBaseClass =
-	{
-		NULL,
-		__ZTI13SomeBaseClass,
-		13SomeBaseClass7PrintMei
-	};
-	
-	struct VT12SomeExtClass {
-		void *null_pointer;
-		RTTI *rtti;
-		void (PrintMe *)(int i);
-		void (OnlyInExt *)();
-	};
-	
-	class SomeExtClass : SomeBaseClass 
-	{
-		SomeExtClass()
-		{
-			SomeBaseClass();
-			vtp = (void *)__ZTV12SomeExtClass+8;
-		}
-		
-		virtual void PrintMe(int i)
-		{
-		};
-
-		virtual void OnlyInExt()
-		{
-		};
-	};
-
-	RTTI __ZTI12SomeExtClass = 
-	{
-		__ZTVN10__cxxabiv120__class_type_infoE+8,
-		"12SomeExtClass",
-		NULL
-	};
-	
-	VT12SomeExtClass __ZTV12SomeExtClass =
-	{
-		NULL,
-		__ZTI12SomeExtClass,
-		12SomeExtClass7PrintMei,
-		9OnlyInExtv
-	};
-
-    int main()
-	{
-		SomeBaseClass *sbc = new SomeExtClass();
-	
-		sbc->PrintMe( 1234 ); ==> sbc->vtp->PrintMe( 1234 )
-	}
-	
-	
+  - exceptions - with stack unwind support?

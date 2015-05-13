@@ -27,7 +27,7 @@ private function hStrLiteralConcat _
 	s = symbAllocStrConst( *symbGetVarLitText( ls ) + *symbGetVarLitText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
-	function = astNewVAR( s, 0, FB_DATATYPE_CHAR )
+	function = astNewVAR( s )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -60,7 +60,7 @@ private function hWstrLiteralConcat _
 						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
     end if
 
-	function = astNewVAR( s, 0, FB_DATATYPE_WCHAR )
+	function = astNewVAR( s )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -96,7 +96,7 @@ private function hStrLiteralCompare _
    		res = (*ltext.data >= *rtext.data)
    	end select
 
-	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
+	function = astNewCONSTi( res )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -181,7 +181,7 @@ private function hWStrLiteralCompare _
 
    	end if
 
-	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
+	function = astNewCONSTi( res )
 
 	astDelNode( r )
 	astDelNode( l )
@@ -232,30 +232,17 @@ private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
    	end select
 end sub
 
-'':::::
-private sub hBOPConstFoldInt _
+private function hBOPConstFoldInt _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	) as ASTNODE ptr
 
-	dim as integer issigned = any
-	dim as integer ldtype = any
+	dim as integer issigned = any, ldfull = any
+	dim as FBSYMBOL ptr lsubtype = any
 
-	ldtype = astGetDataType( l )
-
-	select case as const ldtype
-	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
-		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG, FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		issigned = TRUE
-
-	case else
-		issigned = FALSE
-	end select
-
-	hTruncateInt( ldtype, @l->con.val.int )
-	hTruncateInt( ldtype, @r->con.val.int )
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
@@ -373,12 +360,17 @@ private sub hBOPConstFoldInt _
 		end if
 	end select
 
-	'' result truncated? (e.g. overflow when multiplying two shorts)
-	if( hTruncateInt( ldtype, @l->con.val.int ) <> FALSE ) then
-		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-	end if
+	'' Pretend the CONST is an integer for a moment, since the result was
+	'' calculated and stored at INTEGER precision above, then do a CONV
+	'' back to the original type and let it show any overflow warnings in
+	'' case the real type cannot hold the calculated value.
+	ldfull = l->dtype
+	lsubtype = l->subtype
+	l->dtype = FB_DATATYPE_INTEGER
+	l->subtype = NULL
 
-end sub
+	function = astNewCONV( ldfull, lsubtype, l )
+end function
 
 '':::::
 private sub hBOPConstFoldFlt _
@@ -399,12 +391,9 @@ private sub hBOPConstFoldFlt _
 		l->con.val.float = l->con.val.float * r->con.val.float
 
 	case AST_OP_DIV
-		'' report error for 'constant / 0'
-		if( r->con.val.float = 0.0 ) then
-			errReport( FB_ERRMSG_DIVBYZERO )
-		else
-			l->con.val.float = l->con.val.float / r->con.val.float
-		end if
+		'' Note: no division by zero error here - we should return
+		'' INF instead, just like with (l / r) at runtime
+		l->con.val.float = l->con.val.float / r->con.val.float
 
     case AST_OP_POW
 		l->con.val.float = l->con.val.float ^ r->con.val.float
@@ -447,22 +436,16 @@ private sub hBOPConstFoldFlt _
 
 end sub
 
-'':::::
 private sub hBOPConstFold64 _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) static
+	)
 
-	dim as integer issigned
+	dim as integer issigned = any
 
-	select case astGetDataType( l )
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_LONG
-		issigned = TRUE
-	case else
-		issigned = FALSE
-	end select
+	issigned = typeIsSigned( l->dtype )
 
 	select case as const op
 	case AST_OP_ADD
@@ -656,17 +639,11 @@ private function hDoPointerArith _
     	end select
     end if
 
-    '' calc len( *p )
-    lgt = symbCalcLen( typeDeref( astGetDataType( p ) ), astGetSubType( p ) )
-
-
-	'' incomplete type?
-	if( lgt = 0 ) then
-		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> typeAddrOf( FB_DATATYPE_VOID ) ) then
-			exit function
-		end if
-		lgt = 1
+	'' calc len( *p )
+	lgt = symbCalcDerefLen( astGetDataType( p ), astGetSubType( p ) )
+	if( lgt <= 0 ) then
+		'' incomplete type
+		exit function
 	end if
 
     '' another pointer?
@@ -679,15 +656,15 @@ private function hDoPointerArith _
     			exit function
     		end if
 
-    		'' convert to uint or BOP will complain..
-    		p = astNewCONV( FB_DATATYPE_UINT, NULL, p )
-    		e = astNewCONV( FB_DATATYPE_UINT, NULL, e )
+    		'' convert to int or BOP will complain..
+    		p = astNewCONV( FB_DATATYPE_INTEGER, NULL, p )
+    		e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
 
  			'' subtract..
  			e = astNewBOP( AST_OP_SUB, p, e )
 
  			'' and divide by length
- 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt ) )
     	end if
 
     	exit function
@@ -837,18 +814,53 @@ end function
 
 #endmacro
 
-'':::::
-private function hCmpDynType _
+private function hCheckDerefWcharPtr _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-	
-	'' all checks already done at parser level
-	
-	return rtlOOPIsTypeOf( l, r )
-	
-End Function
+		byval pldtype as integer ptr, _
+		byval r as ASTNODE ptr, _
+		byval rdtype as integer _
+	) as integer
+
+	dim as ASTNODE ptr ll = any
+
+	'' Disallow if it's not a DEREF'ed wcharptr
+	if( l->class <> AST_NODECLASS_DEREF ) then
+		exit function
+	end if
+
+	'' Disallow if it's a fake dynamic string
+	ll = l->l
+	if( ll ) then
+		if( ll->class = AST_NODECLASS_VAR ) then
+			if( symbGetIsWstring( ll->sym ) ) then
+				exit function
+			end if
+		end if
+	end if
+
+	'' remap the type or the optimizer can
+	'' make a wrong assumption
+	*pldtype = typeJoin( *pldtype, env.target.wchar )
+
+	function = TRUE
+end function
+
+'' Convert an expression to the given type, preserving CONST bits, and also
+'' updating the corresponding helper variables
+private sub hConvOperand _
+	( _
+		byval newdtype as integer, _
+		byref dtype as integer, _
+		byref dclass as integer, _
+		byref n as ASTNODE ptr _
+	)
+
+	dtype = typeJoin( dtype, newdtype )
+	dclass = typeGetClass( newdtype )
+	n = astNewCONV( dtype, NULL, n )
+
+end sub
 
 '':::::
 function astNewBOP _
@@ -863,6 +875,7 @@ function astNewBOP _
     dim as ASTNODE ptr n = any
     dim as integer ldtype = any, rdtype = any, dtype = any
     dim as integer ldclass = any, rdclass = any
+	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
 
@@ -878,10 +891,9 @@ function astNewBOP _
 	case AST_OP_CONCAT
 		hToStr( l, r )
 		op = AST_OP_ADD
-
 	case AST_OP_IS
-		return hCmpDynType( l, r )
-	End Select
+		return rtlOOPIsTypeOf( l, r )
+	end select
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
@@ -930,17 +942,23 @@ function astNewBOP _
 		end if
     end if
 
-    '' enums?
-    if( (typeGet( ldtype ) = FB_DATATYPE_ENUM) or _
-    	(typeGet( rdtype ) = FB_DATATYPE_ENUM) ) then
-    	'' not the same?
-    	if( ldtype <> rdtype ) then
-    		if( (ldclass <> FB_DATACLASS_INTEGER) or _
-    			(rdclass <> FB_DATACLASS_INTEGER) ) then
-    			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-    		end if
-    	end if
-    end if
+	''
+	'' Enum operands? Convert them to integer (but preserve CONSTs).
+	''
+	'' When doing math BOPs on enum constants, we don't even know whether
+	'' the resulting integer value will be a part of that enum.
+	'' For typesafe enums, an error would have to be shown here.
+	''
+	'' Similar for relational BOPs, it's better to compare enums as
+	'' integers, especially if the two operands are from different enums.
+	'' (also, the result of relational BOPs is an integer anyways...)
+	''
+	if( typeGet( ldtype ) = FB_DATATYPE_ENUM ) then
+		hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+	end if
+	if( typeGet( rdtype ) = FB_DATATYPE_ENUM ) then
+		hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+	end if
 
     '' both zstrings? treat as string..
     if( (typeGet( ldtype ) = FB_DATATYPE_CHAR) and _
@@ -1020,7 +1038,7 @@ function astNewBOP _
 
 				'' convert to: wstrcmp(l,r) op 0
 				l = rtlWstrCompare( l, r )
-				r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				r = astNewCONSTi( 0 )
 
 				ldtype = typeJoin( ldtype, astGetFullType( l ) )
 				rdtype = typeJoin( rdtype, astGetFullType( r ) )
@@ -1032,32 +1050,28 @@ function astNewBOP _
 				exit function
 			end select
 
-		'' one is not a string..
+		'' One is not a string, but e.g. an integer. Disallow if the
+		'' other is not a DEREF'ed wchar ptr - this allows comparisons
+		'' such as "wstringptr[index] = someinteger", i.e. a simplified
+		'' form of string indexing when dealing with a DEREF'ed ptr.
 		else
 			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
-				'' don't allow, unless it's a deref pointer
-				if( l->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( l, @ldtype, r, rdtype ) = FALSE ) then
 					exit function
 				end if
-				'' remap the type or the optimizer can
-				'' make a wrong assumption
-				ldtype = typeJoin( ldtype, env.target.wchar )
-
 			else
-				'' same as above..
-				if( r->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( r, @rdtype, l, ldtype ) = FALSE ) then
 					exit function
 				end if
-				rdtype = typeJoin( rdtype, env.target.wchar )
 			end if
 		end if
 
-    '' strings?
-    elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
-    		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
+	'' strings?
+	elseif( (ldclass = FB_DATACLASS_STRING) or _
+	        (rdclass = FB_DATACLASS_STRING) ) then
 
 		'' not both strings?
-		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
+		if( ldclass <> rdclass ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
 				if( typeGet( rdtype ) <> FB_DATATYPE_CHAR ) then
@@ -1109,7 +1123,7 @@ function astNewBOP _
 
 			'' convert to: strcmp(l,r) op 0
 			l = rtlStrCompare( l, ldtype, r, rdtype )
-			r = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			r = astNewCONSTi( 0 )
 
 			ldtype = typeJoin( ldtype, astGetFullType( l ) )
 			ldclass = FB_DATACLASS_INTEGER
@@ -1148,26 +1162,71 @@ function astNewBOP _
 
     ''::::::
 
-	'' convert byte to int
-	if( typeGetSize( ldtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( ldtype ) ) then
-				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-			else
-				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
-			end if
-			l = astNewCONV( ldtype, NULL, l )
-		end if
-	end if
+	''
+	'' Promote smaller integer types to [U]INTEGER before the operation
+	''
+	'' - but not if it's -lang qb, because 16bit arithmetic should probably
+	''   not become 32bit there. It could matter for code like:
+	''        #lang "qb"
+	''        dim a as integer  '' 16-bit "integer" (SHORT internally)
+	''        dim b as integer
+	''        dim x as long
+	''        x = a + b
+	''   where the result of the 16bit BOP is assigned to a 32bit value.
+	''
+	'' - do nothing if this BOP is a string concatenation/comparison
+	'' - also, do nothing for float/UDT operands
+	''
+	'' - Pointers and bitfields should be treated as UINTEGER (their
+	''   "remap" types), i.e. they will effectively never be promoted.
+	''
+	''   Pointers can only appear in BOPs as part of pointer indexing,
+	''   which is a special case. The result type should always be the
+	''   pointer type, so it mustn't be converted here.
+	''
+	''   Bitfields must be treated as their remap type, since the BOP result
+	''   can't have bitfield type itself... (similar to enums)
+	''
+	'' - Enums would also be handled via their remap type here, but for now
+	''   any enum operand is already converted to integer above anyways,
+	''   so enums never arrive here.
+	''
 
-	if( typeGetSize( rdtype ) = 1 ) then
-		if( is_str = FALSE ) then
-			if( typeIsSigned( rdtype ) ) then
-				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
+	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
+		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
+		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
+
+		'' not for float
+		if( ldclass = FB_DATACLASS_INTEGER ) then
+			lrank = typeGetIntRank( typeGetRemapType( ldtype ) )
+
+			'' l < INTEGER?
+			if( lrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
 			else
-				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
+				'' INTEGER < l < UINTEGER?
+				if( (intrank < lrank) and (lrank < uintrank) ) then
+					'' Convert to UINTEGER for consistency with
+					'' the above conversion to INTEGER (this can
+					'' happen with ULONG on 32bit, and ULONGINT
+					'' on 64bit, due to the ranking order)
+					hConvOperand( FB_DATATYPE_UINT, ldtype, ldclass, l )
+				end if
 			end if
-			r = astNewCONV( rdtype, NULL, r )
+		end if
+
+		'' not for float
+		if( rdclass = FB_DATACLASS_INTEGER ) then
+			rrank = typeGetIntRank( typeGetRemapType( rdtype ) )
+
+			'' same for r
+			if( rrank < intrank ) then
+				hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+			else
+				if( (intrank < rrank) and (rrank < uintrank) ) then
+					hConvOperand( FB_DATATYPE_UINT, rdtype, rdclass, r )
+				end if
+			end if
 		end if
 	end if
 
@@ -1232,52 +1291,35 @@ function astNewBOP _
 
     ''::::::
 
-    '' convert types to the most precise if needed
 	if( ldtype <> rdtype ) then
-
-		dtype = typeMax( ldtype, rdtype )
-
-		'' don't convert?
-		if( dtype = FB_DATATYPE_INVALID ) then
-
-			'' as types are different, if class is fp,
-			'' the result type will be always a double
-			if( ldclass = FB_DATACLASS_FPOINT ) then
-
-				if( irGetOption( IR_OPT_FPUCONV ) ) then
-					dtype   = ldtype
-					subtype = l->subtype
-				else
-					dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
-					subtype = NULL
-				end if
+		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
+		'' (assuming hCheckPointers() checks were already done)
+		if( (typeIsPtr( ldtype ) or typeIsPtr( rdtype )) and _
+		    ((op = AST_OP_ADD) or (op = AST_OP_SUB)) ) then
+			'' The result is supposed to be the pointer type
+			if( typeIsPtr( ldtype ) ) then
+				dtype   = ldtype
+				subtype = l->subtype
 			else
-
-				'' an ENUM or POINTER always has the precedence
-				if( (rdtype = FB_DATATYPE_ENUM) or typeIsPtr( rdtype ) ) then
-					dtype = rdtype
-					subtype = r->subtype
-				else
-					dtype = ldtype
-					subtype = l->subtype
-				end if
-
-			end if
-
-		else
-			'' convert the l operand?
-			if( typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype ) ) then
+				dtype   = rdtype
 				subtype = r->subtype
+			end if
+		else
+			'' Convert lhs/rhs to most precise type
+			'' (e.g. for +/-/* math BOPs, but also for relational BOPs,
+			'' even if they involve pointers)
+			typeMax( ldtype, l->subtype, rdtype, r->subtype, dtype, subtype )
+
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype )) or _
+			    (subtype <> l->subtype) ) then
 				l = astNewCONV( dtype, subtype, l )
 				if( l = NULL ) then exit function
-
 				ldtype = dtype
-				ldclass = rdclass
+				ldclass = typeGetClass( dtype )
+			end if
 
-			'' convert the r operand..
-			else
-				subtype = l->subtype
-
+			if( (typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( rdtype )) or _
+			    (subtype <> r->subtype) ) then
 				'' if it's the src-operand of a shift operation, do nothing
 				select case op
 				case AST_OP_SHL, AST_OP_SHR
@@ -1288,12 +1330,10 @@ function astNewBOP _
 					if( r = NULL ) then exit function
 
 					rdtype = dtype
-					rdclass = ldclass
+					rdclass = typeGetClass( dtype )
 				end select
-
 			end if
 		end if
-
 	'' no conversion, same types
 	else
 		dtype   = ldtype
@@ -1302,9 +1342,10 @@ function astNewBOP _
 
 	'' post check
 	select case as const op
-	'' relative ops, the result is always an integer
-	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-		
+	'' relational operations always return an integer
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
+	     AST_OP_ANDALSO, AST_OP_ORELSE
+
 		'' except, if it's boolean
 		select case typeGet( dtype )
 		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
@@ -1312,25 +1353,22 @@ function astNewBOP _
 			dtype = FB_DATATYPE_INTEGER
 		end select
 		subtype = NULL
-		
-	'' ANDALSO and ORELSE always return an integer
-	case AST_OP_ANDALSO, AST_OP_ORELSE
-		dtype = FB_DATATYPE_INTEGER
-		subtype = NULL
+
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
-
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
-			select case astGetValueAsULongint( r )
-				case is >= typeGetSize( ldtype ) * 8
-					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
+			select case astGetValueAsLongInt( r )
+			case 0 to (typeGetSize( ldtype ) * 8)-1
+
+			case else
+				errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
 			end select
 		end if
 
-		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
-			if( typeGet( rdtype ) <> FB_DATATYPE_UINT ) then
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_INTEGER ) then
+			if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_UINT ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 				r = astNewCONV( rdtype, NULL, r )
 				rdclass = FB_DATACLASS_INTEGER
@@ -1352,14 +1390,14 @@ function astNewBOP _
 
 		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 			if( FB_LONGSIZE = len( integer ) ) then
-				hBOPConstFoldInt( op, l, r )
+				l = hBOPConstFoldInt( op, l, r )
 			else
 				hBOPConstFold64( op, l, r )
 			end if
 
 		case else
 			'' byte's, short's, int's and enum's
-			hBOPConstFoldInt( op, l, r )
+			l = hBOPConstFoldInt( op, l, r )
 		end select
 
 		astGetFullType( l ) = dtype
@@ -1412,33 +1450,11 @@ function astNewBOP _
 			end if
 
 			'' ? - c = ? + -c
-			select case as const typeGet( rdtype )
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				r->con.val.long = -r->con.val.long
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				r->con.val.float = -r->con.val.float
-
-			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-				if( FB_LONGSIZE = len( integer ) ) then
-					r->con.val.int = -r->con.val.int
-				else
-					r->con.val.long = -r->con.val.long
-				end if
-
-			case else
-				r->con.val.int = -r->con.val.int
-
-			end select
+			r = astNewUOP( AST_OP_NEG, r )
 			op = AST_OP_ADD
 
-		'' report error for 'x / 0'
-		case AST_OP_DIV
-			if( r->con.val.float = 0 ) then
-				errReport( FB_ERRMSG_DIVBYZERO )
-			end if
-
 		'' report error for 'x \ 0', 'x mod 0'
+		'' Note: no error for 'x / 0', that should just return INF
 		case AST_OP_INTDIV, AST_OP_MOD
 			if( r->con.val.int = 0 ) then
 				errReport( FB_ERRMSG_DIVBYZERO )
@@ -1507,20 +1523,20 @@ function astNewBOP _
 			return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
 		end select
 
-	end select
-
 	' Trap ANDALSO, ORELSE, handle floats, and convert to IIF
-	if (op = AST_OP_ANDALSO) or (op = AST_OP_ORELSE) then
+	case AST_OP_ANDALSO, AST_OP_ORELSE
 		dim cmp_op as integer
 		dim cmp_constl as ASTNODE ptr
 		dim cmp_constr as ASTNODE ptr
+
+		'' For ANDALSO/ORELSE, "ex" is the dtorlist cookie
 
 		if ldclass = FB_DATACLASS_FPOINT then
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 			cmp_constr = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 		else
-			cmp_constl = astNewConstI(0, FB_DATATYPE_INTEGER)
-			cmp_constr = astNewConstI(0, FB_DATATYPE_INTEGER)
+			cmp_constl = astNewCONSTi( 0 )
+			cmp_constr = astNewCONSTi( 0 )
 		end if
 
 		if op = AST_OP_ANDALSO then
@@ -1533,11 +1549,11 @@ function astNewBOP _
 		r = astNewBOP( AST_OP_NE, r, cmp_constr )
 
 		if op = AST_OP_ANDALSO then
-			return astNewIIF( l, r, astNewConstI(0, FB_DATATYPE_INTEGER) )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0 ), 0 )
 		else
-			return astNewIIF( l, r, astNewConstI(-1, FB_DATATYPE_INTEGER) )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1 ), 0 )
 		end if
-	end if
+	end select
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )
@@ -1548,8 +1564,8 @@ function astNewBOP _
 	n->op.ex = ex
 	n->op.op = op
 
-	'' always alloc the result VR if it's a HL IR
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' always alloc the result VR for the C backend
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		options or= AST_OPOPT_ALLOCRES
 	end if
 
@@ -1603,39 +1619,23 @@ function astNewSelfBOP _
 
 	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
-		dim as FBSYMBOL ptr tmp = any, subtype = any
-		dim as integer dtype = any
+		dim as FBSYMBOL ptr tmp = any
 		dim as ASTNODE ptr ll = any, lr = any
 
-		dtype = astGetFullType( l )
-		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( astGetFullType( l ) ), astGetSubType( l ) )
 
 		'' tmp = @lvalue
-		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-					   	   astNewADDROF( l ) )
-
+		ll = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( l ) )
 		if( ll = NULL ) then
 			exit function
 		end if
 
 		'' *tmp = *tmp op expr
-		lr = astNewASSIGN( astNewDEREF( astNewVAR( tmp, _
-				   		   			   			   0, _
-				   		   			   			   typeAddrOf( dtype ), _
-				   		   			   			   subtype ),_
-				   		   			    dtype, _
-				   		   			    subtype ), _
-						   astNewBOP( op, _
-				   		   			  astNewDEREF( astNewVAR( tmp, _
-				   		   			   			  			  0, _
-				   		   			   			  			  typeAddrOf( dtype ), _
-				   		   			   			  			  subtype ), _
-				   		   			   			   dtype, _
-				   		   			   			   subtype ), _
-					   	   			  r, _
-					   	   			  ex, _
-					   	   			  options or AST_OPOPT_ALLOCRES ) )
+		lr = astNewASSIGN( _
+			astNewDEREF( astNewVAR( tmp ) ), _
+			astNewBOP( op, _
+				astNewDEREF( astNewVAR( tmp ) ), _
+				r, ex, options or AST_OPOPT_ALLOCRES ) )
 
 		if( lr = NULL ) then
 			exit function
@@ -1673,6 +1673,13 @@ function astLoadBOP _
 
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
+	end if
+
+	if( l->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( l, n->dtype, TRUE )
+	end if
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, n->dtype, TRUE )
 	end if
 
 	'' need some other algo here to select which operand is better to evaluate

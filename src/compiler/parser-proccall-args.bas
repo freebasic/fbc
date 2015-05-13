@@ -32,6 +32,7 @@ private function hProcArg _
 		byval argnum as integer, _
 		byref expr as ASTNODE ptr, _
 		byref amode as integer, _
+		byref have_eq_outside_parens as integer, _
 		byval options as FB_PARSEROPT _
 	) as integer
 
@@ -54,9 +55,16 @@ private function hProcArg _
 	old_dtype = parser.ctx_dtype
 	parser.ctxsym    = symbGetSubType( param )
 	parser.ctx_dtype = symbGetType( param )
+	parser.have_eq_outside_parens = FALSE
 
 	'' Expression
 	expr = cExpression( )
+
+	have_eq_outside_parens or= parser.have_eq_outside_parens
+
+	'' disable optional opening '{' after first parameter
+	fbSetPrntOptional( FALSE )
+
 	if( expr = NULL ) then
 		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			expr = NULL
@@ -129,6 +137,7 @@ private sub hOvlProcArg _
 	( _
 		byval argnum as integer, _
 		byval arg as FB_CALL_ARG ptr, _
+		byref have_eq_outside_parens as integer, _
 		byval options as FB_PARSEROPT _
 	)
 
@@ -147,6 +156,7 @@ private sub hOvlProcArg _
 	old_dtype = parser.ctx_dtype
 	parser.ctxsym    = NULL
 	parser.ctx_dtype = FB_DATATYPE_INVALID
+	parser.have_eq_outside_parens = FALSE
 
 	'' Expression
 	arg->expr = cExpression( )
@@ -168,6 +178,7 @@ private sub hOvlProcArg _
 
 	parser.ctxsym    = oldsym
 	parser.ctx_dtype = old_dtype
+	have_eq_outside_parens or= parser.have_eq_outside_parens
 
 	'' not optional?
 	if( arg->expr <> NULL ) then
@@ -185,6 +196,54 @@ private sub hOvlProcArg _
 	end if
 end sub
 
+private sub hMaybeWarnAboutEqOutsideParens _
+	( _
+		byval args as integer, _
+		byval have_eq_outside_parens as integer, _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	dim as integer warn = any
+
+	'' If there was just one argument, with '=' outside parentheses, in a
+	'' call to a BYREF function like <f (1) = 2>, show a warning -- it could
+	'' easily be misinterpreted as assignment to the BYREF function result.
+	''
+	'' Also, the warning about this syntax problem should be shown in calls
+	'' to overloaded functions, if any of the overloads is a BYREF function,
+	'' because the exact overload used depends more on semantics than on
+	'' syntax.
+	''    f( a ) = b    i.e.    f( (a) = b )
+	'' might be a call to BYVAL or BYREF function depending on 'a'
+	'' could resolve to a different overload than
+	''    (f( a )) = b
+
+	warn = symbProcReturnsByref( proc )
+
+	if( warn = FALSE ) then
+		'' Also check other overloads, if any (for this to work,
+		'' the passed proc must be the overload head proc)
+		if( symbGetProcIsOverloaded( proc ) ) then
+			do
+				proc = symbGetProcOvlNext( proc )
+				if( proc = NULL ) then
+					exit do
+				end if
+
+				warn = symbProcReturnsByref( proc )
+			loop until( warn )
+		end if
+	end if
+
+	warn and= (args = 1)
+	warn and= have_eq_outside_parens
+
+	if( warn ) then
+		errReportWarn( FB_WARNINGMSG_BYREFEQAFTERPARENS )
+	end if
+
+end sub
+
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
@@ -196,13 +255,14 @@ private function hOvlProcArgList _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-    dim as integer i = any, params = any, args = any
+	dim as integer i = any, params = any, args = any, have_eq_outside_parens = any
     dim as ASTNODE ptr procexpr = any
     dim as FBSYMBOL ptr param = any, ovlproc = any
     dim as FB_CALL_ARG ptr arg = any, nxt = any
     dim as FB_ERRMSG err_num = any
 
 	function = NULL
+	have_eq_outside_parens = FALSE
 
 	params = symGetProcOvlMaxParams( proc )
 
@@ -232,7 +292,7 @@ private function hOvlProcArgList _
 			'' alloc a new arg
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
-			hOvlProcArg( args - init_args, arg, options )
+			hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
 
 			'' ','?
 			if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -250,6 +310,9 @@ private function hOvlProcArgList _
 			args += 1
 		loop
 	end if
+
+	'' (checking the first overload, the overload head proc)
+	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' try finding the closest overloaded proc (don't pass the instance ptr, if any)
 	dim as FB_SYMBLOOKUPOPT lkup_options = FB_SYMBLOOKUPOPT_NONE
@@ -313,6 +376,10 @@ private function hOvlProcArgList _
 
 		'' re-add the instance ptr
 		args += 1
+
+		'' Build vtable lookup (function pointer access to be used
+		'' by the CALL), if needed
+		procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -321,17 +388,18 @@ private function hOvlProcArgList _
 			astDelTree( arg->expr )
 			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
+		procexpr = NULL
 	end if
 
-	procexpr = astNewCALL( proc, NULL )
+	procexpr = astNewCALL( proc, procexpr )
 
     '' add to tree
-	param = symbGetProcLastParam( proc )
+	param = symbGetProcHeadParam( proc )
 	arg = arg_list->head
 	for i = 0 to args-1
         nxt = arg->next
 
-		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
 			'' error recovery: fake an expr (don't try to fake an arg,
 			'' different modes and param types like "as any" would break AST)
@@ -341,22 +409,21 @@ private function hOvlProcArgList _
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 		arg = nxt
 	next
 
 	'' add the end-of-list optional args, if any
 	params = symbGetProcParams( proc )
     do while( args < params )
-		astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID )
+		astNewARG( procexpr, NULL )
 
 		'' next
 		args += 1
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 	loop
 
 	function = procexpr
-
 end function
 
 '':::::
@@ -371,7 +438,7 @@ function cProcArgList _
 		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-    dim as integer args = any, params = any, mode = any
+	dim as integer args = any, params = any, mode = any, have_eq_outside_parens = any
     dim as FBSYMBOL ptr param = any
     dim as ASTNODE ptr procexpr = any, expr = any
     dim as FB_CALL_ARG ptr arg = any
@@ -385,6 +452,7 @@ function cProcArgList _
 	end if
 
 	function = NULL
+	have_eq_outside_parens = FALSE
 
 	'' check visibility
 	if( symbCheckAccess( proc ) = FALSE ) then
@@ -400,7 +468,6 @@ function cProcArgList _
 	if( symbIsMethod( proc ) ) then
 		'' calling a method without the instance ptr?
 		if( (options and FB_PARSEROPT_HASINSTPTR) = 0 ) then
-
 			'' is this really a static access or just a method call from
 			'' another method in the same class?
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
@@ -416,6 +483,15 @@ function cProcArgList _
 								symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
+
+		'' Assuming there is no existing function pointer access,
+		'' since we cannot CALL on two function pointer expressions...
+		'' (i.e. no virtual method pointers for now)
+		assert( ptrexpr = NULL )
+
+		'' Build vtable lookup (function pointer access to be used
+		'' by the CALL), if needed
+		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -426,28 +502,25 @@ function cProcArgList _
 		end if
 	end if
 
-    procexpr = astNewCALL( proc, ptrexpr )
+	procexpr = astNewCALL( proc, ptrexpr )
 
 	params = symbGetProcParams( proc )
 
-	param = symbGetProcLastParam( proc )
+	param = symbGetProcHeadParam( proc )
 
 	'' any pre-defined args?
 	arg = arg_list->head
 	do while( arg <> NULL )
 		dim as FB_CALL_ARG ptr nxt = arg->next
 
-		if( astNewARG( procexpr, _
-					   arg->expr, _
-					   FB_DATATYPE_INVALID, _
-					   arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			exit function
 		end if
 
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 		arg = nxt
 		params -= 1
 	loop
@@ -493,12 +566,12 @@ function cProcArgList _
 				end if
 			end if
 
-			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
+			if( hProcArg( proc, param, args, expr, mode, have_eq_outside_parens, options ) = FALSE ) then
 				exit do
 			end if
 
 			'' add to tree
-			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
+			if( astNewARG( procexpr, expr, , mode ) = NULL ) then
 				'' error recovery: skip until next stmt or ')'
 				if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 					hSkipUntil( CHAR_RPRNT )
@@ -515,12 +588,14 @@ function cProcArgList _
 			'' next
 			args += 1
 			if( args < params ) then
-				param = symbGetProcPrevParam( proc, param )
+				param = param->next
 			end if
 
 		'' ','?
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
+
+	hMaybeWarnAboutEqOutsideParens( args, have_eq_outside_parens, proc )
 
 	'' if not all args were given, check for the optional ones
 	do while( args < params )
@@ -538,15 +613,14 @@ function cProcArgList _
 		end if
 
 		'' add to tree
-		if( astNewARG( procexpr, NULL, FB_DATATYPE_INVALID, INVALID ) = NULL ) then
+		if( astNewARG( procexpr, NULL ) = NULL ) then
 			exit function
 		end if
 
 		'' next
 		args += 1
-		param = symbGetProcPrevParam( proc, param )
+		param = param->next
 	loop
 
 	function = procexpr
-
 end function

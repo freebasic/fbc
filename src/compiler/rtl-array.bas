@@ -16,58 +16,58 @@
 							   	   byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIM, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		6, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayRedimPresvEx CDECL ( array() as ANY, byval elementlen as integer, _
 					            		byval doclear as integer, byval isvarlen as integer, _
 								        byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		6, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayRedimObj CDECL ( array() as ANY, byval elementlen as integer, _
 							   	    byval ctor as sub cdecl( byval this_ as any ptr), _
@@ -75,29 +75,29 @@
 							   	    byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIM_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		6, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayRedimPresvObj CDECL ( array() as ANY, byval elementlen as integer, _
 					            		 byval ctor as cdecl sub(), _
@@ -105,213 +105,232 @@
 								         byval dimensions as integer, ... ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		6, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
+				) _
+			} _
 		), _
-		/' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer '/ _
+		/' sub fb_ArrayDestructObj( array() as any, byval dtor as sub cdecl() ) '/ _
 		( _
-			@FB_RTL_ARRAYERASE, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			@FB_RTL_ARRAYDESTRUCTOBJ, NULL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
 		), _
-		/' fb_ArrayEraseObj ( array() as ANY, byval dtor as sub cdecl() ) as integer '/ _
+		/' sub fb_ArrayDestructStr( array() as any ) '/ _
 		( _
-			@FB_RTL_ARRAYERASE_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			@FB_RTL_ARRAYDESTRUCTSTR, NULL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				) _
+			} _
 		), _
-		/' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer '/ _
+		/' fb_ArrayClear( array() as any, byval isvarlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
 		), _
-		/' fb_ArrayClearObj ( array() as ANY, byval ctor as sub cdecl(), byval dtor as sub cdecl(), _
-							  byval dofill as integer ) as integer '/ _
+		/' fb_ArrayClearObj( array() as any, byval ctor as sub cdecl(), byval dtor as sub cdecl(), byval dofill as integer ) as integer '/ _
 		( _
-			@FB_RTL_ARRAYCLEAR_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		4, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			@FB_RTL_ARRAYCLEAROBJ, NULL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_ArrayErase( array() as any, byval isvarlen as integer ) as integer '/ _
+		( _
+			@FB_RTL_ARRAYERASE, NULL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl() ) as integer '/ _
+		( _
+			@FB_RTL_ARRAYERASEOBJ, NULL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_ArrayStrErase( array() as any ) '/ _
+		( _
+			@FB_RTL_ARRAYERASESTR, NULL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYLBOUND, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYUBOUND, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
-		/' fb_ArrayStrErase ( array() as any ) as void '/ _
-		( _
-			@FB_RTL_ARRAYSTRERASE, NULL, _
-	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-	 			) _
-	 		} _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, _
 								 byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		4, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
 		), _
 		/' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, _
 							  byval ubound as integer, _
 							  byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		5, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
-	 }
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
+	}
 
-
-'':::::
 sub rtlArrayModInit( )
-
 	rtlAddIntrinsicProcs( @funcdata(0) )
-
 end sub
 
-'':::::
 sub rtlArrayModEnd( )
-
 	'' procs will be deleted when symbEnd is called
-
 end sub
 
 private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	if( proc = NULL ) then
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
-	function = astBuildProcAddrof(proc)
+	function = astBuildProcAddrof( proc )
 end function
 
 private sub hCheckDefCtor _
@@ -372,7 +391,162 @@ private sub hCheckDtor _
 
 end sub
 
-'':::::
+'' fb_ArrayClear* - destruct elements if needed and then re-initialize
+function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr proc = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
+
+	function = NULL
+
+	dtype = astGetDataType( arrayexpr )
+
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		subtype = astGetSubtype( arrayexpr )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' No default ctor, but others? Then the rtlib cannot just clear
+		'' that array of objects.
+		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+		end if
+	else
+		ctor = NULL
+		dtor = NULL
+	end if
+
+	if( (ctor <> NULL) or (dtor <> NULL) ) then
+		hCheckDefCtor( ctor, TRUE, TRUE )
+		hCheckDtor( dtor, TRUE, TRUE )
+
+		'' fb_ArrayClearObj()
+		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAROBJ ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval ctor as sub cdecl( )
+		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+			exit function
+		end if
+
+		'' byval dtor as sub cdecl( )
+		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
+			exit function
+		end if
+
+		'' byval dofill as integer
+		if( astNewARG( proc, astNewCONSTi( -1 ) ) = NULL ) then
+			exit function
+		end if
+	elseif( dtype = FB_DATATYPE_STRING ) then
+		'' fb_ArrayDestructStr() works as fb_ArrayClearStr() just fine
+		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+	else
+		'' fb_ArrayClear()
+		proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval isvarlen as integer
+		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
+			exit function
+		end if
+	end if
+
+	function = proc
+end function
+
+'' fb_ArrayErase* or fb_ArrayDestruct*
+'' - destruct elements, and free array if it's dynamic
+function rtlArrayErase _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval is_dynamic as integer, _
+		byval check_access as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr dtor = any
+
+	function = NULL
+
+	dtype = astGetDataType( arrayexpr )
+
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+	else
+		dtor = NULL
+	end if
+
+	if( dtor ) then
+		hCheckDtor( dtor, check_access, TRUE )
+
+		if( is_dynamic ) then
+			'' fb_ArrayEraseObj()
+			proc = astNewCALL( PROCLOOKUP( ARRAYERASEOBJ ) )
+		else
+			'' fb_ArrayDestructObj()
+			proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTOBJ ) )
+		end if
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		'' byval dtor as sub cdecl( )
+		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
+			exit function
+		end if
+	elseif( dtype = FB_DATATYPE_STRING ) then
+		if( is_dynamic ) then
+			'' fb_ArrayStrErase()
+			proc = astNewCALL( PROCLOOKUP( ARRAYERASESTR ) )
+		else
+			'' fb_ArrayDestructStr()
+			proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
+		end if
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+	else
+		if( is_dynamic = FALSE ) then
+			'' No dtor, not dynamic = nothing to do
+			exit function
+		end if
+
+		'' fb_ArrayErase()
+		proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
+
+		'' array() as any
+		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
+			exit function
+		end if
+
+		 '' byval isvarlen as integer
+		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
+			exit function
+		end if
+	end if
+
+	function = proc
+end function
+
 function rtlArrayRedim _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -403,7 +577,7 @@ function rtlArrayRedim _
 		'' Assuming there aren't any other ctors if there is no default one,
 		'' because if it were possible to declare such a dynamic array,
 		'' the rtlib couldn't REDIM it.
-		assert( iif( ctor = NULL, (symbGetHasCtor( subtype ) = FALSE) or (errGetCount( ) > 0), TRUE ) )
+		assert( iif( ctor = NULL, (symbGetCompCtorHead( subtype ) = NULL) or (errGetCount( ) > 0), TRUE ) )
 	case else
 		ctor = NULL
 		dtor = NULL
@@ -425,35 +599,27 @@ function rtlArrayRedim _
 
     proc = astNewCALL( f )
 
-    '' array() as ANY
-	expr = astNewVAR( s, 0, dtype )
-    if( astNewARG( proc, expr, dtype ) = NULL ) then
-    	exit function
-    end if
+	'' array() as ANY
+	if( astNewARG( proc, astNewVAR( s ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval element_len as integer
-	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
-	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( elementlen ) ) = NULL ) then
+		exit function
+	end if
 
 	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval doclear as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( doclear, FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, astNewCONSTi( doclear ) ) = NULL ) then
+			exit function
+		end if
 
 		'' byval isvarlen as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( (dtype = FB_DATATYPE_STRING), _
-									 FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-
-    else
+		if( astNewARG( proc, astNewCONSTi( (dtype = FB_DATATYPE_STRING) ) ) = NULL ) then
+			exit function
+		end if
+	else
 		hCheckDefCtor( ctor, FALSE, FALSE )
 		hCheckDtor( dtor, FALSE, FALSE )
 
@@ -466,18 +632,15 @@ function rtlArrayRedim _
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
-    end if
+	end if
 
 	'' byval dimensions as integer
-	if( astNewARG( proc, _
-				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
-				   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( dimensions ) ) = NULL ) then
+		exit function
+	end if
 
 	'' ...
 	for i as integer = 0 to dimensions-1
-
 		'' lbound
 		expr = exprTB(i, 0)
 
@@ -486,9 +649,9 @@ function rtlArrayRedim _
     		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
 
 		'' ubound
 		expr = exprTB(i, 1)
@@ -498,204 +661,40 @@ function rtlArrayRedim _
     		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
+		if( astNewARG( proc, expr ) = NULL ) then
+			exit function
+		end if
 	next
 
 	function = rtlErrorCheck( proc )
-
 end function
 
-'':::::
-function rtlArrayErase _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr dtor = any
-
-	function = NULL
-
-	dtype = astGetDataType( arrayexpr )
-
-	''
-	select case as const dtype
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
-    case else
-    	dtor = NULL
-    end select
-
-    if( dtor = NULL ) then
-    	proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( ARRAYERASE_OBJ ) )
-    end if
-
-    '' array() as ANY
-    if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
-    	exit function
-    end if
-
-	if( dtor = NULL ) then
-		'' byval isvarlen as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
-					   				 FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-			exit function
-		end if
-	else
-		hCheckDtor( dtor, check_access, TRUE )
-
-		'' byval dtor as sub cdecl( )
-		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-			exit function
-		end if
-    end if
-
-	function = proc
-
-end function
-
-'':::::
-function rtlArrayClear _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval dofill as integer, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-	
-	'' no const filtering needed, clear is for dynamic, can't be const...
-	
-    dim as ASTNODE ptr proc = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
-
-    function = NULL
-
-    dtype = astGetDataType( arrayexpr )
-
-	''
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = astGetSubtype( arrayexpr )
-		ctor = symbGetCompDefCtor( subtype )
-		dtor = symbGetCompDtor( subtype )
-
-		'' No default ctor, but others? Then the rtlib cannot just clear
-		'' that array of objects.
-		if( (ctor = NULL) and symbGetHasCtor( subtype ) ) then
-			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-		end if
-	case else
-		ctor = NULL
-		dtor = NULL
-	end select
-
-    if( (ctor = NULL) and (dtor = NULL) ) then
-    	proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR_OBJ ) )
-    end if
-
-    '' array() as ANY
-    if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
-    	exit function
-    end if
-
-	if( (ctor = NULL) and (dtor = NULL) ) then
-		'' byval isvarlen as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
-					   				 FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
-			exit function
-		end if
-	else
-		hCheckDefCtor( ctor, check_access, TRUE )
-		hCheckDtor( dtor, check_access, TRUE )
-
-		'' byval ctor as sub cdecl( )
-		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-			exit function
-		end if
-
-		'' byval dtor as sub cdecl( )
-		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-			exit function
-		end if
-
-		'' byval dofill as integer
-		if( astNewARG( proc, astNewCONSTi( dofill, FB_DATATYPE_INTEGER ) ) = NULL ) then
-			exit function
-		end if
-	end if
-
-    function = proc
-
-end function
-
-'':::::
-function rtlArrayStrErase _
-	( _
-		byval arrayexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-
-	function = NULL
-
-	''
-    proc = astNewCALL( PROCLOOKUP( ARRAYSTRERASE ) )
-
-    '' array() as ANY
-    if( astNewARG( proc, arrayexpr ) = NULL ) then
-    	exit function
-    end if
-
-	function = proc
-
-end function
-
-'':::::
 function rtlArrayBound _
 	( _
-		byval sexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-	''
-	if( islbound ) then
-		f = PROCLOOKUP( ARRAYLBOUND )
-	else
-		f = PROCLOOKUP( ARRAYUBOUND )
-	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( iif( islbound, _
+				PROCLOOKUP( ARRAYLBOUND ), _
+				PROCLOOKUP( ARRAYUBOUND ) ) )
 
-    '' array() as ANY
-    if( astNewARG( proc, sexpr ) = NULL ) then
-    	exit function
-    end if
+	'' array() as ANY
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval dimension as integer
 	if( astNewARG( proc, dimexpr ) = NULL ) then
 		exit function
 	end if
 
-    ''
-    function = proc
-
+	function = proc
 end function
 
 '':::::
@@ -723,9 +722,7 @@ function rtlArrayBoundsCheck _
    	proc = astNewCALL( f )
 
 	'' idx
-	if( astNewARG( proc, _
-					 astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ) ) = NULL ) then
 		exit function
 	end if
 
@@ -742,9 +739,9 @@ function rtlArrayBoundsCheck _
 	end if
 
 	'' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit function
+	end if
 
     '' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then

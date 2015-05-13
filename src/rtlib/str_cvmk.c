@@ -2,10 +2,12 @@
 
 #include "fb.h"
 
-/*:::::*/
 static void hCV( FBSTRING *str, int len, void *num )
 {
 	int	i;
+
+	if( str == NULL )
+		return;
 
 	if( (str->data != NULL) && (FB_STRSIZE( str ) >= len) )
 	{
@@ -17,77 +19,48 @@ static void hCV( FBSTRING *str, int len, void *num )
 	fb_hStrDelTemp( str );
 }
 
-/*:::::*/
-FBCALL double fb_CVD ( FBSTRING *str )
+FBCALL double fb_CVD( FBSTRING *str )
 {
-    double num;
-
-	if( str == NULL )
-		return 0.0;
-
-	num = 0.0;
+	double num = 0.0;
 	hCV( str, sizeof( double ), &num );
-
 	return num;
 }
 
-/*:::::*/
-FBCALL float fb_CVS ( FBSTRING *str )
+FBCALL float fb_CVS( FBSTRING *str )
 {
-    float num;
-
-	if( str == NULL )
-		return 0.0;
-
-	num = 0.0;
+	float num = 0.0;
 	hCV( str, sizeof( float ), &num );
-
 	return num;
 }
 
-/*:::::*/
-FBCALL int fb_CVI ( FBSTRING *str )
+FBCALL short fb_CVSHORT( FBSTRING *str )
 {
-    int	num;
-
-	if( str == NULL )
-		return 0;
-
-	num = 0;
-	hCV( str, sizeof( int ), &num );
-
-	return num;
-}
-
-/*:::::*/
-FBCALL short fb_CVSHORT ( FBSTRING *str )
-{
-    short num;
-
-	if( str == NULL )
-		return 0;
-
-	num = 0;
+	short num = 0;
 	hCV( str, sizeof( short ), &num );
-
 	return num;
 }
 
-/*:::::*/
-FBCALL long long fb_CVLONGINT ( FBSTRING *str )
+FBCALL int fb_CVI( FBSTRING *str )
 {
-    long long num;
-
-	if( str == NULL )
-		return 0;
-
-	num = 0;
-	hCV( str, sizeof( long long ), &num );
-
+	int num = 0;
+	hCV( str, sizeof( int ), &num );
 	return num;
 }
 
-/*:::::*/
+FBCALL long fb_CVL( FBSTRING *str )
+{
+	int num = 0;
+	hCV( str, sizeof( long ), &num );
+	return num;
+}
+
+FBCALL long long fb_CVLONGINT( FBSTRING *str )
+{
+	long long num = 0;
+	hCV( str, sizeof( long long ), &num );
+	return num;
+}
+
 static FBSTRING *hMK( int len, void *num )
 {
 	int	i;
@@ -109,35 +82,32 @@ static FBSTRING *hMK( int len, void *num )
 	return dst;
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_MKD ( double num )
+FBCALL FBSTRING *fb_MKD( double num )
 {
 	return hMK( sizeof( double ), &num );
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_MKS ( float num )
+FBCALL FBSTRING *fb_MKS( float num )
 {
 	return hMK( sizeof( float ), &num );
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_MKI ( int num )
-{
-	return hMK( sizeof( int ), &num );
-}
-
-/*:::::*/
-FBCALL FBSTRING *fb_MKSHORT ( short num )
+FBCALL FBSTRING *fb_MKSHORT( short num )
 {
 	return hMK( sizeof( short ), &num );
 }
 
-/*:::::*/
-FBCALL FBSTRING *fb_MKLONGINT ( long long num )
+FBCALL FBSTRING *fb_MKI( int num )
+{
+	return hMK( sizeof( int ), &num );
+}
+
+FBCALL FBSTRING *fb_MKL( long num )
+{
+	return hMK( sizeof( long ), &num );
+}
+
+FBCALL FBSTRING *fb_MKLONGINT( long long num )
 {
 	return hMK( sizeof( long long ), &num );
 }
-
-
-

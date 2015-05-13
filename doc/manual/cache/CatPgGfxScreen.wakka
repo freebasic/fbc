@@ -53,6 +53,8 @@ Statements and procedures that work with the graphics display.
 		Sets a new coordinate mapping for the current viewport.
 	=={{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}==
 		Converts coordinates between physical and view mappings.
+	=={{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}==
+		Queries ##[[KeyPgDraw Draw]]##'s pen position.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

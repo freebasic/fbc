@@ -29,7 +29,7 @@
 #endif
 
 extern "c"
-declare function rename_ alias "rename" (byval as zstring ptr, byval as zstring ptr) as integer
+declare function rename (byval as zstring ptr, byval as zstring ptr) as integer
 declare function fopen (byval as zstring ptr, byval as zstring ptr) as FILE ptr
 declare function freopen (byval as zstring ptr, byval as zstring ptr, byval as FILE ptr) as FILE ptr
 declare function fflush (byval as FILE ptr) as integer

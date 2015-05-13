@@ -22,6 +22,24 @@ sub parserLetEnd
 
 end sub
 
+function hIsAssignToken( ) as integer
+	select case( lexGetToken( ) )
+	case FB_TK_ASSIGN, FB_TK_DBLEQ
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+end function
+
+function cAssignToken( ) as integer
+	if( hIsAssignToken( ) ) then
+		lexSkipToken( )
+		function = TRUE
+	else
+		function = FALSE
+	end if
+end function
+
 '':::::
 function cOperator _
 	( _
@@ -306,7 +324,7 @@ function cOperator _
 	case CHAR_RSLASH
 		op = AST_OP_INTDIV
 
-	case CHAR_CARET
+	case CHAR_TIMES
 		op = AST_OP_MUL
 
 	case CHAR_SLASH
@@ -337,8 +355,7 @@ function cOperator _
     end if
 
     '' '='?
-    if( lexGetToken( ) = FB_TK_ASSIGN ) then
-    	lexSkipToken( )
+	if( cAssignToken( ) ) then
     	'' get the self version
     	op = astGetOpSelfVer( op )
     end if
@@ -354,12 +371,12 @@ sub cAssignment( byval l as ASTNODE ptr )
 
 	'' '='?
 	dim as integer op = INVALID
-	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+	if( hIsAssignToken( ) = FALSE ) then
 		'' BOP?
 		op = cOperator( FB_OPEROPTS_NONE )
 
 		'' '='?
-		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		if( hIsAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			'' error recovery: skip stmt
 			hSkipStmt( )
@@ -419,6 +436,7 @@ function cAssignmentOrPtrCallEx _
     function = FALSE
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     	exit function
     end if
 
@@ -520,18 +538,6 @@ private function hAssignFromField _
 		return astNewNOP()
 	end if
 
-	/'' valid data type?
-    select case typeGet( symbGetType( fld ) )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetUDTIsUnion( fld ) then
-			hReportLetError( FB_ERRMSG_UNIONSNOTALLOWED, num )
-			'' error recovery
-			astDelTree( lhs )
-			return astNewNOP()
-		end if
-	end select
-	'/
-
 	if( symbGetArrayDimensions( fld ) <> 0 ) then
 		hReportLetError( FB_ERRMSG_ARRAYSNOTALLOWED, num )
 		'' error recovery
@@ -541,10 +547,10 @@ private function hAssignFromField _
 
 	'' build field access
 	dim as ASTNODE ptr expr = any
-	expr = astNewVAR( rhs, 0, symbGetFullType( rhs ), symbGetSubtype( rhs ) )
-	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
+	expr = astNewVAR( rhs )
+	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ) ) )
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
-	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
+	expr = astNewFIELD( expr, fld )
 
 	expr = astNewASSIGN( lhs, expr )
 	if( expr = NULL ) then
@@ -568,6 +574,7 @@ function cAssignmentOrPtrCall _
 
 	dim as integer ismult = FALSE
 	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr fld = any
 
 	function = FALSE
 
@@ -593,6 +600,7 @@ function cAssignmentOrPtrCall _
     end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     	exit function
     end if
 
@@ -650,14 +658,12 @@ function cAssignmentOrPtrCall _
 	end if
 
 	'' '='?
-	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 		expr = NULL
 	else
-		lexSkipToken( )
-
 		'' Expression?
 		expr = cExpression( )
 		if( expr = NULL ) then
@@ -670,7 +676,8 @@ function cAssignmentOrPtrCall _
 	if( expr <> NULL ) then
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT
-			if( symbGetUDTIsUnion( astGetSubtype( expr ) ) ) then
+			if( symbGetUDTIsUnion( astGetSubtype( expr ) ) or _
+			    symbGetUDTHasAnonUnion( astGetSubtype( expr ) ) ) then
 				errReport( FB_ERRMSG_UNIONSNOTALLOWED )
 				'' error recovery:
 				astDelTree( expr )
@@ -700,25 +707,21 @@ function cAssignmentOrPtrCall _
         exit function
 	end if
 
-
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr )
+		expr = astBuildCallResultUdt( expr )
 	end if
 
 	dim as FBSYMBOL ptr tmp = NULL
 	dim as ASTNODE ptr tree = NULL
 
 	if( exprcnt > 0 ) then
-		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), _
-										  astGetSubtype( expr ), _
-										  FALSE, _
-										  FALSE )
+		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), astGetSubtype( expr ) )
 		'' tmp = @expr
 		tree = astBuildVarAssign( tmp, astNewADDROF( expr ) )
 	end if
 
-    dim as FBSYMBOL ptr fld = symbGetUDTFirstElm( astGetSubtype( expr ) )
+	fld = symbUdtGetFirstField( astGetSubtype( expr ) )
     exprcnt = 0
     do
     	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
@@ -741,7 +744,7 @@ function cAssignmentOrPtrCall _
         		tree = astNewLINK( tree, expr )
         	end if
 
-        	fld = symbGetUDTNextElm( fld )
+			fld = symbUdtGetNextField( fld )
         end if
 
         listDelNode( @parser.stmt.let.list, node )
@@ -752,5 +755,4 @@ function cAssignmentOrPtrCall _
 	astAdd( tree )
 
 	function = TRUE
-
 end function

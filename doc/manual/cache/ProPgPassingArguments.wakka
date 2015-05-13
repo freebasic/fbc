@@ -73,6 +73,22 @@ The parameter 'param' = 20
 The variable 'arg' after the call = 20
 %%
 
+{{fbdoc item="section" value="Manually passing pointers to by-reference parameters"}}
+	By specifying the ##Byval## keyword in front of an argument to a ##[[KeyPgByref Byref]]## parameter, an address (usually stored in a pointer) can be passed directly as-is, forcing the ##Byref## parameter to reference the same memory location which the address pointed to.
+
+{{fbdoc item="filename" value="examples/manual/proguide/procs/byrefparam-explicit-byval.bas"}}%%(freebasic)
+sub f( byref i as integer )
+	i = 456
+end sub
+
+dim i as integer = 123
+dim pi as integer ptr = @i
+
+print i
+f( byval pi )
+print i
+%%
+
 {{fbdoc item="see"}}
 	- [[ProPgProcedures Procedures Overview]]
 	- [[ProPgReturnValue Returning a Value]]

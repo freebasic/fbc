@@ -11,7 +11,7 @@
 '':::::
 ''WhileStmtBegin  =   WHILE Expression .
 ''
-sub cWhileStmtBegin()
+sub cWhileStmtBegin( )
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr il = any, el = any
     dim as FB_CMPSTMTSTK ptr stk = any
@@ -31,11 +31,11 @@ sub cWhileStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' branch
-	expr = astUpdComp2Branch( expr, el, FALSE )
+	expr = astBuildBranch( expr, el, FALSE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
@@ -49,17 +49,14 @@ sub cWhileStmtBegin()
 	stk->while.endlabel = el
 end sub
 
-'':::::
-''WhileStmtEnd  =   WEND
-''
-function cWhileStmtEnd as integer
+'' WhileStmtEnd  =  WEND
+sub cWhileStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_WHILE )
 	if( stk = NULL ) then
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' WEND
@@ -76,7 +73,4 @@ function cWhileStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

@@ -8,309 +8,64 @@
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
+#include once "hlp.bi"
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' constant folding optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub hOptConstRemNeg _
-	( _
-		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
-	)
+private sub hOptConstRemNeg( byval n as ASTNODE ptr )
 
-	dim as ASTNODE ptr l = any, r = any
-
-	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
-	if( p <> NULL ) then
-		if( astIsUOP( n, AST_OP_NEG ) ) then
-			l = n->l
-			if( l->class = AST_NODECLASS_VAR ) then
-				if( astIsBOP( p, AST_OP_ADD ) ) then
-					r = p->r
-					if( astIsCONST( r ) ) then
-						p->op.op = AST_OP_SUB
-						p->l = p->r
-						p->r = n->l
-						astDelNode( n )
-						exit sub
-					end if
-				end if
-			end if
-		end if
-	end if
+	dim as ASTNODE ptr l = any, r = any, ll = any
 
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptConstRemNeg( l, n )
+		hOptConstRemNeg( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptConstRemNeg( r, n )
+		hOptConstRemNeg( r )
+	end if
+
+	''
+	''    -var + const        ->     const - var
+	''
+	''         BOP(+)                  BOP(-)
+	''         /     \                 /   \
+	''     UOP(-)    CONST    ->    CONST  VAR
+	''      /
+	''    VAR
+	''
+
+	if( astIsBOP( n, AST_OP_ADD ) ) then
+		l = n->l
+		r = n->r
+		if( astIsUOP( l, AST_OP_NEG ) and astIsCONST( r ) ) then
+			ll = n->l->l
+			if( astIsVAR( ll ) ) then
+				'' BOP(+) -> BOP(-)
+				n->op.op = AST_OP_SUB
+				n->l = r
+				n->r = ll
+				astDelNode( l )
+			end if
+		end if
 	end if
 
 end sub
 
-'':::::
-private sub hConvDataType _
-	( _
-		byval v as FBVALUE ptr, _
-		byval vdtype as integer, _
-		byval to_dtype as integer _
-	)
-
-	vdtype = typeGet( vdtype )
-	to_dtype = typeGet( to_dtype )
-
-	select case as const to_dtype
-	case FB_DATATYPE_LONGINT
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    '' no conversion
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->long = clngint( v->float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->long = clngint( v->int )
-		    end if
-
-		case else
-			v->long = clngint( v->int )
-		end select
-
-	case FB_DATATYPE_ULONGINT
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    '' no conversion
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->long = culngint( v->float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->long = culngint( v->int )
-		    end if
-
-		case else
-			v->long = culngint( v->int )
-		end select
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT
-		    v->float = cdbl( v->long )
-
-		case FB_DATATYPE_ULONGINT
-			v->float = cdbl( cunsg( v->long ) )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			'' do nothing
-
-		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
-			v->float = cdbl( cuint( v->int ) )
-
-		case FB_DATATYPE_LONG
-		    if( FB_LONGSIZE = len( integer ) ) then
-		    	v->float = cdbl( v->int )
-		   	else
-		    	v->float = cdbl( v->long )
-		    end if
-
-		case FB_DATATYPE_ULONG
-		    if( FB_LONGSIZE = len( integer ) ) then
-		    	v->float = cdbl( cuint( v->int ) )
-		   	else
-				v->float = cdbl( cunsg( v->long ) )
-			end if
-
-		case else
-			v->float = cdbl( v->int )
-		end select
-
-	case FB_DATATYPE_LONG
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->int = cint( v->long )
-		    end if
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( FB_LONGSIZE = len( integer ) ) then
-				v->int = cint( v->float )
-			else
-				v->long = clngint( v->float )
-			end if
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    '' do nothing
-
-		case else
-			if( FB_LONGSIZE <> len( integer ) ) then
-				v->long = clngint( v->int )
-			end if
-		end select
-
-	case FB_DATATYPE_ULONG
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->int = cuint( v->long )
-		    end if
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( FB_LONGSIZE = len( integer ) ) then
-				v->int = cuint( v->float )
-			else
-				v->long = culngint( v->float )
-			end if
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    '' do nothing
-
-		case else
-			if( FB_LONGSIZE <> len( integer ) ) then
-				v->long = culngint( v->int )
-			end if
-		end select
-
-	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
-
-	 	select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    v->int = cuint( v->long )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->int = cuint( v->float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->int = cuint( v->long )
-		    end if
-		end select
-
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			v->int = cbool( v->long )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->int = cbool( v->float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				v->int = cbool( v->int )
-			else
-				v->int = cbool( v->long )
-			end if
-
-	case else
-				v->int = cbool( v->int )
-		end select
-
-	case else
-
-		select case as const vdtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    v->int = cint( v->long )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->int = cint( v->float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		    if( FB_LONGSIZE <> len( integer ) ) then
-		    	v->int = cint( v->long )
-        	end if
-		end select
-
-    end select
-
-end sub
-
-''::::::
-private function hPrepConst _
-	( _
-		byval v as ASTVALUE ptr, _
-		byval r as ASTNODE ptr _
-	) as integer
-
-	dim as integer dtype = any
-
-	'' first node? just copy..
-	if( v->dtype = FB_DATATYPE_INVALID ) then
-		v->dtype = astGetDataType( r )
-
-		select case as const v->dtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			v->val.long = r->con.val.long
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			v->val.float = r->con.val.float
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				v->val.int = r->con.val.int
-			else
-				v->val.long = r->con.val.long
-			end if
-
-		case else
-            v->val.int = r->con.val.int
-		end select
-
-		return FB_DATATYPE_INVALID
-	end if
-
-    ''
-	dtype = typeMax( v->dtype, astGetDataType( r ) )
-
-	'' same? don't convert..
-	if( dtype = FB_DATATYPE_INVALID ) then
-		'' an ENUM or POINTER always has the precedence
-		select case typeGet( astGetDataType( r ) )
-		case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
-			return astGetFullType( r )
-		case else
-			return v->dtype
-		end select
-	end if
-
-	'' convert r to v's type
-	if( dtype = v->dtype ) then
-		hConvDataType( @r->con.val, astGetDataType( r ), dtype )
-
-	'' convert v to r's type
-	else
-		hConvDataType( @v->val, v->dtype, dtype )
-		v->dtype = dtype
-	end if
-
-	return dtype
-
-end function
-
-'':::::
 private function hConstAccumADDSUB _
 	( _
 		byval n as ASTNODE ptr, _
-		byval v as ASTVALUE ptr, _
-		byval op as integer _
+		byref accumval as ASTNODE ptr, _
+		byval sign as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer o = any
-	dim as integer dtype = any
+	dim as integer dtype = any, o = any, rsign = any
 
 	if( n = NULL ) then
 		return NULL
@@ -327,91 +82,54 @@ private function hConstAccumADDSUB _
 		l = n->l
 		r = n->r
 
-		if( astIsCONST( r ) ) then
+		'' Inverse operation (+ vs. -) for rhs tree of '-' BOPs
+		if( o = AST_OP_SUB ) then
+			rsign = -sign
+		else
+			rsign = sign
+		end if
 
-			if( op < 0 ) then
-				if( o = AST_OP_ADD ) then
-					o = AST_OP_SUB
-				else
-					o = AST_OP_ADD
+		if( astIsCONST( r ) ) then
+			'' re-using 'r'
+			if( accumval ) then
+				'' Do inverse op if inside the rhs tree of a '-' BOP
+				if( rsign < 0 ) then
+					if( o = AST_OP_ADD ) then
+						o = AST_OP_SUB
+					else
+						o = AST_OP_ADD
+					end if
+				end if
+				accumval = astNewBOP( o, accumval, r )
+			else
+				accumval = r
+
+				'' Negate if inside the rhs of a '-' BOP
+				if( rsign < 0 ) then
+					accumval = astNewUOP( AST_OP_NEG, accumval )
 				end if
 			end if
 
-			dtype = hPrepConst( v, r )
-
-			if( dtype <> FB_DATATYPE_INVALID ) then
-				select case o
-				case AST_OP_ADD
-					select case as const typeGet( dtype )
-					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						v->val.long += r->con.val.long
-
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						v->val.float += r->con.val.float
-
-					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							v->val.int += r->con.val.int
-						else
-							v->val.long += r->con.val.long
-						end if
-
-					case else
-				    	v->val.int += r->con.val.int
-					end select
-
-				case AST_OP_SUB
-					select case as const typeGet( dtype )
-					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						v->val.long -= r->con.val.long
-
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						v->val.float -= r->con.val.float
-
-					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							v->val.int -= r->con.val.int
-						else
-							v->val.long -= r->con.val.long
-						end if
-
-					case else
-						v->val.int -= r->con.val.int
-					end select
-				end select
-			end if
-
-			'' del BOP and const node
-			astDelNode( r )
+			'' Delete the BOP node, while 'l' and 'r' are re-used
 			astDelNode( n )
 
-			'' top node is now the left one
-			n = hConstAccumADDSUB( l, v, op )
-
+			'' 'l' becomes the new top node
+			n = hConstAccumADDSUB( l, accumval, sign )
 		else
 			'' walk
-			n->l = hConstAccumADDSUB( l, v, op )
-
-			if( o = AST_OP_SUB ) then
-#if 1 '' simple fix for #3153953
-				exit select
-#endif
-				op = -op
-			end if
-
-			n->r = hConstAccumADDSUB( r, v, op )
+			n->l = hConstAccumADDSUB( l, accumval, sign )
+			n->r = hConstAccumADDSUB( r, accumval, rsign )
 		end if
 	end select
 
 	function = n
-
 end function
 
 '':::::
 private function hConstAccumMUL _
 	( _
 		byval n as ASTNODE ptr, _
-		byval v as ASTVALUE ptr _
+		byref accumval as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
@@ -426,57 +144,39 @@ private function hConstAccumMUL _
 		r = n->r
 
 		if( astIsCONST( r ) ) then
-
-			dtype = hPrepConst( v, r )
-
-			if( dtype <> FB_DATATYPE_INVALID ) then
-				select case as const typeGet( dtype )
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					v->val.long *= r->con.val.long
-
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					v->val.float *= r->con.val.float
-
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						v->val.int *= r->con.val.int
-					else
-						v->val.long *= r->con.val.long
-					end if
-
-				case else
-					v->val.int *= r->con.val.int
-				end select
+			'' re-using 'r'
+			if( accumval ) then
+				accumval = astNewBOP( AST_OP_MUL, accumval, r )
+			else
+				accumval = r
 			end if
 
-			'' del BOP and const node
-			astDelNode( r )
+			'' Delete the BOP node, while 'l' and 'r' are re-used
 			astDelNode( n )
 
-			'' top node is now the left one
-			n = hConstAccumMUL( l, v )
-
+			'' 'l' becomes the new top node
+			n = hConstAccumMUL( l, accumval )
 		else
 			'' walk
-			n->l = hConstAccumMUL( l, v )
-			n->r = hConstAccumMUL( r, v )
+			n->l = hConstAccumMUL( l, accumval )
+			n->r = hConstAccumMUL( r, accumval )
 		end if
 	end if
 
 	function = n
-
 end function
 
-'':::::
-private function hOptConstAccum1 _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any, r = any, accumval = any
+	dim as integer o = any
 
-	dim as ASTNODE ptr l = any, r = any
+	'' walk
+	if( n->l ) then
+		n->l = hOptConstAccum1( n->l )
+	end if
 
-	if( n = NULL ) then
-		return NULL
+	if( n->r ) then
+		n->r = hOptConstAccum1( n->r )
 	end if
 
 	'' check any ADD|SUB|MUL BOP node with a constant at the right leaf and
@@ -486,60 +186,52 @@ private function hOptConstAccum1 _
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
 		if( astIsCONST( r ) ) then
-			dim as ASTVALUE v = any
+			accumval = NULL
+			o = n->op.op
 
-			select case as const n->op.op
-			case AST_OP_ADD
-				v.dtype = FB_DATATYPE_INVALID
-				n = hConstAccumADDSUB( n, @v, 1 )
-				'' can't pass ConstAccumADDSUB() to newBOP, the order of
-				'' the params should't matter
-				n = astNewBOP( AST_OP_ADD, n, astNewCONST( @v.val, v.dtype ) )
+			select case( o )
+			case AST_OP_ADD, AST_OP_SUB
+				n = hConstAccumADDSUB( n, accumval, 1 )
+
+				'' We checked astIsCONST( r ) above, so we'll always have an accumulated value here,
+				'' but just for safety...
+				if( accumval ) then
+					'' (shouldn't pass hConstAccumADDSUB() as argument to astNewBOP() directly,
+					'' because that could cause problems due to argument evaluation order)
+					n = astNewBOP( o, n, accumval )
+				end if
 
 			case AST_OP_MUL
-				v.dtype = FB_DATATYPE_INVALID
-				n = hConstAccumMUL( n, @v )
-				n = astNewBOP( AST_OP_MUL, n, astNewCONST( @v.val, v.dtype ) )
+				n = hConstAccumMUL( n, accumval )
+				if( accumval ) then
+					n = astNewBOP( AST_OP_MUL, n, accumval )
+				end if
 
-           	case AST_OP_SUB
-				v.dtype = FB_DATATYPE_INVALID
-				n = hConstAccumADDSUB( n, @v, -1 )
-				n = astNewBOP( AST_OP_SUB, n, astNewCONST( @v.val, v.dtype ) )
 			end select
 		end if
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptConstAccum1( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptConstAccum1( r )
-	end if
-
 	function = n
-
 end function
 
-'':::::
-private sub hOptConstAccum2 _
-	( _
-		byval n as ASTNODE ptr _
-	)
+private function hOptConstAccum2( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any, r = any, accumval = any
 
-	dim as ASTNODE ptr l = any, r = any
-	dim as integer dtype = any, checktype = any
-	dim as ASTVALUE v = any
+	'' walk
+	if( n->l ) then
+		n->l = hOptConstAccum2( n->l )
+	end if
+
+	if( n->r ) then
+		n->r = hOptConstAccum2( n->r )
+	end if
 
 	'' check any ADD|SUB|MUL BOP node and then go to child leafs accumulating
 	'' any constants found there, deleting those nodes and then add the
 	'' result to a new node, at right side of the current one
 	'' (this will handle for ex. a+1+(b+2)+(c+3), that will become a+b+c+6)
 	if( n->class = AST_NODECLASS_BOP ) then
-		checktype = FALSE
+		accumval = NULL
 
 		select case n->op.op
 		case AST_OP_ADD
@@ -549,72 +241,28 @@ private sub hOptConstAccum2 _
 				 FB_DATATYPE_WCHAR
 
 			case else
-				v.dtype = FB_DATATYPE_INVALID
-				n->l = hConstAccumADDSUB( n->l, @v, 1 )
-				n->r = hConstAccumADDSUB( n->r, @v, 1 )
-
-				if( v.dtype <> FB_DATATYPE_INVALID ) then
-					n->l = astNewBOP( AST_OP_ADD, n->l, n->r )
-					n->r = astNewCONST( @v.val, v.dtype )
-					checktype = TRUE
+				n = hConstAccumADDSUB( n, accumval, 1 )
+				if( accumval ) then
+					n = astNewBOP( AST_OP_ADD, n, accumval )
 				end if
 			end select
 
 		case AST_OP_MUL
-			v.dtype = FB_DATATYPE_INVALID
-			n->l = hConstAccumMUL( n->l, @v )
-			n->r = hConstAccumMUL( n->r, @v )
-
-			if( v.dtype <> FB_DATATYPE_INVALID ) then
-				n->l = astNewBOP( AST_OP_MUL, n->l, n->r )
-				n->r = astNewCONST( @v.val, v.dtype )
-				checktype = TRUE
+			n = hConstAccumMUL( n, accumval )
+			if( accumval ) then
+				n = astNewBOP( AST_OP_MUL, n, accumval )
 			end if
-       	end select
 
-		if( checktype ) then
-			'' update the node data type
-			l = n->l
-			r = n->r
-			dtype = typeMax( astGetDataType( l ), astGetDataType( r ) )
-			if( dtype <> FB_DATATYPE_INVALID ) then
-				if( typeGet( dtype ) <> typeGet( l->dtype ) ) then
-					n->l = astNewCONV( dtype, r->subtype, l )
-				else
-					n->r = astNewCONV( dtype, l->subtype, r )
-				end if
-				astGetFullType( n ) = dtype
-
-			else
-				'' an ENUM or POINTER always have the precedence
-				select case typeGet( astGetDataType( r ) )
-				case FB_DATATYPE_ENUM, FB_DATATYPE_POINTER
-					astGetFullType( n ) = astGetFullType( r )
-				case else
-					astGetFullType( n ) = astGetFullType( l )
-				end select
-			end if
-		end if
+		end select
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		hOptConstAccum2( l )
-	end if
+	function = n
+end function
 
-	r = n->r
-	if( r <> NULL ) then
-		hOptConstAccum2( r )
-	end if
-
-end sub
-
-'':::::
 private function hConstDistMUL _
 	( _
 		byval n as ASTNODE ptr, _
-		byval v as ASTVALUE ptr _
+		byref accumval as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr l = any, r = any
@@ -624,268 +272,171 @@ private function hConstDistMUL _
 		return NULL
 	end if
 
-	if( astIsBOP( n, AST_OP_ADD) ) then
+	if( astIsBOP( n, AST_OP_ADD ) ) then
 		l = n->l
 		r = n->r
 
 		if( astIsCONST( r ) ) then
-
-			dtype = hPrepConst( v, r )
-
-			if( dtype <> FB_DATATYPE_INVALID ) then
-				select case as const typeGet( dtype )
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					v->val.long += r->con.val.long
-
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					v->val.float += r->con.val.float
-
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						v->val.int += r->con.val.int
-					else
-						v->val.long += r->con.val.long
-					end if
-
-				case else
-					v->val.int += r->con.val.int
-				end select
+			if( accumval ) then
+				accumval = astNewBOP( AST_OP_ADD, accumval, r )
+			else
+				accumval = r
 			end if
 
-			'' del BOP and const node
-			astDelNode( r )
+			'' Delete the BOP node, while 'l' and 'r' are re-used
 			astDelNode( n )
 
-			'' top node is now the left one
-			n = hConstDistMUL( l, v )
-
+			'' 'l' becomes the new top node
+			n = hConstDistMUL( l, accumval )
 		else
-			n->l = hConstDistMUL( l, v )
-			n->r = hConstDistMUL( r, v )
+			n->l = hConstDistMUL( l, accumval )
+			n->r = hConstDistMUL( r, accumval )
 		end if
 	end if
 
 	function = n
-
 end function
 
-'':::::
-private function hOptConstDistMUL _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr l = any, r = any
-	dim as ASTVALUE v = any
+private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr accumval = any
 
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	'' check any MUL BOP node with a constant at the right leaf and then scan
-	'' the left leaf for ADD BOP nodes, applying the distributive, deleting those
-	'' nodes and adding the result of all sums to a new node
-	'' (this will handle for ex. 2 * (3 + a * 2) that will become 6 + a * 4 (with Accum2's help))
+	'' walk, bottom-up, to optimize children first, potentially making the
+	'' transformation possible here.
+	if( n->l ) then
+		n->l = hOptConstDistMUL( n->l )
+	end if
+
+	if( n->r ) then
+		n->r = hOptConstDistMUL( n->r )
+	end if
+
+	''
+	'' Multiplication is distributive, i.e.
+	''
+	''      (a + b) * c
+	''    = a * c + b * c
+	''
+	'' This optimization does exactly that transformation,
+	'' but only for constant summands:
+	''
+	''      (a + 3 + b) * 2
+	''    = (a + b) * 2 + 3 * 2
+	''    = (a + b) * 2 + 6
+	''
+	''      (1 + a + 2 + b) * 3
+	''    = (a + b) * 3 + (1 + 2) * 3
+	''    = (a + b) * 3 + 3 * 3
+	''    = (a + b) * 3 + 9
+	''
+	'' i.e. constant summands are pulled out of the inner expression,
+	'' then multiplicated with the constant factor of the MUL, and then
+	'' that value is ADDed back on top. The MUL is left in to handle the
+	'' part of the expression with non-constant summands.
+	'' (We know there are non-constant summands, because any fully constant
+	'' ADD BOPs were precalculated by astNewBOP()'s constant folding)
+	''
+	'' This transformation can open up further optimization possibilities,
+	'' for example, this:
+	''      (a * 2 + 3) * 2
+	''    = a * 2 * 2 + 3 * 2
+	''    = a * 2 * 2 + 6
+	'' will be turned into
+	''    = a * 4 + 6
+	'' by the constant accumulation optimizations.
+	''
+	'' Or, as another example, this:
+	''      ((a + 1) * 2) * 3
+	''    = (a * 2 + 1 * 2) * 3
+	''    = (a * 2 + 2) * 3
+	'' allows for the same transformation to be applied again, as a result
+	'' of applying it the first time, to get:
+	''    = a * 2 * 3 + 2 * 3
+	''    = a * 2 * 3 + 6
+	'' which will be turned into
+	''    = a * 6 + 6
+	'' by the constant accumulation optimizations.
+	'' Applying this transformation repeatedly on the same tree however
+	'' can only work when walking the tree bottom-up.
+	''
+
+	'' 1. Check for a MUL BOP node with a CONST rhs (assuming astNewBOP()
+	''    swapped lhs/rhs if the CONST was on lhs, so only one thing has
+	''    to be checked here)
 	if( n->class = AST_NODECLASS_BOP ) then
-		r = n->r
-		if( astIsCONST( r ) ) then
+		if( astIsCONST( n->r ) ) then
 			if( n->op.op = AST_OP_MUL ) then
+				'' 2. Scan the lhs for ADD BOPs with CONST rhs (hConstDistMUL())
+				''  - Sums up the CONST summands of all such ADDs
+				''  - Removes these ADDs (possibly leaving in other non-const summands)
+				accumval = NULL
+				n->l = hConstDistMUL( n->l, accumval )
 
-				v.dtype = FB_DATATYPE_INVALID
-				n->l = hConstDistMUL( n->l, @v )
+				if( accumval ) then
+					'' 3. Multiplicate the sum with the MUL's CONST rhs
+					accumval = astNewBOP( AST_OP_MUL, accumval, astCloneTree( n->r ) )
 
-				if( v.dtype <> FB_DATATYPE_INVALID ) then
-					select case as const v.dtype
-					case FB_DATATYPE_LONGINT
-
-mul_long:				select case as const astGetDataType( r )
-						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-							v.val.long *= r->con.val.long
-
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							v.val.long *= clngint( r->con.val.float )
-
-						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-							if( FB_LONGSIZE = len( integer ) ) then
-								v.val.long *= clngint( r->con.val.int )
-							else
-								v.val.long *= r->con.val.long
-							end if
-
-						case else
-							v.val.long *= clngint( r->con.val.int )
-						end select
-
-						r = astNewCONSTl( v.val.long, v.dtype )
-
-					case FB_DATATYPE_ULONGINT
-
-mul_ulong:				select case as const astGetDataType( r )
-						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-							v.val.long *= cunsg( r->con.val.long )
-
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							v.val.long *= culngint( r->con.val.float )
-
-						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-							if( FB_LONGSIZE = len( integer ) ) then
-								v.val.long *= culngint( r->con.val.int )
-							else
-								v.val.long *= cunsg( r->con.val.long )
-							end if
-
-						case else
-							v.val.long *= culngint( r->con.val.int )
-						end select
-
-						r = astNewCONSTl( v.val.long, v.dtype )
-
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						select case as const astGetDataType( r )
-						case FB_DATATYPE_LONGINT
-							v.val.float *= cdbl( r->con.val.long )
-
-						case FB_DATATYPE_ULONGINT
-							v.val.float *= cdbl( cunsg( r->con.val.long ) )
-
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							v.val.float *= r->con.val.float
-
-						case FB_DATATYPE_LONG
-							if( FB_LONGSIZE = len( integer ) ) then
-								v.val.float *= cdbl( r->con.val.int )
-							else
-								v.val.float *= cdbl( r->con.val.long )
-							end if
-
-						case FB_DATATYPE_ULONG
-							if( FB_LONGSIZE = len( integer ) ) then
-								v.val.float *= cdbl( cunsg( r->con.val.int ) )
-							else
-								v.val.float *= cdbl( cunsg( r->con.val.long ) )
-							end if
-
-						case FB_DATATYPE_UINT
-							v.val.float *= cdbl( cunsg( r->con.val.int ) )
-
-						case else
-							v.val.float *= cdbl( r->con.val.int )
-						end select
-
-						r = astNewCONSTf( v.val.float, v.dtype )
-
-					case FB_DATATYPE_LONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							goto mul_int
-						else
-							goto mul_long
-						end if
-
-					case FB_DATATYPE_ULONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							goto mul_int
-						else
-							goto mul_ulong
-						end if
-
-					case else
-
-mul_int:				select case as const astGetDataType( r )
-						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-							v.val.int *= cint( r->con.val.long )
-
-						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-							v.val.int *= cint( r->con.val.float )
-
-						case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-							if( FB_LONGSIZE = len( integer ) ) then
-								v.val.int *= r->con.val.int
-							else
-								v.val.int *= cint( r->con.val.long )
-							end if
-
-						case else
-							v.val.int *= r->con.val.int
-						end select
-
-						r = astNewCONSTi( v.val.int, v.dtype )
-					end select
-
-					n = astNewBOP( AST_OP_ADD, n, r )
+					'' 4. Use an ADD BOP to add the result on top
+					n = astNewBOP( AST_OP_ADD, n, accumval )
 				end if
-
 			end if
 		end if
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptConstDistMUL( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptConstDistMUL( r )
-	end if
-
 	function = n
-
 end function
 
-'':::::
-private sub hOptConstIdxMult _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
+private sub hOptConstIdxMult( byval n as ASTNODE ptr )
+	dim as integer optimize = any, c = any
 	dim as ASTNODE ptr l = n->l
 
-	'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete the * node
+	''
+	'' If top of tree = idx * lgt, and lgt is in the 1..9 range,
+	'' then the length multiplier can be put into ASTNODE.idx.mult,
+	'' allowing the x86 ASM emitter to generate better code.
+	''
+	'' This only works if the multiplier is 1..9 and neither 6 nor 7,
+	'' see also hPrepOperand() and hGetIdxName().
+	''
+
 	if( astIsBOP(l, AST_OP_MUL ) ) then
 		dim as ASTNODE ptr lr = l->r
 		if( astIsCONST( lr ) ) then
+			'' ASM backend?
 			if( irGetOption( IR_OPT_ADDRCISC ) ) then
-				dim as integer c = any
-				select case as const astGetDataType( lr )
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					c = cint( lr->con.val.long )
+				'' Check whether the constant is in usable range
+				'' (just casting to 32bit could break if 64bit
+				'' values are given)
+				c = astGetValueAsLongInt( lr )
+				if( (c >= 1) and (c <= 9) ) then
+					select case as const( c )
+					case 1, 2, 4, 8
+						'' The main multipliers supported by x86
+						optimize = TRUE
 
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					c = cint( lr->con.val.float )
-
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						c = cint( lr->con.val.int )
-					else
-						c = cint( lr->con.val.long )
-					end if
-
-				case else
-					c = cint( lr->con.val.int )
-				end select
-
-				if( c < 10 ) then
-					dim as integer delnode = any
-					select case as const c
-					case 6, 7
-						delnode = FALSE
 					case 3, 5, 9
-						delnode = TRUE
-						'' x86 assumption: not possible if there's already an index (EBP)
+						'' The x86 ASM backend additionally supports 3, 5, 9,
+						'' but it's only possible if there isn't already an index
+						'' (that happens with local variables that use EBP plus an
+						'' index on each access already, x86 assumption)
+						optimize = TRUE
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
 						if( symbIsParam( s ) ) then
-							delnode = FALSE
+							optimize = FALSE
 						elseif( symbIsLocal( s ) ) then
 							if( symbIsStatic( s ) = FALSE ) then
-								delnode = FALSE
+								optimize = FALSE
 							end if
 						end if
+
 					case else
-						delnode = TRUE
+						optimize = FALSE
 					end select
 
-					if( delnode ) then
+					if( optimize ) then
 						n->idx.mult = c
 
 						'' relink
@@ -936,7 +487,7 @@ private function astIncOffset _
 			function = astIncOffset( n->r, ofs )
 		end if
 
-	case AST_NODECLASS_FIELD
+	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 		function = astIncOffset( n->l, ofs )
 
 	case AST_NODECLASS_CONV
@@ -990,10 +541,10 @@ private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' If the deref uses an <> 0 offset then try to include that into
 	'' any child var/idx/deref nodes. If that's not possible, then this
 	'' optimization can't be done.
-	if( ofs <> 0 ) then
-		if( astIncOffset( l->l, ofs ) = FALSE ) then
-			return n
-		end if
+	'' Note: we must do this even if ofs = 0, to ensure it's ok to
+	'' do the astSetType() below.
+	if( astIncOffset( l->l, ofs ) = FALSE ) then
+		return n
 	end if
 
 	dim as integer dtype = astGetFullType( n )
@@ -1008,13 +559,8 @@ private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 end function
 
-'':::::
-private function hOptConstIDX _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr l = any, r = any
+private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any, r = any, accumval = any
 
 	if( n = NULL ) then
 		return NULL
@@ -1034,254 +580,40 @@ private function hOptConstIDX _
 	'' opt must be done in this order: addsub accum and then idx * lgt
 	select case n->class
 	case AST_NODECLASS_IDX, AST_NODECLASS_DEREF
-		l = n->l
-		if( l <> NULL ) then
+		if( n->l ) then
+			accumval = NULL
+			n->l = hConstAccumADDSUB( n->l, accumval, 1 )
 
-			dim as ASTVALUE v = any
-			v.dtype = FB_DATATYPE_INVALID
-			n->l = hConstAccumADDSUB( l, @v, 1 )
-
-        	if( v.dtype <> FB_DATATYPE_INVALID ) then
-        		dim as integer c = any
-        		select case as const v.dtype
-        		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-        			c = cint( v.val.long )
-
-        		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-        			c = cint( v.val.float )
-
-        		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-        			if( FB_LONGSIZE = len( integer ) ) then
-        				c = v.val.int
-        			else
-        				c = cint( v.val.long )
-        			end if
-
-        		case else
-        			c = v.val.int
-        		end select
-
-        		if( n->class = AST_NODECLASS_IDX ) then
-        			n->idx.ofs += c * n->idx.mult
-        		else
-        			n->ptr.ofs += c
-        		end if
-        	end if
-
-        	'' remove l node if it's a const and add it to parent's offset
-        	l = n->l
-        	if( astIsCONST( l ) ) then
-				dim as integer c = any
-				select case as const astGetDataType( l )
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					c = cint( l->con.val.long )
-
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					c = cint( l->con.val.float )
-
-        		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-        			if( FB_LONGSIZE = len( integer ) ) then
-        				c = cint( l->con.val.int )
-        			else
-        				c = cint( l->con.val.long )
-        			end if
-
-				case else
-					c = cint( l->con.val.int )
-				end select
+			if( accumval ) then
+				dim as integer c = astConstFlushToInt( accumval )
 
 				if( n->class = AST_NODECLASS_IDX ) then
 					n->idx.ofs += c * n->idx.mult
 				else
 					n->ptr.ofs += c
 				end if
+			end if
 
-				astDelNode( l )
+			'' remove l node if it's a const and add it to parent's offset
+			if( astIsCONST( n->l ) ) then
+				dim as integer c = astConstFlushToInt( n->l )
 				n->l = NULL
 
+				if( n->class = AST_NODECLASS_IDX ) then
+					n->idx.ofs += c * n->idx.mult
+				else
+					n->ptr.ofs += c
+				end if
 			else
 				'' indexing?
 				if( n->class = AST_NODECLASS_IDX ) then
 					hOptConstIdxMult( n )
-
 				'' deref..
 				else
 					n = hOptDerefAddr( n )
 				end if
 			end if
 		end if
-	end select
-
-	function = n
-
-end function
-
-private function astSetBitfield _
-	( _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr s = any
-
-	''
-	''    l<bitfield> = r
-	'' becomes:
-	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
-	''
-
-	s = l->subtype
-	assert( symbGetClass( s ) = FB_SYMBCLASS_BITFIELD )
-
-	select case s->bitfld.typ
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		astGetFullType( l ) = typeJoin( symbGetFullType( s ), FB_DATATYPE_UINT )
-		l->subtype = NULL
-	case else
-		'' Remap type from bitfield to short/integer/etc., whichever was given
-		'' on the bitfield, to do a "full" field access.
-		astGetFullType( l ) = symbGetFullType( s )
-		l->subtype = s->subtype
-	end select
-
-	'' l is reused on the rhs and thus must be duplicated
-	l = astCloneTree( l )
-
-	'' Apply a mask to retrieve all bits but the bitfield's ones
-	l = astNewBOP( AST_OP_AND, l, _
-	               astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-	                             FB_DATATYPE_UINT ) )
-
-	'' This ensures the bitfield is zeroed & clean before the new value
-	'' is ORed in below. Since the new value may contain zeroes while the
-	'' old values may have one-bits, the OR alone wouldn't necessarily
-	'' overwrite the old value.
-
-	'' boolean bitfield? - do a bool conversion before the bitfield store
-	select case s->bitfld.typ
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		if( r->class <> AST_NODECLASS_CONV ) then
-			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
-			astGetCASTDoConv( r ) = FALSE
-		end if
-		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
-
-		r = astNewBOP( AST_OP_AND, r, _
-					   astNewCONSTi( (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 FB_DATATYPE_UINT ) )
-	case else
-		'' Truncate r if it's too big, ensuring the OR below won't touch any
-		'' other bits outside the target bitfield.
-		r = astNewBOP( AST_OP_AND, r, _
-			       astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
-
-		'' Move r into position if the bitfield doesn't lie at the beginning of
-		'' the accessed field.
-		if( s->bitfld.bitpos > 0 ) then
-			r = astNewBOP( AST_OP_SHL, r, _
-				       astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
-		end if
-	end select
-
-	'' OR in the new bitfield value r
-	function = astNewBOP( AST_OP_OR, l, r )
-end function
-
-private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
-	dim as integer dtype = l->dtype
-	dim as FBSYMBOL ptr s = l->subtype
-	dim as integer boolconv = any
-
-	'' Remap type from bitfield to short/integer/etc, while keeping in
-	'' mind that the bitfield may have been casted, so the FIELD's type
-	'' can't just be discarded.
-	'' if boolean make sure the bool conversion is after the bitfield access
-	select case typeGet( s->typ )
-	case FB_DATATYPE_BOOL8
-		l->dtype = typeJoin( l->dtype, FB_DATATYPE_BYTE )
-		l->subtype = NULL
-		boolconv = TRUE
-	case FB_DATATYPE_BOOL32
-		l->dtype = typeJoin( l->dtype, FB_DATATYPE_INTEGER )
-		l->subtype = NULL
-		boolconv = TRUE
-	case else
-		l->dtype = typeJoin( dtype, s->typ )
-		l->subtype = s->subtype
-		boolconv = FALSE
-	end select
-
-	'' Shift into position, other bits to the right are shifted out
-	if( s->bitfld.bitpos > 0 ) then
-		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos, dtype ) )
-	end if
-
-	'' Mask out other bits to the left
-	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
-
-	'' do boolean conversion after bitfield access
-	if( boolconv ) then
-		l->dtype = typeJoin( l->dtype, s->typ )
-		l->subtype = s->subtype
-		l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
-	end if
-
-	function = l
-end function
-
-private function hRemoveFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr l = any
-
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	'' Remove FIELD nodes and add code for bitfield accesses/assignments
-	'' where needed. FIELD nodes aren't doing anything during emitting,
-	'' but are just needed for the handling of bitfields.
-
-	select case( n->class )
-	case AST_NODECLASS_ASSIGN
-		'' Assigning to a bitfield?
-		if( n->l->class = AST_NODECLASS_FIELD ) then
-			select case( astGetDataType( n->l->l ) )
-			case FB_DATATYPE_BITFIELD
-				'' Delete and link out the FIELD
-				astDelNode( n->l )
-				n->l = n->l->l
-
-				'' The lhs' type is adjusted, and the new rhs
-				'' is returned.
-				n->r = astSetBitfield( n->l, n->r )
-
-			case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-				'' $$JRM
-				n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
-			end select
-		end if
-
-		n->l = hRemoveFIELDs( n->l )
-		n->r = hRemoveFIELDs( n->r )
-
-	case AST_NODECLASS_FIELD
-		l = n->l
-		select case( astGetDataType( l ) )
-		case FB_DATATYPE_BITFIELD
-			l = astAccessBitfield( l )
-			n = hGetBitField( n, astGetFullType( n ) )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-			l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( l ) ), NULL, l )
-		end select
-
-		'' Delete and link out the FIELD
-		astDelNode( n )
-		n = l
-
-		n = hRemoveFIELDs( n )
-
-	case else
-		n->l = hRemoveFIELDs( n->l )
-		n->r = hRemoveFIELDs( n->r )
 	end select
 
 	function = n
@@ -1550,7 +882,7 @@ private sub hDivToShift_Signed _
 					l_cpy, _
 					astNewBOP( AST_OP_SHR, _
 						astNewCONV( typeToUnsigned( dtype ), NULL, l, AST_CONVOPT_SIGNCONV ), _
-						astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ) ), _
+						astNewCONSTi( bits ) ) ), _
 				AST_CONVOPT_SIGNCONV )
 	else
 		'' n + ( (n shr bits) and (1 shl const_val - 1) )
@@ -1560,8 +892,8 @@ private sub hDivToShift_Signed _
 					astNewBOP( AST_OP_AND, _
 						astNewBOP( AST_OP_SHR, _
 							l, _
-							astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ), _
-						astNewCONSTi( 1 shl const_val - 1, FB_DATATYPE_INTEGER ) ) ), _
+							astNewCONSTi( bits ) ), _
+						astNewCONSTi( 1 shl const_val - 1 ) ) ), _
 				AST_CONVOPT_SIGNCONV )
 	end if
 
@@ -2188,7 +1520,7 @@ private function hIsMultStrConcat _
 				end if
 			end if
 
-		case AST_NODECLASS_FIELD
+		case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 			select case l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 
@@ -2234,7 +1566,7 @@ private function hOptStrAssignment _
 				end if
 			end if
 
-		case AST_NODECLASS_FIELD
+		case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 			select case as const l->l->class
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 
@@ -2324,7 +1656,7 @@ function astOptAssignment _
 	case AST_NODECLASS_ASSIGN
 
 	'' SelfBOP and TypeIniFlush will create links to emit trees
-	case AST_NODECLASS_LINK
+	case AST_NODECLASS_LINK, AST_NODECLASS_LOOP
 		n->l = astOptAssignment( n->l )
 		n->r = astOptAssignment( n->r )
 		exit function
@@ -2383,7 +1715,7 @@ function astOptAssignment _
 	select case as const t->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
 
-	case AST_NODECLASS_FIELD
+	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
 		'' isn't it a bitfield?
 		if( astGetDataType( t->l ) = FB_DATATYPE_BITFIELD ) then
 			exit function
@@ -2573,10 +1905,6 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' Optimize nested field accesses
 	n = hMergeNestedFIELDs( n )
 
-	'' Remove FIELD nodes and expand them to bitfield access/assignment
-	'' code where needed
-	n = hRemoveFIELDs( n )
-
 	n = hOptAssocADD( n )
 
 	n = hOptAssocMUL( n )
@@ -2585,9 +1913,9 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n = hOptConstAccum1( n )
 
-	hOptConstAccum2( n )
+	n = hOptConstAccum2( n )
 
-	hOptConstRemNeg( n, NULL )
+	hOptConstRemNeg( n )
 
 	n = hOptConstIDX( n )
 

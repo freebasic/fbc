@@ -5,7 +5,7 @@ Website: http://freeimage.sourceforge.net/
 Platforms supported: ""Win32"", Linux
 Headers to include: ""FreeImage.bi""
 Header version: 3.15.1
-Example included: yes, in examples/gfx/freeimage.bas
+Example included: yes, in ""examples/files/FreeImage""
 
 {{fbdoc item="ex"}}
 Here follows an example of using ""FreeImage"" in ""FreeBASIC"".  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/ FreeImage site]].

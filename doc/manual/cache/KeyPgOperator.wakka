@@ -4,11 +4,12 @@ Declares or defines an overloaded operator.
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
-		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] }
 
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
@@ -24,23 +25,24 @@ Declares or defines an overloaded operator.
 	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 
 	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+	**Operator** //typename//.[[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
 	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	**Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 	**Operator** //typename//.[[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
-	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	**Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
 		Name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##.
 	##//assignment_op//## 
-		##let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
+		##let += -= *= &= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
 	##//unary_op//##
-		##""-"" not @ * -> abs sgn fix frac int exp log sin asin cos acos tan atn##
+		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn##
 	##//binary_op//##
-		##+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >= andalso orelse##
+		##+ - * & / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=##
 
 {{fbdoc item="desc"}}
 	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviors when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##, or ##[[KeyPgUnion Union]]## data type.
@@ -59,32 +61,117 @@ Declares or defines an overloaded operator.
 
 	See ##[[KeyPgOpFor For]]##, ##[[KeyPgOpStep Step]]##, and ##[[KeyPgOpNext Next]]## for more information on overloading the ##[[KeyPgFornext For..Next]]## statement for use with user defined types.
 
+	##**New**##, ##**New[]**##, ##**Delete**##, and ##**Delete[]**## operator members are always static, even if not explicitly declared (##[[KeyPgStaticMember static]]## keyword is unnecessary but allowed).
+
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/operator.bas"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/udt/operator1.bas"}}%%(freebasic)
+'' operator1.bas
+
 Type Vector2D
   As Single x, y
 
   '' Return a string containing the vector data.
   Declare Operator Cast() As String
+
+  '' Multiply the vector by a scalar.
+  Declare Operator *= ( ByVal rhs As Single )
 End Type
 
 '' Allow two vectors to be able to be added together.
 Declare Operator + ( ByRef lhs As Vector2D, ByRef rhs As Vector2D ) As Vector2D
 
+'' Return the modulus (single) of the vector using the overloaded operator abs().
+Declare Operator abs (  ByRef rhs As Vector2D ) As Single
+
 Operator Vector2D.cast () As String
   Return "(" + Str(x) + ", " + Str(y) + ")"
+End Operator
+
+Operator Vector2D.*= ( ByVal rhs As Single )
+  This.x *= rhs
+  This.y *= rhs
 End Operator
 
 Operator + ( ByRef lhs As Vector2D, ByRef rhs As Vector2D ) As Vector2D
   Return type<Vector2D>( lhs.x + rhs.x, lhs.y + rhs.y )
 End Operator
 
+Operator abs ( ByRef rhs As Vector2D ) As Single
+  Return Sqr( rhs.x * rhs.x + rhs.y * rhs.y )
+End Operator
+
 Dim a As Vector2D = type<Vector2D>( 1.2, 3.4 )
 Dim b As Vector2D = type<Vector2D>( 8.9, 6.7 )
+Dim c As Vector2D = type<Vector2D>( 4.3, 5.6 )
 
-Print "a = "; a
-Print "b = "; b
-Print "a + b = "; a + b
+Print "a = "; a, "abs(a) ="; abs( a )
+Print "b = "; b, "abs(b) ="; abs( b )
+Print "a + b = "; a + b, "abs(a+b) ="; abs( a + b )
+Print "c = "; c, "abs(c) ="; Abs( c )
+Print "'c *= 3'"
+c *= 3
+Print "c = "; c, "abs(c) ="; Abs( c )
+%%
+	Aligned memory allocator:
+		- by using the overloaded member operators "New" and "Delete", any created User object is aligned to a multiple of "ALIGN" bytes (256 bytes in this example),
+		- the real pointer of the allocated memory is saved just above the User pointer, in the padding block.
+{{fbdoc item="filename" value="examples/manual/udt/operator2.bas"}}%%(freebasic)
+'' operator2.bas
+
+Const ALIGN = 256
+
+Type UDT
+  Dim As Byte a(0 to 10 * 1024 * 1024 - 1) '' 10 megabyte fixed array
+  Declare Operator New (Byval size As UInteger) As Any Ptr
+  Declare Operator Delete (Byval buffer As Any Ptr)
+  Declare Constructor ()
+  Declare Destructor ()
+End Type
+
+Operator UDT.New (Byval size As UInteger) As Any Ptr
+  Print "  Overloaded New operator, with parameter size = &h" & Hex(size)
+  Dim pOrig As Any Ptr = Callocate(ALIGN-1 + Sizeof(UDT Ptr) + size)
+  Dim pMin As Any Ptr = pOrig + Sizeof(UDT Ptr) 
+  Dim p As Any Ptr = pMin + ALIGN-1 - (Culng(pMin + ALIGN-1) Mod ALIGN)
+  Cast(Any Ptr Ptr, p)[-1] = pOrig
+  Operator = p
+  Print "  real pointer = &h" & Hex(pOrig), "return pointer = &h" & Hex(p)
+End Operator
+
+Operator UDT.Delete (Byval buffer As Any Ptr)
+  Print "  Overloaded Delete operator, with parameter buffer = &h" & Hex(buffer)
+  Dim pOrig As Any Ptr = Cast(Any Ptr Ptr, buffer)[-1]
+  Deallocate(pOrig)
+  Print "  real pointer = &h" & Hex(pOrig)
+End Operator
+
+Constructor UDT ()
+  Print "  Constructor, @This = &h" & Hex(@This)
+End Constructor
+
+Destructor UDT ()
+  Print "  Destructor, @This = &h" & Hex(@This)
+End destructor
+
+Print "'Dim As UDT Ptr p = New UDT'"
+Dim As UDT Ptr p = New UDT
+
+Print "  p = &h" & Hex(p)
+
+Print "'Delete p'"
+Delete p
+%%
+	Output example:
+%%
+'Dim As UDT Ptr p = New UDT'
+  Overloaded New operator, with parameter size = &hA00000
+  real pointer = &h420020   return pointer = &h420100
+  Constructor, @This = &h420100
+  p = &h420100
+'Delete p'
+  Destructor, @This = &h420100
+  Overloaded Delete operator, with parameter buffer = &h420100
+  real pointer = &h420020
 %%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.

@@ -7,8 +7,37 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
+#include once "pp.bi"
 
 declare function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
+
+private function hPPDefinedExpr( ) as ASTNODE ptr
+	dim as FBSYMBOL ptr base_parent = any
+	dim as integer is_defined = any
+
+	'' DEFINED
+	lexSkipToken( LEXCHECK_NODEFINE )
+
+	'' '('
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
+	else
+		lexSkipToken( LEXCHECK_NODEFINE )
+	end if
+
+	'' Identifier
+	is_defined = (cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL)
+	lexSkipToken( )
+
+	'' ')'
+	if( hMatch( CHAR_RPRNT ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		'' error recovery: skip until ')'
+		hSkipUntil( CHAR_RPRNT, TRUE )
+	end if
+
+	function = astNewCONSTi( is_defined )
+end function
 
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
@@ -32,7 +61,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_NEG, negexpr )
 		end if
@@ -40,7 +69,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
 		return negexpr
@@ -54,7 +83,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_PLUS, negexpr )
 		end if
@@ -62,7 +91,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
     	return negexpr
@@ -76,7 +105,7 @@ function cNegNotExpression _
 		if( negexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
 		else
 			negexpr = astNewUOP( AST_OP_NOT, negexpr )
 		end if
@@ -84,7 +113,7 @@ function cNegNotExpression _
     	if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
-			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			negexpr = astNewCONSTi( 0 )
     	end if
 
 		return negexpr
@@ -167,7 +196,7 @@ end function
 ''					  | PtrTypeCastingExpr
 ''				  	  | ParentExpression
 ''					  ) FuncPtrOrMemberDeref?
-''				  |	  AnonUDT
+''				  |	  AnonType
 ''				  |   Atom .
 ''
 function cHighestPrecExpr _
@@ -240,15 +269,27 @@ function cHighestPrecExpr _
 
 		'' Atom
 		case else
+			'' PP expression?
+			if( fbGetIsPP( ) ) then
+				select case( lexGetToken( ) )
+				'' TYPEOF '(' Expression ')'
+				case FB_TK_TYPEOF
+					return astNewCONSTstr( ppTypeOf( ) )
+
+				'' DEFINED '(' Identifier ')'
+				case FB_TK_DEFINED
+					return hPPDefinedExpr( )
+
+				end select
+			end if
+
 			return cAtom( base_parent, chain_ )
 
 		end select
 
 	end select
 
-	''
 	function = cStrIdxOrMemberDeref( expr )
-
 end function
 
 '' '(' DataType ',' Expression ')'
@@ -262,7 +303,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		'' error recovery: skip until ')', fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 	lexSkipToken( )
 
@@ -359,11 +400,7 @@ end function
 '':::::
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
-function cDerefExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
+function cDerefExpression( ) as ASTNODE ptr
     dim as integer derefcnt = any
     dim as ASTNODE ptr expr = any
 
@@ -384,17 +421,12 @@ function cDerefExpression _
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
-	function = astBuildMultiDeref( derefcnt, _
-								   expr, _
-								   astGetFullType( expr ), _
-								   astGetSubType( expr ) )
-
+	function = astBuildMultiDeref( derefcnt, expr, astGetFullType( expr ), astGetSubType( expr ) )
 end function
 
-'':::::
 private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -427,7 +459,7 @@ private function hProcPtrBody _
 	'' taking the address of an method? pointer to methods not supported yet..
 	if( symbIsMethod( proc ) ) then
 		errReportEx( FB_ERRMSG_ACCESSTONONSTATICMEMBER, symbGetFullProcName( proc ) )
-		return NULL
+		return astNewCONSTi( 0 )
 	end if
 
 	if( symbCheckAccess( proc ) = FALSE ) then
@@ -440,11 +472,9 @@ private function hProcPtrBody _
 		callback( proc )
 	end if
 
-	function = astBuildProcAddrof(proc)
-
+	function = astBuildProcAddrof( proc )
 end function
 
-'':::::
 private function hVarPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -455,7 +485,7 @@ private function hVarPtrBody _
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	'' skip any casting if they won't do any conversion
@@ -475,34 +505,37 @@ private function hVarPtrBody _
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
 			astDelTree( expr )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 	case else
 		errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" )
 		'' error recovery: fake a node
 		astDelTree( expr )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end select
 
 	'' check op overloading
 	scope
-    	dim as FBSYMBOL ptr proc = any
-    	dim as FB_ERRMSG err_num = any
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
 
 		proc = symbFindSelfUopOvlProc( AST_OP_ADDROF, expr, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, expr, NULL )
+			expr = astBuildCall( proc, expr )
+			if( expr = NULL ) then
+				expr = astNewCONSTi( 0 )
+			end if
+			return expr
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
+				return astNewCONSTi( 0 )
 			end if
 		end if
 	end scope
 
 	function = astNewADDROF( expr )
-
 end function
 
 '':::::
@@ -511,11 +544,7 @@ end function
 '' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
+function cAddrOfExpression( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = NULL
 
 	'' '@' (Proc ('('')')? | Variable)
@@ -536,8 +565,7 @@ function cAddrOfExpression _
   		dim as FBSYMBOL ptr sym = NULL, base_parent = NULL
 
 		if( check_id ) then
-			chain_ = cIdentifier( base_parent, _
-							  	  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		end if
 
@@ -545,12 +573,10 @@ function cAddrOfExpression _
 		if( sym <> NULL ) then
 			lexSkipToken( )
 			return hProcPtrBody( base_parent, sym )
-
 		'' anything else..
 		else
 			return hVarPtrBody( base_parent, chain_ )
 		end if
-
 	end if
 
 	select case as const lexGetToken( )
@@ -563,13 +589,10 @@ function cAddrOfExpression _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
-    	expr = hVarPtrBody( NULL, NULL )
-		if( expr = FALSE ) then
-			return NULL
-		end if
+		expr = hVarPtrBody( NULL, NULL )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -587,7 +610,7 @@ function cAddrOfExpression _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' proc?
@@ -601,15 +624,12 @@ function cAddrOfExpression _
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		else
 			lexSkipToken( )
 		end if
 
 		expr = hProcPtrBody( base_parent, sym )
-		if( expr = NULL ) then
-			return NULL
-		end if
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -627,7 +647,7 @@ function cAddrOfExpression _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		expr = cHighestPrecExpr( NULL, NULL )
@@ -635,7 +655,7 @@ function cAddrOfExpression _
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		dim as integer dtype = astGetDataType( expr )
@@ -645,7 +665,7 @@ function cAddrOfExpression _
 			'' error recovery: skip until ')' and fake a node
 			hSkipUntil( CHAR_RPRNT, TRUE )
 			astDelTree( expr )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' check for invalid classes (functions, etc)

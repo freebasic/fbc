@@ -293,58 +293,58 @@ sleep
 	Properties can have an additional parameter that is called an ##index## (currently only one additional parameter is allowed). The index is specified in parentheses behind the property's name, as if the property was an array (with only one dimension). For example:
 	
 		{{fbdoc item="filename" value="examples/manual/proguide/udt/properties-indexed.bas"}}%%(freebasic)
-type IntArray
+Type IntArray
 	'' setters
-	declare property value(index as integer, value as integer)
-	declare property value(index as string, value as integer)
-	declare property value(index as integer, value as string)
-	declare property value(index as string, value as string)
+	Declare Property value(index As Integer, v As Integer)
+	Declare Property value(index As String, v As Integer)
+	Declare Property value(index As Integer, v As String)
+	Declare Property value(index As String, v As String)
 
 	'' getters
-	declare property value(index as integer) as integer
-	declare property value(index as string) as integer
+	Declare Property value(index As Integer) As Integer
+	Declare Property value(index As String) As Integer
 
-private:
-	dim as integer data_(0 to 9)
-end type
+Private:
+	Dim As Integer data_(0 To 9)
+End Type
 
-property IntArray.value(index as integer) as integer
-	return this.data_(index)
-end property
+Property IntArray.value(index As Integer) As Integer
+	Return This.data_(index)
+End Property
 
-property IntArray.value(index as string) as integer
-	return this.data_(cint(index))
-end property
+Property IntArray.value(index As String) As Integer
+	Return This.data_(CInt(index))
+End Property
 
-property IntArray.value(index as integer, value as integer)
-	this.data_(index) = value
-end property
+Property IntArray.value(index As Integer, v As Integer)
+	This.data_(index) = v
+End Property
 
-property IntArray.value(index as string, value as integer)
-	this.data_(cint(index)) = value
-end property
+Property IntArray.value(index As String, v As Integer)
+	This.data_(CInt(index)) = v
+End Property
 
-property IntArray.value(index as integer, value as string)
-	this.data_(index) = cint(value)
-end property
+Property IntArray.value(index As Integer, v As String)
+	This.data_(index) = CInt(v)
+End Property
 
-property IntArray.value(index as string, value as string)
-	this.data_(cint(index)) = cint(value)
-end property
+Property IntArray.value(index As String, v As String)
+	This.data_(CInt(index)) = CInt(v)
+End Property
 
-dim a as IntArray
+Dim a As IntArray
 
 a.value(0) = 1234
 a.value("1") = 5678
 a.value(2) = "-1234"
 a.value("3") = "-5678"
 
-print a.value(0)
-print a.value("1")
-print a.value(2)
-print a.value("3")
+Print a.value(0)
+Print a.value("1")
+Print a.value(2)
+Print a.value("3")
 
-sleep
+Sleep
 %%
 	
 	This simulates an integer array that can be assigned strings, and even be indexed with strings. See KeyPgProperty for another example.

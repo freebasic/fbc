@@ -14,7 +14,7 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 	fb_ConsoleGetSize(&cols, NULL);
 
 	do {
-		while( ((k = fb_hGetCh(TRUE)) == -1) || (k & 0x100) )
+		while( ((k = fb_hGetCh(TRUE)) == -1) || (k > 0xFF) )
 			fb_Delay( 10 );
 
 		/* drop subsequent keypresses, if any; this is needed to avoid escape

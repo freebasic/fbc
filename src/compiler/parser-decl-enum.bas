@@ -15,9 +15,7 @@ private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
 	dim as ASTNODE ptr expr = any
 
 	'' '='?
-	if( lexGetToken( ) = FB_TK_ASSIGN ) then
-		lexSkipToken( )
-
+	if( cAssignToken( ) ) then
 		'' ConstExpression
 		expr = cExpression( )
 		if( expr = NULL ) then
@@ -39,8 +37,7 @@ private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION, id )
 		end if
 
-		value = astGetValueAsInt( expr )
-		astDelNode( expr )
+		value = astConstFlushToInt( expr )
 	end if
 end sub
 
@@ -55,8 +52,9 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 
 	do
 		'' Comment? SttSeparator?
-		do while( cComment( ) or cStmtSeparator( ) )
-		loop
+		while( (cComment( ) or cStmtSeparator( )) and _
+		       (lexGetToken( ) <> FB_TK_EOF) )
+		wend
 
 		select case lexGetToken( )
 		'' EOF?
@@ -90,7 +88,7 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 					if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
 						errReport( FB_ERRMSG_DUPDEFINITION )
 						'' error recovery: fake an id
-						id = *hMakeTmpStr( )
+						id = *symbUniqueLabel( )
 					else
 						id = *lexGetText( )
 					end if
@@ -138,11 +136,11 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 	end if
 end sub
 
-'':::::
-''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? EXPLICIT? Comment? SttSeparator
-''                        EnumLine+
-''					  END ENUM .
-sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
+'' EnumDecl  =
+''  ENUM ID? (ALIAS LITSTR)? EXPLICIT?
+''      EnumLine+
+''  END ENUM .
+sub cEnumDecl( byval attrib as integer )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
 
@@ -168,9 +166,9 @@ sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 		id = *lexGetText( )
 		lexSkipToken( )
 
-    case else
-    	id = *hMakeTmpStrNL( )
-    end select
+	case else
+		id = *symbUniqueId( )
+	end select
 
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
@@ -179,7 +177,7 @@ sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 	if( e = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		e = symbAddEnum( hMakeTmpStr( ), NULL, FB_SYMBATTRIB_NONE )
+		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
 	end if
 
 	'' EXPLICIT?

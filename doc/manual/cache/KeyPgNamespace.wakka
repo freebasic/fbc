@@ -8,7 +8,7 @@ Declares a namespace block
 ##
 {{fbdoc item="param"}}
 	##//identifier//##
-		The name of the namespace.
+		The name of the namespace (including nested names specifier).
 	##//aliasname//##
 		An alternate external name for the namespace.
 

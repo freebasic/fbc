@@ -14,7 +14,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	{ _
 		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
-			@FB_RTL_LONGINTDIV, NULL, _
+			@FB_RTL_LONGINTDIV, @"__divdi3", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -29,7 +29,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_ULongintDIV cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
-			@FB_RTL_ULONGINTDIV, NULL, _
+			@FB_RTL_ULONGINTDIV, @"__udivdi3", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -44,7 +44,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_LongintMOD cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
-			@FB_RTL_LONGINTMOD, NULL, _
+			@FB_RTL_LONGINTMOD, @"__moddi3", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -59,7 +59,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_ULongintMOD cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
-			@FB_RTL_ULONGINTMOD, NULL, _
+			@FB_RTL_ULONGINTMOD, @"__umoddi3", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -74,7 +74,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_Dbl2ULongint cdecl ( byval x as double ) as ulongint '/ _
 		( _
-			@FB_RTL_DBL2ULONGINT, NULL, _
+			@FB_RTL_DBL2ULONGINT, @"__fixunsdfdi", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -138,9 +138,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' sinl CDECL overload ( byval x as double ) as double '/ _
+		/' sin CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_SIN, @"sinl", _
+			@FB_RTL_SIN, @"sin", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -162,9 +162,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' asinl CDECL overload ( byval x as double ) as double '/ _
+		/' asin CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_ASIN, @"asinl", _
+			@FB_RTL_ASIN, @"asin", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -186,9 +186,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' cosl CDECL overload ( byval x as double ) as double '/ _
+		/' cos CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_COS, @"cosl", _
+			@FB_RTL_COS, @"cos", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -210,9 +210,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' acosl CDECL overload ( byval x as double ) as double '/ _
+		/' acos CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_ACOS, @"acosl", _
+			@FB_RTL_ACOS, @"acos", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -234,9 +234,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' tanl CDECL overload ( byval x as double ) as double '/ _
+		/' tan CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_TAN, @"tanl", _
+			@FB_RTL_TAN, @"tan", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -258,9 +258,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' atanl CDECL overload ( byval x as double ) as double '/ _
+		/' atan CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_ATAN, @"atanl", _
+			@FB_RTL_ATAN, @"atan", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -282,9 +282,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' sqrtl CDECL overload ( byval x as double ) as double '/ _
+		/' sqrt CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_sqrt, @"sqrtl", _
+			@FB_RTL_sqrt, @"sqrt", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -306,9 +306,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' logl CDECL overload ( byval x as double ) as double '/ _
+		/' log CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_log, @"logl", _
+			@FB_RTL_log, @"log", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -330,9 +330,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' expl CDECL overload ( byval x as double ) as double '/ _
+		/' exp CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_exp, @"expl", _
+			@FB_RTL_exp, @"exp", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -354,9 +354,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' floorl CDECL overload ( byval x as double ) as double '/ _
+		/' floor CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_floor, @"floorl", _
+			@FB_RTL_floor, @"floor", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -402,9 +402,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' fabsl CDECL overload ( byval x as double ) as double '/ _
+		/' fabs CDECL overload ( byval x as double ) as double '/ _
 		( _
-			@FB_RTL_abs, @"fabsl", _
+			@FB_RTL_abs, @"fabs", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
@@ -549,9 +549,9 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 		), _
-		/' atan2l CDECL overload ( byval x as double, byval y as double ) as double '/ _
+		/' atan2 CDECL overload ( byval x as double, byval y as double ) as double '/ _
 		( _
-			@FB_RTL_ATAN2, @"atan2l", _
+			@FB_RTL_ATAN2, @"atan2", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			2, _
@@ -804,110 +804,6 @@ function rtlMathPow	_
 
     ''
     function = proc
-
-end function
-
-'':::::
-function rtlMathLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval islen as integer = TRUE _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-    dim as integer dtype = any, lgt = any
-    dim as FBSYMBOL ptr litsym = any
-
-	function = NULL
-
-	dtype = astGetDataType( expr )
-
-	'' LEN()?
-	if( islen ) then
-		select case as const dtype
-		'' dyn-len or zstring?
-		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR
-
-    		'' literal? evaluate at compile-time..
-    		if( dtype = FB_DATATYPE_CHAR ) then
-    			litsym = astGetStrLitSymbol( expr )
-    			if( litsym <> NULL ) then
-    				lgt = symbGetStrLen( litsym ) - 1
-    			end if
-    		else
-    			litsym = NULL
-    		end if
-
-    		if( litsym = NULL ) then
-    			proc = astNewCALL( PROCLOOKUP( STRLEN ) )
-
-    			'' always calc len before pushing the param
-    			lgt = rtlCalcStrLen( expr, dtype )
-
-    			'' str as any
-    			if( astNewARG( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
- 					exit function
- 				end if
-
-    			'' byval strlen as integer
-				if( astNewARG( proc, _
-							   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-							   FB_DATATYPE_INTEGER ) = NULL ) then
- 					exit function
- 				end if
-
-				return proc
-			end if
-
-		'' wstring?
-		case FB_DATATYPE_WCHAR
-
-    		'' literal? evaluate at compile-time..
-    		litsym = astGetStrLitSymbol( expr )
-    		if( litsym <> NULL ) then
-    			lgt = symbGetWstrLen( litsym ) - 1
-
-    		else
-    			proc = astNewCALL( PROCLOOKUP( WSTRLEN ) )
-
-    			'' byval str as wchar ptr
-    			if( astNewARG( proc, expr ) = NULL ) then
- 					exit function
- 				end if
-
- 				return proc
- 			end if
-
-		'' anything else..
-		case else
-type_size:
-			lgt = rtlCalcExprLen( expr, FALSE )
-
-			'' handle fix-len strings (evaluated at compile-time)
-			if( dtype = FB_DATATYPE_FIXSTR ) then
-				if( lgt > 0 ) then
-					lgt -= 1						'' less the null-term
-				end if
-			end if
-
-		end select
-
-	'' SIZEOF()
-	else
-		lgt = rtlCalcExprLen( expr, FALSE )
-
-		'' wstring? multiply by sizeof(wchar) to get the
-		'' number of bytes, not of chars
-		if( dtype = FB_DATATYPE_WCHAR ) then
-			lgt *= typeGetSize( FB_DATATYPE_WCHAR )
-		end if
-
-	end if
-
-	''
-	astDelTree( expr )
-
-	function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 
 end function
 

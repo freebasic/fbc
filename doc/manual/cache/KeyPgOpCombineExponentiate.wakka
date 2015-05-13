@@ -20,6 +20,8 @@ Exponentiates and assigns a value to a variable
 ##
 	This operator can be overloaded for user-defined types.
 
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpCombineXor Xor=]]##.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/exponent-assign.bas"}}%%(freebasic)
 DIM n AS DOUBLE

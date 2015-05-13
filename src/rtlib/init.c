@@ -1,6 +1,7 @@
 /* libfb initialization */
 
 #include "fb.h"
+#include <locale.h>
 
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
 static int __fb_is_inicnt = 0;
@@ -22,6 +23,22 @@ void fb_hRtInit( void )
 #ifdef ENABLE_MT
 	fb_TlsInit( );
 #endif
+
+	/**
+	 * With the default "C" locale (which is just plain 7-bit ASCII),
+	 * our mbstowcs() calls (from fb_wstr_ConvFromA()) fail to convert
+	 * zstrings specific to the user's locale to Unicode wstrings.
+	 *
+	 * To fix this we must tell the CRT to use the user's locale setting,
+	 * i.e. the locale given by LC_* or LANG environment variables.
+	 *
+	 * We should change the LC_CTYPE setting only, to affect the behaviour
+	 * of the codepage <-> Unicode conversion functions, but not for
+	 * example LC_NUMERIC, which would affect things like the decimal
+	 * separator used by float <-> string conversion functions.
+	 */
+	setlocale( LC_CTYPE, "" );
+
 }
 
 /* called from fbrt0 */
@@ -44,9 +61,12 @@ void fb_hRtExit( void )
 	fb_TlsExit( );
 #endif
 
-	/* if an error has to be displayed, do it now */
-	if( __fb_ctx.error_msg )
-		fputs( __fb_ctx.error_msg, stderr );
+	/* If an error message was stored, print it now, after the console was
+	   cleaned up. At least the DOS gfxlib clears the console on exit,
+	   thus any error messages must be printed after that or they would
+	   not be visible. */
+	if( __fb_ctx.errmsg )
+		fputs( __fb_ctx.errmsg, stderr );
 }
 
 /* called by FB program */

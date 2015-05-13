@@ -1610,9 +1610,9 @@ end type
 
 type LPNMPGCALCSIZE as NMPGCALCSIZE ptr
 
-type NMPGSCROLL
+type NMPGSCROLL field = 1
 	hdr as NMHDR
-	fwKeys as BOOL
+	fwKeys as WORD
 	rcParent as RECT
 	iDir as integer
 	iXpos as integer

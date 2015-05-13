@@ -146,7 +146,7 @@ private sub hAddForwardRef _
             if( subtype = NULL ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake a symbol
-				subtype = symbAddFwdRef( hMakeTmpStr( ) )
+				subtype = symbAddFwdRef( symbUniqueLabel( ) )
             end if
         end if
     end if
@@ -220,20 +220,23 @@ private function hReadId( ) as zstring ptr
     case else
         errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
         '' error recovery: fake an id
-        id = *hMakeTmpStr( )
+        id = *symbUniqueLabel( )
     end select
 
     function = @id
 
 end function
 
-'':::::
-'' MultipleTypedef = TYPE AS SymbolType symbol (',' symbol)*
-''
-sub cTypedefMultDecl()
+'' MultipleTypedef  =  TYPE AS SymbolType symbol (',' symbol)*
+sub cTypedefMultDecl( )
     dim as zstring ptr pfwdname = any, pid = any
     dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
 
     '' AS
     lexSkipToken( )
@@ -256,11 +259,14 @@ sub cTypedefMultDecl()
     loop
 end sub
 
-'':::::
-'' SingleTypedef = TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
-''
-sub cTypedefSingleDecl(byval pid as zstring ptr)
+'' SingleTypedef  =  TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
+sub cTypedefSingleDecl( byval pid as zstring ptr )
 	'' note: given id can be Ucase()'d
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
 
     dim as zstring ptr pfwdname = any
     dim as integer dtype = any, lgt = any

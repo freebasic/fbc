@@ -7,7 +7,7 @@
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
 
-'' if changed, update ast_classTB at ast.bas
+'' when changing, update ast.bas:ast_loadcallbacks() and ast-node-misc.bas:dbg_astNodeClassNames()
 enum AST_NODECLASS
 	AST_NODECLASS_NOP
 
@@ -18,10 +18,18 @@ enum AST_NODECLASS
 	AST_NODECLASS_CONV
 	AST_NODECLASS_ADDROF
 	AST_NODECLASS_BRANCH
+	AST_NODECLASS_JMPTB
 	AST_NODECLASS_CALL
 	AST_NODECLASS_CALLCTOR
 	AST_NODECLASS_STACK
 	AST_NODECLASS_MEM
+
+	'' LOOP nodes, used to wrap loop code (e.g. new[]'s defctor calling)
+	'' that needs to be LINKed into expression trees, because it isn't
+	'' immediately astAdd()'ed, thus may be cloned. The LOOP wrapper node
+	'' allows astCloneTree() to duplicate the loop's LABEL and also update
+	'' the corresponding BRANCH.
+	AST_NODECLASS_LOOP
 
 	'' Only used to classify comparison operators, there are no COMP nodes.
 	AST_NODECLASS_COMP
@@ -42,7 +50,6 @@ enum AST_NODECLASS
 	AST_NODECLASS_IIF
 	AST_NODECLASS_LIT
 	AST_NODECLASS_ASM
-	AST_NODECLASS_JMPTB
 	AST_NODECLASS_DATASTMT
 	AST_NODECLASS_DBG
 
@@ -97,7 +104,7 @@ type AST_NODE_CALL
 	isrtl			as integer
 	args			as integer
 	currarg			as FBSYMBOL ptr
-	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
+	argtail			as ASTNODE_ ptr
 	strtail 		as AST_TMPSTRLIST_ITEM ptr
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 end type
@@ -114,6 +121,8 @@ end type
 type AST_NODE_IDX
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
+	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
+	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
@@ -136,13 +145,25 @@ type AST_NODE_LIT
 	text			as zstring ptr
 end type
 
-type FB_ASMTOK_ as FB_ASMTOK
+enum AST_ASMTOKTYPE
+	AST_ASMTOK_TEXT
+	AST_ASMTOK_SYMB
+end enum
 
-type AST_NODE_ASM
-	head			as FB_ASMTOK_ ptr
+type ASTASMTOK
+	type		as AST_ASMTOKTYPE
+	union
+		sym	as FBSYMBOL ptr
+		text	as zstring ptr
+	end union
+	next		as ASTASMTOK ptr
 end type
 
-type AST_NODE_OP                                  	'' used by: bop, uop, conv & addr
+type AST_NODE_ASM
+	tokhead as ASTASMTOK ptr
+end type
+
+type AST_NODE_OP  '' used by: bop, uop, addr
 	op				as integer
 	options 		as AST_OPOPT
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
@@ -157,8 +178,14 @@ type AST_NODE_OFFS
 end type
 
 type AST_NODE_JMPTB
-	label			as FBSYMBOL ptr
-	op				as AST_JMPTB_OP
+	'' Dynamically allocated buffer holding the jmptb's value/label pairs
+	values				as uinteger ptr
+	labels				as FBSYMBOL ptr ptr
+	labelcount			as integer
+
+	deflabel			as FBSYMBOL ptr
+	minval				as uinteger
+	maxval				as uinteger
 end type
 
 type AST_NODE_DBG
@@ -225,6 +252,7 @@ end type
 
 type AST_NODE_CAST
 	doconv 			as integer						'' do conversion (TRUE or FALSE)
+	do_convfd2fs		as integer  '' whether or not to ensure truncation in double2single conversions
 end type
 
 ''
@@ -296,11 +324,20 @@ end type
 
 type AST_DTORLIST_ITEM
 	sym 			as FBSYMBOL ptr
+
+	'' Some integer used to identify temp vars from expressions nested
+	'' inside the true/false expressions of iif()'s, which may have to be
+	'' destroyed conditionally, depending on which code path was executed.
+	cookie			as integer
+
+	refcount		as integer
 end type
 
-type ASTVALUE
-	dtype			as integer
-	val				as FBVALUE
+type AST_DTORLIST_SCOPESTACK
+	'' Grow array; the stack of cookies of the current live dtorlist scopes
+	cookies	as integer ptr
+	count	as integer
+	room	as integer
 end type
 
 type ASTCTX
@@ -315,10 +352,30 @@ type ASTCTX
 
 	doemit			as integer
 
-	typeinicnt		as integer
+	'' Count of TYPEINI nodes in expressions that are about to be astAdd()ed
+	'' (so astAdd() only bothers running astTypeIniUpdate() if it's really
+	'' necessary -- another pass besides astOptimizeTree() walking the
+	'' whole expression tree during every astAdd() would just be
+	'' unnecessarily slow)
+	typeinicount		as integer
+
+	'' Same for FIELD with bitfield type (for astUpdateBitfields())
+	bitfieldcount		as integer
+
+	'' The counters must always be >= the amount of corresponding nodes that
+	'' will be given to astAdd() so that the updating functions don't miss
+	'' anything. That's why it's important to update the counters during
+	'' astCloneTree() for example. On the other hand, nodes in field or
+	'' parameter initializers don't need to be counted, since these
+	'' expressions will always be cloned instead of being astAdd()ed
+	'' themselves. Unfortunately
 
 	dtorlist		as TLIST						'' temp dtors list
+	dtorlistscopes		as AST_DTORLIST_SCOPESTACK	'' scope stack for astDtorListScope*()
+	dtorlistcookies		as integer			'' Cookie counter used to allocate new cookie numbers
 	flushdtorlist	as integer
+
+	asmtoklist		as TLIST  '' inline ASM token nodes
 end Type
 
 #include once "ir.bi"
@@ -342,8 +399,7 @@ enum AST_INIOPT
 	AST_INIOPT_NONE			= &h00000000
 	AST_INIOPT_ISINI		= &h00000001
 	AST_INIOPT_ISSTATIC		= &h00000002
-	AST_INIOPT_RELINK		= &h00000004
-	AST_INIOPT_DODEREF		= &h00000008
+	AST_INIOPT_DODEREF		= &h00000004
 end enum
 
 
@@ -362,10 +418,7 @@ declare sub astDelNode _
 		byval n as ASTNODE ptr _
 	)
 
-declare function astCloneTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub astDelTree _
 	( _
@@ -378,43 +431,17 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-declare sub astCONST2FBValue _
-	( _
-		byval dst as FBVALUE ptr, _
-		byval expr as ASTNODE ptr _
-	)
-
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
-
-declare function astGetValueAsInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
 
 declare function astGetValueAsLongInt _
 	( _
 		byval n as ASTNODE ptr _
 	) as longint
 
-declare function astGetValueAsULongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as ulongint
-
 declare function astGetValueAsDouble _
 	( _
 		byval n as ASTNODE ptr _
 	) as double
-
-declare function astGetValueAsStr _
-	( _
-		byval n as ASTNODE ptr _
-	) as string
-
-declare function astGetValueAsWstr _
-	( _
-		byval n as ASTNODE ptr _
-	) as wstring ptr
 
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
 declare function astProcEnd( byval callrtexit as integer ) as integer
@@ -436,25 +463,28 @@ declare sub astProcAddGlobalInstance _
 		byval has_dtor as integer _
 	)
 
-declare function astScopeBegin _
+declare function astScopeBegin( ) as ASTNODE ptr
+declare sub astScopeBreak( byval tolabel as FBSYMBOL ptr )
+declare sub astScopeEnd( byval s as ASTNODE ptr )
+declare function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
+declare sub astScopeDestroyVars( byval symtbtail as FBSYMBOL ptr )
+declare sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
+declare function astTempScopeBegin _
 	( _
-		_
-	) as ASTNODE ptr
-
-declare sub astScopeEnd _
+		byref lastscp as FBSYMBOL ptr, _
+		byval backnode as ASTNODE ptr _
+	) as FBSYMBOL ptr
+declare sub astTempScopeEnd _
 	( _
-		byval s as ASTNODE ptr _
+		byval scp as FBSYMBOL ptr, _
+		byval lastscp as FBSYMBOL ptr _
 	)
-
-declare sub astScopeBreak(byval tolabel as FBSYMBOL ptr)
-
-declare function astScopeUpdBreakList _
+declare sub astTempScopeClone _
 	( _
-		byval proc as ASTNODE ptr _
-	) as integer
-
-declare sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
-declare sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
+		byval scp as FBSYMBOL ptr, _
+		byval clonetree as ASTNODE ptr _
+	)
+declare sub astTempScopeDelete( byval scp as FBSYMBOL ptr )
 
 declare function astAdd _
 	( _
@@ -474,11 +504,12 @@ declare sub astAddUnscoped _
 
 declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astUpdComp2Branch _
+declare function astBuildBranch _
 	( _
-		byval n as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval isinverse as integer _
+		byval is_inverse as integer, _
+		byval is_iif as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astPtrCheck _
@@ -505,6 +536,7 @@ enum AST_CONVOPT
 	AST_CONVOPT_SIGNCONV = &h1
 	AST_CONVOPT_CHECKSTR = &h2
 	AST_CONVOPT_PTRONLY  = &h4
+	AST_CONVOPT_DONTCHKPTR = &h8
 end enum
 
 declare function astNewCONV _
@@ -522,6 +554,13 @@ declare function astNewOvlCONV _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare sub astUpdateCONVFD2FS _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval is_expr as integer _
+	)
 
 declare function astNewBOP _
 	( _
@@ -547,7 +586,7 @@ declare function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
+declare function astConstIsZero( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _
@@ -591,23 +630,17 @@ declare function astNewCONSTz _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
+declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
+declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
+
 declare function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval ofs as integer = 0, _
-		byval dtype as integer = FB_DATATYPE_INTEGER, _
-		byval subtype as FBSYMBOL ptr = NULL, _
-		byval clean_up as integer = FALSE _
-	) as ASTNODE ptr
-
-declare sub astBuildVAR _
-	( _
-		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer, _
-		byval dtype as integer, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL _
-	)
+	) as ASTNODE ptr
 
 declare function astNewIDX _
 	( _
@@ -619,11 +652,11 @@ declare function astNewIDX _
 
 declare function astNewFIELD _
 	( _
-		byval p as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval l as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
+declare sub astForgetBitfields( byval n as ASTNODE ptr )
+declare function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewDEREF _
 	( _
@@ -664,12 +697,12 @@ declare function astNewARG _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
-declare function astReplaceARG _
+declare sub astReplaceInstanceArg _
 	( _
 		byval parent as ASTNODE ptr, _
-		byval argnum as integer, _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval expr as ASTNODE ptr, _
+		byval mode as integer = INVALID _
+	)
 
 declare function astNewADDROF _
 	( _
@@ -690,11 +723,30 @@ declare function astNewBRANCH _
 		byval l as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
+declare function astBuildJMPTB _
+	( _
+		byval tempvar as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	) as ASTNODE ptr
+
+declare function astNewLOOP _
+	( _
+		byval label as FBSYMBOL ptr, _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
 declare function astNewIIF _
 	( _
 		byval condexpr as ASTNODE ptr, _
 		byval truexpr as ASTNODE ptr, _
-		byval falsexpr as ASTNODE ptr _
+		byval truecookie as integer, _
+		byval falsexpr as ASTNODE ptr, _
+		byval falsecookie as integer _
 	) as ASTNODE ptr
 
 declare function astNewLINK _
@@ -721,26 +773,19 @@ declare function astNewLIT _
 		byval text as zstring ptr _
 	) as ASTNODE ptr
 
-declare function astNewASM _
+declare function astAsmAppendText _
 	( _
-		byval listhead as FB_ASMTOK_ ptr _
-	) as ASTNODE ptr
+		byval tail as ASTASMTOK ptr, _
+		byval text as zstring ptr _
+	) as ASTASMTOK ptr
 
-declare function astNewJMPTB_Label _
+declare function astAsmAppendSymb _
 	( _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	) as ASTNODE ptr
+		byval tail as ASTASMTOK ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTASMTOK ptr
 
-declare function astNewJMPTB_Begin _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astNewJMPTB_End _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 
 declare function astNewDBG _
 	( _
@@ -748,7 +793,7 @@ declare function astNewDBG _
 		byval ex as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astNewMEM overload _
+declare function astNewMEM _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
@@ -756,16 +801,24 @@ declare function astNewMEM overload _
 		byval bytes as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astNewMEM _
+declare function astBuildNewOp _
 	( _
-		byval op as integer, _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval ex as ASTNODE ptr, _
+		byval op as AST_OP, _
+		byval tmp as FBSYMBOL ptr, _
+		byval elementsexpr as ASTNODE ptr, _
+		byval initexpr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval do_clear as integer, _
-		byval placement_expr as ASTNODE ptr = NULL _
+		byval newexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astBuildDeleteOp _
+	( _
+		byval op as AST_OP, _
+		byval ptrexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
@@ -773,19 +826,30 @@ declare function astNewBOUNDCHK _
 		byval l as ASTNODE ptr, _
 		byval lb as ASTNODE ptr, _
 		byval ub as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
+	) as ASTNODE ptr
+
+declare function astBuildBOUNDCHK _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewPTRCHK _
 	( _
 		byval l as ASTNODE ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval filename as zstring ptr _
 	) as ASTNODE ptr
+
+declare function astBuildPTRCHK( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
 declare function astNewNIDXARRAY _
@@ -815,15 +879,22 @@ declare function astOptAssignment _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astCheckConst _
+declare sub astCheckConst _
 	( _
 		byval dtype as integer, _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+	)
 
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+declare function astCheckASSIGNToType _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
 		byval r as ASTNODE ptr _
 	) as integer
 
@@ -834,10 +905,7 @@ declare function astCheckCONV _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astUpdStrConcat _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astIsClassOnTree _
 	( _
@@ -870,18 +938,6 @@ declare sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
-declare function astTypeIniScopeBegin _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astTypeIniScopeEnd _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -909,6 +965,32 @@ declare function astTypeIniAddCtorList _
 		byval elements as integer _
 	) as ASTNODE ptr
 
+declare function astTypeIniScopeBegin _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function astTypeIniScopeEnd _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare sub astTypeIniCopyElements _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval source as ASTNODE ptr, _
+		byval beginindex as integer _
+	)
+
+declare sub astTypeIniReplaceElement _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval element as integer, _
+		byval expr as ASTNODE ptr _
+	)
+
 declare function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -921,9 +1003,10 @@ declare function astTypeIniIsConst _
 		byval tree as ASTNODE ptr _
 	) as integer
 
-declare function astTypeIniCheckScope _
+declare function astTypeIniUsesLocals _
 	( _
-		byval tree as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval ignoreattrib as integer _
 	) as integer
 
 declare function astTypeIniUpdate _
@@ -931,24 +1014,11 @@ declare function astTypeIniUpdate _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astTypeIniUpdCnt _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+declare function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
+declare function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
+declare sub astTypeIniDelete( byval tree as ASTNODE ptr )
 
-declare function astTypeIniGetHead _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astTypeIniClone _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astDataStmtBegin _
-	( _
-	) as ASTNODE ptr
+declare function astDataStmtBegin( ) as ASTNODE ptr
 
 declare function astDataStmtStore _
 	( _
@@ -956,10 +1026,7 @@ declare function astDataStmtStore _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astDataStmtEnd _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+declare sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
 declare function astDataStmtAdd _
 	( _
@@ -972,20 +1039,10 @@ declare function astGetInverseLogOp _
 		byval op as integer _
 	) as integer
 
-declare function astRemSideFx _
-	( _
-		byref n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astBuildVarAddrof _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astBuildVarDeref _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astBuildVarDeref( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+declare function astBuildVarAddrof( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildVarInc _
 	( _
@@ -1005,6 +1062,14 @@ declare function astBuildVarAssign _
 		byval rhs as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+declare function astBuildFakeWstringAssign _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr, _
+		byval options as integer = 0 _
+	) as ASTNODE ptr
+
 declare function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1012,11 +1077,20 @@ declare function astBuildVarField _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
+declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+
 declare function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval arg1 as ASTNODE ptr, _
-		byval arg2 as ASTNODE ptr _
+		byval arg1 as ASTNODE ptr = NULL, _
+		byval arg2 as ASTNODE ptr = NULL, _
+		byval arg3 as ASTNODE ptr = NULL _
+	) as ASTNODE ptr
+
+declare function astBuildVtableLookup _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astBuildCtorCall _
@@ -1028,13 +1102,8 @@ declare function astBuildCtorCall _
 declare function astBuildDtorCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astBuildCopyCtorCall _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval ignore_virtual as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astBuildForBegin _
@@ -1042,7 +1111,8 @@ declare function astBuildForBegin _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
+		byval inivalue as integer, _
+		byval flush_label as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function astBuildForEnd _
@@ -1068,11 +1138,6 @@ declare function astBuildInstPtrAtOffset _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildMockInstPtr _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
 declare function astBuildVarDtorCall _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1084,7 +1149,7 @@ declare function astBuildTypeIniCtorList _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
+declare function astBuildProcAddrof( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function astBuildProcResultVar _
 	( _
@@ -1126,10 +1191,14 @@ declare function astBuildArrayDescIniTree _
 		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildStrPtr _
+declare function astBuildArrayBound _
 	( _
-		byval lhs as ASTNODE ptr _
+		byval arrayexpr as ASTNODE ptr, _
+		byval dimexpr as ASTNODE ptr, _
+		byval tk as integer _
 	) as ASTNODE ptr
+
+declare function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildMultiDeref _
 	( _
@@ -1139,11 +1208,6 @@ declare function astBuildMultiDeref _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildCallHiddenResVar _
-	( _
-		byval callexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare sub astReplaceSymbolOnTree _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1151,25 +1215,25 @@ declare sub astReplaceSymbolOnTree _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
-declare function astDtorListAdd _
+declare sub astReplaceFwdref _
 	( _
-		byval sym as FBSYMBOL ptr _
-	) as AST_DTORLIST_ITEM ptr
-
-declare sub astDtorListDel _
-	( _
-		byval sym as FBSYMBOL ptr _
+		byval n as ASTNODE ptr, _
+		byval oldsubtype as FBSYMBOL ptr, _
+		byval newdtype as integer, _
+		byval newsubtype as FBSYMBOL ptr _
 	)
 
-declare function astDtorListFlush _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval del_nodes as integer _
-	) as ASTNODE ptr
-
-declare sub astDtorListClear _
-	( _
-	)
+#if __FB_DEBUG__
+declare sub astDtorListDump( )
+#endif
+declare sub astDtorListAdd( byval sym as FBSYMBOL ptr )
+declare sub astDtorListAddRef( byval sym as FBSYMBOL ptr )
+declare sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
+declare function astDtorListFlush( byval cookie as integer = 0 ) as ASTNODE ptr
+declare sub astDtorListDel( byval sym as FBSYMBOL ptr )
+declare sub astDtorListScopeBegin( byval cookie as integer = 0 )
+declare function astDtorListScopeEnd( ) as integer
+declare sub astDtorListUnscope( byval cookie as integer )
 
 declare sub astSetType _
 	( _
@@ -1178,22 +1242,21 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
+declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
+
 declare function astGetOFFSETChildOfs _
 	( _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
+declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
+declare function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astFindLocalSymbol _
-	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr
-
-declare sub astGosubAddInit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
+declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
 declare sub astGosubAddJmp _
 	( _
@@ -1216,12 +1279,6 @@ declare function astGosubAddReturn _
 
 declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
-declare function hTruncateInt _
-	( _
-		byval dtype as integer, _
-		byval value as integer ptr _
-	) as integer
-
 declare function astLoadNOP( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -1239,11 +1296,13 @@ declare function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLOOP( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr

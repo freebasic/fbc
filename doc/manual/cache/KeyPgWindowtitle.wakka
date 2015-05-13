@@ -13,21 +13,21 @@ Sets the program window title
 
 {{fbdoc item="desc"}}
 	This statement is useful to change the program window title. The new title set will become active immediately if the program already runs in windowed mode, otherwise will become the new title for any window produced by subsequent calls to the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement. If this function is not called before setting a new windowed mode via ##[[KeyPgScreengraphics Screen (Graphics)]]##, the program window will use the executable file name (without the extension) as title by default.
-	This command has no effect for consoles.
+	This command has no effect in consoles.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/windowtitle.bas"}}%%(freebasic)
+'Set screen mode 
+SCREEN 13
+
 'Set the window title
 WINDOWTITLE "FreeBASIC example program"
 
-'Set screen mode 
-SCREEN 13
 SLEEP
 %%
 
 {{fbdoc item="target"}}
-	- Not present in DOS version / target of FreeBASIC
-
+	- Not present in DOS version / target of ""FreeBASIC""
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Windowtitle""**##.

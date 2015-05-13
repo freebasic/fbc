@@ -143,6 +143,20 @@ sub wstringOverflow cdecl( )
 	CU_ASSERT( x.i = -1 )
 end sub
 
+sub inputFunction cdecl( )
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+	CU_ASSERT( input( 2, #1 ) = "bb" )
+	close #1
+
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+	CU_ASSERT( winput( 2, #1 ) = wstr( "bb" ) )
+	close #1
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.file.input" )
 	fbcu.add_test( "integerTest", @integerTest )
@@ -152,6 +166,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "Input to fixed-length zstring", @fixlenZstring )
 	fbcu.add_test( "Input to fixed-length wstring", @fixlenWstring )
 	fbcu.add_test( "wstring buffer overflow regression test", @wstringOverflow )
+	fbcu.add_test( "[W]INPUT() function", @inputFunction )
 end sub
 
 end namespace

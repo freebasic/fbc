@@ -22,41 +22,53 @@ Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator 
 {{fbdoc item="desc"}}
 	##**Let**## is used to overload the ##[[KeyPgOpAssignment Operator = (Assignment)]]## operator and to distinguish it from the comparison operator ##[[KeyPgOpEqual Operator = (Equal)]]##.
 
-	##//lhs// **=** //rhs//## will assign the ##//rhs//## to ##//lhs//## by invoking the **Let** operator procedure defined int ##//typename//##.
+	##//lhs// **=** //rhs//## will assign the ##//rhs//## to ##//lhs//## by invoking the ##**Let**## operator procedure defined int ##//typename//##.
+
+	An operator ##**Let**## (assign) must be defined if the shallow implicit copy is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially copied (for example if a member pointer points to dynamically allocated memory, the implicit assignment operator will simply copy the pointer value instead of allocate memory and then perform the copy of data).
+		Note: It is safe to do a check for self-assignment at the top of the ##**Let**## body (by comparing the address of implicit 'this' instance with the address of 'rhs' parameter) to avoid object destruction if previously allocated memory is first deallocated (see example below).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/let.bas"}}%%(freebasic)
-type T
-  x as integer
-  y as integer
-  declare operator let( byref rhs as T )
-end type
+Type UDT
+  Public:
+	Declare Constructor (Byval zp As Const Zstring Ptr)  ''constructor with string initializer
+	Declare Operator Let (Byref rhs As UDT)              ''operator Let (assignment)
+	Declare Function getString () As String              ''function to get string
+	Declare Destructor ()                                ''destructor
+  Private:         
+	Dim zp As Zstring Ptr                                ''private pointer to avoid direct access
+End Type
 
-operator T.let( byref rhs as T )
-  x = rhs.x
-  y = rhs.y
-end operator
+Constructor UDT (Byval zp As Const Zstring Ptr)
+  This.zp = Callocate(Len(*zp) + 1)
+  *This.zp = *zp
+End Constructor
 
-dim a as T = ( 5, 7 )
-dim b as T
+Operator UDT.Let (Byref rhs As UDT)
+  If @This <> @rhs Then  '' check for self-assignment to avoid object destruction
+	Deallocate(This.zp)
+	This.zp = Callocate(Len(*rhs.zp) + 1)
+	*This.zp = *rhs.zp
+  End If
+End Operator
 
-'' Do the assignment invoking the LET
-'' operator procedure
-b = a
+Function UDT.getString () As String
+  Return *This.zp
+End Function
 
-print "a.x = "; a.x
-print "a.y = "; a.y
-print
-print "b.x = "; b.x
-print "b.y = "; b.y
+Destructor UDT ()
+  Deallocate(This.zp)
+End destructor
+
+
+Dim u As UDT = UDT("")
+u = Type<UDT>("Thanks to the overloading operator Let (assign)")
+Print u.getString
+Sleep
 %%
 Output:
 %%
-a.x =  5
-a.y =  7
-
-b.x =  5
-b.y =  7
+Thanks to the overloading operator Let (assign)
 %%
 
 {{fbdoc item="lang"}}

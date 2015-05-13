@@ -21,27 +21,17 @@
 '' on the command line (jeffm)
 ''
 #define AsmBackend() _
-	( _
-	( FB_BACKEND_GAS = fbGetOption( FB_COMPOPT_BACKEND )) _
-	and _
-	( 0 = (FB_EXTRAOPT_GOSUB_SETJMP and fbGetOption( FB_COMPOPT_EXTRAOPT )) ) _
-	)
+	( (env.clopt.backend = FB_BACKEND_GAS) and _
+	  (env.clopt.gosubsetjmp = FALSE) )
 
-'':::::
-sub astGosubAddInit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr var_decl = any
 	dim as integer dtype = any
 
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = symbAllocProcExt( )
-	end if
-	
+	symbProcAllocExt( proc )
+
 	if( symbGetProcStatGosub( proc ) ) then
 		exit sub
 	end if
@@ -52,7 +42,6 @@ sub astGosubAddInit _
 
 		'' DIM "{gosubctx}" as integer = 0
 		dtype = FB_DATATYPE_INTEGER
-
 	else
 
 		'' create a local pointer to the gosub stack
@@ -61,23 +50,19 @@ sub astGosubAddInit _
 
 		'' DIM "{gosubctx}" as GOSUBCTX = NULL
 		dtype = typeAddrOf( FB_DATATYPE_VOID )
-
 	end if
 
-	sym = symbAddVarEx( hMakeTmpStr(), NULL, _
-						 dtype, NULL, 0, _
-						 0, dTB(), _
-						 FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
+	sym = symbAddVar( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), _
+	                  FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
 
-	var_decl = astNewDECL( sym, NULL )
+	var_decl = astNewDECL( sym, TRUE )
 
 	symbSetIsDeclared( sym )
-	
+
 	astAddUnscoped( var_decl )
 
 	symbSetProcGosubSym( proc, sym )
 	symbSetProcStatGosub( proc )
-
 end sub
 
 sub astGosubAddJmp _
@@ -100,13 +85,12 @@ sub astGosubAddJmp _
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-							0, _
-							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
@@ -121,7 +105,7 @@ end sub
 sub astGosubAddJumpPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
+		byval jumptb as ASTNODE ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
@@ -135,9 +119,10 @@ sub astGosubAddJumpPtr _
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
 		astAdd( astNewSTACK( AST_OP_PUSH, _
-						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
+				astNewADDROF( astNewVAR( exitlabel ) ) ) )
 
-		astAdd( astNewBranch( AST_OP_JUMPPTR, NULL, expr ) )
+		'' goto table[expr]
+		astAdd( jumptb )
 	else
 		'' make sure gosub-ctx var is declared
 		astGosubAddInit( proc )
@@ -145,18 +130,17 @@ sub astGosubAddJumpPtr _
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_EQ, _
 					rtlSetJmp( rtlGosubPush( _
-						astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-							0, _
-							symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+						astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 					) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
-		'' goto [expr]
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+		'' goto table[expr]
+		astAdd( jumptb )
 
 		'' end if
 		astAdd( astNewLABEL( label ) )
@@ -183,9 +167,10 @@ function astGosubAddReturn _
 		'' if( ctx <> 0 ) then
 		label = symbAddLabel( NULL )
 
-		astAdd( astUpdComp2Branch( astNewBOP( AST_OP_NE, _
-					astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ), _
-					astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+		astAdd( astBuildBranch( _
+				astNewBOP( AST_OP_NE, _
+					astNewVAR( symbGetProcGosubSym( proc ) ), _
+					astNewCONSTi( 0 ) ), _
 			  label, _
 			  FALSE ) )
 
@@ -201,7 +186,7 @@ function astGosubAddReturn _
 			'' pop return address from the stack.  Uses "POP immed" which will be
 			'' handled specially in emit_x86.bas::_emitPOPI()
 			astAdd( astNewSTACK( AST_OP_POP, _
-				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
+				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ) ) ) )
 
 			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
@@ -212,9 +197,9 @@ function astGosubAddReturn _
 		astAdd( astNewLABEL( label ) )
 
 		'' set/throw error
-		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ) )
 		if( env.clopt.errorcheck ) then
-			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ), _
 								lexLineNum( ), env.inf.name )
 		end if
 
@@ -226,9 +211,9 @@ function astGosubAddReturn _
 
 		'' RETURN
 		if( l = NULL ) then
-	
+
 			'' fb_GosubReturn( @ctx )
-			function = ( NULL <> rtlGosubReturn( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), 0, symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
+			function = (NULL <> rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ))
 
 		'' RETURN [label]
 		else
@@ -236,13 +221,12 @@ function astGosubAddReturn _
 			'' if( fb_GosubPop( @ctx ) = 0 ) then
 			label = symbAddLabel( NULL )
 
-			astAdd( astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
+			astAdd( astBuildBranch( _
+					astNewBOP( AST_OP_EQ, _
 						rtlGosubPop( _
-							astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-								0, _
-								symbGetType( symbGetProcGosubSym( proc ) ) ) ) _
+							astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) _
 						), _
-						astNewCONSTi( 0, FB_DATATYPE_INTEGER ) ), _
+						astNewCONSTi( 0 ) ), _
 				  label, _
 				  FALSE ) )
 
@@ -253,9 +237,9 @@ function astGosubAddReturn _
 			astAdd( astNewLABEL( label ) )
 
 			'' set/throw error
-			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
+			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ) )
 			if( env.clopt.errorcheck ) then
-				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
+				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB ), _
 									lexLineNum( ), env.inf.name )
 			end if
 
@@ -272,9 +256,7 @@ end function
 sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 	if( symbGetProcStatGosub( proc ) ) then
 		if( AsmBackend() = FALSE ) then
-			astAdd( rtlGosubExit( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
-				0, _
-				symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
+			astAdd( rtlGosubExit( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ) )
 		end if
 	end if
 end sub

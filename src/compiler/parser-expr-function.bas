@@ -112,12 +112,14 @@ function cFunctionCall _
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: remove the SUB call, return a fake node
 		astDelTree( funcexpr )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
+
+	'' Take care of functions returning BYREF
+	funcexpr = astBuildByrefResultDeref( funcexpr )
 
 	''
 	function = cStrIdxOrMemberDeref( funcexpr )
-
 end function
 
 '':::::
@@ -176,12 +178,9 @@ function cCtorCall _
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
-    '' alloc temp var
-    tmp = symbAddTempVar( symbGetType( sym ), _
-    					  sym, _
-    					  FALSE, _
-    					  FALSE )
-
+	'' alloc temp var
+	tmp = symbAddTempVar( symbGetType( sym ), sym )
+	astDtorListAdd( tmp )
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -222,10 +221,6 @@ function cCtorCall _
 
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
-		if( symbGetHasDtor( sym ) ) then
-			astDtorListAdd( tmp )
-		end if
-
 		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
 	else
 		function = procexpr

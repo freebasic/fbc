@@ -3,9 +3,8 @@ Gets the value of an arbitrary type at an address in memory
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] //datatype//
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //datatype//
 ##
-~&//Note: ##**Peek**## returns a reference to the value at the specified address. See [[CompilerFAQ Compiler FAQ]].//
 
 {{fbdoc item="usage"}}##
 	**Peek**( [ //datatype//, ] //address// )

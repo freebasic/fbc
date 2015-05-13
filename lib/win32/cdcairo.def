@@ -1,0 +1,11 @@
+LIBRARY cdcairo.dll
+EXPORTS
+cdContextCairoDBuffer
+cdContextCairoImage
+cdContextCairoImageRGB
+cdContextCairoNativeWindow
+cdContextCairoPDF
+cdContextCairoPS
+cdContextCairoSVG
+cdFinishContextPlus
+cdInitContextPlus

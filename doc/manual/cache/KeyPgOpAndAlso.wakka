@@ -23,28 +23,37 @@ Returns the short circuit-and (conjunction) of two numeric values
 	Returns the short circuit-and (conjunction) of the two operands.
 
 {{fbdoc item="desc"}}
-	This operator evaluates the left hand side expression.  If the result is zero, then zero is immediately returned.  If the result is non zero then the right hand side is evaluated, and the logical result from that is returned. 
+	This operator evaluates the left hand side expression.  If the result is zero, then zero is immediately returned.  If the result is nonzero then the right hand side is evaluated, and the logical result from that is returned. 
 
 	The truth table below demonstrates all combinations of a short circuit-and operation, the '-' denotes that the operand is not evaluated.
 
-	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;-;0;1;0;0;1;1;1"}}
+	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;-;0;nonzero;0;0;nonzero;nonzero;-1"}}
 
 	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.
 	
-	The return type is always an Integer, of the value 0 or -1, denoting false and true respectively.
+	The return type is always an ##[[KeyPgInteger Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively.
 
 	This operator cannot be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/andalso.bas"}}%%(freebasic)
-' Using the ANDALSO operator on two numeric values
-DIM AS INTEGER numeric_value1, numeric_value2
-numeric_value1 = 15
-numeric_value2 = 30
+'' Using the ANDALSO operator to guard against array access
+'' when the index is out of range
 
-'Result =  -1
-PRINT numeric_value1 ANDALSO numeric_value2
-SLEEP
+dim as integer isprime(1 to 10) = { _
+	_ ' 1  2  3  4  5  6  7  8  9  10
+	    0, 1, 1, 0, 1, 0, 1, 0, 0, 0 _
+	}
+
+dim as integer n
+input "Enter a number between 1 and 10: ", n
+
+'' isprime() array will only be accessed if n is in range
+if (n >= 1 and n <= 10) andalso isprime(n) then
+	print "n is prime"
+else
+	print "n is not prime, or out of range"
+end if
 %%
 
 {{fbdoc item="diff"}}

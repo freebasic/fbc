@@ -62,18 +62,18 @@ private function hThreadCallMapType _
             function = iif( udt = TRUE, -1, FB_RTL_TCTYPES_PTR )
         case FB_DATATYPE_STRUCT
             '' restrictions to simplify life
-            if symbGetUDTIsUnion( stype ) then 
+            if( symbGetUDTIsUnion( stype ) or symbGetUDTHasAnonUnion( stype ) ) then
                 exit function
             end if
             if symbGetUDTAlign( stype ) <> 0 then 
                 exit function
             end if
-            
+
             '' FB transforms type with 1 element to that element's type
-            dim elems as integer = cint( symbGetUDTElements( stype ) )
-            if elems = 1 then
-                dim as FBSYMBOL ptr elem = symbGetUDTFirstElm( stype )
-                function = hThreadCallMapType( elem, TRUE )
+            dim as FBSYMBOL ptr first = symbUdtGetFirstField( stype )
+            '' no second field?
+            if( symbUdtGetNextField( first ) = NULL ) then
+                function = hThreadCallMapType( first, TRUE )
             else
                 function = FB_RTL_TCTYPES_TYPE
             end if
@@ -83,37 +83,40 @@ private function hThreadCallMapType _
         
 end function
 
-'':::::
 private function hThreadCallPushStruct _
-    ( _
-        byval funcexpr as ASTNODE ptr, _
-        byval struct as FBSYMBOL ptr _
-    ) as integer
+	( _
+		byval funcexpr as ASTNODE ptr, _
+		byval struct as FBSYMBOL ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr fld = any
+	dim as integer count = any
+
+	'' count number of elements
+	count = 0
+	fld = symbUdtGetFirstField( struct )
+	do
+		count += 1
+		fld = symbUdtGetNextField( fld )
+	loop while( fld )
+
+	'' push number of elements
+	if( astNewArg( funcexpr, astNewCONSTi( count ) ) = NULL ) then
+		exit function
+	end if
     
-    function = false
-    
-    '' push number of elements
-    dim as integer elems
-    dim as ASTNODE ptr elemexpr
-    elems = symbGetUDTElements( struct )
-    elemexpr = astNewCONSTi( elems, FB_DATATYPE_INTEGER )
-    if( astNewArg( funcexpr, elemexpr ) = NULL ) then
-        exit function
-    end if
-    
-    '' push each element
-    dim as FBSYMBOL PTR elem 
-    elem = symbGetUDTFirstElm( struct )
-    for i as integer = 1 to elems
-        dim as FB_RTL_TCTYPES tctype = hThreadCallMapType( elem, TRUE )
-        dim as FBSYMBOL ptr stype = symbGetSubType( elem )        
-        if hThreadCallPushType( funcexpr, tctype, stype ) = FALSE then
-            exit  function
-        end if
-        elem = symbGetUDTNextElm( elem, FALSE )
-    next i
-    
-    function = true
+	'' push each element
+	fld = symbUdtGetFirstField( struct )
+	do
+		if( hThreadCallPushType( funcexpr, _
+		                         hThreadCallMapType( fld, TRUE ), _
+		                         symbGetSubType( fld ) ) = FALSE ) then
+			exit  function
+		end if
+		fld = symbUdtGetNextField( fld )
+	loop while( fld )
+
+	function = TRUE
 end function
     
 '':::::
@@ -134,7 +137,7 @@ private function hThreadCallPushType _
     
     '' push argument on stack
     dim as ASTNODE ptr typeexpr
-    typeexpr = astNewCONSTi( tctype, FB_DATATYPE_INTEGER )
+    typeexpr = astNewCONSTi( tctype )
     if( astNewARG( funcexpr, typeexpr ) = NULL ) then
         exit function
     end if
@@ -149,35 +152,24 @@ private function hThreadCallPushType _
     function = true
 end function
 
-'':::::
-private function hGetExprAddrOf _
-    ( _
-        byval expr as ASTNODE ptr, _
-        byref ptrexpr as ASTNODE ptr _
-    ) as integer
-    
-    function = FALSE
-    
-    if( astGetClass( expr ) <> AST_NODECLASS_VAR ) then
-        '' copy expression to a variable, and get the address
-        dim dtype as FB_DATATYPE = astGetDataType( expr )
-        dim stype as FBSYMBOL ptr = astGetSubType( expr )
-        dim tmpvar as FBSYMBOL ptr
-        dim as ASTNODE ptr tmpvarexpr, asgnexpr
-        tmpvar = symbAddTempVar( dtype, stype, FALSE, FALSE )
-        tmpvarexpr = astNewVAR( tmpvar, 0, dtype, stype )
-        asgnexpr = astNewASSIGN( tmpvarexpr, expr, AST_OPOPT_DONTCHKPTR )
-        if( astAdd( asgnexpr ) = FALSE ) then
-            exit function
-        end if
-        ptrexpr = astNewADDROF( tmpvarexpr )
-    else
-        '' already a variable? just get the address
-        ptrexpr = astNewADDROF( expr )
-    end if
+private function hGetExprRef( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmpvar = any, subtype = any
+	dim as integer dtype = any
 
-    function = TRUE
-    
+	if( astIsVAR( expr ) ) then
+		'' already a variable? just get the address
+		'' @expr
+		function = astNewADDROF( expr )
+	else
+		'' copy expression to a variable, and get the address
+		tmpvar = symbAddTempVar( astGetDataType( expr ), astGetSubType( expr ) )
+
+		'' tmpvar = expr
+		astAdd( astNewASSIGN( astNewVAR( tmpvar ), expr, AST_OPOPT_DONTCHKPTR ) )
+
+		'' @tmpvar
+		function = astNewADDROF( astNewVAR( tmpvar ) )
+	end if
 end function
 
 '':::::
@@ -186,7 +178,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     function = NULL
 
     dim as FBSYMBOL ptr proc, param
-    dim as ASTNODE ptr procvarexpr, procvarptrexpr, procmodeexpr
+    dim as ASTNODE ptr procmodeexpr
     dim as ASTNODE ptr stacksizeexpr, argsexpr, ptrexpr
     
     proc = callexpr->sym
@@ -213,9 +205,7 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
 
     '' push function argument
-    procvarexpr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
-    procvarptrexpr = astNewADDROF( procvarexpr )
-    if( astNewARG( expr, procvarptrexpr ) = NULL ) then
+    if( astNewARG( expr, astBuildProcAddrOf( proc ) ) = NULL ) then
         exit function
     end if
 
@@ -234,19 +224,19 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
     end if
 
     '' push calling convention
-    procmodeexpr = astNewCONSTi( procmode, FB_DATATYPE_INTEGER )
+    procmodeexpr = astNewCONSTi( procmode )
     if( astNewARG( expr, procmodeexpr ) = NULL ) then
         exit function
     end if
     
     '' push stack size (not in syntax)
-    stacksizeexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    stacksizeexpr = astNewCONSTi( 0 )
     if( astNewARG( expr, stacksizeexpr ) = NULL ) then
         exit function
     end if
     
     '' push number of arguments
-    argsexpr = astNewCONSTi( args, FB_DATATYPE_INTEGER )
+    argsexpr = astNewCONSTi( args )
     if( astNewARG( expr, argsexpr ) = NULL ) then
         exit function
     end if
@@ -278,19 +268,15 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         end if
 
         '' get pointer to argument
-        if( hGetExprAddrOf( argexpr( i ), ptrexpr ) ) = FALSE then
-            exit function
-        end if
-        
+        ptrexpr = hGetExprRef( argexpr( i ) )
+
         ''byref
         dim isstring as integer
         isstring = typeGetDtOnly( astGetDataType( argexpr( i ) ) )
         if( mode = FB_PARAMMODE_BYREF and _
             argmode( i ) <> FB_PARAMMODE_BYVAL and _
             isstring = FALSE ) then
-            if( hGetExprAddrOf( ptrexpr, ptrexpr ) ) = FALSE then
-                exit function
-            end if
+            ptrexpr = hGetExprRef( ptrexpr )
         end if
         
         if( ptrexpr = NULL ) then

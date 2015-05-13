@@ -32,7 +32,7 @@ enum EMIT_NODEOP
 	EMIT_OP_MOVI, EMIT_OP_MOVF, EMIT_OP_MOVL
 	EMIT_OP_ADDI, EMIT_OP_ADDF, EMIT_OP_ADDL
 	EMIT_OP_SUBI, EMIT_OP_SUBF, EMIT_OP_SUBL
-	EMIT_OP_MULI, EMIT_OP_MULF, EMIT_OP_MULL, EMIT_OP_SMULI
+	EMIT_OP_MULI, EMIT_OP_MULF, EMIT_OP_MULL
 	EMIT_OP_DIVI, EMIT_OP_DIVF, EMIT_OP_DIVL
 	EMIT_OP_MODI, EMIT_OP_MODF, EMIT_OP_MODL
 	EMIT_OP_SHLI, EMIT_OP_SHLL
@@ -68,6 +68,7 @@ enum EMIT_NODEOP
 
 	EMIT_OP_FIX
 	EMIT_OP_FRAC
+	EMIT_OP_CONVFD2FS
 
 	EMIT_OP_SWZREP
 
@@ -82,9 +83,7 @@ enum EMIT_NODEOP
 	EMIT_OP_FLOOR
 	EMIT_OP_XCHGTOS
 
-	EMIT_OP_ALIGN
-	EMIT_OP_STKALIGN
-
+	EMIT_OP_STACKALIGN
 	EMIT_OP_PUSHI, EMIT_OP_PUSHF, EMIT_OP_PUSHL
 	EMIT_OP_POPI, EMIT_OP_POPF, EMIT_OP_POPL
 	EMIT_OP_PUSHUDT
@@ -175,9 +174,16 @@ type EMIT_LITNODE
 end type
 
 type EMIT_JTBNODE
-	op			as AST_JMPTB_OP
-	dtype		as integer
-	text		as zstring ptr
+	tbsym				as FBSYMBOL ptr
+
+	'' Dynamically allocated buffer holding the jmptb's value/label pairs
+	values				as uinteger ptr
+	labels				as FBSYMBOL ptr ptr
+	labelcount			as integer
+
+	deflabel			as FBSYMBOL ptr
+	minval				as uinteger
+	maxval				as uinteger
 end type
 
 type EMIT_MEMNODE
@@ -236,9 +242,16 @@ type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
 type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval op as AST_JMPTB_OP, _
-						byval dtype as integer, _
-						byval text as zstring ptr )
+type EMIT_JTBCB as sub _
+	( _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	)
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 						byval svreg as IRVREG ptr, _
@@ -298,15 +311,9 @@ type EMIT_VTBL
 		byref r2 as integer _
 	)
 
-	getVarName as function _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
 	procGetFrameRegName as function _
 	( _
 	) as const zstring ptr
-
 
 	procBegin as sub _
 	( _
@@ -405,51 +412,26 @@ end type
 ''
 ''
 ''
-declare function emitInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-declare sub emitEnd _
-	( _
-		_
-	)
+declare function emitInit( ) as integer
+declare sub emitEnd( )
 
 declare function emitGetRegClass _
 	( _
 		byval dclass as integer _
 	) as REGCLASS ptr
 
-declare function emitASM _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitCOMMENT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitLIT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
+declare sub emitCOMMENT( byval text as zstring ptr )
+declare sub emitASM( byval text as zstring ptr )
 
 declare function emitJMPTB _
 	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr
-
-declare function emitSTACKALIGN _
-	( _
-		byval bytes as integer _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	) as EMIT_NODE ptr
 
 declare function emitCALL _
@@ -703,6 +685,8 @@ declare function emitFRAC _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
 
+declare function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
+
 declare function emitSWZREP _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -767,6 +751,8 @@ declare function emitFLOOR _
 	( _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
+
+declare function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
 
 declare function emitPUSH _
 	( _
@@ -840,6 +826,9 @@ declare sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
 declare sub emitVARINISTR( byval s as const zstring ptr )
 declare sub emitVARINIWSTR( byval s as zstring ptr )
 declare sub emitVARINIPAD( byval bytes as integer )
+declare sub emitFBCTINFBEGIN( )
+declare sub emitFBCTINFSTRING( byval s as zstring ptr )
+declare sub emitFBCTINFEND( )
 
 declare sub emitWriteStr _
 	( _
@@ -847,7 +836,7 @@ declare sub emitWriteStr _
 		byval addtab as integer = FALSE _
 	)
 
-declare sub emitWriteInfoSection _
+declare sub emitWriteObjinfo _
 	( _
 		byval liblist as TLIST ptr, _
 		byval libpathlist as TLIST ptr _
@@ -865,8 +854,6 @@ declare sub emitFlush _
 
 
 #define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
-
-#define emitGetVarName( s ) emit.vtbl.getVarName( s )
 
 #define emitIsKeyword( text ) emit.vtbl.isKeyword( text )
 

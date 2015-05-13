@@ -1,0 +1,6 @@
+doc/licenses/gnutls-openssl.txt
+doc/licenses/gnutls.txt
+lib/linux/libgnutls-openssl.a
+lib/linux/libgnutls-xssl.a
+lib/linux/libgnutls.a
+lib/linux/libgnutlsxx.a

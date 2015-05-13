@@ -46,11 +46,8 @@ sub cStatement()
 	loop
 end sub
 
-'':::
-''SttSeparator    =   (STT_SEPARATOR | EOL)+ .
-''
+'' StmtSeparator  =  (':' | EOL | EOF)+ .
 function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
-
 	function = FALSE
 
 	do
@@ -58,12 +55,14 @@ function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
 		case FB_TK_STMTSEP, FB_TK_EOL
 			parser.stmt.cnt += 1
 			lexSkipToken( lexflags )
+			function = TRUE
+
+		case FB_TK_EOF
+			function = TRUE
+			exit do
+
 		case else
 			exit do
 		end select
-
-		function = TRUE
 	loop
-
 end function
-

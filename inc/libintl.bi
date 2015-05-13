@@ -1,79 +1,117 @@
+' This is file libintl.bi
+' (FreeBasic binding for libintl version 0.18)
+'
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' translated with help of h_2_bi.bas
+' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+'
+' Licence:
+' This library binding is free software; you can redistribute it
+' and/or modify it under the terms of the GNU Lesser General Public
+' License as published by the Free Software Foundation; either
+' version 2 of the License, or (at your option) ANY later version.
+'
+' This binding is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+' Lesser General Public License for more details, refer to:
+' http://www.gnu.org/licenses/lgpl.html
+'
+'
+' Original license text:
+'
 '/* Message catalogs for internationalization.
-'   Copyright (C) 1995-2002, 2004, 2005 Free Software Foundation, Inc.
-'   This file is part of the GNU C Library.
-'   This file is derived from the file libgettext.h in the GNU gettext package.
-'
-'   The GNU C Library is free software; you can redistribute it and/or
-'   modify it under the terms of the GNU Lesser General Public
-'   License as published by the Free Software Foundation; either
-'   version 2.1 of the License, or (at your option) any later version.
-'
-'   The GNU C Library is distributed in the hope that it will be useful,
-'   but WITHOUT ANY WARRANTY; without even the implied warranty of
-'   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-'   Lesser General Public License for more details.
-'
-'   You should have received a copy of the GNU Lesser General Public
-'   License along with the GNU C Library; if not, write to the Free
-'   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-'   02111-1307 USA.  */
+   'Copyright (C) 1995-2002, 2004, 2005 Free Software Foundation, Inc.
+   'This file is part of the GNU C Library.
+   'This file is derived from the file libgettext.h in the GNU gettext package.
 
-'' libintl doesn't always exist, e.g. on Linux systems it's integrated in glibc
-''#inclib "intl"
+   'The GNU C Library is free software; you can redistribute it and/or
+   'modify it under the terms of the GNU Lesser General Public
+   'License as published by the Free Software Foundation; either
+   'version 2.1 of the License, or (at your option) any later version.
 
-#ifndef _LIBINTL_H
-#define _LIBINTL_H 1
+   'The GNU C Library is distributed in the hope that it will be useful,
+   'but WITHOUT ANY WARRANTY; without even the implied warranty of
+   'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   'Lesser General Public License for more details.
 
-#include once "crt/locale.bi"
+   'You should have received a copy of the GNU Lesser General Public
+   'License along with the GNU C Library; if not, write to the Free
+   'Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   '02111-1307 USA.  */
 
-#define __USE_GNU_GETTEXT 1
-#DEFINE __GNU_GETTEXT_SUPPORTED_REVISION(major) iif((major) = 0, 1, -1)
+#IFDEF __FB_WIN32__
+ #PRAGMA push(msbitfields)
+ #INCLIB "iconv"
+ #INCLIB "intl"
+#ENDIF
 
-' Look up MSGID in the current default message catalog for the current
-'   LC_MESSAGES locale.  If not found, returns MSGID itself (the default
-'   text).
-#define gettext(msgid) dgettext (0, msgid)
+#INCLUDE ONCE "crt/locale.bi"
 
-' Look up MSGID in the DOMAINNAME message catalog for the current
-'   LC_MESSAGES locale.
-#define dgettext(domainname, msgid) dcgettext (domainname, msgid, LC_MESSAGES)
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
-' Similar to `gettext' but select the plural form corresponding to the
-'   number N.
-#define ngettext(msgid1, msgid2, n) dngettext (0, msgid1, msgid2, n)
+' 001 start from: libintl.h2bi ==> libintl.h
 
-' Similar to `dgettext' but select the plural form corresponding to the
-'   number N.
-#define dngettext(domainname, msgid1, msgid2, n) dcngettext (domainname, msgid1, msgid2, n, LC_MESSAGES)
+#IFNDEF _LIBINTL_H
+#DEFINE _LIBINTL_H 1
 
-extern "C"
+' file not found: features.h
 
-' Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
-'   locale.
-declare function dcgettext ( byval __domainname as const zstring ptr, _
-			byval __msgid as const zstring ptr, byval __category as integer) as zstring ptr
+#DEFINE __USE_GNU_GETTEXT 1
+#DEFINE __GNU_GETTEXT_SUPPORTED_REVISION(major) IIF((major)= 0 , 1 , -1)
 
-' Similar to `dcgettext' but select the plural form corresponding to the
-'   number N.
-declare function dcngettext ( byval __domainname as const zstring ptr, byval __msgid1 as const zstring ptr, _
-			 byval __msgid2 as const zstring ptr, byval __n as ulong, _
-			 byval __category as integer) as zstring ptr
+DECLARE FUNCTION gettext(BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
+DECLARE FUNCTION dgettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
+DECLARE FUNCTION __dgettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
+DECLARE FUNCTION dcgettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS ZSTRING PTR
+DECLARE FUNCTION __dcgettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS ZSTRING PTR
+DECLARE FUNCTION ngettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ULONG) AS ZSTRING PTR
+DECLARE FUNCTION dngettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ULONG) AS ZSTRING PTR
+DECLARE FUNCTION dcngettext(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ULONG, BYVAL AS INTEGER) AS ZSTRING PTR
+DECLARE FUNCTION textdomain(BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
+DECLARE FUNCTION bindtextdomain(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
+DECLARE FUNCTION bind_textdomain_codeset(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS ZSTRING PTR
 
-' Set the current default message catalog to DOMAINNAME.
-'   If DOMAINNAME is null, return the current default.
-'   If DOMAINNAME is "", reset to the default of "messages".
-declare function textdomain ( byval __domainname as const zstring ptr ) as zstring ptr
+#IF DEFINED (__OPTIMIZE__) AND NOT DEFINED (__cplusplus)
+#DEFINE __need_NULL
+#INCLUDE ONCE "crt/stddef.bi" '__HEADERS__: stddef.h
 
-' Specify that the DOMAINNAME message catalog will be found
-'   in DIRNAME rather than in the system locale data base.
-declare function bindtextdomain ( byval __domainname as const zstring ptr, _
-			     byval __dirname as const zstring ptr ) as zstring ptr
+#DEFINE gettext(msgid) dgettext (NULL, msgid)
+#DEFINE dgettext(domainname, msgid) dcgettext (domainname, msgid, LC_MESSAGES)
+#DEFINE ngettext(msgid1, msgid2, n) dngettext (NULL, msgid1, msgid2, n)
+#DEFINE dngettext(domainname, msgid1, msgid2, n) dcngettext (domainname, msgid1, msgid2, n, LC_MESSAGES)
+#ENDIF ' DEFINED __OPTIM...
+#ENDIF ' _LIBINTL_H
 
-' Specify the character encoding in which the messages from the
-'   DOMAINNAME message catalog will be returned.
-declare function bind_textdomain_codeset ( byval __domainname as const zstring ptr, _
-				      byval __codeset as const zstring ptr) as zstring ptr
+END EXTERN ' (h_2_bi -P_oCD option)
 
-end extern
+#IFDEF __FB_WIN32__
+#PRAGMA pop(msbitfields)
+#ENDIF
 
-#endif '' _LIBINTL_H
+#DEFINE __(_T_) gettext(_T_)
+
+' Translated at 11-01-28 11:16:38, by h_2_bi (version 0.2.0.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net)
+
+'   Protocol: libintl.bi
+' Parameters:
+'                                  Process time [s]: 0.006257920642383397
+'                                  Bytes translated: 2184
+'                                      Maximum deep: 1
+'                                SUB/FUNCTION names: 11
+'                                mangled TYPE names: 0
+'                                        files done: 0
+'                                      files missed: 2
+' features.h
+' locale.h
+'                                                  __FOLDERS__ : 0
+'                                                   __MACROS__ : 5
+' 1: #define BEGIN_DECLS
+' 1: #define END_DECLS
+' 11: #define THROW
+' 33: #define const const
+' 8: #define attribute_format_arg (x)
+'                                                  __HEADERS__ : 0
+'                                                    __TYPES__ : 0
+'                                                __POST_REPS__ : 0

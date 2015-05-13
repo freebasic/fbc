@@ -31,10 +31,15 @@ sub cParameters _
 		byval isproto as integer _
 	)
 
+	dim as integer length = any
+
+	length = 0
+
 	'' method? add the instance pointer (must be done here
 	'' to check for dups)
 	if( symbIsMethod( proc ) ) then
 		symbAddProcInstancePtr( parent, proc )
+		length += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
 	end if
 
 	'' '('?
@@ -55,6 +60,8 @@ sub cParameters _
 		if( param = NULL ) then
 			exit do
 		end if
+
+		length += symbGetLen( param )
 
 		'' vararg?
 		if( param->param.mode = FB_PARAMMODE_VARARG ) then
@@ -77,6 +84,11 @@ sub cParameters _
 	else
 		lexSkipToken( )
 	end if
+
+	'' param list too large?
+	if( length > 256 ) then
+		errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, symbGetName( proc ) )
+	end if
 end sub
 
 '':::::
@@ -84,10 +96,14 @@ private sub hParamError _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval msgnum as FB_ERRMSG = FB_ERRMSG_ILLEGALPARAMSPECAT _
+		byval msgnum as FB_ERRMSG = FB_ERRMSG_ILLEGALPARAMSPECAT, _
+		byval delta as integer = 1 _
 	)
 
-	errReportParam( proc, symbGetProcParams( proc )+1, pid, msgnum )
+	'' (This can be called before or after adding the parameter, so "delta"
+	'' should be used to ensure we report the proper parameter index)
+
+	errReportParam( proc, symbGetProcParams( proc ) + delta, pid, msgnum )
 
 end sub
 
@@ -96,121 +112,87 @@ private sub hParamWarning _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval msgnum as FB_ERRMSG _
+		byval msgnum as FB_ERRMSG, _
+		byval delta as integer = 1 _
 	)
 
-	errReportParamWarn( proc, symbGetProcParams( proc )+1, pid, msgnum )
+	'' (ditto)
+
+	errReportParamWarn( proc, symbGetProcParams( proc ) + delta, pid, msgnum )
 
 end sub
 
-'':::::
 private function hOptionalExpr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pid as zstring ptr, _
-		byval mode as FB_PARAMMODE, _
-		byval dtype as FB_DATATYPE, _
-		byval subtype as FBSYMBOL ptr _
+		byval param as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr sym = any
+	dim as integer inioptions = any
 
     function = NULL
 
-    '' not byval or byref?
-    if( mode <> FB_PARAMMODE_BYVAL ) then
-    	if( mode <> FB_PARAMMODE_BYREF ) then
-    		exit function
-    	end if
-    end if
-
-    select case as const typeGet( dtype )
-    '' UDT? let SymbolInit() build a tree..
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
-
-    	expr = cInitializer( sym, FB_INIOPT_ISINI )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
-
-    	'' del temp var
-    	astReplaceSymbolOnTree( expr, sym, NULL )
-    	symbDelVar( sym )
-
-    '' anything else..
-	case else
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
-
-    	'' check for invalid types..
-    	static as ASTNODE lside
-
-    	astBuildVAR( @lside, NULL, 0, dtype, subtype )
-
-    	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-        	exit function
+	'' Must be BYVAL/BYREF in order to allow an optional expression
+	'' (not BYDESC nor VARARG)
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYVAL ) then
+		if( symbGetParamMode( param ) <> FB_PARAMMODE_BYREF ) then
+			exit function
 		end if
+	end if
 
-    end select
+	'' Complain if it's a forward reference or ANY (possible with BYREF),
+	'' since the type is unknown, we cannot parse an initializer for it.
+	select case( symbGetType( param ) )
+	case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+		errReport( FB_ERRMSG_INCOMPLETETYPE )
+		hSkipUntil( CHAR_RPRNT, FALSE, , TRUE )
+		return astNewCONSTi( 0 )
+	end select
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	expr = cInitializer( param, FB_INIOPT_ISINI )
+	if( expr = NULL ) then
+		exit function
+	end if
 
-    '' don't allow references to local symbols
-    sym = astFindLocalSymbol( expr )
-    if( sym <> NULL ) then
-		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
+
+	'' Remove bitfields from the AST's bitfield counter - the parameter
+	'' initializer will never be astAdd()ed itself, only cloned.
+	astForgetBitfields( expr )
+
+	'' Disallow references to local vars, except for temp vars/descriptors
+	if( astTypeIniUsesLocals( expr, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
+		hParamError( proc, pid, FB_ERRMSG_INVALIDREFERENCETOLOCAL, 0 )
 		'' no error recovery, caller will take care
 		astDelTree( expr )
 		expr = NULL
-    end if
+	end if
 
 	function = expr
-
 end function
 
-'':::::
 private function hMockParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval pmode as integer = INVALID _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
-	dim as integer dtype, plen
+	dim as integer dtype = any
 
 	if( pmode = INVALID ) then
 		pmode = env.opt.parammode
 	end if
 
-    dtype = FB_DATATYPE_INTEGER
+	if( pmode = FB_PARAMMODE_VARARG ) then
+		dtype = FB_DATATYPE_INVALID
+	else
+		dtype = FB_DATATYPE_INTEGER
+	end if
 
-    select case pmode
-    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-    	plen = FB_POINTERSIZE
-
-    case FB_PARAMMODE_BYVAL
-    	if( dtype = FB_DATATYPE_STRING ) then
-    		plen = FB_POINTERSIZE
-    	else
-    		plen = symbCalcLen( dtype, NULL )
-    	end if
-
-    case FB_PARAMMODE_VARARG
-    	dtype = FB_DATATYPE_INVALID
-    	plen = 0
-    end select
-
-	s = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
-
-	symbSetIsMock( s )
-
-	function = s
-
+	function = symbAddProcParam( proc, NULL, dtype, NULL, pmode, 0 )
 end function
 
 '':::::
@@ -226,11 +208,11 @@ private function hParamDecl _
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
-	dim as ASTNODE ptr optval = any
-	dim as integer dtype = any, mode = any, param_len = any
+	dim as ASTNODE ptr optexpr = any
+	dim as integer dtype = any, mode = any, lgt = any
 	dim as integer attrib = any
 	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
-	dim as FBSYMBOL ptr subtype = any, s = any
+	dim as FBSYMBOL ptr subtype = any, param = any
 
 	function = NULL
 
@@ -258,8 +240,8 @@ private function hParamDecl _
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 
-			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, 0, _
-			                         FB_PARAMMODE_VARARG, 0, NULL )
+			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
+			                         FB_PARAMMODE_VARARG, 0 )
 
 		'' syntax error..
 		else
@@ -282,35 +264,44 @@ private function hParamDecl _
 		mode = INVALID
 	end select
 
-	'' only allow keywords as param names on prototypes
-	readid = TRUE
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+	'' Check whether a param ID was given or not
+	'' In prototypes they can be omitted, and in fact we even allow
+	'' keywords there and use them as parameter ID, probably to make
+	'' translating C headers easier, except for AS of course because that
+	'' indicates the parameter type.
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER
+		'' ID (most common case)
+		readid = TRUE
 
-		select case lexGetClass( )
-		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-			if( isproto = FALSE ) then
-				hParamError( proc, lexGetText( ) )
-				'' error recovery: skip until next ',' or ')' and return a mock param
-				hSkipUntil( CHAR_COMMA )
-				return hMockParam( proc, mode )
-			else
-				'' AS?
-				if( lexGetToken( ) = FB_TK_AS ) then
-					readid = FALSE
-				end if
-			end if
+	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		'' Keyword
 
-		case else
-			if( symbGetProcParams( proc ) > 0 ) then
-				hParamError( proc, lexGetText( ) )
-				'' error recovery: skip until next ',' or ')' and return a mock param
-				hSkipUntil( CHAR_COMMA )
-				return hMockParam( proc, mode )
-			end if
-			exit function
-		end select
+		'' Only allow keywords in prototypes, but not in bodies
+		if( isproto = FALSE ) then
+			hParamError( proc, lexGetText( ) )
+			'' error recovery: skip until next ',' or ')' and return a mock param
+			hSkipUntil( CHAR_COMMA )
+			return hMockParam( proc, mode )
+		end if
 
-	end if
+		'' AS? (the only keyword that cannot be ignored/treated as ID here)
+		readid = (lexGetToken( ) <> FB_TK_AS)
+
+	case else
+		'' It's no ID and no keyword; the only other thing that's
+		'' allowed here is an '(' as in '()' array parameter without id,
+		'' in prototypes only of course (only there can param IDs be omitted).
+		if( (lexGetToken( ) <> CHAR_LPRNT) or (isproto = FALSE) ) then
+			hParamError( proc, lexGetText( ) )
+			'' error recovery: skip until next ',' or ')' and return a mock param
+			hSkipUntil( CHAR_COMMA )
+			return hMockParam( proc, mode )
+		end if
+
+		readid = FALSE
+
+	end select
 
 	''
 	if( reclevel >= FB_MAXARGRECLEVEL ) then
@@ -323,9 +314,8 @@ private function hParamDecl _
 	id = @idTB(reclevel)
 	*id = ""
 
-	''
+	'' ID (or keyword used as ID)
 	if( readid ) then
-		'' ID
 		*id = *lexGetText( )
 		dotpos = lexGetPeriodPos( )
 
@@ -333,21 +323,20 @@ private function hParamDecl _
 		hCheckSuffix( dtype )
 
 		lexSkipToken( )
-
-		'' ('('')')
-		if( lexGetToken( ) = CHAR_LPRNT ) then
-			lexSkipToken( )
-			if( (mode <> INVALID) or _
-				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				hParamError( proc, id )
-			end if
-
-			mode = FB_PARAMMODE_BYDESC
-		end if
-
-	'' no id
 	else
+		'' no id
 		dtype  = FB_DATATYPE_INVALID
+	end if
+
+	'' '()' array parentheses, '('?
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
+		'' Must be followed by ')', and BYVAL/BYREF cannot be used
+		'' (array() parameters always implicitly are BYDESC)
+		if( (mode <> INVALID) or (hMatch( CHAR_RPRNT ) = FALSE) ) then
+			hParamError( proc, id )
+		end if
+		mode = FB_PARAMMODE_BYDESC
 	end if
 
 	use_default = FALSE
@@ -380,13 +369,19 @@ private function hParamDecl _
 			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
-		if( cSymbolType( dtype, subtype, param_len, options ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 			doskip = TRUE
 		end if
+
+		if( mode = FB_PARAMMODE_BYVAL ) then
+			'' Disallow BYVAL passing of objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
+
 		reclevel -= 1
 	else
 		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
@@ -405,13 +400,11 @@ private function hParamDecl _
 
 	'' in lang FB,
 	if( fbLangIsSet( FB_LANG_FB ) ) then
-
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default ) then
 			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
 		end if
-
 	end if
 
     '' QB def-by-letter hax
@@ -464,68 +457,54 @@ private function hParamDecl _
 
     end select
 
-    '' calc len
-   	param_len = symbCalcProcParamLen( typeGet( dtype ), subtype, mode )
-   	if( isproto = FALSE ) then
-   		if( param_len > (FB_INTEGERSIZE * 4) ) then
-   			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
-   				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG )
-   			end if
-   		end if
-   	end if
+	'' default values
+	optexpr = NULL
+	dontinit = FALSE
 
-    '' default values
-   	optval = NULL
-   	dontinit = FALSE
+	'' Add new param
+	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
+	                          dtype, subtype, mode, attrib )
+	if( param = NULL ) then
+		exit function
+	end if
 
-    '' ('=' (expr | ANY))?
-    if( lexGetToken( ) = FB_TK_ASSIGN ) then
-    	lexSkipToken( )
-
-    	if( mode = FB_PARAMMODE_BYDESC ) then
-    		'' ANY?
-    		if( lexGetToken( ) = FB_TK_ANY ) then
-            	lexSkipToken( )
-
-				dontinit = TRUE
-
-    		else
-				hParamError( proc, id )
-				'' error recovery: skip until next ',' or ')'
-				hSkipUntil( CHAR_COMMA )
-    		end if
-
-    	else
-        	attrib or= FB_SYMBATTRIB_OPTIONAL
-			optval = hOptionalExpr( proc, id, mode, dtype, subtype )
-
-			if( optval = NULL ) then
-				hParamError( proc, id )
-				'' error recovery: skip until next ',' or ')' and create a def value
-				hSkipUntil( CHAR_COMMA )
-				if( dtype <> FB_DATATYPE_STRUCT ) then
-					optval = astNewCONSTz( dtype )
-				else
-					attrib and= not FB_SYMBATTRIB_OPTIONAL
-				end if
- 	   		end if
-    	end if
-
-    end if
-
-    if( isproto ) then
-    	id = NULL
-    end if
-
-	s = symbAddProcParam( proc, id, dtype, subtype, param_len, mode, attrib, optval )
-
-	if( s <> NULL ) then
-		if( dontinit ) then
-			symbSetDontInit( s )
+	if( isproto = FALSE ) then
+		if( symbGetLen( param ) > (FB_INTEGERSIZE * 4) ) then
+			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
+				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG, 0 )
+			end if
 		end if
 	end if
 
-	function = s
+	'' ('=' (expr | ANY))?
+	if( cAssignToken( ) ) then
+		if( mode = FB_PARAMMODE_BYDESC ) then
+			'' ANY?
+			if( lexGetToken( ) = FB_TK_ANY ) then
+				lexSkipToken( )
+				dontinit = TRUE
+			else
+				hParamError( proc, id, , 0 )
+				'' error recovery: skip until next ',' or ')'
+				hSkipUntil( CHAR_COMMA )
+			end if
+		else
+			optexpr = hOptionalExpr( proc, id, param )
+			if( optexpr = NULL ) then
+				hParamError( proc, id, , 0 )
+				'' error recovery: skip until next ',' or ')'
+				hSkipUntil( CHAR_COMMA )
+			end if
+		end if
+	end if
 
+	if( dontinit ) then
+		symbSetDontInit( param )
+	end if
+
+	if( optexpr ) then
+		symbMakeParamOptional( proc, param, optexpr )
+	end if
+
+	function = param
 end function
-

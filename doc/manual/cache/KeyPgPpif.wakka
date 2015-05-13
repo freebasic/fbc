@@ -35,5 +35,6 @@ Preprocessor conditional directive
 	- ##[[KeyPgPpifndef #ifndef]]##
 	- ##[[KeyPgPpundef #undef]]##
 	- ##[[KeyPgDefined defined]]##
+	- ##[[KeyPgPpassert #assert]]## 
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

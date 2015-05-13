@@ -555,6 +555,42 @@ private sub test_opt_exp_for cdecl( )
 	CU_ASSERT( x = 10 )
 end sub
 
+'' -gen gcc regression test
+namespace varShadowing
+	private sub test1 cdecl( )
+		dim as integer i = 0
+		CU_ASSERT( i = 0 )
+		scope
+			CU_ASSERT( i = 0 )
+			dim as integer i = 1
+			CU_ASSERT( i = 1 )
+			scope
+				CU_ASSERT( i = 1 )
+				dim as integer i = 2
+				CU_ASSERT( i = 2 )
+				scope
+					CU_ASSERT( i = 2 )
+					static as integer i
+					CU_ASSERT( i = 0 )
+					i = 3
+					CU_ASSERT( i = 3 )
+				end scope
+				CU_ASSERT( i = 2 )
+			end scope
+			CU_ASSERT( i = 1 )
+		end scope
+		CU_ASSERT( i = 0 )
+	end sub
+
+	dim shared as integer global = 1
+
+	private sub test2 cdecl( )
+		CU_ASSERT( global = 1 )
+		dim as integer global = 2
+		CU_ASSERT( global = 2 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/scopes/shadow_inherit" )
 
@@ -575,4 +611,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "12", @test_opt_exp_do )
 	fbcu.add_test( "13", @test_opt_exp_while )
 	fbcu.add_test( "14", @test_opt_exp_for )
+
+	fbcu.add_test( "var shadowing 1", @varShadowing.test1 )
+	fbcu.add_test( "var shadowing 2", @varShadowing.test2 )
 end sub

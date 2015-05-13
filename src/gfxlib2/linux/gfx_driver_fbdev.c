@@ -83,8 +83,6 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
-
-/*:::::*/
 static void vga16_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int color;
@@ -139,8 +137,6 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 	}
 }
 
-
-/*:::::*/
 static void *driver_thread(void *arg)
 {
 	struct fb_vblank vblank;
@@ -263,8 +259,6 @@ static void *driver_thread(void *arg)
 	return NULL;
 }
 
-
-/*:::::*/
 static void driver_save_screen(void)
 {
 	EVENT e;
@@ -277,8 +271,6 @@ static void driver_save_screen(void)
 	fb_hPostEvent(&e);
 }
 
-
-/*:::::*/
 static void driver_restore_screen(void)
 {
 	EVENT e;
@@ -293,20 +285,28 @@ static void driver_restore_screen(void)
 	fb_hPostEvent(&e);
 }
 
-
-/*:::::*/
-static void driver_key_handler(int key)
+static void driver_key_handler( int pressed, int repeated, int scancode, int key )
 {
 	EVENT e;
-	
-	e.scancode = key & 0x7F;
-	e.type = (key & 0x100) ? EVENT_KEY_REPEAT : ((key & 0x80) ? EVENT_KEY_PRESS : EVENT_KEY_RELEASE);
-	e.ascii = (key & 0x1000000) ? 0 : ((key >> 16) & 0xFF);
-	fb_hPostEvent(&e);
+
+	if( pressed ) {
+		if( repeated ) {
+			e.type = EVENT_KEY_REPEAT;
+		} else {
+			e.type = EVENT_KEY_PRESS;
+		}
+	} else {
+		e.type = EVENT_KEY_RELEASE;
+	}
+
+	e.scancode = scancode;
+
+	/* Don't return extended keycodes in the ascii field */
+	e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
+
+	fb_hPostEvent( &e );
 }
 
-
-/*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *device_name;
@@ -447,8 +447,7 @@ got_mode:
 		palette_len = 16;
 		framebuffer_offset = (((mode.yres - h) >> 1) * (mode.xres >> 3)) + ((mode.xres - w) >> 4);
 		blitter = vga16_blitter;
-	}
-	else {
+	} else {
 		palette_len = 256;
 		framebuffer_offset = (((mode.yres - h) >> 1) * device_info.line_length) +
 		                     (((mode.xres - w) >> 1) * BYTES_PER_PIXEL(mode.bits_per_pixel));
@@ -532,8 +531,6 @@ got_mode:
 	return 0;
 }
 
-
-/*:::::*/
 static void driver_exit(void)
 {
 	if (is_running) {
@@ -566,22 +563,16 @@ static void driver_exit(void)
 	}
 }
 
-
-/*:::::*/
 static void driver_lock(void)
 {
 	pthread_mutex_lock(&mutex);
 }
 
-
-/*:::::*/
 static void driver_unlock(void)
 {
 	pthread_mutex_unlock(&mutex);
 }
 
-
-/*:::::*/
 static void driver_set_palette(int index, int r, int g, int b)
 {
 	cmap.red[index] = r << 8;
@@ -590,8 +581,6 @@ static void driver_set_palette(int index, int r, int g, int b)
 	is_palette_changed = TRUE;
 }
 
-
-/*:::::*/
 static void driver_wait_vsync(void)
 {
 	pthread_mutex_lock(&mutex);
@@ -599,8 +588,6 @@ static void driver_wait_vsync(void)
 	pthread_mutex_unlock(&mutex);
 }
 
-
-/*:::::*/
 static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	if (mouse_fd < 0)
@@ -613,8 +600,6 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 	return 0;
 }
 
-
-/*:::::*/
 static void driver_set_mouse(int x, int y, int cursor, int clip)
 {
 	if ((x >= 0) && (x < __fb_gfx->w))
@@ -628,8 +613,6 @@ static void driver_set_mouse(int x, int y, int cursor, int clip)
 		mouse_clip = TRUE;
 }
 
-
-/*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
 	const char *device_name;
@@ -669,8 +652,6 @@ static int *driver_fetch_modes(int depth, int *size)
 	return sizes;
 }
 
-
-/*:::::*/
 int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh)
 {
 	struct fb_var_screeninfo temp, *info;

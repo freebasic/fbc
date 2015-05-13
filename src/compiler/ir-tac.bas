@@ -18,7 +18,7 @@ type IRTAC_CTX
 
 	vregTB			as TFLIST
 
-	tmpcnt		as uinteger
+	asm_line		as string
 end type
 
 declare sub hFlushUOP _
@@ -111,11 +111,7 @@ declare sub hFlushDBG _
 		byval ex as integer _
 	)
 
-declare sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
+declare sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 
 declare sub hFreeIDX _
 	( _
@@ -129,11 +125,6 @@ declare sub hFreeREG _
 		byval force as integer = FALSE _
 	)
 
-declare sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	)
-
 declare sub hFreePreservedRegs _
 	( _
  		_
@@ -144,7 +135,8 @@ declare sub hDump _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval wrapline as integer = FALSE _
 	)
 
 declare sub _flush _
@@ -157,22 +149,21 @@ declare sub _flush _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-private sub _init(byval backend as FB_BACKEND)
+private sub _init( )
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
-	ctx.tmpcnt = 0
 
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	emitInit( backend )
+	emitInit( )
 
 	for i as integer = 0 to EMIT_REGCLASSES-1
 		regTB(i) = emitGetRegClass( i )
 	next
 end sub
 
-private sub _end()
+private sub _end( )
 	emitEnd( )
 
 	flistEnd( @ctx.vregTB )
@@ -419,29 +410,9 @@ private sub _scopeEnd _
 
 end sub
 
-private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
-	emitProcAllocStaticVars(head_sym)
+private sub _procAllocStaticVars( byval head_sym as FBSYMBOL ptr )
+	emitProcAllocStaticVars( head_sym )
 end sub
-
-'':::::
-private function _makeTmpStr _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
-
-	static as zstring * 4 + 8 + 1 res
-
-	if( islabel ) then
-		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
-	else
-		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
-	end if
-
-	ctx.tmpcnt += 1
-
-	function = @res
-
-end function
 
 '':::::
 private sub _emitLabel _
@@ -487,22 +458,32 @@ private sub _emitProcBegin _
 
 end sub
 
-'':::::
 private sub _emitProcEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) static
+	)
 
-	dim as integer bytestopop
+	dim as integer bytestopop = any
 
 	_flush( )
 
+	'' Get the size for the callee's stack clean up (at end of procedure)
 	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 		bytestopop = 0
 	else
-		bytestopop = symbGetProcParamsLen( proc )
+		bytestopop = symbCalcProcParamsLen( proc )
+	end if
+
+	'' Additionally pop the hidden ptr (symbCalcProcParamsLen() doesn't
+	'' include it), if it's stdcall/pascal, or the target wants us to
+	'' always pop it, even under cdecl.
+	if( symbProcReturnsOnStack( proc ) ) then
+		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
+		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
+			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
 	end if
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
@@ -526,20 +507,6 @@ private sub _emitScopeEnd _
 	)
 
 	_flush( )
-
-end sub
-
-''::::
-private sub _emitJmpTb _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
-	) static
-
-	_flush( )
-
-	emitJMPTB( op, dtype, symbGetMangledName( label ) )
 
 end sub
 
@@ -569,16 +536,8 @@ private sub _emitUop _
 
 end sub
 
-'':::::
-private sub _emitConvert _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	) static
-
-	select case symb_dtypeTB(typeGet( dtype )).class
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
 	case FB_DATACLASS_INTEGER
 		select case typeGet( dtype )
 		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
@@ -589,18 +548,10 @@ private sub _emitConvert _
 	case FB_DATACLASS_FPOINT
 		_emit( AST_OP_TOFLT, v1, v2, NULL )
 	end select
-
 end sub
 
-'':::::
-private sub _emitStore _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
-
+private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	_emit( AST_OP_ASSIGN, v1, v2, NULL )
-
 end sub
 
 '':::::
@@ -729,24 +680,28 @@ private sub _emitStackAlign _
 
 end sub
 
-'':::::
-private sub _emitJumpPtr _
-	( _
-		byval v1 as IRVREG ptr _
-	)
-
+private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 	_emit( AST_OP_JUMPPTR, v1, NULL, NULL, NULL )
-
 end sub
 
-'':::::
-private sub _emitBranch _
+private sub _emitBranch( byval op as integer, byval label as FBSYMBOL ptr )
+	_emit( op, NULL, NULL, NULL, label )
+end sub
+
+private sub _emitJmpTb _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
-	_emit( op, NULL, NULL, NULL, label )
+	_flush( )
+	emitJMPTB( tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 end sub
 
@@ -763,6 +718,10 @@ private sub _emitMem _
 
 end sub
 
+private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	'' Nothing to do - used by C backend
+end sub
+
 '':::::
 private sub _emitDBG _
 	( _
@@ -775,24 +734,29 @@ private sub _emitDBG _
 
 end sub
 
-'':::::
-private sub _emitComment _
-	( _
-		byval text as zstring ptr _
-	) static
-
+private sub _emitComment( byval text as zstring ptr )
 	_emit( AST_OP_LIT_COMMENT, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
-
 end sub
 
-'':::::
-private sub _emitASM _
-	( _
-		byval text as zstring ptr _
-	) static
+private sub _emitAsmBegin( )
+	ctx.asm_line = ""
+end sub
 
-	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
+private sub _emitAsmText( byval text as zstring ptr )
+	ctx.asm_line += *text
+end sub
 
+private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
+	ctx.asm_line += *symbGetMangledName( sym )
+	if( symbGetOfs( sym ) > 0 ) then
+		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
+	elseif( symbGetOfs( sym ) < 0 ) then
+		ctx.asm_line += str( symbGetOfs( sym ) )
+	end if
+end sub
+
+private sub _emitAsmEnd( )
+	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ctx.asm_line ) ) ) )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -899,6 +863,18 @@ end sub
 
 private sub _emitVarIniScopeEnd( )
 	'' Used by C-emitter only
+end sub
+
+private sub _emitFbctinfBegin( )
+	emitFBCTINFBEGIN( )
+end sub
+
+private sub _emitFbctinfString( byval s as zstring ptr )
+	emitFBCTINFSTRING( s )
+end sub
+
+private sub _emitFbctinfEnd( )
+	emitFBCTINFEND( )
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1041,6 +1017,8 @@ private function _allocVrVar _
 
 	dim as IRVREG ptr vr = any, va = any
 
+	assert( symbol )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
 
 	vr->sym = symbol
@@ -1152,6 +1130,66 @@ private sub _setVregDataType _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+#if __FB_DEBUG__
+private sub hDump _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval wrapline as integer = FALSE _
+	)
+
+	dim s as string
+
+	if( astGetOpId( op ) <> NULL ) then
+		s = *astGetOpId( op )
+	else
+		s = str( op )
+	end if
+
+	const MAXLEN = 4
+	select case( len( s ) )
+	case is > MAXLEN
+		s = left( s, MAXLEN )
+	case is < MAXLEN
+		s += space( MAXLEN - len( s ) )
+	end select
+	s = "[" + s + "]"
+
+	#macro hDumpVr( id, v )
+		if( v <> NULL ) then
+			if( wrapline ) then
+				s += !"\t"
+			else
+				s += " "
+			end if
+			s += id + " = " + vregDump( v )
+			if( wrapline ) then
+				s += NEWLINE
+			else
+				s += !"\t"
+			end if
+		end if
+	#endmacro
+
+	hDumpVr( "d", vr )
+	hDumpVr( "l", v1 )
+	hDumpVr( "r", v2 )
+
+	if( wrapline = FALSE ) then
+		s += NEWLINE
+	end if
+
+	if( (wrapline = FALSE) and (len( s ) > 79) ) then
+		hDump( op, v1, v2, vr, TRUE )
+	else
+		print s;
+	end if
+
+end sub
+#endif
 
 '':::::
 private sub hRename _
@@ -1357,14 +1395,12 @@ private sub _flush static
 
 end sub
 
-'':::::
 private sub hFlushBRANCH _
 	( _
 		byval op as integer, _
 		byval label as FBSYMBOL ptr _
-	) static
+	)
 
-	''
 	select case as const op
 	case AST_OP_LABEL
 		emitLABEL( label )
@@ -1476,11 +1512,36 @@ private sub hPreserveRegs _
 
         			'' else, copy it to a preserved reg
         			else
-    					dim as IRVREG tr
+						dim as IRVREG src, dst
 
-        				tr = *vr
-        				vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
-        				emitMOV( vr, @tr )
+						'' The original vr probably needs to be preserved (?),
+						'' only its IRVREG->reg field must be updated to the new
+						'' register it was moved to.
+						''
+						'' Special care must be taken with LONGINTs (x86 assumption),
+						'' because they will use a second vreg (through IRVREG->vaux),
+						'' and we don't want the MOV to touch that, since it's
+						'' a different register. So, to prevent the MOV emitting from
+						'' thinking it should mov both vregs, the type must be remapped.
+						'' The vaux vreg will be handled implicitly by another iteration
+						'' of this loop, if it uses any reg that needs to be preserved...
+
+						'' src = the vreg using the current reg
+						'' dst = the vreg using the newly allocated reg
+						assert( irIsREG( vr ) )
+						src = *vr
+						vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
+						dst = *vr
+
+						if( ISLONGINT( vr->dtype ) ) then
+							'' Remap type and forget the vaux vreg
+							src.dtype = FB_DATATYPE_INTEGER
+							src.vaux = NULL
+							dst.dtype = FB_DATATYPE_INTEGER
+							dst.vaux = NULL
+						end if
+
+						emitMOV( @dst, @src )
         			end if
 
         			'' free reg
@@ -1511,19 +1572,6 @@ private sub hFlushCALL _
 
 	'' function?
 	if( proc <> NULL ) then
-		'' pop up the stack if needed
-		select case symbGetProcMode( proc )
-		case FB_FUNCMODE_CDECL
-			'' if this func is VARARG, astCALL() already set the size
-			if( bytestopop = 0 ) then
-				bytestopop = symbGetProcParamsLen( proc )
-			end if
-
-		'' stdcall/pascal etc.. nothing to pop
-		case else
-			bytestopop = 0
-		end select
-
 		'' save used registers and free the FPU stack
 		hPreserveRegs( )
 
@@ -1531,7 +1579,6 @@ private sub hFlushCALL _
 
 	'' call or jump to pointer..
 	else
-
 		'' if it's a CALL, save used registers and free the FPU stack
 		if( op = AST_OP_CALLPTR ) then
 			hPreserveRegs( v1 )
@@ -1723,6 +1770,8 @@ private sub hFlushUOP _
 		emitFIX( v1 )
 	case AST_OP_FRAC
 		emitFRAC( v1 )
+	case AST_OP_CONVFD2FS
+		emitCONVFD2FS( v1 )
 
 	case AST_OP_SIN
 		emitSIN( v1 )
@@ -2430,26 +2479,15 @@ private sub hFlushDBG _
 
 end sub
 
-'':::::
-private sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
-
-	dim as zstring ptr text = cast( zstring ptr, ex )
-
+private sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 	select case op
 	case AST_OP_LIT_COMMENT
 		emitComment( text )
-
 	case AST_OP_LIT_ASM
 		emitASM( text )
-
 	end select
 
 	ZstrFree( text )
-
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2594,22 +2632,15 @@ private sub _loadVR _
 		vreg->regFamily = IR_REG_SSE
 	end if
 
-
 end sub
 
-'':::::
-private sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
+private sub hCreateTMPVAR( byval vreg as IRVREG ptr )
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
-		vreg->sym = symbAddTempVar( vreg->dtype, NULL, TRUE )
+		vreg->sym = symbAddAndAllocateTempVar( vreg->dtype )
 		vreg->ofs = symbGetOfs( vreg->sym )
 		vreg->reg = INVALID
 	end if
-
 end sub
 
 '':::::
@@ -2670,112 +2701,80 @@ private sub _xchgTOS _
 
 end sub
 
-/'':::::
-private sub hDump _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	) static
-
-#macro hDumpVr( id, v )
-	if( v <> NULL ) then
-		print " " id ":" & hex( v ) & "(" & irGetVRType( v ) & ";";
-		print using "##"; irGetVRDataType( v );
-		print "," & typeGetClass( irGetVRDataType( v ) ) & ")";
-	end if
-#endmacro
-
-	if( astGetOpId( op ) <> NULL ) then
-		print using "[\  \]"; *astGetOpId( op );
-	else
-		print using "[####]"; op;
-	end if
-
-	hDumpVr( "d", vr )
-	hDumpVr( "l", v1 )
-	hDumpVr( "r", v2 )
-
-	print
-
-end sub
-'/
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub irTAC_ctor()
-	static as IR_VTBL _vtbl = _
-	( _
-		@_init, _
-		@_end, _
-		@_flush, _
-		@_emitBegin, _
-		@_emitEnd, _
-		@_getOptionValue, _
-		@_procBegin, _
-		@_procEnd, _
-		@_procAllocArg, _
-		@_procAllocLocal, _
-		@_procGetFrameRegName, _
-		@_scopeBegin, _
-		@_scopeEnd, _
-		@_procAllocStaticVars, _
-		@_emit, _
-		@_emitConvert, _
-		@_emitLabel, _
-		@_emitLabelNF, _
-		@_emitReturn, _
-		@_emitProcBegin, _
-		@_emitProcEnd, _
-		@_emitPushArg, _
-		@_emitASM, _
-		@_emitComment, _
-		@_emitJmpTb, _
-		@_emitBop, _
-		@_emitUop, _
-		@_emitStore, _
-		@_emitSpillRegs, _
-		@_emitLoad, _
-		@_emitLoadRes, _
-		@_emitStack, _
-		@_emitPushUDT, _
-		@_emitAddr, _
-		@_emitCall, _
-		@_emitCallPtr, _
-		@_emitStackAlign, _
-		@_emitJumpPtr, _
-		@_emitBranch, _
-		@_emitMem, _
-		@_emitScopeBegin, _
-		@_emitScopeEnd, _
-		@_emitDBG, _
-		@_emitVarIniBegin, _
-		@_emitVarIniEnd, _
-		@_emitVarIniI, _
-		@_emitVarIniF, _
-		@_emitVarIniI64, _
-		@_emitVarIniOfs, _
-		@_emitVarIniStr, _
-		@_emitVarIniWstr, _
-		@_emitVarIniPad, _
-		@_emitVarIniScopeBegin, _
-		@_emitVarIniScopeEnd, _
-		@_allocVreg, _
-		@_allocVrImm, _
-		@_allocVrImm64, _
-		@_allocVrImmF, _
-		@_allocVrVar, _
-		@_allocVrIdx, _
-		@_allocVrPtr, _
-		@_allocVrOfs, _
-		@_setVregDataType, _
-		@_getDistance, _
-		@_loadVr, _
-		@_storeVr, _
-		@_xchgTOS, _
-		@_makeTmpStr _
-	)
-
-	ir.vtbl = _vtbl
-end sub
+dim shared as IR_VTBL irtac_vtbl = _
+( _
+	@_init, _
+	@_end, _
+	@_emitBegin, _
+	@_emitEnd, _
+	@_getOptionValue, _
+	@_procBegin, _
+	@_procEnd, _
+	@_procAllocArg, _
+	@_procAllocLocal, _
+	@_procGetFrameRegName, _
+	@_scopeBegin, _
+	@_scopeEnd, _
+	@_procAllocStaticVars, _
+	@_emitConvert, _
+	@_emitLabel, _
+	@_emitLabelNF, _
+	@_emitReturn, _
+	@_emitProcBegin, _
+	@_emitProcEnd, _
+	@_emitPushArg, _
+	@_emitAsmBegin, _
+	@_emitAsmText, _
+	@_emitAsmSymb, _
+	@_emitAsmEnd, _
+	@_emitComment, _
+	@_emitBop, _
+	@_emitUop, _
+	@_emitStore, _
+	@_emitSpillRegs, _
+	@_emitLoad, _
+	@_emitLoadRes, _
+	@_emitStack, _
+	@_emitPushUDT, _
+	@_emitAddr, _
+	@_emitCall, _
+	@_emitCallPtr, _
+	@_emitStackAlign, _
+	@_emitJumpPtr, _
+	@_emitBranch, _
+	@_emitJmpTb, _
+	@_emitMem, _
+	@_emitScopeBegin, _
+	@_emitScopeEnd, _
+	@_emitDECL, _
+	@_emitDBG, _
+	@_emitVarIniBegin, _
+	@_emitVarIniEnd, _
+	@_emitVarIniI, _
+	@_emitVarIniF, _
+	@_emitVarIniI64, _
+	@_emitVarIniOfs, _
+	@_emitVarIniStr, _
+	@_emitVarIniWstr, _
+	@_emitVarIniPad, _
+	@_emitVarIniScopeBegin, _
+	@_emitVarIniScopeEnd, _
+	@_emitFbctinfBegin, _
+	@_emitFbctinfString, _
+	@_emitFbctinfEnd, _
+	@_allocVreg, _
+	@_allocVrImm, _
+	@_allocVrImm64, _
+	@_allocVrImmF, _
+	@_allocVrVar, _
+	@_allocVrIdx, _
+	@_allocVrPtr, _
+	@_allocVrOfs, _
+	@_setVregDataType, _
+	@_getDistance, _
+	@_loadVr, _
+	@_storeVr, _
+	@_xchgTOS _
+)

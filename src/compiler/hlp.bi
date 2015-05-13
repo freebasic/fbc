@@ -9,14 +9,6 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare sub hlpInit _
-	( _
-	)
-
-declare sub hlpEnd _
-	( _
-	)
-
 declare function hMatchText _
 	( _
 		byval txt as zstring ptr _
@@ -79,21 +71,18 @@ declare function hGetFileExt _
 
 declare sub hReplaceSlash( byval s as zstring ptr, byval char as integer )
 
-declare function pathStripDiv(byref path as string) as string
+declare function pathStripDiv( byref path as string ) as string
+declare function pathIsAbsolute( byval path as zstring ptr ) as integer
 
 declare function hToPow2 _
 	( _
 		byval value as uinteger _
 	) as uinteger
 
-declare function hJumpTbAllocSym _
-	( _
-	) as any ptr
-
-declare function hFloatToStr _
+declare function hFloatToHex _
 	( _
 		byval value as double, _
-		byref typ as integer _
+		byval dtype as integer _
 	) as string
 
 declare function hCheckFileFormat _
@@ -102,7 +91,6 @@ declare function hCheckFileFormat _
 	) as integer
 
 declare function hCurDir( ) as string
-declare function hEnvDir( ) as string
 
 declare function hHexUInt _
 	( _
@@ -119,5 +107,8 @@ declare function strUnquote(byref s as string) as string
 #define hIsCharUpper(_c) ( (_c <= asc("Z")) andalso (_c >= asc("A")) )
 #define hIsChar(_c) ( hIsCharLower(_c) orelse hIsCharUpper(_c) )
 #define hIsCharNumeric(_c) ( (_c <= asc("9")) andalso (_c >= asc("0")) )
+
+'' ensure float values over 2^63 are converted correctly
+#define hCastFloatToULongint(f) cunsg( iif( (f) >= 1.e+16, clngint( (f) * 0.5 ) shl 1, clngint( f ) ) )
 
 #endif ''__HELP_BI__

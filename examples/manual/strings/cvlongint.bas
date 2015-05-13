@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvlongint
 '' --------
 
-Dim a As LongInt, b As String
-a=4534
-b=MKLongInt(a)
-Print a, CVLongInt(b)
-Sleep
+Dim ll As LongInt, s As String
+s = "ABCDEFGH"
+ll = CVLongInt(ll)
+Print Using "s = ""&"""; s
+Print Using "ll = _&H&"; Hex(ll)

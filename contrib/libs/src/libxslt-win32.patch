@@ -1,0 +1,11 @@
+--- libxslt/security.c.orig	2013-04-07 22:12:17.680498468 +0200
++++ libxslt/security.c	2013-04-07 22:12:29.692558019 +0200
+@@ -343,7 +343,7 @@
+ 	    }
+ 	    ret = xsltCheckWritePath(sec, ctxt, directory);
+ 	    if (ret == 1)
+-		ret = mkdir(directory, 0755);
++		ret = mkdir(directory);
+ 	}
+ 	xmlFree(directory);
+ 	if (ret < 0)

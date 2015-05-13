@@ -1,0 +1,5 @@
+LIBRARY imlua_process52.dll
+EXPORTS
+imlua_open_process
+luaopen_imlua_process
+luaopen_imlua_process_omp

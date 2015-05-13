@@ -1,0 +1,4 @@
+LIBRARY imlua_capture52.dll
+EXPORTS
+imlua_open_capture
+luaopen_imlua_capture

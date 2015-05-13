@@ -1,13 +1,11 @@
 {{fbdoc item="title" value="ULONG"}}----
-Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
+Standard data type: 32-bit unsigned integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulong**
 ##
 {{fbdoc item="desc"}}
-	Depending on the platform, same as ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUlongint Ulongint]]##. A 32-bit or 64-bit unsigned whole-number data type.
-
-	##**Ulong**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
+	32-bit unsigned whole-number data type. Can hold values from ##0## to ##4294967295##. Corresponds to an unsigned DWORD.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/ulong.bas"}}%%(freebasic)

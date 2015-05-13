@@ -1,3 +1,4 @@
+#ifdef HOST_MINGW
 #include <malloc.h> /* for _alloca() */
 
 /* These defines let us use the same code for all platforms while still mapping
@@ -10,6 +11,7 @@
 #define strcasecmp(a, b) _stricmp(a, b)
 #define strncasecmp(a, b, n) _strnicmp(a, b, n)
 #define alloca(x) _alloca(x)
+#endif
 
 #define FBCALL __stdcall
 
@@ -29,12 +31,16 @@
 
 #define FB_CONSOLE_MAXPAGES 4
 
+#ifdef HOST_CYGWIN
+typedef off_t fb_off_t;
+#else
 /* MinGW-w64 recognizes -D_FILE_OFFSET_BITS=64, but MinGW does not, so we
    can't be sure that ftello() really maps to the 64bit version...
    so we have to do it manually. */
 typedef long long fb_off_t;
 #define fseeko(stream, offset, whence) fseeko64(stream, offset, whence)
 #define ftello(stream)                 ftello64(stream)
+#endif
 
 #define FB_COLOR_BLACK    (0)
 #define FB_COLOR_BLUE     (FOREGROUND_BLUE)

@@ -28,7 +28,7 @@ struct _DOS_COUNTRY_INFO_GENERAL {
 	unsigned long   far_ptr_case_map_routine;
 	char            data_list_sep[2];
 	char            reserved[10];
-} __attribute__((packed));
+} FBPACKED;
 
 typedef struct _DOS_COUNTRY_INFO_GENERAL DOS_COUNTRY_INFO_GENERAL;
 

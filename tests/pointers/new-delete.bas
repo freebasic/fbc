@@ -368,6 +368,157 @@ namespace newSideFx
 	end sub
 end namespace
 
+namespace vectorNewSideFx
+	dim shared as integer calls
+
+	function f( ) as integer
+		calls += 1
+		function = 2
+	end function
+
+	type DtorUDT
+		i as integer
+		declare destructor( )
+	end type
+
+	destructor DtorUDT( )
+	end destructor
+
+	sub test cdecl( )
+		'' new type[elementsexpr]
+
+		scope
+			CU_ASSERT( calls = 0 )
+
+			'' p = allocate( elementsexpr * sizeof( type ) )
+			var p = new integer[f( )] { any }
+
+			CU_ASSERT( calls = 1 )
+			calls = 0
+
+			delete[] p
+		end scope
+
+		scope
+			CU_ASSERT( calls = 0 )
+
+			'' p = allocate( elementsexpr * sizeof( type ) )
+			'' memclear( *p, elementsexpr * sizeof( type ) )
+			var p = new integer[f( )]
+
+			CU_ASSERT( calls = 1 )
+			calls = 0
+
+			delete[] p
+		end scope
+
+		scope
+			CU_ASSERT( calls = 0 )
+
+			'' p = allocate( (elementsexpr * sizeof( type )) + sizeof( integer ) )
+			'' *p = elementsexpr
+			'' p = cptr( any ptr, p ) + sizeof( integer )
+			var p = new DtorUDT[f( )] { any }
+
+			CU_ASSERT( calls = 1 )
+			calls = 0
+
+			delete[] p
+		end scope
+
+		scope
+			CU_ASSERT( calls = 0 )
+
+			'' p = allocate( (elementsexpr * sizeof( type )) + sizeof( integer ) )
+			'' *p = elementsexpr
+			'' p = cptr( any ptr, p ) + sizeof( integer )
+			'' memclear( *p, elementsexpr * sizeof( type ) )
+			var p = new DtorUDT[f( )]
+
+			CU_ASSERT( calls = 1 )
+			calls = 0
+
+			delete[] p
+		end scope
+	end sub
+end namespace
+
+namespace vectorNewCtorList
+	type UDT
+		i as integer
+	end type
+
+	type ClassUDT
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor ClassUDT( )
+		this.i = 123
+	end constructor
+
+	function f( byval p as ClassUDT ptr ) as UDT
+		function = type( p->i )
+	end function
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( x.i = 0 )
+		x = f( new ClassUDT[1] )
+		CU_ASSERT( x.i = 123 )
+	end sub
+end namespace
+
+namespace vectorNewComplexElements
+	dim shared as integer ctors, dtors
+
+	type ClassUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor ClassUdt( )
+		ctors += 1
+	end constructor
+
+	destructor ClassUdt( )
+		dtors += 1
+	end destructor
+
+	type UDT
+		i as integer
+	end type
+
+	sub test cdecl( )
+		ctors = 0
+		dtors = 0
+		scope
+			var p = new ClassUdt[iif( (type<UDT>( (type<UDT>( 123 )).i )).i = 123, 4, 8 )]
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 0 )
+			delete[] p
+			CU_ASSERT( ctors = 4 )
+			CU_ASSERT( dtors = 4 )
+		end scope
+		CU_ASSERT( ctors = 4 )
+		CU_ASSERT( dtors = 4 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			var p = new ClassUdt[iif( (type<UDT>( (type<UDT>( 123 )).i )).i = 456, 4, 8 )]
+			CU_ASSERT( ctors = 8 )
+			CU_ASSERT( dtors = 0 )
+			delete[] p
+			CU_ASSERT( ctors = 8 )
+			CU_ASSERT( dtors = 8 )
+		end scope
+		CU_ASSERT( ctors = 8 )
+		CU_ASSERT( dtors = 8 )
+	end sub
+end namespace
+
 '' #3509495 regression test
 namespace deleteDerivedPtr
 	type Parent
@@ -520,6 +671,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "New[]", @vectorNew.test )
 	fbcu.add_test( "New as field initializer", @newAsFieldInit.test )
 	fbcu.add_test( "New + side-effects", @newSideFx.test )
+	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test )
+	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test )
 	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test )
 	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test )
 	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test )

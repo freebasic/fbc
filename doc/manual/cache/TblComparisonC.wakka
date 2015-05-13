@@ -1,0 +1,194 @@
+{{fbdoc item="title" value="Comparison of C/C++ and FreeBASIC"}}----
+
+<<**""C/C++""**>><<**""FreeBASIC""**>>
+
+{{fbdoc item="subsect" value="variable declaration"}}
+<<##int a;
+int a, b, c;##>><<##dim a as integer
+dim as integer a, b, c##>>
+
+{{fbdoc item="subsect" value="uninitialized variable"}}
+<<##int a;##>><<##dim a as integer = any##>>
+
+{{fbdoc item="subsect" value="zero-initialized variable"}}
+<<##int a = 0;##>><<##dim a as integer##>>
+
+{{fbdoc item="subsect" value="initialized variable"}}
+<<##int a = 123;##>><<##dim a as integer = 123##>>
+
+{{fbdoc item="subsect" value="array"}}
+<<##int a[4];
+a[0] = 1;##>><<##dim a(0 to 3) as integer
+a(0) = 1##>>
+
+{{fbdoc item="subsect" value="pointer"}}
+<<##int a;
+int *p;
+p = &a;
+*p = 123;>><<##dim a as integer
+dim p as integer ptr
+p = @a
+*p = 123>>
+
+{{fbdoc item="subsect" value="structure, user-defined type"}}
+<<##struct UDT {
+	int myfield;
+}##>><<##type UDT
+	myfield as integer
+end type##>>
+
+{{fbdoc item="subsect" value="typedef, type alias"}}
+<<##typedef int myint;##>><<##type myint as integer##>>
+
+{{fbdoc item="subsect" value="struct pointer"}}
+<<##struct UDT x;
+struct UDT *p;
+p = &x;
+p->myfield = 123;##>><<##dim x as UDT
+dim p as UDT ptr
+p = @x
+p->myfield = 123##>>
+
+{{fbdoc item="subsect" value="function declaration"}}
+<<##int foo( void );##>><<##declare function foo( ) as integer##>>
+
+{{fbdoc item="subsect" value="function body"}}
+<<##int foo( void ) {
+	return 123;
+}##>><<##function foo( ) as integer
+	return 123
+end function##>>
+
+{{fbdoc item="subsect" value="sub declaration"}}
+<<##void foo( void );##>><<##declare sub foo( )##>>
+
+{{fbdoc item="subsect" value="sub body"}}
+<<##void foo( void ) {
+}##>><<##sub foo( )
+end sub##>>
+
+{{fbdoc item="subsect" value="byval parameters"}}
+<<##void foo( int param );
+foo( a );##>><<##declare sub foo( byval param as integer )
+foo( a );##>>
+
+{{fbdoc item="subsect" value="byref parameters"}}
+<<##void foo( int *param );
+foo( &a );
+
+void foo( int& param );
+foo( a );##>><<##declare sub foo( byref param as integer )
+foo( a )
+
+
+
+##>>
+
+{{fbdoc item="subsect" value="statement separator"}}
+<<##;##
+
+>><<##:##
+end-of-line>>
+
+{{fbdoc item="subsect" value="for loop"}}
+<<##for (int i = 0; i < 10; ""i++"") {
+	...
+}##>><<##for i as integer = 0 to 9
+	...
+next##>>
+
+{{fbdoc item="subsect" value="while loop"}}
+<<##while (condition) {
+	...
+}##>><<##while condition
+	...
+wend##>>
+
+{{fbdoc item="subsect" value="do-while loop"}}
+<<##do {
+	...
+} while (condition);##>><<##do
+	...
+loop while condition##>>
+
+{{fbdoc item="subsect" value="if block"}}
+<<##if (condition) {
+	...
+} else if (condition) {
+	...
+} else {
+	...
+}##>><<##if condition then
+	...
+elseif condition then
+	...
+else
+	...
+end if##>>
+
+{{fbdoc item="subsect" value="switch, select"}}
+<<##switch (a) {
+case 1:
+	...
+	break;
+case 2:
+case 3:
+	...
+	break;
+default:
+	...
+	break;
+}##>><<##select case a
+case 1
+	...
+
+
+case 2, 3
+	...
+
+case else
+	...
+
+end select##>>
+
+{{fbdoc item="subsect" value="string literals, zstrings"}}
+<<##char *s = "Hello!";
+char s[] = "Hello!";##>><<##dim s as zstring ptr = @"Hello!"
+dim s as zstring * 6+1 = "Hello!"##>>
+
+{{fbdoc item="subsect" value="hello world"}}
+<<###include <stdio.h>
+int main() {
+	printf("Hello!\n");
+	return 0;
+}##>><<##print "Hello!"
+
+
+
+
+##>>
+
+{{fbdoc item="subsect" value="comments"}}
+<<##""// foo""
+/* foo */##>><<##' foo
+/' foo '/##>>
+
+{{fbdoc item="subsect" value="compile-time checks"}}
+<<###if //a//##
+###elif //b//##
+###else##
+###endif##>><<###if //a//##
+###elseif //b//##
+###else##
+###endif##>>
+
+{{fbdoc item="subsect" value="compile-time target system checks"}}
+<<###ifdef _WIN32##>><<###ifdef ""__FB_WIN32__""##>>
+
+{{fbdoc item="subsect" value="module/header file names"}}
+<<##foo.c, foo.h##>><<##foo.bas, foo.bi##>>
+
+{{fbdoc item="subsect" value="typical compiler command to create an executable"}}
+<<##gcc foo.c -o foo##>><<##fbc foo.bas##>>
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

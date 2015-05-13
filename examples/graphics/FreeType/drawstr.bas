@@ -124,19 +124,23 @@ End Function
 
     ScreenRes SCREEN_W, SCREEN_H, 32
 
+    ScreenLock()
     For x As Integer = 0 To (SCREEN_W - 1)
         For y As Integer = 0 To (SCREEN_H - 1)
             PSet (x, y), x Xor y
         Next
     Next
+    ScreenUnLock()
 
     Randomize(Timer())
 
     For x As Integer = 1 To 20
+        ScreenLock()
         print_text(Rnd() * 200, Rnd() * 180 + 20, _
                 "Hello World!", font1, _
                 Rnd() * 22 + 10, _
                 RGB(Rnd() * 255, Rnd() * 255, Rnd() * 255))
+        ScreenUnLock()
     Next
 
     Sleep

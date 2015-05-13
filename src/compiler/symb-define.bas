@@ -103,7 +103,7 @@ end function
  '':::::
 private function hDefPath_cb( ) as string static
 
-	function = hEnvDir( )
+	function = fbGetInputFileParentDir( )
 
 end function
 
@@ -261,16 +261,14 @@ end function
 
 '':::::
 private function hDefBackend_cb ( ) as string
-
 	select case env.clopt.backend
 	case FB_BACKEND_GAS
 		function = "gas"
-
 	case FB_BACKEND_GCC
 		function = "gcc"
-
-    end select
-
+	case FB_BACKEND_LLVM
+		function = "llvm"
+	end select
 end function
 
 '':::::
@@ -301,11 +299,8 @@ private function hDefFpmode_cb ( ) as string
 
 end function
 
-'':::::
 private function hDefGcc_cb( ) as string static
-
-	function = str( irGetOption( IR_OPT_HIGHLEVEL ) )
-
+	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
 end function
 
 '':::::

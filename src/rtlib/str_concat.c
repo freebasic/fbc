@@ -12,8 +12,8 @@ static __inline__ void fb_hStrConcat
 		int len2
 	)
 {
-    dst = FB_MEMCPYX( dst, str1, len1 );
-    dst = FB_MEMCPYX( dst, str2, len2 );
+    dst = (char *) FB_MEMCPYX( dst, str1, len1 );
+    dst = (char *) FB_MEMCPYX( dst, str2, len2 );
 	*dst = '\0';
 }
 

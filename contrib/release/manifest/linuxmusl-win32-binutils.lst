@@ -1,0 +1,5 @@
+bin/win32/ar
+bin/win32/as
+bin/win32/dlltool
+bin/win32/ld
+bin/win32/windres

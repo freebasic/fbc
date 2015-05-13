@@ -40,14 +40,14 @@ function cPrintStmt  _
 	lexSkipToken( )
 
 	if( islprint ) then
-		filexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		filexpr = astNewCONSTi( -1 )
 	else
 		'' ('#' Expression)?
 		if( hMatch( CHAR_SHARP ) ) then
 			hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
 			hMatchCOMMA( )
 		else
-			filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			filexpr = astNewCONSTi( 0 )
 		end if
 	end if
 
@@ -213,7 +213,7 @@ function cWriteStmt() as integer
 		hMatchCOMMA( )
 
     else
-    	filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		filexpr = astNewCONSTi( 0 )
 	end if
 
 	'' side-effect?
@@ -294,7 +294,7 @@ function cLineInputStmt _
 	if( expr = NULL ) then
 		if( isfile ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		else
 			expr = NULL
 		end if
@@ -384,8 +384,7 @@ function cInputStmt _
     	'' STRING_LIT?
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
-			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ), _
-									 0, FB_DATATYPE_CHAR )
+			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ) )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
@@ -470,7 +469,7 @@ private function hFileClose _
 				'' pass NULL to rtlFileClose to get close-all function
 			else
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				filenum = astNewCONSTi( 0 )
 			end if
 		end if
 
@@ -540,7 +539,7 @@ private function hFilePut _
 		else
 			hSkipStmt( )
 		end if
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	isarray = FALSE
@@ -561,7 +560,7 @@ private function hFilePut _
 						else
 							hSkipStmt( )
 						end if
-						return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						return astNewCONSTi( 0 )
     				end if
 
     				lexSkipToken( )
@@ -663,7 +662,7 @@ private function hFileGet _
 		else
 			hSkipStmt( )
 		end if
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	isarray = FALSE
@@ -681,7 +680,7 @@ private function hFileGet _
 						else
 							hSkipStmt( )
 						end if
-						return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						return astNewCONSTi( 0 )
     				end if
     				lexSkipToken( )
     				lexSkipToken( )
@@ -924,7 +923,7 @@ private function hFileOpen _
         end if
 
         if( flen = NULL ) then
-        	flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			flen = astNewCONSTi( 0 )
         end if
 
         if( faccess = NULL ) then
@@ -969,7 +968,7 @@ private function hFileOpen _
 		file_mode = FB_FILE_MODE_RANDOM
 	end if
 
-	fmode = astNewCONSTi( file_mode, FB_DATATYPE_INTEGER )
+	fmode = astNewCONSTi( file_mode )
 
 	if( isfunc ) then
 		'' ','?
@@ -1013,7 +1012,7 @@ private function hFileOpen _
 		access_mode = FB_FILE_ACCESS_ANY
 	end if
 
-	faccess = astNewCONSTi( access_mode, FB_DATATYPE_INTEGER )
+	faccess = astNewCONSTi( access_mode )
 
 	if( isfunc ) then
 		'' ','?
@@ -1042,7 +1041,7 @@ private function hFileOpen _
 		lock_mode = FB_FILE_LOCK_SHARED
 	end if
 
-	flock = astNewCONSTi( lock_mode, FB_DATATYPE_INTEGER )
+	flock = astNewCONSTi( lock_mode )
 
 	if( isfunc ) then
 		'' ','?
@@ -1065,14 +1064,14 @@ private function hFileOpen _
 
 	'' (LEN '=' Expression)?
 	if( hMatchText( "LEN" ) ) then
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
-			flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			flen = astNewCONSTi( 0 )
 		else
 			hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
 		end if
 	else
-		flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		flen = astNewCONSTi( 0 )
 	end if
 
     if( isfunc ) then
@@ -1212,7 +1211,7 @@ function cFileStmt _
 		if( hMatch( FB_TK_TO ) ) then
 			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 		else
-			expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr2 = astNewCONSTi( 0 )
 		end if
 
 		function = rtlFileLock( islock, filenum, expr1, expr2 )
@@ -1245,8 +1244,8 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		hMatchRPRNT( )
 		function = rtlFileTell( filenum )
 
-	'' INPUT '(' Expr (',' '#'? Expr)? ')'
-	case FB_TK_INPUT
+	'' INPUT|WINPUT '(' Expr (',' '#'? Expr)? ')'
+	case FB_TK_INPUT, FB_TK_WINPUT
 		lexSkipToken( )
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
@@ -1254,10 +1253,10 @@ function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			hMatch( CHAR_SHARP )
 			hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 		else
-			filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			filenum = astNewCONSTi( 0 )
 		end if
 		hMatchRPRNT( )
-		function = rtlFileStrInput( expr, filenum )
+		function = rtlFileStrInput( expr, filenum, tk )
 
 	'' OPEN '(' ... ')'
 	case FB_TK_OPEN

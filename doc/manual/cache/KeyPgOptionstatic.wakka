@@ -35,5 +35,6 @@ Dim bar(100) As Integer			' declares a fixed-length array
 	- ##[[KeyPgErase Erase]]##
 	- ##[[KeyPgRedim Redim]]##
 	- ##[[KeyPgOptiondynamic Option Dynamic]]##
+	- ##[[KeyPgStatic Static]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

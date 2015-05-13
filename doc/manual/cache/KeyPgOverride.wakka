@@ -1,0 +1,53 @@
+{{fbdoc item="title" value="OVERRIDE"}}----
+Method attribute; specifies that a method must override a virtual
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename// [[KeyPgExtends Extends]] //basename//
+		...
+		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgOperator Operator]]|[[KeyPgProperty Property]]|[[KeyPgDestructor Destructor]] ... ( [//parameterlist//] ) [[[KeyPgAs As]] //[[DataType datatype]]//] **Override**
+		...
+	End Type
+##
+{{fbdoc item="desc"}}
+	In method declarations, ##**Override**## can be used to indicate that this method is expected to override a [[KeyPgVirtual virtual]] or [[KeyPgAbstract abstract]] method from the base class. Then the compiler will show an error if the method does not override anything (only a non-static method can override a virtual or abstract method).
+	
+	Use of ##**Override**## is not mandatory to override a virtual or abstract method, it is highly recommended, as it will help prevent inadvertent errors (name/signature not matching).
+	
+	##**Override**## can only be specified on the method declaration in the UDT block, but not on the method body, because it is just a compile-time check in the context of the inheritance hierarchy, and does not affect the method in any way.
+	
+	##**Override**## is only recognized as a keyword at the end of member procedure declarations. It can still be used as identifier elsewhere.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/override.bas"}}%%(freebasic)
+Type A Extends Object
+	Declare Virtual Sub f1( )
+	Declare Virtual Function f2( ) As Integer
+End Type
+
+Type B Extends A
+	Declare Sub f1( ) Override
+	Declare Function f2( ) As Integer Override
+End Type
+
+Sub A.f1( )
+End Sub
+
+Function A.f2( ) As Integer
+	Function = 0
+End Function
+
+Sub B.f1( )
+End Sub
+
+Function B.f2( ) As Integer
+	Function = 0
+End Function
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVirtual Virtual]]##, ##[[KeyPgAbstract Abstract]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

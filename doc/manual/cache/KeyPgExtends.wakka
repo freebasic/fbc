@@ -7,20 +7,20 @@ Specifies a base type from which to derive a new type
 	End [[KeyPgType Type]]
 ##
 {{fbdoc item="desc"}}
-	##**Extends**## declares ##//typename//## to be derived from ##//base_typename//##. The derived user-defined type, ##//typename//##, inherits fields and methods of the ##//base_typename//## base type. ##//typename//## objects may be used in place of ##//base_typename//## objects. Fields and methods inherited from ##//base_typename//## will be implicitly accessible like regular members of ##//typename//##. However, regular members will override inherited members if they have the same identifier. The ##[[KeyPgBase Base (member access)]]## keyword can be used to explicitly access members of the base type.
+	##**Extends**## declares ##//typename//## to be derived from ##//base_typename//##. The derived user-defined type, ##//typename//##, inherits fields and methods of the ##//base_typename//## base type. ##//typename//## objects may be used in place of ##//base_typename//## objects. Fields and methods inherited from ##//base_typename//## will be implicitly accessible like regular members of ##//typename//##. However, a regular member will shadow an inherited member if they have the same identifier. The ##[[KeyPgBase Base (member access)]]## keyword can be used to explicitly access members of the base type.
 	
 	User-defined types that extend another type will include the base type structure at their beginning, and their size as reported by ##[[KeyPgSizeOf sizeof()]]## is the sum of their base type's size plus the size needed for any regular members. Since the inherited members make sure that the structure is not empty, a derived type is not required to have regular members of its own.
 	
 	The ##[[KeyPgBaseInit Base (initializer)]]## keyword can be used at the top of constructor of derived user-defined type. It allows to specify an initializer or constructor call for the base type.
 	
-	Extending the built-in ##[[KeyPgObject Object]]## type allows a user-defined type to be used with ##[[KeyPgOpIs Operator Is]]## to perform run-time type checks.
+	Extending the built-in ##[[KeyPgObject Object]]## type allows a user-defined type to be used with ##[[KeyPgOpIs Operator Is]]## to perform run-time type checks, to support ##[[KeyPgVirtual Virtual]]## and ##[[KeyPgAbstract Abstract]]## methods, and to use the ##[[KeyPgOverride Override]]## method attribute.
 	
-	 **Remark:** Derived UDT pointer can only be casted to "compatible" pointer types (up/down the inheritance hierarchy) or ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]##. Otherwise, cast to ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]## first.
+	 **Note:** Derived UDT pointer can only be casted to "compatible" pointer types (up/down the inheritance hierarchy) or ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]##. Otherwise, cast to ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]## first.
 	
-	**Warning:** Before fbc version 0.24, these five keywords dedicated to inheritance ##**Extends**##, ##[[KeyPgBase Base (member access)]]##, ##[[KeyPgBaseInit Base (initializer)]]##, ##[[KeyPgObject Object]]## and ##[[KeyPgOpIs Operator Is]]## are not supported.
+	**Warning:** Before fbc version 0.24, these five keywords dedicated to inheritance ##**Extends**##, ##[[KeyPgBase Base (member access)]]##, ##[[KeyPgBaseInit Base (initializer)]]##, ##[[KeyPgObject Object]]## and ##[[KeyPgOpIs Operator Is]]## are not supported. Three new keywords ##[[KeyPgVirtual Virtual]]##, ##[[KeyPgAbstract Abstract]]##, and ##[[KeyPgOverride Override]]## come with fbc version 0.25.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/extends.bas"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/udt/extends1.bas"}}%%(freebasic)
 Type SchoolMember 'Represents any school member'
 	Declare Constructor ()
 	Declare Sub Init (Byref _name As String, Byval _age As Integer)
@@ -79,6 +79,135 @@ Print
 Dim As Student s = Student("Swaroop", 22, 75)
 s.Tell()
 %%
+{{fbdoc item="filename" value="examples/manual/udt/extends2.bas"}}%%(freebasic)
+' Example using all eight keywords of inheritance:
+'   'Extends', 'Base.', 'Base()', 'Object', 'Is' operator, 'Virtual', 'Abstract', 'Override'
+
+Type root Extends Object ' 'Extends' to activate RTTI by inheritance of predefined Object type
+  Declare Function ObjectHierarchy () As String
+  Declare Abstract Function ObjectRealType () As String ' 'Abstract' declares function without local body
+	                                                    '    which must be overriden
+  Declare Virtual Destructor () ' 'Virtual' declares destructor with body ('Abstract' forbidden)
+Protected:
+  Declare Constructor () ' to avoid user construction from root
+  Declare Constructor (Byref rhs As root) '' to avoid user copy-construction from root
+End Type ' derived type may be member data empty
+
+Constructor root ()
+End Constructor
+
+Function root.ObjectHierarchy () As String
+  Return "Object(forRTTI) <- root"
+End Function
+
+Virtual Destructor root ()
+  Print "root destructor"
+End Destructor
+
+
+Type animal Extends root ' 'Extends' to inherit of root
+  Declare Constructor (Byref _name As String = "")
+  Declare Function ObjectHierarchy () As String
+  Declare Virtual Function ObjectRealType () As String Override ' 'Virtual' declares function with local
+	                                                            '    body which can be overriden
+	                                                            ' 'Override' to check if the function is
+	                                                            '    well an override
+  Dim name As String
+  Declare virtual Destructor () Override ' 'Virtual' declares destructor with local body
+	                                     ' 'Override' to check if the destructor is well an override
+End Type
+
+Constructor animal (Byref _name As String = "")
+  This.name = _name
+End Constructor
+
+Function animal.ObjectHierarchy () As String
+  Return Base.ObjectHierarchy & " <- animal" ' 'Base.' allows to access to parent member function
+End Function
+
+Virtual Function animal.ObjectRealType () As String
+  Return "animal"
+End Function
+
+Virtual Destructor animal ()
+  Print "  animal destructor: " & This.name
+End Destructor
+
+
+Type dog Extends animal ' 'Extends' to inherit of animal
+  Declare Constructor (Byref _name As String = "")
+  Declare Function ObjectHierarchy () As String
+  Declare Function ObjectRealType () As String Override ' 'Override' to check if the function is well an
+	                                                    '    override
+  Declare Destructor () Override ' 'Override' to check if the destructor is well an override
+End Type ' derived type may be member data empty
+
+Constructor dog (Byref _name As String = "")
+  Base(_name) ' 'Base()' allows to call parent constructor
+End Constructor
+
+Function dog.ObjectHierarchy () As String
+  Return Base.ObjectHierarchy & " <- dog" ' 'Base.' allows to access to parent member function
+End Function
+
+Function dog.ObjectRealType () As String
+  Return "dog"
+End Function
+
+Destructor dog ()
+  Print "    dog destructor: " & This.name
+End Destructor
+
+
+Type cat Extends animal ' 'Extends' to inherit of animal
+  Declare Constructor (Byref _name As String = "")
+  Declare Function ObjectHierarchy () As String
+  Declare Function ObjectRealType () As String Override ' 'Override' to check if the function is well an
+	                                                    '    override
+  Declare Destructor () Override ' 'Override' to check if the destructor is well an override
+End Type ' derived type may be member data empty
+
+Constructor cat (Byref _name As String = "")
+  Base(_name) ' 'Base()' allows to call parent constructor
+End Constructor
+
+Function cat.ObjectHierarchy () As String
+  Return Base.ObjectHierarchy & " <- cat" ' 'Base.' allows to access to parent member function
+End Function
+
+Function cat.ObjectRealType () As String
+  Return "cat"
+End Function
+
+Destructor cat ()
+  Print "    cat destructor: " & This.name
+End Destructor
+
+
+Sub PrintInfo (Byval p As root Ptr) ' must be put after definition of animal type, dog type and cat type
+  Print "  " & Cast(animal Ptr, p)->name, "  " & p->ObjectRealType, "           ";
+  If *p Is dog Then ' 'Is' allows to check compatibility with type symbol
+	Print  Cast(dog Ptr, p)->ObjectHierarchy
+  Elseif *p Is cat Then ' 'Is' allows to check compatibility with type symbol
+	Print Cast(cat Ptr, p)->ObjectHierarchy
+  Elseif *p Is animal Then ' 'Is' allows to check compatibility with type symbol
+	Print Cast(animal Ptr, p)->ObjectHierarchy
+  End If
+End Sub
+
+
+Print "Name:", "Object (real):         Hierarchy:"
+Dim a As root Ptr = New animal("Mouse")
+PrintInfo(a)
+Dim d As root Ptr = New dog("Buddy")
+PrintInfo(d)
+Dim c As root Ptr = New cat("Tiger")
+Printinfo(c)
+Print
+Delete a
+Delete d
+Delete c
+%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Extends""**##.
 
@@ -91,5 +220,8 @@ s.Tell()
 	- ##[[KeyPgBase Base (member access)]]##
 	- ##[[KeyPgObject Object]]##
 	- ##[[KeyPgOpIs Operator Is]]##
+	- ##[[KeyPgVirtual Virtual]]##
+	- ##[[KeyPgAbstract Abstract]]##
+	- ##[[KeyPgOverride Override]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -9,7 +9,7 @@
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
 '#DEFINE __USE_GTK3__
-#INCLUDE "gtk/goocanvas.bi"
+#INCLUDE "goocanvas.bi"
 
 #DEFINE GOO_TYPE_DEMO_ITEM (goo_demo_item_get_type ())
 #DEFINE GOO_DEMO_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GOO_TYPE_DEMO_ITEM, GooDemoItem))

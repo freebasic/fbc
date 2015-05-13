@@ -313,24 +313,19 @@ function rtlDataRead _
  		exit function
  	end if
 
-    if( args > 1 ) then
+	if( args > 1 ) then
 		'' byval dst_size as integer
-		if( astNewARG( proc, _
-					   astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					   FB_DATATYPE_INTEGER ) = NULL ) then
- 			exit function
- 		end if
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewARG( proc, _
-						   astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, _
-										 FB_DATATYPE_INTEGER ), _
-						   FB_DATATYPE_INTEGER ) = NULL ) then
-    			exit function
-    		end if
-    	end if
-    end if
+			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+				exit function
+			end if
+		end if
+	end if
 
     ''
     astAdd( proc )
@@ -339,7 +334,6 @@ function rtlDataRead _
 
 end function
 
-'':::::
 function rtlDataRestore _
 	( _
 		byval label as FBSYMBOL ptr, _
@@ -353,30 +347,28 @@ function rtlDataRestore _
 
     proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
 
-    '' byval labeladdrs as void ptr
-    if( label = NULL ) then
-    	sym = astGetFirstDataStmtSymbol( )
+	'' byval labeladdrs as void ptr
+	if( label = NULL ) then
+		'' blank RESTORE (no label), so use label of first DATA
+		sym = astGetFirstDataStmtSymbol( )
 
-    	'' blank RESTORE used before any DATA was found? damn..
-    	if( sym = NULL ) then
+		'' blank RESTORE used before any DATA was found? damn..
+		if( sym = NULL ) then
 			'' create an empty stmt, it should just contain a link to the next DATA
 			expr = astDataStmtBegin( )
 			astDataStmtEnd( expr )
-    		astDelNode( expr )
+			astDelNode( expr )
 
-    		sym = astGetFirstDataStmtSymbol( )
-    	end if
+			sym = astGetFirstDataStmtSymbol( )
+		end if
+	else
+		sym = astDataStmtAdd( label, 0 )
+	end if
 
-    else
-    	sym = astDataStmtAdd( label, 0 )
-    end if
+	if( astNewARG( proc, astNewADDROF( astNewVAR( sym ) ) ) = NULL ) then
+		exit function
+	end if
 
-    expr = astNewADDROF( astNewVAR( sym, 0, FB_DATATYPE_BYTE ) )
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
-
-	''
 	if( afternode = NULL ) then
 		astAdd( proc )
 	else
@@ -384,6 +376,4 @@ function rtlDataRestore _
 	end if
 
 	function = TRUE
-
 end function
-

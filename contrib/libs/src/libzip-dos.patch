@@ -1,0 +1,32 @@
+--- lib/zip_fdopen.c.orig	2013-04-24 21:41:04.559112511 +0200
++++ lib/zip_fdopen.c	2013-04-24 21:41:19.699187595 +0200
+@@ -34,6 +34,7 @@
+ 
+ 
+ #include "zipint.h"
++#include <unistd.h>
+ 
+ 
+ 
+--- lib/zip_get_archive_flag.c.orig	2013-04-24 21:44:06.244013450 +0200
++++ lib/zip_get_archive_flag.c	2013-04-24 21:44:16.268063153 +0200
+@@ -38,7 +38,7 @@
+ 
+ 
+ ZIP_EXTERN int
+-zip_get_archive_flag(struct zip *za, unsigned int flag, zip_flags_t flags)
++zip_get_archive_flag(struct zip *za, zip_flags_t flag, zip_flags_t flags)
+ {
+     unsigned int fl;
+ 
+--- lib/zip_set_archive_flag.c.orig	2013-04-24 21:45:04.992304766 +0200
++++ lib/zip_set_archive_flag.c	2013-04-24 21:45:13.812348510 +0200
+@@ -38,7 +38,7 @@
+ 
+ 
+ ZIP_EXTERN int
+-zip_set_archive_flag(struct zip *za, unsigned int flag, int value)
++zip_set_archive_flag(struct zip *za, zip_flags_t flag, int value)
+ {
+     unsigned int new_flags;
+     

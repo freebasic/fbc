@@ -21,29 +21,29 @@ Returns a square root of a number
 {{fbdoc item="desc"}}
 	This is the same as raising the argument ##//number//## to the one-half power: ##//y// = //x// [[KeyPgOpExponentiate ^]] (1/2)## . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
 
+	If a ##[[KeyPglongint Longint]]## or ##[[KeyPgUlongint ULongint]]## is passed to ##**Sqr**##, it may be converted to ##[[KeyPgDouble Double]]## precision first.  For numbers over ##2^52##, this will cause a very small loss of precision.  Without making any assumptions about the rounding method, the maximum error due to this will be ##**Sqr**(2^64) - **Sqr**(2^64-2^12)##, which is about ##4.8e-7##. However this may cause erroneous results if the floor or ceiling of this value is taken, and the result of this may be out by ##1##, particularly for square numbers and numbers that are close by.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
-'' Example of sqr function: Pythagorean theorem 
-DIM AS SINGLE a , b
+'' Example of Sqr function: Pythagorean theorem 
+Dim As Single a, b
 
-PRINT "Pythagorean theorem , right triangle"
-PRINT
-INPUT "Please enter one leg side length: ", a
-INPUT "Please enter the other leg side length: ", b
-PRINT 
-PRINT "The hypotenuse has a length of: " ; SQR ( a * a + b * b )
-
-SLEEP
+Print "Pythagorean theorem, right-angled triangle"
+Print
+Input "Please enter one leg side length: ", a
+Input "Please enter the other leg side length: ", b
+Print 
+Print "The hypotenuse has a length of: " & Sqr( a * a + b * b )
 %%
 
 The output would look like:
 %%
-Pythagorean theorem , right triangle
+Pythagorean theorem, right-angled triangle
 
-Please enter one leg side length: 3
-Please enter the other leg side length: 4
+Please enter one leg side length: 1.5
+Please enter the other leg side length: 2
 
-The hypotenuse has a length of: 5
+The hypotenuse has a length of: 2.5
 %%
 
 {{fbdoc item="diff"}}

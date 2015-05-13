@@ -1,40 +1,46 @@
 /* dir() */
 
 #include "../fb.h"
-#include <unistd.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <dirent.h>
 
-typedef struct DIR_DATA
-{
+typedef struct _FB_DIRCTX {
 	int in_use;
 	int attrib;
 	DIR *dir;
 	char filespec[MAX_PATH];
 	char dirname[MAX_PATH];
-} DIR_DATA;
-
-static DIR_DATA dir_data = { 0 };
+} FB_DIRCTX;
 
 static void close_dir ( void )
 {
-	closedir( dir_data.dir );
-	dir_data.in_use = FALSE;
+	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
+
+	closedir( ctx->dir );
+	ctx->in_use = FALSE;
 }
 
 static int get_attrib ( char *name, struct stat *info )
 {
-	int attrib = 0;
+	int attrib = 0, mask;
 
-	if( ( ( info->st_uid == geteuid() ) && ( ( info->st_mode & S_IWUSR ) == 0 ) ) ||
-	    ( ( info->st_gid == getegid() ) && ( ( info->st_mode & S_IWGRP ) == 0 ) ) ||
-	    ( ( ( info->st_mode & S_IWOTH ) == 0 ) ) )
-		attrib |= 0x1;	/* read only */
+	/* read only */
+	if( info->st_uid == geteuid() )
+		mask = S_IWUSR;
+	else if( info->st_gid == getegid() ) 
+		mask = S_IWGRP;
+	else
+		mask = S_IWOTH;
+
+    if( (info->st_mode & mask) == 0 )
+		attrib |= 0x1;
+
 	if( name[0] == '.' )
 		attrib |= 0x2;	/* hidden */
+
 	if( S_ISCHR( info->st_mode ) || S_ISBLK( info->st_mode ) || S_ISFIFO( info->st_mode ) || S_ISSOCK( info->st_mode ) )
 		attrib |= 0x4;	/* system */
+
 	if( S_ISDIR( info->st_mode ) )
 		attrib |= 0x10;	/* directory */
 	else
@@ -45,8 +51,11 @@ static int get_attrib ( char *name, struct stat *info )
 
 static int match_spec( char *name )
 {
-	char *spec = dir_data.filespec;
+	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
 	char *any = NULL;
+	char *spec;
+
+	spec = ctx->filespec;
 
 	while( ( *spec ) || ( *name ) )
 	{
@@ -85,48 +94,58 @@ static int match_spec( char *name )
 	return TRUE;
 }
 
-static char *find_next ( void )
+static char *find_next ( int *attrib )
 {
+	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
 	char *name = NULL;
-
 	struct stat	info;
-	struct dirent	*entry;
-	char		buffer[MAX_PATH];
+	struct dirent *entry;
+	char buffer[MAX_PATH];
 
 	do
 	{
-		entry = readdir( dir_data.dir );
+		entry = readdir( ctx->dir );
 		if( !entry )
 		{
 			close_dir( );
-			name = NULL;
-			break;
+			return NULL;
 		}
 		name = entry->d_name;
-		strcpy( buffer, dir_data.dirname );
+		strcpy( buffer, ctx->dirname );
 		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
+
+		if( stat( buffer, &info ) )
+			continue;
+
+		*attrib = get_attrib( name, &info );
 	}
-	while( ( stat( buffer, &info ) ) || ( get_attrib( name, &info ) & ~dir_data.attrib ) || ( !match_spec( name ) ) );
+	while( ( *attrib & ~ctx->attrib ) || !match_spec( name ) );
 
 	return name;
 }
 
-FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib )
+FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 {
-	FBSTRING	*res;
-	int		len;
-	char		*name, *p;
+	FB_DIRCTX *ctx;
+	FBSTRING *res;
+	int len, tmp_attrib;
+	char *name, *p;
 	struct stat	info;
+	
+	if( out_attrib == NULL ) 
+		out_attrib = &tmp_attrib;
 
 	len = FB_STRSIZE( filespec );
 	name = NULL;
+
+	ctx = FB_TLSGETCTX( DIR );
 
 	if( len > 0 )
 	{
 		/* findfirst */
 
-		if( dir_data.in_use )
+		if( ctx->in_use )
 			close_dir( );
 
 		if( strchr( filespec->data, '*' ) || strchr( filespec->data, '?' ) )
@@ -136,54 +155,59 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib )
 			p = strrchr( filespec->data, '/' );
 			if( p )
 			{
-				strncpy( dir_data.filespec, p + 1, MAX_PATH );
-				dir_data.filespec[MAX_PATH-1] = '\0';
-				while( ( *p == '/' ) && ( p > dir_data.filespec ) )
-					p--;
-				len = p - filespec->data + 1;
+				strncpy( ctx->filespec, p + 1, MAX_PATH );
+				ctx->filespec[MAX_PATH-1] = '\0';
+				len = (p - filespec->data) + 1;
 				if( len > MAX_PATH - 1 )
 					len = MAX_PATH - 1;
-				memcpy( dir_data.dirname, filespec->data, len );
-				dir_data.dirname[len] = '\0';
+				memcpy( ctx->dirname, filespec->data, len );
+				ctx->dirname[len] = '\0';
 			}
 			else
 			{
-				strncpy( dir_data.filespec, filespec->data, MAX_PATH );
-				dir_data.filespec[MAX_PATH-1] = '\0';
-				strcpy( dir_data.dirname, "./");
+				strncpy( ctx->filespec, filespec->data, MAX_PATH );
+				ctx->filespec[MAX_PATH-1] = '\0';
+				strcpy( ctx->dirname, "./");
 			}
 
 			/* Make sure these patterns work just like on Win32/DOS */
-			if( (!strcmp( dir_data.filespec, "*.*" )) || (!strcmp( dir_data.filespec, "*." )) )
-				strcpy( dir_data.filespec, "*" );
+			if( (!strcmp( ctx->filespec, "*.*" )) || (!strcmp( ctx->filespec, "*." )) )
+				strcpy( ctx->filespec, "*" );
 
 			if( (attrib & 0x10) == 0 )
 				attrib |= 0x20;
-			dir_data.attrib = attrib;
-			dir_data.dir = opendir( dir_data.dirname );
-			if( dir_data.dir )
+			ctx->attrib = attrib;
+			ctx->dir = opendir( ctx->dirname );
+			if( ctx->dir )
 			{
-				name = find_next( );
+				name = find_next( out_attrib );
 				if( name )
-					dir_data.in_use = TRUE;
-			}
-		} else {
-			/* no pattern, use stat on single file */
-			if( !stat( filespec->data, &info ) && ( ( get_attrib( filespec->data, &info ) & ~attrib ) == 0 ) )
-			{
-				name = strrchr( filespec->data, '/' );
-				if( !name )
-					name = filespec->data;
-				else
-					name++;
+					ctx->in_use = TRUE;
 			}
 		}
-	} else {
-		/* findnext */
-		if( !dir_data.in_use )
-			res = &__fb_ctx.null_desc;
 		else
-			name = find_next( );
+		{
+			/* no pattern, use stat on single file */
+			if( !stat( filespec->data, &info ) )
+			{
+				tmp_attrib = get_attrib( filespec->data, &info );
+				if( (tmp_attrib & ~attrib ) == 0 )
+				{
+					name = strrchr( filespec->data, '/' );
+					if( !name )
+						name = filespec->data;
+					else
+						name++;
+					*out_attrib = tmp_attrib;
+				}
+			}
+		}
+	}
+	else 
+	{
+		/* findnext */
+		if( ctx->in_use )
+			name = find_next( out_attrib );
 	}
 
 	FB_STRLOCK();
@@ -196,8 +220,10 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib )
 			fb_hStrCopy( res->data, name, len );
 		else
 			res = &__fb_ctx.null_desc;
-	} else
+	} else {
 		res = &__fb_ctx.null_desc;
+		*out_attrib = 0;
+	}
 
 	fb_hStrDelTemp_NoLock( filespec );
 

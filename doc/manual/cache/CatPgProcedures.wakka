@@ -79,6 +79,8 @@ Keywords that work with procedures.
 		Indicates a procedure is to be executed after module-level code.
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
+	=={{fbdoc item="keyword" value="KeyPgByrefFunction|Byref (function results)"}}==
+		Specifies that a function returns by reference rather than by value.
 	=={{fbdoc item="keyword" value="KeyPgCall|Call"}}==
 		Invokes a procedure.
 	=={{fbdoc item="keyword" value="KeyPgNaked|Naked"}}==

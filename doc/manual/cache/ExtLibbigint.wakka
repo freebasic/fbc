@@ -5,9 +5,10 @@ Website: http://valyala.narod.ru/big_int/ (Russian) [the site apparently is gone
 Platforms supported: ""Win32"", Linux
 Headers to include: big_int/big_int.bi
 Header version: from 2005
+Examples: in examples/math/big_int/
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/libraries/big_int.bas"}}%%(freebasic)
 #include once "big_int/big_int_full.bi"
 
 sub print_num(byval num as big_int ptr)

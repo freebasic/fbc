@@ -78,8 +78,6 @@ Do
 Loop Until key = Chr(27) Or key = Chr(255, 107) 'escape or x-button
 %%
 
-	Note: If you use an old version of ""FreeBASIC"", you may have to use Chr( 255 ) + "X".
-
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item7"}}==Can't run programs using Screen 13 or 14 in full-screen!==
@@ -89,7 +87,7 @@ Loop Until key = Chr(27) Or key = Chr(255, 107) 'escape or x-button
 
 {{anchor name="item8"}}==Why does Imagecreate return a NULL pointer?==
 	[[KeyPgImagecreate Imagecreate]] needs to create an image buffer that fits the current screen's pixel format, and it cannot do so if there is no screen mode setup yet, so it returns NULL, very likely resulting in a NULL pointer access later on that crashes the program.
-	
+
 	This is known to happen when Imagecreate is called //before// the graphics library was initialized with a call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]], as may happen when Imagecreate is called in a global constructor that is invoked before the Screen or Screenres call in the main part of the program. In such a case it is necessary to move the screen initialization into a constructor too, and have it execute before the image-creating constructors.
 
 {{anchor name="item0|Back to top"}}

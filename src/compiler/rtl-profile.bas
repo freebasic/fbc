@@ -13,23 +13,23 @@
 	{ _
 		/' mcount cdecl ( void ) as void'/ _
 		( _
-			@FB_RTL_PROFILEMCOUNT, NULL, _
+			@FB_RTL_PROFILEMCOUNT, @"mcount", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
-	 	), _
+		), _
 		/' _monstartup CDECL ( ) as void '/ _
 		( _
-			@FB_RTL_PROFILEMONSTARTUP, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
-	 }
+			@FB_RTL_PROFILEMONSTARTUP, @"_monstartup", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
+	}
 
 sub rtlProfileModInit( )
 	rtlAddIntrinsicProcs( @funcdata(0) )

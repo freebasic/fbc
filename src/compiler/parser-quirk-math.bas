@@ -19,7 +19,7 @@ private function hMathOp(byval op as AST_OP) as ASTNODE ptr
 	expr = astNewUOP( op, expr )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	function = expr
@@ -39,10 +39,57 @@ private function hAtan2() as ASTNODE ptr
 	expr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	function = expr
+end function
+
+private function hLen _
+	( _
+		byval expr as ASTNODE ptr, _
+		byref lgt as integer _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr litsym = any
+
+	select case( astGetDataType( expr ) )
+	case FB_DATATYPE_STRING
+		return rtlStrLen( expr )
+
+	case FB_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlStrLen( expr )
+		end if
+
+		'' String literal, evaluate at compile-time
+		lgt = symbGetStrLen( litsym ) - 1
+
+	case FB_DATATYPE_WCHAR
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym = NULL ) then
+			return rtlWstrLen( expr )
+		end if
+
+		'' String literal, evaluate at compile-time
+		lgt = symbGetWstrLen( litsym ) - 1
+
+	case FB_DATATYPE_FIXSTR
+		'' len( fixstr ) returns the N from STRING * N, i.e. it works
+		'' like sizeof() - 1 (-1 for the implicit null terminator),
+		'' it does not return the length of the stored string data.
+		lgt = astSizeOf( expr ) - 1
+		assert( lgt >= 0 )
+
+	case else
+		'' For anything else, len() means sizeof()
+		lgt = astSizeOf( expr )
+
+	end select
+
+	astDelTree( expr )
+	return NULL
 end function
 
 private function hLenSizeof _
@@ -51,9 +98,9 @@ private function hLenSizeof _
 		byval isasm as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any, expr2 = any
-	dim as integer dtype = any, lgt = any, is_type = any
-	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
+	dim as integer dtype = any, lgt = any
+	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF
 	lexSkipToken( )
@@ -81,7 +128,7 @@ private function hLenSizeof _
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 					'' error recovery: fake an expr
 					astDelTree( expr )
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					expr = astNewCONSTi( 0 )
 				end if
 			end if
 		end if
@@ -97,11 +144,27 @@ private function hLenSizeof _
 		end if
 	end if
 
-	if( expr <> NULL ) then
-		function = rtlMathLen( expr, is_len )
+	if( expr ) then
+		if( is_len ) then
+			'' len()
+			'' If an expression is returned, then it's an
+			'' fb_[W]StrLen() call, otherwise it's a sizeof() and
+			'' the length is returned in lgt.
+			expr = hLen( expr, lgt )
+			if( expr = NULL ) then
+				expr = astNewCONSTi( lgt )
+			end if
+		else
+			'' sizeof()
+			lgt = astSizeOf( expr )
+			astDelTree( expr )
+			expr = astNewCONSTi( lgt )
+		end if
 	else
-		function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( lgt )
 	end if
+
+	function = expr
 end function
 
 '':::::
@@ -174,10 +237,10 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN
-		function = hLenSizeof(TRUE, isasm)
+		function = hLenSizeof( TRUE, isasm )
 
 	case FB_TK_SIZEOF
-		function = hLenSizeof(FALSE, isasm)
+		function = hLenSizeof( FALSE, isasm )
 
 	end select
 

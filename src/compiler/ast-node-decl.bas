@@ -19,17 +19,12 @@ private function hCtorList _
 
 	subtype = symbGetSubtype( sym )
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), _
-    					    subtype, _
-    					    FALSE, _
-    					    FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
+	label = symbAddLabel( NULL )
+	this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), subtype )
 
 	'' fld = @sym(0)
-	tree = astNewLINK( tree, _
-		astBuildVarAssign( this_, _
-			astNewADDROF( astNewVAR( sym, 0, symbGetFullType( sym ), subtype ) ) ) )
+	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -47,18 +42,7 @@ private function hCtorList _
 
 end function
 
-'':::::
-private function hCallCtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as integer lgt = any
-   	dim as FBSYMBOL ptr subtype = any
-
-    function = NULL
-
+private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
     '' static, shared (includes extern/public) or common? do nothing..
     if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
        	 						   FB_SYMBATTRIB_SHARED or _
@@ -69,61 +53,39 @@ private function hCallCtor _
 
     '' local..
 
-   	'' initialized? do nothing..
-   	if( initree <> NULL ) then
-   		exit function
-   	end if
-
-   	'' not initialized..
-   	subtype = symbGetSubtype( sym )
-
 	'' Do not initialize?
 	if( symbGetDontInit( sym ) ) then
 		exit function
 	end if
 
-   	select case symbGetType( sym )
-   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-   		'' has a default ctor?
-   		if( symbGetCompDefCtor( subtype ) <> NULL ) then
-   			'' proc result? astProcEnd() will take care of this
-   			if( (symbGetAttrib( sym ) and FB_SYMBATTRIB_FUNCRESULT) <> 0 ) then
-   				exit function
-   			end if
+	'' has a default ctor?
+	if( symbHasDefCtor( sym ) ) then
+		'' proc result? astProcEnd() will take care of this
+		if( (symbGetAttrib( sym ) and FB_SYMBATTRIB_FUNCRESULT) <> 0 ) then
+			exit function
+		end if
 
-   			'' scalar?
-   			if( (symbGetArrayDimensions( sym ) = 0) or _
-   				(symbGetArrayElements( sym ) = 1) ) then
-   				'' sym.constructor( )
-   				return astBuildCtorCall( subtype, _
-   										 astNewVAR( sym, _
-   											 		0, _
-   											 		symbGetFullType( sym ), _
-   											 		subtype ) )
+		'' scalar?
+		if( (symbGetArrayDimensions( sym ) = 0) or _
+		    (symbGetArrayElements( sym ) = 1) ) then
+			'' sym.constructor( )
+			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
+		'' array..
+		else
+			function = hCtorList( sym )
+		end if
 
-   			'' array..
-   			else
-                return hCtorList( sym )
-   			end if
-   		end if
-   	end select
+		exit function
+	end if
 
-    lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
-
-    function = astNewMEM( AST_OP_MEMCLEAR, _
-    			  	  	  astNewVAR( sym, _
-    			  		  	 	 	 0, _
-    			   			 	 	 symbGetFullType( sym ), _
-    			   			 	 	 subtype ), _
-    			  	  	  astNewCONSTi( lgt ) )
-
+	function = astNewMEM( AST_OP_MEMCLEAR, astNewVAR( sym ), _
+	                      astNewCONSTi( symbGetLen( sym ) * symbGetArrayElements( sym ) ) )
 end function
 
-'':::::
 function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval do_defaultinit as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -131,17 +93,21 @@ function astNewDECL _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
 
-	n->l = hCallCtor( sym, initree )
+	n->sym = sym
+	if( do_defaultinit ) then
+		n->l = hDefaultInit( sym )
+	end if
 
 	function = n
-
 end function
 
-'':::::
-function astLoadDECL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
+function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
+	if( ast.doemit ) then
+		'' Emit local variable declarations in-line for the C backend
+		if( symbIsLocal( n->sym ) ) then
+			irEmitDECL( n->sym )
+		end if
+	end if
 
 	'' call ctor?
 	if( n->l <> NULL ) then
@@ -150,7 +116,4 @@ function astLoadDECL _
 	end if
 
 	function = NULL
-
 end function
-
-

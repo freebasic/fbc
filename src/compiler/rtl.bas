@@ -106,6 +106,7 @@ sub rtlAddIntrinsicProcs _
 		byval procdef as FB_RTL_PROCDEF ptr _
 	)
 
+	dim as FBSYMBOL ptr param = any
     dim as integer callconv = any
 
 	'' for each proc..
@@ -161,7 +162,6 @@ sub rtlAddIntrinsicProcs _
 						'' function pointers need a symbol built so they can check matches
 						case typeAddrOf( FB_DATATYPE_FUNCTION )
 							dim as integer inner_attrib = any, func_arg = any
-							dim as integer inner_param_len = any
 							dim as ASTNODE ptr inner_param_optval = any
 							dim as FBSYMBOL ptr inner_proc = any
 
@@ -189,14 +189,8 @@ sub rtlAddIntrinsicProcs _
 										inner_attrib = 0
 									end if
 
-									if( .dtype <> FB_DATATYPE_INVALID ) then
-										inner_param_len = symbCalcParamLen( .dtype, NULL, .mode )
-									else
-										inner_param_len = FB_POINTERSIZE
-									end if
-
-									symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, _
-									                  .mode, inner_attrib, inner_param_optval )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, .mode, inner_attrib )
+									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
 
@@ -204,27 +198,19 @@ sub rtlAddIntrinsicProcs _
 
 							i += 1
 							with procdef->paramTb(i)
-
 								'' add it
 								'' Note: using FBCALL for the function pointer.
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddPrototype( inner_proc, NULL, hMakeTmpStrNL( ), _
-								                           .dtype, NULL, 0, env.target.fbcall, _
-								                           FB_SYMBOPT_DECLARING )
-
-								if( subtype <> NULL ) then
-									symbSetIsFuncPtr( subtype )
-								end if
+								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, 0, env.target.fbcall )
 
 								'' due to the ambiguity (need to say it's optional to
 								'' even get to this point), the symbol's return type will
 								'' be what specifies if the parent symbol is optional
-                                if( .isopt = FALSE ) then
-                                	attrib = 0
-                                end if
-
+								if( .isopt = FALSE ) then
+									attrib = 0
+								end if
 							end with
 
 							param_optval = NULL
@@ -238,20 +224,17 @@ sub rtlAddIntrinsicProcs _
 						param_optval = NULL
 					end if
 
-					dim as integer lgt = FB_POINTERSIZE
-					if( .dtype <> FB_DATATYPE_INVALID ) then
-						lgt = symbCalcParamLen( .dtype, subtype, .mode )
-					else
+					if( .dtype = FB_DATATYPE_INVALID ) then
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					var parm = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, _
-					                             .mode, attrib, param_optval )
+					param = symbAddProcParam( proc, NULL, .dtype, subtype, .mode, attrib )
 
 					if( .check_const ) then
-						symbSetIsRTLConst( parm )
+						symbSetIsRTLConst( param )
 					end if
 
+					symbMakeParamOptional( proc, param, param_optval )
 				end with
 			next
 
@@ -265,34 +248,33 @@ sub rtlAddIntrinsicProcs _
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 
-			''
+			'' Note: for operators, this is the AST_OP_* value, not a valid zstring ptr
 			dim as const zstring ptr pname = procdef->name
-
-			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
-			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
-				if( fbLangIsSet( FB_LANG_QB ) ) then
-					if( procdef->alias = NULL ) then
-						static as string tmp_alias
-						tmp_alias = *pname
-						procdef->alias = strptr( tmp_alias )
-        			end if
-
-        			static as string tmp_name
-        			tmp_name = "__" + *pname
-        			pname = strptr( tmp_name )
-				end if
-			end if
-
-			''
-			if( procdef->alias = NULL ) then
-				procdef->alias = pname
-			end if
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-				proc = symbAddPrototype( proc, pname, procdef->alias, _
-				                         procdef->dtype, NULL, attrib, callconv, _
-				                         FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
+				if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+					if( fbLangIsSet( FB_LANG_QB ) ) then
+						if( procdef->alias = NULL ) then
+							static as string tmp_alias
+							tmp_alias = *pname
+							procdef->alias = strptr( tmp_alias )
+						end if
+
+						static as string tmp_name
+						tmp_name = "__" + *pname
+						pname = strptr( tmp_name )
+					end if
+				end if
+
+				if( procdef->alias = NULL ) then
+					procdef->alias = pname
+				end if
+
+				proc = symbAddProc( proc, pname, procdef->alias, _
+				                    procdef->dtype, NULL, attrib, callconv, _
+				                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
 			else
@@ -411,7 +393,7 @@ function rtlOvlProcCall _
 	do while( arg <> NULL )
         var nxt = arg->next
 
-		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			return NULL
 		end if
 
@@ -428,34 +410,18 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer _
-	) as integer
-
+function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
 	dim as FBSYMBOL ptr s = any
 	dim as integer dtype = any
-
-	function = -1
 
 	dtype = astGetDataType( expr )
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
 
-	case FB_DATATYPE_STRUCT
-		s = astGetSubtype( expr )
-		if( s <> NULL ) then
-			function = symbCalcLen( dtype, s, unpadlen )
-		else
-			function = 0
-		end if
-
 	case else
-		function = symbCalcLen( dtype, NULL )
+		function = symbCalcLen( dtype, astGetSubtype( expr ) )
 	end select
-
 end function
 
 '':::::

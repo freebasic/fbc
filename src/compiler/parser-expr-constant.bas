@@ -23,7 +23,7 @@ function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubType( sym )
 
-  	select case as const dtype
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
   	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   		return astNewVAR( symbGetConstValStr( sym ), 0, dtype )
 
@@ -51,12 +51,7 @@ end function
 '':::::
 '' LitString	= 	STR_LITERAL STR_LITERAL* .
 ''
-function cStrLiteral _
-	( _
-		byval skiptoken as integer _
-	) as ASTNODE ptr
-
-    dim as integer dtype = any
+function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as FBSYMBOL ptr sym = any
     dim as integer lgt = any, isunicode = any
     dim as zstring ptr zs = any
@@ -65,10 +60,9 @@ function cStrLiteral _
     dim as ASTNODE ptr expr = NULL
 
 	do
-  		dtype = lexGetType( )
 		lgt = lexGetTextLen( )
 
-  		if( dtype <> FB_DATATYPE_WCHAR ) then
+  		if( lexGetType( ) <> FB_DATATYPE_WCHAR ) then
 			'' escaped? convert to internal format..
 			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
 				zs = hReEscape( lexGetText( ), lgt, isunicode )
@@ -96,7 +90,6 @@ function cStrLiteral _
 			'' convert to unicode..
 			else
 				sym = symbAllocWstrConst( wstr( *zs ), lgt )
-				dtype = FB_DATATYPE_WCHAR
 			end if
 
   		else
@@ -122,9 +115,9 @@ function cStrLiteral _
 		end if
 
 		if( expr = NULL ) then
-			expr = astNewVAR( sym, 0, dtype )
+			expr = astNewVAR( sym )
 		else
-			expr = astNewBOP( AST_OP_ADD, expr, astNewVAR( sym, 0, dtype ) )
+			expr = astNewBOP( AST_OP_ADD, expr, astNewVAR( sym ) )
 		end if
 
 		if( skiptoken ) then
@@ -141,7 +134,6 @@ function cStrLiteral _
 	loop
 
 	function = expr
-
 end function
 
 '':::::
@@ -160,8 +152,12 @@ function cNumLiteral _
 	case FB_DATATYPE_ULONGINT
 		function = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+  	case FB_DATATYPE_DOUBLE
 		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
+
+  	case FB_DATATYPE_SINGLE
+		dim fval as single = val( *lexGetText( ) )
+		function = astNewCONSTf( fval , dtype )
 
 	case FB_DATATYPE_UINT
 		function = astNewCONSTi( valuint( *lexGetText( ) ), dtype )

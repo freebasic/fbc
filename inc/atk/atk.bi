@@ -1,11 +1,12 @@
 ' This is file atk.bi
-' (FreeBasic binding for atk library version 1.33.6)
+' (FreeBasic binding for ATK libray - version 2.4.0)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -45,7 +46,9 @@
 
 #INCLIB "atk-1.0"
 
-EXTERN "C"
+#INCLUDE ONCE "glib.bi"
+
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __ATK_H__
 #DEFINE __ATK_H__
@@ -53,7 +56,7 @@ EXTERN "C"
 
 #IFNDEF __ATK_OBJECT_H__
 #DEFINE __ATK_OBJECT_H__
-#INCLUDE ONCE "glib-object.bi"
+#INCLUDE ONCE "glib-object.bi" '__HEADERS__: glib-object.h
 
 #IFNDEF __ATK_STATE_H__
 #DEFINE __ATK_STATE_H__
@@ -104,14 +107,14 @@ END ENUM
 TYPE AtkState AS guint64
 
 DECLARE FUNCTION atk_state_type_register(BYVAL AS CONST gchar PTR) AS AtkStateType
-DECLARE FUNCTION atk_state_type_get_name(BYVAL AS AtkStateType) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_state_type_get_name(BYVAL AS AtkStateType) AS CONST gchar PTR
 DECLARE FUNCTION atk_state_type_for_name(BYVAL AS CONST gchar PTR) AS AtkStateType
 
 #ENDIF ' __ATK_STATE_H__
 
 #IFNDEF __ATK_RELATION_TYPE_H__
 #DEFINE __ATK_RELATION_TYPE_H__
-#INCLUDE ONCE "glib.bi"
+#INCLUDE ONCE "glib.bi" '__HEADERS__: glib.h
 
 ENUM AtkRelationType
   ATK_RELATION_NULL = 0
@@ -225,6 +228,19 @@ ENUM AtkRole
   ATK_ROLE_FORM
   ATK_ROLE_LINK
   ATK_ROLE_INPUT_METHOD_WINDOW
+  ATK_ROLE_TABLE_ROW
+  ATK_ROLE_TREE_ITEM
+  ATK_ROLE_DOCUMENT_SPREADSHEET
+  ATK_ROLE_DOCUMENT_PRESENTATION
+  ATK_ROLE_DOCUMENT_TEXT
+  ATK_ROLE_DOCUMENT_WEB
+  ATK_ROLE_DOCUMENT_EMAIL
+  ATK_ROLE_COMMENT
+  ATK_ROLE_LIST_BOX
+  ATK_ROLE_GROUPING
+  ATK_ROLE_IMAGE_MAP
+  ATK_ROLE_NOTIFICATION
+  ATK_ROLE_INFO_BAR
   ATK_ROLE_LAST_DEFINED
 END ENUM
 
@@ -289,8 +305,8 @@ END TYPE
 
 TYPE _AtkObjectClass
   AS GObjectClass parent
-  get_name AS FUNCTION(BYVAL AS AtkObject PTR) AS G_CONST_RETURN gchar PTR
-  get_description AS FUNCTION(BYVAL AS AtkObject PTR) AS G_CONST_RETURN gchar PTR
+  get_name AS FUNCTION(BYVAL AS AtkObject PTR) AS CONST gchar PTR
+  get_description AS FUNCTION(BYVAL AS AtkObject PTR) AS CONST gchar PTR
   get_parent AS FUNCTION(BYVAL AS AtkObject PTR) AS AtkObject PTR
   get_n_children AS FUNCTION(BYVAL AS AtkObject PTR) AS gint
   ref_child AS FUNCTION(BYVAL AS AtkObject PTR, BYVAL AS gint) AS AtkObject PTR
@@ -327,8 +343,8 @@ END TYPE
 
 DECLARE FUNCTION atk_implementor_get_type() AS GType
 DECLARE FUNCTION atk_implementor_ref_accessible(BYVAL AS AtkImplementor PTR) AS AtkObject PTR
-DECLARE FUNCTION atk_object_get_name(BYVAL AS AtkObject PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION atk_object_get_description(BYVAL AS AtkObject PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_object_get_name(BYVAL AS AtkObject PTR) AS CONST gchar PTR
+DECLARE FUNCTION atk_object_get_description(BYVAL AS AtkObject PTR) AS CONST gchar PTR
 DECLARE FUNCTION atk_object_get_parent(BYVAL AS AtkObject PTR) AS AtkObject PTR
 DECLARE FUNCTION atk_object_get_n_accessible_children(BYVAL AS AtkObject PTR) AS gint
 DECLARE FUNCTION atk_object_ref_accessible_child(BYVAL AS AtkObject PTR, BYVAL AS gint) AS AtkObject PTR
@@ -353,11 +369,11 @@ DECLARE FUNCTION atk_object_connect_property_change_handler(BYVAL AS AtkObject P
 DECLARE SUB atk_object_remove_property_change_handler(BYVAL AS AtkObject PTR, BYVAL AS guint)
 DECLARE SUB atk_object_notify_state_change(BYVAL AS AtkObject PTR, BYVAL AS AtkState, BYVAL AS gboolean)
 DECLARE SUB atk_object_initialize(BYVAL AS AtkObject PTR, BYVAL AS gpointer)
-DECLARE FUNCTION atk_role_get_name(BYVAL AS AtkRole) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_role_get_name(BYVAL AS AtkRole) AS CONST gchar PTR
 DECLARE FUNCTION atk_role_for_name(BYVAL AS CONST gchar PTR) AS AtkRole
 DECLARE FUNCTION atk_object_add_relationship(BYVAL AS AtkObject PTR, BYVAL AS AtkRelationType, BYVAL AS AtkObject PTR) AS gboolean
 DECLARE FUNCTION atk_object_remove_relationship(BYVAL AS AtkObject PTR, BYVAL AS AtkRelationType, BYVAL AS AtkObject PTR) AS gboolean
-DECLARE FUNCTION atk_role_get_localized_name(BYVAL AS AtkRole) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_role_get_localized_name(BYVAL AS AtkRole) AS CONST gchar PTR
 
 #ENDIF ' __ATK_OBJECT_H__
 
@@ -382,22 +398,22 @@ TYPE _AtkActionIface
   AS GTypeInterface parent
   do_action AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS gboolean
   get_n_actions AS FUNCTION(BYVAL AS AtkAction PTR) AS gint
-  get_description AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
-  get_name AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
-  get_keybinding AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+  get_description AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
+  get_name AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
+  get_keybinding AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
   set_description AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint, BYVAL AS CONST gchar PTR) AS gboolean
-  get_localized_name AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+  get_localized_name AS FUNCTION(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
   AS AtkFunction pad2
 END TYPE
 
 DECLARE FUNCTION atk_action_get_type() AS GType
 DECLARE FUNCTION atk_action_do_action(BYVAL AS AtkAction PTR, BYVAL AS gint) AS gboolean
 DECLARE FUNCTION atk_action_get_n_actions(BYVAL AS AtkAction PTR) AS gint
-DECLARE FUNCTION atk_action_get_description(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION atk_action_get_name(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION atk_action_get_keybinding(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_action_get_description(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
+DECLARE FUNCTION atk_action_get_name(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
+DECLARE FUNCTION atk_action_get_keybinding(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION atk_action_set_description(BYVAL AS AtkAction PTR, BYVAL AS gint, BYVAL AS CONST gchar PTR) AS gboolean
-DECLARE FUNCTION atk_action_get_localized_name(BYVAL AS AtkAction PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_action_get_localized_name(BYVAL AS AtkAction PTR, BYVAL AS gint) AS CONST gchar PTR
 
 #ENDIF ' __ATK_ACTION_H__
 
@@ -454,8 +470,8 @@ TYPE _AtkUtilClass
   add_key_event_listener AS FUNCTION(BYVAL AS AtkKeySnoopFunc, BYVAL AS gpointer) AS guint
   remove_key_event_listener AS SUB(BYVAL AS guint)
   get_root AS FUNCTION() AS AtkObject PTR
-  get_toolkit_name AS FUNCTION() AS G_CONST_RETURN gchar PTR
-  get_toolkit_version AS FUNCTION() AS G_CONST_RETURN gchar PTR
+  get_toolkit_name AS FUNCTION() AS CONST gchar PTR
+  get_toolkit_version AS FUNCTION() AS CONST gchar PTR
 END TYPE
 
 DECLARE FUNCTION atk_util_get_type() AS GType
@@ -475,9 +491,9 @@ DECLARE FUNCTION atk_add_key_event_listener(BYVAL AS AtkKeySnoopFunc, BYVAL AS g
 DECLARE SUB atk_remove_key_event_listener(BYVAL AS guint)
 DECLARE FUNCTION atk_get_root() AS AtkObject PTR
 DECLARE FUNCTION atk_get_focus_object() AS AtkObject PTR
-DECLARE FUNCTION atk_get_toolkit_name() AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION atk_get_toolkit_version() AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION atk_get_version() AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_get_toolkit_name() AS CONST gchar PTR
+DECLARE FUNCTION atk_get_toolkit_version() AS CONST gchar PTR
+DECLARE FUNCTION atk_get_version() AS CONST gchar PTR
 
 #DEFINE ATK_DEFINE_TYPE(TN, t_n, T_P) ATK_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, )
 
@@ -495,8 +511,8 @@ DECLARE FUNCTION atk_get_version() AS G_CONST_RETURN gchar PTR
  _ATK_DEFINE_TYPE_EXTENDED_END()
 #ENDMACRO
 
-#MACRO ATK_DEFINE_TYPE_EXTENDED(TN, t_n, T_P, _f_, _C_)
- _ATK_DEFINE_TYPE_EXTENDED_BEGIN (TN, t_n, T_P, _f_)
+#MACRO ATK_DEFINE_TYPE_EXTENDED(TN, t_n, T_P, _F_, _C_)
+ _ATK_DEFINE_TYPE_EXTENDED_BEGIN (TN, t_n, T_P, _F_)
  _C_
  _ATK_DEFINE_TYPE_EXTENDED_END()
 #ENDMACRO
@@ -504,8 +520,8 @@ DECLARE FUNCTION atk_get_version() AS G_CONST_RETURN gchar PTR
 #MACRO _ATK_DEFINE_TYPE_EXTENDED_BEGIN(TypeName, type_name, TYPE, flags)
  DECLARE SUB type_name##_init CDECL(BYVAL self AS TypeName PTR)
  DECLARE SUB type_name##_class_init CDECL(BYVAL klass AS TypeName##Class PTR)
- DIM SHARED AS gpointer type_name##_parent_class = NULL
- SUB type_name##_class_intern_init CDECL(BYVAL klass AS gpointer)
+ STATIC SHARED AS gpointer type_name##_parent_class = NULL
+ SUB type_name##_class_intern_init CDECL(BYVAL klass AS gpointer) STATIC
    type_name##_parent_class = g_type_class_peek_parent (klass)
    type_name##_class_init (CAST(TypeName##Class PTR, klass))
  END SUB
@@ -619,11 +635,11 @@ TYPE AtkDocumentIface AS _AtkDocumentIface
 
 TYPE _AtkDocumentIface
   AS GTypeInterface parent
-  get_document_type AS FUNCTION(BYVAL AS AtkDocument PTR) AS G_CONST_RETURN gchar PTR
+  get_document_type AS FUNCTION(BYVAL AS AtkDocument PTR) AS CONST gchar PTR
   get_document AS FUNCTION(BYVAL AS AtkDocument PTR) AS gpointer
-  get_document_locale AS FUNCTION(BYVAL AS AtkDocument PTR) AS G_CONST_RETURN gchar PTR
+  get_document_locale AS FUNCTION(BYVAL AS AtkDocument PTR) AS CONST gchar PTR
   get_document_attributes AS FUNCTION(BYVAL AS AtkDocument PTR) AS AtkAttributeSet PTR
-  get_document_attribute_value AS FUNCTION(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+  get_document_attribute_value AS FUNCTION(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
   set_document_attribute AS FUNCTION(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gboolean
   AS AtkFunction pad1
   AS AtkFunction pad2
@@ -632,11 +648,11 @@ TYPE _AtkDocumentIface
 END TYPE
 
 DECLARE FUNCTION atk_document_get_type() AS GType
-DECLARE FUNCTION atk_document_get_document_type(BYVAL AS AtkDocument PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_document_get_document_type(BYVAL AS AtkDocument PTR) AS CONST gchar PTR
 DECLARE FUNCTION atk_document_get_document(BYVAL AS AtkDocument PTR) AS gpointer
-DECLARE FUNCTION atk_document_get_locale(BYVAL AS AtkDocument PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_document_get_locale(BYVAL AS AtkDocument PTR) AS CONST gchar PTR
 DECLARE FUNCTION atk_document_get_attributes(BYVAL AS AtkDocument PTR) AS AtkAttributeSet PTR
-DECLARE FUNCTION atk_document_get_attribute_value(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_document_get_attribute_value(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 DECLARE FUNCTION atk_document_set_attribute_value(BYVAL AS AtkDocument PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gboolean
 
 #ENDIF ' __ATK_DOCUMENT_H__
@@ -723,6 +739,8 @@ TYPE _AtkTextRange
   AS gchar PTR content
 END TYPE
 
+DECLARE FUNCTION atk_text_range_get_type() AS GType
+
 ENUM AtkTextClipType
   ATK_TEXT_CLIP_NONE
   ATK_TEXT_CLIP_MIN
@@ -780,9 +798,9 @@ DECLARE SUB atk_text_get_range_extents(BYVAL AS AtkText PTR, BYVAL AS gint, BYVA
 DECLARE FUNCTION atk_text_get_bounded_ranges(BYVAL AS AtkText PTR, BYVAL AS AtkTextRectangle PTR, BYVAL AS AtkCoordType, BYVAL AS AtkTextClipType, BYVAL AS AtkTextClipType) AS AtkTextRange PTR PTR
 DECLARE SUB atk_text_free_ranges(BYVAL AS AtkTextRange PTR PTR)
 DECLARE SUB atk_attribute_set_free(BYVAL AS AtkAttributeSet PTR)
-DECLARE FUNCTION atk_text_attribute_get_name(BYVAL AS AtkTextAttribute) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_text_attribute_get_name(BYVAL AS AtkTextAttribute) AS CONST gchar PTR
 DECLARE FUNCTION atk_text_attribute_for_name(BYVAL AS CONST gchar PTR) AS AtkTextAttribute
-DECLARE FUNCTION atk_text_attribute_get_value(BYVAL AS AtkTextAttribute, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_text_attribute_get_value(BYVAL AS AtkTextAttribute, BYVAL AS gint) AS CONST gchar PTR
 
 #ENDIF ' __ATK_TEXT_H__
 
@@ -857,8 +875,8 @@ DECLARE FUNCTION atk_gobject_accessible_get_object(BYVAL AS AtkGObjectAccessible
 #IFNDEF __ATK_HYPERLINK_H__
 #DEFINE __ATK_HYPERLINK_H__
 
-ENUM AtkHyperlinkStateFlags
-  ATK_HYPERLINK_IS_INLINE = 1 SHL 0
+ENUM AtkHyperlinkStateFlags_
+  ATK_HYPERLINK_IS_INLINE_ = 1 SHL 0
 END ENUM
 
 #DEFINE ATK_TYPE_HYPERLINK (atk_hyperlink_get_type ())
@@ -895,7 +913,7 @@ DECLARE FUNCTION atk_hyperlink_get_object(BYVAL AS AtkHyperlink PTR, BYVAL AS gi
 DECLARE FUNCTION atk_hyperlink_get_end_index(BYVAL AS AtkHyperlink PTR) AS gint
 DECLARE FUNCTION atk_hyperlink_get_start_index(BYVAL AS AtkHyperlink PTR) AS gint
 DECLARE FUNCTION atk_hyperlink_is_valid(BYVAL AS AtkHyperlink PTR) AS gboolean
-DECLARE FUNCTION atk_hyperlink_is_inline_FB ALIAS "atk_hyperlink_is_inline"(BYVAL AS AtkHyperlink PTR) AS gboolean
+DECLARE FUNCTION atk_hyperlink_is_inline(BYVAL AS AtkHyperlink PTR) AS gboolean
 DECLARE FUNCTION atk_hyperlink_get_n_anchors(BYVAL AS AtkHyperlink PTR) AS gint
 
 #IFNDEF ATK_DISABLE_DEPRECATED
@@ -988,19 +1006,19 @@ TYPE AtkImageIface AS _AtkImageIface
 TYPE _AtkImageIface
   AS GTypeInterface parent
   get_image_position AS SUB(BYVAL AS AtkImage PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS AtkCoordType)
-  get_image_description AS FUNCTION(BYVAL AS AtkImage PTR) AS G_CONST_RETURN gchar PTR
+  get_image_description AS FUNCTION(BYVAL AS AtkImage PTR) AS CONST gchar PTR
   get_image_size AS SUB(BYVAL AS AtkImage PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
   set_image_description AS FUNCTION(BYVAL AS AtkImage PTR, BYVAL AS CONST gchar PTR) AS gboolean
-  get_image_locale AS FUNCTION(BYVAL AS AtkImage PTR) AS G_CONST_RETURN gchar PTR
+  get_image_locale AS FUNCTION(BYVAL AS AtkImage PTR) AS CONST gchar PTR
   AS AtkFunction pad1
 END TYPE
 
 DECLARE FUNCTION atk_image_get_type() AS GType
-DECLARE FUNCTION atk_image_get_image_description(BYVAL AS AtkImage PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_image_get_image_description(BYVAL AS AtkImage PTR) AS CONST gchar PTR
 DECLARE SUB atk_image_get_image_size(BYVAL AS AtkImage PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
 DECLARE FUNCTION atk_image_set_image_description(BYVAL AS AtkImage PTR, BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE SUB atk_image_get_image_position(BYVAL AS AtkImage PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS AtkCoordType)
-DECLARE FUNCTION atk_image_get_image_locale(BYVAL AS AtkImage PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_image_get_image_locale(BYVAL AS AtkImage PTR) AS CONST gchar PTR
 
 #ENDIF ' __ATK_IMAGE_H__
 
@@ -1173,7 +1191,7 @@ END TYPE
 
 DECLARE FUNCTION atk_relation_get_type() AS GType
 DECLARE FUNCTION atk_relation_type_register(BYVAL AS CONST gchar PTR) AS AtkRelationType
-DECLARE FUNCTION atk_relation_type_get_name(BYVAL AS AtkRelationType) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_relation_type_get_name(BYVAL AS AtkRelationType) AS CONST gchar PTR
 DECLARE FUNCTION atk_relation_type_for_name(BYVAL AS CONST gchar PTR) AS AtkRelationType
 DECLARE FUNCTION atk_relation_new(BYVAL AS AtkObject PTR PTR, BYVAL AS gint, BYVAL AS AtkRelationType) AS AtkRelation PTR
 DECLARE FUNCTION atk_relation_get_relation_type(BYVAL AS AtkRelation PTR) AS AtkRelationType
@@ -1345,9 +1363,9 @@ TYPE AtkStreamableContentIface AS _AtkStreamableContentIface
 TYPE _AtkStreamableContentIface
   AS GTypeInterface parent
   get_n_mime_types AS FUNCTION(BYVAL AS AtkStreamableContent PTR) AS gint
-  get_mime_type AS FUNCTION(BYVAL AS AtkStreamableContent PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+  get_mime_type AS FUNCTION(BYVAL AS AtkStreamableContent PTR, BYVAL AS gint) AS CONST gchar PTR
   get_stream AS FUNCTION(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS GIOChannel PTR
-  get_uri AS FUNCTION(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+  get_uri AS FUNCTION(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
   AS AtkFunction pad1
   AS AtkFunction pad2
   AS AtkFunction pad3
@@ -1355,9 +1373,9 @@ END TYPE
 
 DECLARE FUNCTION atk_streamable_content_get_type() AS GType
 DECLARE FUNCTION atk_streamable_content_get_n_mime_types(BYVAL AS AtkStreamableContent PTR) AS gint
-DECLARE FUNCTION atk_streamable_content_get_mime_type(BYVAL AS AtkStreamableContent PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_streamable_content_get_mime_type(BYVAL AS AtkStreamableContent PTR, BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION atk_streamable_content_get_stream(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS GIOChannel PTR
-DECLARE FUNCTION atk_streamable_content_get_uri(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_streamable_content_get_uri(BYVAL AS AtkStreamableContent PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 
 #ENDIF ' __ATK_STREAMABLE_CONTENT_H__
 
@@ -1389,9 +1407,9 @@ TYPE _AtkTableIface
   get_column_extent_at AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint, BYVAL AS gint) AS gint
   get_row_extent_at AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint, BYVAL AS gint) AS gint
   get_caption AS FUNCTION(BYVAL AS AtkTable PTR) AS AtkObject PTR
-  get_column_description AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+  get_column_description AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS CONST gchar PTR
   get_column_header AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS AtkObject PTR
-  get_row_description AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+  get_row_description AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS CONST gchar PTR
   get_row_header AS FUNCTION(BYVAL AS AtkTable PTR, BYVAL AS gint) AS AtkObject PTR
   get_summary AS FUNCTION(BYVAL AS AtkTable PTR) AS AtkObject PTR
   set_caption AS SUB(BYVAL AS AtkTable PTR, BYVAL AS AtkObject PTR)
@@ -1432,9 +1450,9 @@ DECLARE FUNCTION atk_table_get_n_rows(BYVAL AS AtkTable PTR) AS gint
 DECLARE FUNCTION atk_table_get_column_extent_at(BYVAL AS AtkTable PTR, BYVAL AS gint, BYVAL AS gint) AS gint
 DECLARE FUNCTION atk_table_get_row_extent_at(BYVAL AS AtkTable PTR, BYVAL AS gint, BYVAL AS gint) AS gint
 DECLARE FUNCTION atk_table_get_caption(BYVAL AS AtkTable PTR) AS AtkObject PTR
-DECLARE FUNCTION atk_table_get_column_description(BYVAL AS AtkTable PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_table_get_column_description(BYVAL AS AtkTable PTR, BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION atk_table_get_column_header(BYVAL AS AtkTable PTR, BYVAL AS gint) AS AtkObject PTR
-DECLARE FUNCTION atk_table_get_row_description(BYVAL AS AtkTable PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION atk_table_get_row_description(BYVAL AS AtkTable PTR, BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION atk_table_get_row_header(BYVAL AS AtkTable PTR, BYVAL AS gint) AS AtkObject PTR
 DECLARE FUNCTION atk_table_get_summary(BYVAL AS AtkTable PTR) AS AtkObject PTR
 DECLARE SUB atk_table_set_caption(BYVAL AS AtkTable PTR, BYVAL AS AtkObject PTR)
@@ -1529,11 +1547,91 @@ DECLARE SUB atk_value_get_minimum_increment(BYVAL AS AtkValue PTR, BYVAL AS GVal
 
 #ENDIF ' __ATK_VALUE_H__
 
+#IFNDEF __ATK_WINDOW_H__
+#DEFINE __ATK_WINDOW_H__
+
+#DEFINE ATK_TYPE_WINDOW (atk_window_get_type ())
+#DEFINE ATK_IS_WINDOW(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_WINDOW)
+#DEFINE ATK_WINDOW(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_WINDOW, AtkWindow)
+#DEFINE ATK_WINDOW_GET_IFACE(obj) (G_TYPE_INSTANCE_GET_INTERFACE ((obj), ATK_TYPE_WINDOW, AtkWindowIface))
+
+TYPE AtkWindow AS _AtkWindow
+TYPE AtkWindowIface AS _AtkWindowIface
+
+TYPE _AtkWindowIface
+  AS GTypeInterface parent
+  AS gpointer _padding_dummy(15)
+END TYPE
+
+DECLARE FUNCTION atk_window_get_type() AS GType
+
+#ENDIF ' __ATK_WINDOW_H__
+
 #UNDEF __ATK_H_INSIDE__
 #ENDIF ' __ATK_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-07-24 11:47:18, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: ATK-2.4.0.bi
+' Parameters: ATK-2.4.0
+'                                  Process time [s]: 0.30014408682473
+'                                  Bytes translated: 82165
+'                                      Maximum deep: 3
+'                                SUB/FUNCTION names: 246
+'                                mangled TYPE names: 0
+'                                        files done: 30
+' atk-2.4.0/atk/atk.h
+' atk-2.4.0/atk/atkobject.h
+' atk-2.4.0/atk/atkstate.h
+' atk-2.4.0/atk/atkrelationtype.h
+' atk-2.4.0/atk/atkaction.h
+' atk-2.4.0/atk/atkcomponent.h
+' atk-2.4.0/atk/atkutil.h
+' atk-2.4.0/atk/atkdocument.h
+' atk-2.4.0/atk/atkeditabletext.h
+' atk-2.4.0/atk/atktext.h
+' atk-2.4.0/atk/atkgobjectaccessible.h
+' atk-2.4.0/atk/atkhyperlink.h
+' atk-2.4.0/atk/atkhyperlinkimpl.h
+' atk-2.4.0/atk/atkhypertext.h
+' atk-2.4.0/atk/atkimage.h
+' atk-2.4.0/atk/atknoopobject.h
+' atk-2.4.0/atk/atknoopobjectfactory.h
+' atk-2.4.0/atk/atkobjectfactory.h
+' atk-2.4.0/atk/atkplug.h
+' atk-2.4.0/atk/atkregistry.h
+' atk-2.4.0/atk/atkrelation.h
+' atk-2.4.0/atk/atkrelationset.h
+' atk-2.4.0/atk/atkselection.h
+' atk-2.4.0/atk/atksocket.h
+' atk-2.4.0/atk/atkstateset.h
+' atk-2.4.0/atk/atkstreamablecontent.h
+' atk-2.4.0/atk/atktable.h
+' atk-2.4.0/atk/atkmisc.h
+' atk-2.4.0/atk/atkvalue.h
+' atk-2.4.0/atk/atkwindow.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 2
+' atk-2.4.0/atk/
+' atk-2.4.0/
+'                                        __MACROS__: 5
+' 29: #define G_BEGIN_DECLS
+' 29: #define G_END_DECLS
+' 1: #define ATK_VAR extern
+' 2: #define G_DEPRECATED_FOR(_T_)
+' 1: #define G_DEPRECATED
+'                                       __HEADERS__: 3
+' 1: atk/atk.h>
+' 1: glib.h>glib.bi
+' 9: glib-object.h>glib-object.bi
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 2
+' 1: AtkHyperlinkStateFlags&
+' 1: ATK_HYPERLINK_IS_INLINE&

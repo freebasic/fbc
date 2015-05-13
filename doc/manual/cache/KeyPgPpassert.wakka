@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="#ASSERT"}}----
+Preprocessor conditional directive
+
+{{fbdoc item="syntax"}}##
+	**#assert ** //condition//
+##
+{{fbdoc item="param"}}
+	##//condition//##
+	    A conditional expression that is assumed to be true
+
+{{fbdoc item="desc"}}
+	Asserts the truth of a conditional expression at compile time.  If ##//condition//## is false, compilation will stop with an error.
+
+	This statement differs from the ##[[KeyPgAssert ASSERT]]## statement in that ##**#assert**## is evaluated at compile-time and ##[[KeyPgAssert ASSERT]]## is evaluated at run-time.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/prepro/assert.bas"}}%%(freebasic)
+const MIN = 5, MAX = 10
+#assert MAX > MIN '' cause an error if MAX <= MIN
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgAssert ASSERT]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPperror #error]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

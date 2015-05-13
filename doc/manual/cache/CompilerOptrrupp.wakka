@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -RR"}}----
+Do not delete the asm file(s)
+
+{{fbdoc item="syntax"}}##
+	**-RR**
+##
+{{fbdoc item="desc"}}
+	The ##-RR## compiler option causes the asm file(s) that are generated during the compile process to not be deleted. Preprocessor macros are expanded in these files. Note that in case of [[CompilerOptgen -gen gcc]] the ##*.asm## files produced by gcc are kept, instead of the ##*.c## files.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptcupp Compiler Option: -C]]
+	- [[CompilerOptr Compiler Option: -r]]
+	- [[CompilerOptrr Compiler Option: -rr]]
+	- [[CompilerOptrupp Compiler Option: -R]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

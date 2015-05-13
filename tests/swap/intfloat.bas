@@ -94,8 +94,8 @@ sub testDerefs cdecl( )
 		scope
 			dim as TA ptr ptr_a = callocate( sizeof(TA) * 3 )
 			dim as TB ptr ptr_b = callocate( sizeof(TB) * 3 )
-			CU_ASSERT( ptr_a )
-			CU_ASSERT( ptr_b )
+			CU_ASSERT( ptr_a <> NULL )
+			CU_ASSERT( ptr_b <> NULL )
 
 			'' Derefs + surrounding memory check
 			ptr_a[0] = 17

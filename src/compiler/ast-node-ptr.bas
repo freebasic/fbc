@@ -62,8 +62,7 @@ function astNewDEREF _
 		end if
 
 		if( astIsCONST( l ) ) then
-			ofs += astGetValueAsInt( l )
-			astDelNode( l )
+			ofs += astConstFlushToInt( l )
 			l = NULL
 		end if
 	end if

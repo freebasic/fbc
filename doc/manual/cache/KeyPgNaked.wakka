@@ -2,52 +2,117 @@
 Write functions without prolog/epilog code
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgSub Sub]] //identifier// **Naked** [//calling_convention//] ( //param_list// )
+	{[[KeyPgSub Sub]] | [[KeyPgFunction Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs As]] //data_type//]
 		//asm_statements//
-	[[KeyPgEndblock End]] [[KeyPgSub Sub]]
-	[[KeyPgFunction Function]] //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[KeyPgAs As]] //data_type//
-		//asm_statements//
-	[[KeyPgEndblock End]] [[KeyPgFunction Function]]
+	[[KeyPgEndblock End]] {[[KeyPgSub Sub]] | [[KeyPgFunction Function]]}
 ##
 {{fbdoc item="param"}}
 	##//identifier//## - name of the procedure.
 	##//calling_convention//## - calling convention of the procedure - can be ##[[KeyPgCdecl CDecl]]##, ##[[KeyPgPascal Pascal]]##, or ##[[KeyPgStdcall StdCall]]##
-	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the calling convention.
+	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the [[ProPgCallingConventions calling convention]].
 	##//param_list//## - parameters to be passed to the procedure.
 	##//data_type//## - the [[DataType data type]] of the function.
 
 {{fbdoc item="desc"}}
 	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm Asm]]## without any unnecessary overhead.
-	
-	 **Warning:** Before fbc version 0.24, ##**Naked**## is not compatible with use of the compiler option //[[CompilerOptexx -exx]]// or //[[CompilerOptprofile -profile]]// (because of program stack pollution by code that is only meant for normal functions).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/procs/naked.bas"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/procs/naked1.bas"}}%%(freebasic)
 '' Naked cdecl function
-function add naked cdecl _
+Function subtract_c Naked cdecl _   '' parameters pushed onto call stack in reverse order of declaration
 	( _
-		byval a as integer, _
-		byval b as integer _
-	) as integer
-	
-	asm
-		mov eax, dword ptr [esp+4] '' a
-		add eax, dword ptr [esp+8] '' + b
-		ret                        '' return result in eax
-	end asm
-	
-end function
+	    ByVal a As Integer, _
+	    ByVal b As Integer _        '' parameter pushed onto stack in first
+	) As Integer
+   
+	Asm
+	    mov eax, dword Ptr [esp+4]  '' eax = a
+	    Sub eax, dword Ptr [esp+8]  '' eax -= b
+	    ret                         '' return result in eax
+	End Asm
+   
+End Function
 
-print add( 1, 5 )%%
+Print subtract_c( 5, 1 ) '' 5 - 1
 
+''---------------------------------------------------------------------------------------------------------------------
+
+'' Naked stdcall function
+Function subtract_s Naked stdcall _ '' parameters pushed onto call stack in reverse order of declaration
+	                     _          '' called procedure responsible for removing parameters from stack
+	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
+	( _
+	    ByVal a As Integer, _
+	    ByVal b As Integer _        '' parameter pushed onto stack in first
+	) As Integer
+   
+	Asm
+	    mov eax, dword Ptr [esp+4]  '' eax = a
+	    Sub eax, dword Ptr [esp+8]  '' eax -= b
+	    ret 8                       '' return result in eax and 8 bytes (2 integers) to release
+	End Asm
+   
+End Function
+
+Print subtract_s( 5, 1 ) '' 5 - 1 
+
+''---------------------------------------------------------------------------------------------------------------------
+
+'' Naked pascal function
+Function subtract_p Naked pascal _  '' parameters pushed onto call stack in same order as declaration
+	                     _          '' called procedure responsible for removing parameters from stack
+	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
+	( _
+	    ByVal a As Integer, _       '' parameter pushed onto stack in first
+	    ByVal b As Integer _
+	) As Integer
+   
+	Asm
+	    mov eax, dword Ptr [esp+8]  '' eax = a
+	    sub eax, dword Ptr [esp+4]  '' eax -= b
+	    ret 8                       '' return result in eax and 8 bytes (2 integers) to release
+	End Asm
+   
+End Function
+
+Print subtract_p( 5, 1 ) '' 5 - 1%%
+	
+{{fbdoc item="filename" value="examples/manual/procs/naked2.bas"}}%%(freebasic)
+'' Naked cdecl function
+'' plus ecx register preserved in asm block by creating user stack
+Function subtract_cp Naked cdecl _      '' parameters pushed onto call stack in reverse order of declaration
+	( _
+	    ByVal a As Integer, _
+	    ByVal b As Integer _            '' parameter pushed onto stack in first
+	) As Integer
+   
+	Asm
+	    push ebp                        '' push ebp onto stack   => esp -= 4
+	    mov ebp, esp                    '' ebp = esp
+	                                    ''    => create user stack 4 bytes above call stack
+	    push ecx                        '' push ecx onto user stack   => esp -= 4
+	    mov eax, dword Ptr [(ebp+4)+4]  '' eax = a   (supplementary offset of +4 bytes only due to 'push ebp')
+	    mov ecx, dword Ptr [(ebp+8)+4]  '' ecx = b   (supplementary offset of +4 bytes only due to 'push ebp')
+	    Sub eax, ecx                    '' eax -= ecx
+	    pop ecx                         '' pop ecx from user stack   => esp += 4
+	    mov esp, ebp                    '' esp = ebp
+	    pop ebp                         '' pop ebp from stack   => esp += 4
+	                                    ''    => discard user stack
+	    ret                             '' return result in eax
+	End Asm
+   
+End Function
+
+Print subtract_cp( 5, 1 ) '' 5 - 1%%
 {{fbdoc item="target"}}
-	- The default calling convention can change depending on the platform used.  Additionally, ##[[KeyPgStdcall StdCall]]## does not behave the same on all platforms - on Linux, it behaves like ##[[KeyPgCdecl Cdecl]]##.  It may be necessary to check the [[CatPgDddefines Intrinsic Defines]] (such as ##[[KeyPgDdfbwin32 __FB_WIN32__]]##), and write different code depending on them.
+	- The default calling convention depends on the target platform, thus it is best to specify the expected calling convention explicitly when using ##**Naked**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAsm Asm]]##
+	- ##[[ProPgCallingConventions Calling Conventions]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgCdecl CDecl]]##

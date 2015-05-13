@@ -51,7 +51,7 @@ private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
 	'' Error recovery: continue parsing as usual
 	if (pp.skipping = FALSE) then
 		if (s->def.flags and FB_DEFINE_FLAGS_NOGCC) then
-			if (irGetOption(IR_OPT_HIGHLEVEL)) then
+			if( env.clopt.backend = FB_BACKEND_GCC ) then
 				errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
 				return FALSE
 			end if
@@ -243,6 +243,9 @@ private function hLoadMacro _
 					text += "$" + QUOTE
 					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
 					text += QUOTE
+				else
+					'' If it's empty, produce an empty string ("")
+					text += """"""
 				end if
 
 			'' ordinary text..
@@ -1042,7 +1045,7 @@ function ppDefine _
 			'' defines have no dups or respect namespaces
 			errReportEx( FB_ERRMSG_DUPDEFINITION, @defname )
 			'' error recovery: fake an id
-			defname = *hMakeTmpStr( )
+			defname = *symbUniqueLabel( )
 		end if
 	else
 		sym = NULL
@@ -1068,7 +1071,7 @@ function ppDefine _
 				case else
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 					'' error recovery: fake a param
-					lastparam = symbAddDefineParam( lastparam, hMakeTmpStr( ) )
+					lastparam = symbAddDefineParam( lastparam, symbUniqueLabel( ) )
 				end select
 
 				if( lastparam = NULL ) then

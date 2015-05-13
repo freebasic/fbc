@@ -13,10 +13,7 @@
 #include once "glib-object.bi"
 #include once "gmodule.bi"
 #include once "glade-xml.bi"
-#include once "gtk/gtkwidget.bi"
-#include once "gtk/gtkwindow.bi"
-#include once "gtk/gtkaccelgroup.bi"
-#include once "gtk/gtkadjustment.bi"
+#include once "gtk/gtk.bi"
 #include once "glade-parser.bi"
 
 type GladeNewFunc as function cdecl(byval as GladeXML ptr, byval as GType, byval as GladeWidgetInfo ptr) as GtkWidget

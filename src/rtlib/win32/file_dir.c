@@ -1,7 +1,9 @@
 /* dir() */
 
 #include "../fb.h"
-#include <direct.h>
+#ifndef HOST_CYGWIN
+	#include <direct.h>
+#endif
 #include <windows.h>
 
 typedef struct {

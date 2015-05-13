@@ -5,9 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "hash.bi"
-#include once "list.bi"
-#include once "ir.bi"
 
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
@@ -16,54 +13,32 @@ type FB_SYMBNEST
 	ns				as FBSYMBOL ptr				'' prev namespace
 end type
 
-'':::::
-sub symbCompInit
-	dim as integer i
-
-	for i = 0 to AST_OPCODES-1
+sub symbCompInit( )
+	for i as integer = 0 to AST_OPCODES-1
 		symb.globOpOvlTb(i).head = NULL
 	next
 
-	''
 	stackNew( @symb.neststk, 16, len( FB_SYMBNEST ), FALSE )
-	
 end sub
 
-'':::::
-sub symbCompEnd
-
+sub symbCompEnd( )
 	stackFree( @symb.neststk )
+end sub
 
+sub symbUdtAllocExt( byval udt as FBSYMBOL ptr )
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext = NULL ) then
+		udt->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
+	end if
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' default ctors
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub hAddRhsParam _
+private function hDeclareProc _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	dim as integer dtype
-
-	select case symbGetClass( parent )
-	case FB_SYMBCLASS_STRUCT
-		dtype = FB_DATATYPE_STRUCT
-	case FB_SYMBCLASS_CLASS
-		'dtype = FB_DATATYPE_CLASS
-	end select
-
-	symbAddProcParam( proc, "__FB_RHS__", dtype, parent, FB_POINTERSIZE, _
-	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, NULL )
-
-end sub
-
-private function hProcBegin _
-	( _
-		byval parent as FBSYMBOL ptr, _
+		byval udt as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval add_rhs as integer, _
 		byval attrib as FB_SYMBATTRIB _
@@ -71,174 +46,241 @@ private function hProcBegin _
 
 	dim as FBSYMBOL ptr proc = any
 
-	symbNestBegin( parent, TRUE )
+	'' Into the UDT namespace
+	symbNestBegin( udt, TRUE )
 
 	proc = symbPreAddProc( NULL )
 
 	'' add "this"
-	symbAddProcInstancePtr( parent, proc )
+	symbAddProcInstancePtr( udt, proc )
 
 	'' add right-side hand param?
 	if( add_rhs ) then
-		hAddRhsParam( parent, proc )
+		assert( symbIsStruct( udt ) )
+		symbAddProcParam( proc, "__FB_RHS__", FB_DATATYPE_STRUCT, udt, _
+		                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	end if
+
+	attrib or= FB_SYMBATTRIB_METHOD
+	attrib or= FB_SYMBATTRIB_PRIVATE
 
 	'' cons|destructor?
 	if( op = INVALID ) then
-		proc = symbAddCtor( proc, NULL, _
-		                    attrib or FB_SYMBATTRIB_METHOD or _
-		                              FB_SYMBATTRIB_PRIVATE, _
-		                    FB_FUNCMODE_CDECL, _
-		                    FB_SYMBOPT_DECLARING )
-
+		proc = symbAddCtor( proc, NULL, attrib, _
+		                    FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	'' op..
 	else
-		proc = symbAddOperator( proc, op, NULL, FB_DATATYPE_VOID, NULL, _
-		                        attrib or FB_SYMBATTRIB_METHOD or _
-		                                  FB_SYMBATTRIB_PRIVATE, _
-		                        FB_FUNCMODE_CDECL, _
-		                        FB_SYMBOPT_DECLARING )
+		proc = symbAddOperator( proc, op, NULL, FB_DATATYPE_VOID, NULL, attrib, _
+		                        FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	end if
 
-	astProcBegin( proc, FALSE )
+	'' Close the namespace again
+	symbNestEnd( TRUE )
 
 	function = proc
 end function
 
+private sub hSetMinimumVtableSize( byval udt as FBSYMBOL ptr )
+	'' vtables always have at least 2 elements (following GCC):
+	''    index 0: a NULL pointer
+	''    index 1: the pointer to this type's RTTI table
+	'' Slots for the pointers for virtual methods start at index 2.
+	''
+	'' Note: A vtable must be generated even if there are no virtuals,
+	'' to support RTTI. In that case it will only have the first two
+	'' elements (null and rtti pointers).
+
+	if( udt->udt.ext->vtableelements = 0 ) then
+		udt->udt.ext->vtableelements = 2
+	end if
+end sub
+
+private sub hBuildRtti( byval udt as FBSYMBOL ptr )
+	static as FBARRAYDIM dTB(0)
+	dim as ASTNODE ptr initree = any, rttibase = any
+	dim as FBSYMBOL ptr rtti = any, fld = any
+	dim as string id
+
+	'' static shared id as $fb_RTTI
+	id = "_ZTS" + *symbGetMangledName( udt )
+	rtti = symbAddVar( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                   FB_SYMBOPT_PRESERVECASE )
+	udt->udt.ext->rtti = rtti
+
+	'' initializer
+	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
+	astTypeIniScopeBegin( initree, rtti )
+
+		'' stdlibvtable = NULL
+		fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
+		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), fld )
+
+		'' id = @"mangled name"
+		fld = symbUdtGetNextInitableField( fld )
+		astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( symbGetMangledName( udt ), -1 ) ) ), fld )
+
+		'' rttibase = @(base's RTTI data) or NULL if there is no base
+		fld = symbUdtGetNextInitableField( fld )
+		if( udt->udt.base ) then
+			rttibase = astNewADDROF( astNewVAR( udt->udt.base->subtype->udt.ext->rtti ) )
+		else
+			rttibase = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
+		astTypeIniAddAssign( initree, rttibase, fld )
+
+	astTypeIniScopeEnd( initree, rtti )
+	astTypeIniEnd( initree, TRUE )
+
+	symbSetTypeIniTree( rtti, initree )
+	symbSetIsInitialized( rtti )
+end sub
+
+private sub hBuildVtable( byval udt as FBSYMBOL ptr )
+	static as FBARRAYDIM dTB(0)
+	dim as ASTNODE ptr initree = any, basevtableinitree = any
+	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any
+	dim as integer i = any, basevtableelements = any
+	dim as string id
+
+	'' The vtable is an array of pointers:
+	''    0. null pointer (why? just following GCC...)
+	''    1. rtti pointer
+	''    2. and following: procptrs corresponding to virtual methods
+	''                      in the order they were parsed.
+
+	assert( udt->udt.ext->vtableelements >= 2 )
+
+	'' static shared vtable(0 to elements-1) as any ptr
+	id = "_ZTV" + *symbGetMangledName( udt )
+	dTB(0).upper = udt->udt.ext->vtableelements - 1
+	vtable = symbAddVar( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
+	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+	                     FB_SYMBOPT_PRESERVECASE )
+
+	'' Find information about the base UDT's vtable:
+	''    the number of elements,
+	''    and the initree (so it can be copied into the new vtable)
+	''
+	'' - If the base has no virtuals, vtableelements will be 2
+	''   (due to hSetMinimumVtableSize())
+	'' - If the base is OBJECT, the vtable is hidden in the rtlib,
+	''   thus there is no initree for us to use. Luckily we don't need it
+	''   anyways, since OBJECT doesn't have any virtuals.
+	assert( symbIsField( udt->udt.base ) )
+	assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
+	assert( symbIsStruct( udt->udt.base->subtype ) )
+	basevtableelements = udt->udt.base->subtype->udt.ext->vtableelements
+	'' Any virtuals (more than the default 2 elements)?
+	if( basevtableelements > 2 ) then
+		assert( symbIsVar( udt->udt.base->subtype->udt.ext->vtable ) )
+		basevtableinitree = udt->udt.base->subtype->udt.ext->vtable->var_.initree
+	else
+		basevtableinitree = NULL
+	end if
+
+	'' {
+	initree = astTypeIniBegin( typeAddrOf( FB_DATATYPE_VOID ), NULL, FALSE, 0 )
+	astTypeIniScopeBegin( initree, vtable )
+
+	'' 0. null pointer = NULL
+	astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) ), vtable )
+
+	'' 1. rtti pointer = @rtti
+	rtti = udt->udt.ext->rtti
+	astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti ) ), vtable )
+
+	'' initialize inherited procptrs, to the same expression as in the
+	'' base vtable's initializer
+	i = 2
+	if( basevtableinitree ) then
+		'' Copy the typeini assigns from the base vtable's initializer,
+		'' except the first 2 (they are set above already)
+		astTypeIniCopyElements( initree, basevtableinitree, 2 )
+		assert( basevtableelements > 2 )
+		i += (basevtableelements - 2)
+	end if
+
+	'' Fill new vtable entries with NULLs first, to be safe, and also to
+	'' initialize any new unimplemented pure-virtual slots.
+	'' We could let them point to __cxa_pure_virtual() like gcc,
+	'' but with a NULL pointer crash instead of the abort() we'll actually
+	'' get a more useful run-time error under -exx.
+	while( i <= dTB(0).upper )
+		astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) ), vtable )
+		i += 1
+	wend
+
+	'' }
+	astTypeIniScopeEnd( initree, vtable )
+	astTypeIniEnd( initree, TRUE )
+
+	symbSetTypeIniTree( vtable, initree )
+	symbSetIsInitialized( vtable )
+
+	'' 1. new (and not inherited) entries for ...
+	''  - virtuals: must be set to point to their bodies for now.
+	''    (not yet overridden)
+	''  - abstracts: are set to point to fb_AbstractStub() (our version
+	''    of GCC's __cxa_pure_virtual()), which will show a run-time
+	''    error message and abort the program.
+	''
+	'' 2. any entries for inherited virtuals/abstracts that were overridden
+	''    by a normal method must be updated to point to the normal method.
+
+	'' For each member of this UDT (does not include inherited members)
+	member = symbGetCompSymbTb( udt ).head
+	while( member )
+		'' procedure?
+		if( symbIsProc( member ) ) then
+			i = symbProcGetVtableIndex( member )
+			if( (i > 0) and (not symbIsAbstract( member )) ) then
+				astTypeIniReplaceElement( initree, i, astBuildProcAddrof( member ) )
+			end if
+		end if
+		member = member->next
+	wend
+
+	udt->udt.ext->vtable = vtable
+end sub
+
+private sub hProcBegin( byval udt as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	'' constructor|destructor|operator parent[.let]( ... )
+	symbNestBegin( udt, TRUE )
+	astProcBegin( proc, FALSE )
+end sub
+
 private sub hProcEnd( )
-	'' end cons|destructor
+	'' end constructor|destructor|operator
 	astProcEnd( FALSE )
 	symbNestEnd( TRUE )
 end sub
 
-private sub hCopyCtorBody( byval proc as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr this_ = any, src = any
-
-	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-	src = symbGetParamVar( symbGetProcTailParam( proc ) )
-
-	'' assign op overload will do the rest
-    astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
-end sub
-
-'':::::
-private sub hAddCtor _
+private sub hAddCtorBody _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byval is_ctor as integer, _
+		byval udt as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr, _
 		byval is_copyctor as integer _
 	)
 
-	dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr this_ = any, src = any
 
-	proc = hProcBegin( sym, INVALID, is_copyctor, _
-	                   iif( is_ctor, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR, _
-	                                 FB_SYMBATTRIB_DESTRUCTOR ) )
-
-	'' call to the static ctor will be added by the ast
+	'' The AST will add any implicit base/field construction/destruction
+	'' code automatically
+	hProcBegin( udt, proc )
 
 	if( is_copyctor ) then
-		hCopyCtorBody( proc )
-	end if
+		this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+		src = symbGetParamVar( symbGetProcTailParam( proc ) )
 
-	'' ditto for the dtor's
+		'' assign op overload will do the rest
+		astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
+	end if
 
 	hProcEnd( )
 
-	'' hasC|Dtor flags will be set by symbAddCtor()
-
-	symbSetCantUndef( sym )
-
+	symbSetCantUndef( udt )
 end sub
-
-private sub hAddRTTI _
-	( _
-		byval sym as FBSYMBOL ptr _ 
-	)
-	
-	static as FBARRAYDIM dTB(0)
-	
-	var mname = *symbGetMangledName( sym )
-	
-	if( sym->udt.ext = NULL ) then
-		sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
-	end if
-
-	'' create a virtual-table struct (extends $fb_BaseVT)
-	var sname = "_ZTV" + mname + "_type"
-	var vtableType = symbStructBegin( NULL, sname, sname, FALSE, 0, symb.rtti.fb_baseVT )
-		
-	'' TODO: add this symbol's virtual methods as function pointers with "this" as the first param
-	
-	symbStructEnd( vtableType, TRUE )
-	
-	'' create the run-time info instance ($fb_RTTI)
-	sname = "_ZTS" + *symbGetMangledName( sym )
-	var rtti = symbAddVarEx( NULL, sname, _
-						     FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, _
-						     symbGetLen( symb.rtti.fb_rtti ), _
-						     0, dTB(), _
-						     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
-						     FB_SYMBOPT_PRESERVECASE )
-	
-	sym->udt.ext->rtti = rtti
-	
-	'' initialize..
-	var initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )	
-		astTypeIniScopeBegin( initree, rtti )
-	
-			'' stdlistVT = NULL
-			var elm = symbGetUDTFirstElm( symb.rtti.fb_rtti )
-			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
-			
-			'' id = @"mangled name"
-			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
-			
-			'' pRTTIBase = @base's RTTI struct
-			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
-	
-		astTypeIniScopeEnd( initree, rtti )
-	astTypeIniEnd( initree, TRUE ) 
-	
-	symbSetTypeIniTree( rtti, initree )
-	symbSetIsInitialized( rtti )
-	
-
-	'' create the vtable instance
-	sname = "_ZTV" + mname
-
-	var vtable = symbAddVarEx( NULL, sname, _
-						       FB_DATATYPE_STRUCT, vtableType, _
-						       symbGetLen( vtableType ), _
-						       0, dTB(), _
-						       FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
-						       FB_SYMBOPT_PRESERVECASE )
-	
-	sym->udt.ext->vtable = vtable
-	
-	'' initialize..
-	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, vtableType, FALSE, 0 )	
-		astTypeIniScopeBegin( initree, vtable )
-			astTypeIniScopeBegin( initree, vtable )
-		
-				'' base.nullPtr = NULL	
-				elm = symbGetUDTFirstElm( symb.rtti.fb_baseVT )
-				astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
-			
-				'' base.pRTTI = @rtti
-				elm = symbGetUDTNextElm( elm, FALSE )
-				astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0 ) ), elm )
-
-			astTypeIniScopeEnd( initree, vtable )
-		astTypeIniScopeEnd( initree, vtable )
-	astTypeIniEnd( initree, TRUE ) 
-	
-	symbSetTypeIniTree( vtable, initree )
-	symbSetIsInitialized( vtable )
-	
-End Sub
 
 '':::::
 private sub hAssignList _
@@ -252,7 +294,7 @@ private sub hAssignList _
 
 	subtype = symbGetSubtype( fld )
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
     label = symbAddLabel( NULL )
     dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
     src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
@@ -317,80 +359,57 @@ private function hCopyUnionFields _
 
 end function
 
-':::::
-private sub hCloneBody _
+private sub hAddLetOpBody _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
+		byval udt as FBSYMBOL ptr, _
+		byval letproc as FBSYMBOL ptr _
+	)
 
-	dim as FBSYMBOL ptr fld, this_, rhs
-	dim as ASTNODE ptr dstexpr, srcexpr
+	dim as FBSYMBOL ptr fld = any, this_ = any, rhs = any
+	dim as ASTNODE ptr dstexpr = any, srcexpr = any
 
-	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-	rhs = symbGetParamVar( symbGetProcTailParam( proc ) )
+	hProcBegin( udt, letproc )
 
-    '' for each field
-    fld = symbGetCompSymbTb( parent ).head
-    do while( fld <> NULL )
+	this_ = symbGetParamVar( symbGetProcHeadParam( letproc ) )
+	rhs = symbGetParamVar( symbGetProcTailParam( letproc ) )
 
+	'' for each field
+	fld = symbGetCompSymbTb( udt ).head
+	while( fld )
 		if( symbIsField( fld ) ) then
-
 			'' part of an union?
 			if( symbGetIsUnionField( fld ) ) then
 				fld = hCopyUnionFields( this_, rhs, fld )
-				continue do
+				continue while
+			end if
 
+			dstexpr = astBuildInstPtr( this_, fld )
+			srcexpr = astBuildInstPtr( rhs, fld )
+
+			'' not an array?
+			if( (symbGetArrayDimensions( fld ) = 0) or _
+			    (symbGetArrayElements( fld ) = 1) ) then
+				'' this.field = rhs.field
+				astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+			'' array..
 			else
-				dstexpr = astBuildInstPtr( this_, fld )
-				srcexpr = astBuildInstPtr( rhs, fld )
-
-            	'' not an array?
-            	if( (symbGetArrayDimensions( fld ) = 0) or _
-            		(symbGetArrayElements( fld ) = 1) ) then
-
-					'' this.field = rhs.field
-            		astAdd( astNewASSIGN( dstexpr, srcexpr ) )
-
-            	'' array..
-            	else
-            		hAssignList( fld, dstexpr, srcexpr )
-            	end if
-            end if
+				hAssignList( fld, dstexpr, srcexpr )
+			end if
 		end if
 
 		fld = fld->next
-	loop
+	wend
 
-end sub
-
-private sub hAddClone( byval sym as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr proc = any
-	proc = hProcBegin( sym, AST_OP_ASSIGN, TRUE, _
-	                   FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
-	hCloneBody( sym, proc )
 	hProcEnd( )
-	symbSetCantUndef( sym )
+
+	symbSetCantUndef( udt )
+
 end sub
 
-sub symbCompAddDefDtor( byval sym as FBSYMBOL ptr )
-	hAddCtor( sym, FALSE, FALSE )
-end sub
-
-sub symbCompAddDefCtor( byval sym as FBSYMBOL ptr )
-	hAddCtor( sym, TRUE, FALSE )
-end sub
-
-sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
+'' Declare & add any implicit/default members and global vars if needed
+sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr defctor = any, copyctor = any, letop = any, dtor = any
 	dim as integer base_without_defaultctor = any
-
-	'' RTTI?
-	if( symbGetHasRTTI( sym ) ) then
-		'' only if it isn't FB's own Object base super class
-		if( sym <> symb.rtti.fb_object ) then
-			hAddRTTI( sym )
-		end if
-	end if
 
 	''
 	'' If this UDT has fields with ctors, we have to make sure to add
@@ -407,19 +426,24 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 	''
 
 	'' Derived?
-	if( sym->udt.base ) then
-		assert( symbIsField( sym->udt.base ) )
-		assert( symbGetType( sym->udt.base ) = FB_DATATYPE_STRUCT )
-		assert( symbIsStruct( sym->udt.base->subtype ) )
+	if( udt->udt.base ) then
+		assert( symbIsField( udt->udt.base ) )
+		assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
+		assert( symbIsStruct( udt->udt.base->subtype ) )
 		'' No default ctor?
-		base_without_defaultctor = (symbGetCompDefCtor( sym->udt.base->subtype ) = NULL)
+		base_without_defaultctor = (symbGetCompDefCtor( udt->udt.base->subtype ) = NULL)
 	else
 		base_without_defaultctor = FALSE
 	end if
 
+	defctor = NULL
+	copyctor = NULL
+	letop = NULL
+	dtor = NULL
+
 	'' Ctor/inited fields and no ctor yet?
-	if( (symbGetUDTHasCtorField( sym ) or symbGetUDTHasInitedField( sym )) and _
-	    (not symbGetHasCtor( sym )) ) then
+	if( (symbGetUDTHasCtorField( udt ) or symbGetUDTHasInitedField( udt )) and _
+	    (symbGetCompCtorHead( udt ) = NULL) ) then
 		if( base_without_defaultctor ) then
 			'' Cannot implicitly generate a default ctor,
 			'' show a nicer error message than astProcEnd() would.
@@ -428,35 +452,88 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			hAddCtor( sym, TRUE, FALSE )
+			defctor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
-	if( symbGetUDTHasCtorField( sym ) ) then
+	if( symbGetUDTHasCtorField( udt ) ) then
 		'' Let operator (must be defined before the copy ctor)
-		if( symbGetCompCloneProc( sym ) = NULL ) then
-			hAddClone( sym )
+		if( symbGetCompCloneProc( udt ) = NULL ) then
+			letop = hDeclareProc( udt, AST_OP_ASSIGN, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+
+			'' Don't allow the implicit LET to override a FINAL LET from the base
+			symbProcCheckOverridden( letop, TRUE )
 		end if
 
 		'' Copy ctor
-		if( symbGetCompCopyCtor( sym ) = NULL ) then
+		if( symbGetCompCopyCtor( udt ) = NULL ) then
 			if( base_without_defaultctor ) then
 				'' Cannot implicitly generate a copy ctor,
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				hAddCtor( sym, TRUE, TRUE )
+				copyctor = hDeclareProc( udt, INVALID, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
 
 	'' has fields with dtors?
-	if( symbGetUDTHasDtorField( sym ) ) then
+	if( symbGetUDTHasDtorField( udt ) ) then
 		'' no default dtor explicitly defined?
-		if( symbGetCompDtor( sym ) = NULL ) then
+		if( symbGetCompDtor( udt ) = NULL ) then
 			'' Dtor
-			hAddCtor( sym, FALSE, FALSE )
+			dtor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_DESTRUCTOR )
+
+			'' Don't allow the implicit dtor to override a FINAL dtor from the base
+			symbProcCheckOverridden( dtor, TRUE )
 		end if
+	end if
+
+	''
+	'' Add vtable and rtti global variables
+	''
+	'' - The vtable can only be created once all methods are known,
+	''   how many virtuals there are, which method overrides virtuals
+	''   from the base, etc.
+	''   Even the implicit destructor (if any) must be declared before
+	''   the vtable is added, in case it should override a virtual dtor.
+	''
+	'' - Creating the vtable depends on FBSYMBOL.udt.ext->rtti being set,
+	''   because the vtable includes a pointer to the rtti table,
+	''   thus the rtti table should be added before the vtable.
+	''
+	'' - Any constructor body depends on FBSYMBOL.udt.ext->vtable being set,
+	''   so the vtable must be added before any constructor bodies.
+	''
+	if( symbGetHasRTTI( udt ) ) then
+		symbUdtAllocExt( udt )
+		hSetMinimumVtableSize( udt )
+
+		'' only if it isn't FB's own Object base super class
+		'' (for which the rtlib already contains these declarations)
+		if( udt <> symb.rtti.fb_object ) then
+			hBuildRtti( udt )
+			hBuildVtable( udt )
+		end if
+	end if
+
+	''
+	'' Add bodies if any implicit ctor/dtor/let procs were declared above
+	''
+	if( defctor ) then
+		hAddCtorBody( udt, defctor, FALSE )
+	end if
+
+	if( copyctor ) then
+		hAddCtorBody( udt, copyctor, TRUE )
+	end if
+
+	if( letop ) then
+		hAddLetOpBody( udt, letop )
+	end if
+
+	if( dtor ) then
+		hAddCtorBody( udt, dtor, FALSE )
 	end if
 end sub
 
@@ -509,225 +586,125 @@ private function hIsLhsEqRhs _
 
 end function
 
-'':::::
-function symbGetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.ctor_head
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
+'' Check whether UDT doesn't have either of dtor/copy ctor/virtual methods
+'' (UDTs that have any of these are handled specially by BYVAL params and
+'' function results. For example, BYVAL params do copy construction, and use
+'' this function to check whether there is a copyctor and whether a temp copy
+'' to be passed byref must be used or not)
+function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
+	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
+	            (symbGetCompDtor( sym ) = NULL) and _
+	            (not symbGetHasRTTI( sym )))
 end function
 
-'':::::
-sub symbSetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
+sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		assert( symbIsConstructor( proc ) )
 
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
+		symbUdtAllocExt( sym )
+		if( sym->udt.ext->ctorhead = NULL ) then
+			'' Add ctor head (first overload)
+			sym->udt.ext->ctorhead = proc
 		end if
-
-		sym->udt.ext->anon.ctor_head = proc
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+	end if
 end sub
 
-'':::::
-sub symbCheckCompCtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		select case symbGetProcParams( proc )
+sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		select case( symbGetProcParams( proc ) )
 		'' default?
 		case 1
-			sym->udt.ext->anon.defctor = proc
-
+			'' only the THIS param  - it's a default ctor
+			'' (this takes precedence over other ctors with all optional params)
+			sym->udt.ext->defctor = proc
 		'' copy?
 		case 2
-			if( sym->udt.ext->anon.copyctor = NULL ) then
+			'' 2 params - it could be a copy ctor
+			if( sym->udt.ext->copyctor = NULL ) then
 				if( hIsLhsEqRhs( sym, proc ) ) then
-					sym->udt.ext->anon.copyctor = proc
+					sym->udt.ext->copyctor = proc
 				end if
 			end if
 		end select
 
-		'' if all params are default/optional, it's a default ctor
-		if( sym->udt.ext->anon.defctor = NULL ) then
-           	if( symbGetProcOptParams( proc ) = _
-           		symbGetProcParams( proc ) - 1 ) then
-           		sym->udt.ext->anon.defctor = proc
-           	end if
+		'' all params optional? then it can be used as default ctor
+		if( sym->udt.ext->defctor = NULL ) then
+			if( symbGetProcOptParams( proc ) = symbGetProcParams( proc ) - 1 ) then
+				sym->udt.ext->defctor = proc
+			end if
 		end if
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+	end if
 end sub
 
-'':::::
-function symbGetCompDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr proc
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.defctor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-function symbGetCompCopyCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr proc
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.copyctor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-function symbGetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.dtor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-sub symbSetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
+sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		assert( symbIsDestructor( proc ) )
+		symbUdtAllocExt( sym )
+		if( sym->udt.ext->dtor = NULL ) then
+			'' Add dtor
+			sym->udt.ext->dtor = proc
 		end if
-
-		sym->udt.ext->anon.dtor = proc
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+	end if
 end sub
 
-'':::::
-function symbGetCompCloneProc _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->ctorhead
+			end if
+		end if
+	end if
+end function
 
-    if( sym = NULL ) then
-    	return NULL
-    end if
+function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->defctor
+			end if
+		end if
+	end if
+end function
 
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-   		if( sym->udt.ext = NULL ) then
-   			return NULL
-   		end if
+function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->copyctor
+			end if
+		end if
+	end if
+end function
 
-    	return sym->udt.ext->anon.clone
+function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->dtor
+			end if
+		end if
+	end if
+end function
 
-    case FB_SYMBCLASS_CLASS
-    	'return ...
+sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		'' clone?
+		if( hIsLhsEqRhs( sym, proc ) ) then
+			symbUdtAllocExt( sym )
+			sym->udt.ext->clone = proc
+		end if
+	end if
+end sub
 
-    case else
-    	return NULL
-    end select
-
+function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->clone
+			end if
+		end if
+	end if
 end function
 
 '':::::
@@ -763,27 +740,6 @@ function symbGetCompOpOvlHead _
 end function
 
 '':::::
-sub symbCheckCompClone _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	'' clone?
-  	if( hIsLhsEqRhs( sym, proc ) ) then
-  		select case symbGetClass( sym )
-   		case FB_SYMBCLASS_STRUCT
-   			sym->udt.ext->anon.clone = proc
-
-   		case FB_SYMBCLASS_CLASS
-   	 		'' ...
-
-   		end select
-   	end if
-
-end sub
-
-'':::::
 sub symbSetCompOpOvlHead _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -792,34 +748,43 @@ sub symbSetCompOpOvlHead _
 
 	dim as AST_OP op = symbGetProcOpOvl( proc )
 
-   	'' self?
-   	if( astGetOpIsSelf( op ) ) then
-  		select case symbGetClass( sym )
-   		case FB_SYMBCLASS_STRUCT
-			if( sym->udt.ext = NULL ) then
-				sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
-			end if
-
+	'' self?
+	if( astGetOpIsSelf( op ) ) then
+		if( symbIsStruct( sym ) ) then
+			symbUdtAllocExt( sym )
 			symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE) = proc
+		end if
 
-   		case FB_SYMBCLASS_ENUM
-
-		case FB_SYMBCLASS_CLASS
-   			'' ...
-
-   		end select
-
-    	'' assign?
-    	if( op = AST_OP_ASSIGN ) then
-    		symbCheckCompClone( sym, proc )
-    	end if
-
-    '' not self..
-    else
-   		symb.globOpOvlTb(op).head = proc
-   	end if
+		'' assign?
+		if( op = AST_OP_ASSIGN ) then
+			symbCheckCompClone( sym, proc )
+		end if
+	'' not self..
+	else
+		symb.globOpOvlTb(op).head = proc
+	end if
 
 end sub
+
+'' Returns vtable index for new virtual method
+function symbCompAddVirtual( byval udt as FBSYMBOL ptr ) as integer
+	'' Virtuals require the vptr, i.e. the UDT must extend OBJECT
+	assert( symbGetHasRTTI( udt ) )
+
+	symbUdtAllocExt( udt )
+
+	hSetMinimumVtableSize( udt )
+
+	function = udt->udt.ext->vtableelements
+	udt->udt.ext->vtableelements += 1
+end function
+
+function symbCompGetAbstractCount( byval udt as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext ) then
+		function = udt->udt.ext->abstractcount
+	end if
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' nesting
@@ -1197,108 +1162,59 @@ end sub
 '' RTTI
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub symbCompRTTIInit()
+sub symbCompRTTIInit( )
+	dim as FBSYMBOL ptr rttitype = any, objtype = any, objrtti = any, ctor = any
+
 	static as FBARRAYDIM dTB(0)
 
-    '' create the $fb_RTTI struct
-    var rtti = symbStructBegin( NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0 )
-	symb.rtti.fb_rtti = rtti
+	'' type $fb_RTTI
+	rttitype = symbStructBegin( NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0 )
+	symb.rtti.fb_rtti = rttitype
 
-	'' stdlibVT as any ptr
-	symbAddField( rtti, _
-				  "stdlibVT", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-				  FB_POINTERSIZE, 0 )
+	'' stdlibvtable as any ptr
+	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
 
 	'' dim id as zstring ptr 
-	symbAddField( rtti, _
-				  "id", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_CHAR ), NULL, _
-				  FB_POINTERSIZE, 0 )
+	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0 )
 
-	'' dim pRTTIBase as $fb_RTTI ptr
-	symbAddField( rtti, _
-				  "pRTTIBase", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
-				  FB_POINTERSIZE, 0 )
+	'' dim rttibase as $fb_RTTI ptr
+	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0 )
 
-	symbStructEnd( rtti )
+	'' end type
+	symbStructEnd( rttitype )
 
-	'' create the $fb_BaseVT struct
-    var baseVT = symbStructBegin( NULL, "$fb_BaseVT", "$fb_BaseVT", FALSE, 0 )
-	symb.rtti.fb_baseVT = baseVT
-    
-	'' dim nullPtr as any ptr
-	symbAddField( baseVT, _
-				  "nullPtr", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-				  FB_POINTERSIZE, 0 )
-
-	'' dim pRTTIBase as $fb_RTTI ptr
-	symbAddField( baseVT, _
-				  "pRTTI", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
-				  FB_POINTERSIZE, 0 )
-
-	symbStructEnd( baseVT )
-
-	'' create the $fb_ObjectVT struct (extends $fb_BaseVT)
-	var objVT = symbStructBegin( NULL, "$fb_ObjectVT", "$fb_ObjectVT", FALSE, 0, baseVT )
-
-	symbStructEnd( objVT, TRUE )
-
-	'' create the $fb_Object struct (the built-in type called [__]OBJECT)
+	'' type object
 	dim as const zstring ptr ptypename = any
 	if( fbLangIsSet( FB_LANG_QB ) ) then
 		ptypename = @"__OBJECT"
 	else
 		ptypename = @"OBJECT"
 	end if
+	objtype = symbStructBegin( NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0 )
+	symb.rtti.fb_object = objtype
+	symbSetHasRTTI( objtype )
+	symbSetIsUnique( objtype )
+	symbNestBegin( objtype, FALSE )
 
-	var obj = symbStructBegin( NULL, ptypename, "$fb_Object", FALSE, 0 )
-    symb.rtti.fb_object = obj
+	'' vptr as any ptr
+	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
 
-	symbSetHasRTTI( obj )
-	symbSetIsUnique( obj )
-	symbNestBegin( obj, FALSE )
+	'' declare constructor( )
+	ctor = symbPreAddProc( NULL )
+	symbAddProcInstancePtr( objtype, ctor )
+	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
+	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
 
-	'' dim pvt as as $fb_BaseVT ptr
-	symbAddField( obj, _
-				  "$fb_pvt", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_STRUCT ), baseVT, _
-				  FB_POINTERSIZE, 0 )
+	'' end type
+	symbStructEnd( objtype, TRUE )
 
-    '' declare constructor( )
-	var ctor = symbPreAddProc( NULL )    
-
-	symbAddProcInstancePtr( obj, ctor )
-
-	symbAddCtor( ctor, NULL, _
-	             FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
-	                                  or FB_SYMBATTRIB_OVERLOADED, _
-	             FB_FUNCMODE_CDECL )
-
-	symbStructEnd( obj, TRUE )
-	
-    '' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
-    var objRTTI = symbAddVarEx( NULL, "__fb_ZTS6Object", _
-    							FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, _
-    							symbGetLen( symb.rtti.fb_rtti ), 0, dTB(), _
-    							FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, _ 
-    							FB_SYMBOPT.FB_SYMBOPT_PRESERVECASE )
+	'' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
+	objrtti = symbAddVar( NULL, "__fb_ZTS6Object", FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	                      FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, FB_SYMBOPT_PRESERVECASE )
 
 	'' update the obj struct RTTI (used to create the link with base classes)
-	if( obj->udt.ext = NULL ) then
-		obj->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
-	end if
-
-	obj->udt.ext->rtti = objRTTI     
+	symbUdtAllocExt( objtype )
+	objtype->udt.ext->rtti = objrtti
 end sub
 
 sub symbCompRTTIEnd()

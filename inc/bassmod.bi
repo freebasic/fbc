@@ -14,7 +14,6 @@
 #ifdef __FB_WIN32__
 # include once "win/wtypes.bi"
 #else
-type BYTE as ubyte
 type WORD as ushort
 type DWORD as uinteger
 type BOOL as integer
@@ -22,6 +21,12 @@ type BOOL as integer
 # define FALSE 0
 #define MAKELONG(a,b) cint( cushort(a) or (cuint(cushort(b)) shl 16) )
 #endif '' __FB_WIN32__
+
+#ifdef __FB_WIN32__
+extern "Windows-MS"
+#else
+extern "C"
+#endif
 
 type HSYNC as DWORD
 
@@ -73,32 +78,34 @@ type SYNCPROC as sub(byval as HSYNC, byval as DWORD, byval as DWORD)
 #define BASS_ACTIVE_PLAYING 1
 #define BASS_ACTIVE_PAUSED 3
 
-declare function BASSMOD_GetVersion alias "BASSMOD_GetVersion" () as DWORD
-declare function BASSMOD_ErrorGetCode alias "BASSMOD_ErrorGetCode" () as DWORD
-declare function BASSMOD_GetDeviceDescription alias "BASSMOD_GetDeviceDescription" (byval devnum as integer) as zstring ptr
-declare function BASSMOD_Init alias "BASSMOD_Init" (byval device as integer, byval freq as DWORD, byval flags as DWORD) as BOOL
-declare sub BASSMOD_Free alias "BASSMOD_Free" ()
-declare function BASSMOD_GetCPU alias "BASSMOD_GetCPU" () as single
-declare function BASSMOD_SetVolume alias "BASSMOD_SetVolume" (byval volume as DWORD) as BOOL
-declare function BASSMOD_GetVolume alias "BASSMOD_GetVolume" () as integer
-declare function BASSMOD_MusicLoad alias "BASSMOD_MusicLoad" (byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD) as BOOL
-declare sub BASSMOD_MusicFree alias "BASSMOD_MusicFree" ()
-declare function BASSMOD_MusicGetName alias "BASSMOD_MusicGetName" () as zstring ptr
-declare function BASSMOD_MusicGetLength alias "BASSMOD_MusicGetLength" (byval playlen as BOOL) as DWORD
-declare function BASSMOD_MusicPlay alias "BASSMOD_MusicPlay" () as BOOL
-declare function BASSMOD_MusicPlayEx alias "BASSMOD_MusicPlayEx" (byval pos as DWORD, byval flags as integer, byval reset as BOOL) as BOOL
-declare function BASSMOD_MusicDecode alias "BASSMOD_MusicDecode" (byval buffer as any ptr, byval length as DWORD) as DWORD
-declare function BASSMOD_MusicSetAmplify alias "BASSMOD_MusicSetAmplify" (byval amp as DWORD) as BOOL
-declare function BASSMOD_MusicSetPanSep alias "BASSMOD_MusicSetPanSep" (byval pan as DWORD) as BOOL
-declare function BASSMOD_MusicSetPositionScaler alias "BASSMOD_MusicSetPositionScaler" (byval scale as DWORD) as BOOL
-declare function BASSMOD_MusicSetVolume alias "BASSMOD_MusicSetVolume" (byval chanins as DWORD, byval volume as DWORD) as BOOL
-declare function BASSMOD_MusicGetVolume alias "BASSMOD_MusicGetVolume" (byval chanins as DWORD) as DWORD
-declare function BASSMOD_MusicIsActive alias "BASSMOD_MusicIsActive" () as DWORD
-declare function BASSMOD_MusicStop alias "BASSMOD_MusicStop" () as BOOL
-declare function BASSMOD_MusicPause alias "BASSMOD_MusicPause" () as BOOL
-declare function BASSMOD_MusicSetPosition alias "BASSMOD_MusicSetPosition" (byval pos as DWORD) as BOOL
-declare function BASSMOD_MusicGetPosition alias "BASSMOD_MusicGetPosition" () as DWORD
-declare function BASSMOD_MusicSetSync alias "BASSMOD_MusicSetSync" (byval type as DWORD, byval param as DWORD, byval proc as SYNCPROC ptr, byval user as DWORD) as HSYNC
-declare function BASSMOD_MusicRemoveSync alias "BASSMOD_MusicRemoveSync" (byval sync as HSYNC) as BOOL
+declare function BASSMOD_GetVersion() as DWORD
+declare function BASSMOD_ErrorGetCode() as DWORD
+declare function BASSMOD_GetDeviceDescription(byval devnum as integer) as zstring ptr
+declare function BASSMOD_Init(byval device as integer, byval freq as DWORD, byval flags as DWORD) as BOOL
+declare sub BASSMOD_Free()
+declare function BASSMOD_GetCPU() as single
+declare function BASSMOD_SetVolume(byval volume as DWORD) as BOOL
+declare function BASSMOD_GetVolume() as integer
+declare function BASSMOD_MusicLoad(byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD) as BOOL
+declare sub BASSMOD_MusicFree()
+declare function BASSMOD_MusicGetName() as zstring ptr
+declare function BASSMOD_MusicGetLength(byval playlen as BOOL) as DWORD
+declare function BASSMOD_MusicPlay() as BOOL
+declare function BASSMOD_MusicPlayEx(byval pos as DWORD, byval flags as integer, byval reset as BOOL) as BOOL
+declare function BASSMOD_MusicDecode(byval buffer as any ptr, byval length as DWORD) as DWORD
+declare function BASSMOD_MusicSetAmplify(byval amp as DWORD) as BOOL
+declare function BASSMOD_MusicSetPanSep(byval pan as DWORD) as BOOL
+declare function BASSMOD_MusicSetPositionScaler(byval scale as DWORD) as BOOL
+declare function BASSMOD_MusicSetVolume(byval chanins as DWORD, byval volume as DWORD) as BOOL
+declare function BASSMOD_MusicGetVolume(byval chanins as DWORD) as DWORD
+declare function BASSMOD_MusicIsActive() as DWORD
+declare function BASSMOD_MusicStop() as BOOL
+declare function BASSMOD_MusicPause() as BOOL
+declare function BASSMOD_MusicSetPosition(byval pos as DWORD) as BOOL
+declare function BASSMOD_MusicGetPosition() as DWORD
+declare function BASSMOD_MusicSetSync(byval type as DWORD, byval param as DWORD, byval proc as SYNCPROC ptr, byval user as DWORD) as HSYNC
+declare function BASSMOD_MusicRemoveSync(byval sync as HSYNC) as BOOL
+
+end extern
 
 #endif

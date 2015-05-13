@@ -19,9 +19,9 @@ Operators and procedures that convert between different types.
 		Converts numeric expressions to 8-bit values.
 	=={{fbdoc item="keyword" value="KeyPgCshort|CSHORT"}} and {{fbdoc item="keyword" value="KeyPgCushort|CUSHORT"}}==
 		Converts numeric expressions to 16-bit values.
-	=={{fbdoc item="keyword" value="KeyPgCint|CINT"}} and {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}==
-		Converts numeric expressions to 32-bit values.
 	=={{fbdoc item="keyword" value="KeyPgClng|CLNG"}} and {{fbdoc item="keyword" value="KeyPgCulng|CULNG"}}==
+		Converts numeric expressions to 32-bit values.
+	=={{fbdoc item="keyword" value="KeyPgCint|CINT"}} and {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}==
 		Converts numeric expressions to 32-bit or 64-bit values.
 	=={{fbdoc item="keyword" value="KeyPgClngint|CLNGINT"}} and {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}==
 		Converts numeric expressions to 64-bit values.

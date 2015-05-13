@@ -1,0 +1,4 @@
+doc/licenses/libtheora.txt
+lib/linux/libtheora.a
+lib/linux/libtheoradec.a
+lib/linux/libtheoraenc.a

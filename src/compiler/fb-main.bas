@@ -16,7 +16,7 @@ private sub hCallMain( )
 
 	'' main( 0, NULL )
 	main = astNewCALL( env.main.proc )
-	astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+	astNewARG( main, astNewCONSTi( 0 ) )
 	astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
 
 	'' tell the emitter to not allocate a result
@@ -32,34 +32,32 @@ private sub hBuildDllMainWin32( )
 
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	                  FB_PARAMMODE_BYVAL, 0 )
 
 	'' reason
 	param = symbAddProcParam( proc, "__FB_DLLREASON__", FB_DATATYPE_UINT, NULL, _
-	                          FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	                          FB_PARAMMODE_BYVAL, 0 )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	                  FB_PARAMMODE_BYVAL, 0 )
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
-	proc = symbAddProc( proc, NULL, "DllMain", _
-						FB_DATATYPE_INTEGER, NULL, _
-						FB_SYMBATTRIB_PUBLIC, _
-						env.target.stdcall )
+	proc = symbAddProc( proc, NULL, "DllMain", FB_DATATYPE_INTEGER, NULL, _
+	                    FB_SYMBATTRIB_PUBLIC, env.target.stdcall, FB_SYMBOPT_DECLARING )
 
 	astProcBegin( proc, FALSE )
 
 	'' function = TRUE
-	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), 0, symbGetFullType( proc ) ), _
+	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ) ), _
 	                      astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 	param = symbGetParamVar( param )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, _
-			astNewVAR( param, 0, symbGetFullType( param ) ), _
+			astNewVAR( param ), _
 			astNewCONSTi( 1, FB_DATATYPE_UINT ), _
 			label, AST_OPOPT_NONE ) )
 
@@ -77,9 +75,8 @@ private sub hBuildDllMainCtor( )
 	dim as FBSYMBOL ptr proc = any
 
 	'' sub ctor cdecl( ) constructor
-	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
-	                    FB_DATATYPE_VOID, NULL, _
-	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )
+	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", FB_DATATYPE_VOID, NULL, _
+	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	symbAddGlobalCtor( proc )
 	astProcBegin( proc, FALSE )
 
@@ -97,26 +94,26 @@ private sub hMainBegin( )
 
 	'' byval argc as integer
 	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_INTEGER, NULL, _
-	                  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	                  FB_PARAMMODE_BYVAL, 0 )
 
 	'' byval argv as zstring ptr ptr
 	symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	                  FB_PARAMMODE_BYVAL, 0 )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
 	var id = fbGetEntryPoint( )
 	if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		attrib = FB_SYMBATTRIB_PRIVATE
-		'' if it's high level, give it a random name
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-			id = *hMakeTmpStrNL()
+		'' Use a random name for the C backend
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
+			id = *symbUniqueId( )
 		end if
 	end if
 
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr ) as integer
 	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_INTEGER, NULL, _
-	                             attrib, FB_FUNCMODE_CDECL )
+	                             attrib, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
 	'' Must be done before astProcBegin(), so it will add the fb_Init() call, etc.
 	symbSetIsMainProc( env.main.proc )
@@ -126,13 +123,10 @@ end sub
 
 private sub hModLevelBegin( )
 	'' sub modlevel cdecl( ) constructor
-	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
-								 "{modlevel}", fbGetModuleEntry( ), _
-								 FB_DATATYPE_VOID, NULL, _
-								 FB_SYMBATTRIB_PRIVATE, _
-								 FB_FUNCMODE_CDECL )
+	env.main.proc = symbAddProc( symbPreAddProc( NULL ), "{modlevel}", fbGetModuleEntry( ), FB_DATATYPE_VOID, NULL, _
+	                             FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	symbAddGlobalCtor( env.main.proc )
-	symbSetIsCalled( env.main.proc )
+	symbSetIsAccessed( env.main.proc )
 	symbSetIsModLevelProc( env.main.proc )
 
 	astProcBegin( env.main.proc, TRUE )

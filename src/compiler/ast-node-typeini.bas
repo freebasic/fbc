@@ -34,7 +34,7 @@ function astTypeIniBegin _
 	dim as integer add_scope = FALSE
 	if( is_local = FALSE ) then
 		if( symbIsScope( parser.currblock ) ) then
-			add_scope = astGetClass( parser.currblock->scp.backnode ) <> AST_NODECLASS_TYPEINI
+			add_scope = not astIsTYPEINI( parser.currblock->scp.backnode )
 		else
 		    add_scope = TRUE
 		end if
@@ -43,16 +43,7 @@ function astTypeIniBegin _
 	if( add_scope ) then
 		'' create a new scope block to handle temp vars allocated inside the
 		'' tree - with shared vars, the temps must be moved to another function
-    	dim as FBSYMBOL ptr s = symbAddScope( n )
-
-		n->typeini.scp = s
-		n->typeini.lastscp = parser.currblock
-
-		parser.scope += 1
-		parser.currblock = s
-
-		symbSetCurrentSymTb( @s->scp.symtb )
-
+		n->typeini.scp = astTempScopeBegin( n->typeini.lastscp, n )
 	else
 		n->typeini.scp = NULL
 	end if
@@ -68,13 +59,14 @@ sub astTypeIniEnd _
 
     dim as ASTNODE ptr n = any, p = any, l = any, r = any
     dim as integer ofs = any
+	dim as FBSYMBOL ptr sym = any
 
 	'' can't leave r pointing to the any node as the
 	'' tail node is linked already
 	tree->r = NULL
 
 	if( is_initializer = FALSE ) then
-		ast.typeinicnt += 1
+		ast.typeinicount += 1
 	end if
 
 	'' merge nested type ini trees
@@ -85,8 +77,8 @@ sub astTypeIniEnd _
     	if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
 			l = n->l
 			'' is it an ini tree too?
-			if( l->class = AST_NODECLASS_TYPEINI ) then
-				ast.typeinicnt -= 1
+			if( astIsTYPEINI( l ) ) then
+				ast.typeinicount -= 1
 
     			ofs = n->typeini.ofs
 
@@ -120,16 +112,7 @@ sub astTypeIniEnd _
 
 	'' close the scope block
 	if( tree->typeini.scp <> NULL ) then
-		'' remove symbols from hash table
-		symbDelScopeTb( tree->typeini.scp )
-
-		'' back to preview symbol tb
-		symbSetCurrentSymTb( tree->typeini.scp->symtb )
-
-		symbFreeSymbol_UnlinkOnly( tree->typeini.scp )
-
-		parser.currblock = tree->typeini.lastscp
-		parser.scope -= 1
+		astTempScopeEnd( tree->typeini.scp, tree->typeini.lastscp )
 	end if
 
 end sub
@@ -295,6 +278,75 @@ function astTypeIniScopeEnd _
 
 end function
 
+'' Takes an array elements initializer and adds the same TYPEINI_ASSIGN's to
+'' the new typeini tree (duplicating the expressions),
+'' but not the TYPEINI_SCOPEINI/TYPEINI_SCOPEEND,
+'' and assuming there are only TYPEINI_ASSIGN's and no ctorcalls or padding etc.
+'' "beginindex" is the index of the first TYPEINI_ASSIGN that should be copied,
+'' this allows to skip some array elements at the front.
+sub astTypeIniCopyElements _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval source as ASTNODE ptr, _
+		byval beginindex as integer _
+	)
+
+	dim as integer i = any
+
+	assert( astIsTYPEINI( source ) )
+	source = source->l
+
+	assert( source->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+	source = source->r
+
+	i = 0
+	while( source->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		if( i >= beginindex ) then
+			astTypeIniAddAssign( tree, astCloneTree( source->l ), source->sym )
+		end if
+		source = source->r
+		i += 1
+	wend
+
+	assert( source->class = AST_NODECLASS_TYPEINI_SCOPEEND )
+end sub
+
+sub astTypeIniReplaceElement _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval element as integer, _
+		byval expr as ASTNODE ptr _
+	)
+
+	'' Walk through the TYPEINI tree until the assign at index "element"
+	'' is reached, then replace the expression.
+	'' assumptions:
+	''    - tree is an array initializer,
+	''    - there are only TYPEINI_ASSIGN's, no ctorcalls/padding
+
+	dim as integer i = any
+
+	assert( astIsTYPEINI( tree ) )
+	tree = tree->l
+
+	assert( tree->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+	tree = tree->r
+
+	i = 0
+	while( tree->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		if( i = element ) then
+			astDelTree( tree->l )
+			tree->l = expr
+			exit sub
+		end if
+		tree = tree->r
+		i += 1
+	wend
+
+	'' should always be found
+	assert( FALSE )
+end sub
+
 '':::::
 private function hCallCtor _
 	( _
@@ -356,11 +408,11 @@ private function hCallCtorList _
 	fldexpr = astBuildVarField( basesym, fld, n->typeini.ofs )
 
 	if( elements > 1 ) then
-    	dim as FBSYMBOL ptr cnt, label, iter
+		dim as FBSYMBOL ptr cnt, label, iter
 
-    	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    	label = symbAddLabel( NULL )
-    	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
+		label = symbAddLabel( NULL )
+		iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 		flush_tree = astNewLINK( flush_tree, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
@@ -420,9 +472,12 @@ private function hFlushTree _
 				'' Assigning to object through THIS pointer, a DEREF is done.
 				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
+				'' Note: n->sym may be NULL from a astReplaceSymbolOnTree(),
+				'' so n's dtype/subtype are used instead.
+
 				if( do_deref ) then
 					'' Assigning to object through pointer, a DEREF is done.
-					assert( n->sym )
+					assert( typeIsPtr( symbGetType( basesym ) ) )
 
 					''
 					'' Must make sure to have the proper type on the DEREF,
@@ -439,11 +494,9 @@ private function hFlushTree _
 						dtype = typeDeref( dtype )
 					end if
 
-					lside = astNewDEREF( astNewVAR( basesym, 0, symbGetFullType( basesym ), symbGetSubtype( basesym ) ), _
-					                     dtype, n->subtype, n->typeini.ofs )
+					lside = astNewDEREF( astNewVAR( basesym ), dtype, n->subtype, n->typeini.ofs )
 				else
 					'' Assigning to object directly
-					'' Note: n->sym may be NULL (from a astReplaceSymbolOnTree(), so n's dtype/subtype are used instead.
 					lside = astNewVAR( basesym, n->typeini.ofs, astGetFullType( n ), n->subtype )
 				end if
 
@@ -457,7 +510,7 @@ private function hFlushTree _
 						'' Bitfield?
 						if( astGetDataType( lside ) = FB_DATATYPE_BITFIELD ) then
 							bitfield = astGetSubType( lside )
-							assert( symbGetClass( bitfield ) = FB_SYMBCLASS_BITFIELD )
+							assert( symbIsBitfield( bitfield ) )
 							assert( typeGetClass( symbGetType( bitfield ) ) = FB_DATACLASS_INTEGER )
 
 							'' Beginning of a field containing one or more bitfields?
@@ -469,12 +522,11 @@ private function hFlushTree _
 							end if
 						end if
 
-						lside = astNewFIELD( lside, n->sym, astGetFullType( n ), n->subtype )
+						lside = astNewFIELD( lside, n->sym )
 					end if
 				end if
 			end if
 
-			assert( astCheckASSIGN( lside, n->l ) )
 			lside = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			assert( lside <> NULL )
 			flush_tree = astNewLINK( flush_tree, lside )
@@ -485,16 +537,13 @@ private function hFlushTree _
 				'' through THIS pointer
 				lside = astBuildInstPtrAtOffset( basesym, NULL, n->typeini.ofs )
 			else
-				dtype = symbGetFullType( basesym )
-
 				if( do_deref ) then
 					'' through a pointer
-					assert( typeIsPtr( dtype ) )
-					lside = astNewDEREF( astNewVAR( basesym, 0, dtype, symbGetSubtype( basesym ) ), _
-					                     typeDeref( dtype ), symbGetSubtype( basesym ), n->typeini.ofs )
+					assert( typeIsPtr( symbGetFullType( basesym ) ) )
+					lside = astNewDEREF( astNewVAR( basesym ), , , n->typeini.ofs )
 				else
 					'' directly
-					lside = astNewVAR( basesym, n->typeini.ofs, dtype, symbGetSubtype( basesym ) )
+					lside = astNewVAR( basesym, n->typeini.ofs )
 				end if
 			end if
 
@@ -551,35 +600,41 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( symbGetFullType( sym ), _
-								   symbGetSubtype( sym ), _
-								   expr )
+				if( typeIsPtr( symbGetFullType( sym ) ) ) then
+					'' Cast pointers to ANY PTR first to prevent issues with derived UDT ptrs,
+					'' which astNewCONV() currently doesn't allow to be casted to/from other ptr
+					'' types directly. Used at least by array descriptor initialization.
+					'' Pointer is pointer anyways, it shouldn't make a difference to the backend.
+					expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
+				end if
 
-                '' shouldn't happen, but..
+				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr )
+				assert( expr <> NULL )
+
+				'' shouldn't happen, but..
 				if( expr = NULL ) then
-			   		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					expr = astNewCONSTi( 0 )
 				end if
 			end if
 
-			if( expr <> NULL ) then
-				select case as const sdtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+			select case as const( sdtype )
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				irEmitVARINI64( sdtype, astGetValLong( expr ) )
 
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
 
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						irEmitVARINIi( sdtype, astGetValInt( expr ) )
-					else
-						irEmitVARINI64( sdtype, astGetValLong( expr ) )
-					end if
-
-				case else
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
 					irEmitVARINIi( sdtype, astGetValInt( expr ) )
-				end select
-			end if
+				else
+					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+				end if
+
+			case else
+				irEmitVARINIi( sdtype, astGetValInt( expr ) )
+			end select
 		end if
 
 	'' literal string..
@@ -669,81 +724,6 @@ private function hFlushTreeStatic _
 
 end function
 
-'':::::
-private sub hRelinkTemps _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval clone_tree as ASTNODE ptr _
-	) static
-
-	if( tree->typeini.scp = NULL ) then
-		exit sub
-	end if
-
-	dim as FBSYMBOL ptr sym = any
-
-	'' different trees?
-	if( clone_tree <> NULL ) then
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		do while( sym <> NULL )
-			astReplaceSymbolOnTree( clone_tree, sym, symbCloneSymbol( sym ) )
-
-			sym = sym->next
-		loop
-
-	'' same tree, don't let the old symbols leak..
-	else
-		dim as FBSYMBOL ptr nxt = any
-
-		sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-		do while( sym <> NULL )
-			nxt = sym->next
-
-			astReplaceSymbolOnTree( tree, sym, symbCloneSymbol( sym ) )
-
-			symbFreeSymbol_RemOnly( sym )
-
-			sym = nxt
-		loop
-
-		symbFreeSymbol_RemOnly( tree->typeini.scp )
-
-		tree->typeini.scp = NULL
-	end if
-
-end sub
-
-'':::::
-private sub hDelTemps _
-	( _
-		byval tree as ASTNODE ptr _
-	) static
-
-	dim as FBSYMBOL ptr sym_head = any
-
-	if( tree->typeini.scp = NULL ) then
-		exit sub
-	end if
-
-	dim as FBSYMBOL ptr sym = any, nxt = any
-
-	sym = symbGetScopeSymbTbHead( tree->typeini.scp )
-	do while( sym <> NULL )
-		nxt = sym->next
-
-		symbFreeSymbol_RemOnly( sym )
-
-		sym = nxt
-	loop
-
-	''
-	symbFreeSymbol_RemOnly( tree->typeini.scp )
-
-	tree->typeini.scp = NULL
-
-end sub
-
-'':::::
 function astTypeIniFlush _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -760,11 +740,7 @@ function astTypeIniFlush _
 	#endif
 
 	if( (options and AST_INIOPT_ISINI) = 0 ) then
-		ast.typeinicnt -= 1
-	end if
-
-	if( (options and AST_INIOPT_RELINK) <> 0 ) then
-		hRelinkTemps( tree, NULL )
+		ast.typeinicount -= 1
 	end if
 
 	if( (options and AST_INIOPT_ISSTATIC) <> 0 ) then
@@ -772,10 +748,6 @@ function astTypeIniFlush _
 		function = NULL
 	else
 		function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
-	end if
-
-	if( (options and AST_INIOPT_RELINK) <> 0 ) then
-		hDelTemps( tree )
 	end if
 
 	astDelNode( tree )
@@ -899,54 +871,52 @@ function astTypeIniIsConst _
 
 end function
 
-'':::::
-function astTypeIniCheckScope _
+function astTypeIniUsesLocals _
 	( _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval ignoreattrib as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr sym = any
-
-	function = FALSE
-
-	if( n <> NULL ) then
-
-    	select case n->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_CONST
-
-			sym = astGetSymbol( n )
-			if( sym <> NULL ) then
-
-				if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or _
-				 						   FB_SYMBATTRIB_COMMON or _
-				 						   FB_SYMBATTRIB_STATIC or _
-										   FB_SYMBATTRIB_DESCRIPTOR or _
-				 						   FB_SYMBATTRIB_TEMP)) = 0) ) then
-
-					function = TRUE
-					exit function
-				end if
-
-			end if
-
-		end select
-
-		if( n->l <> NULL ) then
-			if( astTypeIniCheckScope( n->l ) ) then
-				function = TRUE
-				exit function
-			end if
-		end if
-
-		if( n->r <> NULL ) then
-			if( astTypeIniCheckScope( n->r ) ) then
-				function = TRUE
-				exit function
-			end if
-		end if
-
+	if( n = NULL ) then
+		return FALSE
 	end if
 
+	#if __FB_DEBUG__
+		static as integer reclevel
+		if( reclevel = 0 ) then
+			assert( astIsTYPEINI( n ) )
+		end if
+	#endif
+
+	'' Some TYPEINI expressions (like param/field initializers) can not
+	'' reference local vars because they may be duplicated into other scope
+	'' contexts, where those locals do not exist.
+	''
+	'' Temp vars/descriptors however can be allowed, because they're
+	'' handled by the TYPEINI's implicit scope.
+	'' Local STATICs can be allowed too, because they're not allocated on
+	'' stack but instead as globals.
+	''
+	'' ignoreattrib = these attributes a LOCAL must have to be ignored here
+
+	if( astIsVAR( n ) ) then
+		if( symbIsLocal( n->sym ) and _
+		    ((symbGetAttrib( n->sym ) and ignoreattrib) = 0) ) then
+			return TRUE
+		end if
+	end if
+
+	#if __FB_DEBUG__
+		reclevel += 1
+	#endif
+
+	'' walk
+	function = astTypeIniUsesLocals( n->l, ignoreattrib ) or _
+	           astTypeIniUsesLocals( n->r, ignoreattrib )
+
+	#if __FB_DEBUG__
+		reclevel -= 1
+	#endif
 end function
 
 private function hWalk _
@@ -962,16 +932,17 @@ private function hWalk _
 		return NULL
 	end if
 
-	if( n->class = AST_NODECLASS_TYPEINI ) then
+	if( astIsTYPEINI( n ) ) then
 		'' Create a temporary variable which is initialized by the
 		'' astTypeIniFlush() below.
-		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE, FALSE )
+		sym = symbAddTempVar( astGetFullType( n ), n->subtype )
+		astDtorListAdd( sym )
 
 		'' Update the parent node in the original tree to access the
 		'' temporary variable, instead of the TYPEINI. (it could be an
 		'' ASSIGN, ADDROF, ARG, etc...)
 		if( parent ) then
-			expr = astNewVAR( sym, 0, astGetFullType( n ), n->subtype )
+			expr = astNewVAR( sym )
 			if( parent->l = n ) then
 				parent->l = expr
 			else
@@ -979,67 +950,109 @@ private function hWalk _
 			end if
 		end if
 
-		return astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+		'' Turn this TYPEINI into real code
+		n = astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+
+		'' Also update any nested TYPEINIs, for example this can be a
+		'' TYPEINI CTORCALL, which carries a CALL with ARGs that can
+		'' have TYPEINIs themselves.
+		return astTypeIniUpdate( n )
 	end if
 
 	'' walk
 	return astNewLINK( hWalk( n->l, n ), hWalk( n->r, n ) )
 end function
 
+#if __FB_DEBUG__
+'' Count the TYPEINI nodes in a tree
+function astCountTypeinis( byval n as ASTNODE ptr ) as integer
+	dim as integer count = any
+
+	count = 0
+
+	if( n ) then
+		if( astIsTYPEINI( n ) ) then
+			count += 1
+		end if
+
+		count += astCountTypeinis( n->l )
+		count += astCountTypeinis( n->r )
+	end if
+
+	function = count
+end function
+#endif
+
 function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
-	if( ast.typeinicnt <= 0 ) then
+	'' Shouldn't miss any
+	assert( astCountTypeinis( tree ) <= ast.typeinicount )
+
+	if( ast.typeinicount <= 0 ) then
 		return tree
 	end if
 
 	'' Walk to expand any TYPEINIs. Note that the original tree will be
 	'' updated too, and both are needed.
-	return astNewLINK( hWalk( tree, NULL ), tree )
+	'' Returning the rhs from the LINK, so astTypeIniUpdate() can be used
+	'' in the middle of an expression.
+	return astNewLINK( hWalk( tree, NULL ), tree, FALSE )
 end function
 
-'':::::
-sub astTypeIniUpdCnt _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+'' Duplicates a TYPEINI initializer into the current context. The cloned TYPEINI
+'' won't have a temp scope on its own; instead any temp symbols from the
+'' original TYPEINI's temp scope are duplicated into the current scope context.
+function astTypeIniClone( byval tree as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr clonetree = any
 
-	if( tree->class = AST_NODECLASS_TYPEINI ) then
-		ast.typeinicnt += 1
+	assert( astIsTYPEINI( tree ) )
+
+	clonetree = astCloneTree( tree )
+
+	if( tree->typeini.scp ) then
+		astTempScopeClone( tree->typeini.scp, clonetree )
 	end if
 
-	'' walk
-	if( tree->l <> NULL ) then
-		astTypeIniUpdCnt( tree->l )
+	function = clonetree
+end function
+
+'' If it's only a TYPEINI_ASSIGN, and not for an UDT with a single field,
+'' then just remove the TYPEINI( TYPEINI_ASSIGN( foo ) ) and return only foo.
+function astTypeIniTryRemove( byval tree as ASTNODE ptr ) as ASTNODE ptr
+	assert( astIsTYPEINI( tree ) )
+
+	function = tree
+
+	'' More than one node?
+	if( tree->l->r ) then
+		exit function
 	end if
 
-	if( tree->r <> NULL ) then
-		astTypeIniUpdCnt( tree->r )
+	'' First node is not a TYPEINI_ASSIGN?
+	if( tree->l->class <> AST_NODECLASS_TYPEINI_ASSIGN ) then
+		exit function
 	end if
 
-end sub
+	'' Not the same type (detects the case when the TYPEINI is for an UDT,
+	'' and the first TYPEINI_ASSIGN is for the first field)
+	if( (astGetDataType( tree ) <> astGetDataType( tree->l )) or _
+	    (tree->subtype <> tree->l->subtype) ) then
+		exit function
+	end if
 
-'':::::
-function astTypeIniGetHead _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' head node will be always an EXPR
 	function = tree->l->l
-
+	astDelNode( tree->l )
+	astDelNode( tree )
+	ast.typeinicount -= 1
 end function
 
-'':::::
-function astTypeIniClone _
-	( _
-		byval tree as ASTNODE ptr _
-	) as ASTNODE ptr
+'' For deleting param/var/field initializer TYPEINIs and their temp scope
+sub astTypeIniDelete( byval tree as ASTNODE ptr )
+	assert( astIsTYPEINI( tree ) )
 
-	dim as ASTNODE ptr clone_tree = astCloneTree( tree )
+	if( tree->typeini.scp ) then
+		astTempScopeDelete( tree->typeini.scp )
+		tree->typeini.scp = NULL
+	end if
 
-	clone_tree->typeini.scp = NULL
-
-	hRelinkTemps( tree, clone_tree )
-
-	function = clone_tree
-
-end function
+	astDelTree( tree )
+end sub

@@ -108,7 +108,8 @@ This is the list of external library bindings currently included in ""FreeBASIC"
 {{fbdoc item="section" value="System APIs"}}
 	{{fbdoc item="keyword" value="ExtLibCRT|C Runtime Library"}}
 	{{fbdoc item="keyword" value="ExtLibdos|DOS API"}}
-	{{fbdoc item="keyword" value="ExtLibdisphelper|disphelper"}} - Helper library to use COM objects from plain C 
+	{{fbdoc item="keyword" value="ExtLibdisphelper|disphelper"}} - Helper library to use COM objects from plain C
+	{{fbdoc item="keyword" value="ExtLibGLib|GLib"}} - GNOME's universal cross-platform software utility library
 	{{fbdoc item="keyword" value="ExtLibwindows|Windows API"}}
 	{{fbdoc item="keyword" value="ExtLibX11|X11"}} - Windowing system commonly used on Linux systems
 

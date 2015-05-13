@@ -51,6 +51,7 @@ myVariable.number = 69
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPrivate Private]]##
 	- ##[[KeyPgVisPublic Public:]]## (Access Control)
 	- ##[[KeyPgVisProtected Protected:]]## (Access Control)
 	- ##[[KeyPgType Type]]##

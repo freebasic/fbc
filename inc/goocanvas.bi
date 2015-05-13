@@ -1,7 +1,7 @@
 ' This is file goocanvas-2.0.0.bi
 ' (FreeBasic binding for goocanvas library version 2.0.0)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 ' translated with help of h_2_bi.bas
 ' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
 '
@@ -29,9 +29,13 @@
 #PRAGMA push(msbitfields)
 #ENDIF
 
+#IFDEF __USE_GTK3__
+#INCLIB "goocanvas-2.0"
+#ELSE
 #INCLIB "goocanvas"
+#ENDIF
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF __GOO_CANVAS_H__
 #DEFINE __GOO_CANVAS_H__
@@ -1378,8 +1382,49 @@ DECLARE FUNCTION goo_canvas_boolean_handled_accumulator(BYVAL AS GSignalInvocati
 
 #ENDIF ' __GOO_CANVAS_PRIVATE_H__
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 11-09-19 20:47:50, by h_2_bi (version 0.2.1.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: goocanvas-2.0.0.bi
+' Parameters:
+'                                  Process time [s]: 0.3282270974013954
+'                                  Bytes translated: 75942
+'                                      Maximum deep: 5
+'                                SUB/FUNCTION names: 235
+'                                mangled TYPE names: 0
+'                                        files done: 20
+' goocanvas-2.0.0/src/goocanvas.h
+' goocanvas-2.0.0/src/goocanvasenumtypes.h
+' goocanvas-2.0.0/src/goocanvasellipse.h
+' goocanvas-2.0.0/src/goocanvasitemsimple.h
+' goocanvas-2.0.0/src/goocanvasitem.h
+' goocanvas-2.0.0/src/goocanvasstyle.h
+' goocanvas-2.0.0/src/goocanvasitemmodel.h
+' goocanvas-2.0.0/src/goocanvasutils.h
+' goocanvas-2.0.0/src/goocanvasgrid.h
+' goocanvas-2.0.0/src/goocanvasgroup.h
+' goocanvas-2.0.0/src/goocanvasimage.h
+' goocanvas-2.0.0/src/goocanvaspath.h
+' goocanvas-2.0.0/src/goocanvaspolyline.h
+' goocanvas-2.0.0/src/goocanvasrect.h
+' goocanvas-2.0.0/src/goocanvastable.h
+' goocanvas-2.0.0/src/goocanvastext.h
+' goocanvas-2.0.0/src/goocanvaswidget.h
+' goocanvas-2.0.0/src/goocanvasatk.h
+' goocanvas-2.0.0/src/goocanvasmarshal.h
+' goocanvas-2.0.0/src/goocanvasprivate.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 1
+' goocanvas-2.0.0/src/
+'                                        __MACROS__: 2
+' 20: #define G_BEGIN_DECLS
+' 20: #define G_END_DECLS
+'                                       __HEADERS__: 0
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 0

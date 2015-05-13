@@ -46,15 +46,12 @@ end function
 '':::::
 ''BoolExpression      =   LogExpression ( (ANDALSO | ORELSE ) LogExpression )* .
 ''
-function cBoolExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
-    dim as integer op = any
+function cBoolExpression( ) as ASTNODE ptr
+	dim as integer op = any, dtorlistcookie = any
     dim as ASTNODE ptr expr = any, logexpr = any
 
     '' LogExpression
+	'' The first operand expression will always be executed
     logexpr = cLogExpression( )
     if( logexpr = NULL ) then
 	   	return NULL
@@ -74,26 +71,25 @@ function cBoolExpression _
 
     	lexSkipToken( )
 
-    	'' LogExpression
-    	expr = cLogExpression( )
-    	if( expr = NULL ) then
+		'' LogExpression
+		'' The second operand expression however only conditionally
+		astDtorListScopeBegin( )
+		expr = cLogExpression( )
+		dtorlistcookie = astDtorListScopeEnd( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
-    	end if
+		end if
 
-    	'' do operation
-    	logexpr = astNewBOP( op, logexpr, expr )
-
-        if( logexpr = NULL ) then
+		logexpr = astNewBOP( op, logexpr, expr, cptr( any ptr, dtorlistcookie ) )
+		if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-        end if
-
+			logexpr = astNewCONSTi( 0 )
+		end if
     loop
 
 	function = logexpr
-
 end function
 
 '':::::
@@ -142,7 +138,7 @@ function cLogExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -189,7 +185,7 @@ function cLogOrExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -236,7 +232,7 @@ function cLogAndExpression _
         if( logexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			logexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			logexpr = astNewCONSTi( 0 )
         end if
 
     loop
@@ -267,14 +263,18 @@ function cRelExpression _
     	'' Relational operator
     	select case as const lexGetToken( )
     	case FB_TK_EQ
-			'' eq only inside parentheses?
-			if( fbGetEqInParentsOnly( ) ) then
-				if( parser.prntcnt <= 0 ) then
-					exit do
-				end if
+			parser.have_eq_outside_parens = (parser.prntcnt = 0)
+
+			'' outside parentheses? (cParentExpression() would have
+			'' unset this flag otherwise)
+			if( fbGetEqInParensOnly( ) ) then
+				exit do
 			end if
     		op = AST_OP_EQ
     	case FB_TK_GT
+			if( fbGetGtInParensOnly( ) ) then
+				exit do
+			end if
     		op = AST_OP_GT
     	case FB_TK_LT
     		op = AST_OP_LT
@@ -284,6 +284,7 @@ function cRelExpression _
     		op = AST_OP_LE
     	case FB_TK_GE
  			op = AST_OP_GE
+ 			assert( fbGetGtInParensOnly( ) = FALSE )
     	case else
       		exit do
     	end select
@@ -303,7 +304,7 @@ function cRelExpression _
     	if( relexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			relexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			relexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -335,12 +336,12 @@ function cIsExpression _
 		if( symbGetHasRTTI( astGetSubtype( isexpr ) ) = FALSE ) then
 			errReport( FB_ERRMSG_TYPEHASNORTTI )
 			'' error recovery: fake a node
-			isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			isexpr = astNewCONSTi( 0 )
 		end if
 	else
 		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
 		'' error recovery: fake a node
-		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		isexpr = astNewCONSTi( 0 )
 	end if
 
 	lexSkipToken( )
@@ -358,17 +359,17 @@ function cIsExpression _
 		if( symbGetHasRTTI( subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_TYPEHASNORTTI )
 			'' error recovery: fake a node
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		
 		elseif( symbGetUDTBaseLevel( subtype, astGetSubtype( isexpr ) ) = 0 ) then
 			errReport( FB_ERRMSG_TYPESARENOTRELATED )
 			'' error recovery: fake a node
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 	else
 		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 	
 	'' point to the RTTI table
@@ -380,7 +381,7 @@ function cIsExpression _
 	if( isexpr = NULL ) Then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		'' error recovery: fake a node
-		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		isexpr = astNewCONSTi( 0 )
 	end if
 
     function = isexpr
@@ -481,7 +482,7 @@ function cAddExpression _
     	if( addexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			addexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			addexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -533,7 +534,7 @@ function cShiftExpression _
     	if( shiftexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			shiftexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			shiftexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -579,7 +580,7 @@ function cModExpression _
     	if( modexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			modexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			modexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -625,7 +626,7 @@ function cIntDivExpression _
     	if( idivexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			idivexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			idivexpr = astNewCONSTi( 0 )
     	end if
     loop
 
@@ -654,7 +655,7 @@ function cMultExpression _
     do
     	'' Mult operator
     	select case lexGetToken( )
-    	case CHAR_CARET
+    	case CHAR_TIMES
     		op = AST_OP_MUL
     	case CHAR_SLASH
  			op = AST_OP_DIV
@@ -677,7 +678,7 @@ function cMultExpression _
     	if( mulexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a node
-			mulexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			mulexpr = astNewCONSTi( 0 )
     	end if
     loop
 

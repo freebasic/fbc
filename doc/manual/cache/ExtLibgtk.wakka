@@ -4,7 +4,7 @@ Cross-platform Graphical User Interface library
 Website: http://www.gtk.org
 Platforms supported: ""Win32"", Linux
 Headers to include: gtk/gtk.bi
-Example Usage: yes, in examples/libraries/Gtk/
+Example Usage: yes, in examples/GUI/GTK+/
 Header version: 2.24.6 and 3.2.2
 
 By default, gtk/gtk.bi will use the GTK+ 2.24 API.

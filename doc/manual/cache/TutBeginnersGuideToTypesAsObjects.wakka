@@ -350,7 +350,7 @@ I hope this tutorial has been useful for you, although there are still a few thi
 	- ##[[KeyPgDestructor Destructor]]##
 	- ##[[KeyPgOperator Operator]]##
 	- ##[[KeyPgThis This]]##
-	- [[KeyPgTypeTemp Anonymous Types]]
+	- ##[[KeyPgType Type]]##
 	- [[ProPgTypeObjects Types as Objects]]
 	- ##[[KeyPgVisPublic Public:]]##
 	- ##[[KeyPgVisPrivate Private:]]##

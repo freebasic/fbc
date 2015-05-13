@@ -69,11 +69,17 @@ Command line compiler options for the fbc compiler:
 		- Emit the preprocessed input file only, do not compile
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}
 		- Set the compiler prefix path
+	{{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}
+		- Let the compiler display certain information (##host##, ##target##)
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
 		- Enable function profiling
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}
-		- Write asm file(s) only, do not compile or link
+		- Write intermediate file(s) only, do not compile or link
 	{{fbdoc item="keyword" value="CompilerOptrupp|-R"}}
+		- Do not delete the intermediate file(s)
+	{{fbdoc item="keyword" value="CompilerOptrr|-rr"}}
+		- Write asm file(s) only, do not compile or link
+	{{fbdoc item="keyword" value="CompilerOptrrupp|-RR"}}
 		- Do not delete the asm file(s)
 	{{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}
 		- Set subsystem (##gui##, ##console##)

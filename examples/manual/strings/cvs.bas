@@ -6,8 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCvs
 '' --------
 
-Dim a As Single, b As String
-a=4534.4243
-b=MKS(a)
-Print a, CVS(b)
-Sleep
+Dim f As Single, i As Integer
+f = 1.125
+i = CVI(f)
+
+Print Using "i = _&H&"; Hex(i)
+Print Using "cvs(i) = &"; CVS(i)

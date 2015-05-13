@@ -16,4 +16,3 @@ numeric_value = CUInt(300.23)
 
 'Print the result = 300
 Print numeric_value
-Sleep

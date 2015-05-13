@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="libjit"}}----
 ""LibJIT"" is a fairly straightforward, lightweight library for runtime compilation with a simple and stable ABI.
 
-Website: [[http://www.dotgnu.org/libjit-doc/libjit.html]], [[http://freshmeat.net/projects/libjit]]
+Website: [[http://www.gnu.org/software/libjit/]]
 Platforms supported: Windows, Linux, DOS
 Headers to include: jit.bi
 Header version: 0.1.2

@@ -1,11 +1,12 @@
 ' This is file cairo.bi
-' (FreeBasic binding for cairo library version 1.10.2)
+' (FreeBasic binding for Cairo libray - version 1.12.2)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -63,108 +64,122 @@
 
 #INCLIB "cairo"
 
-EXTERN "C"
+EXTERN "C" ' (h_2_bi -P_oCD option)
 
 #IFNDEF CAIRO_H
 #DEFINE CAIRO_H
 
 #IFNDEF CAIRO_VERSION_H
 #DEFINE CAIRO_VERSION_H
-#DEFINE CAIRO_VERSION_MAJOR (1)
-#DEFINE CAIRO_VERSION_MINOR (10)
-#DEFINE CAIRO_VERSION_MICRO (2)
+#DEFINE CAIRO_VERSION_MAJOR USE_cairo_version_OR_cairo_version_string_INSTEAD
+#DEFINE CAIRO_VERSION_MINOR USE_cairo_version_OR_cairo_version_string_INSTEAD
+#DEFINE CAIRO_VERSION_MICRO USE_cairo_version_OR_cairo_version_string_INSTEAD
 #ENDIF ' CAIRO_VERSION_H
-
-#IFNDEF CAIRO_FEATURES_H
-#DEFINE CAIRO_FEATURES_H
-#DEFINE CAIRO_HAS_FT_FONT 1
-#DEFINE CAIRO_HAS_IMAGE_SURFACE 1
-#DEFINE CAIRO_HAS_PDF_SURFACE 1
-#DEFINE CAIRO_HAS_PNG_FUNCTIONS 1
-#DEFINE CAIRO_HAS_PS_SURFACE 1
-#DEFINE CAIRO_HAS_SVG_SURFACE 1
-#DEFINE CAIRO_HAS_USER_FONT 1
-#DEFINE CAIRO_HAS_XLIB_SURFACE 1
-#DEFINE CAIRO_HAS_XLIB_XRENDER_SURFACE 1
-#ENDIF ' CAIRO_FEATURES_H
 
 #IFNDEF CAIRO_DEPRECATED_H
 #DEFINE CAIRO_DEPRECATED_H
 #DEFINE CAIRO_FONT_TYPE_ATSUI CAIRO_FONT_TYPE_QUARTZ
-#DEFINE cairo_current_font_extents cairo_current_font_extents_REPLACED_BY_cairo_font_extents
-#DEFINE cairo_get_font_extents cairo_get_font_extents_REPLACED_BY_cairo_font_extents
-#DEFINE cairo_current_operator cairo_current_operator_REPLACED_BY_cairo_get_operator
-#DEFINE cairo_current_tolerance cairo_current_tolerance_REPLACED_BY_cairo_get_tolerance
-#DEFINE cairo_current_point cairo_current_point_REPLACED_BY_cairo_get_current_point
-#DEFINE cairo_current_fill_rule cairo_current_fill_rule_REPLACED_BY_cairo_get_fill_rule
-#DEFINE cairo_current_line_width cairo_current_line_width_REPLACED_BY_cairo_get_line_width
-#DEFINE cairo_current_line_cap cairo_current_line_cap_REPLACED_BY_cairo_get_line_cap
-#DEFINE cairo_current_line_join cairo_current_line_join_REPLACED_BY_cairo_get_line_join
-#DEFINE cairo_current_miter_limit cairo_current_miter_limit_REPLACED_BY_cairo_get_miter_limit
-#DEFINE cairo_current_matrix cairo_current_matrix_REPLACED_BY_cairo_get_matrix
-#DEFINE cairo_current_target_surface cairo_current_target_surface_REPLACED_BY_cairo_get_target
-#DEFINE cairo_get_status cairo_get_status_REPLACED_BY_cairo_status
-#DEFINE cairo_concat_matrix cairo_concat_matrix_REPLACED_BY_cairo_transform
-#DEFINE cairo_scale_font cairo_scale_font_REPLACED_BY_cairo_set_font_size
-#DEFINE cairo_select_font cairo_select_font_REPLACED_BY_cairo_select_font_face
-#DEFINE cairo_transform_font cairo_transform_font_REPLACED_BY_cairo_set_font_matrix
-#DEFINE cairo_transform_point cairo_transform_point_REPLACED_BY_cairo_user_to_device
-#DEFINE cairo_transform_distance ERROR cairo_transform_distance REPLACED_BY cairo_user_to_device_distance
-#DEFINE cairo_inverse_transform_point cairo_inverse_transform_point_REPLACED_BY_cairo_device_to_user
-#DEFINE cairo_inverse_transform_distance ERROR cairo_inverse_transform_distance REPLACED_BY cairo_device_to_user_distance
-#DEFINE cairo_init_clip cairo_init_clip_REPLACED_BY_cairo_reset_clip
-#DEFINE cairo_surface_create_for_image ERROR cairo_surface_create_for_image REPLACED_BY cairo_image_surface_create_for_data
-#DEFINE cairo_default_matrix cairo_default_matrix_REPLACED_BY_cairo_identity_matrix
-#DEFINE cairo_matrix_set_affine cairo_matrix_set_affine_REPLACED_BY_cairo_matrix_init
-#DEFINE cairo_matrix_set_identity cairo_matrix_set_identity_REPLACED_BY_cairo_matrix_init_identity
-#DEFINE cairo_pattern_add_color_stop ERROR cairo_pattern_add_color_stop REPLACED_BY cairo_pattern_add_color_stop_rgba
-#DEFINE cairo_set_rgb_color cairo_set_rgb_color_REPLACED_BY_cairo_set_source_rgb
-#DEFINE cairo_set_pattern cairo_set_pattern_REPLACED_BY_cairo_set_source
-#DEFINE cairo_xlib_surface_create_for_pixmap_with_visual ERROR cairo_xlib_surface_create_for_pixmap_with_visual REPLACED_BY cairo_xlib_surface_create
-#DEFINE cairo_xlib_surface_create_for_window_with_visual ERROR cairo_xlib_surface_create_for_window_with_visual REPLACED_BY cairo_xlib_surface_create
-#DEFINE cairo_xcb_surface_create_for_pixmap_with_visual ERROR cairo_xcb_surface_create_for_pixmap_with_visual REPLACED_BY cairo_xcb_surface_create
-#DEFINE cairo_xcb_surface_create_for_window_with_visual ERROR cairo_xcb_surface_create_for_window_with_visual REPLACED_BY cairo_xcb_surface_create
-#DEFINE cairo_ps_surface_set_dpi ERROR cairo_ps_surface_set_dpi REPLACED_BY cairo_surface_set_fallback_resolution
-#DEFINE cairo_pdf_surface_set_dpi ERROR cairo_pdf_surface_set_dpi REPLACED_BY cairo_surface_set_fallback_resolution
-#DEFINE cairo_svg_surface_set_dpi ERROR cairo_svg_surface_set_dpi REPLACED_BY cairo_surface_set_fallback_resolution
-#DEFINE cairo_atsui_font_face_create_for_atsu_font_id ERROR cairo_atsui_font_face_create_for_atsu_font_id REPLACED_BY cairo_quartz_font_face_create_for_atsu_font_id
-#DEFINE cairo_current_path cairo_current_path_DEPRECATED_BY_cairo_copy_path
-#DEFINE cairo_current_path_flat cairo_current_path_flat_DEPRECATED_BY_cairo_copy_path_flat
-#DEFINE cairo_get_path cairo_get_path_DEPRECATED_BY_cairo_copy_path
-#DEFINE cairo_get_path_flat cairo_get_path_flat_DEPRECATED_BY_cairo_get_path_flat
-#DEFINE cairo_set_alpha ERROR cairo_set_alpha DEPRECATED_BY cairo_set_source_rgba_OR_cairo_paint_with_alpha
-#DEFINE cairo_show_surface ERROR cairo_show_surface DEPRECATED_BY cairo_set_source_surface_AND_cairo_paint
-#DEFINE cairo_copy ERROR cairo_copy DEPRECATED_BY cairo_create_AND_MANY_INDIVIDUAL_FUNCTIONS
-#DEFINE cairo_surface_set_repeat cairo_surface_set_repeat_DEPRECATED_BY_cairo_pattern_set_extend
-#DEFINE cairo_surface_set_matrix cairo_surface_set_matrix_DEPRECATED_BY_cairo_pattern_set_matrix
-#DEFINE cairo_surface_get_matrix cairo_surface_get_matrix_DEPRECATED_BY_cairo_pattern_get_matrix
-#DEFINE cairo_surface_set_filter cairo_surface_set_filter_DEPRECATED_BY_cairo_pattern_set_filter
-#DEFINE cairo_surface_get_filter cairo_surface_get_filter_DEPRECATED_BY_cairo_pattern_get_filter
-#DEFINE cairo_matrix_create cairo_matrix_create_DEPRECATED_BY_cairo_matrix_t
-#DEFINE cairo_matrix_destroy cairo_matrix_destroy_DEPRECATED_BY_cairo_matrix_t
-#DEFINE cairo_matrix_copy cairo_matrix_copy_DEPRECATED_BY_cairo_matrix_t
-#DEFINE cairo_matrix_get_affine cairo_matrix_get_affine_DEPRECATED_BY_cairo_matrix_t
-#DEFINE cairo_set_target_surface cairo_set_target_surface_DEPRECATED_BY_cairo_create
-#DEFINE cairo_set_target_image ERROR cairo_set_target_image DEPRECATED_BY cairo_image_surface_create_for_data
-#DEFINE cairo_set_target_pdf cairo_set_target_pdf_DEPRECATED_BY_cairo_pdf_surface_create
-#DEFINE cairo_set_target_png cairo_set_target_png_DEPRECATED_BY_cairo_surface_write_to_png
-#DEFINE cairo_set_target_ps cairo_set_target_ps_DEPRECATED_BY_cairo_ps_surface_create
-#DEFINE cairo_set_target_quartz ERROR cairo_set_target_quartz DEPRECATED_BY cairo_quartz_surface_create
-#DEFINE cairo_set_target_win32 cairo_set_target_win32_DEPRECATED_BY_cairo_win32_surface_create
-#DEFINE cairo_set_target_xcb cairo_set_target_xcb_DEPRECATED_BY_cairo_xcb_surface_create
-#DEFINE cairo_set_target_drawable ERROR cairo_set_target_drawable DEPRECATED_BY cairo_xlib_surface_create
-#DEFINE cairo_get_status_string ERROR cairo_get_status_string DEPRECATED_BY cairo_status_AND_cairo_status_to_string
-#DEFINE cairo_status_string ERROR cairo_status_string DEPRECATED_BY cairo_status AND cairo_status_to_string
+#DEFINE cairo_current_font_extents #ERROR cairo_current_font_extents REPLACED BY cairo_font_extents
+#DEFINE cairo_get_font_extents #ERROR cairo_get_font_extents REPLACED BY cairo_font_extents
+#DEFINE cairo_current_operator #ERROR cairo_current_operator REPLACED BY cairo_get_operator
+#DEFINE cairo_current_tolerance #ERROR cairo_current_tolerance REPLACED BY cairo_get_tolerance
+#DEFINE cairo_current_point #ERROR cairo_current_point REPLACED BY cairo_get_current_point
+#DEFINE cairo_current_fill_rule #ERROR cairo_current_fill_rule REPLACED BY cairo_get_fill_rule
+#DEFINE cairo_current_line_width #ERROR cairo_current_line_width REPLACED BY cairo_get_line_width
+#DEFINE cairo_current_line_cap #ERROR cairo_current_line_cap REPLACED BY cairo_get_line_cap
+#DEFINE cairo_current_line_join #ERROR cairo_current_line_join REPLACED BY cairo_get_line_join
+#DEFINE cairo_current_miter_limit #ERROR cairo_current_miter_limit REPLACED BY cairo_get_miter_limit
+#DEFINE cairo_current_matrix #ERROR cairo_current_matrix REPLACED BY cairo_get_matrix
+#DEFINE cairo_current_target_surface #ERROR cairo_current_target_surface REPLACED BY cairo_get_target
+#DEFINE cairo_get_status #ERROR cairo_get_status REPLACED BY cairo_status
+#DEFINE cairo_concat_matrix #ERROR cairo_concat_matrix REPLACED BY cairo_transform
+#DEFINE cairo_scale_font #ERROR cairo_scale_font REPLACED BY cairo_set_font_size
+#DEFINE cairo_select_font #ERROR cairo_select_font REPLACED BY cairo_select_font_face
+#DEFINE cairo_transform_font #ERROR cairo_transform_font REPLACED BY cairo_set_font_matrix
+#DEFINE cairo_transform_point #ERROR cairo_transform_point REPLACED BY cairo_user_to_device
+#DEFINE cairo_transform_distance #ERROR cairo_transform_distance REPLACED_BY cairo_user_to_device_distance
+#DEFINE cairo_inverse_transform_point #ERROR cairo_inverse_transform_point REPLACED BY cairo_device_to_user
+#DEFINE cairo_inverse_transform_distance #ERROR cairo_inverse_transform_distance REPLACED BY cairo_device_to_user_distance
+#DEFINE cairo_init_clip #ERROR cairo_init_clip REPLACED BY cairo_reset_clip
+#DEFINE cairo_surface_create_for_image #ERROR cairo_surface_create_for_image REPLACED BY cairo_image_surface_create_for_data
+#DEFINE cairo_default_matrix #ERROR cairo_default_matrix REPLACED BY cairo_identity_matrix
+#DEFINE cairo_matrix_set_affine #ERROR cairo_matrix_set_affine REPLACED BY cairo_matrix_init
+#DEFINE cairo_matrix_set_identity #ERROR cairo_matrix_set_identity REPLACED BY cairo_matrix_init_identity
+#DEFINE cairo_pattern_add_color_stop #ERROR cairo_pattern_add_color_stop REPLACED BY cairo_pattern_add_color_stop_rgba
+#DEFINE cairo_set_rgb_color #ERROR cairo_set_rgb_color REPLACED BY cairo_set_source_rgb
+#DEFINE cairo_set_pattern #ERROR cairo_set_pattern REPLACED BY cairo_set_source
+#DEFINE cairo_xlib_surface_create_for_pixmap_with_visual #ERROR cairo_xlib_surface_create_for_pixmap_with_visual REPLACED BY cairo_xlib_surface_create
+#DEFINE cairo_xlib_surface_create_for_window_with_visual #ERROR cairo_xlib_surface_create_for_window_with_visual REPLACED BY cairo_xlib_surface_create
+#DEFINE cairo_xcb_surface_create_for_pixmap_with_visual #ERROR cairo_xcb_surface_create_for_pixmap_with_visual REPLACED BY cairo_xcb_surface_create
+#DEFINE cairo_xcb_surface_create_for_window_with_visual #ERROR cairo_xcb_surface_create_for_window_with_visual REPLACED BY cairo_xcb_surface_create
+#DEFINE cairo_ps_surface_set_dpi #ERROR cairo_ps_surface_set_dpi REPLACED BY cairo_surface_set_fallback_resolution
+#DEFINE cairo_pdf_surface_set_dpi #ERROR cairo_pdf_surface_set_dpi REPLACED BY cairo_surface_set_fallback_resolution
+#DEFINE cairo_svg_surface_set_dpi #ERROR cairo_svg_surface_set_dpi REPLACED BY cairo_surface_set_fallback_resolution
+#DEFINE cairo_atsui_font_face_create_for_atsu_font_id #ERROR cairo_atsui_font_face_create_for_atsu_font_id REPLACED BY cairo_quartz_font_face_create_for_atsu_font_id
+#DEFINE cairo_current_path #ERROR cairo_current_path DEPRECATED BY cairo_copy_path
+#DEFINE cairo_current_path_flat #ERROR cairo_current_path_flat DEPRECATED BY cairo_copy_path_flat
+#DEFINE cairo_get_path #ERROR cairo_get_path DEPRECATED BY cairo_copy_path
+#DEFINE cairo_get_path_flat #ERROR cairo_get_path_flat DEPRECATED BY cairo_get_path_flat
+#DEFINE cairo_set_alpha #ERROR cairo_set_alpha DEPRECATED BY cairo_set_source_rgba_OR_cairo_paint_with_alpha
+#DEFINE cairo_show_surface #ERROR cairo_show_surface DEPRECATED BY cairo_set_source_surface_AND_cairo_paint
+#DEFINE cairo_copy #ERROR cairo_copy DEPRECATED BY cairo_create_AND_MANY_INDIVIDUAL_FUNCTIONS
+#DEFINE cairo_surface_set_repeat #ERROR cairo_surface_set_repeat DEPRECATED BY cairo_pattern_set_extend
+#DEFINE cairo_surface_set_matrix #ERROR cairo_surface_set_matrix DEPRECATED BY cairo_pattern_set_matrix
+#DEFINE cairo_surface_get_matrix #ERROR cairo_surface_get_matrix DEPRECATED BY cairo_pattern_get_matrix
+#DEFINE cairo_surface_set_filter #ERROR cairo_surface_set_filter DEPRECATED BY cairo_pattern_set_filter
+#DEFINE cairo_surface_get_filter #ERROR cairo_surface_get_filter DEPRECATED BY cairo_pattern_get_filter
+#DEFINE cairo_matrix_create #ERROR cairo_matrix_create DEPRECATED BY cairo_matrix_t
+#DEFINE cairo_matrix_destroy #ERROR cairo_matrix_destroy DEPRECATED BY cairo_matrix_t
+#DEFINE cairo_matrix_copy #ERROR cairo_matrix_copy DEPRECATED BY cairo_matrix_t
+#DEFINE cairo_matrix_get_affine #ERROR cairo_matrix_get_affine DEPRECATED BY cairo_matrix_t
+#DEFINE cairo_set_target_surface #ERROR cairo_set_target_surface DEPRECATED BY cairo_create
+#DEFINE cairo_set_target_image #ERROR cairo_set_target_image DEPRECATED BY cairo_image_surface_create_for_data
+#DEFINE cairo_set_target_pdf #ERROR cairo_set_target_pdf DEPRECATED BY cairo_pdf_surface_create
+#DEFINE cairo_set_target_png #ERROR cairo_set_target_png DEPRECATED BY cairo_surface_write_to_png
+#DEFINE cairo_set_target_ps #ERROR cairo_set_target_ps DEPRECATED BY cairo_ps_surface_create
+#DEFINE cairo_set_target_quartz #ERROR cairo_set_target_quartz DEPRECATED BY cairo_quartz_surface_create
+#DEFINE cairo_set_target_win32 #ERROR cairo_set_target_win32 DEPRECATED BY cairo_win32_surface_create
+#DEFINE cairo_set_target_xcb #ERROR cairo_set_target_xcb DEPRECATED BY cairo_xcb_surface_create
+#DEFINE cairo_set_target_drawable #ERROR cairo_set_target_drawable DEPRECATED BY cairo_xlib_surface_create
+#DEFINE cairo_get_status_string #ERROR cairo_get_status_string DEPRECATED BY cairo_status_AND_cairo_status_to_string
+#DEFINE cairo_status_string #ERROR cairo_status_string DEPRECATED BY cairo_status_AND_cairo_status_to_string
 #ENDIF ' CAIRO_DEPRECATED_H
 
-#DEFINE CAIRO_VERSION_ENCODE(major, minor, micro) ((major) * 10000 + (minor) * 100 + (micro))
-#DEFINE CAIRO_VERSION CAIRO_VERSION_ENCODE(CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO)
-#DEFINE CAIRO_VERSION_STRINGIZE_(major, minor, micro) #major & "." & #minor & "." & #micro
-#DEFINE CAIRO_VERSION_STRINGIZE(major, minor, micro) CAIRO_VERSION_STRINGIZE_(major, minor, micro)
-#DEFINE CAIRO_VERSION_STRING CAIRO_VERSION_STRINGIZE(CAIRO_VERSION_MAJOR, CAIRO_VERSION_MINOR, CAIRO_VERSION_MICRO)
+#IFDEF __cplusplus
+#DEFINE CAIRO_BEGIN_DECLS extern @!"C" {
+#DEFINE CAIRO_END_DECLS }
+#ELSE ' __cplusplus
+#DEFINE CAIRO_BEGIN_DECLS
+#DEFINE CAIRO_END_DECLS
+#ENDIF ' __cplusplus
 
-DECLARE FUNCTION cairo_version_ ALIAS "cairo_version"() AS INTEGER
-DECLARE FUNCTION cairo_version_string_ ALIAS "cairo_version_string"() AS CONST ZSTRING PTR
+#IFNDEF cairo_public
+#IF DEFINED (_MSC_VER)  AND  NOT  DEFINED (CAIRO_WIN32_STATIC_BUILD)
+#DEFINE cairo_public __declspec(dllimport)
+#ELSE ' DEFINED (_MSC_V...
+#DEFINE cairo_public
+#ENDIF ' DEFINED (_MSC_V...
+#ENDIF ' cairo_public
+
+#DEFINE CAIRO_VERSION_ENCODE(major, minor, micro) ( _
+   ((major) * 10000) _
+ + ((minor) * 100) _
+ + ((micro) * 1))
+#DEFINE CAIRO_VERSION_ CAIRO_VERSION_ENCODE( _
+ CAIRO_VERSION_MAJOR, _
+ CAIRO_VERSION_MINOR, _
+ CAIRO_VERSION_MICRO)
+#DEFINE CAIRO_VERSION_STRINGIZE_(major, minor, micro) _
+ #major@!"."#minor@!"."#micro
+#DEFINE CAIRO_VERSION_STRINGIZE(major, minor, micro) _
+ CAIRO_VERSION_STRINGIZE_(major, minor, micro)
+#DEFINE CAIRO_VERSION_STRING_ CAIRO_VERSION_STRINGIZE( _
+ CAIRO_VERSION_MAJOR, _
+ CAIRO_VERSION_MINOR, _
+ CAIRO_VERSION_MICRO)
+
+DECLARE FUNCTION cairo_version() AS INTEGER
+DECLARE FUNCTION cairo_version_string() AS CONST ZSTRING PTR
 
 TYPE cairo_bool_t AS INTEGER
 TYPE cairo_t AS _cairo
@@ -180,7 +195,7 @@ TYPE _cairo_matrix
   AS DOUBLE y0
 END TYPE
 
-TYPE AS _cairo_matrix cairo_matrix_t
+TYPE cairo_matrix_t AS _cairo_matrix
 
 TYPE cairo_pattern_t AS _cairo_pattern
 TYPE cairo_destroy_func_t AS SUB(BYVAL AS ANY PTR)
@@ -189,7 +204,7 @@ TYPE _cairo_user_data_key
   AS INTEGER unused
 END TYPE
 
-TYPE AS _cairo_user_data_key cairo_user_data_key_t
+TYPE cairo_user_data_key_t AS _cairo_user_data_key
 
 ENUM _cairo_status
   CAIRO_STATUS_SUCCESS = 0
@@ -228,10 +243,12 @@ ENUM _cairo_status
   CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED
   CAIRO_STATUS_DEVICE_TYPE_MISMATCH
   CAIRO_STATUS_DEVICE_ERROR
+  CAIRO_STATUS_INVALID_MESH_CONSTRUCTION
+  CAIRO_STATUS_DEVICE_FINISHED
   CAIRO_STATUS_LAST_STATUS
 END ENUM
 
-TYPE AS _cairo_status cairo_status_t
+TYPE cairo_status_t AS _cairo_status
 
 ENUM _cairo_content
   CAIRO_CONTENT_COLOR = &h1000
@@ -239,10 +256,29 @@ ENUM _cairo_content
   CAIRO_CONTENT_COLOR_ALPHA = &h3000
 END ENUM
 
-TYPE AS _cairo_content cairo_content_t
+TYPE cairo_content_t AS _cairo_content
+
+ENUM _cairo_format
+  CAIRO_FORMAT_INVALID = -1
+  CAIRO_FORMAT_ARGB32 = 0
+  CAIRO_FORMAT_RGB24 = 1
+  CAIRO_FORMAT_A8 = 2
+  CAIRO_FORMAT_A1 = 3
+  CAIRO_FORMAT_RGB16_565 = 4
+  CAIRO_FORMAT_RGB30 = 5
+END ENUM
+
+TYPE cairo_format_t AS _cairo_format
 
 TYPE cairo_write_func_t AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS CONST UBYTE PTR, BYVAL AS UINTEGER) AS cairo_status_t
 TYPE cairo_read_func_t AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS UBYTE PTR, BYVAL AS UINTEGER) AS cairo_status_t
+
+TYPE _cairo_rectangle_int
+  AS INTEGER x, y
+  AS INTEGER width, height
+END TYPE
+
+TYPE cairo_rectangle_int_t AS _cairo_rectangle_int
 
 DECLARE FUNCTION cairo_create(BYVAL AS cairo_surface_t PTR) AS cairo_t PTR
 DECLARE FUNCTION cairo_reference(BYVAL AS cairo_t PTR) AS cairo_t PTR
@@ -289,7 +325,7 @@ ENUM _cairo_operator
   CAIRO_OPERATOR_HSL_LUMINOSITY
 END ENUM
 
-TYPE AS _cairo_operator cairo_operator_t
+TYPE cairo_operator_t AS _cairo_operator
 
 DECLARE SUB cairo_set_operator(BYVAL AS cairo_t PTR, BYVAL AS cairo_operator_t)
 DECLARE SUB cairo_set_source(BYVAL AS cairo_t PTR, BYVAL AS cairo_pattern_t PTR)
@@ -303,9 +339,12 @@ ENUM _cairo_antialias
   CAIRO_ANTIALIAS_NONE
   CAIRO_ANTIALIAS_GRAY
   CAIRO_ANTIALIAS_SUBPIXEL
+  CAIRO_ANTIALIAS_FAST
+  CAIRO_ANTIALIAS_GOOD
+  CAIRO_ANTIALIAS_BEST
 END ENUM
 
-TYPE AS _cairo_antialias cairo_antialias_t
+TYPE cairo_antialias_t AS _cairo_antialias
 
 DECLARE SUB cairo_set_antialias(BYVAL AS cairo_t PTR, BYVAL AS cairo_antialias_t)
 
@@ -314,7 +353,7 @@ ENUM _cairo_fill_rule
   CAIRO_FILL_RULE_EVEN_ODD
 END ENUM
 
-TYPE AS _cairo_fill_rule cairo_fill_rule_t
+TYPE cairo_fill_rule_t AS _cairo_fill_rule
 
 DECLARE SUB cairo_set_fill_rule(BYVAL AS cairo_t PTR, BYVAL AS cairo_fill_rule_t)
 DECLARE SUB cairo_set_line_width(BYVAL AS cairo_t PTR, BYVAL AS DOUBLE)
@@ -325,7 +364,7 @@ ENUM _cairo_line_cap
   CAIRO_LINE_CAP_SQUARE
 END ENUM
 
-TYPE AS _cairo_line_cap cairo_line_cap_t
+TYPE cairo_line_cap_t AS _cairo_line_cap
 
 DECLARE SUB cairo_set_line_cap(BYVAL AS cairo_t PTR, BYVAL AS cairo_line_cap_t)
 
@@ -335,7 +374,7 @@ ENUM _cairo_line_join
   CAIRO_LINE_JOIN_BEVEL
 END ENUM
 
-TYPE AS _cairo_line_join cairo_line_join_t
+TYPE cairo_line_join_t AS _cairo_line_join
 
 DECLARE SUB cairo_set_line_join(BYVAL AS cairo_t PTR, BYVAL AS cairo_line_join_t)
 DECLARE SUB cairo_set_dash(BYVAL AS cairo_t PTR, BYVAL AS CONST DOUBLE PTR, BYVAL AS INTEGER, BYVAL AS DOUBLE)
@@ -387,7 +426,7 @@ TYPE _cairo_rectangle
   AS DOUBLE x, y, width, height
 END TYPE
 
-TYPE AS _cairo_rectangle cairo_rectangle_t
+TYPE cairo_rectangle_t AS _cairo_rectangle
 
 TYPE _cairo_rectangle_list
   AS cairo_status_t status
@@ -395,7 +434,7 @@ TYPE _cairo_rectangle_list
   AS INTEGER num_rectangles
 END TYPE
 
-TYPE AS _cairo_rectangle_list cairo_rectangle_list_t
+TYPE cairo_rectangle_list_t AS _cairo_rectangle_list
 
 DECLARE FUNCTION cairo_copy_clip_rectangle_list(BYVAL AS cairo_t PTR) AS cairo_rectangle_list_t PTR
 DECLARE SUB cairo_rectangle_list_destroy(BYVAL AS cairo_rectangle_list_t PTR)
@@ -424,7 +463,7 @@ ENUM _cairo_text_cluster_flags
   CAIRO_TEXT_CLUSTER_FLAG_BACKWARD = &h00000001
 END ENUM
 
-TYPE AS _cairo_text_cluster_flags cairo_text_cluster_flags_t
+TYPE cairo_text_cluster_flags_t AS _cairo_text_cluster_flags
 
 TYPE cairo_text_extents_t
   AS DOUBLE x_bearing
@@ -449,14 +488,14 @@ ENUM _cairo_font_slant
   CAIRO_FONT_SLANT_OBLIQUE
 END ENUM
 
-TYPE AS _cairo_font_slant cairo_font_slant_t
+TYPE cairo_font_slant_t AS _cairo_font_slant
 
 ENUM _cairo_font_weight
   CAIRO_FONT_WEIGHT_NORMAL
   CAIRO_FONT_WEIGHT_BOLD
 END ENUM
 
-TYPE AS _cairo_font_weight cairo_font_weight_t
+TYPE cairo_font_weight_t AS _cairo_font_weight
 
 ENUM _cairo_subpixel_order
   CAIRO_SUBPIXEL_ORDER_DEFAULT
@@ -466,7 +505,7 @@ ENUM _cairo_subpixel_order
   CAIRO_SUBPIXEL_ORDER_VBGR
 END ENUM
 
-TYPE AS _cairo_subpixel_order cairo_subpixel_order_t
+TYPE cairo_subpixel_order_t AS _cairo_subpixel_order
 
 ENUM _cairo_hint_style
   CAIRO_HINT_STYLE_DEFAULT
@@ -476,7 +515,7 @@ ENUM _cairo_hint_style
   CAIRO_HINT_STYLE_FULL
 END ENUM
 
-TYPE AS _cairo_hint_style cairo_hint_style_t
+TYPE cairo_hint_style_t AS _cairo_hint_style
 
 ENUM _cairo_hint_metrics
   CAIRO_HINT_METRICS_DEFAULT
@@ -484,7 +523,7 @@ ENUM _cairo_hint_metrics
   CAIRO_HINT_METRICS_ON
 END ENUM
 
-TYPE AS _cairo_hint_metrics cairo_hint_metrics_t
+TYPE cairo_hint_metrics_t AS _cairo_hint_metrics
 
 TYPE cairo_font_options_t AS _cairo_font_options
 
@@ -534,7 +573,7 @@ ENUM _cairo_font_type
   CAIRO_FONT_TYPE_USER
 END ENUM
 
-TYPE AS _cairo_font_type cairo_font_type_t
+TYPE cairo_font_type_t AS _cairo_font_type
 
 DECLARE FUNCTION cairo_font_face_get_type(BYVAL AS cairo_font_face_t PTR) AS cairo_font_type_t
 DECLARE FUNCTION cairo_font_face_get_user_data(BYVAL AS cairo_font_face_t PTR, BYVAL AS CONST cairo_user_data_key_t PTR) AS ANY PTR
@@ -599,7 +638,7 @@ ENUM _cairo_path_data_type
   CAIRO_PATH_CLOSE_PATH
 END ENUM
 
-TYPE AS _cairo_path_data_type cairo_path_data_type_t
+TYPE cairo_path_data_type_t AS _cairo_path_data_type
 
 TYPE cairo_path_data_t AS _cairo_path_data_t
 
@@ -623,7 +662,7 @@ TYPE cairo_path
   AS INTEGER num_data
 END TYPE
 
-TYPE AS cairo_path cairo_path_t
+TYPE cairo_path_t AS cairo_path
 
 DECLARE FUNCTION cairo_copy_path(BYVAL AS cairo_t PTR) AS cairo_path_t PTR
 DECLARE FUNCTION cairo_copy_path_flat(BYVAL AS cairo_t PTR) AS cairo_path_t PTR
@@ -640,9 +679,12 @@ ENUM _cairo_device_type
   CAIRO_DEVICE_TYPE_XCB
   CAIRO_DEVICE_TYPE_XLIB
   CAIRO_DEVICE_TYPE_XML
+  CAIRO_DEVICE_TYPE_COGL
+  CAIRO_DEVICE_TYPE_WIN32
+  CAIRO_DEVICE_TYPE_INVALID = -1
 END ENUM
 
-TYPE AS _cairo_device_type cairo_device_type_t
+TYPE cairo_device_type_t AS _cairo_device_type
 
 DECLARE FUNCTION cairo_device_get_type(BYVAL AS cairo_device_t PTR) AS cairo_device_type_t
 DECLARE FUNCTION cairo_device_status(BYVAL AS cairo_device_t PTR) AS cairo_status_t
@@ -655,7 +697,36 @@ DECLARE FUNCTION cairo_device_get_reference_count(BYVAL AS cairo_device_t PTR) A
 DECLARE FUNCTION cairo_device_get_user_data(BYVAL AS cairo_device_t PTR, BYVAL AS CONST cairo_user_data_key_t PTR) AS ANY PTR
 DECLARE FUNCTION cairo_device_set_user_data(BYVAL AS cairo_device_t PTR, BYVAL AS CONST cairo_user_data_key_t PTR, BYVAL AS ANY PTR, BYVAL AS cairo_destroy_func_t) AS cairo_status_t
 DECLARE FUNCTION cairo_surface_create_similar(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_content_t, BYVAL AS INTEGER, BYVAL AS INTEGER) AS cairo_surface_t PTR
+DECLARE FUNCTION cairo_surface_create_similar_image(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_format_t, BYVAL AS INTEGER, BYVAL AS INTEGER) AS cairo_surface_t PTR
+DECLARE FUNCTION cairo_surface_map_to_image(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST cairo_rectangle_int_t PTR) AS cairo_surface_t PTR
+DECLARE SUB cairo_surface_unmap_image(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_t PTR)
 DECLARE FUNCTION cairo_surface_create_for_rectangle(BYVAL AS cairo_surface_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE) AS cairo_surface_t PTR
+
+ENUM cairo_surface_observer_mode_t
+  CAIRO_SURFACE_OBSERVER_NORMAL = 0
+  CAIRO_SURFACE_OBSERVER_RECORD_OPERATIONS = &h1
+END ENUM
+
+DECLARE FUNCTION cairo_surface_create_observer(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_mode_t) AS cairo_surface_t PTR
+
+TYPE cairo_surface_observer_callback_t AS SUB(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_t PTR, BYVAL AS ANY PTR)
+
+DECLARE FUNCTION cairo_surface_observer_add_paint_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_mask_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_fill_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_stroke_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_glyphs_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_flush_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_add_finish_callback(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_surface_observer_callback_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_print(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_write_func_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_observer_elapsed(BYVAL AS cairo_surface_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_print(BYVAL AS cairo_device_t PTR, BYVAL AS cairo_write_func_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_device_observer_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_paint_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_mask_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_fill_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_stroke_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
+DECLARE FUNCTION cairo_device_observer_glyphs_elapsed(BYVAL AS cairo_device_t PTR) AS DOUBLE
 DECLARE FUNCTION cairo_surface_reference(BYVAL AS cairo_surface_t PTR) AS cairo_surface_t PTR
 DECLARE SUB cairo_surface_finish(BYVAL AS cairo_surface_t PTR)
 DECLARE SUB cairo_surface_destroy(BYVAL AS cairo_surface_t PTR)
@@ -688,9 +759,10 @@ ENUM _cairo_surface_type
   CAIRO_SURFACE_TYPE_XML
   CAIRO_SURFACE_TYPE_SKIA
   CAIRO_SURFACE_TYPE_SUBSURFACE
+  CAIRO_SURFACE_TYPE_COGL
 END ENUM
 
-TYPE AS _cairo_surface_type cairo_surface_type_t
+TYPE cairo_surface_type_t AS _cairo_surface_type
 
 DECLARE FUNCTION cairo_surface_get_type(BYVAL AS cairo_surface_t PTR) AS cairo_surface_type_t
 DECLARE FUNCTION cairo_surface_get_content(BYVAL AS cairo_surface_t PTR) AS cairo_content_t
@@ -700,18 +772,20 @@ DECLARE FUNCTION cairo_surface_get_content(BYVAL AS cairo_surface_t PTR) AS cair
 DECLARE FUNCTION cairo_surface_write_to_png(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST ZSTRING PTR) AS cairo_status_t
 DECLARE FUNCTION cairo_surface_write_to_png_stream(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_write_func_t, BYVAL AS ANY PTR) AS cairo_status_t
 
-#ENDIF ' CAIRO_HAS_PNG_FUNCTIONS
+#ENDIF ' CAIRO_HAS_PNG_F...
 
 DECLARE FUNCTION cairo_surface_get_user_data(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST cairo_user_data_key_t PTR) AS ANY PTR
 DECLARE FUNCTION cairo_surface_set_user_data(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST cairo_user_data_key_t PTR, BYVAL AS ANY PTR, BYVAL AS cairo_destroy_func_t) AS cairo_status_t
 
-#DEFINE CAIRO_MIME_TYPE_JPEG !"image/jpeg"
-#DEFINE CAIRO_MIME_TYPE_PNG !"image/png"
-#DEFINE CAIRO_MIME_TYPE_JP2 !"image/jp2"
-#DEFINE CAIRO_MIME_TYPE_URI !"text/x-uri"
+#DEFINE CAIRO_MIME_TYPE_JPEG @!"image/jpeg"
+#DEFINE CAIRO_MIME_TYPE_PNG @!"image/png"
+#DEFINE CAIRO_MIME_TYPE_JP2 @!"image/jp2"
+#DEFINE CAIRO_MIME_TYPE_URI @!"text/x-uri"
+#DEFINE CAIRO_MIME_TYPE_UNIQUE_ID @!"application/x-cairo.uuid"
 
 DECLARE SUB cairo_surface_get_mime_data(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST UBYTE PTR PTR, BYVAL AS UINTEGER PTR)
 DECLARE FUNCTION cairo_surface_set_mime_data(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST UBYTE PTR, BYVAL AS UINTEGER, BYVAL AS cairo_destroy_func_t, BYVAL AS ANY PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_surface_supports_mime_type(BYVAL AS cairo_surface_t PTR, BYVAL AS CONST ZSTRING PTR) AS cairo_bool_t
 DECLARE SUB cairo_surface_get_font_options(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_font_options_t PTR)
 DECLARE SUB cairo_surface_flush(BYVAL AS cairo_surface_t PTR)
 DECLARE SUB cairo_surface_mark_dirty(BYVAL AS cairo_surface_t PTR)
@@ -723,18 +797,6 @@ DECLARE SUB cairo_surface_get_fallback_resolution(BYVAL AS cairo_surface_t PTR, 
 DECLARE SUB cairo_surface_copy_page(BYVAL AS cairo_surface_t PTR)
 DECLARE SUB cairo_surface_show_page(BYVAL AS cairo_surface_t PTR)
 DECLARE FUNCTION cairo_surface_has_show_text_glyphs(BYVAL AS cairo_surface_t PTR) AS cairo_bool_t
-
-ENUM _cairo_format
-  CAIRO_FORMAT_INVALID = -1
-  CAIRO_FORMAT_ARGB32 = 0
-  CAIRO_FORMAT_RGB24 = 1
-  CAIRO_FORMAT_A8 = 2
-  CAIRO_FORMAT_A1 = 3
-  CAIRO_FORMAT_RGB16_565 = 4
-END ENUM
-
-TYPE AS _cairo_format cairo_format_t
-
 DECLARE FUNCTION cairo_image_surface_create(BYVAL AS cairo_format_t, BYVAL AS INTEGER, BYVAL AS INTEGER) AS cairo_surface_t PTR
 DECLARE FUNCTION cairo_format_stride_for_width(BYVAL AS cairo_format_t, BYVAL AS INTEGER) AS INTEGER
 DECLARE FUNCTION cairo_image_surface_create_for_data(BYVAL AS UBYTE PTR, BYVAL AS cairo_format_t, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS cairo_surface_t PTR
@@ -749,15 +811,35 @@ DECLARE FUNCTION cairo_image_surface_get_stride(BYVAL AS cairo_surface_t PTR) AS
 DECLARE FUNCTION cairo_image_surface_create_from_png(BYVAL AS CONST ZSTRING PTR) AS cairo_surface_t PTR
 DECLARE FUNCTION cairo_image_surface_create_from_png_stream(BYVAL AS cairo_read_func_t, BYVAL AS ANY PTR) AS cairo_surface_t PTR
 
-#ENDIF ' CAIRO_HAS_PNG_FUNCTIONS
+#ENDIF ' CAIRO_HAS_PNG_F...
 
 DECLARE FUNCTION cairo_recording_surface_create(BYVAL AS cairo_content_t, BYVAL AS CONST cairo_rectangle_t PTR) AS cairo_surface_t PTR
 DECLARE SUB cairo_recording_surface_ink_extents(BYVAL AS cairo_surface_t PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR)
+DECLARE FUNCTION cairo_recording_surface_get_extents(BYVAL AS cairo_surface_t PTR, BYVAL AS cairo_rectangle_t PTR) AS cairo_bool_t
+
+TYPE cairo_raster_source_acquire_func_t AS FUNCTION(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR, BYVAL AS cairo_surface_t PTR, BYVAL AS CONST cairo_rectangle_int_t PTR) AS cairo_surface_t PTR
+TYPE cairo_raster_source_release_func_t AS SUB(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR, BYVAL AS cairo_surface_t PTR)
+TYPE cairo_raster_source_snapshot_func_t AS FUNCTION(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR) AS cairo_status_t
+TYPE cairo_raster_source_copy_func_t AS FUNCTION(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR, BYVAL AS CONST cairo_pattern_t PTR) AS cairo_status_t
+TYPE cairo_raster_source_finish_func_t AS SUB(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR)
+
+DECLARE FUNCTION cairo_pattern_create_raster_source(BYVAL AS ANY PTR, BYVAL AS cairo_content_t, BYVAL AS INTEGER, BYVAL AS INTEGER) AS cairo_pattern_t PTR
+DECLARE SUB cairo_raster_source_pattern_set_callback_data(BYVAL AS cairo_pattern_t PTR, BYVAL AS ANY PTR)
+DECLARE FUNCTION cairo_raster_source_pattern_get_callback_data(BYVAL AS cairo_pattern_t PTR) AS ANY PTR
+DECLARE SUB cairo_raster_source_pattern_set_acquire(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_raster_source_acquire_func_t, BYVAL AS cairo_raster_source_release_func_t)
+DECLARE SUB cairo_raster_source_pattern_get_acquire(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_raster_source_acquire_func_t, BYVAL AS cairo_raster_source_release_func_t)
+DECLARE SUB cairo_raster_source_pattern_set_snapshot(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_raster_source_snapshot_func_t)
+DECLARE FUNCTION cairo_raster_source_pattern_get_snapshot(BYVAL AS cairo_pattern_t PTR) AS cairo_raster_source_snapshot_func_t
+DECLARE SUB cairo_raster_source_pattern_set_copy(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_raster_source_copy_func_t)
+DECLARE FUNCTION cairo_raster_source_pattern_get_copy(BYVAL AS cairo_pattern_t PTR) AS cairo_raster_source_copy_func_t
+DECLARE SUB cairo_raster_source_pattern_set_finish(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_raster_source_finish_func_t)
+DECLARE FUNCTION cairo_raster_source_pattern_get_finish(BYVAL AS cairo_pattern_t PTR) AS cairo_raster_source_finish_func_t
 DECLARE FUNCTION cairo_pattern_create_rgb(BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE) AS cairo_pattern_t PTR
 DECLARE FUNCTION cairo_pattern_create_rgba(BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE) AS cairo_pattern_t PTR
 DECLARE FUNCTION cairo_pattern_create_for_surface(BYVAL AS cairo_surface_t PTR) AS cairo_pattern_t PTR
 DECLARE FUNCTION cairo_pattern_create_linear(BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE) AS cairo_pattern_t PTR
 DECLARE FUNCTION cairo_pattern_create_radial(BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE) AS cairo_pattern_t PTR
+DECLARE FUNCTION cairo_pattern_create_mesh() AS cairo_pattern_t PTR
 DECLARE FUNCTION cairo_pattern_reference(BYVAL AS cairo_pattern_t PTR) AS cairo_pattern_t PTR
 DECLARE SUB cairo_pattern_destroy(BYVAL AS cairo_pattern_t PTR)
 DECLARE FUNCTION cairo_pattern_get_reference_count(BYVAL AS cairo_pattern_t PTR) AS UINTEGER
@@ -770,13 +852,23 @@ ENUM _cairo_pattern_type
   CAIRO_PATTERN_TYPE_SURFACE
   CAIRO_PATTERN_TYPE_LINEAR
   CAIRO_PATTERN_TYPE_RADIAL
+  CAIRO_PATTERN_TYPE_MESH
+  CAIRO_PATTERN_TYPE_RASTER_SOURCE
 END ENUM
 
-TYPE AS _cairo_pattern_type cairo_pattern_type_t
+TYPE cairo_pattern_type_t AS _cairo_pattern_type
 
 DECLARE FUNCTION cairo_pattern_get_type(BYVAL AS cairo_pattern_t PTR) AS cairo_pattern_type_t
 DECLARE SUB cairo_pattern_add_color_stop_rgb(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
 DECLARE SUB cairo_pattern_add_color_stop_rgba(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_begin_patch(BYVAL AS cairo_pattern_t PTR)
+DECLARE SUB cairo_mesh_pattern_end_patch(BYVAL AS cairo_pattern_t PTR)
+DECLARE SUB cairo_mesh_pattern_curve_to(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_line_to(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_move_to(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_set_control_point(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_set_corner_color_rgb(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
+DECLARE SUB cairo_mesh_pattern_set_corner_color_rgba(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
 DECLARE SUB cairo_pattern_set_matrix(BYVAL AS cairo_pattern_t PTR, BYVAL AS CONST cairo_matrix_t PTR)
 DECLARE SUB cairo_pattern_get_matrix(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_matrix_t PTR)
 
@@ -787,7 +879,7 @@ ENUM _cairo_extend
   CAIRO_EXTEND_PAD
 END ENUM
 
-TYPE AS _cairo_extend cairo_extend_t
+TYPE cairo_extend_t AS _cairo_extend
 
 DECLARE SUB cairo_pattern_set_extend(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_extend_t)
 DECLARE FUNCTION cairo_pattern_get_extend(BYVAL AS cairo_pattern_t PTR) AS cairo_extend_t
@@ -801,7 +893,7 @@ ENUM _cairo_filter
   CAIRO_FILTER_GAUSSIAN
 END ENUM
 
-TYPE AS _cairo_filter cairo_filter_t
+TYPE cairo_filter_t AS _cairo_filter
 
 DECLARE SUB cairo_pattern_set_filter(BYVAL AS cairo_pattern_t PTR, BYVAL AS cairo_filter_t)
 DECLARE FUNCTION cairo_pattern_get_filter(BYVAL AS cairo_pattern_t PTR) AS cairo_filter_t
@@ -811,6 +903,10 @@ DECLARE FUNCTION cairo_pattern_get_color_stop_rgba(BYVAL AS cairo_pattern_t PTR,
 DECLARE FUNCTION cairo_pattern_get_color_stop_count(BYVAL AS cairo_pattern_t PTR, BYVAL AS INTEGER PTR) AS cairo_status_t
 DECLARE FUNCTION cairo_pattern_get_linear_points(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR) AS cairo_status_t
 DECLARE FUNCTION cairo_pattern_get_radial_circles(BYVAL AS cairo_pattern_t PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_mesh_pattern_get_patch_count(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_mesh_pattern_get_path(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER) AS cairo_path_t PTR
+DECLARE FUNCTION cairo_mesh_pattern_get_corner_color_rgba(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER, BYVAL AS UINTEGER, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR) AS cairo_status_t
+DECLARE FUNCTION cairo_mesh_pattern_get_control_point(BYVAL AS cairo_pattern_t PTR, BYVAL AS UINTEGER, BYVAL AS UINTEGER, BYVAL AS DOUBLE PTR, BYVAL AS DOUBLE PTR) AS cairo_status_t
 DECLARE SUB cairo_matrix_init(BYVAL AS cairo_matrix_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
 DECLARE SUB cairo_matrix_init_identity(BYVAL AS cairo_matrix_t PTR)
 DECLARE SUB cairo_matrix_init_translate(BYVAL AS cairo_matrix_t PTR, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
@@ -826,20 +922,13 @@ DECLARE SUB cairo_matrix_transform_point(BYVAL AS CONST cairo_matrix_t PTR, BYVA
 
 TYPE cairo_region_t AS _cairo_region
 
-TYPE _cairo_rectangle_int
-  AS INTEGER x, y
-  AS INTEGER width, height
-END TYPE
-
-TYPE AS _cairo_rectangle_int cairo_rectangle_int_t
-
 ENUM _cairo_region_overlap
   CAIRO_REGION_OVERLAP_IN
   CAIRO_REGION_OVERLAP_OUT
   CAIRO_REGION_OVERLAP_PART
 END ENUM
 
-TYPE AS _cairo_region_overlap cairo_region_overlap_t
+TYPE cairo_region_overlap_t AS _cairo_region_overlap
 
 DECLARE FUNCTION cairo_region_create() AS cairo_region_t PTR
 DECLARE FUNCTION cairo_region_create_rectangle(BYVAL AS CONST cairo_rectangle_int_t PTR) AS cairo_region_t PTR
@@ -868,8 +957,37 @@ DECLARE SUB cairo_debug_reset_static_data()
 
 #ENDIF ' CAIRO_H
 
-END EXTERN
+END EXTERN ' (h_2_bi -P_oCD option)
 
 #IFDEF __FB_WIN32__
 #PRAGMA pop(msbitfields)
 #ENDIF
+
+' Translated at 12-08-18 19:23:28, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: CAIRO-1.12.2.bi
+' Parameters: CAIRO-1.12.2
+'                                  Process time [s]: 0.1479789576260373
+'                                  Bytes translated: 53670
+'                                      Maximum deep: 2
+'                                SUB/FUNCTION names: 338
+'                                mangled TYPE names: 0
+'                                        files done: 3
+' cairo-1.12.2/src/cairo.h
+' cairo-1.12.2/src/cairo-version.h
+' cairo-1.12.2/src/cairo-deprecated.h
+'                                      files missed: 1
+' cairo-features.h
+'                                       __FOLDERS__: 1
+' cairo-1.12.2/src/
+'                                        __MACROS__: 3
+' 1: #define CAIRO_BEGIN_DECLS
+' 1: #define CAIRO_END_DECLS
+' 325: #define cairo_public
+'                                       __HEADERS__: 1
+' 1: cairo.h>
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 2
+' 1: CAIRO_VERSION&
+' 1: CAIRO_VERSION_STRING&

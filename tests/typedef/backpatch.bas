@@ -80,14 +80,49 @@ sub funcPtr cdecl ()
 
 end sub
 
-private sub ctor () constructor
+#if __FB_BACKEND__ = "gas"
+namespace byrefFwdrefParamLength
+	type UDT as FWDREF
 
+	declare function f1 cdecl( byref x as UDT, ... ) as integer
+
+	type FWDREF
+		'' Big enough that it is bigger than the BYREF (sizeof(any ptr))
+		array(0 to 64-1) as integer
+	end type
+
+	function f1 cdecl( byref x as UDT, ... ) as integer
+		dim result as integer
+		dim arg as any ptr
+
+		arg = va_first( )
+		result += va_arg( arg, integer )
+
+		arg = va_next( arg, integer )
+		result += va_arg( arg, integer )
+
+		arg = va_next( arg, integer )
+		result += va_arg( arg, integer )
+
+		function = result
+	end function
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( f1( x, 123, 456, 789 ) = 123 + 456 + 789 )
+	end sub
+end namespace
+#endif
+
+private sub ctor () constructor
 	fbcu.add_suite("fbc_tests.typedef.backpatch")
 	fbcu.add_test("patchFwdrefWithFwdref1", @patchFwdrefWithFwdref1)
 	fbcu.add_test("patchFwdrefWithFwdref2", @patchFwdrefWithFwdref2)
 	fbcu.add_test("preservePtrs", @preservePtrs)
 	fbcu.add_test("funcPtr", @funcPtr)
-
+#if __FB_BACKEND__ = "gas"
+	fbcu.add_test( "BYREF AS FWDREF param length", @byrefFwdrefParamLength.test )
+#endif
 end sub
 
 end namespace

@@ -8,13 +8,15 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
-''
+'' cIIFFunct  =  IIF '(' condition-expr ',' true-expr ',' false-expr ')' .
 function cIIFFunct() as ASTNODE ptr
-	dim as ASTNODE ptr condexpr = any, truexpr = any, falsexpr = any
+	dim as ASTNODE ptr expr = any, truexpr = any, falsexpr = any
+	dim as integer truecookie = any, falsecookie = any
 
 	function = NULL
+
+	'' The condition expression is always executed,
+	'' the true/false expressions only conditionally though.
 
 	'' IIF
 	lexSkipToken( )
@@ -22,30 +24,34 @@ function cIIFFunct() as ASTNODE ptr
 	'' '('
 	hMatchLPRNT( )
 
-	'' condexpr
-	hMatchExpressionEx( condexpr, FB_DATATYPE_INTEGER )
+	'' condition-expr
+	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 	'' ','
 	hMatchCOMMA( )
 
-	'' truexpr
+	'' true-expr
+	astDtorListScopeBegin( )
 	hMatchExpressionEx( truexpr, FB_DATATYPE_INTEGER )
+	truecookie = astDtorListScopeEnd( )
 
 	'' ','
 	hMatchCOMMA( )
 
-	'' falsexpr
+	'' false-expr
+	astDtorListScopeBegin( )
 	hMatchExpressionEx( falsexpr, astGetDataType( truexpr ) )
+	falsecookie = astDtorListScopeEnd( )
 
 	'' ')'
 	hMatchRPRNT( )
 
-	dim as ASTNODE ptr funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
-	if( funcexpr = NULL ) then
+	expr = astNewIIF( expr, truexpr, truecookie, falsexpr, falsecookie )
+	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		'' error recovery: fake an expr
-		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
-	function = funcexpr
+	function = expr
 end function

@@ -10,7 +10,7 @@
 #ifndef _CRYPTLIB_DEFINED
 #define _CRYPTLIB_DEFINED
 
-#inclib "cl32"
+#inclib "cl"
 
 ' The current cryptlib version: 3.4.1
 
@@ -1635,12 +1635,16 @@ end type
 '*                                                                          *
 '****************************************************************************
 
-' The following is necessary to stop C++ name mangling
-
-#ifdef __FB_WIN32__
+'' On Win32, cryptlib uses stdcall unless STATIC_LIB was defined during the
+'' build. The pre-built cl32.dll exports function names without @N stdcall
+'' decoration, since it's build with MSVC. With -DSTATIC_LIB or on Linux it
+'' uses cdecl.
+'' Because of that we need a #define like __CRYPTLIB_DLL__ to decide which
+'' calling convention to use on Win32.
+#if defined( __FB_WIN32__ ) and defined( __CRYPTLIB_DLL__ )
 extern "Windows-MS"
 #else
-extern "C" ' Need to check this on a non-Windows system
+extern "C"
 #endif
 
 ' Initialise and shut down cryptlib

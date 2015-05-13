@@ -4,7 +4,7 @@ Invoking the compiler after installation.
 {{fbdoc item="section" value="Windows"}}
 	The compiler can be manually invoked from the command-line, or automatically by your IDE/Code Editor. If you're using an IDE, you will usually have to tell it where the compiler was installed, so it can find it. How exactly to do that depends on the IDE. 
 	
-	To compile manually, you should append the FreeBASIC installation directory to your PATH environment variable, separating it from previous entries using a semi-colon. Now you can simply use "fbc" from the command prompt, instead of always having to type in the full path (e.g. "C:\FreeBASIC\fbc.exe").
+	To compile manually, you should append the ""FreeBASIC"" installation directory to your PATH environment variable, separating it from previous entries using a semi-colon. Now you can simply use "fbc" from the command prompt, instead of always having to type in the full path (e.g. "C:\""FreeBASIC""\fbc.exe").
 
 	Then, open a console/command prompt/MS DOS prompt, in the same directory as your program. To compile your program, you can use:
 

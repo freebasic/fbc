@@ -34,7 +34,7 @@ namespace fb
 
 	type CStream
 		as byte ptr				buffer
-		as integer				size	
+		as integer				size
 		as integer				pos
 	end type
 
@@ -195,7 +195,7 @@ namespace fb
 		end if
 
 		if( ctx->stream.buffer <> NULL ) then
-			function = *ctx->stream.buffer
+			function = *cptr( zstring ptr, ctx->stream.buffer )
 		end if
 		
 	end function

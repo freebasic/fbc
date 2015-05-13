@@ -1,0 +1,66 @@
+--- crypt.h.orig	2013-04-30 21:00:58 +0000
++++ crypt.h	2013-04-30 21:01:00 +0000
+@@ -41,52 +41,6 @@
+   #define __STDC_WANT_LIB_EXT1__	1
+ #endif /* TR 24731 safe stdlib extensions */
+ 
+-/* If we're building under Win32, don't haul in the huge amount of cruft
+-   that windows.h brings with it.  We need to define these values before
+-   we include cryptlib.h since this is where windows.h is included */
+-
+-#if ( defined( _WINDOWS ) || defined( WIN32 ) || defined( _WIN32 ) || \
+-	  defined( __WIN32__ ) ) && !defined( _SCCTK )
+-  #define NOATOM			/* Atom Manager routines */
+-  #define NOMCX				/* Modem Configuration Extensions */
+-/*#define NOCLIPBOARD		// Clipboard routines, needed for randomness polling */
+-  #define NOCOLOR			/* Screen colors */
+-  #define NOCOMM			/* COMM driver routines */
+-  #define NOCTLMGR			/* Control and Dialog routines */
+-  #define NODEFERWINDOWPOS	/* DeferWindowPos routines */
+-  #define NODRAWTEXT		/* DrawText() and DT_* */
+-  #define NOGDI				/* All GDI defines and routines */
+-  #define NOGDICAPMASKS		/* CC_*, LC_*, PC_*, CP_*, TC_*, RC_ */
+-  #define NOHELP			/* Help engine interface */
+-  #define NOICONS			/* IDI_* */
+-  #define NOKANJI			/* Kanji support stuff */
+-  #define NOKEYSTATES		/* MK_* */
+-  #define NOMB				/* MB_* and MessageBox() */
+-  #define NOMCX				/* Modem Configuration Extensions */
+-  #define NOMEMMGR			/* GMEM_*, LMEM_*, GHND, LHND, etc */
+-  #define NOMENUS			/* MF_* */
+-  #define NOMETAFILE		/* typedef METAFILEPICT */
+-  #if defined( _MSC_VER ) && ( _MSC_VER > 800 )
+-	#define NOMSG			/* typedef MSG and associated routines */
+-  #endif /* !Win16 */
+-  #define NONLS				/* NLS routines */
+-  #define NOPROFILER		/* Profiler interface */
+-  #define NORASTEROPS		/* Binary and Tertiary raster ops */
+-  #define NOSCROLL			/* SB_* and scrolling routines */
+-  #define NOSERVICE			/* All Service Controller routines, SERVICE_* */
+-  #define NOSHOWWINDOW		/* SW_* */
+-  #define NOSOUND			/* Sound driver routines */
+-  #define NOSYSCOMMANDS		/* SC_* */
+-  #define NOSYSMETRICS		/* SM_* */
+-  #define NOTEXTMETRIC		/* typedef TEXTMETRIC and associated routines */
+-  #define NOVIRTUALKEYCODES	/* VK_* */
+-  #define NOWH				/* SetWindowsHook and WH_* */
+-  #define NOWINMESSAGES		/* WM_*, EM_*, LB_*, CB_* */
+-  #define NOWINOFFSETS		/* GWL_*, GCL_*, associated routines */
+-  #define NOWINSTYLES		/* WS_*, CS_*, ES_*, LBS_*, SBS_*, CBS_* */
+-  #define OEMRESOURCE		/* OEM Resource values */
+-#endif /* Win32 */
+-
+ /* The Palm OS SDK compiler tries to make enums as small as possible (8-bit
+    unsigned chars if it can, otherwise 16-bit unsigned shorts, otherwise
+    ints) for backwards-compatibility with the old 68K-based Palm interface,
+--- makefile.orig	2013-04-30 21:01:35 +0000
++++ makefile	2013-04-30 21:01:37 +0000
+@@ -1888,7 +1888,7 @@
+ 
+ MINGW32_NT-5.1:
+ 	@make OSNAME=win32 target-init
+-	@make $(DEFINES) CFLAGS="$(XCFLAGS) -fomit-frame-pointer -O3"
++	@make $(DEFINES) EXTRAOBJS="$(WIN32ASMOBJS)" CFLAGS="$(XCFLAGS) -fomit-frame-pointer -O3"
+ 
+ MINGW32_NT-6.1:
+ 	@make OSNAME=win32 target-init

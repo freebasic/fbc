@@ -30,15 +30,15 @@ namespace ResolveToBase
 		dim as integer i
 		CU_ASSERT( f( i ) = &h1 )
 
-		dim as A a
-		CU_ASSERT( f( a ) = &hA )
+		dim as A xa
+		CU_ASSERT( f( xa ) = &hA )
 
-		dim as B b
-		CU_ASSERT( f( b ) = &hB )
+		dim as B xb
+		CU_ASSERT( f( xb ) = &hB )
 
 		'' There is no C overload, it should use the B one
-		dim as C c
-		CU_ASSERT( f( c ) = &hB )
+		dim as C xc
+		CU_ASSERT( f( xc ) = &hB )
 	end sub
 end namespace
 
@@ -64,14 +64,14 @@ namespace ResolveExact
 		dim as integer i
 		CU_ASSERT( f( i ) = &h1 )
 
-		dim as A a
-		CU_ASSERT( f( a ) = &hA )
+		dim as A xa
+		CU_ASSERT( f( xa ) = &hA )
 
-		dim as B b
-		CU_ASSERT( f( b ) = &hB )
+		dim as B xb
+		CU_ASSERT( f( xb ) = &hB )
 
-		dim as C c
-		CU_ASSERT( f( c ) = &hC )
+		dim as C xc
+		CU_ASSERT( f( xc ) = &hC )
 	end sub
 end namespace
 

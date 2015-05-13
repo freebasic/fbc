@@ -8,10 +8,12 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-#define CHECK_CODEMASK( ) 												_
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
-    	exit function													:_
-    end if
+#macro CHECK_CODEMASK( )
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit function
+	end if
+#endmacro
 
 '':::::
 ''QuirkStmt   	  =   GotoStmt
@@ -158,9 +160,10 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		funcexpr = cCVXFunct(tk)
 
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
-		 FB_TK_CHR, FB_TK_WCHR, _
-		 FB_TK_ASC, FB_TK_INSTR, FB_TK_INSTRREV, _
-		 FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
+	     FB_TK_CHR, FB_TK_WCHR, _
+	     FB_TK_ASC, FB_TK_INSTR, FB_TK_INSTRREV, _
+	     FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM, _
+	     FB_TK_LCASE, FB_TK_UCASE
 		funcexpr = cStringFunct(tk)
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_FRAC, FB_TK_LEN, FB_TK_SIZEOF, _
@@ -174,7 +177,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 	case FB_TK_LBOUND, FB_TK_UBOUND
 		funcexpr = cArrayFunct(tk)
 
-	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
+	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_WINPUT, FB_TK_OPEN, FB_TK_CLOSE, _
 	     FB_TK_GET, FB_TK_PUT, FB_TK_NAME
 		funcexpr = cFileFunct(tk)
 
@@ -182,7 +185,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		funcexpr = cErrorFunct()
 
 	case FB_TK_IIF
-		funcexpr = cIIFFunct()
+		return cStrIdxOrMemberDeref( cIIFFunct( ) )
 
 	case FB_TK_VA_FIRST
 		funcexpr = cVAFunct()
@@ -193,7 +196,7 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 		return cTypeConvExpr( tk )
 
 	case FB_TK_TYPE
-		return cAnonUDT( )
+		return cStrIdxOrMemberDeref( cAnonType( ) )
 
 	case FB_TK_VIEW
 		funcexpr = cViewStmt(TRUE)

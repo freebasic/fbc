@@ -32,6 +32,13 @@ typedef struct _FB_ERRORCTX {
 	void         *resnxt_lbl;
 } FB_ERRORCTX;
 
+#define FB_ERRMSG_SIZE 1024
+extern char __fb_errmsg[FB_ERRMSG_SIZE];
+
+FBCALL void          fb_Assert          ( char *filename, int linenum, char *funcname, char *expression );
+FBCALL void          fb_AssertWarn      ( char *filename, int linenum, char *funcname, char *expression );
+FBCALL void          fb_AssertW         ( char *filename, int linenum, char *funcname, FB_WCHAR *expression );
+FBCALL void          fb_AssertWarnW     ( char *filename, int linenum, char *funcname, FB_WCHAR *expression );
        FB_ERRHANDLER fb_ErrorThrowEx    ( int errnum, int linenum, const char *fname,
                                           void *res_label, void *resnext_label );
 FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler );
@@ -39,3 +46,8 @@ FBCALL int           fb_ErrorGetNum     ( void );
 FBCALL int           fb_ErrorSetNum     ( int errnum );
        void         *fb_ErrorResume     ( void );
        void         *fb_ErrorResumeNext ( void );
+FBCALL int           fb_ErrorGetLineNum ( void );
+FBCALL const char   *fb_ErrorGetModName ( void );
+FBCALL const char   *fb_ErrorSetModName ( const char *mod_name );
+FBCALL const char   *fb_ErrorGetFuncName( void );
+FBCALL const char   *fb_ErrorSetFuncName( const char *fun_name );

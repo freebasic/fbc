@@ -11,17 +11,15 @@ Operator to construct an object at a specified memory address.
 {{fbdoc item="param"}}
 	##//address//## 
 		the location in memory to construct. the parenthesis are **not** optional.
-	##//size//## 
-		number of bytes to allocate.
 	##//initializers//##
 		Initial value(s) for the variable.
 	##//datatype//##
-		name of the data type to create.
+		name of the data type to construct.
 	##//count//##
-		Number of elements to allocate.
+		Number of elements to construct.
 
 {{fbdoc item="ret"}}
-	A pointer of type ##[[DataType datatype]]## to the newly allocated data.
+	A pointer of type ##[[DataType datatype]]## to the newly constructed data.
 
 {{fbdoc item="desc"}}
 	The ##**Placement New**## operator constructs a specified data type at the specified memory location. 
@@ -42,7 +40,11 @@ Operator to construct an object at a specified memory address.
 
 type Rational
 	as integer	numerator, denominator
+	Declare Destructor ( )
 end type
+
+Destructor Rational ( )
+End Destructor
 
 scope
 	

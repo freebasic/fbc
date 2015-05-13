@@ -1,7 +1,8 @@
 #ifndef __FB_CONFIG_H__
 #define __FB_CONFIG_H__
 
-#ifdef __DJGPP__
+#if defined HOST_XBOX
+#elif defined __DJGPP__
 	#define HOST_DOS
 	#define HOST_DJGPP
 #elif defined __MINGW32__ /* MinGW, MinGW-w64, TDM-GCC */
@@ -15,6 +16,7 @@
 #elif defined __CYGWIN__
 	#define HOST_CYGWIN
 	#define HOST_WIN32
+	#define WIN32_LEAN_AND_MEAN
 #elif defined __linux__
 	#define HOST_LINUX
 	#define HOST_UNIX
@@ -54,6 +56,18 @@
 	#endif
 #elif defined __ppc64__
 	#define HOST_POWERPC64
+#endif
+
+#if defined HOST_MINGW && defined HOST_X86
+	/* work around gcc bug 52991 */
+	/* Since GCC 4.7 -mms-bitfields was made the default for mingw32,
+	   causing structs to be "ms_struct" by default, but "packed" seems
+	   to be broken in combination with that. Using "gcc_struct" (the old
+	   default) helps.
+	   Note that "gcc_struct" isn't recognized for *all* targets though. */
+	#define FBPACKED __attribute__((gcc_struct, packed))
+#else
+	#define FBPACKED __attribute__((packed))
 #endif
 
 #endif

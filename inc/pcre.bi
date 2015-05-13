@@ -294,11 +294,16 @@ that is triggered by the (?) regex item. For Virtual Pascal, these definitions
 have to take another form. '/
 
 #ifndef VPCOMPAT
-  extern import pcre_malloc alias "pcre_malloc" as function cdecl (byval as size_t) as any ptr
-  extern import pcre_free alias "pcre_free" as sub cdecl (byval as any ptr)
-  extern import pcre_stack_malloc alias "pcre_stack_malloc" as function cdecl (byval as size_t) as any ptr
-  extern import pcre_stack_free alias "pcre_stack_free" as sub cdecl (byval as any ptr)
-  extern import pcre_callout alias "pcre_callout" as function cdecl (byval as pcre_callout_block ptr) as integer
+	#ifdef __PCRE_DLL__
+		#define PCRE_DLLIMPORT import
+	#else
+		#define PCRE_DLLIMPORT
+	#endif
+	extern PCRE_DLLIMPORT pcre_malloc as function (byval as size_t) as any ptr
+	extern PCRE_DLLIMPORT pcre_free as sub (byval as any ptr)
+	extern PCRE_DLLIMPORT pcre_stack_malloc as function (byval as size_t) as any ptr
+	extern PCRE_DLLIMPORT pcre_stack_free as sub (byval as any ptr)
+	extern PCRE_DLLIMPORT pcre_callout as function (byval as pcre_callout_block ptr) as integer
 #else
 	declare function pcre_malloc (byval as size_t) as any ptr
 	declare sub pcre_free (byval as any ptr)

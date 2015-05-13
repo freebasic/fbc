@@ -74,7 +74,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Several lines of source code grouped together all sharing at least one common scope.  For example a procedure's code block will be all the lines of code between ##[[KeyPgSub Sub]]## and ##[[KeyPgEnd End Sub]]##.
 
 **com port**
-	A short name for serial communications port.  A program can communicate with an external device, such as modem or another computer through a com port.  See ##[[KeyPgOpenCom Open Com]]##.
+	A short name for serial communications port.  A program can communicate with an external device, such as modem or another computer through a com port (nowadays the good old com ports are deprecated in favor of USB).  See ##[[KeyPgOpenCom Open Com]]##.
 
 **compiler**
 	A compiler is a computer program which takes source code and transforms it into machine or object code.
@@ -95,7 +95,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A special member function of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## that is called when an object is instantiated.
 
 **CVS**
-	Concurrent Versions System. The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB in the past. (see also SVN)
+	Concurrent Versions System. The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB in the past. (see also SVN and GIT)
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -133,14 +133,14 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Shorthand for **dynamically linked library**.
 
 **DPMI**
-	A method / standard allowing to execute protected mode code (mostly also 32-bit) on a 16-bit real mode DOS kernel. Affects only DOS version of FreeBASIC. See also ##[[FaqDOS DOS related FAQ]]## 
+	A method / standard allowing to execute protected mode code (mostly also 32-bit) on a 16-bit real mode DOS kernel. Affects only DOS version of ""FreeBASIC"". See also ##[[FaqDOS DOS related FAQ]]## 
 
 **DJGPP**
 	A complete 32-bit C/C""++"" development system for Intel 80386 (and higher) PCs running DOS and includes ports of many GNU development utilities.
 
 **dynamically linked library**
 	A file containing executable code that is loaded by another application when it is started.  Also referred to as a **dll** or shared library.  See ##[[ProPgSharedLibraries Shared Libraries (DLLs)]]##.
-	
+
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="E"}} E----======
@@ -249,7 +249,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A collection of data whose elements are typically stored on the heap. The linked list's elements store the addresses of their adjacent elements, and so only sequential access (an element is accessed by following the links from adjacent elements) is possible. This scheme does provide constant-time insertion of elements anywhere into the container, however, and because of this is often preferred over the array.
 
 **linker**
-	A program which combines a number of programs to form a complete set of instructions which can be loaded into the computer's memory and followed by the computer.
+	A program which combines multiple modules and libraries into a single executable which can be loaded into the computer's memory and followed by the computer. ""FreeBASIC"" uses the **LD** linker. Linkers are the most common, but not the only way to produce executables.
 
 **LGPL**
 	Shorthand for GNU Lesser General Public License.  Like the GNU GPL, but more permissive allowing non-(L)GPL'd works to be statically linked to the LGPL'd work, provided that the new work can have the LGPL'd portion relinked or replaced.
@@ -406,7 +406,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Subversion. A version control system that allows users to keep track of changes made to sources and documents. Used by FB in the past. (see also CVS and GIT)
 
 **SWIG**
-	A tool that automatically translates C headers to FreeBASIC (although not always perfectly).
+	A tool that automatically translates C headers to ""FreeBASIC"" (although not always perfectly).
 
 **symbol**
 	Used to refer to variables, labels, functions, methods, procedures, or other programmatic constructs in a program.
@@ -476,7 +476,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 ======----{{anchor name="Z"}} Z----======
 
 **zstring**
-	A zstring is in essence a standard C style string ending with an embedded null character. This data type is provided for greater compatibility with C libraries.
+	A zstring is in essence a standard C style string terminated by a null character. This data type is provided for greater compatibility with C libraries.
 
 @@{{anchor name="Index|Back to top"}}@@
 

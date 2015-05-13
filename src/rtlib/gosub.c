@@ -1,7 +1,7 @@
 /* GOSUB support */
 
-#include <setjmp.h>
 #include "fb.h"
+#include <setjmp.h>
 
 /* slow but easy to manage dynamic GOSUB call-stack */
 typedef struct gosubnode {

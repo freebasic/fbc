@@ -1,16 +1,16 @@
 {{fbdoc item="title" value="BASE (member access)"}}----
-Provides explicit access to base type members in methods of a ##[[KeyPgType Type]]##
+Provides explicit access to base type members in non-static methods of a ##[[KeyPgType Type]]##
 
 {{fbdoc item="syntax"}}##
 	**base**.//member//
 	**base** [ .**base** ... ] .//member//
 ##
 {{fbdoc item="desc"}}
-	##**Base**## provides a way to explicitly access members of a specific base type, in the context of methods of a user-defined type derived from another type using ##[[KeyPgExtends Extends]]##.
+	##**Base**## provides a way to explicitly access members of a specific base type, in the context of non-static methods of a user-defined type derived from another type using ##[[KeyPgExtends Extends]]##.
 	
 	By using ##**Base**## repeatedly, as in ##base.base.base.member##, it is possible to access any desired base type, in case there are multiple levels of inheritance.
 	
-	##**Base**## is especially useful when local variables or members of a derived type override a base type's members by using the same identifiers. ##**Base**## then allows unambiguous access to the base type.
+	##**Base**## is especially useful when a base type's member is shadowed by a local variable or member of a derived type using the same identifier. ##**Base**## then allows unambiguous access to the base type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/base.bas"}}%%(freebasic)

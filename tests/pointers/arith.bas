@@ -8,6 +8,8 @@ namespace fbc_tests.pointers.arith
 	
 sub pointerDiffTest cdecl ()
 	CU_ASSERT_EQUAL( p2 - p1, 1 )
+	CU_ASSERT_EQUAL( p1 - p2, -1 )
+	CU_ASSERT( sizeof( p2 - p1 ) >= sizeof( p2 ) )
 end sub
 	 
 sub integralAdditionTest cdecl ()

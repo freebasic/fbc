@@ -1,0 +1,85 @@
+{{fbdoc item="title" value="ABSTRACT"}}----
+Declare abstract methods
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename// [[KeyPgExtends Extends]] //base_typename//
+		[[KeyPgDeclare Declare]] **Abstract** [[KeyPgSub Sub]]|[[KeyPgFunction Function]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]] ...
+	End [[KeyPgType Type]]
+##
+{{fbdoc item="desc"}}
+	##**Abstract**## is a special form of ##[[KeyPgVirtual Virtual]]##. The difference is that abstract methods do not have a body, but just the declaration. Essentially this allows the declaration of an interface which can be implemented by various derived types.
+	
+	In order to call an abstract method, it must have been overridden and implemented by a derived data type, or else the program will abort.
+	As a result, only types that implement all the abstract methods are allowed to create objects. For the same reason, a constructor should not call an unimplemented method.
+	
+	[[KeyPgConstructor Constructors]] cannot be abstract, since they cannot be virtual. In addition, abstract [[KeyPgDestructor destructors]] are not supported either, because a destructor body (no matter whether implicit or explicit) is needed in order to call base and field destructors.
+	
+	Abstracts are called "pure virtual" in ""C++"" (unlike ""FreeBASIC"", ""C++"" allows pure virtuals to have a body, but accessible only statically).
+
+	**Note:** In a multi-level inheritance, a same named method (same identifier and signature) can be declared ##**Abstract**##, ##[[KeyPgVirtual Virtual]]## or normal (without specifier) at each inheritance hierarchy level. When there is mixing of specifiers, the usual order is abstract -> virtual -> normal, from top to bottom of the inheritance hierarchy.
+	The access control (##[[KeyPgVisPublic Public]]##/##[[KeyPgVisProtected Protected]]##/##[[KeyPgVisPrivate Private]]##) of an overriding method is not taken into account by the internal polymorphism process, but only for the initial call at compile-time.
+	A derived static method cannot override a base virtual/abstract method, but can shadow any base method (including virtual/abstract).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/abstract1.bas"}}%%(freebasic)
+type Hello extends object
+	declare abstract sub hi( )
+end type
+
+type HelloEnglish extends Hello
+	declare sub hi( )
+end type
+
+type HelloFrench extends Hello
+	declare sub hi( )
+end type
+
+type HelloGerman extends Hello
+	declare sub hi( )
+end type
+
+
+sub HelloEnglish.hi( )
+	print "hello!"
+end sub
+
+sub HelloFrench.hi( )
+	print "Salut!"
+end sub
+
+sub HelloGerman.hi( )
+	print "Hallo!"
+end sub
+
+
+	randomize( timer( ) )
+
+	dim as Hello ptr h
+
+	for i as integer = 0 to 9
+		select case( int( rnd( ) * 3 ) + 1 )
+		case 1
+			h = new HelloFrench
+		case 2
+			h = new HelloGerman
+		case else
+			h = new HelloEnglish
+		end select
+
+		h->hi( )
+		delete h
+	next
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVirtual Virtual]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgObject Object]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

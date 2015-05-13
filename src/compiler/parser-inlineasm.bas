@@ -13,20 +13,6 @@
 const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
 
 '':::::
-sub parserAsmInit static
-
-	listInit( @parser.asmtoklist, 16, len( FB_ASMTOK ) )
-
-end sub
-
-'':::::
-sub parserAsmEnd static
-
-	listEnd( @parser.asmtoklist )
-
-end sub
-
-'':::::
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
 sub cAsmCode()
@@ -34,7 +20,7 @@ sub cAsmCode()
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
-	dim as FB_ASMTOK ptr head, tail = any, node = any
+	dim as ASTASMTOK ptr head = any, tail = any
 	dim as integer doskip = any, thisTok = any
 
 	head = NULL
@@ -79,7 +65,7 @@ sub cAsmCode()
 					doskip = TRUE
 				end if
 
-			elseif( irGetOption( IR_OPT_HIGHLEVEL ) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
+			elseif( (env.clopt.backend = FB_BACKEND_GCC) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )
@@ -87,19 +73,13 @@ sub cAsmCode()
 					dim as FBSYMBOL ptr s = chain_->sym
 					do
 						select case symbGetClass( s )
-						'' function?
-						case FB_SYMBCLASS_PROC
-							text = *symbGetMangledName( s )
+						case FB_SYMBCLASS_PROC, FB_SYMBCLASS_LABEL
+							sym = s
 							exit do, do
 
 						'' const?
 						case FB_SYMBCLASS_CONST
 							text = symbGetConstValueAsStr( s )
-							exit do, do
-
-						'' label?
-						case FB_SYMBCLASS_LABEL
-							text = *symbGetMangledName( s )
 							exit do, do
 
 						case FB_SYMBCLASS_VAR
@@ -124,8 +104,7 @@ sub cAsmCode()
 		case FB_TKCLASS_NUMLITERAL
 			 expr = cNumLiteral( FALSE )
 			 if( expr <> NULL ) then
-             	text = astGetValueAsStr( expr )
-			 	astDelNode( expr )
+				text = astConstFlushToStr( expr )
 			 end if
 
 		'' lit string?
@@ -186,29 +165,20 @@ sub cAsmCode()
 
 		''
 		if( doskip = FALSE ) then
-			node = listNewNode( @parser.asmtoklist )
-			if( tail <> NULL ) then
-				tail->next = node
+			if( sym ) then
+				tail = astAsmAppendSymb( tail, sym )
 			else
-				head = node
+				tail = astAsmAppendText( tail, text )
 			end if
-			tail = node
-
-			if( sym <> NULL ) then
-            	node->type = FB_ASMTOK_SYMB
-            	node->sym = sym
-			else
-				node->type = FB_ASMTOK_TEXT
-				node->text = ZstrAllocate( len( text ) )
-				*node->text = text
+			if( head = NULL ) then
+				head = tail
 			end if
-			node->next = NULL
 		end if
 
 		lexSkipToken( LEX_FLAGS )
 	loop
 
-	''
+	'' One ASM node per line of asm, with as many asm tokens as needed each
 	if( head <> NULL ) then
 		astAdd( astNewASM( head ) )
 	end if

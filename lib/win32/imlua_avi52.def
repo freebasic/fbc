@@ -1,0 +1,3 @@
+LIBRARY imlua_avi52.dll
+EXPORTS
+luaopen_imlua_avi

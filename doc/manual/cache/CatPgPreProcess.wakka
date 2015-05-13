@@ -64,6 +64,8 @@ Commands that control the preprocessor.
 		Outputs a messages to standard output while compiling.
 	=={{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}==
 		Outputs a messages to standard output and stops compilation.
+	=={{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}==
+		Stops compilation with an error message if a given condition is false.
 	=={{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}==
 		Sets the current line number and file name.
 

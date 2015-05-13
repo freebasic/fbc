@@ -19,7 +19,7 @@ function cVAFunct() as ASTNODE ptr
 	end if
 
 	dim as FBSYMBOL ptr proc = parser.currproc
-	if( proc->proc.mode <> FB_FUNCMODE_CDECL ) then
+	if( symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL ) then
 		exit function
 	end if
 
@@ -30,7 +30,7 @@ function cVAFunct() as ASTNODE ptr
 	if( symbGetParamMode( param ) <> FB_PARAMMODE_VARARG ) then
 		exit function
 	end if
-	param = symbGetProcNextParam( proc, param )
+	param = param->prev
 	if( param = NULL ) then
 		exit function
 	end if
@@ -48,23 +48,20 @@ function cVAFunct() as ASTNODE ptr
 		hMatchRPRNT( )
 	end if
 
-	'' high-level IR? va_* not supported
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' C backend? va_* not supported
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE )
 
 		'' error recovery: fake an expr
 		function = astNewCONSTi( 0 )
 	else
 		'' @param
-		dim as ASTNODE ptr expr = astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubType( sym ) )
-		expr = astNewADDROF( expr )
+		var expr = astNewADDROF( astNewVAR( sym ) )
 
 		'' Cast to ANY PTR to hide that it's based on the parameter
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
-		'' + FB_ROUNDLEN( paramlen( param ) )
-		function = astNewBOP( AST_OP_ADD, expr, _
-		                      astNewCONSTi( FB_ROUNDLEN( symbCalcParamLen( param->typ, param->subtype, param->param.mode ) ), _
-		                                    FB_DATATYPE_UINT ) )
+		'' + paramlen( param )
+		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( param ), FB_DATATYPE_UINT ) )
 	end if
 end function

@@ -41,6 +41,7 @@ const FB_LONGSIZE			= FB_POINTERSIZE
 '' These cannot be hard coded since we have -target and -arch options
 
 '' array descriptor
+'' x86 assumption
 type FB_ARRAYDESC
     data			as any ptr
 	ptr				as any ptr
@@ -53,6 +54,7 @@ const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
 
 const FB_ARRAYDESC_DATAOFFS = offsetof( FB_ARRAYDESC, data )
 
+'' x86 assumption
 type FB_ARRAYDESCDIM
 	elements		as integer
 	lbound			as integer
@@ -64,6 +66,7 @@ const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
 const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
 
 '' string descriptor
+'' x86 assumption
 type FB_STRDESC
 	data			as zstring ptr
 	len				as integer
@@ -82,16 +85,6 @@ enum FB_DATASTMT_ID
 	FB_DATASTMT_ID_ZSTR		= &h0001				'' used by AST only
 	FB_DATASTMT_ID_CONST	= &h0002				'' /
 end enum
-
-type FB_DATADESC
-	id				as short
-	union
-		zstr 		as zstring ptr
-		wstr 		as wstring ptr
-		sym			as any ptr
-		next 		as FB_DATADESC ptr
-	end union
-end type
 
 const FB_DATASTMT_PREFIX	= "_{fbdata}_"
 
@@ -226,7 +219,6 @@ const CHAR_NULL   	= 00, _
       CHAR_PLUS   	= 43, _
       CHAR_MINUS  	= 45, _
       CHAR_RSLASH  	= 92, _
-      CHAR_CARET   	= 42, _
       CHAR_SLASH   	= 47, _
       CHAR_CART   	= 94, _
       CHAR_EQ     	= 61, _
@@ -367,6 +359,8 @@ enum FB_TOKEN
 	FB_TK_EXTENDS
 	FB_TK_IMPLEMENTS
 	FB_TK_BASE
+	FB_TK_VIRTUAL
+	FB_TK_ABSTRACT
 
 	FB_TK_BOOLEAN
 	FB_TK_BYTE
@@ -460,6 +454,8 @@ enum FB_TOKEN
 	FB_TK_TRIM
 	FB_TK_RTRIM
 	FB_TK_LTRIM
+	FB_TK_LCASE
+	FB_TK_UCASE
 	FB_TK_RESTORE
 	FB_TK_READ
 	FB_TK_DATA
@@ -494,6 +490,7 @@ enum FB_TOKEN
 	FB_TK_WRITE
 	FB_TK_LOCK
 	FB_TK_INPUT
+	FB_TK_WINPUT
 	FB_TK_OUTPUT
 	FB_TK_BINARY
 	FB_TK_RANDOM
@@ -528,7 +525,6 @@ enum FB_TOKEN
 	FB_TK_PALETTE
 	FB_TK_SCREEN
 	FB_TK_SCREENQB
-	FB_TK_SCREENRES
 	FB_TK_PAINT
 	FB_TK_DRAW
 	FB_TK_IMAGECREATE
@@ -542,7 +538,7 @@ end enum
 const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
 const FB_TK_DECLSEPCHAR			= CHAR_COMMA	'' ,
 const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, because lex
-const FB_TK_DEREFCHAR			= CHAR_CARET	'' *
+const FB_TK_DEREFCHAR			= CHAR_STAR	    '' *
 const FB_TK_ADDROFCHAR			= CHAR_AT		'' @
 
 const FB_TK_INTTYPECHAR			= CHAR_PERC
@@ -569,23 +565,6 @@ end enum
 #include once "symb.bi"
 
 ''
-enum FB_ASMTOK_TYPE
-	FB_ASMTOK_SYMB
-	FB_ASMTOK_TEXT
-end enum
-
-type FB_ASMTOK
-	type			as FB_ASMTOK_TYPE
-
-	union
-		sym			as FBSYMBOL ptr
-		text		as zstring ptr
-	end union
-
-	next			as FB_ASMTOK ptr
-end type
-
-''
 enum FBFILE_FORMAT
 	FBFILE_FORMAT_ASCII
 	FBFILE_FORMAT_UTF8
@@ -604,8 +583,22 @@ type FBFILE
 end type
 
 enum FB_TARGETOPT
-	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
+	FB_TARGETOPT_UNIX       = &h00000001  '' Unix-like system? (for __FB_UNIX__ #define)
 	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
+	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
+
+	'' Whether callee always pops the hidden struct result ptr
+	'' i386 SysV ABI (MinGW GCC 4.6, Linux, DJGPP, etc.):
+	''    callee always pops hidden param, even for cdecl ("hybrid")
+	'' MinGW GCC 4.7, MSVC ABI:
+	''    hidden param is popped according to calling convention
+	FB_TARGETOPT_CALLEEPOPSHIDDENPTR = &h00000008
+
+	'' Returning structures in registers only exists on Win32, and
+	'' - neither Linux GCC (following the i386 SysV ABI),
+	'' - nor DJGPP
+	'' do it. TODO: what about the BSDs and Darwin/MacOSX?
+	FB_TARGETOPT_RETURNINREGS        = &h00000010
 end enum
 
 type FBTARGET
@@ -691,10 +684,13 @@ type FBENV
 	'' Lists to collect #inclibs and #libpaths
 	libs			as TSTRSET
 	libpaths		as TSTRSET
+
+	fbctinf_started		as integer
 end type
 
 #include once "hlp.bi"
 
+declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 

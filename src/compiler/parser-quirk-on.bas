@@ -16,14 +16,27 @@ function cGOTBStmt _
 		byval isgoto as integer _
 	) as integer
 
-	dim as ASTNODE ptr idxexpr = any
 	dim as integer l = any
-	dim as FBSYMBOL ptr sym = any, exitlabel = any, tbsym = any
-	dim as FBSYMBOL ptr labelTB(0 to FB_MAXGOTBITEMS-1) = any
+	dim as FBSYMBOL ptr sym = any, exitlabel = any
+	dim as uinteger values(0 to FB_MAXGOTBITEMS-1) = any
+	dim as FBSYMBOL ptr labels(0 to FB_MAXGOTBITEMS-1) = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any
 
 	function = FALSE
+
+	''    ON expr GOTO label1, label2, etc.
+	'' works similar to a
+	''    SELECT CASE AS CONST expr
+	''    CASE 1
+	''    CASE 2
+	''    etc.
+	'' it also uses a jump table, however the values are "preset",
+	'' in contrast to SELECT where they're given via CASE statements.
+	'' expr = 1   ->   label1
+	'' expr = 2   ->   label2
+	'' etc.
+	'' This means: minval = 1, maxval = labelcount - 1.
 
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
@@ -32,7 +45,7 @@ function cGOTBStmt _
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -48,9 +61,9 @@ function cGOTBStmt _
 
 			'' Not not too many target labels yet?
 			if( l < FB_MAXGOTBITEMS ) then
-				labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-				if( labelTB(l) = NULL ) then
-					labelTB(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+				labels(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+				if( labels(l) = NULL ) then
+					labels(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 				end if
 			elseif( l = FB_MAXGOTBITEMS ) then '' (Only show the error once)
 				errReport( FB_ERRMSG_TOOMANYLABELS )
@@ -64,7 +77,7 @@ function cGOTBStmt _
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			if( l < FB_MAXGOTBITEMS ) then
 				'' error recovery: fake an label
-				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
+				labels(l) = symbAddLabel( symbUniqueLabel( ), FB_SYMBOPT_NONE )
 			end if
 		end select
 
@@ -76,61 +89,23 @@ function cGOTBStmt _
 		l = FB_MAXGOTBITEMS - 1
 	end if
 
-	''
 	exitlabel = symbAddLabel( NULL )
 
-	'' < 1?
-	expr = astNewBOP( AST_OP_LT, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-					  astNewCONSTi( 1, FB_DATATYPE_UINT ), exitlabel, FALSE )
-	astAdd( expr )
-
-	'' > labels?
-	expr = astNewBOP( AST_OP_GT, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-					  astNewCONSTi( l, FB_DATATYPE_UINT ), exitlabel, FALSE )
-	astAdd( expr )
-
-	'' jump to table[idx]
-	tbsym = hJumpTbAllocSym( )
-
-	idxexpr = astNewBOP( AST_OP_MUL, _
-						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-						 astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) )
-
-	expr = astNewIDX( astNewVAR( tbsym, _
-								 -1*FB_POINTERSIZE, _
-								 typeAddrOf( FB_DATATYPE_VOID ) ), _
-					  idxexpr, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL )
-
-	'' not high-level IR? emit the jump before the table
-	if( (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE) or (isgoto = FALSE) ) then
-		if( isgoto ) then
-			astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-		else
-			astGosubAddJumpPtr( parser.currproc, expr, exitlabel )
-		end if
-	end if
-
-	'' emit table
-	astAdd( astNewJMPTB_Begin( tbsym ) )
-
-	''
-	for i as integer = 0 to l-1
-		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, labelTB(i) ) )
+	for i as integer = 1 to l
+		values(i) = i
 	next
+	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l - 1 )
 
-	astAdd( astNewJMPTB_End( tbsym ) )
-
-	'' high-level IR? emit the jump after the table
-	if( irGetOption( IR_OPT_HIGHLEVEL and isgoto ) ) then
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-    end if
+	if( isgoto ) then
+		astAdd( expr )
+	else
+		astGosubAddJumpPtr( parser.currproc, expr, exitlabel )
+	end if
 
 	'' emit exit label
 	astAdd( astNewLABEL( exitlabel ) )
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -182,7 +157,7 @@ function cOnStmt _
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
 		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
@@ -231,7 +206,7 @@ function cOnStmt _
 
 			lexSkipToken( )
 
-			expr = astNewADDROF( astNewVAR( label, 0, FB_DATATYPE_UINT ) )
+			expr = astNewADDROF( astNewVAR( label ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else

@@ -134,9 +134,9 @@ namespace fbc_tests.file.input_large_int
 			for i as integer = 0 to COUNT-1
 				dim n as t
 				input #1, n
- #if t = single 
+ #if #t = "single"
 				CU_ASSERT_DOUBLE_EQUAL( check(i), n, check(i) \ 10000000 )
- #elseif t = double
+ #elseif #t = "double"
 				CU_ASSERT_DOUBLE_EQUAL( check(i), n, check(i) \ 1000000000000000ll )
  #else
 				if( clngint( cast( t, check(i) ) ) = check(i) ) then

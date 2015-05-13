@@ -138,6 +138,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_hMemSet(&fb_x11, 0, sizeof(fb_x11));
 	
 	context = NULL;
+	info = NULL;
 	
 	if (!(flags & DRIVER_OPENGL))
 		return -1;
@@ -185,43 +186,51 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	fb_x11.screen = XDefaultScreen(dpy);
 	if (!gl_lib) gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
-	
+
 	if (!gl_lib)
 		return -1;
-	
+
 	do {
 		if ((info = __fb_glX.ChooseVisual(dpy, fb_x11.screen, attribs))) {
 			fb_x11.visual = info->visual;
 			context = __fb_glX.CreateContext(dpy, info, NULL, True);
-			XFree(info);
-			if ((intptr_t)context > 0)
+			if (context)
 				break;
-			else
-				__fb_glX.DestroyContext(dpy, context);
+			XFree(info);
+			info = NULL;
 		}
 	} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
 
 	if (!info) {
 		return -1;
 	}
+
 	fb_x11.display = dpy;
 	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
+
+	XFree(info);
+	info = NULL;
+
 	if (result)
 		return result;
+
 	__fb_glX.MakeCurrent(fb_x11.display, fb_x11.window, context);
-	
+
 	if (fb_hGL_Init(gl_lib, NULL))
 		return -1;
+
 	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
+
 	return 0;
 }
 
 static void driver_exit(void)
 {
-	if (context > 0) {
+	if (context) {
 		__fb_glX.MakeCurrent(fb_x11.display, None, NULL);
 		__fb_glX.DestroyContext(fb_x11.display, context);
+		context = NULL;
 	}
 	fb_hX11Exit();
     fb_hDynUnload(&gl_lib);

@@ -16,7 +16,6 @@
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|Type Alias"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 
-
 <<>>
 {{fbdoc item="section" value="Member Procedures"}}
 	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
@@ -24,9 +23,12 @@
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
+	- {{fbdoc item="keyword" value="KeyPgOverride|OVERRIDE"}}
 	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgStaticMember|STATIC (Member)"}}
+	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL"}}
+	- {{fbdoc item="keyword" value="KeyPgAbstract|ABSTRACT"}}
 	- {{fbdoc item="keyword" value="KeyPgConstMember|CONST (Member)"}}
 
 {{fbdoc item="section" value="Member Access Control"}}

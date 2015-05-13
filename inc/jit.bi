@@ -9,6 +9,8 @@
 #ifndef __jit_bi__
 #define __jit_bi__
 
+#inclib "jit"
+
 #include "jit/jit-defs.bi"
 #include "jit/jit-common.bi"
 #include "jit/jit-context.bi"

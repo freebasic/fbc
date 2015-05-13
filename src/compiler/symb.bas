@@ -479,7 +479,7 @@ function symbNewSymbol _
 		else
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
-    end if
+	end if
 
     if( hashtb = NULL ) then
     	hashtb = symb.hashtb
@@ -999,6 +999,8 @@ function symbLookupAt _
 
     static as zstring * FB_MAXNAMELEN+1 sname
 
+	assert( symbIsStruct( ns ) or symbIsNamespace( ns ) or symbIsEnum( ns ) )
+
     if( preserve_case = FALSE ) then
     	hUcase( *id, sname )
     	id = @sname
@@ -1431,12 +1433,18 @@ sub symbFreeSymbol_UnlinkOnly _
 
 end sub
 
-'':::::
 sub symbDelSymbol _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval is_tbdel as integer _
 	)
+
+	'' is_tbdel: If the whole symbol table of a scope or namespace is
+	'' being deleted, we don't need to bother deleting symbols recursively,
+	'' such as array descriptors attached to variables, because the symbol
+	'' table deletion will catch them already. In fact, when deleting a
+	'' symbol table, any attached symbols might be deleted *before* their
+	'' parents, which then can not use the dangling pointers...
 
 	select case as const s->class
     case FB_SYMBCLASS_VAR
@@ -1471,6 +1479,10 @@ sub symbDelSymbol _
 
 	case FB_SYMBCLASS_NSIMPORT
 		symbNamespaceRemove( s, FALSE )
+
+	case FB_SYMBCLASS_FIELD
+		assert( is_tbdel )  '' symbDelField() assumption
+		symbDelField( s )
 
 	case else
 		symbFreeSymbol( s )
@@ -1533,32 +1545,16 @@ sub symbDelSymbolTb _
 
     '' del from hash tb only?
     if( hashonly ) then
+		dim as FBSYMBOL ptr s = tb->head
+		while( s )
+			symbDelFromHash( s )
 
-    	dim as FBSYMBOL ptr s = tb->head
-    	do while( s <> NULL )
+			if( s->class = FB_SYMBCLASS_NSIMPORT ) then
+				symbNamespaceRemove( s, TRUE )
+			end if
 
-	    	select case as const s->class
-    		case FB_SYMBCLASS_VAR, _
-    			 FB_SYMBCLASS_CONST, _
-    			 FB_SYMBCLASS_STRUCT, _
-    			 FB_SYMBCLASS_ENUM, _
-    			 FB_SYMBCLASS_TYPEDEF, _
-    			 FB_SYMBCLASS_LABEL, _
-    			 FB_SYMBCLASS_DEFINE
-
-    			symbDelFromHash( s )
-
-    		case FB_SYMBCLASS_NSIMPORT
-    			symbNamespaceRemove( s, TRUE )
-
-    		case FB_SYMBCLASS_SCOPE
-    			'' already removed..
-    			''''' symbDelScopeTb( s )
-    		end select
-
-    		s = s->next
-    	loop
-
+			s = s->next
+		wend
     '' del from hash and symbol tb's
     else
     	do
@@ -1579,6 +1575,23 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
+	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
+	assert( symbIsStruct( sym ) = FALSE )
+	'' Handle vars, params, function results, etc.
+	function = typeHasCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDefCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDtor( sym->typ, sym->subtype )
+end function
 
 '':::::
 function symbIsArray _
@@ -1658,11 +1671,15 @@ function symbIsEqual _
     '' function? must check because a @foo will point to a different
     '' symbol than funptr, but both can have the same signature
     case FB_SYMBCLASS_PROC
+		'' Check for return BYREF
+		if( symbProcReturnsByref( sym1 ) <> symbProcReturnsByref( sym2 ) ) then
+			exit function
+		end if
 
-    	'' check calling convention
-    	if( symbGetProcMode( sym1 ) <> symbGetProcMode( sym2 ) ) then
-    		exit function
-    	end if
+		'' check calling convention
+		if( symbAreProcModesEqual( sym1, sym2 ) = FALSE ) then
+			exit function
+		end if
 
     	'' not the same number of args?
     	if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
@@ -1723,44 +1740,54 @@ function symbIsEqual _
 
 end function
 
-'':::::
 function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer _
+		byval length as integer _
 	) as zstring ptr
 
 	static as string res
-	dim as integer dtype_np = any, ptrcnt = any
+	dim as integer dtypeonly = any, ptrcount = any
     
 	if( dtype = FB_DATATYPE_INVALID ) then
 		return NULL
 	end if
 
-    ptrcnt = typeGetPtrCnt( dtype )
-	if( typeIsConstAt( dtype, ptrcnt ) ) then
+	ptrcount = typeGetPtrCnt( dtype )
+	if( typeIsConstAt( dtype, ptrcount ) ) then
 		res = "const "
 	else
 		res = ""
 	end if
-	
-	dtype_np = typeGetDtOnly( dtype )
 
-	select case as const dtype_np
+	dtypeonly = typeGetDtOnly( dtype )
+
+	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		res += *symbGetName( subtype )
 
-	case else
-		res += *symb_dtypeTB(dtype_np).name
-		if( dtype_np = FB_DATATYPE_FIXSTR ) then
-			if( lgt > 0 ) then
-				res += " " + str(lgt-1)
-			end if
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
+		res += *symb_dtypeTB(dtypeonly).name
+		if( length > 0 ) then
+			select case( dtypeonly )
+			case FB_DATATYPE_FIXSTR
+				'' For STRING*N the null terminator is
+				'' implicitly added, the length actually is N+1,
+				'' unlike Z/WSTRING*N where N includes it.
+				length -= 1
+			case FB_DATATYPE_WCHAR
+				'' Convert bytes back to chars
+				length \= typeGetSize( FB_DATATYPE_WCHAR )
+			end select
+			res += " * " + str( length )
 		end if
+
+	case else
+		res += *symb_dtypeTB(dtypeonly).name
 	end select
 
-	for i as integer = ptrcnt-1 to 0 step -1
+	for i as integer = ptrcount-1 to 0 step -1
 		if( typeIsConstAt( dtype, i ) ) then
 			res += " const"
 		end if
@@ -1768,7 +1795,6 @@ function symbTypeToStr _
 	next
 
 	function = strptr( res )
-
 end function
 
 '':::::
@@ -1835,12 +1861,44 @@ sub symbSetDefType _
 
 end sub
 
-'':::::
+'' Recalculate the length, to be used after the symbol's type was set/changed
+sub symbRecalcLen( byval sym as FBSYMBOL ptr )
+	if( sym->class = FB_SYMBCLASS_PARAM ) then
+		sym->lgt = symbCalcParamLen( sym->typ, sym->subtype, sym->param.mode )
+	else
+		sym->lgt = symbCalcLen( sym->typ, sym->subtype )
+	end if
+end sub
+
+sub symbSetType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+	sym->typ = dtype
+	sym->subtype = subtype
+
+	symbRecalcLen( sym )
+
+	'' If it's a procedure, the real dtype must be updated too
+	if( symbIsProc( sym ) ) then
+		symbProcRecalcRealType( sym )
+	end if
+
+	'' If setting type to a fwdref, register symbol for back-patching
+	'' (e.g. when substituting a fwdref by another fwdref)
+	if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
+		symbAddToFwdRef( subtype, sym )
+	end if
+
+end sub
+
 function symbCalcLen _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval unpadlen as integer _
+		byval subtype as FBSYMBOL ptr _
 	) as integer
 
 	dtype = typeGet( dtype )
@@ -1849,30 +1907,48 @@ function symbCalcLen _
 	case FB_DATATYPE_FIXSTR
 		function = 0  '' zero-length literal-strings
 
-	case FB_DATATYPE_STRUCT
-		if( unpadlen ) then
-			function = subtype->udt.unpadlgt
-		else
-			function = subtype->lgt
-		end if
-
-	case FB_DATATYPE_BITFIELD
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_BITFIELD
 		function = subtype->lgt
 
 	case else
 		function = typeGetSize( dtype )
-
 	end select
 
 end function
 
+function symbCalcDerefLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr  _
+	) as integer
+
+	dim as integer length = any
+
+	assert( typeIsPtr( dtype ) )
+
+	length = symbCalcLen( typeDeref( dtype ), subtype )
+
+	'' incomplete type?
+	if( length = 0 ) then
+		'' ANY PTR?
+		if( dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+			'' treat as BYTE PTR
+			length = 1
+		end if
+		'' (for anything else, we return 0 to indicate the error)
+	end if
+
+	function = length
+end function
+
 function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
+	dim as FBSYMBOL ptr parent = any, context = any
+
 	'' Neither private nor protected? Always ok.
 	if( (sym->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED)) = 0 ) then
 		return TRUE
 	end if
 
-	''
 	'' Notes:
 	''  - Only UDT members will have visibility flags
 	''  - Private/protected members can *only* be accessed from inside
@@ -1883,40 +1959,26 @@ function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 	''  - UDTs may contain nested namespaces whose members should be
 	''    affected by visibility too (e.g. named enums)
 	''  - There are no nested procedures
-	''
+	''  - All UDTs are also namespaces
 
-	''
-	'' Find the symbol's real parent UDT
-	''
-	'' 1) Get the real parent where the symbol was declared
-	''    (could be the UDT already, or an enum inside one)
-	''    Using the symbol's namespace is not enough, because that
-	''    would falsely match
-	''
-	'' 2) Walk upwards if it's not the UDT yet
-	''    (an UDT must be there, or else the visibility flags
-	''     wouldn't be set)
-	''
-	dim as FBSYMBOL ptr parent = symbGetParent( sym )
-	while( not symbIsStruct( parent ) )
+	'' Walk upwards the symbol's parent namespaces until we find the
+	'' symbol's parent UDT. (Usually it's the first parent, but e.g. with
+	'' named enums inside UDTs there can be another namespace in between)
+	parent = sym
+	do
 		assert( parent <> @symbGetGlobalNamespc( ) )
 		parent = symbGetNamespace( parent )
-	wend
+	loop while( not symbIsStruct( parent ) )
 
-	''
-	'' Check it against the current context:
-	''
-	'' To allow Private access, we must be inside the symbol's
-	'' real parent namespace, i.e. the UDT body, a method, or a namespace
-	'' nested inside one of those.
-	''
-	'' To allow Protected access, we must be inside the namespace
-	'' of an UDT that was derived from the symbol's real parent UDT.
-	''
+	'' Check against the current context, only allowing...
+	'' - private access from inside the symbol's parent UDT namespace,
+	''   i.e. the UDT body, a method, or a namespace nested inside either.
+	'' - protected access from inside the namespace of an UDT that was
+	''   derived from the symbol's real parent UDT.
 
 	'' For all nested namespaces in the current parsing context,
 	'' from the current namespace up to the toplevel one...
-	dim as FBSYMBOL ptr context = symbGetCurrentNamespc( )
+	context = symbGetCurrentNamespc( )
 	while( context <> @symbGetGlobalNamespc( ) )
 
 		'' Is it an UDT namespace? (i.e. a method or UDT body?)
@@ -2043,27 +2105,289 @@ function symbCheckConstAssign _
 end function
 
 #if __FB_DEBUG__
-'' For debugging
-function symbDump( byval s as FBSYMBOL ptr ) as string
-	dim as string dump
+static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+{ _
+	@"var"      , _
+	@"const"    , _
+	@"proc"     , _
+	@"param"    , _
+	@"define"   , _
+	@"keyword"  , _
+	@"label"    , _
+	@"namespace", _
+	@"enum"     , _
+	@"struct"   , _
+	@"class"    , _
+	@"field"    , _
+	@"bitfield" , _
+	@"typedef"  , _
+	@"fwdref"   , _
+	@"scope"    , _
+	@"nsimport"   _
+}
 
-	if( s = NULL ) then
+'' For debugging
+function typeDump _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as string
+
+	dim as string dump
+	dim as integer ok = any, ptrcount = any
+
+	dump = "["
+
+	if( dtype and FB_DATATYPE_INVALID ) then
+		dump += "invalid"
+		ok = (subtype = NULL)
+	else
+		ptrcount = abs( typeGetPtrCnt( dtype ) )
+
+		if( typeIsConstAt( dtype, ptrcount ) ) then
+			dump += "const "
+		end if
+
+		select case( typeGetDtOnly( dtype ) )
+		case FB_DATATYPE_STRUCT
+			dump += "struct"
+		case FB_DATATYPE_WCHAR
+			dump += "wchar"
+		case else
+			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+		end select
+
+		'' UDT name
+		select case( typeGetDtOnly( dtype ) )
+		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+			if( subtype ) then
+				if( symbIsStruct( subtype ) ) then
+					dump += " " + *symbGetName( subtype )
+				end if
+			end if
+		end select
+
+		for i as integer = (ptrcount-1) to 0 step -1
+			if( typeIsConstAt( dtype, i ) ) then
+				dump += " const"
+			end if
+			dump += " ptr"
+		next
+
+		'' Report unusual subtypes
+		if( subtype ) then
+			select case( typeGetDtOnly( dtype ) )
+			case FB_DATATYPE_STRUCT
+				ok = symbIsStruct( subtype )
+			case FB_DATATYPE_ENUM
+				ok = symbIsEnum( subtype )
+			case FB_DATATYPE_NAMESPC
+				ok = symbIsNamespace( subtype )
+			case FB_DATATYPE_BITFIELD
+				ok = symbIsBitfield( subtype )
+			case FB_DATATYPE_FUNCTION
+				ok = symbIsProc( subtype )
+			case FB_DATATYPE_FWDREF
+				ok = symbIsFwdref( subtype )
+			case else
+				ok = FALSE
+			end select
+		else
+			select case( typeGetDtOnly( dtype ) )
+			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, _
+			     FB_DATATYPE_NAMESPC, FB_DATATYPE_BITFIELD, _
+			     FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
+				ok = FALSE
+			case else
+				ok = TRUE
+			end select
+		end if
+	end if
+
+	if( ok = FALSE ) then
+		dump += ", "
+		if( subtype ) then
+			if( (subtype->class >= FB_SYMBCLASS_VAR) and _
+			    (subtype->class <  FB_SYMBCLASS_NSIMPORT) ) then
+				dump += *classnames(subtype->class)
+			else
+				dump += str( subtype->class )
+			end if
+		else
+			dump += "NULL"
+		end if
+	end if
+
+	dump += "]"
+
+	function = dump
+end function
+
+private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string s
+
+	ns = symbGetNamespace( sym )
+	while( ns <> @symbGetGlobalNamespc( ) )
+		s = *symbGetName( ns ) + "." + s
+
+		if( symbGetHashtb( ns ) = NULL ) then
+			exit while
+		end if
+
+		ns = symbGetNamespace( ns )
+	wend
+
+	function = s
+end function
+
+function symbDump( byval sym as FBSYMBOL ptr ) as string
+	dim as string s
+
+	if( sym = NULL ) then
 		return "<NULL>"
 	end if
 
-	dim as zstring ptr id = s->id.name
-	if( id = NULL ) then
-		id = @"<unnamed>"
-	end if
-
 #if 0
-	dump += "[" + hex(s) + "] "
+	s += "[" & hex( sym ) & "] "
 #endif
-	dump += *id
 
 #if 1
-	if( s->id.alias ) then
-		dump += " alias """ + *s->id.alias + """"
+	if( (sym->class < FB_SYMBCLASS_VAR) or (sym->class > FB_SYMBCLASS_NSIMPORT) ) then
+		s += "<bad class " + str( sym->class ) + "> "
+	else
+		s += *classnames(sym->class) + " "
+	end if
+#endif
+
+#if 1
+	#macro checkAttrib( ID )
+		if( sym->attrib and FB_SYMBATTRIB_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkAttrib( SHARED )
+	checkAttrib( STATIC )
+	checkAttrib( DYNAMIC )
+	checkAttrib( COMMON )
+	checkAttrib( EXTERN )
+	checkAttrib( PUBLIC )
+	checkAttrib( PRIVATE )
+	checkAttrib( LOCAL )
+	checkAttrib( EXPORT )
+	checkAttrib( IMPORT )
+	checkAttrib( OVERLOADED )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( METHOD )
+	else
+		checkAttrib( PARAMINSTANCE )
+	end if
+	checkAttrib( CONSTRUCTOR )
+	checkAttrib( DESTRUCTOR )
+	checkAttrib( OPERATOR )
+	checkAttrib( PROPERTY )
+	checkAttrib( PARAMBYDESC )
+	checkAttrib( PARAMBYVAL )
+	checkAttrib( PARAMBYREF )
+	checkAttrib( LITERAL )
+	checkAttrib( CONST )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( STATICLOCALS )
+	else
+		checkAttrib( OPTIONAL )
+	end if
+	checkAttrib( TEMP )
+	checkAttrib( DESCRIPTOR )
+	checkAttrib( FUNCRESULT )
+	checkAttrib( RETURNSBYREF )
+	checkAttrib( VIS_PRIVATE )
+	checkAttrib( VIS_PROTECTED )
+	if( symbIsProc( sym ) ) then
+		checkAttrib( NAKED )
+	else
+		checkAttrib( SUFFIXED )
+	end if
+	checkAttrib( ABSTRACT )
+	checkAttrib( VIRTUAL )
+#endif
+
+#if 1
+	#macro checkStat( ID )
+		if( sym->stats and FB_SYMBSTATS_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkStat( VARALLOCATED )
+	checkStat( ACCESSED )
+	if( symbIsProc( sym ) ) then
+		checkStat( CTORINITED )
+	else
+		checkStat( INITIALIZED )
+	end if
+	checkStat( DECLARED )
+	checkStat( RTL )
+	checkStat( THROWABLE )
+	checkStat( PARSED )
+	checkStat( HASALIAS )
+	if( symbIsProc( sym ) ) then
+		checkStat( EXCLPARENT )
+	else
+		checkStat( DONTINIT )
+	end if
+	checkStat( MAINPROC )
+	checkStat( MODLEVELPROC )
+	checkStat( FUNCPTR )
+	checkStat( JUMPTB )
+	checkStat( GLOBALCTOR )
+	checkStat( GLOBALDTOR )
+	checkStat( CANTDUP )
+	if( symbIsProc( sym ) ) then
+		checkStat( GCCBUILTIN )
+		checkStat( IRHLCBUILTIN )
+	end if
+	checkStat( HASRTTI )
+	checkStat( CANTUNDEF )
+	if( symbIsField( sym ) ) then
+		checkStat( UNIONFIELD )
+	elseif( symbIsProc( sym ) ) then
+		checkStat( PROCEMITTED )
+	else
+		checkStat( WSTRING )
+	end if
+	checkStat( RTL_CONST )
+	checkStat( EMITTED )
+	checkStat( BEINGEMITTED )
+#endif
+
+	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
+		s += "from: "
+		s += symbDump( sym->nsimp.imp_ns )
+		return s
+	end if
+
+#if 1
+	if( sym = @symbGetGlobalNamespc( ) ) then
+		s += "<global namespace>"
+	else
+		s += hGetNamespacePrefix( sym )
+	end if
+#endif
+
+	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
+		s += *astGetOpId( symbGetProcOpOvl( sym ) )
+	else
+		if( sym->id.name ) then
+			s += *sym->id.name
+		else
+			s += "<unnamed>"
+		end if
+	end if
+
+#if 1
+	if( sym->id.alias ) then
+		s += " alias """ + *sym->id.alias + """"
 	end if
 #endif
 
@@ -2071,37 +2395,74 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 	'' Note: symbGetMangledName() will mangle the proc and set the
 	'' "mangled" flag. If this is done too early though, before the proc is
 	'' setup properly, then the mangled name will be empty or wrong.
-	dim as zstring ptr mangled = symbGetMangledName( s )
-	dump += " mangled """
-	if( mangled ) then
-		dump += *mangled
-	end if
-	dump += """"
+	s += " mangled """ + *symbGetMangledName( sym ) + """"
 #endif
 
-	dump += " as "
+	s += " as "
 
-	if( s->typ and FB_DATATYPE_INVALID ) then
-		dump += "<invalid>"
+	if( sym->typ and FB_DATATYPE_INVALID ) then
+		if( sym->class = FB_SYMBCLASS_KEYWORD ) then
+			s += "<keyword>"
+		else
+			s += "<invalid>"
+		end if
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.
-		if( s->subtype = NULL ) then
-			select case as const s->typ
+		if( sym->subtype = NULL ) then
+			select case as const( sym->typ )
 			case FB_DATATYPE_FWDREF
-				dump += "<fwdref>"
+				s += "<fwdref>"
 			case FB_DATATYPE_STRUCT
-				dump += "<struct>"
+				if( symbIsStruct( sym ) ) then
+					if( symbGetUDTIsUnion( sym ) ) then
+						s += "<union>"
+					else
+						s += "<struct>"
+					end if
+				else
+					s += "<struct>"
+				end if
 			case FB_DATATYPE_ENUM
-				dump += "<enum>"
+				s += "<enum>"
 			case else
-				dump += *symbTypeToStr( s->typ, NULL, s->lgt )
+				s += *symbTypeToStr( sym->typ, NULL, sym->lgt )
 			end select
 		else
-			dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+			s += *symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
 		end if
 	end if
 
-	function = dump
+	function = s
 end function
+
+sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr i = any
+	dim as THASH ptr hash = any
+	dim as HASHITEM ptr hashitem = any
+
+	select case( ns->class )
+	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
+
+	case else
+		print "symbDumpNamespace(): not a namespace"
+	end select
+
+	print symbDump( ns ) + ":"
+
+	i = symbGetCompSymbTb( ns ).head
+	while( i )
+		print "    symtb: " + symbDump( i )
+		i = i->next
+	wend
+
+	hash = @symbGetCompHashTb( ns ).tb
+	for index as integer = 0 to hash->nodes-1
+		hashitem = hash->list[index].head
+		while( hashitem )
+			print "    hashtb[" & index & "]: " + *hashitem->name + " = " + symbDump( hashitem->data )
+			hashitem = hashitem->next
+		wend
+	next
+end sub
 #endif

@@ -5,7 +5,7 @@ Website: http://cgui.sourceforge.net/index.html, http://www.allegro.cc/resource/
 Platforms supported: ""Win32"", Linux
 Headers to include: cgui.bi
 Header version: 2.0.1
-Example Usage: yes, in examples/libraries/CGUI/
+Example Usage: yes, in examples/GUI/CGUI/
 
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

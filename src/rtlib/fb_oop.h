@@ -1,6 +1,6 @@
 typedef struct _FB_RTTI {
 	void				*stdlistVT;
-	char				*id;
+	const char      		*id;
 	struct _FB_RTTI 	*pRTTIBase;
 } FB_RTTI;
 

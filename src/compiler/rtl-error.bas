@@ -288,29 +288,25 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( AST_OP_EQ, _
-						 resexpr, _
-						 astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-						 nxtlabel, _
-						 AST_OPOPT_NONE )
+	resexpr = astNewBOP( AST_OP_EQ, resexpr, astNewCONSTi( 0 ), nxtlabel, AST_OPOPT_NONE )
 
 	astAdd( resexpr )
 
 	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
-    '' linenum
-	if( astNewARG( proc, astNewCONSTi( lexLineNum(), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' linenum
+	if( astNewARG( proc, astNewCONSTi( lexLineNum() ) ) = NULL ) then
+		exit function
+	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -320,7 +316,7 @@ function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -370,19 +366,19 @@ sub rtlErrorThrow _
 		exit sub
 	end if
 
-    '' linenum
-	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit sub
-    end if
+	'' linenum
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit sub
+	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( reslabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -392,7 +388,7 @@ sub rtlErrorThrow _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDROF( astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDROF( astNewVAR( nxtlabel ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -437,7 +433,7 @@ sub rtlErrorSetHandler _
     		with parser.currproc->proc.ext->err
     			if( .lasthnd = NULL ) then
 					.lasthnd = symbAddTempVar( typeAddrOf( FB_DATATYPE_VOID ) )
-                	expr = astNewVAR( .lasthnd, 0, typeAddrOf( FB_DATATYPE_VOID ) )
+					expr = astNewVAR( .lasthnd )
                 	astAdd( astNewASSIGN( expr, proc ) )
     			end if
     		end with
@@ -526,7 +522,7 @@ function rtlErrorSetModName _
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastmod = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
-           	expr = astNewVAR( .lastmod, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
+			expr = astNewVAR( .lastmod )
           	function = astNewASSIGN( expr, proc )
     	end with
     else
@@ -554,7 +550,7 @@ function rtlErrorSetFuncName _
     if( sym <> NULL ) then
     	with sym->proc.ext->err
 			.lastfun = symbAddTempVar( typeAddrOf( FB_DATATYPE_CHAR ) )
-            expr = astNewVAR( .lastfun, 0, typeAddrOf( FB_DATATYPE_CHAR ) )
+			expr = astNewVAR( .lastfun )
             function = astNewASSIGN( expr, proc )
     	end with
     else

@@ -66,43 +66,36 @@ function symbAddNamespace _
 
 end function
 
-'':::::
-sub symbDelNamespace _
+sub symbDelNamespaceMembers _
 	( _
-		byval ns as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval delete_hashtb as integer _
 	)
 
-    if( ns = NULL ) then
-    	exit sub
-    end if
+	'' The namespace can be a NAMESPACE, STRUCT or ENUM, assuming that
+	'' FBS_STRUCT, FBS_ENUM and FBS_NAMESPACE all extend FBNAMESPC.
 
-    ''
-    symbCompDelImportList( ns )
+	symbCompDelImportList( s )
 
-    '' del all symbols inside the namespace
-    do
-		'' starting from last because of the USING's that could be
-		'' referencing a namespace in the same scope block
-		dim as FBSYMBOL ptr s = symbGetCompSymbTb( ns ).tail
-		if( s = NULL ) then
-			exit do
-		end if
+	'' Delete all member symbols, starting from last because of the USING's
+	'' that could be referencing a namespace in the same scope block
+	while( symbGetCompSymbTb( s ).tail )
+		symbDelSymbol( symbGetCompSymbTb( s ).tail, TRUE )
+	wend
 
-		symbDelSymbol( s, TRUE )
-	loop
-
-	''
-	if( ns->nspc.ns.ext <> NULL ) then
-		symbCompFreeExt( ns->nspc.ns.ext )
-		ns->nspc.ns.ext = NULL
+	if( s->nspc.ns.ext ) then
+		symbCompFreeExt( s->nspc.ns.ext )
+		s->nspc.ns.ext = NULL
 	end if
 
-	''
-	hashEnd( @ns->nspc.ns.hashtb.tb )
+	if( delete_hashtb ) then
+		hashEnd( @s->nspc.ns.hashtb.tb )
+	end if
+end sub
 
-	'' del node
-	symbFreeSymbol( ns )
-
+sub symbDelNamespace( byval s as FBSYMBOL ptr )
+	symbDelNamespaceMembers( s, TRUE )
+	symbFreeSymbol( s )
 end sub
 
 '':::::

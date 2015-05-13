@@ -33,26 +33,17 @@ end type
 '' globals
 	dim shared ctx as FBCTX
 
-
-'':::::
 sub parserSelectStmtInit( )
-
 	ctx.base = 0
-
 end sub
 
-'':::::
 sub parserSelectStmtEnd( )
-
-
 end sub
 
-'':::::
-''SelectStatement =   SELECT CASE (AS CONST)? Expression .
-''
-sub cSelectStmtBegin()
+'' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
+sub cSelectStmtBegin( )
     dim as ASTNODE ptr expr = any
-    dim as integer dtype = any
+	dim as integer dtype = any, options = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -91,7 +82,7 @@ sub cSelectStmtBegin()
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' can't be an UDT
@@ -99,69 +90,84 @@ sub cSelectStmtBegin()
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' add exit label
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	'' store expression into a temp var
+	sym = NULL
 	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
-	select case typeGet( dtype )
-	'' fixed-len or zstring? temp will be a var-len string..
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		dtype = FB_DATATYPE_STRING
-	end select
-
-    '' not a wstring?
-	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
-		sym = symbAddTempVar( dtype, subtype )
-
-		'' Remove temp flag to have its dtor called at scope breaks/end
-		'' (needed at least in case the temporary is a string)
-		symbUnsetIsTemp( sym )
-
-		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
-		if( expr <> NULL ) then
-			astAdd( expr )
-		end if
+	if( astIsVAR( expr ) ) then
+		'' No need to copy to a temp var when the expression is just
+		'' a var already (note: might be type-casted, so better use
+		'' the AST node's type, not the symbol's)
+		sym = astGetSymbol( expr )
+		assert( sym )
+		assert( symbIsTemp( sym ) = FALSE )
 	else
-		'' the wstring must be allocated() but size
-		'' is unknown at compile-time, do:
+		'' Store expression into a temp var
+		select case typeGet( dtype )
+		'' fixed-len or zstring? temp will be a var-len string..
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			dtype = FB_DATATYPE_STRING
+		end select
 
-		''  dim wstring ptr tmp
-		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
-
-		'' Remove temp flag to have it considered for dtor calling
-		symbUnsetIsTemp( sym )
-
-		'' Mark it as "dynamic wstring" so it will be deallocated with
-		'' WstrFree() at scope breaks/end
-		symbSetIsWstring( sym )
-
-		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
-			astAdd( astRemSideFx( expr ) )
+		options = 0
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-		'' tmp = WstrAlloc( len( expr ) )
-		astAdd( astNewASSIGN( astNewVAR( sym, _
-										 0, _
-										 typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+		'' not a wstring?
+		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
+			'' dim temp as dtype = expr
+			sym = symbAddImplicitVar( dtype, subtype, options )
 
-		'' *tmp = expr
-		expr = astNewASSIGN( astNewDEREF( astNewVAR( sym, _
-								  		 		     0, _
-								  		 		     typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-								  	      FB_DATATYPE_WCHAR, _
-								  	      NULL ), _
-				      		 expr )
+			'' Only need to clear if it's a string because of the
+			'' fb_StrDelete() calls at scope breaks; integers don't
+			'' have clean up, and UDTs aren't supported anyways.
+			'' This also silences the "branch crossing" warnings for
+			'' integers, they aren't needed since integer vars won't
+			'' be accessed anymore once a CASE body was reached,
+			'' unlike string temp vars and their fb_StrDelete().
+			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
+				symbSetDontInit( sym )
+			end if
 
-		if( expr <> NULL ) then
-			astAdd( expr )
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear at procedure-level if needed,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
+			else
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+			end if
+		else
+			'' The wstring expression must be copied into a
+			'' dynamically allocated buffer, just like with string
+			'' expressions, so it can be preserved for comparison
+			'' at every CASE.
+
+			'' dim temp as wstring ptr = expr
+			sym = symbAddImplicitVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL, options )
+
+			'' Mark it as "dynamic wstring" so it will be
+			'' deallocated with fb_WstrDelete() at scope breaks
+			symbSetIsWstring( sym )
+
+			if( options and FB_SYMBOPT_UNSCOPE ) then
+				'' Clear the pointer at procedure-level,
+				'' and do a normal assignment here
+				astAddUnscoped( astNewDECL( sym, TRUE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr ) )
+			else
+				'' Just the assignment, used as initializer
+				astAdd( astNewDECL( sym, FALSE ) )
+				astAdd( astBuildFakeWstringAssign( sym, expr, AST_OPOPT_ISINI ) )
+			end if
 		end if
 	end if
 
@@ -170,7 +176,6 @@ sub cSelectStmtBegin()
 						 FB_CMPSTMT_MASK_NOTHING ) '' nothing allowed but CASE's
 	stk->select.isconst = FALSE
 	stk->select.sym = sym
-	stk->select.dtype = dtype
 	stk->select.casecnt = 0
 	stk->select.cmplabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	stk->select.endlabel = el
@@ -181,7 +186,12 @@ end sub
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
+private sub hCaseExpression _
+	( _
+		byref casectx as FBCASECTX, _
+		byval sym as FBSYMBOL ptr _
+	)
+
 	casectx.op = AST_OP_EQ
 
 	'' IS REL_OP Expression
@@ -199,7 +209,9 @@ private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
 	if( casectx.expr1 = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		casectx.expr1 = astNewCONSTz( dtype )
+		casectx.expr1 = astNewCONSTz( iif( symbGetIsWstring( sym ), _
+							FB_DATATYPE_WCHAR, _
+							symbGetType( sym ) ) )
 	end if
 
 	'' TO Expression
@@ -225,61 +237,42 @@ private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
 	end if
 end sub
 
-'':::::
-'' if it's a wstring, do "if *tmp op expr"
-#define NEWCASEVAR(symbol,dtype) 					_
-	iif( typeGet( dtype ) <> FB_DATATYPE_WCHAR, 				_
-		 astNewVAR( symbol, 0, dtype ), 			_
-		 astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-					  FB_DATATYPE_WCHAR, 			_
-					  NULL ) 						_
-	   )
-
-
-'':::::
 private function hFlushCaseExpr _
 	( _
 		byref casectx as FBCASECTX, _
 		byval sym as FBSYMBOL ptr, _
-		byval dtype as integer, _
 		byval inilabel as FBSYMBOL ptr, _
 		byval nxtlabel as FBSYMBOL ptr, _
 		byval islast as integer _
-	) as integer static
+	) as integer
 
 	dim as ASTNODE ptr expr = any
 
+	'' if it's the fake "dynamic wstring", do "if *tmp op expr"
+	#define NEWCASEVAR( sym ) _
+		iif( symbGetIsWstring( sym ), _
+		     astBuildFakeWstringAccess( sym ), _
+		     astNewVAR( sym ) )
+
+	expr = NEWCASEVAR( sym )
+
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
-        expr = NEWCASEVAR( sym, dtype )
-
 		if( islast ) then
-			expr = astNewBOP( astGetInverseLogOp( casectx.op ), _
-						  	  expr, _
-						  	  casectx.expr1, _
-						  	  nxtlabel, _
-						  	  AST_OPOPT_NONE )
-
+			expr = astNewBOP( astGetInverseLogOp( casectx.op ), expr, _
+			                  casectx.expr1, nxtlabel, AST_OPOPT_NONE )
 		else
-			expr = astNewBOP( casectx.op, _
-						  	  expr, _
-						  	  casectx.expr1, _
-						  	  inilabel, _
-						  	  AST_OPOPT_NONE )
+			expr = astNewBOP( casectx.op, expr, _
+			                  casectx.expr1, inilabel, AST_OPOPT_NONE )
 		end if
-
 	else
-		expr = NEWCASEVAR( sym, dtype )
-
 		expr = astNewBOP( AST_OP_LT, expr, casectx.expr1, nxtlabel, AST_OPOPT_NONE )
-
 		if( expr = NULL ) then
 			return FALSE
 		end if
 
 		astAdd( expr )
 
-		expr = NEWCASEVAR( sym, dtype )
-
+		expr = NEWCASEVAR( sym )
 		if( islast ) then
 			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nxtlabel, AST_OPOPT_NONE )
 		else
@@ -294,23 +287,19 @@ private function hFlushCaseExpr _
 	astAdd( expr )
 
 	function = TRUE
-
 end function
 
-'':::::
-''SelectStmtNext   =    CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
-''
-function cSelectStmtNext( ) as integer
-	dim as FBSYMBOL ptr sym = any, il = any, nl = any
-	dim as integer dtype = any, cnt = any, i = any, cntbase = any
+'' SelectStmtNext  =  CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
+sub cSelectStmtNext( )
+	dim as FBSYMBOL ptr il = any, nl = any
+	dim as integer cnt = any, i = any, cntbase = any
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT, FALSE )
 	if( stk = NULL ) then
 		errReport( FB_ERRMSG_CASEWITHOUTSELECT )
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' ELSE already parsed?
@@ -324,7 +313,7 @@ function cSelectStmtNext( ) as integer
     '' AS CONST?
     if( stk->select.isconst ) then
 		cSelConstStmtNext( stk )
-		return TRUE
+		exit sub
     end if
 
 	'' CASE
@@ -353,18 +342,15 @@ function cSelectStmtNext( ) as integer
 
 		stk->select.casecnt = -1
 
-		return TRUE
+		exit sub
 	end if
 
 	'' CaseExpression ((',' | TO) CaseExpression)*
 	cnt = 0
 	cntbase = ctx.base
 
-	sym = stk->select.sym
-	dtype = stk->select.dtype
-
 	do
-		hCaseExpression( dtype, ctx.caseTB(cntbase + cnt) )
+		hCaseExpression( ctx.caseTB(cntbase + cnt), stk->select.sym )
 		cnt += 1
 
 		if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -380,7 +366,6 @@ function cSelectStmtNext( ) as integer
 	il = symbAddLabel( NULL )
 
 	for i = 0 to cnt-1
-
 		if( i < cnt-1 ) then
 			'' add next label
 			nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -389,11 +374,8 @@ function cSelectStmtNext( ) as integer
 		end if
 
 		if( ctx.caseTB(cntbase+i).typ <> FB_CASETYPE_ELSE ) then
-			if( hFlushCaseExpr( ctx.caseTB(cntbase+i), _
-								sym, dtype, _
-								il, nl, _
-								i = cnt-1 ) = FALSE ) then
-
+			if( hFlushCaseExpr( ctx.caseTB(cntbase+i), stk->select.sym, _
+			                    il, nl, i = cnt-1 ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 		end if
@@ -402,7 +384,6 @@ function cSelectStmtNext( ) as integer
 			'' emit next label
 			astAdd( astNewLABEL( nl ) )
 		end if
-
 	next
 
  	ctx.base -= cnt
@@ -414,23 +395,16 @@ function cSelectStmtNext( ) as integer
 	stk->scopenode = astScopeBegin( )
 
 	stk->select.casecnt += 1
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-''SelectStmtEnd =   END SELECT .
-''
-function cSelectStmtEnd as integer
-	dim as integer dtype = any
+'' SelectStmtEnd  =  END SELECT .
+sub cSelectStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT )
 	if( stk = NULL ) then
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
     '' no CASE's?
@@ -441,7 +415,7 @@ function cSelectStmtEnd as integer
     '' AS CONST?
     if( stk->select.isconst ) then
 		cSelConstStmtEnd( stk )
-		return TRUE
+		exit sub
     end if
 
 	'' END SELECT
@@ -464,7 +438,4 @@ function cSelectStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub

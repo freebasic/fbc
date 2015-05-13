@@ -11,23 +11,28 @@ namespace fbc_tests.functions.callconv_default
 	function foo( b as bar ) as integer
 		b.x = 69
 		b.y = 70
+		function = 0
 	end function
 	
 	function foo2( s as string ) as integer
 		s = "some long text"
+		function = 0
 	end function
 	
 	function foo3( bp as bar ptr ) as integer
 		bp = 0
+		function = 0
 	end function
 	
 	function foo4( i as integer ) as integer
 		i = 0
+		function = 0
 	end function
 	
 	function foo5( b as bar_f ) as integer
 		b.x = 69
 		b.y = 70
+		function = 0
 	end function
 	
 	sub test cdecl( )

@@ -33,6 +33,7 @@ typedef struct {
 	HINSTANCE hinstance;
 	WNDCLASS wndclass;
 	HWND wnd;
+	int fullw, fullh; /* width/height including non-client area */
 	PALETTEENTRY palette[256];
 	BLITTER *blitter;
 	HMONITOR monitor;

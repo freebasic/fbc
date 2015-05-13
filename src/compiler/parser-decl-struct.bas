@@ -8,10 +8,7 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-declare function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
+declare sub hTypeBody( byval s as FBSYMBOL ptr )
 
 declare sub hPatchByvalParamsToSelf _
 	( _
@@ -23,34 +20,41 @@ declare sub hPatchByvalResultToSelf _
 		byval parent as FBSYMBOL ptr _
 	)
 
-'':::::
-''TypeProtoDecl 	=	DECLARE ( CONSTRUCTOR Params
-''								| DESTRUCTOR
-''								| OPERATOR Op Params
-''								| PROPERTY Params
-''								| (STATIC|CONST)? SUB|FUNCTION Params ) .
+private sub hBeginNesting( byval parent as FBSYMBOL ptr )
+	if( symbGetIsUnique( parent ) = FALSE ) then
+		'' must be unique
+		symbSetIsUnique( parent )
+
+		'' start nesting
+		symbNestBegin( parent, FALSE )
+	end if
+end sub
+
 ''
-private function hTypeProtoDecl _
+'' TypeProtoDecl =
+''    DECLARE
+''    (STATIC?
+''      | CONST? (VIRTUAL|ABSTRACT)?)
+''    (CONSTRUCTOR|DESTRUCTOR CtorHeader
+''      | OPERATOR OperatorHeader
+''      | PROPERTY PropertyHeader
+''      | SUB|FUNCTION ProcHeader)
+''    .
+''
+private sub hTypeProtoDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer
+	)
 
-	dim as integer res = any, is_nested = any
-
-#macro hCheckStatic( attrib )
-	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
-		attrib and= not FB_SYMBATTRIB_STATIC
-	end if
-#endmacro
+	dim as integer is_nested = any, tk = any
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		errReport( FB_ERRMSG_METHODINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	'' methods not allowed?
@@ -58,143 +62,72 @@ private function hTypeProtoDecl _
 		errReportNotAllowed( FB_LANG_OPT_CLASS )
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
-
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
+	hBeginNesting( parent )
 
 	'' DECLARE
 	lexSkipToken( )
 
-	cConstOrStaticAttribute( @attrib )
+	cMethodAttributes( parent, attrib )
 
-	res = TRUE
-
-	select case as const lexGetToken( )
+	tk = lexGetToken( )
+	select case( tk )
 	case FB_TK_CONSTRUCTOR
-        hCheckStatic( attrib )
-
-		lexSkipToken( )
-
-		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR, _
-						 is_nested, _
-						 TRUE ) = NULL ) then
-			res = FALSE
-		end if
-
+		hDisallowStaticAttrib( attrib )
+		hDisallowVirtualCtor( attrib )
 	case FB_TK_DESTRUCTOR
-        hCheckStatic( attrib )
-
-		lexSkipToken( )
-
-		if( cCtorHeader( attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_DESTRUCTOR, _
-						 is_nested, _
-						 TRUE ) = NULL ) then
-			res = FALSE
-		end if
-
-	case FB_TK_OPERATOR
-		lexSkipToken( )
-
-		if( cOperatorHeader( attrib or FB_SYMBATTRIB_METHOD, _
-							 is_nested, _
-							 FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT ) = NULL ) then
-			res = FALSE
-		end if
-
+		hDisallowStaticAttrib( attrib )
+		hDisallowAbstractDtor( attrib )
 	case FB_TK_PROPERTY
-        hCheckStatic( attrib )
+		hDisallowStaticAttrib( attrib )
+	end select
 
+	select case( tk )
+	case FB_TK_SUB, FB_TK_FUNCTION, _
+	     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, _
+	     FB_TK_OPERATOR, FB_TK_PROPERTY
 		lexSkipToken( )
-
-		if( cPropertyHeader( attrib or FB_SYMBATTRIB_METHOD, _
-						 	 is_nested, _
-						 	 TRUE ) = NULL ) then
-			res = FALSE
-		end if
-
-	case FB_TK_SUB
-		lexSkipToken( )
-
-		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_METHOD
-		end if
 
 		cProcHeader( attrib, is_nested, _
-		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT or _
-		             FB_PROCOPT_ISSUB )
-
-	case FB_TK_FUNCTION
-		lexSkipToken( )
-
-		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-			attrib or= FB_SYMBATTRIB_METHOD
-		end if
-
-		cProcHeader( attrib, is_nested, _
-		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT )
+				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 	end select
+end sub
 
-	function = res
-
-end function
-
-'':::::
-''TypeEnumDecl 	=	ENUM|CONST ...
-''
-private function hTypeEnumDecl _
+'' TypeEnumDecl  =  ENUM|CONST ...
+private sub hTypeEnumDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval is_const as integer, _
+		byval tk as integer, _
 		byval attrib as integer _
-	) as integer
-
-	dim as integer res = any
+	)
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
 		errReport( FB_ERRMSG_METHODINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
+	hBeginNesting( parent )
 
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
-
-	if( is_const ) then
-		res = cConstDecl( attrib )
+	if( tk = FB_TK_CONST ) then
+		cConstDecl( attrib )
 	else
 		cEnumDecl( attrib )
-		res = TRUE
 	end if
-
-	function = res
-
-end function
+end sub
 
 '':::::
 private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr defctor = any, subtype = any
 
 	'' '=' | '=>' ?
-	select case lexGetToken( )
-	case FB_TK_DBLEQ, FB_TK_EQ
-
-	case else
+	if( hIsAssignToken( ) = FALSE ) then
 		'' No initializer
 
 		'' Check ctors/dtors
@@ -203,7 +136,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 				subtype = symbGetSubtype( sym )
 
 				'' Does it have any constructors? (Then we must call one to initialize this field)
-				if( symbGetHasCtor( subtype ) ) then
+				if( symbGetCompCtorHead( subtype ) ) then
 					'' Does it have a default constructor?
 					defctor = symbGetCompDefCtor( subtype )
 					if( defctor ) then
@@ -229,7 +162,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		end if
 
 		exit sub
-	end select
+	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_INITIALIZER )
@@ -240,8 +173,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 
 	if( sym <> NULL ) then
 		'' union or anon?
-		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-									  FB_UDTOPT_ISANON)) <> 0 ) then
+		if( symbGetUDTIsUnionOrAnon( parent ) ) then
 			errReport( FB_ERRMSG_CTORINUNION )
 			'' error recovery: skip
 			hSkipUntil( FB_TK_EOL )
@@ -270,19 +202,12 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		exit sub
 	end if
 
-	if( symbGetIsUnique( parent ) = FALSE ) then
-		'' must be unique
-		symbSetIsUnique( parent )
-
-		'' start nesting
-		symbNestBegin( parent, FALSE )
-	end if
+	hBeginNesting( parent )
 
 	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree ) then
-		'' don't allow references to local symbols
-		dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
-		if( s <> NULL ) then
+		'' Disallow references to local vars, except for temp vars/descriptors
+		if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
 			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE )
 			'' error recovery
 			astDelTree( initree )
@@ -290,8 +215,12 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		end if
 	end if
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
+
+	'' Remove bitfields from the AST's bitfield counter - the field
+	'' initializer will never be astAdd()ed itself, only cloned.
+	astForgetBitfields( initree )
 
 	'' Field initializers are only used in constructors (replacing the
 	'' implicit default initialization), so we make sure to add a default
@@ -321,6 +250,9 @@ private sub hTypeMultElementDecl _
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
 
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
+
 	do
 		'' allow keywords as field names
 		select case as const lexGetClass( )
@@ -345,7 +277,7 @@ private sub hTypeMultElementDecl _
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: fake an id
-			id = *hMakeTmpStr( )
+			id = *symbUniqueLabel( )
 		end select
 
 	    bits = 0
@@ -365,6 +297,18 @@ private sub hTypeMultElementDecl _
 						bits = 0
 					end if
 				end if
+			end if
+		end if
+
+		'' array?
+		if( dims > 0 ) then
+			'' "array too big" check
+			if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+				errReport( FB_ERRMSG_ARRAYTOOBIG )
+				'' error recovery: use small array
+				dims = 1
+				dTB(0).lower = 0
+				dTB(0).upper = 0
 			end if
 		end if
 
@@ -444,7 +388,7 @@ private sub hTypeElementDecl _
     case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		id = *hMakeTmpStr( )
+		id = *symbUniqueLabel( )
 		dtype = FB_DATATYPE_INVALID
     end select
 
@@ -477,6 +421,21 @@ private sub hTypeElementDecl _
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
+
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
+
+	'' array?
+	if( dims > 0 ) then
+		'' "array too big" check
+		if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+			errReport( FB_ERRMSG_ARRAYTOOBIG )
+			'' error recovery: use small array
+			dims = 1
+			dTB(0).lower = 0
+			dTB(0).upper = 0
+		end if
+	end if
 
 	''
 	if( bits <> 0 ) then
@@ -515,7 +474,35 @@ private sub hTypeElementDecl _
 	hFieldInit( parent, sym )
 end sub
 
-'':::::
+sub hTypeStaticVarDecl _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+	'' The UDT becomes a "class"
+	hBeginNesting( parent )
+
+	symbSetUdtHasStaticVar( parent )
+
+	'' Static member variables are really EXTERNs,
+	'' the corresponding DIM must be present in one (and only one) module.
+	''
+	'' This is necessary to avoid duplicating the static var in every
+	'' module that sees the UDT declaration, otherwise the static var
+	'' wouldn't be shared between different modules, and each had its own.
+	''
+	'' Unfortunately this means the static var cannot be initialized
+	'' at its declaration in the TYPE compound, only at the DIM later.
+
+	attrib or= FB_SYMBATTRIB_EXTERN or _
+			FB_SYMBATTRIB_SHARED or _
+			FB_SYMBATTRIB_STATIC
+
+	cVarDecl( attrib, FALSE, FB_TK_EXTERN, FALSE )
+
+end sub
+
 private function hTypeAdd _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -528,13 +515,11 @@ private function hTypeAdd _
 
 	dim as FBSYMBOL ptr s = any
 
-	function = NULL
-
-	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
+	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
+		s = symbStructBegin( NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0 )
 	end if
 
 	'' Comment? SttSeparator
@@ -548,13 +533,9 @@ private function hTypeAdd _
 		'' error recovery: skip until next line or stmt
 		hSkipUntil( INVALID, TRUE )
 	end if
-	
-	'' TypeBody
-	dim as integer res = hTypeBody( s )
 
-	if( res = FALSE ) then
-		exit function
-	end if
+	'' TypeBody
+	hTypeBody( s )
 
 	'' finalize
 	symbStructEnd( s, symbGetIsUnique( s ) )
@@ -577,11 +558,12 @@ private function hTypeAdd _
 	end if
 
 	function = s
-
 end function
 
 '' [FIELD '=' ConstExpression]
 private function cFieldAlignmentAttribute( ) as integer
+	dim as integer align = any
+
 	'' FIELD
 	if( lexGetToken( ) <> FB_TK_FIELD ) then
 		return 0
@@ -590,7 +572,7 @@ private function cFieldAlignmentAttribute( ) as integer
 	lexSkipToken( )
 
 	'' '='
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
@@ -599,19 +581,18 @@ private function cFieldAlignmentAttribute( ) as integer
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		'' error recovery: fake an expr
 		astDelTree( expr )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' follow the GCC 3.x ABI
-	dim as integer align = astGetValueAsInt( expr )
-	astDelNode( expr )
+	align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
 	elseif( align > FB_INTEGERSIZE ) then
@@ -620,26 +601,22 @@ private function cFieldAlignmentAttribute( ) as integer
 		align = 2
 	end if
 
-	return align
+	function = align
 end function
 
-'':::::
-''TypeBody      =   ( (UNION|TYPE Comment? SttSeparator
-''					   ElementDecl
-''					  END UNION|TYPE)
-''                  | ElementDecl
-''				    | AS AsElementDecl )+ .
+'' TypeBody  =
+''  (     (UNION|TYPE Comment? SttSeparator
+''             ElementDecl
+''         END UNION|TYPE)
+''     |  ElementDecl
+''     |  AS AsElementDecl )+ .
 ''
-private function hTypeBody _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
+private sub hTypeBody( byval s as FBSYMBOL ptr )
 	dim as integer isunion = any
-	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as FB_SYMBATTRIB attrib = any
 	dim as FBSYMBOL ptr inner = any
 
-	function = FALSE
+	attrib = FB_SYMBATTRIB_NONE  '' Used to hold visibility attributes
 
 	do
 		select case as const lexGetToken( )
@@ -702,18 +679,10 @@ private function hTypeBody _
 
 decl_inner:		'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
-				if( isunion = FALSE ) then
-					if( symbGetUDTIsUnion( s ) = FALSE ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: fake type
-						isunion = TRUE
-					end if
-				else
-					if( symbGetUDTIsUnion( s ) ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: fake type
-						isunion = FALSE
-					end if
+				if( symbGetUDTIsUnion( s ) = isunion ) then
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' error recovery: fake type
+					isunion = not isunion
 				end if
 
 				lexSkipToken( )
@@ -725,12 +694,12 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' create a "temp" one
-				inner = hTypeAdd( s, NULL, NULL, isunion, align )
-				if( inner = NULL ) then
-					exit function
-				end if
+				inner = hTypeAdd( s, symbUniqueId( ), NULL, isunion, align )
 
-				inner->udt.options or= iif( isunion, FB_UDTOPT_ISUNION, 0 )
+				if( isunion ) then
+					symbSetUDTIsUnion( inner )
+					symbSetUDTHasAnonUnion( s )
+				end if
 
 				'' walk through all the anon UDT's symbols, and
 				'' promote their attributes from the root
@@ -766,21 +735,13 @@ decl_inner:		'' it's an anonymous inner UDT
 			hTypeMultElementDecl( s, attrib )
 
 		case FB_TK_DECLARE
-			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
-				hSkipStmt( )
-			end if
+			hTypeProtoDecl( s, attrib )
 
-		case FB_TK_ENUM
-			if( hTypeEnumDecl( s, FALSE, attrib ) = FALSE ) then
-				exit function
-			end if
-
-		case FB_TK_CONST
-			if( hTypeEnumDecl( s, TRUE, attrib ) = FALSE ) then
-				exit function
-			end if
+		case FB_TK_ENUM, FB_TK_CONST
+			hTypeEnumDecl( s, lexGetToken( ), attrib )
 
 		case FB_TK_DIM
+			'' Field(s) with explicit DIM
 			lexSkipToken( )
 
 			'' multi-decl?
@@ -792,9 +753,10 @@ decl_inner:		'' it's an anonymous inner UDT
 			end if
 
 		case FB_TK_STATIC
+			'' Static member variable
 			lexSkipToken( )
 
-			'' !!!WRITEME!! it's var, but it can't be initialized
+			hTypeStaticVarDecl( s, attrib )
 
 		'' anything else, must be a field
 		case else
@@ -815,53 +777,44 @@ decl_inner:		'' it's an anonymous inner UDT
 		end if
 	loop
 
-	'' nothing added?
-	if( symbGetUDTElements( s ) = 0 ) then
+	'' no fields added?
+	if( symbUdtGetFirstField( s ) = NULL ) then
 		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
-	end if
-
-    function = TRUE
-
-end function
-
-private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
-	'' Not at module level?
-	if( parser.scope > FB_MAINSCOPE ) then
-		'' we can't allow objects (or their children) with c/dtor
-		if( symbGetUDTHasCtorField( sym ) ) then
-			errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) )
-		end if
-
-		'' can't allow methods either...
-		dim as FBSYMBOL ptr walk = symbGetUDTFirstElm( sym )
-		do while( walk <> NULL )
-			if( symbIsMethod( walk ) ) then
-				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( walk ) )
-			end if
-			walk = walk->next
-		loop
 	end if
 end sub
 
-'':::::
-''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)? Comment? SttSeparator
-''						TypeLine+
-''					  END (TYPE|UNION) .
-function cTypeDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
+private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr member = any
+	'' Not at module level?
+	if( parser.scope > FB_MAINSCOPE ) then
+		'' Shouldn't allow any member procedures - they couldn't be
+		'' implemented since we don't allow nested procedures.
+		'' (Note: assuming symbStructEnd() was already called,
+		'' thus any implicit members were already added by
+		'' symbUdtAddDefaultMembers())
+		member = symbGetCompSymbTb( sym ).head
+		while( member )
+			if( symbIsProc( member ) ) then
+				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( member ) )
+			end if
+			member = member->next
+		wend
+	end if
+end sub
 
+'' TypeDecl  =
+''  TYPE|UNION ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)?
+''      TypeLine+
+''  END (TYPE|UNION) .
+sub cTypeDecl( byval attrib as integer )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
-	function = FALSE
-
 	isunion = (lexGetToken( ) = FB_TK_UNION)
 
-	'' skip TYPE | UNION
+	'' TYPE|UNION
 	lexSkipToken( )
 
 	'' ID
@@ -870,14 +823,14 @@ function cTypeDecl _
 	case FB_TKCLASS_IDENTIFIER
 
 	case FB_TKCLASS_KEYWORD
-    	if( isunion = FALSE ) then
-    		'' AS?
-    		if( lexGetToken( ) = FB_TK_AS ) then
+		if( isunion = FALSE ) then
+			'' AS?
+			if( lexGetToken( ) = FB_TK_AS ) then
 				'' (Note: the typedef parser will skip the AS)
-				cTypedefMultDecl()
-				return TRUE
-    		end if
-    	end if
+				cTypedefMultDecl( )
+				exit sub
+			end if
+		end if
 
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an ID
@@ -906,7 +859,7 @@ function cTypeDecl _
 
 		lexEatToken( @id )
 	else
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	end if
 
 	'' AS?
@@ -917,7 +870,12 @@ function cTypeDecl _
 
 		'' (Note: the typedef parser will skip the AS)
 		cTypedefSingleDecl( id )
-		return TRUE
+		exit sub
+	end if
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipCompound( FB_TK_TYPE )
+		exit sub
 	end if
 
 	'' [ALIAS "id"]
@@ -966,16 +924,12 @@ function cTypeDecl _
 	parser.currblock = currblocksym
 	parser.scope = scope_depth
 
-	hCheckForCDtorOrMethods(sym)
+	hCheckForCDtorOrMethods( sym )
 
 	'' end the compound
 	stk = cCompStmtGetTOS( FB_TK_TYPE )
 	if( stk <> NULL ) then
 		cCompStmtPop( stk )
-	end if
-
-	if( sym = NULL ) then
-		return FALSE
 	end if
 
 	'' has methods? must be unique..
@@ -1000,7 +954,7 @@ function cTypeDecl _
 
 	'' byval params to self?
 	if( symbGetUdtHasRecByvalParam( sym ) ) then
-		if( symbIsTrivial( sym ) = FALSE ) then
+		if( symbCompIsTrivial( sym ) = FALSE ) then
 			hPatchByvalParamsToSelf( sym )
 		end if
 	end if
@@ -1009,50 +963,32 @@ function cTypeDecl _
 	if( symbGetUdtHasRecByvalRes( sym ) ) then
 		hPatchByvalResultToSelf( sym )
 	end if
+end sub
 
-	function = TRUE
+private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr sym = any, param = any
 
-end function
-
-'':::::
-private sub hPatchByvalParamsToSelf _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr sym, param
-	dim as integer do_recalc
-
-	'' for each method..
+	'' For each method...
 	sym = symbGetUDTSymbtb( parent ).head
-	do while( sym <> NULL )
+	while( sym )
 		if( symbIsProc( sym ) ) then
-			do_recalc = FALSE
-
-			'' for each param..
+			'' For each param...
 			param = symbGetProcHeadParam( sym )
-			do while( param <> NULL )
-				'' byval to self? recalc..
-				if( symbGetSubtype( param ) = parent ) then
+			while( param )
+				'' BYVAL AS ParentUDT?
+				if( (symbGetType( param ) = FB_DATATYPE_STRUCT) and _
+				    (symbGetSubtype( param ) = parent)                ) then
 					if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
-						param->lgt = symbCalcProcParamLen( FB_DATATYPE_STRUCT, _
-														   parent, _
-														   FB_PARAMMODE_BYVAL )
-						do_recalc = TRUE
+						symbRecalcLen( param )
 					end if
 				end if
 
 				param = param->next
-			loop
-
-			'' recalc total len?
-			if( do_recalc ) then
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
-			end if
+			wend
 		end if
 
 		sym = sym->next
-	loop
+	wend
 
 end sub
 
@@ -1063,23 +999,15 @@ private sub hPatchByvalResultToSelf _
 	) static
 
 	dim as FBSYMBOL ptr sym
-	dim as integer do_recalc
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
 		if( symbIsProc( sym ) ) then
-
 			'' byval result to self? reset..
 			if( symbGetSubtype( sym ) = parent ) then
-				'' follow the GCC 3.x ABI
-				symbGetProcRealType( sym ) = symbGetUDTRetType( parent )
-
-            	'' recalc params len (we don't know if the hidden param was added or
-            	'' not in the time it was parsed, so we can't do any assumption here)
-            	symbGetProcParamsLen( sym ) = symbCalcProcParamsLen( sym )
+				symbProcRecalcRealType( sym )
 			end if
-
 		end if
 
 		sym = sym->next

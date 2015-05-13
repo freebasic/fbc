@@ -24,12 +24,7 @@ declare sub hDelLocals _
 		byval check_backward as integer _
 	)
 
-'':::::
-function astScopeBegin _
-	( _
-		_
-	) as ASTNODE ptr
-
+function astScopeBegin( ) as ASTNODE ptr
     dim as ASTNODE ptr n = any
     dim as FBSYMBOL ptr s = any
 
@@ -70,15 +65,13 @@ function astScopeBegin _
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEINI, cint( s ) ) )
 
 	function = n
-
 end function
 
-'':::::
 private sub hAddToBreakList _
 	( _
 		byval list as AST_BREAKLIST ptr, _
 		byval node as ASTNODE ptr _
-	) static
+	)
 
 	if( list->tail <> NULL ) then
 		list->tail->next = node
@@ -92,7 +85,7 @@ private sub hAddToBreakList _
 
 end sub
 
-sub astScopeBreak(byval target as FBSYMBOL ptr)
+sub astScopeBreak( byval target as FBSYMBOL ptr )
 	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, FB_DATATYPE_INVALID, NULL )
@@ -113,12 +106,7 @@ sub astScopeBreak(byval target as FBSYMBOL ptr)
 	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
 end sub
 
-'':::::
-sub astScopeEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
+sub astScopeEnd( byval n as ASTNODE ptr )
 	dim as FBSYMBOL ptr s = any
 
 	assert( n->class = AST_NODECLASS_SCOPEBEGIN )
@@ -153,15 +141,9 @@ sub astScopeEnd _
 	astAdd( n )
 
 	n->sym = s
-
 end sub
 
-'':::::
-function astScopeUpdBreakList _
-	( _
-		byval proc as ASTNODE ptr _
-	) as integer
-
+function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
     dim as ASTNODE ptr n = any
 
     function = FALSE
@@ -188,7 +170,6 @@ function astScopeUpdBreakList _
     loop
 
     function = TRUE
-
 end function
 
 '':::::
@@ -616,12 +597,14 @@ private function hCheckBranch _
 
 end function
 
-sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
+sub astScopeDestroyVars( byval symtbtail as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr s = any
+
 	'' For each symbol declared inside the block (in reverse order)
-	dim as FBSYMBOL ptr s = symtbtail
-	while (s)
+	s = symtbtail
+	while( s )
 		'' variable?
-		if (symbIsVar(s)) then
+		if( symbIsVar( s ) ) then
 			'' has a dtor?
 			if( symbGetVarHasDtor( s ) ) then
 				astAdd( astBuildVarDtorCall( s, TRUE ) )
@@ -631,43 +614,63 @@ sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
 	wend
 end sub
 
-sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
-	'' Used for both scope and proc locals/statics
+sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr s = any
 
-	'' For the C emitter, let static vars be allocated here too, so they're
-	'' emitted inside the procedure. The irProcAllocStaticVars() later does
-	'' nothing.
-	'' Otherwise for the ASM emitter, ignore static vars here via the
-	'' filter mask; irProcAllocStaticVars() will handle them later.
-	dim as integer mask = any
-	if (irGetOption(IR_OPT_HIGHLEVEL)) then
-		mask = FB_SYMBATTRIB_SHARED
-	else
-		mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
-	end if
+	'' Emit/allocate variables local to a procedure or scope block
+	assert( ast.doemit )
 
-	dim as FBSYMBOL ptr s = symtbhead
-	while (s)
-		'' non-shared/static variable?
-		if (symbIsVar(s) andalso ((s->attrib and mask) = 0)) then
-			'' Procedure parameter?
-			if (symbIsParam(s)) then
-				s->ofs = irProcAllocArg(parser.currproc, s, iif(symbIsParamByVal(s), s->lgt, FB_POINTERSIZE))
-			else
-				s->ofs = irProcAllocLocal(parser.currproc, s, s->lgt * symbGetArrayElements(s))
+	s = symtbhead
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		''
+		'' C backend: Most locals (including statics) are emitted from
+		'' astLoadDECL(), assuming they have DECL nodes, so they will
+		'' start shadowing variables from parent scopes not earlier
+		'' than they should.
+		''
+		'' Behind the scenes, statics with dtors are actually emitted
+		'' during irProcAllocStaticVars() because they're special:
+		'' They're emitted as globals so the dtor wrappers can see them.
+		''
+		'' The only cases of locals that don't have DECL nodes seem to
+		'' be temp vars. Since their names are unique, there's no
+		'' problem with var shadowing and we can emit them all at the
+		'' top of the scope from here.
+		''
+		while( s )
+			'' temp var?
+			if( symbIsVar( s ) and symbIsTemp( s ) ) then
+				assert( (symbIsShared( s ) = FALSE) and (symbIsParam( s ) = FALSE) )
+				'' Fake a DECL to emit the variable declaration
+				irEmitDECL( s )
 			end if
-			symbSetVarIsAllocated(s)
-		end if
-		s = s->next
-	wend
+			s = s->next
+		wend
+	else
+		''
+		'' ASM backend: All locals except statics or shared vars
+		'' are allocated from here (i.e. the backend reserves the stack
+		'' space for them). Parameters are allocated from here too.
+		''
+		'' statics are handled by irProcAllocStaticVars() later.
+		''
+		while( s )
+			'' non-shared/static variable?
+			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
+				'' Procedure parameter?
+				if( symbIsParam( s ) ) then
+					s->ofs = irProcAllocArg( parser.currproc, s, iif( symbIsParamByVal( s ), s->lgt, FB_POINTERSIZE ) )
+				else
+					s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt * symbGetArrayElements( s ) )
+				end if
+				symbSetVarIsAllocated( s )
+			end if
+			s = s->next
+		wend
+	end if
 end sub
 
-'':::::
-function astLoadSCOPEBEGIN _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s = any
 
 	s = n->sym
@@ -676,20 +679,13 @@ function astLoadSCOPEBEGIN _
 
 	if( ast.doemit ) then
 		irEmitSCOPEBEGIN( s )
+		astScopeAllocLocals( symbGetScopeSymbTbHead( s ) )
 	end if
 
-	astScopeAllocLocals(symbGetScopeSymbTbHead(s))
-
 	function = NULL
-
 end function
 
-'':::::
-function astLoadSCOPEEND _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s = any
 
     s = n->sym
@@ -701,5 +697,99 @@ function astLoadSCOPEEND _
     symbSetProcLocalOfs( parser.currproc, s->scp.emit.baseofs )
 
     function = NULL
-
 end function
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' Temporary scopes used by TYPEINIs to capture any temp symbols, so that they
+'' can be duplicated into other scope contexts
+'' (needed for field/parameter/global var initializer expressions)
+
+function astTempScopeBegin _
+	( _
+		byref lastscp as FBSYMBOL ptr, _
+		byval backnode as ASTNODE ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr scp = any
+
+	scp = symbAddScope( backnode )
+
+	lastscp = parser.currblock
+
+	parser.scope += 1
+	parser.currblock = scp
+
+	symbSetCurrentSymTb( @scp->scp.symtb )
+
+	function = scp
+end function
+
+sub astTempScopeEnd _
+	( _
+		byval scp as FBSYMBOL ptr, _
+		byval lastscp as FBSYMBOL ptr _
+	)
+
+	dim as FBSYMBOL ptr sym = any
+
+	'' remove symbols from hash table
+	symbDelScopeTb( scp )
+
+	'' back to previous symbol tb
+	symbSetCurrentSymTb( scp->symtb )
+
+	symbFreeSymbol_UnlinkOnly( scp )
+
+	parser.currblock = lastscp
+	parser.scope -= 1
+
+	'' Unregister any temp var dtor calls
+	'' (astTempScopeClone() will re-add them in the new context)
+	sym = symbGetScopeSymbTbHead( scp )
+	while( sym )
+		if( symbIsVar( sym ) ) then
+			astDtorListDel( sym )
+		end if
+		sym = sym->next
+	wend
+
+end sub
+
+sub astTempScopeClone _
+	( _
+		byval scp as FBSYMBOL ptr, _
+		byval clonetree as ASTNODE ptr _
+	)
+
+	dim as FBSYMBOL ptr sym = any, clonesym = any
+
+	'' Duplicate any symbols from the temp scope into the current context
+	sym = symbGetScopeSymbTbHead( scp )
+	while( sym )
+		clonesym = symbCloneSymbol( sym )
+
+		'' Update the corresponding expression tree
+		astReplaceSymbolOnTree( clonetree, sym, clonesym )
+
+		'' Re-register temp var dtors in the current context
+		if( symbIsVar( clonesym ) ) then
+			astDtorListAdd( clonesym )
+		end if
+
+		sym = sym->next
+	wend
+
+end sub
+
+sub astTempScopeDelete( byval scp as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr sym = any, nxt = any
+
+	sym = symbGetScopeSymbTbHead( scp )
+	while( sym )
+		nxt = sym->next
+		symbFreeSymbol_RemOnly( sym )
+		sym = nxt
+	wend
+
+	symbFreeSymbol_RemOnly( scp )
+end sub

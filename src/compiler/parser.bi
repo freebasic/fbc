@@ -79,7 +79,6 @@ end type
 type FB_CMPSTMT_SELECT
 	isconst			as integer
 	sym				as FBSYMBOL ptr
-	dtype			as FB_DATATYPE
 	casecnt			as integer
 	const_			as FB_CMPSTMT_SELCONST
 	cmplabel		as FBSYMBOL ptr
@@ -89,7 +88,10 @@ type FB_CMPSTMT_SELECT
 end type
 
 type FB_CMPSTMT_WITH
-	last			as FBSYMBOL ptr
+	'' The WITH temp var (if it needed to use a pointer), or the variable
+	'' (if a simple VAR access was given to the WITH)
+	sym		as FBSYMBOL ptr
+	is_ptr		as integer
 end type
 
 type FB_CMPSTMT_NAMESPACE
@@ -123,10 +125,6 @@ type FB_CMPSTMTSTK
 	end union
 end type
 
-type FBPARSER_STMT_WITH
-	sym				as FBSYMBOL ptr
-end type
-
 type FB_LETSTMT_NODE
 	expr			as ASTNODE ptr
 end type
@@ -147,7 +145,7 @@ type FBPARSER_STMT
 	while			as FB_CMPSTMTSTK ptr
 	select			as FB_CMPSTMTSTK ptr
 	proc			as FB_CMPSTMTSTK ptr
-	with			as FBPARSER_STMT_WITH
+	with			as FB_CMPSTMT_WITH
 	let				as FBPARSER_STMT_LET
 end type
 
@@ -161,7 +159,9 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_OPTONLY		= &h00000020
 	FB_PARSEROPT_HASINSTPTR		= &h00000040
 	FB_PARSEROPT_ISPROPGET		= &h00000080
-	FB_PARSEROPT_EQINPARENTSONLY= &h00000100	'' only check for '=' if inside parentheses
+	FB_PARSEROPT_EQINPARENSONLY	= &h00000100	'' only check for '=' if inside parentheses
+	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
+	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
 end enum
 
 type PARSERCTX
@@ -177,8 +177,6 @@ type PARSERCTX
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
 
-	asmtoklist		as TLIST					'' inline ASM list
-
 	ovlarglist		as TLIST					'' used to resolve calls to overloaded functions
 
 	'' hacks
@@ -186,6 +184,7 @@ type PARSERCTX
 	options			as FB_PARSEROPT
 	ctx_dtype       as integer                  '' used to resolve the address of overloaded procs
 	ctxsym			as FBSYMBOL ptr				'' /
+	have_eq_outside_parens	as integer
 end type
 
 '' cSymbolType flags
@@ -220,6 +219,7 @@ enum FB_IDOPT
 	FB_IDOPT_ISOPERATOR			= &h00000008
 	FB_IDOPT_ALLOWSTRUCT		= &h00000010
 	FB_IDOPT_CHECKSTATIC        = &h00000020
+	FB_IDOPT_ISVAR              = &h00000040  '' parsing namespace prefix for variable declaration?
 
 	FB_IDOPT_DEFAULT			= FB_IDOPT_SHOWERROR or FB_IDOPT_CHECKSTATIC
 end enum
@@ -233,13 +233,11 @@ enum FB_INIOPT
 	FB_INIOPT_ISOBJ             = &h00000004
 end enum
 
-'' cProcHead flags
+'' cProcHeader() flags
 enum FB_PROCOPT
-	FB_PROCOPT_NONE				= &h00000000
-
-	FB_PROCOPT_ISSUB			= &h00000001
-	FB_PROCOPT_ISPROTO			= &h00000002
-	FB_PROCOPT_HASPARENT		= &h00000004
+	FB_PROCOPT_NONE			= &h00000000
+	FB_PROCOPT_ISPROTO		= &h00000001
+	FB_PROCOPT_HASPARENT		= &h00000002
 end enum
 
 '' cVarOrDeref flags
@@ -263,7 +261,6 @@ declare function cComment _
 		byval lexflags as LEXCHECK = LEXCHECK_EVERYTHING _
 	) as integer
 
-declare sub cDirective()
 declare sub cStatement()
 
 declare function cStmtSeparator _
@@ -276,26 +273,11 @@ declare function cDeclaration _
 		_
 	) as integer
 
-declare function cConstDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
-declare function cConstAssign _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
-declare function cTypeDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
-
-declare sub cTypedefMultDecl()
-declare sub cTypedefSingleDecl(byval pid as zstring ptr)
-declare sub cEnumDecl(byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE)
+declare sub cConstDecl( byval attrib as integer )
+declare sub cTypeDecl( byval attrib as integer )
+declare sub cTypedefMultDecl( )
+declare sub cTypedefSingleDecl( byval pid as zstring ptr )
+declare sub cEnumDecl( byval attrib as integer )
 declare function hCheckScope() as integer
 
 declare function cVariableDecl _
@@ -313,11 +295,7 @@ declare function cStaticArrayDecl _
 		byval allow_ellipsis as integer = TRUE _
 	) as integer
 
-declare function cArrayDecl _
-	( _
-		byref dimensions as integer, _
-		exprTB() as ASTNODE ptr _
-	) as integer
+declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 
 declare function cInitializer _
 	( _
@@ -359,39 +337,15 @@ declare function cParentId _
 		byval options as FB_IDOPT = FB_IDOPT_NONE _
 	) as FBSYMBOL ptr
 
-declare sub cCurrentParentId()
-
-declare function cProcDecl _
-	( _
-		_
-	) as integer
+declare sub cCurrentParentId( )
+declare sub cProcDecl( )
 
 declare function cProcHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
 		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
-	) as FBSYMBOL ptr
-
-declare function cOperatorHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval options as FB_PROCOPT _
-	) as FBSYMBOL ptr
-
-declare function cCtorHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval is_prototype as integer _
-	) as FBSYMBOL ptr
-
-declare function cPropertyHeader _
-	( _
-		byval attrib as FB_SYMBATTRIB, _
-		byref is_nested as integer, _
-		byval is_prototype as integer _
+		byval options as FB_PROCOPT, _
+		byval tk as integer _
 	) as FBSYMBOL ptr
 
 declare sub cParameters _
@@ -402,15 +356,8 @@ declare sub cParameters _
 		byval isproto as integer _
 	)
 
-declare function cDefDecl _
-	( _
-		_
-	) as integer
-
-declare function cOptDecl _
-	( _
-		_
-	) as integer
+declare sub cDefDecl( )
+declare sub cOptDecl( )
 
 declare function cProcCallOrAssign _
 	( _
@@ -444,114 +391,46 @@ declare function cCompStmtGetTOS _
 		byval showerror as integer = TRUE _
 	) as FB_CMPSTMTSTK ptr
 
-declare sub cCompStmtPop _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	)
+declare sub cCompStmtPop( byval stk as FB_CMPSTMTSTK ptr )
 
 declare function cCompStmtIsAllowed _
 	( _
 		byval allowmask as FB_CMPSTMT_MASK _
 	) as integer
 
-declare sub cIfStmtBegin()
+declare sub cIfStmtBegin( )
+declare sub cIfStmtNext( )
+declare sub cIfStmtEnd( )
+declare sub cForStmtBegin( )
+declare sub cForStmtEnd( )
+declare sub cDoStmtBegin( )
+declare sub cDoStmtEnd( )
+declare sub cWhileStmtBegin( )
+declare sub cWhileStmtEnd( )
+declare sub cSelectStmtBegin( )
+declare sub cSelectStmtNext( )
+declare sub cSelectStmtEnd( )
+declare sub cSelConstStmtBegin( )
+declare sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
+declare sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
+declare sub hDisallowStaticAttrib( byref attrib as integer )
+declare sub hDisallowVirtualCtor( byref attrib as integer )
+declare sub hDisallowAbstractDtor( byref attrib as integer )
+declare sub cProcStmtBegin( byval attrib as integer = 0 )
+declare sub cProcStmtEnd( )
+declare sub cExitStatement( )
+declare sub cEndStatement( )
+declare sub cContinueStatement( )
+declare sub cWithStmtBegin( )
+declare sub cWithStmtEnd( )
+declare sub cScopeStmtBegin( )
+declare sub cScopeStmtEnd( )
 
-declare function cIfStmtNext _
-	( _
-		_
-	) as integer
-
-declare function cIfStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cForStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cForStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cDoStmtBegin()
-
-declare function cDoStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cWhileStmtBegin()
-
-declare function cWhileStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cSelectStmtBegin()
-
-declare function cSelectStmtNext _
-	( _
-		_
-	) as integer
-
-declare function cSelectStmtEnd _
-	( _
-		_
-	) as integer
-
-declare sub cSelConstStmtBegin()
-declare sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
-declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
-declare function cProcStmtBegin( byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE ) as integer
-declare function cProcStmtEnd( ) as integer
-declare sub cExitStatement()
-declare function cEndStatement( ) as integer
-
-declare sub cContinueStatement()
-declare sub cWithStmtBegin()
-
-declare function cWithStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cScopeStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cScopeStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cNamespaceStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cNamespaceStmtEnd _
-	( _
-		_
-	) as integer
-
-declare function cUsingStmt _
-	( _
-		_
-	) as integer
-
-declare function cExternStmtBegin _
-	( _
-		_
-	) as integer
-
-declare function cExternStmtEnd _
-	( _
-		_
-	) as integer
+declare sub cNamespaceStmtBegin( )
+declare sub cNamespaceStmtEnd( )
+declare sub cUsingStmt( )
+declare sub cExternStmtBegin( )
+declare sub cExternStmtEnd( )
 
 declare function cAssignmentOrPtrCall _
 	( _
@@ -562,6 +441,9 @@ declare function cAssignmentOrPtrCallEx _
 	( _
 		byval expr as ASTNODE ptr _
 	) as integer
+
+declare function hIsAssignToken( ) as integer
+declare function cAssignToken( ) as integer
 
 declare function cOperator _
 	( _
@@ -634,15 +516,8 @@ declare function cHighestPrecExpr _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-declare function cDerefExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cAddrOfExpression _
-	( _
-		_
-	) as ASTNODE ptr
+declare function cDerefExpression( ) as ASTNODE ptr
+declare function cAddrOfExpression( ) as ASTNODE ptr
 
 declare function cTypeConvExpr _
 	( _
@@ -650,7 +525,12 @@ declare function cTypeConvExpr _
 		byval isASM as integer = FALSE _
 	) as ASTNODE ptr
 
-declare function cEqInParentsOnlyExpr _
+declare function cEqInParensOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
+declare function cGtInParensOnlyExpr _
 	( _
 		_
 	) as ASTNODE ptr
@@ -684,11 +564,7 @@ declare function cVariableEx _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cWithVariable _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval checkarray as integer _
-	) as ASTNODE ptr
+declare function cWithVariable( byval checkarray as integer ) as ASTNODE ptr
 
 declare function cImplicitDataMember _
 	( _
@@ -749,9 +625,23 @@ declare function cAsmBlock _
 		_
 	) as integer
 
-declare function cAliasAttribute() as zstring ptr
-declare sub cLibAttribute()
-declare sub cConstOrStaticAttribute( byval pattrib as integer ptr )
+declare function cAliasAttribute( ) as zstring ptr
+declare sub cLibAttribute( )
+declare sub cMethodAttributes _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byref attrib as integer _
+	)
+
+declare sub cProcRetType _
+	( _
+		byval attrib as integer, _
+		byval proc as FBSYMBOL ptr, _
+		byval is_proto as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	)
 
 declare function cProcReturnMethod _
 	( _
@@ -762,6 +652,8 @@ declare function cProcCallingConv _
 	( _
 		byval default as FB_FUNCMODE = FB_USE_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
+
+declare sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
 
 declare function cFunctionCall _
 	( _
@@ -837,6 +729,7 @@ declare function cStrIdxOrMemberDeref _
 	) as ASTNODE ptr
 
 declare sub cAssignment(byval assgexpr as ASTNODE ptr)
+declare function cBydescArrayArgParens( byval arg as ASTNODE ptr ) as FB_PARAMMODE
 declare function cAssignFunctResult( byval is_return as integer ) as integer
 
 declare function cGfxStmt _
@@ -915,21 +808,21 @@ declare function cErrorFunct() as ASTNODE ptr
 declare function cIIFFunct() as ASTNODE ptr
 declare function cVAFunct() as ASTNODE ptr
 declare function cScreenFunct() as ASTNODE ptr
-declare function cAnonUDT() as ASTNODE ptr
-declare sub cConstExprValue(byref value as integer)
-
-declare function cOperatorNew _
+declare function cAnonType( ) as ASTNODE ptr
+declare function cConstIntExpr _
 	( _
-		_
-	) as ASTNODE ptr
-
-declare sub cOperatorDelete()
+		byval expr as ASTNODE ptr, _
+		byval defaultvalue as integer = 0 _
+	) as integer
+declare function cOperatorNew( ) as ASTNODE ptr
+declare sub cOperatorDelete( )
 
 declare sub hSkipUntil _
 	( _
 		byval token as integer, _
 		byval doeat as integer = FALSE, _
-		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING, _
+		byval stop_on_comma as integer = FALSE _
 	)
 
 declare sub hSkipCompound _
@@ -944,13 +837,19 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-declare function hVarDeclEx _
+declare function cVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
-        byval token as integer, _
-        byval is_fordecl as integer _
+		byval token as integer, _
+		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
+
+declare sub hComplainIfAbstractClass _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
 declare sub hSymbolType _
 	( _
@@ -970,7 +869,13 @@ declare function hCheckForDefiniteExprs _
 	) as integer
 
 declare function cThreadCallFunc() as ASTNODE ptr
-    
+
+declare function hIntegerTypeFromBitSize _
+	( _
+		byval bitsize as integer, _
+		byval is_unsigned as integer = FALSE _
+	) as FB_DATATYPE
+
 ''
 '' macros
 ''
@@ -1088,13 +993,33 @@ declare function cThreadCallFunc() as ASTNODE ptr
 	end if
 #endmacro
 
-#define fbGetEqInParentsOnly( ) ((parser.options and FB_PARSEROPT_EQINPARENTSONLY) <> 0)
+#define fbGetEqInParensOnly( ) ((parser.options and FB_PARSEROPT_EQINPARENSONLY) <> 0)
 
-#macro fbSetEqInParentsOnly( _bool )
+#macro fbSetEqInParensOnly( _bool )
 	if( _bool ) then
-		parser.options or= FB_PARSEROPT_EQINPARENTSONLY
+		parser.options or= FB_PARSEROPT_EQINPARENSONLY
 	else
-		parser.options and= not FB_PARSEROPT_EQINPARENTSONLY
+		parser.options and= not FB_PARSEROPT_EQINPARENSONLY
+	end if
+#endmacro
+
+#define fbGetGtInParensOnly( ) ((parser.options and FB_PARSEROPT_GTINPARENSONLY) <> 0)
+
+#macro fbSetGtInParensOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_GTINPARENSONLY
+	else
+		parser.options and= not FB_PARSEROPT_GTINPARENSONLY
+	end if
+#endmacro
+
+'' Whether the expression being parsed is a PP expression (#ifdef etc.)
+#define fbGetIsPP( ) ((parser.options and FB_PARSEROPT_ISPP) <> 0)
+#macro fbSetIsPP( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_ISPP
+	else
+		parser.options and= not FB_PARSEROPT_ISPP
 	end if
 #endmacro
 
@@ -1102,4 +1027,3 @@ declare function cThreadCallFunc() as ASTNODE ptr
 '' inter-module globals
 ''
 extern parser as PARSERCTX
-

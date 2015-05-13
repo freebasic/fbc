@@ -48,6 +48,9 @@ FBCALL int fb_hStrRadix2Int( char *src, int len, int radix )
 					break;
 			}
 			break;
+
+		default:
+			break;
 	}
 
 	return v;

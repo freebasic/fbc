@@ -22,8 +22,8 @@ type SYMBKWD
 end type
 
 declare sub ppInclude()
-declare sub ppIncLib()
-declare sub ppLibPath()
+declare sub ppIncLib( )
+declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
 
@@ -52,6 +52,7 @@ const SYMB_MAXKEYWORDS = 24
         (@"ERROR"	, FB_TK_PP_ERROR	), _
         (@"LINE"	, FB_TK_PP_LINE		), _
         (@"LANG"	, FB_TK_PP_LANG		), _
+        (@"ASSERT"	, FB_TK_PP_ASSERT	), _
         (NULL) _
 	}
 
@@ -154,7 +155,6 @@ sub ppCheck( )
 end sub
 
 
-'':::::
 '' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL*
 ''               |   '#'UNDEF ID
 ''               |   '#'IFDEF ID
@@ -163,115 +163,118 @@ end sub
 ''				 |	 '#'ELSE
 ''				 |   '#'ELSEIF Expression
 ''               |   '#'ENDIF
+''				 |	 '#'ASSERT Expression
 ''               |   '#'PRINT LITERAL*
 ''				 |   '#'INCLUDE ONCE? LIT_STR
 ''				 |   '#'INCLIB LIT_STR
 ''				 |	 '#'LIBPATH LIT_STR
 ''				 |	 '#'ERROR LIT_STR .
 ''
-function ppParse( ) as integer
+sub ppParse( )
+	'' note: when adding any new PP symbol, update ppSkip() too
+	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 
-    '' note: when adding any new PP symbol, update ppSkip() too
-    select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
-
-    '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
-    case FB_TK_PP_DEFINE
-    	lexSkipToken( LEXCHECK_NODEFINE )
-    	function = ppDefine( FALSE )
+	'' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
+	case FB_TK_PP_DEFINE
+		lexSkipToken( LEXCHECK_NODEFINE )
+		ppDefine( FALSE )
 
 	'' MACRO ID '(' ID (',' ID)* ')' Comment? EOL
-	'' 	MacroBody*
+	''    MacroBody*
 	'' ENDMACRO
 	case FB_TK_PP_MACRO
-    	lexSkipToken( LEXCHECK_NODEFINE )
-    	function = ppDefine( TRUE )
+		lexSkipToken( LEXCHECK_NODEFINE )
+		ppDefine( TRUE )
 
 	'' UNDEF ID
-    case FB_TK_PP_UNDEF
-    	dim as FBSYMCHAIN ptr chain_ = any
-    	dim as FBSYMBOL ptr base_parent = any
+	case FB_TK_PP_UNDEF
+		dim as FBSYMCHAIN ptr chain_ = any
+		dim as FBSYMBOL ptr base_parent = any
 
-    	lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( LEXCHECK_NODEFINE )
 
-    	chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
-    	if( chain_ <> NULL ) then
-    		dim as FBSYMBOL ptr sym = chain_->sym
-    		'' don't remove if it was defined inside any namespace (any
-    		'' USING reference to that ns would break its linked-list)
-    		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		chain_ = cIdentifier( base_parent, FB_IDOPT_NONE )
+		if( chain_ <> NULL ) then
+			dim as FBSYMBOL ptr sym = chain_->sym
+			'' don't remove if it was defined inside any namespace (any
+			'' USING reference to that ns would break its linked-list)
+			if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 				errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
-    		else
-    			if( symbGetCantUndef( sym ) ) then
+			else
+				if( symbGetCantUndef( sym ) ) then
 					errReport( FB_ERRMSG_CANTUNDEF )
-    			else
-    				symbDelSymbol( sym )
-    			end if
-    		end if
-    	end if
+				else
+					'' Preserve #undef under -pp, except if #undeffing a macro,
+					'' which won't be preserved (only other symbols will be)
+					if( env.ppfile_num > 0 ) then
+						if( symbIsDefine( sym ) = FALSE ) then
+							lexPPOnlyEmitText( "#undef" )
+							lexPPOnlyEmitToken( )
+						end if
+					end if
+					symbDelSymbol( sym )
+				end if
+			end if
+		end if
 
-    	lexSkipToken( )
-
-    	function = TRUE
+		lexSkipToken( )
 
 	'' IFDEF ID
 	'' IFNDEF ID
 	'' IF ID '=' LITERAL
-    case FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF, FB_TK_PP_IF
-    	function = ppCondIf( )
+	case FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF, FB_TK_PP_IF
+		ppCondIf( )
 
 	'' ELSE
 	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
-    	function = ppCondElse( )
+		ppCondElse( )
 
 	'' ENDIF
 	case FB_TK_PP_ENDIF
-		function = ppCondEndIf( )
+		ppCondEndIf( )
+
+	'' ASSERT Expression
+	case FB_TK_PP_ASSERT
+		lexSkipToken( )
+		ppAssert( )
 
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
 		lexSkipToken( )
 		print *ppReadLiteral( )
-		function = TRUE
 
 	'' ERROR LITERAL*
 	case FB_TK_PP_ERROR
 		lexSkipToken( )
 		errReportEx( -1, *ppReadLiteral( ) )
-		return TRUE
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_PP_INCLUDE
 		lexSkipToken( )
-		ppInclude()
-		function = TRUE
+		ppInclude( )
 
 	'' INCLIB LIT_STR
 	case FB_TK_PP_INCLIB
 		lexSkipToken( )
-		ppIncLib()
-		function = TRUE
+		ppIncLib( )
 
 	'' LIBPATH LIT_STR
 	case FB_TK_PP_LIBPATH
 		lexSkipToken( )
-		ppLibPath()
-		function = TRUE
+		ppLibPath( )
 
 	'' PRAGMA ...
 	case FB_TK_PP_PRAGMA
 		lexSkipToken( )
-		ppPragma()
-		function = TRUE
+		ppPragma( )
 
 	case FB_TK_PP_LINE
 		lexSkipToken( )
 		ppLine()
-		function = TRUE
 
 	case FB_TK_PP_LANG
 		lexSkipToken( )
 		ppLang( )
-		function = TRUE
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -291,8 +294,7 @@ function ppParse( ) as integer
 			hSkipUntil( FB_TK_EOL )
 		end if
 	end if
-
-end function
+end sub
 
 '':::::
 '' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
@@ -324,7 +326,7 @@ end sub
 '':::::
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
-private sub ppIncLib()
+private sub ppIncLib( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -332,14 +334,20 @@ private sub ppIncLib()
 		return
 	end if
 
-	fbAddLib(lexGetText())
-	lexSkipToken()
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#inclib" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLib( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
-private sub ppLibPath()
+private sub ppLibPath( )
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
@@ -347,8 +355,14 @@ private sub ppLibPath()
 		return
 	end if
 
-	fbAddLibPath(lexGetText())
-	lexSkipToken()
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#libpath" )
+		lexPPOnlyEmitToken( )
+	end if
+
+	fbAddLibPath( lexGetText( ) )
+	lexSkipToken( )
 end sub
 
 '':::::
@@ -375,26 +389,30 @@ end sub
 '':::::
 '' ppLang		=   '#'LANG LIT_STR
 ''
-private sub ppLang()
-    static as zstring * FB_MAXPATHLEN+1 opt
+private sub ppLang( )
 	dim as FB_LANG id = any
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip
 		lexSkipToken( )
-		return
+		exit sub
 	end if
 
-	lexEatToken( opt )
-
-	id = fbGetLangId( @opt )
-
+	id = fbGetLangId( lexGetText( ) )
 	if( id = FB_LANG_INVALID ) then
 		errReport( FB_ERRMSG_INVALIDLANG )
-	else
-		fbChangeOption( FB_COMPOPT_LANG, id )
+		lexSkipToken( )
+		exit sub
 	end if
+
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#lang """ + fbGetLangName( id ) + """" )
+	end if
+
+	fbChangeOption( FB_COMPOPT_LANG, id )
+	lexSkipToken( )
 end sub
 
 '':::::
@@ -525,7 +543,6 @@ function ppReadLiteral _
     		continue do
 
 	  	case FB_TK_TYPEOF
-	  		lexSkipToken( )
 			DZstrConcatAssign( text, ppTypeOf( ) )
 			exit do
 
@@ -669,8 +686,6 @@ function ppReadLiteralW _
     		continue do
 
 	  	case FB_TK_TYPEOF
-	  		lexSkipToken( )
-
 	        DWstrConcatAssignA( text, ppTypeOf( ) )
 			exit do
 
@@ -691,14 +706,14 @@ function ppReadLiteralW _
 
 end function
 
-function ppTypeOf _
-	( _
-	) as zstring ptr
-
+function ppTypeOf( ) as zstring ptr
 	'' get type's name
-	dim as zstring ptr res
-	dim as integer dtype, lgt
-	dim as FBSYMBOL ptr subtype
+	dim as zstring ptr res = any
+	dim as integer dtype = any, lgt = any
+	dim as FBSYMBOL ptr subtype = any
+
+	'' TYPEOF
+	lexSkipToken( )
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -724,5 +739,4 @@ function ppTypeOf _
 	end if
 
 	function = res
-
 end function

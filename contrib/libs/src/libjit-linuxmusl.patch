@@ -1,0 +1,140 @@
+--- configure.ac.orig	2013-04-06 18:07:31.687937908 +0200
++++ configure.ac	2013-04-06 18:08:39.336273357 +0200
+@@ -466,7 +466,10 @@
+ AC_CHECK_FUNCS(memset memcmp memchr memcpy memmove bcopy bzero bcmp)
+ AC_CHECK_FUNCS(strlen strcpy strcat strncpy strcmp strncmp)
+ AC_CHECK_FUNCS(strchr strrchr vsprintf vsnprintf _vsnprintf getpagesize)
+-AC_CHECK_FUNCS(isnan isinf finite fmod remainder drem ceil floor)
++AC_CHECK_FUNCS(finite fmod remainder drem ceil floor)
++AC_CHECK_DECLS([isfinite], [], [], [[#include <math.h>]])
++AC_CHECK_DECLS([isinf], [], [], [[#include <math.h>]])
++AC_CHECK_DECLS([isnan], [], [], [[#include <math.h>]])
+ AC_CHECK_FUNCS(acos asin atan atan2 cos cosh exp log log10 pow)
+ AC_CHECK_FUNCS(sin sinh sqrt tan tanh)
+ AC_CHECK_FUNCS(isnanf isinff finitef fmodf remainderf dremf ceilf floorf)
+--- jit/jit-intrinsic.c.orig	2013-04-06 18:11:16.885054604 +0200
++++ jit/jit-intrinsic.c	2013-04-06 18:26:44.089652368 +0200
+@@ -34,8 +34,8 @@
+ #if !defined(isfinite)
+ #define isfinite(value)	_finite((value))
+ #endif
+-#ifndef HAVE_ISNAN
+-#define HAVE_ISNAN 1
++#ifndef HAVE_DECL_ISNAN
++#define HAVE_DECL_ISNAN 1
+ #endif
+ #undef	HAVE_ISNANF
+ #undef	HAVE_ISNANL
+@@ -1634,14 +1634,18 @@
+ #elif defined(HAVE_FINITE)
+ 	return finite(value);
+ #else /* !HAVE_FINITE */
++#if defined(HAVE_DECL_ISFINITE)
++	return isfinite(value);
++#else /* !HAVE_DECL_ISFINITE */
+ #if defined(HAVE_ISNANF) && defined(HAVE_ISINFF)
+ 	return (!isnanf(value) && isinff(value) == 0);
+-#elif defined(HAVE_ISNAN) && defined(HAVE_ISINF)
++#elif defined(HAVE_DECL_ISNAN) && defined(HAVE_DECL_ISINF)
+ 	return (!isnan(value) && isinf(value) == 0);
+ #else
+ 	#error "Don't know how to determine if floating point numbers are finite"
+ 	return 1;
+ #endif
++#endif /* !HAVE_DECL_ISFINITE */
+ #endif /* !HAVE_FINITE */
+ #endif /* !hpux */
+ }
+@@ -1656,7 +1660,7 @@
+ {
+ #if defined(HAVE_ISNANF)
+ 	return isnanf(value);
+-#elif defined(HAVE_ISNAN)
++#elif defined(HAVE_DECL_ISNAN)
+ 	return isnan(value);
+ #else
+ 	return (value != value);
+@@ -1682,7 +1686,7 @@
+ 	{
+ 		return 0;
+ 	}
+-#elif defined(HAVE_ISINF)
++#elif defined(HAVE_DECL_ISINF)
+ 	if(isinf(value) == 0)
+ 	{
+ 		return 0;
+@@ -2124,12 +2128,16 @@
+ #if defined(HAVE_FINITE)
+ 	return finite(value);
+ #else /* !HAVE_FINITE */
+-#if defined(HAVE_ISNAN) && defined(HAVE_ISINF)
++#if defined(HAVE_DECL_ISFINITE)
++	return isfinite(value);
++#else /* !HAVE_DECL_ISFINITE */
++#if defined(HAVE_DECL_ISNAN) && defined(HAVE_DECL_ISINF)
+ 	return (!isnan(value) && isinf(value) == 0);
+ #else
+ 	#error "Don't know how to determine if floating point numbers are finite"
+ 	return 1;
+ #endif
++#endif /* !HAVE_DECL_ISFINITE */
+ #endif /* !HAVE_FINITE */
+ #endif /* !hpux */
+ }
+@@ -2142,7 +2150,7 @@
+ @*/
+ jit_int jit_float64_is_nan(jit_float64 value)
+ {
+-#if defined(HAVE_ISNAN)
++#if defined(HAVE_DECL_ISNAN)
+ 	return isnan(value);
+ #else
+ 	return (value != value);
+@@ -2163,7 +2171,7 @@
+ jit_int jit_float64_is_inf(jit_float64 value)
+ {
+ 	/* The code below works around broken "isinf" implementations */
+-#if defined(HAVE_ISINF)
++#if defined(HAVE_DECL_ISINF)
+ 	if(isinf(value) == 0)
+ 	{
+ 		return 0;
+@@ -2687,15 +2695,19 @@
+ #elif defined(HAVE_FINITE)
+ 	return finite(value);
+ #else /* !HAVE_FINITE */
++#if defined(HAVE_DECL_ISFINITE)
++	return isfinite(value);
++#else /* !HAVE_DECL_ISFINITE */
+ #if defined(HAVE_ISNANL) && defined(HAVE_ISINFL) && \
+ 		!defined(JIT_NFLOAT_IS_DOUBLE)
+ 	return (!isnanl(value) && isinfl(value) == 0);
+-#elif defined(HAVE_ISNAN) && defined(HAVE_ISINF)
++#elif defined(HAVE_DECL_ISNAN) && defined(HAVE_DECL_ISINF)
+ 	return (!isnan(value) && isinf(value) == 0);
+ #else
+ 	#error "Don't know how to determine if floating point numbers are finite"
+ 	return 1;
+ #endif
++#endif /* !HAVE_DECL_ISFINITE */
+ #endif /* !HAVE_FINITE */
+ #endif /* !hpux */
+ }
+@@ -2710,7 +2722,7 @@
+ {
+ #if defined(HAVE_ISNANL) && !defined(JIT_NFLOAT_IS_DOUBLE)
+ 	return isnanl(value);
+-#elif defined(HAVE_ISNAN)
++#elif defined(HAVE_DECL_ISNAN)
+ 	return isnan(value);
+ #else
+ 	return (value != value);
+@@ -2736,7 +2748,7 @@
+ 	{
+ 		return 0;
+ 	}
+-#elif defined(HAVE_ISINF)
++#elif defined(HAVE_DECL_ISINF)
+ 	if(isinf(value) == 0)
+ 	{
+ 		return 0;

@@ -2,12 +2,11 @@
 
 #include "fb_gfx.h"
 
+#define KEY_BUFFER_LEN		16
 
 static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
 static int key_buffer_changed = FALSE;
 
-
-/*:::::*/
 int fb_hGfxInputBufferChanged( void )
 {
 	int res;
@@ -22,7 +21,6 @@ int fb_hGfxInputBufferChanged( void )
 	return res;
 }
 
-/*:::::*/
 void fb_hPostKey(int key)
 {
 	key_buffer[key_tail] = key;
@@ -39,8 +37,6 @@ void fb_hPostKey_End(void)
      interrupt handler */ }
 #endif
 
-
-/*:::::*/
 static int get_key(void)
 {
 	int key = 0;
@@ -61,8 +57,6 @@ static int get_key(void)
 	return key;
 }
 
-
-/*:::::*/
 int fb_GfxGetkey(void)
 {
 	int key = 0;
@@ -77,7 +71,6 @@ int fb_GfxGetkey(void)
 	return key;
 }
 
-/*:::::*/
 int fb_GfxKeyHit(void)
 {
 	int res;
@@ -91,41 +84,21 @@ int fb_GfxKeyHit(void)
 	return res;
 }
 
-/*:::::*/
 FBSTRING *fb_GfxInkey(void)
 {
-	const unsigned char code[KEY_MAX_SPECIALS] = {
-		'k', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
-		';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D'
-	};
 	FBSTRING *res;
-	int key;
+	int ch;
 
-	if ((__fb_gfx) && (key = get_key())) {
-        if (key > 0xFF) {
-            res = (FBSTRING *)fb_hStrAllocTmpDesc();
-            fb_hStrAllocTemp(res, 2);
-            if( (key & 0xFF)==0xFF ) {
-                res->data[1] = (char) (key >> 8);
-            } else {
-                key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
-                res->data[1] = code[key];
-            }
-            res->data[0] = FB_EXT_CHAR;
-			res->data[2] = '\0';
-
-			return res;
-		}
-		else
-			return fb_CHR( 1, key );
+	if (__fb_gfx && (ch = get_key())) {
+		res = fb_hMakeInkeyStr( ch );
+	} else {
+		res = &__fb_ctx.null_desc;
 	}
 
-	return &__fb_ctx.null_desc;
+	return res;
 }
 
-/*:::::*/
 int fb_GfxIsRedir(int is_input)
 {
 	return FALSE;
 }
-

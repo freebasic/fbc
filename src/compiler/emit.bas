@@ -18,52 +18,29 @@ declare function emitGasX86_ctor	_
 '' globals
 	dim shared emit as EMITCTX
 
-'':::::
-#macro hCallCtor( backend )
-	select case backend
-	case FB_BACKEND_GAS
-		emitGasX86_ctor( )
-	end select
-#endmacro
-
-'':::::
-function emitInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
+function emitInit( ) as integer
 	if( emit.inited ) then
 		return TRUE
 	end if
 
-	''
-	hCallCtor( backend )
+	emitGasX86_ctor( )
 
-	''
 	flistInit( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
-
 	flistInit( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
-	''
 	emit.inited = TRUE
 	emit.pos = 0
 
-	''
 	function = emit.vtbl.init( )
-
 end function
 
-'':::::
-sub emitEnd static
-
+sub emitEnd( )
 	if( emit.inited = FALSE ) then
 		exit sub
 	end if
 
 	emit.vtbl.end( )
-
 	emit.inited = FALSE
-
 end sub
 
 '':::::
@@ -210,11 +187,13 @@ sub emitFlush( )
 			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
-			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.op, _
-															n->jtb.dtype, _
-													   		n->jtb.text )
+			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.tbsym, _
+				n->jtb.values, n->jtb.labels, _
+				n->jtb.labelcount, n->jtb.deflabel, _
+				n->jtb.minval, n->jtb.maxval )
 
-			ZstrFree( n->jtb.text )
+			deallocate( n->jtb.values )
+			deallocate( n->jtb.labels )
 
 		case EMIT_NODECLASS_MEM
 			cast( EMIT_MEMCB, emit.opFnTb[n->mem.op] )( n->mem.dvreg, _
@@ -243,113 +222,6 @@ function emitGetRegClass _
 	function = emit.regTB(dclass)
 
 end function
-
-'':::::
-sub emitWriteInfoSection _
-	( _
-		byval libs as TLIST ptr, _
-		byval libpaths as TLIST ptr _
-	)
-
-	static as string byte_fld
-	static as string zstr_fld
-	dim as integer header_emitted = FALSE
-
-	'' this must follow the fbObjInfoWriteObj() format
-
-#macro hWriteStr( value )
-	emitWriteStr( zstr_fld & QUOTE & value & $"\0" & QUOTE )
-#endmacro
-
-#macro hWriteByte( value )
-	emitWriteStr( byte_fld & value )
-#endmacro
-
-#macro hEmitInfoHeader( )
-	scope
-		dim as const zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
-		if( sec <> NULL ) then
-			emitWriteStr( *sec )
-		end if
-
-		if( header_emitted = FALSE ) then
-			header_emitted = TRUE
-			hWriteByte( FB_INFOSEC_VERSION )
-		end if
-	end scope
-#endmacro
-
-	if( len( byte_fld ) = 0 ) then
-		byte_fld = *emit.vtbl.getTypeString( FB_DATATYPE_BYTE ) + " "
-		zstr_fld = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR ) + " "
-	end if
-
-	'' libraries
-	dim as TSTRSETITEM ptr i = listGetHead(libs)
-	if (i) then
-		hEmitInfoHeader( )
-
-		hWriteByte( FB_INFOSEC_LIB )
-		do
-			'' Not default?
-			if (i->userdata = FALSE) then
-				hWriteByte(len(i->s))
-				hWriteStr(i->s)
-			end if
-
-			i = listGetNext(i)
-		loop while (i)
-
-		hWriteByte( 0 )
-	end if
-
-	'' paths
-	i = listGetHead(libpaths)
-	if (i) then
-		hEmitInfoHeader( )
-
-		hWriteByte( FB_INFOSEC_PTH )
-		do
-			'' Not default?
-			if (i->userdata = FALSE) then
-				dim as const zstring ptr txt = hEscape(i->s)
-				hWriteByte(len(i->s)) '' TODO: shouldn't this be len(*txt)?
-				hWriteStr(*txt)
-			end if
-
-			i = listGetNext(i)
-		loop while (i)
-
-		hWriteByte( 0 )
-	end if
-
-	'' any important cmd-line option? (like -lang, -mt)
-	if( env.clopt.multithreaded or (env.clopt.lang <> FB_LANG_FB) ) then
-		hEmitInfoHeader( )
-
-        hWriteByte( FB_INFOSEC_CMD )
-
-    	'' not the default lang?
-    	if( env.clopt.lang <> FB_LANG_FB ) then
-            hWriteByte( len( "-lang" ) )
-            hWriteStr( "-lang" )
-            hWriteStr( fbGetLangName( env.clopt.lang ) )
-    	end if
-
-    	'' MT?
-    	if( env.clopt.multithreaded ) then
-            hWriteByte( len( "-mt" ) )
-            hWriteStr( "-mt" )
-		end if
-
-		hWriteByte( 0 )
-	end if
-
-	if( header_emitted ) then
-		hWriteByte( FB_INFOSEC_EOL )
-	end if
-
-end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' node creation
@@ -544,45 +416,15 @@ private function hNewSYMOP _
 
 end function
 
-'':::::
-private function hNewLIT _
-	( _
-		byval text as zstring ptr, _
-		byval isasm as integer _
-	) as EMIT_NODE ptr static
-
-	dim as EMIT_NODE ptr n
+private sub hNewLIT( byval text as zstring ptr, byval isasm as integer )
+	dim as EMIT_NODE ptr n = any
 
 	n = hNewNode( EMIT_NODECLASS_LIT, isasm )
 
 	n->lit.isasm = isasm
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
-
-	function = n
-
-end function
-
-'':::::
-private function hNewJMPTB _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-
-	dim as EMIT_NODE ptr n
-
-	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
-
-	n->jtb.op = op
-	n->jtb.dtype = dtype
-	n->jtb.text = ZstrAllocate( len( *text ) )
-	*n->jtb.text = *text
-
-	function = n
-
-end function
+end sub
 
 '':::::
 private function hNewMEM _
@@ -903,11 +745,7 @@ function emitMUL _
 		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
-		if( typeIsSigned( dvreg->dtype ) ) then
-			function = hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
-		else
-			function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )
-		end if
+		function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )
 	end select
 
 end function
@@ -1384,6 +1222,10 @@ function emitFRAC _
 
 end function
 
+function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
+	function = hNewUOP( EMIT_OP_CONVFD2FS, dvreg )
+end function
+
 '':::::
 function emitSIN _
 	( _
@@ -1528,6 +1370,15 @@ end function
 '' STK
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr
+	static as IRVREG vr
+
+	vr.typ = IR_VREGTYPE_IMM
+	vr.value.int = bytes
+
+	function = hNewSTK( EMIT_OP_STACKALIGN, @vr )
+end function
+
 '':::::
 function emitPUSH _
 	( _
@@ -1585,81 +1436,55 @@ end function
 '' MISC
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function emitCOMMENT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
+sub emitCOMMENT( byval text as zstring ptr )
+	hNewLIT( "##" + *text, FALSE )
+end sub
 
-	function = hNewLIT( "##" + *text, FALSE )
-
-end function
-
-'':::::
-function emitASM _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-    dim as integer c
-
-    function = hNewLIT( text, TRUE )
+sub emitASM( byval text as zstring ptr )
+	hNewLIT( text, TRUE )
 
 	'' reset reg usage
-	for c = 0 to EMIT_REGCLASSES-1
+	for c as integer = 0 to EMIT_REGCLASSES-1
 		EMIT_REGTRASHALL( c )						'' can't check the reg usage
 	next
+end sub
 
-end function
-
-'':::::
-function emitLIT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-
-	function = hNewLIT( text, FALSE )
-
-end function
-
-'':::::
-function emitALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr static
-
-    static as IRVREG vr
-
-	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
-
-	function = hNewUOP( EMIT_OP_ALIGN, @vr )
-
-end function
-
-'':::::
-function emitSTACKALIGN _
-	( _
-		byval bytes as integer _
-	) as EMIT_NODE ptr static
-    static as IRVREG vr
-
-	vr.typ = IR_VREGTYPE_IMM
-	vr.value.int = bytes
-
-	function = hNewUOP( EMIT_OP_STKALIGN, @vr )
-
-end function
-
-'':::::
 function emitJMPTB _
 	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
+		byval tbsym as FBSYMBOL ptr, _
+		byval values1 as uinteger ptr, _
+		byval labels1 as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
+	) as EMIT_NODE ptr
 
-	function = hNewJMPTB( op, dtype, text )
+	dim as EMIT_NODE ptr n = any
+	dim as uinteger ptr values = any
+	dim as FBSYMBOL ptr ptr labels = any
 
+	assert( labelcount > 0 )
+
+	'' Duplicate the values/labels arrays
+	values = callocate( sizeof( uinteger ) * labelcount )
+	labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+	for i as integer = 0 to labelcount - 1
+		values[i] = values1[i]
+		labels[i] = labels1[i]
+	next
+
+	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
+
+	n->jtb.tbsym = tbsym
+	n->jtb.values = values
+	n->jtb.labels = labels
+	n->jtb.labelcount = labelcount
+	n->jtb.deflabel = deflabel
+	n->jtb.minval = minval
+	n->jtb.maxval = maxval
+
+	function = n
 end function
 
 '':::::

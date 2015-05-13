@@ -47,7 +47,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 	), _
 		/' __main CDECL ( ) as void '/ _
 		( _
-			@FB_RTL_INITCRTCTOR, NULL, _
+			@FB_RTL_INITCRTCTOR, @"__main", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
@@ -633,14 +633,20 @@ sub rtlSystemModEnd( )
 
 end sub
 
-
-
-'':::::
-function rtlCpuCheck( ) as integer static
-	dim as ASTNODE ptr proc, cpu
-	dim as FBSYMBOL ptr s, label
+private function rtlCpuCheck( ) as integer
+	dim as ASTNODE ptr proc = any, cpu = any
+	dim as FBSYMBOL ptr s = any, label = any
+	dim as integer family = any
 
 	function = FALSE
+
+	'' Trim to 686, using higher values from the FB_CPUTYPE_* constants
+	'' doesn't make sense, 786 represents the Intel Itanium (IA-64),
+	'' not FB_CPUTYPE_ATHLON, and so on.
+	family = env.clopt.cputype
+	if( family > FB_CPUTYPE_686 ) then
+		family = FB_CPUTYPE_686
+	end if
 
 	''
 	proc = astNewCALL( PROCLOOKUP( CPUDETECT ), NULL )
@@ -648,24 +654,17 @@ function rtlCpuCheck( ) as integer static
 	'' cpu = fb_CpuDetect shr 28
 	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 28, FB_DATATYPE_UINT ) )
 
-	'' if( cpu < env.clopt.cputype ) then
+	'' if( cpu < family ) then
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( AST_OP_GE, _
-					   cpu, _
-					   astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), _
-					   label, _
-					   AST_OPOPT_NONE ) )
+	astAdd( astNewBOP( AST_OP_GE, cpu, astNewCONSTi( family, FB_DATATYPE_UINT ), label, AST_OPOPT_NONE ) )
 
 	'' print "This program requires at least a <cpu> to run."
-	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )
-	rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-			  FALSE, _
-			  FALSE, _
-			  astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+	s = symbAllocStrConst( "This program requires at least a " & family & "86 to run.", -1 )
+	rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
 
 	'' end 1
 	proc = astNewCALL( PROCLOOKUP( END ), NULL )
-	if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
 		exit function
 	end if
 	astAdd( proc )
@@ -689,24 +688,20 @@ function rtlCpuCheck( ) as integer static
 
 		'' print "This program requires SSE and SSE2 instructions to run."
 		s = symbAllocStrConst( "This program requires SSE and SSE2 instructions to run.", -1 )
-		rtlPrint( astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
-					  FALSE, _
-					  FALSE, _
-					astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+		rtlPrint( astNewCONSTi( 0 ), FALSE, FALSE, astNewVAR( s ) )
+
 		'' end 1
 		proc = astNewCALL( PROCLOOKUP( END ), NULL )
-		if( astNewARG( proc, astNewCONSTi( 1, FB_DATATYPE_INTEGER ) ) = NULL ) then
+		if( astNewARG( proc, astNewCONSTi( 1 ) ) = NULL ) then
 			exit function
 		end if
 		astAdd( proc )
-
 
 		'' end if
 		astAdd( astNewLABEL( label ) )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -721,7 +716,7 @@ function rtlInitApp _
 
 	is_exe = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
 
-	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		'' call __monstartup() on win32/cygwin if profiling
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
@@ -750,8 +745,12 @@ function rtlInitApp _
 		'' fb_InitSignals( )
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-		'' Check CPU type
-		rtlCpuCheck( )
+		'' Checking the CPU for features is only needed on x86
+		'' TODO: x86 assumption
+		'if( fbIsX86( ) ) then
+			'' Check CPU type
+			rtlCpuCheck( )
+		'end if
 	end if
 
 	function = proc

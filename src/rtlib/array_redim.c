@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 int fb_hArrayAlloc
 	( 
 		FBARRAY *array, 
@@ -68,7 +67,6 @@ int fb_hArrayAlloc
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
 static int hRedim
 	( 
 		FBARRAY *array, 
@@ -80,21 +78,12 @@ static int hRedim
 	)
 {
 
-    /* free old */
-    if( array->ptr != NULL )
-    {
-    	if( isvarlen != 0 )
-    		fb_hArrayDtorStr( array, NULL, 0 );
-    	
-    	free( array->ptr );
-    	array->ptr = NULL;
-    	array->data = NULL;
-    }
-    
+	/* free old */
+	fb_ArrayErase( array, isvarlen );
+
     return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
 }
 
-/*:::::*/
 int fb_ArrayRedimEx
 	( 
 		FBARRAY *array, 
@@ -107,15 +96,14 @@ int fb_ArrayRedimEx
 {
 	va_list ap;
 	int res;
-	
+
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
     va_end( ap );
-    
+
     return res;
 }
 
-/*:::::*/
 int fb_ArrayRedim
 	( 
 		FBARRAY *array, 
@@ -127,11 +115,10 @@ int fb_ArrayRedim
 {
 	va_list ap;
 	int res;
-	
+
 	va_start( ap, dimensions );
 	res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
 	va_end( ap );
-	
+
 	return res;
 }
-

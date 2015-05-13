@@ -15,7 +15,7 @@
  * temp string descriptors (string lock is assumed to be held in the thread-safe rlib version)
  **********/
 
-static FB_LIST tmpdsList = { 0 };
+static FB_LIST tmpdsList = { 0, NULL, NULL, NULL };
 
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
@@ -214,7 +214,7 @@ FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
 {
     if( (src != NULL) && (bytes > 0) )
     {
-        dst = FB_MEMCPYX( dst, src, bytes );
+        dst = (char *) FB_MEMCPYX( dst, src, bytes );
     }
 
     /* add the null-term */

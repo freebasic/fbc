@@ -2,27 +2,24 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 
 declare sub hUndefSymbol()
 
-'':::::
-''OptDecl         =   OPTION (BYVAL|DYNAMIC|STATIC|GOSUB|EXPLICIT|PRIVATE|ESCAPE|BASE NUM_LIT|NOKEYWORD ...|NOGOSUB)
-''
-function cOptDecl as integer
-
-	function = FALSE
-
+'' OptDecl  =  OPTION (BYVAL|DYNAMIC|STATIC|GOSUB|EXPLICIT|PRIVATE|ESCAPE|BASE NUM_LIT|NOKEYWORD ...|NOGOSUB)
+sub cOptDecl( )
 	if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_OPTION )
+		hSkipStmt( )
+		exit sub
 	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
+	end if
 
 	'' OPTION
 	lexSkipToken( )
@@ -109,10 +106,7 @@ function cOptDecl as integer
 		end select
 
 	end select
-
-	function = TRUE
-
-end function
+end sub
 
 private sub hUndefSymbol()
 	dim s as FBSYMBOL ptr

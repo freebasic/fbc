@@ -6,7 +6,7 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
-''
+'' when changing, update vregDump():vregtypes()
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_IMM
 	IR_VREGTYPE_VAR
@@ -81,7 +81,7 @@ type IRVREG
 
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
-	mult		as integer						'' multipler
+	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
 
 	vidx		as IRVREG ptr					'' index vreg
 	vaux		as IRVREG ptr					'' aux vreg (used with longint's)
@@ -93,12 +93,8 @@ end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
-	init as sub(byval backend as FB_BACKEND)
-	end as sub()
-
-	flush as sub _
-	( _
-	)
+	init as sub( )
+	end as sub( )
 
 	emitBegin as function _
 	( _
@@ -152,25 +148,9 @@ type IR_VTBL
 		byval s as FBSYMBOL ptr _
 	)
 
-	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
+	procAllocStaticVars as sub( byval head_sym as FBSYMBOL ptr )
 
-	emit as sub _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
-
-	emitConvert as sub _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitConvert as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitLabel as sub _
 	( _
@@ -207,21 +187,14 @@ type IR_VTBL
 		byval level as integer _
 	)
 
-	emitASM as sub _
-	( _
-		byval text as zstring ptr _
-	)
+	emitAsmBegin as sub( )
+	emitAsmText as sub( byval text as zstring ptr )
+	emitAsmSymb as sub( byval sym as FBSYMBOL ptr )
+	emitAsmEnd as sub( )
 
 	emitComment as sub _
 	( _
 		byval text as zstring ptr _
-	)
-
-	emitJmpTb as sub _
-	( _
-		byval op as AST_JMPTB_OP, _
-		byval dtype as integer, _
-		byval label as FBSYMBOL ptr _
 	)
 
 	emitBop as sub _
@@ -240,11 +213,7 @@ type IR_VTBL
 		byval vr as IRVREG ptr _
 	)
 
-	emitStore as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitStore as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitSpillRegs as sub _
 	( _
@@ -301,15 +270,19 @@ type IR_VTBL
 		byval bytes as integer _
 	)
 
-	emitJumpPtr as sub _
-	( _
-		byval v1 as IRVREG ptr _
-	)
+	emitJumpPtr as sub( byval v1 as IRVREG ptr )
+	emitBranch as sub( byval op as integer, byval label as FBSYMBOL ptr )
 
-	emitBranch as sub _
+	emitJmpTb as sub _
 	( _
-		byval op as integer, _
-		byval label as FBSYMBOL ptr _
+		byval v1 as IRVREG ptr, _
+		byval tbsym as FBSYMBOL ptr, _
+		byval values as uinteger ptr, _
+		byval labels as FBSYMBOL ptr ptr, _
+		byval labelcount as integer, _
+		byval deflabel as FBSYMBOL ptr, _
+		byval minval as uinteger, _
+		byval maxval as uinteger _
 	)
 
 	emitMem as sub _
@@ -329,6 +302,8 @@ type IR_VTBL
 	( _
 		byval s as FBSYMBOL ptr _
 	)
+
+	emitDECL as sub( byval sym as FBSYMBOL ptr )
 
 	emitDBG as sub _
 	( _
@@ -361,6 +336,10 @@ type IR_VTBL
 	emitVarIniPad as sub( byval bytes as integer )
 	emitVarIniScopeBegin as sub( )
 	emitVarIniScopeEnd as sub( )
+
+	emitFbctinfBegin as sub( )
+	emitFbctinfString as sub( byval s as zstring ptr )
+	emitFbctinfEnd as sub( )
 
 	allocVreg as function _
 	( _
@@ -452,11 +431,6 @@ type IR_VTBL
 	( _
 		byval reg as integer _
 	)
-
-	makeTmpStr as function  _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
 end type
 
 enum IR_OPT
@@ -471,7 +445,6 @@ enum IR_OPT
 
 	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
 	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
-	IR_OPT_HIGHLEVEL     = &h00040000  '' Preserve the high level constructions?
 end enum
 
 type IRCTX
@@ -483,10 +456,14 @@ end type
 ''
 ''
 ''
-declare sub irTAC_ctor()
-declare sub irHLC_ctor()
-declare sub irInit(byval backend as FB_BACKEND)
-declare sub irEnd()
+extern as IR_VTBL irtac_vtbl
+extern as IR_VTBL irhlc_vtbl
+extern as IR_VTBL irllvm_vtbl
+declare sub irInit( )
+declare sub irEnd( )
+#if __FB_DEBUG__
+declare function vregDump( byval v as IRVREG ptr ) as string
+#endif
 
 ''
 '' macros
@@ -535,8 +512,6 @@ declare sub irEnd()
 
 #define irEmitEnd(tottime) ir.vtbl.emitEnd( tottime )
 
-#define irEmit(op, v1, v2, vr, ex1, ex2) ir.vtbl.emit( op, v1, v2, vr, ex1, ex2 )
-
 #define irEmitPROCBEGIN(proc, initlabel) ir.vtbl.emitProcBegin( proc, initlabel )
 
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
@@ -563,7 +538,11 @@ declare sub irEnd()
 
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
-#define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
+#define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )
+#define irEmitFBCTINFSTRING( s ) ir.vtbl.emitFbctinfString( s )
+#define irEmitFBCTINFEND( )      ir.vtbl.emitFbctinfEnd( )
+
+#define irEmitCONVERT( v1, v2 ) ir.vtbl.emitConvert( v1, v2 )
 
 #define irEmitLABEL(label) ir.vtbl.emitLabel( label )
 
@@ -571,13 +550,14 @@ declare sub irEnd()
 
 #define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
 
-#define irEmitASM(text) ir.vtbl.emitASM( text )
+#define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
+#define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )
+#define irEmitAsmSymb( sym )  ir.vtbl.emitAsmSymb( sym )
+#define irEmitAsmEnd( )       ir.vtbl.emitAsmEnd( )
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
-
-#define irFlush() ir.vtbl.flush( )
+#define irEmitJMPTB( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval ) ir.vtbl.emitJmpTb( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 
@@ -629,6 +609,8 @@ declare sub irEnd()
 
 #define irEmitDBG(op, proc, ex) ir.vtbl.emitDBG( op, proc, ex )
 
+#define irEmitDECL( sym ) ir.vtbl.emitDECL( sym )
+
 
 #define irIsREG(v) (v->typ = IR_VREGTYPE_REG)
 
@@ -651,10 +633,6 @@ declare sub irEnd()
 #define irGetVRValueI(v) v->value.int
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
-
-#define hMakeTmpStr( ) ir.vtbl.makeTmpStr( TRUE )
-
-#define hMakeTmpStrNL( ) ir.vtbl.makeTmpStr( FALSE )
 
 
 ''

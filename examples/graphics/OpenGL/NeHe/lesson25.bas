@@ -41,21 +41,21 @@ type VERTEX                                '' Structure Called VERTEXFor 3D Poin
 	z as single                            '' X, Y & Z Points
 end type
 
-type OBJECT                                '' Structure Called OBJECT For An Object
+type OBJECT_                               '' Structure Called OBJECT For An Object
 	verts as integer                       '' Number Of Vertices For The Object
 	points as VERTEX ptr                   '' One Vertice (Vertex x,y & z)
 end type
 
 ''------------------------------------------------------------------------------
-declare sub objallocate (byval k as OBJECT ptr, byval n as integer)
-declare sub objfree (byval k as OBJECT ptr)
+declare sub objallocate (byval k as OBJECT_ ptr, byval n as integer)
+declare sub objfree (byval k as OBJECT_ ptr)
 declare sub readstr(byval f as integer, byref sstring as string)
-declare sub objload (byref fname as string, byval k as OBJECT ptr)
+declare sub objload (byref fname as string, byval k as OBJECT_ ptr)
 declare sub calculate (byval i as integer, byval v as VERTEX ptr)
 
 dim shared maxver as integer                     '' Will Eventually Hold The Maximum Number Of Vertices
 dim shared as integer steps = 200                '' Maximum Number Of Steps
-dim shared as OBJECT ptr sour, dest              '' Source Object, Destination Object
+dim shared as OBJECT_ ptr sour, dest              '' Source Object, Destination Object
 
 	dim as single xrot, yrot, zrot               '' X, Y & Z Rotation
 	dim as single xspeed, yspeed, zspeed         '' X, Y & Z Spin Speed
@@ -66,10 +66,10 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 	dim as integer morph = FALSE                 '' Default morph To False (Not Morphing)
 
 	
-	dim as OBJECT morph1, morph2, morph3, morph4 '' Our 4 Morphable Objects (morph1,2,3 & 4)
-	dim as OBJECT helper                         '' Helper Object
-	dim as single tx, ty, tz                     '' Temp X, Y & Z Variables
-	dim q as VERTEX                              '' Holds Returned Calculated Values For One Vertex
+	dim as OBJECT_ morph1, morph2, morph3, morph4 '' Our 4 Morphable Objects (morph1,2,3 & 4)
+	dim as OBJECT_ helper                         '' Helper Object
+	dim as single tx, ty, tz                      '' Temp X, Y & Z Variables
+	dim q as VERTEX                               '' Holds Returned Calculated Values For One Vertex
 
 	windowtitle "Piotr Cieslak & NeHe's Morphing Points Tutorial"   '' Set window title
 	screen 18, 16, , 2
@@ -251,12 +251,12 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 
 
 '---------------------------------------------------
-sub objallocate (byval k as OBJECT ptr, byval n as integer)   '' Allocate Memory For Each Object and Defines points
+sub objallocate (byval k as OBJECT_ ptr, byval n as integer)  '' Allocate Memory For Each Object and Defines points
 	k->points = allocate(len(VERTEX)* n)          '' Sets points Equal To VERTEX * Number Of Vertices
 end sub                                           '' (3 Points For Each Vertice)
 
 '---------------------------------------------------
-sub objfree (byval k as OBJECT ptr)               '' Frees The Object (Releasing The Memory)
+sub objfree (byval k as OBJECT_ ptr)              '' Frees The Object (Releasing The Memory)
 	deallocate(k->points)                         '' Frees Points
 end sub
 
@@ -272,7 +272,7 @@ end sub
 
 '---------------------------------------------------
 '' Loads Object From File (name)
-sub objload (byref fname as string, byval k as OBJECT ptr)          
+sub objload (byref fname as string, byval k as OBJECT_ ptr)          
 	dim ver as integer                                  '' Will Hold Vertice Count
 	dim as single rx, ry, rz                            '' Hold Vertex X, Y & Z Position
 	dim oneline as string * 256                         '' Holds One Line Of Text

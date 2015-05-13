@@ -39,7 +39,7 @@ enum LEXCHECK
 	LEXCHECK_NOMULTILINECOMMENT	= &h0200 
 	
 	'' don't interpret f, u, l as type-specifier suffixes on numeric literals (used in asm blocks)
-	LEXCHECK_NOLETTERSUFFIX	= &h0200 
+	LEXCHECK_NOLETTERSUFFIX	= &h0400
 	
 end enum
 
@@ -171,10 +171,9 @@ declare sub lexEatToken _
 		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 	)
 
-declare sub lexSkipToken _
-	( _
-		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
-	)
+declare sub lexPPOnlyEmitToken( )
+declare sub lexPPOnlyEmitText( byref s as string )
+declare sub lexSkipToken( byval flags as LEXCHECK = LEXCHECK_EVERYTHING )
 
 declare function lexGetLookAheadClass _
 	( _

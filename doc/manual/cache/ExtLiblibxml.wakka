@@ -5,9 +5,10 @@ Website: http://xmlsoft.org/
 Platforms supported: ""Win32"", Linux
 Headers to include: libxml/*.bi
 Header version: 2.6.17
+Examples: in examples/xml/
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/libraries/libxml.bas"}}%%(freebasic)
 #include once "libxml/xmlreader.bi"
 #define NULL 0
 
@@ -20,7 +21,7 @@ end if
 dim as xmlTextReaderPtr reader = xmlReaderForFile( filename, NULL, 0 )
 if (reader = NULL) then
 	print "Unable to open "; filename
-	return
+	end 1
 end if
 
 dim as integer ret = xmlTextReaderRead( reader )

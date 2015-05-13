@@ -22,6 +22,7 @@ type EDBGCTX
 	firstline		as integer					'' first non-decl line
 	lastline		as integer					'' last  /
 
+	filename		as zstring * FB_MAXPATHLEN+1
 	incfile			as zstring ptr
 end type
 
@@ -77,7 +78,7 @@ declare function hGetDataType _
 		14 _                                    '' fix-len string
 	}
 
-	dim shared stabsTB(0 to 17) as const zstring ptr = _
+	dim shared stabsTb(0 to 16) as const zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
@@ -95,8 +96,7 @@ declare function hGetDataType _
 		@"fixstr:t14=-2", _
 		@"pchar:t15=*4;", _
 		@"bool8:t16=@s8;-16", _
-		@"bool32:t17=@s32;-16", _
-		NULL _
+		@"bool32:t17=@s32;-16" _
 	}
 
 sub edbgInit( )
@@ -206,35 +206,26 @@ private sub hLABEL _
 
 end sub
 
-
-'':::::
-sub edbgEmitHeader _
-	( _
-		byval filename as zstring ptr _
-	) static
-
-    dim as integer i
-    dim as string stab, lname
+sub edbgEmitHeader( byval filename as zstring ptr )
+	dim as string lname
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
-	''
 	ctx.typecnt 	= 1
-
 	ctx.label 		= NULL
-
 	ctx.incfile 	= NULL
+	ctx.filename	= *filename
 
 	'' emit source file name
-    lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
 
 	'' directory
-    if( instr( *filename, "/" ) = 0 ) then
+	if( pathIsAbsolute( filename ) = FALSE ) then
 		hEmitSTABS( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
-    end if
+	end if
 
 	'' file name
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
@@ -244,21 +235,14 @@ sub edbgEmitHeader _
 	hLABEL( lname )
 
 	'' (known) type definitions
-	i = 0
-	do
-		if( stabsTb(i) = 0 ) then
-			exit do
-		end if
+	for i as integer = lbound( stabsTb ) to ubound( stabsTb )
 		hEmitSTABS( STAB_TYPE_LSYM, stabsTb(i), 0, 0, "0" )
-
 		ctx.typecnt += 1
-		i += 1
-	loop
+	next
 
 	emitWriteStr( "" )
 
 	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
-
 end sub
 
 '':::::
@@ -272,7 +256,7 @@ sub edbgEmitFooter( ) static
 	emitSECTION( IR_SECTION_CODE, 0 )
 
 	'' no checkings after this
-	lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, lname )
 
 	hLABEL( lname )
@@ -500,25 +484,15 @@ sub edbgEmitProcHeader _
 	) static
 
     dim as string desc, procname
-    dim as zstring ptr incfile
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
-	'' procs defined in include files must be declared inside the proper blocks
-	incfile = symbGetProcIncFile( proc )
-	if( incfile <> ctx.incfile ) then
-
-        edbgIncludeEnd( )
-
-		if( incfile <> NULL ) then
-			edbgIncludeBegin( incfile, incfile )
-		end if
-
-		ctx.incfile = incfile
-
-	end if
+	'' For procs defined in include files we must emit corresponding
+	'' include file blocks, so they appear as being declared in the include
+	'' file rather than the toplevel .bas file name.
+	edbgInclude( symbGetProcIncFile( proc ) )
 
 	'' main?
 	if( symbGetIsMainProc( proc ) ) then
@@ -660,7 +634,7 @@ sub edbgEmitProcFooter _
     ''
     hDeclLocalVars( proc, proc, initlabel, exitlabel )
 
-	lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	hLABEL( lname )
 
 	'' emit end proc (FUN with a null string)
@@ -922,14 +896,9 @@ private function hGetDataType _
 
 end function
 
-'':::::
-private sub hDeclUDT _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr e
-    dim as string desc
+private sub hDeclUDT( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr fld = any
+	dim as string desc
 
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
@@ -938,20 +907,18 @@ private sub hDeclUDT _
 
 	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTUnpadLen( sym ) )
 
-	e = symbGetUDTFirstElm( sym )
-	do while( e <> NULL )
-        desc += *symbGetName( e ) + ":" + hGetDataType( e )
-
-        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
-        			  str( symbGetUDTElmBitLen( e ) ) + ";"
-
-		e = symbGetUDTNextElm( e )
-	loop
+	fld = symbUdtGetFirstField( sym )
+	while( fld )
+		desc += *symbGetName( fld ) + ":" + hGetDataType( fld )
+		desc += "," + str( symbGetUDTElmBitOfs( fld ) )
+		desc += "," + str( symbGetUDTElmBitLen( fld ) )
+		desc += ";"
+		fld = symbUdtGetNextField( fld )
+	wend
 
 	desc += ";"
 
 	hEmitSTABS( STAB_TYPE_LSYM, desc, 0, 0, "0" )
-
 end sub
 
 '':::::
@@ -1143,48 +1110,43 @@ sub edbgEmitProcArg _
 
 end sub
 
-'':::::
-sub edbgIncludeBegin _
-	( _
-		byval filename as zstring ptr, _
-		byval incfile as zstring ptr _
-	) static
-
+sub edbgInclude( byval incfile as zstring ptr )
 	dim as string lname
 
-	if( env.clopt.debug = FALSE ) then
+	'' incfile is the new include file for which we should open a block.
+	'' incfile can be NULL to indicate that no next include file is coming,
+	'' in which case we just want to return to the toplevel .bas file name,
+	'' if we previously opened an include file block.
+
+	'' Already in the correct block?
+	'' (same include file, or NULL for toplevel)
+	if( incfile = ctx.incfile ) then
 		exit sub
+	end if
+
+	'' Currently in an include file block?
+	if( ctx.incfile ) then
+		'' Close it
+		hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
+
+		'' "Return" to the main filename, if no new include file block
+		'' will be opened
+		if( incfile = NULL ) then
+			emitSECTION( IR_SECTION_CODE, 0 )
+			lname = *symbUniqueLabel( )
+			hEmitSTABS( STAB_TYPE_SO, ctx.filename, 0, 0, lname )
+			hLABEL( lname )
+		end if
 	end if
 
 	ctx.incfile = incfile
 
-	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
-
-	emitSECTION( IR_SECTION_CODE, 0 )
-
-	lname = *hMakeTmpStr( )
-
-	hEmitSTABS( STAB_TYPE_SOL, filename, 0, 0, lname )
-
-	hLABEL( lname )
-
-end sub
-
-'':::::
-sub edbgIncludeEnd ( ) static
-
-	if( env.clopt.debug = FALSE ) then
-		exit sub
+	'' Open new include file block if needed
+	if( incfile ) then
+		hEmitSTABS( STAB_TYPE_BINCL, incfile, 0, 0 )
+		emitSECTION( IR_SECTION_CODE, 0 )
+		lname = *symbUniqueLabel( )
+		hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
+		hLABEL( lname )
 	end if
-
-	if( ctx.incfile = NULL ) then
-		exit sub
-	end if
-
-	hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
-
-	ctx.incfile = NULL
-
 end sub
-
-

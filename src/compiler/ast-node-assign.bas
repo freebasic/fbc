@@ -3,14 +3,12 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
 private function hCheckStringOps _
 	( _
 		byval l as ASTNODE ptr, _
@@ -19,43 +17,26 @@ private function hCheckStringOps _
 		byval rdclass as FB_DATACLASS _
 	) as integer
 
+	dim as ASTNODE ptr other = any
+
 	function = FALSE
 
-	'' check if it's not a byte ptr
+	'' Other operand must be a z/wstring then
+	'' (since they're not both strings)
 	if( ldclass = FB_DATACLASS_STRING ) then
-		'' not a w|zstring?
-		select case astGetDataType( r )
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-		case else
-			if( r->class <> AST_NODECLASS_DEREF ) then
-				exit function
-			elseif( astGetDataType( r ) <> FB_DATATYPE_BYTE ) then
-				if( astGetDataType( r ) <> FB_DATATYPE_UBYTE ) then
-					exit function
-				end if
-			end if
-		end select
-
+		other = r
 	else
-		'' not a w|zstring?
-		dim as FB_DATATYPE dtype = astGetDataType( l )
-		select case as const dtype
-		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-		case else
-			if( l->class <> AST_NODECLASS_DEREF ) then
-				exit function
-			elseif( dtype <> FB_DATATYPE_BYTE ) then
-				if( dtype <> FB_DATATYPE_UBYTE ) then
-					exit function
-				end if
-			end if
-		end select
+		other = l
 	end if
 
-	function = TRUE
+	select case( astGetDataType( other ) )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
+	case else
+		exit function
+	end select
+
+	function = TRUE
 end function
 
 '':::::
@@ -108,29 +89,28 @@ end function
 private function hCheckWstringOps _
 	( _
 		byval l as ASTNODE ptr, _
-		byref ldtype as FB_DATATYPE, _
+		byref ldfull as integer, _
 		byval r as ASTNODE ptr, _
-		byref rdtype as FB_DATATYPE, _
+		byref rdfull as integer, _
 		byref is_zstr as integer _
 	) as integer
 
 	function = FALSE
 
-	dim as FB_DATATYPE ld = any, rd = any
+	dim as integer ldtype = any, rdtype = any
 
-	ld = typeGet( ldtype )
-	rd = typeGet( rdtype )
+	ldtype = typeGet( ldfull )
+	rdtype = typeGet( rdfull )
 
     '' left?
-	if( ld = FB_DATATYPE_WCHAR ) then
+	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' is right a zstring? (fixed- or
 		'' var-len strings won't reach here)
-		is_zstr = ( rd = FB_DATATYPE_CHAR )
-
+		is_zstr = (rdtype = FB_DATATYPE_CHAR)
 	'' right?
 	else
 		'' is left a zstring?
-		is_zstr = ( ld = FB_DATATYPE_CHAR )
+		is_zstr = (ldtype = FB_DATATYPE_CHAR)
 	end if
 
 	if( is_zstr ) then
@@ -139,60 +119,55 @@ private function hCheckWstringOps _
 
 	'' one is not a string, nor a udt, treat as
 	'' numeric type, let emit convert them if needed..
-	if( ld = FB_DATATYPE_WCHAR ) then
+	if( ldtype = FB_DATATYPE_WCHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( l ) = FALSE ) then
 			exit function
 		end if
 
 		'' remap the type or the optimizer will
 		'' assume it's a string assignment
-		ldtype = typeJoin( ldtype, env.target.wchar )
-
+		ldfull = typeJoin( ldfull, env.target.wchar )
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( r ) = FALSE ) then
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, env.target.wchar )
+		rdfull = typeJoin( rdfull, env.target.wchar )
 	end if
 
 	function = TRUE
-
 end function
 
-'':::::
 private function hCheckZstringOps _
 	( _
 		byval l as ASTNODE ptr, _
-		byref ldtype as FB_DATATYPE, _
+		byref ldfull as integer, _
 		byval r as ASTNODE ptr, _
-		byref rdtype as FB_DATATYPE _
+		byref rdfull as integer _
 	) as integer
 
 	function = FALSE
 
 	'' same as for wstring's..
-	if( typeGet( ldtype ) = FB_DATATYPE_CHAR ) then
+	if( typeGet( ldfull ) = FB_DATATYPE_CHAR ) then
 		'' don't allow, unless it's a pointer
-		if( l->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( l ) = FALSE ) then
 			exit function
 		end if
 
-		ldtype = typeJoin( ldtype, FB_DATATYPE_UBYTE )
-
+		ldfull = typeJoin( ldfull, FB_DATATYPE_UBYTE )
 	else
 		'' same as above..
-		if( r->class <> AST_NODECLASS_DEREF ) then
+		if( astIsDEREF( r ) = FALSE ) then
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, FB_DATATYPE_UBYTE )
+		rdfull = typeJoin( rdfull, FB_DATATYPE_UBYTE )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -223,7 +198,7 @@ private sub hCheckConstAndPointerOps _
 		byval rdtype as FB_DATATYPE _
 	)
 
-	'' check constant
+	'' lhs marked CONST? disallow the assignment then.
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 		return
@@ -305,6 +280,12 @@ function astCheckASSIGN _
 			if( is_zstr ) then
 				return TRUE
 			end if
+
+			'' hCheckWstringOps() may have remapped the types
+			ldclass = typeGetClass( ldfull )
+			rdclass = typeGetClass( rdfull )
+			ldtype = typeGet( ldfull )
+			rdtype = typeGet( rdfull )
 		end if
 
     '' zstrings?
@@ -316,9 +297,15 @@ function astCheckASSIGN _
 			return TRUE
 		end if
 
-		if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckZstringOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
+
+		'' hCheckZstringOps() may have remapped the types
+		ldclass = typeGetClass( ldfull )
+		rdclass = typeGetClass( rdfull )
+		ldtype = typeGet( ldfull )
+		rdtype = typeGet( rdfull )
 
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
@@ -335,7 +322,7 @@ function astCheckASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
+				r = astNewCONV( ldfull, l->subtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -345,20 +332,25 @@ function astCheckASSIGN _
 				exit function
 			end if
 		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
-			end if
-		end if
 	end if
 
 	function = TRUE
+end function
 
+function astCheckASSIGNToType _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr l = any
+
+	l = astNewVAR( NULL, 0, ldtype, lsubtype )
+
+	function = astCheckASSIGN( l, r )
+
+	astDelTree( l )
 end function
 
 '':::::
@@ -374,6 +366,7 @@ function astNewASSIGN _
     dim as FB_DATACLASS ldclass = any, rdclass = any
     dim as FBSYMBOL ptr lsubtype = any, proc = any
 	dim as FB_ERRMSG err_num = any
+	dim as integer do_move = any
 
 	function = NULL
 
@@ -415,9 +408,7 @@ function astNewASSIGN _
 
 		if( check_letop ) then
 			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-
 			if( proc <> NULL ) then
-
 				dim as ASTNODE ptr result = any
 
 				'' if this is a variable initialization, we have to
@@ -437,10 +428,10 @@ function astNewASSIGN _
 
 				'' build a proc call
 				return astNewLINK( result, astBuildCall( proc, l, r ) )
-			else
-				if( err_num <> FB_ERRMSG_OK ) then
-					return NULL
-				end if
+			end if
+
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
 			end if
 		end if
 	end if
@@ -458,7 +449,7 @@ function astNewASSIGN _
 			'' operator LET, which was handled just above.
 
 			'' build a proc call
-			r = astBuildCall( proc, r, NULL )
+			r = astBuildCall( proc, r )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
@@ -497,62 +488,58 @@ function astNewASSIGN _
 			exit function
 		end if
 
-        dim as integer is_udt = TRUE
-        if( astIsCALL( r ) ) then
-        	is_udt = (symbIsUDTReturnedInRegs( r->subtype ) = FALSE)
-        end if
-
-        '' is r an UDT too?
-		if( is_udt ) then
-			'' type ini tree?
-			if( r->class = AST_NODECLASS_TYPEINI ) then
-				'' skip any casting if they won't do any conversion
-				dim as ASTNODE ptr t = l
-				if( l->class = AST_NODECLASS_CONV ) then
-					if( l->cast.doconv = FALSE ) then
-						t = l->l
-					end if
-				end if
-
-				'' !!FIXME!! can't be used with complex l-hand side expressions
-				if( t->class = AST_NODECLASS_VAR ) then
-					'' no double assign, just flush the tree
-					return astTypeIniFlush( r, l->sym, AST_INIOPT_NONE )
+		'' type ini tree?
+		if( astIsTYPEINI( r ) ) then
+			'' skip any casting if they won't do any conversion
+			dim as ASTNODE ptr t = l
+			if( l->class = AST_NODECLASS_CONV ) then
+				if( l->cast.doconv = FALSE ) then
+					t = l->l
 				end if
 			end if
 
-			'' do a shallow copy..
-
-			'' call and returning a pointer? deref the hidden arg (the result)
-			var do_move = TRUE
-			if( astIsCALL( r ) ) then
-				if( typeIsPtr( symbGetUDTRetType( r->subtype ) ) ) then
-					r = astBuildCallHiddenResVar( r )
-				else
-					do_move = FALSE
+			'' Initialize the lhs with the TYPEINI directly,
+			'' instead of using a temp var and then copying that,
+			'' unless there are ctors/dtors (let/cast overloads were
+			'' already handled above).
+			'' FIXME: This currently only works with VAR on the lhs,
+			'' because astTypeIniFlush() takes a symbol, not an expression...
+			if( t->class = AST_NODECLASS_VAR ) then
+				if( (symbHasCtor( t->sym ) or symbHasDtor( t->sym )) = FALSE ) then
+					return astTypeIniFlush( r, t->sym, AST_INIOPT_NONE )
 				end if
 			end if
+		end if
 
+		'' Do a shallow copy
+
+		if( astIsCALL( r ) ) then
+			do_move = symbProcReturnsOnStack( r->sym )
 			if( do_move ) then
-				return astNewMEM( AST_OP_MEMMOVE, _
-							  	l, _
-							  	r, _
-							  	symbGetUDTUnpadLen( l->subtype ) )
+				'' Returning on stack, copy from the temp result var
+				r = astBuildCallResultVar( r )
+			else
+				assert( symbProcReturnsByref( r->sym ) = FALSE )
+
+				'' Returning in registers, patch the types and do a normal ASSIGN
+				ldfull = symbGetProcRealType( r->sym )
+				ldtype = typeGet( ldfull )
+				lsubtype = symbGetProcRealSubtype( r->sym )
+				ldclass = typeGetClass( ldtype )
+				astSetType( l, ldfull, lsubtype )
+
+				rdfull = ldfull
+				rdtype = ldtype
+				rdclass = ldclass
+				astSetType( r, rdfull, lsubtype )
 			end if
-
-		'' r is function returning an UDT on registers
 		else
-            '' patch both type
-            ldfull = symbGetUDTRetType( r->subtype )
-            ldtype = typeGet( ldfull )
-            lsubtype = NULL
-            ldclass = typeGetClass( ldtype )
-            astSetType( l, ldfull, NULL )
+			'' Not a CALL, it must be an UDT in memory, copy from that
+			do_move = TRUE
+		end if
 
-            rdfull = ldfull
-            rdtype = ldtype
-            rdclass = ldclass
-            astSetType( r, rdfull, NULL )
+		if( do_move ) then
+			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetLen( l->subtype ) )
 		end if
 
     '' wstrings?
@@ -572,6 +559,12 @@ function astNewASSIGN _
 			if( is_zstr ) then
 				return rtlWstrAssign( l, r, (options and AST_OPOPT_ISINI) <> 0 )
 			end if
+
+			'' hCheckWstringOps() may have remapped the types
+			ldclass = typeGetClass( ldfull )
+			rdclass = typeGetClass( rdfull )
+			ldtype = typeGet( ldfull )
+			rdtype = typeGet( rdfull )
 		end if
 
 		'' unless it's an initialization
@@ -588,9 +581,15 @@ function astNewASSIGN _
 			return rtlStrAssign( l, r )
 		end if
 
-		if( hCheckZstringOps( l, ldtype, r, rdtype ) = FALSE ) then
+		if( hCheckZstringOps( l, ldfull, r, rdfull ) = FALSE ) then
 			exit function
 		end if
+
+		'' hCheckZstringOps() may have remapped the types
+		ldclass = typeGetClass( ldfull )
+		rdclass = typeGetClass( rdfull )
+		ldtype = typeGet( ldfull )
+		rdtype = typeGet( rdfull )
 
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
@@ -609,16 +608,17 @@ function astNewASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
+				r = astNewCONV( ldfull, lsubtype, r, _
+					iif( options and AST_OPOPT_DONTCHKPTR, AST_CONVOPT_DONTCHKPTR, 0 ) )
 				if( r = NULL ) then
 					exit function
 				end if
 			end if
 
-			'' let the fpu do the convertion if any operand
+			'' let the fpu do the conversion if any operand
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
-			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+			if( env.clopt.backend = FB_BACKEND_GAS ) then
 				if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
 					if( ldtype <> FB_DATATYPE_ULONGINT ) then
 						doconv = irGetOption( IR_OPT_FPUCONV )
@@ -627,17 +627,8 @@ function astNewASSIGN _
 			end if
 
 			if( doconv ) then
-				r = astNewCONV( ldfull, l->subtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
-			end if
-		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
+				r = astNewCONV( ldfull, l->subtype, r, _
+					iif( options and AST_OPOPT_DONTCHKPTR, AST_CONVOPT_DONTCHKPTR, 0 ) )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -663,6 +654,10 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	r = n->r
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
+	end if
+
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, l->dtype, FALSE )
 	end if
 
 	vs = astLoad( r )

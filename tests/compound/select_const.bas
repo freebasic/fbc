@@ -164,14 +164,24 @@ const TEST = 1000
 
 end sub
 
-sub ctor () constructor
+sub testEmptyJumpTable cdecl( )
+	dim as integer i = 456
 
+	select case as const( i )
+	case else
+		i = 123
+	end select
+
+	CU_ASSERT( i = 123 )
+end sub
+
+private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests-compound:select_const")
 	fbcu.add_test("test single1", @test_single_1)
 	fbcu.add_test("test single2", @test_single_2)
 	fbcu.add_test("test range1", @test_range_1)
 	fbcu.add_test("test range2", @test_range_2)
-
+	fbcu.add_test( "empty jmptb", @testEmptyJumpTable )
 end sub
 
 end namespace

@@ -81,46 +81,23 @@ sub symbRemoveFromFwdRef _
 
 end sub
 
-'':::::
 private sub symbReplaceForwardRef _
-    ( _
-        byval s as FBSYMBOL ptr, _
-        byval dtype as integer, _
-        byval subtype as FBSYMBOL ptr _
-    )
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
 
-    dim as integer oldptrcount = any, addptrcount = any
+	assert( typeGetDtOnly( symbGetFullType( s ) ) = FB_DATATYPE_FWDREF )
 
-    '' Replace/merge the symbol's current type with the replacement type.
+	'' If it's a parameter, fix up its initializer too (if any)
+	if( (s->class = FB_SYMBCLASS_PARAM) and symbGetIsOptional( s ) ) then
+		'' Replace old subtype by new subtype
+		astReplaceFwdref( s->param.optexpr, s->subtype, dtype, subtype )
+	end if
 
-    '' Existing PTR's (pointer to forward ref, e.g. on typedefs/variables),
-    oldptrcount = symbGetPtrCnt( s )
-
-    '' and additional PTR's
-    addptrcount = typeGetPtrCnt( dtype )
-
-    '' Too many PTR's after replacing the forward ref with its actual type?
-    if( (oldptrcount + addptrcount) > FB_DT_PTRLEVELS ) then
-        errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
-        '' Error recovery: use the max. amount of PTR's on the final type
-        oldptrcount = FB_DT_PTRLEVELS - addptrcount
-    end if
-
-    '' Replace the forward ref:
-
-    '' dtype (but preserve existing PTR's and CONST's)
-    symbGetFullType( s ) = typeMultAddrOf( dtype, oldptrcount ) or _
-                             typeGetConstMask( symbGetFullType( s ) )
-    '' subtype
-    symbGetSubtype( s ) = subtype
-
-    s->lgt = symbCalcLen( symbGetType( s ), subtype )
-
-    '' We might have substituted the fwdref by another fwdref, and then this
-    '' symbol must be patched again.
-    if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
-        symbAddToFwdRef( subtype, s )
-    end if
+	dtype = typeMerge( symbGetFullType( s ), dtype )
+	symbSetType( s, dtype, subtype )
 
 end sub
 

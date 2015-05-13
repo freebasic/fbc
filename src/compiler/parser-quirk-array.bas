@@ -42,13 +42,13 @@ function cEraseStmt() as integer
 					errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 				end if
 
+				'' ERASE frees dynamic arrays (destruct only),
+				'' but re-initializes static arrays (destruct and construct).
 				if( symbGetIsDynamic( s ) ) then
-					expr = rtlArrayErase( expr, TRUE )
+					astAdd( rtlArrayErase( expr, TRUE, TRUE ) )
 				else
-					expr = rtlArrayClear( expr, TRUE, TRUE )
+					astAdd( rtlArrayClear( expr ) )
 				end if
-
-				astAdd( expr )
 			end if
 		end if
 
@@ -61,7 +61,7 @@ end function
 private function hMakeRef _
 	( _
 		byval t as ASTNODE ptr, _
-		byval pexpr as ASTNODE ptr ptr _
+		byref expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
@@ -74,17 +74,16 @@ private function hMakeRef _
 	'' not the actual data. This also means LINK nodes must be used,
 	'' because we don't support references across statements...
 
-	var dtype = typeAddrof( astGetFullType( (*pexpr) ) )
-	var subtype = astGetSubType( (*pexpr) )
-
 	'' var ref
-	var ref = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+	var ref = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), _
+				astGetSubtype( expr ) )
 
 	'' ref = @expr
-	function = astNewLINK( t, astNewASSIGN( astNewVAR( ref, , dtype, subtype ), astNewADDROF( *pexpr ) ) )
+	function = astNewLINK( t, _
+		astNewASSIGN( astNewVAR( ref ), astNewADDROF( expr ) ) )
 
 	'' Use *ref instead of the original expr
-	*pexpr = astNewDEREF( astNewVAR( ref, , dtype, subtype ) )
+	expr = astNewDEREF( astNewVAR( ref ) )
 
 end function
 
@@ -140,18 +139,18 @@ function cSwapStmt() as integer
 		exit function
 	end if
 
-	'' Check for invalid types by checking whether a raw assignment
-	'' would work (raw because astCheckASSIGN() doesn't check
-	'' operator overloads)
-	dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( l ), astGetSubtype( l ) )
-	dim as integer ok = astCheckASSIGN( fakelhs, r )
-	astDelTree( fakelhs )
-	if( ok = FALSE ) then
+	'' Check whether a "raw" assignment (no operator overloads) would work.
+	'' Must check both l = r and r = l due to inheritance with UDTs which
+	'' can allow one but not the other (and perhaps there even are other
+	'' cases with similar effect).
+	if( (astCheckASSIGN( l, r ) = FALSE) or _
+	    (astCheckASSIGN( r, l ) = FALSE) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		exit function
 	end if
 
 	if( (ldtype = FB_DATATYPE_STRUCT) or (rdtype = FB_DATATYPE_STRUCT) ) then
+		'' This should all be guaranteed by the assignment check above
 		assert( ldtype = FB_DATATYPE_STRUCT )
 		assert( rdtype = FB_DATATYPE_STRUCT )
 		assert( astGetSubtype( l ) = astGetSubtype( r ) )
@@ -175,7 +174,7 @@ function cSwapStmt() as integer
 	''   <SWAP i, f> or <SWAP f, i>.
 	''
 	dim as integer use_pushpop = TRUE
-	use_pushpop and= (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE)
+	use_pushpop and= (env.clopt.backend = FB_BACKEND_GAS)
 	use_pushpop and= (typeGetSize( ldtype ) = typeGetSize( rdtype ))
 	use_pushpop and= (typeGetClass( ldtype ) = typeGetClass( rdtype ))
 	use_pushpop and= (astIsBITFIELD( l ) = FALSE)
@@ -187,11 +186,11 @@ function cSwapStmt() as integer
 
 	'' Side effects? Then use references to be able to read/write...
 	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
-		t = hMakeRef( t, @l )
+		t = hMakeRef( t, l )
 	end if
 
 	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
-		t = hMakeRef( t, @r )
+		t = hMakeRef( t, r )
 	end if
 
 	if( use_pushpop ) then
@@ -204,18 +203,15 @@ function cSwapStmt() as integer
 		'' pop r
 		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
 	else
-		var lfulldtype = astGetFullType( l )
-		var lsubtype = astGetSubType( l )
-
 		'' var temp = clone( l )
-		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE, FALSE )
-		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp, , lfulldtype, lsubtype ), astCloneTree( l ) ) )
+		var temp = symbAddTempVar( astGetFullType( l ), astGetSubtype( l ) )
+		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp ), astCloneTree( l ) ) )
 
 		'' l = clone( r )
 		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
 
 		'' r = temp
-		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp, , lfulldtype, lsubtype ) ) )
+		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp ) ) )
 	end if
 
 	astAdd( t )
@@ -228,16 +224,13 @@ end function
 ''
 function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
-	dim as integer is_lbound = any
 	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
 	select case tk
-
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		is_lbound = (tk = FB_TK_LBOUND)
 		lexSkipToken( )
 
 		'' '('
@@ -249,7 +242,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' ugly hack to deal with arrays w/o indexes
@@ -271,19 +264,19 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 		'' (',' Expression)?
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( dimexpr, FB_DATATYPE_INTEGER )
 		else
-			dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			dimexpr = astNewCONSTi( 1 )
 		end if
 
 		'' ')'
 		hMatchRPRNT( )
 
-		function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
+		function = astBuildArrayBound( arrayexpr, dimexpr, tk )
 	end select
 end function

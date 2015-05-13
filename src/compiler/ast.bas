@@ -30,41 +30,42 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCONV          , _    '' AST_NODECLASS_CONV
 	@astLoadADDROF        , _    '' AST_NODECLASS_ADDROF
 	@astLoadBRANCH        , _    '' AST_NODECLASS_BRANCH
+	@astLoadJMPTB         , _    '' AST_NODECLASS_JMPTB
 	@astLoadCALL          , _    '' AST_NODECLASS_CALL
 	@astLoadCALLCTOR      , _    '' AST_NODECLASS_CALLCTOR
 	@astLoadSTACK         , _    '' AST_NODECLASS_STACK
 	@astLoadMEM           , _    '' AST_NODECLASS_MEM
-	@astLoadNOP           , _    '' AST_NODECLASS_COMP
+	@astLoadLOOP          , _    '' AST_NODECLASS_LOOP
+	NULL                  , _    '' AST_NODECLASS_COMP
 	@astLoadLINK          , _    '' AST_NODECLASS_LINK
 	@astLoadCONST         , _    '' AST_NODECLASS_CONST
 	@astLoadVAR           , _    '' AST_NODECLASS_VAR
 	@astLoadIDX           , _    '' AST_NODECLASS_IDX
-	@astLoadNOP           , _    '' AST_NODECLASS_FIELD
+	@astLoadFIELD         , _    '' AST_NODECLASS_FIELD
 	@astLoadDEREF         , _    '' AST_NODECLASS_DEREF
 	@astLoadLABEL         , _    '' AST_NODECLASS_LABEL
-	@astLoadNOP           , _    '' AST_NODECLASS_ARG
+	NULL                  , _    '' AST_NODECLASS_ARG
 	@astLoadOFFSET        , _    '' AST_NODECLASS_OFFSET
 	@astLoadDECL          , _    '' AST_NODECLASS_DECL
 	@astLoadNIDXARRAY     , _    '' AST_NODECLASS_NIDXARRAY
 	@astLoadIIF           , _    '' AST_NODECLASS_IIF
 	@astLoadLIT           , _    '' AST_NODECLASS_LIT
 	@astLoadASM           , _    '' AST_NODECLASS_ASM
-	@astLoadJMPTB         , _    '' AST_NODECLASS_JMPTB
-	@astLoadNOP           , _    '' AST_NODECLASS_DATASTMT
+	NULL                  , _    '' AST_NODECLASS_DATASTMT
 	@astLoadDBG           , _    '' AST_NODECLASS_DBG
 	@astLoadBOUNDCHK      , _    '' AST_NODECLASS_BOUNDCHK
 	@astLoadPTRCHK        , _    '' AST_NODECLASS_PTRCHK
 	@astLoadSCOPEBEGIN    , _    '' AST_NODECLASS_SCOPEBEGIN
 	@astLoadSCOPEEND      , _    '' AST_NODECLASS_SCOPEEND
-	@astLoadNOP           , _    '' AST_NODECLASS_SCOPE_BREAK
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_PAD
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_ASSIGN
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_CTORCALL
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_CTORLIST
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_SCOPEINI
-	@astLoadNOP           , _    '' AST_NODECLASS_TYPEINI_SCOPEEND
-	@astLoadNOP             _    '' AST_NODECLASS_PROC
+	NULL                  , _    '' AST_NODECLASS_SCOPE_BREAK
+	NULL                  , _    '' AST_NODECLASS_TYPEINI
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_PAD
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_ASSIGN
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_CTORCALL
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_CTORLIST
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEINI
+	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEEND
+	NULL                    _    '' AST_NODECLASS_PROC
 }
 
 '' same order as AST_OP
@@ -142,13 +143,14 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"int"     ), _ '' AST_OP_FLOOR
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"fix"     ), _ '' AST_OP_FIX
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"frac"    ), _ '' AST_OP_FRAC
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"convd2s" ), _ '' AST_OP_CONVFD2FS
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"swzrep"  ), _ '' AST_OP_SWZ_REPEAT
 	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"*"       ), _ '' AST_OP_DEREF
 	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"->"      ), _ '' AST_OP_FLDDEREF
-	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new"     ), _ '' AST_OP_NEW
-	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new[]"   ), _ '' AST_OP_NEW_VEC
-	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete"  ), _ '' AST_OP_DEL
-	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete[]"), _ '' AST_OP_DEL_VEC
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new"     , AST_OP_NEW_SELF    ), _ '' AST_OP_NEW
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"new[]"   , AST_OP_NEW_VEC_SELF), _ '' AST_OP_NEW_VEC
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete"  , AST_OP_DEL_SELF    ), _ '' AST_OP_DEL
+	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"delete[]", AST_OP_DEL_VEC_SELF), _ '' AST_OP_DEL_VEC
 	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cint"    ), _ '' AST_OP_TOINT
 	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cflt"    ), _ '' AST_OP_TOFLT
 	(AST_NODECLASS_CONV  , AST_OPFLAGS_NONE, @"cbool"   ), _ '' AST_OP_TOBOOL
@@ -197,16 +199,21 @@ sub astInit( )
     listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ast.doemit = TRUE
-    ast.typeinicnt = 0
+	ast.typeinicount = 0
+	ast.bitfieldcount = 0
     ast.currblock = NULL
 
     astCallInit( )
     astProcListInit( )
     astDataStmtInit( )
     astMiscInit( )
+
+	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
 
 sub astEnd( )
+	listEnd( @ast.asmtoklist )
+
 	astMiscEnd( )
 	astProcListEnd( )
     astCallEnd( )
@@ -214,12 +221,7 @@ sub astEnd( )
 	listEnd( @ast.astTB )
 end sub
 
-'':::::
-function astCloneTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' note: never clone a tree with side-effects (ie: function call nodes)
 
 	dim as ASTNODE ptr c = any, t = any
@@ -244,33 +246,65 @@ function astCloneTree _
 		c->r = astCloneTree( t )
 	end if
 
+	select case( n->class )
+	case AST_NODECLASS_VAR
+		'' When cloning a temp VAR access, the AST dtorlist must be
+		'' told about the additional reference
+		if( c->sym ) then
+			if( symbIsVar( c->sym ) and symbIsTemp( c->sym ) ) then
+				astDtorListAddRef( c->sym )
+			end if
+		end if
+
 	'' call nodes are too complex, let a helper function clone it
-	if( n->class = AST_NODECLASS_CALL ) then
+	case AST_NODECLASS_CALL
 		astCloneCALL( n, c )
-	end if
 
 	'' IIF nodes have labels, that can't be just cloned or you get dupes
 	'' at the assembler.
-	if( n->class = AST_NODECLASS_IIF ) then
-		c->iif.falselabel = symbAddLabel( NULL )
-		c->l->op.ex = c->iif.falselabel
-	end if
+	case AST_NODECLASS_IIF
+		astReplaceSymbolOnTree( c, c->iif.falselabel, symbAddLabel( NULL ) )
+
+	case AST_NODECLASS_LOOP
+		astReplaceSymbolOnTree( c, c->op.ex, symbAddLabel( NULL ) )
+
+	case AST_NODECLASS_TYPEINI
+		ast.typeinicount += 1
+
+		'' The scope that some TYPEINI have is not duplicated,
+		'' much less the temp vars (astTypeIniClone() should be used
+		'' for that), so better not leave a dangling pointer...
+		c->typeini.scp = NULL
+
+	case AST_NODECLASS_FIELD
+		if( astGetDataType( c->l ) = FB_DATATYPE_BITFIELD ) then
+			ast.bitfieldcount += 1
+		end if
+
+#if __FB_DEBUG__
+	case AST_NODECLASS_LIT, AST_NODECLASS_JMPTB
+		'' These nodes contain dynamically allocated memory,
+		'' which currently isn't handled here
+		assert( FALSE )
+#endif
+
+	end select
 
 	function = c
-
 end function
 
 '':::::
-function astRemSideFx _
-	( _
-		byref n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 	'' note: this should only be done with VAR, IDX, PTR and FIELD nodes
 
 	dim as FBSYMBOL ptr tmp = any, subtype = any
 	dim as integer dtype = any
 	dim as ASTNODE ptr t = any
+
+	'' Handle string concatenation here. Since the expression will be taken
+	'' out of its original context (e.g. string ASSIGN or ARG), we are now
+	'' responsible for doing this.
+	n = astUpdStrConcat( n )
 
 	dtype = astGetFullType( n )
 	subtype = astGetSubType( n )
@@ -280,41 +314,25 @@ function astRemSideFx _
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 		'' tmp = @b
-		t = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-				   	  	  astNewADDROF( n ) )
+		function = astNewASSIGN( astNewVAR( tmp ), astNewADDROF( n ) )
 
-		'' return *tmp
-		function = astNewLINK( t, _
-						   	   astNewDEREF( astNewVAR( tmp, _
-			   		   			   			  	 	   0, _
-			   		   			   			  	 	   typeAddrOf( dtype ), _
-			   		   			   			  	 	   subtype ),_
-			   		   			   	  	  	dtype, _
-			   		   			   	  	  	subtype ) )
-
-		'' repatch node
-		n = astNewDEREF( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
-			   		   	 dtype, _
-			   		   	 subtype )
+		'' repatch original expression to just *tmp
+		n = astNewDEREF( astNewVAR( tmp ) )
 
 	'' simple type..
 	case else
-		tmp = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( dtype, subtype )
 
 		'' tmp = n
-		t = astNewASSIGN( astNewVAR( tmp, 0, dtype, subtype ), n )
+		function = astNewASSIGN( astNewVAR( tmp ), n )
 
-		'' return tmp
-		function = astNewLINK( t, astNewVAR( tmp, 0, dtype, subtype ) )
-
-		'' repatch node
-		n = astNewVAR( tmp, 0, dtype, subtype )
+		'' repatch original expression to just access the temp var
+		n = astNewVAR( tmp )
 
 	end select
-
 end function
 
 '':::::
@@ -375,6 +393,14 @@ sub astDelNode _
 
 	if( n = NULL ) then
 		exit sub
+	end if
+
+	if( astIsVAR( n ) ) then
+		if( n->sym ) then
+			if( symbIsVar( n->sym ) and symbIsTemp( n->sym ) ) then
+				astDtorListRemoveRef( n->sym )
+			end if
+		end if
 	end if
 
 	listDelNode( @ast.astTB, n )

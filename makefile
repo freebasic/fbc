@@ -10,19 +10,16 @@
 #
 #   1) the compiler - this requires a working FB installation, because it's
 #      written in FB itself.
-#          src/compiler/*.bas and possibly src/compiler/bfd-wrapper.c,
+#          src/compiler/*.bas,
 #          compiled into fbc-new[.exe]
-#
-#          Beware of the libbfd pitfall! By default, the compiler source code
-#          uses the system's bfd.h header through bfd-wrapper.c, but it is
-#          linked against whichever libbfd binary is seen by the host FB setup.
-#          Please ensure the used libbfd binary matches the used headers!
-#          See also the configuration options below.
 #
 #   2) the rtlib
 #          all *.c and *.s files in src/rtlib/, src/rtlib/$(TARGET_OS),
 #          and src/rtlib/$(TARGET_ARCH), compiled into libfb.a
 #          src/rtlib/static/fbrt0.c compiled into fbrt0.o
+#
+#          For DOS, the modified version of libc.a is created too,
+#          see contrib/djgpp/ for more information.
 #
 #   3) the thread-safe rtlib (except for DOS)
 #          like the normal rtlib, but with -DENABLE_MT, compiled into libfbmt.a
@@ -54,17 +51,12 @@
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
-#   DISABLE_OBJINFO=1      use "-d DISABLE_OBJINFO" and don't compile in bfd-wrapper.c
-#   ENABLE_FBBFD=217       use "-d ENABLE_FBBFD=$(ENABLE_FBBFD)" and don't compile in bfd-wrapper.c
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
-#   -d DISABLE_OBJINFO       do not use libbfd at all
-#   -d ENABLE_FBBFD=217      use specific bfd.bi instead of bfd.h wrapper
-#   -d ENABLE_TDMGCC         build for TDM-GCC instead of MinGW.org setup
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
 #
@@ -102,6 +94,7 @@
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
+AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
@@ -284,7 +277,8 @@ endif
 
 newcompiler := src/compiler/obj
 ifdef ENABLE_STANDALONE
-  FBC_EXE     := fbc-new$(EXEEXT)
+  FBC_EXE     := fbc$(EXEEXT)
+  FBCNEW_EXE  := fbc-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_OS)-obj
   newlibfbmt  := src/rtlib/$(TARGET_OS)-objmt
   newlibfbgfx := src/gfxlib2/$(TARGET_OS)-obj
@@ -293,7 +287,8 @@ ifdef ENABLE_STANDALONE
   prefixinclude  := $(prefix)/inc
   prefixlib      := $(prefix)/lib/$(TARGET_OS)
 else
-  FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
+  FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
+  FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_PREFIX)obj
   newlibfbmt  := src/rtlib/$(TARGET_PREFIX)objmt
   newlibfbgfx := src/gfxlib2/$(TARGET_PREFIX)obj
@@ -305,7 +300,29 @@ endif
 
 ALLFBCFLAGS := -e -m fbc -w pedantic
 ALLFBLFLAGS := -e -m fbc -w pedantic
-ALLCFLAGS := -Wall
+ALLCFLAGS := -Wall -Werror-implicit-function-declaration
+
+ifeq ($(TARGET_OS),xbox)
+  ifeq ($(OPENXDK),)
+    $(error Please set OPENXDK=<OpenXDK directory>)
+  endif
+
+  MINGWGCCLIBDIR := $(dir $(shell $(CC) -print-file-name=libgcc.a))
+
+  ALLCFLAGS += -ffreestanding -nostdinc -fno-exceptions -march=i386 \
+    -I$(OPENXDK)/i386-pc-xbox/include \
+    -I$(OPENXDK)/include \
+    -I$(MINGWGCCLIBDIR)/include
+
+  # src/rtlib/fb_config.h cannot auto-detect this
+  ALLCFLAGS += -DHOST_XBOX
+
+  # Assume no libffi for now (does it work on Xbox?)
+  ALLCFLAGS += -DDISABLE_FFI
+
+  # -DENABLE_MT parts of rtlib XBox code aren't finished
+  DISABLE_MT := YesPlease
+endif
 
 # If cross-compiling, use -target
 ifdef TARGET
@@ -322,12 +339,6 @@ endif
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
 endif
-ifdef DISABLE_OBJINFO
-  ALLFBCFLAGS += -d DISABLE_OBJINFO
-endif
-ifdef ENABLE_FBBFD
-  ALLFBCFLAGS += -d ENABLE_FBBFD=$(ENABLE_FBBFD)
-endif
 ifdef ENABLE_SUFFIX
   ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(ENABLE_SUFFIX)"'
 endif
@@ -340,32 +351,11 @@ ALLFBLFLAGS += $(FBLFLAGS) $(FBFLAGS)
 ALLCFLAGS += $(CFLAGS)
 
 # compiler headers and modules
-FBC_BI  := $(wildcard $(srcdir)/compiler/*.bi)
-FBC_BAS := $(wildcard $(srcdir)/compiler/*.bas)
-FBC_BAS := $(sort $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS)))
-
-ifndef DISABLE_OBJINFO
-  ifndef ENABLE_FBBFD
-    FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
-  endif
-
-  ALLFBLFLAGS += -l bfd -l iberty
-  ifeq ($(TARGET_OS),cygwin)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),dos)
-    ALLFBLFLAGS += -l intl -l z
-  endif
-  ifeq ($(TARGET_OS),freebsd)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),openbsd)
-    ALLFBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),win32)
-    ALLFBLFLAGS += -l intl -l user32
-  endif
-endif
+FBC_BI  :=        $(wildcard $(srcdir)/compiler/*.bi)
+FBC_BAS := $(sort $(wildcard $(srcdir)/compiler/*.bas))
+FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
+FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
+FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
 
 # rtlib/gfxlib2 headers and modules
 RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
@@ -389,23 +379,11 @@ LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H
 LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.c))))
 LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.s))))
 
-ifeq ($(TARGET_OS),xbox)
-  ALLCFLAGS += -DHOST_XBOX
-
-  # Some special treatment for xbox. TODO: Test me, update me!
-  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
-  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
-  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
-  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
-  ALLCFLAGS += -I$(OPENXDK)/include
-  ALLCFLAGS += -I$(OPENXDK)/include/SDL
-endif
-
 #
 # Build rules
 #
 
-VPATH = $(srcdir)/compiler $(RTLIB_DIRS) $(GFXLIB2_DIRS)
+VPATH = $(RTLIB_DIRS) $(GFXLIB2_DIRS)
 
 # We don't want to use any of make's built-in suffixes/rules
 .SUFFIXES:
@@ -416,7 +394,10 @@ ifndef V
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
   QUIET_AR    = @echo "AR $@";
+  QUIET       = @
 endif
+
+################################################################################
 
 .PHONY: all
 all: compiler rtlib gfxlib2
@@ -426,6 +407,8 @@ $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
 $(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
 	mkdir $@
 
+################################################################################
+
 .PHONY: compiler
 compiler: src src/compiler
 ifndef ENABLE_STANDALONE
@@ -433,20 +416,23 @@ compiler: bin
 endif
 compiler: $(newcompiler) $(FBC_EXE)
 
-$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
-	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
+$(FBC_EXE): $(FBC_BAS)
+	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
+	$(QUIET)mv $(FBCNEW_EXE) $@
 
-$(FBC_BAS): $(newcompiler)/%.o: %.bas $(FBC_BI)
+$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
-$(newcompiler)/bfd-wrapper.o: bfd-wrapper.c
-	$(QUIET_CC)$(CC) -Wall -O2 -c $< -o $@
+################################################################################
 
 .PHONY: rtlib
 rtlib: lib $(libdir) src src/rtlib $(newlibfb)
 rtlib: $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
 ifndef DISABLE_MT
 rtlib: $(newlibfbmt) $(libdir)/libfbmt.a
+endif
+ifeq ($(TARGET_OS),dos)
+rtlib: $(libdir)/libc.a
 endif
 
 $(libdir)/fbextra.x: $(rootdir)lib/fbextra.x
@@ -482,6 +468,20 @@ $(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
 $(LIBFBMT_S): $(newlibfbmt)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
+ifeq ($(TARGET_OS),dos)
+djgpplibc := $(shell $(CC) -print-file-name=libc.a)
+libcmaino := contrib/djgpp/libc/crt0/_main.o
+
+$(libcmaino): %.o: %.c
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libc.a: $(djgpplibc) $(libcmaino)
+	cp $(djgpplibc) $@
+	$(QUIET_AR)ar rs $@ $(libcmaino)
+endif
+
+################################################################################
+
 .PHONY: gfxlib2
 gfxlib2: lib $(libdir) src src/gfxlib2
 gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
@@ -494,6 +494,8 @@ $(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
 
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+################################################################################
 
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
@@ -517,9 +519,14 @@ install-rtlib: $(prefix)/lib $(prefixlib)
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
   endif
+  ifeq ($(TARGET_OS),dos)
+	$(INSTALL_FILE) $(libdir)/libc.a $(prefixlib)/
+  endif
 
 install-gfxlib2: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
+
+################################################################################
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
@@ -536,15 +543,23 @@ uninstall-rtlib:
   ifndef DISABLE_MT
 	rm -f $(prefixlib)/libfbmt.a
   endif
+  ifeq ($(TARGET_OS),dos)
+	rm -f $(libdir)/libc.a
+  endif
 
 uninstall-gfxlib2:
 	rm -f $(prefixlib)/libfbgfx.a
+
+################################################################################
 
 .PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
 clean:        clean-compiler clean-rtlib clean-gfxlib2
 
 clean-compiler:
 	rm -f $(FBC_EXE) $(newcompiler)/*.o
+  ifndef ENABLE_STANDALONE
+	-rmdir bin
+  endif
 
 clean-rtlib:
 	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(newlibfb)/*.o
@@ -553,10 +568,15 @@ clean-rtlib:
 	rm -f $(libdir)/libfbmt.a $(newlibfbmt)/*.o
 	-rmdir $(newlibfbmt)
   endif
+  ifeq ($(TARGET_OS),dos)
+	rm -f $(libdir)/libc.a $(libcmaino)
+  endif
 
 clean-gfxlib2:
 	rm -f $(libdir)/libfbgfx.a $(newlibfbgfx)/*.o
 	-rmdir $(newlibfbgfx)
+
+################################################################################
 
 .PHONY: help
 help:

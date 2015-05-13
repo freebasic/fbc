@@ -1,7 +1,7 @@
 ' This is file gtk.bi
 ' (FreeBasic binding for GTK - The GIMP Toolkit)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+' (C) 2011-2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
 ' translated with help of h_2_bi.bas
 ' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
 '
@@ -21,12 +21,12 @@
 ' See #INCLUDE files for original license text.
 
 ' GTK installations:
-' Defaults to compiling against GTK 2.24. Prepend your code by
+' Defaults to compile against GTK 2.24. Prepend your code by
 '#DEFINE __USE_GTK_OLD__ 'for compiling against versions < 2.16 (and >= 2.0),
 '#DEFINE __USE_GTK3__ 'for compiling against versions >= 3.0
 
 #IFDEF __USE_GTK3__
-#INCLUDE ONCE "gtk-3.2.bi"
+#INCLUDE ONCE "gtk-3.4.bi"
 #ELSE
 #INCLUDE ONCE "gtk-2.24.bi"
 #ENDIF

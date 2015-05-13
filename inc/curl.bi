@@ -33,6 +33,14 @@
 
 #inclib "curl"
 
+#ifdef __FB_WIN32__
+	#ifndef __CURL_DLL__
+		#inclib "idn"
+		#inclib "wldap32"
+		#inclib "z"
+	#endif
+#endif
+
 /' This is the global package copyright '/
 #define LIBCURL_COPYRIGHT "1996 - 2011 Daniel Stenberg, <daniel@haxx.se>."
 

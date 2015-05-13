@@ -13,7 +13,7 @@ Declare Function wxFontMapper_ctor WXCALL Alias "wxFontMapper_ctor" () As wxFont
 Declare Sub wxFontMapper_dtor WXCALL Alias "wxFontMapper_dtor" (self As wxFontMapper Ptr)
 Declare Function wxFontMapper_Get WXCALL Alias "wxFontMapper_Get" () As wxFontMapper Ptr
 Declare Function wxFontMapper_Set WXCALL Alias "wxFontMapper_Set" (mapper As wxFontMapper Ptr) As wxFontMapper Ptr
-Declare Function  wxFontMapper_GetSupportedEncodingsCount WXCALL Alias " wxFontMapper_GetSupportedEncodingsCount" () As size_t
+Declare Function wxFontMapper_GetSupportedEncodingsCount WXCALL Alias "wxFontMapper_GetSupportedEncodingsCount" () As size_t
 Declare Function wxFontMapper_GetEncoding WXCALL Alias "wxFontMapper_GetEncoding" (n As size_t) As wxFontEncoding
 Declare Function wxFontMapper_GetEncodingName WXCALL Alias "wxFontMapper_GetEncodingName" (enc As wxFontEncoding) As wxString Ptr
 Declare Function wxFontMapper_GetEncodingFromName WXCALL Alias "wxFontMapper_GetEncodingFromName" (nameArg As wxString Ptr) As wxFontEncoding
@@ -25,7 +25,7 @@ Declare Sub wxFontMapper_SetDialogParent WXCALL Alias "wxFontMapper_SetDialogPar
 Declare Sub wxFontMapper_SetDialogTitle WXCALL Alias "wxFontMapper_SetDialogTitle" (self As wxFontMapper Ptr, title As wxString Ptr)
 
 ' class wxEncodingConverter
-Declare Function  wxEncodingConverter_ctor WXCALL Alias " wxEncodingConverter_ctor" () As wxEncodingConverter Ptr
+Declare Function wxEncodingConverter_ctor WXCALL Alias "wxEncodingConverter_ctor" () As wxEncodingConverter Ptr
 Declare Function wxEncodingConverter_Init WXCALL Alias "wxEncodingConverter_Init" (self As wxEncodingConverter Ptr, in_enc As wxFontEncoding, out_enc As wxFontEncoding, method As wxInt) As wxBool
 Declare Function wxEncodingConverter_Convert WXCALL Alias "wxEncodingConverter_Convert" (self As wxEncodingConverter Ptr, in As wxString Ptr) As wxString Ptr
 

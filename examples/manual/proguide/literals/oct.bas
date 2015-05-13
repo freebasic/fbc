@@ -7,4 +7,4 @@
 '' --------
 
 Dim x As Integer = &O361100
-Dim b As Byte = &O400
+Dim b As Byte = &O200

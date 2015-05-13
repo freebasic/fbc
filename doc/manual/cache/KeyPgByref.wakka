@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="BYREF"}}----
+{{fbdoc item="title" value="BYREF (parameters)"}}----
 Declaration specifier to explicitly pass a parameter by reference
 
 {{fbdoc item="syntax"}}##
@@ -41,5 +41,6 @@ end
 	- [[ProPgPassingArguments Passing Arguments to Procedures]]
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgByval ByVal]]##
+	- ##[[KeyPgByrefFunction Byref (function results)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

@@ -29,7 +29,7 @@ Dim b As Byte = &H80
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/oct.bas"}}%%(freebasic)
 Dim x as integer = &O361100
-Dim b as byte = &O400
+Dim b as byte = &O200
 %%
 	__Binary__
 	"##&B##", followed by binary digits ( ##0 1## )

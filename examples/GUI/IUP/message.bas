@@ -1,15 +1,11 @@
 #include once "IUP/iup.bi"
+#define NULL 0
 
   '' Initializes IUP
-  IupOpen()
-  
-  '' Program begin
-  
-  '' Executes IupMessage
-  IupMessage("IupMessage Example", "Press the button")
+  IupOpen( NULL, NULL )
 
-  '' Initializes IUP main loop
-  IupMainLoop ()
+  '' Shows a Message Box
+  IupMessage("IupMessage Example", "Hi! Press the button:")
 
   '' Finishes IUP
   IupClose ()

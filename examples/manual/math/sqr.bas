@@ -6,14 +6,12 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSqr
 '' --------
 
-'' Example of sqr function: Pythagorean theorem 
-Dim As Single a , b
+'' Example of Sqr function: Pythagorean theorem 
+Dim As Single a, b
 
-Print "Pythagorean theorem , right triangle"
+Print "Pythagorean theorem, right-angled triangle"
 Print
 Input "Please enter one leg side length: ", a
 Input "Please enter the other leg side length: ", b
 Print 
-Print "The hypotenuse has a length of: " ; Sqr ( a * a + b * b )
-
-Sleep
+Print "The hypotenuse has a length of: " & Sqr( a * a + b * b )

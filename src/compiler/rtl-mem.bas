@@ -97,7 +97,7 @@
 	 			) _
 	 		} _
 		), _
-		/' allocate cdecl ( byval bytes as integer ) as any ptr '/ _
+		/' allocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -105,11 +105,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
-		/' callocate cdecl ( byval bytes as integer ) as any ptr '/ _
+		/' callocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -117,14 +117,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 1 _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 _
 	 			) _
 	 		} _
 		), _
-		/' reallocate cdecl ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
+		/' reallocate cdecl ( byval p as any ptr, byval bytes as uinteger ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -135,7 +135,7 @@
 					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -280,11 +280,9 @@ function rtlNullPtrCheck _
 	end if
 
 	'' linenum
-	if( astNewARG( proc, _
-				   astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), _
-				   FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( linenum ) ) = NULL ) then
+		exit function
+	end if
 
     '' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
@@ -320,10 +318,10 @@ function rtlMemCopy _
     	exit function
     end if
 
-    '' byval bytes as integer
-    if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval bytes as integer
+	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     function = proc
@@ -342,7 +340,7 @@ function rtlMemSwap _
 	dim as ASTNODE ptr proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
 	'' always calc len before pushing the param
-	dim as integer bytes = rtlCalcExprLen( dst, TRUE )
+	dim as integer bytes = rtlCalcExprLen( dst )
 
 	'' dst as any
 	if( astNewARG( proc, dst ) = NULL ) then
@@ -355,7 +353,7 @@ function rtlMemSwap _
 	end if
 
 	'' byval bytes as integer
-	if( astNewARG( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
 		exit function
 	end if
 
@@ -385,20 +383,20 @@ function rtlMemCopyClear _
     	exit function
     end if
 
-    '' byval dstlen as integer
-    if( astNewARG( proc, astNewCONSTi( dstlen, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval dstlen as integer
+	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
+		exit function
+	end if
 
     '' src as any
     if( astNewARG( proc, srcexpr ) = NULL ) then
     	exit function
     end if
 
-    '' byval srclen as integer
-    if( astNewARG( proc, astNewCONSTi( srclen, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval srclen as integer
+	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     astAdd( proc )
@@ -407,89 +405,82 @@ function rtlMemCopyClear _
 
 end function
 
-'':::::
 function rtlMemNewOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval len_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	'' assumes dtype has const info stripped
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr sym = any
 
-    '' try to find an overloaded new()
-    select case as const dtype
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	sym = symbGetCompOpOvlHead( subtype, _
-    								iif( is_vector, _
-    									 AST_OP_NEW_VEC_SELF, _
-    									 AST_OP_NEW_SELF ) )
-    case else
-    	sym = NULL
-    end select
+	'' try to find an overloaded new()
+	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
+		assert( (astGetOpSelfVer( op ) = AST_OP_NEW_SELF) or (astGetOpSelfVer( op ) = AST_OP_NEW_VEC_SELF) )
+		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
+		if( sym ) then
+			if( symbCheckAccess( sym ) = FALSE ) then
+				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+			end if
+		end if
+	else
+		sym = NULL
+	end if
 
-    '' if not defined, call the global one
-    if( sym = NULL ) then
-    	sym = symbGetCompOpOvlHead( subtype, _
-    								iif( is_vector, _
-    									 AST_OP_NEW_VEC, _
-    									 AST_OP_NEW ) )
-    end if
+	'' if not defined, call the global one
+	if( sym = NULL ) then
+		assert( (op = AST_OP_NEW) or (op = AST_OP_NEW_VEC) )
+		sym = symbGetCompOpOvlHead( NULL, op )
+	end if
 
-    proc = astNewCALL( sym )
+	proc = astNewCALL( sym )
 
-    '' byval len as uinteger
-    if( astNewARG( proc, len_expr ) = NULL ) then
-    	exit function
-    end if
+	'' byval len as uinteger
+	if( astNewARG( proc, len_expr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
-
+	function = proc
 end function
 
-'':::::
 function rtlMemDeleteOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval ptr_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr sym = any
 
-	'' assumes const info is stripped
+	'' try to find an overloaded delete()
+	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
+		assert( (astGetOpSelfVer( op ) = AST_OP_DEL_SELF) or (astGetOpSelfVer( op ) = AST_OP_DEL_VEC_SELF) )
+		sym = symbGetCompOpOvlHead( subtype, astGetOpSelfVer( op ) )
+		if( sym ) then
+			if( symbCheckAccess( sym ) = FALSE ) then
+				errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+			end if
+		end if
+	else
+		sym = NULL
+	end if
 
-    '' try to find an overloaded delete()
-    select case as const dtype
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	sym = symbGetCompOpOvlHead( subtype, _
-    								iif( is_vector, _
-    									 AST_OP_DEL_VEC_SELF, _
-    									 AST_OP_DEL_SELF ) )
-    case else
-    	sym = NULL
-    end select
+	'' if not defined, call the global one
+	if( sym = NULL ) then
+		assert( (op = AST_OP_DEL) or (op = AST_OP_DEL_VEC) )
+		sym = symbGetCompOpOvlHead( NULL, op )
+	end if
 
-    '' if not defined, call the global one
-    if( sym = NULL ) then
-    	sym = symbGetCompOpOvlHead( subtype, _
-    								iif( is_vector, _
-    									 AST_OP_DEL_VEC, _
-    									 AST_OP_DEL ) )
-    end if
+	proc = astNewCALL( sym )
 
-    proc = astNewCALL( sym )
+	'' byval ptr as any ptr
+	if( astNewARG( proc, ptr_expr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval ptr as any ptr
-    if( astNewARG( proc, ptr_expr ) = NULL ) then
-    	exit function
-    end if
-
-    function = proc
-
+	function = proc
 end function

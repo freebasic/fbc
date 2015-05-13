@@ -238,7 +238,7 @@ static void x11_update(void)
 	blitter((unsigned char *)image->data, image->bytes_per_line);
 	for (i = 0; i < fb_x11.h; i++) {
 		if (__fb_gfx->dirty[i]) {
-			for (y = i, h = 0; (__fb_gfx->dirty[i]) && (i < fb_x11.h); h++, i++)
+			for (y = i, h = 0; (i < fb_x11.h) && __fb_gfx->dirty[i]; h++, i++)
 				;
 			if (shape_image) {
 				update_mask((unsigned char *)__fb_gfx->framebuffer + (y * __fb_gfx->pitch),

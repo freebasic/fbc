@@ -1,700 +1,957 @@
-''
-''
-'' sqlite3 -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __sqlite3_bi__
-#define __sqlite3_bi__
-
-#inclib "sqlite3"
-
-#define SQLITE_VERSION "3.7.8"
-#define SQLITE_VERSION_NUMBER 3007008
-#define SQLITE_SOURCE_ID "2011-09-19 14:49:19 3e0da808d2f5b4d12046e05980ca04578f581177"
-
-extern "c"
-
-declare function sqlite3_libversion () as zstring ptr
-declare function sqlite3_sourceid () as zstring ptr
-declare function sqlite3_libversion_number () as integer
-declare function sqlite3_compileoption_used (byval zOptName as zstring ptr) as integer
-declare function sqlite3_compileoption_get (byval N as integer) as zstring ptr
-declare function sqlite3_threadsafe () as integer
-
-type sqlite3 as any
-type sqlite_int64 as longint
-type sqlite_uint64 as ulongint
-type sqlite3_int64 as sqlite_int64
-type sqlite3_uint64 as sqlite_uint64
-
-declare function sqlite3_close (byval as sqlite3 ptr) as integer
-
-type sqlite3_callback as function cdecl(byval as any ptr, byval as integer, byval as byte ptr ptr, byval as byte ptr ptr) as integer
-
-declare function sqlite3_exec (byval as sqlite3 ptr, byval sql as zstring ptr, byval callback as function cdecl(byval as any ptr, byval as integer, byval as byte ptr ptr, byval as byte ptr ptr) as integer, byval as any ptr, byval errmsg as byte ptr ptr) as integer
-
-#define SQLITE_OK 0
-#define SQLITE_ERROR 1
-#define SQLITE_INTERNAL 2
-#define SQLITE_PERM 3
-#define SQLITE_ABORT 4
-#define SQLITE_BUSY 5
-#define SQLITE_LOCKED 6
-#define SQLITE_NOMEM 7
-#define SQLITE_READONLY 8
-#define SQLITE_INTERRUPT 9
-#define SQLITE_IOERR 10
-#define SQLITE_CORRUPT 11
-#define SQLITE_NOTFOUND 12
-#define SQLITE_FULL 13
-#define SQLITE_CANTOPEN 14
-#define SQLITE_PROTOCOL 15
-#define SQLITE_EMPTY 16
-#define SQLITE_SCHEMA 17
-#define SQLITE_TOOBIG 18
-#define SQLITE_CONSTRAINT 19
-#define SQLITE_MISMATCH 20
-#define SQLITE_MISUSE 21
-#define SQLITE_NOLFS 22
-#define SQLITE_AUTH 23
-#define SQLITE_FORMAT 24
-#define SQLITE_RANGE 25
-#define SQLITE_NOTADB 26
-#define SQLITE_ROW 100
-#define SQLITE_DONE 101
-#define SQLITE_IOERR_READ (10 or (1 shl 8))
-#define SQLITE_IOERR_SHORT_READ (10 or (2 shl 8))
-#define SQLITE_IOERR_WRITE (10 or (3 shl 8))
-#define SQLITE_IOERR_FSYNC (10 or (4 shl 8))
-#define SQLITE_IOERR_DIR_FSYNC (10 or (5 shl 8))
-#define SQLITE_IOERR_TRUNCATE (10 or (6 shl 8))
-#define SQLITE_IOERR_FSTAT (10 or (7 shl 8))
-#define SQLITE_IOERR_UNLOCK (10 or (8 shl 8))
-#define SQLITE_IOERR_RDLOCK (10 or (9 shl 8))
-#define SQLITE_IOERR_DELETE (10 or (10 shl 8))
-#define SQLITE_IOERR_BLOCKED (10 or (11 shl 8))
-#define SQLITE_IOERR_NOMEM (10 or (12 shl 8))
-#define SQLITE_IOERR_ACCESS (10 or (13 shl 8))
-#define SQLITE_IOERR_CHECKRESERVEDLOCK (10 or (14 shl 8))
-#define SQLITE_IOERR_LOCK (10 or (15 shl 8))
-#define SQLITE_IOERR_CLOSE (10 or (16 shl 8))
-#define SQLITE_IOERR_DIR_CLOSE (10 or (17 shl 8))
-#define SQLITE_IOERR_SHMOPEN (10 or (18 shl 8))
-#define SQLITE_IOERR_SHMSIZE (10 or (19 shl 8))
-#define SQLITE_IOERR_SHMLOCK (10 or (20 shl 8))
-#define SQLITE_IOERR_SHMMAP (10 or (21 shl 8))
-#define SQLITE_IOERR_SEEK (10 or (22 shl 8))
-#define SQLITE_LOCKED_SHAREDCACHE (6 or (1 shl 8))
-#define SQLITE_BUSY_RECOVERY (5 or (1 shl 8))
-#define SQLITE_CANTOPEN_NOTEMPDIR (14 or (1 shl 8))
-#define SQLITE_CORRUPT_VTAB (11 or (1 shl 8))
-#define SQLITE_READONLY_RECOVERY (8 or (1 shl 8))
-#define SQLITE_READONLY_CANTLOCK (8 or (2 shl 8))
-#define SQLITE_OPEN_READONLY &h00000001
-#define SQLITE_OPEN_READWRITE &h00000002
-#define SQLITE_OPEN_CREATE &h00000004
-#define SQLITE_OPEN_DELETEONCLOSE &h00000008
-#define SQLITE_OPEN_EXCLUSIVE &h00000010
-#define SQLITE_OPEN_AUTOPROXY &h00000020
-#define SQLITE_OPEN_URI &h00000040
-#define SQLITE_OPEN_MAIN_DB &h00000100
-#define SQLITE_OPEN_TEMP_DB &h00000200
-#define SQLITE_OPEN_TRANSIENT_DB &h00000400
-#define SQLITE_OPEN_MAIN_JOURNAL &h00000800
-#define SQLITE_OPEN_TEMP_JOURNAL &h00001000
-#define SQLITE_OPEN_SUBJOURNAL &h00002000
-#define SQLITE_OPEN_MASTER_JOURNAL &h00004000
-#define SQLITE_OPEN_NOMUTEX &h00008000
-#define SQLITE_OPEN_FULLMUTEX &h00010000
-#define SQLITE_OPEN_SHAREDCACHE &h00020000
-#define SQLITE_OPEN_PRIVATECACHE &h00040000
-#define SQLITE_OPEN_WAL &h00080000
-#define SQLITE_IOCAP_ATOMIC &h00000001
-#define SQLITE_IOCAP_ATOMIC512 &h00000002
-#define SQLITE_IOCAP_ATOMIC1K &h00000004
-#define SQLITE_IOCAP_ATOMIC2K &h00000008
-#define SQLITE_IOCAP_ATOMIC4K &h00000010
-#define SQLITE_IOCAP_ATOMIC8K &h00000020
-#define SQLITE_IOCAP_ATOMIC16K &h00000040
-#define SQLITE_IOCAP_ATOMIC32K &h00000080
-#define SQLITE_IOCAP_ATOMIC64K &h00000100
-#define SQLITE_IOCAP_SAFE_APPEND &h00000200
-#define SQLITE_IOCAP_SEQUENTIAL &h00000400
-#define SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN &h00000800
-#define SQLITE_LOCK_NONE 0
-#define SQLITE_LOCK_SHARED 1
-#define SQLITE_LOCK_RESERVED 2
-#define SQLITE_LOCK_PENDING 3
-#define SQLITE_LOCK_EXCLUSIVE 4
-#define SQLITE_SYNC_NORMAL &h00002
-#define SQLITE_SYNC_FULL &h00003
-#define SQLITE_SYNC_DATAONLY &h00010
-
-type sqlite3_file
-    pMethods as sqlite3_io_methods ptr
-end type
-
-type sqlite3_io_methods
-    iVersion as integer
-    xClose as function cdecl(byval as sqlite3_file ptr) as integer
-    xRead as function cdecl(byval as sqlite3_file ptr, byval as any ptr, byval as integer, byval as sqlite3_int64) as integer
-    xWrite as function cdecl(byval as sqlite3_file ptr, byval as any ptr, byval as integer, byval as sqlite3_int64) as integer
-    xTruncate as function cdecl(byval as sqlite3_file ptr, byval as sqlite3_int64) as integer
-    xSync as function cdecl(byval as sqlite3_file ptr, byval as integer) as integer
-    xFileSize as function cdecl(byval as sqlite3_file ptr, byval as sqlite3_int64 ptr) as integer
-    xLock as function cdecl(byval as sqlite3_file ptr, byval as integer) as integer
-    xUnlock as function cdecl(byval as sqlite3_file ptr, byval as integer) as integer
-    xCheckReservedLock as function cdecl(byval as sqlite3_file ptr, byval as integer ptr) as integer
-    xFileControl as function cdecl(byval as sqlite3_file ptr, byval as integer, byval as any ptr) as integer
-    xSectorSize as function cdecl(byval as sqlite3_file ptr) as integer
-    xDeviceCharacteristics as function cdecl(byval as sqlite3_file ptr) as integer
-    xShmMap as function cdecl(byval as sqlite3_file ptr, byval as integer, byval as integer, byval as integer, byval as any ptr ptr) as integer
-    xShmLock as function cdecl(byval as sqlite3_file ptr, byval as integer, byval as integer, byval as integer) as integer
-    xShmBarrier as sub cdecl(byval as sqlite3_file ptr)
-    xShmUnmap as function cdecl(byval as sqlite3_file ptr, byval as integer) as integer
-end type
-
-#define SQLITE_FCNTL_LOCKSTATE 1
-#define SQLITE_GET_LOCKPROXYFILE 2
-#define SQLITE_SET_LOCKPROXYFILE 3
-#define SQLITE_LAST_ERRNO 4
-#define SQLITE_FCNTL_SIZE_HINT 5
-#define SQLITE_FCNTL_CHUNK_SIZE 6
-#define SQLITE_FCNTL_FILE_POINTER 7
-#define SQLITE_FCNTL_SYNC_OMITTED 8
-#define SQLITE_FCNTL_WIN32_AV_RETRY 9
-#define SQLITE_FCNTL_PERSIST_WAL 10
-
-type sqlite3_mutex as any
-type sqlite3_syscall_ptr as sub cdecl()
-
-type sqlite3_vfs
-    iVersion as integer
-    szOsFile as integer
-    mxPathname as integer
-    pNext as sqlite3_vfs ptr
-    zName as zstring ptr
-    pAppData as any ptr
-    xOpen as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as sqlite3_file ptr, byval as integer, byval as integer ptr) as integer
-    xDelete as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as integer) as integer
-    xAccess as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as integer, byval as integer ptr) as integer
-    xFullPathname as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as integer, byval as zstring ptr) as integer
-    xDlOpen as sub cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr)
-    xDlError as sub cdecl(byval as sqlite3_vfs ptr, byval as integer, byval as zstring ptr)
-    xDlSym as sub cdecl(byval as sqlite3_vfs ptr, byval as any ptr, byval as zstring ptr)
-    xDlClose as sub cdecl(byval as sqlite3_vfs ptr, byval as any ptr)
-    xRandomness as function cdecl(byval as sqlite3_vfs ptr, byval as integer, byval as zstring ptr) as integer
-    xSleep as function cdecl(byval as sqlite3_vfs ptr, byval as integer) as integer
-    xCurrentTime as function cdecl(byval as sqlite3_vfs ptr, byval as double ptr) as integer
-    xGetLastError as function cdecl(byval as sqlite3_vfs ptr, byval as integer, byval as zstring ptr) as integer
-    xCurrentTimeInt64 as function cdecl(byval as sqlite3_vfs ptr, byval as sqlite3_int64 ptr) as integer
-    xSetSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as sqlite3_syscall_ptr) as integer
-    xGetSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr) as sqlite3_syscall_ptr
-    xNextSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr) as byte ptr
-end type
-
-#define SQLITE_ACCESS_EXISTS 0
-#define SQLITE_ACCESS_READWRITE 1
-#define SQLITE_ACCESS_READ 2
-#define SQLITE_SHM_UNLOCK 1
-#define SQLITE_SHM_LOCK 2
-#define SQLITE_SHM_SHARED 4
-#define SQLITE_SHM_EXCLUSIVE 8
-#define SQLITE_SHM_NLOCK 8
-
-declare function sqlite3_initialize () as integer
-declare function sqlite3_shutdown () as integer
-declare function sqlite3_os_init () as integer
-declare function sqlite3_os_end () as integer
-declare function sqlite3_config (byval as integer, ...) as integer
-declare function sqlite3_db_config (byval as sqlite3 ptr, byval op as integer, ...) as integer
-
-type sqlite3_mem_methods
-    xMalloc as sub cdecl(byval as integer)
-    xFree as sub cdecl(byval as any ptr)
-    xRealloc as sub cdecl(byval as any ptr, byval as integer)
-    xSize as function cdecl(byval as any ptr) as integer
-    xRoundup as function cdecl(byval as integer) as integer
-    xInit as function cdecl(byval as any ptr) as integer
-    xShutdown as sub cdecl(byval as any ptr)
-    pAppData as any ptr
-end type
-
-#define SQLITE_CONFIG_SINGLETHREAD 1
-#define SQLITE_CONFIG_MULTITHREAD 2
-#define SQLITE_CONFIG_SERIALIZED 3
-#define SQLITE_CONFIG_MALLOC 4
-#define SQLITE_CONFIG_GETMALLOC 5
-#define SQLITE_CONFIG_SCRATCH 6
-#define SQLITE_CONFIG_PAGECACHE 7
-#define SQLITE_CONFIG_HEAP 8
-#define SQLITE_CONFIG_MEMSTATUS 9
-#define SQLITE_CONFIG_MUTEX 10
-#define SQLITE_CONFIG_GETMUTEX 11
-#define SQLITE_CONFIG_LOOKASIDE 13
-#define SQLITE_CONFIG_PCACHE 14
-#define SQLITE_CONFIG_GETPCACHE 15
-#define SQLITE_CONFIG_LOG 16
-#define SQLITE_CONFIG_URI 17
-#define SQLITE_DBCONFIG_LOOKASIDE 1001
-#define SQLITE_DBCONFIG_ENABLE_FKEY 1002
-#define SQLITE_DBCONFIG_ENABLE_TRIGGER 1003
-
-declare function sqlite3_extended_result_codes (byval as sqlite3 ptr, byval onoff as integer) as integer
-declare function sqlite3_last_insert_rowid (byval as sqlite3 ptr) as sqlite3_int64
-declare function sqlite3_changes (byval as sqlite3 ptr) as integer
-declare function sqlite3_total_changes (byval as sqlite3 ptr) as integer
-declare sub sqlite3_interrupt (byval as sqlite3 ptr)
-declare function sqlite3_complete (byval sql as zstring ptr) as integer
-declare function sqlite3_complete16 (byval sql as any ptr) as integer
-declare function sqlite3_busy_handler (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr, byval as integer) as integer, byval as any ptr) as integer
-declare function sqlite3_busy_timeout (byval as sqlite3 ptr, byval ms as integer) as integer
-declare function sqlite3_get_table (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval pazResult as byte ptr ptr ptr, byval pnRow as integer ptr, byval pnColumn as integer ptr, byval pzErrmsg as byte ptr ptr) as integer
-declare sub sqlite3_free_table (byval result as byte ptr ptr)
-declare function sqlite3_mprintf (byval as zstring ptr, ...) as zstring ptr
-declare function sqlite3_vmprintf (byval as zstring ptr, byval as va_list) as zstring ptr
-declare function sqlite3_snprintf (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as zstring ptr
-declare function sqlite3_vsnprintf (byval as integer, byval as zstring ptr, byval as zstring ptr, byval as va_list) as zstring ptr
-declare function sqlite3_malloc (byval as integer) as any ptr
-declare function sqlite3_realloc (byval as any ptr, byval as integer) as any ptr
-declare sub sqlite3_free (byval as any ptr)
-declare function sqlite3_memory_used () as sqlite3_int64
-declare function sqlite3_memory_highwater (byval resetFlag as integer) as sqlite3_int64
-declare sub sqlite3_randomness (byval N as integer, byval P as any ptr)
-declare function sqlite3_set_authorizer (byval as sqlite3 ptr, byval xAuth as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer
-
-#define SQLITE_DENY 1
-#define SQLITE_IGNORE 2
-#define SQLITE_CREATE_INDEX 1
-#define SQLITE_CREATE_TABLE 2
-#define SQLITE_CREATE_TEMP_INDEX 3
-#define SQLITE_CREATE_TEMP_TABLE 4
-#define SQLITE_CREATE_TEMP_TRIGGER 5
-#define SQLITE_CREATE_TEMP_VIEW 6
-#define SQLITE_CREATE_TRIGGER 7
-#define SQLITE_CREATE_VIEW 8
-#define SQLITE_DELETE 9
-#define SQLITE_DROP_INDEX 10
-#define SQLITE_DROP_TABLE 11
-#define SQLITE_DROP_TEMP_INDEX 12
-#define SQLITE_DROP_TEMP_TABLE 13
-#define SQLITE_DROP_TEMP_TRIGGER 14
-#define SQLITE_DROP_TEMP_VIEW 15
-#define SQLITE_DROP_TRIGGER 16
-#define SQLITE_DROP_VIEW 17
-#define SQLITE_INSERT 18
-#define SQLITE_PRAGMA 19
-#define SQLITE_READ 20
-#define SQLITE_SELECT 21
-#define SQLITE_TRANSACTION 22
-#define SQLITE_UPDATE 23
-#define SQLITE_ATTACH 24
-#define SQLITE_DETACH 25
-#define SQLITE_ALTER_TABLE 26
-#define SQLITE_REINDEX 27
-#define SQLITE_ANALYZE 28
-#define SQLITE_CREATE_VTABLE 29
-#define SQLITE_DROP_VTABLE 30
-#define SQLITE_FUNCTION 31
-#define SQLITE_SAVEPOINT 32
-#define SQLITE_COPY 0
-
-declare function sqlite3_trace (byval as sqlite3 ptr, byval xTrace as sub cdecl(byval as any ptr, byval as zstring ptr), byval as any ptr) as any ptr
-declare function sqlite3_profile (byval as sqlite3 ptr, byval xProfile as sub cdecl(byval as any ptr, byval as zstring ptr, byval as sqlite3_uint64), byval as any ptr) as any ptr
-declare sub sqlite3_progress_handler (byval as sqlite3 ptr, byval as integer, byval as function cdecl(byval as any ptr) as integer, byval as any ptr)
-declare function sqlite3_open (byval filename as zstring ptr, byval ppDb as sqlite3 ptr ptr) as integer
-declare function sqlite3_open16 (byval filename as any ptr, byval ppDb as sqlite3 ptr ptr) as integer
-declare function sqlite3_open_v2 (byval filename as zstring ptr, byval ppDb as sqlite3 ptr ptr, byval flags as integer, byval zVfs as zstring ptr) as integer
-declare function sqlite3_uri_parameter (byval zFilename as zstring ptr, byval zParam as zstring ptr) as zstring ptr
-declare function sqlite3_errcode (byval db as sqlite3 ptr) as integer
-declare function sqlite3_extended_errcode (byval db as sqlite3 ptr) as integer
-declare function sqlite3_errmsg (byval as sqlite3 ptr) as zstring ptr
-declare function sqlite3_errmsg16 (byval as sqlite3 ptr) as any ptr
-
-type sqlite3_stmt as any
-
-declare function sqlite3_limit (byval as sqlite3 ptr, byval id as integer, byval newVal as integer) as integer
-
-#define SQLITE_LIMIT_LENGTH 0
-#define SQLITE_LIMIT_SQL_LENGTH 1
-#define SQLITE_LIMIT_COLUMN 2
-#define SQLITE_LIMIT_EXPR_DEPTH 3
-#define SQLITE_LIMIT_COMPOUND_SELECT 4
-#define SQLITE_LIMIT_VDBE_OP 5
-#define SQLITE_LIMIT_FUNCTION_ARG 6
-#define SQLITE_LIMIT_ATTACHED 7
-#define SQLITE_LIMIT_LIKE_PATTERN_LENGTH 8
-#define SQLITE_LIMIT_VARIABLE_NUMBER 9
-#define SQLITE_LIMIT_TRIGGER_DEPTH 10
-
-declare function sqlite3_prepare (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as byte ptr ptr) as integer
-declare function sqlite3_prepare_v2 (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as byte ptr ptr) as integer
-declare function sqlite3_prepare16 (byval db as sqlite3 ptr, byval zSql as any ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as any ptr ptr) as integer
-declare function sqlite3_prepare16_v2 (byval db as sqlite3 ptr, byval zSql as any ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as any ptr ptr) as integer
-declare function sqlite3_sql (byval pStmt as sqlite3_stmt ptr) as zstring ptr
-declare function sqlite3_stmt_readonly (byval pStmt as sqlite3_stmt ptr) as integer
-
-type sqlite3_value as any
-type sqlite3_context as any
-
-declare function sqlite3_bind_blob (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval n as integer, byval as sub cdecl(byval as any ptr)) as integer
-declare function sqlite3_bind_double (byval as sqlite3_stmt ptr, byval as integer, byval as double) as integer
-declare function sqlite3_bind_int (byval as sqlite3_stmt ptr, byval as integer, byval as integer) as integer
-declare function sqlite3_bind_int64 (byval as sqlite3_stmt ptr, byval as integer, byval as sqlite3_int64) as integer
-declare function sqlite3_bind_null (byval as sqlite3_stmt ptr, byval as integer) as integer
-declare function sqlite3_bind_text (byval as sqlite3_stmt ptr, byval as integer, byval as zstring ptr, byval n as integer, byval as sub cdecl(byval as any ptr)) as integer
-declare function sqlite3_bind_text16 (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr)) as integer
-declare function sqlite3_bind_value (byval as sqlite3_stmt ptr, byval as integer, byval as sqlite3_value ptr) as integer
-declare function sqlite3_bind_zeroblob (byval as sqlite3_stmt ptr, byval as integer, byval n as integer) as integer
-declare function sqlite3_bind_parameter_count (byval as sqlite3_stmt ptr) as integer
-declare function sqlite3_bind_parameter_name (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
-declare function sqlite3_bind_parameter_index (byval as sqlite3_stmt ptr, byval zName as zstring ptr) as integer
-declare function sqlite3_clear_bindings (byval as sqlite3_stmt ptr) as integer
-declare function sqlite3_column_count (byval pStmt as sqlite3_stmt ptr) as integer
-declare function sqlite3_column_name (byval as sqlite3_stmt ptr, byval N as integer) as zstring ptr
-declare function sqlite3_column_name16 (byval as sqlite3_stmt ptr, byval N as integer) as any ptr
-declare function sqlite3_column_database_name (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
-declare function sqlite3_column_database_name16 (byval as sqlite3_stmt ptr, byval as integer) as any ptr
-declare function sqlite3_column_table_name (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
-declare function sqlite3_column_table_name16 (byval as sqlite3_stmt ptr, byval as integer) as any ptr
-declare function sqlite3_column_origin_name (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
-declare function sqlite3_column_origin_name16 (byval as sqlite3_stmt ptr, byval as integer) as any ptr
-declare function sqlite3_column_decltype (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
-declare function sqlite3_column_decltype16 (byval as sqlite3_stmt ptr, byval as integer) as any ptr
-declare function sqlite3_step (byval as sqlite3_stmt ptr) as integer
-declare function sqlite3_data_count (byval pStmt as sqlite3_stmt ptr) as integer
-
-#define SQLITE_INTEGER 1
-#define SQLITE_FLOAT 2
-#define SQLITE_BLOB 4
-#define SQLITE_NULL 5
-#define SQLITE_TEXT 3
-#define SQLITE3_TEXT 3
-
-declare function sqlite3_column_blob (byval as sqlite3_stmt ptr, byval iCol as integer) as any ptr
-declare function sqlite3_column_bytes (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
-declare function sqlite3_column_bytes16 (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
-declare function sqlite3_column_double (byval as sqlite3_stmt ptr, byval iCol as integer) as double
-declare function sqlite3_column_int (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
-declare function sqlite3_column_int64 (byval as sqlite3_stmt ptr, byval iCol as integer) as sqlite3_int64
-declare function sqlite3_column_text (byval as sqlite3_stmt ptr, byval iCol as integer) as ubyte ptr
-declare function sqlite3_column_text16 (byval as sqlite3_stmt ptr, byval iCol as integer) as any ptr
-declare function sqlite3_column_type (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
-declare function sqlite3_column_value (byval as sqlite3_stmt ptr, byval iCol as integer) as sqlite3_value ptr
-declare function sqlite3_finalize (byval pStmt as sqlite3_stmt ptr) as integer
-declare function sqlite3_reset (byval pStmt as sqlite3_stmt ptr) as integer
-declare function sqlite3_create_function (byval db as sqlite3 ptr, byval zFunctionName as zstring ptr, byval nArg as integer, byval eTextRep as integer, byval pApp as any ptr, byval xFunc as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub cdecl(byval as sqlite3_context ptr)) as integer
-declare function sqlite3_create_function16 (byval db as sqlite3 ptr, byval zFunctionName as any ptr, byval nArg as integer, byval eTextRep as integer, byval pApp as any ptr, byval xFunc as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub cdecl(byval as sqlite3_context ptr)) as integer
-declare function sqlite3_create_function_v2 (byval db as sqlite3 ptr, byval zFunctionName as zstring ptr, byval nArg as integer, byval eTextRep as integer, byval pApp as any ptr, byval xFunc as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub cdecl(byval as sqlite3_context ptr), byval xDestroy as sub cdecl(byval as any ptr)) as integer
-
-#define SQLITE_UTF8 1
-#define SQLITE_UTF16LE 2
-#define SQLITE_UTF16BE 3
-#define SQLITE_UTF16 4
-#define SQLITE_ANY 5
-#define SQLITE_UTF16_ALIGNED 8
-
-declare function sqlite3_aggregate_count (byval as sqlite3_context ptr) as integer
-declare function sqlite3_expired (byval as sqlite3_stmt ptr) as integer
-declare function sqlite3_transfer_bindings (byval as sqlite3_stmt ptr, byval as sqlite3_stmt ptr) as integer
-declare function sqlite3_global_recover () as integer
-declare sub sqlite3_thread_cleanup ()
-declare function sqlite3_memory_alarm (byval as sub cdecl(byval as any ptr, byval as sqlite3_int64, byval as integer), byval as any ptr, byval as sqlite3_int64) as integer
-declare function sqlite3_value_blob (byval as sqlite3_value ptr) as any ptr
-declare function sqlite3_value_bytes (byval as sqlite3_value ptr) as integer
-declare function sqlite3_value_bytes16 (byval as sqlite3_value ptr) as integer
-declare function sqlite3_value_double (byval as sqlite3_value ptr) as double
-declare function sqlite3_value_int (byval as sqlite3_value ptr) as integer
-declare function sqlite3_value_int64 (byval as sqlite3_value ptr) as sqlite3_int64
-declare function sqlite3_value_text (byval as sqlite3_value ptr) as ubyte ptr
-declare function sqlite3_value_text16 (byval as sqlite3_value ptr) as any ptr
-declare function sqlite3_value_text16le (byval as sqlite3_value ptr) as any ptr
-declare function sqlite3_value_text16be (byval as sqlite3_value ptr) as any ptr
-declare function sqlite3_value_type (byval as sqlite3_value ptr) as integer
-declare function sqlite3_value_numeric_type (byval as sqlite3_value ptr) as integer
-declare function sqlite3_aggregate_context (byval as sqlite3_context ptr, byval nBytes as integer) as any ptr
-declare function sqlite3_user_data (byval as sqlite3_context ptr) as any ptr
-declare function sqlite3_context_db_handle (byval as sqlite3_context ptr) as sqlite3 ptr
-declare function sqlite3_get_auxdata (byval as sqlite3_context ptr, byval N as integer) as any ptr
-declare sub sqlite3_set_auxdata (byval as sqlite3_context ptr, byval N as integer, byval as any ptr, byval as sub cdecl(byval as any ptr))
-
-type sqlite3_destructor_type as sub cdecl(byval as any ptr)
-
-declare sub sqlite3_result_blob (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
-declare sub sqlite3_result_double (byval as sqlite3_context ptr, byval as double)
-declare sub sqlite3_result_error (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer)
-declare sub sqlite3_result_error16 (byval as sqlite3_context ptr, byval as any ptr, byval as integer)
-declare sub sqlite3_result_error_toobig (byval as sqlite3_context ptr)
-declare sub sqlite3_result_error_nomem (byval as sqlite3_context ptr)
-declare sub sqlite3_result_error_code (byval as sqlite3_context ptr, byval as integer)
-declare sub sqlite3_result_int (byval as sqlite3_context ptr, byval as integer)
-declare sub sqlite3_result_int64 (byval as sqlite3_context ptr, byval as sqlite3_int64)
-declare sub sqlite3_result_null (byval as sqlite3_context ptr)
-declare sub sqlite3_result_text (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer, byval as sub cdecl(byval as any ptr))
-declare sub sqlite3_result_text16 (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
-declare sub sqlite3_result_text16le (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
-declare sub sqlite3_result_text16be (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
-declare sub sqlite3_result_value (byval as sqlite3_context ptr, byval as sqlite3_value ptr)
-declare sub sqlite3_result_zeroblob (byval as sqlite3_context ptr, byval n as integer)
-declare function sqlite3_create_collation (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval pArg as any ptr, byval xCompare as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
-declare function sqlite3_create_collation_v2 (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval pArg as any ptr, byval xCompare as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer, byval xDestroy as sub cdecl(byval as any ptr)) as integer
-declare function sqlite3_create_collation16 (byval as sqlite3 ptr, byval zName as any ptr, byval eTextRep as integer, byval pArg as any ptr, byval xCompare as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
-declare function sqlite3_collation_needed (byval as sqlite3 ptr, byval as any ptr, byval as sub cdecl(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as zstring ptr)) as integer
-declare function sqlite3_collation_needed16 (byval as sqlite3 ptr, byval as any ptr, byval as sub cdecl(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as any ptr)) as integer
-declare function sqlite3_sleep (byval as integer) as integer
-extern sqlite3_temp_directory alias "sqlite3_temp_directory" as zstring ptr
-declare function sqlite3_get_autocommit (byval as sqlite3 ptr) as integer
-declare function sqlite3_db_handle (byval as sqlite3_stmt ptr) as sqlite3 ptr
-declare function sqlite3_next_stmt (byval pDb as sqlite3 ptr, byval pStmt as sqlite3_stmt ptr) as sqlite3_stmt ptr
-declare function sqlite3_commit_hook (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr) as integer, byval as any ptr) as any ptr
-declare function sqlite3_rollback_hook (byval as sqlite3 ptr, byval as sub cdecl(byval as any ptr), byval as any ptr) as any ptr
-declare function sqlite3_update_hook (byval as sqlite3 ptr, byval as sub cdecl(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as sqlite3_int64), byval as any ptr) as any ptr
-declare function sqlite3_enable_shared_cache (byval as integer) as integer
-declare function sqlite3_release_memory (byval as integer) as integer
-declare function sqlite3_soft_heap_limit64 (byval N as sqlite3_int64) as sqlite3_int64
-declare sub sqlite3_soft_heap_limit (byval N as integer)
-declare function sqlite3_table_column_metadata (byval db as sqlite3 ptr, byval zDbName as zstring ptr, byval zTableName as zstring ptr, byval zColumnName as zstring ptr, byval pzDataType as byte ptr ptr, byval pzCollSeq as byte ptr ptr, byval pNotNull as integer ptr, byval pPrimaryKey as integer ptr, byval pAutoinc as integer ptr) as integer
-declare function sqlite3_load_extension (byval db as sqlite3 ptr, byval zFile as zstring ptr, byval zProc as zstring ptr, byval pzErrMsg as byte ptr ptr) as integer
-declare function sqlite3_enable_load_extension (byval db as sqlite3 ptr, byval onoff as integer) as integer
-declare function sqlite3_auto_extension (byval xEntryPoint as sub cdecl()) as integer
-declare sub sqlite3_reset_auto_extension ()
-
-type sqlite3_vtab as any
-type sqlite3_index_info as any
-type sqlite3_vtab_cursor as any
-type sqlite3_module as any
-
-type sqlite3_module
-    iVersion as integer
-    xCreate as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as byte ptr ptr, byval as sqlite3_vtab ptr ptr, byval as byte ptr ptr) as integer
-    xConnect as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as byte ptr ptr, byval as sqlite3_vtab ptr ptr, byval as byte ptr ptr) as integer
-    xBestIndex as function cdecl(byval as sqlite3_vtab ptr, byval as sqlite3_index_info ptr) as integer
-    xDisconnect as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xDestroy as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xOpen as function cdecl(byval as sqlite3_vtab ptr, byval as sqlite3_vtab_cursor ptr ptr) as integer
-    xClose as function cdecl(byval as sqlite3_vtab_cursor ptr) as integer
-    xFilter as function cdecl(byval as sqlite3_vtab_cursor ptr, byval as integer, byval as zstring ptr, byval as integer, byval as sqlite3_value ptr ptr) as integer
-    xNext as function cdecl(byval as sqlite3_vtab_cursor ptr) as integer
-    xEof as function cdecl(byval as sqlite3_vtab_cursor ptr) as integer
-    xColumn as function cdecl(byval as sqlite3_vtab_cursor ptr, byval as sqlite3_context ptr, byval as integer) as integer
-    xRowid as function cdecl(byval as sqlite3_vtab_cursor ptr, byval as sqlite3_int64 ptr) as integer
-    xUpdate as function cdecl(byval as sqlite3_vtab ptr, byval as integer, byval as sqlite3_value ptr ptr, byval as sqlite3_int64 ptr) as integer
-    xBegin as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xSync as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xCommit as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xRollback as function cdecl(byval as sqlite3_vtab ptr) as integer
-    xFindFunction as function cdecl(byval as sqlite3_vtab ptr, byval as integer, byval as zstring ptr, byval as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval as any ptr ptr) as integer
-    xRename as function cdecl(byval as sqlite3_vtab ptr, byval as zstring ptr) as integer
-    xSavepoint as function cdecl(byval as sqlite3_vtab ptr, byval as integer) as integer
-    xRelease as function cdecl(byval as sqlite3_vtab ptr, byval as integer) as integer
-    xRollbackTo as function cdecl(byval as sqlite3_vtab ptr, byval as integer) as integer
-end type
-
-type sqlite3_index_info_aConstraintUsage
-    argvIndex as integer
-    omit as ubyte
-end type
-
-type sqlite3_index_info_aOrderBy
-    iColumn as integer
-    desc as ubyte
-end type
-
-type sqlite3_index_info_aConstraint
-    iColumn as integer
-    op as ubyte
-    usable as ubyte
-    iTermOffset as integer
-end type
-
-type sqlite3_index_info
-    nConstraint as integer
-    nOrderBy as integer
-    idxNum as integer
-    idxStr as zstring ptr
-    needToFreeIdxStr as integer
-    orderByConsumed as integer
-    estimatedCost as double
-    aConstraintUsage as sqlite3_index_info_aConstraintUsage ptr
-    aOrderBy as sqlite3_index_info_aOrderBy ptr
-    aConstraint as sqlite3_index_info_aConstraint ptr
-end type
-
-#define SQLITE_INDEX_CONSTRAINT_EQ 2
-#define SQLITE_INDEX_CONSTRAINT_GT 4
-#define SQLITE_INDEX_CONSTRAINT_LE 8
-#define SQLITE_INDEX_CONSTRAINT_LT 16
-#define SQLITE_INDEX_CONSTRAINT_GE 32
-#define SQLITE_INDEX_CONSTRAINT_MATCH 64
-
-declare function sqlite3_create_module (byval db as sqlite3 ptr, byval zName as zstring ptr, byval p as sqlite3_module ptr, byval pClientData as any ptr) as integer
-declare function sqlite3_create_module_v2 (byval db as sqlite3 ptr, byval zName as zstring ptr, byval p as sqlite3_module ptr, byval pClientData as any ptr, byval xDestroy as sub cdecl(byval as any ptr)) as integer
-
-type sqlite3_vtab
-    pModule as sqlite3_module ptr
-    nRef as integer
-    zErrMsg as zstring ptr
-end type
-
-type sqlite3_vtab_cursor
-    pVtab as sqlite3_vtab ptr
-end type
-
-declare function sqlite3_declare_vtab (byval as sqlite3 ptr, byval zSQL as zstring ptr) as integer
-declare function sqlite3_overload_function (byval as sqlite3 ptr, byval zFuncName as zstring ptr, byval nArg as integer) as integer
-
-type sqlite3_blob as any
-
-declare function sqlite3_blob_open (byval as sqlite3 ptr, byval zDb as zstring ptr, byval zTable as zstring ptr, byval zColumn as zstring ptr, byval iRow as sqlite3_int64, byval flags as integer, byval ppBlob as sqlite3_blob ptr ptr) as integer
-declare function sqlite3_blob_reopen (byval as sqlite3_blob ptr, byval as sqlite3_int64) as integer
-declare function sqlite3_blob_close (byval as sqlite3_blob ptr) as integer
-declare function sqlite3_blob_bytes (byval as sqlite3_blob ptr) as integer
-declare function sqlite3_blob_read (byval as sqlite3_blob ptr, byval Z as any ptr, byval N as integer, byval iOffset as integer) as integer
-declare function sqlite3_blob_write (byval as sqlite3_blob ptr, byval z as any ptr, byval n as integer, byval iOffset as integer) as integer
-declare function sqlite3_vfs_find (byval zVfsName as zstring ptr) as sqlite3_vfs ptr
-declare function sqlite3_vfs_register (byval as sqlite3_vfs ptr, byval makeDflt as integer) as integer
-declare function sqlite3_vfs_unregister (byval as sqlite3_vfs ptr) as integer
-declare function sqlite3_mutex_alloc (byval as integer) as sqlite3_mutex ptr
-declare sub sqlite3_mutex_free (byval as sqlite3_mutex ptr)
-declare sub sqlite3_mutex_enter (byval as sqlite3_mutex ptr)
-declare function sqlite3_mutex_try (byval as sqlite3_mutex ptr) as integer
-declare sub sqlite3_mutex_leave (byval as sqlite3_mutex ptr)
-
-type sqlite3_mutex_methods
-    xMutexInit as function cdecl() as integer
-    xMutexEnd as function cdecl() as integer
-    xMutexAlloc as function cdecl(byval as integer) as sqlite3_mutex ptr
-    xMutexFree as sub cdecl(byval as sqlite3_mutex ptr)
-    xMutexEnter as sub cdecl(byval as sqlite3_mutex ptr)
-    xMutexTry as function cdecl(byval as sqlite3_mutex ptr) as integer
-    xMutexLeave as sub cdecl(byval as sqlite3_mutex ptr)
-    xMutexHeld as function cdecl(byval as sqlite3_mutex ptr) as integer
-    xMutexNotheld as function cdecl(byval as sqlite3_mutex ptr) as integer
-end type
-
-declare function sqlite3_mutex_held (byval as sqlite3_mutex ptr) as integer
-declare function sqlite3_mutex_notheld (byval as sqlite3_mutex ptr) as integer
-
-#define SQLITE_MUTEX_FAST 0
-#define SQLITE_MUTEX_RECURSIVE 1
-#define SQLITE_MUTEX_STATIC_MASTER 2
-#define SQLITE_MUTEX_STATIC_MEM 3
-#define SQLITE_MUTEX_STATIC_MEM2 4
-#define SQLITE_MUTEX_STATIC_OPEN 4
-#define SQLITE_MUTEX_STATIC_PRNG 5
-#define SQLITE_MUTEX_STATIC_LRU 6
-#define SQLITE_MUTEX_STATIC_LRU2 7
-#define SQLITE_MUTEX_STATIC_PMEM 7
-
-declare function sqlite3_db_mutex (byval as sqlite3 ptr) as sqlite3_mutex ptr
-declare function sqlite3_file_control (byval as sqlite3 ptr, byval zDbName as zstring ptr, byval op as integer, byval as any ptr) as integer
-declare function sqlite3_test_control (byval op as integer, ...) as integer
-
-#define SQLITE_TESTCTRL_FIRST 5
-#define SQLITE_TESTCTRL_PRNG_SAVE 5
-#define SQLITE_TESTCTRL_PRNG_RESTORE 6
-#define SQLITE_TESTCTRL_PRNG_RESET 7
-#define SQLITE_TESTCTRL_BITVEC_TEST 8
-#define SQLITE_TESTCTRL_FAULT_INSTALL 9
-#define SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS 10
-#define SQLITE_TESTCTRL_PENDING_BYTE 11
-#define SQLITE_TESTCTRL_ASSERT 12
-#define SQLITE_TESTCTRL_ALWAYS 13
-#define SQLITE_TESTCTRL_RESERVE 14
-#define SQLITE_TESTCTRL_OPTIMIZATIONS 15
-#define SQLITE_TESTCTRL_ISKEYWORD 16
-#define SQLITE_TESTCTRL_PGHDRSZ 17
-#define SQLITE_TESTCTRL_SCRATCHMALLOC 18
-#define SQLITE_TESTCTRL_LOCALTIME_FAULT 19
-#define SQLITE_TESTCTRL_LAST 19
-
-declare function sqlite3_status (byval op as integer, byval pCurrent as integer ptr, byval pHighwater as integer ptr, byval resetFlag as integer) as integer
-
-#define SQLITE_STATUS_MEMORY_USED 0
-#define SQLITE_STATUS_PAGECACHE_USED 1
-#define SQLITE_STATUS_PAGECACHE_OVERFLOW 2
-#define SQLITE_STATUS_SCRATCH_USED 3
-#define SQLITE_STATUS_SCRATCH_OVERFLOW 4
-#define SQLITE_STATUS_MALLOC_SIZE 5
-#define SQLITE_STATUS_PARSER_STACK 6
-#define SQLITE_STATUS_PAGECACHE_SIZE 7
-#define SQLITE_STATUS_SCRATCH_SIZE 8
-#define SQLITE_STATUS_MALLOC_COUNT 9
-
-declare function sqlite3_db_status (byval as sqlite3 ptr, byval op as integer, byval pCur as integer ptr, byval pHiwtr as integer ptr, byval resetFlg as integer) as integer
-
-#define SQLITE_DBSTATUS_LOOKASIDE_USED 0
-#define SQLITE_DBSTATUS_CACHE_USED 1
-#define SQLITE_DBSTATUS_SCHEMA_USED 2
-#define SQLITE_DBSTATUS_STMT_USED 3
-#define SQLITE_DBSTATUS_LOOKASIDE_HIT 4
-#define SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE 5
-#define SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL 6
-#define SQLITE_DBSTATUS_MAX 6
-
-declare function sqlite3_stmt_status (byval as sqlite3_stmt ptr, byval op as integer, byval resetFlg as integer) as integer
-
-#define SQLITE_STMTSTATUS_FULLSCAN_STEP 1
-#define SQLITE_STMTSTATUS_SORT 2
-#define SQLITE_STMTSTATUS_AUTOINDEX 3
-
-type sqlite3_pcache as any
-
-type sqlite3_pcache_methods
-    pArg as any ptr
-    xInit as function cdecl(byval as any ptr) as integer
-    xShutdown as sub cdecl(byval as any ptr)
-    xCreate as function cdecl(byval as integer, byval as integer) as sqlite3_pcache ptr
-    xCachesize as sub cdecl(byval as sqlite3_pcache ptr, byval as integer)
-    xPagecount as function cdecl(byval as sqlite3_pcache ptr) as integer
-    xFetch as sub cdecl(byval as sqlite3_pcache ptr, byval as uinteger, byval as integer)
-    xUnpin as sub cdecl(byval as sqlite3_pcache ptr, byval as any ptr, byval as integer)
-    xRekey as sub cdecl(byval as sqlite3_pcache ptr, byval as any ptr, byval as uinteger, byval as uinteger)
-    xTruncate as sub cdecl(byval as sqlite3_pcache ptr, byval as uinteger)
-    xDestroy as sub cdecl(byval as sqlite3_pcache ptr)
-end type
-
-type sqlite3_backup as any
-
-declare function sqlite3_backup_init (byval pDest as sqlite3 ptr, byval zDestName as zstring ptr, byval pSource as sqlite3 ptr, byval zSourceName as zstring ptr) as sqlite3_backup ptr
-declare function sqlite3_backup_step (byval p as sqlite3_backup ptr, byval nPage as integer) as integer
-declare function sqlite3_backup_finish (byval p as sqlite3_backup ptr) as integer
-declare function sqlite3_backup_remaining (byval p as sqlite3_backup ptr) as integer
-declare function sqlite3_backup_pagecount (byval p as sqlite3_backup ptr) as integer
-declare function sqlite3_unlock_notify (byval pBlocked as sqlite3 ptr, byval xNotify as sub cdecl(byval as any ptr ptr, byval as integer), byval pNotifyArg as any ptr) as integer
-declare function sqlite3_strnicmp (byval as zstring ptr, byval as zstring ptr, byval as integer) as integer
-declare sub sqlite3_log (byval iErrCode as integer, byval zFormat as zstring ptr, ...)
-declare function sqlite3_wal_hook (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr, byval as sqlite3 ptr, byval as zstring ptr, byval as integer) as integer, byval as any ptr) as any ptr
-declare function sqlite3_wal_autocheckpoint (byval db as sqlite3 ptr, byval N as integer) as integer
-declare function sqlite3_wal_checkpoint (byval db as sqlite3 ptr, byval zDb as zstring ptr) as integer
-declare function sqlite3_wal_checkpoint_v2 (byval db as sqlite3 ptr, byval zDb as zstring ptr, byval eMode as integer, byval pnLog as integer ptr, byval pnCkpt as integer ptr) as integer
-
-#define SQLITE_CHECKPOINT_PASSIVE 0
-#define SQLITE_CHECKPOINT_FULL 1
-#define SQLITE_CHECKPOINT_RESTART 2
-
-declare function sqlite3_vtab_config (byval as sqlite3 ptr, byval op as integer, ...) as integer
-
-#define SQLITE_VTAB_CONSTRAINT_SUPPORT 1
-
-declare function sqlite3_vtab_on_conflict (byval as sqlite3 ptr) as integer
-
-#define SQLITE_ROLLBACK 1
-#define SQLITE_FAIL 3
-#define SQLITE_REPLACE 5
-
-declare function sqlite3_rtree_geometry_callback (byval db as sqlite3 ptr, byval zGeom as zstring ptr, byval xGeom as function cdecl(byval as sqlite3_rtree_geometry ptr, byval as integer, byval as double ptr, byval as integer ptr) as integer, byval pContext as any ptr) as integer
-
-type sqlite3_rtree_geometry
-    pContext as any ptr
-    nParam as integer
-    aParam as double ptr
-    pUser as any ptr
-    xDelUser as sub cdecl(byval as any ptr)
-end type
-
-end extern
-#endif
+' This is file sqlite3.bi
+' FreeBasic header for SQLITE3 version 3.7.13.
+'
+' Translated with help of h_2_bi.bas
+' (C) 2011-2012 by Thomas{ dot ]Freiherr[ at ]gmx[ dot }net
+' License LGPLv2
+'
+' This header is free software: you can redistribute
+' it and/or modify it under the terms of the GNU General Public
+' License as published by the Free Software Foundation, either
+' version 3 of the License, or (at your option) any later
+' version. For details please refer to: http://gplv3.fsf.org/
+'
+' This header is distributed in the hope that it will be
+' useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+' Original Licence test:
+'
+'/*
+'** 2001 September 15
+'**
+'** The author disclaims copyright to this source code.  In place of
+'** a legal notice, here is a blessing:
+'**
+'**    May you do good and not evil.
+'**    May you find forgiveness for yourself and forgive others.
+'**    May you share freely, never taking more than you give.
+'**
+'*************************************************************************
+'** This header file defines the interface that the SQLite library
+'** presents to client programs.  If a C-function, structure, datatype,
+'** or constant definition does not appear in this file, then it is
+'** not a published API of SQLite, is subject to change without
+'** notice, and should not be referenced by programs that use SQLite.
+'**
+'** Some of the definitions that are in this file are marked as
+'** "experimental".  Experimental interfaces are normally new
+'** features recently added to SQLite.  We do not anticipate changes
+'** to experimental interfaces but reserve the right to make minor changes
+'** if experience from use "in the wild" suggest such changes are prudent.
+'**
+'** The official C-language API documentation for SQLite is derived
+'** from comments in this file.  This file is the authoritative source
+'** on how SQLite interfaces are suppose to operate.
+'**
+'** The name of this file under configuration management is "sqlite.h.in".
+'** The makefile makes some minor changes to this file (such as inserting
+'** the version number) and changes its name to "sqlite3.h" as
+'** part of the build process.
+'*/
+
+#INCLUDE ONCE "crt/stdarg.bi"
+#DEFINE SQLITE_INT64_TYPE LONGINT
+#DEFINE UNSINN UINTEGER
+
+#IFDEF __FB_WIN32__
+#PRAGMA push(msbitfields)
+#ENDIF
+
+#INCLIB "sqlite3"
+
+#IFNDEF va_list
+TYPE va_list AS ANY PTR
+#ENDIF
+
+EXTERN "C" ' (h_2_bi -P_oCD option)
+
+#IFNDEF _SQLITE3_H_
+#DEFINE _SQLITE3_H_
+#INCLUDE ONCE "crt/stdarg.bi" '__HEADERS__: stdarg.h
+
+#IFDEF SQLITE_VERSION
+#UNDEF SQLITE_VERSION
+#ENDIF ' SQLITE_VERSION
+
+#IFDEF SQLITE_VERSION_NUMBER
+#UNDEF SQLITE_VERSION_NUMBER
+#ENDIF ' SQLITE_VERSION_NUMBER
+
+#DEFINE SQLITE_VERSION @!"3.7.13"
+#DEFINE SQLITE_VERSION_NUMBER 3007013
+#DEFINE SQLITE_SOURCE_ID @!"2012-06-11 02:05:22 f5b5a13f7394dc143aa136f1d4faba6839eaa6dc"
+
+EXTERN AS CONST ZSTRING PTR sqlite3_version
+
+DECLARE FUNCTION sqlite3_libversion() AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_sourceid() AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_libversion_number() AS INTEGER
+
+#IFNDEF SQLITE_OMIT_COMPILEOPTION_DIAGS
+
+DECLARE FUNCTION sqlite3_compileoption_used(BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_compileoption_get(BYVAL AS INTEGER) AS CONST ZSTRING PTR
+
+#ENDIF ' SQLITE_OMIT_COMPILEOPTION_DIAGS
+
+DECLARE FUNCTION sqlite3_threadsafe() AS INTEGER
+
+TYPE sqlite3 AS sqlite3_
+
+#IFDEF SQLITE_INT64_TYPE
+
+TYPE sqlite_int64 AS SQLITE_INT64_TYPE
+TYPE sqlite_uint64 AS UNSIGNED SQLITE_INT64_TYPE
+
+#ELSEIF DEFINED(_MSC_VER)  OR DEFINED(__BORLANDC__)
+
+TYPE sqlite_int64 AS __int64
+TYPE sqlite_uint64 AS UNSIGNED __int64
+
+#ELSE ' SQLITE_INT64_TYPE
+
+TYPE sqlite_int64 AS LONGINT INTEGER
+TYPE sqlite_uint64 AS ULONGINT
+
+#ENDIF ' SQLITE_INT64_TYPE
+
+TYPE sqlite3_int64 AS sqlite_int64
+TYPE sqlite3_uint64 AS sqlite_uint64
+
+#IFDEF SQLITE_OMIT_FLOATING_POINT
+#DEFINE double_ sqlite3_int64
+#ENDIF ' SQLITE_OMIT_FLOATING_POINT
+
+DECLARE FUNCTION sqlite3_close(BYVAL AS sqlite3 PTR) AS INTEGER
+
+TYPE sqlite3_callback AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+
+DECLARE FUNCTION sqlite3_exec(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER, BYVAL AS ANY PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+
+#DEFINE SQLITE_OK 0
+#DEFINE SQLITE_ERROR 1
+#DEFINE SQLITE_INTERNAL 2
+#DEFINE SQLITE_PERM 3
+#DEFINE SQLITE_ABORT 4
+#DEFINE SQLITE_BUSY 5
+#DEFINE SQLITE_LOCKED 6
+#DEFINE SQLITE_NOMEM 7
+#DEFINE SQLITE_READONLY 8
+#DEFINE SQLITE_INTERRUPT 9
+#DEFINE SQLITE_IOERR 10
+#DEFINE SQLITE_CORRUPT 11
+#DEFINE SQLITE_NOTFOUND 12
+#DEFINE SQLITE_FULL 13
+#DEFINE SQLITE_CANTOPEN 14
+#DEFINE SQLITE_PROTOCOL 15
+#DEFINE SQLITE_EMPTY 16
+#DEFINE SQLITE_SCHEMA 17
+#DEFINE SQLITE_TOOBIG 18
+#DEFINE SQLITE_CONSTRAINT 19
+#DEFINE SQLITE_MISMATCH 20
+#DEFINE SQLITE_MISUSE 21
+#DEFINE SQLITE_NOLFS 22
+#DEFINE SQLITE_AUTH 23
+#DEFINE SQLITE_FORMAT 24
+#DEFINE SQLITE_RANGE 25
+#DEFINE SQLITE_NOTADB 26
+#DEFINE SQLITE_ROW 100
+#DEFINE SQLITE_DONE 101
+#DEFINE SQLITE_IOERR_READ (SQLITE_IOERR  OR (1 SHL 8))
+#DEFINE SQLITE_IOERR_SHORT_READ (SQLITE_IOERR  OR (2 SHL 8))
+#DEFINE SQLITE_IOERR_WRITE (SQLITE_IOERR  OR (3 SHL 8))
+#DEFINE SQLITE_IOERR_FSYNC (SQLITE_IOERR  OR (4 SHL 8))
+#DEFINE SQLITE_IOERR_DIR_FSYNC (SQLITE_IOERR  OR (5 SHL 8))
+#DEFINE SQLITE_IOERR_TRUNCATE (SQLITE_IOERR  OR (6 SHL 8))
+#DEFINE SQLITE_IOERR_FSTAT (SQLITE_IOERR  OR (7 SHL 8))
+#DEFINE SQLITE_IOERR_UNLOCK (SQLITE_IOERR  OR (8 SHL 8))
+#DEFINE SQLITE_IOERR_RDLOCK (SQLITE_IOERR  OR (9 SHL 8))
+#DEFINE SQLITE_IOERR_DELETE (SQLITE_IOERR  OR (10 SHL 8))
+#DEFINE SQLITE_IOERR_BLOCKED (SQLITE_IOERR  OR (11 SHL 8))
+#DEFINE SQLITE_IOERR_NOMEM (SQLITE_IOERR  OR (12 SHL 8))
+#DEFINE SQLITE_IOERR_ACCESS (SQLITE_IOERR  OR (13 SHL 8))
+#DEFINE SQLITE_IOERR_CHECKRESERVEDLOCK (SQLITE_IOERR  OR (14 SHL 8))
+#DEFINE SQLITE_IOERR_LOCK (SQLITE_IOERR  OR (15 SHL 8))
+#DEFINE SQLITE_IOERR_CLOSE (SQLITE_IOERR  OR (16 SHL 8))
+#DEFINE SQLITE_IOERR_DIR_CLOSE (SQLITE_IOERR  OR (17 SHL 8))
+#DEFINE SQLITE_IOERR_SHMOPEN (SQLITE_IOERR  OR (18 SHL 8))
+#DEFINE SQLITE_IOERR_SHMSIZE (SQLITE_IOERR  OR (19 SHL 8))
+#DEFINE SQLITE_IOERR_SHMLOCK (SQLITE_IOERR  OR (20 SHL 8))
+#DEFINE SQLITE_IOERR_SHMMAP (SQLITE_IOERR  OR (21 SHL 8))
+#DEFINE SQLITE_IOERR_SEEK (SQLITE_IOERR  OR (22 SHL 8))
+#DEFINE SQLITE_LOCKED_SHAREDCACHE (SQLITE_LOCKED  OR (1 SHL 8))
+#DEFINE SQLITE_BUSY_RECOVERY (SQLITE_BUSY  OR (1 SHL 8))
+#DEFINE SQLITE_CANTOPEN_NOTEMPDIR (SQLITE_CANTOPEN  OR (1 SHL 8))
+#DEFINE SQLITE_CANTOPEN_ISDIR (SQLITE_CANTOPEN  OR (2 SHL 8))
+#DEFINE SQLITE_CORRUPT_VTAB (SQLITE_CORRUPT  OR (1 SHL 8))
+#DEFINE SQLITE_READONLY_RECOVERY (SQLITE_READONLY  OR (1 SHL 8))
+#DEFINE SQLITE_READONLY_CANTLOCK (SQLITE_READONLY  OR (2 SHL 8))
+#DEFINE SQLITE_ABORT_ROLLBACK (SQLITE_ABORT  OR (2 SHL 8))
+#DEFINE SQLITE_OPEN_READONLY &h00000001
+#DEFINE SQLITE_OPEN_READWRITE &h00000002
+#DEFINE SQLITE_OPEN_CREATE &h00000004
+#DEFINE SQLITE_OPEN_DELETEONCLOSE &h00000008
+#DEFINE SQLITE_OPEN_EXCLUSIVE &h00000010
+#DEFINE SQLITE_OPEN_AUTOPROXY &h00000020
+#DEFINE SQLITE_OPEN_URI &h00000040
+#DEFINE SQLITE_OPEN_MEMORY &h00000080
+#DEFINE SQLITE_OPEN_MAIN_DB &h00000100
+#DEFINE SQLITE_OPEN_TEMP_DB &h00000200
+#DEFINE SQLITE_OPEN_TRANSIENT_DB &h00000400
+#DEFINE SQLITE_OPEN_MAIN_JOURNAL &h00000800
+#DEFINE SQLITE_OPEN_TEMP_JOURNAL &h00001000
+#DEFINE SQLITE_OPEN_SUBJOURNAL &h00002000
+#DEFINE SQLITE_OPEN_MASTER_JOURNAL &h00004000
+#DEFINE SQLITE_OPEN_NOMUTEX &h00008000
+#DEFINE SQLITE_OPEN_FULLMUTEX &h00010000
+#DEFINE SQLITE_OPEN_SHAREDCACHE &h00020000
+#DEFINE SQLITE_OPEN_PRIVATECACHE &h00040000
+#DEFINE SQLITE_OPEN_WAL &h00080000
+#DEFINE SQLITE_IOCAP_ATOMIC &h00000001
+#DEFINE SQLITE_IOCAP_ATOMIC512 &h00000002
+#DEFINE SQLITE_IOCAP_ATOMIC1K &h00000004
+#DEFINE SQLITE_IOCAP_ATOMIC2K &h00000008
+#DEFINE SQLITE_IOCAP_ATOMIC4K &h00000010
+#DEFINE SQLITE_IOCAP_ATOMIC8K &h00000020
+#DEFINE SQLITE_IOCAP_ATOMIC16K &h00000040
+#DEFINE SQLITE_IOCAP_ATOMIC32K &h00000080
+#DEFINE SQLITE_IOCAP_ATOMIC64K &h00000100
+#DEFINE SQLITE_IOCAP_SAFE_APPEND &h00000200
+#DEFINE SQLITE_IOCAP_SEQUENTIAL &h00000400
+#DEFINE SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN &h00000800
+#DEFINE SQLITE_IOCAP_POWERSAFE_OVERWRITE &h00001000
+#DEFINE SQLITE_LOCK_NONE 0
+#DEFINE SQLITE_LOCK_SHARED 1
+#DEFINE SQLITE_LOCK_RESERVED 2
+#DEFINE SQLITE_LOCK_PENDING 3
+#DEFINE SQLITE_LOCK_EXCLUSIVE 4
+#DEFINE SQLITE_SYNC_NORMAL &h00002
+#DEFINE SQLITE_SYNC_FULL &h00003
+#DEFINE SQLITE_SYNC_DATAONLY &h00010
+
+TYPE sqlite3_file AS sqlite3_file_
+TYPE sqlite3_io_methods AS sqlite3_io_methods_
+
+TYPE sqlite3_file_
+  AS CONST sqlite3_io_methods PTR pMethods
+END TYPE
+
+TYPE sqlite3_io_methods_
+  AS INTEGER iVersion
+  xClose AS FUNCTION(BYVAL AS sqlite3_file PTR) AS INTEGER
+  xRead AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_int64) AS INTEGER
+  xWrite AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_int64) AS INTEGER
+  xTruncate AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS sqlite3_int64) AS INTEGER
+  xSync AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER) AS INTEGER
+  xFileSize AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS sqlite3_int64 PTR) AS INTEGER
+  xLock AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER) AS INTEGER
+  xUnlock AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER) AS INTEGER
+  xCheckReservedLock AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER PTR) AS INTEGER
+  xFileControl AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR) AS INTEGER
+  xSectorSize AS FUNCTION(BYVAL AS sqlite3_file PTR) AS INTEGER
+  xDeviceCharacteristics AS FUNCTION(BYVAL AS sqlite3_file PTR) AS INTEGER
+  xShmMap AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS ANY PTR PTR) AS INTEGER
+  xShmLock AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+  xShmBarrier AS SUB(BYVAL AS sqlite3_file PTR)
+  xShmUnmap AS FUNCTION(BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER) AS INTEGER
+END TYPE
+
+#DEFINE SQLITE_FCNTL_LOCKSTATE 1
+#DEFINE SQLITE_GET_LOCKPROXYFILE 2
+#DEFINE SQLITE_SET_LOCKPROXYFILE 3
+#DEFINE SQLITE_LAST_ERRNO 4
+#DEFINE SQLITE_FCNTL_SIZE_HINT 5
+#DEFINE SQLITE_FCNTL_CHUNK_SIZE 6
+#DEFINE SQLITE_FCNTL_FILE_POINTER 7
+#DEFINE SQLITE_FCNTL_SYNC_OMITTED 8
+#DEFINE SQLITE_FCNTL_WIN32_AV_RETRY 9
+#DEFINE SQLITE_FCNTL_PERSIST_WAL 10
+#DEFINE SQLITE_FCNTL_OVERWRITE 11
+#DEFINE SQLITE_FCNTL_VFSNAME 12
+#DEFINE SQLITE_FCNTL_POWERSAFE_OVERWRITE 13
+#DEFINE SQLITE_FCNTL_PRAGMA 14
+
+TYPE sqlite3_mutex AS sqlite3_mutex_
+TYPE sqlite3_vfs AS sqlite3_vfs_
+TYPE sqlite3_syscall_ptr AS SUB()
+
+TYPE sqlite3_vfs_
+  AS INTEGER iVersion
+  AS INTEGER szOsFile
+  AS INTEGER mxPathname
+  AS sqlite3_vfs PTR pNext
+  AS CONST ZSTRING PTR zName
+  AS ANY PTR pAppData
+  xOpen AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3_file PTR, BYVAL AS INTEGER, BYVAL AS INTEGER PTR) AS INTEGER
+  xDelete AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS INTEGER
+  xAccess AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER PTR) AS INTEGER
+  xFullPathname AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR) AS INTEGER
+  xDlOpen AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR) AS ANY PTR
+  xDlError AS SUB(BYVAL AS sqlite3_vfs PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR)
+  xDlSym AS SUB CDECL(BYVAL AS sqlite3_vfs PTR, BYVAL AS ANY PTR, BYVAL AS CONST ZSTRING PTR) PTR
+  xDlClose AS SUB(BYVAL AS sqlite3_vfs PTR, BYVAL AS ANY PTR)
+  xRandomness AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR) AS INTEGER
+  xSleep AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS INTEGER) AS INTEGER
+  xCurrentTime AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS DOUBLE PTR) AS INTEGER
+  xGetLastError AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING PTR) AS INTEGER
+  xCurrentTimeInt64 AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS sqlite3_int64 PTR) AS INTEGER
+  xSetSystemCall AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3_syscall_ptr) AS INTEGER
+  xGetSystemCall AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR) AS sqlite3_syscall_ptr
+  xNextSystemCall AS FUNCTION(BYVAL AS sqlite3_vfs PTR, BYVAL AS CONST ZSTRING PTR) AS CONST ZSTRING PTR
+END TYPE
+
+#DEFINE SQLITE_ACCESS_EXISTS 0
+#DEFINE SQLITE_ACCESS_READWRITE 1
+#DEFINE SQLITE_ACCESS_READ 2
+#DEFINE SQLITE_SHM_UNLOCK 1
+#DEFINE SQLITE_SHM_LOCK 2
+#DEFINE SQLITE_SHM_SHARED 4
+#DEFINE SQLITE_SHM_EXCLUSIVE 8
+#DEFINE SQLITE_SHM_NLOCK 8
+
+DECLARE FUNCTION sqlite3_initialize() AS INTEGER
+DECLARE FUNCTION sqlite3_shutdown() AS INTEGER
+DECLARE FUNCTION sqlite3_os_init() AS INTEGER
+DECLARE FUNCTION sqlite3_os_end() AS INTEGER
+DECLARE FUNCTION sqlite3_config(BYVAL AS INTEGER, ...) AS INTEGER
+DECLARE FUNCTION sqlite3_db_config(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, ...) AS INTEGER
+
+TYPE sqlite3_mem_methods AS sqlite3_mem_methods_
+
+TYPE sqlite3_mem_methods_
+  xMalloc AS FUNCTION(BYVAL AS INTEGER) AS ANY PTR
+  xFree AS SUB(BYVAL AS ANY PTR)
+  xRealloc AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER) AS ANY PTR
+  xSize AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER
+  xRoundup AS FUNCTION(BYVAL AS INTEGER) AS INTEGER
+  xInit AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER
+  xShutdown AS SUB(BYVAL AS ANY PTR)
+  AS ANY PTR pAppData
+END TYPE
+
+#DEFINE SQLITE_CONFIG_SINGLETHREAD 1
+#DEFINE SQLITE_CONFIG_MULTITHREAD 2
+#DEFINE SQLITE_CONFIG_SERIALIZED 3
+#DEFINE SQLITE_CONFIG_MALLOC 4
+#DEFINE SQLITE_CONFIG_GETMALLOC 5
+#DEFINE SQLITE_CONFIG_SCRATCH 6
+#DEFINE SQLITE_CONFIG_PAGECACHE 7
+#DEFINE SQLITE_CONFIG_HEAP 8
+#DEFINE SQLITE_CONFIG_MEMSTATUS 9
+#DEFINE SQLITE_CONFIG_MUTEX 10
+#DEFINE SQLITE_CONFIG_GETMUTEX 11
+#DEFINE SQLITE_CONFIG_LOOKASIDE 13
+#DEFINE SQLITE_CONFIG_PCACHE 14
+#DEFINE SQLITE_CONFIG_GETPCACHE 15
+#DEFINE SQLITE_CONFIG_LOG 16
+#DEFINE SQLITE_CONFIG_URI 17
+#DEFINE SQLITE_CONFIG_PCACHE2 18
+#DEFINE SQLITE_CONFIG_GETPCACHE2 19
+#DEFINE SQLITE_DBCONFIG_LOOKASIDE 1001
+#DEFINE SQLITE_DBCONFIG_ENABLE_FKEY 1002
+#DEFINE SQLITE_DBCONFIG_ENABLE_TRIGGER 1003
+
+DECLARE FUNCTION sqlite3_extended_result_codes(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_last_insert_rowid(BYVAL AS sqlite3 PTR) AS sqlite3_int64
+DECLARE FUNCTION sqlite3_changes(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_total_changes(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE SUB sqlite3_interrupt(BYVAL AS sqlite3 PTR)
+DECLARE FUNCTION sqlite3_complete(BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_complete16(BYVAL AS CONST ANY PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_busy_handler(BYVAL AS sqlite3 PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER) AS INTEGER, BYVAL AS ANY PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_busy_timeout(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_get_table(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ZSTRING PTR PTR PTR, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+DECLARE SUB sqlite3_free_table(BYVAL AS ZSTRING PTR PTR)
+DECLARE FUNCTION sqlite3_mprintf(BYVAL AS CONST ZSTRING PTR, ...) AS ZSTRING PTR
+DECLARE FUNCTION sqlite3_vmprintf(BYVAL AS CONST ZSTRING PTR, BYVAL AS va_list) AS ZSTRING PTR
+DECLARE FUNCTION sqlite3_snprintf(BYVAL AS INTEGER, BYVAL AS ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, ...) AS ZSTRING PTR
+DECLARE FUNCTION sqlite3_vsnprintf(BYVAL AS INTEGER, BYVAL AS ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS va_list) AS ZSTRING PTR
+DECLARE FUNCTION sqlite3_malloc(BYVAL AS INTEGER) AS ANY PTR
+DECLARE FUNCTION sqlite3_realloc(BYVAL AS ANY PTR, BYVAL AS INTEGER) AS ANY PTR
+DECLARE SUB sqlite3_free(BYVAL AS ANY PTR)
+DECLARE FUNCTION sqlite3_memory_used() AS sqlite3_int64
+DECLARE FUNCTION sqlite3_memory_highwater(BYVAL AS INTEGER) AS sqlite3_int64
+DECLARE SUB sqlite3_randomness(BYVAL AS INTEGER, BYVAL AS ANY PTR)
+DECLARE FUNCTION sqlite3_set_authorizer(BYVAL AS sqlite3 PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER, BYVAL AS ANY PTR) AS INTEGER
+
+#DEFINE SQLITE_DENY 1
+#DEFINE SQLITE_IGNORE 2
+#DEFINE SQLITE_CREATE_INDEX 1
+#DEFINE SQLITE_CREATE_TABLE 2
+#DEFINE SQLITE_CREATE_TEMP_INDEX 3
+#DEFINE SQLITE_CREATE_TEMP_TABLE 4
+#DEFINE SQLITE_CREATE_TEMP_TRIGGER 5
+#DEFINE SQLITE_CREATE_TEMP_VIEW 6
+#DEFINE SQLITE_CREATE_TRIGGER 7
+#DEFINE SQLITE_CREATE_VIEW 8
+#DEFINE SQLITE_DELETE 9
+#DEFINE SQLITE_DROP_INDEX 10
+#DEFINE SQLITE_DROP_TABLE 11
+#DEFINE SQLITE_DROP_TEMP_INDEX 12
+#DEFINE SQLITE_DROP_TEMP_TABLE 13
+#DEFINE SQLITE_DROP_TEMP_TRIGGER 14
+#DEFINE SQLITE_DROP_TEMP_VIEW 15
+#DEFINE SQLITE_DROP_TRIGGER 16
+#DEFINE SQLITE_DROP_VIEW 17
+#DEFINE SQLITE_INSERT 18
+#DEFINE SQLITE_PRAGMA 19
+#DEFINE SQLITE_READ 20
+#DEFINE SQLITE_SELECT 21
+#DEFINE SQLITE_TRANSACTION 22
+#DEFINE SQLITE_UPDATE 23
+#DEFINE SQLITE_ATTACH 24
+#DEFINE SQLITE_DETACH 25
+#DEFINE SQLITE_ALTER_TABLE 26
+#DEFINE SQLITE_REINDEX 27
+#DEFINE SQLITE_ANALYZE 28
+#DEFINE SQLITE_CREATE_VTABLE 29
+#DEFINE SQLITE_DROP_VTABLE 30
+#DEFINE SQLITE_FUNCTION 31
+#DEFINE SQLITE_SAVEPOINT 32
+#DEFINE SQLITE_COPY 0
+
+DECLARE FUNCTION sqlite3_trace(BYVAL AS sqlite3 PTR, BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS CONST ZSTRING PTR), BYVAL AS ANY PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_profile(BYVAL AS sqlite3 PTR, BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3_uint64), BYVAL AS ANY PTR) AS ANY PTR
+DECLARE SUB sqlite3_progress_handler(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, BYVAL AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER, BYVAL AS ANY PTR)
+DECLARE FUNCTION sqlite3_open(BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3 PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_open16(BYVAL AS CONST ANY PTR, BYVAL AS sqlite3 PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_open_v2(BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3 PTR PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_uri_parameter(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_uri_boolean(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_uri_int64(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3_int64) AS sqlite3_int64
+DECLARE FUNCTION sqlite3_errcode(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_extended_errcode(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_errmsg(BYVAL AS sqlite3 PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_errmsg16(BYVAL AS sqlite3 PTR) AS CONST ANY PTR
+
+TYPE sqlite3_stmt AS sqlite3_stmt_
+
+DECLARE FUNCTION sqlite3_limit(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+
+#DEFINE SQLITE_LIMIT_LENGTH 0
+#DEFINE SQLITE_LIMIT_SQL_LENGTH 1
+#DEFINE SQLITE_LIMIT_COLUMN 2
+#DEFINE SQLITE_LIMIT_EXPR_DEPTH 3
+#DEFINE SQLITE_LIMIT_COMPOUND_SELECT 4
+#DEFINE SQLITE_LIMIT_VDBE_OP 5
+#DEFINE SQLITE_LIMIT_FUNCTION_ARG 6
+#DEFINE SQLITE_LIMIT_ATTACHED 7
+#DEFINE SQLITE_LIMIT_LIKE_PATTERN_LENGTH 8
+#DEFINE SQLITE_LIMIT_VARIABLE_NUMBER 9
+#DEFINE SQLITE_LIMIT_TRIGGER_DEPTH 10
+
+DECLARE FUNCTION sqlite3_prepare(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_stmt PTR PTR, BYVAL AS CONST ZSTRING PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_prepare_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_stmt PTR PTR, BYVAL AS CONST ZSTRING PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_prepare16(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_stmt PTR PTR, BYVAL AS CONST ANY PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_prepare16_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_stmt PTR PTR, BYVAL AS CONST ANY PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_sql(BYVAL AS sqlite3_stmt PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_stmt_readonly(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_stmt_busy(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+
+TYPE sqlite3_value AS Mem
+TYPE sqlite3_context AS sqlite3_context_
+
+DECLARE FUNCTION sqlite3_bind_blob(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_double(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS DOUBLE) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_int(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_int64(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_int64) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_null(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_text(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_text16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_value(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS CONST sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_zeroblob(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_parameter_count(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_bind_parameter_name(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_bind_parameter_index(BYVAL AS sqlite3_stmt PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_clear_bindings(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_column_count(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_column_name(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_column_name16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_database_name(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_column_database_name16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_table_name(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_column_table_name16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_origin_name(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_column_origin_name16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_decltype(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_column_decltype16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_step(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_data_count(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+
+#DEFINE SQLITE_INTEGER 1
+#DEFINE SQLITE_FLOAT 2
+#DEFINE SQLITE_BLOB 4
+#DEFINE SQLITE_NULL 5
+
+#IFDEF SQLITE_TEXT
+#UNDEF SQLITE_TEXT
+#ELSE ' SQLITE_TEXT
+#DEFINE SQLITE_TEXT 3
+#ENDIF ' SQLITE_TEXT
+
+#DEFINE SQLITE3_TEXT 3
+
+DECLARE FUNCTION sqlite3_column_blob(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_bytes(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_column_bytes16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_column_double(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS DOUBLE
+DECLARE FUNCTION sqlite3_column_int(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_column_int64(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS sqlite3_int64
+DECLARE FUNCTION sqlite3_column_text(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST UBYTE PTR
+DECLARE FUNCTION sqlite3_column_text16(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_column_type(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_column_value(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER) AS sqlite3_value PTR
+DECLARE FUNCTION sqlite3_finalize(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_reset(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_create_function(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_create_function16(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_create_function_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS SUB(BYVAL AS sqlite3_context PTR), BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+
+#DEFINE SQLITE_UTF8 1
+#DEFINE SQLITE_UTF16LE 2
+#DEFINE SQLITE_UTF16BE 3
+#DEFINE SQLITE_UTF16 4
+#DEFINE SQLITE_ANY 5
+#DEFINE SQLITE_UTF16_ALIGNED 8
+
+#IFNDEF SQLITE_OMIT_DEPRECATED
+
+DECLARE FUNCTION sqlite3_aggregate_count(BYVAL AS sqlite3_context PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_expired(BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_transfer_bindings(BYVAL AS sqlite3_stmt PTR, BYVAL AS sqlite3_stmt PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_global_recover() AS INTEGER
+DECLARE SUB sqlite3_thread_cleanup()
+DECLARE FUNCTION sqlite3_memory_alarm(BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS sqlite3_int64, BYVAL AS INTEGER), BYVAL AS ANY PTR, BYVAL AS sqlite3_int64) AS INTEGER
+
+#ENDIF ' SQLITE_OMIT_DEPRECATED
+
+DECLARE FUNCTION sqlite3_value_blob(BYVAL AS sqlite3_value PTR) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_value_bytes(BYVAL AS sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_value_bytes16(BYVAL AS sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_value_double(BYVAL AS sqlite3_value PTR) AS DOUBLE
+DECLARE FUNCTION sqlite3_value_int(BYVAL AS sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_value_int64(BYVAL AS sqlite3_value PTR) AS sqlite3_int64
+DECLARE FUNCTION sqlite3_value_text(BYVAL AS sqlite3_value PTR) AS CONST UBYTE PTR
+DECLARE FUNCTION sqlite3_value_text16(BYVAL AS sqlite3_value PTR) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_value_text16le(BYVAL AS sqlite3_value PTR) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_value_text16be(BYVAL AS sqlite3_value PTR) AS CONST ANY PTR
+DECLARE FUNCTION sqlite3_value_type(BYVAL AS sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_value_numeric_type(BYVAL AS sqlite3_value PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_aggregate_context(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER) AS ANY PTR
+DECLARE FUNCTION sqlite3_user_data(BYVAL AS sqlite3_context PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_context_db_handle(BYVAL AS sqlite3_context PTR) AS sqlite3 PTR
+DECLARE FUNCTION sqlite3_get_auxdata(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER) AS ANY PTR
+DECLARE SUB sqlite3_set_auxdata(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS ANY PTR))
+
+TYPE sqlite3_destructor_type AS SUB(BYVAL AS ANY PTR)
+
+#DEFINE SQLITE_STATIC (CAST(sqlite3_destructor_type, 0))
+
+' #define SQLITE_TRANSIENT   ((sqlite3_destructor_type)-1)
+#DEFINE SQLITE_TRANSIENT (CAST(sqlite3_destructor_type, -1)) '??? unsave CAST
+
+DECLARE SUB sqlite3_result_blob(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR))
+DECLARE SUB sqlite3_result_double(BYVAL AS sqlite3_context PTR, BYVAL AS DOUBLE)
+DECLARE SUB sqlite3_result_error(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER)
+DECLARE SUB sqlite3_result_error16(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER)
+DECLARE SUB sqlite3_result_error_toobig(BYVAL AS sqlite3_context PTR)
+DECLARE SUB sqlite3_result_error_nomem(BYVAL AS sqlite3_context PTR)
+DECLARE SUB sqlite3_result_error_code(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER)
+DECLARE SUB sqlite3_result_int(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER)
+DECLARE SUB sqlite3_result_int64(BYVAL AS sqlite3_context PTR, BYVAL AS sqlite3_int64)
+DECLARE SUB sqlite3_result_null(BYVAL AS sqlite3_context PTR)
+DECLARE SUB sqlite3_result_text(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR))
+DECLARE SUB sqlite3_result_text16(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR))
+DECLARE SUB sqlite3_result_text16le(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR))
+DECLARE SUB sqlite3_result_text16be(BYVAL AS sqlite3_context PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR))
+DECLARE SUB sqlite3_result_value(BYVAL AS sqlite3_context PTR, BYVAL AS sqlite3_value PTR)
+DECLARE SUB sqlite3_result_zeroblob(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER)
+DECLARE FUNCTION sqlite3_create_collation(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR) AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_create_collation_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR) AS INTEGER, BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_create_collation16(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR) AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_collation_needed(BYVAL AS sqlite3 PTR, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR)) AS INTEGER
+DECLARE FUNCTION sqlite3_collation_needed16(BYVAL AS sqlite3 PTR, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, BYVAL AS CONST ANY PTR)) AS INTEGER
+
+#IFDEF SQLITE_HAS_CODEC
+
+DECLARE FUNCTION sqlite3_key(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_rekey(BYVAL AS sqlite3 PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE SUB sqlite3_activate_see(BYVAL AS CONST ZSTRING PTR)
+
+#ENDIF ' SQLITE_HAS_CODEC
+
+#IFDEF SQLITE_ENABLE_CEROD
+
+DECLARE SUB sqlite3_activate_cerod(BYVAL AS CONST ZSTRING PTR)
+
+#ENDIF ' SQLITE_ENABLE_CEROD
+
+DECLARE FUNCTION sqlite3_sleep(BYVAL AS INTEGER) AS INTEGER
+
+EXTERN AS ZSTRING PTR sqlite3_temp_directory
+EXTERN AS ZSTRING PTR sqlite3_data_directory
+
+DECLARE FUNCTION sqlite3_get_autocommit(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_db_handle(BYVAL AS sqlite3_stmt PTR) AS sqlite3 PTR
+DECLARE FUNCTION sqlite3_db_filename(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION sqlite3_db_readonly(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_next_stmt(BYVAL AS sqlite3 PTR, BYVAL AS sqlite3_stmt PTR) AS sqlite3_stmt PTR
+DECLARE FUNCTION sqlite3_commit_hook(BYVAL AS sqlite3 PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER, BYVAL AS ANY PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_rollback_hook(BYVAL AS sqlite3 PTR, BYVAL AS SUB(BYVAL AS ANY PTR), BYVAL AS ANY PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_update_hook(BYVAL AS sqlite3 PTR, BYVAL AS SUB(BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS ZSTRING CONST PTR, BYVAL AS ZSTRING CONST PTR, BYVAL AS sqlite3_int64), BYVAL AS ANY PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_enable_shared_cache(BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_release_memory(BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_db_release_memory(BYVAL AS sqlite3 PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_soft_heap_limit64(BYVAL AS sqlite3_int64) AS sqlite3_int64
+DECLARE SUB sqlite3_soft_heap_limit(BYVAL AS INTEGER)
+DECLARE FUNCTION sqlite3_table_column_metadata(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ZSTRING CONST PTR PTR, BYVAL AS ZSTRING CONST PTR PTR, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_load_extension(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_enable_load_extension(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_auto_extension(BYVAL AS SUB()) AS INTEGER
+DECLARE SUB sqlite3_reset_auto_extension()
+
+TYPE sqlite3_vtab AS sqlite3_vtab_
+TYPE sqlite3_index_info AS sqlite3_index_info_
+TYPE sqlite3_vtab_cursor AS sqlite3_vtab_cursor_
+TYPE sqlite3_module AS sqlite3_module_
+
+TYPE sqlite3_module_
+  AS INTEGER iVersion
+  xCreate AS FUNCTION(BYVAL AS sqlite3 PTR, BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING CONST PTR PTR, BYVAL AS sqlite3_vtab PTR PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+  xConnect AS FUNCTION(BYVAL AS sqlite3 PTR, BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING CONST PTR PTR, BYVAL AS sqlite3_vtab PTR PTR, BYVAL AS ZSTRING PTR PTR) AS INTEGER
+  xBestIndex AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS sqlite3_index_info PTR) AS INTEGER
+  xDisconnect AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xDestroy AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xOpen AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS sqlite3_vtab_cursor PTR PTR) AS INTEGER
+  xClose AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR) AS INTEGER
+  xFilter AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR) AS INTEGER
+  xNext AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR) AS INTEGER
+  xEof AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR) AS INTEGER
+  xColumn AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR, BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER) AS INTEGER
+  xRowid AS FUNCTION(BYVAL AS sqlite3_vtab_cursor PTR, BYVAL AS sqlite3_int64 PTR) AS INTEGER
+  xUpdate AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR, BYVAL AS sqlite3_int64 PTR) AS INTEGER
+  xBegin AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xSync AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xCommit AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xRollback AS FUNCTION(BYVAL AS sqlite3_vtab PTR) AS INTEGER
+  xFindFunction AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS SUB(BYVAL AS sqlite3_context PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_value PTR PTR), BYVAL AS ANY PTR PTR) AS INTEGER
+  xRename AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+  xSavepoint AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS INTEGER) AS INTEGER
+  xRelease AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS INTEGER) AS INTEGER
+  xRollbackTo AS FUNCTION(BYVAL AS sqlite3_vtab PTR, BYVAL AS INTEGER) AS INTEGER
+END TYPE
+
+TYPE sqlite3_index_info__sqlite3_index_constraint
+  AS INTEGER iColumn
+  AS UBYTE op
+  AS UBYTE usable
+  AS INTEGER iTermOffset
+END TYPE
+
+TYPE sqlite3_index_info__sqlite3_index_orderby
+  AS INTEGER iColumn
+  AS UBYTE desc
+END TYPE
+
+TYPE sqlite3_index_info__sqlite3_index_constraint_usage
+  AS INTEGER argvIndex
+  AS UBYTE omit
+END TYPE
+
+TYPE sqlite3_index_info_
+  AS INTEGER nConstraint
+  AS sqlite3_index_info__sqlite3_index_constraint PTR aConstraint
+  AS INTEGER nOrderBy
+  AS sqlite3_index_info__sqlite3_index_orderby PTR aOrderBy
+  AS sqlite3_index_info__sqlite3_index_constraint_usage PTR aConstraintUsage
+  AS INTEGER idxNum
+  AS ZSTRING PTR idxStr
+  AS INTEGER needToFreeIdxStr
+  AS INTEGER orderByConsumed
+  AS DOUBLE estimatedCost
+END TYPE
+
+#DEFINE SQLITE_INDEX_CONSTRAINT_EQ 2
+#DEFINE SQLITE_INDEX_CONSTRAINT_GT 4
+#DEFINE SQLITE_INDEX_CONSTRAINT_LE 8
+#DEFINE SQLITE_INDEX_CONSTRAINT_LT 16
+#DEFINE SQLITE_INDEX_CONSTRAINT_GE 32
+#DEFINE SQLITE_INDEX_CONSTRAINT_MATCH 64
+
+DECLARE FUNCTION sqlite3_create_module(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST sqlite3_module PTR, BYVAL AS ANY PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_create_module_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST sqlite3_module PTR, BYVAL AS ANY PTR, BYVAL AS SUB(BYVAL AS ANY PTR)) AS INTEGER
+
+TYPE sqlite3_vtab_
+  AS CONST sqlite3_module PTR pModule
+  AS INTEGER nRef
+  AS ZSTRING PTR zErrMsg
+END TYPE
+
+TYPE sqlite3_vtab_cursor_
+  AS sqlite3_vtab PTR pVtab
+END TYPE
+
+DECLARE FUNCTION sqlite3_declare_vtab(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_overload_function(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS INTEGER
+
+TYPE sqlite3_blob AS sqlite3_blob_
+
+DECLARE FUNCTION sqlite3_blob_open(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3_int64, BYVAL AS INTEGER, BYVAL AS sqlite3_blob PTR PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_blob_reopen(BYVAL AS sqlite3_blob PTR, BYVAL AS sqlite3_int64) AS INTEGER
+DECLARE FUNCTION sqlite3_blob_close(BYVAL AS sqlite3_blob PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_blob_bytes(BYVAL AS sqlite3_blob PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_blob_read(BYVAL AS sqlite3_blob PTR, BYVAL AS ANY PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_blob_write(BYVAL AS sqlite3_blob PTR, BYVAL AS CONST ANY PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_vfs_find(BYVAL AS CONST ZSTRING PTR) AS sqlite3_vfs PTR
+DECLARE FUNCTION sqlite3_vfs_register(BYVAL AS sqlite3_vfs PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_vfs_unregister(BYVAL AS sqlite3_vfs PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_mutex_alloc(BYVAL AS INTEGER) AS sqlite3_mutex PTR
+DECLARE SUB sqlite3_mutex_free(BYVAL AS sqlite3_mutex PTR)
+DECLARE SUB sqlite3_mutex_enter(BYVAL AS sqlite3_mutex PTR)
+DECLARE FUNCTION sqlite3_mutex_try(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+DECLARE SUB sqlite3_mutex_leave(BYVAL AS sqlite3_mutex PTR)
+
+TYPE sqlite3_mutex_methods AS sqlite3_mutex_methods_
+
+TYPE sqlite3_mutex_methods_
+  xMutexInit AS FUNCTION() AS INTEGER
+  xMutexEnd AS FUNCTION() AS INTEGER
+  xMutexAlloc AS FUNCTION(BYVAL AS INTEGER) AS sqlite3_mutex PTR
+  xMutexFree AS SUB(BYVAL AS sqlite3_mutex PTR)
+  xMutexEnter AS SUB(BYVAL AS sqlite3_mutex PTR)
+  xMutexTry AS FUNCTION(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+  xMutexLeave AS SUB(BYVAL AS sqlite3_mutex PTR)
+  xMutexHeld AS FUNCTION(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+  xMutexNotheld AS FUNCTION(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+END TYPE
+
+#IFNDEF NDEBUG
+
+DECLARE FUNCTION sqlite3_mutex_held(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_mutex_notheld(BYVAL AS sqlite3_mutex PTR) AS INTEGER
+
+#ENDIF ' NDEBUG
+
+#DEFINE SQLITE_MUTEX_FAST 0
+#DEFINE SQLITE_MUTEX_RECURSIVE 1
+#DEFINE SQLITE_MUTEX_STATIC_MASTER 2
+#DEFINE SQLITE_MUTEX_STATIC_MEM 3
+#DEFINE SQLITE_MUTEX_STATIC_MEM2 4
+#DEFINE SQLITE_MUTEX_STATIC_OPEN 4
+#DEFINE SQLITE_MUTEX_STATIC_PRNG 5
+#DEFINE SQLITE_MUTEX_STATIC_LRU 6
+#DEFINE SQLITE_MUTEX_STATIC_LRU2 7
+#DEFINE SQLITE_MUTEX_STATIC_PMEM 7
+
+DECLARE FUNCTION sqlite3_db_mutex(BYVAL AS sqlite3 PTR) AS sqlite3_mutex PTR
+DECLARE FUNCTION sqlite3_file_control(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS ANY PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_test_control(BYVAL AS INTEGER, ...) AS INTEGER
+
+#DEFINE SQLITE_TESTCTRL_FIRST 5
+#DEFINE SQLITE_TESTCTRL_PRNG_SAVE 5
+#DEFINE SQLITE_TESTCTRL_PRNG_RESTORE 6
+#DEFINE SQLITE_TESTCTRL_PRNG_RESET 7
+#DEFINE SQLITE_TESTCTRL_BITVEC_TEST 8
+#DEFINE SQLITE_TESTCTRL_FAULT_INSTALL 9
+#DEFINE SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS 10
+#DEFINE SQLITE_TESTCTRL_PENDING_BYTE 11
+#DEFINE SQLITE_TESTCTRL_ASSERT 12
+#DEFINE SQLITE_TESTCTRL_ALWAYS 13
+#DEFINE SQLITE_TESTCTRL_RESERVE 14
+#DEFINE SQLITE_TESTCTRL_OPTIMIZATIONS 15
+#DEFINE SQLITE_TESTCTRL_ISKEYWORD 16
+#DEFINE SQLITE_TESTCTRL_SCRATCHMALLOC 17
+#DEFINE SQLITE_TESTCTRL_LOCALTIME_FAULT 18
+#DEFINE SQLITE_TESTCTRL_EXPLAIN_STMT 19
+#DEFINE SQLITE_TESTCTRL_LAST 19
+
+DECLARE FUNCTION sqlite3_status(BYVAL AS INTEGER, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR, BYVAL AS INTEGER) AS INTEGER
+
+#DEFINE SQLITE_STATUS_MEMORY_USED 0
+#DEFINE SQLITE_STATUS_PAGECACHE_USED 1
+#DEFINE SQLITE_STATUS_PAGECACHE_OVERFLOW 2
+#DEFINE SQLITE_STATUS_SCRATCH_USED 3
+#DEFINE SQLITE_STATUS_SCRATCH_OVERFLOW 4
+#DEFINE SQLITE_STATUS_MALLOC_SIZE 5
+#DEFINE SQLITE_STATUS_PARSER_STACK 6
+#DEFINE SQLITE_STATUS_PAGECACHE_SIZE 7
+#DEFINE SQLITE_STATUS_SCRATCH_SIZE 8
+#DEFINE SQLITE_STATUS_MALLOC_COUNT 9
+
+DECLARE FUNCTION sqlite3_db_status(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR, BYVAL AS INTEGER) AS INTEGER
+
+#DEFINE SQLITE_DBSTATUS_LOOKASIDE_USED 0
+#DEFINE SQLITE_DBSTATUS_CACHE_USED 1
+#DEFINE SQLITE_DBSTATUS_SCHEMA_USED 2
+#DEFINE SQLITE_DBSTATUS_STMT_USED 3
+#DEFINE SQLITE_DBSTATUS_LOOKASIDE_HIT 4
+#DEFINE SQLITE_DBSTATUS_LOOKASIDE_MISS_SIZE 5
+#DEFINE SQLITE_DBSTATUS_LOOKASIDE_MISS_FULL 6
+#DEFINE SQLITE_DBSTATUS_CACHE_HIT 7
+#DEFINE SQLITE_DBSTATUS_CACHE_MISS 8
+#DEFINE SQLITE_DBSTATUS_CACHE_WRITE 9
+#DEFINE SQLITE_DBSTATUS_MAX 9
+
+DECLARE FUNCTION sqlite3_stmt_status(BYVAL AS sqlite3_stmt PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS INTEGER
+
+#DEFINE SQLITE_STMTSTATUS_FULLSCAN_STEP 1
+#DEFINE SQLITE_STMTSTATUS_SORT 2
+#DEFINE SQLITE_STMTSTATUS_AUTOINDEX 3
+
+TYPE sqlite3_pcache AS sqlite3_pcache_
+TYPE sqlite3_pcache_page AS sqlite3_pcache_page_
+
+TYPE sqlite3_pcache_page_
+  AS ANY PTR pBuf
+  AS ANY PTR pExtra
+END TYPE
+
+TYPE sqlite3_pcache_methods2 AS sqlite3_pcache_methods2_
+
+TYPE sqlite3_pcache_methods2_
+  AS INTEGER iVersion
+  AS ANY PTR pArg
+  xInit AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER
+  xShutdown AS SUB(BYVAL AS ANY PTR)
+  xCreate AS FUNCTION(BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS sqlite3_pcache PTR
+  xCachesize AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS INTEGER)
+  xPagecount AS FUNCTION(BYVAL AS sqlite3_pcache PTR) AS INTEGER
+  xFetch AS FUNCTION(BYVAL AS sqlite3_pcache PTR, BYVAL AS UINTEGER, BYVAL AS INTEGER) AS sqlite3_pcache_page PTR
+  xUnpin AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS sqlite3_pcache_page PTR, BYVAL AS INTEGER)
+  xRekey AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS sqlite3_pcache_page PTR, BYVAL AS UINTEGER, BYVAL AS UINTEGER)
+  xTruncate AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS UINTEGER)
+  xDestroy AS SUB(BYVAL AS sqlite3_pcache PTR)
+  xShrink AS SUB(BYVAL AS sqlite3_pcache PTR)
+END TYPE
+
+TYPE sqlite3_pcache_methods AS sqlite3_pcache_methods_
+
+TYPE sqlite3_pcache_methods_
+  AS ANY PTR pArg
+  xInit AS FUNCTION(BYVAL AS ANY PTR) AS INTEGER
+  xShutdown AS SUB(BYVAL AS ANY PTR)
+  xCreate AS FUNCTION(BYVAL AS INTEGER, BYVAL AS INTEGER) AS sqlite3_pcache PTR
+  xCachesize AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS INTEGER)
+  xPagecount AS FUNCTION(BYVAL AS sqlite3_pcache PTR) AS INTEGER
+  xFetch AS FUNCTION(BYVAL AS sqlite3_pcache PTR, BYVAL AS UINTEGER, BYVAL AS INTEGER) AS ANY PTR
+  xUnpin AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS ANY PTR, BYVAL AS INTEGER)
+  xRekey AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS ANY PTR, BYVAL AS UINTEGER, BYVAL AS UINTEGER)
+  xTruncate AS SUB(BYVAL AS sqlite3_pcache PTR, BYVAL AS UINTEGER)
+  xDestroy AS SUB(BYVAL AS sqlite3_pcache PTR)
+END TYPE
+
+TYPE sqlite3_backup AS sqlite3_backup_
+
+DECLARE FUNCTION sqlite3_backup_init(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR) AS sqlite3_backup PTR
+DECLARE FUNCTION sqlite3_backup_step(BYVAL AS sqlite3_backup PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_backup_finish(BYVAL AS sqlite3_backup PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_backup_remaining(BYVAL AS sqlite3_backup PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_backup_pagecount(BYVAL AS sqlite3_backup PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_unlock_notify(BYVAL AS sqlite3 PTR, BYVAL AS SUB(BYVAL AS ANY PTR PTR, BYVAL AS INTEGER), BYVAL AS ANY PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_stricmp(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_strnicmp(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE SUB sqlite3_log(BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, ...)
+DECLARE FUNCTION sqlite3_wal_hook(BYVAL AS sqlite3 PTR, BYVAL AS FUNCTION(BYVAL AS ANY PTR, BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS INTEGER, BYVAL AS ANY PTR) AS ANY PTR
+DECLARE FUNCTION sqlite3_wal_autocheckpoint(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION sqlite3_wal_checkpoint(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR) AS INTEGER
+DECLARE FUNCTION sqlite3_wal_checkpoint_v2(BYVAL AS sqlite3 PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR) AS INTEGER
+
+#DEFINE SQLITE_CHECKPOINT_PASSIVE 0
+#DEFINE SQLITE_CHECKPOINT_FULL 1
+#DEFINE SQLITE_CHECKPOINT_RESTART 2
+
+DECLARE FUNCTION sqlite3_vtab_config(BYVAL AS sqlite3 PTR, BYVAL AS INTEGER, ...) AS INTEGER
+
+#DEFINE SQLITE_VTAB_CONSTRAINT_SUPPORT 1
+
+DECLARE FUNCTION sqlite3_vtab_on_conflict(BYVAL AS sqlite3 PTR) AS INTEGER
+
+#DEFINE SQLITE_ROLLBACK 1
+#DEFINE SQLITE_FAIL 3
+#DEFINE SQLITE_REPLACE 5
+
+#IFDEF SQLITE_OMIT_FLOATING_POINT
+#UNDEF double
+#ENDIF ' SQLITE_OMIT_FLOATING_POINT
+
+#ENDIF ' _SQLITE3_H_
+
+#IFNDEF _SQLITE3RTREE_H_
+#DEFINE _SQLITE3RTREE_H_
+
+TYPE sqlite3_rtree_geometry AS sqlite3_rtree_geometry_
+
+#IFDEF SQLITE_RTREE_INT_ONLY
+DECLARE FUNCTION sqlite3_rtree_geometry_callback(_
+  BYVAL AS sqlite3 PTR, _
+  BYVAL AS CONST ZSTRING PTR, _
+  BYVAL AS FUNCTION(BYVAL AS sqlite3_rtree_geometry PTR, BYVAL AS INTEGER, BYVAL AS sqlite3_int64 PTR, BYVAL AS INTEGER PTR) AS INTEGER, _
+  BYVAL AS ANY PTR) AS INTEGER
+#ELSE
+DECLARE FUNCTION sqlite3_rtree_geometry_callback(_
+  BYVAL AS sqlite3 PTR, _
+  BYVAL AS CONST ZSTRING PTR, _
+  BYVAL AS FUNCTION(BYVAL AS sqlite3_rtree_geometry PTR, BYVAL AS INTEGER, BYVAL AS DOUBLE PTR, BYVAL AS INTEGER PTR) AS INTEGER, _
+  BYVAL AS ANY PTR) AS INTEGER
+#ENDIF
+
+TYPE sqlite3_rtree_geometry_
+  AS ANY PTR pContext
+  AS INTEGER nParam
+  AS DOUBLE PTR aParam
+  AS ANY PTR pUser
+  xDelUser AS SUB(BYVAL AS ANY PTR)
+END TYPE
+
+#ENDIF ' _SQLITE3RTREE_H_
+
+END EXTERN ' (h_2_bi -P_oCD option)
+
+#IFDEF __FB_WIN32__
+#PRAGMA pop(msbitfields)
+#ENDIF
+
+' Translated at 12-09-01 20:59:40, by h_2_bi (version 0.2.2.1,
+' released under GPLv3 by Thomas[ dot ]Freiherr{ at }gmx[ dot ]net)
+
+'   Protocol: sqlite3.bi
+' Parameters: SQLITE-3.7.13
+'                                  Process time [s]: 0.1680218859110028
+'                                  Bytes translated: 45326
+'                                      Maximum deep: 1
+'                                SUB/FUNCTION names: 210
+'                                mangled TYPE names: 20
+' sqlite3
+' sqlite3_file
+' sqlite3_io_methods
+' sqlite3_mutex
+' sqlite3_vfs
+' sqlite3_mem_methods
+' sqlite3_stmt
+' sqlite3_context
+' sqlite3_vtab
+' sqlite3_index_info
+' sqlite3_vtab_cursor
+' sqlite3_module
+' sqlite3_blob
+' sqlite3_mutex_methods
+' sqlite3_pcache
+' sqlite3_pcache_page
+' sqlite3_pcache_methods2
+' sqlite3_pcache_methods
+' sqlite3_backup
+' sqlite3_rtree_geometry
+'                                        files done: 1
+' sqlite-amalgamation-3071300/sqlite3.h
+'                                      files missed: 0
+'                                       __FOLDERS__: 1
+' sqlite-amalgamation-3071300/
+'                                        __MACROS__: 4
+' 210: #define SQLITE_API
+' 3: #define SQLITE_EXTERN extern
+' 2: #define SQLITE_EXPERIMENTAL
+' 7: #define SQLITE_DEPRECATED
+'                                       __HEADERS__: 0
+'                                         __TYPES__: 0
+'                                     __POST_REPS__: 0

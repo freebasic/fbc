@@ -6,6 +6,7 @@ Platforms supported: DOS, ""Win32"", Linux
 Headers to include: curses.bi
 Header versions: pdcurses 3.4, ncurses from 2005
 Note: On ""Win32"" systems pdcurses is used, on Linux it uses the standard ncurses library.
+Examples: yes, in examples/console/curses/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/curses.bas"}}%%(freebasic)

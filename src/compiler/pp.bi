@@ -22,6 +22,7 @@ enum FB_TOKEN_PP
 	FB_TK_PP_ERROR
 	FB_TK_PP_LINE
 	FB_TK_PP_LANG
+	FB_TK_PP_ASSERT
 end enum
 
 type PP_CTX
@@ -43,9 +44,7 @@ declare sub ppCheck _
 	( _
 	)
 
-declare function ppParse _
-	( _
-	) as integer
+declare sub ppParse( )
 
 declare sub ppDefineInit _
 	( _
@@ -65,13 +64,10 @@ declare function ppDefineLoad _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare sub ppPragmaInit()
-declare sub ppPragmaEnd()
-declare sub ppPragma()
-
-declare function ppTypeOf _
-	( _
-	) as zstring ptr
+declare sub ppPragmaInit( )
+declare sub ppPragmaEnd( )
+declare sub ppPragma( )
+declare function ppTypeOf( ) as zstring ptr
 
 declare sub ppCondInit _
 	( _
@@ -81,17 +77,11 @@ declare sub ppCondEnd _
 	( _
 	)
 
-declare function ppCondIf _
-	( _
-	) as integer
+declare sub ppCondIf( )
+declare sub ppCondElse( )
+declare sub ppCondEndIf( )
 
-declare function ppCondElse _
-	( _
-	) as integer
-
-declare function ppCondEndIf _
-	( _
-	) as integer
+declare sub ppAssert( )
 
 declare function ppReadLiteral _
 	( _

@@ -93,42 +93,9 @@ function symbAddEnumElement _
 
 end function
 
-'':::::
-sub symbDelEnum _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-    if( s = NULL ) then
-    	exit sub
-    end if
-
-    ''
-    symbCompDelImportList( s )
-
-	'' starting from last because of the USING's that could be
-	'' referencing a namespace in the same scope block
-	dim as FBSYMBOL ptr fld = symbGetCompSymbTb( s ).tail
-    do while( fld <> NULL )
-        dim as FBSYMBOL ptr prv = fld->prev
-		symbFreeSymbol( fld )
-		fld = prv
-	loop
-
-	''
-	if( s->enum_.ns.ext <> NULL ) then
-		symbCompFreeExt( s->enum_.ns.ext )
-		s->enum_.ns.ext = NULL
-	end if
-
-	''
-	if( symbGetMangling( s ) = FB_MANGLING_BASIC ) then
-		hashEnd( @s->enum_.ns.hashtb.tb )
-	end if
-
-	'' del the enum node
+sub symbDelEnum( byval s as FBSYMBOL ptr )
+	symbDelNamespaceMembers( s, (symbGetMangling( s ) = FB_MANGLING_BASIC) )
 	symbFreeSymbol( s )
-
 end sub
 
 '':::::

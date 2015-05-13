@@ -9,39 +9,33 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-sub cConstExprValue(byref value as integer)
-	dim as ASTNODE ptr expr = any
+function cConstIntExpr _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval defaultvalue as integer _
+	) as integer
 
-	expr = cEqInParentsOnlyExpr( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		'' error recovery: fake an value
-		value = 0
-		return
+		expr = astNewCONSTi( defaultvalue )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
-		'' error recovery: fake an value
 		astDelTree( expr )
-		value = 0
-		return
+		expr = astNewCONSTi( defaultvalue )
 	end if
 
-	value = astGetValueAsInt( expr )
-	astDelNode( expr )
-end sub
+	function = astConstFlushToInt( expr )
+end function
 
-'':::::
-function cSymbolTypeFuncPtr _
-	( _
-		byval isfunction as integer _
-	) as FBSYMBOL ptr
-
-	dim as integer dtype = any, lgt = any, mode = any
+private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
+	dim as integer dtype = any, lgt = any, mode = any, attrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
+	attrib = 0
+	subtype = NULL
 
 	' no need for naked check here, naked only effects the way a function
 	' is emitted, not the way it's called
@@ -54,59 +48,30 @@ function cSymbolTypeFuncPtr _
 	'' Parameters?
 	cParameters( NULL, proc, mode, TRUE )
 
+	'' BYREF?
+	cByrefAttribute( attrib, is_func )
+
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
-
 		'' if it was SUB, don't allow a return type
-		if( isfunction = FALSE ) then
+		if( is_func = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
-			subtype = NULL
-		
-		'' it's a function
 		else
-
-			lexSkipToken( )
-
-			if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-			end if
-
-			'' check for invalid types
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-
-			case FB_DATATYPE_VOID
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				'' error recovery: fake a type
-				dtype = typeAddrOf( dtype )
-				subtype = NULL
-			end select
-
-			proc->proc.returnMethod = cProcReturnMethod( dtype )
+			cProcRetType( attrib, proc, TRUE, dtype, subtype, lgt )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed
-		if( isfunction ) then
+		if( is_func ) then
 			errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 			'' error recovery: fake a type
 			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
 		else
 			dtype = FB_DATATYPE_VOID
-			subtype = NULL
 		end if
 	end if
 
-	function = symbAddProcPtr( proc, dtype, subtype, mode )
-
+	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
 end function
 
 function cTypeOrExpression _
@@ -125,17 +90,20 @@ function cTypeOrExpression _
 	'' user-defined types/aliases.
 	'' Disambiguation:
 	''  - Types can't be followed by an operator, except for '*', which can
-	''    be used in 'STRING * N'. Note: we cannot check for {Z|W}STRING
-	''    followed by '*', because '*' also works with {z|w}string typedefs.
-	''  - Types can't be followed by '[' or '(', except for 'TYPEOF(...)'.
+	''    be used in 'STRING * N'. Note: We can't just check for
+	''    '{Z|W}STRING *' because '*' also works with {z|w}string typedefs,
+	''    e.g. 'myZstringTypedef * N'.
+	''  - Types can't be followed by '[' or '(', except for:
+	''      TYPEOF|SUB|FUNCTION(...)
 	''  - Note: '.' doesn't make it an expression, because it could be a
 	''    type in a namespace.
 
 	maybe_type = TRUE
 
-	'' Token followed by an operator except '*'?
-	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) and _
-	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) ) then
+	'' Token followed by an operator except '*' / '<'?
+	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
+	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
+	    (lexGetLookAhead( 1 ) <> FB_TK_LT) ) then
 		maybe_type = FALSE
 	else
 		'' Check for some non-operator tokens
@@ -143,8 +111,13 @@ function cTypeOrExpression _
 		case CHAR_LBRACKET    '' [
 			maybe_type = FALSE
 		case CHAR_LPRNT       '' (
-			'' Not a TYPEOF though?
-			maybe_type = (lexGetToken( ) = FB_TK_TYPEOF)
+			'' Not a TYPEOF/SUB/FUNCTION though?
+			select case( lexGetToken( ) )
+			case FB_TK_TYPEOF, FB_TK_SUB, FB_TK_FUNCTION
+
+			case else
+				maybe_type = FALSE
+			end select
 		end select
 	end if
 
@@ -168,7 +141,7 @@ function cTypeOrExpression _
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	function = expr
@@ -191,63 +164,49 @@ sub cTypeOf _
 		exit sub
 	end if
 
-	'' Check the expression
-	if( astIsCONST( expr ) ) then
-		lgt 	= rtlCalcExprLen( expr, FALSE )
-		dtype	= astGetDataType( expr )
-		subtype = astGetSubType( expr )
-	else
-		'' ugly hack to deal with arrays w/o indexes
-		if( astIsNIDXARRAY( expr ) ) then
-			dim as ASTNODE ptr temp_node = expr
-			expr = astGetLeft( expr )
-			astDelNode( temp_node )
-		end if
-
-		dim as integer derefs = 0
-		dim as ASTNODE ptr walk = expr
-		dim as FBSYMBOL ptr sym = astGetSymbol( expr )
-		if( sym = NULL ) then
-			dtype	= astGetFullType( expr )
-			subtype = astGetSubtype( expr )
-            lgt = symbCalcLen( dtype, subtype )
-		else
-			while( walk <> NULL )
-				select case as const astGetClass( walk )
-				case AST_NODECLASS_FIELD, AST_NODECLASS_IDX
-					'' if it's a field, get this node's type,
-					'' don't "solve" the tree
-					sym = astGetSymbol( walk )
-					exit while
-
-				case AST_NODECLASS_DEREF
-					'' count derefs
-					derefs += 1
-
-				end select
-
-				'' update/walk
-				sym = astGetSymbol( walk )
-				walk = astGetLeft( walk )
-			wend
-			lgt 	= symbGetLen( sym )
-			dtype	= symbGetFullType( sym )
-			subtype = symbGetSubtype( sym )
-		end if
-
-		'' byref args have a deref,
-		'' but they maintain their type
-		if( typeIsPtr( dtype ) ) then
-			if( derefs > 0 ) then
-				'' balance it
-				dtype = typeMultDeref( dtype, derefs )
-			end if
-		end if
-
+	'' ugly hack to deal with arrays w/o indexes
+	if( astIsNIDXARRAY( expr ) ) then
+		dim as ASTNODE ptr temp_node = expr
+		expr = astGetLeft( expr )
+		astDelNode( temp_node )
 	end if
+
+	dtype   = astGetFullType( expr )
+	subtype = astGetSubtype( expr )
+	lgt     = astSizeOf( expr )
 
 	astDelTree( expr )
 end sub
+
+function hIntegerTypeFromBitSize _
+	( _
+		byval bitsize as integer, _
+		byval is_unsigned as integer _
+	) as FB_DATATYPE
+
+	dim as FB_DATATYPE dtype
+
+	select case bitsize
+	case 8
+		dtype = FB_DATATYPE_BYTE
+	case 16
+		dtype = FB_DATATYPE_SHORT
+	case 32
+		dtype = FB_DATATYPE_LONG
+	case 64
+		dtype = FB_DATATYPE_LONGINT
+	case else
+		errReport( FB_ERRMSG_INVALIDSIZE, TRUE )
+		dtype = FB_DATATYPE_INTEGER
+	end select
+
+	if( is_unsigned ) then
+		dtype = typeToUnsigned( dtype )
+	end if
+
+	return dtype
+
+end function
 
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
@@ -369,13 +328,48 @@ function cSymbolType _
 
 		case FB_TK_INTEGER
 			lexSkipToken( )
-			dtype = fbLangGetType( INTEGER )
-			lgt = fbLangGetSize( INTEGER )
+
+			'' ['<' lgt '>']
+			if( hMatch( FB_TK_LT ) ) then
+
+				'' expr
+				lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+				dtype = hIntegerTypeFromBitSize( lgt, FALSE )
+
+				if( hMatch( FB_TK_GT ) = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDGT, TRUE )
+				end if
+			else
+
+				dtype = fbLangGetType( INTEGER )
+
+			end if
+
+			lgt = typeGetSize( dtype )
 
 		case FB_TK_UINT
 			lexSkipToken( )
-			dtype = FB_DATATYPE_UINT
-			lgt = FB_INTEGERSIZE
+
+			'' ['<' lgt '>']
+			if( hMatch( FB_TK_LT ) ) then
+
+				'' expr
+				lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+				dtype = hIntegerTypeFromBitSize( lgt, TRUE )
+
+				if( hMatch( FB_TK_GT ) = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDGT, TRUE )
+				end if
+
+			else
+
+				dtype = FB_DATATYPE_UINT
+
+			end if
+
+			lgt = typeGetSize( dtype )
 
 		case FB_TK_LONG
 			lexSkipToken( )
@@ -500,7 +494,7 @@ function cSymbolType _
 			end if
 
 			if( is_const ) then
-				dtype = typeSetIsConst( NULL )
+				dtype = typeSetIsConst( FB_DATATYPE_VOID )
 			end if
 
 			return FALSE
@@ -532,11 +526,11 @@ function cSymbolType _
 	end if
 
 	'' fixed-len z|w|string? (must be handled here because the typedefs)
-	if( lexGetToken( ) = CHAR_STAR ) then
+	if( lexGetToken( ) = CHAR_TIMES ) then
 		lexSkipToken( )
 
 		'' expr
-		cConstExprValue( lgt )
+		lgt = cConstIntExpr( cEqInParensOnlyExpr( ) )
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING
@@ -641,6 +635,7 @@ function cSymbolType _
 			select case as const typeGet( dtype )
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
+				'' (and also BYREF parameters/results)
 				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER )
 					'' error recovery: make pointer

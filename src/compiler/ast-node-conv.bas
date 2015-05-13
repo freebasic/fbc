@@ -10,50 +10,6 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-
-'':::::
-function hTruncateInt _
-	( _
-		byval dtype as integer, _
-		byval value as integer ptr _
-	) as integer
-
-	'' makes sure value is represented exactly as it would be stored in dtype
-
-	'' returns FALSE if conversion was lossless, or TRUE if the number changed
-
-	'' considers signed <-> unsigned changes (e.g. 8-bit -1 <-> 255) as
-	'' lossless, to prevent excessive warnings with things like &hff - counting_pine
-
-	dim as integer value0 = *value
-
-	select case as const dtype
-	case FB_DATATYPE_BOOL8, FB_DATATYPE, BOOL32
-		*value = cbool( value0 )
-		return FALSE '(cbool( *value ) <> value0)
-
-	case FB_DATATYPE_BYTE
-		*value = cbyte( value0 )
-		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
-
-	case FB_DATATYPE_UBYTE
-		*value = cubyte( cuint( value0 ) )
-		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
-
-	case FB_DATATYPE_SHORT
-		*value = cshort( value0 )
-		return (cshort( *value ) <> value0) and (cushort( *value ) <> value0)
-
-	case FB_DATATYPE_USHORT
-		*value = cushort( cuint( value0 ) )
-		return (cshort( *value ) <> value0) and (cushort( *value ) <> value0)
-
-	end select
-
-	return FALSE
-
-end function
-
 '':::::
 private sub hCONVConstEvalInt _
 	( _
@@ -118,10 +74,20 @@ private sub hCONVConstEvalInt _
 		end select
 
 	case else
+		select case as const( to_dtype )
+		case FB_DATATYPE_BYTE
+			v->con.val.int = cbyte( v->con.val.int )
 
-		if( hTruncateInt( to_dtype, @v->con.val.int ) <> FALSE ) then
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
+		case FB_DATATYPE_UBYTE
+			v->con.val.int = cubyte( cuint( v->con.val.int ) )
+
+		case FB_DATATYPE_SHORT
+			v->con.val.int = cshort( v->con.val.int )
+
+		case FB_DATATYPE_USHORT
+			v->con.val.int = cushort( cuint( v->con.val.int ) )
+
+		end select
 
 	end select
 
@@ -138,11 +104,26 @@ private sub hCONVConstEvalFlt _
 	to_dtype = typeGet( to_dtype )
 
 	select case as const vdtype
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		'' do nothing..
+	case FB_DATATYPE_SINGLE
+		'' SINGLE to SINGLE|DOUBLE
+		'' Nothing to do, since float constants are stored as DOUBLE
+
+	case FB_DATATYPE_DOUBLE
+		'' DOUBLE to SINGLE|DOUBLE
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
+			'' Truncate DOUBLE to SINGLE
+			dim as single f = any
+			f = v->con.val.float
+			v->con.val.float = f
+
+			'' Alternative, relying on the fixed CSNG() of FB 0.25:
+			'v->con.val.float = csng( v->con.val.float )
+			'' (currently it's better to use the explicit temp var
+			''  as done above, to avoid the broken CSNG() when
+			''  bootstrapping with FB 0.24 or even earlier versions)
+		end if
 
 	case FB_DATATYPE_LONGINT
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.long )
 		else
@@ -150,7 +131,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_ULONGINT
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.long ) )
 		else
@@ -158,7 +138,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.int ) )
 		else
@@ -166,7 +145,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_LONG
-
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_SINGLE ) then
 				v->con.val.float = csng( v->con.val.int )
@@ -182,7 +160,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_ULONG
-
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_SINGLE ) then
 				v->con.val.float = csng( cunsg( v->con.val.int ) )
@@ -207,7 +184,6 @@ private sub hCONVConstEvalFlt _
 
 
 	case else
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.int )
 		else
@@ -237,7 +213,7 @@ private sub hCONVConstEval64 _
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
-			v->con.val.long = culngint( v->con.val.float )
+			v->con.val.long = hCastFloatToULongint( v->con.val.float )
 		end if
 
 	case FB_DATATYPE_LONG
@@ -346,7 +322,7 @@ private function hCheckPtr _
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
 			if( astIsCONST( expr ) ) then
-				if( astGetValueAsInt( expr ) = 0 ) then
+				if( astConstIsZero( expr ) ) then
 					'' Allow 0-to-pointer casts
 					exit function
 				end if
@@ -442,12 +418,17 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? only upcasting supported by now
-	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
-	end if
-
 	ldtype = astGetFullType( l )
+
+	'' to or from UDT? only upcasting supported by now
+	if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) or _
+	    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+		if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) and _
+		    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+			function = (symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0)
+		end if
+		exit function
+	end if
 
 	'' string? neither
 	if( typeGetClass( ldtype ) = FB_DATACLASS_STRING ) then
@@ -467,9 +448,6 @@ function astCheckCONV _
 			exit function
 		end if
 
-	'' UDT's? ditto
-	case FB_DATATYPE_STRUCT
-		exit function
 	end select
 
 	function = TRUE
@@ -485,7 +463,7 @@ end function
 		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, l, NULL )
+			return astBuildCall( proc, l )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
@@ -505,7 +483,7 @@ function astNewCONV _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-	dim as integer ldclass = any, ldtype = any, errmsg = any
+	dim as integer ldclass = any, ldtype = any, errmsg = any, doconv = any
 
 	if( perrmsg ) then
 		*perrmsg = FB_ERRMSG_OK
@@ -516,7 +494,25 @@ function astNewCONV _
 	'' same type?
 	if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
 		if( l->subtype = to_subtype ) then
-			return l
+			'' Only CONST bits changed?
+			if( ldtype <> to_dtype ) then
+				'' CONST node? Evaluate at compile-time
+				if( astIsCONST( l ) ) then
+					astSetType( l, to_dtype, to_subtype )
+					n = l
+				else
+					'' Otherwise, add a CONV node to represent the changed CONST bits
+					'' to the expression parser
+					n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
+					n->l = l
+					n->cast.doconv = FALSE
+					n->cast.do_convfd2fs = FALSE
+				end if
+			else
+				n = l
+			end if
+
+			return n
 		end if
 	end if
 
@@ -524,22 +520,28 @@ function astNewCONV _
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
 	select case as const typeGet( to_dtype )
-	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
-	'' to cast to be most precise possible) and strings
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
+		'' refuse void (used by uop/bop to cast to be most precise
+		'' possible) and strings, as op overloading already failed
 		exit function
-		 
+
+	'' to UDT?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' not from UDT? op overloading already failed, refuse.
+		if( typeGet( ldtype ) <> FB_DATATYPE_STRUCT ) then
+			exit function
+		end if
+
 		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
 			exit function
-		End If
+		end if
 
+	'' to anything else (integers/floats)
 	case else
-		select case typeGet( ldtype )
-		'' from UDT? ditto..
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' from UDT? refuse, since op overloading already failed
+		if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 			exit function
-		end select
+		end if
 
 	end select
 
@@ -553,13 +555,15 @@ function astNewCONV _
 		end if
 	end if
 
-	'' check pointers
-	errmsg = hCheckPtr( to_dtype, to_subtype, ldtype, l, options )
-	if( errmsg <> FB_ERRMSG_OK ) then
-		if( perrmsg ) then
-			*perrmsg = errmsg
+	if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
+		'' check pointers
+		errmsg = hCheckPtr( to_dtype, to_subtype, ldtype, l, options )
+		if( errmsg <> FB_ERRMSG_OK ) then
+			if( perrmsg ) then
+				*perrmsg = errmsg
+			end if
+			exit function
 		end if
-		exit function
 	end if
 
 	'' string?
@@ -586,6 +590,8 @@ function astNewCONV _
 
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
+		astCheckConst( to_dtype, l )
+
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( to_dtype, l )
@@ -608,17 +614,13 @@ function astNewCONV _
 			hCONVConstEvalInt( to_dtype, l )
 		end select
 
-		l->class = AST_NODECLASS_CONST
-		astGetFullType( l ) = to_dtype
+		l->dtype = to_dtype
 		l->subtype = to_subtype
 		return l
 	end if
 
-	'' assume conversion is necessary ..
-	dim as integer doconv = TRUE
-
-	'' high-level IR? always convert..
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' C backend?
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		'' special case: if it's a float to int, use a builtin function
 		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
 			return rtlMathFTOI( l, to_dtype )
@@ -629,20 +631,23 @@ function astNewCONV _
 				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
 			end select
 		end if
-	else
-		'' only convert if the classes are different (ie, floating<->integer) or
-		'' if sizes are different (ie, byte<->int)
-		if( ldclass = typeGetClass( to_dtype ) ) then
-			select case typeGet( to_dtype )
-			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
-				'' do nothing
+	end if
+
+	doconv = TRUE
+
+	'' only convert if the classes are different (ie, floating<->integer) or
+	'' if sizes are different (ie, byte<->int)
+	if( ldclass = typeGetClass( to_dtype ) ) then
+		select case( typeGet( to_dtype ) )
+		case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+			'' do nothing
+			doconv = FALSE
+		case else
+			if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
 				doconv = FALSE
-			case else
-				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
-					doconv = FALSE
-				end if
-			End Select
-		end if
+			end if
+		end select
+	end if
 
 	'' special rules for converting booleans and bitfields ...
 	select case typeGet( to_dtype )
@@ -665,24 +670,23 @@ function astNewCONV _
 		end select
 	end select
 
-		if( irGetOption( IR_OPT_FPUCONV ) ) then
-			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
-				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
-					doConv = TRUE
-				end if
+	if( irGetOption( IR_OPT_FPUCONV ) ) then
+		if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+			if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
+				doconv = TRUE
 			end if
 		end if
+	end if
 
-		'' casting another cast?
-		if( l->class = AST_NODECLASS_CONV ) then
-			'' no conversion in both?
-			if( l->cast.doconv = FALSE ) then
-				if( doconv = FALSE ) then
-					'' just replace the bottom cast()'s type
-					astGetFullType( l ) = to_dtype
-					l->subtype = to_subtype
-					return l
-				end if
+	'' casting another cast?
+	if( l->class = AST_NODECLASS_CONV ) then
+		'' no conversion in both?
+		if( l->cast.doconv = FALSE ) then
+			if( doconv = FALSE ) then
+				'' just replace the bottom cast()'s type
+				astGetFullType( l ) = to_dtype
+				l->subtype = to_subtype
+				return l
 			end if
 		end if
 	end if
@@ -692,6 +696,16 @@ function astNewCONV _
 
 	n->l = l
 	n->cast.doconv = doconv
+	n->cast.do_convfd2fs = FALSE
+
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
+		if( doconv ) then
+			'' converting DOUBLE to SINGLE?
+			if( typeGet( ldtype ) = FB_DATATYPE_DOUBLE ) then
+				n->cast.do_convfd2fs = (typeGet( to_dtype ) = FB_DATATYPE_SINGLE)
+			end if
+		end if
+	end if
 
 	function = n
 
@@ -712,6 +726,47 @@ function astNewOvlCONV _
 	function = l
 
 end function
+
+sub astUpdateCONVFD2FS _
+	( _
+		byval n as ASTNODE ptr, _
+		byval to_dtype as integer, _
+		byval is_expr as integer _
+	)
+
+	assert( n->class = AST_NODECLASS_CONV )
+
+	'' only when converting DOUBLE to SINGLE
+	if( n->cast.do_convfd2fs = FALSE ) then
+		exit sub
+	end if
+
+	assert( env.clopt.backend = FB_BACKEND_GAS )
+
+	''
+	'' x86 assumptions
+	''
+	'' Don't do the DOUBLE to SINGLE truncation unless needed.
+	''
+	'' If the target dtype cannot hold bigger values than SINGLE
+	'' anyways, then we don't need to do the additional truncation,
+	'' that will happen automatically when storing into the target.
+	''
+	'' This applies to stores (ASSIGN, ARG), and to expressions
+	'' that do not use the FPU stack (ST(N) registers).
+	''
+
+	'' everything >= 4 bytes, assuming that 4 byte integers can hold values
+	'' that still are too big for SINGLE
+	n->cast.do_convfd2fs = (typeGetSize( to_dtype ) >= 4)
+
+	'' to SINGLE itself? no need to do anything then, except if it's on
+	'' the FPU stack, and won't be automatically truncated because of that.
+	if( typeGet( to_dtype ) = FB_DATATYPE_SINGLE ) then
+		n->cast.do_convfd2fs = is_expr
+	end if
+
+end sub
 
 '':::::
 function astLoadCONV _
@@ -735,7 +790,19 @@ function astLoadCONV _
 		if( n->cast.doconv ) then
 			vr = irAllocVreg( astGetDataType( n ), n->subtype )
 			vr->vector = n->vector
-			irEmitConvert( astGetDataType( n ), n->subtype, vr, vs )
+			irEmitConvert( vr, vs )
+
+			if( n->cast.do_convfd2fs ) then
+				'' converting DOUBLE to SINGLE?
+				if( vs->dtype = FB_DATATYPE_DOUBLE ) then
+					if( vr->dtype = FB_DATATYPE_SINGLE ) then
+						if( vr->regFamily = IR_REG_FPU_STACK ) then
+							'' Do additional conversion to truncate to SINGLE
+							irEmitUOP( AST_OP_CONVFD2FS, vr, NULL )
+						end if
+					end if
+				end if
+			end if
 		else
 			vr = vs
 			irSetVregDataType( vr, astGetDataType( n ), n->subtype )

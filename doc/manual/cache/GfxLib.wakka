@@ -5,24 +5,24 @@
 The library supports various drivers depending on the platform: 
 
 	- All:
-		- **##Null##** Does nothing, allows to use graphics functions on in-memory buffers and such, without anything being displayed in a graphics window.  [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_null.c; (gfxlib2/driver_null.c)]]
+		- **##Null##** Does nothing, allows to use graphics functions on in-memory buffers and such, without anything being displayed in a graphics window.  [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/gfx_driver_null.c (gfxlib2/gfx_driver_null.c)]]
 
 	- ""Win32"":
-		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_ddraw_win32.c; (gfxlib2/driver_ddraw_win32.c)]]
-		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 and (some ?) 0.18.x ("banding effects"), not fixed in 0.21 SVN (needs retest with 0.23). [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_gdi_win32.c; (gfxlib2/driver_gdi_win32.c)]]
-		- **##OpenGL##** [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_opengl_win32.c; (gfxlib2/driver_opengl_win32.c)]]
+		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c (gfxlib2/win32/gfx_driver_ddraw.c)]]
+		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash) and 0.18.5 and 0.90rc2 ("banding effects"), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c (gfxlib2/win32/gfx_driver_gdi.c)]]
+		- **##OpenGL##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_opengl.c (gfxlib2/win32/gfx_driver_opengl.c)]]
 
 	- ""Linux & others"":
-		- **##X11##** The default on Unix systems  [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_x11.c; (gfxlib2/driver_x11.c)]]
-		- **##OpenGL##** (on top of X11) [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_opengl_x11.c; (gfxlib2/driver_opengl_x11.c)]]
-		- **##FBDev##** Linux framebuffer device -- fallback in case X11 is disabled [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_fbdev_linux.c; (gfxlib2/driver_fbdev_linux.c)]]
+		- **##X11##** The default on Unix systems  [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/unix/gfx_driver_x11.c (gfxlib2/unix/gfx_driver_x11.c)]]
+		- **##OpenGL##** (on top of X11) [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/unix/gfx_driver_opengl_x11.c (gfxlib2/unix/gfx_driver_opengl_x11.c)]]
+		- **##FBDev##** Linux framebuffer device -- fallback in case X11 is disabled [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/linux/gfx_driver_fbdev.c (gfxlib2/linux/gfx_driver_fbdev.c)]]
 
 	- DOS:
-		- **##BIOS##** [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_bios_dos.c; (gfxlib2/driver_bios_dos.c)]]
-		- **##""ModeX""##** "tuned" 320x240x8bpp VGA mode [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_modex_dos.c; (gfxlib2/driver_modex_dos.c)]]
-		- **##VESA banked##** compatible with very old VESA 1.x implementations [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vesa_bnk_dos.c; (gfxlib2/driver_vesa_bnk_dos.c)]]
-		- **##VESA linear##** needs VESA version at least 2.0, usually faster than banked VESA [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vesa_lin_dos.c; (gfxlib2/driver_vesa_lin_dos.c)]]
-		- **##VGA##** [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vga_dos.c; (gfxlib2/driver_vga_dos.c)]]
+		- **##BIOS##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_bios.c (gfxlib2/dos/gfx_driver_bios.c)]]
+		- **##""ModeX""##** "tuned" 320x240x8bpp VGA mode [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_modex.c (gfxlib2/dos/gfx_driver_modex.c)]]
+		- **##VESA banked##** compatible with very old VESA 1.x implementations [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_vesa_bnk.c (gfxlib2/dos/gfx_driver_vesa_bnk.c)]]
+		- **##VESA linear##** needs VESA version at least 2.0, usually faster than banked VESA [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_vesa_lin.c (gfxlib2/dos/gfx_driver_vesa_lin.c)]]
+		- **##VGA##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_vga.c (gfxlib2/dos/gfx_driver_vga.c)]]
 		- Bug note: [[KeyPgPalette Palette]] doesn't work well [[http://freebasic.net/forum/viewtopic.php?t=12691 (forum discussion: t=12691 2008)]] [[http://freebasic.net/forum/viewtopic.php?t=19980 (forum discussion: t=19980 2012)]]
 
 ##[[KeyPgScreencontrol Screencontrol]]## can be used (SET_DRIVER_NAME 103) to override the default driver preferences. 

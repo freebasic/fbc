@@ -797,16 +797,16 @@
 		( _
 			@FB_RTL_FILESTRINPUT, NULL, _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			2, _
-	 		{ _
-	 			( _
+			{ _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
+				), _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
-	 		} _
+				) _
+			} _
 		), _
 		/' fb_FileLineInput ( byval filenum as integer, _
 							  byref dst as any, byval dstlen as integer,
@@ -1166,35 +1166,35 @@
 	 			) _
 	 		} _
 		), _
-		/' rename cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
+		/' fb_rename alias "rename" cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
 		( _
-			@FB_RTL_FILERENAME, NULL, _
+			@FB_RTL_FILERENAME, @"rename", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
 		/' fb_FileWstrInput ( byval chars as integer, byval filenum as integer = 0 ) as wstring '/ _
 		( _
-			@"winput", @"fb_FileWstrInput", _
+			@FB_RTL_FILEWSTRINPUT, NULL, _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			2, _
-	 		{ _
-	 			( _
+			{ _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
+				), _
+				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
-	 		} _
+				) _
+			} _
 		), _
 		/' fb_FileFree ( ) as integer '/ _
 		( _
@@ -1591,9 +1591,9 @@ function rtlFilePut _
 	dtype    = astGetDataType( src )
 	isstring = symbIsString( dtype )
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
 	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1638,14 +1638,14 @@ function rtlFilePut _
     if( isstring ) then
     	lgt = rtlCalcStrLen( src, dtype )
     else
-    	lgt = rtlCalcExprLen( src, FALSE )
+		lgt = rtlCalcExprLen( src )
     end if
 
-    if( elements = NULL ) then
-    	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-    else
-    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-    end if
+	if( elements = NULL ) then
+		bytes = astNewCONSTi( lgt )
+	else
+		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
+	end if
 
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
@@ -1689,9 +1689,9 @@ function rtlFilePutArray _
 
     function = NULL
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
     o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1766,9 +1766,9 @@ function rtlFileGet _
 	dtype = astGetDataType( dst )
 	isstring = symbIsString( dtype )
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
    	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1828,14 +1828,14 @@ function rtlFileGet _
     if( isstring ) then
     	lgt = rtlCalcStrLen( dst, dtype )
     else
-    	lgt = rtlCalcExprLen( dst, FALSE )
+		lgt = rtlCalcExprLen( dst )
     end if
 
-    if( elements = NULL ) then
-    	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-    else
-    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-    end if
+	if( elements = NULL ) then
+		bytes = astNewCONSTi( lgt )
+	else
+		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
+	end if
 
     '' any pointer fields?
     if( dtype = FB_DATATYPE_STRUCT ) then
@@ -1887,9 +1887,9 @@ function rtlFileGetArray _
 
 	function = NULL
 
-    if( offset = NULL ) then
-    	offset = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( offset = NULL ) then
+		offset = astNewCONSTi( 0 )
+	end if
 	o_dtype  = astGetDataType( offset )
 
 	select case as const o_dtype
@@ -1951,19 +1951,20 @@ function rtlFileGetArray _
 	end if
 end function
 
-'':::::
 function rtlFileStrInput _
 	( _
 		byval bytesexpr as ASTNODE ptr, _
-		byval filenum as ASTNODE ptr _
+		byval filenum as ASTNODE ptr, _
+		byval tk as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
 
     function = NULL
 
-	''
-    proc = astNewCALL( PROCLOOKUP( FILESTRINPUT ) )
+	proc = astNewCALL( iif( tk = FB_TK_WINPUT, _
+				PROCLOOKUP( FILEWSTRINPUT ), _
+				PROCLOOKUP( FILESTRINPUT ) ) )
 
     '' byval bytes as integer
     if( astNewARG( proc, bytesexpr ) = NULL ) then
@@ -1975,9 +1976,7 @@ function rtlFileStrInput _
  		exit function
  	end if
 
-    ''
     function = proc
-
 end function
 
 '':::::
@@ -2009,7 +2008,7 @@ function rtlFileLineInput _
 
     '' "byval filenum as integer" or "text as string "
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, FB_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
     if( astNewARG( proc, expr ) = NULL ) then
@@ -2026,26 +2025,26 @@ function rtlFileLineInput _
  	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
 	'' byval fillrem as integer
-	if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+		exit function
+	end if
 
-    if( args = 6 ) then
-    	'' byval addquestion as integer
- 		if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 6 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2082,7 +2081,7 @@ function rtlFileLineInputWstr _
 
     '' "byval filenum as integer" or "byval text as wstring ptr"
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocWStrConst( "", 0 ), 0, FB_DATATYPE_WCHAR )
+		expr = astNewVAR( symbAllocWStrConst( "", 0 ) )
 	end if
 
     if( astNewARG( proc, expr ) = NULL ) then
@@ -2099,21 +2098,21 @@ function rtlFileLineInputWstr _
  	end if
 
 	'' byval max_chars as integer
-	if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 		exit function
- 	end if
+	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		exit function
+	end if
 
-    if( args = 5 ) then
-    	'' byval addquestion as integer
- 		if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 5 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2149,24 +2148,24 @@ function rtlFileInput _
 
     '' "byval filenum as integer" or "text as string "
     if( (isfile = FALSE) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, FB_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
 	if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
-    if( args = 3 ) then
-    	'' byval addquestion as integer
-    	if( astNewARG( proc, astNewCONSTi( addquestion, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
+	if( args = 3 ) then
+		'' byval addquestion as integer
+		if( astNewARG( proc, astNewCONSTi( addquestion ) ) = NULL ) then
+			exit function
+		end if
 
-    	'' byval addnewline as integer
-    	if( astNewARG( proc, astNewCONSTi( addnewline, FB_DATATYPE_INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
-    end if
+		'' byval addnewline as integer
+		if( astNewARG( proc, astNewCONSTi( addnewline ) ) = NULL ) then
+			exit function
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2268,19 +2267,19 @@ function rtlFileInputGet _
  		exit function
  	end if
 
-    if( args > 1 ) then
+	if( args > 1 ) then
 		'' byval dstlen as integer
-		if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
- 			exit function
- 		end if
+		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+			exit function
+		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
-    			exit function
-    		end if
-    	end if
-    end if
+			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
+				exit function
+			end if
+		end if
+	end if
 
     astAdd( proc )
 
@@ -2378,12 +2377,12 @@ function rtlFileRename _
 
     proc = astNewCALL( PROCLOOKUP( FILERENAME ) )
 
-    '' byval filename_old as string
+	'' byval filename_old as zstring ptr
     if( astNewARG( proc, filename_old ) = NULL ) then
  		exit function
  	end if
 
-    '' byval filename_new as integer
+	'' byval filename_new as zstring ptr
     if( astNewARG( proc, filename_new ) = NULL ) then
  		exit function
  	end if

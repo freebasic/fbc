@@ -296,7 +296,7 @@ function rtlWidthScreen _
 
     '' byval width_arg as integer
     if( width_arg = NULL ) then
-    	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		width_arg = astNewCONSTi( -1 )
     end if
     if( astNewARG( proc, width_arg ) = NULL ) then
     	exit function
@@ -304,7 +304,7 @@ function rtlWidthScreen _
 
     '' byval height_arg as integer
     if( height_arg = NULL ) then
-        height_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		height_arg = astNewCONSTi( -1 )
     end if
     if( astNewARG( proc, height_arg ) = NULL ) then
     	exit function
@@ -336,7 +336,7 @@ function rtlColor _
 
     '' byval fore_color as integer
     if( fexpr = NULL ) then
-    	fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	flags or= FB_COLOR_FG_DEFAULT
     end if
     if( astNewARG( proc, fexpr ) = NULL ) then
@@ -345,17 +345,17 @@ function rtlColor _
 
     '' byval back_color as integer
     if( bexpr = NULL ) then
-    	bexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		bexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	flags or= FB_COLOR_BG_DEFAULT
     end if
     if( astNewARG( proc, bexpr ) = NULL ) then
     	exit function
     end if
 
-    '' byval flags as integer
-    if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    	exit function
-    end if
+	'' byval flags as integer
+	if( astNewARG( proc, astNewCONSTi( flags ) ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( proc )
@@ -382,7 +382,7 @@ function rtlPageSet _
 
     '' byval active as integer = -1
     if( active = NULL ) then
-    	active = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		active = astNewCONSTi( -1 )
     end if
     if( astNewARG( proc, active ) = NULL ) then
     	exit function
@@ -390,7 +390,7 @@ function rtlPageSet _
 
     '' byval visible as integer = -1
     if( visible = NULL ) then
-    	visible = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
+		visible = astNewCONSTi( -1 )
     end if
     if( astNewARG( proc, visible ) = NULL ) then
     	exit function
@@ -431,7 +431,7 @@ function rtlConsoleReadXY _
 
 	'' byval colorflag as integer
 	if( colorflagexpr = NULL ) then
-		colorflagexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		colorflagexpr = astNewCONSTi( 0 )
 	end if
 	if( astNewARG( proc, colorflagexpr ) = NULL ) then
     	exit function
@@ -440,4 +440,3 @@ function rtlConsoleReadXY _
 	function = proc
 
 end function
-

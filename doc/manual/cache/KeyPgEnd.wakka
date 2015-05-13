@@ -12,34 +12,39 @@ Control flow statement to end the program.
 		Error code returned to system.
 
 {{fbdoc item="desc"}}
-	Used to terminate the program, and return to the operating system.  An optional integer return value can be specified to indicate an error code to the system.  If no return value is given, a value of 0 is automatically returned.
+	Used to exit the program, and return to the operating system. An optional integer return value can be specified to indicate an error code to the system. If no return value is given, a value of ##0## is automatically returned at the end of the program.
 
-	Usage of this statement does not cleanly close scope.   Variables and memory are not destroyed automatically and object destructors are not called.  Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
+	Usage of this statement does not cleanly close scope. Variables and memory are not destroyed automatically and object destructors are not called. Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
+
+	For this reason, it is discouraged to use ##**End**## simply to mark the end of a program; the program will come to an end automatically, and in a cleaner fashion, when the last line of module-level code has executed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/end.bas"}}%%(freebasic)
-'' This program stores input from the user in a string, checks the strings length,
-'' by calling valid_string, and either displays the string, or an error message
+'' This program requests a string from the user, and returns an error
+'' code to the OS if the string was empty
 
-function valid_string( s as string ) as integer
-   return len( s )
+function main() as integer
+
+	'' assign input to text string
+	dim as string text
+	line input "Enter some text ( try ""abc"" ): " , text
+
+	'' If string is empty, print an error message and
+	'' return error code 1 (failure)
+	if( text = "" ) then
+	    print "ERROR: string was empty"
+	    return 1
+	end if
+
+	'' string is not empty, so print the string and
+	'' return error code 0 (success)
+	print "You entered: " & text
+	return 0
+
 end function
 
-'' assign input to text string (a string of spaces will input as an empty string)
-dim as string text
-print "Type in some text ( try ""abc"" ): " ;
-input text
-
-'' check if string is valid (not empty). If so, print an error message and return
-'' to the OS with error code -1
-if( not valid_string( text ) ) then
-   print "ERROR: you must enter a valid string"
-   sleep : end -1
-end if
-
-'' string is valid, so print the string and return to the OS with error code 0
-print "You entered: " ; text
-sleep : end 0
+'' call main() and return the error code to the OS
+end main()
 %%
 
 {{fbdoc item="diff"}}
@@ -47,5 +52,6 @@ sleep : end 0
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgEndblock End (Block)]]##
+	- ##[[KeyPgReturn Return]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

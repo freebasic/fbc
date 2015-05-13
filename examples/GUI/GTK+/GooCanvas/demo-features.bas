@@ -9,7 +9,7 @@
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
 '#DEFINE __USE_GTK3__
-#INCLUDE "gtk/goocanvas.bi"
+#INCLUDE "goocanvas.bi"
 
 FUNCTION on_button_press(BYVAL item AS GooCanvasItem PTR, _
                         BYVAL target AS GooCanvasItem PTR, _

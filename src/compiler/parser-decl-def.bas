@@ -2,31 +2,29 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 
-'':::::
-''DefDecl         =   (DEFINT|DEFLNG|DEFSNG|DEFDBL|DEFSTR) (CHAR '-' CHAR ','?)* .
-''
-function cDefDecl as integer static
-    static as zstring * 32+1 char
-    dim as integer dtype, ichar, echar
+'' DefDecl  =  (DEFINT|DEFLNG|DEFSNG|DEFDBL|DEFSTR) (CHAR '-' CHAR ','?)* .
+sub cDefDecl( )
+	static as zstring * 32+1 char
+	dim as integer dtype = any, ichar = any, echar = any
 
-	function = FALSE
-
-    if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_DEFTYPE )
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
-	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-		if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then '' QBASIC allows DEF___ in procs/compound statements
-			exit function
-		end if
+	'' QBASIC allows DEF___ in procs/compound statements, though even then
+	'' it's still disallowed between SELECT and CASE
+	if( cCompStmtIsAllowed( iif( fbLangIsSet( FB_LANG_QB ), _
+				FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE, _
+				FB_CMPSTMT_MASK_DECL ) ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
 	end if
 
 	dtype = FB_DATATYPE_INVALID
@@ -72,46 +70,42 @@ function cDefDecl as integer static
 		dtype = FB_DATATYPE_STRING
 	end select
 
-	if( dtype <> FB_DATATYPE_INVALID ) then
+	assert( dtype <> FB_DATATYPE_INVALID )
+	lexSkipToken( )
+
+	'' (CHAR '-' CHAR ','?)*
+	do
+		'' CHAR
+		char = ucase( *lexGetText( ) )
+		if( len( char ) <> 1 ) then
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
+		end if
+		ichar = asc( char )
 		lexSkipToken( )
 
-		'' (CHAR '-' CHAR ','?)*
-		do
+		'' '-'
+		if( lexGetToken( ) = CHAR_MINUS ) then
+			lexSkipToken( )
+
 			'' CHAR
 			char = ucase( *lexGetText( ) )
 			if( len( char ) <> 1 ) then
 				errReport( FB_ERRMSG_EXPECTEDCOMMA )
 			end if
-			ichar = asc( char )
+			echar = asc( char )
 			lexSkipToken( )
 
-			'' '-'
-			if( lexGetToken( ) = CHAR_MINUS ) then
-				lexSkipToken( )
+		else
+			echar = ichar
+		end if
 
-				'' CHAR
-				char = ucase( *lexGetText( ) )
-				if( len( char ) <> 1 ) then
-					errReport( FB_ERRMSG_EXPECTEDCOMMA )
-				end if
-				echar = asc( char )
-				lexSkipToken( )
+		symbSetDefType( ichar, echar, dtype )
 
-			else
-				echar = ichar
-			end if
+		'' ','
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
 
-			symbSetDefType( ichar, echar, dtype )
-
-      		'' ','
-      		if( lexGetToken( ) <> CHAR_COMMA ) then
-      			exit do
-      		end if
-
-			lexSkipToken( )
-		loop
-
-		function = TRUE
-	end if
-
-end function
+		lexSkipToken( )
+	loop
+end sub

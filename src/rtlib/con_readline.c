@@ -53,7 +53,7 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
     size_t pos, len, tmp_buffer_len = 0;
     int cursor_visible;
     int k;
-    char ch, tmp_buffer[12];
+    char tmp_buffer[12];
 
     fb_GetSize(&cols, &rows);
 
@@ -66,132 +66,125 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
     /* Ensure that the cursor is visible during INPUT */
     fb_Locate( 0, 0, (soft_cursor == FALSE), 0, 0 );
 
-    do {
-        size_t delete_char_count = 0, add_char = FALSE;
-        FBSTRING *sTmp;
+	do {
+		size_t delete_char_count = 0, add_char = FALSE;
+		FBSTRING *s;
 
-        fb_GetXY(&current_x, &current_y);
+		fb_GetXY( &current_x, &current_y );
 
-		if( soft_cursor )
-		{
+		if( soft_cursor ) {
 			fb_PrintFixString( 0, "\377", 0 );
 			fb_Locate( current_y, current_x, FALSE, 0, 0 );
-        }
+		}
 
-        while( fb_KeyHit( ) == 0 )
-        {
-          	fb_Delay( 25 );				/* release time slice */
-        }
+		while( fb_KeyHit( ) == 0 ) {
+			fb_Delay( 25 );				/* release time slice */
+		}
 
-        sTmp = fb_Inkey( );
-        if( sTmp->data != NULL )
-        {
-        	if( FB_STRSIZE(sTmp) == 2 )
-        	{
-            	k = FB_MAKE_EXT_KEY(sTmp->data[1]);
-            	ch = 0;
-        	}
-        	else
-        	{
-            	k = FB_MAKE_KEY(ch = sTmp->data[0]);
-        	}
+		s = fb_Inkey( );
+		if( s->data ) {
+			if( FB_STRSIZE( s ) == 2 ) {
+				k = FB_MAKE_EXT_KEY( FB_CHAR_TO_INT( s->data[1] ) );
+			} else {
+				k = FB_CHAR_TO_INT( s->data[0] );
+			}
 
-        	fb_hStrDelTemp( sTmp );
-        }
-        else
-        {
-        	k = 0;
-        	continue;
-        }
+			fb_hStrDelTemp( s );
+		} else {
+			k = 0;
+			continue;
+		}
 
-		if( soft_cursor )
-		{
+		if( soft_cursor ) {
 			char mask[2] = { ((result.data != NULL) && (pos < len)? result.data[pos]: ' '), '\0' };
 			fb_PrintFixString( 0, mask, 0 );
 			fb_Locate( current_y, current_x, FALSE, 0, 0 );
 		}
 
-        switch (k) {
-        case 8:
-            /* DEL */
-			if (pos!=0) {
-                DoMove( &current_x, &current_y, -1, 0, cols, rows );
-                --pos;
-                delete_char_count = 1;
-            }
-            break;
-        case 9:
-            /* TAB */
-            tmp_buffer_len = ((pos + 8) / 8 * 8) - pos;
-            memset(tmp_buffer, 32, tmp_buffer_len);
-            add_char = TRUE;
-            break;
-        case 27:
-            /* ESC */
-            DoMove( &current_x, &current_y, -pos, 0, cols, rows );
-            pos = 0;
-            delete_char_count = len;
-            break;
-        case FB_MAKE_EXT_KEY(0x53):
-            /* CLeaR */
-            if( len!=pos ) {
-                delete_char_count = 1;
-            } else {
-                fb_Beep();
-            }
-            break;
-        case FB_MAKE_EXT_KEY(0x4B):
-            /* Cursor LEFT */
-            if( pos != 0 ) {
-                DoMove( &current_x, &current_y, -1, 0, cols, rows );
-                --pos;
-            }
-            break;
-        case FB_MAKE_EXT_KEY(0x4D):
-            /* Cursor RIGHT */
-            if( pos != len ) {
-                DoMove( &current_x, &current_y, 1, 0, cols, rows );
-                ++pos;
-            }
-            break;
-        case FB_MAKE_EXT_KEY(0x47):
-            /* HOME */
-            DoMove( &current_x, &current_y, -pos, 0, cols, rows );
-            pos = 0;
-            break;
-        case FB_MAKE_EXT_KEY(0x4F):
-            /* END */
-            DoMove( &current_x, &current_y, len-pos, 0, cols, rows );
-            pos = len;
-            break;
-        case FB_MAKE_EXT_KEY(0x48):
-            /* Cursor UP */
-            if( pos >= cols) {
-                DoMove( &current_x, &current_y, -cols, 0, cols, rows );
-                pos -= cols;
-            }
-            break;
-        case FB_MAKE_EXT_KEY(0x50):
-            /* Cursor DOWN */
-            if( ( pos + cols ) <= len ) {
-                DoMove( &current_x, &current_y, cols, 0, cols, rows );
-                pos += cols;
-            }
-            break;
-        default:
-            if( k>=32 && k<=255 ) {
-                tmp_buffer[0] = (char) k;
-                tmp_buffer_len = 1;
-                add_char = TRUE;
-                /* DoMove( &current_x, &current_y, 1, 0, cols ); */
-            }
-            break;
-        }
+		switch( k ) {
+		case 8:  /* Backspace */
+			if( pos != 0 ) {
+				DoMove( &current_x, &current_y, -1, 0, cols, rows );
+				--pos;
+				delete_char_count = 1;
+			}
+			break;
 
-        if( delete_char_count!=0 || add_char ) {
+		case 9:  /* TAB */
+			tmp_buffer_len = ((pos + 8) / 8 * 8) - pos;
+			memset( tmp_buffer, 32, tmp_buffer_len );
+			add_char = TRUE;
+			break;
+
+		case 27:  /* ESC */
+			DoMove( &current_x, &current_y, -pos, 0, cols, rows );
+			pos = 0;
+			delete_char_count = len;
+			break;
+
+		case KEY_DEL:  /* Delete following char */
+			/* not at EOL already? */
+			if( len != pos ) {
+				delete_char_count = 1;
+			} else {
+				fb_Beep();
+			}
+			break;
+
+		case KEY_LEFT:  /* Move cursor left */
+			/* not at begin-of-line already? */
+			if( pos != 0 ) {
+				DoMove( &current_x, &current_y, -1, 0, cols, rows );
+				--pos;
+			}
+			break;
+
+		case KEY_RIGHT: /* Move cursor right */
+			/* not at EOL already? */
+			if( pos != len ) {
+				DoMove( &current_x, &current_y, 1, 0, cols, rows );
+				++pos;
+			}
+			break;
+
+		case KEY_HOME:  /* Move cursor to begin-of-line */
+			DoMove( &current_x, &current_y, -pos, 0, cols, rows );
+			pos = 0;
+			break;
+
+		case KEY_END:  /* Move cursor to EOL */
+			DoMove( &current_x, &current_y, len-pos, 0, cols, rows );
+			pos = len;
+			break;
+
+		case KEY_UP:  /* Move cursor up */
+			if( pos >= cols ) {
+				DoMove( &current_x, &current_y, -cols, 0, cols, rows );
+				pos -= cols;
+			}
+			break;
+
+		case KEY_DOWN:  /* Move cursor down */
+			if( (pos + cols) <= len ) {
+				DoMove( &current_x, &current_y, cols, 0, cols, rows );
+				pos += cols;
+			}
+			break;
+
+		default:
+			if( (k >= 32) && (k <= 255) ) {
+				tmp_buffer[0] = (char) k;
+				tmp_buffer_len = 1;
+				add_char = TRUE;
+				/* DoMove( &current_x, &current_y, 1, 0, cols ); */
+			}
+			break;
+		}
+
+		if( (delete_char_count != 0) || add_char ) {
 			/* Turn off the cursor during output (speed-up) */
-            fb_Locate( 0, 0, FALSE, 0, 0 );
-        }
+			fb_Locate( 0, 0, FALSE, 0, 0 );
+		}
 
         if( delete_char_count ) {
             FBSTRING *str_fill;

@@ -7,6 +7,5 @@
 '' --------
 
 Dim n As Single
-n = 4.54 + 5.46
+n = 4.75 + 5.25
 Print n
-Sleep

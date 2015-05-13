@@ -79,6 +79,26 @@ function cTypeConvExpr _
 
 	lexSkipToken( )
 
+	if( (tk = FB_TK_CINT) or (tk = FB_TK_CUINT) ) then
+
+		'' ['<' lgt '>']
+		if( hMatch( FB_TK_LT ) ) then
+
+			dim as integer lgt = any
+
+			'' expr
+			lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+
+			dtype = hIntegerTypeFromBitSize( lgt, (tk = FB_TK_CUINT) )
+
+			if( hMatch( FB_TK_GT ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTEDGT )
+			end if
+
+		end if
+
+	end if
+
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
@@ -87,7 +107,7 @@ function cTypeConvExpr _
 	expr = cExpression( )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	if( dtype = FB_DATATYPE_BOOL32 ) then
@@ -122,7 +142,7 @@ function cTypeConvExpr _
 		end if
 		errReport( errmsg, TRUE )
 
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
 	end if
 
 	'' ')'
@@ -139,27 +159,21 @@ function cTypeConvExpr _
 
 end function
 
-'':::::
-'' AnonUDT			=	TYPE ('<' SymbolType '>')? '(' ... ')'
-function cAnonUDT _
-	( _
-		_
-	) as ASTNODE ptr
-
-    dim as FBSYMBOL ptr subtype = any
-    dim as integer dtype = any, lgt = any
-
-    function = NULL
+'' AnonType  =  TYPE ('<' SymbolType '>')? '(' ... ')'
+function cAnonType( ) as ASTNODE ptr
+	dim as ASTNODE ptr initree = any
+	dim as FBSYMBOL ptr sym = any, subtype = any
+	dim as integer dtype = any, lgt = any, is_explicit = any
 
 	'' TYPE
 	lexSkipToken( )
 
-    '' ('<' SymbolType '>')?
-    if( lexGetToken( ) = FB_TK_LT ) then
-    	lexSkipToken( )
+	'' '<'?
+	is_explicit = hMatch( FB_TK_LT )
 
-        '' get UDT or intrinsic type
-		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+	if( is_explicit ) then
+		'' SymbolType
+		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
@@ -169,59 +183,57 @@ function cAnonUDT _
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 		end if
+	else
+		'' use the type from the left-hand expression,
+		'' this allows totally anonymous types.
+		subtype = parser.ctxsym
+		dtype   = parser.ctx_dtype
 
-    	'' '>'
-    	if( lexGetToken( ) <> FB_TK_GT ) then
+		if( dtype = FB_DATATYPE_INVALID ) then
+			errReport( FB_ERRMSG_INCOMPLETETYPE )
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+		end if
+
+		select case( typeGetDtAndPtrOnly( dtype ) )
+		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+			errReport( FB_ERRMSG_INCOMPLETETYPE )
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+		end select
+	end if
+
+	'' Disallow creating objects of abstract classes
+	hComplainIfAbstractClass( dtype, subtype )
+
+	if( is_explicit ) then
+		'' '>'
+		if( hMatch( FB_TK_GT ) = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: skip until next '>'
 			hSkipUntil( FB_TK_GT, TRUE )
-    	else
-    		lexSkipToken( )
-    	end if
-
-    else
-    	'' use the type from the left-hand expression,
-    	'' this allows totally anonymous types.
-    	subtype = parser.ctxsym
-    	dtype   = parser.ctx_dtype
-
-		if( subtype <> NULL ) then
-
-			dtype = FB_DATATYPE_STRUCT
-
-			'' typedef? resolve..
-			if( symbIsTypedef( subtype ) ) then
-				subtype = symbGetSubtype( subtype )
-			end if
-
-	    	if( subtype = NULL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-				'' error recovery: fake a node
-				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-	    	end if
-
-	    	if( symbIsStruct( subtype ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				'' error recovery: fake a node
-				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
 		end if
-
-    end if
-
-    '' has a ctor?
-    if( subtype <> NULL ) then
-	    if( symbGetHasCtor( subtype ) ) then
-	    	return cCtorCall( subtype )
-	    end if
 	end if
 
-    '' alloc temp var
-    dim as FBSYMBOL ptr sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+	'' UDT?
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		'' Has a ctor?
+		if( symbGetCompCtorHead( subtype ) ) then
+			return cCtorCall( subtype )
+		end if
+	end if
 
-    '' let the initializer do the rest..
-    function = cInitializer( sym, FB_INIOPT_NONE )
+	'' Use temp var so the rest can be parsed as var initializer,
+	'' then delete the temp var again, similar to astCALLCTORToCALL()
+	sym = symbAddTempVar( dtype, subtype )
+	initree = cInitializer( sym, FB_INIOPT_NONE )
+	astReplaceSymbolOnTree( initree, sym, NULL )
+	symbDelSymbol( sym )
 
+	'' This gives us a clean TYPEINI tree (like a parameter initializer),
+	'' allowing astNewASSIGN() to optimize it by initializing the lhs
+	'' directly instead of using a temp var, and if that does not happen,
+	'' then astTypeIniUpdate() will take care of it.
+
+	function = initree
 end function
-
-

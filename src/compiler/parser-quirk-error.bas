@@ -31,7 +31,7 @@ function cErrSetStmt() as integer
 	lexSkipToken( )
 
 	'' '='
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+	if( cAssignToken( ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 

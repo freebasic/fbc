@@ -9,6 +9,7 @@
 #include once "fbint.bi"
 #include once "lex.bi"
 #include once "pp.bi"
+#include once "parser.bi"
 
 declare sub 		lexReadUTF8				( )
 
@@ -24,8 +25,10 @@ declare sub 		hMultiLineComment		( )
 
 const UINVALID as uinteger = cuint( INVALID )
 
-'' globals
-	dim shared as LEX_CTX lex
+dim shared as LEX_CTX lex
+
+'' Buffer holding the current line when emitting in -pp only mode
+dim shared as string pponly_ln
 
 '':::::
 '' only update the line count if not inside a multi-line macro
@@ -134,6 +137,8 @@ end sub
 
 '':::::
 sub lexEnd( )
+
+	pponly_ln = ""
 
 	ppEnd( )
 
@@ -1836,7 +1841,7 @@ read_char:
 
 			case CHAR_GT
 				'' '>='?
-				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
+				if( fbGetGtInParensOnly( ) = FALSE andalso lexCurrentChar( TRUE ) = CHAR_EQ ) then
 					'' t.text += chr( lexEatChar )
 					t->text[t->len+0] = lexEatChar( )
 					t->text[t->len+1] = 0
@@ -2090,113 +2095,112 @@ private sub hMoveKDown( ) static
 
 end sub
 
-private sub hGetStrLitText( byref s as string, byval is_escaped as integer )
-    s += QUOTE
+private function lexGetStrLitText( byval tk as integer ) as string
+	dim as string s
+	dim as integer is_escaped = any, saw_backslash = any
+	dim as ubyte ptr p = any
 
-    '' Escaping is enabled for this string literal, so it could contain
-    ''  \"  (which didn't stop the string token parser), or
-    ''  "   (from "" sequences).
-    ''
-    '' And \" shouldn't be turned into \"" in the -pp output...
+	select case( tk )
+	case FB_TK_STRLIT
+		is_escaped = FALSE
+	case FB_TK_STRLIT_ESC
+		s += "!"
+		is_escaped = TRUE
+	case FB_TK_STRLIT_NOESC
+		s += "$"
+		is_escaped = FALSE
+	end select
 
-    dim as integer saw_backslash = FALSE
-    dim as ubyte ptr p = lexGetText( )
-    do
-        select case *p
-        case 0
-            exit do
+	s += """"
 
-        case asc(QUOTE)
-            if (saw_backslash) then
-                '' It's just a '\"'
-                s += QUOTE
-            else
-                '' It's a '"', and the user did '""'
-                s += QUOTE + QUOTE
-            end if
-            saw_backslash = FALSE
+	'' Escaping is enabled for this string literal, so it could contain
+	''  \"  (which didn't stop the string token parser), or
+	''  "   (from "" sequences).
+	''
+	'' And \" shouldn't be turned into \"" in the -pp output...
 
-        case asc("\")
-            saw_backslash = is_escaped
-            s += "\"
+	saw_backslash = FALSE
+	p = lexGetText( )
+	do
+		select case( *p )
+		case 0
+			exit do
 
-        case else
-            saw_backslash = FALSE
-            s += chr(*p)
+		case asc( """" )
+			if( saw_backslash ) then
+				'' It's just a '\"'
+				s += """"
+			else
+				'' It's a '"', and the user did '""'
+				s += """"""
+			end if
+			saw_backslash = FALSE
 
-        end select
+		case asc( "\" )
+			saw_backslash = is_escaped
+			s += "\"
 
-        p += 1
-    loop
+		case else
+			saw_backslash = FALSE
+			s += chr( *p )
 
-    s += QUOTE
+		end select
+
+		p += 1
+	loop
+
+	s += """"
+
+	function = s
+end function
+
+sub lexPPOnlyEmitToken( )
+	select case( lexGetToken( ) )
+	case FB_TK_COMMENT, FB_TK_REM
+		'' Single-line comment
+		exit sub
+
+	case FB_TK_EOF, FB_TK_EOL
+		'' EOF/EOL
+
+		'' Don't write out empty lines (e.g. from PP directives)...
+		if( len( pponly_ln ) > 0 ) then
+			print #env.ppfile_num, pponly_ln
+			pponly_ln = ""
+		elseif( lexGetToken( ) = FB_TK_EOL ) then
+			'' except for lines that really were empty, to help readability in the output.
+			if( lex.ctx->lasttk_id = FB_TK_EOL ) then
+				print #env.ppfile_num, ""
+			end if
+		end if
+
+		exit sub
+	end select
+
+	'' Everything else...
+	if( lex.ctx->head->after_space ) then
+		pponly_ln += " "
+	end if
+
+	select case( lexGetToken( ) )
+	case FB_TK_STRLIT, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC
+		pponly_ln += lexGetStrLitText( lexGetToken( ) )
+	case else
+		pponly_ln += *lexGetText( )
+	end select
 end sub
 
-private sub hEmitToken( )
-    static as string currentline
-
-    select case lexGetToken( )
-    case FB_TK_COMMENT, FB_TK_REM
-        '' Single-line comment
-        return
-
-    case FB_TK_EOF, FB_TK_EOL
-        '' EOF/EOL
-
-        '' Don't write out empty lines (e.g. from PP directives)...
-        if( len(currentline) > 0 ) then
-
-            print #env.ppfile_num, currentline
-            currentline = ""
-
-        elseif( lexGetToken( ) = FB_TK_EOL ) then
-
-            '' except for lines that really were empty, to help readability in the output.
-            if( lex.ctx->lasttk_id = FB_TK_EOL ) then
-                print #env.ppfile_num, ""
-            end if
-
-        end if
-
-        return
-
-    end select
-
-    '' Everything else...
-    if( lex.ctx->head->after_space ) then
-        currentline += " "
-    end if
-
-    select case lexGetToken( )
-    case FB_TK_STRLIT
-        hGetStrLitText( currentline, FALSE )
-
-    case FB_TK_STRLIT_ESC
-        currentline += "!"
-        hGetStrLitText( currentline, TRUE )
-
-    case FB_TK_STRLIT_NOESC
-        currentline += "$"
-        hGetStrLitText( currentline, FALSE )
-
-    case else
-        currentline += *lexGetText( )
-
-    end select
-
+sub lexPPOnlyEmitText( byref s as string )
+	pponly_ln += s
 end sub
 
-'':::::
-sub lexSkipToken _
-	( _
-		byval flags as LEXCHECK _
-	) static
-
+sub lexSkipToken( byval flags as LEXCHECK )
 	'' Emit current token, if -pp was given, except if called from the PP,
 	'' so only the tokens seen by the parser are written.
+	'' (some cases like #inclib are given special treatment in the PP)
 	if( env.ppfile_num > 0 ) then
 		if( lex.ctx->reclevel = 0 ) then
-			hEmitToken( )
+			lexPPOnlyEmitToken( )
 		end if
 	end if
 
@@ -2222,7 +2226,6 @@ sub lexSkipToken _
     end if
 
     ppCheck( )
-
 end sub
 
 '':::::

@@ -39,17 +39,22 @@
 
 #define FB_RTL_MKD                      "fb_MKD"
 #define FB_RTL_MKS                      "fb_MKS"
+#define FB_RTL_MKSHORT                  "fb_MKSHORT"
 #define FB_RTL_MKI                      "fb_MKI"
 #define FB_RTL_MKL                      "fb_MKL"
-#define FB_RTL_MKSHORT                  "fb_MKSHORT"
 #define FB_RTL_MKLONGINT                "fb_MKLONGINT"
 
 #define FB_RTL_CVD                      "fb_CVD"
 #define FB_RTL_CVS                      "fb_CVS"
+#define FB_RTL_CVSHORT                  "fb_CVSHORT"
 #define FB_RTL_CVI                      "fb_CVI"
 #define FB_RTL_CVL                      "fb_CVL"
-#define FB_RTL_CVSHORT                  "fb_CVSHORT"
 #define FB_RTL_CVLONGINT                "fb_CVLONGINT"
+
+#define FB_RTL_CVDFROMLONGINT           "fb_CVDFROMLONGINT"
+#define FB_RTL_CVSFROML                 "fb_CVSFROML"
+#define FB_RTL_CVLFROMS                 "fb_CVLFROMS"
+#define FB_RTL_CVLONGINTFROMD           "fb_CVLONGINTFROMD"
 
 #define FB_RTL_STRMID					"fb_StrMid"
 #define FB_RTL_STRASSIGNMID				"fb_StrAssignMid"
@@ -73,6 +78,8 @@
 #define FB_RTL_STRLTRIM 				"fb_LTRIM"
 #define FB_RTL_STRLTRIMANY 				"fb_LTrimAny"
 #define FB_RTL_STRLTRIMEX 				"fb_LTrimEx"
+#define FB_RTL_STRLCASE2				"fb_StrLcase2"
+#define FB_RTL_STRUCASE2				"fb_StrUcase2"
 #define FB_RTL_STRSWAP 					"fb_StrSwap"
 
 #define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
@@ -117,27 +124,31 @@
 #define FB_RTL_WSTRLTRIM 				"fb_WstrLTrim"
 #define FB_RTL_WSTRLTRIMANY 			"fb_WstrLTrimAny"
 #define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
+#define FB_RTL_WSTRLCASE2				"fb_WstrLcase2"
+#define FB_RTL_WSTRUCASE2				"fb_WstrUcase2"
 #define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
 
-#define FB_RTL_LONGINTDIV				"__divdi3"
-#define FB_RTL_ULONGINTDIV				"__udivdi3"
-#define FB_RTL_LONGINTMOD				"__moddi3"
-#define FB_RTL_ULONGINTMOD				"__umoddi3"
-#define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
+#define FB_RTL_LONGINTDIV				"fb___divdi3"
+#define FB_RTL_ULONGINTDIV				"fb___udivdi3"
+#define FB_RTL_LONGINTMOD				"fb___moddi3"
+#define FB_RTL_ULONGINTMOD				"fb___umoddi3"
+#define FB_RTL_DBL2ULONGINT				"fb___fixunsdfdi"
 
-#define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
-#define FB_RTL_ARRAYREDIM_OBJ			"fb_ArrayRedimObj"
-#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresvEx"
-#define FB_RTL_ARRAYREDIMPRESV_OBJ		"fb_ArrayRedimPresvObj"
-#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
-#define FB_RTL_ARRAYERASE_OBJ			"fb_ArrayEraseObj"
+#define FB_RTL_ARRAYDESTRUCTOBJ				"fb_ArrayDestructObj"
+#define FB_RTL_ARRAYDESTRUCTSTR				"fb_ArrayDestructStr"
 #define FB_RTL_ARRAYCLEAR				"fb_ArrayClear"
-#define FB_RTL_ARRAYCLEAR_OBJ			"fb_ArrayClearObj"
+#define FB_RTL_ARRAYCLEAROBJ				"fb_ArrayClearObj"
+#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
+#define FB_RTL_ARRAYERASEOBJ				"fb_ArrayEraseObj"
+#define FB_RTL_ARRAYERASESTR				"fb_ArrayStrErase"
+#define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
+#define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
+#define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
+#define FB_RTL_ARRAYREDIMPRESV_OBJ			"fb_ArrayRedimPresvObj"
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
-#define FB_RTL_ARRAYSTRERASE			"fb_ArrayStrErase"
-#define FB_RTL_ARRAYSNGBOUNDCHK			"fb_ArraySngBoundChk"
-#define FB_RTL_ARRAYBOUNDCHK			"fb_ArrayBoundChk"
+#define FB_RTL_ARRAYSNGBOUNDCHK				"fb_ArraySngBoundChk"
+#define FB_RTL_ARRAYBOUNDCHK				"fb_ArrayBoundChk"
 
 #define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
 
@@ -146,9 +157,9 @@
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
-#define FB_RTL_INITCRTCTOR 				"__main"
+#define FB_RTL_INITCRTCTOR 				"fb___main"
 #define FB_RTL_END 						"fb_End"
-#define FB_RTL_ATEXIT					"{atexit}"
+#define FB_RTL_ATEXIT					"fb_atexit"
 
 #define FB_RTL_DATARESTORE 				"fb_DataRestore"
 #define FB_RTL_DATAREADSTR 				"fb_DataReadStr"
@@ -275,6 +286,7 @@
 #define FB_RTL_FILESEEKLARGE 			"fb_FileSeekLarge"
 
 #define FB_RTL_FILESTRINPUT 			"fb_FileStrInput"
+#define FB_RTL_FILEWSTRINPUT			"fb_FileWstrInput"
 #define FB_RTL_FILELINEINPUT 			"fb_FileLineInput"
 #define FB_RTL_FILELINEINPUTWSTR		"fb_FileLineInputWstr"
 #define FB_RTL_CONSOLELINEINPUT 		"fb_LineInput"
@@ -299,7 +311,7 @@
 #define FB_RTL_FILELOCKLARGE 			"fb_FileLockLarge"
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
 #define FB_RTL_FILEUNLOCKLARGE 			"fb_FileUnlockLarge"
-#define FB_RTL_FILERENAME 				"rename"
+#define FB_RTL_FILERENAME 				"fb_rename"
 
 #define FB_RTL_WIDTH 					"fb_Width"
 #define FB_RTL_WIDTHDEV 				"fb_WidthDev"
@@ -334,11 +346,8 @@
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
-#define FB_RTL_GFXEVENT					"fb_GfxEvent"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 #define FB_RTL_GFXIMAGECREATEQB			"fb_GfxImageCreateQB"
-#define FB_RTL_GFXGETMOUSE  			"fb_GfxGetMouse"
-#define FB_RTL_GFXGETJOYSTICK  			"fb_GfxGetJoystick"
 
 #define FB_RTL_GFXPUTTRANS				"fb_hPutTrans"
 #define FB_RTL_GFXPUTPSET				"fb_hPutPSet"
@@ -351,8 +360,8 @@
 #define FB_RTL_GFXPUTADD				"fb_hPutAdd"
 #define FB_RTL_GFXPUTCUSTOM				"fb_hPutCustom"
 
-#define FB_RTL_PROFILEMCOUNT            "mcount"
-#define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
+#define FB_RTL_PROFILEMCOUNT            "fb_mcount"
+#define FB_RTL_PROFILEMONSTARTUP        "fb__monstartup"
 
 #define FB_RTL_GOSUBPUSH                "fb_GosubPush"
 #define FB_RTL_GOSUBPOP                 "fb_GosubPop"
@@ -446,6 +455,11 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_CVSHORT
 	FB_RTL_IDX_CVLONGINT
 
+	FB_RTL_IDX_CVDFROMLONGINT
+	FB_RTL_IDX_CVSFROML
+	FB_RTL_IDX_CVLFROMS
+	FB_RTL_IDX_CVLONGINTFROMD
+
 	FB_RTL_IDX_STRMID
 	FB_RTL_IDX_STRASSIGNMID
 	FB_RTL_IDX_STRFILL1
@@ -468,6 +482,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRLTRIM
 	FB_RTL_IDX_STRLTRIMANY
 	FB_RTL_IDX_STRLTRIMEX
+	FB_RTL_IDX_STRLCASE2
+	FB_RTL_IDX_STRUCASE2
 	FB_RTL_IDX_STRSWAP
 
 	FB_RTL_IDX_WSTRALLOC
@@ -512,6 +528,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRLTRIM
 	FB_RTL_IDX_WSTRLTRIMANY
 	FB_RTL_IDX_WSTRLTRIMEX
+	FB_RTL_IDX_WSTRLCASE2
+	FB_RTL_IDX_WSTRUCASE2
 	FB_RTL_IDX_WSTRSWAP
 
 	FB_RTL_IDX_LONGINTDIV
@@ -520,17 +538,19 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ULONGINTMOD
 	FB_RTL_IDX_DBL2ULONGINT
 
+	FB_RTL_IDX_ARRAYDESTRUCTOBJ
+	FB_RTL_IDX_ARRAYDESTRUCTSTR
+	FB_RTL_IDX_ARRAYCLEAR
+	FB_RTL_IDX_ARRAYCLEAROBJ
+	FB_RTL_IDX_ARRAYERASE
+	FB_RTL_IDX_ARRAYERASEOBJ
+	FB_RTL_IDX_ARRAYERASESTR
 	FB_RTL_IDX_ARRAYREDIM
 	FB_RTL_IDX_ARRAYREDIM_OBJ
 	FB_RTL_IDX_ARRAYREDIMPRESV
 	FB_RTL_IDX_ARRAYREDIMPRESV_OBJ
-	FB_RTL_IDX_ARRAYERASE
-	FB_RTL_IDX_ARRAYERASE_OBJ
-	FB_RTL_IDX_ARRAYCLEAR
-	FB_RTL_IDX_ARRAYCLEAR_OBJ
 	FB_RTL_IDX_ARRAYLBOUND
 	FB_RTL_IDX_ARRAYUBOUND
-	FB_RTL_IDX_ARRAYSTRERASE
 	FB_RTL_IDX_ARRAYSNGBOUNDCHK
 	FB_RTL_IDX_ARRAYBOUNDCHK
 
@@ -670,6 +690,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILESEEKLARGE
 
 	FB_RTL_IDX_FILESTRINPUT
+	FB_RTL_IDX_FILEWSTRINPUT
 	FB_RTL_IDX_FILELINEINPUT
 	FB_RTL_IDX_FILELINEINPUTWSTR
 	FB_RTL_IDX_CONSOLELINEINPUT
@@ -738,7 +759,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXGETQB
 	FB_RTL_IDX_GFXSCREENSET
 	FB_RTL_IDX_GFXSCREENSETQB
-	FB_RTL_IDX_GFXSCREENRES
 	FB_RTL_IDX_GFXIMAGECREATE
 	FB_RTL_IDX_GFXIMAGECREATEQB
 
@@ -869,11 +889,7 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer _
-	) as integer
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
 
 declare function rtlCalcStrLen _
 	( _
@@ -915,30 +931,26 @@ declare function rtlStrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval is_ini as integer = FALSE, _
-		byval kill_return as integer = TRUE _
+		byval is_ini as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function rtlWstrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval is_ini as integer = FALSE, _
-		byval kill_return as integer = TRUE _
+		byval is_ini as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function rtlStrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval kill_return as integer = TRUE _
+		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlWstrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval kill_return as integer = TRUE _
+		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlStrDelete _
@@ -1012,6 +1024,9 @@ declare function rtlWstrFill _
 		byval expr2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function rtlStrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function rtlWstrLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
+
 declare function rtlStrAsc _
 	( _
 		byval expr as ASTNODE ptr, _
@@ -1062,6 +1077,22 @@ declare function rtlStrLTrim _
 		byval is_any as integer _
 	) as ASTNODE ptr
 
+declare function rtlStrCase _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval mode as ASTNODE ptr, _
+		byval is_lcase as integer _
+	) as ASTNODE ptr
+
+declare function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
+
+declare function rtlArrayErase _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval is_dynamic as integer, _
+		byval check_access as integer _
+	) as ASTNODE ptr
+
 declare function rtlArrayRedim _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1072,29 +1103,11 @@ declare function rtlArrayRedim _
 		byval doclear as integer _
 	) as integer
 
-declare function rtlArrayErase _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
-declare function rtlArrayClear _
-	( _
-		byval arrayexpr as ASTNODE ptr, _
-		byval dofill as integer, _
-		byval check_access as integer _
-	) as ASTNODE ptr
-
 declare function rtlArrayBound _
 	( _
-		byval sexpr as ASTNODE ptr, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimexpr as ASTNODE ptr, _
 		byval islbound as integer _
-	) as ASTNODE ptr
-
-declare function rtlArrayStrErase _
-	( _
-		byval arrayexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlArrayBoundsCheck _
@@ -1128,12 +1141,6 @@ declare function rtlMathPow _
 	( _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathLen _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval checkstrings as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function rtlMathLongintCMP _
@@ -1246,7 +1253,7 @@ declare function rtlMemCopyClear _
 
 declare function rtlMemNewOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval len_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -1254,7 +1261,7 @@ declare function rtlMemNewOp _
 
 declare function rtlMemDeleteOp _
 	( _
-		byval is_vector as integer, _
+		byval op as integer, _
 		byval ptr_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -1439,7 +1446,8 @@ declare function rtlFileGetArray _
 declare function rtlFileStrInput _
 	( _
 		byval bytesexpr as ASTNODE ptr, _
-		byval filenum as ASTNODE ptr _
+		byval filenum as ASTNODE ptr, _
+		byval tk as integer _
 	) as ASTNODE ptr
 
 declare function rtlFileLineInput _
@@ -1695,8 +1703,7 @@ declare function rtlGfxGet _
 
 declare function rtlGfxScreenSet _
 	( _
-		byval wexpr as ASTNODE ptr, _
-		byval hexpr as ASTNODE ptr, _
+		byval mexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
@@ -1717,30 +1724,6 @@ declare function rtlGfxImageCreate _
 		byval cexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval flags as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxGetMouse _
-	( _
-		byval x_expr as ASTNODE ptr, _
-		byval y_expr as ASTNODE ptr, _
-		byval w_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		byval c_expr as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxGetJoystick _
-	( _
-		byval id_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		a_expr() as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxEvent _
-	( _
-		byval e_expr as ASTNODE ptr, _
-		byval is_func as integer _
 	) as ASTNODE ptr
 
 declare function rtlProfileCall_mcount( ) as ASTNODE ptr

@@ -1,0 +1,8 @@
+LIBRARY im_fftw.dll
+EXPORTS
+imProcessAutoCorrelation
+imProcessCrossCorrelation
+imProcessFFT
+imProcessFFTraw
+imProcessIFFT
+imProcessSwapQuadrants

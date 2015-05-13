@@ -288,20 +288,29 @@ sub strsetAdd _
 		byval userdata as integer _
 	)
 
-	dim as TSTRSETITEM ptr i = hashLookup(@set->hash, s)
+	dim as TSTRSETITEM ptr i = any
+
+	'' Don't bother with empty strings
+	'' (also, empty FBSTRINGs would cause NULL ptr accesses)
+	if( len( s ) = 0 ) then
+		exit sub
+	end if
+
+	i = hashLookup( @set->hash, strptr( s ) )
 
 	'' Already exists?
-	if (i) then
+	if( i ) then
 		exit sub
 	end if
 
 	'' Add new
-	i = listNewNode(@set->list)
+	i = listNewNode( @set->list )
 	i->s = s
 	i->userdata = userdata
 
-	'' No need to pass in a NULL pointer or an empty string
-	if (len(i->s) = 0) then
+	'' Don't bother with empty strings
+	'' (ditto, but won't happen here as long as not out of memory)
+	if( len( i->s ) = 0 ) then
 		exit sub
 	end if
 

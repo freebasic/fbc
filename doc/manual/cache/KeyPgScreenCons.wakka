@@ -17,7 +17,6 @@ Gets the character or color attribute at a given location
 
 {{fbdoc item="ret"}}
 	The [[CptAscii ASCII]] or color attribute of the character.
-	At the moment (v0.18.5), if coordinates are out of screen, no error number is set and the value returned is not reliable.
 
 {{fbdoc item="desc"}}
 	##**Screen**## returns the character or the color attribute found at a given position of a console output. It works in console mode and in graphics mode.

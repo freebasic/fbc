@@ -2,9 +2,9 @@
 
 namespace fbc_tests.numbers.cast_ll2f
 
-	const c as ulongint = 1ll shl 32
+	const c as longint = 1ll shl 32
 
-	sub test_cast_ull()
+	sub test_cast_ull cdecl()
 
 		dim as ulongint n = 1ull
 		dim as double x = 1.0
@@ -29,7 +29,7 @@ namespace fbc_tests.numbers.cast_ll2f
 
 	end sub
 
-	sub test_cast_ll()
+	sub test_cast_ll cdecl()
 
 		dim as longint n = 1ll
 		dim as double x = 1.0

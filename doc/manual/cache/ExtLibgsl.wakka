@@ -5,6 +5,7 @@ Website: http://www.gnu.org/software/gsl/, Windows port: http://gnuwin32.sourcef
 Platforms supported: ""Win32"", Linux
 Headers to include: gsl/*.bi
 Header version: 1.6
+Examples: in examples/math/GSL/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/gsl1.bas"}}%%(freebasic)

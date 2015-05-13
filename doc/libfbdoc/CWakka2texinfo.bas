@@ -847,6 +847,10 @@ namespace fb.fbdoc
 					if( *cellTb[i] = "###" ) then
 						cells( col, row ) = cell_space
 					else
+						'' hack: remove escape codes in table text
+						'' relies on the text returned being no longer than the original
+						*cellTb[i] = CellUnescapeCodes( *cellTb[i] )
+
 						cells( col, row ) = cellTb[i]
 					end if
 					if( len( *cells( col, row ) ) > sizes( col ) ) then

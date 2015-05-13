@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Obsoleted Keywords"}}----
+{{fbdoc item="title" value="Obsolete Keywords"}}----
 
 	Along the way FB has had a few keywords changed. Here is the list of those no longer supported. Old code must be updated if recompiled.
 

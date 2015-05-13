@@ -1,0 +1,96 @@
+{{fbdoc item="title" value="VIRTUAL"}}----
+Declare virtual methods
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename// [[KeyPgExtends Extends]] //base_typename//
+		[[KeyPgDeclare Declare]] **Virtual** [[KeyPgSub Sub]]|[[KeyPgFunction Function]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]]|[[KeyPgDestructor Destructor]] ...
+	End [[KeyPgType Type]]
+##
+{{fbdoc item="desc"}}
+	**Virtual** methods are methods that can be overridden by data types derived from the type they were declared in, allowing for polymorphism. In contrast to ##[[KeyPgAbstract Abstract]]## methods, virtual methods must have an implementation, which is used when the virtual is not overridden.
+	
+	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters, same return type (if any) and same calling convention (if that differs only in parameter passing mode or calling convention or return type, then an overriding error is returned at compile time, else only shadowing is enabled). The property of being a virtual method is not implicitly inherited by the overriding method in the derived type.
+	
+	When calling virtual methods, the compiler may need to do a vtable lookup in order to find out which method must be called for a given object. This requires an extra hidden vtable pointer field to be added at the top of each type with virtual methods. This hidden vptr is provided by the built-in ##[[KeyPgObject Object]]## type. Because of that, virtual methods can only be declared in a type that directly or indirectly ##[[KeyPgExtends extends]]## ##[[KeyPgObject Object]]##.
+	
+	[[KeyPgConstructor Constructors]] cannot be virtual because they create objects, while virtual methods require an already-existing object with a specific type.  The type of the constructor to call is determined at compile-time from the code.
+	In addition, when calling a virtual method inside a constructor, only the local version of the method is used. That is because the vptr has not yet been set up by the derived type constructor, but only by the local type constructor.
+
+	[[KeyPgDestructor Destructors]] often must be virtual when deleting an object manipulated through a pointer to its base type, so that the destruction starts at the most derived type and works its way down to the base type. To do this, it may be necessary to add virtual destructors with an empty body anywhere an explicit destruction was not yet required.
+	On the other hand, when calling a virtual (or abstract) method inside a destructor (virtual or not), the derived method is actually used because the vptr and its vtable are yet there. But this is not reliable because child destructors may have already been called, and so the derived method called may refer to destroyed members.
+
+	For member methods with ##**Virtual**## in their declaration, ##**Virtual**## can also be specified on the corresponding method bodies, for improved code readability.
+
+	**Note:** In a multi-level inheritance, a same named method (same identifier and signature) can be declared ##[[KeyPgAbstract Abstract]]##, ##**Virtual**## or normal (without specifier) at each inheritance hierarchy level. When there is mixing of  specifiers, the usual order is abstract -> virtual -> normal, from top to bottom of the inheritance hierarchy.
+	The access control (##[[KeyPgVisPublic Public]]##/##[[KeyPgVisProtected Protected]]##/##[[KeyPgVisPrivate Private]]##) of an overriding method is not taken into account by the internal polymorphism process, but only for the initial call at compile-time.
+	A derived static method cannot override a base virtual/abstract method, but can shadow any base method (including virtual/abstract).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/virtual1.bas"}}%%(freebasic)
+type Hello extends object
+	declare virtual sub hi( )
+end type
+
+type HelloEnglish extends Hello
+	declare sub hi( )
+end type
+
+type HelloFrench extends Hello
+	declare sub hi( )
+end type
+
+type HelloGerman extends Hello
+	declare sub hi( )
+end type
+
+
+sub Hello.hi( )
+	print "hi!"
+end sub
+
+sub HelloEnglish.hi( )
+	print "hello!"
+end sub
+
+sub HelloFrench.hi( )
+	print "Salut!"
+end sub
+
+sub HelloGerman.hi( )
+	print "Hallo!"
+end sub
+
+
+	randomize( timer( ) )
+
+	dim as Hello ptr h
+
+	for i as integer = 0 to 9
+		select case( int( rnd( ) * 4 ) + 1 )
+		case 1
+			h = new HelloEnglish
+		case 2
+			h = new HelloFrench
+		case 3
+			h = new HelloGerman
+		case else
+			h = new Hello
+		end select
+
+		h->hi( )
+		delete h
+	next
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgObject Object]]##
+	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgAbstract Abstract]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

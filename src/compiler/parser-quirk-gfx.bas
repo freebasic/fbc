@@ -96,8 +96,7 @@ private function hMakeArrayIndex _
     else
 
       idxexpr = astNewBOP( AST_OP_MUL, _
-                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
-                           				 FB_DATATYPE_INTEGER ), _
+                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower ), _
                            astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), _
                            				 astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
 
@@ -296,7 +295,7 @@ private function hGetMode _
 
 			arg3 = symbGetParamNext( arg2 )
 
-			if( s->proc.mode = FB_FUNCMODE_PASCAL ) then
+			if( symbGetProcMode( s ) = FB_FUNCMODE_PASCAL ) then
 				swap arg1, arg3
 			end if
 
@@ -1144,7 +1143,7 @@ function cGfxScreen( byval isqb as integer ) as integer
 			rexpr = cExpression( )
 		end if
 
-		function = rtlGfxScreenSet( mexpr, NULL, dexpr, pexpr, fexpr, rexpr )
+		function = rtlGfxScreenSet( mexpr, dexpr, pexpr, fexpr, rexpr )
 
 	else
 		'' mode?
@@ -1177,50 +1176,6 @@ function cGfxScreen( byval isqb as integer ) as integer
 			function = rtlGfxScreenSetQB( mode, active, visible )
 		end if
 	end if
-
-end function
-
-'':::::
-'' GfxScreenRes     =   SCREENRES expr ',' expr (((',' expr)? ',' expr)? ',' expr)?
-''
-function cGfxScreenRes as integer
-    dim as ASTNODE ptr wexpr, hexpr, dexpr, pexpr, fexpr, rexpr
-
-	function = FALSE
-
-	hMatchExpression( wexpr )
-
-	hMatchCOMMA( )
-
-	hMatchExpression( hexpr )
-
-	dexpr = NULL
-	pexpr = NULL
-	fexpr = NULL
-	rexpr = NULL
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		dexpr = cExpression( )
-	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		pexpr = cExpression( )
-	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		fexpr = cExpression( )
-	end if
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		rexpr = cExpression( )
-	end if
-
-	''
-	function = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr, rexpr )
 
 end function
 
@@ -1300,10 +1255,12 @@ function cGfxImageCreate( byref funcexpr as ASTNODE ptr ) as integer
 
 end function
 
-#define CHECK_CODEMASK( ) 												_
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
-    	exit function													:_
-    end if
+#macro CHECK_CODEMASK( )
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit function
+	end if
+#endmacro
 
 '':::::
 function cGfxStmt _
@@ -1378,11 +1335,6 @@ function cGfxStmt _
 		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxScreen( TRUE )
-
-	case FB_TK_SCREENRES
-		CHECK_CODEMASK( )
-		lexSkipToken( )
-		function = cGfxScreenRes( )
 
 	end select
 

@@ -35,6 +35,12 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
 
+		'' end scope
+		if( stk->scopenode <> NULL ) then
+			astScopeEnd( stk->scopenode )
+			stk->scopenode = NULL
+		end if
+
 		'' exit if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
@@ -56,6 +62,10 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 		else
+
+			'' begin scope
+			stk->scopenode = astScopeBegin( )
+
 			'' Statement
 			cStatement()
 		end if
@@ -79,14 +89,17 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 		lexSkipToken( )
 	end select
 
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
+
 	'' pop from stmt stack
 	cCompStmtPop( stk )
 end sub
 
-'':::::
-''IfStmtBegin	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
-''
-sub cIfStmtBegin()
+'' IfStmtBegin  =  IF Expression THEN (BlockIfStatement | SingleIfStatement) .
+sub cIfStmtBegin( )
 	dim as ASTNODE ptr expr = any
 	dim as FBSYMBOL ptr nl = any, el = any
 	dim as FB_CMPSTMTSTK ptr stk = any
@@ -100,7 +113,7 @@ sub cIfStmtBegin()
     if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
-		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0 )
     end if
 
 	'' add end label (at ENDIF)
@@ -109,7 +122,7 @@ sub cIfStmtBegin()
 	nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	'' branch
-	expr = astUpdComp2Branch( expr, nl, FALSE )
+	expr = astBuildBranch( expr, nl, FALSE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
@@ -153,25 +166,22 @@ sub cIfStmtBegin()
 		ismultiline = FALSE
 	end select
 
+	'' begin scope
+	stk->scopenode = astScopeBegin( )
+
 	if( ismultiline ) then
 		stk->if.issingle = FALSE
-		stk->scopenode = astScopeBegin( )
 	else
 		stk->if.issingle = TRUE
-		stk->scopenode = NULL
 		hIfSingleLine( stk )
 	end if
 end sub
 
-'':::::
-''IfStmtNext	=     ELSEIF Expression THEN
-''              |     ELSE .
-''
-function cIfStmtNext(  ) as integer
+'' IfStmtNext  =     ELSEIF Expression THEN
+''                |  ELSE .
+sub cIfStmtNext( )
 	dim as ASTNODE ptr expr = any
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_IF, FALSE )
 	if( stk = NULL ) then
@@ -180,12 +190,13 @@ function cIfStmtNext(  ) as integer
 		else
 			errReport( FB_ERRMSG_ELSEWITHOUTIF )
 		end if
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' single line? don't process
 	if( stk->if.issingle ) then
-		return TRUE
+		exit sub
 	end if
 
     '' ELSE already parsed?
@@ -217,7 +228,7 @@ function cIfStmtNext(  ) as integer
     	if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0 )
     	end if
 
 		'' THEN
@@ -226,7 +237,7 @@ function cIfStmtNext(  ) as integer
 		end if
 
 		'' branch
-		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
+		expr = astBuildBranch( expr, stk->if.nxtlabel, FALSE )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
@@ -259,27 +270,21 @@ function cIfStmtNext(  ) as integer
 	stk->scopenode = astScopeBegin( )
 
 	cStatement( )
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-''IfStmtEnd	  =   END IF | ENDIF .
-''
-function cIfStmtEnd as integer
+'' IfStmtEnd  =  END IF | ENDIF .
+sub cIfStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	stk = cCompStmtGetTOS( FB_TK_IF )
 	if( stk = NULL ) then
-		exit function
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' single line? don't process
 	if( stk->if.issingle ) then
-		return TRUE
+		exit sub
 	end if
 
 	'' ENDIF or END IF
@@ -303,5 +308,4 @@ function cIfStmtEnd as integer
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-end function
+end sub

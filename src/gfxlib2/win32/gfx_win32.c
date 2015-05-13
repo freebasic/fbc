@@ -142,6 +142,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	PAINTSTRUCT ps;
 	EVENT e;
 	BOOL is_minimized;
+	MINMAXINFO *mmi;
 
 	e.type = 0;
 
@@ -400,10 +401,12 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				else
 					e.type = EVENT_KEY_RELEASE;
 				e.scancode = fb_hVirtualToScancode(wVkCode);
+
+				/* Don't return extended keycodes in the ascii field */
 				e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
 				/* We don't want to enter the menu ... */
-				if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
+				if( wVkCode == VK_F10 || wVkCode == VK_MENU || key == KEY_QUIT )
 					return FALSE;
 			}
 			break;
@@ -426,7 +429,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_CLOSE:
-			fb_hPostKey(0x6BFF); /* ALT + F4 */
+			fb_hPostKey( KEY_QUIT ); /* ALT + F4 */
 			e.type = EVENT_WINDOW_CLOSE;
 			fb_hPostEvent(&e);
 			return FALSE;
@@ -446,6 +449,17 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			if (fb_win32.mouse_clip)
 				ClipCursor(NULL);
 			break;
+
+		case WM_GETMINMAXINFO:
+			/* Don't let the window size be truncated to the screen size */
+			mmi = (MINMAXINFO *)lParam;
+			mmi->ptMaxSize.x      = fb_win32.fullw;
+			mmi->ptMaxSize.y      = fb_win32.fullh;
+			mmi->ptMinTrackSize.x = fb_win32.fullw;
+			mmi->ptMinTrackSize.y = fb_win32.fullh;
+			mmi->ptMaxTrackSize.x = fb_win32.fullw;
+			mmi->ptMaxTrackSize.y = fb_win32.fullh;
+			return 0;
 	}
 
 	if ((message == WM_MOUSEMOVE) || (message == WM_MOUSEENTER)) {
@@ -482,6 +496,9 @@ void fb_hHandleMessages(void)
 
 int fb_hInitWindow(DWORD style, DWORD ex_style, int x, int y, int w, int h)
 {
+	fb_win32.fullw = w;
+	fb_win32.fullh = h;
+
 	fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style,
 		x, y, w, h, HWND_DESKTOP, NULL, fb_win32.hinstance, NULL);
 	if (!fb_win32.wnd)
@@ -564,9 +581,13 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		}
 
 #ifdef HOST_MINGW
-		events[1] = (HANDLE)_beginthreadex( NULL, 0, fb_win32.thread, events[0], 0, NULL );
+		/* Note: _beginthreadex()'s last parameter cannot be NULL,
+		   or else the function fails on Windows 9x */
+		unsigned int thrdaddr;
+		events[1] = (HANDLE)_beginthreadex( NULL, 0, fb_win32.thread, events[0], 0, &thrdaddr );
 #else
-		events[1] = CreateThread( NULL, 0, fb_win32.thread, events[0], 0, NULL );
+		DWORD dwThreadId;
+		events[1] = CreateThread( NULL, 0, fb_win32.thread, events[0], 0, &dwThreadId );
 #endif
 		if( events[1] == NULL ) {
 			CloseHandle(events[0]);

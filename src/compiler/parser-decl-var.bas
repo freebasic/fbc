@@ -9,9 +9,19 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-#define hVarDecl( attrib, dopreserve, token ) _
-	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
+sub hComplainIfAbstractClass _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	)
+
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		if( symbCompGetAbstractCount( subtype ) > 0 ) then
+			errReport( FB_ERRMSG_OBJECTOFABSTRACTCLASS )
+		end if
+	end if
+
+end sub
 
 sub hSymbolType _
 	( _
@@ -37,6 +47,7 @@ sub hSymbolType _
 		subtype = NULL
 		lgt = FB_POINTERSIZE
 	end if
+
 end sub
 
 function hCheckScope() as integer
@@ -57,14 +68,8 @@ end function
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .
 ''
-function cVariableDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer dopreserve = any, tk = any
-
-	function = FALSE
 
 #macro hCheckPrivPubAttrib( attrib )
 	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) <> 0 ) then
@@ -76,13 +81,15 @@ function cVariableDecl _
 	dopreserve = FALSE
 
 	tk = lexGetToken( )
+
 	select case as const tk
 	'' REDIM
 	case FB_TK_REDIM
 		'' REDIM generates code, check if allowed
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			return TRUE
+		end if
 
 		hCheckPrivPubAttrib( attrib )
 
@@ -135,6 +142,11 @@ function cVariableDecl _
 
 	'' STATIC
 	case FB_TK_STATIC
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			return TRUE
+		end if
+
 		lexSkipToken( )
 
 		attrib or= FB_SYMBATTRIB_STATIC
@@ -146,6 +158,11 @@ function cVariableDecl _
 		end if
 
 	case else
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+			hSkipStmt( )
+			return TRUE
+		end if
+
 		lexSkipToken( )
 
 	end select
@@ -184,16 +201,14 @@ function cVariableDecl _
 		end if
 	end if
 
-	''
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
-	''
-	function = hVarDecl( attrib, dopreserve, tk )
-
+	cVarDecl( attrib, dopreserve, tk, FALSE )
+	function = TRUE
 end function
 
 '':::::
@@ -224,10 +239,10 @@ private sub hVarExtToPub _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-	'' remove the extern (or it won't be emitted), make it public (and shared for safety)
-	symbSetAttrib( sym, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
-    		            FB_SYMBATTRIB_PUBLIC or _
-    			        FB_SYMBATTRIB_SHARED )
+	'' Remove EXTERN (or it won't be emitted), add PUBLIC (and SHARED
+	'' for safety), and preserve visibility attributes.
+	symbSetAttrib( sym, (symbGetAttrib( sym ) and (not FB_SYMBATTRIB_EXTERN)) or _
+				FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_SHARED )
 
     '' array? update the descriptor attributes too
     if( symbGetArrayDimensions( sym ) <> 0 ) then
@@ -244,11 +259,55 @@ private sub hVarExtToPub _
 		end if
 
 		symbSetAttrib( desc, attrib )
+
+		'' Add an initializer to the descriptor, now that we know this
+		'' EXTERN will be allocated in this module, and the EXTERN
+		'' attribute was removed
+		symbGetTypeIniTree( desc ) = astBuildArrayDescIniTree( desc, sym, NULL )
 	end if
 
 end sub
 
-'':::::
+private sub hCheckExternArrayDimensions _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
+
+	dim as FBVARDIM ptr d = any
+	dim as integer i = any
+
+	'' Not an array?
+	if( symbGetArrayDimensions( sym ) = 0 ) then
+		exit sub
+	end if
+
+	'' Different dimension count?
+	if( dimensions <> symbGetArrayDimensions( sym ) ) then
+		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+		exit sub
+	end if
+
+	'' Same lbound/ubound for each dimension?
+	d = symbGetArrayFirstDim( sym )
+	i = 0
+	while( d )
+
+		if( ((d->lower <> dTB(i).lower) or _
+		     (d->upper <> dTB(i).upper)      ) and _
+		    (dTB(i).upper <> FB_ARRAYDIM_UNKNOWN)    ) then
+			errReportEx( FB_ERRMSG_BOUNDSDIFFERFROMEXTERN, *id )
+			exit sub
+		end if
+
+		d = d->next
+		i += 1
+	wend
+
+end sub
+
 private function hDeclExternVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -299,6 +358,8 @@ private function hDeclExternVar _
 		end if
 	end if
 
+	hCheckExternArrayDimensions( sym, id, dimensions, dTB() )
+
     '' dup extern?
     if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
     	return sym
@@ -309,18 +370,7 @@ private function hDeclExternVar _
     	hVarExtToPub( sym, attrib )
 	end if
 
-	'' check dimensions
-	if( symbGetArrayDimensions( sym ) <> 0 ) then
-		if( dimensions <> symbGetArrayDimensions( sym ) ) then
-			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-		else
-			'' set dims
-			symbSetArrayDimTb( sym, dimensions, dTB() )
-		end if
-	end if
-
     function = sym
-
 end function
 
 '':::::
@@ -361,9 +411,8 @@ private function hDeclStaticVar _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-    	sym = symbAddVarEx( id, idalias, dtype, subtype, _
-    				  	  	lgt, dimensions, dTB(), _
-    				  	  	attrib, options )
+		sym = symbAddVar( id, idalias, dtype, subtype, lgt, _
+		                  dimensions, dTB(), attrib, options )
 
     '' already declared extern..
     else
@@ -404,6 +453,7 @@ private function hDeclDynArray _
     if( dimensions <> -1 ) then
 		'' DIM'g dynamic arrays gens code, check if allowed
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
     		exit function
     	end if
 	end if
@@ -439,9 +489,8 @@ private function hDeclDynArray _
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
 
-   		sym = symbAddVarEx( id, idalias, dtype, subtype, _
-   						    lgt, dimensions, dTB(), _
-   						    attrib, options )
+		sym = symbAddVar( id, idalias, dtype, subtype, lgt, _
+		                  dimensions, dTB(), attrib, options )
 
 	'' check reallocation..
 	else
@@ -568,7 +617,7 @@ private function hGetId _
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			else
 				*id = *lexGetText( )
@@ -585,7 +634,7 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: fake an id
-			*id = *hMakeTmpStr( )
+			*id = *symbUniqueLabel( )
 			suffix = FB_DATATYPE_INVALID
 
 		'' QB mode..
@@ -597,7 +646,7 @@ private function hGetId _
 			if( suffix = FB_DATATYPE_INVALID ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			end if
 		end if
@@ -605,7 +654,7 @@ private function hGetId _
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		*id = *hMakeTmpStr( )
+		*id = *symbUniqueLabel( )
 		suffix = FB_DATATYPE_INVALID
 	end select
 
@@ -617,71 +666,84 @@ private function hGetId _
 
 end function
 
-'':::::
 private function hLookupVar _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval dtype as integer, _
+		byval is_typeless as integer, _
+		byval has_suffix as integer _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	if( chain_ = NULL ) then
+		exit function
+	end if
+
+	if( is_typeless ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
+			sym = symbFindVarByDefType( chain_, dtype )
+		else
+			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+		end if
+	elseif( has_suffix ) then
+		sym = symbFindVarBySuffix( chain_, dtype )
+	else
+		sym = symbFindVarByType( chain_, dtype )
+	end if
+
+	function = sym
+end function
+
+private function hLookupVarAndCheckParent _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval dtype as integer, _
 		byval is_typeless as integer, _
 		byval has_suffix as integer, _
-		byval options as FB_IDOPT _
+		byval is_decl as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any
 
-    if( chain_ = NULL ) then
-    	return NULL
-    end if
+	sym = hLookupVar( chain_, dtype, is_typeless, has_suffix )
 
-    if( is_typeless ) then
-    	if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
-    		sym = symbFindVarByDefType( chain_, dtype )
-    	else
-    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    	end if
-    elseif( has_suffix ) then
-    	sym = symbFindVarBySuffix( chain_, dtype )
+	'' Namespace prefix explicitly given?
+	if( parent ) then
+		if( sym ) then
+			'' "DIM Parent.foo" is only allowed if there was an
+			'' "EXTERN foo" in the Parent namespace, or if it's a
+			'' "REDIM Parent.foo" redimming an array declared in
+			'' the Parent namespace.
+			'' No EXTERN, or different parent, and not REDIM?
+			if( ((symbIsExtern( sym ) = FALSE) or _
+			     (symbGetNamespace( sym ) <> parent)) and _
+			    is_decl ) then
+				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+			end if
+		else
+			'' Symbol not found in the specified parent namespace
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
+		end if
 	else
-    	sym = symbFindVarByType( chain_, dtype )
-    end if
+		'' The looked up symbol may be an existing var. If it's from
+		'' another namespace, then we ignore it, so that this new
+		'' declaration declares a new var in the current namespace,
+		'' i.e. a duplicate. However if it's from the current namespace
+		'' already, then we cannot allow declaring a second variable
+		'' with that name. Unless this is a REDIM, of course.
+		if( sym ) then
+			if( (symbGetNamespace( sym ) <> symbGetCurrentNamespc( )) and _
+			    is_decl ) then
+				sym = NULL
+			end if
+		end if
+	end if
 
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    '' different namespaces?
-    if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    	'' redim? anything allowed..
-    	if( (options and FB_IDOPT_ISDECL) = 0 ) then
-    		return sym
-    	end if
-
-    	'' currently in the global ns?
-    	if( symbIsGlobalNamespc( ) ) then
-    		'' parent explicitly passed?
-    		if( parent <> NULL ) then
-    			'' not extern?
-    			if( symbIsExtern( sym ) = FALSE ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-    			end if
-
-    		'' allow dups..
-    		else
-    			return NULL
-    		end if
-
-    	'' inside another ns, allow dups..
-    	else
-    		return NULL
-    	end if
-    end if
-
-    function = sym
-
+	function = sym
 end function
 
-''::::
 private sub hMakeArrayDimTB _
 	( _
 		byval dimensions as integer, _
@@ -697,9 +759,7 @@ private sub hMakeArrayDimTB _
 		dim as ASTNODE ptr expr = any
 
 		'' lower bound
-		expr = exprTB(i, 0)
-		dTB(i).lower = astGetValueAsInt( expr )
-		astDelNode( expr )
+		dTB(i).lower = astConstFlushToInt( exprTB(i, 0) )
 
 		'' upper bound
 		expr = exprTB(i, 1)
@@ -710,8 +770,7 @@ private sub hMakeArrayDimTB _
 			dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			continue for
 		else
-			dTB(i).upper = astGetValueAsInt( expr )
-			astDelNode( expr )
+			dTB(i).upper = astConstFlushToInt( expr )
 		end if
 
 		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
@@ -763,10 +822,8 @@ private function hVarInitDefault _
 		end if
 	else
 		'' Complain about lack of default ctor if there are others
-		if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-			end if
+		if( symbHasCtor( sym ) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
 	end if
 
@@ -862,22 +919,13 @@ private function hVarInit _
 	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		'' fake an expression
-		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		initree = astNewCONSTi( 0 )
 	end if
 
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-
-    	dim as integer has_ctor = FALSE
-
-    	select case symbGetType( sym )
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    	end select
-
 		'' only if it's not an object, static or global instances are allowed
-		if( has_ctor = FALSE ) then
-
+		if( symbHasCtor( sym ) = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
@@ -885,20 +933,18 @@ private function hVarInit _
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		'' if it is an object, don't allow local references
 		else
-
-			if( astTypeIniCheckScope( initree ) = TRUE ) then
-				errReport( FB_ERRMSG_INVALIDINITIALIZER )
+			if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or _
+							FB_SYMBATTRIB_STATIC or _
+							FB_SYMBATTRIB_DESCRIPTOR ) ) then
+				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 				'' error recovery: discard the tree
 				astDelTree( initree )
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		end if
-
 	end if
 
 	function = initree
@@ -943,26 +989,18 @@ private function hCallStaticCtor _
 	end if
 
 	'' create a static flag
-	flag = symbAddVarEx( hMakeTmpStr(), NULL, _
-					  	 FB_DATATYPE_INTEGER, NULL, 0, _
-					  	 0, dTB(), _
-					     FB_SYMBATTRIB_STATIC )
+	flag = symbAddVar( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
+	                   0, dTB(), FB_SYMBATTRIB_STATIC )
 
-	tree = astNewLINK( tree, _
-					   astNewDECL( flag, NULL ) )
+	tree = astNewLINK( tree, astNewDECL( flag, TRUE ) )
 
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
 
-    tree = astNewLINK( tree, _
-    				   astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  			 astNewVAR( flag, _
-            										 			0, _
-            										 			FB_DATATYPE_INTEGER ), _
-            							  			 astNewCONSTi( 0, _
-            													   FB_DATATYPE_INTEGER ) ), _
-            				   			  label, _
-            				   			  FALSE ) )
+	tree = astNewLINK( tree, _
+		astBuildBranch( _
+			astNewBOP( AST_OP_EQ, astNewVAR( flag ), astNewCONSTi( 0 ) ), _
+			label, FALSE ) )
 
 	'' flag = 1
 	tree = astNewLINK( tree, _
@@ -1006,8 +1044,8 @@ private function hCallGlobalCtor _
 
 	astProcAddGlobalInstance( sym, initree, has_dtor )
 
-	'' remove the temps from the dtors list if any was added
-	astDtorListClear( )
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
 
 	'' cannot call astAdd() before deleting the dtor list or it
 	'' would be flushed
@@ -1065,28 +1103,22 @@ private function hFlushInitializer _
 						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
-    dim as integer has_ctor = FALSE
-    select case symbGetType( sym )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    end select
-
 	'' not an object?
-    if( has_ctor = FALSE ) then
-    	'' let emit flush it..
-    	symbSetTypeIniTree( sym, initree )
+	if( symbHasCtor( sym ) = FALSE ) then
+		'' let emit flush it..
+		symbSetTypeIniTree( sym, initree )
 
-    	'' no dtor?
-    	if( has_dtor = FALSE ) then
-    		return hFlushDecl( var_decl )
-    	end if
+		'' no dtor?
+		if( has_dtor = FALSE ) then
+			return hFlushDecl( var_decl )
+		end if
 
-    	'' must be added to the dtor list..
-    	initree = NULL
-    end if
-
-    '' don't let emit handle this global/static symbol
-    symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+		'' must be added to the dtor list..
+		initree = NULL
+	else
+		'' Don't let the backend emit the initializer for this global/static
+		symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
+	end if
 
     '' local?
     if( symbIsLocal( sym ) ) then
@@ -1105,12 +1137,12 @@ end function
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function hVarDeclEx _
+function cVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
-        byval token as integer, _
-        byval is_fordecl as integer _
+		byval token as integer, _
+		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXNAMELEN+1 id
@@ -1126,6 +1158,7 @@ function hVarDeclEx _
     dim as ASTNODE ptr assign_initree = any
 	dim as integer doassign = any
 	dim as integer has_ellipsis = FALSE
+	dim as FB_IDOPT options = any
 
     function = NULL
 
@@ -1137,25 +1170,29 @@ function hVarDeclEx _
 		end if
 	end if
 
-    '' (AS SymbolType)?
-    is_multdecl = FALSE
-    if( lexGetToken( ) = FB_TK_AS ) then
-    	lexSkipToken( )
+	'' (AS SymbolType)?
+	is_multdecl = FALSE
+	if( lexGetToken( ) = FB_TK_AS ) then
+		lexSkipToken( )
 
-        '' parse the symbol type (INTEGER, STRING, etc...)
-        hSymbolType( dtype, subtype, lgt )
+		'' parse the symbol type (INTEGER, STRING, etc...)
+		hSymbolType( dtype, subtype, lgt )
 
-    	addsuffix = FALSE
-    	is_multdecl = TRUE
-    end if
+		'' Disallow creating objects of abstract classes
+		hComplainIfAbstractClass( dtype, subtype )
 
-    dim as FB_IDOPT options = FB_IDOPT_DEFAULT
+		addsuffix = FALSE
+		is_multdecl = TRUE
+	end if
 
-    '' it's a declaration if it's not a REDIM,
-    '' or if it is, then it's a REDIM SHARED.
-    if( (token <> FB_TK_REDIM) or (options and FB_SYMBATTRIB_SHARED) ) then
-    	options or= FB_IDOPT_ISDECL
-    end if
+	options = FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR
+
+	'' It's a declaration unless it's a REDIM (REDIMs are code,
+	'' not declarations), except when it's SHARED, because a REDIM SHARED
+	'' is always a declaration and never a code REDIM.
+	if( (token <> FB_TK_REDIM) or ((attrib and FB_SYMBATTRIB_SHARED) <> 0) ) then
+		options or= FB_IDOPT_ISDECL
+	end if
 
     do
 		dim as FBSYMBOL ptr parent = cParentId( options )
@@ -1181,7 +1218,7 @@ function hVarDeclEx _
     		end if
     	end if
 
-    	'' ('(' ArrayDecl? ')')?
+		'' ('(' ArrayDecl? ')')?
 		dimensions = 0
 		check_exprtb = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
@@ -1189,21 +1226,19 @@ function hVarDeclEx _
 
 			is_dynamic = (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0
 
-            '' ID()
+			'' ID()
 			if( lexGetToken( ) = CHAR_RPRNT ) then
 				'' fake it
 				dimensions = -1
 				is_dynamic = TRUE
 
-            '' , ID( expr, (TO expr)? )
-    		else
-    			'' only allow subscripts if not COMMON
-    			if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
+			'' , ID( expr, (TO expr)? )
+			else
+				'' only allow subscripts if not COMMON
+				if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
 					'' static?
 					if( token = FB_TK_STATIC ) then
-    					if( cStaticArrayDecl( dimensions, dTB(), FALSE ) = FALSE ) then
-	    					exit function
-    					end if
+						cStaticArrayDecl( dimensions, dTB(), FALSE )
 
 						'' If there were any ellipsises in the
 						'' array decl then we mark the symbol before initializing
@@ -1213,13 +1248,11 @@ function hVarDeclEx _
 							end if
 						next
 
-    					is_dynamic = FALSE
+						is_dynamic = FALSE
 
 					'' can be static or dynamic..
 					else
-    					if( cArrayDecl( dimensions, exprTB() ) = FALSE ) then
-	    					exit function
-    					end if
+						cArrayDecl( dimensions, exprTB() )
 
 						check_exprtb = TRUE
 
@@ -1230,7 +1263,6 @@ function hVarDeclEx _
 								has_ellipsis = TRUE
 							end if
 						next
-
 					end if
 
     			'' COMMON.. no subscripts
@@ -1266,20 +1298,23 @@ function hVarDeclEx _
 			palias = cAliasAttribute()
 		end if
 
-    	if( is_multdecl = FALSE ) then
-    		'' (AS SymbolType)?
-    		if( lexGetToken( ) = FB_TK_AS ) then
-    			if( dtype <> FB_DATATYPE_INVALID ) then
+		if( is_multdecl = FALSE ) then
+			'' (AS SymbolType)?
+			if( lexGetToken( ) = FB_TK_AS ) then
+				if( dtype <> FB_DATATYPE_INVALID ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					dtype = FB_DATATYPE_INVALID
-    			end if
+				end if
 
-    			lexSkipToken( )
+				lexSkipToken( )
 
-		        '' parse the symbol type (INTEGER, STRING, etc...)
-		        hSymbolType( dtype, subtype, lgt )
+				'' parse the symbol type (INTEGER, STRING, etc...)
+				hSymbolType( dtype, subtype, lgt )
 
-    			addsuffix = FALSE
+				'' Disallow creating objects of abstract classes
+				hComplainIfAbstractClass( dtype, subtype )
+
+				addsuffix = FALSE
 
 			'' no explicit type..
 			else
@@ -1301,25 +1336,18 @@ function hVarDeclEx _
     		end if
     	end if
 
-		sym = hLookupVar( parent, chain_, dtype, is_typeless, _
-		                  (suffix <> FB_DATATYPE_INVALID), options )
-    	if( sym = NULL ) then
-    		'' no symbol was found, check if an explicit namespace was given
-    		if( parent <> NULL ) then
-    			if( parent <> symbGetCurrentNamespc( ) ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
-    			end if
-    		end if
-    	end if
+		sym = hLookupVarAndCheckParent( parent, chain_, dtype, is_typeless, _
+						(suffix <> FB_DATATYPE_INVALID), _
+						((options and FB_IDOPT_ISDECL) <> 0) )
 
 		if( dimensions > 0 ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
-        	'' statement, then a DIM will work the same way as a REDIM
-        	if( token = FB_TK_DIM ) then
+			'' statement, then a DIM will work the same way as a REDIM
+			if( token = FB_TK_DIM ) then
 				if( is_dynamic = FALSE ) then
-            		if( sym <> NULL ) then
+					if( sym <> NULL ) then
 						if( symbIsCommon( sym ) ) then
-                    		is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
+							is_dynamic = (symbGetArrayDimensions( sym ) <> 0)
 						end if
 					end if
 				end if
@@ -1337,24 +1365,31 @@ function hVarDeclEx _
 				end if
 			end if
 
-			'' "array too big for stack" check for static local arrays
-			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
-				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > env.clopt.stacksize ) then
-					if( is_dynamic = FALSE ) then
-						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
-					end if
+			'' "array too big/huge array on stack" check
+			if( is_dynamic = FALSE ) then
+				if( symbCheckArraySize( dimensions, dTB(), lgt, _
+				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
+				                        has_ellipsis ) = FALSE ) then
+					errReport( FB_ERRMSG_ARRAYTOOBIG )
+					'' error recovery: use small array
+					dimensions = 1
+					dTB(0).lower = 0
+					dTB(0).upper = 0
 				end if
+			end if
+		elseif( dimensions = 0 ) then
+			'' "huge variable on stack" check
+			if( ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) and _
+			    (lgt > env.clopt.stacksize) ) then
+				errReportWarn( FB_WARNINGMSG_HUGEVARONSTACK )
 			end if
 		end if
 
 		'' don't allow COMMON object instances
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
-					errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
-				end if
-			end select
+			if( typeHasCtor( dtype, subtype ) or typeHasDtor( dtype, subtype ) ) then
+				errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
+			end if
 		end if
 
     	if( is_dynamic ) then
@@ -1373,12 +1408,8 @@ function hVarDeclEx _
 
 		if( sym <> NULL ) then
 			is_decl = symbGetIsDeclared( sym )
-			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-				'' has a default ctor?
-				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
-				'' dtor?
-				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
-			end if
+			has_defctor = symbHasDefCtor( sym )
+			has_dtor = symbHasDtor( sym )
 			if( has_ellipsis ) then
 				sym->var_.array.has_ellipsis = TRUE
 			end if
@@ -1394,8 +1425,7 @@ function hVarDeclEx _
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
-			select case lexGetToken( )
-			case FB_TK_DBLEQ, FB_TK_EQ
+			if( hIsAssignToken( ) ) then
 				initree = hVarInit( sym, is_decl )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
@@ -1425,17 +1455,16 @@ function hVarDeclEx _
 						initree = hVarInitDefault( sym, is_decl, has_defctor )
 					end if
 				end if
-
-			'' default initialization
-			case else
+			else
+				'' default initialization
 				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
+					hSkipStmt( )
 					exit function
 				end if
 
 				initree = hVarInitDefault( sym, is_decl, has_defctor )
-
-			end select
+			end if
 		else
 			initree = NULL
 			assign_initree = NULL
@@ -1449,21 +1478,18 @@ function hVarDeclEx _
     		dim as ASTNODE ptr var_decl = NULL
 
 			'' not declared already?
-    		if( is_decl = FALSE ) then
-    			'' don't init it if it's a temp FOR var, it
-    			'' will have the start condition put into it...
-    			if( is_fordecl ) then
-   					symbSetDontInit( sym )
-    			end if
-
-				var_decl = astNewDECL( sym, initree )
+			if( is_decl = FALSE ) then
+				'' Don't init if it's a temp FOR var, it will
+				'' have the start condition put into it.
+				var_decl = astNewDECL( sym, _
+						((initree = NULL) and (not is_fordecl)) )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					var_decl = astNewLINK( var_decl, astNewDECL( desc, symbGetTypeIniTree( desc ) ) )
+					var_decl = astNewLINK( var_decl, astNewDECL( desc, (symbGetTypeIniTree( desc ) = NULL) ) )
 				end if
-    		end if
+			end if
 
 			'' handle arrays (must be done after adding the decl node)
 
@@ -1485,31 +1511,15 @@ function hVarDeclEx _
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then
-
-								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-									astAdd( astNewLINK( var_decl, _
-														astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 				 desc, _
-											  	 		 				 AST_INIOPT_ISINI ) ) )
-								else
-									astAddUnscoped( astNewLINK( var_decl, _
-														astTypeIniFlush( symbGetTypeIniTree( desc ), _
-											 	 		 				 desc, _
-											  	 		 				 AST_INIOPT_ISINI ) ) )
-								end if
-
+								var_decl = astNewLINK( var_decl, astTypeIniFlush( symbGetTypeIniTree( desc ), desc, AST_INIOPT_ISINI ) )
 								symbSetTypeIniTree( desc, NULL )
-
-							else
-
-								if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-									astAdd( var_decl )
-								else
-									astAddUnscoped( var_decl )
-								end if
-
 							end if
 
+							if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+								astAdd( var_decl )
+							else
+								astAddUnscoped( var_decl )
+							end if
 							var_decl = NULL
 						end if
 					end if
@@ -1540,13 +1550,11 @@ function hVarDeclEx _
 
 					'' unscoped
 					else
-
 						'' flush the init tree (must be done after adding the decl node)
 						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
 						if( doassign ) then
-
 							dim as ASTNODE ptr assign_vardecl = any
 
 							'' clear it before it's initialized?
@@ -1554,7 +1562,7 @@ function hVarDeclEx _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( sym, assign_initree )
+							assign_vardecl = astNewDECL( sym, (assign_initree = NULL) )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
@@ -1584,16 +1592,10 @@ function hVarDeclEx _
 
 		lexSkipToken( )
     loop
-
-    function = cast( FBSYMBOL ptr, TRUE )
-
 end function
 
 '' look for ... followed by ')', ',' or TO
-function hMatchEllipsis _
-	( _
-	) as integer
-
+private function hMatchEllipsis( ) as integer
 	function = FALSE
 
 	if( lexGetToken( ) = CHAR_DOT ) then
@@ -1610,7 +1612,6 @@ function hMatchEllipsis _
 			end if
 		end if
 	end if
-
 end function
 
 '':::::
@@ -1627,7 +1628,6 @@ function cStaticArrayDecl _
 	) as integer
 
     dim as integer i = any
-    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -1646,6 +1646,7 @@ function cStaticArrayDecl _
     do
 		dim as integer dimension_has_ellipsis = FALSE
 
+		'' First value - lower bound or upper bound
 		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 			dimension_has_ellipsis = TRUE
 			'' This is for the case of '( ... )' with the lower bound being
@@ -1653,65 +1654,32 @@ function cStaticArrayDecl _
 			'' to dTB(i).upper below.
 			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
-			'' Expression
-			expr = cExpression( )
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				if( astIsCONST( expr ) = FALSE ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			dTB(i).lower = astGetValueAsInt( expr )
-			astDelNode( expr )
+			'' Expression (integer constant)
+			dTB(i).lower = cConstIntExpr( cExpression( ), env.opt.base )
 		end if
 
-        '' TO
-    	if( lexGetToken( ) = FB_TK_TO ) then
-    		lexSkipToken( )
+		'' TO
+		if( lexGetToken( ) = FB_TK_TO ) then
+			lexSkipToken( )
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exit function
+				dTB(i).lower = 0
 			end if
 
+			'' Second value - upper bound
 			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 				dimension_has_ellipsis = TRUE
 				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
-				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-				else
-					if( astIsCONST( expr ) = FALSE ) then
-						errReport( FB_ERRMSG_EXPECTEDCONST )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				dTB(i).upper = astGetValueAsInt( expr )
-				astDelNode( expr )
+				'' Expression (integer constant)
+				dTB(i).upper = cConstIntExpr( cExpression( ), dTB(i).lower )
 			end if
-
-    	else
-    	    dTB(i).upper = dTB(i).lower
-    		dTB(i).lower = env.opt.base
-    	end if
+		else
+			'' First value was upper bound, not lower, use default for lower
+			dTB(i).upper = dTB(i).lower
+			dTB(i).lower = env.opt.base
+		end if
 
 		'' Don't check when we have ellipsis, as upper will be set to FB_ARRAYDIM_UNKNOWN
 		if( dimension_has_ellipsis = FALSE ) then
@@ -1753,21 +1721,47 @@ function cStaticArrayDecl _
 
 end function
 
+private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr expr = any, intexpr = any
+
+	expr = cExpression( )
+
+	if( expr ) then
+		'' expression must be integral (no strings, etc.)
+		intexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		if( intexpr ) then
+			expr = intexpr
+		else
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			astDelTree( expr )
+			expr = NULL
+		end if
+	else
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		if( lexGetToken( ) <> FB_TK_TO ) then
+			hSkipUntil( CHAR_COMMA )
+		end if
+	end if
+
+	if( expr = NULL ) then
+		if( defaultexpr ) then
+			expr = astCloneTree( defaultexpr )
+		else
+			expr = astNewCONSTi( env.opt.base )
+		end if
+	end if
+
+	function = expr
+end function
+
 '':::::
 ''ArrayDecl    	  =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cArrayDecl _
-	( _
-		byref dimensions as integer, _
-		exprTB() as ASTNODE ptr _
-	) as integer
-
+sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
 	dim as integer i = any
-	dim as ASTNODE ptr expr = any, i_expr = any
-
-	function = FALSE
 
 	dimensions = 0
 
@@ -1780,39 +1774,7 @@ function cArrayDecl _
 			exprTB(i,0) = NULL
 		else
 			'' Expression
-			expr = cExpression( )
-
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				'' check if non-numeric
-				select case as const astGetDataType( expr )
-				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end select
-
-				'' make sure expr is integral
-				i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-				if( i_expr <> NULL ) then
-					expr = i_expr
-				else
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			exprTB(i,0) = expr
+			exprTB(i,0) = hIntExpr( NULL )
 		end if
 
 		'' TO
@@ -1821,7 +1783,7 @@ function cArrayDecl _
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
-				exit function
+				exprTB(i,0) = astNewCONSTi( 0 )
 			end if
 
 			if( hMatchEllipsis( ) ) then
@@ -1829,39 +1791,11 @@ function cArrayDecl _
 				exprTB(i,1) = NULL
 			else
 				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astCloneTree( exprTB(i,0) )
-				else
-					'' check if non-numeric
-					select case as const astGetDataType( expr )
-					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						expr = astCloneTree( exprTB(i,0) )
-					end select
-
-					'' make sure expr is integral
-					i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-					if( i_expr <> NULL ) then
-						expr = i_expr
-					else
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				exprTB(i,1) = expr
+				exprTB(i,1) = hIntExpr( exprTB(i,0) )
 			end if
 		else
 			exprTB(i,1) = exprTB(i,0)
-			exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+			exprTB(i,0) = astNewCONSTi( env.opt.base )
 		end if
 
 		dimensions += 1
@@ -1881,11 +1815,7 @@ function cArrayDecl _
 			exit do
 		end if
 	loop
-
-	function = TRUE
-
-end function
-
+end sub
 
 '':::::
 ''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer
@@ -1893,6 +1823,7 @@ end function
 sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
 	static as zstring * FB_MAXNAMELEN+1 id
+	dim as FBSYMBOL ptr parent = any, sym = any
 
 	'' allowed?
 	if( fbLangOptIsSet( FB_LANG_OPT_AUTOVAR ) = FALSE ) then
@@ -1900,6 +1831,11 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		'' error recovery: skip stmt
 		hSkipStmt( )
 		return
+	end if
+
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		hSkipStmt( )
+		exit sub
 	end if
 
 	'' VAR
@@ -1934,7 +1870,8 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 	do
 		'' id.id? if not, NULL
-		dim as FBSYMBOL ptr parent = cParentId( FB_IDOPT_ISDECL )
+		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
+					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
 
 		'' get id
 		dim as integer suffix = any
@@ -1951,33 +1888,13 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
-		''
-		dim as FBSYMBOL ptr sym = any
-
-		sym = hLookupVar( parent, _
-						  chain_, _
-						  FB_DATATYPE_INVALID, _
-						  TRUE, _
-						  FALSE, _
-						  FB_IDOPT_ISDECL )
-
-		if( sym = NULL ) then
-			'' no symbol was found, check if an explicit namespace was given
-			if( parent <> NULL ) then
-				if( parent <> symbGetCurrentNamespc( ) ) then
-					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
-				end if
-			end if
-		end if
+		sym = hLookupVarAndCheckParent( parent, chain_, FB_DATATYPE_INVALID, _
+						TRUE, FALSE, TRUE )
 
 		'' '=' | '=>' ?
-		select case lexGetToken( )
-		case FB_TK_DBLEQ, FB_TK_EQ
-			lexSkipToken( )
-
-		case else
+		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
-		end select
+		end if
 
     	'' parse expression
 		dim as ASTNODE ptr expr = cExpression( )
@@ -1991,7 +1908,10 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-		dim as integer has_ctor = FALSE, has_dtor = FALSE
+		dim as integer has_ctor = any, has_dtor = any
+
+		has_ctor = typeHasCtor( dtype, subtype )
+		has_dtor = typeHasDtor( dtype, subtype )
 
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
@@ -2006,12 +1926,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		'' zstring... convert to string
 		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 			dtype = FB_DATATYPE_STRING
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' any ctor?
-			has_ctor = symbGetHasCtor( subtype )
-			'' dtor?
-			has_dtor = symbGetCompDtor( subtype ) <> NULL
 
 		'' if it's a function pointer and not a fun ptr prototype, create one
 		case typeAddrOf( FB_DATATYPE_FUNCTION )
@@ -2040,22 +1954,8 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
         	'' handle constructors..
         	else
-				'' array passed by descriptor?
-				dim as FB_PARAMMODE arg_mode = INVALID
-				if( lexGetToken( ) = CHAR_LPRNT ) then
-					if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
-						if( astGetSymbol( expr ) <> NULL ) then
-							if( symbIsArray( astGetSymbol( expr ) ) ) then
-								lexSkipToken( )
-								lexSkipToken( )
-								arg_mode = FB_PARAMMODE_BYDESC
-							end if
-						end if
-					end if
-    			end if
-
-    			dim as integer is_ctorcall = any
-    			expr = astBuildImplicitCtorCallEx( sym, expr, arg_mode, is_ctorcall )
+				dim as integer is_ctorcall = any
+				expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
 
         		if( expr <> NULL ) then
     				if( is_ctorcall ) then
@@ -2074,7 +1974,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 					if( astTypeIniIsConst( initree ) = FALSE ) then
 						'' error recovery: discard the tree
 						astDelTree( expr )
-						expr = astNewCONSTi( 0 )
+						expr = astNewCONSTz( dtype, subtype )
 		    	    	dtype = FB_DATATYPE_INTEGER
 		    	    	subtype = NULL
 						has_dtor = FALSE
@@ -2088,7 +1988,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
         	symbSetIsInitialized( sym )
 
 			'' add to AST
-			dim as ASTNODE ptr var_decl = astNewDECL( sym, initree )
+			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
 
 			'' set as declared
 			symbSetIsDeclared( sym )

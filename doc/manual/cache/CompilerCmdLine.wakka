@@ -111,13 +111,19 @@ Using the **fbc** command-line.
 		Show compiler version on the command line, do not compile or link.
 	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
 		Be verbose
+	=={{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}==
+		Display certain information (##host##, ##target##, etc.)
 	=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
 		Emit the preprocessed input file only, do not compile
 	=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
+		Compile into intermediate file(s) only, do not assemble or link
+	=={{fbdoc item="keyword" value="CompilerOptrr|-rr"}}==
 		Compile into asm file(s) only, do not assemble or link
 	=={{fbdoc item="keyword" value="CompilerOptc|-c"}}==
 		Compile and assemble source file only, do not link
 	=={{fbdoc item="keyword" value="CompilerOptrupp|-R"}}==
+		Do not delete the intermediate file(s)
+	=={{fbdoc item="keyword" value="CompilerOptrrupp|-RR"}}==
 		Do not delete the asm file(s)
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 		Do not delete the object file(s)
@@ -137,6 +143,7 @@ Using the **fbc** command-line.
 {{fbdoc item="section" value="Meta"}}
 	=={{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}==
 		Read (additional) command-line options from a file
+		
 
 >>::c::
 
@@ -163,4 +170,3 @@ Using the **fbc** command-line.
 	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

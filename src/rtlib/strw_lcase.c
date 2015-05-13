@@ -2,9 +2,7 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrLcase ( const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrLcase2( const FB_WCHAR *src, int mode )
 {
 	FB_WCHAR *dst, *d;
 	const FB_WCHAR *s;
@@ -21,17 +19,23 @@ FBCALL FB_WCHAR *fb_WstrLcase ( const FB_WCHAR *src )
 	if( dst == NULL )
 		return NULL;
 
-	/* to upper */
 	s = src;
 	d = dst;
-	for( i = 0; i < chars; i++ )
-    {
-		c = *s++;
 
-		if( fb_wstr_IsUpper( c ) )
-			c = fb_wstr_ToLower( c );
-
-		*d++ = c;
+	if( mode == 1 ) {
+		for( i = 0; i < chars; i++ ) {
+			c = *s++;
+			if( (c >= 65) && (c <= 90) )
+				c += 97 - 65;
+			*d++ = c;
+		}
+	} else {
+		for( i = 0; i < chars; i++ ) {
+			c = *s++;
+			if( fb_wstr_IsUpper( c ) )
+				c = fb_wstr_ToLower( c );
+			*d++ = c;
+		}
 	}
 
 	/* null char */

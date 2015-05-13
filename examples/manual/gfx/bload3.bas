@@ -6,55 +6,17 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBload
 '' --------
 
-'' A function that creates an image buffer with the same 
-'' dimensions as a BMP image, and loads a file into it.
+ScreenRes 640, 480, 8 '' 8-bit palette graphics mode
+Dim pal(0 To 256-1) As Integer '' 32-bit integer array with room for 256 colors
 
-Const NULL As Any Ptr = 0
+'' load bitmap to screen, put palette into pal() array
+BLoad "picture.bmp", , @pal(0)
 
-Function bmp_load( ByRef filename As Const String ) As Any Ptr
+WindowTitle "Old palette"
+Sleep
 
-	Dim As Integer filenum, bmpwidth, bmpheight
-	Dim As Any Ptr img
+'' set new palette from pal() array
+Palette Using pal(0)
 
-	'' open BMP file
-	filenum = FreeFile()
-	If Open( filename For Binary Access Read As #filenum ) <> 0 Then Return NULL
-
-		'' retrieve BMP dimensions
-		Get #filenum, 19, bmpwidth
-		Get #filenum, 23, bmpheight
-
-	Close #filenum
-
-	'' create image with BMP dimensions
-	img = ImageCreate( bmpwidth, Abs(bmpheight) )
-
-	If img = NULL Then Return NULL
-
-	'' load BMP file into image buffer
-	If BLoad( filename, img ) <> 0 Then ImageDestroy( img ): Return NULL
-
-	Return img
-
-End Function
-
-
-
-Dim As Any Ptr img
-
-ScreenRes 640, 480, 32
-
-img = bmp_load( "picture.bmp" )
-
-If img = NULL Then
-	Print "bmp_load failed"
-
-Else
-
-	Put (10, 10), img
-
-	ImageDestroy( img )
-
-End If
-
+WindowTitle "New palette"
 Sleep

@@ -9,12 +9,23 @@
 #include once "parser.bi"
 #include once "hash.bi"
 
+type ERRPARAMLOCATION
+	'' While an argument location is pushed,
+	'' errors will be reported "at parameter N of F()"
+	proc			as FBSYMBOL ptr
+	tk			as integer
+	paramnum		as integer
+	paramid			as zstring ptr
+end type
+
 type FB_ERRCTX
+	inited			as integer
 	cnt				as integer
 	hide_further_messages		as integer
 	lastline		as integer
 	laststmt		as integer
 	undefhash		as THASH				'' undefined symbols
+	paramlocations		as TLIST  '' ERRPARAMLOCATION's
 end type
 
 type FBWARNING
@@ -22,6 +33,10 @@ type FBWARNING
 	text		as const zstring ptr
 end type
 
+declare function hMakeParamDesc _
+	( _
+		byval msgex as const zstring ptr _
+	) as const zstring ptr
 
 ''globals
 	dim shared errctx as FB_ERRCTX
@@ -51,6 +66,7 @@ end type
 		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
 		( 0, @"Deleting ANY pointers is undefined" ), _
 		( 2, @"Array too large for stack, consider making it var-len or SHARED" ), _
+		( 2, @"Variable too large for stack, consider making it SHARED" ), _
 		( 0, @"Overflow in constant conversion" ), _
 		( 0, @"Variable following NEXT is meaningless" ), _
 		( 0, @"Cast to non-pointer" ), _
@@ -60,7 +76,8 @@ end type
 		( 0, @"Directive ignored after first pass" ), _
 		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
 		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
-		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ) _
+		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ), _
+		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
@@ -101,6 +118,7 @@ end type
 		@"Expected 'CASE'", _
 		@"Expected 'END SELECT'", _
 		@"Wrong number of dimensions", _
+		@"Array boundaries do not match the original EXTERN declaration", _
 		@"'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'", _
 		@"Expected 'END SUB' or 'END FUNCTION'", _
 		@"Illegal parameter specification", _
@@ -112,6 +130,8 @@ end type
 		@"Expected ';'", _
 		@"Undefined label", _
 		@"Too many array dimensions", _
+		@"Array too big", _
+		@"User Defined Type too big", _
 		@"Expected scalar counter", _
 		@"Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block", _
 		@"Expected var-len array", _
@@ -122,6 +142,7 @@ end type
 		@"Illegal specification", _
 		@"Expected 'END WITH'", _
 		@"Illegal inside functions", _
+		@"Statement in between SELECT and first CASE", _
 		@"Expected array", _
 		@"Expected '{'", _
 		@"Expected '}'", _
@@ -146,7 +167,6 @@ end type
 		@"Executable not found", _
 		@"Array out-of-bounds", _
 		@"Missing command-line option for", _
-		@"Math overflow", _
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _
 		@"Illegal inside a compound statement or scoped block", _
@@ -227,10 +247,13 @@ end type
 		@"ERASE on UDT with non-CDECL destructor", _
 		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
-		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
+		@"RETURN mixed with 'FUNCTION =' or EXIT FUNCTION (using both styles together is unsupported when returning objects with constructors)", _
+		@"'FUNCTION =' or EXIT FUNCTION mixed with RETURN (using both styles together is unsupported when returning objects with constructors)", _
+		@"Missing RETURN to copy-construct function result", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
+		@"Function result TYPE has no default constructor", _
 		@"Base UDT without default constructor; missing BASE() initializer", _
 		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
 		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
@@ -255,12 +278,26 @@ end type
 		@"Accessing base UDT's private default constructor", _
 		@"Accessing base UDT's private destructor", _
 		@"Illegal non-static member access", _
+		@"Constructor declared ABSTRACT", _
+		@"Constructor declared VIRTUAL", _
+		@"Destructor declared ABSTRACT", _
 		@"Member cannot be static", _
 		@"Member isn't static", _
 		@"Only static members can be accessed from static functions", _
 		@"The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN", _
-		@"The function prototype wasn't declared as STATIC", _
-		@"The function prototype wasn't declared as CONST", _
+		@"STATIC used here, but not the in the DECLARE statement", _
+		@"CONST used here, but not the in the DECLARE statement", _
+		@"VIRTUAL used here, but not the in the DECLARE statement", _
+		@"ABSTRACT used here, but not the in the DECLARE statement", _
+		@"Method declared VIRTUAL, but UDT does not extend OBJECT", _
+		@"Method declared ABSTRACT, but UDT does not extend OBJECT", _
+		@"Not overriding any virtual method", _
+		@"Implemented body for an ABSTRACT method", _
+		@"Override has different return type than overridden method", _
+		@"Override has different calling convention than overridden method", _
+		@"Implicit destructor override would have different calling convention", _
+		@"Implicit LET operator override would have different calling convention", _
+		@"Override has different parameters than overridden method", _
 		@"This operator cannot be STATIC", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
@@ -285,8 +322,10 @@ end type
 		@"Ambiguous symbol access, explicit scope resolution required", _
 		@"An ENUM, TYPE or UNION cannot be empty", _
 		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
-		@"Only member functions can be static", _
-		@"Only member functions can be const", _
+		@"STATIC used on non-member procedure", _
+		@"CONST used on non-member procedure", _
+		@"ABSTRACT used on non-member procedure", _
+		@"VIRTUAL used on non-member procedure", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
@@ -327,11 +366,20 @@ end type
 		@"Casting derived UDT pointer from incompatible pointer type", _
 		@"Casting derived UDT pointer from unrelated UDT pointer type", _
 		@"Casting derived UDT pointer to incompatible pointer type", _
-		@"Casting derived UDT pointer to unrelated UDT pointer type" _
+		@"Casting derived UDT pointer to unrelated UDT pointer type", _
+		@"ALIAS name string is empty", _
+		@"LIB name string is empty", _
+		@"UDT has unimplemented abstract methods", _
+		@"#ASSERT condition failed", _
+		@"Expected '>'", _
+		@"Invalid size" _
 	}
 
 
-sub errInit()
+sub errInit( )
+	'' fbc.bas will call err*() even before errInit() or after errEnd()
+	errctx.inited += 1
+
 	errctx.cnt = 0
 	errctx.hide_further_messages = FALSE
 	errctx.lastline = -1
@@ -339,18 +387,58 @@ sub errInit()
 
 	'' alloc the undefined symbols tb, used to not report them more than once
 	hashInit( @errctx.undefhash, 64, TRUE )
+
+	listInit( @errctx.paramlocations, 4, sizeof( ERRPARAMLOCATION ) )
 end sub
 
-sub errEnd()
+sub errEnd( )
+	listEnd( @errctx.paramlocations )
 	hashEnd( @errctx.undefhash )
+
+	errctx.inited -= 1
 end sub
 
-sub errHideFurtherErrors()
+sub errHideFurtherErrors( )
 	errctx.hide_further_messages = TRUE
 end sub
 
-function errGetCount() as integer
+function errGetCount( ) as integer
 	return errctx.cnt
+end function
+
+sub errPushParamLocation _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval tk as integer, _
+		byval paramnum as integer, _
+		byval paramid as zstring ptr _
+	)
+
+	dim as ERRPARAMLOCATION ptr l = any
+
+	if( proc ) then
+		'' don't count the instance pointer
+		if( symbIsMethod( proc ) ) then
+			if( paramnum > 1 ) then
+				paramnum -= 1
+			end if
+		end if
+	end if
+
+	l = listNewNode( @errctx.paramlocations )
+	l->proc = proc
+	l->tk = tk
+	l->paramnum = paramnum
+	l->paramid = paramid
+end sub
+
+sub errPopParamLocation( )
+	assert( listGetTail( @errctx.paramlocations ) )
+	listDelNode( @errctx.paramlocations, listGetTail( @errctx.paramlocations ) )
+end sub
+
+private function errHaveParamLocation( ) as integer
+	function = (listGetTail( @errctx.paramlocations ) <> NULL)
 end function
 
 '':::::
@@ -371,6 +459,10 @@ private sub hPrintErrMsg _
 		msg = NULL
 	else
 		msg = errorMsgs(errnum)
+	end if
+
+	if( msgex = NULL ) then
+		msgex = @""
 	end if
 
 	if( len( env.inf.name ) > 0 ) then
@@ -449,8 +541,12 @@ sub errReportEx _
 	)
 
 	'' Don't show if already too many errors displayed
-	if (errctx.hide_further_messages) then
+	if( errctx.hide_further_messages ) then
 		exit sub
+	end if
+
+	if( errctx.inited > 0 ) then
+		msgex = hMakeParamDesc( msgex )
 	end if
 
 	if( linenum = 0 ) then
@@ -473,19 +569,18 @@ sub errReportEx _
 
 	if( errctx.cnt >= env.clopt.maxerrors ) then
 		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, 0, linenum, FALSE )
-		errHideFurtherErrors()
+		errHideFurtherErrors( )
 	end if
 end sub
 
-'':::::
 private function hAddToken _
 	( _
 		byval isbefore as integer, _
 		byval addcomma as integer, _
 		byval msgex as zstring ptr = NULL _
-	) as string static
+	) as const zstring ptr
 
-	dim as string res, token
+	static as string res, token
 
 	res = ""
 
@@ -515,8 +610,7 @@ private function hAddToken _
 		end select
 	end if
 
-	function = res
-
+	function = strptr( res )
 end function
 
 '':::::
@@ -527,7 +621,15 @@ sub errReport _
 		byval customText as const zstring ptr _
 	)
 
-	errReportEx( errnum, hAddToken( isbefore, FALSE ), , , customText )
+	dim as const zstring ptr msgex = any
+
+	if( errHaveParamLocation( ) ) then
+		msgex = NULL
+	else
+		msgex = hAddToken( isbefore, FALSE )
+	end if
+
+	errReportEx( errnum, msgex, , , customText )
 
 end sub
 
@@ -546,6 +648,14 @@ sub errReportWarnEx _
 
 	if( warningMsgs(msgnum).level < env.clopt.warninglevel ) then
 		exit sub
+	end if
+
+	if( errctx.hide_further_messages ) then
+		exit sub
+	end if
+
+	if( errctx.inited > 0 ) then
+		msgex = hMakeParamDesc( msgex )
 	end if
 
 	if( len( env.inf.name ) > 0 ) then
@@ -624,26 +734,38 @@ sub errReportNotAllowed _
 		end if
 	next
 
-	msg += hAddToken( FALSE, langs > 0, msgex )
+	msg += *hAddToken( FALSE, langs > 0, msgex )
 
 	errReportEx( errnum, msg, , FB_ERRMSGOPT_NONE )
 
 end sub
 
-'':::::
-private function hReportMakeDesc _
+private function hMakeParamDesc _
 	( _
-		byval proc as FBSYMBOL ptr, _
-		byval pnum as integer, _
-		byval pid as zstring ptr _
-	) as zstring ptr
+		byval msgex as const zstring ptr _
+	) as const zstring ptr
 
-    static as zstring * FB_MAXNAMELEN*2+32+1 desc
-    dim as zstring ptr pname
-    dim as integer addprnts
+	static as string desc
+	dim as ERRPARAMLOCATION ptr paramloc = any
+	dim as FBSYMBOL ptr proc = any
+	dim as zstring ptr pname = any, pid = any
+	dim as integer pnum = any, addprnts = any
+
+	paramloc = listGetTail( @errctx.paramlocations )
+	if( paramloc = NULL ) then
+		return msgex
+	end if
+
+	proc = paramloc->proc
+	pnum = paramloc->paramnum
+	pid = paramloc->paramid
+	desc = ""
+	if( msgex ) then
+		desc = *msgex + " "
+	end if
 
 	if( pnum > 0 ) then
-		desc = "at parameter " + str( pnum )
+		desc += "at parameter " + str( pnum )
 		if( pid = NULL ) then
 			if( proc <> NULL ) then
 				dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
@@ -670,9 +792,6 @@ private function hReportMakeDesc _
 				desc += ")"
 			end if
 		end if
-
-	else
-		desc = ""
 	end if
 
 	if( proc <> NULL ) then
@@ -690,19 +809,16 @@ private function hReportMakeDesc _
 			else
 				showname = FALSE
 			end if
-
 		else
 			'' function pointer?
 			if( symbGetIsFuncPtr( proc ) ) then
 				pname = symbDemangleFunctionPtr( proc )
-
 			'' method?
 			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
 											    FB_SYMBATTRIB_DESTRUCTOR or _
 											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
-
 				pname = symbDemangleMethod( proc )
-            end if
+			end if
 		end if
 
 		if( showname ) then
@@ -728,73 +844,41 @@ private function hReportMakeDesc _
 				end if
 			end if
 		end if
+	else
+		if( pnum > 0 ) then
+			desc += " of "
+		end if
+		desc += *symbKeywordGetText( paramloc->tk )
 	end if
 
-	function = @desc
-
+	function = strptr( desc )
 end function
 
-'':::::
 sub errReportParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval pnum as integer, _
-		byval pid as zstring ptr, _
+		byval paramnum as integer, _
+		byval paramid as zstring ptr, _
 		byval msgnum as integer _
 	)
 
-	static as any ptr lastproc = NULL
-	static as integer lastpnum = -1
-	dim as integer cnt
-
-	'' don't count the instance pointer
-	if( symbIsMethod( proc ) ) then
-		if( pnum > 1 ) then
-			pnum -= 1
-		end if
-	end if
-
-	'' don't report more than one error in a single param
-	if( proc = lastproc ) then
-		if( pnum = lastpnum ) then
-			exit sub
-		end if
-
-		cnt = errctx.cnt
-	end if
-
-	'' new param, take as a new statement
-	errctx.laststmt = -1
-
-	errReportEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
-
-	'' if it's the same proc, n-param errors will count as just one
-	if( proc = lastproc ) then
-		errctx.cnt = cnt
-	end if
-
-	lastproc = proc
-	lastpnum = pnum
+	errPushParamLocation( proc, -1, paramnum, paramid )
+	errReportEx( msgnum, NULL )
+	errPopParamLocation( )
 
 end sub
 
-'':::::
 sub errReportParamWarn _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval pnum as integer, _
-		byval pid as zstring ptr, _
+		byval paramnum as integer, _
+		byval paramid as zstring ptr, _
 		byval msgnum as integer _
 	)
 
-	'' don't count the instance pointer
-	if( symbIsMethod( proc ) ) then
-		if( pnum > 1 ) then
-			pnum -= 1
-		end if
-	end if
-
-	errReportWarn( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+	errPushParamLocation( proc, -1, paramnum, paramid )
+	errReportWarn( msgnum, NULL )
+	errPopParamLocation( )
 
 end sub
 

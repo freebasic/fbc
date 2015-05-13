@@ -19,7 +19,6 @@ expressions \
 file \
 functions \
 interactive \
-macros \
 namespace \
 numbers \
 optimizations \
@@ -33,6 +32,7 @@ structs \
 swap \
 threads \
 typedef \
+virtual \
 visibility \
 wstring
 

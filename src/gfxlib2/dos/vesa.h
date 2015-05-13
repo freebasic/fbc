@@ -18,8 +18,7 @@ typedef struct VbeInfoBlock
 	unsigned int    oem_product_rev;	/* Pointer to Product Revision string           */
 	unsigned char   reserved[222];		/* Reserved for VBE implementation scratch area */
 	unsigned char   oem_data[256];		/* Data area for OEM strings                    */
-}
-__attribute__ ((packed)) VbeInfoBlock;
+} FBPACKED VbeInfoBlock;
 
 
 /* Mnemonics for VbeInfoBlock.capabilities flags */
@@ -89,8 +88,8 @@ typedef struct VesaModeInfo
 	unsigned long  MaxPixelClock;
 	
 	unsigned char  Reserved[189];
-	
-} __attribute__ ((packed)) VesaModeInfo;
+}
+FBPACKED VesaModeInfo;
 
 
 /* Mnemonics for VesaModeInfo.mode_attributes flags */
@@ -144,7 +143,7 @@ typedef struct VesaPMInfo
 	unsigned short setDisplayStart;
 	unsigned short setPalette;
 	unsigned short IOPrivInfo;
-} __attribute__ ((packed)) VesaPMInfo;
+} FBPACKED VesaPMInfo;
 
 enum VBE_FUNCS
 {

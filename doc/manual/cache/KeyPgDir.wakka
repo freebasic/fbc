@@ -71,7 +71,7 @@ Searches for and returns information about an item in the filesystem; performs a
 
 	(If ##//attrib_mask//## does not include ##**fbArchive**##, then ##**Dir**## may widen the check to include ##**fbDirectory**##, but it is recommended to add ##**fbDirectory**## explicitly, if that is the behaviour sought.)
 
-	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##.  An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.  For example, ##//fbArchive// [[KeyPgOpOr Or]] //fbDirectory//## will match against archived files, archived directories, non-archived files and non-archived directories.  It will not match against, for example, read-only files.
+	Items found having no attributes are **always** matched, regardless of the value of ##//attrib_mask//##.  An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.  For example, ##//fbArchive// [[KeyPgOpOr Or]] //fbDirectory//## will match against archived files, archived directories, non-archived files and non-archived directories.  It will not match against, for example, read-only files.
 
 	In general it is not possible to use ##//attrib_mask//## to include a file/folder with one set of attributes while excluding a file/folder with a different set.  For example, it is not possible to scan for read-only directories while excluding read-only files (unless the files also have other attributes).  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
 

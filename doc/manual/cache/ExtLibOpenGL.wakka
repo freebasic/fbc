@@ -13,6 +13,6 @@ Windows ""OpenGL"": http://msdn.microsoft.com/en-us/library/dd374278.aspx
 Platforms supported: ""Win32"", Linux
 Headers to include: GL/gl.bi
 Header version: from January 2012
-Example Usage: yes, in examples/libraries/GL/
+Examples: yes, in ""examples/graphics/OpenGL/""
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

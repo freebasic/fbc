@@ -2,33 +2,27 @@
 Copies the contents of a graphical page into another graphical page
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //from_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //to_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Screencopy** [ //from_page// ] [, //to_page// ]
 ##
 {{fbdoc item="param"}}
-	##//frompage//##
+	##//from_page//##
 		page to copy from
-	##//topage//##
+	##//to_page//##
 		page to copy to
 
 {{fbdoc item="desc"}}
-	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.
+	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.  ##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.  Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres Screenres]]## or ##[[KeyPgScreengraphics Screen]]##.
 
-	##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.
+	You can use this function to add a double buffer to your graphics. Any graphics screen mode with multiple pages supports this function.
 
-	Page numbers range from 0 to the num_pages specified when setting the graphics mode minus 1 
-
-	You can use this function to add a double buffer to your graphics. Any graphics screen mode supports this function; you must supply valid page numbers otherwise ##**Screencopy**## will have no effect.
-
-	There are two other functons similar to this: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.  ##[[KeyPgFlip Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
-
-Example:
-	See ##[[KeyPgScreenset Screenset]]## example.
-
+	There are two other functions similar to this: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.  ##[[KeyPgFlip Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
 
 {{fbdoc item="ex"}}
+	See also ##[[KeyPgScreenset Screenset]]## example.
+
 {{fbdoc item="filename" value="examples/manual/gfx/screencopy.bas"}}%%(freebasic)
 '' 320x200x8, with 3 pages
 screen 13,,3
