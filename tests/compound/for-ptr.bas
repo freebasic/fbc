@@ -47,13 +47,15 @@ private sub testPtrIterators cdecl( )
 	dim as foo buff( 9 )
 	dim as foo ptr fBuffer  = @buff( 0 )
 	dim as integer c
+	'' Fill the x/y fields in the buffer with their own addresses
 	for i as foo ptr = fBuffer to fBuffer + 9
 		i->x = i
-		i->y = i->x + 4
+		i->y = i->x + offsetof( foo, y )
 		CU_ASSERT( i = ( fBuffer +  c) )
 		c += 1
 	next
 
+	'' Check the fields against their addresses
 	dim as integer stp = 2
 	for i as foo ptr = fBuffer to fBuffer + 9 step stp
 		CU_ASSERT( i->x = @i->x )

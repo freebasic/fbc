@@ -2,11 +2,11 @@
 
 #include "fb.h"
 
-int fb_DevFileReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, int dst_chars )
+int fb_DevFileReadLineWstr( FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars )
 {
     int res;
     FILE *fp;
-    FBSTRING temp = { 0 };
+    FBSTRING temp = { 0, 0, 0 };
 
 	FB_LOCK();
 

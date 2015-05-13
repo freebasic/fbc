@@ -244,6 +244,29 @@ private sub hMaybeWarnAboutEqOutsideParens _
 
 end sub
 
+private function hGetVtableLookupIfNeeded _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
+	) as ASTNODE ptr
+
+	function = NULL
+
+	'' Explicit BASE.* access?
+	if( options and FB_PARSEROPT_EXPLICITBASE ) then
+		'' Disallow calling ABSTRACTs directly this way
+		if( symbIsAbstract( proc ) ) then
+			errReport( FB_ERRMSG_CALLTOABSTRACT )
+		end if
+	else
+		'' Do vtable lookup (function pointer access to be used
+		'' by the CALL) if it's a VIRTUAL.
+		function = astBuildVtableLookup( proc, thisexpr )
+	end if
+
+end function
+
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
@@ -368,18 +391,14 @@ private function hOvlProcArgList _
 
 			'' pass the instance ptr of the current method
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
-			arg->expr = astBuildInstPtr( _
-							symbGetParamVar( _
-								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->expr = astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
 
 		'' re-add the instance ptr
 		args += 1
 
-		'' Build vtable lookup (function pointer access to be used
-		'' by the CALL), if needed
-		procexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		procexpr = hGetVtableLookupIfNeeded( proc, arg_list->head->expr, options )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then
@@ -478,9 +497,7 @@ function cProcArgList _
 
 			'' pass the instance ptr of the current method
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
-			arg->expr = astBuildInstPtr( _
-							symbGetParamVar( _
-								symbGetProcHeadParam( parser.currproc ) ) )
+			arg->expr = astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) )
 			arg->mode = INVALID
 		end if
 
@@ -489,9 +506,7 @@ function cProcArgList _
 		'' (i.e. no virtual method pointers for now)
 		assert( ptrexpr = NULL )
 
-		'' Build vtable lookup (function pointer access to be used
-		'' by the CALL), if needed
-		ptrexpr = astBuildVtableLookup( proc, arg_list->head->expr )
+		ptrexpr = hGetVtableLookupIfNeeded( proc, arg_list->head->expr, options )
 	else
 		'' remove the instance ptr
 		if( (options and FB_PARSEROPT_HASINSTPTR) <> 0 ) then

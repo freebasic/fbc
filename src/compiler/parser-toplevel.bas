@@ -107,8 +107,6 @@ sub cProgram()
 
 	'' For each line...
 	do
-		parser.stmt.cnt += 1
-
 		'' line begin
 		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
@@ -150,12 +148,14 @@ sub cProgram()
 
 		'' line end
 		astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
+
+		'' A new statement starts behind EOL
+		'' (and EOF too, for implicitly generated code)
+		parser.stmt.cnt += 1  '' end-of-statement seen
 	loop while (lexGetToken() <> FB_TK_EOF)
 
 	'' EOF
 	assert(lexGetToken() = FB_TK_EOF)
-
-	parser.stmt.cnt += 1
 
 	if (pp.level <> startlevel) then '' inside #IF block?
 		errReport( FB_ERRMSG_EXPECTEDPPENDIF )

@@ -7,12 +7,14 @@
 function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
+
+	assert( iif( sym, symbIsField( sym ) = FALSE, TRUE ) )
 
 	if( dtype = FB_DATATYPE_INVALID ) then
 		select case( symbGetClass( sym ) )
@@ -21,7 +23,11 @@ function astNewVAR _
 			subtype = NULL
 		case FB_SYMBCLASS_PROC
 			dtype = FB_DATATYPE_FUNCTION
-			subtype = sym
+			if( symbGetIsFuncPtr( sym ) ) then
+				subtype = sym
+			else
+				subtype = symbAddProcPtrFromFunction( sym )
+			end if
 		case else
 			dtype = symbGetFullType( sym )
 			subtype = symbGetSubtype( sym )
@@ -51,7 +57,7 @@ end function
 
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s = any
-    dim as integer ofs = any
+	dim as longint ofs = any
 	dim as IRVREG ptr vr = NULL
 
 	s = n->sym

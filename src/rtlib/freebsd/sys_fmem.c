@@ -5,7 +5,7 @@
 #include <sys/vmmeter.h>
 #include <vm/vm_param.h>
 
-FBCALL unsigned int fb_GetMemAvail( int mode )
+FBCALL size_t fb_GetMemAvail( int mode )
 {
 	int mib[2] = { CTL_VM, VM_METER };
 	struct vmtotal vmt;

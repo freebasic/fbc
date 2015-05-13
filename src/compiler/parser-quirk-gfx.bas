@@ -24,35 +24,56 @@ const FBGFX_DEFAULT_COLOR_FLAG     = &h80000000
 const FBGFX_DEFAULT_AUX_COLOR_FLAG = &h40000000
 const FBGFX_VIEW_SCREEN_FLAG       = &h00000001
 
-'' match, not using a token, but a raw text value
-'':::::
-private function hMakeArrayIndex _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval varexpr as ASTNODE ptr _
-	) as ASTNODE ptr
+'' Check for cast() AS ANY PTR or compatible overloads, and call them, if any.
+private function hMaybeUdt2Ptr( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FB_ERRMSG err_num = any
+	dim as FBSYMBOL ptr castproc = any
 
-    dim as ASTNODE ptr idxexpr, dataOffset
+	castproc = symbFindCastOvlProc( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr, @err_num )
+	if( castproc ) then
+		'' cast() overload found, call it
+		expr = astBuildCall( castproc, expr )
+	else
+		'' No cast() found
+
+		'' An error was shown? (multiple/mismatching overloads)
+		if( err_num <> FB_ERRMSG_OK ) then
+			astDelTree( expr )
+			expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+		end if
+	end if
+
+	function = expr
+end function
+
+private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr varexpr = any, idxexpr = any, dataOffset = any
+	dim as FBSYMBOL ptr sym = any
+
+	varexpr = nidxarray->l
+	astDelNode( nidxarray )
 
     '' field? (assuming field arrays can't be dynamic)
     if( astIsFIELD( varexpr ) ) then
+		'' No need to do anything; the tree is already accessing the
+		'' array field's 1st element. (would be different if it was
+		'' dynamic, because then this would just be the access to the
+		'' array descriptor)
     	return varexpr
     end if
 
+	sym = varexpr->sym
+
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
-
 		'' deref descriptor->data
 		idxexpr = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-                               FB_DATATYPE_INTEGER, _
-                               NULL, _
-                               FB_ARRAYDESC_DATAOFFS )
+				FB_DATATYPE_INTEGER, NULL, symb.fbarray_data )
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewDEREF( astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
-                                  FB_DATATYPE_INTEGER, _
-                                  NULL, _
-                                  FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS )
+					FB_DATATYPE_INTEGER, NULL, _
+					symb.fbarray_dimtb + symb.fbarraydim_lbound )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
@@ -71,15 +92,14 @@ private function hMakeArrayIndex _
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
-    	'' deref descriptor.data
+		'' deref descriptor.data
 		idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
-                             FB_ARRAYDESC_DATAOFFS, _
-                             FB_DATATYPE_INTEGER )
+				symb.fbarray_data, FB_DATATYPE_INTEGER )
 
 		'' descriptor->dimTB(0).lBound
 		dataOffset = astNewVAR( symbGetArrayDescriptor( sym ), _
-                                FB_ARRAYDESCLEN + FB_ARRAYDESC_LBOUNDOFS, _
-                                FB_DATATYPE_INTEGER )
+					symb.fbarray_dimtb + symb.fbarraydim_lbound, _
+					FB_DATATYPE_INTEGER )
 
 		'' lBound * elemLen
 		dataOffset = astNewBOP( AST_OP_MUL, _
@@ -94,111 +114,160 @@ private function hMakeArrayIndex _
 
     '' static array..
     else
-
-      idxexpr = astNewBOP( AST_OP_MUL, _
-                           astNewCONSTi( symbGetArrayFirstDim( sym )->lower ), _
-                           astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), _
-                           				 astGetSubType( varexpr ) ), FB_DATATYPE_UINT ) )
-
+		assert( symbGetArrayDimensions( sym ) > 0 )
+		idxexpr = astNewBOP( AST_OP_MUL, _
+			astNewCONSTi( symbArrayLbound( sym, 0 ) ), _
+			astNewCONSTi( symbCalcLen( astGetDataType( varexpr ), astGetSubType( varexpr ) ), _
+					FB_DATATYPE_UINT ) )
     end if
 
     function = astNewIDX( varexpr, idxexpr, _
     					  astGetFullType( varexpr ), astGetSubType( varexpr ) )
-
 end function
 
-'':::::
-private function hGetTarget _
+private function hMaybeArrayAccess2Ptr _
 	( _
-		byref expr as ASTNODE ptr, _
-		byref isptr as integer, _
-		byval allow_const as integer = FALSE _
-	) as FBSYMBOL ptr
+		byval expr as ASTNODE ptr, _
+		byval pdescexpr as ASTNODE ptr ptr _
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr s = any
-	dim as integer nidx_array = FALSE
+	select case( expr->class )
+	'' Support array accesses as in QB: The image will be stored into the
+	'' array starting at the given array element, not at the address stored
+	'' in the given array element.
+	case AST_NODECLASS_IDX
+		if( pdescexpr ) then
+			'' Simply access the array, will be passed BYDESC in rtlGfxGet()
+			assert( symbIsArray( expr->sym ) )
+			*pdescexpr = astNewVAR( expr->sym )
+		end if
+		expr = astNewADDROF( expr )
 
-	function = NULL
+	'' Same for array fields
+	case AST_NODECLASS_FIELD
+		if( symbIsArray( expr->sym ) ) then
+			if( pdescexpr ) then
+				'' Need to duplicate the array field access so it can be passed BYDESC in rtlGfxGet().
+				'' (a simple VAR on the array field symbol can't be done here, because it's
+				'' not a standalone array on stack, but could be anywhere in memory)
+				'' If the expression contains CALLs (side-effects) though, we mustn't duplicate it,
+				'' and unfortunately astRemSideFx() only works for scalars, not entire arrays,
+				'' so must show an error in that case...
+				if( astHasSideFx( expr ) ) then
+					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+					astDelTree( expr )
+					expr = astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) )
+				else
+					*pdescexpr = astCloneTree( expr )
+					expr = astNewADDROF( expr )
+				end if
+			else
+				expr = astNewADDROF( expr )
+			end if
+		end if
+	end select
 
-	isptr = FALSE
-	expr = NULL
+	function = expr
+end function
 
-	if( lexGetToken( ) = CHAR_LPRNT ) then
-		exit function
+''
+'' Various GFX quirk statements accept an "fb.IMAGE" source and/or destination
+'' parameter. We accept the following expressions here:
+''
+''  - pointer or UDT (with matching cast()) expression: use pointer as-is
+''
+''  - array access (non-pointer type, and UDTs without matching cast()): use
+''    array itself as image buffer, starting at given element (QB compatibility)
+''
+''  - NIDXARRAY: use array itself as image buffer, starting at the front,
+''    regardless of array's dtype. (QB compatibility)
+''
+private function hCheckFbImageExpr _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval allow_const as integer, _
+		byval pdescexpr as ASTNODE ptr ptr = NULL _
+	) as ASTNODE ptr
+
+	'' remove any casting if they won't do any conversion
+	expr = astRemoveNoConvCAST( expr )
+
+	if( astIsNIDXARRAY( expr ) ) then
+		'' Support non-indexed arrays as in QB: Build an array access to
+		'' the 1st element and turn into pointer, regardless of array's dtype.
+		expr = hMaybeArrayAccess2Ptr( hNidxArray2ArrayAccess( expr ), pdescexpr )
+	else
+		'' UDT expression? Turn into pointer if it has a matching cast()
+		'' (cannot check for FB.IMAGE directly because it's not a built-in type)
+		if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
+			expr = hMaybeUdt2Ptr( expr )
+		end if
+
+		'' Special handling for array accesses
+		if( typeIsPtr( expr->dtype ) = FALSE ) then
+			expr = hMaybeArrayAccess2Ptr( expr, pdescexpr )
+		end if
 	end if
 
-    '' flag it as an expression so
-    '' properties don't get confused
-	expr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK or FB_VAREXPROPT_ALLOWADDROF or FB_VAREXPROPT_ISEXPR )
+	'' Ultimately it always has to be a pointer, that will be passed BYVAL
+	'' to the BYREF AS ANY parameters
+	if( typeIsPtr( expr->dtype ) = FALSE ) then
+		'' UDT?
+		if( typeGetDtAndPtrOnly( expr->dtype ) = FB_DATATYPE_STRUCT ) then
+			'' Show a nicer error than "expected pointer"
+			errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+				   " """ & *symbGetName( expr->subtype ) & ".cast() as any ptr""" )
+		else
+			errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+		end if
+		expr = astNewADDROF( expr )
+	end if
+
+	'' Disallow PUT'ting into a CONST object etc.
+	if( allow_const = FALSE ) then
+		if( typeIsConst( typeDeref( expr->dtype ) ) ) then
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+		end if
+	end if
+
+	function = expr
+end function
+
+private function hFbImageExpr _
+	( _
+		byval allow_const as integer, _
+		byval pdescexpr as ASTNODE ptr ptr = NULL _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	expr = cExpressionWithNIDXARRAY( TRUE )
 	if( expr = NULL ) then
 		exit function
 	end if
 
-	'' remove any casting if they won't do any conversion
-	if( astIsCAST( expr ) ) then
-		if( astGetCASTDoConv( expr ) = FALSE ) then
-			dim as ASTNODE ptr l = astGetLeft( expr )
-			astDelNode( expr )
-			expr = l
-		end if
+	function = hCheckFbImageExpr( expr, allow_const, pdescexpr )
+end function
+
+'' [Expr ','] '('
+private function hFbImageExprInFrontOfCoord( byval allow_const as integer ) as ASTNODE ptr
+	dim as ASTNODE ptr expr = any
+
+	'' '('? Assume it's the (x, y) coordinate syntax, instead of an FB.IMAGE
+	'' expression in parentheses.
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		exit function
 	end if
 
-	select case as const astGetClass( expr )
-	'' ugly hack to deal with arrays w/o indexes
-	case AST_NODECLASS_NIDXARRAY
-		nidx_array = TRUE
-		dim as ASTNODE ptr arrayexpr = astGetLeft( expr )
-		astDelNode( expr )
-		s = astGetSymbol( arrayexpr )
-		expr = hMakeArrayIndex( s, arrayexpr )
-
-	'' address-of or pointer deref?
-	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET, _
-		 AST_NODECLASS_DEREF, AST_NODECLASS_BOP
-
-		isptr = TRUE
-		s = NULL
-
-	'' var, idx, ...
-	case else
-		s = astGetSymbol( expr )
-		if( s = NULL ) then
-			'' pointer?
-			if( typeIsPtr( astGetDataType( expr ) ) ) then
-				isptr = TRUE
-				return NULL
-			else
-				exit function
-			end if
-		end if
-
-		'' ptr?
-		isptr = typeIsPtr( symbGetType( s ) )
-
-		'' array?
-		if( symbIsArray( s ) ) then
-			'' no index given?
-			if( astIsIDX( expr ) = FALSE ) then
-				expr = hMakeArrayIndex( s, expr )
-			end if
-
-		'' not a ptr? fail..
-		elseif( isptr = FALSE ) then
-			exit function
-		end if
-
-	end select
-	
-	'' don't allow a pointer to a const...
-	if( allow_const = FALSE ) then
-		if( (typeGetConstMask( astGetFullType( expr ) ) and (1 shl (FB_DT_CONSTPOS + iif( nidx_array, 0, 1 )))) ) then
-			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-			exit function
-		end if
+	expr = hFbImageExpr( allow_const )
+	if( expr = NULL ) then
+		exit function
 	end if
-	
-	function = s
 
+	'' ','
+	hMatchCOMMA( )
+
+	function = expr
 end function
 
 '':::::
@@ -323,17 +392,13 @@ end function
 '' GfxPset     =   PSET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' (',' Expr )?
 ''
 function cGfxPset( byval ispreset as integer ) as integer
-    dim as integer flags, tisptr
+	dim as integer flags
     dim as ASTNODE ptr xexpr, yexpr, cexpr, texpr
-    dim as FBSYMBOL ptr target
 
 	function = FALSE
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -361,35 +426,26 @@ function cGfxPset( byval ispreset as integer ) as integer
 		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
-	''
-	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, flags, ispreset )
-
+	function = rtlGfxPset( texpr, xexpr, yexpr, cexpr, flags, ispreset )
 end function
 
 '':::::
 '' LINE ( Expr ',' )? STEP? ('(' Expr ',' Expr ')')? '-' STEP? '(' Expr ',' Expr ')' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 ''
 function cGfxLine as integer
-    dim as integer flags, linetype, tisptr
+	dim as integer flags, linetype
     dim as ASTNODE ptr styleexpr, x1expr, y1expr, x2expr, y2expr, cexpr, texpr
-    dim as FBSYMBOL ptr target
 
 	function = FALSE
 
 	'' '-'?
 	if( hMatch( CHAR_MINUS ) ) then
-
 		flags = FBGFX_COORDTYPE_R
 		x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
 		y1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
-
 	else
-
 		'' ( Expr ',' )?
-		target = hGetTarget( texpr, tisptr )
-		if( (target <> NULL) or (tisptr) ) then
-			hMatchCOMMA( )
-		end if
+		texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 		'' STEP?
 		if( hMatch( FB_TK_STEP ) ) then
@@ -400,15 +456,10 @@ function cGfxLine as integer
 
 		'' ('(' Expr ',' Expr ')')?
 		if( hMatch( CHAR_LPRNT ) ) then
-
 			hMatchExpression( x1expr )
-
 			hMatchCOMMA( )
-
 			hMatchExpression( y1expr )
-
 			hMatchRPRNT( )
-
 		else
 			flags = FBGFX_COORDTYPE_R
 			x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
@@ -420,7 +471,6 @@ function cGfxLine as integer
 			errReport( FB_ERRMSG_EXPECTEDMINUS )
 			exit function
 		end if
-	
 	end if
 
 	'' STEP?
@@ -440,13 +490,9 @@ function cGfxLine as integer
 
 	'' '(' Expr ',' Expr ')'
 	hMatchLPRNT( )
-
 	hMatchExpression( x2expr )
-
 	hMatchCOMMA( )
-
 	hMatchExpression( y2expr )
-
 	hMatchRPRNT( )
 
 	linetype = FBGFX_LINETYPE_LINE
@@ -481,27 +527,21 @@ function cGfxLine as integer
 		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
-	''
-	function = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
-						   cexpr, linetype, styleexpr, flags )
-
+	function = rtlGfxLine( texpr, x1expr, y1expr, x2expr, y2expr, _
+	                       cexpr, linetype, styleexpr, flags )
 end function
 
 '':::::
 '' GfxCircle     =   CIRCLE ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
 ''
 function cGfxCircle as integer
-    dim as integer flags, fillflag, tisptr
+	dim as integer flags, fillflag
     dim as ASTNODE ptr xexpr, yexpr, cexpr, radexpr, iniexpr, endexpr, aspexpr, texpr
-    dim as FBSYMBOL ptr target
 
 	function = FALSE
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -512,18 +552,13 @@ function cGfxCircle as integer
 
 	'' '(' Expr ',' Expr ')'
 	hMatchLPRNT( )
-
 	hMatchExpression( xexpr )
-
 	hMatchCOMMA( )
-
 	hMatchExpression( yexpr )
-
 	hMatchRPRNT( )
 
 	'' ',' Expr - radius
 	hMatchCOMMA( )
-
 	hMatchExpression( radexpr )
 
 	aspexpr = NULL
@@ -569,9 +604,8 @@ function cGfxCircle as integer
 		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
-	''
-	function = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, _
-			  			     aspexpr, iniexpr, endexpr, fillflag, flags )
+	function = rtlGfxCircle( texpr, xexpr, yexpr, radexpr, cexpr, _
+	                         aspexpr, iniexpr, endexpr, fillflag, flags )
 
 end function
 
@@ -580,16 +614,12 @@ end function
 ''
 function cGfxPaint as integer
     dim as ASTNODE ptr xexpr, yexpr, pexpr, bexpr, texpr
-	dim as integer flags, tisptr
-    dim as FBSYMBOL ptr target
+	dim as integer flags
 
 	function = FALSE
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -632,8 +662,7 @@ function cGfxPaint as integer
 		flags or= FBGFX_DEFAULT_AUX_COLOR_FLAG
 	end if
 
-	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, flags )
-
+	function = rtlGfxPaint( texpr, xexpr, yexpr, pexpr, bexpr, flags )
 end function
 
 '':::::
@@ -641,18 +670,12 @@ end function
 ''
 function cGfxDrawString as integer
 	dim as ASTNODE ptr texpr, xexpr, yexpr, sexpr, cexpr, fexpr, alphaexpr, funcexpr, paramexpr
-	dim as integer tisptr, fisptr, flags, mode
-    dim as FBSYMBOL ptr target
+	dim as integer flags, mode
 
 	function = FALSE
 
-	texpr = NULL
-
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -690,7 +713,7 @@ function cGfxDrawString as integer
 
 		'' custom user font
 		if( hMatch( CHAR_COMMA ) ) then
-			target = hGetTarget( fexpr, fisptr, TRUE )
+			fexpr = hFbImageExpr( TRUE )
 
 			'' mode
 			if( hMatch( CHAR_COMMA ) ) then
@@ -706,43 +729,63 @@ function cGfxDrawString as integer
 		flags or= FBGFX_DEFAULT_COLOR_FLAG
 	end if
 
-	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, flags, mode, alphaexpr, funcexpr, paramexpr )
-
+	function = rtlGfxDrawString( texpr, xexpr, yexpr, sexpr, cexpr, fexpr, _
+	                             flags, mode, alphaexpr, funcexpr, paramexpr )
 end function
 
-'':::::
-'' GfxDraw    =   DRAW ( Expr ',' )? Expr
+''
+'' GfxDraw    =    DRAW [Expression1 ','] Expression2
+''
+'' Expression1 = target FB.IMAGE expression, can be NIDXARRAY
+'' Expression2 = string expression (no NIDXARRAYs allowed)
+''
+'' This is difficult to parse because it's difficult to detect whether we're
+'' given two expressions or just one expression. Specifically because the 1st
+'' expression has slightly different rules (allows NIDXARRAY) than the 2nd,
+'' but only if there are 2 expressions. We'd need infinite look-ahead to check
+'' for the ',' separating the 2 expressions...
+''
+'' Luckily allowing NIDXARRAY is the only difference, and it's a rather tiny
+'' difference. We can always parse the 1st expression allowing NIDXARRAY.
+'' Then if there's a 2nd one, parse that as normal expression, and all is well.
+'' Otherwise if there's no 2nd one, the 1st expression wasn't allowed to have
+'' NIDXARRAY, and we can check it with astIsNIDXARRAY().
 ''
 function cGfxDraw as integer
-	dim as ASTNODE ptr cexpr, texpr
-    dim as integer tisptr
-    dim as FBSYMBOL ptr target
+	dim as ASTNODE ptr expr1, expr2
 
 	function = FALSE
 
-	texpr = NULL
+	'' DRAW STRING?
 	if( hMatch( FB_TK_STRING ) ) then
-		function = cGfxDrawString
-		exit function
-	else
-		select case lexGetLookAhead( 1 )
-
-        '' dot handling needed because of the
-        '' "period in symbol" ambiguity -cha0s
-        case CHAR_COMMA, CHAR_DOT
-			target = hGetTarget( texpr, tisptr )
-			if( (target = NULL) and (tisptr = FALSE) ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				exit function
-			end if
-			hMatch( CHAR_COMMA )
-		end select
+		return cGfxDrawString( )
 	end if
 
-	hMatchExpression( cexpr )
+	'' Parse 1st expression, allowing NIDXARRAYs
+	expr1 = cExpressionWithNIDXARRAY( TRUE )
+	if( expr1 = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		exit function
+	end if
 
-	function = rtlGfxDraw( texpr, tisptr, cexpr )
+	'' ','? (have 2nd expression?)
+	if( hMatch( CHAR_COMMA ) ) then
+		'' 1st was the target image expression, process it as such
+		expr1 = hCheckFbImageExpr( expr1, FALSE )
 
+		'' Parse 2nd expression normally
+		hMatchExpression( expr2 )
+	else
+		'' 1st was the string expression, disallow NIDXARRAYs
+		if( astIsNIDXARRAY( expr1 ) ) then
+			errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE )
+			exit function
+		end if
+		expr2 = expr1
+		expr1 = NULL
+	end if
+
+	function = rtlGfxDraw( expr1, expr2 )
 end function
 
 '':::::
@@ -831,30 +874,21 @@ end function
 ''
 function cGfxPalette as integer
     dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
-    dim as FBSYMBOL ptr s
-    dim as integer isget, isptr
+	dim as integer isget
 
 	function = FALSE
 
-	if( hMatchText( "GET" ) ) then
-		isget = TRUE
-	else
-		isget = FALSE
-	end if
+	isget = hMatchText( "GET" )
 
     '' this could fail if using was #undef'ed and made a method...
 	if( hMatch( FB_TK_USING ) ) then
-
-		s = hGetTarget( arrayexpr, isptr, not isget )
-		if( (s = NULL) and (isptr = FALSE) ) then
-            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-            exit function
-        end if
-		
-        function = rtlGfxPaletteUsing( arrayexpr, isptr, isget )
-
+		arrayexpr = hFbImageExpr( not isget )
+		if( arrayexpr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			exit function
+		end if
+		function = rtlGfxPaletteUsing( arrayexpr, isget )
 	else
-
 		attexpr = NULL
 		rexpr = NULL
 		gexpr = NULL
@@ -903,32 +937,30 @@ function cGfxPalette as integer
 				exit function
 			end if
 		end if
-		
+
 		dim as integer has_const = FALSE
 		if( isget ) then
 			has_const or= iif( rexpr, typeIsConst( astGetFullType( rexpr ) ), FALSE )
 			has_const or= iif( gexpr, typeIsConst( astGetFullType( gexpr ) ), FALSE )
 			has_const or= iif( bexpr, typeIsConst( astGetFullType( bexpr ) ), FALSE )
 		end if
-		
+
 		if( has_const ) then
 			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 		end if
-		
+
 		function = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr, isget )
-
 	end if
-
 end function
 
 '':::::
 '' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' ('(' Expr ',' Expr ')' '-' '(' Expr ',' Expr ')' ',')? Variable (',' Mode (',' Alpha)?)?
 ''
 function cGfxPut as integer
-    dim as integer coordtype, mode, isptr, tisptr, expectmode
+	dim as integer coordtype, mode, expectmode
     dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, _
     				   funcexpr, paramexpr, x1expr, y1expr, x2expr, y2expr
-    dim as FBSYMBOL ptr s, target, arg1, arg2
+	dim as FBSYMBOL ptr arg1, arg2
 
 	function = FALSE
 
@@ -938,10 +970,7 @@ function cGfxPut as integer
 	x1expr = NULL
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -952,20 +981,16 @@ function cGfxPut as integer
 
 	'' '(' Expr ',' Expr ')'
 	hMatchLPRNT( )
-
 	hMatchExpression( xexpr )
-
 	hMatchCOMMA( )
-
 	hMatchExpression( yexpr )
-
 	hMatchRPRNT( )
 
 	'' ',' Variable
 	hMatchCOMMA( )
 
-	s = hGetTarget( arrayexpr, isptr, TRUE )
-	if( (s = NULL) and (isptr = FALSE) ) then
+	arrayexpr = hFbImageExpr( TRUE )
+	if( arrayexpr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
@@ -973,11 +998,9 @@ function cGfxPut as integer
 	'' (',' Mode)?
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
-
 		expectmode = TRUE
 
 		if( hMatch( CHAR_LPRNT ) ) then
-
 			hMatchExpression( x1expr )
 			hMatchCOMMA( )
 			hMatchExpression( y1expr )
@@ -1015,28 +1038,22 @@ function cGfxPut as integer
 		end if
 	end if
 
-	''
-	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
-						  x1expr, y1expr, x2expr, y2expr, _
-						  mode, alphaexpr, funcexpr, paramexpr, coordtype )
-
+	function = rtlGfxPut( texpr, xexpr, yexpr, arrayexpr, _
+	                      x1expr, y1expr, x2expr, y2expr, _
+	                      mode, alphaexpr, funcexpr, paramexpr, coordtype )
 end function
 
 '':::::
 '' GfxGet   =   GET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' '-' STEP? '(' Expr ',' Expr ')' ',' Variable
 ''
 function cGfxGet as integer
-    dim as integer coordtype, isptr, tisptr
-    dim as ASTNODE ptr x1expr, y1expr, x2expr, y2expr, arrayexpr, texpr
-    dim as FBSYMBOL ptr s, target
+	dim as integer coordtype
+	dim as ASTNODE ptr x1expr, y1expr, x2expr, y2expr, arrayexpr, texpr, descexpr
 
 	function = FALSE
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr, TRUE )
-	if( (target <> NULL) or (tisptr) ) then
-		hMatchCOMMA( )
-	end if
+	texpr = hFbImageExprInFrontOfCoord( TRUE )
 
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
@@ -1047,13 +1064,9 @@ function cGfxGet as integer
 
 	'' '(' Expr ',' Expr ')' - x1 and y1
 	hMatchLPRNT( )
-
 	hMatchExpression( x1expr )
-
 	hMatchCOMMA( )
-
 	hMatchExpression( y1expr )
-
 	hMatchRPRNT( )
 
 	'' '-'
@@ -1079,28 +1092,24 @@ function cGfxGet as integer
 
 	'' '(' Expr ',' Expr ')' - x2 and y2
 	hMatchLPRNT( )
-
 	hMatchExpression( x2expr )
-
 	hMatchCOMMA( )
-
 	hMatchExpression( y2expr )
-
 	hMatchRPRNT( )
 
 	'' ',' Variable
 	hMatchCOMMA( )
 
-	s = hGetTarget( arrayexpr, isptr )
-	if( (s = NULL) and (isptr = FALSE) ) then
+	'' descexpr: If an array was given, we pass the descriptor to
+	'' fb_GfxGet() so it can do extra bound checks
+	arrayexpr = hFbImageExpr( FALSE, @descexpr )
+	if( arrayexpr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
-    ''
-	function = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
-						  arrayexpr, isptr, s, coordtype )
-
+	function = rtlGfxGet( texpr, x1expr, y1expr, x2expr, y2expr, _
+	                      arrayexpr, coordtype, descexpr )
 end function
 
 '':::::
@@ -1184,8 +1193,6 @@ end function
 ''
 function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr xexpr, yexpr, texpr
-    dim as integer tisptr
-    dim as FBSYMBOL ptr target
 
 	function = FALSE
 
@@ -1200,8 +1207,8 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchExpression( yexpr )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			target = hGetTarget( texpr, tisptr, TRUE )
-			if( (target = NULL) and (tisptr = FALSE) ) then
+			texpr = hFbImageExpr( TRUE )
+			if( texpr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
@@ -1210,10 +1217,9 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 	hMatchRPRNT( )
 
-	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
+	funcexpr = rtlGfxPoint( texpr, xexpr, yexpr )
 
 	function = funcexpr <> NULL
-
 end function
 
 '':::::

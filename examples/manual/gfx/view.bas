@@ -7,25 +7,36 @@
 '' --------
 
 Screen 12
-Dim ip As Integer Ptr
-Dim As Integer i, j, k
+Dim ip As Any Ptr
+Dim As Integer x, y
+
 'simple sprite
-For i=0 To 63: For j=0 To 63:PSet (i,j), (i\4) Xor (j\4):Next j,i
-ip=ImageCreate(64,64)
-Get (0,0)-(63,63),ip
-Cls
-'viewport
-Line (215,135)-(425,345),1,bf
-View  (220,140)-(420,340)
-k=0
-'move sprite
+ip = ImageCreate(64,64)
+For y = 0 To 63
+  For x = 0 To 63
+	PSet ip, (x, y), (x\4) Xor (y\4)
+  Next x
+Next y
+
+'viewport with blue border
+Line (215,135)-(425,345), 1, bf
+View (220,140)-(420,340)
+
+'move sprite around the viewport
 Do
-  i=100*Sin(k*.02)+50:  j=100* Sin(k*.027)+50
+
+  x = 100*Sin(Timer*2.0)+50
+  y = 100*Sin(Timer*2.7)+50
+  
   ScreenSync
   ScreenLock
-  Cls 1: Put (i,j),ip ,PSet
+  
+  'clear viewport and put image
+  Cls 1
+  Put (x, y), ip, PSet
+	
   ScreenUnlock
-  k=k+1
-Loop Until Len(Inkey)
-ImageDestroy(ip)
 
+Loop While Inkey = ""
+
+ImageDestroy(ip)

@@ -3,7 +3,7 @@
 #include "common.bi"
 
 	redim shared arr_dynamic_int() as integer
-	redim shared arr_dynamic_int_with_alias( )
+	redim shared arr_dynamic_int_with_alias( ) as integer
 
 sub arr_init()
 	redim arr_dynamic_int(TEST_LBOUND to TEST_UBOUND)

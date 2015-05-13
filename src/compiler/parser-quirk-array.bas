@@ -19,12 +19,7 @@ function cEraseStmt() as integer
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipUntil( CHAR_COMMA )
 		else
-			'' ugly hack to deal with arrays w/o indexes
-			if( astIsNIDXARRAY( expr ) ) then
-				var expr2 = astGetLeft( expr )
-				astDelNode( expr )
-				expr = expr2
-			end if
+			expr = astRemoveNIDXARRAY( expr )
 
 			'' array?
 			var s = astGetSymbol( expr )
@@ -58,37 +53,7 @@ function cEraseStmt() as integer
 	function = TRUE
 end function
 
-private function hMakeRef _
-	( _
-		byval t as ASTNODE ptr, _
-		byref expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
-	'' expression with side-effects to that, and replaces the expression
-	'' with an access to that temp var. Effectively this causes the
-	'' expression with side-effects to be used only once.
-	''
-	'' However, here we're taking a reference to the expression instead of
-	'' storing its result, otherwise SWAP would overwrite the temp var,
-	'' not the actual data. This also means LINK nodes must be used,
-	'' because we don't support references across statements...
-
-	'' var ref
-	var ref = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), _
-				astGetSubtype( expr ) )
-
-	'' ref = @expr
-	function = astNewLINK( t, _
-		astNewASSIGN( astNewVAR( ref ), astNewADDROF( expr ) ) )
-
-	'' Use *ref instead of the original expr
-	expr = astNewDEREF( astNewVAR( ref ) )
-
-end function
-
-'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
-function cSwapStmt() as integer
+private function hScopedSwap( ) as integer
 	lexSkipToken( )
 
 	var l = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
@@ -119,7 +84,7 @@ function cSwapStmt() as integer
 	dim as integer ldtype = astGetDataType( l )
 	dim as integer rdtype = astGetDataType( r )
 
-	select case ldtype
+	select case( ldtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		select case rdtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
@@ -128,16 +93,15 @@ function cSwapStmt() as integer
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end select
 		exit function
-	end select
 
-	if( ldtype = FB_DATATYPE_WCHAR ) then
+	case FB_DATATYPE_WCHAR
 		if( rdtype = FB_DATATYPE_WCHAR ) then
 			function = rtlWstrSwap( l, r )
 		else
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end if
 		exit function
-	end if
+	end select
 
 	'' Check whether a "raw" assignment (no operator overloads) would work.
 	'' Must check both l = r and r = l due to inheritance with UDTs which
@@ -181,16 +145,15 @@ function cSwapStmt() as integer
 	use_pushpop and= (astIsBITFIELD( r ) = FALSE)
 
 	'' A scope to enclose the temp vars
-	dim as ASTNODE ptr scopenode = astScopeBegin( )
 	dim as ASTNODE ptr t = NULL
 
 	'' Side effects? Then use references to be able to read/write...
-	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
-		t = hMakeRef( t, l )
+	if( astHasSideFx( l ) ) then
+		t = astNewLINK( t, astMakeRef( l ) )
 	end if
 
-	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
-		t = hMakeRef( t, r )
+	if( astHasSideFx( r ) ) then
+		t = astNewLINK( t, astMakeRef( r ) )
 	end if
 
 	if( use_pushpop ) then
@@ -215,8 +178,22 @@ function cSwapStmt() as integer
 	end if
 
 	astAdd( t )
-	astScopeEnd( scopenode )
 	function = TRUE
+end function
+
+'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
+function cSwapStmt( ) as integer
+	dim as ASTNODE ptr scopenode = any
+
+	'' A scope to enclose the SWAP temp vars
+	'' (must be created before parsing the lhs/rhs expressions, because they
+	'' may use temp vars themselves, and they'd be destructed during the
+	'' astAdd()'s done by astScopeBegin())
+	scopenode = astScopeBegin( )
+
+	function = hScopedSwap( )
+
+	astScopeEnd( scopenode )
 end function
 
 '':::::
@@ -245,12 +222,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 			return astNewCONSTi( 0 )
 		end if
 
-		'' ugly hack to deal with arrays w/o indexes
-		if( astIsNIDXARRAY( arrayexpr ) ) then
-			dim as ASTNODE ptr expr = astGetLeft( arrayexpr )
-			astDelNode( arrayexpr )
-			arrayexpr = expr
-		end if
+		arrayexpr = astRemoveNIDXARRAY( arrayexpr )
 
 		'' array?
 		s = astGetSymbol( arrayexpr )

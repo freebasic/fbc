@@ -3,9 +3,10 @@
 #include "../fb.h"
 #include "fb_private_console.h"
 
-char *fb_ConsoleReadStr( char *buffer, int len )
+char *fb_ConsoleReadStr( char *buffer, ssize_t len )
 {
-	int k, x, y, cols, pos = 0;
+	int k, x, y, cols;
+	ssize_t pos = 0;
 	char ch[2] = { 0, '\0' };
 
 	if (!__fb_con.inited)
@@ -15,12 +16,6 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 
 	do {
 		while( ((k = fb_hGetCh(TRUE)) == -1) || (k > 0xFF) )
-			fb_Delay( 10 );
-
-		/* drop subsequent keypresses, if any; this is needed to avoid escape
-		 * sequence parsing problems in the fb_ConsoleGetXY() call below.
-		 */
-		while( fb_hGetCh(TRUE) >= 0 )
 			fb_Delay( 10 );
 
 		fb_ConsoleGetXY(&x, &y);

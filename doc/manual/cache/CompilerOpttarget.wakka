@@ -6,40 +6,74 @@ Set the target platform for cross compilation
 ##
 {{fbdoc item="param"}}
 	##//platform//##
-		The target platform. (See below)
+		The target platform. Recognized values:
+		
+			- ##dos##
+			- ##win32##
+			- ##win64##
+			- ##xbox##
+			- ##<os>-<arch>##
+				##<os>## can be one of:
+					- ##linux##
+					- ##cygwin##
+					- ##darwin##
+					- ##freebsd##
+					- ##netbsd##
+					- ##openbsd##
+				##<arch>## can be one of:
+					- ##x86##
+					- ##x86_64##
+					- ##arm##
+					- ##aarch64##
+				Examples:
+					- ##linux-x86##
+					- ##linux-x86_64##
+					- ##linux-arm##
+					- ##linux-aarch64##
+					- ##freebsd-x86##
+					- ##freebsd-x86_64##
+					- ##...##
+			- For backwards compatibility, the following values are recognized. They will select the corresponding operating system, together with the compiler's default architecture (same as the host), because these values do not specify an architecture explicitly.
+				- ##linux##
+				- ##cygwin##
+				- ##darwin##
+				- ##freebsd##
+				- ##netbsd##
+				- ##openbsd##
+			- The [[DevNormalVsStandalone Normal]] fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:
+				- ##i686-w64-mingw32##
+				- ##x86_64-w64-mingw32##
+				- ##i686-pc-linux-gnu##
+				- ##arm-linux-gnueabihf##
+				- ##...##
 
 {{fbdoc item="desc"}}
-	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work.
+	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked. Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work (also see [[DevCrossCompiling FB and cross-compiling]]). 
 	
-	The behavior of ##-target## differs depending on whether the FB setup was configured as [[DevNormalVsStandalone Normal or Standalone]].
+	If ##-target <platform>## is given, the compiler will compile programs more or less as if they were compiled on the given platform. This affects which ##""__FB_*__""## operating-system-specific symbol will be pre-defined, the default calling convention, the object and executable file format (e.g. ELF/COFF), the available runtime libraries and functions, etc.
 	
-		- for Normal, such as the ""FreeBASIC-linux"" release:
+	With a standalone FB setup such as the FB-dos or FB-win32 releases:
+	
+		- Specifying ##-target <platform>## causes the compiler to use the compiler tools in the ##bin/<platform>/## directory, and target-specific libraries in the ##lib/<platform>/## directory. For example, ##-target win32## causes the compiler to compile for ""Win32"" and use tools from ##bin/win32/## and libraries from ##lib/win32/##.
 		
+		- It is unnecessary (but safe) to specify a ##-target## option that matches the host (for example ##-target win32## on ##win32##). It does not make a difference to the compilation process.
 		
-			Whatever is given for //platform// will be prefixed to the file names of the used gcc/binutils programs. This will typically be a system triplet such as ##i686-pc-linux-gnu##. For example, specifying ##-target i686-pc-linux-gnu## will cause the compiler to invoke ##i686-pc-linux-gnu-ld## instead of the native ##ld##.
-			
-			As an exception, if the given //platform// string matches the default FB target name for the host system, the -target option is ignored. This means that using ##-target linux## on Linux, ##-target win32## on ""Win32"" and so on, has no effect. This only affects the default FB target names listed for the Standalone setup below.
-			
-			If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke gcc/binutils without a target prefix.
+		- If ##-target## is not specified, the compiler defaults to compiling for the native system. It will then use the compiler tools and libraries from the ##bin/## and ##lib/## directories corresponding to the native system.
+	
+	With a normal FB setup such as the FB-linux release:
+	
+		- Specifying ##-target <platform>## causes the compiler to prefix the ##<platform>-## string to the executable names of binutils and gcc. For example, specifying ##-target i686-w64-mingw32## causes the compiler to invoke ##i686-w64-mingw32-ld## instead of ##ld## (same for other tools besides the linker). This allows fbc to integrate with binutils/gcc cross-compiler toolchains and matches how cross-compiling tools are typically installed on Linux distributions.
 		
-		- for Standalone, such as the ""FreeBASIC-win32"" release:
+		- Note that specifying something like ##-target win32## does not usually make sense here. It causes the compiler to try to use ##win32-ld## which usually does not exist, because binutils/gcc toolchains for cross-compilation to Windows typically have names such as ##i686-pc-mingw32##, not just ##win32##. Thus, it is necessary to specify something like ##-target i686-pc-mingw32## instead of ##-target win32##.
 		
+		- For backwards compatibility, if the given //platform// string describes the host and is an FB target name (the values accepted by the ##-target## option with a standalone FB setup) instead of a GNU triplet, then the ##-target## option will be ignored, and the ##<platform>-## string will not be prefixed to compiler tools. For example, this allows ##-target linux## to work with the FB-linux release. It will be ignored instead of causing the compiler to try to use ##linux-ld## instead of ##ld##.
 		
-			//platform// can be one of the default FB target names:
-			
-				- dos
-				- cygwin
-				- darwin
-				- freebsd
-				- linux
-				- netbsd
-				- openbsd
-				- win32
-				- xbox
+		- If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke binutils/gcc without a target-specific prefix. This allows fbc to integrate with usual Linux (and similar) systems where binutils/gcc for native compilation are installed without any target-specific prefix.
 		
-			The compilation target and the bin/ and lib/ sub-directories to use are selected base on whichever target name is given. For example, ##-target win32## causes the compiler to compile for ""Win32"" and use tools from ##bin/win32/## and libraries from ##lib/win32/##.
+		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]
+	- [[DevCrossCompiling FB and cross-compiling]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

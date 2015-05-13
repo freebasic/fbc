@@ -18,14 +18,19 @@
  * Christian Charras and Thierry Lecroq
  * ( http://www-igm.univ-mlv.fr/~lecroq/string/string.pdf ).
  */
-/*:::::*/
-static int fb_hFindQS( size_t start,
-					   const char *pachText, size_t len_text,
-					   const char *pachPattern, size_t len_pattern )
+
+static ssize_t fb_hFindQS
+	(
+		ssize_t start,
+		const char *pachText,
+		ssize_t len_text,
+		const char *pachPattern,
+		ssize_t len_pattern
+	)
 {
-	size_t max_size = len_text - len_pattern + 1;
-	size_t qs_bc[256];
-	size_t i;
+	ssize_t max_size = len_text - len_pattern + 1;
+	ssize_t qs_bc[256];
+	ssize_t i;
 
 	/* create "bad character" shifts */
 	for( i=0; i!=256; ++i)
@@ -67,21 +72,25 @@ static int fb_hFindQS( size_t start,
  * http://www.iti.fh-flensburg.de/lang/algorithmen/pattern/bm.htm
  */
 
-/*:::::*/
-static int fb_hFindBM( size_t start,
-					   const char *pachText, size_t len_text,
-					   const char *pachPattern, size_t len_pattern )
+static ssize_t fb_hFindBM
+	(
+		ssize_t start,
+		const char *pachText,
+		ssize_t len_text,
+		const char *pachPattern,
+		ssize_t len_pattern
+	)
 {
-	size_t i, j, len_max = len_text - len_pattern;
-	int bm_bc[256];
-	int *bm_gc, *suffixes;
-	int ret;
+	ssize_t i, j, len_max = len_text - len_pattern;
+	ssize_t bm_bc[256];
+	ssize_t *bm_gc, *suffixes;
+	ssize_t ret;
 
-	bm_gc = (int*) malloc(sizeof(int) * (len_pattern + 1));
-	suffixes = (int*) malloc(sizeof(int) * (len_pattern + 1));
+	bm_gc = (ssize_t*) malloc(sizeof(ssize_t) * (len_pattern + 1));
+	suffixes = (ssize_t*) malloc(sizeof(ssize_t) * (len_pattern + 1));
 
-	memset( bm_gc, 0, sizeof(int) * (len_pattern+1) );
-	memset( suffixes, 0, sizeof(int) * (len_pattern+1) );
+	memset( bm_gc, 0, sizeof(ssize_t) * (len_pattern+1) );
+	memset( suffixes, 0, sizeof(ssize_t) * (len_pattern+1) );
 
 	/* create "bad character" shifts */
 	memset(bm_bc, -1, sizeof(bm_bc));
@@ -135,8 +144,8 @@ static int fb_hFindBM( size_t start,
 		else 
 		{
 			char chText = pachText[i+j-1];
-			int shift_gc = bm_gc[j];
-			int shift_bc = j - 1 - bm_bc[ FB_CHAR_TO_INT(chText) ];
+			ssize_t shift_gc = bm_gc[j];
+			ssize_t shift_bc = j - 1 - bm_bc[ FB_CHAR_TO_INT(chText) ];
 			i += ( (shift_gc > shift_bc) ? shift_gc : shift_bc );
 		}
 	}
@@ -145,22 +154,25 @@ static int fb_hFindBM( size_t start,
 	free( suffixes );
 
 	return ret;
-
 }
 
 #if 0
-/*:::::*/
-static int fb_hFindNaive( size_t start,
-						  const char *pachText, size_t len_text,
-						  const char *pachPattern, size_t len_pattern )
+static ssize_t fb_hFindNaive
+	(
+		ssize_t start,
+		const char *pachText,
+		ssize_t len_text,
+		const char *pachPattern,
+		ssize_t len_pattern
+	)
 {
-	size_t i;
-	size_t imax = (len_text - len_pattern + 1);
+	ssize_t i;
+	ssize_t imax = (len_text - len_pattern + 1);
 	pachText += start;
 	if( start < imax )
 	{
 		for( i=start; i != imax; ++i ) {
-			size_t j;
+			ssize_t j;
 			for( j=0; j!=len_pattern; ++j ) {
 				if( pachText[j]!=pachPattern[j] )
 					break;
@@ -174,10 +186,9 @@ static int fb_hFindNaive( size_t start,
 }
 #endif
 
-/*:::::*/
-FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
+FBCALL ssize_t fb_StrInstr( ssize_t start, FBSTRING *src, FBSTRING *patt )
 {
-	int r;
+	ssize_t r;
 
 	if( (src == NULL) || (src->data == NULL) ||
 		(patt == NULL) || (patt->data == NULL) )
@@ -186,8 +197,8 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 	}
 	else
 	{
-		size_t size_src = FB_STRSIZE(src);
-		size_t size_patt = FB_STRSIZE(patt);
+		ssize_t size_src = FB_STRSIZE(src);
+		ssize_t size_patt = FB_STRSIZE(patt);
 
 		if( (size_src == 0) || (size_patt == 0) ||
 			((start < 1) || (start > size_src)) || (size_patt > size_src) )

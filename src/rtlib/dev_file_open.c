@@ -2,14 +2,6 @@
 
 #include "fb.h"
 
-int fb_hDevFileSeekStart
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_zero
-	);
-
 static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
@@ -27,6 +19,13 @@ static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileFlush
 };
 
+void fb_hSetFileBufSize( FILE *fp )
+{
+	/* change the default buffer size */
+	setvbuf( fp, NULL, _IOFBF, FB_FILE_BUFSIZE );
+	/* Note: setvbuf() is only allowed to be called before doing any I/O
+	   with that FILE handle */
+}
 
 int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
 {
@@ -120,6 +119,7 @@ int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
             }
         }
 
+        fb_hSetFileBufSize( fp );
         break;
 
     /* special case, fseek() is unreliable in text-mode, so the file size
@@ -132,6 +132,8 @@ int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
             FB_UNLOCK();
             return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
+
+        fb_hSetFileBufSize( fp );
 
         /* calc file size */
         handle->size = fb_DevFileGetSize( fp, FB_FILE_MODE_INPUT, handle->encod, FALSE );
@@ -149,6 +151,8 @@ int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
             return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
 
+        fb_hSetFileBufSize( fp );
+
         /* skip BOM, if any */
         fb_hDevFileSeekStart( fp, FB_FILE_MODE_INPUT, handle->encod, FALSE );
 
@@ -161,6 +165,8 @@ int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
             FB_UNLOCK();
             return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
+
+        fb_hSetFileBufSize( fp );
     }
 
 	if( handle->size == -1 )
@@ -174,9 +180,6 @@ int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
         	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
-
-    /* change the default buffer size */
-    setvbuf( fp, NULL, _IOFBF, FB_FILE_BUFSIZE );
 
     handle->opaque = fp;
     if (handle->access == FB_FILE_ACCESS_ANY)

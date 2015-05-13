@@ -2,15 +2,10 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_RTRIM 
-	( 
-		FBSTRING *src 
-	)
+FBCALL FBSTRING *fb_RTRIM( FBSTRING *src )
 {
 	FBSTRING *dst;
-	int len;
+	ssize_t len;
 
 	if( src == NULL )
 		return &__fb_ctx.null_desc;
@@ -24,7 +19,7 @@ FBCALL FBSTRING *fb_RTRIM
 		if( len > 0 )
 		{
 			char *src_ptr = fb_hStrSkipCharRev( src->data, len, 32 );
-			len = (int)(src_ptr - src->data) + 1;
+			len = (ssize_t)(src_ptr - src->data) + 1;
 		}
 	}
 

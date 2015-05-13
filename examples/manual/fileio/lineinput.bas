@@ -6,29 +6,13 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgLineinputPp
 '' --------
 
-' compile with -lang qb
+Dim s As String
 
-'$lang: "qb"
+Open "myfile.txt" For Output As #1
+Print #1, "Hello, World"
+Close #1
 
-Dim Filehandle As Integer
-Dim txt As String
-	
-On Error Goto HandleErrors
-	
-Filehandle = FreeFile
-Open "test_text_file.txt" For Input As #filehandle
-
-If LOF(filehandle) > 0 Then
-	    Line Input #filehandle, txt
-Else
-	    Goto HandleErrors
-End If
-
-Close #filehandle
-Print "The first line of test_text_file.txt is:"
-Print txt
-	
-HandleErrors:
-Print "Error."
-Resume Next
-
+Open "myfile.txt" For Input As #1
+Line Input #1, s
+Close #1
+Print s

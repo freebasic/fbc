@@ -42,29 +42,26 @@ char fb_hSoftCursor_data_end;
 
 void fb_hSoftCursor_code_start(void) { }
 
-
-/*:::::*/
 static void copy_cursor_area(int x, int y, int from_area)
 {
 	unsigned char *s, *d;
 	int w, h, s_pitch, d_pitch;
-	
+
 	w = (MIN(CURSOR_W, __fb_gfx->w - x) * __fb_gfx->bpp);
 	h = MIN(CURSOR_H, __fb_gfx->h - y);
-	
+
 	if (from_area) {
 		s = cursor_area;
 		d = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		s_pitch = w;
 		d_pitch = __fb_gfx->pitch;
-	}
-	else {
+	} else {
 		s = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
 		d = cursor_area;
 		s_pitch = __fb_gfx->pitch;
 		d_pitch = w;
 	}
-	
+
 	for (; h; h--) {
 		fb_hMemCpy(d, s, w);
 		s += s_pitch;
@@ -72,8 +69,6 @@ static void copy_cursor_area(int x, int y, int from_area)
 	}
 }
 
-
-/*:::::*/
 int fb_hColorDistance(int index, int r, int g, int b)
 {
 	return (((__fb_gfx->device_palette[index] & 0xFF) - r) * ((__fb_gfx->device_palette[index] & 0xFF) - r)) +
@@ -81,8 +76,6 @@ int fb_hColorDistance(int index, int r, int g, int b)
 	       ((((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b) * (((__fb_gfx->device_palette[index] >> 16) & 0xFF) - b));
 }
 
-
-/*:::::*/
 void fb_hSoftCursorInit(void)
 {
 	cursor_area = malloc(CURSOR_W * CURSOR_H * __fb_gfx->bpp);
@@ -101,8 +94,6 @@ void fb_hSoftCursorInit(void)
 	}
 }
 
-
-/*:::::*/
 void fb_hSoftCursorExit(void)
 {
 #ifdef HOST_DOS
@@ -111,17 +102,15 @@ void fb_hSoftCursorExit(void)
 	free(cursor_area);
 }
 
-
-/*:::::*/
 void fb_hSoftCursorPut(int x, int y)
 {
 	unsigned char *d, *dest;
 	int w, h, px, py, pixel, count;
 	unsigned int data;
 	const unsigned int *cursor;
-	
+
 	copy_cursor_area(x, y, FALSE);
-	
+
 	w = MIN(CURSOR_W, __fb_gfx->w - x);
 	h = MIN(CURSOR_H, __fb_gfx->h - y);
 	dest = __fb_gfx->framebuffer + (y * __fb_gfx->pitch) + (x * __fb_gfx->bpp);
@@ -131,7 +120,7 @@ void fb_hSoftCursorPut(int x, int y)
 		data = *cursor++;
 		for (px = 0; px < w;) {
 			pixel = data & 0x3;
-			for (count = 0; (px < w) && ((data & 0x3) == pixel); px++, data >>= 2)
+			for (count = 0; (px < w) && ((int)(data & 0x3) == pixel); px++, data >>= 2)
 				count++;
 			if (pixel == 0x3) {
 				if (__fb_gfx->bpp == 4)
@@ -148,20 +137,16 @@ void fb_hSoftCursorPut(int x, int y)
 	}
 }
 
-
-/*:::::*/
 void fb_hSoftCursorUnput(int x, int y)
 {
 	copy_cursor_area(x, y, TRUE);
 	fb_hMemSet(__fb_gfx->dirty + y, TRUE, MIN(CURSOR_H, __fb_gfx->h - y));
 }
 
-
-/*:::::*/
 void fb_hSoftCursorPaletteChanged(void)
 {
 	int i, dist, min_wdist = 1000000, min_bdist = 1000000;
-	
+
 	if (__fb_gfx->bpp > 1)
 		return;
 	for (i = 0; i < 256; i++) {

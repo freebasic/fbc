@@ -12,8 +12,8 @@
 function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as integer _
-	) as integer
+		byval defaultvalue as longint _
+	) as longint
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
@@ -30,7 +30,7 @@ function cConstIntExpr _
 end function
 
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
-	dim as integer dtype = any, lgt = any, mode = any, attrib = any
+	dim as integer dtype = any, mode = any, attrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
@@ -58,7 +58,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
 		else
-			cProcRetType( attrib, proc, TRUE, dtype, subtype, lgt )
+			cProcRetType( attrib, proc, TRUE, dtype, subtype )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed
@@ -79,7 +79,7 @@ function cTypeOrExpression _
 		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -134,10 +134,8 @@ function cTypeOrExpression _
 		end if
 	end if
 
-	'' Parse as expression
-	fbSetCheckArray( FALSE )
-	expr = cExpression( )
-	fbSetCheckArray( TRUE )
+	'' Parse as expression, allowing NIDXARRAYs
+	expr = cExpressionWithNIDXARRAY( TRUE )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
@@ -151,7 +149,7 @@ sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 	dim as ASTNODE ptr expr = any
@@ -164,12 +162,7 @@ sub cTypeOf _
 		exit sub
 	end if
 
-	'' ugly hack to deal with arrays w/o indexes
-	if( astIsNIDXARRAY( expr ) ) then
-		dim as ASTNODE ptr temp_node = expr
-		expr = astGetLeft( expr )
-		astDelNode( temp_node )
-	end if
+	expr = astRemoveNIDXARRAY( expr )
 
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
@@ -180,7 +173,7 @@ end sub
 
 function hIntegerTypeFromBitSize _
 	( _
-		byval bitsize as integer, _
+		byval bitsize as longint, _
 		byval is_unsigned as integer _
 	) as FB_DATATYPE
 
@@ -226,7 +219,7 @@ function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
+		byref lgt as longint, _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
@@ -276,7 +269,6 @@ function cSymbolType _
 		case FB_TK_ANY
 			lexSkipToken( )
 			dtype = FB_DATATYPE_VOID
-			lgt = 0
 
 		case FB_TK_BOOLEAN
 
@@ -310,21 +302,18 @@ function cSymbolType _
 		case FB_TK_BYTE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_BYTE
-			lgt = 1
+
 		case FB_TK_UBYTE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_UBYTE
-			lgt = 1
 
 		case FB_TK_SHORT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_SHORT
-			lgt = 2
 
 		case FB_TK_USHORT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_USHORT
-			lgt = 2
 
 		case FB_TK_INTEGER
 			lexSkipToken( )
@@ -342,11 +331,9 @@ function cSymbolType _
 				end if
 			else
 
-				dtype = fbLangGetType( INTEGER )
+				dtype = env.lang.integerkeyworddtype
 
 			end if
-
-			lgt = typeGetSize( dtype )
 
 		case FB_TK_UINT
 			lexSkipToken( )
@@ -369,65 +356,51 @@ function cSymbolType _
 
 			end if
 
-			lgt = typeGetSize( dtype )
-
 		case FB_TK_LONG
 			lexSkipToken( )
-			dtype = fbLangGetType( LONG )
-			lgt = fbLangGetSize( LONG )
+			dtype = FB_DATATYPE_LONG
 
 		case FB_TK_ULONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONG
-			lgt = FB_LONGSIZE
 
 		case FB_TK_LONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_LONGINT
-			lgt = FB_INTEGERSIZE*2
 
 		case FB_TK_ULONGINT
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONGINT
-			lgt = FB_INTEGERSIZE*2
 
 		case FB_TK_SINGLE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_SINGLE
-			lgt = 4
 
 		case FB_TK_DOUBLE
 			lexSkipToken( )
 			dtype = FB_DATATYPE_DOUBLE
-			lgt = 8
 
 		case FB_TK_STRING
 			lexSkipToken( )
 
 			'' assume it's a var-len string, see below for fixed-len
 			dtype = FB_DATATYPE_STRING
-			lgt = FB_STRDESCLEN
 
 		case FB_TK_ZSTRING
 			lexSkipToken( )
 
-			'' assume it's a pointer, see below for fixed-len
 			dtype = FB_DATATYPE_CHAR
-			lgt = 0
 
 		case FB_TK_WSTRING
 			lexSkipToken( )
 
-			'' ditto
 			dtype = FB_DATATYPE_WCHAR
-			lgt = 0
 
 		case FB_TK_FUNCTION, FB_TK_SUB
 			isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
 			lexSkipToken( )
 
 			dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
-			lgt = FB_POINTERSIZE
 			ptr_cnt += 1
 
 			subtype = cSymbolTypeFuncPtr( isfunction )
@@ -435,7 +408,18 @@ function cSymbolType _
 				exit function
 			end if
 
-		case else
+		end select
+
+		if( dtype <> FB_DATATYPE_INVALID ) then
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' Use 0 for now; will be set later if no length
+				'' given via * N (as in Z/WSTRING * N)
+				lgt = 0
+			case else
+				lgt = typeGetSize( dtype )
+			end select
+		else
 			dim as FBSYMCHAIN ptr chain_ = NULL
 			dim as FBSYMBOL ptr base_parent = any
 			dim as integer check_id = TRUE
@@ -467,7 +451,7 @@ function cSymbolType _
 							lexSkipToken( )
 							dtype = FB_DATATYPE_ENUM
 							subtype = sym
-							lgt = FB_INTEGERSIZE
+							lgt = typeGetSize( FB_DATATYPE_ENUM )
 							exit do, do
 
 						case FB_SYMBCLASS_TYPEDEF
@@ -485,7 +469,7 @@ function cSymbolType _
 					chain_ = symbChainGetNext( chain_ )
 				loop while( chain_ <> NULL )
 			end if
-		end select
+		end if
 
 		'' no type?
 		if( dtype = FB_DATATYPE_INVALID ) then
@@ -619,7 +603,7 @@ function cSymbolType _
 	end if
 
 	if( ptr_cnt > 0 ) then
-		lgt = FB_POINTERSIZE
+		lgt = typeGetSize( dtype )
 	else
 		'' can't have forward typedef's if they aren't pointers
 		if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
@@ -632,18 +616,16 @@ function cSymbolType _
 			end if
 
 		elseif( lgt <= 0 ) then
-			select case as const typeGet( dtype )
+			select case( typeGetDtAndPtrOnly( dtype ) )
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
-				'' (and also BYREF parameters/results)
+				'' Z|WSTRING can only be used without PTR in some places:
+				'' LEN()/SIZEOF(), BYREF parameters/results
 				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
 					errReport( FB_ERRMSG_EXPECTEDPOINTER )
 					'' error recovery: make pointer
 					dtype = typeAddrOf( dtype )
-					lgt = FB_POINTERSIZE
-				else
-					lgt = typeGetSize( dtype )
 				end if
+				lgt = typeGetSize( dtype )
 			end select
 		end if
 	end if

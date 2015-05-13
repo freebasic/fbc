@@ -25,7 +25,8 @@ function cFunctionCall _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr funcexpr = any
@@ -37,7 +38,7 @@ function cFunctionCall _
     	exit function
     end if
 
-	dim as FB_PARSEROPT options = FB_PARSEROPT_ISFUNC
+	options or= FB_PARSEROPT_ISFUNC
 
     hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
@@ -128,13 +129,14 @@ end function
 function cFunctionEx _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	'' ID
 	lexSkipToken( )
 
-	function = cFunctionCall( base_parent, sym, NULL, NULL )
+	function = cFunctionCall( base_parent, sym, NULL, NULL, options )
 
 end function
 
@@ -142,7 +144,8 @@ end function
 function cMethodCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -152,13 +155,13 @@ function cMethodCall _
 
 	'' inside an expression? (can't check sym type, it could be an overloaded proc)
 	if( fbGetIsExpression( ) ) then
-		expr = cFunctionCall( NULL, sym, NULL, thisexpr )
+		expr = cFunctionCall( NULL, sym, NULL, thisexpr, options )
 
 		'' no need to check expr, cFunctionCall() will handle VOID calls
 
 	'' assignment..
 	else
-		expr = cProcCall( NULL, sym, NULL, thisexpr )
+		expr = cProcCall( NULL, sym, NULL, thisexpr, FALSE, options )
 
 		'' ditto
 	end if
@@ -192,7 +195,7 @@ function cCtorCall _
 
     '' pass the instance ptr
 	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-	arg->expr = astBuildVarField( tmp )
+	arg->expr = astNewVAR( tmp )
 	arg->mode = INVALID
 
 	procexpr = cProcArgList( NULL, _
@@ -204,9 +207,9 @@ function cCtorCall _
 					  		 iif( isprnt = FALSE, _
 					  		 	  FB_PARSEROPT_OPTONLY, _
 					  		 	  FB_PARSEROPT_NONE ) )
-	if( procexpr = NULL ) then
-		return NULL
-	end if
+
+	'' Try to parse the ')' even in case of error recovery; it belongs to
+	'' the type() construct afterall, and nothing else would handle it.
 
 	if( isprnt ) then
 		'' ')'?
@@ -219,13 +222,13 @@ function cCtorCall _
 		end if
 	end if
 
-	'' check if it's a call (because error recovery)..
-	if( astIsCALL( procexpr ) ) then
-		function = astNewCALLCTOR( procexpr, astBuildVarField( tmp ) )
-	else
+	'' cProcArgList() usually returns a CALL, but it can be NULL or a CONST
+	'' etc. in case of error recovery
+	if( procexpr = NULL ) then
+		function = NULL
+	elseif( astIsCALL( procexpr ) = FALSE ) then
 		function = procexpr
+	else
+		function = astNewCALLCTOR( procexpr, astNewVAR( tmp ) )
 	end if
-
 end function
-
-

@@ -3,6 +3,11 @@ Returns the decimal part of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Frac**( //number// )
@@ -16,6 +21,7 @@ Returns the decimal part of a number
 
 {{fbdoc item="desc"}}
 	Equivalent to: ##(//number// - [[KeyPgFix Fix]](//number//))##.
+	For example, ##**Frac**(4.25)## will return ##0.25##, and ##**Frac**(-1.75)## will return ##-0.75##.  For integer types, the value ##0## is always returned.
 
 	The ##**Frac**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 

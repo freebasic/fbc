@@ -3,11 +3,8 @@
 ''fbc''
 	Frontend: main module, entry point, command-line handling, assembling/linking/etc.
 
-''fb-objinfo''
-	[[DevObjinfo Object/library information]] section reader/writer, used by ''fbc''.
-
-''bfd-wrapper''
-	Small C wrapper around bfd.h (of the native libbfd) to avoid always having to use the exact matching FB headers. (FB headers for some libbfd versions exist, thus this wrapper isn't required, but it's the default to make compiling fbc less troublesome).
+''objinfo''
+	[[DevObjinfo Object/library information]] section reader/writer, used by ''fbc''. Includes tiny ELF/COFF object file format readers.
 
 ''fb''
 	FB parser interface, starts the ''parser'' for every input/include file.
@@ -32,10 +29,11 @@
 	astNew*(): Node creation/tree building, used by the ''parser''.
 	astLoad*(): First step in emitting, calls ''ir'', called after each function is parsed.
 
-''ir'', ''ir-hlc'', ''ir-tac''
+''ir'', ''ir-hlc'', ''ir-llvm'', ''ir-tac''
 	Intermediate representation interface (using virtual registers) used to emit the ''ast''.
-	hlc: High level C emitter (gcc backend).
-	tac: Three-address-codes module (asm backend), calls ''emit''.
+	hlc: High level C emitter (high level in comparison to the ASM backend anyways)
+	llvm: LLVM IR emitter
+	tac: Three-address-codes module (asm backend), calls ''emit''. Reponsible for register allocation, reusing, spilling.
 
 ''reg''
 	Register allocator for ''ir-tac''.

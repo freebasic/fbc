@@ -2,10 +2,8 @@
 Returns a reference to a member from a pointer to an object
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **->** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgAs as]] //U//
+	[[KeyPgDeclare Declare]] [[KeyPgOperator Operator]] **->** ( [[KeyPgByref Byref]] //lhs// [[KeyPgAs As]] //T// [[KeyPgPtr Ptr]] ) [[KeyPgByref Byref]] [[KeyPgAs As]] //U//
 ##
-~&//Note that **##Operator ->## (Pointer to member access)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
-
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **->** //rhs//
 ##
@@ -13,7 +11,7 @@ Returns a reference to a member from a pointer to an object
 	##//lhs//##
 		The address of an object.
 	##//T//##
-		A pointer to a user-defined type.
+		A user-defined type.
 	##//rhs//##
 		The name of a member to access.
 	##//U//##

@@ -46,7 +46,7 @@ void fb_PrintPadEx ( FB_FILE *handle, int mask )
     new_x += 1;
     if (tmp_handle->width!=0) {
         unsigned dev_width = tmp_handle->width;
-        if (new_x > (dev_width - FB_TAB_WIDTH)) {
+        if (new_x > (int)(dev_width - FB_TAB_WIDTH)) {
             new_x = 1;
         }
     }

@@ -38,6 +38,7 @@ namespace fbc_tests.structs.operators
 	makeop(ACOS)
 	makeop(TAN)
 	makeop(ATN)
+	makeop(LEN)
 
 	makeop(NOT)
 	makeop(+)
@@ -79,6 +80,7 @@ namespace fbc_tests.structs.operators
 		testop(ACOS)
 		testop(TAN)
 		testop(ATN)
+		testop(LEN)
 
 		testop(NOT)
 		testop(+)

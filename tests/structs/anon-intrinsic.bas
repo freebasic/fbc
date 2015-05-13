@@ -83,6 +83,28 @@ sub test cdecl( )
 		p2 = type( @testproc )
 		CU_ASSERT( p2( ) = 123 )
 	end scope
+
+	scope
+		'' Testing the type<string>() syntax itself, but also TYPEINIs
+		'' like this being passed as ARG in fb_StrConcat() calls
+		dim s as string = "abc"
+		CU_ASSERT(       (type<string>( "abc" ))       = "abc" )
+		CU_ASSERT( "a" + (type<string>( "abc" ))       = "aabc" )
+		CU_ASSERT(       (type<string>( "abc" )) + "c" = "abcc" )
+		CU_ASSERT( "a" + (type<string>( "abc" )) + "c" = "aabcc" )
+		CU_ASSERT(       (type<string>( s     ))       = "abc" )
+		CU_ASSERT( "a" + (type<string>( s     ))       = "aabc" )
+		CU_ASSERT(       (type<string>( s     )) + "c" = "abcc" )
+		CU_ASSERT( "a" + (type<string>( s     )) + "c" = "aabcc" )
+
+		dim as string a = "aaa", b = "bbb", c = "ccc"
+		CU_ASSERT( a + (type<string>( "bbb" ))     = "aaabbb" )
+		CU_ASSERT(     (type<string>( "bbb" )) + c = "bbbccc" )
+		CU_ASSERT( a + (type<string>( "bbb" )) + c = "aaabbbccc" )
+		CU_ASSERT( a + (type<string>( b     ))     = "aaabbb" )
+		CU_ASSERT(     (type<string>( b     )) + c = "bbbccc" )
+		CU_ASSERT( a + (type<string>( b     )) + c = "aaabbbccc" )
+	end scope
 end sub
 
 private sub ctor( ) constructor

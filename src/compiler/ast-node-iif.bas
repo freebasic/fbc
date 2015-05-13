@@ -183,7 +183,7 @@ function astNewIIF _
 		''    iif( 0, mystr, myfixstr )
 		'' produce? myfixstr is a fix-len string, it cannot just be
 		'' treated as a var-len string, and there is no temp var...
-		if( astConstIsZero( condexpr ) ) then
+		if( astConstEqZero( condexpr ) ) then
 			astDelTree( truexpr )
 			function = falsexpr
 			astDtorListUnscope( falsecookie )
@@ -392,7 +392,7 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' register used must be spilled now or that could happen in a
 		'' function call done in any child trees and also if complex
 		'' expressions were used
-		'''''if( astIsClassOnTree( AST_NODECLASS_CALL, r->l ) <> NULL ) then
+		'''''if( astHasSideFx( r->l ) ) then
 		irEmitSPILLREGS( )
 		'''''end if
 	end if
@@ -418,7 +418,7 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		'' see above
-		'''''if( astIsClassOnTree( AST_NODECLASS_CALL, r->r ) <> NULL ) then
+		'''''if( astHasSideFx( r->r ) ) then
 		irEmitSPILLREGS( )
 		'''''end if
 	end if

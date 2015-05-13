@@ -31,7 +31,7 @@ end type
 	 			@"R", @"G", @"B" _
 	 		}, _
 	 		{ _
-	 			( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
@@ -49,7 +49,7 @@ end type
 	 			@"R", @"G", @"B", @"A" _
 	 		}, _
 	 		{ _
-	 			( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
+				( FB_DEFTOK_TYPE_TEX, @"((cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 	 			( FB_DEFTOK_TYPE_TEX, @") shl 16) or (cuint(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _

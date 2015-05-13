@@ -33,7 +33,7 @@ end enum
 
 type LEXPP_PRAGMASTK
 	tos 	as integer
-	stk(0 to FB_MAXPRAGMARECLEVEL-1) as integer
+	stk(0 to FB_MAXPRAGMARECLEVEL-1) as longint
 end type
 
 '' globals
@@ -56,7 +56,7 @@ end sub
 sub ppPragmaEnd( )
 end sub
 
-private sub pragmaPush( byval opt as integer, byval value as integer )
+private sub pragmaPush( byval opt as integer, byval value as longint )
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
 			errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -69,7 +69,7 @@ private sub pragmaPush( byval opt as integer, byval value as integer )
 	end with
 end sub
 
-private sub pragmaPop( byval opt as integer, byref value as integer )
+private sub pragmaPop( byval opt as integer, byref value as longint )
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
 			errReport( FB_ERRMSG_STACKUNDERFLOW )
@@ -91,7 +91,8 @@ end sub
 ''
 sub ppPragma( )
 	dim as string tk
-	dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
+	dim as integer p = -1, ispop = FALSE, ispush = FALSE
+	dim as longint value = any
 
 	tk = lcase( *lexGetText( ) )
 	if( tk = "push" ) then
@@ -113,8 +114,7 @@ sub ppPragma( )
 		tk = lcase( *lexGetText( ) )
 	end if
 
-	p = -1
-	for i = 0 to LEXPP_PRAGMAS-1
+	for i as integer = 0 to LEXPP_PRAGMAS-1
 		if( tk = pragmaOpt(i).tk ) then
 			p = i
 			exit for

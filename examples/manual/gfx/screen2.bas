@@ -11,7 +11,6 @@
 Using FB '' Screen mode flags are in the FB namespace in lang FB
 #endif
 
-
 ' Sets screen mode 18 (640*480) with 32bpp color depth and 4 pages, in windowed mode; switching disabled
 Screen 18, 32, 4, (GFX_WINDOWED Or GFX_NO_SWITCH)
 

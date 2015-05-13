@@ -1085,7 +1085,7 @@ end type
 
 type PWAVEFORMATEX as WAVEFORMATEX ptr
 type LPWAVEFORMATEX as WAVEFORMATEX ptr
-type LPCWAVEFORMATEX as WAVEFORMATEX ptr
+type LPCWAVEFORMATEX as const WAVEFORMATEX ptr
 
 type HMIDI__
 	i as integer
@@ -1636,7 +1636,7 @@ end type
 
 type PMMIOINFO as MMIOINFO ptr
 type LPMMIOINFO as MMIOINFO ptr
-type LPCMMIOINFO as MMIOINFO ptr
+type LPCMMIOINFO as const MMIOINFO ptr
 
 type MMCKINFO field=1
 	ckid as FOURCC
@@ -1648,7 +1648,7 @@ end type
 
 type PMMCKINFO as MMCKINFO ptr
 type LPMMCKINFO as MMCKINFO ptr
-type LPCMMCKINFO as MMCKINFO ptr
+type LPCMMCKINFO as const MMCKINFO ptr
 
 type MCI_GENERIC_PARMS field=1
 	dwCallback as DWORD

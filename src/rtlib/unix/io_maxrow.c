@@ -3,5 +3,11 @@
 
 int fb_ConsoleGetMaxRow( void )
 {
-	return __fb_con.inited ? __fb_con.h : 24;
+	if( !__fb_con.inited )
+		return 24;
+
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+	return __fb_con.h;
 }

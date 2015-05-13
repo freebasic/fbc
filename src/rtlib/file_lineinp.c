@@ -10,11 +10,15 @@ typedef enum _eInputMode {
     eIM_Read
 } eInputMode;
 
-/*:::::*/
-static int fb_hFileLineInputEx( FB_FILE *handle,
-                                void *dst, int dst_len, int fillrem )
+static int fb_hFileLineInputEx
+	(
+		FB_FILE *handle,
+		void *dst,
+		ssize_t dst_len,
+		int fillrem
+	)
 {
-	int			len, readlen;
+	ssize_t len, readlen;
 	char		buffer[BUFFER_LEN];
     eInputMode  mode = eIM_Invalid;
 
@@ -99,7 +103,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
             /* fixed-len or unknown size (ie: pointers)? use a temp var-len */
             else
             {
-            	FBSTRING str_result = { 0 };
+			FBSTRING str_result = { 0, 0, 0 };
 
             	/* read complete line (may include NULs) */
             	handle->hooks->pfnReadLine( handle, &str_result );
@@ -124,8 +128,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
-FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len, int fillrem )
+FBCALL int fb_FileLineInput( int fnum, void *dst, ssize_t dst_len, int fillrem )
 {
     return fb_hFileLineInputEx( FB_FILE_TO_HANDLE(fnum), dst, dst_len, fillrem );
 }

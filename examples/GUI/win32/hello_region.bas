@@ -8,7 +8,7 @@ const POLY_VERTICES = 5
 
 declare function        WinMain     ( byval hInstance as HINSTANCE, _
                                       byval hPrevInstance as HINSTANCE, _
-                                      byval szCmdLine as string, _
+                                      byval szCmdLine as zstring ptr, _
                                       byval iCmdShow as integer ) as integer
                                   
                                   
@@ -124,7 +124,7 @@ end sub
 '':::::
 function WinMain ( byval hInstance as HINSTANCE, _
                    byval hPrevInstance as HINSTANCE, _
-                   byval szCmdLine as string, _
+                   byval szCmdLine as zstring ptr, _
                    byval iCmdShow as integer ) as integer    
      
     dim as MSG wMsg 

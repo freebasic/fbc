@@ -24,8 +24,7 @@ sub test cdecl ()
 
 end sub
 
-function init cdecl () as integer
-
+function init cdecl () as long
 	fnarray(i) = allocate((j + 1) * sizeof(fn ptr))
 	if (0 = fnarray(i)) then
 		return -1
@@ -33,21 +32,16 @@ function init cdecl () as integer
 	
 	fnarray(i)[j] = @func
 	return 0
-	
 end function
 
-function cleanup cdecl () as integer
-
+function cleanup cdecl () as long
 	deallocate(fnarray(i))
 	return 0
-
 end function
 
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.pointers.ptr_to_func_array", @init, @cleanup)
 	fbcu.add_test("test", @test)
-
 end sub
 
 end namespace

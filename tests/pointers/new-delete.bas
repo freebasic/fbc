@@ -2,6 +2,118 @@
 
 namespace fbc_tests.pointers.new_delete
 
+namespace defaultInit
+	dim shared as integer ctorudt_ctors
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+	constructor CtorUdt( )
+		ctorudt_ctors += 1
+	end constructor
+
+	dim shared as integer dtorudt_dtors
+	type DtorUdt
+		i as integer
+		declare destructor( )
+	end type
+	destructor DtorUdt( )
+		dtorudt_dtors += 1
+	end destructor
+
+	dim shared as integer ctordtorudt_ctors, ctordtorudt_dtors
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+	constructor CtorDtorUdt( )
+		ctordtorudt_ctors += 1
+	end constructor
+	destructor CtorDtorUdt( )
+		ctordtorudt_dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		#macro check( T )
+			scope
+				var p = new T
+				#assert( typeof( p ) = typeof( T ptr ) )
+				CU_ASSERT( *p = 0 )
+				delete p
+			end scope
+		#endmacro
+
+		check(  byte )
+		check( ubyte )
+		check(  short )
+		check( ushort )
+		check(  long )
+		check( ulong )
+		check(  longint )
+		check( ulongint )
+		check(  integer )
+		check( uinteger )
+		check( single )
+		check( double )
+
+		scope
+			var p = new string
+			#assert( typeof( p ) = typeof( string ptr ) )
+			CU_ASSERT( len( *p ) = 0 )
+			CU_ASSERT( *p = "" )
+			delete p
+		end scope
+
+		scope
+			var p = new string
+			#assert( typeof( p ) = typeof( string ptr ) )
+			CU_ASSERT( len( *p ) = 0 )
+			CU_ASSERT( *p = "" )
+			*p = "abcdef"
+			CU_ASSERT( len( *p ) = 6 )
+			CU_ASSERT( *p = "abcdef" )
+			delete p
+		end scope
+
+		scope
+			CU_ASSERT( ctorudt_ctors = 0 )
+			var p = new CtorUdt
+			#assert( typeof( p ) = typeof( CtorUdt ptr ) )
+			CU_ASSERT( ctorudt_ctors = 1 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+		end scope
+		CU_ASSERT( ctorudt_ctors = 1 )
+
+		scope
+			CU_ASSERT( dtorudt_dtors = 0 )
+			var p = new DtorUdt
+			#assert( typeof( p ) = typeof( DtorUdt ptr ) )
+			CU_ASSERT( dtorudt_dtors = 0 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+			CU_ASSERT( dtorudt_dtors = 1 )
+		end scope
+		CU_ASSERT( dtorudt_dtors = 1 )
+
+		scope
+			CU_ASSERT( ctordtorudt_ctors = 0 )
+			CU_ASSERT( ctordtorudt_dtors = 0 )
+			var p = new CtorDtorUdt
+			#assert( typeof( p ) = typeof( CtorDtorUdt ptr ) )
+			CU_ASSERT( ctordtorudt_ctors = 1 )
+			CU_ASSERT( ctordtorudt_dtors = 0 )
+			CU_ASSERT( p->i = 0 )
+			delete p
+			CU_ASSERT( ctordtorudt_ctors = 1 )
+			CU_ASSERT( ctordtorudt_dtors = 1 )
+		end scope
+		CU_ASSERT( ctordtorudt_ctors = 1 )
+		CU_ASSERT( ctordtorudt_dtors = 1 )
+	end sub
+end namespace
+
 private sub newIntFloatInit cdecl( )
 	#macro check( T, N )
 		scope
@@ -22,13 +134,6 @@ private sub newIntFloatInit cdecl( )
 	check( short, -15 )
 	check( ushort, cushort( 0 ) )
 	check( ushort, cushort( 65535 ) )
-	check( integer, 0 )
-	check( integer, &h80000000 )
-	check( integer, &h7FFFFFFF )
-	check( integer, 5 )
-	check( uinteger, 0u )
-	check( uinteger, &hFFFFFFFFu )
-	CU_ASSERT( sizeof( long ) = sizeof( integer ) )  '' TODO: 64bit
 	check( long, 0l )
 	check( long, &h80000000l )
 	check( long, &h7FFFFFFFl )
@@ -40,6 +145,20 @@ private sub newIntFloatInit cdecl( )
 	check( ulongint, 0ull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull )
 
+	check( integer, 0 )
+	check( integer, &h80000000 )
+	check( integer, &h7FFFFFFF )
+	check( integer, 5 )
+	check( uinteger, 0u )
+	check( uinteger, &hFFFFFFFFu )
+#ifdef __FB_64BIT__
+	check( integer, 0ll )
+	check( integer, &h8000000000000000ll )
+	check( integer, &h7FFFFFFFFFFFFFFFll )
+	check( uinteger, 0ull )
+	check( uinteger, &hFFFFFFFFFFFFFFFFull )
+#endif
+
 	check( single, 0.0f )
 	check( single, 2.5f )
 	check( single, 2.5 )
@@ -49,6 +168,39 @@ private sub newIntFloatInit cdecl( )
 	check( double, 0.5 )
 	check( double, 1.0 )
 	check( double, -1.0 )
+end sub
+
+private sub newStringInit cdecl( )
+	scope
+		var p = new string( "" )
+		CU_ASSERT( len( *p ) = 0 )
+		CU_ASSERT( *p = "" )
+		delete p
+	end scope
+
+	scope
+		var p = new string( "abc" )
+		CU_ASSERT( len( *p ) = 3 )
+		CU_ASSERT( *p = "abc" )
+		delete p
+	end scope
+
+	scope
+		var p = new string( string( 50, "." ) )
+		CU_ASSERT( len( *p ) = 50 )
+		CU_ASSERT( *p = string( 50, "." ) )
+		delete p
+	end scope
+
+	scope
+		var p = new string( "a" )
+		CU_ASSERT( len( *p ) = 1 )
+		CU_ASSERT( *p = "a" )
+		*p = "abcdef"
+		CU_ASSERT( len( *p ) = 6 )
+		CU_ASSERT( *p = "abcdef" )
+		delete p
+	end scope
 end sub
 
 private sub newUDTInit cdecl( )
@@ -275,6 +427,128 @@ namespace vectorNew
 	end destructor
 
 	private sub test cdecl( )
+		#macro check( T )
+			scope
+				var p = new T[10]
+				#assert( typeof( p ) = typeof( T ptr ) )
+				CU_ASSERT( p[0] = 0 )
+				CU_ASSERT( p[1] = 0 )
+				CU_ASSERT( p[2] = 0 )
+				CU_ASSERT( p[3] = 0 )
+				CU_ASSERT( p[4] = 0 )
+				CU_ASSERT( p[5] = 0 )
+				CU_ASSERT( p[6] = 0 )
+				CU_ASSERT( p[7] = 0 )
+				CU_ASSERT( p[8] = 0 )
+				CU_ASSERT( p[9] = 0 )
+				delete[] p
+			end scope
+		#endmacro
+
+		check(  byte )
+		check( ubyte )
+		check(  short )
+		check( ushort )
+		check(  long )
+		check( ulong )
+		check(  longint )
+		check( ulongint )
+		check(  integer )
+		check( uinteger )
+		check( single )
+		check( double )
+
+		scope
+			var p = new string[10]
+			#assert( typeof( p ) = typeof( string ptr ) )
+
+			CU_ASSERT( len( p[0] ) = 0 )
+			CU_ASSERT( len( p[1] ) = 0 )
+			CU_ASSERT( len( p[2] ) = 0 )
+			CU_ASSERT( len( p[3] ) = 0 )
+			CU_ASSERT( len( p[4] ) = 0 )
+			CU_ASSERT( len( p[5] ) = 0 )
+			CU_ASSERT( len( p[6] ) = 0 )
+			CU_ASSERT( len( p[7] ) = 0 )
+			CU_ASSERT( len( p[8] ) = 0 )
+			CU_ASSERT( len( p[9] ) = 0 )
+
+			CU_ASSERT( p[0] = "" )
+			CU_ASSERT( p[1] = "" )
+			CU_ASSERT( p[2] = "" )
+			CU_ASSERT( p[3] = "" )
+			CU_ASSERT( p[4] = "" )
+			CU_ASSERT( p[5] = "" )
+			CU_ASSERT( p[6] = "" )
+			CU_ASSERT( p[7] = "" )
+			CU_ASSERT( p[8] = "" )
+			CU_ASSERT( p[9] = "" )
+
+			delete[] p
+		end scope
+
+		scope
+			var p = new string[10]
+			#assert( typeof( p ) = typeof( string ptr ) )
+
+			CU_ASSERT( len( p[0] ) = 0 )
+			CU_ASSERT( len( p[1] ) = 0 )
+			CU_ASSERT( len( p[2] ) = 0 )
+			CU_ASSERT( len( p[3] ) = 0 )
+			CU_ASSERT( len( p[4] ) = 0 )
+			CU_ASSERT( len( p[5] ) = 0 )
+			CU_ASSERT( len( p[6] ) = 0 )
+			CU_ASSERT( len( p[7] ) = 0 )
+			CU_ASSERT( len( p[8] ) = 0 )
+			CU_ASSERT( len( p[9] ) = 0 )
+
+			CU_ASSERT( p[0] = "" )
+			CU_ASSERT( p[1] = "" )
+			CU_ASSERT( p[2] = "" )
+			CU_ASSERT( p[3] = "" )
+			CU_ASSERT( p[4] = "" )
+			CU_ASSERT( p[5] = "" )
+			CU_ASSERT( p[6] = "" )
+			CU_ASSERT( p[7] = "" )
+			CU_ASSERT( p[8] = "" )
+			CU_ASSERT( p[9] = "" )
+
+			p[0] = "1"
+			p[1] = "2"
+			p[2] = "3"
+			p[3] = "4"
+			p[4] = "5"
+			p[5] = "6"
+			p[6] = "7"
+			p[7] = "8"
+			p[8] = "9"
+			p[9] = "10"
+
+			CU_ASSERT( len( p[0] ) = 1 )
+			CU_ASSERT( len( p[1] ) = 1 )
+			CU_ASSERT( len( p[2] ) = 1 )
+			CU_ASSERT( len( p[3] ) = 1 )
+			CU_ASSERT( len( p[4] ) = 1 )
+			CU_ASSERT( len( p[5] ) = 1 )
+			CU_ASSERT( len( p[6] ) = 1 )
+			CU_ASSERT( len( p[7] ) = 1 )
+			CU_ASSERT( len( p[8] ) = 1 )
+			CU_ASSERT( len( p[9] ) = 2 )
+
+			CU_ASSERT( p[0] = "1" )
+			CU_ASSERT( p[1] = "2" )
+			CU_ASSERT( p[2] = "3" )
+			CU_ASSERT( p[3] = "4" )
+			CU_ASSERT( p[4] = "5" )
+			CU_ASSERT( p[5] = "6" )
+			CU_ASSERT( p[6] = "7" )
+			CU_ASSERT( p[7] = "8" )
+			CU_ASSERT( p[8] = "9" )
+			CU_ASSERT( p[9] = "10" )
+
+			delete[] p
+		end scope
+
 		scope
 			var p = new T1[2]
 			CU_ASSERT( p[0].i = 0 )
@@ -519,6 +793,173 @@ namespace vectorNewComplexElements
 	end sub
 end namespace
 
+namespace placementNewPod
+	sub test cdecl( )
+		dim as integer ptr buffer = callocate( sizeof( integer ) * 3 )
+
+		dim as integer ptr p = new(buffer+1) integer (111)
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0] = 0 )
+		CU_ASSERT( buffer[1] = 111 )
+		CU_ASSERT( buffer[2] = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementNewCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+		ctors += 1
+		i = 111
+	end constructor
+
+	sub test cdecl( )
+		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 3 )
+
+		dim as CtorUdt ptr p = new(buffer+1) CtorUdt
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = 0 )
+		CU_ASSERT( buffer[1].i = 111 )
+		CU_ASSERT( buffer[2].i = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementNewCtorDtor
+	dim shared as integer ctors, dtors
+
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor CtorDtorUdt( )
+		ctors += 1
+		i = 111
+	end constructor
+
+	destructor CtorDtorUdt( )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 3 )
+
+		dim as CtorDtorUdt ptr p = new(buffer+1) CtorDtorUdt
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = 0 )
+		CU_ASSERT( buffer[1].i = 111 )
+		CU_ASSERT( buffer[2].i = 0 )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewPod
+	sub test cdecl( )
+		dim as integer ptr buffer = callocate( sizeof( integer ) * 5 )
+		buffer[0] = &hAA
+		buffer[1] = &hBB
+		buffer[2] = &hCC
+		buffer[3] = &hDD
+		buffer[4] = &hEE
+
+		dim as integer ptr p = new(buffer+1) integer[3]
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0] = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1] = 0 )
+		CU_ASSERT( buffer[2] = 0 )
+		CU_ASSERT( buffer[3] = 0 )
+		CU_ASSERT( buffer[4] = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewCtor
+	dim shared as integer ctors
+
+	type CtorUdt
+		i as integer
+		declare constructor( )
+	end type
+
+	constructor CtorUdt( )
+		ctors += 1
+	end constructor
+
+	sub test cdecl( )
+		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 5 )
+		buffer[0].i = &hAA
+		buffer[1].i = &hBB
+		buffer[2].i = &hCC
+		buffer[3].i = &hDD
+		buffer[4].i = &hEE
+
+		dim as CtorUdt ptr p = new(buffer+1) CtorUdt[3]
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1].i = 0 )
+		CU_ASSERT( buffer[2].i = 0 )
+		CU_ASSERT( buffer[3].i = 0 )
+		CU_ASSERT( buffer[4].i = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
+namespace placementVectorNewCtorDtor
+	dim shared as integer ctors, dtors
+
+	type CtorDtorUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor CtorDtorUdt( )
+		ctors += 1
+	end constructor
+
+	destructor CtorDtorUdt( )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 5 )
+		buffer[0].i = &hAA
+		buffer[1].i = &hBB
+		buffer[2].i = &hCC
+		buffer[3].i = &hDD
+		buffer[4].i = &hEE
+
+		dim as CtorDtorUdt ptr p = new(buffer+1) CtorDtorUdt[3]
+		CU_ASSERT( ctors = 3 )
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( p = buffer+1 )
+		CU_ASSERT( buffer[0].i = &hAA )  '' no cookie should be written to p[-1]
+		CU_ASSERT( buffer[1].i = 0 )
+		CU_ASSERT( buffer[2].i = 0 )
+		CU_ASSERT( buffer[3].i = 0 )
+		CU_ASSERT( buffer[4].i = &hEE )
+
+		deallocate( buffer )
+	end sub
+end namespace
+
 '' #3509495 regression test
 namespace deleteDerivedPtr
 	type Parent
@@ -665,7 +1106,9 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/pointers/new-delete" )
+	fbcu.add_test( "default initialization", @defaultInit.test )
 	fbcu.add_test( "New with int/float initializer", @newIntFloatInit )
+	fbcu.add_test( "New with string initializer", @newStringInit )
 	fbcu.add_test( "New with UDT initializer", @newUDTInit )
 	fbcu.add_test( "Some obscure NEW initializers", @newQuirkInit.test )
 	fbcu.add_test( "New[]", @vectorNew.test )
@@ -673,6 +1116,12 @@ private sub ctor( ) constructor
 	fbcu.add_test( "New + side-effects", @newSideFx.test )
 	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test )
 	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test )
+	fbcu.add_test( "new(address) integer", @placementNewPod.test )
+	fbcu.add_test( "new(address) CtorUdt", @placementNewCtor.test )
+	fbcu.add_test( "new(address) CtorDtorUdt", @placementNewCtorDtor.test )
+	fbcu.add_test( "new(address) integer[]", @placementVectorNewPod.test )
+	fbcu.add_test( "new(address) CtorUdt[]", @placementVectorNewCtor.test )
+	fbcu.add_test( "new(address) CtorDtorUdt[]", @placementVectorNewCtorDtor.test )
 	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test )
 	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test )
 	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test )

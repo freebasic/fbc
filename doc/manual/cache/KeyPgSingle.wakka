@@ -26,6 +26,6 @@ sleep
 {{fbdoc item="see"}}
 	- ##[[KeyPgDouble Double]]## More precise float type
 	- ##[[KeyPgCsng Csng]]##
-	- [[TblVarTypes]] Table with variable types overview, limits and suffixes
+	- ##[[TblVarTypes Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

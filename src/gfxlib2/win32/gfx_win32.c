@@ -524,7 +524,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
 
 	module = GetModuleHandle("USER32");
-	for (i = 0; i < sizeof(user32_procs) / sizeof(user32_procs[0]); i++) {
+	for (i = 0; i < ((int)sizeof(user32_procs)) / ((int)sizeof(user32_procs[0])); i++) {
 		*user32_procs[i].proc = GetProcAddress(module, user32_procs[i].name);
 	}
 
@@ -549,8 +549,12 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
-	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
-	strncat( fb_win32.window_class, fb_win32.window_title, WINDOW_TITLE_SIZE + sizeof(WINDOW_CLASS_PREFIX) - 1 );
+
+	/* Make a unique name for the window class, by encoding the address of the global context into it,
+	   so that the window class won't be re-used by other instances of gfxlib2 (e.g. from DLLs). */
+	snprintf( fb_win32.window_class, WINDOW_CLASS_SIZE-1, "%s%p", WINDOW_CLASS_PREFIX, &fb_win32 );
+	fb_win32.window_class[WINDOW_CLASS_SIZE-1] = '\0';
+
 	fb_win32.w = w;
 	fb_win32.h = h;
 	fb_win32.depth = depth;
@@ -684,14 +688,26 @@ void fb_hWin32SetMouse(int x, int y, int cursor, int clip)
 {
 	POINT point;
 
-	if (x >= 0) {
-		point.x = MID(0, x, fb_win32.w - 1);
-		point.y = MID(0, y, fb_win32.h - 1);
+	if (x != (int)0x80000000 || y != (int)0x80000000) {
+		if (x == (int)0x80000000) {
+			x = mouse_x;
+		}
+		else if (y == (int)0x80000000) {
+			y = mouse_y;
+		}
+
+		x = MID(0, x, fb_win32.w - 1);
+		y = MID(0, y, fb_win32.h - 1);
+
+		mouse_on = TRUE;
+		mouse_x = x;
+		mouse_y = y;
+
+		point.x = x;
+		point.y = y;
 		if (!(fb_win32.flags & DRIVER_FULLSCREEN))
 			ClientToScreen(fb_win32.wnd, &point);
 		SetCursorPos(point.x, point.y);
-		mouse_x = x;
-		mouse_y = y;
 	}
 
 	if ((cursor == 0) && (cursor_shown)) {
@@ -728,7 +744,7 @@ int fb_hWin32SetWindowPos(int x, int y)
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return 0;
 
-	if( (x == 0x80000000) && (y == 0x80000000) ) {
+	if( (x == (int)0x80000000) && (y == (int)0x80000000) ) {
 		/* Querying window position */
 		RECT rc;
 		if( GetWindowRect( fb_win32.wnd, &rc ) ) {
@@ -745,21 +761,21 @@ int fb_hWin32SetWindowPos(int x, int y)
 	return 0;
 }
 
-void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
+void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
-	HDC hdc;
+	DEVMODE cur;
 
-	hdc = GetDC(NULL);
-	*width = GetDeviceCaps(hdc, HORZRES);
-	*height = GetDeviceCaps(hdc, VERTRES);
-	*depth = GetDeviceCaps(hdc, BITSPIXEL);
-	*refresh = GetDeviceCaps(hdc, VREFRESH);
-	ReleaseDC(NULL, hdc);
+	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&cur);
+	*width = cur.dmPelsWidth;
+	*height = cur.dmPelsHeight;
+	*depth = cur.dmBitsPerPel;
+	*refresh = cur.dmDisplayFrequency;
+	
 }
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
-	return (int)fb_win32.wnd;
+	return (ssize_t)fb_win32.wnd;
 }
 
 static void keyconv_clear( KEYCONVINFO *k )

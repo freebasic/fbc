@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FBSTRING *fb_Command ( int arg )
 {
 	FBSTRING *dst;
-	int	i, len;
+	ssize_t i, len;
 
 	/* return all arguments? */
 	if( arg < 0 )

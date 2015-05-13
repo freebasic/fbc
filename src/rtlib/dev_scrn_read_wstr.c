@@ -4,9 +4,8 @@
 
 int fb_DevScrnReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
-    size_t chars;
+    size_t chars, copy_chars;
     DEV_SCRN_INFO *info;
-    int copy_chars;
 
     /* !!!FIXME!!! no unicode input supported */
 
@@ -18,7 +17,7 @@ int fb_DevScrnReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 
     while( chars > 0 )
     {
-        int len = info->length / sizeof( FB_WCHAR );
+        size_t len = info->length / sizeof( FB_WCHAR );
         copy_chars = (chars > len) ? len : chars;
         if( copy_chars == 0 )
         {
@@ -65,9 +64,11 @@ void fb_DevScrnInit_ReadWstr( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
+	FB_LOCK( );
     if( FB_HANDLE_SCREEN->hooks->pfnReadWstr == NULL )
     {
     	FB_HANDLE_SCREEN->hooks->pfnReadWstr =
     			(fb_IsRedirected( TRUE )? hReadFromStdin : fb_DevScrnReadWstr);
     }
+	FB_UNLOCK( );
 }

@@ -1,0 +1,15 @@
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment

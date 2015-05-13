@@ -343,24 +343,6 @@ function symbAddKeyword _
 
 end function
 
-'':::::
-function symbDelKeyword _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
-    function = FALSE
-
-	if( s = NULL ) then
-		exit function
-	end if
-
-	symbFreeSymbol( s )
-
-	function = TRUE
-
-end function
-
 function symbKeywordGetText( byval tk as integer ) as const zstring ptr
 	'' This is super slow, but as long as it's only used for error
 	'' reporting it does not matter.

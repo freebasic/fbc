@@ -23,7 +23,7 @@ Conditional function that returns one of two values.
 
 	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
 
-	**Warning:** The capacity to accept different numeric types to be mixed, strings and UDTs is only supported from the fbc version 0.25.
+	**Warning:** The ability to accept mixed numeric types, strings and UDTs is only supported from the fbc version 0.90.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/iif.bas"}}%%(freebasic)

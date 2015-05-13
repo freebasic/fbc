@@ -48,23 +48,25 @@
 	#define HOST_X86
 #elif defined __x86_64__
 	#define HOST_X86_64
+	#define HOST_64BIT
 #elif defined __sparc__
 	#ifdef __LP64__
-		#define HOST_SPARC64
-	#else
-		#define HOST_SPARC
+		#define HOST_64BIT
 	#endif
 #elif defined __ppc64__
-	#define HOST_POWERPC64
+	#define HOST_64BIT
+#elif defined __aarch64__
+	#define HOST_64BIT
 #endif
 
-#if defined HOST_MINGW && defined HOST_X86
+#ifdef HOST_MINGW
 	/* work around gcc bug 52991 */
-	/* Since GCC 4.7 -mms-bitfields was made the default for mingw32,
-	   causing structs to be "ms_struct" by default, but "packed" seems
-	   to be broken in combination with that. Using "gcc_struct" (the old
-	   default) helps.
-	   Note that "gcc_struct" isn't recognized for *all* targets though. */
+	/* Since MinGW gcc 4.7, structs default to "ms_struct" instead of
+	   "gcc_struct" as on Linux, and it seems like "packed" is broken in
+	   combination with "ms_struct", so it's necessary to specify
+	   "gcc_struct" explicitly. "gcc_struct" isn't recognized on all gcc
+	   targets though, so we can't use it *all* the time. Thus we use it
+	   only for MinGW (both 32bit and 64bit). */
 	#define FBPACKED __attribute__((gcc_struct, packed))
 #else
 	#define FBPACKED __attribute__((packed))

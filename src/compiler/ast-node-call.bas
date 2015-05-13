@@ -31,7 +31,33 @@ function astNewCALL _
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
-	assert( sym <> NULL )
+	assert( symbIsProc( sym ) )
+
+	''
+	'' If calling a procedure pointer, ensure to use the procedure pointer's
+	'' subtype procedure symbol, not the procedure symbol for which the
+	'' procedure pointer was created; it may be more "precise".
+	''
+	'' This can happen with bydesc parameter's real subtypes, the descriptor
+	'' types. The procedure may use different descriptor types than the
+	'' procedure pointer, if they're from different scopes (also see
+	'' symbAddArrayDescriptorType()). Then it's better to use the actual
+	'' type we're calling - i.e. the procedure pointer. This matters for the
+	'' C/LLVM backends due to their type checking, but not for the ASM
+	'' backend.
+	''
+	'' The same can happen with procedure pointer types themselves which are
+	'' also scoped (also see symbAddProcPtr()), in case the called procedure
+	'' [pointer] has any procedure pointer parameters. However it's not as
+	'' big of a problem because the C/LLVM backends will treat different
+	'' procedure pointer typedefs as equal as long as the signature matches.
+	'' That's not the case for the array descriptor structures.
+	''
+	if( ptrexpr ) then
+		assert( astGetDataType( ptrexpr ) = typeAddrOf( FB_DATATYPE_FUNCTION ) )
+		assert( (ptrexpr->subtype = sym) or symbIsEqual( ptrexpr->subtype, sym ) )
+		sym = ptrexpr->subtype
+	end if
 
 	''
 	dtype = symbGetFullType( sym )
@@ -94,24 +120,15 @@ function astNewCALLCTOR _
 	function = n
 end function
 
-private sub hCheckTmpStrings( byval f as ASTNODE ptr )
+'' Copy-back any fixed-length strings that were passed to BYREF parameters
+private sub hCopyStringsBack( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t = any
     dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
-	'' copy-back any fix-len string passed as parameter and
-	'' delete all temp strings used as parameters
 	n = f->call.strtail
 	do while( n <> NULL )
 
-		'' copy back if needed
-		if( n->srctree <> NULL ) then
-			t = rtlStrAssign( n->srctree, astNewVAR( n->sym ) )
-			astLoad( t )
-			astDelNode( t )
-		end if
-
-		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->sym ) )
+		t = rtlStrAssign( n->srctree, astNewVAR( n->sym ) )
 		astLoad( t )
 		astDelNode( t )
 
@@ -179,7 +196,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( v1, arg->arg.lgt, reclevel )
+			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
 		end if
 
 		astDelNode( arg )
@@ -192,7 +209,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' to do it, despite it being cdecl.
 		if( (symbGetProcMode( proc ) = FB_FUNCMODE_CDECL) and _
 		    ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) = 0) ) then
-			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+			bytestopop += env.pointersize
 		end if
 		if( ast.doemit ) then
 			'' Clear the temp struct (so the function can safely
@@ -207,7 +224,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			l = astNewVAR( n->call.tmpres )
 			l = astNewADDROF( l )
 			v1 = astLoad( l )
-			irEmitPUSHARG( v1, 0, reclevel )
+			'' (passing NULL param, because no PARAM symbol exists
+			'' for the hidden struct result param)
+			irEmitPUSHARG( NULL, v1, 0, reclevel )
 		end if
 	end if
 
@@ -241,7 +260,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		v1 = astLoad( l )
 		astDelNode( l )
 		if( ast.doemit ) then
-			irEmitCALLPTR( v1, vr, bytestopop, reclevel )
+			irEmitCALLPTR( proc, v1, vr, bytestopop, reclevel )
 		end if
 	else
 		if( ast.doemit ) then
@@ -249,8 +268,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	'' del temp strings and copy back if needed
-	hCheckTmpStrings( n )
+	hCopyStringsBack( n )
 
 	reclevel -= 1
 
@@ -278,7 +296,7 @@ sub astCloneCALL _
 		byval c as ASTNODE ptr _
 	)
 
-    '' temp string list
+	'' copy-back list
     scope
     	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
 
@@ -316,7 +334,7 @@ sub astDelCALL _
 		byval n as ASTNODE ptr _
 	)
 
-    '' temp strings list
+	'' copy-back list
     scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
 		s = n->call.strtail
@@ -345,7 +363,7 @@ sub astReplaceSymbolOnCALL _
 		n->call.tmpres = new_sym
 	end if
 
-	'' temp strings list
+	'' copy-back list
 	scope
 		dim as AST_TMPSTRLIST_ITEM ptr s = any
 		s = n->call.strtail
@@ -390,7 +408,7 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		'' No need to bother doing astDtorListAdd()
 		assert( symbHasDtor( tmp ) = FALSE )
 
-		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI )
 
 		function = astNewLINK( expr, _
 			astBuildVarField( tmp ), _
@@ -448,4 +466,66 @@ function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsByrefResultDeref( expr ) )
 	function = expr->l
 	astDelNode( expr )
+end function
+
+private function hCanIgnoreFunctionResult( byval dtype as integer ) as integer
+	'' Only integers (excluding char/wchar) can be ignored
+	if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
+		select case( dtype )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+		case else
+			return TRUE
+		end select
+	end if
+	function = FALSE
+end function
+
+function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as integer dtype = any
+
+	assert( astIsCALL( n ) )
+	dtype = astGetDataType( n )
+
+	'' If it's a SUB, there's no result to ignore
+	if( dtype = FB_DATATYPE_VOID ) then
+		return n
+	end if
+
+	'' Error checking? Then the result isn't ignored afterall.
+	if( n->sym ) then
+		if( symbGetIsThrowable( n->sym ) ) then
+			return rtlErrorCheck( n )
+		end if
+	end if
+
+	'' Returning string/wstring? Just do fb_hStrDelTemp/fb_WstrDelete to
+	'' to delete the returned temp string, no temp var needed.
+	'' (for wstrings, a temp var couldn't be used anyways, because there's
+	'' no dynamic wstring type)
+	select case( dtype )
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
+		'' This mustn't be done if returning BYREF, but in that case
+		'' we shouldn't come here, since the CALL's dtype should be
+		'' remapped already.
+		assert( symbProcReturnsByref( n->sym ) = FALSE )
+
+		if( dtype = FB_DATATYPE_WCHAR ) then
+			'' Actually returning a wstring ptr. Remap the type so the
+			'' astNewARG()s done from rtlStrDelete() build the correct code.
+			astSetType( n, typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+		end if
+
+		return rtlStrDelete( n )
+	end select
+
+	'' Tell astLoadCALL() to not allocate a result vreg. Works for
+	'' - integers and small UDTs returned in registers,
+	'' - and also UDTs returned on stack: the pointer that is returned in
+	''   registers is ignored, and the temp var holding the result will
+	''   automatically be destructed at the end of the statement, if needed.
+	'' - also floats, because the ASM backend takes care to pop st(0) from
+	''   the FPU stack as needed by the ABI
+	astSetType( n, FB_DATATYPE_VOID, NULL )
+	function = n
 end function

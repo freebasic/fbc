@@ -147,7 +147,8 @@ function cStrIdxOrMemberDeref _
 
 	'' udt '.' ?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( lexGetToken( ) = CHAR_DOT ) then
+		select case( lexGetToken( ) )
+		case CHAR_DOT
     		lexSkipToken( LEXCHECK_NOPERIOD )
 
 			expr = cMemberAccess( dtype, subtype, expr )
@@ -157,7 +158,11 @@ function cStrIdxOrMemberDeref _
 
  			dtype = astGetFullType( expr )
  			subtype = astGetSubType( expr )
-		end if
+
+		'' ('->' | '[')? (possible on non-pointer UDT types due to operator overloading)
+		case FB_TK_FIELDDEREF, CHAR_LBRACKET
+			expr = cMemberDeref( dtype, subtype, expr, TRUE )
+		end select
 
 	end select
 
@@ -294,7 +299,7 @@ end function
 
 '' '(' DataType ',' Expression ')'
 private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
-	dim as integer dtype = any, lgt = any, errmsg = any
+	dim as integer dtype = any, errmsg = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as ASTNODE ptr expr = any
 
@@ -308,7 +313,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 	lexSkipToken( )
 
 	'' DataType
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip until ',', create a fake type
 		hSkipUntil( CHAR_COMMA )
@@ -489,19 +494,15 @@ private function hVarPtrBody _
 	end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = expr
-	if( astIsCAST( expr ) ) then
-		if( astGetCASTDoConv( expr ) = FALSE ) then
-			t = astGetLeft( expr )
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
 	select case as const astGetClass( t )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, AST_NODECLASS_TYPEINI
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_TYPEINI, AST_NODECLASS_CALLCTOR
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
-		if( astGetDataType( astGetLeft( t ) ) = FB_DATATYPE_BITFIELD ) then
+		if( symbFieldIsBitfield( t->sym ) ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
 			astDelTree( expr )
@@ -671,12 +672,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 		'' check for invalid classes (functions, etc)
 
 		'' skip any casting if they won't do any conversion
-		dim as ASTNODE ptr t = expr
-		if( astIsCAST( expr ) ) then
-			if( astGetCASTDoConv( expr ) = FALSE ) then
-				t = astGetLeft( expr )
-			end if
-		end if
+		dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
 
 		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
@@ -707,6 +703,15 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 	end select
 
-	function = expr
+	if( expr ) then
+		'' Allow indexing on VARPTR()/STRPTR()/etc. directly, they look
+		'' like functions so this isn't ambigious, while for @ it would
+		'' mess up the operator precedence:
+		''    @expr[i]  should be  @(expr[i]), not (@expr)[i]
+		'' but for
+		''    varptr(expr)[i], that problem doesn't exist.
+		expr = cStrIdxOrMemberDeref( expr )
+	end if
 
+	function = expr
 end function

@@ -2,7 +2,7 @@
 
 #include "../fb.h"
 
-char *fb_hGetExeName( char *dst, int maxlen )
+char *fb_hGetExeName( char *dst, ssize_t maxlen )
 {
 	const char *p = strrchr( __fb_ctx.argv[0], '/' );
 	if( p )

@@ -10,6 +10,8 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 	if (!param)
 		return;
 
+	FB_GRAPHICS_LOCK( );
+
 	switch ( what ) {
 	case GET_WINDOW_TITLE:
 		if (!__fb_window_title )
@@ -49,25 +51,31 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 			__fb_gfx_driver_name = strdup(param->data);
 		break;
 	}
+
+	FB_GRAPHICS_UNLOCK( );
 }
 
-FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, int *param4 )
+FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t *param3, ssize_t *param4 )
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int res = 0;
-	int res1 = 0, res2 = 0, res3 = 0, res4 = 0;
-	int temp1, temp2, temp3, temp4;
+	ssize_t res1 = 0, res2 = 0, res3 = 0, res4 = 0;
+	ssize_t temp1, temp2, temp3, temp4;
 
 	if (!param1) param1 = &temp1;
 	if (!param2) param2 = &temp2;
 	if (!param3) param3 = &temp3;
 	if (!param4) param4 = &temp4;
 
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
+
 	switch ( what ) {
 	case GET_WINDOW_POS:
 		if ((__fb_gfx) && (__fb_gfx->driver->set_window_pos))
 			res = __fb_gfx->driver->set_window_pos(0x80000000, 0x80000000);
-		res1 = (int)((short)(res & 0xFFFF));
+		res1 = (short)(res & 0xFFFF);
 		res2 = res >> 16;
 		break;
 
@@ -77,7 +85,12 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		break;
 
 	case GET_DESKTOP_SIZE:
-		fb_hScreenInfo(&res1, &res2, &temp3, &temp4);
+		{
+			ssize_t w = 0, h = 0, depth = 0, refresh = 0;
+			fb_hScreenInfo( &w, &h, &depth, &refresh );
+			res1 = w;
+			res2 = h;
+		}
 		break;
 
 	case GET_SCREEN_SIZE:
@@ -152,15 +165,15 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 
 	case SET_PEN_POS:
 		if (__fb_gfx) {
-			if (*param1 != 0x80000000)
+			if (*param1 != (ssize_t)0x80000000)
 				context->last_x = *param1;
-			if (*param2 != 0x80000000)
+			if (*param2 != (ssize_t)0x80000000)
 				context->last_y = *param2;
 		}
 		break;
 
 	case SET_ALPHA_PRIMITIVES:
-		if ((__fb_gfx) && (*param1 != 0x80000000)) {
+		if ((__fb_gfx) && (*param1 != (ssize_t)0x80000000)) {
 			if (*param1)
 				__fb_gfx->flags |= ALPHA_PRIMITIVES;
 			else
@@ -228,6 +241,8 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		break;
 
 	}
+
+	FB_GRAPHICS_UNLOCK( );
 
 	if (what < SET_FIRST_SETTER) {
 		*param1 = res1;

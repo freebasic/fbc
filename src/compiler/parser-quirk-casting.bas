@@ -40,13 +40,13 @@ function cTypeConvExpr _
 		dtype = FB_DATATYPE_USHORT
 
 	case FB_TK_CINT
-		dtype = fbLangGetType( integer )
+		dtype = env.lang.integerkeyworddtype
 
 	case FB_TK_CUINT
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_CLNG
-		dtype = fbLangGetType( long )
+		dtype = FB_DATATYPE_LONG
 
 	case FB_TK_CULNG
 		dtype = FB_DATATYPE_ULONG
@@ -84,10 +84,8 @@ function cTypeConvExpr _
 		'' ['<' lgt '>']
 		if( hMatch( FB_TK_LT ) ) then
 
-			dim as integer lgt = any
-
 			'' expr
-			lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
+			var lgt = cConstIntExpr( cGtInParensOnlyExpr( ) )
 
 			dtype = hIntegerTypeFromBitSize( lgt, (tk = FB_TK_CUINT) )
 
@@ -163,7 +161,7 @@ end function
 function cAnonType( ) as ASTNODE ptr
 	dim as ASTNODE ptr initree = any
 	dim as FBSYMBOL ptr sym = any, subtype = any
-	dim as integer dtype = any, lgt = any, is_explicit = any
+	dim as integer dtype = any, is_explicit = any
 
 	'' TYPE
 	lexSkipToken( )
@@ -173,7 +171,7 @@ function cAnonType( ) as ASTNODE ptr
 
 	if( is_explicit ) then
 		'' SymbolType
-		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
@@ -219,7 +217,12 @@ function cAnonType( ) as ASTNODE ptr
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
-			return cCtorCall( subtype )
+			initree = cCtorCall( subtype )
+			if( initree = NULL ) then
+				'' Error recovery
+				initree = astNewCONSTz( dtype, subtype )
+			end if
+			return initree
 		end if
 	end if
 

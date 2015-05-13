@@ -2,7 +2,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ast.bi"
@@ -12,221 +11,190 @@
 #define FB_COLOR_FG_DEFAULT		&h00000001
 #define FB_COLOR_BG_DEFAULT		&h00000002
 
-
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_ConsoleView ( byval toprow as integer = 0, _
-							byval botrow as integer = 0 ) as void '/ _
+		/' function fb_ConsoleView _
+			( _
+				byval toprow as long = 0, _
+				byval botrow as long = 0 _
+			) as long '/ _
 		( _
 			@FB_RTL_CONSOLEVIEW, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
-		/' fb_ReadXY ( byval x as integer, byval y as integer, _
-					   byval colorflag as integer ) as uinteger '/ _
+		/' function fb_ReadXY _
+			( _
+				byval x as long, _
+				byval y as long, _
+				byval colorflag as long _
+			) as ulong '/ _
 		( _
 			@FB_RTL_CONSOLEREADXY, NULL, _
-	 		FB_DATATYPE_UINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
-        /' fb_Width( byval cols as integer = -1, _
-                     byval width_arg as integer = -1 ) as integer '/ _
+		/' function fb_Width _
+			( _
+				byval cols as long = -1, _
+				byval rows as long = -1 _
+			) as long '/ _
 		( _
 			@FB_RTL_WIDTH, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' fb_WidthDev( dev as string, byval width_arg as integer = -1 ) as integer '/ _
+		/' function fb_WidthDev( byref dev as string, byval width as long = -1 ) as long '/ _
 		( _
 			@FB_RTL_WIDTHDEV, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' fb_WidthFile( byval fnum as integer, byval width_arg as integer = -1 ) as integer '/ _
+		/' function fb_WidthFile( byval fnum as long, byval width as long = -1 ) as long '/ _
 		( _
 			@FB_RTL_WIDTHFILE, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' locate( byval row as integer = 0, byval col as integer = 0, _
-				   byval cursor as integer = -1, byval start as integer = 0, _
-				   byval stop as integer = 0 ) as integer '/ _
+		/' function locate _
+			( _
+				byval row as long = 0, _
+				byval col as long = 0, _
+				byval cursor as long = -1, _
+				byval start as long = 0, _
+				byval stop as long = 0 _
+			) as long '/ _
 		( _
 			@"locate", @"fb_Locate", _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		5, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
-		/' pos( ) as integer '/ _
+		/' function pos overload( ) as long '/ _
 		( _
 			@"pos", @"fb_GetX", _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_OVER, _
 	 		0 _
 		), _
-		/' pos( dummy ) as integer '/ _
+		/' function pos overload( byval dummy as long ) as long '/ _
 		( _
 			@"pos", @"fb_Pos", _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_OVER, _
-     		1, _
+			1, _
 	 		{ _
-	 			( _
-		     		FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' csrlin( ) as integer '/ _
+		/' function csrlin( ) as long '/ _
 		( _
 			@"csrlin", @"fb_GetY", _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
 		), _
-		/' cls( byval n as integer = 1 ) as void '/ _
+		/' sub cls( byval mode as long = &hFFFF0000 ) '/ _
 		( _
 			@"cls", @"fb_Cls", _
-	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ) _
 	 		} _
 		), _
-		/' fb_Color( byval fc as integer, byval bc as integer, byval flags as integer ) as integer '/ _
+		/' function fb_Color _
+			( _
+				byval fc as long, _
+				byval bc as long, _
+				byval flags as long _
+			) as long '/ _
 		( _
 			@FB_RTL_COLOR, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' inkey ( ) as string '/ _
+		/' function inkey( ) as string '/ _
 		( _
 			@"inkey", @"fb_Inkey", _
-	 		FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
 	 		0 _
 		), _
-		/' inkey ( ) as string '/ _
+		/' function inkey( ) as string '/ _
 		( _
 			@"inkey", @"fb_InkeyQB", _
-	 		FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
 	 		0 _
 		), _
-		/' getkey ( ) as integer '/ _
+		/' function getkey( ) as long '/ _
 		( _
 			@"getkey", @"fb_Getkey", _
-	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
-	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), _
-		/' pcopy ( byval frompage as integer = -1, byval topage as integer = -1 ) as integer '/ _
+		/' function pcopy( byval src as long = -1, byval dst as long = -1 ) as long '/ _
 		( _
 			@"pcopy", @"fb_PageCopy", _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
-		/' page ( byval src as integer = -1, byval dst as integer = -1 ) as integer '/ _
+		/' function fb_PageSet( byval active as long = -1, byval visible as long = -1 ) as long '/ _
 		( _
-			@FB_RTL_PAGESET, @"fb_PageSet", _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			@FB_RTL_PAGESET, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-				), _
-				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 		), _
 	 	/' EOL '/ _
@@ -234,8 +202,6 @@
 	 		NULL _
 	 	) _
 	 }
-
-
 
 '':::::
 sub rtlConsoleModInit( )
@@ -311,10 +277,10 @@ function rtlWidthScreen _
     end if
 
 	if( isfunc = FALSE ) then
-		function = iif( rtlErrorCheck( proc ), proc, NULL )
-	else
-		function = proc
+		astAdd( rtlErrorCheck( proc ) )
 	end if
+
+	function = proc
 end function
 
 '':::::

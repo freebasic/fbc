@@ -13,7 +13,7 @@
 ''			   |	 NEW DataType[Expr] .
 ''
 function cOperatorNew( ) as ASTNODE ptr
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
 	dim as integer has_ctor = any, has_defctor = any, do_clear = any
 	dim as ASTNODE ptr initexpr = any, elementsexpr = any, placementexpr = any
@@ -44,16 +44,12 @@ function cOperatorNew( ) as ASTNODE ptr
 	end if
 
 	'' DataType
-	hSymbolType( dtype, subtype, lgt )
+	hSymbolType( dtype, subtype, 0 )
 
-	'' check for invalid types
-	select case as const typeGet( dtype )
-	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE )
-		'' error recovery: fake an expr
-		hSkipStmt( )
-		return astNewCONSTi( 0 )
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		errReport( FB_ERRMSG_NEWCANTBEUSEDWITHFIXLENSTRINGS, TRUE )
+		dtype = FB_DATATYPE_STRING
 	end select
 
 	'' Disallow creating objects of abstract classes
@@ -90,15 +86,22 @@ function cOperatorNew( ) as ASTNODE ptr
 				if( has_defctor ) then
 					errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
 				end if
+
+				'' Disallow ANY for STRING, like cVarDecl()
+				if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRING ) then
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
+				else
+					do_clear = FALSE
+				end if
+
 				lexSkipToken( )
-				do_clear = FALSE
 			else
 				errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED )
 			end if
 
 			'' '}'
 			if( lexGetToken( ) <> CHAR_RBRACE ) then
-				errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+				errReport( FB_ERRMSG_EXPECTEDRBRACE )
 				'' error recovery: skip until next '}'
 				hSkipUntil( CHAR_RBRACE, TRUE )
 			else
@@ -166,9 +169,15 @@ function cOperatorNew( ) as ASTNODE ptr
 			'' ANY?
 			if( lexGetLookAhead( 1 ) = FB_TK_ANY ) then
 				lexSkipToken( )
-				lexSkipToken( )
 
-				do_clear = FALSE
+				'' Disallow ANY for STRING, like cVarDecl()
+				if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRING ) then
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
+				else
+					do_clear = FALSE
+				end if
+
+				lexSkipToken( )
 
 				'' ')'
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -179,10 +188,7 @@ function cOperatorNew( ) as ASTNODE ptr
 					lexSkipToken( )
 				end if
 			else
-				initexpr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
-
-        		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
-
+				initexpr = cInitializer( tmp, FB_INIOPT_ISINI, dtype, subtype )
 				if( initexpr = NULL ) then
 					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				end if
@@ -237,29 +243,25 @@ sub cOperatorDelete( )
 	'' not a ptr?
 	if( typeIsPtr( dtype ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDPOINTER )
-		hSkipStmt( )
 		return
 	end if
 
-	dtype = typeDeref( dtype )
-
 	select case( typeGetDtAndPtrOnly( dtype ) )
-	case FB_DATATYPE_VOID
+	case typeAddrOf( FB_DATATYPE_VOID )
 		'' Warn about ANY PTR
 		errReportWarn( FB_WARNINGMSG_DELETEANYPTR )
-	case FB_DATATYPE_FWDREF
+	case typeAddrOf( FB_DATATYPE_FWDREF )
 		'' Disallow DELETE on forward reference ptrs
 		'' (don't know whether the real type will have a dtor or not)
 		errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-		dtype = FB_DATATYPE_BYTE
 	end select
 
 	'' check visibility
-	if( typeHasDtor( dtype, subtype ) ) then
+	if( typeHasDtor( typeDeref( dtype ), subtype ) ) then
 		if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
 	end if
 
-	astAdd( astBuildDeleteOp( op, ptrexpr, dtype, subtype ) )
+	astAdd( astBuildDeleteOp( op, ptrexpr ) )
 end sub

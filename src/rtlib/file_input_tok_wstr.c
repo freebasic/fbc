@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 {
     /* device? */
@@ -29,12 +28,7 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 
 }
 
-/*:::::*/
-static int hUnreadChar
-	(
-		FB_INPUTCTX *ctx,
-		FB_WCHAR c
-	)
+static int hUnreadChar( FB_INPUTCTX *ctx, FB_WCHAR c )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -52,14 +46,9 @@ static int hUnreadChar
 			return 1;
 		}
 	}
-
 }
 
-/*:::::*/
-static FB_WCHAR hSkipWhiteSpc
-	(
-		FB_INPUTCTX *ctx
-	)
+static FB_WCHAR hSkipWhiteSpc( FB_INPUTCTX *ctx )
 {
 	FB_WCHAR c;
 
@@ -74,12 +63,7 @@ static FB_WCHAR hSkipWhiteSpc
 	return c;
 }
 
-/*:::::*/
-static void hSkipDelimiter
-	(
-		FB_INPUTCTX *ctx,
-		FB_WCHAR c
-	)
+static void hSkipDelimiter( FB_INPUTCTX *ctx, FB_WCHAR c )
 {
 	/* skip white space */
 	while( (c == _LC(' ')) || (c == _LC('\t')) )
@@ -105,18 +89,13 @@ static void hSkipDelimiter
 	}
 }
 
-/*:::::*/
-void fb_FileInputNextTokenWstr
-	(
-		FB_WCHAR *buffer,
-		int max_chars,
-		int is_string
-	)
+void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, ssize_t max_chars, int is_string )
 {
 	/* max_chars does not include the null terminator, the buffer is
 	   assumed to be big enough to hold at least the null terminator */
 
-    int len, isquote, skipdelim;
+	ssize_t len;
+	int isquote, skipdelim;
     FB_WCHAR c;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 

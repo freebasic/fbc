@@ -21,7 +21,7 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 #endif
 
 FB_GL __fb_gl;
-FB_GL_PARAMS __fb_gl_params = { 0 };
+FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static int next_pow2(int n)
 {
@@ -37,14 +37,24 @@ static int next_pow2(int n)
 
 FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 {
-	if ((!__fb_gfx) || (!(__fb_gfx->flags & OPENGL_SUPPORT)))
-		return NULL;
-	return fb_hGL_GetProcAddress(proc);
+	void *result;
+
+	FB_GRAPHICS_LOCK( );
+
+	if (__fb_gfx && (__fb_gfx->flags & OPENGL_SUPPORT)) {
+		result = fb_hGL_GetProcAddress(proc);
+	} else {
+		result = NULL;
+	}
+
+	FB_GRAPHICS_UNLOCK( );
+
+	return result;
 }
 
 int fb_hGL_ExtensionSupported(const char *extension)
 {
-	int len;
+	ssize_t len;
 	char *string = __fb_gl.extensions;
 
 	len = strlen(extension);

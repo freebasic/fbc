@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
+FBCALL FB_WCHAR *fb_FileWstrInput( ssize_t chars, int fnum )
 {
     FB_FILE *handle;
 	FB_WCHAR *dst;
@@ -24,7 +23,7 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
     dst = fb_wstr_AllocTemp( chars );
     if( dst != NULL )
     {
-        size_t read_chars = 0;
+        ssize_t read_chars = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
             while( read_chars != chars )
@@ -72,4 +71,3 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
 
     return dst;
 }
-

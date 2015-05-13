@@ -28,7 +28,7 @@ typedef struct {
 
 static Display *display;
 static FB_DYLIB xlib = NULL;
-static X_FUNCS X = { NULL };
+static X_FUNCS X = { NULL, NULL, NULL, NULL, NULL };
 #endif
 
 static pid_t main_pid;
@@ -240,6 +240,7 @@ static int keyboard_init(void)
 	};
 #endif
 	struct termios term;
+	memset( &term, 0, sizeof( term ) );
 
 	main_pid = getpid();
 	old_getch = __fb_con.keyboard_getch;
@@ -316,6 +317,8 @@ int fb_ConsoleMultikey(int scancode)
 
 	BG_LOCK();
 
+	fb_hStartBgThread( );
+
 	if ((!__fb_con.keyboard_handler) && (!keyboard_init())) {
 		/* Let the handler execute at least once to fill in states */
 		BG_UNLOCK();
@@ -339,13 +342,18 @@ int fb_hConsoleGfxMode
 	)
 {
 	BG_LOCK();
+
+	fb_hStartBgThread( );
+
 	__fb_con.gfx_exit = gfx_exit;
 	if (gfx_exit) {
+		FB_LOCK( );
 		__fb_ctx.hooks.multikeyproc = NULL;
 		__fb_ctx.hooks.inkeyproc = NULL;
 		__fb_ctx.hooks.getkeyproc = NULL;
 		__fb_ctx.hooks.keyhitproc = NULL;
 		__fb_ctx.hooks.sleepproc = NULL;
+		FB_UNLOCK( );
 		gfx_save = save;
 		gfx_restore = restore;
 		gfx_key_handler = key_handler;
@@ -361,6 +369,7 @@ int fb_hConsoleGfxMode
 			fb_hTermOut(SEQ_EXIT_GFX_MODE, 0, 0);
 		}
 	}
+
 	BG_UNLOCK();
 
 	return 0;

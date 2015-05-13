@@ -41,7 +41,7 @@ FBCALL int fb_FileClose( int fnum )
 }
 
 /*:::::*/
-FBCALL int fb_FileCloseAll( )
+FBCALL int fb_FileCloseAll( void )
 {
 	/* As in QB: CLOSE w/o arguments closes all files */
 	fb_FileReset( );

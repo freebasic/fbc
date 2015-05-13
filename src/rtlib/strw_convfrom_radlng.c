@@ -1,7 +1,6 @@
 #include "fb.h"
 
-/*:::::*/
-FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *src, int len, int radix )
+FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *src, ssize_t len, int radix )
 {
 	long long v;
 	int c;
@@ -14,7 +13,7 @@ FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *src, int len, int radix )
 		case 16:
 			while( --len >= 0 )
 			{
-				c = (int)*src++;
+				c = *src++;
 				if( (c >= 97) && (c <= 102) )
 					c -= 87;
 				else if( (c >= 65) && (c <= 70) )
@@ -31,7 +30,7 @@ FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *src, int len, int radix )
 		/* oct */
 		case 8:
 			while( --len >= 0 ) {
-				c = (int)*src++;
+				c = *src++;
 				if( (c >= 48) && (c <= 55) )
 					v = (v * 8) + (c - 48);
 				else
@@ -42,7 +41,7 @@ FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *src, int len, int radix )
 		/* bin */
 		case 2:
 			while( --len >= 0 ) {
-				c = (int)*src++;
+				c = *src++;
 				if( (c >= 48) && (c <= 49) )
 					v = (v * 2) + (c - 48);
 				else

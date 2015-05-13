@@ -105,28 +105,28 @@ type AST_NODE_CALL
 	args			as integer
 	currarg			as FBSYMBOL ptr
 	argtail			as ASTNODE_ ptr
-	strtail 		as AST_TMPSTRLIST_ITEM ptr
+	strtail 		as AST_TMPSTRLIST_ITEM ptr  '' fixed-length string argument copy-back list
 	tmpres          as FBSYMBOL ptr					'' temp result structure, if needed
 end type
 
 type AST_NODE_ARG
 	mode			as integer						'' to pass NULL's to byref args, etc
-	lgt				as integer						'' length, used to push UDT's by value
+	lgt				as longint						'' length, used to push UDT's by value
 end type
 
 type AST_NODE_VAR
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 end type
 
 type AST_NODE_IDX
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 	mult			as integer						'' multipler
 	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
 	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
-	ofs				as integer						'' offset
+	ofs				as longint						'' offset
 end type
 
 type AST_NODE_IIF
@@ -169,23 +169,19 @@ type AST_NODE_OP  '' used by: bop, uop, addr
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
 end type
 
-type AST_NODE_CONST
-	val				as FBVALUE
-end type
-
 type AST_NODE_OFFS
-	ofs				as integer
+	ofs				as longint
 end type
 
 type AST_NODE_JMPTB
 	'' Dynamically allocated buffer holding the jmptb's value/label pairs
-	values				as uinteger ptr
+	values				as ulongint ptr
 	labels				as FBSYMBOL ptr ptr
 	labelcount			as integer
 
 	deflabel			as FBSYMBOL ptr
-	minval				as uinteger
-	maxval				as uinteger
+	minval				as ulongint
+	maxval				as ulongint
 end type
 
 type AST_NODE_DBG
@@ -194,7 +190,7 @@ type AST_NODE_DBG
 end type
 
 type AST_NODE_MEM
-	bytes			as integer
+	bytes				as longint
 	op				as integer
 end type
 
@@ -203,11 +199,11 @@ type AST_NODE_STACK
 end type
 
 type AST_NODE_TYPEINI
-	ofs				as integer
-    union
-    	bytes		as integer
-    	elements	as integer
-    end union
+	ofs				as longint
+	union
+		bytes		as longint
+		elements	as longint
+	end union
     scp				as FBSYMBOL ptr
     lastscp			as FBSYMBOL ptr
 end type
@@ -267,7 +263,7 @@ type ASTNODE
 	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
 
 	union
-		con			as AST_NODE_CONST
+		val			as FBVALUE    '' CONST nodes
 		var_		as AST_NODE_VAR
 		idx			as AST_NODE_IDX
 		ptr			as AST_NODE_PTR
@@ -376,6 +372,18 @@ type ASTCTX
 	flushdtorlist	as integer
 
 	asmtoklist		as TLIST  '' inline ASM token nodes
+
+	'' Whether warnings related to CONST nodes (e.g. "const overflow"
+	'' warnings from astCheckConst()) should be hidden. Sometimes we do
+	'' internal astNew*() operations that cause such warnings, but since
+	'' they're part of internal optimizations, they shouldn't be shown to
+	'' the user.
+	'' This works like a nesting level counter so that the
+	'' astBeginHideWarnings()/astEndHideWarnings() functions work like a
+	'' push/pop stack.
+	''   0 => show warnings
+	'' > 0 => hide warnings
+	hidewarningslevel	as integer
 end Type
 
 #include once "ir.bi"
@@ -393,15 +401,6 @@ type AST_OPINFO
 	id				as const zstring ptr
 	selfop			as AST_OP						'' self version
 end type
-
-'' astTypeIniFlush flags
-enum AST_INIOPT
-	AST_INIOPT_NONE			= &h00000000
-	AST_INIOPT_ISINI		= &h00000001
-	AST_INIOPT_ISSTATIC		= &h00000002
-	AST_INIOPT_DODEREF		= &h00000004
-end enum
-
 
 declare sub astInit( )
 declare sub astEnd( )
@@ -431,17 +430,13 @@ declare function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
+declare function astIsEqualParamInit _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
 declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
-
-declare function astGetValueAsLongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as longint
-
-declare function astGetValueAsDouble _
-	( _
-		byval n as ASTNODE ptr _
-	) as double
 
 declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
 declare function astProcEnd( byval callrtexit as integer ) as integer
@@ -562,6 +557,9 @@ declare sub astUpdateCONVFD2FS _
 		byval is_expr as integer _
 	)
 
+declare function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+
 declare function astNewBOP _
 	( _
 		byval op as integer, _
@@ -586,7 +584,8 @@ declare function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astConstIsZero( byval n as ASTNODE ptr ) as integer
+declare function astConstEqZero( byval n as ASTNODE ptr ) as integer
+declare function astConstGeZero( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _
@@ -607,7 +606,7 @@ declare function astNewCONSTwstr _
 
 declare function astNewCONSTi _
 	( _
-		byval value as integer, _
+		byval value as longint, _
 		byval dtype as integer = FB_DATATYPE_INTEGER, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
@@ -618,26 +617,29 @@ declare function astNewCONSTf _
 		byval dtype as integer = FB_DATATYPE_DOUBLE _
 	) as ASTNODE ptr
 
-declare function astNewCONSTl _
-	( _
-		byval value as longint, _
-		byval dtype as integer = FB_DATATYPE_LONGINT _
-	) as ASTNODE ptr
-
 declare function astNewCONSTz _
 	( _
 		byval dtype as integer = FB_DATATYPE_CHAR, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astConstFlushToInt( byval n as ASTNODE ptr ) as integer
+declare function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
+declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
+declare function astConstGetAsDouble( byval n as ASTNODE ptr ) as double
+declare function astBuildConst( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
+declare function astConvertRawCONSTi _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare function astNewVAR _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer = 0, _
+		byval ofs as longint = 0, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
@@ -663,7 +665,7 @@ declare function astNewDEREF _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer = FB_DATATYPE_INVALID, _
 		byval subtype as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astNewCALL _
@@ -726,12 +728,12 @@ declare function astNewBRANCH _
 declare function astBuildJMPTB _
 	( _
 		byval tempvar as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 declare function astNewLOOP _
@@ -798,7 +800,7 @@ declare function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as integer = 0 _
+		byval bytes as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildNewOp _
@@ -816,9 +818,7 @@ declare function astBuildNewOp _
 declare function astBuildDeleteOp _
 	( _
 		byval op as AST_OP, _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval ptrexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewBOUNDCHK _
@@ -856,6 +856,8 @@ declare function astNewNIDXARRAY _
 	( _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewNode _
 	( _
@@ -907,11 +909,7 @@ declare function astCheckCONV _
 
 declare function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
-declare function astIsClassOnTree _
-	( _
-		byval class_ as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function astHasSideFx( byval n as ASTNODE ptr ) as integer
 
 declare function astIsSymbolOnTree _
 	( _
@@ -929,7 +927,7 @@ declare function astTypeIniBegin _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval is_local as integer, _
-		byval ofs as integer = 0 _
+		byval ofs as longint = 0 _
 	) as ASTNODE ptr
 
 declare sub astTypeIniEnd _
@@ -938,31 +936,39 @@ declare sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
+declare sub astTypeIniRemoveLastNode( byval tree as ASTNODE ptr )
+
 declare function astTypeIniAddPad _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddAssign _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorCall _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval procexpr as ASTNODE ptr _
+		byval procexpr as ASTNODE ptr, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddCtorList _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval elements as integer _
+		byval elements as longint, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeBegin _
@@ -991,11 +997,26 @@ declare sub astTypeIniReplaceElement _
 		byval expr as ASTNODE ptr _
 	)
 
-declare function astTypeIniFlush _
+declare sub astLoadStaticInitializer _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr, _
-		byval options as AST_INIOPT _
+		byval basesym as FBSYMBOL ptr _
+	)
+
+declare function astTypeIniFlush overload _
+	( _
+		byval target as ASTNODE ptr, _
+		byval initree as ASTNODE ptr, _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
+	) as ASTNODE ptr
+
+declare function astTypeIniFlush overload _
+	( _
+		byval target as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr, _
+		byval update_typeinicount as integer, _
+		byval assignoptions as integer _
 	) as ASTNODE ptr
 
 declare function astTypeIniIsConst _
@@ -1039,6 +1060,8 @@ declare function astGetInverseLogOp _
 		byval op as integer _
 	) as integer
 
+declare function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
+declare function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astBuildVarDeref( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -1053,13 +1076,15 @@ declare function astBuildVarInc _
 declare function astBuildVarAssign overload _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as integer _
+		byval rhs as integer, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildVarAssign _
 	( _
 		byval lhs as FBSYMBOL ptr, _
-		byval rhs as ASTNODE ptr _
+		byval rhs as ASTNODE ptr, _
+		byval options as integer = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildFakeWstringAccess( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -1070,11 +1095,29 @@ declare function astBuildFakeWstringAssign _
 		byval options as integer = 0 _
 	) as ASTNODE ptr
 
+declare function astBuildDerefAddrOf overload _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offsetexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr
+
+declare function astBuildDerefAddrOf overload _
+	( _
+		byval n as ASTNODE ptr, _
+		byval offset as longint, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval maybeafield as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr
+
 declare function astBuildVarField _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
+		byval offset as longint = 0 _
 	) as ASTNODE ptr
 
 declare function astBuildTempVarClear( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
@@ -1120,25 +1163,15 @@ declare function astBuildForEnd _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildInstPtr _
+declare function astBuildVarDtorCall overload _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval idxexpr as ASTNODE ptr = NULL _
+		byval varexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildInstPtrAtOffset _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr = NULL, _
-		byval ofs as integer = 0 _
-	) as ASTNODE ptr
-
-declare function astBuildVarDtorCall _
+declare function astBuildVarDtorCall overload _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval check_access as integer = FALSE _
@@ -1242,19 +1275,17 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-declare function astSizeOf( byval n as ASTNODE ptr ) as integer
+declare function astSizeOf( byval n as ASTNODE ptr ) as longint
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
-declare function astGetOFFSETChildOfs _
-	( _
-		byval l as ASTNODE ptr _
-	) as integer
+declare function astGetOFFSETChildOfs( byval l as ASTNODE ptr ) as longint
 
 declare function astBuildCallResultVar( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
 declare function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
+declare function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
@@ -1315,14 +1346,20 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 ''
 '' macros
 ''
-#define astInitNode(n, class_, dtype, subtype) :_
-	    n->class            = class_           :_
-	    astGetFullType( n ) = dtype            :_
-	    n->subtype          = subtype          :_
-	    n->l                = NULL             :_
-	    n->r                = NULL             :_
-	    n->sym              = NULL             :_
-	    n->vector           = 0
+
+#define astBeginHideWarnings( ) ast.hidewarningslevel += 1
+#define astEndHideWarnings( )   ast.hidewarningslevel -= 1
+#define astShouldShowWarnings( ) (ast.hidewarningslevel = 0)
+
+#macro astInitNode( n, class_, dtype_, subtype_ )
+	(n)->class = class_
+	(n)->dtype = dtype_
+	(n)->subtype = subtype_
+	(n)->l = NULL
+	(n)->r = NULL
+	(n)->sym = NULL
+	(n)->vector = 0
+#endmacro
 
 #define astCopy(dst, src) *dst = *src
 
@@ -1354,7 +1391,7 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
-#define astIsBITFIELD(n) iif( astIsFIELD(n), (astGetDataType( astGetLeft( n ) ) = FB_DATATYPE_BITFIELD), FALSE )
+#define astIsBITFIELD(n) iif( astIsFIELD( n ), symbFieldIsBitfield( (n)->sym ), FALSE )
 
 #define astIsNIDXARRAY(n) (n->class = AST_NODECLASS_NIDXARRAY)
 
@@ -1362,13 +1399,10 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsCAST(n) (n->class = AST_NODECLASS_CONV)
 
-#define astGetValue(n) n->con.val
-
-#define astGetValInt(n) n->con.val.int
-
-#define astGetValFloat(n) n->con.val.float
-
-#define astGetValLong(n) n->con.val.long
+#define astConstGetVal( n ) (@(n)->val)
+#define astConstGetFloat( n ) ((n)->val.f)
+#define astConstGetInt( n ) ((n)->val.i)
+#define astConstGetUint( n ) cunsg( (n)->val.i )
 
 #define astGetFullType(n) n->dtype
 #define astGetDataType(n) typeGetDtAndPtrOnly( astGetFullType( n ) )
@@ -1405,8 +1439,6 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
 
-#define astGetCastDoConv( n ) n->cast.doconv
-
 #define astIsUOP( n, uop ) ( ((n)->class = AST_NODECLASS_UOP) andalso ((n)->op.op = (uop)) )
 
 #define astIsBOP( n, bop ) ( ((n)->class = AST_NODECLASS_BOP) andalso ((n)->op.op = (bop)) )
@@ -1418,11 +1450,9 @@ extern ast as ASTCTX
 
 extern ast_bitmaskTB( 0 to 32 ) as uinteger
 
-extern ast_maxlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) as ulongint
-
-extern ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) as longint
-
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
+
+declare function astDumpOp( byval op as AST_OP ) as string
 
 declare sub astDumpTree _
 	( _
@@ -1435,5 +1465,10 @@ declare sub astDumpList _
 		byval n as ASTNODE ptr, _
 		byval col as integer = 0 _
 	)
+
+#if __FB_DEBUG__
+declare function astDumpInline( byval n as ASTNODE ptr ) as string
+declare sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string = "" )
+#endif
 
 #endif '' __AST_BI__

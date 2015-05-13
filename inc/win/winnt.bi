@@ -34,10 +34,10 @@ type PWCH as WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
-type LPCWCH as WCHAR ptr
-type PCWCH as WCHAR ptr
-type LPCWSTR as wstring ptr
-type PCWSTR as wstring ptr
+type LPCWCH as const WCHAR ptr
+type PCWCH as const WCHAR ptr
+type LPCWSTR as const wstring ptr
+type PCWSTR as const wstring ptr
 
 type PCHAR as CHAR ptr
 type LPCH as CHAR ptr
@@ -45,9 +45,9 @@ type PCH as CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
-type LPCCH as CHAR ptr
-type PCSTR as zstring ptr
-type LPCSTR as zstring ptr
+type LPCCH as const CHAR ptr
+type PCSTR as const zstring ptr
+type LPCSTR as const zstring ptr
 
 #ifndef TCHAR
 # ifdef UNICODE

@@ -42,6 +42,13 @@ function cExpression _
 
 end function
 
+function cExpressionWithNIDXARRAY( byval allow_nidxarray as integer ) as ASTNODE ptr
+	dim as integer oldcheckarray = any
+	oldcheckarray = fbGetCheckArray( )
+	fbSetCheckArray( not allow_nidxarray )
+	function = cExpression( )
+	fbSetCheckArray( oldcheckarray )
+end function
 
 '':::::
 ''BoolExpression      =   LogExpression ( (ANDALSO | ORELSE ) LogExpression )* .
@@ -349,8 +356,7 @@ function cIsExpression _
 	'' SymbolType
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
-	dim as integer lgt = any
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 		return NULL
 	end if
 

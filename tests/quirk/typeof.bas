@@ -101,7 +101,7 @@ sub hCheckByrefParams _
 	checkExpr( integer, i )
 	checkExpr( integer ptr, pi )
 	checkExpr( integer, *pi )
-	'checkExpr( string, s )
+	checkExpr( string, s )
 
 end sub
 
@@ -216,9 +216,8 @@ sub test cdecl( )
 		dim px1 as UDT1 ptr
 		checkExpr( UDT1, *px1 )
 
-		'' Currently disallowed
-		'dim ps as string ptr
-		'checkExpr( string, *ps )
+		dim ps as string ptr
+		checkExpr( string, *ps )
 
 		dim cond as integer
 		checkExpr( string, iif( cond, "abc", "123456" ) )
@@ -253,10 +252,10 @@ sub test cdecl( )
 		checkExpr( zstring, z1 )
 		checkExpr( wstring, w1 )
 
-		'dim pz as zstring ptr
-		'dim pw as wstring ptr
-		'checkExpr( zstring, *pz )
-		'checkExpr( wstring, *pw )
+		dim pz as zstring ptr
+		dim pw as wstring ptr
+		checkExpr( zstring, *pz )
+		checkExpr( wstring, *pw )
 
 		dim pfb  as function( ) as byte
 		dim pfi  as function( ) as integer

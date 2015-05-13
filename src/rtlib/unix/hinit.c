@@ -18,10 +18,12 @@ FBCONSOLE __fb_con;
 
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
+static volatile sig_atomic_t __fb_console_resized;
 static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB",
 							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
 
 static pthread_t __fb_bg_thread;
+static int bgthread_inited = FALSE;
 static pthread_mutex_t __fb_bg_mutex;
 FBCALL void fb_BgLock   ( void ) { pthread_mutex_lock  ( &__fb_bg_mutex     ); }
 FBCALL void fb_BgUnlock ( void ) { pthread_mutex_unlock( &__fb_bg_mutex     ); }
@@ -31,10 +33,13 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 
 static pthread_mutex_t __fb_global_mutex;
 static pthread_mutex_t __fb_string_mutex;
+static pthread_mutex_t __fb_graphics_mutex;
 FBCALL void fb_Lock     ( void ) { pthread_mutex_lock  ( &__fb_global_mutex ); }
 FBCALL void fb_Unlock   ( void ) { pthread_mutex_unlock( &__fb_global_mutex ); }
 FBCALL void fb_StrLock  ( void ) { pthread_mutex_lock  ( &__fb_string_mutex ); }
 FBCALL void fb_StrUnlock( void ) { pthread_mutex_unlock( &__fb_string_mutex ); }
+FBCALL void fb_GraphicsLock  ( void ) { pthread_mutex_lock  ( &__fb_graphics_mutex ); }
+FBCALL void fb_GraphicsUnlock( void ) { pthread_mutex_unlock( &__fb_graphics_mutex ); }
 #endif
 
 static void *bg_thread(void *arg)
@@ -53,6 +58,14 @@ static void *bg_thread(void *arg)
 	return NULL;
 }
 
+void fb_hStartBgThread( void )
+{
+	if( bgthread_inited == FALSE ) {
+		pthread_create( &__fb_bg_thread, NULL, bg_thread, NULL );
+		bgthread_inited = TRUE;
+	}
+}
+
 static int default_getch(void)
 {
 	return fgetc(__fb_con.f_in);
@@ -65,33 +78,69 @@ static void signal_handler(int sig)
 	raise(sig);
 }
 
+#ifdef HOST_LINUX
 int fb_hTermQuery( int code, int *val1, int *val2 )
 {
-	fflush( stdin );
-
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
 		return FALSE;
 
-#ifdef HOST_LINUX
-	switch( code ) {
-	case SEQ_QUERY_WINDOW:
-		return (fscanf( stdin, "\e[8;%d;%dt", val1, val2 ) == 2);
-	case SEQ_QUERY_CURSOR:
-		return (fscanf( stdin, "\e[%d;%dR", val1, val2 ) == 2);
-	}
+	int filled;
+	do {
+		/* The terminal should have sent its reply through stdin. However, it's
+		   possible that there's other data pending in stdin, e.g. if the user
+		   happened to press a key at the right time. */
+
+		/* Read until an '\e[' (ESC char followed by '[') is reached,
+		   it should be the begin of the terminal's answer string) */
+		int c;
+		do {
+			do {
+				c = getchar( );
+				if( c == EOF ) return FALSE;
+				if( c == '\e' ) break;
+
+				/* Add skipped char to Inkey() buffer so it's not lost */
+				fb_hAddCh( c );
+			} while (1);
+
+			c = getchar( );
+			if( c == '[' ) break;
+
+			/* ditto */
+			fb_hAddCh( c );
+		} while (1);
+
+		const char *format;
+		if( code == SEQ_QUERY_WINDOW )
+			format = "8;%d;%dt";
+		else /* SEQ_QUERY_CURSOR */
+			format = "%d;%dR";
+
+		filled = scanf( format, val1, val2 );
+	} while (filled != 2);
+
+	return TRUE;
+}
 #endif
 
-	return FALSE;
-}
-
-static void console_resize(int sig)
+/* If the SIGWINCH handler was called, re-query terminal width/height
+   - Assuming BG_LOCK() is acquired, because this can be called from
+     linux/io_mouse.c:mouse_handler() from the background thread
+   - Assuming __fb_con.inited */
+void fb_hRecheckConsoleSize( void )
 {
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
 	int r, c, w, h;
 
-	if (!__fb_con.inited)
+	if( __fb_console_resized == FALSE )
 		return;
+
+	__fb_console_resized = FALSE;
+
+	/* __fb_console_resized may be set to TRUE again here if the signal
+	   handler is called right now, but it doesn't matter since we're about
+	   to update anyways */
 
 	win.ws_row = 0xFFFF;
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
@@ -131,7 +180,15 @@ static void console_resize(int sig)
 		__fb_con.cur_y = __fb_con.cur_x = 1;
 	}
 
-	signal(SIGWINCH, console_resize);
+	/* If __fb_console_resized is set to TRUE only now (after the above
+	   check) then we will miss it for now, but it's ok because the next
+	   fb_hRecheckConsoleSize() will handle it. */
+}
+
+static void sigwinch_handler(int sig)
+{
+	__fb_console_resized = TRUE;
+	signal(SIGWINCH, sigwinch_handler);
 }
 
 int fb_hTermOut( int code, int param1, int param2 )
@@ -317,6 +374,7 @@ static void hInit( void )
 	/* Init multithreading support */
 	pthread_mutex_init(&__fb_global_mutex, &attr);
 	pthread_mutex_init(&__fb_string_mutex, &attr);
+	pthread_mutex_init(&__fb_graphics_mutex, &attr);
 #endif
 
 	pthread_mutex_init( &__fb_bg_mutex, NULL );
@@ -357,8 +415,6 @@ static void hInit( void )
 	}
 	__fb_con.keyboard_getch = default_getch;
 
-	pthread_create( &__fb_bg_thread, NULL, bg_thread, NULL );
-
 	/* Install signal handlers to quietly shut down */
 	for (i = 0; sigs[i] >= 0; i++)
 		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler);
@@ -366,14 +422,17 @@ static void hInit( void )
 	__fb_con.char_buffer = NULL;
 	__fb_con.fg_color = 7;
 	__fb_con.bg_color = 0;
-	console_resize(SIGWINCH);
+
+	__fb_console_resized = TRUE;
+	fb_hRecheckConsoleSize( );
+	signal(SIGWINCH, sigwinch_handler);
 }
 
 void fb_hInit( void )
 {
 	hInit( );
 
-#ifdef HOST_LINUX
+#if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
 	/* Permissions for port I/O */
 	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 #endif
@@ -382,9 +441,10 @@ void fb_hInit( void )
 void fb_hEnd( int unused )
 {
 	fb_hExitConsole();
-	if (__fb_con.inited) {
-		__fb_con.inited = FALSE;
+	__fb_con.inited = FALSE;
+	if( bgthread_inited ) {
 		pthread_join(__fb_bg_thread, NULL);
+		bgthread_inited = FALSE;
 	}
 	pthread_mutex_destroy(&__fb_bg_mutex);
 
@@ -392,5 +452,6 @@ void fb_hEnd( int unused )
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&__fb_global_mutex);
 	pthread_mutex_destroy(&__fb_string_mutex);
+	pthread_mutex_destroy(&__fb_graphics_mutex);
 #endif
 }

@@ -24,14 +24,14 @@ Starts a user-defined procedure in a separate execution thread
 		Optional number of bytes to reserve for this thread's stack.
 
 {{fbdoc item="ret"}}
-	**Threadcreate** returns an ##Any Ptr## handle to the thread created, or a null pointer (##0##) on failure.
+	**""ThreadCreate""** returns an ##Any Ptr## handle to the thread created, or a null pointer (##0##) on failure.
 
 {{fbdoc item="desc"}}
 	The sub pointed to by //procptr// is started as a thread. It will be passed the content of //param//, or 0 (zero) if not specified, in its //userdata// parameter.
 	
 	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor. There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
 	
-	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
+	Before closing, programs should wait for the termination of all launched threads by using ##[[KeyPgThreadWait ThreadWait]]##. Alternatively, if it's not necessary to safely wait for a thread to finish execution, ##[[KeyPgThreadDetach ThreadDetach]]## can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either ##[[KeyPgThreadWait ThreadWait]]## or ##[[KeyPgThreadDetach ThreadDetach]]## to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.
 	
 	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 	
@@ -192,7 +192,8 @@ end sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgThreadWait Threadwait]]##
+	- ##[[KeyPgThreadWait ThreadWait]]##
+	- ##[[KeyPgThreadDetach ThreadDetach]]##
 	- ##[[KeyPgMutexCreate Mutexcreate]]##
 	- ##[[KeyPgMutexLock Mutexlock]]##
 	- ##[[KeyPgMutexUnlock Mutexunlock]]##

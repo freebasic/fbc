@@ -96,7 +96,7 @@ namespace overridingWorks
 
 	type B extends A
 		declare constructor( )
-		declare constructor( byref as B )
+		declare constructor( byref as const B )
 		declare constructor( byval j as integer )
 		declare sub add( byval j as integer )
 		declare function toString( ) as string
@@ -1328,6 +1328,283 @@ namespace externWindowsMs
 	end sub
 end namespace
 
+namespace explicitBase
+	type A extends object
+		i as integer
+		declare virtual function f1( ) as integer
+		declare virtual sub f2( byref as integer )
+	end type
+
+	function A.f1( ) as integer
+		function = &hA
+	end function
+
+	sub A.f2( byref i as integer )
+		i = &hA
+	end sub
+
+	type B extends A
+		declare function f1( ) as integer override
+		declare sub f2( byref as integer ) override
+	end type
+
+	function B.f1( ) as integer
+		'' base.f1() should call A.f1(), not B.f1() recursively
+		function = base.f1( ) + &hB
+	end function
+
+	sub B.f2( byref i as integer )
+		base.f2( i )
+		i += &hB
+	end sub
+
+	sub test cdecl( )
+		dim i as integer
+
+		dim as A ptr pa = new B
+		CU_ASSERT( pa->f1( ) = &hA + &hB )
+		pa->f2( i )
+		CU_ASSERT( i = &hA + &hB )
+		delete pa
+
+		i = 0
+
+		dim as B ptr pb = new B
+		CU_ASSERT( pb->f1( ) = &hA + &hB )
+		pb->f2( i )
+		CU_ASSERT( i = &hA + &hB )
+		delete pb
+	end sub
+end namespace
+
+namespace bydescParamGccWarningRegressionTest
+	type UDT extends object
+		i as integer
+
+		declare function test( ) as integer
+		declare virtual function f( array() as integer ) as integer
+	end type
+
+	function UDT.f( array() as integer ) as integer
+		function = array(0)
+	end function
+
+	function UDT.test( ) as integer
+		dim as integer temp()
+		redim temp(0 to 1)
+		temp(0) = 111
+		function = f( temp() )
+	end function
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( x.test( ) = 111 )
+	end sub
+end namespace
+
+namespace bydescParams1
+	type A extends object
+		declare virtual function f0( array() as integer ) as integer
+		declare virtual function f1( array(any) as integer ) as integer
+		declare virtual function f2( array(any, any) as integer ) as integer
+		declare virtual function f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+	end type
+
+	function A.f0( array() as integer ) as integer
+		function = &hA0
+	end function
+
+	function A.f1( array(any) as integer ) as integer
+		function = &hA1
+	end function
+
+	function A.f2( array(any, any) as integer ) as integer
+		function = &hA2
+	end function
+
+	function A.f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hA8
+	end function
+
+	type B extends A
+		declare function f0( array() as integer ) as integer override
+		declare function f1( array(any) as integer ) as integer override
+		declare function f2( array(any, any) as integer ) as integer override
+		declare function f8( array(any, any, any, any, any, any, any, any) as integer ) as integer override
+	end type
+
+	function B.f0( array() as integer ) as integer
+		function = &hB0
+	end function
+
+	function B.f1( array(any) as integer ) as integer
+		function = &hB1
+	end function
+
+	function B.f2( array(any, any) as integer ) as integer
+		function = &hB2
+	end function
+
+	function B.f8( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hB8
+	end function
+
+	sub test cdecl( )
+		dim array0() as integer
+		dim array1(any) as integer
+		dim array2(any, any) as integer
+		dim array8(any, any, any, any, any, any, any, any) as integer
+
+		scope
+			var pa = new A
+			CU_ASSERT( pa->f0( array0() ) = &hA0 )
+			CU_ASSERT( pa->f1( array1() ) = &hA1 )
+			CU_ASSERT( pa->f2( array2() ) = &hA2 )
+			CU_ASSERT( pa->f8( array8() ) = &hA8 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->f0( array0() ) = &hB0 )
+			CU_ASSERT( pa->f1( array1() ) = &hB1 )
+			CU_ASSERT( pa->f2( array2() ) = &hB2 )
+			CU_ASSERT( pa->f8( array8() ) = &hB8 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->f0( array0() ) = &hB0 )
+			CU_ASSERT( pb->f1( array1() ) = &hB1 )
+			CU_ASSERT( pb->f2( array2() ) = &hB2 )
+			CU_ASSERT( pb->f8( array8() ) = &hB8 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
+namespace bydescParams2
+	type A extends object
+		declare virtual function f( array(any) as integer ) as integer
+		declare virtual function f( array(any, any) as integer ) as integer
+		declare virtual function f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+	end type
+
+	function A.f( array(any) as integer ) as integer
+		function = &hA1
+	end function
+
+	function A.f( array(any, any) as integer ) as integer
+		function = &hA2
+	end function
+
+	function A.f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hA8
+	end function
+
+	type B extends A
+		declare function f( array(any) as integer ) as integer override
+		declare function f( array(any, any) as integer ) as integer override
+		declare function f( array(any, any, any, any, any, any, any, any) as integer ) as integer override
+	end type
+
+	function B.f( array(any) as integer ) as integer
+		function = &hB1
+	end function
+
+	function B.f( array(any, any) as integer ) as integer
+		function = &hB2
+	end function
+
+	function B.f( array(any, any, any, any, any, any, any, any) as integer ) as integer
+		function = &hB8
+	end function
+
+	sub test cdecl( )
+		dim array1(any) as integer
+		dim array2(any, any) as integer
+		dim array8(any, any, any, any, any, any, any, any) as integer
+
+		scope
+			var pa = new A
+			CU_ASSERT( pa->f( array1() ) = &hA1 )
+			CU_ASSERT( pa->f( array2() ) = &hA2 )
+			CU_ASSERT( pa->f( array8() ) = &hA8 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->f( array1() ) = &hB1 )
+			CU_ASSERT( pa->f( array2() ) = &hB2 )
+			CU_ASSERT( pa->f( array8() ) = &hB8 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->f( array1() ) = &hB1 )
+			CU_ASSERT( pb->f( array2() ) = &hB2 )
+			CU_ASSERT( pb->f( array8() ) = &hB8 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
+namespace callingConventions
+	'' All these methods have multiple parameters, ensuring that the
+	'' parameter cycling loops aren't bypassed. The calling convention
+	'' should not affect parameter checking, especially not Pascal for which
+	'' the parameters are reversed in many places of the compiler.
+
+	type A extends object
+		declare virtual function fcdecl   cdecl  ( as integer, as string ) as integer
+		declare virtual function fstdcall stdcall( as integer, as string ) as integer
+		declare virtual function fpascal  pascal ( as integer, as string ) as integer
+	end type
+
+	function A.fcdecl   cdecl  ( i as integer, s as string ) as integer : function = &hA1 : end function
+	function A.fstdcall stdcall( i as integer, s as string ) as integer : function = &hA2 : end function
+	function A.fpascal  pascal ( i as integer, s as string ) as integer : function = &hA3 : end function
+
+	type B extends A
+		declare function fcdecl   cdecl  ( as integer, as string ) as integer override
+		declare function fstdcall stdcall( as integer, as string ) as integer override
+		declare function fpascal  pascal ( as integer, as string ) as integer override
+	end type
+
+	function B.fcdecl   cdecl  ( i as integer, s as string ) as integer : function = &hB1 : end function
+	function B.fstdcall stdcall( i as integer, s as string ) as integer : function = &hB2 : end function
+	function B.fpascal  pascal ( i as integer, s as string ) as integer : function = &hB3 : end function
+
+	sub test cdecl( )
+		scope
+			var pa = new A
+			CU_ASSERT( pa->fcdecl  ( 0, "" ) = &hA1 )
+			CU_ASSERT( pa->fstdcall( 0, "" ) = &hA2 )
+			CU_ASSERT( pa->fpascal ( 0, "" ) = &hA3 )
+			delete pa
+		end scope
+
+		scope
+			dim as A ptr pa = new B
+			CU_ASSERT( pa->fcdecl  ( 0, "" ) = &hB1 )
+			CU_ASSERT( pa->fstdcall( 0, "" ) = &hB2 )
+			CU_ASSERT( pa->fpascal ( 0, "" ) = &hB3 )
+			delete pa
+		end scope
+
+		scope
+			var pb = new B
+			CU_ASSERT( pb->fcdecl  ( 0, "" ) = &hB1 )
+			CU_ASSERT( pb->fstdcall( 0, "" ) = &hB2 )
+			CU_ASSERT( pb->fpascal ( 0, "" ) = &hB3 )
+			delete pb
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1353,6 +1630,11 @@ private sub ctor( ) constructor
 	fbcu.add_test( "overriding an EXTERN C++ method", @externCxx.test )
 	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test )
 	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
+	fbcu.add_test( "explicit BASE access", @explicitBase.test )
+	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test )
+	fbcu.add_test( "bydescParams1", @bydescParams1.test )
+	fbcu.add_test( "bydescParams2", @bydescParams2.test )
+	fbcu.add_test( "callingConventions", @callingConventions.test )
 end sub
 
 end namespace

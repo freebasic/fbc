@@ -2,11 +2,16 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_WstrAssignMid ( FB_WCHAR *dst, int dst_len,
-							   int start, int len, const FB_WCHAR *src )
+FBCALL void fb_WstrAssignMid
+	(
+		FB_WCHAR *dst,
+		ssize_t dst_len,
+		ssize_t start,
+		ssize_t len,
+		const FB_WCHAR *src
+	)
 {
-    int src_len;
+	ssize_t src_len;
 
     if( (dst == NULL) || (src == NULL) )
     	return;

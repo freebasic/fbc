@@ -320,14 +320,14 @@ type SHITEMID field=1
 end type
 
 type LPSHITEMID as SHITEMID ptr
-type LPCSHITEMID as SHITEMID ptr
+type LPCSHITEMID as const SHITEMID ptr
 
 type ITEMIDLIST field=1
 	mkid as SHITEMID
 end type
 
 type LPITEMIDLIST as ITEMIDLIST ptr
-type LPCITEMIDLIST as ITEMIDLIST ptr
+type LPCITEMIDLIST as const ITEMIDLIST ptr
 type BFFCALLBACK as function (byval as HWND, byval as UINT, byval as LPARAM, byval as LPARAM) as integer
 
 #ifndef UNICODE
@@ -498,7 +498,7 @@ type FOLDERSETTINGS field=1
 end type
 
 type LPFOLDERSETTINGS as FOLDERSETTINGS ptr
-type LPCFOLDERSETTINGS as FOLDERSETTINGS ptr
+type LPCFOLDERSETTINGS as const FOLDERSETTINGS ptr
 
 type FVSHOWINFO field=1
 	cbSize as DWORD
@@ -558,7 +558,7 @@ type SHCOLUMNID
 end type
 
 type LPSHCOLUMNID as SHCOLUMNID ptr
-type LPCSHCOLUMNID as SHCOLUMNID ptr
+type LPCSHCOLUMNID as const SHCOLUMNID ptr
 
 type SHELLDETAILS
 	fmt as integer
@@ -714,7 +714,7 @@ type SHCOLUMNDATA
 end type
 
 type LPSHCOLUMNDATA as SHCOLUMNDATA ptr
-type LPCSHCOLUMNDATA as SHCOLUMNDATA ptr
+type LPCSHCOLUMNDATA as const SHCOLUMNDATA ptr
 
 #define MAX_COLUMN_NAME_LEN 80
 #define MAX_COLUMN_DESC_LEN 128
@@ -730,7 +730,7 @@ type SHCOLUMNINFO
 end type
 
 type LPSHCOLUMNINFO as SHCOLUMNINFO ptr
-type LPCSHCOLUMNINFO as SHCOLUMNINFO ptr
+type LPCSHCOLUMNINFO as const SHCOLUMNINFO ptr
 
 enum SHCOLSTATE
 	SHCOLSTATE_TYPE_STR = &h00000001
@@ -746,7 +746,7 @@ enum SHCOLSTATE
 end enum
 
 type LPSHCOLUMNINIT as SHCOLUMNINIT ptr
-type LPCSHCOLUMNINIT as SHCOLUMNINIT ptr
+type LPCSHCOLUMNINIT as const SHCOLUMNINIT ptr
 
 type IColumnProviderVtbl_ as IColumnProviderVtbl
 

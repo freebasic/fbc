@@ -2,10 +2,15 @@
 Non-modifiable variable declaration.
 
 {{fbdoc item="syntax"}}##
-	**Const** //symbolname// [AS [[DataType DataType]]] = //value// [, ...]
+	**Const** //symbolname1// [AS [[DataType DataType]]] = //value1// [, //symbolname2// [AS [[DataType DataType]]] = //value2//, ...]
+		//or//
+	**Const** [AS [[DataType DataType]]] //symbolname1// = //value1// [, //symbolname2// = //value2//, ...]
 ##
 {{fbdoc item="desc"}}
-	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred if //DataType// isn't explicitly given.
+	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred if ##[[DataType DataType]]## isn't explicitly given.
+
+	Specifying ##[[KeyPgString String * size]]##, ##[[KeyPgZstring Zstring * size]]## or ##[[KeyPgWstring Wstring * size]]## as ##[[DataType DataType]]## is not allowed.
+	Specifying ##[[KeyPgString String]]## as ##[[DataType DataType]]## is tolerated but without effect because the resulting type is always a ##[[KeyPgZstring Zstring * size]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/const.bas"}}%%(freebasic)

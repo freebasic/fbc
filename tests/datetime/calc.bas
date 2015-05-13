@@ -1,13 +1,7 @@
 # include once "fbcu.bi"
-
 # include once "vbcompat.bi"
 
-
-
-
-declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
-
- 
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
 tests_datepart:
 	DATA "Jan 1, 2006 12:13:14", "yyyy",  2006

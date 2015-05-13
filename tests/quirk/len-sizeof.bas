@@ -74,110 +74,116 @@ sub sizeofExpression cdecl()
 	'' This tests len/sizeof's type/expression disambiguation, it needs to
 	'' do a lookahead and check for following operators.
 
-	CU_ASSERT(   len(a + b) = 4)
-	CU_ASSERT(sizeof(a + b) = 4)
+	CU_ASSERT(   len(a + b) = sizeof(integer))
+	CU_ASSERT(sizeof(a + b) = sizeof(integer))
 
-	CU_ASSERT(   len(a - b) = 4)
-	CU_ASSERT(sizeof(a - b) = 4)
+	CU_ASSERT(   len(a - b) = sizeof(integer))
+	CU_ASSERT(sizeof(a - b) = sizeof(integer))
 
-	''CU_ASSERT(   len(a * b) = 4) '' This is treated as type to support len(string * N)
-	''CU_ASSERT(sizeof(a * b) = 4)
+	''CU_ASSERT(   len(a * b) = sizeof(integer)) '' This is treated as type to support len(string * N)
+	''CU_ASSERT(sizeof(a * b) = sizeof(integer))
 
-	CU_ASSERT(   len(a / b) = 8) '' (returns a double)
-	CU_ASSERT(sizeof(a / b) = 8)
+	CU_ASSERT(   len(a / b) = sizeof(double)) '' (returns a double)
+	CU_ASSERT(sizeof(a / b) = sizeof(double))
 
-	CU_ASSERT(   len(a \ b) = 4)
-	CU_ASSERT(sizeof(a \ b) = 4)
+	CU_ASSERT(   len(a \ b) = sizeof(integer))
+	CU_ASSERT(sizeof(a \ b) = sizeof(integer))
 
-	CU_ASSERT(   len(a ^ b) = 8) '' (returns a double)
-	CU_ASSERT(sizeof(a ^ b) = 8)
+	CU_ASSERT(   len(a ^ b) = sizeof(double)) '' (returns a double)
+	CU_ASSERT(sizeof(a ^ b) = sizeof(double))
 
-	CU_ASSERT(   len(a mod b) = 4)
-	CU_ASSERT(sizeof(a mod b) = 4)
+	CU_ASSERT(   len(a mod b) = sizeof(integer))
+	CU_ASSERT(sizeof(a mod b) = sizeof(integer))
 
-	CU_ASSERT(   len(not a) = 4)
-	CU_ASSERT(sizeof(not a) = 4)
+	CU_ASSERT(   len(not a) = sizeof(integer))
+	CU_ASSERT(sizeof(not a) = sizeof(integer))
 
-	CU_ASSERT(   len(-a) = 4)
-	CU_ASSERT(sizeof(-a) = 4)
+	CU_ASSERT(   len(-a) = sizeof(integer))
+	CU_ASSERT(sizeof(-a) = sizeof(integer))
 
-	CU_ASSERT(   len(a shl b) = 4)
-	CU_ASSERT(sizeof(a shl b) = 4)
+	CU_ASSERT(   len(a shl b) = sizeof(integer))
+	CU_ASSERT(sizeof(a shl b) = sizeof(integer))
 
-	CU_ASSERT(   len(a shr b) = 4)
-	CU_ASSERT(sizeof(a shr b) = 4)
+	CU_ASSERT(   len(a shr b) = sizeof(integer))
+	CU_ASSERT(sizeof(a shr b) = sizeof(integer))
 
-	CU_ASSERT(   len(a and b) = 4)
-	CU_ASSERT(sizeof(a and b) = 4)
+	CU_ASSERT(   len(a and b) = sizeof(integer))
+	CU_ASSERT(sizeof(a and b) = sizeof(integer))
 
-	CU_ASSERT(   len(a eqv b) = 4)
-	CU_ASSERT(sizeof(a eqv b) = 4)
+	CU_ASSERT(   len(a eqv b) = sizeof(integer))
+	CU_ASSERT(sizeof(a eqv b) = sizeof(integer))
 
-	CU_ASSERT(   len(a imp b) = 4)
-	CU_ASSERT(sizeof(a imp b) = 4)
+	CU_ASSERT(   len(a imp b) = sizeof(integer))
+	CU_ASSERT(sizeof(a imp b) = sizeof(integer))
 
-	CU_ASSERT(   len(a or b) = 4)
-	CU_ASSERT(sizeof(a or b) = 4)
+	CU_ASSERT(   len(a or b) = sizeof(integer))
+	CU_ASSERT(sizeof(a or b) = sizeof(integer))
 
-	CU_ASSERT(   len(a xor b) = 4)
-	CU_ASSERT(sizeof(a xor b) = 4)
+	CU_ASSERT(   len(a xor b) = sizeof(integer))
+	CU_ASSERT(sizeof(a xor b) = sizeof(integer))
 
-	CU_ASSERT(   len(a = b) = 4)
-	CU_ASSERT(sizeof(a = b) = 4)
+	CU_ASSERT(   len(a = b) = sizeof(integer))
+	CU_ASSERT(sizeof(a = b) = sizeof(integer))
 
-	CU_ASSERT(   len(a <> b) = 4)
-	CU_ASSERT(sizeof(a <> b) = 4)
+	CU_ASSERT(   len(a <> b) = sizeof(integer))
+	CU_ASSERT(sizeof(a <> b) = sizeof(integer))
 
-	''CU_ASSERT(   len(a < b) = 4) '' This is treated as type to support len(integer<n>)
-	''CU_ASSERT(sizeof(a < b) = 4)
+	''CU_ASSERT(   len(a < b) = sizeof(integer)) '' This is treated as type to support len(integer<n>)
+	''CU_ASSERT(sizeof(a < b) = sizeof(integer))
 
-	CU_ASSERT(   len(a <= b) = 4)
-	CU_ASSERT(sizeof(a <= b) = 4)
+	CU_ASSERT(   len(a <= b) = sizeof(integer))
+	CU_ASSERT(sizeof(a <= b) = sizeof(integer))
 
-	CU_ASSERT(   len(a >= b) = 4)
-	CU_ASSERT(sizeof(a >= b) = 4)
+	CU_ASSERT(   len(a >= b) = sizeof(integer))
+	CU_ASSERT(sizeof(a >= b) = sizeof(integer))
 
-	CU_ASSERT(   len(a > b) = 4)
-	CU_ASSERT(sizeof(a > b) = 4)
+	CU_ASSERT(   len(a > b) = sizeof(integer))
+	CU_ASSERT(sizeof(a > b) = sizeof(integer))
 
-	CU_ASSERT(   len(a andalso b) = 4)
-	CU_ASSERT(sizeof(a andalso b) = 4)
+	CU_ASSERT(   len(a andalso b) = sizeof(integer))
+	CU_ASSERT(sizeof(a andalso b) = sizeof(integer))
 
-	CU_ASSERT(   len(a orelse b) = 4)
-	CU_ASSERT(sizeof(a orelse b) = 4)
+	CU_ASSERT(   len(a orelse b) = sizeof(integer))
+	CU_ASSERT(sizeof(a orelse b) = sizeof(integer))
 
-	CU_ASSERT(   len(x(0)) = 4)
-	CU_ASSERT(sizeof(x(0)) = 4)
+	CU_ASSERT(   len(x(0)) = sizeof(integer))
+	CU_ASSERT(sizeof(x(0)) = sizeof(integer))
 
-	CU_ASSERT(   len(p[0]) = 4)
-	CU_ASSERT(sizeof(p[0]) = 4)
+	CU_ASSERT(   len(p[0]) = sizeof(integer))
+	CU_ASSERT(sizeof(p[0]) = sizeof(integer))
 
-	CU_ASSERT(   len(aa.a) = 4) '' Plain field access
-	CU_ASSERT(sizeof(aa.a) = 4)
+	CU_ASSERT(   len(aa.a) = sizeof(integer)) '' Plain field access
+	CU_ASSERT(sizeof(aa.a) = sizeof(integer))
 
-	CU_ASSERT(   len(pa->a) = 4)
-	CU_ASSERT(sizeof(pa->a) = 4)
+	CU_ASSERT(   len(pa->a) = sizeof(integer))
+	CU_ASSERT(sizeof(pa->a) = sizeof(integer))
 
-	CU_ASSERT(   len(ns.a) = 4) '' Variable from namespace
-	CU_ASSERT(sizeof(ns.a) = 4)
+	CU_ASSERT(   len(ns.a) = sizeof(integer)) '' Variable from namespace
+	CU_ASSERT(sizeof(ns.a) = sizeof(integer))
 
 	/'
 	'' Treated as len(bb) because bb is a type, even though there is a
 	'' '.' coming, to allow accessing namespaced types
 	type as a bb
 	dim as bb bb
-	CU_ASSERT(   len(bb.a) = 4)
-	CU_ASSERT(sizeof(bb.a) = 4)
+	CU_ASSERT(   len(bb.a) = sizeof(integer))
+	CU_ASSERT(sizeof(bb.a) = sizeof(integer))
 	'/
 
+	dim as string sa = "a", sbb = "bb"
 	dim fstr as string * 31 = "a"
 	dim z as zstring * 32 = "abc"
 	dim w as wstring * 32 = "abcde"
+	dim psa as string ptr = @sa
 	dim pz as zstring ptr = @z
 	dim pw as wstring ptr = @w
 
+	CU_ASSERT( sizeof( sa + sbb ) = sizeof( string ) )
+	CU_ASSERT(    len( sa + sbb ) = 3 )
 	CU_ASSERT( sizeof( fstr ) = 32 )
 	CU_ASSERT(    len( fstr ) = 31 )
+	CU_ASSERT( sizeof( *psa ) = sizeof( string ) )
+	CU_ASSERT(    len( *psa ) = 1 )
 	CU_ASSERT( sizeof( *pz )  = sizeof( zstring ) )
 	CU_ASSERT(    len( *pz )  = 3 )  '' "abc"
 	CU_ASSERT( sizeof( *pw )  = sizeof( wstring ) )
@@ -227,10 +233,17 @@ sub sizeofVar cdecl( )
 	CU_ASSERT( sizeof(  sh ) = 2 )
 	CU_ASSERT(    len( ush ) = 2 )
 	CU_ASSERT( sizeof( ush ) = 2 )
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len(   i ) = 8 )
+	CU_ASSERT( sizeof(   i ) = 8 )
+	CU_ASSERT(    len(  ui ) = 8 )
+	CU_ASSERT( sizeof(  ui ) = 8 )
+#else
 	CU_ASSERT(    len(   i ) = 4 )
 	CU_ASSERT( sizeof(   i ) = 4 )
 	CU_ASSERT(    len(  ui ) = 4 )
 	CU_ASSERT( sizeof(  ui ) = 4 )
+#endif
 	CU_ASSERT(    len(   l ) = 4 )
 	CU_ASSERT( sizeof(   l ) = 4 )
 	CU_ASSERT(    len(  ul ) = 4 )
@@ -245,18 +258,27 @@ sub sizeofVar cdecl( )
 	CU_ASSERT(    len( d ) = 8 )
 	CU_ASSERT( sizeof( d ) = 8 )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len( p ) = 8 )
+	CU_ASSERT( sizeof( p ) = 8 )
+	CU_ASSERT(    len( pi ) = 8 )
+	CU_ASSERT( sizeof( pi ) = 8 )
+	CU_ASSERT(    len( px1 ) = 8 )
+	CU_ASSERT( sizeof( px1 ) = 8 )
+#else
 	CU_ASSERT(    len( p ) = 4 )
 	CU_ASSERT( sizeof( p ) = 4 )
 	CU_ASSERT(    len( pi ) = 4 )
 	CU_ASSERT( sizeof( pi ) = 4 )
 	CU_ASSERT(    len( px1 ) = 4 )
 	CU_ASSERT( sizeof( px1 ) = 4 )
+#endif
 
 	CU_ASSERT( sizeof( "" ) = 1 )
 	CU_ASSERT( sizeof( wstr( "" ) ) = sizeof( wstring ) )
 	CU_ASSERT( sizeof( "test" ) = 5 )
 	CU_ASSERT( sizeof( wstr( "test" ) ) = 5 * sizeof( wstring ) )
-	CU_ASSERT( sizeof( s ) = 12 )
+	CU_ASSERT( sizeof( s ) = sizeof( string ) )
 	CU_ASSERT( sizeof( fixstr31 ) = 32 ) '' 31 + implicit null terminator
 	CU_ASSERT( sizeof( z32 ) = 32 )
 	CU_ASSERT( sizeof( w32 ) = 32 * sizeof( wstring ) )
@@ -275,10 +297,10 @@ sub sizeofVar cdecl( )
 	CU_ASSERT( sizeof( w32 ) = 128 )
 #endif
 
-	CU_ASSERT(    len( x1 ) = 16 )
-	CU_ASSERT( sizeof( x1 ) = 16 )
-	CU_ASSERT(    len( x2 ) = 5 )
-	CU_ASSERT( sizeof( x2 ) = 5 )
+	CU_ASSERT(    len( x1 ) = sizeof( integer ) * 4 )
+	CU_ASSERT( sizeof( x1 ) = sizeof( integer ) * 4 )
+	CU_ASSERT(    len( x2 ) = sizeof( integer ) + 1 )
+	CU_ASSERT( sizeof( x2 ) = sizeof( integer ) + 1 )
 end sub
 
 private sub sizeofType cdecl( )
@@ -290,10 +312,17 @@ private sub sizeofType cdecl( )
 	CU_ASSERT( sizeof(  short ) = 2 )
 	CU_ASSERT(    len( ushort ) = 2 )
 	CU_ASSERT( sizeof( ushort ) = 2 )
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len(  integer ) = 8 )
+	CU_ASSERT( sizeof(  integer ) = 8 )
+	CU_ASSERT(    len( uinteger ) = 8 )
+	CU_ASSERT( sizeof( uinteger ) = 8 )
+#else
 	CU_ASSERT(    len(  integer ) = 4 )
 	CU_ASSERT( sizeof(  integer ) = 4 )
 	CU_ASSERT(    len( uinteger ) = 4 )
 	CU_ASSERT( sizeof( uinteger ) = 4 )
+#endif
 	CU_ASSERT(    len(  long ) = 4 )
 	CU_ASSERT( sizeof(  long ) = 4 )
 	CU_ASSERT(    len( ulong ) = 4 )
@@ -308,12 +337,22 @@ private sub sizeofType cdecl( )
 	CU_ASSERT(    len( double ) = 8 )
 	CU_ASSERT( sizeof( double ) = 8 )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len( any ptr ) = 8 )
+	CU_ASSERT( sizeof( any ptr ) = 8 )
+#else
 	CU_ASSERT(    len( any ptr ) = 4 )
 	CU_ASSERT( sizeof( any ptr ) = 4 )
+#endif
 	CU_ASSERT(    len( integer ptr ) = sizeof( any ptr ) )
 
+#ifdef __FB_64BIT__
+	CU_ASSERT(    len( string ) = 24 )
+	CU_ASSERT( sizeof( string ) = 24 )
+#else
 	CU_ASSERT(    len( string ) = 12 )
 	CU_ASSERT( sizeof( string ) = 12 )
+#endif
 	CU_ASSERT(    len( string * 5 ) = 5 + 1 ) '' + the implicit null terminator
 	CU_ASSERT( sizeof( string * 5 ) = 5 + 1 )
 	CU_ASSERT(    len( zstring ) = 1 )
@@ -352,14 +391,14 @@ private sub sizeofType cdecl( )
 		b as byte
 	end type
 
-	CU_ASSERT(    len( T ) = 16 )
-	CU_ASSERT( sizeof( T ) = 16 )
-	CU_ASSERT(    len( a ) = 16 )
-	CU_ASSERT( sizeof( a ) = 16 )
-	CU_ASSERT(    len( ns.T ) = 16 )
-	CU_ASSERT( sizeof( ns.T ) = 16 )
-	CU_ASSERT(    len( UDT2 ) = 5 )
-	CU_ASSERT( sizeof( UDT2 ) = 5 )
+	CU_ASSERT(    len( T ) = sizeof( integer ) * 4 )
+	CU_ASSERT( sizeof( T ) = sizeof( integer ) * 4 )
+	CU_ASSERT(    len( a ) = sizeof( integer ) * 4 )
+	CU_ASSERT( sizeof( a ) = sizeof( integer ) * 4 )
+	CU_ASSERT(    len( ns.T ) = sizeof( integer ) * 4 )
+	CU_ASSERT( sizeof( ns.T ) = sizeof( integer ) * 4 )
+	CU_ASSERT(    len( UDT2 ) = sizeof( integer ) + 1 )
+	CU_ASSERT( sizeof( UDT2 ) = sizeof( integer ) + 1 )
 end sub
 
 private sub sizeofTypeVsLenString cdecl()
@@ -371,8 +410,8 @@ private sub sizeofTypeVsLenString cdecl()
 		as integer a, b, c, d
 	end type
 	dim as string s1 = "123"
-	CU_ASSERT(   len(s1) = 16)
-	CU_ASSERT(sizeof(s1) = 16)
+	CU_ASSERT(   len(s1) = sizeof(integer) * 4)
+	CU_ASSERT(sizeof(s1) = sizeof(integer) * 4)
 	CU_ASSERT(   len(s1 + s1) = 6)
 
 	'' ---
@@ -381,8 +420,8 @@ private sub sizeofTypeVsLenString cdecl()
 	type s2
 		as integer a, b, c, d
 	end type
-	CU_ASSERT(   len(s2) = 16)
-	CU_ASSERT(sizeof(s2) = 16)
+	CU_ASSERT(   len(s2) = sizeof(integer) * 4)
+	CU_ASSERT(sizeof(s2) = sizeof(integer) * 4)
 	CU_ASSERT(   len(s2 + s2) = 6)
 
 	'' ---
@@ -392,8 +431,8 @@ private sub sizeofTypeVsLenString cdecl()
 		type s3
 			as integer a, b, c, d
 		end type
-		CU_ASSERT(   len(s3) = 16)
-		CU_ASSERT(sizeof(s3) = 16)
+		CU_ASSERT(   len(s3) = sizeof(integer) * 4)
+		CU_ASSERT(sizeof(s3) = sizeof(integer) * 4)
 		CU_ASSERT(   len(s3 + s3) = 6)
 	end scope
 
@@ -404,8 +443,8 @@ private sub sizeofTypeVsLenString cdecl()
 	end type
 	scope
 		dim as string s4 = "123"
-		CU_ASSERT(   len(s4) = 16)
-		CU_ASSERT(sizeof(s4) = 16)
+		CU_ASSERT(   len(s4) = sizeof(integer) * 4)
+		CU_ASSERT(sizeof(s4) = sizeof(integer) * 4)
 		CU_ASSERT(   len(s4 + s4) = 6)
 	end scope
 end sub

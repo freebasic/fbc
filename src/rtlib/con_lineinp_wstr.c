@@ -6,9 +6,14 @@ static const char *pszDefaultQuestion = "? ";
 
 #if defined( HOST_WIN32 ) || defined( HOST_DOS )
 
-/*:::::*/
-int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
-							 int addquestion, int addnewline )
+int fb_ConsoleLineInputWstr
+	(
+		const FB_WCHAR *text,
+		FB_WCHAR *dst,
+		ssize_t max_chars,
+		int addquestion,
+		int addnewline
+	)
 {
     FBSTRING *tmp_result;
 
@@ -48,13 +53,17 @@ static char *hWrapper( char *buffer, size_t count, FILE *fp )
     return fb_ReadString( buffer, count, fp );
 }
 
-/*:::::*/
-int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
-							 int addquestion, int addnewline )
+int fb_ConsoleLineInputWstr
+	(
+		const FB_WCHAR *text,
+		FB_WCHAR *dst,
+		ssize_t max_chars,
+		int addquestion,
+		int addnewline
+	)
 {
-	int res;
-    size_t len;
-    int old_x, old_y;
+	size_t len;
+	int res, old_x, old_y;
 
     /* !!!FIXME!!! no support for unicode input */
 
@@ -72,7 +81,7 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
     }
 
     {
-        FBSTRING str_result = { 0 };
+        FBSTRING str_result = { 0, 0, 0 };
 
         res = fb_DevFileReadLineDumb( stdin, &str_result, hWrapper );
 
@@ -80,8 +89,7 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
 
         if( !addnewline )
         {
-            int cols, rows;
-            int old_y;
+            int cols, rows, old_y;
 
             fb_GetSize( &cols, &rows );
             fb_GetXY( NULL, &old_y );

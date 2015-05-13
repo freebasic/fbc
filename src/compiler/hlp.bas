@@ -87,15 +87,15 @@ function hFloatToHex _
 		byval dtype as integer _
 	) as string
 
-	dim as single singlevalue = any
-
 	'' Emit the raw bytes that make up the float
 	'' x86 little-endian assumption
 	if( typeGet( dtype ) = FB_DATATYPE_DOUBLE ) then
 		function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 	else
-		singlevalue = value
-		function = "0x" + hex( *cptr( uinteger ptr, @singlevalue ), 8 )
+		dim as single singlevalue = value
+		'' Using an intermediate uinteger to allow compiling with FB
+		'' versions before the overload resolution overhaul
+		function = "0x" + hex( cuint( *cptr( ulong ptr, @singlevalue ) ), 8 )
 	end if
 end function
 
@@ -209,29 +209,25 @@ sub hClearName _
 
 end sub
 
-'':::::
-function hStripExt _
-	( _
-		byval filename as zstring ptr _
-	) as string static
+'' Searches backwards for the last '.' while still behind '/' or '\'.
+private function hFindExtBegin( byref path as string ) as integer
+	for i as integer = len( path )-1 to 0 step -1
+		select case( path[i] )
+		case asc( "." )
+			return i
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+		case asc( "\" ), asc( "/" )
+#else
+		case asc( "/" )
+#endif
+			exit for
+		end select
+	next
+	function = len( path )
+end function
 
-    dim as integer p, lp
-
-	lp = 0
-	do
-		p = instr( lp+1, *filename, "." )
-	    if( p = 0 ) then
-	    	exit do
-	    end if
-	    lp = p
-	loop
-
-	if( lp > 0 ) then
-		function = left( *filename, lp-1 )
-	else
-		function = *filename
-	end if
-
+function hStripExt( byref path as string ) as string
+	function = left( path, hFindExtBegin( path ) )
 end function
 
 '':::::
@@ -377,117 +373,8 @@ function pathIsAbsolute( byval path as zstring ptr ) as integer
 #endif
 end function
 
-'':::::
-function hToPow2 _
-	( _
-		byval value as uinteger _
-	) as uinteger static
-
-    dim n as uinteger
-
-	static pow2tb(0 to 63) as uinteger = _
-	{ _
-		 0,  0,  0, 15,  0,  1, 28,  0, _
-		16,  0,  0,  0,  2, 21, 29,  0, _
-    	 0,  0, 19, 17, 10,  0, 12,  0, _
-    	 0,  3,  0,  6,  0, 22, 30,  0, _
-    	14,  0, 27,  0,  0,  0, 20,  0, _
-    	18,  9, 11,  0,  5,  0,  0, 13, _
-    	26,  0,  0,  8,  0,  4,  0, 25, _
-    	 0,   7, 24,  0, 23,  0, 31,  0 _
-	}
-
-	'' don't check if it's zero
-	if( value = 0 ) then
-		return 0
-	end if
-
-	'' (n^(n-1)) * Harley's magic number
-	n = ((value-1) xor value) * (7*255*255*255)
-
-    '' extract bits <31:26>
-    n = pow2tb(n shr 26)				'' translate into bit count - 1
-
-    '' is this really a power of 2?
-    if( value - (1 shl n) = 0 ) then
-    	function = n
-    else
-    	function = 0
-    end if
-
-end function
-
-'':::::
-sub hConvertValue _
-	( _
-		byval src as FBVALUE ptr, _
-		byval sdtype as integer, _
-		byval dst as FBVALUE ptr, _
-		byval ddtype as integer _
-	) static
-
-	select case as const sdtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-conv_long:
-
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		select case as const ddtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			dst->long = src->float
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float = src->float
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				dst->int = src->float
-			else
-				dst->long = src->float
-			end if
-
-		case else
-			dst->int = src->float
-		end select
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			goto conv_int
-		else
-			goto conv_long
-		end if
-
-	case else
-conv_int:
-
-		select case as const ddtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			dst->long = src->int
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			dst->float = src->int
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				dst->int = src->int
-			else
-				dst->long = src->int
-			end if
-
-		case else
-			dst->int = src->int
-		end select
-	end select
-
-end sub
-
-'':::::
-function hCheckFileFormat _
-	( _
-		byval f as integer _
-	) as integer
-
-    dim as integer BOM
+function hCheckFileFormat( byval f as integer ) as integer
+	dim as long BOM
     dim as FBFILE_FORMAT fmt
 
 	'' little-endian assumptions
@@ -530,7 +417,6 @@ function hCheckFileFormat _
 	end if
 
 	function = fmt
-
 end function
 
 function hCurDir( ) as string

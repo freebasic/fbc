@@ -11,9 +11,9 @@ Left-justifies a string
 ##
 {{fbdoc item="param"}}
 	##//dst//##
-		Source ##[[KeyPgString String]]## to get the data.
-	##//src//##
 		String ##[[KeyPgString String]]## to receive the data.
+	##//src//##
+		Source ##[[KeyPgString String]]## to get the data.
 	##//dst_udt//##
 		User defined ##[[KeyPgType Type]]## to receive the data.	
 	##//src_udt//##
@@ -50,7 +50,7 @@ print a.x
 %%
 
 {{fbdoc item="diff"}}
-	-In QB, the syntax was ##**Lset** //dst// = //src//##
+	-In QB, the syntax was ##**Lset** //dst// = //src//##. That syntax is also supported by FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRset Rset]]##

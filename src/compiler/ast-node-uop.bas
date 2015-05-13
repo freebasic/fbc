@@ -3,129 +3,84 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 
-private function hUOPConstFoldInt _
-	( _
-		byval op as integer, _
-		byval v as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as integer ldfull = any
-	dim as FBSYMBOL ptr lsubtype = any
-
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.int = not v->con.val.int
-
-	case AST_OP_NEG
-		v->con.val.int = -v->con.val.int
-
-	case AST_OP_ABS
-		v->con.val.int = abs( v->con.val.int )
-
-	case AST_OP_SGN
-		v->con.val.int = sgn( v->con.val.int )
-	end select
-
-	'' Pretend the CONST is an integer for a moment, since the result was
-	'' calculated and stored at INTEGER precision above, then do a CONV
-	'' back to the original type and let it show any overflow warnings in
-	'' case the real type cannot hold the calculated value.
-	ldfull = v->dtype
-	lsubtype = v->subtype
-	v->dtype = FB_DATATYPE_INTEGER
-	v->subtype = NULL
-
-	function = astNewCONV( ldfull, lsubtype, v )
+'' Need to use replacement function for sgn(longint) constant evaluation,
+'' because the built-in sgn(longint) was bugged in older fbc versions.
+'' This way we can bootstrap safely even using those older versions.
+private function hSgnLongInt( byval x as longint ) as longint
+	if( x = 0 ) then
+		function = 0
+	elseif( x > 0 ) then
+		function = 1
+	else
+		function = -1
+	end if
 end function
 
-'':::::
-private sub hUOPConstFoldFlt _
+private function hConstUop _
 	( _
 		byval op as integer, _
-		byval v as ASTNODE ptr _
-	) static
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
 
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.int = not cint( v->con.val.float )
+	dim as double d = any
+	dim as longint i = any
 
-	case AST_OP_NEG
-		v->con.val.float = -v->con.val.float
+	if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+		d = l->val.f
+		select case as const( op )
+		case AST_OP_NEG   : d =      -d
+		case AST_OP_ABS   : d =  abs( d )
+		case AST_OP_SGN   : d =  sgn( d )
+		case AST_OP_SIN   : d =  sin( d )
+		case AST_OP_ASIN  : d = asin( d )
+		case AST_OP_COS   : d =  cos( d )
+		case AST_OP_ACOS  : d = acos( d )
+		case AST_OP_TAN   : d =  tan( d )
+		case AST_OP_ATAN  : d =  atn( d )
+		case AST_OP_SQRT  : d =  sqr( d )
+		case AST_OP_LOG   : d =  log( d )
+		case AST_OP_EXP   : d =  exp( d )
+		case AST_OP_FLOOR : d =  int( d )
+		case AST_OP_FIX   : d =  fix( d )
+		case AST_OP_FRAC  : d = frac( d )
+		case else         : assert( FALSE )
+		end select
+		l->val.f = d
+	else
+		i = l->val.i
 
-	case AST_OP_ABS
-		v->con.val.float = abs( v->con.val.float )
+		if( typeGetSize( l->dtype ) = 8 ) then
+			select case as const( op )
+			case AST_OP_NOT : i = not i
+			case AST_OP_NEG : i = -i
+			case AST_OP_ABS : i = abs( i )
+			case AST_OP_SGN : i = hSgnLongInt( i )
+			case else       : assert( FALSE )
+			end select
+		else
+			select case as const( op )
+			case AST_OP_NOT : i = not  clng( i )
+			case AST_OP_NEG : i = -    clng( i )
+			case AST_OP_ABS : i = abs( clng( i ) )
+			case AST_OP_SGN : i = sgn( clng( i ) )
+			case else       : assert( FALSE )
+			end select
+		end if
 
-	case AST_OP_SGN
-		v->con.val.float = sgn( v->con.val.float )
+		l->val.i = i
+		l = astConvertRawCONSTi( dtype, subtype, l )
+	end if
 
-	case AST_OP_SIN
-		v->con.val.float = sin( v->con.val.float )
-
-	case AST_OP_ASIN
-		v->con.val.float = asin( v->con.val.float )
-
-	case AST_OP_COS
-		v->con.val.float = cos( v->con.val.float )
-
-	case AST_OP_ACOS
-		v->con.val.float = acos( v->con.val.float )
-
-	case AST_OP_TAN
-		v->con.val.float = tan( v->con.val.float )
-
-	case AST_OP_ATAN
-		v->con.val.float = atn( v->con.val.float )
-
-	case AST_OP_SQRT
-		v->con.val.float = sqr( v->con.val.float )
-
-	case AST_OP_LOG
-		v->con.val.float = log( v->con.val.float )
-
-	case AST_OP_EXP
-		v->con.val.float = exp( v->con.val.float )
-
-	case AST_OP_FLOOR
-		v->con.val.float = int( v->con.val.float )
-
-	case AST_OP_FIX
-		v->con.val.float = fix( v->con.val.float )
-
-	case AST_OP_FRAC
-		v->con.val.float = frac( v->con.val.float )
-	end select
-
-end sub
-
-'':::::
-private sub hUOPConstFold64 _
-	( _
-		byval op as integer, _
-		byval v as ASTNODE ptr _
-	) static
-
-	select case as const op
-	case AST_OP_NOT
-		v->con.val.long = not v->con.val.long
-
-	case AST_OP_NEG
-		v->con.val.long = -v->con.val.long
-
-	case AST_OP_ABS
-		v->con.val.long = abs( v->con.val.long )
-
-	case AST_OP_SGN
-		v->con.val.long = sgn( v->con.val.long )
-	end select
-
-end sub
+	function = l
+end function
 
 function astNewUOP _
 	( _
@@ -290,82 +245,38 @@ function astNewUOP _
 
 	'' constant folding
 	if( astIsCONST( o ) ) then
-
 		if( op = AST_OP_NEG ) then
-			if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
-				if( typeIsSigned( o->dtype ) = FALSE ) then
-					'' test overflow
-					select case( typeGetDtAndPtrOnly( o->dtype ) )
-					case FB_DATATYPE_UINT
-chk_uint:
-						if( astGetValInt( o ) and &h80000000 ) then
-							if( astGetValInt( o ) <> &h80000000 ) then
-								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-							end if
-						end if
+			if( typeIsSigned( o->dtype ) = FALSE ) then
+				'' Check for overflows, for example:
+				'' NEG( cushort( 32769 ) ) is -32769,
+				'' but the lowest short is -32768.
 
-					case FB_DATATYPE_ULONGINT
-chk_ulong:
-						if( astGetValLong( o ) and &h8000000000000000 ) then
-							if( astGetValLong( o ) <> &h8000000000000000 ) then
-								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-							end if
-						end if
-
-					case FB_DATATYPE_ULONG
-						if( FB_LONGSIZE = len( integer ) ) then
-							goto chk_uint
-						else
-							goto chk_ulong
-						end if
-
-					case else
-						if( -astGetValueAsLongint( o ) < ast_minlimitTB(typeGet( o->dtype )) ) then
-							errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-						end if
-					end select
-
-					dtype = typeToSigned( dtype )
+				if( astShouldShowWarnings( ) ) then
+					'' Highest bit set? (meaning the negation cannot be represented,
+					'' since the highest bit will be overwritten with the sign bit)
+					if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
+						errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+					end if
 				end if
+
+				dtype = typeToSigned( dtype )
 			end if
 		end if
 
-		select case as const astGetDataType( o )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		    hUOPConstFold64( op, o )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hUOPConstFoldFlt( op, o )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				hUOPConstFoldInt( op, o )
-			else
-				hUOPConstFold64( op, o )
-			end if
-
-		case else
-			'' byte's, short's, int's and enum's
-			hUOPConstFoldInt( op, o )
-		end select
+		o = hConstUop( op, dtype, subtype, o )
 
 		o->dtype = dtype
 		return o
 	end if
 
-	'' alloc new node
-
-	if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
-		select case as const op
-		case AST_OP_SGN, AST_OP_ABS, AST_OP_FIX, AST_OP_FRAC, _
-			 AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
-			 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
-		 	 AST_OP_EXP, AST_OP_FLOOR
-		 	 return rtlMathUop( op, o )
-		end select
+	if( irGetOption( IR_OPT_MISSINGOPS ) ) then
+		'' Call RTL function if backend doesn't support this op directly
+		if( irSupportsOp( op, dtype ) = FALSE ) then
+			return rtlMathUop( op, o )
+		end if
 	end if
 
-
+	'' alloc new node
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
 
 	n->l = o

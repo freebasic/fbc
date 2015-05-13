@@ -11,7 +11,7 @@
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-private sub hEnumConstDecl(byval id as zstring ptr, byref value as integer)
+private sub hEnumConstDecl( byval id as zstring ptr, byref value as longint )
 	dim as ASTNODE ptr expr = any
 
 	'' '='?
@@ -46,7 +46,7 @@ end sub
 ''
 sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 	static as zstring * FB_MAXNAMELEN+1 id
-	dim as integer value = any
+	dim as longint value = any
 
 	value = 0
 
@@ -173,18 +173,36 @@ sub cEnumDecl( byval attrib as integer )
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
 
-	e = symbAddEnum( @id, palias, attrib )
-	if( e = NULL ) then
-		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		'' error recovery: create a fake symbol
-		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
-	end if
-
 	'' EXPLICIT?
 	dim as integer isexplicit = FALSE
 	if( lexGetToken( ) = FB_TK_EXPLICIT ) then
 		lexSkipToken( )
 		isexplicit = TRUE
+	end if
+
+	''
+	'' Normally, Enums are namespaces containing their constants, and a
+	'' Using will automatically be done below to import the constants into
+	'' the parent namespace unless the Enum was declared Explicit.
+	''
+	'' This way, an Enum's constants can be accessed via "constid" or
+	'' "enumid.constid", and an Explicit Enum's constants can only be
+	'' accessed via the latter.
+	''
+	'' Non-Explicit Enums inside Extern blocks have special behaviour
+	'' though, they're not treated as separate namespaces. Instead, the
+	'' constants are added to the parent namespace directly. Access to them
+	'' via "enumid.constid" is disallowed (FB_ERRMSG_NONSCOPEDENUM).
+	''
+
+	dim as integer use_hashtb = (parser.mangling = FB_MANGLING_BASIC)
+	use_hashtb or= isexplicit
+
+	e = symbAddEnum( @id, palias, attrib, use_hashtb )
+	if( e = NULL ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: create a fake symbol
+		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE, use_hashtb )
 	end if
 
 	'' Comment? SttSeparator
@@ -200,7 +218,7 @@ sub cEnumDecl( byval attrib as integer )
 	end if
 
 	'' if in BASIC mangling mode, start a new scope
-	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
+	if( use_hashtb ) then
 		symbNestBegin( e, FALSE )
 	end if
 
@@ -208,7 +226,7 @@ sub cEnumDecl( byval attrib as integer )
 	cEnumBody( e, attrib )
 
 	'' close scope
-	if( (symbGetMangling( e ) = FB_MANGLING_BASIC) or (isexplicit = TRUE) ) then
+	if( use_hashtb ) then
 		symbNestEnd( FALSE )
 	end if
 
@@ -229,7 +247,7 @@ sub cEnumDecl( byval attrib as integer )
 
 			if( isexplicit = FALSE ) then
 				'' if in BASIC mangling mode, do an implicit 'USING enum'
-				if( symbGetMangling( e ) = FB_MANGLING_BASIC ) then
+				if( use_hashtb ) then
 					symbNamespaceImport( e )
 				end if
 			end if

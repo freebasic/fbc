@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="Line continuation"}}----
+A single ##_## (underscore) character at the end of a line of code tells the compiler that the line continues in the next line. This allows a single statement (line of code) to be spread across multiple lines in the input file, which can be a nice formatting help.
+
+{{fbdoc item="filename" value="examples/manual/proguide/linecontinuation1.bas"}}%%(freebasic)
+'' This Dim statement is spread across multiple lines, using the '_' character
+dim myvariable _
+as integer
+%%
+
+This is often used to make very long lines of code easier to read, for example procedure declarations with a lot of parameters:
+
+{{fbdoc item="filename" value="examples/manual/proguide/linecontinuation2.bas"}}%%(freebasic)
+'' Here's an example:
+
+declare sub drawRectangle( byval x as integer, byval y as integer, byval w as integer, byval h as integer )
+
+'' which can also be written as:
+
+declare sub drawRectangle( byval x as integer, byval y as integer, _
+	                       byval w as integer, byval h as integer )
+
+'' or:
+
+declare sub drawRectangle _
+	( _
+		byval x as integer, _
+		byval y as integer, _
+		byval w as integer, _
+		byval h as integer _
+	)
+
+'' (or any other formatting you like)
+%%
+
+The ##_## line continuation character can be inserted at pretty much any point in a line of code. It does not work inside comments though.
+
+Be careful when adding the ##_## line continuation character right behind an identifier or keyword. It should be separated with at least one space character, otherwise it would be treated as part of the identifier or keyword.
+
+{{fbdoc item="filename" value="examples/manual/proguide/linecontinuation2.bas"}}%%(freebasic)
+'' Declare variable "a_"
+'' (no line continuation happening, because the '_' character is part of
+'' the "a_" identifier)
+dim as integer a_
+
+'' Declare variable "a" and initialize to value 5
+'' (line continuation happening, because the '_' character
+'' was separated from the identifier "a" with a space character)
+dim as integer a _
+= 5
+%%
+
+**Warning:** When an erroneous code line is spread over a multiple lines block by using the _ line continuation character, the error message refers only to the last line of the block.
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

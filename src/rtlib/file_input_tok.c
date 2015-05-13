@@ -2,19 +2,13 @@
 
 #include "fb.h"
 
-/*:::::*/
-static int hReadChar
-	(
-		FB_INPUTCTX *ctx
-	)
+static int hReadChar( FB_INPUTCTX *ctx )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
     {
-        int res;
-        int c;
-
-        size_t len;
+		int res, c;
+		size_t len;
         res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, FALSE );
         if( (res != FB_RTERROR_OK) || (len == 0) )
             return EOF;
@@ -29,14 +23,9 @@ static int hReadChar
 		else
 			return ctx->str.data[ctx->index++];
 	}
-
 }
 
-/*:::::*/
-static int hUnreadChar
-	(
-		FB_INPUTCTX *ctx, int c
-	)
+static int hUnreadChar( FB_INPUTCTX *ctx, int c )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -54,14 +43,9 @@ static int hUnreadChar
 			return TRUE;
 		}
 	}
-
 }
 
-/*:::::*/
-static int hSkipWhiteSpc
-	(
-		FB_INPUTCTX *ctx
-	)
+static int hSkipWhiteSpc( FB_INPUTCTX *ctx )
 {
 	int c;
 
@@ -76,12 +60,7 @@ static int hSkipWhiteSpc
 	return c;
 }
 
-/*:::::*/
-static void hSkipDelimiter
-	(
-		FB_INPUTCTX *ctx,
-		int c
-	)
+static void hSkipDelimiter( FB_INPUTCTX *ctx, int c )
 {
 	/* skip white space */
 	while( (c == ' ') || (c == '\t') )
@@ -107,11 +86,10 @@ static void hSkipDelimiter
 	}
 }
 
-/*:::::*/
 int fb_FileInputNextToken
 	(
 		char *buffer,
-		int max_chars,
+		ssize_t max_chars,
 		int is_string,
 		int *isfp
 	)
@@ -119,7 +97,8 @@ int fb_FileInputNextToken
 	/* max_chars does not include the null terminator, the buffer is
 	   assumed to be big enough to hold at least the null terminator */
 
-    int c, len, isquote, hasamp, skipdelim;
+	int c, isquote, hasamp, skipdelim;
+	ssize_t len;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
 	*isfp = FALSE;

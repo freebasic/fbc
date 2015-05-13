@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_FileLineInputWstr( int fnum, FB_WCHAR *dst, int max_chars )
+FBCALL int fb_FileLineInputWstr( int fnum, FB_WCHAR *dst, ssize_t max_chars )
 {
     FB_FILE *handle = FB_FILE_TO_HANDLE(fnum);
 
@@ -15,4 +14,3 @@ FBCALL int fb_FileLineInputWstr( int fnum, FB_WCHAR *dst, int max_chars )
 
     return handle->hooks->pfnReadLineWstr( handle, dst, max_chars );
 }
-

@@ -14,4 +14,4 @@ fbMajorVersion = __FB_VER_MAJOR__
 fbMinorVersion = __FB_VER_MINOR__
 fbPatchVersion = __FB_VER_PATCH__
 
-Print "Welcome to FreeBASIC ";fbMajorVersion;".";fbMinorVersion;" , Revision ";fbPatchVersion
+Print "Welcome to FreeBASIC " & fbMajorVersion & "." & fbMinorVersion & ", revision " & fbPatchVersion

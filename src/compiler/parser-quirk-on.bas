@@ -9,8 +9,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-function cGOTBStmt _
+private function cGOTBStmt _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval isgoto as integer _
@@ -18,7 +17,7 @@ function cGOTBStmt _
 
 	dim as integer l = any
 	dim as FBSYMBOL ptr sym = any, exitlabel = any
-	dim as uinteger values(0 to FB_MAXGOTBITEMS-1) = any
+	dim as ulongint values(0 to FB_MAXGOTBITEMS-1) = any
 	dim as FBSYMBOL ptr labels(0 to FB_MAXGOTBITEMS-1) = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any
@@ -36,20 +35,24 @@ function cGOTBStmt _
 	'' expr = 1   ->   label1
 	'' expr = 2   ->   label2
 	'' etc.
-	'' This means: minval = 1, maxval = labelcount - 1.
+	'' This means: minval = 1, maxval = labelcount.
 
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
 		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+			hSkipStmt( )
+			exit function
+		end if
 	end if
+
+	'' GOTO|GOSUB
+	lexSkipToken( )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	expr = astNewASSIGN( astNewVAR( sym ), expr )
-	if( expr = NULL ) then
-		exit function
-	end if
-	astAdd( expr )
+	astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
 
 	'' read labels
 	l = 0
@@ -91,10 +94,13 @@ function cGOTBStmt _
 
 	exitlabel = symbAddLabel( NULL )
 
-	for i as integer = 1 to l
-		values(i) = i
+	'' Fill beginning of values buffer with the 1,2,3,4,... values
+	for i as integer = 0 to l - 1
+		values(i) = i + 1
 	next
-	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l - 1 )
+
+	'' labelcount = l, minval = 1, maxval = l
+	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l )
 
 	if( isgoto ) then
 		astAdd( expr )
@@ -149,7 +155,6 @@ function cOnStmt _
 	'' GOTO|GOSUB
 	select case lexGetToken( )
 	case FB_TK_GOTO
-		lexSkipToken( )
 		isgoto = TRUE
 
 	case FB_TK_GOSUB
@@ -167,15 +172,14 @@ function cOnStmt _
 		end if
 
 		'' gosub allowed by OPTION GOSUB?
-		if( env.opt.gosub ) then
-			lexSkipToken( )
-			isgoto = FALSE
-		else
+		if( env.opt.gosub = FALSE ) then
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			hSkipStmt( )
 			return TRUE
 		end if
+
+		isgoto = FALSE
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -186,6 +190,9 @@ function cOnStmt _
 
 	'' on error?
 	if( expr = NULL ) then
+		'' GOTO|GOSUB
+		lexSkipToken( )
+
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
@@ -208,13 +215,11 @@ function cOnStmt _
 
 			expr = astNewADDROF( astNewVAR( label ) )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
-
 		else
 			rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE
-
 	else
 		function = cGOTBStmt( expr, isgoto )
 	end if

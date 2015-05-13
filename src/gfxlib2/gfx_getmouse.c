@@ -2,12 +2,12 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	int failure = TRUE;
 	int temp_z, temp_buttons, temp_clip;
+
+	FB_GRAPHICS_LOCK( );
 
 	if (!z)
 		z = &temp_z;
@@ -20,6 +20,9 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 		failure = __fb_gfx->driver->get_mouse(x, y, z, buttons, clip);
 		DRIVER_UNLOCK();
 	}
+
+	FB_GRAPHICS_UNLOCK( );
+
 	if (failure) {
 		*x = *y = *z = *buttons = *clip = -1;
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);

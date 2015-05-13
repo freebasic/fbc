@@ -5,7 +5,14 @@
 
 int fb_ConsoleWidth( int cols, int rows )
 {
-	int cur = (__fb_con.inited ? (__fb_con.w | (__fb_con.h << 16)) : (80 | (25 << 16)));
+	if( !__fb_con.inited )
+		return (80 | (25 << 16));
+
+	BG_LOCK( );
+	fb_hRecheckConsoleSize( );
+	BG_UNLOCK( );
+
+	int cur = __fb_con.w | (__fb_con.h << 16);
 
 	if ((cols > 0) || (rows > 0)) {
 		BG_LOCK();

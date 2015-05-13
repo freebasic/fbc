@@ -16,7 +16,9 @@ static FB_FILE_HOOKS hooks_dev_scrn = {
     NULL,
     NULL,
     fb_DevScrnReadLine,
-    fb_DevScrnReadLineWstr
+    fb_DevScrnReadLineWstr,
+    NULL,
+    NULL
 };
 
 int fb_DevScrnOpen( FB_FILE *handle, const char *filename, size_t filename_len )
@@ -46,10 +48,9 @@ int fb_DevScrnOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 
 void fb_DevScrnInit( void )
 {
+	FB_LOCK( );
     if ( FB_HANDLE_SCREEN->hooks == NULL )
     {
-        FB_LOCK();
-
         memset(FB_HANDLE_SCREEN, 0, sizeof(*FB_HANDLE_SCREEN));
 
         FB_HANDLE_SCREEN->mode = FB_FILE_MODE_APPEND;
@@ -58,11 +59,10 @@ void fb_DevScrnInit( void )
         FB_HANDLE_SCREEN->access = FB_FILE_ACCESS_READWRITE;
 
         fb_DevScrnOpen( FB_HANDLE_SCREEN, NULL, 0 );
-
-        FB_UNLOCK();
     }
     else if( FB_HANDLE_SCREEN->hooks != &hooks_dev_scrn )
     {
 		FB_HANDLE_SCREEN->hooks = &hooks_dev_scrn;
 	}
+	FB_UNLOCK( );
 }

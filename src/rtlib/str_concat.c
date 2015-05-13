@@ -2,14 +2,13 @@
 
 #include "fb.h"
 
-/*:::::*/
 static __inline__ void fb_hStrConcat
 	(
 		char *dst,
 		const char *str1,
-		int len1,
+		ssize_t len1,
 		const char *str2,
-		int len2
+		ssize_t len2
 	)
 {
     dst = (char *) FB_MEMCPYX( dst, str1, len1 );
@@ -17,18 +16,17 @@ static __inline__ void fb_hStrConcat
 	*dst = '\0';
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_StrConcat
 	(
 		FBSTRING *dst,
 		void *str1,
-		int str1_size,
+		ssize_t str1_size,
 		void *str2,
-		int str2_size
+		ssize_t str2_size
 	)
 {
 	const char *str1_ptr, *str2_ptr;
-	int str1_len, str2_len;
+	ssize_t str1_len, str2_len;
 
 	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
 

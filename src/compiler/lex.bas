@@ -144,6 +144,33 @@ sub lexEnd( )
 
 end sub
 
+private sub hCollectCharForDebugOutput( byval char as uinteger )
+	if( char < 32 ) then
+		'' Filter out ASCII control chars, as they really shouldn't be
+		'' emitted into .asm/.c, because, for example, &h17 (ETB, end of
+		'' transmission block) apparently causes GAS to stop early,
+		'' instead of reading until the rest of the .asm file, even if
+		'' it's inside a comment.
+		select case as const( char )
+		case 0, CHAR_CR, CHAR_LF
+			exit sub
+
+		'' Those white-space chars should be ok though
+		case CHAR_TAB, CHAR_VTAB, CHAR_FORMFEED
+
+		case else
+			char = asc( "?" )
+		end select
+
+	'' Unicode char? Can't be stored into lex.ctx->currline zstring,
+	'' and .asm/.c output files are ANSI/ASCII-only anyways.
+	elseif( char > 255 ) then
+		char = asc( "?" )
+	end if
+
+	DZstrConcatAssignC( lex.ctx->currline, char )
+end sub
+
 '':::::
 private function hReadChar _
 	( _
@@ -169,12 +196,7 @@ private function hReadChar _
 					DZstrConcatAssign( lex.ctx->currline, " [Macro Expansion: " )
 				end if
 
-				select case as const char
-				case 0, CHAR_CR, CHAR_LF
-
-				case else
-					DZstrConcatAssignC( lex.ctx->currline, char )
-				end select
+				hCollectCharForDebugOutput( char )
 			end if
 		end if
 
@@ -232,12 +254,7 @@ private function hReadChar _
 					DZstrConcatAssign( lex.ctx->currline, " ] " )
 				end if
 
-				select case as const char
-				case 0, CHAR_CR, CHAR_LF
-
-				case else
-					DZstrConcatAssignC( lex.ctx->currline, char )
-				end select
+				hCollectCharForDebugOutput( char )
 			end if
 		end if
 
@@ -454,12 +471,12 @@ private sub hReadIdentifier _
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
-			dtype = fbLangGetType( INTEGER )
+			dtype = env.lang.integerkeyworddtype
 			c = lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
-			dtype = fbLangGetType( LONG )
+			dtype = FB_DATATYPE_LONG
 			c = lexEatChar( )
 
 		'' '!'?
@@ -493,8 +510,7 @@ private function hReadNonDecNumber _
 	( _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
-		byref isshort as integer, _
-		byref islong as integer, _
+		byref dtype as integer, _
 		byval flags as LEXCHECK _
 	) as ulongint
 
@@ -503,8 +519,8 @@ private function hReadNonDecNumber _
 	dim as integer lgt = any
 	dim as integer skipchar = any
 
-	isshort = TRUE
-	islong = FALSE
+	assert( dtype = FB_DATATYPE_SHORT )
+
 	value = 0
 	lgt = 0
 	skipchar = FALSE
@@ -550,21 +566,20 @@ private function hReadNonDecNumber _
 					lgt += 1
 					if( lgt > 8 ) then
 						if( lgt = 9 ) then
-							islong = TRUE
+							dtype = FB_DATATYPE_LONGINT
 				    		value64 = (culngint( value ) * 16) + c
-
 				    	elseif( lgt = 17 ) then
 				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 				    			errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 				    		end if
 							skipchar = TRUE
-
 						else
 				    		value64 = (value64 * 16) + c
 				    	end if
-
 					else
-						if( lgt = 5 ) then isshort = FALSE
+						if( lgt = 5 ) then
+							dtype = FB_DATATYPE_LONG
+						end if
                 		value = (value * 16) + c
                 	end if
                 end if
@@ -610,15 +625,15 @@ private function hReadNonDecNumber _
 						select case as const lgt
 						case 11
 							if( first_c > CHAR_3 ) then
-								islong = TRUE
+								dtype = FB_DATATYPE_LONGINT
 								value64 = (culngint( value ) * 8) + c
 							else
 								value = (value * 8) + c
 							end if
 
 						case 12
-							if( islong = FALSE ) then
-								islong = TRUE
+							if( typeGetSize( dtype ) < 8  ) then
+								dtype = FB_DATATYPE_LONGINT
 								value64 = culngint( value )
 							end if
 							value64 = (value64 * 8) + c
@@ -645,10 +660,12 @@ private function hReadNonDecNumber _
 
 					else
 						if( lgt = 6 ) then
-							if( first_c > CHAR_1 ) then isshort = FALSE
+							if( first_c > CHAR_1 ) then
+								dtype = FB_DATATYPE_LONG
+							end if
 						elseif( lgt = 7 ) then
-							isshort = FALSE
-						endif
+							dtype = FB_DATATYPE_LONG
+						end if
 						value = (value * 8) + c
 					end if
 				end if
@@ -690,7 +707,7 @@ private function hReadNonDecNumber _
 					lgt += 1
 					if( lgt > 32 ) then
 						if( lgt = 33 ) then
-							islong = TRUE
+							dtype = FB_DATATYPE_LONGINT
 				    		value64 = (culngint( value ) * 2) + c
 
 				    	elseif( lgt = 65 ) then
@@ -704,7 +721,9 @@ private function hReadNonDecNumber _
 				    	end if
 
 					else
-						if( lgt = 17 ) then isshort = FALSE
+						if( lgt = 17 ) then
+							dtype = FB_DATATYPE_LONG
+						end if
 						value = (value * 2) + c
 					end if
 				end if
@@ -724,7 +743,7 @@ private function hReadNonDecNumber _
 		tlen += 1
 	end if
 
-	if( islong = FALSE ) then
+	if( typeGetSize( dtype ) < 8 ) then
 		function = value
 	else
 		function = value64
@@ -748,7 +767,7 @@ private sub hReadFloatNumber _
 	dim as integer llen = any
 	dim as integer skipchar = any
 
-	dtype = fbLangGetDefLiteral( DOUBLE )
+	dtype = env.lang.floatliteraldtype
 	llen = tlen
 	skipchar = FALSE
 
@@ -914,17 +933,19 @@ private sub hReadNumber _
 	)
 
 	dim as uinteger c = any
-	dim as integer isfloat = any, issigned = any, isshort = any, islong = any, forcedsign = any
+	dim as integer have_u_suffix = any
 	dim as ulongint value = any, value_prev = any
-	dim as integer skipchar = any, hasdot = any
+	dim as integer skipchar = any, hasdot = any, warn = any
 
-	isfloat    = FALSE
-	issigned   = TRUE
-	isshort    = TRUE
-	islong     = FALSE
+	'' Starting with SHORT for the integer literal parser,
+	'' may be changed to USHORT, LONG, ULONG, LONGINT, ULONGINT,
+	'' depending on the literal's size.
+	'' The float literal parser will change this to SINGLE/DOUBLE.
+	dtype = FB_DATATYPE_SHORT
+
+	have_u_suffix = FALSE
 	value	   = 0
 
-	dtype 	   = FB_DATATYPE_INVALID
 	*pnum 	   = 0
 	tlen 	   = 0
 	skipchar   = FALSE
@@ -975,7 +996,6 @@ read_char:
 				end if
 
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
-				isfloat = TRUE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar( )
 					if( skipchar = FALSE ) then
@@ -1000,33 +1020,32 @@ read_char:
 					select case as const tlen
 					case 5
 						if( value > 32767 ) then
-							isshort = FALSE
+							dtype = FB_DATATYPE_LONG
 						end if
 
 					case 6
-						isshort = FALSE
+						dtype = FB_DATATYPE_LONG
 
 					case 10
 						if( value > 2147483647ULL ) then
-							issigned = FALSE
 							if( value > 4294967295ULL ) then
-								issigned = TRUE
-								islong = TRUE
+								dtype = FB_DATATYPE_LONGINT
+							else
+								dtype = FB_DATATYPE_ULONG
 							end if
 						end if
 
 					case 11
-						islong = TRUE
-						issigned = TRUE
+						dtype = FB_DATATYPE_LONGINT
 
 					case 19
 						if( value > 9223372036854775807ULL ) then
-							issigned = FALSE
+							dtype = FB_DATATYPE_ULONGINT
 						end if
 						value_prev = value
 
 					case 20
-						issigned = FALSE
+						dtype = FB_DATATYPE_ULONGINT
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							if( value_prev > 1844674407370955161ULL or _
 							   (value and &h8000000000000000ULL) = 0 ) then
@@ -1069,7 +1088,6 @@ read_char:
 
 	'' fractional part
 	case CHAR_DOT
-		isfloat = TRUE
 		'' add '.'
 		*pnum = CHAR_DOT
 		pnum += 1
@@ -1079,27 +1097,40 @@ read_char:
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		value = hReadNonDecNumber( pnum, tlen, isshort, islong, flags )
-		'' it should be always assumed to be a signed (long)integer,
-		'' the U(LL) suffix should be used otherwise
-		issigned = TRUE
+		value = hReadNonDecNumber( pnum, tlen, dtype, flags )
 	end select
 
 	'' null-term
 	*pnum = 0
 
+	select case( dtype )
+	case FB_DATATYPE_SHORT
+		dtype = env.lang.int15literaldtype
+	case FB_DATATYPE_USHORT
+		dtype = env.lang.int16literaldtype
+	case FB_DATATYPE_LONG
+		dtype = env.lang.int31literaldtype
+	case FB_DATATYPE_ULONG
+		dtype = env.lang.int32literaldtype
+#if __FB_DEBUG__
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+	     FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case else
+		assert( FALSE )
+#endif
+	end select
+
 	'' check suffix type
-	if( isfloat = FALSE ) then
+	if( typeGetClass( dtype ) <> FB_DATACLASS_FPOINT ) then
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 
 			'' 'U' | 'u'
-			forcedsign = FALSE
 			if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 				select case lexCurrentChar( )
 				case CHAR_UUPP, CHAR_ULOW
 					lexEatChar( )
-					issigned = FALSE
-					forcedsign = TRUE
+					dtype = typeToUnsigned( dtype )
+					have_u_suffix = TRUE
 				end select
 			end if
 
@@ -1112,30 +1143,27 @@ read_char:
 					c = lexCurrentChar( )
 					if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 						lexEatChar( )
-						islong = TRUE
-						'' restore sign if needed
-						if( forcedsign = FALSE ) then
-							if( value > 2147483647ULL ) then
-								if( value < 9223372036854775808ULL ) then
-									issigned = TRUE
-								end if
-							end if
-						end if
+						'' 'ULL' or 'LL'
+						dtype = iif( have_u_suffix, FB_DATATYPE_ULONGINT, FB_DATATYPE_LONGINT )
+					'' 'L' only
 					else
-						if( islong ) then
+						'' LONG is 32bit; warn if number is > 32bit
+						if( value > &hFFFFFFFFull ) then
 							if( skipchar = FALSE ) then
 								if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 									errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 								end if
 							end if
 						end if
+						'' 'UL' or 'L'
+						dtype = iif( have_u_suffix, FB_DATATYPE_ULONG, FB_DATATYPE_LONG )
 					end if
 				end if
 
 			'' 'F' | 'f'
 			case CHAR_FUPP, CHAR_FLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
-					if( forcedsign = FALSE ) then
+					if( have_u_suffix = FALSE ) then
 						dtype = FB_DATATYPE_SINGLE
 						lexEatChar( )
 					end if
@@ -1145,7 +1173,7 @@ read_char:
 			'' (NOTE: should this ever occur? Wouldn't it have been parsed as a float already?)
 			case CHAR_DUPP, CHAR_DLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
-					if( forcedsign = FALSE ) then
+					if( have_u_suffix = FALSE ) then
 						dtype = FB_DATATYPE_DOUBLE
 						lexEatChar( )
 					end if
@@ -1153,44 +1181,48 @@ read_char:
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
-				if( islong or (isshort = FALSE and _
-					fbLangGetDefLiteral( INTEGER ) = FB_DATATYPE_SHORT) ) then
-
+				'' Assuming it'll be either SHORT (16bit) or INTEGER (32bit or 64bit).
+				'' So, no need to worry about 8bit. And if it's 64bit, no need to warn
+				'' either - because it's always big enough.
+				select case( typeGetSize( env.lang.integerkeyworddtype ) )
+				case 2    : warn = (value > &hFFFFull)
+				case 4    : warn = (value > &hFFFFFFFFull)
+				case else : warn = FALSE
+				end select
+				if( warn ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
-				else
-					dtype = fbLangGetType( INTEGER )
 				end if
+				dtype = env.lang.integerkeyworddtype
 
 				lexEatChar( )
 
 			'' '&'
 			case FB_TK_LNGTYPECHAR
-				if( islong ) then
+				if( typeGetSize( dtype ) > 4 ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
-				else
-					dtype = fbLangGetType( LONG )
 				end if
+				dtype = FB_DATATYPE_LONG
 
 				lexEatChar( )
 
 			'' '!'
 			case FB_TK_SGNTYPECHAR
-				if( forcedsign = FALSE ) then
+				if( have_u_suffix = FALSE ) then
 					dtype = FB_DATATYPE_SINGLE
 					lexEatChar( )
 				end if
 
 			'' '#'
 			case FB_TK_DBLTYPECHAR
-				if( forcedsign = FALSE ) then
+				if( have_u_suffix = FALSE ) then
 					'' isn't it a '##'?
 					if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 						dtype = FB_DATATYPE_DOUBLE
@@ -1200,32 +1232,6 @@ read_char:
 
 			end select
 
-		end if
-	end if
-
-	if( dtype = FB_DATATYPE_INVALID ) then
-		if( isfloat = FALSE ) then
-			if( islong ) then
-				if( issigned ) then
-					dtype = FB_DATATYPE_LONGINT
-				else
-					dtype = FB_DATATYPE_ULONGINT
-				end if
-			elseif( isshort ) then
-				if( issigned ) then
-					dtype = fbLangGetDefLiteral( SHORT )
-				else
-					dtype = fbLangGetDefLiteral( USHORT )
-				end if
-			else
-				if( issigned ) then
-					dtype = fbLangGetDefLiteral( INTEGER )
-				else
-					dtype = fbLangGetDefLiteral( UINT )
-				end if
-			end if
-		else
-			dtype = fbLangGetDefLiteral( DOUBLE )
 		end if
 	end if
 

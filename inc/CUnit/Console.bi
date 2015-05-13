@@ -1,17 +1,10 @@
-''
-''
-'' Console -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __CUnit_Console_bi__
-#define __CUnit_Console_bi__
+#pragma once
 
-#include once "CUnit/CUnit.bi"
-#include once "CUnit/TestDB.bi"
+#include once "CUnit.bi"
+#include once "TestDB.bi"
 
-declare sub CU_console_run_tests cdecl alias "CU_console_run_tests" ()
+extern "C"
 
-#endif
+declare sub CU_console_run_tests()
+
+end extern

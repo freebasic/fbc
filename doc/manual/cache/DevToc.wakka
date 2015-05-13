@@ -5,20 +5,32 @@ This area of the Wiki is for documenting everything about the compiler and the r
 <<{{fbdoc item="section" value="Developing FreeBASIC Itself"}}
 
 	{{fbdoc item="keyword" value="DevBuild|Compiling a Development Version of FreeBASIC"}}
+		{{fbdoc item="keyword" value="DevGettingTheSourceCode|Getting the source code"}}
+		{{fbdoc item="keyword" value="DevBuildDos|Compiling FB for DOS"}}
+		{{fbdoc item="keyword" value="DevBuildLinux|Compiling FB on Linux"}}
+		{{fbdoc item="keyword" value="DevBuildWindows|Compiling FB on Windows"}}
+		{{fbdoc item="keyword" value="DevRebuildAfterUpdates|Getting source code updates and recompiling FB"}}
+		{{fbdoc item="keyword" value="DevDebuggingFb|Debugging FB"}}
+		{{fbdoc item="keyword" value="DevBuildConfig|FB build configuration options"}}
+		{{fbdoc item="keyword" value="DevBuildKnownProblems|Known problems when compiling FB"}}
+		{{fbdoc item="keyword" value="DevGccToolchainChoice|GCC toolchain choice"}}
+
 	{{fbdoc item="keyword" value="DevFbcTestSuite|Running the FreeBASIC test suite"}}
 	{{fbdoc item="keyword" value="DevNormalVsStandalone|Normal vs. Standalone"}}
+	{{fbdoc item="keyword" value="DevGlossary|Glossary"}}
 	{{fbdoc item="keyword" value="DevMakingReleases|Notes on the creation of FB releases"}}
+	{{fbdoc item="keyword" value="DevCrossCompiling|FB and cross-compiling"}}
+	{{fbdoc item="keyword" value="DevBootstrap|Bootstrapping/cross-compiling fbc"}}
 	
 	{{fbdoc item="keyword" value="DevTranslateHeader|C Header Translation Tutorial"}}
 	{{fbdoc item="keyword" value="DevHeaderStyleGuide|Header Style Guidelines"}}
 	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index (header status)"}}
 
-{{fbdoc item="section" value="Compiler internals"}}
+>><<{{fbdoc item="section" value="Compiler internals"}}
 
 	{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
 	{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
 	{{fbdoc item="keyword" value="DevFbcMem|Memory management"}}
-	{{fbdoc item="keyword" value="FbGrammar|FreeBASIC Grammar"}}
 	{{fbdoc item="keyword" value="DevFbcLexer|Lexer & preprocessor"}}
 		
 	{{fbdoc item="subsect" value="Parser & compiler (fb, parser, symb, rtl)"}}
@@ -29,7 +41,7 @@ This area of the Wiki is for documenting everything about the compiler and the r
 	
 	{{fbdoc item="keyword" value="DevSelectCase|SELECT CASE"}}
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling FB programs"}}
-	{{fbdoc item="keyword" value="KeyPgField|Structure packing/field alignment"}}
+	{{fbdoc item="keyword" value="DevStructLayout|Structure packing/field alignment"}}
 
 {{fbdoc item="section" value="Run-time (rtlib) and Graphics (gfxlib2) Libraries"}}
 

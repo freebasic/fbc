@@ -4,9 +4,8 @@
 
 int fb_DevScrnRead( FB_FILE *handle, void* value, size_t *pLength )
 {
-    size_t length;
+    size_t length, copy_length;
     DEV_SCRN_INFO *info;
-    int copy_length;
     char *pachBuffer = (char*) value;
 
     FB_LOCK();
@@ -59,9 +58,11 @@ void fb_DevScrnInit_Read( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
+	FB_LOCK( );
     if( FB_HANDLE_SCREEN->hooks->pfnRead == NULL )
     {
     	FB_HANDLE_SCREEN->hooks->pfnRead =
     				(fb_IsRedirected( TRUE )? hReadFromStdin : fb_DevScrnRead);
     }
+	FB_UNLOCK( );
 }

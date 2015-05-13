@@ -114,7 +114,9 @@ sub test_gzio     (byval fname as const zstring ptr,_
         print #stderr_, "gzopen error"
         exit_(1)
     end if
-    uncompr =  @"garbage"
+
+    assert( uncomprLen >= len( "garbage" ) + 1 )
+    *cptr( zstring ptr, uncompr ) = "garbage"
 
     if (gzread(file_, uncompr, uncomprLen) <> len_) then
         print #stderr_, "gzread err: ";gzerror(file_, @err_)

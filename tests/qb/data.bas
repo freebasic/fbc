@@ -1,6 +1,6 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 const EPSILON_DBL = 2.2204460492503131e-016
 

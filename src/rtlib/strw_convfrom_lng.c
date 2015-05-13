@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
+FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, ssize_t len )
 {
     const FB_WCHAR *p, *r;
-    int radix;
+	int radix;
 
 	/* skip white spc */
 	p = fb_wstr_SkipChar( src, len, 32 );
@@ -55,11 +54,10 @@ FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
 	return (long long)wcstoull( p, NULL, radix );
 }
 
-/*:::::*/
 FBCALL long long fb_WstrValLng ( const FB_WCHAR *str )
 {
     long long val;
-    int len;
+	ssize_t len;
 
 	if( str == NULL )
 	    return 0;

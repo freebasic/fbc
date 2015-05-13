@@ -11,10 +11,11 @@ static unsigned int WINAPI threadproc( void *param )
 static DWORD WINAPI threadproc( LPVOID param )
 #endif
 {
-	FBTHREAD *thread = param;
+	FBTHREADINFO *info = param;
 
 	/* call the user thread */
-	thread->proc( thread->param );
+	info->proc( info->param );
+	free( info );
 
 	/* free mem */
 	fb_TlsFreeCtxTb( );
@@ -22,28 +23,39 @@ static DWORD WINAPI threadproc( LPVOID param )
 	return 1;
 }
 
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
-	FBTHREAD *thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
-	if( thread == NULL )
-		return NULL;
+	FBTHREAD *thread;
+	FBTHREADINFO *info;
 
-	thread->proc = proc;
-	thread->param = param;
+	thread = (FBTHREAD *)malloc( sizeof( FBTHREAD ) );
+	if( thread == NULL ) {
+		return NULL;
+	}
+
+	info = (FBTHREADINFO *)malloc( sizeof( FBTHREADINFO ) );
+	if( info == NULL ) {
+		free( thread );
+		return NULL;
+	}
+
+	info->proc = proc;
+	info->param = param;
 
 #ifdef HOST_MINGW
 	/* Note: _beginthreadex()'s last parameter cannot be NULL,
 	   or else the function fails on Windows 9x */
 	unsigned int thrdaddr;
-	thread->id = (HANDLE)_beginthreadex( NULL, stack_size, threadproc, (void *)thread, 0, &thrdaddr );
+	thread->id = (HANDLE)_beginthreadex( NULL, stack_size, threadproc, info, 0, &thrdaddr );
 #else
 	DWORD dwThreadId;
-	thread->id = CreateThread( NULL, stack_size, threadproc, (void*)thread, 0, &dwThreadId );
+	thread->id = CreateThread( NULL, stack_size, threadproc, info, 0, &dwThreadId );
 #endif
 
 	if( thread->id == NULL ) {
 		free( thread );
-		thread = NULL;
+		free( info );
+		return NULL;
 	}
 
 	return thread;

@@ -91,7 +91,7 @@ static int hIsInf(double d)
 
 static int hIsInd(double d)
 {
-	return hDoubleToLongBits(d) == 0xfff8000000000000ll;
+	return (hDoubleToLongBits(d) == (long long)0xfff8000000000000ll);
 }
 
 static int hIsNan(double d)
@@ -169,19 +169,19 @@ static unsigned long long hPow10_ULL( int n )
 static int hLog10_ULL( unsigned long long a )
 {
 	int ret = 0;
-	long a32;
+	int a32;
 	unsigned long long a64;
 
 	a64 = a;
-	while( a64 >= (long)1.E+8 )
+	while( a64 >= (int)1.E+8 )
 	{
-		a64 /= (long)1.E+8;
+		a64 /= (int)1.E+8;
 		ret += 8;
 	}
-	a32 = (long)a64;
-	if( a32 >= (long)1.E+4 ) ret += 4; else a32 *= (long)1.E+4;
-	if( a32 >= (long)1.E+6 ) ret += 2; else a32 *= (long)1.E+2;
-	if( a32 >= (long)1.E+7 ) ret += 1;
+	a32 = a64;
+	if( a32 >= (int)1.E+4 ) ret += 4; else a32 *= (int)1.E+4;
+	if( a32 >= (int)1.E+6 ) ret += 2; else a32 *= (int)1.E+2;
+	if( a32 >= (int)1.E+7 ) ret += 1;
 
 	if( a == 0 )
 		DBG_ASSERT( ret == 0 );

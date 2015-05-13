@@ -2,25 +2,24 @@
 Defines variables, objects and arrays having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+	**Static** //symbol1// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]] [, //symbol2// [ (//array-dimensions//) ] [[KeyPgAs As]] [[DataType DataType]], ...]
 		//or//
-	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
-		[ ... ]
-	[[KeyPgEndblock end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
+	**Static** [[KeyPgAs As]] [[DataType DataType]] //symbol1// [ (//array-dimensions//) ] [, //symbol2// [ (//array-dimensions//) ], ...]
+	
 		//or//
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
-		**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+		
+	[[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procedurename// ( //parameters// ) [[[KeyPgAs As]] [[DataType DataType]]] **Static**
 		...
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
-	[[KeyPgDim Dim]] //typename.symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+	[[KeyPgEndblock End]] [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
 ##
 {{fbdoc item="param"}}
 	##//symbol//##
 		variable or array symbol name.
-	##//subscripts//##
-		a comma-separated list of subscript ranges.
-	##//proc_header//##
-		procedure header for a procedure definition.
+	##//array-dimensions//##
+		##//lower-bound// [[KeyPgTo To]] //upper-bound// [, ...]##
+		//or//
+		##[[KeyPgAny Any]] [, [[KeyPgAny Any]]...]##
+		//or empty.//
 
 {{fbdoc item="desc"}}
 	Specifies [[ProPgStorageClasses static storage]] for variables, objects and arrays; they are allocated at program startup and deallocated upon exit. Objects are constructed once when they are defined, and destructed upon program exit.
@@ -28,17 +27,14 @@ Defines variables, objects and arrays having static storage
 	When declaring static arrays, only [[ProPgLiterals numeric literals]], [[KeyPgConst constants]] or [[KeyPgEnum enumerations]] may be used as subscript range values. Static variable-length arrays must be declared empty (no subscript range list) and resized using ##[[KeyPgRedim Redim]]## before used.
 
 	In both iterative and recursive blocks, like looping [[CatPgControlFlow control flow statements]] or procedures, static variables, objects and arrays local to the block are guaranteed to occupy the same storage across all instantiations of the block. For example, procedures that call themselves - either directly or indirectly - share the same instances of their local static variables.
-
+	
 	A static variable may only be initialised with a constant value: its starting value is set at the start of the program before any code is run, and so it cannot depend on any variables or functions in it.
-
+	
 	When used with module-level and member procedure declarations, ##**Static**## specifies [[ProPgStorageClasses static storage]] for all local variables, objects and arrays.
-
+	
 	At module-level variable declaration only, the modifier ##[[KeyPgShared Shared]]## may be used with the keyword ##**Static**## to make module-level static variables visible inside procedures.
-
-	When used with UDT, each ##**Static**## member variable needs an explicit definition as well as a declaration. The declaration inside the UDT is the prototype that is visible to every module seeing the UDT declaration (like with methods). The definition - which must be done outside the type declaration code, and appear only once in a single module - allocates static space for - and optionally initializes - the static variable.
-	A ##**Static**## member variable is visible throughout the entire program (inside any procedure) even if the modifier ##[[KeyPgShared Shared]]## is not specified in the definition (##**Static**## and ##[[KeyPgShared Shared]]## are useless in the definition). So, ##**Static**## member variables can be called directly anywhere in code, or on objects of type ##//typename//##.
-
-	##[[KeyPgStaticMember Static (Member)]]## is also used in member procedure declarations to specify static member procedures.
+	
+	When used with in a user-defined type, ##**Static**## creates [[KeyPgStaticMember static member procedures or variables]].
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/static.bas"}}%%(freebasic)
@@ -61,41 +57,9 @@ Number of times called: 1
 Number of times called: 2
 %%
 
-{{fbdoc item="filename" value="examples/manual/variable/static2.bas"}}%%(freebasic)
-'Assign an unique ID to every instance of a Type (ID incremented in order of creation)
-
-Type UDT
-  Public:
-	Declare Property getID () As integer
-	Declare Constructor ()
-  Private:
-	Dim As Integer ID
-	Static As Integer countID
-End Type
-Dim As Integer UDT.countID = 0
-
-Property UDT.getID () As Integer
-  Property = This.ID
-End Property
-
-Constructor UDT ()
-  This.ID = UDT.countID
-  UDT.countID += 1
-End Constructor
-
-
-Dim As UDT uFirst
-Dim as UDT uSecond
-Dim As UDT uThird
-
-Print uFirst.getID
-Print uSecond.getID
-Print uThird.getID%%
-
 {{fbdoc item="diff"}}
 	- ""QuickBASIC"" allows variables and arrays to be declared using the ##**Static**## keyword within procedures and ##DEF FN## routines only.
 	- ##**Static**## forces local visibility of variables and arrays in ""QuickBASIC"" ##DEF FN## routines. ""FreeBASIC"" supports neither ##DEF FN## routines nor this usage of ##**Static**##.
-	- Using ##**Static**## to specify static member variables (and also ##[[KeyPgStaticMember Static]]## member procedures) is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStaticMember Static (Member)]]##

@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="THREADDETACH"}}----
+Releases a thread handle without waiting for the thread to finish
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare Declare]] [[KeyPgSub Sub]] **""ThreadDetach""** ( [[KeyPgByval Byval]] //id// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] )
+##
+{{fbdoc item="usage"}}##
+	#include "fbthread.bi"
+	**""ThreadDetach""**( //id// )
+##
+{{fbdoc item="param"}}
+	##//id//##
+		##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate ThreadCreate]]## or ##[[KeyPgThreadCall ThreadCall]]##
+
+{{fbdoc item="desc"}}
+	**""ThreadDetach""** releases resources associated with a thread handle returned by ##[[KeyPgThreadCreate ThreadCreate]]## or ##[[KeyPgThreadCall ThreadCall]]##. The thread handle will be destroyed by **""ThreadDetach""** and cannot be used anymore.
+	Unlike ##[[KeyPgThreadWait ThreadWait]]##, **""ThreadDetach""** does not wait for the thread to finish and thread execution continues independently. Any allocated resources will be freed once the thread exits.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/threads/threadsdetach.bas"}}%%(freebasic)
+#include "fbthread.bi"
+
+sub mythread( byval param as any ptr )
+	print "hi!"
+end sub
+
+var thread = threadcreate( @mythread )
+threaddetach( thread )
+
+threaddetach( threadcreate( @mythread ) )
+
+sleep
+%%
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="target"}}
+	- **""ThreadDetach""** is not available with the DOS version of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadWait ThreadWait]]##
+	- ##[[KeyPgThreadCreate ThreadCreate]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

@@ -13,13 +13,16 @@ Declares a user-defined type.
 		[[[KeyPgVisPrivate Private:]]|[[KeyPgVisPublic Public:]]|[[KeyPgVisProtected Protected:]]]
 		
 		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgConstructor Constructor]]|[[KeyPgDestructor Destructor]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]] ...
+		[[KeyPgStatic Static]] //variablename// [[KeyPgAs As]] //[[DataType DataType]]//
 		
 		//fieldname// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
 		//fieldname//(//array dimensions//) [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
+		//fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...]) [[KeyPgAs As]] [[DataType DataType]]
 		//fieldname// : //bits// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
 		
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname// [= //initializer//], ...
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname//(//array dimensions//) [= //initializer//], ...
+		[[KeyPgAs As]] [[DataType DataType]] //fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...])
 		[[KeyPgAs As]] [[DataType DataType]] //fieldname// : //bits// [= //initializer//], ...
 		
 		[[KeyPgUnion Union]]
@@ -35,25 +38,29 @@ Declares a user-defined type.
 	**End Type**
 ##
 {{fbdoc item="desc"}}
-	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size arrays, strings, bitfields, and other unnamed user-defined types or unions.
+	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size or variable-length (dynamic) arrays, fixed-size or variable-length strings, bitfields, or other user-defined types.
 	
 	Types support various functionality related to object-oriented programming:
 		- Inheritance through the use of the [[KeyPgExtends Extends]] keyword
-		- Member procedures such as [[KeyPgMemberSub subs]] or [[KeyPgMemberFunction functions]]
+		- Member procedures such as [[KeyPgMemberSub subs]] or [[KeyPgMemberFunction functions]], including ##[[KeyPgAbstract Abstract]]## or ##[[KeyPgVirtual Virtual]]## ones
 		- Member procedures with special semantic meaning such as [[KeyPgConstructor constructors]] or a [[KeyPgDestructor destructor]]
+		- ##[[KeyPgStatic Static]]## member variables
 		- Member visibility specifiers: ##[[KeyPgVisPublic Public:]]##, ##[[KeyPgVisPrivate Private:]]##, ##[[KeyPgVisProtected Protected:]]##
+	
+	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables.
 	
 	//Memory layout//
 	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.
 	
-	//Dynamic data//
-	Types can contain dynamic strings, but note that the Type will contain the ##[[KeyPgString String]]## descriptor structure, not the string data itself, which afterall is dynamically allocated and can be of variable length, and thus can not be inserted into the Type. Because of that, saving such a Type into a file will write out the string descriptor, not the actual string data. In order to embed strings into Types directly, fixed-length strings must be used. Similarly, when maintaining dynamic data manually through the use of pointers within a Type, it does usually not make sense to save the Type to a file, because the address stored in the pointer field will be written to file, not the actual memory it points to. Addresses are meaningful to a specific process only though, and cannot be shared that way.
+	//Variable-length data//
+	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data. For sizing the structure of the array descriptor in the Type, a variable-length (dynamic) array data member must be always declared by using ##[[KeyPgAny Any(s)]]## in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified.
 	
-	//Special note on fixed length strings//
+	Because of that, saving such a Type into a file will write out the descriptor, not the actual string/array data. In order to embed strings/arrays into Types directly, fixed-length strings/arrays must be used.
+	
+	Similarly, when maintaining dynamic data manually through the use of pointers within a Type, it does usually not make sense to save the Type to a file, because the address stored in the pointer field will be written to file, not the actual memory it points to. Addresses are meaningful to a specific process only though, and cannot be shared that way.
+	
+	//Special note on fixed-length strings//
 	Currently, fixed-length string fields of ##[[KeyPgString String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte Byte]]## or ##[[KeyPgUbyte UByte]]## array with the proper size.
-
-	//Remark//
-	Nested unnamed type or union cannot have function members.
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions

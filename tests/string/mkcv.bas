@@ -22,7 +22,11 @@ sub mkConstTest cdecl ()
 	si64 = mki<64>( &h4847464544434241ll )
 
 	CU_ASSERT_EQUAL( ss,  "AB" )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( si,  "ABCDEFGH" )
+#else
 	CU_ASSERT_EQUAL( si,  "ABCD" )
+#endif
 	CU_ASSERT_EQUAL( sl,  "ABCD" )
 	CU_ASSERT_EQUAL( sll, "ABCDEFGH" )
 
@@ -48,7 +52,11 @@ sub mkVarTest cdecl ()
 	si64 = mki<64>( ll )
 
 	CU_ASSERT_EQUAL( ss,  "AB" )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( si,  "ABCDEFGH" )
+#else
 	CU_ASSERT_EQUAL( si,  "ABCD" )
+#endif
 	CU_ASSERT_EQUAL( sl,  "ABCD" )
 	CU_ASSERT_EQUAL( sll, "ABCDEFGH" )
 
@@ -73,7 +81,11 @@ sub cvConstTest cdecl ()
 	#define D cvd( "ABCDEFGH" )
 
 	CU_ASSERT_EQUAL( SH,             &h4241 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( I,  &h4847464544434241 )
+#else
 	CU_ASSERT_EQUAL( I,          &h44434241 )
+#endif
 	CU_ASSERT_EQUAL( L,          &h44434241 )
 	CU_ASSERT_EQUAL( LL, &h4847464544434241 )
 
@@ -103,7 +115,11 @@ sub cvVarTest cdecl ()
 	dim as double d = cvd( sll )
 
 	CU_ASSERT_EQUAL( sh,             &h4241 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( i,  &h4847464544434241 )
+#else
 	CU_ASSERT_EQUAL( i,          &h44434241 )
+#endif
 	CU_ASSERT_EQUAL( l,          &h44434241 )
 	CU_ASSERT_EQUAL( ll, &h4847464544434241 )
 
@@ -118,7 +134,11 @@ end sub
 
 sub cvNumTest cdecl ()
 
+#ifdef __FB_64BIT__
+	dim as longint i  = cvi( 1.5839800103804824e+40 )
+#else
 	dim as longint i  = cvi( 781.03521! )
+#endif
 	dim as longint l  = cvl( 781.03521! )
 	dim as longint ll = cvlongint( 1.5839800103804824e+40 )
 
@@ -129,7 +149,11 @@ sub cvNumTest cdecl ()
 	dim as double d  = cvd( &H4847464544434241 )
 
 	CU_ASSERT_EQUAL( s,             781.03521! )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( i,     &h4847464544434241 )
+#else
 	CU_ASSERT_EQUAL( i,             &h44434241 )
+#endif
 	CU_ASSERT_EQUAL( l,             &h44434241 )
 	CU_ASSERT_EQUAL( d, 1.5839800103804824e+40 )
 	CU_ASSERT_EQUAL( ll,    &h4847464544434241 )

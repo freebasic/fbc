@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBSTRING *fb_CHR ( int args, ... )
 {
 	FBSTRING 	*dst;
@@ -34,4 +33,3 @@ FBSTRING *fb_CHR ( int args, ... )
 
 	return dst;
 }
-

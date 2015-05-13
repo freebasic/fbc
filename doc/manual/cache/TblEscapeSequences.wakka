@@ -1,14 +1,21 @@
 {{fbdoc item="title" value="Escape Sequences"}}----
-Allowed escape sequences in string literals.
+Escape sequences can be used in string literals by using the operator ! .
 
+{{fbdoc item="usage"}}##
+//result// = !"//text//"
+##
 {{fbdoc item="desc"}}
-	The accepted escape sequences are:
+	The accepted escape sequences in //text//  are:
 	{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\f;formfeed;\l or \n;newline;\r;carriage return;\t;tab;\unnnn;unicode char in hex;\v;vertical tab;\nnn;ascii char in decimal;\&amphnn;ascii char in hex;\&amponnn;ascii char in octal;\&ampbnnnnnnnn;ascii char in binary;\\;backslash;\(double quote);double quote;\';single quote"}} 
+
+Note: The zero-character (\000 = \&amph00 = \&ampo000 = \&ampb00000000) is the null terminator. Only characters before the first null terminator can be seen when the literal is used as a ##[[KeyPgString String]]##. To get a zero character in a string use ##[[KeyPgChr Chr]](0)## instead.
 
 {{fbdoc item="see"}}
 	- [[KeyPgOpPpEscape Operator ! (Escaped String)]]
 	- [[KeyPgOpPpNoescape Operator $ (Non-Escaped String)]]
 	- ##[[KeyPgOptionescape Option Escape]]##
+	- ##[[KeyPgString String]]##
+	- ##[[KeyPgChr Chr]]##
 	- [[ProPgLiterals Literals]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

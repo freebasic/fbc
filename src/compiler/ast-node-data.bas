@@ -166,7 +166,6 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
     astTypeIniEnd( initree, TRUE )
 
     symbSetTypeIniTree( array, initree )
-    symbSetIsInitialized( array )
 
 	'' Link the previous DATA stmt to this new one
 	if( ast.data.lastsym <> NULL ) then
@@ -248,6 +247,7 @@ function astDataStmtAdd _
 		if( label = NULL ) then
 			'' reset the array dimensions
 			symbSetArrayDimTb( sym, 1, dTB() )
+			symbMaybeAddArrayDesc( sym )
 		end if
 		return sym
 	end if
@@ -268,15 +268,15 @@ private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
 
 	'' Using FIELD = 1, to pack it as done by the rtlib
-	ast.data.desc = symbStructBegin( NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0 )
+	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0, 0 )
 
 	'' type	as short
 	symbAddField( ast.data.desc, "type", 0, dTB(), _
-	              FB_DATATYPE_SHORT, NULL, 2, 0 )
+	              FB_DATATYPE_SHORT, NULL, 0, 0, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, "node", 0, dTB(), _
-	              typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, 0 )
+	              typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	symbStructEnd( ast.data.desc )
 end sub

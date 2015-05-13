@@ -1,18 +1,20 @@
+From the GoRC.htm manual:
+
 Copyright
 
-GoRC is Copyright © Jeremy Gordon 1997-2005 [MrDuck Software] - all rights reserved. 
-
+GoRC is Copyright Â© Jeremy Gordon 1997-2013 [MrDuck Software] - all rights
+reserved.
 
 GoRC - licence and distribution
 
-You may use GoRC for any purpose including making commercial programs. You may 
-redistribute it freely (but not for payment nor for use with a program or any 
-material for which the user is asked to pay). You are not entitled to hide or 
-deny my copyright. 
-
+You may use GoRC for any purpose including making commercial programs. You
+may redistribute it freely (but not for payment nor for use with a program
+or any material for which the user is asked to pay). You are not entitled to
+hide or deny my copyright.
 
 Disclaimer
 
-I have made every effort to ensure that GoRC's output is accurate, but you do use 
-it entirely at your own risk. I cannot accept any liability for it failing to work 
-properly or giving the wrong output nor for any errors in this manual. 
+I have made every effort to ensure that GoRC's output is accurate, but you
+do use it entirely at your own risk. I cannot accept any liability for it
+failing to work properly or giving the wrong output nor for any errors in
+this manual.

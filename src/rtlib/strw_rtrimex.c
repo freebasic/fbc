@@ -2,12 +2,10 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrRTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
 {
 	FB_WCHAR 	*dst;
-	int 		len;
+	ssize_t len;
 	const FB_WCHAR *p = NULL;
 
     if( src == NULL ) {
@@ -15,7 +13,7 @@ FBCALL FB_WCHAR *fb_WstrRTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
     }
 
 	{
-        size_t len_pattern = fb_wstr_Len( pattern );
+		ssize_t len_pattern = fb_wstr_Len( pattern );
 		len = fb_wstr_Len( src );
 		if( len >= len_pattern )
 		{
@@ -23,10 +21,10 @@ FBCALL FB_WCHAR *fb_WstrRTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
                 p = fb_wstr_SkipCharRev( src,
                                          len,
                                          *pattern );
-                len = (int)(p - src) + 1;
+                len = (ssize_t)(p - src) + 1;
 
             } else if( len_pattern != 0 ) {
-                size_t test_index = len - len_pattern;
+                ssize_t test_index = len - len_pattern;
                 p = src;
                 while (len >= len_pattern ) {
                     if( fb_wstr_Compare( p + test_index,
@@ -57,4 +55,3 @@ FBCALL FB_WCHAR *fb_WstrRTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
 
     return dst;
 }
-

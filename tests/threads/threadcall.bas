@@ -38,6 +38,11 @@ namespace fbc_tests.threads.threadcall_tests
         CU_ASSERT_TRUE( us = 2 )
     end sub
 
+    extern "Windows-MS"
+        sub testWindowsMs( )
+        end sub
+    end extern
+
     sub BigInt cdecl( byref i as integer, byref ui as uinteger, _
         byref l as longint, byref ul as ulongint )
         
@@ -48,13 +53,12 @@ namespace fbc_tests.threads.threadcall_tests
         ul = 4
     end sub
 
-    sub FloatStr ( byval s as single, byref d as double, byval strval as string, _
-        byref strref as string )
+    sub FloatStr ( byval s as single, byref d as double, byref s1 as string )
         CU_ASSERT_TRUE( s > 14.999 and s < 15.01)
-        CU_ASSERT_TRUE( strval = "fourteen" )
-        
+        CU_ASSERT( s1 = "fourteen" )
+
         ' Output by reference
-        strref = "five"
+        s1 = "five"
         d = 13.00    
     end sub
 
@@ -107,30 +111,36 @@ namespace fbc_tests.threads.threadcall_tests
     sub threadcall_test cdecl( )
         dim thread as any ptr
         dim i as integer, ui as uinteger, l as longint, ul as ulongint
-        dim d as double, strref as string
+        dim d as double
+        dim as string s1, s2
         dim bv as integer ptr, cu as ComplexUDT, AnArray( 0 to 1 ) as string
         dim su as SimpleUDT = Type( Type<SimpleSubUDT>( 10 ), 8.0 )
         dim as any ptr SmallInt_Thread, BigInt_Thread, FloatStr_Thread 
         dim as any ptr TypeArray_Thread, NoArgsA_Thread, NoArgsB_Thread
         dim as any ptr OvlInt_Thread, OvlStr_Thread
         dim as any ptr Namespace_Thread, ONamespace_Thread
+        dim as any ptr testWindowsMs_thread
 
         '' call threads
 #ifdef __FB_WIN32__
         SmallInt_Thread = threadcall SmallInt( 20, 1, 19, 2 )
+        testWindowsMs_thread = threadcall testWindowsMs( )
 #endif
         BigInt_Thread = threadcall BigInt( i, ui, l, ul )
-        FloatStr_Thread = threadcall FloatStr( 15.00, d, "fourteen", strref )
+        s1 = "fourteen"
+        FloatStr_Thread = threadcall FloatStr( 15.00, d, s1 )
         TypeArray_Thread = threadcall TypeArray( su, cu, AnArray(), byval @bv )
         NoArgsA_Thread = threadcall NoArgsA
         NoArgsB_Thread = threadcall NoArgsB()
         OvlInt_Thread = threadcall Overloaded( -10 )
-        OvlStr_Thread = threadcall Overloaded( "minus eleven" )
+        s2 = "minus eleven"
+        OvlStr_Thread = threadcall Overloaded( s2 )
         Namespace_Thread = threadcall ThreadCallNS.ns
         ONamespace_Thread = threadcall ThreadCallONS.ns
 
 #ifdef __FB_WIN32__
         threadwait SmallInt_Thread
+        threadwait testWindowsMs_thread
 #endif
         threadwait BigInt_Thread
         threadwait FloatStr_Thread
@@ -144,7 +154,7 @@ namespace fbc_tests.threads.threadcall_tests
 
         '' check byref args
         CU_ASSERT_TRUE( i = 17 and ui = 3 and l = 16 and ul = 4 )
-        CU_ASSERT_TRUE( d > 12.99 and d < 13.01 and strref = "five" )
+        CU_ASSERT_TRUE( d > 12.99 and d < 13.01 and s1 = "five" )
         CU_ASSERT_TRUE( cu.c(0) = 7 and cu.c(1) = 11 and cu.c(2) = 8 )
         CU_ASSERT_TRUE( cu.d = "ten" and AnArray(0) = "ten" )
         CU_ASSERT_TRUE( AnArray(1) = "nine" and bv = 9 )

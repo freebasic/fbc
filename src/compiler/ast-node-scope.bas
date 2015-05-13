@@ -659,11 +659,10 @@ sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
 				'' Procedure parameter?
 				if( symbIsParam( s ) ) then
-					s->ofs = irProcAllocArg( parser.currproc, s, iif( symbIsParamByVal( s ), s->lgt, FB_POINTERSIZE ) )
+					irProcAllocArg( parser.currproc, s )
 				else
-					s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt * symbGetArrayElements( s ) )
+					irProcAllocLocal( parser.currproc, s )
 				end if
-				symbSetVarIsAllocated( s )
 			end if
 			s = s->next
 		wend

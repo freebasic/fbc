@@ -278,22 +278,31 @@ int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 void fb_dos_set_mouse(int x, int y, int cursor, int clip)
 {
-	int new_x, new_y;
-	
+
 	if (!fb_dos.mouse_ok) return;
-	
-	new_x = ((x >= 0) ? x : fb_dos_mouse_x);
-	new_y = ((y >= 0) ? y : fb_dos_mouse_y);
+
 	fb_dos.mouse_cursor = cursor;
-	
-	fb_dos.regs.x.ax = 0x4;
-	fb_dos.regs.x.cx = new_x;
-	fb_dos.regs.x.dx = new_y;
-	__dpmi_int(0x33, &fb_dos.regs);
-	
-	fb_dos_mouse_x = new_x;
-	fb_dos_mouse_y = new_y;
-	
+
+	if (x != (int)0x80000000 || y != (int)0x80000000) {
+		if (x == (int)0x80000000) {
+			x = fb_dos_mouse_x;
+		}
+		else if (y == (int)0x80000000) {
+			y = fb_dos_mouse_y;
+		}
+
+		x = MID(0, x, fb_dos.w - 1);
+		y = MID(0, y, fb_dos.h - 1);
+
+		fb_dos_mouse_x = x;
+		fb_dos_mouse_y = y;
+
+		fb_dos.regs.x.ax = 0x4;
+		fb_dos.regs.x.cx = x;
+		fb_dos.regs.x.dx = y;
+		__dpmi_int(0x33, &fb_dos.regs);
+	}
+
 	if (clip == 0)
 		fb_dos.mouse_clip = FALSE;
 	else if (clip > 0)
@@ -662,7 +671,7 @@ static void fb_dos_restore_video_mode(void)
 	fb_dos.old_rows = fb_dos.old_cols = 0;
 }
 
-void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
+void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	*width = fb_dos.w;
 	*height = fb_dos.h;
@@ -670,7 +679,7 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*refresh = fb_dos.refresh;
 }
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
 	return 0;
 }

@@ -75,7 +75,7 @@ typedef struct fb_dos_t {
 	int num_vesa_modes;
 	int vesa_use_pm;
 	unsigned long vesa_mmio_linear;
-	unsigned int vesa_mmio_sel;
+	int vesa_mmio_sel;
 
 	int mouse_x_old;
 	int mouse_y_old;

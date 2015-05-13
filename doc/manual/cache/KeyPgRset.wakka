@@ -26,7 +26,7 @@ print "-[" & buffer & "]-"
 %%
 
 {{fbdoc item="diff"}}
-	- In QBasic the syntax was ##**Rset** //dst// = //src//##
+	- In QBasic the syntax was ##**Rset** //dst// = //src//##. That syntax is also supported by FB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLset Lset]]##

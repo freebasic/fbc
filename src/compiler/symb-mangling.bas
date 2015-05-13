@@ -27,48 +27,28 @@ end type
 
 const FB_INITMANGARGS = 96
 
-
 declare function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
 declare sub hMangleProc( byval sym as FBSYMBOL ptr )
 declare sub hMangleVariable( byval sym as FBSYMBOL ptr )
 declare sub hGetProcParamsTypeCode _
 	( _
 		byref mangled as string, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_real_proc as integer _
 	)
+declare sub hMangleNamespace _
+	( _
+		byref mangled as string, _
+		byval ns as FBSYMBOL ptr, _
+		byval dohashing as integer, _
+		byval isconst as integer _
+	)
+
+'' inside a namespace or class?
+#define hIsNested(s) (symbGetNamespace( s ) <> @symbGetGlobalNamespc( ))
 
 '' globals
 	dim shared as FB_MANGLECTX ctx
-
-	dim shared as zstring * 1+1 typecodeTB( 0 to FB_DATATYPES-1 ) => _
-	{ _
-		"v", _					'' void
-		"b", _					'' boolean byte
-		"a", _					'' byte
-		"h", _					'' ubyte
-		"c", _                  '' char
-		"s", _                  '' short
-		"t", _                  '' ushort
-		"w", _                  '' wchar
-		"i", _                  '' integer
-		"j", _                  '' uinteger
-		"b", _					'' boolean integer
-		"!", _                  '' enum
-		"!", _                  '' bitfield
-		"l", _                  '' long
-		"m", _                  '' ulong
-		"x", _                  '' longint
-		"y", _                  '' ulongint
-		"f", _                  '' single
-		"d", _                  '' double
-		"r", _                  '' var-len string
-		"!", _                  '' fix-len string
-		"!", _                  '' struct
-		"!", _                  '' namespace
-		"F", _					'' function
-		"!", _                  '' fwd-ref
-		"P" _                   '' pointer
-	}
 
 sub symbMangleInit( )
 	flistInit( @ctx.flist, FB_INITMANGARGS, len( FB_MANGLEABBR ) )
@@ -137,6 +117,14 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		end select
 	end if
 
+	'' Respect ALIAS for array descriptor types, to avoid exposing their
+	'' internal mangling
+	if( symbIsStruct( sym ) and symbIsDescriptor( sym ) ) then
+		if( sym->id.alias ) then
+			return sym->id.alias
+		end if
+	end if
+
 	'' no mangling, return as-is
 	function = sym->id.name
 end function
@@ -159,33 +147,46 @@ sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 	end if
 end sub
 
-private sub hMangleCompType( byval sym as FBSYMBOL ptr )
-	dim as zstring ptr id = any, p = any
-	dim as integer length = any
+private sub symbSetMangledId( byval sym as FBSYMBOL ptr, byref mangled as string )
+	assert( sym->id.mangled = NULL )
+	sym->id.mangled = ZStrAllocate( len( mangled ) )
+	*sym->id.mangled = mangled
+end sub
 
-	id = sym->id.alias
-	if( id = NULL ) then
-		id = sym->id.name
-	end if
+private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
+	dim as integer arraydtype = any
+	dim as FBSYMBOL ptr arraysubtype = any
 
-	length = len( *id )
-
-	'' Store the mangled id into the symbol
-	p = ZStrAllocate( length + 2 )
-	sym->id.mangled = p
-
-	'' id length
-	if( length < 10 ) then
-		p[0] = asc( "0" ) + length
-		p += 1
+	'' Itanium C++ ABI: All identifiers are encoded as:
+	'' <length><id>
+	if( sym->id.alias ) then
+		mangled += str( len( *sym->id.alias ) )
+		mangled += *sym->id.alias
 	else
-		p[0] = asc( "0" ) + (length \ 10)
-		p[1] = asc( "0" ) + (length mod 10)
-		p += 2
+		mangled += str( len( *sym->id.name ) )
+		mangled += *sym->id.name
 	end if
 
-	'' id
-	*p = *id
+	''
+	'' Array descriptor mangling: '__FBARRAY[1-8]<dtype>'
+	'' (based on the ALIAS specified in symbAddArrayDescriptorType())
+	''
+	'' The dimension count is already encoded in the ALIAS (also see
+	'' symbAddArrayDescriptorType()); and we'll encode the
+	'' arraydtype as template argument here - this allows C++
+	'' demanglers to decode the arraydtype nicely.
+	''
+	'' The dimension count and arraydtype must be encoded in the
+	'' name mangling, because FB allows overloading based on that.
+	''
+	if( symbIsStruct( sym ) and symbIsDescriptor( sym ) ) then
+		mangled += "I" '' begin of template argument list
+
+		symbGetDescTypeArrayDtype( sym, arraydtype, arraysubtype )
+		symbMangleType( mangled, arraydtype, arraysubtype )
+
+		mangled += "E" '' end of template argument list
+	end if
 end sub
 
 function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
@@ -193,17 +194,27 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		return sym->id.mangled
 	end if
 
+	assert( ctx.cnt = 0 )
+
 	select case as const( symbGetClass( sym ) )
 	case FB_SYMBCLASS_PROC
 		hMangleProc( sym )
 	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_FWDREF, _
 	     FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
-		hMangleCompType( sym )
+		dim as string mangled
+		hMangleNamespace( mangled, symbGetNamespace( sym ), TRUE, FALSE )
+		hMangleUdtId( mangled, sym )
+		if( hIsNested( sym ) ) then
+			mangled += "E"
+		end if
+		symbSetMangledId( sym, mangled )
 	case FB_SYMBCLASS_VAR
 		hMangleVariable( sym )
 	case else
 		return sym->id.alias
 	end select
+
+	symbMangleResetAbbrev( )
 
 	'' Periods in symbol names?  not allowed in C, must be replaced.
 	if( env.clopt.backend = FB_BACKEND_GCC ) then
@@ -215,12 +226,11 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	function = sym->id.mangled
 end function
 
-sub symbMangleInitAbbrev( )
-	ctx.cnt = 0
-end sub
-
-sub symbMangleEndAbbrev( )
-	'' reset abbreviation list
+'' Reset the abbreviation list.
+'' Every symbMangleType() will add abbreviations, and the list must be reset
+'' every time (after a symbol was mangled), to prevent the abbreviations from
+'' leaking into the mangling process of the next symbol.
+sub symbMangleResetAbbrev( )
 	flistReset( @ctx.flist )
 	ctx.cnt = 0
 end sub
@@ -251,7 +261,7 @@ private function hAbbrevFind _
 	do while( n <> NULL )
 		'' same type?
 		if( n->subtype = subtype ) then
-			if( astGetFullType( n ) = dtype ) then
+			if( n->dtype = dtype ) then
 				return n->idx
 			end if
 		end if
@@ -273,7 +283,7 @@ private function hAbbrevAdd _
     n = flistNewItem( @ctx.flist )
     n->idx = ctx.cnt
 
-    astGetFullType( n ) = dtype
+    n->dtype = dtype
     n->subtype = subtype
 
     ctx.cnt += 1
@@ -283,6 +293,12 @@ end function
 
 private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "S"
+
+	'' abbreviation index   mangling
+	''   0                    S_
+	''   1                    S0_
+	''   2                    S1_
+	'' etc.
 
 	if( idx > 0 ) then
 		if( idx <= 10 ) then
@@ -304,6 +320,119 @@ private sub hAbbrevGet( byref mangled as string, byval idx as integer )
 	mangled += "_"
 end sub
 
+function hMangleBuiltInType _
+	( _
+		byval dtype as integer, _
+		byref add_abbrev as integer _
+	) as zstring ptr
+
+	assert( dtype = typeGetDtOnly( dtype ) )
+
+	''
+	'' According to the Itanium C++ ABI, C++ built-in type aren't considered
+	'' for abbreviation, while other types are.
+	''
+	'' For FB this means that some of FB built-ins can be mangled as C++
+	'' built-ins without having to do hAbbrevAdd(), while others (e.g.
+	'' FBSTRING) must be mangled as UDT or custom/vendor-specific types for
+	'' which we must do hAbbrevAdd().
+	''
+	'' This way our abbreviations stay compatible to GCC and demanglers.
+	''
+	'' This only matters when hMangleBuiltInType() is called from
+	'' symbMangleType(), but it does not matter when hMangleBuiltInType() is
+	'' just used encode type suffixes into variable names for the C backend.
+	''
+	add_abbrev = FALSE
+
+	if( dtype = FB_DATATYPE_STRING ) then
+		add_abbrev = TRUE
+		return @"8FBSTRING"
+	end if
+
+	if( fbIs64bit( ) ) then
+		'' By default on x86 we mangle INTEGER to "int", but on 64bit
+		'' our INTEGER becomes 64bit, while int stays 32bit, so we
+		'' really shouldn't use the same mangling in that case.
+		''
+		'' Mangling the 64bit INTEGER as "long long" would conflict
+		'' with the LONGINT mangling though (we cannot allow separate
+		'' INTEGER/LONGINT overloads in code but then generate the same
+		'' mangled id for them, the assembler/linker would complain).
+		''
+		'' Besides that, our LONG stays 32bit always, but "long" on
+		'' 64bit Linux changes to 64bit, so we shouldn't mangle LONG
+		'' to "long" in that case. It would still be possible on 64bit
+		'' Windows, because there "long" stays 32bit, but it seems best
+		'' to mangle LONG to "int" on 64bit consistently, since "int"
+		'' stays 32bit on both Linux and Windows.
+		''
+		'' That allows 64bit INTEGER to be mangled as 64bit long on
+		'' Linux & co, making GCC compatibility easier, it's only Win64
+		'' where we need a custom mangling.
+		''
+		'' Itanium C++ ABI compatible mangling of non-C++ built-in
+		'' types (vendor extended types):
+		''    u <length-of-id> <id>
+
+		if( env.target.options and FB_TARGETOPT_UNIX ) then
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : return @"l"  '' long
+			case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
+			end select
+		else
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : add_abbrev = TRUE : return @"u7INTEGER"  '' seems like a good choice
+			case FB_DATATYPE_UINT    : add_abbrev = TRUE : return @"u8UINTEGER"
+			end select
+		end if
+
+		select case( dtype )
+		case FB_DATATYPE_LONG    : return @"i"  '' int
+		case FB_DATATYPE_ULONG   : return @"j"  '' unsigned int
+		end select
+	else
+		select case( dtype )
+		case FB_DATATYPE_INTEGER : return @"i"  '' int
+		case FB_DATATYPE_UINT    : return @"j"  '' unsigned int
+		case FB_DATATYPE_LONG    : return @"l"  '' long
+		case FB_DATATYPE_ULONG   : return @"m"  '' unsigned long
+		end select
+	end if
+
+	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
+	{ _
+		@"v", _ '' void
+		@"b", _ '' boolean byte
+		@"a", _ '' byte (signed char)
+		@"h", _ '' ubyte (unsigned char)
+		@"c", _ '' char
+		@"s", _ '' short
+		@"t", _ '' ushort
+		@"w", _ '' wchar
+		NULL, _ '' integer
+		NULL, _ '' uinteger
+		@"b", _ '' boolean integer
+		NULL, _ '' enum
+		NULL, _ '' long
+		NULL, _ '' ulong
+		@"x", _ '' longint (long long)
+		@"y", _ '' ulongint (unsigned long long)
+		@"f", _ '' single
+		@"d", _ '' double
+		NULL, _ '' var-len string
+		NULL, _ '' fix-len string
+		NULL, _ '' struct
+		NULL, _ '' namespace
+		NULL, _ '' function
+		NULL, _ '' fwd-ref
+		NULL  _ '' pointer
+	}
+
+	assert( typecodes(dtype) <> NULL )
+	function = typecodes(dtype)
+end function
+
 sub symbMangleType _
 	( _
 		byref mangled as string, _
@@ -312,10 +441,12 @@ sub symbMangleType _
 	)
 
 	dim as FBSYMBOL ptr ns = any
+	dim as integer add_abbrev = any
 
 	'' Lookup abbreviation for this type/namespace (if the current procedure
 	'' name already contains the type somewhere, it can be referred to
-	'' through an index instead of by repeating the full name)
+	'' through an index instead of by repeating the full name, as specified
+	'' in the Itanium C++ ABI)
 	dim as integer idx = hAbbrevFind( dtype, subtype )
 	if( idx <> -1 ) then
 		hAbbrevGet( mangled, idx )
@@ -324,20 +455,74 @@ sub symbMangleType _
 
 	'' forward type?
 	if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
+		'' Remap to STRUCT for mangling purposes
 		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
 	end if
 
-	select case as const( dtype )
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+	'' reference?
+	if( typeIsRef( dtype ) ) then
+		'' const?
+		if( typeIsConst( dtype ) ) then
+			mangled += "RK"
+		else
+			mangled + = "R"
+		end if
+
+		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	'' pointer? (must be checked/emitted before CONST)
+	if( typeIsPtr( dtype ) ) then
+		'' const?
+		if( typeIsConstAt( dtype, 1 ) ) then
+			mangled += "PK"
+		else
+			mangled += "P"
+		end if
+
+		symbMangleType( mangled, typeDeref( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	'' const?
+	if( typeGetConstMask( dtype ) ) then
+		'' The type has some CONST bits. For C++ mangling we remove the
+		'' toplevel one and recursively mangle the rest of the type.
+		''
+		'' It could be a BYVAL x as CONST foo type. In this case the
+		'' CONST is not encoded in the C++ mangling, because it makes no
+		'' difference. It's not allowed to have overloads that differ
+		'' only in BYVAL CONSTness. The CONST only matters if it's a
+		'' pointer or BYREF type.
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	''
+	'' Plain type without reference/pointer/const bits
+	''
+	assert( dtype = typeGetDtOnly( dtype ) )
+
+	select case( dtype )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		ns = symbGetNamespace( subtype )
 		if( ns = @symbGetGlobalNamespc( ) ) then
-			mangled += *symbGetMangledName( subtype )
+			hMangleUdtId( mangled, subtype )
 		else
 			mangled += "N"
 			symbMangleType( mangled, symbGetFullType( ns ), ns )
-			mangled += *symbGetMangledName( subtype )
+			hMangleUdtId( mangled, subtype )
 			mangled += "E"
 		end if
+
+		hAbbrevAdd( dtype, subtype )
 
 	case FB_DATATYPE_NAMESPC
 		if( subtype = @symbGetGlobalNamespc( ) ) then
@@ -348,7 +533,9 @@ sub symbMangleType _
 		if( ns ) then
 			symbMangleType( mangled, FB_DATATYPE_NAMESPC, ns )
 		end if
-		mangled += *symbGetMangledName( subtype )
+		hMangleUdtId( mangled, subtype )
+
+		hAbbrevAdd( dtype, subtype )
 
 	case FB_DATATYPE_FUNCTION
 		'' F(byref)(const)(return_type)(params - recursive, reuses hash)E
@@ -356,92 +543,49 @@ sub symbMangleType _
 
 		'' return BYREF?
 		if( symbProcReturnsByref( subtype ) ) then
-			'' const?
-			if( typeIsConst( symbGetFullType( subtype ) ) ) then
-				mangled += "RK"
-			else
-				mangled += "R"
-			end if
-		else
-			'' const?
-			if( typeIsConst( symbGetFullType( subtype ) ) ) then
-				mangled += "K"
-			end if
+			mangled += "R"
+		end if
+
+		'' const?
+		'' (for function results, even BYVAL CONST is encoded into the
+		'' C++ mangling, unlike for parameters)
+		if( typeIsConst( symbGetFullType( subtype ) ) ) then
+			mangled += "K"
 		end if
 
 		symbMangleType( mangled, symbGetFullType( subtype ), symbGetSubtype( subtype ) )
-		hGetProcParamsTypeCode( mangled, subtype )
+		hGetProcParamsTypeCode( mangled, subtype, FALSE )
 
 		mangled += "E"
 
-	case FB_DATATYPE_STRING
-		mangled += "8FBSTRING"
+		hAbbrevAdd( dtype, subtype )
 
 	case else
-		'' builtin?
-		if( typeGet( dtype ) = dtype ) then
-			mangled += typecodeTB( dtype )
-			exit sub
+		mangled += *hMangleBuiltInType( dtype, add_abbrev )
+		if( add_abbrev ) then
+			hAbbrevAdd( dtype, subtype )
 		end if
-
-		'' reference?
-		if( typeIsRef( dtype ) ) then
-			'' const?
-			if( typeIsConst( dtype ) ) then
-				mangled += "RK"
-			else
-				mangled + = "R"
-			end if
-			symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
-
-		'' array?
-		elseif( typeIsArray( dtype ) ) then
-			mangled += "A"
-			symbMangleType( mangled, typeUnsetIsArray( dtype ), subtype )
-
-		'' pointer? (must be checked/emitted before CONST)
-		elseif( typeIsPtr( dtype ) ) then
-			'' const?
-			if( typeIsConstAt( dtype, 1 ) ) then
-				mangled += "PK"
-			else
-				mangled += "P"
-			end if
-
-			symbMangleType( mangled, typeDeref( dtype ), subtype )
-
-		'' const..
-		else
-			'' note: nothing is added (as in C++) because it's not a 'const ptr'
-			symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
-		end if
-
 	end select
 
-	hAbbrevAdd( dtype, subtype )
 end sub
 
 sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
-	dim as integer dtype = any
-
-	dtype = symbGetFullType( param )
-
 	select case as const( symbGetParamMode( param ) )
-	'' by reference (or descriptor)?
+	case FB_PARAMMODE_BYVAL
+		symbMangleType( mangled, param->typ, param->subtype )
+
 	case FB_PARAMMODE_BYREF
-		dtype = typeSetIsRef( dtype )
+		symbMangleType( mangled, typeSetIsRef( param->typ ), param->subtype )
 
 	case FB_PARAMMODE_BYDESC
-		dtype = typeSetIsRefAndArray( dtype )
+		'' Mangling array params as 'FBARRAY[1-8]<dtype>&' because
+		'' that's what they really are from C++'s point of view.
+		assert( symbIsDescriptor( param->param.bydescrealsubtype ) )
+		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), param->param.bydescrealsubtype )
 
-       '' var arg?
 	case FB_PARAMMODE_VARARG
 		mangled += "z"
-		exit sub
-
 	end select
-
-	symbMangleType( mangled, dtype, symbGetSubtype( param ) )
 end sub
 
 private function hAddUnderscore( ) as integer
@@ -453,9 +597,6 @@ private function hAddUnderscore( ) as integer
 		function = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
 	end if
 end function
-
-'' inside a namespace or class?
-#define hIsNested(s) (symbGetNamespace( s ) <> @symbGetGlobalNamespc( ))
 
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
     '' C++?
@@ -505,9 +646,11 @@ private sub hMangleNamespace _
 
 	if( dohashing ) then
 		'' Just add the abbreviation for this if not yet done
-		if( hAbbrevFind( symbGetFullType( ns ), ns ) = -1 ) then
-			hAbbrevAdd( symbGetFullType( ns ), ns )
-		end if
+		'' (just doing hAbbrevFind()/hAbbrevAdd() is not enough,
+		'' because the parent namespaces may need to be abbreviated too,
+		'' which symbMangleType() will do recursively)
+		dim as string unused
+		symbMangleType( unused, symbGetFullType( ns ), ns )
 	end if
 
 	'' create a stack
@@ -525,7 +668,7 @@ private sub hMangleNamespace _
 	end if
 	do
 		ns = nsStk(tos)
-		mangled += *symbGetMangledName( ns )
+		hMangleUdtId( mangled, ns )
 		tos -= 1
 	loop until( tos < 0 )
 end sub
@@ -573,6 +716,12 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' unlike GCC, which does C++ mangling only for globals inside
 			'' namespaces, but not globals from the toplevel namespace.
 			mangled += "_Z"
+
+			if( sym->stats and FB_SYMBSTATS_RTTITABLE ) then
+				mangled += "TS"
+			elseif( sym->stats and FB_SYMBSTATS_VTABLE ) then
+				mangled += "TV"
+			end if
 		end if
 	else
 		'' LLVM: % prefix for local symbols
@@ -588,8 +737,12 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 	'' class (once static member variables are added)
 
+	'' rtti/vtables don't have an id, their mangled name is just the prefixes
+	'' plus the parent UDT namespace(s), all done above already
+	if( sym->stats and (FB_SYMBSTATS_RTTITABLE or FB_SYMBSTATS_VTABLE) ) then
+		id = ""
 	'' id
-	if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
+	elseif( sym->stats and FB_SYMBSTATS_HASALIAS ) then
 		'' Explicit var ALIAS given, overriding the default id
 		id = *sym->id.alias
 	else
@@ -611,7 +764,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 			'' suffixed?
 			if( symbIsSuffixed( sym ) ) then
-				id += typecodeTB( symbGetType( sym ) )
+				id += *hMangleBuiltInType( symbGetType( sym ) )
 				if( env.clopt.backend = FB_BACKEND_GCC ) then
 					id += "$"
 				end if
@@ -638,7 +791,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 						if( symbIsSuffixed( sym ) ) then
 							'' Encode the type to prevent collisions with other variables
 							'' using the same base id but different type suffix.
-							id += typecodeTB( symbGetType( sym ) )
+							id += *hMangleBuiltInType( symbGetType( sym ) )
 							id += "$"
 						end if
 
@@ -661,7 +814,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 
 					'' Type suffix?
 					if( symbIsSuffixed( sym ) ) then
-						id += typecodeTB( symbGetType( sym ) )
+						id += *hMangleBuiltInType( symbGetType( sym ) )
 					end if
 
 					'' Make the symbol unique - LLVM IR doesn't have scopes.
@@ -683,11 +836,13 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	'' id length (C++ only) followed by the id itself
-	if( docpp ) then
-		mangled += str( len( id ) )
+	if( len( id ) > 0 ) then
+		'' id length (C++ only) followed by the id itself
+		if( docpp ) then
+			mangled += str( len( id ) )
+		end if
+		mangled += id
 	end if
-	mangled += id
 
 	if( docpp ) then
 		'' nested? (namespace or class)
@@ -696,24 +851,31 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	'' Store the mangled id into the symbol
-	sym->id.mangled = ZStrAllocate( len( mangled ) )
-	*sym->id.mangled = mangled
+	symbSetMangledId( sym, mangled )
 end sub
 
 private sub hGetProcParamsTypeCode _
 	( _
 		byref mangled as string, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_real_proc as integer _
 	)
 
 	dim as FBSYMBOL ptr param = any
-	dim as integer dtype = any
 
 	param = symbGetProcHeadParam( sym )
 	if( param <> NULL ) then
-		'' instance pointer? skip..
-		if( symbIsParamInstance( param ) ) then
+		''
+		'' When doing C++ mangling for method, the THIS pointer isn't
+		'' included in the mangled name.
+		''
+		'' However, when producing the unique internal id for a
+		'' procedure pointer, we need to encode even the THIS pointer.
+		'' Also see symbAddProcPtr(). This can happen with the symbols
+		'' created by symbAddProcPtrFromFunction() when calling a
+		'' virtual method through the procedure pointer in the vtable.
+		''
+		if( is_real_proc and symbIsParamInstance( param ) ) then
 			param = symbGetParamNext( param )
 		end if
 	end if
@@ -888,6 +1050,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 	case AST_OP_FRAC
 		function = @"v14frac"
 
+	case AST_OP_LEN
+		function = @"v13len"
+
 	case AST_OP_SGN
 		function = @"v13sgn"
 
@@ -936,6 +1101,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 	case AST_OP_FLDDEREF
 		function = @"pt"
 
+	case AST_OP_PTRINDEX
+		function = @"ix"
+
 	case AST_OP_ADDROF
 		function = @"ad"
 
@@ -971,19 +1139,27 @@ end function
 
 private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	dim as string mangled
-	dim as integer length = any, docpp = any
+	dim as integer length = any, docpp = any, add_stdcall_suffix = any
 	dim as zstring ptr id = any
 
 	docpp = hDoCppMangling( sym )
 
-	symbMangleInitAbbrev( )
+	'' Should the @N win32 stdcall suffix be added for this procedure?
+	'' * only for stdcall, not stdcallms/cdecl/pascal
+	''   (that also makes it win32-only)
+	'' * only on x86, since these calling conventions matter there only
+	'' * only for ASM/LLVM backends, but not for the C backend, because gcc
+	''   will do it already
+	add_stdcall_suffix = (sym->proc.mode = FB_FUNCMODE_STDCALL) and _
+				(fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+				(env.clopt.backend <> FB_BACKEND_GCC)
 
 	'' LLVM: @ prefix for global symbols
 	if( env.clopt.backend = FB_BACKEND_LLVM ) then
 		mangled += "@"
 
 		'' Going to add @N stdcall suffix below?
-		if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
+		if( add_stdcall_suffix ) then
 			'' In LLVM, @ is a special char, identifiers using it must be quoted
 			mangled += """"
 		end if
@@ -1064,15 +1240,12 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		if( hIsNested( sym ) ) then
 			mangled += "E"
 		end if
-		hGetProcParamsTypeCode( mangled, sym )
+		hGetProcParamsTypeCode( mangled, sym, TRUE )
 	end if
 
 	'' @N win32 stdcall suffix
-	if( sym->proc.mode = FB_FUNCMODE_STDCALL ) then
-		'' But not for the C backend, because gcc will do it already.
-		if( env.clopt.backend <> FB_BACKEND_GCC ) then
-			mangled += "@" + str( symbCalcProcParamsLen( sym ) )
-		end if
+	if( add_stdcall_suffix ) then
+		mangled += "@" + str( symbCalcProcParamsLen( sym ) )
 
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			'' In LLVM, @ is a special char, identifiers using it must be quoted
@@ -1080,9 +1253,5 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	symbMangleEndAbbrev( )
-
-	'' Store the mangled id into the symbol
-	sym->id.mangled = ZStrAllocate( len( mangled ) )
-	*sym->id.mangled = mangled
+	symbSetMangledId( sym, mangled )
 end sub

@@ -31,7 +31,7 @@ sub cParameters _
 		byval isproto as integer _
 	)
 
-	dim as integer length = any
+	dim as longint length = any
 
 	length = 0
 
@@ -39,7 +39,7 @@ sub cParameters _
 	'' to check for dups)
 	if( symbIsMethod( proc ) ) then
 		symbAddProcInstancePtr( parent, proc )
-		length += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+		length += env.pointersize
 	end if
 
 	'' '('?
@@ -85,8 +85,8 @@ sub cParameters _
 		lexSkipToken( )
 	end if
 
-	'' param list too large?
-	if( length > 256 ) then
+	'' param list too large? (pretty arbitrary limit)
+	if( length > (env.pointersize * 64) ) then
 		errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, symbGetName( proc ) )
 	end if
 end sub
@@ -192,7 +192,7 @@ private function hMockParam _
 		dtype = FB_DATATYPE_INTEGER
 	end if
 
-	function = symbAddProcParam( proc, NULL, dtype, NULL, pmode, 0 )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0 )
 end function
 
 '':::::
@@ -209,10 +209,13 @@ private function hParamDecl _
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
 	dim as ASTNODE ptr optexpr = any
-	dim as integer dtype = any, mode = any, lgt = any
-	dim as integer attrib = any
-	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any, use_default = any
+	dim as integer dtype = any, mode = any, attrib = any, dimensions = any
+	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any
+	dim as integer use_default = any, have_bounds = any
 	dim as FBSYMBOL ptr subtype = any, param = any
+
+	'' unused, so overwriting during recursion doesn't matter
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
 
 	function = NULL
 
@@ -233,15 +236,20 @@ private function hParamDecl _
 				lexSkipToken( )
 			end if
 
-			'' not cdecl or is it the first arg?
-			if( (proc_mode <> FB_FUNCMODE_CDECL) or _
-				(symbGetProcParams( proc ) = 0) ) then
-				hParamError( proc, "..." )
+			'' is it the first arg?
+			if( symbGetProcParams( proc ) = 0 ) then
+				hParamError( proc, "...", FB_ERRMSG_VARARGNOTALLOWEDASFIRSTPARAM )
+				return hMockParam( proc, FB_PARAMMODE_VARARG )
+			end if
+
+			'' not cdecl?
+			if( proc_mode <> FB_FUNCMODE_CDECL ) then
+				hParamError( proc, "...", FB_ERRMSG_VARARGONLYALLOWEDINCDECL )
 				return hMockParam( proc, FB_PARAMMODE_VARARG )
 			end if
 
 			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
-			                         FB_PARAMMODE_VARARG, 0 )
+			                         0, FB_PARAMMODE_VARARG, 0 )
 
 		'' syntax error..
 		else
@@ -328,15 +336,34 @@ private function hParamDecl _
 		dtype  = FB_DATATYPE_INVALID
 	end if
 
+	dimensions = 0
+	have_bounds = FALSE
+
 	'' '()' array parentheses, '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
-		'' Must be followed by ')', and BYVAL/BYREF cannot be used
-		'' (array() parameters always implicitly are BYDESC)
-		if( (mode <> INVALID) or (hMatch( CHAR_RPRNT ) = FALSE) ) then
+
+		'' BYVAL/BYREF cannot be used; array() parameters always
+		'' implicitly are BYDESC
+		if( mode <> INVALID ) then
 			hParamError( proc, id )
 		end if
 		mode = FB_PARAMMODE_BYDESC
+
+		'' '()'?
+		if( lexGetToken( ) = CHAR_RPRNT ) then
+			dimensions = -1
+		else
+			cArrayDecl( dimensions, have_bounds, exprTB() )
+			if( have_bounds ) then
+				hParamError( proc, id )
+			end if
+		end if
+
+		'' ')'
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		end if
 	end if
 
 	use_default = FALSE
@@ -369,7 +396,7 @@ private function hParamDecl _
 			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
-		if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 			hParamError( proc, id )
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
@@ -403,7 +430,7 @@ private function hParamDecl _
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
 		if( use_default ) then
-			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
+			mode = symbGetDefaultParamMode( dtype, subtype )
 		end if
 	end if
 
@@ -448,13 +475,6 @@ private function hParamDecl _
     		end if
     	end if
 
-	case FB_DATATYPE_STRING
-		if( mode = FB_PARAMMODE_BYVAL ) then
-			if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
-				hParamWarning( proc, id, FB_WARNINGMSG_BYVALASSTRING )
-			end if
-		end if
-
     end select
 
 	'' default values
@@ -463,13 +483,13 @@ private function hParamDecl _
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
-	                          dtype, subtype, mode, attrib )
+	                          dtype, subtype, dimensions, mode, attrib )
 	if( param = NULL ) then
 		exit function
 	end if
 
 	if( isproto = FALSE ) then
-		if( symbGetLen( param ) > (FB_INTEGERSIZE * 4) ) then
+		if( symbGetLen( param ) > (env.pointersize * 4) ) then
 			if( fbPdCheckIsSet( FB_PDCHECK_PARAMSIZE ) ) then
 				hParamWarning( proc, id, FB_WARNINGMSG_PARAMSIZETOOBIG, 0 )
 			end if

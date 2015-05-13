@@ -110,7 +110,7 @@ sub ppEnd( )
     		exit for
     	end if
 
-    	symbDelKeyword( kwdTb(i).sym )
+		symbFreeSymbol( kwdTb(i).sym )
     	kwdTb(i).sym = NULL
     next
 
@@ -212,7 +212,9 @@ sub ppParse( )
 							lexPPOnlyEmitToken( )
 						end if
 					end if
-					symbDelSymbol( sym )
+					'' Forget the symbol so it's no longer found by lookups,
+					'' but don't fully delete it, since it might already be used somewhere.
+					symbDelFromHash( sym )
 				end if
 			end if
 		end if
@@ -706,10 +708,10 @@ function ppReadLiteralW _
 
 end function
 
-function ppTypeOf( ) as zstring ptr
+function ppTypeOf( ) as string
 	'' get type's name
-	dim as zstring ptr res = any
-	dim as integer dtype = any, lgt = any
+	dim as integer dtype = any
+	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' TYPEOF
@@ -719,15 +721,12 @@ function ppTypeOf( ) as zstring ptr
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	else
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( )
 	end if
 
 	cTypeOf( dtype, subtype, lgt )
 
-	res = symbTypeToStr( dtype, subtype, lgt )
-	if( res ) then
-		*res = ucase( *res )
-	end if
+	function = ucase( symbTypeToStr( dtype, subtype, lgt ) )
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -735,8 +734,6 @@ function ppTypeOf( ) as zstring ptr
 		'' error recovery: skip until next ')'
 		hSkipUntil( CHAR_RPRNT )
 	else
-		lexSkipToken( LEXCHECK_NODEFINE )
+		lexSkipToken( )
 	end if
-
-	function = res
 end function

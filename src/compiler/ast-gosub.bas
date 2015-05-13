@@ -52,8 +52,7 @@ sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 		dtype = typeAddrOf( FB_DATATYPE_VOID )
 	end if
 
-	sym = symbAddVar( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), _
-	                  FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
+	sym = symbAddImplicitVar( dtype, NULL, FB_SYMBOPT_UNSCOPE )
 
 	var_decl = astNewDECL( sym, TRUE )
 
@@ -186,7 +185,7 @@ function astGosubAddReturn _
 			'' pop return address from the stack.  Uses "POP immed" which will be
 			'' handled specially in emit_x86.bas::_emitPOPI()
 			astAdd( astNewSTACK( AST_OP_POP, _
-				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ) ) ) )
+				astNewCONSTi( env.pointersize ) ) )
 
 			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
@@ -213,7 +212,7 @@ function astGosubAddReturn _
 		if( l = NULL ) then
 
 			'' fb_GosubReturn( @ctx )
-			function = (NULL <> rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) ))
+			function = rtlGosubReturn( astNewADDROF( astNewVAR( symbGetProcGosubSym( proc ) ) ) )
 
 		'' RETURN [label]
 		else

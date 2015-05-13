@@ -362,7 +362,7 @@ function cInputStmt _
 	) as integer
 
     dim as ASTNODE ptr filestrexpr, dstexpr
-    dim as integer islast, isfile, addnewline, addquestion, lgt
+	dim as integer islast, isfile, addnewline, addquestion
 
 	function = FALSE
 
@@ -383,8 +383,7 @@ function cInputStmt _
     	isfile = FALSE
     	'' STRING_LIT?
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-			lgt = lexGetTextLen( )
-			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ) )
+			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) ) )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
@@ -732,17 +731,18 @@ private function hFileGet _
 		if( iobexpr <> NULL ) then
 			s = astGetSymbol( iobexpr )
 			if( s <> NULL ) then
-				dim isint as integer = FALSE
-
-				'' must be integer
-				select case symbGetType( s )
-				case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
-					isint = TRUE
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					isint = ( FB_LONGSIZE = FB_INTEGERSIZE )
-				end select
-
-				if( isint = FALSE ) then
+				'' It's for a BYREF AS INTEGER parameter, so it
+				'' must be an integer type of the same size to
+				'' be allowed by astNewARG().
+				'' (Note: normally astNewARG() would do these
+				'' checks already, but this is a quirk RTL function,
+				'' and astNewARG()'s error reports may be confusing
+				'' if the RTL function parameters and the quirk syntax
+				'' arguments don't match up)
+				var dtype = symbGetType( s )
+				if( (typeGetSize( dtype ) <> env.pointersize) or _
+				    (typeGetClass( dtype ) <> FB_DATACLASS_INTEGER) or _
+				    typeIsPtr( dtype ) ) then
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 			end if

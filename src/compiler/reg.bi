@@ -56,14 +56,15 @@ type REGCLASS
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
-		byval size as uinteger, _				'' in bytes
-		byval doload as integer = TRUE _
+		byval vauxparent as IRVREG ptr, _
+		byval size as uinteger _				'' in bytes
 	) as integer
 
 	_allocate		as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr, _
 		byval size as uinteger _				'' in bytes
 	) as integer
 
@@ -71,7 +72,8 @@ type REGCLASS
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
 	) as integer
 
 	free			as sub _
@@ -90,7 +92,8 @@ type REGCLASS
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval r as integer, _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
 	)
 
 	getMaxRegs		as function _
@@ -112,7 +115,8 @@ type REGCLASS
 	getVreg			as function _
 	( _
 		byval this_ as REGCLASS ptr, _
-		byval r as integer _
+		byval r as integer, _
+		byref vreg as IRVREG ptr _
 	) as IRVREG ptr
 
 	getRealReg		as function _
@@ -136,9 +140,8 @@ type REGCLASS
 	isstack			as integer
 	regs			as integer
 
-	vregTB ( _
-				0 to REG_MAXREGS-1_
-		   )		as IRVREG ptr	'' virtual register name (index)
+	vregTB(0 to REG_MAXREGS-1)	as IRVREG ptr '' vregs currently using each register
+	vauxparent(0 to REG_MAXREGS-1)	as IRVREG ptr '' if vregTB(i) is a vaux, this points to the main longint vreg
 
 	regctx			as REG_REGCTX
 

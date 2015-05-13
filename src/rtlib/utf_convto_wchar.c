@@ -7,21 +7,19 @@
 extern const char __fb_utf8_trailingTb[256];
 extern const UTF_32 __fb_utf8_offsetsTb[6];
 
-char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars );
-char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, int *chars );
-char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, int *chars );
+char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars );
+char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, ssize_t *chars );
+char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, ssize_t *chars );
 
-/*:::::*/
-static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	UTF_32 c;
-	int extbytes;
-	int charsleft;
+	ssize_t extbytes, charsleft;
 	FB_WCHAR *buffer = dst;
 	
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -123,17 +121,15 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	UTF_32 c;
-	int extbytes;
-	int charsleft;
+	ssize_t extbytes, charsleft;
 	FB_WCHAR *buffer = dst;
 	
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -216,8 +212,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-static FB_WCHAR *hUTF8ToWChar( const UTF_8 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF8ToWChar( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	FB_WCHAR *res = NULL;
 	
@@ -240,16 +235,15 @@ static FB_WCHAR *hUTF8ToWChar( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	return res;
 }
 
-/*:::::*/
-static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	UTF_16 c;
-	int charsleft;
+	ssize_t charsleft;
 	FB_WCHAR *buffer = dst;
 	
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -304,8 +298,7 @@ static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	FB_WCHAR *res = NULL;
 
@@ -333,16 +326,15 @@ static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, int *chars )
 }
 
 
-/*:::::*/
-static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	UTF_32 c;
-	int charsleft;
+	ssize_t charsleft;
 	FB_WCHAR *buffer = dst;
 	
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -404,8 +396,7 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, int *chars )
+static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	FB_WCHAR *res = NULL;
 
@@ -432,8 +423,7 @@ static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, int *chars )
 	return res;
 }
 
-/*:::::*/
-FB_WCHAR *fb_UTFToWChar( FB_FILE_ENCOD encod, const void *src, FB_WCHAR *dst, int *chars )
+FB_WCHAR *fb_UTFToWChar( FB_FILE_ENCOD encod, const void *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	switch( encod )
 	{
@@ -449,6 +439,4 @@ FB_WCHAR *fb_UTFToWChar( FB_FILE_ENCOD encod, const void *src, FB_WCHAR *dst, in
 	default:
 		return NULL;
 	}
-
 }
-

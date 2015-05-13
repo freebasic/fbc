@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int str2_size )
+FBCALL FB_WCHAR *fb_WstrConcatWA( const FB_WCHAR *str1, const void *str2, ssize_t str2_size )
 {
 	FB_WCHAR *dst;
-	int str1_len, str2_len;
+	ssize_t str1_len, str2_len;
 	char *str2_ptr;
 
 	if( str1 != NULL )
@@ -38,11 +37,10 @@ FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int s
 	return dst;
 }
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrConcatAW ( const void *str1, int str1_size, const FB_WCHAR *str2 )
+FBCALL FB_WCHAR *fb_WstrConcatAW( const void *str1, ssize_t str1_size, const FB_WCHAR *str2 )
 {
 	FB_WCHAR *dst;
-	int str1_len, str2_len;
+	ssize_t str1_len, str2_len;
 	char *str1_ptr;
 
 	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );

@@ -1,5 +1,5 @@
 /* ERASE for static arrays: clear the elements */
-/* (for FBSTRING arrays, fb_ArrayStrErase() should be used instead */
+/* (for FBSTRING arrays, fb_ArrayStrErase() should be used instead) */
 
 #include "fb.h"
 

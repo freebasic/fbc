@@ -66,8 +66,16 @@ end function
 	'' Create a lua state
 	L = lua_newstate( @my_lua_Alloc, NULL )
 
-	'' Load the base lua library (needed for 'print')
-	luaopen_base( L )
+#if 0
+	'' Load only the base lua library (needed for 'print')
+	lua_pushcfunction( L, @luaopen_base )
+	lua_pushstring( L, "" )
+	lua_call( L, 1, 0 )
+#else
+	'' Load all Lua libraries
+	'' (including the base one, which is needed for 'print')
+	luaL_openlibs( L )
+#endif
 
 	'' Register the function to be called from lua as MinMax
 	lua_register( L, "MinMax", @minmax )

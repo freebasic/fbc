@@ -38,8 +38,9 @@ During the program compilation three types of errors can arise:
 	- //31 Directive ignored after first pass//
 	- //32 'IF' statement found directly after multi-line 'ELSE'//
 	- //33 Shift value greater than or equal to number of bits in data type//
-	- //34 'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)//
-	- //35 '=' parsed as equality operator in function argument, not assignment to BYREF function result//
+	- //34 '=' parsed as equality operator in function argument, not assignment to BYREF function result//
+	- //35 Mixing signed/unsigned operands//
+	- //36 Mismatching parameter initializer//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -108,233 +109,255 @@ During the program compilation three types of errors can arise:
 	- //62 Expected array//
 	- //63 Expected '{'//
 	- //64 Expected '}'//
-	- //65 Too many expressions//
-	- //66 Expected explicit result type//
-	- //67 Range too large//
-	- //68 Forward references not allowed//
-	- //69 Incomplete type//
-	- //70 Array not dimensioned//
-	- //71 Array access, index expected//
-	- //72 Expected 'END ENUM'//
-	- //73 Var-len arrays cannot be initialized//
-	- //74 Invalid bitfield//
-	- //75 Too many parameters//
-	- //76 Macro text too long//
-	- //77 Invalid command-line option//
-	- //78 Var-len strings cannot be initialized//
-	- //79 Recursive TYPE or UNION not allowed//
-	- //80 Recursive DEFINE not allowed//
-	- //81 Array fields cannot be redimensioned//
-	- //82 Identifier cannot include periods//
-	- //83 Executable not found//
-	- //84 Array out-of-bounds//
-	- //85 Missing command-line option for//
-	- //86 Expected 'ANY'//
-	- //87 Expected 'END SCOPE'//
-	- //88 Illegal inside a compound statement or scoped block//
-	- //89 UDT function results cannot be passed by reference//
-	- //90 Ambiguous call to overloaded function//
-	- //91 No matching overloaded function//
-	- //92 Division by zero//
-	- //93 Cannot pop stack, underflow//
-	- //94 UDT's containing var-len string fields cannot be initialized//
-	- //95 Branching to scope block containing local variables//
-	- //96 Branching to other functions or to module-level//
-	- //97 Branch crossing local array, var-len string or object definition//
-	- //98 LOOP without DO//
-	- //99 NEXT without FOR//
-	- //100 WEND without WHILE//
-	- //101 END WITH without WITH//
-	- //102 END IF without IF//
-	- //103 END SELECT without SELECT//
-	- //104 END SUB or FUNCTION without SUB or FUNCTION//
-	- //105 END SCOPE without SCOPE//
-	- //106 END NAMESPACE without NAMESPACE//
-	- //107 END EXTERN without EXTERN//
-	- //108 ELSEIF without IF//
-	- //109 ELSE without IF//
-	- //110 CASE without SELECT//
-	- //111 Cannot modify a constant//
-	- //112 Expected period ('.')//
-	- //113 Expected 'END NAMESPACE'//
-	- //114 Illegal inside a NAMESPACE block//
-	- //115 Symbols defined inside namespaces cannot be removed//
-	- //116 Expected 'END EXTERN'//
-	- //117 Expected 'END SUB'//
-	- //118 Expected 'END FUNCTION'//
-	- //119 Expected 'END CONSTRUCTOR'//
-	- //120 Expected 'END DESTRUCTOR'//
-	- //121 Expected 'END OPERATOR'//
-	- //122 Expected 'END PROPERTY'//
-	- //123 Declaration outside the original namespace//
-	- //124 No end of multi-line comment, expected "'/"//
-	- //125 Too many errors, exiting//
-	- //126 Expected 'ENDMACRO'//
-	- //127 EXTERN or COMMON variables cannot be initialized//
-	- //128 At least one parameter must be a user-defined type//
-	- //129 Parameter or result must be a user-defined type//
-	- //130 Both parameters can't be of the same type//
-	- //131 Parameter and result can't be of the same type//
-	- //132 Invalid result type for this operator//
-	- //133 Invalid parameter type, it must be the same as the parent TYPE/CLASS//
-	- //134 Vararg parameters are not allowed in overloaded functions//
-	- //135 Illegal outside an OPERATOR block//
-	- //136 Parameter cannot be optional//
-	- //137 Only valid in -lang//
-	- //138 Default types or suffixes are only valid in -lang//
-	- //139 Suffixes are only valid in -lang//
-	- //140 Implicit variables are only valid in -lang//
-	- //141 Auto variables are only valid in -lang//
-	- //142 Invalid array index//
-	- //143 Operator must be a member function//
-	- //144 Operator cannot be a member function//
-	- //145 Member function not allowed in anonymous UDT's//
-	- //146 Expected operator//
-	- //147 Declaration outside the original namespace or class//
-	- //148 A destructor should not have any parameters//
-	- //149 Expected class or UDT identifier//
-	- //150 Var-len strings cannot be part of UNION's or nested TYPE's//
-	- //151 Fields with constructors cannot be part of UNION's or nested TYPE's//
-	- //152 Fields with destructors cannot be part of UNION's or nested TYPE's//
-	- //153 Illegal outside a CONSTRUCTOR block//
-	- //154 Illegal outside a DESTRUCTOR block//
-	- //155 UDT's with methods must have unique names//
-	- //156 Parent is not a class or UDT//
-	- //157 CONSTRUCTOR() chain call not at top of constructor//
-	- //158 BASE() initializer not at top of constructor//
-	- //159 REDIM on UDT with non-CDECL constructor//
-	- //160 REDIM on UDT with non-CDECL destructor//
-	- //161 REDIM on UDT with non-parameterless default constructor//
-	- //162 ERASE on UDT with non-CDECL constructor//
-	- //163 ERASE on UDT with non-CDECL destructor//
-	- //164 ERASE on UDT with non-parameterless default constructor//
-	- //165 This symbol cannot be undefined//
-	- //166 RETURN mixed with 'FUNCTION =' or EXIT FUNCTION (using both styles together is unsupported when returning objects with constructors)//
-	- //167 'FUNCTION =' or EXIT FUNCTION mixed with RETURN (using both styles together is unsupported when returning objects with constructors)//
-	- //168 Missing RETURN to copy-construct function result//
-	- //169 Invalid assignment/conversion//
-	- //170 Invalid array subscript//
-	- //171 TYPE or CLASS has no default constructor//
-	- //172 Function result TYPE has no default constructor//
-	- //173 Base UDT without default constructor; missing BASE() initializer//
-	- //174 Base UDT without default constructor; missing default constructor implementation in derived UDT//
-	- //175 Base UDT without default constructor; missing copy constructor implementation in derived UDT//
-	- //176 Invalid priority attribute//
-	- //177 PROPERTY GET should have no parameter, or just one if indexed//
-	- //178 PROPERTY SET should have one parameter, or just two if indexed//
-	- //179 Expected 'PROPERTY'//
-	- //180 Illegal outside a PROPERTY block//
-	- //181 PROPERTY has no GET method/accessor//
-	- //182 PROPERTY has no SET method/accessor//
-	- //183 PROPERTY has no indexed GET method/accessor//
-	- //184 PROPERTY has no indexed SET method/accessor//
-	- //185 Missing overloaded operator: //
-	- //186 The NEW[] operator does not allow explicit calls to constructors//
-	- //187 The NEW[] operator only supports the { ANY } initialization//
-	- //188 The NEW operator cannot be used with strings//
-	- //189 Illegal member access//
-	- //190 Expected ':'//
-	- //191 The default constructor has no public access//
-	- //192 Constructor has no public access//
-	- //193 Destructor has no public access//
-	- //194 Accessing base UDT's private default constructor//
-	- //195 Accessing base UDT's private destructor//
-	- //196 Illegal non-static member access//
-	- //197 Constructor declared ABSTRACT//
-	- //198 Constructor declared VIRTUAL//
-	- //199 Destructor declared ABSTRACT//
-	- //200 Member cannot be static//
-	- //201 Member isn't static//
-	- //202 Only static members can be accessed from static functions//
-	- //203 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
-	- //204 STATIC used here, but not the in the DECLARE statement//
-	- //205 CONST used here, but not the in the DECLARE statement//
-	- //206 VIRTUAL used here, but not the in the DECLARE statement//
-	- //207 ABSTRACT used here, but not the in the DECLARE statement//
-	- //208 Method declared VIRTUAL, but UDT does not extend OBJECT//
-	- //209 Method declared ABSTRACT, but UDT does not extend OBJECT//
-	- //210 Not overriding any virtual method//
-	- //211 Implemented body for an ABSTRACT method//
-	- //212 Override has different return type than overridden method//
-	- //213 Override has different calling convention than overridden method//
-	- //214 Implicit destructor override would have different calling convention//
-	- //215 Implicit LET operator override would have different calling convention//
-	- //216 Override has different parameters than overridden method//
-	- //217 This operator cannot be STATIC//
-	- //218 Parameter must be an integer//
-	- //219 Parameter must be a pointer//
-	- //220 Expected initializer//
-	- //221 Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es//
-	- //222 Illegal outside a FOR compound statement//
-	- //223 Illegal outside a DO compound statement//
-	- //224 Illegal outside a WHILE compound statement//
-	- //225 Illegal outside a SELECT compound statement//
-	- //226 Expected 'FOR'//
-	- //227 Expected 'DO'//
-	- //228 Expected 'WHILE'//
-	- //229 Expected 'SELECT'//
-	- //230 No outer FOR compound statement found//
-	- //231 No outer DO compound statement found//
-	- //232 No outer WHILE compound statement found//
-	- //233 No outer SELECT compound statement found//
-	- //234 Expected 'CONSTRUCTOR', 'DESTRUCTOR', 'DO', 'FOR', 'FUNCTION', 'OPERATOR', 'PROPERTY', 'SELECT', 'SUB' or 'WHILE'//
-	- //235 Expected 'DO', 'FOR' or 'WHILE'//
-	- //236 Illegal outside a SUB block//
-	- //237 Illegal outside a FUNCTION block//
-	- //238 Ambiguous symbol access, explicit scope resolution required//
-	- //239 An ENUM, TYPE or UNION cannot be empty//
-	- //240 ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes//
-	- //241 STATIC used on non-member procedure//
-	- //242 CONST used on non-member procedure//
-	- //243 ABSTRACT used on non-member procedure//
-	- //244 VIRTUAL used on non-member procedure//
-	- //245 Invalid initializer//
-	- //246 Objects with default [con|de]structors or methods are only allowed in the module level//
-	- //247 Symbol not a CLASS, ENUM, TYPE or UNION type//
-	- //248 Too many elements//
-	- //249 Only data members supported//
-	- //250 UNIONs are not allowed//
-	- //251 Arrays are not allowed//
-	- //252 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
-	- //253 Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type//
-	- //254 Local symbols can't be referenced//
-	- //255 Expected 'PTR' or 'POINTER'//
-	- //256 Too many levels of pointer indirection//
-	- //257 Dynamic arrays can't be const//
-	- //258 Const UDT cannot invoke non-const method//
-	- //259 Elements must be empty for strings and arrays//
-	- //260 GOSUB disabled, use 'OPTION GOSUB' to enable//
-	- //261 Invalid -lang//
-	- //262 Can't use ANY as initializer in array with ellipsis bound//
-	- //263 Must have initializer with array with ellipsis bound//
-	- //264 Can't use ... as lower bound//
-	- //265 FOR/NEXT variable name mismatch//
-	- //266 Selected option requires an SSE FPU mode//
-	- //267 Expected relational operator ( =, >, <, <>, <=, >= )//
-	- //268 Unsupported statement in -gen gcc mode//
-	- //269 Too many labels//
-	- //270 Unsupported function//
-	- //271 Expected sub//
-	- //272 Expected '#ENDIF'//
-	- //273 Resource file given for target system that does not support them//
-	- //274 -o <file> option without corresponding input file//
-	- //275 TYPE can only extend other TYPE symbols//
-	- //276 Illegal outside a CLASS, TYPE or UNION method//
-	- //277 CLASS, TYPE or UNION not derived//
-	- //278 CLASS, TYPE or UNION has no constructor//
-	- //279 Symbol type has no Run-Time Type Info (RTTI)//
-	- //280 Types have no hierarchical relation//
-	- //281 Expected a CLASS, TYPE or UNION symbol type//
-	- //282 Casting derived UDT pointer from incompatible pointer type//
-	- //283 Casting derived UDT pointer from unrelated UDT pointer type//
-	- //284 Casting derived UDT pointer to incompatible pointer type//
-	- //285 Casting derived UDT pointer to unrelated UDT pointer type//
-	- //286 ALIAS name string is empty//
-	- //287 LIB name string is empty//
-	- //288 UDT has unimplemented abstract methods//
-	- //289 #ASSERT condition failed//
-	- //290 Expected '>'//
-	- //291 Invalid size//
+	- //65 Expected ']'//
+	- //66 Too many expressions//
+	- //67 Expected explicit result type//
+	- //68 Range too large//
+	- //69 Forward references not allowed//
+	- //70 Incomplete type//
+	- //71 Array not dimensioned//
+	- //72 Array access, index expected//
+	- //73 Expected 'END ENUM'//
+	- //74 Var-len arrays cannot be initialized//
+	- //75 '...' ellipsis upper bound given for dynamic array (this is not supported)//
+	- //76 '...' ellipsis upper bound given for array field (this is not supported)//
+	- //77 Invalid bitfield//
+	- //78 Too many parameters//
+	- //79 Macro text too long//
+	- //80 Invalid command-line option//
+	- //81 Selected non-x86 CPU when compiling for DOS//
+	- //82 Selected -gen gas ASM backend for non-x86 CPU//
+	- //83 -asm att used for -gen gas, but -gen gas only supports -asm intel//
+	- //84 -pic used when making executable (only works when making a shared library)//
+	- //85 -pic used, but not supported by target system (only works for non-x86 Unixes)//
+	- //86 Var-len strings cannot be initialized//
+	- //87 Recursive TYPE or UNION not allowed//
+	- //88 Recursive DEFINE not allowed//
+	- //89 Identifier cannot include periods//
+	- //90 Executable not found//
+	- //91 Array out-of-bounds//
+	- //92 Missing command-line option for//
+	- //93 Expected 'ANY'//
+	- //94 Expected 'END SCOPE'//
+	- //95 Illegal inside a compound statement or scoped block//
+	- //96 UDT function results cannot be passed by reference//
+	- //97 Ambiguous call to overloaded function//
+	- //98 No matching overloaded function//
+	- //99 Division by zero//
+	- //100 Cannot pop stack, underflow//
+	- //101 UDT's containing var-len string fields cannot be initialized//
+	- //102 Branching to scope block containing local variables//
+	- //103 Branching to other functions or to module-level//
+	- //104 Branch crossing local array, var-len string or object definition//
+	- //105 LOOP without DO//
+	- //106 NEXT without FOR//
+	- //107 WEND without WHILE//
+	- //108 END WITH without WITH//
+	- //109 END IF without IF//
+	- //110 END SELECT without SELECT//
+	- //111 END SUB or FUNCTION without SUB or FUNCTION//
+	- //112 END SCOPE without SCOPE//
+	- //113 END NAMESPACE without NAMESPACE//
+	- //114 END EXTERN without EXTERN//
+	- //115 ELSEIF without IF//
+	- //116 ELSE without IF//
+	- //117 CASE without SELECT//
+	- //118 Cannot modify a constant//
+	- //119 Expected period ('.')//
+	- //120 Expected 'END NAMESPACE'//
+	- //121 Illegal inside a NAMESPACE block//
+	- //122 Symbols defined inside namespaces cannot be removed//
+	- //123 Expected 'END EXTERN'//
+	- //124 Expected 'END SUB'//
+	- //125 Expected 'END FUNCTION'//
+	- //126 Expected 'END CONSTRUCTOR'//
+	- //127 Expected 'END DESTRUCTOR'//
+	- //128 Expected 'END OPERATOR'//
+	- //129 Expected 'END PROPERTY'//
+	- //130 Declaration outside the original namespace//
+	- //131 No end of multi-line comment, expected "'/"//
+	- //132 Too many errors, exiting//
+	- //133 Expected 'ENDMACRO'//
+	- //134 EXTERN or COMMON variables cannot be initialized//
+	- //135 EXTERN or COMMON dynamic arrays cannot have initial bounds//
+	- //136 At least one parameter must be a user-defined type//
+	- //137 Parameter or result must be a user-defined type//
+	- //138 Both parameters can't be of the same type//
+	- //139 Parameter and result can't be of the same type//
+	- //140 Invalid result type for this operator//
+	- //141 Invalid parameter type, it must be the same as the parent TYPE/CLASS//
+	- //142 Vararg parameters are not allowed in overloaded functions//
+	- //143 Illegal outside an OPERATOR block//
+	- //144 Parameter cannot be optional//
+	- //145 Only valid in -lang//
+	- //146 Default types or suffixes are only valid in -lang//
+	- //147 Suffixes are only valid in -lang//
+	- //148 Implicit variables are only valid in -lang//
+	- //149 Auto variables are only valid in -lang//
+	- //150 Invalid array index//
+	- //151 Operator must be a member function//
+	- //152 Operator cannot be a member function//
+	- //153 Method declared in anonymous UDT//
+	- //154 Constant declared in anonymous UDT//
+	- //155 Static variable declared in anonymous UDT//
+	- //156 Expected operator//
+	- //157 Declaration outside the original namespace or class//
+	- //158 A destructor should not have any parameters//
+	- //159 Expected class or UDT identifier//
+	- //160 Var-len strings cannot be part of UNION's or nested TYPE's//
+	- //161 Dynamic arrays cannot be part of UNION's or nested TYPE's//
+	- //162 Fields with constructors cannot be part of UNION's or nested TYPE's//
+	- //163 Fields with destructors cannot be part of UNION's or nested TYPE's//
+	- //164 Illegal outside a CONSTRUCTOR block//
+	- //165 Illegal outside a DESTRUCTOR block//
+	- //166 UDT's with methods must have unique names//
+	- //167 Parent is not a class or UDT//
+	- //168 CONSTRUCTOR() chain call not at top of constructor//
+	- //169 BASE() initializer not at top of constructor//
+	- //170 REDIM on UDT with non-CDECL constructor//
+	- //171 REDIM on UDT with non-CDECL destructor//
+	- //172 REDIM on UDT with non-parameterless default constructor//
+	- //173 ERASE on UDT with non-CDECL constructor//
+	- //174 ERASE on UDT with non-CDECL destructor//
+	- //175 ERASE on UDT with non-parameterless default constructor//
+	- //176 This symbol cannot be undefined//
+	- //177 RETURN mixed with 'FUNCTION =' or EXIT FUNCTION (using both styles together is unsupported when returning objects with constructors)//
+	- //178 'FUNCTION =' or EXIT FUNCTION mixed with RETURN (using both styles together is unsupported when returning objects with constructors)//
+	- //179 Missing RETURN to copy-construct function result//
+	- //180 Invalid assignment/conversion//
+	- //181 Invalid array subscript//
+	- //182 TYPE or CLASS has no default constructor//
+	- //183 Function result TYPE has no default constructor//
+	- //184 Missing BASE() initializer (base UDT without default constructor requires manual initialization)//
+	- //185 Missing default constructor implementation (base UDT without default constructor requires manual initialization)//
+	- //186 Missing UDT.constructor(byref as UDT) implementation (base UDT without default constructor requires manual initialization)//
+	- //187 Missing UDT.constructor(byref as const UDT) implementation (base UDT without default constructor requires manual initialization)//
+	- //188 Invalid priority attribute//
+	- //189 PROPERTY GET should have no parameter, or just one if indexed//
+	- //190 PROPERTY SET should have one parameter, or just two if indexed//
+	- //191 Expected 'PROPERTY'//
+	- //192 Illegal outside a PROPERTY block//
+	- //193 PROPERTY has no GET method/accessor//
+	- //194 PROPERTY has no SET method/accessor//
+	- //195 PROPERTY has no indexed GET method/accessor//
+	- //196 PROPERTY has no indexed SET method/accessor//
+	- //197 Missing overloaded operator: //
+	- //198 The NEW[] operator does not allow explicit calls to constructors//
+	- //199 The NEW[] operator only supports the { ANY } initialization//
+	- //200 The NEW operator cannot be used with fixed-length strings//
+	- //201 Illegal member access//
+	- //202 Expected ':'//
+	- //203 The default constructor has no public access//
+	- //204 Constructor has no public access//
+	- //205 Destructor has no public access//
+	- //206 Accessing base UDT's private default constructor//
+	- //207 Accessing base UDT's private destructor//
+	- //208 Illegal non-static member access//
+	- //209 Constructor declared ABSTRACT//
+	- //210 Constructor declared VIRTUAL//
+	- //211 Destructor declared ABSTRACT//
+	- //212 Member cannot be static//
+	- //213 Member isn't static//
+	- //214 Only static members can be accessed from static functions//
+	- //215 The PRIVATE and PUBLIC attributes are not allowed with REDIM, COMMON or EXTERN//
+	- //216 STATIC used here, but not the in the DECLARE statement//
+	- //217 CONST used here, but not the in the DECLARE statement//
+	- //218 VIRTUAL used here, but not the in the DECLARE statement//
+	- //219 ABSTRACT used here, but not the in the DECLARE statement//
+	- //220 Method declared VIRTUAL, but UDT does not extend OBJECT//
+	- //221 Method declared ABSTRACT, but UDT does not extend OBJECT//
+	- //222 Not overriding any virtual method//
+	- //223 Implemented body for an ABSTRACT method//
+	- //224 Override has different return type than overridden method//
+	- //225 Override has different calling convention than overridden method//
+	- //226 Implicit destructor override would have different calling convention//
+	- //227 Implicit LET operator override would have different calling convention//
+	- //228 Override is not a CONST member like the overridden method//
+	- //229 Override is a CONST member, but the overridden method is not//
+	- //230 Override has different parameters than overridden method//
+	- //231 This operator cannot be STATIC//
+	- //232 This operator is implicitly STATIC and cannot be VIRTUAL or ABSTRACT//
+	- //233 This operator is implicitly STATIC and cannot be CONST//
+	- //234 Parameter must be an integer//
+	- //235 Parameter must be a pointer//
+	- //236 Expected initializer//
+	- //237 Fields cannot be named as keywords in TYPE's that contain member functions or in CLASS'es//
+	- //238 Illegal outside a FOR compound statement//
+	- //239 Illegal outside a DO compound statement//
+	- //240 Illegal outside a WHILE compound statement//
+	- //241 Illegal outside a SELECT compound statement//
+	- //242 Expected 'FOR'//
+	- //243 Expected 'DO'//
+	- //244 Expected 'WHILE'//
+	- //245 Expected 'SELECT'//
+	- //246 No outer FOR compound statement found//
+	- //247 No outer DO compound statement found//
+	- //248 No outer WHILE compound statement found//
+	- //249 No outer SELECT compound statement found//
+	- //250 Expected 'CONSTRUCTOR', 'DESTRUCTOR', 'DO', 'FOR', 'FUNCTION', 'OPERATOR', 'PROPERTY', 'SELECT', 'SUB' or 'WHILE'//
+	- //251 Expected 'DO', 'FOR' or 'WHILE'//
+	- //252 Illegal outside a SUB block//
+	- //253 Illegal outside a FUNCTION block//
+	- //254 Ambiguous symbol access, explicit scope resolution required//
+	- //255 An ENUM, TYPE or UNION cannot be empty//
+	- //256 ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes//
+	- //257 STATIC used on non-member procedure//
+	- //258 CONST used on non-member procedure//
+	- //259 ABSTRACT used on non-member procedure//
+	- //260 VIRTUAL used on non-member procedure//
+	- //261 Invalid initializer//
+	- //262 Objects with default [con|de]structors or methods are only allowed in the module level//
+	- //263 Symbol not a CLASS, ENUM, TYPE or UNION type//
+	- //264 Too many elements//
+	- //265 Only data members supported//
+	- //266 UNIONs are not allowed//
+	- //267 Arrays are not allowed//
+	- //268 COMMON variables cannot be object instances of CLASS/TYPE's with cons/destructors//
+	- //269 Cloning operators (LET, Copy constructors) can't take a byval arg of the parent's type//
+	- //270 Local symbols can't be referenced//
+	- //271 Expected 'PTR' or 'POINTER'//
+	- //272 Too many levels of pointer indirection//
+	- //273 Dynamic arrays can't be const//
+	- //274 Const UDT cannot invoke non-const method//
+	- //275 Elements must be empty for strings and arrays//
+	- //276 GOSUB disabled, use 'OPTION GOSUB' to enable//
+	- //277 Invalid -lang//
+	- //278 Can't use ANY as initializer in array with ellipsis bound//
+	- //279 Must have initializer with array with ellipsis bound//
+	- //280 Can't use ... as lower bound//
+	- //281 FOR/NEXT variable name mismatch//
+	- //282 Selected option requires an SSE FPU mode//
+	- //283 Expected relational operator ( =, >, <, <>, <=, >= )//
+	- //284 Unsupported statement in -gen gcc mode//
+	- //285 Too many labels//
+	- //286 Unsupported function//
+	- //287 Expected sub//
+	- //288 Expected '#ENDIF'//
+	- //289 Resource file given for target system that does not support them//
+	- //290 -o <file> option without corresponding input file//
+	- //291 Not extending a TYPE/UNION (a TYPE/UNION can only extend other TYPEs/UNIONs)//
+	- //292 Illegal outside a CLASS, TYPE or UNION method//
+	- //293 CLASS, TYPE or UNION not derived//
+	- //294 CLASS, TYPE or UNION has no constructor//
+	- //295 Symbol type has no Run-Time Type Info (RTTI)//
+	- //296 Types have no hierarchical relation//
+	- //297 Expected a CLASS, TYPE or UNION symbol type//
+	- //298 Casting derived UDT pointer from incompatible pointer type//
+	- //299 Casting derived UDT pointer from unrelated UDT pointer type//
+	- //300 Casting derived UDT pointer to incompatible pointer type//
+	- //301 Casting derived UDT pointer to unrelated UDT pointer type//
+	- //302 ALIAS name string is empty//
+	- //303 LIB name string is empty//
+	- //304 UDT has unimplemented abstract methods//
+	- //305 Non-virtual call to ABSTRACT method//
+	- //306 #ASSERT condition failed//
+	- //307 Expected '>'//
+	- //308 Invalid size//
+	- //309 ALIAS name here is different from ALIAS given in DECLARE prototype//
+	- //310 vararg parameters are only allowed in CDECL procedures//
+	- //311 the first parameter in a procedure may not be vararg//
+	- //312 CONST used on constructor (not needed)//
+	- //313 CONST used on destructor (not needed)//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

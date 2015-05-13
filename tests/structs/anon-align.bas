@@ -62,119 +62,119 @@ sub testAnonPadding cdecl()
 	type A
 		union
 			type
-				as short s
-				as byte b1
+				as short a
+				as byte b
 			end type
 		end union
-		as byte b2
+		as byte c
 	end type
 	CU_ASSERT(sizeof(A) = 6)
-	CU_ASSERT(offsetof(A, b2) = 4)
+	CU_ASSERT(offsetof(A, c) = 4)
 
 	type B
 		union
 			type
-				as longint l
-				as integer i1
+				as longint a
+				as long b
 			end type
 		end union
-		as integer i2
+		as long c
 	end type
-	#ifdef __FB_WIN32__
+	#if defined( __FB_64BIT__) or defined( __FB_WIN32__ )
 		CU_ASSERT(sizeof(B) = 24)
-		CU_ASSERT(offsetof(B, i2) = 16)
+		CU_ASSERT(offsetof(B, c) = 16)
 	#else
 		CU_ASSERT(sizeof(B) = 16)
-		CU_ASSERT(offsetof(B, i2) = 12)
+		CU_ASSERT(offsetof(B, c) = 12)
 	#endif
 
 	union C
 		type field = 1
-			as byte b1
-			as integer i
-			as byte b2
+			as byte a
+			as long b
+			as byte c
 		end type
 	end union
 	CU_ASSERT( sizeof( C ) = 8 )
-	CU_ASSERT( offsetof( C, i ) = 1 )
-	CU_ASSERT( offsetof( C, b2 ) = 5 )
+	CU_ASSERT( offsetof( C, b ) = 1 )
+	CU_ASSERT( offsetof( C, c ) = 5 )
 
 	union D field = 1
 		type
-			as byte b1
-			as integer i
-			as byte b2
+			as byte a
+			as long b
+			as byte c
 		end type
 	end union
 	CU_ASSERT( sizeof( D ) = 6 )
-	CU_ASSERT( offsetof( D, i ) = 1 )
-	CU_ASSERT( offsetof( D, b2 ) = 5 )
+	CU_ASSERT( offsetof( D, b ) = 1 )
+	CU_ASSERT( offsetof( D, c ) = 5 )
 
 	union E field = 1
 		type field = 1
-			as byte b1
-			as integer i
-			as byte b2
+			as byte a
+			as long b
+			as byte c
 		end type
 	end union
 	CU_ASSERT( sizeof( E ) = 6 )
-	CU_ASSERT( offsetof( E, i ) = 1 )
-	CU_ASSERT( offsetof( E, b2 ) = 5 )
+	CU_ASSERT( offsetof( E, b ) = 1 )
+	CU_ASSERT( offsetof( E, c ) = 5 )
 
 	type F
 		union field = 1
 			type
-				as short s
-				as byte b1
+				as short a
+				as byte b
 			end type
 		end union
-		as byte b2
+		as byte c
 	end type
 	CU_ASSERT( sizeof( F ) = 4 )
-	CU_ASSERT( offsetof( F, b1 ) = 2 )
-	CU_ASSERT( offsetof( F, b2 ) = 3 )
+	CU_ASSERT( offsetof( F, b ) = 2 )
+	CU_ASSERT( offsetof( F, c ) = 3 )
 
 	type G
 		union field = 1
 			type
-				as short s1
+				as short a
 				as byte b
 			end type
 		end union
-		as short s2
+		as short c
 	end type
 	CU_ASSERT( sizeof( G ) = 6 )
 	CU_ASSERT( offsetof( G, b ) = 2 )
-	CU_ASSERT( offsetof( G, s2 ) = 4 )
+	CU_ASSERT( offsetof( G, c ) = 4 )
 
 	type H
 		union field = 1
 			type
-				as short s
+				as short a
 				as byte b
 			end type
 		end union
-		as integer i
+		as long c
 	end type
 	CU_ASSERT( sizeof( H ) = 8 )
 	CU_ASSERT( offsetof( H, b ) = 2 )
-	CU_ASSERT( offsetof( H, i ) = 4 )
+	CU_ASSERT( offsetof( H, c ) = 4 )
 
 	type I
 		union
 			type field = 1
-				as short s
+				as short a
 				as byte b
 			end type
-			as integer i1
+			as long c
 		end union
-		as integer i2
+		as long d
 	end type
 	CU_ASSERT( sizeof( I ) = 8 )
-	CU_ASSERT( offsetof( I, s ) = 0 )
+	CU_ASSERT( offsetof( I, a ) = 0 )
 	CU_ASSERT( offsetof( I, b ) = 2 )
-	CU_ASSERT( offsetof( I, i1 ) = 0 )
-	CU_ASSERT( offsetof( I, i2 ) = 4 )
+	CU_ASSERT( offsetof( I, c ) = 0 )
+	CU_ASSERT( offsetof( I, d ) = 4 )
 end sub
 
 private sub ctor( ) constructor

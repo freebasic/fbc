@@ -9,9 +9,16 @@ shl 33:
 	Shift value greater than or equal to number of bits in data type
 shl 123:
 	Shift value greater than or equal to number of bits in data type
+shl 128:
+	Shift value greater than or equal to number of bits in data type
+shl 255:
+	Shift value greater than or equal to number of bits in data type
+shl 256:
+	Shift value greater than or equal to number of bits in data type
+shl huge integer value:
+	Shift value greater than or equal to number of bits in data type
 shl huge longint value:
 	Shift value greater than or equal to number of bits in data type
-	Overflow in constant conversion
 ----------------------------
 shr negative:
 	Shift value greater than or equal to number of bits in data type
@@ -24,6 +31,13 @@ shr 33:
 	Shift value greater than or equal to number of bits in data type
 shr 123:
 	Shift value greater than or equal to number of bits in data type
+shr 128:
+	Shift value greater than or equal to number of bits in data type
+shr 255:
+	Shift value greater than or equal to number of bits in data type
+shr 256:
+	Shift value greater than or equal to number of bits in data type
+shr huge integer value:
+	Shift value greater than or equal to number of bits in data type
 shr huge longint value:
 	Shift value greater than or equal to number of bits in data type
-	Overflow in constant conversion

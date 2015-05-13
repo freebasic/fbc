@@ -1,6 +1,6 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+#define ASSERT(e) if (e) = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 
 assert( len(int1%) = 2 )
 assert( len(lng1&) = 4 )

@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrMid ( const FB_WCHAR *src, int start, int len )
+FBCALL FB_WCHAR *fb_WstrMid( const FB_WCHAR *src, ssize_t start, ssize_t len )
 {
     FB_WCHAR *dst;
-    int	src_len;
+	ssize_t src_len;
 
     if( src == NULL )
     	return NULL;
@@ -33,4 +32,3 @@ FBCALL FB_WCHAR *fb_WstrMid ( const FB_WCHAR *src, int start, int len )
 
 	return dst;
 }
-

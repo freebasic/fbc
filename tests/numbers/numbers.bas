@@ -85,11 +85,21 @@ end sub
 
 sub test_5 cdecl ()
 
+#ifdef __FB_64BIT__
+	test_i_lb = -9223372036854775808
+	test_i_ub = 9223372036854775807
+#else
 	test_i_lb = -2147483648
 	test_i_ub = 2147483647
+#endif
 	# print two warnings follow
+#ifdef __FB_64BIT__
+	i_lb = -9223372036854775809
+	i_ub = 9223372036854775808
+#else
 	i_lb = -2147483649
 	i_ub = 2147483648
+#endif
 	cu_assert( i_lb = test_i_ub )
 	cu_assert( i_ub = test_i_lb )
 
@@ -97,6 +107,18 @@ end sub
 
 sub test_6 cdecl ()
 
+#ifdef __FB_64BIT__
+	test_ui_lb = 0
+	test_ui_ub = 18446744073709551615
+
+	# print two warnings follow
+	ui_lb = -1
+	'' is truncated to 18446744073709551615, not wrapping around
+	ui_ub = 18446744073709551616
+
+	cu_assert( ui_lb = test_ui_ub )
+	cu_assert( ui_ub = test_ui_ub )
+#else
 	test_ui_lb = 0
 	test_ui_ub = 4294967295
 	# print two warnings follow
@@ -104,6 +126,7 @@ sub test_6 cdecl ()
 	ui_ub = 4294967296
 	cu_assert( ui_lb = test_ui_ub )
 	cu_assert( ui_ub = test_ui_lb )
+#endif
 
 end sub
 
@@ -123,17 +146,12 @@ sub test_8 cdecl ()
 
 	test_ul_lb = 0
 	test_ul_ub = 18446744073709551615
-	# print one warning follow
+	# print two warnings follow
 	ul_lb = -1
-	#if 0
-	'' this should issue an error if uncommented:
-	'' the lexer will complain the number is too big
-	ul = 18446744073709551616
-	#endif
+	'' is truncated to 18446744073709551615, not wrapping around
+	ul_ub = 18446744073709551616
 	cu_assert( ul_lb = test_ul_ub )
-	#if 0
-	cu_assert( ul_ub = test_ul_lb )
-	#endif
+	cu_assert( ul_ub = test_ul_ub )
 
 end sub
 

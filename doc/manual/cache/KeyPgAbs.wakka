@@ -3,7 +3,9 @@ Calculates the absolute value of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
@@ -17,7 +19,9 @@ Calculates the absolute value of a number
 	The absolute value of ##//number//##.
 
 {{fbdoc item="desc"}}
-	The absolute value of a number is its unsigned magnitude. For example, ##Abs(-1)## and ##Abs(1)## both return ##1##. The required ##//number//## argument can be any valid numeric expression.
+	The absolute value of a number is its positive magnitude.  If a number is negative, its value will be negated and the positive result returned.  For example, ##Abs(-1)## and ##Abs(1)## both return ##1##. The required ##//number//## argument can be any valid numeric expression.
+	Unsigned numbers will be treated as if they were signed, i.e. if the highest bit is set the number will be treated as negative, and its value negated.
+	The value returned will be greater than or equal to ##0##, with the exception of signed integers containing the lowest possible negative value that can be stored in its type, in which case negating it will overflow the result.
 
 	The ##**Abs**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 

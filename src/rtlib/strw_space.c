@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrSpace ( int chars )
+FBCALL FB_WCHAR *fb_WstrSpace( ssize_t chars )
 {
 	FB_WCHAR *dst;
 
@@ -20,4 +19,3 @@ FBCALL FB_WCHAR *fb_WstrSpace ( int chars )
 
 	return dst;
 }
-

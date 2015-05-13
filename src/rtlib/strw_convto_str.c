@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FBSTRING *fb_WstrToStr( const FB_WCHAR *src )
 {
 	FBSTRING *dst;
-	int chars;
+	ssize_t chars;
 
     if( src == NULL )
     	return &__fb_ctx.null_desc;
@@ -23,4 +22,3 @@ FBCALL FBSTRING *fb_WstrToStr( const FB_WCHAR *src )
 
 	return dst;
 }
-

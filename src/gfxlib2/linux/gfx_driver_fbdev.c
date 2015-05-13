@@ -3,6 +3,9 @@
 #include "../fb_gfx.h"
 #include "fb_gfx_linux.h"
 #include "../../rtlib/unix/fb_private_console.h"
+
+#ifndef DISABLE_FBDEV
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -20,7 +23,7 @@
 typedef struct FBDEVDRIVER
 {
 	int w, h, depth, flags;
-	int refresh_rate;
+	ssize_t refresh_rate;
 	int mouse_clip;
 } FBDEVDRIVER;
 
@@ -89,19 +92,19 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 	unsigned char buffer[fb_fbdev.w], pattern;
 	unsigned char *s, *source = __fb_gfx->framebuffer;
 	int x, y, plane, i, offset;
-	
+
 	OUTB(0x3CE, 0x03);
 	OUTB(0x3CF, 0x00);
-	
+
 	OUTB(0x3CE, 0x05);
 	OUTB(0x3CF, 0x00);
-	
+
 	OUTB(0x3CE, 0x01);
 	OUTB(0x3CF, 0x00);
-	
+
 	OUTB(0x3CE, 0x08);
 	OUTB(0x3CF, 0xFF);
-	
+
 	for (y = 0; y < fb_fbdev.h; y++) {
 		if (__fb_gfx->dirty[y]) {
 			offset = 0;
@@ -117,7 +120,7 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 						else {
 							color = s[i];
 						}
-						
+
 						if (color & (1 << plane))
 							pattern |= 1 << (7 - i);
 					}
@@ -146,18 +149,18 @@ static void *driver_thread(void *arg)
 	unsigned char buffer[1024];
 	int buttons, bytes_read, bytes_left = 0;
 	EVENT e;
-	
+
 	(void)arg;
-	
+
 	is_running = TRUE;
-	
+
 	pthread_mutex_lock(&mutex);
 	pthread_cond_signal(&cond);
 	pthread_mutex_unlock(&mutex);
-	
+
 	while (is_running) {
 		pthread_mutex_lock(&mutex);
-		
+
 		if (mouse_fd >= 0) {
 			FD_ZERO(&set);
 			FD_SET(mouse_fd, &set);
@@ -208,12 +211,12 @@ static void *driver_thread(void *arg)
 							bytes_read = mouse_packet_size;
 						}
 						bytes_left -= bytes_read;
-						memcpy(buffer, &buffer[bytes_read], bytes_left);
+						memmove(buffer, &buffer[bytes_read], bytes_left);
 					}
 				}
 			}
 		}
-		
+
 		if (vsync_flags & (FB_VBLANK_HAVE_VBLANK | FB_VBLANK_HAVE_VCOUNT)) {
 			if (vsync_flags & FB_VBLANK_HAVE_VCOUNT) {
 				ioctl(device_fd, FBIOGET_VBLANK, &vblank);
@@ -229,7 +232,7 @@ static void *driver_thread(void *arg)
 			}
 		}
 		pthread_cond_signal(&cond);
-		
+
 		if (is_active) {
 			if (is_palette_changed) {
 				if (device_info.type != FB_TYPE_VGA_PLANES)
@@ -247,22 +250,22 @@ static void *driver_thread(void *arg)
 			if ((mouse_fd >= 0) && (mouse_shown))
 				fb_hSoftCursorUnput(mouse_x, mouse_y);
 		}
-		
+
 		pthread_mutex_unlock(&mutex);
-		
+
 		if (vsync_flags & (FB_VBLANK_HAVE_VBLANK | FB_VBLANK_HAVE_VCOUNT))
 			usleep(8000);
 		else
 			usleep(1000000 / ((fb_fbdev.refresh_rate > 0) ? fb_fbdev.refresh_rate : 60));
 	}
-	
+
 	return NULL;
 }
 
 static void driver_save_screen(void)
 {
 	EVENT e;
-	
+
 	pthread_mutex_lock(&mutex);
 	is_active = FALSE;
 	pthread_mutex_unlock(&mutex);
@@ -274,7 +277,7 @@ static void driver_save_screen(void)
 static void driver_restore_screen(void)
 {
 	EVENT e;
-	
+
 	pthread_mutex_lock(&mutex);
 	is_active = TRUE;
 	is_palette_changed = TRUE;
@@ -310,27 +313,28 @@ static void driver_key_handler( int pressed, int repeated, int scancode, int key
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	const char *device_name;
-	int try, res_index, dummy, i, j, r, g, b, dist, best_dist, best_index = 0;
+	int try, res_index, i, j, r, g, b, dist, best_dist, best_index = 0;
+	ssize_t dummy;
 	int palette_len;
 	struct fb_vblank vblank;
 	const char *mouse_device[] = { "/dev/input/mice", "/dev/usbmouse", "/dev/psaux", NULL };
 	const unsigned char im_init[] = { 243, 200, 243, 100, 243, 80 };
-	
+
 	if (flags & DRIVER_OPENGL)
 		return -1;
-	
+
 	fb_fbdev.w = w;
 	fb_fbdev.h = h;
 	fb_fbdev.flags = flags;
 	depth = MAX(depth, 4);
-	
+
 	device_name = getenv("FBGFX_FRAMEBUFFER");
 	if (!device_name)
 		device_name = "/dev/fb0";
 	device_fd = open(device_name, O_RDWR, 0);
 	if (device_fd < 0)
 		return -1;
-	
+
 	if ((ioctl(device_fd, FBIOGET_FSCREENINFO, &device_info) < 0) ||
 	    (ioctl(device_fd, FBIOGET_VSCREENINFO, &orig_mode) < 0) ||
 	    ((device_info.type != FB_TYPE_PACKED_PIXELS)
@@ -349,17 +353,17 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 #if defined(i386) && defined(FB_TYPE_VGA_PLANES)
 	if ((device_info.type == FB_TYPE_VGA_PLANES) && (device_info.type_aux == FB_AUX_VGA_PLANES_VGA4)) {
 		mode = orig_mode;
-		if ((orig_mode.xres >= w) && (orig_mode.yres >= h) && (__fb_con.has_perm) && (depth <= 8)) {
+		if ((orig_mode.xres >= (unsigned int)w) && (orig_mode.yres >= (unsigned int)h) && __fb_con.has_perm && (depth <= 8)) {
 			/* we are in vga16 mode, got to live with it */
 			goto got_mode;
 		}
-		
+
 		close(device_fd);
 		device_fd = -1;
 		return -1;
 	}
 #endif
-    
+
 	/* tries in order:
 	 *  1) wanted resolution and color depth;
 	 *  2) any higher resolution and wanted color depth;
@@ -368,10 +372,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	 */
 	for (try = 0; try < 4; try++) {
 		mode = orig_mode;
-		
+
 		mode.xoffset = 0;
 		mode.yoffset = 0;
-		
+
 		if (try < 2) {
 			mode.bits_per_pixel = depth;
 			mode.grayscale = 0;
@@ -400,7 +404,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			}
 			mode.red.msb_right = mode.green.msb_right = mode.blue.msb_right = 0;
 		}
-		
+
 		if (try & 1) {
 			for (res_index = 0; standard_mode[res_index].w; res_index++) {
 				if ((standard_mode[res_index].w >= w) && (standard_mode[res_index].h > h)) {
@@ -418,11 +422,11 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 				goto got_mode;
 		}
 	}
-	
+
 	mode = orig_mode;
-	if ((mode.xres >= w) && (mode.yres >= h))
+	if ((mode.xres >= (unsigned int)w) && (mode.yres >= (unsigned int)h))
 		goto got_mode;
-	
+
 	close(device_fd);
 	device_fd = -1;
 	return -1;
@@ -430,19 +434,19 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 got_mode:
 	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen, driver_key_handler))
 		return -1;
-	
+
 	fb_hFBDevInfo(&dummy, &dummy, &dummy, &fb_fbdev.refresh_rate);
 	__fb_gfx->refresh_rate = fb_fbdev.refresh_rate;
-	
+
 	if (ioctl(device_fd, FBIOGET_FSCREENINFO, &device_info) < 0)
 		return -1;
-	
+
 	framebuffer = mmap(NULL, device_info.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, device_fd, 0);
 	if (framebuffer == (unsigned char *)-1)
 		return -1;
-	
+
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
-	
+
 	if (mode.bits_per_pixel == 4) {
 		palette_len = 16;
 		framebuffer_offset = (((mode.yres - h) >> 1) * (mode.xres >> 3)) + ((mode.xres - w) >> 4);
@@ -455,7 +459,7 @@ got_mode:
 		if (!blitter)
 			return -1;
 	}
-	
+
 	mouse_packet_size = 3;
 	for (try = 0; mouse_device[try]; try++) {
 		mouse_fd = open(mouse_device[try], O_RDWR, 0);
@@ -475,7 +479,7 @@ got_mode:
 		mouse_shown = TRUE;
 		fb_hSoftCursorInit();
 	}
-	
+
 	palette = (unsigned short *)malloc(sizeof(unsigned short) * 1536);
 	orig_cmap.start = 0;
 	orig_cmap.len = palette_len;
@@ -514,10 +518,10 @@ got_mode:
 			color_conv[i] = best_index;
 		}
 	}
-	
+
 	if (ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0)
 		vsync_flags = vblank.flags;
-	
+
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&cond, NULL);
 	pthread_mutex_lock(&mutex);
@@ -539,13 +543,13 @@ static void driver_exit(void)
 		pthread_mutex_destroy(&mutex);
 		pthread_cond_destroy(&cond);
 	}
-	
+
 	if (mouse_fd >= 0) {
 		fb_hSoftCursorExit();
 		close(mouse_fd);
 		mouse_fd = -1;
 	}
-	
+
 	if (device_fd >= 0) {
 		fb_hConsoleGfxMode(NULL, NULL, NULL, NULL);
 		if (framebuffer) {
@@ -602,10 +606,20 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 static void driver_set_mouse(int x, int y, int cursor, int clip)
 {
-	if ((x >= 0) && (x < __fb_gfx->w))
+	if (x != (int)0x80000000 || y != (int)0x80000000) {
+		if (x == (int)0x80000000) {
+			x = mouse_x;
+		}
+		else if (y == (int)0x80000000) {
+			y = mouse_y;
+		}
+
+		x = MID(0, x, __fb_gfx->w - 1);
+		y = MID(0, y, __fb_gfx->h - 1);
+
 		mouse_x = x;
-	if ((y >= 0) && (y < __fb_gfx->h))
 		mouse_y = y;
+	}
 	mouse_shown = (cursor != 0);
 	if (clip == 0)
 		mouse_clip = FALSE;
@@ -617,7 +631,7 @@ static int *driver_fetch_modes(int depth, int *size)
 {
 	const char *device_name;
 	int i, fd, num_sizes = 0, *sizes = NULL;
-	
+
 	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
 		return NULL;
 
@@ -631,7 +645,7 @@ static int *driver_fetch_modes(int depth, int *size)
 	}
 	else
 		fd = device_fd;
-	
+
 	ioctl(fd, FBIOGET_VSCREENINFO, &mode);
 	for (i = 0; standard_mode[i].w; i++) {
 		mode.bits_per_pixel = depth;
@@ -644,19 +658,19 @@ static int *driver_fetch_modes(int depth, int *size)
 			sizes[num_sizes - 1] = (mode.xres << 16) | mode.yres;
 		}
 	}
-	
+
 	if (device_fd < 0)
 		close(fd);
-	
+
 	*size = num_sizes;
 	return sizes;
 }
 
-int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh)
+int fb_hFBDevInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	struct fb_var_screeninfo temp, *info;
 	int fd = -1, htotal, vtotal, flags, res;
-	
+
 	if (device_fd < 0) {
 		if ((fd = open("/dev/fb0", O_RDWR, 0)) < 0)
 			return -1;
@@ -672,17 +686,19 @@ int fb_hFBDevInfo(int *width, int *height, int *depth, int *refresh)
 	htotal = info->left_margin + info->xres + info->right_margin + info->hsync_len;
 	vtotal = info->upper_margin + info->yres + info->lower_margin + info->vsync_len;
 	flags = info->vmode & FB_VMODE_MASK;
-	
+
 	if (!(flags == FB_VMODE_INTERLACED))
 		vtotal <<= 1;
 	if (flags == FB_VMODE_DOUBLE)
 		vtotal <<= 1;
-	
+
 	*width = info->xres;
 	*height = info->yres;
 	*depth = info->bits_per_pixel;
 	if ((info->pixclock) && (htotal) && (vtotal))
 		*refresh = (((1e12 / info->pixclock) / htotal) / vtotal) * 2;
-	
+
 	return 0;
 }
+
+#endif

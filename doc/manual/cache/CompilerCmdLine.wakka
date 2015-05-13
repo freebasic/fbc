@@ -43,6 +43,8 @@ Using the **fbc** command-line.
 		Set the target platform for cross compilation
 	=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
 		Sets the compiler backend (default is 'gas').
+	=={{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}==
+		Sets the assembler format for Asm block.
 	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
 		Set target architecture (default: ##486##)
 	=={{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}==

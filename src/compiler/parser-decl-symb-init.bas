@@ -12,8 +12,9 @@
 
 type FB_INITCTX
 	sym			as FBSYMBOL ptr
-	dim_ 		as FBVARDIM ptr
-	dimcnt		as integer
+	dtype			as integer
+	subtype			as FBSYMBOL ptr
+	dimension 		as integer
 	tree		as ASTNODE ptr
 	options		as FB_INIOPT
 	init_expr   as ASTNODE ptr
@@ -24,7 +25,23 @@ declare function hUDTInit _
 		byref ctx as FB_INITCTX _
 	) as integer
 
-'':::::
+private sub hUpdateContextDtype _
+	( _
+		byref ctx as FB_INITCTX, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	)
+
+	if( dtype = FB_DATATYPE_INVALID ) then
+		ctx.dtype = symbGetFullType( ctx.sym )
+		ctx.subtype = symbGetSubtype( ctx.sym )
+	else
+		ctx.dtype = dtype
+		ctx.subtype = subtype
+	end if
+
+end sub
+
 private function hDoAssign _
 	( _
 		byref ctx as FB_INITCTX, _
@@ -32,19 +49,9 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
-
-	dtype = symbGetFullType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
-	if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+	if( astCheckASSIGNToType( ctx.dtype, ctx.subtype, expr ) = FALSE ) then
 		'' check if it's a cast
-		expr = astNewCONV( dtype, subtype, expr )
+		expr = astNewCONV( ctx.dtype, ctx.subtype, expr )
 		if( expr = NULL ) then
 			'' hand it back...
 			'' (used with UDTs; if an UDT var is given in an UDT initializer,
@@ -57,11 +64,11 @@ private function hDoAssign _
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: create a fake expression
 			astDelTree( expr )
-			expr = astNewCONSTz( dtype, subtype )
+			expr = astNewCONSTz( ctx.dtype, ctx.subtype )
 		end if
 	end if
 
-	astTypeIniAddAssign( ctx.tree, expr, ctx.sym )
+	astTypeIniAddAssign( ctx.tree, expr, ctx.sym, ctx.dtype, ctx.subtype )
 
 	function = TRUE
 end function
@@ -96,11 +103,7 @@ private function hElmInit _
 		hSkipUntil( CHAR_COMMA )
 
 		'' generate an expression matching the symbol's type
-		dim as integer dtype = symbGetType( ctx.sym )
-		if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-			dtype = typeDeref( dtype )
-		end if
-		expr = astNewCONSTz( dtype, symbGetSubtype( ctx.sym ) )
+		expr = astNewCONSTz( ctx.dtype, ctx.subtype )
 	end if
 
 	'' to hand it back if necessary
@@ -114,18 +117,16 @@ private function hElmInit _
 
 end function
 
-'':::::
+'' Parse variable initializer: may be an array, or not.
 private function hArrayInit _
 	( _
 		byref ctx as FB_INITCTX, _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as integer dimensions = any, elements = any, elm_cnt = any
-    dim as integer isarray = any, dtype = any
-    dim as FBVARDIM ptr old_dim = any
-    dim as FBSYMBOL ptr subtype = any
-	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS - 1)
+	dim as integer elm_cnt = any
+	dim as longint elements = any
+	dim as integer isarray = any
 
 	function = FALSE
 
@@ -161,148 +162,120 @@ private function hArrayInit _
 	'' and recursively descends into the next (inner) dimension.
 	'' The first '}' seen is that of the first group of elements in the
 	'' inner-most dimension, corresponding to the last dimension listed in
-	'' the array declaration and the dTB(). Thus, the dimension's sizes are
-	'' filled in "backwards" - inner-most first, outer-most last.
+	'' the array declaration. Thus, the dimension's sizes are filled in
+	'' "backwards" - inner-most first, outer-most last.
 	''
-
-	dimensions = symbGetArrayDimensions( ctx.sym )
-	old_dim = ctx.dim_
 
 	'' '{'?
 	isarray = FALSE
 	if( lexGetToken( ) = CHAR_LBRACE ) then
 		lexSkipToken( )
 
-		ctx.dimcnt += 1
-
-		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		ctx.dimension += 1
+		isarray = TRUE
 
 		'' too many dimensions?
-		if( ctx.dimcnt > dimensions ) then
-			errReport( iif( dimensions > 0, _
+		if( ctx.dimension >= symbGetArrayDimensions( ctx.sym ) ) then
+			errReport( iif( symbGetArrayDimensions( ctx.sym ) > 0, _
 			                FB_ERRMSG_TOOMANYEXPRESSIONS, _
 			                FB_ERRMSG_EXPECTEDARRAY ) )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
-			ctx.dim_ = NULL
-		else
-			'' first dim?
-			if( ctx.dim_ = NULL ) then
-				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
-
-			'' next..
-			else
-				ctx.dim_ = ctx.dim_->next
-			end if
-
-			isarray = TRUE
+			ctx.dimension -= 1
+			exit function
 		end if
 	else
 		'' not the last dimension?
-		if( ctx.dimcnt < dimensions ) then
-			errReport( FB_ERRMSG_EXPECTEDLBRACKET )
-			ctx.dimcnt += 1
-			if( ctx.dim_ = NULL ) then
-				ctx.dim_ = symbGetArrayFirstDim( ctx.sym )
-			else
-				ctx.dim_ = ctx.dim_->next
-			end if
+		'' Initializing a non-array variable is ok even without {}'s,
+		'' but for arrays the {}'s are required.
+		if( ctx.dimension < (symbGetArrayDimensions( ctx.sym ) - 1) ) then
+			errReport( FB_ERRMSG_EXPECTEDLBRACE )
+			ctx.dimension += 1
+			isarray = TRUE
 		end if
 	end if
 
-	if( ctx.dim_ <> NULL ) then
-		dTB(ctx.dimcnt - 1).lower = ctx.dim_->lower
-		dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
-		'' Ellipsis?
-		if( ctx.dim_->upper = FB_ARRAYDIM_UNKNOWN ) then
+	if( isarray ) then
+		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+	end if
+
+	'' Determine the expected number of initializer elements
+	if( ctx.dimension >= 0 ) then
+		assert( ctx.dimension < symbGetArrayDimensions( ctx.sym ) )
+		'' Ellipsis at this dimension?
+		if( symbArrayUbound( ctx.sym, ctx.dimension ) = FB_ARRAYDIM_UNKNOWN ) then
 			elements = -1
 		else
-			elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
+			elements = symbArrayUbound( ctx.sym, ctx.dimension ) - symbArrayLbound( ctx.sym, ctx.dimension ) + 1
 		end if
 	else
 		elements = 1
 	end if
 
-	''
-	dtype = symbGetType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
-	'' for each array element..
+	'' For each initializer element...
 	elm_cnt = 0
 	do
 		'' not the last dimension?
-		if( ctx.dimcnt < dimensions ) then
+		if( ctx.dimension < (symbGetArrayDimensions( ctx.sym ) - 1) ) then
 			if( hArrayInit( ctx ) = FALSE ) then
 				exit function
 			end if
 		else
-			select case as const dtype
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			if( typeGetDtAndPtrOnly( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
 				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
 				end if
-
-			case else
+			else
 				if( hElmInit( ctx, no_fake ) = FALSE ) then
 					exit function
 				end if
-			end select
+			end if
 		end if
 
+		'' Stop parsing elements if the expected number was reached,
+		'' unless it's an ellipsis array dimension, for which we need
+		'' to keep parsing all available elements to determine how
+		'' big the dimension should be.
 		elm_cnt += 1
-		if( elements = -1 ) then
-			'' ellipsis elements...
-			if( lexGetToken( ) <> CHAR_COMMA ) then
-				'' Fill in this dimension's upper bound
-				elements = elm_cnt
-				ctx.dim_->upper = ctx.dim_->lower + elm_cnt - 1
-				dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
-
-				'' "array too big" check
-				'' Note: the dTB() was initialized by now by the recursive parsing,
-				'' but there can still be ellipsis upper bounds if some of the other
-				'' dimensions used them, because their respective initializers haven't
-				'' been fully parsed yet, unless this is the outer-most dimension.
-				if( symbCheckArraySize( dimensions, dTB(), ctx.sym->lgt, _
-				                        ((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
-				                        (ctx.dimcnt > 1) ) = FALSE ) then
-					errReport( FB_ERRMSG_ARRAYTOOBIG )
-					'' error recovery: set this dimension to 1 element
-					dTB(ctx.dimcnt - 1).lower = 0
-					dTB(ctx.dimcnt - 1).upper = 0
-				end if
-
-				symbSetArrayDimTb( ctx.sym, dimensions, dTB() )
-				exit do
-			end if
-		else
-			if( elm_cnt >= elements ) then
-				exit do
-			end if
-		end if
-
-		'' ','
-		if( hMatch( CHAR_COMMA ) = FALSE ) then
+		if( (elm_cnt >= elements) and (elements <> -1) ) then
 			exit do
 		end if
-	loop
 
-	'' Any array elements not initialized by this '{...}'?
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+	'' Finished parsing initializer for ellipsis array dimension?
+	if( elements = -1 ) then
+		'' Update the array symbol with the new info about this dimension's upper bound
+		elements = elm_cnt
+		symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, elements )
+		symbMaybeAddArrayDesc( ctx.sym )
+
+		'' "array too big" check
+		'' Note: If currently parsing an inner dimension, then there can still be
+		'' outer dimensions with ellipsis upper bounds because the outer bounds'
+		'' initializers haven't been fully parsed yet. But it's ok because
+		'' symbCheckArraySize() handles this special case. (The check will be incomplete,
+		'' but ultimately
+		if( symbCheckArraySize( symbGetArrayDimensions( ctx.sym ), @symbGetArrayDim( ctx.sym, 0 ), ctx.sym->lgt, _
+					((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) = FALSE ) then
+			errReport( FB_ERRMSG_ARRAYTOOBIG )
+			'' error recovery: set this dimension to 1 element
+			symbSetFixedSizeArrayDimensionElements( ctx.sym, ctx.dimension, 1 )
+		end if
+	end if
+
+	'' Not all elements initialized in this dimension?
 	'' Then default-initialize/zero them. With multi-dimensional arrays,
 	'' this may happen "in the middle" of the array.
 	elements -= elm_cnt
 	if( elements > 0 ) then
-		'' not the last dimension?
-		if( ctx.dim_->next ) then
-			elements *= symbCalcArrayElements( ctx.sym, ctx.dim_->next )
-		end if
+		'' Add elements for remaining uninitialized dimensions, if any
+		elements *= symbCalcArrayElements( ctx.sym, ctx.dimension + 1 )
 
 		dim as FBSYMBOL ptr ctor = NULL
 		if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
-			ctor = symbGetCompDefCtor( subtype )
+			ctor = symbGetCompDefCtor( ctx.subtype )
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			else
@@ -314,15 +287,15 @@ private function hArrayInit _
 		end if
 
 		if( ctor <> NULL ) then
-			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements )
+			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements, ctx.dtype, ctx.subtype )
 		else
-			dim as integer pad_lgt = any
+			dim as longint pad_lgt = any
 			'' calc len.. handle fixed-len strings
-			select case as const dtype
+			select case as const( typeGetDtAndPtrOnly( ctx.dtype ) )
 			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				pad_lgt = symbGetLen( ctx.sym )
 			case else
-				pad_lgt = symbCalcLen( dtype, subtype )
+				pad_lgt = symbCalcLen( ctx.dtype, ctx.subtype )
 			end select
 
 			pad_lgt *= elements
@@ -337,32 +310,25 @@ private function hArrayInit _
 
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
-			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			errReport( FB_ERRMSG_EXPECTEDRBRACE )
 			'' error recovery: skip until next '}'
 			hSkipUntil( CHAR_RBRACE, TRUE )
 		else
 			lexSkipToken( )
 		end if
 
-		ctx.dim_ = old_dim
-		ctx.dimcnt -= 1
+		ctx.dimension -= 1
 	end if
 
 	function = TRUE
-
 end function
 
-'':::::
-private function hUDTInit _
-	( _
-		byref ctx as FB_INITCTX _
-	) as integer
-
+private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 	static as integer rec_cnt
 
 	dim as integer elm_cnt = any
-	dim as integer lgt = any, baseofs = any, pad_lgt = any, dtype = any
-	dim as FBSYMBOL ptr fld = any, first = any, subtype = any
+	dim as longint lgt = any, baseofs = any, pad_lgt = any
+	dim as FBSYMBOL ptr fld = any, first = any
 	dim as FBSYMBOL ptr oldsubtype = any
 	dim as integer olddtype = any
     dim as FB_INITCTX old_ctx = any
@@ -370,12 +336,6 @@ private function hUDTInit _
     function = FALSE
 
     rec_cnt += 1
-
-	dtype = symbGetType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
-	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
 
     '' ctor?
     if( (ctx.options and FB_INIOPT_ISOBJ) <> 0 ) then
@@ -385,8 +345,8 @@ private function hUDTInit _
 		'' work for UDTs with constructors here
 		oldsubtype = parser.ctxsym
 		olddtype   = parser.ctx_dtype
-		parser.ctx_dtype = dtype
-		parser.ctxsym    = subtype
+		parser.ctx_dtype = ctx.dtype
+		parser.ctxsym    = ctx.subtype
 
 	    '' Expression
 	    expr = cExpression( )
@@ -409,8 +369,8 @@ private function hUDTInit _
 		'' couldn't be passed BYREF anyways.
 		if( symbGetClass( ctx.sym ) = FB_SYMBCLASS_PARAM ) then
 			if( symbGetParamMode( ctx.sym ) = FB_PARAMMODE_BYREF ) then
-				if( (astGetDataType( expr ) = dtype) and _
-				    (astGetSubtype( expr ) = subtype) ) then
+				if( (astGetDataType( expr ) = typeGetDtAndPtrOnly( ctx.dtype )) and _
+				    (astGetSubtype( expr ) = ctx.subtype) ) then
 					rec_cnt -= 1
 					return hDoAssign( ctx, expr )
 				end if
@@ -424,15 +384,15 @@ private function hUDTInit _
 			exit function
 		end if
 
-    	if( is_ctorcall ) then
-    		rec_cnt -= 1
-    		return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
-    	else
-    		'' try to assign it (do a shallow copy)
-    		rec_cnt -= 1
-        	return hDoAssign( ctx, expr )
-        end if
-    end if
+		if( is_ctorcall ) then
+			rec_cnt -= 1
+			return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
+		else
+			'' try to assign it (do a shallow copy)
+			rec_cnt -= 1
+			return hDoAssign( ctx, expr )
+		end if
+	end if
 
 	dim as integer parenth = TRUE, comma = FALSE
 
@@ -448,13 +408,10 @@ private function hUDTInit _
 		parenth = FALSE
 	else
 		astTypeIniScopeBegin( ctx.tree, ctx.sym )
-	end if
-
-	if( parenth ) then
 		lexSkipToken( )
 	end if
 
-	first = symbUdtGetFirstField( subtype )
+	first = symbUdtGetFirstField( ctx.subtype )
 	fld = first
 
 	lgt = 0
@@ -463,9 +420,7 @@ private function hUDTInit _
 	'' save parent
 	old_ctx = ctx
 
-	ctx.options and= not FB_INIOPT_DODEREF
-	ctx.dim_ = NULL
-	ctx.dimcnt = 0
+	ctx.dimension = -1
 
 	'' for each initializable UDT field...
 	'' (for unions, only the first field can be initialized)
@@ -492,6 +447,7 @@ private function hUDTInit _
 			errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 		end if
 		ctx.sym = fld
+		hUpdateContextDtype( ctx )
 
 		'' has ctor?
 		ctx.options and= not FB_INIOPT_ISOBJ
@@ -528,12 +484,18 @@ private function hUDTInit _
 					hSkipUntil( CHAR_RPRNT, TRUE )
 				end if
 				lexSkipToken( )
+
+				'' Undo the astTypeIniScopeBegin() done above.
+				'' We're assigning to the UDT, not to a field,
+				'' so there should be no typeini scope.
+				assert( ctx.tree->r->class = AST_NODECLASS_TYPEINI_SCOPEINI )
+				astTypeIniRemoveLastNode( ctx.tree )
 			end if
 
 			rec_cnt -= 1
 
 			if( is_ctorcall ) then
-				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr ) <> NULL
+				return astTypeIniAddCtorCall( ctx.tree, ctx.sym, expr, ctx.dtype, ctx.subtype ) <> NULL
 			else
 				'' try to assign it (do a shallow copy)
 				return hDoAssign( ctx, expr )
@@ -580,7 +542,7 @@ private function hUDTInit _
 
 	'' Padding at the end of the UDT -- this zeroes tail padding bytes,
 	'' and also any uninited fields and/or uninited parts of unions.
-	dim as integer sym_len = symbCalcLen( dtype, subtype )
+	dim as longint sym_len = symbCalcLen( ctx.dtype, ctx.subtype )
 	pad_lgt = sym_len - lgt
 	if( pad_lgt > 0 ) then
 		astTypeIniAddPad( ctx.tree, pad_lgt )
@@ -592,56 +554,42 @@ private function hUDTInit _
 	function = TRUE
 end function
 
-'':::::
 function cInitializer _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval options as FB_INIOPT _
+		byval options as FB_INIOPT, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as integer is_local = any, dtype = any, ok = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as integer is_local = any, ok = any
     dim as FB_INITCTX ctx = any
 
 	function = NULL
 
+	'' cannot initialize dynamic vars/fields
+	if( symbGetIsDynamic( sym ) or symbIsCommon( sym ) ) then
+		errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
+		exit function
+	end if
+
 	if( symbIsVar( sym ) ) then
-		'' cannot initialize dynamic vars
-		if( symbGetIsDynamic( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
-		'' common?? impossible but..
-		if( symbIsCommon( sym ) ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
-			exit function
-		end if
-
 		is_local = symbIsLocal( sym )
-
 	'' param, struct/class field or anon-udt
 	else
 		is_local = FALSE
 	end if
 
-	dtype = symbGetType( sym )
-	subtype = symbGetSubtype( sym )
-	if( (options and FB_INIOPT_DODEREF) <> 0 ) then
-		dtype = typeDeref( dtype )
-	end if
-
-	''
 	ctx.options = options
 	ctx.sym = sym
-	ctx.dim_ = NULL
-	ctx.dimcnt = 0
+	ctx.dimension = -1
 	ctx.init_expr = NULL
+	hUpdateContextDtype( ctx, dtype, subtype )
 
-	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )
+	ctx.tree = astTypeIniBegin( ctx.dtype, ctx.subtype, is_local, symbGetOfs( sym ) )
 
 	'' has ctor?
-	if( typeHasCtor( dtype, subtype ) ) then
+	if( typeHasCtor( ctx.dtype, ctx.subtype ) ) then
 		ctx.options or= FB_INIOPT_ISOBJ
 	end if
 
@@ -650,7 +598,7 @@ function cInitializer _
 		ok = hArrayInit( ctx )
 	else
 		'' Everything else (e.g. params)
-		if( dtype = FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( ctx.dtype ) = FB_DATATYPE_STRUCT ) then
 			ok = hUDTInit( ctx )
 		else
 			ok = hElmInit( ctx )
@@ -658,10 +606,6 @@ function cInitializer _
 	end if
 
 	astTypeIniEnd( ctx.tree, (options and FB_INIOPT_ISINI) <> 0 )
-
-	if( symbIsVar( ctx.sym ) ) then
-		symbSetIsInitialized( ctx.sym )
-	end if
 
 	function = iif( ok, ctx.tree, NULL )
 end function

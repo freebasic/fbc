@@ -15,21 +15,21 @@ function astNewMEM _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
 
-    var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
+	dim as uinteger blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
 
-	dim as integer lgt = bytes
-    if( op = AST_OP_MEMCLEAR ) then
-    	if( astIsCONST( r ) ) then
-    		lgt = r->con.val.int
-    	else
-    		lgt = blkmaxlen + 1
-    	end if
-    end if
+	dim as ulongint lgt = bytes
+	if( op = AST_OP_MEMCLEAR ) then
+		if( astIsCONST( r ) ) then
+			lgt = astConstGetInt( r )
+		else
+			lgt = blkmaxlen + 1
+		end if
+	end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
 	'' the adress-of and let emit() do the rest
@@ -50,7 +50,6 @@ function astNewMEM _
 	n->mem.bytes = bytes
 
 	function = n
-
 end function
 
 private function hCallCtorList _
@@ -69,7 +68,7 @@ private function hCallCtorList _
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' iter = @vector[0]
-	tree = astBuildVarAssign( iter, astNewVAR( tmp ) )
+	tree = astBuildVarAssign( iter, astNewVAR( tmp ), AST_OPOPT_ISINI )
 
 	'' for cnt = 0 to elements-1
 	'' Note: Using a non-flushing LABEL here because the LABEL node will
@@ -83,7 +82,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, elementsexpr )
+	tree = astBuildForEnd( tree, cnt, label, elementsexpr )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
@@ -166,7 +165,13 @@ function astBuildNewOp _
 	'' new[] stores the element count, if there is a destructor,
 	'' so delete[] knows how many objects to destroy
 	if( op = AST_OP_NEW_VEC ) then
-		save_elmts = typeHasDtor( dtype, subtype )
+		'' Not placement new[] though, because
+		'' 1) we can't assume the given buffer to have room for the cookie at buffer[-1],
+		'' 2) and the cookie is only needed for the built-in delete[] which can only be
+		''    used with new[], but not placement new[]
+		if( newexpr = NULL ) then
+			save_elmts = typeNeedsDtorCall( dtype, subtype )
+		end if
 	end if
 
 	if( newexpr = NULL ) then
@@ -180,7 +185,7 @@ function astBuildNewOp _
 	'' If the elementsexpr will be cloned, take care of side-effects
 	if( elementstreecount > 1 ) then
 		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, elementsexpr ) ) then
+		if( astHasSideFx( elementsexpr ) ) then
 			tree = astRemSideFx( elementsexpr )
 		end if
 	end if
@@ -194,7 +199,7 @@ function astBuildNewOp _
 		if( save_elmts ) then
 			'' length + sizeof( integer )   (to store the vector size)
 			lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
-					astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+					astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ), FB_DATATYPE_UINT ) )
 		end if
 
 		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
@@ -204,7 +209,7 @@ function astBuildNewOp _
 	end if
 
 	'' tempptr = new( len )
-	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr ) )
+	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ) )
 
 	'' save elements count?
 	if( save_elmts ) then
@@ -212,21 +217,21 @@ function astBuildNewOp _
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
 				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
-				hElements( elementsexpr, elementstreecount ) ) )
+				hElements( elementsexpr, elementstreecount ), _
+				AST_OPOPT_ISINI ) )
 
 		'' tempptr += len( integer )
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
-				astNewCONSTi( FB_INTEGERSIZE ), _
+				astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ), _
 				NULL ) )
 	end if
 
 	select case as const( init )
 	case INIT_TYPEINI
 		assert( astIsTYPEINI( initexpr ) )
-		initexpr = astTypeIniFlush( initexpr, tmp, _
-				AST_INIOPT_ISINI or AST_INIOPT_DODEREF )
+		initexpr = astTypeIniFlush( astNewDEREF( astNewVAR( tmp ) ), initexpr, FALSE, AST_OPOPT_ISINI )
 
 	case INIT_CTORCALL
 		initexpr = astPatchCtorCall( astCALLCTORToCALL( initexpr ), _
@@ -255,36 +260,36 @@ function astBuildNewOp _
 	function = astNewLINK( tree, initexpr )
 end function
 
-private function hCallDtorList _
-	( _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
-	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
+	iter = symbAddTempVar( ptrexpr->dtype, ptrexpr->subtype )
 	elmts = symbAddTempVar( FB_DATATYPE_INTEGER )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
 	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
 	'' (using AST_CONVOPT_DONTCHKPTR to support derived UDT pointers)
-	tree = astBuildVarAssign( elmts, astNewDEREF( _
-		astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
-			astNewBOP( AST_OP_ADD, _
-				astCloneTree( ptrexpr ), _
-				astNewCONSTi( -FB_INTEGERSIZE ) ), _
-			AST_CONVOPT_DONTCHKPTR ) ) )
+	tree = astBuildVarAssign( _
+		elmts, _
+		astNewDEREF( _
+			astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
+				astNewBOP( AST_OP_ADD, _
+					astCloneTree( ptrexpr ), _
+					astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_DONTCHKPTR ) ), _
+		AST_OPOPT_ISINI )
 
 	'' iter = @vector[elmts]
-	tree = astNewLINK( tree, astBuildVarAssign( iter, _
-		astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
-				AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ) ) )
+	tree = astNewLINK( tree, _
+		astBuildVarAssign( _
+			iter, _
+			astNewBOP( AST_OP_ADD, ptrexpr, astNewVAR( elmts ), NULL, _
+					AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ), _
+			AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to elmts-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -293,10 +298,10 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
 
 	'' dtor( *iter )
-	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
 
 	function = tree
 end function
@@ -304,18 +309,21 @@ end function
 function astBuildDeleteOp _
 	( _
 		byval op as AST_OP, _
-		byval ptrexpr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval ptrexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = any
-	dim as FBSYMBOL ptr label = any
+	dim as FBSYMBOL ptr label = any, subtype = any
+	dim as integer dtype = any
 
 	tree = NULL
+	dtype = astGetFullType( ptrexpr )
+	subtype = astGetSubType( ptrexpr )
+	assert( typeIsPtr( dtype ) )
+	dtype = typeDeref( dtype )
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, ptrexpr ) ) then
+	if( astHasSideFx( ptrexpr ) ) then
 		tree = astRemSideFx( ptrexpr )
 	end if
 
@@ -328,13 +336,13 @@ function astBuildDeleteOp _
 			label, AST_OPOPT_NONE ) )
 
 	'' call dtors?
-	if( typeHasDtor( dtype, subtype ) ) then
+	if( typeNeedsDtorCall( dtype, subtype ) ) then
 		if( op = AST_OP_DEL_VEC ) then
-			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ), dtype, subtype ) )
+			tree = astNewLINK( tree, hCallDtorList( astCloneTree( ptrexpr ) ) )
 			'' ptr -= len( integer )
-			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( FB_INTEGERSIZE ) )
+			ptrexpr = astNewBOP( AST_OP_SUB, ptrexpr, astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ) )
 		else
-			tree = astNewLINK( tree, astBuildDtorCall( subtype, astNewDEREF( astCloneTree( ptrexpr ) ) ) )
+			tree = astNewLINK( tree, astBuildVarDtorCall( astNewDEREF( astCloneTree( ptrexpr ) ) ) )
 		end if
 	end if
 

@@ -25,8 +25,6 @@ typedef struct BMP_HEADER
 	unsigned int   biClrImportant;
 } FBPACKED BMP_HEADER;
 
-
-/*:::::*/
 static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 {
 	BMP_HEADER header;
@@ -64,7 +62,7 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 		/* Something wrong with the image header */
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	}
-	
+
 	switch (inbpp) {
 	case 1: /* 8-bit or 24-bit output (default to 8) */
 		if (outbpp > 8) {
@@ -213,16 +211,17 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
-/*:::::*/
 FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void *pal, int bitsperpixel)
 {
 	FILE *f;
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int i, result = fb_ErrorSetNum( FB_RTERROR_OK );
 	unsigned int color, *palette = (unsigned int *)pal;
 	char buffer[MAX_PATH], *p;
 
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
 	fb_hConvertPath(buffer);
@@ -230,6 +229,7 @@ FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void 
 	f = fopen(buffer, "wb");
 	if (!f) {
 		fb_hStrDelTemp(filename);
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
@@ -237,12 +237,13 @@ FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void 
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
 	p = strrchr(filename->data, '.');
-	if ((p) && (!strcasecmp(p + 1, "bmp")))
+	if (p && (!strcasecmp(p + 1, "bmp"))) {
 		result = save_bmp(context, f, src, pal, bitsperpixel);
-	else {
+	} else {
 		if ((size == 0) && src) {
 			fclose(f);
 			fb_hStrDelTemp(filename);
+			FB_GRAPHICS_UNLOCK( );
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
 
@@ -254,7 +255,7 @@ FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void 
 
 		if (!src) {
 			DRIVER_LOCK();
-			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			size = MIN(size, (unsigned int)(__fb_gfx->pitch * __fb_gfx->h));
 			if (!fwrite(context->line[0], size, 1, f))
 				result = FB_RTERROR_FILEIO;
 			DRIVER_UNLOCK();
@@ -277,12 +278,10 @@ FBCALL int fb_GfxBsaveEx(FBSTRING *filename, void *src, unsigned int size, void 
 	fclose(f);
 
 	fb_hStrDelTemp(filename);
-
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( result );
 }
 
-
-/*:::::*/
 FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *pal)
 {
 	return fb_GfxBsaveEx(filename, src, size, pal, 0);

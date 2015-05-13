@@ -164,11 +164,11 @@ static int comm_init_count = 0;
 
 #ifndef FB_MANAGED_IRQ
 static irq_props_t irq_props[IRQ_COUNT] = {
-	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3 },
-	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4 },
-	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5 },
-	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6 },
-	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7 }
+	{ 0, 0, 0, 3, 0xb, comm_handler_irq_3, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 4, 0xc, comm_handler_irq_4, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 5, 0xd, comm_handler_irq_5, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 6, 0xe, comm_handler_irq_6, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } },
+	{ 0, 0, 0, 7, 0xf, comm_handler_irq_7, { 0 }, { 0 }, { 0 }, { 0 }, { { 0 } } }
 };
 #else
 static irq_props_t irq_props[IRQ_COUNT] = {
@@ -181,10 +181,10 @@ static irq_props_t irq_props[IRQ_COUNT] = {
 #endif
 
 static comm_props_t comm_props[MAX_COMM] = {
-	{ 0x3f8, 4, 4, 0, 0, 0, 0, 0 },
-	{ 0x2f8, 3, 3, 0, 0, 0, 0, 0 },
-	{ 0x3e8, 4, 4, 0, 0, 0, 0, 0 },
-	{ 0x2e8, 3, 3, 0, 0, 0, 0, 0 }
+	{ 0x3f8, 4, 4, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x2f8, 3, 3, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x3e8, 4, 4, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 },
+	{ 0x2e8, 3, 3, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, 0, 0 }
 };
 
 static inline unsigned int next_pow2( unsigned int n )
@@ -905,12 +905,12 @@ int fb_SerialOpen
 
 	if( options->TransmitBuffer == 0 )
 		options->TransmitBuffer = DEFAULT_BUFFERSIZE;
-	else if( options->TransmitBuffer < 0 || options->TransmitBuffer > MAX_BUFFERSIZE )
+	else if( options->TransmitBuffer > MAX_BUFFERSIZE )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( options->ReceiveBuffer == 0 )
 		options->ReceiveBuffer = DEFAULT_BUFFERSIZE;
-	else if( options->ReceiveBuffer < 0 || options->ReceiveBuffer > MAX_BUFFERSIZE )
+	else if( options->ReceiveBuffer > MAX_BUFFERSIZE )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( options->KeepDTREnabled )
@@ -975,7 +975,7 @@ int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( pLength )
-		*pLength = (long) bytes;
+		*pLength = bytes;
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -990,7 +990,8 @@ int fb_SerialWrite
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	unsigned char * p = (unsigned char *)data;
-	int ch, i;
+	int ch;
+	size_t i;
 
 	/* TODO: Support for ASC/LF options */
 
@@ -1012,7 +1013,8 @@ int fb_SerialRead
 	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
-	int n = *pLength, ch, i, count = 0;
+	size_t n = *pLength, i, count = 0;
+	int ch;
 	unsigned char * p = (unsigned char *)data;
 	int res = FB_RTERROR_OK;
 
@@ -1028,7 +1030,7 @@ int fb_SerialRead
 		count++;
 	}
 
-	*pLength = (size_t) count;
+	*pLength = count;
 	
 	return fb_ErrorSetNum( res );
 }

@@ -159,7 +159,7 @@ int fb_PrinterWriteWstr( DEV_LPT_INFO *devInfo, const FB_WCHAR *buffer, size_t c
 	FILE *fp = (FILE *) devInfo->driver_opaque;
 
 	/* !!!FIXME!!! is this ok? */
-	int bytes;
+	ssize_t bytes;
 	char *temp = alloca( chars * 4 + 1 );
 
 	fb_WCharToUTF( FB_FILE_ENCOD_UTF8, buffer, chars, temp, &bytes );

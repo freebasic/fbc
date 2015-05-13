@@ -54,10 +54,7 @@ declare sub ppDefineEnd _
 	( _
 	)
 
-declare function ppDefine _
-	( _
-		byval ismultiline as integer _
-	) as integer
+declare sub ppDefine( byval ismultiline as integer )
 
 declare function ppDefineLoad _
 	( _
@@ -67,7 +64,7 @@ declare function ppDefineLoad _
 declare sub ppPragmaInit( )
 declare sub ppPragmaEnd( )
 declare sub ppPragma( )
-declare function ppTypeOf( ) as zstring ptr
+declare function ppTypeOf( ) as string
 
 declare sub ppCondInit _
 	( _

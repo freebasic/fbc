@@ -2,10 +2,8 @@
 Returns a reference to a member from a reference to an object
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **.** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //U//
+	[[KeyPgDeclare Declare]] [[KeyPgOperator Operator]] **.** ( [[KeyPgByref Byref]] //lhs// [[KeyPgAs As]] //T// ) [[KeyPgByref Byref]] [[KeyPgAs As]] //U//
 ##
-~&//Note that **##Operator .## (Member access)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
-
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **.** //rhs//
 ##
@@ -27,6 +25,8 @@ Returns a reference to a member from a reference to an object
 
 	**##Operator .## (Member access)** can also be used to access members of an implicit object inside a ##[[KeyPgWith With..End With]]## block.
 
+	This operator cannot be overloaded.
+
 {{fbdoc item="ex"}}
 
 {{fbdoc item="filename" value="examples/manual/udt/access.bas"}}%%(freebasic)
@@ -46,7 +46,7 @@ end with
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- None
 
 {{fbdoc item="diff"}}
 	- None

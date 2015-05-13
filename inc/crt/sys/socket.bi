@@ -30,25 +30,25 @@ enum
 end enum
 
 extern "c"
-declare function socket_ alias "socket" (byval __domain as integer, byval __type as integer, byval __protocol as integer) as integer
+declare function socket_ alias "socket" (byval __domain as long, byval __type as long, byval __protocol as long) as long
 #define opensocket socket_ 
-declare function socketpair (byval __domain as integer, byval __type as integer, byval __protocol as integer, byval __fds as integer ptr) as integer
-declare function bind (byval __fd as integer, byval __addr as sockaddr ptr, byval __len as socklen_t) as integer
-declare function getsockname (byval __fd as integer, byval __addr as sockaddr ptr, byval __len as socklen_t ptr) as integer
-declare function connect (byval __fd as integer, byval __addr as sockaddr ptr, byval __len as socklen_t) as integer
-declare function getpeername (byval __fd as integer, byval __addr as sockaddr ptr, byval __len as socklen_t ptr) as integer
-declare function send (byval __fd as integer, byval __buf as zstring ptr, byval __n as size_t, byval __flags as integer) as ssize_t
-declare function recv (byval __fd as integer, byval __buf as zstring ptr, byval __n as size_t, byval __flags as integer) as ssize_t
-declare function sendto (byval __fd as integer, byval __buf as zstring ptr, byval __n as size_t, byval __flags as integer, byval __addr as sockaddr ptr, byval __addr_len as socklen_t) as ssize_t
-declare function recvfrom (byval __fd as integer, byval __buf as zstring ptr, byval __n as size_t, byval __flags as integer, byval __addr as sockaddr ptr, byval __addr_len as socklen_t ptr) as ssize_t
-declare function sendmsg (byval __fd as integer, byval __message as msghdr ptr, byval __flags as integer) as ssize_t
-declare function recvmsg (byval __fd as integer, byval __message as msghdr ptr, byval __flags as integer) as ssize_t
-declare function getsockopt (byval __fd as integer, byval __level as integer, byval __optname as integer, byval __optval as any ptr, byval __optlen as socklen_t ptr) as integer
-declare function setsockopt (byval __fd as integer, byval __level as integer, byval __optname as integer, byval __optval as any ptr, byval __optlen as socklen_t) as integer
-declare function listen (byval __fd as integer, byval __n as integer) as integer
-declare function accept (byval __fd as integer, byval __addr as sockaddr ptr, byval __addr_len as socklen_t ptr) as integer
-declare function shutdown (byval __fd as integer, byval __how as integer) as integer
-declare function isfdtype (byval __fd as integer, byval __fdtype as integer) as integer
+declare function socketpair (byval __domain as long, byval __type as long, byval __protocol as long, byval __fds as long ptr) as long
+declare function bind (byval __fd as long, byval __addr as sockaddr ptr, byval __len as socklen_t) as long
+declare function getsockname (byval __fd as long, byval __addr as sockaddr ptr, byval __len as socklen_t ptr) as long
+declare function connect (byval __fd as long, byval __addr as sockaddr ptr, byval __len as socklen_t) as long
+declare function getpeername (byval __fd as long, byval __addr as sockaddr ptr, byval __len as socklen_t ptr) as long
+declare function send (byval __fd as long, byval __buf as zstring ptr, byval __n as size_t, byval __flags as long) as ssize_t
+declare function recv (byval __fd as long, byval __buf as zstring ptr, byval __n as size_t, byval __flags as long) as ssize_t
+declare function sendto (byval __fd as long, byval __buf as zstring ptr, byval __n as size_t, byval __flags as long, byval __addr as sockaddr ptr, byval __addr_len as socklen_t) as ssize_t
+declare function recvfrom (byval __fd as long, byval __buf as zstring ptr, byval __n as size_t, byval __flags as long, byval __addr as sockaddr ptr, byval __addr_len as socklen_t ptr) as ssize_t
+declare function sendmsg (byval __fd as long, byval __message as msghdr ptr, byval __flags as long) as ssize_t
+declare function recvmsg (byval __fd as long, byval __message as msghdr ptr, byval __flags as long) as ssize_t
+declare function getsockopt (byval __fd as long, byval __level as long, byval __optname as long, byval __optval as any ptr, byval __optlen as socklen_t ptr) as long
+declare function setsockopt (byval __fd as long, byval __level as long, byval __optname as long, byval __optval as any ptr, byval __optlen as socklen_t) as long
+declare function listen (byval __fd as long, byval __n as long) as long
+declare function accept (byval __fd as long, byval __addr as sockaddr ptr, byval __addr_len as socklen_t ptr) as long
+declare function shutdown (byval __fd as long, byval __how as long) as long
+declare function isfdtype (byval __fd as long, byval __fdtype as long) as long
 #define closesocket close_
 end extern
 

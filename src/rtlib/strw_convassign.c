@@ -2,17 +2,16 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrAssignFromA 
-	( 
-		FB_WCHAR *dst, 
-		int dst_chars, 
-		void *src, 
-		int src_size 
+FBCALL FB_WCHAR *fb_WstrAssignFromA
+	(
+		FB_WCHAR *dst,
+		ssize_t dst_chars,
+		void *src,
+		ssize_t src_size
 	)
 {
 	char *src_ptr;
-	int src_chars;
+	ssize_t src_chars;
 
 	if( dst != NULL )
 	{
@@ -39,17 +38,16 @@ FBCALL FB_WCHAR *fb_WstrAssignFromA
 	return dst;
 }
 
-/*:::::*/
 FBCALL void *fb_WstrAssignToAEx
-	( 
-		void *dst, 
-		int dst_chars, 
-		FB_WCHAR *src, 
+	(
+		void *dst,
+		ssize_t dst_chars,
+		FB_WCHAR *src,
 		int fill_rem,
 		int is_init
 	)
 {
-	int src_chars;
+	ssize_t src_chars;
 
 	if( dst == NULL )
 		return dst;
@@ -123,24 +121,22 @@ FBCALL void *fb_WstrAssignToAEx
 	return dst;
 }
 
-/*:::::*/
-FBCALL void *fb_WstrAssignToA 
-	( 
-		void *dst, 
-		int dst_chars, 
-		FB_WCHAR *src, 
+FBCALL void *fb_WstrAssignToA
+	(
+		void *dst,
+		ssize_t dst_chars,
+		FB_WCHAR *src,
 		int fill_rem
 	)
 {
 	return fb_WstrAssignToAEx( dst, dst_chars, src, fill_rem, FB_FALSE );
 }
 
-/*:::::*/
-FBCALL void *fb_WstrAssignToA_Init 
-	( 
-		void *dst, 
-		int dst_chars, 
-		FB_WCHAR *src, 
+FBCALL void *fb_WstrAssignToA_Init
+	(
+		void *dst,
+		ssize_t dst_chars,
+		FB_WCHAR *src,
 		int fill_rem
 	)
 {

@@ -1,38 +1,48 @@
 #!/usr/bin/make -f
 #
 # This is the FB makefile that builds the compiler (fbc) and the runtime
-# libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx).
-# There are several dependencies, especially for the rtlib and gfxlib2 code,
-# which are listed in the "building FB" guide at:
-#    http://www.freebasic.net/wiki/wikka.php?wakka=DevBuild
+# libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx[mt]). It will
+# also take care of moving the resulting binaries into the proper directory
+# layout, allowing the new FB setup to be tested right away, without being
+# installed elsewhere.
 #
-# Running "make" will try to build the following:
+# Building the compiler requires a working FB installation, because it's written
+# in FB itself. rtlib/gfxlib2 are written in C and some ASM and have several
+# dependencies on external libraries depending on the target system.
+# (for example: ncurses/libtinfo, gpm, Linux headers, X11, OpenGL, DirectX)
+# More info: http://www.freebasic.net/wiki/wikka.php?wakka=DevBuild
 #
-#   1) the compiler - this requires a working FB installation, because it's
-#      written in FB itself.
-#          src/compiler/*.bas,
-#          compiled into fbc-new[.exe]
+# What will be built:
 #
-#   2) the rtlib
-#          all *.c and *.s files in src/rtlib/, src/rtlib/$(TARGET_OS),
-#          and src/rtlib/$(TARGET_ARCH), compiled into libfb.a
-#          src/rtlib/static/fbrt0.c compiled into fbrt0.o
+#   compiler:
+#     src/compiler/*.bas -> fbc[.exe]
 #
-#          For DOS, the modified version of libc.a is created too,
-#          see contrib/djgpp/ for more information.
+#   rtlib:
+#     src/rtlib/static/fbrt0.c
+#     -> fbrt0.o
+#     -> fbrt0pic.o, -fPIC version (non-x86 Linux etc.)
 #
-#   3) the thread-safe rtlib (except for DOS)
-#          like the normal rtlib, but with -DENABLE_MT, compiled into libfbmt.a
+#     all *.c and *.s files in
+#     src/rtlib/
+#     src/rtlib/$(TARGET_OS)
+#     src/rtlib/$(TARGET_ARCH)
+#     -> libfb.a
+#     -> libfbmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
+#     -> libfbpic.a, -fPIC version (non-x86 Linux etc.)
+#     -> libfbmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
 #
-#   4) the gfxlib2
-#          like the normal rtlib, just with the sources from src/gfxlib2/,
-#          compiled into libfbgfx.a
+#     contrib/djgpp/libc/...
+#     -> libc.a, fixed libc for DOS/DJGPP (see contrib/djgpp/ for more info)
 #
-# You can also build FB by doing all these steps manually.
-#
-# The makefile additionally takes care of moving the resulting binaries into
-# the proper directory layout, allowing the new FB setup to be tested right
-# away, without being installed elsewhere.
+#   gfxlib2:
+#     all *.c and *.s files in
+#     src/gfxlib2/
+#     src/gfxlib2/$(TARGET_OS)
+#     src/gfxlib2/$(TARGET_ARCH)
+#     -> libfbgfx.a
+#     -> libfbgfxmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
+#     -> libfbgfxpic.a, -fPIC version (non-x86 Linux etc.)
+#     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
 #
 # commands:
 #   <none>|all                 build everything
@@ -42,18 +52,25 @@
 #   uninstall[-component]      remove from $(prefix)
 #   install-includes           (additional commands for just the FB includes,
 #   uninstall-includes          which don't need to be built)
+#   gitdist    Create source code packages using "git archive"
+#   bindist    Create binary FB release packages from current built directory content
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
 #   CFLAGS           same for the rtlib and gfxlib2 build
 #   prefix           install/uninstall directory, default: /usr/local
 #   TARGET           GNU triplet for cross-compiling
+#   MULTILIB         "32", "64" or empty for cross-compiling using a gcc multilib toolchain
 #   FBC, CC, AR      fbc, gcc, ar programs (TARGET may be prefixed to CC/AR)
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
+#   FBPACKAGE     bindist: The package/archive file name without path or extension
+#   FBMANIFEST    bindist: The manifest file name without path or extension
+#   FBVERSION     bindist/gitdist: FB version number
+#   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
@@ -65,6 +82,7 @@
 #   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
 #   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
+#   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file.
@@ -93,11 +111,14 @@
 
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
+# Avoid gcc exception handling bloat
+CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
-AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
+
+FBVERSION := 1.00.0
 
 # Determine the makefile's directory, this may be a relative path when
 # building in a separate build directory via e.g. "make -f ../fbc/makefile".
@@ -112,81 +133,59 @@ srcdir := $(rootdir)src
 
 -include config.mk
 
+#
+# We need to know target OS/architecture names to select the proper
+# rtlib/gfxlib2 source directories.
+#
+# If TARGET is given, we try to parse it to determine TARGET_OS/TARGET_ARCH.
+# Otherwise we rely on "uname" and "uname -m".
+#
 ifdef TARGET
-  # TARGET given, so parse it
-
-  # os = iif(has >= 3 words, words 3..EOL, last word)
-  # 'i686 pc linux gnu' -> 'linux gnu'
-  # 'mingw32'           -> 'mingw32'
-  extract-os = $(if $(word 3,$(1)),$(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
-
-  # arch = iif(has >= 2 words, first word, unknown)
-  # 'i686 pc linux gnu' -> 'i686'
-  # 'mingw32'           -> 'unknown'
-  extract-arch = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
-
-  # In autoconf we used a shell case statement and checked for *-*-mingw*, but
-  # here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
-  # word/text processing functions to take it apart.
-  extract-triplet-os = $(call extract-os,$(subst -, ,$(1)))
-  extract-triplet-arch = $(call extract-arch,$(subst -, ,$(1)))
-
+  # Parse TARGET
+  triplet := $(subst -, ,$(TARGET))
   TARGET_PREFIX := $(TARGET)-
 
   ifndef TARGET_OS
-    triplet_os := $(call extract-triplet-os,$(TARGET))
-    ifneq ($(filter cygwin%,$(triplet_os)),)
+    ifneq ($(filter cygwin%,$(triplet)),)
       TARGET_OS := cygwin
     endif
-    ifneq ($(filter darwin%,$(triplet_os)),)
+    ifneq ($(filter darwin%,$(triplet)),)
       TARGET_OS := darwin
     endif
-    ifneq ($(filter djgpp%,$(triplet_os)),)
+    ifneq ($(filter djgpp%,$(triplet)),)
       TARGET_OS := dos
     endif
-    ifneq ($(filter msdos%,$(triplet_os)),)
+    ifneq ($(filter msdos%,$(triplet)),)
       TARGET_OS := dos
     endif
-    ifneq ($(filter freebsd%,$(triplet_os)),)
+    ifneq ($(filter freebsd%,$(triplet)),)
       TARGET_OS := freebsd
     endif
-    ifneq ($(filter linux%,$(triplet_os)),)
+    ifneq ($(filter linux%,$(triplet)),)
       TARGET_OS := linux
     endif
-    ifneq ($(filter mingw%,$(triplet_os)),)
+    ifneq ($(filter mingw%,$(triplet)),)
       TARGET_OS := win32
     endif
-    ifneq ($(filter netbsd%,$(triplet_os)),)
+    ifneq ($(filter netbsd%,$(triplet)),)
       TARGET_OS := netbsd
     endif
-    ifneq ($(filter openbsd%,$(triplet_os)),)
+    ifneq ($(filter openbsd%,$(triplet)),)
       TARGET_OS := openbsd
     endif
-    ifneq ($(filter solaris%,$(triplet_os)),)
+    ifneq ($(filter solaris%,$(triplet)),)
       TARGET_OS := solaris
     endif
-    ifneq ($(filter xbox%,$(triplet_os)),)
+    ifneq ($(filter xbox%,$(triplet)),)
       TARGET_OS := xbox
     endif
   endif
 
   ifndef TARGET_ARCH
-    triplet_arch := $(call extract-triplet-arch,$(TARGET))
-    ifneq ($(filter i386 i486 i586 i686,$(triplet_arch)),)
-      TARGET_ARCH := x86
-    endif
-    ifeq ($(triplet_arch),x86_64)
-      TARGET_ARCH := x86_64
-    endif
-    ifeq ($(triplet_arch),sparc)
-      TARGET_ARCH := sparc
-    endif
-    ifeq ($(triplet_arch),sparc64)
-      TARGET_ARCH := sparc64
-    endif
-    ifeq ($(triplet_arch),powerpc64)
-      TARGET_ARCH := powerpc64
-    endif
+    # arch = iif(has >= 2 words, first word, empty)
+    # 'i686 pc linux gnu' -> 'i686'
+    # 'mingw32'           -> ''
+    TARGET_ARCH := $(if $(word 2,$(triplet)),$(firstword $(triplet)))
   endif
 else
   # No TARGET given, so try to detect the native system with 'uname'
@@ -219,34 +218,12 @@ else
   endif
 
   ifndef TARGET_ARCH
-    uname_m := $(shell uname -m)
-    ifneq ($(filter i386 i486 i586 i686,$(uname_m)),)
-      TARGET_ARCH = x86
+    # For DJGPP, always use x86 (DJGPP's uname -m returns just "pc")
+    ifeq ($(TARGET_OS),dos)
+      TARGET_ARCH := x86
+    else
+      TARGET_ARCH = $(shell uname -m)
     endif
-    ifeq ($(uname_m),x86_64)
-      TARGET_ARCH = x86_64
-    endif
-    ifeq ($(uname_m),sparc)
-      TARGET_ARCH = sparc
-    endif
-    ifeq ($(uname_m),sparc64)
-      TARGET_ARCH = sparc64
-    endif
-    ifeq ($(uname_m),powerpc64)
-      TARGET_ARCH = powerpc64
-    endif
-  endif
-endif
-
-# For some targets we can choose good default archs
-# (this also handles automatically setting TARGET_ARCH to x86 under DJGPP,
-# whose uname -m returns just "pc")
-ifndef TARGET_ARCH
-  ifeq ($(TARGET_OS),dos)
-    TARGET_ARCH := x86
-  endif
-  ifeq ($(TARGET_OS),win32)
-    TARGET_ARCH := x86
   endif
 endif
 
@@ -257,13 +234,49 @@ ifndef TARGET_ARCH
   $(error couldn't identify TARGET_ARCH automatically)
 endif
 
+# Normalize TARGET_ARCH to x86
+ifneq ($(filter 386 486 586 686 i386 i486 i586 i686,$(TARGET_ARCH)),)
+  TARGET_ARCH := x86
+endif
+
+# Normalize TARGET_ARCH to arm
+ifneq ($(filter arm%,$(TARGET_ARCH)),)
+  TARGET_ARCH := arm
+endif
+
+# Normalize TARGET_ARCH to x86_64 (e.g., FreeBSD's uname -m returns "amd64"
+# instead of "x86_64" like Linux)
+ifneq ($(filter amd64 x86-64,$(TARGET_ARCH)),)
+  TARGET_ARCH := x86_64
+endif
+
+# Switch TARGET_ARCH depending on MULTILIB
+ifeq ($(MULTILIB),32)
+  ifeq ($(TARGET_ARCH),x86_64)
+    TARGET_ARCH := x86
+  endif
+endif
+ifeq ($(MULTILIB),64)
+  ifeq ($(TARGET_ARCH),x86)
+    TARGET_ARCH := x86_64
+  endif
+endif
+
 ifeq ($(TARGET_OS),dos)
-  FB_NAME := freebas
+  FBNAME := freebas$(ENABLE_SUFFIX)
   FB_LDSCRIPT := i386go32.x
   DISABLE_MT := YesPlease
 else
-  FB_NAME := freebasic
+  FBNAME := freebasic$(ENABLE_SUFFIX)
   FB_LDSCRIPT := fbextra.x
+endif
+
+# ENABLE_PIC for non-x86 Linux etc. (for every system where we need separate
+# -fPIC versions of FB libs besides the normal ones)
+ifneq ($(filter freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ifneq ($(TARGET_ARCH),x86)
+    ENABLE_PIC := YesPlease
+  endif
 endif
 
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
@@ -275,32 +288,78 @@ else
   INSTALL_FILE := install -m 644
 endif
 
-newcompiler := src/compiler/obj
+#
+# Determine FB target name:
+# dos, win32, win64, xbox, linux-x86, linux-x86_64, ...
+#
+
+# Some use a simple free-form name
+ifeq ($(TARGET_OS),dos)
+  FBTARGET := dos
+endif
+ifeq ($(TARGET_OS),xbox)
+  FBTARGET := xbox
+endif
+ifeq ($(TARGET_OS),win32)
+  ifeq ($(TARGET_ARCH),x86_64)
+    FBTARGET := win64
+  else
+    FBTARGET := win32
+  endif
+endif
+
+# The rest uses the <os>-<cpufamily> format
+ifndef FBTARGET
+  FBTARGET := $(TARGET_OS)-$(TARGET_ARCH)
+endif
+
+#
+# Determine directory layout for .o files and final binaries.
+#
+libsubdir := $(FBTARGET)
 ifdef ENABLE_STANDALONE
   FBC_EXE     := fbc$(EXEEXT)
   FBCNEW_EXE  := fbc-new$(EXEEXT)
-  newlibfb    := src/rtlib/$(TARGET_OS)-obj
-  newlibfbmt  := src/rtlib/$(TARGET_OS)-objmt
-  newlibfbgfx := src/gfxlib2/$(TARGET_OS)-obj
-  libdir      := lib/$(TARGET_OS)
+  libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
-  prefixinclude  := $(prefix)/inc
-  prefixlib      := $(prefix)/lib/$(TARGET_OS)
+  prefixincdir   := $(prefix)/inc
+  prefixlibdir   := $(prefix)/lib/$(libsubdir)
 else
+  ifdef TARGET
+    libsubdir := $(TARGET)
+  endif
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
   FBCNEW_EXE  := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
-  newlibfb    := src/rtlib/$(TARGET_PREFIX)obj
-  newlibfbmt  := src/rtlib/$(TARGET_PREFIX)objmt
-  newlibfbgfx := src/gfxlib2/$(TARGET_PREFIX)obj
-  libdir      := lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
+  libdir         := lib/$(FBNAME)/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/bin/fbc$(ENABLE_SUFFIX)$(EXEEXT)
-  prefixinclude  := $(prefix)/include/$(FB_NAME)
-  prefixlib      := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(ENABLE_SUFFIX)
+  prefixbindir   := $(prefix)/bin
+  prefixincdir   := $(prefix)/include/$(FBNAME)
+  prefixlibdir   := $(prefix)/lib/$(FBNAME)/$(libsubdir)
+endif
+fbcobjdir           := src/compiler/obj
+libfbobjdir         := src/rtlib/obj/$(libsubdir)
+libfbpicobjdir      := src/rtlib/obj/$(libsubdir)/pic
+libfbmtobjdir       := src/rtlib/obj/$(libsubdir)/mt
+libfbmtpicobjdir    := src/rtlib/obj/$(libsubdir)/mt/pic
+libfbgfxobjdir      := src/gfxlib2/obj/$(libsubdir)
+libfbgfxpicobjdir   := src/gfxlib2/obj/$(libsubdir)/pic
+libfbgfxmtobjdir    := src/gfxlib2/obj/$(libsubdir)/mt
+libfbgfxmtpicobjdir := src/gfxlib2/obj/$(libsubdir)/mt/pic
+
+# If cross-compiling, use -target
+ifdef TARGET
+  ALLFBCFLAGS += -target $(TARGET)
+  ALLFBLFLAGS += -target $(TARGET)
+endif
+ifdef MULTILIB
+  ALLFBCFLAGS += -arch $(MULTILIB)
+  ALLFBLFLAGS += -arch $(MULTILIB)
+  ALLCFLAGS   += -m$(MULTILIB)
 endif
 
-ALLFBCFLAGS := -e -m fbc -w pedantic
-ALLFBLFLAGS := -e -m fbc -w pedantic
-ALLCFLAGS := -Wall -Werror-implicit-function-declaration
+ALLFBCFLAGS += -e -m fbc -w pedantic
+ALLFBLFLAGS += -e -m fbc -w pedantic
+ALLCFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror-implicit-function-declaration
 
 ifeq ($(TARGET_OS),xbox)
   ifeq ($(OPENXDK),)
@@ -322,12 +381,6 @@ ifeq ($(TARGET_OS),xbox)
 
   # -DENABLE_MT parts of rtlib XBox code aren't finished
   DISABLE_MT := YesPlease
-endif
-
-# If cross-compiling, use -target
-ifdef TARGET
-  ALLFBCFLAGS += -target $(TARGET)
-  ALLFBLFLAGS += -target $(TARGET)
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
@@ -353,9 +406,7 @@ ALLCFLAGS += $(CFLAGS)
 # compiler headers and modules
 FBC_BI  :=        $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(sort $(wildcard $(srcdir)/compiler/*.bas))
-FBC_ASM := $(patsubst %.bas,%.asm,$(FBC_BAS))
-FBC_C   := $(patsubst %.bas,%.c,$(FBC_BAS))
-FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
+FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(fbcobjdir)/%.o,$(FBC_BAS))
 
 # rtlib/gfxlib2 headers and modules
 RTLIB_DIRS := $(srcdir)/rtlib $(srcdir)/rtlib/$(TARGET_OS) $(srcdir)/rtlib/$(TARGET_ARCH)
@@ -365,19 +416,49 @@ endif
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   RTLIB_DIRS += $(srcdir)/rtlib/unix
 endif
-
 GFXLIB2_DIRS := $(patsubst $(srcdir)/rtlib%,$(srcdir)/gfxlib2%,$(RTLIB_DIRS))
 
 LIBFB_H := $(sort $(foreach i,$(RTLIB_DIRS),$(wildcard $(i)/*.h)))
-LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(newlibfb)/%.o,$(wildcard $(i)/*.c))))
-LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(newlibfb)/%.o,$(wildcard $(i)/*.s))))
-
-LIBFBMT_C := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_C))
-LIBFBMT_S := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_S))
+LIBFB_C := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.c,$(libfbobjdir)/%.o,$(wildcard $(i)/*.c))))
+LIBFB_S := $(sort $(foreach i,$(RTLIB_DIRS),$(patsubst $(i)/%.s,$(libfbobjdir)/%.o,$(wildcard $(i)/*.s))))
+LIBFBPIC_C   := $(patsubst $(libfbobjdir)/%,$(libfbpicobjdir)/%,$(LIBFB_C))
+LIBFBMT_C    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_C))
+LIBFBMT_S    := $(patsubst $(libfbobjdir)/%,$(libfbmtobjdir)/%,$(LIBFB_S))
+LIBFBMTPIC_C := $(patsubst $(libfbobjdir)/%,$(libfbmtpicobjdir)/%,$(LIBFB_C))
 
 LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H))
-LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.c))))
-LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.s))))
+LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.c))))
+LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(libfbgfxobjdir)/%.o,$(wildcard $(i)/*.s))))
+LIBFBGFXPIC_C   := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxpicobjdir)/%,$(LIBFBGFX_C))
+LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_C))
+LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
+LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
+
+RTL_OBJDIRS := $(libfbobjdir)
+GFX_OBJDIRS := $(libfbgfxobjdir)
+RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
+GFX_LIBS := $(libdir)/libfbgfx.a
+ifdef ENABLE_PIC
+  RTL_OBJDIRS += $(libfbpicobjdir)
+  GFX_OBJDIRS += $(libfbgfxpicobjdir)
+  RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
+  GFX_LIBS += $(libdir)/libfbgfxpic.a
+endif
+ifndef DISABLE_MT
+  RTL_OBJDIRS += $(libfbmtobjdir)
+  GFX_OBJDIRS += $(libfbgfxmtobjdir)
+  RTL_LIBS += $(libdir)/libfbmt.a
+  GFX_LIBS += $(libdir)/libfbgfxmt.a
+  ifdef ENABLE_PIC
+    RTL_OBJDIRS += $(libfbmtpicobjdir)
+    GFX_OBJDIRS += $(libfbgfxmtpicobjdir)
+    RTL_LIBS += $(libdir)/libfbmtpic.a
+    GFX_LIBS += $(libdir)/libfbgfxmtpic.a
+  endif
+endif
+ifeq ($(TARGET_OS),dos)
+  RTL_LIBS += $(libdir)/libc.a
+endif
 
 #
 # Build rules
@@ -402,38 +483,34 @@ endif
 .PHONY: all
 all: compiler rtlib gfxlib2
 
-src src/compiler src/rtlib src/gfxlib2 bin lib \
-$(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
-$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
-	mkdir $@
+$(fbcobjdir) \
+$(libfbobjdir) \
+$(libfbpicobjdir) \
+$(libfbmtobjdir) \
+$(libfbmtpicobjdir) \
+$(libfbgfxobjdir) \
+$(libfbgfxpicobjdir) \
+$(libfbgfxmtobjdir) \
+$(libfbgfxmtpicobjdir) \
+bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
+	mkdir -p $@
 
 ################################################################################
 
 .PHONY: compiler
-compiler: src src/compiler
-ifndef ENABLE_STANDALONE
-compiler: bin
-endif
-compiler: $(newcompiler) $(FBC_EXE)
+compiler: bin $(fbcobjdir) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
 	$(QUIET)mv $(FBCNEW_EXE) $@
 
-$(FBC_BAS): $(newcompiler)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
+$(FBC_BAS): $(fbcobjdir)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
 ################################################################################
 
 .PHONY: rtlib
-rtlib: lib $(libdir) src src/rtlib $(newlibfb)
-rtlib: $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
-ifndef DISABLE_MT
-rtlib: $(newlibfbmt) $(libdir)/libfbmt.a
-endif
-ifeq ($(TARGET_OS),dos)
-rtlib: $(libdir)/libc.a
-endif
+rtlib: $(libdir) $(RTL_OBJDIRS) $(RTL_LIBS)
 
 $(libdir)/fbextra.x: $(rootdir)lib/fbextra.x
 	cp $< $@
@@ -444,37 +521,44 @@ $(libdir)/i386go32.x: $(rootdir)contrib/djgpp/i386go32.x
 $(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
+$(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
+	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
-	$(QUIET_AR)$(AR) rcs $@ $(newlibfb)/*.o
+	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 endif
-
-$(LIBFB_C): $(newlibfb)/%.o: %.c $(LIBFB_H)
+$(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-
-$(LIBFB_S): $(newlibfb)/%.o: %.s $(LIBFB_H)
+$(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbpic.a: $(LIBFBPIC_C)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+$(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H)
+	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-
-$(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
+$(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
-
-$(LIBFBMT_S): $(newlibfbmt)/%.o: %.s $(LIBFB_H)
+$(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+$(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H)
+	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
 libcmaino := contrib/djgpp/libc/crt0/_main.o
-
 $(libcmaino): %.o: %.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-
 $(libdir)/libc.a: $(djgpplibc) $(libcmaino)
 	cp $(djgpplibc) $@
 	$(QUIET_AR)ar rs $@ $(libcmaino)
@@ -483,72 +567,66 @@ endif
 ################################################################################
 
 .PHONY: gfxlib2
-gfxlib2: lib $(libdir) src src/gfxlib2
-gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
+gfxlib2: $(libdir) $(GFX_OBJDIRS) $(GFX_LIBS)
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-
-$(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
+$(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-
-$(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
+$(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbgfxpic.a: $(LIBFBGFXPIC_C)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+$(LIBFBGFXPIC_C): $(libfbgfxpicobjdir)/%.o: %.c $(LIBFBGFX_H)
+	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+$(LIBFBGFXMT_C): $(libfbgfxmtobjdir)/%.o: %.c $(LIBFBGFX_H)
+	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFXMT_S): $(libfbgfxmtobjdir)/%.o: %.s $(LIBFBGFX_H)
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+
+$(libdir)/libfbgfxmtpic.a: $(LIBFBGFXMTPIC_C)
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+$(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H)
+	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
 
 ################################################################################
 
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-ifdef ENABLE_STANDALONE
-install-compiler:
-else
-install-compiler: $(prefix)/bin
-endif
+install-compiler: $(prefixbindir)
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
-ifdef ENABLE_STANDALONE
-install-includes: $(prefixinclude)
-else
-install-includes: $(prefix)/include $(prefixinclude)
-endif
-	cp -r $(rootdir)inc/* $(prefixinclude)
+install-includes: $(prefixincdir)
+	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: $(prefix)/lib $(prefixlib)
-	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlib)/
-  ifndef DISABLE_MT
-	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
-  endif
-  ifeq ($(TARGET_OS),dos)
-	$(INSTALL_FILE) $(libdir)/libc.a $(prefixlib)/
-  endif
+install-rtlib: $(prefixlibdir)
+	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)/
 
-install-gfxlib2: $(prefix)/lib $(prefixlib)
-	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
+install-gfxlib2: $(prefix)/lib $(prefixlibdir)
+	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)/
 
 ################################################################################
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
-	-rmdir $(prefixlib)
+	-rmdir $(prefixlibdir)
 
 uninstall-compiler:
 	rm -f $(PREFIX_FBC_EXE)
 
 uninstall-includes:
-	rm -rf $(prefixinclude)
+	rm -rf $(prefixincdir)
 
 uninstall-rtlib:
-	rm -f $(prefixlib)/$(FB_LDSCRIPT) $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
-  ifndef DISABLE_MT
-	rm -f $(prefixlib)/libfbmt.a
-  endif
-  ifeq ($(TARGET_OS),dos)
-	rm -f $(libdir)/libc.a
-  endif
+	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(RTL_LIBS))
 
 uninstall-gfxlib2:
-	rm -f $(prefixlib)/libfbgfx.a
+	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(GFX_LIBS))
 
 ################################################################################
 
@@ -556,28 +634,360 @@ uninstall-gfxlib2:
 clean:        clean-compiler clean-rtlib clean-gfxlib2
 
 clean-compiler:
-	rm -f $(FBC_EXE) $(newcompiler)/*.o
+	rm -rf $(FBC_EXE) $(fbcobjdir)
   ifndef ENABLE_STANDALONE
 	-rmdir bin
   endif
 
 clean-rtlib:
-	rm -f $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(newlibfb)/*.o
-	-rmdir $(newlibfb)
-  ifndef DISABLE_MT
-	rm -f $(libdir)/libfbmt.a $(newlibfbmt)/*.o
-	-rmdir $(newlibfbmt)
-  endif
-  ifeq ($(TARGET_OS),dos)
-	rm -f $(libdir)/libc.a $(libcmaino)
-  endif
+	rm -rf $(RTL_LIBS) $(RTL_OBJDIRS)
 
 clean-gfxlib2:
-	rm -f $(libdir)/libfbgfx.a $(newlibfbgfx)/*.o
-	-rmdir $(newlibfbgfx)
+	rm -rf $(GFX_LIBS) $(GFX_OBJDIRS)
 
 ################################################################################
 
 .PHONY: help
 help:
 	@echo "Take a look at the top of this makefile!"
+
+################################################################################
+
+FBSOURCETITLE = FreeBASIC-$(FBVERSION)-source
+
+.PHONY: gitdist
+gitdist:
+	# (using git archive --prefix ... to avoid tarbombs)
+	# .tar.gz and .tar.xz, with LF line endings
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBSOURCETITLE)/" HEAD | tar xf -
+	tar -czf "$(FBSOURCETITLE).tar.gz" "$(FBSOURCETITLE)"
+	tar -cJf "$(FBSOURCETITLE).tar.xz" "$(FBSOURCETITLE)"
+	rm -rf "$(FBSOURCETITLE)"
+
+	# .zip with low word size/fast bytes setting (for DOS), and .7z, with CRLF line endings
+	git -c core.autocrlf=true archive --format tar --prefix "$(FBSOURCETITLE)/" HEAD | tar xf -
+	zip -q -r "$(FBSOURCETITLE).zip" "$(FBSOURCETITLE)"
+	7z a      "$(FBSOURCETITLE).7z"  "$(FBSOURCETITLE)" > /dev/null
+	rm -rf "$(FBSOURCETITLE)"
+
+#
+# Traditionally, the FB release package names depend on whether its a normal or
+# standalone build and on the platform. The "FreeBASIC-x.xx.x-target" name
+# format is traditionally used for the "default" builds for the respective
+# platform.
+#
+# Linux/BSD standalone = FreeBASIC-x.xx.x-target-standalone
+# Linux/BSD normal     = FreeBASIC-x.xx.x-target
+# Windows/DOS standalone = FreeBASIC-x.xx.x-target
+# Windows/DOS normal     = fbc-x.xx.x-target (MinGW/DJGPP-style packages)
+#
+ifndef FBPACKAGE
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifdef ENABLE_STANDALONE
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)-standalone
+    else
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+    endif
+  else
+    ifdef ENABLE_STANDALONE
+      FBPACKAGE := FreeBASIC-$(FBVERSION)-$(FBTARGET)
+    else
+      FBPACKAGE := fbc-$(FBVERSION)-$(FBTARGET)
+    endif
+  endif
+endif
+
+ifndef FBMANIFEST
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifdef ENABLE_STANDALONE
+      FBMANIFEST := FreeBASIC-$(FBTARGET)-standalone
+    else
+      FBMANIFEST := FreeBASIC-$(FBTARGET)
+    endif
+  else
+    ifdef ENABLE_STANDALONE
+      FBMANIFEST := FreeBASIC-$(FBTARGET)
+    else
+      FBMANIFEST := fbc-$(FBTARGET)
+    endif
+  endif
+endif
+
+.PHONY: bindist
+bindist:
+	# Extra directory in which we'll put together the binary release package
+	# (needed anyways to avoid tarbombs)
+	mkdir $(FBPACKAGE)
+
+	# Binaries from the build dir: fbc[.exe] or bin/fbc[.exe], bin/ and lib/
+	# (we're expecting bin/ and lib/ to be filled with the proper external
+	# binaries already in case of standalone setups)
+	cp -R bin lib $(FBPACKAGE)
+  ifdef ENABLE_STANDALONE
+	cp $(FBC_EXE) $(FBPACKAGE)
+  endif
+
+	# Remove lib/win32/*.def stuff. We have it in the source tree (not in
+	# build dir if separate though) but don't want to include it into the
+	# binary release packages.
+	cd $(FBPACKAGE) && rm -rf lib/win32/*.def lib/win32/makefile lib/fbextra.x
+	rmdir $(FBPACKAGE)/lib/win32 || true
+
+	# Includes: inc/, include/freebasic/ or include/freebas/
+	cp -R $(rootdir)inc $(FBPACKAGE)
+  ifeq ($(TARGET_OS),dos)
+	rm -r $(FBPACKAGE)/inc/AL
+	rm -r $(FBPACKAGE)/inc/atk
+	rm -r $(FBPACKAGE)/inc/bass.bi
+	rm -r $(FBPACKAGE)/inc/bassmod.bi
+	rm -r $(FBPACKAGE)/inc/cairo
+	rm -r $(FBPACKAGE)/inc/cd
+	rm -r $(FBPACKAGE)/inc/chipmunk
+	rm -r $(FBPACKAGE)/inc/crt/arpa
+	rm -r $(FBPACKAGE)/inc/crt/bits
+	rm -r $(FBPACKAGE)/inc/crt/linux
+	rm -r $(FBPACKAGE)/inc/crt/netdb.bi
+	rm -r $(FBPACKAGE)/inc/crt/netinet/in.bi
+	rm -r $(FBPACKAGE)/inc/crt/netinet/linux/in.bi
+	rm -r $(FBPACKAGE)/inc/crt/sys/linux
+	rm -r $(FBPACKAGE)/inc/crt/sys/socket.bi
+	rm -r $(FBPACKAGE)/inc/crt/sys/win32
+	rm -r $(FBPACKAGE)/inc/crt/win32
+	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
+	rm -r $(FBPACKAGE)/inc/disphelper
+	rm -r $(FBPACKAGE)/inc/fastcgi
+	rm -r $(FBPACKAGE)/inc/flite
+	rm -r $(FBPACKAGE)/inc/fmod.bi
+	rm -r $(FBPACKAGE)/inc/FreeImage.bi
+	rm -r $(FBPACKAGE)/inc/freetype2
+	rm -r $(FBPACKAGE)/inc/gdk*
+	rm -r $(FBPACKAGE)/inc/gio
+	rm -r $(FBPACKAGE)/inc/GL
+	rm -r $(FBPACKAGE)/inc/glade
+	rm -r $(FBPACKAGE)/inc/glib*
+	rm -r $(FBPACKAGE)/inc/gmodule.bi
+	rm -r $(FBPACKAGE)/inc/goocanvas.bi
+	rm -r $(FBPACKAGE)/inc/gtk*
+	rm -r $(FBPACKAGE)/inc/im
+	rm -r $(FBPACKAGE)/inc/IUP*
+	rm -r $(FBPACKAGE)/inc/japi*
+	rm -r $(FBPACKAGE)/inc/jni.bi
+	rm -r $(FBPACKAGE)/inc/json*
+	rm -r $(FBPACKAGE)/inc/libart_lgpl
+	rm -r $(FBPACKAGE)/inc/MediaInfo*
+	rm -r $(FBPACKAGE)/inc/modplug.bi
+	rm -r $(FBPACKAGE)/inc/mpg123.bi
+	rm -r $(FBPACKAGE)/inc/mysql
+	rm -r $(FBPACKAGE)/inc/Newton.bi
+	rm -r $(FBPACKAGE)/inc/ode
+	rm -r $(FBPACKAGE)/inc/ogg
+	rm -r $(FBPACKAGE)/inc/pango
+	rm -r $(FBPACKAGE)/inc/pdflib.bi
+	rm -r $(FBPACKAGE)/inc/portaudio.bi
+	rm -r $(FBPACKAGE)/inc/postgresql
+	rm -r $(FBPACKAGE)/inc/SDL
+	rm -r $(FBPACKAGE)/inc/sndfile.bi
+	rm -r $(FBPACKAGE)/inc/spidermonkey
+	rm -r $(FBPACKAGE)/inc/uuid.bi
+	rm -r $(FBPACKAGE)/inc/vlc
+	rm -r $(FBPACKAGE)/inc/vorbis
+	rm -r $(FBPACKAGE)/inc/win
+	rm -r $(FBPACKAGE)/inc/windows.bi
+	rm -r $(FBPACKAGE)/inc/wx-c
+	rm -r $(FBPACKAGE)/inc/X11
+	rm -r $(FBPACKAGE)/inc/xmp.bi
+	rm -r $(FBPACKAGE)/inc/zmq
+  endif
+  ifeq ($(TARGET_ARCH),x86_64)
+	# Exclude headers which don't support 64bit yet
+	rm -r $(FBPACKAGE)/inc/AL
+	rm -r $(FBPACKAGE)/inc/allegro
+	rm -r $(FBPACKAGE)/inc/allegro.bi
+	rm -r $(FBPACKAGE)/inc/aspell.bi
+	rm -r $(FBPACKAGE)/inc/atk
+	rm -r $(FBPACKAGE)/inc/bass.bi
+	rm -r $(FBPACKAGE)/inc/bassmod.bi
+	rm -r $(FBPACKAGE)/inc/bfd
+	rm -r $(FBPACKAGE)/inc/bfd.bi
+	rm -r $(FBPACKAGE)/inc/big_int
+	rm -r $(FBPACKAGE)/inc/bzlib.bi
+	rm -r $(FBPACKAGE)/inc/caca0.bi
+	rm -r $(FBPACKAGE)/inc/caca.bi
+	rm -r $(FBPACKAGE)/inc/cairo
+	rm -r $(FBPACKAGE)/inc/cd
+	rm -r $(FBPACKAGE)/inc/cgi-util.bi
+	rm -r $(FBPACKAGE)/inc/cgui.bi
+	rm -r $(FBPACKAGE)/inc/chipmunk
+	rm -r $(FBPACKAGE)/inc/cryptlib.bi
+	rm -r $(FBPACKAGE)/inc/curl.bi
+	rm -r $(FBPACKAGE)/inc/curses
+	rm -r $(FBPACKAGE)/inc/curses.bi
+	rm -r $(FBPACKAGE)/inc/dislin.bi
+	rm -r $(FBPACKAGE)/inc/disphelper
+	rm -r $(FBPACKAGE)/inc/dos
+	rm -r $(FBPACKAGE)/inc/expat.bi
+	rm -r $(FBPACKAGE)/inc/fastcgi
+	rm -r $(FBPACKAGE)/inc/ffi.bi
+	rm -r $(FBPACKAGE)/inc/flite
+	rm -r $(FBPACKAGE)/inc/fmod.bi
+	rm -r $(FBPACKAGE)/inc/FreeImage.bi
+	rm -r $(FBPACKAGE)/inc/freetype2
+	rm -r $(FBPACKAGE)/inc/gd.bi
+	rm -r $(FBPACKAGE)/inc/gdbm.bi
+	rm -r $(FBPACKAGE)/inc/gdk
+	rm -r $(FBPACKAGE)/inc/gdk-pixbuf
+	rm -r $(FBPACKAGE)/inc/gdsl
+	rm -r $(FBPACKAGE)/inc/gettext-po.bi
+	rm -r $(FBPACKAGE)/inc/gif_lib.bi
+	rm -r $(FBPACKAGE)/inc/gio
+	rm -r $(FBPACKAGE)/inc/GL
+	rm -r $(FBPACKAGE)/inc/glade
+	rm -r $(FBPACKAGE)/inc/glib.bi
+	rm -r $(FBPACKAGE)/inc/glibconfig.bi
+	rm -r $(FBPACKAGE)/inc/glib-object.bi
+	rm -r $(FBPACKAGE)/inc/gmodule.bi
+	rm -r $(FBPACKAGE)/inc/gmp.bi
+	rm -r $(FBPACKAGE)/inc/goocanvas.bi
+	rm -r $(FBPACKAGE)/inc/grx
+	rm -r $(FBPACKAGE)/inc/gsl
+	rm -r $(FBPACKAGE)/inc/gtk
+	rm -r $(FBPACKAGE)/inc/gtkgl
+	rm -r $(FBPACKAGE)/inc/IL
+	rm -r $(FBPACKAGE)/inc/im
+	rm -r $(FBPACKAGE)/inc/IUP
+	rm -r $(FBPACKAGE)/inc/japi.bi
+	rm -r $(FBPACKAGE)/inc/jit
+	rm -r $(FBPACKAGE)/inc/jit.bi
+	rm -r $(FBPACKAGE)/inc/jni.bi
+	rm -r $(FBPACKAGE)/inc/jpeglib.bi
+	rm -r $(FBPACKAGE)/inc/jpgalleg.bi
+	rm -r $(FBPACKAGE)/inc/json-c
+	rm -r $(FBPACKAGE)/inc/libart_lgpl
+	rm -r $(FBPACKAGE)/inc/libintl.bi
+	rm -r $(FBPACKAGE)/inc/libxml
+	rm -r $(FBPACKAGE)/inc/libxslt
+	rm -r $(FBPACKAGE)/inc/Lua
+	rm -r $(FBPACKAGE)/inc/lzma.bi
+	rm -r $(FBPACKAGE)/inc/lzo
+	rm -r $(FBPACKAGE)/inc/MediaInfo.bi
+	rm -r $(FBPACKAGE)/inc/modplug.bi
+	rm -r $(FBPACKAGE)/inc/mpg123.bi
+	rm -r $(FBPACKAGE)/inc/mxml.bi
+	rm -r $(FBPACKAGE)/inc/mysql
+	rm -r $(FBPACKAGE)/inc/Newton.bi
+	rm -r $(FBPACKAGE)/inc/ode
+	rm -r $(FBPACKAGE)/inc/ogg
+	rm -r $(FBPACKAGE)/inc/pango
+	rm -r $(FBPACKAGE)/inc/pcre16.bi
+	rm -r $(FBPACKAGE)/inc/pcre.bi
+	rm -r $(FBPACKAGE)/inc/pcreposix.bi
+	rm -r $(FBPACKAGE)/inc/pdflib.bi
+	rm -r $(FBPACKAGE)/inc/png.bi
+	rm -r $(FBPACKAGE)/inc/portaudio.bi
+	rm -r $(FBPACKAGE)/inc/postgresql
+	rm -r $(FBPACKAGE)/inc/quicklz.bi
+	rm -r $(FBPACKAGE)/inc/regex.bi
+	rm -r $(FBPACKAGE)/inc/SDL
+	rm -r $(FBPACKAGE)/inc/sndfile.bi
+	rm -r $(FBPACKAGE)/inc/spidermonkey
+	rm -r $(FBPACKAGE)/inc/sqlite2.bi
+	rm -r $(FBPACKAGE)/inc/sqlite3.bi
+	rm -r $(FBPACKAGE)/inc/sqlite3ext.bi
+	rm -r $(FBPACKAGE)/inc/tinyptc.bi
+	rm -r $(FBPACKAGE)/inc/uuid.bi
+	rm -r $(FBPACKAGE)/inc/vlc
+	rm -r $(FBPACKAGE)/inc/vorbis
+	rm -r $(FBPACKAGE)/inc/win
+	rm -r $(FBPACKAGE)/inc/windows.bi
+	rm -r $(FBPACKAGE)/inc/wx-c
+	rm -r $(FBPACKAGE)/inc/X11
+	rm -r $(FBPACKAGE)/inc/xmp.bi
+	rm -r $(FBPACKAGE)/inc/zip.bi
+	rm -r $(FBPACKAGE)/inc/zlib.bi
+	rm -r $(FBPACKAGE)/inc/zmq
+  endif
+  ifndef ENABLE_STANDALONE
+	mkdir -p $(FBPACKAGE)/include
+    ifeq ($(TARGET_OS),dos)
+	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebas
+    else
+	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebasic
+    endif
+  endif
+
+  ifndef DISABLE_DOCS
+	# Docs
+	cp $(rootdir)changelog.txt $(rootdir)readme.txt $(FBPACKAGE)
+	mkdir $(FBPACKAGE)/doc
+	cp $(rootdir)doc/fbc.1 $(rootdir)doc/gpl.txt $(rootdir)doc/lgpl.txt $(FBPACKAGE)/doc
+    ifneq ($(filter win32 win64,$(TARGET_OS)),)
+      ifdef ENABLE_STANDALONE
+	cp $(rootdir)doc/GoRC.txt $(rootdir)doc/libffi-license.txt $(FBPACKAGE)/doc
+      endif
+    endif
+
+	# Examples
+	cp -R $(rootdir)examples $(FBPACKAGE)
+    ifeq ($(TARGET_OS),dos)
+	rm -r $(FBPACKAGE)/examples/database/mysql_test.bas
+	rm -r $(FBPACKAGE)/examples/database/postgresql_test.bas
+	rm -r $(FBPACKAGE)/examples/dll
+	rm -r $(FBPACKAGE)/examples/files/FreeImage
+	rm -r $(FBPACKAGE)/examples/files/pdflib
+	rm -r $(FBPACKAGE)/examples/graphics/cairo
+	rm -r $(FBPACKAGE)/examples/graphics/FreeType
+	rm -r $(FBPACKAGE)/examples/graphics/OpenGL
+	rm -r $(FBPACKAGE)/examples/graphics/SDL
+	rm -r $(FBPACKAGE)/examples/GUI/GTK+
+	rm -r $(FBPACKAGE)/examples/GUI/IUP
+	rm -r $(FBPACKAGE)/examples/GUI/win32
+	rm -r $(FBPACKAGE)/examples/GUI/wx-c
+	rm -r $(FBPACKAGE)/examples/manual/threads
+	rm -r $(FBPACKAGE)/examples/math/cryptlib
+	rm -r $(FBPACKAGE)/examples/math/Newton
+	rm -r $(FBPACKAGE)/examples/math/ODE
+	rm -r $(FBPACKAGE)/examples/misc/glib
+	rm -r $(FBPACKAGE)/examples/network/http-get.bas
+	rm -r $(FBPACKAGE)/examples/network/win32
+	rm -r $(FBPACKAGE)/examples/other-languages/Java*
+	rm -r $(FBPACKAGE)/examples/other-languages/VB
+	rm -r $(FBPACKAGE)/examples/sound
+	rm -r $(FBPACKAGE)/examples/threads
+	rm -r $(FBPACKAGE)/examples/unicode
+	rm -r $(FBPACKAGE)/examples/win32
+    endif
+  endif
+
+	# install.sh for normal Linux/BSD setups
+  ifndef ENABLE_STANDALONE
+    ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+	cp $(rootdir)install.sh $(FBPACKAGE)
+    endif
+  endif
+
+	# Regenerate the manifest in the source tree, based on the package directory content
+	find $(FBPACKAGE) -type f | LC_ALL=C sort \
+		| sed -e 's,^$(FBPACKAGE)/,,g' \
+		> $(rootdir)contrib/manifest/$(FBMANIFEST).lst
+
+	# Create the archive(s)
+	# (overwriting existing ones, instead of adding to them)
+  ifeq ($(TARGET_OS),dos)
+	rm -f $(FBPACKAGE).zip
+	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
+  else
+  ifneq ($(filter win32 win64,$(TARGET_OS)),)
+	rm -f $(FBPACKAGE).zip
+	rm -f $(FBPACKAGE).7z
+	zip -q -r $(FBPACKAGE).zip $(FBPACKAGE)
+	7z a $(FBPACKAGE).7z  $(FBPACKAGE) > /dev/null
+  else
+	rm -f $(FBPACKAGE).tar.gz
+	rm -f $(FBPACKAGE).tar.xz
+	tar -czf $(FBPACKAGE).tar.gz $(FBPACKAGE)
+	tar -cJf $(FBPACKAGE).tar.xz $(FBPACKAGE)
+  endif
+  endif
+
+	# Clean up
+	rm -rf $(FBPACKAGE)

@@ -7,6 +7,8 @@ Command line compiler options for the fbc compiler:
 		- Add an object file to linker's list
 	{{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}
 		- Set target architecture (default: 486)
+	{{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}
+		- Sets the assembler format for Asm block
 	{{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}
 		- Add a source file to compilation
 	{{fbdoc item="keyword" value="CompilerOptc|-c"}}
@@ -65,12 +67,14 @@ Command line compiler options for the fbc compiler:
 		- Set the optimization level (-gen gcc)
 	{{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}
 		- Add a path to search for libraries
+	{{fbdoc item="keyword" value="CompilerOptpic|-pic"}}
+		- Generate position-indepedent code (non-x86 Unix shared libs)
 	{{fbdoc item="keyword" value="CompilerOptpp|-pp"}}
 		- Emit the preprocessed input file only, do not compile
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}
 		- Set the compiler prefix path
 	{{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}
-		- Let the compiler display certain information (##host##, ##target##)
+		- Let the compiler display certain information (##host##, ##target##, ##x##)
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
 		- Enable function profiling
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}

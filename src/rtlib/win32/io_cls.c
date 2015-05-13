@@ -42,7 +42,7 @@ void fb_ConsoleClear( int mode )
     win_right = __fb_con.window.Right;
     win_bottom = __fb_con.window.Bottom;
 
-	if( (mode == 2) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
+	if( (mode == 2) || (mode == (int)0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
     {
         /* Just fill the view */
         fb_ConsoleGetView( &view_top, &view_bottom );

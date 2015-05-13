@@ -5,13 +5,12 @@
 	#include <windows.h>
 #endif
 
-/*:::::*/
 FBCALL FBSTRING *fb_ExePath ( void )
 {
 	FBSTRING 	*dst;
 	char		*p;
 	char		tmp[MAX_PATH+1];
-	int			len;
+	ssize_t len;
 
 	p = fb_hGetExePath( tmp, MAX_PATH );
 

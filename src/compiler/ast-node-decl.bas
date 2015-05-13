@@ -24,7 +24,7 @@ private function hCtorList _
 	this_ = symbAddTempVar( typeAddrOf( symbGetType( sym ) ), subtype )
 
 	'' fld = @sym(0)
-	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ) ) )
+	tree = astNewLINK( tree, astBuildVarAssign( this_, astNewADDROF( astNewVAR( sym ) ), AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -36,7 +36,7 @@ private function hCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( this_, 1 ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( symbGetArrayElements( sym ) ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( symbGetArrayElements( sym ) ) )
 
 	function = tree
 
@@ -66,12 +66,12 @@ private function hDefaultInit( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 		end if
 
 		'' scalar?
-		if( (symbGetArrayDimensions( sym ) = 0) or _
-		    (symbGetArrayElements( sym ) = 1) ) then
+		if( symbGetArrayDimensions( sym ) = 0 ) then
 			'' sym.constructor( )
 			function = astBuildCtorCall( symbGetSubtype( sym ), astNewVAR( sym ) )
 		'' array..
 		else
+			assert( symbIsDynamic( sym ) = FALSE )
 			function = hCtorList( sym )
 		end if
 

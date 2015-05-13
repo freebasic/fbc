@@ -113,7 +113,12 @@ private sub hUndefSymbol()
 
 	select case as const lexGetClass( LEXCHECK_NODEFINE )
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-		if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
+		s = lexGetSymChain( )->sym
+		if( s ) then
+			'' Forget the symbol so it's no longer found by lookups,
+			'' but don't fully delete it, since it might already be used somewhere.
+			symbDelFromHash( s )
+		else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		end if
 
@@ -135,7 +140,7 @@ private sub hUndefSymbol()
 					if( symbGetCantUndef( s ) ) then
 						errReport( FB_ERRMSG_CANTUNDEF )
 					else
-						symbDelPrototype( s )
+						symbDelFromHash( s )
 					end if
 				end if
 			end if
@@ -153,7 +158,7 @@ private sub hUndefSymbol()
 					if( symbGetCantUndef( s ) ) then
 						errReport( FB_ERRMSG_CANTUNDEF )
 					else
-						symbDelDefine( s )
+						symbDelFromHash( s )
 					end if
 				end if
 			end if

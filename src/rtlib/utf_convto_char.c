@@ -7,17 +7,15 @@
 extern const char __fb_utf8_trailingTb[256];
 extern const UTF_32 __fb_utf8_offsetsTb[6];
 
-/*:::::*/
-char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
+char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 {
 	UTF_32 c;
-	int extbytes;
-	int charsleft;
+	ssize_t extbytes, charsleft;
 	char *buffer = dst;
 	
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -106,16 +104,15 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, int *chars )
+char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, ssize_t *chars )
 {
 	UTF_16 c;
-	int charsleft;
+	ssize_t charsleft;
 	char *buffer = dst;
-	
+
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -172,16 +169,15 @@ char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, int *chars )
+char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, ssize_t *chars )
 {
 	UTF_32 c;
-	int charsleft;
+	ssize_t charsleft;
 	char *buffer = dst;
-	
+
     if( dst == NULL )
     {
-	    int dst_size = 0;
+		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
 	    {
@@ -230,8 +226,7 @@ char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, int *chars )
 	return buffer;
 }
 
-/*:::::*/
-char *fb_UTFToChar( FB_FILE_ENCOD encod, const void *src, char *dst, int *chars )
+char *fb_UTFToChar( FB_FILE_ENCOD encod, const void *src, char *dst, ssize_t *chars )
 {
 	switch( encod )
 	{
@@ -249,4 +244,3 @@ char *fb_UTFToChar( FB_FILE_ENCOD encod, const void *src, char *dst, int *chars 
 	}
 
 }
-

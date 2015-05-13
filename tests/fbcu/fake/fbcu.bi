@@ -53,8 +53,8 @@ namespace fbcu
   sub add_suite _
     ( _
       byval n as zstring ptr = 0, _
-      init as function cdecl ( ) as integer = 0, _
-      cleanup as function cdecl ( ) as integer = 0 _
+      init as function cdecl ( ) as long = 0, _
+      cleanup as function cdecl ( ) as long = 0 _
     )
 
     if( n ) then
@@ -92,7 +92,7 @@ namespace fbcu
 end namespace
 
 private sub fbc_init destructor
-  dim term as function cdecl () as integer, i as integer
+  dim term as function cdecl () as long, i as integer
   for i = fbcu.fbcu_term_count to 1 step - 1
     term = fbcu.fbcu_term_procs(i)
     if( term ) then

@@ -46,7 +46,7 @@ static void DoMove
 
 FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 {
-	FBSTRING result = { 0 };
+	FBSTRING result = { 0, 0, 0 };
 
     int current_x, current_y;
     int cols, rows;
@@ -158,7 +158,7 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 			break;
 
 		case KEY_UP:  /* Move cursor up */
-			if( pos >= cols ) {
+			if( pos >= (size_t)cols ) {
 				DoMove( &current_x, &current_y, -cols, 0, cols, rows );
 				pos -= cols;
 			}

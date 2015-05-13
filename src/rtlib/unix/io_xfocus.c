@@ -18,7 +18,7 @@ typedef struct {
 
 static int ref_count = 0;
 static FB_DYLIB xlib;
-static X_FUNCS X = { NULL };
+static X_FUNCS X = { NULL, NULL, NULL };
 static Display *display;
 static Window xterm_window;
 #endif

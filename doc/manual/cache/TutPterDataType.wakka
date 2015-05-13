@@ -39,7 +39,7 @@ Untyped pointers have no type checking and default to size of byte. Untyped poin
 
 === Pointer Operators ===
 
-FreeBasic has the following [[CatPgOperators pointer operators]].
+FreeBasic has the following [[CatPgOpPoint pointer operators]].
 
 You will notice that the addressof operator not only returns the memory address of a variable, but it can also return the address of a subroutine or function. You would use the address of a subroutine or function to create a callback function such as used in the CRT QSort function.
 
@@ -80,7 +80,7 @@ Pointer indexing works the same way as pointer arithmetic, but the details are h
 Freebasic has a set of pointer functions to complement the pointer operators.
 
 ~- [[KeyPgCptr Cptr]] Converts expression to a data_type pointer. Expression can be another pointer or an integer.
-~- [[KeyPgPeek Peek]] Peek returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
+~- [[KeyPgPeek Peek]] Returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
 ~- [[KeyPgPoke Poke]] Puts the value of expression into the memory location pointed to by pointer. The data_type specifies the type of data being placed into the memory location.
 ~- [[KeyPgSadd Sadd]] Returns the location in memory where the string data in a dynamic string is located.
 ~- [[KeyPgOpStrptr Strptr]] The same as Sadd.

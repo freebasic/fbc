@@ -22,6 +22,8 @@ Creates a temporary copy of a user defined type
 
 	The ##[[KeyPgConstructor Constructor]]## for the type, if there is one, will be called when the temporary copy is created, and the ##[[KeyPgDestructor Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
 
+	It can create not only a temporary copy of an user defined type, but also a temporary copy of predefined data-type as a variable-length string or any numeric data-type (all standard data-types excluding fixed-length strings).
+
 	It can also be used as an even shorter shortcut than ##[[KeyPgWith With]]## (see below) if you are changing all the records.
 
 {{fbdoc item="ex"}}

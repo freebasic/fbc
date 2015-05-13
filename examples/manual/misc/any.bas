@@ -29,8 +29,8 @@ Sleep
 Sub echo (ByVal x As Any Ptr)
 	Dim As Integer i
 	For i = 0 To 39
-	    'echo interprets the data in the pointer as bytes
-	    Print Cast(UByte Ptr, x)[i] & " ";
+		'echo interprets the data in the pointer as bytes
+		Print Cast(UByte Ptr, x)[i] & " ";
 	Next
 	Print
 End Sub

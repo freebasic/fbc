@@ -112,7 +112,7 @@ sub testshortParam cdecl( )
 	end scope
 
 	scope
-		dim as short ptr p = callocate( 1 )
+		dim as short ptr p = callocate( 2 )
 		*p = 15
 		fshort( pre, *p, post )
 		CU_ASSERT( fshortcalls = 3 )
@@ -120,7 +120,7 @@ sub testshortParam cdecl( )
 	end scope
 
 	scope
-		dim as short ptr p = callocate( 1 )
+		dim as short ptr p = callocate( 2 )
 		dim as integer i = 0
 		p[i] = 15
 		fshort( pre, p[i], post )
@@ -129,7 +129,7 @@ sub testshortParam cdecl( )
 	end scope
 
 	scope
-		dim as short ptr p = callocate( 3 )
+		dim as short ptr p = callocate( 2 * 3 )
 		dim as integer i = 2
 		p[2] = 15
 		fshort( pre, p[i], post )

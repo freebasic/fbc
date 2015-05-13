@@ -65,14 +65,11 @@ function astLoadBRANCH _
 			select case n->op.op
 			case AST_OP_JUMPPTR
 				irEmitJUMPPTR( vr )
-
-			case AST_OP_CALLPTR
-				irEmitCALLPTR( vr, NULL, 0, -1 )
-
 			case AST_OP_RET
 				irEmitRETURN( 0 )
+			case else
+				assert( FALSE )
 			end select
-
 		else
 			irEmitBRANCH( n->op.op, n->op.ex )
 		end if
@@ -89,16 +86,16 @@ private function astNewJMPTB _
 	( _
 		byval l as ASTNODE ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, tree = any
-	dim as uinteger ptr values = any
+	dim as ulongint ptr values = any
 	dim as FBSYMBOL ptr ptr labels = any
 
 	tree = NULL
@@ -108,8 +105,8 @@ private function astNewJMPTB _
 	'' case, but it must still be handled without crashing the compiler...)
 	if( labelcount > 0 ) then
 		'' Duplicate the values/labels arrays
-		values = callocate( sizeof( uinteger ) * labelcount )
-		labels = callocate( sizeof( FBSYMBOL ptr ) * labelcount )
+		values = callocate( sizeof( *values ) * labelcount )
+		labels = callocate( sizeof( *labels ) * labelcount )
 		for i as integer = 0 to labelcount - 1
 			values[i] = values1[i]
 			labels[i] = labels1[i]
@@ -154,19 +151,19 @@ end function
 function astBuildJMPTB _
 	( _
 		byval tempvar as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = any, l = any
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr tbsym = any
 
-	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT )
+	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT or symbGetType( tempvar ) = FB_DATATYPE_ULONGINT )
 
 	tree = NULL
 
@@ -199,31 +196,31 @@ function astBuildJMPTB _
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		tbsym = symbAddVar( symbUniqueLabel( ), NULL, _
 		                    typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, _
-		                    1, dTB(), FB_SYMBATTRIB_SHARED )
+		                    0, dTB(), FB_SYMBATTRIB_SHARED )
+
+		'' Prevent the jumptb symbol from being emitted
 		symbSetIsJumpTb( tbsym )
-		symbSetIsInitialized( tbsym )
 
-		if( minval > 0 ) then
-			'' if( expr < minval ) then goto deflabel
-			tree = astNewLINK( tree, _
-				astNewBOP( AST_OP_LT, astNewVAR( tempvar ), _
-					astNewCONSTi( minval, FB_DATATYPE_UINT ), _
-					deflabel, AST_OPOPT_NONE ) )
-		end if
+		'' It shouldn't have an array descriptor, because it would never be used
+		assert( symbGetArrayDescriptor( tbsym ) = NULL )
 
-		'' if( expr > maxval ) then goto deflabel
+		'' if( expr < minval or expr > maxval ) then goto deflabel
+		'' optimised to:
+		'' if( cunsg(expr - minval) > (maxval - minval) ) then goto deflabel
 		tree = astNewLINK( tree, _
-			astNewBOP( AST_OP_GT, astNewVAR( tempvar ), _
-				astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
+			astNewBOP( AST_OP_GT, astNewBOP( AST_OP_SUB, _
+					astNewVAR( tempvar ), _
+					astNewCONSTi( minval, FB_DATATYPE_UINT ) ), _
+				astNewCONSTi( maxval - minval, FB_DATATYPE_UINT ), _
 				deflabel, AST_OPOPT_NONE ) )
 
 		'' goto table[expr - minval]
 		tree = astNewLINK( tree, _
 			astNewBRANCH( AST_OP_JUMPPTR, NULL, _
-				astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE ), _
+				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) ), _
+						astNewCONSTi( env.pointersize, FB_DATATYPE_UINT ) ), _
 					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
 	else
 		tbsym = NULL

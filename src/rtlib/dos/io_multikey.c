@@ -188,7 +188,7 @@ void fb_ConsoleMultikeyInit( void )
 
 int fb_ConsoleMultikey( int scancode )
 {
-	if( scancode >= sizeof( key ) )
+	if( (scancode < 0) || ((unsigned int)scancode >= sizeof( key )) )
 		return FB_FALSE;
 
 	fb_ConsoleMultikeyInit( );

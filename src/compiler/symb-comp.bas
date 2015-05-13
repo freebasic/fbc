@@ -2,9 +2,11 @@
 ''
 '' chng: sep/2006 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
+#include once "rtl.bi"
+
+declare function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
@@ -40,7 +42,7 @@ private function hDeclareProc _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval op as AST_OP, _
-		byval add_rhs as integer, _
+		byval rhsdtype as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
@@ -55,10 +57,12 @@ private function hDeclareProc _
 	symbAddProcInstancePtr( udt, proc )
 
 	'' add right-side hand param?
-	if( add_rhs ) then
+	if( rhsdtype <> FB_DATATYPE_INVALID ) then
+		'' byref __FB_RHS__ as const UDT
+		'' (must be CONST to allow const objects to be passed)
 		assert( symbIsStruct( udt ) )
-		symbAddProcParam( proc, "__FB_RHS__", FB_DATATYPE_STRUCT, udt, _
-		                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
+		symbAddProcParam( proc, "__FB_RHS__", rhsdtype, udt, _
+		                  0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	end if
 
 	attrib or= FB_SYMBATTRIB_METHOD
@@ -99,13 +103,15 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	static as FBARRAYDIM dTB(0)
 	dim as ASTNODE ptr initree = any, rttibase = any
 	dim as FBSYMBOL ptr rtti = any, fld = any
-	dim as string id
 
-	'' static shared id as $fb_RTTI
-	id = "_ZTS" + *symbGetMangledName( udt )
-	rtti = symbAddVar( NULL, id, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
+	'' static shared UDT.rtti as fb_RTTI$
+	'' (real identifier given later during mangling)
+	symbNestBegin( udt, TRUE )
+	rtti = symbAddVar( NULL, NULL, FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
 	                   FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                   FB_SYMBOPT_PRESERVECASE )
+	rtti->stats or= FB_SYMBSTATS_RTTITABLE
+	symbNestEnd( TRUE )
 	udt->udt.ext->rtti = rtti
 
 	'' initializer
@@ -133,7 +139,6 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( rtti, initree )
-	symbSetIsInitialized( rtti )
 end sub
 
 private sub hBuildVtable( byval udt as FBSYMBOL ptr )
@@ -141,7 +146,6 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	dim as ASTNODE ptr initree = any, basevtableinitree = any
 	dim as FBSYMBOL ptr member = any, rtti = any, vtable = any
 	dim as integer i = any, basevtableelements = any
-	dim as string id
 
 	'' The vtable is an array of pointers:
 	''    0. null pointer (why? just following GCC...)
@@ -151,12 +155,15 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 
 	assert( udt->udt.ext->vtableelements >= 2 )
 
-	'' static shared vtable(0 to elements-1) as any ptr
-	id = "_ZTV" + *symbGetMangledName( udt )
+	'' static shared UDT.vtable(0 to elements-1) as any ptr
+	'' (real identifier given later during mangling)
+	symbNestBegin( udt, TRUE )
 	dTB(0).upper = udt->udt.ext->vtableelements - 1
-	vtable = symbAddVar( NULL, id, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
+	vtable = symbAddVar( NULL, NULL, typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 1, dTB(), _
 	                     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
 	                     FB_SYMBOPT_PRESERVECASE )
+	vtable->stats or= FB_SYMBSTATS_VTABLE
+	symbNestEnd( TRUE )
 
 	'' Find information about the base UDT's vtable:
 	''    the number of elements,
@@ -216,14 +223,15 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 	astTypeIniEnd( initree, TRUE )
 
 	symbSetTypeIniTree( vtable, initree )
-	symbSetIsInitialized( vtable )
 
 	'' 1. new (and not inherited) entries for ...
 	''  - virtuals: must be set to point to their bodies for now.
 	''    (not yet overridden)
-	''  - abstracts: are set to point to fb_AbstractStub() (our version
-	''    of GCC's __cxa_pure_virtual()), which will show a run-time
-	''    error message and abort the program.
+	''  - abstracts: are set to NULL, so if they're not overridden, a NULL
+	''    pointer crash will happen when they're called, which is handled by
+	''    -exx error checking (see also astBuildVtableLookup()).
+	''    (GCC sets it to point to __cxa_pure_virtual(), which shows a
+	''    run-time error message and aborts the program)
 	''
 	'' 2. any entries for inherited virtuals/abstracts that were overridden
 	''    by a normal method must be updated to point to the normal method.
@@ -263,23 +271,96 @@ private sub hAddCtorBody _
 		byval is_copyctor as integer _
 	)
 
-	dim as FBSYMBOL ptr this_ = any, src = any
-
 	'' The AST will add any implicit base/field construction/destruction
 	'' code automatically
 	hProcBegin( udt, proc )
 
 	if( is_copyctor ) then
-		this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-		src = symbGetParamVar( symbGetProcTailParam( proc ) )
-
 		'' assign op overload will do the rest
-		astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
+		astAdd( astNewASSIGN( _
+			astBuildVarField( symbGetParamVar( symbGetProcHeadParam( proc ) ) ), _
+			astBuildVarField( symbGetParamVar( symbGetProcTailParam( proc ) ) ) ) )
 	end if
 
 	hProcEnd( )
 
 	symbSetCantUndef( udt )
+end sub
+
+private function hArrayDescPtr _
+	( _
+		byval descexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	descexpr = astNewADDROF( descexpr )
+	descexpr = astNewBOP( AST_OP_ADD, descexpr, astNewCONSTi( symb.fbarray_ptr ) )
+	descexpr = astNewCONV( typeMultAddrOf( dtype, 2 ), subtype, descexpr, AST_CONVOPT_DONTCHKPTR )
+	descexpr = astNewDEREF( descexpr )
+
+	function = descexpr
+end function
+
+'' Copying over a dynamic array, needed for the automatically-generated implicit
+'' LET overloads for UDTs containing dynamic array fields.
+private sub hAssignDynamicArray _
+	( _
+		byval fld as FBSYMBOL ptr, _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr _
+	)
+
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr dst = any, src = any, limit = any
+	dim as FBSYMBOL ptr looplabel = any, exitlabel = any
+
+	'' 1. REDIM dest to same size as source (will call dtors/ctors as needed)
+	dtype = fld->typ
+	astAdd( rtlArrayRedimTo( dstexpr, srcexpr, dtype, fld->subtype ) )
+
+	'' 2. Loop over all elements (if any) and copy them over 1 by 1, using
+	''    astNewASSIGN(), that will call let overloads as needed, and handle
+	''    strings.
+	dtype = typeAddrOf( dtype )
+	looplabel = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
+	dst = symbAddTempVar( dtype, fld->subtype )
+	src = symbAddTempVar( dtype, fld->subtype )
+	limit = symbAddTempVar( dtype, fld->subtype )
+
+	'' dst   = this.dstdesc.ptr
+	'' src   = this.srcdesc.ptr
+	'' limit = src + this.srcdesc.size
+	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( _
+		limit, _
+		astNewBOP( AST_OP_ADD, _
+			astNewVAR( src ), _
+			astBuildDerefAddrOf( srcexpr, symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ), _
+		AST_OPOPT_ISINI ) )
+
+	'' looplabel:
+	astAdd( astNewLABEL( looplabel ) )
+
+	'' if src >= limit then goto exitlabel
+	astAdd( astBuildBranch( astNewBOP( AST_OP_GE, astNewVAR( src ), astNewVAR( limit ) ), exitlabel, TRUE ) )
+
+	'' *dst = *src
+	astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
+
+	'' dst += 1  (astBuildVarInc() does pointer arithmetic)
+	'' src += 1
+	astAdd( astBuildVarInc( dst, 1 ) )
+	astAdd( astBuildVarInc( src, 1 ) )
+
+	'' goto looplabel
+	astAdd( astNewBRANCH( AST_OP_JMP, looplabel ) )
+
+	'' exitlabel:
+	astAdd( astNewLABEL( exitlabel ) )
+
 end sub
 
 '':::::
@@ -299,10 +380,10 @@ private sub hAssignList _
     dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
     src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
-    '' dst = @this.dst(0)
-    astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ) ) )
-    '' src = @this.src(0)
-    astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ) ) )
+	'' dst = @this.dst(0)
+	astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ), AST_OPOPT_ISINI ) )
+	'' src = @this.src(0)
+	astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ), AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )
@@ -316,7 +397,7 @@ private sub hAssignList _
     astAdd( astBuildVarInc( src, 1 ) )
 
 	'' next
-	astAdd( astBuildForEnd( NULL, cnt, label, 1, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
+	astAdd( astBuildForEnd( NULL, cnt, label, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
 
 end sub
 
@@ -329,7 +410,7 @@ private function hCopyUnionFields _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer bytes = any, lgt = any, base_ofs = any
+	dim as longint bytes = any, lgt = any, base_ofs = any
 
 	'' merge all union fields
 	fld = base_fld
@@ -351,12 +432,11 @@ private function hCopyUnionFields _
 
     '' copy all them at once
 	astAdd( astNewMEM( AST_OP_MEMMOVE, _
-    	  	  		   astBuildInstPtr( this_, base_fld ), _
-    	  	  		   astBuildInstPtr( rhs, base_fld ), _
-    	  	  		   bytes ) )
+				astBuildVarField( this_, base_fld ), _
+				astBuildVarField( rhs, base_fld ), _
+				bytes ) )
 
 	function = fld
-
 end function
 
 private sub hAddLetOpBody _
@@ -367,33 +447,56 @@ private sub hAddLetOpBody _
 
 	dim as FBSYMBOL ptr fld = any, this_ = any, rhs = any
 	dim as ASTNODE ptr dstexpr = any, srcexpr = any
+	dim as integer do_copy = any
 
 	hProcBegin( udt, letproc )
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( letproc ) )
 	rhs = symbGetParamVar( symbGetProcTailParam( letproc ) )
 
-	'' for each field
+	''
+	'' Copy each field
+	''
+	'' - except dynamic array field descriptors. Instead, the fake dynamic
+	''   array field will be handled in order to copy the dynamic array.
+	''
+	'' - except the OBJECT base class containing the vptr, because we don't
+	''   want to overwrite this.vptr with rhs.vptr. The this object doesn't
+	''   change its type or size, so its vptr must stay the same.
+	''
+	''   This only applies if this UDT actually is directly derived from
+	''   OBJECT. For UDTs that are only indirectly derived from OBJECT, we
+	''   do want to copy the base. Doing so will call the base's Let
+	''   overload, which then takes care of not overwriting the vptr.
+	''
 	fld = symbGetCompSymbTb( udt ).head
 	while( fld )
-		if( symbIsField( fld ) ) then
+		do_copy = symbIsField( fld ) and (not symbIsDescriptor( fld ))
+		if( udt->udt.base ) then
+			do_copy and= (fld <> udt->udt.base) or _
+				(udt->udt.base->subtype <> symb.rtti.fb_object)
+		end if
+
+		if( do_copy ) then
 			'' part of an union?
 			if( symbGetIsUnionField( fld ) ) then
 				fld = hCopyUnionFields( this_, rhs, fld )
 				continue while
 			end if
 
-			dstexpr = astBuildInstPtr( this_, fld )
-			srcexpr = astBuildInstPtr( rhs, fld )
+			dstexpr = astBuildVarField( this_, fld )
+			srcexpr = astBuildVarField( rhs, fld )
 
-			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
-				'' this.field = rhs.field
-				astAdd( astNewASSIGN( dstexpr, srcexpr ) )
-			'' array..
+			'' Dynamic array field?
+			if( symbIsDynamic( fld ) ) then
+				hAssignDynamicArray( fld, dstexpr, srcexpr )
 			else
-				hAssignList( fld, dstexpr, srcexpr )
+				if( symbGetArrayDimensions( fld ) = 0 ) then
+					'' this.field = rhs.field
+					astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+				else
+					hAssignList( fld, dstexpr, srcexpr )
+				end if
 			end if
 		end if
 
@@ -406,10 +509,14 @@ private sub hAddLetOpBody _
 
 end sub
 
-'' Declare & add any implicit/default members and global vars if needed
-sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr defctor = any, copyctor = any, letop = any, dtor = any
-	dim as integer base_without_defaultctor = any
+'' Declare any implicit/default UDT members without implementing them.
+sub symbUdtDeclareDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
+
+	dim as integer missing_base_defctor = any
 
 	''
 	'' If this UDT has fields with ctors, we have to make sure to add
@@ -424,27 +531,44 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	'' we want to add a default constructor if there isn't any constructor
 	'' yet, to ensure the field initializers are getting used.
 	''
+	'' For the copy constructors and Let overloads, we usually only need to
+	'' add BYREF AS CONST UDT versions. That allows copying from const or
+	'' non-const objects.
+	''
+	'' For backwards compatibility we may need to add a BYREF AS UDT copy
+	'' constructor though: In case the user created only a non-const LET
+	'' overload, and we need to create a copy constructor that's going to
+	'' call that LET overload. Since it's non-const, the copy constructor's
+	'' parameter must be non-const aswell.
+	''
 
 	'' Derived?
 	if( udt->udt.base ) then
 		assert( symbIsField( udt->udt.base ) )
 		assert( symbGetType( udt->udt.base ) = FB_DATATYPE_STRUCT )
 		assert( symbIsStruct( udt->udt.base->subtype ) )
-		'' No default ctor?
-		base_without_defaultctor = (symbGetCompDefCtor( udt->udt.base->subtype ) = NULL)
+		'' No default ctor, but others? Then the base needs to be
+		'' initialized with a manual constructor call. In user-defined
+		'' constructors this is done by using the BASE() initializer
+		'' syntax, but in our implicitly generated constructors we can't
+		'' do that because we don't know what arguments to supply.
+		missing_base_defctor = _
+			(symbGetCompDefCtor( udt->udt.base->subtype ) = NULL) and _
+			(symbGetCompCtorHead( udt->udt.base->subtype ) <> NULL)
 	else
-		base_without_defaultctor = FALSE
+		missing_base_defctor = FALSE
 	end if
 
-	defctor = NULL
-	copyctor = NULL
-	letop = NULL
-	dtor = NULL
+	default.defctor = NULL
+	default.copyctor = NULL
+	default.copyctorconst = NULL
+	default.copyletopconst = NULL
+	default.dtor = NULL
 
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( udt ) or symbGetUDTHasInitedField( udt )) and _
 	    (symbGetCompCtorHead( udt ) = NULL) ) then
-		if( base_without_defaultctor ) then
+		if( missing_base_defctor ) then
 			'' Cannot implicitly generate a default ctor,
 			'' show a nicer error message than astProcEnd() would.
 			'' It would report the missing BASE() initializer,
@@ -452,42 +576,70 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			defctor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
 	if( symbGetUDTHasCtorField( udt ) ) then
-		'' Let operator (must be defined before the copy ctor)
-		if( symbGetCompCloneProc( udt ) = NULL ) then
-			letop = hDeclareProc( udt, AST_OP_ASSIGN, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+		symbUdtAllocExt( udt )
 
-			'' Don't allow the implicit LET to override a FINAL LET from the base
-			symbProcCheckOverridden( letop, TRUE )
+		'' LET overloads must be declared before the copy ctors because
+		'' they're called by the current copy ctor implementation.
+
+		if( udt->udt.ext->copyletopconst = NULL ) then
+			'' declare operator let( byref rhs as const UDT )
+			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+			symbProcCheckOverridden( default.copyletopconst, TRUE )
 		end if
 
-		'' Copy ctor
-		if( symbGetCompCopyCtor( udt ) = NULL ) then
-			if( base_without_defaultctor ) then
+		if( udt->udt.ext->copyctorconst = NULL ) then
+			'' declare constructor( byref rhs as const UDT )
+			if( missing_base_defctor ) then
+				'' Cannot implicitly generate a copy ctor,
+				'' same as with default ctor above.
+				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
+			else
+				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			end if
+		end if
+
+		'' Add a non-const copy ctor for backwards compatibility,
+		'' if the user provided a non-const LET overload (see above).
+		if( (udt->udt.ext->copyletop <> NULL) and (udt->udt.ext->copyctor = NULL) ) then
+			'' declare constructor( byref rhs as UDT )
+			if( missing_base_defctor ) then
 				'' Cannot implicitly generate a copy ctor,
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				copyctor = hDeclareProc( udt, INVALID, TRUE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
 
 	'' has fields with dtors?
 	if( symbGetUDTHasDtorField( udt ) ) then
+		symbUdtAllocExt( udt )
+
 		'' no default dtor explicitly defined?
-		if( symbGetCompDtor( udt ) = NULL ) then
+		if( udt->udt.ext->dtor = NULL ) then
 			'' Dtor
-			dtor = hDeclareProc( udt, INVALID, FALSE, FB_SYMBATTRIB_DESTRUCTOR )
+			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_DESTRUCTOR )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
-			symbProcCheckOverridden( dtor, TRUE )
+			symbProcCheckOverridden( default.dtor, TRUE )
 		end if
 	end if
+
+end sub
+
+'' Implement the implicit members declared by symbUdtDeclareDefaultMembers(),
+'' add other implicit code (vtable/rtti global vars).
+sub symbUdtImplementDefaultMembers _
+	( _
+		byref default as SYMBDEFAULTMEMBERS, _
+		byval udt as FBSYMBOL ptr _
+	)
 
 	''
 	'' Add vtable and rtti global variables
@@ -520,70 +672,61 @@ sub symbUdtAddDefaultMembers( byval udt as FBSYMBOL ptr )
 	''
 	'' Add bodies if any implicit ctor/dtor/let procs were declared above
 	''
-	if( defctor ) then
-		hAddCtorBody( udt, defctor, FALSE )
+
+	if( default.defctor ) then
+		hAddCtorBody( udt, default.defctor, FALSE )
 	end if
 
-	if( copyctor ) then
-		hAddCtorBody( udt, copyctor, TRUE )
+	if( default.copyletopconst ) then
+		hAddLetOpBody( udt, default.copyletopconst )
 	end if
 
-	if( letop ) then
-		hAddLetOpBody( udt, letop )
+	if( default.copyctorconst ) then
+		hAddCtorBody( udt, default.copyctorconst, TRUE )
 	end if
 
-	if( dtor ) then
-		hAddCtorBody( udt, dtor, FALSE )
+	if( default.copyctor ) then
+		hAddCtorBody( udt, default.copyctor, TRUE )
 	end if
+
+	if( default.dtor ) then
+		hAddCtorBody( udt, default.dtor, FALSE )
+	end if
+
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' getters/setters
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private function hIsLhsEqRhs _
+private function hHasByrefSelfParam _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) as integer static
+		byval proc as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 
-	dim as FBSYMBOL ptr param, subtype
+	dim as FBSYMBOL ptr param = any
 
 	function = FALSE
-
 	param = symbGetProcTailParam( proc )
-	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		subtype = symbGetSubtype( param )
 
-		if( subtype = NULL ) then
-			return FALSE
-		end if
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_BYREF ) then
+		exit function
+	end if
 
-		'' forward?
-		if( symbGetClass( subtype ) = FB_SYMBCLASS_FWDREF ) then
-			'' not a pointer?
-			if( symbGetType( param ) = FB_DATATYPE_FWDREF ) then
-				'' same name?
-				if( subtype->hash.index = parent->hash.index ) then
-					return TRUE
-				end if
+	'' HACK: Allow forward references with the same name
+	'' (but CONSTs must still match)
+	if( param->typ = typeJoin( dtype, FB_DATATYPE_FWDREF ) ) then
+		assert( param->subtype->class = FB_SYMBCLASS_FWDREF )
+		if( param->subtype->hash.index = subtype->hash.index ) then
+			if( *param->subtype->hash.item->name = *subtype->hash.item->name ) then
+				return TRUE
 			end if
-
-			return FALSE
-		end if
-
-		if( subtype = parent ) then
-			select case symbGetClass( parent )
-			case FB_SYMBCLASS_STRUCT
-				function = ( symbGetType( param ) = FB_DATATYPE_STRUCT )
-
-			case FB_SYMBCLASS_CLASS
-				'...
-			end select
 		end if
 	end if
 
+	function = (param->typ = dtype) and (param->subtype = subtype)
 end function
 
 '' Check whether UDT doesn't have either of dtor/copy ctor/virtual methods
@@ -592,6 +735,7 @@ end function
 '' this function to check whether there is a copyctor and whether a temp copy
 '' to be passed byref must be used or not)
 function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) )
 	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
 	            (symbGetCompDtor( sym ) = NULL) and _
 	            (not symbGetHasRTTI( sym )))
@@ -617,12 +761,19 @@ sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 			'' only the THIS param  - it's a default ctor
 			'' (this takes precedence over other ctors with all optional params)
 			sym->udt.ext->defctor = proc
+
 		'' copy?
 		case 2
 			'' 2 params - it could be a copy ctor
 			if( sym->udt.ext->copyctor = NULL ) then
-				if( hIsLhsEqRhs( sym, proc ) ) then
+				if( hHasByrefSelfParam( proc, FB_DATATYPE_STRUCT, sym ) ) then
 					sym->udt.ext->copyctor = proc
+				end if
+			end if
+
+			if( sym->udt.ext->copyctorconst = NULL ) then
+				if( hHasByrefSelfParam( proc, typeSetIsConst( FB_DATATYPE_STRUCT ), sym ) ) then
+					sym->udt.ext->copyctorconst = proc
 				end if
 			end if
 		end select
@@ -667,13 +818,10 @@ function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	if( sym ) then
-		if( symbIsStruct( sym ) ) then
-			if( sym->udt.ext ) then
-				function = sym->udt.ext->copyctor
-			end if
-		end if
+private function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	assert( symbIsStruct( sym ) )
+	if( sym->udt.ext ) then
+		function = sym->udt.ext->copyctor
 	end if
 end function
 
@@ -687,23 +835,25 @@ function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+sub symbCheckCompLetOp( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
 	if( symbIsStruct( sym ) ) then
-		'' clone?
-		if( hIsLhsEqRhs( sym, proc ) ) then
+		if( hHasByrefSelfParam( proc, FB_DATATYPE_STRUCT, sym ) ) then
 			symbUdtAllocExt( sym )
-			sym->udt.ext->clone = proc
+			sym->udt.ext->copyletop = proc
+		end if
+
+		if( hHasByrefSelfParam( proc, typeSetIsConst( FB_DATATYPE_STRUCT ), sym ) ) then
+			symbUdtAllocExt( sym )
+			sym->udt.ext->copyletopconst = proc
 		end if
 	end if
 end sub
 
-function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	if( sym ) then
-		if( symbIsStruct( sym ) ) then
-			if( sym->udt.ext ) then
-				function = sym->udt.ext->clone
-			end if
-		end if
+function symbCompHasCopyLetOps( byval udt as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( udt ) )
+	if( udt->udt.ext ) then
+		function = (udt->udt.ext->copyletop <> NULL) or _
+		           (udt->udt.ext->copyletopconst <> NULL)
 	end if
 end function
 
@@ -757,7 +907,7 @@ sub symbSetCompOpOvlHead _
 
 		'' assign?
 		if( op = AST_OP_ASSIGN ) then
-			symbCheckCompClone( sym, proc )
+			symbCheckCompLetOp( sym, proc )
 		end if
 	'' not self..
 	else
@@ -1167,18 +1317,20 @@ sub symbCompRTTIInit( )
 
 	static as FBARRAYDIM dTB(0)
 
-	'' type $fb_RTTI
-	rttitype = symbStructBegin( NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0 )
+	'' type fb_RTTI$
+	'' (using fb_RTTI$ instead of $fb_RTTI to prevent gdb/stabs confusion,
+	'' where leading $ has special meaning)
+	rttitype = symbStructBegin( NULL, NULL, NULL, "fb_RTTI$", "fb_RTTI$", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
-	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	symbAddField( rttitype, "stdlibvtable", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' dim id as zstring ptr 
-	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0 )
+	symbAddField( rttitype, "id", 0, dTB(), typeAddrOf( FB_DATATYPE_CHAR ), NULL, 0, 0, 0 )
 
-	'' dim rttibase as $fb_RTTI ptr
-	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0 )
+	'' dim rttibase as fb_RTTI$ ptr
+	symbAddField( rttitype, "rttibase", 0, dTB(), typeAddrOf( FB_DATATYPE_STRUCT ), rttitype, 0, 0, 0 )
 
 	'' end type
 	symbStructEnd( rttitype )
@@ -1190,14 +1342,16 @@ sub symbCompRTTIInit( )
 	else
 		ptypename = @"OBJECT"
 	end if
-	objtype = symbStructBegin( NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0 )
+	'' (using fb_Object$ instead of $fb_Object - ditto)
+	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "fb_Object$", FALSE, 0, NULL, 0, 0 )
 	symb.rtti.fb_object = objtype
 	symbSetHasRTTI( objtype )
 	symbSetIsUnique( objtype )
 	symbNestBegin( objtype, FALSE )
 
 	'' vptr as any ptr
-	symbAddField( objtype, "$vptr", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0 )
+	'' (using vptr$ instead of $vptr - ditto)
+	symbAddField( objtype, "vptr$", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
@@ -1205,10 +1359,19 @@ sub symbCompRTTIInit( )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
 	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
 
+	'' declare constructor( byref __FB_RHS__ as const object )
+	'' (must have a BYREF AS CONST parameter so it can copy from CONST objects too)
+	ctor = symbPreAddProc( NULL )
+	symbAddProcInstancePtr( objtype, ctor )
+	symbAddProcParam( ctor, "__FB_RHS__", typeSetIsConst( FB_DATATYPE_STRUCT ), objtype, _
+			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
+	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
+	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
+
 	'' end type
 	symbStructEnd( objtype, TRUE )
 
-	'' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
+	'' declare extern shared as fb_RTTI$ __fb_ZTS6Object (the Object class RTTI instance created in C)
 	objrtti = symbAddVar( NULL, "__fb_ZTS6Object", FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, 0, 0, dTB(), _
 	                      FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, FB_SYMBOPT_PRESERVECASE )
 

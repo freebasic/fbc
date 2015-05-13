@@ -2,7 +2,7 @@
 
 #include "../fb.h"
 
-int fb_hGetCurrentDir( char *dst, int maxlen )
+ssize_t fb_hGetCurrentDir( char *dst, ssize_t maxlen )
 {
 	if( getcwd( dst, maxlen ) != NULL )
 		return strlen( dst );

@@ -2,7 +2,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ast.bi"
@@ -11,305 +10,262 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_ArrayRedimEx CDECL ( array() as ANY, byval elementlen as integer, _
-							   	   byval doclear as integer, byval isvarlen as integer, _
-							   	   byval dimensions as integer, ... ) as integer '/ _
+		/' function fb_ArrayRedimEx cdecl _
+			( _
+				array() as any, _
+				byval elementlen as uinteger, _
+				byval doclear as long, _
+				byval isvarlen as long, _
+				byval dimensions as uinteger, _
+				... _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYREDIM, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayRedimPresvEx CDECL ( array() as ANY, byval elementlen as integer, _
-					            		byval doclear as integer, byval isvarlen as integer, _
-								        byval dimensions as integer, ... ) as integer '/ _
+		/' function fb_ArrayRedimPresvEx cdecl _
+			( _
+				array() as any, _
+				byval elementlen as uinteger, _
+				byval doclear as long, _
+				byval isvarlen as long, _
+				byval dimensions as uinteger, _
+				... _
+			) as integer '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayRedimObj CDECL ( array() as ANY, byval elementlen as integer, _
-							   	    byval ctor as sub cdecl( byval this_ as any ptr), _
-							   	    byval dtor as sub cdecl( byval this_ as any ptr), _
-							   	    byval dimensions as integer, ... ) as integer '/ _
+		/' function fb_ArrayRedimObj cdecl _
+			( _
+				array() as any, _
+				byval elementlen as uinteger, _
+				byval ctor as sub cdecl( byval this_ as any ptr), _
+				byval dtor as sub cdecl( byval this_ as any ptr), _
+				byval dimensions as uinteger, _
+				... _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYREDIM_OBJ, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayRedimPresvObj CDECL ( array() as ANY, byval elementlen as integer, _
-					            		 byval ctor as cdecl sub(), _
-					            		 byval dtor as cdecl sub(), _
-								         byval dimensions as integer, ... ) as integer '/ _
+		/' function fb_ArrayRedimPresvObj cdecl _
+			( _
+				array() as any, _
+				byval elementlen as uinteger, _
+				byval ctor as sub cdecl( ), _
+				byval dtor as sub cdecl( ), _
+				byval dimensions as uinteger, _
+				... _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYREDIMPRESV_OBJ, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
-		/' sub fb_ArrayDestructObj( array() as any, byval dtor as sub cdecl() ) '/ _
+		/' function fb_ArrayRedimTo _
+			( _
+				dest() as any, _
+				source() as any, _
+				byval isvarlen as long, _
+				byval ctor as sub cdecl( byval this_ as any ptr), _
+				byval dtor as sub cdecl( byval this_ as any ptr) _
+			) as long '/ _
+		( _
+			@FB_RTL_ARRAYREDIMTO, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' sub fb_ArrayDestructObj( array() as any, byval dtor as sub cdecl( ) ) '/ _
 		( _
 			@FB_RTL_ARRAYDESTRUCTOBJ, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_ArrayDestructStr( array() as any ) '/ _
 		( _
 			@FB_RTL_ARRAYDESTRUCTSTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayClear( array() as any, byval isvarlen as integer ) as integer '/ _
+		/' function fb_ArrayClear( array() as any, byval isvarlen as long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayClearObj( array() as any, byval ctor as sub cdecl(), byval dtor as sub cdecl(), byval dofill as integer ) as integer '/ _
+		/' function fb_ArrayClearObj _
+			( _
+				array() as any, _
+				byval ctor as sub cdecl( ), _
+				byval dtor as sub cdecl( ), _
+				byval dofill as long _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayErase( array() as any, byval isvarlen as integer ) as integer '/ _
+		/' function fb_ArrayErase( array() as any, byval isvarlen as long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl() ) as integer '/ _
+		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASEOBJ, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayStrErase( array() as any ) '/ _
+		/' sub fb_ArrayStrErase( array() as any ) '/ _
 		( _
 			@FB_RTL_ARRAYERASESTR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer '/ _
+		/' function fb_ArrayLBound( array() as any, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYLBOUND, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer '/ _
+		/' function fb_ArrayUBound( array() as any, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYUBOUND, NULL, _
-			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, _
-								 byval linenum as integer ) as any ptr '/ _
+		/' function fb_ArraySngBoundChk _
+			( _
+				byval idx as uinteger, _
+				byval ubound as uinteger, _
+				byval linenum as long, _
+				byval fname as const zstring ptr _
+			) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_CANBECLONED, _
 			4, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, _
-							  byval ubound as integer, _
-							  byval linenum as integer ) as any ptr '/ _
+		/' function fb_ArrayBoundChk _
+			( _
+				byval idx as integer, _
+				byval lbound as integer, _
+				byval ubound as integer, _
+				byval linenum as long, _
+				byval fname as const zstring ptr _
+			) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_CANBECLONED, _
 			5, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
-				), _
-				( _
-					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
-				) _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' EOL '/ _
@@ -547,30 +503,15 @@ function rtlArrayErase _
 	function = proc
 end function
 
-function rtlArrayRedim _
+private sub hGetCtorDtorForRedim _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval elementlen as integer, _
-		byval dimensions as integer, _
-		exprTB() as ASTNODE ptr, _
-		byval dopreserve as integer, _
-		byval doclear as integer _
-	) as integer
-	
-	'' no const filtering needed... dynamic arrays can't be const
-	
-    dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any, subtype = any
-    dim as integer dtype = any
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byref ctor as FBSYMBOL ptr, _
+		byref dtor as FBSYMBOL ptr _
+	)
 
-    function = FALSE
-
-    dtype = symbGetFullType( s )
-
-	'' only objects get instantiated
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = symbGetSubtype( s )
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		ctor = symbGetCompDefCtor( subtype )
 		dtor = symbGetCompDtor( subtype )
 
@@ -578,10 +519,35 @@ function rtlArrayRedim _
 		'' because if it were possible to declare such a dynamic array,
 		'' the rtlib couldn't REDIM it.
 		assert( iif( ctor = NULL, (symbGetCompCtorHead( subtype ) = NULL) or (errGetCount( ) > 0), TRUE ) )
-	case else
+	else
 		ctor = NULL
 		dtor = NULL
-	end select
+	end if
+
+end sub
+
+function rtlArrayRedim _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval dopreserve as integer, _
+		byval doclear as integer _
+	) as ASTNODE ptr
+	
+	'' no const filtering needed... dynamic arrays can't be const
+	
+    dim as ASTNODE ptr proc = any, expr = any
+	dim as FBSYMBOL ptr f = any, sym = any, subtype = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any
+    dim as integer dtype = any
+	dim as longint elementlen = any
+
+	sym = astGetSymbol( arrayexpr )
+	dtype = symbGetFullType( sym )
+	elementlen = symbGetLen( sym )
+
+	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 
     if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
@@ -600,7 +566,7 @@ function rtlArrayRedim _
     proc = astNewCALL( f )
 
 	'' array() as ANY
-	if( astNewARG( proc, astNewVAR( s ) ) = NULL ) then
+	if( astNewARG( proc, arrayexpr ) = NULL ) then
 		exit function
 	end if
 
@@ -665,6 +631,53 @@ function rtlArrayRedim _
 			exit function
 		end if
 	next
+
+	function = rtlErrorCheck( proc )
+end function
+
+function rtlArrayRedimTo _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any
+
+	hGetCtorDtorForRedim( dtype, subtype, ctor, dtor )
+
+	proc = astNewCALL( PROCLOOKUP( ARRAYREDIMTO ) )
+
+	'' dest() as any
+	if( astNewARG( proc, dstexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' source() as any
+	if( astNewARG( proc, srcexpr ) = NULL ) then
+		exit function
+	end if
+
+	'' byval isvarlen as long
+	if( astNewARG( proc, astNewCONSTi( _
+	    (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRING) ) ) = NULL ) then
+		exit function
+	end if
+
+	hCheckDefCtor( ctor, FALSE, FALSE )
+	hCheckDtor( dtor, FALSE, FALSE )
+
+	'' byval ctor as sub cdecl( )
+	if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+		exit function
+	end if
+
+	'' byval dtor as sub cdecl( )
+	if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
+		exit function
+	end if
 
 	function = rtlErrorCheck( proc )
 end function

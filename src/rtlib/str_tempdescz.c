@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_StrAllocTempDescZEx( const char *str, int len )
+FBCALL FBSTRING *fb_StrAllocTempDescZEx( const char *str, ssize_t len )
 {
 	FBSTRING *dsc;
 
@@ -24,10 +23,9 @@ FBCALL FBSTRING *fb_StrAllocTempDescZEx( const char *str, int len )
 	return dsc;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_StrAllocTempDescZ( const char *str )
 {
-	int len;
+	ssize_t len;
 
 	/* find the true size */
 	if( str != NULL )

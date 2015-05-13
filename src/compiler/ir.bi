@@ -44,7 +44,7 @@ type IRTAC_ as IRTAC
 
 type IRTACVREG
 	vreg		as IRVREG_ ptr
-	pParent		as IRVREG_ ptr ptr              '' pointer to parent if idx or aux
+	parent		as IRVREG_ ptr  '' pointer to parent if idx or aux
 	next		as IRTACVREG ptr				'' next in tac (-> vr, v1 or v2)
 end type
 
@@ -80,7 +80,7 @@ type IRVREG
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
-	ofs			as integer						'' +offset
+	ofs			as longint					'' +offset
 	mult		as integer						'' multipler, only valid for IDX and PTR under ir-tac
 
 	vidx		as IRVREG ptr					'' index vreg
@@ -110,6 +110,12 @@ type IR_VTBL
 		byval opt as IR_OPTIONVALUE _
 	) as integer
 
+	supportsOp as function _
+	( _
+		byval op as integer, _
+		byval dtype as integer _
+	) as integer
+
 	procBegin as sub _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -120,19 +126,17 @@ type IR_VTBL
 		byval proc as FBSYMBOL ptr _
 	)
 
-	procAllocArg as function _
+	procAllocArg as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	procAllocLocal as function _
+	procAllocLocal as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
 	procGetFrameRegName as function _
 	( _
@@ -182,8 +186,9 @@ type IR_VTBL
 
 	emitPushArg as sub _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
 	)
 
@@ -236,12 +241,6 @@ type IR_VTBL
 		byval v1 as IRVREG ptr _
 	)
 
-	emitPushUDT as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
 	emitAddr as sub _
 	( _
 		byval op as integer, _
@@ -259,6 +258,7 @@ type IR_VTBL
 
 	emitCallPtr as sub _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _
@@ -277,12 +277,12 @@ type IR_VTBL
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	emitMem as sub _
@@ -290,7 +290,7 @@ type IR_VTBL
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	emitScopeBegin as sub _
@@ -314,26 +314,30 @@ type IR_VTBL
 
 	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
 	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
-	emitVarIniI as sub( byval dtype as integer, byval value as integer )
-	emitVarIniF as sub( byval dtype as integer, byval value as double )
-	emitVarIniI64 as sub( byval dtype as integer, byval value as longint )
-	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
+	emitVarIniI   as sub( byval sym as FBSYMBOL ptr, byval value as longint )
+	emitVarIniF   as sub( byval sym as FBSYMBOL ptr, byval value as double )
+	emitVarIniOfs as sub _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
 
 	emitVarIniStr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	emitVarIniWstr as sub _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
-	emitVarIniPad as sub( byval bytes as integer )
+	emitVarIniPad as sub( byval bytes as longint )
 	emitVarIniScopeBegin as sub( )
 	emitVarIniScopeEnd as sub( )
 
@@ -348,13 +352,6 @@ type IR_VTBL
 	) as IRVREG ptr
 
 	allocVrImm as function _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	allocVrImm64 as function _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -373,7 +370,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	allocVrIdx as function _
@@ -381,7 +378,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -390,7 +387,7 @@ type IR_VTBL
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -399,7 +396,7 @@ type IR_VTBL
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	setVregDataType as sub _
@@ -418,14 +415,14 @@ type IR_VTBL
 	( _
 		byval reg as integer, _
 		byval vreg as IRVREG ptr, _
-		byval doload as integer _
+		byval vauxparent as IRVREG ptr _
 	)
 
 	storeVr as sub _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval reg as integer _
-	)
+		( _
+			byval vreg as IRVREG ptr, _
+			byval vauxparent as IRVREG ptr _
+		)
 
 	xchgTOS as sub _
 	( _
@@ -444,7 +441,7 @@ enum IR_OPT
 	IR_OPT_64BITCPUREGS  = &h00000400  '' 64-bit wide registers?
 
 	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
-	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
+	IR_OPT_MISSINGOPS    = &h00020000  '' Some "complex" math operators unavailable? (call irSupportsOp() for details)
 end enum
 
 type IRCTX
@@ -474,13 +471,13 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irGetOptionValue( opt ) ir.vtbl.getOptionValue( opt )
 
+#define irSupportsOp( op, dtype ) ir.vtbl.supportsOp( op, dtype )
+
 #define irAllocVreg(dtype, stype) ir.vtbl.allocVreg( dtype, stype )
 
 #define irSetVregDataType(v, dtype, stype) ir.vtbl.setVregDataType( v, dtype, stype )
 
 #define irAllocVrImm(dtype, stype, value) ir.vtbl.allocVrImm( dtype, stype, value )
-
-#define irAllocVrImm64(dtype, stype, value) ir.vtbl.allocVrImm64( dtype, stype, value )
 
 #define irAllocVrImmF(dtype, stype, value) ir.vtbl.allocVrImmF( dtype, stype, value )
 
@@ -500,9 +497,9 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irScopeEnd(s) ir.vtbl.scopeEnd( s )
 
-#define irProcAllocArg(proc, s, lgt) ir.vtbl.procAllocArg( proc, s, lgt )
+#define irProcAllocArg(proc, s) ir.vtbl.procAllocArg( proc, s )
 
-#define irProcAllocLocal(proc, s, lgt) ir.vtbl.procAllocLocal( proc, s, lgt )
+#define irProcAllocLocal(proc, s) ir.vtbl.procAllocLocal( proc, s )
 
 #define irProcAllocStaticVars(head_sym) ir.vtbl.procAllocStaticVars( head_sym )
 
@@ -517,25 +514,14 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
 
 #define irEmitVARINIBEGIN(sym) ir.vtbl.emitVarIniBegin( sym )
-
 #define irEmitVARINIEND(sym) ir.vtbl.emitVarIniEnd( sym )
-
-#define irEmitVARINIi(dtype, value) ir.vtbl.emitVarIniI( dtype, value )
-
-#define irEmitVARINIf(dtype, value) ir.vtbl.emitVarIniF( dtype, value )
-
-#define irEmitVARINI64(dtype, value) ir.vtbl.emitVarIniI64( dtype, value )
-
-#define irEmitVARINIOFS(sym, ofs) ir.vtbl.emitVarIniOfs( sym, ofs )
-
+#define irEmitVARINIi(sym, value) ir.vtbl.emitVarIniI( sym, value )
+#define irEmitVARINIf(sym, value) ir.vtbl.emitVarIniF( sym, value )
+#define irEmitVARINIOFS(sym, rhs, ofs) ir.vtbl.emitVarIniOfs( sym, rhs, ofs )
 #define irEmitVARINISTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniStr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIWSTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniWstr( totlgt, litstr, litlgt )
-
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
-
 #define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
-
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )
@@ -548,7 +534,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitRETURN(bytestopop) ir.vtbl.emitReturn( bytestopop )
 
-#define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
+#define irEmitPUSHARG( param, vr, plen, level ) ir.vtbl.emitPushArg( param, vr, plen, level )
 
 #define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
 #define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )
@@ -561,9 +547,9 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 
-#define irLoadVR(reg, vreg, doload) ir.vtbl.loadVR( reg, vreg, doload )
+#define irLoadVR(reg, vreg, vauxparent) ir.vtbl.loadVR( reg, vreg, vauxparent )
 
-#define irStoreVR(vreg, reg) ir.vtbl.storeVR( vreg, reg )
+#define irStoreVR(vreg, vauxparent) ir.vtbl.storeVR( vreg, vauxparent )
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
@@ -585,15 +571,13 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitPOP(v1) ir.vtbl.emitStack( AST_OP_POP, v1 )
 
-#define irEmitPUSHUDT(v1, lgt) ir.vtbl.emitPushUDT( v1, lgt )
-
 #define irEmitADDR(op, v1, vr) ir.vtbl.emitAddr( op, v1, vr )
 
 #define irEmitLABELNF(s) ir.vtbl.emitLabelNF( s )
 
 #define irEmitCALLFUNCT(proc, bytestopop, vr, level) ir.vtbl.emitCall( proc, bytestopop, vr, level )
 
-#define irEmitCALLPTR(v1, vr, bytestopop, level) ir.vtbl.emitCallPtr( v1, vr, bytestopop, level )
+#define irEmitCALLPTR(proc, v1, vr, bytestopop, level) ir.vtbl.emitCallPtr( proc, v1, vr, bytestopop, level )
 
 #define irEmitSTACKALIGN(bytes) ir.vtbl.emitStackAlign( bytes )
 
@@ -621,16 +605,6 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irIsIDX(v) (v->typ = IR_VREGTYPE_IDX)
 
 #define irIsPTR(v) (v->typ = IR_VREGTYPE_PTR)
-
-#define irGetVRType(v) v->typ
-
-#define irGetVRDataType(v) v->dtype
-
-#define irGetVRSubType(v) v->subtype
-
-#define irGetVROfs(v) v->ofs
-
-#define irGetVRValueI(v) v->value.int
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
 

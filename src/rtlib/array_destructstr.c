@@ -2,9 +2,10 @@
 
 #include "fb.h"
 
-void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, int base_idx )
+void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 {
-	int	elements, i;
+    size_t i;
+	ssize_t elements;
 	FBARRAYDIM *dim;
 	FBSTRING *this_;
 

@@ -41,24 +41,19 @@ sub cAsmCode()
 
 		'' id?
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
-
 			if thistok = FB_TK_SIZEOF then
-
-                '' SIZEOF( valid expression )?
-				expr = cMathFunct(thisTok, TRUE)
-				if( expr <> NULL ) then
-
-                    '' constant expression?
-					if( astIsCONST( expr ) = TRUE ) then
+				'' SIZEOF( valid expression )?
+				expr = cMathFunct( thisTok, TRUE )
+				if( expr ) then
+					'' constant expression?
+					if( astIsCONST( expr ) ) then
 						'' text replacement
-					    text = str( symbGetConstValInt( expr ) )
+						text = astConstFlushToStr( expr )
 					else
 						errReport( FB_ERRMSG_EXPECTEDCONST )
 						'' skip emission
 						doskip = TRUE
 					end if
-
-					astDelNode( expr )
 				else
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					'' skip emission
@@ -139,22 +134,18 @@ sub cAsmCode()
     			end if
 
 			case FB_TK_CINT
-
-                '' CINT( valid expression )?
+				'' CINT( valid expression )?
 				expr = cTypeConvExpr( thisTok, TRUE )
 				if( expr <> NULL ) then
-
-                    '' constant expression?
-					if( astIsCONST( expr ) = TRUE ) then
+					'' constant expression?
+					if( astIsCONST( expr ) ) then
 						'' text replacement
-					    text = str( symbGetConstValInt( expr ) )
+						text = astConstFlushToStr( expr )
 					else
 						errReport( FB_ERRMSG_EXPECTEDCONST )
 						'' skip emission
 						doskip = TRUE
 					end if
-
-					astDelNode( expr )
 				else
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					'' skip emission

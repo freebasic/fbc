@@ -252,15 +252,14 @@ function cIdentifier _
     		exit do
     	end if
 
-    	if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
-    		'' not in BASIC mangling mode?
-    		if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
-    			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+		if( symbIsEnum( sym ) ) then
+			if( symbEnumHasHashTb( sym ) = FALSE ) then
+				if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 					errReport( FB_ERRMSG_NONSCOPEDENUM )
-    			end if
-    			exit do
-    		end if
-    	end if
+				end if
+				exit do
+			end if
+		end if
 
     	'' skip id
     	lexSkipToken( LEXCHECK_NOPERIOD )
@@ -290,6 +289,14 @@ function cIdentifier _
     		return NULL
 
     	case else
+			'' Allow '[' for '[]' operator overloads, it's not part
+			'' of FB_TKCLASS_OPERATOR since it's not a real op.
+			if( lexGetToken( ) = CHAR_LBRACKET ) then
+				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+					exit do
+				end if
+			end if
+
     		if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
     			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		end if
@@ -424,9 +431,8 @@ function cParentId _
 			exit do
     	end if
 
-		if( symbGetClass( sym ) = FB_SYMBCLASS_ENUM ) then
-			'' not in BASIC mangling mode?
-			if( symbGetMangling( sym ) <> FB_MANGLING_BASIC ) then
+		if( symbIsEnum( sym ) ) then
+			if( symbEnumHasHashTb( sym ) = FALSE ) then
 				errReport( FB_ERRMSG_NONSCOPEDENUM )
 				exit do
 			end if
@@ -457,6 +463,14 @@ function cParentId _
 			exit do
 
     	case else
+			'' Allow '[' for '[]' operator overloads, it's not part
+			'' of FB_TKCLASS_OPERATOR since it's not a real op.
+			if( lexGetToken( ) = CHAR_LBRACKET ) then
+				if( (options and FB_IDOPT_ISOPERATOR ) <> 0 ) then
+					exit do
+				end if
+			end if
+
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     			exit do
     	end select

@@ -106,6 +106,7 @@ void fb_GfxViewUpdate( void )
 {
 }
 
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc)
 {
     int i;
@@ -141,6 +142,7 @@ void fb_hResetCharCells(FB_GFXCTX *context, int do_alloc)
     }
 }
 
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 void fb_hClearCharCells( int x1, int y1, int x2, int y2,
                          int page,
                          FB_WCHAR ch, unsigned fg, unsigned bg )
@@ -186,6 +188,9 @@ static int set_mode
 
     release_gfx_mem();
 
+	// Lock to protect the access to __fb_ctx.hooks
+	FB_LOCK( );
+
 	if( (mode == 0) || (w == 0) ) {
         memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
@@ -226,6 +231,8 @@ static int set_mode
         __fb_ctx.hooks.pagesetproc = fb_GfxPageSet;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
     }
+
+	FB_UNLOCK( );
 
     if (__fb_gfx) {
     	__fb_gfx->id = screen_id++;
@@ -351,7 +358,7 @@ static int set_mode
         }
     }
 
-    if( flags!=SCREEN_EXIT ) {
+    if( flags != SCREEN_EXIT ) {
         /* Reset VIEW PRINT
          *
          * Normally, resetting VIEW PRINT should also result in setting the cursor
@@ -401,6 +408,8 @@ FBCALL int fb_GfxScreen
 		num_pages = info->num_pages;
 	}
 
+	FB_GRAPHICS_LOCK( );
+
 	int res = set_mode( mode,
 	                    info->w, info->h,
 	                    depth, info->scanline_size,
@@ -409,23 +418,34 @@ FBCALL int fb_GfxScreen
 	                    flags, 0.0,
 	                    info->text_w, info->text_h );
 
-	if( res == FB_RTERROR_OK )
+	if( res == FB_RTERROR_OK ) {
+		FB_LOCK( );
 		FB_HANDLE_SCREEN->line_length = 0;
+		FB_UNLOCK( );
+	}
+
+	FB_GRAPHICS_UNLOCK( );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 FBCALL int fb_GfxScreenQB( int mode, int visible, int active )
 {
+	FB_GRAPHICS_LOCK( );
 
 	int res = fb_GfxScreen( mode, 0, 0, 0, 0 );
-	if( res != FB_RTERROR_OK )
+	if( res != FB_RTERROR_OK ) {
+		FB_GRAPHICS_UNLOCK( );
 		return res;
+	}
 
 	if( visible >= 0 || active >= 0 )
-		return fb_ErrorSetNum( fb_PageSet( visible, active ) );
+		res = fb_ErrorSetNum( fb_PageSet( visible, active ) );
 	else
-		return fb_ErrorSetNum( FB_RTERROR_OK );
+		res = fb_ErrorSetNum( FB_RTERROR_OK );
+
+	FB_GRAPHICS_UNLOCK( );
+	return res;
 }
 
 FBCALL int fb_GfxScreenRes
@@ -456,6 +476,8 @@ FBCALL int fb_GfxScreenRes
 		num_pages = 1;
 	}
 
+	FB_GRAPHICS_LOCK( );
+
 	int res = set_mode( -1,
 	                    w, h,
 	                    depth, 1,
@@ -464,14 +486,21 @@ FBCALL int fb_GfxScreenRes
 	                    flags, 1.0,
 	                    w / __fb_font[FB_FONT_8].w, h / __fb_font[FB_FONT_8].h );
 
-	if( res == FB_RTERROR_OK )
+	if( res == FB_RTERROR_OK ) {
+		FB_LOCK( );
 		FB_HANDLE_SCREEN->line_length = 0;
+		FB_UNLOCK( );
+	}
+
+	FB_GRAPHICS_UNLOCK( );
 
 	return res;
 }
 
 FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
+	FB_GRAPHICS_LOCK( );
+
 	fb_hMemSet(window_title_buff, 0, WINDOW_TITLE_SIZE);
 	fb_hMemCpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
 	__fb_window_title = window_title_buff;
@@ -481,4 +510,6 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 
 	/* del if temp */
 	fb_hStrDelTemp( title );
+
+	FB_GRAPHICS_UNLOCK( );
 }

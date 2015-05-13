@@ -155,7 +155,7 @@ function CHttpStream.read _
 	
 	if( ctx->stream.buffer <> NULL ) then
 		if( is_binary = FALSE ) then
-			function = *ctx->stream.buffer
+			function = *cptr(zstring ptr, ctx->stream.buffer)
 		else
 			dim as string res = space( ctx->stream.pos + 1 )
 			memcpy( strptr( res ), ctx->stream.buffer, ctx->stream.pos + 1 )

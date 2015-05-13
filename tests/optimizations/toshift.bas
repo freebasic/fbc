@@ -2,98 +2,154 @@
 
 namespace fbc_tests.optimizations.toshift
 
-const TEST_1 as integer = 7
-const TEST_2 as integer = -7
+dim shared as byte b
+dim shared as ubyte ub
+dim shared as short s
+dim shared as ushort us
+dim shared as long l
+dim shared as ulong ul
+dim shared as longint ll
+dim shared as ulongint ull
+dim shared as integer i
+dim shared as uinteger ui
 
-	dim shared as byte _sbyte
-	dim shared as ubyte _ubyte
-	dim shared as short _sshort
-	dim shared as ushort _ushort
-	dim shared as integer _sint
-	dim shared as uinteger _uint
-	dim shared as integer div2 = 2
-	dim shared as integer div4 = 4
-	
+dim shared as integer div2 = 2
+dim shared as integer div4 = 4
+
 sub test_positive cdecl ()
-	_sbyte = TEST_1
-	_ubyte = TEST_1
-	_sshort = TEST_1
-	_ushort = TEST_1
-	_sint = TEST_1
-	_uint = TEST_1
-	
-	CU_ASSERT_EQUAL( _sbyte \ 2,  3 )
-	CU_ASSERT_EQUAL( _ubyte \ 2,  3 )
-	CU_ASSERT_EQUAL( _sshort \ 2,  3 )
-	CU_ASSERT_EQUAL( _ushort \ 2,  3 )
-	CU_ASSERT_EQUAL( _sint \ 2,  3 )
-	CU_ASSERT_EQUAL( _uint \ 2,  3 )
-	
-	CU_ASSERT_EQUAL( _sbyte \ div2,  3 )
-	CU_ASSERT_EQUAL( _ubyte \ div2,  3 )
-	CU_ASSERT_EQUAL( _sshort \ div2,  3 )
-	CU_ASSERT_EQUAL( _ushort \ div2,  3 )
-	CU_ASSERT_EQUAL( _sint \ div2,  3 )
-	CU_ASSERT_EQUAL( _uint \ div2,  3 )
+	b   = 7
+	ub  = 7
+	s   = 7
+	us  = 7
+	l   = 7
+	ul  = 7
+	ll  = 7
+	ull = 7
+	i   = 7
+	ui  = 7
 
-	CU_ASSERT_EQUAL( _sbyte \ 4,  1 )
-	CU_ASSERT_EQUAL( _ubyte \ 4,  1 )
-	CU_ASSERT_EQUAL( _sshort \ 4,  1 )
-	CU_ASSERT_EQUAL( _ushort \ 4,  1 )
-	CU_ASSERT_EQUAL( _sint \ 4,  1 )
-	CU_ASSERT_EQUAL( _uint \ 4,  1 )
-	
-	CU_ASSERT_EQUAL( _sbyte \ div4,  1 )
-	CU_ASSERT_EQUAL( _ubyte \ div4,  1 )
-	CU_ASSERT_EQUAL( _sshort \ div4,  1 )
-	CU_ASSERT_EQUAL( _ushort \ div4,  1 )
-	CU_ASSERT_EQUAL( _sint \ div4,  1 )
-	CU_ASSERT_EQUAL( _uint \ div4,  1 )
+	CU_ASSERT_EQUAL( b   \ 2,  3 )
+	CU_ASSERT_EQUAL( ub  \ 2,  3 )
+	CU_ASSERT_EQUAL( s   \ 2,  3 )
+	CU_ASSERT_EQUAL( us  \ 2,  3 )
+	CU_ASSERT_EQUAL( l   \ 2,  3 )
+	CU_ASSERT_EQUAL( ul  \ 2,  3 )
+	CU_ASSERT_EQUAL( ll  \ 2,  3 )
+	CU_ASSERT_EQUAL( ull \ 2,  3 )
+	CU_ASSERT_EQUAL( i   \ 2,  3 )
+	CU_ASSERT_EQUAL( ui  \ 2,  3 )
+
+	CU_ASSERT_EQUAL( b   \ div2,  3 )
+	CU_ASSERT_EQUAL( ub  \ div2,  3 )
+	CU_ASSERT_EQUAL( s   \ div2,  3 )
+	CU_ASSERT_EQUAL( us  \ div2,  3 )
+	CU_ASSERT_EQUAL( l   \ div2,  3 )
+	CU_ASSERT_EQUAL( ul  \ div2,  3 )
+	CU_ASSERT_EQUAL( ll  \ div2,  3 )
+	CU_ASSERT_EQUAL( ull \ div2,  3 )
+	CU_ASSERT_EQUAL( i   \ div2,  3 )
+	CU_ASSERT_EQUAL( ui  \ div2,  3 )
+
+	CU_ASSERT_EQUAL( b   \ 4,  1 )
+	CU_ASSERT_EQUAL( ub  \ 4,  1 )
+	CU_ASSERT_EQUAL( s   \ 4,  1 )
+	CU_ASSERT_EQUAL( us  \ 4,  1 )
+	CU_ASSERT_EQUAL( l   \ 4,  1 )
+	CU_ASSERT_EQUAL( ul  \ 4,  1 )
+	CU_ASSERT_EQUAL( ll  \ 4,  1 )
+	CU_ASSERT_EQUAL( ull \ 4,  1 )
+	CU_ASSERT_EQUAL( i   \ 4,  1 )
+	CU_ASSERT_EQUAL( ui  \ 4,  1 )
+
+	CU_ASSERT_EQUAL( b   \ div4,  1 )
+	CU_ASSERT_EQUAL( ub  \ div4,  1 )
+	CU_ASSERT_EQUAL( s   \ div4,  1 )
+	CU_ASSERT_EQUAL( us  \ div4,  1 )
+	CU_ASSERT_EQUAL( l   \ div4,  1 )
+	CU_ASSERT_EQUAL( ul  \ div4,  1 )
+	CU_ASSERT_EQUAL( ll  \ div4,  1 )
+	CU_ASSERT_EQUAL( ull \ div4,  1 )
+	CU_ASSERT_EQUAL( i   \ div4,  1 )
+	CU_ASSERT_EQUAL( ui  \ div4,  1 )
 end sub
 
 sub test_negative cdecl ()
-	_sbyte = TEST_2
-	_ubyte = TEST_2
-	_sshort = TEST_2
-	_ushort = TEST_2
-	_sint = TEST_2
-	_uint = TEST_2
-	
-	CU_ASSERT_EQUAL( _sbyte \ 2,  -3 )
-	CU_ASSERT_EQUAL( _ubyte \ 2,  &h7C )
-	CU_ASSERT_EQUAL( _sshort \ 2,  -3 )
-	CU_ASSERT_EQUAL( _ushort \ 2,  &h7FFC )
-	CU_ASSERT_EQUAL( _sint \ 2,  -3 )
-	CU_ASSERT_EQUAL( _uint \ 2,  &h7FFFFFFC )
-	
-	CU_ASSERT_EQUAL( _sbyte \ div2,  -3 )
-	CU_ASSERT_EQUAL( _ubyte \ div2,  &h7C )
-	CU_ASSERT_EQUAL( _sshort \ div2,  -3 )
-	CU_ASSERT_EQUAL( _ushort \ div2,  &h7FFC )
-	CU_ASSERT_EQUAL( _sint \ div2,  -3 )
-	CU_ASSERT_EQUAL( _uint \ div2,  &h7FFFFFFC )
+	b   = -7
+	ub  = -7
+	s   = -7
+	us  = -7
+	l   = -7
+	ul  = -7
+	ll  = -7
+	ull = -7
+	i   = -7
+	ui  = -7
 
-	CU_ASSERT_EQUAL( _sbyte \ 4,  -1 )
-	CU_ASSERT_EQUAL( _ubyte \ 4,  &h3E )
-	CU_ASSERT_EQUAL( _sshort \ 4,  -1 )
-	CU_ASSERT_EQUAL( _ushort \ 4,  &h3FFE )
-	CU_ASSERT_EQUAL( _sint \ 4,  -1 )
-	CU_ASSERT_EQUAL( _uint \ 4,  &h3FFFFFFE )
-	
-	CU_ASSERT_EQUAL( _sbyte \ div4,  -1 )
-	CU_ASSERT_EQUAL( _ubyte \ div4,  &h3E )
-	CU_ASSERT_EQUAL( _sshort \ div4,  -1 )
-	CU_ASSERT_EQUAL( _ushort \ div4,  &h3FFE )
-	CU_ASSERT_EQUAL( _sint \ div4,  -1 )
-	CU_ASSERT_EQUAL( _uint \ div4,  &h3FFFFFFE )
+	CU_ASSERT_EQUAL( b   \ 2,  -3 )
+	CU_ASSERT_EQUAL( ub  \ 2,  &h7C )
+	CU_ASSERT_EQUAL( s   \ 2,  -3 )
+	CU_ASSERT_EQUAL( us  \ 2,  &h7FFC )
+	CU_ASSERT_EQUAL( l   \ 2,  -3 )
+	CU_ASSERT_EQUAL( ul  \ 2,  &h7FFFFFFC )
+	CU_ASSERT_EQUAL( ll  \ 2,  -3 )
+	CU_ASSERT_EQUAL( ull \ 2,  &h7FFFFFFFFFFFFFFCull )
+	CU_ASSERT_EQUAL( i   \ 2,  -3 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( ui  \ 2,  &h7FFFFFFFFFFFFFFCull )
+#else
+	CU_ASSERT_EQUAL( ui  \ 2,  &h7FFFFFFC )
+#endif
+
+	CU_ASSERT_EQUAL( b   \ div2,  -3 )
+	CU_ASSERT_EQUAL( ub  \ div2,  &h7C )
+	CU_ASSERT_EQUAL( s   \ div2,  -3 )
+	CU_ASSERT_EQUAL( us  \ div2,  &h7FFC )
+	CU_ASSERT_EQUAL( l   \ div2,  -3 )
+	CU_ASSERT_EQUAL( ul  \ div2,  &h7FFFFFFC )
+	CU_ASSERT_EQUAL( ll  \ div2,  -3 )
+	CU_ASSERT_EQUAL( ull \ div2,  &h7FFFFFFFFFFFFFFCull )
+	CU_ASSERT_EQUAL( i   \ div2,  -3 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( ui  \ div2,  &h7FFFFFFFFFFFFFFCull )
+#else
+	CU_ASSERT_EQUAL( ui  \ div2,  &h7FFFFFFC )
+#endif
+
+	CU_ASSERT_EQUAL( b   \ 4,  -1 )
+	CU_ASSERT_EQUAL( ub  \ 4,  &h3E )
+	CU_ASSERT_EQUAL( s   \ 4,  -1 )
+	CU_ASSERT_EQUAL( us  \ 4,  &h3FFE )
+	CU_ASSERT_EQUAL( l   \ 4,  -1 )
+	CU_ASSERT_EQUAL( ul  \ 4,  &h3FFFFFFE )
+	CU_ASSERT_EQUAL( ll  \ 4,  -1 )
+	CU_ASSERT_EQUAL( ull \ 4,  &h3FFFFFFFFFFFFFFEull )
+	CU_ASSERT_EQUAL( i   \ 4,  -1 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( ui  \ 4,  &h3FFFFFFFFFFFFFFEull )
+#else
+	CU_ASSERT_EQUAL( ui  \ 4,  &h3FFFFFFE )
+#endif
+
+	CU_ASSERT_EQUAL( b   \ div4,  -1 )
+	CU_ASSERT_EQUAL( ub  \ div4,  &h3E )
+	CU_ASSERT_EQUAL( s   \ div4,  -1 )
+	CU_ASSERT_EQUAL( us  \ div4,  &h3FFE )
+	CU_ASSERT_EQUAL( l   \ div4,  -1 )
+	CU_ASSERT_EQUAL( ul  \ div4,  &h3FFFFFFE )
+	CU_ASSERT_EQUAL( ll  \ div4,  -1 )
+	CU_ASSERT_EQUAL( ull \ div4,  &h3FFFFFFFFFFFFFFEull )
+	CU_ASSERT_EQUAL( i   \ div4,  -1 )
+#ifdef __FB_64BIT__
+	CU_ASSERT_EQUAL( ui  \ div4,  &h3FFFFFFFFFFFFFFEull )
+#else
+	CU_ASSERT_EQUAL( ui  \ div4,  &h3FFFFFFE )
+#endif
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests-optimizations:multiplication association")
 	fbcu.add_test("test_positive", @test_positive)
 	fbcu.add_test("test_negative", @test_negative)
-
 end sub
 
 end namespace

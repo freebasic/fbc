@@ -1,10 +1,12 @@
 #ifndef __FB_BI__
 #define __FB_BI__
 
-const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 90
-const FB_VER_PATCH          = 0
-
+const FB_VER_MAJOR  = "1"
+const FB_VER_MINOR  = "00"
+const FB_VER_PATCH  = "0"
+const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
+const FB_BUILD_DATE = __DATE__
+const FB_SIGN       = "FreeBASIC " + FB_VERSION
 
 #define QUOTE !"\""
 #if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_DOS__ )
@@ -45,14 +47,6 @@ const FB_ERR_INFINITE       = &h7fffffff
 
 const INVALID               = -1
 
-''
-const FB_VERSION            = FB_VER_MAJOR & "." & FB_VER_MINOR & "." & FB_VER_PATCH
-const FB_BUILD_DATE         = __DATE__
-const FB_SIGN               = "FreeBASIC " &  FB_VERSION
-const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
-const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
-const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
-
 '' compiler options corresponding to the FBCMMLINEOPT struct
 '' (for use with the public fbSet/GetOption() interface)
 enum FB_COMPOPT
@@ -92,6 +86,8 @@ enum FB_COMPOPT
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
 	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
+	FB_COMPOPT_GFX                  '' boolean: -gfx (whether gfxlib should be linked)
+	FB_COMPOPT_PIC                  '' boolean: -pic (whether to use position-independent code)
 	FB_COMPOPT_STACKSIZE            '' integer
 
 	FB_COMPOPTIONS
@@ -106,16 +102,17 @@ enum FB_PDCHECK
 	FB_PDCHECK_PARAMSIZE    = &h00000004
 	FB_PDCHECK_NEXTVAR      = &h00000008
 	FB_PDCHECK_CASTTONONPTR = &h00000010
+	FB_PDCHECK_SIGNEDNESS   = &h00000020
 
 	FB_PDCHECK_ALL          = &hffffffff
 
-	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR )
+	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR or FB_PDCHECK_SIGNEDNESS )
 end enum
 
 '' cpu types
-'' When changing, update fbc.bas:gcc_architectures()
+'' When changing, update fb.bas:cputypeinfo()
 enum FB_CPUTYPE
-	FB_CPUTYPE_386 = 3
+	FB_CPUTYPE_386 = 0
 	FB_CPUTYPE_486
 	FB_CPUTYPE_586
 	FB_CPUTYPE_686
@@ -128,11 +125,20 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM3
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
-	FB_CPUTYPE_NATIVE
+	FB_CPUTYPE_X86_64
+	FB_CPUTYPE_ARMV6
+	FB_CPUTYPE_ARMV7A
+	FB_CPUTYPE_AARCH64
+	FB_CPUTYPE__COUNT
 end enum
 
-const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486
-
+enum
+	FB_CPUFAMILY_X86 = 0
+	FB_CPUFAMILY_X86_64
+	FB_CPUFAMILY_ARM
+	FB_CPUFAMILY_AARCH64
+	FB_CPUFAMILY__COUNT
+end enum
 
 '' fpu types
 enum FB_FPUTYPE
@@ -205,8 +211,6 @@ enum FB_BACKEND
 	FB_BACKENDS
 end enum
 
-const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
-
 enum FB_ASMSYNTAX
 	FB_ASMSYNTAX_INTEL = 0
 	FB_ASMSYNTAX_ATT
@@ -250,6 +254,8 @@ type FBCMMLINEOPT
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing
 	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
+	gfx             as integer              '' Link against gfx library (default = false)
+	pic             as integer              '' Whether to use position-independent code (default = false)
 	stacksize       as integer
 end type
 
@@ -285,47 +291,64 @@ enum FB_LANG_OPT
 end enum
 
 #if defined(__FB_WIN32__)
-const FB_HOST               = "win32"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_WIN32
 #elseif defined(__FB_CYGWIN__)
-const FB_HOST               = "cygwin"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_CYGWIN
 #elseif defined(__FB_LINUX__)
-const FB_HOST               = "linux"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_LINUX
 #elseif defined(__FB_DOS__)
-const FB_HOST               = "dos"
 const FB_HOST_EXEEXT        = ".exe"
 const FB_HOST_PATHDIV       = RSLASH
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DOS
 #elseif defined(__FB_FREEBSD__)
-const FB_HOST               = "freebsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_FREEBSD
 #elseif defined(__FB_OPENBSD__)
-const FB_HOST               = "openbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_OPENBSD
 #elseif defined(__FB_DARWIN__)
-const FB_HOST               = "darwin"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
 #elseif defined(__FB_NETBSD__)
-const FB_HOST               = "netbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
 const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
 #else
 #error Unsupported host
+#endif
+
+const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
+const FB_DEFAULT_CPUTYPE_ARM     = FB_CPUTYPE_ARMV7A
+const FB_DEFAULT_CPUTYPE_AARCH64 = FB_CPUTYPE_AARCH64
+
+#ifdef __FB_ARM__
+	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_ARM
+	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_AARCH64
+#else
+	const FB_DEFAULT_CPUTYPE32 = FB_DEFAULT_CPUTYPE_X86
+	const FB_DEFAULT_CPUTYPE64 = FB_DEFAULT_CPUTYPE_X86_64
+#endif
+
+#if defined( __FB_64BIT__ ) or defined( __FB_ARM__ )
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+#else
+	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
+#endif
+
+#ifdef __FB_64BIT__
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE64
+#else
+	const FB_DEFAULT_CPUTYPE = FB_DEFAULT_CPUTYPE32
 #endif
 
 '' info section
@@ -358,16 +381,8 @@ declare sub fbAddIncludePath(byref path as string)
 declare sub fbAddPreDefine(byref def as string)
 declare sub fbAddPreInclude(byref file as string)
 
-declare sub fbSetOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	)
-
-declare function fbGetOption _
-	( _
-		byval opt as integer _
-	) as integer
+declare sub fbSetOption( byval opt as integer, byval value as integer )
+declare function fbGetOption( byval opt as integer ) as integer
 
 declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
@@ -375,7 +390,18 @@ declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
-declare function fbGetTargetId( ) as zstring ptr
+declare function fbGetTargetId( ) as string
+declare function fbGetHostId( ) as string
+declare function fbIdentifyOs( byref osid as string ) as integer
+declare function fbIdentifyCpuFamily( byref osid as string ) as integer
+declare function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
+declare function fbGetGccArch( ) as zstring ptr
+declare function fbGetFbcArch( ) as zstring ptr
+declare function fbIs64Bit( ) as integer
+declare function fbGetBits( ) as integer
+declare function fbGetHostBits( ) as integer
+declare function fbGetCpuFamily( ) as integer
+declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 declare function fbGetEntryPoint _
 	( _
@@ -426,12 +452,6 @@ declare function fbGetLangId _
 #define fbLangOptIsSet( op ) ((env.lang.opt and (op)) <> 0)
 
 #define fbLangIsSet( op ) (env.clopt.lang = op)
-
-#define fbLangGetType( tp ) env.lang.typeremap.tp
-
-#define fbLangGetSize( tp ) env.lang.sizeremap.tp
-
-#define fbLangGetDefLiteral( tp ) env.lang.litremap.tp
 
 #define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
 

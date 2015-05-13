@@ -171,8 +171,8 @@ namespace fbc_tests.optimizations.vector
 		f.x = (d.x + e.x) * (d.x - e.x)
 		f.y = (d.y + e.y) * (d.y - e.y)
 
-		CU_ASSERT_EQUAL( c2.x,  2.1875d  )
-		CU_ASSERT_EQUAL( c2.y,  -5.6875d )
+		CU_ASSERT_EQUAL( f.x,  2.1875d )
+		CU_ASSERT_EQUAL( f.y, -5.6875d )
 
 	end sub
 
@@ -187,8 +187,8 @@ namespace fbc_tests.optimizations.vector
 		f.x = (d.x + e.x) / (d.x * e.y)
 		f.y = (d.y + e.y) / (d.y * e.y)
 
-		CU_ASSERT_EQUAL( c2.x, 16.0d )
-		CU_ASSERT_EQUAL( c2.y,  3.5d )
+		CU_ASSERT_EQUAL( f.x, 16.0d )
+		CU_ASSERT_EQUAL( f.y,  3.5d )
 
 	end sub
 
@@ -209,6 +209,37 @@ namespace fbc_tests.optimizations.vector
 
 	end sub
 
+
+	''
+	'' tests with a value returned on stack
+	''
+	function aux1f() as single option("fpu")
+		return 1.0f
+	end function
+
+	function aux1d() as double option("fpu")
+		return 1.0d
+	end function
+
+	sub test11 cdecl ()
+		'' negate
+		CU_ASSERT_EQUAL( -aux1f(), -1.0f )
+
+	end sub
+
+	sub test12 cdecl ()
+		'' sgn()
+		CU_ASSERT_EQUAL( sgn(aux1f()), 1.0f )
+
+	end sub
+
+	sub test13 cdecl ()
+		'' sqr()
+		CU_ASSERT_EQUAL( sqr(aux1d()), sqr(1.0d) )
+
+	end sub
+
+
 	private sub ctor () constructor
 
 		fbcu.add_suite("fbc_tests-optimizations:SSE vector optimizations")
@@ -219,6 +250,12 @@ namespace fbc_tests.optimizations.vector
 		fbcu.add_test("test5", @test5)
 		fbcu.add_test("test6", @test6)
 		fbcu.add_test("test7", @test7)
+		fbcu.add_test("test8", @test8)
+		fbcu.add_test("test9", @test9)
+		fbcu.add_test("test10", @test10)
+		fbcu.add_test("test11", @test11)
+		fbcu.add_test("test12", @test12)
+		fbcu.add_test("test13", @test13)
 
 	end sub
 

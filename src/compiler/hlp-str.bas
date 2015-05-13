@@ -1237,24 +1237,6 @@ function hUnescapeW _
 
 end function
 
-'':::::
-function hGetWstrNull( ) as zstring ptr
-    static as integer isset = FALSE
-    static as zstring * FB_INTEGERSIZE*3+1 nullseq
-    dim as integer i
-
-    if( isset = FALSE ) then
-    	isset = TRUE
-    	nullseq = ""
-    	for i = 1 to typeGetSize( FB_DATATYPE_WCHAR )
-    		nullseq += RSLASH + "0"
-    	next
-	end if
-
-	function = @nullseq
-
-end function
-
 function hCharNeedsEscaping _
 	( _
 		byval ch as integer, _

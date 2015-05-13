@@ -2,16 +2,10 @@
 
 #include "fb.h"
 
-
-/*:::::*/
-FBCALL FBSTRING *fb_RTrimAny 
-	( 
-		FBSTRING *src, 
-		FBSTRING *pattern 
-	)
+FBCALL FBSTRING *fb_RTrimAny( FBSTRING *src, FBSTRING *pattern )
 {
 	FBSTRING *dst;
-	size_t len;
+	ssize_t len;
 
     if( src == NULL ) 
     {
@@ -25,13 +19,13 @@ FBCALL FBSTRING *fb_RTrimAny
 	if( src->data != NULL )
     {
         const char *pachText = src->data;
-        size_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+		ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
         len = FB_STRSIZE( src );
 		if( len_pattern != 0 )
 		{
 			while ( len != 0 )
 	        {
-	            size_t i;
+			ssize_t i;
 	            --len;
 	            for( i=0; i!=len_pattern; ++i ) 
 	            {
@@ -71,4 +65,3 @@ FBCALL FBSTRING *fb_RTrimAny
 
 	return dst;
 }
-

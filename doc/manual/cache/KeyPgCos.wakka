@@ -1,21 +1,23 @@
 {{fbdoc item="title" value="COS"}}----
-Returns the cosine of a number
+Returns the cosine of an angle
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cos** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cos** ( [[KeyPgByval byval]] //angle// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Cos**( //number// )
+	//result// = **Cos**( //angle// )
 ##
 {{fbdoc item="param"}}
-	##//number//##
+	##//angle//##
 		the angle (in radians)
 
 {{fbdoc item="ret"}}
-	Returns the cosine of the argument ##//number//## as a ##[[KeyPgDouble Double]]## within the range of -1 to 1.
+	Returns the cosine of the argument ##//angle//## as a ##[[KeyPgDouble Double]]## within the range of ##-1.0## to ##1.0##.
 
 {{fbdoc item="desc"}}
-	The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required ##//number//## argument can be any valid numeric expression.
+	The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+
+	The value returned by this function is undefined for values of ##//angle//## with an absolute value of ##2 ^ 63## or greater.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/cos.bas"}}%%(freebasic)
@@ -39,6 +41,8 @@ The cosine of a 30 degree angle Is 0.8660254037844387
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAcos Acos]]##
+	- ##[[KeyPgSin Sin]]##
+	- ##[[KeyPgTan Tan]]##
 	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

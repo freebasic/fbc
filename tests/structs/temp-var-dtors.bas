@@ -2969,6 +2969,176 @@ namespace copyctorWith2ndParam
 	end sub
 end namespace
 
+namespace swapUdts
+	dim shared as integer ctors, dtors, fcalls
+
+	type UDT
+		i as integer
+		declare constructor( i as integer )
+		declare destructor( )
+	end type
+
+	constructor UDT( i as integer )
+		'' dtors shouldn't be called too early
+		CU_ASSERT( dtors = 0 )
+		CU_ASSERT( this.i = 0 )
+		ctors += 1
+		this.i = i
+	end constructor
+
+	destructor UDT( )
+		'' ctors must have been called first
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( (this.i = 0) or (this.i = 1) )
+		dtors += 1
+		this.i = &hDEADBEEF
+	end destructor
+
+	function f( byval i as integer ) as UDT
+		fcalls += 1
+		return type( i )
+	end function
+
+	sub test cdecl( )
+		ctors = 0
+		dtors = 0
+		fcalls = 0
+		scope
+			dim array(0 to 1) as integer => { 1, 2 }
+			CU_ASSERT( array(0) = 1 )
+			CU_ASSERT( array(1) = 2 )
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+
+			swap array(type<UDT>(0).i), array(type<UDT>(1).i)
+			CU_ASSERT( array(0) = 2 )
+			CU_ASSERT( array(1) = 1 )
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 2 )
+		end scope
+
+		ctors = 0
+		dtors = 0
+		fcalls = 0
+		scope
+			dim array(0 to 1) as integer => { 1, 2 }
+			CU_ASSERT( array(0) = 1 )
+			CU_ASSERT( array(1) = 2 )
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( fcalls = 0 )
+
+			swap array(f(0).i), array(f(1).i)
+			CU_ASSERT( array(0) = 2 )
+			CU_ASSERT( array(1) = 1 )
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 2 )
+			CU_ASSERT( fcalls = 2 )
+		end scope
+	end sub
+end namespace
+
+namespace localArrayInit1
+	type UDT
+		i as integer
+		declare constructor(byref rhs as string)
+	end type
+
+	constructor UDT(byref rhs as string)
+		this.i = valint(rhs)
+	end constructor
+
+	sub test cdecl( )
+		dim c(0 to 0) as UDT = { "123" }
+		CU_ASSERT( c(0).i = 123 )
+	end sub
+end namespace
+
+namespace localArrayInit2
+	dim shared as integer ctors, dtors
+
+	type A
+		i as integer
+		declare constructor()
+		declare destructor()
+	end type
+
+	constructor A()
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		ctors += 1
+		this.i = 123
+	end constructor
+
+	destructor A()
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		dtors += 1
+	end destructor
+
+	type UDT
+		i as integer
+		declare constructor(byref rhs as A)
+	end type
+
+	constructor UDT(byref rhs as A)
+		this.i = rhs.i
+	end constructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		scope
+			dim c(0 to 0) as UDT = { A() }
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+			CU_ASSERT( c(0).i = 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+	end sub
+end namespace
+
+namespace localArrayInit3
+	dim shared as integer ctors, dtors
+
+	type A
+		i as integer
+		declare constructor()
+		declare destructor()
+	end type
+
+	constructor A()
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		ctors += 1
+		this.i = 123
+	end constructor
+
+	destructor A()
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		dtors += 1
+	end destructor
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		scope
+			dim c(0 to 0) as integer = { (A()).i }
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+			CU_ASSERT( c(0) = 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
@@ -3041,6 +3211,12 @@ private sub ctor( ) constructor
 	add( dtorOnlyDoubleIntUdt.testStaticMemberAccess )
 
 	add( copyctorWith2ndParam.test )
+
+	add( swapUdts.test )
+
+	add( localArrayInit1.test )
+	add( localArrayInit2.test )
+	add( localArrayInit3.test )
 end sub
 
 end namespace

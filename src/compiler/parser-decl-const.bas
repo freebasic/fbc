@@ -12,28 +12,18 @@ private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
 
-		dim as integer lgt = any
-
-		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 		end if
 
-		'' check for invalid types
-		if( subtype <> NULL ) then
-			'' only allow if it's an enum
-			if( dtype <> FB_DATATYPE_ENUM ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				'' error recovery: discard type
-				dtype = FB_DATATYPE_INVALID
-				subtype = NULL
-			end if
-		end if
-
-		select case as const typeGet( dtype )
+		'' Check for invalid (ANY, forward references) and unsupported
+		'' types (UDTs except enums, fixed-length strings)
+		select case( typeGetDtAndPtrOnly( dtype ) )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
+		     FB_DATATYPE_STRUCT, FB_DATATYPE_FWDREF
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: discard type
 			dtype = FB_DATATYPE_INVALID
@@ -138,7 +128,13 @@ private sub cConstAssign _
 	if( expr = NULL ) then
 		errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
 		doskip = TRUE
-		'' error recovery: create a fake node
+		'' Error recovery:
+		'' 1. If the dtype was supposed to be determined based on the
+		''    expression which we just failed to parse, use a default.
+		if( dtype = FB_DATATYPE_INVALID ) then
+			dtype = FB_DATATYPE_INTEGER
+		end if
+		'' 2. Create a fake expression
 		expr = astNewCONSTz( dtype, subtype )
 	end if
 
@@ -159,8 +155,7 @@ private sub cConstAssign _
 			end if
 		end if
 
-		value.str = litsym
-
+		value.s = litsym
 		if( symbAddConst( @id, exprdtype, NULL, @value, attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
@@ -177,9 +172,9 @@ private sub cConstAssign _
 
 		'' Type explicitly specified?
 		if( dtype <> FB_DATATYPE_INVALID ) then
-			'' string?
-			if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
-				errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
+			'' Check for type mismatch & warn about suspicious pointer assignments etc.
+			if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+				errReportEx( FB_ERRMSG_TYPEMISMATCH, id )
 				'' error recovery: create a fake node
 				astDelTree( expr )
 				exprdtype = dtype
@@ -190,7 +185,6 @@ private sub cConstAssign _
 			'' Convert expression to given type if needed
 			if( (dtype <> exprdtype) or _
 				(subtype <> astGetSubtype( expr )) ) then
-
 				expr = astNewCONV( dtype, subtype, expr )
 				if( expr = NULL ) then
 					errReportEx( FB_ERRMSG_INVALIDDATATYPES, id )
@@ -208,8 +202,7 @@ private sub cConstAssign _
 			subtype = astGetSubtype( expr )
 		end if
 
-		if( symbAddConst( @id, dtype, subtype, _
-				@astGetValue( expr ), attrib ) = NULL ) then
+		if( symbAddConst( @id, dtype, subtype, astConstGetVal( expr ), attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
     end if

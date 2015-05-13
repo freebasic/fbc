@@ -301,6 +301,7 @@
 		[[KeyPgIs IS (SELECT CASE)]]
 		[[KeyPgOpIs IS (Run-time type information operator)]]
 		[[KeyPgIsDate ISDATE]]
+		[[KeyPgIsredirected ISREDIRECTED]]
 
 	{{fbdoc item="subsect" value="K"}}
 		[[KeyPgKill KILL]]
@@ -511,6 +512,7 @@
 		[[KeyPgThis THIS]]
 		[[KeyPgThreadCall THREADCALL]]
 		[[KeyPgThreadCreate THREADCREATE]]
+		[[KeyPgThreadDetach THREADDETACH]]
 		[[KeyPgThreadWait THREADWAIT]]
 		[[KeyPgTime TIME]]
 		[[KeyPgTimeserial TIMESERIAL]]
@@ -740,6 +742,7 @@
 		[[ProPgIdentifierRules Identifier Rules]]
 		[[ProPgLiterals Literals]]
 		[[ProPgLabels Labels]]
+		[[ProPgLineContinuation Line continuation]]
 
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
 		[[ProPgDataConversion Coercion and Conversion]]
@@ -933,6 +936,7 @@
 		[[CompilerOptoptfile @< file >]]
 		[[CompilerOpta -a < name >]]
 		[[CompilerOptarch -arch < type >]]
+		[[CompilerOptasm -asm < format >]]
 		[[CompilerOptb -b < name >]]
 		[[CompilerOptc -c]]
 		[[CompilerOptcupp -C]]
@@ -962,6 +966,7 @@
 		[[CompilerOpto -o < name >]]
 		[[CompilerOptoptimization -O < level >]]
 		[[CompilerOptp -p < name >]]
+		[[CompilerOptpic -pic]]
 		[[CompilerOptpp -pp]]
 		[[CompilerOptprefix -prefix < path >]]
 		[[CompilerOptprint -print < option >]]

@@ -410,7 +410,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 				'' Check whether the constant is in usable range
 				'' (just casting to 32bit could break if 64bit
 				'' values are given)
-				c = astGetValueAsLongInt( lr )
+				c = astConstGetInt( lr )
 				if( (c >= 1) and (c <= 9) ) then
 					select case as const( c )
 					case 1, 2, 4, 8
@@ -455,7 +455,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 
 	'' convert to integer if needed
 	if( (typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
-	    (typeGetSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
+	    (typeGetSize( astGetDataType( l ) ) <> env.pointersize) ) then
 		n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
@@ -464,7 +464,7 @@ end sub
 private function astIncOffset _
 	( _
 		byval n as ASTNODE ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as integer
 
 	select case as const n->class
@@ -518,7 +518,7 @@ end function
 
 private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = n->l
-	dim as integer ofs = 0
+	dim as longint ofs = 0
 
 	select case l->class
 	case AST_NODECLASS_OFFSET
@@ -561,6 +561,7 @@ end function
 
 private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any, accumval = any
+	dim as longint c = any
 
 	if( n = NULL ) then
 		return NULL
@@ -585,8 +586,7 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 			n->l = hConstAccumADDSUB( n->l, accumval, 1 )
 
 			if( accumval ) then
-				dim as integer c = astConstFlushToInt( accumval )
-
+				c = astConstFlushToInt( accumval )
 				if( n->class = AST_NODECLASS_IDX ) then
 					n->idx.ofs += c * n->idx.mult
 				else
@@ -596,9 +596,8 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 			'' remove l node if it's a const and add it to parent's offset
 			if( astIsCONST( n->l ) ) then
-				dim as integer c = astConstFlushToInt( n->l )
+				c = astConstFlushToInt( n->l )
 				n->l = NULL
-
 				if( n->class = AST_NODECLASS_IDX ) then
 					n->idx.ofs += c * n->idx.mult
 				else
@@ -848,7 +847,6 @@ end function
 '' other optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 private sub hDivToShift_Signed _
 	( _
 		byval n as ASTNODE ptr, _
@@ -898,18 +896,25 @@ private sub hDivToShift_Signed _
 	end if
 
 	n->op.op = AST_OP_SHR
-	n->r->con.val.int = const_val
+	astConstGetInt( n->r ) = const_val
 
 end sub
 
-'':::::
-private sub hOptToShift _
-	( _
-		byval n as ASTNODE ptr _
-	)
+private function hToPow2( byval v as ulongint ) as integer
+	'' Is it a power of 2? (2/4/8/16/32/...)
+	for i as integer = 1 to 63
+		if( v = (1ull shl i) ) then
+			'' return the exponent of the power of 2 (1/2/3/4/5/...)
+			return i
+		end if
+	next
+	function = 0
+end function
 
+private sub hOptToShift( byval n as ASTNODE ptr )
 	dim as ASTNODE ptr l = any, r = any
-	dim as integer const_val = any, op = any
+	dim as integer op = any, exponent = any
+	dim as longint value = any
 
 	if( n = NULL ) then
 		exit sub
@@ -921,46 +926,63 @@ private sub hOptToShift _
 	''         '     a MOD pow2 imm' to 'a AND pow2-1'
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
+
 		select case op
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
-			if( astIsCONST( r ) ) then
-				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-					if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-						const_val = r->con.val.int
-						if( const_val > 0 ) then
-							const_val = hToPow2( const_val )
-							if( const_val > 0 ) then
-								select case op
-								case AST_OP_MUL
-									if( const_val <= 32 ) then
-										n->op.op = AST_OP_SHL
-										r->con.val.int = const_val
-									end if
 
-								case AST_OP_INTDIV
-									if( const_val <= 32 ) then
-										l = n->l
-										if( typeIsSigned( astGetDataType( l ) ) = FALSE ) then
-											n->op.op = AST_OP_SHR
-											r->con.val.int = const_val
-										else
-                                            hDivToShift_Signed( n, const_val )
-										end if
-									end if
-
-								case AST_OP_MOD
-									'' unsigned types only
-									if( typeIsSigned( astGetDataType( n->l ) ) = FALSE ) then
-										n->op.op = AST_OP_AND
-										r->con.val.int -= 1
-									end if
-								end select
-							end if
-						end if
-					end if
-				end if
+			'' BOP result must be an integer, so no floats are involved
+			if( typeGetClass( n->dtype ) <> FB_DATACLASS_INTEGER ) then
+				exit select
 			end if
+
+			'' The rhs must be an integer constant > 0
+			'' (doesn't matter whether it's signed or unsigned)
+			if( astIsCONST( r ) = FALSE ) then
+				exit select
+			end if
+			value = astConstGetInt( r )
+			if( (value = 0) or _
+			    ((value < 0) and typeIsSigned( astGetFullType( r ) )) ) then
+				exit select
+			end if
+
+			'' Get the exponent if it's a power of 2
+			exponent = hToPow2( value )
+			if( exponent <= 0 ) then
+				exit select
+			end if
+
+			select case op
+			case AST_OP_MUL
+				if( exponent > typeGetBits( n->l->dtype ) ) then
+					exit select, select
+				end if
+
+				n->op.op = AST_OP_SHL
+				astConstGetInt( r ) = exponent
+
+			case AST_OP_INTDIV
+				if( exponent > typeGetBits( n->l->dtype ) ) then
+					exit select, select
+				end if
+
+				if( typeIsSigned( n->l->dtype ) = FALSE ) then
+					n->op.op = AST_OP_SHR
+					astConstGetInt( r ) = exponent
+				else
+					hDivToShift_Signed( n, exponent )
+				end if
+
+			case AST_OP_MOD
+				'' unsigned types only
+				if( typeIsSigned( astGetDataType( n->l ) ) ) then
+					exit select, select
+				end if
+
+				n->op.op = AST_OP_AND
+				astConstGetInt( r ) -= 1
+			end select
 		end select
 	end if
 
@@ -1028,16 +1050,12 @@ private function hOptNullOp _
 		r = n->r
 
 		'' don't allow exprs with side-effects to be deleted
-		keep_l = ( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL )
-		keep_r = ( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL )
+		keep_l = astHasSideFx( l )
+		keep_r = astHasSideFx( r )
 
 		if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
-				if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-					v = r->con.val.int
-				else
-					v = r->con.val.long
-				end if
+				v = astConstGetInt( r )
 
 				select case as const op
 				case AST_OP_MUL
@@ -1059,7 +1077,7 @@ private function hOptNullOp _
 				case AST_OP_MOD
 					if( ( v = 1 ) or ( ( v = -1 ) and ( typeIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
 						if( keep_l = FALSE ) then
-							r->con.val.int = 0
+							astConstGetInt( r ) = 0
 							astDelTree( l )
 							astDelNode( n )
 							return r
@@ -1121,11 +1139,7 @@ private function hOptNullOp _
 				end select
 
 			elseif( astIsCONST( l ) ) then
-				if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
-					v = l->con.val.int
-				else
-					v = l->con.val.long
-				end if
+				v = astConstGetInt( l )
 
 				select case as const op
 				case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
@@ -1175,53 +1189,31 @@ private function hOptLogic _
 	end if
 
 	if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-
 		if( astIsUOP( n, AST_OP_NOT ) ) then
 			if( astIsUOP( l, AST_OP_NOT ) ) then
-
 				'' convert NOT NOT x to x
-
 				m = l->l
 				astDelNode( l )
 				astDelNode( n )
 				n = hOptLogic( m )
-
 			elseif( astIsBOP( l, AST_OP_XOR ) ) then
 				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 					if( astIsCONST( l->l ) ) then
 						'' convert:
 						'' not (const xor x)    to    (not const) xor x
-
-						if( typeGetSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
-							v = l->l->con.val.int
-						else
-							v = l->l->con.val.long
-						end if
-
-						l->l->con.val.long = not v
+						astConstGetInt( l->l ) = not astConstGetInt( l->l )
 						astDelNode( n )
 						n = hOptLogic( l )
-
 					elseif( astIsCONST( l->r ) ) then
 						'' convert:
 						'' not (x xor const)    to    x xor (not const)
-
-						if( typeGetSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
-							v = l->r->con.val.int
-						else
-							v = l->r->con.val.long
-						end if
-
-						l->r->con.val.long = not v
+						astConstGetInt( l->r ) = not astConstGetInt( l->r )
 						astDelNode( n )
 						n = hOptLogic( l )
-
 					end if
 				end if
 			end if
-
 		elseif( n->class = AST_NODECLASS_BOP ) then
-
 			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 				op = n->op.op
 				select case op
@@ -1274,14 +1266,9 @@ private function hOptLogic _
 						'' const or  (not x)    to    not ((not const) and x)
 						'' const xor (not x)    to    (not const) xor x
 
-						if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
-							v = l->con.val.int
-						else
-							v = l->con.val.long
-						end if
-
+						v = astConstGetInt( l )
 						m = astNewBOP( op, l, r->l )
-						l->con.val.long = not v
+						astConstGetInt( l ) = not v
 
 						if( op <> AST_OP_XOR ) then
 							m = astNewUOP( AST_OP_NOT, m )
@@ -1289,7 +1276,6 @@ private function hOptLogic _
 
 						astDelNode( r )
 						astDelNode( n )
-
 						n = m
 
 					elseif( astIsConst( r ) and astIsUOP(l, AST_OP_NOT) ) then
@@ -1298,14 +1284,9 @@ private function hOptLogic _
 						'' (not x) or  const    to    not (x and (not const))
 						'' (not x) xor const    to    x xor (not const)
 
-						if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
-							v = r->con.val.int
-						else
-							v = r->con.val.long
-						end if
-
+						v = astConstGetInt( r )
 						m = astNewBOP( op, l->l, r )
-						r->con.val.long = not v
+						astConstGetInt( r ) = not v
 
 						if( op <> AST_OP_XOR ) then
 							m = astNewUOP( AST_OP_NOT, m )
@@ -1313,33 +1294,22 @@ private function hOptLogic _
 
 						astDelNode( l )
 						astDelNode( n )
-
 						n = m
 
 					elseif( (op = AST_OP_XOR) and astIsUOP(l, AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) xor y    to    not (x xor y)
-
 						m = astNewUOP( AST_OP_NOT, n )
-
 						n->l = l->l
-
 						astDelNode( l )
-
 						n = m
-
 					elseif( (op = AST_OP_XOR) and astIsUOP(r, AST_OP_NOT) ) then
 						'' convert:
 						'' x xor (not y)    to    not (x xor y)
-
 						m = astNewUOP( AST_OP_NOT, n)
-
 						n->r = r->l
-
 						astDelNode( r )
-
 						n = m
-
 					end if
 				end select
 			end if
@@ -1347,7 +1317,6 @@ private function hOptLogic _
 	end if
 
 	function = n
-
 end function
 
 private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
@@ -1359,6 +1328,24 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' convert l{float} op cast(float, r{var}) to l op r
+	''
+	'' For example:
+	''    dim f as single, i as integer
+	''    print f + cast( single, i )
+	''
+	'' The cast can be optimized out, because the x86 FPU's fiadd, fisub,
+	'' fimul, fidiv instructions can work with integer operands directly,
+	'' so we don't need to convert integer to float first and then do
+	'' regular float+float BOPs afterwards.
+	''
+	'' Apparently these instructions only support 16bit and 32bit memory
+	'' operands though, thus BYTEs and LONGINTs have to be disallowed below.
+	''
+	'' This all is only useful for the ASM backend since it's making
+	'' assumptions about the x86 FPU. For the other backends, we can aswell
+	'' do the cast, ensure we're getting the behaviour we want, and let
+	'' gcc/llvm worry about good code generation.
+
 	if( n->class = AST_NODECLASS_BOP ) then
 		select case astGetDataType( n )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
@@ -1370,23 +1357,23 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						l = r->l
 
-						'' skip any casting if they won't do any conversion
-						dim as ASTNODE ptr t = l
-						if( l->class = AST_NODECLASS_CONV ) then
-							if( l->cast.doconv = FALSE ) then
-								t = l->l
-							end if
-						end if
+						'' Note: should not skip noconv CASTs here,
+						'' because it could be a sign conversion such as
+						'' from integer VAR to uinteger. Without that CAST
+						'' to unsigned, it would pass the signed check below,
+						'' and then a signed operation would be done while
+						'' an unsigned one was intended.
 
-						'' can't be a longint
-						if( typeGetSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
+						'' Disallow BYTEs and LONGINTs
+						select case( typeGetSize( astGetDataType( l ) ) )
+						case 2, 4
 							dorem = FALSE
 
-							select case as const t->class
+							select case( l->class )
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( typeIsSigned( astGetDataType( t ) ) ) then
+								if( typeIsSigned( astGetDataType( l ) ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -1395,8 +1382,7 @@ private function hDoOptRemConv( byval n as ASTNODE ptr ) as ASTNODE ptr
 								astDelNode( r )
 								n->r = l
 							end if
-
-						end if
+						end select
 					end select
 				end if
 			end if
@@ -1536,7 +1522,6 @@ private function hIsMultStrConcat _
 
 end function
 
-''::::
 private function hOptStrAssignment _
 	( _
 		byval n as ASTNODE ptr, _
@@ -1591,37 +1576,29 @@ private function hOptStrAssignment _
 		r = n->r
 
 		if( hIsMultStrConcat( l, r ) ) then
-
 			function = hOptStrMultConcat( l, l, r, is_wstr )
-
 		else
 			''	=            f() -- concatassign
 			'' / \           / \
 			''a   +    =>   a   expr
 			''   / \
 			''  a   expr
-
-            if( is_wstr = FALSE ) then
+			if( is_wstr = FALSE ) then
 				function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
 			else
 				function = rtlWstrConcatAssign( l, astUpdStrConcat( r ) )
 			end if
 		end if
-
 	else
-
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
 		if( hIsMultStrConcat( l, r ) ) then
-
 			function = hOptStrMultConcat( NULL, l, r, is_wstr )
-
 		else
 			''	=            f() -- assign
 			'' / \           / \
 			''a   +    =>   a   f() -- concat (done by UpdStrConcat)
 			''   / \           / \
 			''  b   expr      b   expr
-
 			if( is_wstr = FALSE ) then
 				function = rtlStrAssign( l, astUpdStrConcat( r ) )
 			else
@@ -1631,15 +1608,9 @@ private function hOptStrAssignment _
 	end if
 
 	astDelNode( n )
-
 end function
 
-''::::
-function astOptAssignment _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
+function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer dtype = any, dclass = any
 
@@ -1705,19 +1676,15 @@ function astOptAssignment _
 	'' is left side a var, idx or ptr?
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = l
-	if( l->class = AST_NODECLASS_CONV ) then
-		if( l->cast.doconv = FALSE ) then
-			t = l->l
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 	select case as const t->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
+	     AST_NODECLASS_IIF
 
-	case AST_NODECLASS_FIELD, AST_NODECLASS_IIF
+	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( astGetDataType( t->l ) = FB_DATATYPE_BITFIELD ) then
+		if( symbFieldIsBitfield( t->sym ) ) then
 			exit function
 		end if
 
@@ -1865,7 +1832,7 @@ private function hOptReciprocal _
 	if( astIsBOP( n, AST_OP_DIV ) ) then
 		l = n->l
 		if( astIsCONST( l ) ) then
-			if( ( astGetDataType( l ) = FB_DATATYPE_SINGLE ) andalso ( astGetValFloat( l ) = 1.0f ) ) then
+			if( (astGetDataType( l ) = FB_DATATYPE_SINGLE) andalso (astConstGetFloat( l ) = 1.0) ) then
 				r = n->r
 				if( astIsUOP( r, AST_OP_SQRT ) ) then
 					'' change this to a rsqrt
@@ -1902,6 +1869,8 @@ end function
 function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' The order of calls below matters!
 
+	astBeginHideWarnings( )
+
 	'' Optimize nested field accesses
 	n = hMergeNestedFIELDs( n )
 
@@ -1929,15 +1898,20 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n = hOptSelfCompare( n )
 
-	if( irGetOption( IR_OPT_FPUCONV ) = FALSE ) then
+	if( (irGetOption( IR_OPT_FPUCONV ) = FALSE) and _
+	    (env.clopt.backend = FB_BACKEND_GAS) ) then
 		n = hDoOptRemConv( n )
 	end if
 
-	if( irGetOption( IR_OPT_NOINLINEOPS ) = FALSE ) then
+	'' (not even checking irSupportsOp() here, because neither
+	'' C/LLVM backends support reciprocal ops)
+	if( irGetOption( IR_OPT_MISSINGOPS ) = FALSE ) then
 		if( env.clopt.fpmode = FB_FPMODE_FAST ) then
 			n = hOptReciprocal( n )
 		end if
 	end if
+
+	astEndHideWarnings( )
 
 	function = n
 end function

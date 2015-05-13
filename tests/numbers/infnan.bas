@@ -8,7 +8,7 @@ private sub testDouble cdecl( )
 	''
 
 	#macro checkD( d, x )
-		'' x86 assumption
+		'' Little-endian assumption
 		CU_ASSERT( *cptr( ulongint ptr, @d ) = x )
 	#endmacro
 
@@ -104,8 +104,8 @@ private sub testSingle cdecl( )
 	''
 
 	#macro checkF( f, x )
-		'' x86 assumption
-		CU_ASSERT( *cptr( uinteger ptr, @f ) = x )
+		'' Little-endian assumption
+		CU_ASSERT( *cptr( ulong ptr, @f ) = x )
 	#endmacro
 
 	#macro checkConstF( N, x )

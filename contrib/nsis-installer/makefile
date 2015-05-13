@@ -1,11 +1,11 @@
-FB_VERSION := 0.90.0
+FB_VERSION := 1.00.0
 ZIP_TITLE := FreeBASIC-$(FB_VERSION)-win32
 ZIP_FILE := $(ZIP_TITLE).zip
 INSTALLER_EXE := $(ZIP_TITLE).exe
 MAKENSIS := makensis
 FBC := fbc
 
-MANIFEST := ../release/manifest/win32.lst
+MANIFEST := ../manifest/FreeBASIC-win32.lst
 
 .SUFFIXES:
 
@@ -15,7 +15,7 @@ all: $(INSTALLER_EXE)
 $(INSTALLER_EXE): installer.nsi $(ZIP_FILE) \
                     open-console.exe fblogo-header.bmp \
                     fblogo.ico $(MANIFEST)
-	unzip -q -o $(ZIP_FILE) -d $(ZIP_TITLE)
+	unzip -q -o $(ZIP_FILE)
 	cp installer.nsi open-console.exe fblogo.ico $(ZIP_TITLE)
 	$(MAKENSIS) -V2 $(ZIP_TITLE)/installer.nsi
 	rm -r $(ZIP_TITLE)

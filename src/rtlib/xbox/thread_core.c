@@ -6,36 +6,42 @@
 
 static void NTAPI threadproc(void *param1, void *param2)
 {
-#if 0
-	FBTHREAD *thread = param1;
-	
+	FBTHREADINFO *info = param1;
+
 	/* call the user thread procedure */
-	thread->proc( thread->param );
-	
+	info->proc( info->param );
+	free( info );
+
 	/* free mem */
 	fb_TlsFreeCtxTb( );
-#endif
 }
 
-FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, ssize_t stack_size )
 {
 	NTSTATUS status;
 	FBTHREAD *thread;
+	FBTHREADINFO *info;
 
-	thread = malloc( sizeof( FBTHREAD ) );
-
-	if ( !thread )
+	thread = (FBTHREAD *)malloc( sizeof( FBTHREAD ) );
+	if( thread == NULL ) {
 		return NULL;
+	}
 
-	thread->proc = proc;
-	thread->param = param;
+	info = (FBTHREADINFO *)malloc( sizeof( FBTHREADINFO ) );
+	if( info == NULL ) {
+		free( thread );
+		return NULL;
+	}
+
+	info->proc = proc;
+	info->param = param;
 
 	status = PsCreateSystemThreadEx( &thread->id, /* ThreadHandle */
 	                                 0,           /* ThreadExtraSize */
 	                                 /* stack_size??? */ 65536,       /* KernelStackSize */
 	                                 0,           /* TlsDataSize */
 	                                 NULL,        /* ThreadId */
-	                                 &thread,     /* StartContext1 */
+	                                 info,        /* StartContext1 */
 	                                 NULL,        /* StartContext2 */
 	                                 FALSE,       /* CreateSuspended */
 	                                 FALSE,       /* DebugStack */
@@ -43,10 +49,11 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_siz
 
 	if( status != STATUS_SUCCESS ) {
 		free( thread );
+		free( info );
 		return NULL;
 	}
 
-	return NULL;
+	return thread;
 }
 
 FBCALL void fb_ThreadWait( FBTHREAD *thread )

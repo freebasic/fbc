@@ -35,6 +35,9 @@ tests_num:
 	data 0.1236,    "#.##e-000",        "1.24e-001"
 	data 0.000000000125,                "#.##e-0",          "1.25e-10"
 	data 0.999999,  "#.00e+000",        "1.00e+000"
+	data 9.9e+20,   "#",                "990000000000000000000"
+	data 4.9e-324,  "#.#e+#",           "4.9e-324"
+	data 9.9e-100,  "###################e+#", "9900000000000000000e-118"
 
 	data -0.1236,   "##0.00%",          "-12.36%"
     data -123,      !"\"asd\\\"",        !"asd\\"
@@ -62,6 +65,9 @@ tests_num:
 	data -0.1236,   "#.##e-000",        "-1.24e-001"
 	data -0.000000000125,               "#.##e-0",          "-1.25e-10"
 	data -0.999999, "#.00e+000",        "-1.00e+000"
+	data -9.9e+20,  "#",                "-990000000000000000000"
+	data -4.9e-324, "#.#e+#",           "-4.9e-324"
+	data -9.9e-100, "###################e+#", "-9900000000000000000e-118"
 
 	data -0.1236,   "##0.00%-",         "12.36%-"
     data -123,      !"\"asd\\\"",        !"asd\\"
@@ -89,6 +95,9 @@ tests_num:
 	data -0.1236,   "#.##e-000-",       "1.24e-001-"
 	data -0.000000000125,               "#.##e-0-",          "1.25e-10-"
 	data -0.999999, "#.00e+000-",       "1.00e+000-"
+	data -9.9e+20,  "#-",               "990000000000000000000-"
+	data -4.9e-324, "#.#e+#-",          "4.9e-324-"
+	data -9.9e-100, "###################e+#-", "9900000000000000000e-118-"
 
 	data 0.1236,    "##0.00%-",         "12.36%"
     data 123,       !"\"asd\\\"",        !"asd\\"
@@ -116,6 +125,9 @@ tests_num:
 	data 0.1236,    "#.##e-000-",       "1.24e-001"
 	data 0.000000000125,                "#.##e-0-",          "1.25e-10"
 	data 0.999999,  "#.00e+000-",       "1.00e+000"
+	data 9.9e+20,   "#-",               "990000000000000000000"
+	data 4.9e-324,  "#.#e+#-",          "4.9e-324"
+	data 9.9e-100, "###################e+#-", "9900000000000000000e-118"
 
 	data 1234,      "###,0.00",         "1,234.00"
 	data 1234567,   "#,#,#,0.00",       "1,234,567.00"
@@ -125,7 +137,9 @@ tests_num:
 	data 1234,      "###0,.00",         "1.23"
 	data 1234,      "#########,0.00",   "1,234.00"
 	data 123456,    "#######,##0.00",   "123,456.00"
+	data 12345678, 	"#######,##0.00",   "12,345,678.00"
 	data 123,       "#########,0.00",   "123.00"
+	data 100000,    "#,##0.00",         "100,000.00"
 
     data "."
 
@@ -149,7 +163,7 @@ tests_dt:
     data "Aug. 9, 2005",      "ddd dddd ddddd",   "Tue Tuesday 08/09/2005"
     data "."
 
-declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
 namespace fbc_tests.string_.format_
 
@@ -187,26 +201,25 @@ sub dateFormatTest cdecl ()
         read sValue
 	wend
 
+	CU_ASSERT( len( format(now(), "yyyy.mm.dd") ) > 0 )
 end sub
 
-function init cdecl () as integer
+function init cdecl () as long
 	' Turn off I18N and L10N
 	fb_I18nSet 0
 	return 0
 end function
 
-function cleanup cdecl () as integer
+function cleanup cdecl () as long
 	' Turn on I18N and L10N
 	fb_I18nSet 1
 	return 0
 end function
 
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.string_.format_", @init, @cleanup)
 	fbcu.add_test("number format test", @numberFormatTest)
 	fbcu.add_test("date format test", @dateFormatTest)
-
 end sub
 
 end namespace

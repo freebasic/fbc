@@ -1,6 +1,0 @@
-doc/licenses/gnutls-openssl.txt
-doc/licenses/gnutls.txt
-lib/win32/libgnutls-openssl.a
-lib/win32/libgnutls-xssl.a
-lib/win32/libgnutls.a
-lib/win32/libgnutlsxx.a

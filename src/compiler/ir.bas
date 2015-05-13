@@ -5,6 +5,7 @@
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
+#include once "emit.bi"
 
 dim shared ir as IRCTX
 
@@ -25,13 +26,184 @@ sub irEnd( )
 	ir.vtbl.end( )
 end sub
 
-#if __FB_DEBUG__
-#include once "reg.bi"
-#include once "emit-private.bi"
+type IRHLCONTEXT
+	regcount	as integer  '' vreg id counter
+	vregs		as TFLIST   '' IRVREG allocation
+end type
 
+dim shared hl as IRHLCONTEXT
+
+sub irhlInit( )
+	flistInit( @hl.vregs, IR_INITVREGNODES, sizeof( IRVREG ) )
+end sub
+
+sub irhlEnd( )
+	flistEnd( @hl.vregs )
+end sub
+
+sub irhlEmitProcBegin( )
+	hl.regcount = 0
+end sub
+
+sub irhlEmitProcEnd( )
+	flistReset( @hl.vregs )
+end sub
+
+function irhlNewVreg _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval vtype as integer _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr v = any
+
+	v = flistNewItem( @hl.vregs )
+
+	v->typ = vtype
+	v->dtype = dtype
+	v->subtype = subtype
+	if( vtype = IR_VREGTYPE_REG ) then
+		v->reg = hl.regcount
+		hl.regcount += 1
+	else
+		v->reg = INVALID
+	end if
+	v->regFamily = 0
+	v->vector = 0
+	v->sym = NULL
+	v->ofs = 0
+	v->mult = 0
+	v->vidx = NULL
+	v->vaux = NULL
+
+	function = v
+end function
+
+function irhlAllocVreg _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as IRVREG ptr
+	function = irhlNewVreg( dtype, subtype, IR_VREGTYPE_REG )
+end function
+
+function irhlAllocVrImm _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.i = value
+
+	function = vr
+end function
+
+function irhlAllocVrImmF _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as double _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = any
+
+	vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IMM )
+	vr->value.f = value
+
+	function = vr
+end function
+
+function irhlAllocVrVar _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_VAR )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+
+	function = vr
+end function
+
+function irhlAllocVrIdx _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint, _
+		byval mult as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_IDX )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+	vr->vidx = vidx
+
+	function = vr
+end function
+
+function irhlAllocVrPtr _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ofs as longint, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_PTR )
+
+	vr->ofs = ofs
+	vr->vidx = vidx
+
+	function = vr
+end function
+
+function irhlAllocVrOfs _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as longint _
+	) as IRVREG ptr
+
+	dim as IRVREG ptr vr = irhlNewVreg( dtype, subtype, IR_VREGTYPE_OFS )
+
+	vr->sym = symbol
+	vr->ofs = ofs
+
+	function = vr
+end function
+
+'' DATA descriptor arrays must be emitted based on the order indicated by the
+'' FBSYMBOL.var_.data.prev linked list, not in the symtb order.
+sub irForEachDataStmt( byval callback as sub( byval as FBSYMBOL ptr ) )
+	var sym = astGetLastDataStmtSymbol( )
+	while( sym )
+		callback( sym )
+		sym = sym->var_.data.prev
+	wend
+end sub
+
+sub irhlFlushStaticInitializer( byval sym as FBSYMBOL ptr )
+	astLoadStaticInitializer( symbGetTypeIniTree( sym ), sym )
+	symbSetTypeIniTree( sym, NULL )
+end sub
+
+#if __FB_DEBUG__
 function vregDump( byval v as IRVREG ptr ) as string
 	dim as string s
-	dim as zstring ptr regname = any
+	dim as string regname
 
 	if( v = NULL ) then
 		return "<NULL>"
@@ -51,38 +223,17 @@ function vregDump( byval v as IRVREG ptr ) as string
 	select case( v->typ )
 	case IR_VREGTYPE_IMM
 		s += " "
-		select case as const( v->dtype )
-		case FB_DATATYPE_LONGINT
-			s += str( v->value.long )
-		case FB_DATATYPE_ULONGINT
-			s += str( v->value.long )
-		case FB_DATATYPE_SINGLE
-			s += str( v->value.float )
-		case FB_DATATYPE_DOUBLE
-			s += str( v->value.float )
-		case FB_DATATYPE_LONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s += str( v->value.int )
-			else
-				s += str( v->value.long )
-			end if
-		case FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				s += str( v->value.int )
-			else
-				s += str( v->value.long )
-			end if
-		case FB_DATATYPE_UINT
-			s += str( v->value.int )
-		case else
-			s += str( v->value.int )
-		end select
+		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
+			s += str( v->value.f )
+		else
+			s += str( v->value.i )
+		end if
 
 	case IR_VREGTYPE_REG
 		if( env.clopt.backend = FB_BACKEND_GAS ) then
-			regname = hGetRegName( v->dtype, v->reg )
-			if( len( *regname ) > 0 ) then
-				s += " " + ucase( *regname )
+			regname = emitDumpRegName( v->dtype, v->reg )
+			if( len( regname ) > 0 ) then
+				s += " " + ucase( regname )
 			else
 				s += " " + str( v->reg )
 			end if

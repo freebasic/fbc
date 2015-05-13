@@ -1001,6 +1001,10 @@ function symbLookupAt _
 
 	assert( symbIsStruct( ns ) or symbIsNamespace( ns ) or symbIsEnum( ns ) )
 
+	if( symbIsEnum( ns ) and (not symbEnumHasHashTb( ns )) ) then
+		exit function
+	end if
+
     if( preserve_case = FALSE ) then
     	hUcase( *id, sname )
     	id = @sname
@@ -1446,61 +1450,36 @@ sub symbDelSymbol _
 	'' symbol table, any attached symbols might be deleted *before* their
 	'' parents, which then can not use the dangling pointers...
 
-	select case as const s->class
-    case FB_SYMBCLASS_VAR
-		symbDelVar( s, is_tbdel )
-
-    case FB_SYMBCLASS_CONST
-		symbDelConst( s )
-
-    case FB_SYMBCLASS_PROC
-		symbDelPrototype( s )
-
-	case FB_SYMBCLASS_DEFINE
-		symbDelDefine( s )
-
-	case FB_SYMBCLASS_KEYWORD
-		symbDelKeyword( s )
-
-    case FB_SYMBCLASS_LABEL
-		symbDelLabel( s )
-
-    case FB_SYMBCLASS_ENUM
-		symbDelEnum( s )
-
-    case FB_SYMBCLASS_STRUCT
-		symbDelStruct( s )
-
-    case FB_SYMBCLASS_SCOPE
-		symbDelScope( s )
-
-    case FB_SYMBCLASS_NAMESPACE
-		symbDelNamespace( s )
-
-	case FB_SYMBCLASS_NSIMPORT
-		symbNamespaceRemove( s, FALSE )
-
-	case FB_SYMBCLASS_FIELD
-		assert( is_tbdel )  '' symbDelField() assumption
-		symbDelField( s )
-
-	case else
-		symbFreeSymbol( s )
-
-    end select
+	select case as const( s->class )
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD : symbDelVar( s, is_tbdel )
+	case FB_SYMBCLASS_CONST     : symbDelConst( s )
+	case FB_SYMBCLASS_PROC      : symbDelPrototype( s )
+	case FB_SYMBCLASS_DEFINE    : symbDelDefine( s )
+	case FB_SYMBCLASS_LABEL     : symbDelLabel( s )
+	case FB_SYMBCLASS_ENUM      : symbDelEnum( s )
+	case FB_SYMBCLASS_STRUCT    : symbDelStruct( s )
+	case FB_SYMBCLASS_SCOPE     : symbDelScope( s )
+	case FB_SYMBCLASS_NAMESPACE : symbDelNamespace( s )
+	case FB_SYMBCLASS_NSIMPORT  : symbNamespaceRemove( s, FALSE )
+	case else                   : symbFreeSymbol( s )
+	end select
 
 end sub
 
-'':::::
-function symbCloneSymbol _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
+	dim as integer arraydtype = any
+	dim as FBSYMBOL ptr arraysubtype = any
 
 	'' assuming only non-complex symbols will be passed,
 	'' for use by astTypeIniClone() mainly
 
 	select case as const s->class
+	case FB_SYMBCLASS_PROC
+		'' Only procptr subtype PROC symbols, but no real PROCs,
+		'' should appear in TYPEINI scopes.
+		assert( symbGetIsFuncPtr( s ) )
+		function = symbAddProcPtrFromFunction( s )
+
     case FB_SYMBCLASS_VAR
     	function = symbCloneVar( s )
 
@@ -1510,11 +1489,16 @@ function symbCloneSymbol _
     case FB_SYMBCLASS_LABEL
     	function = symbCloneLabel( s )
 
-    case FB_SYMBCLASS_STRUCT
-    	function = symbCloneStruct( s )
+	case FB_SYMBCLASS_STRUCT
+		'' Assuming only array descriptor types will ever be cloned
+		'' (most other structs would be too complex, especially classes)
+		assert( symbIsDescriptor( s ) )
+
+		symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
+		function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
 
     case else
-    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		assert( FALSE )
     	function = NULL
     end select
 
@@ -1593,23 +1577,20 @@ function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
 	function = typeHasDtor( sym->typ, sym->subtype )
 end function
 
-'':::::
-function symbIsArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
+function symbIsDataDesc( byval sym as FBSYMBOL ptr ) as integer
+	if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+		function = (symbGetSubtype( sym ) = ast.data.desc)
+	end if
+end function
 
+function symbIsArray( byval sym as FBSYMBOL ptr ) as integer
 	select case sym->class
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if (symbGetIsDynamic(sym)) then
-			return TRUE
-		else
-			return symbGetArrayDimensions( sym ) <> 0
-		end if
+		assert( iif( symbGetIsDynamic( sym ), (symbGetArrayDimensions( sym ) <> 0), TRUE ) )
+		function = (symbGetArrayDimensions( sym ) <> 0)
+	case else
+		function = FALSE
 	end select
-
-	function = FALSE
-
 end function
 
 '':::::
@@ -1653,6 +1634,17 @@ function symbIsEqual _
     	exit function
     end if
 
+	if( symbIsFwdRef( sym1 ) ) then
+		'' Unsolved forward references - it's a different symbol, so
+		'' that means it's a different forward reference.
+		'' FIXME: They may still resolve to the same type later, in
+		'' which case we should treat them as equal - but that would
+		'' require repeating this check during forward reference
+		'' backpatching, and delaying all warnings due to potentially
+		'' different forward references until then.
+		return FALSE
+	end if
+
 	'' different types?
     if( sym1->typ <> sym2->typ ) then
     	exit function
@@ -1662,7 +1654,7 @@ function symbIsEqual _
     '' UDT?
     case FB_SYMBCLASS_STRUCT '', FB_SYMBCLASS_CLASS  
     	return symbGetUDTBaseLevel( sym1, sym2 ) > 0
-    	
+
     '' enum?
     case FB_SYMBCLASS_ENUM
     	'' no check, they are pointing to different symbols
@@ -1681,54 +1673,24 @@ function symbIsEqual _
 			exit function
 		end if
 
-    	'' not the same number of args?
-    	if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
-
-    		'' no args?
-    		if( symbGetProcParams( sym1 ) = 0 ) then
+		'' not the same number of params?
+		if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
     			exit function
-    		end if
+		end if
 
-    		'' not vararg?
-    		if( symbGetProcTailParam( sym1 )->param.mode <> FB_PARAMMODE_VARARG ) then
-    			exit function
-    		end if
+		'' check each param
+		paraml = symbGetProcHeadParam( sym1 )
+		paramr = symbGetProcHeadParam( sym2 )
 
-    		'' not enough args?
-    		if( (symbGetProcParams( sym2 ) - symbGetProcParams( sym1 )) < -1 ) then
-    			exit function
-    		end if
-    	end if
-
-    	'' check each param
-    	paraml = symbGetProcHeadParam( sym1 )
-    	paramr = symbGetProcHeadParam( sym2 )
-
-    	do while( paraml <> NULL )
-            '' vararg?
-            if( paraml->param.mode = FB_PARAMMODE_VARARG ) then
-            	exit do
-            end if
-
-    		'' mode?
-    		if( paraml->param.mode <> paramr->param.mode ) then
-            	exit function
-    		end if
-
-    		'' different types?
-    		if( paraml->typ <> paramr->typ ) then
-         		exit function
-        	end if
-
-        	'' sub-types?
-        	if( paraml->subtype <> paramr->subtype ) then
-            	exit function
+		while( paraml )
+			if( symbParamIsSame( paraml, paramr ) = FALSE ) then
+				exit function
 			end if
 
-    		'' next arg..
-    		paraml = paraml->next
-    		paramr = paramr->next
-    	loop
+			'' next param
+			paraml = paraml->next
+			paramr = paramr->next
+		wend
     end select
 
 	'' and sub type
@@ -1744,31 +1706,31 @@ function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval length as integer _
-	) as zstring ptr
+		byval length as longint _
+	) as string
 
-	static as string res
+	dim as string s
 	dim as integer dtypeonly = any, ptrcount = any
     
 	if( dtype = FB_DATATYPE_INVALID ) then
-		return NULL
+		exit function
 	end if
 
 	ptrcount = typeGetPtrCnt( dtype )
 	if( typeIsConstAt( dtype, ptrcount ) ) then
-		res = "const "
+		s = "const "
 	else
-		res = ""
+		s = ""
 	end if
 
 	dtypeonly = typeGetDtOnly( dtype )
 
 	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-		res += *symbGetName( subtype )
+		s += *symbGetName( subtype )
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
-		res += *symb_dtypeTB(dtypeonly).name
+		s += *symb_dtypeTB(dtypeonly).name
 		if( length > 0 ) then
 			select case( dtypeonly )
 			case FB_DATATYPE_FIXSTR
@@ -1780,21 +1742,44 @@ function symbTypeToStr _
 				'' Convert bytes back to chars
 				length \= typeGetSize( FB_DATATYPE_WCHAR )
 			end select
-			res += " * " + str( length )
+			s += " * " + str( length )
+		end if
+
+	case FB_DATATYPE_FUNCTION
+		'' Procedure pointer
+
+		'' The sub() or function() already implies one PTR
+		assert( ptrcount > 0 )
+		ptrcount -= 1
+
+		'' If there are any more PTRs, i.e. a PTR to a proc PTR,
+		'' then it must be emitted inside a typeof():
+		''    typeof( function( ) as integer ) ptr
+		'' otherwise, the PTR would be seen as part of the
+		'' function result type:
+		''    function( ) as integer ptr
+		if( ptrcount > 0 ) then
+			s += "typeof("
+		end if
+
+		s += symbProcPtrToStr( subtype )
+
+		if( ptrcount > 0 ) then
+			s += ")"
 		end if
 
 	case else
-		res += *symb_dtypeTB(dtypeonly).name
+		s += *symb_dtypeTB(dtypeonly).name
 	end select
 
 	for i as integer = ptrcount-1 to 0 step -1
 		if( typeIsConstAt( dtype, i ) ) then
-			res += " const"
+			s += " const"
 		end if
-		res += " ptr"
+		s += " ptr"
 	next
 
-	function = strptr( res )
+	function = s
 end function
 
 '':::::
@@ -1899,7 +1884,7 @@ function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer
+	) as longint
 
 	dtype = typeGet( dtype )
 
@@ -1907,7 +1892,7 @@ function symbCalcLen _
 	case FB_DATATYPE_FIXSTR
 		function = 0  '' zero-length literal-strings
 
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_BITFIELD
+	case FB_DATATYPE_STRUCT
 		function = subtype->lgt
 
 	case else
@@ -1920,9 +1905,9 @@ function symbCalcDerefLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr  _
-	) as integer
+	) as longint
 
-	dim as integer length = any
+	dim as longint length = any
 
 	assert( typeIsPtr( dtype ) )
 
@@ -2013,10 +1998,47 @@ function symbCheckConstAssign _
 		byval mode as FB_PARAMMODE = 0, _
 		byref matches as integer = 0 _
 	) as integer
-	
+
+	dim as integer i = any, lcount = any, rcount = any, rmatches = any
+	dim as integer lconst = any, rconst = any
+
+	''
+	'' Toplevel const:
+	''
+	''       T := const T    ok (byval copy)
+	'' const T :=       T    ok in initialization, not later
+	''
+	'' T       ptr := T const ptr    ok (byval copy)
+	'' T const ptr := T       ptr    ok in initialization, not later
+	''
+	''
+	'' Nested consts:
+	''
+	'' const T ptr := const T ptr    ok
+	'' const T ptr :=       T ptr    ok
+	''       T ptr := const T ptr    not ok
+	''
+	'' Basically the lhs may add CONSTs, but not remove them.
+	''
+	'' If pointer indirection levels differ, then the check stops at the
+	'' last level that they still have in common, for example:
+	''
+	''     T ptr ptr := const T ptr
+	''     (rhs is a pointer to something const, but lhs is a ptr to
+	''     something non-const, so they're incompatible)
+	''
+	''     T ptr := const T ptr ptr
+	''     (rhs is a pointer to a non-const "const T ptr"; lhs is a pointer
+	''     to something non-const aswell, match)
+	''
+	''     const T ptr := T const ptr ptr
+	''     (rhs is a pointer to a const "T ptr"; lhs is a pointer to a
+	''     const something, match)
+	''
+
 	function = FALSE
 	matches = 0
-	
+
 	'' no consts? short-circuit
 	if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
 		return TRUE
@@ -2026,85 +2048,110 @@ function symbCheckConstAssign _
 	if( mode = FB_PARAMMODE_VARARG ) then
 		return TRUE
 	end if
-	
-	dim as integer l_cnt = typeGetPtrCnt( ldtype ), r_cnt = typeGetPtrCnt( rdtype ), start_at = any
-	
-	'' any ptr const on the right?
-	if( typeGetConstMask( rdtype ) and typeIsPtr( rdtype ) ) then
-		
-		'' types and ptr depth HAVE to match
-		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			
-			'' unless it's a ptr to an any ptr
-			if( (typeGetDtAndPtrOnly( ldtype ) = typeAddrOf(FB_DATATYPE_VOID)) = FALSE ) then
-				exit function
-			end if
-		end if
-		
-		if( lsubtype <> rsubtype ) then
-			exit function
-		end if
-		
-		if( l_cnt <> r_cnt ) then
-			exit function
-		end if
-		
-	end if
-	
-	'' add one for the non-ptr slot
-	r_cnt += 1
-	
-	'' byval params need extra matching for
-	'' overload resolution
-	if( mode = FB_PARAMMODE_BYVAL ) then
-		start_at = 1
-		matches = r_cnt
-		
+
+	lcount = typeGetPtrCnt( ldtype )
+	rcount = typeGetPtrCnt( rdtype )
+	i = 0
+	rmatches = rcount
+
+	select case( mode )
+	'' byval params need extra matching for overload resolution
+	case FB_PARAMMODE_BYVAL
+		i = 1
+		matches = rcount + 1
 		'' top-level const gets precedence...
 		if( typeIsConst( ldtype ) ) then
 			matches += 1
 		end if
-		
-	else
-		
-		'' just a variable assignment?
-		if( mode = 0 ) then
-			start_at = 1
-		else
-			
-			'' byref/bydesc param, check every level
-			start_at = 0
-		end if
-		
-	end if
-	
-	r_cnt -= start_at
-	
-	'' walk along all the const flags
-	for i as integer = start_at to l_cnt
-		
-		'' same? update matches
-		if( typeIsConstAt( ldtype, i ) = typeIsConstAt( rdtype, i ) ) then
-			if( (r_cnt) > matches ) then
-				matches = r_cnt
+
+	'' just a variable assignment?
+	case 0
+		i = 1
+
+	'' byref/bydesc param, check every level
+	case else
+		rmatches += 1
+	end select
+
+	'' Walk along all the CONST flags. It's an error if the rhs is CONST
+	'' while the lhs isn't, i.e. the lhs "loses" CONSTness.
+	while( (i <= lcount) and (i <= rcount) )
+		lconst = typeIsConstAt( ldtype, i )
+		rconst = typeIsConstAt( rdtype, i )
+
+		if( lconst = rconst ) then
+			if( matches < rmatches ) then
+				matches = rmatches
 			end if
 		end if
-		
-		'' if r is const and l isn't... (only pointers/refs checked here)
-		if( typeIsConstAt( rdtype, i ) ) then
-			if( typeIsConstAt( ldtype, i ) = FALSE ) then
-				exit function
-			end if
+
+		if( rconst and (not lconst) ) then
+			exit function
 		end if
-		
-		r_cnt -= 1
-	next
-	
+
+		rmatches -= 1
+		i += 1
+	wend
+
 	function = TRUE
-	
 end function
 
+private sub hForEachGlobal _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval symclass as integer, _
+		byval callback as sub( byval as FBSYMBOL ptr ) _
+	)
+
+	while( sym )
+		select case( symbGetClass( sym ) )
+		case FB_SYMBCLASS_NAMESPACE
+			hForEachGlobal( symbGetNamespaceTbHead( sym ), symclass, callback )
+
+		case FB_SYMBCLASS_STRUCT
+			hForEachGlobal( symbGetCompSymbTb( sym ).head, symclass, callback )
+
+		case FB_SYMBCLASS_SCOPE
+			hForEachGlobal( symbGetScopeSymbTbHead( sym ), symclass, callback )
+
+		case symclass
+			callback( sym )
+		end select
+
+		sym = sym->next
+	wend
+
+end sub
+
+sub symbForEachGlobal _
+	( _
+		byval symclass as integer, _
+		byval callback as sub( byval as FBSYMBOL ptr ) _
+	)
+
+	hForEachGlobal( symbGetGlobalTbHead( ), symclass, callback )
+
+end sub
+
 #if __FB_DEBUG__
+private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = any
+	dim as string s
+
+	ns = symbGetNamespace( sym )
+	while( ns <> @symbGetGlobalNamespc( ) )
+		s = *symbGetName( ns ) + "." + s
+
+		if( symbGetHashtb( ns ) = NULL ) then
+			exit while
+		end if
+
+		ns = symbGetNamespace( ns )
+	wend
+
+	function = s
+end function
+
 static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _
 	@"var"      , _
@@ -2119,7 +2166,6 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 	@"struct"   , _
 	@"class"    , _
 	@"field"    , _
-	@"bitfield" , _
 	@"typedef"  , _
 	@"fwdref"   , _
 	@"scope"    , _
@@ -2134,7 +2180,7 @@ function typeDump _
 	) as string
 
 	dim as string dump
-	dim as integer ok = any, ptrcount = any
+	dim as integer ok = any, ptrcount = any, dtypeonly = any
 
 	dump = "["
 
@@ -2142,19 +2188,31 @@ function typeDump _
 		dump += "invalid"
 		ok = (subtype = NULL)
 	else
-		ptrcount = abs( typeGetPtrCnt( dtype ) )
+		ptrcount = typeGetPtrCnt( dtype )
+		assert( ptrcount >= 0 )
+
+		if( typeIsRef( dtype ) ) then
+			dump += "byref "
+		end if
 
 		if( typeIsConstAt( dtype, ptrcount ) ) then
 			dump += "const "
 		end if
 
-		select case( typeGetDtOnly( dtype ) )
+		dtypeonly = typeGetDtOnly( dtype )
+		select case( dtypeonly )
 		case FB_DATATYPE_STRUCT
 			dump += "struct"
 		case FB_DATATYPE_WCHAR
 			dump += "wchar"
+		case FB_DATATYPE_FIXSTR
+			dump += "fixstr"
 		case else
-			dump += *symb_dtypeTB(typeGetDtOnly( dtype )).name
+			if( (dtypeonly >= 0) and (dtypeonly < FB_DATATYPES) ) then
+				dump += *symb_dtypeTB(dtypeonly).name
+			else
+				dump += "<invalid dtype " & dtypeonly & ">"
+			end if
 		end select
 
 		'' UDT name
@@ -2162,7 +2220,20 @@ function typeDump _
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 			if( subtype ) then
 				if( symbIsStruct( subtype ) ) then
-					dump += " " + *symbGetName( subtype )
+					dump += " "
+					dump += hGetNamespacePrefix( subtype )
+					dump += *symbGetName( subtype )
+				end if
+			end if
+
+		case FB_DATATYPE_NAMESPC
+			if( subtype ) then
+				if( symbIsNamespace( subtype ) ) then
+					if( subtype = @symbGetGlobalNamespc( ) ) then
+						dump += " <global namespace>"
+					else
+						dump += " " + *symbGetName( subtype )
+					end if
 				end if
 			end if
 		end select
@@ -2183,8 +2254,6 @@ function typeDump _
 				ok = symbIsEnum( subtype )
 			case FB_DATATYPE_NAMESPC
 				ok = symbIsNamespace( subtype )
-			case FB_DATATYPE_BITFIELD
-				ok = symbIsBitfield( subtype )
 			case FB_DATATYPE_FUNCTION
 				ok = symbIsProc( subtype )
 			case FB_DATATYPE_FWDREF
@@ -2195,7 +2264,7 @@ function typeDump _
 		else
 			select case( typeGetDtOnly( dtype ) )
 			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, _
-			     FB_DATATYPE_NAMESPC, FB_DATATYPE_BITFIELD, _
+			     FB_DATATYPE_NAMESPC, _
 			     FB_DATATYPE_FUNCTION, FB_DATATYPE_FWDREF
 				ok = FALSE
 			case else
@@ -2223,23 +2292,30 @@ function typeDump _
 	function = dump
 end function
 
-private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
-	dim as FBSYMBOL ptr ns = any
-	dim as string s
+private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
+	if( sym = @symbGetGlobalNamespc( ) ) then
+		s += "<global namespace>"
+	else
+		s += hGetNamespacePrefix( sym )
+	end if
 
-	ns = symbGetNamespace( sym )
-	while( ns <> @symbGetGlobalNamespc( ) )
-		s = *symbGetName( ns ) + "." + s
+	if( sym->id.name ) then
+		s += *sym->id.name
+	else
+		s += "<unnamed>"
+	end if
 
-		if( symbGetHashtb( ns ) = NULL ) then
-			exit while
-		end if
+	if( sym->id.alias ) then
+		s += " alias """ + *sym->id.alias + """"
+	end if
 
-		ns = symbGetNamespace( ns )
-	wend
-
-	function = s
-end function
+#if 0
+	'' Note: symbGetMangledName() will mangle the proc and set the
+	'' "mangled" flag. If this is done too early though, before the proc is
+	'' setup properly, then the mangled name will be empty or wrong.
+	s += " mangled """ + *symbGetMangledName( sym ) + """"
+#endif
+end sub
 
 function symbDump( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
@@ -2319,18 +2395,16 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		end if
 	#endmacro
 
-	checkStat( VARALLOCATED )
 	checkStat( ACCESSED )
-	if( symbIsProc( sym ) ) then
-		checkStat( CTORINITED )
-	else
-		checkStat( INITIALIZED )
-	end if
+	checkStat( CTORINITED )
 	checkStat( DECLARED )
+	checkStat( IMPLICIT )
 	checkStat( RTL )
 	checkStat( THROWABLE )
 	checkStat( PARSED )
+	checkStat( RTTITABLE )
 	checkStat( HASALIAS )
+	checkStat( VTABLE )
 	if( symbIsProc( sym ) ) then
 		checkStat( EXCLPARENT )
 	else
@@ -2344,8 +2418,9 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkStat( GLOBALDTOR )
 	checkStat( CANTDUP )
 	if( symbIsProc( sym ) ) then
-		checkStat( GCCBUILTIN )
-		checkStat( IRHLCBUILTIN )
+		checkStat( CANBECLONED )
+	else
+		checkStat( ARGV )
 	end if
 	checkStat( HASRTTI )
 	checkStat( CANTUNDEF )
@@ -2367,38 +2442,73 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		return s
 	end if
 
-#if 1
-	if( sym = @symbGetGlobalNamespc( ) ) then
-		s += "<global namespace>"
-	else
-		s += hGetNamespacePrefix( sym )
-	end if
-#endif
+	select case( sym->class )
+	case FB_SYMBCLASS_PROC
+		s += *symbGetFullProcName( sym )
 
-	if( symbIsProc( sym ) and symbIsOperator( sym ) ) then
-		s += *astGetOpId( symbGetProcOpOvl( sym ) )
-	else
-		if( sym->id.name ) then
-			s += *sym->id.name
-		else
-			s += "<unnamed>"
-		end if
-	end if
-
-#if 1
-	if( sym->id.alias ) then
-		s += " alias """ + *sym->id.alias + """"
-	end if
-#endif
+		select case( symbGetProcMode( sym ) )
+		case FB_FUNCMODE_STDCALL    : s += " stdcall"
+		case FB_FUNCMODE_STDCALL_MS : s += " stdcallms"
+		case FB_FUNCMODE_PASCAL     : s += " pascal"
+		case FB_FUNCMODE_CDECL      : s += " cdecl"
+		end select
 
 #if 0
-	'' Note: symbGetMangledName() will mangle the proc and set the
-	'' "mangled" flag. If this is done too early though, before the proc is
-	'' setup properly, then the mangled name will be empty or wrong.
-	s += " mangled """ + *symbGetMangledName( sym ) + """"
+		'' Dump parameters recursively (if any)
+		s += "("
+		var param = symbGetProcHeadParam( sym )
+		while( param )
+			s += symbDump( param )
+			param = param->next
+			if( param ) then
+				s += ", "
+			end if
+		wend
+		s += ")"
 #endif
 
-	s += " as "
+	case FB_SYMBCLASS_PARAM
+		select case( symbGetParamMode( sym ) )
+		case FB_PARAMMODE_BYVAL  : s += "byval "
+		case FB_PARAMMODE_BYREF  : s += "byref "
+		case FB_PARAMMODE_BYDESC : s += "bydesc "
+		case FB_PARAMMODE_VARARG : s += "vararg "
+		end select
+
+		hDumpName( s, sym )
+
+		if( sym->param.mode = FB_PARAMMODE_BYDESC ) then
+			s += hDumpDynamicArrayDimensions( sym->param.bydescdimensions )
+		end if
+
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		hDumpName( s, sym )
+
+		'' Array dimensions, if any
+		if( symbIsDynamic( sym ) ) then
+			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
+		elseif( symbGetArrayDimensions( sym ) > 0 ) then
+			s += "("
+			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
+				if( i > 0 ) then
+					s += ", "
+				end if
+				s &= symbArrayLbound( sym, i )
+				s += " to "
+				if( symbArrayUbound( sym, i ) = FB_ARRAYDIM_UNKNOWN ) then
+					s += "..."
+				else
+					s &= symbArrayUbound( sym, i )
+				end if
+			next
+			s += ")"
+		end if
+
+	case else
+		hDumpName( s, sym )
+	end select
+
+	s += " "
 
 	if( sym->typ and FB_DATATYPE_INVALID ) then
 		if( sym->class = FB_SYMBCLASS_KEYWORD ) then
@@ -2426,11 +2536,19 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else
-				s += *symbTypeToStr( sym->typ, NULL, sym->lgt )
+				s += typeDump( sym->typ, NULL )
 			end select
 		else
-			s += *symbTypeToStr( sym->typ, sym->subtype, sym->lgt )
+			s += typeDump( sym->typ, sym->subtype )
 		end if
+	end if
+
+	if( symbIsField( sym ) ) then
+		if( sym->var_.bits > 0 ) then
+			s += " bitfield : " & sym->var_.bits & " (" & sym->var_.bitpos & ".." & sym->var_.bitpos + sym->var_.bits - 1 & ")"
+		end if
+
+		s += " offset=" & sym->ofs
 	end if
 
 	function = s
@@ -2464,5 +2582,18 @@ sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 			hashitem = hashitem->next
 		wend
 	next
+end sub
+
+sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
+	print "symchain [" + hex( chain_ ) + "]:"
+
+	if( chain_ = NULL ) then
+		exit sub
+	end if
+
+	do
+		print "    " + symbDump( chain_->sym )
+		chain_ = chain_->next
+	loop while( chain_ )
 end sub
 #endif

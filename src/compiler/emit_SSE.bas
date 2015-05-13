@@ -97,7 +97,7 @@ private sub _emitSTORF2I_SSE _
 	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case if the dst is uinteger
-	if( ( ddsize = FB_INTEGERSIZE ) and ( typeIsSigned( dvreg->dtype ) = 0 ) ) then
+	if( (ddsize = 4) and (typeIsSigned( dvreg->dtype ) = 0) ) then
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
@@ -135,7 +135,7 @@ private sub _emitSTORF2I_SSE _
 		exit sub
 	end if
 
-	if( dvreg->typ = IR_VREGTYPE_REG ) and ( ddsize = FB_INTEGERSIZE ) then
+	if( (dvreg->typ = IR_VREGTYPE_REG) and (ddsize = 4) ) then
 		'' dst is 32-bit register
 		isfree = TRUE
 		aux = dst
@@ -269,7 +269,7 @@ private sub _emitSTORI2F_SSE _
 	sdsize = typeGetSize( svreg->dtype )
 
 	'' special case for unsigned integers
-	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) Then
+	if( (typeIsSigned( svreg->dtype ) = 0) and (sdsize = 4) ) then
 		hPUSH "0"
 		hPUSH src
 		outp "fild qword ptr [esp]"
@@ -278,7 +278,7 @@ private sub _emitSTORI2F_SSE _
 		exit sub
 	end if
 
-	if( svreg->typ <> IR_VREGTYPE_IMM ) and ( sdsize = FB_INTEGERSIZE ) Then
+	if( (svreg->typ <> IR_VREGTYPE_IMM) and (sdsize = 4) ) then
 		'' src is 32-bit reg or 32-bit mem
 		aux = src
 		isFree = TRUE
@@ -329,8 +329,8 @@ private sub hEmitStoreFreg2F_SSE _
 	dim as string dst, src
 	dim as integer ddsize
 
-	hPrepOperand( dvreg, dst, , , FALSE )
-	hPrepOperand( svreg, src, , , FALSE )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	ddsize = typeGetSize( dvreg->dtype )
 
@@ -364,8 +364,8 @@ private sub _emitSTORF2F_SSE _
 	dim as integer ddsize, sdsize, src_vec
 	dim as string ostr
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	ddsize = typeGetSize( dvreg->dtype )
 	sdsize = typeGetSize( svreg->dtype )
@@ -375,6 +375,7 @@ private sub _emitSTORF2F_SSE _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		'' if the src was returned from a function, it is in st(0)
 		if( svreg->regFamily = IR_REG_FPU_STACK ) then
+			hPrepOperand( dvreg, dst )
 			outp "fstp " + dst
 			exit sub
 		end if
@@ -403,8 +404,8 @@ private sub _emitSTORF2F_SSE _
 		'' same size? just copy..
 		if( sdsize = ddsize ) then
 			if( src_vec ) then
-				hPrepOperand( dvreg, dst, , , FALSE )
-				hPrepOperand( svreg, src, , , FALSE )
+				hPrepOperand( dvreg, dst, , , , FALSE )
+				hPrepOperand( svreg, src, , , , FALSE )
 				if( ddsize > 4 ) then
 					outp "movupd xmm7" + COMMA + src
 					outp "movupd " + dst + COMMA + "xmm7"
@@ -572,7 +573,7 @@ private sub _emitLOADF2I_SSE _
 		'' dst is a register
 		isfree = TRUE
 		'' not an integer? make it
-		if( ddsize < FB_INTEGERSIZE ) then
+		if( ddsize < 4 ) then
 			dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 		end if
 
@@ -731,7 +732,7 @@ private sub _emitLOADI2F_SSE _
 	ddsize = typeGetSize( dvreg->dtype )
 
 	'' special case for unsigned integers
-	if( typeIsSigned( svreg->dtype ) = 0) and ( sdsize = FB_INTEGERSIZE ) then
+	if( (typeIsSigned( svreg->dtype ) = 0) and (sdsize = 4) ) then
 		'' find a register
 		reg = hFindRegNotInVreg( svreg )
 		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
@@ -742,7 +743,7 @@ private sub _emitLOADI2F_SSE _
 		end if
 
 		if( ddsize > 4 ) then
-			sym = symbAllocLongIntConst( &h40F0000000000000, FB_DATATYPE_ULONGINT )
+			sym = symbAllocIntConst( &h40F0000000000000, FB_DATATYPE_ULONGINT )
 			tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 			suffix = "sd "
 		else
@@ -770,7 +771,7 @@ private sub _emitLOADI2F_SSE _
 		exit sub
 	end if
 
-	if( svreg->typ <> IR_VREGTYPE_IMM ) and ( sdsize = FB_INTEGERSIZE ) then
+	if( (svreg->typ <> IR_VREGTYPE_IMM) and (sdsize = 4) ) then
 		'' src is 32-bit mem or register
 		isfree = TRUE
 		aux = src			'' just use it
@@ -786,7 +787,7 @@ private sub _emitLOADI2F_SSE _
 			hPUSH aux
 		end if
 
-		if( svreg->typ = IR_VREGTYPE_IMM ) or ( sdsize = FB_INTEGERSIZE ) then
+		if( (svreg->typ = IR_VREGTYPE_IMM) or (sdsize = 4) ) then
 			outp "mov " + aux + COMMA + src
 		else
 			if( typeIsSigned( svreg->dtype ) ) then
@@ -832,13 +833,15 @@ private sub _emitLOADF2F_SSE _
 	dim as string src, dst
 	dim as integer sdsize, ddsize
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
 
 	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
+		hPrepOperand( svreg, src )
 		outp "fld " + src
 		exit sub
 	end if
+
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	sdsize = typeGetSize( svreg->dtype )
 	ddsize = typeGetSize( dvreg->dtype )
@@ -891,8 +894,8 @@ private sub _emitMOVF_SSE _
 	dim as string dst, src
 	dim as integer sdsize, ddsize
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
 
 	sdsize = typeGetSize( svreg->dtype )
 	ddsize = typeGetSize( dvreg->dtype )
@@ -1684,13 +1687,13 @@ private sub _emitNEGF_SSE _
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movss " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
 	end if
 
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 	else
 		sym = symbAllocIntConst(&h80000000, FB_DATATYPE_UINT)
@@ -1769,7 +1772,7 @@ private sub _emitABSF_SSE _
 	end if
 
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 	else
 		sym = symbAllocIntConst(&h7FFFFFFF, FB_DATATYPE_UINT)
@@ -1810,7 +1813,7 @@ private sub _emitSGNF_SSE _
 			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movss " + dst + COMMA + "dword ptr [esp]"
 		end if
 		outp "add esp" + COMMA + str( ddsize )
 	end if
@@ -1819,13 +1822,13 @@ private sub _emitSGNF_SSE _
 		outp "xorpd xmm7, xmm7"
 		outp "cmpneqsd xmm7" + COMMA + dst
 
-		sym = symbAllocLongIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 		outp "orpd " + dst + COMMA + src
 
-		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
@@ -2347,7 +2350,7 @@ private sub _emitSQRT_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
@@ -2382,7 +2385,7 @@ private sub _emitRSQRT_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
@@ -2417,7 +2420,7 @@ private sub _emitRCP_SSE _
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "fstp qword ptr [esp]"
-			outp "movlpd " + dst + COMMA + "dword ptr [esp]"
+			outp "movlpd " + dst + COMMA + "qword ptr [esp]"
 		else
 			outp "fstp dword ptr [esp]"
 			outp "movss " + dst + COMMA + "dword ptr [esp]"
@@ -2549,7 +2552,7 @@ private sub _emitFLOOR_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
 		suffix = "d "
 	else
@@ -2612,10 +2615,10 @@ private sub _emitFIX_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		neg1_sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
 
-		absval_sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		absval_sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		absval_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, absval_sym, symbGetOfs( absval_sym ) )
 
 		suffix = "d "
@@ -2694,10 +2697,10 @@ private sub _emitFRAC_SSE _
 
 	ddsize = typeGetSize( dvreg->dtype )
 	if( ddsize > 4 ) then
-		neg1_sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
+		neg1_sym = symbAllocIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		neg1_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, neg1_sym, symbGetOfs( neg1_sym ) )
 
-		absval_sym = symbAllocLongIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
+		absval_sym = symbAllocIntConst(&h8000000000000000, FB_DATATYPE_ULONGINT)
 		absval_vreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, absval_sym, symbGetOfs( absval_sym ) )
 
 		suffix = "d "

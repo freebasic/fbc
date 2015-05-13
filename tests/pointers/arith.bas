@@ -30,8 +30,7 @@ sub integralSubtractionAssignmentTest cdecl ()
 	CU_ASSERT_EQUAL( p2, @tb[0] )
 end sub
 
-private function init cdecl () as integer
-
+private function init cdecl () as long
 	tb = allocate(2 * sizeof(integer))
 	if (0 = tb) then
 		return -1
@@ -41,25 +40,20 @@ private function init cdecl () as integer
 	p2 = @tb[1]
 
 	return 0
-
 end function
 
-private function cleanup cdecl () as integer
-
+private function cleanup cdecl () as long
 	deallocate(tb)
 	return 0
-
 end function
 
 private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pointers.arith", @init)
+	fbcu.add_suite("fbc_tests.pointers.arith", @init, @cleanup)
 	fbcu.add_test("pointerDiffTest", @pointerDiffTest)
 	fbcu.add_test("integralAdditionTest", @integralAdditionTest)
 	fbcu.add_test("integralAdditionAssignmentTest", @integralAdditionAssignmentTest)
 	fbcu.add_test("integralSubtractionTest", @integralSubtractionTest)
 	fbcu.add_test("integralSubtractionAssignmentTest", @integralSubtractionAssignmentTest)
-
 end sub
 
 end namespace

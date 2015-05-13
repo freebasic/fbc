@@ -6,12 +6,12 @@
 
 #define FB_RTL_STRINIT					"fb_StrInit"
 #define FB_RTL_STRDELETE				"fb_StrDelete"
+#define FB_RTL_HSTRDELTEMP				"fb_hStrDelTemp"
 #define FB_RTL_STRASSIGN				"fb_StrAssign"
 #define FB_RTL_STRCONCAT 				"fb_StrConcat"
 #define FB_RTL_STRCOMPARE				"fb_StrCompare"
 #define FB_RTL_STRCONCATASSIGN			"fb_StrConcatAssign"
 #define FB_RTL_STRALLOCTMPRES			"fb_StrAllocTempResult"
-#define FB_RTL_STRALLOCTMPDESCV			"fb_StrAllocTempDescV"
 #define FB_RTL_STRALLOCTMPDESCF			"fb_StrAllocTempDescF"
 #define FB_RTL_STRALLOCTMPDESCZ			"fb_StrAllocTempDescZ"
 #define FB_RTL_STRALLOCTMPDESCZEX		"fb_StrAllocTempDescZEx"
@@ -47,7 +47,6 @@
 #define FB_RTL_CVD                      "fb_CVD"
 #define FB_RTL_CVS                      "fb_CVS"
 #define FB_RTL_CVSHORT                  "fb_CVSHORT"
-#define FB_RTL_CVI                      "fb_CVI"
 #define FB_RTL_CVL                      "fb_CVL"
 #define FB_RTL_CVLONGINT                "fb_CVLONGINT"
 
@@ -145,6 +144,7 @@
 #define FB_RTL_ARRAYREDIM_OBJ				"fb_ArrayRedimObj"
 #define FB_RTL_ARRAYREDIMPRESV				"fb_ArrayRedimPresvEx"
 #define FB_RTL_ARRAYREDIMPRESV_OBJ			"fb_ArrayRedimPresvObj"
+#define FB_RTL_ARRAYREDIMTO				"fb_ArrayRedimTo"
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
 #define FB_RTL_ARRAYSNGBOUNDCHK				"fb_ArraySngBoundChk"
@@ -337,15 +337,17 @@
 #define FB_RTL_GFXVIEW 					"fb_GfxView"
 #define FB_RTL_GFXWINDOW 				"fb_GfxWindow"
 #define FB_RTL_GFXPALETTE 				"fb_GfxPalette"
-#define FB_RTL_GFXPALETTEUSING 			"fb_GfxPaletteUsing"
-#define FB_RTL_GFXPALETTEGET 			"fb_GfxPaletteGet"
-#define FB_RTL_GFXPALETTEGETUSING 		"fb_GfxPaletteGetUsing"
+#define FB_RTL_GFXPALETTEUSING				"fb_GfxPaletteUsing"
+#define FB_RTL_GFXPALETTEUSING64			"fb_GfxPaletteUsing64"
+#define FB_RTL_GFXPALETTEGET				"fb_GfxPaletteGet"
+#define FB_RTL_GFXPALETTEGET64				"fb_GfxPaletteGet64"
+#define FB_RTL_GFXPALETTEGETUSING			"fb_GfxPaletteGetUsing"
+#define FB_RTL_GFXPALETTEGETUSING64			"fb_GfxPaletteGetUsing64"
 #define FB_RTL_GFXPUT 					"fb_GfxPut"
 #define FB_RTL_GFXGET 					"fb_GfxGet"
 #define FB_RTL_GFXGETQB					"fb_GfxGetQB"
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
-#define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 #define FB_RTL_GFXIMAGECREATEQB			"fb_GfxImageCreateQB"
 
@@ -369,20 +371,14 @@
 #define FB_RTL_GOSUBEXIT                "fb_GosubExit"
 #define FB_RTL_SETJMP                   "fb_SetJmp"
 
-#define FB_RTL_SGN						"{sgn}"
-#define FB_RTL_SIN                      "{sin}"
+#define FB_RTL_SGN                      "{sgn}"
 #define FB_RTL_ASIN                     "{asin}"
-#define FB_RTL_COS                      "{cos}"
 #define FB_RTL_ACOS                     "{acos}"
 #define FB_RTL_TAN                      "{tan}"
 #define FB_RTL_ATAN                     "{atan}"
-#define FB_RTL_SQRT                     "{sqrt}"
-#define FB_RTL_LOG                      "{log}"
-#define FB_RTL_EXP                      "{exp}"
-#define FB_RTL_FLOOR                    "{floor}"
-#define FB_RTL_ABS                    	"{abs}"
-#define FB_RTL_FIX                    	"{fix}"
-#define FB_RTL_FRAC                    	"{frac}"
+#define FB_RTL_ABS                      "{abs}"
+#define FB_RTL_FIX                      "{fix}"
+#define FB_RTL_FRAC                     "{frac}"
 #define FB_RTL_ATAN2                    "{atan2}"
 
 #define FB_RTL_FTOSB                    "fb_ftosb"
@@ -410,12 +406,12 @@
 enum FB_RTL_IDX
 	FB_RTL_IDX_STRINIT
 	FB_RTL_IDX_STRDELETE
+	FB_RTL_IDX_HSTRDELTEMP
 	FB_RTL_IDX_STRASSIGN
 	FB_RTL_IDX_STRCONCAT
 	FB_RTL_IDX_STRCOMPARE
 	FB_RTL_IDX_STRCONCATASSIGN
 	FB_RTL_IDX_STRALLOCTMPRES
-	FB_RTL_IDX_STRALLOCTMPDESCV
 	FB_RTL_IDX_STRALLOCTMPDESCF
 	FB_RTL_IDX_STRALLOCTMPDESCZ
 	FB_RTL_IDX_STRALLOCTMPDESCZEX
@@ -450,7 +446,6 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_CVD
 	FB_RTL_IDX_CVS
-	FB_RTL_IDX_CVI
 	FB_RTL_IDX_CVL
 	FB_RTL_IDX_CVSHORT
 	FB_RTL_IDX_CVLONGINT
@@ -549,6 +544,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYREDIM_OBJ
 	FB_RTL_IDX_ARRAYREDIMPRESV
 	FB_RTL_IDX_ARRAYREDIMPRESV_OBJ
+	FB_RTL_IDX_ARRAYREDIMTO
 	FB_RTL_IDX_ARRAYLBOUND
 	FB_RTL_IDX_ARRAYUBOUND
 	FB_RTL_IDX_ARRAYSNGBOUNDCHK
@@ -644,6 +640,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
 	FB_RTL_IDX_MEMCOPYCLEAR
+	FB_RTL_IDX_ALLOCATE
+	FB_RTL_IDX_DEALLOCATE
 
 	FB_RTL_IDX_FILEOPEN
 	FB_RTL_IDX_FILEOPEN_ENCOD
@@ -742,8 +740,11 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXWINDOW
 	FB_RTL_IDX_GFXPALETTE
 	FB_RTL_IDX_GFXPALETTEUSING
+	FB_RTL_IDX_GFXPALETTEUSING64
 	FB_RTL_IDX_GFXPALETTEGET
+	FB_RTL_IDX_GFXPALETTEGET64
 	FB_RTL_IDX_GFXPALETTEGETUSING
+	FB_RTL_IDX_GFXPALETTEGETUSING64
 	FB_RTL_IDX_GFXPUT
 	FB_RTL_IDX_GFXPUTTRANS
 	FB_RTL_IDX_GFXPUTPSET
@@ -772,16 +773,10 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_SETJMP
 
 	FB_RTL_IDX_SGN
-	FB_RTL_IDX_SIN
 	FB_RTL_IDX_ASIN
-	FB_RTL_IDX_COS
 	FB_RTL_IDX_ACOS
 	FB_RTL_IDX_TAN
 	FB_RTL_IDX_ATAN
-	FB_RTL_IDX_SQRT
-	FB_RTL_IDX_LOG
-	FB_RTL_IDX_EXP
-	FB_RTL_IDX_FLOOR
 	FB_RTL_IDX_ABS
 	FB_RTL_IDX_FIX
 	FB_RTL_IDX_FRAC
@@ -816,32 +811,34 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_MT		  = &h00000004					'' needs the multithreaded rtlib
 
 	FB_RTL_OPT_DBGONLY	  = &h00000010                  '' -g only
-	FB_RTL_OPT_OPERATOR	  = &h00000020
+				''= &h00000020
 	FB_RTL_OPT_STRSUFFIX  = &h00000040                  '' has a $ suffix (-lang qb only)
 	FB_RTL_OPT_NOQB		  = &h00000080                  '' anything but -lang qb
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
-	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
- 	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
+	FB_RTL_OPT_CANBECLONED    = &h00000800  '' -> FB_PROCSTATS_CANBECLONED
+	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
+	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
 end enum
 
-enum FB_RTL_TCTYPES
-    FB_RTL_TCTYPES_STDCALL,
-    FB_RTL_TCTYPES_CDECL,
-    FB_RTL_TCTYPES_BYTE,
-    FB_RTL_TCTYPES_UBYTE,
-    FB_RTL_TCTYPES_SHORT,
-    FB_RTL_TCTYPES_USHORT,
-    FB_RTL_TCTYPES_INTEGER,
-    FB_RTL_TCTYPES_UINTEGER,
-    FB_RTL_TCTYPES_LONGINT,
-    FB_RTL_TCTYPES_ULONGINT,
-    FB_RTL_TCTYPES_SINGLE,
-    FB_RTL_TCTYPES_DOUBLE,
-    FB_RTL_TCTYPES_TYPE,
-    FB_RTL_TCTYPES_PTR
+'' mirrored in rtlib/thread_call.c
+enum
+	FB_THREADCALL_STDCALL
+	FB_THREADCALL_CDECL
+	FB_THREADCALL_INT8
+	FB_THREADCALL_UINT8
+	FB_THREADCALL_INT16
+	FB_THREADCALL_UINT16
+	FB_THREADCALL_INT32
+	FB_THREADCALL_UINT32
+	FB_THREADCALL_INT64
+	FB_THREADCALL_UINT64
+	FB_THREADCALL_FLOAT32
+	FB_THREADCALL_FLOAT64
+	FB_THREADCALL_STRUCT
+	FB_THREADCALL_PTR
 end enum
 
 type FB_RTL_PARAMDEF
@@ -871,10 +868,7 @@ declare sub rtlEnd _
 	( _
 	)
 
-declare sub rtlAddIntrinsicProcs _
-	( _
-		byval procdef as FB_RTL_PROCDEF ptr _
-	)
+declare sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 
 declare function rtlProcLookup _
 	( _
@@ -889,13 +883,13 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as integer
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 
 declare function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
-	) as integer
+	) as longint
 
 declare function rtlStrCompare _
 	( _
@@ -953,10 +947,7 @@ declare function rtlWstrConcatAssign _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlStrDelete _
-	( _
-		byval strg as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function rtlStrDelete( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function rtlStrAllocTmpResult _
 	( _
@@ -1095,13 +1086,20 @@ declare function rtlArrayErase _
 
 declare function rtlArrayRedim _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval elementlen as integer, _
+		byval arrayexpr as ASTNODE ptr, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		byval dopreserve as integer, _
 		byval doclear as integer _
-	) as integer
+	) as ASTNODE ptr
+
+declare function rtlArrayRedimTo _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 declare function rtlArrayBound _
 	( _
@@ -1199,12 +1197,6 @@ declare function rtlMathBop _
 		byval rexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlMathFTOI _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval to_dtype as integer _
-	) as ASTNODE ptr
-
 declare function rtlInitMain _
 	( _
 		_
@@ -1217,13 +1209,6 @@ declare function rtlInitApp _
 	) as ASTNODE ptr
 
 declare function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer
-
-declare function rtlMemCopy _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval bytes as integer _
-	) as ASTNODE ptr
 
 declare function rtlMemSwap _
 	( _
@@ -1246,9 +1231,9 @@ declare function rtlWstrSwap _
 declare function rtlMemCopyClear _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval dstlen as integer, _
+		byval dstlen as longint, _
 		byval srcexpr as ASTNODE ptr, _
-		byval srclen as integer _
+		byval srclen as longint _
 	) as integer
 
 declare function rtlMemNewOp _
@@ -1489,7 +1474,7 @@ declare function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-declare function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
+declare function rtlErrorCheck( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare sub rtlErrorThrow _
 	( _
@@ -1552,7 +1537,6 @@ declare function rtlAtExit _
 declare function rtlGfxPset _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
@@ -1563,7 +1547,6 @@ declare function rtlGfxPset _
 declare function rtlGfxPoint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
@@ -1571,7 +1554,6 @@ declare function rtlGfxPoint _
 declare function rtlGfxLine _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
@@ -1585,7 +1567,6 @@ declare function rtlGfxLine _
 declare function rtlGfxCircle _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval radexpr as ASTNODE ptr, _
@@ -1600,7 +1581,6 @@ declare function rtlGfxCircle _
 declare function rtlGfxPaint _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval pexpr as ASTNODE ptr, _
@@ -1611,20 +1591,17 @@ declare function rtlGfxPaint _
 declare function rtlGfxDraw _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
 declare function rtlGfxDrawString _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval texpr as ASTNODE ptr, _
 		byval sexpr as ASTNODE ptr, _
 		byval cexpr as ASTNODE ptr, _
 		byval fexpr as ASTNODE ptr, _
-		byval fisptr as integer, _
 		byval coord_type as integer, _
 		byval mode as integer, _
 		byval alphaexpr as ASTNODE ptr, _
@@ -1664,18 +1641,15 @@ declare function rtlGfxPalette _
 declare function rtlGfxPaletteUsing _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval isget as integer _
 	) as integer
 
 declare function rtlGfxPut _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval xexpr as ASTNODE ptr, _
 		byval yexpr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
@@ -1690,15 +1664,13 @@ declare function rtlGfxPut _
 declare function rtlGfxGet _
 	( _
 		byval target as ASTNODE ptr, _
-		byval targetisptr as integer, _
 		byval x1expr as ASTNODE ptr, _
 		byval y1expr as ASTNODE ptr, _
 		byval x2expr as ASTNODE ptr, _
 		byval y2expr as ASTNODE ptr, _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isptr as integer, _
-		byval symbol as FBSYMBOL ptr, _
-		byval coordtype as integer _
+		byval coordtype as integer, _
+		byval descexpr as ASTNODE ptr _
 	) as integer
 
 declare function rtlGfxScreenSet _
@@ -1739,10 +1711,7 @@ declare function rtlGosubPop _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlGosubReturn _
-	( _
-		byval ctx as ASTNODE ptr _
-	) as ASTNODE ptr
+declare function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
 
 declare function rtlGosubExit _
 	( _
@@ -1753,11 +1722,6 @@ declare function rtlSetJmp _
 	( _
 		byval buf as ASTNODE ptr _
 	) as ASTNODE ptr
-
-declare function rtlMultinput_cb _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
 
 declare function rtlPrinter_cb _
 	( _

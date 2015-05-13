@@ -27,6 +27,7 @@ enum AST_OP
 	AST_OP_DEL_SELF
 	AST_OP_DEL_VEC_SELF
 	AST_OP_ADDROF
+	AST_OP_PTRINDEX    '' fake [] operator, only to allow it to be overloaded
 	AST_OP_FOR
 	AST_OP_STEP
 	AST_OP_NEXT
@@ -82,6 +83,7 @@ enum AST_OP
 	AST_OP_FLOOR
 	AST_OP_FIX
 	AST_OP_FRAC
+	AST_OP_LEN
 	AST_OP_CONVFD2FS						'' used internally by ASM backend
 
 	AST_OP_SWZ_REPEAT						'' swizzle; repeat value

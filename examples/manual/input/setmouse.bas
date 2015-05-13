@@ -21,5 +21,5 @@ Do
 	    SetMouse 320, 240
 	End If
 
-	' run loop until Escape is pressed
-Loop Until Inkey = Chr(27)
+	' run loop until a key is pressed or the window is closed
+Loop While Inkey = ""

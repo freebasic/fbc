@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
+FBCALL FBSTRING *fb_FileStrInput( ssize_t bytes, int fnum )
 {
     FB_FILE   *handle;
 	FBSTRING  *dst;
@@ -24,11 +23,11 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
     dst = fb_hStrAllocTemp( NULL, bytes );
     if( dst!=NULL )
     {
-        size_t read_count = 0;
+        ssize_t read_count = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
             dst->data[0] = 0;
-            while( read_count!=bytes ) {
+            while( read_count != bytes ) {
                 res = fb_FileGetDataEx( handle,
                                         0,
                                         dst->data + read_count,

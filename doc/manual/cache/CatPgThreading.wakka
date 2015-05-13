@@ -16,8 +16,10 @@ Procedures for working with multithreaded applications.
 		Starts a procedure with parameters in a separate thread of execution.
 	=={{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}==
 		Starts a procedure in a separate thread of execution.
+	=={{fbdoc item="keyword" value="KeyPgThreadDetach|THREADDETACH"}}==
+		Releases a thread handle without waiting for the thread to finish.
 	=={{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}==
-		Waits until a threaded procedure has finished.
+		Waits for a thread to finish and releases the thread handle.
 
 {{anchor name="CONDVARS"}}{{fbdoc item="section" value="Conditional Variables"}}
 	=={{fbdoc item="keyword" value="KeyPgCondCreate|CONDCREATE"}}==

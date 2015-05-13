@@ -2,17 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_hDevFileSeekStart
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_zero
-	)
+int fb_hDevFileSeekStart( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_zero )
 {
 	/* skip the BOM if in UTF-mode */
-	int ofs;
+	size_t ofs;
 
 	switch( encod )
 	{
@@ -38,14 +31,7 @@ int fb_hDevFileSeekStart
 	return fseeko( fp, ofs, SEEK_SET );
 }
 
-/*:::::*/
-fb_off_t fb_DevFileGetSize
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_back
-	)
+fb_off_t fb_DevFileGetSize( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_back )
 {
 	fb_off_t size = 0;
 
@@ -71,4 +57,3 @@ fb_off_t fb_DevFileGetSize
 
 	return size;
 }
-

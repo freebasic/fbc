@@ -13,9 +13,9 @@ Control flow statement to end the program.
 
 {{fbdoc item="desc"}}
 	Used to exit the program, and return to the operating system. An optional integer return value can be specified to indicate an error code to the system. If no return value is given, a value of ##0## is automatically returned at the end of the program.
-
-	Usage of this statement does not cleanly close scope. Variables and memory are not destroyed automatically and object destructors are not called. Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
-
+	
+	Usage of this statement does not cleanly close scope. Local variables will not have their destructors called automatically, because ""FreeBASIC"" does not do stack unwinding. Only the destructors of global variables will be called in this case.
+	
 	For this reason, it is discouraged to use ##**End**## simply to mark the end of a program; the program will come to an end automatically, and in a cleaner fashion, when the last line of module-level code has executed.
 
 {{fbdoc item="ex"}}

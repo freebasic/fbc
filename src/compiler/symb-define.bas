@@ -59,9 +59,9 @@ const SYMB_MAXDEFINES = 34
 	{ _
         (@"__FB_VERSION__"            ,   @FB_VERSION         ,  0,   NULL                   ), _
         (@"__FB_BUILD_DATE__"         ,   @FB_BUILD_DATE      ,  0,   NULL                   ), _
-        (@"__FB_VER_MAJOR__"          ,   @FB_VER_STR_MAJOR   ,  1,   NULL                   ), _
-        (@"__FB_VER_MINOR__"          ,   @FB_VER_STR_MINOR   ,  1,   NULL                   ), _
-        (@"__FB_VER_PATCH__"          ,   @FB_VER_STR_PATCH   ,  1,   NULL                   ), _
+        (@"__FB_VER_MAJOR__"          ,   @FB_VER_MAJOR       ,  1,   NULL                   ), _
+        (@"__FB_VER_MINOR__"          ,   @FB_VER_MINOR       ,  1,   NULL                   ), _
+        (@"__FB_VER_PATCH__"          ,   @FB_VER_PATCH       ,  1,   NULL                   ), _
         (@"__FB_SIGNATURE__"          ,   @FB_SIGN            ,  0,   NULL                   ), _
         (@"__FB_MT__"                 ,   NULL                ,  1,   @hDefMultithread_cb    ), _
         (@"__FILE__"                  ,   NULL                ,  0,   @hDefFile_cb           ), _
@@ -341,6 +341,15 @@ sub symbDefineInit _
 	else
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 	end if
+
+	if( fbIs64bit( ) ) then
+		symbAddDefine( @"__FB_64BIT__", NULL, 0 )
+	end if
+
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
+		symbAddDefine( @"__FB_ARM__", NULL, 0 )
+	end select
 
 	'' add "main" define
 	if( ismain ) then

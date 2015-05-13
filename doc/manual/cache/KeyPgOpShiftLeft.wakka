@@ -20,9 +20,12 @@ Shifts the bits of a numeric expression to the left
 	Returns the result of ##//lhs//## being shifted left ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, "##&b0101 **Shl** 1##" returns the binary number ##&b01010##, and "##5 **Shl** 1##" returns ##10##.
+	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). Numerically, the result is the same as "##[[KeyPgCint Cint]]( lhs [[KeyPgOpMultiply *]] 2 [[KeyPgOpExponentiate ^]] rhs )##". For example, "##&b0101 **Shl** 1##" returns the binary number ##&b01010##, and "##5 **Shl** 1##" returns ##10##.
 
 	Neither of the operands are modified in any way.
+
+	If the result is too large to fit inside the result's data type, the leftmost bits are discarded ("shifted out").
+	The results of this operation are undefined for values of ##//rhs//## less than zero, or greater than or equal to the number of bits in the result's data type.
 
 	This operator can be overloaded for user-defined types.
 

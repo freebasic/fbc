@@ -4,7 +4,6 @@
 
 static void driver_dummy(void);
 
-
 const GFXDRIVER __fb_gfxDriverNull =
 {
 	"Null",			/* char *name; */
@@ -19,12 +18,10 @@ const GFXDRIVER __fb_gfxDriverNull =
 	NULL,			/* void (*set_window_title)(char *title); */
 	NULL,			/* int (*set_window_pos)(int x, int y); */
 	NULL,			/* int *(*fetch_modes)(int depth, int *size); */
-	NULL			/* void (*flip)(void); */
+	NULL,			/* void (*flip)(void); */
+	NULL			/* void (*poll_events)(void); */
 };
 
-
-/*:::::*/
 static void driver_dummy(void)
 {
 }
-

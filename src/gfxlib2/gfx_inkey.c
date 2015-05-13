@@ -11,16 +11,19 @@ int fb_hGfxInputBufferChanged( void )
 {
 	int res;
 
+	FB_GRAPHICS_LOCK( );
 	DRIVER_LOCK();
 
     res = key_buffer_changed;
     key_buffer_changed = FALSE;
 
 	DRIVER_UNLOCK();
+	FB_GRAPHICS_UNLOCK( );
 
 	return res;
 }
 
+/* Only called from gfx drivers; caller is expected to hold DRIVER_LOCK() */
 void fb_hPostKey(int key)
 {
 	key_buffer[key_tail] = key;
@@ -57,37 +60,58 @@ static int get_key(void)
 	return key;
 }
 
+/* Doing synchronization manually here because getkey() is blocking */
 int fb_GfxGetkey(void)
 {
 	int key = 0;
 
-	if (!__fb_gfx)
-		return 0;
+	/* Poll until next key press */
+	while( 1 ) {
+		FB_GRAPHICS_LOCK( );
 
-	while ((key = get_key()) == 0) {
+		/* Abort if gfx screen was closed */
+		if (!__fb_gfx) {
+			FB_GRAPHICS_UNLOCK( );
+			break;
+		}
+
+		key = get_key( );
+
+		FB_GRAPHICS_UNLOCK( );
+
+		if( key != 0 ) {
+			break;
+		}
+
 		fb_Sleep(20);
 	}
 
 	return key;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 int fb_GfxKeyHit(void)
 {
 	int res;
 
+	FB_GRAPHICS_LOCK( );
 	DRIVER_LOCK();
 
 	res = (key_head != key_tail? 1: 0);
 
 	DRIVER_UNLOCK();
+	FB_GRAPHICS_UNLOCK( );
 
 	return res;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 FBSTRING *fb_GfxInkey(void)
 {
 	FBSTRING *res;
 	int ch;
+
+	FB_GRAPHICS_LOCK( );
 
 	if (__fb_gfx && (ch = get_key())) {
 		res = fb_hMakeInkeyStr( ch );
@@ -95,10 +119,12 @@ FBSTRING *fb_GfxInkey(void)
 		res = &__fb_ctx.null_desc;
 	}
 
+	FB_GRAPHICS_UNLOCK( );
+
 	return res;
 }
 
 int fb_GfxIsRedir(int is_input)
 {
-	return FALSE;
+	return FB_FALSE;
 }

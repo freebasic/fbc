@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_WriteWstr ( int fnum, FB_WCHAR *s, int mask )
+FBCALL void fb_WriteWstr( int fnum, FB_WCHAR *s, int mask )
 {
     const FB_WCHAR *buff;
-    int len, bufflen;
+	ssize_t len, bufflen;
     FB_FILE *handle = FB_FILE_TO_HANDLE( fnum );
 
 	if( s == NULL )

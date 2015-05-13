@@ -12,7 +12,9 @@ Frees previously allocated memory
 		the address of the previously allocated buffer.
 
 {{fbdoc item="desc"}}
-	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use will result in undefined behavior.
+	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use (dereferencing or calling **##Deallocate##** again) will result in undefined behavior.
+
+	Calling **##Deallocate##** on a null pointer induces no action.
 
 ~&**##Deallocate##** is an alias for the C runtime library's **##free##**, so it's not guaranteed to be thread safe in all platforms.
 

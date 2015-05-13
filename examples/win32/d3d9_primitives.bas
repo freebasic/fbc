@@ -131,7 +131,7 @@ declare sub render()
 ''-----------------------------------------------------------------------------
 function WinMain(byval hInstance as HINSTANCE, _
 				 byval hPrevInstance as HINSTANCE, _
-				 byval lpCmdLine as string, _
+				 byval lpCmdLine as zstring ptr, _
 				 byval nCmdShow as integer _
 				) as integer
 

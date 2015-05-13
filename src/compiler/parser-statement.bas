@@ -19,7 +19,7 @@
 sub cStatement()
 	'' ':'?
 	if( lexGetToken( ) = FB_TK_STMTSEP ) then
-		parser.stmt.cnt += 1
+		parser.stmt.cnt += 1  '' end-of-statement seen
 		lexSkipToken( )
 	end if
 
@@ -36,12 +36,11 @@ sub cStatement()
 			end if
 		end if
 
-		parser.stmt.cnt += 1
-
 		'' ':'?
 		if( lexGetToken( ) <> FB_TK_STMTSEP ) then
 			exit do
 		end if
+		parser.stmt.cnt += 1  '' end-of-statement seen
 		lexSkipToken( )
 	loop
 end sub

@@ -76,7 +76,7 @@ end type
 declare sub strsetAdd _
 	( _
 		byval set as TSTRSET ptr, _
-		byref s as const string, _
+		byref s as string, _
 		byval userdata as integer _
 	)
 declare sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)

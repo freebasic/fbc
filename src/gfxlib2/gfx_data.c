@@ -23,6 +23,7 @@ const PALETTE __fb_palette[FB_PALETTE_COUNT] =
 	{ 256, &internal_data[DATA_PAL_256] }
 };
 
+/* Caller is expected to hold FB_GRAPHICSLOCK() */
 void fb_hSetupData()
 {
 	static int inited = FALSE;
@@ -30,7 +31,7 @@ void fb_hSetupData()
 	if (inited)
 		return;
 
-	int size = DATA_SIZE;
+	ssize_t size = DATA_SIZE;
 	fb_hDecode(compressed_data, sizeof(compressed_data), internal_data, &size);
 
 	inited = TRUE;

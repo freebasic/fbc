@@ -32,7 +32,7 @@ end function
 function cAssignFunctResult( byval is_return as integer ) as integer
 	dim as FBSYMBOL ptr res = any, subtype = any
 	dim as ASTNODE ptr rhs = any, expr = any
-	dim as integer has_ctor = any, has_defctor = any
+	dim as integer has_ctor = any, has_defctor = any, assignoptions = any
 
 	function = FALSE
 
@@ -120,22 +120,30 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	'' set accessed flag here, as proc will be ended before AST is flushed
 	symbSetIsAccessed( res )
 
-	'' RETURN and has ctor? try to initialize..
-	if( is_return and has_ctor ) then
-		dim as integer is_ctorcall = any
-		rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
-		if( rhs = NULL ) then
-			exit function
+	'' For RETURN, the result object is only being constructed now, so try
+	'' to call a constructor, or fallback to copy-construction by shallow
+	'' copy.
+	assignoptions = 0
+	if( is_return ) then
+		if( has_ctor ) then
+			dim as integer is_ctorcall = any
+			rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
+			if( rhs = NULL ) then
+				exit function
+			end if
+
+			if( is_ctorcall ) then
+				astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
+				return TRUE
+			end if
 		end if
 
-		if( is_ctorcall ) then
-			astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
-			return TRUE
-		end if
+		'' Do copy-construction by shallow copy (i.e. don't call any LET overload)
+		assignoptions = AST_OPOPT_ISINI
 	end if
 
 	'' do the assignment
-	expr = astNewASSIGN( astBuildProcResultVar( parser.currproc, res ), rhs )
+	expr = astNewASSIGN( astBuildProcResultVar( parser.currproc, res ), rhs, assignoptions )
 	if( expr = NULL ) then
 		astDelTree( rhs )
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT )
@@ -179,6 +187,39 @@ sub hMethodCallAddInstPtrOvlArg _
 
 end sub
 
+private function hLooksLikeEndOfStatement( ) as integer
+	select case( lexGetToken( ) )
+	case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, _
+	     FB_TK_COMMENT, FB_TK_REM
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+end function
+
+function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr t = any
+
+	'' Allow no-conv casts on top of the call, and still ignore the result
+	t = astSkipNoConvCAST( expr )
+
+	'' Normal CALL at the beginning of a statement? This is only
+	'' possible if its result is being ignored.
+	if( astIsCALL( t ) ) then
+		astAdd( astIgnoreCallResult( astRemoveNoConvCAST( expr ) ) )
+		function = TRUE
+
+	'' Call to byref function? Either it's the lhs of an assignment,
+	'' or the result is being ignored: need to disambiguate.
+	elseif( astIsByrefResultDeref( t ) and hLooksLikeEndOfStatement( ) ) then
+		astAdd( astIgnoreCallResult( astRemoveByrefResultDeref( astRemoveNoConvCAST( expr ) ) ) )
+		function = TRUE
+
+	else
+		function = FALSE
+	end if
+end function
+
 '':::::
 function cProcCall _
 	( _
@@ -186,16 +227,15 @@ function cProcCall _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr, _
-		byval checkprnts as integer = FALSE _
+		byval checkprnts as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any, is_propset = FALSE
+	dim as integer is_propset = FALSE
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	function = NULL
-
-	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
 
     hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
@@ -336,66 +376,12 @@ function cProcCall _
 		end if
 	end if
 
-	'' not a function? (because StrIdxOrMemberDeref())
-	if( astIsCALL( procexpr ) = FALSE ) then
-		'' And not a DEREF( CALL( function-with-byref-result ) ) either?
-		if( astIsByrefResultDeref( procexpr ) = FALSE ) then
-			'' Cannot ignore this
-			return procexpr
-		end if
-
-		select case( lexGetToken( ) )
-		case FB_TK_STMTSEP, FB_TK_EOL, FB_TK_EOF, _
-		     FB_TK_COMMENT, FB_TK_REM
-			'' It seems like the result is being ignored,
-			'' i.e. no assignment following
-
-		case else
-			return procexpr
-		end select
-
-		'' Remove the DEREF and turn it into a plain CALL,
-		'' whose result can be ignored.
-		procexpr = astRemoveByrefResultDeref( procexpr )
+	'' If it's a CALL, ignore the result
+	if( cMaybeIgnoreCallResult( procexpr ) ) then
+		function = NULL
+	else
+		function = procexpr
 	end if
-
-	dtype = astGetDataType( procexpr )
-
-	'' can proc's result be skipped?
-	if( dtype <> FB_DATATYPE_VOID ) then
-		if( typeGetClass( dtype ) <> FB_DATACLASS_INTEGER ) then
-			errReport( FB_ERRMSG_VARIABLEREQUIRED )
-			'' error recovery: skip
-			astDelTree( procexpr )
-			exit function
-
-		'' CHAR and WCHAR literals are also from the INTEGER class
-		else
-			select case as const dtype
-			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				errReport( FB_ERRMSG_VARIABLEREQUIRED )
-				'' error recovery: skip
-				astDelTree( procexpr )
-				exit function
-			end select
-		end if
-	end if
-
-	'' check error?
-	sym = astGetSymbol( procexpr )
-	if( sym <> NULL ) then
-		if( symbGetIsThrowable( sym ) ) then
-			rtlErrorCheck( procexpr )
-			exit function
-		end if
-	end if
-
-	'' tell the emitter to not allocate a result
-	astSetType( procexpr, FB_DATATYPE_VOID, NULL )
-
-	astAdd( procexpr )
-
-	function = NULL
 
 end function
 
@@ -403,7 +389,8 @@ private function hProcSymbol _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
-		byval iscall as integer _
+		byval iscall as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as integer
 
 	dim as integer do_call = any
@@ -439,7 +426,7 @@ private function hProcSymbol _
 	'' ID ProcParamList?
 	if( do_call ) then
 		dim as ASTNODE ptr expr = any
-		expr = cProcCall( base_parent, sym, NULL, NULL )
+		expr = cProcCall( base_parent, sym, NULL, NULL, FALSE, options )
 
 		'' assignment of a function deref?
 		if( expr <> NULL ) then
@@ -660,7 +647,8 @@ private function hAssignOrCall _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval iscall as integer _
+		byval iscall as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as integer
 
 	function = FALSE
@@ -672,7 +660,7 @@ private function hAssignOrCall _
 	    	select case as const symbGetClass( sym )
 	    	'' proc?
 	    	case FB_SYMBCLASS_PROC
-				return hProcSymbol( base_parent, sym, iscall )
+				return hProcSymbol( base_parent, sym, iscall, options )
 
 			case FB_SYMBCLASS_VAR
 				'' must process variables here, multiple calls to
@@ -681,7 +669,7 @@ private function hAssignOrCall _
 				return hAssignOrPtrCall( cVariableEx( chain_, TRUE ), iscall )
 
 			case FB_SYMBCLASS_FIELD
-				return hAssignOrPtrCall( cImplicitDataMember( base_parent, chain_, TRUE ), iscall )
+				return hAssignOrPtrCall( cImplicitDataMember( base_parent, chain_, TRUE, options ), iscall )
 
 			case FB_SYMBCLASS_CONST
 				'' This covers misuse of constants as "statements",
@@ -936,7 +924,7 @@ private sub hCtorChain( )
 	lexSkipToken( )
 
 	cProcCall( NULL, symbGetCompCtorHead( parent ), NULL, _
-	           astBuildInstPtr( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
+	           astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
 end sub
 
 ''  BaseInit  =  BASE (CtorCall | Initializer)
@@ -1059,7 +1047,7 @@ private function hBaseMemberAccess( ) as integer
 	loop
 
 	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
-	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
+	function = hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE, FB_PARSEROPT_EXPLICITBASE )
 end function
 
 function hForwardCall( ) as integer
@@ -1127,7 +1115,7 @@ function hForwardCall( ) as integer
 			 dtype = FB_DATATYPE_STRING
 		end select
 
-		if( symbAddProcParam( proc, NULL, dtype, NULL, mode, 0 ) = NULL ) then
+		if( symbAddProcParam( proc, NULL, dtype, NULL, iif( mode = FB_PARAMMODE_BYDESC, -1, 0 ), mode, 0 ) = NULL ) then
 			exit do
 		end if
 

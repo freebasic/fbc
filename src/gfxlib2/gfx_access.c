@@ -2,10 +2,10 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 FBCALL void fb_GfxLock(void)
 {
+	FB_GRAPHICS_LOCK( );
+
 	if (!__fb_gfx)
 		return;
 
@@ -15,14 +15,15 @@ FBCALL void fb_GfxLock(void)
 	++__fb_gfx->lock_count;
 }
 
-
-/*:::::*/
 FBCALL void fb_GfxUnlock(int start_line, int end_line)
 {
 	FB_GFXCTX *context = fb_hGetContext();
-	
-	if (!__fb_gfx)
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
+
 	if (start_line < 0)
 		start_line = 0;
 	if (end_line < 0)
@@ -35,18 +36,27 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 		if (__fb_gfx->lock_count == 0)
 			__fb_gfx->driver->unlock();
 	}
+
+	FB_GRAPHICS_UNLOCK( );
 }
 
-
-/*:::::*/
 FBCALL void *fb_GfxScreenPtr(void)
 {
-	FB_GFXCTX *context = fb_hGetContext();
-	
-	if (!__fb_gfx)
+	FB_GFXCTX *context;
+	void *p;
+
+	FB_GRAPHICS_LOCK( );
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return NULL;
+	}
+
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
-	
-	return context->line[0];
+	p = context->line[0];
+
+	FB_GRAPHICS_UNLOCK( );
+	return p;
 }

@@ -1,5 +1,0 @@
-doc/licenses/PCRE.txt
-lib/dos/libpcre.a
-lib/dos/libpcre16.a
-lib/dos/libpcre32.a
-lib/dos/libpcreposix.a

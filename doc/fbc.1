@@ -1,8 +1,8 @@
-.TH FBC 1 "2012-08-20" "FreeBASIC Compiler 0.90.0" "FreeBASIC Compiler"
+.TH FBC 1 "2014-09-10" "FreeBASIC Compiler 1.00.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
-Compiles BASIC source code files to native code.
+Compiles FreeBASIC source code files (*.bas) to native code.
 .SH SYNOPSIS
 .B fbc \fR[\fIoptions\fR] \fIinput-files\fR
 
@@ -20,6 +20,9 @@ Treat file as .o/.a input file
 .TP
 \fB\-arch\fR \fItype\fR
 Set target architecture (default: \fB486\fR)
+.TP
+\fB\-asm\fR \fBatt\fR|\fBintel\fR
+Set the assembler format for Asm blocks and for code generation (x86 only)
 .TP
 \fB\-b\fR \fIfile\fR
 Treat file as .bas input file
@@ -54,16 +57,16 @@ Export symbols for dynamic linkage
 \fB\-forcelang\fR \fIname\fR
 Override #lang statements in source code
 .TP
-\fB\-fpmode\fR \fIfast\fR|\fIprecise\fR
+\fB\-fpmode\fR \fBfast\fR|\fBprecise\fR
 Select floating-point math accuracy/speed
 .TP
-\fB\-fpu\fR \fIx87\fR|\fIsse\fR
+\fB\-fpu\fR \fBx87\fR|\fBsse\fR
 Set target FPU
 .TP
 \fB\-g\fR
 Add debug info
 .TP
-\fB\-gen\fR \fIgas\fR|\fIgcc\fR
+\fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR
 Select code generation backend
 .TP
 \fB\-i\fR \fIpath\fR
@@ -105,8 +108,11 @@ Set .o file name for corresponding input .bas
 \fB\-O\fR \fIvalue\fR
 Optimization level (default: 0)
 .TP
-\fB\-p \fIpath\fR
+\fB\-p\fR \fIpath\fR
 Add a library search path
+.TP
+\fB\-pic\fR
+Generate position-indepedent code (non-x86 Unix shared libs)
 .TP
 \fB\-pp\fR
 Write out preprocessed input file (.pp.bas) only
@@ -114,16 +120,28 @@ Write out preprocessed input file (.pp.bas) only
 \fB\-prefix\fR \fIpath\fR
 Set the compiler prefix path
 .TP
+\fB\-print\fR \fBhost\fR|\fBtarget\fR
+Display host/target system name
+.TP
+\fB\-print\fR \fBx\fR
+Display output binary/library file name (if known)
+.TP
 \fB\-profile\fR
 Enable function profiling
 .TP
 \fB\-r\fR
-Like -c, but write out .asm/.c only, do not assemble
+Write out .asm (-gen gas) or .c (-gen gcc) only
+.TP
+\fB\-rr\fR
+Write out the final .asm only
 .TP
 \fB\-R\fR
-Preserve temporary non-.o files (.asm/.c etc.)
+Preserve the temporary .asm/.c file
 .TP
-\fB\-s\fR \fIconsole\fR|\fIgui\fR
+\fB\-RR\fR
+Preserve the final .asm file
+.TP
+\fB\-s\fR \fBconsole\fR|\fBgui\fR
 Select win32 subsystem
 .TP
 \fB\-static\fR
@@ -147,8 +165,8 @@ Automatic vectorization level (default: 0)
 \fB\-version\fR
 Show compiler version
 .TP
-\fB\-w\fR \fIall\fR|\fIpedantic\fR\fIn\fR
-Set min warning level: \fBall\fR, \fBpedantic\fR, or an integer
+\fB\-w\fR \fBall\fR|\fBpedantic\fR|\fIn\fR
+Set minimum warning level: \fBall\fR, \fBpedantic\fR, or an integer
 .TP
 \fB\-Wa\fR \fIa,b,c\fR
 Pass options to GAS
@@ -167,9 +185,11 @@ Use setjmp/longjmp to implement GOSUB
 
 .SH ENVIRONMENT
 .IP AS
-Overrides location of GNU AS (assembler)
+Overrides location of GNU as (assembler)
 .IP LD
-Overrides location of GNU LD (linker)
+Overrides location of GNU ld (linker)
+.IP GCC
+Overrides location of gcc (-gen gcc)
 
 .SH "SEE ALSO"
 The full language specification and help is available in wiki format at

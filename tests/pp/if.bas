@@ -173,6 +173,46 @@ sub test cdecl( )
 		CU_PASS( )
 	#endif
 
+	'' Besides undeclared identifiers, quirk function names should also be
+	'' accepted as literals, for better backwards compatibility
+	#if typeof( s ) = string
+		CU_PASS( )
+	#else
+		CU_FAIL( )
+	#endif
+
+	#if typeof( s ) <> string
+		CU_FAIL( )
+	#endif
+
+	#if typeof( s ) <> STRING
+		CU_FAIL( )
+	#endif
+
+	#if string <> typeof( s )
+		CU_FAIL( )
+	#endif
+
+	#if STRING <> typeof( s )
+		CU_FAIL( )
+	#endif
+
+	#if name <> name
+		CU_FAIL( )
+	#endif
+
+	#if name <> NAME
+		CU_FAIL( )
+	#endif
+
+	#if undeclaredid = name
+		CU_FAIL( )
+	#endif
+
+	#if name = undeclaredid
+		CU_FAIL( )
+	#endif
+
 	'' constant
 	#if defined( N1 )
 		CU_PASS( )

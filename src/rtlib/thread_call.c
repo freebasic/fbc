@@ -21,10 +21,9 @@
 
 #include "fb.h"
 
-/* TODO: Add support for non-x86 */
-#if defined DISABLE_FFI || defined HOST_DOS || !defined HOST_X86
+#if defined DISABLE_FFI || defined HOST_DOS || (!defined HOST_X86 && !defined HOST_X86_64)
 
-FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, ... )
 {
 	return NULL;
 }
@@ -44,25 +43,25 @@ typedef struct _FBTHREADCALL
 	void        **values;
 } FBTHREADCALL;
 
+/* mirrored in compiler/rtl.bi */
 enum {
-    FB_THREADCALL_STDCALL,
-    FB_THREADCALL_CDECL,
-    FB_THREADCALL_BYTE,
-    FB_THREADCALL_UBYTE,
-    FB_THREADCALL_SHORT,
-    FB_THREADCALL_USHORT,
-    FB_THREADCALL_INTEGER,
-    FB_THREADCALL_UINTEGER,
-    FB_THREADCALL_LONGINT,
-    FB_THREADCALL_ULONGINT,
-    FB_THREADCALL_SINGLE,
-    FB_THREADCALL_DOUBLE,
-    FB_THREADCALL_TYPE,
-    FB_THREADCALL_PTR
+	FB_THREADCALL_STDCALL,
+	FB_THREADCALL_CDECL,
+	FB_THREADCALL_INT8,
+	FB_THREADCALL_UINT8,
+	FB_THREADCALL_INT16,
+	FB_THREADCALL_UINT16,
+	FB_THREADCALL_INT32,
+	FB_THREADCALL_UINT32,
+	FB_THREADCALL_INT64,
+	FB_THREADCALL_UINT64,
+	FB_THREADCALL_FLOAT32,
+	FB_THREADCALL_FLOAT64,
+	FB_THREADCALL_STRUCT,
+	FB_THREADCALL_PTR
 };
 
-/*:::::*/
-static void freeType( ffi_type *arg )
+static void freeStruct( ffi_type *arg )
 {
     int i = 0;
     ffi_type **elem = arg->elements;
@@ -75,7 +74,7 @@ static void freeType( ffi_type *arg )
         
         /* free embedded types */
         if( (*elem)->type == FFI_TYPE_STRUCT )
-            freeType( *elem );
+            freeStruct( *elem );
             
         elem++;
         i++;
@@ -87,8 +86,7 @@ static void freeType( ffi_type *arg )
 
 static ffi_type *getArgument( va_list *args_list );
 
-/*:::::*/
-static ffi_type *getType( va_list *args_list )
+static ffi_type *getStruct( va_list *args_list )
 {
     int num_elems = va_arg( (*args_list), int );
     int i, j;
@@ -112,7 +110,7 @@ static ffi_type *getType( va_list *args_list )
             for( j=0; j<i; j++ )
             {
                 if( ffi_arg->elements[j]->type == FFI_TYPE_STRUCT )
-                    freeType( ffi_arg );
+                    freeStruct( ffi_arg );
             }
             free( ffi_arg->elements );
             free( ffi_arg );
@@ -123,36 +121,23 @@ static ffi_type *getType( va_list *args_list )
     return ffi_arg;
 }
 
-/*:::::*/
 static ffi_type *getArgument( va_list *args_list )
 {
     int arg_type = va_arg( (*args_list), int );
     switch( arg_type )
     {
-        case FB_THREADCALL_BYTE:
-            return &ffi_type_schar;
-        case FB_THREADCALL_UBYTE:
-            return &ffi_type_uchar;
-        case FB_THREADCALL_SHORT:
-            return &ffi_type_sshort;
-        case FB_THREADCALL_USHORT:
-            return &ffi_type_ushort;
-        case FB_THREADCALL_INTEGER:
-            return &ffi_type_sint;
-        case FB_THREADCALL_UINTEGER:
-            return &ffi_type_uint;
-        case FB_THREADCALL_LONGINT:
-            return &ffi_type_sint64;
-        case FB_THREADCALL_ULONGINT:
-            return &ffi_type_uint64;
-        case FB_THREADCALL_SINGLE:
-            return &ffi_type_float;
-        case FB_THREADCALL_DOUBLE:
-            return &ffi_type_double;
-        case FB_THREADCALL_TYPE:
-            return getType( args_list );
-        case FB_THREADCALL_PTR:
-            return &ffi_type_pointer;
+        case FB_THREADCALL_INT8:    return &ffi_type_sint8;
+        case FB_THREADCALL_UINT8:   return &ffi_type_uint8;
+        case FB_THREADCALL_INT16:   return &ffi_type_sint16;
+        case FB_THREADCALL_UINT16:  return &ffi_type_uint16;
+        case FB_THREADCALL_INT32:   return &ffi_type_sint32;
+        case FB_THREADCALL_UINT32:  return &ffi_type_uint32;
+        case FB_THREADCALL_INT64:   return &ffi_type_sint64;
+        case FB_THREADCALL_UINT64:  return &ffi_type_uint64;
+        case FB_THREADCALL_FLOAT32: return &ffi_type_float;
+        case FB_THREADCALL_FLOAT64: return &ffi_type_double;
+        case FB_THREADCALL_STRUCT:  return getStruct( args_list );
+        case FB_THREADCALL_PTR:     return &ffi_type_pointer;
         default:
             return NULL;
     }
@@ -160,8 +145,7 @@ static ffi_type *getArgument( va_list *args_list )
 
 static FBCALL void threadproc( void *param );
 
-/*:::::*/
-FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, ... )
 {
     ffi_type     **ffi_args;
     void         **values;
@@ -184,7 +168,7 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... 
             for( j=0; j<i; j++ )
             {
                 if( ffi_args[i]->type == FFI_TYPE_STRUCT )
-                    freeType( ffi_args[i] );
+                    freeStruct( ffi_args[i] );
             }
             return NULL;
         }
@@ -204,7 +188,6 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... 
     return fb_ThreadCreate( threadproc, (void *)param, stack_size );
 }
 
-/*:::::*/
 static FBCALL void threadproc( void *param )
 {
     FBTHREADCALL *info = ( FBTHREADCALL * )param;
@@ -212,11 +195,14 @@ static FBCALL void threadproc( void *param )
     ffi_abi abi = -1;
     ffi_cif cif;
     int i;
-    
+
+#ifdef HOST_X86_64
+    abi = FFI_DEFAULT_ABI;
+#else
     /* check calling convention */
     if( info->abi == FB_THREADCALL_CDECL )
         abi = FFI_SYSV;
-#if defined( X86_WIN32 )
+#ifdef HOST_WIN32
     else if( info->abi == FB_THREADCALL_STDCALL )
         abi = FFI_STDCALL;
 #endif
@@ -225,9 +211,10 @@ static FBCALL void threadproc( void *param )
 
     /* prep FFI call interface */
     if( status == FFI_OK )
+#endif
         status = ffi_prep_cif( 
             &cif,               // handle
-            abi,                // ABI (CDECL or STDCALL)
+            abi,                // ABI (CDECL or STDCALL on x86, host default on x86_64)
             info->num_args,     // number of arguments
             &ffi_type_void,     // return type
             info->ffi_arg_types // argument types
@@ -242,7 +229,7 @@ static FBCALL void threadproc( void *param )
     for( i=0; i<info->num_args; i++ )
     {
         if( info->ffi_arg_types[i]->type == FFI_TYPE_STRUCT )
-            freeType( info->ffi_arg_types[i] );
+            freeStruct( info->ffi_arg_types[i] );
     }
     free( info->values );
     free( info->ffi_arg_types );

@@ -173,7 +173,7 @@ static void init_planar_access( void )
     outportb(0x3C4, 0x02);
 }
 
-static void driver_update_planar_ega_vga( int planes )
+static void driver_update_planar_ega_vga( unsigned int planes )
 {
     /* EGA/VGA planar mode */
     int y;

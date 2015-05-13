@@ -8,11 +8,14 @@ int fb_GfxIn(unsigned short port)
 {
 	int value = -1;
 
-	if (!__fb_gfx)
+	FB_GRAPHICS_LOCK( );
+
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
 		return -1;
+	}
 
 	switch (port) {
-
 		case 0x3C9:
 			if (__fb_gfx->depth > 8)
 				break;
@@ -24,7 +27,7 @@ int fb_GfxIn(unsigned short port)
 				idx &= (__fb_gfx->default_palette->colors - 1);
 			}
 			break;
-		
+
 		case 0x3DA:
 			if (__fb_gfx->driver->wait_vsync)
 				__fb_gfx->driver->wait_vsync();
@@ -32,6 +35,7 @@ int fb_GfxIn(unsigned short port)
 			break;
 	}
 
+	FB_GRAPHICS_UNLOCK( );
 	return value;
 }
 
@@ -39,11 +43,14 @@ int fb_GfxOut(unsigned short port, unsigned char value)
 {
 	int i, r, g, b;
 
-	if ((!__fb_gfx) || (__fb_gfx->depth > 8))
+	FB_GRAPHICS_LOCK( );
+
+	if ((!__fb_gfx) || (__fb_gfx->depth > 8)) {
+		FB_GRAPHICS_UNLOCK( );
 		return -1;
+	}
 
 	switch (port) {
-
 		case 0x3C7:
 		case 0x3C8:
 			idx = value & (__fb_gfx->default_palette->colors - 1);
@@ -81,8 +88,10 @@ int fb_GfxOut(unsigned short port, unsigned char value)
 			break;
 		
 		default:
+			FB_GRAPHICS_UNLOCK( );
 			return -1;
 	}
 
+	FB_GRAPHICS_UNLOCK( );
 	return 0;
 }

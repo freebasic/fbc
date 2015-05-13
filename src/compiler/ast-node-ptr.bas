@@ -3,19 +3,17 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "ast.bi"
 
-'':::::
 function astNewDEREF _
 	( _
 		byval l as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -28,12 +26,7 @@ function astNewDEREF _
 
 		if( ofs = 0 ) then
 			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = l
-			if( l->class = AST_NODECLASS_CONV ) then
-				if( l->cast.doconv = FALSE ) then
-					t = l->l
-				end if
-			end if
+			dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 			'' convert *@ to nothing
     		dim as integer delchild = any
@@ -74,15 +67,9 @@ function astNewDEREF _
 	n->ptr.ofs = ofs
 
 	function = n
-
 end function
 
-'':::::
-function astLoadDEREF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l = any
     dim as IRVREG ptr v1 = any, vp = any, vr = any
 
@@ -103,7 +90,7 @@ function astLoadDEREF _
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
 			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
-			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
+			(typeGetSize(v1->dtype) <> env.pointersize) ) then
 
 			vp = irAllocVREG( typeAddrOf( astGetDataType( n ) ), n->subtype )
 			irEmitADDR( AST_OP_DEREF, v1, vp )
@@ -118,6 +105,4 @@ function astLoadDEREF _
 	astDelNode( l )
 
 	function = vr
-
 end function
-

@@ -74,9 +74,11 @@ private sub hTypeProtoDecl _
 	case FB_TK_CONSTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowVirtualCtor( attrib )
+		hDisallowConstCtorDtor( tk, attrib )
 	case FB_TK_DESTRUCTOR
 		hDisallowStaticAttrib( attrib )
 		hDisallowAbstractDtor( attrib )
+		hDisallowConstCtorDtor( tk, attrib )
 	case FB_TK_PROPERTY
 		hDisallowStaticAttrib( attrib )
 	end select
@@ -107,7 +109,7 @@ private sub hTypeEnumDecl _
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
-		errReport( FB_ERRMSG_METHODINANONUDT )
+		errReport( FB_ERRMSG_CONSTINANONUDT )
 		'' error recovery: skip stmt
 		hSkipStmt( )
 		exit sub
@@ -120,10 +122,39 @@ private sub hTypeEnumDecl _
 	else
 		cEnumDecl( attrib )
 	end if
+
 end sub
 
-'':::::
-private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
+private sub hSetFieldInitree( byval sym as FBSYMBOL ptr, byval initree as ASTNODE ptr )
+	if( initree ) then
+		'' Disallow references to local vars, except for temp vars/descriptors
+		if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
+			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE )
+			'' error recovery
+			astDelTree( initree )
+			initree = NULL
+		end if
+	end if
+
+	'' No temp dtors should be left registered after the TYPEINI build-up
+	assert( astDtorListIsEmpty( ) )
+
+	'' Remove bitfields from the AST's bitfield counter - the field
+	'' initializer will never be astAdd()ed itself, only cloned.
+	astForgetBitfields( initree )
+
+	if( initree ) then
+		symbSetTypeIniTree( sym, initree )
+	end if
+end sub
+
+private sub hFieldInit _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval boundstypeini as ASTNODE ptr _
+	)
+
 	dim as FBSYMBOL ptr defctor = any, subtype = any
 
 	'' '=' | '=>' ?
@@ -161,6 +192,12 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 			end if
 		end if
 
+		if( boundstypeini ) then
+			symbSetUDTHasInitedField( parent )
+			hBeginNesting( parent )
+			hSetFieldInitree( sym, boundstypeini )
+		end if
+
 		exit sub
 	end if
 
@@ -189,6 +226,11 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 		exit sub
 	end if
 
+	'' Field initializers are only used in constructors (replacing the
+	'' implicit default initialization), so we make sure to add a default
+	'' constructor, if no constructor was specified.
+	symbSetUDTHasInitedField( parent )
+
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 		'' don't allow var-len strings
@@ -203,49 +245,15 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 	end if
 
 	hBeginNesting( parent )
-
-	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
-	if( initree ) then
-		'' Disallow references to local vars, except for temp vars/descriptors
-		if( astTypeIniUsesLocals( initree, FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR ) ) then
-			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE )
-			'' error recovery
-			astDelTree( initree )
-			initree = NULL
-		end if
-	end if
-
-	'' No temp dtors should be left registered after the TYPEINI build-up
-	assert( astDtorListIsEmpty( ) )
-
-	'' Remove bitfields from the AST's bitfield counter - the field
-	'' initializer will never be astAdd()ed itself, only cloned.
-	astForgetBitfields( initree )
-
-	'' Field initializers are only used in constructors (replacing the
-	'' implicit default initialization), so we make sure to add a default
-	'' constructor, if no constructor was specified.
-	symbSetUDTHasInitedField( parent )
-
-	if( initree ) then
-		symbSetTypeIniTree( sym, initree )
-	end if
+	hSetFieldInitree( sym, cInitializer( sym, FB_INIOPT_ISINI ) )
 end sub
 
-'':::::
-''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?
-''							 (',' ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?)*
-''
-private sub hTypeMultElementDecl _
+private sub hFieldType _
 	( _
-		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
-	) static
-
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint _
+	)
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -253,182 +261,148 @@ private sub hTypeMultElementDecl _
 	'' Disallow creating objects of abstract classes
 	hComplainIfAbstractClass( dtype, subtype )
 
-	do
-		'' allow keywords as field names
-		select case as const lexGetClass( )
-		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-			'' contains a period?
-			if( lexGetPeriodPos( ) > 0 ) then
-				errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+end sub
+
+private sub hArrayOrBitfield _
+	( _
+		byval token as integer, _
+		byref attrib as integer, _
+		byref bits as integer, _
+		byref dims as integer, _
+		dTB() as FBARRAYDIM, _
+		byref boundstypeini as ASTNODE ptr _
+	)
+
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	dim as integer have_bounds = any
+
+	bits = 0
+	dims = 0
+	have_bounds = FALSE
+	boundstypeini = NULL
+
+	'' '('? (array dimensions)
+	if( hMatch( CHAR_LPRNT ) ) then
+		'' Note: '()' only is not allowed for fields; '(any)' or
+		'' '(any, any)' etc should be used instead. '()' is only needed
+		'' for variables due to backwards compatibility.
+
+		'' For dynamic array fields, there may be initial bounds given
+		'' in the field declaration. We want to REDIM the field to those
+		'' initial dimensions, which must be done in the UDT's
+		'' constructor(s), just like with other field initializers.
+		'' Because the bound expressions may be complex (not just
+		'' constants), we need to use a temp scope to capture temp vars
+		'' etc., as done for normal field initializers, and the bound
+		'' expressions and their temp vars must be duplicated into every
+		'' constructor body (astTypeIniClone()).
+		''
+		'' Thus, we're building a TYPEINI tree that takes care of the
+		'' temp scope stuff, and then use that to hold the expressions
+		'' from the exprTB(), such that hCallFieldCtors() can build the
+		'' REDIM CALL from that later.
+		''
+		'' How about building the REDIM here?
+		'' - We can't build the REDIM right here because it requires the
+		''   field symbol which isn't created yet.
+		'' - We could build it in hFieldInit(), but then we'd have to
+		''   build an empty TYPEINI here or insert some kind of
+		''   place-holder expression, and then insert the REDIM CALL
+		''   into the TYPEINI later.
+		'' - When building the REDIM here, we'd have to use a fake field
+		''   access, because only hCallFieldCtors() can build the full
+		''   array field access based on the constructor's THIS pointer.
+		''   It'd have to replace the fake arg with the real one. We'd
+		''   also have to separate the REDIM CALL build-up from the
+		''   rtlErrorCheck() it uses, so that hCallFieldCtors() could
+		''   more easily find the REDIM CALL in the expression tree.
+		''
+		'' If it turns out that this is not a dynamic array, we simply
+		'' delete the TYPEINI.
+
+		boundstypeini = astTypeIniBegin( FB_DATATYPE_INTEGER, NULL, FALSE, 0 )
+
+		cArrayDecl( dims, have_bounds, exprTB() )
+
+		if( have_bounds ) then
+			'' No ellipsis allowed, neither fixed-size nor dynamic array fields
+			hComplainAboutEllipsis( dims, exprTB(), FB_ERRMSG_ARRAYFIELDWITHELLIPSIS )
+
+			hMaybeConvertExprTb2DimTb( attrib, dims, exprTB(), dTB() )
+
+			'' Not using the dTB()? (still dynamic?)
+			if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+				'' Store the bounds into the TYPEINI
+				for i as integer = 0 to dims - 1
+					astTypeIniAddAssign( boundstypeini, exprTB(i,0), NULL, FB_DATATYPE_INTEGER )
+					astTypeIniAddAssign( boundstypeini, exprTB(i,1), NULL, FB_DATATYPE_INTEGER )
+				next
 			end if
+		else
+			'' No bounds
+			attrib or= FB_SYMBATTRIB_DYNAMIC
+		end if
 
-    		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
-    		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-    			if( symbGetIsUnique( parent ) ) then
-					errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
-    			else
-    				symbSetUDTHasKwdField( parent )
-    			end if
-    		end if
+		astTypeIniEnd( boundstypeini, TRUE )
 
-			id = *lexGetText( )
+		if( (not have_bounds) or ((attrib and FB_SYMBATTRIB_DYNAMIC) = 0) ) then
+			astDelTree( boundstypeini )
+			boundstypeini = NULL
+		end if
+
+		'' ')'
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		else
+			lexSkipToken( )
+		end if
+	else
+		'' REDIM? Must have array dimensions
+		if( token = FB_TK_REDIM ) then
+			errReport( FB_ERRMSG_EXPECTEDARRAY )
+			dims = -1
+		end if
+	end if
+
+	'' ':' NUMLIT? (bitfield size)
+	if( lexGetToken( ) = FB_TK_STMTSEP ) then
+		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
+			lexSkipToken( )
+			bits = valint( *lexGetText( ) )
 			lexSkipToken( )
 
-		case else
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			'' error recovery: fake an id
-			id = *symbUniqueLabel( )
-		end select
-
-	    bits = 0
-
-		'' ArrayDecl?
-		if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
-			'' ':' NUMLIT?
-			if( lexGetToken( ) = FB_TK_STMTSEP ) then
-				if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
-					lexSkipToken( )
-					bits = valint( *lexGetText( ) )
-					lexSkipToken( )
-
-					if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
-						errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
-						'' error recovery: no bits
-						bits = 0
-					end if
-				end if
-			end if
-		end if
-
-		'' array?
-		if( dims > 0 ) then
-			'' "array too big" check
-			if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
-				errReport( FB_ERRMSG_ARRAYTOOBIG )
-				'' error recovery: use small array
-				dims = 1
-				dTB(0).lower = 0
-				dTB(0).upper = 0
-			end if
-		end if
-
-		'' ref to self?
-		if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-			if( subtype = parent ) then
-				errReport( FB_ERRMSG_RECURSIVEUDT )
-				'' error recovery: fake type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-				lgt = FB_INTEGERSIZE
-			end if
-		end if
-
-        ''
-		sym = symbAddField( parent, @id, _
-						  	dims, dTB(), _
-						  	dtype, subtype, _
-						  	lgt, bits )
-		if( sym = NULL ) then
-			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		else
-			symbGetAttrib( sym ) or= attrib
-			hFieldInit( parent, sym )
-		end if
-
-		'' ','?
-	    if( lexGetToken( ) <> CHAR_COMMA ) then
-	    	exit do
-	    end if
-
-	    lexSkipToken( )
-	loop
-end sub
-
-'':::::
-'' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType ('=' Expression)?
-''
-private sub hTypeElementDecl _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
-	) static
-
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
-    dim as FBSYMBOL ptr sym, subtype
-    dim as integer dims, dtype, lgt, bits
-
-	'' allow keywords as field names
-	select case as const lexGetClass( )
-	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-
-		'' ID
-		id = *lexGetText( )
-
-    	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-    	end if
-
-    	'' contains a period?
-    	if( lexGetPeriodPos( ) > 0 ) then
-			errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	end if
-
-    	'' but don't allow keywords if it's an object (because the implicit inst. ptr)
-    	if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-    		if( symbGetIsUnique( parent ) ) then
-				errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
-    		else
-    			symbSetUDTHasKwdField( parent )
-    		end if
-    	end if
-
-		lexSkipToken( )
-
-    case else
-		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		'' error recovery: fake an id
-		id = *symbUniqueLabel( )
-		dtype = FB_DATATYPE_INVALID
-    end select
-
-	subtype = NULL
-	bits = 0
-
-	'' ArrayDecl?
-	if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
-		'' ':' NUMLIT?
-		if( lexGetToken( ) = FB_TK_STMTSEP ) then
-			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
-				lexSkipToken( )
-				bits = valint( *lexGetText( ) )
-				lexSkipToken( )
-				if( bits <= 0 ) then
-					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-					'' error recovery: no bits
-					bits = 0
-				end if
+			if( (bits <= 0) or (dims <> 0) ) then
+				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				'' error recovery: no bits
+				bits = 0
 			end if
 		end if
 	end if
 
-    '' AS
-    if( lexGetToken( ) <> FB_TK_AS ) then
-		errReport( FB_ERRMSG_SYNTAXERROR )
-    else
-    	lexSkipToken( )
-    end if
+end sub
 
-	'' SymbolType
-	hSymbolType( dtype, subtype, lgt )
+private function hAddAndInitField _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dims as integer, _
+		dTB() as FBARRAYDIM, _
+		byval boundstypeini as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval lgt as longint, _
+		byval bits as integer, _
+		byval attrib as integer _
+	) as integer
 
-	'' Disallow creating objects of abstract classes
-	hComplainIfAbstractClass( dtype, subtype )
+	dim as FBSYMBOL ptr sym = any
+
+	function = FALSE
 
 	'' array?
 	if( dims > 0 ) then
 		'' "array too big" check
-		if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+		if( symbCheckArraySize( dims, @dTB(0), lgt, FALSE ) = FALSE ) then
 			errReport( FB_ERRMSG_ARRAYTOOBIG )
 			'' error recovery: use small array
 			dims = 1
@@ -437,8 +411,7 @@ private sub hTypeElementDecl _
 		end if
 	end if
 
-	''
-	if( bits <> 0 ) then
+	if( bits > 0 ) then
 		if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
 			errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
 			'' error recovery: no bits
@@ -453,25 +426,160 @@ private sub hTypeElementDecl _
 			'' error recovery: fake type
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
-			lgt = FB_INTEGERSIZE
+			lgt = 0
 		end if
 	end if
 
-	''
-	sym = symbAddField( parent, @id, _
-					  	dims, dTB(), _
-					  	dtype, subtype, _
-					  	lgt, bits )
-
+	sym = symbAddField( parent, id, dims, dTB(), dtype, subtype, lgt, bits, attrib )
 	if( sym = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-		'' error recovery: pretend the field was added
-		return
+		exit function
 	end if
-	sym->attrib or= attrib
 
-	'' initializer
-	hFieldInit( parent, sym )
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		hComplainAboutConstDynamicArray( sym )
+	end if
+
+	'' Initializer?
+	hFieldInit( parent, sym, boundstypeini )
+
+	function = TRUE
+end function
+
+private function hFieldId( byval parent as FBSYMBOL ptr ) as zstring ptr
+	static as zstring * FB_MAXNAMELEN+1 id
+
+	'' allow keywords as field names
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		'' Disallow type suffixes on fields
+		if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+
+		'' contains a period?
+		if( lexGetPeriodPos( ) > 0 ) then
+			errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+		end if
+
+		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
+		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+			if( symbGetIsUnique( parent ) ) then
+				errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
+			else
+				symbSetUDTHasKwdField( parent )
+			end if
+		end if
+
+		id = *lexGetText( )
+		lexSkipToken( )
+
+	case else
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an id
+		id = *symbUniqueLabel( )
+	end select
+
+	function = @id
+end function
+
+''
+'' FieldSymbol =
+''    Identifier [ArrayDimensions | ':' BitfieldSize] ['=' InitializerExpression]
+''
+'' TypeMultElementDecl =
+''    AS SymbolType FieldSymbol (',' FieldSymbol)*
+''
+private sub hTypeMultElementDecl _
+	( _
+		byval token as integer, _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	dim as zstring ptr id = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any, bits = any, dims = any, fieldattrib = any
+	dim as longint lgt = any
+	dim as ASTNODE ptr boundstypeini = any
+
+	'' AS SymbolType
+	lexSkipToken( )
+	hFieldType( dtype, subtype, lgt )
+
+	do
+		fieldattrib = attrib
+
+		'' Identifier
+		id = hFieldId( parent )
+
+		'' [ArrayDimensions | ':' BitfieldSize]
+		hArrayOrBitfield( token, fieldattrib, bits, dims, dTB(), boundstypeini )
+
+		'' symbAddField()
+		'' ['=' InitializerExpression]
+		hAddAndInitField( parent, id, dims, dTB(), boundstypeini, dtype, subtype, lgt, bits, fieldattrib )
+
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+end sub
+
+''
+'' TypeElementDecl =
+''    Identifier [ArrayDimensions | ':' BitfieldSize] AS SymbolType ['=' InitializerExpression]
+''
+private sub hTypeElementDecl _
+	( _
+		byval token as integer, _
+		byval parent as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	dim as zstring ptr id = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any, bits = any, dims = any
+	dim as longint lgt = any
+	dim as ASTNODE ptr boundstypeini = any
+
+	'' Identifier
+	id = hFieldId( parent )
+
+	'' [ArrayDimensions | ':' BitfieldSize]
+	hArrayOrBitfield( token, attrib, bits, dims, dTB(), boundstypeini )
+
+	'' AS SymbolType
+	if( lexGetToken( ) <> FB_TK_AS ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	else
+		lexSkipToken( )
+	end if
+	hFieldType( dtype, subtype, lgt )
+
+	'' symbAddField()
+	'' ['=' InitializerExpression]
+	hAddAndInitField( parent, id, dims, dTB(), boundstypeini, dtype, subtype, lgt, bits, attrib )
+end sub
+
+private sub hFieldDeclWithExplicitDim _
+	( _
+		byval token as integer, _
+		byval s as FBSYMBOL ptr, _
+		byval attrib as integer _
+	)
+
+	'' DIM|REDIM
+	lexSkipToken( )
+
+	'' multi-decl?
+	if( lexGetToken( ) = FB_TK_AS ) then
+		hTypeMultElementDecl( token, s, attrib )
+	else
+		hTypeElementDecl( token, s, attrib )
+	end if
+
 end sub
 
 sub hTypeStaticVarDecl _
@@ -479,6 +587,14 @@ sub hTypeStaticVarDecl _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as integer _
 	)
+
+	'' Disallow Static member vars inside anonymous UDTs
+	if( symbGetUDTIsAnon( parent ) ) then
+		errReport( FB_ERRMSG_STATICVARINANONUDT )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		exit sub
+	end if
 
 	'' The UDT becomes a "class"
 	hBeginNesting( parent )
@@ -515,11 +631,11 @@ private function hTypeAdd _
 
 	dim as FBSYMBOL ptr s = any
 
-	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
+	s = symbStructBegin( NULL, NULL, parent, id, id_alias, isunion, align, baseSubtype, 0, 0 )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0 )
+		s = symbStructBegin( NULL, NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0, 0 )
 	end if
 
 	'' Comment? SttSeparator
@@ -562,8 +678,6 @@ end function
 
 '' [FIELD '=' ConstExpression]
 private function cFieldAlignmentAttribute( ) as integer
-	dim as integer align = any
-
 	'' FIELD
 	if( lexGetToken( ) <> FB_TK_FIELD ) then
 		return 0
@@ -592,10 +706,10 @@ private function cFieldAlignmentAttribute( ) as integer
 	end if
 
 	'' follow the GCC 3.x ABI
-	align = astConstFlushToInt( expr )
+	var align = astConstFlushToInt( expr )
 	if( align < 0 ) then
 		align = 0
-	elseif( align > FB_INTEGERSIZE ) then
+	elseif( align > env.pointersize ) then
 		align = 0
 	elseif( align = 3 ) then
 		align = 2
@@ -662,7 +776,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 			'' isn't it a field called "end"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, FB_TK_STMTSEP
-				hTypeElementDecl( s, attrib )
+				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
 			'' it's not a field, exit
 			case else
@@ -720,19 +834,18 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' bitfield..
-				hTypeElementDecl( s, attrib )
+				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
 			'' it's a field, parse it
 			case else
-				hTypeElementDecl( s, attrib )
+				hTypeElementDecl( FB_TK_DIM, s, attrib )
 
 			end select
 
 		'' AS?
 		case FB_TK_AS
 			'' it's a multi-declaration
-			lexSkipToken( )
-			hTypeMultElementDecl( s, attrib )
+			hTypeMultElementDecl( FB_TK_DIM, s, attrib )
 
 		case FB_TK_DECLARE
 			hTypeProtoDecl( s, attrib )
@@ -741,16 +854,10 @@ decl_inner:		'' it's an anonymous inner UDT
 			hTypeEnumDecl( s, lexGetToken( ), attrib )
 
 		case FB_TK_DIM
-			'' Field(s) with explicit DIM
-			lexSkipToken( )
+			hFieldDeclWithExplicitDim( FB_TK_DIM, s, attrib )
 
-			'' multi-decl?
-			if( lexGetToken( ) = FB_TK_AS ) then
-				lexSkipToken( )
-				hTypeMultElementDecl( s, attrib )
-			else
-				hTypeElementDecl( s, attrib )
-			end if
+		case FB_TK_REDIM
+			hFieldDeclWithExplicitDim( FB_TK_REDIM, s, attrib or FB_SYMBATTRIB_DYNAMIC )
 
 		case FB_TK_STATIC
 			'' Static member variable
@@ -760,7 +867,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		'' anything else, must be a field
 		case else
-			hTypeElementDecl( s, attrib )
+			hTypeElementDecl( FB_TK_DIM, s, attrib )
 
 		end select
 
@@ -791,7 +898,7 @@ private sub hCheckForCDtorOrMethods( byval sym as FBSYMBOL ptr )
 		'' implemented since we don't allow nested procedures.
 		'' (Note: assuming symbStructEnd() was already called,
 		'' thus any implicit members were already added by
-		'' symbUdtAddDefaultMembers())
+		'' symbUdtDeclareDefaultMembers())
 		member = symbGetCompSymbTb( sym ).head
 		while( member )
 			if( symbIsProc( member ) ) then
@@ -887,8 +994,8 @@ sub cTypeDecl( byval attrib as integer )
 		lexSkipToken( )
 
 		'' SymbolType
-		dim as integer baseDtype, baseLgt
-		hSymbolType( baseDtype, baseSubtype, baseLgt )
+		dim as integer baseDtype
+		hSymbolType( baseDtype, baseSubtype, 0 )
 
 		'' is the base type a struct?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then
@@ -992,25 +1099,22 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 
 end sub
 
-'':::::
-private sub hPatchByvalResultToSelf _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr sym
+private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr sym = any
 
 	'' for each method..
 	sym = symbGetUDTSymbtb( parent ).head
 	do while( sym <> NULL )
+
 		if( symbIsProc( sym ) ) then
 			'' byval result to self? reset..
-			if( symbGetSubtype( sym ) = parent ) then
+			if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
+			    (symbGetSubtype( sym ) = parent) and _
+			    (not symbProcReturnsByref( sym )) ) then
 				symbProcRecalcRealType( sym )
 			end if
 		end if
 
 		sym = sym->next
 	loop
-
 end sub

@@ -18,13 +18,15 @@
 function symbStructBegin _
 	( _
 		byval symtb as FBSYMBOLTB ptr, _
+		byval hashtb as FBHASHTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval base_ as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as integer, _
+		byval options as integer _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
@@ -39,7 +41,7 @@ function symbStructBegin _
     	end if
     end if
 
-	s = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, symtb, NULL, _
+	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
 	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
 	                   FB_DATATYPE_STRUCT, NULL, attrib )
 	if( s = NULL ) then
@@ -79,16 +81,17 @@ function symbStructBegin _
 	s->udt.natalign = 1
 	s->udt.bitpos = 0
 	s->udt.unpadlgt	= 0
-
+	s->udt.retdtype = FB_DATATYPE_INVALID
 	s->udt.dbg.typenum = INVALID
-
 	s->udt.ext = NULL
 
 	'' extending another UDT?
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
 
-		s->udt.base = symbAddField( s, "$base", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0 )
+		'' (using base$ instead of $base to prevent gdb/stabs confusion,
+		'' where leading $ has special meaning)
+		s->udt.base = symbAddField( s, "base$", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
 
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
@@ -125,7 +128,7 @@ function typeCalcNaturalAlign _
 
 	'' var-len string: largest field is the pointer at the front
 	case FB_DATATYPE_STRING
-		align = FB_POINTERSIZE
+		align = env.pointersize
 
 	case else
 		'' Anything else (including zstring/wstring/fixlen strings)
@@ -133,9 +136,14 @@ function typeCalcNaturalAlign _
 		align = typeGetSize( dtype )
 	end select
 
-	if( align = 8 ) then
-		'' LONGINT/DOUBLE are 4-byte aligned on Unix (x86 assumption)
-		if( env.clopt.target <> FB_COMPTARGET_WIN32 ) then
+	'' LONGINT/DOUBLE are 4-byte aligned on 32bit x86 Linux/DOS/BSD,
+	'' but 8-byte aligned on other systems (Win32/Win64, 64bit Linux/BSD,
+	'' ARM Linux)
+	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+	    (env.clopt.target <> FB_COMPTARGET_WIN32) ) then
+		'' As a result, on 32bit x86 Linux/DOS/BSD, everything that is
+		'' otherwise 8-byte aligned, is actually 4-byte aligned.
+		if( align = 8 ) then
 			align = 4
 		end if
 	end if
@@ -147,7 +155,7 @@ end function
 
 private function hCalcPadding _
 	( _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval align as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -178,8 +186,8 @@ end function
 
 private function hCheckUDTSize _
 	( _
-		byval udtlen as uinteger, _
-		byval fieldlen as uinteger, _
+		byval udtlen as ulongint, _
+		byval fieldlen as ulongint, _
 		byval fieldpad as uinteger _
 	) as integer
 
@@ -202,7 +210,7 @@ function symbCheckBitField _
 	( _
 		byval udt as FBSYMBOL ptr, _
 		byval dtype as integer, _
-		byval lgt as integer, _
+		byval lgt as longint, _
 		byval bits as integer _
 	) as integer
 
@@ -225,35 +233,26 @@ function symbCheckBitField _
 
 end function
 
-private function symbAddBitField _
-	( _
-		byval bitpos as integer, _
-		byval bits as integer, _
-		byval dtype as integer, _
-		byval lgt as integer _
-	) as FBSYMBOL ptr
-
-	dim as FBSYMBOL ptr sym = any
-
-	'' table must be the global one, if the UDT is been defined
-	'' at main(), it will be deleted before some private function
-	'' accessing the bitfield
-
-	sym = symbNewSymbol( FB_SYMBOPT_NONE, NULL, NULL, NULL, _
-	                     FB_SYMBCLASS_BITFIELD, NULL, NULL, dtype, NULL )
-	if( sym = NULL ) then
-		return NULL
-	end if
-
-	sym->bitfld.bitpos = bitpos
-	sym->bitfld.bits = bits
-	sym->bitfld.typ = dtype
-	sym->lgt = lgt
-
-	function = sym
-end function
-
-'':::::
+''
+'' Add a new field, it can be one of:
+''
+'' a) A real field taking up memory in the structure, i.e. struct layout always
+''    changes in this case. The new field is appended to the end of the
+''    structure, possibly preceded by padding bytes between the previous field
+''    and the new one.
+''
+'' b) A bitfield, which is either merged into an existing memory chunk at the
+''    end of the structure (conceptually: container field, as represented by
+''    by the first bitfield in the memory chunk), or causes a new "container
+''    field" to be started and becomes the first bitfield in it. In the former
+''    case, the struct layout doesn't change; in the latter, it changes.
+''
+'' c) A fake dynamic array field, which causes a corresponding real descriptor
+''    field to be added recursively. The fake array field does not use up any
+''    memory, only the descriptor will actually be emitted. While adding the
+''    fake array field, the struct layout doesn't change. When adding the
+''    descriptor, it changes, as with any other real field.
+''
 function symbAddField _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -262,15 +261,18 @@ function symbAddField _
 		dTB() as FBARRAYDIM, _
 		byval decl_dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
-		byval bits as integer _
-	) as FBSYMBOL ptr static
+		byval lgt as longint, _
+		byval bits as integer, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, prevbitfield = any
-	dim as integer pad = any, updateudt = any, elen = any
-	dim as FBHASHTB ptr hashtb
+	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, _
+		desc = any, desctype = any
+	dim as integer pad = any, alloc_field = any, elen = any, options = any
+	dim as longint offset = any
 
-    function = NULL
+	function = NULL
+	desc = NULL
 
 	dtype = decl_dtype
 
@@ -279,9 +281,41 @@ function symbAddField _
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
-	'' check if the parent ofs must be updated
-	updateudt = TRUE
+	'' Dynamic array field? Recursively add the corresponding descriptor field.
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+		assert( dimensions > 0 )
+
+		'' Because this is done here at the top:
+		''  - the descriptor will be added before the fake array,
+		''    allowing the fake array to be "merged" into the descriptor
+		''  - we have to worry about the symbUniqueId() call
+		dim as FBARRAYDIM emptydTB(0 to 0)
+
+		'' Note: using the exact descriptor type corresponding to the
+		'' amount of dimensions found in the field declaration.
+		desctype = symbAddArrayDescriptorType( dimensions, dtype, subtype )
+
+		desc = symbAddField( parent, id, 0, emptydTB(), _
+				FB_DATATYPE_STRUCT, desctype, _
+				0, 0, FB_SYMBATTRIB_DESCRIPTOR )
+
+		'' Same offset for the fake array field as for the descriptor,
+		'' to make astNewARG()'s job easier
+		offset = desc->ofs
+		alloc_field = FALSE
+	else
+		assert( dimensions >= 0 )
+
+		'' All other fields default to the next available offset,
+		'' except bitfields which are given special treatment below.
+		offset = parent->ofs
+		alloc_field = TRUE
+	end if
+
+	'' Check for bitfield
 	if( bits > 0 ) then
+		symbSetUdtHasBitfield( parent )
+
 		'' last field was a bitfield too? try to merge..
 		if( parent->udt.bitpos > 0 ) then
 			'' Find the last field (skipping over methods etc.)
@@ -290,12 +324,10 @@ function symbAddField _
 				tail = tail->prev
 			wend
 
-			assert( symbGetType( tail ) = FB_DATATYPE_BITFIELD )
-			prevbitfield = tail->subtype
-			assert( symbIsBitfield( prevbitfield ) )
+			assert( symbIsBitfield( tail ) )
 
 			'' Too many bits to fit into previous bitfield container field?
-			if( parent->udt.bitpos + bits > prevbitfield->lgt*8 ) then
+			if( parent->udt.bitpos + bits > tail->lgt*8 ) then
 				'' Start new container field, this bitfield will be at bitpos 0 in it
 				parent->udt.bitpos = 0
 			else
@@ -310,16 +342,16 @@ function symbAddField _
 				'' have a different length, but maybe then this
 				'' check shouldn't just be done for different lengths,
 				'' but always if the dtypes are different?
-				if( lgt <> prevbitfield->lgt ) then
-					dtype = symbGetType( prevbitfield )
-					lgt = prevbitfield->lgt
+				if( lgt <> tail->lgt ) then
+					dtype = symbGetType( tail )
+					lgt = tail->lgt
 				end if
-			end if
-		end if
 
-		'' don't update if there are enough bits left
-		if( parent->udt.bitpos <> 0 ) then
-			updateudt = FALSE
+				'' Put this bitfield into the same container as the previous bitfield,
+				'' i.e. same base offset as the previous bitfield.
+				offset = tail->ofs
+				alloc_field = FALSE
+			end if
 		end if
 	else
 		'' Normal fields are not merged into bitfield containers,
@@ -327,9 +359,9 @@ function symbAddField _
 		parent->udt.bitpos = 0
 	end if
 
-	''
-	if( updateudt ) then
-		pad = hCalcPadding( parent->ofs, parent->udt.align, dtype, subtype )
+	'' Add padding for normal fields (neither bitfield nor fake array)
+	if( alloc_field ) then
+		pad = hCalcPadding( offset, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -367,11 +399,11 @@ function symbAddField _
 		end if
 
 		'' Check whether adding this field would make the UDT be too big
-		if( hCheckUDTSize( parent->ofs, lgt, pad ) ) then
-			parent->ofs += pad
+		if( hCheckUDTSize( offset, lgt, pad ) ) then
+			offset += pad
 		else
 			'' error recovery: don't add this field
-			updateudt = FALSE
+			alloc_field = FALSE
 		end if
 
 		'' update largest field len
@@ -382,139 +414,136 @@ function symbAddField _
 		end if
 	end if
 
-	'' bitfield?
-	if( bits > 0 ) then
-		subtype = symbAddBitField( parent->udt.bitpos, bits, decl_dtype, lgt )
-		dtype = FB_DATATYPE_BITFIELD
-	end if
-
     '' use the base parent hashtb if it's an anonymous type
     base_parent = parent
     do while( symbGetUDTIsAnon( base_parent ) )
     	base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
-	hashtb = @symbGetUDTHashTb( base_parent )
+	'' Preserve LOCAL
+	attrib or= (parent->attrib and FB_SYMBATTRIB_LOCAL)
 
-    ''
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				     NULL, _
-    				     @symbGetUDTSymbTb( parent ), hashtb, _
-    				     FB_SYMBCLASS_FIELD, _
-    				     id, NULL, _
-    				     dtype, subtype, _
-    				     iif( symbIsLocal( parent ), _
-    				     	  FB_SYMBATTRIB_LOCAL, _
-    				     	  FB_SYMBATTRIB_NONE ) )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	'' Don't add dynamic array descriptor fields to the hashtb. They use the
+	'' same id as the corresponding dynamic array fields, so they would
+	'' collide. And we don't need to look them up anyways. (this is also
+	'' what symbAddArrayDesc() does for dynamic array variables)
+	options = 0
+	if( (attrib and FB_SYMBATTRIB_DESCRIPTOR) = 0 ) then
+		options = FB_SYMBOPT_DOHASH
+	end if
+
+	sym = symbNewSymbol( options, NULL, _
+			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
+			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
+			attrib )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->lgt = lgt
+	sym->ofs = offset
+	symbVarInitFields( sym )
+	symbVarInitArrayDimensions( sym, dimensions, dTB() )
+	if( desc ) then
+		sym->var_.array.desc = desc
+		sym->var_.array.desctype = desc->subtype
+		desc->var_.desc.array = sym  '' desc's backlink
 
-	if( updateudt or symbGetUDTIsUnion( parent ) ) then
-		sym->ofs = parent->ofs
-	else
-		sym->ofs = parent->ofs - lgt
+		symbSetTypeIniTree( desc, astBuildArrayDescIniTree( desc, sym, NULL ) )
 	end if
-
-	''
-	sym->var_.initree = NULL
-
-	'' array fields
-	sym->var_.array.desc = NULL
-	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
-	sym->var_.array.dimhead = NULL
-	sym->var_.array.dimtail = NULL
-	sym->var_.array.has_ellipsis = FALSE
-
-	symbSetArrayDimensions( sym, dimensions )
-	if( dimensions > 0 ) then
-		for i as integer = 0 to dimensions-1
-			symbAddArrayDim( sym, dTB(i).lower, dTB(i).upper )
-		next
-	end if
-
-	sym->var_.array.elms = symbCalcArrayElements( sym )
+	sym->var_.bitpos = parent->udt.bitpos
+	sym->var_.bits = bits
 
 	'' multiple len by all array elements (if any)
-	lgt *= sym->var_.array.elms
+	lgt *= symbGetArrayElements( sym )
 
-	select case as const typeGet( dtype )
-	'' var-len string fields? must add a ctor, copyctor and dtor
-	case FB_DATATYPE_STRING
-		'' not allowed inside unions or anonymous nested structs/unions
+	'' Dynamic array? Same restrictions as STRINGs. No need to check the
+	'' array's dtype because only the descriptor will be included in the
+	'' UDT, not the array data.
+	if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 		if( symbGetUDTIsUnionOrAnon( parent ) ) then
-			errReport( FB_ERRMSG_VARLENSTRINGINUNION )
+			errReport( FB_ERRMSG_DYNAMICARRAYINUNION )
 		else
 			symbSetUDTHasCtorField( parent )
 			symbSetUDTHasDtorField( parent )
 			symbSetUDTHasPtrField( parent )
 		end if
-
-	'' struct with a ctor or dtor? must add a ctor or dtor too
-	case FB_DATATYPE_STRUCT
-		'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
-		'' parent if this field has it.
-		if( symbGetUDTHasPtrField( subtype ) ) then
-			symbSetUDTHasPtrField( base_parent )
-		end if
-
-		if( symbGetCompCtorHead( subtype ) ) then
+	else
+		select case( typeGetDtAndPtrOnly( dtype ) )
+		'' var-len string fields? must add a ctor, copyctor and dtor
+		case FB_DATATYPE_STRING
 			'' not allowed inside unions or anonymous nested structs/unions
 			if( symbGetUDTIsUnionOrAnon( parent ) ) then
-				errReport( FB_ERRMSG_CTORINUNION )
+				errReport( FB_ERRMSG_VARLENSTRINGINUNION )
 			else
 				symbSetUDTHasCtorField( parent )
-			end if
-		end if
-
-		if( symbGetCompDtor( subtype ) ) then
-			'' not allowed inside unions or anonymous nested structs/unions
-			if( symbGetUDTIsUnionOrAnon( parent ) ) then
-				errReport( FB_ERRMSG_DTORINUNION )
-			else
 				symbSetUDTHasDtorField( parent )
+				symbSetUDTHasPtrField( parent )
 			end if
-		end if
 
-	end select
+		'' struct with a ctor or dtor? must add a ctor or dtor too
+		case FB_DATATYPE_STRUCT
+			'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
+			'' parent if this field has it.
+			if( symbGetUDTHasPtrField( subtype ) ) then
+				symbSetUDTHasPtrField( base_parent )
+			end if
+
+			if( symbGetCompCtorHead( subtype ) ) then
+				'' not allowed inside unions or anonymous nested structs/unions
+				if( symbGetUDTIsUnionOrAnon( parent ) ) then
+					errReport( FB_ERRMSG_CTORINUNION )
+				else
+					symbSetUDTHasCtorField( parent )
+				end if
+			end if
+
+			if( symbGetCompDtor( subtype ) ) then
+				'' not allowed inside unions or anonymous nested structs/unions
+				if( symbGetUDTIsUnionOrAnon( parent ) ) then
+					errReport( FB_ERRMSG_DTORINUNION )
+				else
+					symbSetUDTHasDtorField( parent )
+				end if
+			end if
+
+		end select
+	end if
 
 	'' check pointers
 	if( typeIsPtr( dtype ) ) then
 		symbSetUDTHasPtrField( base_parent )
 	end if
 
-	'' struct?
-	if( symbGetUDTIsUnion( parent ) = FALSE ) then
-		if( updateudt ) then
-			parent->ofs += lgt
-			parent->lgt = parent->ofs
-		end if
-
-		'' update the bit position, wrapping around
-		if( bits > 0 ) then
-			parent->udt.bitpos += bits
-			parent->udt.bitpos and= (typeGetBits( dtype ) - 1)
-		end if
-
-	'' union..
-	else
+	'' Union?
+	if( symbGetUDTIsUnion( parent ) ) then
 		symbSetIsUnionField( sym )
 
-		'' always update, been it a bitfield or not
-		parent->ofs = 0
-		if( lgt > parent->lgt ) then
-			parent->lgt = lgt
+		'' All fields start at offset 0 again; bitfield bitpos never increases
+		assert( parent->ofs = 0 )
+		assert( parent->udt.bitpos = 0 )
+
+		if( alloc_field ) then
+			'' Union's size is the max field size
+			if( parent->lgt < lgt ) then
+				parent->lgt = lgt
+			end if
+		end if
+	else
+		'' Update struct size, if a new (non-fake) field was started
+		if( alloc_field ) then
+			offset += lgt
+			parent->ofs = offset
+			parent->lgt = offset
 		end if
 
-		'' bit position doesn't change in a union
+		'' Update bitpos if non-zero
+		parent->udt.bitpos += bits
 	end if
 
-    function = sym
+	sym->parent = parent
 
-    sym->parent = parent
-
+	function = sym
 end function
 
 sub symbInsertInnerUDT _
@@ -552,24 +581,21 @@ sub symbInsertInnerUDT _
 
     symtb = @parent->udt.ns.symtb
 
-	if( symbGetUDTIsUnion( parent ) ) then
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
+	'' Link fields to the parent, so lookups will find them, but without
+	'' breaking their FBSYMBOL.parent pointers which are needed for
+	'' correct traversal of the tree of nested structs/unions.
+	while( fld )
+
+		fld->symtb = symtb
+
+		if( symbGetUDTIsUnion( parent ) ) then
 			symbSetIsUnionField( fld )
-    		'' next
-    		fld = fld->next
-    	loop
-    else
-    	'' link to parent
-    	do while( fld <> NULL )
-    		fld->symtb = symtb
-			'' update the offset
+		else
 			fld->ofs += parent->ofs
-    		'' next
-    		fld = fld->next
-    	loop
-    end if
+		end if
+
+		fld = fld->next
+	wend
 
     parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
@@ -603,12 +629,24 @@ end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
-	dim as integer res = any
+	dim as integer res = any, unpadlen = any
+	dim as longint unpadlen64 = any
 
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
-		'' It's always returned through a hidden param on stack
+		'' It's always returned through a hidden param on stack,
+		'' even for the C backend, because gcc doesn't get to see
+		'' ctors/dtors/virtuals and thus would think it's trivial and,
+		'' if small enough, ok to be returned in registers, which would
+		'' be wrong.
 		return typeAddrOf( FB_DATATYPE_STRUCT )
+	end if
+
+	'' C backend: Trivial structs can just be returned as-is, no need to
+	'' "lower the AST" to using registers or a hidden pointer parameter and
+	'' pointer result. Instead, gcc will do that.
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		return FB_DATATYPE_STRUCT
 	end if
 
 	'' On Linux & co structures are never returned in registers
@@ -616,18 +654,23 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
 
-	'' C backend? Leave the type as-is instead of lowering to the real
-	'' "return-in-regs" type, this means we can generate nicer C code,
-	'' since UDT vars also use the original type, they can be used with
-	'' RETURN in C without needing a cast.
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+	res = FB_DATATYPE_VOID
+
+	'' Check whether the structure is small enough to be returned in
+	'' registers, and if so, select the proper dtype. For this, the
+	'' un-padded UDT length should be checked so we can handle the cases
+	'' where length=1/2/3.
+	unpadlen64 = symbGetUDTUnpadLen( sym )
+
+	'' Check for longint -> integer overflow, otherwise that could happen
+	'' to the SELECT's temp var below
+	unpadlen = unpadlen64
+	if( unpadlen <> unpadlen64 ) then
+		'' very big structure (> 2GiB), no way to return in registers
 		return FB_DATATYPE_STRUCT
 	end if
 
-	res = FB_DATATYPE_VOID
-
-	'' use the un-padded UDT len
-	select case as const symbGetUDTUnpadLen( sym )
+	select case as const( unpadlen )
 	case 1
 		res = FB_DATATYPE_BYTE
 
@@ -639,12 +682,12 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		fld = symbUdtGetFirstField( sym )
 		if( fld->lgt = 2 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE ) then
+			if( sym->lgt >= 4 ) then
 				res = FB_DATATYPE_INTEGER
 			end if
 		end if
 
-	case FB_INTEGERSIZE
+	case 4
 		'' return in ST(0) if there's only one element and it's a SINGLE
 		do
 			fld = symbUdtGetFirstField( sym )
@@ -669,17 +712,17 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 			res = FB_DATATYPE_INTEGER
 		end if
 
-	case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
+	case 5, 6, 7
 		'' return as longint only if first is a int
 		fld = symbUdtGetFirstField( sym )
-		if( fld->lgt = FB_INTEGERSIZE ) then
+		if( fld->lgt = 4 ) then
 			'' and if the struct is not packed
-			if( sym->lgt >= FB_INTEGERSIZE*2 ) then
+			if( sym->lgt >= 8 ) then
 				res = FB_DATATYPE_LONGINT
 			end if
 		end if
 
-	case FB_INTEGERSIZE*2
+	case 8
 		'' return in ST(0) if there's only one element and it's a DOUBLE
 		do
 			fld = symbUdtGetFirstField( sym )
@@ -721,6 +764,7 @@ sub symbStructEnd _
 		byval isnested as integer _
 	)
 
+	dim as SYMBDEFAULTMEMBERS defaultmembers = any
 	dim as integer pad = any
 
 	'' end nesting?
@@ -738,11 +782,28 @@ sub symbStructEnd _
 		sym->lgt += pad
 	end if
 
-	'' set the real data type used to return this struct from procs
+	'' Declare implicit members (but don't implement them yet)
+	symbUdtDeclareDefaultMembers( defaultmembers, sym )
+
+	'' Determine how to return this structure from procedures
+	'' (must be done after declaring default members because it depends on
+	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
 	sym->udt.retdtype = hGetReturnType( sym )
 
-	'' Declare & add any implicit members
-	symbUdtAddDefaultMembers( sym )
+	''
+	'' Now that the UDT return type is known we can build code using it,
+	'' such as the implicit methods' bodies, or the function pointers for
+	'' the vtable slots.
+	''
+	'' Methods declared by the user using the UDT itself will be fixed up
+	'' by hPatchByvalParamsToSelf/hPatchByvalResultToSelf, but that only
+	'' works for declarations, not implementations.
+	''
+	'' Furthermore, function pointers (such as the vtable ones) can be added
+	'' to a different namespace, i.e. not the UDT, so the hPatch* functions
+	'' wouldn't handle them anyways.
+	''
+	symbUdtImplementDefaultMembers( defaultmembers, sym )
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
@@ -751,40 +812,9 @@ sub symbStructEnd _
 
 end sub
 
-function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
-	static as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr clone = any, fld = any
-
-	'' assuming only simple structs will be cloned (ie: the ones
-	'' created by symbAddArrayDesc())
-
-	clone = symbStructBegin( NULL, NULL, symbUniqueId( ), NULL, _
-	                         symbGetUDTIsUnion( sym ), _
-	                         sym->udt.align, NULL, 0 )
-
-	fld = sym->udt.ns.symtb.head
-	while( fld )
-		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
-		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0 )
-		fld = fld->next
-	wend
-
-	symbStructEnd( clone )
-
-	function = clone
-end function
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-sub symbDelField( byval s as FBSYMBOL ptr )
-	if( symbGetArrayDimensions( s ) > 0 ) then
-		symbDelVarDims( s )
-	end if
-	'' Note: astEnd() will already free the initree
-	symbFreeSymbol( s )
-end sub
 
 sub symbDelStruct( byval s as FBSYMBOL ptr )
 	symbDelNamespaceMembers( s, (not symbGetUDTIsAnon( s )) )

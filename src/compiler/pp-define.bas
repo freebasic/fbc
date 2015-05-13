@@ -1003,11 +1003,7 @@ end function
 '' 					| 	MACRO ID '(' ID (',' ID)* ')' Comment? EOL
 '' 							MacroBody*
 '' 						ENDMACRO .
-function ppDefine _
-	( _
-		byval ismultiline as integer _
-	) as integer
-
+sub ppDefine( byval ismultiline as integer )
 	static as zstring * FB_MAXNAMELEN+1 defname
 	dim as integer params = any, isargless = any, flags = any, is_variadic = any
 	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
@@ -1017,8 +1013,6 @@ function ppDefine _
 	dim as FB_DEFTOK ptr tokhead = any
 
 	'' note: using the PP hashtb here, so any non-PP keyword won't be found
-
-	function = FALSE
 
 	'' don't allow explicit namespaces
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
@@ -1030,9 +1024,10 @@ function ppDefine _
 
     lexEatToken( @defname, flags )
 
-    if( hIsValidSymbolName( defname ) = FALSE ) then
-    	exit function
-    end if
+	if( hIsValidSymbolName( defname ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		exit sub
+	end if
 
 	'' contains a period? (with LEX_FLAGS it won't skip white spaces)
 	if( lexGetToken( flags ) = CHAR_DOT ) then
@@ -1085,7 +1080,7 @@ function ppDefine _
 					errReport( FB_ERRMSG_TOOMANYPARAMS )
 					'' error recovery: skip until next ')'
 					hSkipUntil( CHAR_RPRNT, TRUE )
-					return TRUE
+					exit sub
 				end if
 
 				if( paramhead = NULL ) then
@@ -1116,9 +1111,7 @@ function ppDefine _
 			lexSkipToken( LEX_FLAGS and (not LEXCHECK_NOWHITESPC) )
 		end if
 	else
-		if( ismultiline ) then
-			errReport( FB_ERRMSG_EXPECTEDLPRNT )
-		else
+		if( ismultiline = FALSE ) then
 			if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
 				'' skip white-spaces
 				lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
@@ -1129,7 +1122,7 @@ function ppDefine _
 	'' not a macro?
 	if( params = 0 ) then
 		hReadDefineText( sym, @defname, isargless, ismultiline )
-		return TRUE
+		exit sub
 	end if
 
 	'' macro..
@@ -1143,7 +1136,4 @@ function ppDefine _
                                  FB_DEFINE_FLAGS_VARIADIC, _
                                  FB_DEFINE_FLAGS_NONE ) )
 	end if
-
-   	function = TRUE
-
-end function
+end sub

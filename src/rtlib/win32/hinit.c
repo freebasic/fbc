@@ -8,12 +8,15 @@
 static CRITICAL_SECTION __fb_global_mutex;
 static CRITICAL_SECTION __fb_string_mutex;
 static CRITICAL_SECTION __fb_mtcore_mutex;
+static CRITICAL_SECTION __fb_graphics_mutex;
 FBCALL void fb_Lock( void )      { EnterCriticalSection( &__fb_global_mutex ); }
 FBCALL void fb_Unlock( void )    { LeaveCriticalSection( &__fb_global_mutex ); }
 FBCALL void fb_StrLock( void )   { EnterCriticalSection( &__fb_string_mutex ); }
 FBCALL void fb_StrUnlock( void ) { LeaveCriticalSection( &__fb_string_mutex ); }
 FBCALL void fb_MtLock( void )    { EnterCriticalSection( &__fb_mtcore_mutex ); }
 FBCALL void fb_MtUnlock( void )  { LeaveCriticalSection( &__fb_mtcore_mutex ); }
+FBCALL void fb_GraphicsLock  ( void ) { EnterCriticalSection( &__fb_graphics_mutex ); }
+FBCALL void fb_GraphicsUnlock( void ) { LeaveCriticalSection( &__fb_graphics_mutex ); }
 #endif
 
 FB_CONSOLE_CTX __fb_con /* not initialized */;
@@ -47,6 +50,7 @@ _CRTIMP unsigned int __cdecl __MINGW_NOTHROW _controlfp (unsigned int unNew, uns
 	InitializeCriticalSection(&__fb_global_mutex);
 	InitializeCriticalSection(&__fb_string_mutex);
 	InitializeCriticalSection(&__fb_mtcore_mutex);
+	InitializeCriticalSection(&__fb_graphics_mutex);
 #endif
 
 	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
@@ -58,5 +62,6 @@ void fb_hEnd( int unused )
 	DeleteCriticalSection(&__fb_global_mutex);
 	DeleteCriticalSection(&__fb_string_mutex);
 	DeleteCriticalSection(&__fb_mtcore_mutex);
+	DeleteCriticalSection(&__fb_graphics_mutex);
 #endif
 }

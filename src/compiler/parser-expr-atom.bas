@@ -62,6 +62,7 @@ function cParentExpression _
 
 	dim as ASTNODE ptr parexpr = any
 	dim as integer eqinparensonly = any, gtinparensonly = any
+	dim as integer idxinparensonly = any
 
   	'' '('
   	if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -76,16 +77,18 @@ function cParentExpression _
   	dim as integer is_opt = fbGetPrntOptional( )
   	fbSetPrntOptional( FALSE )
 
-
 	eqinparensonly = fbGetEqInParensOnly( )
 	gtinparensonly = fbGetGtInParensOnly( )
+	idxinparensonly = fbGetIdxInParensOnly( )
 	fbSetEqInParensOnly( FALSE )
 	fbSetGtInParensOnly( FALSE )
-	
+	fbSetIdxInParensOnly( FALSE )
+
   	parexpr = cExpression(  )
 
 	fbSetEqInParensOnly( eqinparensonly )
 	fbSetGtInParensOnly( gtinparensonly )
+	fbSetIdxInParensOnly( idxinparensonly )
 
   	if( parexpr = NULL ) then
   		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
@@ -263,7 +266,8 @@ end function
 private function hFindId _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval chain_ as FBSYMCHAIN ptr _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
     '' QB mode?
@@ -279,13 +283,13 @@ private function hFindId _
 				return cConstant( sym )
 
 			case FB_SYMBCLASS_PROC
-				return cFunctionEx( base_parent, sym )
+				return cFunctionEx( base_parent, sym, options )
 
 			case FB_SYMBCLASS_VAR
 	      		return cVariableEx( chain_, fbGetCheckArray( ) )
 
        		case FB_SYMBCLASS_FIELD
-       			return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ) )
+				return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ), options )
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD
@@ -378,7 +382,7 @@ private function hBaseMemberAccess _
 	loop
 
 	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
-	return hFindId( symbGetSubtype( base_ ), @chain_ ) 
+	function = hFindId( symbGetSubtype( base_ ), @chain_, FB_PARSEROPT_EXPLICITBASE )
 end function
 
 private function hCheckId _
@@ -396,6 +400,12 @@ private function hCheckId _
 			return expr
 		end if
 	end if
+
+	'' If there's a namespace prefix, cIdentifier() should have parsed it
+	'' and the id, and verified that the id exists in that namespace. And
+	'' then hFindId() should have succeeded. Otherwise the namespace would
+	'' be lost here.
+	assert( (base_parent = NULL) or (errGetCount( ) > 0) )
 
 	'' Undeclared identifiers in PP expressions are upper-cased and then
 	'' turned into string literals, allowing them to be compared

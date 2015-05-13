@@ -2,9 +2,14 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_LineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
-				  			 int addquestion, int addnewline )
+FBCALL int fb_LineInputWstr
+	(
+		const FB_WCHAR *text,
+		FB_WCHAR *dst,
+		ssize_t max_chars,
+		int addquestion,
+		int addnewline
+	)
 {
     FB_LINEINPUTWPROC fn;
 

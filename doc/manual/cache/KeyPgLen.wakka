@@ -1,32 +1,39 @@
 {{fbdoc item="title" value="LEN"}}----
-Returns the length of a variable or data type
+Returns the length of an expression or data type
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //variable// [[KeyPgAs as]] [[KeyPgAny any]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgZString zstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Len** ( [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( //datatype// ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Len**( //variable// )
+	//result// = **Len**( //expression// )
 		##//or//##
 	//result// = **Len**( [[DataType DataType]] )
 ##
 {{fbdoc item="param"}}
-	##//variable//##
-		A variable of any type.
+	##//expression//##
+		An expression of any type.
 	##//datatype//##
 		A [[DataType DataType]].
 
 {{fbdoc item="ret"}}
-	Returns the size of a variable or [[DataType DataType]] in bytes.
+	Returns the size of an expression or [[DataType DataType]] in bytes.
 
 {{fbdoc item="desc"}}
-	##**Len**## returns the length of a variable or [[DataType DataType]], in bytes.
+	##**Len**## returns the length of an expression or the size of a [[DataType DataType]], in bytes.
 
-	In the first form, if ##//variable//## is of type ##[[KeyPgString String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. Otherwise, the size of ##//variable//##'s type in bytes is returned.
+	In the first form, if ##//expression//## is of type ##[[KeyPgString String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. If the expression is of a user defined type, an ##[[KeyPgOperator Operator]] **Len**## compatible with that data type is called.  Otherwise, the size of the ##//expression//##'s data type in bytes is returned.
 
-	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
+	In the second form, if ##//expression//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size in bytes of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
 
-	If there is both a user defined type and a variable both having the same name in the same scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
+	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
+
+	The ##**Len**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)

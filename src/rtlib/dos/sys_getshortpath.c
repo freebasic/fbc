@@ -1,6 +1,6 @@
 #include "../fb.h"
 
-char *fb_hGetShortPath( char *src, char *dst, int maxlen )
+char *fb_hGetShortPath( char *src, char *dst, ssize_t maxlen )
 {
 	if( strchr( src, 32 ) == NULL ) {
 		strcpy( dst, src );

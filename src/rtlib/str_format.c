@@ -26,14 +26,11 @@ typedef struct _FormatMaskInfo {
 
     int has_ampm;
 
-    int length_min;
-    int length_opt;
+    ssize_t length_min;
+    ssize_t length_opt;
 } FormatMaskInfo;
 
-#define FB_MAXFIXLEN 19 /* floor( log10( pow( 2.0, 63 ) ) ) + 1 */
-
-FBCALL FBSTRING *fb_hStrFormat ( double value,
-                                 const char *mask, size_t mask_length );
+#define FB_MAXFIXLEN 19 /* floor( log10( pow( 2.0, 64 ) ) ) */
 
 /** Splits a number into its fixed and fractional part.
  *
@@ -46,8 +43,10 @@ static
 void fb_hGetNumberParts
 	(
 		double number,
-        char *pachFixPart, int *pcchLenFix,
-        char *pachFracPart, int *pcchLenFrac,
+		char *pachFixPart,
+		ssize_t *pcchLenFix,
+		char *pachFracPart,
+		ssize_t *pcchLenFrac,
         char *pchSign,
         char chDecimalPoint,
         int precision
@@ -57,8 +56,9 @@ void fb_hGetNumberParts
     char chSign;
     double dblFix;
     double dblFrac = modf( number, &dblFix );
-    long long llFix = (long long) dblFix;
-    int len_fix, len_frac;
+    int neg = (number < 0.0);
+    unsigned long long ullFix = (unsigned long long) (neg ? -dblFix : dblFix);
+    ssize_t len_fix, len_frac;
 
     /* make fractional part positive */
     if( dblFrac < 0.0 )
@@ -91,24 +91,23 @@ void fb_hGetNumberParts
     pachFracPart[len_frac] = 0;
 
     /* Store fix part of the number into buffer */
-    if( llFix==0 && number < 0.0 ) {
+    if( ullFix==0 && neg ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '-';
-    } else if( llFix==0 && number > 0.0 ) {
+    } else if( ullFix==0 && number > 0.0 ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '+';
     } else {
-        if( llFix < 0 ) {
+        if( neg ) {
             chSign = '-';
-            llFix = -llFix;
-        } else if( llFix > 0 ) {
+        } else if( ullFix > 0 ) {
             chSign = '+';
         } else {
-            chSign = 0;
+            chSign = '\0';
         }
-        len_fix = sprintf( pachFixPart, "%" FB_LL_FMTMOD "d", llFix );
+        len_fix = sprintf( pachFixPart, "%" FB_LL_FMTMOD "u", ullFix );
     }
 
     if( pcchLenFix!=NULL )
@@ -119,7 +118,6 @@ void fb_hGetNumberParts
         *pchSign = chSign;
 }
 
-/*:::::*/
 static
 FBSTRING *fb_hBuildDouble
 	(
@@ -129,7 +127,7 @@ FBSTRING *fb_hBuildDouble
 	)
 {
     char FixPart[128], FracPart[128], chSign;
-    int LenFix, LenFrac, LenSign, LenDecPoint, LenTotal;
+    ssize_t LenFix, LenFrac, LenSign, LenDecPoint, LenTotal;
     FBSTRING 	*dst;
 
     fb_hGetNumberParts( num,
@@ -228,7 +226,8 @@ static
 int fb_hProcessMask
 	(
 		FBSTRING *dst,
-        const char *mask, int mask_length,
+		const char *mask,
+		ssize_t mask_length,
         double value,
         FormatMaskInfo *pInfo,
         char chThousandsSep,
@@ -237,17 +236,17 @@ int fb_hProcessMask
         char chTimeSep
 	)
 {
-    char FixPart[128], FracPart[128], ExpPart[128], chSign;
-    int LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
-    int ExpValue, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0;
+    char FixPart[128], FracPart[128], ExpPart[128], chSign = 0;
+    ssize_t LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
+    ssize_t ExpValue, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0;
     int do_skip = FALSE, do_exp = FALSE, do_string = FALSE;
     int did_sign = FALSE, did_exp = FALSE, did_hour = FALSE, did_thousandsep = FALSE;
     int do_num_frac = FALSE, last_was_comma = FALSE, was_k_div = FALSE;
     int do_output = dst!=NULL;
     int do_add = FALSE;
-    int LenOut;
+    ssize_t LenOut;
     char *pszOut;
-    int i;
+    ssize_t i;
 
     DBG_ASSERT( pInfo!=NULL );
 
@@ -305,9 +304,19 @@ int fb_hProcessMask
 				}
 
 				if( ExpValue != 0 )
-					value *= pow( 10.0, -ExpValue );
+				{
+					if( -ExpValue <= 308 )
+					{
+						value *= pow( 10.0, -ExpValue );
+					}
+					else
+					{
+						value *= pow( 5.0, -ExpValue );
+						value *= pow( 2.0, -ExpValue );
+					}
+				}
 
-				LenExp = sprintf( ExpPart, "%d", ExpValue );
+				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
 
 	            if( ExpValue < 0 )
 					IndexExp = ExpAdjust = 1;
@@ -352,6 +361,20 @@ int fb_hProcessMask
 			}
 
 			value = hRound( value, pInfo );
+
+			/* value rounded up to next power of 10? */
+			if( pInfo->has_exponent && (fb_IntLog10_64( (unsigned long long)fabs( value ) ) == pInfo->num_digits_fix) )
+			{
+				value /= 10.0;
+				ExpValue += 1;
+				LenExp = sprintf( ExpPart, "%d", (int)ExpValue );
+				if( ExpValue < 0 )
+					IndexExp = ExpAdjust = 1;
+				else
+					IndexExp = ExpAdjust = 0;
+
+				NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
+			}
 
 			fb_hGetNumberParts( value,
             					FixPart, &LenFix,
@@ -455,14 +478,16 @@ int fb_hProcessMask
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
                             int remaining = LenFix - IndexFix;
-                            if( (remaining % 3)==0 ) {
+                            if( IndexFix != LenFix && (remaining % 3)==0 ) {
                                 if( did_thousandsep ) {
                                     did_thousandsep = FALSE;
                                     LenAdd = 3;
                                 } else {
-                                    did_thousandsep = TRUE;
-                                    pszAdd = &chThousandsSep;
-                                    LenAdd = 1;
+                                    if( IndexFix >= 1 ) {
+                                        did_thousandsep = TRUE;
+                                        pszAdd = &chThousandsSep;
+                                        LenAdd = 1;
+                                    }
                                 }
                             } else {
                                 LenAdd = remaining % 3;
@@ -1116,7 +1141,6 @@ int fb_hProcessMask
     return TRUE;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_hStrFormat
 	(
 		double value,
@@ -1186,7 +1210,6 @@ FBCALL FBSTRING *fb_hStrFormat
     return dst;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_StrFormat
 	(
 		double value,
@@ -1202,4 +1225,3 @@ FBCALL FBSTRING *fb_StrFormat
 
     return dst;
 }
-

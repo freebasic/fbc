@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
+FBCALL FBSTRING *fb_LEFT( FBSTRING *src, ssize_t chars )
 {
 	FBSTRING 	*dst;
-	int 		len, src_len;
+	ssize_t len, src_len;
 
 	if( src == NULL )
 		return &__fb_ctx.null_desc;

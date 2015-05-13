@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="Getting source code updates and recompiling FB"}}----
+
+To download updates made available in the fbc Git repository, you can do a pull, either using your preferred graphical Git tool, or in a terminal:
+
+%%git pull%%
+
+To take a look at incoming changes //before// applying them, do this:
+
+%%# Update remote branches
+git fetch
+
+# Take a look
+gitk --all
+
+# Everything looks ok? Then merge the remote branch into the current branch to apply the update.
+git merge origin/master
+%%
+
+Rebuilding is, most of the time, as easy as as running "make" again. Of course, if you used compilation options (like ENABLE_STANDALONE) for the build, you have to specify them again this time, unless they are (still) set in ##config.mk##.
+
+%%make
+# or if needed:
+make ENABLE_STANDALONE=1%%
+
+As a special exception, for the DOS build it is necessary to run ##make clean## before ##make## to properly rebuild FB after source modules have been renamed or deleted. The reason for this is that under DOS/DJGPP the makefile uses *.o wildcards to link fbc and archive libfb.a etc., instead of passing the explicit .o file names, because it has to obey the command line length limitation. If ##make clean## is not run, it may use old left-over object files from a previous build. Luckily, we do not rename or delete source files often.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

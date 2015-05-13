@@ -1,7 +1,5 @@
 # include "fbcu.bi"
 
-
-
 namespace fbc_tests.pointers.indexing2
 
 	dim shared dp as integer pointer pointer 
@@ -18,8 +16,7 @@ sub test cdecl ()
 
 end sub
 
-private function init cdecl () as integer
-
+private function init cdecl () as long
 	dim i as integer
 	for i = 0 to 4 
   		array(i) = i 
@@ -31,23 +28,17 @@ private function init cdecl () as integer
 	if (0 = *dp) then return -1
 
 	return 0
-
 end function
 
-private function cleanup cdecl () as integer
-
+private function cleanup cdecl () as long
 '	deallocate (*dp)
 '	deallocate (dp)
-	
 	return 0
-
 end function
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.pointers.indexing2", @init, @cleanup)
 	fbcu.add_test("test", @test)
-
 end sub
 
 end namespace

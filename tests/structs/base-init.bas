@@ -140,14 +140,14 @@ namespace rttiPreserved
 
 	type Child extends Parent
 		declare constructor( )
-		declare constructor( byref as Child )
+		declare constructor( byref as const Child )
 	end type
 
 	constructor Child( )
 		base( 123 )
 	end constructor
 
-	constructor Child( byref rhs as Child )
+	constructor Child( byref rhs as const Child )
 		base( 456 )
 	end constructor
 
@@ -322,6 +322,31 @@ namespace simple
 	end sub
 end namespace
 
+namespace podBaseComplexDerived
+	'' POD base class, but a complex derived class. The derived class needs
+	'' to have def-ctor & copy-ctor implicitly generated. The fact that the
+	'' base class doesn't have a def-ctor shouldn't be a problem - it's a
+	'' simple POD type that should just be cleared.
+
+	type Parent
+		i as integer
+	end type
+
+	type Child extends Parent
+		s as string
+	end type
+
+	sub test cdecl( )
+		dim as Child c1
+		c1.i = 123
+		c1.s = "abc"
+
+		dim as Child c2 = c1
+		CU_ASSERT( c2.i = 123 )
+		CU_ASSERT( c2.s = "abc" )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/based-init" )
 	fbcu.add_test( "Implicit base default ctor call", @implicitBaseDefCtor.test )
@@ -334,6 +359,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "BASE() affects a single ctor only 1", @baseinitIsCtorSpecific1.test )
 	fbcu.add_test( "BASE() affects a single ctor only 2", @baseinitIsCtorSpecific2.test )
 	fbcu.add_test( "Simple base field initialization", @simple.test )
+	fbcu.add_test( "podBaseComplexDerived", @podBaseComplexDerived.test )
 end sub
 
 end namespace

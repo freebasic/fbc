@@ -45,6 +45,10 @@
 #inclib "png"
 #inclib "z"
 
+#ifdef __FB_WIN32__
+	#inclib "gdi32"
+#endif
+
 type PDF as any
 
 #ifndef FILE

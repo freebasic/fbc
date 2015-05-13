@@ -1,8 +1,5 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.string_.comp_null
 
 	dim shared v as string
@@ -12,14 +9,13 @@ namespace fbc_tests.string_.comp_null
 	dim shared w as wstring * 10
 	dim shared pw as wstring ptr
 
-function init cdecl () as integer
+function init cdecl () as long
 	v = ""
 	f = ""
 	z = ""
 	pz = 0
 	w = wstr("")
 	pw = 0
-	
 	return 0
 end function
 
@@ -66,12 +62,10 @@ sub wstringTest cdecl ()
 end sub
 
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.string_.comp_null", @init)
 	fbcu.add_test("string test", @stringTest)
 	fbcu.add_test("zstring test", @zstringTest)
 	fbcu.add_test("wstring test", @wstringTest)
-
 end sub
 
 end namespace

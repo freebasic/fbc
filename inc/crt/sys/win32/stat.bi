@@ -61,13 +61,16 @@ type _stati64
 	st_ctime as time_t
 end type
 
-declare function _fstat cdecl alias "_fstat" (byval as integer, byval as _stat ptr) as integer
-declare function _chmod cdecl alias "_chmod" (byval as zstring ptr, byval as integer) as integer
-declare function _stat cdecl alias "_stat" (byval as zstring ptr, byval as _stat ptr) as integer
+extern "C"
 
-declare function _fstati64 cdecl alias "_fstati64" (byval as integer, byval as _stati64 ptr) as integer
-declare function _stati64 cdecl alias "_stati64" (byval as zstring ptr, byval as _stati64 ptr) as integer
-declare function _wstat cdecl alias "_wstat" (byval as wchar_t ptr, byval as _stat ptr) as integer
-declare function _wstati64 cdecl alias "_wstati64" (byval as wchar_t ptr, byval as _stati64 ptr) as integer
+declare function _fstat (byval as long, byval as _stat ptr) as long
+declare function _chmod (byval as zstring ptr, byval as long) as long
+declare function _stat (byval as zstring ptr, byval as _stat ptr) as long
+declare function _fstati64 (byval as long, byval as _stati64 ptr) as long
+declare function _stati64 (byval as zstring ptr, byval as _stati64 ptr) as long
+declare function _wstat (byval as wchar_t ptr, byval as _stat ptr) as long
+declare function _wstati64 (byval as wchar_t ptr, byval as _stati64 ptr) as long
+
+end extern
 
 #endif

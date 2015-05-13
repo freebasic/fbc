@@ -220,6 +220,15 @@ function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = NULL
 end function
 
+function astRemoveNIDXARRAY( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( astIsNIDXARRAY( n ) ) then
+		function = n->l
+		n->l = NULL
+		astDelTree( n )
+	end if
+end function
+
 '' Links (l = statement 1; r = statement 2)
 function astNewLINK _
 	( _
@@ -297,7 +306,7 @@ function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		if( n->lod.isres ) then
-			vr = irAllocVREG( irGetVRDataType( v1 ), irGetVRSubType( v1 ) )
+			vr = irAllocVREG( v1->dtype, v1->subtype )
 			irEmitLOADRES( v1, vr )
 		else
 			irEmitLOAD( v1 )
@@ -311,7 +320,7 @@ end function
 
 '' Field accesses - used in expression trees to be able to identify bitfield
 '' assignments/accesses, and also by astOptimizeTree() to optimize nested field
-'' accesses.
+'' accesses, and by hFbImageExpr() to identify array field accesses.
 '' l = field access; r = NULL
 function astNewFIELD _
 	( _
@@ -326,7 +335,8 @@ function astNewFIELD _
 	dtype = l->dtype
 	subtype = l->subtype
 
-	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BITFIELD ) then
+	assert( symbIsField( sym ) )
+	if( symbFieldIsBitfield( sym ) ) then
 		select case symbGetType( subtype )
 		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
 			'' final type is always a signed int
@@ -369,11 +379,10 @@ end sub
 
 private function astSetBitfield _
 	( _
+		byval bitfield as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr s = any
 
 	''
 	''    l<bitfield> = r
@@ -381,18 +390,15 @@ private function astSetBitfield _
 	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
 	''
 
-	s = l->subtype
-	assert( symbGetClass( s ) = FB_SYMBCLASS_BITFIELD )
-
-	select case s->bitfld.typ
+	select case symbGetType( bitfield )
 	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		astGetFullType( l ) = typeJoin( symbGetFullType( s ), FB_DATATYPE_UINT )
+		l->dtype = typeJoin( bitfield->typ, FB_DATATYPE_UINT )
 		l->subtype = NULL
 	case else
 		'' Remap type from bitfield to short/integer/etc., whichever was given
 		'' on the bitfield, to do a "full" field access.
-		astGetFullType( l ) = symbGetFullType( s )
-		l->subtype = s->subtype
+		l->dtype = bitfield->typ
+		l->subtype = bitfield->subtype
 	end select
 
 	'' l is reused on the rhs and thus must be duplicated
@@ -400,8 +406,7 @@ private function astSetBitfield _
 
 	'' Apply a mask to retrieve all bits but the bitfield's ones
 	l = astNewBOP( AST_OP_AND, l, _
-	               astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-	                             FB_DATATYPE_UINT ) )
+		astNewCONSTi( not (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos) ) )
 
 	'' This ensures the bitfield is zeroed & clean before the new value
 	'' is ORed in below. Since the new value may contain zeroes while the
@@ -409,7 +414,7 @@ private function astSetBitfield _
 	'' overwrite the old value.
 
 	'' boolean bitfield? - do a bool conversion before the bitfield store
-	select case s->bitfld.typ
+	select case symbGetType( bitfield )
 	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
 		if( r->class <> AST_NODECLASS_CONV ) then
 			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
@@ -418,19 +423,17 @@ private function astSetBitfield _
 		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
 
 		r = astNewBOP( AST_OP_AND, r, _
-					   astNewCONSTi( (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 FB_DATATYPE_UINT ) )
+		               astNewCONSTi( (ast_bitmaskTB(bitfield->bitfld.bits) shl s->bitfld.bitpos), _
+		                             FB_DATATYPE_UINT ) )
 	case else
 		'' Truncate r if it's too big, ensuring the OR below won't touch any
 		'' other bits outside the target bitfield.
-		r = astNewBOP( AST_OP_AND, r, _
-			       astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+		r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
 
 		'' Move r into position if the bitfield doesn't lie at the beginning of
 		'' the accessed field.
-		if( s->bitfld.bitpos > 0 ) then
-			r = astNewBOP( AST_OP_SHL, r, _
-				       astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
+		if( bitfield->var_.bitpos > 0 ) then
+			r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( bitfield->var_.bitpos ) )
 		end if
 	end select
 
@@ -438,21 +441,21 @@ private function astSetBitfield _
 	function = astNewBOP( AST_OP_OR, l, r )
 end function
 
-private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
-	dim as FBSYMBOL ptr s = any
-	dim as integer boolconv = any
+private function astAccessBitfield _
+	( _
+		byval bitfield as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	''    l<bitfield>
 	'' becomes:
 	''    (l<int> shr bitpos) and mask
 
-	s = l->subtype
-	assert( symbIsBitfield( s ) )
-
 	'' Remap type from bitfield to short/integer/etc, while keeping in
 	'' mind that the bitfield may have been casted, so the FIELD's type
 	'' can't just be discarded.
 	'' if boolean make sure the bool conversion is after the bitfield access
+	dim boolconv as integer
 	select case typeGet( s->typ )
 	case FB_DATATYPE_BOOL8
 		l->dtype = typeJoin( l->dtype, FB_DATATYPE_BYTE )
@@ -463,23 +466,23 @@ private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
 		l->subtype = NULL
 		boolconv = TRUE
 	case else
-		l->dtype = typeJoin( l->dtype, s->typ )
-		l->subtype = s->subtype
+		l->dtype = typeJoin( l->dtype, bitfield->typ )
+		l->subtype = bitfield->subtype
 		boolconv = FALSE
 	end select
 
 	'' Shift into position, other bits to the right are shifted out
-	if( s->bitfld.bitpos > 0 ) then
-		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos ) )
+	if( bitfield->var_.bitpos > 0 ) then
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( bitfield->var_.bitpos ) )
 	end if
 
 	'' Mask out other bits to the left
-	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits) ) )
+	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
 
 	'' do boolean conversion after bitfield access
 	if( boolconv ) then
-		l->dtype = typeJoin( l->dtype, s->typ )
-		l->subtype = s->subtype
+		l->dtype = typeJoin( l->dtype, bitfield->typ )
+		l->subtype = bitfield->subtype
 		l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
@@ -510,8 +513,6 @@ end function
 '' corresponding code instead. Non-bitfield FIELD nodes stay in,
 '' they're used by astProcVectorize().
 function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr l = any
-
 	'' Shouldn't miss any bitfields
 	assert( astCountBitfields( n ) <= ast.bitfieldcount )
 
@@ -527,8 +528,8 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_ASSIGN
 		'' Assigning to a bitfield?
 		if( n->l->class = AST_NODECLASS_FIELD ) then
-			select case( astGetDataType( n->l->l ) )
-			case FB_DATATYPE_BITFIELD
+			var bitfield = n->l->sym
+			if( symbFieldIsBitfield( bitfield ) ) then
 				'' Delete and link out the FIELD
 				ast.bitfieldcount -= 1
 				astDelNode( n->l )
@@ -536,20 +537,20 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				'' The lhs' type is adjusted, and the new rhs
 				'' is returned.
-				n->r = astSetBitfield( n->l, n->r )
-
-			case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-				'' $$JRM
-				n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
-			end select
+				n->r = astSetBitfield( bitfield, n->l, n->r )
+			else
+				select case( astGetDataType( n->l->l ) )
+				case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+					'' $$JRM
+					n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
+				end select
+			end if
 		end if
 
 	case AST_NODECLASS_FIELD
-		l = n->l
-
-		select case( astGetDataType( l ) )
-		case FB_DATATYPE_BITFIELD
-			l = astAccessBitfield( l )
+		if( symbFieldIsBitfield( n->sym ) ) then
+			var l = n->l
+			l = astAccessBitfield( n->sym, l )
 
 			'' Delete and link out the FIELD
 			ast.bitfieldcount -= 1
@@ -557,8 +558,11 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 			n = l
 
 			return astUpdateBitfields( n )
+		end if
+
+		select case( astGetDataType( n->l ) )
 		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-			l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( l ) ), NULL, l )
+			n->l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( n->l ) ), NULL, n->l )
 		end select
 
 	end select
@@ -749,6 +753,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_DEL_SELF"        , '/ @"del="         /' , 0 '/ ), _
 	( /' @"AST_OP_DEL_VEC_SELF"    , '/ @"del[]="       /' , 0 '/ ), _
 	( /' @"AST_OP_ADDROF"          , '/ @"ADDROF"       /' , 0 '/ ), _
+	( /' @"AST_OP_PTRINDEX"        , '/ @"PTRINDEX"     /' , 0 '/ ), _
 	( /' @"AST_OP_FOR"             , '/ @"FOR"          /' , 0 '/ ), _
 	( /' @"AST_OP_STEP"            , '/ @"STEP"         /' , 0 '/ ), _
 	( /' @"AST_OP_NEXT"            , '/ @"NEXT"         /' , 0 '/ ), _
@@ -798,6 +803,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_FLOOR"           , '/ @"FLOOR"        /' , 0 '/ ), _
 	( /' @"AST_OP_FIX"             , '/ @"FIX"          /' , 0 '/ ), _
 	( /' @"AST_OP_FRAC"            , '/ @"FRAC"         /' , 0 '/ ), _
+	( /' @"AST_OP_LEN"             , '/ @"LEN"          /' , 0 '/ ), _
 	( /' @"AST_OP_CONVFD2FS"       , '/ @"CONVFD2FS"    /' , 0 '/ ), _
 	( /' @"AST_OP_SWZREP"          , '/ @"SWZREP"       /' , 0 '/ ), _
 	( /' @"AST_OP_DEREF"           , '/ @"DEREF"        /' , 0 '/ ), _
@@ -843,18 +849,11 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_TOUNSIGNED"      , '/ @"TOUNSIGNED"   /' , 0 '/ ) _
 }
 
-'':::::
-private function hAstNodeOpToStr _
-	( _
-		byval op as AST_OP _
-	) as string
-
+function astDumpOp( byval op as AST_OP ) as string
 	if(( op > AST_OPCODES - 1 ) or ( op < 0 )) then
 		return "OP:" + str(op)
 	end if
-
 	return *dbg_astNodeOpNames( op ).name
-
 end function
 
 '':::::
@@ -894,32 +893,28 @@ private function hAstNodeToStr _
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return hAstNodeOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
+		return astDumpOp( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_UOP
-		return hAstNodeOpToStr( n->op.op )
+		return astDumpOp( n->op.op )
 
 	case AST_NODECLASS_CONST
-		select case as const astGetDataType( n )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return str( n->con.val.long )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			return str( n->con.val.float )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				return str( n->con.val.int )
-			else
-				return str( n->con.val.long )
-			end if
-
-		case else
-            return str( n->con.val.int )
-		end select
+		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+			return str( astConstGetFloat( n ) )
+		end if
+		return str( astConstGetInt( n ) )
 
 	case AST_NODECLASS_VAR
-		return "VAR( " & *symbGetName( n->sym ) & " )"
+		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )"
+
+	case AST_NODECLASS_FIELD
+		return "FIELD( " & *symbGetName( n->sym ) & " )"
+
+	case AST_NODECLASS_DECL
+		if( n->sym ) then
+			return "DECL( " & *symbGetName( n->sym ) & " )"
+		end if
+		return "DECL"
 
 	case AST_NODECLASS_CALL
 		return "CALL( " & *symbGetName( n->sym ) & " )"
@@ -928,10 +923,13 @@ private function hAstNodeToStr _
 		return "LABEL: " & hSymbToStr( n->sym )
 
 	case AST_NODECLASS_BRANCH
-		return "BRANCH: " & hAstNodeOpToStr( n->op.op ) & " " & hSymbToStr( n->op.ex )
+		return "BRANCH: " & astDumpOp( n->op.op ) & " " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
+
+	case AST_NODECLASS_TYPEINI_ASSIGN
+		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
 
 	case else
 		return hAstNodeClassToStr( n->class )
@@ -960,7 +958,9 @@ private sub astDumpTreeEx _
 	dim as string s
 	's += "[" + hex( n, 8 ) + "] "
 	s += hAstNodeToStr( n )
-	's += " " + typeDump( n->dtype, n->subtype )
+#if __FB_DEBUG__
+	s += " " + typeDump( n->dtype, n->subtype )
+#endif
 	dbg_astOutput( s, col, just, depth )
 
 	depth += 1
@@ -1010,3 +1010,112 @@ sub astDumpList _
 	loop
 
 end sub
+
+#if __FB_DEBUG__
+function astDumpInline( byval n as ASTNODE ptr ) as string
+	static reclevel as integer
+
+	reclevel += 1
+
+	dim s as string
+	if( n = NULL ) then
+		s = "<NULL>"
+	else
+		s += hAstNodeClassToStr( n->class )
+		's += typeDump( n->dtype, n->subtype )
+
+		var have_data = (n->sym <> NULL) or (n->l <> NULL) or (n->r <> NULL)
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP, AST_NODECLASS_CONST
+			have_data or= TRUE
+		end select
+
+		if( have_data ) then
+			s += "( "
+		end if
+
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+			s += astDumpOp( n->op.op ) + ", "
+		case AST_NODECLASS_CONST
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+				s += str( astConstGetFloat( n ) ) + ", "
+			else
+				s += str( astConstGetInt( n ) ) + ", "
+			end if
+		end select
+
+		if( n->sym ) then
+			s += *symbGetName( n->sym ) + ", "
+		end if
+		if( n->l ) then
+			s += astDumpInline( n->l ) + ", "
+		end if
+		if( n->r ) then
+			s += astDumpInline( n->r ) + ", "
+		end if
+
+		if( have_data ) then
+			if( right( s, 2 ) = ", " ) then
+				s = left( s, len( s ) - 2 )
+			end if
+			s += " )"
+		end if
+	end if
+
+	reclevel -= 1
+
+	function = s
+end function
+
+sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
+	static reclevel as integer
+
+	reclevel += 1
+
+	dim s as string
+
+	'' Indentation
+	s += space( (reclevel - 1) * 4 ) + prefix
+
+	if( n = NULL ) then
+		s += "<NULL>"
+	else
+		's += "[" + hex( n ) + "] "
+		s += hAstNodeClassToStr( n->class )
+		s += typeDump( n->dtype, n->subtype )
+
+		select case as const( n->class )
+		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+			s += " " + astDumpOp( n->op.op )
+		case AST_NODECLASS_CONST
+			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+				s += " " + str( astConstGetFloat( n ) )
+			else
+				s += " " + str( astConstGetInt( n ) )
+			end if
+		end select
+
+		if( n->sym ) then
+			#if 1
+				s += " " + *symbGetName( n->sym )
+			#else
+				s += " " + symbDump( n->sym )
+			#endif
+		end if
+	end if
+
+	print s
+
+	if( n ) then
+		if( n->l ) then
+			astDumpSmall( n->l, "l: " )
+		end if
+		if( n->r ) then
+			astDumpSmall( n->r, "r: " )
+		end if
+	end if
+
+	reclevel -= 1
+end sub
+#endif

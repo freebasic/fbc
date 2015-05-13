@@ -26,6 +26,11 @@ end type
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 declare sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 declare function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
+declare function hInitVptr _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as ASTNODE ptr
 declare sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 declare sub hCallDtors( byval proc as FBSYMBOL ptr )
 declare sub hGenStaticInstancesDtors( byval proc as FBSYMBOL ptr )
@@ -395,6 +400,7 @@ end function
 
 sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 	dim as ASTNODE ptr n = any
+	dim as integer enable_implicit_code = any
 
 	n = hNewProcNode( )
 
@@ -429,9 +435,11 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	irProcBegin( sym )
 
+	enable_implicit_code = not symbIsNaked( sym )
+
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if( symbIsNaked( sym ) = FALSE ) then
+	if( enable_implicit_code ) then
 		'' alloc parameters
 		hDeclProcParams( sym )
 
@@ -463,6 +471,28 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 		env.main.initnode = rtlInitApp( _
 			astNewVAR( symbGetParamVar( argc ) ), _
 			astNewVAR( symbGetParamVar( argv ) ) )
+
+	'' Destructor?
+	elseif( symbIsDestructor( sym ) and enable_implicit_code ) then
+		''
+		'' If the UDT has a vptr, reset it at the top of destructors,
+		'' such that the vptr always matches the type of object that
+		'' we're destructing, as in C++.
+		''
+		'' For example:
+		''    type A extends object
+		''    type B extends A
+		''
+		'' When destroying a B object, the body of B.destructor() runs
+		'' before the body of A.destructor() (B.destructor() actually
+		'' calls A.destructor() at its end before returning). This means
+		'' the B part of the object is destroyed before the A part.
+		''
+		'' Thus, it's not safe to allow virtual calls from inside
+		'' A.destructor() to any of B's methods, and this is prevented
+		'' by resetting the vptr at the top of each destructor.
+		''
+		astAdd( hInitVptr( symbGetNamespace( sym ), sym ) )
 	end if
 
 	'' Label at beginning of lexical block, used by debug stabs output
@@ -667,8 +697,19 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		'' not into a recursion?
 		if( rec_cnt = 1 ) then
 			if( n->block.proc.ismain = FALSE ) then
-				'' not private or inline? flush it..
-				if( symbIsPrivate( sym ) = FALSE ) then
+				''
+				'' Emit public (non-private) procedures immediately.
+				''
+				'' Emitting of private ones is delayed until hProcFlushAll(),
+				'' so that they're only emitted if actually used.
+				''
+				'' When using the C/LLVM backends, emitting of procedures containing forward
+				'' references in their signature must be delayed aswell, otherwise the C/LLVM
+				'' backends would try emitting them with incomplete type.
+				''
+				if( (not symbIsPrivate( sym )) and _
+				    ((not symbProcHasFwdRefInSignature( sym )) or _
+				     (env.clopt.backend = FB_BACKEND_GAS)) ) then
 					do_flush = TRUE
 
 				'' remove from hash tb only
@@ -818,7 +859,8 @@ private function hCallCtorList _
 
 	dim as FBSYMBOL ptr cnt = any, label = any, iter = any, subtype = any
 	dim as ASTNODE ptr fldexpr = any, tree = any
-	dim as integer dtype = any, elements = any
+	dim as integer dtype = any
+	dim as longint elements = any
 
 	'' instance? (this function is also used by the static dtor wrapper)
 	if( fld <> NULL ) then
@@ -831,6 +873,7 @@ private function hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
+	assert( elements > 0 )
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
@@ -839,10 +882,10 @@ private function hCallCtorList _
 	if( fld <> NULL ) then
 		if( is_ctor ) then
 			'' iter = @this.field(0)
-			fldexpr = astBuildInstPtr( this_, fld )
+			fldexpr = astBuildVarField( this_, fld )
 		else
 			'' iter = @this.field(elements-1)
-			fldexpr = astBuildInstPtr( this_, fld, astNewCONSTi( elements - 1 ) )
+			fldexpr = astBuildVarField( this_, fld, (elements - 1) * symbGetLen( fld ) )
 		end if
 	else
 		if( is_ctor ) then
@@ -853,8 +896,7 @@ private function hCallCtorList _
 			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetLen( subtype ) )
 		end if
 	end if
-
-	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ) )
+	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ), AST_OPOPT_ISINI )
 
 	'' for cnt = 0 to symbGetArrayElements( fld )-1
 	tree = astBuildForBegin( tree, cnt, label, 0 )
@@ -871,7 +913,7 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
 
 	'' next
-	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( elements ) )
+	tree = astBuildForEnd( tree, cnt, label, astNewCONSTi( elements ) )
 
 	function = tree
 end function
@@ -882,6 +924,14 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
+	assert( symbIsDescriptor( fld ) = FALSE )  '' should have had an initree
+
+	'' Fake dynamic array field that didn't have an initree - nothing to do
+	if( symbIsDynamic( fld ) ) then
+		assert( symbGetTypeIniTree( fld ) = NULL )
+		exit function
+	end if
+
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
 		exit function
@@ -889,28 +939,25 @@ private function hCallFieldCtor _
 
 	'' has a default ctor too?
 	if( symbHasDefCtor( fld ) ) then
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
-
 		'' not an array?
-		if( (symbGetArrayDimensions( fld ) = 0) or _
-		    (symbGetArrayElements( fld ) = 1) ) then
+		if( symbGetArrayDimensions( fld ) = 0 ) then
 			'' ctor( this.field )
-			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
+			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) )
 		'' array..
 		else
 			function = hCallCtorList( TRUE, this_, fld )
 		end if
-
 		exit function
 	end if
 
 	'' bitfield?
-	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
-		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
-		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
+	if( symbFieldIsBitfield( fld ) ) then
+		function = astNewASSIGN( astBuildVarField( this_, fld ), _
+		                         astNewCONSTi( 0, FB_DATATYPE_UINT ), _
+		                         AST_OPOPT_ISINI )
 	else
 		function = astNewMEM( AST_OP_MEMCLEAR, _
-		                      astBuildInstPtr( this_, fld ), _
+		                      astBuildVarField( this_, fld ), _
 		                      astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
 	end if
 end function
@@ -923,7 +970,7 @@ private function hClearUnionFields _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
-	dim as integer bytes = any, lgt = any, base_ofs = any
+	dim as longint bytes = any, lgt = any, base_ofs = any
 
 	'' merge all union fields
 	fld = base_fld
@@ -947,8 +994,52 @@ private function hClearUnionFields _
 
 	'' clear all them at once
 	function = astNewMEM( AST_OP_MEMCLEAR, _
-	                      astBuildInstPtr( this_, base_fld ), _
+	                      astBuildVarField( this_, base_fld ), _
 	                      astNewCONSTi( bytes ) )
+end function
+
+private function hInitDynamicArrayField _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	dim as ASTNODE ptr boundstypeini = any, n = any
+	dim as integer dimensions = any
+
+	'' Duplicate the expressions and its temp vars into the current scope
+	boundstypeini = astTypeIniClone( symbGetTypeIniTree( fld ) )
+
+	'' Fill the exprTB() with the bounds expressions from the TYPEINI
+	dimensions = 0
+	assert( astIsTYPEINI( boundstypeini ) )
+	n = boundstypeini->l
+	do
+		assert( dimensions < FB_MAXARRAYDIMS )
+
+		'' lbound
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,0) = n->l
+		n->l = NULL  '' so we can astDelTree() the TYPEINI without free'ing the bounds expressions
+
+		'' ubound
+		n = n->r
+		assert( n->class = AST_NODECLASS_TYPEINI_ASSIGN )
+		exprTB(dimensions,1) = n->l
+		n->l = NULL  '' ditto
+
+		n = n->r
+		dimensions += 1
+	loop while( n )
+
+	assert( dimensions = symbGetArrayDimensions( fld ) )
+
+	'' Delete the TYPEINI (but not the bounds expressions), no longer needed
+	astDelTree( boundstypeini )
+
+	'' Build the REDIM CALL with the bounds expressions
+	function = rtlArrayRedim( astBuildVarField( this_, fld ), dimensions, exprTB(), FALSE, (not symbGetDontInit( fld )) )
 end function
 
 private function hCallFieldCtors _
@@ -958,38 +1049,46 @@ private function hCallFieldCtors _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any, this_ = any
-	dim as ASTNODE ptr tree = NULL
+	dim as ASTNODE ptr tree = any, boundstypeini = any
+	dim as integer skip = any
 
+	tree = NULL
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-	'' for each field..
+	'' For all real fields, excluding...
+	''  - other members like procedures,
+	''  - the base field if any; it's initialized separately already
+	''  - fake dynamic array fields
 	fld = symbGetCompSymbTb( parent ).head
-	do while( fld <> NULL )
+	while( fld )
 
 		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
 			if( fld <> parent->udt.base ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
 					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
-					'' skip next
-					continue do
+					'' hClearUnionFields() already skipped to the next field behind the union
+					continue while
 				else
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
 						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
-					'' flush the tree..
+					elseif( symbIsDynamic( fld ) ) then
+						tree = astNewLINK( tree, hInitDynamicArrayField( this_, fld ) )
 					else
+						'' Note: flushing the field's TYPEINI against the whole "THIS" instance,
+						'' not against "THIS.thefield", because the TYPEINI contains absolute offsets.
 						tree = astNewLINK( tree, _
-							astTypeIniFlush( astTypeIniClone( symbGetTypeIniTree( fld ) ), _
-							                 this_, AST_INIOPT_ISINI ) )
+							astTypeIniFlush( astBuildVarField( this_ ), _
+								astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+								FALSE, AST_OPOPT_ISINI ) )
 					end if
 				end if
 			end if
 		end if
 
 		fld = fld->next
-	loop
+	wend
 
 	function = tree
 end function
@@ -1016,7 +1115,7 @@ private function hCallBaseCtor _
 	initree = proc->proc.ext->base_initree
 	if( initree ) then
 		proc->proc.ext->base_initree = NULL
-		return astTypeIniFlush( initree, this_, AST_INIOPT_ISINI )
+		return astTypeIniFlush( astBuildVarField( this_ ), initree, FALSE, AST_OPOPT_ISINI )
 	end if
 
 	subtype = symbGetSubtype( base_ )
@@ -1056,11 +1155,11 @@ private function hInitVptr _
 
 	'' this.vptr = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) )
 	'' assuming that everything with a vptr extends fb_Object
-	'' Also, x86 assumption
 	function = astNewASSIGN( _ 
-		astBuildInstPtr( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
+		astBuildVarField( this_, symbUdtGetFirstField( symb.rtti.fb_object ) ), _
 		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, env.pointersize * 2 ) ) ), _
+		AST_OPOPT_ISINI )
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
@@ -1069,13 +1168,13 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 
 	parent = symbGetNamespace( sym )
 
-	'' 1st) base ctor
+	'' 1. base ctor (will set vtable ptr according to base)
 	tree = hCallBaseCtor( parent, sym )
 
-	'' 2nd) field ctors
+	'' 2. fields (each field will be constructed, or initialized, or cleared unless =ANY was used on it)
 	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
 
-	'' 3rd) setup the vtable ptr
+	'' 3. vtable ptr (to point to this class's vtable instead of the base's)
 	tree = astNewLINK( tree, hInitVptr( parent, sym ) )
 
 	'' Find the first statement that is executable code,
@@ -1093,29 +1192,26 @@ private sub hCallFieldDtor _
 		byval fld as FBSYMBOL ptr _
 	)
 
-	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
-		var fldexpr = astBuildInstPtr( this_, fld )
+	assert( symbIsDescriptor( fld ) = FALSE )
 
-		'' assuming fields cannot be dynamic arrays
-
-		'' not an array?
-		if( (symbGetArrayDimensions( fld ) = 0) or _
-		    (symbGetArrayElements( fld ) = 1) ) then
-			astAdd( rtlStrDelete( fldexpr ) )
-		else
-			astAdd( rtlArrayErase( fldexpr, FALSE, FALSE ) )
+	'' Dynamic array field?
+	if( symbIsDynamic( fld ) ) then
+		'' Always needs clean up, regardless of dtype
+		astAdd( rtlArrayErase( astBuildVarField( this_, fld ), TRUE, FALSE ) )
+	elseif( symbGetArrayDimensions( fld ) = 0 ) then
+		'' Normal field
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
+			astAdd( rtlStrDelete( astBuildVarField( this_, fld ) ) )
+		elseif( symbHasDtor( fld ) ) then
+			'' dtor( this.field )
+			astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildVarField( this_, fld ) ) )
 		end if
 	else
-		'' UDT field with dtor?
-		if( symbHasDtor( fld ) ) then
-			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
-				'' dtor( this.field )
-				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
-			else
-				astAdd( hCallCtorList( FALSE, this_, fld ) )
-			end if
+		'' Fixed-size array field
+		if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
+			astAdd( rtlArrayErase( astBuildVarField( this_, fld ), FALSE, FALSE ) )
+		elseif( symbHasDtor( fld ) ) then
+			astAdd( hCallCtorList( FALSE, this_, fld ) )
 		end if
 	end if
 
@@ -1131,20 +1227,23 @@ private sub hCallFieldDtors _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-    '' for each field (in inverse order)..
-    fld = symbGetCompSymbTb( parent ).tail
-    do while( fld <> NULL )
-		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
+	'' For each field (in inverse order)
+	''  - excluding non-field members (e.g. methods)
+	''  - excluding the base field, that will be destructed separately
+	''  - dynamic array descriptor fields: hCallFieldDtor() frees dynamic
+	''    array fields by calling ERASE on the fake dynamic array field,
+	''    for which astNewARG() will automagically pass the descriptor.
+	fld = symbGetCompSymbTb( parent ).tail
+	while( fld )
 
 		if( symbIsField( fld ) ) then
-			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
-			if( fld <> parent->udt.base ) Then
+			if( (not symbIsDescriptor( fld )) and (fld <> parent->udt.base) ) then
 				hCallFieldDtor( this_, fld )
 			end if
 		end if
 
 		fld = fld->prev
-	loop
+	wend
 
 end sub
 
@@ -1191,7 +1290,7 @@ private sub hCallBaseDtor _
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	astAdd( astBuildDtorCall( symbGetSubtype( base_ ), _
-				astBuildInstPtr( this_, base_ ), _
+				astBuildVarField( this_, base_ ), _
 				TRUE ) )
 end sub
 
@@ -1213,7 +1312,7 @@ private sub hCallStaticCtor _
 		byval initree as ASTNODE ptr _
 	)
 
-	astAdd( astTypeIniFlush( astTypeIniClone( initree ), sym, AST_INIOPT_ISINI ) )
+	astAdd( astTypeIniFlush( sym, astTypeIniClone( initree ), FALSE, AST_OPOPT_ISINI ) )
 	astTypeIniDelete( initree )
 
 end sub
@@ -1224,8 +1323,7 @@ private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
 		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
 	else
 		'' not an array?
-		if( (symbGetArrayDimensions( sym ) = 0) or _
-		    (symbGetArrayElements( sym ) = 1) ) then
+		if( symbGetArrayDimensions( sym ) = 0 ) then
 			'' dtor( var )
 			astAdd( astBuildDtorCall( symbGetSubtype( sym ), astBuildVarField( sym, NULL, 0 ) ) )
 		else

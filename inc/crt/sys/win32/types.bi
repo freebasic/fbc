@@ -10,9 +10,9 @@
 #define __crt_sys_win32_types_bi__
 
 type time_t as integer
-type _off_t as integer
-type _dev_t as uinteger
-type _ino_t as short
+type _off_t as long
+type _dev_t as ulong
+type _ino_t as ushort
 type _pid_t as integer
 type _mode_t as ushort
 type _sigset_t as integer

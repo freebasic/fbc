@@ -22,7 +22,9 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	// That way both rtlibs can restore the terminal properly on exit.
 	// Note: The shared lib rtlib exits *after* the program rtlib, in case
 	// the user forgot to dylibfree().
+	FB_LOCK( );
 	fb_hExitConsole();
+	FB_UNLOCK( );
 
 	libname[MAX_PATH-1] = '\0';
 	if( (library) && (library->data) ) {
@@ -38,7 +40,9 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	/* del if temp */
 	fb_hStrDelTemp( library );
 
+	FB_LOCK( );
 	fb_hInitConsole();
+	FB_UNLOCK( );
 
 	return res;
 }
@@ -69,9 +73,13 @@ FBCALL void fb_DylibFree( void *library )
 {
 	// See above; if it's an FB lib it will restore the terminal state
 	// on shutdown
+	FB_LOCK( );
 	fb_hExitConsole();
+	FB_UNLOCK( );
 
 	dlclose( library );
 
+	FB_LOCK( );
 	fb_hInitConsole();
+	FB_UNLOCK( );
 }

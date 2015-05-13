@@ -25,29 +25,30 @@ function astNewBOUNDCHK _
 
     dim as ASTNODE ptr n = any
 
-	'' lbound is a const?
-	if( astIsCONST( lb ) ) then
-		'' ubound too?
-		if( astIsCONST( ub ) ) then
-			'' index also?
-			if( astIsCONST( l ) ) then
-				'' i < lbound?
-				if( l->con.val.int < lb->con.val.int ) then
-					return NULL
-				end if
-				'' i > ubound?
-				if( l->con.val.int > ub->con.val.int ) then
-					return NULL
-				end if
+	'' If one of lbound/ubound is CONST, the other should be too -- either
+	'' both are known at compile-time, or neither is.
+	assert( astIsCONST( lb ) = astIsCONST( ub ) )
 
-				astDelNode( lb )
-				astDelNode( ub )
-				return l
+	'' CONST l/ubound?
+	if( astIsCONST( lb ) ) then
+		'' CONST index?
+		if( astIsCONST( l ) ) then
+			'' i < lbound?
+			if( astConstGetInt( l ) < astConstGetInt( lb ) ) then
+				return NULL
 			end if
+			'' i > ubound?
+			if( astConstGetInt( l ) > astConstGetInt( ub ) ) then
+				return NULL
+			end if
+
+			astDelNode( lb )
+			astDelNode( ub )
+			return l
 		end if
 
-		'' 0? del it
-		if( lb->con.val.int = 0 ) then
+		'' 0? Delete it so rtlArrayBoundsCheck() will use fb_ArraySngBoundChk()
+		if( astConstGetInt( lb ) = 0 ) then
 			astDelNode( lb )
 			lb = NULL
 		end if
@@ -87,7 +88,7 @@ function astLoadBOUNDCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym ), l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI )
 	astLoad( t )
 	astDelNode( t )
 
@@ -177,7 +178,7 @@ function astLoadPTRCHK _
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym ), l )
+	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI )
 	astLoad( t )
 	astDelNode( t )
 

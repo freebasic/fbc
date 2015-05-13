@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL int fb_FileInput( int fnum )
 {
     FB_INPUTCTX *ctx;

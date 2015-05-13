@@ -76,8 +76,9 @@ declare function hMakeParamDesc _
 		( 0, @"Directive ignored after first pass" ), _
 		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
 		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
-		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ), _
-		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ) _
+		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ), _
+		( 0, @"Mixing signed/unsigned operands" ), _
+		( 0, @"Mismatching parameter initializer" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
@@ -146,6 +147,7 @@ declare function hMakeParamDesc _
 		@"Expected array", _
 		@"Expected '{'", _
 		@"Expected '}'", _
+		@"Expected ']'", _
 		@"Too many expressions", _
 		@"Expected explicit result type", _
 		@"Range too large", _
@@ -155,14 +157,20 @@ declare function hMakeParamDesc _
 		@"Array access, index expected", _
 		@"Expected 'END ENUM'", _
 		@"Var-len arrays cannot be initialized", _
+		@"'...' ellipsis upper bound given for dynamic array (this is not supported)", _
+		@"'...' ellipsis upper bound given for array field (this is not supported)", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
+		@"Selected non-x86 CPU when compiling for DOS", _
+		@"Selected -gen gas ASM backend for non-x86 CPU", _
+		@"-asm att used for -gen gas, but -gen gas only supports -asm intel", _
+		@"-pic used when making executable (only works when making a shared library)", _
+		@"-pic used, but not supported by target system (only works for non-x86 Unixes)", _
 		@"Var-len strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
-		@"Array fields cannot be redimensioned", _
 		@"Identifier cannot include periods", _
 		@"Executable not found", _
 		@"Array out-of-bounds", _
@@ -209,6 +217,7 @@ declare function hMakeParamDesc _
 		@"Too many errors, exiting", _
 		@"Expected 'ENDMACRO'", _
 		@"EXTERN or COMMON variables cannot be initialized", _
+		@"EXTERN or COMMON dynamic arrays cannot have initial bounds", _
 		@"At least one parameter must be a user-defined type", _
 		@"Parameter or result must be a user-defined type", _
 		@"Both parameters can't be of the same type", _
@@ -226,12 +235,15 @@ declare function hMakeParamDesc _
 		@"Invalid array index", _
 		@"Operator must be a member function", _
 		@"Operator cannot be a member function", _
-		@"Member function not allowed in anonymous UDT's", _
+		@"Method declared in anonymous UDT", _
+		@"Constant declared in anonymous UDT", _
+		@"Static variable declared in anonymous UDT", _
 		@"Expected operator", _
 		@"Declaration outside the original namespace or class", _
 		@"A destructor should not have any parameters", _
 		@"Expected class or UDT identifier", _
 		@"Var-len strings cannot be part of UNION's or nested TYPE's", _
+		@"Dynamic arrays cannot be part of UNION's or nested TYPE's", _
 		@"Fields with constructors cannot be part of UNION's or nested TYPE's", _
 		@"Fields with destructors cannot be part of UNION's or nested TYPE's", _
 		@"Illegal outside a CONSTRUCTOR block", _
@@ -254,9 +266,10 @@ declare function hMakeParamDesc _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
 		@"Function result TYPE has no default constructor", _
-		@"Base UDT without default constructor; missing BASE() initializer", _
-		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
-		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
+		@"Missing BASE() initializer (base UDT without default constructor requires manual initialization)", _
+		@"Missing default constructor implementation (base UDT without default constructor requires manual initialization)", _
+		@"Missing UDT.constructor(byref as UDT) implementation (base UDT without default constructor requires manual initialization)", _
+		@"Missing UDT.constructor(byref as const UDT) implementation (base UDT without default constructor requires manual initialization)", _
 		@"Invalid priority attribute", _
 		@"PROPERTY GET should have no parameter, or just one if indexed", _
 		@"PROPERTY SET should have one parameter, or just two if indexed", _
@@ -269,7 +282,7 @@ declare function hMakeParamDesc _
 		@"Missing overloaded operator: ", _
 		@"The NEW[] operator does not allow explicit calls to constructors", _
 		@"The NEW[] operator only supports the { ANY } initialization", _
-		@"The NEW operator cannot be used with strings", _
+		@"The NEW operator cannot be used with fixed-length strings", _
 		@"Illegal member access", _
 		@"Expected ':'", _
 		@"The default constructor has no public access", _
@@ -297,8 +310,12 @@ declare function hMakeParamDesc _
 		@"Override has different calling convention than overridden method", _
 		@"Implicit destructor override would have different calling convention", _
 		@"Implicit LET operator override would have different calling convention", _
+		@"Override is not a CONST member like the overridden method", _
+		@"Override is a CONST member, but the overridden method is not", _
 		@"Override has different parameters than overridden method", _
 		@"This operator cannot be STATIC", _
+		@"This operator is implicitly STATIC and cannot be VIRTUAL or ABSTRACT", _
+		@"This operator is implicitly STATIC and cannot be CONST", _
 		@"Parameter must be an integer", _
 		@"Parameter must be a pointer", _
 		@"Expected initializer", _
@@ -356,7 +373,7 @@ declare function hMakeParamDesc _
 		@"Expected '#ENDIF'", _
 		@"Resource file given for target system that does not support them", _
 		@"-o <file> option without corresponding input file", _
-		@"TYPE can only extend other TYPE symbols", _
+		@"Not extending a TYPE/UNION (a TYPE/UNION can only extend other TYPEs/UNIONs)", _
 		@"Illegal outside a CLASS, TYPE or UNION method", _
 		@"CLASS, TYPE or UNION not derived", _
 		@"CLASS, TYPE or UNION has no constructor", _
@@ -370,9 +387,15 @@ declare function hMakeParamDesc _
 		@"ALIAS name string is empty", _
 		@"LIB name string is empty", _
 		@"UDT has unimplemented abstract methods", _
+		@"Non-virtual call to ABSTRACT method", _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
-		@"Invalid size" _
+		@"Invalid size", _
+		@"ALIAS name here is different from ALIAS given in DECLARE prototype", _
+		@"vararg parameters are only allowed in CDECL procedures", _
+		@"the first parameter in a procedure may not be vararg", _
+		@"CONST used on constructor (not needed)", _
+		@"CONST used on destructor (not needed)" _
 	}
 
 
@@ -810,14 +833,18 @@ private function hMakeParamDesc _
 				showname = FALSE
 			end if
 		else
+			static s as string
+
 			'' function pointer?
 			if( symbGetIsFuncPtr( proc ) ) then
-				pname = symbDemangleFunctionPtr( proc )
+				s = symbProcPtrToStr( proc )
+				pname = strptr( s )
 			'' method?
 			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
 											    FB_SYMBATTRIB_DESTRUCTOR or _
 											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
-				pname = symbDemangleMethod( proc )
+				s = symbMethodToStr( proc )
+				pname = strptr( s )
 			end if
 		end if
 

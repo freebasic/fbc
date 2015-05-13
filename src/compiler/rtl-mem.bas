@@ -2,7 +2,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ast.bi"
@@ -10,243 +9,133 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
-		/' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr '/ _
+		/' function fb_NullPtrChk _
+			( _
+				byval p as any ptr, _
+				byval linenum as long, _
+				byval fname as zstring ptr _
+			) as any ptr '/ _
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_CANBECLONED, _
 			3, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void '/ _
-		( _
-			@FB_RTL_MEMCOPY, @"memcpy", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
-			3, _
-			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
-		/' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void '/ _
+		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as integer ) '/ _
 		( _
 			@FB_RTL_MEMSWAP, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void '/ _
+		/' sub fb_MemCopyClear _
+			( _
+				byref dst as any, _
+				byval dstlen as integer, _
+				byref src as any, _
+				byval srclen as integer _
+			) '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
-			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' fre ( ) as uinteger '/ _
+		/' function fre( byval mode as long = 0 ) as uinteger '/ _
 		( _
 			@"fre", @"fb_GetMemAvail", _
-			FB_DATATYPE_UINT, FB_USE_FUNCMODE_FBCALL, _
+			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			) _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
-		/' allocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
+		/' function allocate cdecl( byval size as uinteger ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' callocate cdecl ( byval bytes as uinteger ) as any ptr '/ _
+		/' function callocate cdecl( byval items as uinteger, byval size as uinteger = 1 ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 _
-	 			) _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
-		/' reallocate cdecl ( byval p as any ptr, byval bytes as uinteger ) as any ptr '/ _
+		/' function reallocate cdecl( byval p as any ptr, byval size as uinteger ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' deallocate cdecl ( byval p as any ptr ) as void '/ _
+		/' sub deallocate cdecl( byval p as any ptr ) '/ _
 		( _
 			@"deallocate", @"free", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' clear cdecl ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
+		/' function clear cdecl _
+			( _
+				byref dst as any, _
+				byval value as long = 0, _
+				byval bytes as uinteger _
+			) as any ptr '/ _
 		( _
 			@"clear", @"memset", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( _
-					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
-	 			), _
-	 			( _
-					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' new cdecl ( byval bytes as uinteger ) as any ptr '/ _
-		( _
-			cast( zstring ptr, AST_OP_NEW ), NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
-		/' new[] cdecl ( byval bytes as uinteger ) as any ptr '/ _
-		( _
-			cast( zstring ptr, AST_OP_NEW_VEC ), NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
-		/' delete cdecl ( byval ptr as any ptr ) '/ _
-		( _
-			cast( zstring ptr, AST_OP_DEL ), NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
-		/' delete[] cdecl ( byval ptr as any ptr ) '/ _
-		( _
-			cast( zstring ptr, AST_OP_DEL_VEC ), NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_OPERATOR, _
-			1, _
-			{ _
-				( _
-					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
-	 			) _
-	 		} _
-		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
 	 	) _
 	 }
 
-private sub hUpdateNewOpSizeParamType( byval op as AST_OP )
-	dim as FBSYMBOL ptr sym = any
-	sym = symbGetCompOpOvlHead( NULL, op )
-	if( sym ) then
-		sym = symbGetProcHeadParam( sym )
-		if( sym ) then
-			symbGetFullType( sym ) = env.target.size_t
-		end if
-	end if
-end sub
-
 '':::::
 sub rtlMemModInit( )
 
 	rtlAddIntrinsicProcs( @funcdata(0) )
-
-	'' remap the new/new[] size param, size_t can be unsigned (int | long),
-	'' making the mangling incompatible..
-
-	'' new
-	hUpdateNewOpSizeParamType( AST_OP_NEW )
-
-	'' new[]
-	hUpdateNewOpSizeParamType( AST_OP_NEW_VEC )
 
 end sub
 
@@ -256,7 +145,6 @@ sub rtlMemModEnd( )
 	'' procs will be deleted when symbEnd is called
 
 end sub
-
 
 '':::::
 function rtlNullPtrCheck _
@@ -294,41 +182,6 @@ function rtlNullPtrCheck _
 end function
 
 '':::::
-function rtlMemCopy _
-	( _
-		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr, _
-		byval bytes as integer _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc = any
-
-	function = NULL
-
-	''
-    proc = astNewCALL( PROCLOOKUP( MEMCOPY ) )
-
-    '' dst as any
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
-
-    '' src as any
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval bytes as integer
-	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
-		exit function
-	end if
-
-    ''
-    function = proc
-
-end function
-
-'':::::
 function rtlMemSwap _
 	( _
 		byval dst as ASTNODE ptr, _
@@ -340,7 +193,7 @@ function rtlMemSwap _
 	dim as ASTNODE ptr proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
 	'' always calc len before pushing the param
-	dim as integer bytes = rtlCalcExprLen( dst )
+	dim as longint bytes = rtlCalcExprLen( dst )
 
 	'' dst as any
 	if( astNewARG( proc, dst ) = NULL ) then
@@ -366,9 +219,9 @@ end function
 function rtlMemCopyClear _
 	( _
 		byval dstexpr as ASTNODE ptr, _
-		byval dstlen as integer, _
+		byval dstlen as longint, _
 		byval srcexpr as ASTNODE ptr, _
-		byval srclen as integer _
+		byval srclen as longint _
 	) as integer
 
     dim as ASTNODE ptr proc = any
@@ -429,10 +282,9 @@ function rtlMemNewOp _
 		sym = NULL
 	end if
 
-	'' if not defined, call the global one
+	'' If no new overload was declared, just call allocate()
 	if( sym = NULL ) then
-		assert( (op = AST_OP_NEW) or (op = AST_OP_NEW_VEC) )
-		sym = symbGetCompOpOvlHead( NULL, op )
+		sym = rtlProcLookup( @"allocate", FB_RTL_IDX_ALLOCATE )
 	end if
 
 	proc = astNewCALL( sym )
@@ -469,10 +321,9 @@ function rtlMemDeleteOp _
 		sym = NULL
 	end if
 
-	'' if not defined, call the global one
+	'' If no delete overload was declared, just call deallocate()
 	if( sym = NULL ) then
-		assert( (op = AST_OP_DEL) or (op = AST_OP_DEL_VEC) )
-		sym = symbGetCompOpOvlHead( NULL, op )
+		sym = rtlProcLookup( @"deallocate", FB_RTL_IDX_DEALLOCATE )
 	end if
 
 	proc = astNewCALL( sym )

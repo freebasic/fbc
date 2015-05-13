@@ -6,10 +6,13 @@
 ''         be included in other distributions without authorization.
 ''
 ''
+
 #ifndef __bigint_big_int_full_bi__
 #define __bigint_big_int_full_bi__
 
 #inclib "big_int"
+
+#include once "crt/stddef.bi"
 
 #include once "big_int/str_funcs.bi"
 #include once "big_int/service_funcs.bi"

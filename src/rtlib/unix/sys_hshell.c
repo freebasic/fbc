@@ -8,7 +8,9 @@ int fb_hShell( char *program )
 {
 	int errcode;
 
+	FB_LOCK( );
 	fb_hExitConsole();
+	FB_UNLOCK( );
 
 	errcode = system( program );
 
@@ -23,7 +25,9 @@ int fb_hShell( char *program )
 		}
 	}
 
+	FB_LOCK( );
 	fb_hInitConsole();
+	FB_UNLOCK( );
 
 	return errcode;
 }

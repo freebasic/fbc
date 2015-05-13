@@ -2,11 +2,10 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_FilePutStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len )
+int fb_FilePutStrEx( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len )
 {
-    int res;
-    long len;
+	int res;
+	ssize_t len;
     char *data;
 
     /* get string data len */
@@ -25,15 +24,12 @@ int fb_FilePutStrEx( FB_FILE *handle, fb_off_t pos, void *str, int str_len )
 	return res;
 }
 
-/*:::::*/
-FBCALL int fb_FilePutStr( int fnum, long pos, void *str, int str_len )
+FBCALL int fb_FilePutStr( int fnum, int pos, void *str, ssize_t str_len )
 {
 	return fb_FilePutStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 
-/*:::::*/
-FBCALL int fb_FilePutStrLarge( int fnum, long long pos, void *str, int str_len )
+FBCALL int fb_FilePutStrLarge( int fnum, long long pos, void *str, ssize_t str_len )
 {
 	return fb_FilePutStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
-

@@ -620,20 +620,35 @@ void fb_hX11Exit(void)
 		if (arrow_cursor != None) {
 			XUndefineCursor(fb_x11.display, fb_x11.window);
 			XFreeCursor(fb_x11.display, arrow_cursor);
+			arrow_cursor = None;
 			XFreeCursor(fb_x11.display, blank_cursor);
+			blank_cursor = None;
 		}
-		if (color_map != None)
+		if (color_map != None) {
 			XFreeColormap(fb_x11.display, color_map);
-		if (wm_intern_hints != None)
+			color_map = None;
+		}
+		if (wm_intern_hints != None) {
 			XDeleteProperty(fb_x11.display, fb_x11.window, wm_intern_hints);
-		if (fb_x11.window != None) XDestroyWindow(fb_x11.display, fb_x11.window);
-		if (fb_x11.fswindow != None) XDestroyWindow(fb_x11.display, fb_x11.fswindow);
-		if (fb_x11.wmwindow != None) XDestroyWindow(fb_x11.display, fb_x11.wmwindow);
+			wm_intern_hints = None;
+		}
+		if (fb_x11.window != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.window);
+			fb_x11.window = None;
+		}
+		if (fb_x11.fswindow != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.fswindow);
+			fb_x11.fswindow = None;
+		}
+		if (fb_x11.wmwindow != None) {
+			XDestroyWindow(fb_x11.display, fb_x11.wmwindow);
+			fb_x11.wmwindow = None;
+		}
 		if (fb_x11.config) {
 			XRRFreeScreenConfigInfo(fb_x11.config);
 			fb_x11.config = NULL;
 		}
-		if(fb_x11.display) XCloseDisplay(fb_x11.display);
+		XCloseDisplay(fb_x11.display);
 		fb_x11.display = NULL;
 	}
 }
@@ -698,10 +713,21 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 void fb_hX11SetMouse(int x, int y, int show, int clip)
 {
-	if ((x >= 0) && (has_focus)) {
+	if ((x != (int)0x80000000 || y != (int)0x80000000) && has_focus) {
+		if (x == (int)0x80000000) {
+			x = mouse_x;
+		}
+		else if (y == (int)0x80000000) {
+			y = mouse_y;
+		}
+
+		x = MID(0, x, fb_x11.w - 1);
+		y = MID(0, y, fb_x11.h - 1);
+
 		mouse_on = TRUE;
-		mouse_x = MID(0, x, fb_x11.w - 1);
-		mouse_y = MID(0, y, fb_x11.h - 1) + fb_x11.display_offset;
+		mouse_x = x;
+		mouse_y = y;
+
 		XWarpPointer(fb_x11.display, None, fb_x11.window, 0, 0, 0, 0, mouse_x, mouse_y);
 	}
 	if ((show > 0) && (!cursor_shown)) {
@@ -736,7 +762,7 @@ void fb_hX11SetWindowTitle(char *title)
 int fb_hX11SetWindowPos(int x, int y)
 {
 	Window window, root, parent, *children;
-	XWindowAttributes attribs = { 0 };
+	XWindowAttributes attribs = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	XEvent event;
 	unsigned int num_children;
 	int dx = 0, dy = 0;
@@ -753,11 +779,11 @@ int fb_hX11SetWindowPos(int x, int y)
 		XQueryTree(fb_x11.display, window, &root, &parent, &children, &num_children);
 		if (children) XFree(children);
 	} while (parent != root_window);
-	if (x == 0x80000000)
+	if (x == (int)0x80000000)
 		x = attribs.x;
 	else
 		x -= dx;
-	if (y == 0x80000000)
+	if (y == (int)0x80000000)
 		y = attribs.y;
 	else
 		y -= dy;
@@ -815,7 +841,7 @@ int *fb_hX11FetchModes(int depth, int *size)
 	return sizes;
 }
 
-int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
+int fb_hX11ScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
 	XRRScreenConfiguration *cfg;
 	Display *dpy;
@@ -847,14 +873,14 @@ int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
 	return 0;
 }
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
-	return (fb_x11.display ? (int)fb_x11.window : 0);
+	return (fb_x11.display ? fb_x11.window : 0);
 }
 
 #else
 
-int fb_hGetWindowHandle(void)
+ssize_t fb_hGetWindowHandle(void)
 {
 	return 0;
 }

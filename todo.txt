@@ -1,4 +1,18 @@
+o 64bit
+  - Add -print hostarch/targetarch? Currently -print host/target only show the
+    OS name. Should they show arch too, or should it be separate? Or add
+    something like -print host (all), -print hostos, -print hostarch
+  - Add -print host/target-bits?
+  - FB includes must be adjusted for 64bit compatibility (if the corresponding
+    library even is available on 64bit)
+  - Windows port I/O driver? Can it be ported to 64bit? is it needed?
+
 o LLVM backend
+  - Check whether F2I conversions work correctly for unsigned integers (compare
+    to issues in C/ASM backends), and overall can't trigger fptosi/fptoui's
+    conditions for undefined behaviour
+  - returning structs in registers? Disabled for -gen gcc in hGetReturnType(),
+    can the same be done for -gen llvm?
   - structs should be emitted as byte arrays, to let the FB side handle
     packing/alignment, unless the fields must be emitted individually as with
     the C backend due to global varinis with procptrs that can't be emitted in
@@ -13,29 +27,8 @@ o LLVM backend
      - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
        (instead of a struct containing the biggest member only)
   - Debugging metadata
-  - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
-    llc even has -x86-asm-syntax=intel (should find out how well it works)
-  - va_arg: Same issue as with C backend
-
-o C backend
-  - MinGW gcc doesn't have STDCALL_MS or PASCAL; we could use 'asm("<alias>")' to
-    rename symbols, however that doesn't work with DLL export tables:
-    gcc inserts the full <alias> into '.ascii " -export:<alias>"', without stripping
-    the leading underscore, causing ld errors
-  - field accesses, pointer indexing, struct layout/field alignment, etc. is all
-    still calculated on the FB side
-     - i.e. the generated C code is ABI-dependant.
-     - sizeof()/offsetof() are evaluated purely on the FB side,
-       impossible to pass all constant expressions on to the C backend...
-       (constants, array bounds, fixstr lengths, multi-dim indexing, ...)
-  - va_* is too hard to translate to C:
-     - FB has    p = va_first( )   always returns pointer to head
-                 v = va_arg( p )   always returns arg value for given pointer
-                 p = va_next( p )  returns pointer to next arg
-     - C has     va_start( );      init
-                 v = va_arg( );    returns current arg value and moves to next
-                 va_end( );        end
-     - FB allows va_* to be used like a linked list, that's not possible in C
+  - Inline ASM
+  - va_*() macros can't be implemented, so must be disallowed just like with -gen gcc
 
 o ABI
   - MinGW GCC 4.7 C++ defaults to __thiscall for methods like MSVC,
@@ -64,6 +57,15 @@ o static member vars
 
 	print f( ).i
 
+o Allow typeless DIMs to implement EXTERNs:
+    extern a as integer
+    dim a
+
+o ThreadCall
+    Cannot safely pass BYREF parameters, especially not temp strings or other
+    temp objects which will be destroyed at the end of the ThreadCall statement
+    so they cannot safely be referenced from the thread...
+
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
   - out-of-bounds dimension argument given to lbound()/ubound()
@@ -88,14 +90,7 @@ o -exx should catch...
       members could be accessed
 
 [ ] operator overloading:
-    - add 'operator []' (or string-ish classes won't allow 'direct' char access)
     - OPERATOR foo.() ( lb1, lb2, ..... ) AS TYPE -- array indexing, not functor
-
-o BYREF function results
-  - hPatchByvalResultToSelf() should probably check symbProcReturnsByref() now
-  - "f( 1 ) = 2" will be parsed as "f( (1) = 2 )", could parse BYREF proc params
-    differently, e.g. with cEqInParensOnlyExpr(), or just always require ()'s
-    to call BYREF procs?
 
 [ ] quirks:
     [ ] OPEN ... FOR is not checking for mode
@@ -237,13 +232,6 @@ o BYREF function results
     - no null-term, temporaries always created when passing to functions
     - probably will need their own assign and concat functions
 
-[ ] "byval as string" arguments should make a temp copy (including descriptor)
-    of the param passed:
-    - must pass (?) the address of the temp descriptor, not the string data, what
-      will break *all* functions assuming the latter - they would have to be
-      declared as zstring ptr, what will need more changes in users' code, because
-      the non-implicit pointer deref
-
 [ ] proc def:
     - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
     - to support params > 64k, "ret" can't be used
@@ -278,8 +266,9 @@ o rtlib
     However FB should always use '.' for portability.
     We'd need our own float <-> string routines (PRINT USING/FORMAT may have one
     part of that already) to really fix this.
-    
-    
+
+o gfxlib2 thread-safety
+  - ScreenList() works like Dir(); it should use TLS instead of simple global var
 
 o classes
   - vtable lookup should handle THIS expression with side-effects
@@ -314,3 +303,18 @@ o classes
 	- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
 
   - exceptions - with stack unwind support?
+
+- FBSYMCHAINs are currently allocated from a fixed-size pool. If used up, it
+  wraps around and starts re-using nodes. This is dangerous because it could
+  overwrite nodes that are still in use.
+    - A huge CHAINPOOL_SIZE value should prevent any issues in practice
+    - But still the compiler should have a way to detect the overflow and report
+      an error, instead of running into "random" bugs
+    - Refcounting seems impossible though, because for that we'd have to unref
+      FBSYMCHAINs at proper places in lexer/parser/..., but symbLookup() can
+      return FBSYMCHAINs from imported namespaces that weren't allocated from
+      the chainpool, and even worse FBSYMCHAINs have references to each-other
+      through next/prev links...
+    - To really fix this, FBSYMCHAINs should be unique nodes allocated from a
+      dynamic list, and have clear ownership/lifetime, perhaps wrapped in some
+      kind of parent object

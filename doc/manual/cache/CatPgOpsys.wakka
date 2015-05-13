@@ -55,6 +55,8 @@ Statements and procedures for working with files, directories and the system.
 		Gets the command-line parameters passed to the program.
 	=={{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}==
 		Gets the value of an environment variable.
+	=={{fbdoc item="keyword" value="KeyPgIsredirected|ISREDIRECTED"}}==
+		Checks whether stdin or stdout is redirected to a file or not.
 	=={{fbdoc item="keyword" value="KeyPgSetenviron|SETENVIRON"}}==
 		Sets the value of an environment variable.
 	=={{fbdoc item="keyword" value="KeyPgShell|SHELL"}}==

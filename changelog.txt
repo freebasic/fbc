@@ -1,3 +1,233 @@
+Version 1.00.0 (former 0.91.0):
+
+[changed]
+- Platform naming conventions have changed for Linux/BSD due to 64bit/ARM support. dos/win32/xbox stay the same, win64 is added, and we use the <os>-<cpufamily> format for other systems (Linux/*BSD/Cygwin): linux-x86, linux-x86_64, linux-arm, etc. This affects the compiler's -target option, installation directory layout, release packages, compiler -v output, etc. but not any FB code.
+- The normal (non-standalone) compiler now uses target-specific sub-directories in lib/freebasic/ again, for example lib/freebasic/linux-x86/, to allow libs for other targets to be installed into the same directory, for example lib/freebasic/linux-x86_64/, instead of having to use a separate directory like lib/freebasic-linux-x86_64/. Same goes for the FB makefile: the *.o files go into target-specific subdirs in src/{compiler,rtlib,gfxlib2}/obj/, to avoid trashing the source dirs with tons of separate obj-<target>/ subdirs.
+- More predictable overload resolution for primitive types, preferring: the same dataclass >> a type that's at least as large >> the closest in size >> the same signedness >> the same kind >> the [U]INTEGER type
+- Bin/Oct/Hex(x, digits) functions now prepend zeroes, even if it's more than the data type size, if needed to fill the result string up to the requested amount of digits
+- Number literal suffixes are now followed more strictly. For example, a number with L suffix will now always be a 32bit LONG (previously it could be 32bit or 64bit, signed or unsigned, depending on the value), and the % integer suffix will always produce the FB dialect mode's default INTEGER type (INTEGER, or SHORT in -lang qb), but never a [U]LONGINT anymore.
+- CONST isn't allowed/needed on constructors/destructors anymore, the non-CONST versions now work even with CONST objects. (A CONST constructor couldn't initialize the object, so it's not useful. And after a destructor runs, the object is "dead", so it doesn't matter whether the destructor modified it or not.)
+- DOS rtlib no longer uses setlocale(), as FB-dos doesn't support Unicode anyways, and thus the setlocale() reference here only served to unnecessarily increase .exe size.
+- #if expressions allow quirk function names to be used as literals again, so for example <#IF TYPEOF(x) = STRING> works again, instead of complaining about missing arguments in a call to the String() function.
+- For dynamic arrays where the dimension count is known at the point of the declaration, fbc will now allocate array descriptors with room for only the amount of required dimensions. Descriptors with room for all of FB_MAXARRAYDIMS will only be used for dynamic arrays declared with '()' (unknown dimension count) now.
+- The C++-compatible name mangling for procedures with BYDESC parameters has been adjusted to match the implementation of BYDESC parameters, and to support the new '(any[, ...])' syntax.
+- #699: The default global New/New[]/Delete/Delete[] operators now simply use allocate()/deallocate() internally, instead of the functions from GCC's libsupc++. This avoids platform-dependant behaviour of the GCC functions (exception throwing, aborting) in case of allocation failure (instead, NULL will be returned as with allocate()).
+- FB no longer uses libsupc++ (from GCC's libstdc++) by default
+- The implicitly generated copy constructors and LET overloads will now have "BYREF AS CONST MyUdt" parameters (previously they didn't use CONST), to allow copying from CONST objects to work at least for the built-in data types or with nested UDTs. For backwards compatibility, if there is a user-defined "UDT.let(byref as UDT)" LET overload, FB will still add the non-const "UDT.constructor(byref as UDT)" copy-constructor. It's still the programmer's responsibility to write proper "byref as const UDT" versions of the copy-constructor or LET overload if the UDT needs deep-copying and CONST instances of the UDT are being used.
+- Function pointer types that differ only in function result CONSTness will now be seen as different, as in C++. Function pointer types that differ only in BYVAL parameter CONSTness will now be seen as being the same, as in C++.
+- Some internal data structures and fields ($fb_RTTI, $fb_Object, $base, $vptr) have been renamed from $foo to foo$ to prevent gdb/STABS debugging data confusion, because a leading $ has special meaning there.
+- user32 is now linked in by default when compiling for Windows (and Cygwin) as it's sometimes needed by MinGW-w64's libmingwex
+
+[added]
+- 64bit support (currently x86_64 and aarch64, based on -gen gcc): INTEGER/POINTER = 64bit, LONG = 32bit DWORD. Compiler #define: __FB_64BIT__
+- -arch 32|64 options to support easy switching between 32bit and 64bit, by selecting a default arch that supports 32/64 bits respectively.
+- ARM support (currently armv6|armv7-a|aarch64) based on -gen gcc. Compiler #define: __FB_ARM__
+- To support non-x86 Unix shared libraries, there will now be PIC (position-independent code) versions of the FB libs for such systems: fbrt0pic.o, libfbpic.a, etc. The compiler will automatically use them when making a non-x86 Unix shared library.
+- -pic option for generating position-independent code for non-x86 Unix shared libraries (automatically enabled by -dll, but must be given manually when compiling code via -c or -lib, if it will later be linked into a shared library)
+- fbc -v now prints out the target system and architecture
+- BYVAL AS STRING is now working properly: it now has BYVAL semantics and no longer behaves like BYREF AS ZSTRING. Modifications made by the callee are not visible to the caller, as for other BYVAL parameters. (BYVAL AS STRING is implemented by copying the string argument into a temporary STRING, whose descriptor is then passed BYREF to the procedure)
+- New syntax for declaring dynamic arrays with certain amount of dimensions (but no initial bounds): DIM array(ANY) AS INTEGER (1 dimension), DIM array(ANY, ANY) AS INTEGER (2 dimensions), etc. This allows for better compile-time checking of dynamic array parameters, and also allows the compiler to allocate smaller array descriptors which is especially useful for dynamic array fields.
+- Dynamic array fields are now supported in UDTs (for example: array(ANY) AS INTEGER). Similar rules as for dynamic string fields apply: Just the array descriptor is included in the UDT, not the actual array data. The UDT will become a class, and is given an implicit constructor and destructor to initialize the array descriptor, or free the data it contains. This code will also automatically be added to user-defined constructors/destructors.
+- REDIM now also accepts expressions to access dynamic arrays, instead of just plain identifiers, which is needed to redim dynamic array fields, or dynamic arrays that are static member variables. For example: REDIM (this.array)(0 to 1)
+- Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
+- Updated header for libzip 0.11.1
+- Indexing/member dereferencing operators ([], ->) can now be applied to VARPTR/PROCPTR/STRPTR/SADD() expressions (for example: print strptr(s)[1]), instead of requiring the address expression to be wrapped in parentheses first.
+- FLT_MAX and DBL_MAX to crt/limits.bi
+- operator [] overloading support, for example: type MyStringClass : declare operator []( index as integer ) byref as integer : ...
+- warning message when mixing signed and unsigned operands in comparisons or integer divide/MOD/SHR operations, where the signedness could change the result
+- crt/long.bi, which provides the CLONG and CULONG type aliases that always match C's long and unsigned long data types (for use when making FB bindings for C libraries that use C's long data type, because 64bit FB doesn't have a built-in type that matches 64bit C's long on all platforms)
+- crt/longdouble.bi, which provides a CLONGDOUBLE type that (at least in size) matches C's long double type, for use by bindings.
+- Adjusted CRT headers for 64bit support
+- Updated CUnit 2.1-2 headers, with 64bit support
+- #macro can now also be used to #define macros without a '()' macro parameter list
+- #438: Checking of parameter initializer expressions: When a parameter has a different initializer in the procedure prototype and in the procedure body, a warning will be shown now. Previously, the compiler silently ignored the initializer from the body and always used the one from the prototype.
+- Taking the address of an anonymous object created by constructor call is now allowed by the compiler: @UdtWithCtor( <ctor-params...> )  It already worked for anonymous objects of UDTs without constructor: @type<UdtWithoutCtor>( ... )
+- crt/linux/syslog.bi header
+- GFX statements now accept UDTs as target/source images, if the UDT has cast() AS ANY PTR (or other PTR types) operator overloads
+- jpeglib example now works with both fb and fblite dialects
+- Any function result may now be ignored at the call site (simply by not using the function result in any expression or assignment). Previously this was only allowed for functions returning integer types or pointers.
+- Thread-safe version of the FB graphics library (libfbgfxmt), used automatically if FB's threading functions are used or fbc's -mt command line option is given, just like the thread-safe version of the FB runtime library (libfbmt).
+- NEW/DELETE and NEW[]/DELETE[] can now be used with the dynamic STRING data type
+- ThreadDetach() function in fbthread.bi: alternative to ThreadWait() that cleans up the thread handle but does not wait for the thread to finish.
+- IsRedirected() function in fbio.bi, that can be used to check whether stdin or stdout is redirected to a file or not
+- Dynamic array descriptors will now always be generated with the FBARRAY.data and FBARRAY.ptr pointer fields specialized for the array's original data type, improving the -g debug info
+- Len() can now be overloaded as an operator for user-defined types
+- Suspicious pointer assignment warnings will now be shown for constant declarations too
+- CONST can now be used to declare UDT/string/procedure pointer constants, for example: CONST p AS MyUdt PTR = 0
+
+[fixed]
+- dlltool syntax error when building a DLL without any EXPORTs
+- ImageDestroy() won't crash anymore if given a NULL pointer
+- The compiler didn't check ALIAS names (if given in both DECLARE prototype and procedure body) for equality
+- Compiler crash after showing error for "dim shared E as E" where E is an Enum declared inside an Extern block
+- Compiler crash on Explicit Enum declared inside Extern block
+- #if typeof() and #print typeof() will now take the full procedure pointer type including parameters, calling convention (if non-default), etc. into account, instead of just treating everything as "FUNCTION PTR".
+- #669: Compiler crash instead of error message for Static member variables declared inside anonymous UDTs
+- #675: SHARED variable initializers referencing a non-SHARED STATIC from the implicit main() scope triggered an internal compiler error (dangling pointer), instead of resulting in an error message.
+- Various implicitly generated variables (such as FOR/WITH/SELECT CASE temp vars) won't appear in -g stabs output anymore
+- #597: Illegal ASM generated for +,-,*,/ floating point operations when the right hand-side operand was a byte or ubyte variable enclosed in a cast to double or single
+- #677: Casts changing only signedness on the rhs of a +,-,*,/ floating point operation could be ignored
+- Using #undef (or Option NoKeyWord) on symbols which are already in use somewhere won't cause internal compiler errors anymore: The compiler will now simply forget the symbol's identifier, so it cannot be used from input code anymore, instead of fully deleting the symbol and possibly corrupting the compiler's internal data structures.
+- #671: Arguments weren't always converted to the parameters' data type, causing gcc pointer mismatch warnings under -gen gcc
+- #670: Functions returning a Byref result weren't allowed to return references to elements from array parameters
+- Mid() statement didn't allow some string expressions as destination, such as <Mid( *StrPtr( s ), ... ) = ...>
+- The UINT_MAX from crt/limits.bi was an INTEGER instead of UINTEGER
+- #defines with invalid or missing identifiers were ignored instead of causing a compiler error
+- #686: Statements with lots of identifier/keyword tokens (such as procedure pointer variable declarations with 10 parameters) could cause unexpected compiler behaviour, e.g. compiler errors even though the code was good.
+- The compiler allowed integer arguments to be passed to BYREF AS Z/WSTRING parameters, treating them as pointers
+- #603: Optional parameters for which no arguments were given could break overload resolution. Now, overload resolution will only search for matching overloads based on the given arguments.
+- Overload resolution if no arguments were given will no longer prefer a parameter-less overload over one with only optional parameters. This is now an ambigious call error, as in C++, for consistency with overload resolution with one argument given between two overloads, both with the same first parameter, and one having a second optional parameter.
+- #689: Bad code generated for GET #, , array(), , bytesread (bytesread variable not passed on to fb_FileGetArrayIOB(): the last argument was completely missing)
+- The compiler allowed fixed-length z/w/string variables to be initialized with integers, leading to bad code generation or runtime crashes. Now only strings should be allowed.
+- #691: 0.24 regression: The compiler didn't prevent linking .so's against themselves, causing an ld error
+- 0.90.0 regression: When dragging a window on Win32 with the OpenGL gfxlib2 driver, it was resized to minimum size
+- #663: For virtual methods, base.method() called the overriding method, instead of the base's own method
+- The Is operator (RTTI) treated UDTs with the same identifier but from different namespaces as being equal
+- RTTI/Vtables inside namespaces used GCC-incompatible name mangling
+- #616: Assignments between pointers and floats are now disallowed, matching the behaviour for assignments between pointers and other incompatible data types
+- fbc -g generated wrong stabs definitions for UDTs whose size had to be rounded up (tail padding), preventing gdb from properly showing the content of arrays of such UDTs
+- #651: Multiple cases of bad ASM code generation for expressions involving LONGINTs, observable mostly when compiled under -exx due to the additional register spilling due to calls to pointer/bound checking functions (affected -gen gas only)
+- inc/win/*.bi headers: PC* and LPC* typedefs were not marked as const ptrs
+- -gen gas asm error when the rhs operand to SHL/SHR is a constant value greater than 255
+- C backend: Won't generate #line 0 at the top of procedures under -g anymore
+- C backend: Will now generate #lines for procedure headers under -g (improved debugging support under -gen gcc)
+- #703: Compiler crash after recovering from "ElseIf behind Else" error
+- The Win32 gfxlib2 will now use a (more) unique name for the window class it registers to create the graphics window, to prevent issues when using multiple gfxlib2 instances in parallel in the same process.
+- Non-standalone fbc builds failed with a "not found" error when having to execute compiler tools repeatedly (i.e. when compiling multiple modules instead of just one), if the tools weren't present in the same directory tree as fbc, such that fbc had to rely on the PATH environment to find them, on systems where exec() won't search the PATH (i.e. DOS/Win32)
+- crt/ctype.bi: The isascii() and toascii() CRT function declarations used wrong name mangling, and on Win32 the wrong calling convention too
+- crt/bits/pthreadtypes.bi: Various type aliases (including pthread_t) and UDT fields were wrong (used a 64bit integer type instead of a 32bit type like the original C header, assuming a 32bit system)
+- crt/win32/process.bi: spawnvpe()'s and _spawnvpe()'s last parameter type was wrong
+- #434: win/winbase.bi's RtlFillMemory() declaration was wrong (it was just an alias for memset(), but actually it should be memset() with swapped fill/length parameters)
+- crt/stddef.bi: Now uses signed 32bit wchar_t for Linux, to match glibc, instead of unsigned 32bit
+- crt/stdint.bi: WCHAR_MIN/WCHAR_MAX/WINT_MIN/WINT_MAX declarations were incomplete
+- Debugging help: For dynamic arrays, the compiler will now always name the array descriptor symbol after the original array name
+- datetime.bi: DateDiff() was declared to return a 32bit integer while the rtlib actually returns a 64bit integer
+- SELECT CASE AS CONST was ignoring the upper 32 bits of 64bit integer expressions in 32bit mode
+- ICE (dangling pointer) with type initializer expressions, which is known to at least cause a compiler hang during error recovery
+- #705: REDIM in a procedure marked with STATIC did not create a STATIC dynamic array (on heap, preserved to next call), but only a local dynamic array (on stack)
+- STATIC declarations couldn't use variables for array bounds, but only compile-time constants
+- STATIC declarations ignored OPTION DYNAMIC
+- zlib example tried to modify a string literal, which would cause it to crash on Linux or with -gen gcc
+- The compiler could sometimes ignore casts in address-of expressions, for example "@cuint( *integerptr )" returned an INTEGER PTR instead of a UINTEGER PTR
+- #699: "New Integer[-1]" or similar uses of New[] with negative size, that will wrap around to a massively huge value because the size is treated as unsigned, caused the ASM backend to try to emit GiBs of MOV instructions (one for each 4 bytes...), seemingly causing the compiler to hang.
+- #696: Bad code generated for temporary variable destruction (such as temporary strings from String IIf()) used as argument to built-in statements such as Open or Draw String when -e/ex/exx error checking was enabled
+- On Linux/*BSD, shell(), exec(), run(), chain(), dylibload(), dylibunload() weren't thread-safe (due to Unix rtlib's console I/O handling)
+- C backend: Nested anonymous structures could be emitted incorrectly, potentially causing them to be too small, which could easily result in buffer overflows on stack due to local variables of that struct type being smaller than expected
+- filecopy() (for DOS/Linux/*BSD) can now handle large files (> 2 GiB)
+- Using -asm att together with the ASM backend (-gen gas) now results in an error, because it only supports -asm intel
+- Uninitialized variable accessed in format()
+- =Any initializer on fields didn't cause an implicit constructor to be added as for other field initializers
+- UByte/UShort versions of Bin/Hex/WBin/WHex( n, digits ) functions were missing
+- Miscompilation of runtime library function calls for ImageCreate(), Mki() and ThreadCall, in modules except the first when compiling multiple modules in one invocation of fbc, if -lang qb was given on the fbc command line (not as #lang "qb" in the source).
+- C backend: String literal emitting now also escapes characters that would otherwise form trigraphs
+- big_int binding: Some function declarations were missing parameters; also added some missing functions
+- 0.90.1 regression: PMAP was returning bad values for func values of 0 or 1.
+- #701: fbc didn't escape \ as \\ in @files (response files) sometimes used when invoking ld
+- Win32 fbc will now avoid hitting Win32 command line length limits when invoking ld with a long command line, by using "ld @file" (response files)
+- #713: gfxlib2 crashed when closing and re-opening an X11 OpenGL graphics screen
+- ThreadCall on Win32 couldn't be used with procedures declared inside Extern "Windows-MS" blocks
+- CIRCLE did sometimes not fully update the screen immediately, causing the last scan line of the circle to remain invisible until the screen was updated some other way
+- crt/linux/fnctl.bi: Broken declaration of open_ ALIAS "open"() (0.90.0 regression)
+- Using Unicode characters in comments and compiling with -g could lead to junk bytes being emitted into the generated .asm/.c files
+- #710: Operator Placement New[] ("new(address) DataType[N]") will no longer store a cookie containing the number of vector elements (N) in front of the allocated buffer, as done by normal New[]. The cookie is an implementation detail that the coder can't be expected to know, especially because it only applies to New[] when used with data type that has a destructor, so the buffer given to Placement New[] will likely be too small. Besides that, the cookie is only useful to Delete[], which however can only be used with New[], but not Placement New[] (no way to be sure that the given buffer even can be Delete[]'d).
+- Bad code generated when using type<string>(...) in a string concatenation or as argument to a BYREF AS ANY parameter
+- -fpu sse: Bad code generated for negation on Single function result returned through FPU stack
+- -fpu sse: Bad code generated when calling sgn() on Single function result returned through FPU stack
+- -fpu sse: Bad code generated when calling sqr() on Double function result returned through FPU stack
+- -fpu sse and -vec 1|2: Various cases of bad code generation resulting in operand size mismatch errors
+- fbc crashed after showing the error message when using -vec 1|2 without -fpu sse
+- ASM backend: Sgn(LongInt) returned wrong values
+- C backend: Extern "Windows-MS" is now supported, including DLL exports (stdcall procedures without @N suffix)
+- #709: format() adds erroneous thousands delimiter, was affecting all number strings that were multiple of 3.
+- #715: GFX statements (Get, Put, Line, Circle, ...) are now more strict about their target/source image parameters. Arrays are still accepted as in QB, but besides that, the argument must be some pointer expression now, that is expected to point to an FB.IMAGE buffer of the proper size. Previously non-pointer expressions were accepted but could cause bad code to be generated or could be silently miscompiled.
+- #665: DRAW statement now accepts the same target image expressions as the rest of GFX statements (not just simple pointer variables or 'a.b' field accesses anymore)
+- #687: DRAW statement now remembers the subpixel position between commands.
+- #717: REDIM [PRESERVE] did not clear array elements with destructor but no constructor
+- x->*field syntax wasn't working if operator -> was overloaded
+- x[a][b] syntax wasn't working if operator [] was overloaded
+- x[a].field syntax wasn't working if operator [] was overloaded
+- Win32 ScreenInfo() reimplemented to report screen size more accurately (the old version returned incorrect values on Windows 8.1). Also, it will now report the size of the screen assigned to the program, rather than always the primary monitor.
+- #assert inside #if 0 blocks caused a syntax error
+- PP typeof()'s argument was not being macro-expanded properly (e.g. the x in <#if typeof(x) = ...>)
+- Macro expansion right behind a PP typeof() wasn't working (e.g. the foo in <#if typeof(x) foo>)
+- Crash (division by zero) when PRINTing onto tiny graphics screens (e.g. screenres 1, 1)
+- pdflib.bi was missing #inclib "gdi32"
+- Methods with CONST function results are no longer allowed to override virtual methods with non-CONST function results, and vice-versa (the return type must be the exact same, as for function pointers)
+- CONST-member methods are no longer allowed to override non-CONST-member virtual methods, and vice-versa
+- The compiler no longer crashes (SIGFPE) on constant expressions containing signed integer division overflows, e.g. -2147483648 \ -1, which triggers SIGFPE when calculated on x86. The compiler now inserts 0 (-2147483648 \ -1 = 2147483648 which doesn't fit into a 32bit signed integer, and in theory overflows to 0) and shows a warning. Note: FB programs doing such divisions at run-time (e.g. <dim a as integer = -2147483648, b as integer = -1 : print a \ b>) may still run into SIGFPE crashes; this change just affects the compiler itself, not the generated code.
+- When calling a byref function through a function pointer, the result may now be ignored, just like with normal function calls, or when calling normal functions through function pointers.
+- STRPTR() on a CONST STRING (DIM s AS CONST STRING) did not preserve CONSTness and allowed modifying the string
+- win/objbase.bi: Wrong IsEqualGUID() declaration, producing wrong result value (subsequently, all aliases such as IsEqualIID() were wrong too)
+- Fields were allowed to have type suffixes when declared using the "AS DataType a, b, c" syntax instead of "a AS DataType"
+- When DIM'ing an EXTERN array, the DIM statement was allowed to have different lbound than the EXTERN
+- Compiler crash during error recovery if a dynamic array declaration/REDIM contained '...' ellipsis upper bounds
+- EOF() didn't work properly with files bigger than 4 GB
+- #643: Typeless REDIM was accidentially being allowed, if the array's identifier matched that of a field visible through the implicit THIS reference, by re-using the field's data type, but still creating a new array. This will now trigger a compiler error just like other typeless REDIMs without a pre-existing array.
+- Duplicate EXTERNs for dynamic arrays are now allowed, just like duplicate EXTERNs for normal or fixed-size array variables, which already were allowed before.
+- EXTERN variables could be allocated via a static array variable declaration, this will now trigger an error.
+- #648: Local (scoped) variable declarations (including REDIM) caused EXTERNs to be allocated, instead of shadowing them
+- Local dynamic arrays can now be shadowed in nested scopes without compiler error
+- More precise compile-time checks of dynamic array dimension counts
+- -lang fblite/qb: EXTERN arrays are no longer allowed to have subcripts if OPTION DYNAMIC was in effect, because EXTERN dynamic arrays cannot have initial subscripts, just like COMMON arrays.
+- #720: Some pointer assignments weren't working due to bogus CONSTness checking
+- #582: Wrong code generated for bitfield self-BOPs or SWAPs sometimes under -exx or if the bitfield expression contained function calls (side-effects)
+- When specifying an .o file name without extension but '.' in its path (for example: -o ../foo), fbc created temporary files by stripping everything from the .o path until that '.' and then appending the new extension, which often resulted in bad/unexpected file names (for example: ..foo.asm).
+- Calling getkey() in one thread won't cause other threads' rtlib function calls to block until getkey() returns anymore
+- #726: CONSTRUCTOR|DESTRUCTOR (module-level initialization/cleanup) was allowed to be specified on sub prototypes (although, it was ignored), method bodies (silently miscompiled due to the missing THIS argument), and PRIVATE/PROTECTED static member procedures. Now these cases are disallowed.
+- #576: Array elements could be passed to array parameters in place of the array itself: <myfunction( myarray(index) )>. However, the array index was simply ignored. The array must be passed without index now: <myfunction( myarray() )>
+- #722: Member operators NEW/DELETE/NEW[]/DELETE[] could be declared CONST/VIRTUAL/ABSTRACT despite being implicitly STATIC. This is now disallowed.
+- C backend: main() will now be emitted with clang-compatible signature
+- C/LLVM backends: Procedures using forward references in their signatures could be emitted with ANY PTRs in place of the forward references, while prototypes/calls could end up using the signature with resolved forward references, causing the generated C/LLVM code to have type conflicts.
+- #719: Compiler crash when passing an upcasted class/UDT function result to a Byref parameter
+- #698: sizeof() now allows string expressions (note: it returns sizeof(string), not the string length - len() should be used for that)
+- #685: SETMOUSE had differing behaviour between platforms when x and y were not both present and within the window
+- When RETURN'ing classes without copy-constructor from a function, or passing classes without copy-constructor to a Byval parameter, their Let operator overload was called, even though this is an object initialization, and not an assignment. (the object wasn't even initialized before the Let overload was called)
+- Overload resolution didn't allow up-casting arguments when passing to a CONST parameter (e.g. BYREF AS CONST). This also prevented copy constructors with BYREF AS CONST parameter from being called, when the source object had to be up-casted.
+- Copy-constructing or assigning an object from a CONST object didn't work with the implicitly generated copy-constructor or LET overload because they only had BYREF AS MyClass parameters which can't accept CONST objects (instead of calling the copy-constructor or LET overload, a shallow copy was done, which for example caused trouble if the UDT contained dynamic strings requiring a deep copy)
+- C backend: A gcc warning was triggered when initializing a global variable with an @addressof expression, taking the address of another global.
+- #614: When copying (copy-constructing or assigning) objects of classes extending OBJECT, the lhs' vptr could be overwritten incorrectly, causing the object to have a wrong run-time type.
+- 0.90.0 regression: -g could produce bad stabs info when #includes were used (after closing an #include block, the wrong directive was used to return to the main file), preventing gdb from determining variable types sometimes
+- -g will now produce correct stabs info for dynamic array descriptors
+- 0.90.0 regression: Sometimes incorrect C++ mangling of procedures in nested namespaces
+- 0.24.0 regression: SWAP called temporary variable destructors too early, even before calling constructors
+- Temporary strings used during procedure calls could be freed too early (directly after the call, instead of being kept alive until the end of the statement), potentially leaving references to them (used with-in the same statement) dangling.
+- #545: Overload resolution will now properly handle arguments with CONST qualifiers in their data type
+- ASM backend -g debug info for dynamic array descriptors: The data type of the DATA & PTR pointer fields was wrong (they were emitted with an extra level of pointer indirection that shouldn't have been there). The DATA pointer field will also now have the array's original data type, while the PTR field is an ANY PTR (since it's the dynamic array's memory block, not necessarily the array data). The dimTB field will now be emitted as the array that it is (instead of as a sequence of manually generated fields).
+- Any function pointers were allowed to be assigned to function pointers with varargs, as long as the signature outside the varargs part matched. On x86 this is technically ok for an assignment with types like "sub cdecl( byval as integer ) = sub cdecl( byval as integer, ... )", because the lhs can be called just like the rhs without passing any varargs. But this isn't allowed in C, and isn't necessarily safe on non-x86 platforms. Besides it also allowed BYREF or array (bydesc) parameters in place of the varargs, which breaks even on x86 (e.g. "sub cdecl( byval as integer, byref as integer ) = sub cdecl( byval as integer, ... )")
+- Pointer assignments between pointers to different unsolved forward references will now trigger "suspicious" warnings because these forward references may be resolved to different types later. This matches the C++ mangling behaviour which also treats different unsolved forward references as different types.
+- Destructors of UDTs with ABSTRACT/VIRTUAL methods will now reset the object's RTTI such that it matches the type whose destructor is running. This prevents virtual calls from a base class destructor into a derived class which has already been destructed, as in C++.
+- The compiler refused to generate an implicit default-constructor and copy-constructor for UDTs derived from a simple plain-old-data base UDT (that itself didn't have any constructors)
+- Bin/Oct/Hex() didn't accept pointers to CONST types
+- Override signature compatibility checking was broken for methods using the Pascal calling convention
+- C backend: Structures containing bitfields were sometimes not emitted correctly (wrong sizeof()), so for now they will be emitted as simple byte arrays. This is bad for -g debug info of course, but that can be fixed in the future when FB's bitfields have been made compatible to GCC's, and the C backend can emit them as-is, without having to worry about layout differences.
+- #733: The -> operator couldn't be applied to parenthesized UDT expressions even if overloaded for that UDT
+- On Win32, wrong code could be generated when returning complex structures from functions: Under -gen gas, they could be incorrectly returned in registers (if small enough), if they became complex only thanks to the addition of implicit members. Besides being ABI-incompatible to GCC/MSVC, this could also lead to missing destructor calls.
+- C backend: stdcall functions returning non-trivial UDTs had the wrong @N stdcall suffix (the hidden result pointer parameter was calculated into it, but shouldn't be)
+- 0.90.0 regression: Some cases of binary operations involving unsigned operands and constants could cause the compiler to show "implicit conversion" warnings due to internal transformations, for example: dim as uinteger a, b : print a - (b - 1)
+- Bad code generated for temporary variable destruction in local array initializers: temporary strings or UDTs with destructors could be destroyed before first used
+- #728: Buggy overload resolution for Byval As Const parameters
+- LSET / RSET were aborting when the rhs was an empty var-len string
+- #739: ASM backend: The compiler allocated unused stack space for dynamic arrays (besides the array descriptor), based on the array element data type size. This was not only a waste of memory, but could also lead to stack overflow crashes if the array element data type was very big.
+- #736: Format() overflow when significand (after scaling to 19 digits) is 2^63 or greater
+- Format() overflow on very small numbers, trying to scale them by excessively large powers of 10
+- 0.24.0 regression: cgi-util.bi was missing
+- Format() was adding an extra digit before the decimal point in scientific notation when rounding up to the next power of 10
+
+
+Version 0.90.1:
+
+[fixed]
+- Potential internal errors in Unix rtlib during SIGWINCH signal handling, due to calls to non-async-signal-safe functions
+- Any input on stdin could break the Unix rtlib's escape sequence communication with the terminal, e.g. typing very fast at an Input prompt
+- #679: WINDOW width/height were losing precision on very small Single values
+- Taking the address of a PEEK, [] indexing, or * dereferencing expression could ignore the PEEK/indexing/derefenced data type (e.g. "@peek( integer, myptr )" returned myptr's type instead of an INTEGER PTR, and "@string[index]" returned a ZSTRING PTR instead of an UBYTE PTR). This could also break WITH when used on a PEEK expression.
+- C backend: Passing @proc (taking address of procedures) expressions to BYREF parameters caused bad C code to be generated
+- Pointer arithmetic on procedure pointers is now disallowed. It is not meaningful, because procedures do not have a fixed size and are not arranged like array elements.
+- 0.90.0 regression: A bug in array index parsing could cause the compiler to crash due to arrays being used without index, instead of showing an error message
+- 0.90.0 regression: ON GOTO was broken due to the compiler generating bad jump tables for it
+- 0.90.0 regression: Some Win32 API libs were missing (e.g. libstrmiids.dll.a)
+
+
 Version 0.90.0 (former 0.25.0):
 
 [changed]
@@ -77,6 +307,7 @@ Version 0.90.0 (former 0.25.0):
 - bpp parameter on BSAVE, to request a BMP bit depth
 - TYPEOF() can now also be used directly on SUB|FUNCTION(...) function pointer types
 - Mode parameter for Lcase()/Ucase() functions, that can be set to 1 to enable ASCII-only mode (e.g. LCASE("foo", 1)), which will be evaluated as compile-time constant if possible
+- Improved multiplication/division/modulus to bitwise shift/and optimizations to handle operations with 64bit and unsigned right hand operand better
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example

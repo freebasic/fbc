@@ -327,7 +327,7 @@ static int *driver_fetch_modes(int depth, int *size)
 	DEVMODE dm;
 
 	while (EnumDisplaySettings(NULL, mode, &dm)) {
-		if ((dm.dmBitsPerPel == depth) ||
+		if ((dm.dmBitsPerPel == (unsigned int)depth) ||
 		    (dm.dmBitsPerPel == 15 && depth == 16) ||
 		    (dm.dmBitsPerPel == 16 && depth == 15) ||
 		    (dm.dmBitsPerPel == 24 && depth == 32) ||

@@ -101,7 +101,7 @@ end type
 extern "C"
 
 'Sets and/or returns the current locale
-declare function setlocale ( byval __category as integer, byval __locale as const zstring ptr ) as zstring ptr
+declare function setlocale (byval __category as long, byval __locale as const zstring ptr) as zstring ptr
 
 'Return the numeric/monetary information for the current locale.
 declare function localeconv () as lconv ptr

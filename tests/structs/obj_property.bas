@@ -24,20 +24,17 @@ end property
 
 sub test cdecl
 	dim as bar b1
-	
+
 	b1.v = 1
 	CU_ASSERT_EQUAL( b1.v, 1 )
 
 	b1.v = "2"
 	CU_ASSERT_EQUAL( b1.v, 2 )
-	
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("fb-tests-structs:property")
 	fbcu.add_test( "test", @test)
-
 end sub
-	
-end namespace	
+
+end namespace

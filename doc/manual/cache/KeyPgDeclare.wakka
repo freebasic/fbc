@@ -2,7 +2,7 @@
 Declares a module-level or member procedure
 
 {{fbdoc item="syntax"}}##
-	**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ] [ [[KeyPgModuleConstructor Constructor]] | [[KeyPgModuleDestructor Destructor]] ]
+	**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ]
 	**Declare** [[KeyPgFunction Function]] //name// [ //param_list// ] [[KeyPgAs As]] //return_type//
 	**Declare** [[KeyPgOperator Operator]] //op_symbol// //param_list// [ [[KeyPgAs As]] //return_type// ]
 	

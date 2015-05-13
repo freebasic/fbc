@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL unsigned int fb_WstrAsc ( const FB_WCHAR *str, int pos )
+FBCALL unsigned int fb_WstrAsc( const FB_WCHAR *str, ssize_t pos )
 {
-    int len;
+	ssize_t len;
 
 	if( str == NULL )
 		return 0;
@@ -15,6 +14,4 @@ FBCALL unsigned int fb_WstrAsc ( const FB_WCHAR *str, int pos )
 		return 0;
 	else
 		return str[pos-1];
-
 }
-

@@ -2,13 +2,11 @@
 
 #include "fb.h"
 
-
-/*:::::*/
 FBCALL FB_WCHAR *fb_WstrTrim ( const FB_WCHAR *src )
 {
 	FB_WCHAR *dst;
 	const FB_WCHAR *p;
-	int chars;
+	ssize_t chars;
 
 	if( src == NULL )
 		return NULL;
@@ -37,7 +35,3 @@ FBCALL FB_WCHAR *fb_WstrTrim ( const FB_WCHAR *src )
 
 	return dst;
 }
-
-
-
-

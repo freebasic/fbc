@@ -17,47 +17,6 @@ declare sub astReplaceSymbolOnCALL _
 		byval new_sym as FBSYMBOL ptr _
 	)
 
-'' globals
-	dim shared as longint ast_minlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
-	{ _
-		-1LL, _									'' boolean byte
-		-128LL, _								'' byte
-		0LL, _                                  '' ubyte
-		0LL, _                                  '' char
-		-32768LL, _                             '' short
-		0LL, _                                  '' ushort
-		0LL, _                                  '' wchar
-		-2147483648LL, _                        '' int
-		0LL, _                                  '' uint
-		-1LL, _									'' boolean integer
-		-2147483648LL, _                        '' enum
-		0LL, _                                  '' bitfield
-		-2147483648LL, _                        '' long
-		0LL, _                                  '' ulong
-		-9223372036854775808LL, _               '' longint
-		0LL _                                   '' ulongint
-	}
-
-	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_LOW_INDEX to FB_DATATYPE_UPP_INDEX ) = _
-	{ _
-		1ULL, _                                 '' boolean byte
-		127ULL, _                               '' byte
-		255ULL, _                               '' ubyte
-		255ULL, _                               '' char
-		32767ULL, _                             '' short
-		65535ULL, _                             '' ushort
-		65535ULL, _                             '' wchar
-		2147483647ULL, _                        '' int
-		4294967295ULL, _                        '' uint
-		1ULL, _                                  '' boolean integer
-		2147483647ULL, _                        '' enum
-		4294967295ULL, _                        '' bitfield
-		2147483647ULL, _                        '' long
-		4294967295ULL, _                        '' ulong
-		9223372036854775807ULL, _               '' longint
-		18446744073709551615ULL _               '' ulongint
-	}
-
 sub astMiscInit( )
 	listInit( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 	with( ast.dtorlistscopes )
@@ -67,12 +26,6 @@ sub astMiscInit( )
 	end with
 	ast.dtorlistcookies = 0
 	ast.flushdtorlist = TRUE
-
-	'' Remap wchar to target-specific type
-	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar)
-	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar)
-
-    '' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
 end sub
 
 sub astMiscEnd( )
@@ -131,34 +84,17 @@ function astIsTreeEqual _
 		end if
 
 	case AST_NODECLASS_CONST
-
-		select case as const astGetDataType( l )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			if( l->con.val.long <> r->con.val.long ) then
+		select case( typeGetClass( l->dtype ) )
+		case FB_DATACLASS_FPOINT
+			if( l->val.f <> r->val.f ) then
 				exit function
 			end if
 
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( l->con.val.float <> r->con.val.float ) then
+		case FB_DATACLASS_INTEGER
+			if( l->val.i <> r->val.i ) then
 				exit function
 			end if
 
-  		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    	if( FB_LONGSIZE = len( integer ) ) then
-				if( l->con.val.int <> r->con.val.int ) then
-					exit function
-				end if
-  	    	else
-				if( l->con.val.long <> r->con.val.long ) then
-					exit function
-				end if
-  	    	end if
-
-		case else
-			'' bytes/shorts/integers/enums
-			if( l->con.val.int <> r->con.val.int ) then
-				exit function
-			end if
 		end select
 
 	case AST_NODECLASS_DEREF
@@ -240,37 +176,194 @@ function astIsTreeEqual _
 
 end function
 
-'':::::
-function astIsClassOnTree _
+''
+'' Check whether two parameter initializers are the same (for comparing
+'' initializer expressions from prototype and body). This is basically the same
+'' as astIsTreeEqual(), except it allows CALLs and such aswell as temp vars,
+'' because for a param initializer those things can be treated equal.
+''
+'' For example, two calls f(1) and f(1) are equal as far as param initializers
+'' are concerned, but astIsTreeEqual() wouldn't treat them as equal, so we need
+'' a custom function.
+''
+'' Also, two expressions such as iif(a,b,c) and iif(a,b,c) are equal for param
+'' initializers. The two iif()'s will use separate temp vars, causing
+'' astIsTreeEqual() to treat them as different, but that doesn't matter for
+'' param initializers where the expression and the temp vars it uses will be
+'' duplicated & inserted into the call scopes.
+''
+'' Temp labels stored in BOP's or LOOP's ASTNODE.op.ex field should be treated
+'' equal too (e.g. used by iif()).
+''
+function astIsEqualParamInit _
 	( _
-		byval class_ as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
 
-	dim as ASTNODE ptr m = any
+	function = FALSE
 
-	''
+	if( (l = NULL) or (r = NULL) ) then
+		if( l = r ) then
+			function = TRUE
+		end if
+		exit function
+	end if
+
+	if( l->class <> r->class ) then
+		exit function
+	end if
+
+	if( l->dtype <> r->dtype ) then
+		exit function
+	end if
+
+	if( l->subtype <> r->subtype ) then
+		'' If it's a function pointer, the subtype may point to different proc
+		'' symbols, but if they have the same signature they should still be
+		'' treated equal here.
+		if( typeGetDtOnly( l->dtype ) = FB_DATATYPE_FUNCTION ) then
+			if( symbIsEqual( l->subtype, r->subtype ) = FALSE ) then
+				exit function
+			end if
+		else
+			exit function
+		end if
+	end if
+
+	select case as const( l->class )
+	case AST_NODECLASS_LINK
+		if( l->link.ret_left <> r->link.ret_left ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_VAR
+		'' VARs must access the same symbol, unless they're accessing
+		'' temp vars. Those will be duplicated anyways when the param
+		'' initializer is inserted in a call.
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->var_.ofs <> r->var_.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_FIELD
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+	case AST_NODECLASS_CONST
+		if( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT ) then
+			if( l->val.f <> r->val.f ) then
+				exit function
+			end if
+		else
+			assert( typeGetClass( l->dtype ) = FB_DATACLASS_INTEGER )
+			if( l->val.i <> r->val.i ) then
+				exit function
+			end if
+		end if
+
+	case AST_NODECLASS_DEREF
+		if( l->ptr.ofs <> r->ptr.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_IDX
+		if( l->idx.ofs <> r->idx.ofs ) then
+			exit function
+		end if
+
+		if( l->idx.mult <> r->idx.mult ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_BOP, AST_NODECLASS_UOP
+		if( l->op.op <> r->op.op ) then
+			exit function
+		end if
+
+		if( l->op.options <> r->op.options ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_ADDROF
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->op.op <> r->op.op ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_OFFSET
+		if( l->sym <> r->sym ) then
+			if( symbIsTemp( l->sym ) = FALSE ) then
+				exit function
+			end if
+			if( symbIsTemp( r->sym ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		if( l->ofs.ofs <> r->ofs.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_CALL
+		if( l->sym <> r->sym ) then
+			exit function
+		end if
+	end select
+
+	if( astIsEqualParamInit( l->l, r->l ) = FALSE ) then
+		exit function
+	end if
+
+	if( astIsEqualParamInit( l->r, r->r ) = FALSE ) then
+		exit function
+	end if
+
+	function = TRUE
+end function
+
+function astHasSideFx( byval n as ASTNODE ptr ) as integer
 	if( n = NULL ) then
-		return NULL
+		exit function
 	end if
 
-	if( n->class = class_ ) then
-		return n
+	'' Most CALLs are treated as having side-effects, i.e. mustn't be
+	'' duplicated. But for some RTL procedures we know that it's safe to
+	'' duplicate calls to them, so they can be excluded here (but the CALL's
+	'' arguments must still be checked recursively)
+	if( n->class = AST_NODECLASS_CALL ) then
+		assert( symbIsProc( n->sym ) )
+		if( (n->sym->stats and FB_SYMBSTATS_CANBECLONED) = 0 ) then
+			return TRUE
+		end if
 	end if
 
-	'' walk
-	m = astIsClassOnTree( class_, n->l )
-	if( m <> NULL ) then
-		return m
+	if( astHasSideFx( n->l ) ) then
+		return TRUE
 	end if
-
-	m = astIsClassOnTree( class_, n->r )
-	if( m <> NULL ) then
-		return m
-	end if
-
-	function = NULL
-
+	function = astHasSideFx( n->r )
 end function
 
 ''::::
@@ -416,79 +509,6 @@ function astIsConstant( byval expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function astGetValueAsLongInt _
-	( _
-		byval n as ASTNODE ptr _
-	) as longint
-
-	assert( astIsCONST( n ) )
-
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = astGetValLong( n )
-
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = clngint( astGetValFloat( n ) )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  			if( astGetDataType( n ) = FB_DATATYPE_LONG ) then
-  				function = clngint( astGetValInt( n ) )
-  			else
-  				function = clngint( cuint( astGetValInt( n ) ) )
-  			end if
-  	   	else
-  	    	function = astGetValLong( n )
-  	    end if
-
-  	case else
-  		if( typeIsSigned( astGetDataType( n ) ) ) then
-  			function = clngint( astGetValInt( n ) )
-  		else
-  			function = clngint( cuint( astGetValInt( n ) ) )
-  		end if
-  	end select
-
-end function
-
-function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
-	assert( astIsCONST( n ) )
-
-	select case as const( astGetDataType( n ) )
-	case FB_DATATYPE_ULONGINT
-		'' without cunsg(), &hFFFFFFFFFFFFFFFFull would be seen as -1,
-		'' causing the double to be -1 instead of the huge value...
-		function = cdbl( cunsg( astGetValLong( n ) ) )
-
-	case FB_DATATYPE_LONGINT
-		function = cdbl( astGetValLong( n ) )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = astGetValFloat( n )
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = cdbl( cunsg( astGetValLong( n ) ) )
-		else
-			function = cdbl( cunsg( astGetValInt( n ) ) )
-		end if
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			function = cdbl( astGetValLong( n ) )
-		else
-			function = cdbl( astGetValInt( n ) )
-		end if
-
-	case FB_DATATYPE_UINT
-		function = cdbl( cunsg( astGetValInt( n ) ) )
-
-	case else
-		function = cdbl( astGetValInt( n ) )
-	end select
-end function
-
-'':::::
 function astGetStrLitSymbol _
 	( _
 		byval n as ASTNODE ptr _
@@ -527,8 +547,6 @@ sub astCheckConst _
 	result = TRUE
 
 	''
-	'' x86/32-bit assumptions
-	''
 	'' We don't want to show overflow warnings for conversions where only
 	'' the sign differs, such as integer <-> uinteger, because in that case
 	'' there is no data/precision loss. Technically speaking there can be
@@ -538,8 +556,10 @@ sub astCheckConst _
 	''    dim a as uinteger = -1
 	''    dim b as uinteger = 1 shl 31
 	''
+	'' TODO: handle bitfields
+	''
 
-	select case as const( typeGet( dtype ) )
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
 	''case FB_DATATYPE_DOUBLE
 		'' DOUBLE can hold all the other dtype's values;
 		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
@@ -553,7 +573,7 @@ sub astCheckConst _
 		'' min = 1.401298e-45
 		'' max = 3.402823e+38
 
-		dval = astGetValueAsDouble( n )
+		dval = astConstGetAsDouble( n )
 
 		select case abs( dval )
 		case 0.0, 2e-45 to 3e+38 '' definitely no overflow: comfortably within SINGLE bounds
@@ -571,27 +591,25 @@ sub astCheckConst _
 			end if
 		end select
 
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
-	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
-	     FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
-
-		select case as const( typeGetSize( dtype ) )
-		case 1
-			lval = astGetValueAsLongInt( n )
+	case else
+		select case as const( typeGetSizeType( dtype ) )
+		case FB_SIZETYPE_INT8, FB_SIZETYPE_UINT8
+			lval = astConstGetAsInt64( n )
 			result = ((lval >= -128) and (lval <= 255))
-		case 2
-			lval = astGetValueAsLongInt( n )
+
+		case FB_SIZETYPE_INT16, FB_SIZETYPE_UINT16
+			lval = astConstGetAsInt64( n )
 			result = ((lval >= -32768) and (lval <= 65535))
-		case 4
-			lval = astGetValueAsLongInt( n )
-			result = ((lval >= -2147483648u) and (lval <= 4294967295u))
-		case 8
+
+		case FB_SIZETYPE_INT32, FB_SIZETYPE_UINT32
+			lval = astConstGetAsInt64( n )
+			result = ((lval >= -2147483648ll) and (lval <= 4294967295ll))
+
+		case FB_SIZETYPE_INT64, FB_SIZETYPE_UINT64
 			'' longints can hold most other type's values, except floats
 			'' float?
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-				dval = astGetValueAsDouble( n )
+				dval = astConstGetAsDouble( n )
 				result = ((dval >= -9223372036854775808ull) and _
 					  (dval <= 18446744073709551615ull))
 			end if
@@ -603,7 +621,7 @@ sub astCheckConst _
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 
-	if( result = FALSE ) then
+	if( (result = FALSE) and astShouldShowWarnings( ) ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
 end sub
@@ -628,7 +646,7 @@ function astPtrCheck _
 		'' Only ok if it's a 0 constant
 		if( astIsCONST( expr ) ) then
 			if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
-				function = astConstIsZero( expr )
+				function = astConstEqZero( expr )
 			end if
 		end if
 		exit function
@@ -779,12 +797,9 @@ function astBuildBranch _
 			if( ovlProc = NULL ) then
 				ovlProc = symbGetCompOpOvlHead( expr->subtype, AST_OP_CAST )
 				if( ovlProc = NULL ) then
-					if( expr->subtype ) then
-						errReport( FB_ERRMSG_NOMATCHINGPROC, _
-								   TRUE, _
-								   " """ & *symbGetName( expr->subtype ) & ".cast()""" )
-						return NULL
-					end if
+					errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE, _
+					           " """ & *symbGetName( expr->subtype ) & ".cast()""" )
+					return NULL
 				end if
 
 				errReport( FB_ERRMSG_NOMATCHINGPROC, TRUE )
@@ -853,7 +868,7 @@ function astBuildBranch _
 			''    over the IF block.
 			'' b) true (or false but inverted), don't emit a jump at all,
 			''    but fall trough to the IF block.
-			if( astConstIsZero( n ) <> is_inverse ) then
+			if( astConstEqZero( n ) <> is_inverse ) then
 				m = astNewBRANCH( AST_OP_JMP, label, NULL )
 			else
 				m = astNewNOP( )
@@ -945,13 +960,13 @@ function astBuildBranch _
 	'' string, or the comparison against zero to be a string comparison...
 	select case( dtype )
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		dtype = typeRemap( dtype, expr->subtype )
+		dtype = typeRemap( dtype )
 	end select
 
 	if( call_dtors ) then
 		'' 1. assign the condition to a temp var
 		temp = symbAddTempVar( dtype, expr->subtype )
-		n = astBuildVarAssign( temp, expr )
+		n = astBuildVarAssign( temp, expr, AST_OPOPT_ISINI )
 
 		'' 2. call dtors
 		n = astNewLINK( n, astDtorListFlush( ) )
@@ -1224,7 +1239,7 @@ sub astSetType _
 
 end sub
 
-function astSizeOf( byval n as ASTNODE ptr ) as integer
+function astSizeOf( byval n as ASTNODE ptr ) as longint
 	function = symbCalcLen( n->dtype, n->subtype )
 
 	'' If it's a STRING * N, we must get the real length from the
@@ -1237,19 +1252,32 @@ function astSizeOf( byval n as ASTNODE ptr ) as integer
 	end select
 end function
 
+private function hSymbIsOnLocalStack( byval sym as FBSYMBOL ptr ) as integer
+	function = symbIsLocal( sym ) and (not symbIsStatic( sym ))
+end function
+
 function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	select case( astGetClass( expr ) )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX
-		'' Disallow local vars/arrays
-		function = symbIsLocal( expr->sym ) and (not symbIsStatic( expr->sym ))
+	case AST_NODECLASS_VAR
+		'' Disallow local var accesses
+		'' Note: accesses to byref params are automatically allowed,
+		'' because they have DEREFs at the top, not VARs.
+		function = hSymbIsOnLocalStack( expr->sym )
+
+	case AST_NODECLASS_IDX
+		'' Disallow local array accesses, unless it's a bydesc param
+		'' (accesses to them also have an IDX at the top)
+		if( symbIsParamBydesc( expr->sym ) = FALSE ) then
+			function = hSymbIsOnLocalStack( expr->sym )
+		end if
 
 	case AST_NODECLASS_CALL
 		'' No CALLs can be allowed - either their result
 		'' is in registers or in a local temp var.
-		'' Note: functions returning BYREF are ok,
-		'' they appear here as DEREFs.
+		'' Note: functions returning BYREF are ok, because they have
+		'' DEREFs at the top, not CALLs.
 		function = TRUE
 
 	case AST_NODECLASS_FIELD

@@ -2,103 +2,42 @@
 
 #include "fb.h"
 
-/*:::::*/
-static char *hFillDigits( char *buf, int digits, int totdigs, int cnt )
-{
-	if( digits > 0 )
-	{
-		digits -= totdigs - cnt;
-		while( digits > 0 )
-		{
-			*buf++ = '0';
-			--digits;
-		}
-	}
-
-	return buf;
-}
-
-/*:::::*/
 FBCALL FBSTRING *fb_OCTEx_l ( unsigned long long num, int digits )
 {
-	FBSTRING *dst;
-	char *buf;
-	int	i, totdigs;
+	FBSTRING *s;
+	int i;
+	unsigned long long num2;
 
-	totdigs = ((sizeof(long long)*8) / 3) + 1;
-
-	if( digits > 0 )
-	{
-		if( digits < totdigs )
-			totdigs = digits;
-		else if( digits > totdigs )
-			digits = totdigs;
+	if( digits <= 0 ) {
+		/* Only use the minimum amount of digits needed; need to count
+		   the important 3-bit (base 8) chunks in the number.
+		   And if it's zero, use 1 digit for 1 zero. */
+		digits = 0;
+		num2 = num;
+		while( num2 ) {
+			digits += 1;
+			num2 >>= 3;
+		}
+		if( digits == 0 )
+			digits = 1;
 	}
 
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, totdigs );
-	if( dst == NULL )
+	s = fb_hStrAllocTemp( NULL, digits );
+	if( s == NULL )
 		return &__fb_ctx.null_desc;
 
-	/* convert */
-	buf = dst->data;
-
-	if( num == 0 )
-	{
-		if( digits <= 0 )
-			digits = 1;
-
-		while( digits-- )
-			*buf++ = '0';
-	}
-	else
-	{
-		/* enough to fit? */
-		if( (totdigs * 3 < (sizeof(long long)*8)) )
-		{
-			num <<= (sizeof(long long)*8) - (totdigs*3);
-			i = 0;
-        }
-		/* too big.. */
-		else
-		{
-			if( num > (0xFFFFFFFFFFFFFFFFULL >> 1) )
-			{
-				buf = hFillDigits( buf, digits, totdigs, 0 );
-				*buf++ = '0' + ((num & ~(0xFFFFFFFFFFFFFFFFULL >> 1))
-								>> (sizeof(long long)*8-1));
-			}
-
-			num <<= 1;
-			i = 1;
-		}
-
-		/* check for 0's at msb? */
-		if( buf == dst->data )
-		{
-			for( ; i < totdigs; i++, num <<= 3 )
-				if( num > 0x1FFFFFFFFFFFFFFFULL )
-					break;
-
-			buf = hFillDigits( buf, digits, totdigs, i );
-		}
-
-		/* convert.. */
-		for( ; i < totdigs; i++, num <<= 3 )
-			*buf++ = '0' + ((num & 0xE000000000000000ULL) >> (sizeof(long long)*8-3));
+	i = digits - 1;
+	while( i >= 0 ) {
+		s->data[i] = '0' + (num & 7); /* '0'..'7' */
+		num >>= 3;
+		i -= 1;
 	}
 
-	/* add null-term */
-	*buf = '\0';
-
-    fb_hStrSetLength( dst, buf - dst->data );
-
-	return dst;
+	s->data[digits] = '\0';
+	return s;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_OCT_l ( unsigned long long num )
 {
 	return fb_OCTEx_l( num, 0 );
 }
-

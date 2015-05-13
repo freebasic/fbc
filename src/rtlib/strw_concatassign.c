@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_WstrConcatAssign ( FB_WCHAR *dst, int dst_chars, const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrConcatAssign( FB_WCHAR *dst, ssize_t dst_chars, const FB_WCHAR *src )
 {
-	int src_len, dst_len;
+	ssize_t src_len, dst_len;
 
 	/* NULL? */
 	if( (dst == NULL) || (src == NULL) )

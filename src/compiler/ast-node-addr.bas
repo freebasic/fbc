@@ -3,36 +3,23 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "ast.bi"
 
-'':::::
-function astGetOFFSETChildOfs _
-	( _
-		byval l as ASTNODE ptr _
-	) as integer
-
+function astGetOFFSETChildOfs( byval l as ASTNODE ptr ) as longint
 	'' var?
 	if( astIsVAR( l ) ) then
 		function = l->var_.ofs
-
 	'' array..
 	else
 		function = l->idx.ofs + l->r->var_.ofs + _
 					 symbGetArrayDiff( l->sym ) + symbGetOfs( l->sym )
 	end if
-
 end function
 
-'':::::
-private function astNewOFFSET _
-	( _
-		byval l as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
 	if( l = NULL ) then
@@ -58,15 +45,9 @@ private function astNewOFFSET _
 	end if
 
 	function = n
-
 end function
 
-'':::::
-function astLoadOFFSET _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as IRVREG ptr vr = any
     dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr l = any
@@ -91,7 +72,6 @@ function astLoadOFFSET _
 	astDelNode( l )
 
 	function = vr
-
 end function
 
 private sub hRemoveNullPtrCheck( byval l as ASTNODE ptr )
@@ -135,78 +115,55 @@ private sub hRemoveNullPtrCheck( byval l as ASTNODE ptr )
 	end select
 end sub
 
-private function hAddrofDerefConst2Const _
-	( _
-		byval l as ASTNODE ptr, _
-		byval deref as ASTNODE ptr, _
-		byval is_field as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr ll = any
-
-	assert( deref->class = AST_NODECLASS_DEREF )
-
-	if( env.clopt.extraerrchk ) then
-		hRemoveNullPtrCheck( deref )
-	end if
-
-	ll = deref->l
-
-	'' @*cptr( foo ptr, const )  ->  cast( foo ptr, const )
-	'' Note: astNewDEREF() stores the CONST value into its
-	'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
-	if( ll = NULL ) then
-		ll = astNewCONV( typeAddrOf( l->dtype ), l->subtype, astNewCONSTi( deref->ptr.ofs ) )
-		astDelTree( l )
-		return ll
-	end if
-
-	'' assuming a CONST lhs is always put into ASTNODE.ptr.ofs
-	'' and then deleted by astNewDEREF()
-	assert( ll->class <> AST_NODECLASS_CONST )
-
-	if( is_field = FALSE ) then
-		'' @[var] to nothing (can't be local or field)
-		if( deref->ptr.ofs = 0 ) then
-			astDelNode( deref )
-			if( deref <> l ) then
-				astDelNode( l )
-			end if
-			return ll
-		end if
-	end if
-
-	function = NULL
-end function
-
 function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	if( l = NULL ) then
 		return NULL
 	end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = l
-	if( l->class = AST_NODECLASS_CONV ) then
-		if( l->cast.doconv = FALSE ) then
-			t = l->l
-		end if
-	end if
+	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
 
 	n = NULL
 
 	select case( t->class )
 	case AST_NODECLASS_DEREF
-		n = hAddrofDerefConst2Const( l, t, FALSE )
+		if( env.clopt.extraerrchk ) then
+			hRemoveNullPtrCheck( t )
+		end if
+
+		'' astNewDEREF() on a CONST stores the CONST's value into its
+		'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
+		if( t->l ) then
+			'' @*nonconst  ->  nonconst
+			if( t->ptr.ofs = 0 ) then
+				n = t->l
+				astDelNode( t ) '' DEREF
+			end if
+		else
+			'' @*const  ->  const
+			n = astNewCONSTi( t->ptr.ofs )
+			astDelNode( t )  '' DEREF
+		end if
 
 	case AST_NODECLASS_FIELD
 		'' @0->field to const
-		n = t->l
-		if( n->class = AST_NODECLASS_DEREF ) then
-			n = hAddrofDerefConst2Const( l, n, TRUE )
-		else
-			n = NULL
+		if( t->l->class = AST_NODECLASS_DEREF ) then
+			if( env.clopt.extraerrchk ) then
+				hRemoveNullPtrCheck( t->l )
+			end if
+
+			'' astNewDEREF() on a CONST stores the CONST's value into its
+			'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
+			if( t->l->l = NULL ) then
+				'' @*const  ->  const
+				n = astNewCONSTi( t->l->ptr.ofs )
+				astDelNode( t->l )  '' DEREF
+				astDelNode( t )     '' FIELD
+			end if
 		end if
 
 	case AST_NODECLASS_VAR
@@ -219,20 +176,17 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 				 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
 				 						   FB_SYMBATTRIB_COMMON or _
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
-				if( t <> l ) then
-					astDelNode( l )
-				end if
-
-				return astNewOFFSET( t )
+				n = astNewOFFSET( t )
 			end if
 		end if
 
 	case AST_NODECLASS_IDX
 		'' try to remove the idx node if it's a constant expr
-		t = astOptimizeTree( t )
 		if( t <> l ) then
+			t = astOptimizeTree( t )
 			l->l = t
 		else
+			t = astOptimizeTree( t )
 			l = t
 		end if
 
@@ -247,34 +201,34 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 				 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
 				'' can't be dynamic either
 				if( symbGetIsDynamic( s ) = FALSE ) then
-					if( t <> l ) then
-						astDelNode( l )
-					end if
-					return astNewOFFSET( t )
+					n = astNewOFFSET( t )
 				end if
 			end if
 		end if
 
 	end select
 
+	'' ADDROF's data type should always be determined based on the data type
+	'' of the top level node of its lhs.
+	dtype = typeAddrOf( l->dtype )
+	subtype = l->subtype
+
 	if( n ) then
-		return n
+		if( t <> l ) then
+			astDelNode( l )  '' CONV that was skipped above
+		end if
+		return astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDROF, typeAddrOf( l->dtype ), l->subtype )
+	n = astNewNode( AST_NODECLASS_ADDROF, dtype, subtype )
 	n->op.op = AST_OP_ADDROF
 	n->l = l
 
 	function = n
 end function
 
-'':::::
-function astLoadADDROF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr p = any
     dim as IRVREG ptr v1 = any, vr = any
 
@@ -289,7 +243,7 @@ function astLoadADDROF _
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
 			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
-			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
+			(typeGetSize(v1->dtype) <> env.pointersize) ) then
 
 			vr = irAllocVREG( astGetDataType( n ), n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )
@@ -302,6 +256,4 @@ function astLoadADDROF _
 	astDelNode( p )
 
 	function = vr
-
 end function
-

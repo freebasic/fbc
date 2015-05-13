@@ -7,7 +7,7 @@
 '' --------
 
 Function f( ) ByRef As Const ZString
-	'' This string will be returned by reference, no copy will be created.
+	'' This string literal (because statically allocated in memory) will be returned by reference, no copy will be created.
 	Function = "abcd"
 End Function
 

@@ -43,13 +43,13 @@ sub cDefDecl( )
 		dtype = FB_DATATYPE_USHORT
 
 	case FB_TK_DEFINT
-		dtype = fbLangGetType( INTEGER )
+		dtype = env.lang.integerkeyworddtype
 
 	case FB_TK_DEFUINT
 		dtype = FB_DATATYPE_UINT
 
 	case FB_TK_DEFLNG
-		dtype = fbLangGetType( LONG )
+		dtype = FB_DATATYPE_LONG
 
 	case FB_TK_DEFULNG
 		dtype = FB_DATATYPE_ULONG

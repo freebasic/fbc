@@ -2,20 +2,19 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL void *fb_StrAssignEx
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem,
 		int is_init
 	)
 {
 	FBSTRING *dstr;
 	const char *src_ptr;
-	int src_len;
+	ssize_t src_len;
 
 	FB_STRLOCK();
 
@@ -40,7 +39,7 @@ FBCALL void *fb_StrAssignEx
 		/* src NULL? */
 		if( src_len == 0 )
 		{
-			if( is_init == FB_FALSE ) 
+			if( is_init == FB_FALSE )
 			{
 				fb_StrDelete( dstr );
 			}
@@ -56,7 +55,7 @@ FBCALL void *fb_StrAssignEx
 			/* if src is a temp, just copy the descriptor */
 			if( (src_size == -1) && FB_ISTEMP(src) )
 			{
-				if( is_init == FB_FALSE ) 
+				if( is_init == FB_FALSE )
 					fb_StrDelete( dstr );
 
 				dstr->data = (char *)src_ptr;
@@ -75,7 +74,7 @@ FBCALL void *fb_StrAssignEx
 			}
 
         	/* else, realloc dst if needed and copy src */
-        	if( is_init == FB_FALSE ) 
+        	if( is_init == FB_FALSE )
         	{
 				if( FB_STRSIZE( dst ) != src_len )
 					fb_hStrRealloc( dstr, src_len, FB_FALSE );
@@ -130,31 +129,26 @@ FBCALL void *fb_StrAssignEx
 	return dst;
 }
 
-/*:::::*/
 FBCALL void *fb_StrAssign
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem
 	)
 {
 	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_FALSE );
 }
 
-/*:::::*/
 FBCALL void *fb_StrInit
 	(
 		void *dst,
-		int dst_size,
+		ssize_t dst_size,
 		void *src,
-		int src_size,
+		ssize_t src_size,
 		int fill_rem
 	)
 {
 	return fb_StrAssignEx( dst, dst_size, src, src_size, fill_rem, FB_TRUE );
 }
-
-
-

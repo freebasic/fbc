@@ -9,7 +9,9 @@
 #ifndef __crt_io_bi__
 #define __crt_io_bi__
 
+#include once "crt/long.bi"
 #include once "crt/stdio.bi"
+#include once "crt/stdint.bi"
 #include once "crt/sys/types.bi"
 
 #ifdef __FB_WIN32__
@@ -23,7 +25,7 @@
 #define _A_ARCH &h00000020
 
 #ifndef _fsize_t
-type _fsize_t as uinteger
+type _fsize_t as ulong
 #endif
 
 type _finddata_t
@@ -51,43 +53,43 @@ end type
 #define R_OK 4
 
 extern "c"
-declare function _findfirst (byval as zstring ptr, byval as _finddata_t ptr) as integer
-declare function _findnext (byval as integer, byval as _finddata_t ptr) as integer
-declare function _findclose (byval as integer) as integer
-declare function _chdir (byval as zstring ptr) as integer
-declare function _getcwd (byval as zstring ptr, byval as integer) as zstring ptr
-declare function _mkdir (byval as zstring ptr) as integer
+declare function _findfirst (byval as zstring ptr, byval as _finddata_t ptr) as intptr_t
+declare function _findnext (byval as intptr_t, byval as _finddata_t ptr) as long
+declare function _findclose (byval as intptr_t) as long
+declare function _chdir (byval as zstring ptr) as long
+declare function _getcwd (byval as zstring ptr, byval as long) as zstring ptr
+declare function _mkdir (byval as zstring ptr) as long
 declare function _mktemp (byval as zstring ptr) as zstring ptr
-declare function _rmdir (byval as zstring ptr) as integer
-declare function _chmod (byval as zstring ptr, byval as integer) as integer
-declare function _filelengthi64 (byval as integer) as longint
-declare function _findfirsti64 (byval as zstring ptr, byval as _finddatai64_t ptr) as integer
-declare function _findnexti64 (byval as integer, byval as _finddatai64_t ptr) as integer
-declare function _lseeki64 (byval as integer, byval as longint, byval as integer) as longint
-declare function _telli64 (byval as integer) as longint
-declare function _access (byval as zstring ptr, byval as integer) as integer
-declare function _chsize (byval as integer, byval as integer) as integer
-declare function _close (byval as integer) as integer
-declare function _commit (byval as integer) as integer
-declare function _creat (byval as zstring ptr, byval as integer) as integer
-declare function _dup (byval as integer) as integer
-declare function _dup2 (byval as integer, byval as integer) as integer
-declare function _filelength (byval as integer) as integer
-declare function _get_osfhandle (byval as integer) as integer
-declare function _isatty (byval as integer) as integer
-declare function _eof (byval as integer) as integer
-declare function _locking (byval as integer, byval as integer, byval as integer) as integer
-declare function _lseek (byval as integer, byval as integer, byval as integer) as integer
-declare function _open (byval as zstring ptr, byval as integer, ...) as integer
-declare function _open_osfhandle (byval as integer, byval as integer) as integer
-declare function _pipe (byval as integer ptr, byval as uinteger, byval as integer) as integer
-declare function _read (byval as integer, byval as any ptr, byval as uinteger) as integer
-declare function _setmode (byval as integer, byval as integer) as integer
-declare function _sopen (byval as zstring ptr, byval as integer, byval as integer, ...) as integer
-declare function _tell (byval as integer) as integer
-declare function _umask (byval as integer) as integer
-declare function _unlink (byval as zstring ptr) as integer
-declare function _write (byval as integer, byval as any ptr, byval as uinteger) as integer
+declare function _rmdir (byval as zstring ptr) as long
+declare function _chmod (byval as zstring ptr, byval as long) as long
+declare function _filelengthi64 (byval as long) as longint
+declare function _findfirsti64 (byval as zstring ptr, byval as _finddatai64_t ptr) as intptr_t
+declare function _findnexti64 (byval as intptr_t, byval as _finddatai64_t ptr) as long
+declare function _lseeki64 (byval as long, byval as longint, byval as long) as longint
+declare function _telli64 (byval as long) as longint
+declare function _access (byval as zstring ptr, byval as long) as long
+declare function _chsize (byval as long, byval as clong) as long
+declare function _close (byval as long) as long
+declare function _commit (byval as long) as long
+declare function _creat (byval as zstring ptr, byval as long) as long
+declare function _dup (byval as long) as long
+declare function _dup2 (byval as long, byval as long) as long
+declare function _filelength (byval as long) as clong
+declare function _get_osfhandle (byval as long) as intptr_t
+declare function _isatty (byval as long) as long
+declare function _eof (byval as long) as long
+declare function _locking (byval as long, byval as long, byval as clong) as long
+declare function _lseek (byval as long, byval as clong, byval as long) as clong
+declare function _open (byval as zstring ptr, byval as long, ...) as long
+declare function _open_osfhandle (byval as intptr_t, byval as long) as long
+declare function _pipe (byval as long ptr, byval as ulong, byval as long) as long
+declare function _read (byval as long, byval as any ptr, byval as ulong) as long
+declare function _setmode (byval as long, byval as long) as long
+declare function _sopen (byval as zstring ptr, byval as long, byval as long, ...) as long
+declare function _tell (byval as long) as clong
+declare function _umask (byval as long) as long
+declare function _unlink (byval as zstring ptr) as long
+declare function _write (byval as long, byval as any ptr, byval as ulong) as long
 end extern
 
 #else '' __FB_WIN32__

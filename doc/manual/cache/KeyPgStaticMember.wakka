@@ -1,21 +1,34 @@
 {{fbdoc item="title" value="STATIC (Member)"}}----
-Declare a static member procedure
+Declare a static member procedure or variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procname// ...
-	End Type
+		**Static** //variablename// [[KeyPgAs As]] [[DataType DataType]] [, ...]
+		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procedurename// ...
+		...
+	[[KeyPgEndblock End]] [[KeyPgType Type]]
 	
-	**Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename//.//procname// ...
+	[[KeyPgDim Dim]] //typename.variablename// [[KeyPgAs As]] [[DataType DataType]] [= //initializer//] [, ...]
+	
+	[**Static**] [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename//.//procedurename// ...
 		...
 	End [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	##**Static**## methods do not have an implicit ##[[KeyPgThis This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers), the only difference being that they are encapsulated in the ##//typename//## namespace and have access to ##//typename//##'s ##[[KeyPgVisPrivate Private]]## or ##[[KeyPgVisProtected Protected]]## members.
+
+	- Static member procedures
+		##**Static**## methods do not have an implicit ##[[KeyPgThis This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers), the only difference being that they are encapsulated in the ##//typename//## namespace and have access to ##//typename//##'s ##[[KeyPgVisPrivate Private]]## or ##[[KeyPgVisProtected Protected]]## members.
+		
+		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis This]]## (or explicit ##[[KeyPgBase Base]]##) access possible from within a static method.
+		
+		For member procedures with ##**Static**## in their prototype, ##**Static**## can also be specified on the corresponding procedure bodies, for improved code readability.
 	
-	##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis This]]## (or explicit ##[[KeyPgBase Base]]##) access possible from within a static method.
-	
-	For member procedures with ##**Static**## in their declaration, ##**Static**## can also be specified on the corresponding procedure bodies, for improved code readability.
+	- Static member variables
+		##**Static**## member variables are created and initialized only once independently of any object construction, in contrast to non-static member variables which are created again and again for each separate object. They always are ##[[KeyPgShared Shared]]##, even if ##[[KeyPgShared Shared]]## was not specified in the declaration. Thus, ##**Static**## member variables are similar to global variables, except that they are declared in a Type namespace.
+		
+		Each ##**Static**## member variable declared in a Type must be explicitly allocated somewhere outside the type by using a ##[[KeyPgDim Dim]]## statement. The declaration inside the Type is the prototype that is visible to every module seeing the Type declaration. The definition outside the Type allocates and optionally initializes the ##**Static**## member variable. There can only be one definition per ##**Static**## member variable: it can only be allocated in a single module, not in multiple ones. This is the same as for ##[[KeyPgExtern Extern]]## variables.
+		
+		A ##**Static**## member variable is subject to member access control except for its definition outside the Type. If a private ##**Static**## member variable is to be explicitly initialized outside the Type's member procedures, an initializer must be provided with the definition.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/static.bas"}}%%(freebasic)
@@ -80,6 +93,38 @@ for i as integer = 1 to 4
   print i,
   objects(i).handler()
 next i
+%%
+
+{{fbdoc item="filename" value="examples/manual/udt/static2.bas"}}%%(freebasic)
+'' Assign an unique ID to every instance of a Type (ID incremented in order of creation)
+
+Type UDT
+  Public:
+	Declare Property getID () As integer
+	Declare Constructor ()
+  Private:
+	Dim As Integer ID
+	Static As Integer countID
+End Type
+Dim As Integer UDT.countID = 0
+
+Property UDT.getID () As Integer
+  Property = This.ID
+End Property
+
+Constructor UDT ()
+  This.ID = UDT.countID
+  UDT.countID += 1
+End Constructor
+
+
+Dim As UDT uFirst
+Dim as UDT uSecond
+Dim As UDT uThird
+
+Print uFirst.getID
+Print uSecond.getID
+Print uThird.getID
 %%
 
 {{fbdoc item="diff"}}

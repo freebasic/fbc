@@ -200,20 +200,25 @@ static int fb_hHookConWrite
 
 void fb_GfxPrintBufferEx( const void *buffer, size_t len, int mask )
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
     const char *pachText = (const char *) buffer;
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
     fb_PrintInfo info;
     fb_ConHooks hooks;
 
+	FB_GRAPHICS_LOCK( );
+
     /* Do we want to correct the console cursor position? */
     if( (mask & FB_PRINT_FORCE_ADJUST)==0 ) {
         /* No, we can check for the length to avoid unnecessary stuff ... */
-        if( len==0 )
+        if( len==0 ) {
+            FB_GRAPHICS_UNLOCK( );
             return;
+        }
     }
 
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, NULL);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -265,6 +270,7 @@ void fb_GfxPrintBufferEx( const void *buffer, size_t len, int mask )
     SET_DIRTY(context, info.dirty_start, info.dirty_end - info.dirty_start);
 
     DRIVER_UNLOCK();
+	FB_GRAPHICS_UNLOCK( );
 }
 
 void fb_GfxPrintBuffer( const char *buffer, int mask )
@@ -272,6 +278,7 @@ void fb_GfxPrintBuffer( const char *buffer, int mask )
     fb_GfxPrintBufferEx(buffer, strlen(buffer), mask);
 }
 
+/* Caller is expected to hold FB_GRAPHICS_LOCK() */
 int fb_GfxLocateRaw( int y, int x, int cursor )
 {
 	if (x > -1)
@@ -284,20 +291,30 @@ int fb_GfxLocateRaw( int y, int x, int cursor )
 int fb_GfxLocate( int y, int x, int cursor )
 {
     int ret;
+	FB_GRAPHICS_LOCK( );
     __fb_gfx->flags &= ~PRINT_SCROLL_WAS_OFF;
     ret = fb_GfxLocateRaw( y - 1, x - 1, cursor ) + 0x0101;
     fb_SetPos( FB_HANDLE_SCREEN , __fb_gfx->cursor_x );
+	FB_GRAPHICS_UNLOCK( );
     return ret;
 }
 
 int fb_GfxGetX( void )
 {
-	return __fb_gfx->cursor_x + 1;
+	int x;
+	FB_GRAPHICS_LOCK( );
+	x = __fb_gfx->cursor_x + 1;
+	FB_GRAPHICS_UNLOCK( );
+	return x;
 }
 
 int fb_GfxGetY( void )
 {
-	return __fb_gfx->cursor_y + 1;
+	int y;
+	FB_GRAPHICS_LOCK( );
+	y = __fb_gfx->cursor_y + 1;
+	FB_GRAPHICS_UNLOCK( );
+	return y;
 }
 
 void fb_GfxGetXY( int *col, int *row )
@@ -311,9 +328,13 @@ void fb_GfxGetXY( int *col, int *row )
 
 void fb_GfxGetSize( int *cols, int *rows )
 {
+	FB_GRAPHICS_LOCK( );
+
 	if( cols != NULL )
 		*cols = __fb_gfx->text_w;
 
 	if( rows != NULL )
 		*rows = __fb_gfx->text_h;
+
+	FB_GRAPHICS_UNLOCK( );
 }

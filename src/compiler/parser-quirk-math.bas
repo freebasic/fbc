@@ -48,10 +48,11 @@ end function
 private function hLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr litsym = any
+	dim as ASTNODE ptr lenexpr = any
 
 	select case( astGetDataType( expr ) )
 	case FB_DATATYPE_STRING
@@ -82,6 +83,14 @@ private function hLen _
 		lgt = astSizeOf( expr ) - 1
 		assert( lgt >= 0 )
 
+	case FB_DATATYPE_STRUCT
+		lenexpr = astNewUOP( AST_OP_LEN, expr )
+		if( lenexpr <> NULL ) then
+			return lenexpr
+		end if
+
+		lgt = astSizeOf( expr )
+
 	case else
 		'' For anything else, len() means sizeof()
 		lgt = astSizeOf( expr )
@@ -98,8 +107,9 @@ private function hLenSizeof _
 		byval isasm as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any, expr2 = any, initree = any
-	dim as integer dtype = any, lgt = any
+	dim as ASTNODE ptr expr = any, initree = any
+	dim as integer dtype = any
+	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF
@@ -116,21 +126,7 @@ private function hLenSizeof _
 		'' Array without index makes this a SIZEOF()
 		if( astIsNIDXARRAY( expr ) ) then
 			is_len = FALSE
-			expr2 = astGetLeft( expr )
-			astDelNode( expr )
-			expr = expr2
-		end if
-
-		'' Disallow string expressions in SIZEOF()
-		if( is_len = FALSE ) then
-			if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
-				if( (astGetSymbol( expr ) = NULL) or astIsCALL( expr ) ) then
-					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( 0 )
-				end if
-			end if
+			expr = astRemoveNIDXARRAY( expr )
 		end if
 	end if
 

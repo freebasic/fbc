@@ -4,7 +4,6 @@
 
 int fb_hGfxInputBufferChanged( void );
 
-/*:::::*/
 void fb_GfxSleep ( int msecs )
 {
 	/* infinite? wait until any key is pressed */
@@ -29,5 +28,4 @@ void fb_GfxSleep ( int msecs )
 
 	if( msecs > 0 )
 		fb_Delay( msecs );
-
 }

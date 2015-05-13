@@ -149,8 +149,7 @@ int fb_DevFileOpenEncod
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     }
 
-    /* change the default buffer size */
-    setvbuf( fp, NULL, _IOFBF, FB_FILE_BUFSIZE );
+    fb_hSetFileBufSize( fp );
 
     handle->opaque = fp;
 

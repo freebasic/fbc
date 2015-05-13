@@ -1,29 +1,19 @@
-''
-''
-'' CUnit -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __CUnit_CUnit_bi__
-#define __CUnit_CUnit_bi__
-
-#inclib "cunit"
+#pragma once
 
 #include once "crt/string.bi"
 #include once "crt/math.bi"
 
-#define CU_VERSION "2.1-0"
+#define CU_VERSION "2.1-2"
 #define CU_MAX_TEST_NAME_LENGTH 256
 #define CU_MAX_SUITE_NAME_LENGTH 256
 #define CU_TRUE 1
 #define CU_FALSE 0
-#define CU_UNREFERENCED_PARAMETER(x) cast( any ptr, x )
+#define CU_MAX(a, b) iif( a >= b, a, b )
+#define CU_MIN(a, b) iif( a >= b, b, a )
 
-#include once "CUnit/CUError.bi"
-#include once "CUnit/TestDB.bi"
-#include once "CUnit/TestRun.bi"
+#include once "CUError.bi"
+#include once "TestDB.bi"
+#include once "TestRun.bi"
 
 #define CU_PASS(msg) _
   CU_assertImplementation(CU_TRUE, __LINE__, ("CU_PASS(" #msg ")"), __FILE__, "", CU_FALSE)
@@ -129,5 +119,3 @@
 
 #define CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(actual, expected, granularity) _
   CU_assertImplementation(((fabs(cast(double,actual) - (expected)) > fabs(cast(double,granularity)))), __LINE__, ("CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" #actual ","  #expected "," #granularity ")"), __FILE__, "", CU_TRUE)
-
-#endif

@@ -2,7 +2,6 @@
 
 #include "fb_gfx.h"
 
-
 typedef struct SPAN
 {
 	int y, x1, x2;
@@ -10,8 +9,6 @@ typedef struct SPAN
 	struct SPAN *next;
 } SPAN;
 
-
-/*:::::*/
 static SPAN *add_span(FB_GFXCTX *context, SPAN **span, int *x, int y, unsigned int border_color)
 {
 	SPAN *s;
@@ -38,33 +35,35 @@ static SPAN *add_span(FB_GFXCTX *context, SPAN **span, int *x, int y, unsigned i
 	return s;
 }
 
-
-/*:::::*/
 FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int flags)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int size, x, y;
 	unsigned char data[256], *dest, *src;
 	SPAN **span, *s, *tail, *head;
 
-	if (!__fb_gfx)
-		return;
+	FB_GRAPHICS_LOCK( );
 
+	if (!__fb_gfx) {
+		FB_GRAPHICS_UNLOCK( );
+		return;
+	}
+
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, target);
 
 	if (flags & DEFAULT_COLOR_1)
 		color = context->fg_color;
 	else
 		color = fb_hFixColor(context->target_bpp, color);
+
 	if (flags & DEFAULT_COLOR_2)
 		border_color = color;
 	else
 		border_color = fb_hFixColor(context->target_bpp, border_color);
 
 	fb_hSetPixelTransfer(context,color);
-
 	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
-
 	fb_hTranslateCoord(context, fx, fy, &x, &y);
 
 	fb_hMemSet(data, 0, sizeof(data));
@@ -77,11 +76,15 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
     }
 
 	if ((x < context->view_x) || (x >= context->view_x + context->view_w) ||
-	    (y < context->view_y) || (y >= context->view_y + context->view_h))
+	    (y < context->view_y) || (y >= context->view_y + context->view_h)) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
 
-	if (context->get_pixel(context, x, y) == border_color)
+	if (context->get_pixel(context, x, y) == border_color) {
+		FB_GRAPHICS_UNLOCK( );
 		return;
+	}
 
 	size = sizeof(SPAN *) * (context->view_y + context->view_h);
 	span = (SPAN **)malloc(size);
@@ -152,5 +155,5 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	free(span);
 
 	DRIVER_UNLOCK();
-
+	FB_GRAPHICS_UNLOCK( );
 }

@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-static FB_FILE_HOOKS hooks_dev_scrn_null = { 0 };
+static FB_FILE_HOOKS hooks_dev_scrn_null = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void fb_DevScrnInit_Screen( void )
 {
@@ -19,9 +19,8 @@ void fb_DevScrnInit_Screen( void )
 
 void fb_DevScrnInit_NoOpen( void )
 {
+	FB_LOCK();
     if ( FB_HANDLE_SCREEN->hooks == NULL ) {
-        FB_LOCK();
-
         memset(FB_HANDLE_SCREEN, 0, sizeof(*FB_HANDLE_SCREEN));
 
         FB_HANDLE_SCREEN->mode = FB_FILE_MODE_APPEND;
@@ -31,7 +30,6 @@ void fb_DevScrnInit_NoOpen( void )
         fb_DevScrnInit_Screen( );
 
         FB_HANDLE_SCREEN->hooks = &hooks_dev_scrn_null;
-
-        FB_UNLOCK();
     }
+	FB_UNLOCK();
 }

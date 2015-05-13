@@ -37,7 +37,7 @@ dim shared as FILE ptr temp_file = NULL
  ' Opens the temporary file used by the tests.
  ' Returns zero on success, non-zero otherwise.
  '/
-function init_suite1 cdecl() as integer
+function init_suite1 cdecl() as long
    temp_file = fopen("temp.txt", "w+")
    if temp_file = NULL then
       return -1
@@ -50,7 +50,7 @@ end function
  ' Closes the temporary file used by the tests.
  ' Returns zero on success, non-zero otherwise.
  '/
-function clean_suite1 cdecl() as integer
+function clean_suite1 cdecl() as long
    if fclose(temp_file) <> 0 then
       return -1
    else

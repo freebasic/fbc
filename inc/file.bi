@@ -26,10 +26,10 @@ declare function FileDateTime alias "fb_FileDateTime" ( byval filename as __zstr
 
 #else
 
-declare function FileCopy alias "fb_FileCopy" ( byval source as zstring ptr, byval destination as zstring ptr ) as integer
-declare function FileAttr alias "fb_FileAttr" ( byval handle as integer, byval returntype as integer = 1 ) as integer
+declare function FileCopy alias "fb_FileCopy" ( byval source as zstring ptr, byval destination as zstring ptr ) as long
+declare function FileAttr alias "fb_FileAttr" ( byval handle as long, byval returntype as long = 1 ) as long
 declare function FileLen alias "fb_FileLen" ( byval filename as zstring ptr ) as longint
-declare function FileExists alias "fb_FileExists" ( byval filename as zstring ptr ) as integer
+declare function FileExists alias "fb_FileExists" ( byval filename as zstring ptr ) as long
 declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstring ptr ) as double
 
 #endif

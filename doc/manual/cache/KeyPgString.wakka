@@ -20,8 +20,6 @@ Standard data type: 8 bit character string
 
 	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
 
-	Note: When passing ##**String**##s as parameters to ##[[CatPgProcedures Procedures]]##, they should always be passed by reference (##[[KeyPgByref ByRef]]##).  Currently, ##[[KeyPgByval ByVal]]## does not pass a copy of the string, but a ##[[KeyPgPtr Pointer]]## to the string data.  This can cause unexpected behavior including ##**String**## corruption. If you wish to prevent the value of the ##**String**## from being modified you should add the ##[[KeyPgConstQualifier Const Qualifier]]## to the relevant parameter.
-
 {{fbdoc item="ex"}}
 
 {{fbdoc item="filename" value="examples/manual/datatype/string-varlen.bas"}}%%(freebasic)

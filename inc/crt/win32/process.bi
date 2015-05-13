@@ -10,6 +10,7 @@
 #define __crt_win32_process_bi__
 
 #include "crt/sys/types.bi"
+#include once "crt/stdint.bi"
 
 #define	_WAIT_CHILD 0
 #define	_WAIT_GRANDCHILD 1
@@ -35,42 +36,48 @@ extern "C"
 
 declare sub cexit ()
 declare sub _c_exit ()
-declare function _cwait (byval as integer ptr, byval as _pid_t, byval as integer) as integer
-declare function _getpid () as _pid_t
-declare function _execl (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _execle (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _execlp (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _execlpe (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _execv (byval as zstring ptr, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function _spawnl (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _spawnle (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _spawnlp (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _spawnlpe (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _spawnv (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function _spawnve (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
-declare function _spawnvp (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function _spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr) as integer
+declare function _getpid () as long
+declare function _cwait (byval as long ptr, byval as intptr_t, byval as long) as intptr_t
+declare function _execl (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _execle (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _execlp (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _execlpe (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _execv (byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function _execve (byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function _execvp (byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function _execvpe (byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function _spawnl (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _spawnle (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _spawnlp (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _spawnlpe (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function _spawnv (byval as long, byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function _spawnve (byval as long, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function _spawnvp (byval as long, byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function _spawnvpe (byval as long, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
 
-declare function _beginthread (byval as sub(byval as any ptr), byval as uinteger, byval as any ptr) as ulong
+declare function _beginthread (byval as sub(byval as any ptr), byval as ulong, byval as any ptr) as uintptr_t
 declare sub _endthread()
-declare function _beginthreadex (byval as any ptr, byval as uinteger, byval as function stdcall(byval as any ptr) as uinteger, byval as any ptr, byval as uinteger, byval as uinteger ptr) as ulong
-declare sub _endthreadex(byval as uinteger)
+declare function _beginthreadex (byval as any ptr, byval as ulong, byval as function stdcall(byval as any ptr) as ulong, byval as any ptr, byval as ulong, byval as ulong ptr) as uintptr_t
+declare sub _endthreadex(byval as ulong)
 
-declare function cwait (byval as integer ptr, byval as _pid_t, byval as integer) as integer
-declare function getpid () as _pid_t
-declare function execl (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function execle (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function execlp (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function execlpe (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function execv (byval as zstring ptr, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function spawnl (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function spawnle (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function spawnlp (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function spawnlpe (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function spawnv (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function spawnve (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
-declare function spawnvp (byval as integer, byval as zstring ptr, byval as zstring ptr ptr) as integer
-declare function spawnvpe (byval as integer, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr) as integer
+declare function getpid () as long
+declare function cwait (byval as long ptr, byval as intptr_t, byval as long) as intptr_t
+declare function execl (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function execle (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function execlp (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function execlpe (byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function execv (byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function execve (byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function execvp (byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function execvpe (byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function spawnl (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function spawnle (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function spawnlp (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function spawnlpe (byval as long, byval as zstring ptr, byval as zstring ptr, ...) as intptr_t
+declare function spawnv (byval as long, byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function spawnve (byval as long, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
+declare function spawnvp (byval as long, byval as zstring ptr, byval as zstring ptr ptr) as intptr_t
+declare function spawnvpe (byval as long, byval as zstring ptr, byval as zstring ptr ptr, byval as zstring ptr ptr) as intptr_t
 
 end extern
 

@@ -2,8 +2,6 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned char *s = (unsigned char *)src;
@@ -23,8 +21,6 @@ static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h
 	}
 }
 
-
-/*:::::*/
 static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned short *s = (unsigned short *)src;
@@ -52,8 +48,6 @@ static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h
 	}
 }
 
-
-/*:::::*/
 static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned int *s = (unsigned int *)src;
@@ -73,8 +67,8 @@ static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h
 	}
 }
 
-
-/*:::::*/
+/* Not thread-safe; putters should only be called from other gfx functions that
+   take care of the synchronization */
 void fb_hPutCustom(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	static PUTTER *all_putters[] = {

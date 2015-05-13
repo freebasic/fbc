@@ -10,47 +10,64 @@
 #define __crt_setjmp_bi__
 
 #ifdef __FB_WIN32__
-#define _JBLEN 16
-type jmp_buf
-	as integer __opaque(0 to _JBLEN-1)
-end type
+	#define _JBLEN 16
 
-#elseif defined(__FB_DOS__)
-type jmp_buf
-  as uinteger __eax, __ebx, __ecx, __edx, __esi
-  as uinteger __edi, __ebp, __esp, __eip, __eflags
-  as ushort __cs, __ds, __es, __fs, __gs, __ss
-  as uinteger __sigmask
-  as uinteger __signum
-  as uinteger __exception_ptr
-  as ubyte __fpu_state(0 to 108-1)
-end type
+	#ifdef __FB_64BIT__
+		type SETJMP_FLOAT128
+			Part(0 to 1) as ulongint
+		end type
+		#define _JBTYPE SETJMP_FLOAT128
+	#else
+		#define _JBTYPE long
+	#endif
+
+	type jmp_buf
+		__opaque(0 to _JBLEN-1) as _JBTYPE
+	end type
+
+#elseif defined( __FB_DOS__ )
+	type jmp_buf
+		as uinteger __eax, __ebx, __ecx, __edx, __esi
+		as uinteger __edi, __ebp, __esp, __eip, __eflags
+		as ushort __cs, __ds, __es, __fs, __gs, __ss
+		as uinteger __sigmask
+		as uinteger __signum
+		as uinteger __exception_ptr
+		as ubyte __fpu_state(0 to 108-1)
+	end type
 
 #else
-type __jmp_buf
-	as integer __opaque(0 to 6-1)
-end type
+	#ifdef __FB_64BIT__
+		'' x86_64 glibc
+		type __jmp_buf
+			__opaque(0 to 8-1) as longint
+		end type
+	#else
+		'' x86 glibc
+		type __jmp_buf
+			__opaque(0 to 6-1) as long
+		end type
+	#endif
 
-#ifndef __sigset_t
-const _SIGSET_NWORDS =1024 \ (8 * len(uinteger))
-type __sigset_t
-    as uinteger __val(0 to _SIGSET_NWORDS-1)
-end type
+	#include once "crt/bits/sigset.bi"
+
+	type jmp_buf
+		__jmpbuf		as __jmp_buf
+		__mask_was_saved	as long
+		__saved_mask		as __sigset_t
+	end type
 #endif
 
-type jmp_buf
-    as __jmp_buf __jmpbuf
-    as integer __mask_was_saved
-    as __sigset_t __saved_mask
-end type
-#endif
+extern "C"
 
 #ifdef __FB_WIN32__
-declare function setjmp cdecl alias "_setjmp" (byval as jmp_buf ptr) as integer
+declare function setjmp alias "_setjmp" (byval as jmp_buf ptr) as long
 #else
-declare function setjmp cdecl alias "setjmp" (byval as jmp_buf ptr) as integer
+declare function setjmp (byval as jmp_buf ptr) as long
 #endif
 
-declare sub longjmp cdecl alias "longjmp" (byval as jmp_buf ptr, byval as integer)
+declare sub longjmp (byval as jmp_buf ptr, byval as long)
+
+end extern
 
 #endif

@@ -32,15 +32,15 @@ private sub hBuildDllMainWin32( )
 
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' reason
 	param = symbAddProcParam( proc, "__FB_DLLREASON__", FB_DATATYPE_UINT, NULL, _
-	                          FB_PARAMMODE_BYVAL, 0 )
+	                          0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
@@ -88,17 +88,17 @@ private sub hBuildDllMainCtor( )
 end sub
 
 private sub hMainBegin( )
-	dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any, argv = any
 
 	proc = symbPreAddProc( NULL )
 
-	'' byval argc as integer
-	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_INTEGER, NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	'' byval argc as long
+	symbAddProcParam( proc, "__FB_ARGC__", FB_DATATYPE_LONG, NULL, _
+	                  0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' byval argv as zstring ptr ptr
-	symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-	                  FB_PARAMMODE_BYVAL, 0 )
+	argv = symbAddProcParam( proc, "__FB_ARGV__", typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                         0, FB_PARAMMODE_BYVAL, 0 )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC
@@ -109,10 +109,15 @@ private sub hMainBegin( )
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			id = *symbUniqueId( )
 		end if
+	else
+		'' If the implicit main() will actually be called main() and be
+		'' public too, then the C backend needs to take care to emit
+		'' argv with the proper dtype...
+		argv->stats or= FB_SYMBSTATS_ARGV
 	end if
 
-	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr ) as integer
-	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_INTEGER, NULL, _
+	'' function main cdecl( byval argc as long, byval argv as zstring ptr ptr ) as long
+	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_LONG, NULL, _
 	                             attrib, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
 	'' Must be done before astProcBegin(), so it will add the fb_Init() call, etc.

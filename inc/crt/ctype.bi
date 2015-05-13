@@ -17,21 +17,24 @@
 #include once "crt/linux/ctype.bi"
 #endif
 
-declare function isalnum cdecl alias "isalnum" (byval as integer) as integer
-declare function isalpha cdecl alias "isalpha" (byval as integer) as integer
-declare function iscntrl cdecl alias "iscntrl" (byval as integer) as integer
-declare function isdigit cdecl alias "isdigit" (byval as integer) as integer
-declare function isgraph cdecl alias "isgraph" (byval as integer) as integer
-declare function islower cdecl alias "islower" (byval as integer) as integer
-declare function isprint cdecl alias "isprint" (byval as integer) as integer
-declare function ispunct cdecl alias "ispunct" (byval as integer) as integer
-declare function isspace cdecl alias "isspace" (byval as integer) as integer
-declare function isupper cdecl alias "isupper" (byval as integer) as integer
-declare function isxdigit cdecl alias "isxdigit" (byval as integer) as integer
-declare function tolower cdecl alias "tolower" (byval as integer) as integer
-declare function toupper cdecl alias "toupper" (byval as integer) as integer
+extern "C"
 
-declare function isascii (byval as integer) as integer
-declare function toascii (byval as integer) as integer
+declare function isalnum (byval as long) as long
+declare function isalpha (byval as long) as long
+declare function iscntrl (byval as long) as long
+declare function isdigit (byval as long) as long
+declare function isgraph (byval as long) as long
+declare function islower (byval as long) as long
+declare function isprint (byval as long) as long
+declare function ispunct (byval as long) as long
+declare function isspace (byval as long) as long
+declare function isupper (byval as long) as long
+declare function isxdigit (byval as long) as long
+declare function tolower (byval as long) as long
+declare function toupper (byval as long) as long
+declare function isascii (byval as long) as long
+declare function toascii (byval as long) as long
+
+end extern
 
 #endif

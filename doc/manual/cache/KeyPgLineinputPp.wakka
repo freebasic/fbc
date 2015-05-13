@@ -17,32 +17,16 @@ Reads one line of text from a file
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/lineinput.bas"}}%%(freebasic)
-' compile with -lang qb
+dim s as string
 
-'$lang: "qb"
+open "myfile.txt" for output as #1
+print #1, "Hello, World"
+close #1
 
-Dim Filehandle As Integer
-Dim txt As String
-	
-On Error Goto HandleErrors
-	
-Filehandle = FreeFile
-Open "test_text_file.txt" For Input As #filehandle
-
-If LOF(filehandle) > 0 Then
-	    Line Input #filehandle, txt
-Else
-	    Goto HandleErrors
-End If
-
-Close #filehandle
-Print "The first line of test_text_file.txt is:"
-Print txt
-	
-HandleErrors:
-Print "Error."
-Resume Next
-
+open "myfile.txt" for input as #1
+line input #1, s
+close #1
+print s
 %%
 
 {{fbdoc item="diff"}}
@@ -50,7 +34,6 @@ Resume Next
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInputPp Input #]]##
-	- ##[[KeyPgLineinputPp Line Input #]]##
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgInputfilemode Input (file mode)]]##
 

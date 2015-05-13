@@ -131,10 +131,10 @@ type LPDIRECTSOUNDFULLDUPLEX8 as IDirectSoundFullDuplex ptr
 #endif
 
 #ifndef LPCWAVEFORMATEX
-type LPCWAVEFORMATEX as WAVEFORMATEX ptr
+type LPCWAVEFORMATEX as const WAVEFORMATEX ptr
 #endif
 #ifndef LPCGUID
-type LPCGUID as GUID ptr
+type LPCGUID as const GUID ptr
 #endif
 
 type LPLPDIRECTSOUND as LPDIRECTSOUND ptr
@@ -180,7 +180,7 @@ type DSCAPS
 end type
 
 type LPDSCAPS as DSCAPS ptr
-type LPCDSCAPS as DSCAPS ptr
+type LPCDSCAPS as const DSCAPS ptr
 
 type DSBCAPS
 	dwSize as DWORD
@@ -191,7 +191,7 @@ type DSBCAPS
 end type
 
 type LPDSBCAPS as DSBCAPS ptr
-type LPCDSBCAPS as DSBCAPS ptr
+type LPCDSBCAPS as const DSBCAPS ptr
 
 #if DIRECTSOUND_VERSION >= &h0800
 
@@ -204,7 +204,7 @@ type DSEFFECTDESC
 end type
 
 type LPDSEFFECTDESC as DSEFFECTDESC ptr
-type LPCDSEFFECTDESC as DSEFFECTDESC ptr
+type LPCDSEFFECTDESC as const DSEFFECTDESC ptr
 
 #define DSFX_LOCHARDWARE &h00000001
 #define DSFX_LOCSOFTWARE &h00000002
@@ -231,7 +231,7 @@ type DSCEFFECTDESC
 end type
 
 type LPDSCEFFECTDESC as DSCEFFECTDESC ptr
-type LPCDSCEFFECTDESC as DSCEFFECTDESC ptr
+type LPCDSCEFFECTDESC as const DSCEFFECTDESC ptr
 
 #define DSCFX_LOCHARDWARE &h00000001
 #define DSCFX_LOCSOFTWARE &h00000002
@@ -248,7 +248,7 @@ type DSBUFFERDESC
 end type
 
 type LPDSBUFFERDESC as DSBUFFERDESC ptr
-type LPCDSBUFFERDESC as DSBUFFERDESC ptr
+type LPCDSBUFFERDESC as const DSBUFFERDESC ptr
 
 type DSBUFFERDESC1
 	dwSize as DWORD
@@ -259,7 +259,7 @@ type DSBUFFERDESC1
 end type
 
 type LPDSBUFFERDESC1 as DSBUFFERDESC1 ptr
-type LPCDSBUFFERDESC1 as DSBUFFERDESC1 ptr
+type LPCDSBUFFERDESC1 as const DSBUFFERDESC1 ptr
 
 type DS3DBUFFER
 	dwSize as DWORD
@@ -275,7 +275,7 @@ type DS3DBUFFER
 end type
 
 type LPDS3DBUFFER as DS3DBUFFER ptr
-type LPCDS3DBUFFER as DS3DBUFFER ptr
+type LPCDS3DBUFFER as const DS3DBUFFER ptr
 
 type DS3DLISTENER
 	dwSize as DWORD
@@ -289,7 +289,7 @@ type DS3DLISTENER
 end type
 
 type LPDS3DLISTENER as DS3DLISTENER ptr
-type LPCDS3DLISTENER as DS3DLISTENER ptr
+type LPCDS3DLISTENER as const DS3DLISTENER ptr
 
 type DSCCAPS
 	dwSize as DWORD
@@ -299,7 +299,7 @@ type DSCCAPS
 end type
 
 type LPDSCCAPS as DSCCAPS ptr
-type LPCDSCCAPS as DSCCAPS ptr
+type LPCDSCCAPS as const DSCCAPS ptr
 
 type DSCBUFFERDESC1
 	dwSize as DWORD
@@ -322,7 +322,7 @@ type DSCBUFFERDESC
 end type
 
 type LPDSCBUFFERDESC as DSCBUFFERDESC ptr
-type LPCDSCBUFFERDESC as DSCBUFFERDESC ptr
+type LPCDSCBUFFERDESC as const DSCBUFFERDESC ptr
 
 type DSCBCAPS
 	dwSize as DWORD
@@ -332,7 +332,7 @@ type DSCBCAPS
 end type
 
 type LPDSCBCAPS as DSCBCAPS ptr
-type LPCDSCBCAPS as DSCBCAPS ptr
+type LPCDSCBCAPS as const DSCBCAPS ptr
 
 type DSBPOSITIONNOTIFY
 	dwOffset as DWORD
@@ -340,7 +340,7 @@ type DSBPOSITIONNOTIFY
 end type
 
 type LPDSBPOSITIONNOTIFY as DSBPOSITIONNOTIFY ptr
-type LPCDSBPOSITIONNOTIFY as DSBPOSITIONNOTIFY ptr
+type LPCDSBPOSITIONNOTIFY as const DSBPOSITIONNOTIFY ptr
 
 #ifndef UNICODE
 type LPDSENUMCALLBACKA as function (byval as LPGUID, byval as LPCSTR, byval as LPCSTR, byval as LPVOID) as BOOL
@@ -859,7 +859,7 @@ type LPDSFXGargle as DSFXGargle ptr
 #define DSFXGARGLE_WAVE_TRIANGLE 0
 #define DSFXGARGLE_WAVE_SQUARE 1
 
-type LPCDSFXGargle as DSFXGargle ptr
+type LPCDSFXGargle as const DSFXGargle ptr
 
 #define DSFXGARGLE_RATEHZ_MIN 1
 #define DSFXGARGLE_RATEHZ_MAX 1000
@@ -897,7 +897,7 @@ type DSFXChorus
 end type
 
 type LPDSFXChorus as DSFXChorus ptr
-type LPCDSFXChorus as DSFXChorus ptr
+type LPCDSFXChorus as const DSFXChorus ptr
 
 #define DSFXCHORUS_WAVE_TRIANGLE 0
 #define DSFXCHORUS_WAVE_SIN 1
@@ -952,7 +952,7 @@ type DSFXFlanger
 end type
 
 type LPDSFXFlanger as DSFXFlanger ptr
-type LPCDSFXFlanger as DSFXFlanger ptr
+type LPCDSFXFlanger as const DSFXFlanger ptr
 
 #define DSFXFLANGER_WAVE_TRIANGLE 0
 #define DSFXFLANGER_WAVE_SIN 1
@@ -1005,7 +1005,7 @@ type DSFXEcho
 end type
 
 type LPDSFXEcho as DSFXEcho ptr
-type LPCDSFXEcho as DSFXEcho ptr
+type LPCDSFXEcho as const DSFXEcho ptr
 
 #define DSFXECHO_WETDRYMIX_MIN 0.0f
 #define DSFXECHO_WETDRYMIX_MAX 100.0f
@@ -1049,7 +1049,7 @@ type DSFXDistortion
 end type
 
 type LPDSFXDistortion as DSFXDistortion ptr
-type LPCDSFXDistortion as DSFXDistortion ptr
+type LPCDSFXDistortion as const DSFXDistortion ptr
 
 #define DSFXDISTORTION_GAIN_MIN -60.0f
 #define DSFXDISTORTION_GAIN_MAX 0.0f
@@ -1094,7 +1094,7 @@ type DSFXCompressor
 end type
 
 type LPDSFXCompressor as DSFXCompressor ptr
-type LPCDSFXCompressor as DSFXCompressor ptr
+type LPCDSFXCompressor as const DSFXCompressor ptr
 
 #define DSFXCOMPRESSOR_GAIN_MIN -60.0f
 #define DSFXCOMPRESSOR_GAIN_MAX 60.0f
@@ -1138,7 +1138,7 @@ type DSFXParamEq
 end type
 
 type LPDSFXParamEq as DSFXParamEq ptr
-type LPCDSFXParamEq as DSFXParamEq ptr
+type LPCDSFXParamEq as const DSFXParamEq ptr
 
 #define DSFXPARAMEQ_CENTER_MIN 80.0f
 #define DSFXPARAMEQ_CENTER_MAX 16000.0f
@@ -1185,7 +1185,7 @@ type DSFXI3DL2Reverb
 end type
 
 type LPDSFXI3DL2Reverb as DSFXI3DL2Reverb ptr
-type LPCDSFXI3DL2Reverb as DSFXI3DL2Reverb ptr
+type LPCDSFXI3DL2Reverb as const DSFXI3DL2Reverb ptr
 
 #define DSFX_I3DL2REVERB_ROOM_MIN (-10000)
 #define DSFX_I3DL2REVERB_ROOM_MAX 0
@@ -1263,7 +1263,7 @@ type DSFXWavesReverb
 end type
 
 type LPDSFXWavesReverb as DSFXWavesReverb ptr
-type LPCDSFXWavesReverb as DSFXWavesReverb ptr
+type LPCDSFXWavesReverb as const DSFXWavesReverb ptr
 
 #define DSFX_WAVESREVERB_INGAIN_MIN -96.0f
 #define DSFX_WAVESREVERB_INGAIN_MAX 0.0f
@@ -1307,7 +1307,7 @@ type DSCFXAec
 end type
 
 type LPDSCFXAec as DSCFXAec ptr
-type LPCDSCFXAec as DSCFXAec ptr
+type LPCDSCFXAec as const DSCFXAec ptr
 
 #define DSCFX_AEC_MODE_PASS_THROUGH &h0
 #define DSCFX_AEC_MODE_HALF_DUPLEX &h1
@@ -1346,7 +1346,7 @@ type DSCFXNoiseSuppress
 end type
 
 type LPDSCFXNoiseSuppress as DSCFXNoiseSuppress ptr
-type LPCDSCFXNoiseSuppress as DSCFXNoiseSuppress ptr
+type LPCDSCFXNoiseSuppress as const DSCFXNoiseSuppress ptr
 
 type IDirectSoundCaptureFXNoiseSuppressVtbl_ as IDirectSoundCaptureFXNoiseSuppressVtbl
 

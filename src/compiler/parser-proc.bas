@@ -117,19 +117,42 @@ private sub hParamError _
 
 end sub
 
-'':::::
-private function hCheckPrototype _
+private sub hCheckPrototype _
 	( _
 		byval proto as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
+		byval palias as zstring ptr, _
 		byval proc_dtype as integer, _
-		byval proc_subtype as FBSYMBOL ptr _
-	) as integer
+		byval proc_subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	)
 
     dim as FBSYMBOL ptr param = any, proto_param = any
     dim as integer params = any, proto_params = any, i = any
 
-	function = FALSE
+	'' Check ALIAS id
+	if( (palias <> NULL) and ((proto->stats and FB_SYMBSTATS_HASALIAS) <> 0) ) then
+		if( *palias <> *proto->id.alias ) then
+			errReportEx( FB_ERRMSG_DIFFERENTALIASTHANPROTO, """" + *palias + """" )
+		end if
+	end if
+
+	'' check return type
+	if( (symbGetFullType( proto ) <> proc_dtype) or _
+	    (symbGetSubtype( proto ) <> proc_subtype) ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+	end if
+
+	'' check return method
+	if( (proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
+	    (proto->proc.returnMethod <> proc->proc.returnMethod) ) then
+		errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
+	end if
+
+	'' check calling convention
+	if( symbGetProcMode( proto ) <> mode ) then
+		errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
+	end if
 
 	'' check arg count
 	param = symbGetProcHeadParam( proc )
@@ -148,32 +171,13 @@ private function hCheckPrototype _
 
 	if( proto_params <> params ) then
 		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-		'' no error recovery: caller will take care
-		exit function
 	end if
 
-	'' check return type
-	if( symbGetFullType( proto ) <> proc_dtype ) then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-		'' no error recovery: ditto
-		exit function
-	end if
-
-	'' and sub type
-	if( symbGetSubtype( proto ) <> proc_subtype ) then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-		'' no error recovery: ditto
-		exit function
-	end if
-
-	'' check return method
-	if( proc->proc.returnMethod <> FB_RETURN_DEFAULT) and _
-		( proto->proc.returnMethod <> proc->proc.returnMethod ) then
-			errReportWarn( FB_WARNINGMSG_RETURNMETHODMISMATCH )
-	end if
-
-	'' check each arg
-	for i = 1 to params
+	'' Check each parameter. In case they had different amounts of
+	'' parameters, we already showed an error, but still can check at least
+	'' the common parameters, for better error recovery.
+	i = 1
+	while( (i <= proto_params) and (i <= params) )
         dim as integer dtype = symbGetFullType( proto_param )
 
     	'' convert any AS ANY arg to the final one
@@ -185,22 +189,23 @@ private function hCheckPrototype _
     	else
     		if( param->typ <> dtype ) then
                 hParamError( proc, i )
-                '' no error recovery: caller will take care
-                exit function
-
             elseif( param->subtype <> symbGetSubtype( proto_param ) ) then
                 hParamError( proc, i )
-                '' no error recovery: ditto
-                exit function
     		end if
     	end if
 
-    	'' and mode
-    	if( param->param.mode <> symbGetParamMode( proto_param ) ) then
+		'' and mode
+		if( param->param.mode <> proto_param->param.mode ) then
 			hParamError( proc, i )
-			'' no error recovery: ditto
-            exit function
-    	end if
+		end if
+
+		'' Different BYDESC dimensions?
+		'' (even if one is unknown, both should be unknown)
+		if( param->param.mode = FB_PARAMMODE_BYDESC ) then
+			if( param->param.bydescdimensions <> proto_param->param.bydescdimensions ) then
+				hParamError( proc, i )
+			end if
+		end if
 
     	'' check names and change to the new one if needed
     	if( param->param.mode <> FB_PARAMMODE_VARARG ) then
@@ -216,15 +221,20 @@ private function hCheckPrototype _
     		end if
     	end if
 
-    	'' next arg
+		'' Warn about mismatching param initializers?
+		'' If both params are optional, compare the two initializers
+		if( symbGetIsOptional( proto_param ) and symbGetIsOptional( param ) ) then
+			if( astIsEqualParamInit( proto_param->param.optexpr, param->param.optexpr ) = FALSE ) then
+				errReportParamWarn( proc, i, NULL, FB_WARNINGMSG_MISMATCHINGPARAMINIT )
+			end if
+		end if
+
     	proto_param = proto_param->next
     	param = param->next
-    next
+		i += 1
+	wend
 
-    ''
-    function = TRUE
-
-end function
+end sub
 
 private sub hCheckAttribs _
 	( _
@@ -367,8 +377,7 @@ sub cProcRetType _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	)
 
 	dim as integer options = any
@@ -389,7 +398,7 @@ sub cProcRetType _
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 	end if
 
-	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
@@ -427,73 +436,6 @@ sub cProcRetType _
 
 end sub
 
-private sub hParseAttributes _
-	( _
-		byref attrib as FB_SYMBATTRIB, _
-		byval stats as FB_SYMBSTATS, _
-		byref priority as integer _
-	)
-
-	priority = 0
-
-	'' Priority?
-	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-		'' not ctor or dtor?
-		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) = 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip token
-			lexSkipToken( )
-		'' not an integer
-		elseif( lexGetType( ) <> FB_DATATYPE_INTEGER ) then
-			errReport( FB_ERRMSG_INVALIDPRIORITY )
-			'' error recovery: skip token
-			lexSkipToken( )
-		else
-			priority = valint( *lexGetText() )
-			if priority < 101 or priority > 65535 then
-				errReport( FB_ERRMSG_INVALIDPRIORITY )
-				'' error recovery: skip token
-				lexSkipToken( )
-			else
-				priority and= &hffff
-   				lexSkipToken( )
-			end if
-		end if
-	end if
-
-    '' STATIC?
-    if( lexGetToken( ) = FB_TK_STATIC ) then
-    	lexSkipToken( )
-    	attrib or= FB_SYMBATTRIB_STATICLOCALS
-    end if
-
-    '' EXPORT?
-    if( lexGetToken( ) = FB_TK_EXPORT ) then
-		'' ctor or dtor?
-		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			'' error recovery: skip token
-			lexSkipToken( )
-			return
-		end if
-
-    	'' private?
-    	if( (attrib and FB_SYMBATTRIB_PRIVATE) > 0 ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-    			'' error recovery: make it public
-    			attrib and= not FB_SYMBATTRIB_PRIVATE
-    	end if
-
-    	lexSkipToken( )
-
-    	fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-    	'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-    	'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
-    	'''''end if
-    	attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
-    end if
-end sub
-
 function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHOD
 	'' (OPTION(LIT_STRING))?
 
@@ -524,7 +466,7 @@ end function
 
 function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
     '' Use the default FBCALL?
-    if( default = FB_USE_FUNCMODE_FBCALL ) then
+    if( default = FB_FUNCMODE_FBCALL ) then
         default = env.target.fbcall
     end if
 
@@ -855,7 +797,7 @@ private function hCheckOpOvlParams _
 
 		case else
 			assert( op = AST_OP_DEREF )
-			'' return type can't be a void
+			'' Must be a function, not a sub
 			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 
 		end select
@@ -878,6 +820,9 @@ private function hCheckOpOvlParams _
 		'' relational? it must return an integer
 		case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 			found_mismatch = (symbGetType( proc ) <> FB_DATATYPE_INTEGER)
+		case AST_OP_PTRINDEX
+			'' Must be a function, not a sub
+			found_mismatch = (symbGetType( proc ) = FB_DATATYPE_VOID)
 		case else
 			'' self? must be a SUB
 			if( astGetOpIsSelf( op ) ) then
@@ -1047,7 +992,7 @@ function cProcHeader _
 	dim as zstring ptr palias = any
 	dim as FBSYMBOL ptr head_proc = any, proc = any, parent = any, subtype = any
 	dim as FBSYMBOL ptr param = any
-	dim as integer dtype = any, lgt = any, is_outside = any, is_memberproc = any
+	dim as integer dtype = any, is_outside = any, is_memberproc = any
 	dim as integer mode = any, stats = any, op = any, is_get = any, is_indexed = any
 	dim as integer priority = any, idopt = any
 
@@ -1059,6 +1004,7 @@ function cProcHeader _
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
 	stats = 0
+	priority = 0
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
@@ -1171,7 +1117,7 @@ function cProcHeader _
 
 	case FB_TK_OPERATOR
 		'' Operator (instead of an ID)
-		op = cOperator( )
+		op = cOperator( TRUE )
 		select case( op )
 		case INVALID, _
 		     AST_OP_ANDALSO, AST_OP_ANDALSO_SELF, _
@@ -1199,7 +1145,20 @@ function cProcHeader _
 		select case as const( op )
 		case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF, _
 		     AST_OP_DEL_SELF, AST_OP_DEL_VEC_SELF
-			'' These ops are made STATIC implicitly
+
+			'' These ops are made STATIC implicitly, and they can't
+			'' be CONST/VIRTUAL/ABSTRACT
+
+			if( attrib and (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT) ) then
+				errReport( FB_ERRMSG_OPERATORCANTBEVIRTUAL, TRUE )
+				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
+			end if
+
+			if( attrib and FB_SYMBATTRIB_CONST ) then
+				errReport( FB_ERRMSG_OPERATORCANTBECONST, TRUE )
+				attrib and= not FB_SYMBATTRIB_CONST
+			end if
+
 			attrib or= FB_SYMBATTRIB_STATIC
 			attrib and= not FB_SYMBATTRIB_METHOD
 
@@ -1234,7 +1193,7 @@ function cProcHeader _
 		'' the rtlib's REDIM or ERASE functions by procptr
 		mode = FB_FUNCMODE_CDECL
 	case else
-		mode = FB_USE_FUNCMODE_FBCALL
+		mode = FB_FUNCMODE_FBCALL
 	end select
 	mode = cProcCallingConv( mode )
 
@@ -1344,7 +1303,7 @@ function cProcHeader _
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
 				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-				              dtype, subtype, lgt )
+				              dtype, subtype )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: fake a type
@@ -1365,8 +1324,10 @@ function cProcHeader _
 			end if
 		end if
 
-		'' check params
-		hCheckOpOvlParams( parent, op, proc )
+		'' Check param/result types
+		if( hCheckOpOvlParams( parent, op, proc ) = FALSE ) then
+			exit function
+		end if
 
 	case FB_TK_PROPERTY
 		'' BYREF?
@@ -1375,7 +1336,7 @@ function cProcHeader _
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
 		else
@@ -1411,7 +1372,7 @@ function cProcHeader _
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
-			              dtype, subtype, lgt )
+			              dtype, subtype )
 		else
 			if( tk = FB_TK_FUNCTION ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) ) then
@@ -1430,28 +1391,6 @@ function cProcHeader _
 				dtype = FB_DATATYPE_VOID
 			end if
 		end if
-
-		'' (CONSTRUCTOR | DESTRUCTOR)?
-		select case( lexGetToken( ) )
-		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-			'' A module ctor/dtor must be a sub with no params,
-			'' it cannot be a method or function.
-			'' (static member procs are ok though)
-			if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
-			    (tk = FB_TK_FUNCTION) ) then
-				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
-			elseif( symbGetProcParams( proc ) <> 0 ) then
-				errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
-			else
-				if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
-					stats or= FB_SYMBSTATS_GLOBALCTOR
-				else
-					stats or= FB_SYMBSTATS_GLOBALDTOR
-				end if
-			end if
-
-			lexSkipToken( )
-		end select
 
 	end select
 
@@ -1488,8 +1427,84 @@ function cProcHeader _
 		return proc
 	end if
 
+	''
 	'' Body
-	hParseAttributes( attrib, stats, priority )
+	''
+
+	'' (CONSTRUCTOR | DESTRUCTOR)?
+	select case( lexGetToken( ) )
+	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
+		'' A module ctor/dtor must be a sub with no params,
+		'' it cannot be a method or function (static member
+		'' procs are ok though).
+		'' Note: if this body is a member procedure and didn't have an
+		'' explicit STATIC, then we don't know whether it's a method or
+		'' a static member yet, as it depends on the corresponding
+		'' prototype which we only check below. I.e. this check must be
+		'' repeated later.
+		if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
+		    (tk = FB_TK_FUNCTION) ) then
+			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+		elseif( symbGetProcParams( proc ) <> 0 ) then
+			errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+		else
+			if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
+				stats or= FB_SYMBSTATS_GLOBALCTOR
+			else
+				stats or= FB_SYMBSTATS_GLOBALDTOR
+			end if
+		end if
+
+		lexSkipToken( )
+
+		'' Priority?
+		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+			'' not an integer?
+			if( lexGetType( ) <> FB_DATATYPE_INTEGER ) then
+				errReport( FB_ERRMSG_INVALIDPRIORITY )
+				'' error recovery: skip token
+				lexSkipToken( )
+			else
+				priority = valint( *lexGetText() )
+				if priority < 101 or priority > 65535 then
+					errReport( FB_ERRMSG_INVALIDPRIORITY )
+					'' error recovery: skip token
+					lexSkipToken( )
+				else
+					priority and= &hffff
+					lexSkipToken( )
+				end if
+			end if
+		end if
+
+	end select
+
+	'' STATIC?
+	if( hMatch( FB_TK_STATIC ) ) then
+		attrib or= FB_SYMBATTRIB_STATICLOCALS
+	end if
+
+	'' EXPORT?
+	if( lexGetToken( ) = FB_TK_EXPORT ) then
+		'' ctor or dtor?
+		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+
+		'' private?
+		if( attrib and FB_SYMBATTRIB_PRIVATE ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			attrib and= not FB_SYMBATTRIB_PRIVATE
+		end if
+
+		lexSkipToken( )
+
+		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
+		'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
+		'''''end if
+		attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
+	end if
 
 	select case( tk )
 	case FB_TK_CONSTRUCTOR
@@ -1585,19 +1600,18 @@ function cProcHeader _
 
 			'' There already is a prototype for this proc, check for
 			'' declaration conflicts and fix up the parameters
-			if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-				return CREATEFAKE( )
-			end if
-
-			'' check calling convention
-			if( symbGetProcMode( head_proc ) <> mode ) then
-				errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
-			end if
+			hCheckPrototype( head_proc, proc, palias, dtype, subtype, mode )
 
 			'' use the prototype
 			proc = head_proc
 
 			hCheckAttribs( proc, attrib )
+
+			if( stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR) ) then
+				if( symbIsMethod( proc ) ) then
+					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+				end if
+			end if
 
 			symbSetIsDeclared( proc )
 		end if
@@ -1605,9 +1619,15 @@ function cProcHeader _
 
 	'' Register global ctors/dtors
 	if( stats and FB_SYMBSTATS_GLOBALCTOR ) then
+		if( proc->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED) ) then
+			errReport( FB_ERRMSG_NOACCESSTOCTOR, TRUE )
+		end if
 		symbAddGlobalCtor( proc )
 		symbSetProcPriority( proc, priority )
 	elseif( stats and FB_SYMBSTATS_GLOBALDTOR ) then
+		if( proc->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED) ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR, TRUE )
+		end if
 		symbAddGlobalDtor( proc )
 		symbSetProcPriority( proc, priority )
 	end if
@@ -1648,6 +1668,19 @@ sub hDisallowAbstractDtor( byref attrib as integer )
 	end if
 end sub
 
+sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as integer )
+	'' It doesn't make sense for ctors/dtors to be CONST. It's a ctor's
+	'' purpose to initialize an object and it couldn't do that if it used
+	'' a CONST This. And as for dtors, they need to be able to destroy all
+	'' objects, CONST or not. It doesn't matter whether the dtor modifies
+	'' the object in the process since it's dead afterwards anyways.
+	if( attrib and FB_SYMBATTRIB_CONST ) then
+		errReport( iif( tk = FB_TK_CONSTRUCTOR, _
+			FB_ERRMSG_CONSTCTOR, FB_ERRMSG_CONSTDTOR ) )
+		attrib and= not FB_SYMBATTRIB_CONST
+	end if
+end sub
+
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? (STATIC? | CONST? VIRTUAL?)
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
 sub cProcStmtBegin( byval attrib as integer )
@@ -1665,7 +1698,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 	cMethodAttributes( NULL, attrib )
 
-	'' SUB | FUNCTION
+	'' SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR
 	tkn = lexGetToken( )
 	select case as const tkn
 	case FB_TK_SUB, FB_TK_FUNCTION
@@ -1679,6 +1712,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 		hDisallowStaticAttrib( attrib )
 		hDisallowVirtualCtor( attrib )
+		hDisallowConstCtorDtor( tkn, attrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -1689,6 +1723,7 @@ sub cProcStmtBegin( byval attrib as integer )
 
 		hDisallowStaticAttrib( attrib )
 		hDisallowAbstractDtor( attrib )
+		hDisallowConstCtorDtor( tkn, attrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
@@ -1719,6 +1754,12 @@ sub cProcStmtBegin( byval attrib as integer )
 	'' ProcHeader
 	proc = cProcHeader( attrib, is_nested, FB_PROCOPT_NONE, tkn )
 	if( proc = NULL ) then
+		'' Close namespace again if cProcHeader() opened it, for better
+		'' error recovery.
+		if( is_nested ) then
+			symbNestEnd( TRUE )
+		end if
+		hSkipCompound( tkn )
 		exit sub
 	end if
 
@@ -1782,7 +1823,7 @@ sub cProcStmtEnd( )
     '' always finish
 	astProcEnd( FALSE )
 
-	'' was the namespace changed?
+	'' Close namespace again if cProcHeader() opened it
 	if( stk->proc.is_nested ) then
 		symbNestEnd( TRUE )
 	end if

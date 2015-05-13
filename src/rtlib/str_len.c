@@ -2,10 +2,9 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL int fb_StrLen( void *str, int str_size )
+FBCALL ssize_t fb_StrLen( void *str, ssize_t str_size )
 {
-	int len;
+	ssize_t len;
 
 	if( str == NULL )
 		return 0;
@@ -28,5 +27,3 @@ FBCALL int fb_StrLen( void *str, int str_size )
 
 	return len;
 }
-
-

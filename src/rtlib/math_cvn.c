@@ -21,14 +21,14 @@ FBCALL double fb_CVDFROMLONGINT( long long ll )
 	hDoCVn( ll, double, 8 );
 }
 
-FBCALL float fb_CVSFROML( long l )
+FBCALL float fb_CVSFROML( int l )
 {
 	hDoCVn( l, float, 4 );
 }
 
-FBCALL long fb_CVLFROMS( float f )
+FBCALL int fb_CVLFROMS( float f )
 {
-	hDoCVn( f, long, 4 );
+	hDoCVn( f, int, 4 );
 }
 
 FBCALL long long fb_CVLONGINTFROMD( double d )

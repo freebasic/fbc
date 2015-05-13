@@ -19,7 +19,7 @@ Declares a namespace block
 	Any identifier in the global namespace is available for use in a named namespace (even global symbols with the same name as keywords may be declared inside a namespace). 
 
 	Namespaces implicitly have public access and this is not modifiable.
-	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared Shared]] is not specified (static and shared are optional).
+	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared Shared]] is not specified (static and shared are optional, but this may improve code readability).
 	Namespaces do not have any effect on the visibility of a define.
 	It is possible to define a namespace in two or more declarations.
 	

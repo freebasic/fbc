@@ -10,23 +10,22 @@
 #define __crt_win32_wchar_bi__
 
 #include once "crt/win32/ctype.bi"
-
-#define WCHAR_MIN 0
-#define WCHAR_MAX &hffff
+#include once "crt/long.bi"
+#include once "crt/stdint.bi"
 
 #ifndef WEOF
 #define	WEOF cast(wchar_t,&hFFFF)
 #endif
 
-type mbstate_t as integer
+type mbstate_t as long
 type _Wint_t as wchar_t
 
 #ifndef _fsize_t
-type _fsize_t as uinteger
+type _fsize_t as culong
 #endif
 
 type _wfinddata_t
-	attrib as uinteger
+	attrib as ulong
 	time_create as time_t
 	time_access as time_t
 	time_write as time_t
@@ -35,7 +34,7 @@ type _wfinddata_t
 end type
 
 type _wfinddatai64_t
-	attrib as uinteger
+	attrib as ulong
 	time_create as time_t
 	time_access as time_t
 	time_write as time_t
@@ -76,29 +75,29 @@ end type
 #endif
 
 extern "c"
-declare function _waccess (byval as wchar_t ptr, byval as integer) as integer
-declare function _wchmod (byval as wchar_t ptr, byval as integer) as integer
-declare function _wcreat (byval as wchar_t ptr, byval as integer) as integer
-declare function _wfindfirst (byval as wchar_t ptr, byval as _wfinddata_t ptr) as integer
-declare function _wfindnext (byval as integer, byval as _wfinddata_t ptr) as integer
-declare function _wunlink (byval as wchar_t ptr) as integer
-declare function _wopen (byval as wchar_t ptr, byval as integer, ...) as integer
-declare function _wsopen (byval as wchar_t ptr, byval as integer, byval as integer, ...) as integer
+declare function _waccess (byval as wchar_t ptr, byval as long) as long
+declare function _wchmod (byval as wchar_t ptr, byval as long) as long
+declare function _wcreat (byval as wchar_t ptr, byval as long) as long
+declare function _wfindfirst (byval as wchar_t ptr, byval as _wfinddata_t ptr) as intptr_t
+declare function _wfindnext (byval as intptr_t, byval as _wfinddata_t ptr) as long
+declare function _wunlink (byval as wchar_t ptr) as long
+declare function _wopen (byval as wchar_t ptr, byval as long, ...) as long
+declare function _wsopen (byval as wchar_t ptr, byval as long, byval as long, ...) as long
 declare function _wmktemp (byval as wchar_t ptr) as wchar_t ptr
-declare function _wfindfirsti64 (byval as wchar_t ptr, byval as _wfinddatai64_t ptr) as integer
-declare function _wfindnexti64 (byval as integer, byval as _wfinddatai64_t ptr) as integer
-declare function _wchdir (byval as wchar_t ptr) as integer
-declare function _wgetcwd (byval as wchar_t ptr, byval as integer) as wchar_t ptr
-declare function _wgetdcwd (byval as integer, byval as wchar_t ptr, byval as integer) as wchar_t ptr
-declare function _wmkdir (byval as wchar_t ptr) as integer
-declare function _wrmdir (byval as wchar_t ptr) as integer
-declare function _wstat (byval as wchar_t ptr, byval as _stat ptr) as integer
-declare function _wstati64 (byval as wchar_t ptr, byval as _stati64 ptr) as integer
+declare function _wfindfirsti64 (byval as wchar_t ptr, byval as _wfinddatai64_t ptr) as intptr_t
+declare function _wfindnexti64 (byval as intptr_t, byval as _wfinddatai64_t ptr) as long
+declare function _wgetcwd (byval as wchar_t ptr, byval as long) as wchar_t ptr
+declare function _wgetdcwd (byval as long, byval as wchar_t ptr, byval as long) as wchar_t ptr
+declare function _wchdir (byval as wchar_t ptr) as long
+declare function _wmkdir (byval as wchar_t ptr) as long
+declare function _wrmdir (byval as wchar_t ptr) as long
+declare function _wstat (byval as wchar_t ptr, byval as _stat ptr) as long
+declare function _wstati64 (byval as wchar_t ptr, byval as _stati64 ptr) as long
 declare function _wasctime (byval as tm ptr) as wchar_t ptr
 declare function _wctime (byval as time_t ptr) as wchar_t ptr
 declare function _wstrdate (byval as wchar_t ptr) as wchar_t ptr
 declare function _wstrtime (byval as wchar_t ptr) as wchar_t ptr
-declare function _wsetlocale (byval as integer, byval as wchar_t ptr) as wchar_t ptr
+declare function _wsetlocale (byval as long, byval as wchar_t ptr) as wchar_t ptr
 end extern
 
 #endif

@@ -23,11 +23,15 @@ void FB_CONPRINTTTY
     int fGotNewCoordinate = FALSE;
     int BorderWidth = pBorder->Right - pBorder->Left + 1;
 
-    DBG_ASSERT( BorderWidth != 0 );
+    /* Do nothing (and prevent division by zero below) if width == 0.
+       (can happen with tiny gfxlib2 screens at least) */
+    if( BorderWidth == 0 ) {
+        return;
+    }
 
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 
-    fb_Coord dwMoveCoord = { 0 };
+    fb_Coord dwMoveCoord = { 0, 0 };
     for( IndexText=0; IndexText!=TextLength; ++IndexText )
     {
         const FB_TCHAR *pachOutputData = pachText;

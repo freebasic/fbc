@@ -154,7 +154,7 @@ void fb_dos_vesa_detect(void)
 		      (fb_dos.vesa_mode_info.MemoryModel == VMI_MM_DIR)) &&
 			 ((fb_dos.vesa_info.vbe_version < 0x200) ||
 			  ((unsigned int)fb_dos.vesa_info.total_memory << 16 >=
-			   fb_dos.vesa_mode_info.BytesPerScanLine * fb_dos.vesa_mode_info.YResolution)) )
+			   (unsigned int)(fb_dos.vesa_mode_info.BytesPerScanLine * fb_dos.vesa_mode_info.YResolution))) )
 		{
 			/* clobber WinFuncPtr to hold mode number */
 			fb_dos.vesa_mode_info.WinFuncPtr = mode_list[c];

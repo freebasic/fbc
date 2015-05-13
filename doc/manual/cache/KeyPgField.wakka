@@ -2,30 +2,12 @@
 Specifies field alignment.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
+	[[KeyPgType Type]]|[[KeyPgUnion Union]] //typename// **Field** = { 1 | 2 | 4 }
 		...
-	End [[KeyPgType Type]]
+	End [[KeyPgType Type]]|[[KeyPgUnion Union]]
 ##
 {{fbdoc item="desc"}}
-	##**Field**## can be used to pack ##[[KeyPgType Types]]## or ##[[KeyPgUnion Unions]]## more tightly than the default layout. The most commonly used value is ##**Field = 1**##, which causes the ##Type## or ##Union## to be packed as tightly as possible, without any padding bytes being added between the fields or at the end of the ##Type##. ##**Field**## can only be used to decrease field alignment, but it cannot be used to increase it. In order to add padding bytes, a ##Union## with appropriate members could be used instead.
-	
-	The default layout of ##Type## and ##Union## structures in ""FreeBASIC"" follows the GCC ABI. This allows for compatibility with other compilers or languages such as C.
-
-	By default, fields are aligned to their natural boundaries, which are: 
-		- A multiple of 1 for 1-byte data types
-		- A multiple of 2 for 2-byte data types
-		- A multiple of 4 for 4-byte data types
-		- A multiple of 4 for 8-byte data types (Linux & other non-""Win32"" systems only)
-		- A multiple of 8 for 8-byte data types (""Win32"" only)
-		- The largest natural boundary of the fields of ##Type##/##Union## data types
-	Dynamic string descriptors are handled as ##Type## structures with the data pointer field being the one with the largest natural alignment.
-	Fixed-length strings are aligned according to the alignment required for the character size.
-	Static arrays are aligned according to the alignment required for the element data type.
-	
-	The compiler aligns fields by inserting padding bytes in front of them in order to move them to an offset that corresponds to their natural boundary, or to a multiple of the value given with ##**Field**##, if it is smaller than the field's natural alignment. On the x86 architecture, such proper alignment is not required but can result in better performance when accessing the fields. Other architectures might actually require proper alignment.
-	
-	In addition, the whole structure's size is rounded up to a multiple of the largest natural alignment of its fields, by adding padding bytes at the end of the structure. This ensures that in an array of ##Type##s, each individual one is properly aligned as required by the fields.
-
+	##**Field**## can be used to pack ##[[KeyPgType Types]]## or ##[[KeyPgUnion Unions]]## more tightly than [[DevStructLayout the default layout]]. The most commonly used value is ##**Field = 1**##, which causes the ##Type## or ##Union## to be packed as tightly as possible, without any padding bytes being added between the fields or at the end of the ##Type##. ##**Field**## can only be used to decrease field alignment, but it cannot be used to increase it. In order to add padding bytes, a ##Union## with appropriate members could be used instead.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/field.bas"}}%%(freebasic)
@@ -69,9 +51,10 @@ sleep
 
 {{fbdoc item="diff"}}
 	- In QB ##**Field**## was used to define fields in a file buffer at run time. This feature is not implemented in FB, so the keyword has been redefined. To define fields in a file buffer, ##**[[KeyPgType Type]]s**## must be used.
-	
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##
 	- ##[[KeyPgUnion Union]]##
+	- [[DevStructLayout Structure packing/field alignment]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

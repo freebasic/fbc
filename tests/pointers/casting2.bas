@@ -3,9 +3,9 @@
 namespace fbc_tests.pointers.casting2
 
 sub test cdecl ()
-	dim array( 0 to 9 ) as integer = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+	dim array(0 to 9) as long = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
 
-	dim pt as integer ptr
+	dim pt as long ptr
 
 	pt = @array(1)
 

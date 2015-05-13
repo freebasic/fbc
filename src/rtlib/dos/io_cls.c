@@ -11,7 +11,7 @@ void fb_ConsoleClear( int mode )
     if( mode==1 )
         return;
 
-	if( (mode == 2) || (mode == 0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
+	if( (mode == 2) || (mode == (int)0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
         fb_ConsoleGetView( &toprow, &botrow );
         --toprow;
         --botrow;

@@ -15,6 +15,7 @@
 #include once "hash.bi"
 #include once "symb.bi"
 #include once "emit-private.bi"
+#include once "ir-private.bi"
 
 declare sub hDeclVariable _
 	( _
@@ -49,33 +50,32 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	'' same order as FB_DATATYPE
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' boolean byte
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
-		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr"  ), _	'' wchar
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
-		( FB_DATACLASS_INTEGER, 4			    , 2, "dword ptr" ), _	'' boolean integer
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _   '' ulong
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
-		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
-		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
-		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
-		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
-		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		 ), _	'' namespace
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
-		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit
+		( 0, "void ptr"  ), _ '' void
+		( 0, "byte ptr"  ), _ '' boolean byte
+		( 0, "byte ptr"  ), _ '' byte
+		( 0, "byte ptr"  ), _ '' ubyte
+		( 0, "byte ptr"  ), _ '' char
+		( 1, "word ptr"  ), _ '' short
+		( 1, "word ptr"  ), _ '' ushort
+		( 1, "word ptr"  ), _ '' wchar
+		( 2, "dword ptr" ), _ '' int
+		( 2, "dword ptr" ), _ '' uint
+		( 2, "dword ptr" ), _ '' boolean integer
+		( 2, "dword ptr" ), _ '' enum
+		( 2, "dword ptr" ), _ '' long
+		( 2, "dword ptr" ), _ '' ulong
+		( 2, "qword ptr" ), _ '' longint
+		( 2, "qword ptr" ), _ '' ulongint
+		( 3, "dword ptr" ), _ '' single
+		( 3, "qword ptr" ), _ '' double
+		( 0, ""          ), _ '' string
+		( 0, "byte ptr"  ), _ '' fix-len string
+		( 2, "dword ptr" ), _ '' struct
+		( 0, ""          ), _ '' namespace
+		( 2, "dword ptr" ), _ '' function
+		( 0, "byte ptr"  ), _ '' fwd-ref
+		( 2, "dword ptr" ), _ '' pointer
+		( 3, "xmmword ptr" ) _ '' 128-bit
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -167,6 +167,12 @@ const EMIT_MAXKEYWORDS = 600
 
 '':::::
 #define hEmitExportHeader( ) _setSection( IR_SECTION_DIRECTIVE, 0 )
+
+#if __FB_DEBUG__
+function emitDumpRegName( byval dtype as integer, byval reg as integer ) as string
+	function = *hGetRegName( dtype, reg )
+end function
+#endif
 
 '':::::
 function hIsRegFree _
@@ -491,7 +497,7 @@ sub hPrepOperand _
 		'' offset
 		ofs += vreg->ofs
 		if( isaux ) then
-			ofs += FB_INTEGERSIZE
+			ofs += 4
 		end if
 
 		if( ofs > 0 ) then
@@ -528,9 +534,9 @@ sub hPrepOperand _
 
 	case IR_VREGTYPE_IMM
 		if( isaux = FALSE ) then
-			operand = str( vreg->value.int )
+			operand = str( vreg->value.i )
 		else
-			operand = str( vreg->vaux->value.int )
+			operand = str( vreg->vaux->value.i )
 		end if
 
 	case else
@@ -855,12 +861,13 @@ private sub hEmitVarBss _
     dim as string alloc, ostr
     dim as integer attrib, elements
 
+	assert( symbIsExtern( s ) = FALSE )
+	assert( symbIsDynamic( s ) = FALSE )
+
 	attrib = symbGetAttrib( s )
 
-	elements = 1
-    if( symbGetArrayDimensions( s ) > 0 ) then
-    	elements = symbGetArrayElements( s )
-	end if
+	elements = symbGetArrayElements( s )
+	assert( elements >= 1 )
 
     hEmitBssHeader( )
 
@@ -889,12 +896,8 @@ private sub hEmitVarBss _
     ostr += "," + str( symbGetLen( s ) * elements )
     emitWriteStr( ostr, TRUE )
 
-    '' add dbg info, if public or shared
-    if( (attrib and (FB_SYMBATTRIB_SHARED or _
-    				 FB_SYMBATTRIB_COMMON or _
-    				 FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-    	edbgEmitGlobalVar( s, IR_SECTION_BSS )
-	end if
+	'' Add debug info for public/shared globals, but not local statics
+	edbgEmitGlobalVar( s, IR_SECTION_BSS )
 
 end sub
 
@@ -909,34 +912,6 @@ private sub hWriteHeader( ) static
     emitWriteStr( "" )
     hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
 
-end sub
-
-private sub hWriteBss( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteBss( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteBss( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteBss( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-
-		end select
-
-		s = s->next
-	wend
 end sub
 
 '':::::
@@ -959,7 +934,9 @@ private sub hEmitVarConst _
 	case FB_DATATYPE_WCHAR
 		stext = QUOTE
 		stext += *hEscapeW( symbGetVarLitTextW( s ) )
-		stext += *hGetWstrNull( )
+		for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+			stext += RSLASH + "0"
+		next
 		stext += QUOTE
 
 	case else
@@ -985,61 +962,6 @@ private sub hEmitVarConst _
 	ostr += (":" + TABCHAR) + stype + TABCHAR + stext
 	emitWriteStr( ostr )
 
-end sub
-
-private sub hWriteConst( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteConst( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteConst( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteConst( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-		end select
-
-		s = s->next
-	wend
-end sub
-
-private sub hWriteData( byval s as FBSYMBOL ptr )
-	while( s )
-		select case( symbGetClass( s ) )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteData( symbGetNamespaceTbHead( s ) )
-
-		'' UDT namespace? (static member vars)
-		case FB_SYMBCLASS_STRUCT
-			'' "Class"?
-			if( symbGetIsUnique( s ) ) then
-				hWriteData( symbGetCompSymbTb( s ).head )
-			end if
-
-		'' scope block?
-		case FB_SYMBCLASS_SCOPE
-			hWriteData( symbGetScopeSymbTbHead( s ) )
-
-		'' variable?
-		case FB_SYMBCLASS_VAR
-			hDeclVariable( s )
-
-		end select
-
-		s = s->next
-	wend
 end sub
 
 '':::::
@@ -1083,84 +1005,40 @@ private sub hEmitExport( byval s as FBSYMBOL ptr )
     end if
 end sub
 
-private sub hWriteExport( byval s as FBSYMBOL ptr )
-
-    '' for each proc exported..
-    do while( s )
-
-    	select case symbGetClass( s )
-		'' name space?
-		case FB_SYMBCLASS_NAMESPACE
-			hWriteExport( symbGetNamespaceTbHead( s ) )
-
-		case FB_SYMBCLASS_STRUCT
-			'' does struct have exports?
-			dim as FBSYMBOL ptr walk = symbGetUDTSymbTbHead( s )
-			while( walk )
-                hEmitExport( walk )
-				walk = symbGetNext( walk )
-			wend
-
-    	case FB_SYMBCLASS_PROC
-    		if( symbGetIsDeclared( s ) ) then
-                hEmitExport( s )
-    		end if
-    	end select
-
-    	s = s->next
-    loop
-
-end sub
-
 '':::::
 private sub hDeclVariable _
 	( _
 		byval s as FBSYMBOL ptr _
 	) static
 
-    '' already allocated?
-	if( symbGetVarIsAllocated( s ) ) then
+	'' literal?
+	if( symbGetIsLiteral( s ) ) then
+		select case symbGetType( s )
+		'' string? check if ever referenced
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			if( symbGetIsAccessed( s ) = FALSE ) then
+				return
+			end if
+
+		end select
+
+		hEmitVarConst( s )
 		return
 	end if
 
-	symbSetVarIsAllocated( s )
+	'' Don't emit the fake jump-table vars, see also astBuildJMPTB()
+	if( symbGetIsJumpTb( s ) ) then
+		return
+	end if
 
-	'' literal?
-    if( symbGetIsLiteral( s ) ) then
-
-    	select case symbGetType( s )
-    	'' udt? don't emit
-    	case FB_DATATYPE_STRUCT
-    		return
-
-    	'' string? check if ever referenced
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	  	if( symbGetIsAccessed( s ) = FALSE ) then
-    	  		return
-    	  	end if
-
-		'' anything else, only if len > 0
-		case else
-			if( symbGetLen( s ) <= 0 ) then
-				return
-			end if
-    	end select
-
-    	hEmitVarConst( s )
-
-    	return
+	'' Don't emit EXTERNs (only PUBLICs will be allocated here) or fake
+	'' dynamic array symbols (their descriptor will be emitted instead)
+	if( symbIsExtern( s ) or symbIsDynamic( s ) ) then
+		return
 	end if
 
 	'' initialized?
-	if( symbGetIsInitialized( s ) ) then
-
-		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
-			return
-		elseif( symbGetIsJumpTb( s ) ) then
-			return
-		end if
-
+	if( symbGetTypeIniTree( s ) ) then
     	'' never referenced?
     	if( symbGetIsAccessed( s ) = FALSE ) then
 			'' not public?
@@ -1170,21 +1048,7 @@ private sub hDeclVariable _
 		end if
 
 		hEmitDataHeader( )
-		astTypeIniFlush( s->var_.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
-
-		return
-	end if
-
-    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
-	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
-			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-		return
-	end if
-
-    '' a string or array descriptor?
-	if( symbGetLen( s ) <= 0 ) then
+		irhlFlushStaticInitializer( s )
 		return
 	end if
 
@@ -1394,12 +1258,12 @@ end sub
 private sub _emitJMPTB _
 	( _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values1 as uinteger ptr, _
+		byval values1 as ulongint ptr, _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	dim as FBSYMBOL ptr label = any
@@ -1427,7 +1291,7 @@ private sub _emitJMPTB _
 
 	outEx( tb + ":" + NEWLINE )
 	i = 0
-	for value as uinteger = minval to maxval
+	for value as ulongint = minval to maxval
 		assert( i < labelcount )
 		if( value = values1[i] ) then
 			label = labels1[i]
@@ -1556,7 +1420,7 @@ private sub _emitRET _
 
     dim ostr as string
 
-    ostr = "ret " + str( vreg->value.int )
+	ostr = "ret " + str( vreg->value.i )
     outp( ostr )
 
 end sub
@@ -1669,7 +1533,7 @@ private sub _emitSTORI2L _
 		hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1679,7 +1543,7 @@ private sub _emitSTORI2L _
 	end if
 
 	''
-	if( sdsize < FB_INTEGERSIZE ) then
+	if( sdsize < 4 ) then
 		ext = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 
 		if( typeIsSigned( svreg->dtype ) ) then
@@ -1908,7 +1772,7 @@ private sub _emitSTORF2I _
 		'' unsigned.. try a bigger type
 		else
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2051,7 +1915,7 @@ private sub _emitSTORI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2066,7 +1930,7 @@ private sub _emitSTORI2F _
 		else
 
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2101,7 +1965,7 @@ private sub _emitSTORI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2225,11 +2089,10 @@ private sub _emitLOADI2L _
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-
         hMOV dst1, src1
 
 		'' negative?
-		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.i < 0) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2241,7 +2104,7 @@ private sub _emitLOADI2L _
 	''
 	if( typeIsSigned( svreg->dtype ) ) then
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movsx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2255,7 +2118,7 @@ private sub _emitLOADI2L _
 
 	else
 
-		if( sdsize < FB_INTEGERSIZE ) then
+		if( sdsize < 4 ) then
 			ostr = "movzx " + dst1 + COMMA + src1
 			outp ostr
 		else
@@ -2511,7 +2374,7 @@ private sub _emitLOADF2I _
 			outp ostr
 
 			'' not an integer? make it
-			if( ddsize < FB_INTEGERSIZE ) then
+			if( ddsize < 4 ) then
 				dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 			end if
 
@@ -2521,7 +2384,7 @@ private sub _emitLOADF2I _
 		else
 
 			'' uint?
-			if( ddsize = FB_INTEGERSIZE ) then
+			if( ddsize = 4 ) then
 				outp "sub esp, 8"
 				outp "fistp qword ptr [esp]"
 				hPOP dst
@@ -2661,7 +2524,7 @@ private sub _emitLOADI2F _
 		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
-			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < 4) ) then
 				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
@@ -2676,7 +2539,7 @@ private sub _emitLOADI2F _
 		else
 
 			'' uint?
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2711,7 +2574,7 @@ private sub _emitLOADI2F _
 		'' unsigned, try a bigger type..
 		else
 			'' uint..
-			if( sdsize = FB_INTEGERSIZE ) then
+			if( sdsize = 4 ) then
 				hPUSH "0"
 				hPUSH src
 				outp "fild qword ptr [esp]"
@@ -2847,7 +2710,7 @@ private sub _emitADDI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			doinc = TRUE
 		case -1
@@ -2890,6 +2753,8 @@ private sub _emitADDF _
 			ostr = "fadd " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fiadd " + src
 			outp ostr
 		end if
@@ -2935,7 +2800,7 @@ private sub _emitSUBI _
 	doinc = FALSE
 	dodec = FALSE
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		select case svreg->value.int
+		select case svreg->value.i
 		case 1
 			dodec = TRUE
 		case -1
@@ -2978,6 +2843,8 @@ private sub _emitSUBF _
 			ostr = "fsub " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fisub " + src
 			outp ostr
 		end if
@@ -3156,6 +3023,8 @@ private sub _emitMULF _
 			ostr = "fmul " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fimul " + src
 			outp ostr
 		end if
@@ -3184,6 +3053,8 @@ private sub _emitDIVF _
 			ostr = "fdiv " + src
 			outp ostr
 		else
+			'' Relying on hDoOptRemConv()
+			assert( (typeGetSize( svreg->dtype ) = 2) or (typeGetSize( svreg->dtype ) = 4) )
 			ostr = "fidiv " + src
 			outp ostr
 		end if
@@ -3209,15 +3080,15 @@ private sub _emitDIVI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3276,7 +3147,7 @@ private sub _emitDIVI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -3363,15 +3234,15 @@ private sub _emitMODI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    if( dtypeTB(dvreg->dtype).size = 4 ) then
-    	eax = "eax"
-    	ecx = "ecx"
-    	edx = "edx"
-    else
-    	eax = "ax"
-    	ecx = "cx"
-    	edx = "dx"
-    end if
+	if( typeGetSize( dvreg->dtype ) = 4 ) then
+		eax = "eax"
+		ecx = "ecx"
+		edx = "edx"
+	else
+		eax = "ax"
+		ecx = "cx"
+		edx = "dx"
+	end if
 
 	ecxtrashed = FALSE
 
@@ -3430,7 +3301,7 @@ private sub _emitMODI _
 	end if
 
 	if( typeIsSigned( dvreg->dtype ) ) then
-		if( dtypeTB(dvreg->dtype).size = 4 ) then
+		if( typeGetSize( dvreg->dtype ) = 4 ) then
 			outp "cdq"
 		else
 			outp "cwd"
@@ -3546,7 +3417,7 @@ private sub hSHIFTL _
 	end if
 
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.int >= 64 ) then
+		if( svreg->value.i >= 64 ) then
 			'' zero both result halves
 			if( bv->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + b + ", " + b
@@ -3559,7 +3430,7 @@ private sub hSHIFTL _
 			else
 				outp "mov " + a + ", 0"
 			end if
-		elseif( svreg->value.int >= 32 ) then
+		elseif( svreg->value.i >= 32 ) then
 			tmpisfree = TRUE
 			if( (bv->typ = IR_VREGTYPE_REG) or (av->typ = IR_VREGTYPE_REG) ) then
 				'' a or b is a reg
@@ -3589,8 +3460,8 @@ private sub hSHIFTL _
 				outp "mov " + b + ", 0"
 			end if
 
-			if( svreg->value.int > 32 ) then
-				src = str( svreg->value.int - 32 )
+			if( svreg->value.i > 32 ) then
+				src = str( svreg->value.i - 32 )
 				outp mnemonic32 + a + ", " + src
 			end if
 
@@ -3653,7 +3524,7 @@ private sub hSHIFTL _
 
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
-			if( typeGetSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+			if( typeGetSize( svreg->dtype ) <> 4 ) then
  				'' if it's not a reg, the right size was already set at the hPrepOperand() above
  				if( svreg->typ = IR_VREGTYPE_REG ) then
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
@@ -4300,7 +4171,7 @@ private sub hCMPI _
 	'' optimize "cmp" to "test"
 	dotest = FALSE
 	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
-		if( svreg->value.int = 0 ) then
+		if( svreg->value.i = 0 ) then
 			dotest = TRUE
 		end if
 	end if
@@ -4962,7 +4833,7 @@ private sub _emitABSI _
 		hPUSH( rname )
 	end if
 
-	bits = (dtypeTB(dvreg->dtype).size * 8)-1
+	bits = typeGetBits( dvreg->dtype ) - 1
 
 	hMOV( rname, dst )
 
@@ -4992,73 +4863,85 @@ private sub _emitABSF _
 
 end sub
 
-'':::::
-private sub _emitSGNL _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
+''
+'' Algorithm:
+''	select case( highdword )
+''	case is < 0
+''		highdword = -1
+''		lowdword  = -1
+''	case is > 0
+''		highdword = 0
+''		lowdword  = 1
+''	case else
+''		if( lowdword <> 0 ) then
+''			highdword = 0
+''			lowdword  = 1
+''		else
+''			highdword = 0
+''			lowdword  = 0
+''		end if
+''	end select
+''
+'' - Result is stored into the input registers, so must be careful
+''   about overwriting
+''
+'' - For 1/-1 it's enough to check the high dword only, but to determine
+''   whether the LONGINT is 0, both dwords must be checked
+''
+'' - Should have as few jumps/assignments as possible
+''
+private sub _emitSGNL( byval dvreg as IRVREG ptr )
+	dim as string low, high, exitlabel, tmp32
+	dim as integer tmpreg = any, istmpfree = any
 
-    dim dst1 as string, dst2 as string
-    dim ostr as string
-    dim label1 as string, label2 as string
+	hPrepOperand64( dvreg, low, high )
+	exitlabel = *symbUniqueLabel( )
+	tmpreg = hFindRegNotInVreg( dvreg )
+	istmpfree = hIsRegFree( FB_DATACLASS_INTEGER, tmpreg )
+	tmp32 = *hGetRegName( FB_DATATYPE_INTEGER, tmpreg )
 
-	hPrepOperand64( dvreg, dst1, dst2 )
+	if( istmpfree = FALSE ) then
+		hPUSH( tmp32 )
+	end if
 
-	label1 = *symbUniqueLabel( )
-	label2 = *symbUniqueLabel( )
+	hMOV( tmp32, low )              '' tmp = low (backup the low dword)
+	outp( "cmp " + high + ", 0" )   '' select case high
+	hMOV( low , "-1" )              '' low  = -1
+	hMOV( high, "-1" )              '' high = -1
+	hBRANCH( "jl", exitlabel )      '' case is < 0 goto exit
+	hMOV( low , "1" )               '' low  = 1
+	hMOV( high, "0" )               '' high = 0
+	hBRANCH( "jg", exitlabel )      '' case is > 0 goto exit
+	outp( "cmp " + tmp32 + ", 0" )  '' select case tmp (high = 0, but must check original low dword too)
+	'hMOV( low , "1" )              '' (low  = 1)
+	'hMOV( high, "0" )              '' (high = 0)
+	hBRANCH( "jne", exitlabel )     '' case is <> 0 goto exit
+	hMOV( low , "0" )               '' low  = 0
+	'hMOV( high, "0" )              '' (high = 0)
+	hLABEL( exitlabel )             '' exit:
 
-	ostr = "cmp " + dst2 + ", 0"
-	outp ostr
-	hBRANCH( "jne", label1 )
-
-	ostr = "cmp " + dst1 + ", 0"
-	outp ostr
-	hBRANCH( "je", label2 )
-
-	hLABEL( label1 )
-	hMOV( dst1, "1" )
-	hMOV( dst2, "0" )
-	hBRANCH( "jg", label2 )
-	hMOV( dst1, "-1" )
-	hMOV( dst2, "-1" )
-
-	hLABEL( label2 )
-
+	if( istmpfree = FALSE ) then
+		hPOP( tmp32 )
+	end if
 end sub
 
-'':::::
-private sub _emitSGNI _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-    dim as string dst, label, ostr
+private sub _emitSGNI( byval dvreg as IRVREG ptr )
+	dim as string dst, exitlabel
 
 	hPrepOperand( dvreg, dst )
+	exitlabel = *symbUniqueLabel( )
 
-	label = *symbUniqueLabel( )
-
-	ostr = "cmp " + dst + ", 0"
-	outp ostr
-
-	hBRANCH( "je", label )
-	hMOV( dst, "1" )
-	hBRANCH( "jg", label )
-	hMOV( dst, "-1" )
-
-	hLABEL( label )
-
+	outp( "cmp " + dst + ", 0" )  '' select case x
+	hBRANCH( "je", exitlabel )    '' case 0 goto exit (x = 0)
+	hMOV( dst, "1" )              '' x = 1
+	hBRANCH( "jg", exitlabel )    '' case is > 0 goto exit
+	hMOV( dst, "-1" )             '' x = -1
+	hLABEL( exitlabel )           '' exit:
 end sub
 
-
-'':::::
-private sub _emitSGNF _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as string dst, label, ostr
-	dim as integer iseaxfree
+private sub _emitSGNF( byval dvreg as IRVREG ptr )
+	dim as string dst, label
+	dim as integer iseaxfree = any
 
 	hPrepOperand( dvreg, dst )
 
@@ -5088,7 +4971,6 @@ private sub _emitSGNF _
 	outp "fchs"
 
 	hLABEL( label )
-
 end sub
 
 '':::::
@@ -5317,10 +5199,10 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 private sub _emitSTACKALIGN( byval vreg as IRVREG ptr, byval unused as integer )
-	if( vreg->value.int > 0 ) then
-		outp( "sub esp, " + str( vreg->value.int ) )
+	if( vreg->value.i > 0 ) then
+		outp( "sub esp, " + str( vreg->value.i ) )
 	else
-		outp( "add esp, " + str( -vreg->value.int ) )
+		outp( "add esp, " + str( -vreg->value.i ) )
 	end if
 end sub
 
@@ -5591,18 +5473,18 @@ private sub _emitPOPI _
 		'' gosub quirk: return-to-label needs to pop return address from the stack
 		'' see ast-gosub.bas::astGosubAddReturn() - (jeffm)
 
-		if( dvreg->value.int = 4 ) then
+		if( dvreg->value.i = 4 ) then
 			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 				hPOP "eax"
 			else
 				outp "add esp, 4"
 			end if
 		else
-			ostr = "add esp, " + str( dvreg->value.int )
+			ostr = "add esp, " + str( dvreg->value.i )
 			outp ostr
 		end if
 
-	elseif( dsize = FB_INTEGERSIZE ) then
+	elseif( dsize = 4 ) then
 		'' POP 4 bytes directly, no need for intermediate code
 		ostr = "pop " + dst
 		outp ostr
@@ -5693,6 +5575,10 @@ private sub _emitPOPF _
 		outp ostr
 	end if
 
+end sub
+
+private sub _emitPOPST0( )
+	outp( "fstp st(0)" )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -5925,7 +5811,7 @@ private sub _emitMEMMOVE _
 	) static
 
 	'' handle the assumption done at ast-node-mem::newMEM()
-	if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
+	if( culng( bytes ) > EMIT_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
 	else
 		hMemMoveBlk( dvreg, svreg, bytes )
@@ -5950,7 +5836,7 @@ end sub
 private sub hMemClearRepIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as ulong _
 	) static
 
 	dim as string dst
@@ -5985,7 +5871,7 @@ private sub hMemClearRepIMM _
 	outp "xor eax, eax"
 
 	if( bytes > 4 ) then
-		ostr = "mov ecx, " + str( cunsg(bytes) \ 4 )
+		ostr = "mov ecx, " + str( bytes \ 4 )
 		outp ostr
 		outp "rep stosd"
 
@@ -6026,7 +5912,7 @@ end sub
 private sub hMemClearBlkIMM _
 	( _
 		byval dvreg as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as ulong _
 	) static
 
 	dim as string dst
@@ -6034,7 +5920,7 @@ private sub hMemClearBlkIMM _
 
 	ofs = 0
 	'' move dwords
-	for i = 1 to cunsg(bytes) \ 4
+	for i = 1 to bytes \ 4
 		hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, ofs )
 		hMOV( dst, "0" )
 		ofs += 4
@@ -6143,7 +6029,7 @@ private sub _emitMEMCLEAR _
 
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
-		dim as integer bytes = svreg->value.int
+		dim as ulong bytes = svreg->value.i
 		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else
@@ -6572,10 +6458,8 @@ end sub
 sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	_setSection( IR_SECTION_DATA, 0 )
 
-	'' add dbg info, if public or shared
-    'if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-   		edbgEmitGlobalVar( sym, IR_SECTION_DATA )
-   	'end if
+	'' Add debug info for public/shared globals, but not local statics
+	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
    	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
     	hALIGN( 8 )
@@ -6591,17 +6475,21 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	hLABEL( *symbGetMangledName( sym ) )
 end sub
 
-sub emitVARINIi( byval dtype as integer, byval value as integer )
-	outEx( *_getTypeString( dtype ) + " " + str( value ) + NEWLINE )
+sub emitVARINIi( byval dtype as integer, byval value as longint )
+	dim s as string
+	s = *_getTypeString( dtype ) + " "
+	if( ISLONGINT( dtype ) ) then
+		s += "0x" + hex( value )
+	else
+		s += str( value )
+	end if
+	s += NEWLINE
+	outEx( s )
 end sub
 
 sub emitVARINIf( byval dtype as integer, byval value as double )
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
 	outEx( *_getTypeString( dtype ) + " " + hFloatToHex( value, dtype ) + NEWLINE )
-end sub
-
-sub emitVARINI64( byval dtype as integer, byval value as longint )
-	outEx( *_getTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE )
 end sub
 
 sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
@@ -6628,7 +6516,9 @@ sub emitVARINIWSTR( byval s as zstring ptr )
 	static as string ostr
 	ostr = ".ascii " + QUOTE
 	ostr += *s
-	ostr += *hGetWstrNull( )
+	for i as integer = 1 to typeGetSize( FB_DATATYPE_WCHAR )
+		ostr += RSLASH + "0"
+	next
 	ostr += QUOTE + NEWLINE
 	outEx( ostr )
 end sub
@@ -6729,6 +6619,7 @@ end sub
 		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _
 		EMIT_CBENTRY(POPI), EMIT_CBENTRY(POPF), EMIT_CBENTRY(POPL), _
 		EMIT_CBENTRY(PUSHUDT), _
+		EMIT_CBENTRY(POPST0), _
         _
 		EMIT_CBENTRY(CALL), _
 		EMIT_CBENTRY(CALLPTR), _
@@ -6858,21 +6749,15 @@ private sub _close _
 	'' file name) before emitting the global vars
 	edbgInclude( NULL )
 
-	'' const
-	hWriteConst( symbGetGlobalTbHead( ) )
+	'' const/data/bss
+	symbForEachGlobal( FB_SYMBCLASS_VAR, @hDeclVariable )
 
-	'' data
-	hWriteData( symbGetGlobalTbHead( ) )
-
-	'' bss
-	hWriteBss( symbGetGlobalTbHead( ) )
-
-	''
+	'' DLL export table
 	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
-		hWriteExport( symbGetGlobalTbHead( ) )
+		symbForEachGlobal( FB_SYMBCLASS_PROC, @hEmitExport )
 	end if
 
-	''
+	'' Global ctor/dtor lists
 	hWriteCtor( symbGetGlobCtorListHead( ), TRUE )
 	hWriteCtor( symbGetGlobDtorListHead( ), FALSE )
 
@@ -7031,15 +6916,26 @@ private sub _procAllocStaticVars( byval s as FBSYMBOL ptr )
 	wend
 end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-    dim as integer ofs
+	dim as integer ofs = any, lgt = any
+
+	'' Do not allocate stack space for fake dynamic array symbols; only the
+	'' corresponding descriptors will be emitted.
+	''
+	'' It should not be necessary to assign the array symbol the same offset
+	'' as its descriptor either, as any accesses should be based on the
+	'' descriptor instead.
+	if( symbIsDynamic( sym ) ) then
+		assert( sym->ofs = 0 )
+		exit sub
+	end if
+
+	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -7049,23 +6945,30 @@ private function _procAllocLocal _
     	proc->proc.ext->stk.localmax = -ofs
     end if
 
-	function = ofs
+	sym->ofs = ofs
 
-end function
+end sub
 
-'':::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer static
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = proc->proc.ext->stk.argofs
+	dim as integer lgt = any
 
+	assert( symbIsParam( sym ) )
+
+	if( symbIsParamByVal( sym ) ) then
+		lgt = symbGetLen( sym )
+	else
+		lgt = 4    '' it's just a pointer
+	end if
+
+	sym->ofs = proc->proc.ext->stk.argofs
     proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
 
-end function
+end sub
 
 '':::::
 private sub _procHeader _

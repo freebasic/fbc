@@ -2,7 +2,6 @@
 
 #include "fb.h"
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_IntToWstr ( int num )
 {
 	FB_WCHAR *dst;
@@ -18,7 +17,6 @@ FBCALL FB_WCHAR *fb_IntToWstr ( int num )
 	return dst;
 }
 
-/*:::::*/
 FBCALL FB_WCHAR *fb_UIntToWstr ( unsigned int num )
 {
 	FB_WCHAR *dst;
@@ -33,4 +31,3 @@ FBCALL FB_WCHAR *fb_UIntToWstr ( unsigned int num )
 
 	return dst;
 }
-

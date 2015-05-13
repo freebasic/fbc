@@ -72,8 +72,8 @@ end type
 type FB_CMPSTMT_SELCONST
 	base			as integer
 	deflabel 		as FBSYMBOL ptr
-	minval			as uinteger
-	maxval			as uinteger
+	minval			as ulongint
+	maxval			as ulongint
 end type
 
 type FB_CMPSTMT_SELECT
@@ -162,6 +162,8 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_EQINPARENSONLY	= &h00000100	'' only check for '=' if inside parentheses
 	FB_PARSEROPT_GTINPARENSONLY	= &h00000200	'' only check for '>' if inside parentheses
 	FB_PARSEROPT_ISPP               = &h00000400  '' PP expression? (e.g. #if condition)
+	FB_PARSEROPT_EXPLICITBASE       = &h00000800  '' Used to tell cProcArgList() & co about explicit BASE accesses from hBaseMemberAccess() functions
+	FB_PARSEROPT_IDXINPARENSONLY    = &h00001000  '' Only parse array index if inside parentheses (used by REDIM, so it can handle 'expr(1 to 2)', where the expression parser should parse 'expr' but not the '(1 to 2)' part)
 end enum
 
 type PARSERCTX
@@ -197,18 +199,6 @@ enum FB_SYMBTYPEOPT
 	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
 end enum
 
-'' cOperator flags
-enum FB_OPEROPTS
-	FB_OPEROPTS_NONE			= &h00000000
-
-	FB_OPEROPTS_UNARY			= &h00000001
-	FB_OPEROPTS_SELF			= &h00000002
-	FB_OPEROPTS_ASSIGN			= &h00000004
-	FB_OPEROPTS_RELATIVE		= &h00000008
-
-	FB_OPEROPTS_DEFAULT			= &hffffffff
-end enum
-
 '' cIdentifier flags
 enum FB_IDOPT
 	FB_IDOPT_NONE				= &h00000000
@@ -227,10 +217,8 @@ end enum
 '' cInitializer flags
 enum FB_INIOPT
 	FB_INIOPT_NONE              = &h00000000
-
 	FB_INIOPT_ISINI             = &h00000001
-	FB_INIOPT_DODEREF           = &h00000002
-	FB_INIOPT_ISOBJ             = &h00000004
+	FB_INIOPT_ISOBJ             = &h00000002
 end enum
 
 '' cProcHeader() flags
@@ -244,7 +232,7 @@ end enum
 enum FB_VAREXPROPT
 	FB_VAREXPROPT_NONE         = &h00000000
 	FB_VAREXPROPT_NOARRAYCHECK = &h00000001
-	FB_VAREXPROPT_ALLOWADDROF  = &h00000002
+	                         ''= &h00000002
 	FB_VAREXPROPT_ISEXPR       = &h00000004
 	FB_VAREXPROPT_ISASSIGN     = &h00000010  '' Used by SWAP to disallow CALLs etc.
 end enum
@@ -285,22 +273,19 @@ declare function cVariableDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
-
-declare function cStaticArrayDecl _
+declare sub cArrayDecl _
 	( _
 		byref dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval checkprnts as integer = TRUE, _
-		byval allow_ellipsis as integer = TRUE _
-	) as integer
-
-declare sub cArrayDecl( byref dimensions as integer, exprTB() as ASTNODE ptr )
+		byref have_bounds as integer, _
+		exprTB() as ASTNODE ptr _
+	)
 
 declare function cInitializer _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval options as FB_INIOPT _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_INIOPT, _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function cTypeOrExpression _
@@ -308,21 +293,21 @@ declare function cTypeOrExpression _
 		byval is_len as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	) as ASTNODE ptr
 
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer, _
+		byref lgt as longint, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 	) as integer
 
@@ -416,6 +401,7 @@ declare sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 declare sub hDisallowStaticAttrib( byref attrib as integer )
 declare sub hDisallowVirtualCtor( byref attrib as integer )
 declare sub hDisallowAbstractDtor( byref attrib as integer )
+declare sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as integer )
 declare sub cProcStmtBegin( byval attrib as integer = 0 )
 declare sub cProcStmtEnd( )
 declare sub cExitStatement( )
@@ -445,15 +431,14 @@ declare function cAssignmentOrPtrCallEx _
 declare function hIsAssignToken( ) as integer
 declare function cAssignToken( ) as integer
 
-declare function cOperator _
-	( _
-		byval options as FB_OPEROPTS = FB_OPEROPTS_DEFAULT _
-	) as integer
+declare function cOperator( byval is_overload as integer ) as integer
 
 declare function cExpression _
 	( _
 		_
 	) as ASTNODE ptr
+
+declare function cExpressionWithNIDXARRAY( byval allow_nidxarray as integer ) as ASTNODE ptr
 
 declare function cCatExpression _
 	( _
@@ -570,7 +555,8 @@ declare function cImplicitDataMember _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
-		byval checkarray as integer _
+		byval checkarray as integer, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 declare function cVarOrDeref _
@@ -581,7 +567,8 @@ declare function cVarOrDeref _
 declare function cFunctionEx _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cQuirkFunction _
@@ -596,20 +583,8 @@ declare function cEnumConstant _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function cLiteral _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cNumLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
-
-declare function cStrLiteral _
-	( _
-		byval skiptoken as integer = TRUE _
-	) as ASTNODE ptr
+declare function cStrLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
+declare function cNumLiteral( byval skiptoken as integer = TRUE ) as ASTNODE ptr
 
 declare function cProcArgList _
 	( _
@@ -639,8 +614,7 @@ declare sub cProcRetType _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref subtype as FBSYMBOL ptr _
 	)
 
 declare function cProcReturnMethod _
@@ -650,7 +624,7 @@ declare function cProcReturnMethod _
 
 declare function cProcCallingConv _
 	( _
-		byval default as FB_FUNCMODE = FB_USE_FUNCMODE_FBCALL _
+		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
 
 declare sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
@@ -660,7 +634,8 @@ declare function cFunctionCall _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
-		byval thisexpr as ASTNODE ptr = NULL _
+		byval thisexpr as ASTNODE ptr = NULL, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare sub hMethodCallAddInstPtrOvlArg _
@@ -671,19 +646,23 @@ declare sub hMethodCallAddInstPtrOvlArg _
         byval options as FB_PARSEROPT ptr _
     )
 
+declare function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
+
 declare function cProcCall _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval ptrexpr as ASTNODE ptr, _
 		byval thisexpr as ASTNODE ptr = NULL, _
-		byval checkprnts as integer = FALSE _
+		byval checkprnts as integer = FALSE, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cMethodCall _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval thisexpr as ASTNODE ptr _
+		byval thisexpr as ASTNODE ptr, _
+		byval options as FB_PARSEROPT _
 	) as ASTNODE ptr
 
 declare function cCtorCall _
@@ -696,7 +675,8 @@ declare function cUdtMember _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval varexpr as ASTNODE ptr, _
-		byval check_array as integer _
+		byval check_array as integer, _
+		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
 declare function cMemberAccess _
@@ -789,7 +769,7 @@ declare function cWriteStmt() as integer
 declare function cErrorStmt() as integer
 declare function cErrSetStmt() as integer
 declare function cViewStmt(byval is_func as integer) as ASTNODE ptr
-declare function cMidStmt() as integer
+declare function cMidStmt( ) as integer
 declare function cLRSetStmt(byval tk as FB_TOKEN) as integer
 declare function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 declare function cColorStmt(byval isfunc as integer) as ASTNODE ptr
@@ -812,8 +792,8 @@ declare function cAnonType( ) as ASTNODE ptr
 declare function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as integer = 0 _
-	) as integer
+		byval defaultvalue as longint = 0 _
+	) as longint
 declare function cOperatorNew( ) as ASTNODE ptr
 declare sub cOperatorDelete( )
 
@@ -837,6 +817,21 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
+declare sub hMaybeConvertExprTb2DimTb _
+	( _
+		byref attrib as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		dTB() as FBARRAYDIM _
+	)
+
+declare sub hComplainAboutEllipsis _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval errmsg as integer _
+	)
+
 declare function cVarDecl _
 	( _
 		byval attrib as integer, _
@@ -851,11 +846,13 @@ declare sub hComplainIfAbstractClass _
 		byval subtype as FBSYMBOL ptr _
 	)
 
+declare sub hComplainAboutConstDynamicArray( byval sym as FBSYMBOL ptr )
+
 declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer _
+		byref lgt as longint _
 	)
 
 declare function hCheckForDefiniteTypes _
@@ -872,7 +869,7 @@ declare function cThreadCallFunc() as ASTNODE ptr
 
 declare function hIntegerTypeFromBitSize _
 	( _
-		byval bitsize as integer, _
+		byval bitsize as longint, _
 		byval is_unsigned as integer = FALSE _
 	) as FB_DATATYPE
 
@@ -1020,6 +1017,15 @@ declare function hIntegerTypeFromBitSize _
 		parser.options or= FB_PARSEROPT_ISPP
 	else
 		parser.options and= not FB_PARSEROPT_ISPP
+	end if
+#endmacro
+
+#define fbGetIdxInParensOnly( ) ((parser.options and FB_PARSEROPT_IDXINPARENSONLY) <> 0)
+#macro fbSetIdxInParensOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_IDXINPARENSONLY
+	else
+		parser.options and= not FB_PARSEROPT_IDXINPARENSONLY
 	end if
 #endmacro
 

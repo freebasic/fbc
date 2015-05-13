@@ -102,10 +102,67 @@ namespace tempvarVsRecursion
 	end sub
 end namespace
 
+namespace implicitAddrOfPeek
+	type NormalUdt
+		i as integer
+	end type
+
+	type DerivedUdt extends object
+		j as integer
+	end type
+
+	sub test cdecl( )
+		dim pany as any ptr
+		dim pinteger as integer ptr
+		dim pnormal1 as NormalUdt ptr
+		dim pderived1 as DerivedUdt ptr
+
+		dim normal1 as NormalUdt
+		dim derived1 as DerivedUdt
+
+		normal1.i = 111
+		pany = @normal1
+		with peek( NormalUdt, pany )
+			if 0 = len( .i ) then
+			end if
+			CU_ASSERT( .i = 111 )
+			CU_ASSERT( sizeof( .i ) = sizeof( integer ) )
+		end with
+
+		derived1.j = 222
+		pany = @derived1
+		with peek( DerivedUdt, pany )
+			if 0 = len( .j ) then
+			end if
+			CU_ASSERT( .j = 222 )
+			CU_ASSERT( sizeof( .j ) = sizeof( integer ) )
+		end with
+
+		normal1.i = 333
+		pinteger = cptr( integer ptr, @normal1 )
+		with peek( NormalUdt, pinteger )
+			if 0 = len( .i ) then
+			end if
+			CU_ASSERT( .i = 333 )
+			CU_ASSERT( sizeof( .i ) = sizeof( integer ) )
+		end with
+
+		derived1.j = 444
+		pinteger = cptr( integer ptr, cptr( any ptr, @derived1 ) )
+		with peek( DerivedUdt, pinteger )
+			if 0 = len( .j ) then
+			end if
+			CU_ASSERT( .j = 444 )
+			CU_ASSERT( sizeof( .j ) = sizeof( integer ) )
+		end with
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/compound/with" )
 	fbcu.add_test( "basics", @basics.test )
 	fbcu.add_test( "recursion", @tempvarVsRecursion.test )
+	fbcu.add_test( "PEEK", @implicitAddrOfPeek.test )
 end sub
 
 end namespace

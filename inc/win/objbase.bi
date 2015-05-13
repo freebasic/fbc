@@ -72,7 +72,7 @@ end enum
 #include once "win/unknwn.bi"
 #include once "win/objidl.bi"
 
-#define IsEqualGUID(rguid1, rguid2) (not memcmp(rguid1, rguid2, sizeof(GUID)))
+#define IsEqualGUID(rguid1, rguid2) (-(memcmp(rguid1, rguid2, sizeof(GUID)) = 0))
 #define IsEqualIID(id1,id2) IsEqualGUID(id1,id2)
 #define IsEqualCLSID(id1,id2) IsEqualGUID(id1,id2)
 

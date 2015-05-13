@@ -35,10 +35,9 @@ function symbAddConst _
 		exit function
 	end if
 
-	sym->con.val = *value
+	sym->val = *value
 
 	function = sym
-
 end function
 
 function symbAllocFloatConst _
@@ -71,7 +70,7 @@ function symbAllocFloatConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -81,46 +80,6 @@ function symbAllocFloatConst _
 end function
 
 function symbAllocIntConst _
-	( _
-		byval value as integer, _
-		byval dtype as integer _
-	) as FBSYMBOL ptr static
-
-    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as string svalue
-
-	function = NULL
-
-	svalue = "0x" + Hex(value)
-
-	id = "{fbnc}"
-	id += svalue
-
-	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
-	if( s <> NULL ) then
-		return s
-	end if
-
-	id_alias = *symbUniqueId( )
-
-	'' it must be declare as SHARED, because even if currently inside an
-	'' proc, the global symbol tb should be used, so just one constant
-	'' will be ever allocated over the module
-	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
-
-	s->var_.littext = ZstrAllocate( len( svalue ) )
-	*s->var_.littext = svalue
-
-	function = s
-end function
-
-'':::::
-function symbAllocLongIntConst _
 	( _
 		byval value as longint, _
 		byval dtype as integer _
@@ -133,7 +92,14 @@ function symbAllocLongIntConst _
 
 	function = NULL
 
-	svalue = "0x" + Hex(value)
+	svalue = "0x"
+	if( typeGetSize( dtype ) = 8 ) then
+		svalue += hex( value )
+	else
+		'' Using an intermediate uinteger to allow compiling with FB
+		'' versions before the overload resolution overhaul
+		svalue += hex( cuint( culng( value ) ) )
+	end if
 
 	id = "{fbnc}"
 	id += svalue
@@ -150,7 +116,7 @@ function symbAllocLongIntConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVar( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
 	s->var_.littext = ZstrAllocate( len( svalue ) )
@@ -198,7 +164,7 @@ function symbAllocStrConst _
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVar( @id, @id_alias, FB_DATATYPE_CHAR, NULL, lgt + 1, 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littext = ZstrAllocate( strlen )
@@ -248,7 +214,7 @@ function symbAllocWStrConst _
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt+1) * len( wstring ), 0, dTB(), _
-	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
 	s->var_.littextw = WstrAllocate( strlen )
@@ -266,64 +232,29 @@ sub symbDelConst( byval s as FBSYMBOL ptr )
 	symbFreeSymbol( s )
 end sub
 
-'':::::
-function symbGetConstValueAsStr _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
-  	select case as const symbGetType( s )
-  	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-  		function = *symbGetConstValStr( s )->var_.littext
-
-  	case FB_DATATYPE_LONGINT
-  		function = str( symbGetConstValLong( s ) )
-
-  	case FB_DATATYPE_ULONGINT
-  	    function = str( cunsg( symbGetConstValLong( s ) ) )
-
-	case FB_DATATYPE_SINGLE
-		function = str( csng( symbGetConstValFloat( s ) ) )
+function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+	select case( symbGetType( s ) )
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		function = *symbGetConstStr( s )->var_.littext
 
 	case FB_DATATYPE_DOUBLE
-		function = str( symbGetConstValFloat( s ) )
+		function = str( symbGetConstFloat( s ) )
 
-  	case FB_DATATYPE_LONG
-  		if( FB_LONGSIZE = len( integer ) ) then
-  			function = str( symbGetConstValInt( s ) )
-  		else
-  			function = str( symbGetConstValLong( s ) )
-  		end if
+	case FB_DATATYPE_SINGLE
+		function = str( csng( symbGetConstFloat( s ) ) )
 
-  	case FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = str( cunsg( symbGetConstValInt( s ) ) )
-  	    else
-  	    	function = str( cunsg( symbGetConstValLong( s ) ) )
-  	    end if
-
-  	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
-  		function = str( cunsg( symbGetConstValInt( s ) ) )
-
-  	case else
-  		function = str( symbGetConstValInt( s ) )
-  	end select
-
+	case else
+		if( typeIsSigned( s->typ ) ) then
+			function = str( symbGetConstInt( s ) )
+		else
+			function = str( cunsg( symbGetConstInt( s ) ) )
+		end if
+	end select
 end function
 
-'':::::
-function symbCloneConst _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbCloneConst( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' no need to make a copy of fbvalue.str, if it's a literal,
 	'' it will be a non-local var
-
-	function = symbAddConst( NULL, _
-							 symbGetType( sym ), _
-							 symbGetSubType( sym ), _
-							 @sym->con.val, _
-							 symbGetAttrib( sym ) )
-
+	function = symbAddConst( NULL, symbGetType( sym ), symbGetSubtype( sym ), _
+	                         symbGetConstVal( sym ), symbGetAttrib( sym ) )
 end function

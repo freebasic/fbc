@@ -53,13 +53,13 @@
 extern "C"
 
 #ifdef __FB_WIN32__
-	declare function _errno( ) as integer ptr
-	#define errno (*_errno)
+	declare function _errno() as long ptr
+	#define errno (*_errno())
 #elseif defined( __FB_LINUX__ )
-	declare function __errno_location( ) as integer ptr
-	#define errno (*__errno_location( ))
+	declare function __errno_location() as long ptr
+	#define errno (*__errno_location())
 #else
-	extern errno as integer
+	extern errno as long
 #endif
 
 end extern

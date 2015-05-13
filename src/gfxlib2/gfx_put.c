@@ -2,17 +2,11 @@
 
 #include "fb_gfx.h"
 
-
 #ifdef HOST_X86
-
 #include "x86/fb_gfx_mmx.h"
-
 extern void fb_hPutAlphaMaskMMX(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
-
 #endif
 
-
-/*:::::*/
 static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param)
 {
 	unsigned char *s;
@@ -42,18 +36,21 @@ static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int
 	}
 }
 
-
-/*:::::*/
 FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int put_mode, PUTTER *putter, int alpha, BLENDER *blender, void *param)
 {
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	int x, y, w, h, pitch, bpp;
 	int lhs, rhs;
 	PUT_HEADER *header;
 
-	if ((!__fb_gfx) || (!src))
-		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	FB_GRAPHICS_LOCK( );
 
+	if ((!__fb_gfx) || (!src)) {
+		FB_GRAPHICS_UNLOCK( );
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+
+	context = fb_hGetContext( );
 	fb_hPrepareTarget(context, target);
 	fb_hSetPixelTransfer(context, MASK_A_32);
 
@@ -76,6 +73,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 			rhs = COORD_TYPE_R;
 			break;
 		default:
+			FB_GRAPHICS_UNLOCK( );
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
@@ -94,8 +92,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 		h = header->height;
 		pitch = header->pitch;
 		src += sizeof(PUT_HEADER);
-	}
-	else {
+	} else {
 		bpp = header->old.bpp;
 		if (!bpp)
 			bpp = context->target_bpp;
@@ -106,13 +103,15 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	}
 
 	if (bpp != context->target_bpp) {
-		if ((put_mode == PUT_MODE_ALPHA) && (bpp == 1) && (context->target_bpp == 4))
+		if ((put_mode == PUT_MODE_ALPHA) && (bpp == 1) && (context->target_bpp == 4)) {
 			putter = fb_hPutAlphaMask;
-		else
+		} else {
+			FB_GRAPHICS_UNLOCK( );
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+		}
 	}
 
-	if (x1 != 0xFFFF0000) {
+	if (x1 != (int)0xFFFF0000) {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 
 		x1 = MID(0, x1, w-1);
@@ -127,8 +126,10 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 
 	if ((w == 0) || (h == 0) ||
 	    (x + w <= context->view_x) || (x >= context->view_x + context->view_w) ||
-	    (y + h <= context->view_y) || (y >= context->view_y + context->view_h))
+	    (y + h <= context->view_y) || (y >= context->view_y + context->view_h)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_OK );
+	}
 
 	if (y < context->view_y) {
 		src += ((context->view_y - y) * pitch);
@@ -150,5 +151,6 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	SET_DIRTY(context, y, h);
 	DRIVER_UNLOCK();
 
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

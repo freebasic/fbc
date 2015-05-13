@@ -10,7 +10,7 @@
 #define __crt_linux_stdlib_bi__
 
 extern "c"
-declare function mkstemp ( byval template_ as zstring ptr ) as integer
+declare function mkstemp (byval template_ as zstring ptr) as long
 end extern
 
 #endif '' __crt_linux_stdlib_bi__

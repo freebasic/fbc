@@ -217,7 +217,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		    (!fread_16_le(&biPlanes, f)) ||
 		    (!fread_16_le(&biBitCount, f)))
 			return FB_RTERROR_FILEIO;
-		
+
 		if (biSize >= 20) {
 			if (!fread_32_le(&biCompression, f)) {
 				return FB_RTERROR_FILEIO;
@@ -285,14 +285,14 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		put_header = (PUT_HEADER *)dest;
 		/* do not overwrite pre-allocated image buffer header */
 		if (put_header->type == PUT_HEADER_NEW) {
-			width = MIN(put_header->width, biWidth);
-			height = MIN(put_header->height, biHeight);
+			width = MIN((int)put_header->width, biWidth);
+			height = MIN((int)put_header->height, biHeight);
 			bpp = put_header->bpp;
 		} else {
 			bpp = put_header->old.bpp;
 			if (bpp == 1 || bpp == 2 || bpp == 4) {
-				width = MIN(put_header->old.width, biWidth);
-				height = MIN(put_header->old.height, biHeight);
+				width = MIN((int)put_header->old.width, biWidth);
+				height = MIN((int)put_header->old.height, biHeight);
 			}
 			else {
 				if (usenewheader) {
@@ -302,8 +302,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 
-					width = MIN(put_header->width, biWidth);
-					height = MIN(put_header->height, biHeight);
+					width = MIN((int)put_header->width, biWidth);
+					height = MIN((int)put_header->height, biHeight);
 					bpp = put_header->bpp;
 				}
 				else {
@@ -311,9 +311,9 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					put_header->old.width = biWidth;
 					put_header->old.height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
-					
-					width = MIN(put_header->old.width, biWidth);
-					height = MIN(put_header->old.height, biHeight);
+
+					width = MIN((int)put_header->old.width, biWidth);
+					height = MIN((int)put_header->old.height, biHeight);
 					bpp = put_header->old.bpp;
 				}
 			}
@@ -447,14 +447,20 @@ exit_error:
 static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader)
 {
 	FILE *f;
-	FB_GFXCTX *context = fb_hGetContext();
+	FB_GFXCTX *context;
 	unsigned char id;
 	unsigned int color, *palette = pal, size = 0;
 	char buffer[MAX_PATH];
 	int i, result = fb_ErrorSetNum( FB_RTERROR_OK );
 
-	if ((!dest) && (!__fb_gfx))
+	FB_GRAPHICS_LOCK( );
+
+	context = fb_hGetContext();
+
+	if ((!dest) && (!__fb_gfx)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
@@ -464,6 +470,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 
 	if (!f) {
 		fb_hStrDelTemp(filename);
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 
@@ -490,6 +497,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 			result = load_bmp(context, f, dest, pal, usenewheader);
 			fclose(f);
 			fb_hStrDelTemp(filename);
+			FB_GRAPHICS_UNLOCK( );
 			return result;
 
 		default:
@@ -500,7 +508,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 	if (result == FB_RTERROR_OK) {
 		if (!dest) {
 			DRIVER_LOCK();
-			size = MIN(size, __fb_gfx->pitch * __fb_gfx->h);
+			size = MIN(size, (unsigned int)(__fb_gfx->pitch * __fb_gfx->h));
 			if ((!fread(context->line[0], size, 1, f)) && (!feof(f)))
 				result = FB_RTERROR_FILEIO;
 			SET_DIRTY(context, 0, __fb_gfx->h);
@@ -526,7 +534,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 	fclose(f);
 
 	fb_hStrDelTemp(filename);
-
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( result );
 }
 

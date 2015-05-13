@@ -563,8 +563,14 @@ sub testDifferentTypes cdecl( )
 	check( byte, -1,    ubyte, &hFF )
 	check( byte, -1,    short,   -1 )
 	check( byte, -1,   ushort, &hFFFF )
+	check( byte, -1,     long,   -1 )
+	check( byte, -1,    ulong, &hFFFFFFFFu )
 	check( byte, -1,  integer,   -1 )
+#if sizeof( uinteger ) = 4
 	check( byte, -1, uinteger, &hFFFFFFFFu )
+#else
+	check( byte, -1, uinteger, &hFFFFFFFFFFFFFFFFu )
+#endif
 	check( byte, -1,  longint,   -1 )
 	check( byte, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
@@ -572,6 +578,8 @@ sub testDifferentTypes cdecl( )
 	check( ubyte, &hFF,    ubyte, &hFF )
 	check( ubyte, &hFF,    short, &hFF )
 	check( ubyte, &hFF,   ushort, &hFF )
+	check( ubyte, &hFF,     long, &hFF )
+	check( ubyte, &hFF,    ulong, &hFF )
 	check( ubyte, &hFF,  integer, &hFF )
 	check( ubyte, &hFF, uinteger, &hFF )
 	check( ubyte, &hFF,  longint, &hFF )
@@ -581,8 +589,14 @@ sub testDifferentTypes cdecl( )
 	check( short, -1,    ubyte,     -1 )
 	check( short, -1,    short,     -1 )
 	check( short, -1,   ushort, &hFFFF )
+	check( short, -1,     long,     -1 )
+	check( short, -1,    ulong, &hFFFFFFFFu )
 	check( short, -1,  integer,     -1 )
+#if sizeof( uinteger ) = 4
 	check( short, -1, uinteger, &hFFFFFFFFu )
+#else
+	check( short, -1, uinteger, &hFFFFFFFFFFFFFFFFu )
+#endif
 	check( short, -1,  longint,     -1 )
 	check( short, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
@@ -590,6 +604,8 @@ sub testDifferentTypes cdecl( )
 	check( ushort, &hFFFF,    ubyte, &hFFFF )
 	check( ushort, &hFFFF,    short, &hFFFF )
 	check( ushort, &hFFFF,   ushort, &hFFFF )
+	check( ushort, &hFFFF,     long, &hFFFF )
+	check( ushort, &hFFFF,    ulong, &hFFFF )
 	check( ushort, &hFFFF,  integer, &hFFFF )
 	check( ushort, &hFFFF, uinteger, &hFFFF )
 	check( ushort, &hFFFF,  longint, &hFFFF )
@@ -599,8 +615,18 @@ sub testDifferentTypes cdecl( )
 	check( integer, -1,    ubyte,     -1 )
 	check( integer, -1,    short,     -1 )
 	check( integer, -1,   ushort,     -1 )
+	check( integer, -1,     long,     -1 )
+#if sizeof( integer ) = 4
+	check( integer, -1,    ulong, &hFFFFFFFFu )
+#else
+	check( integer, -1,    ulong, &hFFFFFFFFFFFFFFFFu )
+#endif
 	check( integer, -1,  integer,     -1 )
+#if sizeof( integer ) = 4
 	check( integer, -1, uinteger, &hFFFFFFFFu )
+#else
+	check( integer, -1, uinteger, &hFFFFFFFFFFFFFFFFu )
+#endif
 	check( integer, -1,  longint,     -1 )
 	check( integer, -1, ulongint, &hFFFFFFFFFFFFFFFFull )
 
@@ -608,15 +634,31 @@ sub testDifferentTypes cdecl( )
 	check( uinteger, &hFFFFFFFFu,    ubyte, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu,    short, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu,   ushort, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,     long, &hFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFu,    ulong, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu,  integer, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu, uinteger, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu,  longint, &hFFFFFFFFu )
 	check( uinteger, &hFFFFFFFFu, ulongint, &hFFFFFFFFu )
+#if sizeof( uinteger ) = 8
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,     byte, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,    ubyte, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,    short, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,   ushort, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,     long, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,    ulong, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,  integer, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu, uinteger, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu,  longint, &hFFFFFFFFFFFFFFFFu )
+	check( uinteger, &hFFFFFFFFFFFFFFFFu, ulongint, &hFFFFFFFFFFFFFFFFu )
+#endif
 
 	check( longint, -1,     byte,     -1 )
 	check( longint, -1,    ubyte,     -1 )
 	check( longint, -1,    short,     -1 )
 	check( longint, -1,   ushort,     -1 )
+	check( longint, -1,     long,     -1 )
+	check( longint, -1,    ulong,     -1 )
 	check( longint, -1,  integer,     -1 )
 	check( longint, -1, uinteger,     -1 )
 	check( longint, -1,  longint,     -1 )
@@ -626,6 +668,8 @@ sub testDifferentTypes cdecl( )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull,    ubyte, &hFFFFFFFFFFFFFFFFull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull,    short, &hFFFFFFFFFFFFFFFFull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull,   ushort, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,     long, &hFFFFFFFFFFFFFFFFull )
+	check( ulongint, &hFFFFFFFFFFFFFFFFull,    ulong, &hFFFFFFFFFFFFFFFFull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull,  integer, &hFFFFFFFFFFFFFFFFull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull, uinteger, &hFFFFFFFFFFFFFFFFull )
 	check( ulongint, &hFFFFFFFFFFFFFFFFull,  longint, &hFFFFFFFFFFFFFFFFull )
@@ -987,6 +1031,69 @@ namespace iifStringIndexingOrMemberAccess
 	end sub
 end namespace
 
+namespace procptrs
+	sub sub1( )
+	end sub
+
+	sub sub2( )
+	end sub
+
+	function f1( ) as integer
+		function = 1
+	end function
+
+	function f2( ) as integer
+		function = 2
+	end function
+
+	sub test cdecl( )
+		dim as sub( ) psub1, psub2
+		CU_ASSERT( iif( condtrue, psub1, psub2 ) = 0 )
+
+		psub1 = @sub1
+		psub2 = @sub2
+		CU_ASSERT( iif( condtrue , psub1, psub2 ) = @sub1 )
+		CU_ASSERT( iif( condfalse, psub1, psub2 ) = @sub2 )
+		(iif( condtrue , psub1, psub2 ))( )
+		(iif( condfalse, psub1, psub2 ))( )
+
+		dim as function( ) as integer pf1 = @f1, pf2 = @f2
+		CU_ASSERT( (iif( condtrue , pf1, pf2 ))( ) = 1 )
+		CU_ASSERT( (iif( condfalse, pf1, pf2 ))( ) = 2 )
+	end sub
+end namespace
+
+sub testRtlErrorChecking cdecl( )
+	scope
+		dim as string ln
+		CU_ASSERT( ln = "" )
+
+		var i = -1
+
+		var f = freefile( )
+		open iif( i, "data/123.txt", "data/empty.txt" ) for input as #f
+		line input #f, ln
+		close #f
+
+		CU_ASSERT( ln = "1234567890" )
+	end scope
+
+	scope
+		dim as string ln
+		CU_ASSERT( ln = "" )
+
+		var a = 1, b = 0
+		var ext = ".txt"
+
+		var f = freefile( )
+		open "data/" + iif( a, str( a ) + "2", "x" ) + iif( b, "x", "3" + ext ) for input as #f
+		line input #f, ln
+		close #f
+
+		CU_ASSERT( ln = "1234567890" )
+	end scope
+end sub
+
 sub ctor( ) constructor
 	fbcu.add_suite( "tests/expressions/iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
@@ -1004,6 +1111,8 @@ sub ctor( ) constructor
 	fbcu.add_test( "iif() ctors 4", @iifTempVarIntCtorAndCopyCtor.test )
 	fbcu.add_test( "iif() ctors 5", @iifTempVarDefCtorAndIntCtor.test )
 	fbcu.add_test( "member access", @iifStringIndexingOrMemberAccess.test )
+	fbcu.add_test( "procptrs", @procptrs.test )
+	fbcu.add_test( "string iif vs. rtl error checking", @testRtlErrorChecking )
 end sub
 
 end namespace

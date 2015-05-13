@@ -2,13 +2,12 @@
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
+FBCALL double fb_WstrToDouble( const FB_WCHAR *src, ssize_t len )
 {
 	const FB_WCHAR *p, *r;
 	int radix;
+	ssize_t i;
 	FB_WCHAR *q, c;
-	int i;
 	double ret;
 
 	/* skip white spc */
@@ -66,11 +65,10 @@ FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
 	return ret;
 }
 
-/*:::::*/
 FBCALL double fb_WstrVal ( const FB_WCHAR *str )
 {
     double val;
-    int len;
+	ssize_t len;
 
 	if( str == NULL )
 	    return 0.0;
@@ -83,5 +81,3 @@ FBCALL double fb_WstrVal ( const FB_WCHAR *str )
 
 	return val;
 }
-
-

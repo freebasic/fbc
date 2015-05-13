@@ -20,7 +20,7 @@ typedef uint8_t  UTF_8;
 #	include <ctype.h>
 #	define FB_WCHAR char
 #	define _LC(c) c
-#	define FB_WEOF EOF
+#	define FB_WEOF ((FB_WCHAR)EOF)
 #	define wcslen(s) strlen(s)
 #	define iswlower(c) islower(c)
 #	define iswupper(c) isupper(c)
@@ -48,7 +48,7 @@ typedef uint8_t  UTF_8;
 	{
 		return memcpy(mbstr,wcstr,count), count;
 	}
-	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
 	{
 		memcpy(dst,src,chars);
 	}
@@ -67,10 +67,10 @@ typedef uint8_t  UTF_8;
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
 #	if defined HOST_MINGW
-#		define FB_WEOF WEOF
+#		define FB_WEOF ((FB_WCHAR)WEOF)
 #		define swprintf _snwprintf
 #		define FB_WSTR_FROM_INT( buffer, num )        _itow( num, buffer, 10 )
-#		define FB_WSTR_FROM_UINT( buffer, num )       _ultow( (unsigned long) num, buffer, 10 )
+#		define FB_WSTR_FROM_UINT( buffer, num )       _ultow( (unsigned int) num, buffer, 10 )
 #		define FB_WSTR_FROM_UINT_OCT( buffer, num )   _itow( num, buffer, 8 )
 #		define FB_WSTR_FROM_INT64( buffer, num )      _i64tow( num, buffer, 10 )
 #		define FB_WSTR_FROM_UINT64( buffer, num )     _ui64tow( num, buffer, 10 )
@@ -79,7 +79,7 @@ typedef uint8_t  UTF_8;
 #		define FB_WEOF ((FB_WCHAR)-1)
 #	endif
 #	define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
 	{
 		while( chars-- ) {
 			UTF_16 c = *src++;
@@ -98,7 +98,7 @@ typedef uint8_t  UTF_8;
 #	include <wctype.h>
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
-#	define FB_WEOF WEOF
+#	define FB_WEOF ((FB_WCHAR)WEOF)
 #endif
 
 #ifndef FB_WSTR_FROM_INT
@@ -143,7 +143,7 @@ typedef uint8_t  UTF_8;
 
 #ifndef FB_WSTR_WCHARTOCHAR
 #define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
 {
 	while( chars ) {
 		UTF_32 c = *src++;
@@ -156,12 +156,12 @@ static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int 
 #endif
 
 /* Calculate the number of characters between two pointers. */
-static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
+static __inline__ ssize_t fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
 	return ((intptr_t)end - (intptr_t)ini) / sizeof( FB_WCHAR );
 }
 
-static __inline__ FB_WCHAR *fb_wstr_AllocTemp( int chars )
+static __inline__ FB_WCHAR *fb_wstr_AllocTemp( ssize_t chars )
 {
 	/* plus the null-term */
 	return (FB_WCHAR *)malloc( (chars + 1) * sizeof( FB_WCHAR ) );
@@ -173,15 +173,15 @@ static __inline__ void fb_wstr_Del( FB_WCHAR *s )
 }
 
 /* Return the length of a WSTRING. */
-static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
+static __inline__ ssize_t fb_wstr_Len( const FB_WCHAR *s )
 {
 	/* without the null-term */
 	return wcslen( s );
 }
 
-static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, ssize_t dst_chars, const char *src )
 {
-	int chars;
+	ssize_t chars;
 
 	/* NULL? */
 	if( src == NULL ) {
@@ -200,12 +200,12 @@ static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const ch
 		dst[dst_chars] = _LC('\0');
 }
 
-static __inline__ void fb_wstr_ConvToA( char *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_ConvToA( char *dst, const FB_WCHAR *src, ssize_t chars )
 {
 	/* !!!FIXME!!! wcstombs() will fail and not emit '?' or such if the
 	   characters are above 255 and can't be converted? not good.. */
 #if 0
-	int bytes;
+	ssize_t bytes;
 
 	/* plus the null-term */
 	bytes = wcstombs( dst, src, chars + 1 );
@@ -247,7 +247,7 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 }
 
 /* Copy n characters from A to B and terminate with NUL. */
-static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, ssize_t chars )
 {
 	if( (src != NULL) && (chars > 0) )
 		dst = (FB_WCHAR *) FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
@@ -257,14 +257,14 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int cha
 }
 
 /* Copy n characters from A to B. */
-static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, ssize_t chars )
 {
 	return (FB_WCHAR *) FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 }
 
-static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
+static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, ssize_t chars )
 {
-	int i;
+	ssize_t i;
 	for( i = 0; i < chars; i++ )
 		*dst++ = c;
 	/* add null-term */
@@ -272,7 +272,7 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 }
 
 /* Skip all characters (c) from the beginning of the string, max 'n' chars. */
-static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, ssize_t chars, FB_WCHAR c )
 {
 	if( s == NULL )
 		return NULL;
@@ -290,7 +290,7 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars
 }
 
 /* Skip all characters (c) from the end of the string, max 'n' chars. */
-static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, ssize_t chars, FB_WCHAR c )
 {
 	if( (s == NULL) || (chars <= 0) )
 		return s;
@@ -318,7 +318,7 @@ static __inline__ size_t fb_wstr_InstrAny( const FB_WCHAR *s, const FB_WCHAR *ss
 	return wcscspn( s, sset );
 }
 
-static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1, const FB_WCHAR *str2, int chars )
+static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1, const FB_WCHAR *str2, ssize_t chars )
 {
 	return wcsncmp( str1, str2, chars );
 }

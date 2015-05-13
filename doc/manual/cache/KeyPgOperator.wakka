@@ -4,8 +4,9 @@ Declares or defines an overloaded operator.
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
-		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+		[[KeyPgDeclare declare]] **Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
@@ -25,8 +26,9 @@ Declares or defines an overloaded operator.
 	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 
 	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
-	**Operator** //typename//.[[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]]
+	**Operator** //typename//.[[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]]
 	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	**Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -40,7 +42,7 @@ Declares or defines an overloaded operator.
 	##//assignment_op//## 
 		##let += -= *= &= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
 	##//unary_op//##
-		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn##
+		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn len##
 	##//binary_op//##
 		##+ - * & / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=##
 
@@ -161,8 +163,8 @@ Print "  p = &h" & Hex(p)
 Print "'Delete p'"
 Delete p
 %%
-	Output example:
-%%
+		Output example:
+	%%
 'Dim As UDT Ptr p = New UDT'
   Overloaded New operator, with parameter size = &hA00000
   real pointer = &h420020   return pointer = &h420100
@@ -172,6 +174,65 @@ Delete p
   Destructor, @This = &h420100
   Overloaded Delete operator, with parameter buffer = &h420100
   real pointer = &h420020
+%%
+	Small use case of the operator "[]": simplest smart pointers for byte buffers.
+{{fbdoc item="filename" value="examples/manual/udt/operator3.bas"}}%%(freebasic)
+'' operator3.bas
+
+'' A smart pointer is an object which behaves like a pointer but does more than a pointer:
+'' - This object is flexible as a pointer and has the advantage of being an object,
+''   like constructor and destructor called automatically.
+'' - Therefore, the destructor of the smart pointer will be automatically called
+''   when this object goes out of scope, and it will delete the user pointer.
+
+'' Example of simplest smart pointers for byte buffers:
+'' - Constructor and destructor allow to allocate, deallocate, and resize the byte buffer.
+'' - Pointer index operator allows to access buffer elements.
+'' - Copy-constructor and let-operator are just declared in private section,
+''   in order to disallow copy construction and any assignment.
+
+Type smartByteBuffer
+  Public:
+	Declare Constructor (Byval size As Uinteger = 0)
+	Declare Operator [] (Byval index As Uinteger) Byref As Byte
+	Declare Destructor ()
+  Private:
+	Declare Constructor (Byref rhs As smartByteBuffer)
+	Declare Operator Let (Byref rhs As smartByteBuffer)
+	Dim As Byte PTR psbb
+End Type
+
+Constructor smartByteBuffer (Byval size As Uinteger = 0)
+  This.destructor()
+  If size > 0 Then
+	This.psbb = New Byte[size]
+	Print "Byte buffer allocated"
+  End If
+End Constructor
+
+Operator smartByteBuffer.[] (Byval index As Uinteger) Byref As Byte
+  Return This.psbb[index]
+End Operator
+
+Destructor smartByteBuffer ()
+  If This.psbb > 0 Then
+	Delete[] This.psbb
+	This.psbb = 0
+	Print "Byte buffer deallocated"
+  End If
+End destructor
+
+Scope
+  Dim As smartByteBuffer sbb = smartByteBuffer(256)
+  For I As Integer = 0 To 255
+	sbb[I] = I - 128
+  Next I
+  Print
+  For I As Integer = 0 To 255
+	Print Using "#####"; sbb[I];
+  Next I
+  Print
+End Scope
 %%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.

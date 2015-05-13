@@ -3,6 +3,7 @@
 #include "../fb.h"
 #include "fb_private_console.h"
 
+/* Caller is expected to hold FB_LOCK() */
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING *res;
@@ -19,16 +20,27 @@ FBSTRING *fb_ConsoleInkey( void )
 	return res;
 }
 
+/* Doing synchronization manually here because getkey() is blocking */
 int fb_ConsoleGetkey( void )
 {
-	int k = fb_hConsoleGetKey( TRUE );
-    while( k==-1 ) {
-        fb_Sleep( -1 );
-        k = fb_hConsoleGetKey( TRUE );
-    }
-    return k;
+	int k;
+
+	do {
+		FB_LOCK( );
+		k = fb_hConsoleGetKey( TRUE );
+		FB_UNLOCK( );
+
+		if( k != -1 ) {
+			break;
+		}
+
+		fb_Sleep( -1 );
+	} while( 1 );
+
+	return k;
 }
 
+/* Caller is expected to hold FB_LOCK() */
 int fb_ConsoleKeyHit( void )
 {
     return fb_hConsolePeekKey( TRUE ) != -1;

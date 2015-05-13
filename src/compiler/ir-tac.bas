@@ -130,6 +130,8 @@ declare sub hFreePreservedRegs _
  		_
 	)
 
+#if __FB_DEBUG__
+declare sub hDumpFreeIntRegs( )
 declare sub hDump _
 	( _
 		byval op as integer, _
@@ -138,6 +140,9 @@ declare sub hDump _
 		byval vr as IRVREG ptr, _
 		byval wrapline as integer = FALSE _
 	)
+declare function tacvregDump( byval tacvreg as IRTACVREG ptr ) as string
+declare sub tacDump( byval tac as IRTAC ptr )
+#endif
 
 declare sub _flush _
 	( _
@@ -202,13 +207,7 @@ private function _getOptionValue _
 
 end function
 
-
-'':::::
-private sub hLoadIDX _
-	( _
-		byval vreg as IRVREG ptr _
-	)
-
+private sub hLoadIDX( byval vreg as IRVREG ptr )
     dim as IRVREG ptr vi = any
 
 	if( vreg = NULL ) then
@@ -232,10 +231,7 @@ private sub hLoadIDX _
 		exit sub
 	end if
 
-	regTB(FB_DATACLASS_INTEGER)->ensure( regTB(FB_DATACLASS_INTEGER), _
-										 vi, _
-										 typeGetSize( FB_DATATYPE_INTEGER ) )
-
+	regTB(FB_DATACLASS_INTEGER)->ensure( regTB(FB_DATACLASS_INTEGER), vi, NULL, typeGetSize( FB_DATATYPE_INTEGER ) )
 end sub
 
 '':::::
@@ -259,25 +255,20 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-''::::
-private sub hRelink _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval tvreg as IRTACVREG ptr _
-	) static
-
+'' Add the IRTACVREG to the IRVREG's list
+private sub hRelink( byval vreg as IRVREG ptr, byval tvreg as IRTACVREG ptr )
 	if( vreg->tacvhead = NULL ) then
 		vreg->tacvhead = tvreg
 	else
 		vreg->tacvtail->next = tvreg
 	end if
-
 	vreg->tacvtail = tvreg
-
 end sub
 
+'' Setup an IRTAC's vr, v1 or v2 fields for the given IRVREG and its idx/aux
+'' sub-IRVREGs.
 #macro hRelinkVreg(v,t)
-    t->v.reg.pParent = NULL
+    t->v.reg.parent = NULL
     t->v.reg.next = NULL
 
     if( v <> NULL ) then
@@ -286,7 +277,7 @@ end sub
 
     	if( v->vidx <> NULL ) then
     		t->v.idx.vreg = v->vidx
-    		t->v.idx.pParent = @v->vidx
+    		t->v.idx.parent = v
     		t->v.idx.next = NULL
     		hRelink( v->vidx, @t->v.idx )
     		v->vidx->taclast = t
@@ -294,7 +285,7 @@ end sub
 
     	if( v->vaux <> NULL ) then
     		t->v.aux.vreg = v->vaux
-    		t->v.aux.pParent = @v->vaux
+    		t->v.aux.parent = v
     		t->v.aux.next = NULL
     		hRelink( v->vaux, @t->v.aux )
     		v->vaux->taclast = t
@@ -315,6 +306,7 @@ private sub _emit _
 
     dim as IRTAC ptr t
 
+	'' Add a new IRTAC node to represent the three operand vregs
     t = flistNewItem( @ctx.tacTB )
 
     t->pos = ctx.taccnt
@@ -357,29 +349,25 @@ private sub _procEnd _
 
 end sub
 
-''::::
-private function _procAllocArg _
+private sub _procAllocArg _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocArg( proc, sym, lgt )
+	emitProcAllocArg( proc, sym )
 
-end function
+end sub
 
-'':::::
-private function _procAllocLocal _
+private sub _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
+		byval sym as FBSYMBOL ptr _
+	)
 
-	function = emitProcAllocLocal( proc, sym, lgt )
+	emitProcAllocLocal( proc, sym )
 
-end function
+end sub
 
 '':::::
 private function _procGetFrameRegName _
@@ -482,7 +470,7 @@ private sub _emitProcEnd _
 	if( symbProcReturnsOnStack( proc ) ) then
 		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
 		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
-			bytestopop += typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) )
+			bytestopop += env.pointersize
 		end if
 	end if
 
@@ -537,7 +525,7 @@ private sub _emitUop _
 end sub
 
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
+	select case( typeGetClass( v1->dtype ) )
 	case FB_DATACLASS_INTEGER
 		select case typeGet( dtype )
 		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
@@ -596,28 +584,18 @@ private sub _emitStack _
 end sub
 
 '':::::
-private sub _emitPushUDT _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
-	_emit( AST_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
-
-end sub
-
-'':::::
 private sub _emitPushArg _
 	( _
+		byval param as FBSYMBOL ptr, _
 		byval vr as IRVREG ptr, _
-		byval plen as integer, _
+		byval udtlen as longint, _
 		byval level as integer _
-	) static
+	)
 
-	if( plen = 0 ) then
+	if( udtlen = 0 ) then
 		_emitStack( AST_OP_PUSH, vr )
 	else
-		_emitPushUDT( vr, plen )
+		_emit( AST_OP_PUSHUDT, vr, NULL, NULL, NULL, udtlen )
 	end if
 
 end sub
@@ -660,13 +638,14 @@ end sub
 '':::::
 private sub _emitCallPtr _
 	( _
+		byval proc as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer, _
 		byval level as integer _
 	)
 
-	_emit( AST_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
+	_emit( AST_OP_CALLPTR, v1, NULL, vr, proc, bytestopop )
 
 end sub
 
@@ -692,12 +671,12 @@ private sub _emitJmpTb _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval tbsym as FBSYMBOL ptr, _
-		byval values as uinteger ptr, _
+		byval values as ulongint ptr, _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as uinteger, _
-		byval maxval as uinteger _
+		byval minval as ulongint, _
+		byval maxval as ulongint _
 	)
 
 	_flush( )
@@ -711,7 +690,7 @@ private sub _emitMem _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval bytes as integer _
+		byval bytes as longint _
 	)
 
 	_emit( op, v1, v2, NULL, 0, bytes )
@@ -767,27 +746,28 @@ end sub
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
-private sub _emitVarIniI( byval dtype as integer, byval value as integer )
-	emitVARINIi( dtype, value )
+private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
+	emitVARINIi( symbGetType( sym ), value )
 end sub
 
-private sub _emitVarIniF( byval dtype as integer, byval value as double )
-	emitVARINIf( dtype, value )
+private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
+	emitVARINIf( symbGetType( sym ), value )
 end sub
 
-private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
-	emitVARINI64( dtype, value )
-end sub
-
-private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
-	emitVARINIOFS( symbGetMangledName( sym ), ofs )
+private sub _emitVarIniOfs _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr, _
+		byval ofs as longint _
+	)
+	emitVARINIOFS( symbGetMangledName( rhs ), ofs )
 end sub
 
 private sub _emitVarIniStr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as zstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as const zstring ptr s
@@ -819,9 +799,9 @@ end sub
 '':::::
 private sub _emitVarIniWstr _
 	( _
-		byval totlgt as integer, _
+		byval totlgt as longint, _
 		byval litstr as wstring ptr, _
-		byval litlgt as integer _
+		byval litlgt as longint _
 	)
 
 	dim as zstring ptr s
@@ -853,7 +833,7 @@ private sub _emitVarIniWstr _
 
 end sub
 
-private sub _emitVarIniPad( byval bytes as integer )
+private sub _emitVarIniPad( byval bytes as longint )
 	emitVARINIPAD( bytes )
 end sub
 
@@ -894,25 +874,23 @@ private function hNewVR _
 	v->typ = vtype
 	v->dtype = typeGet( dtype )
 	v->subtype = subtype
-	v->sym = NULL
 	v->reg = INVALID
-	v->vidx	= NULL
-	v->vaux	= NULL
-	v->ofs = 0
-	v->vector = 0
-
 	if( env.clopt.fputype = FB_FPUTYPE_FPU ) then
 		v->regFamily = IR_REG_FPU_STACK
 	else
 		v->regFamily = IR_REG_SSE
 	end if
-
+	v->vector = 0
+	v->sym = NULL
+	v->ofs = 0
+	v->mult = 0
+	v->vidx	= NULL
+	v->vaux	= NULL
 	v->tacvhead = NULL
 	v->tacvtail = NULL
 	v->taclast = NULL
 
 	function = v
-
 end function
 
 '':::::
@@ -935,32 +913,7 @@ private function _allocVreg _
 
 end function
 
-'':::::
 private function _allocVrImm _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval value as integer _
-	) as IRVREG ptr
-
-	dim as IRVREG ptr vr = any
-
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.int = value
-
-	'' longint?
-	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-		 vr->vaux->value.int = 0
-	end if
-
-	function = vr
-
-end function
-
-'':::::
-private function _allocVrImm64 _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -971,18 +924,21 @@ private function _allocVrImm64 _
 
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
-	vr->value.int = cuint( value )
+	if( ISLONGINT( dtype ) ) then
+		'' Only the low 32bits go in the main vreg
+		vr->value.i = value and &hFFFFFFFFll
 
-	'' aux
-	vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
-
-	vr->vaux->value.int = cint( value shr 32 )
+		'' The aux vreg takes the high 32bits
+		'' (doing cunsg() to get an unsigned shr, no sign extension)
+		vr->vaux = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IMM )
+		vr->vaux->value.i = cunsg( value ) shr 32
+	else
+		vr->value.i = value
+	end if
 
 	function = vr
-
 end function
 
-'':::::
 private function _allocVrImmF _
 	( _
 		byval dtype as integer, _
@@ -991,19 +947,19 @@ private function _allocVrImmF _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
+	dim as FBSYMBOL ptr s = any
 
-	'' the FPU doesn't support immediates? create a temp const var_..
-	if( irGetOption( IR_OPT_FPUIMMEDIATES ) = FALSE ) then
-		dim as FBSYMBOL ptr s = symbAllocFloatConst( value, dtype )
-		return irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
+	'' float immediates supported by the FPU?
+	if( irGetOption( IR_OPT_FPUIMMEDIATES ) ) then
+		vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
+		vr->value.f = value
+	else
+		'' create a temp const var
+		s = symbAllocFloatConst( value, dtype )
+		vr = irAllocVRVAR( dtype, subtype, s, symbGetOfs( s ) )
 	end if
 
-	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
-
-	vr->value.float = value
-
 	function = vr
-
 end function
 
 '':::::
@@ -1012,7 +968,7 @@ private function _allocVrVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any, va = any
@@ -1028,7 +984,7 @@ private function _allocVrVar _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_VAR )
 		vr->vaux = va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1041,7 +997,7 @@ private function _allocVrIdx _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval mult as integer, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
@@ -1059,7 +1015,7 @@ private function _allocVrIdx _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1071,7 +1027,7 @@ private function _allocVrPtr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval ofs as integer, _
+		byval ofs as longint, _
 		byval vidx as IRVREG ptr _
 	) as IRVREG ptr
 
@@ -1087,7 +1043,7 @@ private function _allocVrPtr _
 	if( ISLONGINT( dtype ) ) then
 		va = hNewVR( FB_DATATYPE_INTEGER, NULL, IR_VREGTYPE_IDX )
 		vr->vaux= va
-		va->ofs = ofs + FB_INTEGERSIZE
+		va->ofs = ofs + 4  '' vaux = the upper 4 bytes
 	end if
 
 	function = vr
@@ -1100,7 +1056,7 @@ private function _allocVrOfs _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval symbol as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval ofs as longint _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
@@ -1132,6 +1088,28 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #if __FB_DEBUG__
+private sub hDumpFreeIntRegs( )
+	dim as string free, used
+	dim as integer reg = any
+
+	'' For each register in the integer class
+	reg = regTB(FB_DATACLASS_INTEGER)->getFirst( regTB(FB_DATACLASS_INTEGER) )
+	while( reg <> INVALID )
+
+		if( regTB(FB_DATACLASS_INTEGER)->isFree( regTB(FB_DATACLASS_INTEGER), reg ) ) then
+			if( len( free ) > 0 ) then free += ", "
+			free += emitDumpRegName( FB_DATATYPE_INTEGER, reg )
+		else
+			if( len( used ) > 0 ) then used += ", "
+			used += emitDumpRegName( FB_DATATYPE_INTEGER, reg )
+		end if
+
+		reg = regTB(FB_DATACLASS_INTEGER)->getNext( regTB(FB_DATACLASS_INTEGER), reg )
+	wend
+
+	print , "used: " & used & " | free: " & free
+end sub
+
 private sub hDump _
 	( _
 		byval op as integer, _
@@ -1189,6 +1167,33 @@ private sub hDump _
 	end if
 
 end sub
+
+function tacvregDump( byval tacvreg as IRTACVREG ptr ) as string
+	if( tacvreg = NULL ) then
+		return "<NULL>"
+	end if
+	function = "IRTACVREG( " & _
+		"vreg=" & vregDump( tacvreg->vreg ) & ", " & _
+		"parent=" & vregDump( tacvreg->parent ) & ", " & _
+		"next=" & tacvregDump( tacvreg->next ) & " )"
+end function
+
+sub tacDump( byval tac as IRTAC ptr )
+	if( tac = NULL ) then
+		print "IRTAC: <NULL>"
+		exit sub
+	end if
+	print "IRTAC: pos=" & tac->pos & ", op=" & tac->op
+	print , "vr vreg: " & tacvregDump( @tac->vr.reg )
+	print , "vr vidx: " & tacvregDump( @tac->vr.idx )
+	print , "vr vaux: " & tacvregDump( @tac->vr.aux )
+	print , "v1 vreg: " & tacvregDump( @tac->v1.reg )
+	print , "v1 vidx: " & tacvregDump( @tac->v1.idx )
+	print , "v1 vaux: " & tacvregDump( @tac->v1.aux )
+	print , "v2 vreg: " & tacvregDump( @tac->v2.reg )
+	print , "v2 vidx: " & tacvregDump( @tac->v2.idx )
+	print , "v2 vaux: " & tacvregDump( @tac->v2.aux )
+end sub
 #endif
 
 '':::::
@@ -1206,8 +1211,13 @@ private sub hRename _
 	t = vold->tacvhead
 	do
 		'' if it's an index or auxiliary vreg, update parent
-		if( t->pParent <> NULL ) then
-			*t->pParent = vnew
+		if( t->parent ) then
+			assert( (t->parent->vidx = vold) or (t->parent->vaux = vold) )
+			if( t->parent->vidx = vold ) then
+				t->parent->vidx = vnew
+			else
+				t->parent->vaux = vnew
+			end if
 		end if
 		t->vreg = vnew
 		t = t->next
@@ -1448,19 +1458,111 @@ private sub hFreePreservedRegs( ) static
 
 end sub
 
-'':::::
-private sub hPreserveRegs _
-	( _
-		byval ptrvreg as IRVREG ptr = NULL _
-	) static
+private function hPreserveReg( byval vr as IRVREG ptr ) as integer
+	dim as integer vr_dclass = any, vr_dtype = any, vr_typ = any
+	dim as integer preserved1 = any, preserved2 = any
+	dim as integer freg1 = any, freg2 = any
+	dim as IRVREG origvreg = any, origvaux = any, destvreg = any
 
-    dim as integer class_
+	'' If the vreg uses a register that isn't preserved across calls,
+	'' we have to allocate another register that is preserved, and copy
+	'' over the data. If there is no other free preserved register
+	'' available, we must spill and put the data into a temp var on stack.
+	''
+	'' For LONGINTs this is more complex, because both main and aux vregs
+	'' must be checked. If either needs to be spilled, both should be
+	'' spilled, to ensure the LONGINT's dwords stay together, either both
+	'' in regs, or both on stack.
+
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+
+	assert( irIsREG( vr ) )
+	origvreg = *vr
+	preserved1 = emitIsRegPreserved( vr_dclass, vr->reg )
+	if( ISLONGINT( vr_dtype ) ) then
+		assert( irIsREG( vr->vaux ) )
+		origvaux = *vr->vaux
+		origvreg.vaux = @origvaux
+		preserved2 = emitIsRegPreserved( vr_dclass, vr->vaux->reg )
+	else
+		preserved2 = TRUE
+	end if
+
+	if( preserved1 and preserved2 ) then
+		'' Both vr and vaux (if any) already use regs that will be
+		'' preserved, nothing to do
+		return TRUE
+	end if
+
+	if( preserved1 = FALSE ) then
+		'' Find a free preserved reg to copy to
+		freg1 = emitGetFreePreservedReg( vr_dclass, vr_dtype )
+		if( freg1 = INVALID ) then
+			'' None free, need to spill
+			return FALSE
+		end if
+		vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg1, vr, NULL )
+	end if
+
+	if( preserved2 = FALSE ) then
+		'' Find a 2nd free preserved reg (this relies on the 1st one
+		'' already being allocated, otherwise this would just return
+		'' the same reg again)
+		freg2 = emitGetFreePreservedReg( FB_DATACLASS_INTEGER, FB_DATATYPE_INTEGER )
+		if( freg2 = INVALID ) then
+			'' None free, need to spill
+			if( preserved1 = FALSE ) then
+				'' Restore vr to its old reg
+				regTB(vr_dclass)->free( regTB(vr_dclass), vr->reg )
+				vr->reg = origvreg.reg
+			end if
+			return FALSE
+		end if
+		vr->vaux->reg = regTB(FB_DATACLASS_INTEGER)->allocateReg( regTB(FB_DATACLASS_INTEGER), freg2, vr->vaux, vr )
+	end if
+
+	if( (not preserved1) and (not preserved2) ) then
+		'' Both vr and its vaux changed, move both to their new regs
+		emitMOV( vr, @origvreg )
+	elseif( preserved1 = FALSE ) then
+		'' vr changed, vaux (if any) didn't
+		if( ISLONGINT( vr_dtype ) ) then
+			'' Copy vr temporarily, remapping its type and removing
+			'' the vaux vreg, so we can move only the low dword
+			destvreg = *vr
+			destvreg.dtype = FB_DATATYPE_INTEGER
+			destvreg.vaux = NULL
+
+			origvreg.dtype = FB_DATATYPE_INTEGER
+			origvreg.vaux = NULL
+
+			emitMOV( @destvreg, @origvreg )
+		else
+			emitMOV( vr, @origvreg )
+		end if
+	else
+		'' vaux changed, vr didn't
+		emitMOV( vr->vaux, @origvaux )
+	end if
+
+	'' Free the original register(s)
+	if( preserved1 = FALSE ) then
+		regTB(vr_dclass)->free( regTB(vr_dclass), origvreg.reg )
+	end if
+	if( preserved2 = FALSE ) then
+		regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), origvaux.reg )
+	end if
+
+	function = TRUE
+end function
+
+private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL )
+	dim as integer npreg = any, reg = any
+	dim as IRVREG ptr vr = any, vauxparent = any
 
 	'' for each reg class
-	for class_ = 0 to EMIT_REGCLASSES-1
-
+	for class_ as integer = 0 to EMIT_REGCLASSES-1
     	'' set the register that shouldn't be preserved (used for CALLPTR only)
-    	dim as integer npreg
 
     	npreg = INVALID
     	if( class_ = FB_DATACLASS_INTEGER ) then
@@ -1482,82 +1584,76 @@ private sub hPreserveRegs _
     	end if
 
 		'' for each register on that class
-    	dim as integer reg
-
 		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
 			if( (regTB(class_)->isFree( regTB(class_), reg ) = FALSE) and _
 				(reg <> npreg) ) then
 
-    			dim as IRVREG ptr vr
-    			dim as integer vr_dclass, vr_dtype, vr_typ
-
 				'' get the attached vreg
-				vr = regTB(class_)->getVreg( regTB(class_), reg )
-                assert( vr <> NULL )
+				vr = regTB(class_)->getVreg( regTB(class_), reg, vauxparent )
+				assert( irIsREG( vr ) and (vr->reg = reg) )
 
-                hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+				'' If this is a LONGINT vreg's vaux, use the main vreg instead.
+				'' This way we ensure that we'll always check both the main and
+				'' aux vregs, no matter which one is found first in this loop.
+				if( vauxparent ) then
+					assert( vauxparent->vaux = vr )
+					vr = vauxparent
+				end if
 
-        		'' if reg is not preserved between calls
-        		if( emitIsRegPreserved( vr_dclass, reg ) = FALSE ) then
-    				dim as integer freg
+				'' Move to other registers if needed and possible
+				if( hPreserveReg( vr ) = FALSE ) then
+					'' Failed, no more free regs, spill to stack
+					irStoreVR( vr, NULL )
+				end if
+			end if
 
-        			'' find a preserved reg to copy to
-        			freg = emitGetFreePreservedReg( vr_dclass, vr_dtype )
-
-        			'' if none free, spill reg
-        			if( freg = INVALID ) then
-        				irStoreVR( vr, reg )
-
-        			'' else, copy it to a preserved reg
-        			else
-						dim as IRVREG src, dst
-
-						'' The original vr probably needs to be preserved (?),
-						'' only its IRVREG->reg field must be updated to the new
-						'' register it was moved to.
-						''
-						'' Special care must be taken with LONGINTs (x86 assumption),
-						'' because they will use a second vreg (through IRVREG->vaux),
-						'' and we don't want the MOV to touch that, since it's
-						'' a different register. So, to prevent the MOV emitting from
-						'' thinking it should mov both vregs, the type must be remapped.
-						'' The vaux vreg will be handled implicitly by another iteration
-						'' of this loop, if it uses any reg that needs to be preserved...
-
-						'' src = the vreg using the current reg
-						'' dst = the vreg using the newly allocated reg
-						assert( irIsREG( vr ) )
-						src = *vr
-						vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
-						dst = *vr
-
-						if( ISLONGINT( vr->dtype ) ) then
-							'' Remap type and forget the vaux vreg
-							src.dtype = FB_DATATYPE_INTEGER
-							src.vaux = NULL
-							dst.dtype = FB_DATATYPE_INTEGER
-							dst.vaux = NULL
-						end if
-
-						emitMOV( @dst, @src )
-        			end if
-
-        			'' free reg
-        			regTB(vr_dclass)->free( regTB(vr_dclass), reg )
-        		end if
-        	end if
-
-        	'' next reg
-        	reg = regTB(class_)->getNext( regTB(class_), reg )
+			'' next reg
+			reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
-
 	next
 
 end sub
 
-'':::::
+private sub hLoadPointer( byval v1 as IRVREG ptr )
+	dim as integer vtype = any, dtype = any, dclass = any
+	hGetVREG( v1, dtype, dclass, vtype )
+	hLoadIDX( v1 )
+	if( vtype = IR_VREGTYPE_REG ) then
+		regTB(dclass)->ensure( regTB(dclass), v1, NULL, typeGetSize( dtype ) )
+	end if
+end sub
+
+private sub hLoadResult( byval proc as FBSYMBOL ptr, byval vr as IRVREG ptr )
+	dim as integer vtype = any, dtype = any, dclass = any, reg1 = any, reg2 = any
+	dim as IRVREG ptr va = any
+
+	'' Load result, if any (fb allows function calls w/o saving the result)
+	if( vr ) then
+		hGetVREG( vr, dtype, dclass, vtype )
+		emitGetResultReg( dtype, dclass, reg1, reg2 )
+
+		if( ISLONGINT( dtype ) ) then
+			va = vr->vaux
+			va->reg = regTB(dclass)->allocateReg( regTB(dclass), reg2, va, vr )
+			va->typ = IR_VREGTYPE_REG
+		end if
+
+		vr->reg = regTB(dclass)->allocateReg( regTB(dclass), reg1, vr, NULL )
+		vr->typ = IR_VREGTYPE_REG
+
+		hFreeREG( vr )
+	else
+		'' Integer function results in EAX[:EDX] or float results in xmm0 can just be ignored,
+		'' but float results in st(0) must be popped from the FPU stack.
+		if( (typeGetClass( symbGetProcRealType( proc ) ) = FB_DATACLASS_FPOINT) and _
+		    (proc->proc.returnMethod <> FB_RETURN_SSE) ) then
+			emitPOPST0( )
+		end if
+	end if
+end sub
+
 private sub hFlushCALL _
 	( _
 		byval op as integer, _
@@ -1565,65 +1661,33 @@ private sub hFlushCALL _
 		byval bytestopop as integer, _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr _
-	) static
+	)
 
-	dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
-	dim as IRVREG ptr va
-
-	'' function?
-	if( proc <> NULL ) then
+	select case( op )
+	case AST_OP_CALLFUNCT
 		'' save used registers and free the FPU stack
 		hPreserveRegs( )
 
 		emitCALL( proc, bytestopop )
+		hLoadResult( proc, vr )
 
-	'' call or jump to pointer..
-	else
-		'' if it's a CALL, save used registers and free the FPU stack
-		if( op = AST_OP_CALLPTR ) then
-			hPreserveRegs( v1 )
-		end if
+	case AST_OP_CALLPTR
+		hPreserveRegs( v1 )
 
-		'' load pointer
-		hGetVREG( v1, vr_dtype, vr_dclass, vr_typ )
-		hLoadIDX( v1 )
-		if( vr_typ = IR_VREGTYPE_REG ) then
-			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-			                          v1, _
-			                          typeGetSize( vr_dtype ) )
-		end if
-
-		'' CALLPTR
-		if( op = AST_OP_CALLPTR ) then
-			emitCALLPTR( v1, bytestopop )
-		'' JUMPPTR
-		else
-			emitJUMPPTR( v1 )
-		end if
-
-		'' free pointer
+		hLoadPointer( v1 )
+		emitCALLPTR( v1, bytestopop )
 		hFreeREG( v1 )
-	end if
+		hLoadResult( proc, vr )
 
-	'' load result
-	if( vr <> NULL ) then
-		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
+	case AST_OP_JUMPPTR
+		hLoadPointer( v1 )
+		emitJUMPPTR( v1 )
+		hFreeREG( v1 )
+		assert( vr = NULL )
 
-		emitGetResultReg( vr_dtype, vr_dclass, vr_reg, vr_reg2 )
-
-		'' longints..
-		if( ISLONGINT( vr_dtype ) ) then
-			va = vr->vaux
-			va->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg2, va )
-			va->typ = IR_VREGTYPE_REG
-		end if
-
-		vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg, vr )
-		vr->typ = IR_VREGTYPE_REG
-
-		'' fb allows function calls w/o saving the result
-		hFreeREG( vr )
-	end if
+	case else
+		assert( FALSE )
+	end select
 
 end sub
 
@@ -1654,17 +1718,10 @@ private sub hFlushSTACK _
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
 	''
@@ -1710,17 +1767,10 @@ private sub hFlushUOP _
 			'' handle longint
 			if( ISLONGINT( vr_dtype ) ) then
 				va = vr->vaux
-				regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(vr_dclass)->ensure( regTB(vr_dclass), va, vr, typeGetSize( FB_DATATYPE_INTEGER ) )
 				vr_dtype = FB_DATATYPE_INTEGER
 			end if
-
-			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-									  vr, _
-									  typeGetSize( vr_dtype ) )
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), vr, NULL, typeGetSize( vr_dtype ) )
 		end if
 	end if
 
@@ -1729,11 +1779,7 @@ private sub hFlushUOP _
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
 
@@ -1742,9 +1788,7 @@ private sub hFlushUOP _
 			v1->vector = 0
 		end if
 
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 
 		if( op = AST_OP_SWZ_REPEAT ) then
 			v1->vector = v1vector
@@ -1845,52 +1889,30 @@ private sub hFlushBOP _
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
-				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, v2, typeGetSize( FB_DATATYPE_INTEGER ) )
 				v2_dtype = FB_DATATYPE_INTEGER
 			end if
-
-			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-									  v2, _
-									  typeGetSize( v2_dtype ) )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		end if
-
 	else
 		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
-				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, v2, typeGetSize( FB_DATATYPE_INTEGER ) )
 				v2_dtype = FB_DATATYPE_INTEGER
 			end if
-
-			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-									  v2, _
-									  typeGetSize( v2_dtype ) )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		end if
 
 		'' destine allocation comes *after* source, 'cause the x86 FPU stack
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
     ''
@@ -1937,18 +1959,10 @@ private sub hFlushBOP _
 			'' handle longint
 			if( ISLONGINT( vr_dtype ) ) then
 				va = vr->vaux
-				regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(vr_dclass)->ensure( regTB(vr_dclass), va, vr, typeGetSize( FB_DATATYPE_INTEGER ) )
 				vr_dtype = FB_DATATYPE_INTEGER
 			end if
-
-			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-									  vr, _
-									  typeGetSize( vr_dtype ) )
-
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), vr, NULL, typeGetSize( vr_dtype ) )
 			emitMOV( vr, v1 )
 		end if
 	end if
@@ -2002,17 +2016,10 @@ private sub hFlushCOMP _
 		'' handle longint
 		if( ISLONGINT( v2_dtype ) ) then
 			va = v2->vaux
-			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), va, v2, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v2_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-								  v2, _
-								  typeGetSize( v2_dtype ) )
+		regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		v2_typ = IR_VREGTYPE_REG
 	end if
 
@@ -2034,25 +2041,16 @@ private sub hFlushCOMP _
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
 	'' result not equal destine? (can happen with DAG optimizations and floats comparations)
 	if( vr <> NULL ) then
 		if( vr <> v1 ) then
-			vr->reg = regTB(vr_dclass)->_allocate( regTB(vr_dclass), _
-												  vr, _
-												  typeGetSize( vr_dtype ) )
+			vr->reg = regTB(vr_dclass)->_allocate( regTB(vr_dclass), vr, NULL, typeGetSize( vr_dtype ) )
 			vr->typ = IR_VREGTYPE_REG
 		end if
 	end if
@@ -2082,37 +2080,30 @@ private sub hFlushCOMP _
 
 end sub
 
-'':::::
-private sub hSpillRegs( ) static
-    dim as IRVREG ptr vr
-    dim as integer reg
-    dim as integer class_
+private sub hSpillRegs( )
+	dim as IRVREG ptr vr = any, vauxparent = any
+	dim as integer reg = any
 
 	'' for each reg class
-	for class_ = 0 to EMIT_REGCLASSES-1
-
+	for class_ as integer = 0 to EMIT_REGCLASSES-1
 		'' for each register on that class
 		reg = regTB(class_)->getFirst( regTB(class_) )
 		do until( reg = INVALID )
 			'' if not free
 			if( regTB(class_)->isFree( regTB(class_), reg ) = FALSE ) then
-
 				'' get the attached vreg
-				vr = regTB(class_)->getVreg( regTB(class_), reg )
+				vr = regTB(class_)->getVreg( regTB(class_), reg, vauxparent )
+				assert( irIsREG( vr ) )
+				assert( vr->reg = reg )
 
-        		'' spill
-        		irStoreVR( vr, reg )
+				'' spill
+				irStoreVR( vr, vauxparent )
+			end if
 
-        		'' free reg
-        		regTB(class_)->free( regTB(class_), reg )
-        	end if
-
-        	'' next reg
-        	reg = regTB(class_)->getNext( regTB(class_), reg )
+			'' next reg
+			reg = regTB(class_)->getNext( regTB(class_), reg )
 		loop
-
 	next
-
 end sub
 
 '':::::
@@ -2143,21 +2134,13 @@ private sub hFlushSTORE _
     '' if dst is a fpoint, only load src if its a reg (x86 assumption)
 	if( (v2_typ = IR_VREGTYPE_REG) or _
 		((v2_typ <> IR_VREGTYPE_IMM) and (v1_dclass = FB_DATACLASS_INTEGER)) ) then
-
 		'' handle longint
 		if( ISLONGINT( v2_dtype ) ) then
 			va = v2->vaux
-			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), va, v2, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v2_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-								  v2, _
-								  typeGetSize( v2_dtype ) )
+		regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 	end if
 
 	''
@@ -2191,40 +2174,22 @@ private sub hFlushLOAD _
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-									  va, _
-									  typeGetSize( FB_DATATYPE_INTEGER ), _
-									  FALSE )
-
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 
 	case AST_OP_LOADRES
 		if( v1_typ = IR_VREGTYPE_REG ) then
 			'' handle longint
 			if( ISLONGINT( v1_dtype ) ) then
 				va = v1->vaux
-				regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(v1_dclass)->ensure( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 				'' can't change v1_dtype
-				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-												   v1, _
-												   typeGetSize( FB_DATATYPE_INTEGER ) )
-
+				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( FB_DATATYPE_INTEGER ) )
 			else
-				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-												   v1, _
-												   typeGetSize( v1_dtype ) )
+				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 			end if
-
-
 		else
 			v1_reg = INVALID
 		end if
@@ -2237,11 +2202,11 @@ private sub hFlushLOAD _
 			'' handle longint
 			if( ISLONGINT( v1_dtype ) ) then
 				va = vr->vaux
-				va->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg2, va )
+				va->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg2, va, vr )
 				va->typ = IR_VREGTYPE_REG
 			end if
 
-			vr->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg, vr )
+			vr->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg, vr, NULL )
 			vr->typ = IR_VREGTYPE_REG
 
 			'' decide where to put the float (st(0) or xmm0) at the end of the function
@@ -2290,28 +2255,26 @@ private sub hFlushCONVERT _
 		'' fp to fp conversion with source already on stack? do nothing..
 		if( v2_dclass = FB_DATACLASS_FPOINT ) then
 			if( irGetOption( IR_OPT_FPUCONV ) ) then
-
 				v1->regFamily = v2->regFamily
 				if( v2->regFamily = IR_REG_FPU_STACK ) then exit sub
 			else
 				v1->reg = v2->reg
 				v2->reg = INVALID
 				v1->typ = IR_VREGTYPE_REG
-				regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1 )
+				regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1, NULL )
 				exit sub
-			endif
-
+			end if
 		end if
 
 		'' it's an integer, check if used again
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if any operand is a byte (because [E]SI/[E]DI) or longint
 			select case typeGetSize( v1_dtype )
-			case 1, FB_INTEGERSIZE*2
+			case 1, 8
 
 			case else
 				select case typeGetSize( v2_dtype )
-				case 1, FB_INTEGERSIZE*2
+				case 1, 8
 
 				case else
 					reuse = TRUE
@@ -2323,40 +2286,26 @@ private sub hFlushCONVERT _
 	if( reuse ) then
 		v1->reg = v2->reg
 		v1->typ = IR_VREGTYPE_REG
-		regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1 )
-
+		regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1, NULL )
 	else
 		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
 			'' handle longint
 			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
-				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-										  va, _
-										  typeGetSize( FB_DATATYPE_INTEGER ), _
-										  FALSE )
-
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, v2, typeGetSize( FB_DATATYPE_INTEGER ) )
 				v2_dtype = FB_DATATYPE_INTEGER
 			end if
-
-			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
-									  v2, _
-									  typeGetSize( v2_dtype ) )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2, NULL, typeGetSize( v2_dtype ) )
 		end if
 
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
-												  va, _
-												  typeGetSize( FB_DATATYPE_INTEGER ) )
+			va->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), va, v1, typeGetSize( FB_DATATYPE_INTEGER ) )
 			va->typ = IR_VREGTYPE_REG
-
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
-
-		v1->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
-											  v1, _
-											  typeGetSize( v1_dtype ) )
+		v1->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 		v1->typ = IR_VREGTYPE_REG
 	end if
 
@@ -2395,15 +2344,11 @@ private sub hFlushADDR _
 
 	''
 	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
-		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
-								  v1, _
-								  typeGetSize( v1_dtype ) )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1, NULL, typeGetSize( v1_dtype ) )
 	end if
 
 	if( vr_typ = IR_VREGTYPE_REG ) then             '' x86 assumption
-		regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-								  vr, _
-								  typeGetSize( vr_dtype ) )
+		regTB(vr_dclass)->ensure( regTB(vr_dclass), vr, NULL, typeGetSize( vr_dtype ) )
 	end if
 
 	''
@@ -2597,26 +2542,24 @@ private function _GetDistance _
 
 end function
 
-'':::::
 private sub _loadVR _
 	( _
 		byval reg as integer, _
 		byval vreg as IRVREG ptr, _
-		byval doload as integer _
-	) static
+		byval vauxparent as IRVREG ptr _
+	)
 
 	dim as IRVREG rvreg
 
 	if( vreg->typ <> IR_VREGTYPE_REG ) then
-
-		if( doload ) then
+		'' Don't load aux vregs now - they'll be loaded when their
+		'' parent vreg is loaded
+		if( vauxparent = NULL ) then
 			rvreg.typ 	= IR_VREGTYPE_REG
 			rvreg.dtype = vreg->dtype
 			rvreg.reg	= reg
 			rvreg.vaux	= vreg->vaux
-
 			rvreg.regFamily = vreg->regFamily
-
 			emitLOAD( @rvreg, vreg )
 		end if
 
@@ -2628,60 +2571,69 @@ private sub _loadVR _
 
 	vreg->reg = reg
 
-	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) and ( doLoad = FALSE ) then
+	if( (env.clopt.fputype >= FB_FPUTYPE_SSE) and (vauxparent <> NULL) ) then
 		vreg->regFamily = IR_REG_SSE
 	end if
 
 end sub
 
-private sub hCreateTMPVAR( byval vreg as IRVREG ptr )
-	if( vreg->typ <> IR_VREGTYPE_VAR ) then
+private sub _storeVR _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval vauxparent as IRVREG ptr _
+	)
+
+	dim as IRVREG origvreg = any, origvaux = any
+	dim as integer vr_dclass = any
+
+	if( vauxparent ) then
+		assert( vauxparent->vaux = vreg )
+		vreg = vauxparent
+	end if
+
+	'' Store a REG vreg into a temp var on stack (spilling registers)
+	'' If this is a LONGINT vreg or the vaux of a LONGINT vreg, then the
+	'' whole qword (both vregs) should be spilled, not just one dword.
+	'' This way we ensure to always keep the two dwords together, either
+	'' both in registers or both in consecutive memory.
+	'' This also allows us to free up the registers used by the vreg(s).
+
+	assert( irIsREG( vreg ) )
+	assert( iif( vreg->vaux, irIsREG( vreg->vaux ), TRUE ) )
+
+	'' Back up the old vreg
+	origvreg = *vreg
+	if( ISLONGINT( vreg->dtype ) ) then
+		'' Back up the old vaux too
+		origvaux = *vreg->vaux
+		origvreg.vaux = @origvaux
+	end if
+
+	if( irGetDistance( vreg ) <> IR_MAXDIST ) then
+		'' Turn the old vreg into a VAR
 		vreg->typ = IR_VREGTYPE_VAR
 		vreg->sym = symbAddAndAllocateTempVar( vreg->dtype )
 		vreg->ofs = symbGetOfs( vreg->sym )
 		vreg->reg = INVALID
-	end if
-end sub
-
-'':::::
-private sub _storeVR _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval reg as integer _
-	) static
-
-    dim as IRVREG rvreg
-	dim as IRVREG ptr vareg
-
-	if( irGetDistance( vreg ) = IR_MAXDIST ) then
-		exit sub
-	end if
-
-	rvreg.typ		= IR_VREGTYPE_REG
-	rvreg.dtype		= vreg->dtype
-	rvreg.reg		= reg
-	rvreg.vaux		= vreg->vaux
-
-	rvreg.regFamily	= vreg->regFamily
-
-	hCreateTMPVAR( vreg )
-
-	emitSTORE( vreg, @rvreg )
-
-	'' handle longints
-	if( ISLONGINT( vreg->dtype ) ) then
-		vareg = vreg->vaux
-		if( vareg->typ <> IR_VREGTYPE_VAR ) then
-			regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), vareg->reg )
-			vareg->reg = INVALID
-			vareg->typ = IR_VREGTYPE_VAR
-			vareg->ofs = vreg->ofs + FB_INTEGERSIZE
+		if( ISLONGINT( vreg->dtype ) ) then
+			'' Turn the old vaux into a VAR
+			vreg->vaux->reg = INVALID
+			vreg->vaux->typ = IR_VREGTYPE_VAR
+			vreg->vaux->ofs = vreg->ofs + 4  '' vaux = the upper 4 bytes
 		end if
+		if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
+			vreg->regFamily = IR_REG_SSE
+		end if
+
+		'' Copy data from old vreg into new VAR vreg
+		emitSTORE( vreg, @origvreg )
 	end if
 
-	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
-		vreg->regFamily = IR_REG_SSE
+	if( ISLONGINT( origvreg.dtype ) ) then
+		regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), origvaux.reg )
 	end if
+	vr_dclass = typeGetClass( origvreg.dtype )
+	regTB(vr_dclass)->free( regTB(vr_dclass), origvreg.reg )
 
 end sub
 
@@ -2710,6 +2662,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
+	NULL, _  '' supportsOp() unimplemented, because the ASM backend supports all ops anyways, and doesn't use IR_OPT_MISSINGOPS
 	@_procBegin, _
 	@_procEnd, _
 	@_procAllocArg, _
@@ -2737,7 +2690,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitLoad, _
 	@_emitLoadRes, _
 	@_emitStack, _
-	@_emitPushUDT, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
@@ -2754,7 +2706,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitVarIniEnd, _
 	@_emitVarIniI, _
 	@_emitVarIniF, _
-	@_emitVarIniI64, _
 	@_emitVarIniOfs, _
 	@_emitVarIniStr, _
 	@_emitVarIniWstr, _
@@ -2766,7 +2717,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitFbctinfEnd, _
 	@_allocVreg, _
 	@_allocVrImm, _
-	@_allocVrImm64, _
 	@_allocVrImmF, _
 	@_allocVrVar, _
 	@_allocVrIdx, _

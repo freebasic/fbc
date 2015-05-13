@@ -11,20 +11,6 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-declare function hMangleFunctionPtr	_
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
-	) as zstring ptr
-
-declare function hDemangleParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -85,32 +71,34 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 	end if
 end function
 
+private function hAlignToPow2 _
+	( _
+		byval value as longint, _
+		byval align as integer _
+	) as longint
+	function = (value + (align-1)) and (not (align-1))
+end function
+
 function symbCalcArgLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
-	) as integer
+	) as longint
 
 	select case( mode )
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-		return FB_POINTERSIZE
+		return env.pointersize
 	end select
 
 	'' BYVAL/VARARG
 
-	select case( typeGetDtAndPtrOnly( dtype ) )
-	case FB_DATATYPE_STRING
-		'' BYVAL strings passed as pointer instead
-		return FB_POINTERSIZE
-	case FB_DATATYPE_STRUCT
-		'' BYVAL non-trivial UDTs passed BYREF implicitly
-		if( symbCompIsTrivial( subtype ) = FALSE ) then
-			return FB_POINTERSIZE
-		end if
-	end select
+	'' Byval non-trivial type? Implicitly passing a copy Byref.
+	if( typeIsTrivial( dtype, subtype ) = FALSE ) then
+		return env.pointersize
+	end if
 
-	function = FB_ROUNDLEN( symbCalcLen( dtype, subtype ) )
+	function = hAlignToPow2( symbCalcLen( dtype, subtype ), env.pointersize )
 end function
 
 function symbCalcParamLen _
@@ -118,7 +106,7 @@ function symbCalcParamLen _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
-	) as integer
+	) as longint
 
 	'' VARARG params have 0 length for now,
 	'' only the VARARG args later have > 0 length...
@@ -130,8 +118,8 @@ function symbCalcParamLen _
 
 end function
 
-function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as integer
-	dim as integer length = any
+function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
+	dim as longint length = any
 	dim as FBSYMBOL ptr param = any
 
 	'' Calculate the sum of the sizes of all "normal" parameters,
@@ -163,6 +151,7 @@ function symbAddProcParam _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval dimensions as integer, _
 		byval mode as integer, _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
@@ -170,6 +159,8 @@ function symbAddProcParam _
     dim as FBSYMBOL ptr param = any
 
     function = NULL
+
+	assert( (dimensions <> 0) = (mode = FB_PARAMMODE_BYDESC) )
 
 	param = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, _
 	                       @proc->proc.paramtb, NULL, _
@@ -184,6 +175,12 @@ function symbAddProcParam _
 	param->lgt = symbCalcParamLen( dtype, subtype, mode )
 	param->param.mode = mode
 	param->param.optexpr = NULL
+	param->param.bydescdimensions = dimensions
+	if( mode = FB_PARAMMODE_BYDESC ) then
+		param->param.bydescrealsubtype = symbAddArrayDescriptorType( dimensions, dtype, subtype )
+	else
+		param->param.bydescrealsubtype = NULL
+	end if
 
 	'' for UDTs, check if not including a byval param to self
 	if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
@@ -284,6 +281,11 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 		else
 			dtype = symbGetUDTRetType( subtype )
 
+			'' symbStructEnd() should have set it by now, but there
+			'' could be problems if symbUdtDeclareDefaultMembers()
+			'' calls this before that.
+			assert( dtype <> FB_DATATYPE_INVALID )
+
 			'' If it became an integer or float, forget the subtype,
 			'' that should only be preserved for UDTs and UDT ptrs.
 			if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
@@ -329,7 +331,34 @@ private function hCanOverload _
 
 end function
 
-'':::::
+private function hCanOverloadBydesc _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as integer
+
+	function = FALSE
+
+	'' Any BYDESC?
+	if( (a->param.mode = FB_PARAMMODE_BYDESC) or _
+	    (b->param.mode = FB_PARAMMODE_BYDESC) ) then
+		'' Both BYDESC?
+		if( (a->param.mode = FB_PARAMMODE_BYDESC) and _
+		    (b->param.mode = FB_PARAMMODE_BYDESC) ) then
+			'' No unknown dimensions?
+			if( (a->param.bydescdimensions > 0) and _
+			    (b->param.bydescdimensions > 0) ) then
+				'' Different dimension count?
+				function = (a->param.bydescdimensions <> b->param.bydescdimensions)
+			end if
+		else
+			'' Only one is BYDESC; can allow the overload
+			function = TRUE
+		end if
+	end if
+
+end function
+
 private function hAddOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -354,15 +383,8 @@ private function hAddOvlProc _
 	end if
 
 	'' only one them is a property?
-	if( (attrib and FB_SYMBATTRIB_PROPERTY) <> 0 ) then
-    	if( symbIsProperty( ovl_head_proc ) = FALSE ) then
-			exit function
-    	end if
-
-	elseif( symbIsProperty( ovl_head_proc ) ) then
-		if( (attrib and FB_SYMBATTRIB_PROPERTY) = 0 ) then
-			exit function
-		end if
+	if( ((attrib and FB_SYMBATTRIB_PROPERTY) <> 0) <> symbIsProperty( ovl_head_proc ) ) then
+		exit function
 	end if
 
 	'' not arg-less?
@@ -428,15 +450,23 @@ private function hAddOvlProc _
 			ovl_param = symbGetProcTailParam( ovl )
 
 			do
-				'' different modes?
-				if( param->param.mode <> ovl_param->param.mode ) then
-					'' one is by desc? allow byref and byval args
-					'' with the same type or subtype
-					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					end if
+				'' We can allow overloads to have a param with the same dtype,
+				'' where one is BYDESC and the other is BYREF/BYVAL, because the
+				'' overload resolution can disambiguate based on whether an array
+				'' was given or not.
+				''
+				'' If both are BYDESC though, then it depends on the dimension count
+				'' and/or on the dtype. We can allow the overload if the two array
+				'' parameters have different dimension counts, because the overload
+				'' resolution can disambiguate based on that. But we can't allow
+				'' overloading if there's a '()' array involved (unknown dimensions),
+				'' because then the overload resolution wouldn't know which one to use.
+				''
+				'' If both overloads are BYREF/BYVAL though, then only the dtype
+				'' matters.
+
+				if( hCanOverloadBydesc( param, ovl_param ) ) then
+					exit do
 				end if
 
 				dim as integer pdtype = param->typ
@@ -716,7 +746,7 @@ private function hSetupProc _
 
 			'' assign? could be a clone..
 			if( op = AST_OP_ASSIGN ) then
-				symbCheckCompClone( parent, proc )
+				symbCheckCompLetOp( parent, proc )
 			end if
         end if
 
@@ -978,6 +1008,49 @@ function symbAddCtor _
 	function = symbAddProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, attrib, mode, options )
 end function
 
+function symbLookupInternallyMangledSubtype _
+	( _
+		byval id as zstring ptr, _
+		byref attrib as integer, _
+		byref parent as FBSYMBOL ptr, _
+		byref symtb as FBSYMBOLTB ptr, _
+		byref hashtb as FBHASHTB ptr _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMCHAIN ptr chain_ = any
+
+	if( parser.scope = FB_MAINSCOPE ) then
+		'' When outside scopes, it's a global, because whichever symbol
+		'' uses this procptr proto/descriptor type can be globally
+		'' visible (global vars, procs, etc.)
+		parent = @symbGetGlobalNamespc( )
+		symtb = @symbGetCompSymbTb( parent )
+		hashtb = @symbGetCompHashTb( parent )
+
+		attrib or= FB_SYMBATTRIB_SHARED
+		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
+	else
+		'' If inside a scope, make the procptr proto/descriptor type
+		'' local too, because it could use local symbols, while it
+		'' itself can only be used by local symbols, not by globals
+		'' (globals cannot be declared inside scopes).
+		parent = symbGetCurrentNamespc( )
+		symtb = symb.symtb                    '' symtb of current scope
+		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
+		assert( hashtb = symb.hashtb )
+
+		attrib or= FB_SYMBATTRIB_LOCAL
+		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
+	end if
+
+	'' already exists? (it's ok to use LookupAt, literal str's are always
+	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
+	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
+	if( chain_ <> NULL ) then
+		function = chain_->sym
+	end if
+end function
+
 function symbAddProcPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -987,11 +1060,10 @@ function symbAddProcPtr _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
-	dim as zstring ptr id = any
-	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, parent = any
 	dim as FBSYMBOLTB ptr symtb = any
 	dim as FBHASHTB ptr hashtb = any
+	dim as string id
 
 	''
 	'' The procptr prototypes are mangled, allowing them to be re-used.
@@ -1014,39 +1086,41 @@ function symbAddProcPtr _
 	'' also requires them to be scoped locally.
 	''
 
-	id = hMangleFunctionPtr( proc, dtype, subtype, attrib, mode )
+	'' Add information to the prototype so we can pass the PROC subtype to
+	'' C++ mangling functions directly (instead of having to encode
+	'' parameters & function result manually).
+	proc->attrib or= attrib
+	assert( proc->typ = FB_DATATYPE_INVALID )
+	proc->typ = dtype
+	proc->subtype = subtype
 
-	if( parser.scope = FB_MAINSCOPE ) then
-		'' When outside scopes, it's a global, because whichever symbol
-		'' uses this procptr proto can be globally visible (global vars,
-		'' procs, etc.)
-		parent = @symbGetGlobalNamespc( )
-		symtb = @symbGetCompSymbTb( parent )
-		hashtb = @symbGetCompHashTb( parent )
+	id = "{fbfp}"
 
-		attrib or= FB_SYMBATTRIB_SHARED
-		assert( (proc->attrib and FB_SYMBATTRIB_LOCAL) = 0 )
-		assert( (attrib and FB_SYMBATTRIB_LOCAL) = 0 )
-	else
-		'' If inside a scope, make the procptr proto local too, because
-		'' it could use local symbols, while it itself can only be used
-		'' by local symbols, not by globals (globals cannot be declared
-		'' inside scopes).
-		parent = symbGetCurrentNamespc( )
-		symtb = symb.symtb                    '' symtb of current scope
-		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
-		assert( hashtb = symb.hashtb )
+	'' Must encode the parameter/function result mode & dtype uniquely
+	'' - Cannot just encoded hex( param->typ ) because a BYVAL parameter
+	''   that is CONST is the same type as a non-CONST BYVAL parameter; to
+	''   achieve this they must be encoded the same.
+	'' - Cannot just encode hex( param->subtype ) because if it's
+	''   a forward reference symbol it may be removed, the encoded
+	''   address may then be that of another symbol.
+	'' - UDT namespace must be encoded, because UDT name itself is
+	''   not enough (same UDT may exist in separate namespaces)
+	'' - Bydesc dimensions must be encoded
+	'' - BYVAL/BYREF function result and its CONSTness (even if BYVAL, as
+	''   with C++ mangling)
+	symbMangleType( id, FB_DATATYPE_FUNCTION, proc )
+	symbMangleResetAbbrev( )
 
-		attrib or= FB_SYMBATTRIB_LOCAL
-		assert( (proc->attrib and FB_SYMBATTRIB_SHARED) = 0 )
-		assert( (attrib and FB_SYMBATTRIB_SHARED) = 0 )
-	end if
+	'' Calling convention, must be encoded manually as it's not encoded in
+	'' the C++ mangling. We want function pointers with different calling
+	'' conventions to be seen as different types though, even though that's
+	'' not encoded in the C++ mangling, as with g++/clang++.
+	id += "$"
+	id += hex( mode )
 
-	'' already exists? (it's ok to use LookupAt, literal str's are always
-	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
-	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
-	if( chain_ <> NULL ) then
-		return chain_->sym
+	sym = symbLookupInternallyMangledSubtype( id, attrib, parent, symtb, hashtb )
+	if( sym ) then
+		return sym
 	end if
 
 	'' create a new prototype
@@ -1074,11 +1148,8 @@ function symbAddProcPtrFromFunction _
 	'' params
 	var param = symbGetProcHeadParam( base_proc )
     do while( param <> NULL )
-		var p = symbAddProcParam( proc, NULL, _
-		                          symbGetFullType( param ), _
-		                          symbGetSubtype( param ), _
-		                          symbGetParamMode( param ), _
-		                          symbGetAttrib( param ) )
+		var p = symbAddProcParam( proc, NULL, param->typ, param->subtype, _
+				param->param.bydescdimensions, param->param.mode, param->attrib )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
@@ -1142,10 +1213,52 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	function = proc
 end function
 
+sub symbGetRealParamDtype overload _
+	( _
+		byval parammode as integer, _
+		byval bydescrealsubtype as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+	select case( parammode )
+	case FB_PARAMMODE_BYVAL
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, subtype ) = FALSE ) then
+			dtype = typeAddrOf( dtype )
+		end if
+
+	case FB_PARAMMODE_BYREF
+		dtype = typeAddrOf( dtype )
+
+	case FB_PARAMMODE_BYDESC
+		dtype = typeAddrOf( FB_DATATYPE_STRUCT )
+		assert( symbIsDescriptor( bydescrealsubtype ) )
+		subtype = bydescrealsubtype
+	end select
+
+end sub
+
+sub symbGetRealParamDtype overload _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	)
+
+	assert( param->class = FB_SYMBCLASS_PARAM )
+
+	dtype = symbGetType( param )
+	subtype = param->subtype
+
+	symbGetRealParamDtype( param->param.mode, param->param.bydescrealsubtype, dtype, subtype )
+
+end sub
+
 function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
-    dim as integer attrib = any, dtype = any
+	dim as integer attrib = any, dtype = any, dimensions = any
 
 	function = NULL
 
@@ -1155,18 +1268,10 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	case FB_PARAMMODE_BYVAL
 		attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-		select case( symbGetType( param ) )
-		'' byval string? it's actually an pointer to a zstring
-		case FB_DATATYPE_STRING
+		'' Byval non-trivial type? Passed Byref implicitly.
+		if( typeIsTrivial( dtype, param->subtype ) = FALSE ) then
 			attrib = FB_SYMBATTRIB_PARAMBYREF
-			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a dtor, copy ctor or virtual methods? it's a copy..
-			if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-				attrib = FB_SYMBATTRIB_PARAMBYREF
-			end if
-		end select
+		end if
 
 	case FB_PARAMMODE_BYREF
 		attrib = FB_SYMBATTRIB_PARAMBYREF
@@ -1188,10 +1293,14 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-	s = symbAddVar( symbGetName( param ), NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	s = symbAddVar( symbGetName( param ), NULL, dtype, param->subtype, 0, param->param.bydescdimensions, dTB(), attrib )
 	if( s = NULL ) then
 		exit function
 	end if
+
+	assert( s->var_.array.desc = NULL )
+	assert( s->var_.array.desctype = NULL )
+	s->var_.array.desctype = param->param.bydescrealsubtype
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
     symbSetIsDeclared( s )
@@ -1200,26 +1309,29 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
     	symbSetDontInit( s )
     end if
 
+	if( param->stats and FB_SYMBSTATS_ARGV ) then
+		s->stats or= FB_SYMBSTATS_ARGV
+	end if
+
 	function = s
 end function
 
 function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
-    static as string id
 
 	if( symbProcReturnsOnStack( proc ) = FALSE ) then
 		return NULL
 	end if
 
-	id = *symbUniqueId( )
-	s = symbAddVar( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	s = symbAddVar( symbUniqueId( ), NULL, FB_DATATYPE_STRUCT, proc->subtype, 0, _
 	                0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	symbProcAllocExt( proc )
 	proc->proc.ext->res = s
 
 	symbSetIsDeclared( s )
+	symbSetIsImplicit( s )
 
 	function = s
 end function
@@ -1254,6 +1366,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	astAdd( astNewDECL( res, TRUE ) )
 
 	symbSetIsDeclared( res )
+	symbSetIsImplicit( res )
 
 	function = res
 end function
@@ -1277,7 +1390,7 @@ sub symbAddProcInstancePtr _
 		dtype = typeSetIsConst( dtype )
 	end if
 
-	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
+	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, 0, _
 	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_PARAMINSTANCE )
 end sub
 
@@ -1353,14 +1466,8 @@ function symbFindOverloadProc _
 			ovl_param = symbGetProcTailParam( ovl )
 			param = symbGetProcTailParam( proc )
 			do
-				'' different modes?
-				if( param->param.mode <> ovl_param->param.mode ) then
-					'' one is by desc? can't be the same..
-					if( param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					elseif( ovl_param->param.mode = FB_PARAMMODE_BYDESC ) then
-						exit do
-					end if
+				if( hCanOverloadBydesc( param, ovl_param ) ) then
+					exit do
 				end if
 
 				'' not the same type? check next proc..
@@ -1504,7 +1611,9 @@ private function hCalcTypesDiff _
 	  	byval mode as FB_PARAMMODE = 0 _
 	) as integer
 
-	dim as integer arg_dclass = any
+	dim as integer arg_dclass = any, param_dt = any, arg_dt = any
+
+	function = 0
 
     '' don't take the const qualifier into account
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
@@ -1521,29 +1630,69 @@ private function hCalcTypesDiff _
 		'' another integer..
 		case FB_DATACLASS_INTEGER
 
-			'' handle special cases..
-			select case as const arg_dtype
+			'' z/wstring param:
+			'' - allow any z/wstring arg, doesn't matter whether
+			''   it's a DEREF or not (it can all be treated as string)
+			'' - disallow other args (passing BYVAL explicitly
+			''   should be handled by caller already)
+			select case( param_dtype )
 			case FB_DATATYPE_CHAR
-				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
-
+				return 0
 			case FB_DATATYPE_WCHAR
-				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_HALFMATCH
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
+				end select
+				return 0
+
+			'' z/wstring ptr params:
+			'' - allow z/wstring or z/wstring ptr args, corresponding
+			''   to hStrArgToStrPtrParam(), explicitly here
+			'' - leave rest to pointer checks below
+			case typeAddrOf( FB_DATATYPE_CHAR )
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_FULLMATCH
+				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
+			case typeAddrOf( FB_DATATYPE_WCHAR )
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR
+					return FB_OVLPROC_HALFMATCH
+				case FB_DATATYPE_WCHAR
+					return FB_OVLPROC_FULLMATCH
+				end select
 
-			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
-				'' enum args can be passed to integer params (as in C++)
-				arg_dtype = typeRemap( arg_dtype, arg_subtype )
+			'' Any other non-z/wstring param from FB_DATACLASS_INTEGER:
+			'' - Only allow z/wstring arg if it's a DEREF that can
+			''   be treated as integer
+			case else
+				select case( arg_dtype )
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					if( arg_expr = NULL ) then
+						return 0
+					end if
 
+					if( astIsDEREF( arg_expr ) = FALSE ) then
+						return 0
+					end if
+				end select
 			end select
+
+			'' Remap enums
+			if( arg_dtype = FB_DATATYPE_ENUM ) then
+				'' enum args can be passed to integer params (as in C++)
+				arg_dtype = typeRemap( arg_dtype )
+			end if
 
 			'' check pointers..
 			if( typeIsPtr( param_dtype ) ) then
@@ -1560,18 +1709,12 @@ private function hCalcTypesDiff _
 					end if
 
 					'' not 0 (NULL)?
-					if( arg_dtype = FB_DATATYPE_INTEGER ) then
-						if( astGetValInt( arg_expr ) <> 0 ) then
-							return 0
-						end if
-					else
-						if( astGetValLong( arg_expr ) <> 0 ) then
-							return 0
-						end if
+					if( astConstEqZero( arg_expr ) = FALSE ) then
+						return 0
 					end if
 
 					'' not native pointer width?
-					if( typeGetSize( arg_dtype ) <> FB_POINTERSIZE ) then
+					if( typeGetSize( arg_dtype ) <> env.pointersize ) then
 						return 0
 					end if
 
@@ -1592,7 +1735,18 @@ private function hCalcTypesDiff _
 				end if
 
 				'' Different pointer types aren't compatible at all though,
-				'' that would be dangerous.
+				'' that would be dangerous, except if the pointer count matches
+				'' and the base dtypes are integers of the same size.
+				if( typeGetPtrCnt( param_dtype ) = typeGetPtrCnt( arg_dtype ) ) then
+					param_dt = typeGetDtOnly( param_dtype )
+					arg_dt = typeGetDtOnly( arg_dtype )
+					if( (typeGetClass( param_dt ) = FB_DATACLASS_INTEGER) and _
+					    (typeGetClass( arg_dt   ) = FB_DATACLASS_INTEGER) and _
+					    (typeGetSize( param_dt ) = typeGetSize( arg_dt )) ) then
+						return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( arg_dt, param_dt )
+					end if
+				end if
+
 				return 0
 
 			elseif( typeIsPtr( arg_dtype ) ) then
@@ -1601,7 +1755,7 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
@@ -1609,22 +1763,19 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
-		'' string? only if it's a w|zstring ptr arg
+		'' string arg to integer param? only if the param is a w|zstring
+		'' (treated as strings) or w|zstring ptr (auto string to ptr conversion,
+		'' corresponding to hStrArgToStrPtrParam())
 		case FB_DATACLASS_STRING
 			select case param_dtype
-			case typeAddrOf( FB_DATATYPE_CHAR )
+			case FB_DATATYPE_CHAR, typeAddrOf( FB_DATATYPE_CHAR )
 				return FB_OVLPROC_FULLMATCH
-			case typeAddrOf( FB_DATATYPE_WCHAR )
+			case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
 				return FB_OVLPROC_HALFMATCH
-			case else
-				return 0
 			end select
 
-		'' refuse anything else
-		case else
-			return 0
 		end select
 
 	'' floating-point?
@@ -1637,22 +1788,16 @@ private function hCalcTypesDiff _
 				return 0
 			end if
 
-			'' remap to real type if it's a bitfield..
-			select case arg_dtype
-			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
+			if( arg_dtype = FB_DATATYPE_ENUM ) then
 				'' enum args can be passed to fpoint params (as in C++)
-				arg_dtype = typeRemap( arg_dtype, arg_subtype )
-			end select
+				arg_dtype = typeRemap( arg_dtype )
+			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
-
-		'' refuse anything else
-		case else
-			return 0
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
 
 		end select
 
@@ -1662,27 +1807,19 @@ private function hCalcTypesDiff _
 		select case arg_dclass
 		'' okay if it's a fixed-len string
 		case FB_DATACLASS_STRING
-			return FB_OVLPROC_FULLMATCH
+			function = FB_OVLPROC_FULLMATCH
 
-		'' integer only if it's a w|zstring
+		'' integer if it's a z/wstring (no matter whether a
+		'' variable/literal or DEREF, it can all be treated as string)
 		case FB_DATACLASS_INTEGER
 			select case arg_dtype
 			case FB_DATATYPE_CHAR
-				return FB_OVLPROC_FULLMATCH
+				function = FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR
-				return FB_OVLPROC_HALFMATCH
-			case else
-				return 0
+				function = FB_OVLPROC_HALFMATCH
 			end select
 
-		'' refuse anything else
-		case else
-			return 0
 		end select
-
-	'' anything else, this function is only used when nothing matches
-	case else
-		return 0
 
 	end select
 
@@ -1699,7 +1836,9 @@ private function hCheckOvlParam _
 	) as integer
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
-	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any
+	dim as integer baselevel = any, type_is_compatible = any
+	dim as integer const_matches = any
+	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
 
 	constonly_diff = FALSE
 
@@ -1737,6 +1876,19 @@ private function hCheckOvlParam _
         	return 0
         end if
 
+		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
+		array = arg_expr->sym
+		assert( symbIsArray( array ) )
+
+		'' If the BYDESC parameter has unknown dimensions, any array can be passed.
+		'' Otherwise, only arrays with unknown or matching dimensions can be passed.
+		if( param->param.bydescdimensions > 0 ) then
+			if( (param->param.bydescdimensions <> symbGetArrayDimensions( array )) and _
+			    (symbGetArrayDimensions( array ) > 0) ) then
+				return 0
+			end if
+		end if
+
 		return FB_OVLPROC_FULLMATCH
 
 	'' byref param?
@@ -1745,8 +1897,8 @@ private function hCheckOvlParam _
 		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' invalid type? refuse..
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
-               	return 0
+				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
+				return 0
 			end if
 
 			'' pretend param is a pointer
@@ -1764,44 +1916,49 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-			'' same subtype? full match..
-			if( param_subtype = arg_subtype ) then
-				return FB_OVLPROC_FULLMATCH
-			else
-				'' is param type a base type of the argument type?
-				if( param_subtype <> NULL ) then
-					select case symbGetType( param_subtype )
-					case FB_DATATYPE_STRUCT '' , FB_DATATYPE_CLASS
-						var level = symbGetUDTBaseLevel( arg_subtype, param_subtype )
-						if( level > 0 ) then
-							return FB_OVLPROC_FULLMATCH - level 
-						End If
-					End Select
-				end if
-			end if
-		elseif( typeGetConstMask( param_dtype ) ) then
-			'' same subtype? ..
-			if( param_subtype = arg_subtype ) then
-				'' param is const but arg isn't?
-				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
-					constonly_diff = TRUE
-					return FB_OVLPROC_HALFMATCH
-				end if
-			end if
+		''
+		'' The argument is compatible to the parameter if it's the same
+		'' type, or if it's being up-casted. Up-casting can apply to UDT
+		'' aswell as UDT pointer parameters.
+		''
+		'' When up-casting, the level must be calculated into the match
+		'' score, such that we prefer passing arguments to the parameter
+		'' with the closest base type.
+		''
+		type_is_compatible = FALSE
+		baselevel = 0
+		if( param_subtype = arg_subtype ) then
+			type_is_compatible = TRUE
+		elseif( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT ) then
+			baselevel = symbGetUDTBaseLevel( arg_subtype, param_subtype )
+			type_is_compatible = (baselevel > 0)
 		end if
 
-		'' if it's rtl, only if explicitly set
-	    if( (symbGetIsRTL( parent ) = FALSE) or (symbGetIsRTLConst( param )) ) then
-			dim as integer const_matches = any
-			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) = FALSE ) then
-				return 0
-			else
-				if( const_matches ) then
-					dim as integer ptrcnt = typeGetPtrCnt( arg_dtype )
-					return (FB_OVLPROC_HALFMATCH / (ptrcnt+2)) * const_matches
-				end if
+		if( type_is_compatible ) then
+			'' In either case, we still have to check CONSTness (no point choosing a
+			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
+			'' because it couldn't be passed anyways)
+
+			'' ... except if it's a RTL procedure without RTL_CONST (then no CONST checking should be done)
+			if( symbGetIsRTL( parent ) and (not symbGetIsRTLConst( param )) ) then
+				return FB_OVLPROC_FULLMATCH - baselevel
 			end if
+
+			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
+			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+				return FB_OVLPROC_FULLMATCH - baselevel
+			end if
+
+			'' Check whether CONSTness allows passing the arg to the param.
+			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
+				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
+				'' TODO: Fix and use const_matches
+				constonly_diff = TRUE
+				return FB_OVLPROC_HALFMATCH - baselevel
+			end if
+
+			'' Same/compatible type, but mismatch due to CONSTness
+			return 0
 		end if
 
 		'' pointer? check if valid (could be a NULL)
@@ -1864,8 +2021,9 @@ function symbFindClosestOvlProc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as integer i = any, arg_matches = any, matches = any
-	dim as integer max_matches = any, amb_cnt = any, exact_matches = any
+	dim as integer arg_matches = any, matches = any
+	dim as integer max_matches = any, exact_matches = any
+	dim as integer matchcount = any
 	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
@@ -1877,7 +2035,7 @@ function symbFindClosestOvlProc _
 
 	closest_proc = NULL
 	max_matches = 0
-	amb_cnt = 0
+	matchcount = 0  '' number of matching procedures found
 
 	dim as integer is_property = symbIsProperty( ovl_head_proc )
 
@@ -1906,12 +2064,8 @@ function symbFindClosestOvlProc _
 			end if
 		end if
 
+		'' Only consider overloads with enough params
 		if( args <= params ) then
-			'' arg-less? exit..
-			if( params = 0 ) then
-				return ovl
-			end if
-
 			param = symbGetProcHeadParam( ovl )
 			if( symbIsMethod( ovl ) ) then
 				param = param->next
@@ -1922,8 +2076,7 @@ function symbFindClosestOvlProc _
 
 			'' for each arg..
 			arg = arg_head
-			for i = 0 to args-1
-
+			for i as integer = 0 to args-1
 				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
@@ -1944,53 +2097,48 @@ function symbFindClosestOvlProc _
 				arg = arg->next
 			next
 
-			'' fewer params? check if the ones missing are optional
-			dim as integer total_args = args
-			if( args < params ) then
-				if( (matches > 0) or (args = 0) ) then
-					do while( param <> NULL )
-			    		'' not optional? exit
-			    		if( symbGetIsOptional( param ) = FALSE ) then
-			    			matches = 0
-			    			exit do
-			    		else
-			    			matches += FB_OVLPROC_FULLMATCH
-			    		end if
-						total_args += 1
-						'' next param
-						param = param->next
-					loop
+			'' If there were no args, then assume it's a match and
+			'' then check the remaining params, if any.
+			var is_match = (args = 0) or (matches > 0)
+
+			'' Fewer args than params? Check whether the missing ones are optional.
+			for i as integer = args to params-1
+				'' not optional? exit
+				if( symbGetIsOptional( param ) = FALSE ) then
+					'' Missing arg for this param - not a match afterall.
+					is_match = FALSE
+					exit for
 				end if
-			end if
-			matches /= total_args
 
-		    '' closer?
-		    if( matches > max_matches ) then
+				'' next param
+				param = param->next
+			next
 
-				dim as integer eligible = TRUE
+			if( is_match ) then
+				'' First match, or better match than any previous overload?
+				if( (matchcount = 0) or (matches > max_matches) ) then
+					dim as integer eligible = TRUE
 
-				'' an operator overload candidate is only eligible if
-				'' there is at least one exact arg match
-				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( exact_matches = 0 and constonly_diff = FALSE ) then
-						eligible = FALSE
+					'' an operator overload candidate is only eligible if
+					'' there is at least one exact arg match
+					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
+						if( exact_matches = 0 and constonly_diff = FALSE ) then
+							eligible = FALSE
+						end if
 					end if
-				end if
 
-				'' it's eligible, update
-				if( eligible ) then
-				   	closest_proc = ovl
-				   	max_matches = matches
-				   	amb_cnt = 0
-				end if
+					'' it's eligible, update
+					if( eligible ) then
+						closest_proc = ovl
+						max_matches = matches
+						matchcount = 1
+					end if
 
-			'' same? ambiguity..
-			elseif( matches = max_matches ) then
-				if( max_matches > 0 ) then
-					amb_cnt += 1
+				'' Same score than best previous overload?
+				elseif( matches = max_matches ) then
+					matchcount += 1
 				end if
 			end if
-
 		end if
 
 		'' next overloaded proc
@@ -1998,7 +2146,7 @@ function symbFindClosestOvlProc _
 	loop while( ovl <> NULL )
 
 	'' more than one possibility?
-	if( amb_cnt > 0 ) then
+	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		function = NULL
 	else
@@ -2301,12 +2449,12 @@ function symbFindCastOvlProc _
    	end if
 
 	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
-	dim as integer matches = any, max_matches = any, amb_cnt = any
+	dim as integer matches = any, max_matches = any, matchcount = any
 
 	'' must check the return type, not the parameter..
 	closest_proc = NULL
 	max_matches = 0
-	amb_cnt = 0
+	matchcount = 0
 
 	if( typeGet( to_dtype ) <> FB_DATATYPE_VOID ) then
 		'' for each overloaded proc..
@@ -2317,12 +2465,12 @@ function symbFindCastOvlProc _
 			if( matches > max_matches ) then
 		   		closest_proc = proc
 		   		max_matches = matches
-		   		amb_cnt = 0
+				matchcount = 1
 
 			'' same? ambiguity..
 			elseif( matches = max_matches ) then
 				if( max_matches > 0 ) then
-					amb_cnt += 1
+					matchcount += 1
 				end if
 			end if
 
@@ -2354,11 +2502,10 @@ function symbFindCastOvlProc _
 	end if
 
 	'' more than one possibility?
-	if( amb_cnt > 0 ) then
+	if( matchcount > 1 ) then
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		closest_proc = NULL
-
 	else
 		if( closest_proc <> NULL ) then
 			'' check visibility
@@ -2477,6 +2624,32 @@ end function
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function symbParamIsSame _
+	( _
+		byval a as FBSYMBOL ptr, _
+		byval b as FBSYMBOL ptr _
+	) as integer
+
+	assert( a->class = FB_SYMBCLASS_PARAM )
+	assert( b->class = FB_SYMBCLASS_PARAM )
+	function = FALSE
+
+	if( (symbGetParamMode( a ) <> symbGetParamMode( b )) or _
+	    (symbGetFullType ( a ) <> symbGetFullType ( b )) or _
+	    (symbGetSubtype  ( a ) <> symbGetSubtype  ( b )) ) then
+		exit function
+	end if
+
+	'' Check Bydesc dimensions
+	if( a->param.mode = FB_PARAMMODE_BYDESC ) then
+		if( a->param.bydescdimensions <> b->param.bydescdimensions ) then
+			exit function
+		end if
+	end if
+
+	function = TRUE
+end function
+
 private function hAreMethodsCompatible _
 	( _
 		byval v as FBSYMBOL ptr, _  '' The virtual that's overridden
@@ -2488,8 +2661,13 @@ private function hAreMethodsCompatible _
 	assert( symbIsProc( v ) and symbIsMethod( v ) )
 	assert( symbIsProc( o ) and symbIsMethod( o ) )
 
-	'' Different result type? (Note: SUBs have VOID result type)
-	if( (symbGetType   ( v ) <> symbGetType   ( o )) or _
+	'' Different result type?
+	'' - It must be the exact same (even CONSTs), as for procedure pointers
+	'' - This isn't checked already when searching the overridden method,
+	''   because that search is just based on finding compatible overloads
+	''   which doesn't take result type into account.
+	'' - SUBs have VOID result type and will be handled here too
+	if( (symbGetFullType( v ) <> symbGetFullType( o )) or _
 	    (symbGetSubtype( v ) <> symbGetSubtype( o )) ) then
 		return FB_ERRMSG_OVERRIDERETTYPEDIFFERS
 	end if
@@ -2504,14 +2682,22 @@ private function hAreMethodsCompatible _
 		return FB_ERRMSG_OVERRIDECALLCONVDIFFERS
 	end if
 
+	'' If one is a CONST member method, the other must be too
+	if( symbIsConstant( v ) <> symbIsConstant( o ) ) then
+		if( symbIsConstant( v ) ) then
+			return FB_ERRMSG_OVERRIDEISNTCONSTMEMBER
+		end if
+		return FB_ERRMSG_OVERRIDEISCONSTMEMBER
+	end if
+
 	'' Different parameter count?
 	if( symbGetProcParams( v ) <> symbGetProcParams( o ) ) then
 		return FB_ERRMSG_OVERRIDEPARAMSDIFFER
 	end if
 
 	'' Check each parameter's mode and type
-	vparam = symbGetProcLastParam( v )
-	oparam = symbGetProcLastParam( o )
+	vparam = symbGetProcHeadParam( v )
+	oparam = symbGetProcHeadParam( o )
 
 	'' But skip THIS ptr; virtual/override will have a different types here,
 	'' their parent classes respectively. Since this virtual was found to
@@ -2523,9 +2709,7 @@ private function hAreMethodsCompatible _
 	oparam = oparam->next
 
 	while( vparam )
-		if( (symbGetParamMode( vparam ) <> symbGetParamMode( oparam )) or _
-		    (symbGetFullType ( vparam ) <> symbGetFullType ( oparam )) or _
-		    (symbGetSubtype  ( vparam ) <> symbGetSubtype  ( oparam )) ) then
+		if( symbParamIsSame( vparam, oparam ) = FALSE ) then
 			return FB_ERRMSG_OVERRIDEPARAMSDIFFER
 		end if
 		vparam = vparam->next
@@ -2558,7 +2742,7 @@ sub symbProcCheckOverridden _
 		if( errmsg <> FB_ERRMSG_OK ) then
 			if( is_implicit and _
 			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
-				'' symbUdtAddDefaultMembers() uses this to check
+				'' symbUdtDeclareDefaultMembers() uses this to check
 				'' implicit dtors and LET overloads. Since they
 				'' are not visible in the original code,
 				'' the error message must have more info.
@@ -2599,158 +2783,157 @@ function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 end function
 
-'':::::
-private function hMangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
-	) as zstring ptr
-
-    static as string id
-    dim as integer i = any
-    dim as FBSYMBOL ptr param = any
-
-    '' cheapo and fast internal mangling..
-    id = "{fbfp}("
-
-    symbMangleInitAbbrev( )
-
-    '' for each param..
-    param = symbGetProcHeadParam( proc )
-    for i = 0 to symbGetProcParams( proc )-1
-    	if( i > 0 ) then
-    		id += ","
-    	end if
-
-    	'' not an UDT?
-    	if( param->subtype = NULL ) then
-    		id += hex( param->typ ) + "M" + hex( cint(param->param.mode) )
-    	else
-    		'' notes:
-    		'' - can't use hex( param->subtype ), because slots can be
-    		''   reused if fwd types were resolved and removed
-    		'' - can't use only the param->id.name because UDT's with the same
-    		''   name declared inside different namespaces
-			symbMangleParam( id, param )
-    	end if
-
-    	param = symbGetParamNext( param )
-    next
-
-    '' return type
-    id += ")"
-	if( subtype = NULL ) then
-		id += hex( dtype )
-	else
-		'' see the notes above
-		symbMangleType( id, dtype, subtype )
-	end if
-
-    symbMangleEndAbbrev( )
-
-	'' return BYREF? - must be mangled explicitly, to distinguish it from
-	'' other function pointers with same types & parameters, that are not
-	'' returning BYREF though.
-	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
-		id += "$"  '' prevent the R from looking like part of the previous type id (if any)
-		id += "R"  '' R for reference, as in C++ mangling
-	end if
-
-    '' calling convention
-    id += "$"
-    id += hex( mode )
-
-	function = strptr( id )
-end function
-
-private function hDemangleParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-	static as string res
+function symbProcHasFwdRefInSignature( byval proc as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr param = any
 
-	static as const zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
-	{ _
-		@"byval", _
-		@"byref", _
-		@"bydesc", _
-		@"vararg" _
-	}
+	assert( symbIsProc( proc ) )
 
-    res = ""
+	'' Check result type
+	if( typeHasFwdRefInSignature( proc->typ, proc->subtype ) ) then
+		return TRUE
+	end if
 
-    '' for each param..
-    param = symbGetProcHeadParam( proc )
+	'' Check each parameter
+	param = symbGetProcHeadParam( proc )
+	while( param )
 
-    '' method? skip the instance pointer
-    if( param <> NULL ) then
-    	if( symbIsMethod( proc ) ) then
-    		param = symbGetParamNext( param )
-    	end if
-    end if
+		if( typeHasFwdRefInSignature( param->typ, param->subtype ) ) then
+			return TRUE
+		end if
 
-    do while( param <> NULL )
-    	select case as const param->param.mode
-    	case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			res += *parammodeTb(param->param.mode)
-			res += " as "
-			res += *symbTypeToStr( param->typ, param->subtype )
+		param = symbGetParamNext( param )
+	wend
+
+	function = FALSE
+end function
+
+private sub hSubOrFuncToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	if( symbGetType( proc ) = FB_DATATYPE_VOID ) then
+		s += "sub"
+	else
+		s += "function"
+	end if
+end sub
+
+'' Append calling convention, if it differs from the default
+private sub hProcModeToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	'' Ctors/Dtors currently always default to CDECL, see cProcHeader()
+	if( symbIsConstructor( proc ) or symbIsDestructor( proc ) ) then
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+			s += " stdcall"
+		case FB_FUNCMODE_PASCAL
+			s += " pascal"
+		end select
+	else
+		'' Others default to FBCALL
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+			select case( env.target.fbcall )
+			case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+
+			case else
+				s += " stdcall"
+			end select
+		case FB_FUNCMODE_PASCAL
+			if( env.target.fbcall <> FB_FUNCMODE_PASCAL ) then
+				s += " pascal"
+			end if
+		case FB_FUNCMODE_CDECL
+			if( env.target.fbcall <> FB_FUNCMODE_CDECL ) then
+				s += " cdecl"
+			end if
+		end select
+	end if
+end sub
+
+function hDumpDynamicArrayDimensions( byval dimensions as integer ) as string
+	dim s as string
+
+	s += "("
+	for i as integer = 1 to dimensions
+		if( i > 1 ) then
+			s += ", "
+		end if
+		s += "any"
+	next
+	s += ") "
+
+	function = s
+end function
+
+private sub hParamsToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	s += "("
+
+	var param = symbGetProcHeadParam( proc )
+
+	'' Method? Skip the instance pointer
+	if( (param <> NULL) and symbIsMethod( proc ) ) then
+		param = symbGetParamNext( param )
+	end if
+
+	while( param )
+		var parammode = symbGetParamMode( param )
+
+		select case( parammode )
+		case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+			select case( parammode )
+			case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF
+				'' Byval/Byref, if different from default, at least in -lang fb.
+				'' In other -langs it depends on OPTION BYVAL, and it seems best to
+				'' always include Byval/Byref in that case, otherwise it'd depend on
+				'' source code context.
+				if( fbLangIsSet( FB_LANG_FB ) and _
+				    (symbGetDefaultParamMode( param->typ, param->subtype ) <> parammode) ) then
+					if( parammode = FB_PARAMMODE_BYVAL ) then
+						s += "byval "
+					else
+						s += "byref "
+					end if
+				end if
+
+			case FB_PARAMMODE_BYDESC
+				s += hDumpDynamicArrayDimensions( param->param.bydescdimensions )
+			end select
+
+			'' Parameter's data type
+			s += "as " + symbTypeToStr( param->typ, param->subtype )
 
 		case FB_PARAMMODE_VARARG
-			res += "..."
+			s += "..."
 		end select
 
-    	param = symbGetParamNext( param )
+		param = symbGetParamNext( param )
+		if( param ) then
+			s += ", "
+		end if
+	wend
 
-    	if( param <> NULL ) then
-    		res += ", "
-    	end if
-    loop
+	s += ")"
+end sub
 
-    function = strptr( res )
+private sub hResultToStr( byref s as string, byval proc as FBSYMBOL ptr )
+	'' Function result
+	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
+		if( symbProcReturnsByref( proc ) ) then
+			s += " byref"
+		end if
+		s += " as " + symbTypeToStr( proc->typ, proc->subtype )
+	end if
+end sub
 
+function symbProcPtrToStr( byval proc as FBSYMBOL ptr ) as string
+	dim s as string
+
+	hSubOrFuncToStr( s, proc )
+	hProcModeToStr( s, proc )
+	hParamsToStr( s, proc )
+	hResultToStr( s, proc )
+
+	function = s
 end function
 
-'':::::
-function symbDemangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-	static as string res
-
-	'' sub or function?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-		res = "function("
-	else
-		res = "sub("
-	end if
-
-	res += *hDemangleParams( proc )
-
-	res += ")"
-
-	'' any return type?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-    	res += " as "
-    	res += *symbTypeToStr( proc->typ, proc->subtype )
-	end if
-
-	function = strptr( res )
-
-end function
-
-'':::::
-function symbGetFullProcName _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
+function symbGetFullProcName( byval proc as FBSYMBOL ptr ) as zstring ptr
 	static as string res
 
 	res = ""
@@ -2764,82 +2947,51 @@ function symbGetFullProcName _
 
 	if( symbIsConstructor( proc ) ) then
 	 	res += "constructor"
-
 	elseif( symbIsDestructor( proc ) ) then
 		res += "destructor"
-
 	elseif( symbIsOperator( proc ) ) then
 		res += "operator."
 		if( proc->proc.ext <> NULL ) then
 			res += *astGetOpId( symbGetProcOpOvl( proc ) )
 		end if
-
 	elseif( symbIsProperty( proc ) ) then
 		res += *symbGetName( proc )
-
 		res += ".property."
 		if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
 			res += "get"
 		else
 			res += "set"
 		end if
-
 	else
 		res += *symbGetName( proc )
 	end if
 
 	function = strptr( res )
-
 end function
 
-'':::::
-function symbDemangleMethod _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as zstring ptr
-
-	static as string res
-
-	res = *symbGetFullProcName( proc )
-
-	res += "("
-
-	res += *hDemangleParams( proc )
-
-	res += ")"
-
-	'' any return type?
-	if( proc->typ <> FB_DATATYPE_VOID ) then
-    	res += " as "
-    	res += *symbTypeToStr( proc->typ, proc->subtype )
-	end if
-
-	function = strptr( res )
-
+function symbMethodToStr( byval proc as FBSYMBOL ptr ) as string
+	var s = *symbGetFullProcName( proc )
+	hProcModeToStr( s, proc )
+	hParamsToStr( s, proc )
+	hResultToStr( s, proc )
+	function = s
 end function
 
-'':::::
-function symbGetDefaultCallConv _
+function symbGetDefaultParamMode _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-	'' assumes dtype has const info stripped
-
-	select case as const dtype
+	select case as const( typeGetDtAndPtrOnly( dtype ) )
     case FB_DATATYPE_FWDREF, _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
 	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-
          return FB_PARAMMODE_BYREF
-
     case else
          return FB_PARAMMODE_BYVAL
-
     end select
-
 
 end function
 

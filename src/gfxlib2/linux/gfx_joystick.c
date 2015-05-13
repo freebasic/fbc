@@ -29,7 +29,7 @@ typedef struct _JOYDATA {
 static JOYDATA joydata[16];
 static int inited = FALSE;
 
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
+FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	const char *device[] = { "/dev/input/js",
 							 "/dev/js",
@@ -39,6 +39,8 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	JS_EVENT event;
 	int i, j, k, count = 0;
 	int version;
+
+	FB_GRAPHICS_LOCK( );
 
 	if (!inited) {
 		fb_hMemSet(joydata, 0, sizeof(JOYDATA) * 16);
@@ -68,16 +70,19 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = *a7 = *a8 = -1000.0;
 
-	if ((id < 0) || (id > 15))
+	if ((id < 0) || (id > 15)) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	joy = &joydata[id];
+	}
 
-	if (joy->fd < 0)
+	joy = &joydata[id];
+	if (joy->fd < 0) {
+		FB_GRAPHICS_UNLOCK( );
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
 
 	while (read(joy->fd, &event, sizeof(event)) > 0) {
 		switch (event.type & ~JS_EVENT_INIT) {
-
 			case JS_EVENT_AXIS:
 				if (event.number < 8)
 					joy->axis[event.number] = (float)event.value / 32767.0;
@@ -104,5 +109,6 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	*a8 = joy->axis[7];
 	*buttons = joy->buttons;
 
+	FB_GRAPHICS_UNLOCK( );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

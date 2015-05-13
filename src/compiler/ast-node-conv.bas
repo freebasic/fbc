@@ -3,291 +3,103 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "ir.bi"
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-private sub hCONVConstEvalInt _
-	( _
-		byval to_dtype as integer, _
-		byval v as ASTNODE ptr _
-	)
+private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
+	dim as integer ldtype = any
 
-	dim as integer vdtype = typeGet( v->dtype )
-	to_dtype = typeGet( to_dtype )
+	ldtype = astGetFullType( l )
 
-	select case as const vdtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-
-		select case as const to_dtype
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-			v->con.val.int = cbool( v->con.val.long )
-
-		case FB_DATATYPE_BYTE
-			v->con.val.int = cbyte( v->con.val.long )
-
-		case FB_DATATYPE_UBYTE
-			v->con.val.int = cubyte( culngint( v->con.val.long ) )
-
-		case FB_DATATYPE_SHORT
-			v->con.val.int = cshort( v->con.val.long )
-
-		case FB_DATATYPE_USHORT
-			v->con.val.int = cushort( culngint( v->con.val.long ) )
-
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_LONG
-			v->con.val.int = cint( v->con.val.long )
-
-		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER, FB_DATATYPE_ULONG
-			v->con.val.uint = cuint( culngint( v->con.val.long ) )
-
+	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
+		select case as const( typeGetSizeType( todtype ) )
+		case FB_SIZETYPE_FLOAT32
+			'' SINGLE -> SINGLE: nothing to do
+			'' DOUBLE -> SINGLE?
+			if( typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_DOUBLE ) then
+				'' Truncate DOUBLE to SINGLE (note: csng()
+				'' before 0.25 didn't truncate in this case,
+				'' so using an explicit temp var instead)
+				dim as single f = any
+				f = l->val.f
+				l->val.f = f
+			end if
+		case FB_SIZETYPE_FLOAT64
+			'' SINGLE/DOUBLE -> DOUBLE:
+			'' Nothing to do, since float constants are stored as DOUBLE
+		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+			l->val.i = cbool( l->val.f )
+		case FB_SIZETYPE_INT8
+			l->val.i = cbyte( l->val.f )
+		case FB_SIZETYPE_UINT8
+			l->val.i = cubyte( l->val.f )
+		case FB_SIZETYPE_INT16
+			l->val.i = cshort( l->val.f )
+		case FB_SIZETYPE_UINT16
+			l->val.i = cushort( l->val.f )
+		case FB_SIZETYPE_INT32
+			l->val.i = clng( l->val.f )
+		case FB_SIZETYPE_UINT32
+			l->val.i = culng( l->val.f )
+		case FB_SIZETYPE_INT64
+			l->val.i = clngint( l->val.f )
+		case FB_SIZETYPE_UINT64
+			l->val.i = hCastFloatToULongint( l->val.f )
 		end select
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-
-		select case as const to_dtype
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-			v->con.val.int = cbool( v->con.val.float )
-
-		case FB_DATATYPE_BYTE
-			v->con.val.int = cbyte( v->con.val.float )
-
-		case FB_DATATYPE_UBYTE
-			v->con.val.int = cubyte( v->con.val.float )
-
-		case FB_DATATYPE_SHORT
-			v->con.val.int = cshort( v->con.val.float )
-
-		case FB_DATATYPE_USHORT
-			v->con.val.int = cushort( v->con.val.float )
-
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM, FB_DATATYPE_LONG
-			v->con.val.int = cint( v->con.val.float )
-
-		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER, FB_DATATYPE_ULONG
-			v->con.val.uint = cuint( v->con.val.float )
-
+	elseif( typeIsSigned( ldtype ) ) then
+		select case as const( typeGetSizeType( todtype ) )
+		case FB_SIZETYPE_FLOAT32
+			l->val.f = csng( l->val.i )
+		case FB_SIZETYPE_FLOAT64
+			l->val.f = cdbl( l->val.i )
+		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+			l->val.i = cbool( l->val.i )
+		case FB_SIZETYPE_INT8
+			l->val.i = cbyte( l->val.i )
+		case FB_SIZETYPE_UINT8
+			l->val.i = cubyte( l->val.i )
+		case FB_SIZETYPE_INT16
+			l->val.i = cshort( l->val.i )
+		case FB_SIZETYPE_UINT16
+			l->val.i = cushort( l->val.i )
+		case FB_SIZETYPE_INT32
+			l->val.i = clng( l->val.i )
+		case FB_SIZETYPE_UINT32
+			l->val.i = culng( l->val.i )
+		case FB_SIZETYPE_INT64
+			l->val.i = clngint( l->val.i )
+		case FB_SIZETYPE_UINT64
+			l->val.i = culngint( l->val.i )
 		end select
-
-	case else
-		select case as const( to_dtype )
-		case FB_DATATYPE_BYTE
-			v->con.val.int = cbyte( v->con.val.int )
-
-		case FB_DATATYPE_UBYTE
-			v->con.val.int = cubyte( cuint( v->con.val.int ) )
-
-		case FB_DATATYPE_SHORT
-			v->con.val.int = cshort( v->con.val.int )
-
-		case FB_DATATYPE_USHORT
-			v->con.val.int = cushort( cuint( v->con.val.int ) )
-
+	else
+		select case as const( typeGetSizeType( todtype ) )
+		case FB_SIZETYPE_FLOAT32
+			l->val.f = csng( cunsg( l->val.i ) )
+		case FB_SIZETYPE_FLOAT64
+			l->val.f = cdbl( cunsg( l->val.i ) )
+		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+			l->val.i = cbool( cunsg( l->val.i ) )
+		case FB_SIZETYPE_INT8
+			l->val.i = cbyte( cunsg( l->val.i ) )
+		case FB_SIZETYPE_UINT8
+			l->val.i = cubyte( cunsg( l->val.i ) )
+		case FB_SIZETYPE_INT16
+			l->val.i = cshort( cunsg( l->val.i ) )
+		case FB_SIZETYPE_UINT16
+			l->val.i = cushort( cunsg( l->val.i ) )
+		case FB_SIZETYPE_INT32
+			l->val.i = clng( cunsg( l->val.i ) )
+		case FB_SIZETYPE_UINT32
+			l->val.i = culng( cunsg( l->val.i ) )
+		case FB_SIZETYPE_INT64
+			l->val.i = clngint( cunsg( l->val.i ) )
+		case FB_SIZETYPE_UINT64
+			l->val.i = culngint( cunsg( l->val.i ) )
 		end select
-
-	end select
-
-end sub
-
-'':::::
-private sub hCONVConstEvalFlt _
-	( _
-		byval to_dtype as integer, _
-		byval v as ASTNODE ptr _
-	)
-
-	dim as integer vdtype = typeGet( v->dtype )
-	to_dtype = typeGet( to_dtype )
-
-	select case as const vdtype
-	case FB_DATATYPE_SINGLE
-		'' SINGLE to SINGLE|DOUBLE
-		'' Nothing to do, since float constants are stored as DOUBLE
-
-	case FB_DATATYPE_DOUBLE
-		'' DOUBLE to SINGLE|DOUBLE
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			'' Truncate DOUBLE to SINGLE
-			dim as single f = any
-			f = v->con.val.float
-			v->con.val.float = f
-
-			'' Alternative, relying on the fixed CSNG() of FB 0.25:
-			'v->con.val.float = csng( v->con.val.float )
-			'' (currently it's better to use the explicit temp var
-			''  as done above, to avoid the broken CSNG() when
-			''  bootstrapping with FB 0.24 or even earlier versions)
-		end if
-
-	case FB_DATATYPE_LONGINT
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			v->con.val.float = csng( v->con.val.long )
-		else
-			v->con.val.float = cdbl( v->con.val.long )
-		end if
-
-	case FB_DATATYPE_ULONGINT
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			v->con.val.float = csng( cunsg( v->con.val.long ) )
-		else
-			v->con.val.float = cdbl( cunsg( v->con.val.long ) )
-		end if
-
-	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			v->con.val.float = csng( cunsg( v->con.val.int ) )
-		else
-			v->con.val.float = cdbl( cunsg( v->con.val.int ) )
-		end if
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			if( to_dtype = FB_DATATYPE_SINGLE ) then
-				v->con.val.float = csng( v->con.val.int )
-			else
-				v->con.val.float = cdbl( v->con.val.int )
-			end if
-		else
-			if( to_dtype = FB_DATATYPE_SINGLE ) then
-				v->con.val.float = csng( v->con.val.long )
-			else
-				v->con.val.float = cdbl( v->con.val.long )
-			end if
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			if( to_dtype = FB_DATATYPE_SINGLE ) then
-				v->con.val.float = csng( cunsg( v->con.val.int ) )
-			else
-				v->con.val.float = cdbl( cunsg( v->con.val.int ) )
-			end if
-		else
-			if( to_dtype = FB_DATATYPE_SINGLE ) then
-				v->con.val.float = csng( cunsg( v->con.val.long ) )
-			else
-				v->con.val.float = cdbl( cunsg( v->con.val.long ) )
-			end if
-		end if
-
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			v->con.val.float = csng( cbool( v->con.val.int ) )
-		else
-			v->con.val.float = cdbl( cbool( v->con.val.int ) )
-		end if
-
-
-	case else
-		if( to_dtype = FB_DATATYPE_SINGLE ) then
-			v->con.val.float = csng( v->con.val.int )
-		else
-			v->con.val.float = cdbl( v->con.val.int )
-		end if
-
-	end select
-
-end sub
-
-'':::::
-private sub hCONVConstEval64 _
-	( _
-		byval to_dtype as integer, _
-		byval v as ASTNODE ptr _
-	)
-
-	dim as integer vdtype = typeGet( v->dtype )
-	to_dtype = typeGet( to_dtype )
-
-	select case as const vdtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		'' do nothing
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-
-		if( to_dtype = FB_DATATYPE_LONGINT ) then
-			v->con.val.long = clngint( v->con.val.float )
-		else
-			v->con.val.long = hCastFloatToULongint( v->con.val.float )
-		end if
-
-	case FB_DATATYPE_LONG
-
-		if( FB_LONGSIZE = len( integer ) ) then
-			if( to_dtype = FB_DATATYPE_LONGINT ) then
-				v->con.val.long = clngint( v->con.val.int )
-			else
-				v->con.val.long = culngint( v->con.val.int )
-			end if
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			if( to_dtype = FB_DATATYPE_LONGINT ) then
-				v->con.val.long = clngint( cuint( v->con.val.int ) )
-			else
-				v->con.val.long = culngint( cuint( v->con.val.int ) )
-			end if
-		end if
-
-	case else
-		'' when expanding to 64bit, we must take care of signedness of source operand
-
-		if( to_dtype = FB_DATATYPE_LONGINT ) then
-			if( typeIsSigned( v->dtype ) ) then
-				v->con.val.long = clngint( v->con.val.int )
-			else
-				v->con.val.long = clngint( cuint( v->con.val.int ) )
-			end if
-		else
-			if( typeIsSigned( v->dtype ) ) then
-				v->con.val.long = culngint( v->con.val.int )
-			else
-				v->con.val.long = culngint( cuint( v->con.val.int ) )
-			end if
-		end if
-
-	end select
-
-end sub
-
-'':::::
-private sub hCONVConstEvalBool _
-	( _
-		byval to_dtype as integer, _
-		byval v as ASTNODE ptr _
-	)
-
-	dim as integer vdtype = typeGet( v->dtype )
-	to_dtype = typeGet( to_dtype )
-
-	select case as const vdtype
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		'' do nothing
-
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		v->con.val.int = cbool( v->con.val.long )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		v->con.val.int = cbool( v->con.val.float )
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			v->con.val.int = cbool( v->con.val.float )
-		else
-			v->con.val.int = cbool( v->con.val.long )
-		end if
-
-	case else
-		v->con.val.int = cbool( v->con.val.int )
-
-	end select
-
+	end if
 end sub
 
 '':::::
@@ -310,19 +122,23 @@ private function hCheckPtr _
 
 	function = FB_ERRMSG_OK
 
-	'' to pointer? only allow integers and pointers
+	'' to pointer? only allow integers of same size, and pointers
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32
-			'' Allow integer/long-to-pointer casts
-			exit function
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			'' Allow integer-to-pointer casts if same size
+			if( typeGetSize( expr_dtype ) = env.pointersize ) then
+				exit function
+			end if
+			return hGetTypeMismatchErrMsg( options )
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
 			if( astIsCONST( expr ) ) then
-				if( astConstIsZero( expr ) ) then
+				if( astConstEqZero( expr ) ) then
 					'' Allow 0-to-pointer casts
 					exit function
 				end if
@@ -338,13 +154,17 @@ private function hCheckPtr _
 			return hGetTypeMismatchErrMsg( options )
 		end select
 
-	'' from pointer? only allow integers and pointers
+	'' from pointer? only allow integers of same size and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			'' Allow pointer-to-integer/long casts
-			exit function
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+			'' Allow integer-to-pointer casts if same size
+			if( typeGetSize( to_dtype ) = env.pointersize ) then
+				exit function
+			end if
+			return hGetTypeMismatchErrMsg( options )
 
 		case FB_DATATYPE_POINTER
 			'' Both are pointers, fall through to checks below
@@ -520,7 +340,8 @@ function astNewCONV _
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
 	select case as const typeGet( to_dtype )
-	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' refuse void (used by uop/bop to cast to be most precise
 		'' possible) and strings, as op overloading already failed
 		exit function
@@ -592,45 +413,11 @@ function astNewCONV _
 	if( astIsCONST( l ) ) then
 		astCheckConst( to_dtype, l )
 
-		select case as const typeGet( to_dtype )
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hCONVConstEval64( to_dtype, l )
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hCONVConstEvalFlt( to_dtype, l )
-
-		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-			if( FB_LONGSIZE = len( integer ) ) then
-				hCONVConstEvalInt( to_dtype, l )
-			else
-				hCONVConstEval64( to_dtype, l )
-			end if
-
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-			hCONVConstEvalBool( to_dtype, l )
-
-		case else
-			'' bytes/shorts/integers/enum
-			hCONVConstEvalInt( to_dtype, l )
-		end select
+		hConstConv( to_dtype, l )
 
 		l->dtype = to_dtype
 		l->subtype = to_subtype
 		return l
-	end if
-
-	'' C backend?
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		'' special case: if it's a float to int, use a builtin function
-		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
-			return rtlMathFTOI( l, to_dtype )
-		else
-			select case( typeGetDtAndPtrOnly( to_dtype ) )
-			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
-				'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
-				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
-			end select
-		end if
 	end if
 
 	doconv = TRUE
@@ -815,4 +602,22 @@ function astLoadCONV _
 
 end function
 
+function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( n->class = AST_NODECLASS_CONV ) then
+		if( n->cast.doconv = FALSE ) then
+			function = n->l
+		end if
+	end if
+end function
 
+function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( n->class = AST_NODECLASS_CONV ) then
+		if( n->cast.doconv = FALSE ) then
+			function = n->l
+			n->l = NULL
+			astDelTree( n )
+		end if
+	end if
+end function

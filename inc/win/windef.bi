@@ -75,8 +75,8 @@ type LPWORD as WORD ptr
 type LPLONG as integer ptr
 type PDWORD as DWORD ptr
 type LPDWORD as DWORD ptr
-type PCVOID as any ptr
-type LPCVOID as any ptr
+type PCVOID as const any ptr
+type LPCVOID as const any ptr
 type INT_ as integer
 type UINT as uinteger
 type PUINT as uinteger ptr
@@ -270,7 +270,7 @@ end type
 
 type PRECT as RECT ptr
 type LPRECT as RECT ptr
-type LPCRECT as RECT ptr
+type LPCRECT as const RECT ptr
 
 type RECTL
 	left as LONG
@@ -281,7 +281,7 @@ end type
 
 type PRECTL as RECTL ptr
 type LPRECTL as RECTL ptr
-type LPCRECTL as RECTL ptr
+type LPCRECTL as const RECTL ptr
 
 type POINT
 	x as LONG

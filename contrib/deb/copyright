@@ -4,7 +4,7 @@ Source: http://www.freebasic.net
 
 
 Files: src/compiler/*
-Copyright:  Copyright (C) 2004-2013 The FreeBASIC development team
+Copyright:  Copyright (C) 2004-2014 The FreeBASIC development team
 License: GPL-2+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ License: GPL-2+
 
 
 Files: src/rtlib/* src/gfxlib2/*
-Copyright:  Copyright (C) 2004-2013 The FreeBASIC development team
+Copyright:  Copyright (C) 2004-2014 The FreeBASIC development team
 License: LGPL-2+ with exception
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
