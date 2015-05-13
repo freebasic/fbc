@@ -14,97 +14,6 @@
 '' vars
 ''
 
-
-'':::::
-private function astSetBitField _
-	( _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr s = any
-
-	s = l->subtype
-
-	'' remap type
-
-	'' boolean bitfield? - do a bool conversion before the bitfield store
-	select case s->bitfld.typ
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		astGetFullType( l ) = typeJoin( symbGetFullType( s ), FB_DATATYPE_UINT )
-	l->subtype = NULL
-
-		if( r->class <> AST_NODECLASS_CONV ) then
-			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
-			astGetCASTDoConv( r ) = FALSE
-		end if
-		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
-
-		r = astNewBOP( AST_OP_AND, r, _
-					   astNewCONSTi( (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 FB_DATATYPE_UINT ) )
-
-	case else
-		astGetFullType( l ) = symbGetFullType( s )
-		l->subtype = NULL
-
-	'' make sure result will fit in destination...
-	r = astNewBOP( AST_OP_AND, r, _
-				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
-
-	if( s->bitfld.bitpos > 0 ) then
-		r = astNewBOP( AST_OP_SHL, r, _
-				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
-	end if
-
-	end select
-
-	l = astNewBOP( AST_OP_AND, astCloneTree( l ), _
-				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 FB_DATATYPE_UINT ) )
-
-
-	function = astNewBOP( AST_OP_OR, l, r )
-
-end function
-
-'':::::
-sub astUpdateFieldAssignment _
-	( _
-		byref l as ASTNODE ptr, _
-		byref r as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr lchild = any
-
-	'' handle bitfields..
-
-	if( l->class <> AST_NODECLASS_FIELD ) then
-		exit sub
-	end if
-
-	lchild = astGetLeft( l )
-
-	select case astGetDataType( lchild )
-	case FB_DATATYPE_BITFIELD
-
-		'' l is a field node, use its left child instead
-		r = astSetBitField( astGetLeft( l ), r )
-		r = astSetBitField( lchild, r )
-
-		'' the field node can be removed
-		astDelNode( l )
-		l = astGetLeft( l )
-		l = lchild
-
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
-		'' $$JRM
-		r = astNewCONV( astGetFullType( l ), NULL, r )
-
-	end select
-
-end sub
-
 '':::::
 function astBuildVarAssign _
 	( _
@@ -322,8 +231,7 @@ end function
 '' loops
 ''
 
-'':::::
-function astBuildForBeginEx _
+function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
@@ -332,99 +240,38 @@ function astBuildForBeginEx _
 	) as ASTNODE ptr
 
 	'' cnt = 0
-    tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
+	tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
 
-    '' do
-    tree = astNewLINK( tree, astNewLABEL( label ) )
-
-    function = tree
-
-end function
-
-'':::::
-sub astBuildForBegin _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
-	)
-
-    astAdd( astBuildForBeginEx( NULL, cnt, label, inivalue ) )
-
-end sub
-
-'':::::
-function astBuildForEndEx _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' next
-    tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
-
-    '' next
-    tree = astNewLINK( tree, astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  				   astNewVAR( cnt, _
-            										 	   			  0, _
-            										 	   			  FB_DATATYPE_INTEGER ), _
-            							  				   endvalue ), _
-            				   					label, _
-            				   					FALSE ) )
+	'' do
+	tree = astNewLINK( tree, astNewLABEL( label ) )
 
 	function = tree
-
 end function
 
-'':::::
-function astBuildForEndEx _
+function astBuildForEnd _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval stepvalue as integer, _
-		byval endvalue as integer _
+		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	function = astBuildForEndEx( tree, _
-								 cnt, _
-								 label, _
-								 stepvalue, _
-								 astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
+	'' counter += stepvalue
+	tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
 
+	'' if( counter = endvalue ) then
+	''     goto label
+	'' end if
+	tree = astNewLINK( tree, _
+		astUpdComp2Branch( _
+			astNewBOP( AST_OP_EQ, _
+				astNewVAR( cnt, 0, FB_DATATYPE_INTEGER ), _
+				endvalue ), _
+			label, FALSE ) )
+
+	function = tree
 end function
-
-'':::::
-sub astBuildForEnd _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as ASTNODE ptr _
-	)
-
-    astAdd( astBuildForEndEx( NULL, cnt, label, stepvalue, endvalue ) )
-
-end sub
-
-'':::::
-sub astBuildForEnd _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as integer _
-	)
-
-    astBuildForEnd( cnt, _
-    				label, _
-    				stepvalue, _
-    				astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
-
-end sub
 
 ''
 '' calls

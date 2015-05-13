@@ -127,6 +127,8 @@ Version 0.24.0:
 - C backend: Taking address of module-level labels was broken (used by module-level error handling code)
 - C backend: Wstring literals outside variable initializers were emitted assuming sizeof(wstring) = 2, causing buffer overflows on Linux (where sizeof(wstring) = 4)
 - C backend: wchar type didn't match gcc's, breaking global fixed-length wstring initializers
+- Unused bits (padding) in UDTs with bitfields could be left uninitialized by type initializers
+- C backend #3421351: Wrong code for bitfield assignment when the target bitfield expression had nested field accesses
 
 
 Version 0.23.0:

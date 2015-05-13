@@ -37,12 +37,14 @@ function astScopeBegin _
 		return NULL
 	end if
 
-	''
 	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, FB_DATATYPE_INVALID )
 
-    n = astAdd( n )
+	'' Assuming the astAdd() adds the SCOPEBEGIN without reallocating it
+	'' or similar, because it's still referenced afterwards!
+	'' astAdd() could theoretically LINK it with other statements though,
+	'' that's why we can't use "n = astAdd( n )".
+	astAdd( n )
 
-	''
 	s = symbAddScope( n )
 
     '' change to scope's symbol tb
@@ -104,7 +106,9 @@ sub astScopeBreak(byval target as FBSYMBOL ptr)
 	'' the branch node is added, not the break itself, any
 	'' destructor will be added before this node when
 	'' processing the proc's branch list
-	n->l = astAdd( astNewBRANCH( AST_OP_JMP, target ) )
+	'' Same concerns apply as for the astAdd() of SCOPEBEGIN above
+	n->l = astNewBRANCH( AST_OP_JMP, target )
+	astAdd( n->l )
 
 	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
 end sub
@@ -116,6 +120,8 @@ sub astScopeEnd _
 	)
 
 	dim as FBSYMBOL ptr s = any
+
+	assert( n->class = AST_NODECLASS_SCOPEBEGIN )
 
 	s = n->sym
 
@@ -130,7 +136,6 @@ sub astScopeEnd _
 	'' remove symbols from hash table
 	symbDelScopeTb( s )
 
-	''
 	irScopeEnd( s )
 
 	'' back to preview symbol tb
@@ -140,14 +145,14 @@ sub astScopeEnd _
 	parser.currblock = ast.currblock->sym
 	parser.scope -= 1
 
-	''
 	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
 
 	n = astNewNode( AST_NODECLASS_SCOPEEND, FB_DATATYPE_INVALID )
 
-    n = astAdd( n )
+	'' Same concerns apply as for the astAdd() of SCOPEBEGIN above
+	astAdd( n )
 
-    n->sym = s
+	n->sym = s
 
 end sub
 
@@ -698,5 +703,3 @@ function astLoadSCOPEEND _
     function = NULL
 
 end function
-
-

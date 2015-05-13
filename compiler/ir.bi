@@ -475,7 +475,6 @@ enum IR_OPT
 	IR_OPT_ADDRCISC			= &h00100000			'' complex addressing modes (base+idx*disp)
 	IR_OPT_REUSEOPER        = &h00200000			'' reuse destine operand
 	IR_OPT_IMMOPER          = &h00400000			'' allow immediate operands
-	IR_OPT_NESTEDFIELDS		= &h00800000			'' optimize (reduce) the accesses to UDT fields?
 	IR_OPT_NOINLINEOPS		= &h01000000			'' don't pass down to IR the complex operators
 
 	IR_OPT_HIGHLEVEL		= &h10000000			'' high-level, preserve the HL constructions

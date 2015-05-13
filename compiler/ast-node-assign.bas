@@ -655,12 +655,7 @@ function astNewASSIGN _
 
 end function
 
-'':::::
-function astLoadASSIGN _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l = any, r = any
     dim as IRVREG ptr vs = any, vr = any
 
@@ -669,9 +664,6 @@ function astLoadASSIGN _
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
 	end if
-
-	'' handle bitfields..
-	astUpdateFieldAssignment( l, r )
 
 	vs = astLoad( r )
 	vr = astLoad( l )
@@ -684,7 +676,4 @@ function astLoadASSIGN _
 	astDelNode( r )
 
 	function = vr
-
 end function
-
-

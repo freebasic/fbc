@@ -975,8 +975,7 @@ private function hCtorChain _
 		return TRUE
 	end if
 
-	'' this must be set before doing any AST call, or the ctor
-	'' initialization would be trigged
+	'' Tell astProcEnd() to omit the default init code at the top of ctors
 	symbSetIsCtorInited( proc )
 
 	this_ = symbGetProcHeadParam( proc )
@@ -1035,8 +1034,7 @@ private function hBaseCtorCall() as integer
 	'' BASE
 	lexSkipToken( )
 
-	'' this must be set before doing any AST call, or the ctor
-	'' initialization would be trigged
+	'' Tell astProcEnd() to omit the default init code at the top of ctors
 	symbSetIsCtorInited( proc )
 
 	var this_ = symbGetProcHeadParam( proc )
