@@ -5,7 +5,7 @@ Integer data type modifier
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Unsigned** //{integer-based data type}//
 ##
 {{fbdoc item="desc"}}
-	Forces an integer-based data type to be unsigned (cannot contain negative numbers, but has it's maximum value doubled).
+	Forces an integer-based data type to be unsigned (cannot contain negative numbers, but has its maximum value doubled).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/unsigned.bas"}}%%(freebasic)

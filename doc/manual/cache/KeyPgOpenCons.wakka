@@ -54,6 +54,7 @@ Sleep
 	- In QB the syntax was ##OPEN "CON:" FOR INPUT|OUTPUT AS [#] //filenum//##
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgOpenScrn Open Scrn]]##
 	- ##[[KeyPgOpenErr Open Err]]##
 	- ##[[KeyPgFreefile FreeFile]]##

@@ -38,7 +38,7 @@ open "bleh.dat"  for output as #1
 	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusingPp Print # Using]]##
+	- ##[[KeyPgPrintusing Print Using]]##
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgWrite Write #]]##
 	- ##[[KeyPgOpen Open]]##

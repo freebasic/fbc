@@ -10,7 +10,7 @@
 Dim array(0 To 99) As Integer
 
 'clear the contents of the array to 0, starting with the first element
-Clear array(1), , 100 * SizeOf(Integer)
+Clear array(0), , 100 * SizeOf(Integer)
 
 
 'allocate 20 bytes of memory

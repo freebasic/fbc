@@ -8,7 +8,7 @@
 
 '' This example uses Strptr to demonstrate using pointers with strings
 Dim myString As String
-Dim toMyStringDesc as any ptr
+Dim toMyStringDesc As Any Ptr
 Dim toMyString As ZString Ptr
 
 '' Note that using standard VARPTR notation will return a pointer to the
@@ -16,7 +16,7 @@ Dim toMyString As ZString Ptr
 myString = "Improper method for Strings"
 toMyStringDesc = @myString
 Print myString
-Print hex( toMyStringDesc )
+Print Hex( toMyStringDesc )
 Print
 
 '' However, using Strptr returns the proper pointer

@@ -49,7 +49,7 @@ end select
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the aliases ##**""__Enum""**## and ##**""__Explicit""**##.
+	- Explicit Enum not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Explicit""**##.
 
 
 {{fbdoc item="diff"}}

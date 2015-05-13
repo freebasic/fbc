@@ -11,12 +11,10 @@ ScreenRes 320, 240, 32, 2    'Sets up the screen to be 320x240 in 32-bit color w
 
 For n As Integer = 50 To 270
 
-	ScreenSet 2,1     'Sets the working page to 2 and the displayed page to 1
+	ScreenSet 1,0     'Sets the working page to 1 and the displayed page to 0
 	Cls
-	Circle (n, 50),50 ,RGB(255,255,0) 'Draws a circle with a 50 pixel radius in yellow on page 2
-	ScreenSet 1,1    'Sets the working page to 1 and the displayed page to 1
-	ScreenSync    'Waits for vertical refresh
-	Flip 2,1    'Copies our circle from page 2 to page 1
+	Circle (n, 50),50 ,RGB(255,255,0) 'Draws a circle with a 50 pixel radius in yellow on page 1
+	Flip 1,0    'Copies our circle from page 1 to page 0
 
 	Sleep 25
 Next

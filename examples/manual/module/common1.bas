@@ -12,7 +12,7 @@ Declare Sub initme()
 
 Common Shared foo() As Double
 
-Redim foo(0 To 2) As Double
+ReDim foo(0 To 2) As Double
 
 initme()
 

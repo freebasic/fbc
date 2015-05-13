@@ -29,5 +29,5 @@ Function some_function( ) As Integer
   '' Error; function-level vars cannot be shared  
   '' dim shared as integer sharedFunctionLevel
 
-  function = 0
+  Function = 0
 End Function

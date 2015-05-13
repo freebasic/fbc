@@ -16,7 +16,7 @@
 #define FALSE 0
 #define TRUE (Not FALSE)
 
-'' Function like definition
+'' Function-like definition
 #define MyRGB(R,G,B) (((R)Shl 16)  Or ((G)Shl 8) Or (B)) 
 Print Hex( MyRGB(&hff, &h00, &hff) )
 

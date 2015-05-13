@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MONTHNAME"}}----
-Gets the name of a month from it's integral representation
+Gets the name of a month from its integral representation
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""MonthName""** ( [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]

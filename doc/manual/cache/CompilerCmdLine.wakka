@@ -3,7 +3,7 @@ Using the **fbc** command-line.
 
 	The official ""FreeBASIC"" distribution comes with **fbc**, ""FreeBASIC""'s flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
 
-	At it's simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an assembly (.asm) file, then compiling this into an object file (.o) using GAS and finally linking using LD this object file to other object files and libraries it needs to run, producing the final executable file. The assembly and compiled object files are deleted at this point by default. For example, the following command,
+	At its simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an assembly (.asm) file, then compiling this into an object file (.o) using GAS and finally linking using LD this object file to other object files and libraries it needs to run, producing the final executable file. The assembly and compiled object files are deleted at this point by default. For example, the following command,
 
 		##fbc foo.bas##
 
@@ -163,3 +163,4 @@ Using the **fbc** command-line.
 	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

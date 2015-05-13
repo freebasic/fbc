@@ -78,9 +78,10 @@ loop
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencopy""**##.
 
 {{fbdoc item="diff"}}
-	- New to ""FreeBASIC"". QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.
+	- New to ""FreeBASIC"". It is a graphics-only version of ##[[KeyPgPcopy Pcopy]]## - which works in both text and graphics modes.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPcopy Pcopy]]##
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreenset Screenset]]##

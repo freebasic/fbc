@@ -11,9 +11,9 @@
 #define rgb_g(x) ((x) Shr 8 And 255)
 #define rgb_b(x) ((x) And 255)
 
-dim as uinteger c
-dim as integer x, y
-dim as ubyte red, green, blue, alpha
+Dim As UInteger c
+Dim As Integer x, y
+Dim As UByte red, green, blue, Alpha
 
 '' Assume a 16, 24, or 32 bit screen mode has been set
 c = Point(x, y)

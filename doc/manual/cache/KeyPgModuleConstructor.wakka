@@ -11,7 +11,7 @@ Specifies execution of a procedure before module-level code
 
 	The procedure must have an empty parameter list.  A compile-time error will be generated if the ##**Constructor**## keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
 
-	In a single module, constructors normally execute in the order in which they are defined.
+	In a single module, constructors normally execute in the reverse order in which they are defined.
 
 	The ##//priority//## attribute, an integer between 101 and 65535, can be used to force constructors to be executed in a certain order.  The value of ##//priority//## has no specific meaning, only the relationship of the number with other constructor priorities.  101 is the highest priority and is executed first.  All constructors having a ##//priority//## attribute are executed before constructors with no attribute.  The priority value of 65535 is the same as not assigning a priority value.
 
@@ -49,8 +49,8 @@ end sub
 %%
 	**Output:**
 %%
-Constructor1() called
 Constructor2() called
+Constructor1() called
 module-level code
 Destructor1() called
 Destructor2() called

@@ -13,8 +13,17 @@ Declares a namespace block
 		An alternate external name for the namespace.
 
 {{fbdoc item="desc"}}
-	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). 
+	Namespaces allow to group entities like objects (predefined data-types and UDTs including Union and Enum) and procedures (including their declarations) under a name. This way the global scope can be divided in "sub-scopes", each one with its own name. 
 
+	Whether or not explicitly declared a namespace in a source file, the compiler adds a default namespace. This unnamed namespace, called the global namespace, is present in every file.
+	Any identifier in the global namespace is available for use in a named namespace (even global symbols with the same name as keywords may be declared inside a namespace). 
+
+	Namespaces implicitly have public access and this is not modifiable.
+	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared Shared]] is not specified (static and shared are optional).
+	Namespaces do not have any effect on the visibility of a define.
+	It is possible to define a namespace in two or more declarations.
+	
+	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the global namespace). 
 	For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. 
 
 	To access duplicated symbols defined in the global namespace use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).

@@ -18,19 +18,19 @@ Standard data type: 8 bit character string
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/zstring.bas"}}%%(freebasic)
-dim as zstring * 14 str1 => "hello, world"
+dim as zstring * 13 str1 => "hello, world"
 print str1
-print len(str1)    'returns 12, the size of the string it contains 
-print sizeof(str1) 'returns 14, the size of the variable
+print len(str1)     'returns 12, the size of the string it contains 
+print sizeof(str1)  'returns 13, the size of the variable
 %%
 
 {{fbdoc item="filename" value="examples/manual/datatype/zstring2.bas"}}%%(freebasic)
 dim as zstring ptr str2
-str2 = allocate( 14 )
+str2 = allocate( 13 )
 *str2 = "hello, world"
 print *str2
-print len(*str2)      'returns 12, the size of the string it contains 
-print sizeof(*str2)  'returns len(zstring), the size of the variable
+print len(*str2)     'returns 12, the size of the string it contains 
+print sizeof(*str2)  'returns 0, because a dereferenced pointer is passed and not a variable
 %%
 
 {{fbdoc item="lang"}}

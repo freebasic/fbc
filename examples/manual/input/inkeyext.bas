@@ -28,6 +28,10 @@ Do
 
 	    Case Chr$(27): Print "Escape"
 
+	    Case Chr$(9): Print "Tab"
+
+	    Case Chr$(8): Print "Backspace"
+
 	    Case Chr$(32) To Chr$(127)
 	        Print "Printable character: " & k
 
@@ -42,6 +46,12 @@ Do
 	    Case EXTCHAR & "O": Print "Down Left / End"
 	    Case EXTCHAR & "P": Print "Down"
 	    Case EXTCHAR & "Q": Print "Down Right / PgDn"
+
+	    Case EXTCHAR & "R": Print "Insert"
+	    Case EXTCHAR & "S": Print "Delete"
+
+
+	    Case EXTCHAR & "k": Print "Close window / Alt-F4"
 
 	    Case EXTCHAR & Chr$(59) To EXTCHAR & Chr$(68)
 	        Print "Function key: F" & Asc(k, 2) - 58

@@ -3,7 +3,7 @@ Consists of a set of functions that implement regular expression pattern matchin
 
 Website: http://www.pcre.org
 Platforms supported: ""Win32"", Linux
-Headers to include: pcre/pcre.bi
-Header version: 7.6
+Headers to include: pcre.bi, pcre16.bi, prceposix.bi
+Version: 8.31
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

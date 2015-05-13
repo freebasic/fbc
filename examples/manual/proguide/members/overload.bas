@@ -26,5 +26,5 @@ Type T
 	'' Declare Static Function f (As UByte) As Integer
 
 	'' ...
-	somedata as any ptr
+	somedata As Any Ptr
 End Type

@@ -6,16 +6,13 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgChain
 '' --------
 
-#ifdef FB__LINUX
-#define CHAIN2	"chain2"
+#ifdef __FB_LINUX__
+	Dim As String program = "./program"
 #else
-#define CHAIN2	"chain2.exe"
+	Dim As String program = "program.exe"
 #endif
 
-	Print "chain1 begins"
-
-	Chain CHAIN2
-
-	Print "chain1 ends"
-
-	Sleep
+Print "Running " & program & "..."
+If (Chain(program) <> 0) Then
+	Print program & " not found!"
+End If

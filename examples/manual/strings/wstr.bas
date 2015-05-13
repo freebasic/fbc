@@ -22,7 +22,7 @@ MessageBox(null, ws, WStr("Unicode 'Hello World'"), MB_OK Or MB_ICONINFORMATION)
 
 #else
 
-print ws
-print WStr("Unicode 'Hello World'")
+Print ws
+Print WStr("Unicode 'Hello World'")
 
 #endif

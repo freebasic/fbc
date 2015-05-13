@@ -365,7 +365,7 @@ an experimental attempt to generate that order.
     --------
 
     Typical usage:
-        $ ./mkerrlst -p /FreeBASIC/src/compiler/
+        $ ./mkerrlst [ -p ../../src/compiler/ ]
         $ fbc mkerrtxt.bas
         $ ./mkerrtxt > errlist.txt
 
@@ -484,8 +484,8 @@ on each page.
         $ ./samps extract @PageIndex.txt
 
     This utility is used for managing the wiki samples and synchronizing them
-with FreeBASIC/examples/manual.  Type './samps' without any command line 
-options for a full list commands.
+with examples/manual.  Type './samps' without any command line options for a
+full list of commands.
 
     Directories used must be configured in fbchkdoc.ini
 
@@ -586,9 +586,9 @@ that the wakka cache directory is up to date:
     -------------------------
 
     Most of the samples code in the wiki (any code marked with %%(freebasic)
-tags) should also exist in FreeBASIC/examples/manual.  The main reason for
+tags) should also exist in examples/manual.  The main reason for
 this is to automate testing of the wiki's sample code for compile errors. The
-FreeBASIC/examples/manual/samples.bas program can be used to compile all, or
+examples/manual/samples.bas program can be used to compile all, or
 a specified directory of sample sources and optionally report an error.
 
     Assuming that PageIndex.txt and the cache directory is up to date, these

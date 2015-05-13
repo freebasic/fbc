@@ -9,18 +9,35 @@ Set the target platform for cross compilation
 		The target platform. (See below)
 
 {{fbdoc item="desc"}}
-	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed in the lib/ and bin/ directories for cross compilation to work.
+	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work.
 	
-	//platform// is the system name that is prefixed to the names of the compilation tools and also the name of the lib/ directory. It can be a system triplet such as ##i686-pc-mingw32## as known from gcc/binutils, or something as simple as ##dos## or ##win32##. The compiler expects to find compilation tools and libraries named after this //platform// name.
+	The behavior of ##-target## differs depending on whether the FB setup was configured as [[DevNormalVsStandalone Normal or Standalone]].
 	
-	For example, in order to use ##-target dos## with the FB-win32 fbc, there must be ##bin/dos-{as,ar,ld}.exe## and ##dos-lib/*## (with the FB DOS libraries) installed in the FB-win32 directory.
-	
-	For example, to cross-compile from Debian to ""Win32"":
-		- Install Debian's mingw32 cross-compiling toolchain (##gcc-mingw32##), so the ##i586-mingw32msvc-{as,ar,ld,gcc,dlltool}## tools are available.
-		- Install FB win32 libraries in ##lib/i586-mingw32msvc-freebasic/##. Those can be built from the FB source via ##make TARGET=i586-mingw32msvc##, or they can be taken from the FB win32 release, as long as it's the same FB version.
-		- Now you can use ##-target i586-mingw32msvc## to cross-compile.
-	
-	""FreeBASIC"" generally supports these target systems at the moment: Cygwin, Darwin, DOS (DJGPP), ""FreeBSD"", Linux, ""NetBSD"", ""OpenBSD"", ""Win32"" (""MinGW""), Xbox.
+		- for Normal, such as the ""FreeBASIC-linux"" release:
+		
+		
+			Whatever is given for //platform// will be prefixed to the file names of the used gcc/binutils programs. This will typically be a system triplet such as ##i686-pc-linux-gnu##. For example, specifying ##-target i686-pc-linux-gnu## will cause the compiler to invoke ##i686-pc-linux-gnu-ld## instead of the native ##ld##.
+			
+			As an exception, if the given //platform// string matches the default FB target name for the host system, the -target option is ignored. This means that using ##-target linux## on Linux, ##-target win32## on ""Win32"" and so on, has no effect. This only affects the default FB target names listed for the Standalone setup below.
+			
+			If ##-target## is not specified, the compiler defaults to compiling for the native system, and it will invoke gcc/binutils without a target prefix.
+		
+		- for Standalone, such as the ""FreeBASIC-win32"" release:
+		
+		
+			//platform// can be one of the default FB target names:
+			
+				- dos
+				- cygwin
+				- darwin
+				- freebsd
+				- linux
+				- netbsd
+				- openbsd
+				- win32
+				- xbox
+		
+			The compilation target and the bin/ and lib/ sub-directories to use are selected base on whichever target name is given. For example, ##-target win32## causes the compiler to compile for ""Win32"" and use tools from ##bin/win32/## and libraries from ##lib/win32/##.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

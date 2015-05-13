@@ -6,27 +6,24 @@ else
 endif
 
 FBC := fbc
-
-LIBFBDOC_DIR := ../libfbdoc
-LIBFBDOC := $(LIBFBDOC_DIR)/libfbdoc.a
-
 FBDOC := fbdoc$(EXEEXT)
 
-FBFLAGS += -exx -g -i $(LIBFBDOC_DIR)
+FBFLAGS += -exx -g -i ../libfbdoc
 ifdef HAVE_MYSQL
     FBFLAGS += -d HAVE_MYSQL -l mysql
 endif
-FBFLAGS += -p $(LIBFBDOC_DIR) -l fbdoc -l curl -l pcre
+FBFLAGS += -p ../libfbdoc -l fbdoc -l curl -l pcre
 
-################################################################################
+ifeq ($(EXEEXT),.exe)
+  FBFLAGS += -l ws2_32
+endif
 
-$(FBDOC): fbdoc.bas $(LIBFBDOC)
+$(FBDOC): fbdoc.bas ../libfbdoc/libfbdoc.a
 	$(FBC) $(FBFLAGS) $< -x $@
 
-$(LIBFBDOC):
-	cd $(LIBFBDOC_DIR) && make
-
-clean:
-	-rm -f $(FBDOC)
+../libfbdoc/libfbdoc.a:
+	cd ../libfbdoc && make
 
 .PHONY: clean
+clean:
+	-rm -f $(FBDOC)

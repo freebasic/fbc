@@ -7,14 +7,78 @@ Specifies a base type from which to derive a new type
 	End [[KeyPgType Type]]
 ##
 {{fbdoc item="desc"}}
-	##**Extends**## declares ##//typename//## to be derived from ##//base_typename//##. The derived user-defined type, ##//typename//##, inherits fields and methods of the ##//base_typename//## base type. ##//typename//## objects may be used in place of ##//base_typename//## objects. Fields and methods inherited from ##//base_typename//## will be implicitly accessible like regular members of ##//typename//##. However, regular members will override inherited members if they have the same identifier. The ##[[KeyPgBase Base]]## keyword can be used to explicitly access members of the base type.
+	##**Extends**## declares ##//typename//## to be derived from ##//base_typename//##. The derived user-defined type, ##//typename//##, inherits fields and methods of the ##//base_typename//## base type. ##//typename//## objects may be used in place of ##//base_typename//## objects. Fields and methods inherited from ##//base_typename//## will be implicitly accessible like regular members of ##//typename//##. However, regular members will override inherited members if they have the same identifier. The ##[[KeyPgBase Base (member access)]]## keyword can be used to explicitly access members of the base type.
 	
 	User-defined types that extend another type will include the base type structure at their beginning, and their size as reported by ##[[KeyPgSizeOf sizeof()]]## is the sum of their base type's size plus the size needed for any regular members. Since the inherited members make sure that the structure is not empty, a derived type is not required to have regular members of its own.
 	
+	The ##[[KeyPgBaseInit Base (initializer)]]## keyword can be used at the top of constructor of derived user-defined type. It allows to specify an initializer or constructor call for the base type.
+	
 	Extending the built-in ##[[KeyPgObject Object]]## type allows a user-defined type to be used with ##[[KeyPgOpIs Operator Is]]## to perform run-time type checks.
+	
+	 **Remark:** Derived UDT pointer can only be casted to "compatible" pointer types (up/down the inheritance hierarchy) or ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]##. Otherwise, cast to ##[[KeyPgAny Any]] [[KeyPgPtr Ptr]]## first.
+	
+	**Warning:** Before fbc version 0.24, these five keywords dedicated to inheritance ##**Extends**##, ##[[KeyPgBase Base (member access)]]##, ##[[KeyPgBaseInit Base (initializer)]]##, ##[[KeyPgObject Object]]## and ##[[KeyPgOpIs Operator Is]]## are not supported.
 
 {{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/extends.bas"}}%%(freebasic)
+Type SchoolMember 'Represents any school member'
+	Declare Constructor ()
+	Declare Sub Init (Byref _name As String, Byval _age As Integer)
+	As String name
+	As Integer age
+End Type
 
+Constructor SchoolMember ()
+	Print "Initialized SchoolMember"
+End Constructor
+
+Sub SchoolMember.Init (Byref _name As String, Byval _age As Integer)
+	This.name = _name
+	This.age = _age
+	Print "Name: "; This.name; "   Age:"; This.age
+End Sub
+
+
+Type Teacher Extends SchoolMember 'Represents a teacher derived from SchoolMember'
+	Declare Constructor (Byref _name As String, Byval _age As Integer, Byval _salary As Integer)
+	As Integer salary
+	Declare Sub Tell ()
+End Type
+
+Constructor Teacher (Byref _name As String, Byval _age As Integer, Byval _salary As Integer)
+	Print "Initialized Teacher"
+	This.Init(_name, _age) 'implicit access to base member procedure'
+	This.salary = _salary
+End Constructor
+
+Sub Teacher.Tell ()
+	Print "Salary:"; This.salary
+End Sub
+
+
+Type Student Extends SchoolMember 'Represents a student derived from SchoolMember'
+	Declare Constructor (Byref _name As String, Byval _age As Integer, Byval _marks As Integer)
+	As Integer marks
+	Declare Sub Tell ()
+End Type
+
+Constructor Student (Byref _name As String, Byval _age As Integer, Byval _marks As Integer)
+	Print "Initialized Student"
+	This.Init(_name, _age) 'implicit access to base member procedure'
+	This.marks = _marks
+End Constructor
+	
+Sub Student.Tell ()
+	Print "Marks:"; This.marks
+End Sub
+
+
+Dim As Teacher t = Teacher("Mrs. Shrividya", 40, 30000)
+t.Tell()
+Print
+Dim As Student s = Student("Swaroop", 22, 75)
+s.Tell()
+%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Extends""**##.
 
@@ -23,7 +87,9 @@ Specifies a base type from which to derive a new type
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgBase Base]]##
+	- ##[[KeyPgBaseInit Base (initializer)]]##
+	- ##[[KeyPgBase Base (member access)]]##
+	- ##[[KeyPgObject Object]]##
 	- ##[[KeyPgOpIs Operator Is]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

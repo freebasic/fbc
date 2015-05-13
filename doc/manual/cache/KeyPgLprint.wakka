@@ -19,7 +19,7 @@ Writes text to the default printer.
 
 	Some printers will not print at all until a ##[[KeyPgChr Chr]](12)## (End of Page) character is printed.
 
-	Internally, FreeBASIC uses the special file number ##-1## for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]] -1##.  The next use of **##Lprint##** will automatically reopen it as needed.
+	Internally, ""FreeBASIC"" uses the special file number ##-1## for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]] -1##.  The next use of **##Lprint##** will automatically reopen it as needed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/lprint.bas"}}%%(freebasic)

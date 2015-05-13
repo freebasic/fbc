@@ -60,6 +60,11 @@ enum OUTPUT_FORMATS
 	OUT_TEXINFO	 = 8
 end enum
 
+private sub hMkdir( byref path as string )
+	if( mkdir( path ) ) then
+	end if
+end sub
+
 '' --------------------------------------------------------------------------
 '' main
 '' --------------------------------------------------------------------------
@@ -373,6 +378,8 @@ end enum
 		sOutputDir = ManualDir + "html/"
 		sTemplateDir = ManualDir + "templates/default/code/"
 
+		hMkdir( sOutputDir )
+
 		Templates.Clear()
 		Templates.LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
 		Templates.LoadFile( "chm_prj", sTemplateDir + "chm_prj.tpl.html" )
@@ -394,6 +401,8 @@ end enum
 		sOutputDir = ManualDir + "fbhelp/"
 		sTemplateDir = ManualDir + "templates/default/code/"
 
+		hMkdir( sOutputDir )
+
 		Templates.Clear()
 		Templates.LoadFile( "fbhelp_doctoc", sTemplateDir + "fbhelp_doctoc.tpl.txt" )
 
@@ -410,6 +419,8 @@ end enum
 		sOutputDir = ManualDir + "txt/"
 		sTemplateDir = ManualDir + "templates/default/code/"
 
+		hMkdir( sOutputDir )
+
 		Templates.Clear()
 		Templates.LoadFile( "txt_doctoc", sTemplateDir + "txt_doctoc.tpl.txt" )
 
@@ -425,6 +436,8 @@ end enum
 		'' Generate ascii Txt output for single txt file
 		sOutputDir = ManualDir + "texinfo/"
 		sTemplateDir = ManualDir + "templates/default/code/"
+
+		hMkdir( sOutputDir )
 
 		Templates.Clear()
 		Templates.LoadFile( "texinfo_def", sTemplateDir + "texinfo_def.tpl.texinfo" )

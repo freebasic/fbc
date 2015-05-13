@@ -7,11 +7,13 @@
 '' --------
 
 Dim As Integer mode, w, h
-'' Find which 8bit resolutions are supported
+
+Print "Resolutions supported at 8 bits per pixel:"
+
 mode = ScreenList(8)
-While (mode)
+While (mode <> 0)
 	w = HiWord(mode)
 	h = LoWord(mode)
-	Print Str(w) + "x" + Str(h)
-	mode = ScreenList
+	Print w & "x" & h
+	mode = ScreenList()
 Wend

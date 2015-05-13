@@ -1,6 +1,7 @@
 Version 0.24.0:
 
 [changed]
+- add a "special exception" to gfxlib2 license to allow linking into executables under more relaxed terms (the same as the rtlib)
 - -target option now accepts system triplets (known from gcc/binutils)
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
 - fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
@@ -23,6 +24,9 @@ Version 0.24.0:
 - The NAKED keyword is now disallowed under -gen gcc because gcc doesn't support naked functions on x86
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
 - The -target option is no longer case-sensitive
+- Linux standalone fbc won't try to use tools from PATH anymore
+- PRINT USING now prints Inf/Nan/Ind values in the same style as QB, e.g. "1.#INF"
+- PRINT USING now disallows commas between expressions (they had the same effect as semi-colons)
 
 [added]
 - Single inheritance for classes: TYPE Child EXTENDS Parent
@@ -72,6 +76,7 @@ Version 0.24.0:
 - Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
 - FIELD = N can now be used on nested anonymous TYPEs/UNIONs
 - IIF()'s with constant conditions are now evaluated at compile-time
+- Updated headers for PCRE library 8.31
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
@@ -167,11 +172,12 @@ Version 0.24.0:
 - Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
 - Macro arguments can now be completely empty (no space required anymore to get it to work)
 - C backend: global constructor/destructor priorities were not emitted
-- Win32: incorrect Inkey() values for Alt-7/Alt-8 (Thanks to DodgeRules for find/fix) 
+- Win32: incorrect Inkey() values for Alt-7/Alt-8 (Thanks to DodgeRules for find/fix)
 - Mismatched parentheses in various translated headers
 - Concatenations could fail on some combinations of const/non-const and string/wstring operands
 - Concatenations involving const strings could return const results, which could prevent them being passed to functions
 - Some incorrect definitions/constants in commctrl.bi (thanks to VANYA for fix)
+- The Unix rtlib initialization code could start waiting for a response from the terminal without ensuring to have sent the escape sequence first (missing fflush(stdout)), thus blocking on the stdin read until some other input arrived (e.g. pressing ENTER)
 
 
 Version 0.23.0:
@@ -255,7 +261,7 @@ Version 0.21.1:
 
 [fixed]
 - #3034516: Remove trailing backslash from #macro line in inc/ode/odemath.bi
-- gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position. 
+- gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position.
 - Added some missing FB_UNLOCK()'s to the rtlib
 
 
@@ -716,7 +722,7 @@ Version 0.17 Beta:
 - symbols declared inside namespaces using keyword names (like INPUT, PRINT, etc) are now allowed (v1c)
 - even with an explicit alias, symbols will be mangled if declared inside a namespace (v1c)
 - thread*, cond* and mutex* ids are now "any ptr", not integers, to allow easy and safe migration to 64-bit platforms in future (v1c)
-- string fields in UDT's are now pseudo-objects, with that change, UDT's containing those fields can only be initialized if a 
+- string fields in UDT's are now pseudo-objects, with that change, UDT's containing those fields can only be initialized if a
   constructor is explicitly defined (v1c)
 - pointers to z|wtrings can't be passed byval to string params directly anymore, dereference them first (v1c)
 - pointers to byte|ubyte arrays can't be passed byval to string params directly anymore, use type casting (v1c)
@@ -795,7 +801,7 @@ Version 0.17 Beta:
 - multiple EXIT and CONTINUE levels support (EXIT FOR, FOR or CONTINUE DO, DO, DO, etc) (v1c)
 - the __FB_BUILD_DATE__, __FB_BUILD_TIME__, and __FB_BUILD_SIGNATURE__ intrinsic defines, see wiki for details. (cha0s)
 - DyLibSymbol is now overloaded; it can take a short as the second arg, to specify the proc's ordinal. Patch by voodooattack
-- the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see 
+- the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see
   http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTypeof for details (cha0s)
 - the win32 DirectX gfx driver will now go fullscreen on the nearest monitor when the user presses Alt-Enter/maximize (DrV)
 

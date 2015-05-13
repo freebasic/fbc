@@ -6,9 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPcopy
 '' --------
 
-' Console mode example:
+'' Console mode example:
 
-'' set the working page number to 0, and the visible page number to 1
+'' Set the working page number to 0, and the visible page number to 1
 #if __FB_LANG__ = "QB"
 Screen ,, 0, 1
 #else
@@ -21,17 +21,14 @@ Dim As Double t
 t = Timer
 
 Do
-
-
-	'' fill working page with a certain color and character
+	'' Fill working page with a certain color and character
 	Cls
 	Locate 1, 1
 	Color (i And 15), 0
 	Print String$(80 * 25, Hex$(i, 1));
 	i += 1
 
-
-	'' show frames per second
+	'' Show frames per second
 	Color 15, 0
 	Locate 1, 1
 	Print "fps: " & fps,
@@ -42,14 +39,11 @@ Do
 	End If
 	frames += 1
 
-
-	'' copy working page to visible page
+	'' Copy working page to visible page
 	PCopy
 
-
-	'' sleep 50ms per frame to free up cpu time
+	'' Sleep 50ms per frame to free up cpu time
 	Sleep 50, 1
 
-
-	'' run loop until user presses a key
+	'' Run loop until the user presses a key
 Loop Until Len(Inkey$)

@@ -12,6 +12,6 @@ Type func_t As Function (ByRef As String) As Integer
 
 Dim func As func_t = @f
 		
-Function f (Byref arg as String) as Integer
-	Function = Cint(arg)
+Function f (ByRef arg As String) As Integer
+	Function = CInt(arg)
 End Function

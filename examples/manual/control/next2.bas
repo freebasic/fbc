@@ -6,9 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgNext
 '' --------
 
-Dim i As Integer, j As Integer
-For i=1 To 10
-For j=1 To 2
-   ' ...
-Next j
+For i As Integer = 1 To 10
+	For j As Integer = 1 To 2
+	    ' ...
+	Next j
 Next i

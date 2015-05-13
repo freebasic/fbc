@@ -17,7 +17,7 @@ Procedures with full access to members of a ##[[KeyPgType Type]]## or ##[[KeyPgC
 ~&//The term 'member procedure' refers to both static and non-static member procedures, unless otherwise noted.//
 
 {{anchor name="DECL"}}{{fbdoc item="section" value="Declaration and definition"}}
-	Member procedures are declared much like normal module-level procedures except that they are declared within, and defined outside, a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition *.
+	Member procedures are declared much like normal module-level procedures except that they are declared within, and defined outside, a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition {{anchor name="note_definedoutside|[1]"}}.
 
 	When defining member procedures, the procedure name is prefixed with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##). It is an error to define a member procedure without a matching declaration in the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.
 
@@ -42,10 +42,8 @@ Function foo.g As Integer
 End Function
 %%
 
-	* //In the future, member procedures may be able to be defined within the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.//
-
 {{anchor name="USAGE"}}{{fbdoc item="section" value="Usage"}}
-	Member procedures are referred to just like member data, that is, their name is prefixed with the name of an object instance and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##) *.
+	Member procedures are referred to just like member data, that is, their name is prefixed with the name of an object instance and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##) {{anchor name="note_staticmemberprocs|[2]"}}.
 
 	The following example, using the code from the last example, calls ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## member procedures:
 
@@ -57,14 +55,16 @@ Dim bar As foo
 bar.f(bar.g())
 %%
 
-	* //Static member procedures do not require an object instance in order to be called.//
 
 {{anchor name="THIS"}}{{fbdoc item="section" value="The hidden parameter, This"}}
-	Member procedures actually have an additional parameter than what they are declared with *. When they are called, using the name of an instance and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##, a reference to that instance is passed along with any other arguments in the call, allowing the member procedure direct access to the instance.
+	Member procedures actually have an additional parameter than what they are declared with {{anchor name="note_staticnothis|[3]"}}. When they are called, using the name of an instance and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##, a reference to that instance is passed along with any other arguments in the call, allowing the member procedure direct access to the instance.
 
 	The additional parameter added by the compiler is called ##[[KeyPgThis This]]##, and since it's a reference, any modifications to ##[[KeyPgThis This]]## are actually modifications to the instance that was passed to the member procedure when it was called. You can use ##[[KeyPgThis This]]## just like any other variable, ie., pass it to procedures taking a object of the same type, call other member procedures and access member data using ##[[KeyPgOpMemberAccess Operator . (Member access)]]##, etc.
 
 	Most of the time, however, using ##[[KeyPgThis This]]## explicitly is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##[[KeyPgThis This]]## and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. The only times when you need to qualify member names with ##[[KeyPgThis This]]## is when the member name is hidden, for example, by a parameter or local variable. In these situations, qualifying the member name is the only way to refer to these hidden member names.
+
+	##//Note:
+	To access duplicated symbols defined outside the Type use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).//##
 
 	The following example uses the ##[[KeyPgThis This]]## keyword to refer to member data whose name is hidden by a parameter and local variable:
 
@@ -88,8 +88,6 @@ Sub foo.g ()
 End Sub
 %%
 	
-	* //Static member procedures do not have this extra parameter added by the compiler, and so cannot access the object instance from which it was called with.//
-
 {{anchor name="ACCESS"}}{{fbdoc item="section" value="Access rights"}}
 	Unlike normal module-level procedures, member procedures have full access rights to the members of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they are declared in; they can refer to the public, protected and private members of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
@@ -187,5 +185,9 @@ Sub foo.f (ByRef self As foo)
 	'' Print i
 End Sub
 %%
+
+	{{anchor name="note_definedoutside"}}[1] //In the future, member procedures may be able to be defined within the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.//
+	{{anchor name="note_staticmemberprocs"}}[2] //Static member procedures do not require an object instance in order to be called.//
+	{{anchor name="note_staticnothis"}}[3] //Static member procedures do not have this extra parameter added by the compiler, and so cannot access the object instance from which it was called with.//
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

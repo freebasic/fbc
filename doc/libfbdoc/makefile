@@ -5,26 +5,18 @@ else
 	EXEEXT := .exe
 endif
 
+FBFLAGS := -exx -g
 FBC := fbc
-AR := ar
-
-LIBFBDOC := libfbdoc.a
 
 INC := $(wildcard *.bi)
-SRC := $(wildcard *.bas)
-OBJ := $(patsubst %.bas,%.o,$(SRC))
+OBJ := $(patsubst %.bas,%.o,$(wildcard *.bas))
 
-FBCFLAGS += -exx -g
-
-################################################################################
-
-$(LIBFBDOC): $(OBJ)
-	$(AR) rcs $@ $(OBJ)
+libfbdoc.a: $(OBJ)
+	$(FBC) -lib $^ -x $@
 
 %.o: %.bas $(INC)
-	$(FBC) $(FBCFLAGS) -c $< -o $@
-
-clean:
-	-rm -f $(OBJ) $(LIBFBDOC)
+	$(FBC) $(FBFLAGS) -c $< -o $@
 
 .PHONY: clean
+clean:
+	-rm -f $(OBJ) libfbdoc.a

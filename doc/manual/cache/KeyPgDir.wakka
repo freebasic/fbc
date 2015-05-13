@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DIR"}}----
-Searches for and returns information about an item in the filesystem, performs a directory search.
+Searches for and returns information about an item in the filesystem; performs a directory search
 
 {{fbdoc item="syntax"}}##
 	# [[KeyPgInclude include]] "dir.bi"
@@ -67,30 +67,32 @@ Searches for and returns information about an item in the filesystem, performs a
 		**Linux**: The item is not a directory; typical filesystems do not support this metadata.
 
 	## # define fbNormal (fbReadOnly or fbArchive) ##
-		//The item is a file or directory.//
+		//The item is read-only or "archived".//
 
-	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##. An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.
-	If ##//attrib_mask//## does not include ##**fbArchive**##, then ##**Dir**## may widen the check to include ##**fbDirectory**##, but it is recommended to add ##**fbDirectory**## explicitly, if that is the behaviour sought.  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
+	(If ##//attrib_mask//## does not include ##**fbArchive**##, then ##**Dir**## may widen the check to include ##**fbDirectory**##, but it is recommended to add ##**fbDirectory**## explicitly, if that is the behaviour sought.)
+
+	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##.  An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.  For example, ##//fbArchive// [[KeyPgOpOr Or]] //fbDirectory//## will match against archived files, archived directories, non-archived files and non-archived directories.  It will not match against, for example, read-only files.
+
+	In general it is not possible to use ##//attrib_mask//## to include a file/folder with one set of attributes while excluding a file/folder with a different set.  For example, it is not possible to scan for read-only directories while excluding read-only files (unless the files also have other attributes).  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
+
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
 #include "dir.bi" 'provides constants to use for the attrib_mask parameter
 
-Sub list_files (byref filespec as string, byval attrib as integer)
-	Dim filename As String
+sub list_files (byref filespec as string, byval attrib as integer)
+	dim as string filename = dir(filespec, attrib) ' Start a file search with the specified filespec/attrib *AND* get the first filename.
+	do while len(filename) > 0 ' If len(filename) is 0, exit the loop: no more filenames are left to be read.
+		print filename
+		filename = dir()
+	loop
+end sub
 
-	filename = dir( filespec, attrib )
-	Do
-	    Print filename
-	    filename = dir( )
-	Loop While len( filename ) > 0
-End Sub
-
-Print "directories:"
+print "directories:"
 list_files "*", fbDirectory
 
-Print
-Print "archive files:"
+print
+print "archive files:"
 list_files "*", fbArchive
 %%
 

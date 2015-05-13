@@ -13,20 +13,20 @@ Declares a user-defined type.
 		[ [[KeyPgVisPrivate Private]]: ]
 		[ [[KeyPgVisPublic Public]]: ]
 		[ [[KeyPgVisProtected Protected]]: ]
-		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] [ ( [ //parameters// ] ) ]
-		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
+		[[KeyPgDeclare declare]] [ [[KeyPgConstMember Const]] ] [[KeyPgConstructor constructor]] [ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [ [[KeyPgConstMember Const]] ] [[KeyPgDestructor destructor]]  [ () ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] | [[KeyPgConstMember Const]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] | [[KeyPgConstMember Const]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
 		//fieldname// [ ( //array subscripts// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]// [ = //initializer// ]
 		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //array subscripts// ) | : //bits// ] [ = //initializer// ], ...
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
-		[[KeyPgDeclare declare]] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgConstMember Const]] ] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [ [[KeyPgConstMember Const]] ] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
 		...
 	**End Type**
 ##
 {{fbdoc item="param"}}
 	##//alignment//##
-		Specifies the byte alignment for data fields.
+		Specifies the padding byte limit for data fields alignment.
 	##//fieldname//##
 		Name of the data field or member procedure.
 	##//external_name//##
@@ -55,7 +55,7 @@ Declares a user-defined type.
 
 	##[[KeyPgExtends Extends]]## can optionally be used to create a user-defined type that is derived from another type and inherits its members.
 	
-	The optional ##[[KeyPgField Field]]=//number//## when given will change the default field alignment. ##[[KeyPgField Field]]=1## will disable any alignment, making the ##**Type**## contiguous in memory. 
+	The optional ##[[KeyPgField Field]]=//number//## when given will change the default padding byte limit for data fields alignment. ##[[KeyPgField Field]]=1## will disable any alignment, making the ##**Type**## contiguous in memory. 
 	
 	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
 	
@@ -65,7 +65,7 @@ Declares a user-defined type.
 	
 	##[[KeyPgStaticMember Static]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that no hidden ##[[KeyPgThis This]]## parameter is to be passed to the member procedure.
 	
-	##[[KeyPgConstMember Const]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that the hidden ##[[KeyPgThis This]]## parameter is to be considered read-only.
+	##[[KeyPgConstMember Const]]## immediately preceding ##[[KeyPgMemberSub Sub]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgProperty Property]]## or ##[[KeyPgOperator Operator]]## indicates that the hidden ##[[KeyPgThis This]]## parameter is to be considered read-only.
 	
 	 **Warning** Special care must be taken when using a user defined type for file I/O.  It is recommended to use ##Field = 1## for such cases, and it may be required to read files created by other applications.
 	UDTs that contain pointers to data should not be written to file as-is: when the data is read later, the pointers will almost certainly be invalid, and the data they pointed to will no longer be available.  Instead, custom input/output routines should be used, to save the allocated data in a different format in the file.  This includes UDTs containing variable-length strings.
@@ -136,12 +136,12 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 %%
 
 {{fbdoc item="target"}}
-	- The default field alignment is 4 bytes for DOS and Linux targets.
-	- The default field alignment is 8 bytes for Windows targets.
+	- The default ##**Field**## alignment parameter is 4 bytes for DOS and Linux targets.
+	- The default ##**Field**## alignment parameter is 8 bytes for Windows targets (this difference with regard to 4 bytes applies only to Longint and Double members).
 	
 {{fbdoc item="lang"}}
 	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[CompilerOptlang -lang fb]]// dialect since version 0.17b
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the default field alignment depends on the target platform.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the default ##**Field**## alignment parameter depends on the target platform.
 	- With the //[[CompilerOptlang -lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
 	- To force byte alignment use ##FIELD=1##.
 

@@ -13,7 +13,7 @@
 @@**""FreeBASIC"" Linux questions**@@
 
 {{anchor name="item1"}}==""FreeBASIC"" gives me an error 'ld: can't find -lX11' or something similar!==
-	""FreeBASIC"" uses ld to link it's files under linux. This program requires that any libraries you use have the '-dev' versions installed. For example, for the above error message, you'd want to install xlib-dev for your distribution. Other common errors are for glibc, which requires glibc-dev, and sdl, which requires sdl-dev. Most distributions make these easily available on your install media.
+	""FreeBASIC"" uses ld to link its files under linux. This program requires that any libraries you use have the '-dev' versions installed. For example, for the above error message, you'd want to install xlib-dev for your distribution. Other common errors are for glibc, which requires glibc-dev, and sdl, which requires sdl-dev. Most distributions make these easily available on your install media.
 
 {{anchor name="item0|Back to top"}}
 

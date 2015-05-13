@@ -14,12 +14,12 @@ Returns a square root of a number
 {{fbdoc item="ret"}}
 	Returns the square root of the argument ##//number//##.
 
-	If ##//number//## equals zero, **Sqr** returns zero. 
+	If ##//number//## equals zero, ##**Sqr**## returns zero (##0.0##).
 
-	If ##//number//## is less than zero, **Sqr** returns a special value representing "not defined", printing like """NaN""" or "IND", exact text is platform dependent.
+	If ##//number//## is less than zero, ##**Sqr**## returns a special value representing "not defined", printing like "##""NaN""##" or ##"IND"##, exact text is platform dependent.
 
 {{fbdoc item="desc"}}
-	This is the same as raising the argument //number// to the one-half power: y = x ^ (1/2) . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
+	This is the same as raising the argument ##//number//## to the one-half power: ##//y// = //x// [[KeyPgOpExponentiate ^]] (1/2)## . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
@@ -50,6 +50,7 @@ The hypotenuse has a length of: 5
 	- None
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpExponentiate Operator ^ (Exponentiate)]]##
 	- [[CatPgMath Arithmetic Operators]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

@@ -7,5 +7,5 @@
 '' --------
 
 #if( __FB_OPTION_BYVAL__ <> 0 )
-  #error Option ByVal must not be used With This source
+  #error Option ByVal must Not be used With This source
 #endif

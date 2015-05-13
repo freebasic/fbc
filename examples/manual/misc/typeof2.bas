@@ -10,4 +10,4 @@ Dim As String foo
 #print TypeOf(foo)
 #if TypeOf(foo) = Integer
   #print "Never happened!"
-#endIf
+#endif

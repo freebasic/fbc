@@ -9,6 +9,7 @@
 
 	{{fbdoc item="subsect" value="_"}}
 		[[KeyPgDddate __DATE__]]
+		[[KeyPgDddateiso __DATE_ISO__]]
 		[[KeyPgDdfbargc __FB_ARGC__]]
 		[[KeyPgDdfbargv __FB_ARGV__]]
 		[[KeyPgDdFBBackend __FB_BACKEND__]]
@@ -22,6 +23,7 @@
 		[[KeyPgDdfbfpmode __FB_FPMODE__]]
 		[[KeyPgDdfbfpu __FB_FPU__]]
 		[[KeyPgDdfbfreebsd __FB_FREEBSD__]]
+		[[KeyPgDdfbgcc __FB_GCC__]]
 		[[KeyPgDdfblang __FB_LANG__]]
 		[[KeyPgDdfblinux __FB_LINUX__]]
 		[[KeyPgDdFBMain __FB_MAIN__]]
@@ -107,6 +109,8 @@
 		[[KeyPgAtn ATN]]
 
 	{{fbdoc item="subsect" value="B"}}
+		[[KeyPgBaseInit BASE (initialization)]]
+		[[KeyPgBase BASE (member access)]]
 		[[KeyPgBeep BEEP]]
 		[[KeyPgBin BIN]]
 		[[KeyPgBinary BINARY]]
@@ -234,6 +238,7 @@
 		[[KeyPgExit EXIT]]
 		[[KeyPgExp EXP]]
 		[[KeyPgExport EXPORT]]
+		[[KeyPgExtends EXTENDS]]
 		[[KeyPgExtern EXTERN]]
 		[[KeyPgExternBlock EXTERN...END EXTERN]]
 
@@ -278,6 +283,7 @@
 		[[KeyPgImageDestroy IMAGEDESTROY]]
 		[[KeyPgImageInfo IMAGEINFO]]
 		[[KeyPgOpImp IMP]]
+		[[KeyPgImplements IMPLEMENTS]]
 		[[KeyPgImport IMPORT]]
 		[[KeyPgInkey INKEY]]
 		[[KeyPgInp INP]]
@@ -289,7 +295,8 @@
 		[[KeyPgInstrrev INSTRREV]]
 		[[KeyPgInt INT]]
 		[[KeyPgInteger INTEGER]]
-		[[KeyPgIs IS]]
+		[[KeyPgIs IS (SELECT CASE)]]
+		[[KeyPgOpIs IS (Run-time type information operator)]]
 		[[KeyPgIsDate ISDATE]]
 
 	{{fbdoc item="subsect" value="K"}}
@@ -353,6 +360,7 @@
 		[[KeyPgNow NOW]]
 
 	{{fbdoc item="subsect" value="O"}}
+		[[KeyPgObject OBJECT]]
 		[[KeyPgOct OCT]]
 		[[KeyPgOffsetof OFFSETOF]]
 		[[KeyPgOnerror ON ERROR]]
@@ -401,7 +409,6 @@
 		[[KeyPgPrint PRINT]]
 		[[KeyPgPrintPp PRINT #]]
 		[[KeyPgPrintusing PRINT USING]]
-		[[KeyPgPrintusingPp PRINT USING #]]
 		[[KeyPgPrivate PRIVATE]]
 		[[KeyPgVisPrivate PRIVATE: (Access Control)]]
 		[[KeyPgOpProcptr PROCPTR]]
@@ -497,6 +504,7 @@
 		[[KeyPgTan TAN]]
 		[[KeyPgThen THEN]]
 		[[KeyPgThis THIS]]
+		[[KeyPgThreadCall THREADCALL]]
 		[[KeyPgThreadCreate THREADCREATE]]
 		[[KeyPgThreadWait THREADWAIT]]
 		[[KeyPgTime TIME]]
@@ -621,6 +629,7 @@
 		[[KeyPgOpLessThanOrEqual Operator <= (Less than or equal)]]
 		[[KeyPgOpGreaterThanOrEqual Operator >= (Greater than or equal)]]
 		[[KeyPgOpGreaterThan Operator > (Greater than)]]
+		[[KeyPgOpIs Operator Is (Run-time type information)]]
 
 	{{fbdoc item="subsect" value="Logical operators"}}
 		[[KeyPgOpAnd Operator And (Conjunction)]]
@@ -660,6 +669,7 @@
 	{{fbdoc item="subsect" value="Type or Class operators"}}
 		[[KeyPgOpMemberAccess Operator . (Member access)]]
 		[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]
+		[[KeyPgOpIs Operator Is (Run-time type information)]]
 
 	{{fbdoc item="subsect" value="Memory operators"}}
 		[[KeyPgOpNew Operator New]]
@@ -752,6 +762,7 @@
 		[[KeyPgTypeTemp Temporary Types]]
 		[[ProPgCtorsDtors Constructors and Destructors]]
 		[[ProPgMemberProcedures Member Procedures]]
+		[[ProPgProperties Properties]]
 		[[ProPgMemberAccessRights Member Access Rights]]
 		[[ProPgOperatorOverloading Operator Overloading]]
 		[[ProPgTypeObjects Types as Objects]]
@@ -788,6 +799,121 @@
 		[[ProPgFileIO File I/O in FreeBASIC]]
 	[[CommunityTutorials Community Tutorials]]
 	[[CodeLibrary Community Code Library]]
+
+{{fbdoc item="section" value="External Libraries Index"}}
+
+	{{fbdoc item="subsect" value="Graphical/test-based user interfaces"}}
+		[[ExtLibcgui CGUI]]
+		[[ExtLibcurses Curses]]
+		[[ExtLibgtk GTK+]]
+		[[ExtLibIUP IUP]]
+		[[ExtLibwxc wxC]]
+		[[ExtLibwindows Windows API]]
+		[[ExtLibX11 X11]]
+
+	{{fbdoc item="subsect" value="Graphics"}}
+		[[ExtLiballegro Allegro]]
+		[[ExtLibDUGL DUGL]]
+		[[ExtLibcaca caca]]
+		[[ExtLibcairo Cairo]]
+		[[ExtLibdislin DISLIN]]
+		[[ExtLibfreeglut freeglut]]
+		[[ExtLibfreeimage FreeImage]]
+		[[ExtLibfreetype2 Freetype2]]
+		[[ExtLibgd GD]]
+		[[ExtLibgiflib GIFLIB]]
+		[[ExtLibGLUT GLUT]]
+		[[ExtLibGLFW GLFW]]
+		[[ExtLibgrx GRX]]
+		[[ExtLibIL IL (DevIL)]]
+		[[ExtLibjapi japi]]
+		[[ExtLibjpeglib jpeglib]]
+		[[ExtLibjpgalleg JPGalleg]]
+		[[ExtLiblibpng libpng]]
+		[[ExtLibOpenGL OpenGL]]
+		[[ExtLibpdflib PDFlib]]
+		[[ExtLibSDL SDL]]
+		[[ExtLibtinyptc TinyPTC]]
+
+	{{fbdoc item="subsect" value="Music/Sound, Audio/Video"}}
+		[[ExtLibbass BASS]]
+		[[ExtLibbassmod BASSMOD]]
+		[[ExtLibFlite Flite]]
+		[[ExtLibfmod FMOD]]
+		[[ExtLibMediaInfo MediaInfo]]
+		[[ExtLibmpg123 mpg123]]
+		[[ExtLibogg Ogg]]
+		[[ExtLibal OpenAL]]
+		[[ExtLibPortAudio PortAudio]]
+		[[ExtLibsndfile sndfile]]
+		[[ExtLibVLC VLC]]
+		[[ExtLibvorbis Vorbis]]
+
+	{{fbdoc item="subsect" value="Database"}}
+		[[ExtLibGDBM GDBM]]
+		[[ExtLibmysql MySQL]]
+		[[ExtLibpostgresql PostgreSQL]]
+		[[ExtLibsqlite SQLite]]
+
+	{{fbdoc item="subsect" value="Development Helpers"}}
+		[[ExtLibCUnit CUnit]]
+		[[ExtLibgdsl GDSL]]
+		[[ExtLibgettext gettext (includes libintl)]]
+		[[ExtLibaspell GNU ASpell]]
+		[[ExtLibbfd libbfd]]
+
+	{{fbdoc item="subsect" value="Embeddable Languages"}}
+		[[ExtLibjni JNI]]
+		[[ExtLibjsonc json-c]]
+		[[ExtLibFfi libffi]]
+		[[ExtLibJit libjit]]
+		[[ExtLibLua Lua]]
+		[[ExtLibspidermonkey SpiderMonkey]]
+
+	{{fbdoc item="subsect" value="Cryptography"}}
+		[[ExtLibcryptlib cryptlib]]
+		[[ExtLibUUID UUID]]
+
+	{{fbdoc item="subsect" value="Mathematics"}}
+		[[ExtLibbigint big_int]]
+		[[ExtLibChipmunk Chipmunk]]
+		[[ExtLibgmp GMP]]
+		[[ExtLibgsl GSL]]
+		[[ExtLibnewton Newton]]
+		[[ExtLibode ODE]]
+
+	{{fbdoc item="subsect" value="Networking"}}
+		[[ExtLibcgiutil cgi-util]]
+		[[ExtLibcurl curl]]
+		[[ExtLibFastCGI FastCGI]]
+		[[ExtLibZeroMQ ZeroMQ]]
+
+	{{fbdoc item="subsect" value="eXtensible Markup Language (XML)"}}
+		[[ExtLibexpat Expat]]
+		[[ExtLiblibxml libxml]]
+		[[ExtLiblibxslt libxslt]]
+		[[ExtLibmxml Mini-XML]]
+
+	{{fbdoc item="subsect" value="Regular Expressions"}}
+		[[ExtLibpcre PCRE]]
+		[[ExtLibtre TRE]]
+
+	{{fbdoc item="subsect" value="Compression"}}
+		[[ExtLibbzip2 bzip2]]
+		[[ExtLibZip libzip]]
+		[[ExtLibLzma liblzma]]
+		[[ExtLibLzo LZO]]
+		[[ExtLibquicklz QuickLZ]]
+		[[ExtLibzlib zlib]]
+
+	{{fbdoc item="subsect" value="System APIs"}}
+		[[ExtLibCRT C Runtime Library]]
+		[[ExtLibdos DOS API]]
+		[[ExtLibdisphelper disphelper]]
+		[[ExtLibwindows Windows API]]
+		[[ExtLibX11 X11]]
+
+	{{fbdoc item="subsect" value="User Contributed Libraries"}}
 
 {{fbdoc item="section" value="Using the FreeBASIC compiler"}}
 	[[CompilerInstalling Installing FreeBASIC]]
@@ -834,6 +960,7 @@
 		[[CompilerOptr -r]]
 		[[CompilerOptrupp -R]]
 		[[CompilerOpts -s < name >]]
+		[[CompilerOptstatic -static]]
 		[[CompilerOpttarget -target < platform >]]
 		[[CompilerOptt -t < value >]]
 		[[CompilerOptv -v]]
@@ -868,93 +995,8 @@
 	[[GlossaryIndex Glossary]]
 	[[CatPgMisc Miscellaneous Keywords]]
 	[[ProPgCruntime C Standard Library Functions]]
-
-{{fbdoc item="section" value="Library Headers Index"}}
-
-	{{fbdoc item="subsect" value="Graphics"}}
-		[[ExtLiballegro allegro]]
-		[[ExtLibDUGL DUGL]]
-		[[ExtLibcaca caca]]
-		[[ExtLibcairo cairo]]
-		[[ExtLibcgui cgui]]
-		[[ExtLibcurses Curses]]
-		[[ExtLibdislin dislin]]
-		[[ExtLibfreeimage FreeImage]]
-		[[ExtLibfreetype2 Freetype2]]
-		[[ExtLibgd gd]]
-		[[ExtLibgiflib gif_lib]]
-		[[ExtLibgrx grx]]
-		[[ExtLibgtk GTK+]]
-		[[ExtLibIL IL]]
-		[[ExtLibIUP IUP]]
-		[[ExtLibjapi japi]]
-		[[ExtLibjpeglib jpeglib]]
-		[[ExtLibjpgalleg jpgalleg]]
-		[[ExtLiblibpng libpng]]
-		[[ExtLibOpenGL OpenGL]]
-		[[ExtLibpdflib pdflib]]
-		[[ExtLibSDL SDL]]
-		[[ExtLibtinyptc tinyptc]]
-		[[ExtLibwxc wx-c]]
-
-	{{fbdoc item="subsect" value="Database"}}
-		[[ExtLibmysql mysql]]
-		[[ExtLibpostgresql postgresql]]
-		[[ExtLibsqlite sqlite]]
-
-	{{fbdoc item="subsect" value="Music / Sound"}}
-		[[ExtLibbass BASS]]
-		[[ExtLibbassmod BASSMOD]]
-		[[ExtLibfmod FMOD]]
-		[[ExtLibal OpenAL]]
-
-	{{fbdoc item="subsect" value="Development Helpers"}}
-		[[ExtLibbfd bfd]]
-		[[ExtLibCUnit CUnit]]
-		[[ExtLibgdsl gdsl]]
-		[[ExtLibaspell GNU ASpell]]
-
-	{{fbdoc item="subsect" value="Embeddable Languages"}}
-		[[ExtLibjni jni]]
-		[[ExtLibLua Lua]]
-		[[ExtLibspidermonkey spidermonkey]]
-
-	{{fbdoc item="subsect" value="Cryptography"}}
-		[[ExtLibcryptlib cryptlib]]
-
-	{{fbdoc item="subsect" value="Mathematics"}}
-		[[ExtLibbigint big_int]]
-		[[ExtLibgmp gmp]]
-		[[ExtLibgsl gsl]]
-		[[ExtLibnewton Newton]]
-		[[ExtLibode ode]]
-
-	{{fbdoc item="subsect" value="Networking"}}
-		[[ExtLibcgiutil cgi-util]]
-		[[ExtLibcurl curl]]
-		[[ExtLibFastCGI FastCGI]]
-
-	{{fbdoc item="subsect" value="eXtensible Markup Language (XML)"}}
-		[[ExtLibexpat expat]]
-		[[ExtLiblibxml libxml]]
-		[[ExtLiblibxslt libxslt]]
-		[[ExtLibmxml mxml]]
-
-	{{fbdoc item="subsect" value="Regular Expressions"}}
-		[[ExtLibpcre pcre]]
-		[[ExtLibtre tre]]
-
-	{{fbdoc item="subsect" value="Compression"}}
-		[[ExtLibLzo LZO]]
-		[[ExtLibquicklz QuickLZ]]
-		[[ExtLibzlib zlib]]
-
-	{{fbdoc item="subsect" value="System Specific"}}
-		[[ExtLibCRT C Runtime Library]]
-		[[ExtLibdos DOS API]]
-		[[ExtLibdisphelper disphelper]]
-		[[ExtLibwindows Windows API]]
-
-	{{fbdoc item="subsect" value="User Contributed Libraries"}}
 	[[CptAscii ASCII Character Codes]]
 	[[TblRuntimeErrors Runtime Error Codes]]
+
+{{fbdoc item="section" value="Hacking on FreeBASIC"}}
+	[[DevToc Developer's Table of Contents]]

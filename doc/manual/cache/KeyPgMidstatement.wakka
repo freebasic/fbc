@@ -14,7 +14,7 @@ Overwrites a substring of a string with another
 	##//text//##
 		The string to work with.
 	##//start//##
-		The start position in ##//text//## of the substring to overwrite.
+		The start position in ##//text//## of the substring to overwrite. The first character starts at position 1.
 	##//length//##
 		The number of characters to overwrite.
 

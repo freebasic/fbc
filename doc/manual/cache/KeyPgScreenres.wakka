@@ -2,7 +2,7 @@
 Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="syntax"}}##
-	**Screenres** //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]], //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenres** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 8, [[KeyPgByval byval]] //num_pages// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1, [[KeyPgByval byval]] //flags// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //refresh_rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
  ##
 {{fbdoc item="usage"}}##
 	**Screenres** //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]]
@@ -11,9 +11,9 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist Screenlist]]##.
 	##//depth//##
-		The color depth in bits per pixel. Valid color depths are: 1, 2, 4, 8, 16 and 32.  Values of 15 and 24 are also allowed as aliases for 16 and 32, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2^//depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics Screen]] 13##.
+		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate ^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics Screen]] 13##.
 	##//num_pages//##
-		The number of video pages to create, defaults to 1. (see below)
+		The number of video pages to create, defaults to ##1##. (see below)
 	##//flags//##
 		Used to set various properties of the screen, including fullscreen mode and the graphics driver used. (see ##[[KeyPgScreengraphics Screen]]## or the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##

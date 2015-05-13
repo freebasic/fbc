@@ -5,7 +5,7 @@ INSTALLER_EXE := $(ZIP_TITLE).exe
 MAKENSIS := makensis
 FBC := fbc
 
-MANIFEST := ../../../manifest/win32.lst
+MANIFEST := ../manifest/win32.lst
 
 .SUFFIXES:
 
@@ -14,9 +14,9 @@ all: $(INSTALLER_EXE)
 
 $(INSTALLER_EXE): installer.nsi $(ZIP_FILE) \
                     open-console.exe fblogo-header.bmp \
-                    ../../../fblogo.ico $(MANIFEST)
+                    fblogo.ico $(MANIFEST)
 	unzip -q -o $(ZIP_FILE)
-	cp installer.nsi open-console.exe ../../../fblogo.ico $(ZIP_TITLE)
+	cp installer.nsi open-console.exe fblogo.ico $(ZIP_TITLE)
 	$(MAKENSIS) -V2 $(ZIP_TITLE)/installer.nsi
 	rm -r $(ZIP_TITLE)
 

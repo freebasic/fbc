@@ -86,6 +86,20 @@ sub ReadWriteErrorBas( byval hin as integer, byval hout as integer )
 	wend
 end sub
 
+sub ShowUsage( )
+	print "mkerrlst [ -p path ]"
+	print
+	print "Default path to compiler sources: ../../src/compiler"
+	print
+	print "Example:"
+	print "    ./mkerrlst -p ../../src/compiler"
+	print
+	print "Then:"
+	print "    fbc mkerrtxt.bas"
+	print "    ./mkerrtxt"
+	print 
+	end 1
+end sub
 
 '' --------------------------------------------------------
 '' MAIN
@@ -94,19 +108,6 @@ end sub
 dim as string f1, f2, fout, p
 dim as integer hin1, hin2, hout, i = 1
 
-if( command(i) = "" ) then
-	print "mkerrlst -p path"
-	print
-	print "Example:"
-	print "    ./mkerrlst -p /FreeBASIC/src/compiler/"
-	print
-	print "Then:"
-	print "    fbc mkerrtxt.bas"
-	print "    ./mkerrtxt"
-	print 
-	end 0
-end if
-
 while( command(i) > "" )
 	if( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
@@ -114,23 +115,20 @@ while( command(i) > "" )
 			i += 1
 			p = command(i)
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
+			ShowUsage( )
 		end select
 	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
+		ShowUsage( )
 	end if
 	i += 1
 wend
 
 if( p = "" ) then
-	print "no path"
-	end 1
+	p = "../../src/compiler"
 end if
 
-f1 = p & "inc\error.bi"
-f2 = p & "error.bas"
+f1 = p & "/error.bi"
+f2 = p & "/error.bas"
 fout = "mkerrtxt.bas"
 
 hin1 = freefile
@@ -163,4 +161,4 @@ close #hout
 close #hin1
 close #hin2
 
-print "Done."
+print "Done. Now - compile & run mkerrtxt.bas."
