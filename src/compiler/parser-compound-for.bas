@@ -231,6 +231,8 @@ private function hAddImplicitVar _
 	function = s
 end function
 
+'' Create an implicit variable for the given dtype and add the code storing the
+'' given expression into it.
 private function hStoreTemp _
 	( _
 		byval dtype as integer, _
@@ -238,12 +240,24 @@ private function hStoreTemp _
 		byval expr as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-	'' This function creates a temporary symbol,
-	'' which then has the expression 'expr' stored
-	'' into it. The symbol is returned.
-	dim as FBSYMBOL ptr s = hAddImplicitVar( dtype, subtype )
+	'' Move the implicit var to procedure-level if the lang mode requests it
+	'' (to prevent the stack memory from being re-used by other locals,
+	'' allowing for "random" GOTOs/GOSUBs in and out of FOR loops)
+	dim as integer options = 0
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+		options or= FB_SYMBOPT_UNSCOPE
+	end if
 
-    '' expr is assigned into the symbol
+	'' dim implicitvar as dtype
+	dim as FBSYMBOL ptr s = symbAddImplicitVar( dtype, subtype, options )
+	dim as ASTNODE ptr declnode = NULL
+	if( options and FB_SYMBOPT_UNSCOPE ) then
+		astAddUnscoped( astNewDECL( s, TRUE ) )
+	else
+		declnode = astNewDECL( s, FALSE )
+	end if
+
+	'' implicitvar = expr
 	expr = astNewASSIGN( astNewVAR( s ), expr )
 
 	'' couldn't assign?
@@ -256,13 +270,11 @@ private function hStoreTemp _
 			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, _
 			           astGetOpId( AST_OP_ASSIGN ) )
 		end select
-	else
-		'' add to AST
-		astAdd( expr )
 	end if
 
-	function = s
+	astAdd( astNewLINK( declnode, expr ) )
 
+	function = s
 end function
 
 '':::::

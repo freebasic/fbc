@@ -6,10 +6,29 @@ Read (additional) command-line options from the file
 ##
 {{fbdoc item="param"}}
 	##//file//##
-		Name of a text file containing command line options. It's possible to use multiple lines in the file. The options in a line must be separated by SPACEs and support Double-quoted strings (like the real command line). This file can contain more @file options.
+		Name of a text file containing command line options. It's possible to use multiple lines in the file. The options may be separated by spaces or line breaks, and support double-quoted strings to allow spaces in parameters (like the real command line). This file can itself contain additional ##@//file//## options.
 
 {{fbdoc item="desc"}}
-	The ##@file## compiler option tells the compiler to parse the specified file to find more command line options. The options found in the file are treated as if they were found on the command line. This can be useful to pass very long command lines to the compiler, for example on DOS, where command lines are limited in length.
+	The ##@//file//## compiler option tells the compiler to parse the specified file to find more command line options. The options found in the file are treated as if they were found on the command line. This can be useful to pass very long command lines to the compiler, for example on DOS, where command lines are limited in length.
+
+{{fbdoc item="ex"}}
+##options.txt##:
+{{fbdoc item="filename" value="examples/manual/module/options.txt"}}%%
+-d TEST=123
+%%
+
+##opts.bas##:
+{{fbdoc item="filename" value="examples/manual/module/opts.bas"}}%%(freebasic)
+Print "TEST=" & TEST
+%%
+	Compile with:
+
+		##fbc @options.txt opts.bas##
+
+Output:
+%%
+TEST=123
+%%
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

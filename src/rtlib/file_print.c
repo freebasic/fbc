@@ -5,16 +5,8 @@
 /*:::::*/
 int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
 {
-    int res;
-
     fb_DevScrnInit_Write( );
-
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
+	return fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
 }
 
 /*:::::*/

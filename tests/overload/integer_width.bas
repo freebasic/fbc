@@ -11,11 +11,11 @@ namespace fbc_tests.overloads.integer_width
 	end function
 
 	sub zee_test cdecl( )
-#ifdef __FB_64BIT__
-		CU_ASSERT_EQUAL( hexa(0ull), 1 )
-#else
 		CU_ASSERT_EQUAL( hexa(0ull), 2 )
-#endif
+		CU_ASSERT_EQUAL( hexa(1ull), 2 )
+		CU_ASSERT_EQUAL( hexa(&hFFFFFFFFull), 2 )
+		CU_ASSERT_EQUAL( hexa(&hFFFFFFFF00000000ull), 2 )
+		CU_ASSERT_EQUAL( hexa(&hFFFFFFFFFFFFFFFFull), 2 )
 		CU_ASSERT_EQUAL( hexa(1ull shl 32), 2 )
 	end sub
 

@@ -90,7 +90,7 @@ static void mouse_handler(void)
 			mouse_x += event.dx;
 			mouse_y += event.dy;
 
-			fb_hRecheckConsoleSize( );
+			fb_hRecheckConsoleSize( TRUE );
 			if (mouse_x < 0) mouse_x = 0;
 			if (mouse_x >= __fb_con.w) mouse_x = __fb_con.w - 1;
 			if (mouse_y < 0) mouse_y = 0;

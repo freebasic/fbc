@@ -1,11 +1,14 @@
 #pragma once
 
-#include once "CUnit.bi"
 #include once "crt/errno.bi"
+#include once "CUnit.bi"
 
 extern "C"
 
-enum CU_ErrorCode
+#define CUNIT_CUERROR_H_SEEN
+
+type CU_ErrorCode as long
+enum
 	CUE_SUCCESS = 0
 	CUE_NOMEMORY = 1
 	CUE_NOREGISTRY = 10
@@ -27,16 +30,17 @@ enum CU_ErrorCode
 	CUE_WRITE_ERROR = 43
 end enum
 
-enum CU_ErrorAction
+type CU_ErrorAction as long
+enum
 	CUEA_IGNORE
 	CUEA_FAIL
 	CUEA_ABORT
 end enum
 
-declare function CU_get_error() as long
+declare function CU_get_error() as CU_ErrorCode
 declare function CU_get_error_msg() as const zstring ptr
-declare sub CU_set_error_action(byval action as long)
-declare function CU_get_error_action() as long
-declare sub CU_set_error(byval error as long)
+declare sub CU_set_error_action(byval action as CU_ErrorAction)
+declare function CU_get_error_action() as CU_ErrorAction
+declare sub CU_set_error(byval error_ as CU_ErrorCode)
 
 end extern

@@ -4,7 +4,7 @@ Loss-less data compression library using the Deflate algorithm unencumbered by p
 Website: http://www.zlib.net
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: zlib.bi
-Header version: 1.2.6
+Header version: 1.2.8
 Examples: in examples/compression/
 
 {{fbdoc item="ex"}}

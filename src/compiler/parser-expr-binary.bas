@@ -76,6 +76,11 @@ function cBoolExpression( ) as ASTNODE ptr
       		exit do
     	end select
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
     	lexSkipToken( )
 
 		'' LogExpression
@@ -130,6 +135,11 @@ function cLogExpression _
       		exit do
     	end select
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
     	lexSkipToken( )
 
     	'' LogOrExpression
@@ -177,6 +187,11 @@ function cLogOrExpression _
     		exit do
     	end if
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
     	lexSkipToken( )
 
     	'' LogAndExpression
@@ -223,6 +238,11 @@ function cLogAndExpression _
     	if( lexGetToken( ) <> FB_TK_AND ) then
     		exit do
     	end if
+
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
 
     	lexSkipToken( )
 
@@ -417,6 +437,11 @@ function cCatExpression _
 			exit do
 		end if
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
 		lexSkipToken( )
 
 		'' AddExpression
@@ -469,6 +494,11 @@ function cAddExpression _
     	case else
       		exit do
     	end select
+
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
 
     	lexSkipToken( )
 
@@ -525,6 +555,11 @@ function cShiftExpression _
       		exit do
     	end select
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
     	lexSkipToken( )
 
     	'' ModExpression
@@ -566,12 +601,17 @@ function cModExpression _
 
     '' ( ... )*
     do
-    	'' Add operator
-    	if( lexGetToken( ) = FB_TK_MOD ) then
- 			lexSkipToken( )
-    	else
-      		exit do
-    	end if
+		'' MOD
+		if( lexGetToken( ) <> FB_TK_MOD ) then
+			exit do
+		end if
+
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
+		lexSkipToken( )
 
     	'' IntDivExpression
     	expr = cIntDivExpression( )
@@ -612,12 +652,17 @@ function cIntDivExpression _
 
     '' ( ... )*
     do
-    	'' '\'
-    	if( lexGetToken( ) = CHAR_RSLASH ) then
- 			lexSkipToken( )
-    	else
-      		exit do
-    	end if
+		'' '\'
+		if( lexGetToken( ) <> CHAR_RSLASH ) then
+			exit do
+		end if
+
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
+ 		lexSkipToken( )
 
     	'' MultExpression
     	expr = cMultExpression( )
@@ -669,6 +714,11 @@ function cMultExpression _
       		exit do
     	end select
 
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
     	lexSkipToken( )
 
     	'' ExpExpression
@@ -710,11 +760,16 @@ function cExpExpression _
 
     '' ( '^' NegNotExpression )*
     do
-    	if( lexGetToken( ) <> CHAR_CART ) then
-    		exit do
-    	else
-    		lexSkipToken( )
-    	end if
+		if( lexGetToken( ) <> CHAR_CART ) then
+			exit do
+		end if
+
+		'' Self-assignment? Then don't parse a BOP
+		if( hIsAssignToken( lexGetLookAhead( 1 ) ) ) then
+			exit do
+		end if
+
+		lexSkipToken( )
 
     	'' NegNotExpression
     	expr = cNegNotExpression(  )

@@ -13,8 +13,6 @@ Restricting member access to certain parts of code.
 
 	By default, that is, without an access classification label, members of a ##[[KeyPgType Type]]## are public, and members of a ##[[KeyPgClass Class]]## are private.
 
-~&//Note: As of 02.26.07, inheritance has not been implemented yet. Thus, protected members are supported as a place-holder of sorts. When talking about member access rights, protected members are identical to private members for the time being.//
-
 {{anchor name="PUBLIC"}}{{fbdoc item="section" value="Public members"}}
 	Public members can be referred to from anywhere; they are accessible from, for example, member procedures or module-level code or procedures.
 

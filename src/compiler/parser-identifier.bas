@@ -43,9 +43,9 @@ private function hGlobalId _
 
     else
     	'' inside a WITH block, a single '.' is ambiguous..
-    	if( parser.stmt.with.sym <> NULL ) then
-    		exit function
-    	end if
+		if( parser.stmt.with ) then
+			exit function
+		end if
     end if
 
     if( (options and FB_IDOPT_ISDECL) <> 0 ) then

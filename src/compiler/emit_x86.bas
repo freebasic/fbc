@@ -995,7 +995,7 @@ private sub hEmitExport( byval s as FBSYMBOL ptr )
         hEmitExportHeader( )
 
         dim as zstring ptr sname = symbGetMangledName( s )
-        if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
+        if( env.underscoreprefix ) then
             sname += 1
         end if
 

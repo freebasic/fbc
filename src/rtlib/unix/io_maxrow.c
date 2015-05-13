@@ -7,7 +7,7 @@ int fb_ConsoleGetMaxRow( void )
 		return 24;
 
 	BG_LOCK( );
-	fb_hRecheckConsoleSize( );
+	fb_hRecheckConsoleSize( TRUE );
 	BG_UNLOCK( );
 	return __fb_con.h;
 }

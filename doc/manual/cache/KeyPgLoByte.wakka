@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="LOBYTE"}}----
-Gets the least-significant byte (LSB, or //lo-byte//) of an ##[[KeyPgUinteger Uinteger]]## value.
+Gets the lowest byte of the operand.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Lobyte**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h000000FF )
+	[[KeyPgPpdefine #define]] **Lobyte**( //expr// ) ([[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h000000FF)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Lobyte**( //expr// )
@@ -12,10 +12,10 @@ Gets the least-significant byte (LSB, or //lo-byte//) of an ##[[KeyPgUinteger Ui
 		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="ret"}}
-	Returns the LSB value of ##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##.
+	Returns the value of the low byte of //expr//.
 
 {{fbdoc item="desc"}}
-	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its LSB.
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its least-significant (low) byte.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/lobyte.bas"}}%%(freebasic)

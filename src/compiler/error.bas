@@ -345,6 +345,7 @@ declare function hMakeParamDesc _
 		@"VIRTUAL used on non-member procedure", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
+		@"Static member variable in nested UDT (only allowed in toplevel UDTs)", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
 		@"Too many elements", _
 		@"Only data members supported", _
@@ -395,7 +396,9 @@ declare function hMakeParamDesc _
 		@"vararg parameters are only allowed in CDECL procedures", _
 		@"the first parameter in a procedure may not be vararg", _
 		@"CONST used on constructor (not needed)", _
-		@"CONST used on destructor (not needed)" _
+		@"CONST used on destructor (not needed)", _
+		@"Byref function result not set", _
+		@"Function result assignment outside of the function" _
 	}
 
 

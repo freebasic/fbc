@@ -79,6 +79,14 @@ static void signal_handler(int sig)
 }
 
 #ifdef HOST_LINUX
+/* Query window size or cursor position from the terminal by sending the
+   respective escape sequence to stdout and reading the answer (report) from
+   stdin.
+   That's assuming that the terminal actually supports the escape sequence and
+   sends a response. If it does not, we'll hang forever (or at least until the
+   read from stdin returns EOF).
+   Used with SEQ_QUERY_WINDOW and SEQ_QUERY_CURSOR only (but could easily be
+   extended to support more). */
 int fb_hTermQuery( int code, int *val1, int *val2 )
 {
 	if( fb_hTermOut( code, 0, 0 ) == FALSE )
@@ -123,11 +131,37 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 }
 #endif
 
-/* If the SIGWINCH handler was called, re-query terminal width/height
-   - Assuming BG_LOCK() is acquired, because this can be called from
-     linux/io_mouse.c:mouse_handler() from the background thread
-   - Assuming __fb_con.inited */
-void fb_hRecheckConsoleSize( void )
+/**
+ * Update our cursor position with information from the terminal, if possible,
+ * to make it more accurate. (It's possible that the cursor moved outside of
+ * our control; e.g. if the FB program did a printf() instead of using FB's
+ * PRINT)
+ */
+void fb_hRecheckCursorPos( void )
+{
+#ifdef HOST_LINUX
+	int x = 0;
+	int y = 0;
+	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &y, &x ) ) {
+		__fb_con.cur_x = x;
+		__fb_con.cur_y = y;
+	}
+#endif
+}
+
+/**
+ * Check whether the SIGWINCH handler has been called, and if so, re-query
+ * the terminal width/height.
+ *  - Assuming BG_LOCK() is acquired, because this can be called from
+ *    linux/io_mouse.c:mouse_handler() from the background thread
+ *  - Assuming __fb_con.inited
+ *
+ *  The "requery_cursorpos" parameter allows callers to disable the cursor
+ *  position update we'd normally do too in this case. This is useful if the
+ *  caller wants to do it manually, regardless of whether SIGWINCH happened,
+ *  while at the same time avoiding duplicate queries.
+ */
+void fb_hRecheckConsoleSize( int requery_cursorpos )
 {
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
@@ -136,11 +170,18 @@ void fb_hRecheckConsoleSize( void )
 	if( __fb_console_resized == FALSE )
 		return;
 
-	__fb_console_resized = FALSE;
+	/* __fb_console_resized may be set to TRUE again here if a SIGWINCH
+	   arrives while we're doing this check.
 
-	/* __fb_console_resized may be set to TRUE again here if the signal
-	   handler is called right now, but it doesn't matter since we're about
-	   to update anyways */
+	   If it happens here before we're setting __fb_console_resized to FALSE
+	   then it doesn't matter, because we're about to check the console size
+	   anyways.
+
+	   If it happens later (during/after the check below) then we'll miss
+	   it this time; but at least the next fb_hRecheckConsoleSize() will
+	   handle it. */
+
+	__fb_console_resized = FALSE;
 
 	win.ws_row = 0xFFFF;
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
@@ -173,16 +214,11 @@ void fb_hRecheckConsoleSize( void )
 	__fb_con.attr_buffer = attr_buffer;
 	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
-#ifdef HOST_LINUX
-	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &__fb_con.cur_y, &__fb_con.cur_x ) == FALSE )
-#endif
-	{
-		__fb_con.cur_y = __fb_con.cur_x = 1;
-	}
 
-	/* If __fb_console_resized is set to TRUE only now (after the above
-	   check) then we will miss it for now, but it's ok because the next
-	   fb_hRecheckConsoleSize() will handle it. */
+	/* Also update the cursor position if wanted */
+	if (requery_cursorpos) {
+		fb_hRecheckCursorPos( );
+	}
 }
 
 static void sigwinch_handler(int sig)
@@ -193,14 +229,32 @@ static void sigwinch_handler(int sig)
 
 int fb_hTermOut( int code, int param1, int param2 )
 {
+	/* Hard-coded VT100 terminal escape sequences corresponding to our SEQ_*
+	   #defines with values >= 100. Apparently these codes are not available
+	   through termcap/terminfo (tgetstr()), so we need to hard-code them.
+
+	   These cannot safely be used for some (old) terminals which don't
+	   support them, as the terminal won't recognize them, thus won't send
+	   a response, leaving us hanging and waiting for a response. We don't
+	   have a good way of preventing this issue though especially since we
+	   can't rely on termcap/terminfo for this.
+
+	   Thus, we provide the __fb_enable_vt100_escapes global variable, which
+	   FB programs can set to TRUE or FALSE as needed at runtime. */
 	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
 		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
+
 	char *str;
 
 	if (!__fb_con.inited)
 		return FALSE;
 
 	if (code > SEQ_MAX) {
+
+		/* Is use of the VT100 escape sequences disallowed? */
+		if (!__fb_enable_vt100_escapes)
+			return FALSE;
+
 		switch (code) {
 		case SEQ_SET_COLOR_EX:
 			if( fprintf( stdout, "\e[%dm", param1 ) < 4 )
@@ -220,6 +274,7 @@ int fb_hTermOut( int code, int param1, int param2 )
 		tputs(str, 1, putchar);
 	}
 
+	/* Ensure the terminal gets to see the escape sequence */
 	fflush( stdout );
 
 	return TRUE;
@@ -292,9 +347,31 @@ int fb_hInitConsole( )
 void fb_hExitConsole( void )
 {
 	int bottom;
+	SIGHANDLER old_sigttou_handler;
 
 	if (__fb_con.inited) {
-		
+
+		/* Ignore SIGTTOU, which is sent in case we write to the
+		   terminal while being in the background (e.g. CTRL+Z + bg).
+		   This happens at least with the tcsetattr() on STDOUT_FILENO
+		   for restoring the original terminal state below, because we
+		   switched to non-canonical mode in fb_hInitConsole (~ICANON).
+
+		   The default handler for SIGTTOU suspends the process,
+		   but we don't want to hang now when exiting the FB program.
+
+		   We probably shouldn't ignore SIGTTOU (or SIGTTIN for that
+		   matter) globally/always though, as normally the behaviour
+		   makes sense: If a background program tries to write to the
+		   terminal (or read user input), it should be suspended until
+		   brought to foreground by the user. Otherwise it would
+		   interfere with whatever the user is currently doing.
+
+		   However, implicit terminal adjustments done by the rtlib is a
+		   case where we probably don't want that to happen. Thus the
+		   signal should be ignored only here. */
+		old_sigttou_handler = signal(SIGTTOU, SIG_IGN);
+
 		if (__fb_con.gfx_exit)
 			__fb_con.gfx_exit();
 		
@@ -305,14 +382,22 @@ void fb_hExitConsole( void )
 			__fb_con.mouse_exit();
 		BG_UNLOCK();
 
-		bottom = fb_ConsoleGetMaxRow();
-		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
-			/* Restore scrolling region to whole screen and clear */
-			fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
-			fb_hTermOut(SEQ_CLS, 0, 0);
-			fb_hTermOut(SEQ_HOME, 0, 0);
+		/* Only restore scrolling region if we changed it. This way we can avoid
+		   calling fb_ConsoleGetMaxRow(), which may have to query the terminal size.
+		   It's best to avoid that as much as possible (not all terminals support
+		   the escape sequence, it's slow, it's unsafe if fb_hExitConsole() is called
+		   during a signal handler). */
+		if (__fb_con.scroll_region_changed) {
+			bottom = fb_ConsoleGetMaxRow();
+			if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
+				/* Restore scrolling region to whole screen and clear */
+				fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
+				fb_hTermOut(SEQ_CLS, 0, 0);
+				fb_hTermOut(SEQ_HOME, 0, 0);
+			}
+			__fb_con.scroll_region_changed = FALSE;
 		}
-		
+
 		/* Cleanup terminal */
 #ifdef HOST_LINUX
 		if (__fb_con.inited == INIT_CONSOLE)
@@ -331,6 +416,9 @@ void fb_hExitConsole( void )
 			fclose(__fb_con.f_in);
 			__fb_con.f_in = NULL;
 		}
+
+		/* Restore SIGTTOU handler (so it's no longer ignored) */
+		signal(SIGTTOU, old_sigttou_handler);
 	}
 }
 
@@ -341,9 +429,7 @@ static void hInit( void )
 	struct termios tty;
     int i;
 
-#ifdef ENABLE_MT
     pthread_mutexattr_t attr;
-#endif
 
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
@@ -356,7 +442,6 @@ static void hInit( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 #endif
 
-#ifdef ENABLE_MT
 	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
 
@@ -371,13 +456,14 @@ static void hInit( void )
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 #endif
 
+#ifdef ENABLE_MT
 	/* Init multithreading support */
 	pthread_mutex_init(&__fb_global_mutex, &attr);
 	pthread_mutex_init(&__fb_string_mutex, &attr);
 	pthread_mutex_init(&__fb_graphics_mutex, &attr);
 #endif
 
-	pthread_mutex_init( &__fb_bg_mutex, NULL );
+	pthread_mutex_init(&__fb_bg_mutex, &attr);
 
 	memset(&__fb_con, 0, sizeof(__fb_con));
 
@@ -423,8 +509,26 @@ static void hInit( void )
 	__fb_con.fg_color = 7;
 	__fb_con.bg_color = 0;
 
+	/* Trigger console window size & cursor position checks the first time
+	   fb_hRecheckConsoleSize() is invoked (lazy initialization).
+
+	   It's good to do this lazily because we don't need this information
+	   until the first use of one of FB's console I/O commands anyways.
+	   For FB programs which don't use those we never have to bother
+	   retrieving this information from the terminal.
+
+	   This is also good because we may try to use some special terminal
+	   escape sequences which the terminal may not support, in which case
+	   we end up hanging, waiting for an answer forever (fb_hTermOut() and
+	   fb_hTermQuery()). In that case, at least, we'll only hang when the
+	   FB program uses console I/O commands, but not always on start up of
+	   every FB program. */
 	__fb_console_resized = TRUE;
-	fb_hRecheckConsoleSize( );
+
+	/* In case it's not possible to retrieve the real cursor position from
+	   the terminal, we assume to start out at 1,1. */
+	__fb_con.cur_y = __fb_con.cur_x = 1;
+
 	signal(SIGWINCH, sigwinch_handler);
 }
 

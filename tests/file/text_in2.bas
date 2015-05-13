@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.text_in2
+namespace fbc_tests.file_.text_in2
 
 const filename = "file\text_in2.txt"
 

@@ -21,6 +21,7 @@ Left-justifies a string
 
 {{fbdoc item="desc"}}
 	##**Lset**## left justifies text into the string buffer ##//dst//##, filling the left part of the string with ##//src//## and the right part with spaces. The string buffer size is not modified.
+	If text is too long for the string buffer size, ##**Lset**## truncates characters from the right.
 
 	For compatibility with ""QBasic"", ##**Lset**## can also copy a user defined type variable into another one. The copy is made byte for byte, without any care for fields or alignment. It's up to the programmer to take care for the  validity of the result.
 

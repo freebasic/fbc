@@ -3,7 +3,7 @@
 
 === Introduction===
 
-Polymorphism is a powerful tool in object-oriented program. A polymorphic method (Sub or Function) behaves differently depending on the definition of the object. For example, an animal object may have a speak method that will issue a bark for a dog and a meow for a cat. FreeBasic doesn't yet support true polymorphism; this will be added when classes are implemented. However, you can simulate polymorphic methods using method pointers. 
+Polymorphism is a powerful tool in object-oriented program. A polymorphic method (Sub or Function) behaves differently depending on the definition of the object. For example, an animal object may have a speak method that will issue a bark for a dog and a meow for a cat. FreeBasic doesn't support true polymorphism before version 0.90.0. However, you can simulate polymorphic methods using method pointers.
 
 === Polymorphism===
 
@@ -20,7 +20,7 @@ Type animal
 	Declare Constructor (anid As Integer)    
 End Type
 %%
-The #defines are passed to the Constructor to signal what type of object is being created. The speak As Sub()definition defines the method pointer. As you will see, the address of two different subroutines will be passed to the speak method pointer. The following listing shows the different speak subroutines and the Constructor method:
+The #defines are passed to the Constructor to signal what type of object is being created. The speak As Sub() definition defines the method pointer. As you will see, the address of two different subroutines will be passed to the speak method pointer. The following listing shows the different speak subroutines and the Constructor method:
 %%(freebasic)
 'Speak method for dog object
 Sub Bark()
@@ -116,4 +116,55 @@ myCat.speak()
 
 Sleep
 End
+%%
+
+
+----
+
+=== From fbc version 0.90.0, polymorphism through inheritance and virtuality is supported ===
+
+Previous example transposed for fbc version 0.90.0 or greater, by using polymorphism through inheritance with abstract/virtual methods (feature now supported):
+%%(freebasic)
+'Requires FreeBasic version >= 0.90.0
+
+'Base-type animal
+Type animal Extends Object
+	Declare Abstract Sub speak ()
+End Type
+
+'Derived-type dog
+Type dog Extends animal
+	Declare Virtual Sub speak () Override
+End Type
+
+'Speak method for dog object
+Virtual Sub dog.speak ()
+	Print "Woof!"
+End Sub
+
+'Derived-type cat
+Type cat Extends animal
+	Declare Virtual Sub speak () Override
+End Type
+
+'Speak mehod for cat object
+Virtual Sub cat.speak ()
+	Print "Meow!"
+End Sub
+
+'Create a dog and cat as dynamic object through animal pointer
+Dim myDog As animal Ptr = New dog
+Dim mycat As animal Ptr = New cat
+
+'Have the animals speak
+Print "My dog says ";
+myDog->speak()
+Print "My cat says ";
+myCat->speak()
+
+Sleep
+
+'Delete the dynamic objects
+Delete myDog
+Delete myCat
 %%

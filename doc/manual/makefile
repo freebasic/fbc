@@ -1,10 +1,11 @@
+include ../../version.mk
+
 HHC := hhc
 FBDOC := ../fbdoc/fbdoc
 MAKEFBHELP := ../makefbhelp/makefbhelp
 
 # Nice names for the resulting .zip's and the important files
-FB_VERSION  = 1.00.0
-TITLE       = FB-manual-$(FB_VERSION)
+TITLE       = FB-manual-$(FBVERSION)
 CHM         = $(TITLE).chm
 CHMZIP      = $(TITLE)-chm.zip
 FBHELP      = fbhelp.daz

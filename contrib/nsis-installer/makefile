@@ -1,5 +1,6 @@
-FB_VERSION := 1.00.0
-ZIP_TITLE := FreeBASIC-$(FB_VERSION)-win32
+include ../../version.mk
+
+ZIP_TITLE := FreeBASIC-$(FBVERSION)-win32
 ZIP_FILE := $(ZIP_TITLE).zip
 INSTALLER_EXE := $(ZIP_TITLE).exe
 MAKENSIS := makensis
@@ -25,7 +26,7 @@ installer.nsi: makescript.exe $(MANIFEST) template.nsi
 	$^ $@
 
 makescript.exe: makescript.bas
-	$(FBC) -g -exx -d FB_VERSION=$(FB_VERSION) $< -x $@
+	$(FBC) -g -exx -d FBVERSION=$(FBVERSION) $< -x $@
 
 open-console.exe: open-console.bas
 	$(FBC) -exx $< -x $@

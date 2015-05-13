@@ -43,16 +43,17 @@ Dim b as byte = &B10000000
 	If an integer literal suffix is not given, the number field size required to hold the literal is automatically calculated.  Specifying a size suffix guarantees that the compiler will consider a number as a specific integer size.
 
 	Integer literals ending with:
-	- "##L##", "##%##", are considered as signed 32 bit integers. (##[[KeyPgInteger Integer]]##)
-	- "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong Long]]##)
-	- "##U##", "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUinteger Uinteger]]##)
+	- "##%##", are considered as signed 32/64 (depending on platform) bit integers. (##[[KeyPgInteger Integer]]##)
+	- "##L##", "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong Long]]##)
+	- "##U##", are considered as unsigned 32/64 (depending on platform) bit integers. (##[[KeyPgUinteger Uinteger]]##)
+	- "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUlong Ulong]]##)
 	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint Longint]]##)
 	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint Ulongint]]##)
 
 	The prefixes, suffixes, and hexadecimal letter digits are all case-insensitive.
 	
 {{fbdoc item="filename" value="examples/manual/proguide/literals/intsuff.bas"}}%%(freebasic)
-Dim a as integer = 123L
+Dim a as long = 123L
 Dim b as uinteger = &h1234u
 Dim c as longint = 76543LL
 Dim d as ulongint = &b1010101ULL

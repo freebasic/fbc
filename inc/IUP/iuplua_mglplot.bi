@@ -1,12 +1,13 @@
-''
-''
-'' iuplua_mglplot -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __iuplua_mglplot_bi__
-#define __iuplua_mglplot_bi__
+#pragma once
 
+extern "C"
+
+#define __IUPLUA_MGLPLOT_H
+
+#ifdef LUA_NOOBJECT
+	declare function iup_mglplotlua_open() as long
+#else
+	declare function iup_mglplotlua_open(byval L as lua_State ptr) as long
 #endif
+
+end extern

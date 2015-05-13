@@ -35,8 +35,14 @@ sub cSelConstStmtBegin()
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer options = any
 
+	''
 	'' Open outer scope (perhaps not really needed, but done to match the
 	'' normal SELECT CASE, also the scope might help with stack usage)
+	''
+	'' The scope must be created before parsing the expression given to
+	'' SELECT, otherwise any temporaries it uses would be destroyed too
+	'' early by astScopeBegin() because that flushes the AST dtor list.
+	''
 	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
 	if( outerscopenode = NULL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -101,8 +107,9 @@ sub cSelConstStmtBegin()
 		astAddUnscoped( astNewDECL( sym, TRUE ) )
 		astAdd( astNewASSIGN( astNewVAR( sym ), expr ) )
 	else
-		astAdd( astNewDECL( sym, FALSE ) )
-		astAdd( astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) )
+		astAdd( astNewLINK( _
+			astNewDECL( sym, FALSE ), _
+			astNewASSIGN( astNewVAR( sym ), expr, AST_OPOPT_ISINI ) ) )
 	end if
 
 	'' skip the statements

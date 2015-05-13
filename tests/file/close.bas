@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.close_
+namespace fbc_tests.file_.close_
 
 const filename = "./file/close.bas"
 

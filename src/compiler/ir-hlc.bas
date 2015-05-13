@@ -459,8 +459,7 @@ private function hGetMangledNameForASM _
 
 	mangled = *symbGetMangledName( sym )
 
-	if( underscore_prefix and _
-	    ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0) ) then
+	if( underscore_prefix and env.underscoreprefix ) then
 		mangled  = "_" + mangled
 	end if
 
@@ -1694,16 +1693,14 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 
 		n = exprNewCAST( typeAddrOf( symbGetType( sym ) ), symbGetSubtype( sym ), n )
 
-	'' main()'s argv? Add CAST to convert from char** to the one used by FB
+	'' main()'s argv? It's emitted as int8** (char**), not as uint8** (zstring ptr ptr),
+	'' so specify the type manually instead of deriving it from the FB symbol.
+	'' exprNewVREG() will add the cast to uint8** where needed.
 	elseif( (symbIsVar( sym ) or (sym->class = FB_SYMBCLASS_PARAM)) and _
 	        ((sym->stats and FB_SYMBSTATS_ARGV) <> 0) ) then
-
-		n = exprNew( EXPRCLASS_SYM, FB_DATATYPE_INVALID, NULL )
+		n = exprNew( EXPRCLASS_SYM, typeMultAddrOf( FB_DATATYPE_BYTE, 2 ), NULL )
 		n->sym = sym
-
-		n = exprNewCAST( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, n )
 	else
-
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
 
@@ -1995,18 +1992,9 @@ private function hEmitFloat _
 		end if
 
 	case else
-		if( dtype = FB_DATATYPE_DOUBLE ) then
-			s = str( value )
-		else
-			s = str( csng( value ) )
-		end if
 
-		'' Append .0 if there is no dot or exponent yet,
-		'' to prevent gcc from treating it as int
-		'' (e.g. 1 -> 1.0, but 0.1 or 1e-100 can stay as-is)
-		if( instr( s, any "e." ) = 0 ) then
-			s += ".0"
-		end if
+		'' Convert to exact representation using C99-compatible hex format
+		s = hFloatToHex_C99( value )
 
 		'' float type suffix
 		if( dtype = FB_DATATYPE_SINGLE ) then
@@ -2426,7 +2414,6 @@ private function exprNewVREG _
 
 	dim as EXPRNODE ptr l = any
 	dim as integer dtype = any, have_offset = any
-	dim as FBSYMBOL ptr subtype = any
 
 	select case as const( vreg->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
@@ -2553,8 +2540,6 @@ private function exprNewVREG _
 		l = exprNewOFFSET( vreg->sym, vreg->ofs )
 
 	case IR_VREGTYPE_IMM
-		static as string s
-
 		'' An immediate -- a constant value
 		'' The integer literal can be emitted as 32bit or 64bit,
 		'' signed or unsigned, and afterwards it should be cast to the

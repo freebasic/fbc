@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR  = "1"
-const FB_VER_MINOR  = "00"
+const FB_VER_MINOR  = "01"
 const FB_VER_PATCH  = "0"
 const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
 const FB_BUILD_DATE = __DATE__
@@ -33,7 +33,7 @@ const FB_MAXNAMESPCRECLEVEL = 64
 const FB_MAXARRAYDIMS       = 8
 const FB_MAXDEFINEARGS      = 32
 
-const FB_MAXNAMELEN         = 64
+const FB_MAXNAMELEN         = 128
 const FB_MAXLITLEN          = 1024              '' literal strings max length
 const FB_MAXNUMLEN          = 64
 const FB_MAXOPERANDLEN      = FB_MAXNAMELEN + 2 + 16 + 2 + 1

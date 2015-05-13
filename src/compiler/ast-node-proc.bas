@@ -266,6 +266,33 @@ private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 end function
 
+''
+'' Add a statement to the current procedure.
+''
+'' This will also
+''  * update & optimize the statement (astUpdate())
+''  * add clean up code behind the statement for currently-registered temporary
+''    variables (astDtorListFlush())
+''
+'' When calling astAdd(), care must be taken not to destroy any temporaries
+'' too early. After parsing an expression (e.g. with cExpression()), the first
+'' astAdd() will flush the AST dtor list and add the code for destroying the
+'' temp vars used in that expression. Thus, the expression itself *must* be
+'' added in this first astAdd(). Otherwise, if the expression is added during a
+'' secondary astAdd(), the temp var clean up would occur in front of the
+'' expression, which is wrong (it must be emitted behind the expression).
+''
+'' If there is a statement (or multiple ones) which need to be added in front of
+'' the one using the expression, they must all be linked together using
+'' astNewLINK(), such that there is only one astAdd, to avoid the dtor list
+'' being flushed too early.
+''
+'' Sometimes it's not obvious where the astAdd's there are because some astAdd's
+'' are "hidden" inside other functions such as astScopeBegin().
+''
+'' astAddUnscoped() does not have this problem because it unsets
+'' ast.flushdtorlist.
+''
 function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
 	n = astUpdate( n )
 	if( n = NULL ) then

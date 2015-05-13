@@ -24,7 +24,7 @@ Declares a union user defined type.
 
 	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##. All members of a union are public and access control is not supported. 
 
-	Nested unnamed type or union cannot have function members or static data members.
+	Nested unnamed type or union cannot have procedure members or static data members (same restriction for local named type/union).
 
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 

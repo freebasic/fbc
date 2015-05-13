@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.input_large_int
+namespace fbc_tests.file_.input_large_int
 
 	const DEC_COUNT = 18
 	const HEX_COUNT = 16

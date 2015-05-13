@@ -1,79 +1,49 @@
-'Copyright (c) 2000-2004 algif contributors
-'
-'Permission is hereby granted, free of charge, to any person obtaining 
-'a copy of this software and associated documentation files 
-'(the "Software"), to deal in the Software without restriction, 
-'including without limitation the rights to use, copy, modify, merge, 
-'publish, distribute, sublicense, and/or sell copies of the Software,
-'and to permit persons to whom the Software is furnished to do so, 
-'subject to the following conditions:
-'
-'The above copyright notice and this permission notice shall be included 
-'in all copies or substantial portions of the Software.
-'
-'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-'OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-'MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-'IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-'DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-'OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
-'USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-#Ifndef _algif_bi_
-#define _algif_bi_ -1
-#Include Once "allegro.bi"
-
+#pragma once
 #inclib "algif"
+
+#include once "allegro.bi"
 
 extern "C"
 
-'////////////////AUXILIARY FUNCTIONS FOR algif////////////////////////////////
-Declare Function LZW_decode (ByVal As PACKFILE Ptr, ByVal As BITMAP Ptr ) As Integer
-Declare Sub LZW_encode (ByVal As PACKFILE Ptr, ByVal As BITMAP Ptr)
+type GIF_FRAME as GIF_FRAME_
 
-#Define DAT_GIF  DAT_ID('G','I','F',' ')
-#Define DAT_PNG DAT_ID('P','N','G',' ')
+#define _GIF_H_
+#define DAT_GIF DAT_ID(asc("G"), asc("I"), asc("F"), asc(" "))
 
-Type GIF_PALETTE
-	colors_count As Integer
-	colors(0 To 255) As RGB
-End Type
+type GIF_PALETTE
+	colors_count as long
+	colors(0 to 255) as RGB
+end type
 
+type GIF_ANIMATION
+	width as long
+	height as long
+	frames_count as long
+	background_index as long
+	loop as long
+	palette as GIF_PALETTE
+	frames as GIF_FRAME ptr
+	store as BITMAP ptr
+end type
 
-Type GIF_FRAME
-	bitmap_8_bit As BITMAP Ptr
-	Palette As GIF_PALETTE
-	xoff As Integer
-	yoff As Integer
-	duration As Integer
-	disposal_method As Integer '0 - don't care, 1 - keep, 2 - background, 3 - previous
-	transparent_index As Integer
-End Type
+type GIF_FRAME_
+	bitmap_8_bit as BITMAP ptr
+	palette as GIF_PALETTE
+	xoff as long
+	yoff as long
+	duration as long
+	disposal_method as long
+	transparent_index as long
+end type
 
-Type GIF_ANIMATION
-	Width As Integer
-	height As Integer
-	frames_count As Integer
-	background_index As Integer
-	Loop As Integer
-	Palette As GIF_PALETTE
-	frames As GIF_FRAME Ptr
-End Type
-
-Declare Sub algif_init ()
-Declare Function algif_load_animation (ByVal As const ZString Ptr, ByVal BITMAP As Ptr Ptr Ptr, ByVal As Integer Ptr Ptr ) As Integer
-Declare Function load_gif (ByVal As const ZString Ptr, ByVal As RGB Ptr) As BITMAP Ptr
-Declare Function save_gif (ByVal As const ZString Ptr, ByVal As BITMAP Ptr, ByVal As RGB Ptr) As Integer
-
-' Advanced use.
-Declare Function algif_load_raw_animation ( ByVal As const ZString Ptr) As GIF_ANIMATION Ptr
-Declare Sub algif_render_frame (ByVal As GIF_ANIMATION Ptr, ByVal As BITMAP Ptr, ByVal As Integer, ByVal As Integer, ByVal As Integer)
-
-Declare Function algif_create_raw_animation(ByVal As Integer) As GIF_ANIMATION Ptr
-Declare Function algif_save_raw_animation (ByVal As String Ptr, ByVal As GIF_ANIMATION Ptr) As Integer
-
-Declare Sub algif_destroy_raw_animation(ByVal As GIF_ANIMATION Ptr)
+declare sub algif_init()
+declare function algif_load_animation(byval filename as const zstring ptr, byval frames as BITMAP ptr ptr ptr, byval durations as long ptr ptr) as long
+declare function load_gif(byval filename as const zstring ptr, byval pal as RGB ptr) as BITMAP ptr
+declare function save_gif(byval filename as const zstring ptr, byval bmp as BITMAP ptr, byval pal as const RGB ptr) as long
+declare function algif_load_raw_animation(byval filename as const zstring ptr) as GIF_ANIMATION ptr
+declare sub algif_render_frame(byval gif as GIF_ANIMATION ptr, byval bitmap as BITMAP ptr, byval frame as long, byval xpos as long, byval ypos as long)
+declare function algif_create_raw_animation(byval frames_count as long) as GIF_ANIMATION ptr
+declare function algif_save_raw_animation(byval filename as const zstring ptr, byval gif as GIF_ANIMATION ptr) as long
+declare sub algif_destroy_raw_animation(byval gif as GIF_ANIMATION ptr)
 
 end extern
-
-#EndIf

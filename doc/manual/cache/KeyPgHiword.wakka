@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="HIWORD"}}----
-Gets the most-significant word (MSW, or //hi-word//) of an ##[[KeyPgUinteger Uinteger]]## value.
+Gets the second 16bit word of the operand.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Hiword**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpShiftRight shr]] 16 )
+	[[KeyPgPpdefine #define]] **Hiword**( //expr// ) (([[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) and &hFFFF0000) [[KeyPgOpShiftRight shr]] 16)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Hiword**( //expr// )
@@ -12,10 +12,10 @@ Gets the most-significant word (MSW, or //hi-word//) of an ##[[KeyPgUinteger Uin
 		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="ret"}}
-	Returns the MSW value of ##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##.
+	Returns the value of the high 16bit word of the low 32bit dword of //expr//.
 
 {{fbdoc item="desc"}}
-	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its MSW.
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its second 16bit word - that is the most-significant (high) 16bit word of the least-significant (low) 32bit dword of //expr//.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/hiword.bas"}}%%(freebasic)

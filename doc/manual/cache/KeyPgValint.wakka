@@ -2,8 +2,8 @@
 Converts a string to an integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valint** ( //strnum// )
@@ -13,7 +13,7 @@ Converts a string to an integer number
 		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns an ##[[KeyPgInteger Integer]]## of the converted string
+	Returns a ##[[KeyPgLong Long]]## value of the converted string
 
 	If the first character of the string is invalid, ##**Valint**## will return ##0##.
 
@@ -44,7 +44,7 @@ print a, b
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgVal Val]]##
 	- ##[[KeyPgValuint Valuint]]##
 	- ##[[KeyPgVallng Vallng]]##

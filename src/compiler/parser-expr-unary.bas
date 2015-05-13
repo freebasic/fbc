@@ -132,6 +132,8 @@ function cStrIdxOrMemberDeref _
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any
 
+	if( expr = NULL ) then exit function
+
 	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
@@ -220,18 +222,12 @@ function cHighestPrecExpr _
 	'' DerefExpr
 	case FB_TK_DEREFCHAR
 		expr = cDerefExpression( )
-		if( expr = NULL ) then
-			return NULL
-		end if
 
 	'' ParentExpression
 	case CHAR_LPRNT
 		dim as integer is_opt = fbGetPrntOptional( )
 
 		expr = cParentExpression( )
-		if( expr = NULL ) then
-			return NULL
-		end if
 
 		'' if parsing a SUB, don't call StrIdxOrMemberDeref() twice
 		if( is_opt ) then
@@ -251,9 +247,6 @@ function cHighestPrecExpr _
 			lexSkipToken( )
 
 			expr = hCast( 0 )
-			if( expr = NULL ) then
-				return NULL
-			end if
 
 		'' CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
 		case FB_TK_CPTR
@@ -261,16 +254,10 @@ function cHighestPrecExpr _
 			lexSkipToken( )
 
 			expr = hCast( AST_CONVOPT_PTRONLY )
-			if( expr = NULL ) then
-				return NULL
-			end if
 
 		'' OperatorNew
 		case FB_TK_NEW
 			expr = cOperatorNew( )
-			if( expr = NULL ) then
-				return NULL
-			end if
 
 		'' Atom
 		case else
@@ -554,7 +541,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
   		'' not inside a WITH block?
   		dim as integer check_id = TRUE
-  		if( parser.stmt.with.sym <> NULL ) then
+		if( parser.stmt.with ) then
   			if( lexGetToken( ) = CHAR_DOT ) then
   				'' not a '..'?
   				check_id = (lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT)
@@ -703,15 +690,11 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 	end select
 
-	if( expr ) then
-		'' Allow indexing on VARPTR()/STRPTR()/etc. directly, they look
-		'' like functions so this isn't ambigious, while for @ it would
-		'' mess up the operator precedence:
-		''    @expr[i]  should be  @(expr[i]), not (@expr)[i]
-		'' but for
-		''    varptr(expr)[i], that problem doesn't exist.
-		expr = cStrIdxOrMemberDeref( expr )
-	end if
-
-	function = expr
+	'' Allow indexing on VARPTR()/STRPTR()/etc. directly, they look
+	'' like functions so this isn't ambigious, while for @ it would
+	'' mess up the operator precedence:
+	''    @expr[i]  should be  @(expr[i]), not (@expr)[i]
+	'' but for
+	''    varptr(expr)[i], that problem doesn't exist.
+	function = cStrIdxOrMemberDeref( expr )
 end function

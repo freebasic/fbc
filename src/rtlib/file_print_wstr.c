@@ -10,16 +10,8 @@ int fb_hFilePrintBufferWstrEx
 		size_t len
 	)
 {
-    int res;
-
     fb_DevScrnInit_WriteWstr( );
-
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, TRUE );
-
-    return res;
+	return fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, TRUE );
 }
 
 /*:::::*/

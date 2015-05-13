@@ -30,7 +30,7 @@
 		- All variables must be explicitly declared, using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgVar Var]]##, ##[[KeyPgConst Const]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##.
 
 	""2"") type suffixes (##!, #, $, %, &##)
-		- They are only allowed for numeric literals, but it's recommended to use ##[[KeyPgCast Cast]]## or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##uinteger##), ##ull## (##ulongint##) numeric literal suffixes to resolve overloading.
+		- They are only allowed for numeric literals, but it's recommended to use ##[[KeyPgCast Cast]]## or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##ulong##), ##ull## (##ulongint##) numeric literal suffixes to resolve overloading.
 
 	""3"") ##[[KeyPgDefbyte Defbyte]]##, ##[[KeyPgDefubyte Defubyte]]##, ##[[KeyPgDefshort Defshort]]##, ##[[KeyPgDefushort Defushort]]##, ##[[KeyPgDefint Defint]]##, ##[[KeyPgDefuint Defuint]]##, ##[[KeyPgDeflng Deflng]]##, ##[[KeyPgDeflongint Deflongint]]##, ##[[KeyPgDefulongint Defulongint]]##, ##[[KeyPgDefsng Defsng]]##, ##[[KeyPgDefdbl Defdbl]]##, ##[[KeyPgDefstr Defstr]]##
 		- An explicit type ("##As //T//##") is needed when declaring variables using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##. Variables declared using ##[[KeyPgVar Var]]## or ##[[KeyPgConst Const]]## have their types inferred from an initialization value (an explicit type is optional using ##[[KeyPgConst Const]]##).

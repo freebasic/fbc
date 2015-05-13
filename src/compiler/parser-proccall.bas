@@ -46,11 +46,12 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	has_ctor = symbHasCtor( parser.currproc )
 	has_defctor = symbHasDefCtor( parser.currproc )
+	var returns_byref = symbProcReturnsByref( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then
 		if( symbGetProcStatAssignUsed( parser.currproc ) ) then
-			if( has_defctor ) then
+			if( has_defctor and (not returns_byref) ) then
 				errReport( FB_ERRMSG_RETURNMIXEDWITHASSIGN )
 			end if
 		end if
@@ -58,7 +59,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 		symbSetProcStatReturnUsed( parser.currproc )
 	else
 		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
-			if( has_defctor ) then
+			if( has_defctor and (not returns_byref) ) then
 				errReport( FB_ERRMSG_ASSIGNMIXEDWITHRETURN )
 			end if
 		end if
@@ -80,7 +81,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	'' is allowed, no implicit ADDROF is done, just like with BYREF params.
 
 	'' Returning BYREF and no explicit BYVAL given?
-	if( symbProcReturnsByref( parser.currproc ) and (not hMatch( FB_TK_BYVAL )) ) then
+	if( returns_byref and (not hMatch( FB_TK_BYVAL )) ) then
 		'' BYREF return, must be able to do addrof on the expression
 		'' (this disallows expressions like constants, BOPs, @ UOP, ...)
 		rhs = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
@@ -273,7 +274,7 @@ function cProcCall _
 		end if
 
 		'' '='?
-		if( hIsAssignToken( ) ) then
+		if( hIsAssignToken( lexGetToken( ) ) ) then
 			if( is_indexed ) then
 				if( symbGetUDTHasIdxSetProp( symbGetParent( sym ) ) = FALSE ) then
 					errReport( FB_ERRMSG_PROPERTYHASNOIDXSETMETHOD, TRUE )
@@ -405,7 +406,7 @@ private function hProcSymbol _
 	lexSkipToken( )
 
 	'' '='?
-	do_call = not hIsAssignToken( )
+	do_call = not hIsAssignToken( lexGetToken( ) )
 
 	if( do_call = FALSE ) then
 		'' special case: property
@@ -448,7 +449,7 @@ private function hProcSymbol _
 
 	'' check if name is valid (or if overloaded)
 	if( symbIsProcOverloadOf( parser.currproc, sym ) = FALSE ) then
-		errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+		errReport( FB_ERRMSG_RESULTASSIGNOUTSIDEFUNCTION )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
 		return TRUE
@@ -801,13 +802,13 @@ function cProcCallOrAssign _
 			'' no need to check for '=', that was done already by Declaration()
 
 			if( fbIsModLevel( ) ) then
-				errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
+				errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY )
 				'' error recovery: skip stmt, return
 				hSkipStmt( )
 				return TRUE
 			else
 				if( symbIsProperty( parser.currproc ) = FALSE ) then
-					errReport( FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY )
+					errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY )
 				end if
 			end if
 
@@ -870,7 +871,7 @@ function cProcCallOrAssign _
 		'' '.'?
 		if( lexGetToken( ) = CHAR_DOT ) then
   			'' inside a WITH block?
-  			if( parser.stmt.with.sym <> NULL ) then
+			if( parser.stmt.with ) then
 				'' not '..'?
 				if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
 					expr = cWithVariable( fbGetCheckArray( ) )

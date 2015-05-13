@@ -900,6 +900,14 @@ declare function astCheckASSIGNToType _
 		byval r as ASTNODE ptr _
 	) as integer
 
+declare function astCheckConvNonPtrToPtr _
+	( _
+		byval to_dtype as integer, _
+		byval expr_dtype as integer, _
+		byval expr as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
+
 declare function astCheckCONV _
 	( _
 		byval to_dtype as integer, _
@@ -1060,6 +1068,9 @@ declare function astGetInverseLogOp _
 		byval op as integer _
 	) as integer
 
+declare function astGetEffectiveNode( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astGetEffectiveClass( byval n as ASTNODE ptr ) as integer
+declare function astRebuildWithoutEffectivePart( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
 declare function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr

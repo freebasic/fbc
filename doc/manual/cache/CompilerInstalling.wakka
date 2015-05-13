@@ -1,75 +1,84 @@
 {{fbdoc item="title" value="Installing"}}----
 Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text editor or IDE.
 
-{{fbdoc item="section" value="Windows"}}
+{{fbdoc item="section" value="Windows 32bit"}}
 
 	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC-x.xx.x-win32.exe]] installer
 	1) Run it and click through it. The installer will install ""FreeBASIC"" at ##""C:\%ProgramFiles%\FreeBASIC""##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.
-	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
+	1) Unless you already have a source code editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://fbide.freebasic.net/ FBIDE]]
 		- [[http://radasm.cherrytree.at/fbedit/ FBEdit]]
-	
+
 	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program Uninstall or change a program]]).
+
+{{fbdoc item="section" value="Windows x64"}}
+
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC-x.xx.x-win64.zip]] package
+	1) Extract it where you like, for example at ##""C:\%ProgramFiles%\FreeBASIC""## (no further installation required to use fbc).
+	1) You may want to install a source code editor or IDE; also see the **Windows 32bit** section.
+
+	To uninstall ""FreeBASIC"", simply deleted the directory where you extracted it.
 
 {{fbdoc item="section" value="Linux"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/ FreeBASIC-x.xx.x-linux.tar.gz]] package
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/ FreeBASIC-x.xx.x-linux-x86.tar.gz (32bit) or FreeBASIC-x.xx.x-linux-x86_64.tar.gz (64bit)]] package
 	1) Extract the archive, for example by doing right-click -> Extract Here, or manually in a terminal:
 		
 		%%$ cd Downloads
-$ tar xzf FreeBASIC-x.xx.x-linux.tar.gz%%
+$ tar xzf FreeBASIC-x.xx.x-linux-x86.tar.gz%%
 		
-	1) The ""FreeBASIC"" setup can be used from where it was extracted. Usually it is installed into the /usr/local system directory though, so that the ##fbc## program is available through-out the whole system. To do that, run the included installation script:
+	1) The ""FreeBASIC"" compiler can be used from where it was extracted. Usually it is installed into the ##/usr/local## system directory though, so that the ##fbc## program is available through-out the whole system. To do that, run the included installation script:
 		
-		%%$ cd FreeBASIC-x.xx.x-linux
+		%%$ cd FreeBASIC-x.xx.x-linux-x86
 $ sudo ./install.sh -i%%
 		
 		The ##install.sh## script can also be given a path as in ##./install.sh -i /usr## if you prefer to install into a directory other than the default ##/usr/local##. This default is a good choice though, as it avoids mixing with the content of ##/usr## which is usually managed by the distribution's packaging tool.
-	
+		
 	1) ""FreeBASIC"" requires several additional packages to be installed before it can be used to compile executables. In general, these are:
 		
 			- binutils
-			- libc development files
+			- libc development files (installing gcc will typically install these too)
 			- gcc
-			- ""g++ (or rather, libsupc++, part of libstdc++)""
 			- libncurses development files
 			- X11 development files (for FB graphics programs)
 			- libffi development files (for the [[KeyPgThreadCall ThreadCall]] keyword)
+			- gpm (general purpose mouse) daemon and libgpm (only needed for GetMouse support in the Linux console)
 		
 		The actual package names to install vary depending on the GNU/Linux distribution.
 		
-		Debian/Ubuntu x86 (32bit):
-			- gcc, ""g++""
-			- libncurses5-dev
-			- libx11-dev, libxext-dev, libxrender-dev, libxrandr-dev, libxpm-dev
-			- libffi-dev
+		For native development (32bit FB on 32bit system, or 64bit FB on 64bit system):
+			- Debian/Ubuntu:
+				- gcc
+				- libncurses5-dev
+				- libffi-dev
+				- libgl1-mesa-dev
+				- libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
+			- Fedora:
+				- gcc
+				- ncurses-devel
+				- libffi-devel
+				- mesa-libGL-devel
+				- libX11-devel libXext-devel libXrender-devel libXrandr-devel libXpm-devel
+			- ""OpenSUSE"":
+				- gcc
+				- ncurses-devel
+				- libffi46-devel
+				- xorg-x11-devel
 		
-		Debian/Ubuntu amd64 (64bit):
-			- gcc-multilib, ""g++-multilib""
-			- lib32ncurses5-dev
-			- libx11-dev:i386, libxext-dev:i386, libxrender-dev:i386, libxrandr-dev:i386, libxpm-dev:i386
-		
-		older Debian/Ubuntu amd64 (64bit), before the switch to multiarch:
-			- gcc-multilib, ""g++-multilib""
-			- lib32ncurses5-dev
-			- ia32-libs
-			- lib32ffi-dev
-		
-		""OpenSUSE"" x86 (32bit):
-			- gcc, ""gcc-c++""
-			- ncurses-devel
-			- xorg-x11-devel
-			- libffi46-devel
-		
-		""OpenSUSE"" x86_64 (64bit):
-			- gcc-32bit, ""gcc-c++-32bit""
-			- ncurses-devel-32bit
-			- xorg-x11-devel-32bit
-			- xorg-x11-libX11-devel-32bit
-			- xorg-x11-libXext-devel-32bit
-			- xorg-x11-libXrender-devel-32bit
-			- xorg-x11-libXpm-devel-32bit
-			- libffi46-devel-32bit
+		For 32bit development on a 64bit system:
+			- Debian/Ubuntu:
+				- gcc-multilib
+				- lib32ncurses5-dev
+				- libx11-dev:i386 libxext-dev:i386 libxrender-dev:i386 libxrandr-dev:i386 libxpm-dev:i386
+			- ""OpenSUSE"":
+				- gcc-32bit
+				- ncurses-devel-32bit
+				- xorg-x11-devel-32bit
+				- xorg-x11-libX11-devel-32bit
+				- xorg-x11-libXext-devel-32bit
+				- xorg-x11-libXrender-devel-32bit
+				- xorg-x11-libXpm-devel-32bit
+				- libffi46-devel-32bit
 	
 	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://www.geany.org/ Geany]]

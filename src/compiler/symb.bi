@@ -1352,6 +1352,8 @@ declare function symbAddScope _
 		byval backnode as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
+declare sub symbScopeTurnTempsIntoImplicits( byval scopesym as FBSYMBOL ptr )
+
 declare function symbAddNamespace _
 	( _
 		byval id as zstring ptr, _

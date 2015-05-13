@@ -821,6 +821,8 @@ enum FB_RTL_OPT
 	                          ''&h00001000
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 	FB_RTL_OPT_X86ONLY        = &h00004000  '' on x86 only
+	FB_RTL_OPT_32BIT          = &h00008000  '' 32bit only
+	FB_RTL_OPT_64BIT          = &h00010000  '' 64bit only
 end enum
 
 '' mirrored in rtlib/thread_call.c
@@ -1267,17 +1269,11 @@ declare function rtlPrint _
 		byval islprint as integer = FALSE _
 	) as integer
 
-declare function rtlPrintSPC _
+declare function rtlPrintSPCTab _
 	( _
 		byval fileexpr as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval islprint as integer = FALSE _
-	) as integer
-
-declare function rtlPrintTab _
-	( _
-		byval fileexpr as ASTNODE ptr, _
-		byval expr as ASTNODE ptr, _
+		byval istab as integer, _
 		byval islprint as integer = FALSE _
 	) as integer
 

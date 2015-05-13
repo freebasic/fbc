@@ -6,14 +6,12 @@
 #include "../../rtlib/fb_config.h"
 
 #if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_XBOX)
-#define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name :
-#define VAR(name)		.globl _##name ; _##name :
 #define GLOBL(name)		_##name
 #else
-#define FUNC(name)		.globl name ; .balign 8, 0x90 ; name :
-#define VAR(name)		.globl name ; name :
 #define GLOBL(name)		name
 #endif
+#define FUNC(name)		.globl GLOBL(name) ; .balign 8, 0x90 ; GLOBL(name) :
+#define VAR(name)		.globl GLOBL(name) ; GLOBL(name) :
 #define LABEL(name)		.balign 4, 0x90 ; name :
 
 #define RESERVE_LOCALS(n)	subl $((n)*4), %esp

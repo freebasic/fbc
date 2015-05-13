@@ -1703,22 +1703,18 @@ private function hCalcTypesDiff _
 						return 0
 					end if
 
-					'' not a numeric constant?
-					if( astIsCONST( arg_expr ) = FALSE ) then
+					'' Allow passing literal 0 (with some non-ptr integer type) to the ptr
+					if( astCheckConvNonPtrToPtr( param_dtype, arg_dtype, arg_expr, 0 ) <> FB_ERRMSG_OK ) then
 						return 0
 					end if
 
-					'' not 0 (NULL)?
-					if( astConstEqZero( arg_expr ) = FALSE ) then
-						return 0
-					end if
-
-					'' not native pointer width?
-					if( typeGetSize( arg_dtype ) <> env.pointersize ) then
-						return 0
-					end if
-
-					return FB_OVLPROC_HALFMATCH
+					'' Allow passing a literal 0 integer to a pointer parameter,
+					'' but give it a very low score, such that we will prefer passing
+					'' the literal 0 integer to actual integer parameters (which are
+					'' scored based on FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB...,
+					'' which is why we have to choose something that's hopefully lower
+					'' but still > 0 here).
+					return 1
 				end if
 
 				'' Both are pointers (but they're different,

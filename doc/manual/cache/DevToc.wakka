@@ -22,6 +22,7 @@ This area of the Wiki is for documenting everything about the compiler and the r
 	{{fbdoc item="keyword" value="DevCrossCompiling|FB and cross-compiling"}}
 	{{fbdoc item="keyword" value="DevBootstrap|Bootstrapping/cross-compiling fbc"}}
 	
+	{{fbdoc item="keyword" value="DevBindingCreation|Creating FB bindings for C libraries"}}
 	{{fbdoc item="keyword" value="DevTranslateHeader|C Header Translation Tutorial"}}
 	{{fbdoc item="keyword" value="DevHeaderStyleGuide|Header Style Guidelines"}}
 	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index (header status)"}}

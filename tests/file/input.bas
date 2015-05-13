@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.inputTests
+namespace fbc_tests.file_.inputTests
 
 '' The test data must match the test file's content
 type DataEntry

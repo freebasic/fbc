@@ -1479,13 +1479,23 @@ function astNewSelfBOP _
 
 	'' ... = l normalbop r
 	r = astNewBOP( astGetOpSelfVer( op ), astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
+	'' astNewBOP() may fail if the two operands aren't compatible (depending on the operation).
 	if( r = NULL ) then
 		astDelTree( t )
 		exit function
 	end if
 
 	'' l = ...
-	t = astNewLINK( t, astNewASSIGN( l, r ), FALSE )
+	l = astNewASSIGN( l, r )
+	'' astNewASSIGN() may fail if the operation result isn't compatible with the lhs.
+	'' This can happen e.g. with the & string concatenation operator, which can take
+	'' integers as both lhs/rhs, but always returns a string, which then can't be
+	'' assigned back to an integer lhs.
+	if( l = NULL ) then
+		astDelTree( t )
+		exit function
+	end if
+	t = astNewLINK( t, l, FALSE )
 
 	function = t
 end function

@@ -1,11 +1,8 @@
 o 64bit
-  - Add -print hostarch/targetarch? Currently -print host/target only show the
-    OS name. Should they show arch too, or should it be separate? Or add
-    something like -print host (all), -print hostos, -print hostarch
-  - Add -print host/target-bits?
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
   - Windows port I/O driver? Can it be ported to 64bit? is it needed?
+  - 64bit bitfields aren't working properly - see tests/structs/bitfield-types.bas
 
 o LLVM backend
   - Check whether F2I conversions work correctly for unsigned integers (compare

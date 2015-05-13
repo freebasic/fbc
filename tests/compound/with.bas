@@ -9,6 +9,15 @@ namespace basics
 		i as integer
 	end type
 
+	type CtorUdt
+		i as integer
+		declare constructor( byval as integer )
+	end type
+
+	constructor CtorUdt( byval i as integer )
+		this.i = i + 1
+	end constructor
+
 	sub test cdecl( )
 		dim as UDT x1, x2
 		x1.i = 456
@@ -53,6 +62,18 @@ namespace basics
 			with( *p1 )
 				CU_ASSERT( .i = 456 )
 			end with
+		end with
+
+		with( type<UDT>( 123 ) )
+			CU_ASSERT( .i = 123 )
+		end with
+
+		with( type<CtorUdt>( 123 ) )
+			CU_ASSERT( .i = 124 )
+		end with
+
+		with( CtorUdt( 123 ) )
+			CU_ASSERT( .i = 124 )
 		end with
 	end sub
 end namespace
@@ -158,11 +179,380 @@ namespace implicitAddrOfPeek
 	end sub
 end namespace
 
+namespace functionResult
+	'' WITH must take special care when given a function call which returns
+	'' an UDT, because it may be returned in registers on Win32.
+
+	type ByteUdt
+		i as byte
+	end type
+
+	type ShortUdt
+		i as integer
+	end type
+
+	type IntegerUdt
+		i as integer
+	end type
+
+	type BigUdt
+		i(0 to 9) as integer
+	end type
+
+	function fByteUdt( byval i as integer ) as ByteUdt
+		return type( i )
+	end function
+
+	function fShortUdt( byval i as integer ) as ShortUdt
+		return type( i )
+	end function
+
+	function fIntegerUdt( byval i as integer ) as IntegerUdt
+		return type( i )
+	end function
+
+	function fBigUdt( byval i as integer ) as BigUdt
+		return type( { 0, 1, 2, 3, i, 5, 6, 7, 8, 9 } )
+	end function
+
+	sub test cdecl( )
+		with( fByteUdt( 111 ) )
+			CU_ASSERT( .i = 111 )
+		end with
+
+		with( fShortUdt( 222 ) )
+			CU_ASSERT( .i = 222 )
+		end with
+
+		with( fIntegerUdt( 333 ) )
+			CU_ASSERT( .i = 333 )
+		end with
+
+		with( fBigUdt( 444 ) )
+			CU_ASSERT( .i(0) = 0 )
+			CU_ASSERT( .i(1) = 1 )
+			CU_ASSERT( .i(2) = 2 )
+			CU_ASSERT( .i(3) = 3 )
+			CU_ASSERT( .i(4) = 444 )
+			CU_ASSERT( .i(5) = 5 )
+			CU_ASSERT( .i(6) = 6 )
+			CU_ASSERT( .i(7) = 7 )
+			CU_ASSERT( .i(8) = 8 )
+			CU_ASSERT( .i(9) = 9 )
+		end with
+	end sub
+end namespace
+
+namespace temporaries
+	'' WITH should extend the lifetime of any temp vars from the given
+	'' expression, such that they're not destroyed until END WITH (or any
+	'' other EXIT/RETURN/GOTO out of the WITH block)
+
+	const TRUE = -1
+	const FALSE = 0
+	dim shared zero as integer = 0  '' Helper var to ensure '*(@foo + 0)' won't be optimized to 'foo'
+
+	dim shared as integer ctors, dtors
+
+	type UDT
+		as integer i, alive
+		declare constructor( )
+		declare constructor( i as integer )
+		declare destructor( )
+	end type
+
+	constructor UDT( )
+		CU_ASSERT( this.alive = FALSE )
+		this.alive = TRUE
+		ctors += 1
+	end constructor
+
+	constructor UDT( i as integer )
+		CU_ASSERT( this.alive = FALSE )
+		this.alive = TRUE
+		ctors += 1
+		this.i = i
+	end constructor
+
+	destructor UDT( )
+		CU_ASSERT( this.alive )
+		this.alive = FALSE
+		dtors += 1
+		this.i = &hDEADBEEF
+	end destructor
+
+	function f( byval i as integer ) as UDT
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		function = type( i )
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( dtors = 1 )
+	end function
+
+	sub testCtorsDtors cdecl( )
+		ctors = 0
+		dtors = 0
+		scope
+			dim x as UDT = UDT( 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			with x
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+			end with
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			with type<UDT>( 123 )
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+			end with
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			with *(@type<UDT>( 123 ) + zero)
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+			end with
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 1 )
+		end scope
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		scope
+			with f( 123 )
+				CU_ASSERT( ctors = 2 )
+				CU_ASSERT( dtors = 1 )
+				CU_ASSERT( .i = 123 )
+			end with
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 2 )
+		end scope
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( dtors = 2 )
+	end sub
+
+	sub exitSubTest1( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		dim x as UDT = UDT( 123 )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+		with x
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( .i = 123 )
+			exit sub
+			CU_FAIL( )
+		end with
+		CU_FAIL( )
+	end sub
+
+	sub exitSubTest2( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		with type<UDT>( 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( .i = 123 )
+			exit sub
+			CU_FAIL( )
+		end with
+		CU_FAIL( )
+	end sub
+
+	sub exitSubTest3( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		with *(@type<UDT>( 123 ) + zero)
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( .i = 123 )
+			exit sub
+			CU_FAIL( )
+		end with
+		CU_FAIL( )
+	end sub
+
+	sub exitSubTest4( )
+		CU_ASSERT( ctors = 0 )
+		CU_ASSERT( dtors = 0 )
+		with f( 123 )
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( dtors = 1 )
+			CU_ASSERT( .i = 123 )
+			exit sub
+			CU_FAIL( )
+		end with
+		CU_FAIL( )
+	end sub
+
+	sub testScopeBreaks cdecl( )
+		''
+		'' EXIT DO
+		''
+
+		ctors = 0
+		dtors = 0
+		do
+			dim x as UDT = UDT( 123 )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			with x
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+				exit do
+				CU_FAIL( )
+			end with
+			CU_FAIL( )
+		loop
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		do
+			with type<UDT>( 123 )
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+				exit do
+				CU_FAIL( )
+			end with
+			CU_FAIL( )
+		loop
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		do
+			with *(@type<UDT>( 123 ) + zero)
+				CU_ASSERT( ctors = 1 )
+				CU_ASSERT( dtors = 0 )
+				CU_ASSERT( .i = 123 )
+				exit do
+				CU_FAIL( )
+			end with
+			CU_FAIL( )
+		loop
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		do
+			with f( 123 )
+				CU_ASSERT( ctors = 2 )
+				CU_ASSERT( dtors = 1 )
+				CU_ASSERT( .i = 123 )
+				exit do
+				CU_FAIL( )
+			end with
+			CU_FAIL( )
+		loop
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( dtors = 2 )
+
+		''
+		'' EXIT SUB
+		''
+
+		ctors = 0
+		dtors = 0
+		exitSubTest1( )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		exitSubTest2( )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		exitSubTest3( )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+
+		ctors = 0
+		dtors = 0
+		exitSubTest4( )
+		CU_ASSERT( ctors = 2 )
+		CU_ASSERT( dtors = 2 )
+	end sub
+
+	dim shared as integer udt2ctors, udt2dtors
+
+	type UDT2
+		px as UDT ptr
+		declare constructor( byref as UDT )
+		declare destructor( )
+	end type
+
+	constructor UDT2( byref x as UDT )
+		'' Store address of the argument object. UDT2 can only access it
+		'' as long as the UDT object stays alive, so this is potentially
+		'' unsafe.
+		this.px = @x
+		udt2ctors += 1
+	end constructor
+
+	destructor UDT2( )
+		udt2dtors += 1
+	end destructor
+
+	sub testMultipleTemps cdecl( )
+		'' The live of *both* temporaries should be extended, not just
+		'' the "toplevel" one which is accessed by the WITH.
+		ctors = 0
+		dtors = 0
+		udt2ctors = 0
+		udt2dtors = 0
+		with UDT2( UDT( 123 ) )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( dtors = 0 )
+			CU_ASSERT( udt2ctors = 1 )
+			CU_ASSERT( udt2dtors = 0 )
+			CU_ASSERT( .px->alive )
+			CU_ASSERT( .px->i = 123 )
+		end with
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 1 )
+		CU_ASSERT( udt2ctors = 1 )
+		CU_ASSERT( udt2dtors = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/compound/with" )
 	fbcu.add_test( "basics", @basics.test )
 	fbcu.add_test( "recursion", @tempvarVsRecursion.test )
 	fbcu.add_test( "PEEK", @implicitAddrOfPeek.test )
+	fbcu.add_test( "function result", @functionResult.test )
+	fbcu.add_test( "temporaries ctors/dtors", @temporaries.testCtorsDtors )
+	fbcu.add_test( "temporaries scope breaks", @temporaries.testScopeBreaks )
+	fbcu.add_test( "multiple temporaries", @temporaries.testMultipleTemps )
 end sub
 
 end namespace

@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-namespace fbc_tests.file.text_in
+namespace fbc_tests.file_.text_in
 
 sub TestInputEOF cdecl
 	dim i as integer

@@ -47,7 +47,7 @@ Declares a user-defined type.
 		- ##[[KeyPgStatic Static]]## member variables
 		- Member visibility specifiers: ##[[KeyPgVisPublic Public:]]##, ##[[KeyPgVisPrivate Private:]]##, ##[[KeyPgVisProtected Protected:]]##
 	
-	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables.
+	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables (same restriction for local types/unions).
 	
 	//Memory layout//
 	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.

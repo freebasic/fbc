@@ -681,26 +681,31 @@ end function
 ''::::
 function ppDefineLoad _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval currmacro as FBSYMBOL ptr _
 	) as integer
 
 	'' recursion?
-	if( s = lex.ctx->currmacro ) then
+	if( s = currmacro ) then
 		errReport( FB_ERRMSG_RECURSIVEMACRO )
 		'' error recovery: skip
 		hSkipUntil( INVALID, FALSE, LEX_FLAGS )
 		return TRUE
 	end if
 
-	'' only one level
-	if( lex.ctx->currmacro = NULL ) then
-		lex.ctx->currmacro = s
-	end if
-
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		function = hLoadDefine( s )
 	else
 		function = hLoadDefineW( s )
+	end if
+
+	'' Not empty?
+	if( lex.ctx->deflen > 0 ) then
+		'' Set currmacro if there is no other currmacro yet,
+		'' to prevent at least trivial recursion
+		if( lex.ctx->currmacro = NULL ) then
+			lex.ctx->currmacro = s
+		end if
 	end if
 
 	'' force a re-read

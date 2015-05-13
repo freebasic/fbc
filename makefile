@@ -45,15 +45,23 @@
 #     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
 #
 # commands:
+#
 #   <none>|all                 build everything
 #   compiler|rtlib|gfxlib2     build specific component only
 #   clean[-component]          remove built files
 #   install[-component]        install into $(prefix)
 #   uninstall[-component]      remove from $(prefix)
+#
 #   install-includes           (additional commands for just the FB includes,
 #   uninstall-includes          which don't need to be built)
+#
 #   gitdist    Create source code packages using "git archive"
 #   bindist    Create binary FB release packages from current built directory content
+#
+#   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
+#   log-tests     using the newly built fbc)
+#   warning-tests
+#   clean-tests
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -118,10 +126,11 @@ AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
 
-FBVERSION := 1.00.0
-
 # Determine the makefile's directory, this may be a relative path when
 # building in a separate build directory via e.g. "make -f ../fbc/makefile".
+# MAKEFILE_LIST did not exist in GNU make 3.79.1 (it was only added in 3.80),
+# so DJGPP users have to set MAKEFILE_LIST or rootdir manually in order to build
+# in a separate directory.
 rootdir := $(dir $(MAKEFILE_LIST))
 
 # Prune ./ prefix for beauty
@@ -131,6 +140,7 @@ endif
 
 srcdir := $(rootdir)src
 
+include $(rootdir)version.mk
 -include config.mk
 
 #
@@ -345,6 +355,7 @@ libfbgfxobjdir      := src/gfxlib2/obj/$(libsubdir)
 libfbgfxpicobjdir   := src/gfxlib2/obj/$(libsubdir)/pic
 libfbgfxmtobjdir    := src/gfxlib2/obj/$(libsubdir)/mt
 libfbgfxmtpicobjdir := src/gfxlib2/obj/$(libsubdir)/mt/pic
+djgpplibcobjdir     := contrib/djgpp/libc/crt0/obj/$(libsubdir)
 
 # If cross-compiling, use -target
 ifdef TARGET
@@ -457,6 +468,7 @@ ifndef DISABLE_MT
   endif
 endif
 ifeq ($(TARGET_OS),dos)
+  RTL_OBJDIRS += $(djgpplibcobjdir)
   RTL_LIBS += $(libdir)/libc.a
 endif
 
@@ -492,6 +504,7 @@ $(libfbgfxobjdir) \
 $(libfbgfxpicobjdir) \
 $(libfbgfxmtobjdir) \
 $(libfbgfxmtpicobjdir) \
+$(djgpplibcobjdir) \
 bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
 	mkdir -p $@
 
@@ -556,8 +569,8 @@ $(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H)
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
-libcmaino := contrib/djgpp/libc/crt0/_main.o
-$(libcmaino): %.o: %.c
+libcmaino := $(djgpplibcobjdir)/_main.o
+$(libcmaino): $(rootdir)contrib/djgpp/libc/crt0/_main.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 $(libdir)/libc.a: $(djgpplibc) $(libcmaino)
 	cp $(djgpplibc) $@
@@ -650,6 +663,23 @@ clean-gfxlib2:
 .PHONY: help
 help:
 	@echo "Take a look at the top of this makefile!"
+
+################################################################################
+
+.PHONY: cunit-tests log-tests clean-tests
+
+cunit-tests:
+	cd tests && make cunit-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+
+log-tests:
+	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+
+warning-tests:
+	cd tests/warnings && make FBC="`pwd`/../../bin/fbc"
+
+clean-tests:
+	cd tests && make clean
+
 
 ################################################################################
 
@@ -801,8 +831,6 @@ bindist:
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
 	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/allegro
-	rm -r $(FBPACKAGE)/inc/allegro.bi
 	rm -r $(FBPACKAGE)/inc/aspell.bi
 	rm -r $(FBPACKAGE)/inc/atk
 	rm -r $(FBPACKAGE)/inc/bass.bi
@@ -816,20 +844,14 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/cairo
 	rm -r $(FBPACKAGE)/inc/cd
 	rm -r $(FBPACKAGE)/inc/cgi-util.bi
-	rm -r $(FBPACKAGE)/inc/cgui.bi
 	rm -r $(FBPACKAGE)/inc/chipmunk
 	rm -r $(FBPACKAGE)/inc/cryptlib.bi
-	rm -r $(FBPACKAGE)/inc/curl.bi
-	rm -r $(FBPACKAGE)/inc/curses
-	rm -r $(FBPACKAGE)/inc/curses.bi
 	rm -r $(FBPACKAGE)/inc/dislin.bi
 	rm -r $(FBPACKAGE)/inc/disphelper
 	rm -r $(FBPACKAGE)/inc/dos
 	rm -r $(FBPACKAGE)/inc/expat.bi
 	rm -r $(FBPACKAGE)/inc/fastcgi
-	rm -r $(FBPACKAGE)/inc/ffi.bi
 	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/fmod.bi
 	rm -r $(FBPACKAGE)/inc/FreeImage.bi
 	rm -r $(FBPACKAGE)/inc/freetype2
 	rm -r $(FBPACKAGE)/inc/gd.bi
@@ -854,10 +876,7 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/gtkgl
 	rm -r $(FBPACKAGE)/inc/IL
 	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/IUP
 	rm -r $(FBPACKAGE)/inc/japi.bi
-	rm -r $(FBPACKAGE)/inc/jit
-	rm -r $(FBPACKAGE)/inc/jit.bi
 	rm -r $(FBPACKAGE)/inc/jni.bi
 	rm -r $(FBPACKAGE)/inc/jpeglib.bi
 	rm -r $(FBPACKAGE)/inc/jpgalleg.bi
@@ -866,7 +885,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/libintl.bi
 	rm -r $(FBPACKAGE)/inc/libxml
 	rm -r $(FBPACKAGE)/inc/libxslt
-	rm -r $(FBPACKAGE)/inc/Lua
 	rm -r $(FBPACKAGE)/inc/lzma.bi
 	rm -r $(FBPACKAGE)/inc/lzo
 	rm -r $(FBPACKAGE)/inc/MediaInfo.bi
@@ -882,7 +900,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/pcre.bi
 	rm -r $(FBPACKAGE)/inc/pcreposix.bi
 	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/png.bi
 	rm -r $(FBPACKAGE)/inc/portaudio.bi
 	rm -r $(FBPACKAGE)/inc/postgresql
 	rm -r $(FBPACKAGE)/inc/quicklz.bi
@@ -902,8 +919,6 @@ bindist:
 	rm -r $(FBPACKAGE)/inc/wx-c
 	rm -r $(FBPACKAGE)/inc/X11
 	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zip.bi
-	rm -r $(FBPACKAGE)/inc/zlib.bi
 	rm -r $(FBPACKAGE)/inc/zmq
   endif
   ifndef ENABLE_STANDALONE

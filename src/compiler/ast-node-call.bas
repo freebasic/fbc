@@ -406,6 +406,7 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 		tmp = symbAddTempVar( FB_DATATYPE_STRUCT, expr->subtype )
 
 		'' No need to bother doing astDtorListAdd()
+		'' (UDTs with dtor are never returned in registers)
 		assert( symbHasDtor( tmp ) = FALSE )
 
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL or AST_OPOPT_ISINI )

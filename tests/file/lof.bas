@@ -2,7 +2,7 @@
 
 #include "vbcompat.bi"
 
-namespace fbc_tests.file.lof_
+namespace fbc_tests.file_.lof_
 
 type FileInfo
 	as zstring * 32 name

@@ -109,8 +109,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_USHORT, _   '' wchar
 		FB_FUNCMODE_STDCALL, _  '' fbcall
 		FB_FUNCMODE_STDCALL, _  '' stdcall
-		0	or FB_TARGETOPT_UNDERSCORE _
-			or FB_TARGETOPT_EXPORT _
+		0	or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
 	), _
 	( _
@@ -119,7 +118,6 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
 		0	or FB_TARGETOPT_UNIX _
-			or FB_TARGETOPT_UNDERSCORE _
 			or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
 	), _
@@ -136,16 +134,14 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_DATATYPE_UBYTE, _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
-		0	or FB_TARGETOPT_UNDERSCORE _
-			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+		0	or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 	), _
 	( _
 		@"xbox", _
 		FB_DATATYPE_ULONG, _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
-		0	or FB_TARGETOPT_UNDERSCORE _
-			or FB_TARGETOPT_RETURNINREGS _
+		0	or FB_TARGETOPT_RETURNINREGS _
 	), _
 	( _
 		@"freebsd", _
@@ -350,6 +346,16 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	env.opt.gosub = (env.clopt.lang = FB_LANG_QB)
 
 	env.fbctinf_started = FALSE
+
+	'' Leading underscore needed on ASM symbols?
+	'' Yes for dos/cygwin-x86/win32/xbox, but not win64/cygwin-x86_64/linux-*/etc.
+	env.underscoreprefix = FALSE
+	select case( env.clopt.target )
+	case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+		env.underscoreprefix = TRUE
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		env.underscoreprefix = not fbIs64bit( )
+	end select
 
 	'' set by symbDataInit()
 	env.pointersize = 0

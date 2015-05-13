@@ -20,7 +20,7 @@ sub parserCompoundStmtSetCtx( )
 	parser.stmt.while = NULL
 	parser.stmt.select = NULL
 	parser.stmt.proc = NULL
-	parser.stmt.with.sym = NULL
+	parser.stmt.with = NULL
 end sub
 
 sub parserCompoundStmtInit( )
@@ -156,20 +156,20 @@ sub cEndStatement( )
 end sub
 
 private function hCheckForCtorResult( ) as integer
-	function = FB_ERRMSG_OK
-	if( symbHasCtor( parser.currproc ) ) then
-		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
+	if( symbGetProcStatReturnUsed( parser.currproc ) ) then
+		if( symbHasCtor( parser.currproc ) and _
+		    (not symbProcReturnsByref( parser.currproc )) ) then
 			'' EXIT FUNCTION cannot be allowed in combination
-			'' with RETURN and a ctor result, because it would
-			'' not call the result constructor.
-			function = FB_ERRMSG_MISSINGRETURNFORCTORRESULT
-		else
-			'' EXIT FUNCTION used, and no RETURN yet:
-			'' make it behave like FUNCTION=, to ensure the result ctor
-			'' is called at the top.
-			symbSetProcStatAssignUsed( parser.currproc )
+			'' with RETURN and a ctor result for byval functions,
+			'' because it would not call the result constructor.
+			return FB_ERRMSG_MISSINGRETURNFORCTORRESULT
 		end if
 	end if
+
+	'' EXIT FUNCTION used; mark the function as if FUNCTION= was used,
+	'' to ensure the result will be constructed at the top if needed.
+	symbSetProcStatAssignUsed( parser.currproc )
+	function = FB_ERRMSG_OK
 end function
 
 '':::::
@@ -188,7 +188,8 @@ sub cExitStatement( )
 	lexSkipToken( )
 
 	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION) (',')*
-	select case as const lexGetToken( )
+	var tk = lexGetToken( )
+	select case as const( tk )
 	case FB_TK_FOR
 		if( parser.stmt.for = NULL ) then
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEFORSTMT )
@@ -297,7 +298,16 @@ sub cExitStatement( )
 		end if
 
 		if( label = NULL ) then
-			hExitError( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+			dim errmsg as integer
+			select case as const( tk )
+			case FB_TK_SUB         : errmsg = FB_ERRMSG_ILLEGALOUTSIDEASUB
+			case FB_TK_PROPERTY    : errmsg = FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY
+			case FB_TK_OPERATOR    : errmsg = FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR
+			case FB_TK_CONSTRUCTOR : errmsg = FB_ERRMSG_ILLEGALOUTSIDEACTOR
+			case FB_TK_DESTRUCTOR  : errmsg = FB_ERRMSG_ILLEGALOUTSIDEADTOR
+			case else              : errmsg = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
+			end select
+			hExitError( errmsg )
 		end if
 
 		dim as FB_ERRMSG errnum = FB_ERRMSG_OK
@@ -331,7 +341,7 @@ sub cExitStatement( )
 			if( symbIsProperty( parser.currproc ) ) then
 				errnum = hCheckForCtorResult( )
 			else
-				errnum = FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY
+				errnum = FB_ERRMSG_ILLEGALOUTSIDEAPROPERTY
 			end if
 
 		case FB_TK_OPERATOR
@@ -590,6 +600,10 @@ function cCompStmtPush _
 	case FB_TK_FUNCTION
 		stk->proc.last = parser.stmt.proc
 		parser.stmt.proc = stk
+
+	case FB_TK_WITH
+		stk->with.last = parser.stmt.with
+		parser.stmt.with = stk
 	end select
 
 	parser.stmt.id = id
@@ -684,6 +698,9 @@ sub cCompStmtPop( byval stk as FB_CMPSTMTSTK ptr )
 
 	case FB_TK_FUNCTION
 		parser.stmt.proc = stk->proc.last
+
+	case FB_TK_WITH
+		parser.stmt.with = stk->with.last
 	end select
 
 	stackPop( @parser.stmt.stk )

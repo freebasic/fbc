@@ -30,10 +30,10 @@ end constructor
 {{fbdoc item="filename" value="examples/manual/udt/baseinit2.bas"}}%%(freebasic)
 type ComplexParent
 	as integer i
-	declare constructor( byval as integer )
+	declare constructor( byval as integer = 0 )
 end type
 
-constructor ComplexParent( byval i as integer )
+constructor ComplexParent( byval i as integer = 0 )
 	this.i = i
 end constructor
 

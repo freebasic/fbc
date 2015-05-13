@@ -791,6 +791,74 @@ namespace integerPointers
 	end namespace
 end namespace
 
+namespace const0
+	'' It's possible to pass constant zero to pointer parameters
+
+	sub a overload( byval p as any ptr ) :            : end sub
+	sub a overload( byref s as string  ) : CU_FAIL( ) : end sub
+
+	#macro makeFunction1( suffix, inttype )
+		function f1_##suffix overload( byval p as any ptr ) as string : function = "any ptr" : end function
+		function f1_##suffix overload( byval i as inttype ) as string : function = #inttype  : end function
+	#endmacro
+
+	makeFunction1( b, byte )
+	makeFunction1( ub, ubyte )
+	makeFunction1( sh, short )
+	makeFunction1( ush, ushort )
+	makeFunction1( l, long )
+	makeFunction1( ul, ulong )
+	makeFunction1( ll, longint )
+	makeFunction1( ull, ulongint )
+	makeFunction1( i, integer )
+	makeFunction1( ui, uinteger )
+
+	private sub test cdecl( )
+		a( 0l )
+		a( 0ul )
+		a( 0ll )
+		a( 0ull )
+		a( 0 )
+		a( 0u )
+		a( cbyte( 0 ) )
+		a( cubyte( 0 ) )
+		a( cshort( 0 ) )
+		a( cushort( 0 ) )
+		a( clng( 0 ) )
+		a( culng( 0 ) )
+		a( clngint( 0 ) )
+		a( culngint( 0 ) )
+		a( cint( 0 ) )
+		a( cuint( 0 ) )
+		a( cptr( any ptr, 0 ) )
+
+		#macro makeTest1( suffix, result )
+			CU_ASSERT( f1_##suffix( cptr( any ptr, 0 ) ) = "any ptr" )
+			CU_ASSERT( f1_##suffix( cbyte  ( 0 ) ) = #result )
+			CU_ASSERT( f1_##suffix( cubyte ( 0 ) ) = #result )
+			CU_ASSERT( f1_##suffix( cshort ( 0 ) ) = #result )
+			CU_ASSERT( f1_##suffix( cushort( 0 ) ) = #result )
+			CU_ASSERT( f1_##suffix( 0l   ) = #result )
+			CU_ASSERT( f1_##suffix( 0ul  ) = #result )
+			CU_ASSERT( f1_##suffix( 0ll  ) = #result )
+			CU_ASSERT( f1_##suffix( 0ull ) = #result )
+			CU_ASSERT( f1_##suffix( 0    ) = #result )
+			CU_ASSERT( f1_##suffix( 0u   ) = #result )
+		#endmacro
+
+		makeTest1( b, byte )
+		makeTest1( ub, ubyte )
+		makeTest1( sh, short )
+		makeTest1( ush, ushort )
+		makeTest1( l, long )
+		makeTest1( ul, ulong )
+		makeTest1( ll, longint )
+		makeTest1( ull, ulongint )
+		makeTest1( i, integer )
+		makeTest1( ui, uinteger )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/overload/pointers" )
 	fbcu.add_test( "pointers", @pointers.test )
@@ -832,6 +900,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "integerPointers.uinteger_longint" , @integerPointers.uinteger_longint.test )
 	fbcu.add_test( "integerPointers.uinteger_ulongint", @integerPointers.uinteger_ulongint.test )
 	fbcu.add_test( "integerPointers.uinteger_integer" , @integerPointers.uinteger_integer.test )
+
+	fbcu.add_test( "const0", @const0.test )
 end sub
 
 end namespace

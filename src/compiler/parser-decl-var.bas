@@ -242,21 +242,22 @@ private function hExprTbIsConst _
 	function = TRUE
 end function
 
-private sub hCheckExternVar _
+private function hCheckExternVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byref attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	)
+	) as integer
 
 	'' Check data type
 	if( (dtype <> symbGetFullType( sym )) or _
 	    (subtype <> symbGetSubType( sym )) ) then
 		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
+		exit function
 	end if
 
 	'' One is dynamic, but the other isn't? (can't just rely on dimensions
@@ -264,7 +265,7 @@ private sub hCheckExternVar _
 	'' array declaration, e.g. with a REDIM)
 	if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> (sym->attrib and FB_SYMBATTRIB_DYNAMIC) ) then
 		errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
-		exit sub
+		exit function
 	end if
 
 	'' One of them has unknown dimensions? Then the other must be an array too,
@@ -272,14 +273,15 @@ private sub hCheckExternVar _
 	if( (dimensions = -1) or (symbGetArrayDimensions( sym ) = -1) ) then
 		if( (dimensions <> 0) <> (symbGetArrayDimensions( sym ) <> 0) ) then
 			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+			exit function
 		end if
-		exit sub
+		return TRUE
 	end if
 
 	'' Mismatching array dimensions?
 	if( dimensions <> symbGetArrayDimensions( sym ) ) then
 		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-		exit sub
+		exit function
 	end if
 
 	'' Check bounds of fixed-size arrays
@@ -294,20 +296,55 @@ private sub hCheckExternVar _
 		next
 	end if
 
+	function = TRUE
+end function
+
+private sub hCheckExternVarAndRecover _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref attrib as integer, _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
+		dTB() as FBARRAYDIM _
+	)
+
+	if( hCheckExternVar( sym, id, dtype, subtype, attrib, dimensions, dTB() ) = FALSE ) then
+		'' Error recovery: make definition match the EXTERN declaration
+		dtype = symbGetFullType( sym )
+		subtype = symbGetSubType( sym )
+		lgt = symbGetLen( sym )
+		attrib = (attrib and (not FB_SYMBATTRIB_DYNAMIC)) or (sym->attrib and FB_SYMBATTRIB_DYNAMIC)
+		dimensions = symbGetArrayDimensions( sym )
+		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
+			have_bounds = FALSE
+		elseif( dimensions > 0 ) then
+			have_bounds = TRUE
+			for i as integer = 0 to dimensions - 1
+				dTB(i).lower = symbArrayLbound( sym, i )
+				dTB(i).upper = symbArrayUbound( sym, i )
+			next
+		end if
+	end if
+
 end sub
 
 private function hAddVar _
 	( _
 		byval sym as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval idalias as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval lgt as longint, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
 		byval addsuffix as integer, _
-		byval attrib as integer, _
-		byval dimensions as integer, _
-		byval have_bounds as integer, _
+		byref attrib as integer, _
+		byref dimensions as integer, _
+		byref have_bounds as integer, _
 		dTB() as FBARRAYDIM, _
 		byval token as integer _
 	) as FBSYMBOL ptr
@@ -323,8 +360,7 @@ private function hAddVar _
 		    (parser.scope = FB_MAINSCOPE) ) then
 
 			'' Verify that the new variable declaration is compatible with the previous EXTERN
-			hCheckExternVar( sym, id, dtype, subtype, _
-					attrib, dimensions, dTB() )
+			hCheckExternVarAndRecover( sym, id, dtype, subtype, lgt, attrib, dimensions, have_bounds, dTB() )
 
 			'' Then allocate the EXTERN:
 
@@ -360,15 +396,13 @@ private function hAddVar _
 		        ((attrib and FB_SYMBATTRIB_EXTERN) <> 0) ) then
 
 			'' Only verify that the EXTERN declaration is compatible with the previous one
-			hCheckExternVar( sym, id, dtype, subtype, _
-					attrib, dimensions, dTB() )
+			hCheckExternVarAndRecover( sym, id, dtype, subtype, lgt, attrib, dimensions, have_bounds, dTB() )
 			is_declared = TRUE
 
 		'' REDIM'ing an existing array (dynamic array var/field, BYDESC param)?
 		'' Note: If the existing array is a COMMON, then not only REDIM is allowed,
 		'' but also DIM etc.
 		elseif( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and _
-			(dimensions > 0) and _
 			have_bounds and _
 			symbGetIsDynamic( sym ) and _
 			((token = FB_TK_REDIM) or symbIsCommon( sym )) ) then
@@ -378,9 +412,11 @@ private function hAddVar _
 			is_declared = TRUE
 
 		'' Have an existing variable, but it's none of the above cases?
-		'' Try to add this one as new var. If it conflicts with the
-		'' existing one due to scope, the symbAddVar() will return NULL.
-		'' Otherwise, it will shadow the existing variable.
+		'' Then this is the declaration of a new variable, and it will
+		'' a) trigger a duplicate definition error (if the symbAddVar()
+		''    fails because the symbol already exists in this scope)
+		'' b) shadow the existing one (if the existing symbol is from
+		''    another scope).
 		else
 			is_declared = FALSE
 		end if
@@ -395,6 +431,20 @@ private function hAddVar _
 			symbCheckDynamicArrayDimensions( sym, dimensions )
 		end if
 	else
+		'' As long as the new variable declaration has no namespace prefix,
+		'' we can try to add it as new var. If it has a namespace prefix
+		'' though, then we have to show an error. We can't add a variable
+		'' into the namespace this way (they can only be added from inside),
+		'' but we can't just ignore the namespace prefix either.
+		''
+		'' Normally hLookupVarAndCheckParent() should already catch all such cases,
+		'' but since our "redim vs. declaration" detection may not have been
+		'' accurate at the point of hLookupVarAndCheckParent(), it's probably
+		'' good to have this check here too.
+		if( parent ) then
+			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		end if
+
 		if( addsuffix ) then
 			attrib or= FB_SYMBATTRIB_SUFFIXED
 		end if
@@ -1088,7 +1138,7 @@ end function
 ''
 function cVarDecl _
 	( _
-		byval attrib as integer, _
+		byval baseattrib as integer, _
 		byval dopreserve as integer, _
 		byval token as integer, _
 		byval is_fordecl as integer _
@@ -1115,7 +1165,7 @@ function cVarDecl _
 	if( symbIsGlobalNamespc( ) = FALSE ) then
 		if( fbIsModLevel( ) ) then
 			'' variables will be always shared..
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
@@ -1134,11 +1184,15 @@ function cVarDecl _
 		is_multdecl = TRUE
 	end if
 
-	'' Some code below needs to differentiate between "new variable
-	'' declaration" and "REDIM"; however this isn't always accurate.
-	is_redim = (token = FB_TK_REDIM) and ((attrib and FB_SYMBATTRIB_SHARED) = 0)
-
 	do
+		dim as integer attrib = baseattrib
+
+		'' Some code below needs to differentiate between "new variable declaration" and "redim";
+		'' however this isn't always accurate. For example, a REDIM statement can act as a variable
+		'' declaration, but we won't know until the array dimensions have been parsed. Before that,
+		'' is_redim will be inaccurate.
+		is_redim = (token = FB_TK_REDIM) and ((attrib and FB_SYMBATTRIB_SHARED) = 0)
+
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR or _
 				iif( is_redim, 0, FB_IDOPT_ISDECL ) )
 
@@ -1272,12 +1326,18 @@ function cVarDecl _
 			attrib and= not FB_SYMBATTRIB_DYNAMIC
 		end if
 
+		'' Update is_redim now that we've parsed the array bounds, if any.
+		'' It's only a true redim if array bounds are given. If it's not an array,
+		'' or dimensions were given without bounds, then it can't be a redim.
+		is_redim and= have_bounds
+
 		palias = NULL
 		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0 ) then
 			'' [ALIAS "id"]
 			palias = cAliasAttribute()
 		end if
 
+		'' Data type
 		if( is_multdecl = FALSE ) then
 			'' (AS SymbolType)?
 			if( lexGetToken( ) = FB_TK_AS ) then
@@ -1366,7 +1426,7 @@ function cVarDecl _
 			end if
 		end if
 
-		if( (dimensions > 0) and have_bounds ) then
+		if( have_bounds ) then
 			'' QB quirk: when the symbol was defined already by a preceeding COMMON
 			'' statement, then a DIM will work the same way as a REDIM
 			if( token = FB_TK_DIM ) then
@@ -1375,6 +1435,7 @@ function cVarDecl _
 						if( symbIsCommon( sym ) ) then
 							if( symbGetArrayDimensions( sym ) <> 0 ) then
 								attrib or= FB_SYMBATTRIB_DYNAMIC
+								is_redim = TRUE
 							end if
 						end if
 					end if
@@ -1414,7 +1475,7 @@ function cVarDecl _
 		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 			'' DIM'ing dynamic arrays requires a REDIM, check whether code is allowed
 			'' (for REDIM's this check was already done by cVariableDecl())
-			if( (dimensions > 0) and have_bounds and (token <> FB_TK_REDIM) ) then
+			if( have_bounds and (token <> FB_TK_REDIM) ) then
 				if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 					hSkipStmt( )
 					exit function
@@ -1430,7 +1491,7 @@ function cVarDecl _
 		'' Declare the new variable or comlain about duplicate
 		'' definition, etc.
 		''
-		sym = hAddVar( sym, id, palias, dtype, subtype, lgt, addsuffix, _
+		sym = hAddVar( sym, parent, id, palias, dtype, subtype, lgt, addsuffix, _
 				attrib, dimensions, have_bounds, dTB(), token )
 
 		dim as integer has_defctor = FALSE, has_dtor = FALSE
@@ -1453,7 +1514,7 @@ function cVarDecl _
 			assign_initree = NULL
 
 			'' '=' | '=>' ?
-			if( hIsAssignToken( ) ) then
+			if( hIsAssignToken( lexGetToken( ) ) ) then
 				initree = hVarInit( sym, is_declared )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
@@ -1574,7 +1635,7 @@ function cVarDecl _
 				end if
 
 				'' Dynamic array? If the dimensions are known, redim it.
-				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and (dimensions > 0) and have_bounds ) then
+				if( ((attrib and FB_SYMBATTRIB_DYNAMIC) <> 0) and have_bounds ) then
 					if( varexpr = NULL ) then
 						varexpr = astNewVAR( sym )
 					end if
@@ -1875,7 +1936,7 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 		end select
 
 		'' add var after parsing the expression, or the the var itself could be used
-		sym = hAddVar( sym, id, NULL, dtype, subtype, _
+		sym = hAddVar( sym, parent, id, NULL, dtype, subtype, _
 			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then

@@ -18,7 +18,6 @@ FBCALL double fb_hStr2Double( char *src, ssize_t len )
 	else if( (len >= 2) && (p[0] == '&') )
 	{
 		skip = 2;
-		radix = 0;
 		switch( p[1] )
 		{
 			case 'h':
@@ -40,8 +39,7 @@ FBCALL double fb_hStr2Double( char *src, ssize_t len )
 				break;
 		}
 
-		if( radix != 0 )
-			return (double)fb_hStrRadix2Longint( &p[skip], len - skip, radix );
+		return fb_hStrRadix2Longint( p + skip, len - skip, radix );
 	}
 
 	/* Workaround: strtod() does not allow 'd' as an exponent specifier on 

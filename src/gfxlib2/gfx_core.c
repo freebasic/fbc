@@ -132,8 +132,8 @@ void fb_hTranslateCoord(FB_GFXCTX *context, float fx, float fy, int *x, int *y)
 		fy = ((fy - context->win_y) * context->view_h) / context->win_h;
 	}
 	
-	*x = (int)(fx > 0 ? fx + 0.5 : fx - 0.5);
-	*y = (int)(fy > 0 ? fy + 0.5 : fy - 0.5);
+	*x = CINT(fx);
+	*y = CINT(fy);
 	
 	if ((context->flags & (CTX_WINDOW_ACTIVE | CTX_WINDOW_SCREEN)) == CTX_WINDOW_ACTIVE)
 		*y = context->view_h - 1 - *y;

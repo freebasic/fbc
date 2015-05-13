@@ -814,11 +814,12 @@ function rtlPrint _
 end function
 
 '':::::
-function rtlPrintSPC _
+function rtlPrintSPCTab _
 	( _
 		byval fileexpr as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval istab as integer, _
+		byval islprint as integer = FALSE _
 	) as integer
 
     dim as ASTNODE ptr proc = any
@@ -830,7 +831,11 @@ function rtlPrintSPC _
     end if
 
 	''
-    proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
+	if( istab ) then
+		proc = astNewCALL( PROCLOOKUP( PRINTTAB ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
+	end if
 
     '' byval filenum as integer
     if( astNewARG( proc, fileexpr ) = NULL ) then
@@ -838,41 +843,6 @@ function rtlPrintSPC _
  	end if
 
     '' byval n as integer
-    if( astNewARG( proc, expr ) = NULL ) then
- 		exit function
- 	end if
-
-    astAdd( proc )
-
-    function = TRUE
-
-end function
-
-'':::::
-function rtlPrintTab _
-	( _
-		byval fileexpr as ASTNODE ptr, _
-		byval expr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
-    ) as integer
-
-    dim as ASTNODE ptr proc = any
-
-	function = FALSE
-
-    if islprint then
-    	rtlPrinter_cb( NULL )
-    end if
-
-	''
-    proc = astNewCALL( PROCLOOKUP( PRINTTAB ) )
-
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval newcol as integer
     if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if

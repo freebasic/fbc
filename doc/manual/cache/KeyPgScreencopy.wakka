@@ -18,6 +18,8 @@ Copies the contents of a graphical page into another graphical page
 
 	You can use this function to add a double buffer to your graphics. Any graphics screen mode with multiple pages supports this function.
 
+	##**Screencopy**## is inactive if the destination page is locked.
+
 	There are two other functions similar to this: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.  ##[[KeyPgFlip Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
 
 {{fbdoc item="ex"}}

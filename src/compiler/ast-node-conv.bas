@@ -111,6 +111,34 @@ private function hGetTypeMismatchErrMsg( byval options as AST_CONVOPT ) as integ
 	end if
 end function
 
+function astCheckConvNonPtrToPtr _
+	( _
+		byval to_dtype as integer, _
+		byval expr_dtype as integer, _
+		byval expr as ASTNODE ptr, _
+		byval options as AST_CONVOPT _
+	) as integer
+
+	assert( typeIsPtr( to_dtype ) )
+	assert( typeIsPtr( expr_dtype ) = FALSE )
+
+	if( typeGetClass( expr_dtype ) = FB_DATACLASS_INTEGER ) then
+		'' Allow converting literal 0 with any integer type to any pointer type
+		if( astIsCONST( expr ) ) then
+			if( astConstEqZero( expr ) ) then
+				return FB_ERRMSG_OK
+			end if
+		end if
+
+		'' Allow integer-to-pointer casts only if same size
+		if( typeGetSize( expr_dtype ) = env.pointersize ) then
+			return FB_ERRMSG_OK
+		end if
+	end if
+
+	function = hGetTypeMismatchErrMsg( options )
+end function
+
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
@@ -124,55 +152,29 @@ private function hCheckPtr _
 
 	'' to pointer? only allow integers of same size, and pointers
 	if( typeIsPtr( to_dtype ) ) then
-		select case as const typeGet( expr_dtype )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_BOOL32, _
-		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			'' Allow integer-to-pointer casts if same size
-			if( typeGetSize( expr_dtype ) = env.pointersize ) then
-				exit function
-			end if
-			return hGetTypeMismatchErrMsg( options )
+		if( typeIsPtr( expr_dtype ) = FALSE ) then
+			return astCheckConvNonPtrToPtr( to_dtype, expr_dtype, expr, options )
+		end if
 
-		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
-		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_BOOL8
+		'' Both are pointers, fall through to checks below
+
+	'' from pointer? only allow integers of same size and pointers
+	elseif( typeIsPtr( expr_dtype ) ) then
+		if( typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
+			'' Allow converting literal 0 with any pointer type to any integer type
 			if( astIsCONST( expr ) ) then
 				if( astConstEqZero( expr ) ) then
-					'' Allow 0-to-pointer casts
 					exit function
 				end if
 			end if
 
-			return hGetTypeMismatchErrMsg( options )
-
-		case FB_DATATYPE_POINTER
-			'' Both are pointers, fall through to checks below
-
-		case else
-			'' Nothing else allowed (strings, structs)
-			return hGetTypeMismatchErrMsg( options )
-		end select
-
-	'' from pointer? only allow integers of same size and pointers
-	elseif( typeIsPtr( expr_dtype ) ) then
-		select case as const typeGet( to_dtype )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-		     FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			'' Allow integer-to-pointer casts if same size
+			'' Allow pointer-to-integer casts if same size
 			if( typeGetSize( to_dtype ) = env.pointersize ) then
 				exit function
 			end if
-			return hGetTypeMismatchErrMsg( options )
+		end if
 
-		case FB_DATATYPE_POINTER
-			'' Both are pointers, fall through to checks below
-
-		case else
-			'' Nothing else allowed (strings, structs)
-			return hGetTypeMismatchErrMsg( options )
-		end select
+		return hGetTypeMismatchErrMsg( options )
 	else
 		'' No pointers at all, nothing to do
 		exit function

@@ -4,7 +4,11 @@ Allows reading and writing PNG images.
 Website: http://www.libpng.org/pub/png/libpng.html
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: png.bi
-Header version: 1.5.14
+Header versions: 1.2.51, 1.4.13, 1.5.19, 1.6.14
 Examples: in examples/files/libpng/
+
+When #including png.bi, you can ##""#define __LIBPNG_VERSION""## to one of ##12##, ##14##, ##15##, ##16## in order to select the desired libpng version. The default is the latest version.
+
+Overriding the default allows you to match the exact libpng version on your system (interesting for Linux distros which, for example, use the libpng 1.2 series instead of the latest version).
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

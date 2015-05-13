@@ -18,7 +18,7 @@ Creates a temporary copy of a user defined type
 {{fbdoc item="desc"}}
 	Used to create a temporary type.  If ##//typename//## is not explicitly given, it will be inferred from its usage if possible.  Usage of the temporary copy may include assigning it to a variable, passing it as a parameter to a procedure, or returning it as a value from a procedure.
 
-	For a type without constructor, the temporary type syntax is allowed if all type data-fields are numeric primitives only and without any default initializers, but the compiler does a direct assignment instead of using a temporary copy.
+	For a type without constructor, the temporary type syntax is allowed if all type data-fields are numeric primitives only and without any default initializers, but the compiler does a direct assignment instead of using a temporary copy if at same time the type is without destructor.
 
 	The ##[[KeyPgConstructor Constructor]]## for the type, if there is one, will be called when the temporary copy is created, and the ##[[KeyPgDestructor Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
 

@@ -31,6 +31,8 @@ Declares or defines a member procedure returning a value.
 
 	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember Const (Member)]]## may be declared using the ##**Const**## specifier.
 
+	As for a normal ##[[KeyPgFunction Function]]##, the return value of a ##**Function**## member can be ignored in the calling code.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/function.bas"}}%%(freebasic)
 #include "vbcompat.bi"

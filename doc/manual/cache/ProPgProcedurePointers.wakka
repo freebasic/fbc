@@ -13,6 +13,8 @@ dim pointerToProcedure as sub
 	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt Operator @]]## (Address of) or the ##[[KeyPgOpProcptr ProcPtr operator]]##:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procptrs/pfunc.bi"}}%%(freebasic)
+'' pfunc.bi
+
 function Add (a as integer, b as integer) as integer
 	return a + b
 end function
@@ -29,7 +31,9 @@ dim pFunc as function (as integer, as integer) as integer = @Add
 
 print "3 + 4 = " & pFunc(3, 4)
 %%
+	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt Operator @ (Address of)]]## page.
 
+	
 {{fbdoc item="section" value="Passing procedure pointers to procedures"}}
 	Passing procedure pointers to other procedures is similar as well:
 
@@ -129,7 +133,7 @@ print p(obj, 69) '' prints 489
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgPointer Pointer]]##
-	- ##[[KeyPgOpAt Operator * (Address of)]]##
+	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- ##[[KeyPgOpProcptr ProcPtr operator]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

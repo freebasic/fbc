@@ -50,6 +50,7 @@ typedef struct FBCONSOLE
 #if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
 	int has_perm;
 #endif
+	int scroll_region_changed;
 	char *seq[SEQ_MAX];
 	int (*keyboard_getch)(void);
 	int (*keyboard_init)(void);
@@ -67,7 +68,8 @@ extern FBCONSOLE __fb_con;
 #ifdef HOST_LINUX
 int fb_hTermQuery( int code, int *val1, int *val2 );
 #endif
-void fb_hRecheckConsoleSize( void );
+void fb_hRecheckCursorPos( void );
+void fb_hRecheckConsoleSize( int requery_cursorpos );
 int fb_hTermOut(int code, int param1, int param2);
 void fb_hAddCh( int k );
 int fb_hGetCh(int remove);

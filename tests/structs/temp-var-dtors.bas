@@ -2874,7 +2874,6 @@ namespace dtorOnlyDoubleIntUdt
 	end sub
 end namespace
 
-
 namespace copyctorWith2ndParam
 	'' The AST must ensure that temp vars created in true/false expressions
 	'' of an iif() are only constructed/destructed if the true/false code
@@ -3139,6 +3138,233 @@ namespace localArrayInit3
 	end sub
 end namespace
 
+''
+'' Constructs such as SELECT CASE, FOR, SWAP, WITH need to parse operand
+'' expressions and create implicit vars. While doing that they must take care to
+'' handle temporaries in the expression properly.
+''
+'' Specifically, the temp vars from the expression mustn't be destructed too
+'' early, before the expression is even used. They must be destructed behind the
+'' expression. Some language constructs such as the ones mentioned above must be
+'' extra careful about this because they implicitly consist of multiple
+'' statements.
+''
+'' This affects both UDTs with constructors/destructors and dynamic strings.
+'' (UDT => destructor call, string => fb_StrDelete() call)
+''
+namespace tempUdtArg
+	type PodUdt
+		i as integer
+	end type
+
+	type ClassUdt
+		i as integer
+
+		declare constructor( )
+		declare constructor( byval as integer )
+		declare constructor( byref as ClassUdt )
+		declare destructor( )
+	end type
+
+	constructor ClassUdt( )
+		this.i = 123
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	constructor ClassUdt( byval i as integer )
+		this.i = i
+		totalctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	constructor ClassUdt( byref rhs as ClassUdt )
+		this.i = rhs.i
+		totalcopyctors += 1
+		with( status(hFindSlot( @this )) )
+			.instance = @this
+			CU_ASSERT( .refcount = 0 )
+			.refcount += 1
+		end with
+	end constructor
+
+	destructor ClassUdt( )
+		totaldtors += 1
+		with( status(hFindSlot( @this )) )
+			CU_ASSERT( .refcount = 1 )
+			.refcount -= 1
+		end with
+	end destructor
+
+	function fInteger( byref x as ClassUdt ) as integer
+		function = x.i
+	end function
+
+	function fString( byref x as ClassUdt ) as string
+		function = str( x.i )
+	end function
+
+	function fWstring( byref x as ClassUdt ) as wstring ptr
+		static w as wstring * 32
+		w = wstr( x.i )
+		function = @w
+	end function
+
+	function fPodUdt( byref x as ClassUdt ) as PodUdt
+		function = type( x.i )
+	end function
+
+	sub test cdecl( )
+		begin( )
+			select case( fInteger( ClassUdt( 111 ) ) )
+			case 111
+			case else
+				CU_FAIL( )
+			end select
+		check( 1, 0, 1 )
+
+		begin( )
+			select case( fString( ClassUdt( 111 ) ) )
+			case "111"
+			case else
+				CU_FAIL( )
+			end select
+		check( 1, 0, 1 )
+
+		begin( )
+			select case( *fWstring( ClassUdt( 111 ) ) )
+			case wstr( "111" )
+			case else
+				CU_FAIL( )
+			end select
+		check( 1, 0, 1 )
+
+		begin( )
+			select case as const( fInteger( ClassUdt( 111 ) ) )
+			case 111
+			case else
+				CU_FAIL( )
+			end select
+		check( 1, 0, 1 )
+
+		begin( )
+			with( fPodUdt( ClassUdt( 111 ) ) )
+				CU_ASSERT( .i = 111 )
+			end with
+		check( 1, 0, 1 )
+
+		begin( )
+			var count = 0
+			for i as integer = fInteger( ClassUdt( 1 ) ) to 2
+				count += 1
+			next
+			CU_ASSERT( count = 2 )
+		check( 1, 0, 1 )
+
+		begin( )
+			var count = 0
+			for i as integer = 1 to fInteger( ClassUdt( 3 ) )
+				count += 1
+			next
+			CU_ASSERT( count = 3 )
+		check( 1, 0, 1 )
+
+		begin( )
+			var count = 0
+			for i as integer = 1 to 10 step fInteger( ClassUdt( 2 ) )
+				count += 1
+			next
+			CU_ASSERT( count = 5 )
+		check( 1, 0, 1 )
+	end sub
+end namespace
+
+namespace tempStringArg
+	type PodUdt
+		i as integer
+	end type
+
+	function fInteger( byref s as string ) as integer
+		function = valint( s )
+	end function
+
+	function fString( byref s as string ) as string
+		function = s
+	end function
+
+	function fWstring( byref s as string ) as wstring ptr
+		static w as wstring * 32
+		w = s
+		function = @w
+	end function
+
+	function fPodUdt( byref s as string ) as PodUdt
+		function = type( valint( s ) )
+	end function
+
+	sub test cdecl( )
+		select case( fInteger( "111" ) )
+		case 111
+		case else
+			CU_FAIL( )
+		end select
+
+		select case( fString( "111" ) )
+		case "111"
+		case else
+			CU_FAIL( )
+		end select
+
+		select case( *fWstring( "111" ) )
+		case wstr( "111" )
+		case else
+			CU_FAIL( )
+		end select
+
+		select case as const( fInteger( "111" ) )
+		case 111
+		case else
+			CU_FAIL( )
+		end select
+
+		with( fPodUdt( "111" ) )
+			CU_ASSERT( .i = 111 )
+		end with
+
+		scope
+			var count = 0
+			for i as integer = fInteger( "1" ) to 2
+				count += 1
+			next
+			CU_ASSERT( count = 2 )
+		end scope
+
+		scope
+			var count = 0
+			for i as integer = 1 to fInteger( "3" )
+				count += 1
+			next
+			CU_ASSERT( count = 3 )
+		end scope
+
+		scope
+			var count = 0
+			for i as integer = 1 to 10 step fInteger( "2" )
+				count += 1
+			next
+			CU_ASSERT( count = 5 )
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/temp-var-dtors" )
 
@@ -3217,6 +3443,9 @@ private sub ctor( ) constructor
 	add( localArrayInit1.test )
 	add( localArrayInit2.test )
 	add( localArrayInit3.test )
+
+	add( tempUdtArg.test )
+	add( tempStringArg.test )
 end sub
 
 end namespace

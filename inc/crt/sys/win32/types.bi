@@ -17,5 +17,17 @@ type _pid_t as integer
 type _mode_t as ushort
 type _sigset_t as integer
 type _ssize_t as integer
+type off32_t as long
+type off64_t as longint
+
+#ifdef _FILE_OFFSET_BITS
+	#if _FILE_OFFSET_BITS = 64
+		type off_t as off64_t
+	#else
+		type off_t as off32_t
+	#endif
+#else
+	type off_t as long
+#endif
 
 #endif

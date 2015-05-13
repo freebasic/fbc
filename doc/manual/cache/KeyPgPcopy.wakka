@@ -20,6 +20,8 @@ Copies one graphical or text page onto another
 
 	If the ##//source//## argument is omitted, the current working page is assumed.  If the ##//destination//## page is omitted, the current visible page is assumed.
 
+	##**Pcopy**## is inactive if the ##//destination//## page is locked.
+
 {{fbdoc item="ex"}}
 
 	{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)

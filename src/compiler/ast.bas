@@ -294,6 +294,79 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = c
 end function
 
+'' Determine the expression effectively returned by the given tree. Usually it's
+'' just the toplevel node, except if there are LINKs involved which return
+'' either their lhs or rhs.
+function astGetEffectiveNode( byval n as ASTNODE ptr ) as ASTNODE ptr
+	if( n->class = AST_NODECLASS_LINK ) then
+		if( n->link.ret_left ) then
+			function = astGetEffectiveNode( n->l )
+		else
+			function = astGetEffectiveNode( n->r )
+		end if
+	else
+		function = n
+	end if
+end function
+
+'' Determine the AST_NODECLASS_* of the given expression, while transparently
+'' handling LINKs.
+function astGetEffectiveClass( byval n as ASTNODE ptr ) as integer
+	function = astGetEffectiveNode( n )->class
+end function
+
+''
+'' Rebuild an expression with its effective part removed.
+''
+'' This will rebuild the expression tree, conceptually preserving all LINKed
+'' subexpressions except the one that is returned as effective result.
+'' LINK nodes which become unnecessary as a result of the removal of the
+'' subexpression are removed too.
+''
+'' The other side of the LINK from which the effective part was removed becomes
+'' the new effective part.
+''
+'' If there are no LINKs in the given tree, i.e. the effective part is the only
+'' thing contained in the tree, then NULL will be returned (and the operation is
+'' the same as just doing astDelTree()).
+''
+'' Example 1: (effective part marked with **)
+''
+''      LINK(ret_left=FALSE)
+''      /  \                    =>     *DECL*
+''   DECL  *VAR*
+''
+'' Example 2:
+''
+''             LINK(ret_left=TRUE)
+''              /                \                  LINK(ret_left=TRUE)
+''       LINK(ret_left=FALSE)    CALL       =>       /            \
+''      /                   \                     *DECL*          CALL
+''   DECL                 *DEREF*
+''                         /
+''                       VAR
+''
+'' Example 3:
+''
+''        *VAR*        =>      <NULL>
+''
+function astRebuildWithoutEffectivePart( byval n as ASTNODE ptr ) as ASTNODE ptr
+	if( n->class = AST_NODECLASS_LINK ) then
+		var l = n->l
+		var r = n->r
+		if( n->link.ret_left ) then
+			l = astRebuildWithoutEffectivePart( l )
+		else
+			r = astRebuildWithoutEffectivePart( r )
+		end if
+		function = astNewLINK( l, r, n->link.ret_left )
+		astDelNode( n )
+	else
+		astDelTree( n )
+		function = NULL
+	end if
+end function
+
 '' Address-of can only be taken on variables/derefs, or iif/typeini nodes which
 '' are eventually replaced by temp var accesses (i.e. the address-of will
 '' ultimately be done on the iif's/typeini's temp var), but not of
@@ -305,6 +378,12 @@ function astCanTakeAddrOf( byval n as ASTNODE ptr ) as integer
 		function = TRUE
 	case AST_NODECLASS_FIELD
 		function = (not symbFieldIsBitfield( n->sym ))
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			function = astCanTakeAddrOf( n->l )
+		else
+			function = astCanTakeAddrOf( n->r )
+		end if
 	case else
 		function = FALSE
 	end select

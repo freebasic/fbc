@@ -77,6 +77,11 @@ declare function hFloatToHex _
 		byval dtype as integer _
 	) as string
 
+declare function hFloatToHex_C99 _
+	( _
+		byval value as double _
+	) as string
+
 declare function hCheckFileFormat _
 	( _
 		byval f as integer _

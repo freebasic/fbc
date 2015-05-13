@@ -633,11 +633,15 @@ function astNewASSIGN _
     elseif( (ldtype = FB_DATATYPE_WCHAR) or _
     		(rdtype = FB_DATATYPE_WCHAR) ) then
 
-		'' both not wstrings? otherwise don't do any assignment by now
-		'' to allow optimizations..
-		if( ldtype <> rdtype ) then
-    		dim as integer is_zstr
-
+		'' If both are wstrings, delay assignment until astOptimizeTree(),
+		'' unless it's an initialization, then we can't do optimizations anyways.
+		'' (see also STRING handling above)
+		if( ldtype = rdtype ) then
+			if( (options and AST_OPOPT_ISINI) <> 0 ) then
+				return rtlWstrAssign( l, r, TRUE )
+			end if
+		else
+			dim as integer is_zstr
 			if( hCheckWstringOps( l, ldfull, r, rdfull, is_zstr ) = FALSE ) then
 				exit function
 			end if
@@ -652,11 +656,6 @@ function astNewASSIGN _
 			rdclass = typeGetClass( rdfull )
 			ldtype = typeGet( ldfull )
 			rdtype = typeGet( rdfull )
-		end if
-
-		'' unless it's an initialization
-		if( (options and AST_OPOPT_ISINI) <> 0 ) then
-			return rtlWstrAssign( l, r, TRUE )
 		end if
 
     '' zstrings?

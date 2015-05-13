@@ -54,7 +54,7 @@ Declare Sub f Overload (a As Single)
 %%
 
 {{anchor name="PROCPTRPTR"}}{{fbdoc item="section" value="Pointers to procedure pointers"}}
-	Pointers to procedure pointers are just like any other pointer type, except they point to procedure pointers. Because the syntax for declaring procedure pointers doesn't allow directly creating a pointer to procedure pointer, a type alias is used.
+	Pointers to procedure pointers are just like any other pointer type, except they point to procedure pointers. Because the syntax for declaring procedure pointers doesn't allow directly creating a pointer to procedure pointer when the procedure is a function (because ptr applies on return type and not on procedure), a type alias is used.
 
 	The following example declares a pointer to a procedure returning an integer pointer, and then a pointer to a pointer to a procedure returning an integer:
 
