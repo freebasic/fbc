@@ -6,6 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgProcedurePointers
 '' --------
 
+'' pfunc.bi
+
 Function Add (a As Integer, b As Integer) As Integer
 	Return a + b
 End Function

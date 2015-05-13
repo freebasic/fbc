@@ -7,11 +7,7 @@
 
 ' Get the selected filename and print it to the console 
 Sub file_ok_sel Cdecl ( Byval w As GtkWidget Ptr, Byval fs As GtkFileSelection Ptr )
-
-	Dim As Zstring Ptr file_name
-	file_name = gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs))
-	Print *file_name
-	
+	Print *gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs))
 End Sub
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #inclib "iup"
+
 #ifdef __FB_WIN32__
 	#inclib "gdi32"
 	#inclib "user32"
@@ -28,9 +29,8 @@ extern "C"
 #define IUP_COPYRIGHT "Copyright (C) 1994-2014 Tecgraf, PUC-Rio."
 #define IUP_DESCRIPTION "Multi-platform toolkit for building graphical user interfaces."
 #define IUP_VERSION "3.11"
-#define IUP_VERSION_NUMBER 311000
+const IUP_VERSION_NUMBER = 311000
 #define IUP_VERSION_DATE "2014/07/28"
-
 type Ihandle as Ihandle_
 type Icallback as function(byval as Ihandle ptr) as long
 
@@ -58,22 +58,22 @@ declare function IupVersionDate() as zstring ptr
 declare function IupVersionNumber() as long
 declare sub IupSetLanguage(byval lng as const zstring ptr)
 declare function IupGetLanguage() as zstring ptr
-declare sub IupSetLanguageString(byval name_ as const zstring ptr, byval str_ as const zstring ptr)
-declare sub IupStoreLanguageString(byval name_ as const zstring ptr, byval str_ as const zstring ptr)
-declare function IupGetLanguageString(byval name_ as const zstring ptr) as zstring ptr
+declare sub IupSetLanguageString(byval name as const zstring ptr, byval str as const zstring ptr)
+declare sub IupStoreLanguageString(byval name as const zstring ptr, byval str as const zstring ptr)
+declare function IupGetLanguageString(byval name as const zstring ptr) as zstring ptr
 declare sub IupSetLanguagePack(byval ih as Ihandle ptr)
 declare sub IupDestroy(byval ih as Ihandle ptr)
 declare sub IupDetach(byval child as Ihandle ptr)
 declare function IupAppend(byval ih as Ihandle ptr, byval child as Ihandle ptr) as Ihandle ptr
 declare function IupInsert(byval ih as Ihandle ptr, byval ref_child as Ihandle ptr, byval child as Ihandle ptr) as Ihandle ptr
-declare function IupGetChild(byval ih as Ihandle ptr, byval pos_ as long) as Ihandle ptr
+declare function IupGetChild(byval ih as Ihandle ptr, byval pos as long) as Ihandle ptr
 declare function IupGetChildPos(byval ih as Ihandle ptr, byval child as Ihandle ptr) as long
 declare function IupGetChildCount(byval ih as Ihandle ptr) as long
 declare function IupGetNextChild(byval ih as Ihandle ptr, byval child as Ihandle ptr) as Ihandle ptr
 declare function IupGetBrother(byval ih as Ihandle ptr) as Ihandle ptr
 declare function IupGetParent(byval ih as Ihandle ptr) as Ihandle ptr
 declare function IupGetDialog(byval ih as Ihandle ptr) as Ihandle ptr
-declare function IupGetDialogChild(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as Ihandle ptr
+declare function IupGetDialogChild(byval ih as Ihandle ptr, byval name as const zstring ptr) as Ihandle ptr
 declare function IupReparent(byval ih as Ihandle ptr, byval new_parent as Ihandle ptr, byval ref_child as Ihandle ptr) as long
 declare function IupPopup(byval ih as Ihandle ptr, byval x as long, byval y as long) as long
 declare function IupShow(byval ih as Ihandle ptr) as long
@@ -81,68 +81,68 @@ declare function IupShowXY(byval ih as Ihandle ptr, byval x as long, byval y as 
 declare function IupHide(byval ih as Ihandle ptr) as long
 declare function IupMap(byval ih as Ihandle ptr) as long
 declare sub IupUnmap(byval ih as Ihandle ptr)
-declare sub IupResetAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr)
+declare sub IupResetAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr)
 declare function IupGetAllAttributes(byval ih as Ihandle ptr, byval names as zstring ptr ptr, byval n as long) as long
-declare function IupSetAtt(byval handle_name as const zstring ptr, byval ih as Ihandle ptr, byval name_ as const zstring ptr, ...) as Ihandle ptr
-declare function IupSetAttributes(byval ih as Ihandle ptr, byval str_ as const zstring ptr) as Ihandle ptr
+declare function IupSetAtt(byval handle_name as const zstring ptr, byval ih as Ihandle ptr, byval name as const zstring ptr, ...) as Ihandle ptr
+declare function IupSetAttributes(byval ih as Ihandle ptr, byval str as const zstring ptr) as Ihandle ptr
 declare function IupGetAttributes(byval ih as Ihandle ptr) as zstring ptr
-declare sub IupSetAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare sub IupSetStrAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare sub IupSetStrf(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval format as const zstring ptr, ...)
-declare sub IupSetInt(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as long)
-declare sub IupSetFloat(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as single)
-declare sub IupSetDouble(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as double)
-declare sub IupSetRGB(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval r as ubyte, byval g as ubyte, byval b as ubyte)
-declare function IupGetAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as zstring ptr
-declare function IupGetInt(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as long
-declare function IupGetInt2(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as long
-declare function IupGetIntInt(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval i1 as long ptr, byval i2 as long ptr) as long
-declare function IupGetFloat(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as single
-declare function IupGetDouble(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as double
-declare sub IupGetRGB(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
-declare sub IupSetAttributeId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as const zstring ptr)
-declare sub IupSetStrAttributeId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as const zstring ptr)
-declare sub IupSetStrfId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval format as const zstring ptr, ...)
-declare sub IupSetIntId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as long)
-declare sub IupSetFloatId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as single)
-declare sub IupSetDoubleId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as double)
-declare sub IupSetRGBId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval r as ubyte, byval g as ubyte, byval b as ubyte)
-declare function IupGetAttributeId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as zstring ptr
-declare function IupGetIntId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as long
-declare function IupGetFloatId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as single
-declare function IupGetDoubleId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as double
-declare sub IupGetRGBId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
-declare sub IupSetAttributeId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
-declare sub IupSetStrAttributeId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
-declare sub IupSetStrfId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval format as const zstring ptr, ...)
-declare sub IupSetIntId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as long)
-declare sub IupSetFloatId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as single)
-declare sub IupSetDoubleId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as double)
-declare sub IupSetRGBId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval r as ubyte, byval g as ubyte, byval b as ubyte)
-declare function IupGetAttributeId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long) as zstring ptr
-declare function IupGetIntId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long) as long
-declare function IupGetFloatId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long) as single
-declare function IupGetDoubleId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long) as double
-declare sub IupGetRGBId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
-declare sub IupSetGlobal(byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare sub IupSetStrGlobal(byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare function IupGetGlobal(byval name_ as const zstring ptr) as zstring ptr
+declare sub IupSetAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as const zstring ptr)
+declare sub IupSetStrAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as const zstring ptr)
+declare sub IupSetStrf(byval ih as Ihandle ptr, byval name as const zstring ptr, byval format as const zstring ptr, ...)
+declare sub IupSetInt(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as long)
+declare sub IupSetFloat(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as single)
+declare sub IupSetDouble(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as double)
+declare sub IupSetRGB(byval ih as Ihandle ptr, byval name as const zstring ptr, byval r as ubyte, byval g as ubyte, byval b as ubyte)
+declare function IupGetAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr) as zstring ptr
+declare function IupGetInt(byval ih as Ihandle ptr, byval name as const zstring ptr) as long
+declare function IupGetInt2(byval ih as Ihandle ptr, byval name as const zstring ptr) as long
+declare function IupGetIntInt(byval ih as Ihandle ptr, byval name as const zstring ptr, byval i1 as long ptr, byval i2 as long ptr) as long
+declare function IupGetFloat(byval ih as Ihandle ptr, byval name as const zstring ptr) as single
+declare function IupGetDouble(byval ih as Ihandle ptr, byval name as const zstring ptr) as double
+declare sub IupGetRGB(byval ih as Ihandle ptr, byval name as const zstring ptr, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
+declare sub IupSetAttributeId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as const zstring ptr)
+declare sub IupSetStrAttributeId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as const zstring ptr)
+declare sub IupSetStrfId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval format as const zstring ptr, ...)
+declare sub IupSetIntId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as long)
+declare sub IupSetFloatId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as single)
+declare sub IupSetDoubleId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as double)
+declare sub IupSetRGBId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval r as ubyte, byval g as ubyte, byval b as ubyte)
+declare function IupGetAttributeId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as zstring ptr
+declare function IupGetIntId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as long
+declare function IupGetFloatId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as single
+declare function IupGetDoubleId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as double
+declare sub IupGetRGBId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
+declare sub IupSetAttributeId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
+declare sub IupSetStrAttributeId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
+declare sub IupSetStrfId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval format as const zstring ptr, ...)
+declare sub IupSetIntId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as long)
+declare sub IupSetFloatId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as single)
+declare sub IupSetDoubleId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as double)
+declare sub IupSetRGBId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval r as ubyte, byval g as ubyte, byval b as ubyte)
+declare function IupGetAttributeId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long) as zstring ptr
+declare function IupGetIntId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long) as long
+declare function IupGetFloatId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long) as single
+declare function IupGetDoubleId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long) as double
+declare sub IupGetRGBId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr)
+declare sub IupSetGlobal(byval name as const zstring ptr, byval value as const zstring ptr)
+declare sub IupSetStrGlobal(byval name as const zstring ptr, byval value as const zstring ptr)
+declare function IupGetGlobal(byval name as const zstring ptr) as zstring ptr
 declare function IupSetFocus(byval ih as Ihandle ptr) as Ihandle ptr
 declare function IupGetFocus() as Ihandle ptr
 declare function IupPreviousField(byval ih as Ihandle ptr) as Ihandle ptr
 declare function IupNextField(byval ih as Ihandle ptr) as Ihandle ptr
-declare function IupGetCallback(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as Icallback
-declare function IupSetCallback(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval func as Icallback) as Icallback
-declare function IupSetCallbacks(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval func as Icallback, ...) as Ihandle ptr
-declare function IupGetFunction(byval name_ as const zstring ptr) as Icallback
-declare function IupSetFunction(byval name_ as const zstring ptr, byval func as Icallback) as Icallback
-declare function IupGetHandle(byval name_ as const zstring ptr) as Ihandle ptr
-declare function IupSetHandle(byval name_ as const zstring ptr, byval ih as Ihandle ptr) as Ihandle ptr
+declare function IupGetCallback(byval ih as Ihandle ptr, byval name as const zstring ptr) as Icallback
+declare function IupSetCallback(byval ih as Ihandle ptr, byval name as const zstring ptr, byval func as Icallback) as Icallback
+declare function IupSetCallbacks(byval ih as Ihandle ptr, byval name as const zstring ptr, byval func as Icallback, ...) as Ihandle ptr
+declare function IupGetFunction(byval name as const zstring ptr) as Icallback
+declare function IupSetFunction(byval name as const zstring ptr, byval func as Icallback) as Icallback
+declare function IupGetHandle(byval name as const zstring ptr) as Ihandle ptr
+declare function IupSetHandle(byval name as const zstring ptr, byval ih as Ihandle ptr) as Ihandle ptr
 declare function IupGetAllNames(byval names as zstring ptr ptr, byval n as long) as long
 declare function IupGetAllDialogs(byval names as zstring ptr ptr, byval n as long) as long
 declare function IupGetName(byval ih as Ihandle ptr) as zstring ptr
-declare sub IupSetAttributeHandle(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval ih_named as Ihandle ptr)
-declare function IupGetAttributeHandle(byval ih as Ihandle ptr, byval name_ as const zstring ptr) as Ihandle ptr
+declare sub IupSetAttributeHandle(byval ih as Ihandle ptr, byval name as const zstring ptr, byval ih_named as Ihandle ptr)
+declare function IupGetAttributeHandle(byval ih as Ihandle ptr, byval name as const zstring ptr) as Ihandle ptr
 declare function IupGetClassName(byval ih as Ihandle ptr) as zstring ptr
 declare function IupGetClassType(byval ih as Ihandle ptr) as zstring ptr
 declare function IupGetAllClasses(byval names as zstring ptr ptr, byval n as long) as long
@@ -150,7 +150,7 @@ declare function IupGetClassAttributes(byval classname as const zstring ptr, byv
 declare function IupGetClassCallbacks(byval classname as const zstring ptr, byval names as zstring ptr ptr, byval n as long) as long
 declare sub IupSaveClassAttributes(byval ih as Ihandle ptr)
 declare sub IupCopyClassAttributes(byval src_ih as Ihandle ptr, byval dst_ih as Ihandle ptr)
-declare sub IupSetClassDefaultAttribute(byval classname as const zstring ptr, byval name_ as const zstring ptr, byval value as const zstring ptr)
+declare sub IupSetClassDefaultAttribute(byval classname as const zstring ptr, byval name as const zstring ptr, byval value as const zstring ptr)
 declare function IupClassMatch(byval ih as Ihandle ptr, byval classname as const zstring ptr) as long
 declare function IupCreate(byval classname as const zstring ptr) as Ihandle ptr
 declare function IupCreatev(byval classname as const zstring ptr, byval params as any ptr ptr) as Ihandle ptr
@@ -176,9 +176,9 @@ declare function IupExpander(byval child as Ihandle ptr) as Ihandle ptr
 declare function IupDetachBox(byval child as Ihandle ptr) as Ihandle ptr
 declare function IupBackgroundBox(byval child as Ihandle ptr) as Ihandle ptr
 declare function IupFrame(byval child as Ihandle ptr) as Ihandle ptr
-declare function IupImage(byval width_ as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
-declare function IupImageRGB(byval width_ as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
-declare function IupImageRGBA(byval width_ as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
+declare function IupImage(byval width as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
+declare function IupImageRGB(byval width as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
+declare function IupImageRGBA(byval width as long, byval height as long, byval pixmap as const ubyte ptr) as Ihandle ptr
 declare function IupItem(byval title as const zstring ptr, byval action as const zstring ptr) as Ihandle ptr
 declare function IupSubmenu(byval title as const zstring ptr, byval child as Ihandle ptr) as Ihandle ptr
 declare function IupSeparator() as Ihandle ptr
@@ -196,34 +196,34 @@ declare function IupToggle(byval title as const zstring ptr, byval action as con
 declare function IupTimer() as Ihandle ptr
 declare function IupClipboard() as Ihandle ptr
 declare function IupProgressBar() as Ihandle ptr
-declare function IupVal(byval type_ as const zstring ptr) as Ihandle ptr
+declare function IupVal(byval type as const zstring ptr) as Ihandle ptr
 declare function IupTabs(byval child as Ihandle ptr, ...) as Ihandle ptr
 declare function IupTabsv(byval children as Ihandle ptr ptr) as Ihandle ptr
 declare function IupTree() as Ihandle ptr
 declare function IupLink(byval url as const zstring ptr, byval title as const zstring ptr) as Ihandle ptr
 declare function IupSpin() as Ihandle ptr
 declare function IupSpinbox(byval child as Ihandle ptr) as Ihandle ptr
-declare function IupSaveImageAsText(byval ih as Ihandle ptr, byval file_name as const zstring ptr, byval format as const zstring ptr, byval name_ as const zstring ptr) as long
-declare sub IupTextConvertLinColToPos(byval ih as Ihandle ptr, byval lin as long, byval col as long, byval pos_ as long ptr)
-declare sub IupTextConvertPosToLinCol(byval ih as Ihandle ptr, byval pos_ as long, byval lin as long ptr, byval col as long ptr)
+declare function IupSaveImageAsText(byval ih as Ihandle ptr, byval file_name as const zstring ptr, byval format as const zstring ptr, byval name as const zstring ptr) as long
+declare sub IupTextConvertLinColToPos(byval ih as Ihandle ptr, byval lin as long, byval col as long, byval pos as long ptr)
+declare sub IupTextConvertPosToLinCol(byval ih as Ihandle ptr, byval pos as long, byval lin as long ptr, byval col as long ptr)
 declare function IupConvertXYToPos(byval ih as Ihandle ptr, byval x as long, byval y as long) as long
-declare sub IupStoreGlobal(byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare sub IupStoreAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval value as const zstring ptr)
-declare sub IupSetfAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval format as const zstring ptr, ...)
-declare sub IupStoreAttributeId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as const zstring ptr)
-declare sub IupSetfAttributeId(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval f as const zstring ptr, ...)
-declare sub IupStoreAttributeId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
-declare sub IupSetfAttributeId2(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval lin as long, byval col as long, byval format as const zstring ptr, ...)
+declare sub IupStoreGlobal(byval name as const zstring ptr, byval value as const zstring ptr)
+declare sub IupStoreAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval value as const zstring ptr)
+declare sub IupSetfAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval format as const zstring ptr, ...)
+declare sub IupStoreAttributeId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as const zstring ptr)
+declare sub IupSetfAttributeId(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval f as const zstring ptr, ...)
+declare sub IupStoreAttributeId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval value as const zstring ptr)
+declare sub IupSetfAttributeId2(byval ih as Ihandle ptr, byval name as const zstring ptr, byval lin as long, byval col as long, byval format as const zstring ptr, ...)
 declare function IupTreeSetUserId(byval ih as Ihandle ptr, byval id as long, byval userid as any ptr) as long
 declare function IupTreeGetUserId(byval ih as Ihandle ptr, byval id as long) as any ptr
 declare function IupTreeGetId(byval ih as Ihandle ptr, byval userid as any ptr) as long
-declare sub IupTreeSetAttributeHandle(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval ih_named as Ihandle ptr)
-declare sub IupTreeSetAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as const zstring ptr)
-declare sub IupTreeStoreAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval value as const zstring ptr)
-declare function IupTreeGetAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as zstring ptr
-declare function IupTreeGetInt(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as long
-declare function IupTreeGetFloat(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long) as single
-declare sub IupTreeSetfAttribute(byval ih as Ihandle ptr, byval name_ as const zstring ptr, byval id as long, byval format as const zstring ptr, ...)
+declare sub IupTreeSetAttributeHandle(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval ih_named as Ihandle ptr)
+declare sub IupTreeSetAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as const zstring ptr)
+declare sub IupTreeStoreAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval value as const zstring ptr)
+declare function IupTreeGetAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as zstring ptr
+declare function IupTreeGetInt(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as long
+declare function IupTreeGetFloat(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long) as single
+declare sub IupTreeSetfAttribute(byval ih as Ihandle ptr, byval name as const zstring ptr, byval id as long, byval format as const zstring ptr, ...)
 declare function IupGetActionName() as const zstring ptr
 declare function IupMapFont(byval iupfont as const zstring ptr) as zstring ptr
 declare function IupUnMapFont(byval driverfont as const zstring ptr) as zstring ptr
@@ -237,32 +237,30 @@ declare sub IupMessage(byval title as const zstring ptr, byval msg as const zstr
 declare sub IupMessagef(byval title as const zstring ptr, byval format as const zstring ptr, ...)
 declare function IupAlarm(byval title as const zstring ptr, byval msg as const zstring ptr, byval b1 as const zstring ptr, byval b2 as const zstring ptr, byval b3 as const zstring ptr) as long
 declare function IupScanf(byval format as const zstring ptr, ...) as long
-declare function IupListDialog(byval type_ as long, byval title as const zstring ptr, byval size as long, byval list as const zstring ptr ptr, byval op as long, byval max_col as long, byval max_lin as long, byval marks as long ptr) as long
+declare function IupListDialog(byval type as long, byval title as const zstring ptr, byval size as long, byval list as const zstring ptr ptr, byval op as long, byval max_col as long, byval max_lin as long, byval marks as long ptr) as long
 declare function IupGetText(byval title as const zstring ptr, byval text as zstring ptr) as long
 declare function IupGetColor(byval x as long, byval y as long, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr) as long
-
 type Iparamcb as function(byval dialog as Ihandle ptr, byval param_index as long, byval user_data as any ptr) as long
-
 declare function IupGetParam(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, ...) as long
 declare function IupGetParamv(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, byval param_count as long, byval param_extra as long, byval param_data as any ptr ptr) as long
 declare function IupLayoutDialog(byval dialog as Ihandle ptr) as Ihandle ptr
 declare function IupElementPropertiesDialog(byval elem as Ihandle ptr) as Ihandle ptr
 
-#define IUP_ERROR 1
-#define IUP_NOERROR 0
-#define IUP_OPENED (-1)
-#define IUP_INVALID (-1)
-#define IUP_INVALID_ID (-10)
-#define IUP_IGNORE (-1)
-#define IUP_DEFAULT (-2)
-#define IUP_CLOSE (-3)
-#define IUP_CONTINUE (-4)
-#define IUP_CENTER &hFFFF
-#define IUP_LEFT &hFFFE
-#define IUP_RIGHT &hFFFD
-#define IUP_MOUSEPOS &hFFFC
-#define IUP_CURRENT &hFFFB
-#define IUP_CENTERPARENT &hFFFA
+const IUP_ERROR = 1
+const IUP_NOERROR = 0
+const IUP_OPENED = -1
+const IUP_INVALID = -1
+const IUP_INVALID_ID = -10
+const IUP_IGNORE = -1
+const IUP_DEFAULT = -2
+const IUP_CLOSE = -3
+const IUP_CONTINUE = -4
+const IUP_CENTER = &hFFFF
+const IUP_LEFT = &hFFFE
+const IUP_RIGHT = &hFFFD
+const IUP_MOUSEPOS = &hFFFC
+const IUP_CURRENT = &hFFFB
+const IUP_CENTERPARENT = &hFFFA
 #define IUP_TOP IUP_LEFT
 #define IUP_BOTTOM IUP_RIGHT
 
@@ -324,10 +322,10 @@ end enum
 #define IUPMASK_EFLOAT IUP_MASK_EFLOAT
 #define IUPMASK_INT IUP_MASK_INT
 #define IUPMASK_UINT IUP_MASK_UINT
-#define IUP_GETPARAM_OK (-1)
-#define IUP_GETPARAM_INIT (-2)
-#define IUP_GETPARAM_CANCEL (-3)
-#define IUP_GETPARAM_HELP (-4)
+const IUP_GETPARAM_OK = -1
+const IUP_GETPARAM_INIT = -2
+const IUP_GETPARAM_CANCEL = -3
+const IUP_GETPARAM_HELP = -4
 
 enum
 	IUP_RECBINARY

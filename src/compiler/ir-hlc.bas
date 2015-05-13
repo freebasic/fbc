@@ -1222,9 +1222,6 @@ private function _emitBegin( ) as integer
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
 	end if
 
-	hWriteLine( "// Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ), TRUE )
-	hWriteLine( "", TRUE )
-
 	hWriteLine( "typedef   signed char       int8;", TRUE )
 	hWriteLine( "typedef unsigned char      uint8;", TRUE )
 	hWriteLine( "typedef   signed short      int16;", TRUE )
@@ -1247,7 +1244,7 @@ private function _emitBegin( ) as integer
 	function = TRUE
 end function
 
-private sub _emitEnd( byval tottime as double )
+private sub _emitEnd( )
 	dim as integer section = any
 
 	hUpdateCurrentFileName( env.inf.name )
@@ -1322,8 +1319,6 @@ private sub _emitEnd( byval tottime as double )
 
 	'' body (is appended to header section)
 	sectionEnd( )
-
-	hWriteLine( !"\n// Total compilation time: " + str( tottime ) + " seconds.", TRUE )
 
 	'' Emit & close the main section
 	if( ctx.sections(0).old = FALSE ) then
@@ -3340,7 +3335,7 @@ private sub _emitFbctinfBegin( )
 	ctx.fbctinf += "__fbctinf[] = """
 end sub
 
-private sub _emitFbctinfString( byval s as zstring ptr )
+private sub _emitFbctinfString( byval s as const zstring ptr )
 	ctx.fbctinf += *s + $"\0"
 end sub
 
@@ -3385,6 +3380,7 @@ private sub _emitProcBegin _
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
 		mangled = hGetMangledNameForASM( proc, TRUE )
+		hWriteLine( "__asm__( "".text"" );" )
 		hWriteLine( "__asm__( "".globl " + mangled + """ );" )
 		hWriteLine( "__asm__( """ + mangled + ":"" );" )
 		exit sub

@@ -9,7 +9,7 @@ The library supports various drivers depending on the platform:
 
 	- ""Win32"":
 		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c (gfxlib2/win32/gfx_driver_ddraw.c)]]
-		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash) and 0.18.5 and 0.90rc2 ("banding effects"), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c (gfxlib2/win32/gfx_driver_gdi.c)]]
+		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash), and minor problems 0.18.5, and 0.90.x and 1.xx ("banding effects", try extra SCREENUNLOCK), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c (gfxlib2/win32/gfx_driver_gdi.c)]]
 		- **##OpenGL##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_opengl.c (gfxlib2/win32/gfx_driver_opengl.c)]]
 
 	- ""Linux & others"":
@@ -31,7 +31,7 @@ The library supports various drivers depending on the platform:
 	- In DOS, ""GfxLib"" will create and "manage" a mouse arrow if a mouse driver is detected. There is no "official" way to disable this. Also note that the arrow doesn't react to mouse movements while the screen is locked.
 	- In DOS, Windowing and ""OpenGL"" related commands and switches are not available (they exist but do nothing, or return some values with no meaning)
 	- In DOS, the refresh rate setting is not available (some VESA cards do support it, but ""FreeBASIC"" for now doesn't)
-	- In DOS, the resolution must match one supported by the graphics card. ""GfxLib"" will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Unsupported resolutions may currently crash the program, though in future ""GfxLib"" may try to find a close match instead. For optimal compatibility, you should support "safe" resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on many other cards. Also modes 1024x768 and above are not available on older cards and laptops.
+	- In DOS, the resolution must match one supported by the graphics card. ""GfxLib"" will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Unsupported resolutions may currently crash the program (if you fail to check SCREENPTR for ZERO before using it), though in future ""GfxLib"" may try to find a close match instead. For optimal compatibility, you should support "safe" resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on many other cards. Also modes 1024x768 and above are not available on older cards and laptops.
 	- It has been observed that SCREEN and SCREENRES may fail to clear the screen in DOS, actually this is probably a BIOS bug that ""GfxLib"" currently doesn't workaround.
 
 {{fbdoc item="diff"}}

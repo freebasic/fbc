@@ -62,7 +62,7 @@ private function hReadType _
 
     function = NULL
 
-    if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+    if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_ALLOWFORWARD ) = FALSE ) then
         '' Everything not recognized by cSymbolType() is either still undefined,
         '' so we'll make it a forward ref, or it's an existing forward ref, and
         '' we'll look it up.

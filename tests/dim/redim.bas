@@ -353,6 +353,37 @@ namespace dynamicArrayFieldsLocal
 	end sub
 end namespace
 
+namespace implicitThisExplicitType
+	'' REDIMs in methods should redim array fields, instead of making new
+	'' local arrays
+
+	type UDT
+		array(any) as integer
+		declare sub f1()
+		declare sub f2()
+	end type
+
+	sub UDT.f1()
+		redim array(1 to 1) as integer
+	end sub
+
+	sub UDT.f2()
+		redim array(2 to 2)
+	end sub
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( lbound( x.array ) = 0 )
+		CU_ASSERT( ubound( x.array ) = -1 )
+		x.f1( )
+		CU_ASSERT( lbound( x.array ) = 1 )
+		CU_ASSERT( ubound( x.array ) = 1 )
+		x.f2( )
+		CU_ASSERT( lbound( x.array ) = 2 )
+		CU_ASSERT( ubound( x.array ) = 2 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.dim.redim")
 	fbcu.add_test("test", @test)

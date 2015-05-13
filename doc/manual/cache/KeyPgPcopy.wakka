@@ -2,7 +2,7 @@
 Copies one graphical or text page onto another
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Pcopy** [ //source// ] [, //destination// ]

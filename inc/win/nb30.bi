@@ -1,113 +1,40 @@
-''
-''
-'' nb30 -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_nb30_bi__
-#define __win_nb30_bi__
+#pragma once
 
-#define NCBNAMSZ 16
-#define MAX_LANA 254
-#define NAME_FLAGS_MASK &h87
-#define GROUP_NAME &h80
-#define UNIQUE_NAME &h00
-#define REGISTERING &h00
-#define REGISTERED &h04
-#define DEREGISTERED &h05
-#define DUPLICATE &h06
-#define DUPLICATE_DEREG &h07
-#define LISTEN_OUTSTANDING &h01
-#define CALL_PENDING &h02
-#define SESSION_ESTABLISHED &h03
-#define HANGUP_PENDING &h04
-#define HANGUP_COMPLETE &h05
-#define SESSION_ABORTED &h06
-#ifdef __FB_OPTION_ESCAPE__
-#define ALL_TRANSPORTS "M\0\0\0"
-#else
-#define ALL_TRANSPORTS "M" + chr( 0, 0, 0 )
-#endif
-#define MS_NBF "MNBF"
-#define NCBCALL &h10
-#define NCBLISTEN &h11
-#define NCBHANGUP &h12
-#define NCBSEND &h14
-#define NCBRECV &h15
-#define NCBRECVANY &h16
-#define NCBCHAINSEND &h17
-#define NCBDGSEND &h20
-#define NCBDGRECV &h21
-#define NCBDGSENDBC &h22
-#define NCBDGRECVBC &h23
-#define NCBADDNAME &h30
-#define NCBDELNAME &h31
-#define NCBRESET &h32
-#define NCBASTAT &h33
-#define NCBSSTAT &h34
-#define NCBCANCEL &h35
-#define NCBADDGRNAME &h36
-#define NCBENUM &h37
-#define NCBUNLINK &h70
-#define NCBSENDNA &h71
-#define NCBCHAINSENDNA &h72
-#define NCBLANSTALERT &h73
-#define NCBACTION &h77
-#define NCBFINDNAME &h78
-#define NCBTRACE &h79
-#define ASYNCH &h80
-#define NRC_GOODRET &h00
-#define NRC_BUFLEN &h01
-#define NRC_ILLCMD &h03
-#define NRC_CMDTMO &h05
-#define NRC_INCOMP &h06
-#define NRC_BADDR &h07
-#define NRC_SNUMOUT &h08
-#define NRC_NORES &h09
-#define NRC_SCLOSED &h0a
-#define NRC_CMDCAN &h&b
-#define NRC_DUPNAME &h0d
-#define NRC_NAMTFUL &h0e
-#define NRC_ACTSES &h0f
-#define NRC_LOCTFUL &h11
-#define NRC_REMTFUL &h12
-#define NRC_ILLNN &h13
-#define NRC_NOCALL &h14
-#define NRC_NOWILD &h15
-#define NRC_INUSE &h16
-#define NRC_NAMERR &h17
-#define NRC_SABORT &h18
-#define NRC_NAMCONF &h19
-#define NRC_IFBUSY &h21
-#define NRC_TOOMANY &h22
-#define NRC_BRIDGE &h23
-#define NRC_CANOCCR &h24
-#define NRC_CANCEL &h26
-#define NRC_DUPENV &h30
-#define NRC_ENVNOTDEF &h34
-#define NRC_OSRESNOTAV &h35
-#define NRC_MAXAPPS &h36
-#define NRC_NOSAPS &h37
-#define NRC_NORESOURCES &h38
-#define NRC_INVADDRESS &h39
-#define NRC_INVDDID &h3B
-#define NRC_LOCKFAIL &h3C
-#define NRC_OPENERR &h3f
-#define NRC_SYSTEM &h40
-#define NRC_PENDING &hff
+extern "Windows"
 
-type ACTION_HEADER
-	transport_id as ULONG
-	action_code as USHORT
-	reserved as USHORT
+#define NCB_INCLUDED
+const NCBNAMSZ = 16
+const MAX_LANA = 254
+
+type _NCB
+	ncb_command as UCHAR
+	ncb_retcode as UCHAR
+	ncb_lsn as UCHAR
+	ncb_num as UCHAR
+	ncb_buffer as PUCHAR
+	ncb_length as WORD
+	ncb_callname(0 to 15) as UCHAR
+	ncb_name(0 to 15) as UCHAR
+	ncb_rto as UCHAR
+	ncb_sto as UCHAR
+	ncb_post as sub(byval as _NCB ptr)
+	ncb_lana_num as UCHAR
+	ncb_cmd_cplt as UCHAR
+
+	#ifdef __FB_64BIT__
+		ncb_reserve(0 to 17) as UCHAR
+	#else
+		ncb_reserve(0 to 9) as UCHAR
+	#endif
+
+	ncb_event as HANDLE
 end type
 
-type PACTION_HEADER as ACTION_HEADER ptr
+type NCB as _NCB
+type PNCB as _NCB ptr
 
-type ADAPTER_STATUS
-	adapter_address(0 to 6-1) as UCHAR
+type _ADAPTER_STATUS
+	adapter_address(0 to 5) as UCHAR
 	rev_major as UCHAR
 	reserved0 as UCHAR
 	adapter_type as UCHAR
@@ -136,82 +63,159 @@ type ADAPTER_STATUS
 	name_count as WORD
 end type
 
-type PADAPTER_STATUS as ADAPTER_STATUS ptr
+type ADAPTER_STATUS as _ADAPTER_STATUS
+type PADAPTER_STATUS as _ADAPTER_STATUS ptr
 
-type FIND_NAME_BUFFER
-	length as UCHAR
-	access_control as UCHAR
-	frame_control as UCHAR
-	destination_addr(0 to 6-1) as UCHAR
-	source_addr(0 to 6-1) as UCHAR
-	routing_info(0 to 18-1) as UCHAR
-end type
-
-type PFIND_NAME_BUFFER as FIND_NAME_BUFFER ptr
-
-type FIND_NAME_HEADER
-	node_count as WORD
-	reserved as UCHAR
-	unique_group as UCHAR
-end type
-
-type PFIND_NAME_HEADER as FIND_NAME_HEADER ptr
-
-type LANA_ENUM
-	length as UCHAR
-	lana(0 to 254+1-1) as UCHAR
-end type
-
-type PLANA_ENUM as LANA_ENUM ptr
-
-type NAME_BUFFER
-	name(0 to 16-1) as UCHAR
+type _NAME_BUFFER
+	name(0 to 15) as UCHAR
 	name_num as UCHAR
 	name_flags as UCHAR
 end type
 
-type PNAME_BUFFER as NAME_BUFFER ptr
+type NAME_BUFFER as _NAME_BUFFER
+type PNAME_BUFFER as _NAME_BUFFER ptr
+const NAME_FLAGS_MASK = &h87
+const GROUP_NAME = &h80
+const UNIQUE_NAME = &h00
+const REGISTERING = &h00
+const REGISTERED = &h04
+const DEREGISTERED = &h05
+const DUPLICATE = &h06
+const DUPLICATE_DEREG = &h07
 
-type NCB
-	ncb_command as UCHAR
-	ncb_retcode as UCHAR
-	ncb_lsn as UCHAR
-	ncb_num as UCHAR
-	ncb_buffer as PUCHAR
-	ncb_length as WORD
-	ncb_callname(0 to 16-1) as UCHAR
-	ncb_name(0 to 16-1) as UCHAR
-	ncb_rto as UCHAR
-	ncb_sto as UCHAR
-	ncb_post as sub (byval as NCB ptr)
-	ncb_lana_num as UCHAR
-	ncb_cmd_cplt as UCHAR
-	ncb_reserve(0 to 10-1) as UCHAR
-	ncb_event as HANDLE
-end type
-
-type PNCB as NCB ptr
-
-type SESSION_BUFFER
-	lsn as UCHAR
-	state as UCHAR
-	local_name(0 to 16-1) as UCHAR
-	remote_name(0 to 16-1) as UCHAR
-	rcvs_outstanding as UCHAR
-	sends_outstanding as UCHAR
-end type
-
-type PSESSION_BUFFER as SESSION_BUFFER ptr
-
-type SESSION_HEADER
+type _SESSION_HEADER
 	sess_name as UCHAR
 	num_sess as UCHAR
 	rcv_dg_outstanding as UCHAR
 	rcv_any_outstanding as UCHAR
 end type
 
-type PSESSION_HEADER as SESSION_HEADER ptr
+type SESSION_HEADER as _SESSION_HEADER
+type PSESSION_HEADER as _SESSION_HEADER ptr
 
-declare function Netbios alias "Netbios" (byval as PNCB) as UCHAR
+type _SESSION_BUFFER
+	lsn as UCHAR
+	state as UCHAR
+	local_name(0 to 15) as UCHAR
+	remote_name(0 to 15) as UCHAR
+	rcvs_outstanding as UCHAR
+	sends_outstanding as UCHAR
+end type
 
-#endif
+type SESSION_BUFFER as _SESSION_BUFFER
+type PSESSION_BUFFER as _SESSION_BUFFER ptr
+const LISTEN_OUTSTANDING = &h01
+const CALL_PENDING = &h02
+const SESSION_ESTABLISHED = &h03
+const HANGUP_PENDING = &h04
+const HANGUP_COMPLETE = &h05
+const SESSION_ABORTED = &h06
+
+type _LANA_ENUM
+	length as UCHAR
+	lana(0 to (254 + 1) - 1) as UCHAR
+end type
+
+type LANA_ENUM as _LANA_ENUM
+type PLANA_ENUM as _LANA_ENUM ptr
+
+type _FIND_NAME_HEADER
+	node_count as WORD
+	reserved as UCHAR
+	unique_group as UCHAR
+end type
+
+type FIND_NAME_HEADER as _FIND_NAME_HEADER
+type PFIND_NAME_HEADER as _FIND_NAME_HEADER ptr
+
+type _FIND_NAME_BUFFER
+	length as UCHAR
+	access_control as UCHAR
+	frame_control as UCHAR
+	destination_addr(0 to 5) as UCHAR
+	source_addr(0 to 5) as UCHAR
+	routing_info(0 to 17) as UCHAR
+end type
+
+type FIND_NAME_BUFFER as _FIND_NAME_BUFFER
+type PFIND_NAME_BUFFER as _FIND_NAME_BUFFER ptr
+
+type _ACTION_HEADER
+	transport_id as ULONG
+	action_code as USHORT
+	reserved as USHORT
+end type
+
+type ACTION_HEADER as _ACTION_HEADER
+type PACTION_HEADER as _ACTION_HEADER ptr
+#define ALL_TRANSPORTS !"M\0\0\0"
+#define MS_NBF "MNBF"
+const NCBCALL = &h10
+const NCBLISTEN = &h11
+const NCBHANGUP = &h12
+const NCBSEND = &h14
+const NCBRECV = &h15
+const NCBRECVANY = &h16
+const NCBCHAINSEND = &h17
+const NCBDGSEND = &h20
+const NCBDGRECV = &h21
+const NCBDGSENDBC = &h22
+const NCBDGRECVBC = &h23
+const NCBADDNAME = &h30
+const NCBDELNAME = &h31
+const NCBRESET = &h32
+const NCBASTAT = &h33
+const NCBSSTAT = &h34
+const NCBCANCEL = &h35
+const NCBADDGRNAME = &h36
+const NCBENUM = &h37
+const NCBUNLINK = &h70
+const NCBSENDNA = &h71
+const NCBCHAINSENDNA = &h72
+const NCBLANSTALERT = &h73
+const NCBACTION = &h77
+const NCBFINDNAME = &h78
+const NCBTRACE = &h79
+const ASYNCH = &h80
+const NRC_GOODRET = &h00
+const NRC_BUFLEN = &h01
+const NRC_ILLCMD = &h03
+const NRC_CMDTMO = &h05
+const NRC_INCOMP = &h06
+const NRC_BADDR = &h07
+const NRC_SNUMOUT = &h08
+const NRC_NORES = &h09
+const NRC_SCLOSED = &h0a
+const NRC_CMDCAN = &h0b
+const NRC_DUPNAME = &h0d
+const NRC_NAMTFUL = &h0e
+const NRC_ACTSES = &h0f
+const NRC_LOCTFUL = &h11
+const NRC_REMTFUL = &h12
+const NRC_ILLNN = &h13
+const NRC_NOCALL = &h14
+const NRC_NOWILD = &h15
+const NRC_INUSE = &h16
+const NRC_NAMERR = &h17
+const NRC_SABORT = &h18
+const NRC_NAMCONF = &h19
+const NRC_IFBUSY = &h21
+const NRC_TOOMANY = &h22
+const NRC_BRIDGE = &h23
+const NRC_CANOCCR = &h24
+const NRC_CANCEL = &h26
+const NRC_DUPENV = &h30
+const NRC_ENVNOTDEF = &h34
+const NRC_OSRESNOTAV = &h35
+const NRC_MAXAPPS = &h36
+const NRC_NOSAPS = &h37
+const NRC_NORESOURCES = &h38
+const NRC_INVADDRESS = &h39
+const NRC_INVDDID = &h3B
+const NRC_LOCKFAIL = &h3C
+const NRC_OPENERR = &h3f
+const NRC_SYSTEM = &h40
+const NRC_PENDING = &hff
+declare function Netbios(byval pncb as PNCB) as UCHAR
+
+end extern

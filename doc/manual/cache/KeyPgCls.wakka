@@ -2,7 +2,7 @@
 Clears the screen in both text modes and graphics modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Cls** ( [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Cls** ( [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgLong long]] = 1 )
 ##
 {{fbdoc item="usage"}}##
 	**Cls** //mode//

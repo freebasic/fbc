@@ -354,7 +354,18 @@ static int set_mode
 
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;
-            atexit(exit_proc);
+
+            /* Tell the rtlib to clean-up the gfxlib2 before it exits.
+
+               We can't use atexit() for this, because then the gfxlib2 clean-up
+               may run after the rtlib clean-up which isn't safe because gfxlib2
+               uses the rtlib. atexit() is unreliable -- see fb_hRtExit().
+
+               This way we can at least ensure that gfxlib2 is cleaned up before
+               the rtlib, regardless of what method that will use for clean-up. */
+
+            DBG_ASSERT( __fb_ctx.exit_gfxlib2 == NULL );
+            __fb_ctx.exit_gfxlib2 = exit_proc;
         }
     }
 

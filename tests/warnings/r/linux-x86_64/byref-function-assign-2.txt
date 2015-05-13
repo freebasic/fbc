@@ -1,0 +1,30 @@
+--- 1 ---
+no warning:
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+--- 2 ---
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+--- 3 ---
+no warning:
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+--- 4 ---
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+--- 5 ---
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+no warning:
+--- 6 ---
+1 warning:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+no warning:
+--- 7 ---
+2 warnings:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+--- 8 ---
+2 warnings:
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result
+	'=' parsed as equality operator in function argument, not assignment to BYREF function result

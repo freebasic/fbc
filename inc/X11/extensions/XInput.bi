@@ -1,114 +1,209 @@
-''
-''
-'' XInput -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XInput_bi__
-#define __XInput_bi__
+#pragma once
 
-#define _deviceKeyPress 0
-#define _deviceKeyRelease 1
-#define _deviceButtonPress 0
-#define _deviceButtonRelease 1
-#define _deviceMotionNotify 0
-#define _deviceFocusIn 0
-#define _deviceFocusOut 1
-#define _proximityIn 0
-#define _proximityOut 1
-#define _deviceStateNotify 0
-#define _deviceMappingNotify 1
-#define _changeDeviceNotify 2
-#define _propertyNotify 6
+#include once "crt/long.bi"
+#include once "X11/Xlib.bi"
+#include once "X11/extensions/XI.bi"
 
-declare function _XiGetDevicePresenceNotifyEvent cdecl alias "_XiGetDevicePresenceNotifyEvent" (byval as Display ptr) as integer
+extern "C"
+
+#define _XINPUT_H_
+const _deviceKeyPress = 0
+const _deviceKeyRelease = 1
+const _deviceButtonPress = 0
+const _deviceButtonRelease = 1
+const _deviceMotionNotify = 0
+const _deviceFocusIn = 0
+const _deviceFocusOut = 1
+const _proximityIn = 0
+const _proximityOut = 1
+const _deviceStateNotify = 0
+const _deviceMappingNotify = 1
+const _changeDeviceNotify = 2
+const _propertyNotify = 6
+#macro FindTypeAndClass(d, type, _class, classid, offset)
+	scope
+		dim _i as long
+		dim _ip as XInputClassInfo ptr = cptr(XDevice ptr, d)->classes
+		type = 0
+		_class = 0
+		while _i < cptr(XDevice ptr, d)->num_classes
+			if _ip->input_class = classid then
+				type = _ip->event_type_base + offset
+				_class = (cptr(XDevice ptr, d)->device_id shl 8) or type
+			end if
+			_i += 1
+			_ip += 1
+		wend
+	end scope
+#endmacro
+#define DeviceKeyPress(d, type, _class) FindTypeAndClass(d, type, _class, KeyClass, _deviceKeyPress)
+#define DeviceKeyRelease(d, type, _class) FindTypeAndClass(d, type, _class, KeyClass, _deviceKeyRelease)
+#define DeviceButtonPress(d, type, _class) FindTypeAndClass(d, type, _class, ButtonClass, _deviceButtonPress)
+#define DeviceButtonRelease(d, type, _class) FindTypeAndClass(d, type, _class, ButtonClass, _deviceButtonRelease)
+#define DeviceMotionNotify(d, type, _class) FindTypeAndClass(d, type, _class, ValuatorClass, _deviceMotionNotify)
+#define DeviceFocusIn(d, type, _class) FindTypeAndClass(d, type, _class, FocusClass, _deviceFocusIn)
+#define DeviceFocusOut(d, type, _class) FindTypeAndClass(d, type, _class, FocusClass, _deviceFocusOut)
+#define ProximityIn(d, type, _class) FindTypeAndClass(d, type, _class, ProximityClass, _proximityIn)
+#define ProximityOut(d, type, _class) FindTypeAndClass(d, type, _class, ProximityClass, _proximityOut)
+#define DeviceStateNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _deviceStateNotify)
+#define DeviceMappingNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _deviceMappingNotify)
+#define ChangeDeviceNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _changeDeviceNotify)
+#define DevicePropertyNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _propertyNotify)
+#macro DevicePointerMotionHint(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _devicePointerMotionHint
+	end scope
+#endmacro
+#macro DeviceButton1Motion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton1Motion
+	end scope
+#endmacro
+#macro DeviceButton2Motion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton2Motion
+	end scope
+#endmacro
+#macro DeviceButton3Motion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton3Motion
+	end scope
+#endmacro
+#macro DeviceButton4Motion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton4Motion
+	end scope
+#endmacro
+#macro DeviceButton5Motion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton5Motion
+	end scope
+#endmacro
+#macro DeviceButtonMotion(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonMotion
+	end scope
+#endmacro
+#macro DeviceOwnerGrabButton(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceOwnerGrabButton
+	end scope
+#endmacro
+#macro DeviceButtonPressGrab(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonGrab
+	end scope
+#endmacro
+#macro NoExtensionEvent(d, type, _class)
+	scope
+		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _noExtensionEvent
+	end scope
+#endmacro
+
+declare function _XiGetDevicePresenceNotifyEvent(byval as Display ptr) as long
+declare sub _xibaddevice(byval dpy as Display ptr, byval error as long ptr)
+declare sub _xibadclass(byval dpy as Display ptr, byval error as long ptr)
+declare sub _xibadevent(byval dpy as Display ptr, byval error as long ptr)
+declare sub _xibadmode(byval dpy as Display ptr, byval error as long ptr)
+declare sub _xidevicebusy(byval dpy as Display ptr, byval error as long ptr)
+
+#macro DevicePresence(dpy, type, _class)
+	scope
+		type = _XiGetDevicePresenceNotifyEvent(dpy)
+		_class = (&h10000 or _devicePresence)
+	end scope
+#endmacro
+#define BadDevice(dpy, error) _xibaddevice(dpy, @error)
+#define BadClass(dpy, error) _xibadclass(dpy, @error)
+#define BadEvent(dpy, error) _xibadevent(dpy, @error)
+#define BadMode(dpy, error) _xibadmode(dpy, @error)
+#define DeviceBusy(dpy, error) _xidevicebusy(dpy, @error)
+type XAnyClassPtr as _XAnyClassinfo ptr
 
 type XDeviceKeyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	root as Window
 	subwindow as Window
 	time as Time
-	x as integer
-	y as integer
-	x_root as integer
-	y_root as integer
-	state as uinteger
-	keycode as uinteger
-	same_screen as Bool
-	device_state as uinteger
+	x as long
+	y as long
+	x_root as long
+	y_root as long
+	state as ulong
+	keycode as ulong
+	same_screen as long
+	device_state as ulong
 	axes_count as ubyte
 	first_axis as ubyte
-	axis_data(0 to 6-1) as integer
+	axis_data(0 to 5) as long
 end type
 
 type XDeviceKeyPressedEvent as XDeviceKeyEvent
 type XDeviceKeyReleasedEvent as XDeviceKeyEvent
 
 type XDeviceButtonEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	root as Window
 	subwindow as Window
 	time as Time
-	x as integer
-	y as integer
-	x_root as integer
-	y_root as integer
-	state as uinteger
-	button as uinteger
-	same_screen as Bool
-	device_state as uinteger
+	x as long
+	y as long
+	x_root as long
+	y_root as long
+	state as ulong
+	button as ulong
+	same_screen as long
+	device_state as ulong
 	axes_count as ubyte
 	first_axis as ubyte
-	axis_data(0 to 6-1) as integer
+	axis_data(0 to 5) as long
 end type
 
 type XDeviceButtonPressedEvent as XDeviceButtonEvent
 type XDeviceButtonReleasedEvent as XDeviceButtonEvent
 
 type XDeviceMotionEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	root as Window
 	subwindow as Window
 	time as Time
-	x as integer
-	y as integer
-	x_root as integer
-	y_root as integer
-	state as uinteger
+	x as long
+	y as long
+	x_root as long
+	y_root as long
+	state as ulong
 	is_hint as byte
-	same_screen as Bool
-	device_state as uinteger
+	same_screen as long
+	device_state as ulong
 	axes_count as ubyte
 	first_axis as ubyte
-	axis_data(0 to 6-1) as integer
+	axis_data(0 to 5) as long
 end type
 
 type XDeviceFocusChangeEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
-	mode as integer
-	detail as integer
+	mode as long
+	detail as long
 	time as Time
 end type
 
@@ -116,25 +211,25 @@ type XDeviceFocusInEvent as XDeviceFocusChangeEvent
 type XDeviceFocusOutEvent as XDeviceFocusChangeEvent
 
 type XProximityNotifyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	root as Window
 	subwindow as Window
 	time as Time
-	x as integer
-	y as integer
-	x_root as integer
-	y_root as integer
-	state as uinteger
-	same_screen as Bool
-	device_state as uinteger
+	x as long
+	y as long
+	x_root as long
+	y_root as long
+	state as ulong
+	same_screen as long
+	device_state as ulong
 	axes_count as ubyte
 	first_axis as ubyte
-	axis_data(0 to 6-1) as integer
+	axis_data(0 to 5) as long
 end type
 
 type XProximityInEvent as XProximityNotifyEvent
@@ -146,14 +241,14 @@ type XInputClass
 end type
 
 type XDeviceStateNotifyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	time as Time
-	num_classes as integer
+	num_classes as long
 	data as zstring * 64
 end type
 
@@ -162,7 +257,7 @@ type XValuatorStatus
 	length as ubyte
 	num_valuators as ubyte
 	mode as ubyte
-	valuators(0 to 6-1) as integer
+	valuators(0 to 5) as long
 end type
 
 type XKeyStatus
@@ -180,222 +275,222 @@ type XButtonStatus
 end type
 
 type XDeviceMappingEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	time as Time
-	request as integer
-	first_keycode as integer
-	count as integer
+	request as long
+	first_keycode as long
+	count as long
 end type
 
 type XChangeDeviceNotifyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	deviceid as XID
 	time as Time
-	request as integer
+	request as long
 end type
 
 type XDevicePresenceNotifyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	time as Time
-	devchange as Bool
+	devchange as long
 	deviceid as XID
 	control as XID
 end type
 
 type XDevicePropertyNotifyEvent
-	type as integer
-	serial as uinteger
-	send_event as Bool
+	as long type
+	serial as culong
+	send_event as long
 	display as Display ptr
 	window as Window
 	time as Time
 	deviceid as XID
-	atom as Atom
-	state as integer
+	atom as XAtom
+	state as long
 end type
 
 type XFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
 end type
 
 type XKbdFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	click as integer
-	percent as integer
-	pitch as integer
-	duration as integer
-	led_mask as integer
-	global_auto_repeat as integer
+	click as long
+	percent as long
+	pitch as long
+	duration as long
+	led_mask as long
+	global_auto_repeat as long
 	auto_repeats as zstring * 32
 end type
 
 type XPtrFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	accelNum as integer
-	accelDenom as integer
-	threshold as integer
+	accelNum as long
+	accelDenom as long
+	threshold as long
 end type
 
 type XIntegerFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	resolution as integer
-	minVal as integer
-	maxVal as integer
+	resolution as long
+	minVal as long
+	maxVal as long
 end type
 
 type XStringFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	max_symbols as integer
-	num_syms_supported as integer
+	max_symbols as long
+	num_syms_supported as long
 	syms_supported as KeySym ptr
 end type
 
 type XBellFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	percent as integer
-	pitch as integer
-	duration as integer
+	percent as long
+	pitch as long
+	duration as long
 end type
 
 type XLedFeedbackState
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	led_values as integer
-	led_mask as integer
+	led_values as long
+	led_mask as long
 end type
 
 type XFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
 end type
 
 type XPtrFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	accelNum as integer
-	accelDenom as integer
-	threshold as integer
+	accelNum as long
+	accelDenom as long
+	threshold as long
 end type
 
 type XKbdFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	click as integer
-	percent as integer
-	pitch as integer
-	duration as integer
-	led_mask as integer
-	led_value as integer
-	key as integer
-	auto_repeat_mode as integer
+	click as long
+	percent as long
+	pitch as long
+	duration as long
+	led_mask as long
+	led_value as long
+	key as long
+	auto_repeat_mode as long
 end type
 
 type XStringFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	num_keysyms as integer
+	num_keysyms as long
 	syms_to_display as KeySym ptr
 end type
 
 type XIntegerFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	int_to_display as integer
+	int_to_display as long
 end type
 
 type XBellFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	percent as integer
-	pitch as integer
-	duration as integer
+	percent as long
+	pitch as long
+	duration as long
 end type
 
 type XLedFeedbackControl
 	class as XID
-	length as integer
+	length as long
 	id as XID
-	led_mask as integer
-	led_values as integer
+	led_mask as long
+	led_values as long
 end type
 
 type XDeviceControl
 	control as XID
-	length as integer
+	length as long
 end type
 
 type XDeviceResolutionControl
 	control as XID
-	length as integer
-	first_valuator as integer
-	num_valuators as integer
-	resolutions as integer ptr
+	length as long
+	first_valuator as long
+	num_valuators as long
+	resolutions as long ptr
 end type
 
 type XDeviceResolutionState
 	control as XID
-	length as integer
-	num_valuators as integer
-	resolutions as integer ptr
-	min_resolutions as integer ptr
-	max_resolutions as integer ptr
+	length as long
+	num_valuators as long
+	resolutions as long ptr
+	min_resolutions as long ptr
+	max_resolutions as long ptr
 end type
 
 type XDeviceAbsCalibControl
 	control as XID
-	length as integer
-	min_x as integer
-	max_x as integer
-	min_y as integer
-	max_y as integer
-	flip_x as integer
-	flip_y as integer
-	rotation as integer
-	button_threshold as integer
+	length as long
+	min_x as long
+	max_x as long
+	min_y as long
+	max_y as long
+	flip_x as long
+	flip_y as long
+	rotation as long
+	button_threshold as long
 end type
 
 type XDeviceAbsCalibState as XDeviceAbsCalibControl
 
 type XDeviceAbsAreaControl
 	control as XID
-	length as integer
-	offset_x as integer
-	offset_y as integer
-	width as integer
-	height as integer
-	screen as integer
+	length as long
+	offset_x as long
+	offset_y as long
+	width as long
+	height as long
+	screen as long
 	following as XID
 end type
 
@@ -403,29 +498,28 @@ type XDeviceAbsAreaState as XDeviceAbsAreaControl
 
 type XDeviceCoreControl
 	control as XID
-	length as integer
-	status as integer
+	length as long
+	status as long
 end type
 
 type XDeviceCoreState
 	control as XID
-	length as integer
-	status as integer
-	iscore as integer
+	length as long
+	status as long
+	iscore as long
 end type
 
 type XDeviceEnableControl
 	control as XID
-	length as integer
-	enable as integer
+	length as long
+	enable as long
 end type
 
 type XDeviceEnableState as XDeviceEnableControl
-type XAnyClassPtr as _XAnyClassinfo ptr
 
 type _XAnyClassinfo
 	class as XID
-	length as integer
+	length as long
 end type
 
 type XAnyClassInfo as _XAnyClassinfo
@@ -433,10 +527,10 @@ type XDeviceInfoPtr as _XDeviceInfo ptr
 
 type _XDeviceInfo
 	id as XID
-	type as Atom
+	as XAtom type
 	name as zstring ptr
-	num_classes as integer
-	use as integer
+	num_classes as long
+	use as long
 	inputclassinfo as XAnyClassPtr
 end type
 
@@ -445,7 +539,7 @@ type XKeyInfoPtr as _XKeyInfo ptr
 
 type _XKeyInfo
 	class as XID
-	length as integer
+	length as long
 	min_keycode as ushort
 	max_keycode as ushort
 	num_keys as ushort
@@ -456,7 +550,7 @@ type XButtonInfoPtr as _XButtonInfo ptr
 
 type _XButtonInfo
 	class as XID
-	length as integer
+	length as long
 	num_buttons as short
 end type
 
@@ -464,9 +558,9 @@ type XButtonInfo as _XButtonInfo
 type XAxisInfoPtr as _XAxisInfo ptr
 
 type _XAxisInfo
-	resolution as integer
-	min_value as integer
-	max_value as integer
+	resolution as long
+	min_value as long
+	max_value as long
 end type
 
 type XAxisInfo as _XAxisInfo
@@ -474,10 +568,10 @@ type XValuatorInfoPtr as _XValuatorInfo ptr
 
 type _XValuatorInfo
 	class as XID
-	length as integer
+	length as long
 	num_axes as ubyte
 	mode as ubyte
-	motion_buffer as uinteger
+	motion_buffer as culong
 	axes as XAxisInfoPtr
 end type
 
@@ -490,7 +584,7 @@ end type
 
 type XDevice
 	device_id as XID
-	num_classes as integer
+	num_classes as long
 	classes as XInputClassInfo ptr
 end type
 
@@ -501,12 +595,12 @@ end type
 
 type XDeviceTimeCoord
 	time as Time
-	data as integer ptr
+	data as long ptr
 end type
 
 type XDeviceState
 	device_id as XID
-	num_classes as integer
+	num_classes as long
 	data as XInputClass ptr
 end type
 
@@ -515,7 +609,7 @@ type XValuatorState
 	length as ubyte
 	num_valuators as ubyte
 	mode as ubyte
-	valuators as integer ptr
+	valuators as long ptr
 end type
 
 type XKeyState
@@ -532,56 +626,49 @@ type XButtonState
 	buttons as zstring * 32
 end type
 
-declare function XChangePointerDevice cdecl alias "XChangePointerDevice" (byval as Display ptr, byval as XDevice ptr, byval as integer, byval as integer) as integer
-declare function XGrabDevice cdecl alias "XGrabDevice" (byval as Display ptr, byval as XDevice ptr, byval as Window, byval as Bool, byval as integer, byval as XEventClass ptr, byval as integer, byval as integer, byval as Time) as integer
-declare function XUngrabDevice cdecl alias "XUngrabDevice" (byval as Display ptr, byval as XDevice ptr, byval as Time) as integer
-declare function XGrabDeviceKey cdecl alias "XGrabDeviceKey" (byval as Display ptr, byval as XDevice ptr, byval as uinteger, byval as uinteger, byval as XDevice ptr, byval as Window, byval as Bool, byval as uinteger, byval as XEventClass ptr, byval as integer, byval as integer) as integer
-declare function XUngrabDeviceKey cdecl alias "XUngrabDeviceKey" (byval as Display ptr, byval as XDevice ptr, byval as uinteger, byval as uinteger, byval as XDevice ptr, byval as Window) as integer
-declare function XGrabDeviceButton cdecl alias "XGrabDeviceButton" (byval as Display ptr, byval as XDevice ptr, byval as uinteger, byval as uinteger, byval as XDevice ptr, byval as Window, byval as Bool, byval as uinteger, byval as XEventClass ptr, byval as integer, byval as integer) as integer
-declare function XUngrabDeviceButton cdecl alias "XUngrabDeviceButton" (byval as Display ptr, byval as XDevice ptr, byval as uinteger, byval as uinteger, byval as XDevice ptr, byval as Window) as integer
-declare function XAllowDeviceEvents cdecl alias "XAllowDeviceEvents" (byval as Display ptr, byval as XDevice ptr, byval as integer, byval as Time) as integer
-declare function XGetDeviceFocus cdecl alias "XGetDeviceFocus" (byval as Display ptr, byval as XDevice ptr, byval as Window ptr, byval as integer ptr, byval as Time ptr) as integer
-declare function XSetDeviceFocus cdecl alias "XSetDeviceFocus" (byval as Display ptr, byval as XDevice ptr, byval as Window, byval as integer, byval as Time) as integer
-declare function XGetFeedbackControl cdecl alias "XGetFeedbackControl" (byval as Display ptr, byval as XDevice ptr, byval as integer ptr) as XFeedbackState ptr
-declare sub XFreeFeedbackList cdecl alias "XFreeFeedbackList" (byval as XFeedbackState ptr)
-declare function XChangeFeedbackControl cdecl alias "XChangeFeedbackControl" (byval as Display ptr, byval as XDevice ptr, byval as uinteger, byval as XFeedbackControl ptr) as integer
-declare function XDeviceBell cdecl alias "XDeviceBell" (byval as Display ptr, byval as XDevice ptr, byval as XID, byval as XID, byval as integer) as integer
-declare function XGetDeviceKeyMapping cdecl alias "XGetDeviceKeyMapping" (byval as Display ptr, byval as XDevice ptr, byval as KeyCode, byval as integer, byval as integer ptr) as KeySym ptr
-declare function XChangeDeviceKeyMapping cdecl alias "XChangeDeviceKeyMapping" (byval as Display ptr, byval as XDevice ptr, byval as integer, byval as integer, byval as KeySym ptr, byval as integer) as integer
-declare function XGetDeviceModifierMapping cdecl alias "XGetDeviceModifierMapping" (byval as Display ptr, byval as XDevice ptr) as XModifierKeymap ptr
-declare function XSetDeviceModifierMapping cdecl alias "XSetDeviceModifierMapping" (byval as Display ptr, byval as XDevice ptr, byval as XModifierKeymap ptr) as integer
-declare function XSetDeviceButtonMapping cdecl alias "XSetDeviceButtonMapping" (byval as Display ptr, byval as XDevice ptr, byval as ubyte ptr, byval as integer) as integer
-declare function XGetDeviceButtonMapping cdecl alias "XGetDeviceButtonMapping" (byval as Display ptr, byval as XDevice ptr, byval as ubyte ptr, byval as uinteger) as integer
-declare function XQueryDeviceState cdecl alias "XQueryDeviceState" (byval as Display ptr, byval as XDevice ptr) as XDeviceState ptr
-declare sub XFreeDeviceState cdecl alias "XFreeDeviceState" (byval as XDeviceState ptr)
-declare function XListInputDevices cdecl alias "XListInputDevices" (byval as Display ptr, byval as integer ptr) as XDeviceInfo ptr
-declare sub XFreeDeviceList cdecl alias "XFreeDeviceList" (byval as XDeviceInfo ptr)
-declare function XOpenDevice cdecl alias "XOpenDevice" (byval as Display ptr, byval as XID) as XDevice ptr
-declare function XCloseDevice cdecl alias "XCloseDevice" (byval as Display ptr, byval as XDevice ptr) as integer
-declare function XSetDeviceMode cdecl alias "XSetDeviceMode" (byval as Display ptr, byval as XDevice ptr, byval as integer) as integer
-declare function XSetDeviceValuators cdecl alias "XSetDeviceValuators" (byval as Display ptr, byval as XDevice ptr, byval as integer ptr, byval as integer, byval as integer) as integer
-declare function XGetDeviceControl cdecl alias "XGetDeviceControl" (byval as Display ptr, byval as XDevice ptr, byval as integer) as XDeviceControl ptr
-declare function XChangeDeviceControl cdecl alias "XChangeDeviceControl" (byval as Display ptr, byval as XDevice ptr, byval as integer, byval as XDeviceControl ptr) as integer
-declare function XSelectExtensionEvent cdecl alias "XSelectExtensionEvent" (byval as Display ptr, byval as Window, byval as XEventClass ptr, byval as integer) as integer
-declare function XGetSelectedExtensionEvents cdecl alias "XGetSelectedExtensionEvents" (byval as Display ptr, byval as Window, byval as integer ptr, byval as XEventClass ptr ptr, byval as integer ptr, byval as XEventClass ptr ptr) as integer
-declare function XChangeDeviceDontPropagateList cdecl alias "XChangeDeviceDontPropagateList" (byval as Display ptr, byval as Window, byval as integer, byval as XEventClass ptr, byval as integer) as integer
-declare function XGetDeviceDontPropagateList cdecl alias "XGetDeviceDontPropagateList" (byval as Display ptr, byval as Window, byval as integer ptr) as XEventClass ptr
-declare function XSendExtensionEvent cdecl alias "XSendExtensionEvent" (byval as Display ptr, byval as XDevice ptr, byval as Window, byval as Bool, byval as integer, byval as XEventClass ptr, byval as XEvent ptr) as Status
-declare function XGetDeviceMotionEvents cdecl alias "XGetDeviceMotionEvents" (byval as Display ptr, byval as XDevice ptr, byval as Time, byval as Time, byval as integer ptr, byval as integer ptr, byval as integer ptr) as XDeviceTimeCoord ptr
-declare sub XFreeDeviceMotionEvents cdecl alias "XFreeDeviceMotionEvents" (byval as XDeviceTimeCoord ptr)
-declare sub XFreeDeviceControl cdecl alias "XFreeDeviceControl" (byval as XDeviceControl ptr)
+declare function XChangeKeyboardDevice(byval as Display ptr, byval as XDevice ptr) as long
+declare function XChangePointerDevice(byval as Display ptr, byval as XDevice ptr, byval as long, byval as long) as long
+declare function XGrabDevice(byval as Display ptr, byval as XDevice ptr, byval as Window, byval as long, byval as long, byval as XEventClass ptr, byval as long, byval as long, byval as Time) as long
+declare function XUngrabDevice(byval as Display ptr, byval as XDevice ptr, byval as Time) as long
+declare function XGrabDeviceKey(byval as Display ptr, byval as XDevice ptr, byval as ulong, byval as ulong, byval as XDevice ptr, byval as Window, byval as long, byval as ulong, byval as XEventClass ptr, byval as long, byval as long) as long
+declare function XUngrabDeviceKey(byval as Display ptr, byval as XDevice ptr, byval as ulong, byval as ulong, byval as XDevice ptr, byval as Window) as long
+declare function XGrabDeviceButton(byval as Display ptr, byval as XDevice ptr, byval as ulong, byval as ulong, byval as XDevice ptr, byval as Window, byval as long, byval as ulong, byval as XEventClass ptr, byval as long, byval as long) as long
+declare function XUngrabDeviceButton(byval as Display ptr, byval as XDevice ptr, byval as ulong, byval as ulong, byval as XDevice ptr, byval as Window) as long
+declare function XAllowDeviceEvents(byval as Display ptr, byval as XDevice ptr, byval as long, byval as Time) as long
+declare function XGetDeviceFocus(byval as Display ptr, byval as XDevice ptr, byval as Window ptr, byval as long ptr, byval as Time ptr) as long
+declare function XSetDeviceFocus(byval as Display ptr, byval as XDevice ptr, byval as Window, byval as long, byval as Time) as long
+declare function XGetFeedbackControl(byval as Display ptr, byval as XDevice ptr, byval as long ptr) as XFeedbackState ptr
+declare sub XFreeFeedbackList(byval as XFeedbackState ptr)
+declare function XChangeFeedbackControl(byval as Display ptr, byval as XDevice ptr, byval as culong, byval as XFeedbackControl ptr) as long
+declare function XDeviceBell(byval as Display ptr, byval as XDevice ptr, byval as XID, byval as XID, byval as long) as long
+declare function XGetDeviceKeyMapping(byval as Display ptr, byval as XDevice ptr, byval as KeyCode, byval as long, byval as long ptr) as KeySym ptr
+declare function XChangeDeviceKeyMapping(byval as Display ptr, byval as XDevice ptr, byval as long, byval as long, byval as KeySym ptr, byval as long) as long
+declare function XGetDeviceModifierMapping(byval as Display ptr, byval as XDevice ptr) as XModifierKeymap ptr
+declare function XSetDeviceModifierMapping(byval as Display ptr, byval as XDevice ptr, byval as XModifierKeymap ptr) as long
+declare function XSetDeviceButtonMapping(byval as Display ptr, byval as XDevice ptr, byval as ubyte ptr, byval as long) as long
+declare function XGetDeviceButtonMapping(byval as Display ptr, byval as XDevice ptr, byval as ubyte ptr, byval as ulong) as long
+declare function XQueryDeviceState(byval as Display ptr, byval as XDevice ptr) as XDeviceState ptr
+declare sub XFreeDeviceState(byval as XDeviceState ptr)
+declare function XGetExtensionVersion(byval as Display ptr, byval as const zstring ptr) as XExtensionVersion ptr
+declare function XListInputDevices(byval as Display ptr, byval as long ptr) as XDeviceInfo ptr
+declare sub XFreeDeviceList(byval as XDeviceInfo ptr)
+declare function XOpenDevice(byval as Display ptr, byval as XID) as XDevice ptr
+declare function XCloseDevice(byval as Display ptr, byval as XDevice ptr) as long
+declare function XSetDeviceMode(byval as Display ptr, byval as XDevice ptr, byval as long) as long
+declare function XSetDeviceValuators(byval as Display ptr, byval as XDevice ptr, byval as long ptr, byval as long, byval as long) as long
+declare function XGetDeviceControl(byval as Display ptr, byval as XDevice ptr, byval as long) as XDeviceControl ptr
+declare function XChangeDeviceControl(byval as Display ptr, byval as XDevice ptr, byval as long, byval as XDeviceControl ptr) as long
+declare function XSelectExtensionEvent(byval as Display ptr, byval as Window, byval as XEventClass ptr, byval as long) as long
+declare function XGetSelectedExtensionEvents(byval as Display ptr, byval as Window, byval as long ptr, byval as XEventClass ptr ptr, byval as long ptr, byval as XEventClass ptr ptr) as long
+declare function XChangeDeviceDontPropagateList(byval as Display ptr, byval as Window, byval as long, byval as XEventClass ptr, byval as long) as long
+declare function XGetDeviceDontPropagateList(byval as Display ptr, byval as Window, byval as long ptr) as XEventClass ptr
+declare function XSendExtensionEvent(byval as Display ptr, byval as XDevice ptr, byval as Window, byval as long, byval as long, byval as XEventClass ptr, byval as XEvent ptr) as long
+declare function XGetDeviceMotionEvents(byval as Display ptr, byval as XDevice ptr, byval as Time, byval as Time, byval as long ptr, byval as long ptr, byval as long ptr) as XDeviceTimeCoord ptr
+declare sub XFreeDeviceMotionEvents(byval as XDeviceTimeCoord ptr)
+declare sub XFreeDeviceControl(byval as XDeviceControl ptr)
+declare function XListDeviceProperties(byval as Display ptr, byval as XDevice ptr, byval as long ptr) as XAtom ptr
+declare sub XChangeDeviceProperty(byval as Display ptr, byval as XDevice ptr, byval as XAtom, byval as XAtom, byval as long, byval as long, byval as const ubyte ptr, byval as long)
+declare sub XDeleteDeviceProperty(byval as Display ptr, byval as XDevice ptr, byval as XAtom)
+declare function XGetDeviceProperty(byval as Display ptr, byval as XDevice ptr, byval as XAtom, byval as clong, byval as clong, byval as long, byval as XAtom, byval as XAtom ptr, byval as long ptr, byval as culong ptr, byval as culong ptr, byval as ubyte ptr ptr) as long
 
-type XIPropertyInfo
-	pending as Bool
-	range as Bool
-	immutable as Bool
-	fromClient as Bool
-	num_values as integer
-	values as integer ptr
-end type
-
-declare function XListDeviceProperties cdecl alias "XListDeviceProperties" (byval as Display ptr, byval as XDevice ptr, byval as integer ptr) as Atom ptr
-declare sub XDeleteDeviceProperty cdecl alias "XDeleteDeviceProperty" (byval as Display ptr, byval as XDevice ptr, byval as Atom)
-declare function XGetDeviceProperty cdecl alias "XGetDeviceProperty" (byval as Display ptr, byval as XDevice ptr, byval as Atom, byval as integer, byval as integer, byval as Bool, byval as Atom, byval as Atom ptr, byval as integer ptr, byval as uinteger ptr, byval as uinteger ptr, byval as ubyte ptr ptr) as Status
-
-#endif
+end extern

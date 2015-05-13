@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="__FB_ASM__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_ASM__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_ASM__""## returns a string equal to ##"intel"## or ##"att"## depending on whether inline assembly blocks should use the Intel format or the ""GCC/AT&T"" format.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbasm.bas"}}%%(freebasic)
+dim a as long
+#if __FB_ASM__ = "intel"
+	asm
+ 		inc dword ptr [a]
+	end asm
+#else
+	asm
+		"incl %0\n" : "+m" (a) : :
+	end asm
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOptasm Compiler Option: -asm]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

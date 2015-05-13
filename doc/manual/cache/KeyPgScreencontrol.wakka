@@ -2,8 +2,8 @@
 Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] param1 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param2 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param3 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param4 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] param [[KeyPgAs as]] [[KeyPgString string]] = ##"####"## )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByref byref]] param1 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param2 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param3 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param4 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByref byref]] param [[KeyPgAs as]] [[KeyPgString string]] = ##"####"## )
 ##
 {{fbdoc item="usage"}}##
 	**""ScreenControl""**( //what// [, [ //param1// ][, [ //param2// ][, [ //param3// ][, [ //param4// ]]]]] )

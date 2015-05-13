@@ -4,7 +4,7 @@ GLUT is a helper library that can be used to create OpenGL applications. It allo
 Website: http://www.opengl.org/resources/libraries/glut/
 Platforms supported: ""Win32""
 Headers to include: GL/glut.bi
-Header version: from 2006
+Header version: 3.7
 Examples: in ""examples/graphics/OpenGL/""
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

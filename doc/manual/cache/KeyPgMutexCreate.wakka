@@ -11,7 +11,7 @@ Creates a mutex used for synchronizing the execution of threads
 	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local variable used by a single thread, called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex (including the main thread executing main program), until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.
+	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local static variable used by a single thread called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex (including the main thread executing main program), until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.
 
 	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 	

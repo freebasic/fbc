@@ -2,8 +2,8 @@
 Waits until a specified time has elapsed, or a key is pressed.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //keyflag// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgLong long]] , [[KeyPgByval byval]] //keyflag// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Sleep** [ //amount// [, //keyflag// ]]

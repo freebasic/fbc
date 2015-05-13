@@ -511,8 +511,8 @@ declare function astPtrCheck _
 	( _
 		byval pdtype as integer, _
 		byval psubtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
-		byval strictcheck as integer = FALSE _
+		byval pparammode as integer, _
+		byval expr as ASTNODE ptr _
 	) as integer
 
 declare function astNewNOP _
@@ -559,6 +559,8 @@ declare sub astUpdateCONVFD2FS _
 
 declare function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astSkipCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astRemoveCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewBOP _
 	( _
@@ -870,6 +872,8 @@ declare function astLoad _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
+
+declare function astIncOffset( byval n as ASTNODE ptr, byval ofs as longint ) as integer
 
 declare function astOptimizeTree _
 	( _

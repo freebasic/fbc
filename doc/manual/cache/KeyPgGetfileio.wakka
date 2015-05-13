@@ -2,9 +2,9 @@
 Reads data from a file to a buffer
 
 {{fbdoc item="syntax"}}##
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], [[KeyPgByref ByRef]] //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, [//amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]] [, [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] ]
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], [[KeyPgByref ByRef]] //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, [//amount// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] [, [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] ]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
 ##
 {{fbdoc item="usage"}}##
 	**Get** #//filenum//, //position//, //data// [, [//amount//] [, //bytesread// ] ]

@@ -9,7 +9,7 @@
 ' http://www.opengl.org/code/
 
 #include once "gtk/gtk.bi"
-#include once "gtk/gtkgl.bi"
+#include once "gtkgl/gtkgl.bi"
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 

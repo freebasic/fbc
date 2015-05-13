@@ -31,7 +31,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
-	( FB_DATACLASS_INTEGER,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
+	( FB_DATACLASS_PROC   ,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"fwdref"   ), _
 	( FB_DATACLASS_INTEGER, -1, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"pointer"  ), _
 	( FB_DATACLASS_INTEGER, 16, FALSE,  0, FB_DATATYPE_XMMWORD , -1                 , @"xmmword"  )  _
@@ -492,4 +492,70 @@ function closestType _
 	assert( dtype1 = dtype2 )
 	return dtype1
 
+end function
+
+function typeCalcMatch _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval lparammode as integer, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr _
+	) as integer
+
+	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
+		return FB_OVLPROC_FULLMATCH
+	end if
+
+	if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( rdtype ) ) then
+		return 0
+	end if
+
+	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
+		return 0
+	end if
+
+	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
+		return FB_OVLPROC_HALFMATCH
+	end if
+
+	'' We know that they're different (in terms of dtype or subtype or both),
+	'' but they have the same ptrcount and CONSTs don't disallow the assignment.
+
+	var ldt = typeGetDtOnly( ldtype )
+	var rdt = typeGetDtOnly( rdtype )
+	if( ldt <> rdt ) then
+		'' Different base dtype, so probably not compatible.
+
+		'' The only exception here are integer types with the same size.
+		'' This applies to plain integers, and also to integer pointers.
+		'' For example: Integer [Ptr] will be treated as compatible to Long/LongInt [Ptr],
+		'' on 32bit/64bit respectively, and vice-versa.
+		if( (typeGetClass( ldt ) = FB_DATACLASS_INTEGER) and _
+		    (typeGetClass( rdt ) = FB_DATACLASS_INTEGER) and _
+		    (typeGetSize( ldt ) = typeGetSize( rdt )) ) then
+			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( ldt, rdt )
+		end if
+
+		return 0
+	end if
+
+	select case( ldt )
+	case FB_DATATYPE_STRUCT
+		'' Allow up-casting for any pointers, and BYREF parameters/function results,
+		'' but not for BYVAL parameters/function results. At least for BYVAL function results,
+		'' it's not safe, as the caller allocates the temp var where the callee will write
+		'' the result, thus they must use the exact same type or there will be a buffer overflow.
+		if( typeIsPtr( ldtype ) or (lparammode = FB_PARAMMODE_BYREF) ) then
+			'' Check whether r is derived from l.
+			if( symbGetUDTBaseLevel( rsubtype, lsubtype ) > 0 ) then
+				return FB_OVLPROC_HALFMATCH
+			end if
+		end if
+	case FB_DATATYPE_FUNCTION
+		'' Allow different procptrs as long as the signatures are compatible enough
+		return symbCalcProcMatch( lsubtype, rsubtype, 0 )
+	end select
+
+	function = 0
 end function

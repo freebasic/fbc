@@ -1,550 +1,1326 @@
-''
-''
-'' commdlg -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_commdlg_bi__
-#define __win_commdlg_bi__
+#pragma once
 
 #inclib "comdlg32"
 
-#define LBSELCHSTRING "commdlg_LBSelChangedNotify"
-#define SHAREVISTRING "commdlg_ShareViolation"
-#define FILEOKSTRING "commdlg_FileNameOK"
-#define COLOROKSTRING "commdlg_ColorOK"
-#define SETRGBSTRING "commdlg_SetRGBColor"
-#define HELPMSGSTRING "commdlg_help"
-#define FINDMSGSTRING "commdlg_FindReplace"
+#include once "_mingw_unicode.bi"
+#include once "prsht.bi"
 
-#ifndef CDN_FIRST
-#define CDN_FIRST	cuint(-601)
-#define CDN_LAST	cuint(-699)
-#endif
-#define CDN_INITDONE	CDN_FIRST
-#define CDN_SELCHANGE	(CDN_FIRST-1U)
-#define CDN_FOLDERCHANGE	(CDN_FIRST-2U)
-#define CDN_SHAREVIOLATION	(CDN_FIRST-3U)
-#define CDN_HELP	(CDN_FIRST-4U)
-#define CDN_FILEOK	(CDN_FIRST-5U)
-#define CDN_TYPECHANGE	(CDN_FIRST-6U)
-#define CDM_FIRST (1024+100)
-#define CDM_LAST (1024+200)
-#define CDM_GETSPEC (1024+100)
-#define CDM_GETFILEPATH ((1024+100) +1)
-#define CDM_GETFOLDERPATH ((1024+100) +2)
-#define CDM_GETFOLDERIDLIST ((1024+100) +3)
-#define CDM_SETCONTROLTEXT ((1024+100) +4)
-#define CDM_HIDECONTROL ((1024+100) +5)
-#define CDM_SETDEFEXT ((1024+100) +6)
-#define CC_RGBINIT 1
-#define CC_FULLOPEN 2
-#define CC_PREVENTFULLOPEN 4
-#define CC_SHOWHELP 8
-#define CC_ENABLEHOOK 16
-#define CC_ENABLETEMPLATE 32
-#define CC_ENABLETEMPLATEHANDLE 64
-#define CC_SOLIDCOLOR 128
-#define CC_ANYCOLOR 256
-#define CF_SCREENFONTS 1
-#define CF_PRINTERFONTS 2
-#define CF_BOTH 3
-#define CF_SHOWHELP 4
-#define CF_ENABLEHOOK 8
-#define CF_ENABLETEMPLATE 16
-#define CF_ENABLETEMPLATEHANDLE 32
-#define CF_INITTOLOGFONTSTRUCT 64
-#define CF_USESTYLE 128
-#define CF_EFFECTS 256
-#define CF_APPLY 512
-#define CF_ANSIONLY 1024
-#define CF_SCRIPTSONLY 1024
-#define CF_NOVECTORFONTS 2048
-#define CF_NOOEMFONTS 2048
-#define CF_NOSIMULATIONS 4096
-#define CF_LIMITSIZE 8192
-#define CF_FIXEDPITCHONLY 16384
-#define CF_WYSIWYG 32768
-#define CF_FORCEFONTEXIST 65536
-#define CF_SCALABLEONLY 131072
-#define CF_TTONLY 262144
-#define CF_NOFACESEL 524288
-#define CF_NOSTYLESEL 1048576
-#define CF_NOSIZESEL 2097152
-#define CF_SELECTSCRIPT 4194304
-#define CF_NOSCRIPTSEL 8388608
-#define CF_NOVERTFONTS &h1000000
-#define SIMULATED_FONTTYPE &h8000
-#define PRINTER_FONTTYPE &h4000
-#define SCREEN_FONTTYPE &h2000
-#define BOLD_FONTTYPE &h100
-#define ITALIC_FONTTYPE &h0200
-#define REGULAR_FONTTYPE &h0400
-#define WM_CHOOSEFONT_GETLOGFONT (1024+1)
-#define WM_CHOOSEFONT_SETLOGFONT (1024+101)
-#define WM_CHOOSEFONT_SETFLAGS (1024+102)
-#define OFN_ALLOWMULTISELECT 512
-#define OFN_CREATEPROMPT &h2000
-#define OFN_ENABLEHOOK 32
-#define OFN_ENABLESIZING &h800000
-#define OFN_ENABLETEMPLATE 64
-#define OFN_ENABLETEMPLATEHANDLE 128
-#define OFN_EXPLORER &h80000
-#define OFN_EXTENSIONDIFFERENT &h400
-#define OFN_FILEMUSTEXIST &h1000
-#define OFN_HIDEREADONLY 4
-#define OFN_LONGNAMES &h200000
-#define OFN_NOCHANGEDIR 8
-#define OFN_NODEREFERENCELINKS &h100000
-#define OFN_NOLONGNAMES &h40000
-#define OFN_NONETWORKBUTTON &h20000
-#define OFN_NOREADONLYRETURN &h8000
-#define OFN_NOTESTFILECREATE &h10000
-#define OFN_NOVALIDATE 256
-#define OFN_OVERWRITEPROMPT 2
-#define OFN_PATHMUSTEXIST &h800
-#define OFN_READONLY 1
-#define OFN_SHAREAWARE &h4000
-#define OFN_SHOWHELP 16
-#define OFN_SHAREFALLTHROUGH 2
-#define OFN_SHARENOWARN 1
-#define OFN_SHAREWARN 0
-#define OFN_NODEREFERENCELINKS &h100000
-#define OFN_DONTADDTORECENT &h02000000
-#define FR_DIALOGTERM 64
-#define FR_DOWN 1
-#define FR_ENABLEHOOK 256
-#define FR_ENABLETEMPLATE 512
-#define FR_ENABLETEMPLATEHANDLE &h2000
-#define FR_FINDNEXT 8
-#define FR_HIDEUPDOWN &h4000
-#define FR_HIDEMATCHCASE &h8000
-#define FR_HIDEWHOLEWORD &h10000
-#define FR_MATCHALEFHAMZA &h80000000
-#define FR_MATCHCASE 4
-#define FR_MATCHDIAC &h20000000
-#define FR_MATCHKASHIDA &h40000000
-#define FR_NOMATCHCASE &h800
-#define FR_NOUPDOWN &h400
-#define FR_NOWHOLEWORD 4096
-#define FR_REPLACE 16
-#define FR_REPLACEALL 32
-#define FR_SHOWHELP 128
-#define FR_WHOLEWORD 2
-#define PD_ALLPAGES 0
-#define PD_SELECTION 1
-#define PD_PAGENUMS 2
-#define PD_NOSELECTION 4
-#define PD_NOPAGENUMS 8
-#define PD_COLLATE 16
-#define PD_PRINTTOFILE 32
-#define PD_PRINTSETUP 64
-#define PD_NOWARNING 128
-#define PD_RETURNDC 256
-#define PD_RETURNIC 512
-#define PD_RETURNDEFAULT 1024
-#define PD_SHOWHELP 2048
-#define PD_ENABLEPRINTHOOK 4096
-#define PD_ENABLESETUPHOOK 8192
-#define PD_ENABLEPRINTTEMPLATE 16384
-#define PD_ENABLESETUPTEMPLATE 32768
-#define PD_ENABLEPRINTTEMPLATEHANDLE 65536
-#define PD_ENABLESETUPTEMPLATEHANDLE &h20000
-#define PD_USEDEVMODECOPIES &h40000
-#define PD_USEDEVMODECOPIESANDCOLLATE &h40000
-#define PD_DISABLEPRINTTOFILE &h80000
-#define PD_HIDEPRINTTOFILE &h100000
-#define PD_NONETWORKBUTTON &h200000
-#define PSD_DEFAULTMINMARGINS 0
-#define PSD_INWININIINTLMEASURE 0
-#define PSD_MINMARGINS 1
-#define PSD_MARGINS 2
-#define PSD_INTHOUSANDTHSOFINCHES 4
-#define PSD_INHUNDREDTHSOFMILLIMETERS 8
-#define PSD_DISABLEMARGINS 16
-#define PSD_DISABLEPRINTER 32
-#define PSD_NOWARNING 128
-#define PSD_DISABLEORIENTATION 256
-#define PSD_DISABLEPAPER 512
-#define PSD_RETURNDEFAULT 1024
-#define PSD_SHOWHELP 2048
-#define PSD_ENABLEPAGESETUPHOOK 8192
-#define PSD_ENABLEPAGESETUPTEMPLATE &h8000
-#define PSD_ENABLEPAGESETUPTEMPLATEHANDLE &h20000
-#define PSD_ENABLEPAGEPAINTHOOK &h40000
-#define PSD_DISABLEPAGEPAINTING &h80000
-#define WM_PSD_PAGESETUPDLG 1024
-#define WM_PSD_FULLPAGERECT (1024+1)
-#define WM_PSD_MINMARGINRECT (1024+2)
-#define WM_PSD_MARGINRECT (1024+3)
-#define WM_PSD_GREEKTEXTRECT (1024+4)
-#define WM_PSD_ENVSTAMPRECT (1024+5)
-#define WM_PSD_YAFULLPAGERECT (1024+6)
-#define CD_LBSELNOITEMS (-1)
-#define CD_LBSELCHANGE 0
-#define CD_LBSELSUB 1
-#define CD_LBSELADD 2
-#define DN_DEFAULTPRN 1
+extern "Windows"
 
-#ifndef SNDMSG
-#define SNDMSG SendMessage
+#define _INC_COMMDLG
+extern IID_IPrintDialogCallback as const GUID
+extern IID_IPrintDialogServices as const GUID
+type LPOFNHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+#define CDSIZEOF_STRUCT(structname, member) (clng(cast(LPBYTE, @cptr(structname ptr, 0)->member) - cast(LPBYTE, cptr(structname ptr, 0))) + sizeof(cptr(structname ptr, 0)->member))
+
+#ifdef __FB_64BIT__
+	type tagOFN_NT4A
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCSTR
+		lpstrCustomFilter as LPSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCSTR
+		lpstrTitle as LPCSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
+#else
+	type tagOFN_NT4A field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCSTR
+		lpstrCustomFilter as LPSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCSTR
+		lpstrTitle as LPCSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
 #endif
 
-#define CommDlg_OpenSave_GetSpec(d,s,m) SNDMSG(d,CDM_GETSPEC,m,cint(s))
-#define CommDlg_OpenSave_GetSpecA CommDlg_OpenSave_GetSpec
-#define CommDlg_OpenSave_GetSpecW CommDlg_OpenSave_GetSpec
-#define CommDlg_OpenSave_GetFilePath(d,s,m) SNDMSG(d,CDM_GETFILEPATH,m,cint(s))
-#define CommDlg_OpenSave_GetFilePathA CommDlg_OpenSave_GetFilePath
-#define CommDlg_OpenSave_GetFilePathW CommDlg_OpenSave_GetFilePath
-#define CommDlg_OpenSave_GetFolderPath(d,s,m) SNDMSG(d,CDM_GETFOLDERPATH,m,cint(s))
-#define CommDlg_OpenSave_GetFolderPathA CommDlg_OpenSave_GetFolderPath
-#define CommDlg_OpenSave_GetFolderPathW CommDlg_OpenSave_GetFolderPath
-#define CommDlg_OpenSave_GetFolderIDList(d,i,m) SNDMSG(d,CDM_GETFOLDERIDLIST,m,cint(i))
-#define CommDlg_OpenSave_SetControlText(d,i,t) SNDMSG(d,CDM_SETCONTROLTEXT,i,cint(t))
-#define CommDlg_OpenSave_HideControl(d,i) SNDMSG(d,CDM_HIDECONTROL,i,0)
-#define CommDlg_OpenSave_SetDefExt(d,e) SNDMSG(d,CDM_SETDEFEXT,0,cint(e))
+type OPENFILENAME_NT4A as tagOFN_NT4A
+type LPOPENFILENAME_NT4A as tagOFN_NT4A ptr
 
-type __CDHOOKPROC as function (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT
-type LPCCHOOKPROC as __CDHOOKPROC
-type LPCFHOOKPROC as __CDHOOKPROC
-type LPFRHOOKPROC as __CDHOOKPROC
-type LPOFNHOOKPROC as __CDHOOKPROC
-type LPPAGEPAINTHOOK as __CDHOOKPROC
-type LPPAGESETUPHOOK as __CDHOOKPROC
-type LPSETUPHOOKPROC as __CDHOOKPROC
-type LPPRINTHOOKPROC as __CDHOOKPROC
+#ifdef __FB_64BIT__
+	type tagOFN_NT4W
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCWSTR
+		lpstrCustomFilter as LPWSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPWSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPWSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCWSTR
+		lpstrTitle as LPCWSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCWSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#else
+	type tagOFN_NT4W field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCWSTR
+		lpstrCustomFilter as LPWSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPWSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPWSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCWSTR
+		lpstrTitle as LPCWSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCWSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#endif
 
-#ifndef UNICODE
-type CHOOSECOLORA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HWND
-	rgbResult as COLORREF
-	lpCustColors as COLORREF ptr
-	Flags as DWORD
-	lCustData as LPARAM
-	lpfnHook as LPCCHOOKPROC
-	lpTemplateName as LPCSTR
-end type
-
-type LPCHOOSECOLORA as CHOOSECOLORA ptr
-
-type CHOOSEFONTA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDC as HDC
-	lpLogFont as LPLOGFONTA
-	iPointSize as INT_
-	Flags as DWORD
-	rgbColors as DWORD
-	lCustData as LPARAM
-	lpfnHook as LPCFHOOKPROC
-	lpTemplateName as LPCSTR
-	hInstance as HINSTANCE
-	lpszStyle as LPSTR
-	nFontType as WORD
-	___MISSING_ALIGNMENT__ as WORD
-	nSizeMin as INT_
-	nSizeMax as INT_
-end type
-
-type LPCHOOSEFONTA as CHOOSEFONTA ptr
-
-#else ''UNICODE
-type CHOOSECOLORW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HWND
-	rgbResult as COLORREF
-	lpCustColors as COLORREF ptr
-	Flags as DWORD
-	lCustData as LPARAM
-	lpfnHook as LPCCHOOKPROC
-	lpTemplateName as LPCWSTR
-end type
-
-type LPCHOOSECOLORW as CHOOSECOLORW ptr
-
-type CHOOSEFONTW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDC as HDC
-	lpLogFont as LPLOGFONTW
-	iPointSize as INT_
-	Flags as DWORD
-	rgbColors as DWORD
-	lCustData as LPARAM
-	lpfnHook as LPCFHOOKPROC
-	lpTemplateName as LPCWSTR
-	hInstance as HINSTANCE
-	lpszStyle as LPWSTR
-	nFontType as WORD
-	___MISSING_ALIGNMENT__ as WORD
-	nSizeMin as INT_
-	nSizeMax as INT_
-end type
-
-type LPCHOOSEFONTW as CHOOSEFONTW ptr
-#endif ''UNICODE
-
-type DEVNAMES field=1
-	wDriverOffset as WORD
-	wDeviceOffset as WORD
-	wOutputOffset as WORD
-	wDefault as WORD
-end type
-
-#ifndef UNICODE
-type LPDEVNAMES as DEVNAMES ptr
-
-type FINDREPLACEA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HINSTANCE
-	Flags as DWORD
-	lpstrFindWhat as LPSTR
-	lpstrReplaceWith as LPSTR
-	wFindWhatLen as WORD
-	wReplaceWithLen as WORD
-	lCustData as LPARAM
-	lpfnHook as LPFRHOOKPROC
-	lpTemplateName as LPCSTR
-end type
-
-type LPFINDREPLACEA as FINDREPLACEA ptr
-
-type OFNA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HINSTANCE
-	lpstrFilter as LPCSTR
-	lpstrCustomFilter as LPSTR
-	nMaxCustFilter as DWORD
-	nFilterIndex as DWORD
-	lpstrFile as LPSTR
-	nMaxFile as DWORD
-	lpstrFileTitle as LPSTR
-	nMaxFileTitle as DWORD
-	lpstrInitialDir as LPCSTR
-	lpstrTitle as LPCSTR
-	Flags as DWORD
-	nFileOffset as WORD
-	nFileExtension as WORD
-	lpstrDefExt as LPCSTR
-	lCustData as DWORD
-	lpfnHook as LPOFNHOOKPROC
-	lpTemplateName as LPCSTR
-end type
-
-type OPENFILENAMEA as OFNA
-type LPOPENFILENAMEA as OFNA ptr
-
-type OFNOTIFYA field=1
-	hdr as NMHDR
-	lpOFN as LPOPENFILENAMEA
-	pszFile as LPSTR
-end type
-
-type LPOFNOTIFYA as OFNOTIFYA ptr
-
-type PSDA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDevMode as HGLOBAL
-	hDevNames as HGLOBAL
-	Flags as DWORD
-	ptPaperSize as POINT
-	rtMinMargin as RECT
-	rtMargin as RECT
-	hInstance as HINSTANCE
-	lCustData as LPARAM
-	lpfnPageSetupHook as LPPAGESETUPHOOK
-	lpfnPagePaintHook as LPPAGEPAINTHOOK
-	lpPageSetupTemplateName as LPCSTR
-	hPageSetupTemplate as HGLOBAL
-end type
-
-type PAGESETUPDLGA as PSDA
-type LPPAGESETUPDLGA as PSDA ptr
-
-type PDA field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDevMode as HANDLE
-	hDevNames as HANDLE
-	hDC as HDC
-	Flags as DWORD
-	nFromPage as WORD
-	nToPage as WORD
-	nMinPage as WORD
-	nMaxPage as WORD
-	nCopies as WORD
-	hInstance as HINSTANCE
-	lCustData as DWORD
-	lpfnPrintHook as LPPRINTHOOKPROC
-	lpfnSetupHook as LPSETUPHOOKPROC
-	lpPrintTemplateName as LPCSTR
-	lpSetupTemplateName as LPCSTR
-	hPrintTemplate as HANDLE
-	hSetupTemplate as HANDLE
-end type
-
-type PRINTDLGA as PDA
-type LPPRINTDLGA as PDA ptr
-
-#else ''UNICODE
-type FINDREPLACEW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HINSTANCE
-	Flags as DWORD
-	lpstrFindWhat as LPWSTR
-	lpstrReplaceWith as LPWSTR
-	wFindWhatLen as WORD
-	wReplaceWithLen as WORD
-	lCustData as LPARAM
-	lpfnHook as LPFRHOOKPROC
-	lpTemplateName as LPCWSTR
-end type
-
-type LPFINDREPLACEW as FINDREPLACEW ptr
-
-type OFNW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hInstance as HINSTANCE
-	lpstrFilter as LPCWSTR
-	lpstrCustomFilter as LPWSTR
-	nMaxCustFilter as DWORD
-	nFilterIndex as DWORD
-	lpstrFile as LPWSTR
-	nMaxFile as DWORD
-	lpstrFileTitle as LPWSTR
-	nMaxFileTitle as DWORD
-	lpstrInitialDir as LPCWSTR
-	lpstrTitle as LPCWSTR
-	Flags as DWORD
-	nFileOffset as WORD
-	nFileExtension as WORD
-	lpstrDefExt as LPCWSTR
-	lCustData as DWORD
-	lpfnHook as LPOFNHOOKPROC
-	lpTemplateName as LPCWSTR
-end type
-
-type OPENFILENAMEW as OFNW
-type LPOPENFILENAMEW as OFNW ptr
-
-type OFNOTIFYW field=1
-	hdr as NMHDR
-	lpOFN as LPOPENFILENAMEW
-	pszFile as LPWSTR
-end type
-
-type LPOFNOTIFYW as OFNOTIFYW ptr
-
-type PSDW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDevMode as HGLOBAL
-	hDevNames as HGLOBAL
-	Flags as DWORD
-	ptPaperSize as POINT
-	rtMinMargin as RECT
-	rtMargin as RECT
-	hInstance as HINSTANCE
-	lCustData as LPARAM
-	lpfnPageSetupHook as LPPAGESETUPHOOK
-	lpfnPagePaintHook as LPPAGEPAINTHOOK
-	lpPageSetupTemplateName as LPCWSTR
-	hPageSetupTemplate as HGLOBAL
-end type
-
-type PAGESETUPDLGW as PSDW
-type LPPAGESETUPDLGW as PSDW ptr
-
-type PDW field=1
-	lStructSize as DWORD
-	hwndOwner as HWND
-	hDevMode as HANDLE
-	hDevNames as HANDLE
-	hDC as HDC
-	Flags as DWORD
-	nFromPage as WORD
-	nToPage as WORD
-	nMinPage as WORD
-	nMaxPage as WORD
-	nCopies as WORD
-	hInstance as HINSTANCE
-	lCustData as DWORD
-	lpfnPrintHook as LPPRINTHOOKPROC
-	lpfnSetupHook as LPSETUPHOOKPROC
-	lpPrintTemplateName as LPCWSTR
-	lpSetupTemplateName as LPCWSTR
-	hPrintTemplate as HANDLE
-	hSetupTemplate as HANDLE
-end type
-
-type PRINTDLGW as PDW
-type LPPRINTDLGW as PDW ptr
-#endif ''UNICODE
-
-declare function CommDlgExtendedError alias "CommDlgExtendedError" () as DWORD
+type OPENFILENAME_NT4W as tagOFN_NT4W
+type LPOPENFILENAME_NT4W as tagOFN_NT4W ptr
 
 #ifdef UNICODE
-declare function ChooseColor alias "ChooseColorW" (byval as LPCHOOSECOLORW) as BOOL
-declare function ChooseFont alias "ChooseFontW" (byval as LPCHOOSEFONTW) as BOOL
-declare function FindText alias "FindTextW" (byval as LPFINDREPLACEW) as HWND
-declare function GetFileTitle alias "GetFileTitleW" (byval as LPCWSTR, byval as LPWSTR, byval as WORD) as short
-declare function GetOpenFileName alias "GetOpenFileNameW" (byval as LPOPENFILENAMEW) as BOOL
-declare function GetSaveFileName alias "GetSaveFileNameW" (byval as LPOPENFILENAMEW) as BOOL
-declare function PageSetupDlg alias "PageSetupDlgW" (byval as LPPAGESETUPDLGW) as BOOL
-declare function PrintDlg alias "PrintDlgW" (byval as LPPRINTDLGW) as BOOL
-declare function ReplaceText alias "ReplaceTextW" (byval as LPFINDREPLACEW) as HWND
-
-type CHOOSECOLOR as CHOOSECOLORW
-type LPCHOOSECOLOR as CHOOSECOLORW ptr
-type CHOOSEFONT as CHOOSEFONTW
-type LPCHOOSEFONT as CHOOSEFONTW ptr
-type FINDREPLACE as FINDREPLACEW
-type LPFINDREPLACE as FINDREPLACEW ptr
-type OPENFILENAME as OPENFILENAMEW
-type LPOPENFILENAME as OPENFILENAMEW ptr
-type OFNOTIFY as OFNOTIFYW
-type LPOFNOTIFY as OFNOTIFYW ptr
-type PAGESETUPDLG as PAGESETUPDLGW
-type LPPAGESETUPDLG as PAGESETUPDLGW ptr
-type PRINTDLG as PRINTDLGW
-type LPPRINTDLG as PRINTDLGW ptr
-
-#else ''UNICODE
-declare function ChooseColor alias "ChooseColorA" (byval as LPCHOOSECOLORA) as BOOL
-declare function ChooseFont alias "ChooseFontA" (byval as LPCHOOSEFONTA) as BOOL
-declare function FindText alias "FindTextA" (byval as LPFINDREPLACEA) as HWND
-declare function GetFileTitle alias "GetFileTitleA" (byval as LPCSTR, byval as LPSTR, byval as WORD) as short
-declare function GetOpenFileName alias "GetOpenFileNameA" (byval as LPOPENFILENAMEA) as BOOL
-declare function GetSaveFileName alias "GetSaveFileNameA" (byval as LPOPENFILENAMEA) as BOOL
-declare function PageSetupDlg alias "PageSetupDlgA" (byval as LPPAGESETUPDLGA) as BOOL
-declare function PrintDlg alias "PrintDlgA" (byval as LPPRINTDLGA) as BOOL
-declare function ReplaceText alias "ReplaceTextA" (byval as LPFINDREPLACEA) as HWND
-
-type CHOOSECOLOR as CHOOSECOLORA
-type LPCHOOSECOLOR as CHOOSECOLORA ptr
-type CHOOSEFONT as CHOOSEFONTA
-type LPCHOOSEFONT as CHOOSEFONTA ptr
-type FINDREPLACE as FINDREPLACEA
-type LPFINDREPLACE as FINDREPLACEA ptr
-type OPENFILENAME as OPENFILENAMEA
-type LPOPENFILENAME as OPENFILENAMEA ptr
-type OFNOTIFY as OFNOTIFYA
-type LPOFNOTIFY as OFNOTIFYA ptr
-type PAGESETUPDLG as PAGESETUPDLGA
-type LPPAGESETUPDLG as PAGESETUPDLGA ptr
-type PRINTDLG as PRINTDLGA
-type LPPRINTDLG as PRINTDLGA ptr
-
-#endif ''UNICODE
-
+	type OPENFILENAME_NT4 as OPENFILENAME_NT4W
+	type LPOPENFILENAME_NT4 as LPOPENFILENAME_NT4W
+#else
+	type OPENFILENAME_NT4 as OPENFILENAME_NT4A
+	type LPOPENFILENAME_NT4 as LPOPENFILENAME_NT4A
 #endif
+
+#ifdef __FB_64BIT__
+	type tagOFNA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCSTR
+		lpstrCustomFilter as LPSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCSTR
+		lpstrTitle as LPCSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCSTR
+		pvReserved as any ptr
+		dwReserved as DWORD
+		FlagsEx as DWORD
+	end type
+#else
+	type tagOFNA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCSTR
+		lpstrCustomFilter as LPSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCSTR
+		lpstrTitle as LPCSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCSTR
+		pvReserved as any ptr
+		dwReserved as DWORD
+		FlagsEx as DWORD
+	end type
+#endif
+
+type OPENFILENAMEA as tagOFNA
+type LPOPENFILENAMEA as tagOFNA ptr
+
+#ifdef __FB_64BIT__
+	type tagOFNW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCWSTR
+		lpstrCustomFilter as LPWSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPWSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPWSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCWSTR
+		lpstrTitle as LPCWSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCWSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCWSTR
+		pvReserved as any ptr
+		dwReserved as DWORD
+		FlagsEx as DWORD
+	end type
+#else
+	type tagOFNW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		lpstrFilter as LPCWSTR
+		lpstrCustomFilter as LPWSTR
+		nMaxCustFilter as DWORD
+		nFilterIndex as DWORD
+		lpstrFile as LPWSTR
+		nMaxFile as DWORD
+		lpstrFileTitle as LPWSTR
+		nMaxFileTitle as DWORD
+		lpstrInitialDir as LPCWSTR
+		lpstrTitle as LPCWSTR
+		Flags as DWORD
+		nFileOffset as WORD
+		nFileExtension as WORD
+		lpstrDefExt as LPCWSTR
+		lCustData as LPARAM
+		lpfnHook as LPOFNHOOKPROC
+		lpTemplateName as LPCWSTR
+		pvReserved as any ptr
+		dwReserved as DWORD
+		FlagsEx as DWORD
+	end type
+#endif
+
+type OPENFILENAMEW as tagOFNW
+type LPOPENFILENAMEW as tagOFNW ptr
+
+#ifdef UNICODE
+	type OPENFILENAME as OPENFILENAMEW
+	type LPOPENFILENAME as LPOPENFILENAMEW
+#else
+	type OPENFILENAME as OPENFILENAMEA
+	type LPOPENFILENAME as LPOPENFILENAMEA
+#endif
+
+#define OPENFILENAME_SIZE_VERSION_400A CDSIZEOF_STRUCT(OPENFILENAMEA, lpTemplateName)
+#define OPENFILENAME_SIZE_VERSION_400W CDSIZEOF_STRUCT(OPENFILENAMEW, lpTemplateName)
+
+#ifdef UNICODE
+	#define OPENFILENAME_SIZE_VERSION_400 OPENFILENAME_SIZE_VERSION_400W
+#else
+	#define OPENFILENAME_SIZE_VERSION_400 OPENFILENAME_SIZE_VERSION_400A
+#endif
+
+declare function GetOpenFileNameA(byval as LPOPENFILENAMEA) as WINBOOL
+declare function GetOpenFileNameW(byval as LPOPENFILENAMEW) as WINBOOL
+
+#ifdef UNICODE
+	#define GetOpenFileName GetOpenFileNameW
+#else
+	#define GetOpenFileName GetOpenFileNameA
+#endif
+
+declare function GetSaveFileNameA(byval as LPOPENFILENAMEA) as WINBOOL
+declare function GetSaveFileNameW(byval as LPOPENFILENAMEW) as WINBOOL
+
+#ifdef UNICODE
+	#define GetSaveFileName GetSaveFileNameW
+#else
+	#define GetSaveFileName GetSaveFileNameA
+#endif
+
+declare function GetFileTitleA(byval as LPCSTR, byval as LPSTR, byval as WORD) as short
+declare function GetFileTitleW(byval as LPCWSTR, byval as LPWSTR, byval as WORD) as short
+
+#ifdef UNICODE
+	#define GetFileTitle GetFileTitleW
+#else
+	#define GetFileTitle GetFileTitleA
+#endif
+
+const OFN_READONLY = &h1
+const OFN_OVERWRITEPROMPT = &h2
+const OFN_HIDEREADONLY = &h4
+const OFN_NOCHANGEDIR = &h8
+const OFN_SHOWHELP = &h10
+const OFN_ENABLEHOOK = &h20
+const OFN_ENABLETEMPLATE = &h40
+const OFN_ENABLETEMPLATEHANDLE = &h80
+const OFN_NOVALIDATE = &h100
+const OFN_ALLOWMULTISELECT = &h200
+const OFN_EXTENSIONDIFFERENT = &h400
+const OFN_PATHMUSTEXIST = &h800
+const OFN_FILEMUSTEXIST = &h1000
+const OFN_CREATEPROMPT = &h2000
+const OFN_SHAREAWARE = &h4000
+const OFN_NOREADONLYRETURN = &h8000
+const OFN_NOTESTFILECREATE = &h10000
+const OFN_NONETWORKBUTTON = &h20000
+const OFN_NOLONGNAMES = &h40000
+const OFN_EXPLORER = &h80000
+const OFN_NODEREFERENCELINKS = &h100000
+const OFN_LONGNAMES = &h200000
+const OFN_ENABLEINCLUDENOTIFY = &h400000
+const OFN_ENABLESIZING = &h800000
+const OFN_DONTADDTORECENT = &h2000000
+const OFN_FORCESHOWHIDDEN = &h10000000
+const OFN_EX_NOPLACESBAR = &h1
+const OFN_SHAREFALLTHROUGH = 2
+const OFN_SHARENOWARN = 1
+const OFN_SHAREWARN = 0
+type LPCCHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+
+#ifdef __FB_64BIT__
+	type _OFNOTIFYA
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEA
+		pszFile as LPSTR
+	end type
+#else
+	type _OFNOTIFYA field = 1
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEA
+		pszFile as LPSTR
+	end type
+#endif
+
+type OFNOTIFYA as _OFNOTIFYA
+type LPOFNOTIFYA as _OFNOTIFYA ptr
+
+#ifdef __FB_64BIT__
+	type _OFNOTIFYW
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEW
+		pszFile as LPWSTR
+	end type
+#else
+	type _OFNOTIFYW field = 1
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEW
+		pszFile as LPWSTR
+	end type
+#endif
+
+type OFNOTIFYW as _OFNOTIFYW
+type LPOFNOTIFYW as _OFNOTIFYW ptr
+
+#ifdef UNICODE
+	type OFNOTIFY as OFNOTIFYW
+	type LPOFNOTIFY as LPOFNOTIFYW
+#else
+	type OFNOTIFY as OFNOTIFYA
+	type LPOFNOTIFY as LPOFNOTIFYA
+#endif
+
+#ifdef __FB_64BIT__
+	type _OFNOTIFYEXA
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEA
+		psf as LPVOID
+		pidl as LPVOID
+	end type
+#else
+	type _OFNOTIFYEXA field = 1
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEA
+		psf as LPVOID
+		pidl as LPVOID
+	end type
+#endif
+
+type OFNOTIFYEXA as _OFNOTIFYEXA
+type LPOFNOTIFYEXA as _OFNOTIFYEXA ptr
+
+#ifdef __FB_64BIT__
+	type _OFNOTIFYEXW
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEW
+		psf as LPVOID
+		pidl as LPVOID
+	end type
+#else
+	type _OFNOTIFYEXW field = 1
+		hdr as NMHDR
+		lpOFN as LPOPENFILENAMEW
+		psf as LPVOID
+		pidl as LPVOID
+	end type
+#endif
+
+type OFNOTIFYEXW as _OFNOTIFYEXW
+type LPOFNOTIFYEXW as _OFNOTIFYEXW ptr
+
+#ifdef UNICODE
+	type OFNOTIFYEX as OFNOTIFYEXW
+	type LPOFNOTIFYEX as LPOFNOTIFYEXW
+#else
+	type OFNOTIFYEX as OFNOTIFYEXA
+	type LPOFNOTIFYEX as LPOFNOTIFYEXA
+#endif
+
+const CDN_FIRST = culng(0u - 601u)
+const CDN_LAST = culng(0u - 699u)
+#define CDN_INITDONE CDN_FIRST
+#define CDN_SELCHANGE culng(CDN_FIRST - 1)
+#define CDN_FOLDERCHANGE culng(CDN_FIRST - 2)
+#define CDN_SHAREVIOLATION culng(CDN_FIRST - 3)
+#define CDN_HELP culng(CDN_FIRST - 4)
+#define CDN_FILEOK culng(CDN_FIRST - 5)
+#define CDN_TYPECHANGE culng(CDN_FIRST - 6)
+#define CDN_INCLUDEITEM culng(CDN_FIRST - 7)
+#define CDM_FIRST (WM_USER + 100)
+#define CDM_LAST (WM_USER + 200)
+#define CDM_GETSPEC CDM_FIRST
+#define CommDlg_OpenSave_GetSpecA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETSPEC, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
+#define CommDlg_OpenSave_GetSpecW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETSPEC, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
+
+#ifdef UNICODE
+	#define CommDlg_OpenSave_GetSpec CommDlg_OpenSave_GetSpecW
+#else
+	#define CommDlg_OpenSave_GetSpec CommDlg_OpenSave_GetSpecA
+#endif
+
+#define CDM_GETFILEPATH (CDM_FIRST + 1)
+#define CommDlg_OpenSave_GetFilePathA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFILEPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
+#define CommDlg_OpenSave_GetFilePathW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFILEPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
+
+#ifdef UNICODE
+	#define CommDlg_OpenSave_GetFilePath CommDlg_OpenSave_GetFilePathW
+#else
+	#define CommDlg_OpenSave_GetFilePath CommDlg_OpenSave_GetFilePathA
+#endif
+
+#define CDM_GETFOLDERPATH (CDM_FIRST + 2)
+#define CommDlg_OpenSave_GetFolderPathA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
+#define CommDlg_OpenSave_GetFolderPathW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
+
+#ifdef UNICODE
+	#define CommDlg_OpenSave_GetFolderPath CommDlg_OpenSave_GetFolderPathW
+#else
+	#define CommDlg_OpenSave_GetFolderPath CommDlg_OpenSave_GetFolderPathA
+#endif
+
+#define CDM_GETFOLDERIDLIST (CDM_FIRST + 3)
+#define CommDlg_OpenSave_GetFolderIDList(_hdlg, _pidl, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERIDLIST, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPVOID, _pidl))))
+#define CDM_SETCONTROLTEXT (CDM_FIRST + 4)
+#define CommDlg_OpenSave_SetControlText(_hdlg, _id, _text) SNDMSG(_hdlg, CDM_SETCONTROLTEXT, cast(WPARAM, _id), cast(LPARAM, cast(LPSTR, _text)))
+#define CDM_HIDECONTROL (CDM_FIRST + 5)
+#define CommDlg_OpenSave_HideControl(_hdlg, _id) SNDMSG(_hdlg, CDM_HIDECONTROL, cast(WPARAM, _id), 0)
+#define CDM_SETDEFEXT (CDM_FIRST + 6)
+#define CommDlg_OpenSave_SetDefExt(_hdlg, _pszext) SNDMSG(_hdlg, CDM_SETDEFEXT, 0, cast(LPARAM, cast(LPSTR, _pszext)))
+
+#ifdef __FB_64BIT__
+	type tagCHOOSECOLORA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HWND
+		rgbResult as COLORREF
+		lpCustColors as COLORREF ptr
+		Flags as DWORD
+		lCustData as LPARAM
+		lpfnHook as LPCCHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
+#else
+	type tagCHOOSECOLORA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HWND
+		rgbResult as COLORREF
+		lpCustColors as COLORREF ptr
+		Flags as DWORD
+		lCustData as LPARAM
+		lpfnHook as LPCCHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
+#endif
+
+type CHOOSECOLORA as tagCHOOSECOLORA
+type LPCHOOSECOLORA as tagCHOOSECOLORA ptr
+
+#ifdef __FB_64BIT__
+	type tagCHOOSECOLORW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HWND
+		rgbResult as COLORREF
+		lpCustColors as COLORREF ptr
+		Flags as DWORD
+		lCustData as LPARAM
+		lpfnHook as LPCCHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#else
+	type tagCHOOSECOLORW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HWND
+		rgbResult as COLORREF
+		lpCustColors as COLORREF ptr
+		Flags as DWORD
+		lCustData as LPARAM
+		lpfnHook as LPCCHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#endif
+
+type CHOOSECOLORW as tagCHOOSECOLORW
+type LPCHOOSECOLORW as tagCHOOSECOLORW ptr
+
+#ifdef UNICODE
+	type CHOOSECOLOR as CHOOSECOLORW
+	type LPCHOOSECOLOR as LPCHOOSECOLORW
+#else
+	type CHOOSECOLOR as CHOOSECOLORA
+	type LPCHOOSECOLOR as LPCHOOSECOLORA
+#endif
+
+declare function ChooseColorA(byval as LPCHOOSECOLORA) as WINBOOL
+declare function ChooseColorW(byval as LPCHOOSECOLORW) as WINBOOL
+
+#ifdef UNICODE
+	declare function ChooseColor alias "ChooseColorW"(byval as LPCHOOSECOLORW) as WINBOOL
+#else
+	declare function ChooseColor alias "ChooseColorA"(byval as LPCHOOSECOLORA) as WINBOOL
+#endif
+
+const CC_RGBINIT = &h1
+const CC_FULLOPEN = &h2
+const CC_PREVENTFULLOPEN = &h4
+const CC_SHOWHELP = &h8
+const CC_ENABLEHOOK = &h10
+const CC_ENABLETEMPLATE = &h20
+const CC_ENABLETEMPLATEHANDLE = &h40
+const CC_SOLIDCOLOR = &h80
+const CC_ANYCOLOR = &h100
+type LPFRHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+
+#ifdef __FB_64BIT__
+	type tagFINDREPLACEA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		Flags as DWORD
+		lpstrFindWhat as LPSTR
+		lpstrReplaceWith as LPSTR
+		wFindWhatLen as WORD
+		wReplaceWithLen as WORD
+		lCustData as LPARAM
+		lpfnHook as LPFRHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
+#else
+	type tagFINDREPLACEA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		Flags as DWORD
+		lpstrFindWhat as LPSTR
+		lpstrReplaceWith as LPSTR
+		wFindWhatLen as WORD
+		wReplaceWithLen as WORD
+		lCustData as LPARAM
+		lpfnHook as LPFRHOOKPROC
+		lpTemplateName as LPCSTR
+	end type
+#endif
+
+type FINDREPLACEA as tagFINDREPLACEA
+type LPFINDREPLACEA as tagFINDREPLACEA ptr
+
+#ifdef __FB_64BIT__
+	type tagFINDREPLACEW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		Flags as DWORD
+		lpstrFindWhat as LPWSTR
+		lpstrReplaceWith as LPWSTR
+		wFindWhatLen as WORD
+		wReplaceWithLen as WORD
+		lCustData as LPARAM
+		lpfnHook as LPFRHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#else
+	type tagFINDREPLACEW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hInstance as HINSTANCE
+		Flags as DWORD
+		lpstrFindWhat as LPWSTR
+		lpstrReplaceWith as LPWSTR
+		wFindWhatLen as WORD
+		wReplaceWithLen as WORD
+		lCustData as LPARAM
+		lpfnHook as LPFRHOOKPROC
+		lpTemplateName as LPCWSTR
+	end type
+#endif
+
+type FINDREPLACEW as tagFINDREPLACEW
+type LPFINDREPLACEW as tagFINDREPLACEW ptr
+
+#ifdef UNICODE
+	type FINDREPLACE as FINDREPLACEW
+	type LPFINDREPLACE as LPFINDREPLACEW
+#else
+	type FINDREPLACE as FINDREPLACEA
+	type LPFINDREPLACE as LPFINDREPLACEA
+#endif
+
+const FR_DOWN = &h1
+const FR_WHOLEWORD = &h2
+const FR_MATCHCASE = &h4
+const FR_FINDNEXT = &h8
+const FR_REPLACE = &h10
+const FR_REPLACEALL = &h20
+const FR_DIALOGTERM = &h40
+const FR_SHOWHELP = &h80
+const FR_ENABLEHOOK = &h100
+const FR_ENABLETEMPLATE = &h200
+const FR_NOUPDOWN = &h400
+const FR_NOMATCHCASE = &h800
+const FR_NOWHOLEWORD = &h1000
+const FR_ENABLETEMPLATEHANDLE = &h2000
+const FR_HIDEUPDOWN = &h4000
+const FR_HIDEMATCHCASE = &h8000
+const FR_HIDEWHOLEWORD = &h10000
+const FR_RAW = &h20000
+declare function FindTextA(byval as LPFINDREPLACEA) as HWND
+declare function FindTextW(byval as LPFINDREPLACEW) as HWND
+
+#ifdef UNICODE
+	declare function FindText alias "FindTextW"(byval as LPFINDREPLACEW) as HWND
+#else
+	declare function FindText alias "FindTextA"(byval as LPFINDREPLACEA) as HWND
+#endif
+
+declare function ReplaceTextA(byval as LPFINDREPLACEA) as HWND
+declare function ReplaceTextW(byval as LPFINDREPLACEW) as HWND
+
+#ifdef UNICODE
+	#define ReplaceText ReplaceTextW
+#else
+	#define ReplaceText ReplaceTextA
+#endif
+
+type LPCFHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+
+#ifdef __FB_64BIT__
+	type tagCHOOSEFONTA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDC as HDC
+		lpLogFont as LPLOGFONTA
+		iPointSize as INT_
+		Flags as DWORD
+		rgbColors as COLORREF
+		lCustData as LPARAM
+		lpfnHook as LPCFHOOKPROC
+		lpTemplateName as LPCSTR
+		hInstance as HINSTANCE
+		lpszStyle as LPSTR
+		nFontType as WORD
+		___MISSING_ALIGNMENT__ as WORD
+		nSizeMin as INT_
+		nSizeMax as INT_
+	end type
+#else
+	type tagCHOOSEFONTA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDC as HDC
+		lpLogFont as LPLOGFONTA
+		iPointSize as INT_
+		Flags as DWORD
+		rgbColors as COLORREF
+		lCustData as LPARAM
+		lpfnHook as LPCFHOOKPROC
+		lpTemplateName as LPCSTR
+		hInstance as HINSTANCE
+		lpszStyle as LPSTR
+		nFontType as WORD
+		___MISSING_ALIGNMENT__ as WORD
+		nSizeMin as INT_
+		nSizeMax as INT_
+	end type
+#endif
+
+type CHOOSEFONTA as tagCHOOSEFONTA
+type LPCHOOSEFONTA as tagCHOOSEFONTA ptr
+
+#ifdef __FB_64BIT__
+	type tagCHOOSEFONTW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDC as HDC
+		lpLogFont as LPLOGFONTW
+		iPointSize as INT_
+		Flags as DWORD
+		rgbColors as COLORREF
+		lCustData as LPARAM
+		lpfnHook as LPCFHOOKPROC
+		lpTemplateName as LPCWSTR
+		hInstance as HINSTANCE
+		lpszStyle as LPWSTR
+		nFontType as WORD
+		___MISSING_ALIGNMENT__ as WORD
+		nSizeMin as INT_
+		nSizeMax as INT_
+	end type
+#else
+	type tagCHOOSEFONTW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDC as HDC
+		lpLogFont as LPLOGFONTW
+		iPointSize as INT_
+		Flags as DWORD
+		rgbColors as COLORREF
+		lCustData as LPARAM
+		lpfnHook as LPCFHOOKPROC
+		lpTemplateName as LPCWSTR
+		hInstance as HINSTANCE
+		lpszStyle as LPWSTR
+		nFontType as WORD
+		___MISSING_ALIGNMENT__ as WORD
+		nSizeMin as INT_
+		nSizeMax as INT_
+	end type
+#endif
+
+type CHOOSEFONTW as tagCHOOSEFONTW
+type LPCHOOSEFONTW as tagCHOOSEFONTW ptr
+
+#ifdef UNICODE
+	type CHOOSEFONT as CHOOSEFONTW
+	type LPCHOOSEFONT as LPCHOOSEFONTW
+#else
+	type CHOOSEFONT as CHOOSEFONTA
+	type LPCHOOSEFONT as LPCHOOSEFONTA
+#endif
+
+declare function ChooseFontA(byval as LPCHOOSEFONTA) as WINBOOL
+declare function ChooseFontW(byval as LPCHOOSEFONTW) as WINBOOL
+
+#ifdef UNICODE
+	declare function ChooseFont alias "ChooseFontW"(byval as LPCHOOSEFONTW) as WINBOOL
+#else
+	declare function ChooseFont alias "ChooseFontA"(byval as LPCHOOSEFONTA) as WINBOOL
+#endif
+
+const CF_SCREENFONTS = &h1
+const CF_PRINTERFONTS = &h2
+#define CF_BOTH (CF_SCREENFONTS or CF_PRINTERFONTS)
+#define CF_SHOWHELP __MSABI_LONG(&h4)
+#define CF_ENABLEHOOK __MSABI_LONG(&h8)
+#define CF_ENABLETEMPLATE __MSABI_LONG(&h10)
+#define CF_ENABLETEMPLATEHANDLE __MSABI_LONG(&h20)
+#define CF_INITTOLOGFONTSTRUCT __MSABI_LONG(&h40)
+#define CF_USESTYLE __MSABI_LONG(&h80)
+#define CF_EFFECTS __MSABI_LONG(&h100)
+#define CF_APPLY __MSABI_LONG(&h200)
+#define CF_ANSIONLY __MSABI_LONG(&h400)
+#define CF_SCRIPTSONLY CF_ANSIONLY
+#define CF_NOVECTORFONTS __MSABI_LONG(&h800)
+#define CF_NOOEMFONTS CF_NOVECTORFONTS
+#define CF_NOSIMULATIONS __MSABI_LONG(&h1000)
+#define CF_LIMITSIZE __MSABI_LONG(&h2000)
+#define CF_FIXEDPITCHONLY __MSABI_LONG(&h4000)
+#define CF_WYSIWYG __MSABI_LONG(&h8000)
+#define CF_FORCEFONTEXIST __MSABI_LONG(&h10000)
+#define CF_SCALABLEONLY __MSABI_LONG(&h20000)
+#define CF_TTONLY __MSABI_LONG(&h40000)
+#define CF_NOFACESEL __MSABI_LONG(&h80000)
+#define CF_NOSTYLESEL __MSABI_LONG(&h100000)
+#define CF_NOSIZESEL __MSABI_LONG(&h200000)
+#define CF_SELECTSCRIPT __MSABI_LONG(&h400000)
+#define CF_NOSCRIPTSEL __MSABI_LONG(&h800000)
+#define CF_NOVERTFONTS __MSABI_LONG(&h1000000)
+const SIMULATED_FONTTYPE = &h8000
+const PRINTER_FONTTYPE = &h4000
+const SCREEN_FONTTYPE = &h2000
+const BOLD_FONTTYPE = &h100
+const ITALIC_FONTTYPE = &h200
+const REGULAR_FONTTYPE = &h400
+const PS_OPENTYPE_FONTTYPE = &h10000
+const TT_OPENTYPE_FONTTYPE = &h20000
+const TYPE1_FONTTYPE = &h40000
+#define WM_CHOOSEFONT_GETLOGFONT (WM_USER + 1)
+#define WM_CHOOSEFONT_SETLOGFONT (WM_USER + 101)
+#define WM_CHOOSEFONT_SETFLAGS (WM_USER + 102)
+#define LBSELCHSTRINGA "commdlg_LBSelChangedNotify"
+#define SHAREVISTRINGA "commdlg_ShareViolation"
+#define FILEOKSTRINGA "commdlg_FileNameOK"
+#define COLOROKSTRINGA "commdlg_ColorOK"
+#define SETRGBSTRINGA "commdlg_SetRGBColor"
+#define HELPMSGSTRINGA "commdlg_help"
+#define FINDMSGSTRINGA "commdlg_FindReplace"
+#define LBSELCHSTRINGW wstr("commdlg_LBSelChangedNotify")
+#define SHAREVISTRINGW wstr("commdlg_ShareViolation")
+#define FILEOKSTRINGW wstr("commdlg_FileNameOK")
+#define COLOROKSTRINGW wstr("commdlg_ColorOK")
+#define SETRGBSTRINGW wstr("commdlg_SetRGBColor")
+#define HELPMSGSTRINGW wstr("commdlg_help")
+#define FINDMSGSTRINGW wstr("commdlg_FindReplace")
+
+#ifdef UNICODE
+	#define LBSELCHSTRING LBSELCHSTRINGW
+	#define SHAREVISTRING SHAREVISTRINGW
+	#define FILEOKSTRING FILEOKSTRINGW
+	#define COLOROKSTRING COLOROKSTRINGW
+	#define SETRGBSTRING SETRGBSTRINGW
+	#define HELPMSGSTRING HELPMSGSTRINGW
+	#define FINDMSGSTRING FINDMSGSTRINGW
+#else
+	#define LBSELCHSTRING LBSELCHSTRINGA
+	#define SHAREVISTRING SHAREVISTRINGA
+	#define FILEOKSTRING FILEOKSTRINGA
+	#define COLOROKSTRING COLOROKSTRINGA
+	#define SETRGBSTRING SETRGBSTRINGA
+	#define HELPMSGSTRING HELPMSGSTRINGA
+	#define FINDMSGSTRING FINDMSGSTRINGA
+#endif
+
+const CD_LBSELNOITEMS = -1
+const CD_LBSELCHANGE = 0
+const CD_LBSELSUB = 1
+const CD_LBSELADD = 2
+type LPPRINTHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+type LPSETUPHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+
+#ifdef __FB_64BIT__
+	type tagPDA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		nFromPage as WORD
+		nToPage as WORD
+		nMinPage as WORD
+		nMaxPage as WORD
+		nCopies as WORD
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPrintHook as LPPRINTHOOKPROC
+		lpfnSetupHook as LPSETUPHOOKPROC
+		lpPrintTemplateName as LPCSTR
+		lpSetupTemplateName as LPCSTR
+		hPrintTemplate as HGLOBAL
+		hSetupTemplate as HGLOBAL
+	end type
+#else
+	type tagPDA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		nFromPage as WORD
+		nToPage as WORD
+		nMinPage as WORD
+		nMaxPage as WORD
+		nCopies as WORD
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPrintHook as LPPRINTHOOKPROC
+		lpfnSetupHook as LPSETUPHOOKPROC
+		lpPrintTemplateName as LPCSTR
+		lpSetupTemplateName as LPCSTR
+		hPrintTemplate as HGLOBAL
+		hSetupTemplate as HGLOBAL
+	end type
+#endif
+
+type PRINTDLGA as tagPDA
+type LPPRINTDLGA as tagPDA ptr
+
+#ifdef __FB_64BIT__
+	type tagPDW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		nFromPage as WORD
+		nToPage as WORD
+		nMinPage as WORD
+		nMaxPage as WORD
+		nCopies as WORD
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPrintHook as LPPRINTHOOKPROC
+		lpfnSetupHook as LPSETUPHOOKPROC
+		lpPrintTemplateName as LPCWSTR
+		lpSetupTemplateName as LPCWSTR
+		hPrintTemplate as HGLOBAL
+		hSetupTemplate as HGLOBAL
+	end type
+#else
+	type tagPDW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		nFromPage as WORD
+		nToPage as WORD
+		nMinPage as WORD
+		nMaxPage as WORD
+		nCopies as WORD
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPrintHook as LPPRINTHOOKPROC
+		lpfnSetupHook as LPSETUPHOOKPROC
+		lpPrintTemplateName as LPCWSTR
+		lpSetupTemplateName as LPCWSTR
+		hPrintTemplate as HGLOBAL
+		hSetupTemplate as HGLOBAL
+	end type
+#endif
+
+type PRINTDLGW as tagPDW
+type LPPRINTDLGW as tagPDW ptr
+
+#ifdef UNICODE
+	type PRINTDLG as PRINTDLGW
+	type LPPRINTDLG as LPPRINTDLGW
+#else
+	type PRINTDLG as PRINTDLGA
+	type LPPRINTDLG as LPPRINTDLGA
+#endif
+
+declare function PrintDlgA(byval as LPPRINTDLGA) as WINBOOL
+declare function PrintDlgW(byval as LPPRINTDLGW) as WINBOOL
+
+#ifdef UNICODE
+	declare function PrintDlg alias "PrintDlgW"(byval as LPPRINTDLGW) as WINBOOL
+#else
+	declare function PrintDlg alias "PrintDlgA"(byval as LPPRINTDLGA) as WINBOOL
+#endif
+
+type IPrintDialogCallbackVtbl as IPrintDialogCallbackVtbl_
+
+#ifdef __FB_64BIT__
+	type IPrintDialogCallback
+		lpVtbl as IPrintDialogCallbackVtbl ptr
+	end type
+
+	type IPrintDialogCallbackVtbl_
+		QueryInterface as function(byval This as IPrintDialogCallback ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+		AddRef as function(byval This as IPrintDialogCallback ptr) as ULONG
+		Release as function(byval This as IPrintDialogCallback ptr) as ULONG
+		InitDone as function(byval This as IPrintDialogCallback ptr) as HRESULT
+		SelectionChange as function(byval This as IPrintDialogCallback ptr) as HRESULT
+		HandleMessage as function(byval This as IPrintDialogCallback ptr, byval hDlg as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pResult as LRESULT ptr) as HRESULT
+	end type
+#else
+	type IPrintDialogCallback field = 1
+		lpVtbl as IPrintDialogCallbackVtbl ptr
+	end type
+
+	type IPrintDialogCallbackVtbl_ field = 1
+		QueryInterface as function(byval This as IPrintDialogCallback ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+		AddRef as function(byval This as IPrintDialogCallback ptr) as ULONG
+		Release as function(byval This as IPrintDialogCallback ptr) as ULONG
+		InitDone as function(byval This as IPrintDialogCallback ptr) as HRESULT
+		SelectionChange as function(byval This as IPrintDialogCallback ptr) as HRESULT
+		HandleMessage as function(byval This as IPrintDialogCallback ptr, byval hDlg as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pResult as LRESULT ptr) as HRESULT
+	end type
+#endif
+
+type IPrintDialogServicesVtbl as IPrintDialogServicesVtbl_
+
+#ifdef __FB_64BIT__
+	type IPrintDialogServices
+		lpVtbl as IPrintDialogServicesVtbl ptr
+	end type
+
+	type IPrintDialogServicesVtbl_
+		QueryInterface as function(byval This as IPrintDialogServices ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+		AddRef as function(byval This as IPrintDialogServices ptr) as ULONG
+		Release as function(byval This as IPrintDialogServices ptr) as ULONG
+		GetCurrentDevMode as function(byval This as IPrintDialogServices ptr, byval pDevMode as LPDEVMODE, byval pcbSize as UINT ptr) as HRESULT
+		GetCurrentPrinterName as function(byval This as IPrintDialogServices ptr, byval pPrinterName as LPTSTR, byval pcchSize as UINT ptr) as HRESULT
+		GetCurrentPortName as function(byval This as IPrintDialogServices ptr, byval pPortName as LPTSTR, byval pcchSize as UINT ptr) as HRESULT
+	end type
+
+	type tagPRINTPAGERANGE
+		nFromPage as DWORD
+		nToPage as DWORD
+	end type
+#else
+	type IPrintDialogServices field = 1
+		lpVtbl as IPrintDialogServicesVtbl ptr
+	end type
+
+	type IPrintDialogServicesVtbl_ field = 1
+		QueryInterface as function(byval This as IPrintDialogServices ptr, byval riid as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+		AddRef as function(byval This as IPrintDialogServices ptr) as ULONG
+		Release as function(byval This as IPrintDialogServices ptr) as ULONG
+		GetCurrentDevMode as function(byval This as IPrintDialogServices ptr, byval pDevMode as LPDEVMODE, byval pcbSize as UINT ptr) as HRESULT
+		GetCurrentPrinterName as function(byval This as IPrintDialogServices ptr, byval pPrinterName as LPTSTR, byval pcchSize as UINT ptr) as HRESULT
+		GetCurrentPortName as function(byval This as IPrintDialogServices ptr, byval pPortName as LPTSTR, byval pcchSize as UINT ptr) as HRESULT
+	end type
+
+	type tagPRINTPAGERANGE field = 1
+		nFromPage as DWORD
+		nToPage as DWORD
+	end type
+#endif
+
+type PRINTPAGERANGE as tagPRINTPAGERANGE
+type LPPRINTPAGERANGE as tagPRINTPAGERANGE ptr
+
+#ifdef __FB_64BIT__
+	type tagPDEXA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		Flags2 as DWORD
+		ExclusionFlags as DWORD
+		nPageRanges as DWORD
+		nMaxPageRanges as DWORD
+		lpPageRanges as LPPRINTPAGERANGE
+		nMinPage as DWORD
+		nMaxPage as DWORD
+		nCopies as DWORD
+		hInstance as HINSTANCE
+		lpPrintTemplateName as LPCSTR
+		lpCallback as LPUNKNOWN
+		nPropertyPages as DWORD
+		lphPropertyPages as HPROPSHEETPAGE ptr
+		nStartPage as DWORD
+		dwResultAction as DWORD
+	end type
+#else
+	type tagPDEXA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		Flags2 as DWORD
+		ExclusionFlags as DWORD
+		nPageRanges as DWORD
+		nMaxPageRanges as DWORD
+		lpPageRanges as LPPRINTPAGERANGE
+		nMinPage as DWORD
+		nMaxPage as DWORD
+		nCopies as DWORD
+		hInstance as HINSTANCE
+		lpPrintTemplateName as LPCSTR
+		lpCallback as LPUNKNOWN
+		nPropertyPages as DWORD
+		lphPropertyPages as HPROPSHEETPAGE ptr
+		nStartPage as DWORD
+		dwResultAction as DWORD
+	end type
+#endif
+
+type PRINTDLGEXA as tagPDEXA
+type LPPRINTDLGEXA as tagPDEXA ptr
+
+#ifdef __FB_64BIT__
+	type tagPDEXW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		Flags2 as DWORD
+		ExclusionFlags as DWORD
+		nPageRanges as DWORD
+		nMaxPageRanges as DWORD
+		lpPageRanges as LPPRINTPAGERANGE
+		nMinPage as DWORD
+		nMaxPage as DWORD
+		nCopies as DWORD
+		hInstance as HINSTANCE
+		lpPrintTemplateName as LPCWSTR
+		lpCallback as LPUNKNOWN
+		nPropertyPages as DWORD
+		lphPropertyPages as HPROPSHEETPAGE ptr
+		nStartPage as DWORD
+		dwResultAction as DWORD
+	end type
+#else
+	type tagPDEXW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		hDC as HDC
+		Flags as DWORD
+		Flags2 as DWORD
+		ExclusionFlags as DWORD
+		nPageRanges as DWORD
+		nMaxPageRanges as DWORD
+		lpPageRanges as LPPRINTPAGERANGE
+		nMinPage as DWORD
+		nMaxPage as DWORD
+		nCopies as DWORD
+		hInstance as HINSTANCE
+		lpPrintTemplateName as LPCWSTR
+		lpCallback as LPUNKNOWN
+		nPropertyPages as DWORD
+		lphPropertyPages as HPROPSHEETPAGE ptr
+		nStartPage as DWORD
+		dwResultAction as DWORD
+	end type
+#endif
+
+type PRINTDLGEXW as tagPDEXW
+type LPPRINTDLGEXW as tagPDEXW ptr
+
+#ifdef UNICODE
+	type PRINTDLGEX as PRINTDLGEXW
+	type LPPRINTDLGEX as LPPRINTDLGEXW
+#else
+	type PRINTDLGEX as PRINTDLGEXA
+	type LPPRINTDLGEX as LPPRINTDLGEXA
+#endif
+
+declare function PrintDlgExA(byval as LPPRINTDLGEXA) as HRESULT
+declare function PrintDlgExW(byval as LPPRINTDLGEXW) as HRESULT
+
+#ifdef UNICODE
+	declare function PrintDlgEx alias "PrintDlgExW"(byval as LPPRINTDLGEXW) as HRESULT
+#else
+	declare function PrintDlgEx alias "PrintDlgExA"(byval as LPPRINTDLGEXA) as HRESULT
+#endif
+
+const PD_ALLPAGES = &h0
+const PD_SELECTION = &h1
+const PD_PAGENUMS = &h2
+const PD_NOSELECTION = &h4
+const PD_NOPAGENUMS = &h8
+const PD_COLLATE = &h10
+const PD_PRINTTOFILE = &h20
+const PD_PRINTSETUP = &h40
+const PD_NOWARNING = &h80
+const PD_RETURNDC = &h100
+const PD_RETURNIC = &h200
+const PD_RETURNDEFAULT = &h400
+const PD_SHOWHELP = &h800
+const PD_ENABLEPRINTHOOK = &h1000
+const PD_ENABLESETUPHOOK = &h2000
+const PD_ENABLEPRINTTEMPLATE = &h4000
+const PD_ENABLESETUPTEMPLATE = &h8000
+const PD_ENABLEPRINTTEMPLATEHANDLE = &h10000
+const PD_ENABLESETUPTEMPLATEHANDLE = &h20000
+const PD_USEDEVMODECOPIES = &h40000
+const PD_USEDEVMODECOPIESANDCOLLATE = &h40000
+const PD_DISABLEPRINTTOFILE = &h80000
+const PD_HIDEPRINTTOFILE = &h100000
+const PD_NONETWORKBUTTON = &h200000
+const PD_CURRENTPAGE = &h400000
+const PD_NOCURRENTPAGE = &h800000
+const PD_EXCLUSIONFLAGS = &h1000000
+const PD_USELARGETEMPLATE = &h10000000
+#define PD_EXCL_COPIESANDCOLLATE (DM_COPIES or DM_COLLATE)
+const START_PAGE_GENERAL = &hffffffff
+const PD_RESULT_CANCEL = 0
+const PD_RESULT_PRINT = 1
+const PD_RESULT_APPLY = 2
+
+#ifdef __FB_64BIT__
+	type tagDEVNAMES
+		wDriverOffset as WORD
+		wDeviceOffset as WORD
+		wOutputOffset as WORD
+		wDefault as WORD
+	end type
+#else
+	type tagDEVNAMES field = 1
+		wDriverOffset as WORD
+		wDeviceOffset as WORD
+		wOutputOffset as WORD
+		wDefault as WORD
+	end type
+#endif
+
+type DEVNAMES as tagDEVNAMES
+type LPDEVNAMES as tagDEVNAMES ptr
+const DN_DEFAULTPRN = &h1
+declare function CommDlgExtendedError() as DWORD
+#define WM_PSD_PAGESETUPDLG WM_USER
+#define WM_PSD_FULLPAGERECT (WM_USER + 1)
+#define WM_PSD_MINMARGINRECT (WM_USER + 2)
+#define WM_PSD_MARGINRECT (WM_USER + 3)
+#define WM_PSD_GREEKTEXTRECT (WM_USER + 4)
+#define WM_PSD_ENVSTAMPRECT (WM_USER + 5)
+#define WM_PSD_YAFULLPAGERECT (WM_USER + 6)
+type LPPAGEPAINTHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+type LPPAGESETUPHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
+
+#ifdef __FB_64BIT__
+	type tagPSDA
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		Flags as DWORD
+		ptPaperSize as POINT
+		rtMinMargin as RECT
+		rtMargin as RECT
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPageSetupHook as LPPAGESETUPHOOK
+		lpfnPagePaintHook as LPPAGEPAINTHOOK
+		lpPageSetupTemplateName as LPCSTR
+		hPageSetupTemplate as HGLOBAL
+	end type
+#else
+	type tagPSDA field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		Flags as DWORD
+		ptPaperSize as POINT
+		rtMinMargin as RECT
+		rtMargin as RECT
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPageSetupHook as LPPAGESETUPHOOK
+		lpfnPagePaintHook as LPPAGEPAINTHOOK
+		lpPageSetupTemplateName as LPCSTR
+		hPageSetupTemplate as HGLOBAL
+	end type
+#endif
+
+type PAGESETUPDLGA as tagPSDA
+type LPPAGESETUPDLGA as tagPSDA ptr
+
+#ifdef __FB_64BIT__
+	type tagPSDW
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		Flags as DWORD
+		ptPaperSize as POINT
+		rtMinMargin as RECT
+		rtMargin as RECT
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPageSetupHook as LPPAGESETUPHOOK
+		lpfnPagePaintHook as LPPAGEPAINTHOOK
+		lpPageSetupTemplateName as LPCWSTR
+		hPageSetupTemplate as HGLOBAL
+	end type
+#else
+	type tagPSDW field = 1
+		lStructSize as DWORD
+		hwndOwner as HWND
+		hDevMode as HGLOBAL
+		hDevNames as HGLOBAL
+		Flags as DWORD
+		ptPaperSize as POINT
+		rtMinMargin as RECT
+		rtMargin as RECT
+		hInstance as HINSTANCE
+		lCustData as LPARAM
+		lpfnPageSetupHook as LPPAGESETUPHOOK
+		lpfnPagePaintHook as LPPAGEPAINTHOOK
+		lpPageSetupTemplateName as LPCWSTR
+		hPageSetupTemplate as HGLOBAL
+	end type
+#endif
+
+type PAGESETUPDLGW as tagPSDW
+type LPPAGESETUPDLGW as tagPSDW ptr
+
+#ifdef UNICODE
+	type PAGESETUPDLG as PAGESETUPDLGW
+	type LPPAGESETUPDLG as LPPAGESETUPDLGW
+#else
+	type PAGESETUPDLG as PAGESETUPDLGA
+	type LPPAGESETUPDLG as LPPAGESETUPDLGA
+#endif
+
+declare function PageSetupDlgA(byval as LPPAGESETUPDLGA) as WINBOOL
+declare function PageSetupDlgW(byval as LPPAGESETUPDLGW) as WINBOOL
+
+#ifdef UNICODE
+	declare function PageSetupDlg alias "PageSetupDlgW"(byval as LPPAGESETUPDLGW) as WINBOOL
+#else
+	declare function PageSetupDlg alias "PageSetupDlgA"(byval as LPPAGESETUPDLGA) as WINBOOL
+#endif
+
+const PSD_DEFAULTMINMARGINS = &h0
+const PSD_INWININIINTLMEASURE = &h0
+const PSD_MINMARGINS = &h1
+const PSD_MARGINS = &h2
+const PSD_INTHOUSANDTHSOFINCHES = &h4
+const PSD_INHUNDREDTHSOFMILLIMETERS = &h8
+const PSD_DISABLEMARGINS = &h10
+const PSD_DISABLEPRINTER = &h20
+const PSD_NOWARNING = &h80
+const PSD_DISABLEORIENTATION = &h100
+const PSD_RETURNDEFAULT = &h400
+const PSD_DISABLEPAPER = &h200
+const PSD_SHOWHELP = &h800
+const PSD_ENABLEPAGESETUPHOOK = &h2000
+const PSD_ENABLEPAGESETUPTEMPLATE = &h8000
+const PSD_ENABLEPAGESETUPTEMPLATEHANDLE = &h20000
+const PSD_ENABLEPAGEPAINTHOOK = &h40000
+const PSD_DISABLEPAGEPAINTING = &h80000
+const PSD_NONETWORKBUTTON = &h200000
+
+end extern

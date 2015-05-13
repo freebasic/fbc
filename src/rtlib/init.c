@@ -52,14 +52,33 @@ void fb_hRtExit( void )
 	if( __fb_is_inicnt != 0 )
 		return;
 
-	/* atexit() can't be used because if OPEN is called in a global ctor inside 
-	   a shared-lib and any other file function is called in the respective global
-	   dtor, it would be already reseted - the atexit() chain is called before the 
-	   global dtors one*/
+	/* Doing clean-up here in the rtlib's global dtor, instead of using
+	   atexit().
+
+	   FB supports global ctors/dtors, and thus FB programs can call FB
+	   functions from there. Hence the rtlib/gfxlib2 initialization must
+	   be the first global ctor, and the clean-up must be the last global
+	   dtor. This is done by fbrt0.c. We can't rely on atexit() for this,
+	   because sometimes the atexit handlers can be called before the global
+	   dtors, sometimes after.
+
+	   Some observations about atexit() behaviour: it depends on context,
+	   e.g. whether it's called from a global ctor or global dtor or main(),
+	   or whether it's a shared lib/DLL or executable,
+	   and it depends on the platform (e.g. GNU/Linux vs MinGW-w64). */
+
 	fb_FileReset( );
+
+	if( __fb_ctx.exit_gfxlib2 )
+		__fb_ctx.exit_gfxlib2( );
 
 	/* os-dep termination */
 	fb_hEnd( 0 );
+
+	fb_DevScrnEnd( FB_HANDLE_SCREEN );
+
+	/* Free main thread's TLS contexts */
+	fb_TlsFreeCtxTb( );
 
 #ifdef ENABLE_MT
 	fb_TlsExit( );

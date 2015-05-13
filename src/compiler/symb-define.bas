@@ -20,96 +20,19 @@ type DEFCALLBACK as function() as string
 type SYMBDEF
 	name			as const zstring ptr
 	value			as zstring ptr
-	flags			as integer
+	flags			as integer  '' FB_DEFINE_FLAGS_*
 	proc			as DEFCALLBACK
 end type
 
-declare function	hDefFile_cb			( ) as string
-declare function	hDefFpmode_cb		( ) as string
-declare function	hDefFpu_cb			( ) as string
-declare function	hDefFunction_cb		( ) as string
-declare function	hDefLine_cb			( ) as string
-declare function	hDefDate_cb			( ) as string
-declare function	hDefDateISO_cb		( ) as string
-declare function	hDefTime_cb			( ) as string
-declare function    hDefMultithread_cb	( ) as string
-declare function    hDefOptByval_cb		( ) as string
-declare function    hDefOptDynamic_cb	( ) as string
-declare function    hDefOptEscape_cb	( ) as string
-declare function    hDefOptExplicit_cb	( ) as string
-declare function    hDefOptPrivate_cb	( ) as string
-declare function    hDefOptGosub_cb		( ) as string
-declare function 	hDefOutExe_cb 		( ) as string
-declare function 	hDefOutLib_cb 		( ) as string
-declare function 	hDefOutDll_cb 		( ) as string
-declare function 	hDefOutObj_cb 		( ) as string
-declare function 	hDefDebug_cb 		( ) as string
-declare function 	hDefErr_cb 			( ) as string
-declare function 	hDefExErr_cb 		( ) as string
-declare function 	hDefExxErr_cb 		( ) as string
-declare function	hDefLang_cb			( ) as string
-declare function    hDefBackend_cb      ( ) as string
-declare function    hDefPath_cb         ( ) as string
-declare function    hDefGcc_cb         	( ) as string
-
-'' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 34
-
-	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
-	{ _
-        (@"__FB_VERSION__"            ,   @FB_VERSION         ,  0,   NULL                   ), _
-        (@"__FB_BUILD_DATE__"         ,   @FB_BUILD_DATE      ,  0,   NULL                   ), _
-        (@"__FB_VER_MAJOR__"          ,   @FB_VER_MAJOR       ,  1,   NULL                   ), _
-        (@"__FB_VER_MINOR__"          ,   @FB_VER_MINOR       ,  1,   NULL                   ), _
-        (@"__FB_VER_PATCH__"          ,   @FB_VER_PATCH       ,  1,   NULL                   ), _
-        (@"__FB_SIGNATURE__"          ,   @FB_SIGN            ,  0,   NULL                   ), _
-        (@"__FB_MT__"                 ,   NULL                ,  1,   @hDefMultithread_cb    ), _
-        (@"__FILE__"                  ,   NULL                ,  0,   @hDefFile_cb           ), _
-        (@"__FILE_NQ__"               ,   NULL                ,  1,   @hDefFile_cb           ), _
-        (@"__FUNCTION__"              ,   NULL                ,  0,   @hDefFunction_cb       ), _
-        (@"__FUNCTION_NQ__"           ,   NULL                ,  1,   @hDefFunction_cb       ), _
-        (@"__LINE__"                  ,   NULL                ,  1,   @hDefLine_cb           ), _
-        (@"__DATE__"                  ,   NULL                ,  0,   @hDefDate_cb           ), _
-        (@"__DATE_ISO__"              ,   NULL                ,  0,   @hDefDateISO_cb        ), _
-        (@"__TIME__"                  ,   NULL                ,  0,   @hDefTime_cb           ), _
-        (@"__PATH__"                  ,   NULL                ,  0,   @hDefPath_cb           ), _
-        (@"__FB_OPTION_BYVAL__"       ,   NULL                ,  1,   @hDefOptByval_cb       ), _
-        (@"__FB_OPTION_DYNAMIC__"     ,   NULL                ,  1,   @hDefOptDynamic_cb     ), _
-        (@"__FB_OPTION_ESCAPE__"      ,   NULL                ,  1,   @hDefOptEscape_cb      ), _
-        (@"__FB_OPTION_EXPLICIT__"    ,   NULL                ,  1,   @hDefOptExplicit_cb    ), _
-        (@"__FB_OPTION_PRIVATE__"     ,   NULL                ,  1,   @hDefOptPrivate_cb     ), _
-        (@"__FB_OPTION_GOSUB__"       ,   NULL                ,  1,   @hDefOptGosub_cb       ), _
-        (@"__FB_OUT_EXE__"            ,   NULL                ,  1,   @hDefOutExe_cb         ), _
-        (@"__FB_OUT_LIB__"            ,   NULL                ,  1,   @hDefOutLib_cb         ), _
-        (@"__FB_OUT_DLL__"            ,   NULL                ,  1,   @hDefOutDll_cb         ), _
-        (@"__FB_OUT_OBJ__"            ,   NULL                ,  1,   @hDefOutObj_cb         ), _
-        (@"__FB_DEBUG__"              ,   NULL                ,  1,   @hDefDebug_cb          ), _
-        (@"__FB_ERR__"                ,   NULL                ,  1,   @hDefErr_cb            ), _
-        (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
-        (@"__FB_BACKEND__"            ,   NULL                ,  0,   @hDefBackend_cb        ), _
-        (@"__FB_FPU__"                ,   NULL                ,  0,   @hDefFpu_cb            ), _
-        (@"__FB_FPMODE__"             ,   NULL                ,  0,   @hDefFpmode_cb         ), _
-        (@"__FB_GCC__"                ,   NULL                ,  1,   @hDefGcc_cb    		 ), _
-		(NULL) _
-	}
-
-'':::::
 private function hDefFile_cb( ) as string static
-
 	function = env.inf.name
-
 end function
 
- '':::::
 private function hDefPath_cb( ) as string static
-
 	function = fbGetInputFileParentDir( )
-
 end function
 
-'':::::
 private function hDefFunction_cb( ) as string
-
 	if( symbGetIsMainProc( parser.currproc ) ) then
 		function = FB_MAINPROCNAME
 	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
@@ -117,122 +40,72 @@ private function hDefFunction_cb( ) as string
 	else
 		function = *symbGetFullProcName( parser.currproc )
 	end if
-
 end function
 
-'':::::
 private function hDefLine_cb( ) as string static
-
 	function = str( lexLineNum( ) )
-
 end function
 
-'':::::
 private function hDefDate_cb( ) as string static
-
 	function = date
-
 end function
 
-'':::::
 private function hDefDateISO_cb( ) as string static
-
 	function = format( now( ), "yyyy-mm-dd" )
-
 end function
 
-'':::::
 private function hDefTime_cb( ) as string static
-
 	function = time
-
 end function
 
-'':::::
 private function hDefMultithread_cb( ) as string static
-
 	function = str( env.clopt.multithreaded )
-
 end function
 
-'':::::
 private function hDefOptByval_cb ( ) as string
-
 	function = str( env.opt.parammode = FB_PARAMMODE_BYVAL )
-
 end function
 
-'':::::
 private function hDefOptDynamic_cb ( ) as string
-
 	function = str( env.opt.dynamic = TRUE )
-
 end function
 
-'':::::
 private function hDefOptEscape_cb ( ) as string
-
 	function = str( env.opt.escapestr = TRUE )
-
 end function
 
-'':::::
 private function hDefOptExplicit_cb ( ) as string
-
 	function = str( env.opt.explicit = TRUE )
-
 end function
 
-'':::::
 private function hDefOptPrivate_cb ( ) as string
-
 	function = str( env.opt.procpublic = FALSE )
-
 end function
 
-'':::::
 private function hDefOptGosub_cb ( ) as string
-
 	function = str( env.opt.gosub = TRUE )
-
 end function
 
-'':::::
 private function hDefOutExe_cb ( ) as string
-
 	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
-
 end function
 
-'':::::
 private function hDefOutLib_cb ( ) as string
-
 	function = str( env.clopt.outtype = FB_OUTTYPE_STATICLIB )
-
 end function
 
-'':::::
 private function hDefOutDll_cb ( ) as string
-
 	function = str( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
-
 end function
 
-'':::::
 private function hDefOutObj_cb ( ) as string
-
 	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
-
 end function
 
-'':::::
 private function hDefDebug_cb ( ) as string
-
 	function = str( env.clopt.debug )
-
 end function
 
-''::::
 private function hDefErr_cb ( ) as string
     dim as integer res = &h0000
 
@@ -249,17 +122,12 @@ private function hDefErr_cb ( ) as string
 	end if
 
 	function = str( res )
-
 end function
 
-'':::::
 private function hDefLang_cb ( ) as string
-
 	function = fbGetLangName( env.clopt.lang )
-
 end function
 
-'':::::
 private function hDefBackend_cb ( ) as string
 	select case env.clopt.backend
 	case FB_BACKEND_GAS
@@ -271,9 +139,7 @@ private function hDefBackend_cb ( ) as string
 	end select
 end function
 
-'':::::
 private function hDefFpu_cb ( ) as string
-
 	select case fbGetOption( FB_COMPOPT_FPUTYPE )
 	case FB_FPUTYPE_FPU
 		return "x87"
@@ -282,12 +148,9 @@ private function hDefFpu_cb ( ) as string
 	case else
 		assert( 0 )
 	end select
-
 end function
 
-'':::::
 private function hDefFpmode_cb ( ) as string
-
 	select case fbGetOption( FB_COMPOPT_FPMODE )
 	case FB_FPMODE_PRECISE
 		return "precise"
@@ -296,14 +159,58 @@ private function hDefFpmode_cb ( ) as string
 	case else
 		assert( 0 )
 	end select
-
 end function
 
 private function hDefGcc_cb( ) as string static
 	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
 end function
 
-'':::::
+private function hDefAsm_cb( ) as string
+	select case( env.clopt.asmsyntax )
+	case FB_ASMSYNTAX_INTEL : function = "intel"
+	case FB_ASMSYNTAX_ATT   : function = "att"
+	end select
+end function
+
+'' Intrinsic #defines which are always defined
+dim shared defTb(0 to ...) as SYMBDEF => _
+{ _
+	_ '' name                     constant value  flags                callback (if value isn't constant)
+	(@"__FB_VERSION__"        , @FB_VERSION   , FB_DEFINE_FLAGS_STR, NULL               ), _
+	(@"__FB_BUILD_DATE__"     , @FB_BUILD_DATE, FB_DEFINE_FLAGS_STR, NULL               ), _
+	(@"__FB_VER_MAJOR__"      , @FB_VER_MAJOR , 0                  , NULL               ), _
+	(@"__FB_VER_MINOR__"      , @FB_VER_MINOR , 0                  , NULL               ), _
+	(@"__FB_VER_PATCH__"      , @FB_VER_PATCH , 0                  , NULL               ), _
+	(@"__FB_SIGNATURE__"      , @FB_SIGN      , FB_DEFINE_FLAGS_STR, NULL               ), _
+	(@"__FB_MT__"             , NULL          , 0                  , @hDefMultithread_cb), _
+	(@"__FILE__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefFile_cb       ), _
+	(@"__FILE_NQ__"           , NULL          , 0                  , @hDefFile_cb       ), _
+	(@"__FUNCTION__"          , NULL          , FB_DEFINE_FLAGS_STR, @hDefFunction_cb   ), _
+	(@"__FUNCTION_NQ__"       , NULL          , 0                  , @hDefFunction_cb   ), _
+	(@"__LINE__"              , NULL          , 0                  , @hDefLine_cb       ), _
+	(@"__DATE__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefDate_cb       ), _
+	(@"__DATE_ISO__"          , NULL          , FB_DEFINE_FLAGS_STR, @hDefDateISO_cb    ), _
+	(@"__TIME__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefTime_cb       ), _
+	(@"__PATH__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefPath_cb       ), _
+	(@"__FB_OPTION_BYVAL__"   , NULL          , 0                  , @hDefOptByval_cb   ), _
+	(@"__FB_OPTION_DYNAMIC__" , NULL          , 0                  , @hDefOptDynamic_cb ), _
+	(@"__FB_OPTION_ESCAPE__"  , NULL          , 0                  , @hDefOptEscape_cb  ), _
+	(@"__FB_OPTION_EXPLICIT__", NULL          , 0                  , @hDefOptExplicit_cb), _
+	(@"__FB_OPTION_PRIVATE__" , NULL          , 0                  , @hDefOptPrivate_cb ), _
+	(@"__FB_OPTION_GOSUB__"   , NULL          , 0                  , @hDefOptGosub_cb   ), _
+	(@"__FB_OUT_EXE__"        , NULL          , 0                  , @hDefOutExe_cb     ), _
+	(@"__FB_OUT_LIB__"        , NULL          , 0                  , @hDefOutLib_cb     ), _
+	(@"__FB_OUT_DLL__"        , NULL          , 0                  , @hDefOutDll_cb     ), _
+	(@"__FB_OUT_OBJ__"        , NULL          , 0                  , @hDefOutObj_cb     ), _
+	(@"__FB_DEBUG__"          , NULL          , 0                  , @hDefDebug_cb      ), _
+	(@"__FB_ERR__"            , NULL          , 0                  , @hDefErr_cb        ), _
+	(@"__FB_LANG__"           , NULL          , FB_DEFINE_FLAGS_STR, @hDefLang_cb       ), _
+	(@"__FB_BACKEND__"        , NULL          , FB_DEFINE_FLAGS_STR, @hDefBackend_cb    ), _
+	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
+	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
+	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        )  _
+}
+
 sub symbDefineInit _
 	( _
 		byval ismain as integer _
@@ -316,14 +223,11 @@ sub symbDefineInit _
 	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
 	'' add the pre-defines
-	for i as integer = 0 to SYMB_MAXDEFINES-1
-		if( defTb(i).name = NULL ) then
-			exit for
-		end if
-
+	for i as integer = 0 to ubound( defTb )
 		value = *defTb(i).value
+
 		if( defTb(i).value <> NULL ) then
-			if( bit( defTb(i).flags, 0 ) = 0 ) then
+			if( defTb(i).flags and FB_DEFINE_FLAGS_STR ) then
 				value = QUOTE + value + QUOTE
 			end if
 		end if
@@ -349,6 +253,8 @@ sub symbDefineInit _
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
 		symbAddDefine( @"__FB_ARM__", NULL, 0 )
+	case FB_CPUFAMILY_X86
+		symbAddDefine( @"__FB_ASM__", NULL, 0, FALSE, @hDefAsm_cb, FB_DEFINE_FLAGS_STR )
 	end select
 
 	'' add "main" define

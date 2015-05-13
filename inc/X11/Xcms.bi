@@ -1,22 +1,33 @@
-''
-''
-'' Xcms -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xcms_bi__
-#define __Xcms_bi__
+#pragma once
 
-#define XcmsFailure 0
-#define XcmsSuccess 1
-#define XcmsSuccessWithCompression 2
-#define XcmsInitNone &h00
-#define XcmsInitSuccess &h01
-#define XcmsInitFailure &hff
+#include once "crt/long.bi"
+#include once "X11/Xlib.bi"
 
-type XcmsColorFormat as uinteger
+extern "C"
+
+#define _X11_XCMS_H_
+const XcmsFailure = 0
+const XcmsSuccess = 1
+const XcmsSuccessWithCompression = 2
+#define XcmsUndefinedFormat cast(XcmsColorFormat, &h00000000)
+#define XcmsCIEXYZFormat cast(XcmsColorFormat, &h00000001)
+#define XcmsCIEuvYFormat cast(XcmsColorFormat, &h00000002)
+#define XcmsCIExyYFormat cast(XcmsColorFormat, &h00000003)
+#define XcmsCIELabFormat cast(XcmsColorFormat, &h00000004)
+#define XcmsCIELuvFormat cast(XcmsColorFormat, &h00000005)
+#define XcmsTekHVCFormat cast(XcmsColorFormat, &h00000006)
+#define XcmsRGBFormat cast(XcmsColorFormat, &h80000000)
+#define XcmsRGBiFormat cast(XcmsColorFormat, &h80000001)
+const XcmsInitNone = &h00
+const XcmsInitSuccess = &h01
+const XcmsInitFailure = &hff
+#define DisplayOfCCC(ccc) (ccc)->dpy
+#define ScreenNumberOfCCC(ccc) (ccc)->screenNumber
+#define VisualOfCCC(ccc) (ccc)->visual
+#define ClientWhitePointOfCCC(ccc) (@(ccc)->clientWhitePt)
+#define ScreenWhitePointOfCCC(ccc) (@(ccc)->pPerScrnInfo->screenWhitePt)
+#define FunctionSetOfCCC(ccc) (ccc)->pPerScrnInfo->functionSet
+type XcmsColorFormat as culong
 type XcmsFloat as double
 
 type XcmsRGB
@@ -46,7 +57,7 @@ end type
 type XcmsCIExyY
 	x as XcmsFloat
 	y as XcmsFloat
-	Y as XcmsFloat
+	Y_ as XcmsFloat
 end type
 
 type XcmsCIELab
@@ -74,13 +85,7 @@ type XcmsPad
 	pad3 as XcmsFloat
 end type
 
-type XcmsColor
-	pixel as uinteger
-	format as XcmsColorFormat
-	spec as XcmsColor__NESTED__spec
-end type
-
-union XcmsColor__NESTED__spec
+union XcmsColor_spec
 	RGB as XcmsRGB
 	RGBi as XcmsRGBi
 	CIEXYZ as XcmsCIEXYZ
@@ -92,6 +97,12 @@ union XcmsColor__NESTED__spec
 	Pad as XcmsPad
 end union
 
+type XcmsColor
+	spec as XcmsColor_spec
+	pixel as culong
+	format as XcmsColorFormat
+end type
+
 type _XcmsPerScrnInfo
 	screenWhitePt as XcmsColor
 	functionSet as XPointer
@@ -102,12 +113,12 @@ end type
 
 type XcmsPerScrnInfo as _XcmsPerScrnInfo
 type XcmsCCC as _XcmsCCC ptr
-type XcmsCompressionProc as function cdecl(byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-type XcmsWhiteAdjustProc as function cdecl(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
+type XcmsCompressionProc as function(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+type XcmsWhiteAdjustProc as function(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
 
 type _XcmsCCC
 	dpy as Display ptr
-	screenNumber as integer
+	screenNumber as long
 	visual as Visual ptr
 	clientWhitePt as XcmsColor
 	gamutCompProc as XcmsCompressionProc
@@ -118,21 +129,21 @@ type _XcmsCCC
 end type
 
 type XcmsCCCRec as _XcmsCCC
-type XcmsScreenInitProc as function cdecl(byval as Display ptr, byval as integer, byval as XcmsPerScrnInfo ptr) as Status
-type XcmsScreenFreeProc as sub cdecl(byval as XPointer)
-type XcmsDDConversionProc as function cdecl(byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-type XcmsDIConversionProc as function cdecl(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
+type XcmsScreenInitProc as function(byval as Display ptr, byval as long, byval as XcmsPerScrnInfo ptr) as long
+type XcmsScreenFreeProc as sub(byval as XPointer)
+type XcmsDDConversionProc as function(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+type XcmsDIConversionProc as function(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
 type XcmsConversionProc as XcmsDIConversionProc
 type XcmsFuncListPtr as XcmsConversionProc ptr
-type XcmsParseStringProc as function cdecl(byval as zstring ptr, byval as XcmsColor ptr) as integer
+type XcmsParseStringProc as function(byval as zstring ptr, byval as XcmsColor ptr) as long
 
 type _XcmsColorSpace
-	prefix as zstring ptr
+	prefix as const zstring ptr
 	id as XcmsColorFormat
 	parseString as XcmsParseStringProc
 	to_CIEXYZ as XcmsFuncListPtr
 	from_CIEXYZ as XcmsFuncListPtr
-	inverse_flag as integer
+	inverse_flag as long
 end type
 
 type XcmsColorSpace as _XcmsColorSpace
@@ -144,72 +155,74 @@ type _XcmsFunctionSet
 end type
 
 type XcmsFunctionSet as _XcmsFunctionSet
+declare function XcmsAddColorSpace(byval as XcmsColorSpace ptr) as long
+declare function XcmsAddFunctionSet(byval as XcmsFunctionSet ptr) as long
+declare function XcmsAllocColor(byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as XcmsColorFormat) as long
+declare function XcmsAllocNamedColor(byval as Display ptr, byval as Colormap, byval as const zstring ptr, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat) as long
+declare function XcmsCCCOfColormap(byval as Display ptr, byval as Colormap) as XcmsCCC
+declare function XcmsCIELabClipab(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELabClipL(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELabClipLab(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELabQueryMaxC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELabQueryMaxL(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELabQueryMaxLC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELabQueryMinL(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELabToCIEXYZ(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIELabWhiteShiftColors(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELuvClipL(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELuvClipLuv(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELuvClipuv(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsCIELuvQueryMaxC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELuvQueryMaxL(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELuvQueryMaxLC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELuvQueryMinL(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsCIELuvToCIEuvY(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIELuvWhiteShiftColors(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsCIEXYZToCIELab(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIEXYZToCIEuvY(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIEXYZToCIExyY(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIEXYZToRGBi(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsCIEuvYToCIELuv(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIEuvYToCIEXYZ(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIEuvYToTekHVC(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsCIExyYToCIEXYZ(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsClientWhitePointOfCCC(byval as XcmsCCC) as XcmsColor ptr
+declare function XcmsConvertColors(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as XcmsColorFormat, byval as long ptr) as long
+declare function XcmsCreateCCC(byval as Display ptr, byval as long, byval as Visual ptr, byval as XcmsColor ptr, byval as XcmsCompressionProc, byval as XPointer, byval as XcmsWhiteAdjustProc, byval as XPointer) as XcmsCCC
+declare function XcmsDefaultCCC(byval as Display ptr, byval as long) as XcmsCCC
+declare function XcmsDisplayOfCCC(byval as XcmsCCC) as Display ptr
+declare function XcmsFormatOfPrefix(byval as zstring ptr) as XcmsColorFormat
+declare sub XcmsFreeCCC(byval as XcmsCCC)
+declare function XcmsLookupColor(byval as Display ptr, byval as Colormap, byval as const zstring ptr, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat) as long
+declare function XcmsPrefixOfFormat(byval as XcmsColorFormat) as zstring ptr
+declare function XcmsQueryBlack(byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as long
+declare function XcmsQueryBlue(byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as long
+declare function XcmsQueryColor(byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as XcmsColorFormat) as long
+declare function XcmsQueryColors(byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as ulong, byval as XcmsColorFormat) as long
+declare function XcmsQueryGreen(byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as long
+declare function XcmsQueryRed(byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as long
+declare function XcmsQueryWhite(byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as long
+declare function XcmsRGBiToCIEXYZ(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsRGBiToRGB(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsRGBToRGBi(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsScreenNumberOfCCC(byval as XcmsCCC) as long
+declare function XcmsScreenWhitePointOfCCC(byval as XcmsCCC) as XcmsColor ptr
+declare function XcmsSetCCCOfColormap(byval as Display ptr, byval as Colormap, byval as XcmsCCC) as XcmsCCC
+declare function XcmsSetCompressionProc(byval as XcmsCCC, byval as XcmsCompressionProc, byval as XPointer) as XcmsCompressionProc
+declare function XcmsSetWhiteAdjustProc(byval as XcmsCCC, byval as XcmsWhiteAdjustProc, byval as XPointer) as XcmsWhiteAdjustProc
+declare function XcmsSetWhitePoint(byval as XcmsCCC, byval as XcmsColor ptr) as long
+declare function XcmsStoreColor(byval as Display ptr, byval as Colormap, byval as XcmsColor ptr) as long
+declare function XcmsStoreColors(byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsTekHVCClipC(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsTekHVCClipV(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsTekHVCClipVC(byval as XcmsCCC, byval as XcmsColor ptr, byval as ulong, byval as ulong, byval as long ptr) as long
+declare function XcmsTekHVCQueryMaxC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsTekHVCQueryMaxV(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsTekHVCQueryMaxVC(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsTekHVCQueryMaxVSamples(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsTekHVCQueryMinV(byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as long
+declare function XcmsTekHVCToCIEuvY(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as ulong) as long
+declare function XcmsTekHVCWhiteShiftColors(byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as ulong, byval as long ptr) as long
+declare function XcmsVisualOfCCC(byval as XcmsCCC) as Visual ptr
 
-declare function XcmsAddFunctionSet cdecl alias "XcmsAddFunctionSet" (byval as XcmsFunctionSet ptr) as Status
-declare function XcmsAllocColor cdecl alias "XcmsAllocColor" (byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as XcmsColorFormat) as Status
-declare function XcmsCCCOfColormap cdecl alias "XcmsCCCOfColormap" (byval as Display ptr, byval as Colormap) as XcmsCCC
-declare function XcmsCIELabClipab cdecl alias "XcmsCIELabClipab" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELabClipL cdecl alias "XcmsCIELabClipL" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELabClipLab cdecl alias "XcmsCIELabClipLab" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELabQueryMaxC cdecl alias "XcmsCIELabQueryMaxC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELabQueryMaxL cdecl alias "XcmsCIELabQueryMaxL" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELabQueryMaxLC cdecl alias "XcmsCIELabQueryMaxLC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELabQueryMinL cdecl alias "XcmsCIELabQueryMinL" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELabToCIEXYZ cdecl alias "XcmsCIELabToCIEXYZ" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIELabWhiteShiftColors cdecl alias "XcmsCIELabWhiteShiftColors" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELuvClipL cdecl alias "XcmsCIELuvClipL" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELuvClipLuv cdecl alias "XcmsCIELuvClipLuv" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELuvClipuv cdecl alias "XcmsCIELuvClipuv" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIELuvQueryMaxC cdecl alias "XcmsCIELuvQueryMaxC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELuvQueryMaxL cdecl alias "XcmsCIELuvQueryMaxL" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELuvQueryMaxLC cdecl alias "XcmsCIELuvQueryMaxLC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELuvQueryMinL cdecl alias "XcmsCIELuvQueryMinL" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsCIELuvToCIEuvY cdecl alias "XcmsCIELuvToCIEuvY" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIELuvWhiteShiftColors cdecl alias "XcmsCIELuvWhiteShiftColors" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIEXYZToCIELab cdecl alias "XcmsCIEXYZToCIELab" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIEXYZToCIEuvY cdecl alias "XcmsCIEXYZToCIEuvY" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIEXYZToCIExyY cdecl alias "XcmsCIEXYZToCIExyY" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIEXYZToRGBi cdecl alias "XcmsCIEXYZToRGBi" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsCIEuvYToCIELuv cdecl alias "XcmsCIEuvYToCIELuv" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIEuvYToCIEXYZ cdecl alias "XcmsCIEuvYToCIEXYZ" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIEuvYToTekHVC cdecl alias "XcmsCIEuvYToTekHVC" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsCIExyYToCIEXYZ cdecl alias "XcmsCIExyYToCIEXYZ" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsClientWhitePointOfCCC cdecl alias "XcmsClientWhitePointOfCCC" (byval as XcmsCCC) as XcmsColor ptr
-declare function XcmsConvertColors cdecl alias "XcmsConvertColors" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as XcmsColorFormat, byval as Bool ptr) as Status
-declare function XcmsCreateCCC cdecl alias "XcmsCreateCCC" (byval as Display ptr, byval as integer, byval as Visual ptr, byval as XcmsColor ptr, byval as XcmsCompressionProc, byval as XPointer, byval as XcmsWhiteAdjustProc, byval as XPointer) as XcmsCCC
-declare function XcmsDefaultCCC cdecl alias "XcmsDefaultCCC" (byval as Display ptr, byval as integer) as XcmsCCC
-declare function XcmsDisplayOfCCC cdecl alias "XcmsDisplayOfCCC" (byval as XcmsCCC) as Display ptr
-declare function XcmsFormatOfPrefix cdecl alias "XcmsFormatOfPrefix" (byval as zstring ptr) as XcmsColorFormat
-declare sub XcmsFreeCCC cdecl alias "XcmsFreeCCC" (byval as XcmsCCC)
-declare function XcmsPrefixOfFormat cdecl alias "XcmsPrefixOfFormat" (byval as XcmsColorFormat) as zstring ptr
-declare function XcmsQueryBlack cdecl alias "XcmsQueryBlack" (byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as Status
-declare function XcmsQueryBlue cdecl alias "XcmsQueryBlue" (byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as Status
-declare function XcmsQueryColor cdecl alias "XcmsQueryColor" (byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as XcmsColorFormat) as Status
-declare function XcmsQueryColors cdecl alias "XcmsQueryColors" (byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as uinteger, byval as XcmsColorFormat) as Status
-declare function XcmsQueryGreen cdecl alias "XcmsQueryGreen" (byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as Status
-declare function XcmsQueryRed cdecl alias "XcmsQueryRed" (byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as Status
-declare function XcmsQueryWhite cdecl alias "XcmsQueryWhite" (byval as XcmsCCC, byval as XcmsColorFormat, byval as XcmsColor ptr) as Status
-declare function XcmsRGBiToCIEXYZ cdecl alias "XcmsRGBiToCIEXYZ" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsRGBiToRGB cdecl alias "XcmsRGBiToRGB" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsRGBToRGBi cdecl alias "XcmsRGBToRGBi" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsScreenNumberOfCCC cdecl alias "XcmsScreenNumberOfCCC" (byval as XcmsCCC) as integer
-declare function XcmsScreenWhitePointOfCCC cdecl alias "XcmsScreenWhitePointOfCCC" (byval as XcmsCCC) as XcmsColor ptr
-declare function XcmsSetCCCOfColormap cdecl alias "XcmsSetCCCOfColormap" (byval as Display ptr, byval as Colormap, byval as XcmsCCC) as XcmsCCC
-declare function XcmsSetCompressionProc cdecl alias "XcmsSetCompressionProc" (byval as XcmsCCC, byval as XcmsCompressionProc, byval as XPointer) as XcmsCompressionProc
-declare function XcmsSetWhiteAdjustProc cdecl alias "XcmsSetWhiteAdjustProc" (byval as XcmsCCC, byval as XcmsWhiteAdjustProc, byval as XPointer) as XcmsWhiteAdjustProc
-declare function XcmsSetWhitePoint cdecl alias "XcmsSetWhitePoint" (byval as XcmsCCC, byval as XcmsColor ptr) as Status
-declare function XcmsStoreColor cdecl alias "XcmsStoreColor" (byval as Display ptr, byval as Colormap, byval as XcmsColor ptr) as Status
-declare function XcmsStoreColors cdecl alias "XcmsStoreColors" (byval as Display ptr, byval as Colormap, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsTekHVCClipC cdecl alias "XcmsTekHVCClipC" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsTekHVCClipV cdecl alias "XcmsTekHVCClipV" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsTekHVCClipVC cdecl alias "XcmsTekHVCClipVC" (byval as XcmsCCC, byval as XcmsColor ptr, byval as uinteger, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsTekHVCQueryMaxC cdecl alias "XcmsTekHVCQueryMaxC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsTekHVCQueryMaxV cdecl alias "XcmsTekHVCQueryMaxV" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsTekHVCQueryMaxVC cdecl alias "XcmsTekHVCQueryMaxVC" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsTekHVCQueryMaxVSamples cdecl alias "XcmsTekHVCQueryMaxVSamples" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsTekHVCQueryMinV cdecl alias "XcmsTekHVCQueryMinV" (byval as XcmsCCC, byval as XcmsFloat, byval as XcmsFloat, byval as XcmsColor ptr) as Status
-declare function XcmsTekHVCToCIEuvY cdecl alias "XcmsTekHVCToCIEuvY" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as uinteger) as Status
-declare function XcmsTekHVCWhiteShiftColors cdecl alias "XcmsTekHVCWhiteShiftColors" (byval as XcmsCCC, byval as XcmsColor ptr, byval as XcmsColor ptr, byval as XcmsColorFormat, byval as XcmsColor ptr, byval as uinteger, byval as Bool ptr) as Status
-declare function XcmsVisualOfCCC cdecl alias "XcmsVisualOfCCC" (byval as XcmsCCC) as Visual ptr
-
-#endif
+end extern

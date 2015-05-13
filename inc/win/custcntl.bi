@@ -1,21 +1,15 @@
-''
-''
-'' custcntl -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_custcntl_bi__
-#define __win_custcntl_bi__
+#pragma once
 
-#define CCF_NOTEXT 1
-#define CCHCCCLASS 32
-#define CCHCCDESC 32
-#define CCHCCTEXT 256
+#include once "_mingw_unicode.bi"
 
-#ifndef UNICODE
-type CCSTYLEA
+extern "Windows"
+
+#define _INC_CUSTCNTL
+const CCHCCCLASS = 32
+const CCHCCDESC = 32
+const CCHCCTEXT = 256
+
+type tagCCSTYLEA
 	flStyle as DWORD
 	flExtStyle as DWORD
 	szText as zstring * 256
@@ -23,10 +17,10 @@ type CCSTYLEA
 	wReserved1 as WORD
 end type
 
-type LPCCSTYLEA as CCSTYLEA ptr
+type CCSTYLEA as tagCCSTYLEA
+type LPCCSTYLEA as tagCCSTYLEA ptr
 
-#else
-type CCSTYLEW
+type tagCCSTYLEW
 	flStyle as DWORD
 	flExtStyle as DWORD
 	szText as wstring * 256
@@ -34,33 +28,56 @@ type CCSTYLEW
 	wReserved1 as WORD
 end type
 
-type LPCCSTYLEW as CCSTYLEW ptr
+type CCSTYLEW as tagCCSTYLEW
+type LPCCSTYLEW as tagCCSTYLEW ptr
+
+#ifdef UNICODE
+	#define CCSTYLE CCSTYLEW
+	#define LPCCSTYLE LPCCSTYLEW
+	#define LPFNCCSTYLE LPFNCCSTYLEW
+	#define LPFNCCSIZETOTEXT LPFNCCSIZETOTEXTW
+	#define CCSTYLEFLAG CCSTYLEFLAGW
+	#define LPCCSTYLEFLAG LPCCSTYLEFLAGW
+	#define CCINFO CCINFOW
+	#define LPCCINFO LPCCINFOW
+	#define LPFNCCINFO LPFNCCINFOW
+#else
+	#define CCSTYLE CCSTYLEA
+	#define LPCCSTYLE LPCCSTYLEA
+	#define LPFNCCSTYLE LPFNCCSTYLEA
+	#define LPFNCCSIZETOTEXT LPFNCCSIZETOTEXTA
+	#define CCSTYLEFLAG CCSTYLEFLAGA
+	#define LPCCSTYLEFLAG LPCCSTYLEFLAGA
+	#define CCINFO CCINFOA
+	#define LPCCINFO LPCCINFOA
+	#define LPFNCCINFO LPFNCCINFOA
 #endif
 
-#ifndef UNICODE
-type CCSTYLEFLAGA
+type LPFNCCSTYLEA as function(byval hwndParent as HWND, byval pccs as LPCCSTYLEA) as WINBOOL
+type LPFNCCSTYLEW as function(byval hwndParent as HWND, byval pccs as LPCCSTYLEW) as WINBOOL
+type LPFNCCSIZETOTEXTA as function(byval flStyle as DWORD, byval flExtStyle as DWORD, byval hfont as HFONT, byval pszText as LPSTR) as INT_
+type LPFNCCSIZETOTEXTW as function(byval flStyle as DWORD, byval flExtStyle as DWORD, byval hfont as HFONT, byval pszText as LPWSTR) as INT_
+
+type tagCCSTYLEFLAGA
 	flStyle as DWORD
 	flStyleMask as DWORD
 	pszStyle as LPSTR
 end type
 
-type LPCCSTYLEFLAGA as CCSTYLEFLAGA ptr
+type CCSTYLEFLAGA as tagCCSTYLEFLAGA
+type LPCCSTYLEFLAGA as tagCCSTYLEFLAGA ptr
 
-#else
-type CCSTYLEFLAGW
+type tagCCSTYLEFLAGW
 	flStyle as DWORD
 	flStyleMask as DWORD
 	pszStyle as LPWSTR
 end type
 
-type LPCCSTYLEFLAGW as CCSTYLEFLAGW ptr
-#endif
+type CCSTYLEFLAGW as tagCCSTYLEFLAGW
+type LPCCSTYLEFLAGW as tagCCSTYLEFLAGW ptr
+const CCF_NOTEXT = &h00000001
 
-#ifndef UNICODE
-type LPFNCCSTYLEA as function(byval as HWND, byval as LPCCSTYLEA) as BOOL
-type LPFNCCSIZETOTEXTA as function(byval as DWORD, byval as DWORD, byval as HFONT, byval as LPSTR) as INT_
-
-type CCINFOA
+type tagCCINFOA
 	szClass as zstring * 32
 	flOptions as DWORD
 	szDesc as zstring * 32
@@ -78,23 +95,10 @@ type CCINFOA
 	dwReserved2 as DWORD
 end type
 
-type LPCCINFOA as CCINFOA ptr
-type LPFNCCINFOA as function(byval as LPCCINFOA) as UINT
+type CCINFOA as tagCCINFOA
+type LPCCINFOA as tagCCINFOA ptr
 
-declare function CustomControlInfo alias "CustomControlInfoA" (byval acci as LPCCINFOA) as UINT
-
-type CCSTYLE as CCSTYLEA
-type LPCCSTYLE as CCSTYLEA ptr
-type CCSTYLEFLAG as CCSTYLEFLAGA
-type LPCCSTYLEFLAG as CCSTYLEFLAGA ptr
-type CCINFO as CCINFOA
-type LPCCINFO as CCINFOA ptr
-
-#else
-type LPFNCCSTYLEW as function(byval as HWND, byval as LPCCSTYLEW) as BOOL
-type LPFNCCSIZETOTEXTW as function(byval as DWORD, byval as DWORD, byval as HFONT, byval as LPWSTR) as INT_
-
-type CCINFOW
+type tagCCINFOW
 	szClass as wstring * 32
 	flOptions as DWORD
 	szDesc as wstring * 32
@@ -103,27 +107,18 @@ type CCINFOW
 	flStyleDefault as DWORD
 	flExtStyleDefault as DWORD
 	flCtrlTypeMask as DWORD
-	szTextDefault as wstring * 256
 	cStyleFlags as INT_
 	aStyleFlags as LPCCSTYLEFLAGW
+	szTextDefault as wstring * 256
 	lpfnStyle as LPFNCCSTYLEW
 	lpfnSizeToText as LPFNCCSIZETOTEXTW
 	dwReserved1 as DWORD
 	dwReserved2 as DWORD
 end type
 
-type LPCCINFOW as CCINFOW ptr
-type LPFNCCINFOW as function(byval as LPCCINFOW) as UINT
+type CCINFOW as tagCCINFOW
+type LPCCINFOW as tagCCINFOW ptr
+type LPFNCCINFOA as function(byval acci as LPCCINFOA) as UINT
+type LPFNCCINFOW as function(byval acci as LPCCINFOW) as UINT
 
-declare function CustomControlInfo alias "CustomControlInfoW" (byval acci as LPCCINFOW) as UINT
-
-type CCSTYLE as CCSTYLEW
-type LPCCSTYLE as CCSTYLEW ptr
-type CCSTYLEFLAG as CCSTYLEFLAGW
-type LPCCSTYLEFLAG as CCSTYLEFLAGW ptr
-type CCINFO as CCINFOW
-type LPCCINFO as CCINFOW ptr
-
-#endif
-
-#endif
+end extern

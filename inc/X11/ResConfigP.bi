@@ -1,14 +1,12 @@
-''
-''
-'' ResConfigP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ResConfigP_bi__
-#define __ResConfigP_bi__
+#pragma once
 
-declare sub _XtResourceConfigurationEH cdecl alias "_XtResourceConfigurationEH" (byval as Widget, byval as XtPointer, byval as XEvent ptr)
+#include once "X11/Xfuncproto.bi"
 
-#endif
+extern "C"
+
+#define _RESCONFIGP_H
+#define RCM_DATA "Custom Data"
+#define RCM_INIT "Custom Init"
+declare sub _XtResourceConfigurationEH(byval as Widget, byval as XtPointer, byval as XEvent ptr)
+
+end extern

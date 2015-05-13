@@ -7,8 +7,7 @@
 
 ' Create a new hbox with an image and a label packed into it
 ' and return the box.
-
-Function xpm_label_box Cdecl(Byval xpm_filename As gpointer Ptr, Byval label_text As gpointer Ptr) As GtkWidget Ptr
+Function xpm_label_box(Byval xpm_filename As ZString Ptr, Byval label_text As ZString Ptr) As GtkWidget Ptr
 
 	Dim As GtkWidget Ptr box
 	Dim As GtkWidget Ptr label
@@ -72,7 +71,7 @@ End Sub
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (@callback), strptr("cool button"))
 	
 	' This calls our box creating function 
-	box = xpm_label_box (strptr("info.xpm"), strptr("cool button"))
+	box = xpm_label_box("info.xpm", "cool button")
 	
 	' Pack and show all our widgets 
 	gtk_widget_show (box)

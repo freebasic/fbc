@@ -403,15 +403,35 @@ end type
 				( -1 ) _
 			} _
 		), _
-		/' #define OFFSETOF(type_,field_) cint( @cast( type_ ptr, 0 )->field_ ) '/ _
+		/' #define OFFSETOF(type_,field_) clng( @cast( type_ ptr, 0 )->field_ )
+		   32bit -lang qb: not using cint() because that's 16 bit (offsets bigger
+		   than that would be truncated, and it's incompatible to 32 bit pointers) '/ _
 		( _
-			@"__OFFSETOF", FB_RTL_OPT_NONE, _
+			@"__OFFSETOF", FB_RTL_OPT_32BIT, _
 			2, _
 			{ _
 				@"T", @"F" _
 			}, _
 			{ _
-				( FB_DEFTOK_TYPE_TEX, @"cint( @__cast( " ), _
+				( FB_DEFTOK_TYPE_TEX, @"clng( @__cast( " ), _
+				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
+				( FB_DEFTOK_TYPE_TEX, @" __ptr, 0 )->" ), _
+				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
+				( FB_DEFTOK_TYPE_TEX, @" )" ), _
+				( -1 ) _
+			} _
+		), _
+		/' #define OFFSETOF(type_,field_) __clngint( @cast( type_ ptr, 0 )->field_ )
+		   64bit -lang qb: not using cint() because that's 16 bit (offsets bigger
+		   than that would be truncated, and it's incompatible to 64 bit pointers) '/ _
+		( _
+			@"__OFFSETOF", FB_RTL_OPT_64BIT, _
+			2, _
+			{ _
+				@"T", @"F" _
+			}, _
+			{ _
+				( FB_DEFTOK_TYPE_TEX, @"__clngint( @__cast( " ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
 				( FB_DEFTOK_TYPE_TEX, @" __ptr, 0 )->" ), _
 				( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _

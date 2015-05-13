@@ -1,16 +1,23 @@
 {{fbdoc item="title" value="Compiler Option: -r"}}----
-Compile into asm file(s) only, do not assemble or link
+Compile into ##*.asm/*.c/*.ll## file(s) only, do not assemble or link
 
 {{fbdoc item="syntax"}}##
 	**-r**
 ##
 {{fbdoc item="desc"}}
-	The ##**-r**## option specifies that any source files listed are to be compiled to asm files, and not compiled or linked into an executable. When using [[CompilerOptgen -gen gcc]], ##*.c## files are generated instead of ##*.asm## files. When using the "-r" switch, "-m" must be specified when compiling a main source file.
+	The ##**-r**## option specifies that any source files listed are to be compiled to ##*.asm##/##*.c##/##*.ll## files, depending on the used [[CompilerOptgen code generation backend]], and not compiled or linked into an executable.
+	
+	When using the ##**-r**## option, ##[[CompilerOptm -m]]## must be specified when compiling the main module.
+	
+	Use the ##[[CompilerOptrupp -R]]## option to preserve intermediate files without affecting compilation/assembling/linking.
+	Use the ##[[CompilerOptrr -rr]]## option to compile input source files to ##*.asm## regardless of the code generation backend.
 
 {{fbdoc item="see"}}
 	- [[CompilerOptc Compiler Option: -c]]
 	- [[CompilerOptrupp Compiler Option: -R]]
 	- [[CompilerOptm Compiler Option: -m]]
+	- [[CompilerOptgen Compiler Option: -gen]]
+	- [[CompilerOptrr Compiler Option: -rr]]
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

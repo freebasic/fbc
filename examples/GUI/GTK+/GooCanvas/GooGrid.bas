@@ -36,7 +36,7 @@ VAR root = goo_canvas_get_root_item (GOO_CANVAS (canvas))
 VAR title = goo_canvas_text_new(root, "<span size=""xx-large"">"_
                                 "GooCanvas FreeBasic-Example</span>", _
                                 GridX + 0.5 * GridW, GridY - 25, -1, _
-                                GTK_ANCHOR_S, _
+                                GOO_CANVAS_ANCHOR_S, _
                                 "use-markup", 1, _
                                 "font", "Times bold 14", _
                                 NULL)
@@ -78,31 +78,31 @@ goo_canvas_points_unref(CanPoi)
 VAR ox = GridX - 8 * line_group
 VAR text = goo_canvas_text_new(group, "1", _
                                ox, oy - fy, -1, _
-                               GTK_ANCHOR_E, _
+                               GOO_CANVAS_ANCHOR_E, _
                                NULL)
 text = goo_canvas_text_new(group, "-1", _
                            ox, oy + fy, -1, _
-                           GTK_ANCHOR_E, _
+                           GOO_CANVAS_ANCHOR_E, _
                            NULL)
 fy /= 2
 text = goo_canvas_text_new(group, "<small>0.5</small>", _
                            ox, oy - fy, -1, _
-                           GTK_ANCHOR_E, _
+                           GOO_CANVAS_ANCHOR_E, _
                            "use-markup", 1, _
                            NULL)
 text = goo_canvas_text_new(group, "<small>-0.5</small>", _
                            ox, oy + fy, -1, _
-                           GTK_ANCHOR_E, _
+                           GOO_CANVAS_ANCHOR_E, _
                            "use-markup", 1, _
                            NULL)
 text = goo_canvas_text_new(group, "0", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_E, _
+                           GOO_CANVAS_ANCHOR_E, _
                            NULL)
 ox -= 35
 text = goo_canvas_text_new(group, "f(<i>φ</i>) = sin(<i>φ</i>)", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_S, _
+                           GOO_CANVAS_ANCHOR_S, _
                            "use-markup", 1, _
                            NULL)
 goo_canvas_item_rotate(text, -90.0, ox, oy)
@@ -111,40 +111,40 @@ ox = GridX
 oy = GridY + GridH + 8 * line_group
 text = goo_canvas_text_new(group, "0", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            NULL)
 ox += dx
 text = goo_canvas_text_new(group, "<small>0.5π</small>", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            "use-markup", 1, _
                            NULL)
 ox += dx
 text = goo_canvas_text_new(group, "π", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            NULL)
 text = goo_canvas_text_new(group, "This <i>φ</i> looks like an <i>angel</i>", _
                            ox, oy + 25, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            "use-markup", 1, _
                            NULL)
 ox += dx
 text = goo_canvas_text_new(group, "<small>1.5π</small>", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            "use-markup", 1, _
                            NULL)
 ox += dx
 text = goo_canvas_text_new(group, "2π", _
                            ox, oy, -1, _
-                           GTK_ANCHOR_N, _
+                           GOO_CANVAS_ANCHOR_N, _
                            NULL)
 text = goo_canvas_text_new(group, "<span size=""x-small""><span foreground=""blue"">" _
                            !"Click me!</span>\n<span background=""yellow"">" _
                            " l · m · r </span></span>", _
                            ox - 0.5 * dx, GridY + .05 * GridH + 0.5 * fy, -1, _
-                           GTK_ANCHOR_CENTER, _
+                           GOO_CANVAS_ANCHOR_CENTER, _
                            "use-markup", 1, _
                            "alignment", PANGO_ALIGN_CENTER, _
                            NULL)

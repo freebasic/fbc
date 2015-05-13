@@ -307,8 +307,8 @@ end function
 private sub hAssignDynamicArray _
 	( _
 		byval fld as FBSYMBOL ptr, _
-		byval dstexpr as ASTNODE ptr, _
-		byval srcexpr as ASTNODE ptr _
+		byval this_ as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr _
 	)
 
 	dim as integer dtype = any
@@ -317,7 +317,9 @@ private sub hAssignDynamicArray _
 
 	'' 1. REDIM dest to same size as source (will call dtors/ctors as needed)
 	dtype = fld->typ
-	astAdd( rtlArrayRedimTo( dstexpr, srcexpr, dtype, fld->subtype ) )
+	astAdd( rtlArrayRedimTo( astBuildVarField( this_, fld ), _
+	                         astBuildVarField( rhs  , fld ), _
+	                         dtype, fld->subtype ) )
 
 	'' 2. Loop over all elements (if any) and copy them over 1 by 1, using
 	''    astNewASSIGN(), that will call let overloads as needed, and handle
@@ -329,16 +331,16 @@ private sub hAssignDynamicArray _
 	src = symbAddTempVar( dtype, fld->subtype )
 	limit = symbAddTempVar( dtype, fld->subtype )
 
-	'' dst   = this.dstdesc.ptr
-	'' src   = this.srcdesc.ptr
-	'' limit = src + this.srcdesc.size
-	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( dstexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
-	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( srcexpr, symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	'' dst   = this.arraydesc.ptr
+	'' src   = rhs.arraydesc.ptr
+	'' limit = src + rhs.arraydesc.size
+	astAdd( astBuildVarAssign( dst, astBuildDerefAddrOf( astBuildVarField( this_, fld ), symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
+	astAdd( astBuildVarAssign( src, astBuildDerefAddrOf( astBuildVarField( rhs  , fld ), symb.fbarray_ptr, dtype, fld->subtype ), AST_OPOPT_ISINI ) )
 	astAdd( astBuildVarAssign( _
 		limit, _
 		astNewBOP( AST_OP_ADD, _
 			astNewVAR( src ), _
-			astBuildDerefAddrOf( srcexpr, symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ), _
+			astBuildDerefAddrOf( astBuildVarField( rhs, fld ), symb.fbarray_size, FB_DATATYPE_UINT, NULL ) ), _
 		AST_OPOPT_ISINI ) )
 
 	'' looplabel:
@@ -367,8 +369,8 @@ end sub
 private sub hAssignList _
 	( _
 		byval fld as FBSYMBOL ptr, _
-		byval dstexpr as ASTNODE ptr, _
-		byval srcexpr as ASTNODE ptr _
+		byval this_ as FBSYMBOL ptr, _
+		byval rhs as FBSYMBOL ptr _
 	) static
 
 	dim as FBSYMBOL ptr cnt, label, dst, src, subtype
@@ -380,10 +382,10 @@ private sub hAssignList _
     dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
     src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
-	'' dst = @this.dst(0)
-	astAdd( astBuildVarAssign( dst, astNewADDROF( dstexpr ), AST_OPOPT_ISINI ) )
-	'' src = @this.src(0)
-	astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ), AST_OPOPT_ISINI ) )
+	'' dst = @this.arrayfield(0)
+	astAdd( astBuildVarAssign( dst, astNewADDROF( astBuildVarField( this_, fld ) ), AST_OPOPT_ISINI ) )
+	'' src = @rhs.arrayfield(0)
+	astAdd( astBuildVarAssign( src, astNewADDROF( astBuildVarField( rhs, fld ) ), AST_OPOPT_ISINI ) )
 
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )
@@ -446,7 +448,6 @@ private sub hAddLetOpBody _
 	)
 
 	dim as FBSYMBOL ptr fld = any, this_ = any, rhs = any
-	dim as ASTNODE ptr dstexpr = any, srcexpr = any
 	dim as integer do_copy = any
 
 	hProcBegin( udt, letproc )
@@ -484,18 +485,15 @@ private sub hAddLetOpBody _
 				continue while
 			end if
 
-			dstexpr = astBuildVarField( this_, fld )
-			srcexpr = astBuildVarField( rhs, fld )
-
 			'' Dynamic array field?
 			if( symbIsDynamic( fld ) ) then
-				hAssignDynamicArray( fld, dstexpr, srcexpr )
+				hAssignDynamicArray( fld, this_, rhs )
 			else
 				if( symbGetArrayDimensions( fld ) = 0 ) then
 					'' this.field = rhs.field
-					astAdd( astNewASSIGN( dstexpr, srcexpr ) )
+					astAdd( astNewASSIGN( astBuildVarField( this_, fld ), astBuildVarField( rhs, fld ) ) )
 				else
-					hAssignList( fld, dstexpr, srcexpr )
+					hAssignList( fld, this_, rhs )
 				end if
 			end if
 		end if

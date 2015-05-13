@@ -42,11 +42,12 @@ CASE .butPM
     IF t = "" THEN t = "-0" ELSE t = "-" & t
   END IF
 END SELECT
-END WITH
 
 IF t = "" THEN t = "0"
 
 gtk_entry_set_text(disp, t)
 CLEAR_DISPLAY = 0
+
+END WITH
 
 END SUB

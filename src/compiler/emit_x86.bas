@@ -909,8 +909,6 @@ private sub hWriteHeader( ) static
 
 	''
 	emitWriteStr( ".intel_syntax noprefix", TRUE )
-    emitWriteStr( "" )
-    hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
 
 end sub
 
@@ -6531,7 +6529,7 @@ sub emitFBCTINFBEGIN( )
 	_setSection( IR_SECTION_INFO, 0 )
 end sub
 
-sub emitFBCTINFSTRING( byval s as zstring ptr )
+sub emitFBCTINFSTRING( byval s as const zstring ptr )
 	static as string ln
 	ln = *emit.vtbl.getTypeString( FB_DATATYPE_CHAR )
 	ln += " """ + *s + $"\0"""
@@ -6738,12 +6736,7 @@ private function _open _
 end function
 
 '':::::
-private sub _close _
-	( _
-		byval tottime as double _
-	)
-
-	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
+private sub _close( )
 
 	'' Close any STABS #include block (and return to the toplevel .bas
 	'' file name) before emitting the global vars

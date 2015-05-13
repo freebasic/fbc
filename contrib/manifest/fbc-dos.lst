@@ -16,17 +16,6 @@ include/freebas/Lua/lualib.bi
 include/freebas/allegro.bi
 include/freebas/allegro/algif.bi
 include/freebas/allegro/alpng.bi
-include/freebas/allegro5/allegro.bi
-include/freebas/allegro5/allegro_acodec.bi
-include/freebas/allegro5/allegro_audio.bi
-include/freebas/allegro5/allegro_color.bi
-include/freebas/allegro5/allegro_font.bi
-include/freebas/allegro5/allegro_image.bi
-include/freebas/allegro5/allegro_memfile.bi
-include/freebas/allegro5/allegro_native_dialog.bi
-include/freebas/allegro5/allegro_physfs.bi
-include/freebas/allegro5/allegro_primitives.bi
-include/freebas/allegro5/allegro_ttf.bi
 include/freebas/aspell.bi
 include/freebas/bfd.bi
 include/freebas/bfd/bfd-216.bi
@@ -68,6 +57,7 @@ include/freebas/crt/long.bi
 include/freebas/crt/longdouble.bi
 include/freebas/crt/malloc.bi
 include/freebas/crt/math.bi
+include/freebas/crt/mem.bi
 include/freebas/crt/process.bi
 include/freebas/crt/setjmp.bi
 include/freebas/crt/stdarg.bi
@@ -112,7 +102,6 @@ include/freebas/expat.bi
 include/freebas/fbgfx.bi
 include/freebas/fbio.bi
 include/freebas/fbthread.bi
-include/freebas/ffi.bi
 include/freebas/file.bi
 include/freebas/gd.bi
 include/freebas/gdbm.bi
@@ -354,6 +343,7 @@ include/freebas/gsl/gsl_wavelet2d.bi
 include/freebas/jit.bi
 include/freebas/jpeglib.bi
 include/freebas/jpgalleg.bi
+include/freebas/libiconv.bi
 include/freebas/libintl.bi
 include/freebas/libxml/HTMLparser.bi
 include/freebas/libxml/HTMLtree.bi
@@ -447,6 +437,8 @@ include/freebas/sqlite3.bi
 include/freebas/sqlite3ext.bi
 include/freebas/string.bi
 include/freebas/tinyptc.bi
+include/freebas/tre/regex.bi
+include/freebas/tre/tre.bi
 include/freebas/utf_conv.bi
 include/freebas/vbcompat.bi
 include/freebas/zip.bi

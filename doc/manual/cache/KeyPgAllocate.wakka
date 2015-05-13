@@ -2,7 +2,7 @@
 Allocates a block of memory from the free store
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Allocate**( //count// )

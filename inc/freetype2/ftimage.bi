@@ -1,15 +1,11 @@
-''
-''
-'' ftimage -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __ftimage_bi__
-#define __ftimage_bi__
+#pragma once
 
-type FT_Pos as integer
+#include once "crt/long.bi"
+
+extern "C"
+
+#define __FTIMAGE_H__
+type FT_Pos as clong
 
 type FT_Vector_
 	x as FT_Pos
@@ -27,7 +23,8 @@ end type
 
 type FT_BBox as FT_BBox_
 
-enum FT_Pixel_Mode_
+type FT_Pixel_Mode_ as long
+enum
 	FT_PIXEL_MODE_NONE = 0
 	FT_PIXEL_MODE_MONO
 	FT_PIXEL_MODE_GRAY
@@ -35,19 +32,20 @@ enum FT_Pixel_Mode_
 	FT_PIXEL_MODE_GRAY4
 	FT_PIXEL_MODE_LCD
 	FT_PIXEL_MODE_LCD_V
+	FT_PIXEL_MODE_BGRA
 	FT_PIXEL_MODE_MAX
 end enum
 
 type FT_Pixel_Mode as FT_Pixel_Mode_
 
 type FT_Bitmap_
-	rows as integer
-	width as integer
-	pitch as integer
+	rows as ulong
+	width as ulong
+	pitch as long
 	buffer as ubyte ptr
-	num_grays as short
-	pixel_mode as byte
-	palette_mode as byte
+	num_grays as ushort
+	pixel_mode as ubyte
+	palette_mode as ubyte
 	palette as any ptr
 end type
 
@@ -59,67 +57,59 @@ type FT_Outline_
 	points as FT_Vector ptr
 	tags as zstring ptr
 	contours as short ptr
-	flags as integer
+	flags as long
 end type
 
 type FT_Outline as FT_Outline_
-
-#define FT_OUTLINE_NONE &h0
-#define FT_OUTLINE_OWNER &h1
-#define FT_OUTLINE_EVEN_ODD_FILL &h2
-#define FT_OUTLINE_REVERSE_FILL &h4
-#define FT_OUTLINE_IGNORE_DROPOUTS &h8
-#define FT_OUTLINE_HIGH_PRECISION &h100
-#define FT_OUTLINE_SINGLE_PASS &h200
-#define ft_outline_none &h0
-#define ft_outline_owner &h1
-#define ft_outline_even_odd_fill &h2
-#define ft_outline_reverse_fill &h4
-#define ft_outline_ignore_dropouts &h8
-#define ft_outline_high_precision &h100
-#define ft_outline_single_pass &h200
-#define FT_CURVE_TAG_ON 1
-#define FT_CURVE_TAG_CONIC 0
-#define FT_CURVE_TAG_CUBIC 2
-#define FT_CURVE_TAG_TOUCH_X 8
-#define FT_CURVE_TAG_TOUCH_Y 16
-#define FT_CURVE_TAG_TOUCH_BOTH (8 or 16)
-#define FT_Curve_Tag_On 1
-#define FT_Curve_Tag_Conic 0
-#define FT_Curve_Tag_Cubic 2
-#define FT_Curve_Tag_Touch_X 8
-#define FT_Curve_Tag_Touch_Y 16
-
-type FT_Outline_MoveToFunc as function cdecl(byval as FT_Vector ptr, byval as any ptr) as integer
-type FT_Outline_LineToFunc as function cdecl(byval as FT_Vector ptr, byval as any ptr) as integer
-type FT_Outline_ConicToFunc as function cdecl(byval as FT_Vector ptr, byval as FT_Vector ptr, byval as any ptr) as integer
-type FT_Outline_CubicToFunc as function cdecl(byval as FT_Vector ptr, byval as FT_Vector ptr, byval as FT_Vector ptr, byval as any ptr) as integer
+#define FT_OUTLINE_CONTOURS_MAX SHRT_MAX
+#define FT_OUTLINE_POINTS_MAX SHRT_MAX
+const FT_OUTLINE_NONE = &h0
+const FT_OUTLINE_OWNER = &h1
+const FT_OUTLINE_EVEN_ODD_FILL = &h2
+const FT_OUTLINE_REVERSE_FILL = &h4
+const FT_OUTLINE_IGNORE_DROPOUTS = &h8
+const FT_OUTLINE_SMART_DROPOUTS = &h10
+const FT_OUTLINE_INCLUDE_STUBS = &h20
+const FT_OUTLINE_HIGH_PRECISION = &h100
+const FT_OUTLINE_SINGLE_PASS = &h200
+#define FT_CURVE_TAG(flag) (flag and 3)
+const FT_CURVE_TAG_ON = 1
+const FT_CURVE_TAG_CONIC = 0
+const FT_CURVE_TAG_CUBIC = 2
+const FT_CURVE_TAG_HAS_SCANMODE = 4
+const FT_CURVE_TAG_TOUCH_X = 8
+const FT_CURVE_TAG_TOUCH_Y = 16
+#define FT_CURVE_TAG_TOUCH_BOTH (FT_CURVE_TAG_TOUCH_X or FT_CURVE_TAG_TOUCH_Y)
+type FT_Outline_MoveToFunc as function(byval to as const FT_Vector ptr, byval user as any ptr) as long
+#define FT_Outline_MoveTo_Func FT_Outline_MoveToFunc
+type FT_Outline_LineToFunc as function(byval to as const FT_Vector ptr, byval user as any ptr) as long
+#define FT_Outline_LineTo_Func FT_Outline_LineToFunc
+type FT_Outline_ConicToFunc as function(byval control as const FT_Vector ptr, byval to as const FT_Vector ptr, byval user as any ptr) as long
+#define FT_Outline_ConicTo_Func FT_Outline_ConicToFunc
+type FT_Outline_CubicToFunc as function(byval control1 as const FT_Vector ptr, byval control2 as const FT_Vector ptr, byval to as const FT_Vector ptr, byval user as any ptr) as long
+#define FT_Outline_CubicTo_Func FT_Outline_CubicToFunc
 
 type FT_Outline_Funcs_
 	move_to as FT_Outline_MoveToFunc
 	line_to as FT_Outline_LineToFunc
 	conic_to as FT_Outline_ConicToFunc
 	cubic_to as FT_Outline_CubicToFunc
-	shift as integer
+	shift as long
 	delta as FT_Pos
 end type
 
 type FT_Outline_Funcs as FT_Outline_Funcs_
 
-#define FT_IMAGE_TAG( value, _x1, _x2, _x3, _x4 ) _
-          value = ( (cuint(_x1) shl 24) or (cuint(_x2) shl 16) or (cuint(_x3) shl 8) or cuint(_x4))
-
-enum FT_Glyph_Format_
-    FT_IMAGE_TAG( FT_GLYPH_FORMAT_NONE, 0, 0, 0, 0 )
-
-    FT_IMAGE_TAG( FT_GLYPH_FORMAT_COMPOSITE, asc("c"), asc("o"), asc("m"), asc("p") )
-    FT_IMAGE_TAG( FT_GLYPH_FORMAT_BITMAP,    asc("b"), asc("i"), asc("t"), asc("s") )
-    FT_IMAGE_TAG( FT_GLYPH_FORMAT_OUTLINE,   asc("o"), asc("u"), asc("t"), asc("l") )
-    FT_IMAGE_TAG( FT_GLYPH_FORMAT_PLOTTER,   asc("p"), asc("l"), asc("o"), asc("t") )
+type FT_Glyph_Format_ as long
+enum
+	FT_GLYPH_FORMAT_NONE = (((cast(culong, 0) shl 24) or (cast(culong, 0) shl 16)) or (cast(culong, 0) shl 8)) or cast(culong, 0)
+	FT_GLYPH_FORMAT_COMPOSITE = (((cast(culong, asc("c")) shl 24) or (cast(culong, asc("o")) shl 16)) or (cast(culong, asc("m")) shl 8)) or cast(culong, asc("p"))
+	FT_GLYPH_FORMAT_BITMAP = (((cast(culong, asc("b")) shl 24) or (cast(culong, asc("i")) shl 16)) or (cast(culong, asc("t")) shl 8)) or cast(culong, asc("s"))
+	FT_GLYPH_FORMAT_OUTLINE = (((cast(culong, asc("o")) shl 24) or (cast(culong, asc("u")) shl 16)) or (cast(culong, asc("t")) shl 8)) or cast(culong, asc("l"))
+	FT_GLYPH_FORMAT_PLOTTER = (((cast(culong, asc("p")) shl 24) or (cast(culong, asc("l")) shl 16)) or (cast(culong, asc("o")) shl 8)) or cast(culong, asc("t"))
 end enum
 
 type FT_Glyph_Format as FT_Glyph_Format_
-
 type FT_Raster as FT_RasterRec_ ptr
 
 type FT_Span_
@@ -129,23 +119,19 @@ type FT_Span_
 end type
 
 type FT_Span as FT_Span_
-type FT_SpanFunc as sub cdecl(byval as integer, byval as integer, byval as FT_Span ptr, byval as any ptr)
-type FT_Raster_BitTest_Func as function cdecl(byval as integer, byval as integer, byval as any ptr) as integer
-type FT_Raster_BitSet_Func as sub cdecl(byval as integer, byval as integer, byval as any ptr)
-
-#define FT_RASTER_FLAG_DEFAULT &h0
-#define FT_RASTER_FLAG_AA &h1
-#define FT_RASTER_FLAG_DIRECT &h2
-#define FT_RASTER_FLAG_CLIP &h4
-#define ft_raster_flag_default &h0
-#define ft_raster_flag_aa &h1
-#define ft_raster_flag_direct &h2
-#define ft_raster_flag_clip &h4
+type FT_SpanFunc as sub(byval y as long, byval count as long, byval spans as const FT_Span ptr, byval user as any ptr)
+#define FT_Raster_Span_Func FT_SpanFunc
+type FT_Raster_BitTest_Func as function(byval y as long, byval x as long, byval user as any ptr) as long
+type FT_Raster_BitSet_Func as sub(byval y as long, byval x as long, byval user as any ptr)
+const FT_RASTER_FLAG_DEFAULT = &h0
+const FT_RASTER_FLAG_AA = &h1
+const FT_RASTER_FLAG_DIRECT = &h2
+const FT_RASTER_FLAG_CLIP = &h4
 
 type FT_Raster_Params_
-	target as FT_Bitmap ptr
-	source as any ptr
-	flags as integer
+	target as const FT_Bitmap ptr
+	source as const any ptr
+	flags as long
 	gray_spans as FT_SpanFunc
 	black_spans as FT_SpanFunc
 	bit_test as FT_Raster_BitTest_Func
@@ -155,14 +141,19 @@ type FT_Raster_Params_
 end type
 
 type FT_Raster_Params as FT_Raster_Params_
-type FT_Raster_NewFunc as function cdecl(byval as any ptr, byval as FT_Raster ptr) as integer
-type FT_Raster_DoneFunc as sub cdecl(byval as FT_Raster)
-type FT_Raster_ResetFunc as sub cdecl(byval as FT_Raster, byval as ubyte ptr, byval as uinteger)
-type FT_Raster_SetModeFunc as function cdecl(byval as FT_Raster, byval as uinteger, byval as any ptr) as integer
-type FT_Raster_RenderFunc as function cdecl(byval as FT_Raster, byval as FT_Raster_Params ptr) as integer
+type FT_Raster_NewFunc as function(byval memory as any ptr, byval raster as FT_Raster ptr) as long
+#define FT_Raster_New_Func FT_Raster_NewFunc
+type FT_Raster_DoneFunc as sub(byval raster as FT_Raster)
+#define FT_Raster_Done_Func FT_Raster_DoneFunc
+type FT_Raster_ResetFunc as sub(byval raster as FT_Raster, byval pool_base as ubyte ptr, byval pool_size as culong)
+#define FT_Raster_Reset_Func FT_Raster_ResetFunc
+type FT_Raster_SetModeFunc as function(byval raster as FT_Raster, byval mode as culong, byval args as any ptr) as long
+#define FT_Raster_Set_Mode_Func FT_Raster_SetModeFunc
+type FT_Raster_RenderFunc as function(byval raster as FT_Raster, byval params as const FT_Raster_Params ptr) as long
+#define FT_Raster_Render_Func FT_Raster_RenderFunc
 
 type FT_Raster_Funcs_
-	''glyph_format as FT_Glyph_Format
+	glyph_format as FT_Glyph_Format
 	raster_new as FT_Raster_NewFunc
 	raster_reset as FT_Raster_ResetFunc
 	raster_set_mode as FT_Raster_SetModeFunc
@@ -172,4 +163,4 @@ end type
 
 type FT_Raster_Funcs as FT_Raster_Funcs_
 
-#endif
+end extern

@@ -1,0 +1,132 @@
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+3 warnings:
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+	Suspicious pointer assignment
+----------------------------------------------
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+----------------------------------------------
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+----------------------------------------------
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+----------------------------------------------
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+1 warning:
+	Suspicious pointer assignment
+no warning:

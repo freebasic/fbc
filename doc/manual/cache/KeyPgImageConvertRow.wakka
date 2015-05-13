@@ -2,7 +2,7 @@
 Converts a row of image data into another color depth
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgLong long]] = 1 )
 ##
 {{fbdoc item="usage"}}##
 	**""ImageConvertRow""**( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// [, //isrgb// ] )

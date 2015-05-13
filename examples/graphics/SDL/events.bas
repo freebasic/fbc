@@ -7,7 +7,7 @@
 
 ' This function may run in a separate event thread 
 ' note the use of SDLCALL (or cdecl) for this callback function
-function FilterEvents SDLCALL (byval event as SDL_Event ptr) as integer
+function FilterEvents SDLCALL (byval event as const SDL_Event ptr) as long
 	static boycott as integer
    
    	' This quit event signals the closing of the window    

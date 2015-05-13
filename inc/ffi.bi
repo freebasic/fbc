@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "ffi"
 
 #include once "crt/stddef.bi"
@@ -6,19 +7,19 @@
 
 '' The following symbols have been renamed:
 ''     typedef FFI_TYPE => FFI_TYPE_
-''     #define FFI_TYPE_VOID => FFI_TYPE_VOID_
-''     #define FFI_TYPE_FLOAT => FFI_TYPE_FLOAT_
-''     #define FFI_TYPE_DOUBLE => FFI_TYPE_DOUBLE_
-''     #define FFI_TYPE_LONGDOUBLE => FFI_TYPE_LONGDOUBLE_
-''     #define FFI_TYPE_UINT8 => FFI_TYPE_UINT8_
-''     #define FFI_TYPE_SINT8 => FFI_TYPE_SINT8_
-''     #define FFI_TYPE_UINT16 => FFI_TYPE_UINT16_
-''     #define FFI_TYPE_SINT16 => FFI_TYPE_SINT16_
-''     #define FFI_TYPE_UINT32 => FFI_TYPE_UINT32_
-''     #define FFI_TYPE_SINT32 => FFI_TYPE_SINT32_
-''     #define FFI_TYPE_UINT64 => FFI_TYPE_UINT64_
-''     #define FFI_TYPE_SINT64 => FFI_TYPE_SINT64_
-''     #define FFI_TYPE_POINTER => FFI_TYPE_POINTER_
+''     constant FFI_TYPE_VOID => FFI_TYPE_VOID_
+''     constant FFI_TYPE_FLOAT => FFI_TYPE_FLOAT_
+''     constant FFI_TYPE_DOUBLE => FFI_TYPE_DOUBLE_
+''     constant FFI_TYPE_LONGDOUBLE => FFI_TYPE_LONGDOUBLE_
+''     constant FFI_TYPE_UINT8 => FFI_TYPE_UINT8_
+''     constant FFI_TYPE_SINT8 => FFI_TYPE_SINT8_
+''     constant FFI_TYPE_UINT16 => FFI_TYPE_UINT16_
+''     constant FFI_TYPE_SINT16 => FFI_TYPE_SINT16_
+''     constant FFI_TYPE_UINT32 => FFI_TYPE_UINT32_
+''     constant FFI_TYPE_SINT32 => FFI_TYPE_SINT32_
+''     constant FFI_TYPE_UINT64 => FFI_TYPE_UINT64_
+''     constant FFI_TYPE_SINT64 => FFI_TYPE_SINT64_
+''     constant FFI_TYPE_POINTER => FFI_TYPE_POINTER_
 
 extern "C"
 
@@ -39,64 +40,61 @@ type ffi_arg as uinteger
 type ffi_sarg as integer
 
 #if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	#define FFI_SIZEOF_ARG 8
-	#define USE_BUILTIN_FFS 0
+	const FFI_SIZEOF_ARG = 8
+	const USE_BUILTIN_FFS = 0
 #endif
 
 type ffi_abi as long
 enum
 	FFI_FIRST_ABI = 0
-
 	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
 		FFI_WIN64
+		FFI_LAST_ABI
+		FFI_DEFAULT_ABI = FFI_WIN64
 	#elseif defined(__FB_WIN32__)
 		FFI_SYSV
 		FFI_STDCALL
 		FFI_THISCALL
 		FFI_FASTCALL
 		FFI_MS_CDECL
-	#elseif defined(__FB_64BIT__)
-		FFI_SYSV
+		FFI_LAST_ABI
+		FFI_DEFAULT_ABI = FFI_SYSV
 	#else
 		FFI_SYSV
 		FFI_UNIX64
 		FFI_THISCALL
 		FFI_FASTCALL
 		FFI_STDCALL
-	#endif
-
-	FFI_LAST_ABI
-
-	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-		FFI_DEFAULT_ABI = FFI_WIN64
-	#elseif not defined(__FB_64BIT__)
-		FFI_DEFAULT_ABI = FFI_SYSV
-	#else
-		FFI_DEFAULT_ABI = FFI_UNIX64
+		FFI_LAST_ABI
+		#ifdef __FB_64BIT__
+			FFI_DEFAULT_ABI = FFI_UNIX64
+		#else
+			FFI_DEFAULT_ABI = FFI_SYSV
+		#endif
 	#endif
 end enum
 
-#define FFI_CLOSURES 1
+const FFI_CLOSURES = 1
 #define FFI_TYPE_SMALL_STRUCT_1B (FFI_TYPE_LAST + 1)
 #define FFI_TYPE_SMALL_STRUCT_2B (FFI_TYPE_LAST + 2)
 #define FFI_TYPE_SMALL_STRUCT_4B (FFI_TYPE_LAST + 3)
 #define FFI_TYPE_MS_STRUCT (FFI_TYPE_LAST + 4)
 
 #if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	#define FFI_TRAMPOLINE_SIZE 29
-	#define FFI_NATIVE_RAW_API 0
-	#define FFI_NO_RAW_API 1
+	const FFI_TRAMPOLINE_SIZE = 29
+	const FFI_NATIVE_RAW_API = 0
+	const FFI_NO_RAW_API = 1
 #elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
-	#define FFI_TRAMPOLINE_SIZE 52
+	const FFI_TRAMPOLINE_SIZE = 52
 #else
-	#define FFI_TRAMPOLINE_SIZE 10
+	const FFI_TRAMPOLINE_SIZE = 10
 #endif
 
 #if (defined(__FB_LINUX__) and defined(__FB_64BIT__)) or (not defined(__FB_64BIT__))
-	#define FFI_NATIVE_RAW_API 1
+	const FFI_NATIVE_RAW_API = 1
 #endif
 
-#define FFI_64_BIT_MAX 9223372036854775807
+const FFI_64_BIT_MAX = 9223372036854775807
 #define FFI_LONG_LONG_MAX LLONG_MAX
 
 type _ffi_type
@@ -107,7 +105,6 @@ type _ffi_type
 end type
 
 type ffi_type as _ffi_type
-
 #define ffi_type_uchar ffi_type_uint8
 #define ffi_type_schar ffi_type_sint8
 #define ffi_type_ushort ffi_type_uint16
@@ -158,9 +155,9 @@ end type
 declare function ffi_prep_cif_core(byval cif as ffi_cif ptr, byval abi as ffi_abi, byval isvariadic as ulong, byval nfixedargs as ulong, byval ntotalargs as ulong, byval rtype as ffi_type ptr, byval atypes as ffi_type ptr ptr) as ffi_status
 
 #ifndef __FB_64BIT__
-	#define FFI_SIZEOF_ARG 4
+	const FFI_SIZEOF_ARG = 4
 #elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
-	#define FFI_SIZEOF_ARG 8
+	const FFI_SIZEOF_ARG = 8
 #endif
 
 #define FFI_SIZEOF_JAVA_RAW FFI_SIZEOF_ARG
@@ -174,7 +171,6 @@ union ffi_raw
 end union
 
 type ffi_java_raw as ffi_raw
-
 declare sub ffi_raw_call(byval cif as ffi_cif ptr, byval fn as sub(), byval rvalue as any ptr, byval avalue as ffi_raw ptr)
 declare sub ffi_ptrarray_to_raw(byval cif as ffi_cif ptr, byval args as any ptr ptr, byval raw as ffi_raw ptr)
 declare sub ffi_raw_to_ptrarray(byval cif as ffi_cif ptr, byval raw as ffi_raw ptr, byval args as any ptr ptr)
@@ -231,21 +227,21 @@ declare function ffi_prep_cif_var(byval cif as ffi_cif ptr, byval abi as ffi_abi
 declare sub ffi_call(byval cif as ffi_cif ptr, byval fn as sub(), byval rvalue as any ptr, byval avalue as any ptr ptr)
 
 #define FFI_FN(f) cptr(sub cdecl(), f)
-#define FFI_TYPE_VOID_ 0
-#define FFI_TYPE_INT 1
-#define FFI_TYPE_FLOAT_ 2
-#define FFI_TYPE_DOUBLE_ 3
-#define FFI_TYPE_LONGDOUBLE_ 4
-#define FFI_TYPE_UINT8_ 5
-#define FFI_TYPE_SINT8_ 6
-#define FFI_TYPE_UINT16_ 7
-#define FFI_TYPE_SINT16_ 8
-#define FFI_TYPE_UINT32_ 9
-#define FFI_TYPE_SINT32_ 10
-#define FFI_TYPE_UINT64_ 11
-#define FFI_TYPE_SINT64_ 12
-#define FFI_TYPE_STRUCT 13
-#define FFI_TYPE_POINTER_ 14
+const FFI_TYPE_VOID_ = 0
+const FFI_TYPE_INT = 1
+const FFI_TYPE_FLOAT_ = 2
+const FFI_TYPE_DOUBLE_ = 3
+const FFI_TYPE_LONGDOUBLE_ = 4
+const FFI_TYPE_UINT8_ = 5
+const FFI_TYPE_SINT8_ = 6
+const FFI_TYPE_UINT16_ = 7
+const FFI_TYPE_SINT16_ = 8
+const FFI_TYPE_UINT32_ = 9
+const FFI_TYPE_SINT32_ = 10
+const FFI_TYPE_UINT64_ = 11
+const FFI_TYPE_SINT64_ = 12
+const FFI_TYPE_STRUCT = 13
+const FFI_TYPE_POINTER_ = 14
 #define FFI_TYPE_LAST FFI_TYPE_POINTER_
 
 end extern

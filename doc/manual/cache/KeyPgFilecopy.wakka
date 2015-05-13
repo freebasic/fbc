@@ -2,7 +2,7 @@
 Copies a file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileCopy""** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileCopy""** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"

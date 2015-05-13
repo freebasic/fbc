@@ -944,7 +944,12 @@ function symbUdtGetNextInitableField( byval sym as FBSYMBOL ptr ) as FBSYMBOL pt
 	function = sym
 end function
 
-'':::::
+'' Check whether s is derived from baseSym, and if so, how many levels separate
+'' the two in the inheritance hierachy. For example:
+''    same UDT, or not derived at all = 0 levels
+''    directly derived = 1 level
+''    derived from a directly derived UDT = 2 levels
+''    etc.
 function symbGetUDTBaseLevel _
 	( _
 		byval s as FBSYMBOL ptr, _

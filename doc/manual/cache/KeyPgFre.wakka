@@ -2,7 +2,7 @@
 Returns the amount of free memory available
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fre** ( [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fre** ( [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Fre**( [ //value// ] )

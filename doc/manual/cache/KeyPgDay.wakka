@@ -2,7 +2,7 @@
 Gets the day of the month from a [[ProPgDates Date Serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Day** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Day** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

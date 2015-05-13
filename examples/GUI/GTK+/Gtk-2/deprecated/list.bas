@@ -11,7 +11,7 @@
 ' This is our data identification string to store data in list items
 Const list_item_data_key ="list_item_data"
 
-Declare Sub sigh_button_event Cdecl ( Byval gtklist As GtkWidget Ptr, Byval event As GdkEventButton Ptr, Byval frame As GtkWidget Ptr )
+Declare Function sigh_button_event Cdecl ( Byval gtklist As GtkWidget Ptr, Byval event As GdkEventButton Ptr, Byval frame As GtkWidget Ptr ) As gboolean
 Declare Sub sigh_print_selection Cdecl ( Byval gtklist As GtkWidget Ptr, Byval func_data As gpointer )
 
 
@@ -149,7 +149,7 @@ Declare Sub sigh_print_selection Cdecl ( Byval gtklist As GtkWidget Ptr, Byval f
 ' This is the signal handler that got connected to button
 ' press/release events of the List
 
-Sub sigh_button_event Cdecl ( Byval gtklist As GtkWidget Ptr, Byval event As GdkEventButton Ptr, Byval frame As GtkWidget Ptr )
+Function sigh_button_event Cdecl ( Byval gtklist As GtkWidget Ptr, Byval event As GdkEventButton Ptr, Byval frame As GtkWidget Ptr ) As gboolean
 
   ' We only do something if the third (rightmost mouse button was released
 
@@ -198,7 +198,9 @@ Sub sigh_button_event Cdecl ( Byval gtklist As GtkWidget Ptr, Byval event As Gdk
       gtk_widget_reparent (new_prisoner, frame)
     End If
   End If
-End Sub
+
+  Function = FALSE
+End Function
 
 
 ' This is the signal handler that gets called if List

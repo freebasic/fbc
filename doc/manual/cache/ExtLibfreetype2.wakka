@@ -4,7 +4,7 @@ A Free, High-Quality, and Portable Font Engine
 Website: http://www.freetype.org
 Platforms supported: ""Win32"", Linux
 Headers to include: freetype2/freetype.bi
-Header version: 2.1.9
+Header version: 2.5.5
 Examples: yes, in ""examples/graphics/FreeType/""
 
 {{fbdoc item="ex"}}

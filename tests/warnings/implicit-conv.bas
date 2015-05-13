@@ -1,5 +1,9 @@
 #print "1 warning:"
-print -&hFFFFFFFFu
+#ifdef __FB_64BIT__
+	print -&hFFFFFFFFFFFFFFFFu
+#else
+	print -&hFFFFFFFFu
+#endif
 
 scope
 	#print "no warnings:"

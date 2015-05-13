@@ -223,7 +223,7 @@ function astIsEqualParamInit _
 		'' symbols, but if they have the same signature they should still be
 		'' treated equal here.
 		if( typeGetDtOnly( l->dtype ) = FB_DATATYPE_FUNCTION ) then
-			if( symbIsEqual( l->subtype, r->subtype ) = FALSE ) then
+			if( symbCalcProcMatch( l->subtype, r->subtype, 0 ) = 0 ) then
 				exit function
 			end if
 		else
@@ -626,20 +626,17 @@ sub astCheckConst _
 	end if
 end sub
 
-'':::::
 function astPtrCheck _
 	( _
 		byval pdtype as integer, _
 		byval psubtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr, _
-		byval strictcheck as integer _
+		byval pparammode as integer, _
+		byval expr as ASTNODE ptr _
 	) as integer
 
-	dim as integer edtype = any
-
+	assert( typeIsPtr( pdtype ) )
 	function = FALSE
-
-	edtype = astGetFullType( expr )
+	var edtype = astGetFullType( expr )
 
 	'' expr not a pointer?
 	if( typeIsPtr( edtype ) = FALSE ) then
@@ -652,50 +649,21 @@ function astPtrCheck _
 		exit function
 	end if
 
-	'' different constant masks?
-	if( strictcheck ) then
-		if( typeGetPtrConstMask( edtype ) <> _
-			typeGetPtrConstMask( pdtype ) ) then
-			exit function
+	'' Are ANY PTRs involved? Then we don't need to do exact type checks
+	if( typeGetDtOnly( pdtype ) = FB_DATATYPE_VOID ) then
+		if( typeGetDtOnly( edtype ) = FB_DATATYPE_VOID ) then
+			return TRUE
 		end if
+		return (typeGetPtrCnt( pdtype ) <= typeGetPtrCnt( edtype ))
+	elseif( typeGetDtOnly( edtype ) = FB_DATATYPE_VOID ) then
+		return (typeGetPtrCnt( pdtype ) >= typeGetPtrCnt( edtype ))
 	end if
 
-	'' different types?
-	if( typeGetDtAndPtrOnly( pdtype ) <> typeGetDtAndPtrOnly( edtype ) ) then
-
-    	'' remove the pointers
-    	dim as integer pdtype_np = any, edtype_np = any
-    	pdtype_np = typeGetDtOnly( pdtype )
-    	edtype_np = typeGetDtOnly( edtype )
-
-    	'' 1st) is one of them an ANY PTR?
-    	if( pdtype_np = FB_DATATYPE_VOID ) then
-    		return TRUE
-    	elseif( edtype_np = FB_DATATYPE_VOID ) then
-    		return TRUE
-    	end if
-
-    	'' 2nd) same level of indirection?
-    	if( typeGetPtrCnt( pdtype ) <> typeGetPtrCnt( edtype ) ) then
-    		exit function
-    	end if
-
-    	'' 4th) same size and class?
-    	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
-    		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
-    		if( typeGetSize( pdtype_np ) = typeGetSize( edtype_np ) ) then
-    			if( typeGetClass( pdtype_np ) = typeGetClass( edtype_np ) ) then
-    				return TRUE
-    			end if
-    		end if
-    	end if
-
-    	exit function
-    end if
-
-	'' check sub types
-	function = symbIsEqual( astGetSubType( expr ), psubtype )
-
+	'' Check type compatibility, but without checking CONSTness. Users of astPtrCheck()
+	'' do this manually already (and if there is a CONSTness mismatch, they show an error,
+	'' not just a warning, which is astPtrCheck()'s main purpose).
+	function = (typeCalcMatch( typeGetDtAndPtrOnly( pdtype ), psubtype, pparammode, _
+	                           typeGetDtAndPtrOnly( edtype ), expr->subtype ) > 0)
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1282,12 +1250,17 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
 	case AST_NODECLASS_FIELD
 		if( astIsDEREF( expr->l ) ) then
-			if( astIsBOP( expr->l->l, AST_OP_ADD ) ) then
-				if( astGetClass( expr->l->l->l ) = AST_NODECLASS_ADDROF ) then
-					'' will be a VAR/FIELD again
-					function = astIsAccessToLocal( expr->l->l->l->l )
+			'' DEREF's lhs can be NULL in case it deref'ed a const
+			if( expr->l->l ) then
+				if( astIsBOP( expr->l->l, AST_OP_ADD ) ) then
+					if( astGetClass( expr->l->l->l ) = AST_NODECLASS_ADDROF ) then
+						'' will be a VAR/FIELD again
+						function = astIsAccessToLocal( expr->l->l->l->l )
+					end if
 				end if
 			end if
+		else
+			function = astIsAccessToLocal( expr->l )
 		end if
 
 	end select

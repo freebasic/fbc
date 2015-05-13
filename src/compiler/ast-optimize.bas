@@ -461,12 +461,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 
 end sub
 
-private function astIncOffset _
-	( _
-		byval n as ASTNODE ptr, _
-		byval ofs as longint _
-	) as integer
-
+function astIncOffset( byval n as ASTNODE ptr, byval ofs as longint ) as integer
 	select case as const n->class
 	case AST_NODECLASS_VAR
 		n->var_.ofs += ofs
@@ -513,7 +508,6 @@ private function astIncOffset _
 	case else
 		function = FALSE
 	end select
-
 end function
 
 private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
@@ -535,13 +529,14 @@ private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsDEREF(n) )
 	ofs += n->ptr.ofs
 
-	'' *(@[expr] +   0)    ->    [expr]
-	'' *(@[expr] + ofs)    ->    [expr+ofs]
+	'' DEREF(ADDROF(VAR(x, ofs=A)       ), ofs=B)    =>    VAR(x, ofs=A+B)
+	'' DEREF(OFFSET(VAR(x, ofs=A), ofs=C), ofs=B)    =>    VAR(x, ofs=A+B+C)
+	'' (also, astIncOffset() handles more than just VARs)
 
 	'' If the deref uses an <> 0 offset then try to include that into
 	'' any child var/idx/deref nodes. If that's not possible, then this
 	'' optimization can't be done.
-	'' Note: we must do this even if ofs = 0, to ensure it's ok to
+	'' Note: we must do this check even if ofs = 0, to ensure it's ok to
 	'' do the astSetType() below.
 	if( astIncOffset( l->l, ofs ) = FALSE ) then
 		return n
@@ -614,110 +609,6 @@ private function hOptConstIDX( byval n as ASTNODE ptr ) as ASTNODE ptr
 			end if
 		end if
 	end select
-
-	function = n
-end function
-
-private function hMergeNestedFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr l = any
-
-	if( n = NULL ) then
-		return NULL
-	end if
-
-	n->l = hMergeNestedFIELDs( n->l )
-	n->r = hMergeNestedFIELDs( n->r )
-
-	if( astIsFIELD( n ) ) then
-		l = n->l
-
-		'' This is the pattern for field accesses:
-		''
-		''    udt.field
-		''
-		'' =  *(@udt + offsetof(field))
-		''
-		'' =  FIELD( DEREF( BOP( +, ADDROF( udt ), offsetof(field) ) ) )
-		''
-		''
-		'' Nested field accesses will look like:
-		''
-		''    udt.a.b
-		''
-		'' =  *(@udt.a + offsetof(b))
-		''
-		''                     FIELD
-		''                       |
-		''                     DEREF
-		''                       |
-		''                     + BOP
-		''                      / \
-		''                 ADDROF  offsetof(b)
-		''                    /
-		''                udt.a
-		''
-		'' =  *(@*(@udt + offsetof(a)) + offsetof(b))
-		''
-		''                     FIELD
-		''                       |
-		''                     DEREF
-		''                       |
-		''                     + BOP
-		''                      / \
-		''                 ADDROF  offsetof(b)    *2*
-		''                    /
-		''                 FIELD
-		''                   |
-		''                 DEREF
-		''                   |
-		''          *1*    + BOP
-		''                  / \
-		''             ADDROF  offsetof(a)
-		''                /
-		''              udt
-		''
-		'' The extra ADDROF/DEREF cancel each other out, and by
-		'' removing the ADDROF/FIELD/DEREF combo, the whole tree
-		'' can be optimized to:
-		''
-		'' =  *(@udt + offsetof(a) + offsetof(b))
-		''
-		''                     FIELD
-		''                       |
-		''                     DEREF
-		''                       |
-		''                     + BOP
-		''                      / \
-		''          *1*    + BOP   offsetof(b)    *2*
-		''                   / \
-		''              ADDROF  offsetof(a)
-		''                 /
-		''               udt
-		''
-
-		dim as ASTNODE ptr ll = l->l
-		'' Note: DEREF.l can be NULL in case it was dereferencing a constant
-		if( astIsDEREF( l ) and (ll <> NULL) ) then
-			if( ll->class = AST_NODECLASS_BOP ) then
-				assert( astIsBOP( ll, AST_OP_ADD ) )
-				dim as ASTNODE ptr lll = ll->l
-				if( lll->class = AST_NODECLASS_ADDROF ) then
-					dim as ASTNODE ptr llll = lll->l
-					if( astIsFIELD( llll ) ) then
-						dim as ASTNODE ptr lllll = llll->l
-						dim as ASTNODE ptr llllll = lllll->l
-						if( astIsDEREF( lllll ) and (llllll <> NULL) ) then
-							l->l = astNewBOP( AST_OP_ADD, llllll, ll->r )
-							astDelNode( ll )
-							astDelNode( lll )
-							astDelNode( llll )
-							astDelNode( lllll )
-						end if
-					end if
-				end if
-			end if
-		end if
-	end if
 
 	function = n
 end function
@@ -1870,9 +1761,6 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' The order of calls below matters!
 
 	astBeginHideWarnings( )
-
-	'' Optimize nested field accesses
-	n = hMergeNestedFIELDs( n )
 
 	n = hOptAssocADD( n )
 

@@ -354,6 +354,19 @@ function astNewFIELD _
 		'' store to a bitfield.
 	end if
 
+	'' Don't nest FIELD nodes, it's useless (though probably not harmful)
+	'' FIELD(a, FIELD(b, ...)) => FIELD(a, ...)
+	if( astIsFIELD( l ) ) then
+		'' If solving out a bitfield FIELD we'd have to adjust the ast.bitfieldcount,
+		'' but that can't happen because we can't have field accesses on bitfields,
+		'' because those can only be integers, not UDTs.
+		assert( symbFieldIsBitfield( l->sym ) = FALSE )
+		l->sym = sym
+		l->dtype = dtype
+		l->subtype = subtype
+		return l
+	end if
+
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
 	n->sym = sym
 	n->l = l
@@ -1093,6 +1106,10 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 			if( n->idx.mult <> 1 ) then s += " mult=" & n->idx.mult
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
 			s += " " + astDumpOp( n->op.op )
+		case AST_NODECLASS_CONV
+			if( n->cast.doconv = FALSE ) then
+				s += " noconv"
+			end if
 		case AST_NODECLASS_CONST
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 				s += " " + str( astConstGetFloat( n ) )

@@ -22,6 +22,9 @@ Dim As cairo_surface_t Ptr surface = _
 Dim As cairo_t Ptr c = cairo_create(surface)
 cairo_scale(c, SCREEN_W, SCREEN_H)
 
+'' Translate to the center of the rendering context
+cairo_translate(c, 0.5, 0.5)
+
 Do
 	ScreenLock()
 
@@ -42,10 +45,8 @@ Do
 	cairo_set_line_cap(c, CAIRO_LINE_CAP_ROUND)
 	cairo_set_line_width(c, 0.1)
 
-	'' Translate to the center of the rendering context,
-	'' and draw a black clock outline.
+	'' Draw a black clock outline
 	cairo_set_source_rgba(c, 0, 0, 0, 1)
-	cairo_translate(c, 0.5, 0.5)
 	cairo_arc(c, 0, 0, 0.4, 0, PI * 2)
 	cairo_stroke(c)
 

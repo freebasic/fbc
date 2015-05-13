@@ -1,4 +1,5 @@
 #pragma once
+
 #inclib "pdcurses"
 
 #include once "crt/long.bi"
@@ -11,7 +12,7 @@
 #endif
 
 '' The following symbols have been renamed:
-''     #define ERR => ERR_
+''     constant ERR => ERR_
 ''     typedef WINDOW => WINDOW_
 ''     struct SCREEN => SCREEN_
 ''     procedure beep => beep_
@@ -22,18 +23,17 @@
 
 extern "C"
 
-#define __PDCURSES__ 1
-#define PDC_BUILD 3401
-#define PDCURSES 1
-#define XOPEN 1
-#define SYSVcurses 1
-#define BSDcurses 1
-#define CHTYPE_LONG 1
-#define FALSE 0
-#define TRUE 1
-#define ERR_ (-1)
-#define OK 0
-
+const __PDCURSES__ = 1
+const PDC_BUILD = 3401
+const PDCURSES = 1
+const XOPEN = 1
+const SYSVcurses = 1
+const BSDcurses = 1
+const CHTYPE_LONG = 1
+const FALSE = 0
+const TRUE = 1
+const ERR_ = -1
+const OK = 0
 type bool as ubyte
 type chtype as ulong
 
@@ -50,24 +50,24 @@ type MOUSE_STATUS
 	changes as long
 end type
 
-#define BUTTON_RELEASED &h0000
-#define BUTTON_PRESSED &h0001
-#define BUTTON_CLICKED &h0002
-#define BUTTON_DOUBLE_CLICKED &h0003
-#define BUTTON_TRIPLE_CLICKED &h0004
-#define BUTTON_MOVED &h0005
-#define WHEEL_SCROLLED &h0006
-#define BUTTON_ACTION_MASK &h0007
-#define PDC_BUTTON_SHIFT &h0008
-#define PDC_BUTTON_CONTROL &h0010
-#define PDC_BUTTON_ALT &h0020
-#define BUTTON_MODIFIER_MASK &h0038
+const BUTTON_RELEASED = &h0000
+const BUTTON_PRESSED = &h0001
+const BUTTON_CLICKED = &h0002
+const BUTTON_DOUBLE_CLICKED = &h0003
+const BUTTON_TRIPLE_CLICKED = &h0004
+const BUTTON_MOVED = &h0005
+const WHEEL_SCROLLED = &h0006
+const BUTTON_ACTION_MASK = &h0007
+const PDC_BUTTON_SHIFT = &h0008
+const PDC_BUTTON_CONTROL = &h0010
+const PDC_BUTTON_ALT = &h0020
+const BUTTON_MODIFIER_MASK = &h0038
 #define MOUSE_X_POS Mouse_status.x
 #define MOUSE_Y_POS Mouse_status.y
-#define PDC_MOUSE_MOVED &h0008
-#define PDC_MOUSE_POSITION &h0010
-#define PDC_MOUSE_WHEEL_UP &h0020
-#define PDC_MOUSE_WHEEL_DOWN &h0040
+const PDC_MOUSE_MOVED = &h0008
+const PDC_MOUSE_POSITION = &h0010
+const PDC_MOUSE_WHEEL_UP = &h0020
+const PDC_MOUSE_WHEEL_DOWN = &h0040
 #define A_BUTTON_CHANGED (Mouse_status.changes and 7)
 #define MOUSE_MOVED (Mouse_status.changes and PDC_MOUSE_MOVED)
 #define MOUSE_POS_REPORT (Mouse_status.changes and PDC_MOUSE_POSITION)
@@ -75,41 +75,40 @@ end type
 #define BUTTON_STATUS(x) (Mouse_status.button((x) - 1))
 #define MOUSE_WHEEL_UP (Mouse_status.changes and PDC_MOUSE_WHEEL_UP)
 #define MOUSE_WHEEL_DOWN (Mouse_status.changes and PDC_MOUSE_WHEEL_DOWN)
-#define BUTTON1_RELEASED cast(clong, &h00000001)
-#define BUTTON1_PRESSED cast(clong, &h00000002)
-#define BUTTON1_CLICKED cast(clong, &h00000004)
-#define BUTTON1_DOUBLE_CLICKED cast(clong, &h00000008)
-#define BUTTON1_TRIPLE_CLICKED cast(clong, &h00000010)
-#define BUTTON1_MOVED cast(clong, &h00000010)
-#define BUTTON2_RELEASED cast(clong, &h00000020)
-#define BUTTON2_PRESSED cast(clong, &h00000040)
-#define BUTTON2_CLICKED cast(clong, &h00000080)
-#define BUTTON2_DOUBLE_CLICKED cast(clong, &h00000100)
-#define BUTTON2_TRIPLE_CLICKED cast(clong, &h00000200)
-#define BUTTON2_MOVED cast(clong, &h00000200)
-#define BUTTON3_RELEASED cast(clong, &h00000400)
-#define BUTTON3_PRESSED cast(clong, &h00000800)
-#define BUTTON3_CLICKED cast(clong, &h00001000)
-#define BUTTON3_DOUBLE_CLICKED cast(clong, &h00002000)
-#define BUTTON3_TRIPLE_CLICKED cast(clong, &h00004000)
-#define BUTTON3_MOVED cast(clong, &h00004000)
-#define BUTTON4_RELEASED cast(clong, &h00008000)
-#define BUTTON4_PRESSED cast(clong, &h00010000)
-#define BUTTON4_CLICKED cast(clong, &h00020000)
-#define BUTTON4_DOUBLE_CLICKED cast(clong, &h00040000)
-#define BUTTON4_TRIPLE_CLICKED cast(clong, &h00080000)
-#define BUTTON5_RELEASED cast(clong, &h00100000)
-#define BUTTON5_PRESSED cast(clong, &h00200000)
-#define BUTTON5_CLICKED cast(clong, &h00400000)
-#define BUTTON5_DOUBLE_CLICKED cast(clong, &h00800000)
-#define BUTTON5_TRIPLE_CLICKED cast(clong, &h01000000)
-#define MOUSE_WHEEL_SCROLL cast(clong, &h02000000)
-#define BUTTON_MODIFIER_SHIFT cast(clong, &h04000000)
-#define BUTTON_MODIFIER_CONTROL cast(clong, &h08000000)
-#define BUTTON_MODIFIER_ALT cast(clong, &h10000000)
-#define ALL_MOUSE_EVENTS cast(clong, &h1fffffff)
-#define REPORT_MOUSE_POSITION cast(clong, &h20000000)
-
+const BUTTON1_RELEASED = cast(clong, &h00000001)
+const BUTTON1_PRESSED = cast(clong, &h00000002)
+const BUTTON1_CLICKED = cast(clong, &h00000004)
+const BUTTON1_DOUBLE_CLICKED = cast(clong, &h00000008)
+const BUTTON1_TRIPLE_CLICKED = cast(clong, &h00000010)
+const BUTTON1_MOVED = cast(clong, &h00000010)
+const BUTTON2_RELEASED = cast(clong, &h00000020)
+const BUTTON2_PRESSED = cast(clong, &h00000040)
+const BUTTON2_CLICKED = cast(clong, &h00000080)
+const BUTTON2_DOUBLE_CLICKED = cast(clong, &h00000100)
+const BUTTON2_TRIPLE_CLICKED = cast(clong, &h00000200)
+const BUTTON2_MOVED = cast(clong, &h00000200)
+const BUTTON3_RELEASED = cast(clong, &h00000400)
+const BUTTON3_PRESSED = cast(clong, &h00000800)
+const BUTTON3_CLICKED = cast(clong, &h00001000)
+const BUTTON3_DOUBLE_CLICKED = cast(clong, &h00002000)
+const BUTTON3_TRIPLE_CLICKED = cast(clong, &h00004000)
+const BUTTON3_MOVED = cast(clong, &h00004000)
+const BUTTON4_RELEASED = cast(clong, &h00008000)
+const BUTTON4_PRESSED = cast(clong, &h00010000)
+const BUTTON4_CLICKED = cast(clong, &h00020000)
+const BUTTON4_DOUBLE_CLICKED = cast(clong, &h00040000)
+const BUTTON4_TRIPLE_CLICKED = cast(clong, &h00080000)
+const BUTTON5_RELEASED = cast(clong, &h00100000)
+const BUTTON5_PRESSED = cast(clong, &h00200000)
+const BUTTON5_CLICKED = cast(clong, &h00400000)
+const BUTTON5_DOUBLE_CLICKED = cast(clong, &h00800000)
+const BUTTON5_TRIPLE_CLICKED = cast(clong, &h01000000)
+const MOUSE_WHEEL_SCROLL = cast(clong, &h02000000)
+const BUTTON_MODIFIER_SHIFT = cast(clong, &h04000000)
+const BUTTON_MODIFIER_CONTROL = cast(clong, &h08000000)
+const BUTTON_MODIFIER_ALT = cast(clong, &h10000000)
+const ALL_MOUSE_EVENTS = cast(clong, &h1fffffff)
+const REPORT_MOUSE_POSITION = cast(clong, &h20000000)
 type mmask_t as culong
 
 type MEVENT
@@ -199,8 +198,6 @@ end type
 	extern import COLORS as long
 	extern import COLOR_PAIRS as long
 	extern import TABSIZE as long
-	extern import acs_map(0 to 128-1) as chtype
-	extern import ttytype as zstring * 128
 #else
 	extern LINES as long
 	extern COLS as long
@@ -211,10 +208,19 @@ end type
 	extern COLORS as long
 	extern COLOR_PAIRS as long
 	extern TABSIZE as long
-	extern acs_map(0 to 128-1) as chtype
-	extern ttytype as zstring * 128
 #endif
 
+#define acs_map(i) ((@__acs_map)[i])
+
+#if defined(__FB_WIN32__) and defined(PDC_DLL_BUILD)
+	extern import __acs_map alias "acs_map" as chtype
+	extern import __ttytype alias "ttytype" as byte
+#else
+	extern __acs_map alias "acs_map" as chtype
+	extern __ttytype alias "ttytype" as byte
+#endif
+
+#define ttytype (*cptr(zstring ptr, @__ttytype))
 #define A_NORMAL cast(chtype, 0)
 #define A_ALTCHARSET cast(chtype, &h00010000)
 #define A_RIGHTLINE cast(chtype, &h00020000)
@@ -229,8 +235,8 @@ end type
 #define A_COLOR cast(chtype, &hff000000)
 #define A_ITALIC A_INVIS
 #define A_PROTECT ((A_UNDERLINE or A_LEFTLINE) or A_RIGHTLINE)
-#define PDC_ATTR_SHIFT 19
-#define PDC_COLOR_SHIFT 24
+const PDC_ATTR_SHIFT = 19
+const PDC_COLOR_SHIFT = 24
 #define A_STANDOUT (A_REVERSE or A_BOLD)
 #define A_DIM A_NORMAL
 #define CHR_MSK A_CHARTEXT
@@ -342,243 +348,243 @@ end type
 	#define WACS_SSSS WACS_PLUS
 #endif
 
-#define COLOR_BLACK 0
-#define COLOR_BLUE 1
-#define COLOR_GREEN 2
-#define COLOR_RED 4
+const COLOR_BLACK = 0
+const COLOR_BLUE = 1
+const COLOR_GREEN = 2
+const COLOR_RED = 4
 #define COLOR_CYAN (COLOR_BLUE or COLOR_GREEN)
 #define COLOR_MAGENTA (COLOR_RED or COLOR_BLUE)
 #define COLOR_YELLOW (COLOR_RED or COLOR_GREEN)
-#define COLOR_WHITE 7
-#define KEY_CODE_YES &h100
-#define KEY_BREAK &h101
-#define KEY_DOWN &h102
-#define KEY_UP &h103
-#define KEY_LEFT &h104
-#define KEY_RIGHT &h105
-#define KEY_HOME &h106
-#define KEY_BACKSPACE &h107
-#define KEY_F0 &h108
-#define KEY_DL &h148
-#define KEY_IL &h149
-#define KEY_DC &h14a
-#define KEY_IC &h14b
-#define KEY_EIC &h14c
-#define KEY_CLEAR &h14d
-#define KEY_EOS &h14e
-#define KEY_EOL &h14f
-#define KEY_SF &h150
-#define KEY_SR &h151
-#define KEY_NPAGE &h152
-#define KEY_PPAGE &h153
-#define KEY_STAB &h154
-#define KEY_CTAB &h155
-#define KEY_CATAB &h156
-#define KEY_ENTER &h157
-#define KEY_SRESET &h158
-#define KEY_RESET &h159
-#define KEY_PRINT &h15a
-#define KEY_LL &h15b
-#define KEY_ABORT &h15c
-#define KEY_SHELP &h15d
-#define KEY_LHELP &h15e
-#define KEY_BTAB &h15f
-#define KEY_BEG &h160
-#define KEY_CANCEL &h161
-#define KEY_CLOSE &h162
-#define KEY_COMMAND &h163
-#define KEY_COPY &h164
-#define KEY_CREATE &h165
-#define KEY_END &h166
-#define KEY_EXIT &h167
-#define KEY_FIND &h168
-#define KEY_HELP &h169
-#define KEY_MARK &h16a
-#define KEY_MESSAGE &h16b
-#define KEY_MOVE &h16c
-#define KEY_NEXT &h16d
-#define KEY_OPEN &h16e
-#define KEY_OPTIONS &h16f
-#define KEY_PREVIOUS &h170
-#define KEY_REDO &h171
-#define KEY_REFERENCE &h172
-#define KEY_REFRESH &h173
-#define KEY_REPLACE &h174
-#define KEY_RESTART &h175
-#define KEY_RESUME &h176
-#define KEY_SAVE &h177
-#define KEY_SBEG &h178
-#define KEY_SCANCEL &h179
-#define KEY_SCOMMAND &h17a
-#define KEY_SCOPY &h17b
-#define KEY_SCREATE &h17c
-#define KEY_SDC &h17d
-#define KEY_SDL &h17e
-#define KEY_SELECT &h17f
-#define KEY_SEND &h180
-#define KEY_SEOL &h181
-#define KEY_SEXIT &h182
-#define KEY_SFIND &h183
-#define KEY_SHOME &h184
-#define KEY_SIC &h185
-#define KEY_SLEFT &h187
-#define KEY_SMESSAGE &h188
-#define KEY_SMOVE &h189
-#define KEY_SNEXT &h18a
-#define KEY_SOPTIONS &h18b
-#define KEY_SPREVIOUS &h18c
-#define KEY_SPRINT &h18d
-#define KEY_SREDO &h18e
-#define KEY_SREPLACE &h18f
-#define KEY_SRIGHT &h190
-#define KEY_SRSUME &h191
-#define KEY_SSAVE &h192
-#define KEY_SSUSPEND &h193
-#define KEY_SUNDO &h194
-#define KEY_SUSPEND &h195
-#define KEY_UNDO &h196
-#define ALT_0 &h197
-#define ALT_1 &h198
-#define ALT_2 &h199
-#define ALT_3 &h19a
-#define ALT_4 &h19b
-#define ALT_5 &h19c
-#define ALT_6 &h19d
-#define ALT_7 &h19e
-#define ALT_8 &h19f
-#define ALT_9 &h1a0
-#define ALT_A &h1a1
-#define ALT_B &h1a2
-#define ALT_C &h1a3
-#define ALT_D &h1a4
-#define ALT_E &h1a5
-#define ALT_F &h1a6
-#define ALT_G &h1a7
-#define ALT_H &h1a8
-#define ALT_I &h1a9
-#define ALT_J &h1aa
-#define ALT_K &h1ab
-#define ALT_L &h1ac
-#define ALT_M &h1ad
-#define ALT_N &h1ae
-#define ALT_O &h1af
-#define ALT_P &h1b0
-#define ALT_Q &h1b1
-#define ALT_R &h1b2
-#define ALT_S &h1b3
-#define ALT_T &h1b4
-#define ALT_U &h1b5
-#define ALT_V &h1b6
-#define ALT_W &h1b7
-#define ALT_X &h1b8
-#define ALT_Y &h1b9
-#define ALT_Z &h1ba
-#define CTL_LEFT &h1bb
-#define CTL_RIGHT &h1bc
-#define CTL_PGUP &h1bd
-#define CTL_PGDN &h1be
-#define CTL_HOME &h1bf
-#define CTL_END &h1c0
-#define KEY_A1 &h1c1
-#define KEY_A2 &h1c2
-#define KEY_A3 &h1c3
-#define KEY_B1 &h1c4
-#define KEY_B2 &h1c5
-#define KEY_B3 &h1c6
-#define KEY_C1 &h1c7
-#define KEY_C2 &h1c8
-#define KEY_C3 &h1c9
-#define PADSLASH &h1ca
-#define PADENTER &h1cb
-#define CTL_PADENTER &h1cc
-#define ALT_PADENTER &h1cd
-#define PADSTOP &h1ce
-#define PADSTAR &h1cf
-#define PADMINUS &h1d0
-#define PADPLUS &h1d1
-#define CTL_PADSTOP &h1d2
-#define CTL_PADCENTER &h1d3
-#define CTL_PADPLUS &h1d4
-#define CTL_PADMINUS &h1d5
-#define CTL_PADSLASH &h1d6
-#define CTL_PADSTAR &h1d7
-#define ALT_PADPLUS &h1d8
-#define ALT_PADMINUS &h1d9
-#define ALT_PADSLASH &h1da
-#define ALT_PADSTAR &h1db
-#define ALT_PADSTOP &h1dc
-#define CTL_INS &h1dd
-#define ALT_DEL &h1de
-#define ALT_INS &h1df
-#define CTL_UP &h1e0
-#define CTL_DOWN &h1e1
-#define CTL_TAB &h1e2
-#define ALT_TAB &h1e3
-#define ALT_MINUS &h1e4
-#define ALT_EQUAL &h1e5
-#define ALT_HOME &h1e6
-#define ALT_PGUP &h1e7
-#define ALT_PGDN &h1e8
-#define ALT_END &h1e9
-#define ALT_UP &h1ea
-#define ALT_DOWN &h1eb
-#define ALT_RIGHT &h1ec
-#define ALT_LEFT &h1ed
-#define ALT_ENTER &h1ee
-#define ALT_ESC &h1ef
-#define ALT_BQUOTE &h1f0
-#define ALT_LBRACKET &h1f1
-#define ALT_RBRACKET &h1f2
-#define ALT_SEMICOLON &h1f3
-#define ALT_FQUOTE &h1f4
-#define ALT_COMMA &h1f5
-#define ALT_STOP &h1f6
-#define ALT_FSLASH &h1f7
-#define ALT_BKSP &h1f8
-#define CTL_BKSP &h1f9
-#define PAD0 &h1fa
-#define CTL_PAD0 &h1fb
-#define CTL_PAD1 &h1fc
-#define CTL_PAD2 &h1fd
-#define CTL_PAD3 &h1fe
-#define CTL_PAD4 &h1ff
-#define CTL_PAD5 &h200
-#define CTL_PAD6 &h201
-#define CTL_PAD7 &h202
-#define CTL_PAD8 &h203
-#define CTL_PAD9 &h204
-#define ALT_PAD0 &h205
-#define ALT_PAD1 &h206
-#define ALT_PAD2 &h207
-#define ALT_PAD3 &h208
-#define ALT_PAD4 &h209
-#define ALT_PAD5 &h20a
-#define ALT_PAD6 &h20b
-#define ALT_PAD7 &h20c
-#define ALT_PAD8 &h20d
-#define ALT_PAD9 &h20e
-#define CTL_DEL &h20f
-#define ALT_BSLASH &h210
-#define CTL_ENTER &h211
-#define SHF_PADENTER &h212
-#define SHF_PADSLASH &h213
-#define SHF_PADSTAR &h214
-#define SHF_PADPLUS &h215
-#define SHF_PADMINUS &h216
-#define SHF_UP &h217
-#define SHF_DOWN &h218
-#define SHF_IC &h219
-#define SHF_DC &h21a
-#define KEY_MOUSE &h21b
-#define KEY_SHIFT_L &h21c
-#define KEY_SHIFT_R &h21d
-#define KEY_CONTROL_L &h21e
-#define KEY_CONTROL_R &h21f
-#define KEY_ALT_L &h220
-#define KEY_ALT_R &h221
-#define KEY_RESIZE &h222
-#define KEY_SUP &h223
-#define KEY_SDOWN &h224
+const COLOR_WHITE = 7
+const KEY_CODE_YES = &h100
+const KEY_BREAK = &h101
+const KEY_DOWN = &h102
+const KEY_UP = &h103
+const KEY_LEFT = &h104
+const KEY_RIGHT = &h105
+const KEY_HOME = &h106
+const KEY_BACKSPACE = &h107
+const KEY_F0 = &h108
+const KEY_DL = &h148
+const KEY_IL = &h149
+const KEY_DC = &h14a
+const KEY_IC = &h14b
+const KEY_EIC = &h14c
+const KEY_CLEAR = &h14d
+const KEY_EOS = &h14e
+const KEY_EOL = &h14f
+const KEY_SF = &h150
+const KEY_SR = &h151
+const KEY_NPAGE = &h152
+const KEY_PPAGE = &h153
+const KEY_STAB = &h154
+const KEY_CTAB = &h155
+const KEY_CATAB = &h156
+const KEY_ENTER = &h157
+const KEY_SRESET = &h158
+const KEY_RESET = &h159
+const KEY_PRINT = &h15a
+const KEY_LL = &h15b
+const KEY_ABORT = &h15c
+const KEY_SHELP = &h15d
+const KEY_LHELP = &h15e
+const KEY_BTAB = &h15f
+const KEY_BEG = &h160
+const KEY_CANCEL = &h161
+const KEY_CLOSE = &h162
+const KEY_COMMAND = &h163
+const KEY_COPY = &h164
+const KEY_CREATE = &h165
+const KEY_END = &h166
+const KEY_EXIT = &h167
+const KEY_FIND = &h168
+const KEY_HELP = &h169
+const KEY_MARK = &h16a
+const KEY_MESSAGE = &h16b
+const KEY_MOVE = &h16c
+const KEY_NEXT = &h16d
+const KEY_OPEN = &h16e
+const KEY_OPTIONS = &h16f
+const KEY_PREVIOUS = &h170
+const KEY_REDO = &h171
+const KEY_REFERENCE = &h172
+const KEY_REFRESH = &h173
+const KEY_REPLACE = &h174
+const KEY_RESTART = &h175
+const KEY_RESUME = &h176
+const KEY_SAVE = &h177
+const KEY_SBEG = &h178
+const KEY_SCANCEL = &h179
+const KEY_SCOMMAND = &h17a
+const KEY_SCOPY = &h17b
+const KEY_SCREATE = &h17c
+const KEY_SDC = &h17d
+const KEY_SDL = &h17e
+const KEY_SELECT = &h17f
+const KEY_SEND = &h180
+const KEY_SEOL = &h181
+const KEY_SEXIT = &h182
+const KEY_SFIND = &h183
+const KEY_SHOME = &h184
+const KEY_SIC = &h185
+const KEY_SLEFT = &h187
+const KEY_SMESSAGE = &h188
+const KEY_SMOVE = &h189
+const KEY_SNEXT = &h18a
+const KEY_SOPTIONS = &h18b
+const KEY_SPREVIOUS = &h18c
+const KEY_SPRINT = &h18d
+const KEY_SREDO = &h18e
+const KEY_SREPLACE = &h18f
+const KEY_SRIGHT = &h190
+const KEY_SRSUME = &h191
+const KEY_SSAVE = &h192
+const KEY_SSUSPEND = &h193
+const KEY_SUNDO = &h194
+const KEY_SUSPEND = &h195
+const KEY_UNDO = &h196
+const ALT_0 = &h197
+const ALT_1 = &h198
+const ALT_2 = &h199
+const ALT_3 = &h19a
+const ALT_4 = &h19b
+const ALT_5 = &h19c
+const ALT_6 = &h19d
+const ALT_7 = &h19e
+const ALT_8 = &h19f
+const ALT_9 = &h1a0
+const ALT_A = &h1a1
+const ALT_B = &h1a2
+const ALT_C = &h1a3
+const ALT_D = &h1a4
+const ALT_E = &h1a5
+const ALT_F = &h1a6
+const ALT_G = &h1a7
+const ALT_H = &h1a8
+const ALT_I = &h1a9
+const ALT_J = &h1aa
+const ALT_K = &h1ab
+const ALT_L = &h1ac
+const ALT_M = &h1ad
+const ALT_N = &h1ae
+const ALT_O = &h1af
+const ALT_P = &h1b0
+const ALT_Q = &h1b1
+const ALT_R = &h1b2
+const ALT_S = &h1b3
+const ALT_T = &h1b4
+const ALT_U = &h1b5
+const ALT_V = &h1b6
+const ALT_W = &h1b7
+const ALT_X = &h1b8
+const ALT_Y = &h1b9
+const ALT_Z = &h1ba
+const CTL_LEFT = &h1bb
+const CTL_RIGHT = &h1bc
+const CTL_PGUP = &h1bd
+const CTL_PGDN = &h1be
+const CTL_HOME = &h1bf
+const CTL_END = &h1c0
+const KEY_A1 = &h1c1
+const KEY_A2 = &h1c2
+const KEY_A3 = &h1c3
+const KEY_B1 = &h1c4
+const KEY_B2 = &h1c5
+const KEY_B3 = &h1c6
+const KEY_C1 = &h1c7
+const KEY_C2 = &h1c8
+const KEY_C3 = &h1c9
+const PADSLASH = &h1ca
+const PADENTER = &h1cb
+const CTL_PADENTER = &h1cc
+const ALT_PADENTER = &h1cd
+const PADSTOP = &h1ce
+const PADSTAR = &h1cf
+const PADMINUS = &h1d0
+const PADPLUS = &h1d1
+const CTL_PADSTOP = &h1d2
+const CTL_PADCENTER = &h1d3
+const CTL_PADPLUS = &h1d4
+const CTL_PADMINUS = &h1d5
+const CTL_PADSLASH = &h1d6
+const CTL_PADSTAR = &h1d7
+const ALT_PADPLUS = &h1d8
+const ALT_PADMINUS = &h1d9
+const ALT_PADSLASH = &h1da
+const ALT_PADSTAR = &h1db
+const ALT_PADSTOP = &h1dc
+const CTL_INS = &h1dd
+const ALT_DEL = &h1de
+const ALT_INS = &h1df
+const CTL_UP = &h1e0
+const CTL_DOWN = &h1e1
+const CTL_TAB = &h1e2
+const ALT_TAB = &h1e3
+const ALT_MINUS = &h1e4
+const ALT_EQUAL = &h1e5
+const ALT_HOME = &h1e6
+const ALT_PGUP = &h1e7
+const ALT_PGDN = &h1e8
+const ALT_END = &h1e9
+const ALT_UP = &h1ea
+const ALT_DOWN = &h1eb
+const ALT_RIGHT = &h1ec
+const ALT_LEFT = &h1ed
+const ALT_ENTER = &h1ee
+const ALT_ESC = &h1ef
+const ALT_BQUOTE = &h1f0
+const ALT_LBRACKET = &h1f1
+const ALT_RBRACKET = &h1f2
+const ALT_SEMICOLON = &h1f3
+const ALT_FQUOTE = &h1f4
+const ALT_COMMA = &h1f5
+const ALT_STOP = &h1f6
+const ALT_FSLASH = &h1f7
+const ALT_BKSP = &h1f8
+const CTL_BKSP = &h1f9
+const PAD0 = &h1fa
+const CTL_PAD0 = &h1fb
+const CTL_PAD1 = &h1fc
+const CTL_PAD2 = &h1fd
+const CTL_PAD3 = &h1fe
+const CTL_PAD4 = &h1ff
+const CTL_PAD5 = &h200
+const CTL_PAD6 = &h201
+const CTL_PAD7 = &h202
+const CTL_PAD8 = &h203
+const CTL_PAD9 = &h204
+const ALT_PAD0 = &h205
+const ALT_PAD1 = &h206
+const ALT_PAD2 = &h207
+const ALT_PAD3 = &h208
+const ALT_PAD4 = &h209
+const ALT_PAD5 = &h20a
+const ALT_PAD6 = &h20b
+const ALT_PAD7 = &h20c
+const ALT_PAD8 = &h20d
+const ALT_PAD9 = &h20e
+const CTL_DEL = &h20f
+const ALT_BSLASH = &h210
+const CTL_ENTER = &h211
+const SHF_PADENTER = &h212
+const SHF_PADSLASH = &h213
+const SHF_PADSTAR = &h214
+const SHF_PADPLUS = &h215
+const SHF_PADMINUS = &h216
+const SHF_UP = &h217
+const SHF_DOWN = &h218
+const SHF_IC = &h219
+const SHF_DC = &h21a
+const KEY_MOUSE = &h21b
+const KEY_SHIFT_L = &h21c
+const KEY_SHIFT_R = &h21d
+const KEY_CONTROL_L = &h21e
+const KEY_CONTROL_R = &h21f
+const KEY_ALT_L = &h220
+const KEY_ALT_R = &h221
+const KEY_RESIZE = &h222
+const KEY_SUP = &h223
+const KEY_SDOWN = &h224
 #define KEY_MIN KEY_BREAK
 #define KEY_MAX KEY_SDOWN
 #define KEY_F(n) (KEY_F0 + (n))
@@ -1030,13 +1036,13 @@ declare function PDC_save_key_modifiers(byval as bool) as long
 		getyx(curscr, (y), (x))
 	end if
 #endmacro
-#define PDC_CLIP_SUCCESS 0
-#define PDC_CLIP_ACCESS_ERROR 1
-#define PDC_CLIP_EMPTY 2
-#define PDC_CLIP_MEMORY_ERROR 3
-#define PDC_KEY_MODIFIER_SHIFT 1
-#define PDC_KEY_MODIFIER_CONTROL 2
-#define PDC_KEY_MODIFIER_ALT 4
-#define PDC_KEY_MODIFIER_NUMLOCK 8
+const PDC_CLIP_SUCCESS = 0
+const PDC_CLIP_ACCESS_ERROR = 1
+const PDC_CLIP_EMPTY = 2
+const PDC_CLIP_MEMORY_ERROR = 3
+const PDC_KEY_MODIFIER_SHIFT = 1
+const PDC_KEY_MODIFIER_CONTROL = 2
+const PDC_KEY_MODIFIER_ALT = 4
+const PDC_KEY_MODIFIER_NUMLOCK = 8
 
 end extern

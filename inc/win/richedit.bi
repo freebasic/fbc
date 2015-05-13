@@ -1,268 +1,304 @@
-''
-''
-'' richedit -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_richedit_bi__
-#define __win_richedit_bi__
+#pragma once
 
-#ifdef UNICODE 
-#define RICHEDIT_CLASS "RichEdit20W"
-#else
-#define RICHEDIT_CLASS "RichEdit20A"
-#endif
+#include once "_mingw_unicode.bi"
+
+extern "Windows"
+
+#define _RICHEDIT_
+const _RICHEDIT_VER = &h0300
+const cchTextLimitDefault = 32767
+#define MSFTEDIT_CLASS wstr("RICHEDIT50W")
+#define CERICHEDIT_CLASSA "RichEditCEA"
+#define CERICHEDIT_CLASSW wstr("RichEditCEW")
+#define RICHEDIT_CLASSA "RichEdit20A"
 #define RICHEDIT_CLASS10A "RICHEDIT"
-#define CF_RTF "Rich Text Format"
-#define CF_RTFNOOBJS "Rich Text Format Without Objects"
-#define CF_RETEXTOBJ "RichEdit Text and Objects"
-#define CFM_BOLD 1
-#define CFM_ITALIC 2
-#define CFM_UNDERLINE 4
-#define CFM_STRIKEOUT 8
-#define CFM_PROTECTED 16
-#define CFM_LINK 32
-#define CFM_SIZE &h80000000
-#define CFM_COLOR &h40000000
-#define CFM_FACE &h20000000
-#define CFM_OFFSET &h10000000
-#define CFM_CHARSET &h08000000
-#define CFM_SUBSCRIPT &h00030000
-#define CFM_SUPERSCRIPT &h00030000
-#define CFM_EFFECTS	(CFM_BOLD or CFM_ITALIC or CFM_UNDERLINE or CFM_COLOR or CFM_STRIKEOUT or CFE_PROTECTED or CFM_LINK)
-#define CFE_BOLD 1
-#define CFE_ITALIC 2
-#define CFE_UNDERLINE 4
-#define CFE_STRIKEOUT 8
-#define CFE_PROTECTED 16
-#define CFE_AUTOCOLOR &h40000000
-#define CFE_SUBSCRIPT &h00010000
-#define CFE_SUPERSCRIPT &h00020000
-#define IMF_FORCENONE 1
-#define IMF_FORCEENABLE 2
-#define IMF_FORCEDISABLE 4
-#define IMF_CLOSESTATUSWINDOW 8
-#define IMF_VERTICAL 32
-#define IMF_FORCEACTIVE 64
-#define IMF_FORCEINACTIVE 128
-#define IMF_FORCEREMEMBER 256
-#define SEL_EMPTY 0
-#define SEL_TEXT 1
-#define SEL_OBJECT 2
-#define SEL_MULTICHAR 4
-#define SEL_MULTIOBJECT 8
-#define MAX_TAB_STOPS 32
-#define PFM_ALIGNMENT 8
-#define PFM_NUMBERING 32
-#define PFM_OFFSET 4
-#define PFM_OFFSETINDENT &h80000000
-#define PFM_RIGHTINDENT 2
-#define PFM_STARTINDENT 1
-#define PFM_TABSTOPS 16
-#define PFM_BORDER 2048
-#define PFM_LINESPACING 256
-#define PFM_NUMBERINGSTART 32768
-#define PFM_NUMBERINGSTYLE 8192
-#define PFM_NUMBERINGTAB 16384
-#define PFM_SHADING 4096
-#define PFM_SPACEAFTER 128
-#define PFM_SPACEBEFORE 64
-#define PFM_STYLE 1024
-#define PFM_DONOTHYPHEN 4194304
-#define PFM_KEEP 131072
-#define PFM_KEEPNEXT 262144
-#define PFM_NOLINENUMBER 1048576
-#define PFM_NOWIDOWCONTROL 2097152
-#define PFM_PAGEBREAKBEFORE 524288
-#define PFM_RTLPARA 65536
-#define PFM_SIDEBYSIDE 8388608
-#define PFM_TABLE 1073741824
-#define PFN_BULLET 1
-#define PFE_DONOTHYPHEN 64
-#define PFE_KEEP 2
-#define PFE_KEEPNEXT 4
-#define PFE_NOLINENUMBER 16
-#define PFE_NOWIDOWCONTROL 32
-#define PFE_PAGEBREAKBEFORE 8
-#define PFE_RTLPARA 1
-#define PFE_SIDEBYSIDE 128
-#define PFE_TABLE 16384
-#define PFA_LEFT 1
-#define PFA_RIGHT 2
-#define PFA_CENTER 3
-#define PFA_JUSTIFY 4
-#define PFA_FULL_INTERWORD 4
-#define SF_TEXT 1
-#define SF_RTF 2
-#define SF_RTFNOOBJS 3
-#define SF_TEXTIZED 4
-#define SF_UNICODE 16
-#define SF_USECODEPAGE 32
-#define SF_NCRFORNONASCII 64
-#define SF_RTFVAL &h0700
-#define SFF_PWD &h0800
-#define SFF_KEEPDOCINFO &h1000
-#define SFF_PERSISTVIEWSCALE &h2000
-#define SFF_PLAINRTF &h4000
-#define SFF_SELECTION &h8000
-#define WB_CLASSIFY 3
-#define WB_MOVEWORDLEFT 4
-#define WB_MOVEWORDRIGHT 5
-#define WB_LEFTBREAK 6
-#define WB_RIGHTBREAK 7
-#define WB_MOVEWORDPREV 4
-#define WB_MOVEWORDNEXT 5
-#define WB_PREVBREAK 6
-#define WB_NEXTBREAK 7
-#define WBF_WORDWRAP 16
-#define WBF_WORDBREAK 32
-#define WBF_OVERFLOW 64
-#define WBF_LEVEL1 128
-#define WBF_LEVEL2 256
-#define WBF_CUSTOM 512
-#define ES_DISABLENOSCROLL 8192
-#define ES_EX_NOCALLOLEINIT 16777216
-#define ES_NOIME 524288
-#define ES_NOOLEDRAGDROP 8
-#define ES_SAVESEL 32768
-#define ES_SELFIME 262144
-#define ES_SUNKEN 16384
-#define ES_VERTICAL 4194304
-#define ES_SELECTIONBAR 16777216
-#define EM_CANPASTE (1024+50)
-#define EM_DISPLAYBAND (1024+51)
-#define EM_EXGETSEL (1024+52)
-#define EM_EXLIMITTEXT (1024+53)
-#define EM_EXLINEFROMCHAR (1024+54)
-#define EM_EXSETSEL (1024+55)
-#define EM_FINDTEXT (1024+56)
-#define EM_FORMATRANGE (1024+57)
-#define EM_GETCHARFORMAT (1024+58)
-#define EM_GETEVENTMASK (1024+59)
-#define EM_GETOLEINTERFACE (1024+60)
-#define EM_GETPARAFORMAT (1024+61)
-#define EM_GETSELTEXT (1024+62)
-#define EM_HIDESELECTION (1024+63)
-#define EM_PASTESPECIAL (1024+64)
-#define EM_REQUESTRESIZE (1024+65)
-#define EM_SELECTIONTYPE (1024+66)
-#define EM_SETBKGNDCOLOR (1024+67)
-#define EM_SETCHARFORMAT (1024+68)
-#define EM_SETEVENTMASK (1024+69)
-#define EM_SETOLECALLBACK (1024+70)
-#define EM_SETPARAFORMAT (1024+71)
-#define EM_SETTARGETDEVICE (1024+72)
-#define EM_STREAMIN (1024+73)
-#define EM_STREAMOUT (1024+74)
-#define EM_GETTEXTRANGE (1024+75)
-#define EM_FINDWORDBREAK (1024+76)
-#define EM_SETOPTIONS (1024+77)
-#define EM_GETOPTIONS (1024+78)
-#define EM_FINDTEXTEX (1024+79)
-#define EM_GETWORDBREAKPROCEX (1024+80)
-#define EM_SETWORDBREAKPROCEX (1024+81)
-#define EM_SETUNDOLIMIT (1024+82)
-#define EM_REDO (1024+84)
-#define EM_CANREDO (1024+85)
-#define EM_GETUNDONAME (1024+86)
-#define EM_GETREDONAME (1024+87)
-#define EM_STOPGROUPTYPING (1024+88)
-#define EM_SETTEXTMODE (1024+89)
-#define EM_GETTEXTMODE (1024+90)
-#define EM_AUTOURLDETECT (1024+91)
-#define EM_GETAUTOURLDETECT (1024+92)
-#define EM_SETPALETTE (1024+93)
-#define EM_GETTEXTEX (1024+94)
-#define EM_GETTEXTLENGTHEX (1024+95)
-#define EM_SHOWSCROLLBAR (1024+96)
-#define EM_SETTEXTEX (1024+97)
-#define EM_SETPUNCTUATION (1024+100)
-#define EM_GETPUNCTUATION (1024+101)
-#define EM_SETWORDWRAPMODE (1024+102)
-#define EM_GETWORDWRAPMODE (1024+103)
-#define EM_SETIMECOLOR (1024+104)
-#define EM_GETIMECOLOR (1024+105)
-#define EM_SETIMEOPTIONS (1024+106)
-#define EM_GETIMEOPTIONS (1024+107)
-#define EM_SETLANGOPTIONS (1024+120)
-#define EM_GETLANGOPTIONS (1024+121)
-#define EM_GETIMECOMPMODE (1024+122)
-#define EM_FINDTEXTW (1024+123)
-#define EM_FINDTEXTEXW (1024+124)
-#define EM_RECONVERSION (1024+125)
-#define EM_SETBIDIOPTIONS (1024+200)
-#define EM_GETBIDIOPTIONS (1024+201)
-#define EM_SETTYPOGRAPHYOPTIONS (1024+202)
-#define EM_GETTYPOGRAPHYOPTIONS (1024+203)
-#define EM_SETEDITSTYLE (1024+204)
-#define EM_GETEDITSTYLE (1024+205)
-#define EM_GETSCROLLPOS (1024+221)
-#define EM_SETSCROLLPOS (1024+222)
-#define EM_SETFONTSIZE (1024+223)
-#define EM_GETZOOM (1024+224)
-#define EM_SETZOOM (1024+225)
-#define EN_CORRECTTEXT 1797
-#define EN_DROPFILES 1795
-#define EN_IMECHANGE 1799
-#define EN_LINK 1803
-#define EN_MSGFILTER 1792
-#define EN_OLEOPFAILED 1801
-#define EN_PROTECTED 1796
-#define EN_REQUESTRESIZE 1793
-#define EN_SAVECLIPBOARD 1800
-#define EN_SELCHANGE 1794
-#define EN_STOPNOUNDO 1798
-#define ENM_NONE 0
-#define ENM_CHANGE 1
-#define ENM_CORRECTTEXT 4194304
-#define ENM_DRAGDROPDONE 16
-#define ENM_DROPFILES 1048576
-#define ENM_IMECHANGE 8388608
-#define ENM_KEYEVENTS 65536
-#define ENM_LANGCHANGE 16777216
-#define ENM_LINK 67108864
-#define ENM_MOUSEEVENTS 131072
-#define ENM_OBJECTPOSITIONS 33554432
-#define ENM_PROTECTED 2097152
-#define ENM_REQUESTRESIZE 262144
-#define ENM_SCROLL 4
-#define ENM_SCROLLEVENTS 8
-#define ENM_SELCHANGE 524288
-#define ENM_UPDATE 2
-#define ENM_LINK 67108864
-#define ECO_AUTOWORDSELECTION 1
-#define ECO_AUTOVSCROLL 64
-#define ECO_AUTOHSCROLL 128
-#define ECO_NOHIDESEL 256
-#define ECO_READONLY 2048
-#define ECO_WANTRETURN 4096
-#define ECO_SAVESEL &h8000
-#define ECO_SELECTIONBAR &h1000000
-#define ECO_VERTICAL &h400000
-#define ECOOP_SET 1
-#define ECOOP_OR 2
-#define ECOOP_AND 3
-#define ECOOP_XOR 4
-#define SCF_DEFAULT 0
-#define SCF_SELECTION 1
-#define SCF_WORD 2
-#define SCF_ALL 4
-#define SCF_USEUIRULES 8
-#define TM_PLAINTEXT 1
-#define TM_RICHTEXT 2
-#define TM_SINGLELEVELUNDO 4
-#define TM_MULTILEVELUNDO 8
-#define TM_SINGLECODEPAGE 16
-#define TM_MULTICODEPAGE 32
-#define GT_DEFAULT 0
-#define GT_USECRLF 1
-#define yHeightCharPtsMost 1638
-#define lDefaultTab 720
+#define RICHEDIT_CLASSW wstr("RichEdit20W")
 
-#ifndef UNICODE
-type CHARFORMATA field=4
+#ifdef UNICODE
+	#define RICHEDIT_CLASS RICHEDIT_CLASSW
+#else
+	#define RICHEDIT_CLASS RICHEDIT_CLASSA
+#endif
+
+#define EM_CANPASTE (WM_USER + 50)
+#define EM_DISPLAYBAND (WM_USER + 51)
+#define EM_EXGETSEL (WM_USER + 52)
+#define EM_EXLIMITTEXT (WM_USER + 53)
+#define EM_EXLINEFROMCHAR (WM_USER + 54)
+#define EM_EXSETSEL (WM_USER + 55)
+#define EM_FINDTEXT (WM_USER + 56)
+#define EM_FORMATRANGE (WM_USER + 57)
+#define EM_GETCHARFORMAT (WM_USER + 58)
+#define EM_GETEVENTMASK (WM_USER + 59)
+#define EM_GETOLEINTERFACE (WM_USER + 60)
+#define EM_GETPARAFORMAT (WM_USER + 61)
+#define EM_GETSELTEXT (WM_USER + 62)
+#define EM_HIDESELECTION (WM_USER + 63)
+#define EM_PASTESPECIAL (WM_USER + 64)
+#define EM_REQUESTRESIZE (WM_USER + 65)
+#define EM_SELECTIONTYPE (WM_USER + 66)
+#define EM_SETBKGNDCOLOR (WM_USER + 67)
+#define EM_SETCHARFORMAT (WM_USER + 68)
+#define EM_SETEVENTMASK (WM_USER + 69)
+#define EM_SETOLECALLBACK (WM_USER + 70)
+#define EM_SETPARAFORMAT (WM_USER + 71)
+#define EM_SETTARGETDEVICE (WM_USER + 72)
+#define EM_STREAMIN (WM_USER + 73)
+#define EM_STREAMOUT (WM_USER + 74)
+#define EM_GETTEXTRANGE (WM_USER + 75)
+#define EM_FINDWORDBREAK (WM_USER + 76)
+#define EM_SETOPTIONS (WM_USER + 77)
+#define EM_GETOPTIONS (WM_USER + 78)
+#define EM_FINDTEXTEX (WM_USER + 79)
+#define EM_GETWORDBREAKPROCEX (WM_USER + 80)
+#define EM_SETWORDBREAKPROCEX (WM_USER + 81)
+#define EM_SETUNDOLIMIT (WM_USER + 82)
+#define EM_REDO (WM_USER + 84)
+#define EM_CANREDO (WM_USER + 85)
+#define EM_GETUNDONAME (WM_USER + 86)
+#define EM_GETREDONAME (WM_USER + 87)
+#define EM_STOPGROUPTYPING (WM_USER + 88)
+#define EM_SETTEXTMODE (WM_USER + 89)
+#define EM_GETTEXTMODE (WM_USER + 90)
+
+type tagTextMode as long
+enum
+	TM_PLAINTEXT = 1
+	TM_RICHTEXT = 2
+	TM_SINGLELEVELUNDO = 4
+	TM_MULTILEVELUNDO = 8
+	TM_SINGLECODEPAGE = 16
+	TM_MULTICODEPAGE = 32
+end enum
+
+type TEXTMODE as tagTextMode
+#define EM_AUTOURLDETECT (WM_USER + 91)
+#define EM_GETAUTOURLDETECT (WM_USER + 92)
+#define EM_SETPALETTE (WM_USER + 93)
+#define EM_GETTEXTEX (WM_USER + 94)
+#define EM_GETTEXTLENGTHEX (WM_USER + 95)
+#define EM_SHOWSCROLLBAR (WM_USER + 96)
+#define EM_SETTEXTEX (WM_USER + 97)
+#define EM_SETPUNCTUATION (WM_USER + 100)
+#define EM_GETPUNCTUATION (WM_USER + 101)
+#define EM_SETWORDWRAPMODE (WM_USER + 102)
+#define EM_GETWORDWRAPMODE (WM_USER + 103)
+#define EM_SETIMECOLOR (WM_USER + 104)
+#define EM_GETIMECOLOR (WM_USER + 105)
+#define EM_SETIMEOPTIONS (WM_USER + 106)
+#define EM_GETIMEOPTIONS (WM_USER + 107)
+#define EM_CONVPOSITION (WM_USER + 108)
+#define EM_SETLANGOPTIONS (WM_USER + 120)
+#define EM_GETLANGOPTIONS (WM_USER + 121)
+#define EM_GETIMECOMPMODE (WM_USER + 122)
+#define EM_FINDTEXTW (WM_USER + 123)
+#define EM_FINDTEXTEXW (WM_USER + 124)
+#define EM_RECONVERSION (WM_USER + 125)
+#define EM_SETIMEMODEBIAS (WM_USER + 126)
+#define EM_GETIMEMODEBIAS (WM_USER + 127)
+#define EM_SETBIDIOPTIONS (WM_USER + 200)
+#define EM_GETBIDIOPTIONS (WM_USER + 201)
+#define EM_SETTYPOGRAPHYOPTIONS (WM_USER + 202)
+#define EM_GETTYPOGRAPHYOPTIONS (WM_USER + 203)
+#define EM_SETEDITSTYLE (WM_USER + 204)
+#define EM_GETEDITSTYLE (WM_USER + 205)
+const SES_EMULATESYSEDIT = 1
+const SES_BEEPONMAXTEXT = 2
+const SES_EXTENDBACKCOLOR = 4
+const SES_MAPCPS = 8
+const SES_EMULATE10 = 16
+const SES_USECRLF = 32
+const SES_USEAIMM = 64
+const SES_NOIME = 128
+const SES_ALLOWBEEPS = 256
+const SES_UPPERCASE = 512
+const SES_LOWERCASE = 1024
+const SES_NOINPUTSEQUENCECHK = 2048
+const SES_BIDI = 4096
+const SES_SCROLLONKILLFOCUS = 8192
+const SES_XLTCRCRLFTOCR = 16384
+const SES_DRAFTMODE = 32768
+const SES_USECTF = &h0010000
+const SES_HIDEGRIDLINES = &h0020000
+const SES_USEATFONT = &h0040000
+const SES_CUSTOMLOOK = &h0080000
+const SES_LBSCROLLNOTIFY = &h0100000
+const SES_CTFALLOWEMBED = &h0200000
+const SES_CTFALLOWSMARTTAG = &h0400000
+const SES_CTFALLOWPROOFING = &h0800000
+const IMF_AUTOKEYBOARD = &h0001
+const IMF_AUTOFONT = &h0002
+const IMF_IMECANCELCOMPLETE = &h0004
+const IMF_IMEALWAYSSENDNOTIFY = &h0008
+const IMF_AUTOFONTSIZEADJUST = &h0010
+const IMF_UIFONTS = &h0020
+const IMF_DUALFONT = &h0080
+const ICM_NOTOPEN = &h0000
+const ICM_LEVEL3 = &h0001
+const ICM_LEVEL2 = &h0002
+const ICM_LEVEL2_5 = &h0003
+const ICM_LEVEL2_SUI = &h0004
+const ICM_CTF = &h0005
+const TO_ADVANCEDTYPOGRAPHY = 1
+const TO_SIMPLELINEBREAK = 2
+const TO_DISABLECUSTOMTEXTOUT = 4
+const TO_ADVANCEDLAYOUT = 8
+#define EM_OUTLINE (WM_USER + 220)
+#define EM_GETSCROLLPOS (WM_USER + 221)
+#define EM_SETSCROLLPOS (WM_USER + 222)
+#define EM_SETFONTSIZE (WM_USER + 223)
+#define EM_GETZOOM (WM_USER + 224)
+#define EM_SETZOOM (WM_USER + 225)
+#define EM_GETVIEWKIND (WM_USER + 226)
+#define EM_SETVIEWKIND (WM_USER + 227)
+#define EM_GETPAGE (WM_USER + 228)
+#define EM_SETPAGE (WM_USER + 229)
+#define EM_GETHYPHENATEINFO (WM_USER + 230)
+#define EM_SETHYPHENATEINFO (WM_USER + 231)
+#define EM_GETPAGEROTATE (WM_USER + 235)
+#define EM_SETPAGEROTATE (WM_USER + 236)
+#define EM_GETCTFMODEBIAS (WM_USER + 237)
+#define EM_SETCTFMODEBIAS (WM_USER + 238)
+#define EM_GETCTFOPENSTATUS (WM_USER + 240)
+#define EM_SETCTFOPENSTATUS (WM_USER + 241)
+#define EM_GETIMECOMPTEXT (WM_USER + 242)
+#define EM_ISIME (WM_USER + 243)
+#define EM_GETIMEPROPERTY (WM_USER + 244)
+#define EM_GETQUERYRTFOBJ (WM_USER + 269)
+#define EM_SETQUERYRTFOBJ (WM_USER + 270)
+const EPR_0 = 0
+const EPR_270 = 1
+const EPR_180 = 2
+const EPR_90 = 3
+const CTFMODEBIAS_DEFAULT = &h0000
+const CTFMODEBIAS_FILENAME = &h0001
+const CTFMODEBIAS_NAME = &h0002
+const CTFMODEBIAS_READING = &h0003
+const CTFMODEBIAS_DATETIME = &h0004
+const CTFMODEBIAS_CONVERSATION = &h0005
+const CTFMODEBIAS_NUMERIC = &h0006
+const CTFMODEBIAS_HIRAGANA = &h0007
+const CTFMODEBIAS_KATAKANA = &h0008
+const CTFMODEBIAS_HANGUL = &h0009
+const CTFMODEBIAS_HALFWIDTHKATAKANA = &h000A
+const CTFMODEBIAS_FULLWIDTHALPHANUMERIC = &h000B
+const CTFMODEBIAS_HALFWIDTHALPHANUMERIC = &h000C
+const IMF_SMODE_PLAURALCLAUSE = &h0001
+const IMF_SMODE_NONE = &h0002
+
+type _imecomptext field = 4
+	cb as LONG
+	flags as DWORD
+end type
+
+type IMECOMPTEXT as _imecomptext
+const ICT_RESULTREADSTR = 1
+const EMO_EXIT = 0
+const EMO_ENTER = 1
+const EMO_PROMOTE = 2
+const EMO_EXPAND = 3
+const EMO_MOVESELECTION = 4
+const EMO_GETVIEWMODE = 5
+const EMO_EXPANDSELECTION = 0
+const EMO_EXPANDDOCUMENT = 1
+const VM_NORMAL = 4
+const VM_OUTLINE = 2
+const VM_PAGE = 9
+const EN_MSGFILTER = &h0700
+const EN_REQUESTRESIZE = &h0701
+const EN_SELCHANGE = &h0702
+const EN_DROPFILES = &h0703
+const EN_PROTECTED = &h0704
+const EN_CORRECTTEXT = &h0705
+const EN_STOPNOUNDO = &h0706
+const EN_IMECHANGE = &h0707
+const EN_SAVECLIPBOARD = &h0708
+const EN_OLEOPFAILED = &h0709
+const EN_OBJECTPOSITIONS = &h070a
+const EN_LINK = &h070b
+const EN_DRAGDROPDONE = &h070c
+const EN_PARAGRAPHEXPANDED = &h070d
+const EN_PAGECHANGE = &h070e
+const EN_LOWFIRTF = &h070f
+const EN_ALIGNLTR = &h0710
+const EN_ALIGNRTL = &h0711
+const ENM_NONE = &h00000000
+const ENM_CHANGE = &h00000001
+const ENM_UPDATE = &h00000002
+const ENM_SCROLL = &h00000004
+const ENM_SCROLLEVENTS = &h00000008
+const ENM_DRAGDROPDONE = &h00000010
+const ENM_PARAGRAPHEXPANDED = &h00000020
+const ENM_PAGECHANGE = &h00000040
+const ENM_KEYEVENTS = &h00010000
+const ENM_MOUSEEVENTS = &h00020000
+const ENM_REQUESTRESIZE = &h00040000
+const ENM_SELCHANGE = &h00080000
+const ENM_DROPFILES = &h00100000
+const ENM_PROTECTED = &h00200000
+const ENM_CORRECTTEXT = &h00400000
+const ENM_IMECHANGE = &h00800000
+const ENM_LANGCHANGE = &h01000000
+const ENM_OBJECTPOSITIONS = &h02000000
+const ENM_LINK = &h04000000
+const ENM_LOWFIRTF = &h08000000
+const ES_SAVESEL = &h00008000
+const ES_SUNKEN = &h00004000
+const ES_DISABLENOSCROLL = &h00002000
+const ES_SELECTIONBAR = &h01000000
+const ES_NOOLEDRAGDROP = &h00000008
+const ES_EX_NOCALLOLEINIT = &h00000000
+const ES_VERTICAL = &h00400000
+const ES_NOIME = &h00080000
+const ES_SELFIME = &h00040000
+const ECO_AUTOWORDSELECTION = &h00000001
+const ECO_AUTOVSCROLL = &h00000040
+const ECO_AUTOHSCROLL = &h00000080
+const ECO_NOHIDESEL = &h00000100
+const ECO_READONLY = &h00000800
+const ECO_WANTRETURN = &h00001000
+const ECO_SAVESEL = &h00008000
+const ECO_SELECTIONBAR = &h01000000
+const ECO_VERTICAL = &h00400000
+const ECOOP_SET = &h0001
+const ECOOP_OR = &h0002
+const ECOOP_AND = &h0003
+const ECOOP_XOR = &h0004
+const WB_CLASSIFY = 3
+const WB_MOVEWORDLEFT = 4
+const WB_MOVEWORDRIGHT = 5
+const WB_LEFTBREAK = 6
+const WB_RIGHTBREAK = 7
+const WB_MOVEWORDPREV = 4
+const WB_MOVEWORDNEXT = 5
+const WB_PREVBREAK = 6
+const WB_NEXTBREAK = 7
+const PC_FOLLOWING = 1
+const PC_LEADING = 2
+const PC_OVERFLOW = 3
+const PC_DELIMITER = 4
+const WBF_WORDWRAP = &h010
+const WBF_WORDBREAK = &h020
+const WBF_OVERFLOW = &h040
+const WBF_LEVEL1 = &h080
+const WBF_LEVEL2 = &h100
+const WBF_CUSTOM = &h200
+const IMF_FORCENONE = &h0001
+const IMF_FORCEENABLE = &h0002
+const IMF_FORCEDISABLE = &h0004
+const IMF_CLOSESTATUSWINDOW = &h0008
+const IMF_VERTICAL = &h0020
+const IMF_FORCEACTIVE = &h0040
+const IMF_FORCEINACTIVE = &h0080
+const IMF_FORCEREMEMBER = &h0100
+const IMF_MULTIPLEEDIT = &h0400
+#define WBF_CLASS cast(UBYTE, &h0F)
+#define WBF_ISWHITE cast(UBYTE, &h10)
+#define WBF_BREAKLINE cast(UBYTE, &h20)
+#define WBF_BREAKAFTER cast(UBYTE, &h40)
+type EDITWORDBREAKPROCEX as function cdecl(byval pchText as zstring ptr, byval cchText as LONG, byval bCharSet as UBYTE, byval action as INT_) as LONG
+
+type _charformat field = 4
 	cbSize as UINT
 	dwMask as DWORD
 	dwEffects as DWORD
@@ -274,7 +310,54 @@ type CHARFORMATA field=4
 	szFaceName as zstring * 32
 end type
 
-type CHARFORMAT2A field=4
+type CHARFORMATA as _charformat
+
+type _charformatw field = 4
+	cbSize as UINT
+	dwMask as DWORD
+	dwEffects as DWORD
+	yHeight as LONG
+	yOffset as LONG
+	crTextColor as COLORREF
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
+	szFaceName as wstring * 32
+end type
+
+type CHARFORMATW as _charformatw
+
+#ifdef UNICODE
+	#define CHARFORMAT CHARFORMATW
+#else
+	#define CHARFORMAT CHARFORMATA
+#endif
+
+type _charformat2w field = 4
+	cbSize as UINT
+	dwMask as DWORD
+	dwEffects as DWORD
+	yHeight as LONG
+	yOffset as LONG
+	crTextColor as COLORREF
+	bCharSet as UBYTE
+	bPitchAndFamily as UBYTE
+	szFaceName as wstring * 32
+	wWeight as WORD
+	sSpacing as SHORT
+	crBackColor as COLORREF
+	lcid as LCID
+	dwReserved as DWORD
+	sStyle as SHORT
+	wKerning as WORD
+	bUnderlineType as UBYTE
+	bAnimation as UBYTE
+	bRevAuthor as UBYTE
+	bReserved1 as UBYTE
+end type
+
+type CHARFORMAT2W as _charformat2w
+
+type _charformat2a field = 4
 	cbSize as UINT
 	dwMask as DWORD
 	dwEffects as DWORD
@@ -296,130 +379,194 @@ type CHARFORMAT2A field=4
 	bRevAuthor as UBYTE
 end type
 
-#else ''UNICODE
-type CHARFORMATW field=4
-	cbSize as UINT
-	dwMask as DWORD
-	dwEffects as DWORD
-	yHeight as LONG
-	yOffset as LONG
-	crTextColor as COLORREF
-	bCharSet as UBYTE
-	bPitchAndFamily as UBYTE
-	szFaceName as wstring * 32
-end type
+type CHARFORMAT2A as _charformat2a
 
-type CHARFORMAT2W field=4
-	cbSize as UINT
-	dwMask as DWORD
-	dwEffects as DWORD
-	yHeight as LONG
-	yOffset as LONG
-	crTextColor as COLORREF
-	bCharSet as UBYTE
-	bPitchAndFamily as UBYTE
-	szFaceName as wstring * 32
-	wWeight as WORD
-	sSpacing as SHORT
-	crBackColor as COLORREF
-	lcid as LCID
-	dwReserved as DWORD
-	sStyle as SHORT
-	wKerning as WORD
-	bUnderlineType as UBYTE
-	bAnimation as UBYTE
-	bRevAuthor as UBYTE
-end type
-#endif ''UNICODE
+#ifdef UNICODE
+	#define CHARFORMAT2 CHARFORMAT2W
+#else
+	#define CHARFORMAT2 CHARFORMAT2A
+#endif
 
-type CHARRANGE field=4
+#define CHARFORMATDELTA (sizeof(CHARFORMAT2) - sizeof(CHARFORMAT))
+const CFM_BOLD = &h00000001
+const CFM_ITALIC = &h00000002
+const CFM_UNDERLINE = &h00000004
+const CFM_STRIKEOUT = &h00000008
+const CFM_PROTECTED = &h00000010
+const CFM_LINK = &h00000020
+const CFM_SIZE = &h80000000
+const CFM_COLOR = &h40000000
+const CFM_FACE = &h20000000
+const CFM_OFFSET = &h10000000
+const CFM_CHARSET = &h08000000
+const CFE_BOLD = &h0001
+const CFE_ITALIC = &h0002
+const CFE_UNDERLINE = &h0004
+const CFE_STRIKEOUT = &h0008
+const CFE_PROTECTED = &h0010
+const CFE_LINK = &h0020
+const CFE_AUTOCOLOR = &h40000000
+const CFM_SMALLCAPS = &h0040
+const CFM_ALLCAPS = &h0080
+const CFM_HIDDEN = &h0100
+const CFM_OUTLINE = &h0200
+const CFM_SHADOW = &h0400
+const CFM_EMBOSS = &h0800
+const CFM_IMPRINT = &h1000
+const CFM_DISABLED = &h2000
+const CFM_REVISED = &h4000
+const CFM_BACKCOLOR = &h04000000
+const CFM_LCID = &h02000000
+const CFM_UNDERLINETYPE = &h00800000
+const CFM_WEIGHT = &h00400000
+const CFM_SPACING = &h00200000
+const CFM_KERNING = &h00100000
+const CFM_STYLE = &h00080000
+const CFM_ANIMATION = &h00040000
+const CFM_REVAUTHOR = &h00008000
+const CFE_SUBSCRIPT = &h00010000
+const CFE_SUPERSCRIPT = &h00020000
+#define CFM_SUBSCRIPT (CFE_SUBSCRIPT or CFE_SUPERSCRIPT)
+#define CFM_SUPERSCRIPT CFM_SUBSCRIPT
+#define CFM_EFFECTS ((((((CFM_BOLD or CFM_ITALIC) or CFM_UNDERLINE) or CFM_COLOR) or CFM_STRIKEOUT) or CFE_PROTECTED) or CFM_LINK)
+#define CFM_ALL ((((CFM_EFFECTS or CFM_SIZE) or CFM_FACE) or CFM_OFFSET) or CFM_CHARSET)
+#define CFM_EFFECTS2 (((((((((((((CFM_EFFECTS or CFM_DISABLED) or CFM_SMALLCAPS) or CFM_ALLCAPS) or CFM_HIDDEN) or CFM_OUTLINE) or CFM_SHADOW) or CFM_EMBOSS) or CFM_IMPRINT) or CFM_DISABLED) or CFM_REVISED) or CFM_SUBSCRIPT) or CFM_SUPERSCRIPT) or CFM_BACKCOLOR)
+#define CFM_ALL2 ((((((((((CFM_ALL or CFM_EFFECTS2) or CFM_BACKCOLOR) or CFM_LCID) or CFM_UNDERLINETYPE) or CFM_WEIGHT) or CFM_REVAUTHOR) or CFM_SPACING) or CFM_KERNING) or CFM_STYLE) or CFM_ANIMATION)
+#define CFE_SMALLCAPS CFM_SMALLCAPS
+#define CFE_ALLCAPS CFM_ALLCAPS
+#define CFE_HIDDEN CFM_HIDDEN
+#define CFE_OUTLINE CFM_OUTLINE
+#define CFE_SHADOW CFM_SHADOW
+#define CFE_EMBOSS CFM_EMBOSS
+#define CFE_IMPRINT CFM_IMPRINT
+#define CFE_DISABLED CFM_DISABLED
+#define CFE_REVISED CFM_REVISED
+#define CFE_AUTOBACKCOLOR CFM_BACKCOLOR
+const CFU_CF1UNDERLINE = &hFF
+const CFU_INVERT = &hFE
+const CFU_UNDERLINETHICKLONGDASH = 18
+const CFU_UNDERLINETHICKDOTTED = 17
+const CFU_UNDERLINETHICKDASHDOTDOT = 16
+const CFU_UNDERLINETHICKDASHDOT = 15
+const CFU_UNDERLINETHICKDASH = 14
+const CFU_UNDERLINELONGDASH = 13
+const CFU_UNDERLINEHEAVYWAVE = 12
+const CFU_UNDERLINEDOUBLEWAVE = 11
+const CFU_UNDERLINEHAIRLINE = 10
+const CFU_UNDERLINETHICK = 9
+const CFU_UNDERLINEWAVE = 8
+const CFU_UNDERLINEDASHDOTDOT = 7
+const CFU_UNDERLINEDASHDOT = 6
+const CFU_UNDERLINEDASH = 5
+const CFU_UNDERLINEDOTTED = 4
+const CFU_UNDERLINEDOUBLE = 3
+const CFU_UNDERLINEWORD = 2
+const CFU_UNDERLINE = 1
+const CFU_UNDERLINENONE = 0
+const yHeightCharPtsMost = 1638
+const SCF_SELECTION = &h0001
+const SCF_WORD = &h0002
+const SCF_DEFAULT = &h0000
+const SCF_ALL = &h0004
+const SCF_USEUIRULES = &h0008
+const SCF_ASSOCIATEFONT = &h0010
+const SCF_NOKBUPDATE = &h0020
+const SCF_ASSOCIATEFONT2 = &h0040
+
+type _charrange field = 4
 	cpMin as LONG
 	cpMax as LONG
 end type
 
-type COMPCOLOR field=4
-	crText as COLORREF
-	crBackground as COLORREF
-	dwEffects as DWORD
+type CHARRANGE as _charrange
+
+type _textrange field = 4
+	chrg as CHARRANGE
+	lpstrText as LPSTR
 end type
 
-type EDITSTREAMCALLBACK as function (byval as DWORD,byval as PBYTE,byval as LONG,byval as LONG ptr) as DWORD
-type EDITSTREAM field=4
-	dwCookie as DWORD
+type TEXTRANGEA as _textrange
+
+type _textrangew field = 4
+	chrg as CHARRANGE
+	lpstrText as LPWSTR
+end type
+
+type TEXTRANGEW as _textrangew
+
+#ifdef UNICODE
+	#define TEXTRANGE TEXTRANGEW
+#else
+	#define TEXTRANGE TEXTRANGEA
+#endif
+
+type EDITSTREAMCALLBACK as function(byval dwCookie as DWORD_PTR, byval pbBuff as LPBYTE, byval cb as LONG, byval pcb as LONG ptr) as DWORD
+
+type _editstream field = 4
+	dwCookie as DWORD_PTR
 	dwError as DWORD
 	pfnCallback as EDITSTREAMCALLBACK
 end type
 
-type ENCORRECTTEXT field=4
-	nmhdr as NMHDR
+type EDITSTREAM as _editstream
+const SF_TEXT = &h0001
+const SF_RTF = &h0002
+const SF_RTFNOOBJS = &h0003
+const SF_TEXTIZED = &h0004
+const SF_UNICODE = &h0010
+const SF_USECODEPAGE = &h0020
+const SF_NCRFORNONASCII = &h40
+const SFF_WRITEXTRAPAR = &h80
+const SFF_SELECTION = &h8000
+const SFF_PLAINRTF = &h4000
+const SFF_PERSISTVIEWSCALE = &h2000
+const SFF_KEEPDOCINFO = &h1000
+const SFF_PWD = &h0800
+const SF_RTFVAL = &h0700
+
+type _findtext field = 4
 	chrg as CHARRANGE
-	seltyp as WORD
+	lpstrText as LPCSTR
 end type
 
-type ENDROPFILES field=4
-	nmhdr as NMHDR
-	hDrop as HANDLE
-	cp as LONG
-	fProtected as BOOL
-end type
+type FINDTEXTA as _findtext
 
-type ENLINK field=4
-	nmhdr as NMHDR
-	msg as UINT
-	wParam as WPARAM
-	lParam as LPARAM
+type _findtextw field = 4
 	chrg as CHARRANGE
+	lpstrText as LPCWSTR
 end type
 
-type ENOLEOPFAILED field=4
-	nmhdr as NMHDR
-	iob as LONG
-	lOper as LONG
-	hr as HRESULT
-end type
+type FINDTEXTW as _findtextw
 
-type ENPROTECTED field=4
-	nmhdr as NMHDR
-	msg as UINT
-	wParam as WPARAM
-	lParam as LPARAM
+#ifdef UNICODE
+	type FINDTEXT as FINDTEXTW
+#else
+	type FINDTEXT as FINDTEXTA
+#endif
+
+type _findtextexa field = 4
 	chrg as CHARRANGE
-end type
-
-type LPENPROTECTED as ENPROTECTED ptr
-
-type ENSAVECLIPBOARD field=4
-	nmhdr as NMHDR
-	cObjectCount as LONG
-	cch as LONG
-end type
-
-#ifndef UNICODE
-type FINDTEXTA field=4
-	chrg as CHARRANGE
-	lpstrText as LPSTR
-end type
-
-type FINDTEXTEXA field=4
-	chrg as CHARRANGE
-	lpstrText as LPSTR
+	lpstrText as LPCSTR
 	chrgText as CHARRANGE
 end type
 
-#else ''UNICODE
-type FINDTEXTW field=4
-	chrg as CHARRANGE
-	lpstrText as LPWSTR
-end type
+type FINDTEXTEXA as _findtextexa
 
-type FINDTEXTEXW field=4
+type _findtextexw field = 4
 	chrg as CHARRANGE
-	lpstrText as LPWSTR
+	lpstrText as LPCWSTR
 	chrgText as CHARRANGE
 end type
-#endif ''UNICODE
 
-type FORMATRANGE field=4
+type FINDTEXTEXW as _findtextexw
+
+#ifdef UNICODE
+	#define FINDTEXTEX FINDTEXTEXW
+#else
+	#define FINDTEXTEX FINDTEXTEXA
+#endif
+
+type _formatrange field = 4
 	hdc as HDC
 	hdcTarget as HDC
 	rc as RECT
@@ -427,27 +574,13 @@ type FORMATRANGE field=4
 	chrg as CHARRANGE
 end type
 
-type MSGFILTER field=4
-	nmhdr as NMHDR
-	msg as UINT
-	wParam as WPARAM
-	lParam as LPARAM
-end type
+type FORMATRANGE as _formatrange
+const MAX_TAB_STOPS = 32
+const lDefaultTab = 720
+const MAX_TABLE_CELLS = 63
+#define wReserved wEffects
 
-type PARAFORMAT field=4
-	cbSize as UINT
-	dwMask as DWORD
-	wNumbering as WORD
-	wReserved as WORD
-	dxStartIndent as LONG
-	dxRightIndent as LONG
-	dxOffset as LONG
-	wAlignment as WORD
-	cTabCount as SHORT
-	rgxTabs(0 to 32-1) as LONG
-end type
-
-type PARAFORMAT2 field=4
+type _paraformat field = 4
 	cbSize as UINT
 	dwMask as DWORD
 	wNumbering as WORD
@@ -457,11 +590,26 @@ type PARAFORMAT2 field=4
 	dxOffset as LONG
 	wAlignment as WORD
 	cTabCount as SHORT
-	rgxTabs(0 to 32-1) as LONG
+	rgxTabs(0 to 31) as LONG
+end type
+
+type PARAFORMAT as _paraformat
+
+type _paraformat2 field = 4
+	cbSize as UINT
+	dwMask as DWORD
+	wNumbering as WORD
+	wEffects as WORD
+	dxStartIndent as LONG
+	dxRightIndent as LONG
+	dxOffset as LONG
+	wAlignment as WORD
+	cTabCount as SHORT
+	rgxTabs(0 to 31) as LONG
 	dySpaceBefore as LONG
 	dySpaceAfter as LONG
 	dyLineSpacing as LONG
-	sStype as SHORT
+	sStyle as SHORT
 	bLineSpacingRule as UBYTE
 	bOutlineLevel as UBYTE
 	wShadingWeight as WORD
@@ -474,41 +622,231 @@ type PARAFORMAT2 field=4
 	wBorders as WORD
 end type
 
-type SELCHANGE field=4
+type PARAFORMAT2 as _paraformat2
+const PFM_STARTINDENT = &h00000001
+const PFM_RIGHTINDENT = &h00000002
+const PFM_OFFSET = &h00000004
+const PFM_ALIGNMENT = &h00000008
+const PFM_TABSTOPS = &h00000010
+const PFM_NUMBERING = &h00000020
+const PFM_OFFSETINDENT = &h80000000
+const PFM_SPACEBEFORE = &h00000040
+const PFM_SPACEAFTER = &h00000080
+const PFM_LINESPACING = &h00000100
+const PFM_STYLE = &h00000400
+const PFM_BORDER = &h00000800
+const PFM_SHADING = &h00001000
+const PFM_NUMBERINGSTYLE = &h00002000
+const PFM_NUMBERINGTAB = &h00004000
+const PFM_NUMBERINGSTART = &h00008000
+const PFM_RTLPARA = &h00010000
+const PFM_KEEP = &h00020000
+const PFM_KEEPNEXT = &h00040000
+const PFM_PAGEBREAKBEFORE = &h00080000
+const PFM_NOLINENUMBER = &h00100000
+const PFM_NOWIDOWCONTROL = &h00200000
+const PFM_DONOTHYPHEN = &h00400000
+const PFM_SIDEBYSIDE = &h00800000
+const PFM_TABLE = &h40000000
+const PFM_TEXTWRAPPINGBREAK = &h20000000
+const PFM_TABLEROWDELIMITER = &h10000000
+const PFM_COLLAPSED = &h01000000
+const PFM_OUTLINELEVEL = &h02000000
+const PFM_BOX = &h04000000
+const PFM_RESERVED2 = &h08000000
+#define PFM_ALL (((((((PFM_STARTINDENT or PFM_RIGHTINDENT) or PFM_OFFSET) or PFM_ALIGNMENT) or PFM_TABSTOPS) or PFM_NUMBERING) or PFM_OFFSETINDENT) or PFM_RTLPARA)
+#define PFM_EFFECTS ((((((((((PFM_RTLPARA or PFM_KEEP) or PFM_KEEPNEXT) or PFM_TABLE) or PFM_PAGEBREAKBEFORE) or PFM_NOLINENUMBER) or PFM_NOWIDOWCONTROL) or PFM_DONOTHYPHEN) or PFM_SIDEBYSIDE) or PFM_TABLE) or PFM_TABLEROWDELIMITER)
+#define PFM_ALL2 ((((((((((PFM_ALL or PFM_EFFECTS) or PFM_SPACEBEFORE) or PFM_SPACEAFTER) or PFM_LINESPACING) or PFM_STYLE) or PFM_SHADING) or PFM_BORDER) or PFM_NUMBERINGTAB) or PFM_NUMBERINGSTART) or PFM_NUMBERINGSTYLE)
+#define PFE_RTLPARA (PFM_RTLPARA shr 16)
+#define PFE_KEEP (PFM_KEEP shr 16)
+#define PFE_KEEPNEXT (PFM_KEEPNEXT shr 16)
+#define PFE_PAGEBREAKBEFORE (PFM_PAGEBREAKBEFORE shr 16)
+#define PFE_NOLINENUMBER (PFM_NOLINENUMBER shr 16)
+#define PFE_NOWIDOWCONTROL (PFM_NOWIDOWCONTROL shr 16)
+#define PFE_DONOTHYPHEN (PFM_DONOTHYPHEN shr 16)
+#define PFE_SIDEBYSIDE (PFM_SIDEBYSIDE shr 16)
+#define PFE_TEXTWRAPPINGBREAK (PFM_TEXTWRAPPINGBREAK shr 16)
+#define PFE_COLLAPSED (PFM_COLLAPSED shr 16)
+#define PFE_BOX (PFM_BOX shr 16)
+#define PFE_TABLE (PFM_TABLE shr 16)
+#define PFE_TABLEROWDELIMITER (PFM_TABLEROWDELIMITER shr 16)
+const PFN_BULLET = 1
+const PFN_ARABIC = 2
+const PFN_LCLETTER = 3
+const PFN_UCLETTER = 4
+const PFN_LCROMAN = 5
+const PFN_UCROMAN = 6
+const PFNS_PAREN = &h000
+const PFNS_PARENS = &h100
+const PFNS_PERIOD = &h200
+const PFNS_PLAIN = &h300
+const PFNS_NONUMBER = &h400
+const PFNS_NEWNUMBER = &h8000
+const PFA_LEFT = 1
+const PFA_RIGHT = 2
+const PFA_CENTER = 3
+const PFA_JUSTIFY = 4
+const PFA_FULL_INTERWORD = 4
+const PFA_FULL_INTERLETTER = 5
+const PFA_FULL_SCALED = 6
+const PFA_FULL_GLYPHS = 7
+const PFA_SNAP_GRID = 8
+
+type _msgfilter field = 4
+	nmhdr as NMHDR
+	msg as UINT
+	wParam as WPARAM
+	lParam as LPARAM
+end type
+
+type MSGFILTER as _msgfilter
+
+type _reqresize field = 4
+	nmhdr as NMHDR
+	rc as RECT
+end type
+
+type REQRESIZE as _reqresize
+
+type _selchange field = 4
 	nmhdr as NMHDR
 	chrg as CHARRANGE
 	seltyp as WORD
 end type
 
-#ifndef UNICODE
-type TEXTRANGEA field=4
-	chrg as CHARRANGE
-	lpstrText as LPSTR
-end type
+type SELCHANGE as _selchange
+const SEL_EMPTY = &h0000
+const SEL_TEXT = &h0001
+const SEL_OBJECT = &h0002
+const SEL_MULTICHAR = &h0004
+const SEL_MULTIOBJECT = &h0008
+const GCM_RIGHTMOUSEDROP = &h8000
 
-#else ''UNICODE
-type TEXTRANGEW field=4
-	chrg as CHARRANGE
-	lpstrText as LPWSTR
-end type
-#endif ''UNICODE
-
-type REQRESIZE field=4
+type _endropfiles field = 4
 	nmhdr as NMHDR
-	rc as RECT
+	hDrop as HANDLE
+	cp as LONG
+	fProtected as WINBOOL
 end type
 
-type REPASTESPECIAL field=4
-	dwAspect as DWORD
-	dwParam as DWORD
+type ENDROPFILES as _endropfiles
+
+type _enprotected field = 4
+	nmhdr as NMHDR
+	msg as UINT
+	wParam as WPARAM
+	lParam as LPARAM
+	chrg as CHARRANGE
 end type
 
-type PUNCTUATION field=4
+type ENPROTECTED as _enprotected
+
+type _ensaveclipboard field = 4
+	nmhdr as NMHDR
+	cObjectCount as LONG
+	cch as LONG
+end type
+
+type ENSAVECLIPBOARD as _ensaveclipboard
+
+type _enoleopfailed field = 4
+	nmhdr as NMHDR
+	iob as LONG
+	lOper as LONG
+	hr as HRESULT
+end type
+
+type ENOLEOPFAILED as _enoleopfailed
+const OLEOP_DOVERB = 1
+
+type _objectpositions field = 4
+	nmhdr as NMHDR
+	cObjectCount as LONG
+	pcpPositions as LONG ptr
+end type
+
+type OBJECTPOSITIONS as _objectpositions
+
+type _enlink field = 4
+	nmhdr as NMHDR
+	msg as UINT
+	wParam as WPARAM
+	lParam as LPARAM
+	chrg as CHARRANGE
+end type
+
+type ENLINK as _enlink
+
+type _enlowfirtf field = 4
+	nmhdr as NMHDR
+	szControl as zstring ptr
+end type
+
+type ENLOWFIRTF as _enlowfirtf
+
+type _encorrecttext field = 4
+	nmhdr as NMHDR
+	chrg as CHARRANGE
+	seltyp as WORD
+end type
+
+type ENCORRECTTEXT as _encorrecttext
+
+type _punctuation field = 4
 	iSize as UINT
 	szPunctuation as LPSTR
 end type
 
-type GETTEXTEX field=4
+type PUNCTUATION as _punctuation
+
+type _compcolor field = 4
+	crText as COLORREF
+	crBackground as COLORREF
+	dwEffects as DWORD
+end type
+
+type COMPCOLOR as _compcolor
+#define CF_RTF __TEXT("Rich Text Format")
+#define CF_RTFNOOBJS __TEXT("Rich Text Format Without Objects")
+#define CF_RETEXTOBJ __TEXT("RichEdit Text and Objects")
+
+type _repastespecial field = 4
+	dwAspect as DWORD
+	dwParam as DWORD_PTR
+end type
+
+type REPASTESPECIAL as _repastespecial
+
+type _undonameid as long
+enum
+	UID_UNKNOWN = 0
+	UID_TYPING = 1
+	UID_DELETE = 2
+	UID_DRAGDROP = 3
+	UID_CUT = 4
+	UID_PASTE = 5
+	UID_AUTOCORRECT = 6
+end enum
+
+type UNDONAMEID as _undonameid
+const ST_DEFAULT = 0
+const ST_KEEPUNDO = 1
+const ST_SELECTION = 2
+const ST_NEWCHARS = 4
+
+type _settextex field = 4
+	flags as DWORD
+	codepage as UINT
+end type
+
+type SETTEXTEX as _settextex
+const GT_DEFAULT = 0
+const GT_USECRLF = 1
+const GT_SELECTION = 2
+const GT_RAWTEXT = 4
+const GT_NOHIDDENTEXT = 8
+
+type _gettextex field = 4
 	cb as DWORD
 	flags as DWORD
 	codepage as UINT
@@ -516,48 +854,66 @@ type GETTEXTEX field=4
 	lpUsedDefChar as LPBOOL
 end type
 
-#define GT_DEFAULT 0
-#define GT_USECRLF 1
-#define GT_SELECTION 2
+type GETTEXTEX as _gettextex
+const GTL_DEFAULT = 0
+const GTL_USECRLF = 1
+const GTL_PRECISE = 2
+const GTL_CLOSE = 4
+const GTL_NUMCHARS = 8
+const GTL_NUMBYTES = 16
 
-type SETTEXTEX
+type _gettextlengthex field = 4
 	flags as DWORD
 	codepage as UINT
 end type
 
-#define ST_DEFAULT 0
-#define ST_KEEPUNDO 1
-#define ST_SELECTION 2
+type GETTEXTLENGTHEX as _gettextlengthex
 
-type EDITWORDBREAKPROCEX as function (byval as zstring ptr, byval as LONG, byval as UBYTE, byval as INT_) as LONG
-
-#define TO_ADVANCEDTYPOGRAPHY 1
-#define TO_SIMPLELINEBREAK 2
-#define GTL_DEFAULT 0
-#define GTL_USECRLF 1
-#define GTL_PRECISE 2
-#define GTL_CLOSE 4
-#define GTL_NUMCHARS 8
-#define GTL_NUMBYTES 16
-
-type GETTEXTLENGTHEX field=4
-	flags as DWORD
-	codepage as UINT
+type _bidioptions field = 4
+	cbSize as UINT
+	wMask as WORD
+	wEffects as WORD
 end type
 
-#ifdef UNICODE
-type CHARFORMAT as CHARFORMATW
-type CHARFORMAT2 as CHARFORMAT2W
-type FINDTEXT as FINDTEXTW
-type FINDTEXTEX as FINDTEXTEXW
-type TEXTRANGE as TEXTRANGEW
+type BIDIOPTIONS as _bidioptions
+const BOM_NEUTRALOVERRIDE = &h0004
+const BOM_CONTEXTREADING = &h0008
+const BOM_CONTEXTALIGNMENT = &h0010
+const BOE_NEUTRALOVERRIDE = &h0004
+const BOE_CONTEXTREADING = &h0008
+const BOE_CONTEXTALIGNMENT = &h0010
+const FR_MATCHDIAC = &h20000000
+const FR_MATCHKASHIDA = &h40000000
+const FR_MATCHALEFHAMZA = &h80000000
+const WCH_EMBEDDING = cast(wchar_t, &hFFFC)
 
-#else ''UNICODE
-type CHARFORMAT as CHARFORMATA
-type CHARFORMAT2 as CHARFORMAT2A
-type FINDTEXT as FINDTEXTA
-type FINDTEXTEX as FINDTEXTEXA
-type TEXTRANGE as TEXTRANGEA
-#endif ''UNICODE
+type tagKHYPH as long
+enum
+	khyphNil
+	khyphNormal
+	khyphAddBefore
+	khyphChangeBefore
+	khyphDeleteBefore
+	khyphChangeAfter
+	khyphDelAndChange
+end enum
 
-#endif
+type KHYPH as tagKHYPH
+
+type HYPHRESULT field = 4
+	khyph as KHYPH
+	ichHyph as long
+	chHyph as wchar_t
+end type
+
+declare sub HyphenateProc(byval pszWord as wstring ptr, byval langid as LANGID, byval ichExceed as long, byval phyphresult as HYPHRESULT ptr)
+
+type tagHyphenateInfo field = 4
+	cbSize as SHORT
+	dxHyphenateZone as SHORT
+	pfnHyphenate as sub(byval as wstring ptr, byval as LANGID, byval as long, byval as HYPHRESULT ptr)
+end type
+
+type HYPHENATEINFO as tagHyphenateInfo
+
+end extern

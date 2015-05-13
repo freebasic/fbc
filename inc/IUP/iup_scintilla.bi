@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUP_SCINTILLA_H
-
 declare sub IupScintillaOpen()
 declare function IupScintilla() as Ihandle ptr
 

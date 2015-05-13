@@ -1,119 +1,213 @@
-#include "crt/long.bi"
+#pragma once
 
-#IFNDEF _BITS_PTHREADTYPES_H
-#DEFINE _BITS_PTHREADTYPES_H 1
-#DEFINE __SIZEOF_PTHREAD_ATTR_T 36
-#DEFINE __SIZEOF_PTHREAD_MUTEX_T 24
-#DEFINE __SIZEOF_PTHREAD_MUTEXATTR_T 4
-#DEFINE __SIZEOF_PTHREAD_COND_T 48
-#DEFINE __SIZEOF_PTHREAD_COND_COMPAT_T 12
-#DEFINE __SIZEOF_PTHREAD_CONDATTR_T 4
-#DEFINE __SIZEOF_PTHREAD_RWLOCK_T 32
-#DEFINE __SIZEOF_PTHREAD_RWLOCKATTR_T 8
-#DEFINE __SIZEOF_PTHREAD_BARRIER_T 20
-#DEFINE __SIZEOF_PTHREAD_BARRIERATTR_T 4
+#ifndef __FB_UNIX__
+	#error "target not supported; this header is for GNU/Linux glibc"
+#endif
 
-TYPE pthread_t AS CULONG
+#include once "crt/long.bi"
+#include once "crt/bits/wordsize.bi"
 
-UNION pthread_attr_t
-  AS ZSTRING*__SIZEOF_PTHREAD_ATTR_T __size
-  AS CLONG __align
-END UNION
+const _BITS_PTHREADTYPES_H = 1
 
-TYPE __pthread_internal_slist
-  AS __pthread_internal_slist PTR __next
-END TYPE
+#ifdef __FB_64BIT__
+	const __SIZEOF_PTHREAD_ATTR_T = 56
+	const __SIZEOF_PTHREAD_MUTEX_T = 40
+#else
+	const __SIZEOF_PTHREAD_ATTR_T = 36
+	const __SIZEOF_PTHREAD_MUTEX_T = 24
+#endif
 
-TYPE AS __pthread_internal_slist __pthread_slist_t
+const __SIZEOF_PTHREAD_MUTEXATTR_T = 4
+const __SIZEOF_PTHREAD_COND_T = 48
+const __SIZEOF_PTHREAD_CONDATTR_T = 4
 
-TYPE pthread_mutex_t___pthread_mutex_s
-  AS LONG __lock
-  AS ULONG __count
-  AS LONG __owner
-  AS LONG __kind
-  AS ULONG __nusers
-END TYPE
+#ifdef __FB_64BIT__
+	const __SIZEOF_PTHREAD_RWLOCK_T = 56
+#else
+	const __SIZEOF_PTHREAD_RWLOCK_T = 32
+#endif
 
-UNION pthread_mutex_t
-  AS pthread_mutex_t___pthread_mutex_s __data
-  AS ZSTRING*__SIZEOF_PTHREAD_MUTEX_T __size
-  AS CLONG __align
-END UNION
+const __SIZEOF_PTHREAD_RWLOCKATTR_T = 8
 
-UNION pthread_mutexattr_t
-  AS ZSTRING*__SIZEOF_PTHREAD_MUTEXATTR_T __size
-  AS LONG __align
-END UNION
+#ifdef __FB_64BIT__
+	const __SIZEOF_PTHREAD_BARRIER_T = 32
+#else
+	const __SIZEOF_PTHREAD_BARRIER_T = 20
+#endif
 
-TYPE pthread_cond_t___data
-  AS LONG __lock
-  AS ULONG __futex
-  AS ULONGINT __total_seq
-  AS ULONGINT __wakeup_seq
-  AS ULONGINT __woken_seq
-  AS ANY PTR __mutex
-  AS ULONG __nwaiters
-  AS ULONG __broadcast_seq
-END TYPE
+const __SIZEOF_PTHREAD_BARRIERATTR_T = 4
+type pthread_t as culong
 
-UNION pthread_cond_t
-  AS pthread_cond_t___data __data
-  AS ZSTRING*__SIZEOF_PTHREAD_COND_T __size
-  AS LONGINT __align
-END UNION
+union pthread_attr_t
+	#ifdef __FB_64BIT__
+		__size as zstring * 56
+	#else
+		__size as zstring * 36
+	#endif
 
-UNION pthread_condattr_t
-  AS ZSTRING*__SIZEOF_PTHREAD_CONDATTR_T __size
-  AS LONG __align
-END UNION
+	__align as clong
+end union
 
-TYPE pthread_key_t AS ULONG
-TYPE pthread_once_t AS LONG
+const __have_pthread_attr_t = 1
 
-#IF DEFINED (__USE_UNIX98) OR DEFINED (__USE_XOPEN2K)
+#ifdef __FB_64BIT__
+	type __pthread_internal_list
+		__prev as __pthread_internal_list ptr
+		__next as __pthread_internal_list ptr
+	end type
 
-TYPE pthread_rwlock_t___data
-  AS LONG __lock
-  AS ULONG __nr_readers
-  AS ULONG __readers_wakeup
-  AS ULONG __writer_wakeup
-  AS ULONG __nr_readers_queued
-  AS ULONG __nr_writers_queued
-  AS UBYTE __flags
-  AS UBYTE __shared
-  AS UBYTE __pad1
-  AS UBYTE __pad2
-  AS LONG __writer
-END TYPE
+	type __pthread_list_t as __pthread_internal_list
+#else
+	type __pthread_internal_slist
+		__next as __pthread_internal_slist ptr
+	end type
 
-UNION pthread_rwlock_t
-  AS pthread_rwlock_t___data __data
-  AS ZSTRING*__SIZEOF_PTHREAD_RWLOCK_T __size
-  AS CLONG __align
-END UNION
+	type __pthread_slist_t as __pthread_internal_slist
 
-UNION pthread_rwlockattr_t
-  AS ZSTRING*__SIZEOF_PTHREAD_RWLOCKATTR_T __size
-  AS CLONG __align
-END UNION
+	type pthread_mutex_t___pthread_mutex_s___elision_data
+		__espins as short
+		__elision as short
+	end type
+#endif
 
-#ENDIF ' DEFINED __USE_U...
+type __pthread_mutex_s
+	__lock as long
+	__count as ulong
+	__owner as long
 
-#IFDEF __USE_XOPEN2K
+	#ifndef __FB_64BIT__
+		__kind as long
+	#endif
 
-TYPE pthread_spinlock_t AS LONG
+	__nusers as ulong
 
-UNION pthread_barrier_t
-  AS ZSTRING*__SIZEOF_PTHREAD_BARRIER_T __size
-  AS CLONG __align
-END UNION
+	#ifdef __FB_64BIT__
+		__kind as long
+		__spins as short
+		__elision as short
+		__list as __pthread_list_t
+	#else
+		union
+			__elision_data as pthread_mutex_t___pthread_mutex_s___elision_data
+			__list as __pthread_slist_t
+		end union
+	#endif
+end type
 
-UNION pthread_barrierattr_t
-  AS ZSTRING*__SIZEOF_PTHREAD_BARRIERATTR_T __size
-  AS LONG __align
-END UNION
+union pthread_mutex_t
+	__data as __pthread_mutex_s
 
-#ENDIF ' __USE_XOPEN2K
+	#ifdef __FB_64BIT__
+		__size as zstring * 40
+	#else
+		__size as zstring * 24
+	#endif
 
-#DEFINE __cleanup_fct_attribute __attribute__ ((__regparm__ (1)))
-#ENDIF ' _BITS_PTHREADTYPES_H
+	__align as clong
+end union
+
+#ifdef __FB_64BIT__
+	const __PTHREAD_MUTEX_HAVE_PREV = 1
+	#define __PTHREAD_SPINS '' TODO: 0, 0
+#else
+	#define __spins __elision_data.__espins
+	#define __elision __elision_data.__elision
+	#define __PTHREAD_SPINS (0, 0)
+#endif
+
+union pthread_mutexattr_t
+	__size as zstring * 4
+	__align as long
+end union
+
+type pthread_cond_t___data
+	__lock as long
+	__futex as ulong
+	__total_seq as ulongint
+	__wakeup_seq as ulongint
+	__woken_seq as ulongint
+	__mutex as any ptr
+	__nwaiters as ulong
+	__broadcast_seq as ulong
+end type
+
+union pthread_cond_t
+	__data as pthread_cond_t___data
+	__size as zstring * 48
+	__align as longint
+end union
+
+union pthread_condattr_t
+	__size as zstring * 4
+	__align as long
+end union
+
+type pthread_key_t as ulong
+type pthread_once_t as long
+
+type pthread_rwlock_t___data
+	__lock as long
+	__nr_readers as ulong
+	__readers_wakeup as ulong
+	__writer_wakeup as ulong
+	__nr_readers_queued as ulong
+	__nr_writers_queued as ulong
+
+	#ifndef __FB_64BIT__
+		__flags as ubyte
+		__shared as ubyte
+		__rwelision as byte
+		__pad2 as ubyte
+	#endif
+
+	__writer as long
+
+	#ifdef __FB_64BIT__
+		__shared as long
+		__rwelision as byte
+		__pad1(0 to 6) as ubyte
+		__pad2 as culong
+		__flags as ulong
+	#endif
+end type
+
+union pthread_rwlock_t
+	__data as pthread_rwlock_t___data
+
+	#ifdef __FB_64BIT__
+		__size as zstring * 56
+	#else
+		__size as zstring * 32
+	#endif
+
+	__align as clong
+end union
+
+#ifdef __FB_64BIT__
+	#define __PTHREAD_RWLOCK_ELISION_EXTRA '' TODO: 0, { 0, 0, 0, 0, 0, 0, 0 }
+	const __PTHREAD_RWLOCK_INT_FLAGS_SHARED = 1
+#else
+	const __PTHREAD_RWLOCK_ELISION_EXTRA = 0
+#endif
+
+union pthread_rwlockattr_t
+	__size as zstring * 8
+	__align as clong
+end union
+
+type pthread_spinlock_t as long
+
+union pthread_barrier_t
+	#ifdef __FB_64BIT__
+		__size as zstring * 32
+	#else
+		__size as zstring * 20
+	#endif
+
+	__align as clong
+end union
+
+union pthread_barrierattr_t
+	__size as zstring * 4
+	__align as long
+end union

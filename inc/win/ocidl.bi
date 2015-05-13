@@ -1,37 +1,74 @@
-''
-''
-'' ocidl -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_ocidl_bi__
-#define __win_ocidl_bi__
+#pragma once
 
-#include once "win/ole2.bi"
+#include once "rpc.bi"
+#include once "rpcndr.bi"
+#include once "windows.bi"
+#include once "ole2.bi"
+#include once "oleidl.bi"
+#include once "oaidl.bi"
+#include once "servprov.bi"
+#include once "urlmon.bi"
+#include once "winapifamily.bi"
 
-type LPERRORLOG as IErrorLog ptr
-type LPPROPERTYBAG as IPropertyBag ptr
-type LPPROPERTYBAG2 as IPropertyBag2 ptr
-type LPENUMCONNECTIONS as IEnumConnections ptr
-type LPCONNECTIONPOINT as IConnectionPoint ptr
-type LPENUMCONNECTIONPOINTS as IEnumConnectionPoints ptr
-type LPPROPERTYPAGESITE as IPropertyPageSite ptr
-type LPFONT as IFont ptr
-type LPFONTDISP as IFontDisp ptr
-type LPOLEUNDOMANAGER as IOleUndoManager ptr
-type TEXTMETRICOLE as TEXTMETRICW
-type LPTEXTMETRICOLE as TEXTMETRICOLE ptr
+extern "Windows"
 
-type OLE_COLOR as DWORD
-type OLE_HANDLE as UINT
-type OLE_XPOS_HIMETRIC as integer
-type OLE_YPOS_HIMETRIC as integer
-type OLE_XSIZE_HIMETRIC as integer
-type OLE_YSIZE_HIMETRIC as integer
+#define __ocidl_h__
+#define __IEnumConnections_FWD_DEFINED__
+#define __IConnectionPoint_FWD_DEFINED__
+#define __IEnumConnectionPoints_FWD_DEFINED__
+#define __IConnectionPointContainer_FWD_DEFINED__
+#define __IClassFactory2_FWD_DEFINED__
+#define __IProvideClassInfo_FWD_DEFINED__
+#define __IProvideClassInfo2_FWD_DEFINED__
+#define __IProvideMultipleClassInfo_FWD_DEFINED__
+#define __IOleControl_FWD_DEFINED__
+#define __IOleControlSite_FWD_DEFINED__
+#define __IPropertyPage_FWD_DEFINED__
+#define __IPropertyPage2_FWD_DEFINED__
+#define __IPropertyPageSite_FWD_DEFINED__
+#define __IPropertyNotifySink_FWD_DEFINED__
+#define __ISpecifyPropertyPages_FWD_DEFINED__
+#define __IPersistMemory_FWD_DEFINED__
+#define __IPersistStreamInit_FWD_DEFINED__
+#define __IPersistPropertyBag_FWD_DEFINED__
+#define __ISimpleFrameSite_FWD_DEFINED__
+#define __IFont_FWD_DEFINED__
+#define __IPicture_FWD_DEFINED__
+#define __IPicture2_FWD_DEFINED__
+#define __IFontEventsDisp_FWD_DEFINED__
+#define __IFontDisp_FWD_DEFINED__
+#define __IPictureDisp_FWD_DEFINED__
+#define __IOleInPlaceObjectWindowless_FWD_DEFINED__
+#define __IOleInPlaceSiteEx_FWD_DEFINED__
+#define __IOleInPlaceSiteWindowless_FWD_DEFINED__
+#define __IViewObjectEx_FWD_DEFINED__
+#define __IOleUndoUnit_FWD_DEFINED__
+#define __IOleParentUndoUnit_FWD_DEFINED__
+#define __IEnumOleUndoUnits_FWD_DEFINED__
+#define __IOleUndoManager_FWD_DEFINED__
+#define __IPointerInactive_FWD_DEFINED__
+#define __IObjectWithSite_FWD_DEFINED__
+#define __IPerPropertyBrowsing_FWD_DEFINED__
+#define __IPropertyBag2_FWD_DEFINED__
+#define __IPersistPropertyBag2_FWD_DEFINED__
+#define __IAdviseSinkEx_FWD_DEFINED__
+#define __IQuickActivate_FWD_DEFINED__
+#define __IOleControlTypes_INTERFACE_DEFINED__
+extern IOleControlTypes_v1_0_c_ifspec as RPC_IF_HANDLE
+extern IOleControlTypes_v1_0_s_ifspec as RPC_IF_HANDLE
 
-enum READYSTATE
+type tagUASFLAGS as long
+enum
+	UAS_NORMAL = &h0
+	UAS_BLOCKED = &h1
+	UAS_NOPARENTENABLE = &h2
+	UAS_MASK = &h3
+end enum
+
+type UASFLAGS as tagUASFLAGS
+
+type tagREADYSTATE as long
+enum
 	READYSTATE_UNINITIALIZED = 0
 	READYSTATE_LOADING = 1
 	READYSTATE_LOADED = 2
@@ -39,8 +76,1404 @@ enum READYSTATE
 	READYSTATE_COMPLETE = 4
 end enum
 
+type READYSTATE as tagREADYSTATE
+#define __IEnumConnections_INTERFACE_DEFINED__
+type IEnumConnections as IEnumConnections_
+type PENUMCONNECTIONS as IEnumConnections ptr
+type LPENUMCONNECTIONS as IEnumConnections ptr
 
-enum PROPBAG2_TYPE
+type tagCONNECTDATA
+	pUnk as IUnknown ptr
+	dwCookie as DWORD
+end type
+
+type CONNECTDATA as tagCONNECTDATA
+type PCONNECTDATA as tagCONNECTDATA ptr
+type LPCONNECTDATA as tagCONNECTDATA ptr
+extern IID_IEnumConnections as const GUID
+
+type IEnumConnectionsVtbl
+	QueryInterface as function(byval This as IEnumConnections ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IEnumConnections ptr) as ULONG
+	Release as function(byval This as IEnumConnections ptr) as ULONG
+	Next as function(byval This as IEnumConnections ptr, byval cConnections as ULONG, byval rgcd as LPCONNECTDATA, byval pcFetched as ULONG ptr) as HRESULT
+	Skip as function(byval This as IEnumConnections ptr, byval cConnections as ULONG) as HRESULT
+	Reset as function(byval This as IEnumConnections ptr) as HRESULT
+	Clone as function(byval This as IEnumConnections ptr, byval ppEnum as IEnumConnections ptr ptr) as HRESULT
+end type
+
+type IEnumConnections_
+	lpVtbl as IEnumConnectionsVtbl ptr
+end type
+
+declare function IEnumConnections_RemoteNext_Proxy(byval This as IEnumConnections ptr, byval cConnections as ULONG, byval rgcd as LPCONNECTDATA, byval pcFetched as ULONG ptr) as HRESULT
+declare sub IEnumConnections_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnections_Skip_Proxy(byval This as IEnumConnections ptr, byval cConnections as ULONG) as HRESULT
+declare sub IEnumConnections_Skip_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnections_Reset_Proxy(byval This as IEnumConnections ptr) as HRESULT
+declare sub IEnumConnections_Reset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnections_Clone_Proxy(byval This as IEnumConnections ptr, byval ppEnum as IEnumConnections ptr ptr) as HRESULT
+declare sub IEnumConnections_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnections_Next_Proxy(byval This as IEnumConnections ptr, byval cConnections as ULONG, byval rgcd as LPCONNECTDATA, byval pcFetched as ULONG ptr) as HRESULT
+declare function IEnumConnections_Next_Stub(byval This as IEnumConnections ptr, byval cConnections as ULONG, byval rgcd as LPCONNECTDATA, byval pcFetched as ULONG ptr) as HRESULT
+#define __IConnectionPoint_INTERFACE_DEFINED__
+
+type IConnectionPoint as IConnectionPoint_
+type PCONNECTIONPOINT as IConnectionPoint ptr
+type LPCONNECTIONPOINT as IConnectionPoint ptr
+extern IID_IConnectionPoint as const GUID
+type IConnectionPointContainer as IConnectionPointContainer_
+
+type IConnectionPointVtbl
+	QueryInterface as function(byval This as IConnectionPoint ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IConnectionPoint ptr) as ULONG
+	Release as function(byval This as IConnectionPoint ptr) as ULONG
+	GetConnectionInterface as function(byval This as IConnectionPoint ptr, byval pIID as IID ptr) as HRESULT
+	GetConnectionPointContainer as function(byval This as IConnectionPoint ptr, byval ppCPC as IConnectionPointContainer ptr ptr) as HRESULT
+	Advise as function(byval This as IConnectionPoint ptr, byval pUnkSink as IUnknown ptr, byval pdwCookie as DWORD ptr) as HRESULT
+	Unadvise as function(byval This as IConnectionPoint ptr, byval dwCookie as DWORD) as HRESULT
+	EnumConnections as function(byval This as IConnectionPoint ptr, byval ppEnum as IEnumConnections ptr ptr) as HRESULT
+end type
+
+type IConnectionPoint_
+	lpVtbl as IConnectionPointVtbl ptr
+end type
+
+declare function IConnectionPoint_GetConnectionInterface_Proxy(byval This as IConnectionPoint ptr, byval pIID as IID ptr) as HRESULT
+declare sub IConnectionPoint_GetConnectionInterface_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConnectionPoint_GetConnectionPointContainer_Proxy(byval This as IConnectionPoint ptr, byval ppCPC as IConnectionPointContainer ptr ptr) as HRESULT
+declare sub IConnectionPoint_GetConnectionPointContainer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConnectionPoint_Advise_Proxy(byval This as IConnectionPoint ptr, byval pUnkSink as IUnknown ptr, byval pdwCookie as DWORD ptr) as HRESULT
+declare sub IConnectionPoint_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConnectionPoint_Unadvise_Proxy(byval This as IConnectionPoint ptr, byval dwCookie as DWORD) as HRESULT
+declare sub IConnectionPoint_Unadvise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConnectionPoint_EnumConnections_Proxy(byval This as IConnectionPoint ptr, byval ppEnum as IEnumConnections ptr ptr) as HRESULT
+declare sub IConnectionPoint_EnumConnections_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IEnumConnectionPoints_INTERFACE_DEFINED__
+
+type IEnumConnectionPoints as IEnumConnectionPoints_
+type PENUMCONNECTIONPOINTS as IEnumConnectionPoints ptr
+type LPENUMCONNECTIONPOINTS as IEnumConnectionPoints ptr
+extern IID_IEnumConnectionPoints as const GUID
+
+type IEnumConnectionPointsVtbl
+	QueryInterface as function(byval This as IEnumConnectionPoints ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IEnumConnectionPoints ptr) as ULONG
+	Release as function(byval This as IEnumConnectionPoints ptr) as ULONG
+	Next as function(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG, byval ppCP as LPCONNECTIONPOINT ptr, byval pcFetched as ULONG ptr) as HRESULT
+	Skip as function(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG) as HRESULT
+	Reset as function(byval This as IEnumConnectionPoints ptr) as HRESULT
+	Clone as function(byval This as IEnumConnectionPoints ptr, byval ppEnum as IEnumConnectionPoints ptr ptr) as HRESULT
+end type
+
+type IEnumConnectionPoints_
+	lpVtbl as IEnumConnectionPointsVtbl ptr
+end type
+
+declare function IEnumConnectionPoints_RemoteNext_Proxy(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG, byval ppCP as LPCONNECTIONPOINT ptr, byval pcFetched as ULONG ptr) as HRESULT
+declare sub IEnumConnectionPoints_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnectionPoints_Skip_Proxy(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG) as HRESULT
+declare sub IEnumConnectionPoints_Skip_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnectionPoints_Reset_Proxy(byval This as IEnumConnectionPoints ptr) as HRESULT
+declare sub IEnumConnectionPoints_Reset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnectionPoints_Clone_Proxy(byval This as IEnumConnectionPoints ptr, byval ppEnum as IEnumConnectionPoints ptr ptr) as HRESULT
+declare sub IEnumConnectionPoints_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumConnectionPoints_Next_Proxy(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG, byval ppCP as LPCONNECTIONPOINT ptr, byval pcFetched as ULONG ptr) as HRESULT
+declare function IEnumConnectionPoints_Next_Stub(byval This as IEnumConnectionPoints ptr, byval cConnections as ULONG, byval ppCP as LPCONNECTIONPOINT ptr, byval pcFetched as ULONG ptr) as HRESULT
+#define __IConnectionPointContainer_INTERFACE_DEFINED__
+type PCONNECTIONPOINTCONTAINER as IConnectionPointContainer ptr
+type LPCONNECTIONPOINTCONTAINER as IConnectionPointContainer ptr
+extern IID_IConnectionPointContainer as const GUID
+
+type IConnectionPointContainerVtbl
+	QueryInterface as function(byval This as IConnectionPointContainer ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IConnectionPointContainer ptr) as ULONG
+	Release as function(byval This as IConnectionPointContainer ptr) as ULONG
+	EnumConnectionPoints as function(byval This as IConnectionPointContainer ptr, byval ppEnum as IEnumConnectionPoints ptr ptr) as HRESULT
+	FindConnectionPoint as function(byval This as IConnectionPointContainer ptr, byval riid as const IID const ptr, byval ppCP as IConnectionPoint ptr ptr) as HRESULT
+end type
+
+type IConnectionPointContainer_
+	lpVtbl as IConnectionPointContainerVtbl ptr
+end type
+
+declare function IConnectionPointContainer_EnumConnectionPoints_Proxy(byval This as IConnectionPointContainer ptr, byval ppEnum as IEnumConnectionPoints ptr ptr) as HRESULT
+declare sub IConnectionPointContainer_EnumConnectionPoints_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IConnectionPointContainer_FindConnectionPoint_Proxy(byval This as IConnectionPointContainer ptr, byval riid as const IID const ptr, byval ppCP as IConnectionPoint ptr ptr) as HRESULT
+declare sub IConnectionPointContainer_FindConnectionPoint_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IClassFactory2_INTERFACE_DEFINED__
+type IClassFactory2 as IClassFactory2_
+type LPCLASSFACTORY2 as IClassFactory2 ptr
+
+type tagLICINFO
+	cbLicInfo as LONG
+	fRuntimeKeyAvail as WINBOOL
+	fLicVerified as WINBOOL
+end type
+
+type LICINFO as tagLICINFO
+type LPLICINFO as tagLICINFO ptr
+extern IID_IClassFactory2 as const GUID
+
+type IClassFactory2Vtbl
+	QueryInterface as function(byval This as IClassFactory2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IClassFactory2 ptr) as ULONG
+	Release as function(byval This as IClassFactory2 ptr) as ULONG
+	CreateInstance as function(byval This as IClassFactory2 ptr, byval pUnkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	LockServer as function(byval This as IClassFactory2 ptr, byval fLock as WINBOOL) as HRESULT
+	GetLicInfo as function(byval This as IClassFactory2 ptr, byval pLicInfo as LICINFO ptr) as HRESULT
+	RequestLicKey as function(byval This as IClassFactory2 ptr, byval dwReserved as DWORD, byval pBstrKey as BSTR ptr) as HRESULT
+	CreateInstanceLic as function(byval This as IClassFactory2 ptr, byval pUnkOuter as IUnknown ptr, byval pUnkReserved as IUnknown ptr, byval riid as const IID const ptr, byval bstrKey as BSTR, byval ppvObj as PVOID ptr) as HRESULT
+end type
+
+type IClassFactory2_
+	lpVtbl as IClassFactory2Vtbl ptr
+end type
+
+declare function IClassFactory2_GetLicInfo_Proxy(byval This as IClassFactory2 ptr, byval pLicInfo as LICINFO ptr) as HRESULT
+declare sub IClassFactory2_GetLicInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IClassFactory2_RequestLicKey_Proxy(byval This as IClassFactory2 ptr, byval dwReserved as DWORD, byval pBstrKey as BSTR ptr) as HRESULT
+declare sub IClassFactory2_RequestLicKey_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IClassFactory2_RemoteCreateInstanceLic_Proxy(byval This as IClassFactory2 ptr, byval riid as const IID const ptr, byval bstrKey as BSTR, byval ppvObj as IUnknown ptr ptr) as HRESULT
+declare sub IClassFactory2_RemoteCreateInstanceLic_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IClassFactory2_CreateInstanceLic_Proxy(byval This as IClassFactory2 ptr, byval pUnkOuter as IUnknown ptr, byval pUnkReserved as IUnknown ptr, byval riid as const IID const ptr, byval bstrKey as BSTR, byval ppvObj as PVOID ptr) as HRESULT
+declare function IClassFactory2_CreateInstanceLic_Stub(byval This as IClassFactory2 ptr, byval riid as const IID const ptr, byval bstrKey as BSTR, byval ppvObj as IUnknown ptr ptr) as HRESULT
+#define __IProvideClassInfo_INTERFACE_DEFINED__
+type IProvideClassInfo as IProvideClassInfo_
+type LPPROVIDECLASSINFO as IProvideClassInfo ptr
+extern IID_IProvideClassInfo as const GUID
+
+type IProvideClassInfoVtbl
+	QueryInterface as function(byval This as IProvideClassInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IProvideClassInfo ptr) as ULONG
+	Release as function(byval This as IProvideClassInfo ptr) as ULONG
+
+	#ifdef UNICODE
+		GetClassInfoW as function(byval This as IProvideClassInfo ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#else
+		GetClassInfoA as function(byval This as IProvideClassInfo ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#endif
+end type
+
+type IProvideClassInfo_
+	lpVtbl as IProvideClassInfoVtbl ptr
+end type
+
+declare function IProvideClassInfo_GetClassInfo_Proxy(byval This as IProvideClassInfo ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+declare sub IProvideClassInfo_GetClassInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IProvideClassInfo2_INTERFACE_DEFINED__
+type IProvideClassInfo2 as IProvideClassInfo2_
+type LPPROVIDECLASSINFO2 as IProvideClassInfo2 ptr
+
+type tagGUIDKIND as long
+enum
+	GUIDKIND_DEFAULT_SOURCE_DISP_IID = 1
+end enum
+
+type GUIDKIND as tagGUIDKIND
+extern IID_IProvideClassInfo2 as const GUID
+
+type IProvideClassInfo2Vtbl
+	QueryInterface as function(byval This as IProvideClassInfo2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IProvideClassInfo2 ptr) as ULONG
+	Release as function(byval This as IProvideClassInfo2 ptr) as ULONG
+
+	#ifdef UNICODE
+		GetClassInfoW as function(byval This as IProvideClassInfo2 ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#else
+		GetClassInfoA as function(byval This as IProvideClassInfo2 ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#endif
+
+	GetGUID as function(byval This as IProvideClassInfo2 ptr, byval dwGuidKind as DWORD, byval pGUID as GUID ptr) as HRESULT
+end type
+
+type IProvideClassInfo2_
+	lpVtbl as IProvideClassInfo2Vtbl ptr
+end type
+
+declare function IProvideClassInfo2_GetGUID_Proxy(byval This as IProvideClassInfo2 ptr, byval dwGuidKind as DWORD, byval pGUID as GUID ptr) as HRESULT
+declare sub IProvideClassInfo2_GetGUID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IProvideMultipleClassInfo_INTERFACE_DEFINED__
+const MULTICLASSINFO_GETTYPEINFO = &h1
+const MULTICLASSINFO_GETNUMRESERVEDDISPIDS = &h2
+const MULTICLASSINFO_GETIIDPRIMARY = &h4
+const MULTICLASSINFO_GETIIDSOURCE = &h8
+const TIFLAGS_EXTENDDISPATCHONLY = &h1
+type IProvideMultipleClassInfo as IProvideMultipleClassInfo_
+type LPPROVIDEMULTIPLECLASSINFO as IProvideMultipleClassInfo ptr
+extern IID_IProvideMultipleClassInfo as const GUID
+
+type IProvideMultipleClassInfoVtbl
+	QueryInterface as function(byval This as IProvideMultipleClassInfo ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IProvideMultipleClassInfo ptr) as ULONG
+	Release as function(byval This as IProvideMultipleClassInfo ptr) as ULONG
+
+	#ifdef UNICODE
+		GetClassInfoW as function(byval This as IProvideMultipleClassInfo ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#else
+		GetClassInfoA as function(byval This as IProvideMultipleClassInfo ptr, byval ppTI as ITypeInfo ptr ptr) as HRESULT
+	#endif
+
+	GetGUID as function(byval This as IProvideMultipleClassInfo ptr, byval dwGuidKind as DWORD, byval pGUID as GUID ptr) as HRESULT
+	GetMultiTypeInfoCount as function(byval This as IProvideMultipleClassInfo ptr, byval pcti as ULONG ptr) as HRESULT
+	GetInfoOfIndex as function(byval This as IProvideMultipleClassInfo ptr, byval iti as ULONG, byval dwFlags as DWORD, byval pptiCoClass as ITypeInfo ptr ptr, byval pdwTIFlags as DWORD ptr, byval pcdispidReserved as ULONG ptr, byval piidPrimary as IID ptr, byval piidSource as IID ptr) as HRESULT
+end type
+
+type IProvideMultipleClassInfo_
+	lpVtbl as IProvideMultipleClassInfoVtbl ptr
+end type
+
+declare function IProvideMultipleClassInfo_GetMultiTypeInfoCount_Proxy(byval This as IProvideMultipleClassInfo ptr, byval pcti as ULONG ptr) as HRESULT
+declare sub IProvideMultipleClassInfo_GetMultiTypeInfoCount_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IProvideMultipleClassInfo_GetInfoOfIndex_Proxy(byval This as IProvideMultipleClassInfo ptr, byval iti as ULONG, byval dwFlags as DWORD, byval pptiCoClass as ITypeInfo ptr ptr, byval pdwTIFlags as DWORD ptr, byval pcdispidReserved as ULONG ptr, byval piidPrimary as IID ptr, byval piidSource as IID ptr) as HRESULT
+declare sub IProvideMultipleClassInfo_GetInfoOfIndex_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleControl_INTERFACE_DEFINED__
+type IOleControl as IOleControl_
+type LPOLECONTROL as IOleControl ptr
+
+type tagCONTROLINFO
+	cb as ULONG
+	hAccel as HACCEL
+	cAccel as USHORT
+	dwFlags as DWORD
+end type
+
+type CONTROLINFO as tagCONTROLINFO
+type LPCONTROLINFO as tagCONTROLINFO ptr
+
+type tagCTRLINFO as long
+enum
+	CTRLINFO_EATS_RETURN = 1
+	CTRLINFO_EATS_ESCAPE = 2
+end enum
+
+type CTRLINFO as tagCTRLINFO
+extern IID_IOleControl as const GUID
+
+type IOleControlVtbl
+	QueryInterface as function(byval This as IOleControl ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleControl ptr) as ULONG
+	Release as function(byval This as IOleControl ptr) as ULONG
+	GetControlInfo as function(byval This as IOleControl ptr, byval pCI as CONTROLINFO ptr) as HRESULT
+	OnMnemonic as function(byval This as IOleControl ptr, byval pMsg as MSG ptr) as HRESULT
+	OnAmbientPropertyChange as function(byval This as IOleControl ptr, byval dispID as DISPID) as HRESULT
+	FreezeEvents as function(byval This as IOleControl ptr, byval bFreeze as WINBOOL) as HRESULT
+end type
+
+type IOleControl_
+	lpVtbl as IOleControlVtbl ptr
+end type
+
+declare function IOleControl_GetControlInfo_Proxy(byval This as IOleControl ptr, byval pCI as CONTROLINFO ptr) as HRESULT
+declare sub IOleControl_GetControlInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControl_OnMnemonic_Proxy(byval This as IOleControl ptr, byval pMsg as MSG ptr) as HRESULT
+declare sub IOleControl_OnMnemonic_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControl_OnAmbientPropertyChange_Proxy(byval This as IOleControl ptr, byval dispID as DISPID) as HRESULT
+declare sub IOleControl_OnAmbientPropertyChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControl_FreezeEvents_Proxy(byval This as IOleControl ptr, byval bFreeze as WINBOOL) as HRESULT
+declare sub IOleControl_FreezeEvents_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleControlSite_INTERFACE_DEFINED__
+type IOleControlSite as IOleControlSite_
+type LPOLECONTROLSITE as IOleControlSite ptr
+
+type tagPOINTF
+	x as FLOAT
+	y as FLOAT
+end type
+
+type POINTF as tagPOINTF
+type LPPOINTF as tagPOINTF ptr
+
+type tagXFORMCOORDS as long
+enum
+	XFORMCOORDS_POSITION = &h1
+	XFORMCOORDS_SIZE = &h2
+	XFORMCOORDS_HIMETRICTOCONTAINER = &h4
+	XFORMCOORDS_CONTAINERTOHIMETRIC = &h8
+	XFORMCOORDS_EVENTCOMPAT = &h10
+end enum
+
+type XFORMCOORDS as tagXFORMCOORDS
+extern IID_IOleControlSite as const GUID
+
+type IOleControlSiteVtbl
+	QueryInterface as function(byval This as IOleControlSite ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleControlSite ptr) as ULONG
+	Release as function(byval This as IOleControlSite ptr) as ULONG
+	OnControlInfoChanged as function(byval This as IOleControlSite ptr) as HRESULT
+	LockInPlaceActive as function(byval This as IOleControlSite ptr, byval fLock as WINBOOL) as HRESULT
+	GetExtendedControl as function(byval This as IOleControlSite ptr, byval ppDisp as IDispatch ptr ptr) as HRESULT
+	TransformCoords as function(byval This as IOleControlSite ptr, byval pPtlHimetric as POINTL ptr, byval pPtfContainer as POINTF ptr, byval dwFlags as DWORD) as HRESULT
+	TranslateAccelerator as function(byval This as IOleControlSite ptr, byval pMsg as MSG ptr, byval grfModifiers as DWORD) as HRESULT
+	OnFocus as function(byval This as IOleControlSite ptr, byval fGotFocus as WINBOOL) as HRESULT
+	ShowPropertyFrame as function(byval This as IOleControlSite ptr) as HRESULT
+end type
+
+type IOleControlSite_
+	lpVtbl as IOleControlSiteVtbl ptr
+end type
+
+declare function IOleControlSite_OnControlInfoChanged_Proxy(byval This as IOleControlSite ptr) as HRESULT
+declare sub IOleControlSite_OnControlInfoChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_LockInPlaceActive_Proxy(byval This as IOleControlSite ptr, byval fLock as WINBOOL) as HRESULT
+declare sub IOleControlSite_LockInPlaceActive_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_GetExtendedControl_Proxy(byval This as IOleControlSite ptr, byval ppDisp as IDispatch ptr ptr) as HRESULT
+declare sub IOleControlSite_GetExtendedControl_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_TransformCoords_Proxy(byval This as IOleControlSite ptr, byval pPtlHimetric as POINTL ptr, byval pPtfContainer as POINTF ptr, byval dwFlags as DWORD) as HRESULT
+declare sub IOleControlSite_TransformCoords_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_TranslateAccelerator_Proxy(byval This as IOleControlSite ptr, byval pMsg as MSG ptr, byval grfModifiers as DWORD) as HRESULT
+declare sub IOleControlSite_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_OnFocus_Proxy(byval This as IOleControlSite ptr, byval fGotFocus as WINBOOL) as HRESULT
+declare sub IOleControlSite_OnFocus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleControlSite_ShowPropertyFrame_Proxy(byval This as IOleControlSite ptr) as HRESULT
+declare sub IOleControlSite_ShowPropertyFrame_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPropertyPage_INTERFACE_DEFINED__
+type IPropertyPage as IPropertyPage_
+type LPPROPERTYPAGE as IPropertyPage ptr
+
+type tagPROPPAGEINFO
+	cb as ULONG
+	pszTitle as LPOLESTR
+	size as SIZE
+	pszDocString as LPOLESTR
+	pszHelpFile as LPOLESTR
+	dwHelpContext as DWORD
+end type
+
+type PROPPAGEINFO as tagPROPPAGEINFO
+type LPPROPPAGEINFO as tagPROPPAGEINFO ptr
+extern IID_IPropertyPage as const GUID
+type IPropertyPageSite as IPropertyPageSite_
+
+type IPropertyPageVtbl
+	QueryInterface as function(byval This as IPropertyPage ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPropertyPage ptr) as ULONG
+	Release as function(byval This as IPropertyPage ptr) as ULONG
+	SetPageSite as function(byval This as IPropertyPage ptr, byval pPageSite as IPropertyPageSite ptr) as HRESULT
+	Activate as function(byval This as IPropertyPage ptr, byval hWndParent as HWND, byval pRect as LPCRECT, byval bModal as WINBOOL) as HRESULT
+	Deactivate as function(byval This as IPropertyPage ptr) as HRESULT
+	GetPageInfo as function(byval This as IPropertyPage ptr, byval pPageInfo as PROPPAGEINFO ptr) as HRESULT
+	SetObjects as function(byval This as IPropertyPage ptr, byval cObjects as ULONG, byval ppUnk as IUnknown ptr ptr) as HRESULT
+	Show as function(byval This as IPropertyPage ptr, byval nCmdShow as UINT) as HRESULT
+	Move as function(byval This as IPropertyPage ptr, byval pRect as LPCRECT) as HRESULT
+	IsPageDirty as function(byval This as IPropertyPage ptr) as HRESULT
+	Apply as function(byval This as IPropertyPage ptr) as HRESULT
+	Help as function(byval This as IPropertyPage ptr, byval pszHelpDir as LPCOLESTR) as HRESULT
+	TranslateAccelerator as function(byval This as IPropertyPage ptr, byval pMsg as MSG ptr) as HRESULT
+end type
+
+type IPropertyPage_
+	lpVtbl as IPropertyPageVtbl ptr
+end type
+
+declare function IPropertyPage_SetPageSite_Proxy(byval This as IPropertyPage ptr, byval pPageSite as IPropertyPageSite ptr) as HRESULT
+declare sub IPropertyPage_SetPageSite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Activate_Proxy(byval This as IPropertyPage ptr, byval hWndParent as HWND, byval pRect as LPCRECT, byval bModal as WINBOOL) as HRESULT
+declare sub IPropertyPage_Activate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Deactivate_Proxy(byval This as IPropertyPage ptr) as HRESULT
+declare sub IPropertyPage_Deactivate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_GetPageInfo_Proxy(byval This as IPropertyPage ptr, byval pPageInfo as PROPPAGEINFO ptr) as HRESULT
+declare sub IPropertyPage_GetPageInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_SetObjects_Proxy(byval This as IPropertyPage ptr, byval cObjects as ULONG, byval ppUnk as IUnknown ptr ptr) as HRESULT
+declare sub IPropertyPage_SetObjects_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Show_Proxy(byval This as IPropertyPage ptr, byval nCmdShow as UINT) as HRESULT
+declare sub IPropertyPage_Show_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Move_Proxy(byval This as IPropertyPage ptr, byval pRect as LPCRECT) as HRESULT
+declare sub IPropertyPage_Move_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_IsPageDirty_Proxy(byval This as IPropertyPage ptr) as HRESULT
+declare sub IPropertyPage_IsPageDirty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Apply_Proxy(byval This as IPropertyPage ptr) as HRESULT
+declare sub IPropertyPage_Apply_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_Help_Proxy(byval This as IPropertyPage ptr, byval pszHelpDir as LPCOLESTR) as HRESULT
+declare sub IPropertyPage_Help_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPage_TranslateAccelerator_Proxy(byval This as IPropertyPage ptr, byval pMsg as MSG ptr) as HRESULT
+declare sub IPropertyPage_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPropertyPage2_INTERFACE_DEFINED__
+type IPropertyPage2 as IPropertyPage2_
+type LPPROPERTYPAGE2 as IPropertyPage2 ptr
+extern IID_IPropertyPage2 as const GUID
+
+type IPropertyPage2Vtbl
+	QueryInterface as function(byval This as IPropertyPage2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPropertyPage2 ptr) as ULONG
+	Release as function(byval This as IPropertyPage2 ptr) as ULONG
+	SetPageSite as function(byval This as IPropertyPage2 ptr, byval pPageSite as IPropertyPageSite ptr) as HRESULT
+	Activate as function(byval This as IPropertyPage2 ptr, byval hWndParent as HWND, byval pRect as LPCRECT, byval bModal as WINBOOL) as HRESULT
+	Deactivate as function(byval This as IPropertyPage2 ptr) as HRESULT
+	GetPageInfo as function(byval This as IPropertyPage2 ptr, byval pPageInfo as PROPPAGEINFO ptr) as HRESULT
+	SetObjects as function(byval This as IPropertyPage2 ptr, byval cObjects as ULONG, byval ppUnk as IUnknown ptr ptr) as HRESULT
+	Show as function(byval This as IPropertyPage2 ptr, byval nCmdShow as UINT) as HRESULT
+	Move as function(byval This as IPropertyPage2 ptr, byval pRect as LPCRECT) as HRESULT
+	IsPageDirty as function(byval This as IPropertyPage2 ptr) as HRESULT
+	Apply as function(byval This as IPropertyPage2 ptr) as HRESULT
+	Help as function(byval This as IPropertyPage2 ptr, byval pszHelpDir as LPCOLESTR) as HRESULT
+	TranslateAccelerator as function(byval This as IPropertyPage2 ptr, byval pMsg as MSG ptr) as HRESULT
+	EditProperty as function(byval This as IPropertyPage2 ptr, byval dispID as DISPID) as HRESULT
+end type
+
+type IPropertyPage2_
+	lpVtbl as IPropertyPage2Vtbl ptr
+end type
+
+declare function IPropertyPage2_EditProperty_Proxy(byval This as IPropertyPage2 ptr, byval dispID as DISPID) as HRESULT
+declare sub IPropertyPage2_EditProperty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPropertyPageSite_INTERFACE_DEFINED__
+type LPPROPERTYPAGESITE as IPropertyPageSite ptr
+
+type tagPROPPAGESTATUS as long
+enum
+	PROPPAGESTATUS_DIRTY = &h1
+	PROPPAGESTATUS_VALIDATE = &h2
+	PROPPAGESTATUS_CLEAN = &h4
+end enum
+
+type PROPPAGESTATUS as tagPROPPAGESTATUS
+extern IID_IPropertyPageSite as const GUID
+
+type IPropertyPageSiteVtbl
+	QueryInterface as function(byval This as IPropertyPageSite ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPropertyPageSite ptr) as ULONG
+	Release as function(byval This as IPropertyPageSite ptr) as ULONG
+	OnStatusChange as function(byval This as IPropertyPageSite ptr, byval dwFlags as DWORD) as HRESULT
+	GetLocaleID as function(byval This as IPropertyPageSite ptr, byval pLocaleID as LCID ptr) as HRESULT
+	GetPageContainer as function(byval This as IPropertyPageSite ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
+	TranslateAccelerator as function(byval This as IPropertyPageSite ptr, byval pMsg as MSG ptr) as HRESULT
+end type
+
+type IPropertyPageSite_
+	lpVtbl as IPropertyPageSiteVtbl ptr
+end type
+
+declare function IPropertyPageSite_OnStatusChange_Proxy(byval This as IPropertyPageSite ptr, byval dwFlags as DWORD) as HRESULT
+declare sub IPropertyPageSite_OnStatusChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPageSite_GetLocaleID_Proxy(byval This as IPropertyPageSite ptr, byval pLocaleID as LCID ptr) as HRESULT
+declare sub IPropertyPageSite_GetLocaleID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPageSite_GetPageContainer_Proxy(byval This as IPropertyPageSite ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
+declare sub IPropertyPageSite_GetPageContainer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyPageSite_TranslateAccelerator_Proxy(byval This as IPropertyPageSite ptr, byval pMsg as MSG ptr) as HRESULT
+declare sub IPropertyPageSite_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPropertyNotifySink_INTERFACE_DEFINED__
+type IPropertyNotifySink as IPropertyNotifySink_
+type LPPROPERTYNOTIFYSINK as IPropertyNotifySink ptr
+extern IID_IPropertyNotifySink as const GUID
+
+type IPropertyNotifySinkVtbl
+	QueryInterface as function(byval This as IPropertyNotifySink ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPropertyNotifySink ptr) as ULONG
+	Release as function(byval This as IPropertyNotifySink ptr) as ULONG
+	OnChanged as function(byval This as IPropertyNotifySink ptr, byval dispID as DISPID) as HRESULT
+	OnRequestEdit as function(byval This as IPropertyNotifySink ptr, byval dispID as DISPID) as HRESULT
+end type
+
+type IPropertyNotifySink_
+	lpVtbl as IPropertyNotifySinkVtbl ptr
+end type
+
+declare function IPropertyNotifySink_OnChanged_Proxy(byval This as IPropertyNotifySink ptr, byval dispID as DISPID) as HRESULT
+declare sub IPropertyNotifySink_OnChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyNotifySink_OnRequestEdit_Proxy(byval This as IPropertyNotifySink ptr, byval dispID as DISPID) as HRESULT
+declare sub IPropertyNotifySink_OnRequestEdit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __ISpecifyPropertyPages_INTERFACE_DEFINED__
+type ISpecifyPropertyPages as ISpecifyPropertyPages_
+type LPSPECIFYPROPERTYPAGES as ISpecifyPropertyPages ptr
+
+type tagCAUUID
+	cElems as ULONG
+	pElems as GUID ptr
+end type
+
+type CAUUID as tagCAUUID
+type LPCAUUID as tagCAUUID ptr
+extern IID_ISpecifyPropertyPages as const GUID
+
+type ISpecifyPropertyPagesVtbl
+	QueryInterface as function(byval This as ISpecifyPropertyPages ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ISpecifyPropertyPages ptr) as ULONG
+	Release as function(byval This as ISpecifyPropertyPages ptr) as ULONG
+	GetPages as function(byval This as ISpecifyPropertyPages ptr, byval pPages as CAUUID ptr) as HRESULT
+end type
+
+type ISpecifyPropertyPages_
+	lpVtbl as ISpecifyPropertyPagesVtbl ptr
+end type
+
+declare function ISpecifyPropertyPages_GetPages_Proxy(byval This as ISpecifyPropertyPages ptr, byval pPages as CAUUID ptr) as HRESULT
+declare sub ISpecifyPropertyPages_GetPages_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPersistMemory_INTERFACE_DEFINED__
+type IPersistMemory as IPersistMemory_
+type LPPERSISTMEMORY as IPersistMemory ptr
+extern IID_IPersistMemory as const GUID
+
+type IPersistMemoryVtbl
+	QueryInterface as function(byval This as IPersistMemory ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPersistMemory ptr) as ULONG
+	Release as function(byval This as IPersistMemory ptr) as ULONG
+	GetClassID as function(byval This as IPersistMemory ptr, byval pClassID as CLSID ptr) as HRESULT
+	IsDirty as function(byval This as IPersistMemory ptr) as HRESULT
+	Load as function(byval This as IPersistMemory ptr, byval pMem as LPVOID, byval cbSize as ULONG) as HRESULT
+	Save as function(byval This as IPersistMemory ptr, byval pMem as LPVOID, byval fClearDirty as WINBOOL, byval cbSize as ULONG) as HRESULT
+	GetSizeMax as function(byval This as IPersistMemory ptr, byval pCbSize as ULONG ptr) as HRESULT
+	InitNew as function(byval This as IPersistMemory ptr) as HRESULT
+end type
+
+type IPersistMemory_
+	lpVtbl as IPersistMemoryVtbl ptr
+end type
+
+declare function IPersistMemory_IsDirty_Proxy(byval This as IPersistMemory ptr) as HRESULT
+declare sub IPersistMemory_IsDirty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMemory_RemoteLoad_Proxy(byval This as IPersistMemory ptr, byval pMem as UBYTE ptr, byval cbSize as ULONG) as HRESULT
+declare sub IPersistMemory_RemoteLoad_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMemory_RemoteSave_Proxy(byval This as IPersistMemory ptr, byval pMem as UBYTE ptr, byval fClearDirty as WINBOOL, byval cbSize as ULONG) as HRESULT
+declare sub IPersistMemory_RemoteSave_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMemory_GetSizeMax_Proxy(byval This as IPersistMemory ptr, byval pCbSize as ULONG ptr) as HRESULT
+declare sub IPersistMemory_GetSizeMax_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMemory_InitNew_Proxy(byval This as IPersistMemory ptr) as HRESULT
+declare sub IPersistMemory_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistMemory_Load_Proxy(byval This as IPersistMemory ptr, byval pMem as LPVOID, byval cbSize as ULONG) as HRESULT
+declare function IPersistMemory_Load_Stub(byval This as IPersistMemory ptr, byval pMem as UBYTE ptr, byval cbSize as ULONG) as HRESULT
+declare function IPersistMemory_Save_Proxy(byval This as IPersistMemory ptr, byval pMem as LPVOID, byval fClearDirty as WINBOOL, byval cbSize as ULONG) as HRESULT
+declare function IPersistMemory_Save_Stub(byval This as IPersistMemory ptr, byval pMem as UBYTE ptr, byval fClearDirty as WINBOOL, byval cbSize as ULONG) as HRESULT
+#define __IPersistStreamInit_INTERFACE_DEFINED__
+type IPersistStreamInit as IPersistStreamInit_
+type LPPERSISTSTREAMINIT as IPersistStreamInit ptr
+extern IID_IPersistStreamInit as const GUID
+
+type IPersistStreamInitVtbl
+	QueryInterface as function(byval This as IPersistStreamInit ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPersistStreamInit ptr) as ULONG
+	Release as function(byval This as IPersistStreamInit ptr) as ULONG
+	GetClassID as function(byval This as IPersistStreamInit ptr, byval pClassID as CLSID ptr) as HRESULT
+	IsDirty as function(byval This as IPersistStreamInit ptr) as HRESULT
+	Load as function(byval This as IPersistStreamInit ptr, byval pStm as LPSTREAM) as HRESULT
+	Save as function(byval This as IPersistStreamInit ptr, byval pStm as LPSTREAM, byval fClearDirty as WINBOOL) as HRESULT
+	GetSizeMax as function(byval This as IPersistStreamInit ptr, byval pCbSize as ULARGE_INTEGER ptr) as HRESULT
+	InitNew as function(byval This as IPersistStreamInit ptr) as HRESULT
+end type
+
+type IPersistStreamInit_
+	lpVtbl as IPersistStreamInitVtbl ptr
+end type
+
+declare function IPersistStreamInit_IsDirty_Proxy(byval This as IPersistStreamInit ptr) as HRESULT
+declare sub IPersistStreamInit_IsDirty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistStreamInit_Load_Proxy(byval This as IPersistStreamInit ptr, byval pStm as LPSTREAM) as HRESULT
+declare sub IPersistStreamInit_Load_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistStreamInit_Save_Proxy(byval This as IPersistStreamInit ptr, byval pStm as LPSTREAM, byval fClearDirty as WINBOOL) as HRESULT
+declare sub IPersistStreamInit_Save_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistStreamInit_GetSizeMax_Proxy(byval This as IPersistStreamInit ptr, byval pCbSize as ULARGE_INTEGER ptr) as HRESULT
+declare sub IPersistStreamInit_GetSizeMax_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistStreamInit_InitNew_Proxy(byval This as IPersistStreamInit ptr) as HRESULT
+declare sub IPersistStreamInit_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPersistPropertyBag_INTERFACE_DEFINED__
+type IPersistPropertyBag as IPersistPropertyBag_
+type LPPERSISTPROPERTYBAG as IPersistPropertyBag ptr
+extern IID_IPersistPropertyBag as const GUID
+
+type IPersistPropertyBagVtbl
+	QueryInterface as function(byval This as IPersistPropertyBag ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPersistPropertyBag ptr) as ULONG
+	Release as function(byval This as IPersistPropertyBag ptr) as ULONG
+	GetClassID as function(byval This as IPersistPropertyBag ptr, byval pClassID as CLSID ptr) as HRESULT
+	InitNew as function(byval This as IPersistPropertyBag ptr) as HRESULT
+	Load as function(byval This as IPersistPropertyBag ptr, byval pPropBag as IPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
+	Save as function(byval This as IPersistPropertyBag ptr, byval pPropBag as IPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+end type
+
+type IPersistPropertyBag_
+	lpVtbl as IPersistPropertyBagVtbl ptr
+end type
+
+declare function IPersistPropertyBag_InitNew_Proxy(byval This as IPersistPropertyBag ptr) as HRESULT
+declare sub IPersistPropertyBag_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistPropertyBag_Load_Proxy(byval This as IPersistPropertyBag ptr, byval pPropBag as IPropertyBag ptr, byval pErrorLog as IErrorLog ptr) as HRESULT
+declare sub IPersistPropertyBag_Load_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistPropertyBag_Save_Proxy(byval This as IPersistPropertyBag ptr, byval pPropBag as IPropertyBag ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+declare sub IPersistPropertyBag_Save_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __ISimpleFrameSite_INTERFACE_DEFINED__
+type ISimpleFrameSite as ISimpleFrameSite_
+type LPSIMPLEFRAMESITE as ISimpleFrameSite ptr
+extern IID_ISimpleFrameSite as const GUID
+
+type ISimpleFrameSiteVtbl
+	QueryInterface as function(byval This as ISimpleFrameSite ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ISimpleFrameSite ptr) as ULONG
+	Release as function(byval This as ISimpleFrameSite ptr) as ULONG
+	PreMessageFilter as function(byval This as ISimpleFrameSite ptr, byval hWnd as HWND, byval msg as UINT, byval wp as WPARAM, byval lp as LPARAM, byval plResult as LRESULT ptr, byval pdwCookie as DWORD ptr) as HRESULT
+	PostMessageFilter as function(byval This as ISimpleFrameSite ptr, byval hWnd as HWND, byval msg as UINT, byval wp as WPARAM, byval lp as LPARAM, byval plResult as LRESULT ptr, byval dwCookie as DWORD) as HRESULT
+end type
+
+type ISimpleFrameSite_
+	lpVtbl as ISimpleFrameSiteVtbl ptr
+end type
+
+declare function ISimpleFrameSite_PreMessageFilter_Proxy(byval This as ISimpleFrameSite ptr, byval hWnd as HWND, byval msg as UINT, byval wp as WPARAM, byval lp as LPARAM, byval plResult as LRESULT ptr, byval pdwCookie as DWORD ptr) as HRESULT
+declare sub ISimpleFrameSite_PreMessageFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function ISimpleFrameSite_PostMessageFilter_Proxy(byval This as ISimpleFrameSite ptr, byval hWnd as HWND, byval msg as UINT, byval wp as WPARAM, byval lp as LPARAM, byval plResult as LRESULT ptr, byval dwCookie as DWORD) as HRESULT
+declare sub ISimpleFrameSite_PostMessageFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IFont_INTERFACE_DEFINED__
+
+type IFont as IFont_
+type LPFONT as IFont ptr
+type TEXTMETRICOLE as TEXTMETRICW
+type LPTEXTMETRICOLE as TEXTMETRICOLE ptr
+extern IID_IFont as const GUID
+
+type IFontVtbl
+	QueryInterface as function(byval This as IFont ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IFont ptr) as ULONG
+	Release as function(byval This as IFont ptr) as ULONG
+	get_Name as function(byval This as IFont ptr, byval pName as BSTR ptr) as HRESULT
+	put_Name as function(byval This as IFont ptr, byval name as BSTR) as HRESULT
+	get_Size as function(byval This as IFont ptr, byval pSize as CY ptr) as HRESULT
+	put_Size as function(byval This as IFont ptr, byval size as CY) as HRESULT
+	get_Bold as function(byval This as IFont ptr, byval pBold as WINBOOL ptr) as HRESULT
+	put_Bold as function(byval This as IFont ptr, byval bold as WINBOOL) as HRESULT
+	get_Italic as function(byval This as IFont ptr, byval pItalic as WINBOOL ptr) as HRESULT
+	put_Italic as function(byval This as IFont ptr, byval italic as WINBOOL) as HRESULT
+	get_Underline as function(byval This as IFont ptr, byval pUnderline as WINBOOL ptr) as HRESULT
+	put_Underline as function(byval This as IFont ptr, byval underline as WINBOOL) as HRESULT
+	get_Strikethrough as function(byval This as IFont ptr, byval pStrikethrough as WINBOOL ptr) as HRESULT
+	put_Strikethrough as function(byval This as IFont ptr, byval strikethrough as WINBOOL) as HRESULT
+	get_Weight as function(byval This as IFont ptr, byval pWeight as SHORT ptr) as HRESULT
+	put_Weight as function(byval This as IFont ptr, byval weight as SHORT) as HRESULT
+	get_Charset as function(byval This as IFont ptr, byval pCharset as SHORT ptr) as HRESULT
+	put_Charset as function(byval This as IFont ptr, byval charset as SHORT) as HRESULT
+	get_hFont as function(byval This as IFont ptr, byval phFont as HFONT ptr) as HRESULT
+	Clone as function(byval This as IFont ptr, byval ppFont as IFont ptr ptr) as HRESULT
+	IsEqual as function(byval This as IFont ptr, byval pFontOther as IFont ptr) as HRESULT
+	SetRatio as function(byval This as IFont ptr, byval cyLogical as LONG, byval cyHimetric as LONG) as HRESULT
+	QueryTextMetrics as function(byval This as IFont ptr, byval pTM as TEXTMETRICOLE ptr) as HRESULT
+	AddRefHfont as function(byval This as IFont ptr, byval hFont as HFONT) as HRESULT
+	ReleaseHfont as function(byval This as IFont ptr, byval hFont as HFONT) as HRESULT
+	SetHdc as function(byval This as IFont ptr, byval hDC as HDC) as HRESULT
+end type
+
+type IFont_
+	lpVtbl as IFontVtbl ptr
+end type
+
+declare function IFont_get_Name_Proxy(byval This as IFont ptr, byval pName as BSTR ptr) as HRESULT
+declare sub IFont_get_Name_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Name_Proxy(byval This as IFont ptr, byval name as BSTR) as HRESULT
+declare sub IFont_put_Name_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Size_Proxy(byval This as IFont ptr, byval pSize as CY ptr) as HRESULT
+declare sub IFont_get_Size_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Size_Proxy(byval This as IFont ptr, byval size as CY) as HRESULT
+declare sub IFont_put_Size_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Bold_Proxy(byval This as IFont ptr, byval pBold as WINBOOL ptr) as HRESULT
+declare sub IFont_get_Bold_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Bold_Proxy(byval This as IFont ptr, byval bold as WINBOOL) as HRESULT
+declare sub IFont_put_Bold_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Italic_Proxy(byval This as IFont ptr, byval pItalic as WINBOOL ptr) as HRESULT
+declare sub IFont_get_Italic_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Italic_Proxy(byval This as IFont ptr, byval italic as WINBOOL) as HRESULT
+declare sub IFont_put_Italic_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Underline_Proxy(byval This as IFont ptr, byval pUnderline as WINBOOL ptr) as HRESULT
+declare sub IFont_get_Underline_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Underline_Proxy(byval This as IFont ptr, byval underline as WINBOOL) as HRESULT
+declare sub IFont_put_Underline_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Strikethrough_Proxy(byval This as IFont ptr, byval pStrikethrough as WINBOOL ptr) as HRESULT
+declare sub IFont_get_Strikethrough_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Strikethrough_Proxy(byval This as IFont ptr, byval strikethrough as WINBOOL) as HRESULT
+declare sub IFont_put_Strikethrough_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Weight_Proxy(byval This as IFont ptr, byval pWeight as SHORT ptr) as HRESULT
+declare sub IFont_get_Weight_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Weight_Proxy(byval This as IFont ptr, byval weight as SHORT) as HRESULT
+declare sub IFont_put_Weight_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_Charset_Proxy(byval This as IFont ptr, byval pCharset as SHORT ptr) as HRESULT
+declare sub IFont_get_Charset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_put_Charset_Proxy(byval This as IFont ptr, byval charset as SHORT) as HRESULT
+declare sub IFont_put_Charset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_get_hFont_Proxy(byval This as IFont ptr, byval phFont as HFONT ptr) as HRESULT
+declare sub IFont_get_hFont_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_Clone_Proxy(byval This as IFont ptr, byval ppFont as IFont ptr ptr) as HRESULT
+declare sub IFont_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_IsEqual_Proxy(byval This as IFont ptr, byval pFontOther as IFont ptr) as HRESULT
+declare sub IFont_IsEqual_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_SetRatio_Proxy(byval This as IFont ptr, byval cyLogical as LONG, byval cyHimetric as LONG) as HRESULT
+declare sub IFont_SetRatio_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_QueryTextMetrics_Proxy(byval This as IFont ptr, byval pTM as TEXTMETRICOLE ptr) as HRESULT
+declare sub IFont_QueryTextMetrics_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_AddRefHfont_Proxy(byval This as IFont ptr, byval hFont as HFONT) as HRESULT
+declare sub IFont_AddRefHfont_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_ReleaseHfont_Proxy(byval This as IFont ptr, byval hFont as HFONT) as HRESULT
+declare sub IFont_ReleaseHfont_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IFont_SetHdc_Proxy(byval This as IFont ptr, byval hDC as HDC) as HRESULT
+declare sub IFont_SetHdc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPicture_INTERFACE_DEFINED__
+type IPicture as IPicture_
+type LPPICTURE as IPicture ptr
+
+type tagPictureAttributes as long
+enum
+	PICTURE_SCALABLE = &h1
+	PICTURE_TRANSPARENT = &h2
+end enum
+
+type PICTUREATTRIBUTES as tagPictureAttributes
+type OLE_HANDLE as UINT
+type OLE_XPOS_HIMETRIC as LONG
+type OLE_YPOS_HIMETRIC as LONG
+type OLE_XSIZE_HIMETRIC as LONG
+type OLE_YSIZE_HIMETRIC as LONG
+extern IID_IPicture as const GUID
+
+type IPictureVtbl
+	QueryInterface as function(byval This as IPicture ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPicture ptr) as ULONG
+	Release as function(byval This as IPicture ptr) as ULONG
+	get_Handle as function(byval This as IPicture ptr, byval pHandle as OLE_HANDLE ptr) as HRESULT
+	get_hPal as function(byval This as IPicture ptr, byval phPal as OLE_HANDLE ptr) as HRESULT
+	get_Type as function(byval This as IPicture ptr, byval pType as SHORT ptr) as HRESULT
+	get_Width as function(byval This as IPicture ptr, byval pWidth as OLE_XSIZE_HIMETRIC ptr) as HRESULT
+	get_Height as function(byval This as IPicture ptr, byval pHeight as OLE_YSIZE_HIMETRIC ptr) as HRESULT
+	Render as function(byval This as IPicture ptr, byval hDC as HDC, byval x as LONG, byval y as LONG, byval cx as LONG, byval cy as LONG, byval xSrc as OLE_XPOS_HIMETRIC, byval ySrc as OLE_YPOS_HIMETRIC, byval cxSrc as OLE_XSIZE_HIMETRIC, byval cySrc as OLE_YSIZE_HIMETRIC, byval pRcWBounds as LPCRECT) as HRESULT
+	set_hPal as function(byval This as IPicture ptr, byval hPal as OLE_HANDLE) as HRESULT
+	get_CurDC as function(byval This as IPicture ptr, byval phDC as HDC ptr) as HRESULT
+	SelectPicture as function(byval This as IPicture ptr, byval hDCIn as HDC, byval phDCOut as HDC ptr, byval phBmpOut as OLE_HANDLE ptr) as HRESULT
+	get_KeepOriginalFormat as function(byval This as IPicture ptr, byval pKeep as WINBOOL ptr) as HRESULT
+	put_KeepOriginalFormat as function(byval This as IPicture ptr, byval keep as WINBOOL) as HRESULT
+	PictureChanged as function(byval This as IPicture ptr) as HRESULT
+	SaveAsFile as function(byval This as IPicture ptr, byval pStream as LPSTREAM, byval fSaveMemCopy as WINBOOL, byval pCbSize as LONG ptr) as HRESULT
+	get_Attributes as function(byval This as IPicture ptr, byval pDwAttr as DWORD ptr) as HRESULT
+end type
+
+type IPicture_
+	lpVtbl as IPictureVtbl ptr
+end type
+
+declare function IPicture_get_Handle_Proxy(byval This as IPicture ptr, byval pHandle as OLE_HANDLE ptr) as HRESULT
+declare sub IPicture_get_Handle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_hPal_Proxy(byval This as IPicture ptr, byval phPal as OLE_HANDLE ptr) as HRESULT
+declare sub IPicture_get_hPal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_Type_Proxy(byval This as IPicture ptr, byval pType as SHORT ptr) as HRESULT
+declare sub IPicture_get_Type_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_Width_Proxy(byval This as IPicture ptr, byval pWidth as OLE_XSIZE_HIMETRIC ptr) as HRESULT
+declare sub IPicture_get_Width_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_Height_Proxy(byval This as IPicture ptr, byval pHeight as OLE_YSIZE_HIMETRIC ptr) as HRESULT
+declare sub IPicture_get_Height_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_Render_Proxy(byval This as IPicture ptr, byval hDC as HDC, byval x as LONG, byval y as LONG, byval cx as LONG, byval cy as LONG, byval xSrc as OLE_XPOS_HIMETRIC, byval ySrc as OLE_YPOS_HIMETRIC, byval cxSrc as OLE_XSIZE_HIMETRIC, byval cySrc as OLE_YSIZE_HIMETRIC, byval pRcWBounds as LPCRECT) as HRESULT
+declare sub IPicture_Render_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_set_hPal_Proxy(byval This as IPicture ptr, byval hPal as OLE_HANDLE) as HRESULT
+declare sub IPicture_set_hPal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_CurDC_Proxy(byval This as IPicture ptr, byval phDC as HDC ptr) as HRESULT
+declare sub IPicture_get_CurDC_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_SelectPicture_Proxy(byval This as IPicture ptr, byval hDCIn as HDC, byval phDCOut as HDC ptr, byval phBmpOut as OLE_HANDLE ptr) as HRESULT
+declare sub IPicture_SelectPicture_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_KeepOriginalFormat_Proxy(byval This as IPicture ptr, byval pKeep as WINBOOL ptr) as HRESULT
+declare sub IPicture_get_KeepOriginalFormat_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_put_KeepOriginalFormat_Proxy(byval This as IPicture ptr, byval keep as WINBOOL) as HRESULT
+declare sub IPicture_put_KeepOriginalFormat_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_PictureChanged_Proxy(byval This as IPicture ptr) as HRESULT
+declare sub IPicture_PictureChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_SaveAsFile_Proxy(byval This as IPicture ptr, byval pStream as LPSTREAM, byval fSaveMemCopy as WINBOOL, byval pCbSize as LONG ptr) as HRESULT
+declare sub IPicture_SaveAsFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture_get_Attributes_Proxy(byval This as IPicture ptr, byval pDwAttr as DWORD ptr) as HRESULT
+declare sub IPicture_get_Attributes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPicture2_INTERFACE_DEFINED__
+
+type IPicture2 as IPicture2_
+type LPPICTURE2 as IPicture2 ptr
+type HHANDLE as UINT_PTR
+extern IID_IPicture2 as const GUID
+
+type IPicture2Vtbl
+	QueryInterface as function(byval This as IPicture2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPicture2 ptr) as ULONG
+	Release as function(byval This as IPicture2 ptr) as ULONG
+	get_Handle as function(byval This as IPicture2 ptr, byval pHandle as HHANDLE ptr) as HRESULT
+	get_hPal as function(byval This as IPicture2 ptr, byval phPal as HHANDLE ptr) as HRESULT
+	get_Type as function(byval This as IPicture2 ptr, byval pType as SHORT ptr) as HRESULT
+	get_Width as function(byval This as IPicture2 ptr, byval pWidth as OLE_XSIZE_HIMETRIC ptr) as HRESULT
+	get_Height as function(byval This as IPicture2 ptr, byval pHeight as OLE_YSIZE_HIMETRIC ptr) as HRESULT
+	Render as function(byval This as IPicture2 ptr, byval hDC as HDC, byval x as LONG, byval y as LONG, byval cx as LONG, byval cy as LONG, byval xSrc as OLE_XPOS_HIMETRIC, byval ySrc as OLE_YPOS_HIMETRIC, byval cxSrc as OLE_XSIZE_HIMETRIC, byval cySrc as OLE_YSIZE_HIMETRIC, byval pRcWBounds as LPCRECT) as HRESULT
+	set_hPal as function(byval This as IPicture2 ptr, byval hPal as HHANDLE) as HRESULT
+	get_CurDC as function(byval This as IPicture2 ptr, byval phDC as HDC ptr) as HRESULT
+	SelectPicture as function(byval This as IPicture2 ptr, byval hDCIn as HDC, byval phDCOut as HDC ptr, byval phBmpOut as HHANDLE ptr) as HRESULT
+	get_KeepOriginalFormat as function(byval This as IPicture2 ptr, byval pKeep as WINBOOL ptr) as HRESULT
+	put_KeepOriginalFormat as function(byval This as IPicture2 ptr, byval keep as WINBOOL) as HRESULT
+	PictureChanged as function(byval This as IPicture2 ptr) as HRESULT
+	SaveAsFile as function(byval This as IPicture2 ptr, byval pStream as LPSTREAM, byval fSaveMemCopy as WINBOOL, byval pCbSize as LONG ptr) as HRESULT
+	get_Attributes as function(byval This as IPicture2 ptr, byval pDwAttr as DWORD ptr) as HRESULT
+end type
+
+type IPicture2_
+	lpVtbl as IPicture2Vtbl ptr
+end type
+
+declare function IPicture2_get_Handle_Proxy(byval This as IPicture2 ptr, byval pHandle as HHANDLE ptr) as HRESULT
+declare sub IPicture2_get_Handle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_hPal_Proxy(byval This as IPicture2 ptr, byval phPal as HHANDLE ptr) as HRESULT
+declare sub IPicture2_get_hPal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_Type_Proxy(byval This as IPicture2 ptr, byval pType as SHORT ptr) as HRESULT
+declare sub IPicture2_get_Type_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_Width_Proxy(byval This as IPicture2 ptr, byval pWidth as OLE_XSIZE_HIMETRIC ptr) as HRESULT
+declare sub IPicture2_get_Width_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_Height_Proxy(byval This as IPicture2 ptr, byval pHeight as OLE_YSIZE_HIMETRIC ptr) as HRESULT
+declare sub IPicture2_get_Height_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_Render_Proxy(byval This as IPicture2 ptr, byval hDC as HDC, byval x as LONG, byval y as LONG, byval cx as LONG, byval cy as LONG, byval xSrc as OLE_XPOS_HIMETRIC, byval ySrc as OLE_YPOS_HIMETRIC, byval cxSrc as OLE_XSIZE_HIMETRIC, byval cySrc as OLE_YSIZE_HIMETRIC, byval pRcWBounds as LPCRECT) as HRESULT
+declare sub IPicture2_Render_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_set_hPal_Proxy(byval This as IPicture2 ptr, byval hPal as HHANDLE) as HRESULT
+declare sub IPicture2_set_hPal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_CurDC_Proxy(byval This as IPicture2 ptr, byval phDC as HDC ptr) as HRESULT
+declare sub IPicture2_get_CurDC_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_SelectPicture_Proxy(byval This as IPicture2 ptr, byval hDCIn as HDC, byval phDCOut as HDC ptr, byval phBmpOut as HHANDLE ptr) as HRESULT
+declare sub IPicture2_SelectPicture_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_KeepOriginalFormat_Proxy(byval This as IPicture2 ptr, byval pKeep as WINBOOL ptr) as HRESULT
+declare sub IPicture2_get_KeepOriginalFormat_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_put_KeepOriginalFormat_Proxy(byval This as IPicture2 ptr, byval keep as WINBOOL) as HRESULT
+declare sub IPicture2_put_KeepOriginalFormat_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_PictureChanged_Proxy(byval This as IPicture2 ptr) as HRESULT
+declare sub IPicture2_PictureChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_SaveAsFile_Proxy(byval This as IPicture2 ptr, byval pStream as LPSTREAM, byval fSaveMemCopy as WINBOOL, byval pCbSize as LONG ptr) as HRESULT
+declare sub IPicture2_SaveAsFile_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPicture2_get_Attributes_Proxy(byval This as IPicture2 ptr, byval pDwAttr as DWORD ptr) as HRESULT
+declare sub IPicture2_get_Attributes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IFontEventsDisp_INTERFACE_DEFINED__
+type IFontEventsDisp as IFontEventsDisp_
+type LPFONTEVENTS as IFontEventsDisp ptr
+extern IID_IFontEventsDisp as const GUID
+
+type IFontEventsDispVtbl
+	QueryInterface as function(byval This as IFontEventsDisp ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IFontEventsDisp ptr) as ULONG
+	Release as function(byval This as IFontEventsDisp ptr) as ULONG
+	GetTypeInfoCount as function(byval This as IFontEventsDisp ptr, byval pctinfo as UINT ptr) as HRESULT
+	GetTypeInfo as function(byval This as IFontEventsDisp ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
+	GetIDsOfNames as function(byval This as IFontEventsDisp ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
+	Invoke as function(byval This as IFontEventsDisp ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
+end type
+
+type IFontEventsDisp_
+	lpVtbl as IFontEventsDispVtbl ptr
+end type
+
+#define __IFontDisp_INTERFACE_DEFINED__
+type IFontDisp as IFontDisp_
+type LPFONTDISP as IFontDisp ptr
+extern IID_IFontDisp as const GUID
+
+type IFontDispVtbl
+	QueryInterface as function(byval This as IFontDisp ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IFontDisp ptr) as ULONG
+	Release as function(byval This as IFontDisp ptr) as ULONG
+	GetTypeInfoCount as function(byval This as IFontDisp ptr, byval pctinfo as UINT ptr) as HRESULT
+	GetTypeInfo as function(byval This as IFontDisp ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
+	GetIDsOfNames as function(byval This as IFontDisp ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
+	Invoke as function(byval This as IFontDisp ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
+end type
+
+type IFontDisp_
+	lpVtbl as IFontDispVtbl ptr
+end type
+
+#define __IPictureDisp_INTERFACE_DEFINED__
+type IPictureDisp as IPictureDisp_
+type LPPICTUREDISP as IPictureDisp ptr
+extern IID_IPictureDisp as const GUID
+
+type IPictureDispVtbl
+	QueryInterface as function(byval This as IPictureDisp ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPictureDisp ptr) as ULONG
+	Release as function(byval This as IPictureDisp ptr) as ULONG
+	GetTypeInfoCount as function(byval This as IPictureDisp ptr, byval pctinfo as UINT ptr) as HRESULT
+	GetTypeInfo as function(byval This as IPictureDisp ptr, byval iTInfo as UINT, byval lcid as LCID, byval ppTInfo as ITypeInfo ptr ptr) as HRESULT
+	GetIDsOfNames as function(byval This as IPictureDisp ptr, byval riid as const IID const ptr, byval rgszNames as LPOLESTR ptr, byval cNames as UINT, byval lcid as LCID, byval rgDispId as DISPID ptr) as HRESULT
+	Invoke as function(byval This as IPictureDisp ptr, byval dispIdMember as DISPID, byval riid as const IID const ptr, byval lcid as LCID, byval wFlags as WORD, byval pDispParams as DISPPARAMS ptr, byval pVarResult as VARIANT ptr, byval pExcepInfo as EXCEPINFO ptr, byval puArgErr as UINT ptr) as HRESULT
+end type
+
+type IPictureDisp_
+	lpVtbl as IPictureDispVtbl ptr
+end type
+
+#define __IOleInPlaceObjectWindowless_INTERFACE_DEFINED__
+type IOleInPlaceObjectWindowless as IOleInPlaceObjectWindowless_
+type LPOLEINPLACEOBJECTWINDOWLESS as IOleInPlaceObjectWindowless ptr
+extern IID_IOleInPlaceObjectWindowless as const GUID
+
+type IOleInPlaceObjectWindowlessVtbl
+	QueryInterface as function(byval This as IOleInPlaceObjectWindowless ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleInPlaceObjectWindowless ptr) as ULONG
+	Release as function(byval This as IOleInPlaceObjectWindowless ptr) as ULONG
+	GetWindow as function(byval This as IOleInPlaceObjectWindowless ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IOleInPlaceObjectWindowless ptr, byval fEnterMode as WINBOOL) as HRESULT
+	InPlaceDeactivate as function(byval This as IOleInPlaceObjectWindowless ptr) as HRESULT
+	UIDeactivate as function(byval This as IOleInPlaceObjectWindowless ptr) as HRESULT
+	SetObjectRects as function(byval This as IOleInPlaceObjectWindowless ptr, byval lprcPosRect as LPCRECT, byval lprcClipRect as LPCRECT) as HRESULT
+	ReactivateAndUndo as function(byval This as IOleInPlaceObjectWindowless ptr) as HRESULT
+	OnWindowMessage as function(byval This as IOleInPlaceObjectWindowless ptr, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval plResult as LRESULT ptr) as HRESULT
+	GetDropTarget as function(byval This as IOleInPlaceObjectWindowless ptr, byval ppDropTarget as IDropTarget ptr ptr) as HRESULT
+end type
+
+type IOleInPlaceObjectWindowless_
+	lpVtbl as IOleInPlaceObjectWindowlessVtbl ptr
+end type
+
+declare function IOleInPlaceObjectWindowless_OnWindowMessage_Proxy(byval This as IOleInPlaceObjectWindowless ptr, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval plResult as LRESULT ptr) as HRESULT
+declare sub IOleInPlaceObjectWindowless_OnWindowMessage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceObjectWindowless_GetDropTarget_Proxy(byval This as IOleInPlaceObjectWindowless ptr, byval ppDropTarget as IDropTarget ptr ptr) as HRESULT
+declare sub IOleInPlaceObjectWindowless_GetDropTarget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleInPlaceSiteEx_INTERFACE_DEFINED__
+type IOleInPlaceSiteEx as IOleInPlaceSiteEx_
+type LPOLEINPLACESITEEX as IOleInPlaceSiteEx ptr
+
+type tagACTIVATEFLAGS as long
+enum
+	ACTIVATE_WINDOWLESS = 1
+end enum
+
+type ACTIVATEFLAGS as tagACTIVATEFLAGS
+extern IID_IOleInPlaceSiteEx as const GUID
+
+type IOleInPlaceSiteExVtbl
+	QueryInterface as function(byval This as IOleInPlaceSiteEx ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleInPlaceSiteEx ptr) as ULONG
+	Release as function(byval This as IOleInPlaceSiteEx ptr) as ULONG
+	GetWindow as function(byval This as IOleInPlaceSiteEx ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IOleInPlaceSiteEx ptr, byval fEnterMode as WINBOOL) as HRESULT
+	CanInPlaceActivate as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	OnInPlaceActivate as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	OnUIActivate as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	GetWindowContext as function(byval This as IOleInPlaceSiteEx ptr, byval ppFrame as IOleInPlaceFrame ptr ptr, byval ppDoc as IOleInPlaceUIWindow ptr ptr, byval lprcPosRect as LPRECT, byval lprcClipRect as LPRECT, byval lpFrameInfo as LPOLEINPLACEFRAMEINFO) as HRESULT
+	Scroll as function(byval This as IOleInPlaceSiteEx ptr, byval scrollExtant as SIZE) as HRESULT
+	OnUIDeactivate as function(byval This as IOleInPlaceSiteEx ptr, byval fUndoable as WINBOOL) as HRESULT
+	OnInPlaceDeactivate as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	DiscardUndoState as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	DeactivateAndUndo as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+	OnPosRectChange as function(byval This as IOleInPlaceSiteEx ptr, byval lprcPosRect as LPCRECT) as HRESULT
+	OnInPlaceActivateEx as function(byval This as IOleInPlaceSiteEx ptr, byval pfNoRedraw as WINBOOL ptr, byval dwFlags as DWORD) as HRESULT
+	OnInPlaceDeactivateEx as function(byval This as IOleInPlaceSiteEx ptr, byval fNoRedraw as WINBOOL) as HRESULT
+	RequestUIActivate as function(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+end type
+
+type IOleInPlaceSiteEx_
+	lpVtbl as IOleInPlaceSiteExVtbl ptr
+end type
+
+declare function IOleInPlaceSiteEx_OnInPlaceActivateEx_Proxy(byval This as IOleInPlaceSiteEx ptr, byval pfNoRedraw as WINBOOL ptr, byval dwFlags as DWORD) as HRESULT
+declare sub IOleInPlaceSiteEx_OnInPlaceActivateEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteEx_OnInPlaceDeactivateEx_Proxy(byval This as IOleInPlaceSiteEx ptr, byval fNoRedraw as WINBOOL) as HRESULT
+declare sub IOleInPlaceSiteEx_OnInPlaceDeactivateEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteEx_RequestUIActivate_Proxy(byval This as IOleInPlaceSiteEx ptr) as HRESULT
+declare sub IOleInPlaceSiteEx_RequestUIActivate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleInPlaceSiteWindowless_INTERFACE_DEFINED__
+type IOleInPlaceSiteWindowless as IOleInPlaceSiteWindowless_
+type LPOLEINPLACESITEWINDOWLESS as IOleInPlaceSiteWindowless ptr
+
+type tagOLEDCFLAGS as long
+enum
+	OLEDC_NODRAW = &h1
+	OLEDC_PAINTBKGND = &h2
+	OLEDC_OFFSCREEN = &h4
+end enum
+
+type OLEDCFLAGS as tagOLEDCFLAGS
+extern IID_IOleInPlaceSiteWindowless as const GUID
+
+type IOleInPlaceSiteWindowlessVtbl
+	QueryInterface as function(byval This as IOleInPlaceSiteWindowless ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleInPlaceSiteWindowless ptr) as ULONG
+	Release as function(byval This as IOleInPlaceSiteWindowless ptr) as ULONG
+	GetWindow as function(byval This as IOleInPlaceSiteWindowless ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IOleInPlaceSiteWindowless ptr, byval fEnterMode as WINBOOL) as HRESULT
+	CanInPlaceActivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	OnInPlaceActivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	OnUIActivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	GetWindowContext as function(byval This as IOleInPlaceSiteWindowless ptr, byval ppFrame as IOleInPlaceFrame ptr ptr, byval ppDoc as IOleInPlaceUIWindow ptr ptr, byval lprcPosRect as LPRECT, byval lprcClipRect as LPRECT, byval lpFrameInfo as LPOLEINPLACEFRAMEINFO) as HRESULT
+	Scroll as function(byval This as IOleInPlaceSiteWindowless ptr, byval scrollExtant as SIZE) as HRESULT
+	OnUIDeactivate as function(byval This as IOleInPlaceSiteWindowless ptr, byval fUndoable as WINBOOL) as HRESULT
+	OnInPlaceDeactivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	DiscardUndoState as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	DeactivateAndUndo as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	OnPosRectChange as function(byval This as IOleInPlaceSiteWindowless ptr, byval lprcPosRect as LPCRECT) as HRESULT
+	OnInPlaceActivateEx as function(byval This as IOleInPlaceSiteWindowless ptr, byval pfNoRedraw as WINBOOL ptr, byval dwFlags as DWORD) as HRESULT
+	OnInPlaceDeactivateEx as function(byval This as IOleInPlaceSiteWindowless ptr, byval fNoRedraw as WINBOOL) as HRESULT
+	RequestUIActivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	CanWindowlessActivate as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	GetCapture as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	SetCapture as function(byval This as IOleInPlaceSiteWindowless ptr, byval fCapture as WINBOOL) as HRESULT
+	GetFocus as function(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+	SetFocus as function(byval This as IOleInPlaceSiteWindowless ptr, byval fFocus as WINBOOL) as HRESULT
+	GetDC as function(byval This as IOleInPlaceSiteWindowless ptr, byval pRect as LPCRECT, byval grfFlags as DWORD, byval phDC as HDC ptr) as HRESULT
+	ReleaseDC as function(byval This as IOleInPlaceSiteWindowless ptr, byval hDC as HDC) as HRESULT
+	InvalidateRect as function(byval This as IOleInPlaceSiteWindowless ptr, byval pRect as LPCRECT, byval fErase as WINBOOL) as HRESULT
+	InvalidateRgn as function(byval This as IOleInPlaceSiteWindowless ptr, byval hRGN as HRGN, byval fErase as WINBOOL) as HRESULT
+	ScrollRect as function(byval This as IOleInPlaceSiteWindowless ptr, byval dx as INT_, byval dy as INT_, byval pRectScroll as LPCRECT, byval pRectClip as LPCRECT) as HRESULT
+	AdjustRect as function(byval This as IOleInPlaceSiteWindowless ptr, byval prc as LPRECT) as HRESULT
+	OnDefWindowMessage as function(byval This as IOleInPlaceSiteWindowless ptr, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval plResult as LRESULT ptr) as HRESULT
+end type
+
+type IOleInPlaceSiteWindowless_
+	lpVtbl as IOleInPlaceSiteWindowlessVtbl ptr
+end type
+
+declare function IOleInPlaceSiteWindowless_CanWindowlessActivate_Proxy(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+declare sub IOleInPlaceSiteWindowless_CanWindowlessActivate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_GetCapture_Proxy(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+declare sub IOleInPlaceSiteWindowless_GetCapture_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_SetCapture_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval fCapture as WINBOOL) as HRESULT
+declare sub IOleInPlaceSiteWindowless_SetCapture_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_GetFocus_Proxy(byval This as IOleInPlaceSiteWindowless ptr) as HRESULT
+declare sub IOleInPlaceSiteWindowless_GetFocus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_SetFocus_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval fFocus as WINBOOL) as HRESULT
+declare sub IOleInPlaceSiteWindowless_SetFocus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_GetDC_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval pRect as LPCRECT, byval grfFlags as DWORD, byval phDC as HDC ptr) as HRESULT
+declare sub IOleInPlaceSiteWindowless_GetDC_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_ReleaseDC_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval hDC as HDC) as HRESULT
+declare sub IOleInPlaceSiteWindowless_ReleaseDC_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_InvalidateRect_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval pRect as LPCRECT, byval fErase as WINBOOL) as HRESULT
+declare sub IOleInPlaceSiteWindowless_InvalidateRect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_InvalidateRgn_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval hRGN as HRGN, byval fErase as WINBOOL) as HRESULT
+declare sub IOleInPlaceSiteWindowless_InvalidateRgn_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_ScrollRect_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval dx as INT_, byval dy as INT_, byval pRectScroll as LPCRECT, byval pRectClip as LPCRECT) as HRESULT
+declare sub IOleInPlaceSiteWindowless_ScrollRect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_AdjustRect_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval prc as LPRECT) as HRESULT
+declare sub IOleInPlaceSiteWindowless_AdjustRect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleInPlaceSiteWindowless_OnDefWindowMessage_Proxy(byval This as IOleInPlaceSiteWindowless ptr, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval plResult as LRESULT ptr) as HRESULT
+declare sub IOleInPlaceSiteWindowless_OnDefWindowMessage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IViewObjectEx_INTERFACE_DEFINED__
+type IViewObjectEx as IViewObjectEx_
+type LPVIEWOBJECTEX as IViewObjectEx ptr
+
+type tagVIEWSTATUS as long
+enum
+	VIEWSTATUS_OPAQUE = 1
+	VIEWSTATUS_SOLIDBKGND = 2
+	VIEWSTATUS_DVASPECTOPAQUE = 4
+	VIEWSTATUS_DVASPECTTRANSPARENT = 8
+	VIEWSTATUS_SURFACE = 16
+	VIEWSTATUS_3DSURFACE = 32
+end enum
+
+type VIEWSTATUS as tagVIEWSTATUS
+
+type tagHITRESULT as long
+enum
+	HITRESULT_OUTSIDE = 0
+	HITRESULT_TRANSPARENT = 1
+	HITRESULT_CLOSE = 2
+	HITRESULT_HIT = 3
+end enum
+
+type HITRESULT as tagHITRESULT
+
+type tagDVASPECT2 as long
+enum
+	DVASPECT_OPAQUE = 16
+	DVASPECT_TRANSPARENT = 32
+end enum
+
+type DVASPECT2 as tagDVASPECT2
+
+type tagExtentInfo
+	cb as ULONG
+	dwExtentMode as DWORD
+	sizelProposed as SIZEL
+end type
+
+type DVEXTENTINFO as tagExtentInfo
+
+type tagExtentMode as long
+enum
+	DVEXTENT_CONTENT = 0
+	DVEXTENT_INTEGRAL = 1
+end enum
+
+type DVEXTENTMODE as tagExtentMode
+
+type tagAspectInfoFlag as long
+enum
+	DVASPECTINFOFLAG_CANOPTIMIZE = 1
+end enum
+
+type DVASPECTINFOFLAG as tagAspectInfoFlag
+
+type tagAspectInfo
+	cb as ULONG
+	dwFlags as DWORD
+end type
+
+type DVASPECTINFO as tagAspectInfo
+extern IID_IViewObjectEx as const GUID
+
+type IViewObjectExVtbl
+	QueryInterface as function(byval This as IViewObjectEx ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IViewObjectEx ptr) as ULONG
+	Release as function(byval This as IViewObjectEx ptr) as ULONG
+	Draw as function(byval This as IViewObjectEx ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval pvAspect as any ptr, byval ptd as DVTARGETDEVICE ptr, byval hdcTargetDev as HDC, byval hdcDraw as HDC, byval lprcBounds as LPCRECTL, byval lprcWBounds as LPCRECTL, byval pfnContinue as function(byval dwContinue as ULONG_PTR) as WINBOOL, byval dwContinue as ULONG_PTR) as HRESULT
+	GetColorSet as function(byval This as IViewObjectEx ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval pvAspect as any ptr, byval ptd as DVTARGETDEVICE ptr, byval hicTargetDev as HDC, byval ppColorSet as LOGPALETTE ptr ptr) as HRESULT
+	Freeze as function(byval This as IViewObjectEx ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval pvAspect as any ptr, byval pdwFreeze as DWORD ptr) as HRESULT
+	Unfreeze as function(byval This as IViewObjectEx ptr, byval dwFreeze as DWORD) as HRESULT
+	SetAdvise as function(byval This as IViewObjectEx ptr, byval aspects as DWORD, byval advf as DWORD, byval pAdvSink as IAdviseSink ptr) as HRESULT
+	GetAdvise as function(byval This as IViewObjectEx ptr, byval pAspects as DWORD ptr, byval pAdvf as DWORD ptr, byval ppAdvSink as IAdviseSink ptr ptr) as HRESULT
+	GetExtent as function(byval This as IViewObjectEx ptr, byval dwDrawAspect as DWORD, byval lindex as LONG, byval ptd as DVTARGETDEVICE ptr, byval lpsizel as LPSIZEL) as HRESULT
+	GetRect as function(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRect as LPRECTL) as HRESULT
+	GetViewStatus as function(byval This as IViewObjectEx ptr, byval pdwStatus as DWORD ptr) as HRESULT
+	QueryHitPoint as function(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRectBounds as LPCRECT, byval ptlLoc as POINT, byval lCloseHint as LONG, byval pHitResult as DWORD ptr) as HRESULT
+	QueryHitRect as function(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRectBounds as LPCRECT, byval pRectLoc as LPCRECT, byval lCloseHint as LONG, byval pHitResult as DWORD ptr) as HRESULT
+	GetNaturalExtent as function(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval lindex as LONG, byval ptd as DVTARGETDEVICE ptr, byval hicTargetDev as HDC, byval pExtentInfo as DVEXTENTINFO ptr, byval pSizel as LPSIZEL) as HRESULT
+end type
+
+type IViewObjectEx_
+	lpVtbl as IViewObjectExVtbl ptr
+end type
+
+declare function IViewObjectEx_GetRect_Proxy(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRect as LPRECTL) as HRESULT
+declare sub IViewObjectEx_GetRect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IViewObjectEx_GetViewStatus_Proxy(byval This as IViewObjectEx ptr, byval pdwStatus as DWORD ptr) as HRESULT
+declare sub IViewObjectEx_GetViewStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IViewObjectEx_QueryHitPoint_Proxy(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRectBounds as LPCRECT, byval ptlLoc as POINT, byval lCloseHint as LONG, byval pHitResult as DWORD ptr) as HRESULT
+declare sub IViewObjectEx_QueryHitPoint_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IViewObjectEx_QueryHitRect_Proxy(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval pRectBounds as LPCRECT, byval pRectLoc as LPCRECT, byval lCloseHint as LONG, byval pHitResult as DWORD ptr) as HRESULT
+declare sub IViewObjectEx_QueryHitRect_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IViewObjectEx_GetNaturalExtent_Proxy(byval This as IViewObjectEx ptr, byval dwAspect as DWORD, byval lindex as LONG, byval ptd as DVTARGETDEVICE ptr, byval hicTargetDev as HDC, byval pExtentInfo as DVEXTENTINFO ptr, byval pSizel as LPSIZEL) as HRESULT
+declare sub IViewObjectEx_GetNaturalExtent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleUndoUnit_INTERFACE_DEFINED__
+type IOleUndoUnit as IOleUndoUnit_
+type LPOLEUNDOUNIT as IOleUndoUnit ptr
+extern IID_IOleUndoUnit as const GUID
+type IOleUndoManager as IOleUndoManager_
+
+type IOleUndoUnitVtbl
+	QueryInterface as function(byval This as IOleUndoUnit ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleUndoUnit ptr) as ULONG
+	Release as function(byval This as IOleUndoUnit ptr) as ULONG
+	Do as function(byval This as IOleUndoUnit ptr, byval pUndoManager as IOleUndoManager ptr) as HRESULT
+	GetDescription as function(byval This as IOleUndoUnit ptr, byval pBstr as BSTR ptr) as HRESULT
+	GetUnitType as function(byval This as IOleUndoUnit ptr, byval pClsid as CLSID ptr, byval plID as LONG ptr) as HRESULT
+	OnNextAdd as function(byval This as IOleUndoUnit ptr) as HRESULT
+end type
+
+type IOleUndoUnit_
+	lpVtbl as IOleUndoUnitVtbl ptr
+end type
+
+declare function IOleUndoUnit_Do_Proxy(byval This as IOleUndoUnit ptr, byval pUndoManager as IOleUndoManager ptr) as HRESULT
+declare sub IOleUndoUnit_Do_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoUnit_GetDescription_Proxy(byval This as IOleUndoUnit ptr, byval pBstr as BSTR ptr) as HRESULT
+declare sub IOleUndoUnit_GetDescription_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoUnit_GetUnitType_Proxy(byval This as IOleUndoUnit ptr, byval pClsid as CLSID ptr, byval plID as LONG ptr) as HRESULT
+declare sub IOleUndoUnit_GetUnitType_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoUnit_OnNextAdd_Proxy(byval This as IOleUndoUnit ptr) as HRESULT
+declare sub IOleUndoUnit_OnNextAdd_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IOleParentUndoUnit_INTERFACE_DEFINED__
+type IOleParentUndoUnit as IOleParentUndoUnit_
+type LPOLEPARENTUNDOUNIT as IOleParentUndoUnit ptr
+extern IID_IOleParentUndoUnit as const GUID
+
+type IOleParentUndoUnitVtbl
+	QueryInterface as function(byval This as IOleParentUndoUnit ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleParentUndoUnit ptr) as ULONG
+	Release as function(byval This as IOleParentUndoUnit ptr) as ULONG
+	Do as function(byval This as IOleParentUndoUnit ptr, byval pUndoManager as IOleUndoManager ptr) as HRESULT
+	GetDescription as function(byval This as IOleParentUndoUnit ptr, byval pBstr as BSTR ptr) as HRESULT
+	GetUnitType as function(byval This as IOleParentUndoUnit ptr, byval pClsid as CLSID ptr, byval plID as LONG ptr) as HRESULT
+	OnNextAdd as function(byval This as IOleParentUndoUnit ptr) as HRESULT
+	Open as function(byval This as IOleParentUndoUnit ptr, byval pPUU as IOleParentUndoUnit ptr) as HRESULT
+	Close as function(byval This as IOleParentUndoUnit ptr, byval pPUU as IOleParentUndoUnit ptr, byval fCommit as WINBOOL) as HRESULT
+	Add as function(byval This as IOleParentUndoUnit ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	FindUnit as function(byval This as IOleParentUndoUnit ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	GetParentState as function(byval This as IOleParentUndoUnit ptr, byval pdwState as DWORD ptr) as HRESULT
+end type
+
+type IOleParentUndoUnit_
+	lpVtbl as IOleParentUndoUnitVtbl ptr
+end type
+
+declare function IOleParentUndoUnit_Open_Proxy(byval This as IOleParentUndoUnit ptr, byval pPUU as IOleParentUndoUnit ptr) as HRESULT
+declare sub IOleParentUndoUnit_Open_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleParentUndoUnit_Close_Proxy(byval This as IOleParentUndoUnit ptr, byval pPUU as IOleParentUndoUnit ptr, byval fCommit as WINBOOL) as HRESULT
+declare sub IOleParentUndoUnit_Close_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleParentUndoUnit_Add_Proxy(byval This as IOleParentUndoUnit ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleParentUndoUnit_Add_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleParentUndoUnit_FindUnit_Proxy(byval This as IOleParentUndoUnit ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleParentUndoUnit_FindUnit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleParentUndoUnit_GetParentState_Proxy(byval This as IOleParentUndoUnit ptr, byval pdwState as DWORD ptr) as HRESULT
+declare sub IOleParentUndoUnit_GetParentState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IEnumOleUndoUnits_INTERFACE_DEFINED__
+type IEnumOleUndoUnits as IEnumOleUndoUnits_
+type LPENUMOLEUNDOUNITS as IEnumOleUndoUnits ptr
+extern IID_IEnumOleUndoUnits as const GUID
+
+type IEnumOleUndoUnitsVtbl
+	QueryInterface as function(byval This as IEnumOleUndoUnits ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IEnumOleUndoUnits ptr) as ULONG
+	Release as function(byval This as IEnumOleUndoUnits ptr) as ULONG
+	Next as function(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
+	Skip as function(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG) as HRESULT
+	Reset as function(byval This as IEnumOleUndoUnits ptr) as HRESULT
+	Clone as function(byval This as IEnumOleUndoUnits ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+end type
+
+type IEnumOleUndoUnits_
+	lpVtbl as IEnumOleUndoUnitsVtbl ptr
+end type
+
+declare function IEnumOleUndoUnits_RemoteNext_Proxy(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
+declare sub IEnumOleUndoUnits_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumOleUndoUnits_Skip_Proxy(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG) as HRESULT
+declare sub IEnumOleUndoUnits_Skip_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumOleUndoUnits_Reset_Proxy(byval This as IEnumOleUndoUnits ptr) as HRESULT
+declare sub IEnumOleUndoUnits_Reset_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumOleUndoUnits_Clone_Proxy(byval This as IEnumOleUndoUnits ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+declare sub IEnumOleUndoUnits_Clone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IEnumOleUndoUnits_Next_Proxy(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
+declare function IEnumOleUndoUnits_Next_Stub(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
+#define __IOleUndoManager_INTERFACE_DEFINED__
+#define SID_SOleUndoManager IID_IOleUndoManager
+type LPOLEUNDOMANAGER as IOleUndoManager ptr
+extern IID_IOleUndoManager as const GUID
+
+type IOleUndoManagerVtbl
+	QueryInterface as function(byval This as IOleUndoManager ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IOleUndoManager ptr) as ULONG
+	Release as function(byval This as IOleUndoManager ptr) as ULONG
+	Open as function(byval This as IOleUndoManager ptr, byval pPUU as IOleParentUndoUnit ptr) as HRESULT
+	Close as function(byval This as IOleUndoManager ptr, byval pPUU as IOleParentUndoUnit ptr, byval fCommit as WINBOOL) as HRESULT
+	Add as function(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	GetOpenParentState as function(byval This as IOleUndoManager ptr, byval pdwState as DWORD ptr) as HRESULT
+	DiscardFrom as function(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	UndoTo as function(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	RedoTo as function(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+	EnumUndoable as function(byval This as IOleUndoManager ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+	EnumRedoable as function(byval This as IOleUndoManager ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+	GetLastUndoDescription as function(byval This as IOleUndoManager ptr, byval pBstr as BSTR ptr) as HRESULT
+	GetLastRedoDescription as function(byval This as IOleUndoManager ptr, byval pBstr as BSTR ptr) as HRESULT
+	Enable as function(byval This as IOleUndoManager ptr, byval fEnable as WINBOOL) as HRESULT
+end type
+
+type IOleUndoManager_
+	lpVtbl as IOleUndoManagerVtbl ptr
+end type
+
+declare function IOleUndoManager_Open_Proxy(byval This as IOleUndoManager ptr, byval pPUU as IOleParentUndoUnit ptr) as HRESULT
+declare sub IOleUndoManager_Open_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_Close_Proxy(byval This as IOleUndoManager ptr, byval pPUU as IOleParentUndoUnit ptr, byval fCommit as WINBOOL) as HRESULT
+declare sub IOleUndoManager_Close_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_Add_Proxy(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleUndoManager_Add_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_GetOpenParentState_Proxy(byval This as IOleUndoManager ptr, byval pdwState as DWORD ptr) as HRESULT
+declare sub IOleUndoManager_GetOpenParentState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_DiscardFrom_Proxy(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleUndoManager_DiscardFrom_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_UndoTo_Proxy(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleUndoManager_UndoTo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_RedoTo_Proxy(byval This as IOleUndoManager ptr, byval pUU as IOleUndoUnit ptr) as HRESULT
+declare sub IOleUndoManager_RedoTo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_EnumUndoable_Proxy(byval This as IOleUndoManager ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+declare sub IOleUndoManager_EnumUndoable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_EnumRedoable_Proxy(byval This as IOleUndoManager ptr, byval ppEnum as IEnumOleUndoUnits ptr ptr) as HRESULT
+declare sub IOleUndoManager_EnumRedoable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_GetLastUndoDescription_Proxy(byval This as IOleUndoManager ptr, byval pBstr as BSTR ptr) as HRESULT
+declare sub IOleUndoManager_GetLastUndoDescription_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_GetLastRedoDescription_Proxy(byval This as IOleUndoManager ptr, byval pBstr as BSTR ptr) as HRESULT
+declare sub IOleUndoManager_GetLastRedoDescription_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IOleUndoManager_Enable_Proxy(byval This as IOleUndoManager ptr, byval fEnable as WINBOOL) as HRESULT
+declare sub IOleUndoManager_Enable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPointerInactive_INTERFACE_DEFINED__
+type IPointerInactive as IPointerInactive_
+type LPPOINTERINACTIVE as IPointerInactive ptr
+
+type tagPOINTERINACTIVE as long
+enum
+	POINTERINACTIVE_ACTIVATEONENTRY = 1
+	POINTERINACTIVE_DEACTIVATEONLEAVE = 2
+	POINTERINACTIVE_ACTIVATEONDRAG = 4
+end enum
+
+type POINTERINACTIVE as tagPOINTERINACTIVE
+extern IID_IPointerInactive as const GUID
+
+type IPointerInactiveVtbl
+	QueryInterface as function(byval This as IPointerInactive ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPointerInactive ptr) as ULONG
+	Release as function(byval This as IPointerInactive ptr) as ULONG
+	GetActivationPolicy as function(byval This as IPointerInactive ptr, byval pdwPolicy as DWORD ptr) as HRESULT
+	OnInactiveMouseMove as function(byval This as IPointerInactive ptr, byval pRectBounds as LPCRECT, byval x as LONG, byval y as LONG, byval grfKeyState as DWORD) as HRESULT
+	OnInactiveSetCursor as function(byval This as IPointerInactive ptr, byval pRectBounds as LPCRECT, byval x as LONG, byval y as LONG, byval dwMouseMsg as DWORD, byval fSetAlways as WINBOOL) as HRESULT
+end type
+
+type IPointerInactive_
+	lpVtbl as IPointerInactiveVtbl ptr
+end type
+
+declare function IPointerInactive_GetActivationPolicy_Proxy(byval This as IPointerInactive ptr, byval pdwPolicy as DWORD ptr) as HRESULT
+declare sub IPointerInactive_GetActivationPolicy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPointerInactive_OnInactiveMouseMove_Proxy(byval This as IPointerInactive ptr, byval pRectBounds as LPCRECT, byval x as LONG, byval y as LONG, byval grfKeyState as DWORD) as HRESULT
+declare sub IPointerInactive_OnInactiveMouseMove_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPointerInactive_OnInactiveSetCursor_Proxy(byval This as IPointerInactive ptr, byval pRectBounds as LPCRECT, byval x as LONG, byval y as LONG, byval dwMouseMsg as DWORD, byval fSetAlways as WINBOOL) as HRESULT
+declare sub IPointerInactive_OnInactiveSetCursor_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IObjectWithSite_INTERFACE_DEFINED__
+type IObjectWithSite as IObjectWithSite_
+type LPOBJECTWITHSITE as IObjectWithSite ptr
+extern IID_IObjectWithSite as const GUID
+
+type IObjectWithSiteVtbl
+	QueryInterface as function(byval This as IObjectWithSite ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IObjectWithSite ptr) as ULONG
+	Release as function(byval This as IObjectWithSite ptr) as ULONG
+	SetSite as function(byval This as IObjectWithSite ptr, byval pUnkSite as IUnknown ptr) as HRESULT
+	GetSite as function(byval This as IObjectWithSite ptr, byval riid as const IID const ptr, byval ppvSite as any ptr ptr) as HRESULT
+end type
+
+type IObjectWithSite_
+	lpVtbl as IObjectWithSiteVtbl ptr
+end type
+
+declare function IObjectWithSite_SetSite_Proxy(byval This as IObjectWithSite ptr, byval pUnkSite as IUnknown ptr) as HRESULT
+declare sub IObjectWithSite_SetSite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IObjectWithSite_GetSite_Proxy(byval This as IObjectWithSite ptr, byval riid as const IID const ptr, byval ppvSite as any ptr ptr) as HRESULT
+declare sub IObjectWithSite_GetSite_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPerPropertyBrowsing_INTERFACE_DEFINED__
+type IPerPropertyBrowsing as IPerPropertyBrowsing_
+type LPPERPROPERTYBROWSING as IPerPropertyBrowsing ptr
+
+type tagCALPOLESTR
+	cElems as ULONG
+	pElems as LPOLESTR ptr
+end type
+
+type CALPOLESTR as tagCALPOLESTR
+type LPCALPOLESTR as tagCALPOLESTR ptr
+
+type tagCADWORD
+	cElems as ULONG
+	pElems as DWORD ptr
+end type
+
+type CADWORD as tagCADWORD
+type LPCADWORD as tagCADWORD ptr
+extern IID_IPerPropertyBrowsing as const GUID
+
+type IPerPropertyBrowsingVtbl
+	QueryInterface as function(byval This as IPerPropertyBrowsing ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPerPropertyBrowsing ptr) as ULONG
+	Release as function(byval This as IPerPropertyBrowsing ptr) as ULONG
+	GetDisplayString as function(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pBstr as BSTR ptr) as HRESULT
+	MapPropertyToPage as function(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pClsid as CLSID ptr) as HRESULT
+	GetPredefinedStrings as function(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pCaStringsOut as CALPOLESTR ptr, byval pCaCookiesOut as CADWORD ptr) as HRESULT
+	GetPredefinedValue as function(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval dwCookie as DWORD, byval pVarOut as VARIANT ptr) as HRESULT
+end type
+
+type IPerPropertyBrowsing_
+	lpVtbl as IPerPropertyBrowsingVtbl ptr
+end type
+
+declare function IPerPropertyBrowsing_GetDisplayString_Proxy(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pBstr as BSTR ptr) as HRESULT
+declare sub IPerPropertyBrowsing_GetDisplayString_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPerPropertyBrowsing_MapPropertyToPage_Proxy(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pClsid as CLSID ptr) as HRESULT
+declare sub IPerPropertyBrowsing_MapPropertyToPage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPerPropertyBrowsing_GetPredefinedStrings_Proxy(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval pCaStringsOut as CALPOLESTR ptr, byval pCaCookiesOut as CADWORD ptr) as HRESULT
+declare sub IPerPropertyBrowsing_GetPredefinedStrings_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPerPropertyBrowsing_GetPredefinedValue_Proxy(byval This as IPerPropertyBrowsing ptr, byval dispID as DISPID, byval dwCookie as DWORD, byval pVarOut as VARIANT ptr) as HRESULT
+declare sub IPerPropertyBrowsing_GetPredefinedValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPropertyBag2_INTERFACE_DEFINED__
+type IPropertyBag2 as IPropertyBag2_
+type LPPROPERTYBAG2 as IPropertyBag2 ptr
+
+type tagPROPBAG2_TYPE as long
+enum
 	PROPBAG2_TYPE_UNDEFINED = 0
 	PROPBAG2_TYPE_DATA = 1
 	PROPBAG2_TYPE_URL = 2
@@ -50,7 +1483,9 @@ enum PROPBAG2_TYPE
 	PROPBAG2_TYPE_MONIKER = 6
 end enum
 
-type PROPBAG2
+type PROPBAG2_TYPE as tagPROPBAG2_TYPE
+
+type tagPROPBAG2
 	dwType as DWORD
 	vt as VARTYPE
 	cfType as CLIPFORMAT
@@ -59,872 +1494,107 @@ type PROPBAG2
 	clsid as CLSID
 end type
 
-type QACONTROL
-	cbSize as ULONG
-	dwMiscStatus as DWORD
-	dwViewStatus as DWORD
-	dwEventCookie as DWORD
-	dwPropNotifyCookie as DWORD
-	dwPointerActivationPolicy as DWORD
-end type
-
-type POINTF
-	x as single
-	y as single
-end type
-
-type LPPOINTF as POINTF ptr
-
-type CONTROLINFO
-	cb as ULONG
-	hAccel as HACCEL
-	cAccel as USHORT
-	dwFlags as DWORD
-end type
-
-type LPCONTROLINFO as CONTROLINFO ptr
-
-type CONNECTDATA
-	pUnk as LPUNKNOWN
-	dwCookie as DWORD
-end type
-
-type LPCONNECTDATA as CONNECTDATA ptr
-
-type LICINFO
-	cbLicInfo as integer
-	fRuntimeKeyAvail as BOOL
-	fLicVerified as BOOL
-end type
-
-type LPLICINFO as LICINFO ptr
-
-type CAUUID
-	cElems as ULONG
-	pElems as GUID ptr
-end type
-
-type LPCAUUID as CAUUID ptr
-
-type CALPOLESTR
-	cElems as ULONG
-	pElems as LPOLESTR ptr
-end type
-
-type LPCALPOLESTR as CALPOLESTR ptr
-
-type CADWORD
-	cElems as ULONG
-	pElems as DWORD ptr
-end type
-
-type LPCADWORD as CADWORD ptr
-
-type PROPPAGEINFO
-	cb as ULONG
-	pszTitle as LPOLESTR
-	size as SIZE
-	pszDocString as LPOLESTR
-	pszHelpFile as LPOLESTR
-	dwHelpContext as DWORD
-end type
-
-type LPPROPPAGEINFO as PROPPAGEINFO ptr
-
-extern IID_IOleControl alias "IID_IOleControl" as IID
-
-type IOleControlVtbl_ as IOleControlVtbl
-
-type IOleControl
-	lpVtbl as IOleControlVtbl_ ptr
-end type
-
-type IOleControlVtbl
-	QueryInterface as function(byval as IOleControl ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleControl ptr) as ULONG
-	Release as function(byval as IOleControl ptr) as ULONG
-	GetControlInfo as function(byval as IOleControl ptr, byval as LPCONTROLINFO) as HRESULT
-	OnMnemonic as function(byval as IOleControl ptr, byval as LPMSG) as HRESULT
-	OnAmbientPropertyChange as function(byval as IOleControl ptr, byval as DISPID) as HRESULT
-	FreezeEvents as function(byval as IOleControl ptr, byval as BOOL) as HRESULT
-end type
-extern IID_IOleControlSite alias "IID_IOleControlSite" as IID
-
-type IOleControlSiteVtbl_ as IOleControlSiteVtbl
-
-type IOleControlSite
-	lpVtbl as IOleControlSiteVtbl_ ptr
-end type
-
-type IOleControlSiteVtbl
-	QueryInterface as function(byval as IOleControlSite ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleControlSite ptr) as ULONG
-	Release as function(byval as IOleControlSite ptr) as ULONG
-	OnControlInfoChanged as function(byval as IOleControlSite ptr) as HRESULT
-	LockInPlaceActive as function(byval as IOleControlSite ptr, byval as BOOL) as HRESULT
-	GetExtendedControl as function(byval as IOleControlSite ptr, byval as LPDISPATCH ptr) as HRESULT
-	TransformCoords as function(byval as IOleControlSite ptr, byval as POINTL ptr, byval as POINTF ptr, byval as DWORD) as HRESULT
-	TranslateAcceleratorA as function(byval as IOleControlSite ptr, byval as LPMSG, byval as DWORD) as HRESULT
-	OnFocus as function(byval as IOleControlSite ptr, byval as BOOL) as HRESULT
-	ShowPropertyFrame as function(byval as IOleControlSite ptr) as HRESULT
-end type
-extern IID_ISimpleFrameSite alias "IID_ISimpleFrameSite" as IID
-
-#define IOleControlSite_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IOleControlSite_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IOleControlSite_Release(T) (T)->lpVtbl->Release(T)
-#define IOleControlSite_OnControlInfoChanged(T) (T)->lpVtbl->OnControlInfoChanged(T)
-#define IOleControlSite_LockInPlaceActive(T,a) (T)->lpVtbl->LockInPlaceActive(T,a)
-#define IOleControlSite_GetExtendedControl(T,a) (T)->lpVtbl->GetExtendedControl(T,a)
-#define IOleControlSite_TransformCoords(T,a,b,c) (T)->lpVtbl->TransformCoords(T,a,b,c)
-#define IOleControlSite_TranslateAccelerator(T,a,b) (T)->lpVtbl->TranslateAccelerator(T,a,b)
-#define IOleControlSite_OnFocus(T,a) (T)->lpVtbl->OnFocus(T,a)
-#define IOleControlSite_ShowPropertyFrame(T) (T)->lpVtbl->ShowPropertyFrame(T)
-
-type ISimpleFrameSiteVtbl_ as ISimpleFrameSiteVtbl
-
-type ISimpleFrameSite
-	lpVtbl as ISimpleFrameSiteVtbl_ ptr
-end type
-
-type ISimpleFrameSiteVtbl
-	QueryInterface as function(byval as ISimpleFrameSite ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as ISimpleFrameSite ptr) as ULONG
-	Release as function(byval as ISimpleFrameSite ptr) as ULONG
-	PreMessageFilter as function(byval as ISimpleFrameSite ptr, byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM, byval as LONG ptr, byval as PDWORD) as HRESULT
-	PostMessageFilter as function(byval as ISimpleFrameSite ptr, byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM, byval as LONG ptr, byval as DWORD) as HRESULT
-end type
-extern IID_IErrorLog alias "IID_IErrorLog" as IID
-
-type IErrorLogVtbl_ as IErrorLogVtbl
-
-type IErrorLog
-	lpVtbl as IErrorLogVtbl_ ptr
-end type
-
-type IErrorLogVtbl
-	QueryInterface as function(byval as IErrorLog ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IErrorLog ptr) as ULONG
-	Release as function(byval as IErrorLog ptr) as ULONG
-	AddError as function(byval as IErrorLog ptr, byval as LPCOLESTR, byval as LPEXCEPINFO) as HRESULT
-end type
-extern IID_IPropertyBag alias "IID_IPropertyBag" as IID
-
-type IPropertyBagVtbl_ as IPropertyBagVtbl
-
-type IPropertyBag
-	lpVtbl as IPropertyBagVtbl_ ptr
-end type
-
-type IPropertyBagVtbl
-	QueryInterface as function(byval as IPropertyBag ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyBag ptr) as ULONG
-	Release as function(byval as IPropertyBag ptr) as ULONG
-	Read as function(byval as IPropertyBag ptr, byval as LPCOLESTR, byval as LPVARIANT, byval as LPERRORLOG) as HRESULT
-	Write as function(byval as IPropertyBag ptr, byval as LPCOLESTR, byval as LPVARIANT) as HRESULT
-end type
-extern IID_IPropertyBag2 alias "IID_IPropertyBag2" as IID
-
-type IPropertyBag2Vtbl_ as IPropertyBag2Vtbl
-
-type IPropertyBag2
-	lpVtbl as IPropertyBag2Vtbl_ ptr
-end type
+type PROPBAG2 as tagPROPBAG2
+extern IID_IPropertyBag2 as const GUID
 
 type IPropertyBag2Vtbl
-	QueryInterface as function(byval as IPropertyBag2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyBag2 ptr) as ULONG
-	Release as function(byval as IPropertyBag2 ptr) as ULONG
-	Read as function(byval as IPropertyBag2 ptr, byval as ULONG, byval as PROPBAG2 ptr, byval as LPERRORLOG, byval as VARIANT ptr, byval as HRESULT ptr) as HRESULT
-	Write as function(byval as IPropertyBag2 ptr, byval as ULONG, byval as PROPBAG2 ptr, byval as VARIANT ptr) as HRESULT
-	CountProperties as function(byval as IPropertyBag2 ptr, byval as ULONG ptr) as HRESULT
-	GetPropertyInfo as function(byval as IPropertyBag2 ptr, byval as ULONG, byval as ULONG, byval as PROPBAG2 ptr, byval as ULONG ptr) as HRESULT
-	LoadObject as function(byval as IPropertyBag2 ptr, byval as LPCOLESTR, byval as DWORD, byval as IUnknown ptr, byval as LPERRORLOG) as HRESULT
-end type
-extern IID_IPersistPropertyBag alias "IID_IPersistPropertyBag" as IID
-
-type IPersistPropertyBagVtbl_ as IPersistPropertyBagVtbl
-
-type IPersistPropertyBag
-	lpVtbl as IPersistPropertyBagVtbl_ ptr
+	QueryInterface as function(byval This as IPropertyBag2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPropertyBag2 ptr) as ULONG
+	Release as function(byval This as IPropertyBag2 ptr) as ULONG
+	Read as function(byval This as IPropertyBag2 ptr, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pErrLog as IErrorLog ptr, byval pvarValue as VARIANT ptr, byval phrError as HRESULT ptr) as HRESULT
+	Write as function(byval This as IPropertyBag2 ptr, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pvarValue as VARIANT ptr) as HRESULT
+	CountProperties as function(byval This as IPropertyBag2 ptr, byval pcProperties as ULONG ptr) as HRESULT
+	GetPropertyInfo as function(byval This as IPropertyBag2 ptr, byval iProperty as ULONG, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pcProperties as ULONG ptr) as HRESULT
+	LoadObject as function(byval This as IPropertyBag2 ptr, byval pstrName as LPCOLESTR, byval dwHint as DWORD, byval pUnkObject as IUnknown ptr, byval pErrLog as IErrorLog ptr) as HRESULT
 end type
 
-type IPersistPropertyBagVtbl
-	QueryInterface as function(byval as IPersistPropertyBag ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPersistPropertyBag ptr) as ULONG
-	Release as function(byval as IPersistPropertyBag ptr) as ULONG
-	GetClassID as function(byval as IPersistPropertyBag ptr, byval as LPCLSID) as HRESULT
-	InitNew as function(byval as IPersistPropertyBag ptr) as HRESULT
-	Load as function(byval as IPersistPropertyBag ptr, byval as LPPROPERTYBAG, byval as LPERRORLOG) as HRESULT
-	Save as function(byval as IPersistPropertyBag ptr, byval as LPPROPERTYBAG, byval as BOOL, byval as BOOL) as HRESULT
+type IPropertyBag2_
+	lpVtbl as IPropertyBag2Vtbl ptr
 end type
 
-#define IPersistPropertyBag_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IPersistPropertyBag_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IPersistPropertyBag_Release(T) (T)->lpVtbl->Release(T)
-#define IPersistPropertyBag_GetClassID(T,a) (T)->lpVtbl->GetClassID(T,a)
-#define IPersistPropertyBag_InitNew(T) (T)->lpVtbl->InitNew(T)
-#define IPersistPropertyBag_Load(T,a,b) (T)->lpVtbl->Load(T,a,b)
-#define IPersistPropertyBag_Save(T,a,b,c) (T)->lpVtbl->Save(T,a,b,c)
-
-extern IID_IPersistPropertyBag2 alias "IID_IPersistPropertyBag2" as IID
-
-type IPersistPropertyBag2Vtbl_ as IPersistPropertyBag2Vtbl
-
-type IPersistPropertyBag2
-	lpVtbl as IPersistPropertyBag2Vtbl_ ptr
-end type
+declare function IPropertyBag2_Read_Proxy(byval This as IPropertyBag2 ptr, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pErrLog as IErrorLog ptr, byval pvarValue as VARIANT ptr, byval phrError as HRESULT ptr) as HRESULT
+declare sub IPropertyBag2_Read_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyBag2_Write_Proxy(byval This as IPropertyBag2 ptr, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pvarValue as VARIANT ptr) as HRESULT
+declare sub IPropertyBag2_Write_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyBag2_CountProperties_Proxy(byval This as IPropertyBag2 ptr, byval pcProperties as ULONG ptr) as HRESULT
+declare sub IPropertyBag2_CountProperties_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyBag2_GetPropertyInfo_Proxy(byval This as IPropertyBag2 ptr, byval iProperty as ULONG, byval cProperties as ULONG, byval pPropBag as PROPBAG2 ptr, byval pcProperties as ULONG ptr) as HRESULT
+declare sub IPropertyBag2_GetPropertyInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPropertyBag2_LoadObject_Proxy(byval This as IPropertyBag2 ptr, byval pstrName as LPCOLESTR, byval dwHint as DWORD, byval pUnkObject as IUnknown ptr, byval pErrLog as IErrorLog ptr) as HRESULT
+declare sub IPropertyBag2_LoadObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IPersistPropertyBag2_INTERFACE_DEFINED__
+type IPersistPropertyBag2 as IPersistPropertyBag2_
+type LPPERSISTPROPERTYBAG2 as IPersistPropertyBag2 ptr
+extern IID_IPersistPropertyBag2 as const GUID
 
 type IPersistPropertyBag2Vtbl
-	QueryInterface as function(byval as IPersistPropertyBag2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPersistPropertyBag2 ptr) as ULONG
-	Release as function(byval as IPersistPropertyBag2 ptr) as ULONG
-	GetClassID as function(byval as IPersistPropertyBag2 ptr, byval as LPCLSID) as HRESULT
-	InitNew as function(byval as IPersistPropertyBag2 ptr) as HRESULT
-	Load as function(byval as IPersistPropertyBag2 ptr, byval as LPPROPERTYBAG2, byval as LPERRORLOG) as HRESULT
-	Save as function(byval as IPersistPropertyBag2 ptr, byval as LPPROPERTYBAG2, byval as BOOL, byval as BOOL) as HRESULT
-	IsDirty as function(byval as IPersistPropertyBag2 ptr) as HRESULT
+	QueryInterface as function(byval This as IPersistPropertyBag2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IPersistPropertyBag2 ptr) as ULONG
+	Release as function(byval This as IPersistPropertyBag2 ptr) as ULONG
+	GetClassID as function(byval This as IPersistPropertyBag2 ptr, byval pClassID as CLSID ptr) as HRESULT
+	InitNew as function(byval This as IPersistPropertyBag2 ptr) as HRESULT
+	Load as function(byval This as IPersistPropertyBag2 ptr, byval pPropBag as IPropertyBag2 ptr, byval pErrLog as IErrorLog ptr) as HRESULT
+	Save as function(byval This as IPersistPropertyBag2 ptr, byval pPropBag as IPropertyBag2 ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+	IsDirty as function(byval This as IPersistPropertyBag2 ptr) as HRESULT
 end type
 
-#define IPersistPropertyBag2_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IPersistPropertyBag2_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IPersistPropertyBag2_Release(T) (T)->lpVtbl->Release(T)
-#define IPersistPropertyBag2_GetClassID(T,a) (T)->lpVtbl->GetClassID(T,a)
-#define IPersistPropertyBag2_InitNew(T) (T)->lpVtbl->InitNew(T)
-#define IPersistPropertyBag2_Load(T,a,b) (T)->lpVtbl->Load(T,a,b)
-#define IPersistPropertyBag2_Save(T,a,b,c) (T)->lpVtbl->Save(T,a,b,c)
-#define IPersistPropertyBag2_IsDirty(T) (T)->lpVtbl->IsDirty(T)
-
-extern IID_IPersistStreamInit alias "IID_IPersistStreamInit" as IID
-
-type IPersistStreamInitVtbl_ as IPersistStreamInitVtbl
-
-type IPersistStreamInit
-	lpVtbl as IPersistStreamInitVtbl_ ptr
+type IPersistPropertyBag2_
+	lpVtbl as IPersistPropertyBag2Vtbl ptr
 end type
 
-type IPersistStreamInitVtbl
-	QueryInterface as function(byval as IPersistStreamInit ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPersistStreamInit ptr) as ULONG
-	Release as function(byval as IPersistStreamInit ptr) as ULONG
-	GetClassID as function(byval as IPersistStreamInit ptr, byval as LPCLSID) as HRESULT
-	IsDirty as function(byval as IPersistStreamInit ptr) as HRESULT
-	Load as function(byval as IPersistStreamInit ptr, byval as LPSTREAM) as HRESULT
-	Save as function(byval as IPersistStreamInit ptr, byval as LPSTREAM, byval as BOOL) as HRESULT
-	GetSizeMax as function(byval as IPersistStreamInit ptr, byval as PULARGE_INTEGER) as HRESULT
-	InitNew as function(byval as IPersistStreamInit ptr) as HRESULT
-end type
-extern IID_IPersistMemory alias "IID_IPersistMemory" as IID
-
-type IPersistMemoryVtbl_ as IPersistMemoryVtbl
-
-type IPersistMemory
-	lpVtbl as IPersistMemoryVtbl_ ptr
-end type
-
-type IPersistMemoryVtbl
-	QueryInterface as function(byval as IPersistMemory ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPersistMemory ptr) as ULONG
-	Release as function(byval as IPersistMemory ptr) as ULONG
-	GetClassID as function(byval as IPersistMemory ptr, byval as LPCLSID) as HRESULT
-	IsDirty as function(byval as IPersistMemory ptr) as HRESULT
-	Load as function(byval as IPersistMemory ptr, byval as PVOID, byval as ULONG) as HRESULT
-	Save as function(byval as IPersistMemory ptr, byval as PVOID, byval as BOOL, byval as ULONG) as HRESULT
-	GetSizeMax as function(byval as IPersistMemory ptr, byval as PULONG) as HRESULT
-	InitNew as function(byval as IPersistMemory ptr) as HRESULT
-end type
-extern IID_IPropertyNotifySink alias "IID_IPropertyNotifySink" as IID
-
-type IPropertyNotifySinkVtbl_ as IPropertyNotifySinkVtbl
-
-type IPropertyNotifySink
-	lpVtbl as IPropertyNotifySinkVtbl_ ptr
-end type
-
-type IPropertyNotifySinkVtbl
-	QueryInterface as function(byval as IPropertyNotifySink ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyNotifySink ptr) as ULONG
-	Release as function(byval as IPropertyNotifySink ptr) as ULONG
-	OnChanged as function(byval as IPropertyNotifySink ptr, byval as DISPID) as HRESULT
-	OnRequestEdit as function(byval as IPropertyNotifySink ptr, byval as DISPID) as HRESULT
-end type
-
-#define IPropertyNotifySink_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IPropertyNotifySink_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IPropertyNotifySink_Release(T) (T)->lpVtbl->Release(T)
-#define IPropertyNotifySink_OnChanged(T,a) (T)->lpVtbl->OnChanged(T,a)
-#define IPropertyNotifySink_OnRequestEdit(T,a) (T)->lpVtbl->OnRequestEdit(T,a)
-
-extern IID_IProvideClassInfo alias "IID_IProvideClassInfo" as IID
-
-type IProvideClassInfoVtbl_ as IProvideClassInfoVtbl
-
-type IProvideClassInfo
-	lpVtbl as IProvideClassInfoVtbl_ ptr
-end type
-
-type IProvideClassInfoVtbl
-	QueryInterface as function(byval as IProvideClassInfo ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IProvideClassInfo ptr) as ULONG
-	Release as function(byval as IProvideClassInfo ptr) as ULONG
-	GetClassInfoA as function(byval as IProvideClassInfo ptr, byval as LPTYPEINFO ptr) as HRESULT
-end type
-extern IID_IProvideClassInfo2 alias "IID_IProvideClassInfo2" as IID
-
-type IProvideClassInfo2Vtbl_ as IProvideClassInfo2Vtbl
-
-type IProvideClassInfo2
-	lpVtbl as IProvideClassInfo2Vtbl_ ptr
-end type
-
-type IProvideClassInfo2Vtbl
-	QueryInterface as function(byval as IProvideClassInfo2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IProvideClassInfo2 ptr) as ULONG
-	Release as function(byval as IProvideClassInfo2 ptr) as ULONG
-	GetClassInfoA as function(byval as IProvideClassInfo2 ptr, byval as LPTYPEINFO ptr) as HRESULT
-	GetGUID as function(byval as IProvideClassInfo2 ptr, byval as DWORD, byval as GUID ptr) as HRESULT
-end type
-extern IID_IConnectionPointContainer alias "IID_IConnectionPointContainer" as IID
-
-type IConnectionPointContainerVtbl_ as IConnectionPointContainerVtbl
-
-type IConnectionPointContainer
-	lpVtbl as IConnectionPointContainerVtbl_ ptr
-end type
-
-type IConnectionPointContainerVtbl
-	QueryInterface as function(byval as IConnectionPointContainer ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IConnectionPointContainer ptr) as ULONG
-	Release as function(byval as IConnectionPointContainer ptr) as ULONG
-	EnumConnectionPoints as function(byval as IConnectionPointContainer ptr, byval as LPENUMCONNECTIONPOINTS ptr) as HRESULT
-	FindConnectionPoint as function(byval as IConnectionPointContainer ptr, byval as IID ptr, byval as LPCONNECTIONPOINT ptr) as HRESULT
-end type
-
-#define IConnectionPointContainer_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IConnectionPointContainer_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IConnectionPointContainer_Release(T) (T)->lpVtbl->Release(T)
-#define IConnectionPointContainer_EnumConnectionPoints(T,a) (T)->lpVtbl->EnumConnectionPoints(T,a)
-#define IConnectionPointContainer_FindConnectionPoint(T,a,b) (T)->lpVtbl->FindConnectionPoint(T,a,b)
-
-extern IID_IEnumConnectionPoints alias "IID_IEnumConnectionPoints" as IID
-
-type IEnumConnectionPointsVtbl_ as IEnumConnectionPointsVtbl
-
-type IEnumConnectionPoints
-	lpVtbl as IEnumConnectionPointsVtbl_ ptr
-end type
-
-type IEnumConnectionPointsVtbl
-	QueryInterface as function(byval as IEnumConnectionPoints ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IEnumConnectionPoints ptr) as ULONG
-	Release as function(byval as IEnumConnectionPoints ptr) as ULONG
-	Next as function(byval as IEnumConnectionPoints ptr, byval as ULONG, byval as LPCONNECTIONPOINT ptr, byval as ULONG ptr) as HRESULT
-	Skip as function(byval as IEnumConnectionPoints ptr, byval as ULONG) as HRESULT
-	Reset as function(byval as IEnumConnectionPoints ptr) as HRESULT
-	Clone as function(byval as IEnumConnectionPoints ptr, byval as LPENUMCONNECTIONPOINTS ptr) as HRESULT
-end type
-
-extern IID_IConnectionPoint alias "IID_IConnectionPoint" as IID
-
-type IConnectionPointVtbl_ as IConnectionPointVtbl
-
-type IConnectionPoint
-	lpVtbl as IConnectionPointVtbl_ ptr
-end type
-
-type IConnectionPointVtbl
-	QueryInterface as function(byval as IConnectionPoint ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IConnectionPoint ptr) as ULONG
-	Release as function(byval as IConnectionPoint ptr) as ULONG
-	GetConnectionInterface as function(byval as IConnectionPoint ptr, byval as IID ptr) as HRESULT
-	GetConnectionPointContainer as function(byval as IConnectionPoint ptr, byval as IConnectionPointContainer ptr ptr) as HRESULT
-	Advise as function(byval as IConnectionPoint ptr, byval as LPUNKNOWN, byval as PDWORD) as HRESULT
-	Unadvise as function(byval as IConnectionPoint ptr, byval as DWORD) as HRESULT
-	EnumConnections as function(byval as IConnectionPoint ptr, byval as LPENUMCONNECTIONS ptr) as HRESULT
-end type
-
-#define IConnectionPoint_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IConnectionPoint_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IConnectionPoint_Release(T) (T)->lpVtbl->Release(T)
-#define IConnectionPoint_GetConnectionInterface(T,a) (T)->lpVtbl->GetConnectionInterface(T,a)
-#define IConnectionPoint_GetConnectionPointContainer(T,a) (T)->lpVtbl->GetConnectionPointContainer(T,a)
-#define IConnectionPoint_Advise(T,a,b) (T)->lpVtbl->Advise(T,a,b)
-#define IConnectionPoint_Unadvise(T,a) (T)->lpVtbl->Unadvise(T,a)
-#define IConnectionPoint_EnumConnections(T,a) (T)->lpVtbl->EnumConnections(T,a)
-
-extern IID_IEnumConnections alias "IID_IEnumConnections" as IID
-
-type IEnumConnectionsVtbl_ as IEnumConnectionsVtbl
-
-type IEnumConnections
-	lpVtbl as IEnumConnectionsVtbl_ ptr
-end type
-
-type IEnumConnectionsVtbl
-	QueryInterface as function(byval as IEnumConnections ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IEnumConnections ptr) as ULONG
-	Release as function(byval as IEnumConnections ptr) as ULONG
-	Next as function(byval as IEnumConnections ptr, byval as ULONG, byval as LPCONNECTDATA, byval as PULONG) as HRESULT
-	Skip as function(byval as IEnumConnections ptr, byval as ULONG) as HRESULT
-	Reset as function(byval as IEnumConnections ptr) as HRESULT
-	Clone as function(byval as IEnumConnections ptr, byval as LPENUMCONNECTIONS ptr) as HRESULT
-end type
-
-#define IEnumConnections_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
-#define IEnumConnections_AddRef(T) (T)->lpVtbl->AddRef(T)
-#define IEnumConnections_Release(T) (T)->lpVtbl->Release(T)
-#define IEnumConnections_Next(T,a,b,c) (T)->lpVtbl->Next(T,a,b,c)
-#define IEnumConnections_Skip(T,a) (T)->lpVtbl->Skip(T,a)
-#define IEnumConnections_Reset(T) (T)->lpVtbl->Reset(T)
-#define IEnumConnections_Clone(T,a) (T)->lpVtbl->Clone(T,a)
-
-extern IID_IClassFactory2 alias "IID_IClassFactory2" as IID
-
-type IClassFactory2Vtbl_ as IClassFactory2Vtbl
-
-type IClassFactory2
-	lpVtbl as IClassFactory2Vtbl_ ptr
-end type
-
-type IClassFactory2Vtbl
-	QueryInterface as function(byval as IClassFactory2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IClassFactory2 ptr) as ULONG
-	Release as function(byval as IClassFactory2 ptr) as ULONG
-	CreateInstance as function(byval as IClassFactory2 ptr, byval as LPUNKNOWN, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	LockServer as function(byval as IClassFactory2 ptr, byval as BOOL) as HRESULT
-	GetLicInfo as function(byval as IClassFactory2 ptr, byval as LPLICINFO) as HRESULT
-	RequestLicKey as function(byval as IClassFactory2 ptr, byval as DWORD, byval as BSTR ptr) as HRESULT
-	CreateInstanceLic as function(byval as IClassFactory2 ptr, byval as LPUNKNOWN, byval as LPUNKNOWN, byval as IID ptr, byval as BSTR, byval as PVOID ptr) as HRESULT
-end type
-extern IID_ISpecifyPropertyPages alias "IID_ISpecifyPropertyPages" as IID
-
-type ISpecifyPropertyPagesVtbl_ as ISpecifyPropertyPagesVtbl
-
-type ISpecifyPropertyPages
-	lpVtbl as ISpecifyPropertyPagesVtbl_ ptr
-end type
-
-type ISpecifyPropertyPagesVtbl
-	QueryInterface as function(byval as ISpecifyPropertyPages ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as ISpecifyPropertyPages ptr) as ULONG
-	Release as function(byval as ISpecifyPropertyPages ptr) as ULONG
-	GetPages as function(byval as ISpecifyPropertyPages ptr, byval as CAUUID ptr) as HRESULT
-end type
-extern IID_IPerPropertyBrowsing alias "IID_IPerPropertyBrowsing" as IID
-
-type IPerPropertyBrowsingVtbl_ as IPerPropertyBrowsingVtbl
-
-type IPerPropertyBrowsing
-	lpVtbl as IPerPropertyBrowsingVtbl_ ptr
-end type
-
-type IPerPropertyBrowsingVtbl
-	QueryInterface as function(byval as IPerPropertyBrowsing ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPerPropertyBrowsing ptr) as ULONG
-	Release as function(byval as IPerPropertyBrowsing ptr) as ULONG
-	GetDisplayString as function(byval as IPerPropertyBrowsing ptr, byval as DISPID, byval as BSTR ptr) as HRESULT
-	MapPropertyToPage as function(byval as IPerPropertyBrowsing ptr, byval as DISPID, byval as LPCLSID) as HRESULT
-	GetPredefinedStrings as function(byval as IPerPropertyBrowsing ptr, byval as DISPID, byval as CALPOLESTR ptr, byval as CADWORD ptr) as HRESULT
-	GetPredefinedValue as function(byval as IPerPropertyBrowsing ptr, byval as DISPID, byval as DWORD, byval as VARIANT ptr) as HRESULT
-end type
-extern IID_IPropertyPageSite alias "IID_IPropertyPageSite" as IID
-
-type IPropertyPageSiteVtbl_ as IPropertyPageSiteVtbl
-
-type IPropertyPageSite
-	lpVtbl as IPropertyPageSiteVtbl_ ptr
-end type
-
-type IPropertyPageSiteVtbl
-	QueryInterface as function(byval as IPropertyPageSite ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyPageSite ptr) as ULONG
-	Release as function(byval as IPropertyPageSite ptr) as ULONG
-	OnStatusChange as function(byval as IPropertyPageSite ptr, byval as DWORD) as HRESULT
-	GetLocaleID as function(byval as IPropertyPageSite ptr, byval as LCID ptr) as HRESULT
-	GetPageContainer as function(byval as IPropertyPageSite ptr, byval as LPUNKNOWN ptr) as HRESULT
-	TranslateAcceleratorA as function(byval as IPropertyPageSite ptr, byval as LPMSG) as HRESULT
-end type
-extern IID_IPropertyPage alias "IID_IPropertyPage" as IID
-
-type IPropertyPageVtbl_ as IPropertyPageVtbl
-
-type IPropertyPage
-	lpVtbl as IPropertyPageVtbl_ ptr
-end type
-
-type IPropertyPageVtbl
-	QueryInterface as function(byval as IPropertyPage ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyPage ptr) as ULONG
-	Release as function(byval as IPropertyPage ptr) as ULONG
-	SetPageSite as function(byval as IPropertyPage ptr, byval as LPPROPERTYPAGESITE) as HRESULT
-	Activate as function(byval as IPropertyPage ptr, byval as HWND, byval as LPCRECT, byval as BOOL) as HRESULT
-	Deactivate as function(byval as IPropertyPage ptr) as HRESULT
-	GetPageInfo as function(byval as IPropertyPage ptr, byval as LPPROPPAGEINFO) as HRESULT
-	SetObjects as function(byval as IPropertyPage ptr, byval as ULONG, byval as LPUNKNOWN ptr) as HRESULT
-	Show as function(byval as IPropertyPage ptr, byval as UINT) as HRESULT
-	Move as function(byval as IPropertyPage ptr, byval as LPCRECT) as HRESULT
-	IsPageDirty as function(byval as IPropertyPage ptr) as HRESULT
-	Apply as function(byval as IPropertyPage ptr) as HRESULT
-	Help as function(byval as IPropertyPage ptr, byval as LPCOLESTR) as HRESULT
-	TranslateAcceleratorA as function(byval as IPropertyPage ptr, byval as LPMSG) as HRESULT
-end type
-extern IID_IPropertyPage2 alias "IID_IPropertyPage2" as IID
-
-type IPropertyPage2Vtbl_ as IPropertyPage2Vtbl
-
-type IPropertyPage2
-	lpVtbl as IPropertyPage2Vtbl_ ptr
-end type
-
-type IPropertyPage2Vtbl
-	QueryInterface as function(byval as IPropertyPage2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPropertyPage2 ptr) as ULONG
-	Release as function(byval as IPropertyPage2 ptr) as ULONG
-	SetPageSite as function(byval as IPropertyPage2 ptr, byval as LPPROPERTYPAGESITE) as HRESULT
-	Activate as function(byval as IPropertyPage2 ptr, byval as HWND, byval as LPCRECT, byval as BOOL) as HRESULT
-	Deactivate as function(byval as IPropertyPage2 ptr) as HRESULT
-	GetPageInfo as function(byval as IPropertyPage2 ptr, byval as LPPROPPAGEINFO) as HRESULT
-	SetObjects as function(byval as IPropertyPage2 ptr, byval as ULONG, byval as LPUNKNOWN ptr) as HRESULT
-	Show as function(byval as IPropertyPage2 ptr, byval as UINT) as HRESULT
-	Move as function(byval as IPropertyPage2 ptr, byval as LPCRECT) as HRESULT
-	IsPageDirty as function(byval as IPropertyPage2 ptr) as HRESULT
-	Apply as function(byval as IPropertyPage2 ptr) as HRESULT
-	Help as function(byval as IPropertyPage2 ptr, byval as LPCOLESTR) as HRESULT
-	TranslateAcceleratorA as function(byval as IPropertyPage2 ptr, byval as LPMSG) as HRESULT
-	EditProperty as function(byval as IPropertyPage2 ptr, byval as DISPID) as HRESULT
-end type
-extern IID_IFont alias "IID_IFont" as IID
-
-type IFontVtbl_ as IFontVtbl
-
-type IFont
-	lpVtbl as IFontVtbl_ ptr
-end type
-
-type IFontVtbl
-	QueryInterface as function(byval as IFont ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IFont ptr) as ULONG
-	Release as function(byval as IFont ptr) as ULONG
-	get_Name as function(byval as IFont ptr, byval as BSTR ptr) as HRESULT
-	put_Name as function(byval as IFont ptr, byval as BSTR) as HRESULT
-	get_Size as function(byval as IFont ptr, byval as CY ptr) as HRESULT
-	put_Size as function(byval as IFont ptr, byval as CY) as HRESULT
-	get_Bold as function(byval as IFont ptr, byval as BOOL ptr) as HRESULT
-	put_Bold as function(byval as IFont ptr, byval as BOOL) as HRESULT
-	get_Italic as function(byval as IFont ptr, byval as BOOL ptr) as HRESULT
-	put_Italic as function(byval as IFont ptr, byval as BOOL) as HRESULT
-	get_Underline as function(byval as IFont ptr, byval as BOOL ptr) as HRESULT
-	put_Underline as function(byval as IFont ptr, byval as BOOL) as HRESULT
-	get_Strikethrough as function(byval as IFont ptr, byval as BOOL ptr) as HRESULT
-	put_Strikethrough as function(byval as IFont ptr, byval as BOOL) as HRESULT
-	get_Weight as function(byval as IFont ptr, byval as short ptr) as HRESULT
-	put_Weight as function(byval as IFont ptr, byval as short) as HRESULT
-	get_Charset as function(byval as IFont ptr, byval as short ptr) as HRESULT
-	put_Charset as function(byval as IFont ptr, byval as short) as HRESULT
-	get_hFont as function(byval as IFont ptr, byval as HFONT ptr) as HRESULT
-	Clone as function(byval as IFont ptr, byval as IFont ptr ptr) as HRESULT
-	IsEqual as function(byval as IFont ptr, byval as IFont ptr) as HRESULT
-	SetRatio as function(byval as IFont ptr, byval as integer, byval as integer) as HRESULT
-	QueryTextMetrics as function(byval as IFont ptr, byval as LPTEXTMETRICOLE) as HRESULT
-	AddRefHfont as function(byval as IFont ptr, byval as HFONT) as HRESULT
-	ReleaseHfont as function(byval as IFont ptr, byval as HFONT) as HRESULT
-	SetHdc as function(byval as IFont ptr, byval as HDC) as HRESULT
-end type
-extern IID_IFontDisp alias "IID_IFontDisp" as IID
-
-type IFontDispVtbl_ as IFontDispVtbl
-
-type IFontDisp
-	lpVtbl as IFontDispVtbl_ ptr
-end type
-
-type IFontDispVtbl
-	QueryInterface as function(byval as IFontDisp ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IFontDisp ptr) as ULONG
-	Release as function(byval as IFontDisp ptr) as ULONG
-	GetTypeInfoCount as function(byval as IFontDisp ptr, byval as UINT ptr) as HRESULT
-	GetTypeInfo as function(byval as IFontDisp ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
-	GetIDsOfNames as function(byval as IFontDisp ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IFontDisp ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
-end type
-extern IID_IPicture alias "IID_IPicture" as IID
-
-type IPictureVtbl_ as IPictureVtbl
-
-type IPicture
-	lpVtbl as IPictureVtbl_ ptr
-end type
-
-type IPictureVtbl
-	QueryInterface as function(byval as IPicture ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPicture ptr) as ULONG
-	Release as function(byval as IPicture ptr) as ULONG
-	get_Handle as function(byval as IPicture ptr, byval as OLE_HANDLE ptr) as HRESULT
-	get_hPal as function(byval as IPicture ptr, byval as OLE_HANDLE ptr) as HRESULT
-	get_Type as function(byval as IPicture ptr, byval as short ptr) as HRESULT
-	get_Width as function(byval as IPicture ptr, byval as OLE_XSIZE_HIMETRIC ptr) as HRESULT
-	get_Height as function(byval as IPicture ptr, byval as OLE_YSIZE_HIMETRIC ptr) as HRESULT
-	Render as function(byval as IPicture ptr, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as OLE_XPOS_HIMETRIC, byval as OLE_YPOS_HIMETRIC, byval as OLE_XSIZE_HIMETRIC, byval as OLE_YSIZE_HIMETRIC, byval as LPCRECT) as HRESULT
-	set_hPal as function(byval as IPicture ptr, byval as OLE_HANDLE) as HRESULT
-	get_CurDC as function(byval as IPicture ptr, byval as HDC ptr) as HRESULT
-	SelectPicture as function(byval as IPicture ptr, byval as HDC, byval as HDC ptr, byval as OLE_HANDLE ptr) as HRESULT
-	get_KeepOriginalFormat as function(byval as IPicture ptr, byval as BOOL ptr) as HRESULT
-	put_KeepOriginalFormat as function(byval as IPicture ptr, byval as BOOL) as HRESULT
-	PictureChanged as function(byval as IPicture ptr) as HRESULT
-	SaveAsFile as function(byval as IPicture ptr, byval as LPSTREAM, byval as BOOL, byval as LONG ptr) as HRESULT
-	get_Attributes as function(byval as IPicture ptr, byval as PDWORD) as HRESULT
-end type
-
-#define IPicture_QueryInterface(p,a,b) (p)->lpVtbl->QueryInterface(p,a,b)
-#define IPicture_AddRef(p) (p)->lpVtbl->AddRef(p)
-#define IPicture_Release(p) (p)->lpVtbl->Release(p)
-#define IPicture_get_Handle(p,a) (p)->lpVtbl->get_Handle(p,a)
-#define IPicture_get_hPal(p,a) (p)->lpVtbl->get_hPal(p,a)
-#define IPicture_get_Type(p,a) (p)->lpVtbl->get_Type(p,a)
-#define IPicture_get_Width(p,a) (p)->lpVtbl->get_Width(p,a)
-#define IPicture_get_Height(p,a) (p)->lpVtbl->get_Height(p,a)
-#define IPicture_Render(p,a,b,c,d,e,f,g,h,i,j) (p)->lpVtbl->Render(p,a,b,c,d,e,f,g,h,i,j)
-#define IPicture_set_hPal(p,a) (p)->lpVtbl->set_hPal(p,a)
-#define IPicture_get_CurDC(p,a) (p)->lpVtbl->get_CurDC(p,a)
-#define IPicture_SelectPicture(p,a,b,c) (p)->lpVtbl->SelectPicture(p,a,b,c)
-#define IPicture_get_KeepOriginalFormat(p,a) (p)->lpVtbl->get_KeepOriginalFormat(p,a)
-#define IPicture_put_KeepOriginalFormat(p,a) (p)->lpVtbl->put_KeepOriginalFormat(p,a)
-#define IPicture_PictureChanged(p) (p)->lpVtbl->PictureChanged(p)
-#define IPicture_SaveAsFile(p,a,b,c) (p)->lpVtbl->SaveAsFile(p,a,b,c)
-#define IPicture_get_Attributes(p,a) (p)->lpVtbl->get_Attributes(p,a)
-
-extern IID_IPictureDisp alias "IID_IPictureDisp" as IID
-
-type IPictureDispVtbl_ as IPictureDispVtbl
-
-type IPictureDisp
-	lpVtbl as IPictureDispVtbl_ ptr
-end type
-
-type IPictureDispVtbl
-	QueryInterface as function(byval as IPictureDisp ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPictureDisp ptr) as ULONG
-	Release as function(byval as IPictureDisp ptr) as ULONG
-	GetTypeInfoCount as function(byval as IPictureDisp ptr, byval as UINT ptr) as HRESULT
-	GetTypeInfo as function(byval as IPictureDisp ptr, byval as UINT, byval as LCID, byval as LPTYPEINFO ptr) as HRESULT
-	GetIDsOfNames as function(byval as IPictureDisp ptr, byval as IID ptr, byval as LPOLESTR ptr, byval as UINT, byval as LCID, byval as DISPID ptr) as HRESULT
-	Invoke as function(byval as IPictureDisp ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
-end type
-extern IID_IOleInPlaceSiteEx alias "IID_IOleInPlaceSiteEx" as IID
-
-type IOleInPlaceSiteExVtbl_ as IOleInPlaceSiteExVtbl
-
-type IOleInPlaceSiteEx
-	lpVtbl as IOleInPlaceSiteExVtbl_ ptr
-end type
-
-type IOleInPlaceSiteExVtbl
-	QueryInterface as function(byval as IOleInPlaceSiteEx ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleInPlaceSiteEx ptr) as ULONG
-	Release as function(byval as IOleInPlaceSiteEx ptr) as ULONG
-	GetWindow as function(byval as IOleInPlaceSiteEx ptr, byval as HWND ptr) as HRESULT
-	ContextSensitiveHelp as function(byval as IOleInPlaceSiteEx ptr, byval as BOOL) as HRESULT
-	CanInPlaceActivate as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	OnInPlaceActivate as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	OnUIActivate as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	GetWindowContext as function(byval as IOleInPlaceSiteEx ptr, byval as IOleInPlaceFrame ptr ptr, byval as IOleInPlaceUIWindow ptr ptr, byval as LPRECT, byval as LPRECT, byval as LPOLEINPLACEFRAMEINFO) as HRESULT
-	Scroll as function(byval as IOleInPlaceSiteEx ptr, byval as SIZE) as HRESULT
-	OnUIDeactivate as function(byval as IOleInPlaceSiteEx ptr, byval as BOOL) as HRESULT
-	OnInPlaceDeactivate as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	DiscardUndoState as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	DeactivateAndUndo as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-	OnPosRectChange as function(byval as IOleInPlaceSiteEx ptr, byval as LPCRECT) as HRESULT
-	OnInPlaceActivateEx as function(byval as IOleInPlaceSiteEx ptr, byval as BOOL ptr, byval as DWORD) as HRESULT
-	OnInPlaceDeactivateEx as function(byval as IOleInPlaceSiteEx ptr, byval as BOOL) as HRESULT
-	RequestUIActivate as function(byval as IOleInPlaceSiteEx ptr) as HRESULT
-end type
-extern IID_IObjectWithSite alias "IID_IObjectWithSite" as IID
-
-type IObjectWithSiteVtbl_ as IObjectWithSiteVtbl
-
-type IObjectWithSite
-	lpVtbl as IObjectWithSiteVtbl_ ptr
-end type
-
-type IObjectWithSiteVtbl
-	QueryInterface as function(byval as IObjectWithSite ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IObjectWithSite ptr) as ULONG
-	Release as function(byval as IObjectWithSite ptr) as ULONG
-	SetSite as function(byval as IObjectWithSite ptr, byval as IUnknown ptr) as HRESULT
-	GetSite as function(byval as IObjectWithSite ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-end type
-extern IID_IOleInPlaceSiteWindowless alias "IID_IOleInPlaceSiteWindowless" as IID
-
-type IOleInPlaceSiteWindowlessVtbl_ as IOleInPlaceSiteWindowlessVtbl
-
-type IOleInPlaceSiteWindowless
-	lpVtbl as IOleInPlaceSiteWindowlessVtbl_ ptr
-end type
-
-type IOleInPlaceSiteWindowlessVtbl
-	QueryInterface as function(byval as IOleInPlaceSiteWindowless ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleInPlaceSiteWindowless ptr) as ULONG
-	Release as function(byval as IOleInPlaceSiteWindowless ptr) as ULONG
-	GetWindow as function(byval as IOleInPlaceSiteWindowless ptr, byval as HWND ptr) as HRESULT
-	ContextSensitiveHelp as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL) as HRESULT
-	CanInPlaceActivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	OnInPlaceActivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	OnUIActivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	GetWindowContext as function(byval as IOleInPlaceSiteWindowless ptr, byval as IOleInPlaceFrame ptr ptr, byval as IOleInPlaceUIWindow ptr ptr, byval as LPRECT, byval as LPRECT, byval as LPOLEINPLACEFRAMEINFO) as HRESULT
-	Scroll as function(byval as IOleInPlaceSiteWindowless ptr, byval as SIZE) as HRESULT
-	OnUIDeactivate as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL) as HRESULT
-	OnInPlaceDeactivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	DiscardUndoState as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	DeactivateAndUndo as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	OnPosRectChange as function(byval as IOleInPlaceSiteWindowless ptr, byval as LPCRECT) as HRESULT
-	OnInPlaceActivateEx as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL ptr, byval as DWORD) as HRESULT
-	OnInPlaceDeactivateEx as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL) as HRESULT
-	RequestUIActivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	CanWindowlessActivate as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	GetCapture as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	SetCapture as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL) as HRESULT
-	GetFocus as function(byval as IOleInPlaceSiteWindowless ptr) as HRESULT
-	SetFocus as function(byval as IOleInPlaceSiteWindowless ptr, byval as BOOL) as HRESULT
-	GetDC as function(byval as IOleInPlaceSiteWindowless ptr, byval as LPCRECT, byval as DWORD, byval as HDC ptr) as HRESULT
-	ReleaseDC as function(byval as IOleInPlaceSiteWindowless ptr, byval as HDC) as HRESULT
-	InvalidateRect as function(byval as IOleInPlaceSiteWindowless ptr, byval as LPCRECT, byval as BOOL) as HRESULT
-	InvalidateRgn as function(byval as IOleInPlaceSiteWindowless ptr, byval as HRGN, byval as BOOL) as HRESULT
-	ScrollRect as function(byval as IOleInPlaceSiteWindowless ptr, byval as INT_, byval as INT_, byval as LPCRECT, byval as LPCRECT) as HRESULT
-	AdjustRect as function(byval as IOleInPlaceSiteWindowless ptr, byval as LPCRECT) as HRESULT
-	OnDefWindowMessage as function(byval as IOleInPlaceSiteWindowless ptr, byval as UINT, byval as WPARAM, byval as LPARAM, byval as LONG ptr) as HRESULT
-end type
-extern IID_IAdviseSinkEx alias "IID_IAdviseSinkEx" as IID
-
-type IAdviseSinkExVtbl_ as IAdviseSinkExVtbl
-
-type IAdviseSinkEx
-	lpVtbl as IAdviseSinkExVtbl_ ptr
-end type
+declare function IPersistPropertyBag2_InitNew_Proxy(byval This as IPersistPropertyBag2 ptr) as HRESULT
+declare sub IPersistPropertyBag2_InitNew_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistPropertyBag2_Load_Proxy(byval This as IPersistPropertyBag2 ptr, byval pPropBag as IPropertyBag2 ptr, byval pErrLog as IErrorLog ptr) as HRESULT
+declare sub IPersistPropertyBag2_Load_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistPropertyBag2_Save_Proxy(byval This as IPersistPropertyBag2 ptr, byval pPropBag as IPropertyBag2 ptr, byval fClearDirty as WINBOOL, byval fSaveAllProperties as WINBOOL) as HRESULT
+declare sub IPersistPropertyBag2_Save_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IPersistPropertyBag2_IsDirty_Proxy(byval This as IPersistPropertyBag2 ptr) as HRESULT
+declare sub IPersistPropertyBag2_IsDirty_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+#define __IAdviseSinkEx_INTERFACE_DEFINED__
+type IAdviseSinkEx as IAdviseSinkEx_
+type LPADVISESINKEX as IAdviseSinkEx ptr
+extern IID_IAdviseSinkEx as const GUID
 
 type IAdviseSinkExVtbl
-	QueryInterface as function(byval as IAdviseSinkEx ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IAdviseSinkEx ptr) as ULONG
-	Release as function(byval as IAdviseSinkEx ptr) as ULONG
-	OnDataChange as sub(byval as IAdviseSinkEx ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr)
-	OnViewChange as sub(byval as IAdviseSinkEx ptr, byval as DWORD, byval as LONG)
-	OnRename as sub(byval as IAdviseSinkEx ptr, byval as IMoniker ptr)
-	OnSave as sub(byval as IAdviseSinkEx ptr)
-	OnClose as sub(byval as IAdviseSinkEx ptr)
-	OnViewStatusChange as function(byval as IAdviseSinkEx ptr, byval as DWORD) as HRESULT
-end type
-extern IID_IPointerInactive alias "IID_IPointerInactive" as IID
-
-type IPointerInactiveVtbl_ as IPointerInactiveVtbl
-
-type IPointerInactive
-	lpVtbl as IPointerInactiveVtbl_ ptr
+	QueryInterface as function(byval This as IAdviseSinkEx ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IAdviseSinkEx ptr) as ULONG
+	Release as function(byval This as IAdviseSinkEx ptr) as ULONG
+	OnDataChange as sub(byval This as IAdviseSinkEx ptr, byval pFormatetc as FORMATETC ptr, byval pStgmed as STGMEDIUM ptr)
+	OnViewChange as sub(byval This as IAdviseSinkEx ptr, byval dwAspect as DWORD, byval lindex as LONG)
+	OnRename as sub(byval This as IAdviseSinkEx ptr, byval pmk as IMoniker ptr)
+	OnSave as sub(byval This as IAdviseSinkEx ptr)
+	OnClose as sub(byval This as IAdviseSinkEx ptr)
+	OnViewStatusChange as sub(byval This as IAdviseSinkEx ptr, byval dwViewStatus as DWORD)
 end type
 
-type IPointerInactiveVtbl
-	QueryInterface as function(byval as IPointerInactive ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IPointerInactive ptr) as ULONG
-	Release as function(byval as IPointerInactive ptr) as ULONG
-	GetActivationPolicy as function(byval as IPointerInactive ptr, byval as DWORD ptr) as HRESULT
-	OnInactiveMouseMove as function(byval as IPointerInactive ptr, byval as LPCRECT, byval as LONG, byval as LONG, byval as DWORD) as HRESULT
-	OnInactiveSetCursor as function(byval as IPointerInactive ptr, byval as LPCRECT, byval as LONG, byval as LONG, byval as DWORD, byval as BOOL) as HRESULT
-end type
-extern IID_IOleUndoUnit alias "IID_IOleUndoUnit" as IID
-
-type IOleUndoUnitVtbl_ as IOleUndoUnitVtbl
-
-type IOleUndoUnit
-	lpVtbl as IOleUndoUnitVtbl_ ptr
+type IAdviseSinkEx_
+	lpVtbl as IAdviseSinkExVtbl ptr
 end type
 
-type IOleUndoUnitVtbl
-	QueryInterface as function(byval as IOleUndoUnit ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUndoUnit ptr) as ULONG
-	Release as function(byval as IOleUndoUnit ptr) as ULONG
-	Do as function(byval as IOleUndoUnit ptr, byval as LPOLEUNDOMANAGER) as HRESULT
-	GetDescription as function(byval as IOleUndoUnit ptr, byval as BSTR ptr) as HRESULT
-	GetUnitType as function(byval as IOleUndoUnit ptr, byval as CLSID ptr, byval as LONG ptr) as HRESULT
-	OnNextAdd as function(byval as IOleUndoUnit ptr) as HRESULT
-end type
-extern IID_IOleParentUndoUnit alias "IID_IOleParentUndoUnit" as IID
+declare function IAdviseSinkEx_RemoteOnViewStatusChange_Proxy(byval This as IAdviseSinkEx ptr, byval dwViewStatus as DWORD) as HRESULT
+declare sub IAdviseSinkEx_RemoteOnViewStatusChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare sub IAdviseSinkEx_OnViewStatusChange_Proxy(byval This as IAdviseSinkEx ptr, byval dwViewStatus as DWORD)
+declare function IAdviseSinkEx_OnViewStatusChange_Stub(byval This as IAdviseSinkEx ptr, byval dwViewStatus as DWORD) as HRESULT
+#define __IQuickActivate_INTERFACE_DEFINED__
+type IQuickActivate as IQuickActivate_
+type LPQUICKACTIVATE as IQuickActivate ptr
 
-type IOleParentUndoUnitVtbl_ as IOleParentUndoUnitVtbl
-
-type IOleParentUndoUnit
-	lpVtbl as IOleParentUndoUnitVtbl_ ptr
-end type
-
-type IOleParentUndoUnitVtbl
-	QueryInterface as function(byval as IOleParentUndoUnit ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleParentUndoUnit ptr) as ULONG
-	Release as function(byval as IOleParentUndoUnit ptr) as ULONG
-	Do as function(byval as IOleParentUndoUnit ptr, byval as LPOLEUNDOMANAGER) as HRESULT
-	GetDescription as function(byval as IOleParentUndoUnit ptr, byval as BSTR ptr) as HRESULT
-	GetUnitType as function(byval as IOleParentUndoUnit ptr, byval as CLSID ptr, byval as LONG ptr) as HRESULT
-	OnNextAdd as function(byval as IOleParentUndoUnit ptr) as HRESULT
-	Open as function(byval as IOleParentUndoUnit ptr, byval as IOleParentUndoUnit ptr) as HRESULT
-	Close as function(byval as IOleParentUndoUnit ptr, byval as IOleParentUndoUnit ptr, byval as BOOL) as HRESULT
-	Add as function(byval as IOleParentUndoUnit ptr, byval as IOleUndoUnit ptr) as HRESULT
-	FindUnit as function(byval as IOleParentUndoUnit ptr, byval as IOleUndoUnit ptr) as HRESULT
-	GetParentState as function(byval as IOleParentUndoUnit ptr, byval as DWORD ptr) as HRESULT
-end type
-extern IID_IEnumOleUndoUnits alias "IID_IEnumOleUndoUnits" as IID
-
-type IEnumOleUndoUnitsVtbl_ as IEnumOleUndoUnitsVtbl
-
-type IEnumOleUndoUnits
-	lpVtbl as IEnumOleUndoUnitsVtbl_ ptr
-end type
-
-type IEnumOleUndoUnitsVtbl
-	QueryInterface as function(byval as IEnumOleUndoUnits ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IEnumOleUndoUnits ptr) as ULONG
-	Release as function(byval as IEnumOleUndoUnits ptr) as ULONG
-	Next as function(byval as IEnumOleUndoUnits ptr, byval as ULONG, byval as IOleUndoUnit ptr ptr, byval as ULONG ptr) as HRESULT
-	Skip as function(byval as IEnumOleUndoUnits ptr, byval as ULONG) as HRESULT
-	Reset as function(byval as IEnumOleUndoUnits ptr) as HRESULT
-	Clone as function(byval as IEnumOleUndoUnits ptr, byval as IEnumOleUndoUnits ptr ptr) as HRESULT
-end type
-extern IID_IOleUndoManager alias "IID_IOleUndoManager" as IID
-
-type IOleUndoManagerVtbl_ as IOleUndoManagerVtbl
-
-type IOleUndoManager
-	lpVtbl as IOleUndoManagerVtbl_ ptr
-end type
-
-type IOleUndoManagerVtbl
-	QueryInterface as function(byval as IOleUndoManager ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IOleUndoManager ptr) as ULONG
-	Release as function(byval as IOleUndoManager ptr) as ULONG
-	Open as function(byval as IOleUndoManager ptr, byval as IOleParentUndoUnit ptr) as HRESULT
-	Close as function(byval as IOleUndoManager ptr, byval as IOleParentUndoUnit ptr, byval as BOOL) as HRESULT
-	Add as function(byval as IOleUndoManager ptr, byval as IOleUndoUnit ptr) as HRESULT
-	GetOpenParentState as function(byval as IOleUndoManager ptr, byval as DWORD ptr) as HRESULT
-	DiscardFrom as function(byval as IOleUndoManager ptr, byval as IOleUndoUnit ptr) as HRESULT
-	UndoTo as function(byval as IOleUndoManager ptr, byval as IOleUndoUnit ptr) as HRESULT
-	RedoTo as function(byval as IOleUndoManager ptr, byval as IOleUndoUnit ptr) as HRESULT
-	EnumUndoable as function(byval as IOleUndoManager ptr, byval as IEnumOleUndoUnits ptr ptr) as HRESULT
-	EnumRedoable as function(byval as IOleUndoManager ptr, byval as IEnumOleUndoUnits ptr ptr) as HRESULT
-	GetLastUndoDescription as function(byval as IOleUndoManager ptr, byval as BSTR ptr) as HRESULT
-	GetLastRedoDescription as function(byval as IOleUndoManager ptr, byval as BSTR ptr) as HRESULT
-	Enable as function(byval as IOleUndoManager ptr, byval as BOOL) as HRESULT
-end type
-
-enum QACONTAINERFLAGS
-	QACONTAINER_SHOWHATCHING = 1
-	QACONTAINER_SHOWGRABHANDLES = 2
-	QACONTAINER_USERMODE = 4
-	QACONTAINER_DISPLAYASDEFAULT = 8
-	QACONTAINER_UIDEAD = 16
-	QACONTAINER_AUTOCLIP = 32
-	QACONTAINER_MESSAGEREFLECT = 64
-	QACONTAINER_SUPPORTSMNEMONICS = 128
+type tagQACONTAINERFLAGS as long
+enum
+	QACONTAINER_SHOWHATCHING = &h1
+	QACONTAINER_SHOWGRABHANDLES = &h2
+	QACONTAINER_USERMODE = &h4
+	QACONTAINER_DISPLAYASDEFAULT = &h8
+	QACONTAINER_UIDEAD = &h10
+	QACONTAINER_AUTOCLIP = &h20
+	QACONTAINER_MESSAGEREFLECT = &h40
+	QACONTAINER_SUPPORTSMNEMONICS = &h80
 end enum
 
-type IBindHost_ as IBindHost
-type IServiceProvider_ as IServiceProvider
+type QACONTAINERFLAGS as tagQACONTAINERFLAGS
+type OLE_COLOR as DWORD
 
-type QACONTAINER
+type tagQACONTAINER
 	cbSize as ULONG
 	pClientSite as IOleClientSite ptr
 	pAdviseSink as IAdviseSinkEx ptr
@@ -938,26 +1608,55 @@ type QACONTAINER
 	dwAppearance as DWORD
 	lcid as LONG
 	hpal as HPALETTE
-	pBindHost as IBindHost_ ptr
+	pBindHost as IBindHost ptr
 	pOleControlSite as IOleControlSite ptr
-	pServiceProvider as IServiceProvider_ ptr
+	pServiceProvider as IServiceProvider ptr
 end type
 
-extern IID_IQuickActivate alias "IID_IQuickActivate" as IID
+type QACONTAINER as tagQACONTAINER
 
-type IQuickActivateVtbl_ as IQuickActivateVtbl
-
-type IQuickActivate
-	lpVtbl as IQuickActivateVtbl_ ptr
+type tagQACONTROL
+	cbSize as ULONG
+	dwMiscStatus as DWORD
+	dwViewStatus as DWORD
+	dwEventCookie as DWORD
+	dwPropNotifyCookie as DWORD
+	dwPointerActivationPolicy as DWORD
 end type
+
+type QACONTROL as tagQACONTROL
+extern IID_IQuickActivate as const GUID
 
 type IQuickActivateVtbl
-	QueryInterface as function(byval as IQuickActivate ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-	AddRef as function(byval as IQuickActivate ptr) as ULONG
-	Release as function(byval as IQuickActivate ptr) as ULONG
-	QuickActivate as function(byval as IQuickActivate ptr, byval as QACONTAINER ptr, byval as QACONTROL ptr) as HRESULT
-	SetContentExtent as function(byval as IQuickActivate ptr, byval as LPSIZEL) as HRESULT
-	GetContentExtent as function(byval as IQuickActivate ptr, byval as LPSIZEL) as HRESULT
+	QueryInterface as function(byval This as IQuickActivate ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IQuickActivate ptr) as ULONG
+	Release as function(byval This as IQuickActivate ptr) as ULONG
+	QuickActivate as function(byval This as IQuickActivate ptr, byval pQaContainer as QACONTAINER ptr, byval pQaControl as QACONTROL ptr) as HRESULT
+	SetContentExtent as function(byval This as IQuickActivate ptr, byval pSizel as LPSIZEL) as HRESULT
+	GetContentExtent as function(byval This as IQuickActivate ptr, byval pSizel as LPSIZEL) as HRESULT
 end type
 
-#endif
+type IQuickActivate_
+	lpVtbl as IQuickActivateVtbl ptr
+end type
+
+declare function IQuickActivate_RemoteQuickActivate_Proxy(byval This as IQuickActivate ptr, byval pQaContainer as QACONTAINER ptr, byval pQaControl as QACONTROL ptr) as HRESULT
+declare sub IQuickActivate_RemoteQuickActivate_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IQuickActivate_SetContentExtent_Proxy(byval This as IQuickActivate ptr, byval pSizel as LPSIZEL) as HRESULT
+declare sub IQuickActivate_SetContentExtent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IQuickActivate_GetContentExtent_Proxy(byval This as IQuickActivate ptr, byval pSizel as LPSIZEL) as HRESULT
+declare sub IQuickActivate_GetContentExtent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+declare function IQuickActivate_QuickActivate_Proxy(byval This as IQuickActivate ptr, byval pQaContainer as QACONTAINER ptr, byval pQaControl as QACONTROL ptr) as HRESULT
+declare function IQuickActivate_QuickActivate_Stub(byval This as IQuickActivate ptr, byval pQaContainer as QACONTAINER ptr, byval pQaControl as QACONTROL ptr) as HRESULT
+declare function HFONT_UserSize(byval as ULONG ptr, byval as ULONG, byval as HFONT ptr) as ULONG
+declare function HFONT_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HFONT ptr) as ubyte ptr
+declare function HFONT_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HFONT ptr) as ubyte ptr
+declare sub HFONT_UserFree(byval as ULONG ptr, byval as HFONT ptr)
+declare function HRGN_UserSize(byval as ULONG ptr, byval as ULONG, byval as HRGN ptr) as ULONG
+declare function HRGN_UserMarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HRGN ptr) as ubyte ptr
+declare function HRGN_UserUnmarshal(byval as ULONG ptr, byval as ubyte ptr, byval as HRGN ptr) as ubyte ptr
+declare sub HRGN_UserFree(byval as ULONG ptr, byval as HRGN ptr)
+
+end extern
+
+#include once "ole-common.bi"

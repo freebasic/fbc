@@ -4,7 +4,7 @@ Free and easy-to-use client-side URL transfer library supporting almost every pr
 Website: http://curl.haxx.se/libcurl/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: curl.bi
-Header version: 7.24.0
+Header version: 7.39.0
 Examples: in examples/network/curl/
 
 {{fbdoc item="ex"}}

@@ -623,3 +623,19 @@ function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 		end if
 	end if
 end function
+
+function astSkipCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	while( n->class = AST_NODECLASS_CONV )
+		n = n->l
+	wend
+	function = n
+end function
+
+function astRemoveCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	while( n->class = AST_NODECLASS_CONV )
+		var l = n->l
+		astDelNode( n )
+		n = l
+	wend
+	function = n
+end function

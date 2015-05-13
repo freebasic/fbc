@@ -5,11 +5,10 @@ Website: http://www.gtk.org
 Platforms supported: ""Win32"", Linux
 Headers to include: gtk/gtk.bi
 Example Usage: yes, in examples/GUI/GTK+/
-Header version: 2.24.6 and 3.2.2
+Header version: 2.24.27, 3.14.10
 
-By default, gtk/gtk.bi will use the GTK+ 2.24 API.
-Define ""__USE_GTK_OLD__"" before including gtk/gtk.bi to use GTK+ >= 2.0 and < 2.16.
-Define ""__USE_GTK3__"" before including gtk/gtk.bi to use GTK+ >= 3.0.
+By default, gtk/gtk.bi will use the GTK+ 2 API.
+Define ""__USE_GTK3__"" before including gtk/gtk.bi to use GTK+ 3.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/gtk.bas"}}%%(freebasic)

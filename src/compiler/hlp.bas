@@ -473,6 +473,15 @@ function hCurDir( ) as string
 	function = pathStripDiv( curdir( ) )
 end function
 
+function pathStripCurdir( byref path as string ) as string
+	var pwd = hCurdir( ) + FB_HOST_PATHDIV
+	if( left( path, len( pwd ) ) = pwd ) then
+		function = right( path, len( path ) - len( pwd ) )
+	else
+		function = path
+	end if
+end function
+
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer
 
 	if( sym = NULL ) then exit function

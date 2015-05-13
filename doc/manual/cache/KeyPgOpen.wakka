@@ -10,11 +10,11 @@ Opens a disk file for reading or writing using file operations
 	**Open** //filename// **For** **[[KeyPgRandom Random]]** [//access_type//] [//lock_type//] **As** [**#**]//filenumber// [**Len =** //record_length//]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Open** (//filename//, **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**|**[[KeyPgAppend Append]]**}, **As** //filenumber// )
+	//result// = **Open**( //filename//[,] **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**|**[[KeyPgAppend Append]]**}[,] **As** //filenumber// )
 		##//or//##
-	//result// = **Open** (//filename//, **For** **[[KeyPgBinary Binary]]**, **[[KeyPgAccess Access]]** {**Read**|**Write**}, **As** //filenumber// )
+	//result// = **Open**( //filename//[,] **For** **[[KeyPgBinary Binary]]**[,] **[[KeyPgAccess Access]]** {**Read**|**Write**}[,] **As** //filenumber// )
 		##//or//##
-	//result// = **Open** (//filename//, **For** **[[KeyPgRandom Random]]**, **[[KeyPgAccess Access]]** {**Read**|**Write**}, **As** //filenumber// [, **Len = ** //record_length//] )
+	//result// = **Open**( //filename//[,] **For** **[[KeyPgRandom Random]]**[,] **[[KeyPgAccess Access]]** {**Read**|**Write**}[,] **As** //filenumber// [[,] **Len = ** //record_length//] )
 		##//or//##
 	**Open** //filename// **For** {**[[KeyPgInputfilemode Input]]**|**[[KeyPgOutput Output]]**|**[[KeyPgAppend Append]]**} **As** //filenumber//
 		##//or//##

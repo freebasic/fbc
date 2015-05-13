@@ -1,19 +1,13 @@
-''
-''
-'' Xcup -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xcup_bi__
-#define __Xcup_bi__
+#pragma once
 
-#define X_XcupQueryVersion 0
-#define X_XcupGetReservedColormapEntries 1
-#define X_XcupStoreColors 2
-#define XcupNumberErrors 0
+#include once "X11/Xfuncproto.bi"
+#include once "X11/extensions/cup.bi"
 
-declare function XcupStoreColors cdecl alias "XcupStoreColors" (byval as Display ptr, byval as Colormap, byval as XColor ptr, byval as integer) as Status
+extern "C"
 
-#endif
+#define _XCUP_H_
+declare function XcupQueryVersion(byval as Display ptr, byval as long ptr, byval as long ptr) as long
+declare function XcupGetReservedColormapEntries(byval as Display ptr, byval as long, byval as XColor ptr ptr, byval as long ptr) as long
+declare function XcupStoreColors(byval as Display ptr, byval as Colormap, byval as XColor ptr, byval as long) as long
+
+end extern

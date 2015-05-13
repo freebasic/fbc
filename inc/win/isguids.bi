@@ -1,17 +1,21 @@
-''
-''
-'' isguids -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_isguids_bi__
-#define __win_isguids_bi__
+#pragma once
 
 #inclib "uuid"
 
-extern CLSID_InternetShortcut alias "CLSID_InternetShortcut" as GUID
-extern IID_IUniformResourceLocator alias "IID_IUniformResourceLocator" as GUID
+#include once "_mingw_unicode.bi"
 
+extern "C"
+
+#define _ISGUIDS_H_
+
+#ifdef UNICODE
+	#define IID_IUniformResourceLocator IID_IUniformResourceLocatorW
+#else
+	#define IID_IUniformResourceLocator IID_IUniformResourceLocatorA
 #endif
+
+extern CLSID_InternetShortcut as const GUID
+extern IID_IUniformResourceLocatorA as const GUID
+extern IID_IUniformResourceLocatorW as const GUID
+
+end extern

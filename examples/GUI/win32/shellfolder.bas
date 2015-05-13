@@ -13,7 +13,7 @@
 function BrowseCallbackProc(byval hWnd as HWND, _
 							byval uMsg as UINT, _ 
                             byval lParam as LPARAM, _
-                            byval lpData as LPARAM) as integer 
+                            byval lpData as LPARAM) as long
 
     select case uMsg 
     case BFFM_INITIALIZED 
@@ -54,7 +54,7 @@ function BrowseForFolder(byval hWnd as HWND, _
     with bi
 	    .pidlRoot   = pidlStart 
 	    .hwndOwner  = hWnd 
-	    .lpszTitle  = @Prompt
+	    .lpszTitle  = strptr(Prompt)
 	    .ulFlags    = Flags 
 	   	.lpfn       = @BrowseCallbackProc 
 	   	.lParam		= cuint( strptr( sFolder ) )

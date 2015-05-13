@@ -1370,6 +1370,7 @@ enum
 	OPT_RR
 	OPT_RRKEEPASM
 	OPT_S
+	OPT_SHOWINCLUDES
 	OPT_STATIC
 	OPT_T
 	OPT_TARGET
@@ -1431,6 +1432,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_RR
 	FALSE, _ '' OPT_RRKEEPASM
 	TRUE , _ '' OPT_S
+	FALSE, _ '' OPT_SHOWINCLUDES
 	FALSE, _ '' OPT_STATIC
 	TRUE , _ '' OPT_T
 	TRUE , _ '' OPT_TARGET
@@ -1688,6 +1690,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_S
 		fbc.subsystem = arg
 
+	case OPT_SHOWINCLUDES
+		fbSetOption( FB_COMPOPT_SHOWINCLUDES, TRUE )
+
 	case OPT_STATIC
 		fbc.staticlink = TRUE
 
@@ -1902,6 +1907,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("s")
 		ONECHAR(OPT_S)
+		CHECK("showincludes", OPT_SHOWINCLUDES)
 		CHECK("static", OPT_STATIC)
 
 	case asc("t")
@@ -2332,14 +2338,14 @@ private sub fbcInit2( )
 	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid
 #else
 	dim as string fbname
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+	#ifdef __FB_DOS__
 		'' Our subdirectory in include/ and lib/ is usually called
 		'' freebasic/, but on DOS that's too long... of course almost
 		'' no targetid or suffix can be used either.
 		fbname = "freebas"
-	else
+	#else
 		fbname = "freebasic"
-	end if
+	#endif
 	#ifdef ENABLE_SUFFIX
 		fbname += ENABLE_SUFFIX
 	#endif
@@ -3268,11 +3274,12 @@ private sub hPrintOptions( )
 	print "  -print host|target  Display host/target system name"
 	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
-	print "  -r               Write out .asm (-gen gas) or .c (-gen gcc) only"
+	print "  -r               Write out .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm) only"
 	print "  -rr              Write out the final .asm only"
-	print "  -R               Preserve the temporary .asm/.c file"
+	print "  -R               Preserve temporary .asm/.c/.ll/.def files"
 	print "  -RR              Preserve the final .asm file"
 	print "  -s console|gui   Select win32 subsystem"
+	print "  -showincludes    Display a tree of file names of #included files"
 	print "  -static          Prefer static libraries over dynamic ones when linking"
 	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
 	print "  -target <name>   Set cross-compilation target"
@@ -3281,7 +3288,7 @@ private sub hPrintOptions( )
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
 	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
-	print "  -Wa <a,b,c>      Pass options to 'as' (-gen gas or -gen llvm)"
+	print "  -Wa <a,b,c>      Pass options to 'as'"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
 	print "  -Wl <a,b,c>      Pass options to 'ld'"
 	print "  -x <file>        Set output executable/library file name"
@@ -3300,7 +3307,7 @@ private sub hPrintVersion( )
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
 		" (" + FB_BUILD_DATE + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
-	print "Copyright (C) 2004-2014 The FreeBASIC development team."
+	print "Copyright (C) 2004-2015 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE
 		hAppendConfigInfo( config, "standalone" )

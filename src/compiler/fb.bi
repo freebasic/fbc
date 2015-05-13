@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR  = "1"
-const FB_VER_MINOR  = "01"
+const FB_VER_MINOR  = "02"
 const FB_VER_PATCH  = "0"
 const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
 const FB_BUILD_DATE = __DATE__
@@ -89,6 +89,8 @@ enum FB_COMPOPT
 	FB_COMPOPT_GFX                  '' boolean: -gfx (whether gfxlib should be linked)
 	FB_COMPOPT_PIC                  '' boolean: -pic (whether to use position-independent code)
 	FB_COMPOPT_STACKSIZE            '' integer
+
+	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 
 	FB_COMPOPTIONS
 end enum
@@ -257,6 +259,7 @@ type FBCMMLINEOPT
 	gfx             as integer              '' Link against gfx library (default = false)
 	pic             as integer              '' Whether to use position-independent code (default = false)
 	stacksize       as integer
+	showincludes    as integer
 end type
 
 '' features allowed in the selected language

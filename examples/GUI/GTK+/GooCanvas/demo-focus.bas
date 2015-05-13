@@ -14,7 +14,7 @@ FUNCTION on_focus_in CDECL(BYVAL item AS GooCanvasItem PTR, _
                            BYVAL target AS GooCanvasItem PTR, _
                            BYVAL event AS GdkEventKey PTR, _
                            BYVAL dat AS gpointer) AS gboolean
-  VAR id = g_object_get_data (G_OBJECT (item), "id")
+  DIM AS ZSTRING PTR id = g_object_get_data (G_OBJECT (item), "id")
 
   g_print (!"%s received focus-in event\n", IIF(id, id, @"unknown"))
 
@@ -29,7 +29,7 @@ FUNCTION on_focus_out CDECL(BYVAL item AS GooCanvasItem PTR, _
                             BYVAL target AS GooCanvasItem PTR, _
                             BYVAL event AS GdkEventKey PTR, _
                             BYVAL dat AS gpointer) AS gboolean
-  VAR id = g_object_get_data (G_OBJECT (item), "id")
+  DIM AS ZSTRING PTR id = g_object_get_data (G_OBJECT (item), "id")
 
   g_print (!"%s received focus-out event\n", IIF(id, id, @"unknown"))
 
@@ -44,7 +44,7 @@ FUNCTION on_button_press CDECL(BYVAL item AS GooCanvasItem PTR, _
                                BYVAL target AS GooCanvasItem PTR, _
                                BYVAL event AS GdkEventKey PTR, _
                                BYVAL dat AS gpointer) AS gboolean
-  VAR id = g_object_get_data (G_OBJECT (item), "id")
+  DIM AS ZSTRING PTR id = g_object_get_data (G_OBJECT (item), "id")
 
   g_print (!"%s received button-press event\n", IIF(id, id, @"unknown"))
 
@@ -58,7 +58,7 @@ FUNCTION on_key_press CDECL(BYVAL item AS GooCanvasItem PTR, _
                             BYVAL target AS GooCanvasItem PTR, _
                             BYVAL event AS GdkEventKey PTR, _
                             BYVAL dat AS gpointer) AS gboolean
-  VAR id = g_object_get_data (G_OBJECT (item), "id")
+  DIM AS ZSTRING PTR id = g_object_get_data (G_OBJECT (item), "id")
 
   g_print (!"%s received key-press event\n", IIF(id, id, @"unknown"))
 

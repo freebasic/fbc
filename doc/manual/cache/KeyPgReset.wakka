@@ -3,7 +3,7 @@ Closes all open files, or resets standard I/O handles.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Reset** ( )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Reset** ( [[KeyPgByval byval]] //streamno// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Reset** ( [[KeyPgByval byval]] //streamno// [[KeyPgAs as]] [[KeyPgLong long]] )
 ##
 {{fbdoc item="usage"}}##
 	**Reset**

@@ -2,7 +2,7 @@
 Fills a ##[[KeyPgWstring wstring]]## with a certain length of a certain wide character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //ch// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
@@ -14,7 +14,7 @@ Fills a ##[[KeyPgWstring wstring]]## with a certain length of a certain wide cha
 	##//count//##
 		An ##[[KeyPgInteger integer]]## specifying the length of the string to be created.
 	##//ch_code//##
-		An ##[[KeyPgInteger integer]]## specifying the Unicode char to be used to fill the string.
+		A ##[[KeyPgLong long]]## specifying the Unicode char to be used to fill the string.
 	##//ch//##
 		A ##[[KeyPgwstring wstring]]## whose first character is to be used to fill the string.
 

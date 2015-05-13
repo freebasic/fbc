@@ -1,35 +1,32 @@
-''
-''
-'' Xct -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xct_bi__
-#define __Xct_bi__
+#pragma once
 
-#define XctVersion 1
+#include once "crt/long.bi"
+#include once "X11/Xfuncproto.bi"
 
+extern "C"
+
+#define _Xct_h
+const XctVersion = 1
 type XctString as ubyte ptr
 
-enum XctHDirection
+type XctHDirection as long
+enum
 	XctUnspecified
 	XctLeftToRight
 	XctRightToLeft
 end enum
 
-type XctFlags as uinteger
+type XctFlags as culong
+const XctSingleSetSegments = &h0001
+const XctProvideExtensions = &h0002
+const XctAcceptC0Extensions = &h0004
+const XctAcceptC1Extensions = &h0008
+const XctHideDirection = &h0010
+const XctFreeString = &h0020
+const XctShiftMultiGRToGL = &h0040
 
-#define XctSingleSetSegments &h0001
-#define XctProvideExtensions &h0002
-#define XctAcceptC0Extensions &h0004
-#define XctAcceptC1Extensions &h0008
-#define XctHideDirection &h0010
-#define XctFreeString &h0020
-#define XctShiftMultiGRToGL &h0040
-
-enum XctResult
+type XctResult as long
+enum
 	XctSegment
 	XctC0Segment
 	XctGLSegment
@@ -42,34 +39,36 @@ enum XctResult
 	XctError
 end enum
 
+type _XctPriv as _XctPriv_
 
 type _XctRec
 	total_string as XctString
-	total_length as integer
+	total_length as long
 	flags as XctFlags
-	version as integer
-	can_ignore_exts as integer
+	version as long
+	can_ignore_exts as long
 	item as XctString
-	item_length as uinteger
-	char_size as integer
+	item_length as ulong
+	char_size as long
 	encoding as zstring ptr
 	horizontal as XctHDirection
-	horz_depth as uinteger
+	horz_depth as ulong
 	GL as zstring ptr
 	GL_encoding as zstring ptr
-	GL_set_size as integer
-	GL_char_size as integer
+	GL_set_size as long
+	GL_char_size as long
 	GR as zstring ptr
 	GR_encoding as zstring ptr
-	GR_set_size as integer
-	GR_char_size as integer
+	GR_set_size as long
+	GR_char_size as long
 	GLGR_encoding as zstring ptr
 	priv as _XctPriv ptr
 end type
 
 type XctData as _XctRec ptr
+declare function XctCreate(byval string as const ubyte ptr, byval length as long, byval flags as XctFlags) as XctData
+declare function XctNextItem(byval data as XctData) as XctResult
+declare sub XctFree(byval data as XctData)
+declare sub XctReset(byval data as XctData)
 
-declare sub XctFree cdecl alias "XctFree" (byval data as XctData)
-declare sub XctReset cdecl alias "XctReset" (byval data as XctData)
-
-#endif
+end extern

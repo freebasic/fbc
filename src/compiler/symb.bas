@@ -1072,35 +1072,6 @@ function symbLookupByNameAndClass _
 end function
 
 '':::::
-function symbLookupByNameAndSuffix _
-	( _
-		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval suffix as integer, _
-		byval preserve_case as integer, _
-		byval search_imports as integer _
-	) as FBSYMBOL ptr
-
-	dim as FBSYMCHAIN ptr chain_ = any
-
-	chain_ = symbLookupAt( ns, id, preserve_case, search_imports )
-
-    '' any found?
-    if( chain_ <> NULL ) then
-		'' check if types match
-    	if( suffix = FB_DATATYPE_INVALID ) then
-    		function = symbFindVarByDefType( chain_, symbGetDefType( id ) )
-    	else
-    		function = symbFindVarBySuffix( chain_, suffix )
-    	end if
-
-	else
-		function = NULL
-	end if
-
-end function
-
-'':::::
 function symbFindByClass _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
@@ -1269,39 +1240,35 @@ check_var:
 
 end function
 
-'':::::
-function symbFindVarByType _
+function symbFindByClassAndType _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
+		byval symclass as integer, _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	function = NULL
 
-    do while( chain_ <> NULL )
-    	sym = chain_->sym
-    	do
-    		if( symbIsVar( sym ) ) then
-    			if( symbGetFullType( sym ) = dtype ) then
-    				goto check_var
-    			end if
-    		end if
+	while( chain_ )
+
+		var sym = chain_->sym
+		do
+
+			if( (sym->class = symclass) and (symbGetFullType( sym ) = dtype) ) then
+				if( symclass = FB_SYMBCLASS_VAR ) then
+					'' check if symbol isn't a non-shared module level one
+					if( symbVarCheckAccess( sym ) = FALSE ) then
+						exit function
+					end if
+				end if
+				return sym
+			end if
 
 			sym = sym->hash.next
-		loop while( sym <> NULL )
+		loop while( sym )
 
-    	chain_ = chain_->next
-    loop
-
-	return NULL
-
-check_var:
-	'' check if symbol isn't a non-shared module level one
-	if( symbVarCheckAccess( sym ) ) then
-		function = sym
-	else
-		function = NULL
-	end if
+		chain_ = chain_->next
+	wend
 
 end function
 
@@ -1605,100 +1572,6 @@ function symbIsString _
 	case else
 		function = FALSE
 	end select
-
-end function
-
-'':::::
-function symbIsEqual _
-	( _
-		byval sym1 as FBSYMBOL ptr, _
-		byval sym2 as FBSYMBOL ptr _
-	) as integer
-
-	dim as FBSYMBOL ptr paraml = any, paramr = any
-
-	function = FALSE
-
-	'' same symbol?
-	if( sym1 = sym2 ) then
-		return TRUE
-	end if
-
-	'' any NULL?
-	if( (sym1 = NULL) or (sym2 = NULL) ) then
-		exit function
-	end if
-
-	'' different classes?
-    if( sym1->class <> sym2->class ) then
-    	exit function
-    end if
-
-	if( symbIsFwdRef( sym1 ) ) then
-		'' Unsolved forward references - it's a different symbol, so
-		'' that means it's a different forward reference.
-		'' FIXME: They may still resolve to the same type later, in
-		'' which case we should treat them as equal - but that would
-		'' require repeating this check during forward reference
-		'' backpatching, and delaying all warnings due to potentially
-		'' different forward references until then.
-		return FALSE
-	end if
-
-	'' different types?
-    if( sym1->typ <> sym2->typ ) then
-    	exit function
-    end if
-
-    select case sym1->class
-    '' UDT?
-    case FB_SYMBCLASS_STRUCT '', FB_SYMBCLASS_CLASS  
-    	return symbGetUDTBaseLevel( sym1, sym2 ) > 0
-
-    '' enum?
-    case FB_SYMBCLASS_ENUM
-    	'' no check, they are pointing to different symbols
-    	exit function
-
-    '' function? must check because a @foo will point to a different
-    '' symbol than funptr, but both can have the same signature
-    case FB_SYMBCLASS_PROC
-		'' Check for return BYREF
-		if( symbProcReturnsByref( sym1 ) <> symbProcReturnsByref( sym2 ) ) then
-			exit function
-		end if
-
-		'' check calling convention
-		if( symbAreProcModesEqual( sym1, sym2 ) = FALSE ) then
-			exit function
-		end if
-
-		'' not the same number of params?
-		if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
-    			exit function
-		end if
-
-		'' check each param
-		paraml = symbGetProcHeadParam( sym1 )
-		paramr = symbGetProcHeadParam( sym2 )
-
-		while( paraml )
-			if( symbParamIsSame( paraml, paramr ) = FALSE ) then
-				exit function
-			end if
-
-			'' next param
-			paraml = paraml->next
-			paramr = paramr->next
-		wend
-    end select
-
-	'' and sub type
-	if( sym1->subtype <> sym2->subtype ) then
-        function = symbIsEqual( sym1->subtype, sym2->subtype )
-    else
-    	function = TRUE
-    end if
 
 end function
 

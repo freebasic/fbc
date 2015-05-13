@@ -1,0 +1,97 @@
+#pragma once
+
+#inclib "SDL2_ttf"
+
+#include once "crt/long.bi"
+#include once "SDL.bi"
+
+extern "C"
+
+#define _SDL_TTF_H
+const SDL_TTF_MAJOR_VERSION = 2
+const SDL_TTF_MINOR_VERSION = 0
+const SDL_TTF_PATCHLEVEL = 12
+#macro SDL_TTF_VERSION(X)
+	scope
+		(X)->major = SDL_TTF_MAJOR_VERSION
+		(X)->minor = SDL_TTF_MINOR_VERSION
+		(X)->patch = SDL_TTF_PATCHLEVEL
+	end scope
+#endmacro
+#define TTF_MAJOR_VERSION SDL_TTF_MAJOR_VERSION
+#define TTF_MINOR_VERSION SDL_TTF_MINOR_VERSION
+#define TTF_PATCHLEVEL SDL_TTF_PATCHLEVEL
+#define TTF_VERSION(X) SDL_TTF_VERSION(X)
+declare function TTF_Linked_Version() as const SDL_version ptr
+const UNICODE_BOM_NATIVE = &hFEFF
+const UNICODE_BOM_SWAPPED = &hFFFE
+declare sub TTF_ByteSwappedUNICODE(byval swapped as long)
+type TTF_Font as _TTF_Font
+
+declare function TTF_Init() as long
+declare function TTF_OpenFont(byval file as const zstring ptr, byval ptsize as long) as TTF_Font ptr
+declare function TTF_OpenFontIndex(byval file as const zstring ptr, byval ptsize as long, byval index as clong) as TTF_Font ptr
+declare function TTF_OpenFontRW(byval src as SDL_RWops ptr, byval freesrc as long, byval ptsize as long) as TTF_Font ptr
+declare function TTF_OpenFontIndexRW(byval src as SDL_RWops ptr, byval freesrc as long, byval ptsize as long, byval index as clong) as TTF_Font ptr
+
+const TTF_STYLE_NORMAL = &h00
+const TTF_STYLE_BOLD = &h01
+const TTF_STYLE_ITALIC = &h02
+const TTF_STYLE_UNDERLINE = &h04
+const TTF_STYLE_STRIKETHROUGH = &h08
+
+declare function TTF_GetFontStyle(byval font as const TTF_Font ptr) as long
+declare sub TTF_SetFontStyle(byval font as TTF_Font ptr, byval style as long)
+declare function TTF_GetFontOutline(byval font as const TTF_Font ptr) as long
+declare sub TTF_SetFontOutline(byval font as TTF_Font ptr, byval outline as long)
+
+const TTF_HINTING_NORMAL = 0
+const TTF_HINTING_LIGHT = 1
+const TTF_HINTING_MONO = 2
+const TTF_HINTING_NONE = 3
+
+declare function TTF_GetFontHinting(byval font as const TTF_Font ptr) as long
+declare sub TTF_SetFontHinting(byval font as TTF_Font ptr, byval hinting as long)
+declare function TTF_FontHeight(byval font as const TTF_Font ptr) as long
+declare function TTF_FontAscent(byval font as const TTF_Font ptr) as long
+declare function TTF_FontDescent(byval font as const TTF_Font ptr) as long
+declare function TTF_FontLineSkip(byval font as const TTF_Font ptr) as long
+declare function TTF_GetFontKerning(byval font as const TTF_Font ptr) as long
+declare sub TTF_SetFontKerning(byval font as TTF_Font ptr, byval allowed as long)
+declare function TTF_FontFaces(byval font as const TTF_Font ptr) as clong
+declare function TTF_FontFaceIsFixedWidth(byval font as const TTF_Font ptr) as long
+declare function TTF_FontFaceFamilyName(byval font as const TTF_Font ptr) as zstring ptr
+declare function TTF_FontFaceStyleName(byval font as const TTF_Font ptr) as zstring ptr
+declare function TTF_GlyphIsProvided(byval font as const TTF_Font ptr, byval ch as Uint16) as long
+declare function TTF_GlyphMetrics(byval font as TTF_Font ptr, byval ch as Uint16, byval minx as long ptr, byval maxx as long ptr, byval miny as long ptr, byval maxy as long ptr, byval advance as long ptr) as long
+declare function TTF_SizeText(byval font as TTF_Font ptr, byval text as const zstring ptr, byval w as long ptr, byval h as long ptr) as long
+declare function TTF_SizeUTF8(byval font as TTF_Font ptr, byval text as const zstring ptr, byval w as long ptr, byval h as long ptr) as long
+declare function TTF_SizeUNICODE(byval font as TTF_Font ptr, byval text as const Uint16 ptr, byval w as long ptr, byval h as long ptr) as long
+declare function TTF_RenderText_Solid(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Solid(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Solid(byval font as TTF_Font ptr, byval text as const Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Solid(byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderText_Shaded(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Shaded(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Shaded(byval font as TTF_Font ptr, byval text as const Uint16 ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Shaded(byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderText_Blended(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Blended(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Blended(byval font as TTF_Font ptr, byval text as const Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderText_Blended_Wrapped(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color, byval wrapLength as Uint32) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Blended_Wrapped(byval font as TTF_Font ptr, byval text as const zstring ptr, byval fg as SDL_Color, byval wrapLength as Uint32) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Blended_Wrapped(byval font as TTF_Font ptr, byval text as const Uint16 ptr, byval fg as SDL_Color, byval wrapLength as Uint32) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Blended(byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
+
+#define TTF_RenderText(font, text, fg, bg) TTF_RenderText_Shaded(font, text, fg, bg)
+#define TTF_RenderUTF8(font, text, fg, bg) TTF_RenderUTF8_Shaded(font, text, fg, bg)
+#define TTF_RenderUNICODE(font, text, fg, bg) TTF_RenderUNICODE_Shaded(font, text, fg, bg)
+
+declare sub TTF_CloseFont(byval font as TTF_Font ptr)
+declare sub TTF_Quit()
+declare function TTF_WasInit() as long
+declare function TTF_GetFontKerningSize(byval font as TTF_Font ptr, byval prev_index as long, byval index as long) as long
+#define TTF_SetError SDL_SetError
+#define TTF_GetError SDL_GetError
+
+end extern

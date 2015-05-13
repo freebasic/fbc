@@ -2,8 +2,6 @@
 
 #include "fb.h"
 
-void fb_DevScrnInit_Screen( void );
-
 static FB_FILE_HOOKS hooks_dev_scrn = {
     fb_DevScrnEof,
     fb_DevScrnClose,
@@ -27,11 +25,14 @@ int fb_DevScrnOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 
     if (handle!=FB_HANDLE_SCREEN)
     {
-        DEV_SCRN_INFO *info = (DEV_SCRN_INFO*) FB_HANDLE_SCREEN->opaque;
-        handle->hooks = &hooks_dev_scrn;
+        /* Duplicate and copy the DEV_SCRN_INFO from FB_HANDLE_SCREEN */
+        DEV_SCRN_INFO *screeninfo = (DEV_SCRN_INFO*) FB_HANDLE_SCREEN->opaque;
+        DEV_SCRN_INFO *info = malloc(sizeof(DEV_SCRN_INFO));
+        memcpy(info, screeninfo, sizeof(DEV_SCRN_INFO));
         handle->opaque = info;
-        handle->redirection_to = FB_HANDLE_SCREEN;
 
+        handle->hooks = &hooks_dev_scrn;
+        handle->redirection_to = FB_HANDLE_SCREEN;
     }
     else if( handle->hooks != &hooks_dev_scrn )
     {

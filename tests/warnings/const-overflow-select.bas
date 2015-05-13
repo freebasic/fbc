@@ -3,8 +3,12 @@ select case as const( &hFF00000000ull )
 case 0
 end select
 
+#ifndef __FB_64BIT__
+
 dim as long l
 select case as const( l )
 #print "CASE with 64bit value, causes a warning because it's a SELECT CONST with 32bit value:"
 case &hFF00000000ull
 end select
+
+#endif

@@ -1,34 +1,19 @@
-''
-''
-'' ole -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_ole_bi__
-#define __win_ole_bi__
+#pragma once
 
 #inclib "ole32"
 
-type OLE_LPCSTR as const zstring ptr
-#define OLE_CONST
-#ifndef LRESULT
-type LRESULT as LONG
-#endif
-#ifndef HGLOBAL
-type HGLOBAL as HANDLE
-#endif
+#include once "winapifamily.bi"
 
-#define OT_LINK 1L
-#define OT_EMBEDDED 2L
-#define OT_STATIC 3L
-#define OLEVERB_PRIMARY 0
-#define OF_SET 1
-#define OF_GET 2
-#define OF_HANDLER 4
+extern "Windows"
 
-type OLETARGETDEVICE
+#define _INC_OLE
+#define OLE_LPCSTR LPCSTR
+#define OT_LINK __MSABI_LONG(1)
+#define OT_EMBEDDED __MSABI_LONG(2)
+#define OT_STATIC __MSABI_LONG(3)
+const OLEVERB_PRIMARY = 0
+
+type _OLETARGETDEVICE
 	otdDeviceNameOffset as USHORT
 	otdDriverNameOffset as USHORT
 	otdPortNameOffset as USHORT
@@ -36,12 +21,17 @@ type OLETARGETDEVICE
 	otdExtDevmodeSize as USHORT
 	otdEnvironmentOffset as USHORT
 	otdEnvironmentSize as USHORT
-	otdData(0 to 1-1) as UBYTE
+	otdData(0 to 0) as UBYTE
 end type
 
+type OLETARGETDEVICE as _OLETARGETDEVICE
 type LPOLETARGETDEVICE as OLETARGETDEVICE ptr
+const OF_SET = &h1
+const OF_GET = &h2
+const OF_HANDLER = &h4
 
-enum OLESTATUS
+type OLESTATUS as long
+enum
 	OLE_OK
 	OLE_WAIT_FOR_RELEASE
 	OLE_BUSY
@@ -102,7 +92,8 @@ enum OLESTATUS
 	OLE_WARN_DELETE_DATA = 1000
 end enum
 
-enum OLE_NOTIFICATION
+type OLE_NOTIFICATION as long
+enum
 	OLE_CHANGED
 	OLE_SAVED
 	OLE_CLOSED
@@ -112,7 +103,8 @@ enum OLE_NOTIFICATION
 	OLE_QUERY_RETRY
 end enum
 
-enum OLE_RELEASE_METHOD
+type OLE_RELEASE_METHOD as long
+enum
 	OLE_NONE
 	OLE_DELETE
 	OLE_LNKPASTE
@@ -137,7 +129,8 @@ enum OLE_RELEASE_METHOD
 	OLE_CREATEINVISIBLE
 end enum
 
-enum OLEOPT_RENDER
+type OLEOPT_RENDER as long
+enum
 	olerender_none
 	olerender_draw
 	olerender_format
@@ -145,197 +138,211 @@ end enum
 
 type OLECLIPFORMAT as WORD
 
-enum OLEOPT_UPDATE
+type OLEOPT_UPDATE as long
+enum
 	oleupdate_always
 	oleupdate_onsave
 	oleupdate_oncall
 end enum
 
-#ifndef HOBJECT
 type HOBJECT as HANDLE
-#endif
-type LHSERVER as LONG
-type LHCLIENTDOC as LONG
-type LHSERVERDOC as LONG
-type LPOLEOBJECT as OLEOBJECT ptr
-type LPOLESTREAM as OLESTREAM ptr
-type LPOLECLIENT as OLECLIENT ptr
+type LHSERVER as LONG_PTR
+type LHCLIENTDOC as LONG_PTR
+type LHSERVERDOC as LONG_PTR
+type LPOLEOBJECT as _OLEOBJECT ptr
+type LPOLESTREAM as _OLESTREAM ptr
+type LPOLECLIENT as _OLECLIENT ptr
 
-type OLEOBJECTVTBL
-	QueryProtocol as sub (byval as LPOLEOBJECT, byval as LPCSTR)
-	Release as function (byval as LPOLEOBJECT) as OLESTATUS
-	Show as function (byval as LPOLEOBJECT, byval as BOOL) as OLESTATUS
-	DoVerb as function (byval as LPOLEOBJECT, byval as UINT, byval as BOOL, byval as BOOL) as OLESTATUS
-	GetData as function (byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE ptr) as OLESTATUS
-	SetData as function (byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE) as OLESTATUS
-	SetTargetDevice as function (byval as LPOLEOBJECT, byval as HANDLE) as OLESTATUS
-	SetBounds as function (byval as LPOLEOBJECT, byval as RECT ptr) as OLESTATUS
-	EnumFormats as function (byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLECLIPFORMAT
-	SetColorScheme as function (byval as LPOLEOBJECT, byval as LOGPALETTE ptr) as OLESTATUS
-	Delete__ as function (byval as LPOLEOBJECT) as OLESTATUS
-	SetHostNames as function (byval as LPOLEOBJECT, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
-	SaveToStream as function (byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
-	Clone as function (byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-	CopyFromLink as function (byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-	Equal as function (byval as LPOLEOBJECT, byval as LPOLEOBJECT) as OLESTATUS
-	CopyToClipboard as function (byval as LPOLEOBJECT) as OLESTATUS
-	Draw as function (byval as LPOLEOBJECT, byval as HDC, byval as RECT ptr, byval as RECT ptr, byval as HDC) as OLESTATUS
-	Activate as function (byval as LPOLEOBJECT, byval as UINT, byval as BOOL, byval as BOOL, byval as HWND, byval as RECT ptr) as OLESTATUS
-	Execute as function (byval as LPOLEOBJECT, byval as HANDLE, byval as UINT) as OLESTATUS
-	Close as function (byval as LPOLEOBJECT) as OLESTATUS
-	Update as function (byval as LPOLEOBJECT) as OLESTATUS
-	Reconnect as function (byval as LPOLEOBJECT) as OLESTATUS
-	ObjectConvert as function (byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-	GetLinkUpdateOptions as function (byval as LPOLEOBJECT, byval as OLEOPT_UPDATE ptr) as OLESTATUS
-	SetLinkUpdateOptions as function (byval as LPOLEOBJECT, byval as OLEOPT_UPDATE) as OLESTATUS
-	Rename as function (byval as LPOLEOBJECT, byval as LPCSTR) as OLESTATUS
-	QueryName as function (byval as LPOLEOBJECT, byval as LPSTR, byval as UINT ptr) as OLESTATUS
-	QueryType as function (byval as LPOLEOBJECT, byval as LONG ptr) as OLESTATUS
-	QueryBounds as function (byval as LPOLEOBJECT, byval as RECT ptr) as OLESTATUS
-	QuerySize as function (byval as LPOLEOBJECT, byval as DWORD ptr) as OLESTATUS
-	QueryOpen as function (byval as LPOLEOBJECT) as OLESTATUS
-	QueryOutOfDate as function (byval as LPOLEOBJECT) as OLESTATUS
-	QueryReleaseStatus as function (byval as LPOLEOBJECT) as OLESTATUS
-	QueryReleaseError as function (byval as LPOLEOBJECT) as OLESTATUS
-	QueryReleaseMethod as function (byval as LPOLEOBJECT) as OLE_RELEASE_METHOD
-	RequestData as function (byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLESTATUS
-	ObjectLong as function (byval as LPOLEOBJECT, byval as UINT, byval as LONG ptr) as OLESTATUS
-	ChangeData as function (byval as LPOLEOBJECT, byval as HANDLE, byval as LPOLECLIENT, byval as BOOL) as OLESTATUS
+type _OLEOBJECTVTBL
+	QueryProtocol as function(byval as LPOLEOBJECT, byval as LPCSTR) as any ptr
+	Release as function(byval as LPOLEOBJECT) as OLESTATUS
+	Show as function(byval as LPOLEOBJECT, byval as WINBOOL) as OLESTATUS
+	DoVerb as function(byval as LPOLEOBJECT, byval as UINT, byval as WINBOOL, byval as WINBOOL) as OLESTATUS
+	GetData as function(byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE ptr) as OLESTATUS
+	SetData as function(byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE) as OLESTATUS
+	SetTargetDevice as function(byval as LPOLEOBJECT, byval as HANDLE) as OLESTATUS
+	SetBounds as function(byval as LPOLEOBJECT, byval as const RECT ptr) as OLESTATUS
+	EnumFormats as function(byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLECLIPFORMAT
+	SetColorScheme as function(byval as LPOLEOBJECT, byval as const LOGPALETTE ptr) as OLESTATUS
+	Delete_ as function(byval as LPOLEOBJECT) as OLESTATUS
+	SetHostNames as function(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
+	SaveToStream as function(byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
+	Clone as function(byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+	CopyFromLink as function(byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+	Equal as function(byval as LPOLEOBJECT, byval as LPOLEOBJECT) as OLESTATUS
+	CopyToClipboard as function(byval as LPOLEOBJECT) as OLESTATUS
+	Draw as function(byval as LPOLEOBJECT, byval as HDC, byval as const RECT ptr, byval as const RECT ptr, byval as HDC) as OLESTATUS
+	Activate as function(byval as LPOLEOBJECT, byval as UINT, byval as WINBOOL, byval as WINBOOL, byval as HWND, byval as const RECT ptr) as OLESTATUS
+	Execute as function(byval as LPOLEOBJECT, byval as HANDLE, byval as UINT) as OLESTATUS
+	Close as function(byval as LPOLEOBJECT) as OLESTATUS
+	Update as function(byval as LPOLEOBJECT) as OLESTATUS
+	Reconnect as function(byval as LPOLEOBJECT) as OLESTATUS
+	ObjectConvert as function(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+	GetLinkUpdateOptions as function(byval as LPOLEOBJECT, byval as OLEOPT_UPDATE ptr) as OLESTATUS
+	SetLinkUpdateOptions as function(byval as LPOLEOBJECT, byval as OLEOPT_UPDATE) as OLESTATUS
+	Rename as function(byval as LPOLEOBJECT, byval as LPCSTR) as OLESTATUS
+	QueryName as function(byval as LPOLEOBJECT, byval as LPSTR, byval as UINT ptr) as OLESTATUS
+	QueryType as function(byval as LPOLEOBJECT, byval as LONG ptr) as OLESTATUS
+	QueryBounds as function(byval as LPOLEOBJECT, byval as RECT ptr) as OLESTATUS
+	QuerySize as function(byval as LPOLEOBJECT, byval as DWORD ptr) as OLESTATUS
+	QueryOpen as function(byval as LPOLEOBJECT) as OLESTATUS
+	QueryOutOfDate as function(byval as LPOLEOBJECT) as OLESTATUS
+	QueryReleaseStatus as function(byval as LPOLEOBJECT) as OLESTATUS
+	QueryReleaseError as function(byval as LPOLEOBJECT) as OLESTATUS
+	QueryReleaseMethod as function(byval as LPOLEOBJECT) as OLE_RELEASE_METHOD
+	RequestData as function(byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLESTATUS
+	ObjectLong as function(byval as LPOLEOBJECT, byval as UINT, byval as LONG ptr) as OLESTATUS
+	ChangeData as function(byval as LPOLEOBJECT, byval as HANDLE, byval as LPOLECLIENT, byval as WINBOOL) as OLESTATUS
 end type
 
+type OLEOBJECTVTBL as _OLEOBJECTVTBL
 type LPOLEOBJECTVTBL as OLEOBJECTVTBL ptr
 
-type OLEOBJECT
+type _OLEOBJECT
 	lpvtbl as LPOLEOBJECTVTBL
 end type
 
-type OLECLIENTVTBL
-	CallBack as function (byval as LPOLECLIENT, byval as OLE_NOTIFICATION, byval as LPOLEOBJECT) as integer
+type OLEOBJECT as _OLEOBJECT
+
+type _OLECLIENTVTBL
+	CallBack as function(byval as LPOLECLIENT, byval as OLE_NOTIFICATION, byval as LPOLEOBJECT) as long
 end type
 
+type OLECLIENTVTBL as _OLECLIENTVTBL
 type LPOLECLIENTVTBL as OLECLIENTVTBL ptr
 
-type OLECLIENT
+type _OLECLIENT
 	lpvtbl as LPOLECLIENTVTBL
 end type
 
-type OLESTREAMVTBL
-	Get as function (byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
-	Put as function (byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
+type OLECLIENT as _OLECLIENT
+
+type _OLESTREAMVTBL
+	Get as function(byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
+	Put as function(byval as LPOLESTREAM, byval as const any ptr, byval as DWORD) as DWORD
 end type
 
+type OLESTREAMVTBL as _OLESTREAMVTBL
 type LPOLESTREAMVTBL as OLESTREAMVTBL ptr
 
-type OLESTREAM
+type _OLESTREAM
 	lpstbl as LPOLESTREAMVTBL
 end type
 
-enum OLE_SERVER_USE
+type OLESTREAM as _OLESTREAM
+declare function OleDelete(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleRelease(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleSaveToStream(byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
+declare function OleEqual(byval as LPOLEOBJECT, byval as LPOLEOBJECT) as OLESTATUS
+declare function OleCopyToClipboard(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleSetHostNames(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
+declare function OleSetTargetDevice(byval as LPOLEOBJECT, byval as HANDLE) as OLESTATUS
+declare function OleSetBounds(byval as LPOLEOBJECT, byval as const RECT ptr) as OLESTATUS
+declare function OleSetColorScheme(byval as LPOLEOBJECT, byval as const LOGPALETTE ptr) as OLESTATUS
+declare function OleQueryBounds(byval as LPOLEOBJECT, byval as RECT ptr) as OLESTATUS
+declare function OleQuerySize(byval as LPOLEOBJECT, byval as DWORD ptr) as OLESTATUS
+declare function OleDraw(byval as LPOLEOBJECT, byval as HDC, byval as const RECT ptr, byval as const RECT ptr, byval as HDC) as OLESTATUS
+declare function OleQueryOpen(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleActivate(byval as LPOLEOBJECT, byval as UINT, byval as WINBOOL, byval as WINBOOL, byval as HWND, byval as const RECT ptr) as OLESTATUS
+declare function OleExecute(byval as LPOLEOBJECT, byval as HANDLE, byval as UINT) as OLESTATUS
+declare function OleClose(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleUpdate(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleReconnect(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleGetLinkUpdateOptions(byval as LPOLEOBJECT, byval as OLEOPT_UPDATE ptr) as OLESTATUS
+declare function OleSetLinkUpdateOptions(byval as LPOLEOBJECT, byval as OLEOPT_UPDATE) as OLESTATUS
+declare function OleQueryProtocol(byval as LPOLEOBJECT, byval as LPCSTR) as any ptr
+declare function OleQueryReleaseStatus(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleQueryReleaseError(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleQueryReleaseMethod(byval as LPOLEOBJECT) as OLE_RELEASE_METHOD
+declare function OleQueryType(byval as LPOLEOBJECT, byval as LONG ptr) as OLESTATUS
+declare function OleQueryClientVersion() as DWORD
+declare function OleQueryServerVersion() as DWORD
+declare function OleEnumFormats(byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLECLIPFORMAT
+declare function OleGetData(byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE ptr) as OLESTATUS
+declare function OleSetData(byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE) as OLESTATUS
+declare function OleQueryOutOfDate(byval as LPOLEOBJECT) as OLESTATUS
+declare function OleRequestData(byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleQueryLinkFromClip(byval as LPCSTR, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleQueryCreateFromClip(byval as LPCSTR, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleCreateFromClip(byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleCreateLinkFromClip(byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleCreateFromFile(byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleCreateLinkFromFile(byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LPCSTR, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleLoadFromStream(byval as LPOLESTREAM, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+declare function OleCreate(byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleCreateInvisible(byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT, byval as WINBOOL) as OLESTATUS
+declare function OleCreateFromTemplate(byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
+declare function OleClone(byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+declare function OleCopyFromLink(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+declare function OleObjectConvert(byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
+declare function OleRename(byval as LPOLEOBJECT, byval as LPCSTR) as OLESTATUS
+declare function OleQueryName(byval lpobj as LPOLEOBJECT, byval lpBuf as LPSTR, byval lpcbBuf as UINT ptr) as OLESTATUS
+declare function OleRevokeObject(byval as LPOLECLIENT) as OLESTATUS
+declare function OleIsDcMeta(byval as HDC) as WINBOOL
+declare function OleRegisterClientDoc(byval as LPCSTR, byval as LPCSTR, byval as LONG, byval as LHCLIENTDOC ptr) as OLESTATUS
+declare function OleRevokeClientDoc(byval as LHCLIENTDOC) as OLESTATUS
+declare function OleRenameClientDoc(byval as LHCLIENTDOC, byval as LPCSTR) as OLESTATUS
+declare function OleRevertClientDoc(byval as LHCLIENTDOC) as OLESTATUS
+declare function OleSavedClientDoc(byval as LHCLIENTDOC) as OLESTATUS
+declare function OleEnumObjects(byval as LHCLIENTDOC, byval as LPOLEOBJECT ptr) as OLESTATUS
+
+type OLE_SERVER_USE as long
+enum
 	OLE_SERVER_MULTI
 	OLE_SERVER_SINGLE
 end enum
 
-type LPOLESERVER as OLESERVER ptr
-type LPOLESERVERDOC as OLESERVERDOC ptr
+type LPOLESERVER as _OLESERVER ptr
+type LPOLESERVERDOC as _OLESERVERDOC ptr
+declare function OleRegisterServer(byval as LPCSTR, byval as LPOLESERVER, byval as LHSERVER ptr, byval as HINSTANCE, byval as OLE_SERVER_USE) as OLESTATUS
+declare function OleRevokeServer(byval as LHSERVER) as OLESTATUS
+declare function OleBlockServer(byval as LHSERVER) as OLESTATUS
+declare function OleUnblockServer(byval as LHSERVER, byval as WINBOOL ptr) as OLESTATUS
+declare function OleLockServer(byval as LPOLEOBJECT, byval as LHSERVER ptr) as OLESTATUS
+declare function OleUnlockServer(byval as LHSERVER) as OLESTATUS
+declare function OleRegisterServerDoc(byval as LHSERVER, byval as LPCSTR, byval as LPOLESERVERDOC, byval as LHSERVERDOC ptr) as OLESTATUS
+declare function OleRevokeServerDoc(byval as LHSERVERDOC) as OLESTATUS
+declare function OleRenameServerDoc(byval as LHSERVERDOC, byval as LPCSTR) as OLESTATUS
+declare function OleRevertServerDoc(byval as LHSERVERDOC) as OLESTATUS
+declare function OleSavedServerDoc(byval as LHSERVERDOC) as OLESTATUS
 
-type OLESERVERVTBL
-	Open as function (byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
-	Create as function (byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
-	CreateFromTemplate as function (byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
-	Edit as function (byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
-	Exit as function (byval as LPOLESERVER) as OLESTATUS
-	Release as function (byval as LPOLESERVER) as OLESTATUS
-	Execute as function (byval as LPOLESERVER, byval as HANDLE) as OLESTATUS
+type _OLESERVERVTBL
+	Open as function(byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
+	Create as function(byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
+	CreateFromTemplate as function(byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
+	Edit as function(byval as LPOLESERVER, byval as LHSERVERDOC, byval as LPCSTR, byval as LPCSTR, byval as LPOLESERVERDOC ptr) as OLESTATUS
+	Exit as function(byval as LPOLESERVER) as OLESTATUS
+	Release as function(byval as LPOLESERVER) as OLESTATUS
+	Execute as function(byval as LPOLESERVER, byval as HANDLE) as OLESTATUS
 end type
 
+type OLESERVERVTBL as _OLESERVERVTBL
 type LPOLESERVERVTBL as OLESERVERVTBL ptr
 
-type OLESERVER
+type _OLESERVER
 	lpvtbl as LPOLESERVERVTBL
 end type
 
-type OLESERVERDOCVTBL
-	Save as function (byval as LPOLESERVERDOC) as OLESTATUS
-	Close as function (byval as LPOLESERVERDOC) as OLESTATUS
-	SetHostNames as function (byval as LPOLESERVERDOC, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
-	SetDocDimensions as function (byval as LPOLESERVERDOC, byval as RECT ptr) as OLESTATUS
-	GetObjectA as function (byval as LPOLESERVERDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as LPOLECLIENT) as OLESTATUS
-	Release as function (byval as LPOLESERVERDOC) as OLESTATUS
-	SetColorScheme as function (byval as LPOLESERVERDOC, byval as LOGPALETTE ptr) as OLESTATUS
-	Execute as function (byval as LPOLESERVERDOC, byval as HANDLE) as OLESTATUS
+type OLESERVER as _OLESERVER
+
+type _OLESERVERDOCVTBL
+	Save as function(byval as LPOLESERVERDOC) as OLESTATUS
+	Close as function(byval as LPOLESERVERDOC) as OLESTATUS
+	SetHostNames as function(byval as LPOLESERVERDOC, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
+	SetDocDimensions as function(byval as LPOLESERVERDOC, byval as const RECT ptr) as OLESTATUS
+	GetObject as function(byval as LPOLESERVERDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as LPOLECLIENT) as OLESTATUS
+	Release as function(byval as LPOLESERVERDOC) as OLESTATUS
+	SetColorScheme as function(byval as LPOLESERVERDOC, byval as const LOGPALETTE ptr) as OLESTATUS
+	Execute as function(byval as LPOLESERVERDOC, byval as HANDLE) as OLESTATUS
 end type
 
+type OLESERVERDOCVTBL as _OLESERVERDOCVTBL
 type LPOLESERVERDOCVTBL as OLESERVERDOCVTBL ptr
 
-type OLESERVERDOC
+type _OLESERVERDOC
 	lpvtbl as LPOLESERVERDOCVTBL
 end type
 
-declare function OleDelete alias "OleDelete" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleRelease alias "OleRelease" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleSaveToStream alias "OleSaveToStream" (byval as LPOLEOBJECT, byval as LPOLESTREAM) as OLESTATUS
-declare function OleEqual alias "OleEqual" (byval as LPOLEOBJECT, byval as LPOLEOBJECT) as OLESTATUS
-declare function OleCopyToClipboard alias "OleCopyToClipboard" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleSetHostNames alias "OleSetHostNames" (byval as LPOLEOBJECT, byval as LPCSTR, byval as LPCSTR) as OLESTATUS
-declare function OleSetTargetDevice alias "OleSetTargetDevice" (byval as LPOLEOBJECT, byval as HANDLE) as OLESTATUS
-declare function OleSetBounds alias "OleSetBounds" (byval as LPOLEOBJECT, byval as LPCRECT) as OLESTATUS
-declare function OleSetColorScheme alias "OleSetColorScheme" (byval as LPOLEOBJECT, byval as LOGPALETTE ptr) as OLESTATUS
-declare function OleQueryBounds alias "OleQueryBounds" (byval as LPOLEOBJECT, byval as RECT ptr) as OLESTATUS
-declare function OleQuerySize alias "OleQuerySize" (byval as LPOLEOBJECT, byval as DWORD ptr) as OLESTATUS
-declare function OleDraw alias "OleDraw" (byval as LPOLEOBJECT, byval as HDC, byval as LPCRECT, byval as LPCRECT, byval as HDC) as OLESTATUS
-declare function OleQueryOpen alias "OleQueryOpen" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleActivate alias "OleActivate" (byval as LPOLEOBJECT, byval as UINT, byval as BOOL, byval as BOOL, byval as HWND, byval as LPCRECT) as OLESTATUS
-declare function OleExecute alias "OleExecute" (byval as LPOLEOBJECT, byval as HANDLE, byval as UINT) as OLESTATUS
-declare function OleClose alias "OleClose" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleUpdate alias "OleUpdate" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleReconnect alias "OleReconnect" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleGetLinkUpdateOptions alias "OleGetLinkUpdateOptions" (byval as LPOLEOBJECT, byval as OLEOPT_UPDATE ptr) as OLESTATUS
-declare function OleSetLinkUpdateOptions alias "OleSetLinkUpdateOptions" (byval as LPOLEOBJECT, byval as OLEOPT_UPDATE) as OLESTATUS
-declare function OleQueryProtocol alias "OleQueryProtocol" (byval as LPOLEOBJECT, byval as LPCSTR) as any ptr
-declare function OleQueryReleaseStatus alias "OleQueryReleaseStatus" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleQueryReleaseError alias "OleQueryReleaseError" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleQueryReleaseMethod alias "OleQueryReleaseMethod" (byval as LPOLEOBJECT) as OLE_RELEASE_METHOD
-declare function OleQueryType alias "OleQueryType" (byval as LPOLEOBJECT, byval as LONG ptr) as OLESTATUS
-declare function OleQueryClientVersion alias "OleQueryClientVersion" () as DWORD
-declare function OleQueryServerVersion alias "OleQueryServerVersion" () as DWORD
-declare function OleEnumFormats alias "OleEnumFormats" (byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLECLIPFORMAT
-declare function OleGetData alias "OleGetData" (byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE ptr) as OLESTATUS
-declare function OleSetData alias "OleSetData" (byval as LPOLEOBJECT, byval as OLECLIPFORMAT, byval as HANDLE) as OLESTATUS
-declare function OleQueryOutOfDate alias "OleQueryOutOfDate" (byval as LPOLEOBJECT) as OLESTATUS
-declare function OleRequestData alias "OleRequestData" (byval as LPOLEOBJECT, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleQueryLinkFromClip alias "OleQueryLinkFromClip" (byval as LPCSTR, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleQueryCreateFromClip alias "OleQueryCreateFromClip" (byval as LPCSTR, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleCreateFromClip alias "OleCreateFromClip" (byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleCreateLinkFromClip alias "OleCreateLinkFromClip" (byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleCreateFromFile alias "OleCreateFromFile" (byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleCreateLinkFromFile alias "OleCreateLinkFromFile" (byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LPCSTR, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleLoadFromStream alias "OleLoadFromStream" (byval as LPOLESTREAM, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-declare function OleCreate alias "OleCreate" (byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleCreateInvisible alias "OleCreateInvisible" (byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT, byval as BOOL) as OLESTATUS
-declare function OleCreateFromTemplate alias "OleCreateFromTemplate" (byval as LPCSTR, byval as LPOLECLIENT, byval as LPCSTR, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr, byval as OLEOPT_RENDER, byval as OLECLIPFORMAT) as OLESTATUS
-declare function OleClone alias "OleClone" (byval as LPOLEOBJECT, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-declare function OleCopyFromLink alias "OleCopyFromLink" (byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-declare function OleObjectConvert alias "OleObjectConvert" (byval as LPOLEOBJECT, byval as LPCSTR, byval as LPOLECLIENT, byval as LHCLIENTDOC, byval as LPCSTR, byval as LPOLEOBJECT ptr) as OLESTATUS
-declare function OleRename alias "OleRename" (byval as LPOLEOBJECT, byval as LPCSTR) as OLESTATUS
-declare function OleQueryName alias "OleQueryName" (byval as LPOLEOBJECT, byval as LPSTR, byval as UINT ptr) as OLESTATUS
-declare function OleRevokeObject alias "OleRevokeObject" (byval as LPOLECLIENT) as OLESTATUS
-declare function OleIsDcMeta alias "OleIsDcMeta" (byval as HDC) as BOOL
-declare function OleRegisterClientDoc alias "OleRegisterClientDoc" (byval as LPCSTR, byval as LPCSTR, byval as LONG, byval as LHCLIENTDOC ptr) as OLESTATUS
-declare function OleRevokeClientDoc alias "OleRevokeClientDoc" (byval as LHCLIENTDOC) as OLESTATUS
-declare function OleRenameClientDoc alias "OleRenameClientDoc" (byval as LHCLIENTDOC, byval as LPCSTR) as OLESTATUS
-declare function OleRevertClientDoc alias "OleRevertClientDoc" (byval as LHCLIENTDOC) as OLESTATUS
-declare function OleSavedClientDoc alias "OleSavedClientDoc" (byval as LHCLIENTDOC) as OLESTATUS
-declare function OleEnumObjects alias "OleEnumObjects" (byval as LHCLIENTDOC, byval as LPOLEOBJECT ptr) as OLESTATUS
-declare function OleRegisterServer alias "OleRegisterServer" (byval as LPCSTR, byval as LPOLESERVER, byval as LHSERVER ptr, byval as HINSTANCE, byval as OLE_SERVER_USE) as OLESTATUS
-declare function OleRevokeServer alias "OleRevokeServer" (byval as LHSERVER) as OLESTATUS
-declare function OleBlockServer alias "OleBlockServer" (byval as LHSERVER) as OLESTATUS
-declare function OleUnblockServer alias "OleUnblockServer" (byval as LHSERVER, byval as BOOL ptr) as OLESTATUS
-declare function OleLockServer alias "OleLockServer" (byval as LPOLEOBJECT, byval as LHSERVER ptr) as OLESTATUS
-declare function OleUnlockServer alias "OleUnlockServer" (byval as LHSERVER) as OLESTATUS
-declare function OleRegisterServerDoc alias "OleRegisterServerDoc" (byval as LHSERVER, byval as LPCSTR, byval as LPOLESERVERDOC, byval as LHSERVERDOC ptr) as OLESTATUS
-declare function OleRevokeServerDoc alias "OleRevokeServerDoc" (byval as LHSERVERDOC) as OLESTATUS
-declare function OleRenameServerDoc alias "OleRenameServerDoc" (byval as LHSERVERDOC, byval as LPCSTR) as OLESTATUS
-declare function OleRevertServerDoc alias "OleRevertServerDoc" (byval as LHSERVERDOC) as OLESTATUS
-declare function OleSavedServerDoc alias "OleSavedServerDoc" (byval as LHSERVERDOC) as OLESTATUS
+type OLESERVERDOC as _OLESERVERDOC
 
-#endif
+end extern

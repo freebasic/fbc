@@ -248,6 +248,7 @@ private function hCheckExternVar _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
+		byval lgt as longint, _
 		byref attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
@@ -259,6 +260,15 @@ private function hCheckExternVar _
 		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
 		exit function
 	end if
+
+	'' Check fix-len string length
+	select case( typeGetDtAndPtrOnly( dtype ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		if( lgt <> sym->lgt ) then
+			errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
+			exit function
+		end if
+	end select
 
 	'' One is dynamic, but the other isn't? (can't just rely on dimensions
 	'' check below, because we may have seen dimensions <> -1 in a dynamic
@@ -312,7 +322,7 @@ private sub hCheckExternVarAndRecover _
 		dTB() as FBARRAYDIM _
 	)
 
-	if( hCheckExternVar( sym, id, dtype, subtype, attrib, dimensions, dTB() ) = FALSE ) then
+	if( hCheckExternVar( sym, id, dtype, subtype, lgt, attrib, dimensions, dTB() ) = FALSE ) then
 		'' Error recovery: make definition match the EXTERN declaration
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubType( sym )
@@ -558,7 +568,10 @@ private function hLookupVar _
 	elseif( has_suffix ) then
 		sym = symbFindVarBySuffix( chain_, dtype )
 	else
-		sym = symbFindVarByType( chain_, dtype )
+		sym = symbFindByClassAndType( chain_, FB_SYMBCLASS_VAR, dtype )
+		if( sym = NULL ) then
+			sym = symbFindByClassAndType( chain_, FB_SYMBCLASS_FIELD, dtype )
+		end if
 	end if
 
 	function = sym

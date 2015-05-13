@@ -1,15 +1,11 @@
-''
-''
-'' HookObjI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __HookObjI_bi__
-#define __HookObjI_bi__
+#pragma once
 
+extern "C"
+
+#define _XtHookObjI_h
+type HookObject as _HookObjRec ptr
 type HookObjectClass as _HookObjClassRec ptr
+extern hookObjectClass as WidgetClass
 
 type _HookObjPart
 	createhook_callbacks as XtCallbackList
@@ -33,7 +29,7 @@ end type
 type HookObjRec as _HookObjRec
 
 type _HookObjClassPart
-	unused as integer
+	unused as long
 end type
 
 type HookObjClassPart as _HookObjClassPart
@@ -44,5 +40,6 @@ type _HookObjClassRec
 end type
 
 type HookObjClassRec as _HookObjClassRec
+extern hookObjClassRec as HookObjClassRec
 
-#endif
+end extern

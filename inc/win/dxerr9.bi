@@ -1,24 +1,41 @@
-''
-''
-'' dxerr9 -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_dxerr9_bi__
-#define __win_dxerr9_bi__
+#pragma once
 
 #inclib "dxerr9"
 
+#include once "_mingw_unicode.bi"
+
+extern "Windows"
+
+#define __WINE_DXERR9_H
+declare function DXGetErrorString9A(byval hr as HRESULT) as const zstring ptr
+declare function DXGetErrorString9W(byval hr as HRESULT) as const wstring ptr
+
 #ifdef UNICODE
-declare function DXGetErrorString9 alias "DXGetErrorString9W" (byval as HRESULT) as WCHAR ptr
-declare function DXGetErrorDescription9 alias "DXGetErrorDescription9W" (byval as HRESULT) as WCHAR ptr
-declare function DXTrace alias "DXTraceW" (byval as zstring ptr, byval as DWORD, byval as HRESULT, byval as WCHAR ptr, byval as BOOL) as HRESULT
+	#define DXGetErrorString9 DXGetErrorString9W
 #else
-declare function DXGetErrorString9 alias "DXGetErrorString9A" (byval as HRESULT) as zstring ptr
-declare function DXGetErrorDescription9 alias "DXGetErrorDescription9A" (byval as HRESULT) as zstring ptr
-declare function DXTrace alias "DXTraceA" (byval as zstring ptr, byval as DWORD, byval as HRESULT, byval as zstring ptr, byval as BOOL) as HRESULT
+	#define DXGetErrorString9 DXGetErrorString9A
 #endif
 
+declare function DXGetErrorDescription9A(byval hr as HRESULT) as const zstring ptr
+declare function DXGetErrorDescription9W(byval hr as HRESULT) as const wstring ptr
+
+#ifdef UNICODE
+	#define DXGetErrorDescription9 DXGetErrorDescription9W
+#else
+	#define DXGetErrorDescription9 DXGetErrorDescription9A
 #endif
+
+declare function DXTraceA(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const zstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
+declare function DXTraceW(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const wstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT
+
+#ifdef UNICODE
+	#define DXTrace DXTraceW
+#else
+	#define DXTrace DXTraceA
+#endif
+
+#define DXTRACE_MSG(str) __MSABI_LONG(0)
+#define DXTRACE_ERR(str, hr) (hr)
+#define DXTRACE_ERR_NOMSGBOX(str, hr) (hr)
+
+end extern

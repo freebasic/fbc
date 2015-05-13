@@ -27,7 +27,7 @@
 ''     #define K_x => K_x_
 ''     #define K_y => K_y_
 ''     #define K_z => K_z_
-''     #define K_Ccedilla => K_Ccedilla_
+''     constant K_Ccedilla => K_Ccedilla_
 ''     #define K_cR => K_cR_
 
 #define __IUPKEY_H
@@ -135,46 +135,46 @@
 #define K_quoteright K_apostrophe
 #define isxkey iup_isXkey
 #define iup_isXkey(_c) ((_c) >= 128)
-#define K_PAUSE &hFF13
-#define K_ESC &hFF1B
-#define K_HOME &hFF50
-#define K_LEFT &hFF51
-#define K_UP &hFF52
-#define K_RIGHT &hFF53
-#define K_DOWN &hFF54
-#define K_PGUP &hFF55
-#define K_PGDN &hFF56
-#define K_END &hFF57
-#define K_MIDDLE &hFF0B
-#define K_Print &hFF61
-#define K_INS &hFF63
-#define K_Menu &hFF67
-#define K_DEL &hFFFF
-#define K_F1 &hFFBE
-#define K_F2 &hFFBF
-#define K_F3 &hFFC0
-#define K_F4 &hFFC1
-#define K_F5 &hFFC2
-#define K_F6 &hFFC3
-#define K_F7 &hFFC4
-#define K_F8 &hFFC5
-#define K_F9 &hFFC6
-#define K_F10 &hFFC7
-#define K_F11 &hFFC8
-#define K_F12 &hFFC9
-#define K_LSHIFT &hFFE1
-#define K_RSHIFT &hFFE2
-#define K_LCTRL &hFFE3
-#define K_RCTRL &hFFE4
-#define K_LALT &hFFE9
-#define K_RALT &hFFEA
-#define K_NUM &hFF7F
-#define K_SCROLL &hFF14
-#define K_CAPS &hFFE5
-#define K_ccedilla &h00E7
-#define K_Ccedilla_ &h00C7
-#define K_acute &h00B4
-#define K_diaeresis &h00A8
+const K_PAUSE = &hFF13
+const K_ESC = &hFF1B
+const K_HOME = &hFF50
+const K_LEFT = &hFF51
+const K_UP = &hFF52
+const K_RIGHT = &hFF53
+const K_DOWN = &hFF54
+const K_PGUP = &hFF55
+const K_PGDN = &hFF56
+const K_END = &hFF57
+const K_MIDDLE = &hFF0B
+const K_Print = &hFF61
+const K_INS = &hFF63
+const K_Menu = &hFF67
+const K_DEL = &hFFFF
+const K_F1 = &hFFBE
+const K_F2 = &hFFBF
+const K_F3 = &hFFC0
+const K_F4 = &hFFC1
+const K_F5 = &hFFC2
+const K_F6 = &hFFC3
+const K_F7 = &hFFC4
+const K_F8 = &hFFC5
+const K_F9 = &hFFC6
+const K_F10 = &hFFC7
+const K_F11 = &hFFC8
+const K_F12 = &hFFC9
+const K_LSHIFT = &hFFE1
+const K_RSHIFT = &hFFE2
+const K_LCTRL = &hFFE3
+const K_RCTRL = &hFFE4
+const K_LALT = &hFFE9
+const K_RALT = &hFFEA
+const K_NUM = &hFF7F
+const K_SCROLL = &hFF14
+const K_CAPS = &hFFE5
+const K_ccedilla = &h00E7
+const K_Ccedilla_ = &h00C7
+const K_acute = &h00B4
+const K_diaeresis = &h00A8
 #define iup_isShiftXkey(_c) ((_c) and &h10000000)
 #define iup_isCtrlXkey(_c) ((_c) and &h20000000)
 #define iup_isAltXkey(_c) ((_c) and &h40000000)

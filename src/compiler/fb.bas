@@ -405,16 +405,6 @@ private sub hUpdateTargetOptions( )
 	env.target = targetinfo(env.clopt.target)
 end sub
 
-private sub hUpdateBackendOptions( )
-	'' -gen gas defaults to -asm intel, because that's all it supports,
-	'' -gen gcc/llvm defaults to -asm att, because that's GCC's/LLVM's standard
-	if( env.clopt.backend = FB_BACKEND_GAS ) then
-		env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL
-	else
-		env.clopt.asmsyntax = FB_ASMSYNTAX_ATT
-	end if
-end sub
-
 sub fbGlobalInit()
 	strlistInit(@env.predefines, FB_INITINCFILES)
 	strlistInit(@env.preincludes, FB_INITINCFILES)
@@ -431,6 +421,7 @@ sub fbGlobalInit()
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
 	env.clopt.optlevel      = 0
+	env.clopt.asmsyntax     = FB_ASMSYNTAX_INTEL
 
 	env.clopt.lang          = FB_DEFAULT_LANG
 	env.clopt.forcelang     = FALSE
@@ -456,7 +447,6 @@ sub fbGlobalInit()
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
-	hUpdateBackendOptions( )
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -480,7 +470,6 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
-		hUpdateBackendOptions( )
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
 		hUpdateTargetOptions( )
@@ -540,6 +529,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
 			env.clopt.stacksize = FB_MINSTACKSIZE
 		end if
+	case FB_COMPOPT_SHOWINCLUDES
+		env.clopt.showincludes = value
 	end select
 end sub
 
@@ -606,6 +597,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
 		function = env.clopt.stacksize
+	case FB_COMPOPT_SHOWINCLUDES
+		function = env.clopt.showincludes
 
 	case else
 		function = 0
@@ -908,7 +901,7 @@ private sub fbParsePreIncludes()
 	wend
 end sub
 
-private sub hAppendFbctinf( byval value as zstring ptr )
+private sub hAppendFbctinf( byval value as const zstring ptr )
 	if( env.fbctinf_started = FALSE ) then
 		env.fbctinf_started = TRUE
 		irEmitFBCTINFBEGIN( )
@@ -968,6 +961,23 @@ private sub hEmitObjinfo( )
 	end if
 end sub
 
+'' Print one line of -showincludes output
+private sub hShowInclude( byval includelevel as integer, byref message as string )
+	'' Show message with the proper indentation
+	dim ln as string
+	for i as integer = 1 to includelevel
+		ln += " |  "
+	next
+	ln += message
+	print ln
+end sub
+
+private sub hOnSkippedFile( byref filename as string )
+	if( env.clopt.showincludes ) then
+		hShowInclude( env.includerec + 1, "(" + pathStripCurdir( filename ) + ")" )
+	end if
+end sub
+
 sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
@@ -975,8 +985,6 @@ sub fbCompile _
 		byref pponlyfile as string, _
 		byval ismain as integer _
 	)
-
-	dim as double tmr
 
 	env.inf.name = *infname
 	hReplaceSlash( env.inf.name, asc( FB_HOST_PATHDIV ) )
@@ -996,6 +1004,11 @@ sub fbCompile _
 	if( open( *infname, for binary, access read, as #env.inf.num ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit sub
+	end if
+
+	if( env.clopt.showincludes ) then
+		'' Toplevel file
+		hShowInclude( 0, pathStripCurdir( *infname ) )
 	end if
 
 	env.inf.format = hCheckFileFormat( env.inf.num )
@@ -1018,15 +1031,11 @@ sub fbCompile _
 
 	fbMainBegin( )
 
-	tmr = timer( )
-
 	fbParsePreDefines()
 	fbParsePreIncludes()
 	if (fbShouldContinue()) then
 		cProgram()
 	end if
-
-	tmr = timer( ) - tmr
 
 	fbMainEnd( )
 
@@ -1040,7 +1049,7 @@ sub fbCompile _
 	end if
 
 	'' save
-	irEmitEnd( tmr )
+	irEmitEnd( )
 
 	if( env.ppfile_num > 0 ) then
 		close #env.ppfile_num
@@ -1263,6 +1272,9 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 			'' not found?
 			if (path = NULL) then
+				if( env.clopt.showincludes ) then
+					hShowInclude( env.includerec + 1, *filename + " (not found in include dirs)" )
+				end if
 				errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
 				errHideFurtherErrors()
 				exit sub
@@ -1298,12 +1310,14 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	if( isonce ) then
 		'' we should respect the path
 		if( hFindIncFile( @env.incfilehash, incfile ) <> NULL ) then
+			hOnSkippedFile( incfile )
 			exit sub
 		end if
 	end if
 
 	'' #pragma ONCE
 	if( hFindIncFile( @env.inconcehash, incfile ) <> NULL ) then
+		hOnSkippedFile( incfile )
 		exit sub
 	end if
 
@@ -1316,6 +1330,10 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 	env.inf.name  = incfile
 	env.inf.incfile = fileidx
+
+	if( env.clopt.showincludes ) then
+		hShowInclude( env.includerec, pathStripCurdir( incfile ) )
+	end if
 
 	''
 	env.inf.num = freefile

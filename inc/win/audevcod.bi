@@ -1,17 +1,9 @@
-''
-''
-'' audevcod -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_audevcod_bi__
-#define __win_audevcod_bi__
+#pragma once
 
-#define EC_SND_DEVICE_ERROR_BASE &h0200
+#define __AUDEVCOD__
 
-enum SNDDEV_ERR
+type _tagSND_DEVICE_ERROR as long
+enum
 	SNDDEV_ERROR_Open = 1
 	SNDDEV_ERROR_Close = 2
 	SNDDEV_ERROR_GetCaps = 3
@@ -28,7 +20,7 @@ enum SNDDEV_ERR
 	SNDDEV_ERROR_Query = 14
 end enum
 
-#define EC_SNDDEV_IN_ERROR (&h0200+&h00)
-#define EC_SNDDEV_OUT_ERROR (&h0200+&h01)
-
-#endif
+type SNDDEV_ERR as _tagSND_DEVICE_ERROR
+const EC_SND_DEVICE_ERROR_BASE = &h0200
+#define EC_SNDDEV_IN_ERROR (EC_SND_DEVICE_ERROR_BASE + &h00)
+#define EC_SNDDEV_OUT_ERROR (EC_SND_DEVICE_ERROR_BASE + &h01)

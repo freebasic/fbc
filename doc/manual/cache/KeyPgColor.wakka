@@ -2,7 +2,7 @@
 Sets the display foreground / background color that is used with console output and graphics output of text
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgLong long]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Color** [//foreground//] [, //background//]
@@ -15,7 +15,7 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].  (In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits.)
+	Returns a 32-bit value containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].  (In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits.)
 	The old color values can be retrieved at the same time as setting new ones.
 
 {{fbdoc item="desc"}}

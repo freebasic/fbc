@@ -175,9 +175,12 @@ static PRINTER_INFO_5 *GetDefaultPrinters( int *pCount )
         if (GetLastError()!=ERROR_INSUFFICIENT_BUFFER)
             break;
 
+		PRINTER_INFO_5* oldResult = result;
         result = (PRINTER_INFO_5*) realloc( result, dwNeeded );
-        if( result == NULL )
+        if( result == NULL ) {
+            free(oldResult);
             break;
+        }
 
         fResult = EnumPrinters(dwFlags,
                                NULL,
@@ -215,9 +218,12 @@ static PRINTER_INFO_2 *GetPrinters( int *pCount )
         if (GetLastError()!=ERROR_INSUFFICIENT_BUFFER)
             break;
 
+		PRINTER_INFO_2* oldResult = result;
         result = (PRINTER_INFO_2*) realloc( result, dwNeeded );
-        if( result == NULL )
+        if( result == NULL ) {
+            free(oldResult);
             break;
+        }
 
         fResult = EnumPrinters(dwFlags,
                                NULL,
@@ -255,7 +261,11 @@ static char *GetDefaultPrinterName(void)
                 while (!fResult) {
                     if (GetLastError()!=ERROR_INSUFFICIENT_BUFFER)
                         break;
+                    
+                    TCHAR *oldBuffer = buffer;
                     buffer = (TCHAR*) realloc(buffer, dwSize * sizeof(TCHAR));
+                    if (buffer == NULL)
+                        free(oldBuffer);
                     fResult = pfnGetDefaultPrinter(buffer, &dwSize);
                 }
                 if (dwSize>1) {

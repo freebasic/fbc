@@ -2,7 +2,7 @@
 Detects the status of keys by keyboard scancode.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Multikey** ( [[KeyPgByval byval]] //scancode// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Multikey** ( [[KeyPgByval byval]] //scancode// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Multikey**(//scancode//)

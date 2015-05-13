@@ -2,7 +2,7 @@
 Maps coordinates between view and physical mapping.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **PMap**( //coord//, //func// )

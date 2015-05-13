@@ -40,6 +40,10 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for a common PC OS (e.g. DOS, Windows, OS/2).
 	=={{fbdoc item="keyword" value="KeyPgDdfbunix|__FB_UNIX__"}}==
 		Defined if compiling for a Unix-like OS.
+	=={{fbdoc item="keyword" value="KeyPgDdfb64bit|__FB_64BIT__"}}==
+		Defined if compiling for a 64bit target.
+	=={{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}==
+		Defined if compiling for the ARM architecture.
 
 {{anchor name="VERSION"}}{{fbdoc item="section" value="Version Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}==
@@ -58,6 +62,8 @@ Preprocessor symbols defined by the compiler.
 		Defined as a string literal of the compiler signature.
 
 {{anchor name="CMDLINE"}}{{fbdoc item="section" value="Command-line switches"}}
+	=={{fbdoc item="keyword" value="KeyPgDdfbasm|__FB_ASM__"}}==
+		Defined to either ##"intel"## or ##"att"## depending on [[CompilerOptasm -asm]].
 	=={{fbdoc item="keyword" value="KeyPgDdFBBackend|__FB_BACKEND__"}}==
 		Defined to either ##"gas"## or ##"gcc"## depending on [[CompilerOptgen -gen]].
 	=={{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}==

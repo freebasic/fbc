@@ -2,7 +2,7 @@
 Copies the contents of a graphical page into another graphical page
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //from_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //to_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screencopy** ( [[KeyPgByval byval]] //from_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //to_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Screencopy** [ //from_page// ] [, //to_page// ]

@@ -55,7 +55,7 @@
 		- Nested procedures may be allowed in future.
 
 	""8"") ##[[KeyPgOngosub On Gosub]]## or ##[[KeyPgOngoto On Goto]]##
-		- Use ##SELECT expr AS CONST## for the latter.
+		- Use ##[[KeyPgSelectcase Select Case As Const]] //expr//## for the latter.
 
 	""9"") ##[[KeyPgResume Resume]]##
 		- Most runtime and graphics library procedures now return an error code, like:  ##IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error##... 
@@ -68,7 +68,7 @@
 		- Just remove them.
 
 	""12"") numeric labels
-		- No comment.
+		- Named labels can be used instead, e.g. ##label_name:## / ##[[KeyPgGoto Goto]] label_name##.
 
 	""13"") global symbols with the same name as keywords 
 		- Declare them inside a namespace. 

@@ -1,117 +1,114 @@
-''
-''
-'' ole2 -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_ole2_bi__
-#define __win_ole2_bi__
+#pragma once
 
 #inclib "ole32"
 
-#include once "win/winerror.bi"
-#include once "win/objbase.bi"
-#include once "win/olectlid.bi"
-#include once "win/oleauto.bi"
+#include once "winapifamily.bi"
+#include once "winerror.bi"
+#include once "objbase.bi"
+#include once "oleauto.bi"
+#include once "oleidl.bi"
 
+extern "Windows"
+
+#define _OLE2_H_
 #define E_DRAW VIEW_E_DRAW
 #define DATA_E_FORMATETC DV_E_FORMATETC
-#define OLEIVERB_PRIMARY (0L)
-#define OLEIVERB_SHOW (-1L)
-#define OLEIVERB_OPEN (-2L)
-#define OLEIVERB_HIDE (-3L)
-#define OLEIVERB_UIACTIVATE (-4L)
-#define OLEIVERB_INPLACEACTIVATE (-5L)
-#define OLEIVERB_DISCARDUNDOSTATE (-6L)
-#define EMBDHLP_INPROC_HANDLER &h0000L
-#define EMBDHLP_INPROC_SERVER &h0001L
-#define EMBDHLP_CREATENOW &h00000000L
-#define EMBDHLP_DELAYCREATE &h00010000L
+#define OLEIVERB_PRIMARY __MSABI_LONG(0)
+#define OLEIVERB_SHOW (-__MSABI_LONG(1))
+#define OLEIVERB_OPEN (-__MSABI_LONG(2))
+#define OLEIVERB_HIDE (-__MSABI_LONG(3))
+#define OLEIVERB_UIACTIVATE (-__MSABI_LONG(4))
+#define OLEIVERB_INPLACEACTIVATE (-__MSABI_LONG(5))
+#define OLEIVERB_DISCARDUNDOSTATE (-__MSABI_LONG(6))
+#define EMBDHLP_INPROC_HANDLER __MSABI_LONG(&h0000)
+#define EMBDHLP_INPROC_SERVER __MSABI_LONG(&h0001)
+#define EMBDHLP_CREATENOW __MSABI_LONG(&h00000000)
+#define EMBDHLP_DELAYCREATE __MSABI_LONG(&h00010000)
+const OLECREATE_LEAVERUNNING = &h1
 
-#include once "win/oleidl.bi"
+declare function OleBuildVersion() as DWORD
+declare function ReadClassStg(byval pStg as LPSTORAGE, byval pclsid as CLSID ptr) as HRESULT
+declare function WriteClassStg(byval pStg as LPSTORAGE, byval rclsid as const IID const ptr) as HRESULT
+declare function ReadClassStm(byval pStm as LPSTREAM, byval pclsid as CLSID ptr) as HRESULT
+declare function WriteClassStm(byval pStm as LPSTREAM, byval rclsid as const IID const ptr) as HRESULT
+declare function WriteFmtUserTypeStg(byval pstg as LPSTORAGE, byval cf as CLIPFORMAT, byval lpszUserType as LPOLESTR) as HRESULT
+declare function ReadFmtUserTypeStg(byval pstg as LPSTORAGE, byval pcf as CLIPFORMAT ptr, byval lplpszUserType as LPOLESTR ptr) as HRESULT
+declare function OleInitialize(byval pvReserved as LPVOID) as HRESULT
+declare sub OleUninitialize()
+declare function OleQueryLinkFromData(byval pSrcDataObject as LPDATAOBJECT) as HRESULT
+declare function OleQueryCreateFromData(byval pSrcDataObject as LPDATAOBJECT) as HRESULT
+declare function OleCreate(byval rclsid as const IID const ptr, byval riid as const IID const ptr, byval renderopt as DWORD, byval pFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateEx(byval rclsid as const IID const ptr, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateFromData(byval pSrcDataObj as LPDATAOBJECT, byval riid as const IID const ptr, byval renderopt as DWORD, byval pFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateFromDataEx(byval pSrcDataObj as LPDATAOBJECT, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLinkFromData(byval pSrcDataObj as LPDATAOBJECT, byval riid as const IID const ptr, byval renderopt as DWORD, byval pFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLinkFromDataEx(byval pSrcDataObj as LPDATAOBJECT, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateStaticFromData(byval pSrcDataObj as LPDATAOBJECT, byval iid as const IID const ptr, byval renderopt as DWORD, byval pFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLink(byval pmkLinkSrc as LPMONIKER, byval riid as const IID const ptr, byval renderopt as DWORD, byval lpFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLinkEx(byval pmkLinkSrc as LPMONIKER, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLinkToFile(byval lpszFileName as LPCOLESTR, byval riid as const IID const ptr, byval renderopt as DWORD, byval lpFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateLinkToFileEx(byval lpszFileName as LPCOLESTR, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateFromFile(byval rclsid as const IID const ptr, byval lpszFileName as LPCOLESTR, byval riid as const IID const ptr, byval renderopt as DWORD, byval lpFormatEtc as LPFORMATETC, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleCreateFromFileEx(byval rclsid as const IID const ptr, byval lpszFileName as LPCOLESTR, byval riid as const IID const ptr, byval dwFlags as DWORD, byval renderopt as DWORD, byval cFormats as ULONG, byval rgAdvf as DWORD ptr, byval rgFormatEtc as LPFORMATETC, byval lpAdviseSink as IAdviseSink ptr, byval rgdwConnection as DWORD ptr, byval pClientSite as LPOLECLIENTSITE, byval pStg as LPSTORAGE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleLoad(byval pStg as LPSTORAGE, byval riid as const IID const ptr, byval pClientSite as LPOLECLIENTSITE, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleSave(byval pPS as LPPERSISTSTORAGE, byval pStg as LPSTORAGE, byval fSameAsLoad as WINBOOL) as HRESULT
+declare function OleLoadFromStream(byval pStm as LPSTREAM, byval iidInterface as const IID const ptr, byval ppvObj as LPVOID ptr) as HRESULT
+declare function OleSaveToStream(byval pPStm as LPPERSISTSTREAM, byval pStm as LPSTREAM) as HRESULT
+declare function OleSetContainedObject(byval pUnknown as LPUNKNOWN, byval fContained as WINBOOL) as HRESULT
+declare function OleNoteObjectVisible(byval pUnknown as LPUNKNOWN, byval fVisible as WINBOOL) as HRESULT
+declare function RegisterDragDrop(byval hwnd as HWND, byval pDropTarget as LPDROPTARGET) as HRESULT
+declare function RevokeDragDrop(byval hwnd as HWND) as HRESULT
+declare function DoDragDrop(byval pDataObj as LPDATAOBJECT, byval pDropSource as LPDROPSOURCE, byval dwOKEffects as DWORD, byval pdwEffect as LPDWORD) as HRESULT
+declare function OleSetClipboard(byval pDataObj as LPDATAOBJECT) as HRESULT
+declare function OleGetClipboard(byval ppDataObj as LPDATAOBJECT ptr) as HRESULT
+declare function OleFlushClipboard() as HRESULT
+declare function OleIsCurrentClipboard(byval pDataObj as LPDATAOBJECT) as HRESULT
+declare function OleCreateMenuDescriptor(byval hmenuCombined as HMENU, byval lpMenuWidths as LPOLEMENUGROUPWIDTHS) as HOLEMENU
+declare function OleSetMenuDescriptor(byval holemenu as HOLEMENU, byval hwndFrame as HWND, byval hwndActiveObject as HWND, byval lpFrame as LPOLEINPLACEFRAME, byval lpActiveObj as LPOLEINPLACEACTIVEOBJECT) as HRESULT
+declare function OleDestroyMenuDescriptor(byval holemenu as HOLEMENU) as HRESULT
+declare function OleTranslateAccelerator(byval lpFrame as LPOLEINPLACEFRAME, byval lpFrameInfo as LPOLEINPLACEFRAMEINFO, byval lpmsg as LPMSG) as HRESULT
+declare function OleDuplicateData(byval hSrc as HANDLE, byval cfFormat as CLIPFORMAT, byval uiFlags as UINT) as HANDLE
+declare function OleDraw(byval pUnknown as LPUNKNOWN, byval dwAspect as DWORD, byval hdcDraw as HDC, byval lprcBounds as LPCRECT) as HRESULT
+declare function OleRun(byval pUnknown as LPUNKNOWN) as HRESULT
+declare function OleIsRunning(byval pObject as LPOLEOBJECT) as WINBOOL
+declare function OleLockRunning(byval pUnknown as LPUNKNOWN, byval fLock as WINBOOL, byval fLastUnlockCloses as WINBOOL) as HRESULT
+declare sub ReleaseStgMedium(byval as LPSTGMEDIUM)
+declare function CreateOleAdviseHolder(byval ppOAHolder as LPOLEADVISEHOLDER ptr) as HRESULT
+declare function OleCreateDefaultHandler(byval clsid as const IID const ptr, byval pUnkOuter as LPUNKNOWN, byval riid as const IID const ptr, byval lplpObj as LPVOID ptr) as HRESULT
+declare function OleCreateEmbeddingHelper(byval clsid as const IID const ptr, byval pUnkOuter as LPUNKNOWN, byval flags as DWORD, byval pCF as LPCLASSFACTORY, byval riid as const IID const ptr, byval lplpObj as LPVOID ptr) as HRESULT
+declare function IsAccelerator(byval hAccel as HACCEL, byval cAccelEntries as long, byval lpMsg as LPMSG, byval lpwCmd as WORD ptr) as WINBOOL
+declare function OleGetIconOfFile(byval lpszPath as LPOLESTR, byval fUseFileAsLabel as WINBOOL) as HGLOBAL
+declare function OleGetIconOfClass(byval rclsid as const IID const ptr, byval lpszLabel as LPOLESTR, byval fUseTypeAsLabel as WINBOOL) as HGLOBAL
+declare function OleMetafilePictFromIconAndLabel(byval hIcon as HICON, byval lpszLabel as LPOLESTR, byval lpszSourceFile as LPOLESTR, byval iIconIndex as UINT) as HGLOBAL
+declare function OleRegGetUserType(byval clsid as const IID const ptr, byval dwFormOfType as DWORD, byval pszUserType as LPOLESTR ptr) as HRESULT
+declare function OleRegGetMiscStatus(byval clsid as const IID const ptr, byval dwAspect as DWORD, byval pdwStatus as DWORD ptr) as HRESULT
+declare function OleRegEnumFormatEtc(byval clsid as const IID const ptr, byval dwDirection as DWORD, byval ppenum as LPENUMFORMATETC ptr) as HRESULT
+declare function OleRegEnumVerbs(byval clsid as const IID const ptr, byval ppenum as LPENUMOLEVERB ptr) as HRESULT
+type LPOLESTREAM as _OLESTREAM ptr
 
+type _OLESTREAMVTBL
+	Get as function(byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
+	Put as function(byval as LPOLESTREAM, byval as const any ptr, byval as DWORD) as DWORD
+end type
+
+type OLESTREAMVTBL as _OLESTREAMVTBL
 type LPOLESTREAMVTBL as OLESTREAMVTBL ptr
 
-type OLESTREAM
+type _OLESTREAM
 	lpstbl as LPOLESTREAMVTBL
 end type
 
-type LPOLESTREAM as OLESTREAM ptr
+type OLESTREAM as _OLESTREAM
+declare function OleConvertOLESTREAMToIStorage(byval lpolestream as LPOLESTREAM, byval pstg as LPSTORAGE, byval ptd as const DVTARGETDEVICE ptr) as HRESULT
+declare function OleConvertIStorageToOLESTREAM(byval pstg as LPSTORAGE, byval lpolestream as LPOLESTREAM) as HRESULT
+declare function GetHGlobalFromILockBytes(byval plkbyt as LPLOCKBYTES, byval phglobal as HGLOBAL ptr) as HRESULT
+declare function CreateILockBytesOnHGlobal(byval hGlobal as HGLOBAL, byval fDeleteOnRelease as WINBOOL, byval pplkbyt as LPLOCKBYTES ptr) as HRESULT
+declare function OleDoAutoConvert(byval pStg as LPSTORAGE, byval pClsidNew as LPCLSID) as HRESULT
+declare function OleGetAutoConvert(byval clsidOld as const IID const ptr, byval pClsidNew as LPCLSID) as HRESULT
+declare function OleSetAutoConvert(byval clsidOld as const IID const ptr, byval clsidNew as const IID const ptr) as HRESULT
+declare function GetConvertStg(byval pStg as LPSTORAGE) as HRESULT
+declare function SetConvertStg(byval pStg as LPSTORAGE, byval fConvert as WINBOOL) as HRESULT
+declare function OleConvertIStorageToOLESTREAMEx(byval pstg as LPSTORAGE, byval cfFormat as CLIPFORMAT, byval lWidth as LONG, byval lHeight as LONG, byval dwSize as DWORD, byval pmedium as LPSTGMEDIUM, byval polestm as LPOLESTREAM) as HRESULT
+declare function OleConvertOLESTREAMToIStorageEx(byval polestm as LPOLESTREAM, byval pstg as LPSTORAGE, byval pcfFormat as CLIPFORMAT ptr, byval plwWidth as LONG ptr, byval plHeight as LONG ptr, byval pdwSize as DWORD ptr, byval pmedium as LPSTGMEDIUM) as HRESULT
 
-type OLESTREAMVTBL
-	Get as function (byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
-	Put as function (byval as LPOLESTREAM, byval as any ptr, byval as DWORD) as DWORD
-end type
-
-#ifndef CreateDataAdviseHolder
-declare function CreateDataAdviseHolder alias "CreateDataAdviseHolder" (byval as LPDATAADVISEHOLDER ptr) as HRESULT
-#endif
-declare function OleBuildVersion alias "OleBuildVersion" () as DWORD
-declare function ReadClassStg alias "ReadClassStg" (byval as LPSTORAGE, byval as CLSID ptr) as HRESULT
-declare function WriteClassStg alias "WriteClassStg" (byval as LPSTORAGE, byval as CLSID ptr) as HRESULT
-declare function ReadClassStm alias "ReadClassStm" (byval as LPSTREAM, byval as CLSID ptr) as HRESULT
-declare function WriteClassStm alias "WriteClassStm" (byval as LPSTREAM, byval as CLSID ptr) as HRESULT
-declare function WriteFmtUserTypeStg alias "WriteFmtUserTypeStg" (byval as LPSTORAGE, byval as CLIPFORMAT, byval as LPOLESTR) as HRESULT
-declare function ReadFmtUserTypeStg alias "ReadFmtUserTypeStg" (byval as LPSTORAGE, byval as CLIPFORMAT ptr, byval as LPOLESTR ptr) as HRESULT
-declare function OleInitialize alias "OleInitialize" (byval as PVOID) as HRESULT
-declare sub OleUninitialize alias "OleUninitialize" ()
-declare function OleQueryLinkFromData alias "OleQueryLinkFromData" (byval as LPDATAOBJECT) as HRESULT
-declare function OleQueryCreateFromData alias "OleQueryCreateFromData" (byval as LPDATAOBJECT) as HRESULT
-declare function OleCreate alias "OleCreate" (byval as CLSID ptr, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateFromData alias "OleCreateFromData" (byval as LPDATAOBJECT, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateLinkFromData alias "OleCreateLinkFromData" (byval as LPDATAOBJECT, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateStaticFromData alias "OleCreateStaticFromData" (byval as LPDATAOBJECT, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateLink alias "OleCreateLink" (byval as LPMONIKER, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateLinkToFile alias "OleCreateLinkToFile" (byval as LPCOLESTR, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleCreateFromFile alias "OleCreateFromFile" (byval as CLSID ptr, byval as LPCOLESTR, byval as IID ptr, byval as DWORD, byval as LPFORMATETC, byval as LPOLECLIENTSITE, byval as LPSTORAGE, byval as PVOID ptr) as HRESULT
-declare function OleLoad alias "OleLoad" (byval as LPSTORAGE, byval as IID ptr, byval as LPOLECLIENTSITE, byval as PVOID ptr) as HRESULT
-declare function OleSave alias "OleSave" (byval as LPPERSISTSTORAGE, byval as LPSTORAGE, byval as BOOL) as HRESULT
-declare function OleLoadFromStream alias "OleLoadFromStream" (byval as LPSTREAM, byval as IID ptr, byval as PVOID ptr) as HRESULT
-declare function OleSaveToStream alias "OleSaveToStream" (byval as LPPERSISTSTREAM, byval as LPSTREAM) as HRESULT
-declare function OleSetContainedObject alias "OleSetContainedObject" (byval as LPUNKNOWN, byval as BOOL) as HRESULT
-declare function OleNoteObjectVisible alias "OleNoteObjectVisible" (byval as LPUNKNOWN, byval as BOOL) as HRESULT
-declare function RegisterDragDrop alias "RegisterDragDrop" (byval as HWND, byval as LPDROPTARGET) as HRESULT
-declare function RevokeDragDrop alias "RevokeDragDrop" (byval as HWND) as HRESULT
-declare function DoDragDrop alias "DoDragDrop" (byval as LPDATAOBJECT, byval as LPDROPSOURCE, byval as DWORD, byval as PDWORD) as HRESULT
-declare function OleSetClipboard alias "OleSetClipboard" (byval as LPDATAOBJECT) as HRESULT
-declare function OleGetClipboard alias "OleGetClipboard" (byval as LPDATAOBJECT ptr) as HRESULT
-declare function OleFlushClipboard alias "OleFlushClipboard" () as HRESULT
-declare function OleIsCurrentClipboard alias "OleIsCurrentClipboard" (byval as LPDATAOBJECT) as HRESULT
-declare function OleCreateMenuDescriptor alias "OleCreateMenuDescriptor" (byval as HMENU, byval as LPOLEMENUGROUPWIDTHS) as HOLEMENU
-declare function OleSetMenuDescriptor alias "OleSetMenuDescriptor" (byval as HOLEMENU, byval as HWND, byval as HWND, byval as LPOLEINPLACEFRAME, byval as LPOLEINPLACEACTIVEOBJECT) as HRESULT
-declare function OleDestroyMenuDescriptor alias "OleDestroyMenuDescriptor" (byval as HOLEMENU) as HRESULT
-declare function OleTranslateAccelerator alias "OleTranslateAccelerator" (byval as LPOLEINPLACEFRAME, byval as LPOLEINPLACEFRAMEINFO, byval as LPMSG) as HRESULT
-declare function OleDuplicateData alias "OleDuplicateData" (byval as HANDLE, byval as CLIPFORMAT, byval as UINT) as HANDLE
-declare function OleDraw alias "OleDraw" (byval as LPUNKNOWN, byval as DWORD, byval as HDC, byval as LPCRECT) as HRESULT
-declare function OleRun alias "OleRun" (byval as LPUNKNOWN) as HRESULT
-declare function OleIsRunning alias "OleIsRunning" (byval as LPOLEOBJECT) as BOOL
-declare function OleLockRunning alias "OleLockRunning" (byval as LPUNKNOWN, byval as BOOL, byval as BOOL) as HRESULT
-declare sub ReleaseStgMedium alias "ReleaseStgMedium" (byval as LPSTGMEDIUM)
-declare function CreateOleAdviseHolder alias "CreateOleAdviseHolder" (byval as LPOLEADVISEHOLDER ptr) as HRESULT
-declare function OleCreateDefaultHandler alias "OleCreateDefaultHandler" (byval as CLSID ptr, byval as LPUNKNOWN, byval as IID ptr, byval as PVOID ptr) as HRESULT
-declare function OleCreateEmbeddingHelper alias "OleCreateEmbeddingHelper" (byval as CLSID ptr, byval as LPUNKNOWN, byval as DWORD, byval as LPCLASSFACTORY, byval as IID ptr, byval as PVOID ptr) as HRESULT
-declare function IsAccelerator alias "IsAccelerator" (byval as HACCEL, byval as integer, byval as LPMSG, byval as WORD ptr) as BOOL
-declare function OleGetIconOfFile alias "OleGetIconOfFile" (byval as LPOLESTR, byval as BOOL) as HGLOBAL
-declare function OleGetIconOfClass alias "OleGetIconOfClass" (byval as CLSID ptr, byval as LPOLESTR, byval as BOOL) as HGLOBAL
-declare function OleMetafilePictFromIconAndLabel alias "OleMetafilePictFromIconAndLabel" (byval as HICON, byval as LPOLESTR, byval as LPOLESTR, byval as UINT) as HGLOBAL
-declare function OleRegGetUserType alias "OleRegGetUserType" (byval as CLSID ptr, byval as DWORD, byval as LPOLESTR ptr) as HRESULT
-declare function OleRegGetMiscStatus alias "OleRegGetMiscStatus" (byval as CLSID ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
-declare function OleRegEnumFormatEtc alias "OleRegEnumFormatEtc" (byval as CLSID ptr, byval as DWORD, byval as LPENUMFORMATETC ptr) as HRESULT
-declare function OleRegEnumVerbs alias "OleRegEnumVerbs" (byval as CLSID ptr, byval as LPENUMOLEVERB ptr) as HRESULT
-declare function OleConvertOLESTREAMToIStorage alias "OleConvertOLESTREAMToIStorage" (byval as LPOLESTREAM, byval as LPSTORAGE, byval as DVTARGETDEVICE ptr) as HRESULT
-declare function OleConvertIStorageToOLESTREAM alias "OleConvertIStorageToOLESTREAM" (byval as LPSTORAGE, byval as LPOLESTREAM) as HRESULT
-declare function GetHGlobalFromILockBytes alias "GetHGlobalFromILockBytes" (byval as LPLOCKBYTES, byval as HGLOBAL ptr) as HRESULT
-declare function CreateILockBytesOnHGlobal alias "CreateILockBytesOnHGlobal" (byval as HGLOBAL, byval as BOOL, byval as LPLOCKBYTES ptr) as HRESULT
-declare function GetHGlobalFromStream alias "GetHGlobalFromStream" (byval as LPSTREAM, byval as HGLOBAL ptr) as HRESULT
-declare function CreateStreamOnHGlobal alias "CreateStreamOnHGlobal" (byval as HGLOBAL, byval as BOOL, byval as LPSTREAM ptr) as HRESULT
-declare function OleDoAutoConvert alias "OleDoAutoConvert" (byval as LPSTORAGE, byval as LPCLSID) as HRESULT
-declare function OleGetAutoConvert alias "OleGetAutoConvert" (byval as CLSID ptr, byval as LPCLSID) as HRESULT
-declare function OleSetAutoConvert alias "OleSetAutoConvert" (byval as CLSID ptr, byval as CLSID ptr) as HRESULT
-declare function GetConvertStg alias "GetConvertStg" (byval as LPSTORAGE) as HRESULT
-declare function SetConvertStg alias "SetConvertStg" (byval as LPSTORAGE, byval as BOOL) as HRESULT
-declare function OleConvertIStorageToOLESTREAMEx alias "OleConvertIStorageToOLESTREAMEx" (byval as LPSTORAGE, byval as CLIPFORMAT, byval as LONG, byval as LONG, byval as DWORD, byval as LPSTGMEDIUM, byval as LPOLESTREAM) as HRESULT
-declare function OleConvertOLESTREAMToIStorageEx alias "OleConvertOLESTREAMToIStorageEx" (byval as LPOLESTREAM, byval as LPSTORAGE, byval as CLIPFORMAT ptr, byval as LONG ptr, byval as LONG ptr, byval as DWORD ptr, byval as LPSTGMEDIUM) as HRESULT
-
-#endif
+end extern

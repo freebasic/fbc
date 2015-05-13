@@ -328,13 +328,29 @@ function cAssignmentOrPtrCall _
 	'' not LET?
 	if( lexGetToken( ) <> FB_TK_LET ) then
 		'' Variable
-		expr = cVarOrDeref( )
+		'' ... or anything else that can appear on the lhs of an assignment.
+		'' As a special case, we allow all casts here for now (while normally
+		'' only noconv casts are allowed on lhs of assignments), see below...
+		expr = cVarOrDeref( FB_VAREXPROPT_ALLOWALLCASTS )
 		if( expr = NULL ) then
 			exit function
-    	end if
+		end if
 
-    	return cAssignmentOrPtrCallEx( expr )
-    end if
+		'' If it's a function CALL, check whether we're ignoring the result
+		if( cMaybeIgnoreCallResult( expr ) ) then
+			return TRUE
+		end if
+
+		'' Couldn't ignore function result; maybe it's not a CALL at all.
+		'' Undo the effects of FB_VAREXPROPT_ALLOWALLCASTS: Complain if there
+		'' are not just noconv casts.
+		if( astSkipNoConvCAST( expr ) <> astSkipCASTs( expr ) ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
+
+		return cAssignmentOrPtrCallEx( expr )
+	end if
 
     '' LET..
     if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then

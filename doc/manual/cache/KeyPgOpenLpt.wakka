@@ -7,7 +7,7 @@ Open a printer device
 {{fbdoc item="usage"}}##
 	**Open Lpt** "LPT..." [[KeyPgAs as]] [#]//filenum//
 		//or//
-	//result// = **Open Lpt**( "LPT..." [[KeyPgAs as]] [#]//filenum// )
+	//result// = **Open Lpt**( "LPT..."[,] [[KeyPgAs as]] [#]//filenum// )
 ##
 {{fbdoc item="param"}}
 	##//x//##

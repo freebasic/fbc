@@ -1,378 +1,393 @@
-''
-''
-'' XKB -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XKB_bi__
-#define __XKB_bi__
+#pragma once
 
-#define X_kbUseExtension 0
-#define X_kbSelectEvents 1
-#define X_kbBell 3
-#define X_kbGetState 4
-#define X_kbLatchLockState 5
-#define X_kbGetControls 6
-#define X_kbSetControls 7
-#define X_kbGetMap 8
-#define X_kbSetMap 9
-#define X_kbGetCompatMap 10
-#define X_kbSetCompatMap 11
-#define X_kbGetIndicatorState 12
-#define X_kbGetIndicatorMap 13
-#define X_kbSetIndicatorMap 14
-#define X_kbGetNamedIndicator 15
-#define X_kbSetNamedIndicator 16
-#define X_kbGetNames 17
-#define X_kbSetNames 18
-#define X_kbGetGeometry 19
-#define X_kbSetGeometry 20
-#define X_kbPerClientFlags 21
-#define X_kbListComponents 22
-#define X_kbGetKbdByName 23
-#define X_kbGetDeviceInfo 24
-#define X_kbSetDeviceInfo 25
-#define X_kbSetDebuggingFlags 101
-#define XkbEventCode 0
-#define XkbNumberEvents (0+1)
-#define XkbNewKeyboardNotify 0
-#define XkbMapNotify 1
-#define XkbStateNotify 2
-#define XkbControlsNotify 3
-#define XkbIndicatorStateNotify 4
-#define XkbIndicatorMapNotify 5
-#define XkbNamesNotify 6
-#define XkbCompatMapNotify 7
-#define XkbBellNotify 8
-#define XkbActionMessage 9
-#define XkbAccessXNotify 10
-#define XkbExtensionDeviceNotify 11
-#define XkbNewKeyboardNotifyMask (1L shl 0)
-#define XkbMapNotifyMask (1L shl 1)
-#define XkbStateNotifyMask (1L shl 2)
-#define XkbControlsNotifyMask (1L shl 3)
-#define XkbIndicatorStateNotifyMask (1L shl 4)
-#define XkbIndicatorMapNotifyMask (1L shl 5)
-#define XkbNamesNotifyMask (1L shl 6)
-#define XkbCompatMapNotifyMask (1L shl 7)
-#define XkbBellNotifyMask (1L shl 8)
-#define XkbActionMessageMask (1L shl 9)
-#define XkbAccessXNotifyMask (1L shl 10)
-#define XkbExtensionDeviceNotifyMask (1L shl 11)
-#define XkbAllEventsMask (&hFFF)
-#define XkbNKN_KeycodesMask (1L shl 0)
-#define XkbNKN_GeometryMask (1L shl 1)
-#define XkbNKN_DeviceIDMask (1L shl 2)
-#define XkbAllNewKeyboardEventsMask (&h7)
-#define XkbAXN_SKPress 0
-#define XkbAXN_SKAccept 1
-#define XkbAXN_SKReject 2
-#define XkbAXN_SKRelease 3
-#define XkbAXN_BKAccept 4
-#define XkbAXN_BKReject 5
-#define XkbAXN_AXKWarning 6
-#define XkbAXN_SKPressMask (1L shl 0)
-#define XkbAXN_SKAcceptMask (1L shl 1)
-#define XkbAXN_SKRejectMask (1L shl 2)
-#define XkbAXN_SKReleaseMask (1L shl 3)
-#define XkbAXN_BKAcceptMask (1L shl 4)
-#define XkbAXN_BKRejectMask (1L shl 5)
-#define XkbAXN_AXKWarningMask (1L shl 6)
-#define XkbAllAccessXEventsMask (&hf)
-#define XkbAllBellEventsMask (1L shl 0)
-#define XkbAllActionMessagesMask (1L shl 0)
-#define XkbKeyboard 0
-#define XkbNumberErrors 1
-#define XkbErr_BadDevice &hff
-#define XkbErr_BadClass &hfe
-#define XkbErr_BadId &hfd
-#define XkbClientMapMask (1L shl 0)
-#define XkbServerMapMask (1L shl 1)
-#define XkbCompatMapMask (1L shl 2)
-#define XkbIndicatorMapMask (1L shl 3)
-#define XkbNamesMask (1L shl 4)
-#define XkbGeometryMask (1L shl 5)
-#define XkbControlsMask (1L shl 6)
-#define XkbAllComponentsMask (&h7f)
-#define XkbModifierStateMask (1L shl 0)
-#define XkbModifierBaseMask (1L shl 1)
-#define XkbModifierLatchMask (1L shl 2)
-#define XkbModifierLockMask (1L shl 3)
-#define XkbGroupStateMask (1L shl 4)
-#define XkbGroupBaseMask (1L shl 5)
-#define XkbGroupLatchMask (1L shl 6)
-#define XkbGroupLockMask (1L shl 7)
-#define XkbCompatStateMask (1L shl 8)
-#define XkbGrabModsMask (1L shl 9)
-#define XkbCompatGrabModsMask (1L shl 10)
-#define XkbLookupModsMask (1L shl 11)
-#define XkbCompatLookupModsMask (1L shl 12)
-#define XkbPointerButtonMask (1L shl 13)
-#define XkbAllStateComponentsMask (&h3fff)
-#define XkbRepeatKeysMask (1L shl 0)
-#define XkbSlowKeysMask (1L shl 1)
-#define XkbBounceKeysMask (1L shl 2)
-#define XkbStickyKeysMask (1L shl 3)
-#define XkbMouseKeysMask (1L shl 4)
-#define XkbMouseKeysAccelMask (1L shl 5)
-#define XkbAccessXKeysMask (1L shl 6)
-#define XkbAccessXTimeoutMask (1L shl 7)
-#define XkbAccessXFeedbackMask (1L shl 8)
-#define XkbAudibleBellMask (1L shl 9)
-#define XkbOverlay1Mask (1L shl 10)
-#define XkbOverlay2Mask (1L shl 11)
-#define XkbIgnoreGroupLockMask (1L shl 12)
-#define XkbGroupsWrapMask (1L shl 27)
-#define XkbInternalModsMask (1L shl 28)
-#define XkbIgnoreLockModsMask (1L shl 29)
-#define XkbPerKeyRepeatMask (1L shl 30)
-#define XkbControlsEnabledMask (1L shl 31)
-#define XkbAccessXOptionsMask ((1L shl 3) or (1L shl 8))
-#define XkbAllBooleanCtrlsMask (&h00001FFF)
-#define XkbAllControlsMask (&hF8001FFF)
-#define XkbAllControlEventsMask (&hF8001FFF)
-#define XkbAX_SKPressFBMask (1L shl 0)
-#define XkbAX_SKAcceptFBMask (1L shl 1)
-#define XkbAX_FeatureFBMask (1L shl 2)
-#define XkbAX_SlowWarnFBMask (1L shl 3)
-#define XkbAX_IndicatorFBMask (1L shl 4)
-#define XkbAX_StickyKeysFBMask (1L shl 5)
-#define XkbAX_TwoKeysMask (1L shl 6)
-#define XkbAX_LatchToLockMask (1L shl 7)
-#define XkbAX_SKReleaseFBMask (1L shl 8)
-#define XkbAX_SKRejectFBMask (1L shl 9)
-#define XkbAX_BKRejectFBMask (1L shl 10)
-#define XkbAX_DumbBellFBMask (1L shl 11)
-#define XkbAX_FBOptionsMask (&hF3F)
-#define XkbAX_SKOptionsMask (&h0C0)
-#define XkbAX_AllOptionsMask (&hFFF)
-#define XkbUseCoreKbd &h0100
-#define XkbUseCorePtr &h0200
-#define XkbDfltXIClass &h0300
-#define XkbDfltXIId &h0400
-#define XkbAllXIClasses &h0500
-#define XkbAllXIIds &h0600
-#define XkbXINone &hff00
-#define XkbNoModifier &hff
-#define XkbNoShiftLevel &hff
-#define XkbNoShape &hff
-#define XkbNoIndicator &hff
-#define XkbNoModifierMask 0
-#define XkbAllModifiersMask &hff
-#define XkbAllVirtualModsMask &hffff
-#define XkbNumKbdGroups 4
-#define XkbMaxKbdGroup (4-1)
-#define XkbMaxMouseKeysBtn 4
-#define XkbGroup1Index 0
-#define XkbGroup2Index 1
-#define XkbGroup3Index 2
-#define XkbGroup4Index 3
-#define XkbAnyGroup 254
-#define XkbAllGroups 255
-#define XkbGroup1Mask (1 shl 0)
-#define XkbGroup2Mask (1 shl 1)
-#define XkbGroup3Mask (1 shl 2)
-#define XkbGroup4Mask (1 shl 3)
-#define XkbAnyGroupMask (1 shl 7)
-#define XkbAllGroupsMask (&hf)
-#define XkbWrapIntoRange (&h00)
-#define XkbClampIntoRange (&h40)
-#define XkbRedirectIntoRange (&h80)
-#define XkbSA_ClearLocks (1L shl 0)
-#define XkbSA_LatchToLock (1L shl 1)
-#define XkbSA_LockNoLock (1L shl 0)
-#define XkbSA_LockNoUnlock (1L shl 1)
-#define XkbSA_UseModMapMods (1L shl 2)
-#define XkbSA_GroupAbsolute (1L shl 2)
-#define XkbSA_UseDfltButton 0
-#define XkbSA_NoAcceleration (1L shl 0)
-#define XkbSA_MoveAbsoluteX (1L shl 1)
-#define XkbSA_MoveAbsoluteY (1L shl 2)
-#define XkbSA_ISODfltIsGroup (1L shl 7)
-#define XkbSA_ISONoAffectMods (1L shl 6)
-#define XkbSA_ISONoAffectGroup (1L shl 5)
-#define XkbSA_ISONoAffectPtr (1L shl 4)
-#define XkbSA_ISONoAffectCtrls (1L shl 3)
-#define XkbSA_ISOAffectMask (&h78)
-#define XkbSA_MessageOnPress (1L shl 0)
-#define XkbSA_MessageOnRelease (1L shl 1)
-#define XkbSA_MessageGenKeyEvent (1L shl 2)
-#define XkbSA_AffectDfltBtn 1
-#define XkbSA_DfltBtnAbsolute (1L shl 2)
-#define XkbSA_SwitchApplication (1L shl 0)
-#define XkbSA_SwitchAbsolute (1L shl 2)
-#define XkbSA_IgnoreVal (&h00)
-#define XkbSA_SetValMin (&h10)
-#define XkbSA_SetValCenter (&h20)
-#define XkbSA_SetValMax (&h30)
-#define XkbSA_SetValRelative (&h40)
-#define XkbSA_SetValAbsolute (&h50)
-#define XkbSA_ValOpMask (&h70)
-#define XkbSA_ValScaleMask (&h07)
-#define XkbSA_NoAction &h00
-#define XkbSA_SetMods &h01
-#define XkbSA_LatchMods &h02
-#define XkbSA_LockMods &h03
-#define XkbSA_SetGroup &h04
-#define XkbSA_LatchGroup &h05
-#define XkbSA_LockGroup &h06
-#define XkbSA_MovePtr &h07
-#define XkbSA_PtrBtn &h08
-#define XkbSA_LockPtrBtn &h09
-#define XkbSA_SetPtrDflt &h0a
-#define XkbSA_ISOLock &h&b
-#define XkbSA_Terminate &h0c
-#define XkbSA_SwitchScreen &h0d
-#define XkbSA_SetControls &h0e
-#define XkbSA_LockControls &h0f
-#define XkbSA_ActionMessage &h10
-#define XkbSA_RedirectKey &h11
-#define XkbSA_DeviceBtn &h12
-#define XkbSA_LockDeviceBtn &h13
-#define XkbSA_DeviceValuator &h14
-#define XkbSA_LastAction &h14
-#define XkbSA_NumActions (&h14+1)
-#define XkbSA_XFree86Private &h86
-#define XkbSA_BreakLatch ((1 shl &h00) or (1 shl &h08) or (1 shl &h09) or (1 shl &h0c) or (1 shl &h0d) or (1 shl &h0e) or (1 shl &h0f) or (1 shl &h10) or (1 shl &h11) or (1 shl &h12) or (1 shl &h13))
-#define XkbKB_Permanent &h80
-#define XkbKB_OpMask &h7f
-#define XkbKB_Default &h00
-#define XkbKB_Lock &h01
-#define XkbKB_RadioGroup &h02
-#define XkbKB_Overlay1 &h03
-#define XkbKB_Overlay2 &h04
-#define XkbKB_RGAllowNone &h80
-#define XkbMinLegalKeyCode 8
-#define XkbMaxLegalKeyCode 255
-#define XkbMaxKeyCount (255-8+1)
-#define XkbPerKeyBitArraySize ((255+1)/8)
-#define XkbNumModifiers 8
-#define XkbNumVirtualMods 16
-#define XkbNumIndicators 32
-#define XkbAllIndicatorsMask (&hffffffff)
-#define XkbMaxRadioGroups 32
-#define XkbAllRadioGroupsMask (&hffffffff)
-#define XkbMaxShiftLevel 63
-#define XkbMaxSymsPerKey (63*4)
-#define XkbRGMaxMembers 12
-#define XkbActionMessageLength 6
-#define XkbKeyNameLength 4
-#define XkbMaxRedirectCount 8
-#define XkbGeomPtsPerMM 10
-#define XkbGeomMaxColors 32
-#define XkbGeomMaxLabelColors 3
-#define XkbGeomMaxPriority 255
-#define XkbOneLevelIndex 0
-#define XkbTwoLevelIndex 1
-#define XkbAlphabeticIndex 2
-#define XkbKeypadIndex 3
-#define XkbLastRequiredType 3
-#define XkbNumRequiredTypes (3+1)
-#define XkbMaxKeyTypes 255
-#define XkbOneLevelMask (1 shl 0)
-#define XkbTwoLevelMask (1 shl 1)
-#define XkbAlphabeticMask (1 shl 2)
-#define XkbKeypadMask (1 shl 3)
-#define XkbAllRequiredTypes (&hf)
+#include once "crt/long.bi"
+
+#define _XKB_H_
+const X_kbUseExtension = 0
+const X_kbSelectEvents = 1
+const X_kbBell = 3
+const X_kbGetState = 4
+const X_kbLatchLockState = 5
+const X_kbGetControls = 6
+const X_kbSetControls = 7
+const X_kbGetMap = 8
+const X_kbSetMap = 9
+const X_kbGetCompatMap = 10
+const X_kbSetCompatMap = 11
+const X_kbGetIndicatorState = 12
+const X_kbGetIndicatorMap = 13
+const X_kbSetIndicatorMap = 14
+const X_kbGetNamedIndicator = 15
+const X_kbSetNamedIndicator = 16
+const X_kbGetNames = 17
+const X_kbSetNames = 18
+const X_kbGetGeometry = 19
+const X_kbSetGeometry = 20
+const X_kbPerClientFlags = 21
+const X_kbListComponents = 22
+const X_kbGetKbdByName = 23
+const X_kbGetDeviceInfo = 24
+const X_kbSetDeviceInfo = 25
+const X_kbSetDebuggingFlags = 101
+const XkbEventCode = 0
+#define XkbNumberEvents (XkbEventCode + 1)
+const XkbNewKeyboardNotify = 0
+const XkbMapNotify = 1
+const XkbStateNotify = 2
+const XkbControlsNotify = 3
+const XkbIndicatorStateNotify = 4
+const XkbIndicatorMapNotify = 5
+const XkbNamesNotify = 6
+const XkbCompatMapNotify = 7
+const XkbBellNotify = 8
+const XkbActionMessage = 9
+const XkbAccessXNotify = 10
+const XkbExtensionDeviceNotify = 11
+const XkbNewKeyboardNotifyMask = cast(clong, 1) shl 0
+const XkbMapNotifyMask = cast(clong, 1) shl 1
+const XkbStateNotifyMask = cast(clong, 1) shl 2
+const XkbControlsNotifyMask = cast(clong, 1) shl 3
+const XkbIndicatorStateNotifyMask = cast(clong, 1) shl 4
+const XkbIndicatorMapNotifyMask = cast(clong, 1) shl 5
+const XkbNamesNotifyMask = cast(clong, 1) shl 6
+const XkbCompatMapNotifyMask = cast(clong, 1) shl 7
+const XkbBellNotifyMask = cast(clong, 1) shl 8
+const XkbActionMessageMask = cast(clong, 1) shl 9
+const XkbAccessXNotifyMask = cast(clong, 1) shl 10
+const XkbExtensionDeviceNotifyMask = cast(clong, 1) shl 11
+const XkbAllEventsMask = &hFFF
+const XkbNKN_KeycodesMask = cast(clong, 1) shl 0
+const XkbNKN_GeometryMask = cast(clong, 1) shl 1
+const XkbNKN_DeviceIDMask = cast(clong, 1) shl 2
+const XkbAllNewKeyboardEventsMask = &h7
+const XkbAXN_SKPress = 0
+const XkbAXN_SKAccept = 1
+const XkbAXN_SKReject = 2
+const XkbAXN_SKRelease = 3
+const XkbAXN_BKAccept = 4
+const XkbAXN_BKReject = 5
+const XkbAXN_AXKWarning = 6
+const XkbAXN_SKPressMask = cast(clong, 1) shl 0
+const XkbAXN_SKAcceptMask = cast(clong, 1) shl 1
+const XkbAXN_SKRejectMask = cast(clong, 1) shl 2
+const XkbAXN_SKReleaseMask = cast(clong, 1) shl 3
+const XkbAXN_BKAcceptMask = cast(clong, 1) shl 4
+const XkbAXN_BKRejectMask = cast(clong, 1) shl 5
+const XkbAXN_AXKWarningMask = cast(clong, 1) shl 6
+const XkbAllAccessXEventsMask = &h7f
+#define XkbAllStateEventsMask XkbAllStateComponentsMask
+#define XkbAllMapEventsMask XkbAllMapComponentsMask
+#define XkbAllIndicatorEventsMask XkbAllIndicatorsMask
+#define XkbAllNameEventsMask XkbAllNamesMask
+#define XkbAllCompatMapEventsMask XkbAllCompatMask
+const XkbAllBellEventsMask = cast(clong, 1) shl 0
+const XkbAllActionMessagesMask = cast(clong, 1) shl 0
+const XkbKeyboard = 0
+const XkbNumberErrors = 1
+const XkbErr_BadDevice = &hff
+const XkbErr_BadClass = &hfe
+const XkbErr_BadId = &hfd
+const XkbClientMapMask = cast(clong, 1) shl 0
+const XkbServerMapMask = cast(clong, 1) shl 1
+const XkbCompatMapMask = cast(clong, 1) shl 2
+const XkbIndicatorMapMask = cast(clong, 1) shl 3
+const XkbNamesMask = cast(clong, 1) shl 4
+const XkbGeometryMask = cast(clong, 1) shl 5
+const XkbControlsMask = cast(clong, 1) shl 6
+const XkbAllComponentsMask = &h7f
+const XkbModifierStateMask = cast(clong, 1) shl 0
+const XkbModifierBaseMask = cast(clong, 1) shl 1
+const XkbModifierLatchMask = cast(clong, 1) shl 2
+const XkbModifierLockMask = cast(clong, 1) shl 3
+const XkbGroupStateMask = cast(clong, 1) shl 4
+const XkbGroupBaseMask = cast(clong, 1) shl 5
+const XkbGroupLatchMask = cast(clong, 1) shl 6
+const XkbGroupLockMask = cast(clong, 1) shl 7
+const XkbCompatStateMask = cast(clong, 1) shl 8
+const XkbGrabModsMask = cast(clong, 1) shl 9
+const XkbCompatGrabModsMask = cast(clong, 1) shl 10
+const XkbLookupModsMask = cast(clong, 1) shl 11
+const XkbCompatLookupModsMask = cast(clong, 1) shl 12
+const XkbPointerButtonMask = cast(clong, 1) shl 13
+const XkbAllStateComponentsMask = &h3fff
+const XkbRepeatKeysMask = cast(clong, 1) shl 0
+const XkbSlowKeysMask = cast(clong, 1) shl 1
+const XkbBounceKeysMask = cast(clong, 1) shl 2
+const XkbStickyKeysMask = cast(clong, 1) shl 3
+const XkbMouseKeysMask = cast(clong, 1) shl 4
+const XkbMouseKeysAccelMask = cast(clong, 1) shl 5
+const XkbAccessXKeysMask = cast(clong, 1) shl 6
+const XkbAccessXTimeoutMask = cast(clong, 1) shl 7
+const XkbAccessXFeedbackMask = cast(clong, 1) shl 8
+const XkbAudibleBellMask = cast(clong, 1) shl 9
+const XkbOverlay1Mask = cast(clong, 1) shl 10
+const XkbOverlay2Mask = cast(clong, 1) shl 11
+const XkbIgnoreGroupLockMask = cast(clong, 1) shl 12
+const XkbGroupsWrapMask = cast(clong, 1) shl 27
+const XkbInternalModsMask = cast(clong, 1) shl 28
+const XkbIgnoreLockModsMask = cast(clong, 1) shl 29
+const XkbPerKeyRepeatMask = cast(clong, 1) shl 30
+const XkbControlsEnabledMask = cast(clong, 1) shl 31
+#define XkbAccessXOptionsMask (XkbStickyKeysMask or XkbAccessXFeedbackMask)
+const XkbAllBooleanCtrlsMask = &h00001FFF
+const XkbAllControlsMask = &hF8001FFF
+#define XkbAllControlEventsMask XkbAllControlsMask
+const XkbAX_SKPressFBMask = cast(clong, 1) shl 0
+const XkbAX_SKAcceptFBMask = cast(clong, 1) shl 1
+const XkbAX_FeatureFBMask = cast(clong, 1) shl 2
+const XkbAX_SlowWarnFBMask = cast(clong, 1) shl 3
+const XkbAX_IndicatorFBMask = cast(clong, 1) shl 4
+const XkbAX_StickyKeysFBMask = cast(clong, 1) shl 5
+const XkbAX_TwoKeysMask = cast(clong, 1) shl 6
+const XkbAX_LatchToLockMask = cast(clong, 1) shl 7
+const XkbAX_SKReleaseFBMask = cast(clong, 1) shl 8
+const XkbAX_SKRejectFBMask = cast(clong, 1) shl 9
+const XkbAX_BKRejectFBMask = cast(clong, 1) shl 10
+const XkbAX_DumbBellFBMask = cast(clong, 1) shl 11
+const XkbAX_FBOptionsMask = &hF3F
+const XkbAX_SKOptionsMask = &h0C0
+const XkbAX_AllOptionsMask = &hFFF
+const XkbUseCoreKbd = &h0100
+const XkbUseCorePtr = &h0200
+const XkbDfltXIClass = &h0300
+const XkbDfltXIId = &h0400
+const XkbAllXIClasses = &h0500
+const XkbAllXIIds = &h0600
+const XkbXINone = &hff00
+#define XkbLegalXILedClass(c) (((((c) = KbdFeedbackClass) orelse ((c) = LedFeedbackClass)) orelse ((c) = XkbDfltXIClass)) orelse ((c) = XkbAllXIClasses))
+#define XkbLegalXIBellClass(c) (((((c) = KbdFeedbackClass) orelse ((c) = BellFeedbackClass)) orelse ((c) = XkbDfltXIClass)) orelse ((c) = XkbAllXIClasses))
+#define XkbExplicitXIDevice(c) (((c) and (not &hff)) = 0)
+#define XkbExplicitXIClass(c) (((c) and (not &hff)) = 0)
+#define XkbExplicitXIId(c) (((c) and (not &hff)) = 0)
+#define XkbSingleXIClass(c) ((((c) and (not &hff)) = 0) orelse ((c) = XkbDfltXIClass))
+#define XkbSingleXIId(c) ((((c) and (not &hff)) = 0) orelse ((c) = XkbDfltXIId))
+const XkbNoModifier = &hff
+const XkbNoShiftLevel = &hff
+const XkbNoShape = &hff
+const XkbNoIndicator = &hff
+const XkbNoModifierMask = 0
+const XkbAllModifiersMask = &hff
+const XkbAllVirtualModsMask = &hffff
+const XkbNumKbdGroups = 4
+#define XkbMaxKbdGroup (XkbNumKbdGroups - 1)
+const XkbMaxMouseKeysBtn = 4
+const XkbGroup1Index = 0
+const XkbGroup2Index = 1
+const XkbGroup3Index = 2
+const XkbGroup4Index = 3
+const XkbAnyGroup = 254
+const XkbAllGroups = 255
+const XkbGroup1Mask = 1 shl 0
+const XkbGroup2Mask = 1 shl 1
+const XkbGroup3Mask = 1 shl 2
+const XkbGroup4Mask = 1 shl 3
+const XkbAnyGroupMask = 1 shl 7
+const XkbAllGroupsMask = &hf
+#define XkbBuildCoreState(m, g) ((((g) and &h3) shl 13) or ((m) and &hff))
+#define XkbGroupForCoreState(s) (((s) shr 13) and &h3)
+#define XkbIsLegalGroup(g) (((g) >= 0) andalso ((g) < XkbNumKbdGroups))
+const XkbWrapIntoRange = &h00
+const XkbClampIntoRange = &h40
+const XkbRedirectIntoRange = &h80
+const XkbSA_ClearLocks = cast(clong, 1) shl 0
+const XkbSA_LatchToLock = cast(clong, 1) shl 1
+const XkbSA_LockNoLock = cast(clong, 1) shl 0
+const XkbSA_LockNoUnlock = cast(clong, 1) shl 1
+const XkbSA_UseModMapMods = cast(clong, 1) shl 2
+const XkbSA_GroupAbsolute = cast(clong, 1) shl 2
+const XkbSA_UseDfltButton = 0
+const XkbSA_NoAcceleration = cast(clong, 1) shl 0
+const XkbSA_MoveAbsoluteX = cast(clong, 1) shl 1
+const XkbSA_MoveAbsoluteY = cast(clong, 1) shl 2
+const XkbSA_ISODfltIsGroup = cast(clong, 1) shl 7
+const XkbSA_ISONoAffectMods = cast(clong, 1) shl 6
+const XkbSA_ISONoAffectGroup = cast(clong, 1) shl 5
+const XkbSA_ISONoAffectPtr = cast(clong, 1) shl 4
+const XkbSA_ISONoAffectCtrls = cast(clong, 1) shl 3
+const XkbSA_ISOAffectMask = &h78
+const XkbSA_MessageOnPress = cast(clong, 1) shl 0
+const XkbSA_MessageOnRelease = cast(clong, 1) shl 1
+const XkbSA_MessageGenKeyEvent = cast(clong, 1) shl 2
+const XkbSA_AffectDfltBtn = 1
+const XkbSA_DfltBtnAbsolute = cast(clong, 1) shl 2
+const XkbSA_SwitchApplication = cast(clong, 1) shl 0
+const XkbSA_SwitchAbsolute = cast(clong, 1) shl 2
+const XkbSA_IgnoreVal = &h00
+const XkbSA_SetValMin = &h10
+const XkbSA_SetValCenter = &h20
+const XkbSA_SetValMax = &h30
+const XkbSA_SetValRelative = &h40
+const XkbSA_SetValAbsolute = &h50
+const XkbSA_ValOpMask = &h70
+const XkbSA_ValScaleMask = &h07
+#define XkbSA_ValOp(a) ((a) and XkbSA_ValOpMask)
+#define XkbSA_ValScale(a) ((a) and XkbSA_ValScaleMask)
+const XkbSA_NoAction = &h00
+const XkbSA_SetMods = &h01
+const XkbSA_LatchMods = &h02
+const XkbSA_LockMods = &h03
+const XkbSA_SetGroup = &h04
+const XkbSA_LatchGroup = &h05
+const XkbSA_LockGroup = &h06
+const XkbSA_MovePtr = &h07
+const XkbSA_PtrBtn = &h08
+const XkbSA_LockPtrBtn = &h09
+const XkbSA_SetPtrDflt = &h0a
+const XkbSA_ISOLock = &h0b
+const XkbSA_Terminate = &h0c
+const XkbSA_SwitchScreen = &h0d
+const XkbSA_SetControls = &h0e
+const XkbSA_LockControls = &h0f
+const XkbSA_ActionMessage = &h10
+const XkbSA_RedirectKey = &h11
+const XkbSA_DeviceBtn = &h12
+const XkbSA_LockDeviceBtn = &h13
+const XkbSA_DeviceValuator = &h14
+#define XkbSA_LastAction XkbSA_DeviceValuator
+#define XkbSA_NumActions (XkbSA_LastAction + 1)
+const XkbSA_XFree86Private = &h86
+#define XkbSA_BreakLatch (((((((((((1 shl XkbSA_NoAction) or (1 shl XkbSA_PtrBtn)) or (1 shl XkbSA_LockPtrBtn)) or (1 shl XkbSA_Terminate)) or (1 shl XkbSA_SwitchScreen)) or (1 shl XkbSA_SetControls)) or (1 shl XkbSA_LockControls)) or (1 shl XkbSA_ActionMessage)) or (1 shl XkbSA_RedirectKey)) or (1 shl XkbSA_DeviceBtn)) or (1 shl XkbSA_LockDeviceBtn))
+#define XkbIsModAction(a) (((a)->type >= Xkb_SASetMods) andalso ((a)->type <= XkbSA_LockMods))
+#define XkbIsGroupAction(a) (((a)->type >= XkbSA_SetGroup) andalso ((a)->type <= XkbSA_LockGroup))
+#define XkbIsPtrAction(a) (((a)->type >= XkbSA_MovePtr) andalso ((a)->type <= XkbSA_SetPtrDflt))
+const XkbKB_Permanent = &h80
+const XkbKB_OpMask = &h7f
+const XkbKB_Default = &h00
+const XkbKB_Lock = &h01
+const XkbKB_RadioGroup = &h02
+const XkbKB_Overlay1 = &h03
+const XkbKB_Overlay2 = &h04
+const XkbKB_RGAllowNone = &h80
+const XkbMinLegalKeyCode = 8
+const XkbMaxLegalKeyCode = 255
+#define XkbMaxKeyCount ((XkbMaxLegalKeyCode - XkbMinLegalKeyCode) + 1)
+#define XkbPerKeyBitArraySize ((XkbMaxLegalKeyCode + 1) / 8)
+#define XkbIsLegalKeycode(k) ((k) >= XkbMinLegalKeyCode)
+const XkbNumModifiers = 8
+const XkbNumVirtualMods = 16
+const XkbNumIndicators = 32
+const XkbAllIndicatorsMask = &hffffffff
+const XkbMaxRadioGroups = 32
+const XkbAllRadioGroupsMask = &hffffffff
+const XkbMaxShiftLevel = 63
+#define XkbMaxSymsPerKey (XkbMaxShiftLevel * XkbNumKbdGroups)
+const XkbRGMaxMembers = 12
+const XkbActionMessageLength = 6
+const XkbKeyNameLength = 4
+const XkbMaxRedirectCount = 8
+const XkbGeomPtsPerMM = 10
+const XkbGeomMaxColors = 32
+const XkbGeomMaxLabelColors = 3
+const XkbGeomMaxPriority = 255
+const XkbOneLevelIndex = 0
+const XkbTwoLevelIndex = 1
+const XkbAlphabeticIndex = 2
+const XkbKeypadIndex = 3
+#define XkbLastRequiredType XkbKeypadIndex
+#define XkbNumRequiredTypes (XkbLastRequiredType + 1)
+const XkbMaxKeyTypes = 255
+const XkbOneLevelMask = 1 shl 0
+const XkbTwoLevelMask = 1 shl 1
+const XkbAlphabeticMask = 1 shl 2
+const XkbKeypadMask = 1 shl 3
+const XkbAllRequiredTypes = &hf
+#define XkbShiftLevel(n) ((n) - 1)
+#define XkbShiftLevelMask(n) (1 shl ((n) - 1))
 #define XkbName "XKEYBOARD"
-#define XkbMajorVersion 1
-#define XkbMinorVersion 0
-#define XkbExplicitKeyTypesMask (&h0f)
-#define XkbExplicitKeyType1Mask (1 shl 0)
-#define XkbExplicitKeyType2Mask (1 shl 1)
-#define XkbExplicitKeyType3Mask (1 shl 2)
-#define XkbExplicitKeyType4Mask (1 shl 3)
-#define XkbExplicitInterpretMask (1 shl 4)
-#define XkbExplicitAutoRepeatMask (1 shl 5)
-#define XkbExplicitBehaviorMask (1 shl 6)
-#define XkbExplicitVModMapMask (1 shl 7)
-#define XkbAllExplicitMask (&hff)
-#define XkbKeyTypesMask (1 shl 0)
-#define XkbKeySymsMask (1 shl 1)
-#define XkbModifierMapMask (1 shl 2)
-#define XkbExplicitComponentsMask (1 shl 3)
-#define XkbKeyActionsMask (1 shl 4)
-#define XkbKeyBehaviorsMask (1 shl 5)
-#define XkbVirtualModsMask (1 shl 6)
-#define XkbVirtualModMapMask (1 shl 7)
-#define XkbAllClientInfoMask ((1 shl 0) or (1 shl 1) or (1 shl 2))
-#define XkbAllServerInfoMask ((1 shl 3) or (1 shl 4) or (1 shl 5) or (1 shl 6) or (1 shl 7))
-#define XkbAllMapComponentsMask (((1 shl 0) or (1 shl 1) or (1 shl 2)) or ((1 shl 3) or (1 shl 4) or (1 shl 5) or (1 shl 6) or (1 shl 7)))
-#define XkbSI_AutoRepeat (1 shl 0)
-#define XkbSI_LockingKey (1 shl 1)
-#define XkbSI_LevelOneOnly (&h80)
-#define XkbSI_OpMask (&h7f)
-#define XkbSI_NoneOf (0)
-#define XkbSI_AnyOfOrNone (1)
-#define XkbSI_AnyOf (2)
-#define XkbSI_AllOf (3)
-#define XkbSI_Exactly (4)
-#define XkbIM_NoExplicit (1L shl 7)
-#define XkbIM_NoAutomatic (1L shl 6)
-#define XkbIM_LEDDrivesKB (1L shl 5)
-#define XkbIM_UseBase (1L shl 0)
-#define XkbIM_UseLatched (1L shl 1)
-#define XkbIM_UseLocked (1L shl 2)
-#define XkbIM_UseEffective (1L shl 3)
-#define XkbIM_UseCompat (1L shl 4)
-#define XkbIM_UseNone 0
-#define XkbIM_UseAnyGroup ((1L shl 0) or (1L shl 1) or (1L shl 2) or (1L shl 3))
-#define XkbIM_UseAnyMods (((1L shl 0) or (1L shl 1) or (1L shl 2) or (1L shl 3)) or (1L shl 4))
-#define XkbSymInterpMask (1 shl 0)
-#define XkbGroupCompatMask (1 shl 1)
-#define XkbAllCompatMask (&h3)
-#define XkbKeycodesNameMask (1 shl 0)
-#define XkbGeometryNameMask (1 shl 1)
-#define XkbSymbolsNameMask (1 shl 2)
-#define XkbPhysSymbolsNameMask (1 shl 3)
-#define XkbTypesNameMask (1 shl 4)
-#define XkbCompatNameMask (1 shl 5)
-#define XkbKeyTypeNamesMask (1 shl 6)
-#define XkbKTLevelNamesMask (1 shl 7)
-#define XkbIndicatorNamesMask (1 shl 8)
-#define XkbKeyNamesMask (1 shl 9)
-#define XkbKeyAliasesMask (1 shl 10)
-#define XkbVirtualModNamesMask (1 shl 11)
-#define XkbGroupNamesMask (1 shl 12)
-#define XkbRGNamesMask (1 shl 13)
-#define XkbComponentNamesMask (&h3f)
-#define XkbAllNamesMask (&h3fff)
-#define XkbGBN_TypesMask (1L shl 0)
-#define XkbGBN_CompatMapMask (1L shl 1)
-#define XkbGBN_ClientSymbolsMask (1L shl 2)
-#define XkbGBN_ServerSymbolsMask (1L shl 3)
-#define XkbGBN_SymbolsMask ((1L shl 2) or (1L shl 3))
-#define XkbGBN_IndicatorMapMask (1L shl 4)
-#define XkbGBN_KeyNamesMask (1L shl 5)
-#define XkbGBN_GeometryMask (1L shl 6)
-#define XkbGBN_OtherNamesMask (1L shl 7)
-#define XkbGBN_AllComponentsMask (&hff)
-#define XkbLC_Hidden (1L shl 0)
-#define XkbLC_Default (1L shl 1)
-#define XkbLC_Partial (1L shl 2)
-#define XkbLC_AlphanumericKeys (1L shl 8)
-#define XkbLC_ModifierKeys (1L shl 9)
-#define XkbLC_KeypadKeys (1L shl 10)
-#define XkbLC_FunctionKeys (1L shl 11)
-#define XkbLC_AlternateGroup (1L shl 12)
-#define XkbXI_KeyboardsMask (1L shl 0)
-#define XkbXI_ButtonActionsMask (1L shl 1)
-#define XkbXI_IndicatorNamesMask (1L shl 2)
-#define XkbXI_IndicatorMapsMask (1L shl 3)
-#define XkbXI_IndicatorStateMask (1L shl 4)
-#define XkbXI_UnsupportedFeatureMask (1L shl 15)
-#define XkbXI_AllFeaturesMask (&h001f)
-#define XkbXI_AllDeviceFeaturesMask (&h001e)
-#define XkbXI_IndicatorsMask (&h001c)
-#define XkbAllExtensionDeviceEventsMask (&h801f)
-#define XkbPCF_DetectableAutoRepeatMask (1L shl 0)
-#define XkbPCF_GrabsUseXKBStateMask (1L shl 1)
-#define XkbPCF_AutoResetControlsMask (1L shl 2)
-#define XkbPCF_LookupStateWhenGrabbed (1L shl 3)
-#define XkbPCF_SendEventUsesXKBState (1L shl 4)
-#define XkbPCF_AllFlagsMask (&h1F)
-#define XkbDF_DisableLocks (1 shl 0)
-
-#endif
+const XkbMajorVersion = 1
+const XkbMinorVersion = 0
+const XkbExplicitKeyTypesMask = &h0f
+const XkbExplicitKeyType1Mask = 1 shl 0
+const XkbExplicitKeyType2Mask = 1 shl 1
+const XkbExplicitKeyType3Mask = 1 shl 2
+const XkbExplicitKeyType4Mask = 1 shl 3
+const XkbExplicitInterpretMask = 1 shl 4
+const XkbExplicitAutoRepeatMask = 1 shl 5
+const XkbExplicitBehaviorMask = 1 shl 6
+const XkbExplicitVModMapMask = 1 shl 7
+const XkbAllExplicitMask = &hff
+const XkbKeyTypesMask = 1 shl 0
+const XkbKeySymsMask = 1 shl 1
+const XkbModifierMapMask = 1 shl 2
+const XkbExplicitComponentsMask = 1 shl 3
+const XkbKeyActionsMask = 1 shl 4
+const XkbKeyBehaviorsMask = 1 shl 5
+const XkbVirtualModsMask = 1 shl 6
+const XkbVirtualModMapMask = 1 shl 7
+#define XkbAllClientInfoMask ((XkbKeyTypesMask or XkbKeySymsMask) or XkbModifierMapMask)
+#define XkbAllServerInfoMask ((((XkbExplicitComponentsMask or XkbKeyActionsMask) or XkbKeyBehaviorsMask) or XkbVirtualModsMask) or XkbVirtualModMapMask)
+#define XkbAllMapComponentsMask (XkbAllClientInfoMask or XkbAllServerInfoMask)
+const XkbSI_AutoRepeat = 1 shl 0
+const XkbSI_LockingKey = 1 shl 1
+const XkbSI_LevelOneOnly = &h80
+const XkbSI_OpMask = &h7f
+const XkbSI_NoneOf = 0
+const XkbSI_AnyOfOrNone = 1
+const XkbSI_AnyOf = 2
+const XkbSI_AllOf = 3
+const XkbSI_Exactly = 4
+const XkbIM_NoExplicit = cast(clong, 1) shl 7
+const XkbIM_NoAutomatic = cast(clong, 1) shl 6
+const XkbIM_LEDDrivesKB = cast(clong, 1) shl 5
+const XkbIM_UseBase = cast(clong, 1) shl 0
+const XkbIM_UseLatched = cast(clong, 1) shl 1
+const XkbIM_UseLocked = cast(clong, 1) shl 2
+const XkbIM_UseEffective = cast(clong, 1) shl 3
+const XkbIM_UseCompat = cast(clong, 1) shl 4
+const XkbIM_UseNone = 0
+#define XkbIM_UseAnyGroup (((XkbIM_UseBase or XkbIM_UseLatched) or XkbIM_UseLocked) or XkbIM_UseEffective)
+#define XkbIM_UseAnyMods (XkbIM_UseAnyGroup or XkbIM_UseCompat)
+const XkbSymInterpMask = 1 shl 0
+const XkbGroupCompatMask = 1 shl 1
+const XkbAllCompatMask = &h3
+const XkbKeycodesNameMask = 1 shl 0
+const XkbGeometryNameMask = 1 shl 1
+const XkbSymbolsNameMask = 1 shl 2
+const XkbPhysSymbolsNameMask = 1 shl 3
+const XkbTypesNameMask = 1 shl 4
+const XkbCompatNameMask = 1 shl 5
+const XkbKeyTypeNamesMask = 1 shl 6
+const XkbKTLevelNamesMask = 1 shl 7
+const XkbIndicatorNamesMask = 1 shl 8
+const XkbKeyNamesMask = 1 shl 9
+const XkbKeyAliasesMask = 1 shl 10
+const XkbVirtualModNamesMask = 1 shl 11
+const XkbGroupNamesMask = 1 shl 12
+const XkbRGNamesMask = 1 shl 13
+const XkbComponentNamesMask = &h3f
+const XkbAllNamesMask = &h3fff
+const XkbGBN_TypesMask = cast(clong, 1) shl 0
+const XkbGBN_CompatMapMask = cast(clong, 1) shl 1
+const XkbGBN_ClientSymbolsMask = cast(clong, 1) shl 2
+const XkbGBN_ServerSymbolsMask = cast(clong, 1) shl 3
+#define XkbGBN_SymbolsMask (XkbGBN_ClientSymbolsMask or XkbGBN_ServerSymbolsMask)
+const XkbGBN_IndicatorMapMask = cast(clong, 1) shl 4
+const XkbGBN_KeyNamesMask = cast(clong, 1) shl 5
+const XkbGBN_GeometryMask = cast(clong, 1) shl 6
+const XkbGBN_OtherNamesMask = cast(clong, 1) shl 7
+const XkbGBN_AllComponentsMask = &hff
+const XkbLC_Hidden = cast(clong, 1) shl 0
+const XkbLC_Default = cast(clong, 1) shl 1
+const XkbLC_Partial = cast(clong, 1) shl 2
+const XkbLC_AlphanumericKeys = cast(clong, 1) shl 8
+const XkbLC_ModifierKeys = cast(clong, 1) shl 9
+const XkbLC_KeypadKeys = cast(clong, 1) shl 10
+const XkbLC_FunctionKeys = cast(clong, 1) shl 11
+const XkbLC_AlternateGroup = cast(clong, 1) shl 12
+const XkbXI_KeyboardsMask = cast(clong, 1) shl 0
+const XkbXI_ButtonActionsMask = cast(clong, 1) shl 1
+const XkbXI_IndicatorNamesMask = cast(clong, 1) shl 2
+const XkbXI_IndicatorMapsMask = cast(clong, 1) shl 3
+const XkbXI_IndicatorStateMask = cast(clong, 1) shl 4
+const XkbXI_UnsupportedFeatureMask = cast(clong, 1) shl 15
+const XkbXI_AllFeaturesMask = &h001f
+const XkbXI_AllDeviceFeaturesMask = &h001e
+const XkbXI_IndicatorsMask = &h001c
+const XkbAllExtensionDeviceEventsMask = &h801f
+const XkbPCF_DetectableAutoRepeatMask = cast(clong, 1) shl 0
+const XkbPCF_GrabsUseXKBStateMask = cast(clong, 1) shl 1
+const XkbPCF_AutoResetControlsMask = cast(clong, 1) shl 2
+const XkbPCF_LookupStateWhenGrabbed = cast(clong, 1) shl 3
+const XkbPCF_SendEventUsesXKBState = cast(clong, 1) shl 4
+const XkbPCF_AllFlagsMask = &h1F
+const XkbDF_DisableLocks = 1 shl 0

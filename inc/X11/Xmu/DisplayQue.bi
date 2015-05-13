@@ -1,18 +1,15 @@
-''
-''
-'' DisplayQue -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __DisplayQue_bi__
-#define __DisplayQue_bi__
+#pragma once
 
+#include once "X11/Xmu/CloseHook.bi"
+#include once "X11/Xfuncproto.bi"
+
+extern "C"
+
+#define _XMU_DISPLAYQUE_H_
 type XmuDisplayQueue as _XmuDisplayQueue
 type XmuDisplayQueueEntry as _XmuDisplayQueueEntry
-type XmuCloseDisplayQueueProc as function cdecl(byval as XmuDisplayQueue ptr, byval as XmuDisplayQueueEntry ptr) as integer
-type XmuFreeDisplayQueueProc as function cdecl(byval as XmuDisplayQueue ptr) as integer
+type XmuCloseDisplayQueueProc as function(byval queue as XmuDisplayQueue ptr, byval entry as XmuDisplayQueueEntry ptr) as long
+type XmuFreeDisplayQueueProc as function(byval queue as XmuDisplayQueue ptr) as long
 
 type _XmuDisplayQueueEntry
 	prev as _XmuDisplayQueueEntry ptr
@@ -23,7 +20,7 @@ type _XmuDisplayQueueEntry
 end type
 
 type _XmuDisplayQueue
-	nentries as integer
+	nentries as long
 	head as XmuDisplayQueueEntry ptr
 	tail as XmuDisplayQueueEntry ptr
 	closefunc as XmuCloseDisplayQueueProc
@@ -31,9 +28,11 @@ type _XmuDisplayQueue
 	data as XPointer
 end type
 
-declare function XmuDQDestroy cdecl alias "XmuDQDestroy" (byval q as XmuDisplayQueue ptr, byval docallbacks as Bool) as Bool
-declare function XmuDQLookupDisplay cdecl alias "XmuDQLookupDisplay" (byval q as XmuDisplayQueue ptr, byval dpy as Display ptr) as XmuDisplayQueueEntry ptr
-declare function XmuDQAddDisplay cdecl alias "XmuDQAddDisplay" (byval q as XmuDisplayQueue ptr, byval dpy as Display ptr, byval data as XPointer) as XmuDisplayQueueEntry ptr
-declare function XmuDQRemoveDisplay cdecl alias "XmuDQRemoveDisplay" (byval q as XmuDisplayQueue ptr, byval dpy as Display ptr) as Bool
+declare function XmuDQCreate(byval closefunc as XmuCloseDisplayQueueProc, byval freefunc as XmuFreeDisplayQueueProc, byval data as XPointer) as XmuDisplayQueue ptr
+declare function XmuDQDestroy(byval q as XmuDisplayQueue ptr, byval docallbacks as long) as long
+declare function XmuDQLookupDisplay(byval q as XmuDisplayQueue ptr, byval dpy as Display ptr) as XmuDisplayQueueEntry ptr
+declare function XmuDQAddDisplay(byval q as XmuDisplayQueue ptr, byval dpy as Display ptr, byval data as XPointer) as XmuDisplayQueueEntry ptr
+declare function XmuDQRemoveDisplay(byval q as XmuDisplayQueue ptr, byval dpy as Display ptr) as long
+#define XmuDQNDisplays(q) (q)->nentries
 
-#endif
+end extern

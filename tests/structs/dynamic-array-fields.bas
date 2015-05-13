@@ -925,6 +925,82 @@ namespace initialBounds
 	end sub
 end namespace
 
+namespace scoping
+	'' When REDIM'ing a field via implicit "this", the field should be
+	'' preferred over any global vars.
+
+	dim shared a(any) as integer
+
+	type UDT
+		a(any) as integer
+		declare sub f1( )
+		declare sub f2( )
+		declare sub f3( )
+		declare sub f4( )
+		declare sub f5( )
+	end type
+
+	sub UDT.f1( )
+		'' should redim this.a, not the global a
+		redim a(1 to 1)
+	end sub
+
+	sub UDT.f2( )
+		'' should redim this.a, not the global a
+		redim a(2 to 2) as integer
+	end sub
+
+	sub UDT.f3( )
+		'' should make a new local array that overrides the field (and the global too)
+		dim a(any) as integer
+		redim a(0 to 0)
+	end sub
+
+	sub UDT.f4( )
+		redim a(4 to 4)
+		dim a(any) as integer
+		redim a(0 to 0)
+	end sub
+
+	sub UDT.f5( )
+		'' different dtype, should make a new local array
+		redim a(0 to 0) as string
+	end sub
+
+	sub test cdecl( )
+		dim x as UDT
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 0 )
+		CU_ASSERT( ubound( x.a ) = -1 )
+		x.f1( )
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 1 )
+		CU_ASSERT( ubound( x.a ) = 1 )
+		x.f2( )
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 2 )
+		CU_ASSERT( ubound( x.a ) = 2 )
+		x.f3( )
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 2 )
+		CU_ASSERT( ubound( x.a ) = 2 )
+		x.f4( )
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 4 )
+		CU_ASSERT( ubound( x.a ) = 4 )
+		x.f5( )
+		CU_ASSERT( lbound( a ) = 0 )
+		CU_ASSERT( ubound( a ) = -1 )
+		CU_ASSERT( lbound( x.a ) = 4 )
+		CU_ASSERT( ubound( x.a ) = 4 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/dynamic-array-fields")
 	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test )
@@ -935,6 +1011,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "redimMakesDynamic", @redimMakesDynamic.test )
 	fbcu.add_test( "dimWithNonConstBoundsMakesDynamic", @dimWithNonConstBoundsMakesDynamic.test )
 	fbcu.add_test( "initialBounds", @initialBounds.test )
+	fbcu.add_test( "scoping", @scoping.test )
 end sub
 
 end namespace

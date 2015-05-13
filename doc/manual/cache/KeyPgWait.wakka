@@ -2,7 +2,7 @@
 Reads from a hardware port with a mask.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wait** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] , [[KeyPgByval byval]] //and_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //xor_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wait** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //and_mask// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //xor_mask// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Wait** //port,// //and_value// [, //xor_value//]

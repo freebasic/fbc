@@ -11,10 +11,8 @@ extern "C"
 #define LLVM_C_CORE_H
 #define LLVM_C_SUPPORT_H
 #define SUPPORT_DATATYPES_H
-
 type LLVMBool as long
 type LLVMMemoryBufferRef as LLVMOpaqueMemoryBuffer ptr
-
 declare function LLVMLoadLibraryPermanently(byval Filename as const zstring ptr) as LLVMBool
 
 type LLVMContextRef as LLVMOpaqueContext ptr
@@ -271,20 +269,15 @@ enum
 	LLVMDSNote
 end enum
 
-declare sub LLVMInitializeCore(byval R as LLVMPassRegistryRef)
 declare sub LLVMShutdown()
 declare function LLVMCreateMessage(byval Message as const zstring ptr) as zstring ptr
 declare sub LLVMDisposeMessage(byval Message as zstring ptr)
-
 type LLVMFatalErrorHandler as sub(byval Reason as const zstring ptr)
-
 declare sub LLVMInstallFatalErrorHandler(byval Handler as LLVMFatalErrorHandler)
 declare sub LLVMResetFatalErrorHandler()
 declare sub LLVMEnablePrettyStackTrace()
-
 type LLVMDiagnosticHandler as sub(byval as LLVMDiagnosticInfoRef, byval as any ptr)
 type LLVMYieldCallback as sub(byval as LLVMContextRef, byval as any ptr)
-
 declare function LLVMContextCreate() as LLVMContextRef
 declare function LLVMGetGlobalContext() as LLVMContextRef
 declare sub LLVMContextSetDiagnosticHandler(byval C as LLVMContextRef, byval Handler as LLVMDiagnosticHandler, byval DiagnosticContext as any ptr)
@@ -292,8 +285,8 @@ declare sub LLVMContextSetYieldCallback(byval C as LLVMContextRef, byval Callbac
 declare sub LLVMContextDispose(byval C as LLVMContextRef)
 declare function LLVMGetDiagInfoDescription(byval DI as LLVMDiagnosticInfoRef) as zstring ptr
 declare function LLVMGetDiagInfoSeverity(byval DI as LLVMDiagnosticInfoRef) as LLVMDiagnosticSeverity
-declare function LLVMGetMDKindIDInContext(byval C as LLVMContextRef, byval Name_ as const zstring ptr, byval SLen as ulong) as ulong
-declare function LLVMGetMDKindID(byval Name_ as const zstring ptr, byval SLen as ulong) as ulong
+declare function LLVMGetMDKindIDInContext(byval C as LLVMContextRef, byval Name as const zstring ptr, byval SLen as ulong) as ulong
+declare function LLVMGetMDKindID(byval Name as const zstring ptr, byval SLen as ulong) as ulong
 declare function LLVMModuleCreateWithName(byval ModuleID as const zstring ptr) as LLVMModuleRef
 declare function LLVMModuleCreateWithNameInContext(byval ModuleID as const zstring ptr, byval C as LLVMContextRef) as LLVMModuleRef
 declare sub LLVMDisposeModule(byval M as LLVMModuleRef)
@@ -304,14 +297,14 @@ declare sub LLVMSetTarget(byval M as LLVMModuleRef, byval Triple as const zstrin
 declare sub LLVMDumpModule(byval M as LLVMModuleRef)
 declare function LLVMPrintModuleToFile(byval M as LLVMModuleRef, byval Filename as const zstring ptr, byval ErrorMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMPrintModuleToString(byval M as LLVMModuleRef) as zstring ptr
-declare sub LLVMSetModuleInlineAsm(byval M as LLVMModuleRef, byval Asm_ as const zstring ptr)
+declare sub LLVMSetModuleInlineAsm(byval M as LLVMModuleRef, byval Asm as const zstring ptr)
 declare function LLVMGetModuleContext(byval M as LLVMModuleRef) as LLVMContextRef
-declare function LLVMGetTypeByName(byval M as LLVMModuleRef, byval Name_ as const zstring ptr) as LLVMTypeRef
-declare function LLVMGetNamedMetadataNumOperands(byval M as LLVMModuleRef, byval name_ as const zstring ptr) as ulong
-declare sub LLVMGetNamedMetadataOperands(byval M as LLVMModuleRef, byval name_ as const zstring ptr, byval Dest as LLVMValueRef ptr)
-declare sub LLVMAddNamedMetadataOperand(byval M as LLVMModuleRef, byval name_ as const zstring ptr, byval Val_ as LLVMValueRef)
-declare function LLVMAddFunction(byval M as LLVMModuleRef, byval Name_ as const zstring ptr, byval FunctionTy as LLVMTypeRef) as LLVMValueRef
-declare function LLVMGetNamedFunction(byval M as LLVMModuleRef, byval Name_ as const zstring ptr) as LLVMValueRef
+declare function LLVMGetTypeByName(byval M as LLVMModuleRef, byval Name as const zstring ptr) as LLVMTypeRef
+declare function LLVMGetNamedMetadataNumOperands(byval M as LLVMModuleRef, byval name as const zstring ptr) as ulong
+declare sub LLVMGetNamedMetadataOperands(byval M as LLVMModuleRef, byval name as const zstring ptr, byval Dest as LLVMValueRef ptr)
+declare sub LLVMAddNamedMetadataOperand(byval M as LLVMModuleRef, byval name as const zstring ptr, byval Val as LLVMValueRef)
+declare function LLVMAddFunction(byval M as LLVMModuleRef, byval Name as const zstring ptr, byval FunctionTy as LLVMTypeRef) as LLVMValueRef
+declare function LLVMGetNamedFunction(byval M as LLVMModuleRef, byval Name as const zstring ptr) as LLVMValueRef
 declare function LLVMGetFirstFunction(byval M as LLVMModuleRef) as LLVMValueRef
 declare function LLVMGetLastFunction(byval M as LLVMModuleRef) as LLVMValueRef
 declare function LLVMGetNextFunction(byval Fn as LLVMValueRef) as LLVMValueRef
@@ -319,8 +312,8 @@ declare function LLVMGetPreviousFunction(byval Fn as LLVMValueRef) as LLVMValueR
 declare function LLVMGetTypeKind(byval Ty as LLVMTypeRef) as LLVMTypeKind
 declare function LLVMTypeIsSized(byval Ty as LLVMTypeRef) as LLVMBool
 declare function LLVMGetTypeContext(byval Ty as LLVMTypeRef) as LLVMContextRef
-declare sub LLVMDumpType(byval Val_ as LLVMTypeRef)
-declare function LLVMPrintTypeToString(byval Val_ as LLVMTypeRef) as zstring ptr
+declare sub LLVMDumpType(byval Val as LLVMTypeRef)
+declare function LLVMPrintTypeToString(byval Val as LLVMTypeRef) as zstring ptr
 declare function LLVMInt1TypeInContext(byval C as LLVMContextRef) as LLVMTypeRef
 declare function LLVMInt8TypeInContext(byval C as LLVMContextRef) as LLVMTypeRef
 declare function LLVMInt16TypeInContext(byval C as LLVMContextRef) as LLVMTypeRef
@@ -353,7 +346,7 @@ declare function LLVMCountParamTypes(byval FunctionTy as LLVMTypeRef) as ulong
 declare sub LLVMGetParamTypes(byval FunctionTy as LLVMTypeRef, byval Dest as LLVMTypeRef ptr)
 declare function LLVMStructTypeInContext(byval C as LLVMContextRef, byval ElementTypes as LLVMTypeRef ptr, byval ElementCount as ulong, byval Packed as LLVMBool) as LLVMTypeRef
 declare function LLVMStructType(byval ElementTypes as LLVMTypeRef ptr, byval ElementCount as ulong, byval Packed as LLVMBool) as LLVMTypeRef
-declare function LLVMStructCreateNamed(byval C as LLVMContextRef, byval Name_ as const zstring ptr) as LLVMTypeRef
+declare function LLVMStructCreateNamed(byval C as LLVMContextRef, byval Name as const zstring ptr) as LLVMTypeRef
 declare function LLVMGetStructName(byval Ty as LLVMTypeRef) as const zstring ptr
 declare sub LLVMStructSetBody(byval StructTy as LLVMTypeRef, byval ElementTypes as LLVMTypeRef ptr, byval ElementCount as ulong, byval Packed as LLVMBool)
 declare function LLVMCountStructElementTypes(byval StructTy as LLVMTypeRef) as ulong
@@ -373,99 +366,99 @@ declare function LLVMX86MMXTypeInContext(byval C as LLVMContextRef) as LLVMTypeR
 declare function LLVMVoidType() as LLVMTypeRef
 declare function LLVMLabelType() as LLVMTypeRef
 declare function LLVMX86MMXType() as LLVMTypeRef
-declare function LLVMTypeOf(byval Val_ as LLVMValueRef) as LLVMTypeRef
-declare function LLVMGetValueName(byval Val_ as LLVMValueRef) as const zstring ptr
-declare sub LLVMSetValueName(byval Val_ as LLVMValueRef, byval Name_ as const zstring ptr)
-declare sub LLVMDumpValue(byval Val_ as LLVMValueRef)
-declare function LLVMPrintValueToString(byval Val_ as LLVMValueRef) as zstring ptr
+declare function LLVMTypeOf(byval Val as LLVMValueRef) as LLVMTypeRef
+declare function LLVMGetValueName(byval Val as LLVMValueRef) as const zstring ptr
+declare sub LLVMSetValueName(byval Val as LLVMValueRef, byval Name as const zstring ptr)
+declare sub LLVMDumpValue(byval Val as LLVMValueRef)
+declare function LLVMPrintValueToString(byval Val as LLVMValueRef) as zstring ptr
 declare sub LLVMReplaceAllUsesWith(byval OldVal as LLVMValueRef, byval NewVal as LLVMValueRef)
-declare function LLVMIsConstant(byval Val_ as LLVMValueRef) as LLVMBool
-declare function LLVMIsUndef(byval Val_ as LLVMValueRef) as LLVMBool
-declare function LLVMIsAArgument(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsABasicBlock(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAInlineAsm(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMDNode(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMDString(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAUser(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstant(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsABlockAddress(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantAggregateZero(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantArray(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantDataSequential(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantDataArray(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantDataVector(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantExpr(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantFP(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantInt(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantPointerNull(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantStruct(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAConstantVector(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAGlobalValue(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAGlobalAlias(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAGlobalObject(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFunction(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAGlobalVariable(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAUndefValue(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAInstruction(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsABinaryOperator(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsACallInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAIntrinsicInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsADbgInfoIntrinsic(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsADbgDeclareInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMemIntrinsic(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMemCpyInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMemMoveInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAMemSetInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsACmpInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFCmpInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAICmpInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAExtractElementInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAGetElementPtrInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAInsertElementInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAInsertValueInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsALandingPadInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAPHINode(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsASelectInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAShuffleVectorInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAStoreInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsATerminatorInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsABranchInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAIndirectBrInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAInvokeInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAReturnInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsASwitchInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAUnreachableInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAResumeInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAUnaryInstruction(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAAllocaInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsACastInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAAddrSpaceCastInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsABitCastInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFPExtInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFPToSIInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFPToUIInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAFPTruncInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAIntToPtrInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAPtrToIntInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsASExtInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsASIToFPInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsATruncInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAUIToFPInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAZExtInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAExtractValueInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsALoadInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMIsAVAArgInst(byval Val_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMGetFirstUse(byval Val_ as LLVMValueRef) as LLVMUseRef
+declare function LLVMIsConstant(byval Val as LLVMValueRef) as LLVMBool
+declare function LLVMIsUndef(byval Val as LLVMValueRef) as LLVMBool
+declare function LLVMIsAArgument(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsABasicBlock(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAInlineAsm(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMDNode(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMDString(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAUser(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstant(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsABlockAddress(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantAggregateZero(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantArray(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantDataSequential(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantDataArray(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantDataVector(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantExpr(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantFP(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantInt(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantPointerNull(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantStruct(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAConstantVector(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAGlobalValue(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAGlobalAlias(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAGlobalObject(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFunction(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAGlobalVariable(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAUndefValue(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAInstruction(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsABinaryOperator(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsACallInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAIntrinsicInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsADbgInfoIntrinsic(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsADbgDeclareInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMemIntrinsic(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMemCpyInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMemMoveInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAMemSetInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsACmpInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFCmpInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAICmpInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAExtractElementInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAGetElementPtrInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAInsertElementInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAInsertValueInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsALandingPadInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAPHINode(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsASelectInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAShuffleVectorInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAStoreInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsATerminatorInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsABranchInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAIndirectBrInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAInvokeInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAReturnInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsASwitchInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAUnreachableInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAResumeInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAUnaryInstruction(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAAllocaInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsACastInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAAddrSpaceCastInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsABitCastInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFPExtInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFPToSIInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFPToUIInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAFPTruncInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAIntToPtrInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAPtrToIntInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsASExtInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsASIToFPInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsATruncInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAUIToFPInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAZExtInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAExtractValueInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsALoadInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMIsAVAArgInst(byval Val as LLVMValueRef) as LLVMValueRef
+declare function LLVMGetFirstUse(byval Val as LLVMValueRef) as LLVMUseRef
 declare function LLVMGetNextUse(byval U as LLVMUseRef) as LLVMUseRef
 declare function LLVMGetUser(byval U as LLVMUseRef) as LLVMValueRef
 declare function LLVMGetUsedValue(byval U as LLVMUseRef) as LLVMValueRef
-declare function LLVMGetOperand(byval Val_ as LLVMValueRef, byval Index as ulong) as LLVMValueRef
-declare sub LLVMSetOperand(byval User as LLVMValueRef, byval Index as ulong, byval Val_ as LLVMValueRef)
-declare function LLVMGetNumOperands(byval Val_ as LLVMValueRef) as long
+declare function LLVMGetOperand(byval Val as LLVMValueRef, byval Index as ulong) as LLVMValueRef
+declare sub LLVMSetOperand(byval User as LLVMValueRef, byval Index as ulong, byval Val as LLVMValueRef)
+declare function LLVMGetNumOperands(byval Val as LLVMValueRef) as long
 declare function LLVMConstNull(byval Ty as LLVMTypeRef) as LLVMValueRef
 declare function LLVMConstAllOnes(byval Ty as LLVMTypeRef) as LLVMValueRef
 declare function LLVMGetUndef(byval Ty as LLVMTypeRef) as LLVMValueRef
-declare function LLVMIsNull(byval Val_ as LLVMValueRef) as LLVMBool
+declare function LLVMIsNull(byval Val as LLVMValueRef) as LLVMBool
 declare function LLVMConstPointerNull(byval Ty as LLVMTypeRef) as LLVMValueRef
 declare function LLVMConstInt(byval IntTy as LLVMTypeRef, byval N as ulongint, byval SignExtend as LLVMBool) as LLVMValueRef
 declare function LLVMConstIntOfArbitraryPrecision(byval IntTy as LLVMTypeRef, byval NumWords as ulong, byval Words as const ulongint ptr) as LLVMValueRef
@@ -476,8 +469,8 @@ declare function LLVMConstRealOfString(byval RealTy as LLVMTypeRef, byval Text a
 declare function LLVMConstRealOfStringAndSize(byval RealTy as LLVMTypeRef, byval Text as const zstring ptr, byval SLen as ulong) as LLVMValueRef
 declare function LLVMConstIntGetZExtValue(byval ConstantVal as LLVMValueRef) as ulongint
 declare function LLVMConstIntGetSExtValue(byval ConstantVal as LLVMValueRef) as longint
-declare function LLVMConstStringInContext(byval C as LLVMContextRef, byval Str_ as const zstring ptr, byval Length as ulong, byval DontNullTerminate as LLVMBool) as LLVMValueRef
-declare function LLVMConstString(byval Str_ as const zstring ptr, byval Length as ulong, byval DontNullTerminate as LLVMBool) as LLVMValueRef
+declare function LLVMConstStringInContext(byval C as LLVMContextRef, byval Str as const zstring ptr, byval Length as ulong, byval DontNullTerminate as LLVMBool) as LLVMValueRef
+declare function LLVMConstString(byval Str as const zstring ptr, byval Length as ulong, byval DontNullTerminate as LLVMBool) as LLVMValueRef
 declare function LLVMConstStructInContext(byval C as LLVMContextRef, byval ConstantVals as LLVMValueRef ptr, byval Count as ulong, byval Packed as LLVMBool) as LLVMValueRef
 declare function LLVMConstStruct(byval ConstantVals as LLVMValueRef ptr, byval Count as ulong, byval Packed as LLVMBool) as LLVMValueRef
 declare function LLVMConstArray(byval ElementTy as LLVMTypeRef, byval ConstantVals as LLVMValueRef ptr, byval Length as ulong) as LLVMValueRef
@@ -556,14 +549,14 @@ declare sub LLVMSetSection(byval Global as LLVMValueRef, byval Section as const 
 declare function LLVMGetVisibility(byval Global as LLVMValueRef) as LLVMVisibility
 declare sub LLVMSetVisibility(byval Global as LLVMValueRef, byval Viz as LLVMVisibility)
 declare function LLVMGetDLLStorageClass(byval Global as LLVMValueRef) as LLVMDLLStorageClass
-declare sub LLVMSetDLLStorageClass(byval Global as LLVMValueRef, byval Class_ as LLVMDLLStorageClass)
+declare sub LLVMSetDLLStorageClass(byval Global as LLVMValueRef, byval Class as LLVMDLLStorageClass)
 declare function LLVMHasUnnamedAddr(byval Global as LLVMValueRef) as LLVMBool
 declare sub LLVMSetUnnamedAddr(byval Global as LLVMValueRef, byval HasUnnamedAddr as LLVMBool)
 declare function LLVMGetAlignment(byval V as LLVMValueRef) as ulong
 declare sub LLVMSetAlignment(byval V as LLVMValueRef, byval Bytes as ulong)
-declare function LLVMAddGlobal(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMAddGlobalInAddressSpace(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr, byval AddressSpace as ulong) as LLVMValueRef
-declare function LLVMGetNamedGlobal(byval M as LLVMModuleRef, byval Name_ as const zstring ptr) as LLVMValueRef
+declare function LLVMAddGlobal(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMAddGlobalInAddressSpace(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr, byval AddressSpace as ulong) as LLVMValueRef
+declare function LLVMGetNamedGlobal(byval M as LLVMModuleRef, byval Name as const zstring ptr) as LLVMValueRef
 declare function LLVMGetFirstGlobal(byval M as LLVMModuleRef) as LLVMValueRef
 declare function LLVMGetLastGlobal(byval M as LLVMModuleRef) as LLVMValueRef
 declare function LLVMGetNextGlobal(byval GlobalVar as LLVMValueRef) as LLVMValueRef
@@ -579,13 +572,13 @@ declare function LLVMGetThreadLocalMode(byval GlobalVar as LLVMValueRef) as LLVM
 declare sub LLVMSetThreadLocalMode(byval GlobalVar as LLVMValueRef, byval Mode as LLVMThreadLocalMode)
 declare function LLVMIsExternallyInitialized(byval GlobalVar as LLVMValueRef) as LLVMBool
 declare sub LLVMSetExternallyInitialized(byval GlobalVar as LLVMValueRef, byval IsExtInit as LLVMBool)
-declare function LLVMAddAlias(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Aliasee as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
+declare function LLVMAddAlias(byval M as LLVMModuleRef, byval Ty as LLVMTypeRef, byval Aliasee as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
 declare sub LLVMDeleteFunction(byval Fn as LLVMValueRef)
 declare function LLVMGetIntrinsicID(byval Fn as LLVMValueRef) as ulong
 declare function LLVMGetFunctionCallConv(byval Fn as LLVMValueRef) as ulong
 declare sub LLVMSetFunctionCallConv(byval Fn as LLVMValueRef, byval CC as ulong)
 declare function LLVMGetGC(byval Fn as LLVMValueRef) as const zstring ptr
-declare sub LLVMSetGC(byval Fn as LLVMValueRef, byval Name_ as const zstring ptr)
+declare sub LLVMSetGC(byval Fn as LLVMValueRef, byval Name as const zstring ptr)
 declare sub LLVMAddFunctionAttr(byval Fn as LLVMValueRef, byval PA as LLVMAttribute)
 declare sub LLVMAddTargetDependentFunctionAttr(byval Fn as LLVMValueRef, byval A as const zstring ptr, byval V as const zstring ptr)
 declare function LLVMGetFunctionAttr(byval Fn as LLVMValueRef) as LLVMAttribute
@@ -602,16 +595,16 @@ declare sub LLVMAddAttribute(byval Arg as LLVMValueRef, byval PA as LLVMAttribut
 declare sub LLVMRemoveAttribute(byval Arg as LLVMValueRef, byval PA as LLVMAttribute)
 declare function LLVMGetAttribute(byval Arg as LLVMValueRef) as LLVMAttribute
 declare sub LLVMSetParamAlignment(byval Arg as LLVMValueRef, byval align as ulong)
-declare function LLVMMDStringInContext(byval C as LLVMContextRef, byval Str_ as const zstring ptr, byval SLen as ulong) as LLVMValueRef
-declare function LLVMMDString(byval Str_ as const zstring ptr, byval SLen as ulong) as LLVMValueRef
+declare function LLVMMDStringInContext(byval C as LLVMContextRef, byval Str as const zstring ptr, byval SLen as ulong) as LLVMValueRef
+declare function LLVMMDString(byval Str as const zstring ptr, byval SLen as ulong) as LLVMValueRef
 declare function LLVMMDNodeInContext(byval C as LLVMContextRef, byval Vals as LLVMValueRef ptr, byval Count as ulong) as LLVMValueRef
 declare function LLVMMDNode(byval Vals as LLVMValueRef ptr, byval Count as ulong) as LLVMValueRef
-declare function LLVMGetMDString(byval V as LLVMValueRef, byval Len_ as ulong ptr) as const zstring ptr
+declare function LLVMGetMDString(byval V as LLVMValueRef, byval Len as ulong ptr) as const zstring ptr
 declare function LLVMGetMDNodeNumOperands(byval V as LLVMValueRef) as ulong
 declare sub LLVMGetMDNodeOperands(byval V as LLVMValueRef, byval Dest as LLVMValueRef ptr)
 declare function LLVMBasicBlockAsValue(byval BB as LLVMBasicBlockRef) as LLVMValueRef
-declare function LLVMValueIsBasicBlock(byval Val_ as LLVMValueRef) as LLVMBool
-declare function LLVMValueAsBasicBlock(byval Val_ as LLVMValueRef) as LLVMBasicBlockRef
+declare function LLVMValueIsBasicBlock(byval Val as LLVMValueRef) as LLVMBool
+declare function LLVMValueAsBasicBlock(byval Val as LLVMValueRef) as LLVMBasicBlockRef
 declare function LLVMGetBasicBlockParent(byval BB as LLVMBasicBlockRef) as LLVMValueRef
 declare function LLVMGetBasicBlockTerminator(byval BB as LLVMBasicBlockRef) as LLVMValueRef
 declare function LLVMCountBasicBlocks(byval Fn as LLVMValueRef) as ulong
@@ -621,30 +614,30 @@ declare function LLVMGetLastBasicBlock(byval Fn as LLVMValueRef) as LLVMBasicBlo
 declare function LLVMGetNextBasicBlock(byval BB as LLVMBasicBlockRef) as LLVMBasicBlockRef
 declare function LLVMGetPreviousBasicBlock(byval BB as LLVMBasicBlockRef) as LLVMBasicBlockRef
 declare function LLVMGetEntryBasicBlock(byval Fn as LLVMValueRef) as LLVMBasicBlockRef
-declare function LLVMAppendBasicBlockInContext(byval C as LLVMContextRef, byval Fn as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMBasicBlockRef
-declare function LLVMAppendBasicBlock(byval Fn as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMBasicBlockRef
-declare function LLVMInsertBasicBlockInContext(byval C as LLVMContextRef, byval BB as LLVMBasicBlockRef, byval Name_ as const zstring ptr) as LLVMBasicBlockRef
-declare function LLVMInsertBasicBlock(byval InsertBeforeBB as LLVMBasicBlockRef, byval Name_ as const zstring ptr) as LLVMBasicBlockRef
+declare function LLVMAppendBasicBlockInContext(byval C as LLVMContextRef, byval Fn as LLVMValueRef, byval Name as const zstring ptr) as LLVMBasicBlockRef
+declare function LLVMAppendBasicBlock(byval Fn as LLVMValueRef, byval Name as const zstring ptr) as LLVMBasicBlockRef
+declare function LLVMInsertBasicBlockInContext(byval C as LLVMContextRef, byval BB as LLVMBasicBlockRef, byval Name as const zstring ptr) as LLVMBasicBlockRef
+declare function LLVMInsertBasicBlock(byval InsertBeforeBB as LLVMBasicBlockRef, byval Name as const zstring ptr) as LLVMBasicBlockRef
 declare sub LLVMDeleteBasicBlock(byval BB as LLVMBasicBlockRef)
 declare sub LLVMRemoveBasicBlockFromParent(byval BB as LLVMBasicBlockRef)
 declare sub LLVMMoveBasicBlockBefore(byval BB as LLVMBasicBlockRef, byval MovePos as LLVMBasicBlockRef)
 declare sub LLVMMoveBasicBlockAfter(byval BB as LLVMBasicBlockRef, byval MovePos as LLVMBasicBlockRef)
 declare function LLVMGetFirstInstruction(byval BB as LLVMBasicBlockRef) as LLVMValueRef
 declare function LLVMGetLastInstruction(byval BB as LLVMBasicBlockRef) as LLVMValueRef
-declare function LLVMHasMetadata(byval Val_ as LLVMValueRef) as long
-declare function LLVMGetMetadata(byval Val_ as LLVMValueRef, byval KindID as ulong) as LLVMValueRef
-declare sub LLVMSetMetadata(byval Val_ as LLVMValueRef, byval KindID as ulong, byval Node as LLVMValueRef)
+declare function LLVMHasMetadata(byval Val as LLVMValueRef) as long
+declare function LLVMGetMetadata(byval Val as LLVMValueRef, byval KindID as ulong) as LLVMValueRef
+declare sub LLVMSetMetadata(byval Val as LLVMValueRef, byval KindID as ulong, byval Node as LLVMValueRef)
 declare function LLVMGetInstructionParent(byval Inst as LLVMValueRef) as LLVMBasicBlockRef
 declare function LLVMGetNextInstruction(byval Inst as LLVMValueRef) as LLVMValueRef
 declare function LLVMGetPreviousInstruction(byval Inst as LLVMValueRef) as LLVMValueRef
 declare sub LLVMInstructionEraseFromParent(byval Inst as LLVMValueRef)
 declare function LLVMGetInstructionOpcode(byval Inst as LLVMValueRef) as LLVMOpcode
 declare function LLVMGetICmpPredicate(byval Inst as LLVMValueRef) as LLVMIntPredicate
-declare sub LLVMSetInstructionCallConv(byval Instr_ as LLVMValueRef, byval CC as ulong)
-declare function LLVMGetInstructionCallConv(byval Instr_ as LLVMValueRef) as ulong
-declare sub LLVMAddInstrAttribute(byval Instr_ as LLVMValueRef, byval index as ulong, byval as LLVMAttribute)
-declare sub LLVMRemoveInstrAttribute(byval Instr_ as LLVMValueRef, byval index as ulong, byval as LLVMAttribute)
-declare sub LLVMSetInstrParamAlignment(byval Instr_ as LLVMValueRef, byval index as ulong, byval align as ulong)
+declare sub LLVMSetInstructionCallConv(byval Instr as LLVMValueRef, byval CC as ulong)
+declare function LLVMGetInstructionCallConv(byval Instr as LLVMValueRef) as ulong
+declare sub LLVMAddInstrAttribute(byval Instr as LLVMValueRef, byval index as ulong, byval as LLVMAttribute)
+declare sub LLVMRemoveInstrAttribute(byval Instr as LLVMValueRef, byval index as ulong, byval as LLVMAttribute)
+declare sub LLVMSetInstrParamAlignment(byval Instr as LLVMValueRef, byval index as ulong, byval align as ulong)
 declare function LLVMIsTailCall(byval CallInst as LLVMValueRef) as LLVMBool
 declare sub LLVMSetTailCall(byval CallInst as LLVMValueRef, byval IsTailCall as LLVMBool)
 declare function LLVMGetSwitchDefaultDest(byval SwitchInstr as LLVMValueRef) as LLVMBasicBlockRef
@@ -654,13 +647,13 @@ declare function LLVMGetIncomingValue(byval PhiNode as LLVMValueRef, byval Index
 declare function LLVMGetIncomingBlock(byval PhiNode as LLVMValueRef, byval Index as ulong) as LLVMBasicBlockRef
 declare function LLVMCreateBuilderInContext(byval C as LLVMContextRef) as LLVMBuilderRef
 declare function LLVMCreateBuilder() as LLVMBuilderRef
-declare sub LLVMPositionBuilder(byval Builder as LLVMBuilderRef, byval Block as LLVMBasicBlockRef, byval Instr_ as LLVMValueRef)
-declare sub LLVMPositionBuilderBefore(byval Builder as LLVMBuilderRef, byval Instr_ as LLVMValueRef)
+declare sub LLVMPositionBuilder(byval Builder as LLVMBuilderRef, byval Block as LLVMBasicBlockRef, byval Instr as LLVMValueRef)
+declare sub LLVMPositionBuilderBefore(byval Builder as LLVMBuilderRef, byval Instr as LLVMValueRef)
 declare sub LLVMPositionBuilderAtEnd(byval Builder as LLVMBuilderRef, byval Block as LLVMBasicBlockRef)
 declare function LLVMGetInsertBlock(byval Builder as LLVMBuilderRef) as LLVMBasicBlockRef
 declare sub LLVMClearInsertionPosition(byval Builder as LLVMBuilderRef)
-declare sub LLVMInsertIntoBuilder(byval Builder as LLVMBuilderRef, byval Instr_ as LLVMValueRef)
-declare sub LLVMInsertIntoBuilderWithName(byval Builder as LLVMBuilderRef, byval Instr_ as LLVMValueRef, byval Name_ as const zstring ptr)
+declare sub LLVMInsertIntoBuilder(byval Builder as LLVMBuilderRef, byval Instr as LLVMValueRef)
+declare sub LLVMInsertIntoBuilderWithName(byval Builder as LLVMBuilderRef, byval Instr as LLVMValueRef, byval Name as const zstring ptr)
 declare sub LLVMDisposeBuilder(byval Builder as LLVMBuilderRef)
 declare sub LLVMSetCurrentDebugLocation(byval Builder as LLVMBuilderRef, byval L as LLVMValueRef)
 declare function LLVMGetCurrentDebugLocation(byval Builder as LLVMBuilderRef) as LLVMValueRef
@@ -669,98 +662,98 @@ declare function LLVMBuildRetVoid(byval as LLVMBuilderRef) as LLVMValueRef
 declare function LLVMBuildRet(byval as LLVMBuilderRef, byval V as LLVMValueRef) as LLVMValueRef
 declare function LLVMBuildAggregateRet(byval as LLVMBuilderRef, byval RetVals as LLVMValueRef ptr, byval N as ulong) as LLVMValueRef
 declare function LLVMBuildBr(byval as LLVMBuilderRef, byval Dest as LLVMBasicBlockRef) as LLVMValueRef
-declare function LLVMBuildCondBr(byval as LLVMBuilderRef, byval If_ as LLVMValueRef, byval Then_ as LLVMBasicBlockRef, byval Else_ as LLVMBasicBlockRef) as LLVMValueRef
-declare function LLVMBuildSwitch(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Else_ as LLVMBasicBlockRef, byval NumCases as ulong) as LLVMValueRef
+declare function LLVMBuildCondBr(byval as LLVMBuilderRef, byval If as LLVMValueRef, byval Then as LLVMBasicBlockRef, byval Else as LLVMBasicBlockRef) as LLVMValueRef
+declare function LLVMBuildSwitch(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Else as LLVMBasicBlockRef, byval NumCases as ulong) as LLVMValueRef
 declare function LLVMBuildIndirectBr(byval B as LLVMBuilderRef, byval Addr as LLVMValueRef, byval NumDests as ulong) as LLVMValueRef
-declare function LLVMBuildInvoke(byval as LLVMBuilderRef, byval Fn as LLVMValueRef, byval Args as LLVMValueRef ptr, byval NumArgs as ulong, byval Then_ as LLVMBasicBlockRef, byval Catch as LLVMBasicBlockRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildLandingPad(byval B as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval PersFn as LLVMValueRef, byval NumClauses as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildInvoke(byval as LLVMBuilderRef, byval Fn as LLVMValueRef, byval Args as LLVMValueRef ptr, byval NumArgs as ulong, byval Then as LLVMBasicBlockRef, byval Catch as LLVMBasicBlockRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildLandingPad(byval B as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval PersFn as LLVMValueRef, byval NumClauses as ulong, byval Name as const zstring ptr) as LLVMValueRef
 declare function LLVMBuildResume(byval B as LLVMBuilderRef, byval Exn as LLVMValueRef) as LLVMValueRef
 declare function LLVMBuildUnreachable(byval as LLVMBuilderRef) as LLVMValueRef
 declare sub LLVMAddCase(byval Switch as LLVMValueRef, byval OnVal as LLVMValueRef, byval Dest as LLVMBasicBlockRef)
 declare sub LLVMAddDestination(byval IndirectBr as LLVMValueRef, byval Dest as LLVMBasicBlockRef)
 declare sub LLVMAddClause(byval LandingPad as LLVMValueRef, byval ClauseVal as LLVMValueRef)
-declare sub LLVMSetCleanup(byval LandingPad as LLVMValueRef, byval Val_ as LLVMBool)
-declare function LLVMBuildAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNSWAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNUWAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNSWSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNUWSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNSWMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNUWMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildUDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildExactSDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildURem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSRem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFRem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildShl(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildLShr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildAShr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildAnd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildOr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildXor(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildBinOp(byval B as LLVMBuilderRef, byval Op as LLVMOpcode, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNeg(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNSWNeg(byval B as LLVMBuilderRef, byval V as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNUWNeg(byval B as LLVMBuilderRef, byval V as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFNeg(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildNot(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildMalloc(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildArrayMalloc(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Val_ as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildAlloca(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildArrayAlloca(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Val_ as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
+declare sub LLVMSetCleanup(byval LandingPad as LLVMValueRef, byval Val as LLVMBool)
+declare function LLVMBuildAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNSWAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNUWAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFAdd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNSWSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNUWSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFSub(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNSWMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNUWMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFMul(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildUDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildExactSDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFDiv(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildURem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSRem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFRem(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildShl(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildLShr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildAShr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildAnd(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildOr(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildXor(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildBinOp(byval B as LLVMBuilderRef, byval Op as LLVMOpcode, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNeg(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNSWNeg(byval B as LLVMBuilderRef, byval V as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNUWNeg(byval B as LLVMBuilderRef, byval V as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFNeg(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildNot(byval as LLVMBuilderRef, byval V as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildMalloc(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildArrayMalloc(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Val as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildAlloca(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildArrayAlloca(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Val as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
 declare function LLVMBuildFree(byval as LLVMBuilderRef, byval PointerVal as LLVMValueRef) as LLVMValueRef
-declare function LLVMBuildLoad(byval as LLVMBuilderRef, byval PointerVal as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildStore(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval Ptr_ as LLVMValueRef) as LLVMValueRef
-declare function LLVMBuildGEP(byval B as LLVMBuilderRef, byval Pointer_ as LLVMValueRef, byval Indices as LLVMValueRef ptr, byval NumIndices as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildInBoundsGEP(byval B as LLVMBuilderRef, byval Pointer_ as LLVMValueRef, byval Indices as LLVMValueRef ptr, byval NumIndices as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildStructGEP(byval B as LLVMBuilderRef, byval Pointer_ as LLVMValueRef, byval Idx as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildGlobalString(byval B as LLVMBuilderRef, byval Str_ as const zstring ptr, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildGlobalStringPtr(byval B as LLVMBuilderRef, byval Str_ as const zstring ptr, byval Name_ as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildLoad(byval as LLVMBuilderRef, byval PointerVal as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildStore(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval Ptr as LLVMValueRef) as LLVMValueRef
+declare function LLVMBuildGEP(byval B as LLVMBuilderRef, byval Pointer as LLVMValueRef, byval Indices as LLVMValueRef ptr, byval NumIndices as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildInBoundsGEP(byval B as LLVMBuilderRef, byval Pointer as LLVMValueRef, byval Indices as LLVMValueRef ptr, byval NumIndices as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildStructGEP(byval B as LLVMBuilderRef, byval Pointer as LLVMValueRef, byval Idx as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildGlobalString(byval B as LLVMBuilderRef, byval Str as const zstring ptr, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildGlobalStringPtr(byval B as LLVMBuilderRef, byval Str as const zstring ptr, byval Name as const zstring ptr) as LLVMValueRef
 declare function LLVMGetVolatile(byval MemoryAccessInst as LLVMValueRef) as LLVMBool
 declare sub LLVMSetVolatile(byval MemoryAccessInst as LLVMValueRef, byval IsVolatile as LLVMBool)
-declare function LLVMBuildTrunc(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildZExt(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSExt(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFPToUI(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFPToSI(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildUIToFP(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSIToFP(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFPTrunc(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFPExt(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildPtrToInt(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildIntToPtr(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildBitCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildAddrSpaceCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildZExtOrBitCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSExtOrBitCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildTruncOrBitCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildCast(byval B as LLVMBuilderRef, byval Op as LLVMOpcode, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildPointerCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildIntCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFPCast(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildICmp(byval as LLVMBuilderRef, byval Op as LLVMIntPredicate, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFCmp(byval as LLVMBuilderRef, byval Op as LLVMRealPredicate, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildPhi(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildCall(byval as LLVMBuilderRef, byval Fn as LLVMValueRef, byval Args as LLVMValueRef ptr, byval NumArgs as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildSelect(byval as LLVMBuilderRef, byval If_ as LLVMValueRef, byval Then_ as LLVMValueRef, byval Else_ as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildVAArg(byval as LLVMBuilderRef, byval List as LLVMValueRef, byval Ty as LLVMTypeRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildExtractElement(byval as LLVMBuilderRef, byval VecVal as LLVMValueRef, byval Index as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildInsertElement(byval as LLVMBuilderRef, byval VecVal as LLVMValueRef, byval EltVal as LLVMValueRef, byval Index as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildShuffleVector(byval as LLVMBuilderRef, byval V1 as LLVMValueRef, byval V2 as LLVMValueRef, byval Mask as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildExtractValue(byval as LLVMBuilderRef, byval AggVal as LLVMValueRef, byval Index as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildInsertValue(byval as LLVMBuilderRef, byval AggVal as LLVMValueRef, byval EltVal as LLVMValueRef, byval Index as ulong, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildIsNull(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildIsNotNull(byval as LLVMBuilderRef, byval Val_ as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildPtrDiff(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildFence(byval B as LLVMBuilderRef, byval ordering as LLVMAtomicOrdering, byval singleThread as LLVMBool, byval Name_ as const zstring ptr) as LLVMValueRef
-declare function LLVMBuildAtomicRMW(byval B as LLVMBuilderRef, byval op as LLVMAtomicRMWBinOp, byval PTR_ as LLVMValueRef, byval Val_ as LLVMValueRef, byval ordering as LLVMAtomicOrdering, byval singleThread as LLVMBool) as LLVMValueRef
+declare function LLVMBuildTrunc(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildZExt(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSExt(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFPToUI(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFPToSI(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildUIToFP(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSIToFP(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFPTrunc(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFPExt(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildPtrToInt(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildIntToPtr(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildBitCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildAddrSpaceCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildZExtOrBitCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSExtOrBitCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildTruncOrBitCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildCast(byval B as LLVMBuilderRef, byval Op as LLVMOpcode, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildPointerCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildIntCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFPCast(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval DestTy as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildICmp(byval as LLVMBuilderRef, byval Op as LLVMIntPredicate, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFCmp(byval as LLVMBuilderRef, byval Op as LLVMRealPredicate, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildPhi(byval as LLVMBuilderRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildCall(byval as LLVMBuilderRef, byval Fn as LLVMValueRef, byval Args as LLVMValueRef ptr, byval NumArgs as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildSelect(byval as LLVMBuilderRef, byval If as LLVMValueRef, byval Then as LLVMValueRef, byval Else as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildVAArg(byval as LLVMBuilderRef, byval List as LLVMValueRef, byval Ty as LLVMTypeRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildExtractElement(byval as LLVMBuilderRef, byval VecVal as LLVMValueRef, byval Index as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildInsertElement(byval as LLVMBuilderRef, byval VecVal as LLVMValueRef, byval EltVal as LLVMValueRef, byval Index as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildShuffleVector(byval as LLVMBuilderRef, byval V1 as LLVMValueRef, byval V2 as LLVMValueRef, byval Mask as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildExtractValue(byval as LLVMBuilderRef, byval AggVal as LLVMValueRef, byval Index as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildInsertValue(byval as LLVMBuilderRef, byval AggVal as LLVMValueRef, byval EltVal as LLVMValueRef, byval Index as ulong, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildIsNull(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildIsNotNull(byval as LLVMBuilderRef, byval Val as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildPtrDiff(byval as LLVMBuilderRef, byval LHS as LLVMValueRef, byval RHS as LLVMValueRef, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildFence(byval B as LLVMBuilderRef, byval ordering as LLVMAtomicOrdering, byval singleThread as LLVMBool, byval Name as const zstring ptr) as LLVMValueRef
+declare function LLVMBuildAtomicRMW(byval B as LLVMBuilderRef, byval op as LLVMAtomicRMWBinOp, byval PTR as LLVMValueRef, byval Val as LLVMValueRef, byval ordering as LLVMAtomicOrdering, byval singleThread as LLVMBool) as LLVMValueRef
 declare function LLVMCreateModuleProviderForExistingModule(byval M as LLVMModuleRef) as LLVMModuleProviderRef
 declare sub LLVMDisposeModuleProvider(byval M as LLVMModuleProviderRef)
 declare function LLVMCreateMemoryBufferWithContentsOfFile(byval Path as const zstring ptr, byval OutMemBuf as LLVMMemoryBufferRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
@@ -794,24 +787,18 @@ declare function LLVMVerifyModule(byval M as LLVMModuleRef, byval Action as LLVM
 declare function LLVMVerifyFunction(byval Fn as LLVMValueRef, byval Action as LLVMVerifierFailureAction) as LLVMBool
 declare sub LLVMViewFunctionCFG(byval Fn as LLVMValueRef)
 declare sub LLVMViewFunctionCFGOnly(byval Fn as LLVMValueRef)
-
 #define LLVM_C_BITCODEREADER_H
-
 declare function LLVMParseBitcode(byval MemBuf as LLVMMemoryBufferRef, byval OutModule as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMParseBitcodeInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutModule as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModule(byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleProviderInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutMP as LLVMModuleProviderRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetBitcodeModuleProvider(byval MemBuf as LLVMMemoryBufferRef, byval OutMP as LLVMModuleProviderRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_BITCODEWRITER_H
-
 declare function LLVMWriteBitcodeToFile(byval M as LLVMModuleRef, byval Path as const zstring ptr) as long
 declare function LLVMWriteBitcodeToFD(byval M as LLVMModuleRef, byval FD as long, byval ShouldClose as long, byval Unbuffered as long) as long
 declare function LLVMWriteBitcodeToFileHandle(byval M as LLVMModuleRef, byval Handle as long) as long
-
 #define LLVM_C_DISASSEMBLER_H
-
 type LLVMDisasmContextRef as any ptr
 type LLVMOpInfoCallback as function(byval DisInfo as any ptr, byval PC as ulongint, byval Offset as ulongint, byval Size as ulongint, byval TagType as long, byval TagBuf as any ptr) as long
 
@@ -828,54 +815,50 @@ type LLVMOpInfo1
 	VariantKind as ulongint
 end type
 
-#define LLVMDisassembler_VariantKind_None 0
-#define LLVMDisassembler_VariantKind_ARM_HI16 1
-#define LLVMDisassembler_VariantKind_ARM_LO16 2
-#define LLVMDisassembler_VariantKind_ARM64_PAGE 1
-#define LLVMDisassembler_VariantKind_ARM64_PAGEOFF 2
-#define LLVMDisassembler_VariantKind_ARM64_GOTPAGE 3
-#define LLVMDisassembler_VariantKind_ARM64_GOTPAGEOFF 4
-#define LLVMDisassembler_VariantKind_ARM64_TLVP 5
-#define LLVMDisassembler_VariantKind_ARM64_TLVOFF 6
-
+const LLVMDisassembler_VariantKind_None = 0
+const LLVMDisassembler_VariantKind_ARM_HI16 = 1
+const LLVMDisassembler_VariantKind_ARM_LO16 = 2
+const LLVMDisassembler_VariantKind_ARM64_PAGE = 1
+const LLVMDisassembler_VariantKind_ARM64_PAGEOFF = 2
+const LLVMDisassembler_VariantKind_ARM64_GOTPAGE = 3
+const LLVMDisassembler_VariantKind_ARM64_GOTPAGEOFF = 4
+const LLVMDisassembler_VariantKind_ARM64_TLVP = 5
+const LLVMDisassembler_VariantKind_ARM64_TLVOFF = 6
 type LLVMSymbolLookupCallback as function(byval DisInfo as any ptr, byval ReferenceValue as ulongint, byval ReferenceType as ulongint ptr, byval ReferencePC as ulongint, byval ReferenceName as const zstring ptr ptr) as const zstring ptr
-
-#define LLVMDisassembler_ReferenceType_InOut_None 0
-#define LLVMDisassembler_ReferenceType_In_Branch 1
-#define LLVMDisassembler_ReferenceType_In_PCrel_Load 2
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADRP &h100000001
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADDXri &h100000002
-#define LLVMDisassembler_ReferenceType_In_ARM64_LDRXui &h100000003
-#define LLVMDisassembler_ReferenceType_In_ARM64_LDRXl &h100000004
-#define LLVMDisassembler_ReferenceType_In_ARM64_ADR &h100000005
-#define LLVMDisassembler_ReferenceType_Out_SymbolStub 1
-#define LLVMDisassembler_ReferenceType_Out_LitPool_SymAddr 2
-#define LLVMDisassembler_ReferenceType_Out_LitPool_CstrAddr 3
-#define LLVMDisassembler_ReferenceType_Out_Objc_CFString_Ref 4
-#define LLVMDisassembler_ReferenceType_Out_Objc_Message 5
-#define LLVMDisassembler_ReferenceType_Out_Objc_Message_Ref 6
-#define LLVMDisassembler_ReferenceType_Out_Objc_Selector_Ref 7
-#define LLVMDisassembler_ReferenceType_Out_Objc_Class_Ref 8
-#define LLVMDisassembler_ReferenceType_DeMangled_Name 9
+const LLVMDisassembler_ReferenceType_InOut_None = 0
+const LLVMDisassembler_ReferenceType_In_Branch = 1
+const LLVMDisassembler_ReferenceType_In_PCrel_Load = 2
+const LLVMDisassembler_ReferenceType_In_ARM64_ADRP = &h100000001
+const LLVMDisassembler_ReferenceType_In_ARM64_ADDXri = &h100000002
+const LLVMDisassembler_ReferenceType_In_ARM64_LDRXui = &h100000003
+const LLVMDisassembler_ReferenceType_In_ARM64_LDRXl = &h100000004
+const LLVMDisassembler_ReferenceType_In_ARM64_ADR = &h100000005
+const LLVMDisassembler_ReferenceType_Out_SymbolStub = 1
+const LLVMDisassembler_ReferenceType_Out_LitPool_SymAddr = 2
+const LLVMDisassembler_ReferenceType_Out_LitPool_CstrAddr = 3
+const LLVMDisassembler_ReferenceType_Out_Objc_CFString_Ref = 4
+const LLVMDisassembler_ReferenceType_Out_Objc_Message = 5
+const LLVMDisassembler_ReferenceType_Out_Objc_Message_Ref = 6
+const LLVMDisassembler_ReferenceType_Out_Objc_Selector_Ref = 7
+const LLVMDisassembler_ReferenceType_Out_Objc_Class_Ref = 8
+const LLVMDisassembler_ReferenceType_DeMangled_Name = 9
 
 declare function LLVMCreateDisasm(byval TripleName as const zstring ptr, byval DisInfo as any ptr, byval TagType as long, byval GetOpInfo as LLVMOpInfoCallback, byval SymbolLookUp as LLVMSymbolLookupCallback) as LLVMDisasmContextRef
 declare function LLVMCreateDisasmCPU(byval Triple as const zstring ptr, byval CPU as const zstring ptr, byval DisInfo as any ptr, byval TagType as long, byval GetOpInfo as LLVMOpInfoCallback, byval SymbolLookUp as LLVMSymbolLookupCallback) as LLVMDisasmContextRef
 declare function LLVMSetDisasmOptions(byval DC as LLVMDisasmContextRef, byval Options as ulongint) as long
 
-#define LLVMDisassembler_Option_UseMarkup 1
-#define LLVMDisassembler_Option_PrintImmHex 2
-#define LLVMDisassembler_Option_AsmPrinterVariant 4
-#define LLVMDisassembler_Option_SetInstrComments 8
-#define LLVMDisassembler_Option_PrintLatency 16
-
+const LLVMDisassembler_Option_UseMarkup = 1
+const LLVMDisassembler_Option_PrintImmHex = 2
+const LLVMDisassembler_Option_AsmPrinterVariant = 4
+const LLVMDisassembler_Option_SetInstrComments = 8
+const LLVMDisassembler_Option_PrintLatency = 16
 declare sub LLVMDisasmDispose(byval DC as LLVMDisasmContextRef)
 declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval Bytes as ubyte ptr, byval BytesSize as ulongint, byval PC as ulongint, byval OutString as zstring ptr, byval OutStringSize as uinteger) as uinteger
-
 #define LLVM_C_EXECUTIONENGINE_H
 #define LLVM_C_TARGET_H
 #define LLVM_CONFIG_H
 #define LLVM_BINDIR "/usr/bin"
-#define LLVM_CONFIGTIME "Fri Nov  7 17:30:50 CET 2014"
+#define LLVM_CONFIGTIME "Thu Feb 12 14:06:48 CET 2015"
 #define LLVM_DATADIR "/usr/share/llvm"
 #ifdef __FB_WIN32__
 	#ifdef __FB_64BIT__
@@ -891,9 +874,9 @@ declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval B
 	#endif
 #endif
 #define LLVM_DOCSDIR "/usr/share/doc/llvm"
-#define LLVM_ENABLE_THREADS 1
+const LLVM_ENABLE_THREADS = 1
 #define LLVM_ETCDIR "/usr/etc/llvm"
-#define LLVM_HAS_ATOMICS 1
+const LLVM_HAS_ATOMICS = 1
 #define LLVM_HOST_TRIPLE LLVM_DEFAULT_TARGET_TRIPLE
 #define LLVM_INCLUDEDIR "/usr/include"
 #define LLVM_INFODIR "/usr/info"
@@ -906,13 +889,13 @@ declare function LLVMDisasmInstruction(byval DC as LLVMDisasmContextRef, byval B
 #define LLVM_NATIVE_TARGETINFO LLVMInitializeX86TargetInfo
 #define LLVM_NATIVE_TARGETMC LLVMInitializeX86TargetMC
 #ifdef __FB_UNIX__
-	#define LLVM_ON_UNIX 1
+	const LLVM_ON_UNIX = 1
 #endif
 #define LLVM_PREFIX "/usr"
-#define LLVM_USE_INTEL_JITEVENTS 0
-#define LLVM_USE_OPROFILE 0
-#define LLVM_VERSION_MAJOR 3
-#define LLVM_VERSION_MINOR 5
+const LLVM_USE_INTEL_JITEVENTS = 0
+const LLVM_USE_OPROFILE = 0
+const LLVM_VERSION_MAJOR = 3
+const LLVM_VERSION_MINOR = 5
 
 type LLVMByteOrdering as long
 enum
@@ -922,7 +905,6 @@ end enum
 
 type LLVMTargetDataRef as LLVMOpaqueTargetData ptr
 type LLVMTargetLibraryInfoRef as LLVMOpaqueTargetLibraryInfotData ptr
-
 declare sub LLVMInitializeR600TargetInfo()
 declare sub LLVMInitializeSystemZTargetInfo()
 declare sub LLVMInitializeHexagonTargetInfo()
@@ -1117,9 +1099,7 @@ declare function LLVMPreferredAlignmentOfGlobal(byval TD as LLVMTargetDataRef, b
 declare function LLVMElementAtOffset(byval TD as LLVMTargetDataRef, byval StructTy as LLVMTypeRef, byval Offset as ulongint) as ulong
 declare function LLVMOffsetOfElement(byval TD as LLVMTargetDataRef, byval StructTy as LLVMTypeRef, byval Element as ulong) as ulongint
 declare sub LLVMDisposeTargetData(byval TD as LLVMTargetDataRef)
-
 #define LLVM_C_TARGETMACHINE_H
-
 type LLVMTargetMachineRef as LLVMOpaqueTargetMachine ptr
 type LLVMTargetRef as LLVMTarget ptr
 
@@ -1157,7 +1137,7 @@ end enum
 
 declare function LLVMGetFirstTarget() as LLVMTargetRef
 declare function LLVMGetNextTarget(byval T as LLVMTargetRef) as LLVMTargetRef
-declare function LLVMGetTargetFromName(byval Name_ as const zstring ptr) as LLVMTargetRef
+declare function LLVMGetTargetFromName(byval Name as const zstring ptr) as LLVMTargetRef
 declare function LLVMGetTargetFromTriple(byval Triple as const zstring ptr, byval T as LLVMTargetRef ptr, byval ErrorMessage as zstring ptr ptr) as LLVMBool
 declare function LLVMGetTargetName(byval T as LLVMTargetRef) as const zstring ptr
 declare function LLVMGetTargetDescription(byval T as LLVMTargetRef) as const zstring ptr
@@ -1218,7 +1198,7 @@ declare sub LLVMAddModule(byval EE as LLVMExecutionEngineRef, byval M as LLVMMod
 declare sub LLVMAddModuleProvider(byval EE as LLVMExecutionEngineRef, byval MP as LLVMModuleProviderRef)
 declare function LLVMRemoveModule(byval EE as LLVMExecutionEngineRef, byval M as LLVMModuleRef, byval OutMod as LLVMModuleRef ptr, byval OutError as zstring ptr ptr) as LLVMBool
 declare function LLVMRemoveModuleProvider(byval EE as LLVMExecutionEngineRef, byval MP as LLVMModuleProviderRef, byval OutMod as LLVMModuleRef ptr, byval OutError as zstring ptr ptr) as LLVMBool
-declare function LLVMFindFunction(byval EE as LLVMExecutionEngineRef, byval Name_ as const zstring ptr, byval OutFn as LLVMValueRef ptr) as LLVMBool
+declare function LLVMFindFunction(byval EE as LLVMExecutionEngineRef, byval Name as const zstring ptr, byval OutFn as LLVMValueRef ptr) as LLVMBool
 declare function LLVMRecompileAndRelinkFunction(byval EE as LLVMExecutionEngineRef, byval Fn as LLVMValueRef) as any ptr
 declare function LLVMGetExecutionEngineTargetData(byval EE as LLVMExecutionEngineRef) as LLVMTargetDataRef
 declare function LLVMGetExecutionEngineTargetMachine(byval EE as LLVMExecutionEngineRef) as LLVMTargetMachineRef
@@ -1229,12 +1209,11 @@ type LLVMMemoryManagerAllocateCodeSectionCallback as function(byval Opaque as an
 type LLVMMemoryManagerAllocateDataSectionCallback as function(byval Opaque as any ptr, byval Size as uinteger, byval Alignment as ulong, byval SectionID as ulong, byval SectionName as const zstring ptr, byval IsReadOnly as LLVMBool) as ubyte ptr
 type LLVMMemoryManagerFinalizeMemoryCallback as function(byval Opaque as any ptr, byval ErrMsg as zstring ptr ptr) as LLVMBool
 type LLVMMemoryManagerDestroyCallback as sub(byval Opaque as any ptr)
-
 declare function LLVMCreateSimpleMCJITMemoryManager(byval Opaque as any ptr, byval AllocateCodeSection as LLVMMemoryManagerAllocateCodeSectionCallback, byval AllocateDataSection as LLVMMemoryManagerAllocateDataSectionCallback, byval FinalizeMemory as LLVMMemoryManagerFinalizeMemoryCallback, byval Destroy as LLVMMemoryManagerDestroyCallback) as LLVMMCJITMemoryManagerRef
 declare sub LLVMDisposeMCJITMemoryManager(byval MM as LLVMMCJITMemoryManagerRef)
-
 #define LLVM_C_INITIALIZEPASSES_H
 
+declare sub LLVMInitializeCore(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeTransformUtils(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeScalarOpts(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeObjCARCOpts(byval R as LLVMPassRegistryRef)
@@ -1246,11 +1225,8 @@ declare sub LLVMInitializeAnalysis(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeIPA(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeCodeGen(byval R as LLVMPassRegistryRef)
 declare sub LLVMInitializeTarget(byval R as LLVMPassRegistryRef)
-
 #define LLVM_C_IRREADER_H
-
 declare function LLVMParseIRInContext(byval ContextRef as LLVMContextRef, byval MemBuf as LLVMMemoryBufferRef, byval OutM as LLVMModuleRef ptr, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_LINKER_H
 
 type LLVMLinkerMode as long
@@ -1260,9 +1236,7 @@ enum
 end enum
 
 declare function LLVMLinkModules(byval Dest as LLVMModuleRef, byval Src as LLVMModuleRef, byval Mode as LLVMLinkerMode, byval OutMessage as zstring ptr ptr) as LLVMBool
-
 #define LLVM_C_LINKTIMEOPTIMIZER_H
-
 type llvm_lto_t as any ptr
 
 type llvm_lto_status as long
@@ -1280,17 +1254,13 @@ enum
 end enum
 
 type llvm_lto_status_t as llvm_lto_status
-
 declare function llvm_create_optimizer() as llvm_lto_t
 declare sub llvm_destroy_optimizer(byval lto as llvm_lto_t)
 declare function llvm_read_object_file(byval lto as llvm_lto_t, byval input_filename as const zstring ptr) as llvm_lto_status_t
 declare function llvm_optimize_modules(byval lto as llvm_lto_t, byval output_filename as const zstring ptr) as llvm_lto_status_t
-
 #define LLVM_C_LTO_H
-
 type lto_bool_t as byte
-
-#define LTO_API_VERSION 10
+const LTO_API_VERSION = 10
 
 type lto_symbol_attributes as long
 enum
@@ -1329,7 +1299,6 @@ end enum
 
 type lto_module_t as LLVMOpaqueLTOModule ptr
 type lto_code_gen_t as LLVMOpaqueLTOCodeGenerator ptr
-
 declare function lto_get_version() as const zstring ptr
 declare function lto_get_error_message() as const zstring ptr
 declare function lto_module_is_object_file(byval path as const zstring ptr) as lto_bool_t
@@ -1365,7 +1334,6 @@ enum
 end enum
 
 type lto_diagnostic_handler_t as sub(byval severity as lto_codegen_diagnostic_severity_t, byval diag as const zstring ptr, byval ctxt as any ptr)
-
 declare sub lto_codegen_set_diagnostic_handler(byval as lto_code_gen_t, byval as lto_diagnostic_handler_t, byval as any ptr)
 declare function lto_codegen_create() as lto_code_gen_t
 declare sub lto_codegen_dispose(byval as lto_code_gen_t)
@@ -1378,10 +1346,9 @@ declare sub lto_codegen_set_assembler_args(byval cg as lto_code_gen_t, byval arg
 declare sub lto_codegen_add_must_preserve_symbol(byval cg as lto_code_gen_t, byval symbol as const zstring ptr)
 declare function lto_codegen_write_merged_modules(byval cg as lto_code_gen_t, byval path as const zstring ptr) as lto_bool_t
 declare function lto_codegen_compile(byval cg as lto_code_gen_t, byval length as uinteger ptr) as const any ptr
-declare function lto_codegen_compile_to_file(byval cg as lto_code_gen_t, byval name_ as const zstring ptr ptr) as lto_bool_t
+declare function lto_codegen_compile_to_file(byval cg as lto_code_gen_t, byval name as const zstring ptr ptr) as lto_bool_t
 declare sub lto_codegen_debug_options(byval cg as lto_code_gen_t, byval as const zstring ptr)
 declare sub lto_initialize_disassembler()
-
 #define LLVM_C_OBJECT_H
 
 type LLVMObjectFileRef as LLVMOpaqueObjectFile ptr

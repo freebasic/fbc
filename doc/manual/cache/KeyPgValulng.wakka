@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VALULNG"}}----
-Converts a string to a unsigned long integer
+Converts a string to a unsigned 64bit integer
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]

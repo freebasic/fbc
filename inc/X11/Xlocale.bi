@@ -1,12 +1,7 @@
-''
-''
-'' Xlocale -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xlocale_bi__
-#define __Xlocale_bi__
+#pragma once
 
-#endif
+#include once "X11/Xfuncproto.bi"
+#include once "X11/Xosdefs.bi"
+#include once "crt/locale.bi"
+
+#define _X11_XLOCALE_H_

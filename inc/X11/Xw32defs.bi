@@ -1,19 +1,12 @@
-''
-''
-'' Xw32defs -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xw32defs_bi__
-#define __Xw32defs_bi__
+#pragma once
 
-type caddr_t as byte ptr
+#ifdef __FB_WIN32__
+	#define _XW32DEFS_H
+	type caddr_t as zstring ptr
+	#define lstat stat
 
-#define F_OK 0
-#define X_OK 1
-#define W_OK 2
-#define R_OK 4
-
+	type iovec
+		iov_base as caddr_t
+		iov_len as long
+	end type
 #endif

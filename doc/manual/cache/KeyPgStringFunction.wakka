@@ -2,7 +2,7 @@
 Creates and fills a string of a certain length with a certain character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //ch// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
@@ -14,7 +14,7 @@ Creates and fills a string of a certain length with a certain character
 	##//count//##
 		An integer specifying the length of the string to be created.
 	##//ch_code//##
-		An integer specifying the ASCII character code to be used to fill the string.
+		A long specifying the ASCII character code to be used to fill the string.
 	##//ch//##
 		A string whose first character is to be used to fill the string.
 

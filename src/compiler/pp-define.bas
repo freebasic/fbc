@@ -305,11 +305,11 @@ private function hLoadDefine _
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-            if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
+			if( symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_STR ) then
 				text = "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE
-            else
+			else
 				text = symbGetDefineCallback( s )( )
-            end if
+			end if
 
 			if( lex.ctx->deflen = 0 ) then
 				DZstrAssign( lex.ctx->deftext, text )
@@ -615,11 +615,11 @@ private function hLoadDefineW _
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-            if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
+			if( symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_STR ) then
 				DWstrAssignA( text, "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE )
-            else
+			else
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
-            end if
+			end if
 
 			if( lex.ctx->deflen = 0 ) then
 				DWstrAssign( lex.ctx->deftextw, text.data )

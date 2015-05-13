@@ -689,12 +689,18 @@ function cMemberDeref _
 					varexpr = astBuildPTRCHK( varexpr )
 				end if
 
-				'' ptr[index] = ptr + (index * sizeof( typeof( *ptr ) ))
+				'' ptr[index]  =>  ptr + (index * sizeof(*ptr))
+				'' (DEREF added later below, so we can pass the pointer to cUdtMember() first if needed)
 				varexpr = astNewBOP( AST_OP_ADD, varexpr, _
 					astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt ) ) )
 
 				'' '.'?
 				if( lexGetToken( ) = CHAR_DOT ) then
+					'' A . member access can only follow a [] ptr index operation if the type now is a UDT
+					if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+						errReport( FB_ERRMSG_INVALIDDATATYPES )
+						exit do
+					end if
 					lexSkipToken( LEXCHECK_NOPERIOD )
 
 					varexpr = cUdtMember( dtype, subtype, varexpr, check_array )
@@ -712,6 +718,7 @@ function cMemberDeref _
 				else
 					varexpr = astNewDEREF( varexpr, dtype, subtype )
 				end if
+
 			end select
 
 		'' Only processing -> and [] here...
@@ -1358,8 +1365,14 @@ function cVarOrDeref _
 	end if
 
 	if( expr <> NULL ) then
-		'' skip any casting if they won't do any conversion
-		dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
+		dim as ASTNODE ptr t = any
+		if( options and FB_VAREXPROPT_ALLOWALLCASTS ) then
+			'' Allow all casts - used for function calls where result is ignored
+			t = astSkipCASTs( expr )
+		else
+			'' Allow noconv casts on the lhs of assignments.
+			t = astSkipNoConvCAST( expr )
+		end if
 
 		dim as integer complain = TRUE
 

@@ -2,12 +2,12 @@
 Opens the console directly for input and output as a file
 
 {{fbdoc item="syntax"}}##
-	**[[KeyPgOpen Open]] Scrn** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]
+	**[[KeyPgOpen Open]] Scrn** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	**Open Scrn** [for //mode//] as [#]//filenum//
 		//or//
-	//result// = **Open Scrn**( [for //mode//] as [#]//filenum// )
+	//result// = **Open Scrn**( [for //mode//[,]] as [#]//filenum// )
 ##
 {{fbdoc item="param"}}
 	##//mode//##

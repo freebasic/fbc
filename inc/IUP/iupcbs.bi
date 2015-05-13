@@ -7,7 +7,6 @@
 extern "C"
 
 #define __IUPCBS_H
-
 type IFidle as function() as long
 type IFi as sub(byval as long)
 type IFii as sub(byval as long, byval as long)

@@ -1,192 +1,389 @@
-''
-''
-'' wtypes -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __win_wtypes_bi__
-#define __win_wtypes_bi__
+#pragma once
 
-#include once "win/rpc.bi"
-#include once "win/rpcndr.bi"
+#include once "rpc.bi"
+#include once "rpcndr.bi"
+#include once "wtypesbase.bi"
 
-#define IID_NULL GUID_NULL
-#define CLSID_NULL GUID_NULL
-#define CBPCLIPDATA(d) (d.cbSize-sizeof(d.ulClipFmt))
-#define DECIMAL_NEG cubyte(&h80)
-#define DECIMAL_SETZERO(d) d.Lo64=0 : d.Hi32=0 : d.signscale=0
-#define ROTFLAGS_REGISTRATIONKEEPSALIVE	&h01
-#define ROTFLAGS_ALLOWANYCLIENT		&h02
+'' The following symbols have been renamed:
+''     typedef DATE => DATE_
 
-#ifndef BLOB
-type BLOB
-	cbSize as ULONG
-	pBlobData as UBYTE ptr
+extern "C"
+
+const __REQUIRED_RPCNDR_H_VERSION__ = 475
+#define __wtypes_h__
+#define __IWinTypes_INTERFACE_DEFINED__
+extern IWinTypes_v0_1_c_ifspec as RPC_IF_HANDLE
+extern IWinTypes_v0_1_s_ifspec as RPC_IF_HANDLE
+
+type tagRemHGLOBAL
+	fNullHGlobal as LONG
+	cbData as ULONG
+	data(0 to 0) as ubyte
 end type
 
-type PBLOB as BLOB ptr
-type LPBLOB as BLOB ptr
-#endif
+type RemHGLOBAL as tagRemHGLOBAL
 
-enum DVASPECT
+type tagRemHMETAFILEPICT
+	mm as LONG
+	xExt as LONG
+	yExt as LONG
+	cbData as ULONG
+	data(0 to 0) as ubyte
+end type
+
+type RemHMETAFILEPICT as tagRemHMETAFILEPICT
+
+type tagRemHENHMETAFILE
+	cbData as ULONG
+	data(0 to 0) as ubyte
+end type
+
+type RemHENHMETAFILE as tagRemHENHMETAFILE
+
+type tagRemHBITMAP
+	cbData as ULONG
+	data(0 to 0) as ubyte
+end type
+
+type RemHBITMAP as tagRemHBITMAP
+
+type tagRemHPALETTE
+	cbData as ULONG
+	data(0 to 0) as ubyte
+end type
+
+type RemHPALETTE as tagRemHPALETTE
+
+type tagRemBRUSH
+	cbData as ULONG
+	data(0 to 0) as ubyte
+end type
+
+type RemHBRUSH as tagRemBRUSH
+#define _ROTFLAGS_DEFINED
+const ROTFLAGS_REGISTRATIONKEEPSALIVE = &h1
+const ROTFLAGS_ALLOWANYCLIENT = &h2
+#define _ROT_COMPARE_MAX_DEFINED
+const ROT_COMPARE_MAX = 2048
+
+type tagDVASPECT as long
+enum
 	DVASPECT_CONTENT = 1
 	DVASPECT_THUMBNAIL = 2
 	DVASPECT_ICON = 4
 	DVASPECT_DOCPRINT = 8
 end enum
 
-enum DVASPECT2
-	DVASPECT_OPAQUE = 16
-	DVASPECT_TRANSPARENT = 32
+type DVASPECT as tagDVASPECT
+
+type tagSTGC as long
+enum
+	STGC_DEFAULT = 0
+	STGC_OVERWRITE = 1
+	STGC_ONLYIFCURRENT = 2
+	STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE = 4
+	STGC_CONSOLIDATE = 8
 end enum
 
-enum STATFLAG
+type STGC as tagSTGC
+
+type tagSTGMOVE as long
+enum
+	STGMOVE_MOVE = 0
+	STGMOVE_COPY = 1
+	STGMOVE_SHALLOWCOPY = 2
+end enum
+
+type STGMOVE as tagSTGMOVE
+
+type tagSTATFLAG as long
+enum
 	STATFLAG_DEFAULT = 0
 	STATFLAG_NONAME = 1
+	STATFLAG_NOOPEN = 2
 end enum
 
-enum MEMCTX
-	MEMCTX_LOCAL = 0
-	MEMCTX_TASK
-	MEMCTX_SHARED
-	MEMCTX_MACSYSTEM
-	MEMCTX_UNKNOWN = -1
-	MEMCTX_SAME = -2
-end enum
+type STATFLAG as tagSTATFLAG
+type HCONTEXT as any ptr
+const WDT_INPROC_CALL = &h48746457
+const WDT_REMOTE_CALL = &h52746457
+const WDT_INPROC64_CALL = &h50746457
 
-enum MSHCTX
-	MSHCTX_LOCAL = 0
-	MSHCTX_NOSHAREDMEM
-	MSHCTX_DIFFERENTMACHINE
-	MSHCTX_INPROC
-end enum
+union _userCLIPFORMAT_u
+	dwValue as DWORD
+	pwszName as wstring ptr
+end union
 
-enum CLSCTX
-	CLSCTX_INPROC_SERVER = 1
-	CLSCTX_INPROC_HANDLER = 2
-	CLSCTX_LOCAL_SERVER = 4
-	CLSCTX_INPROC_SERVER16 = 8
-	CLSCTX_REMOTE_SERVER = 16
-end enum
-
-enum MSHLFLAGS
-	MSHLFLAGS_NORMAL
-	MSHLFLAGS_TABLESTRONG
-	MSHLFLAGS_TABLEWEAK
-end enum
-
-type FLAGGED_WORD_BLOB
-	fFlags as uinteger
-	clSize as uinteger
-	asData(0 to 1-1) as ushort
+type _userCLIPFORMAT
+	fContext as LONG
+	u as _userCLIPFORMAT_u
 end type
 
-#ifndef OLE2ANSI
-type OLECHAR as WCHAR
-type LPOLESTR as LPWSTR
-type LPCOLESTR as LPCWSTR
-#define OLESTR(s) wstr(s)
-#else
-type OLECHAR as byte
-type LPOLESTR as LPSTR
-type LPCOLESTR as LPCSTR
-#define OLESTR(s) s
-#endif
+type userCLIPFORMAT as _userCLIPFORMAT
+type wireCLIPFORMAT as userCLIPFORMAT ptr
+type CLIPFORMAT as WORD
 
-type VARTYPE as ushort
-type VARIANT_BOOL as short
-type _VARIANT_BOOL as VARIANT_BOOL
-#define VARIANT_TRUE cshort(&hffff)
-#define VARIANT_FALSE cshort(0)
+union _GDI_NONREMOTE_u
+	hInproc as LONG
+	hRemote as DWORD_BLOB ptr
+end union
 
-type BSTR as OLECHAR ptr
-type wireBSTR as FLAGGED_WORD_BLOB ptr
-type LPBSTR as BSTR ptr
-type SCODE as LONG
-type HCONTEXT as any ptr
+type _GDI_NONREMOTE
+	fContext as LONG
+	u as _GDI_NONREMOTE_u
+end type
 
-union CY
+type GDI_NONREMOTE as _GDI_NONREMOTE
+
+union _userHGLOBAL_u
+	hInproc as LONG
+	hRemote as FLAGGED_BYTE_BLOB ptr
+	hInproc64 as INT64
+end union
+
+type _userHGLOBAL
+	fContext as LONG
+	u as _userHGLOBAL_u
+end type
+
+type userHGLOBAL as _userHGLOBAL
+type wireHGLOBAL as userHGLOBAL ptr
+
+union _userHMETAFILE_u
+	hInproc as LONG
+	hRemote as BYTE_BLOB ptr
+	hInproc64 as INT64
+end union
+
+type _userHMETAFILE
+	fContext as LONG
+	u as _userHMETAFILE_u
+end type
+
+type userHMETAFILE as _userHMETAFILE
+
+type _remoteMETAFILEPICT
+	mm as LONG
+	xExt as LONG
+	yExt as LONG
+	hMF as userHMETAFILE ptr
+end type
+
+type remoteMETAFILEPICT as _remoteMETAFILEPICT
+
+union _userHMETAFILEPICT_u
+	hInproc as LONG
+	hRemote as remoteMETAFILEPICT ptr
+	hInproc64 as INT64
+end union
+
+type _userHMETAFILEPICT
+	fContext as LONG
+	u as _userHMETAFILEPICT_u
+end type
+
+type userHMETAFILEPICT as _userHMETAFILEPICT
+
+union _userHENHMETAFILE_u
+	hInproc as LONG
+	hRemote as BYTE_BLOB ptr
+	hInproc64 as INT64
+end union
+
+type _userHENHMETAFILE
+	fContext as LONG
+	u as _userHENHMETAFILE_u
+end type
+
+type userHENHMETAFILE as _userHENHMETAFILE
+
+type _userBITMAP
+	bmType as LONG
+	bmWidth as LONG
+	bmHeight as LONG
+	bmWidthBytes as LONG
+	bmPlanes as WORD
+	bmBitsPixel as WORD
+	cbSize as ULONG
+	pBuffer(0 to 0) as ubyte
+end type
+
+type userBITMAP as _userBITMAP
+
+union _userHBITMAP_u
+	hInproc as LONG
+	hRemote as userBITMAP ptr
+	hInproc64 as INT64
+end union
+
+type _userHBITMAP
+	fContext as LONG
+	u as _userHBITMAP_u
+end type
+
+type userHBITMAP as _userHBITMAP
+
+union _userHPALETTE_u
+	hInproc as LONG
+	hRemote as LOGPALETTE ptr
+	hInproc64 as INT64
+end union
+
+type _userHPALETTE
+	fContext as LONG
+	u as _userHPALETTE_u
+end type
+
+type userHPALETTE as _userHPALETTE
+
+union _RemotableHandle_u
+	hInproc as LONG
+	hRemote as LONG
+end union
+
+type _RemotableHandle
+	fContext as LONG
+	u as _RemotableHandle_u
+end type
+
+type RemotableHandle as _RemotableHandle
+type wireHWND as RemotableHandle ptr
+type wireHMENU as RemotableHandle ptr
+type wireHACCEL as RemotableHandle ptr
+type wireHBRUSH as RemotableHandle ptr
+type wireHFONT as RemotableHandle ptr
+type wireHDC as RemotableHandle ptr
+type wireHICON as RemotableHandle ptr
+type wireHRGN as RemotableHandle ptr
+type wireHMONITOR as RemotableHandle ptr
+type wireHBITMAP as userHBITMAP ptr
+type wireHPALETTE as userHPALETTE ptr
+type wireHENHMETAFILE as userHENHMETAFILE ptr
+type wireHMETAFILE as userHMETAFILE ptr
+type wireHMETAFILEPICT as userHMETAFILEPICT ptr
+type HMETAFILEPICT as any ptr
+type DATE_ as double
+#define _tagCY_DEFINED
+#define _CY_DEFINED
+
+union tagCY
 	type
-		Lo as uinteger
-		Hi as integer
+		Lo as ulong
+		Hi as long
 	end type
+
 	int64 as LONGLONG
 end union
 
-type DATE_ as double
+type CY as tagCY
+type LPCY as CY ptr
 
-type BSTRBLOB
-	cbSize as ULONG
-	pData as PBYTE
+type tagDEC
+	wReserved as USHORT
+
+	union
+		type
+			scale as UBYTE
+			sign as UBYTE
+		end type
+
+		signscale as USHORT
+	end union
+
+	Hi32 as ULONG
+
+	union
+		type
+			Lo32 as ULONG
+			Mid32 as ULONG
+		end type
+
+		Lo64 as ULONGLONG
+	end union
 end type
 
-type LPBSTRBLOB as BSTRBLOB ptr
+type DECIMAL as tagDEC
+#define DECIMAL_NEG cast(UBYTE, &h80)
+#macro DECIMAL_SETZERO(dec)
+	scope
+		(dec).Lo64 = 0
+		(dec).Hi32 = 0
+		(dec).signscale = 0
+	end scope
+#endmacro
+type LPDECIMAL as DECIMAL ptr
+type wireBSTR as FLAGGED_WORD_BLOB ptr
+type BSTR as wstring ptr
+type LPBSTR as BSTR ptr
+type VARIANT_BOOL as short
+#define _tagBSTRBLOB_DEFINED
 
-type CLIPDATA
+type tagBSTRBLOB
 	cbSize as ULONG
-	ulClipFmt as integer
-	pClipData as PBYTE
+	pData as UBYTE ptr
 end type
 
-enum STGC
-	STGC_DEFAULT
-	STGC_OVERWRITE
-	STGC_ONLYIFCURRENT
-	STGC_DANGEROUSLYCOMMITMERELYTODISKCACHE
-end enum
+type BSTRBLOB as tagBSTRBLOB
+type LPBSTRBLOB as tagBSTRBLOB ptr
+#define VARIANT_TRUE cast(VARIANT_BOOL, -1)
+#define VARIANT_FALSE cast(VARIANT_BOOL, 0)
 
-enum STGMOVE
-	STGMOVE_MOVE
-	STGMOVE_COPY
-	STGMOVE_SHALLOWCOPY
-end enum
+type tagCLIPDATA
+	cbSize as ULONG
+	ulClipFmt as LONG
+	pClipData as UBYTE ptr
+end type
 
-enum VARENUM
-	VT_EMPTY
-	VT_NULL
-	VT_I2
-	VT_I4
-	VT_R4
-	VT_R8
-	VT_CY
-	VT_DATE
-	VT_BSTR
-	VT_DISPATCH
-	VT_ERROR
-	VT_BOOL
-	VT_VARIANT
-	VT_UNKNOWN
-	VT_DECIMAL
+type CLIPDATA as tagCLIPDATA
+#define CBPCLIPDATA(clipdata) ((clipdata).cbSize - sizeof((clipdata).ulClipFmt))
+type VARTYPE as ushort
+
+type VARENUM as long
+enum
+	VT_EMPTY = 0
+	VT_NULL = 1
+	VT_I2 = 2
+	VT_I4 = 3
+	VT_R4 = 4
+	VT_R8 = 5
+	VT_CY = 6
+	VT_DATE = 7
+	VT_BSTR = 8
+	VT_DISPATCH = 9
+	VT_ERROR = 10
+	VT_BOOL = 11
+	VT_VARIANT = 12
+	VT_UNKNOWN = 13
+	VT_DECIMAL = 14
 	VT_I1 = 16
-	VT_UI1
-	VT_UI2
-	VT_UI4
-	VT_I8
-	VT_UI8
-	VT_INT
-	VT_UINT
-	VT_VOID
-	VT_HRESULT
-	VT_PTR
-	VT_SAFEARRAY
-	VT_CARRAY
-	VT_USERDEFINED
-	VT_LPSTR
-	VT_LPWSTR
+	VT_UI1 = 17
+	VT_UI2 = 18
+	VT_UI4 = 19
+	VT_I8 = 20
+	VT_UI8 = 21
+	VT_INT = 22
+	VT_UINT = 23
+	VT_VOID = 24
+	VT_HRESULT = 25
+	VT_PTR = 26
+	VT_SAFEARRAY = 27
+	VT_CARRAY = 28
+	VT_USERDEFINED = 29
+	VT_LPSTR = 30
+	VT_LPWSTR = 31
 	VT_RECORD = 36
 	VT_INT_PTR = 37
 	VT_UINT_PTR = 38
 	VT_FILETIME = 64
-	VT_BLOB
-	VT_STREAM
-	VT_STORAGE
-	VT_STREAMED_OBJECT
-	VT_STORED_OBJECT
-	VT_BLOB_OBJECT
-	VT_CF
-	VT_CLSID
+	VT_BLOB = 65
+	VT_STREAM = 66
+	VT_STORAGE = 67
+	VT_STREAMED_OBJECT = 68
+	VT_STORED_OBJECT = 69
+	VT_BLOB_OBJECT = 70
+	VT_CF = 71
+	VT_CLSID = 72
+	VT_VERSIONED_STREAM = 73
 	VT_BSTR_BLOB = &hfff
 	VT_VECTOR = &h1000
 	VT_ARRAY = &h2000
@@ -197,49 +394,73 @@ enum VARENUM
 	VT_TYPEMASK = &hfff
 end enum
 
-type BYTE_SIZEDARR
-	clSize as uinteger
-	pData as byte ptr
+type PROPID as ULONG
+#define PROPERTYKEY_DEFINED
+
+type _tagpropertykey
+	fmtid as GUID
+	pid as DWORD
 end type
 
-type SHORT_SIZEDARR
-	clSize as uinteger
-	pData as ushort ptr
+type PROPERTYKEY as _tagpropertykey
+
+type tagCSPLATFORM
+	dwPlatformId as DWORD
+	dwVersionHi as DWORD
+	dwVersionLo as DWORD
+	dwProcessorArch as DWORD
 end type
 
-type WORD_SIZEDARR as SHORT_SIZEDARR
+type CSPLATFORM as tagCSPLATFORM
 
-type LONG_SIZEDARR
-	clSize as uinteger
-	pData as uinteger ptr
+type tagQUERYCONTEXT
+	dwContext as DWORD
+	Platform as CSPLATFORM
+	Locale as LCID
+	dwVersionHi as DWORD
+	dwVersionLo as DWORD
 end type
 
-type DWORD_SIZEDARR as LONG_SIZEDARR
+type QUERYCONTEXT as tagQUERYCONTEXT
 
-type HYPER_SIZEDARR
-	clSize as uinteger
-	pData as longint ptr
+type tagTYSPEC as long
+enum
+	TYSPEC_CLSID = 0
+	TYSPEC_FILEEXT = 1
+	TYSPEC_MIMETYPE = 2
+	TYSPEC_FILENAME = 3
+	TYSPEC_PROGID = 4
+	TYSPEC_PACKAGENAME = 5
+	TYSPEC_OBJECTID = 6
+end enum
+
+type TYSPEC as tagTYSPEC
+
+type __WIDL_wtypes_generated_name_00000000_tagged_union_ByName
+	pPackageName as LPOLESTR
+	PolicyId as GUID
 end type
 
-type DECIMAL
-	wReserved as USHORT
-	union
-		type
-			scale as UBYTE
-			sign as UBYTE
-		end type
-		signscale as USHORT
-	end union
-	Hi32 as ULONG
-	union
-		type
-			Lo32 as ULONG
-			Mid32 as ULONG
-		end type
-		Lo64 as ULONGLONG
-	end union
+type __WIDL_wtypes_generated_name_00000000_tagged_union_ByObjectId
+	ObjectId as GUID
+	PolicyId as GUID
 end type
 
-type HMETAFILEPICT as any ptr
+union __WIDL_wtypes_generated_name_00000000_tagged_union
+	clsid as CLSID
+	pFileExt as LPOLESTR
+	pMimeType as LPOLESTR
+	pProgId as LPOLESTR
+	pFileName as LPOLESTR
+	ByName as __WIDL_wtypes_generated_name_00000000_tagged_union_ByName
+	ByObjectId as __WIDL_wtypes_generated_name_00000000_tagged_union_ByObjectId
+end union
 
-#endif
+type __WIDL_wtypes_generated_name_00000000
+	tyspec as DWORD
+	tagged_union as __WIDL_wtypes_generated_name_00000000_tagged_union
+end type
+
+type uCLSSPEC as __WIDL_wtypes_generated_name_00000000
+
+end extern

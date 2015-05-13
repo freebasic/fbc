@@ -875,6 +875,30 @@ namespace returnVsFunction
 	end sub
 end namespace
 
+namespace derefConst
+	type UDT
+		a as integer
+		b as integer
+	end type
+
+	function offsetof_a( ) byref as integer
+		'' This isn't an access to a local var, so it should be allowed (and not
+		'' trigger a compiler crash), although it's perhaps not very useful,
+		'' except if all callers of this function take the address-of the result
+		'' in which case they'll retrieve the offsetof(UDT, a).
+		function = cptr(UDT ptr, 0)->a
+	end function
+
+	function offsetof_b( ) byref as integer
+		function = cptr(UDT ptr, 0)->b
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( @(offsetof_a( )) = offsetof( UDT, a ) )
+		CU_ASSERT( @(offsetof_b( )) = offsetof( UDT, b ) )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -900,6 +924,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "returning a forward ref", @protoReturningFwdref.test )
 	fbcu.add_test( "C++ mangling", @cxxMangling.test )
 	fbcu.add_test( "ReturnVsFunction", @returnVsFunction.test )
+	fbcu.add_test( "derefConst", @derefConst.test )
 end sub
 
 end namespace

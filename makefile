@@ -57,11 +57,15 @@
 #
 #   gitdist    Create source code packages using "git archive"
 #   bindist    Create binary FB release packages from current built directory content
+#   mingw-libs Standalone: Copy libraries from MinGW toolchain into lib/win32/ etc.
 #
 #   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
 #   log-tests     using the newly built fbc)
 #   warning-tests
 #   clean-tests
+#
+#   bootstrap-dist  Create source package with precompiled fbc sources
+#   bootstrap       Build fbc from the precompiled sources (only if precompiled sources exist)
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -76,6 +80,7 @@
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
+#   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
 #   FBVERSION     bindist/gitdist: FB version number
 #   DISABLE_DOCS  bindist: Don't package readme/changelog/manpage/examples
@@ -122,6 +127,7 @@ CFLAGS := -Wfatal-errors -O2
 # Avoid gcc exception handling bloat
 CFLAGS += -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables
 FBFLAGS := -maxerr 1
+AS = $(TARGET_PREFIX)as
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
 prefix := /usr/local
@@ -332,6 +338,7 @@ ifdef ENABLE_STANDALONE
   FBCNEW_EXE  := fbc-new$(EXEEXT)
   libdir         := lib/$(libsubdir)
   PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
+  prefixbindir   := $(prefix)
   prefixincdir   := $(prefix)/inc
   prefixlibdir   := $(prefix)/lib/$(libsubdir)
 else
@@ -486,6 +493,7 @@ ifndef V
   QUIET_LINK  = @echo "LINK $@";
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
+  QUIET_AS    = @echo "AS $@";
   QUIET_AR    = @echo "AR $@";
   QUIET       = @
 endif
@@ -505,7 +513,7 @@ $(libfbgfxpicobjdir) \
 $(libfbgfxmtobjdir) \
 $(libfbgfxmtpicobjdir) \
 $(djgpplibcobjdir) \
-bin $(libdir) $(prefixbindir) $(prefixincdir) $(prefixlibdir):
+bin $(libdir):
 	mkdir -p $@
 
 ################################################################################
@@ -611,17 +619,21 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H)
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-install-compiler: $(prefixbindir)
+install-compiler:
+	mkdir -p $(prefixbindir)
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
-install-includes: $(prefixincdir)
+install-includes:
+	mkdir -p $(prefixincdir)
 	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: $(prefixlibdir)
-	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)/
+install-rtlib:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)
 
-install-gfxlib2: $(prefix)/lib $(prefixlibdir)
-	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)/
+install-gfxlib2:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)
 
 ################################################################################
 
@@ -675,7 +687,7 @@ log-tests:
 	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
 
 warning-tests:
-	cd tests/warnings && make FBC="`pwd`/../../bin/fbc"
+	cd tests/warnings && FBC="`pwd`/../../bin/fbc" ./test.sh
 
 clean-tests:
 	cd tests && make clean
@@ -727,207 +739,184 @@ ifndef FBPACKAGE
   endif
 endif
 
+FBPACKAGE := $(FBPACKAGE)$(FBPACKSUFFIX)
+
 ifndef FBMANIFEST
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-    ifdef ENABLE_STANDALONE
-      FBMANIFEST := FreeBASIC-$(FBTARGET)-standalone
-    else
-      FBMANIFEST := FreeBASIC-$(FBTARGET)
-    endif
-  else
-    ifdef ENABLE_STANDALONE
-      FBMANIFEST := FreeBASIC-$(FBTARGET)
-    else
-      FBMANIFEST := fbc-$(FBTARGET)
-    endif
-  endif
+  FBMANIFEST := $(subst -$(FBVERSION),,$(FBPACKAGE))
 endif
+
+packbin := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixbindir))
+packinc := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixincdir))
+packlib := $(patsubst $(prefix)%,$(FBPACKAGE)%,$(prefixlibdir))
 
 .PHONY: bindist
 bindist:
 	# Extra directory in which we'll put together the binary release package
 	# (needed anyways to avoid tarbombs)
-	mkdir $(FBPACKAGE)
+	mkdir -p $(packbin) $(packinc) $(packlib)
 
-	# Binaries from the build dir: fbc[.exe] or bin/fbc[.exe], bin/ and lib/
-	# (we're expecting bin/ and lib/ to be filled with the proper external
-	# binaries already in case of standalone setups)
-	cp -R bin lib $(FBPACKAGE)
+	# Copy fbc, binutils + gcc's libexec/.../cc1.exe (standalone), includes,
+	# libs (including the non-FB ones for standalone)
+	cp $(FBC_EXE) $(packbin)
+	cp -r $(rootdir)inc/* $(packinc)
   ifdef ENABLE_STANDALONE
-	cp $(FBC_EXE) $(FBPACKAGE)
+	mkdir -p $(FBPACKAGE)/bin/$(FBTARGET)
+	cp bin/$(FBTARGET)/* $(FBPACKAGE)/bin/$(FBTARGET)
+	cp lib/$(FBTARGET)/*.a lib/$(FBTARGET)/*.o lib/$(FBTARGET)/*.x $(packlib)
+	if [ -d bin/libexec ]; then \
+		cp -R bin/libexec $(FBPACKAGE)/bin; \
+	fi
+  else
+	cp $(RTL_LIBS) $(GFX_LIBS) $(packlib)
   endif
 
-	# Remove lib/win32/*.def stuff. We have it in the source tree (not in
-	# build dir if separate though) but don't want to include it into the
-	# binary release packages.
-	cd $(FBPACKAGE) && rm -rf lib/win32/*.def lib/win32/makefile lib/fbextra.x
-	rmdir $(FBPACKAGE)/lib/win32 || true
-
-	# Includes: inc/, include/freebasic/ or include/freebas/
-	cp -R $(rootdir)inc $(FBPACKAGE)
   ifeq ($(TARGET_OS),dos)
-	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/atk
-	rm -r $(FBPACKAGE)/inc/bass.bi
-	rm -r $(FBPACKAGE)/inc/bassmod.bi
-	rm -r $(FBPACKAGE)/inc/cairo
-	rm -r $(FBPACKAGE)/inc/cd
-	rm -r $(FBPACKAGE)/inc/chipmunk
-	rm -r $(FBPACKAGE)/inc/crt/arpa
-	rm -r $(FBPACKAGE)/inc/crt/bits
-	rm -r $(FBPACKAGE)/inc/crt/linux
-	rm -r $(FBPACKAGE)/inc/crt/netdb.bi
-	rm -r $(FBPACKAGE)/inc/crt/netinet/in.bi
-	rm -r $(FBPACKAGE)/inc/crt/netinet/linux/in.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/linux
-	rm -r $(FBPACKAGE)/inc/crt/sys/socket.bi
-	rm -r $(FBPACKAGE)/inc/crt/sys/win32
-	rm -r $(FBPACKAGE)/inc/crt/win32
-	rm -r $(FBPACKAGE)/inc/curses/ncurses.bi
-	rm -r $(FBPACKAGE)/inc/disphelper
-	rm -r $(FBPACKAGE)/inc/fastcgi
-	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/fmod.bi
-	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/freetype2
-	rm -r $(FBPACKAGE)/inc/gdk*
-	rm -r $(FBPACKAGE)/inc/gio
-	rm -r $(FBPACKAGE)/inc/GL
-	rm -r $(FBPACKAGE)/inc/glade
-	rm -r $(FBPACKAGE)/inc/glib*
-	rm -r $(FBPACKAGE)/inc/gmodule.bi
-	rm -r $(FBPACKAGE)/inc/goocanvas.bi
-	rm -r $(FBPACKAGE)/inc/gtk*
-	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/IUP*
-	rm -r $(FBPACKAGE)/inc/japi*
-	rm -r $(FBPACKAGE)/inc/jni.bi
-	rm -r $(FBPACKAGE)/inc/json*
-	rm -r $(FBPACKAGE)/inc/libart_lgpl
-	rm -r $(FBPACKAGE)/inc/MediaInfo*
-	rm -r $(FBPACKAGE)/inc/modplug.bi
-	rm -r $(FBPACKAGE)/inc/mpg123.bi
-	rm -r $(FBPACKAGE)/inc/mysql
-	rm -r $(FBPACKAGE)/inc/Newton.bi
-	rm -r $(FBPACKAGE)/inc/ode
-	rm -r $(FBPACKAGE)/inc/ogg
-	rm -r $(FBPACKAGE)/inc/pango
-	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/portaudio.bi
-	rm -r $(FBPACKAGE)/inc/postgresql
-	rm -r $(FBPACKAGE)/inc/SDL
-	rm -r $(FBPACKAGE)/inc/sndfile.bi
-	rm -r $(FBPACKAGE)/inc/spidermonkey
-	rm -r $(FBPACKAGE)/inc/uuid.bi
-	rm -r $(FBPACKAGE)/inc/vlc
-	rm -r $(FBPACKAGE)/inc/vorbis
-	rm -r $(FBPACKAGE)/inc/win
-	rm -r $(FBPACKAGE)/inc/windows.bi
-	rm -r $(FBPACKAGE)/inc/wx-c
-	rm -r $(FBPACKAGE)/inc/X11
-	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zmq
+	rm -r $(packinc)/AL
+	rm -r $(packinc)/allegro5
+	rm -r $(packinc)/atk
+	rm -r $(packinc)/bass.bi
+	rm -r $(packinc)/bassmod.bi
+	rm -r $(packinc)/cairo
+	rm -r $(packinc)/cd
+	rm -r $(packinc)/chipmunk
+	rm -r $(packinc)/crt/arpa
+	rm -r $(packinc)/crt/bits
+	rm -r $(packinc)/crt/iconv.bi
+	rm -r $(packinc)/crt/linux
+	rm -r $(packinc)/crt/netdb.bi
+	rm -r $(packinc)/crt/netinet/in.bi
+	rm -r $(packinc)/crt/netinet/linux/in.bi
+	rm -r $(packinc)/crt/pthread.bi
+	rm -r $(packinc)/crt/regex.bi
+	rm -r $(packinc)/crt/sched.bi
+	rm -r $(packinc)/crt/sys/linux
+	rm -r $(packinc)/crt/sys/socket.bi
+	rm -r $(packinc)/crt/sys/win32
+	rm -r $(packinc)/crt/win32
+	rm -r $(packinc)/curses/ncurses.bi
+	rm -r $(packinc)/disphelper
+	rm -r $(packinc)/fastcgi
+	rm -r $(packinc)/ffi.bi
+	rm -r $(packinc)/flite
+	rm -r $(packinc)/fmod.bi
+	rm -r $(packinc)/fontconfig
+	rm -r $(packinc)/FreeImage.bi
+	rm -r $(packinc)/freetype2
+	rm -r $(packinc)/gdk*
+	rm -r $(packinc)/gio
+	rm -r $(packinc)/GL
+	rm -r $(packinc)/GLFW
+	rm -r $(packinc)/glade
+	rm -r $(packinc)/glib*
+	rm -r $(packinc)/gmodule.bi
+	rm -r $(packinc)/goocanvas.bi
+	rm -r $(packinc)/gtk*
+	rm -r $(packinc)/im
+	rm -r $(packinc)/IUP*
+	rm -r $(packinc)/japi*
+	rm -r $(packinc)/jni.bi
+	rm -r $(packinc)/json*
+	rm -r $(packinc)/libart_lgpl
+	rm -r $(packinc)/MediaInfo*
+	rm -r $(packinc)/modplug.bi
+	rm -r $(packinc)/mpg123.bi
+	rm -r $(packinc)/mysql
+	rm -r $(packinc)/Newton.bi
+	rm -r $(packinc)/ode
+	rm -r $(packinc)/ogg
+	rm -r $(packinc)/pango
+	rm -r $(packinc)/pdflib.bi
+	rm -r $(packinc)/portaudio.bi
+	rm -r $(packinc)/postgresql
+	rm -r $(packinc)/SDL
+	rm -r $(packinc)/SDL2
+	rm -r $(packinc)/sndfile.bi
+	rm -r $(packinc)/spidermonkey
+	rm -r $(packinc)/uuid.bi
+	rm -r $(packinc)/vlc
+	rm -r $(packinc)/vorbis
+	rm -r $(packinc)/win
+	rm -r $(packinc)/windows.bi
+	rm -r $(packinc)/wx-c
+	rm -r $(packinc)/X11
+	rm -r $(packinc)/xmp.bi
+	rm -r $(packinc)/zmq
   endif
+
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
-	rm -r $(FBPACKAGE)/inc/AL
-	rm -r $(FBPACKAGE)/inc/aspell.bi
-	rm -r $(FBPACKAGE)/inc/atk
-	rm -r $(FBPACKAGE)/inc/bass.bi
-	rm -r $(FBPACKAGE)/inc/bassmod.bi
-	rm -r $(FBPACKAGE)/inc/bfd
-	rm -r $(FBPACKAGE)/inc/bfd.bi
-	rm -r $(FBPACKAGE)/inc/big_int
-	rm -r $(FBPACKAGE)/inc/bzlib.bi
-	rm -r $(FBPACKAGE)/inc/caca0.bi
-	rm -r $(FBPACKAGE)/inc/caca.bi
-	rm -r $(FBPACKAGE)/inc/cairo
-	rm -r $(FBPACKAGE)/inc/cd
-	rm -r $(FBPACKAGE)/inc/cgi-util.bi
-	rm -r $(FBPACKAGE)/inc/chipmunk
-	rm -r $(FBPACKAGE)/inc/cryptlib.bi
-	rm -r $(FBPACKAGE)/inc/dislin.bi
-	rm -r $(FBPACKAGE)/inc/disphelper
-	rm -r $(FBPACKAGE)/inc/dos
-	rm -r $(FBPACKAGE)/inc/expat.bi
-	rm -r $(FBPACKAGE)/inc/fastcgi
-	rm -r $(FBPACKAGE)/inc/flite
-	rm -r $(FBPACKAGE)/inc/FreeImage.bi
-	rm -r $(FBPACKAGE)/inc/freetype2
-	rm -r $(FBPACKAGE)/inc/gd.bi
-	rm -r $(FBPACKAGE)/inc/gdbm.bi
-	rm -r $(FBPACKAGE)/inc/gdk
-	rm -r $(FBPACKAGE)/inc/gdk-pixbuf
-	rm -r $(FBPACKAGE)/inc/gdsl
-	rm -r $(FBPACKAGE)/inc/gettext-po.bi
-	rm -r $(FBPACKAGE)/inc/gif_lib.bi
-	rm -r $(FBPACKAGE)/inc/gio
-	rm -r $(FBPACKAGE)/inc/GL
-	rm -r $(FBPACKAGE)/inc/glade
-	rm -r $(FBPACKAGE)/inc/glib.bi
-	rm -r $(FBPACKAGE)/inc/glibconfig.bi
-	rm -r $(FBPACKAGE)/inc/glib-object.bi
-	rm -r $(FBPACKAGE)/inc/gmodule.bi
-	rm -r $(FBPACKAGE)/inc/gmp.bi
-	rm -r $(FBPACKAGE)/inc/goocanvas.bi
-	rm -r $(FBPACKAGE)/inc/grx
-	rm -r $(FBPACKAGE)/inc/gsl
-	rm -r $(FBPACKAGE)/inc/gtk
-	rm -r $(FBPACKAGE)/inc/gtkgl
-	rm -r $(FBPACKAGE)/inc/IL
-	rm -r $(FBPACKAGE)/inc/im
-	rm -r $(FBPACKAGE)/inc/japi.bi
-	rm -r $(FBPACKAGE)/inc/jni.bi
-	rm -r $(FBPACKAGE)/inc/jpeglib.bi
-	rm -r $(FBPACKAGE)/inc/jpgalleg.bi
-	rm -r $(FBPACKAGE)/inc/json-c
-	rm -r $(FBPACKAGE)/inc/libart_lgpl
-	rm -r $(FBPACKAGE)/inc/libintl.bi
-	rm -r $(FBPACKAGE)/inc/libxml
-	rm -r $(FBPACKAGE)/inc/libxslt
-	rm -r $(FBPACKAGE)/inc/lzma.bi
-	rm -r $(FBPACKAGE)/inc/lzo
-	rm -r $(FBPACKAGE)/inc/MediaInfo.bi
-	rm -r $(FBPACKAGE)/inc/modplug.bi
-	rm -r $(FBPACKAGE)/inc/mpg123.bi
-	rm -r $(FBPACKAGE)/inc/mxml.bi
-	rm -r $(FBPACKAGE)/inc/mysql
-	rm -r $(FBPACKAGE)/inc/Newton.bi
-	rm -r $(FBPACKAGE)/inc/ode
-	rm -r $(FBPACKAGE)/inc/ogg
-	rm -r $(FBPACKAGE)/inc/pango
-	rm -r $(FBPACKAGE)/inc/pcre16.bi
-	rm -r $(FBPACKAGE)/inc/pcre.bi
-	rm -r $(FBPACKAGE)/inc/pcreposix.bi
-	rm -r $(FBPACKAGE)/inc/pdflib.bi
-	rm -r $(FBPACKAGE)/inc/portaudio.bi
-	rm -r $(FBPACKAGE)/inc/postgresql
-	rm -r $(FBPACKAGE)/inc/quicklz.bi
-	rm -r $(FBPACKAGE)/inc/regex.bi
-	rm -r $(FBPACKAGE)/inc/SDL
-	rm -r $(FBPACKAGE)/inc/sndfile.bi
-	rm -r $(FBPACKAGE)/inc/spidermonkey
-	rm -r $(FBPACKAGE)/inc/sqlite2.bi
-	rm -r $(FBPACKAGE)/inc/sqlite3.bi
-	rm -r $(FBPACKAGE)/inc/sqlite3ext.bi
-	rm -r $(FBPACKAGE)/inc/tinyptc.bi
-	rm -r $(FBPACKAGE)/inc/uuid.bi
-	rm -r $(FBPACKAGE)/inc/vlc
-	rm -r $(FBPACKAGE)/inc/vorbis
-	rm -r $(FBPACKAGE)/inc/win
-	rm -r $(FBPACKAGE)/inc/windows.bi
-	rm -r $(FBPACKAGE)/inc/wx-c
-	rm -r $(FBPACKAGE)/inc/X11
-	rm -r $(FBPACKAGE)/inc/xmp.bi
-	rm -r $(FBPACKAGE)/inc/zmq
-  endif
-  ifndef ENABLE_STANDALONE
-	mkdir -p $(FBPACKAGE)/include
-    ifeq ($(TARGET_OS),dos)
-	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebas
-    else
-	mv $(FBPACKAGE)/inc $(FBPACKAGE)/include/freebasic
-    endif
+	rm -r $(packinc)/AL
+	rm -r $(packinc)/aspell.bi
+	rm -r $(packinc)/bass.bi
+	rm -r $(packinc)/bassmod.bi
+	rm -r $(packinc)/bfd
+	rm -r $(packinc)/bfd.bi
+	rm -r $(packinc)/big_int
+	rm -r $(packinc)/bzlib.bi
+	rm -r $(packinc)/caca0.bi
+	rm -r $(packinc)/caca.bi
+	rm -r $(packinc)/cd
+	rm -r $(packinc)/cgi-util.bi
+	rm -r $(packinc)/chipmunk
+	rm -r $(packinc)/cryptlib.bi
+	rm -r $(packinc)/dislin.bi
+	rm -r $(packinc)/disphelper
+	rm -r $(packinc)/dos
+	rm -r $(packinc)/expat.bi
+	rm -r $(packinc)/flite
+	rm -r $(packinc)/FreeImage.bi
+	rm -r $(packinc)/gd.bi
+	rm -r $(packinc)/gdbm.bi
+	rm -r $(packinc)/gdsl
+	rm -r $(packinc)/gettext-po.bi
+	rm -r $(packinc)/gif_lib.bi
+	rm -r $(packinc)/glade
+	rm -r $(packinc)/gmp.bi
+	rm -r $(packinc)/goocanvas.bi
+	rm -r $(packinc)/grx
+	rm -r $(packinc)/gsl
+	rm -r $(packinc)/IL
+	rm -r $(packinc)/im
+	rm -r $(packinc)/japi.bi
+	rm -r $(packinc)/jni.bi
+	rm -r $(packinc)/jpeglib.bi
+	rm -r $(packinc)/jpgalleg.bi
+	rm -r $(packinc)/json-c
+	rm -r $(packinc)/libart_lgpl
+	rm -r $(packinc)/libintl.bi
+	rm -r $(packinc)/libxml
+	rm -r $(packinc)/libxslt
+	rm -r $(packinc)/lzma.bi
+	rm -r $(packinc)/lzo
+	rm -r $(packinc)/MediaInfo.bi
+	rm -r $(packinc)/modplug.bi
+	rm -r $(packinc)/mpg123.bi
+	rm -r $(packinc)/mxml.bi
+	rm -r $(packinc)/mysql
+	rm -r $(packinc)/Newton.bi
+	rm -r $(packinc)/ode
+	rm -r $(packinc)/ogg
+	rm -r $(packinc)/pcre16.bi
+	rm -r $(packinc)/pcre.bi
+	rm -r $(packinc)/pcreposix.bi
+	rm -r $(packinc)/pdflib.bi
+	rm -r $(packinc)/portaudio.bi
+	rm -r $(packinc)/postgresql
+	rm -r $(packinc)/quicklz.bi
+	rm -r $(packinc)/sndfile.bi
+	rm -r $(packinc)/spidermonkey
+	rm -r $(packinc)/sqlite2.bi
+	rm -r $(packinc)/sqlite3.bi
+	rm -r $(packinc)/sqlite3ext.bi
+	rm -r $(packinc)/tinyptc.bi
+	rm -r $(packinc)/uuid.bi
+	rm -r $(packinc)/vlc
+	rm -r $(packinc)/vorbis
+	rm -r $(packinc)/win/ddk
+	rm -r $(packinc)/win/rc
+	rm -r $(packinc)/wx-c
+	rm -r $(packinc)/xmp.bi
+	rm -r $(packinc)/zmq
   endif
 
   ifndef DISABLE_DOCS
@@ -976,7 +965,7 @@ bindist:
 	# install.sh for normal Linux/BSD setups
   ifndef ENABLE_STANDALONE
     ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-	cp $(rootdir)install.sh $(FBPACKAGE)
+	cp $(rootdir)contrib/unix-installer/install.sh $(FBPACKAGE)
     endif
   endif
 
@@ -1006,3 +995,141 @@ bindist:
 
 	# Clean up
 	rm -rf $(FBPACKAGE)
+
+ifdef ENABLE_STANDALONE
+ifeq ($(TARGET_OS),win32)
+
+mingwlibs += crtbegin.o
+mingwlibs += crtend.o
+mingwlibs += crt2.o
+mingwlibs += dllcrt2.o
+mingwlibs += gcrt2.o
+mingwlibs += libgcc.a
+mingwlibs += libmingw32.a
+mingwlibs += libmingwex.a
+mingwlibs += libmoldname.a
+mingwlibs += libsupc++.a
+mingwlibs += libstdc++.a
+mingwlibs += libgmon.a
+
+winapilibsignore += -e libdelayimp
+winapilibsignore += -e libgcc
+winapilibsignore += -e libgmon
+winapilibsignore += -e libiconv
+winapilibsignore += -e liblargeint
+winapilibsignore += -e 'libm\.a$$'
+winapilibsignore += -e libmangle
+winapilibsignore += -e libmingw
+winapilibsignore += -e libmoldname
+winapilibsignore += -e libpseh
+winapilibsignore += -e libpthread
+winapilibsignore += -e libwinpthread
+winapilibsignore += -e 'libz\.a$$'
+
+.PHONY: mingw-libs
+mingw-libs:
+	# MinGW/CRT libs
+	for i in $(mingwlibs); do \
+		cp `$(CC) -print-file-name=$$i` $(libdir); \
+	done
+
+	# libgcc_eh.a too, if it exists (TDM-GCC doesn't have it)
+	libgcc_eh=`$(CC) -print-file-name=libgcc_eh.a`; \
+		if [ -f "$$libgcc_eh" ]; then \
+			cp "$$libgcc_eh" $(libdir); \
+		fi
+
+	# Windows API libs
+	#  * copy all lib*.a files from the directory of libkernel32.a
+	#  * renaming lib*.a to lib*.dll.a - this isn't 100% correct, because
+	#    all libs really are import libs, but it follows FB tradition.
+	#  * Filtering out some libs which are included in MinGW toolchains
+	#    sometimes, but we don't want (e.g. libpthread).
+	dir=$$(dirname $$($(CC) -print-file-name=libkernel32.a)); \
+		ls $$dir/lib*.a | grep -v $(winapilibsignore) | while read i; do \
+			cp $$i $(libdir)/`basename $$i | sed -e 's/\.a$$/.dll.a/g'`; \
+		done
+
+endif
+endif
+
+#
+# Precompile the compiler sources into .asm/.c files and put them into a
+# bootstrap/ directory, then package the source tree including the bootstrap/
+# sources. This package can then be distributed, and people can do
+# "make bootstrap" to build an fbc from the precompiled sources.
+#
+# The precompiled sources should be compatible to the rtlib in the same source
+# tree, so that it's safe to link the bootstrapped fbc against it. This way
+# there's no need to worry about choosing the right rtlib when bootstrapping
+# fbc -- it's just always possible to use the version from the same source tree.
+#
+FBBOOTSTRAPTITLE := $(FBSOURCETITLE)-bootstrap
+.PHONY: bootstrap-dist
+bootstrap-dist:
+	# Precompile fbc sources for various targets
+	rm -rf bootstrap
+	mkdir -p bootstrap/dos
+	mkdir -p bootstrap/linux-x86
+	mkdir -p bootstrap/linux-x86_64
+	mkdir -p bootstrap/win32
+	mkdir -p bootstrap/win64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target dos          && mv src/compiler/*.asm bootstrap/dos
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86    && mv src/compiler/*.asm bootstrap/linux-x86
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target linux-x86_64 && mv src/compiler/*.c   bootstrap/linux-x86_64
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32        && mv src/compiler/*.asm bootstrap/win32
+	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64        && mv src/compiler/*.c   bootstrap/win64
+
+	# Ensure to have LFs regardless of host system (LFs will probably on
+	# DOS/Win32, but CRLFs could cause issues on Linux)
+	dos2unix bootstrap/dos/*
+	dos2unix bootstrap/linux-x86/*
+	dos2unix bootstrap/linux-x86_64/*
+	dos2unix bootstrap/win32/*
+	dos2unix bootstrap/win64/*
+
+	# Package FB sources (similar to our "gitdist" command), and add the bootstrap/ directory
+	# Making a .tar.xz should be good enough for now.
+	git -c core.autocrlf=false archive --format tar --prefix "$(FBBOOTSTRAPTITLE)/" HEAD | tar xf -
+	mv bootstrap $(FBBOOTSTRAPTITLE)
+	tar -cJf "$(FBBOOTSTRAPTITLE).tar.xz" "$(FBBOOTSTRAPTITLE)"
+	rm -rf "$(FBBOOTSTRAPTITLE)"
+
+#
+# Build the fbc[.exe] binary from the precompiled sources in the bootstrap/
+# directory.
+#
+BOOTSTRAP_FBC := bootstrap/fbc$(EXEEXT)
+.PHONY: bootstrap
+bootstrap: rtlib gfxlib2 $(BOOTSTRAP_FBC)
+	mkdir -p bin
+	cp $(BOOTSTRAP_FBC) $(FBC_EXE)
+
+ifeq ($(TARGET_ARCH),x86)
+  # x86: .asm => .o (using the same assembler options as fbc)
+  BOOTSTRAP_OBJ = $(patsubst %.asm,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.asm)))
+  $(BOOTSTRAP_OBJ): %.o: %.asm
+	$(QUIET_AS)$(AS) --strip-local-absolute $< -o $@
+else
+  # x86_64 etc.: .c => .o (using the same gcc options as fbc -gen gcc)
+  BOOTSTRAP_CFLAGS := -nostdinc
+  BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
+  BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math
+  BOOTSTRAP_CFLAGS += -Wfatal-errors
+  BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
+  $(BOOTSTRAP_OBJ): %.o: %.c
+	$(QUIET_CC)$(CC) -c $(BOOTSTRAP_CFLAGS) $< -o $@
+endif
+
+# Use gcc to link fbc from the bootstrap .o's
+# (assuming the rtlib was built already)
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  BOOTSTRAP_LIBS := -lncurses -lm -pthread
+endif
+$(BOOTSTRAP_FBC): $(BOOTSTRAP_OBJ)
+	$(QUIET_LINK)$(CC) -o $@ $(libdir)/fbrt0.o bootstrap/$(FBTARGET)/*.o $(libdir)/libfb.a $(BOOTSTRAP_LIBS)
+
+.PHONY: clean-bootstrap
+clean-bootstrap:
+	rm -f $(BOOTSTRAP_FBC) bootstrap/$(FBTARGET)/*.o

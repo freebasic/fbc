@@ -1,14 +1,13 @@
-''
-''
-'' Object -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Object_bi__
-#define __Object_bi__
+#pragma once
 
+'' The following symbols have been renamed:
+''     typedef Object => Object_
+
+extern "C"
+
+#define _XtObject_h
+type Object_ as _ObjectRec ptr
 type ObjectClass as _ObjectClassRec ptr
+extern objectClass as WidgetClass
 
-#endif
+end extern

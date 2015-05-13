@@ -7,7 +7,7 @@
 '' --------
 
 Dim As WString Ptr str2
-str2 = Allocate( 14 * Len(WString) )
+str2 = Allocate( 13 * Len(WString) )
 *str2 = "hello, world"
 Print *str2
 Print Len(*str2)      'returns 12, the length of the string it points to

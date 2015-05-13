@@ -2,7 +2,7 @@
 Creates a [[ProPgDates date serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateSerial""** ( [[KeyPgByval byval]] //year// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //day// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateSerial""** ( [[KeyPgByval byval]] //year// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //day// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

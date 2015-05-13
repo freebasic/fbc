@@ -1,12 +1,8 @@
-''
-''
-'' Xtos -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __Xtos_bi__
-#define __Xtos_bi__
+#pragma once
 
-#endif
+#include once "crt/long.bi"
+#include once "X11/Xalloca.bi"
+
+#define _Xtos_h
+#define ALLOCATE_LOCAL_FALLBACK(_size) XtMalloc(cast(culong, (_size)))
+#define DEALLOCATE_LOCAL_FALLBACK(_ptr) XtFree(cast(XtPointer, (_ptr)))

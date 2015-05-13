@@ -2,7 +2,7 @@
 Control flow statement to end the program.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **End** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **End** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgLong long]] = 0 )
 ##
 {{fbdoc item="usage"}}##
 	**End** [ //retval// ]

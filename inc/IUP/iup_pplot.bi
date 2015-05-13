@@ -3,7 +3,6 @@
 extern "C"
 
 #define __IUP_PPLOT_H
-
 declare sub IupPPlotOpen()
 declare function IupPPlot() as Ihandle ptr
 declare sub IupPPlotBegin(byval ih as Ihandle ptr, byval strXdata as long)

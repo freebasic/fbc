@@ -1187,7 +1187,7 @@ read_char:
 
 			'' '&'
 			case FB_TK_LNGTYPECHAR
-				if( typeGetSize( dtype ) > 4 ) then
+				if( value > &hFFFFFFFFull ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )

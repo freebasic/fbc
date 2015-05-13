@@ -8,10 +8,10 @@
 
 Type ComplexParent
 	As Integer i
-	Declare Constructor( ByVal As Integer )
+	Declare Constructor( ByVal As Integer = 0 )
 End Type
 
-Constructor ComplexParent( ByVal i As Integer )
+Constructor ComplexParent( ByVal i As Integer = 0 )
 	this.i = i
 End Constructor
 

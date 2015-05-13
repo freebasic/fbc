@@ -2,7 +2,7 @@
 Gets the character or color attribute at a given location
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screen** ( [[KeyPgByval byval]] row [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] column [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] colorflag [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screen** ( [[KeyPgByval byval]] row [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] column [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] colorflag [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Screen**( //row//, //column// [, //colorflag// ] )

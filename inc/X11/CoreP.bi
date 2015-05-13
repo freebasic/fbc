@@ -1,20 +1,26 @@
-''
-''
-'' CoreP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __CoreP_bi__
-#define __CoreP_bi__
+#pragma once
+
+#include once "X11/Core.bi"
+
+extern "C"
+
+#define XtCoreP_h
+extern _XtInheritTranslations as long
+#define XtInheritTranslations cast(String_, @_XtInheritTranslations)
+#define XtInheritRealize cast(XtRealizeProc, _XtInherit)
+#define XtInheritResize cast(XtWidgetProc, _XtInherit)
+#define XtInheritExpose cast(XtExposeProc, _XtInherit)
+#define XtInheritSetValuesAlmost cast(XtAlmostProc, _XtInherit)
+#define XtInheritAcceptFocus cast(XtAcceptFocusProc, _XtInherit)
+#define XtInheritQueryGeometry cast(XtGeometryHandler, _XtInherit)
+#define XtInheritDisplayAccelerator cast(XtStringProc, _XtInherit)
 
 type _CorePart
 	self as Widget
 	widget_class as WidgetClass
 	parent as Widget
 	xrm_name as XrmName
-	being_destroyed as Boolean
+	being_destroyed as byte
 	destroy_callbacks as XtCallbackList
 	constraints as XtPointer
 	x as Position
@@ -22,9 +28,9 @@ type _CorePart
 	width as Dimension
 	height as Dimension
 	border_width as Dimension
-	managed as Boolean
-	sensitive as Boolean
-	ancestor_sensitive as Boolean
+	managed as byte
+	sensitive as byte
+	ancestor_sensitive as byte
 	event_table as XtEventTable
 	tm as XtTMRec
 	accelerators as XtTranslations
@@ -32,15 +38,15 @@ type _CorePart
 	border_pixmap as Pixmap
 	popup_list as WidgetList
 	num_popups as Cardinal
-	name as String
+	name as String_
 	screen as Screen ptr
 	colormap as Colormap
 	window as Window
 	depth as Cardinal
 	background_pixel as Pixel
 	background_pixmap as Pixmap
-	visible as Boolean
-	mapped_when_managed as Boolean
+	visible as byte
+	mapped_when_managed as byte
 end type
 
 type CorePart as _CorePart
@@ -54,7 +60,7 @@ type CoreRec as _WidgetRec
 
 type _CoreClassPart
 	superclass as WidgetClass
-	class_name as String
+	class_name as String_
 	widget_size as Cardinal
 	class_initialize as XtProc
 	class_part_initialize as XtWidgetClassProc
@@ -67,10 +73,10 @@ type _CoreClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	compress_motion as Boolean
+	compress_motion as byte
 	compress_exposure as XtEnum
-	compress_enterleave as Boolean
-	visible_interest as Boolean
+	compress_enterleave as byte
+	visible_interest as byte
 	destroy as XtWidgetProc
 	resize as XtWidgetProc
 	expose as XtExposeProc
@@ -81,7 +87,7 @@ type _CoreClassPart
 	accept_focus as XtAcceptFocusProc
 	version as XtVersionType
 	callback_private as XtPointer
-	tm_table as String
+	tm_table as String_
 	query_geometry as XtGeometryHandler
 	display_accelerator as XtStringProc
 	extension as XtPointer
@@ -95,5 +101,7 @@ end type
 
 type WidgetClassRec as _WidgetClassRec
 type CoreClassRec as _WidgetClassRec
+extern widgetClassRec as WidgetClassRec
+extern coreClassRec alias "widgetClassRec" as WidgetClassRec
 
-#endif
+end extern

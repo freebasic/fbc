@@ -1,13 +1,14 @@
-''
-''
-'' VendorP -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __VendorP_bi__
-#define __VendorP_bi__
+#pragma once
+
+#include once "X11/Vendor.bi"
+
+extern "C"
+
+#define _XtVendorPrivate_h
+
+type VendorShellClassPart
+	extension as XtPointer
+end type
 
 type _VendorShellClassRec
 	core_class as CoreClassPart
@@ -18,9 +19,10 @@ type _VendorShellClassRec
 end type
 
 type VendorShellClassRec as _VendorShellClassRec
+extern vendorShellClassRec as VendorShellClassRec
 
 type VendorShellPart
-	vendor_specific as integer
+	vendor_specific as long
 end type
 
 type VendorShellRec
@@ -33,4 +35,4 @@ end type
 
 type VendorShellWidget as VendorShellRec ptr
 
-#endif
+end extern

@@ -2,7 +2,7 @@
 Sets current work and visible pages
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenset** ( [[KeyPgByval byval]] //work_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visible_page// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenset** ( [[KeyPgByval byval]] //work_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //visible_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Screenset** [ //work_page// ] [, //visible_page// ]

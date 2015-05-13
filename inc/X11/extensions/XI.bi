@@ -1,77 +1,75 @@
-''
-''
-'' XI -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __XI_bi__
-#define __XI_bi__
+#pragma once
 
-#define sz_xGetExtensionVersionReq 8
-#define sz_xGetExtensionVersionReply 32
-#define sz_xListInputDevicesReq 4
-#define sz_xListInputDevicesReply 32
-#define sz_xOpenDeviceReq 8
-#define sz_xOpenDeviceReply 32
-#define sz_xCloseDeviceReq 8
-#define sz_xSetDeviceModeReq 8
-#define sz_xSetDeviceModeReply 32
-#define sz_xSelectExtensionEventReq 12
-#define sz_xGetSelectedExtensionEventsReq 8
-#define sz_xGetSelectedExtensionEventsReply 32
-#define sz_xChangeDeviceDontPropagateListReq 12
-#define sz_xGetDeviceDontPropagateListReq 8
-#define sz_xGetDeviceDontPropagateListReply 32
-#define sz_xGetDeviceMotionEventsReq 16
-#define sz_xGetDeviceMotionEventsReply 32
-#define sz_xChangeKeyboardDeviceReq 8
-#define sz_xChangeKeyboardDeviceReply 32
-#define sz_xChangePointerDeviceReq 8
-#define sz_xChangePointerDeviceReply 32
-#define sz_xGrabDeviceReq 20
-#define sz_xGrabDeviceReply 32
-#define sz_xUngrabDeviceReq 12
-#define sz_xGrabDeviceKeyReq 20
-#define sz_xGrabDeviceKeyReply 32
-#define sz_xUngrabDeviceKeyReq 16
-#define sz_xGrabDeviceButtonReq 20
-#define sz_xGrabDeviceButtonReply 32
-#define sz_xUngrabDeviceButtonReq 16
-#define sz_xAllowDeviceEventsReq 12
-#define sz_xGetDeviceFocusReq 8
-#define sz_xGetDeviceFocusReply 32
-#define sz_xSetDeviceFocusReq 16
-#define sz_xGetFeedbackControlReq 8
-#define sz_xGetFeedbackControlReply 32
-#define sz_xChangeFeedbackControlReq 12
-#define sz_xGetDeviceKeyMappingReq 8
-#define sz_xGetDeviceKeyMappingReply 32
-#define sz_xChangeDeviceKeyMappingReq 8
-#define sz_xGetDeviceModifierMappingReq 8
-#define sz_xSetDeviceModifierMappingReq 8
-#define sz_xSetDeviceModifierMappingReply 32
-#define sz_xGetDeviceButtonMappingReq 8
-#define sz_xGetDeviceButtonMappingReply 32
-#define sz_xSetDeviceButtonMappingReq 8
-#define sz_xSetDeviceButtonMappingReply 32
-#define sz_xQueryDeviceStateReq 8
-#define sz_xQueryDeviceStateReply 32
-#define sz_xSendExtensionEventReq 16
-#define sz_xDeviceBellReq 8
-#define sz_xSetDeviceValuatorsReq 8
-#define sz_xSetDeviceValuatorsReply 32
-#define sz_xGetDeviceControlReq 8
-#define sz_xGetDeviceControlReply 32
-#define sz_xChangeDeviceControlReq 8
-#define sz_xChangeDeviceControlReply 32
-#define sz_xListDevicePropertiesReq 8
-#define sz_xListDevicePropertiesReply 32
-#define sz_xChangeDevicePropertyReq 20
-#define sz_xDeleteDevicePropertyReq 12
-#define sz_xGetDevicePropertyReq 24
-#define sz_xGetDevicePropertyReply 32
+#include once "crt/long.bi"
+
+'' The following symbols have been renamed:
+''     constant Relative => XRelative
+''     constant Absolute => XAbsolute
+
+#define _XI_H_
+const sz_xGetExtensionVersionReq = 8
+const sz_xGetExtensionVersionReply = 32
+const sz_xListInputDevicesReq = 4
+const sz_xListInputDevicesReply = 32
+const sz_xOpenDeviceReq = 8
+const sz_xOpenDeviceReply = 32
+const sz_xCloseDeviceReq = 8
+const sz_xSetDeviceModeReq = 8
+const sz_xSetDeviceModeReply = 32
+const sz_xSelectExtensionEventReq = 12
+const sz_xGetSelectedExtensionEventsReq = 8
+const sz_xGetSelectedExtensionEventsReply = 32
+const sz_xChangeDeviceDontPropagateListReq = 12
+const sz_xGetDeviceDontPropagateListReq = 8
+const sz_xGetDeviceDontPropagateListReply = 32
+const sz_xGetDeviceMotionEventsReq = 16
+const sz_xGetDeviceMotionEventsReply = 32
+const sz_xChangeKeyboardDeviceReq = 8
+const sz_xChangeKeyboardDeviceReply = 32
+const sz_xChangePointerDeviceReq = 8
+const sz_xChangePointerDeviceReply = 32
+const sz_xGrabDeviceReq = 20
+const sz_xGrabDeviceReply = 32
+const sz_xUngrabDeviceReq = 12
+const sz_xGrabDeviceKeyReq = 20
+const sz_xGrabDeviceKeyReply = 32
+const sz_xUngrabDeviceKeyReq = 16
+const sz_xGrabDeviceButtonReq = 20
+const sz_xGrabDeviceButtonReply = 32
+const sz_xUngrabDeviceButtonReq = 16
+const sz_xAllowDeviceEventsReq = 12
+const sz_xGetDeviceFocusReq = 8
+const sz_xGetDeviceFocusReply = 32
+const sz_xSetDeviceFocusReq = 16
+const sz_xGetFeedbackControlReq = 8
+const sz_xGetFeedbackControlReply = 32
+const sz_xChangeFeedbackControlReq = 12
+const sz_xGetDeviceKeyMappingReq = 8
+const sz_xGetDeviceKeyMappingReply = 32
+const sz_xChangeDeviceKeyMappingReq = 8
+const sz_xGetDeviceModifierMappingReq = 8
+const sz_xSetDeviceModifierMappingReq = 8
+const sz_xSetDeviceModifierMappingReply = 32
+const sz_xGetDeviceButtonMappingReq = 8
+const sz_xGetDeviceButtonMappingReply = 32
+const sz_xSetDeviceButtonMappingReq = 8
+const sz_xSetDeviceButtonMappingReply = 32
+const sz_xQueryDeviceStateReq = 8
+const sz_xQueryDeviceStateReply = 32
+const sz_xSendExtensionEventReq = 16
+const sz_xDeviceBellReq = 8
+const sz_xSetDeviceValuatorsReq = 8
+const sz_xSetDeviceValuatorsReply = 32
+const sz_xGetDeviceControlReq = 8
+const sz_xGetDeviceControlReply = 32
+const sz_xChangeDeviceControlReq = 8
+const sz_xChangeDeviceControlReply = 32
+const sz_xListDevicePropertiesReq = 8
+const sz_xListDevicePropertiesReply = 32
+const sz_xChangeDevicePropertyReq = 20
+const sz_xDeleteDevicePropertyReq = 12
+const sz_xGetDevicePropertyReq = 24
+const sz_xGetDevicePropertyReply = 32
 #define INAME "XInputExtension"
 #define XI_KEYBOARD "KEYBOARD"
 #define XI_MOUSE "MOUSE"
@@ -92,116 +90,116 @@
 #define XI_CURSORKEYS "CURSORKEYS"
 #define XI_FOOTMOUSE "FOOTMOUSE"
 #define XI_JOYSTICK "JOYSTICK"
-#define Dont_Check 0
-#define XInput_Initial_Release 1
-#define XInput_Add_XDeviceBell 2
-#define XInput_Add_XSetDeviceValuators 3
-#define XInput_Add_XChangeDeviceControl 4
-#define XInput_Add_DevicePresenceNotify 5
-#define XInput_Add_DeviceProperties 6
-#define XI_Absent 0
-#define XI_Present 1
-#define XI_Initial_Release_Major 1
-#define XI_Initial_Release_Minor 0
-#define XI_Add_XDeviceBell_Major 1
-#define XI_Add_XDeviceBell_Minor 1
-#define XI_Add_XSetDeviceValuators_Major 1
-#define XI_Add_XSetDeviceValuators_Minor 2
-#define XI_Add_XChangeDeviceControl_Major 1
-#define XI_Add_XChangeDeviceControl_Minor 3
-#define XI_Add_DevicePresenceNotify_Major 1
-#define XI_Add_DevicePresenceNotify_Minor 4
-#define XI_Add_DeviceProperties_Major 1
-#define XI_Add_DeviceProperties_Minor 5
-#define DEVICE_RESOLUTION 1
-#define DEVICE_ABS_CALIB 2
-#define DEVICE_CORE 3
-#define DEVICE_ENABLE 4
-#define DEVICE_ABS_AREA 5
-#define NoSuchExtension 1
-#define COUNT 0
-#define CREATE 1
-#define NewPointer 0
-#define NewKeyboard 1
-#define XPOINTER 0
-#define XKEYBOARD 1
-#define UseXKeyboard &hFF
-#define IsXPointer 0
-#define IsXKeyboard 1
-#define IsXExtensionDevice 2
-#define IsXExtensionKeyboard 3
-#define IsXExtensionPointer 4
-#define AsyncThisDevice 0
-#define SyncThisDevice 1
-#define ReplayThisDevice 2
-#define AsyncOtherDevices 3
-#define AsyncAll 4
-#define SyncAll 5
-#define FollowKeyboard 3
-#define RevertToFollowKeyboard 3
-#define DvAccelNum (1L shl 0)
-#define DvAccelDenom (1L shl 1)
-#define DvThreshold (1L shl 2)
-#define DvKeyClickPercent (1L shl 0)
-#define DvPercent (1L shl 1)
-#define DvPitch (1L shl 2)
-#define DvDuration (1L shl 3)
-#define DvLed (1L shl 4)
-#define DvLedMode (1L shl 5)
-#define DvKey (1L shl 6)
-#define DvAutoRepeatMode (1L shl 7)
-#define DvString (1L shl 0)
-#define DvInteger (1L shl 0)
-#define DeviceMode (1L shl 0)
-#define Relative 0
-#define Absolute 1
-#define ProximityState (1L shl 1)
-#define InProximity (0L shl 1)
-#define OutOfProximity (1L shl 1)
-#define AddToList 0
-#define DeleteFromList 1
-#define KeyClass 0
-#define ButtonClass 1
-#define ValuatorClass 2
-#define FeedbackClass 3
-#define ProximityClass 4
-#define FocusClass 5
-#define OtherClass 6
-#define KbdFeedbackClass 0
-#define PtrFeedbackClass 1
-#define StringFeedbackClass 2
-#define IntegerFeedbackClass 3
-#define LedFeedbackClass 4
-#define BellFeedbackClass 5
-#define _devicePointerMotionHint 0
-#define _deviceButton1Motion 1
-#define _deviceButton2Motion 2
-#define _deviceButton3Motion 3
-#define _deviceButton4Motion 4
-#define _deviceButton5Motion 5
-#define _deviceButtonMotion 6
-#define _deviceButtonGrab 7
-#define _deviceOwnerGrabButton 8
-#define _noExtensionEvent 9
-#define _devicePresence 0
-#define DeviceAdded 0
-#define DeviceRemoved 1
-#define DeviceEnabled 2
-#define DeviceDisabled 3
-#define DeviceUnrecoverable 4
-#define DeviceControlChanged 5
-#define XI_BadDevice 0
-#define XI_BadEvent 1
-#define XI_BadMode 2
-#define XI_DeviceBusy 3
-#define XI_BadClass 4
-
-type XEventClass as uinteger
+const Dont_Check = 0
+const XInput_Initial_Release = 1
+const XInput_Add_XDeviceBell = 2
+const XInput_Add_XSetDeviceValuators = 3
+const XInput_Add_XChangeDeviceControl = 4
+const XInput_Add_DevicePresenceNotify = 5
+const XInput_Add_DeviceProperties = 6
+const XI_Absent = 0
+const XI_Present = 1
+const XI_Initial_Release_Major = 1
+const XI_Initial_Release_Minor = 0
+const XI_Add_XDeviceBell_Major = 1
+const XI_Add_XDeviceBell_Minor = 1
+const XI_Add_XSetDeviceValuators_Major = 1
+const XI_Add_XSetDeviceValuators_Minor = 2
+const XI_Add_XChangeDeviceControl_Major = 1
+const XI_Add_XChangeDeviceControl_Minor = 3
+const XI_Add_DevicePresenceNotify_Major = 1
+const XI_Add_DevicePresenceNotify_Minor = 4
+const XI_Add_DeviceProperties_Major = 1
+const XI_Add_DeviceProperties_Minor = 5
+const DEVICE_RESOLUTION = 1
+const DEVICE_ABS_CALIB = 2
+const DEVICE_CORE = 3
+const DEVICE_ENABLE = 4
+const DEVICE_ABS_AREA = 5
+const NoSuchExtension = 1
+const COUNT = 0
+const CREATE = 1
+const NewPointer = 0
+const NewKeyboard = 1
+const XPOINTER = 0
+const XKEYBOARD = 1
+const UseXKeyboard = &hFF
+const IsXPointer = 0
+const IsXKeyboard = 1
+const IsXExtensionDevice = 2
+const IsXExtensionKeyboard = 3
+const IsXExtensionPointer = 4
+const AsyncThisDevice = 0
+const SyncThisDevice = 1
+const ReplayThisDevice = 2
+const AsyncOtherDevices = 3
+const AsyncAll = 4
+const SyncAll = 5
+const FollowKeyboard = 3
+const RevertToFollowKeyboard = 3
+const DvAccelNum = cast(clong, 1) shl 0
+const DvAccelDenom = cast(clong, 1) shl 1
+const DvThreshold = cast(clong, 1) shl 2
+const DvKeyClickPercent = cast(clong, 1) shl 0
+const DvPercent = cast(clong, 1) shl 1
+const DvPitch = cast(clong, 1) shl 2
+const DvDuration = cast(clong, 1) shl 3
+const DvLed = cast(clong, 1) shl 4
+const DvLedMode = cast(clong, 1) shl 5
+const DvKey = cast(clong, 1) shl 6
+const DvAutoRepeatMode = cast(clong, 1) shl 7
+const DvString = cast(clong, 1) shl 0
+const DvInteger = cast(clong, 1) shl 0
+const DeviceMode = cast(clong, 1) shl 0
+const XRelative = 0
+const XAbsolute = 1
+const ProximityState = cast(clong, 1) shl 1
+const InProximity = cast(clong, 0) shl 1
+const OutOfProximity = cast(clong, 1) shl 1
+const AddToList = 0
+const DeleteFromList = 1
+const KeyClass = 0
+const ButtonClass = 1
+const ValuatorClass = 2
+const FeedbackClass = 3
+const ProximityClass = 4
+const FocusClass = 5
+const OtherClass = 6
+const AttachClass = 7
+const KbdFeedbackClass = 0
+const PtrFeedbackClass = 1
+const StringFeedbackClass = 2
+const IntegerFeedbackClass = 3
+const LedFeedbackClass = 4
+const BellFeedbackClass = 5
+const _devicePointerMotionHint = 0
+const _deviceButton1Motion = 1
+const _deviceButton2Motion = 2
+const _deviceButton3Motion = 3
+const _deviceButton4Motion = 4
+const _deviceButton5Motion = 5
+const _deviceButtonMotion = 6
+const _deviceButtonGrab = 7
+const _deviceOwnerGrabButton = 8
+const _noExtensionEvent = 9
+const _devicePresence = 0
+const _deviceEnter = 0
+const _deviceLeave = 1
+const DeviceAdded = 0
+const DeviceRemoved = 1
+const DeviceEnabled = 2
+const DeviceDisabled = 3
+const DeviceUnrecoverable = 4
+const DeviceControlChanged = 5
+const XI_BadDevice = 0
+const XI_BadEvent = 1
+const XI_BadMode = 2
+const XI_DeviceBusy = 3
+const XI_BadClass = 4
+type XEventClass as culong
 
 type XExtensionVersion
-	present as integer
+	present as long
 	major_version as short
 	minor_version as short
 end type
-
-#endif

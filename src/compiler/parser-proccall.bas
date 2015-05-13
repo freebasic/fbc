@@ -199,24 +199,25 @@ private function hLooksLikeEndOfStatement( ) as integer
 end function
 
 function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
-	dim as ASTNODE ptr t = any
-
-	'' Allow no-conv casts on top of the call, and still ignore the result
-	t = astSkipNoConvCAST( expr )
+	'' Allow ignoring function call results even if there are any casts on
+	'' top of the CALL
+	var t = astSkipCASTs( expr )
 
 	'' Normal CALL at the beginning of a statement? This is only
 	'' possible if its result is being ignored.
 	if( astIsCALL( t ) ) then
-		astAdd( astIgnoreCallResult( astRemoveNoConvCAST( expr ) ) )
+		astAdd( astIgnoreCallResult( astRemoveCASTs( expr ) ) )
 		function = TRUE
 
 	'' Call to byref function? Either it's the lhs of an assignment,
 	'' or the result is being ignored: need to disambiguate.
 	elseif( astIsByrefResultDeref( t ) and hLooksLikeEndOfStatement( ) ) then
-		astAdd( astIgnoreCallResult( astRemoveByrefResultDeref( astRemoveNoConvCAST( expr ) ) ) )
+		astAdd( astIgnoreCallResult( astRemoveByrefResultDeref( astRemoveCASTs( expr ) ) ) )
 		function = TRUE
 
 	else
+		'' It's not just a CALL - don't allow the result value of this
+		'' expression to be ignored.
 		function = FALSE
 	end if
 end function

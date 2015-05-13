@@ -2,7 +2,7 @@
 Sets the position and visibility of the mouse cursor
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])

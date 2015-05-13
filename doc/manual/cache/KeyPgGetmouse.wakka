@@ -2,7 +2,7 @@
 Retrieves the status of the mouse pointing device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getmouse** (//x//, //y// [, [ //wheel// ] [, [ //buttons// ] [, [ //clip// ]]]])

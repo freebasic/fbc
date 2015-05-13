@@ -2,7 +2,7 @@
 Returns the number of characters sent to the printer port in the last ##[[KeyPgLprint Lprint]]## statement.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lpos** ( [[KeyPgByval byval]] //printer// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lpos** ( [[KeyPgByval byval]] //printer// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = LPOS(//printer//)
