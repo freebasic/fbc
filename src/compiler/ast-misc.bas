@@ -592,6 +592,8 @@ sub astCheckConst _
 		end select
 
 	case else
+		'' TODO: bitfields, booleans
+
 		select case as const( typeGetSizeType( dtype ) )
 		case FB_SIZETYPE_INT8, FB_SIZETYPE_UINT8
 			lval = astConstGetAsInt64( n )
@@ -615,10 +617,6 @@ sub astCheckConst _
 			end if
 		end select
 
-	case FB_DATATYPE_BOOL8
-	case FB_DATATYPE_BOOL32
-	case FB_DATATYPE_BITFIELD
-		'' !!!WRITEME!!! use ->subtype's
 	end select
 
 	if( (result = FALSE) and astShouldShowWarnings( ) ) then
