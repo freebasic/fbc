@@ -223,7 +223,7 @@ private sub hCheckPrototype _
 
 		'' Warn about mismatching param initializers?
 		'' If both params are optional, compare the two initializers
-		if( symbGetIsOptional( proto_param ) and symbGetIsOptional( param ) ) then
+		if( symbParamIsOptional( proto_param ) and symbParamIsOptional( param ) ) then
 			if( astIsEqualParamInit( proto_param->param.optexpr, param->param.optexpr ) = FALSE ) then
 				errReportParamWarn( proc, i, NULL, FB_WARNINGMSG_MISMATCHINGPARAMINIT )
 			end if
@@ -574,7 +574,7 @@ private function hCheckOpOvlParams _
 	end if
 
 	'' optional?
-	if( symbGetIsOptional( param ) ) then
+	if( symbParamIsOptional( param ) ) then
 		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		exit function
 	end if
@@ -902,7 +902,7 @@ private function hCheckIsSelfCloneByval _
 	'' At least one additional non-optional parameter?
 	param = param->next
 	while( param <> NULL )
-		if( symbGetIsOptional( param ) = FALSE ) then
+		if( symbParamIsOptional( param ) = FALSE ) then
 			exit function
 		end if
 		param = param->next
@@ -940,7 +940,7 @@ private sub hCheckPropParams _
 	param = symbGetProcHeadParam( proc )
 	i = 0
 	while( param )
-		if( symbGetIsOptional( param ) ) then
+		if( symbParamIsOptional( param ) ) then
 			hParamError( proc, 1+i, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		end if
 

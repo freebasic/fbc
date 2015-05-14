@@ -161,7 +161,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_PARAMBYREF 	= &h00040000
 	FB_SYMBATTRIB_LITERAL		= &h00080000
 	FB_SYMBATTRIB_CONST			= &h00100000
-	FB_SYMBATTRIB_OPTIONAL		= &h00200000	'' params only
+	FB_SYMBATTRIB_STATICLOCALS      = &h00200000  '' procedures only
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
@@ -174,7 +174,6 @@ enum FB_SYMBATTRIB
 
 	'' reuse - take care
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
-	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL  '' procedures only
 	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_NAKED
 end enum
 
@@ -2299,6 +2298,8 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetParamNext(a) a->next
 
+#define symbParamIsOptional( param_ ) ((param_)->param.optexpr <> NULL)
+
 #define symbGetImportNamespc(s) s->nsimp.imp_ns
 
 #define symbGetImportNext(s) s->nsimp.imp_next
@@ -2360,8 +2361,6 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define symbIsConstant(s) ((s->attrib and FB_SYMBATTRIB_CONST) <> 0)
 
 #define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
-
-#define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbProcReturnsByref(s) ((s->attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0)
 

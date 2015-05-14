@@ -208,7 +208,6 @@ sub symbMakeParamOptional _
 		exit sub
 	end if
 
-	param->attrib or= FB_SYMBATTRIB_OPTIONAL
 	param->param.optexpr = optexpr
 	proc->proc.optparams += 1
 
@@ -1819,7 +1818,7 @@ private function hCheckOvlParam _
 	'' arg not passed?
 	if( arg_expr = NULL ) then
 		'' is param optional?
-		if( symbGetIsOptional( param ) ) then
+		if( symbParamIsOptional( param ) ) then
 			return FB_OVLPROC_FULLMATCH
 		else
 			return 0
@@ -2077,7 +2076,7 @@ function symbFindClosestOvlProc _
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1
 				'' not optional? exit
-				if( symbGetIsOptional( param ) = FALSE ) then
+				if( symbParamIsOptional( param ) = FALSE ) then
 					'' Missing arg for this param - not a match afterall.
 					is_match = FALSE
 					exit for
