@@ -1631,14 +1631,15 @@ function cVarDecl _
 					end if
 				end if
 			else
-				if( symbIsRef( sym ) ) then
-					errReport( FB_ERRMSG_MISSINGREFINIT )
-					hSkipStmt( )
-					exit function
-				end if
-
 				'' default initialization
 				if( sym ) then
+					'' Byref? Always requires an explicit initializer
+					if( symbIsRef( sym ) ) then
+						errReport( FB_ERRMSG_MISSINGREFINIT )
+						hSkipStmt( )
+						exit function
+					end if
+
 					if( symbArrayHasUnknownBounds( sym ) ) then
 						errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 						hSkipStmt( )
