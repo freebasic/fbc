@@ -974,7 +974,7 @@ function cVariableEx overload _
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
 
-    is_byref = symbIsParamByRef( sym ) or symbIsImport( sym )
+	is_byref = symbIsParamByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
 	is_array = symbIsArray( sym )
 	is_funcptr = FALSE
 
