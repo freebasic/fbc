@@ -68,8 +68,13 @@ sub astTypeIniEnd _
 	tree->r = NULL
 
 	if( is_initializer = FALSE ) then
+		'' We're going to use the TYPEINI as expression that will be astAdd'ed,
+		'' to be updated by e.g. astTypeIniUpdate() later
 		ast.typeinicount += 1
 	end if
+	'' Otherwise, if it's an initializer, it will either be passed to astTypeIniFlush() immediately,
+	'' or kept in an FBSYMBOL.var_.initree. In this case there is no TYPEINI that would need to be
+	'' registered for astTypeIniUpdate() later.
 
 	'' merge nested type ini trees
     p = NULL
@@ -415,6 +420,9 @@ function astTypeIniFlush overload _
 	        astIsFIELD( target ) or astIsIDX( target ) )
 
 	if( update_typeinicount ) then
+		'' Unregister the TYPEINI - we're emitting it right now, no need
+		'' for astTypeIniUpdate() later. This only makes sense for TYPEINIs
+		'' that were previously registered via astTypeIniEnd(..., FALSE).
 		ast.typeinicount -= 1
 	end if
 
