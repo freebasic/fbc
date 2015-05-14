@@ -2245,7 +2245,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( TEMP )
 	checkAttrib( DESCRIPTOR )
 	checkAttrib( FUNCRESULT )
-	checkAttrib( RETURNSBYREF )
+	checkAttrib( REF )
 	checkAttrib( VIS_PRIVATE )
 	checkAttrib( VIS_PROTECTED )
 	if( symbIsProc( sym ) ) then

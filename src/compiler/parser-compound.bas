@@ -158,7 +158,7 @@ end sub
 private function hCheckForCtorResult( ) as integer
 	if( symbGetProcStatReturnUsed( parser.currproc ) ) then
 		if( symbHasCtor( parser.currproc ) and _
-		    (not symbProcReturnsByref( parser.currproc )) ) then
+		    (not symbIsRef( parser.currproc )) ) then
 			'' EXIT FUNCTION cannot be allowed in combination
 			'' with RETURN and a ctor result for byval functions,
 			'' because it would not call the result constructor.

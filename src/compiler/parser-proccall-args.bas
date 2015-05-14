@@ -218,7 +218,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 	'' could resolve to a different overload than
 	''    (f( a )) = b
 
-	warn = symbProcReturnsByref( proc )
+	warn = symbIsRef( proc )
 
 	if( warn = FALSE ) then
 		'' Also check other overloads, if any (for this to work,
@@ -230,7 +230,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 					exit do
 				end if
 
-				warn = symbProcReturnsByref( proc )
+				warn = symbIsRef( proc )
 			loop until( warn )
 		end if
 	end if

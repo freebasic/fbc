@@ -1114,7 +1114,7 @@ private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
 			'' byval result to self? reset..
 			if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
 			    (symbGetSubtype( sym ) = parent) and _
-			    (not symbProcReturnsByref( sym )) ) then
+			    (not symbIsRef( sym )) ) then
 				symbProcRecalcRealType( sym )
 			end if
 		end if

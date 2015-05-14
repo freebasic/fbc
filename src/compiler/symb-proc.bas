@@ -59,7 +59,7 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 
 	'' BYREF result never is on stack, instead it's always a pointer,
 	'' which will always be returned in registers
-	if( symbProcReturnsByref( proc ) ) then
+	if( symbIsRef( proc ) ) then
 		exit function
 	end if
 
@@ -261,7 +261,7 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 	dtype = symbGetFullType( proc )
 	subtype = symbGetSubtype( proc )
 
-	if( symbProcReturnsByref( proc ) ) then
+	if( symbIsRef( proc ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 
@@ -1161,7 +1161,7 @@ function symbAddProcPtrFromFunction _
 
 	function = symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
-			base_proc->attrib and FB_SYMBATTRIB_RETURNSBYREF, _  '' preserve RETURNSBYREF
+			base_proc->attrib and FB_SYMBATTRIB_REF, _  '' preserve REF flag
 			symbGetProcMode( base_proc ) )
 
 end function
@@ -1350,7 +1350,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dtype = proc->typ
 
 	'' Returning byref? Then the implicit result var is actually a pointer.
-	if( symbProcReturnsByref( proc ) ) then
+	if( symbIsRef( proc ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 
@@ -2679,7 +2679,7 @@ function symbCalcProcMatch _
 	''   which doesn't take result type into account.
 	'' - SUBs have VOID result type and will be handled here too
 	var match = typeCalcMatch( l->typ, l->subtype, _
-			iif( symbProcReturnsByref( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			iif( symbIsRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			r->typ, r->subtype )
 	if( match = 0 ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
@@ -2687,7 +2687,7 @@ function symbCalcProcMatch _
 	end if
 
 	'' Does one have a BYREF result, but not the other?
-	if( symbProcReturnsByref( l ) <> symbProcReturnsByref( r ) ) then
+	if( symbIsRef( l ) <> symbIsRef( r ) ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
 		return 0
 	end if
@@ -2952,7 +2952,7 @@ end sub
 private sub hResultToStr( byref s as string, byval proc as FBSYMBOL ptr )
 	'' Function result
 	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-		if( symbProcReturnsByref( proc ) ) then
+		if( symbIsRef( proc ) ) then
 			s += " byref"
 		end if
 		s += " as " + symbTypeToStr( proc->typ, proc->subtype )

@@ -46,7 +46,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	has_ctor = symbHasCtor( parser.currproc )
 	has_defctor = symbHasDefCtor( parser.currproc )
-	var returns_byref = symbProcReturnsByref( parser.currproc )
+	var returns_byref = symbIsRef( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then

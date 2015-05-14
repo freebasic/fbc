@@ -628,7 +628,7 @@ function astNewASSIGN _
 		l = astRemoveNoConvCAST( l )
 		r = astRemoveNoConvCAST( r )
 		assert( astIsCALL( r ) )
-		assert( symbProcReturnsByref( r->sym ) = FALSE )
+		assert( symbIsRef( r->sym ) = FALSE )
 
 		ldfull = symbGetProcRealType( r->sym )
 		ldtype = typeGet( ldfull )
