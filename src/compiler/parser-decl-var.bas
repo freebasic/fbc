@@ -725,8 +725,7 @@ private function hVarInitDefault _
 	'' because that's the only way for the coder to set the value.
 	if( typeIsConst( symbGetFullType( sym ) ) ) then
 		errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
-		'' error recovery: fake an expr
-		return astNewCONSTi( 0 )
+		exit function
 	end if
 
 	'' Has default constructor?
@@ -835,8 +834,7 @@ private function hVarInit _
 		'' ...or const-qualified vars
 		if( typeIsConst( symbGetFullType( sym ) ) ) then
 			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
-			'' error recovery: fake an expr
-			return astNewCONSTi( 0 )
+			return NULL
 		end if
 
 		lexSkipToken( )
@@ -845,8 +843,7 @@ private function hVarInit _
 
 	var initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
-		'' fake an expression
-		initree = astNewCONSTi( 0 )
+		return NULL
 	end if
 
 	'' static or shared?

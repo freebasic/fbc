@@ -410,6 +410,7 @@ function astTypeIniFlush overload _
 
 	dim as ASTNODE ptr n = any, nxt = any, t = any, l = any
 
+	assert( astIsTYPEINI( initree ) )
 	assert( astIsVAR( target ) or astIsDEREF( target ) or _
 	        astIsFIELD( target ) or astIsIDX( target ) )
 
@@ -475,6 +476,10 @@ function astTypeIniFlush overload _
 		case AST_NODECLASS_TYPEINI_CTORLIST
 			t = hCallCtorList( t, n, target )
 
+		case AST_NODECLASS_TYPEINI_SCOPEINI, AST_NODECLASS_TYPEINI_SCOPEEND
+
+		case else
+			assert( FALSE )
 		end select
 
 		nxt = n->r
