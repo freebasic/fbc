@@ -954,8 +954,6 @@ function cVariableEx overload _
 		byval check_array as integer _
 	) as ASTNODE ptr
 
-	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
 	dim as ASTNODE ptr varexpr = any, idxexpr = any, descexpr = any
 	dim as integer is_byref = any, is_funcptr = any, is_array = any
 
@@ -970,9 +968,6 @@ function cVariableEx overload _
 
 	'' ID
 	lexSkipToken( )
-
-	dtype = symbGetFullType( sym )
-	subtype = symbGetSubtype( sym )
 
 	is_byref = symbIsParamByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
 	is_array = symbIsArray( sym )
@@ -1022,7 +1017,7 @@ function cVariableEx overload _
 				end if
 			else
    				'' check if calling functions through pointers
-   				is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
+				is_funcptr = (symbGetType( sym ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 
 				'' using (...) with scalars?
 				if( (is_array = FALSE) and (is_funcptr = FALSE) ) then
@@ -1052,13 +1047,10 @@ function cVariableEx overload _
 		end if
 	end if
 
-	'' AST will handle descriptor pointers
-	if( is_byref ) then
-		'' byref or import? by now it's a pointer var, the real type will be set below
-		varexpr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
-	else
-		varexpr = astNewVAR( sym, 0, dtype, subtype )
-	end if
+	varexpr = astNewVAR( sym )
+
+	assert( varexpr->dtype = iif( is_byref, typeAddrOf( sym->typ ), sym->typ ) )
+	assert( varexpr->subtype = sym->subtype )
 
 	'' array or index?
 	if( idxexpr <> NULL ) then
@@ -1066,36 +1058,32 @@ function cVariableEx overload _
 		if( is_byref ) then
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
-			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
+			varexpr = astNewIDX( varexpr, idxexpr, FB_DATATYPE_INVALID, NULL )
 		end if
 	end if
 
 	'' check arguments passed by reference (implicit pointers)
 	if( is_byref ) then
-		varexpr = astNewDEREF( varexpr, dtype, subtype )
+		varexpr = astNewDEREF( varexpr )
 	end if
 
-   	''
+	assert( varexpr->dtype = sym->typ )
+	assert( varexpr->subtype = sym->subtype )
+
    	if( is_funcptr = FALSE ) then
    		if( check_fields ) then
    			'' ('.' UdtMember)?
    			if( lexGetToken( ) = CHAR_DOT ) then
 
-				select case	typeGet( dtype )
-				case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
-
-				case else
+				if( astGetDataType( varexpr ) <> FB_DATATYPE_STRUCT ) then
 					errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
 					hSkipStmt( )
 					return varexpr
-				end select
+				end if
 
    				lexSkipToken( LEXCHECK_NOPERIOD )
 
-   				varexpr = cUdtMember( dtype, _
-   									  subtype, _
-   									  astNewADDROF( varexpr ), _
-   									  check_array )
+				varexpr = cUdtMember( varexpr->dtype, varexpr->subtype, astNewADDROF( varexpr ), check_array )
    				if( varexpr = NULL ) then
    					exit function
    				end if
@@ -1105,12 +1093,9 @@ function cVariableEx overload _
 					return varexpr
 				end if
 
-				dtype =	astGetDataType(	varexpr	)
-				subtype	= astGetSubType( varexpr )
-
 				'' check if	calling	functions through pointers
 				if(	lexGetToken( ) = CHAR_LPRNT	) then
-					is_funcptr = (dtype = typeAddrOf( FB_DATATYPE_FUNCTION ))
+					is_funcptr = (astGetDataType( varexpr ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 				end	if
 
 			end if
@@ -1119,12 +1104,7 @@ function cVariableEx overload _
 
     if( check_fields ) then
     	'' FuncPtrOrMemberDeref?
-		varexpr = cFuncPtrOrMemberDeref( dtype, _
-									  	 subtype, _
-									  	 varexpr, _
-									  	 is_funcptr, _
-									  	 check_array )
-
+		varexpr = cFuncPtrOrMemberDeref( varexpr->dtype, varexpr->subtype, varexpr, is_funcptr, check_array )
 	else
 		if( is_nidxarray ) then
 			varexpr = astNewNIDXARRAY( varexpr )
