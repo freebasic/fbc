@@ -791,6 +791,28 @@ private function hVarInit _
 		exit function
 	end if
 
+	'' Reference? Must be initialized with a var/deref, not an arbitrary initializer
+	if( symbIsRef( sym ) ) then
+		initree = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+		if( initree = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipStmt( )
+			exit function
+		end if
+
+		if( astCheckByrefAssign( sym->typ, sym->subtype, initree ) = FALSE ) then
+			errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
+			hSkipStmt( )
+			exit function
+		end if
+
+		'' Implicit addrof due to BYREF
+		assert( astCanTakeAddrOf( initree ) )
+		initree = astNewADDROF( initree )
+
+		return initree
+	end if
+
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
