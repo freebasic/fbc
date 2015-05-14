@@ -1608,6 +1608,12 @@ function cVarDecl _
 					end if
 				end if
 			else
+				if( symbIsRef( sym ) ) then
+					errReport( FB_ERRMSG_MISSINGREFINIT )
+					hSkipStmt( )
+					exit function
+				end if
+
 				'' default initialization
 				if( sym ) then
 					if( symbArrayHasUnknownBounds( sym ) ) then

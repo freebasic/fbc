@@ -1,6 +1,6 @@
 o Dim Byref
   - Var Byref
-  - initializer required; same checks as for byref result assignments
+  - check initializer as for byref result assignments
   - ref var's real dtype = pointer, matters at least when emitting/allocating
   - implicit deref on access like for byref params
   - extend temp var life-time like WITH
