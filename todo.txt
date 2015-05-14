@@ -1,3 +1,10 @@
+o Dim Byref
+  - Var Byref
+  - initializer required; same checks as for byref result assignments
+  - ref var's real dtype = pointer, matters at least when emitting/allocating
+  - implicit deref on access like for byref params
+  - extend temp var life-time like WITH
+
 o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
