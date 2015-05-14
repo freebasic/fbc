@@ -1173,9 +1173,14 @@ private function hMaybeBuildFieldAccess _
 	function = astBuildVarField( symbGetParamVar( thisparam ), fld )
 end function
 
-'':::::
-''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
-''                       (',' SymbolDef)* .
+''
+'' VarDecl =
+''     SingleVarDecl (',' SingleVarDecl)*
+''   | [BYREF] AS DataType MultVarDecl (',' MultVarDecl)*
+''
+'' SingleVarDecl = [BYREF] Identifier ['(' ArrayDimensions ')'] [AS SymbolType] ['=' VarInitializer]
+''
+'' MultVarDecl = Identifier ['(' ArrayDimensions ')'] ['=' VarInitializer]
 ''
 function cVarDecl _
 	( _
@@ -1210,6 +1215,9 @@ function cVarDecl _
 		end if
 	end if
 
+	'' BYREF?
+	var has_byref_at_start = hMatch( FB_TK_BYREF )
+
 	'' (AS SymbolType)?
 	is_multdecl = FALSE
 	if( lexGetToken( ) = FB_TK_AS ) then
@@ -1223,10 +1231,25 @@ function cVarDecl _
 
 		addsuffix = FALSE
 		is_multdecl = TRUE
+		if( has_byref_at_start ) then
+			has_byref_at_start = FALSE
+			baseattrib or= FB_SYMBATTRIB_REF
+		end if
 	end if
 
 	do
 		dim as integer attrib = baseattrib
+
+		if( is_multdecl = FALSE ) then
+			'' 1st SingleVarDecl has BYREF?
+			if( has_byref_at_start ) then
+				has_byref_at_start = FALSE
+				attrib or= FB_SYMBATTRIB_REF
+			'' additional SingleVarDecl has BYREF?
+			elseif( hMatch( FB_TK_BYREF ) ) then
+				attrib or= FB_SYMBATTRIB_REF
+			end if
+		end if
 
 		'' Some code below needs to differentiate between "new variable declaration" and "redim";
 		'' however this isn't always accurate. For example, a REDIM statement can act as a variable
