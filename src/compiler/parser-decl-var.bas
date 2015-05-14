@@ -756,7 +756,6 @@ private function hVarInit _
 	) as ASTNODE ptr
 
 	dim as integer attrib = any, ignoreattribs = any
-	dim as ASTNODE ptr initree = any
 
 	function = NULL
 
@@ -793,22 +792,26 @@ private function hVarInit _
 
 	'' Reference? Must be initialized with a var/deref, not an arbitrary initializer
 	if( symbIsRef( sym ) ) then
-		initree = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
-		if( initree = NULL ) then
+		var expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
 			exit function
 		end if
 
-		if( astCheckByrefAssign( sym->typ, sym->subtype, initree ) = FALSE ) then
+		if( astCheckByrefAssign( sym->typ, sym->subtype, expr ) = FALSE ) then
 			errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
 			hSkipStmt( )
 			exit function
 		end if
 
 		'' Implicit addrof due to BYREF
-		assert( astCanTakeAddrOf( initree ) )
-		initree = astNewADDROF( initree )
+		assert( astCanTakeAddrOf( expr ) )
+		expr = astNewADDROF( expr )
+
+		var initree = astTypeIniBegin( expr->dtype, expr->subtype, FALSE, 0 )
+		astTypeIniAddAssign( initree, expr, sym )
+		astTypeIniEnd( initree, TRUE )
 
 		return initree
 	end if
@@ -840,7 +843,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI )
+	var initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		'' fake an expression
 		initree = astNewCONSTi( 0 )
