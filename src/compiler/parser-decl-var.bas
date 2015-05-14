@@ -804,12 +804,13 @@ private function hVarInit _
 			exit function
 		end if
 
-		'' Implicit addrof due to BYREF
+		'' Build the TYPEINI for initializing the reference/pointer
+		'' Do the implicit ADDROF due to BYREF
+		var ptrdtype = typeAddrOf( sym->typ )
+		var ptrsubtype = sym->subtype
+		var initree = astTypeIniBegin( ptrdtype, ptrsubtype, FALSE, 0 )
 		assert( astCanTakeAddrOf( expr ) )
-		expr = astNewADDROF( expr )
-
-		var initree = astTypeIniBegin( expr->dtype, expr->subtype, FALSE, 0 )
-		astTypeIniAddAssign( initree, expr, sym )
+		astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
 		astTypeIniEnd( initree, TRUE )
 
 		return initree

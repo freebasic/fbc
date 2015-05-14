@@ -31,6 +31,11 @@ function astNewVAR _
 		case else
 			dtype = symbGetFullType( sym )
 			subtype = symbGetSubtype( sym )
+			if( symbIsRef( sym ) ) then
+				'' If it's a reference, then it's really a pointer
+				'' (the caller is expected to do the implicit DEREF)
+				dtype = typeAddrOf( dtype )
+			end if
 		end select
 	end if
 
