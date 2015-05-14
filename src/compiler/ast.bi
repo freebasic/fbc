@@ -647,13 +647,7 @@ declare function astNewVAR _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astNewIDX _
-	( _
-		byval v as ASTNODE ptr, _
-		byval i as ASTNODE ptr, _
-		byval dtype as integer = FB_DATATYPE_INVALID, _
-		byval subtype as FBSYMBOL ptr = NULL _
-	) as ASTNODE ptr
+declare function astNewIDX( byval var_ as ASTNODE ptr, byval idx as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewFIELD _
 	( _
