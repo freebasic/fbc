@@ -1058,7 +1058,7 @@ function cVariableEx overload _
 		if( is_byref ) then
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
-			varexpr = astNewIDX( varexpr, idxexpr, FB_DATATYPE_INVALID, NULL )
+			varexpr = astNewIDX( varexpr, idxexpr )
 		end if
 	end if
 

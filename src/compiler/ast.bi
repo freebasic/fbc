@@ -651,8 +651,8 @@ declare function astNewIDX _
 	( _
 		byval v as ASTNODE ptr, _
 		byval i as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval dtype as integer = FB_DATATYPE_INVALID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewFIELD _
