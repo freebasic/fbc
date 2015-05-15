@@ -403,7 +403,7 @@ function hMangleBuiltInType _
 	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
 	{ _
 		@"v", _ '' void
-		@"b", _ '' boolean byte
+		@"b", _ '' boolean
 		@"a", _ '' byte (signed char)
 		@"h", _ '' ubyte (unsigned char)
 		@"c", _ '' char
@@ -412,7 +412,6 @@ function hMangleBuiltInType _
 		@"w", _ '' wchar
 		NULL, _ '' integer
 		NULL, _ '' uinteger
-		@"b", _ '' boolean integer
 		NULL, _ '' enum
 		NULL, _ '' long
 		NULL, _ '' ulong

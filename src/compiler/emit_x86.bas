@@ -51,7 +51,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
 		( 0, "void ptr"  ), _ '' void
-		( 0, "byte ptr"  ), _ '' boolean byte
+		( 0, "byte ptr"  ), _ '' boolean
 		( 0, "byte ptr"  ), _ '' byte
 		( 0, "byte ptr"  ), _ '' ubyte
 		( 0, "byte ptr"  ), _ '' char
@@ -60,7 +60,6 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 		( 1, "word ptr"  ), _ '' wchar
 		( 2, "dword ptr" ), _ '' int
 		( 2, "dword ptr" ), _ '' uint
-		( 2, "dword ptr" ), _ '' boolean integer
 		( 2, "dword ptr" ), _ '' enum
 		( 2, "dword ptr" ), _ '' long
 		( 2, "dword ptr" ), _ '' ulong

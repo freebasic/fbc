@@ -53,7 +53,7 @@ declare function hGetDataType _
 	dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 	{ _
 		 7, _									'' void
-		15, _                                   '' boolean byte
+		15, _                                   '' boolean
 		 2, _                                   '' byte
 		 3, _                                   '' ubyte
 		 4, _                                   '' char
@@ -62,7 +62,6 @@ declare function hGetDataType _
 		 6, _                                   '' wchar
 		 1, _                                   '' int
 		 8, _                                   '' uint
-		16, _                                   '' boolean integer
 		 1, _                                   '' enum
 		 1, _                                   '' long
 		 8, _                                   '' ulong
