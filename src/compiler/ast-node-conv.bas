@@ -438,27 +438,6 @@ function astNewCONV _
 		end select
 	end if
 
-	'' special rules for converting booleans and bitfields ...
-	select case typeGet( to_dtype )
-	case FB_DATATYPE_BOOLEAN
-		select case typeGet( ldtype )
-		case FB_DATATYPE_BITFIELD
-			doconv = FALSE
-		case else
-			doconv = TRUE
-		end select
-	case FB_DATATYPE_BITFIELD
-		select case typeGet( ldtype )
-		case FB_DATATYPE_BOOLEAN
-			doconv = FALSE
-		end select
-	case else
-		select case typeGet( ldtype )
-		case FB_DATATYPE_BOOLEAN
-			doconv = TRUE
-		end select
-	end select
-
 	if( irGetOption( IR_OPT_FPUCONV ) ) then
 		if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
 			if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
