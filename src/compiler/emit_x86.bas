@@ -6123,8 +6123,8 @@ private sub hMovBool _
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( dvreg->dtype )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -6271,7 +6271,7 @@ private sub _emitSTORB2I _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
 		_emitSTORI2I(dvreg, svreg)
 	else
 		hMovBool(dvreg, svreg)
@@ -6290,7 +6290,7 @@ private sub _emitSTORI2B _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
 		_emitSTORI2I(dvreg, svreg)
 	else
 		hMovBool(dvreg, svreg)
@@ -6309,7 +6309,7 @@ private sub _emitSTORB2B _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (symbGetDataSize( dvreg->dtype ) >= symbGetDataSize( svreg->dtype )) ) then
+	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
 		_emitSTORI2I(dvreg, svreg)
 	else
 		hMovBool(dvreg, svreg)
