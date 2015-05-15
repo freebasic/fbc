@@ -432,7 +432,7 @@ private function astSetBitfield _
 		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
 
 		r = astNewBOP( AST_OP_AND, r, _
-		               astNewCONSTi( (ast_bitmaskTB(bitfield->bitfld.bits) shl s->bitfld.bitpos), _
+		               astNewCONSTi( (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos), _
 		                             FB_DATATYPE_UINT ) )
 	else
 		'' Truncate r if it's too big, ensuring the OR below won't touch any
@@ -571,12 +571,6 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	n->l = astUpdateBitfields( n->l )
 	n->r = astUpdateBitfields( n->r )
-
-	'' $$JRM
-	'' convert to boolean if needed?
-	if( dtype = FB_DATATYPE_BOOLEAN ) then
-		n = astNewCONV( dtype, NULL, n )
-	end if
 
 	function = n
 end function
