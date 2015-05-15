@@ -6129,7 +6129,7 @@ private sub hMovBool _
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
 
-		if( svreg->value.int <> 0 ) then
+		if( svreg->value.i <> 0 ) then
 			if( FAST_BOOL<>FALSE ) then
 				hMOV dst, "1"
 			else
