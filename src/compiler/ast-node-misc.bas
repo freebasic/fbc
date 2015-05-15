@@ -427,8 +427,7 @@ private function astSetBitfield _
 	'' boolean bitfield? - do a bool conversion before the bitfield store
 	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
 		if( r->class <> AST_NODECLASS_CONV ) then
-			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
-			astGetCASTDoConv( r ) = FALSE
+			r = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, r )
 		end if
 		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
 

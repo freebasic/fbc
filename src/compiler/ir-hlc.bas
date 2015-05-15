@@ -237,7 +237,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	NULL        , _ '' wchar
 	NULL        , _ '' integer
 	NULL        , _ '' uint
-	@"bool32"   , _ '' boolean int
 	NULL        , _ '' enum
 	@"int32"    , _ '' long
 	@"uint32"   , _ '' ulong
