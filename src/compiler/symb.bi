@@ -22,8 +22,6 @@ end enum
 '' - symb-mangling.bas::typecodeTB() array
 '' - symb-data.bas::symb_dtypeTB() array
 '' - emit_x86.bas::dtypeTB() array
-'' - FB_DATATYPE_LOW_INDEX below,
-'' - FB_DATATYPE_UPP_INDEX below,
 '' - ast-misc.bas::ast_minlimitTB() array
 '' - ast-misc.bas::ast_maxlimitTB() array
 
@@ -56,8 +54,6 @@ enum FB_DATATYPE
 end enum
 
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
-const FB_DATATYPE_LOW_INDEX = FB_DATATYPE_BOOLEAN
-const FB_DATATYPE_UPP_INDEX = FB_DATATYPE_ULONGINT
 
 const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
 const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
