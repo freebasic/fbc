@@ -6105,7 +6105,6 @@ private sub _emitSCOPEEND _
 end sub
 
 '' $$JRM
-#define FAST_BOOL (0 <> (fbGetOption(FB_COMPOPT_EXTRAOPT) and FB_EXTRAOPT_FAST_BOOL))
 #macro JRM_DEBUG()
 	outp "# " + __FUNCTION__
 #endmacro
@@ -6130,11 +6129,7 @@ private sub hMovBool _
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
 
 		if( svreg->value.i <> 0 ) then
-			if( FAST_BOOL<>FALSE ) then
-				hMOV dst, "1"
-			else
-				hMOV dst, "-1"
-			end if
+			hMOV dst, "-1"
 		else
 			hMOV dst, "0"
 		end if
@@ -6148,10 +6143,8 @@ private sub hMovBool _
 		'' set byte to one (1) if src not equal to zero
 		outp "setne " + dst
 
-		if( FAST_BOOL = FALSE ) then
-			'' convert 0|1 to 0|-1
-			outp "neg " + dst
-		end if
+		'' convert 0|1 to 0|-1
+		outp "neg " + dst
 
 	'' dst is register with 8-bit accessor?
 	elseif( (dvreg->typ = IR_VREGTYPE_REG) _
@@ -6168,10 +6161,8 @@ private sub hMovBool _
 		'' set byte to one (1) if src not equal to zero
 		outp "setne " + dst8
 
-		if( FAST_BOOL = FALSE ) then
-			'' convert 0|1 to 0|-1
-			outp "neg " + dst8
-		end if
+		'' convert 0|1 to 0|-1
+		outp "neg " + dst8
 
 		outp "movsx " + dst + COMMA + dst8
 
@@ -6197,10 +6188,8 @@ private sub hMovBool _
 		'' set byte to one (1) if src not equal to zero
 		outp "setne " + aux8
 
-		if( FAST_BOOL = FALSE ) then
-			'' convert 0|1 to 0|-1
-			outp "neg " + aux8
-		end if
+		'' convert 0|1 to 0|-1
+		outp "neg " + aux8
 
 		if( dvreg->typ = IR_VREGTYPE_REG ) then
 			outp "movsx " + dst + COMMA + aux8
@@ -6271,11 +6260,7 @@ private sub _emitSTORB2I _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
-		_emitSTORI2I(dvreg, svreg)
-	else
-		hMovBool(dvreg, svreg)
-	endif
+	hMovBool(dvreg, svreg)
 
 	JRM_DEBUG()
 
@@ -6290,11 +6275,7 @@ private sub _emitSTORI2B _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
-		_emitSTORI2I(dvreg, svreg)
-	else
-		hMovBool(dvreg, svreg)
-	end if
+	hMovBool(dvreg, svreg)
 
 	JRM_DEBUG()
 
@@ -6309,11 +6290,7 @@ private sub _emitSTORB2B _
 
 	JRM_DEBUG()
 
-	if( (FAST_BOOL <> FALSE) and (typeGetSize( dvreg->dtype ) >= typeGetSize( svreg->dtype )) ) then
-		_emitSTORI2I(dvreg, svreg)
-	else
-		hMovBool(dvreg, svreg)
-	endif
+	hMovBool(dvreg, svreg)
 
 	JRM_DEBUG()
 

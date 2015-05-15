@@ -1800,12 +1800,6 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		select case( lcase( arg ) )
 		case "gosub-setjmp"
 			fbSetOption( FB_COMPOPT_GOSUBSETJMP, TRUE )
-		case "byte-bool"
-			fbSetOption( FB_COMPOPT_BYTEBOOL, TRUE )
-		case "integer-bool"
-			fbSetOption( FB_COMPOPT_INTEGERBOOL, TRUE )
-		case "fast-bool"
-			fbSetOption( FB_COMPOPT_FASTBOOL, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select
