@@ -22,8 +22,6 @@ end enum
 '' - symb-mangling.bas::typecodeTB() array
 '' - symb-data.bas::symb_dtypeTB() array
 '' - emit_x86.bas::dtypeTB() array
-'' - ast-misc.bas::ast_minlimitTB() array
-'' - ast-misc.bas::ast_maxlimitTB() array
 
 enum FB_DATATYPE
 	FB_DATATYPE_VOID
