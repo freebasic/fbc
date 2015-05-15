@@ -762,14 +762,11 @@ sub cForStmtBegin( )
 
 	select case as const dtype
 	case FB_DATATYPE_BOOLEAN
-		if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			astDelTree( idexpr )
-			idexpr = CREATEFAKEID( )
-			dtype = astGetDataType( idexpr )
-		end if
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		'' error recovery: fake a var
+		astDelTree( idexpr )
+		idexpr = CREATEFAKEID( )
+		dtype = astGetDataType( idexpr )
 
 	'' allow all other scalars ...
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE

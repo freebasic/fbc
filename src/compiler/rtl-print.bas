@@ -605,21 +605,13 @@
 	 	) _
 	 }
 
-'':::::
-private function hConvertBoolToString _ 
-	( _ 
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-	
-	dim as ASTNODE ptr true_node = any, false_node = any
+private function hConvertBoolToString( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	var true_node = astNewADDROF( astNewCONSTStr( "true" ) )
+	var false_node = astNewADDROF( astNewCONSTStr( "false" ) )
 
-	true_node = astNewADDROF( astNewCONSTStr( "true" ) )
-	false_node = astNewADDROF( astNewCONSTStr( "false" ) )
-	
-	expr = astNewIIF( expr, true_node, false_node )
-	
+	expr = astNewIIF( expr, true_node, 0, false_node, 0 )
+
 	function = astNewDEREF( expr )
-	
 end function
 
 '':::::

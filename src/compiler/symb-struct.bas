@@ -263,7 +263,7 @@ function symbAddField _
 		byval id as zstring ptr, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval decl_dtype as integer, _
+		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
@@ -277,8 +277,6 @@ function symbAddField _
 
 	function = NULL
 	desc = NULL
-
-	dtype = decl_dtype
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
