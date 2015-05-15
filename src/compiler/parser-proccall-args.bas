@@ -85,7 +85,7 @@ private function hProcArg _
 
 	if( expr = NULL ) then
 		'' check if argument is optional
-		if( symbGetIsOptional( param ) = FALSE ) then
+		if( symbParamIsOptional( param ) = FALSE ) then
 			if( pmode = FB_PARAMMODE_VARARG ) then
 				exit function
 			end if
@@ -218,7 +218,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 	'' could resolve to a different overload than
 	''    (f( a )) = b
 
-	warn = symbProcReturnsByref( proc )
+	warn = symbIsRef( proc )
 
 	if( warn = FALSE ) then
 		'' Also check other overloads, if any (for this to work,
@@ -230,7 +230,7 @@ private sub hMaybeWarnAboutEqOutsideParens _
 					exit do
 				end if
 
-				warn = symbProcReturnsByref( proc )
+				warn = symbIsRef( proc )
 			loop until( warn )
 		end if
 	end if
@@ -620,7 +620,7 @@ function cProcArgList _
 		end if
 
 		'' not optional?
-		if( symbGetIsOptional( param ) = FALSE ) then
+		if( symbParamIsOptional( param ) = FALSE ) then
 			errReport( FB_ERRMSG_ARGCNTMISMATCH )
 			'' error recovery: fake an expr
 			astDelTree( procexpr )

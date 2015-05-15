@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "oleacc"
@@ -237,6 +252,35 @@ type IAccessible_
 	lpVtbl as IAccessibleVtbl ptr
 end type
 
+#define IAccessible_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAccessible_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAccessible_Release(This) (This)->lpVtbl->Release(This)
+#define IAccessible_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IAccessible_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IAccessible_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IAccessible_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IAccessible_get_accParent(This, ppdispParent) (This)->lpVtbl->get_accParent(This, ppdispParent)
+#define IAccessible_get_accChildCount(This, pcountChildren) (This)->lpVtbl->get_accChildCount(This, pcountChildren)
+#define IAccessible_get_accChild(This, varChildID, ppdispChild) (This)->lpVtbl->get_accChild(This, varChildID, ppdispChild)
+#define IAccessible_get_accName(This, varID, pszName) (This)->lpVtbl->get_accName(This, varID, pszName)
+#define IAccessible_get_accValue(This, varID, pszValue) (This)->lpVtbl->get_accValue(This, varID, pszValue)
+#define IAccessible_get_accDescription(This, varID, pszDescription) (This)->lpVtbl->get_accDescription(This, varID, pszDescription)
+#define IAccessible_get_accRole(This, varID, pvarRole) (This)->lpVtbl->get_accRole(This, varID, pvarRole)
+#define IAccessible_get_accState(This, varID, pvarState) (This)->lpVtbl->get_accState(This, varID, pvarState)
+#define IAccessible_get_accHelp(This, varID, pszHelp) (This)->lpVtbl->get_accHelp(This, varID, pszHelp)
+#define IAccessible_get_accHelpTopic(This, pszHelpFile, varID, pidTopic) (This)->lpVtbl->get_accHelpTopic(This, pszHelpFile, varID, pidTopic)
+#define IAccessible_get_accKeyboardShortcut(This, varID, pszKeyboardShortcut) (This)->lpVtbl->get_accKeyboardShortcut(This, varID, pszKeyboardShortcut)
+#define IAccessible_get_accFocus(This, pvarID) (This)->lpVtbl->get_accFocus(This, pvarID)
+#define IAccessible_get_accSelection(This, pvarID) (This)->lpVtbl->get_accSelection(This, pvarID)
+#define IAccessible_get_accDefaultAction(This, varID, pszDefaultAction) (This)->lpVtbl->get_accDefaultAction(This, varID, pszDefaultAction)
+#define IAccessible_accSelect(This, flagsSelect, varID) (This)->lpVtbl->accSelect(This, flagsSelect, varID)
+#define IAccessible_accLocation(This, pxLeft, pyTop, pcxWidth, pcyHeight, varID) (This)->lpVtbl->accLocation(This, pxLeft, pyTop, pcxWidth, pcyHeight, varID)
+#define IAccessible_accNavigate(This, navDir, varStart, pvarEnd) (This)->lpVtbl->accNavigate(This, navDir, varStart, pvarEnd)
+#define IAccessible_accHitTest(This, xLeft, yTop, pvarID) (This)->lpVtbl->accHitTest(This, xLeft, yTop, pvarID)
+#define IAccessible_accDoDefaultAction(This, varID) (This)->lpVtbl->accDoDefaultAction(This, varID)
+#define IAccessible_put_accName(This, varID, pszName) (This)->lpVtbl->put_accName(This, varID, pszName)
+#define IAccessible_put_accValue(This, varID, pszValue) (This)->lpVtbl->put_accValue(This, varID, pszValue)
+
 declare function IAccessible_get_accParent_Proxy(byval This as IAccessible ptr, byval ppdispParent as IDispatch ptr ptr) as HRESULT
 declare sub IAccessible_get_accParent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IAccessible_get_accChildCount_Proxy(byval This as IAccessible ptr, byval pcountChildren as LONG ptr) as HRESULT
@@ -295,6 +339,10 @@ type IAccessibleHandler_
 	lpVtbl as IAccessibleHandlerVtbl ptr
 end type
 
+#define IAccessibleHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAccessibleHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAccessibleHandler_Release(This) (This)->lpVtbl->Release(This)
+#define IAccessibleHandler_AccessibleObjectFromID(This, hwnd, lObjectID, pIAccessible) (This)->lpVtbl->AccessibleObjectFromID(This, hwnd, lObjectID, pIAccessible)
 declare function IAccessibleHandler_AccessibleObjectFromID_Proxy(byval This as IAccessibleHandler ptr, byval hwnd as LONG, byval lObjectID as LONG, byval pIAccessible as LPACCESSIBLE ptr) as HRESULT
 declare sub IAccessibleHandler_AccessibleObjectFromID_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
@@ -322,6 +370,10 @@ type IAccIdentity_
 	lpVtbl as IAccIdentityVtbl ptr
 end type
 
+#define IAccIdentity_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAccIdentity_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAccIdentity_Release(This) (This)->lpVtbl->Release(This)
+#define IAccIdentity_GetIdentityString(This, dwIDChild, ppIDString, pdwIDStringLen) (This)->lpVtbl->GetIdentityString(This, dwIDChild, ppIDString, pdwIDStringLen)
 declare function IAccIdentity_GetIdentityString_Proxy(byval This as IAccIdentity ptr, byval dwIDChild as DWORD, byval ppIDString as UBYTE ptr ptr, byval pdwIDStringLen as DWORD ptr) as HRESULT
 declare sub IAccIdentity_GetIdentityString_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IAccPropServer_INTERFACE_DEFINED__
@@ -339,6 +391,10 @@ type IAccPropServer_
 	lpVtbl as IAccPropServerVtbl ptr
 end type
 
+#define IAccPropServer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAccPropServer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAccPropServer_Release(This) (This)->lpVtbl->Release(This)
+#define IAccPropServer_GetPropValue(This, pIDString, dwIDStringLen, idProp, pvarValue, pfHasProp) (This)->lpVtbl->GetPropValue(This, pIDString, dwIDStringLen, idProp, pvarValue, pfHasProp)
 declare function IAccPropServer_GetPropValue_Proxy(byval This as IAccPropServer ptr, byval pIDString as const UBYTE ptr, byval dwIDStringLen as DWORD, byval idProp as MSAAPROPID, byval pvarValue as VARIANT ptr, byval pfHasProp as WINBOOL ptr) as HRESULT
 declare sub IAccPropServer_GetPropValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IAccPropServices_INTERFACE_DEFINED__
@@ -369,6 +425,25 @@ end type
 type IAccPropServices_
 	lpVtbl as IAccPropServicesVtbl ptr
 end type
+
+#define IAccPropServices_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAccPropServices_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAccPropServices_Release(This) (This)->lpVtbl->Release(This)
+#define IAccPropServices_SetPropValue(This, pIDString, dwIDStringLen, idProp, var) (This)->lpVtbl->SetPropValue(This, pIDString, dwIDStringLen, idProp, var)
+#define IAccPropServices_SetPropServer(This, pIDString, dwIDStringLen, paProps, cProps, pServer, annoScope) (This)->lpVtbl->SetPropServer(This, pIDString, dwIDStringLen, paProps, cProps, pServer, annoScope)
+#define IAccPropServices_ClearProps(This, pIDString, dwIDStringLen, paProps, cProps) (This)->lpVtbl->ClearProps(This, pIDString, dwIDStringLen, paProps, cProps)
+#define IAccPropServices_SetHwndProp(This, hwnd, idObject, idChild, idProp, var) (This)->lpVtbl->SetHwndProp(This, hwnd, idObject, idChild, idProp, var)
+#define IAccPropServices_SetHwndPropStr(This, hwnd, idObject, idChild, idProp, str) (This)->lpVtbl->SetHwndPropStr(This, hwnd, idObject, idChild, idProp, str)
+#define IAccPropServices_SetHwndPropServer(This, hwnd, idObject, idChild, paProps, cProps, pServer, annoScope) (This)->lpVtbl->SetHwndPropServer(This, hwnd, idObject, idChild, paProps, cProps, pServer, annoScope)
+#define IAccPropServices_ClearHwndProps(This, hwnd, idObject, idChild, paProps, cProps) (This)->lpVtbl->ClearHwndProps(This, hwnd, idObject, idChild, paProps, cProps)
+#define IAccPropServices_ComposeHwndIdentityString(This, hwnd, idObject, idChild, ppIDString, pdwIDStringLen) (This)->lpVtbl->ComposeHwndIdentityString(This, hwnd, idObject, idChild, ppIDString, pdwIDStringLen)
+#define IAccPropServices_DecomposeHwndIdentityString(This, pIDString, dwIDStringLen, phwnd, pidObject, pidChild) (This)->lpVtbl->DecomposeHwndIdentityString(This, pIDString, dwIDStringLen, phwnd, pidObject, pidChild)
+#define IAccPropServices_SetHmenuProp(This, hmenu, idChild, idProp, var) (This)->lpVtbl->SetHmenuProp(This, hmenu, idChild, idProp, var)
+#define IAccPropServices_SetHmenuPropStr(This, hmenu, idChild, idProp, str) (This)->lpVtbl->SetHmenuPropStr(This, hmenu, idChild, idProp, str)
+#define IAccPropServices_SetHmenuPropServer(This, hmenu, idChild, paProps, cProps, pServer, annoScope) (This)->lpVtbl->SetHmenuPropServer(This, hmenu, idChild, paProps, cProps, pServer, annoScope)
+#define IAccPropServices_ClearHmenuProps(This, hmenu, idChild, paProps, cProps) (This)->lpVtbl->ClearHmenuProps(This, hmenu, idChild, paProps, cProps)
+#define IAccPropServices_ComposeHmenuIdentityString(This, hmenu, idChild, ppIDString, pdwIDStringLen) (This)->lpVtbl->ComposeHmenuIdentityString(This, hmenu, idChild, ppIDString, pdwIDStringLen)
+#define IAccPropServices_DecomposeHmenuIdentityString(This, pIDString, dwIDStringLen, phmenu, pidChild) (This)->lpVtbl->DecomposeHmenuIdentityString(This, pIDString, dwIDStringLen, phmenu, pidChild)
 
 declare function IAccPropServices_SetPropValue_Proxy(byval This as IAccPropServices ptr, byval pIDString as const UBYTE ptr, byval dwIDStringLen as DWORD, byval idProp as MSAAPROPID, byval var as VARIANT) as HRESULT
 declare sub IAccPropServices_SetPropValue_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

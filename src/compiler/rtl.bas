@@ -145,11 +145,9 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			for i as integer = 0 to procdef->params-1
 				with procdef->paramTb(i)
 					dim as FBSYMBOL ptr subtype = NULL
-					dim as integer attrib = any, dtype = any
+					dim as integer dtype = any
 					dim as ASTNODE ptr param_optval = any
 					if( .isopt ) then
-						attrib = FB_SYMBATTRIB_OPTIONAL
-
 						select case as const .dtype
 						case FB_DATATYPE_STRING
 							'' only NULL can be used
@@ -160,18 +158,16 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 
 						'' function pointers need a symbol built so they can check matches
 						case typeAddrOf( FB_DATATYPE_FUNCTION )
-							dim as integer inner_attrib = any, func_arg = any
 							dim as ASTNODE ptr inner_param_optval = any
 							dim as FBSYMBOL ptr inner_proc = any
 
 							'' scan through the next args as child args
 							inner_proc = symbPreAddProc( NULL )
-							for func_arg = 0 to .optval-1
+							for func_arg as integer = 0 to .optval-1
 								i += 1
 
 								with procdef->paramTb(i)
 									if( .isopt ) then
-										inner_attrib = FB_SYMBATTRIB_OPTIONAL
 										select case as const .dtype
 										case FB_DATATYPE_STRING
 											'' only NULL can be used
@@ -185,10 +181,9 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 										end select
 									else
 										inner_param_optval = NULL
-										inner_attrib = 0
 									end if
 
-									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, inner_attrib )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0 )
 									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
@@ -203,13 +198,6 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
 								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, 0, env.target.fbcall )
-
-								'' due to the ambiguity (need to say it's optional to
-								'' even get to this point), the symbol's return type will
-								'' be what specifies if the parent symbol is optional
-								if( .isopt = FALSE ) then
-									attrib = 0
-								end if
 							end with
 
 							param_optval = NULL
@@ -219,7 +207,6 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 
 						end select
 					else
-						attrib = 0
 						param_optval = NULL
 					end if
 
@@ -228,7 +215,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 						dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, attrib )
+					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0 )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( param )

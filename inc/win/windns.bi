@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw_unicode.bi"
@@ -35,6 +50,7 @@ union IP6_ADDRESS
 end union
 
 type PIP6_ADDRESS as IP6_ADDRESS ptr
+#undef IP6_ADDRESS_STRING_LENGTH
 const IP6_ADDRESS_STRING_LENGTH = 47
 const IP6_ADDRESS_STRING_BUFFER_LENGTH = 48
 #macro INLINE_WORD_FLIP(out, in)
@@ -943,7 +959,10 @@ const DNS_QUERY_NO_HOSTS_FILE = &h00000040
 const DNS_QUERY_NO_NETBT = &h00000080
 const DNS_QUERY_WIRE_ONLY = &h00000100
 const DNS_QUERY_RETURN_MESSAGE = &h00000200
+const DNS_QUERY_MULTICAST_ONLY = &h00000400
+const DNS_QUERY_NO_MULTICAST = &h00000800
 const DNS_QUERY_TREAT_AS_FQDN = &h00001000
+const DNS_QUERY_APPEND_MULTILABEL = &h00800000
 const DNS_QUERY_DONT_RESET_TTL_VALUES = &h00100000
 const DNS_QUERY_RESERVED = &hff000000
 #define DNS_QUERY_CACHE_ONLY DNS_QUERY_NO_WIRE_QUERY

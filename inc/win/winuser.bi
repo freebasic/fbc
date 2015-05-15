@@ -1,11 +1,63 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "user32"
 
+#include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "_mingw.bi"
 #include once "crt/stdarg.bi"
 #include once "guiddef.bi"
+
+'' The following symbols have been renamed:
+''     typedef INPUT => INPUT_
 
 extern "Windows"
 
@@ -29,6 +81,7 @@ type DLGPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as
 type TIMERPROC as sub(byval as HWND, byval as UINT, byval as UINT_PTR, byval as DWORD)
 type GRAYSTRINGPROC as function(byval as HDC, byval as LPARAM, byval as long) as WINBOOL
 type WNDENUMPROC as function(byval as HWND, byval as LPARAM) as WINBOOL
+type ENUMWINDOWSPROC as WNDENUMPROC  '' custom name for backwards-compatibility (it existed in old headers despite being undocumented)
 type HOOKPROC as function(byval code as long, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 type SENDASYNCPROC as sub(byval as HWND, byval as UINT, byval as ULONG_PTR, byval as LRESULT)
 type PROPENUMPROCA as function(byval as HWND, byval as LPCSTR, byval as HANDLE) as WINBOOL
@@ -52,8 +105,8 @@ type DRAWSTATEPROC as function(byval hdc as HDC, byval lData as LPARAM, byval wD
 type NAMEENUMPROCA as function(byval as LPSTR, byval as LPARAM) as WINBOOL
 type NAMEENUMPROCW as function(byval as LPWSTR, byval as LPARAM) as WINBOOL
 type WINSTAENUMPROCA as NAMEENUMPROCA
-type DESKTOPENUMPROCA as NAMEENUMPROCA
 type WINSTAENUMPROCW as NAMEENUMPROCW
+type DESKTOPENUMPROCA as NAMEENUMPROCA
 type DESKTOPENUMPROCW as NAMEENUMPROCW
 
 #ifdef UNICODE
@@ -101,6 +154,14 @@ const DIFFERENCE = 11
 #define ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(3)
 #define MINIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(1)
 #define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(16)
+
+#ifdef UNICODE
+	#define wvsprintf wvsprintfW
+	#define wsprintf wsprintfW
+#else
+	#define wvsprintf wvsprintfA
+	#define wsprintf wsprintfA
+#endif
 
 declare function wvsprintfA(byval as LPSTR, byval as LPCSTR, byval arglist as va_list) as long
 declare function wvsprintfW(byval as LPWSTR, byval as LPCWSTR, byval arglist as va_list) as long
@@ -450,6 +511,8 @@ const WTS_SESSION_LOGOFF = &h6
 const WTS_SESSION_LOCK = &h7
 const WTS_SESSION_UNLOCK = &h8
 const WTS_SESSION_REMOTE_CONTROL = &h9
+const WTS_SESSION_CREATE = &ha
+const WTS_SESSION_TERMINATE = &hb
 const MSGF_DIALOGBOX = 0
 const MSGF_MESSAGEBOX = 1
 const MSGF_MENU = 2
@@ -471,6 +534,11 @@ const HSHELL_ACCESSIBILITYSTATE = 11
 const HSHELL_APPCOMMAND = 12
 const HSHELL_WINDOWREPLACED = 13
 const HSHELL_WINDOWREPLACING = 14
+
+#if _WIN32_WINNT = &h0602
+	const HSHELL_MONITORCHANGED = 16
+#endif
+
 const HSHELL_HIGHBIT = &h8000
 #define HSHELL_FLASH (HSHELL_REDRAW or HSHELL_HIGHBIT)
 #define HSHELL_RUDEAPPACTIVATED (HSHELL_WINDOWACTIVATED or HSHELL_HIGHBIT)
@@ -529,6 +597,12 @@ const APPCOMMAND_MEDIA_FAST_FORWARD = 49
 const APPCOMMAND_MEDIA_REWIND = 50
 const APPCOMMAND_MEDIA_CHANNEL_UP = 51
 const APPCOMMAND_MEDIA_CHANNEL_DOWN = 52
+
+#if _WIN32_WINNT = &h0602
+	const APPCOMMAND_DELETE = 53
+	const APPCOMMAND_DWM_FLIP3D = 54
+#endif
+
 const FAPPCOMMAND_MOUSE = &h8000
 const FAPPCOMMAND_KEY = 0
 const FAPPCOMMAND_OEM = &h1000
@@ -642,7 +716,7 @@ type LPMOUSEHOOKSTRUCT as tagMOUSEHOOKSTRUCT ptr
 type PMOUSEHOOKSTRUCT as tagMOUSEHOOKSTRUCT ptr
 
 type tagMOUSEHOOKSTRUCTEX
-	_unnamed as MOUSEHOOKSTRUCT
+	__unnamed as MOUSEHOOKSTRUCT
 	mouseData as DWORD
 end type
 
@@ -704,10 +778,10 @@ end type
 type MOUSEMOVEPOINT as tagMOUSEMOVEPOINT
 type PMOUSEMOVEPOINT as tagMOUSEMOVEPOINT ptr
 type LPMOUSEMOVEPOINT as tagMOUSEMOVEPOINT ptr
-const GMMP_USE_DISPLAY_POINTS = 1
-const GMMP_USE_HIGH_RESOLUTION_POINTS = 2
 declare function GetMouseMovePointsEx(byval cbSize as UINT, byval lppt as LPMOUSEMOVEPOINT, byval lpptBuf as LPMOUSEMOVEPOINT, byval nBufPoints as long, byval resolution as DWORD) as long
 
+const GMMP_USE_DISPLAY_POINTS = 1
+const GMMP_USE_HIGH_RESOLUTION_POINTS = 2
 #define DESKTOP_READOBJECTS __MSABI_LONG(&h0001)
 #define DESKTOP_CREATEWINDOW __MSABI_LONG(&h0002)
 #define DESKTOP_CREATEMENU __MSABI_LONG(&h0004)
@@ -721,12 +795,16 @@ declare function GetMouseMovePointsEx(byval cbSize as UINT, byval lppt as LPMOUS
 
 #ifdef UNICODE
 	#define CreateDesktop CreateDesktopW
+	#define CreateDesktopEx CreateDesktopExW
 #else
 	#define CreateDesktop CreateDesktopA
+	#define CreateDesktopEx CreateDesktopExA
 #endif
 
 declare function CreateDesktopA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as LPDEVMODEA, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
 declare function CreateDesktopW(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as LPDEVMODEW, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
+declare function CreateDesktopExA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as DEVMODEA ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
+declare function CreateDesktopExW(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as DEVMODEW ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
 
 #ifdef UNICODE
 	#define OpenDesktop OpenDesktopW
@@ -757,7 +835,7 @@ declare function GetThreadDesktop(byval dwThreadId as DWORD) as HDESK
 #define WINSTA_ENUMERATE __MSABI_LONG(&h0100)
 #define WINSTA_READSCREEN __MSABI_LONG(&h0200)
 #define WINSTA_ALL_ACCESS ((((((((WINSTA_ENUMDESKTOPS or WINSTA_READATTRIBUTES) or WINSTA_ACCESSCLIPBOARD) or WINSTA_CREATEDESKTOP) or WINSTA_WRITEATTRIBUTES) or WINSTA_ACCESSGLOBALATOMS) or WINSTA_EXITWINDOWS) or WINSTA_ENUMERATE) or WINSTA_READSCREEN)
-#define CWF_CREATE_ONLY __MSABI_LONG(&h0001)
+const CWF_CREATE_ONLY = &h00000001
 #define WSF_VISIBLE __MSABI_LONG(&h0001)
 
 #ifdef UNICODE
@@ -786,6 +864,11 @@ const UOI_FLAGS = 1
 const UOI_NAME = 2
 const UOI_TYPE = 3
 const UOI_USER_SID = 4
+
+#if _WIN32_WINNT = &h0602
+	const UOI_HEAPSIZE = 5
+	const UOI_IO = 6
+#endif
 
 type tagUSEROBJECTFLAGS
 	fInherit as WINBOOL
@@ -936,47 +1019,46 @@ type LPMSG as tagMSG ptr
 #define MAKEWPARAM(l, h) cast(WPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELPARAM(l, h) cast(LPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELRESULT(l, h) cast(LRESULT, cast(DWORD, MAKELONG(l, h)))
-
-#ifndef __FB_64BIT__
-	const GWL_WNDPROC = -4
-	const GWL_HINSTANCE = -6
-	const GWL_HWNDPARENT = -8
-#endif
-
+const GWL_WNDPROC = -4
+const GWL_HINSTANCE = -6
+const GWL_HWNDPARENT = -8
 const GWL_STYLE = -16
 const GWL_EXSTYLE = -20
+const GWL_USERDATA = -21
+const GWL_ID = -12
 
-#ifndef __FB_64BIT__
-	const GWL_USERDATA = -21
+#ifdef __FB_64BIT__
+	#undef GWL_WNDPROC
+	#undef GWL_HINSTANCE
+	#undef GWL_HWNDPARENT
+	#undef GWL_USERDATA
 #endif
 
-const GWL_ID = -12
 const GWLP_WNDPROC = -4
 const GWLP_HINSTANCE = -6
 const GWLP_HWNDPARENT = -8
 const GWLP_USERDATA = -21
 const GWLP_ID = -12
-
-#ifndef __FB_64BIT__
-	const GCL_MENUNAME = -8
-	const GCL_HBRBACKGROUND = -10
-	const GCL_HCURSOR = -12
-	const GCL_HICON = -14
-	const GCL_HMODULE = -16
-#endif
-
+const GCL_MENUNAME = -8
+const GCL_HBRBACKGROUND = -10
+const GCL_HCURSOR = -12
+const GCL_HICON = -14
+const GCL_HMODULE = -16
 const GCL_CBWNDEXTRA = -18
 const GCL_CBCLSEXTRA = -20
-
-#ifndef __FB_64BIT__
-	const GCL_WNDPROC = -24
-#endif
-
+const GCL_WNDPROC = -24
 const GCL_STYLE = -26
 const GCW_ATOM = -32
+const GCL_HICONSM = -34
 
-#ifndef __FB_64BIT__
-	const GCL_HICONSM = -34
+#ifdef __FB_64BIT__
+	#undef GCL_MENUNAME
+	#undef GCL_HBRBACKGROUND
+	#undef GCL_HCURSOR
+	#undef GCL_HICON
+	#undef GCL_HMODULE
+	#undef GCL_WNDPROC
+	#undef GCL_HICONSM
 #endif
 
 const GCLP_MENUNAME = -8
@@ -1122,6 +1204,7 @@ const WM_NCMBUTTONDBLCLK = &h00A9
 const WM_NCXBUTTONDOWN = &h00AB
 const WM_NCXBUTTONUP = &h00AC
 const WM_NCXBUTTONDBLCLK = &h00AD
+const WM_INPUT_DEVICE_CHANGE = &h00fe
 const WM_INPUT = &h00FF
 const WM_KEYFIRST = &h0100
 const WM_KEYDOWN = &h0100
@@ -1195,10 +1278,10 @@ const WM_XBUTTONUP = &h020C
 const WM_XBUTTONDBLCLK = &h020D
 
 #if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const WM_MOUSELAST = &h020D
+	const WM_MOUSELAST = &h020d
 #else
-	const WM_MOUSEHWHEEL = &h020E
-	const WM_MOUSELAST = &h020E
+	const WM_MOUSEHWHEEL = &h020e
+	const WM_MOUSELAST = &h020e
 #endif
 
 const WHEEL_DELTA = 120
@@ -1234,8 +1317,17 @@ const PBT_APMRESUMEAUTOMATIC = &h0012
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
 	const PBT_POWERSETTINGCHANGE = 32787
+
+	type POWERBROADCAST_SETTING
+		PowerSetting as GUID
+		DataLength as DWORD
+		Data(0 to 0) as UCHAR
+	end type
+
+	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
 #endif
 
+const WM_DEVICECHANGE = &h0219
 const WM_MDICREATE = &h0220
 const WM_MDIDESTROY = &h0221
 const WM_MDIACTIVATE = &h0222
@@ -1251,6 +1343,27 @@ const WM_ENTERSIZEMOVE = &h0231
 const WM_EXITSIZEMOVE = &h0232
 const WM_DROPFILES = &h0233
 const WM_MDIREFRESHMENU = &h0234
+
+#if _WIN32_WINNT = &h0602
+	const WM_POINTERDEVICECHANGE = &h238
+	const WM_POINTERDEVICEINRANGE = &h239
+	const WM_POINTERDEVICEOUTOFRANGE = &h23a
+	const WM_TOUCH = &h0240
+	const WM_NCPOINTERUPDATE = &h0241
+	const WM_NCPOINTERDOWN = &h0242
+	const WM_NCPOINTERUP = &h0243
+	const WM_POINTERUPDATE = &h0245
+	const WM_POINTERDOWN = &h0246
+	const WM_POINTERUP = &h0247
+	const WM_POINTERENTER = &h0249
+	const WM_POINTERLEAVE = &h024a
+	const WM_POINTERACTIVATE = &h024b
+	const WM_POINTERCAPTURECHANGED = &h024c
+	const WM_TOUCHHITTESTING = &h024d
+	const WM_POINTERWHEEL = &h024e
+	const WM_POINTERHWHEEL = &h024f
+#endif
+
 const WM_IME_SETCONTEXT = &h0281
 const WM_IME_NOTIFY = &h0282
 const WM_IME_CONTROL = &h0283
@@ -1290,6 +1403,18 @@ const WM_PRINT = &h0317
 const WM_PRINTCLIENT = &h0318
 const WM_APPCOMMAND = &h0319
 const WM_THEMECHANGED = &h031A
+const WM_CLIPBOARDUPDATE = &h031d
+
+#if _WIN32_WINNT = &h0602
+	const WM_DWMCOMPOSITIONCHANGED = &h031e
+	const WM_DWMNCRENDERINGCHANGED = &h031f
+	const WM_DWMCOLORIZATIONCOLORCHANGED = &h0320
+	const WM_DWMWINDOWMAXIMIZEDCHANGE = &h0321
+	const WM_DWMSENDICONICTHUMBNAIL = &h0323
+	const WM_DWMSENDICONICLIVEPREVIEWBITMAP = &h0326
+	const WM_GETTITLEBARINFOEX = &h033f
+#endif
+
 const WM_HANDHELDFIRST = &h0358
 const WM_HANDHELDLAST = &h035F
 const WM_AFXFIRST = &h0360
@@ -1339,6 +1464,11 @@ const SMTO_NORMAL = &h0000
 const SMTO_BLOCK = &h0001
 const SMTO_ABORTIFHUNG = &h0002
 const SMTO_NOTIMEOUTIFNOTHUNG = &h0008
+
+#if _WIN32_WINNT = &h0602
+	const SMTO_ERRORONEXIT = &h0020
+#endif
+
 const MA_ACTIVATE = 1
 const MA_ACTIVATEANDEAT = 2
 const MA_NOACTIVATE = 3
@@ -1469,6 +1599,11 @@ declare function TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WIN
 #define WS_EX_PALETTEWINDOW ((WS_EX_WINDOWEDGE or WS_EX_TOOLWINDOW) or WS_EX_TOPMOST)
 const WS_EX_LAYERED = &h00080000
 #define WS_EX_NOINHERITLAYOUT __MSABI_LONG(&h00100000)
+
+#if _WIN32_WINNT = &h0602
+	#define WS_EX_NOREDIRECTIONBITMAP __MSABI_LONG(&h00200000)
+#endif
+
 #define WS_EX_LAYOUTRTL __MSABI_LONG(&h00400000)
 #define WS_EX_COMPOSITED __MSABI_LONG(&h02000000)
 #define WS_EX_NOACTIVATE __MSABI_LONG(&h08000000)
@@ -1807,6 +1942,9 @@ const PM_NOYIELD = &h0002
 #define PM_QS_SENDMESSAGE (QS_SENDMESSAGE shl 16)
 declare function RegisterHotKey(byval hWnd as HWND, byval id as long, byval fsModifiers as UINT, byval vk as UINT) as WINBOOL
 declare function UnregisterHotKey(byval hWnd as HWND, byval id as long) as WINBOOL
+const MOD_ALT = &h0001
+const MOD_CONTROL = &h0002
+const MOD_SHIFT = &h0004
 const MOD_WIN = &h0008
 
 #if _WIN32_WINNT = &h0602
@@ -1815,13 +1953,23 @@ const MOD_WIN = &h0008
 
 const IDHOT_SNAPWINDOW = -1
 const IDHOT_SNAPDESKTOP = -2
+const ENDSESSION_CLOSEAPP = &h00000001
+const ENDSESSION_CRITICAL = &h40000000
 const ENDSESSION_LOGOFF = &h80000000
-const EWX_LOGOFF = 0
+const EWX_LOGOFF = &h00000000
 const EWX_SHUTDOWN = &h00000001
 const EWX_REBOOT = &h00000002
 const EWX_FORCE = &h00000004
 const EWX_POWEROFF = &h00000008
 const EWX_FORCEIFHUNG = &h00000010
+const EWX_QUICKRESOLVE = &h00000020
+
+#if _WIN32_WINNT = &h0602
+	const EWX_RESTARTAPPS = &h00000040
+#endif
+
+const EWX_HYBRID_SHUTDOWN = &h00400000
+const EWX_BOOTOPTIONS = &h01000000
 #define ExitWindows(dwReserved, Code) ExitWindowsEx(EWX_LOGOFF, &hFFFFFFFF)
 
 #ifdef UNICODE
@@ -1841,6 +1989,11 @@ declare function SwapMouseButton(byval fSwap as WINBOOL) as WINBOOL
 declare function GetMessagePos() as DWORD
 declare function GetMessageTime() as LONG
 declare function GetMessageExtraInfo() as LPARAM
+
+#if _WIN32_WINNT = &h0602
+	declare function GetUnpredictedMessagePos() as DWORD
+#endif
+
 declare function IsWow64Message() as WINBOOL
 declare function SetMessageExtraInfo(byval lParam as LPARAM) as LPARAM
 declare function SendMessageA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
@@ -1874,7 +2027,19 @@ declare function BroadcastSystemMessageExW(byval flags as DWORD, byval lpInfo as
 declare function BroadcastSystemMessageA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 declare function BroadcastSystemMessageW(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
 
+const BSM_ALLCOMPONENTS = &h00000000
+const BSM_VXDS = &h00000001
+const BSM_NETDRIVER = &h00000002
+const BSM_INSTALLABLEDRIVERS = &h00000004
+const BSM_APPLICATIONS = &h00000008
 const BSM_ALLDESKTOPS = &h00000010
+const BSF_QUERY = &h00000001
+const BSF_IGNORECURRENTTASK = &h00000002
+const BSF_FLUSHDISK = &h00000004
+const BSF_NOHANG = &h00000008
+const BSF_POSTMESSAGE = &h00000010
+const BSF_FORCEIFHUNG = &h00000020
+const BSF_NOTIMEOUTIFNOTHUNG = &h00000040
 const BSF_ALLOWSFW = &h00000080
 const BSF_SENDNOTIFYMESSAGE = &h00000100
 const BSF_RETURNHDESK = &h00000200
@@ -1898,41 +2063,17 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	#define GetClassInfo GetClassInfoW
 	#define RegisterClassEx RegisterClassExW
 	#define GetClassInfoEx GetClassInfoExW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define RegisterDeviceNotification RegisterDeviceNotificationA
-	#define PostMessage PostMessageA
-	#define PostThreadMessage PostThreadMessageA
-	#define PostAppMessage PostAppMessageA
-	#define DefWindowProc DefWindowProcA
-	#define CallWindowProc CallWindowProcA
-	#define RegisterClass RegisterClassA
-	#define UnregisterClass UnregisterClassA
-	#define GetClassInfo GetClassInfoA
-	#define RegisterClassEx RegisterClassExA
-	#define GetClassInfoEx GetClassInfoExA
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if defined(__FB_64BIT__) and (defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)))
+	#define _HPOWERNOTIFY_DEF_
 	type HPOWERNOTIFY as HANDLE
 	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
-
-	type POWERBROADCAST_SETTING
-		PowerSetting as GUID
-		DataLength as DWORD
-		Data(0 to 0) as UCHAR
-	end type
-
-	type PPOWERBROADCAST_SETTING as POWERBROADCAST_SETTING ptr
-	extern GUID_POWERSCHEME_PERSONALITY as const GUID
-	extern GUID_MIN_POWER_SAVINGS as const GUID
-	extern GUID_MAX_POWER_SAVINGS as const GUID
-	extern GUID_TYPICAL_POWER_SAVINGS as const GUID
-	extern GUID_ACDC_POWER_SOURCE as const GUID
-	extern GUID_BATTERY_PERCENTAGE_REMAINING as const GUID
-	extern GUID_IDLE_BACKGROUND_TASK as const GUID
-	extern GUID_SYSTEM_AWAYMODE as const GUID
-	extern GUID_MONITOR_POWER_ON as const GUID
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+	declare function RegisterPowerSettingNotification(byval hRecipient as HANDLE, byval PowerSettingGuid as LPCGUID, byval Flags as DWORD) as HPOWERNOTIFY
+	declare function UnregisterPowerSettingNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
+	declare function RegisterSuspendResumeNotification(byval hRecipient as HANDLE, byval Flags as DWORD) as HPOWERNOTIFY
+	declare function UnregisterSuspendResumeNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
+#elseif not defined(UNICODE)
 	#define RegisterDeviceNotification RegisterDeviceNotificationA
 	#define PostMessage PostMessageA
 	#define PostThreadMessage PostThreadMessageA
@@ -1946,25 +2087,22 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	#define GetClassInfoEx GetClassInfoExA
 #endif
 
-declare function RegisterDeviceNotificationA(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
-declare function RegisterDeviceNotificationW(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
-
-#if _WIN32_WINNT = &h0602
+#if ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))) or ((not defined(__FB_64BIT__)) and (defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))))
+	#define _HPOWERNOTIFY_DEF_
+	type HPOWERNOTIFY as HANDLE
+	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
 	declare function RegisterPowerSettingNotification(byval hRecipient as HANDLE, byval PowerSettingGuid as LPCGUID, byval Flags as DWORD) as HPOWERNOTIFY
 	declare function UnregisterPowerSettingNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
+	declare function RegisterSuspendResumeNotification(byval hRecipient as HANDLE, byval Flags as DWORD) as HPOWERNOTIFY
+	declare function UnregisterSuspendResumeNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
 #endif
 
-declare function UnregisterDeviceNotification(byval Handle as HDEVNOTIFY) as WINBOOL
 declare function PostMessageA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
 declare function PostMessageW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
 declare function PostThreadMessageA(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
 declare function PostThreadMessageW(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
-
 #define PostAppMessageA(idThread, wMsg, wParam, lParam) PostThreadMessageA(cast(DWORD, idThread), wMsg, wParam, lParam)
 #define PostAppMessageW(idThread, wMsg, wParam, lParam) PostThreadMessageW(cast(DWORD, idThread), wMsg, wParam, lParam)
-#define HWND_BROADCAST cast(HWND, &hffff)
-#define HWND_MESSAGE cast(HWND, -3)
-
 declare function AttachThreadInput(byval idAttach as DWORD, byval idAttachTo as DWORD, byval fAttach as WINBOOL) as WINBOOL
 declare function ReplyMessage(byval lResult as LRESULT) as WINBOOL
 declare function WaitMessage() as WINBOOL
@@ -1972,17 +2110,8 @@ declare function WaitForInputIdle(byval hProcess as HANDLE, byval dwMilliseconds
 declare function DefWindowProcA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare function DefWindowProcW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare sub PostQuitMessage(byval nExitCode as long)
-declare function CallWindowProcA(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-declare function CallWindowProcW(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare function InSendMessage() as WINBOOL
 declare function InSendMessageEx(byval lpReserved as LPVOID) as DWORD
-
-const ISMEX_NOSEND = &h00000000
-const ISMEX_SEND = &h00000001
-const ISMEX_NOTIFY = &h00000002
-const ISMEX_CALLBACK = &h00000004
-const ISMEX_REPLIED = &h00000008
-
 declare function GetDoubleClickTime() as UINT
 declare function SetDoubleClickTime(byval as UINT) as WINBOOL
 declare function RegisterClassA(byval lpWndClass as const WNDCLASSA ptr) as ATOM
@@ -1995,8 +2124,34 @@ declare function RegisterClassExA(byval as const WNDCLASSEXA ptr) as ATOM
 declare function RegisterClassExW(byval as const WNDCLASSEXW ptr) as ATOM
 declare function GetClassInfoExA(byval hInstance as HINSTANCE, byval lpszClass as LPCSTR, byval lpwcx as LPWNDCLASSEXA) as WINBOOL
 declare function GetClassInfoExW(byval hInstance as HINSTANCE, byval lpszClass as LPCWSTR, byval lpwcx as LPWNDCLASSEXW) as WINBOOL
+declare function CallWindowProcA(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+declare function CallWindowProcW(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
 const CW_USEDEFAULT = clng(&h80000000)
+#define HWND_BROADCAST cast(HWND, &hffff)
+#define HWND_MESSAGE cast(HWND, -3)
 #define HWND_DESKTOP cast(HWND, 0)
+const ISMEX_NOSEND = &h00000000
+const ISMEX_SEND = &h00000001
+const ISMEX_NOTIFY = &h00000002
+const ISMEX_CALLBACK = &h00000004
+const ISMEX_REPLIED = &h00000008
+
+#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	extern GUID_POWERSCHEME_PERSONALITY as const GUID
+	extern GUID_MIN_POWER_SAVINGS as const GUID
+	extern GUID_MAX_POWER_SAVINGS as const GUID
+	extern GUID_TYPICAL_POWER_SAVINGS as const GUID
+	extern GUID_ACDC_POWER_SOURCE as const GUID
+	extern GUID_BATTERY_PERCENTAGE_REMAINING as const GUID
+	extern GUID_IDLE_BACKGROUND_TASK as const GUID
+	extern GUID_SYSTEM_AWAYMODE as const GUID
+	extern GUID_MONITOR_POWER_ON as const GUID
+#endif
+
+declare function RegisterDeviceNotificationA(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+declare function RegisterDeviceNotificationW(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+declare function UnregisterDeviceNotification(byval Handle as HDEVNOTIFY) as WINBOOL
 type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as BOOLEAN
 
 #ifdef UNICODE
@@ -2034,7 +2189,11 @@ end type
 
 type UPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO
 type PUPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO ptr
-declare function UpdateLayeredWindowIndirect(byval hWnd as HWND, byval pULWInfo as const UPDATELAYEREDWINDOWINFO ptr) as WINBOOL
+
+#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	declare function UpdateLayeredWindowIndirect(byval hWnd as HWND, byval pULWInfo as const UPDATELAYEREDWINDOWINFO ptr) as WINBOOL
+#endif
+
 declare function GetLayeredWindowAttributes(byval hwnd as HWND, byval pcrKey as COLORREF ptr, byval pbAlpha as UBYTE ptr, byval pdwFlags as DWORD ptr) as WINBOOL
 const PW_CLIENTONLY = &h00000001
 declare function PrintWindow(byval hwnd as HWND, byval hdcBlt as HDC, byval nFlags as UINT) as WINBOOL
@@ -2045,8 +2204,12 @@ const ULW_COLORKEY = &h00000001
 const ULW_ALPHA = &h00000002
 const ULW_OPAQUE = &h00000004
 const ULW_EX_NORESIZE = &h00000008
-declare function ShowWindowAsync(byval hWnd as HWND, byval nCmdShow as long) as WINBOOL
-declare function FlashWindow(byval hWnd as HWND, byval bInvert as WINBOOL) as WINBOOL
+const FLASHW_STOP = 0
+const FLASHW_CAPTION = &h00000001
+const FLASHW_TRAY = &h00000002
+#define FLASHW_ALL (FLASHW_CAPTION or FLASHW_TRAY)
+const FLASHW_TIMER = &h00000004
+const FLASHW_TIMERNOFG = &h0000000c
 
 type FLASHWINFO
 	cbSize as UINT
@@ -2057,14 +2220,9 @@ type FLASHWINFO
 end type
 
 type PFLASHWINFO as FLASHWINFO ptr
+declare function ShowWindowAsync(byval hWnd as HWND, byval nCmdShow as long) as WINBOOL
+declare function FlashWindow(byval hWnd as HWND, byval bInvert as WINBOOL) as WINBOOL
 declare function FlashWindowEx(byval pfwi as PFLASHWINFO) as WINBOOL
-const FLASHW_STOP = 0
-const FLASHW_CAPTION = &h00000001
-const FLASHW_TRAY = &h00000002
-#define FLASHW_ALL (FLASHW_CAPTION or FLASHW_TRAY)
-const FLASHW_TIMER = &h00000004
-const FLASHW_TIMERNOFG = &h0000000C
-
 declare function ShowOwnedPopups(byval hWnd as HWND, byval fShow as WINBOOL) as WINBOOL
 declare function OpenIcon(byval hWnd as HWND) as WINBOOL
 declare function CloseWindow(byval hWnd as HWND) as WINBOOL
@@ -2072,6 +2230,14 @@ declare function MoveWindow(byval hWnd as HWND, byval X as long, byval Y as long
 declare function SetWindowPos(byval hWnd as HWND, byval hWndInsertAfter as HWND, byval X as long, byval Y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
 declare function GetWindowPlacement(byval hWnd as HWND, byval lpwndpl as WINDOWPLACEMENT ptr) as WINBOOL
 declare function SetWindowPlacement(byval hWnd as HWND, byval lpwndpl as const WINDOWPLACEMENT ptr) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	const WDA_NONE = &h00000000
+	const WDA_MONITOR = &h00000001
+	declare function GetWindowDisplayAffinity(byval hWnd as HWND, byval pdwAffinity as DWORD ptr) as WINBOOL
+	declare function SetWindowDisplayAffinity(byval hWnd as HWND, byval dwAffinity as DWORD) as WINBOOL
+#endif
+
 declare function BeginDeferWindowPos(byval nNumWindows as long) as HDWP
 declare function DeferWindowPos(byval hWinPosInfo as HDWP, byval hWnd as HWND, byval hWndInsertAfter as HWND, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as HDWP
 declare function EndDeferWindowPos(byval hWinPosInfo as HDWP) as WINBOOL
@@ -2259,6 +2425,12 @@ declare function IsClipboardFormatAvailable(byval format as UINT) as WINBOOL
 declare function GetPriorityClipboardFormat(byval paFormatPriorityList as UINT ptr, byval cFormats as long) as long
 declare function GetOpenClipboardWindow() as HWND
 
+#if _WIN32_WINNT = &h0602
+	declare function AddClipboardFormatListener(byval hwnd as HWND) as WINBOOL
+	declare function RemoveClipboardFormatListener(byval hwnd as HWND) as WINBOOL
+	declare function GetUpdatedClipboardFormats(byval lpuiFormats as PUINT, byval cFormats as UINT, byval pcFormatsOut as PUINT) as WINBOOL
+#endif
+
 #ifdef UNICODE
 	#define CharToOem CharToOemW
 	#define OemToChar OemToCharW
@@ -2367,12 +2539,12 @@ declare function VkKeyScanA(byval ch as byte) as SHORT
 declare function VkKeyScanW(byval ch as wchar_t) as SHORT
 declare function VkKeyScanExA(byval ch as byte, byval dwhkl as HKL) as SHORT
 declare function VkKeyScanExW(byval ch as wchar_t, byval dwhkl as HKL) as SHORT
+declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
 
 const KEYEVENTF_EXTENDEDKEY = &h0001
 const KEYEVENTF_KEYUP = &h0002
 const KEYEVENTF_UNICODE = &h0004
 const KEYEVENTF_SCANCODE = &h0008
-declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
 const MOUSEEVENTF_MOVE = &h0001
 const MOUSEEVENTF_LEFTDOWN = &h0002
 const MOUSEEVENTF_LEFTUP = &h0004
@@ -2383,8 +2555,105 @@ const MOUSEEVENTF_MIDDLEUP = &h0040
 const MOUSEEVENTF_XDOWN = &h0080
 const MOUSEEVENTF_XUP = &h0100
 const MOUSEEVENTF_WHEEL = &h0800
+
+#if _WIN32_WINNT = &h0602
+	const MOUSEEVENTF_HWHEEL = &h01000
+	const MOUSEEVENTF_MOVE_NOCOALESCE = &h2000
+#endif
+
 const MOUSEEVENTF_VIRTUALDESK = &h4000
 const MOUSEEVENTF_ABSOLUTE = &h8000
+const INPUT_MOUSE = 0
+const INPUT_KEYBOARD = 1
+const INPUT_HARDWARE = 2
+
+#if _WIN32_WINNT = &h0602
+	#define TOUCH_COORD_TO_PIXEL(l) ((l) / 100)
+	const TOUCHEVENTF_MOVE = &h0001
+	const TOUCHEVENTF_DOWN = &h0002
+	const TOUCHEVENTF_UP = &h0004
+	const TOUCHEVENTF_INRANGE = &h0008
+	const TOUCHEVENTF_PRIMARY = &h0010
+	const TOUCHEVENTF_NOCOALESCE = &h0020
+	const TOUCHEVENTF_PEN = &h0040
+	const TOUCHEVENTF_PALM = &h0080
+	const TOUCHINPUTMASKF_TIMEFROMSYSTEM = &h0001
+	const TOUCHINPUTMASKF_EXTRAINFO = &h0002
+	const TOUCHINPUTMASKF_CONTACTAREA = &h0004
+	const TWF_FINETOUCH = &h00000001
+	const TWF_WANTPALM = &h00000002
+	const POINTER_FLAG_NONE = &h00000000
+	const POINTER_FLAG_NEW = &h00000001
+	const POINTER_FLAG_INRANGE = &h00000002
+	const POINTER_FLAG_INCONTACT = &h00000004
+	const POINTER_FLAG_FIRSTBUTTON = &h00000010
+	const POINTER_FLAG_SECONDBUTTON = &h00000020
+	const POINTER_FLAG_THIRDBUTTON = &h00000040
+	const POINTER_FLAG_FOURTHBUTTON = &h00000080
+	const POINTER_FLAG_FIFTHBUTTON = &h00000100
+	const POINTER_FLAG_PRIMARY = &h00002000
+	const POINTER_FLAG_CONFIDENCE = &h00004000
+	const POINTER_FLAG_CANCELED = &h00008000
+	const POINTER_FLAG_DOWN = &h00010000
+	const POINTER_FLAG_UPDATE = &h00020000
+	const POINTER_FLAG_UP = &h00040000
+	const POINTER_FLAG_WHEEL = &h00080000
+	const POINTER_FLAG_HWHEEL = &h00100000
+	const POINTER_FLAG_CAPTURECHANGED = &h00200000
+	const POINTER_MOD_SHIFT = &h0004
+	const POINTER_MOD_CTRL = &h0008
+	const TOUCH_FLAG_NONE = &h00000000
+	const TOUCH_MASK_NONE = &h00000000
+	const TOUCH_MASK_CONTACTAREA = &h00000001
+	const TOUCH_MASK_ORIENTATION = &h00000002
+	const TOUCH_MASK_PRESSURE = &h00000004
+	const PEN_FLAG_NONE = &h00000000
+	const PEN_FLAG_BARREL = &h00000001
+	const PEN_FLAG_INVERTED = &h00000002
+	const PEN_FLAG_ERASER = &h00000004
+	const PEN_MASK_NONE = &h00000000
+	const PEN_MASK_PRESSURE = &h00000001
+	const PEN_MASK_ROTATION = &h00000002
+	const PEN_MASK_TILT_X = &h00000004
+	const PEN_MASK_TILT_Y = &h00000008
+	const POINTER_MESSAGE_FLAG_NEW = &h00000001
+	const POINTER_MESSAGE_FLAG_INRANGE = &h00000002
+	const POINTER_MESSAGE_FLAG_INCONTACT = &h00000004
+	const POINTER_MESSAGE_FLAG_FIRSTBUTTON = &h00000010
+	const POINTER_MESSAGE_FLAG_SECONDBUTTON = &h00000020
+	const POINTER_MESSAGE_FLAG_THIRDBUTTON = &h00000040
+	const POINTER_MESSAGE_FLAG_FOURTHBUTTON = &h00000080
+	const POINTER_MESSAGE_FLAG_FIFTHBUTTON = &h00000100
+	const POINTER_MESSAGE_FLAG_PRIMARY = &h00002000
+	const POINTER_MESSAGE_FLAG_CONFIDENCE = &h00004000
+	const POINTER_MESSAGE_FLAG_CANCELED = &h00008000
+	#define GET_POINTERID_WPARAM(wParam) LOWORD(wParam)
+	#define IS_POINTER_FLAG_SET_WPARAM(wParam, flag) ((cast(DWORD, HIWORD(wParam)) and (flag)) = (flag))
+	#define IS_POINTER_NEW_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_NEW)
+	#define IS_POINTER_INRANGE_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INRANGE)
+	#define IS_POINTER_INCONTACT_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INCONTACT)
+	#define IS_POINTER_FIRSTBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FIRSTBUTTON)
+	#define IS_POINTER_SECONDBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_SECONDBUTTON)
+	#define IS_POINTER_THIRDBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_THIRDBUTTON)
+	#define IS_POINTER_FOURTHBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FOURTHBUTTON)
+	#define IS_POINTER_FIFTHBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FIFTHBUTTON)
+	#define IS_POINTER_PRIMARY_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_PRIMARY)
+	#define HAS_POINTER_CONFIDENCE_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CONFIDENCE)
+	#define IS_POINTER_CANCELED_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CANCELED)
+	#define PA_ACTIVATE MA_ACTIVATE
+	#define PA_NOACTIVATE MA_NOACTIVATE
+	const MAX_TOUCH_COUNT = 256
+	const TOUCH_FEEDBACK_DEFAULT = &h1
+	const TOUCH_FEEDBACK_INDIRECT = &h2
+	const TOUCH_FEEDBACK_NONE = &h3
+	const TOUCH_HIT_TESTING_DEFAULT = &h0
+	const TOUCH_HIT_TESTING_CLIENT = &h1
+	const TOUCH_HIT_TESTING_NONE = &h2
+	const TOUCH_HIT_TESTING_PROXIMITY_CLOSEST = &h0
+	const TOUCH_HIT_TESTING_PROXIMITY_FARTHEST = &hfff
+	const GWFS_INCLUDE_ANCESTORS = &h00000001
+#endif
+
 declare sub mouse_event(byval dwFlags as DWORD, byval dx as DWORD, byval dy as DWORD, byval dwData as DWORD, byval dwExtraInfo as ULONG_PTR)
 
 type tagMOUSEINPUT
@@ -2422,10 +2691,6 @@ type HARDWAREINPUT as tagHARDWAREINPUT
 type PHARDWAREINPUT as tagHARDWAREINPUT ptr
 type LPHARDWAREINPUT as tagHARDWAREINPUT ptr
 
-const INPUT_MOUSE = 0
-const INPUT_KEYBOARD = 1
-const INPUT_HARDWARE = 2
-
 type tagINPUT
 	as DWORD type
 
@@ -2436,10 +2701,182 @@ type tagINPUT
 	end union
 end type
 
-type INPUT as tagINPUT
+type INPUT_ as tagINPUT
 type PINPUT as tagINPUT ptr
 type LPINPUT as tagINPUT ptr
 declare function SendInput(byval cInputs as UINT, byval pInputs as LPINPUT, byval cbSize as long) as UINT
+
+#if _WIN32_WINNT = &h0602
+	type HTOUCHINPUT__
+		unused as long
+	end type
+
+	type HTOUCHINPUT as HTOUCHINPUT__ ptr
+
+	type tagTOUCHINPUT
+		x as LONG
+		y as LONG
+		hSource as HANDLE
+		dwID as DWORD
+		dwFlags as DWORD
+		dwMask as DWORD
+		dwTime as DWORD
+		dwExtraInfo as ULONG_PTR
+		cxContact as DWORD
+		cyContact as DWORD
+	end type
+
+	type TOUCHINPUT as tagTOUCHINPUT
+	type PTOUCHINPUT as tagTOUCHINPUT ptr
+	type PCTOUCHINPUT as const TOUCHINPUT ptr
+
+	declare function GetTouchInputInfo(byval hTouchInput as HTOUCHINPUT, byval cInputs as UINT, byval pInputs as PTOUCHINPUT, byval cbSize as long) as WINBOOL
+	declare function CloseTouchInputHandle(byval hTouchInput as HTOUCHINPUT) as WINBOOL
+	declare function RegisterTouchWindow(byval hwnd as HWND, byval ulFlags as ULONG) as WINBOOL
+	declare function UnregisterTouchWindow(byval hwnd as HWND) as WINBOOL
+	declare function IsTouchWindow(byval hwnd as HWND, byval pulFlags as PULONG) as WINBOOL
+
+	type POINTER_INPUT_TYPE as DWORD
+	type POINTER_FLAGS as UINT32
+	type TOUCH_FLAGS as UINT32
+	type TOUCH_MASK as UINT32
+	type PEN_FLAGS as UINT32
+	type PEN_MASK as UINT32
+
+	type tagPOINTER_INPUT_TYPE as long
+	enum
+		PT_POINTER = &h00000001
+		PT_TOUCH = &h00000002
+		PT_PEN = &h00000003
+		PT_MOUSE = &h00000004
+	end enum
+
+	type tagFEEDBACK_TYPE as long
+	enum
+		FEEDBACK_TOUCH_CONTACTVISUALIZATION = 1
+		FEEDBACK_PEN_BARRELVISUALIZATION = 2
+		FEEDBACK_PEN_TAP = 3
+		FEEDBACK_PEN_DOUBLETAP = 4
+		FEEDBACK_PEN_PRESSANDHOLD = 5
+		FEEDBACK_PEN_RIGHTTAP = 6
+		FEEDBACK_TOUCH_TAP = 7
+		FEEDBACK_TOUCH_DOUBLETAP = 8
+		FEEDBACK_TOUCH_PRESSANDHOLD = 9
+		FEEDBACK_TOUCH_RIGHTTAP = 10
+		FEEDBACK_GESTURE_PRESSANDTAP = 11
+		FEEDBACK_MAX = &hffffffff
+	end enum
+
+	type FEEDBACK_TYPE as tagFEEDBACK_TYPE
+
+	type tagPOINTER_BUTTON_CHANGE_TYPE as long
+	enum
+		POINTER_CHANGE_NONE
+		POINTER_CHANGE_FIRSTBUTTON_DOWN
+		POINTER_CHANGE_FIRSTBUTTON_UP
+		POINTER_CHANGE_SECONDBUTTON_DOWN
+		POINTER_CHANGE_SECONDBUTTON_UP
+		POINTER_CHANGE_THIRDBUTTON_DOWN
+		POINTER_CHANGE_THIRDBUTTON_UP
+		POINTER_CHANGE_FOURTHBUTTON_DOWN
+		POINTER_CHANGE_FOURTHBUTTON_UP
+		POINTER_CHANGE_FIFTHBUTTON_DOWN
+		POINTER_CHANGE_FIFTHBUTTON_UP
+	end enum
+
+	type POINTER_BUTTON_CHANGE_TYPE as tagPOINTER_BUTTON_CHANGE_TYPE
+
+	type tagPOINTER_INFO
+		pointerType as POINTER_INPUT_TYPE
+		pointerId as UINT32
+		frameId as UINT32
+		pointerFlags as POINTER_FLAGS
+		sourceDevice as HANDLE
+		hwndTarget as HWND
+		ptPixelLocation as POINT
+		ptHimetricLocation as POINT
+		ptPixelLocationRaw as POINT
+		ptHimetricLocationRaw as POINT
+		dwTime as DWORD
+		historyCount as UINT32
+		InputData as INT32
+		dwKeyStates as DWORD
+		PerformanceCount as UINT64
+		ButtonChangeType as POINTER_BUTTON_CHANGE_TYPE
+	end type
+
+	type POINTER_INFO as tagPOINTER_INFO
+
+	type tagPOINTER_TOUCH_INFO
+		pointerInfo as POINTER_INFO
+		touchFlags as TOUCH_FLAGS
+		touchMask as TOUCH_MASK
+		rcContact as RECT
+		rcContactRaw as RECT
+		orientation as UINT32
+		pressure as UINT32
+	end type
+
+	type POINTER_TOUCH_INFO as tagPOINTER_TOUCH_INFO
+
+	type tagPOINTER_PEN_INFO
+		pointerInfo as POINTER_INFO
+		penFlags as PEN_FLAGS
+		penMask as PEN_MASK
+		pressure as UINT32
+		rotation as UINT32
+		tiltX as INT32
+		tiltY as INT32
+	end type
+
+	type POINTER_PEN_INFO as tagPOINTER_PEN_INFO
+
+	type tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION
+		score as UINT16
+		adjustedPoint as POINT
+	end type
+
+	type TOUCH_HIT_TESTING_PROXIMITY_EVALUATION as tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION
+	type PTOUCH_HIT_TESTING_PROXIMITY_EVALUATION as tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION ptr
+
+	type tagTOUCH_HIT_TESTING_INPUT
+		pointerId as UINT32
+		point as POINT
+		boundingBox as RECT
+		nonOccludedBoundingBox as RECT
+		orientation as UINT32
+	end type
+
+	type TOUCH_HIT_TESTING_INPUT as tagTOUCH_HIT_TESTING_INPUT
+	type PTOUCH_HIT_TESTING_INPUT as tagTOUCH_HIT_TESTING_INPUT ptr
+	declare function InitializeTouchInjection(byval maxCount as UINT32, byval dwMode as DWORD) as WINBOOL
+	declare function InjectTouchInput(byval count as UINT32, byval contacts as const POINTER_TOUCH_INFO ptr) as WINBOOL
+	declare function GetPointerType(byval pointerId as UINT32, byval pointerType as POINTER_INPUT_TYPE ptr) as WINBOOL
+	declare function GetPointerCursorId(byval pointerId as UINT32, byval cursorId as UINT32 ptr) as WINBOOL
+	declare function GetPointerInfo(byval pointerId as UINT32, byval pointerInfo as POINTER_INFO ptr) as WINBOOL
+	declare function GetPointerInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval pointerInfo as POINTER_INFO ptr) as WINBOOL
+	declare function GetPointerFrameInfo(byval pointerId as UINT32, byval pointerCount as UINT32 ptr, byval pointerInfo as POINTER_INFO ptr) as WINBOOL
+	declare function GetPointerFrameInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval pointerCount as UINT32 ptr, byval pointerInfo as POINTER_INFO ptr) as WINBOOL
+	declare function GetPointerTouchInfo(byval pointerId as UINT32, byval touchInfo as POINTER_TOUCH_INFO ptr) as WINBOOL
+	declare function GetPointerTouchInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval touchInfo as POINTER_TOUCH_INFO ptr) as WINBOOL
+	declare function GetPointerFrameTouchInfo(byval pointerId as UINT32, byval pointerCount as UINT32 ptr, byval touchInfo as POINTER_TOUCH_INFO ptr) as WINBOOL
+	declare function GetPointerFrameTouchInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval pointerCount as UINT32 ptr, byval touchInfo as POINTER_TOUCH_INFO ptr) as WINBOOL
+	declare function GetPointerPenInfo(byval pointerId as UINT32, byval penInfo as POINTER_PEN_INFO ptr) as WINBOOL
+	declare function GetPointerPenInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval penInfo as POINTER_PEN_INFO ptr) as WINBOOL
+	declare function GetPointerFramePenInfo(byval pointerId as UINT32, byval pointerCount as UINT32 ptr, byval penInfo as POINTER_PEN_INFO ptr) as WINBOOL
+	declare function GetPointerFramePenInfoHistory(byval pointerId as UINT32, byval entriesCount as UINT32 ptr, byval pointerCount as UINT32 ptr, byval penInfo as POINTER_PEN_INFO ptr) as WINBOOL
+	declare function SkipPointerFrameMessages(byval pointerId as UINT32) as WINBOOL
+	declare function RegisterPointerInputTarget(byval hwnd as HWND, byval pointerType as POINTER_INPUT_TYPE) as WINBOOL
+	declare function UnregisterPointerInputTarget(byval hwnd as HWND, byval pointerType as POINTER_INPUT_TYPE) as WINBOOL
+	declare function EnableMouseInPointer(byval fEnable as WINBOOL) as WINBOOL
+	declare function IsMouseInPointerEnabled() as WINBOOL
+	declare function RegisterTouchHitTestingWindow(byval hwnd as HWND, byval value as ULONG) as WINBOOL
+	declare function EvaluateProximityToRect(byval controlBoundingBox as const RECT ptr, byval pHitTestingInput as const TOUCH_HIT_TESTING_INPUT ptr, byval pProximityEval as TOUCH_HIT_TESTING_PROXIMITY_EVALUATION ptr) as WINBOOL
+	declare function EvaluateProximityToPolygon(byval numVertices as UINT32, byval controlPolygon as const POINT ptr, byval pHitTestingInput as const TOUCH_HIT_TESTING_INPUT ptr, byval pProximityEval as TOUCH_HIT_TESTING_PROXIMITY_EVALUATION ptr) as WINBOOL
+	declare function PackTouchHitTestingProximityEvaluation(byval pHitTestingInput as const TOUCH_HIT_TESTING_INPUT ptr, byval pProximityEval as const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION ptr) as LRESULT
+	declare function GetWindowFeedbackSetting(byval hwnd as HWND, byval feedback as FEEDBACK_TYPE, byval dwFlags as DWORD, byval pSize as UINT32 ptr, byval config as any ptr) as WINBOOL
+	declare function SetWindowFeedbackSetting(byval hwnd as HWND, byval feedback as FEEDBACK_TYPE, byval dwFlags as DWORD, byval size as UINT32, byval configuration as const any ptr) as WINBOOL
+#endif
 
 type tagLASTINPUTINFO
 	cbSize as UINT
@@ -2470,6 +2907,15 @@ declare function ReleaseCapture() as WINBOOL
 declare function MsgWaitForMultipleObjects(byval nCount as DWORD, byval pHandles as const HANDLE ptr, byval fWaitAll as WINBOOL, byval dwMilliseconds as DWORD, byval dwWakeMask as DWORD) as DWORD
 declare function MsgWaitForMultipleObjectsEx(byval nCount as DWORD, byval pHandles as const HANDLE ptr, byval dwMilliseconds as DWORD, byval dwWakeMask as DWORD, byval dwFlags as DWORD) as DWORD
 
+const MAPVK_VK_TO_VSC = 0
+const MAPVK_VSC_TO_VK = 1
+const MAPVK_VK_TO_CHAR = 2
+const MAPVK_VSC_TO_VK_EX = 3
+
+#if _WIN32_WINNT = &h0602
+	const MAPVK_VK_TO_VSC_EX = 4
+#endif
+
 const MWMO_WAITALL = &h0001
 const MWMO_ALERTABLE = &h0002
 const MWMO_INPUTAVAILABLE = &h0004
@@ -2483,12 +2929,31 @@ const QS_SENDMESSAGE = &h0040
 const QS_HOTKEY = &h0080
 const QS_ALLPOSTMESSAGE = &h0100
 const QS_RAWINPUT = &h0400
+
+#if _WIN32_WINNT = &h0602
+	const QS_TOUCH = &h0800
+	const QS_POINTER = &h1000
+#endif
+
 #define QS_MOUSE (QS_MOUSEMOVE or QS_MOUSEBUTTON)
-#define QS_INPUT ((QS_MOUSE or QS_KEY) or QS_RAWINPUT)
+
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#define QS_INPUT ((QS_MOUSE or QS_KEY) or QS_RAWINPUT)
+#else
+	#define QS_INPUT ((((QS_MOUSE or QS_KEY) or QS_RAWINPUT) or QS_TOUCH) or QS_POINTER)
+#endif
+
 #define QS_ALLEVENTS ((((QS_INPUT or QS_POSTMESSAGE) or QS_TIMER) or QS_PAINT) or QS_HOTKEY)
 #define QS_ALLINPUT (((((QS_INPUT or QS_POSTMESSAGE) or QS_TIMER) or QS_PAINT) or QS_HOTKEY) or QS_SENDMESSAGE)
 const USER_TIMER_MAXIMUM = &h7FFFFFFF
 const USER_TIMER_MINIMUM = &h0000000A
+
+#if _WIN32_WINNT = &h0602
+	const TIMERV_DEFAULT_COALESCING = 0
+	const TIMERV_NO_COALESCING = &hffffffff
+	const TIMERV_COALESCING_MIN = 1
+	const TIMERV_COALESCING_MAX = &h7ffffff5
+#endif
 
 #ifdef UNICODE
 	#define LoadAccelerators LoadAcceleratorsW
@@ -2521,6 +2986,11 @@ declare function CopyAcceleratorTableW(byval hAccelSrc as HACCEL, byval lpAccelD
 
 declare function TranslateAcceleratorA(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
 declare function TranslateAcceleratorW(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
+
+#if _WIN32_WINNT = &h0602
+	declare function SetCoalescableTimer(byval hWnd as HWND, byval nIDEvent as UINT_PTR, byval uElapse as UINT, byval lpTimerFunc as TIMERPROC, byval uToleranceDelay as ULONG) as UINT_PTR
+#endif
+
 const SM_CXSCREEN = 0
 const SM_CYSCREEN = 1
 const SM_CXVSCROLL = 2
@@ -2612,8 +3082,17 @@ const SM_MEDIACENTER = 87
 const SM_STARTER = 88
 const SM_SERVERR2 = 89
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const SM_CMETRICS = 90
+#if _WIN32_WINNT = &h0400
+	const SM_CMETRICS = 91
+#elseif _WIN32_WINNT = &h0602
+	const SM_MOUSEHORIZONTALWHEELPRESENT = 91
+	const SM_CXPADDEDBORDER = 92
+	const SM_DIGITIZER = 94
+	const SM_MAXIMUMTOUCHES = 95
+#endif
+
+#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	const SM_CMETRICS = 97
 #endif
 
 const SM_REMOTESESSION = &h1000
@@ -2622,20 +3101,54 @@ const SM_REMOTECONTROL = &h2001
 const SM_CARETBLINKINGENABLED = &h2002
 
 #if _WIN32_WINNT = &h0602
-	const SM_MOUSEHORIZONTALWHEELPRESENT = 91
-	const SM_CXPADDEDBORDER = 92
-	const SM_DIGITIZER = 94
-	const SM_MAXIMUMTOUCHES = 95
-	const SM_CMETRICS = 96
-	const NID_INTEGRATED_TOUCH = &h01
-	const NID_EXTERNAL_TOUCH = &h02
-	const NID_INTEGRATED_PEN = &h04
-	const NID_EXTERNAL_PEN = &h08
-	const NID_MULTI_INPUT = &h40
-	const NID_READY = &h80
+	const SM_CONVERTIBLESLATEMODE = &h2003
+	const SM_SYSTEMDOCKED = &h2004
 #endif
 
 declare function GetSystemMetrics(byval nIndex as long) as long
+const PMB_ACTIVE = &h00000001
+const MNC_IGNORE = 0
+const MNC_CLOSE = 1
+const MNC_EXECUTE = 2
+const MNC_SELECT = 3
+const MNS_NOCHECK = &h80000000
+const MNS_MODELESS = &h40000000
+const MNS_DRAGDROP = &h20000000
+const MNS_AUTODISMISS = &h10000000
+const MNS_NOTIFYBYPOS = &h08000000
+const MNS_CHECKORBMP = &h04000000
+const MIM_MAXHEIGHT = &h00000001
+const MIM_BACKGROUND = &h00000002
+const MIM_HELPID = &h00000004
+const MIM_MENUDATA = &h00000008
+const MIM_STYLE = &h00000010
+const MIM_APPLYTOSUBMENUS = &h80000000
+const MND_CONTINUE = 0
+const MND_ENDMENU = 1
+const MNGOF_TOPGAP = &h00000001
+const MNGOF_BOTTOMGAP = &h00000002
+const MNGO_NOINTERFACE = &h00000000
+const MNGO_NOERROR = &h00000001
+const MIIM_STATE = &h00000001
+const MIIM_ID = &h00000002
+const MIIM_SUBMENU = &h00000004
+const MIIM_CHECKMARKS = &h00000008
+const MIIM_TYPE = &h00000010
+const MIIM_DATA = &h00000020
+const MIIM_STRING = &h00000040
+const MIIM_BITMAP = &h00000080
+const MIIM_FTYPE = &h00000100
+#define HBMMENU_CALLBACK cast(HBITMAP, -1)
+#define HBMMENU_SYSTEM cast(HBITMAP, 1)
+#define HBMMENU_MBAR_RESTORE cast(HBITMAP, 2)
+#define HBMMENU_MBAR_MINIMIZE cast(HBITMAP, 3)
+#define HBMMENU_MBAR_CLOSE cast(HBITMAP, 5)
+#define HBMMENU_MBAR_CLOSE_D cast(HBITMAP, 6)
+#define HBMMENU_MBAR_MINIMIZE_D cast(HBITMAP, 7)
+#define HBMMENU_POPUP_CLOSE cast(HBITMAP, 8)
+#define HBMMENU_POPUP_RESTORE cast(HBITMAP, 9)
+#define HBMMENU_POPUP_MAXIMIZE cast(HBITMAP, 10)
+#define HBMMENU_POPUP_MINIMIZE cast(HBITMAP, 11)
 
 #ifdef UNICODE
 	#define LoadMenu LoadMenuW
@@ -2668,7 +3181,6 @@ declare function GetMenuStringA(byval hMenu as HMENU, byval uIDItem as UINT, byv
 declare function GetMenuStringW(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPWSTR, byval cchMax as long, byval flags as UINT) as long
 declare function GetMenuState(byval hMenu as HMENU, byval uId as UINT, byval uFlags as UINT) as UINT
 declare function DrawMenuBar(byval hWnd as HWND) as WINBOOL
-const PMB_ACTIVE = &h00000001
 declare function GetSystemMenu(byval hWnd as HWND, byval bRevert as WINBOOL) as HMENU
 declare function CreateMenu() as HMENU
 declare function CreatePopupMenu() as HMENU
@@ -2690,31 +3202,12 @@ declare function SetMenuItemBitmaps(byval hMenu as HMENU, byval uPosition as UIN
 declare function GetMenuCheckMarkDimensions() as LONG
 declare function TrackPopupMenu(byval hMenu as HMENU, byval uFlags as UINT, byval x as long, byval y as long, byval nReserved as long, byval hWnd as HWND, byval prcRect as const RECT ptr) as WINBOOL
 
-const MNC_IGNORE = 0
-const MNC_CLOSE = 1
-const MNC_EXECUTE = 2
-const MNC_SELECT = 3
-
 type tagTPMPARAMS
 	cbSize as UINT
 	rcExclude as RECT
 end type
 
 type TPMPARAMS as tagTPMPARAMS
-type LPTPMPARAMS as TPMPARAMS ptr
-declare function TrackPopupMenuEx(byval as HMENU, byval as UINT, byval as long, byval as long, byval as HWND, byval as LPTPMPARAMS) as WINBOOL
-const MNS_NOCHECK = &h80000000
-const MNS_MODELESS = &h40000000
-const MNS_DRAGDROP = &h20000000
-const MNS_AUTODISMISS = &h10000000
-const MNS_NOTIFYBYPOS = &h08000000
-const MNS_CHECKORBMP = &h04000000
-const MIM_MAXHEIGHT = &h00000001
-const MIM_BACKGROUND = &h00000002
-const MIM_HELPID = &h00000004
-const MIM_MENUDATA = &h00000008
-const MIM_STYLE = &h00000010
-const MIM_APPLYTOSUBMENUS = &h80000000
 
 type tagMENUINFO
 	cbSize as DWORD
@@ -2728,13 +3221,17 @@ end type
 
 type MENUINFO as tagMENUINFO
 type LPMENUINFO as tagMENUINFO ptr
+type LPTPMPARAMS as TPMPARAMS ptr
 type LPCMENUINFO as const MENUINFO ptr
 
+declare function TrackPopupMenuEx(byval as HMENU, byval as UINT, byval as long, byval as long, byval as HWND, byval as LPTPMPARAMS) as WINBOOL
 declare function GetMenuInfo(byval as HMENU, byval as LPMENUINFO) as WINBOOL
 declare function SetMenuInfo(byval as HMENU, byval as LPCMENUINFO) as WINBOOL
 declare function EndMenu() as WINBOOL
-const MND_CONTINUE = 0
-const MND_ENDMENU = 1
+
+#if _WIN32_WINNT = &h0602
+	declare function CalculatePopupWindowPosition(byval anchorPoint as const POINT ptr, byval windowSize as const SIZE ptr, byval flags as UINT, byval excludeRect as RECT ptr, byval popupWindowPosition as RECT ptr) as WINBOOL
+#endif
 
 type tagMENUGETOBJECTINFO
 	dwFlags as DWORD
@@ -2746,30 +3243,6 @@ end type
 
 type MENUGETOBJECTINFO as tagMENUGETOBJECTINFO
 type PMENUGETOBJECTINFO as tagMENUGETOBJECTINFO ptr
-const MNGOF_TOPGAP = &h00000001
-const MNGOF_BOTTOMGAP = &h00000002
-const MNGO_NOINTERFACE = &h00000000
-const MNGO_NOERROR = &h00000001
-const MIIM_STATE = &h00000001
-const MIIM_ID = &h00000002
-const MIIM_SUBMENU = &h00000004
-const MIIM_CHECKMARKS = &h00000008
-const MIIM_TYPE = &h00000010
-const MIIM_DATA = &h00000020
-const MIIM_STRING = &h00000040
-const MIIM_BITMAP = &h00000080
-const MIIM_FTYPE = &h00000100
-#define HBMMENU_CALLBACK cast(HBITMAP, -1)
-#define HBMMENU_SYSTEM cast(HBITMAP, 1)
-#define HBMMENU_MBAR_RESTORE cast(HBITMAP, 2)
-#define HBMMENU_MBAR_MINIMIZE cast(HBITMAP, 3)
-#define HBMMENU_MBAR_CLOSE cast(HBITMAP, 5)
-#define HBMMENU_MBAR_CLOSE_D cast(HBITMAP, 6)
-#define HBMMENU_MBAR_MINIMIZE_D cast(HBITMAP, 7)
-#define HBMMENU_POPUP_CLOSE cast(HBITMAP, 8)
-#define HBMMENU_POPUP_RESTORE cast(HBITMAP, 9)
-#define HBMMENU_POPUP_MAXIMIZE cast(HBITMAP, 10)
-#define HBMMENU_POPUP_MINIMIZE cast(HBITMAP, 11)
 
 type tagMENUITEMINFOA
 	cbSize as UINT
@@ -2863,6 +3336,10 @@ declare function MenuItemFromPoint(byval hWnd as HWND, byval hMenu as HMENU, byv
 #define TPM_NOANIMATION __MSABI_LONG(&h4000)
 #define TPM_LAYOUTRTL __MSABI_LONG(&h8000)
 
+#if _WIN32_WINNT = &h0602
+	#define TPM_WORKAREA __MSABI_LONG(&h10000)
+#endif
+
 type tagDROPSTRUCT
 	hwndSource as HWND
 	hwndSink as HWND
@@ -2952,19 +3429,6 @@ declare function DrawTextExW(byval hdc as HDC, byval lpchText as LPWSTR, byval c
 
 declare function GrayStringA(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
 declare function GrayStringW(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
-const DST_COMPLEX = &h0000
-const DST_TEXT = &h0001
-const DST_PREFIXTEXT = &h0002
-const DST_ICON = &h0003
-const DST_BITMAP = &h0004
-const DSS_NORMAL = &h0000
-const DSS_UNION = &h0010
-const DSS_DISABLED = &h0020
-const DSS_MONO = &h0080
-const DSS_HIDEPREFIX = &h0200
-const DSS_PREFIXONLY = &h0400
-const DSS_RIGHT = &h8000
-
 declare function DrawStateA(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
 declare function DrawStateW(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
 declare function TabbedTextOutA(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr, byval nTabOrigin as long) as LONG
@@ -2978,14 +3442,26 @@ declare function PaintDesktop(byval hdc as HDC) as WINBOOL
 declare sub SwitchToThisWindow(byval hwnd as HWND, byval fUnknown as WINBOOL)
 declare function SetForegroundWindow(byval hWnd as HWND) as WINBOOL
 declare function AllowSetForegroundWindow(byval dwProcessId as DWORD) as WINBOOL
-#define ASFW_ANY cast(DWORD, -1)
 declare function LockSetForegroundWindow(byval uLockCode as UINT) as WINBOOL
-const LSFW_LOCK = 1
-const LSFW_UNLOCK = 2
 declare function WindowFromDC(byval hDC as HDC) as HWND
 declare function GetDC(byval hWnd as HWND) as HDC
 declare function GetDCEx(byval hWnd as HWND, byval hrgnClip as HRGN, byval flags as DWORD) as HDC
 
+const DST_COMPLEX = &h0000
+const DST_TEXT = &h0001
+const DST_PREFIXTEXT = &h0002
+const DST_ICON = &h0003
+const DST_BITMAP = &h0004
+const DSS_NORMAL = &h0000
+const DSS_UNION = &h0010
+const DSS_DISABLED = &h0020
+const DSS_MONO = &h0080
+const DSS_HIDEPREFIX = &h0200
+const DSS_PREFIXONLY = &h0400
+const DSS_RIGHT = &h8000
+#define ASFW_ANY cast(DWORD, -1)
+const LSFW_LOCK = 1
+const LSFW_UNLOCK = 2
 #define DCX_WINDOW __MSABI_LONG(&h00000001)
 #define DCX_CACHE __MSABI_LONG(&h00000002)
 #define DCX_NORESETATTRS __MSABI_LONG(&h00000004)
@@ -3234,12 +3710,20 @@ declare function ScreenToClient(byval hWnd as HWND, byval lpPoint as LPPOINT) as
 declare function MapWindowPoints(byval hWndFrom as HWND, byval hWndTo as HWND, byval lpPoints as LPPOINT, byval cPoints as UINT) as long
 declare function WindowFromPoint(byval Point as POINT) as HWND
 declare function ChildWindowFromPoint(byval hWndParent as HWND, byval Point as POINT) as HWND
+declare function ChildWindowFromPointEx(byval hwnd as HWND, byval pt as POINT, byval flags as UINT) as HWND
+
+#if _WIN32_WINNT = &h0602
+	declare function SetPhysicalCursorPos(byval X as long, byval Y as long) as WINBOOL
+	declare function GetPhysicalCursorPos(byval lpPoint as LPPOINT) as WINBOOL
+	declare function LogicalToPhysicalPoint(byval hWnd as HWND, byval lpPoint as LPPOINT) as WINBOOL
+	declare function PhysicalToLogicalPoint(byval hWnd as HWND, byval lpPoint as LPPOINT) as WINBOOL
+	declare function WindowFromPhysicalPoint(byval Point as POINT) as HWND
+#endif
 
 const CWP_ALL = &h0000
 const CWP_SKIPINVISIBLE = &h0001
 const CWP_SKIPDISABLED = &h0002
 const CWP_SKIPTRANSPARENT = &h0004
-declare function ChildWindowFromPointEx(byval hwnd as HWND, byval pt as POINT, byval flags as UINT) as HWND
 const CTLCOLOR_MSGBOX = 0
 const CTLCOLOR_EDIT = 1
 const CTLCOLOR_LISTBOX = 2
@@ -3307,9 +3791,13 @@ declare function PtInRect(byval lprc as const RECT ptr, byval pt as POINT) as WI
 #ifdef UNICODE
 	#define GetWindowLong GetWindowLongW
 	#define SetWindowLong SetWindowLongW
+	#define GetClassLong GetClassLongW
+	#define SetClassLong SetClassLongW
 #else
 	#define GetWindowLong GetWindowLongA
 	#define SetWindowLong SetWindowLongA
+	#define GetClassLong GetClassLongA
+	#define SetClassLong SetClassLongA
 #endif
 
 declare function GetWindowWord(byval hWnd as HWND, byval nIndex as long) as WORD
@@ -3337,14 +3825,6 @@ declare function SetWindowLongW(byval hWnd as HWND, byval nIndex as long, byval 
 	#define GetWindowLongPtrW GetWindowLongW
 	#define SetWindowLongPtrA SetWindowLongA
 	#define SetWindowLongPtrW SetWindowLongW
-#endif
-
-#ifdef UNICODE
-	#define GetClassLong GetClassLongW
-	#define SetClassLong SetClassLongW
-#else
-	#define GetClassLong GetClassLongA
-	#define SetClassLong SetClassLongA
 #endif
 
 declare function GetClassWord(byval hWnd as HWND, byval nIndex as long) as WORD
@@ -3431,13 +3911,13 @@ declare function GetWindow(byval hWnd as HWND, byval uCmd as UINT) as HWND
 
 declare function SetWindowsHookA(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
 declare function SetWindowsHookW(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
+#define DefHookProc(nCode, wParam, lParam, phhk) CallNextHookEx(*phhk, nCode, wParam, lParam)
 declare function UnhookWindowsHook(byval nCode as long, byval pfnFilterProc as HOOKPROC) as WINBOOL
 declare function SetWindowsHookExA(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
 declare function SetWindowsHookExW(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
 declare function UnhookWindowsHookEx(byval hhk as HHOOK) as WINBOOL
 declare function CallNextHookEx(byval hhk as HHOOK, byval nCode as long, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 
-#define DefHookProc(nCode, wParam, lParam, phhk) CallNextHookEx(*phhk, nCode, wParam, lParam)
 #define MF_INSERT __MSABI_LONG(&h00000000)
 #define MF_CHANGE __MSABI_LONG(&h00000080)
 #define MF_APPEND __MSABI_LONG(&h00000100)
@@ -3465,6 +3945,7 @@ declare function CallNextHookEx(byval hhk as HHOOK, byval nCode as long, byval w
 #define MF_HELP __MSABI_LONG(&h00004000)
 #define MF_RIGHTJUSTIFY __MSABI_LONG(&h00004000)
 #define MF_MOUSESELECT __MSABI_LONG(&h00008000)
+#define MF_END __MSABI_LONG(&h00000080)
 #define MFT_STRING MF_STRING
 #define MFT_BITMAP MF_BITMAP
 #define MFT_MENUBARBREAK MF_MENUBARBREAK
@@ -3519,6 +4000,12 @@ const SC_DEFAULT = &hF160
 const SC_MONITORPOWER = &hF170
 const SC_CONTEXTHELP = &hF180
 const SC_SEPARATOR = &hF00F
+
+#if _WIN32_WINNT = &h0602
+	const SCF_ISSECURE = &h00000001
+#endif
+
+#define GET_SC_WPARAM(wParam) (clng(wParam) and &hfff0)
 #define SC_ICON SC_MINIMIZE
 #define SC_ZOOM SC_MAXIMIZE
 
@@ -3558,7 +4045,6 @@ declare function DestroyCursor(byval hCursor as HCURSOR) as WINBOOL
 #define IDC_HAND MAKEINTRESOURCE(32649)
 #define IDC_APPSTARTING MAKEINTRESOURCE(32650)
 #define IDC_HELP MAKEINTRESOURCE(32651)
-declare function SetSystemCursor(byval hcur as HCURSOR, byval id as DWORD) as WINBOOL
 
 type _ICONINFO
 	fIcon as WINBOOL
@@ -3579,6 +4065,7 @@ type PICONINFO as ICONINFO ptr
 	#define PrivateExtractIcons PrivateExtractIconsA
 #endif
 
+declare function SetSystemCursor(byval hcur as HCURSOR, byval id as DWORD) as WINBOOL
 declare function LoadIconA(byval hInstance as HINSTANCE, byval lpIconName as LPCSTR) as HICON
 declare function LoadIconW(byval hInstance as HINSTANCE, byval lpIconName as LPCWSTR) as HICON
 declare function PrivateExtractIconsA(byval szFileName as LPCSTR, byval nIconIndex as long, byval cxIcon as long, byval cyIcon as long, byval phicon as HICON ptr, byval piconid as UINT ptr, byval nIcons as UINT, byval flags as UINT) as UINT
@@ -3629,6 +4116,57 @@ const LR_SHARED = &h8000
 declare function LoadImageA(byval hInst as HINSTANCE, byval name as LPCSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
 declare function LoadImageW(byval hInst as HINSTANCE, byval name as LPCWSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
 declare function CopyImage(byval h as HANDLE, byval type as UINT, byval cx as long, byval cy as long, byval flags as UINT) as HANDLE
+declare function DrawIconEx(byval hdc as HDC, byval xLeft as long, byval yTop as long, byval hIcon as HICON, byval cxWidth as long, byval cyWidth as long, byval istepIfAniCur as UINT, byval hbrFlickerFreeDraw as HBRUSH, byval diFlags as UINT) as WINBOOL
+declare function CreateIconIndirect(byval piconinfo as PICONINFO) as HICON
+declare function CopyIcon(byval hIcon as HICON) as HICON
+declare function GetIconInfo(byval hIcon as HICON, byval piconinfo as PICONINFO) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	type _ICONINFOEXA
+		cbSize as DWORD
+		fIcon as WINBOOL
+		xHotspot as DWORD
+		yHotspot as DWORD
+		hbmMask as HBITMAP
+		hbmColor as HBITMAP
+		wResID as WORD
+		szModName as zstring * 260
+		szResName as zstring * 260
+	end type
+
+	type ICONINFOEXA as _ICONINFOEXA
+	type PICONINFOEXA as _ICONINFOEXA ptr
+
+	type _ICONINFOEXW
+		cbSize as DWORD
+		fIcon as WINBOOL
+		xHotspot as DWORD
+		yHotspot as DWORD
+		hbmMask as HBITMAP
+		hbmColor as HBITMAP
+		wResID as WORD
+		szModName as wstring * 260
+		szResName as wstring * 260
+	end type
+
+	type ICONINFOEXW as _ICONINFOEXW
+	type PICONINFOEXW as _ICONINFOEXW ptr
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	type ICONINFOEX as ICONINFOEXW
+	type PICONINFOEX as PICONINFOEXW
+	#define GetIconInfoEx GetIconInfoExW
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	type ICONINFOEX as ICONINFOEXA
+	type PICONINFOEX as PICONINFOEXA
+	#define GetIconInfoEx GetIconInfoExA
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function GetIconInfoExA(byval hicon as HICON, byval piconinfo as PICONINFOEXA) as WINBOOL
+	declare function GetIconInfoExW(byval hicon as HICON, byval piconinfo as PICONINFOEXW) as WINBOOL
+#endif
 
 const DI_MASK = &h0001
 const DI_IMAGE = &h0002
@@ -3636,12 +4174,6 @@ const DI_NORMAL = &h0003
 const DI_COMPAT = &h0004
 const DI_DEFAULTSIZE = &h0008
 const DI_NOMIRROR = &h0010
-
-declare function DrawIconEx(byval hdc as HDC, byval xLeft as long, byval yTop as long, byval hIcon as HICON, byval cxWidth as long, byval cyWidth as long, byval istepIfAniCur as UINT, byval hbrFlickerFreeDraw as HBRUSH, byval diFlags as UINT) as WINBOOL
-declare function CreateIconIndirect(byval piconinfo as PICONINFO) as HICON
-declare function CopyIcon(byval hIcon as HICON) as HICON
-declare function GetIconInfo(byval hIcon as HICON, byval piconinfo as PICONINFO) as WINBOOL
-
 const RES_ICON = 1
 const RES_CURSOR = 2
 const OBM_CLOSE = 32754
@@ -3703,6 +4235,11 @@ const OIC_WINLOGO = 32517
 #define OIC_WARNING OIC_BANG
 #define OIC_ERROR OIC_HAND
 #define OIC_INFORMATION OIC_NOTE
+
+#if _WIN32_WINNT = &h0602
+	const OIC_SHIELD = 32518
+#endif
+
 const ORD_LANGDRIVER = 1
 #define IDI_APPLICATION MAKEINTRESOURCE(32512)
 #define IDI_HAND MAKEINTRESOURCE(32513)
@@ -3710,6 +4247,11 @@ const ORD_LANGDRIVER = 1
 #define IDI_EXCLAMATION MAKEINTRESOURCE(32515)
 #define IDI_ASTERISK MAKEINTRESOURCE(32516)
 #define IDI_WINLOGO MAKEINTRESOURCE(32517)
+
+#if _WIN32_WINNT = &h0602
+	#define IDI_SHIELD MAKEINTRESOURCE(32518)
+#endif
+
 #define IDI_WARNING IDI_EXCLAMATION
 #define IDI_ERROR IDI_HAND
 #define IDI_INFORMATION IDI_ASTERISK
@@ -3845,6 +4387,11 @@ const BM_SETSTYLE = &h00F4
 const BM_CLICK = &h00F5
 const BM_GETIMAGE = &h00F6
 const BM_SETIMAGE = &h00F7
+
+#if _WIN32_WINNT = &h0602
+	const BM_SETDONTCLICK = &h00f8
+#endif
+
 const BST_UNCHECKED = &h0000
 const BST_CHECKED = &h0001
 const BST_INDETERMINATE = &h0002
@@ -3892,16 +4439,28 @@ const STN_ENABLE = 2
 const STN_DISABLE = 3
 const STM_MSGMAX = &h0174
 #define WC_DIALOG MAKEINTATOM(&h8002)
+const DWL_MSGRESULT = 0
+const DWL_DLGPROC = 4
+const DWL_USER = 8
 
-#ifndef __FB_64BIT__
-	const DWL_MSGRESULT = 0
-	const DWL_DLGPROC = 4
-	const DWL_USER = 8
+#ifdef __FB_64BIT__
+	#undef DWL_MSGRESULT
+	#undef DWL_DLGPROC
+	#undef DWL_USER
 #endif
 
 const DWLP_MSGRESULT = 0
 #define DWLP_DLGPROC (DWLP_MSGRESULT + sizeof(LRESULT))
 #define DWLP_USER (DWLP_DLGPROC + sizeof(DLGPROC))
+const DDL_READWRITE = &h0000
+const DDL_READONLY = &h0001
+const DDL_HIDDEN = &h0002
+const DDL_SYSTEM = &h0004
+const DDL_DIRECTORY = &h0010
+const DDL_ARCHIVE = &h0020
+const DDL_POSTMSGS = &h2000
+const DDL_DRIVES = &h4000
+const DDL_EXCLUSIVE = &h8000
 
 #ifdef UNICODE
 	#define IsDialogMessage IsDialogMessageW
@@ -3927,17 +4486,6 @@ declare function IsDialogMessageW(byval hDlg as HWND, byval lpMsg as LPMSG) as W
 declare function MapDialogRect(byval hDlg as HWND, byval lpRect as LPRECT) as WINBOOL
 declare function DlgDirListA(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
 declare function DlgDirListW(byval hDlg as HWND, byval lpPathSpec as LPWSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
-
-const DDL_READWRITE = &h0000
-const DDL_READONLY = &h0001
-const DDL_HIDDEN = &h0002
-const DDL_SYSTEM = &h0004
-const DDL_DIRECTORY = &h0010
-const DDL_ARCHIVE = &h0020
-const DDL_POSTMSGS = &h2000
-const DDL_DRIVES = &h4000
-const DDL_EXCLUSIVE = &h8000
-
 declare function DlgDirSelectExA(byval hwndDlg as HWND, byval lpString as LPSTR, byval chCount as long, byval idListBox as long) as WINBOOL
 declare function DlgDirSelectExW(byval hwndDlg as HWND, byval lpString as LPWSTR, byval chCount as long, byval idListBox as long) as WINBOOL
 declare function DlgDirListComboBoxA(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDComboBox as long, byval nIDStaticPath as long, byval uFiletype as UINT) as long
@@ -4285,12 +4833,16 @@ type LPHELPWININFOW as tagHELPWININFOW ptr
 	type HELPWININFO as HELPWININFOW
 	type PHELPWININFO as PHELPWININFOW
 	type LPHELPWININFO as LPHELPWININFOW
+	#define WinHelp WinHelpW
 #else
 	type HELPWININFO as HELPWININFOA
 	type PHELPWININFO as PHELPWININFOA
 	type LPHELPWININFO as LPHELPWININFOA
+	#define WinHelp WinHelpA
 #endif
 
+declare function WinHelpA(byval hWndMain as HWND, byval lpszHelp as LPCSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
+declare function WinHelpW(byval hWndMain as HWND, byval lpszHelp as LPCWSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
 const HELP_CONTEXT = &h0001
 const HELP_QUIT = &h0002
 const HELP_INDEX = &h0003
@@ -4318,17 +4870,15 @@ const IDH_GENERIC_HELP_BUTTON = 28442
 const IDH_OK = 28443
 const IDH_CANCEL = 28444
 const IDH_HELP = 28445
-
-#ifdef UNICODE
-	#define WinHelp WinHelpW
-#else
-	#define WinHelp WinHelpA
-#endif
-
-declare function WinHelpA(byval hWndMain as HWND, byval lpszHelp as LPCSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
-declare function WinHelpW(byval hWndMain as HWND, byval lpszHelp as LPCWSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
 const GR_GDIOBJECTS = 0
 const GR_USEROBJECTS = 1
+
+#if _WIN32_WINNT = &h0602
+	const GR_GDIOBJECTS_PEAK = 2
+	const GR_USEROBJECTS_PEAK = 4
+	#define GR_GLOBAL cast(HANDLE, -2)
+#endif
+
 declare function GetGuiResources(byval hProcess as HANDLE, byval uiFlags as DWORD) as DWORD
 const SPI_GETBEEP = &h0001
 const SPI_SETBEEP = &h0002
@@ -4433,8 +4983,12 @@ const SPI_GETWHEELSCROLLLINES = &h0068
 const SPI_SETWHEELSCROLLLINES = &h0069
 const SPI_GETMENUSHOWDELAY = &h006A
 const SPI_SETMENUSHOWDELAY = &h006B
-const SPI_GETWHEELSCROLLCHARS = &h006C
-const SPI_SETWHEELSCROLLCHARS = &h006D
+
+#if _WIN32_WINNT = &h0602
+	const SPI_GETWHEELSCROLLCHARS = &h006C
+	const SPI_SETWHEELSCROLLCHARS = &h006D
+#endif
+
 const SPI_GETSHOWIMEUI = &h006E
 const SPI_SETSHOWIMEUI = &h006F
 const SPI_GETMOUSESPEED = &h0070
@@ -4442,42 +4996,45 @@ const SPI_SETMOUSESPEED = &h0071
 const SPI_GETSCREENSAVERRUNNING = &h0072
 const SPI_GETDESKWALLPAPER = &h0073
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const SPI_GETAUDIODESCRIPTION = &h0074
-	const SPI_SETAUDIODESCRIPTION = &h0075
-#endif
-
-const SPI_GETSCREENSAVESECURE = &h0076
-const SPI_SETSCREENSAVESECURE = &h0077
-const SPI_GETHUNGAPPTIMEOUT = &h0078
-const SPI_SETHUNGAPPTIMEOUT = &h0079
-const SPI_GETWAITTOKILLTIMEOUT = &h007A
-const SPI_SETWAITTOKILLTIMEOUT = &h007B
-const SPI_GETWAITTOKILLSERVICETIMEOUT = &h007C
-const SPI_SETWAITTOKILLSERVICETIMEOUT = &h007D
-const SPI_GETMOUSEDOCKTHRESHOLD = &h007E
-const SPI_SETMOUSEDOCKTHRESHOLD = &h007F
-const SPI_GETPENDOCKTHRESHOLD = &h0080
-const SPI_SETPENDOCKTHRESHOLD = &h0081
-const SPI_GETWINARRANGING = &h0082
-const SPI_SETWINARRANGING = &h0083
-const SPI_GETMOUSEDRAGOUTTHRESHOLD = &h0084
-const SPI_SETMOUSEDRAGOUTTHRESHOLD = &h0085
-const SPI_GETPENDRAGOUTTHRESHOLD = &h0086
-const SPI_SETPENDRAGOUTTHRESHOLD = &h0087
-const SPI_GETMOUSESIDEMOVETHRESHOLD = &h0088
-const SPI_SETMOUSESIDEMOVETHRESHOLD = &h0089
-const SPI_GETPENSIDEMOVETHRESHOLD = &h008A
-const SPI_SETPENSIDEMOVETHRESHOLD = &h008B
-const SPI_GETDRAGFROMMAXIMIZE = &h008C
-const SPI_SETDRAGFROMMAXIMIZE = &h008D
-const SPI_GETSNAPSIZING = &h008E
-const SPI_GETDOCKMOVING = &h0090
-const SPI_SETDOCKMOVING = &h0091
-
 #if _WIN32_WINNT = &h0602
 	const SPI_GETAUDIODESCRIPTION = &h0074
 	const SPI_SETAUDIODESCRIPTION = &h0075
+	const SPI_GETSCREENSAVESECURE = &h0076
+	const SPI_SETSCREENSAVESECURE = &h0077
+	const SPI_GETHUNGAPPTIMEOUT = &h0078
+	const SPI_SETHUNGAPPTIMEOUT = &h0079
+	const SPI_GETWAITTOKILLTIMEOUT = &h007a
+	const SPI_SETWAITTOKILLTIMEOUT = &h007b
+	const SPI_GETWAITTOKILLSERVICETIMEOUT = &h007c
+	const SPI_SETWAITTOKILLSERVICETIMEOUT = &h007d
+	const SPI_GETMOUSEDOCKTHRESHOLD = &h007e
+	const SPI_SETMOUSEDOCKTHRESHOLD = &h007f
+	const SPI_GETPENDOCKTHRESHOLD = &h0080
+	const SPI_SETPENDOCKTHRESHOLD = &h0081
+	const SPI_GETWINARRANGING = &h0082
+	const SPI_SETWINARRANGING = &h0083
+	const SPI_GETMOUSEDRAGOUTTHRESHOLD = &h0084
+	const SPI_SETMOUSEDRAGOUTTHRESHOLD = &h0085
+	const SPI_GETPENDRAGOUTTHRESHOLD = &h0086
+	const SPI_SETPENDRAGOUTTHRESHOLD = &h0087
+	const SPI_GETMOUSESIDEMOVETHRESHOLD = &h0088
+	const SPI_SETMOUSESIDEMOVETHRESHOLD = &h0089
+	const SPI_GETPENSIDEMOVETHRESHOLD = &h008a
+	const SPI_SETPENSIDEMOVETHRESHOLD = &h008b
+	const SPI_GETDRAGFROMMAXIMIZE = &h008c
+	const SPI_SETDRAGFROMMAXIMIZE = &h008d
+	const SPI_GETSNAPSIZING = &h008e
+	const SPI_SETSNAPSIZING = &h008f
+	const SPI_GETDOCKMOVING = &h0090
+	const SPI_SETDOCKMOVING = &h0091
+	const SPI_GETTOUCHPREDICTIONPARAMETERS = &h009c
+	const SPI_SETTOUCHPREDICTIONPARAMETERS = &h009d
+	const SPI_GETLOGICALDPIOVERRIDE = &h009e
+	const SPI_SETLOGICALDPIOVERRIDE = &h009f
+	const SPI_GETMOUSECORNERCLIPLENGTH = &h00a0
+	const SPI_SETMOUSECORNERCLIPLENGTH = &h00a1
+	const SPI_GETMENURECT = &h00a2
+	const SPI_SETMENURECT = &h00a3
 #endif
 
 const SPI_GETACTIVEWINDOWTRACKING = &h1000
@@ -4522,12 +5079,24 @@ const SPI_GETBLOCKSENDINPUTRESETS = &h1026
 const SPI_SETBLOCKSENDINPUTRESETS = &h1027
 const SPI_GETUIEFFECTS = &h103E
 const SPI_SETUIEFFECTS = &h103F
-const SPI_GETDISABLEOVERLAPPEDCONTENT = &h1040
-const SPI_SETDISABLEOVERLAPPEDCONTENT = &h1041
-const SPI_GETCLIENTAREAANIMATION = &h1042
-const SPI_SETCLIENTAREAANIMATION = &h1043
-const SPI_GETCLEARTYPE = &h1048
-const SPI_SETCLEARTYPE = &h1049
+
+#if _WIN32_WINNT = &h0602
+	const SPI_GETDISABLEOVERLAPPEDCONTENT = &h1040
+	const SPI_SETDISABLEOVERLAPPEDCONTENT = &h1041
+	const SPI_GETCLIENTAREAANIMATION = &h1042
+	const SPI_SETCLIENTAREAANIMATION = &h1043
+	const SPI_GETCLEARTYPE = &h1048
+	const SPI_SETCLEARTYPE = &h1049
+	const SPI_GETSPEECHRECOGNITION = &h104a
+	const SPI_SETSPEECHRECOGNITION = &h104b
+	const SPI_GETCARETBROWSING = &h104c
+	const SPI_SETCARETBROWSING = &h104d
+	const SPI_GETTHREADLOCALINPUTSETTINGS = &h104e
+	const SPI_SETTHREADLOCALINPUTSETTINGS = &h104f
+	const SPI_GETSYSTEMLANGUAGEBAR = &h1050
+	const SPI_SETSYSTEMLANGUAGEBAR = &h1051
+#endif
+
 const SPI_GETFOREGROUNDLOCKTIMEOUT = &h2000
 const SPI_SETFOREGROUNDLOCKTIMEOUT = &h2001
 const SPI_GETACTIVEWNDTRKTIMEOUT = &h2002
@@ -4551,8 +5120,49 @@ const SPI_GETFOCUSBORDERHEIGHT = &h2010
 const SPI_SETFOCUSBORDERHEIGHT = &h2011
 const SPI_GETFONTSMOOTHINGORIENTATION = &h2012
 const SPI_SETFONTSMOOTHINGORIENTATION = &h2013
-const SPI_GETMESSAGEDURATION = &h2016
-const SPI_SETMESSAGEDURATION = &h2017
+
+#if _WIN32_WINNT = &h0602
+	const SPI_GETMINIMUMHITRADIUS = &h2014
+	const SPI_SETMINIMUMHITRADIUS = &h2015
+	const SPI_GETMESSAGEDURATION = &h2016
+	const SPI_SETMESSAGEDURATION = &h2017
+	const SPI_GETCONTACTVISUALIZATION = &h2018
+	const SPI_SETCONTACTVISUALIZATION = &h2019
+	const SPI_GETGESTUREVISUALIZATION = &h201a
+	const SPI_SETGESTUREVISUALIZATION = &h201b
+	const CONTACTVISUALIZATION_OFF = &h0000
+	const CONTACTVISUALIZATION_ON = &h0001
+	const CONTACTVISUALIZATION_PRESENTATIONMODE = &h0002
+	const GESTUREVISUALIZATION_OFF = &h0000
+	const GESTUREVISUALIZATION_ON = &h001f
+	const GESTUREVISUALIZATION_TAP = &h0001
+	const GESTUREVISUALIZATION_DOUBLETAP = &h0002
+	const GESTUREVISUALIZATION_PRESSANDTAP = &h0004
+	const GESTUREVISUALIZATION_PRESSANDHOLD = &h0008
+	const GESTUREVISUALIZATION_RIGHTTAP = &h0010
+	const MAX_TOUCH_PREDICTION_FILTER_TAPS = 3
+
+	type tagTouchPredictionParameters
+		cbSize as UINT
+		dwLatency as UINT
+		dwSampleTime as UINT
+		bUseHWTimeStamp as UINT
+	end type
+
+	type TOUCHPREDICTIONPARAMETERS as tagTouchPredictionParameters
+	type PTOUCHPREDICTIONPARAMETERS as tagTouchPredictionParameters ptr
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_LATENCY = 8
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_SAMPLETIME = 8
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_USE_HW_TIMESTAMP = 1
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_DELTA = 0.001f
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_LAMBDA_MIN = 0.9f
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_LAMBDA_MAX = 0.999f
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_LAMBDA_LEARNING_RATE = 0.001f
+	const TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_EXPO_SMOOTH_ALPHA = 0.99f
+	const MAX_LOGICALDPIOVERRIDE = 2
+	const MIN_LOGICALDPIOVERRIDE = -2
+#endif
+
 const FE_FONTSMOOTHINGORIENTATIONBGR = &h0000
 const FE_FONTSMOOTHINGORIENTATIONRGB = &h0001
 const SPIF_UPDATEINIFILE = &h0001
@@ -4576,6 +5186,10 @@ type tagNONCLIENTMETRICSA
 	lfMenuFont as LOGFONTA
 	lfStatusFont as LOGFONTA
 	lfMessageFont as LOGFONTA
+
+	#if _WIN32_WINNT = &h0602
+		iPaddedBorderWidth as long
+	#endif
 end type
 
 type NONCLIENTMETRICSA as tagNONCLIENTMETRICSA
@@ -4598,6 +5212,10 @@ type tagNONCLIENTMETRICSW
 	lfMenuFont as LOGFONTW
 	lfStatusFont as LOGFONTW
 	lfMessageFont as LOGFONTW
+
+	#if _WIN32_WINNT = &h0602
+		iPaddedBorderWidth as long
+	#endif
 end type
 
 type NONCLIENTMETRICSW as tagNONCLIENTMETRICSW
@@ -4715,10 +5333,6 @@ type LPSERIALKEYSW as tagSERIALKEYSW ptr
 	type LPSERIALKEYS as LPSERIALKEYSA
 #endif
 
-const SERKF_SERIALKEYSON = &h00000001
-const SERKF_AVAILABLE = &h00000002
-const SERKF_INDICATOR = &h00000004
-
 type tagHIGHCONTRASTA
 	cbSize as UINT
 	dwFlags as DWORD
@@ -4745,6 +5359,9 @@ type LPHIGHCONTRASTW as tagHIGHCONTRASTW ptr
 	type LPHIGHCONTRAST as LPHIGHCONTRASTA
 #endif
 
+const SERKF_SERIALKEYSON = &h00000001
+const SERKF_AVAILABLE = &h00000002
+const SERKF_INDICATOR = &h00000004
 const HCF_HIGHCONTRASTON = &h00000001
 const HCF_AVAILABLE = &h00000002
 const HCF_HOTKEYACTIVE = &h00000004
@@ -4760,7 +5377,14 @@ const CDS_FULLSCREEN = &h00000004
 const CDS_GLOBAL = &h00000008
 const CDS_SET_PRIMARY = &h00000010
 const CDS_VIDEOPARAMETERS = &h00000020
+
+#if _WIN32_WINNT = &h0602
+	const CDS_ENABLE_UNSAFE_MODES = &h00000100
+	const CDS_DISABLE_UNSAFE_MODES = &h00000200
+#endif
+
 const CDS_RESET = &h40000000
+const CDS_RESET_EX = &h20000000
 const CDS_NORESET = &h10000000
 #define __TVOUT__
 
@@ -4868,6 +5492,15 @@ declare function EnumDisplaySettingsExW(byval lpszDeviceName as LPCWSTR, byval i
 const EDS_RAWMODE = &h00000002
 declare function EnumDisplayDevicesA(byval lpDevice as LPCSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEA, byval dwFlags as DWORD) as WINBOOL
 declare function EnumDisplayDevicesW(byval lpDevice as LPCWSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEW, byval dwFlags as DWORD) as WINBOOL
+const EDD_GET_DEVICE_INTERFACE_NAME = &h00000001
+
+#if _WIN32_WINNT = &h0602
+	declare function GetDisplayConfigBufferSizes(byval flags as UINT32, byval numPathArrayElements as UINT32 ptr, byval numModeInfoArrayElements as UINT32 ptr) as LONG
+	declare function SetDisplayConfig(byval numPathArrayElements as UINT32, byval pathArray as DISPLAYCONFIG_PATH_INFO ptr, byval numModeInfoArrayElements as UINT32, byval modeInfoArray as DISPLAYCONFIG_MODE_INFO ptr, byval flags as UINT32) as LONG
+	declare function QueryDisplayConfig(byval flags as UINT32, byval numPathArrayElements as UINT32 ptr, byval pathArray as DISPLAYCONFIG_PATH_INFO ptr, byval numModeInfoArrayElements as UINT32 ptr, byval modeInfoArray as DISPLAYCONFIG_MODE_INFO ptr, byval currentTopologyId as DISPLAYCONFIG_TOPOLOGY_ID ptr) as LONG
+	declare function DisplayConfigGetDeviceInfo(byval requestPacket as DISPLAYCONFIG_DEVICE_INFO_HEADER ptr) as LONG
+	declare function DisplayConfigSetDeviceInfo(byval setPacket as DISPLAYCONFIG_DEVICE_INFO_HEADER ptr) as LONG
+#endif
 
 #ifdef UNICODE
 	#define SystemParametersInfo SystemParametersInfoW
@@ -5033,29 +5666,6 @@ end type
 
 type TOGGLEKEYS as tagTOGGLEKEYS
 type LPTOGGLEKEYS as tagTOGGLEKEYS ptr
-const TKF_TOGGLEKEYSON = &h00000001
-const TKF_AVAILABLE = &h00000002
-const TKF_HOTKEYACTIVE = &h00000004
-const TKF_CONFIRMHOTKEY = &h00000008
-const TKF_HOTKEYSOUND = &h00000010
-const TKF_INDICATOR = &h00000020
-declare sub SetDebugErrorLevel(byval dwLevel as DWORD)
-const SLE_ERROR = &h00000001
-const SLE_MINORERROR = &h00000002
-const SLE_WARNING = &h00000003
-
-declare sub SetLastErrorEx(byval dwErrCode as DWORD, byval dwType as DWORD)
-declare function InternalGetWindowText(byval hWnd as HWND, byval pString as LPWSTR, byval cchMaxCount as long) as long
-declare function EndTask(byval hWnd as HWND, byval fShutDown as WINBOOL, byval fForce as WINBOOL) as WINBOOL
-
-const MONITOR_DEFAULTTONULL = &h00000000
-const MONITOR_DEFAULTTOPRIMARY = &h00000001
-const MONITOR_DEFAULTTONEAREST = &h00000002
-
-declare function MonitorFromPoint(byval pt as POINT, byval dwFlags as DWORD) as HMONITOR
-declare function MonitorFromRect(byval lprc as LPCRECT, byval dwFlags as DWORD) as HMONITOR
-declare function MonitorFromWindow(byval hwnd as HWND, byval dwFlags as DWORD) as HMONITOR
-const MONITORINFOF_PRIMARY = &h00000001
 
 type tagMONITORINFO
 	cbSize as DWORD
@@ -5066,6 +5676,17 @@ end type
 
 type MONITORINFO as tagMONITORINFO
 type LPMONITORINFO as tagMONITORINFO ptr
+
+#if _WIN32_WINNT = &h0602
+	type tagAUDIODESCRIPTION
+		cbSize as UINT
+		Enabled as WINBOOL
+		Locale as LCID
+	end type
+
+	type AUDIODESCRIPTION as tagAUDIODESCRIPTION
+	type LPAUDIODESCRIPTION as tagAUDIODESCRIPTION ptr
+#endif
 
 type tagMONITORINFOEXA
 	union
@@ -5102,21 +5723,54 @@ type LPMONITORINFOEXW as tagMONITORINFOEXW ptr
 #ifdef UNICODE
 	type MONITORINFOEX as MONITORINFOEXW
 	type LPMONITORINFOEX as LPMONITORINFOEXW
-	#define GetMonitorInfo GetMonitorInfoW
 #else
 	type MONITORINFOEX as MONITORINFOEXA
 	type LPMONITORINFOEX as LPMONITORINFOEXA
+#endif
+
+type MONITORENUMPROC as function(byval as HMONITOR, byval as HDC, byval as LPRECT, byval as LPARAM) as WINBOOL
+declare sub SetDebugErrorLevel(byval dwLevel as DWORD)
+declare sub SetLastErrorEx(byval dwErrCode as DWORD, byval dwType as DWORD)
+declare function InternalGetWindowText(byval hWnd as HWND, byval pString as LPWSTR, byval cchMaxCount as long) as long
+declare function CancelShutdown() as WINBOOL
+declare function MonitorFromPoint(byval pt as POINT, byval dwFlags as DWORD) as HMONITOR
+declare function MonitorFromRect(byval lprc as LPCRECT, byval dwFlags as DWORD) as HMONITOR
+declare function MonitorFromWindow(byval hwnd as HWND, byval dwFlags as DWORD) as HMONITOR
+declare function EndTask(byval hWnd as HWND, byval fShutDown as WINBOOL, byval fForce as WINBOOL) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	declare function SoundSentry() as WINBOOL
+#endif
+
+#ifdef UNICODE
+	#define GetMonitorInfo GetMonitorInfoW
+#else
 	#define GetMonitorInfo GetMonitorInfoA
 #endif
 
 declare function GetMonitorInfoA(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
 declare function GetMonitorInfoW(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
-type MONITORENUMPROC as function(byval as HMONITOR, byval as HDC, byval as LPRECT, byval as LPARAM) as WINBOOL
 declare function EnumDisplayMonitors(byval hdc as HDC, byval lprcClip as LPCRECT, byval lpfnEnum as MONITORENUMPROC, byval dwData as LPARAM) as WINBOOL
-declare sub NotifyWinEvent(byval event as DWORD, byval hwnd as HWND, byval idObject as LONG, byval idChild as LONG)
+
+const TKF_TOGGLEKEYSON = &h00000001
+const TKF_AVAILABLE = &h00000002
+const TKF_HOTKEYACTIVE = &h00000004
+const TKF_CONFIRMHOTKEY = &h00000008
+const TKF_HOTKEYSOUND = &h00000010
+const TKF_INDICATOR = &h00000020
+const SLE_ERROR = &h00000001
+const SLE_MINORERROR = &h00000002
+const SLE_WARNING = &h00000003
+const MONITOR_DEFAULTTONULL = &h00000000
+const MONITOR_DEFAULTTOPRIMARY = &h00000001
+const MONITOR_DEFAULTTONEAREST = &h00000002
+const MONITORINFOF_PRIMARY = &h00000001
 type WINEVENTPROC as sub(byval hWinEventHook as HWINEVENTHOOK, byval event as DWORD, byval hwnd as HWND, byval idObject as LONG, byval idChild as LONG, byval idEventThread as DWORD, byval dwmsEventTime as DWORD)
+
+declare sub NotifyWinEvent(byval event as DWORD, byval hwnd as HWND, byval idObject as LONG, byval idChild as LONG)
 declare function SetWinEventHook(byval eventMin as DWORD, byval eventMax as DWORD, byval hmodWinEventProc as HMODULE, byval pfnWinEventProc as WINEVENTPROC, byval idProcess as DWORD, byval idThread as DWORD, byval dwFlags as DWORD) as HWINEVENTHOOK
 declare function IsWinEventHookInstalled(byval event as DWORD) as WINBOOL
+
 const WINEVENT_OUTOFCONTEXT = &h0000
 const WINEVENT_SKIPOWNTHREAD = &h0001
 const WINEVENT_SKIPOWNPROCESS = &h0002
@@ -5164,6 +5818,23 @@ const EVENT_SYSTEM_SWITCHSTART = &h0014
 const EVENT_SYSTEM_SWITCHEND = &h0015
 const EVENT_SYSTEM_MINIMIZESTART = &h0016
 const EVENT_SYSTEM_MINIMIZEEND = &h0017
+
+#if _WIN32_WINNT = &h0602
+	const EVENT_SYSTEM_DESKTOPSWITCH = &h0020
+	const EVENT_SYSTEM_SWITCHER_APPGRABBED = &h0024
+	const EVENT_SYSTEM_SWITCHER_APPOVERTARGET = &h0025
+	const EVENT_SYSTEM_SWITCHER_APPDROPPED = &h0026
+	const EVENT_SYSTEM_SWITCHER_CANCELLED = &h0027
+	const EVENT_SYSTEM_IME_KEY_NOTIFICATION = &h0029
+	const EVENT_SYSTEM_END = &h00ff
+	const EVENT_OEM_DEFINED_START = &h0101
+	const EVENT_OEM_DEFINED_END = &h01ff
+	const EVENT_UIA_EVENTID_START = &h4e00
+	const EVENT_UIA_EVENTID_END = &h4eff
+	const EVENT_UIA_PROPID_START = &h7500
+	const EVENT_UIA_PROPID_END = &h75ff
+#endif
+
 const EVENT_CONSOLE_CARET = &h4001
 const EVENT_CONSOLE_UPDATE_REGION = &h4002
 const EVENT_CONSOLE_UPDATE_SIMPLE = &h4003
@@ -5171,9 +5842,20 @@ const EVENT_CONSOLE_UPDATE_SCROLL = &h4004
 const EVENT_CONSOLE_LAYOUT = &h4005
 const EVENT_CONSOLE_START_APPLICATION = &h4006
 const EVENT_CONSOLE_END_APPLICATION = &h4007
-const CONSOLE_APPLICATION_16BIT = &h0001
+
+#ifdef __FB_64BIT__
+	const CONSOLE_APPLICATION_16BIT = &h0000
+#else
+	const CONSOLE_APPLICATION_16BIT = &h0001
+#endif
+
 const CONSOLE_CARET_SELECTION = &h0001
 const CONSOLE_CARET_VISIBLE = &h0002
+
+#if _WIN32_WINNT = &h0602
+	const EVENT_CONSOLE_END = &h40ff
+#endif
+
 const EVENT_OBJECT_CREATE = &h8000
 const EVENT_OBJECT_DESTROY = &h8001
 const EVENT_OBJECT_SHOW = &h8002
@@ -5193,6 +5875,30 @@ const EVENT_OBJECT_PARENTCHANGE = &h800F
 const EVENT_OBJECT_HELPCHANGE = &h8010
 const EVENT_OBJECT_DEFACTIONCHANGE = &h8011
 const EVENT_OBJECT_ACCELERATORCHANGE = &h8012
+
+#if _WIN32_WINNT = &h0602
+	const EVENT_OBJECT_INVOKED = &h8013
+	const EVENT_OBJECT_TEXTSELECTIONCHANGED = &h8014
+	const EVENT_OBJECT_CONTENTSCROLLED = &h8015
+	const EVENT_SYSTEM_ARRANGMENTPREVIEW = &h8016
+	const EVENT_OBJECT_CLOAKED = &h8017
+	const EVENT_OBJECT_UNCLOAKED = &h8018
+	const EVENT_OBJECT_LIVEREGIONCHANGED = &h8019
+	const EVENT_OBJECT_HOSTEDOBJECTSINVALIDATED = &h8020
+	const EVENT_OBJECT_DRAGSTART = &h8021
+	const EVENT_OBJECT_DRAGCANCEL = &h8022
+	const EVENT_OBJECT_DRAGCOMPLETE = &h8023
+	const EVENT_OBJECT_DRAGENTER = &h8024
+	const EVENT_OBJECT_DRAGLEAVE = &h8025
+	const EVENT_OBJECT_DRAGDROPPED = &h8026
+	const EVENT_OBJECT_IME_SHOW = &h8027
+	const EVENT_OBJECT_IME_HIDE = &h8028
+	const EVENT_OBJECT_IME_CHANGE = &h8029
+	const EVENT_OBJECT_END = &h80ff
+	const EVENT_AIA_START = &ha000
+	const EVENT_AIA_END = &hafff
+#endif
+
 const SOUND_SYSTEM_STARTUP = 1
 const SOUND_SYSTEM_SHUTDOWN = 2
 const SOUND_SYSTEM_BEEP = 3
@@ -5238,7 +5944,12 @@ const GUI_INMOVESIZE = &h00000002
 const GUI_INMENUMODE = &h00000004
 const GUI_SYSTEMMENUMODE = &h00000008
 const GUI_POPUPMENUMODE = &h00000010
-const GUI_16BITTASK = &h00000020
+
+#ifdef __FB_64BIT__
+	const GUI_16BITTASK = &h00000000
+#else
+	const GUI_16BITTASK = &h00000020
+#endif
 
 #ifdef UNICODE
 	#define GetWindowModuleFileName GetWindowModuleFileNameW
@@ -5247,8 +5958,15 @@ const GUI_16BITTASK = &h00000020
 #endif
 
 declare function GetGUIThreadInfo(byval idThread as DWORD, byval pgui as PGUITHREADINFO) as WINBOOL
+declare function BlockInput(byval fBlockIt as WINBOOL) as WINBOOL
 declare function GetWindowModuleFileNameA(byval hwnd as HWND, byval pszFileName as LPSTR, byval cchFileNameMax as UINT) as UINT
 declare function GetWindowModuleFileNameW(byval hwnd as HWND, byval pszFileName as LPWSTR, byval cchFileNameMax as UINT) as UINT
+
+#if _WIN32_WINNT = &h0602
+	const USER_DEFAULT_SCREEN_DPI = 96
+	declare function SetProcessDPIAware() as WINBOOL
+	declare function IsProcessDPIAware() as WINBOOL
+#endif
 
 const STATE_SYSTEM_UNAVAILABLE = &h00000001
 const STATE_SYSTEM_SELECTED = &h00000002
@@ -5296,6 +6014,11 @@ type CURSORINFO as tagCURSORINFO
 type PCURSORINFO as tagCURSORINFO ptr
 type LPCURSORINFO as tagCURSORINFO ptr
 const CURSOR_SHOWING = &h00000001
+
+#if _WIN32_WINNT = &h0602
+	const CURSOR_SUPPRESSED = &h00000002
+#endif
+
 declare function GetCursorInfo(byval pci as PCURSORINFO) as WINBOOL
 
 type tagWINDOWINFO
@@ -5327,6 +6050,19 @@ type TITLEBARINFO as tagTITLEBARINFO
 type PTITLEBARINFO as tagTITLEBARINFO ptr
 type LPTITLEBARINFO as tagTITLEBARINFO ptr
 declare function GetTitleBarInfo(byval hwnd as HWND, byval pti as PTITLEBARINFO) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	type tagTITLEBARINFOEX
+		cbSize as DWORD
+		rcTitleBar as RECT
+		rgstate(0 to (5 + 1) - 1) as DWORD
+		rgrect(0 to (5 + 1) - 1) as RECT
+	end type
+
+	type TITLEBARINFOEX as tagTITLEBARINFOEX
+	type PTITLEBARINFOEX as tagTITLEBARINFOEX ptr
+	type LPTITLEBARINFOEX as tagTITLEBARINFOEX ptr
+#endif
 
 type tagMENUBARINFO
 	cbSize as DWORD
@@ -5376,16 +6112,16 @@ const GA_PARENT = 1
 const GA_ROOT = 2
 const GA_ROOTOWNER = 3
 
-declare function GetAncestor(byval hwnd as HWND, byval gaFlags as UINT) as HWND
-declare function RealChildWindowFromPoint(byval hwndParent as HWND, byval ptParentClientCoords as POINT) as HWND
-declare function RealGetWindowClassA(byval hwnd as HWND, byval ptszClassName as LPSTR, byval cchClassNameMax as UINT) as UINT
-declare function RealGetWindowClassW(byval hwnd as HWND, byval ptszClassName as LPWSTR, byval cchClassNameMax as UINT) as UINT
-
 #ifdef UNICODE
 	#define RealGetWindowClass RealGetWindowClassW
 #else
 	#define RealGetWindowClass RealGetWindowClassA
 #endif
+
+declare function GetAncestor(byval hwnd as HWND, byval gaFlags as UINT) as HWND
+declare function RealChildWindowFromPoint(byval hwndParent as HWND, byval ptParentClientCoords as POINT) as HWND
+declare function RealGetWindowClassA(byval hwnd as HWND, byval ptszClassName as LPSTR, byval cchClassNameMax as UINT) as UINT
+declare function RealGetWindowClassW(byval hwnd as HWND, byval ptszClassName as LPWSTR, byval cchClassNameMax as UINT) as UINT
 
 type tagALTTABINFO
 	cbSize as DWORD
@@ -5467,21 +6203,25 @@ const RI_MOUSE_RIGHT_BUTTON_DOWN = &h0004
 const RI_MOUSE_RIGHT_BUTTON_UP = &h0008
 const RI_MOUSE_MIDDLE_BUTTON_DOWN = &h0010
 const RI_MOUSE_MIDDLE_BUTTON_UP = &h0020
+const RI_MOUSE_BUTTON_4_DOWN = &h0040
+const RI_MOUSE_BUTTON_4_UP = &h0080
+const RI_MOUSE_BUTTON_5_DOWN = &h0100
+const RI_MOUSE_BUTTON_5_UP = &h0200
+const RI_MOUSE_WHEEL = &h0400
 #define RI_MOUSE_BUTTON_1_DOWN RI_MOUSE_LEFT_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_1_UP RI_MOUSE_LEFT_BUTTON_UP
 #define RI_MOUSE_BUTTON_2_DOWN RI_MOUSE_RIGHT_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_2_UP RI_MOUSE_RIGHT_BUTTON_UP
 #define RI_MOUSE_BUTTON_3_DOWN RI_MOUSE_MIDDLE_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_3_UP RI_MOUSE_MIDDLE_BUTTON_UP
-const RI_MOUSE_BUTTON_4_DOWN = &h0040
-const RI_MOUSE_BUTTON_4_UP = &h0080
-const RI_MOUSE_BUTTON_5_DOWN = &h0100
-const RI_MOUSE_BUTTON_5_UP = &h0200
-const RI_MOUSE_WHEEL = &h0400
 const MOUSE_MOVE_RELATIVE = 0
 const MOUSE_MOVE_ABSOLUTE = 1
 const MOUSE_VIRTUAL_DESKTOP = &h02
 const MOUSE_ATTRIBUTES_CHANGED = &h04
+
+#if _WIN32_WINNT = &h0602
+	const MOUSE_MOVE_NOCOALESCE = &h08
+#endif
 
 type tagRAWKEYBOARD
 	MakeCode as USHORT
@@ -5547,6 +6287,7 @@ type tagRID_DEVICE_INFO_MOUSE
 	dwId as DWORD
 	dwNumberOfButtons as DWORD
 	dwSampleRate as DWORD
+	fHasHorizontalWheel as WINBOOL
 end type
 
 type RID_DEVICE_INFO_MOUSE as tagRID_DEVICE_INFO_MOUSE
@@ -5620,60 +6361,18 @@ const RIDEV_INPUTSINK = &h00000100
 const RIDEV_CAPTUREMOUSE = &h00000200
 const RIDEV_NOHOTKEYS = &h00000200
 const RIDEV_APPKEYS = &h00000400
+const RIDEV_EXINPUTSINK = &h00001000
+const RIDEV_DEVNOTIFY = &h00002000
 const RIDEV_EXMODEMASK = &h000000F0
 #define RIDEV_EXMODE(mode) ((mode) and RIDEV_EXMODEMASK)
-const MAPVK_VK_TO_VSC = 0
-const MAPVK_VSC_TO_VK = 1
-const MAPVK_VK_TO_CHAR = 2
-const MAPVK_VSC_TO_VK_EX = 3
+const GIDC_ARRIVAL = 1
+const GIDC_REMOVAL = 2
 
-#if _WIN32_WINNT = &h0602
-	const MAPVK_VK_TO_VSC_EX = 4
-	const WM_TOUCHMOVE = 576
-	const WM_TOUCHDOWN = 577
-	const WM_TOUCHUP = 578
-	const TOUCHEVENTF_MOVE = &h0001
-	const TOUCHEVENTF_DOWN = &h0002
-	const TOUCHEVENTF_UP = &h0004
-	const TOUCHEVENTF_INRANGE = &h0008
-	const TOUCHEVENTF_PRIMARY = &h0010
-	const TOUCHEVENTF_NOCOALESCE = &h0020
-	const TOUCHEVENTF_PEN = &h0040
-	const TOUCHEVENTF_PALM = &h0080
-	const TOUCHINPUTMASKF_TIMEFROMSYSTEM = &h0001
-	const TOUCHINPUTMASKF_EXTRAINFO = &h0002
-	const TOUCHINPUTMASKF_CONTACTAREA = &h0004
-
-	type HTOUCHINPUT__
-		unused as long
-	end type
-
-	type HTOUCHINPUT as HTOUCHINPUT__ ptr
-
-	type _TOUCHINPUT
-		x as LONG
-		y as LONG
-		hSource as HANDLE
-		dwID as DWORD
-		dwFlags as DWORD
-		dwMask as DWORD
-		dwTime as DWORD
-		dwExtraInfo as ULONG_PTR
-		cxContact as DWORD
-		cyContact as DWORD
-	end type
-
-	type TOUCHINPUT as _TOUCHINPUT
-	type PTOUCHINPUT as _TOUCHINPUT ptr
-	declare function CloseTouchInputHandle(byval hTouchInput as HANDLE) as WINBOOL
-	declare function GetTouchInputInfo(byval hTouchInput as HANDLE, byval cInputs as UINT, byval pInputs as PTOUCHINPUT, byval cbSize as long) as WINBOOL
-	declare function IsTouchWindow(byval hWnd as HWND, byval pulFlags as PULONG) as WINBOOL
-	declare function RegisterTouchWindow(byval hWnd as HWND, byval ulFlags as ULONG) as WINBOOL
-	declare function UnregisterTouchWindow(byval hWnd as HWND) as WINBOOL
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#define GET_DEVICE_CHANGE_LPARAM(lParam) LOWORD(lParam)
+#else
+	#define GET_DEVICE_CHANGE_WPARAM(wParam) LOWORD(wParam)
 #endif
-
-declare function RegisterRawInputDevices(byval pRawInputDevices as PCRAWINPUTDEVICE, byval uiNumDevices as UINT, byval cbSize as UINT) as WINBOOL
-declare function GetRegisteredRawInputDevices(byval pRawInputDevices as PRAWINPUTDEVICE, byval puiNumDevices as PUINT, byval cbSize as UINT) as UINT
 
 type tagRAWINPUTDEVICELIST
 	hDevice as HANDLE
@@ -5682,33 +6381,104 @@ end type
 
 type RAWINPUTDEVICELIST as tagRAWINPUTDEVICELIST
 type PRAWINPUTDEVICELIST as tagRAWINPUTDEVICELIST ptr
+declare function RegisterRawInputDevices(byval pRawInputDevices as PCRAWINPUTDEVICE, byval uiNumDevices as UINT, byval cbSize as UINT) as WINBOOL
+declare function GetRegisteredRawInputDevices(byval pRawInputDevices as PRAWINPUTDEVICE, byval puiNumDevices as PUINT, byval cbSize as UINT) as UINT
 declare function GetRawInputDeviceList(byval pRawInputDeviceList as PRAWINPUTDEVICELIST, byval puiNumDevices as PUINT, byval cbSize as UINT) as UINT
 declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput as INT_, byval cbSizeHeader as UINT) as LRESULT
 
 #if _WIN32_WINNT = &h0602
-	type _AUDIODESCRIPTION
-		cbSize as UINT
-		Enabled as BOOL
-		Locale as LCID
+	const POINTER_DEVICE_PRODUCT_STRING_MAX = 520
+	const PDC_ARRIVAL = &h001
+	const PDC_REMOVAL = &h002
+	const PDC_ORIENTATION_0 = &h004
+	const PDC_ORIENTATION_90 = &h008
+	const PDC_ORIENTATION_180 = &h010
+	const PDC_ORIENTATION_270 = &h020
+	const PDC_MODE_DEFAULT = &h040
+	const PDC_MODE_CENTERED = &h080
+	const PDC_MAPPING_CHANGE = &h100
+	const PDC_RESOLUTION = &h200
+	const PDC_ORIGIN = &h400
+	const PDC_MODE_ASPECTRATIOPRESERVED = &h800
+
+	type tagPOINTER_DEVICE_TYPE as long
+	enum
+		POINTER_DEVICE_TYPE_INTEGRATED_PEN = &h00000001
+		POINTER_DEVICE_TYPE_EXTERNAL_PEN = &h00000002
+		POINTER_DEVICE_TYPE_TOUCH = &h00000003
+		POINTER_DEVICE_TYPE_MAX = &hffffffff
+	end enum
+
+	type POINTER_DEVICE_TYPE as tagPOINTER_DEVICE_TYPE
+
+	type tagPOINTER_DEVICE_INFO
+		displayOrientation as DWORD
+		device as HANDLE
+		pointerDeviceType as POINTER_DEVICE_TYPE
+		monitor as HMONITOR
+		startingCursorId as ULONG
+		maxActiveContacts as USHORT
+		productString as wstring * 520
 	end type
 
-	type AUDIODESCRIPTION as _AUDIODESCRIPTION
-	type PAUDIODESCRIPTION as _AUDIODESCRIPTION ptr
-#endif
+	type POINTER_DEVICE_INFO as tagPOINTER_DEVICE_INFO
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateDesktopEx CreateDesktopExW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateDesktopEx CreateDesktopExA
-#endif
+	type tagPOINTER_DEVICE_PROPERTY
+		logicalMin as INT32
+		logicalMax as INT32
+		physicalMin as INT32
+		physicalMax as INT32
+		unit as UINT32
+		unitExponent as UINT32
+		usagePageId as USHORT
+		usageId as USHORT
+	end type
 
-#if _WIN32_WINNT = &h0602
-	declare function CreateDesktopExA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as DEVMODE ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
-	declare function CreateDesktopExW(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as DEVMODE ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
-	declare function ShutdownBlockReasonCreate(byval hWnd as HWND, byval pwszReason as LPCWSTR) as WINBOOL
-	declare function ShutdownBlockReasonDestroy(byval hWnd as HWND) as WINBOOL
-	declare function ShutdownBlockReasonQuery(byval hWnd as HWND, byval pwszBuff as LPWSTR, byval pcchBuff as DWORD ptr) as WINBOOL
+	type POINTER_DEVICE_PROPERTY as tagPOINTER_DEVICE_PROPERTY
 
+	type tagPOINTER_DEVICE_CURSOR_TYPE as long
+	enum
+		POINTER_DEVICE_CURSOR_TYPE_UNKNOWN = &h00000000
+		POINTER_DEVICE_CURSOR_TYPE_TIP = &h00000001
+		POINTER_DEVICE_CURSOR_TYPE_ERASER = &h00000002
+		POINTER_DEVICE_CURSOR_TYPE_MAX = &hffffffff
+	end enum
+
+	type POINTER_DEVICE_CURSOR_TYPE as tagPOINTER_DEVICE_CURSOR_TYPE
+
+	type tagPOINTER_DEVICE_CURSOR_INFO
+		cursorId as UINT32
+		cursor as POINTER_DEVICE_CURSOR_TYPE
+	end type
+
+	type POINTER_DEVICE_CURSOR_INFO as tagPOINTER_DEVICE_CURSOR_INFO
+	declare function GetPointerDevices(byval deviceCount as UINT32 ptr, byval pointerDevices as POINTER_DEVICE_INFO ptr) as WINBOOL
+	declare function GetPointerDevice(byval device as HANDLE, byval pointerDevice as POINTER_DEVICE_INFO ptr) as WINBOOL
+	declare function GetPointerDeviceProperties(byval device as HANDLE, byval propertyCount as UINT32 ptr, byval pointerProperties as POINTER_DEVICE_PROPERTY ptr) as WINBOOL
+	declare function RegisterPointerDeviceNotifications(byval window as HWND, byval notifyRange as WINBOOL) as WINBOOL
+	declare function GetPointerDeviceRects(byval device as HANDLE, byval pointerDeviceRect as RECT ptr, byval displayRect as RECT ptr) as WINBOOL
+	declare function GetPointerDeviceCursors(byval device as HANDLE, byval cursorCount as UINT32 ptr, byval deviceCursors as POINTER_DEVICE_CURSOR_INFO ptr) as WINBOOL
+	declare function GetRawPointerDeviceData(byval pointerId as UINT32, byval historyCount as UINT32, byval propertiesCount as UINT32, byval pProperties as POINTER_DEVICE_PROPERTY ptr, byval pValues as LONG ptr) as WINBOOL
+	const MSGFLT_ADD = 1
+	const MSGFLT_REMOVE = 2
+	declare function ChangeWindowMessageFilter(byval message as UINT, byval dwFlag as DWORD) as WINBOOL
+
+	const MSGFLTINFO_NONE = 0
+	const MSGFLTINFO_ALREADYALLOWED_FORWND = 1
+	const MSGFLTINFO_ALREADYDISALLOWED_FORWND = 2
+	const MSGFLTINFO_ALLOWED_HIGHER = 3
+	const MSGFLT_RESET = 0
+	const MSGFLT_ALLOW = 1
+	const MSGFLT_DISALLOW = 2
+
+	type tagCHANGEFILTERSTRUCT
+		cbSize as DWORD
+		ExtStatus as DWORD
+	end type
+
+	type CHANGEFILTERSTRUCT as tagCHANGEFILTERSTRUCT
+	type PCHANGEFILTERSTRUCT as tagCHANGEFILTERSTRUCT ptr
+	declare function ChangeWindowMessageFilterEx(byval hwnd as HWND, byval message as UINT, byval action as DWORD, byval pChangeFilterStruct as PCHANGEFILTERSTRUCT) as WINBOOL
 	const GF_BEGIN = &h00000001
 	const GF_INERTIA = &h00000002
 	const GF_END = &h00000004
@@ -5720,29 +6490,14 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	const GID_TWOFINGERTAP = 6
 	const GID_PRESSANDTAP = 7
 	#define GID_ROLLOVER GID_PRESSANDTAP
-	const GC_ALLGESTURES = &h00000001
-	const GC_ZOOM = &h00000001
-	const GC_PAN = &h00000001
-	const GC_PAN_WITH_SINGLE_FINGER_VERTICALLY = &h00000002
-	const GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY = &h00000004
-	const GC_PAN_WITH_GUTTER = &h00000008
-	const GC_PAN_WITH_INERTIA = &h00000010
-	const GC_ROTATE = &h00000001
-	const GC_TWOFINGERTAP = &h00000001
-	const GC_PRESSANDTAP = &h00000001
-	#define GC_ROLLOVER GC_PRESSANDTAP
-	const GCF_INCLUDE_ANCESTORS = &h00000001
-	const GESTURECONFIGMAXCOUNT = 256
 
 	type HGESTUREINFO__
 		unused as long
 	end type
 
 	type HGESTUREINFO as HGESTUREINFO__ ptr
-	#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_) cast(USHORT, (((_arg_) + (2.0 * 3.14159265)) / (4.0 * 3.14159265)) * 65535.0)
-	#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((cdbl((_arg_)) / 65535.0) * 4.0) * 3.14159265) - (2.0 * 3.14159265))
 
-	type _GESTUREINFO
+	type tagGESTUREINFO
 		cbSize as UINT
 		dwFlags as DWORD
 		dwID as DWORD
@@ -5754,8 +6509,8 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 		cbExtraArgs as UINT
 	end type
 
-	type GESTUREINFO as _GESTUREINFO
-	type PGESTUREINFO as _GESTUREINFO ptr
+	type GESTUREINFO as tagGESTUREINFO
+	type PGESTUREINFO as tagGESTUREINFO ptr
 	type PCGESTUREINFO as const GESTUREINFO ptr
 
 	type tagGESTURENOTIFYSTRUCT
@@ -5768,20 +6523,139 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 
 	type GESTURENOTIFYSTRUCT as tagGESTURENOTIFYSTRUCT
 	type PGESTURENOTIFYSTRUCT as tagGESTURENOTIFYSTRUCT ptr
+	#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_) cast(USHORT, (((_arg_) + (2.0 * 3.14159265)) / (4.0 * 3.14159265)) * 65535.0)
+	#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((cdbl((_arg_)) / 65535.0) * 4.0) * 3.14159265) - (2.0 * 3.14159265))
+	declare function GetGestureInfo(byval hGestureInfo as HGESTUREINFO, byval pGestureInfo as PGESTUREINFO) as WINBOOL
+	declare function GetGestureExtraArgs(byval hGestureInfo as HGESTUREINFO, byval cbExtraArgs as UINT, byval pExtraArgs as PBYTE) as WINBOOL
+	declare function CloseGestureInfoHandle(byval hGestureInfo as HGESTUREINFO) as WINBOOL
 
-	type _GESTURECONFIG
+	type tagGESTURECONFIG
 		dwID as DWORD
 		dwWant as DWORD
 		dwBlock as DWORD
 	end type
 
-	type GESTURECONFIG as _GESTURECONFIG
-	type PGESTURECONFIG as _GESTURECONFIG ptr
+	type GESTURECONFIG as tagGESTURECONFIG
+	type PGESTURECONFIG as tagGESTURECONFIG ptr
+	const GC_ALLGESTURES = &h00000001
+	const GC_ZOOM = &h00000001
+	const GC_PAN = &h00000001
+	const GC_PAN_WITH_SINGLE_FINGER_VERTICALLY = &h00000002
+	const GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY = &h00000004
+	const GC_PAN_WITH_GUTTER = &h00000008
+	const GC_PAN_WITH_INERTIA = &h00000010
+	const GC_ROTATE = &h00000001
+	const GC_TWOFINGERTAP = &h00000001
+	const GC_PRESSANDTAP = &h00000001
+	#define GC_ROLLOVER GC_PRESSANDTAP
+	const GESTURECONFIGMAXCOUNT = 256
+	const GCF_INCLUDE_ANCESTORS = &h00000001
 	declare function SetGestureConfig(byval hwnd as HWND, byval dwReserved as DWORD, byval cIDs as UINT, byval pGestureConfig as PGESTURECONFIG, byval cbSize as UINT) as WINBOOL
 	declare function GetGestureConfig(byval hwnd as HWND, byval dwReserved as DWORD, byval dwFlags as DWORD, byval pcIDs as PUINT, byval pGestureConfig as PGESTURECONFIG, byval cbSize as UINT) as WINBOOL
-	declare function GetGestureInfo(byval hGestureInfo as HGESTUREINFO, byval pGestureInfo as PGESTUREINFO) as WINBOOL
-	declare function GetGestureExtraArgs(byval hGestureInfo as HGESTUREINFO, byval cbExtraArgs as UINT, byval pExtraArgs as PBYTE) as WINBOOL
-	declare function CloseGestureInfoHandle(byval hGestureInfo as HGESTUREINFO) as WINBOOL
+	const NID_INTEGRATED_TOUCH = &h00000001
+	const NID_EXTERNAL_TOUCH = &h00000002
+	const NID_INTEGRATED_PEN = &h00000004
+	const NID_EXTERNAL_PEN = &h00000008
+	const NID_MULTI_INPUT = &h00000040
+	const NID_READY = &h00000080
+#endif
+
+const MAX_STR_BLOCKREASON = 256
+declare function ShutdownBlockReasonCreate(byval hWnd as HWND, byval pwszReason as LPCWSTR) as WINBOOL
+declare function ShutdownBlockReasonQuery(byval hWnd as HWND, byval pwszBuff as LPWSTR, byval pcchBuff as DWORD ptr) as WINBOOL
+declare function ShutdownBlockReasonDestroy(byval hWnd as HWND) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	type tagINPUT_MESSAGE_DEVICE_TYPE as long
+	enum
+		IMDT_UNAVAILABLE = &h00000000
+		IMDT_KEYBOARD = &h00000001
+		IMDT_MOUSE = &h00000002
+		IMDT_TOUCH = &h00000004
+		IMDT_PEN = &h00000008
+	end enum
+
+	type INPUT_MESSAGE_DEVICE_TYPE as tagINPUT_MESSAGE_DEVICE_TYPE
+
+	type tagINPUT_MESSAGE_ORIGIN_ID as long
+	enum
+		IMO_UNAVAILABLE = &h00000000
+		IMO_HARDWARE = &h00000001
+		IMO_INJECTED = &h00000002
+		IMO_SYSTEM = &h00000004
+	end enum
+
+	type INPUT_MESSAGE_ORIGIN_ID as tagINPUT_MESSAGE_ORIGIN_ID
+
+	type tagINPUT_MESSAGE_SOURCE
+		deviceType as INPUT_MESSAGE_DEVICE_TYPE
+		originId as INPUT_MESSAGE_ORIGIN_ID
+	end type
+
+	type INPUT_MESSAGE_SOURCE as tagINPUT_MESSAGE_SOURCE
+	declare function GetCurrentInputMessageSource(byval inputMessageSource as INPUT_MESSAGE_SOURCE ptr) as WINBOOL
+	declare function GetCIMSSM(byval inputMessageSource as INPUT_MESSAGE_SOURCE ptr) as WINBOOL
+
+	type tagAR_STATE as long
+	enum
+		AR_ENABLED = &h0
+		AR_DISABLED = &h1
+		AR_SUPPRESSED = &h2
+		AR_REMOTESESSION = &h4
+		AR_MULTIMON = &h8
+		AR_NOSENSOR = &h10
+		AR_NOT_SUPPORTED = &h20
+		AR_DOCKED = &h40
+		AR_LAPTOP = &h80
+	end enum
+
+	type AR_STATE as tagAR_STATE
+	type PAR_STATE as tagAR_STATE ptr
+
+	type ORIENTATION_PREFERENCE as long
+	enum
+		ORIENTATION_PREFERENCE_NONE = &h0
+		ORIENTATION_PREFERENCE_LANDSCAPE = &h1
+		ORIENTATION_PREFERENCE_PORTRAIT = &h2
+		ORIENTATION_PREFERENCE_LANDSCAPE_FLIPPED = &h4
+		ORIENTATION_PREFERENCE_PORTRAIT_FLIPPED = &h8
+	end enum
+
+	declare function GetAutoRotationState(byval pState as PAR_STATE) as WINBOOL
+	declare function GetDisplayAutoRotationPreferences(byval pOrientation as ORIENTATION_PREFERENCE ptr) as WINBOOL
+	declare function GetDisplayAutoRotationPreferencesByProcessId(byval dwProcessId as DWORD, byval pOrientation as ORIENTATION_PREFERENCE ptr, byval fRotateScreen as WINBOOL ptr) as WINBOOL
+	declare function SetDisplayAutoRotationPreferences(byval orientation as ORIENTATION_PREFERENCE) as WINBOOL
+	declare function IsImmersiveProcess(byval hProcess as HANDLE) as WINBOOL
+	declare function SetProcessRestrictionExemption(byval fEnableExemption as WINBOOL) as WINBOOL
+
+	type tagINPUT_TRANSFORM
+		union
+			type
+				_11 as single
+				_12 as single
+				_13 as single
+				_14 as single
+				_21 as single
+				_22 as single
+				_23 as single
+				_24 as single
+				_31 as single
+				_32 as single
+				_33 as single
+				_34 as single
+				_41 as single
+				_42 as single
+				_43 as single
+				_44 as single
+			end type
+
+			m(0 to 3, 0 to 3) as single
+		end union
+	end type
+
+	type INPUT_TRANSFORM as tagINPUT_TRANSFORM
+	declare function GetPointerInputTransform(byval pointerId as UINT32, byval historyCount as UINT32, byval inputTransform as UINT32 ptr) as WINBOOL
+	declare function IsMousePointerEnabled() as WINBOOL
 #endif
 
 end extern

@@ -1,3 +1,27 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DirectMusic Performance Layer Plugins API
+''
+''   Copyright (C) 2003-2004 Rok Mandeljc
+''
+''   This program is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This program is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "dxguid"
@@ -39,17 +63,21 @@ type LPDIRECTMUSICTRACK as IDirectMusicTrack ptr
 type LPDIRECTMUSICTRACK8 as IDirectMusicTrack8 ptr
 type LPDIRECTMUSICTOOL as IDirectMusicTool ptr
 type LPDIRECTMUSICTOOL8 as IDirectMusicTool8 ptr
+type IDirectMusicPerformance as IDirectMusicPerformance_
 type LPDIRECTMUSICPERFORMANCE as IDirectMusicPerformance ptr
 type LPDIRECTMUSICPERFORMANCE8 as IDirectMusicPerformance8 ptr
+type IDirectMusicSegment as IDirectMusicSegment_
 type LPDIRECTMUSICSEGMENT as IDirectMusicSegment ptr
 type LPDIRECTMUSICSEGMENT8 as IDirectMusicSegment8 ptr
+type IDirectMusicSegmentState as IDirectMusicSegmentState_
 type LPDIRECTMUSICSEGMENTSTATE as IDirectMusicSegmentState ptr
 type LPDIRECTMUSICSEGMENTSTATE8 as IDirectMusicSegmentState8 ptr
+type IDirectMusicGraph as IDirectMusicGraph_
 type LPDIRECTMUSICGRAPH as IDirectMusicGraph ptr
 type IDirectMusicGraph8 as IDirectMusicGraph
 type LPDIRECTMUSICGRAPH8 as IDirectMusicGraph ptr
-type DMUS_PMSG_ as _DMUS_PMSG
-type MUSIC_TIME_ as LONG
+type DMUS_PMSG as _DMUS_PMSG
+type MUSIC_TIME as LONG
 const DMUS_TRACK_PARAMF_CLOCK = &h1
 type DMUS_TRACKF_FLAGS as enumDMUS_TRACKF_FLAGS
 
@@ -70,7 +98,7 @@ end enum
 
 type IDirectMusicToolVtbl as IDirectMusicToolVtbl_
 
-type IDirectMusicTool_
+type IDirectMusicTool
 	lpVtbl as IDirectMusicToolVtbl ptr
 end type
 
@@ -126,7 +154,7 @@ end type
 #define IDirectMusicTool8_Clone(p, a) (p)->lpVtbl->Clone(p, a)
 type IDirectMusicTrackVtbl as IDirectMusicTrackVtbl_
 
-type IDirectMusicTrack_
+type IDirectMusicTrack
 	lpVtbl as IDirectMusicTrackVtbl ptr
 end type
 

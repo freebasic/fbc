@@ -1,3 +1,26 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2002-2003 Jason Edmeades
+''                           Raphael Junqueira
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #define __WINE_D3D9CAPS_H
@@ -11,11 +34,28 @@ const D3DCURSORCAPS_LOWRES = 2
 #define D3DDEVCAPS2_CAN_STRETCHRECT_FROM_TEXTURES __MSABI_LONG(&h00000010)
 #define D3DDEVCAPS2_PRESAMPLEDDMAPNPATCH __MSABI_LONG(&h00000020)
 #define D3DDEVCAPS2_VERTEXELEMENTSCANSHARESTREAMOFFSET __MSABI_LONG(&h00000040)
+const D3DDEVCAPS_EXECUTESYSTEMMEMORY = &h0000010
+const D3DDEVCAPS_EXECUTEVIDEOMEMORY = &h0000020
+const D3DDEVCAPS_TLVERTEXSYSTEMMEMORY = &h0000040
+const D3DDEVCAPS_TLVERTEXVIDEOMEMORY = &h0000080
+const D3DDEVCAPS_TEXTURESYSTEMMEMORY = &h0000100
+const D3DDEVCAPS_TEXTUREVIDEOMEMORY = &h0000200
+const D3DDEVCAPS_DRAWPRIMTLVERTEX = &h0000400
+const D3DDEVCAPS_CANRENDERAFTERFLIP = &h0000800
+const D3DDEVCAPS_TEXTURENONLOCALVIDMEM = &h0001000
+const D3DDEVCAPS_DRAWPRIMITIVES2 = &h0002000
+const D3DDEVCAPS_SEPARATETEXTUREMEMORIES = &h0004000
+const D3DDEVCAPS_DRAWPRIMITIVES2EX = &h0008000
+const D3DDEVCAPS_HWTRANSFORMANDLIGHT = &h0010000
+const D3DDEVCAPS_CANBLTSYSTONONLOCAL = &h0020000
+const D3DDEVCAPS_HWRASTERIZATION = &h0080000
 const D3DDEVCAPS_PUREDEVICE = &h0100000
 const D3DDEVCAPS_QUINTICRTPATCHES = &h0200000
 const D3DDEVCAPS_RTPATCHES = &h0400000
 const D3DDEVCAPS_RTPATCHHANDLEZERO = &h0800000
 const D3DDEVCAPS_NPATCHES = &h1000000
+const D3DFVFCAPS_TEXCOORDCOUNTMASK = &h00FFFF
+const D3DFVFCAPS_DONOTSTRIPELEMENTS = &h080000
 const D3DFVFCAPS_PSIZE = &h100000
 const D3DLINECAPS_TEXTURE = &h01
 const D3DLINECAPS_ZTEST = &h02
@@ -23,7 +63,33 @@ const D3DLINECAPS_BLEND = &h04
 const D3DLINECAPS_ALPHACMP = &h08
 const D3DLINECAPS_FOG = &h10
 const D3DLINECAPS_ANTIALIAS = &h20
+const D3DPBLENDCAPS_ZERO = &h00000001
+const D3DPBLENDCAPS_ONE = &h00000002
+const D3DPBLENDCAPS_SRCCOLOR = &h00000004
+const D3DPBLENDCAPS_INVSRCCOLOR = &h00000008
+const D3DPBLENDCAPS_SRCALPHA = &h00000010
+const D3DPBLENDCAPS_INVSRCALPHA = &h00000020
+const D3DPBLENDCAPS_DESTALPHA = &h00000040
+const D3DPBLENDCAPS_INVDESTALPHA = &h00000080
+const D3DPBLENDCAPS_DESTCOLOR = &h00000100
+const D3DPBLENDCAPS_INVDESTCOLOR = &h00000200
+const D3DPBLENDCAPS_SRCALPHASAT = &h00000400
+const D3DPBLENDCAPS_BOTHSRCALPHA = &h00000800
+const D3DPBLENDCAPS_BOTHINVSRCALPHA = &h00001000
 const D3DPBLENDCAPS_BLENDFACTOR = &h00002000
+const D3DPCMPCAPS_NEVER = &h01
+const D3DPCMPCAPS_LESS = &h02
+const D3DPCMPCAPS_EQUAL = &h04
+const D3DPCMPCAPS_LESSEQUAL = &h08
+const D3DPCMPCAPS_GREATER = &h10
+const D3DPCMPCAPS_NOTEQUAL = &h20
+const D3DPCMPCAPS_GREATEREQUAL = &h40
+const D3DPCMPCAPS_ALWAYS = &h80
+#define D3DPMISCCAPS_MASKZ __MSABI_LONG(&h00000002)
+#define D3DPMISCCAPS_LINEPATTERNREP __MSABI_LONG(&h00000004)
+#define D3DPMISCCAPS_CULLNONE __MSABI_LONG(&h00000010)
+#define D3DPMISCCAPS_CULLCW __MSABI_LONG(&h00000020)
+#define D3DPMISCCAPS_CULLCCW __MSABI_LONG(&h00000040)
 #define D3DPMISCCAPS_COLORWRITEENABLE __MSABI_LONG(&h00000080)
 #define D3DPMISCCAPS_CLIPPLANESCALEDPOINTS __MSABI_LONG(&h00000100)
 #define D3DPMISCCAPS_CLIPTLVERTS __MSABI_LONG(&h00000200)
@@ -37,6 +103,20 @@ const D3DPBLENDCAPS_BLENDFACTOR = &h00002000
 #define D3DPMISCCAPS_MRTINDEPENDENTBITDEPTHS __MSABI_LONG(&h00040000)
 #define D3DPMISCCAPS_MRTPOSTPIXELSHADERBLENDING __MSABI_LONG(&h00080000)
 #define D3DPMISCCAPS_FOGVERTEXCLAMPED __MSABI_LONG(&h00100000)
+#define D3DPRASTERCAPS_DITHER __MSABI_LONG(&h00000001)
+#define D3DPRASTERCAPS_PAT __MSABI_LONG(&h00000008)
+#define D3DPRASTERCAPS_ZTEST __MSABI_LONG(&h00000010)
+#define D3DPRASTERCAPS_FOGVERTEX __MSABI_LONG(&h00000080)
+#define D3DPRASTERCAPS_FOGTABLE __MSABI_LONG(&h00000100)
+#define D3DPRASTERCAPS_ANTIALIASEDGES __MSABI_LONG(&h00001000)
+#define D3DPRASTERCAPS_MIPMAPLODBIAS __MSABI_LONG(&h00002000)
+#define D3DPRASTERCAPS_ZBIAS __MSABI_LONG(&h00004000)
+#define D3DPRASTERCAPS_ZBUFFERLESSHSR __MSABI_LONG(&h00008000)
+#define D3DPRASTERCAPS_FOGRANGE __MSABI_LONG(&h00010000)
+#define D3DPRASTERCAPS_ANISOTROPY __MSABI_LONG(&h00020000)
+#define D3DPRASTERCAPS_WBUFFER __MSABI_LONG(&h00040000)
+#define D3DPRASTERCAPS_WFOG __MSABI_LONG(&h00100000)
+#define D3DPRASTERCAPS_ZFOG __MSABI_LONG(&h00200000)
 #define D3DPRASTERCAPS_COLORPERSPECTIVE __MSABI_LONG(&h00400000)
 #define D3DPRASTERCAPS_SCISSORTEST __MSABI_LONG(&h01000000)
 #define D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS __MSABI_LONG(&h02000000)
@@ -48,7 +128,25 @@ const D3DPRESENT_INTERVAL_TWO = &h00000002
 const D3DPRESENT_INTERVAL_THREE = &h00000004
 const D3DPRESENT_INTERVAL_FOUR = &h00000008
 const D3DPRESENT_INTERVAL_IMMEDIATE = &h80000000
+const D3DPSHADECAPS_COLORGOURAUDRGB = &h00008
+const D3DPSHADECAPS_SPECULARGOURAUDRGB = &h00200
+const D3DPSHADECAPS_ALPHAGOURAUDBLEND = &h04000
+const D3DPSHADECAPS_FOGGOURAUD = &h80000
+const D3DPTADDRESSCAPS_WRAP = &h01
+const D3DPTADDRESSCAPS_MIRROR = &h02
+const D3DPTADDRESSCAPS_CLAMP = &h04
+const D3DPTADDRESSCAPS_BORDER = &h08
+const D3DPTADDRESSCAPS_INDEPENDENTUV = &h10
 const D3DPTADDRESSCAPS_MIRRORONCE = &h20
+#define D3DPTEXTURECAPS_PERSPECTIVE __MSABI_LONG(&h00000001)
+#define D3DPTEXTURECAPS_POW2 __MSABI_LONG(&h00000002)
+#define D3DPTEXTURECAPS_ALPHA __MSABI_LONG(&h00000004)
+#define D3DPTEXTURECAPS_SQUAREONLY __MSABI_LONG(&h00000020)
+#define D3DPTEXTURECAPS_TEXREPEATNOTSCALEDBYSIZE __MSABI_LONG(&h00000040)
+#define D3DPTEXTURECAPS_ALPHAPALETTE __MSABI_LONG(&h00000080)
+#define D3DPTEXTURECAPS_NONPOW2CONDITIONAL __MSABI_LONG(&h00000100)
+#define D3DPTEXTURECAPS_PROJECTED __MSABI_LONG(&h00000400)
+#define D3DPTEXTURECAPS_CUBEMAP __MSABI_LONG(&h00000800)
 #define D3DPTEXTURECAPS_VOLUMEMAP __MSABI_LONG(&h00002000)
 #define D3DPTEXTURECAPS_MIPMAP __MSABI_LONG(&h00004000)
 #define D3DPTEXTURECAPS_MIPVOLUMEMAP __MSABI_LONG(&h00008000)
@@ -56,13 +154,58 @@ const D3DPTADDRESSCAPS_MIRRORONCE = &h20
 #define D3DPTEXTURECAPS_CUBEMAP_POW2 __MSABI_LONG(&h00020000)
 #define D3DPTEXTURECAPS_VOLUMEMAP_POW2 __MSABI_LONG(&h00040000)
 #define D3DPTEXTURECAPS_NOPROJECTEDBUMPENV __MSABI_LONG(&h00200000)
+const D3DPTFILTERCAPS_MINFPOINT = &h00000100
+const D3DPTFILTERCAPS_MINFLINEAR = &h00000200
+const D3DPTFILTERCAPS_MINFANISOTROPIC = &h00000400
 const D3DPTFILTERCAPS_MINFPYRAMIDALQUAD = &h00000800
 const D3DPTFILTERCAPS_MINFGAUSSIANQUAD = &h00001000
+const D3DPTFILTERCAPS_MIPFPOINT = &h00010000
+const D3DPTFILTERCAPS_MIPFLINEAR = &h00020000
+const D3DPTFILTERCAPS_MAGFPOINT = &h01000000
+const D3DPTFILTERCAPS_MAGFLINEAR = &h02000000
+const D3DPTFILTERCAPS_MAGFANISOTROPIC = &h04000000
 const D3DPTFILTERCAPS_MAGFPYRAMIDALQUAD = &h08000000
 const D3DPTFILTERCAPS_MAGFGAUSSIANQUAD = &h10000000
+const D3DSTENCILCAPS_KEEP = &h01
+const D3DSTENCILCAPS_ZERO = &h02
+const D3DSTENCILCAPS_REPLACE = &h04
+const D3DSTENCILCAPS_INCRSAT = &h08
+const D3DSTENCILCAPS_DECRSAT = &h10
+const D3DSTENCILCAPS_INVERT = &h20
+const D3DSTENCILCAPS_INCR = &h40
+const D3DSTENCILCAPS_DECR = &h80
 const D3DSTENCILCAPS_TWOSIDED = &h100
+const D3DTEXOPCAPS_DISABLE = &h0000001
+const D3DTEXOPCAPS_SELECTARG1 = &h0000002
+const D3DTEXOPCAPS_SELECTARG2 = &h0000004
+const D3DTEXOPCAPS_MODULATE = &h0000008
+const D3DTEXOPCAPS_MODULATE2X = &h0000010
+const D3DTEXOPCAPS_MODULATE4X = &h0000020
+const D3DTEXOPCAPS_ADD = &h0000040
+const D3DTEXOPCAPS_ADDSIGNED = &h0000080
+const D3DTEXOPCAPS_ADDSIGNED2X = &h0000100
+const D3DTEXOPCAPS_SUBTRACT = &h0000200
+const D3DTEXOPCAPS_ADDSMOOTH = &h0000400
+const D3DTEXOPCAPS_BLENDDIFFUSEALPHA = &h0000800
+const D3DTEXOPCAPS_BLENDTEXTUREALPHA = &h0001000
+const D3DTEXOPCAPS_BLENDFACTORALPHA = &h0002000
+const D3DTEXOPCAPS_BLENDTEXTUREALPHAPM = &h0004000
+const D3DTEXOPCAPS_BLENDCURRENTALPHA = &h0008000
+const D3DTEXOPCAPS_PREMODULATE = &h0010000
+const D3DTEXOPCAPS_MODULATEALPHA_ADDCOLOR = &h0020000
+const D3DTEXOPCAPS_MODULATECOLOR_ADDALPHA = &h0040000
+const D3DTEXOPCAPS_MODULATEINVALPHA_ADDCOLOR = &h0080000
+const D3DTEXOPCAPS_MODULATEINVCOLOR_ADDALPHA = &h0100000
+const D3DTEXOPCAPS_BUMPENVMAP = &h0200000
+const D3DTEXOPCAPS_BUMPENVMAPLUMINANCE = &h0400000
+const D3DTEXOPCAPS_DOTPRODUCT3 = &h0800000
 const D3DTEXOPCAPS_MULTIPLYADD = &h1000000
 const D3DTEXOPCAPS_LERP = &h2000000
+#define D3DVTXPCAPS_TEXGEN __MSABI_LONG(&h00000001)
+#define D3DVTXPCAPS_MATERIALSOURCE7 __MSABI_LONG(&h00000002)
+#define D3DVTXPCAPS_DIRECTIONALLIGHTS __MSABI_LONG(&h00000008)
+#define D3DVTXPCAPS_POSITIONALLIGHTS __MSABI_LONG(&h00000010)
+#define D3DVTXPCAPS_LOCALVIEWER __MSABI_LONG(&h00000020)
 #define D3DVTXPCAPS_TWEENING __MSABI_LONG(&h00000040)
 #define D3DVTXPCAPS_TEXGEN_SPHEREMAP __MSABI_LONG(&h00000100)
 #define D3DVTXPCAPS_NO_TEXGEN_NONLOCALVIEWER __MSABI_LONG(&h00000200)
@@ -112,95 +255,188 @@ const D3DPS20_MIN_NUMINSTRUCTIONSLOTS = 96
 const D3DMIN30SHADERINSTRUCTIONS = 512
 const D3DMAX30SHADERINSTRUCTIONS = 32768
 
-type _D3DVSHADERCAPS2_0
-	Caps as DWORD
-	DynamicFlowControlDepth as INT_
-	NumTemps as INT_
-	StaticFlowControlDepth as INT_
-end type
+#ifdef __FB_64BIT__
+	type _D3DVSHADERCAPS2_0
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+	end type
+#else
+	type _D3DVSHADERCAPS2_0 field = 4
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+	end type
+#endif
 
 type D3DVSHADERCAPS2_0 as _D3DVSHADERCAPS2_0
 
-type _D3DPSHADERCAPS2_0
-	Caps as DWORD
-	DynamicFlowControlDepth as INT_
-	NumTemps as INT_
-	StaticFlowControlDepth as INT_
-	NumInstructionSlots as INT_
-end type
+#ifdef __FB_64BIT__
+	type _D3DPSHADERCAPS2_0
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+		NumInstructionSlots as INT_
+	end type
+#else
+	type _D3DPSHADERCAPS2_0 field = 4
+		Caps as DWORD
+		DynamicFlowControlDepth as INT_
+		NumTemps as INT_
+		StaticFlowControlDepth as INT_
+		NumInstructionSlots as INT_
+	end type
+#endif
 
 type D3DPSHADERCAPS2_0 as _D3DPSHADERCAPS2_0
 
-type _D3DCAPS9
-	DeviceType as D3DDEVTYPE
-	AdapterOrdinal as UINT
-	Caps as DWORD
-	Caps2 as DWORD
-	Caps3 as DWORD
-	PresentationIntervals as DWORD
-	CursorCaps as DWORD
-	DevCaps as DWORD
-	PrimitiveMiscCaps as DWORD
-	RasterCaps_ as DWORD
-	ZCmpCaps as DWORD
-	SrcBlendCaps as DWORD
-	DestBlendCaps as DWORD
-	AlphaCmpCaps as DWORD
-	ShadeCaps as DWORD
-	TextureCaps as DWORD
-	TextureFilterCaps as DWORD
-	CubeTextureFilterCaps as DWORD
-	VolumeTextureFilterCaps as DWORD
-	TextureAddressCaps as DWORD
-	VolumeTextureAddressCaps as DWORD
-	LineCaps_ as DWORD
-	MaxTextureWidth as DWORD
-	MaxTextureHeight as DWORD
-	MaxVolumeExtent as DWORD
-	MaxTextureRepeat as DWORD
-	MaxTextureAspectRatio as DWORD
-	MaxAnisotropy as DWORD
-	MaxVertexW as single
-	GuardBandLeft as single
-	GuardBandTop as single
-	GuardBandRight as single
-	GuardBandBottom as single
-	ExtentsAdjust as single
-	StencilCaps as DWORD
-	FVFCaps as DWORD
-	TextureOpCaps as DWORD
-	MaxTextureBlendStages as DWORD
-	MaxSimultaneousTextures as DWORD
-	VertexProcessingCaps as DWORD
-	MaxActiveLights as DWORD
-	MaxUserClipPlanes as DWORD
-	MaxVertexBlendMatrices as DWORD
-	MaxVertexBlendMatrixIndex as DWORD
-	MaxPointSize as single
-	MaxPrimitiveCount as DWORD
-	MaxVertexIndex as DWORD
-	MaxStreams as DWORD
-	MaxStreamStride as DWORD
-	VertexShaderVersion as DWORD
-	MaxVertexShaderConst as DWORD
-	PixelShaderVersion as DWORD
-	PixelShader1xMaxValue as single
-	DevCaps2 as DWORD
-	MaxNpatchTessellationLevel as single
-	Reserved5 as DWORD
-	MasterAdapterOrdinal as UINT
-	AdapterOrdinalInGroup as UINT
-	NumberOfAdaptersInGroup as UINT
-	DeclTypes as DWORD
-	NumSimultaneousRTs as DWORD
-	StretchRectFilterCaps as DWORD
-	VS20Caps as D3DVSHADERCAPS2_0
-	PS20Caps as D3DPSHADERCAPS2_0
-	VertexTextureFilterCaps as DWORD
-	MaxVShaderInstructionsExecuted as DWORD
-	MaxPShaderInstructionsExecuted as DWORD
-	MaxVertexShader30InstructionSlots as DWORD
-	MaxPixelShader30InstructionSlots as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DCAPS9
+		DeviceType as D3DDEVTYPE
+		AdapterOrdinal as UINT
+		Caps as DWORD
+		Caps2 as DWORD
+		Caps3 as DWORD
+		PresentationIntervals as DWORD
+		CursorCaps as DWORD
+		DevCaps as DWORD
+		PrimitiveMiscCaps as DWORD
+		RasterCaps as DWORD
+		ZCmpCaps as DWORD
+		SrcBlendCaps as DWORD
+		DestBlendCaps as DWORD
+		AlphaCmpCaps as DWORD
+		ShadeCaps as DWORD
+		TextureCaps as DWORD
+		TextureFilterCaps as DWORD
+		CubeTextureFilterCaps as DWORD
+		VolumeTextureFilterCaps as DWORD
+		TextureAddressCaps as DWORD
+		VolumeTextureAddressCaps as DWORD
+		LineCaps as DWORD
+		MaxTextureWidth as DWORD
+		MaxTextureHeight as DWORD
+		MaxVolumeExtent as DWORD
+		MaxTextureRepeat as DWORD
+		MaxTextureAspectRatio as DWORD
+		MaxAnisotropy as DWORD
+		MaxVertexW as single
+		GuardBandLeft as single
+		GuardBandTop as single
+		GuardBandRight as single
+		GuardBandBottom as single
+		ExtentsAdjust as single
+		StencilCaps as DWORD
+		FVFCaps as DWORD
+		TextureOpCaps as DWORD
+		MaxTextureBlendStages as DWORD
+		MaxSimultaneousTextures as DWORD
+		VertexProcessingCaps as DWORD
+		MaxActiveLights as DWORD
+		MaxUserClipPlanes as DWORD
+		MaxVertexBlendMatrices as DWORD
+		MaxVertexBlendMatrixIndex as DWORD
+		MaxPointSize as single
+		MaxPrimitiveCount as DWORD
+		MaxVertexIndex as DWORD
+		MaxStreams as DWORD
+		MaxStreamStride as DWORD
+		VertexShaderVersion as DWORD
+		MaxVertexShaderConst as DWORD
+		PixelShaderVersion as DWORD
+		PixelShader1xMaxValue as single
+		DevCaps2 as DWORD
+		MaxNpatchTessellationLevel as single
+		Reserved5 as DWORD
+		MasterAdapterOrdinal as UINT
+		AdapterOrdinalInGroup as UINT
+		NumberOfAdaptersInGroup as UINT
+		DeclTypes as DWORD
+		NumSimultaneousRTs as DWORD
+		StretchRectFilterCaps as DWORD
+		VS20Caps as D3DVSHADERCAPS2_0
+		PS20Caps as D3DPSHADERCAPS2_0
+		VertexTextureFilterCaps as DWORD
+		MaxVShaderInstructionsExecuted as DWORD
+		MaxPShaderInstructionsExecuted as DWORD
+		MaxVertexShader30InstructionSlots as DWORD
+		MaxPixelShader30InstructionSlots as DWORD
+	end type
+#else
+	type _D3DCAPS9 field = 4
+		DeviceType as D3DDEVTYPE
+		AdapterOrdinal as UINT
+		Caps as DWORD
+		Caps2 as DWORD
+		Caps3 as DWORD
+		PresentationIntervals as DWORD
+		CursorCaps as DWORD
+		DevCaps as DWORD
+		PrimitiveMiscCaps as DWORD
+		RasterCaps as DWORD
+		ZCmpCaps as DWORD
+		SrcBlendCaps as DWORD
+		DestBlendCaps as DWORD
+		AlphaCmpCaps as DWORD
+		ShadeCaps as DWORD
+		TextureCaps as DWORD
+		TextureFilterCaps as DWORD
+		CubeTextureFilterCaps as DWORD
+		VolumeTextureFilterCaps as DWORD
+		TextureAddressCaps as DWORD
+		VolumeTextureAddressCaps as DWORD
+		LineCaps as DWORD
+		MaxTextureWidth as DWORD
+		MaxTextureHeight as DWORD
+		MaxVolumeExtent as DWORD
+		MaxTextureRepeat as DWORD
+		MaxTextureAspectRatio as DWORD
+		MaxAnisotropy as DWORD
+		MaxVertexW as single
+		GuardBandLeft as single
+		GuardBandTop as single
+		GuardBandRight as single
+		GuardBandBottom as single
+		ExtentsAdjust as single
+		StencilCaps as DWORD
+		FVFCaps as DWORD
+		TextureOpCaps as DWORD
+		MaxTextureBlendStages as DWORD
+		MaxSimultaneousTextures as DWORD
+		VertexProcessingCaps as DWORD
+		MaxActiveLights as DWORD
+		MaxUserClipPlanes as DWORD
+		MaxVertexBlendMatrices as DWORD
+		MaxVertexBlendMatrixIndex as DWORD
+		MaxPointSize as single
+		MaxPrimitiveCount as DWORD
+		MaxVertexIndex as DWORD
+		MaxStreams as DWORD
+		MaxStreamStride as DWORD
+		VertexShaderVersion as DWORD
+		MaxVertexShaderConst as DWORD
+		PixelShaderVersion as DWORD
+		PixelShader1xMaxValue as single
+		DevCaps2 as DWORD
+		MaxNpatchTessellationLevel as single
+		Reserved5 as DWORD
+		MasterAdapterOrdinal as UINT
+		AdapterOrdinalInGroup as UINT
+		NumberOfAdaptersInGroup as UINT
+		DeclTypes as DWORD
+		NumSimultaneousRTs as DWORD
+		StretchRectFilterCaps as DWORD
+		VS20Caps as D3DVSHADERCAPS2_0
+		PS20Caps as D3DPSHADERCAPS2_0
+		VertexTextureFilterCaps as DWORD
+		MaxVShaderInstructionsExecuted as DWORD
+		MaxPShaderInstructionsExecuted as DWORD
+		MaxVertexShader30InstructionSlots as DWORD
+		MaxPixelShader30InstructionSlots as DWORD
+	end type
+#endif
 
 type D3DCAPS9 as _D3DCAPS9

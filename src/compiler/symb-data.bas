@@ -493,6 +493,13 @@ function closestType _
 
 end function
 
+'' Determine whether two types are compatible, for an assignment like this:
+''    l = r
+'' where l could be a reference or a variable (parameters, function results,
+'' variables...) and r is the source (e.g. the argument in case of parameters).
+''  result = 0  =>  incompatible
+''  otherwise   =>  compatible, and the result is a matching score
+''                  (FB_OVLPROC_FULLMATCH etc.)
 function typeCalcMatch _
 	( _
 		byval ldtype as integer, _

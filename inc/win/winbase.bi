@@ -1,3 +1,51 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "kernel32"
@@ -11,6 +59,8 @@
 '' The following symbols have been renamed:
 ''     procedure Sleep => Sleep_
 ''     procedure Beep => Beep_
+''     #define GHND => GHND_
+''     #define GPTR => GPTR_
 
 extern "Windows"
 
@@ -853,6 +903,7 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 	#define GetModuleFileName GetModuleFileNameW
 	#define GetModuleHandle GetModuleHandleW
 	#define LoadLibraryEx LoadLibraryExW
+	#define EnumResourceLanguages EnumResourceLanguagesW
 #else
 	#define PGET_MODULE_HANDLE_EX PGET_MODULE_HANDLE_EXA
 	#define GetModuleHandleEx GetModuleHandleExA
@@ -860,6 +911,7 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 	#define GetModuleFileName GetModuleFileNameA
 	#define GetModuleHandle GetModuleHandleA
 	#define LoadLibraryEx LoadLibraryExA
+	#define EnumResourceLanguages EnumResourceLanguagesA
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -885,6 +937,11 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 declare function DisableThreadLibraryCalls(byval hLibModule as HMODULE) as WINBOOL
 declare function FreeLibrary(byval hLibModule as HMODULE) as WINBOOL
 declare function GetProcAddress(byval hModule as HMODULE, byval lpProcName as LPCSTR) as FARPROC
+
+#if _WIN32_WINNT = &h0602
+	declare function FindStringOrdinal(byval dwFindStringOrdinalFlags as DWORD, byval lpStringSource as LPCWSTR, byval cchSource as long, byval lpStringValue as LPCWSTR, byval cchValue as long, byval bIgnoreCase as WINBOOL) as long
+#endif
+
 #define _MEMORYAPI_H_
 
 type _MEMORY_RESOURCE_NOTIFICATION_TYPE as long
@@ -1149,22 +1206,11 @@ declare sub ExitProcess(byval uExitCode as UINT)
 declare function TerminateProcess(byval hProcess as HANDLE, byval uExitCode as UINT) as WINBOOL
 declare function GetExitCodeProcess(byval hProcess as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
 declare function SwitchToThread() as WINBOOL
-declare function CreateThread(byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
 declare function CreateRemoteThread(byval hProcess as HANDLE, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
 declare function OpenThread(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval dwThreadId as DWORD) as HANDLE
-declare function SetThreadPriority(byval hThread as HANDLE, byval nPriority as long) as WINBOOL
 declare function SetThreadPriorityBoost(byval hThread as HANDLE, byval bDisablePriorityBoost as WINBOOL) as WINBOOL
 declare function GetThreadPriorityBoost(byval hThread as HANDLE, byval pDisablePriorityBoost as PBOOL) as WINBOOL
-declare function GetThreadPriority(byval hThread as HANDLE) as long
-declare sub ExitThread(byval dwExitCode as DWORD)
 declare function TerminateThread(byval hThread as HANDLE, byval dwExitCode as DWORD) as WINBOOL
-declare function GetExitCodeThread(byval hThread as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
-declare function SuspendThread(byval hThread as HANDLE) as DWORD
-declare function ResumeThread(byval hThread as HANDLE) as DWORD
-declare function TlsAlloc() as DWORD
-declare function TlsGetValue(byval dwTlsIndex as DWORD) as LPVOID
-declare function TlsSetValue(byval dwTlsIndex as DWORD, byval lpTlsValue as LPVOID) as WINBOOL
-declare function TlsFree(byval dwTlsIndex as DWORD) as WINBOOL
 declare function SetProcessShutdownParameters(byval dwLevel as DWORD, byval dwFlags as DWORD) as WINBOOL
 declare function GetProcessVersion(byval ProcessId as DWORD) as DWORD
 declare sub GetStartupInfoW(byval lpStartupInfo as LPSTARTUPINFOW)
@@ -1214,7 +1260,6 @@ declare function CreateProcessAsUserW(byval hToken as HANDLE, byval lpApplicatio
 	declare function SetProcessAffinityUpdateMode(byval hProcess as HANDLE, byval dwFlags as DWORD) as WINBOOL
 	declare function QueryProcessAffinityUpdateMode(byval hProcess as HANDLE, byval lpdwFlags as LPDWORD) as WINBOOL
 	declare function UpdateProcThreadAttribute(byval lpAttributeList as LPPROC_THREAD_ATTRIBUTE_LIST, byval dwFlags as DWORD, byval Attribute as DWORD_PTR, byval lpValue as PVOID, byval cbSize as SIZE_T_, byval lpPreviousValue as PVOID, byval lpReturnSize as PSIZE_T) as WINBOOL
-	declare function SetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER, byval lpPreviousIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 	declare function GetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 	declare sub GetCurrentProcessorNumberEx(byval ProcNumber as PPROCESSOR_NUMBER)
 	declare sub GetCurrentThreadStackLimits(byval LowLimit as PULONG_PTR, byval HighLimit as PULONG_PTR)
@@ -1230,6 +1275,22 @@ declare function IsProcessorFeaturePresent(byval ProcessorFeature as DWORD) as W
 
 #if _WIN32_WINNT = &h0602
 	declare sub FlushProcessWriteBuffers()
+#endif
+
+declare function CreateThread(byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval dwStackSize as SIZE_T_, byval lpStartAddress as LPTHREAD_START_ROUTINE, byval lpParameter as LPVOID, byval dwCreationFlags as DWORD, byval lpThreadId as LPDWORD) as HANDLE
+declare function SetThreadPriority(byval hThread as HANDLE, byval nPriority as long) as WINBOOL
+declare function GetThreadPriority(byval hThread as HANDLE) as long
+declare sub ExitThread(byval dwExitCode as DWORD)
+declare function GetExitCodeThread(byval hThread as HANDLE, byval lpExitCode as LPDWORD) as WINBOOL
+declare function SuspendThread(byval hThread as HANDLE) as DWORD
+declare function ResumeThread(byval hThread as HANDLE) as DWORD
+declare function TlsAlloc() as DWORD
+declare function TlsGetValue(byval dwTlsIndex as DWORD) as LPVOID
+declare function TlsSetValue(byval dwTlsIndex as DWORD, byval lpTlsValue as LPVOID) as WINBOOL
+declare function TlsFree(byval dwTlsIndex as DWORD) as WINBOOL
+
+#if _WIN32_WINNT = &h0602
+	declare function SetThreadIdealProcessorEx(byval hThread as HANDLE, byval lpIdealProcessor as PPROCESSOR_NUMBER, byval lpPreviousIdealProcessor as PPROCESSOR_NUMBER) as WINBOOL
 #endif
 
 #define _PROCESSTOPOLOGYAPI_H_
@@ -1732,12 +1793,12 @@ type PTP_WIN32_IO_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval
 #endif
 
 #define _THREADPOOLLEGACYAPISET_H_
+declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval Flags as ULONG) as WINBOOL
+declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function QueueUserWorkItem(byval Function as LPTHREAD_START_ROUTINE, byval Context as PVOID, byval Flags as ULONG) as WINBOOL
 declare function UnregisterWaitEx(byval WaitHandle as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function CreateTimerQueue() as HANDLE
-declare function CreateTimerQueueTimer(byval phNewTimer as PHANDLE, byval TimerQueue as HANDLE, byval Callback as WAITORTIMERCALLBACK, byval Parameter as PVOID, byval DueTime as DWORD, byval Period as DWORD, byval Flags as ULONG) as WINBOOL
 declare function ChangeTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval DueTime as ULONG, byval Period as ULONG) as WINBOOL
-declare function DeleteTimerQueueTimer(byval TimerQueue as HANDLE, byval Timer as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 declare function DeleteTimerQueueEx(byval TimerQueue as HANDLE, byval CompletionEvent as HANDLE) as WINBOOL
 #define _APISETUTIL_
 declare function EncodePointer(byval Ptr as PVOID) as PVOID
@@ -2031,8 +2092,8 @@ const GMEM_NOTIFY = &h4000
 #define GMEM_LOWER GMEM_NOT_BANKED
 const GMEM_VALID_FLAGS = &h7f72
 const GMEM_INVALID_HANDLE = &h8000
-#define GHND (GMEM_MOVEABLE or GMEM_ZEROINIT)
-#define GPTR (GMEM_FIXED or GMEM_ZEROINIT)
+#define GHND_ (GMEM_MOVEABLE or GMEM_ZEROINIT)
+#define GPTR_ (GMEM_FIXED or GMEM_ZEROINIT)
 #define GlobalLRUNewest(h) cast(HANDLE, (h))
 #define GlobalLRUOldest(h) cast(HANDLE, (h))
 #define GlobalDiscard(h) GlobalReAlloc((h), 0, GMEM_MOVEABLE)
@@ -2342,8 +2403,6 @@ type POFSTRUCT as _OFSTRUCT ptr
 	end function
 
 	#define InterlockedCompareExchangePointer(Destination, ExChange, Comperand) cast(PVOID, cast(LONG_PTR, InterlockedCompareExchange(cptr(LONG ptr, (Destination)), cast(LONG, cast(LONG_PTR, (ExChange))), cast(LONG, cast(LONG_PTR, (Comperand))))))
-	#define InterlockedDecrementAcquire InterlockedDecrement
-	#define InterlockedDecrementRelease InterlockedDecrement
 #endif
 
 #define InterlockedIncrementAcquire InterlockedIncrement
@@ -2351,11 +2410,18 @@ type POFSTRUCT as _OFSTRUCT ptr
 
 #ifdef __FB_64BIT__
 	#define InterlockedDecrement _InterlockedDecrement
-	#define InterlockedDecrementAcquire InterlockedDecrement
-	#define InterlockedDecrementRelease InterlockedDecrement
+#endif
+
+#define InterlockedDecrementAcquire InterlockedDecrement
+#define InterlockedDecrementRelease InterlockedDecrement
+
+#ifdef __FB_64BIT__
 	#define InterlockedExchange _InterlockedExchange
 	#define InterlockedExchangeAdd _InterlockedExchangeAdd
 	#define InterlockedCompareExchange _InterlockedCompareExchange
+#else
+	#define InterlockedIncrementAcquire InterlockedIncrement
+	#define InterlockedIncrementRelease InterlockedIncrement
 #endif
 
 #define InterlockedCompareExchangeAcquire InterlockedCompareExchange
@@ -2484,6 +2550,7 @@ declare function SetEnvironmentStringsA(byval NewEnvironment as LPCH) as WINBOOL
 #endif
 
 declare sub RaiseFailFastException(byval pExceptionRecord as PEXCEPTION_RECORD, byval pContextRecord as PCONTEXT, byval dwFlags as DWORD)
+declare function SetThreadIdealProcessor(byval hThread as HANDLE, byval dwIdealProcessor as DWORD) as DWORD
 const FIBER_FLAG_FLOAT_SWITCH = &h1
 declare function CreateFiber(byval dwStackSize as SIZE_T_, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
 declare function CreateFiberEx(byval dwStackCommitSize as SIZE_T_, byval dwStackReserveSize as SIZE_T_, byval dwFlags as DWORD, byval lpStartAddress as LPFIBER_START_ROUTINE, byval lpParameter as LPVOID) as LPVOID
@@ -2493,7 +2560,6 @@ declare function ConvertThreadToFiberEx(byval lpParameter as LPVOID, byval dwFla
 declare function ConvertFiberToThread() as WINBOOL
 declare sub SwitchToFiber(byval lpFiber as LPVOID)
 declare function SetThreadAffinityMask(byval hThread as HANDLE, byval dwThreadAffinityMask as DWORD_PTR) as DWORD_PTR
-declare function SetThreadIdealProcessor(byval hThread as HANDLE, byval dwIdealProcessor as DWORD) as DWORD
 
 type _THREAD_INFORMATION_CLASS as long
 enum
@@ -2740,6 +2806,8 @@ declare function BackupWrite(byval hFile as HANDLE, byval lpBuffer as LPBYTE, by
 	#define lstrcmp lstrcmpW
 	#define lstrcmpi lstrcmpiW
 	#define lstrcpyn lstrcpynW
+	#define lstrcpy lstrcpyW
+	#define lstrcat lstrcatW
 	#define lstrlen lstrlenW
 #else
 	#define CreateMailslot CreateMailslotA
@@ -2750,6 +2818,8 @@ declare function BackupWrite(byval hFile as HANDLE, byval lpBuffer as LPBYTE, by
 	#define lstrcmp lstrcmpA
 	#define lstrcmpi lstrcmpiA
 	#define lstrcpyn lstrcpynA
+	#define lstrcpy lstrcpyA
+	#define lstrcat lstrcatA
 	#define lstrlen lstrlenA
 #endif
 
@@ -2828,6 +2898,7 @@ const SHUTDOWN_NORETRY = &h1
 #endif
 
 declare function CreateSemaphoreW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR) as HANDLE
+declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 declare function OpenMutexA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function CreateSemaphoreA(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCSTR) as HANDLE
 declare function OpenSemaphoreA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
@@ -2845,7 +2916,6 @@ declare function CreateFileMappingA(byval hFile as HANDLE, byval lpFileMappingAt
 declare function OpenFileMappingA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function GetLogicalDriveStringsA(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
 declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
-declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 
 #ifdef UNICODE
 	#define CreateWaitableTimer CreateWaitableTimerW
@@ -4525,6 +4595,7 @@ declare function SetXStateFeaturesMask(byval Context as PCONTEXT, byval FeatureM
 
 #define MICROSOFT_WINDOWS_WINBASE_INTERLOCKED_CPLUSPLUS_H_INCLUDED
 #define MICROSOFT_WINDOWS_WINBASE_H_DEFINE_INTERLOCKED_CPLUSPLUS_OVERLOADS ((_WIN32_WINNT >= &h0502) orelse (defined(_WINBASE_) = 0))
+#undef MICROSOFT_WINBASE_H_DEFINE_INTERLOCKED_CPLUSPLUS_OVERLOADS
 const MICROSOFT_WINBASE_H_DEFINE_INTERLOCKED_CPLUSPLUS_OVERLOADS = 0
 
 end extern

@@ -1137,10 +1137,14 @@ function astDtorListScopeEnd( ) as integer
 	end with
 end function
 
+'' Remove cookie markers from the dtor list entries for the given scope,
+'' indicating that they should be destroyed by the next toplevel
+'' astDtorListFlush(0).
+'' This is useful if an expression was at first parsed with a dtor list scope,
+'' but then it turns out that that's not needed, and can be undone using this
+'' function.
 sub astDtorListUnscope( byval cookie as integer )
 	dim as AST_DTORLIST_ITEM ptr i = any
-
-	'' call the dtors in the reverse order
 	i = listGetTail( @ast.dtorlist )
 	while( i )
 		if( i->cookie = cookie ) then
@@ -1263,4 +1267,10 @@ function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 
 	end select
 
+end function
+
+function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
+	if( n->class = AST_NODECLASS_BOP ) then
+		function = astOpIsRelational( n->op.op )
+	end if
 end function

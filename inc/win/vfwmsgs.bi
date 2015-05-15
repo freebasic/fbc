@@ -1,7 +1,27 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2002 Alexandre Julliard
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
-#define E_PROP_ID_UNSUPPORTED cast(HRESULT, &h80070490)
-#define E_PROP_SET_UNSUPPORTED cast(HRESULT, &h80070492)
 #define VFW_S_NO_MORE_ITEMS cast(HRESULT, &h00040103)
 #define VFW_S_DUPLICATE_NAME cast(HRESULT, &h0004022D)
 #define VFW_S_STATE_INTERMEDIATE cast(HRESULT, &h00040237)
@@ -141,5 +161,18 @@
 #define VFW_E_VMR_NOT_IN_MIXER_MODE cast(HRESULT, &h80040296)
 #define VFW_E_VMR_NO_AP_SUPPLIED cast(HRESULT, &h80040297)
 #define VFW_E_VMR_NO_DEINTERLACE_HW cast(HRESULT, &h80040298)
+#define VFW_E_VMR_NO_PROCAMP_HW cast(HRESULT, &h80040299)
 #define VFW_E_DVD_VMR9_INCOMPATIBLEDEC cast(HRESULT, &h8004029A)
+#define VFW_E_NO_COPP_HW cast(HRESULT, &h8004029B)
+#define VFW_E_DVD_NONBLOCKING cast(HRESULT, &h8004029C)
+#define VFW_E_DVD_TOO_MANY_RENDERERS_IN_FILTER_GRAPH cast(HRESULT, &h8004029D)
+#define VFW_E_DVD_NON_EVR_RENDERER_IN_FILTER_GRAPH cast(HRESULT, &h8004029E)
+#define VFW_E_DVD_RESOLUTION_ERROR cast(HRESULT, &h8004029F)
+#define VFW_E_CODECAPI_LINEAR_RANGE cast(HRESULT, &h80040310)
+#define VFW_E_CODECAPI_ENUMERATED cast(HRESULT, &h80040311)
+#define VFW_E_CODECAPI_NO_DEFAULT cast(HRESULT, &h80040313)
+#define VFW_E_CODECAPI_NO_CURRENT_VALUE cast(HRESULT, &h80040314)
+#define VFW_E_DVD_CHAPTER_DOES_NOT_EXIST cast(HRESULT, &h80040315)
 #define VFW_E_BAD_KEY cast(HRESULT, &h800403F2)
+#define E_PROP_ID_UNSUPPORTED cast(HRESULT, &h80070490)
+#define E_PROP_SET_UNSUPPORTED cast(HRESULT, &h80070492)

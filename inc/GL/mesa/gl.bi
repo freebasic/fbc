@@ -1,3 +1,32 @@
+'' FreeBASIC binding for mesa-10.5.1
+''
+'' based on the C header files:
+''   Mesa 3-D graphics library
+''
+''   Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
+''   Copyright (C) 2009  VMware, Inc.  All Rights Reserved.
+''
+''   Permission is hereby granted, free of charge, to any person obtaining a
+''   copy of this software and associated documentation files (the "Software"),
+''   to deal in the Software without restriction, including without limitation
+''   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+''   and/or sell copies of the Software, and to permit persons to whom the
+''   Software is furnished to do so, subject to the following conditions:
+''
+''   The above copyright notice and this permission notice shall be included
+''   in all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+''   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+''   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+''   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+''   OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+''   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+''   OTHER DEALINGS IN THE SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #ifdef __FB_WIN32__
@@ -605,7 +634,7 @@ declare sub glPushClientAttrib(byval mask as GLbitfield)
 declare sub glPopClientAttrib()
 declare function glRenderMode(byval mode as GLenum) as GLint
 declare function glGetError() as GLenum
-declare function glGetString(byval name as GLenum) as const GLubyte ptr
+declare function glGetString(byval name as GLenum) as const zstring ptr
 declare sub glFinish()
 declare sub glFlush()
 declare sub glHint(byval target as GLenum, byval mode as GLenum)
@@ -955,6 +984,10 @@ type PFNGLTEXIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, by
 type PFNGLTEXSUBIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, byval xoffset as GLint, byval yoffset as GLint, byval zoffset as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval pixels as const GLvoid ptr)
 type PFNGLCOPYTEXSUBIMAGE3DPROC as sub(byval target as GLenum, byval level as GLint, byval xoffset as GLint, byval yoffset as GLint, byval zoffset as GLint, byval x as GLint, byval y as GLint, byval width as GLsizei, byval height as GLsizei)
 
+const GL_CONSTANT_COLOR = &h8001
+const GL_ONE_MINUS_CONSTANT_COLOR = &h8002
+const GL_CONSTANT_ALPHA = &h8003
+const GL_ONE_MINUS_CONSTANT_ALPHA = &h8004
 const GL_COLOR_TABLE = &h80D0
 const GL_POST_CONVOLUTION_COLOR_TABLE = &h80D1
 const GL_POST_COLOR_MATRIX_COLOR_TABLE = &h80D2
@@ -1020,6 +1053,11 @@ const GL_MINMAX_FORMAT = &h802F
 const GL_MINMAX_SINK = &h8030
 const GL_TABLE_TOO_LARGE = &h8031
 const GL_BLEND_EQUATION = &h8009
+const GL_MIN = &h8007
+const GL_MAX = &h8008
+const GL_FUNC_ADD = &h8006
+const GL_FUNC_SUBTRACT = &h800A
+const GL_FUNC_REVERSE_SUBTRACT = &h800B
 const GL_BLEND_COLOR = &h8005
 
 declare sub glColorTable(byval target as GLenum, byval internalformat as GLenum, byval width as GLsizei, byval format as GLenum, byval type as GLenum, byval table as const GLvoid ptr)

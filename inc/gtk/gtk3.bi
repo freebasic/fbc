@@ -1,3 +1,26 @@
+'' FreeBASIC binding for gtk+-3.14.10
+''
+'' based on the C header files:
+''   GTK - The GIMP Toolkit
+''   Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library. If not, see <http://www.gnu.org/licenses/>.
+''
+'' translated to FreeBASIC by:
+''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "gtk-3"
@@ -28,6 +51,7 @@
 extern "C"
 
 #define __GTK_H__
+#define __GTK_H_INSIDE__
 #define __GTK_ABOUT_DIALOG_H__
 #define __GTK_DIALOG_H__
 #define __GTK_WINDOW_H__
@@ -11671,6 +11695,7 @@ end type
 
 declare function gtk_vseparator_get_type() as GType
 declare function gtk_vseparator_new() as GtkWidget ptr
+#undef __GTK_H_INSIDE__
 
 end extern
 

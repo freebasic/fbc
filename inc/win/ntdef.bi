@@ -1,3 +1,27 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   ntdef.h
+''
+''   This file is part of the ReactOS PSDK package.
+''
+''   Contributors:
+''     Created by Casper S. Hornstrup <chorns@users.sourceforge.net>
+''
+''   THIS SOFTWARE IS NOT COPYRIGHTED
+''
+''   This source code is offered for use in the public domain. You may
+''   use, modify or distribute it freely.
+''
+''   This code is distributed in the hope that it will be useful but
+''   WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+''   DISCLAIMED. This includes but is not limited to warranties of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw.bi"
@@ -32,6 +56,7 @@ const NULL64 = 0
 	#define MAX_NATURAL_ALIGNMENT sizeof(ULONGLONG)
 	const MEMORY_ALLOCATION_ALIGNMENT = 16
 #else
+	#undef ALIGNMENT_MACHINE
 	#define MAX_NATURAL_ALIGNMENT sizeof(ULONG)
 	const MEMORY_ALLOCATION_ALIGNMENT = 8
 #endif
@@ -398,7 +423,7 @@ type PGROUP_AFFINITY as _GROUP_AFFINITY ptr
 #define RTL_FIELD_SIZE(type, field) sizeof(cptr(type ptr, 0)->field)
 #define RTL_SIZEOF_THROUGH_FIELD(type, field) (FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field))
 #define RTL_CONTAINS_FIELD(Struct, Size, Field) ((cast(PCHAR, @(Struct)->Field) + sizeof((Struct)->Field)) <= (cast(PCHAR, (Struct)) + (Size)))
-#define RTL_NUMBER_OF_V1(A) (sizeof((A)) / sizeof((A)[0]))
+#define RTL_NUMBER_OF_V1(A) (ubound(A) - lbound(A) + 1)
 #define RTL_NUMBER_OF_V2(A) RTL_NUMBER_OF_V1(A)
 #define RTL_NUMBER_OF(A) RTL_NUMBER_OF_V1(A)
 #define ARRAYSIZE(A) RTL_NUMBER_OF_V2(A)

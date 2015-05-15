@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "odbc32"
@@ -285,6 +300,9 @@ const SQL_MAX_IDENTIFIER_LEN = 10005
 #define SQL_AT_ADD_COLUMN __MSABI_LONG(&h00000001)
 #define SQL_AT_DROP_COLUMN __MSABI_LONG(&h00000002)
 #define SQL_AT_ADD_CONSTRAINT __MSABI_LONG(&h00000008)
+const SQL_AM_NONE = 0
+const SQL_AM_CONNECTION = 1
+const SQL_AM_STATEMENT = 2
 const SQL_CB_DELETE = 0
 const SQL_CB_CLOSE = 1
 const SQL_CB_PRESERVE = 2

@@ -1,11 +1,62 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw_unicode.bi"
+#include once "winapifamily.bi"
+#include once "wtypes.bi"
+#include once "objbase.bi"
 
 extern "Windows"
 
 #define _RICHEDIT_
-const _RICHEDIT_VER = &h0300
+const _RICHEDIT_VER = &h0800
 const cchTextLimitDefault = 32767
 #define MSFTEDIT_CLASS wstr("RICHEDIT50W")
 #define CERICHEDIT_CLASSA "RichEditCEA"
@@ -73,6 +124,12 @@ end enum
 
 type TEXTMODE as tagTextMode
 #define EM_AUTOURLDETECT (WM_USER + 91)
+const AURL_ENABLEURL = 1
+const AURL_ENABLEEMAILADDR = 2
+const AURL_ENABLETELNO = 4
+const AURL_ENABLEEAURLS = 8
+const AURL_ENABLEDRIVELETTERS = 16
+const AURL_DISABLEMIXEDLGC = 32
 #define EM_GETAUTOURLDETECT (WM_USER + 92)
 #define EM_SETPALETTE (WM_USER + 93)
 #define EM_GETTEXTEX (WM_USER + 94)
@@ -106,7 +163,9 @@ const SES_EMULATESYSEDIT = 1
 const SES_BEEPONMAXTEXT = 2
 const SES_EXTENDBACKCOLOR = 4
 const SES_MAPCPS = 8
+const SES_HYPERLINKTOOLTIPS = 8
 const SES_EMULATE10 = 16
+const SES_DEFAULTLATINLIGA = 16
 const SES_USECRLF = 32
 const SES_USEAIMM = 64
 const SES_NOIME = 128
@@ -118,31 +177,43 @@ const SES_BIDI = 4096
 const SES_SCROLLONKILLFOCUS = 8192
 const SES_XLTCRCRLFTOCR = 16384
 const SES_DRAFTMODE = 32768
-const SES_USECTF = &h0010000
-const SES_HIDEGRIDLINES = &h0020000
-const SES_USEATFONT = &h0040000
-const SES_CUSTOMLOOK = &h0080000
-const SES_LBSCROLLNOTIFY = &h0100000
-const SES_CTFALLOWEMBED = &h0200000
-const SES_CTFALLOWSMARTTAG = &h0400000
-const SES_CTFALLOWPROOFING = &h0800000
+const SES_USECTF = &h00010000
+const SES_HIDEGRIDLINES = &h00020000
+const SES_USEATFONT = &h00040000
+const SES_CUSTOMLOOK = &h00080000
+const SES_LBSCROLLNOTIFY = &h00100000
+const SES_CTFALLOWEMBED = &h00200000
+const SES_CTFALLOWSMARTTAG = &h00400000
+const SES_CTFALLOWPROOFING = &h00800000
+const SES_LOGICALCARET = &h01000000
+const SES_WORDDRAGDROP = &h02000000
+const SES_SMARTDRAGDROP = &h04000000
+const SES_MULTISELECT = &h08000000
+const SES_CTFNOLOCK = &h10000000
+const SES_NOEALINEHEIGHTADJUST = &h20000000
+const SES_MAX = &h20000000
 const IMF_AUTOKEYBOARD = &h0001
 const IMF_AUTOFONT = &h0002
 const IMF_IMECANCELCOMPLETE = &h0004
 const IMF_IMEALWAYSSENDNOTIFY = &h0008
 const IMF_AUTOFONTSIZEADJUST = &h0010
 const IMF_UIFONTS = &h0020
+const IMF_NOIMPLICITLANG = &h0040
 const IMF_DUALFONT = &h0080
+const IMF_NOKBDLIDFIXUP = &h0200
+const IMF_NORTFFONTSUBSTITUTE = &h0400
+const IMF_SPELLCHECKING = &h0800
+const IMF_TKBPREDICTION = &h1000
 const ICM_NOTOPEN = &h0000
 const ICM_LEVEL3 = &h0001
 const ICM_LEVEL2 = &h0002
 const ICM_LEVEL2_5 = &h0003
 const ICM_LEVEL2_SUI = &h0004
 const ICM_CTF = &h0005
-const TO_ADVANCEDTYPOGRAPHY = 1
-const TO_SIMPLELINEBREAK = 2
-const TO_DISABLECUSTOMTEXTOUT = 4
-const TO_ADVANCEDLAYOUT = 8
+const TO_ADVANCEDTYPOGRAPHY = &h0001
+const TO_SIMPLELINEBREAK = &h0002
+const TO_DISABLECUSTOMTEXTOUT = &h0004
+const TO_ADVANCEDLAYOUT = &h0008
 #define EM_OUTLINE (WM_USER + 220)
 #define EM_GETSCROLLPOS (WM_USER + 221)
 #define EM_SETSCROLLPOS (WM_USER + 222)
@@ -170,6 +241,7 @@ const EPR_0 = 0
 const EPR_270 = 1
 const EPR_180 = 2
 const EPR_90 = 3
+const EPR_SE = 5
 const CTFMODEBIAS_DEFAULT = &h0000
 const CTFMODEBIAS_FILENAME = &h0001
 const CTFMODEBIAS_NAME = &h0002
@@ -180,9 +252,9 @@ const CTFMODEBIAS_NUMERIC = &h0006
 const CTFMODEBIAS_HIRAGANA = &h0007
 const CTFMODEBIAS_KATAKANA = &h0008
 const CTFMODEBIAS_HANGUL = &h0009
-const CTFMODEBIAS_HALFWIDTHKATAKANA = &h000A
-const CTFMODEBIAS_FULLWIDTHALPHANUMERIC = &h000B
-const CTFMODEBIAS_HALFWIDTHALPHANUMERIC = &h000C
+const CTFMODEBIAS_HALFWIDTHKATAKANA = &h000a
+const CTFMODEBIAS_FULLWIDTHALPHANUMERIC = &h000b
+const CTFMODEBIAS_HALFWIDTHALPHANUMERIC = &h000c
 const IMF_SMODE_PLAURALCLAUSE = &h0001
 const IMF_SMODE_NONE = &h0002
 
@@ -204,6 +276,98 @@ const EMO_EXPANDDOCUMENT = 1
 const VM_NORMAL = 4
 const VM_OUTLINE = 2
 const VM_PAGE = 9
+#define EM_INSERTTABLE (WM_USER + 232)
+
+type _tableRowParms field = 4
+	cbRow as UBYTE
+	cbCell as UBYTE
+	cCell as UBYTE
+	cRow as UBYTE
+	dxCellMargin as LONG
+	dxIndent as LONG
+	dyHeight as LONG
+	nAlignment : 3 as DWORD
+	fRTL : 1 as DWORD
+	fKeep : 1 as DWORD
+	fKeepFollow : 1 as DWORD
+	fWrap : 1 as DWORD
+	fIdentCells : 1 as DWORD
+	cpStartRow as LONG
+	bTableLevel as UBYTE
+	iCell as UBYTE
+end type
+
+type TABLEROWPARMS as _tableRowParms
+
+type _tableCellParms field = 4
+	dxWidth as LONG
+	nVertAlign : 2 as WORD
+	fMergeTop : 1 as WORD
+	fMergePrev : 1 as WORD
+	fVertical : 1 as WORD
+	fMergeStart : 1 as WORD
+	fMergeCont : 1 as WORD
+	wShading as WORD
+	dxBrdrLeft as SHORT
+	dyBrdrTop as SHORT
+	dxBrdrRight as SHORT
+	dyBrdrBottom as SHORT
+	crBrdrLeft as COLORREF
+	crBrdrTop as COLORREF
+	crBrdrRight as COLORREF
+	crBrdrBottom as COLORREF
+	crBackPat as COLORREF
+	crForePat as COLORREF
+end type
+
+type TABLECELLPARMS as _tableCellParms
+#define EM_GETAUTOCORRECTPROC (WM_USER + 233)
+#define EM_SETAUTOCORRECTPROC (WM_USER + 234)
+#define EM_CALLAUTOCORRECTPROC (WM_USER + 255)
+type AutoCorrectProc as function(byval langid as LANGID, byval pszBefore as const wstring ptr, byval pszAfter as wstring ptr, byval cchAfter as LONG, byval pcchReplaced as LONG ptr) as long
+const ATP_NOCHANGE = 0
+const ATP_CHANGE = 1
+const ATP_NODELIMITER = 2
+const ATP_REPLACEALLTEXT = 4
+#define EM_GETTABLEPARMS (WM_USER + 265)
+#define EM_SETEDITSTYLEEX (WM_USER + 275)
+#define EM_GETEDITSTYLEEX (WM_USER + 276)
+const SES_EX_NOTABLE = &h00000004
+const SES_EX_HANDLEFRIENDLYURL = &h00000100
+const SES_EX_NOTHEMING = &h00080000
+const SES_EX_NOACETATESELECTION = &h00100000
+const SES_EX_USESINGLELINE = &h00200000
+const SES_EX_MULTITOUCH = &h08000000
+const SES_EX_HIDETEMPFORMAT = &h10000000
+const SES_EX_USEMOUSEWPARAM = &h20000000
+#define EM_GETSTORYTYPE (WM_USER + 290)
+#define EM_SETSTORYTYPE (WM_USER + 291)
+#define EM_GETELLIPSISMODE (WM_USER + 305)
+#define EM_SETELLIPSISMODE (WM_USER + 306)
+const ELLIPSIS_MASK = &h00000003
+const ELLIPSIS_NONE = &h00000000
+const ELLIPSIS_END = &h00000001
+const ELLIPSIS_WORD = &h00000003
+#define EM_SETTABLEPARMS (WM_USER + 307)
+#define EM_GETTOUCHOPTIONS (WM_USER + 310)
+#define EM_SETTOUCHOPTIONS (WM_USER + 311)
+#define EM_INSERTIMAGE (WM_USER + 314)
+#define EM_SETUIANAME (WM_USER + 320)
+#define EM_GETELLIPSISSTATE (WM_USER + 322)
+const RTO_SHOWHANDLES = 1
+const RTO_DISABLEHANDLES = 2
+const RTO_READINGMODE = 3
+
+type tagRICHEDIT_IMAGE_PARAMETERS field = 4
+	xWidth as LONG
+	yHeight as LONG
+	Ascent as LONG
+	as LONG Type
+	pwszAlternateText as LPCWSTR
+	pIStream as IStream ptr
+end type
+
+type RICHEDIT_IMAGE_PARAMETERS as tagRICHEDIT_IMAGE_PARAMETERS
 const EN_MSGFILTER = &h0700
 const EN_REQUESTRESIZE = &h0701
 const EN_SELCHANGE = &h0702
@@ -222,6 +386,18 @@ const EN_PAGECHANGE = &h070e
 const EN_LOWFIRTF = &h070f
 const EN_ALIGNLTR = &h0710
 const EN_ALIGNRTL = &h0711
+const EN_CLIPFORMAT = &h0712
+const EN_STARTCOMPOSITION = &h0713
+const EN_ENDCOMPOSITION = &h0714
+
+type _endcomposition field = 4
+	nmhdr as NMHDR
+	dwCode as DWORD
+end type
+
+type ENDCOMPOSITIONNOTIFY as _endcomposition
+const ECN_ENDCOMPOSITION = &h0001
+const ECN_NEWTEXT = &h0002
 const ENM_NONE = &h00000000
 const ENM_CHANGE = &h00000001
 const ENM_UPDATE = &h00000002
@@ -230,6 +406,7 @@ const ENM_SCROLLEVENTS = &h00000008
 const ENM_DRAGDROPDONE = &h00000010
 const ENM_PARAGRAPHEXPANDED = &h00000020
 const ENM_PAGECHANGE = &h00000040
+const ENM_CLIPFORMAT = &h00000080
 const ENM_KEYEVENTS = &h00010000
 const ENM_MOUSEEVENTS = &h00020000
 const ENM_REQUESTRESIZE = &h00040000
@@ -242,6 +419,10 @@ const ENM_LANGCHANGE = &h01000000
 const ENM_OBJECTPOSITIONS = &h02000000
 const ENM_LINK = &h04000000
 const ENM_LOWFIRTF = &h08000000
+const ENM_STARTCOMPOSITION = &h10000000
+const ENM_ENDCOMPOSITION = &h20000000
+const ENM_GROUPTYPINGCHANGE = &h40000000
+const ENM_HIDELINKTOOLTIP = &h80000000
 const ES_SAVESEL = &h00008000
 const ES_SUNKEN = &h00004000
 const ES_DISABLENOSCROLL = &h00002000
@@ -292,7 +473,7 @@ const IMF_FORCEACTIVE = &h0040
 const IMF_FORCEINACTIVE = &h0080
 const IMF_FORCEREMEMBER = &h0100
 const IMF_MULTIPLEEDIT = &h0400
-#define WBF_CLASS cast(UBYTE, &h0F)
+#define WBF_CLASS cast(UBYTE, &h0f)
 #define WBF_ISWHITE cast(UBYTE, &h10)
 #define WBF_BREAKLINE cast(UBYTE, &h20)
 #define WBF_BREAKAFTER cast(UBYTE, &h40)
@@ -346,13 +527,18 @@ type _charformat2w field = 4
 	sSpacing as SHORT
 	crBackColor as COLORREF
 	lcid as LCID
-	dwReserved as DWORD
+
+	union field = 4
+		dwReserved as DWORD
+		dwCookie as DWORD
+	end union
+
 	sStyle as SHORT
 	wKerning as WORD
 	bUnderlineType as UBYTE
 	bAnimation as UBYTE
 	bRevAuthor as UBYTE
-	bReserved1 as UBYTE
+	bUnderlineColor as UBYTE
 end type
 
 type CHARFORMAT2W as _charformat2w
@@ -371,12 +557,18 @@ type _charformat2a field = 4
 	sSpacing as SHORT
 	crBackColor as COLORREF
 	lcid as LCID
-	dwReserved as DWORD
+
+	union field = 4
+		dwReserved as DWORD
+		dwCookie as DWORD
+	end union
+
 	sStyle as SHORT
 	wKerning as WORD
 	bUnderlineType as UBYTE
 	bAnimation as UBYTE
 	bRevAuthor as UBYTE
+	bUnderlineColor as UBYTE
 end type
 
 type CHARFORMAT2A as _charformat2a
@@ -399,39 +591,40 @@ const CFM_COLOR = &h40000000
 const CFM_FACE = &h20000000
 const CFM_OFFSET = &h10000000
 const CFM_CHARSET = &h08000000
-const CFE_BOLD = &h0001
-const CFE_ITALIC = &h0002
-const CFE_UNDERLINE = &h0004
-const CFE_STRIKEOUT = &h0008
-const CFE_PROTECTED = &h0010
-const CFE_LINK = &h0020
+const CFE_BOLD = &h00000001
+const CFE_ITALIC = &h00000002
+const CFE_UNDERLINE = &h00000004
+const CFE_STRIKEOUT = &h00000008
+const CFE_PROTECTED = &h00000010
+const CFE_LINK = &h00000020
 const CFE_AUTOCOLOR = &h40000000
-const CFM_SMALLCAPS = &h0040
-const CFM_ALLCAPS = &h0080
-const CFM_HIDDEN = &h0100
-const CFM_OUTLINE = &h0200
-const CFM_SHADOW = &h0400
-const CFM_EMBOSS = &h0800
-const CFM_IMPRINT = &h1000
-const CFM_DISABLED = &h2000
-const CFM_REVISED = &h4000
-const CFM_BACKCOLOR = &h04000000
-const CFM_LCID = &h02000000
-const CFM_UNDERLINETYPE = &h00800000
-const CFM_WEIGHT = &h00400000
-const CFM_SPACING = &h00200000
-const CFM_KERNING = &h00100000
-const CFM_STYLE = &h00080000
-const CFM_ANIMATION = &h00040000
+const CFM_SMALLCAPS = &h00000040
+const CFM_ALLCAPS = &h00000080
+const CFM_HIDDEN = &h00000100
+const CFM_OUTLINE = &h00000200
+const CFM_SHADOW = &h00000400
+const CFM_EMBOSS = &h00000800
+const CFM_IMPRINT = &h00001000
+const CFM_DISABLED = &h00002000
+const CFM_REVISED = &h00004000
 const CFM_REVAUTHOR = &h00008000
 const CFE_SUBSCRIPT = &h00010000
 const CFE_SUPERSCRIPT = &h00020000
+const CFM_ANIMATION = &h00040000
+const CFM_STYLE = &h00080000
+const CFM_KERNING = &h00100000
+const CFM_SPACING = &h00200000
+const CFM_WEIGHT = &h00400000
+const CFM_UNDERLINETYPE = &h00800000
+const CFM_COOKIE = &h01000000
+const CFM_LCID = &h02000000
+const CFM_BACKCOLOR = &h04000000
 #define CFM_SUBSCRIPT (CFE_SUBSCRIPT or CFE_SUPERSCRIPT)
 #define CFM_SUPERSCRIPT CFM_SUBSCRIPT
 #define CFM_EFFECTS ((((((CFM_BOLD or CFM_ITALIC) or CFM_UNDERLINE) or CFM_COLOR) or CFM_STRIKEOUT) or CFE_PROTECTED) or CFM_LINK)
 #define CFM_ALL ((((CFM_EFFECTS or CFM_SIZE) or CFM_FACE) or CFM_OFFSET) or CFM_CHARSET)
-#define CFM_EFFECTS2 (((((((((((((CFM_EFFECTS or CFM_DISABLED) or CFM_SMALLCAPS) or CFM_ALLCAPS) or CFM_HIDDEN) or CFM_OUTLINE) or CFM_SHADOW) or CFM_EMBOSS) or CFM_IMPRINT) or CFM_DISABLED) or CFM_REVISED) or CFM_SUBSCRIPT) or CFM_SUPERSCRIPT) or CFM_BACKCOLOR)
-#define CFM_ALL2 ((((((((((CFM_ALL or CFM_EFFECTS2) or CFM_BACKCOLOR) or CFM_LCID) or CFM_UNDERLINETYPE) or CFM_WEIGHT) or CFM_REVAUTHOR) or CFM_SPACING) or CFM_KERNING) or CFM_STYLE) or CFM_ANIMATION)
+#define CFM_EFFECTS2 ((((((((((((CFM_EFFECTS or CFM_DISABLED) or CFM_SMALLCAPS) or CFM_ALLCAPS) or CFM_HIDDEN) or CFM_OUTLINE) or CFM_SHADOW) or CFM_EMBOSS) or CFM_IMPRINT) or CFM_REVISED) or CFM_SUBSCRIPT) or CFM_SUPERSCRIPT) or CFM_BACKCOLOR)
+#define CFM_ALL2 (((((((((((CFM_ALL or CFM_EFFECTS2) or CFM_BACKCOLOR) or CFM_LCID) or CFM_UNDERLINETYPE) or CFM_WEIGHT) or CFM_REVAUTHOR) or CFM_SPACING) or CFM_KERNING) or CFM_STYLE) or CFM_ANIMATION) or CFM_COOKIE)
 #define CFE_SMALLCAPS CFM_SMALLCAPS
 #define CFE_ALLCAPS CFM_ALLCAPS
 #define CFE_HIDDEN CFM_HIDDEN
@@ -442,8 +635,21 @@ const CFE_SUPERSCRIPT = &h00020000
 #define CFE_DISABLED CFM_DISABLED
 #define CFE_REVISED CFM_REVISED
 #define CFE_AUTOBACKCOLOR CFM_BACKCOLOR
-const CFU_CF1UNDERLINE = &hFF
-const CFU_INVERT = &hFE
+const CFM_FONTBOUND = &h00100000
+const CFM_LINKPROTECTED = &h00800000
+const CFM_EXTENDED = &h02000000
+const CFM_MATHNOBUILDUP = &h08000000
+const CFM_MATH = &h10000000
+const CFM_MATHORDINARY = &h20000000
+#define CFM_ALLEFFECTS (((((CFM_EFFECTS2 or CFM_FONTBOUND) or CFM_EXTENDED) or CFM_MATHNOBUILDUP) or CFM_MATH) or CFM_MATHORDINARY)
+const CFE_FONTBOUND = &h00100000
+const CFE_LINKPROTECTED = &h00800000
+const CFE_EXTENDED = &h02000000
+const CFE_MATHNOBUILDUP = &h08000000
+const CFE_MATH = &h10000000
+const CFE_MATHORDINARY = &h20000000
+const CFU_CF1UNDERLINE = &hff
+const CFU_INVERT = &hfe
 const CFU_UNDERLINETHICKLONGDASH = 18
 const CFU_UNDERLINETHICKDOTTED = 17
 const CFU_UNDERLINETHICKDASHDOTDOT = 16
@@ -472,6 +678,10 @@ const SCF_USEUIRULES = &h0008
 const SCF_ASSOCIATEFONT = &h0010
 const SCF_NOKBUPDATE = &h0020
 const SCF_ASSOCIATEFONT2 = &h0040
+const SCF_SMARTFONT = &h0080
+const SCF_CHARREPFROMLCID = &h0100
+const SPF_DONTSETDEFAULT = &h0002
+const SPF_SETDEFAULT = &h0004
 
 type _charrange field = 4
 	cpMin as LONG
@@ -578,13 +788,17 @@ type FORMATRANGE as _formatrange
 const MAX_TAB_STOPS = 32
 const lDefaultTab = 720
 const MAX_TABLE_CELLS = 63
-#define wReserved wEffects
 
 type _paraformat field = 4
 	cbSize as UINT
 	dwMask as DWORD
 	wNumbering as WORD
-	wEffects as WORD
+
+	union field = 4
+		wReserved as WORD
+		wEffects as WORD
+	end union
+
 	dxStartIndent as LONG
 	dxRightIndent as LONG
 	dxOffset as LONG
@@ -599,7 +813,12 @@ type _paraformat2 field = 4
 	cbSize as UINT
 	dwMask as DWORD
 	wNumbering as WORD
-	wEffects as WORD
+
+	union field = 4
+		wReserved as WORD
+		wEffects as WORD
+	end union
+
 	dxStartIndent as LONG
 	dxRightIndent as LONG
 	dxOffset as LONG
@@ -647,13 +866,13 @@ const PFM_NOLINENUMBER = &h00100000
 const PFM_NOWIDOWCONTROL = &h00200000
 const PFM_DONOTHYPHEN = &h00400000
 const PFM_SIDEBYSIDE = &h00800000
-const PFM_TABLE = &h40000000
-const PFM_TEXTWRAPPINGBREAK = &h20000000
-const PFM_TABLEROWDELIMITER = &h10000000
 const PFM_COLLAPSED = &h01000000
 const PFM_OUTLINELEVEL = &h02000000
 const PFM_BOX = &h04000000
 const PFM_RESERVED2 = &h08000000
+const PFM_TABLEROWDELIMITER = &h10000000
+const PFM_TEXTWRAPPINGBREAK = &h20000000
+const PFM_TABLE = &h40000000
 #define PFM_ALL (((((((PFM_STARTINDENT or PFM_RIGHTINDENT) or PFM_OFFSET) or PFM_ALIGNMENT) or PFM_TABSTOPS) or PFM_NUMBERING) or PFM_OFFSETINDENT) or PFM_RTLPARA)
 #define PFM_EFFECTS ((((((((((PFM_RTLPARA or PFM_KEEP) or PFM_KEEPNEXT) or PFM_TABLE) or PFM_PAGEBREAKBEFORE) or PFM_NOLINENUMBER) or PFM_NOWIDOWCONTROL) or PFM_DONOTHYPHEN) or PFM_SIDEBYSIDE) or PFM_TABLE) or PFM_TABLEROWDELIMITER)
 #define PFM_ALL2 ((((((((((PFM_ALL or PFM_EFFECTS) or PFM_SPACEBEFORE) or PFM_SPACEAFTER) or PFM_LINESPACING) or PFM_STYLE) or PFM_SHADING) or PFM_BORDER) or PFM_NUMBERINGTAB) or PFM_NUMBERINGSTART) or PFM_NUMBERINGSTYLE)
@@ -687,10 +906,6 @@ const PFA_RIGHT = 2
 const PFA_CENTER = 3
 const PFA_JUSTIFY = 4
 const PFA_FULL_INTERWORD = 4
-const PFA_FULL_INTERLETTER = 5
-const PFA_FULL_SCALED = 6
-const PFA_FULL_GLYPHS = 7
-const PFA_SNAP_GRID = 8
 
 type _msgfilter field = 4
 	nmhdr as NMHDR
@@ -715,12 +930,39 @@ type _selchange field = 4
 end type
 
 type SELCHANGE as _selchange
+
+type _grouptypingchange field = 4
+	nmhdr as NMHDR
+	fGroupTyping as WINBOOL
+end type
+
+type GROUPTYPINGCHANGE as _grouptypingchange
+
+type _clipboardformat field = 4
+	nmhdr as NMHDR
+	cf as CLIPFORMAT
+end type
+
+type CLIPBOARDFORMAT as _clipboardformat
 const SEL_EMPTY = &h0000
 const SEL_TEXT = &h0001
 const SEL_OBJECT = &h0002
 const SEL_MULTICHAR = &h0004
 const SEL_MULTIOBJECT = &h0008
 const GCM_RIGHTMOUSEDROP = &h8000
+
+type _getcontextmenuex field = 4
+	chrg as CHARRANGE
+	dwFlags as DWORD
+	pt as POINT
+	pvReserved as any ptr
+end type
+
+type GETCONTEXTMENUEX as _getcontextmenuex
+const GCMF_GRIPPER = &h00000001
+const GCMF_SPELLING = &h00000002
+const GCMF_TOUCHMENU = &h00004000
+const GCMF_MOUSEMENU = &h00002000
 
 type _endropfiles field = 4
 	nmhdr as NMHDR
@@ -825,7 +1067,7 @@ enum
 	UID_DRAGDROP = 3
 	UID_CUT = 4
 	UID_PASTE = 5
-	UID_AUTOCORRECT = 6
+	UID_AUTOTABLE = 6
 end enum
 
 type UNDONAMEID as _undonameid
@@ -833,6 +1075,7 @@ const ST_DEFAULT = 0
 const ST_KEEPUNDO = 1
 const ST_SELECTION = 2
 const ST_NEWCHARS = 4
+const ST_UNICODE = 8
 
 type _settextex field = 4
 	flags as DWORD
@@ -879,13 +1122,18 @@ type BIDIOPTIONS as _bidioptions
 const BOM_NEUTRALOVERRIDE = &h0004
 const BOM_CONTEXTREADING = &h0008
 const BOM_CONTEXTALIGNMENT = &h0010
+const BOM_LEGACYBIDICLASS = &h0040
+const BOM_UNICODEBIDI = &h0080
 const BOE_NEUTRALOVERRIDE = &h0004
 const BOE_CONTEXTREADING = &h0008
 const BOE_CONTEXTALIGNMENT = &h0010
+const BOE_FORCERECALC = &h0020
+const BOE_LEGACYBIDICLASS = &h0040
+const BOE_UNICODEBIDI = &h0080
 const FR_MATCHDIAC = &h20000000
 const FR_MATCHKASHIDA = &h40000000
 const FR_MATCHALEFHAMZA = &h80000000
-const WCH_EMBEDDING = cast(wchar_t, &hFFFC)
+const WCH_EMBEDDING = cast(wchar_t, &hfffc)
 
 type tagKHYPH as long
 enum
@@ -915,5 +1163,13 @@ type tagHyphenateInfo field = 4
 end type
 
 type HYPHENATEINFO as tagHyphenateInfo
+#define RICHEDIT60_CLASS wstr("RICHEDIT60W")
+const PFA_FULL_NEWSPAPER = 5
+const PFA_FULL_INTERLETTER = 6
+const PFA_FULL_SCALED = 7
+const PFA_FULL_GLYPHS = 8
+const AURL_ENABLEEA = 1
+const GCM_TOUCHMENU = &h4000
+const GCM_MOUSEMENU = &h2000
 
 end extern

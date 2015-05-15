@@ -35,11 +35,6 @@ static int fb_hFileLineInputEx
         mode = eIM_Read;
     }
 
-    if( mode==eIM_Invalid ) {
-        FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
     switch( mode ) {
     case eIM_Read:
         /* This is the VFS-compatible way to read a line ... but it's slow */
@@ -118,9 +113,8 @@ static int fb_hFileLineInputEx
         }
         break;
     case eIM_Invalid:
-        /* the "invalid" mode was already handled above ... so we don't
-         * need to do anything here ... */
-        break;
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
     FB_UNLOCK();

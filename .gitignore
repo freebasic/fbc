@@ -10,4 +10,5 @@
 /lib/*/fbextra.x
 /lib/freebas/*
 /lib/freebasic/*
+/lib64/freebasic/*
 /config.mk

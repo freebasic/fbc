@@ -1,3 +1,22 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Contributors:
+''     Created by Markus Koenig <markus@stber-koenig.de>
+''
+''   THIS SOFTWARE IS NOT COPYRIGHTED
+''
+''   This source code is offered for use in the public domain. You may
+''   use, modify or distribute it freely.
+''
+''   This code is distributed in the hope that it will be useful but
+''   WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+''   DISCLAIMED. This includes but is not limited to warranties of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/stddef.bi"
@@ -6,6 +25,12 @@
 #include once "wingdi.bi"
 #include once "basetyps.bi"
 #include once "ddraw.bi"
+
+'' The following symbols have been renamed:
+''     struct Size => Size_
+''     struct Point => Point_
+''     struct PointF => PointF_
+''     struct Rect => Rect_
 
 extern "Windows"
 

@@ -1,3 +1,28 @@
+'' FreeBASIC binding for atk-2.14.0
+''
+'' based on the C header files:
+''   ATK -  Accessibility Toolkit
+''   Copyright 2001 Sun Microsystems Inc.
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Library General Public
+''   License as published by the Free Software Foundation; either
+''   version 2 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Library General Public License for more details.
+''
+''   You should have received a copy of the GNU Library General Public
+''   License along with this library; if not, write to the
+''   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+''   Boston, MA 02111-1307, USA.
+''
+'' translated to FreeBASIC by:
+''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "atk-1.0"
@@ -12,6 +37,7 @@
 extern "C"
 
 #define __ATK_H__
+#define __ATK_H_INSIDE__
 #define __ATK_OBJECT_H__
 #define __ATK_VERSION_H__
 const ATK_MAJOR_VERSION = 2
@@ -30,6 +56,7 @@ const ATK_INTERFACE_AGE = 1
 #define ATK_VERSION_CUR_STABLE G_ENCODE_VERSION(ATK_MAJOR_VERSION, ATK_MINOR_VERSION)
 #define ATK_VERSION_PREV_STABLE G_ENCODE_VERSION(ATK_MAJOR_VERSION, ATK_MINOR_VERSION - 2)
 #define ATK_VERSION_MIN_REQUIRED ATK_VERSION_CUR_STABLE
+#undef ATK_VERSION_MAX_ALLOWED
 #define ATK_VERSION_MAX_ALLOWED ATK_VERSION_CUR_STABLE
 
 declare function atk_get_major_version() as guint
@@ -1453,6 +1480,7 @@ type _AtkWindowIface
 end type
 
 declare function atk_window_get_type() as GType
+#undef __ATK_H_INSIDE__
 
 end extern
 

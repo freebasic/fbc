@@ -1,7 +1,56 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "rasdlg"
 
+#include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "ras.bi"
 
@@ -18,7 +67,6 @@ const RASPBDEVENT_EditGlobals = 5
 const RASPBDEVENT_NoUser = 6
 const RASPBDEVENT_NoUserEdit = 7
 const RASNOUSER_SmartCard = &h00000001
-#define RASNOUSERW tagRASNOUSERW
 
 type tagRASNOUSERW field = 4
 	dwSize as DWORD
@@ -28,8 +76,6 @@ type tagRASNOUSERW field = 4
 	szPassword as wstring * 256 + 1
 	szDomain as wstring * 15 + 1
 end type
-
-#define RASNOUSERA tagRASNOUSERA
 
 type tagRASNOUSERA field = 4
 	dwSize as DWORD
@@ -46,6 +92,8 @@ end type
 	#define RASNOUSER RASNOUSERA
 #endif
 
+#define RASNOUSERW tagRASNOUSERW
+#define RASNOUSERA tagRASNOUSERA
 #define LPRASNOUSERW RASNOUSERW ptr
 #define LPRASNOUSERA RASNOUSERA ptr
 #define LPRASNOUSER RASNOUSER ptr
@@ -53,7 +101,6 @@ const RASPBDFLAG_PositionDlg = &h00000001
 const RASPBDFLAG_ForceCloseOnDial = &h00000002
 const RASPBDFLAG_NoUser = &h00000010
 const RASPBDFLAG_UpdateDefaults = &h80000000
-#define RASPBDLGW tagRASPBDLGW
 
 type tagRASPBDLGW field = 4
 	dwSize as DWORD
@@ -67,8 +114,6 @@ type tagRASPBDLGW field = 4
 	reserved as ULONG_PTR
 	reserved2 as ULONG_PTR
 end type
-
-#define RASPBDLGA tagRASPBDLGA
 
 type tagRASPBDLGA field = 4
 	dwSize as DWORD
@@ -91,21 +136,34 @@ end type
 	#define RASPBDLGFUNC RASPBDLGFUNCA
 #endif
 
+#define RASPBDLGW tagRASPBDLGW
+#define RASPBDLGA tagRASPBDLGA
 #define LPRASPBDLGW RASPBDLGW ptr
 #define LPRASPBDLGA RASPBDLGA ptr
 #define LPRASPBDLG RASPBDLG ptr
 const RASEDFLAG_PositionDlg = &h00000001
 const RASEDFLAG_NewEntry = &h00000002
-const RASEDFLAG_CloneEntry = &h00000004
+
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	const RASEDFLAG_CloneEntry = &h00000004
+#endif
+
 const RASEDFLAG_NoRename = &h00000008
 const RASEDFLAG_ShellOwned = &h40000000
 const RASEDFLAG_NewPhoneEntry = &h00000010
 const RASEDFLAG_NewTunnelEntry = &h00000020
-const RASEDFLAG_NewDirectEntry = &h00000040
+
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	const RASEDFLAG_NewDirectEntry = &h00000040
+#endif
+
 const RASEDFLAG_NewBroadbandEntry = &h00000080
 const RASEDFLAG_InternetEntry = &h00000100
 const RASEDFLAG_NAT = &h00000200
-type RASENTRYDLGW as tagRASENTRYDLGW
+
+#if _WIN32_WINNT = &h0602
+	const RASEDFLAG_IncomingConnection = &h00000400
+#endif
 
 type tagRASENTRYDLGW field = 4
 	dwSize as DWORD
@@ -118,8 +176,6 @@ type tagRASENTRYDLGW field = 4
 	reserved as ULONG_PTR
 	reserved2 as ULONG_PTR
 end type
-
-type RASENTRYDLGA as tagRASENTRYDLGA
 
 type tagRASENTRYDLGA field = 4
 	dwSize as DWORD
@@ -139,13 +195,14 @@ end type
 	type RASENTRYDLG as RASENTRYDLGA
 #endif
 
-#define LPRASENTRYDLGW RASENTRYDLGW ptr
-#define LPRASENTRYDLGA RASENTRYDLGA ptr
-#define LPRASENTRYDLG RASENTRYDLG ptr
+type RASENTRYDLGW as tagRASENTRYDLGW
+type RASENTRYDLGA as tagRASENTRYDLGA
+type LPRASENTRYDLGW as RASENTRYDLGW ptr
+type LPRASENTRYDLGA as RASENTRYDLGA ptr
+type LPRASENTRYDLG as RASENTRYDLG ptr
 const RASDDFLAG_PositionDlg = &h00000001
 const RASDDFLAG_NoPrompt = &h00000002
 const RASDDFLAG_LinkFailure = &h80000000
-#define RASDIALDLG tagRASDIALDLG
 
 type tagRASDIALDLG field = 4
 	dwSize as DWORD
@@ -159,6 +216,7 @@ type tagRASDIALDLG field = 4
 	reserved2 as ULONG_PTR
 end type
 
+#define RASDIALDLG tagRASDIALDLG
 #define LPRASDIALDLG RASDIALDLG ptr
 type RasCustomDialDlgFn as function(byval hInstDll as HINSTANCE, byval dwFlags as DWORD, byval lpszPhonebook as LPWSTR, byval lpszEntry as LPWSTR, byval lpszPhoneNumber as LPWSTR, byval lpInfo as tagRASDIALDLG ptr, byval pvInfo as PVOID) as WINBOOL
 

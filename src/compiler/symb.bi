@@ -170,11 +170,11 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_PARAMBYREF 	= &h00040000
 	FB_SYMBATTRIB_LITERAL		= &h00080000
 	FB_SYMBATTRIB_CONST			= &h00100000
-	FB_SYMBATTRIB_OPTIONAL		= &h00200000	'' params only
+	FB_SYMBATTRIB_STATICLOCALS      = &h00200000  '' procedures only
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-	FB_SYMBATTRIB_RETURNSBYREF	= &h02000000    '' procedures only
+	FB_SYMBATTRIB_REF               = &h02000000    '' procedures returning BYREF
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
@@ -183,7 +183,6 @@ enum FB_SYMBATTRIB
 
 	'' reuse - take care
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
-	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL  '' procedures only
 	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_NAKED
 end enum
 
@@ -1148,6 +1147,15 @@ declare function symbAddConst _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
 		byval attrib as integer = FB_SYMBATTRIB_NONE _
+	) as FBSYMBOL ptr
+
+declare function symbReuseOrAddConst _
+	( _
+		byval id as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as FBVALUE ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
@@ -2299,6 +2307,8 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetParamNext(a) a->next
 
+#define symbParamIsOptional( param_ ) ((param_)->param.optexpr <> NULL)
+
 #define symbGetImportNamespc(s) s->nsimp.imp_ns
 
 #define symbGetImportNext(s) s->nsimp.imp_next
@@ -2361,9 +2371,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
 
-#define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
-
-#define symbProcReturnsByref(s) ((s->attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0)
+#define symbIsRef(s) ((s->attrib and FB_SYMBATTRIB_REF) <> 0)
 
 #define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
 

@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) the Wine project
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "ddraw"
@@ -48,6 +70,7 @@ const DDENUMRET_CANCEL = 0
 const DDENUMRET_OK = 1
 #define DD_OK S_OK
 #define DD_FALSE S_FALSE
+const _FACDD = &h876
 #define DDERR_ALREADYINITIALIZED MAKE_DDHRESULT(5)
 #define DDERR_CANNOTATTACHSURFACE MAKE_DDHRESULT(10)
 #define DDERR_CANNOTDETACHSURFACE MAKE_DDHRESULT(20)
@@ -881,7 +904,10 @@ type _DDSURFACEDESC2
 		dwLinearSize as DWORD
 	end union
 
-	dwBackBufferCount as DWORD
+	union
+		dwBackBufferCount as DWORD
+		dwDepth as DWORD
+	end union
 
 	union
 		dwMipMapCount as DWORD

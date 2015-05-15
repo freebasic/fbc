@@ -85,12 +85,6 @@
 #include once "lex.bi"
 #include once "ir-private.bi"
 
-type IRCALLARG
-	param	as FBSYMBOL ptr
-	vr	as IRVREG ptr
-	level	as integer
-end type
-
 '' The stack of nested sections allows us to go back and emit text to
 '' the headers of parent sections, while already working on emitting
 '' something else in an inner section.
@@ -176,7 +170,6 @@ type IRHLCCTX
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
 
-	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	linenum				as integer
 	escapedinputfilename		as string
 	usedbuiltins			as uinteger  '' BUILTIN_*
@@ -255,7 +248,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 
 private sub _init( )
 	irhlInit( )
-	listInit( @ctx.callargs, 32, sizeof( IRCALLARG ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.anonstack, 8, sizeof( FBSYMBOL ptr ), LIST_FLAGS_NOCLEAR )
 	listInit( @ctx.exprnodes, 32, sizeof( EXPRNODE ), LIST_FLAGS_CLEAR )
 	listInit( @ctx.exprcache, 8, sizeof( EXPRCACHENODE ), LIST_FLAGS_NOCLEAR )
@@ -274,7 +266,6 @@ private sub _end( )
 	listEnd( @ctx.exprcache )
 	listEnd( @ctx.exprnodes )
 	listEnd( @ctx.anonstack )
-	listEnd( @ctx.callargs )
 	irhlEnd( )
 end sub
 
@@ -1662,6 +1653,13 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
+	'' Dynamic array (fake dynamic array symbol)? Remap to array descriptor,
+	'' since that's what it will be emitted as.
+	if( symbIsVar( sym ) and symbIsDynamic( sym ) ) then
+		sym = sym->var_.array.desc
+		assert( sym )
+	end if
+
 	if( symbIsLabel( sym ) ) then
 		'' &&label is a void* in GCC
 		'' This is handled as a single SYM instead of ADDROF( SYM ),
@@ -1675,6 +1673,12 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		'' address of functions, not to call them, so the '&' is
 		'' part of the SYM.
 		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_FUNCTION ), sym )
+		n->sym = sym
+
+	'' Bydesc dynamic array param? Use descriptor type
+	elseif( symbIsParamBydesc( sym ) ) then
+		assert( sym->var_.array.desctype )
+		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_STRUCT ), sym->var_.array.desctype )
 		n->sym = sym
 
 	'' Array? Add CAST to make it a pointer to the first element,
@@ -1716,10 +1720,9 @@ private function typeCBop _
 	) as integer
 
 	'' Result of relational/comparison operators is int
-	select case( op )
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+	if( astOpIsRelational( op ) ) then
 		return FB_DATATYPE_LONG
-	end select
+	end if
 
 	'' This tries to do C operand type promotion (and is probably not
 	'' 100% accurate), in order to figure out the result type of BOP/UOP
@@ -2655,7 +2658,7 @@ private sub _emitBop _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval ex as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr _
 	)
 
 	dim as EXPRNODE ptr l = any, r = any
@@ -2663,20 +2666,18 @@ private sub _emitBop _
 	l = exprNewVREG( v1 )
 	r = exprNewVREG( v2 )
 
-	select case as const( op )
-	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		if( vr = NULL ) then
-			'' Conditional branch
-			static as string s
-			s = "if( "
-			s += exprFlush( exprNewBOP( op, l, r ) )
-			s += " ) goto "
-			s += *symbGetMangledName( ex )
-			s += ";"
-			hWriteLine( s )
-			exit sub
-		end if
-	end select
+	'' Conditional branch?
+	if( label ) then
+		assert( vr = NULL )
+		static as string s
+		s = "if( "
+		s += exprFlush( exprNewBOP( op, l, r ) )
+		s += " ) goto "
+		s += *symbGetMangledName( label )
+		s += ";"
+		hWriteLine( s )
+		exit sub
+	end if
 
 	if( vr = NULL ) then
 		vr = v1
@@ -2858,7 +2859,7 @@ private sub hDoCall _
 
 	'' Flush argument list
 	s += "( "
-	arg = listGetTail( @ctx.callargs )
+	arg = listGetTail( @irhl.callargs )
 	while( arg andalso (arg->level = level) )
 		dim as IRCALLARG ptr prev = listGetPrev( arg )
 
@@ -2877,7 +2878,7 @@ private sub hDoCall _
 
 		s += exprFlush( expr )
 
-		listDelNode( @ctx.callargs, arg )
+		listDelNode( @irhl.callargs, arg )
 
 		if( prev ) then
 			if( prev->level = level ) then
@@ -3441,23 +3442,6 @@ private sub _emitProcEnd _
 
 end sub
 
-private sub _emitPushArg _
-	( _
-		byval param as FBSYMBOL ptr, _
-		byval vr as IRVREG ptr, _
-		byval udtlen as longint, _
-		byval level as integer _
-	)
-
-	'' Remember for later, so during _emitCall[Ptr] we can emit the whole
-	'' call in one go
-	dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
-	arg->param = param
-	arg->vr = vr
-	arg->level = level
-
-end sub
-
 private sub _emitScopeBegin( byval s as FBSYMBOL ptr )
 	sectionBegin( )
 	hWriteLine( "{", TRUE )
@@ -3494,7 +3478,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	NULL, _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
-	@_emitPushArg, _
+	@irhlEmitPushArg, _
 	@_emitAsmBegin, _
 	@_emitAsmText, _
 	@_emitAsmSymb, _

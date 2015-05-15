@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "wsock32"
@@ -182,8 +197,8 @@ const IOC_OUT = &h40000000
 const IOC_IN = &h80000000
 #define IOC_INOUT (IOC_IN or IOC_OUT)
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
-#define _IOR(x, y, t) (((IOC_OUT or ((cast(__LONG32, sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
-#define _IOW(x, y, t) (((IOC_IN or ((cast(__LONG32, sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
 #define FIONREAD _IOR(asc("f"), 127, u_long)
 #define FIONBIO _IOW(asc("f"), 126, u_long)
 #define FIOASYNC _IOW(asc("f"), 125, u_long)
@@ -231,17 +246,17 @@ const IPPORT_RESERVED = 1024
 const IMPLINK_IP = 155
 const IMPLINK_LOWEXPER = 156
 const IMPLINK_HIGHEXPER = 158
-#define IN_CLASSA(i) ((cast(__LONG32, (i)) and &h80000000) = 0)
+#define IN_CLASSA(i) ((clng((i)) and &h80000000) = 0)
 const IN_CLASSA_NET = &hff000000
 const IN_CLASSA_NSHIFT = 24
 const IN_CLASSA_HOST = &h00ffffff
 const IN_CLASSA_MAX = 128
-#define IN_CLASSB(i) ((cast(__LONG32, (i)) and &hc0000000) = &h80000000)
+#define IN_CLASSB(i) ((clng((i)) and &hc0000000) = &h80000000)
 const IN_CLASSB_NET = &hffff0000
 const IN_CLASSB_NSHIFT = 16
 const IN_CLASSB_HOST = &h0000ffff
 const IN_CLASSB_MAX = 65536
-#define IN_CLASSC(i) ((cast(__LONG32, (i)) and &he0000000) = &hc0000000)
+#define IN_CLASSC(i) ((clng((i)) and &he0000000) = &hc0000000)
 const IN_CLASSC_NET = &hffffff00
 const IN_CLASSC_NSHIFT = 8
 const IN_CLASSC_HOST = &h000000ff

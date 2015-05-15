@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2003 Robert Shearman
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "rpc.bi"
@@ -56,6 +78,26 @@ type IDirectDrawVideo_
 	lpVtbl as IDirectDrawVideoVtbl ptr
 end type
 
+#define IDirectDrawVideo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDirectDrawVideo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDirectDrawVideo_Release(This) (This)->lpVtbl->Release(This)
+#define IDirectDrawVideo_GetSwitches(This, pSwitches) (This)->lpVtbl->GetSwitches(This, pSwitches)
+#define IDirectDrawVideo_SetSwitches(This, Switches) (This)->lpVtbl->SetSwitches(This, Switches)
+#define IDirectDrawVideo_GetCaps(This, pCaps) (This)->lpVtbl->GetCaps(This, pCaps)
+#define IDirectDrawVideo_GetEmulatedCaps(This, pCaps) (This)->lpVtbl->GetEmulatedCaps(This, pCaps)
+#define IDirectDrawVideo_GetSurfaceDesc(This, pSurfaceDesc) (This)->lpVtbl->GetSurfaceDesc(This, pSurfaceDesc)
+#define IDirectDrawVideo_GetFourCCCodes(This, pCount, pCodes) (This)->lpVtbl->GetFourCCCodes(This, pCount, pCodes)
+#define IDirectDrawVideo_SetDirectDraw(This, ddraw) (This)->lpVtbl->SetDirectDraw(This, ddraw)
+#define IDirectDrawVideo_GetDirectDraw(This, ddraw) (This)->lpVtbl->GetDirectDraw(This, ddraw)
+#define IDirectDrawVideo_GetSurfaceType(This, pSurfaceType) (This)->lpVtbl->GetSurfaceType(This, pSurfaceType)
+#define IDirectDrawVideo_SetDefault(This) (This)->lpVtbl->SetDefault(This)
+#define IDirectDrawVideo_UseScanLine(This, UseScanLine) (This)->lpVtbl->UseScanLine(This, UseScanLine)
+#define IDirectDrawVideo_CanUseScanLine(This, UseScanLine) (This)->lpVtbl->CanUseScanLine(This, UseScanLine)
+#define IDirectDrawVideo_UseOverlayStretch(This, UseOverlayStretch) (This)->lpVtbl->UseOverlayStretch(This, UseOverlayStretch)
+#define IDirectDrawVideo_CanUseOverlayStretch(This, UseOverlayStretch) (This)->lpVtbl->CanUseOverlayStretch(This, UseOverlayStretch)
+#define IDirectDrawVideo_UseWhenFullScreen(This, UseWhenFullScreen) (This)->lpVtbl->UseWhenFullScreen(This, UseWhenFullScreen)
+#define IDirectDrawVideo_WillUseFullScreen(This, UseWhenFullScreen) (This)->lpVtbl->WillUseFullScreen(This, UseWhenFullScreen)
+
 declare function IDirectDrawVideo_GetSwitches_Proxy(byval This as IDirectDrawVideo ptr, byval pSwitches as DWORD ptr) as HRESULT
 declare sub IDirectDrawVideo_GetSwitches_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDirectDrawVideo_SetSwitches_Proxy(byval This as IDirectDrawVideo ptr, byval Switches as DWORD) as HRESULT
@@ -107,6 +149,16 @@ type IQualProp_
 	lpVtbl as IQualPropVtbl ptr
 end type
 
+#define IQualProp_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IQualProp_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IQualProp_Release(This) (This)->lpVtbl->Release(This)
+#define IQualProp_get_FramesDroppedInRenderer(This, pcFrames) (This)->lpVtbl->get_FramesDroppedInRenderer(This, pcFrames)
+#define IQualProp_get_FramesDrawn(This, pcFramesDrawn) (This)->lpVtbl->get_FramesDrawn(This, pcFramesDrawn)
+#define IQualProp_get_AvgFrameRate(This, piAvgFrameRate) (This)->lpVtbl->get_AvgFrameRate(This, piAvgFrameRate)
+#define IQualProp_get_Jitter(This, iJitter) (This)->lpVtbl->get_Jitter(This, iJitter)
+#define IQualProp_get_AvgSyncOffset(This, piAvg) (This)->lpVtbl->get_AvgSyncOffset(This, piAvg)
+#define IQualProp_get_DevSyncOffset(This, piDev) (This)->lpVtbl->get_DevSyncOffset(This, piDev)
+
 declare function IQualProp_get_FramesDroppedInRenderer_Proxy(byval This as IQualProp ptr, byval pcFrames as long ptr) as HRESULT
 declare sub IQualProp_get_FramesDroppedInRenderer_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IQualProp_get_FramesDrawn_Proxy(byval This as IQualProp ptr, byval pcFramesDrawn as long ptr) as HRESULT
@@ -148,6 +200,27 @@ end type
 type IFullScreenVideo_
 	lpVtbl as IFullScreenVideoVtbl ptr
 end type
+
+#define IFullScreenVideo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFullScreenVideo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFullScreenVideo_Release(This) (This)->lpVtbl->Release(This)
+#define IFullScreenVideo_CountModes(This, pModes) (This)->lpVtbl->CountModes(This, pModes)
+#define IFullScreenVideo_GetModeInfo(This, Mode, pWidth, pHeight, pDepth) (This)->lpVtbl->GetModeInfo(This, Mode, pWidth, pHeight, pDepth)
+#define IFullScreenVideo_GetCurrentMode(This, pMode) (This)->lpVtbl->GetCurrentMode(This, pMode)
+#define IFullScreenVideo_IsModeAvailable(This, Mode) (This)->lpVtbl->IsModeAvailable(This, Mode)
+#define IFullScreenVideo_IsModeEnabled(This, Mode) (This)->lpVtbl->IsModeEnabled(This, Mode)
+#define IFullScreenVideo_SetEnabled(This, Mode, bEnabled) (This)->lpVtbl->SetEnabled(This, Mode, bEnabled)
+#define IFullScreenVideo_GetClipFactor(This, pClipFactor) (This)->lpVtbl->GetClipFactor(This, pClipFactor)
+#define IFullScreenVideo_SetClipFactor(This, ClipFactor) (This)->lpVtbl->SetClipFactor(This, ClipFactor)
+#define IFullScreenVideo_SetMessageDrain(This, hwnd) (This)->lpVtbl->SetMessageDrain(This, hwnd)
+#define IFullScreenVideo_GetMessageDrain(This, hwnd) (This)->lpVtbl->GetMessageDrain(This, hwnd)
+#define IFullScreenVideo_SetMonitor(This, Monitor) (This)->lpVtbl->SetMonitor(This, Monitor)
+#define IFullScreenVideo_GetMonitor(This, Monitor) (This)->lpVtbl->GetMonitor(This, Monitor)
+#define IFullScreenVideo_HideOnDeactivate(This, Hide) (This)->lpVtbl->HideOnDeactivate(This, Hide)
+#define IFullScreenVideo_IsHideOnDeactivate(This) (This)->lpVtbl->IsHideOnDeactivate(This)
+#define IFullScreenVideo_SetCaption(This, strCaption) (This)->lpVtbl->SetCaption(This, strCaption)
+#define IFullScreenVideo_GetCaption(This, pstrCaption) (This)->lpVtbl->GetCaption(This, pstrCaption)
+#define IFullScreenVideo_SetDefault(This) (This)->lpVtbl->SetDefault(This)
 
 declare function IFullScreenVideo_CountModes_Proxy(byval This as IFullScreenVideo ptr, byval pModes as LONG ptr) as HRESULT
 declare sub IFullScreenVideo_CountModes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -217,6 +290,31 @@ type IFullScreenVideoEx_
 	lpVtbl as IFullScreenVideoExVtbl ptr
 end type
 
+#define IFullScreenVideoEx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFullScreenVideoEx_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFullScreenVideoEx_Release(This) (This)->lpVtbl->Release(This)
+#define IFullScreenVideoEx_CountModes(This, pModes) (This)->lpVtbl->CountModes(This, pModes)
+#define IFullScreenVideoEx_GetModeInfo(This, Mode, pWidth, pHeight, pDepth) (This)->lpVtbl->GetModeInfo(This, Mode, pWidth, pHeight, pDepth)
+#define IFullScreenVideoEx_GetCurrentMode(This, pMode) (This)->lpVtbl->GetCurrentMode(This, pMode)
+#define IFullScreenVideoEx_IsModeAvailable(This, Mode) (This)->lpVtbl->IsModeAvailable(This, Mode)
+#define IFullScreenVideoEx_IsModeEnabled(This, Mode) (This)->lpVtbl->IsModeEnabled(This, Mode)
+#define IFullScreenVideoEx_SetEnabled(This, Mode, bEnabled) (This)->lpVtbl->SetEnabled(This, Mode, bEnabled)
+#define IFullScreenVideoEx_GetClipFactor(This, pClipFactor) (This)->lpVtbl->GetClipFactor(This, pClipFactor)
+#define IFullScreenVideoEx_SetClipFactor(This, ClipFactor) (This)->lpVtbl->SetClipFactor(This, ClipFactor)
+#define IFullScreenVideoEx_SetMessageDrain(This, hwnd) (This)->lpVtbl->SetMessageDrain(This, hwnd)
+#define IFullScreenVideoEx_GetMessageDrain(This, hwnd) (This)->lpVtbl->GetMessageDrain(This, hwnd)
+#define IFullScreenVideoEx_SetMonitor(This, Monitor) (This)->lpVtbl->SetMonitor(This, Monitor)
+#define IFullScreenVideoEx_GetMonitor(This, Monitor) (This)->lpVtbl->GetMonitor(This, Monitor)
+#define IFullScreenVideoEx_HideOnDeactivate(This, Hide) (This)->lpVtbl->HideOnDeactivate(This, Hide)
+#define IFullScreenVideoEx_IsHideOnDeactivate(This) (This)->lpVtbl->IsHideOnDeactivate(This)
+#define IFullScreenVideoEx_SetCaption(This, strCaption) (This)->lpVtbl->SetCaption(This, strCaption)
+#define IFullScreenVideoEx_GetCaption(This, pstrCaption) (This)->lpVtbl->GetCaption(This, pstrCaption)
+#define IFullScreenVideoEx_SetDefault(This) (This)->lpVtbl->SetDefault(This)
+#define IFullScreenVideoEx_SetAcceleratorTable(This, hwnd, hAccel) (This)->lpVtbl->SetAcceleratorTable(This, hwnd, hAccel)
+#define IFullScreenVideoEx_GetAcceleratorTable(This, phwnd, phAccel) (This)->lpVtbl->GetAcceleratorTable(This, phwnd, phAccel)
+#define IFullScreenVideoEx_KeepPixelAspectRatio(This, KeepAspect) (This)->lpVtbl->KeepPixelAspectRatio(This, KeepAspect)
+#define IFullScreenVideoEx_IsKeepPixelAspectRatio(This, pKeepAspect) (This)->lpVtbl->IsKeepPixelAspectRatio(This, pKeepAspect)
+
 declare function IFullScreenVideoEx_SetAcceleratorTable_Proxy(byval This as IFullScreenVideoEx ptr, byval hwnd as HWND, byval hAccel as HACCEL) as HRESULT
 declare sub IFullScreenVideoEx_SetAcceleratorTable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IFullScreenVideoEx_GetAcceleratorTable_Proxy(byval This as IFullScreenVideoEx ptr, byval phwnd as HWND ptr, byval phAccel as HACCEL ptr) as HRESULT
@@ -244,6 +342,17 @@ end type
 type IBaseVideoMixer_
 	lpVtbl as IBaseVideoMixerVtbl ptr
 end type
+
+#define IBaseVideoMixer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBaseVideoMixer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBaseVideoMixer_Release(This) (This)->lpVtbl->Release(This)
+#define IBaseVideoMixer_SetLeadPin(This, iPin) (This)->lpVtbl->SetLeadPin(This, iPin)
+#define IBaseVideoMixer_GetLeadPin(This, piPin) (This)->lpVtbl->GetLeadPin(This, piPin)
+#define IBaseVideoMixer_GetInputPinCount(This, piPinCount) (This)->lpVtbl->GetInputPinCount(This, piPinCount)
+#define IBaseVideoMixer_IsUsingClock(This, pbValue) (This)->lpVtbl->IsUsingClock(This, pbValue)
+#define IBaseVideoMixer_SetUsingClock(This, bValue) (This)->lpVtbl->SetUsingClock(This, bValue)
+#define IBaseVideoMixer_GetClockPeriod(This, pbValue) (This)->lpVtbl->GetClockPeriod(This, pbValue)
+#define IBaseVideoMixer_SetClockPeriod(This, bValue) (This)->lpVtbl->SetClockPeriod(This, bValue)
 
 declare function IBaseVideoMixer_SetLeadPin_Proxy(byval This as IBaseVideoMixer ptr, byval iPin as long) as HRESULT
 declare sub IBaseVideoMixer_SetLeadPin_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

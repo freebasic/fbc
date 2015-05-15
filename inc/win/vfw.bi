@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "avifil32"
@@ -51,7 +66,9 @@ const ICMODE_FASTDECOMPRESS = 3
 const ICMODE_QUERY = 4
 const ICMODE_FASTCOMPRESS = 5
 const ICMODE_DRAW = 8
+#define AVIIF_LIST __MSABI_LONG(&h00000001)
 #define AVIIF_TWOCC __MSABI_LONG(&h00000002)
+#define AVIIF_KEYFRAME __MSABI_LONG(&h00000010)
 const ICQUALITY_LOW = 0
 const ICQUALITY_HIGH = 10000
 const ICQUALITY_DEFAULT = -1
@@ -200,6 +217,7 @@ type ICSETSTATUSPROC
 	Status as function(byval lParam as LPARAM, byval message as UINT, byval l as LONG) as LONG
 end type
 
+#define ICDECOMPRESS_HURRYUP __MSABI_LONG(&h80000000)
 #define ICDECOMPRESS_UPDATE __MSABI_LONG(&h40000000)
 #define ICDECOMPRESS_PREROLL __MSABI_LONG(&h20000000)
 #define ICDECOMPRESS_NULLFRAME __MSABI_LONG(&h10000000)
@@ -230,6 +248,9 @@ type ICDECOMPRESSEX
 	dySrc as long
 end type
 
+#define ICDRAW_QUERY __MSABI_LONG(&h00000001)
+#define ICDRAW_FULLSCREEN __MSABI_LONG(&h00000002)
+#define ICDRAW_HDC __MSABI_LONG(&h00000004)
 #define ICDRAW_ANIMATE __MSABI_LONG(&h00000008)
 #define ICDRAW_CONTINUE __MSABI_LONG(&h00000010)
 #define ICDRAW_MEMORYDC __MSABI_LONG(&h00000020)
@@ -255,6 +276,8 @@ type ICDRAWBEGIN
 	dwScale as DWORD
 end type
 
+#define ICDRAW_HURRYUP __MSABI_LONG(&h80000000)
+#define ICDRAW_UPDATE __MSABI_LONG(&h40000000)
 #define ICDRAW_PREROLL __MSABI_LONG(&h20000000)
 #define ICDRAW_NULLFRAME __MSABI_LONG(&h10000000)
 #define ICDRAW_NOTKEYFRAME __MSABI_LONG(&h08000000)
@@ -746,6 +769,7 @@ type IAVIPersistFileVtbl_
 end type
 
 type PAVIPERSISTFILE as IAVIPersistFile ptr
+#define PAVIFILE IAVIFile ptr
 type IAVIFileVtbl as IAVIFileVtbl_
 
 type IAVIFile
@@ -765,7 +789,9 @@ type IAVIFileVtbl_
 	DeleteStream as function(byval This as IAVIFile ptr, byval fccType as DWORD, byval lParam as LONG) as HRESULT
 end type
 
+#undef PAVIFILE
 type PAVIFILE as IAVIFile ptr
+#define PGETFRAME IGetFrame ptr
 type IGetFrameVtbl as IGetFrameVtbl_
 
 type IGetFrame
@@ -782,6 +808,7 @@ type IGetFrameVtbl_
 	SetFormat as function(byval This as IGetFrame ptr, byval lpbi as LPBITMAPINFOHEADER, byval lpBits as LPVOID, byval x as long, byval y as long, byval dx as long, byval dy as long) as HRESULT
 end type
 
+#undef PGETFRAME
 type PGETFRAME as IGetFrame ptr
 #define DEFINE_AVIGUID(name, l, w1, w2) DEFINE_GUID(name, l, w1, w2, &hC0, 0, 0, 0, 0, 0, 0, &h46)
 extern IID_IAVIFile as const GUID
@@ -1039,7 +1066,7 @@ const MCIWNDF_NOOPEN = &h8000
 #define MCIWndGetStart(hwnd) cast(LONG, MCIWndSM(hwnd, MCIWNDM_GETSTART, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define MCIWndGetLength(hwnd) cast(LONG, MCIWndSM(hwnd, MCIWNDM_GETLENGTH, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define MCIWndGetEnd(hwnd) cast(LONG, MCIWndSM(hwnd, MCIWNDM_GETEND, cast(WPARAM, 0), cast(LPARAM, 0)))
-#define MCIWndStep(hwnd, n) cast(LONG, MCIWndSM(hwnd, MCI_STEP, cast(WPARAM, 0), cast(LPARAM, cast(__LONG32, (n)))))
+#define MCIWndStep(hwnd, n) cast(LONG, MCIWndSM(hwnd, MCI_STEP, cast(WPARAM, 0), cast(LPARAM, clng((n)))))
 #define MCIWndDestroy(hwnd) MCIWndSM(hwnd, WM_CLOSE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define MCIWndSetZoom(hwnd, iZoom) MCIWndSM(hwnd, MCIWNDM_SETZOOM, cast(WPARAM, 0), cast(LPARAM, cast(UINT, (iZoom))))
 #define MCIWndGetZoom(hwnd) cast(UINT, MCIWndSM(hwnd, MCIWNDM_GETZOOM, cast(WPARAM, 0), cast(LPARAM, 0)))

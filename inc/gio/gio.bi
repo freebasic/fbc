@@ -1,3 +1,29 @@
+'' FreeBASIC binding for glib-2.42.2
+''
+'' based on the C header files:
+''   GIO - GLib Input, Output and Streaming Library
+''
+''   Copyright (C) 2006-2007 Red Hat, Inc.
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General
+''   Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
+''
+''   Author: Alexander Larsson <alexl@redhat.com>
+''
+'' translated to FreeBASIC by:
+''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "gio-2.0"
@@ -21,6 +47,7 @@
 extern "C"
 
 #define __G_IO_H__
+#define __GIO_GIO_H_INSIDE__
 #define __GIO_TYPES_H__
 #define __GIO_ENUMS_H__
 
@@ -5539,6 +5566,7 @@ declare sub g_notification_add_button_with_target_value(byval notification as GN
 declare sub g_notification_set_default_action(byval notification as GNotification ptr, byval detailed_action as const zstring ptr)
 declare sub g_notification_set_default_action_and_target(byval notification as GNotification ptr, byval action as const zstring ptr, byval target_format as const zstring ptr, ...)
 declare sub g_notification_set_default_action_and_target_value(byval notification as GNotification ptr, byval action as const zstring ptr, byval target as GVariant ptr)
+#undef __GIO_GIO_H_INSIDE__
 
 end extern
 

@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "opengl32"
@@ -604,6 +619,9 @@ const GL_COLOR_INDEX12_EXT = &h80E6
 const GL_COLOR_INDEX16_EXT = &h80E7
 const GL_MAX_ELEMENTS_VERTICES_WIN = &h80E8
 const GL_MAX_ELEMENTS_INDICES_WIN = &h80E9
+const GL_PHONG_WIN = &h80EA
+const GL_PHONG_HINT_WIN = &h80EB
+const GL_FOG_SPECULAR_TEXTURE_WIN = &h80EC
 #define GL_LOGIC_OP GL_INDEX_LOGIC_OP
 #define GL_TEXTURE_COMPONENTS GL_TEXTURE_INTERNAL_FORMAT
 
@@ -724,7 +742,7 @@ declare sub glGetPixelMapuiv(byval map as GLenum, byval values as GLuint ptr)
 declare sub glGetPixelMapusv(byval map as GLenum, byval values as GLushort ptr)
 declare sub glGetPointerv(byval pname as GLenum, byval params as GLvoid ptr ptr)
 declare sub glGetPolygonStipple(byval mask as GLubyte ptr)
-declare function glGetString(byval name as GLenum) as const GLubyte ptr
+declare function glGetString(byval name as GLenum) as const zstring ptr
 declare sub glGetTexEnvfv(byval target as GLenum, byval pname as GLenum, byval params as GLfloat ptr)
 declare sub glGetTexEnviv(byval target as GLenum, byval pname as GLenum, byval params as GLint ptr)
 declare sub glGetTexGendv(byval coord as GLenum, byval pname as GLenum, byval params as GLdouble ptr)

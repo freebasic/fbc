@@ -1,3 +1,26 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2002-2003 Jason Edmeades
+''                           Raphael Junqueira
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "dxguid"
@@ -31,12 +54,26 @@ const DIRECT3D_VERSION = &h0900
 const D3D_SDK_VERSION = 32
 const D3DADAPTER_DEFAULT = 0
 #define D3DENUM_NO_WHQL_LEVEL __MSABI_LONG(&h00000002)
+#define D3DPRESENT_DONOTWAIT __MSABI_LONG(1)
+#define D3DPRESENT_LINEAR_CONTENT __MSABI_LONG(2)
 #define D3DPRESENT_BACK_BUFFERS_MAX __MSABI_LONG(3)
 #define D3DSGR_NO_CALIBRATION __MSABI_LONG(&h00000000)
 #define D3DSGR_CALIBRATE __MSABI_LONG(&h00000001)
 const _FACD3D = &h876
 #define MAKE_D3DHRESULT(code) MAKE_HRESULT(1, _FACD3D, code)
 #define MAKE_D3DSTATUS(code) MAKE_HRESULT(0, _FACD3D, code)
+#define D3D_OK S_OK
+#define D3DERR_WRONGTEXTUREFORMAT MAKE_D3DHRESULT(2072)
+#define D3DERR_UNSUPPORTEDCOLOROPERATION MAKE_D3DHRESULT(2073)
+#define D3DERR_UNSUPPORTEDCOLORARG MAKE_D3DHRESULT(2074)
+#define D3DERR_UNSUPPORTEDALPHAOPERATION MAKE_D3DHRESULT(2075)
+#define D3DERR_UNSUPPORTEDALPHAARG MAKE_D3DHRESULT(2076)
+#define D3DERR_TOOMANYOPERATIONS MAKE_D3DHRESULT(2077)
+#define D3DERR_CONFLICTINGTEXTUREFILTER MAKE_D3DHRESULT(2078)
+#define D3DERR_UNSUPPORTEDFACTORVALUE MAKE_D3DHRESULT(2079)
+#define D3DERR_CONFLICTINGRENDERSTATE MAKE_D3DHRESULT(2081)
+#define D3DERR_UNSUPPORTEDTEXTUREFILTER MAKE_D3DHRESULT(2082)
+#define D3DERR_CONFLICTINGTEXTUREPALETTE MAKE_D3DHRESULT(2086)
 #define D3DERR_DRIVERINTERNALERROR MAKE_D3DHRESULT(2087)
 #define D3DERR_NOTFOUND MAKE_D3DHRESULT(2150)
 #define D3DERR_MOREDATA MAKE_D3DHRESULT(2151)
@@ -186,8 +223,8 @@ type IDirect3D9ExVtbl_
 	GetDeviceCaps as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval DeviceType as D3DDEVTYPE, byval pCaps as D3DCAPS9 ptr) as HRESULT
 	GetAdapterMonitor as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT) as HMONITOR
 	CreateDevice as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval DeviceType as D3DDEVTYPE, byval hFocusWindow as HWND, byval BehaviorFlags as DWORD, byval pPresentationParameters as D3DPRESENT_PARAMETERS ptr, byval ppReturnedDeviceInterface as IDirect3DDevice9 ptr ptr) as HRESULT
-	GetAdapterModeCountEx as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval pFilter as const D3DDISPLAYMODEFILTER ptr) as UINT
-	EnumAdapterModesEx as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval pFilter as const D3DDISPLAYMODEFILTER ptr, byval Mode as UINT, byval pMode as D3DDISPLAYMODEEX ptr) as HRESULT
+	GetAdapterModeCountEx as function(byval This as IDirect3D9Ex ptr, byval adapter_idx as UINT, byval filter as const D3DDISPLAYMODEFILTER ptr) as UINT
+	EnumAdapterModesEx as function(byval This as IDirect3D9Ex ptr, byval adapter_idx as UINT, byval filter as const D3DDISPLAYMODEFILTER ptr, byval mode_idx as UINT, byval mode as D3DDISPLAYMODEEX ptr) as HRESULT
 	GetAdapterDisplayModeEx as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval pMode as D3DDISPLAYMODEEX ptr, byval pRotation as D3DDISPLAYROTATION ptr) as HRESULT
 	CreateDeviceEx as function(byval This as IDirect3D9Ex ptr, byval Adapter as UINT, byval DeviceType as D3DDEVTYPE, byval hFocusWindow as HWND, byval BehaviorFlags as DWORD, byval pPresentationParameters as D3DPRESENT_PARAMETERS ptr, byval pFullscreenDisplayMode as D3DDISPLAYMODEEX ptr, byval ppReturnedDeviceInterface as IDirect3DDevice9Ex ptr ptr) as HRESULT
 	GetAdapterLUID as function(byval This as IDirect3D9Ex ptr, byval Adatper as UINT, byval pLUID as LUID ptr) as HRESULT
@@ -226,12 +263,12 @@ type IDirect3DVolume9Vtbl_
 	AddRef as function(byval This as IDirect3DVolume9 ptr) as ULONG
 	Release as function(byval This as IDirect3DVolume9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DVolume9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DVolume9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DVolume9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DVolume9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DVolume9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	GetContainer as function(byval This as IDirect3DVolume9 ptr, byval riid as const IID const ptr, byval ppContainer as any ptr ptr) as HRESULT
 	GetDesc as function(byval This as IDirect3DVolume9 ptr, byval pDesc as D3DVOLUME_DESC ptr) as HRESULT
-	LockBox as function(byval This as IDirect3DVolume9 ptr, byval pLockedVolume as D3DLOCKED_BOX ptr, byval pBox as const D3DBOX ptr, byval Flags as DWORD) as HRESULT
+	LockBox as function(byval This as IDirect3DVolume9 ptr, byval locked_box as D3DLOCKED_BOX ptr, byval box as const D3DBOX ptr, byval flags as DWORD) as HRESULT
 	UnlockBox as function(byval This as IDirect3DVolume9 ptr) as HRESULT
 end type
 
@@ -256,7 +293,7 @@ type IDirect3DSwapChain9Vtbl_
 	QueryInterface as function(byval This as IDirect3DSwapChain9 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DSwapChain9 ptr) as ULONG
 	Release as function(byval This as IDirect3DSwapChain9 ptr) as ULONG
-	Present as function(byval This as IDirect3DSwapChain9 ptr, byval pSourceRect as const RECT ptr, byval pDestRect as const RECT ptr, byval hDestWindowOverride as HWND, byval pDirtyRegion as const RGNDATA ptr, byval dwFlags as DWORD) as HRESULT
+	Present as function(byval This as IDirect3DSwapChain9 ptr, byval src_rect as const RECT ptr, byval dst_rect as const RECT ptr, byval dst_window_override as HWND, byval dirty_region as const RGNDATA ptr, byval flags as DWORD) as HRESULT
 	GetFrontBufferData as function(byval This as IDirect3DSwapChain9 ptr, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
 	GetBackBuffer as function(byval This as IDirect3DSwapChain9 ptr, byval iBackBuffer as UINT, byval Type as D3DBACKBUFFER_TYPE, byval ppBackBuffer as IDirect3DSurface9 ptr ptr) as HRESULT
 	GetRasterStatus as function(byval This as IDirect3DSwapChain9 ptr, byval pRasterStatus as D3DRASTER_STATUS ptr) as HRESULT
@@ -285,7 +322,7 @@ type IDirect3DSwapChain9ExVtbl_
 	QueryInterface as function(byval This as IDirect3DSwapChain9Ex ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirect3DSwapChain9Ex ptr) as ULONG
 	Release as function(byval This as IDirect3DSwapChain9Ex ptr) as ULONG
-	Present as function(byval This as IDirect3DSwapChain9Ex ptr, byval pSourceRect as const RECT ptr, byval pDestRect as const RECT ptr, byval hDestWindowOverride as HWND, byval pDirtyRegion as const RGNDATA ptr, byval dwFlags as DWORD) as HRESULT
+	Present as function(byval This as IDirect3DSwapChain9Ex ptr, byval src_rect as const RECT ptr, byval dst_rect as const RECT ptr, byval dst_window_override as HWND, byval dirty_region as const RGNDATA ptr, byval flags as DWORD) as HRESULT
 	GetFrontBufferData as function(byval This as IDirect3DSwapChain9Ex ptr, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
 	GetBackBuffer as function(byval This as IDirect3DSwapChain9Ex ptr, byval iBackBuffer as UINT, byval Type as D3DBACKBUFFER_TYPE, byval ppBackBuffer as IDirect3DSurface9 ptr ptr) as HRESULT
 	GetRasterStatus as function(byval This as IDirect3DSwapChain9Ex ptr, byval pRasterStatus as D3DRASTER_STATUS ptr) as HRESULT
@@ -321,7 +358,7 @@ type IDirect3DResource9Vtbl_
 	AddRef as function(byval This as IDirect3DResource9 ptr) as ULONG
 	Release as function(byval This as IDirect3DResource9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DResource9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DResource9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DResource9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DResource9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DResource9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DResource9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -352,7 +389,7 @@ type IDirect3DSurface9Vtbl_
 	AddRef as function(byval This as IDirect3DSurface9 ptr) as ULONG
 	Release as function(byval This as IDirect3DSurface9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DSurface9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DSurface9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DSurface9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DSurface9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DSurface9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DSurface9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -361,7 +398,7 @@ type IDirect3DSurface9Vtbl_
 	GetType as function(byval This as IDirect3DSurface9 ptr) as D3DRESOURCETYPE
 	GetContainer as function(byval This as IDirect3DSurface9 ptr, byval riid as const IID const ptr, byval ppContainer as any ptr ptr) as HRESULT
 	GetDesc as function(byval This as IDirect3DSurface9 ptr, byval pDesc as D3DSURFACE_DESC ptr) as HRESULT
-	LockRect as function(byval This as IDirect3DSurface9 ptr, byval pLockedRect as D3DLOCKED_RECT ptr, byval pRect as const RECT ptr, byval Flags as DWORD) as HRESULT
+	LockRect as function(byval This as IDirect3DSurface9 ptr, byval locked_rect as D3DLOCKED_RECT ptr, byval rect as const RECT ptr, byval flags as DWORD) as HRESULT
 	UnlockRect as function(byval This as IDirect3DSurface9 ptr) as HRESULT
 	GetDC as function(byval This as IDirect3DSurface9 ptr, byval phdc as HDC ptr) as HRESULT
 	ReleaseDC as function(byval This as IDirect3DSurface9 ptr, byval hdc as HDC) as HRESULT
@@ -395,7 +432,7 @@ type IDirect3DVertexBuffer9Vtbl_
 	AddRef as function(byval This as IDirect3DVertexBuffer9 ptr) as ULONG
 	Release as function(byval This as IDirect3DVertexBuffer9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DVertexBuffer9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DVertexBuffer9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DVertexBuffer9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DVertexBuffer9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DVertexBuffer9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DVertexBuffer9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -432,7 +469,7 @@ type IDirect3DIndexBuffer9Vtbl_
 	AddRef as function(byval This as IDirect3DIndexBuffer9 ptr) as ULONG
 	Release as function(byval This as IDirect3DIndexBuffer9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DIndexBuffer9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DIndexBuffer9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DIndexBuffer9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DIndexBuffer9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DIndexBuffer9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DIndexBuffer9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -469,7 +506,7 @@ type IDirect3DBaseTexture9Vtbl_
 	AddRef as function(byval This as IDirect3DBaseTexture9 ptr) as ULONG
 	Release as function(byval This as IDirect3DBaseTexture9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DBaseTexture9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DBaseTexture9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DBaseTexture9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DBaseTexture9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DBaseTexture9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DBaseTexture9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -512,7 +549,7 @@ type IDirect3DCubeTexture9Vtbl_
 	AddRef as function(byval This as IDirect3DCubeTexture9 ptr) as ULONG
 	Release as function(byval This as IDirect3DCubeTexture9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DCubeTexture9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DCubeTexture9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DCubeTexture9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DCubeTexture9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DCubeTexture9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DCubeTexture9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -527,9 +564,9 @@ type IDirect3DCubeTexture9Vtbl_
 	GenerateMipSubLevels as sub(byval This as IDirect3DCubeTexture9 ptr)
 	GetLevelDesc as function(byval This as IDirect3DCubeTexture9 ptr, byval Level as UINT, byval pDesc as D3DSURFACE_DESC ptr) as HRESULT
 	GetCubeMapSurface as function(byval This as IDirect3DCubeTexture9 ptr, byval FaceType as D3DCUBEMAP_FACES, byval Level as UINT, byval ppCubeMapSurface as IDirect3DSurface9 ptr ptr) as HRESULT
-	LockRect as function(byval This as IDirect3DCubeTexture9 ptr, byval FaceType as D3DCUBEMAP_FACES, byval Level as UINT, byval pLockedRect as D3DLOCKED_RECT ptr, byval pRect as const RECT ptr, byval Flags as DWORD) as HRESULT
+	LockRect as function(byval This as IDirect3DCubeTexture9 ptr, byval face as D3DCUBEMAP_FACES, byval level as UINT, byval locked_rect as D3DLOCKED_RECT ptr, byval rect as const RECT ptr, byval flags as DWORD) as HRESULT
 	UnlockRect as function(byval This as IDirect3DCubeTexture9 ptr, byval FaceType as D3DCUBEMAP_FACES, byval Level as UINT) as HRESULT
-	AddDirtyRect as function(byval This as IDirect3DCubeTexture9 ptr, byval FaceType as D3DCUBEMAP_FACES, byval pDirtyRect as const RECT ptr) as HRESULT
+	AddDirtyRect as function(byval This as IDirect3DCubeTexture9 ptr, byval face as D3DCUBEMAP_FACES, byval dirty_rect as const RECT ptr) as HRESULT
 end type
 
 #define IDirect3DCubeTexture9_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -565,7 +602,7 @@ type IDirect3DTexture9Vtbl_
 	AddRef as function(byval This as IDirect3DTexture9 ptr) as ULONG
 	Release as function(byval This as IDirect3DTexture9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DTexture9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DTexture9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DTexture9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DTexture9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DTexture9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DTexture9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -580,9 +617,9 @@ type IDirect3DTexture9Vtbl_
 	GenerateMipSubLevels as sub(byval This as IDirect3DTexture9 ptr)
 	GetLevelDesc as function(byval This as IDirect3DTexture9 ptr, byval Level as UINT, byval pDesc as D3DSURFACE_DESC ptr) as HRESULT
 	GetSurfaceLevel as function(byval This as IDirect3DTexture9 ptr, byval Level as UINT, byval ppSurfaceLevel as IDirect3DSurface9 ptr ptr) as HRESULT
-	LockRect as function(byval This as IDirect3DTexture9 ptr, byval Level as UINT, byval pLockedRect as D3DLOCKED_RECT ptr, byval pRect as const RECT ptr, byval Flags as DWORD) as HRESULT
+	LockRect as function(byval This as IDirect3DTexture9 ptr, byval level as UINT, byval locked_rect as D3DLOCKED_RECT ptr, byval rect as const RECT ptr, byval flags as DWORD) as HRESULT
 	UnlockRect as function(byval This as IDirect3DTexture9 ptr, byval Level as UINT) as HRESULT
-	AddDirtyRect as function(byval This as IDirect3DTexture9 ptr, byval pDirtyRect as const RECT ptr) as HRESULT
+	AddDirtyRect as function(byval This as IDirect3DTexture9 ptr, byval dirty_rect as const RECT ptr) as HRESULT
 end type
 
 #define IDirect3DTexture9_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -618,7 +655,7 @@ type IDirect3DVolumeTexture9Vtbl_
 	AddRef as function(byval This as IDirect3DVolumeTexture9 ptr) as ULONG
 	Release as function(byval This as IDirect3DVolumeTexture9 ptr) as ULONG
 	GetDevice as function(byval This as IDirect3DVolumeTexture9 ptr, byval ppDevice as IDirect3DDevice9 ptr ptr) as HRESULT
-	SetPrivateData as function(byval This as IDirect3DVolumeTexture9 ptr, byval refguid as const GUID const ptr, byval pData as const any ptr, byval SizeOfData as DWORD, byval Flags as DWORD) as HRESULT
+	SetPrivateData as function(byval This as IDirect3DVolumeTexture9 ptr, byval guid as const GUID const ptr, byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD) as HRESULT
 	GetPrivateData as function(byval This as IDirect3DVolumeTexture9 ptr, byval refguid as const GUID const ptr, byval pData as any ptr, byval pSizeOfData as DWORD ptr) as HRESULT
 	FreePrivateData as function(byval This as IDirect3DVolumeTexture9 ptr, byval refguid as const GUID const ptr) as HRESULT
 	SetPriority as function(byval This as IDirect3DVolumeTexture9 ptr, byval PriorityNew as DWORD) as DWORD
@@ -633,9 +670,9 @@ type IDirect3DVolumeTexture9Vtbl_
 	GenerateMipSubLevels as sub(byval This as IDirect3DVolumeTexture9 ptr)
 	GetLevelDesc as function(byval This as IDirect3DVolumeTexture9 ptr, byval Level as UINT, byval pDesc as D3DVOLUME_DESC ptr) as HRESULT
 	GetVolumeLevel as function(byval This as IDirect3DVolumeTexture9 ptr, byval Level as UINT, byval ppVolumeLevel as IDirect3DVolume9 ptr ptr) as HRESULT
-	LockBox as function(byval This as IDirect3DVolumeTexture9 ptr, byval Level as UINT, byval pLockedVolume as D3DLOCKED_BOX ptr, byval pBox as const D3DBOX ptr, byval Flags as DWORD) as HRESULT
+	LockBox as function(byval This as IDirect3DVolumeTexture9 ptr, byval level as UINT, byval locked_box as D3DLOCKED_BOX ptr, byval box as const D3DBOX ptr, byval flags as DWORD) as HRESULT
 	UnlockBox as function(byval This as IDirect3DVolumeTexture9 ptr, byval Level as UINT) as HRESULT
-	AddDirtyBox as function(byval This as IDirect3DVolumeTexture9 ptr, byval pDirtyBox as const D3DBOX ptr) as HRESULT
+	AddDirtyBox as function(byval This as IDirect3DVolumeTexture9 ptr, byval dirty_box as const D3DBOX ptr) as HRESULT
 end type
 
 #define IDirect3DVolumeTexture9_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -787,11 +824,11 @@ type IDirect3DDevice9Vtbl_
 	GetSwapChain as function(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval pSwapChain as IDirect3DSwapChain9 ptr ptr) as HRESULT
 	GetNumberOfSwapChains as function(byval This as IDirect3DDevice9 ptr) as UINT
 	Reset as function(byval This as IDirect3DDevice9 ptr, byval pPresentationParameters as D3DPRESENT_PARAMETERS ptr) as HRESULT
-	Present as function(byval This as IDirect3DDevice9 ptr, byval pSourceRect as const RECT ptr, byval pDestRect as const RECT ptr, byval hDestWindowOverride as HWND, byval pDirtyRegion as const RGNDATA ptr) as HRESULT
+	Present as function(byval This as IDirect3DDevice9 ptr, byval src_rect as const RECT ptr, byval dst_rect as const RECT ptr, byval dst_window_override as HWND, byval dirty_region as const RGNDATA ptr) as HRESULT
 	GetBackBuffer as function(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval iBackBuffer as UINT, byval Type as D3DBACKBUFFER_TYPE, byval ppBackBuffer as IDirect3DSurface9 ptr ptr) as HRESULT
 	GetRasterStatus as function(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval pRasterStatus as D3DRASTER_STATUS ptr) as HRESULT
 	SetDialogBoxMode as function(byval This as IDirect3DDevice9 ptr, byval bEnableDialogs as WINBOOL) as HRESULT
-	SetGammaRamp as sub(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval Flags as DWORD, byval pRamp as const D3DGAMMARAMP ptr)
+	SetGammaRamp as sub(byval This as IDirect3DDevice9 ptr, byval swapchain_idx as UINT, byval flags as DWORD, byval ramp as const D3DGAMMARAMP ptr)
 	GetGammaRamp as sub(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval pRamp as D3DGAMMARAMP ptr)
 	CreateTexture as function(byval This as IDirect3DDevice9 ptr, byval Width as UINT, byval Height as UINT, byval Levels as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppTexture as IDirect3DTexture9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateVolumeTexture as function(byval This as IDirect3DDevice9 ptr, byval Width as UINT, byval Height as UINT, byval Depth as UINT, byval Levels as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppVolumeTexture as IDirect3DVolumeTexture9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
@@ -800,12 +837,12 @@ type IDirect3DDevice9Vtbl_
 	CreateIndexBuffer as function(byval This as IDirect3DDevice9 ptr, byval Length as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppIndexBuffer as IDirect3DIndexBuffer9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateRenderTarget as function(byval This as IDirect3DDevice9 ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval MultiSample as D3DMULTISAMPLE_TYPE, byval MultisampleQuality as DWORD, byval Lockable as WINBOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateDepthStencilSurface as function(byval This as IDirect3DDevice9 ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval MultiSample as D3DMULTISAMPLE_TYPE, byval MultisampleQuality as DWORD, byval Discard as WINBOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
-	UpdateSurface as function(byval This as IDirect3DDevice9 ptr, byval pSourceSurface as IDirect3DSurface9 ptr, byval pSourceRect as const RECT ptr, byval pDestinationSurface as IDirect3DSurface9 ptr, byval pDestPoint as const POINT ptr) as HRESULT
+	UpdateSurface as function(byval This as IDirect3DDevice9 ptr, byval src_surface as IDirect3DSurface9 ptr, byval src_rect as const RECT ptr, byval dst_surface as IDirect3DSurface9 ptr, byval dst_point as const POINT ptr) as HRESULT
 	UpdateTexture as function(byval This as IDirect3DDevice9 ptr, byval pSourceTexture as IDirect3DBaseTexture9 ptr, byval pDestinationTexture as IDirect3DBaseTexture9 ptr) as HRESULT
 	GetRenderTargetData as function(byval This as IDirect3DDevice9 ptr, byval pRenderTarget as IDirect3DSurface9 ptr, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
 	GetFrontBufferData as function(byval This as IDirect3DDevice9 ptr, byval iSwapChain as UINT, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
-	StretchRect as function(byval This as IDirect3DDevice9 ptr, byval pSourceSurface as IDirect3DSurface9 ptr, byval pSourceRect as const RECT ptr, byval pDestSurface as IDirect3DSurface9 ptr, byval pDestRect as const RECT ptr, byval Filter as D3DTEXTUREFILTERTYPE) as HRESULT
-	ColorFill as function(byval This as IDirect3DDevice9 ptr, byval pSurface as IDirect3DSurface9 ptr, byval pRect as const RECT ptr, byval color as D3DCOLOR) as HRESULT
+	StretchRect as function(byval This as IDirect3DDevice9 ptr, byval src_surface as IDirect3DSurface9 ptr, byval src_rect as const RECT ptr, byval dst_surface as IDirect3DSurface9 ptr, byval dst_rect as const RECT ptr, byval filter as D3DTEXTUREFILTERTYPE) as HRESULT
+	ColorFill as function(byval This as IDirect3DDevice9 ptr, byval surface as IDirect3DSurface9 ptr, byval rect as const RECT ptr, byval color as D3DCOLOR) as HRESULT
 	CreateOffscreenPlainSurface as function(byval This as IDirect3DDevice9 ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	SetRenderTarget as function(byval This as IDirect3DDevice9 ptr, byval RenderTargetIndex as DWORD, byval pRenderTarget as IDirect3DSurface9 ptr) as HRESULT
 	GetRenderTarget as function(byval This as IDirect3DDevice9 ptr, byval RenderTargetIndex as DWORD, byval ppRenderTarget as IDirect3DSurface9 ptr ptr) as HRESULT
@@ -813,26 +850,26 @@ type IDirect3DDevice9Vtbl_
 	GetDepthStencilSurface as function(byval This as IDirect3DDevice9 ptr, byval ppZStencilSurface as IDirect3DSurface9 ptr ptr) as HRESULT
 	BeginScene as function(byval This as IDirect3DDevice9 ptr) as HRESULT
 	EndScene as function(byval This as IDirect3DDevice9 ptr) as HRESULT
-	Clear as function(byval This as IDirect3DDevice9 ptr, byval Count as DWORD, byval pRects as const D3DRECT ptr, byval Flags as DWORD, byval Color as D3DCOLOR, byval Z as single, byval Stencil as DWORD) as HRESULT
-	SetTransform as function(byval This as IDirect3DDevice9 ptr, byval State as D3DTRANSFORMSTATETYPE, byval pMatrix as const D3DMATRIX ptr) as HRESULT
+	Clear as function(byval This as IDirect3DDevice9 ptr, byval rect_count as DWORD, byval rects as const D3DRECT ptr, byval flags as DWORD, byval color as D3DCOLOR, byval z as single, byval stencil as DWORD) as HRESULT
+	SetTransform as function(byval This as IDirect3DDevice9 ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as const D3DMATRIX ptr) as HRESULT
 	GetTransform as function(byval This as IDirect3DDevice9 ptr, byval State as D3DTRANSFORMSTATETYPE, byval pMatrix as D3DMATRIX ptr) as HRESULT
-	MultiplyTransform as function(byval This as IDirect3DDevice9 ptr, byval as D3DTRANSFORMSTATETYPE, byval as const D3DMATRIX ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DDevice9 ptr, byval pViewport as const D3DVIEWPORT9 ptr) as HRESULT
+	MultiplyTransform as function(byval This as IDirect3DDevice9 ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as const D3DMATRIX ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DDevice9 ptr, byval viewport as const D3DVIEWPORT9 ptr) as HRESULT
 	GetViewport as function(byval This as IDirect3DDevice9 ptr, byval pViewport as D3DVIEWPORT9 ptr) as HRESULT
-	SetMaterial as function(byval This as IDirect3DDevice9 ptr, byval pMaterial as const D3DMATERIAL9 ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DDevice9 ptr, byval material as const D3DMATERIAL9 ptr) as HRESULT
 	GetMaterial as function(byval This as IDirect3DDevice9 ptr, byval pMaterial as D3DMATERIAL9 ptr) as HRESULT
-	SetLight as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval as const D3DLIGHT9 ptr) as HRESULT
+	SetLight as function(byval This as IDirect3DDevice9 ptr, byval index as DWORD, byval light as const D3DLIGHT9 ptr) as HRESULT
 	GetLight as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval as D3DLIGHT9 ptr) as HRESULT
 	LightEnable as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval Enable as WINBOOL) as HRESULT
 	GetLightEnable as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval pEnable as WINBOOL ptr) as HRESULT
-	SetClipPlane as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval pPlane as const single ptr) as HRESULT
+	SetClipPlane as function(byval This as IDirect3DDevice9 ptr, byval index as DWORD, byval plane as const single ptr) as HRESULT
 	GetClipPlane as function(byval This as IDirect3DDevice9 ptr, byval Index as DWORD, byval pPlane as single ptr) as HRESULT
 	SetRenderState as function(byval This as IDirect3DDevice9 ptr, byval State as D3DRENDERSTATETYPE, byval Value as DWORD) as HRESULT
 	GetRenderState as function(byval This as IDirect3DDevice9 ptr, byval State as D3DRENDERSTATETYPE, byval pValue as DWORD ptr) as HRESULT
 	CreateStateBlock as function(byval This as IDirect3DDevice9 ptr, byval Type as D3DSTATEBLOCKTYPE, byval ppSB as IDirect3DStateBlock9 ptr ptr) as HRESULT
 	BeginStateBlock as function(byval This as IDirect3DDevice9 ptr) as HRESULT
 	EndStateBlock as function(byval This as IDirect3DDevice9 ptr, byval ppSB as IDirect3DStateBlock9 ptr ptr) as HRESULT
-	SetClipStatus as function(byval This as IDirect3DDevice9 ptr, byval pClipStatus as const D3DCLIPSTATUS9 ptr) as HRESULT
+	SetClipStatus as function(byval This as IDirect3DDevice9 ptr, byval clip_status as const D3DCLIPSTATUS9 ptr) as HRESULT
 	GetClipStatus as function(byval This as IDirect3DDevice9 ptr, byval pClipStatus as D3DCLIPSTATUS9 ptr) as HRESULT
 	GetTexture as function(byval This as IDirect3DDevice9 ptr, byval Stage as DWORD, byval ppTexture as IDirect3DBaseTexture9 ptr ptr) as HRESULT
 	SetTexture as function(byval This as IDirect3DDevice9 ptr, byval Stage as DWORD, byval pTexture as IDirect3DBaseTexture9 ptr) as HRESULT
@@ -841,11 +878,11 @@ type IDirect3DDevice9Vtbl_
 	GetSamplerState as function(byval This as IDirect3DDevice9 ptr, byval Sampler as DWORD, byval Type as D3DSAMPLERSTATETYPE, byval pValue as DWORD ptr) as HRESULT
 	SetSamplerState as function(byval This as IDirect3DDevice9 ptr, byval Sampler as DWORD, byval Type as D3DSAMPLERSTATETYPE, byval Value as DWORD) as HRESULT
 	ValidateDevice as function(byval This as IDirect3DDevice9 ptr, byval pNumPasses as DWORD ptr) as HRESULT
-	SetPaletteEntries as function(byval This as IDirect3DDevice9 ptr, byval PaletteNumber as UINT, byval pEntries as const PALETTEENTRY ptr) as HRESULT
+	SetPaletteEntries as function(byval This as IDirect3DDevice9 ptr, byval palette_idx as UINT, byval entries as const PALETTEENTRY ptr) as HRESULT
 	GetPaletteEntries as function(byval This as IDirect3DDevice9 ptr, byval PaletteNumber as UINT, byval pEntries as PALETTEENTRY ptr) as HRESULT
 	SetCurrentTexturePalette as function(byval This as IDirect3DDevice9 ptr, byval PaletteNumber as UINT) as HRESULT
 	GetCurrentTexturePalette as function(byval This as IDirect3DDevice9 ptr, byval PaletteNumber as UINT ptr) as HRESULT
-	SetScissorRect as function(byval This as IDirect3DDevice9 ptr, byval pRect as const RECT ptr) as HRESULT
+	SetScissorRect as function(byval This as IDirect3DDevice9 ptr, byval rect as const RECT ptr) as HRESULT
 	GetScissorRect as function(byval This as IDirect3DDevice9 ptr, byval pRect as RECT ptr) as HRESULT
 	SetSoftwareVertexProcessing as function(byval This as IDirect3DDevice9 ptr, byval bSoftware as WINBOOL) as HRESULT
 	GetSoftwareVertexProcessing as function(byval This as IDirect3DDevice9 ptr) as WINBOOL
@@ -853,22 +890,22 @@ type IDirect3DDevice9Vtbl_
 	GetNPatchMode as function(byval This as IDirect3DDevice9 ptr) as single
 	DrawPrimitive as function(byval This as IDirect3DDevice9 ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval StartVertex as UINT, byval PrimitiveCount as UINT) as HRESULT
 	DrawIndexedPrimitive as function(byval This as IDirect3DDevice9 ptr, byval as D3DPRIMITIVETYPE, byval BaseVertexIndex as INT_, byval MinVertexIndex as UINT, byval NumVertices as UINT, byval startIndex as UINT, byval primCount as UINT) as HRESULT
-	DrawPrimitiveUP as function(byval This as IDirect3DDevice9 ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval PrimitiveCount as UINT, byval pVertexStreamZeroData as const any ptr, byval VertexStreamZeroStride as UINT) as HRESULT
-	DrawIndexedPrimitiveUP as function(byval This as IDirect3DDevice9 ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval MinVertexIndex as UINT, byval NumVertices as UINT, byval PrimitiveCount as UINT, byval pIndexData as const any ptr, byval IndexDataFormat as D3DFORMAT, byval pVertexStreamZeroData as const any ptr, byval VertexStreamZeroStride as UINT) as HRESULT
+	DrawPrimitiveUP as function(byval This as IDirect3DDevice9 ptr, byval primitive_type as D3DPRIMITIVETYPE, byval primitive_count as UINT, byval data as const any ptr, byval stride as UINT) as HRESULT
+	DrawIndexedPrimitiveUP as function(byval This as IDirect3DDevice9 ptr, byval primitive_type as D3DPRIMITIVETYPE, byval min_vertex_idx as UINT, byval vertex_count as UINT, byval primitive_count as UINT, byval index_data as const any ptr, byval index_format as D3DFORMAT, byval data as const any ptr, byval stride as UINT) as HRESULT
 	ProcessVertices as function(byval This as IDirect3DDevice9 ptr, byval SrcStartIndex as UINT, byval DestIndex as UINT, byval VertexCount as UINT, byval pDestBuffer as IDirect3DVertexBuffer9 ptr, byval pVertexDecl as IDirect3DVertexDeclaration9 ptr, byval Flags as DWORD) as HRESULT
-	CreateVertexDeclaration as function(byval This as IDirect3DDevice9 ptr, byval pVertexElements as const D3DVERTEXELEMENT9 ptr, byval ppDecl as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
+	CreateVertexDeclaration as function(byval This as IDirect3DDevice9 ptr, byval elements as const D3DVERTEXELEMENT9 ptr, byval declaration as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
 	SetVertexDeclaration as function(byval This as IDirect3DDevice9 ptr, byval pDecl as IDirect3DVertexDeclaration9 ptr) as HRESULT
 	GetVertexDeclaration as function(byval This as IDirect3DDevice9 ptr, byval ppDecl as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
 	SetFVF as function(byval This as IDirect3DDevice9 ptr, byval FVF as DWORD) as HRESULT
 	GetFVF as function(byval This as IDirect3DDevice9 ptr, byval pFVF as DWORD ptr) as HRESULT
-	CreateVertexShader as function(byval This as IDirect3DDevice9 ptr, byval pFunction as const DWORD ptr, byval ppShader as IDirect3DVertexShader9 ptr ptr) as HRESULT
+	CreateVertexShader as function(byval This as IDirect3DDevice9 ptr, byval byte_code as const DWORD ptr, byval shader as IDirect3DVertexShader9 ptr ptr) as HRESULT
 	SetVertexShader as function(byval This as IDirect3DDevice9 ptr, byval pShader as IDirect3DVertexShader9 ptr) as HRESULT
 	GetVertexShader as function(byval This as IDirect3DDevice9 ptr, byval ppShader as IDirect3DVertexShader9 ptr ptr) as HRESULT
-	SetVertexShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const single ptr, byval Vector4fCount as UINT) as HRESULT
+	SetVertexShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const single ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as single ptr, byval Vector4fCount as UINT) as HRESULT
-	SetVertexShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const long ptr, byval Vector4iCount as UINT) as HRESULT
+	SetVertexShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const long ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as long ptr, byval Vector4iCount as UINT) as HRESULT
-	SetVertexShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const WINBOOL ptr, byval BoolCount as UINT) as HRESULT
+	SetVertexShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const WINBOOL ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as WINBOOL ptr, byval BoolCount as UINT) as HRESULT
 	SetStreamSource as function(byval This as IDirect3DDevice9 ptr, byval StreamNumber as UINT, byval pStreamData as IDirect3DVertexBuffer9 ptr, byval OffsetInBytes as UINT, byval Stride as UINT) as HRESULT
 	GetStreamSource as function(byval This as IDirect3DDevice9 ptr, byval StreamNumber as UINT, byval ppStreamData as IDirect3DVertexBuffer9 ptr ptr, byval OffsetInBytes as UINT ptr, byval pStride as UINT ptr) as HRESULT
@@ -876,17 +913,17 @@ type IDirect3DDevice9Vtbl_
 	GetStreamSourceFreq as function(byval This as IDirect3DDevice9 ptr, byval StreamNumber as UINT, byval Divider as UINT ptr) as HRESULT
 	SetIndices as function(byval This as IDirect3DDevice9 ptr, byval pIndexData as IDirect3DIndexBuffer9 ptr) as HRESULT
 	GetIndices as function(byval This as IDirect3DDevice9 ptr, byval ppIndexData as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	CreatePixelShader as function(byval This as IDirect3DDevice9 ptr, byval pFunction as const DWORD ptr, byval ppShader as IDirect3DPixelShader9 ptr ptr) as HRESULT
+	CreatePixelShader as function(byval This as IDirect3DDevice9 ptr, byval byte_code as const DWORD ptr, byval shader as IDirect3DPixelShader9 ptr ptr) as HRESULT
 	SetPixelShader as function(byval This as IDirect3DDevice9 ptr, byval pShader as IDirect3DPixelShader9 ptr) as HRESULT
 	GetPixelShader as function(byval This as IDirect3DDevice9 ptr, byval ppShader as IDirect3DPixelShader9 ptr ptr) as HRESULT
-	SetPixelShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const single ptr, byval Vector4fCount as UINT) as HRESULT
+	SetPixelShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const single ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantF as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as single ptr, byval Vector4fCount as UINT) as HRESULT
-	SetPixelShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const long ptr, byval Vector4iCount as UINT) as HRESULT
+	SetPixelShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const long ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantI as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as long ptr, byval Vector4iCount as UINT) as HRESULT
-	SetPixelShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as const WINBOOL ptr, byval BoolCount as UINT) as HRESULT
+	SetPixelShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval reg_idx as UINT, byval data as const WINBOOL ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantB as function(byval This as IDirect3DDevice9 ptr, byval StartRegister as UINT, byval pConstantData as WINBOOL ptr, byval BoolCount as UINT) as HRESULT
-	DrawRectPatch as function(byval This as IDirect3DDevice9 ptr, byval Handle as UINT, byval pNumSegs as const single ptr, byval pRectPatchInfo as const D3DRECTPATCH_INFO ptr) as HRESULT
-	DrawTriPatch as function(byval This as IDirect3DDevice9 ptr, byval Handle as UINT, byval pNumSegs as const single ptr, byval pTriPatchInfo as const D3DTRIPATCH_INFO ptr) as HRESULT
+	DrawRectPatch as function(byval This as IDirect3DDevice9 ptr, byval handle as UINT, byval segment_count as const single ptr, byval patch_info as const D3DRECTPATCH_INFO ptr) as HRESULT
+	DrawTriPatch as function(byval This as IDirect3DDevice9 ptr, byval handle as UINT, byval segment_count as const single ptr, byval patch_info as const D3DTRIPATCH_INFO ptr) as HRESULT
 	DeletePatch as function(byval This as IDirect3DDevice9 ptr, byval Handle as UINT) as HRESULT
 	CreateQuery as function(byval This as IDirect3DDevice9 ptr, byval Type as D3DQUERYTYPE, byval ppQuery as IDirect3DQuery9 ptr ptr) as HRESULT
 end type
@@ -1034,11 +1071,11 @@ type IDirect3DDevice9ExVtbl_
 	GetSwapChain as function(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval pSwapChain as IDirect3DSwapChain9 ptr ptr) as HRESULT
 	GetNumberOfSwapChains as function(byval This as IDirect3DDevice9Ex ptr) as UINT
 	Reset as function(byval This as IDirect3DDevice9Ex ptr, byval pPresentationParameters as D3DPRESENT_PARAMETERS ptr) as HRESULT
-	Present as function(byval This as IDirect3DDevice9Ex ptr, byval pSourceRect as const RECT ptr, byval pDestRect as const RECT ptr, byval hDestWindowOverride as HWND, byval pDirtyRegion as const RGNDATA ptr) as HRESULT
+	Present as function(byval This as IDirect3DDevice9Ex ptr, byval src_rect as const RECT ptr, byval dst_rect as const RECT ptr, byval dst_window_override as HWND, byval dirty_region as const RGNDATA ptr) as HRESULT
 	GetBackBuffer as function(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval iBackBuffer as UINT, byval Type as D3DBACKBUFFER_TYPE, byval ppBackBuffer as IDirect3DSurface9 ptr ptr) as HRESULT
 	GetRasterStatus as function(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval pRasterStatus as D3DRASTER_STATUS ptr) as HRESULT
 	SetDialogBoxMode as function(byval This as IDirect3DDevice9Ex ptr, byval bEnableDialogs as WINBOOL) as HRESULT
-	SetGammaRamp as sub(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval Flags as DWORD, byval pRamp as const D3DGAMMARAMP ptr)
+	SetGammaRamp as sub(byval This as IDirect3DDevice9Ex ptr, byval swapchain_idx as UINT, byval flags as DWORD, byval ramp as const D3DGAMMARAMP ptr)
 	GetGammaRamp as sub(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval pRamp as D3DGAMMARAMP ptr)
 	CreateTexture as function(byval This as IDirect3DDevice9Ex ptr, byval Width as UINT, byval Height as UINT, byval Levels as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppTexture as IDirect3DTexture9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateVolumeTexture as function(byval This as IDirect3DDevice9Ex ptr, byval Width as UINT, byval Height as UINT, byval Depth as UINT, byval Levels as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppVolumeTexture as IDirect3DVolumeTexture9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
@@ -1047,12 +1084,12 @@ type IDirect3DDevice9ExVtbl_
 	CreateIndexBuffer as function(byval This as IDirect3DDevice9Ex ptr, byval Length as UINT, byval Usage as DWORD, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppIndexBuffer as IDirect3DIndexBuffer9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateRenderTarget as function(byval This as IDirect3DDevice9Ex ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval MultiSample as D3DMULTISAMPLE_TYPE, byval MultisampleQuality as DWORD, byval Lockable as WINBOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	CreateDepthStencilSurface as function(byval This as IDirect3DDevice9Ex ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval MultiSample as D3DMULTISAMPLE_TYPE, byval MultisampleQuality as DWORD, byval Discard as WINBOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
-	UpdateSurface as function(byval This as IDirect3DDevice9Ex ptr, byval pSourceSurface as IDirect3DSurface9 ptr, byval pSourceRect as const RECT ptr, byval pDestinationSurface as IDirect3DSurface9 ptr, byval pDestPoint as const POINT ptr) as HRESULT
+	UpdateSurface as function(byval This as IDirect3DDevice9Ex ptr, byval src_surface as IDirect3DSurface9 ptr, byval src_rect as const RECT ptr, byval dst_surface as IDirect3DSurface9 ptr, byval dst_point as const POINT ptr) as HRESULT
 	UpdateTexture as function(byval This as IDirect3DDevice9Ex ptr, byval pSourceTexture as IDirect3DBaseTexture9 ptr, byval pDestinationTexture as IDirect3DBaseTexture9 ptr) as HRESULT
 	GetRenderTargetData as function(byval This as IDirect3DDevice9Ex ptr, byval pRenderTarget as IDirect3DSurface9 ptr, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
 	GetFrontBufferData as function(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT, byval pDestSurface as IDirect3DSurface9 ptr) as HRESULT
-	StretchRect as function(byval This as IDirect3DDevice9Ex ptr, byval pSourceSurface as IDirect3DSurface9 ptr, byval pSourceRect as const RECT ptr, byval pDestSurface as IDirect3DSurface9 ptr, byval pDestRect as const RECT ptr, byval Filter as D3DTEXTUREFILTERTYPE) as HRESULT
-	ColorFill as function(byval This as IDirect3DDevice9Ex ptr, byval pSurface as IDirect3DSurface9 ptr, byval pRect as const RECT ptr, byval color as D3DCOLOR) as HRESULT
+	StretchRect as function(byval This as IDirect3DDevice9Ex ptr, byval src_surface as IDirect3DSurface9 ptr, byval src_rect as const RECT ptr, byval dst_surface as IDirect3DSurface9 ptr, byval dst_rect as const RECT ptr, byval filter as D3DTEXTUREFILTERTYPE) as HRESULT
+	ColorFill as function(byval This as IDirect3DDevice9Ex ptr, byval surface as IDirect3DSurface9 ptr, byval rect as const RECT ptr, byval color as D3DCOLOR) as HRESULT
 	CreateOffscreenPlainSurface as function(byval This as IDirect3DDevice9Ex ptr, byval Width as UINT, byval Height as UINT, byval Format as D3DFORMAT, byval Pool as D3DPOOL, byval ppSurface as IDirect3DSurface9 ptr ptr, byval pSharedHandle as HANDLE ptr) as HRESULT
 	SetRenderTarget as function(byval This as IDirect3DDevice9Ex ptr, byval RenderTargetIndex as DWORD, byval pRenderTarget as IDirect3DSurface9 ptr) as HRESULT
 	GetRenderTarget as function(byval This as IDirect3DDevice9Ex ptr, byval RenderTargetIndex as DWORD, byval ppRenderTarget as IDirect3DSurface9 ptr ptr) as HRESULT
@@ -1060,26 +1097,26 @@ type IDirect3DDevice9ExVtbl_
 	GetDepthStencilSurface as function(byval This as IDirect3DDevice9Ex ptr, byval ppZStencilSurface as IDirect3DSurface9 ptr ptr) as HRESULT
 	BeginScene as function(byval This as IDirect3DDevice9Ex ptr) as HRESULT
 	EndScene as function(byval This as IDirect3DDevice9Ex ptr) as HRESULT
-	Clear as function(byval This as IDirect3DDevice9Ex ptr, byval Count as DWORD, byval pRects as const D3DRECT ptr, byval Flags as DWORD, byval Color as D3DCOLOR, byval Z as single, byval Stencil as DWORD) as HRESULT
-	SetTransform as function(byval This as IDirect3DDevice9Ex ptr, byval State as D3DTRANSFORMSTATETYPE, byval pMatrix as const D3DMATRIX ptr) as HRESULT
+	Clear as function(byval This as IDirect3DDevice9Ex ptr, byval rect_count as DWORD, byval rects as const D3DRECT ptr, byval flags as DWORD, byval color as D3DCOLOR, byval z as single, byval stencil as DWORD) as HRESULT
+	SetTransform as function(byval This as IDirect3DDevice9Ex ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as const D3DMATRIX ptr) as HRESULT
 	GetTransform as function(byval This as IDirect3DDevice9Ex ptr, byval State as D3DTRANSFORMSTATETYPE, byval pMatrix as D3DMATRIX ptr) as HRESULT
-	MultiplyTransform as function(byval This as IDirect3DDevice9Ex ptr, byval as D3DTRANSFORMSTATETYPE, byval as const D3DMATRIX ptr) as HRESULT
-	SetViewport as function(byval This as IDirect3DDevice9Ex ptr, byval pViewport as const D3DVIEWPORT9 ptr) as HRESULT
+	MultiplyTransform as function(byval This as IDirect3DDevice9Ex ptr, byval state as D3DTRANSFORMSTATETYPE, byval matrix as const D3DMATRIX ptr) as HRESULT
+	SetViewport as function(byval This as IDirect3DDevice9Ex ptr, byval viewport as const D3DVIEWPORT9 ptr) as HRESULT
 	GetViewport as function(byval This as IDirect3DDevice9Ex ptr, byval pViewport as D3DVIEWPORT9 ptr) as HRESULT
-	SetMaterial as function(byval This as IDirect3DDevice9Ex ptr, byval pMaterial as const D3DMATERIAL9 ptr) as HRESULT
+	SetMaterial as function(byval This as IDirect3DDevice9Ex ptr, byval material as const D3DMATERIAL9 ptr) as HRESULT
 	GetMaterial as function(byval This as IDirect3DDevice9Ex ptr, byval pMaterial as D3DMATERIAL9 ptr) as HRESULT
-	SetLight as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval as const D3DLIGHT9 ptr) as HRESULT
+	SetLight as function(byval This as IDirect3DDevice9Ex ptr, byval index as DWORD, byval light as const D3DLIGHT9 ptr) as HRESULT
 	GetLight as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval as D3DLIGHT9 ptr) as HRESULT
 	LightEnable as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval Enable as WINBOOL) as HRESULT
 	GetLightEnable as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval pEnable as WINBOOL ptr) as HRESULT
-	SetClipPlane as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval pPlane as const single ptr) as HRESULT
+	SetClipPlane as function(byval This as IDirect3DDevice9Ex ptr, byval index as DWORD, byval plane as const single ptr) as HRESULT
 	GetClipPlane as function(byval This as IDirect3DDevice9Ex ptr, byval Index as DWORD, byval pPlane as single ptr) as HRESULT
 	SetRenderState as function(byval This as IDirect3DDevice9Ex ptr, byval State as D3DRENDERSTATETYPE, byval Value as DWORD) as HRESULT
 	GetRenderState as function(byval This as IDirect3DDevice9Ex ptr, byval State as D3DRENDERSTATETYPE, byval pValue as DWORD ptr) as HRESULT
 	CreateStateBlock as function(byval This as IDirect3DDevice9Ex ptr, byval Type as D3DSTATEBLOCKTYPE, byval ppSB as IDirect3DStateBlock9 ptr ptr) as HRESULT
 	BeginStateBlock as function(byval This as IDirect3DDevice9Ex ptr) as HRESULT
 	EndStateBlock as function(byval This as IDirect3DDevice9Ex ptr, byval ppSB as IDirect3DStateBlock9 ptr ptr) as HRESULT
-	SetClipStatus as function(byval This as IDirect3DDevice9Ex ptr, byval pClipStatus as const D3DCLIPSTATUS9 ptr) as HRESULT
+	SetClipStatus as function(byval This as IDirect3DDevice9Ex ptr, byval clip_status as const D3DCLIPSTATUS9 ptr) as HRESULT
 	GetClipStatus as function(byval This as IDirect3DDevice9Ex ptr, byval pClipStatus as D3DCLIPSTATUS9 ptr) as HRESULT
 	GetTexture as function(byval This as IDirect3DDevice9Ex ptr, byval Stage as DWORD, byval ppTexture as IDirect3DBaseTexture9 ptr ptr) as HRESULT
 	SetTexture as function(byval This as IDirect3DDevice9Ex ptr, byval Stage as DWORD, byval pTexture as IDirect3DBaseTexture9 ptr) as HRESULT
@@ -1088,11 +1125,11 @@ type IDirect3DDevice9ExVtbl_
 	GetSamplerState as function(byval This as IDirect3DDevice9Ex ptr, byval Sampler as DWORD, byval Type as D3DSAMPLERSTATETYPE, byval pValue as DWORD ptr) as HRESULT
 	SetSamplerState as function(byval This as IDirect3DDevice9Ex ptr, byval Sampler as DWORD, byval Type as D3DSAMPLERSTATETYPE, byval Value as DWORD) as HRESULT
 	ValidateDevice as function(byval This as IDirect3DDevice9Ex ptr, byval pNumPasses as DWORD ptr) as HRESULT
-	SetPaletteEntries as function(byval This as IDirect3DDevice9Ex ptr, byval PaletteNumber as UINT, byval pEntries as const PALETTEENTRY ptr) as HRESULT
+	SetPaletteEntries as function(byval This as IDirect3DDevice9Ex ptr, byval palette_idx as UINT, byval entries as const PALETTEENTRY ptr) as HRESULT
 	GetPaletteEntries as function(byval This as IDirect3DDevice9Ex ptr, byval PaletteNumber as UINT, byval pEntries as PALETTEENTRY ptr) as HRESULT
 	SetCurrentTexturePalette as function(byval This as IDirect3DDevice9Ex ptr, byval PaletteNumber as UINT) as HRESULT
 	GetCurrentTexturePalette as function(byval This as IDirect3DDevice9Ex ptr, byval PaletteNumber as UINT ptr) as HRESULT
-	SetScissorRect as function(byval This as IDirect3DDevice9Ex ptr, byval pRect as const RECT ptr) as HRESULT
+	SetScissorRect as function(byval This as IDirect3DDevice9Ex ptr, byval rect as const RECT ptr) as HRESULT
 	GetScissorRect as function(byval This as IDirect3DDevice9Ex ptr, byval pRect as RECT ptr) as HRESULT
 	SetSoftwareVertexProcessing as function(byval This as IDirect3DDevice9Ex ptr, byval bSoftware as WINBOOL) as HRESULT
 	GetSoftwareVertexProcessing as function(byval This as IDirect3DDevice9Ex ptr) as WINBOOL
@@ -1100,22 +1137,22 @@ type IDirect3DDevice9ExVtbl_
 	GetNPatchMode as function(byval This as IDirect3DDevice9Ex ptr) as single
 	DrawPrimitive as function(byval This as IDirect3DDevice9Ex ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval StartVertex as UINT, byval PrimitiveCount as UINT) as HRESULT
 	DrawIndexedPrimitive as function(byval This as IDirect3DDevice9Ex ptr, byval as D3DPRIMITIVETYPE, byval BaseVertexIndex as INT_, byval MinVertexIndex as UINT, byval NumVertices as UINT, byval startIndex as UINT, byval primCount as UINT) as HRESULT
-	DrawPrimitiveUP as function(byval This as IDirect3DDevice9Ex ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval PrimitiveCount as UINT, byval pVertexStreamZeroData as const any ptr, byval VertexStreamZeroStride as UINT) as HRESULT
-	DrawIndexedPrimitiveUP as function(byval This as IDirect3DDevice9Ex ptr, byval PrimitiveType as D3DPRIMITIVETYPE, byval MinVertexIndex as UINT, byval NumVertices as UINT, byval PrimitiveCount as UINT, byval pIndexData as const any ptr, byval IndexDataFormat as D3DFORMAT, byval pVertexStreamZeroData as const any ptr, byval VertexStreamZeroStride as UINT) as HRESULT
+	DrawPrimitiveUP as function(byval This as IDirect3DDevice9Ex ptr, byval primitive_type as D3DPRIMITIVETYPE, byval primitive_count as UINT, byval data as const any ptr, byval stride as UINT) as HRESULT
+	DrawIndexedPrimitiveUP as function(byval This as IDirect3DDevice9Ex ptr, byval primitive_type as D3DPRIMITIVETYPE, byval min_vertex_idx as UINT, byval vertex_count as UINT, byval primitive_count as UINT, byval index_data as const any ptr, byval index_format as D3DFORMAT, byval data as const any ptr, byval stride as UINT) as HRESULT
 	ProcessVertices as function(byval This as IDirect3DDevice9Ex ptr, byval SrcStartIndex as UINT, byval DestIndex as UINT, byval VertexCount as UINT, byval pDestBuffer as IDirect3DVertexBuffer9 ptr, byval pVertexDecl as IDirect3DVertexDeclaration9 ptr, byval Flags as DWORD) as HRESULT
-	CreateVertexDeclaration as function(byval This as IDirect3DDevice9Ex ptr, byval pVertexElements as const D3DVERTEXELEMENT9 ptr, byval ppDecl as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
+	CreateVertexDeclaration as function(byval This as IDirect3DDevice9Ex ptr, byval elements as const D3DVERTEXELEMENT9 ptr, byval declaration as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
 	SetVertexDeclaration as function(byval This as IDirect3DDevice9Ex ptr, byval pDecl as IDirect3DVertexDeclaration9 ptr) as HRESULT
 	GetVertexDeclaration as function(byval This as IDirect3DDevice9Ex ptr, byval ppDecl as IDirect3DVertexDeclaration9 ptr ptr) as HRESULT
 	SetFVF as function(byval This as IDirect3DDevice9Ex ptr, byval FVF as DWORD) as HRESULT
 	GetFVF as function(byval This as IDirect3DDevice9Ex ptr, byval pFVF as DWORD ptr) as HRESULT
-	CreateVertexShader as function(byval This as IDirect3DDevice9Ex ptr, byval pFunction as const DWORD ptr, byval ppShader as IDirect3DVertexShader9 ptr ptr) as HRESULT
+	CreateVertexShader as function(byval This as IDirect3DDevice9Ex ptr, byval byte_core as const DWORD ptr, byval shader as IDirect3DVertexShader9 ptr ptr) as HRESULT
 	SetVertexShader as function(byval This as IDirect3DDevice9Ex ptr, byval pShader as IDirect3DVertexShader9 ptr) as HRESULT
 	GetVertexShader as function(byval This as IDirect3DDevice9Ex ptr, byval ppShader as IDirect3DVertexShader9 ptr ptr) as HRESULT
-	SetVertexShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const single ptr, byval Vector4fCount as UINT) as HRESULT
+	SetVertexShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const single ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as single ptr, byval Vector4fCount as UINT) as HRESULT
-	SetVertexShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const long ptr, byval Vector4iCount as UINT) as HRESULT
+	SetVertexShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const long ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as long ptr, byval Vector4iCount as UINT) as HRESULT
-	SetVertexShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const WINBOOL ptr, byval BoolCount as UINT) as HRESULT
+	SetVertexShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const WINBOOL ptr, byval count as UINT) as HRESULT
 	GetVertexShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as WINBOOL ptr, byval BoolCount as UINT) as HRESULT
 	SetStreamSource as function(byval This as IDirect3DDevice9Ex ptr, byval StreamNumber as UINT, byval pStreamData as IDirect3DVertexBuffer9 ptr, byval OffsetInBytes as UINT, byval Stride as UINT) as HRESULT
 	GetStreamSource as function(byval This as IDirect3DDevice9Ex ptr, byval StreamNumber as UINT, byval ppStreamData as IDirect3DVertexBuffer9 ptr ptr, byval OffsetInBytes as UINT ptr, byval pStride as UINT ptr) as HRESULT
@@ -1123,22 +1160,22 @@ type IDirect3DDevice9ExVtbl_
 	GetStreamSourceFreq as function(byval This as IDirect3DDevice9Ex ptr, byval StreamNumber as UINT, byval Divider as UINT ptr) as HRESULT
 	SetIndices as function(byval This as IDirect3DDevice9Ex ptr, byval pIndexData as IDirect3DIndexBuffer9 ptr) as HRESULT
 	GetIndices as function(byval This as IDirect3DDevice9Ex ptr, byval ppIndexData as IDirect3DIndexBuffer9 ptr ptr) as HRESULT
-	CreatePixelShader as function(byval This as IDirect3DDevice9Ex ptr, byval pFunction as const DWORD ptr, byval ppShader as IDirect3DPixelShader9 ptr ptr) as HRESULT
+	CreatePixelShader as function(byval This as IDirect3DDevice9Ex ptr, byval byte_code as const DWORD ptr, byval shader as IDirect3DPixelShader9 ptr ptr) as HRESULT
 	SetPixelShader as function(byval This as IDirect3DDevice9Ex ptr, byval pShader as IDirect3DPixelShader9 ptr) as HRESULT
 	GetPixelShader as function(byval This as IDirect3DDevice9Ex ptr, byval ppShader as IDirect3DPixelShader9 ptr ptr) as HRESULT
-	SetPixelShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const single ptr, byval Vector4fCount as UINT) as HRESULT
+	SetPixelShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const single ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantF as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as single ptr, byval Vector4fCount as UINT) as HRESULT
-	SetPixelShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const long ptr, byval Vector4iCount as UINT) as HRESULT
+	SetPixelShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const long ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantI as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as long ptr, byval Vector4iCount as UINT) as HRESULT
-	SetPixelShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as const WINBOOL ptr, byval BoolCount as UINT) as HRESULT
+	SetPixelShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval reg_idx as UINT, byval data as const WINBOOL ptr, byval count as UINT) as HRESULT
 	GetPixelShaderConstantB as function(byval This as IDirect3DDevice9Ex ptr, byval StartRegister as UINT, byval pConstantData as WINBOOL ptr, byval BoolCount as UINT) as HRESULT
-	DrawRectPatch as function(byval This as IDirect3DDevice9Ex ptr, byval Handle as UINT, byval pNumSegs as const single ptr, byval pRectPatchInfo as const D3DRECTPATCH_INFO ptr) as HRESULT
-	DrawTriPatch as function(byval This as IDirect3DDevice9Ex ptr, byval Handle as UINT, byval pNumSegs as const single ptr, byval pTriPatchInfo as const D3DTRIPATCH_INFO ptr) as HRESULT
+	DrawRectPatch as function(byval This as IDirect3DDevice9Ex ptr, byval handle as UINT, byval segment_count as const single ptr, byval patch_info as const D3DRECTPATCH_INFO ptr) as HRESULT
+	DrawTriPatch as function(byval This as IDirect3DDevice9Ex ptr, byval handle as UINT, byval segment_count as const single ptr, byval patch_info as const D3DTRIPATCH_INFO ptr) as HRESULT
 	DeletePatch as function(byval This as IDirect3DDevice9Ex ptr, byval Handle as UINT) as HRESULT
 	CreateQuery as function(byval This as IDirect3DDevice9Ex ptr, byval Type as D3DQUERYTYPE, byval ppQuery as IDirect3DQuery9 ptr ptr) as HRESULT
 	SetConvolutionMonoKernel as function(byval This as IDirect3DDevice9Ex ptr, byval width as UINT, byval height as UINT, byval rows as single ptr, byval columns as single ptr) as HRESULT
 	ComposeRects as function(byval This as IDirect3DDevice9Ex ptr, byval src_surface as IDirect3DSurface9 ptr, byval dst_surface as IDirect3DSurface9 ptr, byval src_descs as IDirect3DVertexBuffer9 ptr, byval rect_count as UINT, byval dst_descs as IDirect3DVertexBuffer9 ptr, byval operation as D3DCOMPOSERECTSOP, byval offset_x as INT_, byval offset_y as INT_) as HRESULT
-	PresentEx as function(byval This as IDirect3DDevice9Ex ptr, byval pSourceRect as const RECT ptr, byval pDestRect as const RECT ptr, byval hDestWindowOverride as HWND, byval pDirtyRegion as const RGNDATA ptr, byval dwFlags as DWORD) as HRESULT
+	PresentEx as function(byval This as IDirect3DDevice9Ex ptr, byval src_rect as const RECT ptr, byval dst_rect as const RECT ptr, byval dst_window_override as HWND, byval dirty_region as const RGNDATA ptr, byval flags as DWORD) as HRESULT
 	GetGPUThreadPriority as function(byval This as IDirect3DDevice9Ex ptr, byval pPriority as INT_ ptr) as HRESULT
 	SetGPUThreadPriority as function(byval This as IDirect3DDevice9Ex ptr, byval Priority as INT_) as HRESULT
 	WaitForVBlank as function(byval This as IDirect3DDevice9Ex ptr, byval iSwapChain as UINT) as HRESULT
@@ -1288,13 +1325,14 @@ end type
 #define IDirect3DDevice9Ex_ResetEx(p, a, b) (p)->lpVtbl->ResetEx(p, a, b)
 #define IDirect3DDevice9Ex_GetDisplayModeEx(p, a, b, c) (p)->lpVtbl->GetDisplayModeEx(p, a, b, c)
 
-declare function D3DPERF_BeginEvent(byval as D3DCOLOR, byval as LPCWSTR) as long
+declare function D3DPERF_BeginEvent(byval color as D3DCOLOR, byval name as const wstring ptr) as long
 declare function D3DPERF_EndEvent() as long
 declare function D3DPERF_GetStatus() as DWORD
 declare function D3DPERF_QueryRepeatFrame() as WINBOOL
-declare sub D3DPERF_SetMarker(byval as D3DCOLOR, byval as LPCWSTR)
-declare sub D3DPERF_SetOptions(byval as DWORD)
-declare sub D3DPERF_SetRegion(byval as D3DCOLOR, byval as LPCWSTR)
+declare sub D3DPERF_SetMarker(byval color as D3DCOLOR, byval name as const wstring ptr)
+declare sub D3DPERF_SetOptions(byval options as DWORD)
+declare sub D3DPERF_SetRegion(byval color as D3DCOLOR, byval name as const wstring ptr)
 declare function Direct3DCreate9(byval SDKVersion as UINT) as IDirect3D9 ptr
+declare function Direct3DCreate9Ex(byval SDKVersion as UINT, byval as IDirect3D9Ex ptr ptr) as HRESULT
 
 end extern

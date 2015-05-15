@@ -1,3 +1,26 @@
+'' FreeBASIC binding for glibc-2.21
+''
+'' based on the C header files:
+''   Copyright (C) 2002-2015 Free Software Foundation, Inc.
+''   This file is part of the GNU C Library.
+''
+''   The GNU C Library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   The GNU C Library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with the GNU C Library; if not, see
+''   <http://www.gnu.org/licenses/>.  
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #ifndef __FB_UNIX__
@@ -108,7 +131,7 @@ end union
 
 #ifdef __FB_64BIT__
 	const __PTHREAD_MUTEX_HAVE_PREV = 1
-	#define __PTHREAD_SPINS '' TODO: 0, 0
+	#define __PTHREAD_SPINS 0, 0
 #else
 	#define __spins __elision_data.__espins
 	#define __elision __elision_data.__elision
@@ -184,7 +207,7 @@ union pthread_rwlock_t
 end union
 
 #ifdef __FB_64BIT__
-	#define __PTHREAD_RWLOCK_ELISION_EXTRA '' TODO: 0, { 0, 0, 0, 0, 0, 0, 0 }
+	#define __PTHREAD_RWLOCK_ELISION_EXTRA 0, { 0, 0, 0, 0, 0, 0, 0 }
 	const __PTHREAD_RWLOCK_INT_FLAGS_SHARED = 1
 #else
 	const __PTHREAD_RWLOCK_ELISION_EXTRA = 0

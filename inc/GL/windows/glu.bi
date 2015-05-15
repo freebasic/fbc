@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "glu32"
@@ -14,9 +29,9 @@ extern "Windows"
 	#define gluErrorStringWIN(errCode) cast(LPCWSTR, gluErrorString(errCode))
 #endif
 
-declare function gluErrorString(byval errCode as GLenum) as const GLubyte ptr
+declare function gluErrorString(byval errCode as GLenum) as const zstring ptr
 declare function gluErrorUnicodeStringEXT(byval errCode as GLenum) as const wstring ptr
-declare function gluGetString(byval name as GLenum) as const GLubyte ptr
+declare function gluGetString(byval name as GLenum) as const zstring ptr
 declare sub gluOrtho2D(byval left as GLdouble, byval right as GLdouble, byval bottom as GLdouble, byval top as GLdouble)
 declare sub gluPerspective(byval fovy as GLdouble, byval aspect as GLdouble, byval zNear as GLdouble, byval zFar as GLdouble)
 declare sub gluPickMatrix(byval x as GLdouble, byval y as GLdouble, byval width as GLdouble, byval height as GLdouble, byval viewport as GLint ptr)

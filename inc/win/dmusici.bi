@@ -1,3 +1,27 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DirectMusic Performance API
+''
+''   Copyright (C) 2003-2004 Rok Mandeljc
+''
+''   This program is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This program is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "windows.bi"
@@ -28,7 +52,6 @@ extern CLSID_DirectMusicSynthSink as const GUID
 extern CLSID_DirectMusicSection as const GUID
 extern CLSID_DirectMusicAuditionTrack as const GUID
 extern CLSID_DirectMusicSegTriggerTrack as const GUID
-extern CLSID_DirectMusicAudioPath as const GUID
 extern CLSID_DirectMusicTemplate as const GUID
 extern CLSID_DirectMusicScriptAutoImpSegment as const GUID
 extern CLSID_AudioVBScript as const GUID
@@ -505,9 +528,6 @@ type DMUS_BAND_PARAM as _DMUS_BAND_PARAM
 type LPDMUS_BAND_PARAM as _DMUS_BAND_PARAM ptr
 type DMUS_VARIATIONS_PARAM as _DMUS_VARIATIONS_PARAM
 type LPDMUS_VARIATIONS_PARAM as _DMUS_VARIATIONS_PARAM ptr
-type MUSIC_TIME as MUSIC_TIME_
-type IDirectMusicTool as IDirectMusicTool_
-type IDirectMusicGraph as IDirectMusicGraph_
 
 type _DMUS_PMSG
 	dwSize as DWORD
@@ -871,9 +891,6 @@ type IDirectMusicBand_
 	lpVtbl as IDirectMusicBandVtbl ptr
 end type
 
-type IDirectMusicSegment as IDirectMusicSegment_
-type IDirectMusicPerformance as IDirectMusicPerformance_
-
 type IDirectMusicBandVtbl_
 	QueryInterface as function(byval This as IDirectMusicBand ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectMusicBand ptr) as ULONG
@@ -1004,9 +1021,6 @@ type IDirectMusicSegmentVtbl as IDirectMusicSegmentVtbl_
 type IDirectMusicSegment_
 	lpVtbl as IDirectMusicSegmentVtbl ptr
 end type
-
-type IDirectMusicTrack as IDirectMusicTrack_
-type IDirectMusicSegmentState as IDirectMusicSegmentState_
 
 type IDirectMusicSegmentVtbl_
 	QueryInterface as function(byval This as IDirectMusicSegment ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1216,8 +1230,6 @@ type IDirectMusicPerformanceVtbl as IDirectMusicPerformanceVtbl_
 type IDirectMusicPerformance_
 	lpVtbl as IDirectMusicPerformanceVtbl ptr
 end type
-
-type DMUS_PMSG as DMUS_PMSG_
 
 type IDirectMusicPerformanceVtbl_
 	QueryInterface as function(byval This as IDirectMusicPerformance ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

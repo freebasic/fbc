@@ -91,7 +91,7 @@ private sub symbReplaceForwardRef _
 	assert( typeGetDtOnly( symbGetFullType( s ) ) = FB_DATATYPE_FWDREF )
 
 	'' If it's a parameter, fix up its initializer too (if any)
-	if( (s->class = FB_SYMBCLASS_PARAM) and symbGetIsOptional( s ) ) then
+	if( (s->class = FB_SYMBCLASS_PARAM) andalso symbParamIsOptional( s ) ) then
 		'' Replace old subtype by new subtype
 		astReplaceFwdref( s->param.optexpr, s->subtype, dtype, subtype )
 	end if

@@ -223,7 +223,7 @@ private sub hCheckPrototype _
 
 		'' Warn about mismatching param initializers?
 		'' If both params are optional, compare the two initializers
-		if( symbGetIsOptional( proto_param ) and symbGetIsOptional( param ) ) then
+		if( symbParamIsOptional( proto_param ) and symbParamIsOptional( param ) ) then
 			if( astIsEqualParamInit( proto_param->param.optexpr, param->param.optexpr ) = FALSE ) then
 				errReportParamWarn( proc, i, NULL, FB_WARNINGMSG_MISMATCHINGPARAMINIT )
 			end if
@@ -243,14 +243,14 @@ private sub hCheckAttribs _
 	)
 
 	'' if one returns BYREF, the other must too
-	if( ((attrib and FB_SYMBATTRIB_RETURNSBYREF) <> 0) <> symbProcReturnsByref( proto ) ) then
+	if( ((attrib and FB_SYMBATTRIB_REF) <> 0) <> symbIsRef( proto ) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 		'' Error recovery: if the proto had BYREF, add it for the body
 		'' too, otherwise remove it from the body
-		if( symbProcReturnsByref( proto ) ) then
-			attrib or= FB_SYMBATTRIB_RETURNSBYREF
+		if( symbIsRef( proto ) ) then
+			attrib or= FB_SYMBATTRIB_REF
 		else
-			attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+			attrib and= not FB_SYMBATTRIB_REF
 		end if
 	end if
 
@@ -388,7 +388,7 @@ sub cProcRetType _
 	options = FB_SYMBTYPEOPT_DEFAULT
 
 	'' Returns BYREF?
-	if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+	if( attrib and FB_SYMBATTRIB_REF ) then
 		'' In prototypes, allow BYREF AS FWDREF
 		if( is_proto ) then
 			options or= FB_SYMBTYPEOPT_ALLOWFORWARD
@@ -408,7 +408,7 @@ sub cProcRetType _
 		select case( typeGetDtAndPtrOnly( dtype ) )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			'' FIXSTR is never allowed; ZSTRING/WSTRING only if BYREF
-			if( ((attrib and FB_SYMBATTRIB_RETURNSBYREF) = 0) or _
+			if( ((attrib and FB_SYMBATTRIB_REF) = 0) or _
 			    (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_FIXSTR) ) then
 				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
 				'' error recovery: fake a type
@@ -426,7 +426,7 @@ sub cProcRetType _
 			subtype = NULL
 		end select
 
-		if( (attrib and FB_SYMBATTRIB_RETURNSBYREF) = 0 ) then
+		if( (attrib and FB_SYMBATTRIB_REF) = 0 ) then
 			'' Disallow BYVAL return of objects of abstract classes
 			hComplainIfAbstractClass( dtype, subtype )
 		end if
@@ -538,7 +538,7 @@ sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 		lexSkipToken( )
-		attrib or= FB_SYMBATTRIB_RETURNSBYREF
+		attrib or= FB_SYMBATTRIB_REF
 	end if
 end sub
 
@@ -574,7 +574,7 @@ private function hCheckOpOvlParams _
 	end if
 
 	'' optional?
-	if( symbGetIsOptional( param ) ) then
+	if( symbParamIsOptional( param ) ) then
 		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		exit function
 	end if
@@ -902,7 +902,7 @@ private function hCheckIsSelfCloneByval _
 	'' At least one additional non-optional parameter?
 	param = param->next
 	while( param <> NULL )
-		if( symbGetIsOptional( param ) = FALSE ) then
+		if( symbParamIsOptional( param ) = FALSE ) then
 			exit function
 		end if
 		param = param->next
@@ -940,7 +940,7 @@ private sub hCheckPropParams _
 	param = symbGetProcHeadParam( proc )
 	i = 0
 	while( param )
-		if( symbGetIsOptional( param ) ) then
+		if( symbParamIsOptional( param ) ) then
 			hParamError( proc, 1+i, FB_ERRMSG_PARAMCANTBEOPTIONAL )
 		end if
 
@@ -1344,10 +1344,10 @@ function cProcHeader _
 			is_get = TRUE
 		else
 			'' found BYREF before?
-			if( attrib and FB_SYMBATTRIB_RETURNSBYREF ) then
+			if( attrib and FB_SYMBATTRIB_REF ) then
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: remove BYREF attribute and treat as setter
-				attrib and= not FB_SYMBATTRIB_RETURNSBYREF
+				attrib and= not FB_SYMBATTRIB_REF
 			end if
 			dtype = FB_DATATYPE_VOID
 			is_indexed = (symbGetProcParams( proc ) = 1+2)
@@ -1818,7 +1818,7 @@ sub cProcStmtEnd( )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
 			if( symbIsNaked( parser.currproc ) = FALSE ) then
-				if( symbProcReturnsByref( parser.currproc ) ) then
+				if( symbIsRef( parser.currproc ) ) then
 					errReport( FB_ERRMSG_NOBYREFFUNCTIONRESULT )
 				else
 					errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )

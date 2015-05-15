@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "snmpapi"
@@ -67,6 +82,20 @@ type SnmpVarBindList field = 4
 	len as UINT
 end type
 
+const ASN_UNIVERSAL = &h00
+const ASN_APPLICATION = &h40
+const ASN_CONTEXT = &h80
+const ASN_PRIVATE = &hC0
+const ASN_PRIMITIVE = &h00
+const ASN_CONSTRUCTOR = &h20
+#define SNMP_PDU_GET ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h0)
+#define SNMP_PDU_GETNEXT ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h1)
+#define SNMP_PDU_RESPONSE ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h2)
+#define SNMP_PDU_SET ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h3)
+#define SNMP_PDU_V1TRAP ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h4)
+#define SNMP_PDU_GETBULK ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h5)
+#define SNMP_PDU_INFORM ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h6)
+#define SNMP_PDU_TRAP ((ASN_CONTEXT or ASN_CONSTRUCTOR) or &h7)
 #define ASN_INTEGER ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h02)
 #define ASN_BITS ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h03)
 #define ASN_OCTETSTRING ((ASN_UNIVERSAL or ASN_PRIMITIVE) or &h04)
@@ -182,7 +211,7 @@ const SNMP_OUTPUT_TO_EVENTLOG = &h4
 const SNMP_OUTPUT_TO_DEBUGGER = &h8
 declare sub SnmpUtilDbgPrint cdecl(byval nLogLevel as INT_, byval szFormat as LPSTR, ...)
 #define SNMPDBG(_x_)
-#define DEFINE_SIZEOF(Array) (sizeof((Array)) / sizeof((Array)[0]))
+#define DEFINE_SIZEOF(Array) (ubound(Array) - lbound(Array) + 1)
 #define DEFINE_OID(SubIdArray) (DEFINE_SIZEOF(SubIdArray), (SubIdArray))
 #define DEFINE_NULLOID() (0, NULL)
 #define DEFINE_NULLOCTETS() (NULL, 0, FALSE)

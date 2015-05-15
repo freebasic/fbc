@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "imagehlp"
@@ -254,6 +269,8 @@ const UNDNAME_32_BIT_DECODE = &h0800
 const UNDNAME_NAME_ONLY = &h1000
 const UNDNAME_NO_ARGUMENTS = &h2000
 const UNDNAME_NO_SPECIAL_SYMS = &h4000
+const UNDNAME_NO_ARGUMENTS = &h2000
+const UNDNAME_NO_SPECIAL_SYMS = &h4000
 declare function UnDecorateSymbolName(byval DecoratedName as PCSTR, byval UnDecoratedName as PSTR, byval UndecoratedLength as DWORD, byval Flags as DWORD) as DWORD
 declare function UnDecorateSymbolNameW(byval DecoratedName as PCWSTR, byval UnDecoratedName as PWSTR, byval UndecoratedLength as DWORD, byval Flags as DWORD) as DWORD
 const DBHHEADER_DEBUGDIRS = &h1
@@ -466,6 +483,20 @@ type PSYMBOL_FUNCENTRY_CALLBACK64 as function(byval hProcess as HANDLE, byval Ad
 	type PSYMBOL_REGISTERED_CALLBACK as function(byval hProcess as HANDLE, byval ActionCode as ULONG, byval CallbackData as PVOID, byval UserContext as PVOID) as WINBOOL
 	#define PSYMBOL_FUNCENTRY_CALLBACK PSYMBOL_FUNCENTRY_CALLBACK32
 #endif
+
+const SYMFLAG_VALUEPRESENT = &h00000001
+const SYMFLAG_REGISTER = &h00000008
+const SYMFLAG_REGREL = &h00000010
+const SYMFLAG_FRAMEREL = &h00000020
+const SYMFLAG_PARAMETER = &h00000040
+const SYMFLAG_LOCAL = &h00000080
+const SYMFLAG_CONSTANT = &h00000100
+const SYMFLAG_EXPORT = &h00000200
+const SYMFLAG_FORWARDER = &h00000400
+const SYMFLAG_FUNCTION = &h00000800
+const SYMFLAG_VIRTUAL = &h00001000
+const SYMFLAG_THUNK = &h00002000
+const SYMFLAG_TLSREL = &h00004000
 
 type SYM_TYPE as long
 enum

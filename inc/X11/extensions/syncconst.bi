@@ -1,3 +1,33 @@
+'' FreeBASIC binding for xextproto-7.3.0
+''
+'' based on the C header files:
+''
+''   Copyright 1991, 1993, 1994, 1998  The Open Group
+''
+''   Permission to use, copy, modify, distribute, and sell this software and its
+''   documentation for any purpose is hereby granted without fee, provided that
+''   the above copyright notice appear in all copies and that both that
+''   copyright notice and this permission notice appear in supporting
+''   documentation.
+''
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+''   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+''   OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+''   AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+''   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+''
+''   Except as contained in this notice, the name of The Open Group shall not be
+''   used in advertising or otherwise to promote the sale, use or other dealings
+''   in this Software without prior written authorization from The Open Group.
+''
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/long.bi"
@@ -80,6 +110,22 @@ const XSyncCAEvents = cast(clong, 1) shl 5
 		(pv)->lo = 0
 	end scope
 #endmacro
+#define XSyncIntToValue(pv, i) _XSyncIntToValue(pv, i)
+#define XSyncIntsToValue(pv, l, h) _XSyncIntsToValue(pv, l, h)
+#define XSyncValueGreaterThan(a, b) _XSyncValueGreaterThan(a, b)
+#define XSyncValueLessThan(a, b) _XSyncValueLessThan(a, b)
+#define XSyncValueGreaterOrEqual(a, b) _XSyncValueGreaterOrEqual(a, b)
+#define XSyncValueLessOrEqual(a, b) _XSyncValueLessOrEqual(a, b)
+#define XSyncValueEqual(a, b) _XSyncValueEqual(a, b)
+#define XSyncValueIsNegative(v) _XSyncValueIsNegative(v)
+#define XSyncValueIsZero(a) _XSyncValueIsZero(a)
+#define XSyncValueIsPositive(v) _XSyncValueIsPositive(v)
+#define XSyncValueLow32(v) _XSyncValueLow32(v)
+#define XSyncValueHigh32(v) _XSyncValueHigh32(v)
+#define XSyncValueAdd(presult, a, b, poverflow) _XSyncValueAdd(presult, a, b, poverflow)
+#define XSyncValueSubtract(presult, a, b, poverflow) _XSyncValueSubtract(presult, a, b, poverflow)
+#define XSyncMaxValue(pv) _XSyncMaxValue(pv)
+#define XSyncMinValue(pv) _XSyncMinValue(pv)
 
 type XSyncValueType as long
 enum

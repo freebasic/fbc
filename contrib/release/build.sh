@@ -15,7 +15,7 @@
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
-# ./build.sh <target> [<fbc-commit>]
+# ./build.sh <target> <fbc-commit-id>
 #
 # <target> can be one of:
 #   dos
@@ -54,6 +54,11 @@
 #
 set -e
 
+usage() {
+	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id>"
+	exit 1
+}
+
 target="$1"
 case "$target" in
 dos|linux-x86|linux-x86_64|win32|win64)
@@ -61,56 +66,49 @@ dos|linux-x86|linux-x86_64|win32|win64)
 win32-mingworg)
 	fbtarget=win32;;
 *)
-	echo "usage: ./build.sh [dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 [<commit>]]" && exit 1;;
+	usage;;
 esac
 
-case "$2" in
-"") fbccommit="master";;
-*)  fbccommit="$2";;
-esac
+fbccommit="$2"
+if [ -z "$fbccommit" ]; then
+	usage
+fi
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 mkdir -p input
 mkdir -p output
 rm -rf build
 mkdir build
-
-echo "updating input/fbc repo"
-cd input
-if [ ! -d fbc ]; then
-	git clone https://github.com/freebasic/fbc.git
-fi
-cd fbc
-git fetch
-git fetch --tags
-git remote prune origin
-git reset --hard origin/master
-cd ../..
-
 cd build
 
-function download() {
+buildinfo=../output/buildinfo-$target.txt
+echo "fbc $fbccommit $target, build based on:" > $buildinfo
+echo >> $buildinfo
+
+download() {
 	filename="$1"
 	url="$2"
 
-	if [ -f "$filename" ]; then
+	if [ -f "../input/$filename" ]; then
 		echo "cached      $filename"
 	else
 		echo "downloading $filename"
-		#if ! wget -O "$filename" "$url"; then
-		if ! curl -L -o "$filename" "$url"; then
+		#if ! wget -O "../input/$filename" "$url"; then
+		if ! curl -L -o "../input/$filename" "$url"; then
 			echo "download failed"
-			rm -f "$filename"
+			rm -f "../input/$filename"
 			exit 1
 		fi
 	fi
+
+	echo "$filename <$url>" >> $buildinfo
 }
 
-function download_mingw() {
-	download "../input/MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
+download_mingw() {
+	download "MinGW.org/$1" "http://downloads.sourceforge.net/mingw/${1}?download"
 }
 
-function get_mingww64_toolchain() {
+get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 
@@ -119,8 +117,7 @@ function get_mingww64_toolchain() {
 	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev2.7z
 
 	mkdir -p ../input/MinGW-w64
-	download "../input/MinGW-w64/$file" \
-		"http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
+	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
 
 	7z x "../input/MinGW-w64/$file" > /dev/null
 }
@@ -129,11 +126,11 @@ case "$target" in
 dos)
 	DJGPP_MIRROR="ftp://ftp.fu-berlin.de/pc/languages/djgpp/"
 
-	function download_djgpp() {
+	download_djgpp() {
 		dir="$1"
 		package="$2"
 		mkdir -p ../input/DJGPP
-		download "../input/DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
+		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
 	# binutils/gcc/gdb (needs updating to new versions)
@@ -169,7 +166,7 @@ win32)
 
 	mkdir -p ../input/MinGW.org
 	mkdir mingworg-gdb
-	function get_mingworggdb() {
+	get_mingworggdb() {
 		download_mingw "$1" 
 		tar xf "../input/MinGW.org/$1" -C mingworg-gdb
 	}
@@ -180,7 +177,7 @@ win32)
 win32-mingworg)
 	# Download & extract MinGW.org toolchain
 	mkdir -p ../input/MinGW.org
-	function download_extract_mingw() {
+	download_extract_mingw() {
 		download_mingw "$1" 
 		tar xf "../input/MinGW.org/$1"
 	}
@@ -199,7 +196,7 @@ win32-mingworg)
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
-	download ../input/dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
+	download dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
 	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
 
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
@@ -211,30 +208,36 @@ win64)
 	;;
 esac
 
+get_fbc_sources() {
+	# fbc sources
+	download fbc-$fbccommit.tar.gz https://github.com/freebasic/fbc/archive/$fbccommit.tar.gz
+	tar xf ../input/fbc-$fbccommit.tar.gz
+	mv fbc-$fbccommit fbc
+}
+
 bootfb_title=FreeBASIC-1.01.0-$fbtarget
 
 case $fbtarget in
 linux*)
+	# Special case: linux builds use the host gcc toolchain
+	echo "$(lsb_release -d -s), $(uname -m), $(gcc --version | head -1)" >> $buildinfo
+
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.tar.xz
-	download ../input/$bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
+	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	tar xf ../input/$bootfb_package
 
-	# fbc sources
-	cp -R ../input/fbc .
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	get_fbc_sources
 
 	mkdir tempinstall
 	;;
 *)
 	# Download & extract FB for bootstrapping
 	bootfb_package=$bootfb_title.zip
-	download ../input/$bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
+	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	unzip -q ../input/$bootfb_package
 
-	# fbc sources
-	cp -R ../input/fbc fbc
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	get_fbc_sources
 	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
@@ -249,13 +252,13 @@ win32|win64)
 	# libffi sources
 	libffi_title=libffi-3.2.1
 	libffi_package="${libffi_title}.tar.gz"
-	download "../input/$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
+	download "$libffi_package" "ftp://sourceware.org/pub/libffi/$libffi_package"
 	echo "extracting $libffi_package"
 	tar xf "../input/$libffi_package"
 	;;
 esac
 
-function dosbuild() {
+dosbuild() {
 	dospath=`pwd -W`
 
 	cat <<EOF > build.bat
@@ -316,7 +319,7 @@ EOF
 	cp fbc/contrib/manifest/FreeBASIC-dos.lst ../output
 }
 
-function linuxbuild() {
+linuxbuild() {
 	cd fbc
 	echo
 	echo "bootstrapping normal fbc"
@@ -335,7 +338,7 @@ function linuxbuild() {
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
 
-function windowsbuild() {
+windowsbuild() {
 	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
 	# its gcc and not one from the host
 	origPATH="$PATH"

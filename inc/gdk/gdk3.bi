@@ -1,3 +1,26 @@
+'' FreeBASIC binding for gtk+-3.14.10
+''
+'' based on the C header files:
+''   GDK - The GIMP Drawing Kit
+''   Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library. If not, see <http://www.gnu.org/licenses/>.
+''
+'' translated to FreeBASIC by:
+''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "gdk-3"
@@ -360,6 +383,16 @@
 extern "C"
 
 #define __GDK_H__
+#define __GDK_H_INSIDE__
+
+#ifdef __FB_WIN32__
+	#define GDK_WINDOWING_WIN32
+#else
+	#define GDK_WINDOWING_X11
+	#define GDK_WINDOWING_WAYLAND
+	#define GDK_WINDOWING_MIR
+#endif
+
 #define __GDK_VERSION_MACROS_H__
 const GDK_MAJOR_VERSION = 3
 const GDK_MINOR_VERSION = 14
@@ -658,6 +691,7 @@ declare function gdk_drag_drop_succeeded(byval context as GdkDragContext ptr) as
 
 #define GDK_TYPE_EVENT gdk_event_get_type()
 #define GDK_TYPE_EVENT_SEQUENCE gdk_event_sequence_get_type()
+#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
 #define GDK_EVENT_PROPAGATE FALSE
 #define GDK_EVENT_STOP TRUE
@@ -4254,6 +4288,7 @@ declare function gdk_visual_get_bits_per_rgb(byval visual as GdkVisual ptr) as g
 declare sub gdk_visual_get_red_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_green_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_blue_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
+#undef __GDK_H_INSIDE__
 
 end extern
 

@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "ipifcons.bi"
@@ -28,6 +43,20 @@ enum
 end enum
 
 type IF_OPER_STATUS as _IF_OPER_STATUS
+
+type _NET_IF_OPER_STATUS as long
+enum
+	NET_IF_OPER_STATUS_UP = 1
+	NET_IF_OPER_STATUS_DOWN
+	NET_IF_OPER_STATUS_TESTING
+	NET_IF_OPER_STATUS_UNKNOWN
+	NET_IF_OPER_STATUS_DORMANT
+	NET_IF_OPER_STATUS_NOT_PRESENT
+	NET_IF_OPER_STATUS_LOWER_LAYER_DOWN
+end enum
+
+type NET_IF_OPER_STATUS as _NET_IF_OPER_STATUS
+type PNET_IF_OPER_STATUS as _NET_IF_OPER_STATUS ptr
 
 type _NET_IF_ADMIN_STATUS as long
 enum
@@ -126,3 +155,23 @@ type NET_LUID as _NET_LUID
 type PNET_LUID as _NET_LUID ptr
 type IF_LUID as NET_LUID
 type PIF_LUID as NET_LUID ptr
+
+type _IF_COUNTED_STRING_LH
+	Length as USHORT
+	String as wstring * 256 + 1
+end type
+
+type IF_COUNTED_STRING_LH as _IF_COUNTED_STRING_LH
+type PIF_COUNTED_STRING_LH as _IF_COUNTED_STRING_LH ptr
+type IF_COUNTED_STRING as IF_COUNTED_STRING_LH
+type PIF_COUNTED_STRING as IF_COUNTED_STRING ptr
+
+type _IF_PHYSICAL_ADDRESS_LH
+	Length as USHORT
+	Address(0 to 31) as UCHAR
+end type
+
+type IF_PHYSICAL_ADDRESS_LH as _IF_PHYSICAL_ADDRESS_LH
+type PIF_PHYSICAL_ADDRESS_LH as _IF_PHYSICAL_ADDRESS_LH ptr
+type IF_PHYSICAL_ADDRESS as IF_PHYSICAL_ADDRESS_LH
+type PIF_PHYSICAL_ADDRESS as IF_PHYSICAL_ADDRESS ptr

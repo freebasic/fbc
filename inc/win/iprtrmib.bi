@@ -1,9 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "mprapi.bi"
 #include once "ipmib.bi"
 #include once "ipifcons.bi"
 #include once "udpmib.bi"
+#include once "tcpmib.bi"
 
 #define __ROUTING_IPRTRMIB_H__
 const IPRTRMGR_PID = 10000
@@ -445,7 +461,6 @@ const MIB_TCP_STATE_CLOSING = 9
 const MIB_TCP_STATE_LAST_ACK = 10
 const MIB_TCP_STATE_TIME_WAIT = 11
 const MIB_TCP_STATE_DELETE_TCB = 12
-type MIB_TCP_STATE as long
 
 type _MIB_TCPTABLE
 	dwNumEntries as DWORD

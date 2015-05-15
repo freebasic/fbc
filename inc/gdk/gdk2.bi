@@ -1,3 +1,28 @@
+'' FreeBASIC binding for gtk+-2.24.27
+''
+'' based on the C header files:
+''   GDK - The GIMP Drawing Kit
+''   Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the
+''   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+''   Boston, MA 02111-1307, USA.
+''
+'' translated to FreeBASIC by:
+''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #ifdef __FB_WIN32__
@@ -29,6 +54,7 @@
 extern "C"
 
 #define __GDK_H__
+#define __GDK_H_INSIDE__
 #define __GDK_APP_LAUNCH_CONTEXT_H__
 #define __GDK_SCREEN_H__
 #define __GDK_TYPES_H__
@@ -387,7 +413,9 @@ declare sub gdk_device_free_history(byval events as GdkTimeCoord ptr ptr, byval 
 declare function gdk_device_get_axis(byval device as GdkDevice ptr, byval axes as gdouble ptr, byval use as GdkAxisUse, byval value as gdouble ptr) as gboolean
 declare sub gdk_input_set_extension_events(byval window as GdkWindow ptr, byval mask as gint, byval mode as GdkExtensionMode)
 declare function gdk_device_get_core_pointer() as GdkDevice ptr
+
 #define GDK_TYPE_EVENT gdk_event_get_type()
+#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
 
 type GdkEventAny as _GdkEventAny
@@ -2308,11 +2336,10 @@ declare function gdk_visual_get_bits_per_rgb(byval visual as GdkVisual ptr) as g
 declare sub gdk_visual_get_red_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_green_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_blue_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
-
 #define gdk_visual_ref(v) g_object_ref(v)
 #define gdk_visual_unref(v) g_object_unref(v)
+#undef __GDK_H_INSIDE__
 #define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
-
 declare sub gdk_parse_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare sub gdk_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare function gdk_init_check(byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean

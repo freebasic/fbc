@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "rpc.bi"
@@ -36,6 +51,12 @@ end type
 type IObjectSafety_
 	lpVtbl as IObjectSafetyVtbl ptr
 end type
+
+#define IObjectSafety_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectSafety_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectSafety_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectSafety_GetInterfaceSafetyOptions(This, riid, pdwSupportedOptions, pdwEnabledOptions) (This)->lpVtbl->GetInterfaceSafetyOptions(This, riid, pdwSupportedOptions, pdwEnabledOptions)
+#define IObjectSafety_SetInterfaceSafetyOptions(This, riid, dwOptionSetMask, dwEnabledOptions) (This)->lpVtbl->SetInterfaceSafetyOptions(This, riid, dwOptionSetMask, dwEnabledOptions)
 
 declare function IObjectSafety_GetInterfaceSafetyOptions_Proxy(byval This as IObjectSafety ptr, byval riid as const IID const ptr, byval pdwSupportedOptions as DWORD ptr, byval pdwEnabledOptions as DWORD ptr) as HRESULT
 declare sub IObjectSafety_GetInterfaceSafetyOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

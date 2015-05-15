@@ -1,3 +1,51 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "uuid"
@@ -64,6 +112,14 @@ type IEnumGUID_
 	lpVtbl as IEnumGUIDVtbl ptr
 end type
 
+#define IEnumGUID_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumGUID_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumGUID_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumGUID_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumGUID_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumGUID_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumGUID_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
+
 declare function IEnumGUID_RemoteNext_Proxy(byval This as IEnumGUID ptr, byval celt as ULONG, byval rgelt as GUID ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumGUID_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumGUID_Skip_Proxy(byval This as IEnumGUID ptr, byval celt as ULONG) as HRESULT
@@ -103,6 +159,14 @@ type IEnumCATEGORYINFO_
 	lpVtbl as IEnumCATEGORYINFOVtbl ptr
 end type
 
+#define IEnumCATEGORYINFO_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumCATEGORYINFO_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumCATEGORYINFO_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumCATEGORYINFO_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumCATEGORYINFO_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumCATEGORYINFO_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumCATEGORYINFO_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
+
 declare function IEnumCATEGORYINFO_Next_Proxy(byval This as IEnumCATEGORYINFO ptr, byval celt as ULONG, byval rgelt as CATEGORYINFO ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumCATEGORYINFO_Next_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumCATEGORYINFO_Skip_Proxy(byval This as IEnumCATEGORYINFO ptr, byval celt as ULONG) as HRESULT
@@ -132,6 +196,16 @@ end type
 type ICatRegister_
 	lpVtbl as ICatRegisterVtbl ptr
 end type
+
+#define ICatRegister_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICatRegister_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICatRegister_Release(This) (This)->lpVtbl->Release(This)
+#define ICatRegister_RegisterCategories(This, cCategories, rgCategoryInfo) (This)->lpVtbl->RegisterCategories(This, cCategories, rgCategoryInfo)
+#define ICatRegister_UnRegisterCategories(This, cCategories, rgcatid) (This)->lpVtbl->UnRegisterCategories(This, cCategories, rgcatid)
+#define ICatRegister_RegisterClassImplCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->RegisterClassImplCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_UnRegisterClassImplCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->UnRegisterClassImplCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_RegisterClassReqCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->RegisterClassReqCategories(This, rclsid, cCategories, rgcatid)
+#define ICatRegister_UnRegisterClassReqCategories(This, rclsid, cCategories, rgcatid) (This)->lpVtbl->UnRegisterClassReqCategories(This, rclsid, cCategories, rgcatid)
 
 declare function ICatRegister_RegisterCategories_Proxy(byval This as ICatRegister ptr, byval cCategories as ULONG, byval rgCategoryInfo as CATEGORYINFO ptr) as HRESULT
 declare sub ICatRegister_RegisterCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -166,6 +240,16 @@ end type
 type ICatInformation_
 	lpVtbl as ICatInformationVtbl ptr
 end type
+
+#define ICatInformation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICatInformation_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICatInformation_Release(This) (This)->lpVtbl->Release(This)
+#define ICatInformation_EnumCategories(This, lcid, ppenumCategoryInfo) (This)->lpVtbl->EnumCategories(This, lcid, ppenumCategoryInfo)
+#define ICatInformation_GetCategoryDesc(This, rcatid, lcid, pszDesc) (This)->lpVtbl->GetCategoryDesc(This, rcatid, lcid, pszDesc)
+#define ICatInformation_EnumClassesOfCategories(This, cImplemented, rgcatidImpl, cRequired, rgcatidReq, ppenumClsid) (This)->lpVtbl->EnumClassesOfCategories(This, cImplemented, rgcatidImpl, cRequired, rgcatidReq, ppenumClsid)
+#define ICatInformation_IsClassOfCategories(This, rclsid, cImplemented, rgcatidImpl, cRequired, rgcatidReq) (This)->lpVtbl->IsClassOfCategories(This, rclsid, cImplemented, rgcatidImpl, cRequired, rgcatidReq)
+#define ICatInformation_EnumImplCategoriesOfClass(This, rclsid, ppenumCatid) (This)->lpVtbl->EnumImplCategoriesOfClass(This, rclsid, ppenumCatid)
+#define ICatInformation_EnumReqCategoriesOfClass(This, rclsid, ppenumCatid) (This)->lpVtbl->EnumReqCategoriesOfClass(This, rclsid, ppenumCatid)
 
 declare function ICatInformation_EnumCategories_Proxy(byval This as ICatInformation ptr, byval lcid as LCID, byval ppenumCategoryInfo as IEnumCATEGORYINFO ptr ptr) as HRESULT
 declare sub ICatInformation_EnumCategories_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

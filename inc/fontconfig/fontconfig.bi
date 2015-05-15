@@ -1,3 +1,31 @@
+'' FreeBASIC binding for fontconfig-2.11.1
+''
+'' based on the C header files:
+''   fontconfig/fontconfig/fontconfig.h
+''
+''   Copyright © 2001 Keith Packard
+''
+''   Permission to use, copy, modify, distribute, and sell this software and its
+''   documentation for any purpose is hereby granted without fee, provided that
+''   the above copyright notice appear in all copies and that both that
+''   copyright notice and this permission notice appear in supporting
+''   documentation, and that the name of the author(s) not be used in
+''   advertising or publicity pertaining to distribution of the software without
+''   specific, written prior permission.  The authors make no
+''   representations about the suitability of this software for any purpose.  It
+''   is provided "as is" without express or implied warranty.
+''
+''   THE AUTHOR(S) DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+''   INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+''   EVENT SHALL THE AUTHOR(S) BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+''   CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+''   DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+''   TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+''   PERFORMANCE OF THIS SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/sys/types.bi"
@@ -462,6 +490,7 @@ declare sub FcStrListFirst(byval list as FcStrList ptr)
 declare function FcStrListNext(byval list as FcStrList ptr) as FcChar8 ptr
 declare sub FcStrListDone(byval list as FcStrList ptr)
 declare function FcConfigParseAndLoad(byval config as FcConfig ptr, byval file as const FcChar8 ptr, byval complain as FcBool) as FcBool
+#undef FC_ATTRIBUTE_SENTINEL
 #define FcConfigGetRescanInverval FcConfigGetRescanInverval_REPLACE_BY_FcConfigGetRescanInterval
 #define FcConfigSetRescanInverval FcConfigSetRescanInverval_REPLACE_BY_FcConfigSetRescanInterval
 

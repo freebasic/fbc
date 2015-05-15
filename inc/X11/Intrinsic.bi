@@ -1,3 +1,32 @@
+'' FreeBASIC binding for libXt-1.1.4
+''
+'' based on the C header files:
+''   *********************************************************
+''   Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
+''
+''   			All Rights Reserved
+''
+''   Permission to use, copy, modify, and distribute this software and its
+''   documentation for any purpose and without fee is hereby granted,
+''   provided that the above copyright notice appear in all copies and that
+''   both that copyright notice and this permission notice appear in
+''   supporting documentation, and that the name Digital not be
+''   used in advertising or publicity pertaining to distribution of the
+''   software without specific, written prior permission.
+''
+''   DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+''   ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+''   DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+''   ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+''   WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+''   ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+''   SOFTWARE.
+''
+''   *****************************************************************
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/long.bi"
@@ -320,16 +349,21 @@ declare sub XtRemoveBlockHook(byval as XtBlockHookId)
 #define XtIsComposite(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h08))
 #define XtIsConstraint(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h10))
 #define XtIsShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h20))
+#undef XtIsOverrideShell
 declare function XtIsOverrideShell_ alias "XtIsOverrideShell"(byval as Widget) as byte
 #define XtIsOverrideShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, overrideShellWidgetClass), cast(WidgetClass, shellWidgetClass), cast(XtEnum, &h20))
 #define XtIsWMShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h40))
+#undef XtIsVendorShell
 declare function XtIsVendorShell_ alias "XtIsVendorShell"(byval as Widget) as byte
 #define XtIsVendorShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, vendorShellWidgetClass), cast(WidgetClass, wmShellWidgetClass), cast(XtEnum, &h40))
+#undef XtIsTransientShell
 declare function XtIsTransientShell_ alias "XtIsTransientShell"(byval as Widget) as byte
 #define XtIsTransientShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, transientShellWidgetClass), cast(WidgetClass, wmShellWidgetClass), cast(XtEnum, &h40))
 #define XtIsTopLevelShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h80))
+#undef XtIsApplicationShell
 declare function XtIsApplicationShell_ alias "XtIsApplicationShell"(byval as Widget) as byte
 #define XtIsApplicationShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, applicationShellWidgetClass), cast(WidgetClass, topLevelShellWidgetClass), cast(XtEnum, &h80))
+#undef XtIsSessionShell
 declare function XtIsSessionShell_ alias "XtIsSessionShell"(byval as Widget) as byte
 #define XtIsSessionShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, sessionShellWidgetClass), cast(WidgetClass, topLevelShellWidgetClass), cast(XtEnum, &h80))
 
@@ -341,7 +375,12 @@ declare sub XtSetMappedWhenManaged(byval as Widget, byval as byte)
 declare function XtNameToWidget(byval as Widget, byval as const zstring ptr) as Widget
 declare function XtWindowToWidget(byval as Display ptr, byval as Window) as Widget
 declare function XtGetClassExtension(byval as WidgetClass, byval as Cardinal, byval as XrmQuark, byval as clong, byval as Cardinal) as XtPointer
-#define XtSetArg(arg, n, d) '' TODO: ((void)( (arg).name = (n), (arg).value = (XtArgVal)(d) ))
+#macro XtSetArg(arg, n, d)
+	scope
+		(arg).name = (n)
+		(arg).value = cast(XtArgVal, d)
+	end scope
+#endmacro
 declare function XtMergeArgLists(byval as ArgList, byval as Cardinal, byval as ArgList, byval as Cardinal) as ArgList
 #define XtVaNestedList "XtVaNestedList"
 #define XtVaTypedArg "XtVaTypedArg"
@@ -356,8 +395,10 @@ declare function XtName(byval as Widget) as String_
 declare function XtSuperclass(byval as Widget) as WidgetClass
 declare function XtClass(byval as Widget) as WidgetClass
 declare function XtParent(byval as Widget) as Widget
+#undef XtMapWidget
 declare sub XtMapWidget_ alias "XtMapWidget"(byval as Widget)
 #define XtMapWidget(widget) XMapWindow(XtDisplay(widget), XtWindow(widget))
+#undef XtUnmapWidget
 declare sub XtUnmapWidget_ alias "XtUnmapWidget"(byval as Widget)
 #define XtUnmapWidget(widget) XUnmapWindow(XtDisplay(widget), XtWindow(widget))
 declare sub XtAddCallback(byval as Widget, byval as const zstring ptr, byval as XtCallbackProc, byval as XtPointer)
@@ -429,8 +470,8 @@ const XtUnspecifiedShellInt = -1
 #define XtDefaultBackground "XtDefaultBackground"
 #define XtDefaultFont "XtDefaultFont"
 #define XtDefaultFontSet "XtDefaultFontSet"
-#define XtOffset(p_type, field) '' TODO: ((Cardinal) (((char *) (&(((p_type)NULL)->field))) - ((char *) NULL)))
-#define XtOffsetOf(s_type, field) '' TODO: XtOffset(s_type*,field)
+#define XtOffset(p_type, field) cast(Cardinal, cptr(byte ptr, @cast(p_type, NULL)->field) - cptr(byte ptr, NULL))
+#define XtOffsetOf(s_type, field) XtOffset(s_type ptr, field)
 
 type _XtCheckpointTokenRec
 	save_type as long
@@ -477,6 +518,7 @@ declare function XtRealloc(byval as zstring ptr, byval as Cardinal) as zstring p
 declare sub XtFree(byval as zstring ptr)
 declare function XtAsprintf(byval new_string as String_ ptr, byval format as const zstring ptr, ...) as Cardinal
 #define XtNew(type) cptr(type ptr, XtMalloc(culng(sizeof((type)))))
+#undef XtNewString
 declare function XtNewString_ alias "XtNewString"(byval as String_) as String_
 #define XtNewString(str) iif((str) <> NULL, strcpy(XtMalloc(culng(culng(strlen(str)) + 1)), str), NULL)
 declare function XtAddWorkProc(byval as XtWorkProc, byval as XtPointer) as XtWorkProcId

@@ -205,7 +205,7 @@ type IR_VTBL
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval ex as FBSYMBOL ptr _
+		byval label as FBSYMBOL ptr _
 	)
 
 	emitUop as sub _
@@ -550,7 +550,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
-#define irEmitBOP( op, v1, v2, vr, ex ) ir.vtbl.emitBop( op, v1, v2, vr, ex )
+#define irEmitBOP( op, v1, v2, vr, label ) ir.vtbl.emitBop( op, v1, v2, vr, label )
 
 #define irEmitUOP(op, v1, vr) ir.vtbl.emitUop( op, v1, vr )
 

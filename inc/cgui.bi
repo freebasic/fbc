@@ -1,3 +1,11 @@
+'' FreeBASIC binding for cgui-2.0.3
+''
+'' based on the C header files:
+''   A C Graphical User Interface [add on to Allegro] by Christer Sandberg
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "cgui"

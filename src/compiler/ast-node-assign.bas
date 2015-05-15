@@ -370,6 +370,18 @@ function astCheckASSIGNToType _
 	astDelTree( l )
 end function
 
+'' Check whether it's ok to assign
+''   l = r
+'' where l is a reference.
+function astCheckByrefAssign _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+	function = (typeCalcMatch( ldtype, lsubtype, FB_PARAMMODE_BYREF, r->dtype, r->subtype ) > 0)
+end function
+
 private function hShallowCopy _
 	( _
 		byval l as ASTNODE ptr, _
@@ -616,7 +628,7 @@ function astNewASSIGN _
 		l = astRemoveNoConvCAST( l )
 		r = astRemoveNoConvCAST( r )
 		assert( astIsCALL( r ) )
-		assert( symbProcReturnsByref( r->sym ) = FALSE )
+		assert( symbIsRef( r->sym ) = FALSE )
 
 		ldfull = symbGetProcRealType( r->sym )
 		ldtype = typeGet( ldfull )

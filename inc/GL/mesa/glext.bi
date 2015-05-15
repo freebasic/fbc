@@ -1,3 +1,30 @@
+'' FreeBASIC binding for mesa-10.5.1
+''
+'' based on the C header files:
+''   Copyright (c) 2013-2014 The Khronos Group Inc.
+''
+''   Permission is hereby granted, free of charge, to any person obtaining a
+''   copy of this software and/or associated documentation files (the
+''   "Materials"), to deal in the Materials without restriction, including
+''   without limitation the rights to use, copy, modify, merge, publish,
+''   distribute, sublicense, and/or sell copies of the Materials, and to
+''   permit persons to whom the Materials are furnished to do so, subject to
+''   the following conditions:
+''
+''   The above copyright notice and this permission notice shall be included
+''   in all copies or substantial portions of the Materials.
+''
+''   THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+''   MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "GL/mesa/gl.bi"
@@ -851,7 +878,7 @@ type PFNGLCLEARBUFFERIVPROC as sub(byval buffer as GLenum, byval drawbuffer as G
 type PFNGLCLEARBUFFERUIVPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLuint ptr)
 type PFNGLCLEARBUFFERFVPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLfloat ptr)
 type PFNGLCLEARBUFFERFIPROC as sub(byval buffer as GLenum, byval drawbuffer as GLint, byval depth as GLfloat, byval stencil as GLint)
-type PFNGLGETSTRINGIPROC as function(byval name as GLenum, byval index as GLuint) as const GLubyte ptr
+type PFNGLGETSTRINGIPROC as function(byval name as GLenum, byval index as GLuint) as const zstring ptr
 type PFNGLISRENDERBUFFERPROC as function(byval renderbuffer as GLuint) as GLboolean
 type PFNGLBINDRENDERBUFFERPROC as sub(byval target as GLenum, byval renderbuffer as GLuint)
 type PFNGLDELETERENDERBUFFERSPROC as sub(byval n as GLsizei, byval renderbuffers as const GLuint ptr)
@@ -937,7 +964,7 @@ type PFNGLISVERTEXARRAYPROC as function(byval array as GLuint) as GLboolean
 	declare sub glClearBufferuiv(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLuint ptr)
 	declare sub glClearBufferfv(byval buffer as GLenum, byval drawbuffer as GLint, byval value as const GLfloat ptr)
 	declare sub glClearBufferfi(byval buffer as GLenum, byval drawbuffer as GLint, byval depth as GLfloat, byval stencil as GLint)
-	declare function glGetStringi(byval name as GLenum, byval index as GLuint) as const GLubyte ptr
+	declare function glGetStringi(byval name as GLenum, byval index as GLuint) as const zstring ptr
 	declare function glIsRenderbuffer(byval renderbuffer as GLuint) as GLboolean
 	declare sub glBindRenderbuffer(byval target as GLenum, byval renderbuffer as GLuint)
 	declare sub glDeleteRenderbuffers(byval n as GLsizei, byval renderbuffers as const GLuint ptr)

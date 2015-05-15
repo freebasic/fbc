@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "advapi32"
@@ -120,14 +135,10 @@ end enum
 
 type POLICY_AUDIT_EVENT_TYPE as _POLICY_AUDIT_EVENT_TYPE
 type PPOLICY_AUDIT_EVENT_TYPE as _POLICY_AUDIT_EVENT_TYPE ptr
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define POLICY_AUDIT_EVENT_UNCHANGED __MSABI_LONG(&h00000000)
-	#define POLICY_AUDIT_EVENT_SUCCESS __MSABI_LONG(&h00000001)
-	#define POLICY_AUDIT_EVENT_FAILURE __MSABI_LONG(&h00000002)
-	#define POLICY_AUDIT_EVENT_NONE __MSABI_LONG(&h00000004)
-#endif
-
+#define POLICY_AUDIT_EVENT_UNCHANGED __MSABI_LONG(&h00000000)
+#define POLICY_AUDIT_EVENT_SUCCESS __MSABI_LONG(&h00000001)
+#define POLICY_AUDIT_EVENT_FAILURE __MSABI_LONG(&h00000002)
+#define POLICY_AUDIT_EVENT_NONE __MSABI_LONG(&h00000004)
 #define POLICY_AUDIT_EVENT_MASK (((POLICY_AUDIT_EVENT_SUCCESS or POLICY_AUDIT_EVENT_FAILURE) or POLICY_AUDIT_EVENT_UNCHANGED) or POLICY_AUDIT_EVENT_NONE)
 
 type _LSA_UNICODE_STRING
@@ -642,6 +653,17 @@ type PLSA_ENUMERATION_INFORMATION as _LSA_ENUMERATION_INFORMATION ptr
 declare function LsaFreeMemory(byval Buffer as PVOID) as NTSTATUS
 declare function LsaClose(byval ObjectHandle as LSA_HANDLE) as NTSTATUS
 
+#if _WIN32_WINNT = &h0602
+	type _LSA_LAST_INTER_LOGON_INFO
+		LastSuccessfulLogon as LARGE_INTEGER
+		LastFailedLogon as LARGE_INTEGER
+		FailedAttemptCountSinceLastSuccessfulLogon as ULONG
+	end type
+
+	type LSA_LAST_INTER_LOGON_INFO as _LSA_LAST_INTER_LOGON_INFO
+	type PLSA_LAST_INTER_LOGON_INFO as _LSA_LAST_INTER_LOGON_INFO ptr
+#endif
+
 type _SECURITY_LOGON_SESSION_DATA
 	Size as ULONG
 	LogonId as LUID
@@ -655,6 +677,20 @@ type _SECURITY_LOGON_SESSION_DATA
 	LogonServer as LSA_UNICODE_STRING
 	DnsDomainName as LSA_UNICODE_STRING
 	Upn as LSA_UNICODE_STRING
+
+	#if _WIN32_WINNT = &h0602
+		UserFlags as ULONG
+		LastLogonInfo as LSA_LAST_INTER_LOGON_INFO
+		LogonScript as LSA_UNICODE_STRING
+		ProfilePath as LSA_UNICODE_STRING
+		HomeDirectory as LSA_UNICODE_STRING
+		HomeDirectoryDrive as LSA_UNICODE_STRING
+		LogoffTime as LARGE_INTEGER
+		KickOffTime as LARGE_INTEGER
+		PasswordLastSet as LARGE_INTEGER
+		PasswordCanChange as LARGE_INTEGER
+		PasswordMustChange as LARGE_INTEGER
+	#endif
 end type
 
 type SECURITY_LOGON_SESSION_DATA as _SECURITY_LOGON_SESSION_DATA
@@ -1650,10 +1686,6 @@ type KERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST
 type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 
 #if _WIN32_WINNT = &h0602
-	const POLICY_AUDIT_EVENT_UNCHANGED = &h00000000
-	const POLICY_AUDIT_EVENT_SUCCESS = &h00000001
-	const POLICY_AUDIT_EVENT_FAILURE = &h00000002
-	const POLICY_AUDIT_EVENT_NONE = &h00000004
 	const PER_USER_POLICY_UNCHANGED = &h00
 	const PER_USER_AUDIT_SUCCESS_INCLUDE = &h01
 	const PER_USER_AUDIT_SUCCESS_EXCLUDE = &h02

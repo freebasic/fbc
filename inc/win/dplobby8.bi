@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2003-2005 Raphael Junqueira
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "ole2.bi"
@@ -145,15 +167,15 @@ type IDirectPlay8LobbiedApplicationVtbl_
 	QueryInterface as function(byval This as IDirectPlay8LobbiedApplication ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8LobbiedApplication ptr) as ULONG
 	Release as function(byval This as IDirectPlay8LobbiedApplication ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval pdpnhConnection as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	RegisterProgram as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pdplProgramDesc as PDPL_PROGRAM_DESC, byval dwFlags as const DWORD) as HRESULT
-	UnRegisterProgram as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pguidApplication as GUID ptr, byval dwFlags as const DWORD) as HRESULT
-	Send as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as const DPNHANDLE, byval pBuffer as UBYTE const ptr, byval pBufferSize as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	SetAppAvailable as function(byval This as IDirectPlay8LobbiedApplication ptr, byval fAvailable as const WINBOOL, byval dwFlags as const DWORD) as HRESULT
-	UpdateStatus as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as const DPNHANDLE, byval dwStatus as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8LobbiedApplication ptr, byval dwFlags as const DWORD) as HRESULT
-	GetConnectionSettings as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as const DPNHANDLE, byval pdplSessionInfo as DPL_CONNECTION_SETTINGS const ptr, byval pdwInfoSize as DWORD ptr, byval dwFlags as const DWORD) as HRESULT
-	SetConnectionSettings as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as const DPNHANDLE, byval pdplSessionInfo as const DPL_CONNECTION_SETTINGS const ptr, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval pdpnhConnection as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	RegisterProgram as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pdplProgramDesc as PDPL_PROGRAM_DESC, byval dwFlags as DWORD) as HRESULT
+	UnRegisterProgram as function(byval This as IDirectPlay8LobbiedApplication ptr, byval pguidApplication as GUID ptr, byval dwFlags as DWORD) as HRESULT
+	Send as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as DPNHANDLE, byval pBuffer as UBYTE ptr, byval pBufferSize as DWORD, byval dwFlags as DWORD) as HRESULT
+	SetAppAvailable as function(byval This as IDirectPlay8LobbiedApplication ptr, byval fAvailable as WINBOOL, byval dwFlags as DWORD) as HRESULT
+	UpdateStatus as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as DPNHANDLE, byval dwStatus as DWORD, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8LobbiedApplication ptr, byval dwFlags as DWORD) as HRESULT
+	GetConnectionSettings as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as DPNHANDLE, byval pdplSessionInfo as DPL_CONNECTION_SETTINGS ptr, byval pdwInfoSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetConnectionSettings as function(byval This as IDirectPlay8LobbiedApplication ptr, byval hConnection as DPNHANDLE, byval pdplSessionInfo as const DPL_CONNECTION_SETTINGS ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8LobbiedApplication_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -178,14 +200,14 @@ type IDirectPlay8LobbyClientVtbl_
 	QueryInterface as function(byval This as IDirectPlay8LobbyClient ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8LobbyClient ptr) as ULONG
 	Release as function(byval This as IDirectPlay8LobbyClient ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8LobbyClient ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	EnumLocalPrograms as function(byval This as IDirectPlay8LobbyClient ptr, byval pGuidApplication as GUID const ptr, byval pEnumData as UBYTE const ptr, byval pdwEnumData as DWORD const ptr, byval pdwItems as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	ConnectApplication as function(byval This as IDirectPlay8LobbyClient ptr, byval pdplConnectionInfo as DPL_CONNECT_INFO const ptr, byval pvConnectionContext as const PVOID, byval hApplication as DPNHANDLE const ptr, byval dwTimeOut as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	Send as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as const DPNHANDLE, byval pBuffer as UBYTE const ptr, byval pBufferSize as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	ReleaseApplication as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8LobbyClient ptr, byval dwFlags as const DWORD) as HRESULT
-	GetConnectionSettings as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as const DPNHANDLE, byval pdplSessionInfo as DPL_CONNECTION_SETTINGS const ptr, byval pdwInfoSize as DWORD ptr, byval dwFlags as const DWORD) as HRESULT
-	SetConnectionSettings as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as const DPNHANDLE, byval pdplSessionInfo as const DPL_CONNECTION_SETTINGS const ptr, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8LobbyClient ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	EnumLocalPrograms as function(byval This as IDirectPlay8LobbyClient ptr, byval pGuidApplication as GUID ptr, byval pEnumData as UBYTE ptr, byval pdwEnumData as DWORD ptr, byval pdwItems as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	ConnectApplication as function(byval This as IDirectPlay8LobbyClient ptr, byval pdplConnectionInfo as DPL_CONNECT_INFO ptr, byval pvConnectionContext as PVOID, byval hApplication as DPNHANDLE ptr, byval dwTimeOut as DWORD, byval dwFlags as DWORD) as HRESULT
+	Send as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as DPNHANDLE, byval pBuffer as UBYTE ptr, byval pBufferSize as DWORD, byval dwFlags as DWORD) as HRESULT
+	ReleaseApplication as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8LobbyClient ptr, byval dwFlags as DWORD) as HRESULT
+	GetConnectionSettings as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as DPNHANDLE, byval pdplSessionInfo as DPL_CONNECTION_SETTINGS ptr, byval pdwInfoSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetConnectionSettings as function(byval This as IDirectPlay8LobbyClient ptr, byval hConnection as DPNHANDLE, byval pdplSessionInfo as const DPL_CONNECTION_SETTINGS ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8LobbyClient_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)

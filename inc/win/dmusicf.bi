@@ -1,3 +1,27 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DirectMusic File Formats
+''
+''   Copyright (C) 2003-2004 Rok Mandeljc
+''
+''   This program is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This program is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "windows.bi"
@@ -5,7 +29,6 @@
 #include once "mmsystem.bi"
 
 #define __WINE_DMUSIC_FILEFORMATS_H
-#define COM_NO_WINDOWS_H
 #define DMUS_FOURCC_GUID_CHUNK mmioFOURCC(asc("g"), asc("u"), asc("i"), asc("d"))
 #define DMUS_FOURCC_INFO_LIST mmioFOURCC(asc("I"), asc("N"), asc("F"), asc("O"))
 #define DMUS_FOURCC_UNFO_LIST mmioFOURCC(asc("U"), asc("N"), asc("F"), asc("O"))

@@ -393,25 +393,16 @@ private function hCheckPointer _
     select case op
     '' add op?
     case AST_OP_ADD, AST_OP_SUB
-
     	'' another pointer?
-    	if( typeIsPtr( dtype ) ) then
-    		return FALSE
-    	end if
-
-    	return TRUE
+		function = not typeIsPtr( dtype )
 
 	'' short-circuit ops?  operands will be checked against zero, so allow.
 	case AST_OP_ANDALSO, AST_OP_ORELSE
-		return TRUE
+		function = TRUE
 
 	'' relational op?
-	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
-
-    	return TRUE
-
-    case else
-    	return FALSE
+	case else
+		function = astOpIsRelational( op )
     end select
 
 end function
@@ -807,10 +798,8 @@ function astNewBOP _
 				end if
 			end select
 
-			select case as const op
 			'' concatenation?
-			case AST_OP_ADD
-
+			if( op = AST_OP_ADD ) then
 				'' both literals?
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
@@ -836,7 +825,7 @@ function astNewBOP _
 				'' to allow optimizations..
 
 			'' comparison?
-			case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+			elseif( astOpIsRelational( op ) ) then
 				'' both literals?
 				if( litsym <> NULL ) then
 					return hWstrLiteralCompare( op, l, r )
@@ -852,9 +841,9 @@ function astNewBOP _
 				rdclass = FB_DATACLASS_INTEGER
 
 			'' no other operation allowed
-			case else
+			else
 				exit function
-			end select
+			end if
 
 		'' One is not a string, but e.g. an integer. Disallow if the
 		'' other is not a DEREF'ed wchar ptr - this allows comparisons
@@ -902,9 +891,8 @@ function astNewBOP _
 			end if
 		end if
 
-		select case as const op
 		'' concatenation?
-		case AST_OP_ADD
+		if( op = AST_OP_ADD ) then
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralConcat( l, r )
@@ -921,7 +909,7 @@ function astNewBOP _
 			'' to allow optimizations..
 
 		'' comparison?
-		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
+		elseif( astOpIsRelational( op ) ) then
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralCompare( op, l, r )
@@ -937,9 +925,9 @@ function astNewBOP _
 			rdclass = FB_DATACLASS_INTEGER
 
 		'' no other operation allowed
-		case else
+		else
 			exit function
-		end select
+		end if
 
     '' zstrings?
     elseif( (typeGet( ldtype ) = FB_DATATYPE_CHAR) or _
@@ -1234,9 +1222,16 @@ function astNewBOP _
 		end if
 	end select
 
-	''::::::
-
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
+	''
+	'' ldtype/rdtype can be different for cases like SHL/SHR or pointer arithmetic,
+	'' but for the math, bitwise or relational operators, they will have been
+	'' promoted to the same type.
+	''
+	'' String concatenation/comparison operations won't be affected since
+	'' they don't use CONSTs (string literals are VARs). Even "str & int"
+	'' BOPs are already converted to "str + fb_IntToStr(int)".
+
 	if( astIsCONST( l ) and astIsCONST( r ) ) then
 		l = hConstBop( op, dtype, subtype, l, r )
 
@@ -1246,34 +1241,42 @@ function astNewBOP _
 		astDelNode( r )
 
 		return l
+	end if
 
-	elseif( astIsCONST( l ) and ldtype = rdtype and is_str = FALSE ) then
+	'' CONST + x  =>  x + CONST
+	'' Moving CONSTs to the rhs (where possible) reduces the amount of code
+	'' needed in astOptimizeTree() etc., as from now on only the rhs needs
+	'' to be checked for being CONST (otherwise we'd always have to check
+	'' both sides).
+	if( astIsCONST( l ) ) then
+		var do_swap = FALSE
+
 		select case op
 		case AST_OP_ADD, AST_OP_MUL, _
 		     AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, _
 		     AST_OP_EQ, AST_OP_NE
 			'' ? OP c = c OP ?
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_GE
 			'' c >= ?  =  ? <= c
 			op = AST_OP_LE
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_GT
 			'' c > ?  =  ? < c
 			op = AST_OP_LT
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_LE
 			'' c <= ?  =  ? >= c
 			op = AST_OP_GE
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_LT
 			'' c < ?  =  ? > c
 			op = AST_OP_GT
-			astSwap( r, l )
+			do_swap = TRUE
 
 		case AST_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
@@ -1283,12 +1286,59 @@ function astNewBOP _
 			if( r = NULL ) then
 				return NULL
 			end if
-			astSwap( r, l )
 			op = AST_OP_ADD
+			do_swap = TRUE
 		end select
 
-	elseif( astIsCONST( r ) ) then
+		if( do_swap ) then
+			swap ldtype, rdtype
+			swap ldclass, rdclass
+			swap l, r
+		end if
+	end if
+
+	if( astIsCONST( r ) ) then
 		select case op
+		case AST_OP_NE
+			'' Integer comparison (not a string/float one)?
+			if( (ldclass = FB_DATACLASS_INTEGER) and (rdclass = FB_DATACLASS_INTEGER) ) then
+				if( r->val.i = 0 ) then
+					''
+					'' x <> 0  =>  x  if x already is a boolean
+					''
+					'' but only if x is a relational BOP, for example:
+					''   (a <> b) <> 0  =>  a <> b
+					''
+					'' Generally there are more cases where this optimization could be done, for example:
+					''   (not a) <> 0  =>   not a   (at least if the <not a> has Integer type, i.e. boolean)
+					'' but then astBuildBranch() could be missing the BOP for doing an optimized conditional branch,
+					'' so it's probably better to only optimize if there will still be a BOP.
+					''
+					if( astIsRelationalBop( l ) ) then
+						astDelNode( r )
+						return l
+					end if
+				end if
+			end if
+
+		case AST_OP_EQ
+			'' Integer comparison (not a string/float one)?
+			if( (ldclass = FB_DATACLASS_INTEGER) and (rdclass = FB_DATACLASS_INTEGER) ) then
+				if( r->val.i = 0 ) then
+					'' Solve out = 0 checks on relational BOPs: = 0 is a logical negation,
+					'' and we can solve it out by inverting the relational BOP.
+					'' (a <> b) = 0  =>  (a =  b)
+					'' (a =  b) = 0  =>  (a <> b)
+					'' (a <  b) = 0  =>  (a >= b)
+					'' etc.
+					if( astIsRelationalBop( l ) ) then
+						l->op.op = astGetInverseLogOp( l->op.op )
+						astDelNode( r )
+						return l
+					end if
+				end if
+			end if
+
 		case AST_OP_ADD
 			select case( l->class )
 			case AST_NODECLASS_OFFSET
@@ -1539,26 +1589,31 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	v2 = astLoad( r )
 
 	if( ast.doemit ) then
-		'' result type can be different, with boolean operations on floats
-		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( astGetDataType( n ), n->subtype )
-			vr->vector = n->vector
-		else
-			vr = NULL
-			v1->vector = n->vector
-		end if
-
-		'' execute the operation
+		'' ex=label? Then this is an optimized conditional branch
 		if( n->op.ex <> NULL ) then
-			'' hack! ex=label, vr being NULL 'll gen better code at IR..
+			vr = NULL
 			irEmitBOP( op, v1, v2, NULL, n->op.ex )
 		else
-			irEmitBOP( op, v1, v2, vr, NULL )
-		end if
+			if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
+				'' Self-BOPs: Always re-use the lhs vreg to store the result,
+				'' that way no assignment is needed anymore,
+				'' at least from the x86 ASM backend's point of view.
+				vr = irAllocVREG( astGetDataType( n ), n->subtype )
+				vr->vector = n->vector
+			else
+				'' Normal BOPs: The result must be stored into a newly allocated vreg,
+				'' although the ASM backend may end up optimizing it out (hReuse()).
+				vr = NULL
+				v1->vector = n->vector
+			end if
 
-		'' "var op= expr" optimizations
-		if( vr = NULL ) then
-			vr = v1
+			irEmitBOP( op, v1, v2, vr, NULL )
+
+			'' Return vr to parent even for self-BOPs - this is probably useless at the moment though,
+			'' because FB self-BOPs can only be used as statements, not in expressions...
+			if( vr = NULL ) then
+				vr = v1
+			end if
 		end if
 	end if
 

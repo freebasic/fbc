@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "lmcons.bi"
@@ -372,11 +387,7 @@ end type
 
 type RAS_PORT_1 as _RAS_PORT_1
 type PRAS_PORT_1 as _RAS_PORT_1 ptr
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const IPADDRESSLEN = 15
-#endif
-
+const IPADDRESSLEN = 15
 const IPXADDRESSLEN = 22
 const ATADDRESSLEN = 32
 const MAXIPADRESSLEN = 64
@@ -487,12 +498,9 @@ type _PPP_INFO_2
 end type
 
 type PPP_INFO_2 as _PPP_INFO_2
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const RAS_FLAGS_PPP_CONNECTION = &h00000001
-	const RAS_FLAGS_MESSENGER_PRESENT = &h00000002
-	const RAS_FLAGS_QUARANTINE_PRESENT = &h00000008
-#endif
+const RAS_FLAGS_PPP_CONNECTION = &h00000001
+const RAS_FLAGS_MESSENGER_PRESENT = &h00000002
+const RAS_FLAGS_QUARANTINE_PRESENT = &h00000008
 
 type _RAS_CONNECTION_0
 	hConnection as HANDLE
@@ -540,7 +548,12 @@ end type
 
 type RAS_CONNECTION_2 as _RAS_CONNECTION_2
 type PRAS_CONNECTION_2 as _RAS_CONNECTION_2 ptr
+const RASPRIV_NoCallback = &h01
+const RASPRIV_AdminSetCallback = &h02
+const RASPRIV_CallerSetCallback = &h04
+const RASPRIV_DialinPrivilege = &h08
 const RASPRIV2_DialinPolicy = &h1
+#define RASPRIV_CallbackType ((RASPRIV_AdminSetCallback or RASPRIV_CallerSetCallback) or RASPRIV_NoCallback)
 
 type _RAS_USER_0
 	bfPrivilege as UBYTE

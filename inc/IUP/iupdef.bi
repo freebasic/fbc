@@ -1,3 +1,30 @@
+'' FreeBASIC binding for iup-3.13
+''
+'' based on the C header files:
+''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
+''
+''   Permission is hereby granted, free of charge, to any person obtaining
+''   a copy of this software and associated documentation files (the
+''   "Software"), to deal in the Software without restriction, including
+''   without limitation the rights to use, copy, modify, merge, publish,
+''   distribute, sublicense, and/or sell copies of the Software, and to
+''   permit persons to whom the Software is furnished to do so, subject to
+''   the following conditions:
+''
+''   The above copyright notice and this permission notice shall be
+''   included in all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 '' The following symbols have been renamed:
@@ -43,6 +70,7 @@
 #define IUP_K_ANY "K_ANY"
 #define IUP_KEYPRESS_CB "KEYPRESS_CB"
 #define IUP_HELP_CB "HELP_CB"
+#define IUP_SCROLL_CB "SCROLL_CB"
 #define IUP_RESIZE_CB "RESIZE_CB"
 #define IUP_MOTION_CB "MOTION_CB"
 #define IUP_BUTTON_CB "BUTTON_CB"
@@ -157,6 +185,8 @@
 #define IUP_OPEN "OPEN"
 #define IUP_SAVE "SAVE"
 #define IUP_DIR "DIR"
+#define IUP_HORIZONTAL "HORIZONTAL"
+#define IUP_VERTICAL "VERTICAL"
 #define IUP_YES "YES"
 #define IUP_NO "NO"
 #define IUP_ON "ON"
@@ -485,6 +515,7 @@
 #define IUP_K_m0 "K_m0"
 #define IUP_NUM_PARTS "NUM_PARTS"
 #define IUP_NUM_CELLS "NUM_CELLS"
+#define IUP_CELL "CELL"
 #define IUP_PREVIEW_SIZE "PREVIEW_SIZE"
 #define IUP_SHOW_PREVIEW "SHOW_PREVIEW"
 #define IUP_SHOW_SECONDARY "SHOW_SECONDARY"
@@ -507,6 +538,7 @@
 #define IUP_TRANSPARENT "TRANSPARENT"
 #define IUP_NON_SCROLLABLE_LINES "NON_SCROLLABLE_LINES"
 #define IUP_NON_SCROLLABLE_COLS "NON_SCROLLABLE_COLS"
+#define IUP_ORIGIN "ORIGIN"
 #define IUP_NO_COLOR "NO_COLOR"
 #define IUP_FIRST_LINE "FIRST_LINE"
 #define IUP_FIRST_COL "FIRST_COL"
@@ -531,6 +563,8 @@
 #define ICTL_MOUSEMOVE_CB "MOUSEMOVE_CB"
 #define ICTL_BUTTON_PRESS_CB "BUTTON_PRESS_CB"
 #define ICTL_BUTTON_RELEASE_CB "BUTTON_RELEASE_CB"
+#define ICTL_HORIZONTAL "HORIZONTAL"
+#define ICTL_VERTICAL "VERTICAL"
 #define ICTL_SHOWTICKS "SHOWTICKS"
 #define ICTL_TOP "TOP"
 #define ICTL_BOTTOM "BOTTOM"
@@ -572,6 +606,7 @@
 #define IUP_NUMCOL "NUMCOL"
 #define IUP_NUMLIN_VISIBLE "NUMLIN_VISIBLE"
 #define IUP_NUMCOL_VISIBLE "NUMCOL_VISIBLE"
+#define IUP_MARKED "MARKED"
 #define IUP_WIDTHDEF "WIDTHDEF"
 #define IUP_HEIGHTDEF "HEIGHTDEF"
 #define IUP_AREA "AREA"
@@ -583,6 +618,7 @@
 #define IUP_EDIT_MODE "EDIT_MODE"
 #define IUP_FOCUS_CELL "FOCUS_CELL"
 #define IUP_ORIGIN "ORIGIN"
+#define IUP_REDRAW "REDRAW"
 #define IUP_PREVIOUSVALUE "PREVIOUSVALUE"
 #define IUP_MOUSEMOVE_CB "MOUSEMOVE_CB"
 #define IUP_ADDLEAF "ADDLEAF"
@@ -595,6 +631,7 @@
 #define IUP_KIND "KIND"
 #define IUP_PARENT "PARENT"
 #define IUP_DEPTH "DEPTH"
+#define IUP_MARKED "MARKED"
 #define IUP_ADDEXPANDED "ADDEXPANDED"
 #define IUP_CTRL "CTRL"
 #define IUP_SHIFT "SHIFT"

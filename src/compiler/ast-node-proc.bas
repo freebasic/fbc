@@ -287,7 +287,7 @@ end function
 '' astNewLINK(), such that there is only one astAdd, to avoid the dtor list
 '' being flushed too early.
 ''
-'' Sometimes it's not obvious where the astAdd's there are because some astAdd's
+'' Sometimes it's not obvious where the astAdd's are because some astAdd's
 '' are "hidden" inside other functions such as astScopeBegin().
 ''
 '' astAddUnscoped() does not have this problem because it unsets
@@ -575,8 +575,7 @@ private function hMaybeCallResultCtor _
 	dim as FBSYMBOL ptr res = any, defctor = any
 
 	'' Not returning BYVAL, or BYVAL but not an UDT?
-	if( symbProcReturnsByref( sym ) or _
-	    (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
+	if( symbIsRef( sym ) or (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
 		return head_node
 	end if
 
@@ -829,8 +828,7 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and _
-	    (not symbProcReturnsByref( proc )) ) then
+	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsRef( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
 		if( env.clopt.backend = FB_BACKEND_GCC ) then

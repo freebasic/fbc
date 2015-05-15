@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "uuid"
@@ -139,6 +154,39 @@ type IWebBrowser_
 	lpVtbl as IWebBrowserVtbl ptr
 end type
 
+#define IWebBrowser_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWebBrowser_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWebBrowser_Release(This) (This)->lpVtbl->Release(This)
+#define IWebBrowser_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IWebBrowser_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IWebBrowser_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IWebBrowser_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IWebBrowser_GoBack(This) (This)->lpVtbl->GoBack(This)
+#define IWebBrowser_GoForward(This) (This)->lpVtbl->GoForward(This)
+#define IWebBrowser_GoHome(This) (This)->lpVtbl->GoHome(This)
+#define IWebBrowser_GoSearch(This) (This)->lpVtbl->GoSearch(This)
+#define IWebBrowser_Navigate(This, URL, Flags, TargetFrameName, PostData, Headers) (This)->lpVtbl->Navigate(This, URL, Flags, TargetFrameName, PostData, Headers)
+#define IWebBrowser_Refresh(This) (This)->lpVtbl->Refresh(This)
+#define IWebBrowser_Refresh2(This, Level) (This)->lpVtbl->Refresh2(This, Level)
+#define IWebBrowser_Stop(This) (This)->lpVtbl->Stop(This)
+#define IWebBrowser_get_Application(This, ppDisp) (This)->lpVtbl->get_Application(This, ppDisp)
+#define IWebBrowser_get_Parent(This, ppDisp) (This)->lpVtbl->get_Parent(This, ppDisp)
+#define IWebBrowser_get_Container(This, ppDisp) (This)->lpVtbl->get_Container(This, ppDisp)
+#define IWebBrowser_get_Document(This, ppDisp) (This)->lpVtbl->get_Document(This, ppDisp)
+#define IWebBrowser_get_TopLevelContainer(This, pBool) (This)->lpVtbl->get_TopLevelContainer(This, pBool)
+#define IWebBrowser_get_Type(This, Type) (This)->lpVtbl->get_Type(This, Type)
+#define IWebBrowser_get_Left(This, pl) (This)->lpVtbl->get_Left(This, pl)
+#define IWebBrowser_put_Left(This, Left) (This)->lpVtbl->put_Left(This, Left)
+#define IWebBrowser_get_Top(This, pl) (This)->lpVtbl->get_Top(This, pl)
+#define IWebBrowser_put_Top(This, Top) (This)->lpVtbl->put_Top(This, Top)
+#define IWebBrowser_get_Width(This, pl) (This)->lpVtbl->get_Width(This, pl)
+#define IWebBrowser_put_Width(This, Width) (This)->lpVtbl->put_Width(This, Width)
+#define IWebBrowser_get_Height(This, pl) (This)->lpVtbl->get_Height(This, pl)
+#define IWebBrowser_put_Height(This, Height) (This)->lpVtbl->put_Height(This, Height)
+#define IWebBrowser_get_LocationName(This, LocationName) (This)->lpVtbl->get_LocationName(This, LocationName)
+#define IWebBrowser_get_LocationURL(This, LocationURL) (This)->lpVtbl->get_LocationURL(This, LocationURL)
+#define IWebBrowser_get_Busy(This, pBool) (This)->lpVtbl->get_Busy(This, pBool)
+
 declare function IWebBrowser_GoBack_Proxy(byval This as IWebBrowser ptr) as HRESULT
 declare sub IWebBrowser_GoBack_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWebBrowser_GoForward_Proxy(byval This as IWebBrowser ptr) as HRESULT
@@ -207,6 +255,13 @@ type DWebBrowserEvents_
 	lpVtbl as DWebBrowserEventsVtbl ptr
 end type
 
+#define DWebBrowserEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DWebBrowserEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DWebBrowserEvents_Release(This) (This)->lpVtbl->Release(This)
+#define DWebBrowserEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DWebBrowserEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DWebBrowserEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DWebBrowserEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IWebBrowserApp_INTERFACE_DEFINED__
 extern IID_IWebBrowserApp as const IID
 type IWebBrowserApp as IWebBrowserApp_
@@ -269,6 +324,59 @@ end type
 type IWebBrowserApp_
 	lpVtbl as IWebBrowserAppVtbl ptr
 end type
+
+#define IWebBrowserApp_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWebBrowserApp_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWebBrowserApp_Release(This) (This)->lpVtbl->Release(This)
+#define IWebBrowserApp_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IWebBrowserApp_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IWebBrowserApp_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IWebBrowserApp_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IWebBrowserApp_GoBack(This) (This)->lpVtbl->GoBack(This)
+#define IWebBrowserApp_GoForward(This) (This)->lpVtbl->GoForward(This)
+#define IWebBrowserApp_GoHome(This) (This)->lpVtbl->GoHome(This)
+#define IWebBrowserApp_GoSearch(This) (This)->lpVtbl->GoSearch(This)
+#define IWebBrowserApp_Navigate(This, URL, Flags, TargetFrameName, PostData, Headers) (This)->lpVtbl->Navigate(This, URL, Flags, TargetFrameName, PostData, Headers)
+#define IWebBrowserApp_Refresh(This) (This)->lpVtbl->Refresh(This)
+#define IWebBrowserApp_Refresh2(This, Level) (This)->lpVtbl->Refresh2(This, Level)
+#define IWebBrowserApp_Stop(This) (This)->lpVtbl->Stop(This)
+#define IWebBrowserApp_get_Application(This, ppDisp) (This)->lpVtbl->get_Application(This, ppDisp)
+#define IWebBrowserApp_get_Parent(This, ppDisp) (This)->lpVtbl->get_Parent(This, ppDisp)
+#define IWebBrowserApp_get_Container(This, ppDisp) (This)->lpVtbl->get_Container(This, ppDisp)
+#define IWebBrowserApp_get_Document(This, ppDisp) (This)->lpVtbl->get_Document(This, ppDisp)
+#define IWebBrowserApp_get_TopLevelContainer(This, pBool) (This)->lpVtbl->get_TopLevelContainer(This, pBool)
+#define IWebBrowserApp_get_Type(This, Type) (This)->lpVtbl->get_Type(This, Type)
+#define IWebBrowserApp_get_Left(This, pl) (This)->lpVtbl->get_Left(This, pl)
+#define IWebBrowserApp_put_Left(This, Left) (This)->lpVtbl->put_Left(This, Left)
+#define IWebBrowserApp_get_Top(This, pl) (This)->lpVtbl->get_Top(This, pl)
+#define IWebBrowserApp_put_Top(This, Top) (This)->lpVtbl->put_Top(This, Top)
+#define IWebBrowserApp_get_Width(This, pl) (This)->lpVtbl->get_Width(This, pl)
+#define IWebBrowserApp_put_Width(This, Width) (This)->lpVtbl->put_Width(This, Width)
+#define IWebBrowserApp_get_Height(This, pl) (This)->lpVtbl->get_Height(This, pl)
+#define IWebBrowserApp_put_Height(This, Height) (This)->lpVtbl->put_Height(This, Height)
+#define IWebBrowserApp_get_LocationName(This, LocationName) (This)->lpVtbl->get_LocationName(This, LocationName)
+#define IWebBrowserApp_get_LocationURL(This, LocationURL) (This)->lpVtbl->get_LocationURL(This, LocationURL)
+#define IWebBrowserApp_get_Busy(This, pBool) (This)->lpVtbl->get_Busy(This, pBool)
+#define IWebBrowserApp_Quit(This) (This)->lpVtbl->Quit(This)
+#define IWebBrowserApp_ClientToWindow(This, pcx, pcy) (This)->lpVtbl->ClientToWindow(This, pcx, pcy)
+#define IWebBrowserApp_PutProperty(This, Property, vtValue) (This)->lpVtbl->PutProperty(This, Property, vtValue)
+#define IWebBrowserApp_GetProperty(This, Property, pvtValue) (This)->lpVtbl->GetProperty(This, Property, pvtValue)
+#define IWebBrowserApp_get_Name(This, Name) (This)->lpVtbl->get_Name(This, Name)
+#define IWebBrowserApp_get_HWND(This, pHWND) (This)->lpVtbl->get_HWND(This, pHWND)
+#define IWebBrowserApp_get_FullName(This, FullName) (This)->lpVtbl->get_FullName(This, FullName)
+#define IWebBrowserApp_get_Path(This, Path) (This)->lpVtbl->get_Path(This, Path)
+#define IWebBrowserApp_get_Visible(This, pBool) (This)->lpVtbl->get_Visible(This, pBool)
+#define IWebBrowserApp_put_Visible(This, Value) (This)->lpVtbl->put_Visible(This, Value)
+#define IWebBrowserApp_get_StatusBar(This, pBool) (This)->lpVtbl->get_StatusBar(This, pBool)
+#define IWebBrowserApp_put_StatusBar(This, Value) (This)->lpVtbl->put_StatusBar(This, Value)
+#define IWebBrowserApp_get_StatusText(This, StatusText) (This)->lpVtbl->get_StatusText(This, StatusText)
+#define IWebBrowserApp_put_StatusText(This, StatusText) (This)->lpVtbl->put_StatusText(This, StatusText)
+#define IWebBrowserApp_get_ToolBar(This, Value) (This)->lpVtbl->get_ToolBar(This, Value)
+#define IWebBrowserApp_put_ToolBar(This, Value) (This)->lpVtbl->put_ToolBar(This, Value)
+#define IWebBrowserApp_get_MenuBar(This, Value) (This)->lpVtbl->get_MenuBar(This, Value)
+#define IWebBrowserApp_put_MenuBar(This, Value) (This)->lpVtbl->put_MenuBar(This, Value)
+#define IWebBrowserApp_get_FullScreen(This, pbFullScreen) (This)->lpVtbl->get_FullScreen(This, pbFullScreen)
+#define IWebBrowserApp_put_FullScreen(This, bFullScreen) (This)->lpVtbl->put_FullScreen(This, bFullScreen)
 
 declare function IWebBrowserApp_Quit_Proxy(byval This as IWebBrowserApp ptr) as HRESULT
 declare sub IWebBrowserApp_Quit_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -392,6 +500,78 @@ type IWebBrowser2_
 	lpVtbl as IWebBrowser2Vtbl ptr
 end type
 
+#define IWebBrowser2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWebBrowser2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWebBrowser2_Release(This) (This)->lpVtbl->Release(This)
+#define IWebBrowser2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IWebBrowser2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IWebBrowser2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IWebBrowser2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IWebBrowser2_GoBack(This) (This)->lpVtbl->GoBack(This)
+#define IWebBrowser2_GoForward(This) (This)->lpVtbl->GoForward(This)
+#define IWebBrowser2_GoHome(This) (This)->lpVtbl->GoHome(This)
+#define IWebBrowser2_GoSearch(This) (This)->lpVtbl->GoSearch(This)
+#define IWebBrowser2_Navigate(This, URL, Flags, TargetFrameName, PostData, Headers) (This)->lpVtbl->Navigate(This, URL, Flags, TargetFrameName, PostData, Headers)
+#define IWebBrowser2_Refresh(This) (This)->lpVtbl->Refresh(This)
+#define IWebBrowser2_Refresh2(This, Level) (This)->lpVtbl->Refresh2(This, Level)
+#define IWebBrowser2_Stop(This) (This)->lpVtbl->Stop(This)
+#define IWebBrowser2_get_Application(This, ppDisp) (This)->lpVtbl->get_Application(This, ppDisp)
+#define IWebBrowser2_get_Parent(This, ppDisp) (This)->lpVtbl->get_Parent(This, ppDisp)
+#define IWebBrowser2_get_Container(This, ppDisp) (This)->lpVtbl->get_Container(This, ppDisp)
+#define IWebBrowser2_get_Document(This, ppDisp) (This)->lpVtbl->get_Document(This, ppDisp)
+#define IWebBrowser2_get_TopLevelContainer(This, pBool) (This)->lpVtbl->get_TopLevelContainer(This, pBool)
+#define IWebBrowser2_get_Type(This, Type) (This)->lpVtbl->get_Type(This, Type)
+#define IWebBrowser2_get_Left(This, pl) (This)->lpVtbl->get_Left(This, pl)
+#define IWebBrowser2_put_Left(This, Left) (This)->lpVtbl->put_Left(This, Left)
+#define IWebBrowser2_get_Top(This, pl) (This)->lpVtbl->get_Top(This, pl)
+#define IWebBrowser2_put_Top(This, Top) (This)->lpVtbl->put_Top(This, Top)
+#define IWebBrowser2_get_Width(This, pl) (This)->lpVtbl->get_Width(This, pl)
+#define IWebBrowser2_put_Width(This, Width) (This)->lpVtbl->put_Width(This, Width)
+#define IWebBrowser2_get_Height(This, pl) (This)->lpVtbl->get_Height(This, pl)
+#define IWebBrowser2_put_Height(This, Height) (This)->lpVtbl->put_Height(This, Height)
+#define IWebBrowser2_get_LocationName(This, LocationName) (This)->lpVtbl->get_LocationName(This, LocationName)
+#define IWebBrowser2_get_LocationURL(This, LocationURL) (This)->lpVtbl->get_LocationURL(This, LocationURL)
+#define IWebBrowser2_get_Busy(This, pBool) (This)->lpVtbl->get_Busy(This, pBool)
+#define IWebBrowser2_Quit(This) (This)->lpVtbl->Quit(This)
+#define IWebBrowser2_ClientToWindow(This, pcx, pcy) (This)->lpVtbl->ClientToWindow(This, pcx, pcy)
+#define IWebBrowser2_PutProperty(This, Property, vtValue) (This)->lpVtbl->PutProperty(This, Property, vtValue)
+#define IWebBrowser2_GetProperty(This, Property, pvtValue) (This)->lpVtbl->GetProperty(This, Property, pvtValue)
+#define IWebBrowser2_get_Name(This, Name) (This)->lpVtbl->get_Name(This, Name)
+#define IWebBrowser2_get_HWND(This, pHWND) (This)->lpVtbl->get_HWND(This, pHWND)
+#define IWebBrowser2_get_FullName(This, FullName) (This)->lpVtbl->get_FullName(This, FullName)
+#define IWebBrowser2_get_Path(This, Path) (This)->lpVtbl->get_Path(This, Path)
+#define IWebBrowser2_get_Visible(This, pBool) (This)->lpVtbl->get_Visible(This, pBool)
+#define IWebBrowser2_put_Visible(This, Value) (This)->lpVtbl->put_Visible(This, Value)
+#define IWebBrowser2_get_StatusBar(This, pBool) (This)->lpVtbl->get_StatusBar(This, pBool)
+#define IWebBrowser2_put_StatusBar(This, Value) (This)->lpVtbl->put_StatusBar(This, Value)
+#define IWebBrowser2_get_StatusText(This, StatusText) (This)->lpVtbl->get_StatusText(This, StatusText)
+#define IWebBrowser2_put_StatusText(This, StatusText) (This)->lpVtbl->put_StatusText(This, StatusText)
+#define IWebBrowser2_get_ToolBar(This, Value) (This)->lpVtbl->get_ToolBar(This, Value)
+#define IWebBrowser2_put_ToolBar(This, Value) (This)->lpVtbl->put_ToolBar(This, Value)
+#define IWebBrowser2_get_MenuBar(This, Value) (This)->lpVtbl->get_MenuBar(This, Value)
+#define IWebBrowser2_put_MenuBar(This, Value) (This)->lpVtbl->put_MenuBar(This, Value)
+#define IWebBrowser2_get_FullScreen(This, pbFullScreen) (This)->lpVtbl->get_FullScreen(This, pbFullScreen)
+#define IWebBrowser2_put_FullScreen(This, bFullScreen) (This)->lpVtbl->put_FullScreen(This, bFullScreen)
+#define IWebBrowser2_Navigate2(This, URL, Flags, TargetFrameName, PostData, Headers) (This)->lpVtbl->Navigate2(This, URL, Flags, TargetFrameName, PostData, Headers)
+#define IWebBrowser2_QueryStatusWB(This, cmdID, pcmdf) (This)->lpVtbl->QueryStatusWB(This, cmdID, pcmdf)
+#define IWebBrowser2_ExecWB(This, cmdID, cmdexecopt, pvaIn, pvaOut) (This)->lpVtbl->ExecWB(This, cmdID, cmdexecopt, pvaIn, pvaOut)
+#define IWebBrowser2_ShowBrowserBar(This, pvaClsid, pvarShow, pvarSize) (This)->lpVtbl->ShowBrowserBar(This, pvaClsid, pvarShow, pvarSize)
+#define IWebBrowser2_get_ReadyState(This, plReadyState) (This)->lpVtbl->get_ReadyState(This, plReadyState)
+#define IWebBrowser2_get_Offline(This, pbOffline) (This)->lpVtbl->get_Offline(This, pbOffline)
+#define IWebBrowser2_put_Offline(This, bOffline) (This)->lpVtbl->put_Offline(This, bOffline)
+#define IWebBrowser2_get_Silent(This, pbSilent) (This)->lpVtbl->get_Silent(This, pbSilent)
+#define IWebBrowser2_put_Silent(This, bSilent) (This)->lpVtbl->put_Silent(This, bSilent)
+#define IWebBrowser2_get_RegisterAsBrowser(This, pbRegister) (This)->lpVtbl->get_RegisterAsBrowser(This, pbRegister)
+#define IWebBrowser2_put_RegisterAsBrowser(This, bRegister) (This)->lpVtbl->put_RegisterAsBrowser(This, bRegister)
+#define IWebBrowser2_get_RegisterAsDropTarget(This, pbRegister) (This)->lpVtbl->get_RegisterAsDropTarget(This, pbRegister)
+#define IWebBrowser2_put_RegisterAsDropTarget(This, bRegister) (This)->lpVtbl->put_RegisterAsDropTarget(This, bRegister)
+#define IWebBrowser2_get_TheaterMode(This, pbRegister) (This)->lpVtbl->get_TheaterMode(This, pbRegister)
+#define IWebBrowser2_put_TheaterMode(This, bRegister) (This)->lpVtbl->put_TheaterMode(This, bRegister)
+#define IWebBrowser2_get_AddressBar(This, Value) (This)->lpVtbl->get_AddressBar(This, Value)
+#define IWebBrowser2_put_AddressBar(This, Value) (This)->lpVtbl->put_AddressBar(This, Value)
+#define IWebBrowser2_get_Resizable(This, Value) (This)->lpVtbl->get_Resizable(This, Value)
+#define IWebBrowser2_put_Resizable(This, Value) (This)->lpVtbl->put_Resizable(This, Value)
+
 declare function IWebBrowser2_Navigate2_Proxy(byval This as IWebBrowser2 ptr, byval URL as VARIANT ptr, byval Flags as VARIANT ptr, byval TargetFrameName as VARIANT ptr, byval PostData as VARIANT ptr, byval Headers as VARIANT ptr) as HRESULT
 declare sub IWebBrowser2_Navigate2_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IWebBrowser2_QueryStatusWB_Proxy(byval This as IWebBrowser2 ptr, byval cmdID as OLECMDID, byval pcmdf as OLECMDF ptr) as HRESULT
@@ -448,6 +628,14 @@ type DWebBrowserEvents2_
 	lpVtbl as DWebBrowserEvents2Vtbl ptr
 end type
 
+#define DWebBrowserEvents2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DWebBrowserEvents2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DWebBrowserEvents2_Release(This) (This)->lpVtbl->Release(This)
+#define DWebBrowserEvents2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DWebBrowserEvents2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DWebBrowserEvents2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DWebBrowserEvents2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+
 extern CLSID_WebBrowser_V1 as const CLSID
 extern CLSID_WebBrowser as const CLSID
 extern CLSID_InternetExplorer as const CLSID
@@ -470,6 +658,13 @@ type DShellWindowsEvents_
 	lpVtbl as DShellWindowsEventsVtbl ptr
 end type
 
+#define DShellWindowsEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DShellWindowsEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DShellWindowsEvents_Release(This) (This)->lpVtbl->Release(This)
+#define DShellWindowsEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DShellWindowsEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DShellWindowsEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DShellWindowsEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IShellWindows_INTERFACE_DEFINED__
 extern IID_IShellWindows as const IID
 type IShellWindows as IShellWindows_
@@ -498,6 +693,25 @@ end type
 type IShellWindows_
 	lpVtbl as IShellWindowsVtbl ptr
 end type
+
+#define IShellWindows_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellWindows_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellWindows_Release(This) (This)->lpVtbl->Release(This)
+#define IShellWindows_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IShellWindows_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IShellWindows_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IShellWindows_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IShellWindows_get_Count(This, Count) (This)->lpVtbl->get_Count(This, Count)
+#define IShellWindows_Item(This, index, Folder) (This)->lpVtbl->Item(This, index, Folder)
+#define IShellWindows__NewEnum(This, ppunk) (This)->lpVtbl->_NewEnum(This, ppunk)
+#define IShellWindows_Register(This, pid, hwnd, swClass, plCookie) (This)->lpVtbl->Register(This, pid, hwnd, swClass, plCookie)
+#define IShellWindows_RegisterPending(This, lThreadId, pvarloc, pvarlocRoot, swClass, plCookie) (This)->lpVtbl->RegisterPending(This, lThreadId, pvarloc, pvarlocRoot, swClass, plCookie)
+#define IShellWindows_Revoke(This, lCookie) (This)->lpVtbl->Revoke(This, lCookie)
+#define IShellWindows_OnNavigate(This, lCookie, pvarLoc) (This)->lpVtbl->OnNavigate(This, lCookie, pvarLoc)
+#define IShellWindows_OnActivated(This, lCookie, fActive) (This)->lpVtbl->OnActivated(This, lCookie, fActive)
+#define IShellWindows_FindWindowSW(This, pvarLoc, pvarLocRoot, swClass, phwnd, swfwOptions, ppdispOut) (This)->lpVtbl->FindWindowSW(This, pvarLoc, pvarLocRoot, swClass, phwnd, swfwOptions, ppdispOut)
+#define IShellWindows_OnCreated(This, lCookie, punk) (This)->lpVtbl->OnCreated(This, lCookie, punk)
+#define IShellWindows_ProcessAttachDetach(This, fAttach) (This)->lpVtbl->ProcessAttachDetach(This, fAttach)
 
 declare function IShellWindows_get_Count_Proxy(byval This as IShellWindows ptr, byval Count as long ptr) as HRESULT
 declare sub IShellWindows_get_Count_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -553,6 +767,27 @@ type IShellUIHelper_
 	lpVtbl as IShellUIHelperVtbl ptr
 end type
 
+#define IShellUIHelper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellUIHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellUIHelper_Release(This) (This)->lpVtbl->Release(This)
+#define IShellUIHelper_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IShellUIHelper_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IShellUIHelper_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IShellUIHelper_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IShellUIHelper_ResetFirstBootMode(This) (This)->lpVtbl->ResetFirstBootMode(This)
+#define IShellUIHelper_ResetSafeMode(This) (This)->lpVtbl->ResetSafeMode(This)
+#define IShellUIHelper_RefreshOfflineDesktop(This) (This)->lpVtbl->RefreshOfflineDesktop(This)
+#define IShellUIHelper_AddFavorite(This, URL, Title) (This)->lpVtbl->AddFavorite(This, URL, Title)
+#define IShellUIHelper_AddChannel(This, URL) (This)->lpVtbl->AddChannel(This, URL)
+#define IShellUIHelper_AddDesktopComponent(This, URL, Type, Left, Top, Width, Height) (This)->lpVtbl->AddDesktopComponent(This, URL, Type, Left, Top, Width, Height)
+#define IShellUIHelper_IsSubscribed(This, URL, pBool) (This)->lpVtbl->IsSubscribed(This, URL, pBool)
+#define IShellUIHelper_NavigateAndFind(This, URL, strQuery, varTargetFrame) (This)->lpVtbl->NavigateAndFind(This, URL, strQuery, varTargetFrame)
+#define IShellUIHelper_ImportExportFavorites(This, fImport, strImpExpPath) (This)->lpVtbl->ImportExportFavorites(This, fImport, strImpExpPath)
+#define IShellUIHelper_AutoCompleteSaveForm(This, Form) (This)->lpVtbl->AutoCompleteSaveForm(This, Form)
+#define IShellUIHelper_AutoScan(This, strSearch, strFailureUrl, pvarTargetFrame) (This)->lpVtbl->AutoScan(This, strSearch, strFailureUrl, pvarTargetFrame)
+#define IShellUIHelper_AutoCompleteAttach(This, Reserved) (This)->lpVtbl->AutoCompleteAttach(This, Reserved)
+#define IShellUIHelper_ShowBrowserUI(This, bstrName, pvarIn, pvarOut) (This)->lpVtbl->ShowBrowserUI(This, bstrName, pvarIn, pvarOut)
+
 declare function IShellUIHelper_ResetFirstBootMode_Proxy(byval This as IShellUIHelper ptr) as HRESULT
 declare sub IShellUIHelper_ResetFirstBootMode_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellUIHelper_ResetSafeMode_Proxy(byval This as IShellUIHelper ptr) as HRESULT
@@ -598,6 +833,13 @@ type DShellNameSpaceEvents_
 	lpVtbl as DShellNameSpaceEventsVtbl ptr
 end type
 
+#define DShellNameSpaceEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define DShellNameSpaceEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define DShellNameSpaceEvents_Release(This) (This)->lpVtbl->Release(This)
+#define DShellNameSpaceEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define DShellNameSpaceEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define DShellNameSpaceEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define DShellNameSpaceEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 #define __IShellFavoritesNameSpace_INTERFACE_DEFINED__
 extern IID_IShellFavoritesNameSpace as const IID
 type IShellFavoritesNameSpace as IShellFavoritesNameSpace_
@@ -628,6 +870,27 @@ end type
 type IShellFavoritesNameSpace_
 	lpVtbl as IShellFavoritesNameSpaceVtbl ptr
 end type
+
+#define IShellFavoritesNameSpace_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellFavoritesNameSpace_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellFavoritesNameSpace_Release(This) (This)->lpVtbl->Release(This)
+#define IShellFavoritesNameSpace_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IShellFavoritesNameSpace_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IShellFavoritesNameSpace_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IShellFavoritesNameSpace_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IShellFavoritesNameSpace_MoveSelectionUp(This) (This)->lpVtbl->MoveSelectionUp(This)
+#define IShellFavoritesNameSpace_MoveSelectionDown(This) (This)->lpVtbl->MoveSelectionDown(This)
+#define IShellFavoritesNameSpace_ResetSort(This) (This)->lpVtbl->ResetSort(This)
+#define IShellFavoritesNameSpace_NewFolder(This) (This)->lpVtbl->NewFolder(This)
+#define IShellFavoritesNameSpace_Synchronize(This) (This)->lpVtbl->Synchronize(This)
+#define IShellFavoritesNameSpace_Import(This) (This)->lpVtbl->Import(This)
+#define IShellFavoritesNameSpace_Export(This) (This)->lpVtbl->Export(This)
+#define IShellFavoritesNameSpace_InvokeContextMenuCommand(This, strCommand) (This)->lpVtbl->InvokeContextMenuCommand(This, strCommand)
+#define IShellFavoritesNameSpace_MoveSelectionTo(This) (This)->lpVtbl->MoveSelectionTo(This)
+#define IShellFavoritesNameSpace_get_SubscriptionsEnabled(This, pBool) (This)->lpVtbl->get_SubscriptionsEnabled(This, pBool)
+#define IShellFavoritesNameSpace_CreateSubscriptionForSelection(This, pBool) (This)->lpVtbl->CreateSubscriptionForSelection(This, pBool)
+#define IShellFavoritesNameSpace_DeleteSubscriptionForSelection(This, pBool) (This)->lpVtbl->DeleteSubscriptionForSelection(This, pBool)
+#define IShellFavoritesNameSpace_SetRoot(This, bstrFullPath) (This)->lpVtbl->SetRoot(This, bstrFullPath)
 
 declare function IShellFavoritesNameSpace_MoveSelectionUp_Proxy(byval This as IShellFavoritesNameSpace ptr) as HRESULT
 declare sub IShellFavoritesNameSpace_MoveSelectionUp_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -707,6 +970,48 @@ type IShellNameSpace_
 	lpVtbl as IShellNameSpaceVtbl ptr
 end type
 
+#define IShellNameSpace_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellNameSpace_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellNameSpace_Release(This) (This)->lpVtbl->Release(This)
+#define IShellNameSpace_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IShellNameSpace_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IShellNameSpace_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IShellNameSpace_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IShellNameSpace_MoveSelectionUp(This) (This)->lpVtbl->MoveSelectionUp(This)
+#define IShellNameSpace_MoveSelectionDown(This) (This)->lpVtbl->MoveSelectionDown(This)
+#define IShellNameSpace_ResetSort(This) (This)->lpVtbl->ResetSort(This)
+#define IShellNameSpace_NewFolder(This) (This)->lpVtbl->NewFolder(This)
+#define IShellNameSpace_Synchronize(This) (This)->lpVtbl->Synchronize(This)
+#define IShellNameSpace_Import(This) (This)->lpVtbl->Import(This)
+#define IShellNameSpace_Export(This) (This)->lpVtbl->Export(This)
+#define IShellNameSpace_InvokeContextMenuCommand(This, strCommand) (This)->lpVtbl->InvokeContextMenuCommand(This, strCommand)
+#define IShellNameSpace_MoveSelectionTo(This) (This)->lpVtbl->MoveSelectionTo(This)
+#define IShellNameSpace_get_SubscriptionsEnabled(This, pBool) (This)->lpVtbl->get_SubscriptionsEnabled(This, pBool)
+#define IShellNameSpace_CreateSubscriptionForSelection(This, pBool) (This)->lpVtbl->CreateSubscriptionForSelection(This, pBool)
+#define IShellNameSpace_DeleteSubscriptionForSelection(This, pBool) (This)->lpVtbl->DeleteSubscriptionForSelection(This, pBool)
+#define IShellNameSpace_SetRoot(This, bstrFullPath) (This)->lpVtbl->SetRoot(This, bstrFullPath)
+#define IShellNameSpace_get_EnumOptions(This, pgrfEnumFlags) (This)->lpVtbl->get_EnumOptions(This, pgrfEnumFlags)
+#define IShellNameSpace_put_EnumOptions(This, lVal) (This)->lpVtbl->put_EnumOptions(This, lVal)
+#define IShellNameSpace_get_SelectedItem(This, pItem) (This)->lpVtbl->get_SelectedItem(This, pItem)
+#define IShellNameSpace_put_SelectedItem(This, pItem) (This)->lpVtbl->put_SelectedItem(This, pItem)
+#define IShellNameSpace_get_Root(This, pvar) (This)->lpVtbl->get_Root(This, pvar)
+#define IShellNameSpace_put_Root(This, var) (This)->lpVtbl->put_Root(This, var)
+#define IShellNameSpace_get_Depth(This, piDepth) (This)->lpVtbl->get_Depth(This, piDepth)
+#define IShellNameSpace_put_Depth(This, iDepth) (This)->lpVtbl->put_Depth(This, iDepth)
+#define IShellNameSpace_get_Mode(This, puMode) (This)->lpVtbl->get_Mode(This, puMode)
+#define IShellNameSpace_put_Mode(This, uMode) (This)->lpVtbl->put_Mode(This, uMode)
+#define IShellNameSpace_get_Flags(This, pdwFlags) (This)->lpVtbl->get_Flags(This, pdwFlags)
+#define IShellNameSpace_put_Flags(This, dwFlags) (This)->lpVtbl->put_Flags(This, dwFlags)
+#define IShellNameSpace_put_TVFlags(This, dwFlags) (This)->lpVtbl->put_TVFlags(This, dwFlags)
+#define IShellNameSpace_get_TVFlags(This, dwFlags) (This)->lpVtbl->get_TVFlags(This, dwFlags)
+#define IShellNameSpace_get_Columns(This, bstrColumns) (This)->lpVtbl->get_Columns(This, bstrColumns)
+#define IShellNameSpace_put_Columns(This, bstrColumns) (This)->lpVtbl->put_Columns(This, bstrColumns)
+#define IShellNameSpace_get_CountViewTypes(This, piTypes) (This)->lpVtbl->get_CountViewTypes(This, piTypes)
+#define IShellNameSpace_SetViewType(This, iType) (This)->lpVtbl->SetViewType(This, iType)
+#define IShellNameSpace_SelectedItems(This, ppid) (This)->lpVtbl->SelectedItems(This, ppid)
+#define IShellNameSpace_Expand(This, var, iDepth) (This)->lpVtbl->Expand(This, var, iDepth)
+#define IShellNameSpace_UnselectAll(This) (This)->lpVtbl->UnselectAll(This)
+
 declare function IShellNameSpace_get_EnumOptions_Proxy(byval This as IShellNameSpace ptr, byval pgrfEnumFlags as LONG ptr) as HRESULT
 declare sub IShellNameSpace_get_EnumOptions_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IShellNameSpace_put_EnumOptions_Proxy(byval This as IShellNameSpace ptr, byval lVal as LONG) as HRESULT
@@ -782,6 +1087,28 @@ type IScriptErrorList_
 	lpVtbl as IScriptErrorListVtbl ptr
 end type
 
+#define IScriptErrorList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IScriptErrorList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IScriptErrorList_Release(This) (This)->lpVtbl->Release(This)
+#define IScriptErrorList_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define IScriptErrorList_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define IScriptErrorList_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define IScriptErrorList_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define IScriptErrorList_advanceError(This) (This)->lpVtbl->advanceError(This)
+#define IScriptErrorList_retreatError(This) (This)->lpVtbl->retreatError(This)
+#define IScriptErrorList_canAdvanceError(This, pfCanAdvance) (This)->lpVtbl->canAdvanceError(This, pfCanAdvance)
+#define IScriptErrorList_canRetreatError(This, pfCanRetreat) (This)->lpVtbl->canRetreatError(This, pfCanRetreat)
+#define IScriptErrorList_getErrorLine(This, plLine) (This)->lpVtbl->getErrorLine(This, plLine)
+#define IScriptErrorList_getErrorChar(This, plChar) (This)->lpVtbl->getErrorChar(This, plChar)
+#define IScriptErrorList_getErrorCode(This, plCode) (This)->lpVtbl->getErrorCode(This, plCode)
+#define IScriptErrorList_getErrorMsg(This, pstr) (This)->lpVtbl->getErrorMsg(This, pstr)
+#define IScriptErrorList_getErrorUrl(This, pstr) (This)->lpVtbl->getErrorUrl(This, pstr)
+#define IScriptErrorList_getAlwaysShowLockState(This, pfAlwaysShowLocked) (This)->lpVtbl->getAlwaysShowLockState(This, pfAlwaysShowLocked)
+#define IScriptErrorList_getDetailsPaneOpen(This, pfDetailsPaneOpen) (This)->lpVtbl->getDetailsPaneOpen(This, pfDetailsPaneOpen)
+#define IScriptErrorList_setDetailsPaneOpen(This, fDetailsPaneOpen) (This)->lpVtbl->setDetailsPaneOpen(This, fDetailsPaneOpen)
+#define IScriptErrorList_getPerErrorDisplay(This, pfPerErrorDisplay) (This)->lpVtbl->getPerErrorDisplay(This, pfPerErrorDisplay)
+#define IScriptErrorList_setPerErrorDisplay(This, fPerErrorDisplay) (This)->lpVtbl->setPerErrorDisplay(This, fPerErrorDisplay)
+
 declare function IScriptErrorList_advanceError_Proxy(byval This as IScriptErrorList ptr) as HRESULT
 declare sub IScriptErrorList_advanceError_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IScriptErrorList_retreatError_Proxy(byval This as IScriptErrorList ptr) as HRESULT
@@ -832,6 +1159,17 @@ type ISearch_
 	lpVtbl as ISearchVtbl ptr
 end type
 
+#define ISearch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISearch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISearch_Release(This) (This)->lpVtbl->Release(This)
+#define ISearch_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define ISearch_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define ISearch_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define ISearch_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ISearch_get_Title(This, pbstrTitle) (This)->lpVtbl->get_Title(This, pbstrTitle)
+#define ISearch_get_Id(This, pbstrId) (This)->lpVtbl->get_Id(This, pbstrId)
+#define ISearch_get_Url(This, pbstrUrl) (This)->lpVtbl->get_Url(This, pbstrUrl)
+
 declare function ISearch_get_Title_Proxy(byval This as ISearch ptr, byval pbstrTitle as BSTR ptr) as HRESULT
 declare sub ISearch_get_Title_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISearch_get_Id_Proxy(byval This as ISearch ptr, byval pbstrId as BSTR ptr) as HRESULT
@@ -859,6 +1197,18 @@ end type
 type ISearches_
 	lpVtbl as ISearchesVtbl ptr
 end type
+
+#define ISearches_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISearches_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISearches_Release(This) (This)->lpVtbl->Release(This)
+#define ISearches_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define ISearches_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define ISearches_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define ISearches_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ISearches_get_Count(This, plCount) (This)->lpVtbl->get_Count(This, plCount)
+#define ISearches_get_Default(This, pbstrDefault) (This)->lpVtbl->get_Default(This, pbstrDefault)
+#define ISearches_Item(This, index, ppid) (This)->lpVtbl->Item(This, index, ppid)
+#define ISearches__NewEnum(This, ppunk) (This)->lpVtbl->_NewEnum(This, ppunk)
 
 declare function ISearches_get_Count_Proxy(byval This as ISearches ptr, byval plCount as long ptr) as HRESULT
 declare sub ISearches_get_Count_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -912,6 +1262,41 @@ end type
 type ISearchAssistantOC_
 	lpVtbl as ISearchAssistantOCVtbl ptr
 end type
+
+#define ISearchAssistantOC_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISearchAssistantOC_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISearchAssistantOC_Release(This) (This)->lpVtbl->Release(This)
+#define ISearchAssistantOC_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define ISearchAssistantOC_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define ISearchAssistantOC_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define ISearchAssistantOC_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ISearchAssistantOC_AddNextMenuItem(This, bstrText, idItem) (This)->lpVtbl->AddNextMenuItem(This, bstrText, idItem)
+#define ISearchAssistantOC_SetDefaultSearchUrl(This, bstrUrl) (This)->lpVtbl->SetDefaultSearchUrl(This, bstrUrl)
+#define ISearchAssistantOC_NavigateToDefaultSearch(This) (This)->lpVtbl->NavigateToDefaultSearch(This)
+#define ISearchAssistantOC_IsRestricted(This, bstrGuid, pVal) (This)->lpVtbl->IsRestricted(This, bstrGuid, pVal)
+#define ISearchAssistantOC_get_ShellFeaturesEnabled(This, pVal) (This)->lpVtbl->get_ShellFeaturesEnabled(This, pVal)
+#define ISearchAssistantOC_get_SearchAssistantDefault(This, pVal) (This)->lpVtbl->get_SearchAssistantDefault(This, pVal)
+#define ISearchAssistantOC_get_Searches(This, ppid) (This)->lpVtbl->get_Searches(This, ppid)
+#define ISearchAssistantOC_get_InWebFolder(This, pVal) (This)->lpVtbl->get_InWebFolder(This, pVal)
+#define ISearchAssistantOC_PutProperty(This, bPerLocale, bstrName, bstrValue) (This)->lpVtbl->PutProperty(This, bPerLocale, bstrName, bstrValue)
+#define ISearchAssistantOC_GetProperty(This, bPerLocale, bstrName, pbstrValue) (This)->lpVtbl->GetProperty(This, bPerLocale, bstrName, pbstrValue)
+#define ISearchAssistantOC_put_EventHandled(This, bHandled) (This)->lpVtbl->put_EventHandled(This, bHandled)
+#define ISearchAssistantOC_ResetNextMenu(This) (This)->lpVtbl->ResetNextMenu(This)
+#define ISearchAssistantOC_FindOnWeb(This) (This)->lpVtbl->FindOnWeb(This)
+#define ISearchAssistantOC_FindFilesOrFolders(This) (This)->lpVtbl->FindFilesOrFolders(This)
+#define ISearchAssistantOC_FindComputer(This) (This)->lpVtbl->FindComputer(This)
+#define ISearchAssistantOC_FindPrinter(This) (This)->lpVtbl->FindPrinter(This)
+#define ISearchAssistantOC_FindPeople(This) (This)->lpVtbl->FindPeople(This)
+#define ISearchAssistantOC_GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue) (This)->lpVtbl->GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue)
+#define ISearchAssistantOC_NotifySearchSettingsChanged(This) (This)->lpVtbl->NotifySearchSettingsChanged(This)
+#define ISearchAssistantOC_put_ASProvider(This, Provider) (This)->lpVtbl->put_ASProvider(This, Provider)
+#define ISearchAssistantOC_get_ASProvider(This, pProvider) (This)->lpVtbl->get_ASProvider(This, pProvider)
+#define ISearchAssistantOC_put_ASSetting(This, Setting) (This)->lpVtbl->put_ASSetting(This, Setting)
+#define ISearchAssistantOC_get_ASSetting(This, pSetting) (This)->lpVtbl->get_ASSetting(This, pSetting)
+#define ISearchAssistantOC_NETDetectNextNavigate(This) (This)->lpVtbl->NETDetectNextNavigate(This)
+#define ISearchAssistantOC_PutFindText(This, FindText) (This)->lpVtbl->PutFindText(This, FindText)
+#define ISearchAssistantOC_get_Version(This, pVersion) (This)->lpVtbl->get_Version(This, pVersion)
+#define ISearchAssistantOC_EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult) (This)->lpVtbl->EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult)
 
 declare function ISearchAssistantOC_AddNextMenuItem_Proxy(byval This as ISearchAssistantOC ptr, byval bstrText as BSTR, byval idItem as long) as HRESULT
 declare sub ISearchAssistantOC_AddNextMenuItem_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -1013,6 +1398,41 @@ type ISearchAssistantOC2_
 	lpVtbl as ISearchAssistantOC2Vtbl ptr
 end type
 
+#define ISearchAssistantOC2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISearchAssistantOC2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISearchAssistantOC2_Release(This) (This)->lpVtbl->Release(This)
+#define ISearchAssistantOC2_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define ISearchAssistantOC2_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define ISearchAssistantOC2_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define ISearchAssistantOC2_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ISearchAssistantOC2_AddNextMenuItem(This, bstrText, idItem) (This)->lpVtbl->AddNextMenuItem(This, bstrText, idItem)
+#define ISearchAssistantOC2_SetDefaultSearchUrl(This, bstrUrl) (This)->lpVtbl->SetDefaultSearchUrl(This, bstrUrl)
+#define ISearchAssistantOC2_NavigateToDefaultSearch(This) (This)->lpVtbl->NavigateToDefaultSearch(This)
+#define ISearchAssistantOC2_IsRestricted(This, bstrGuid, pVal) (This)->lpVtbl->IsRestricted(This, bstrGuid, pVal)
+#define ISearchAssistantOC2_get_ShellFeaturesEnabled(This, pVal) (This)->lpVtbl->get_ShellFeaturesEnabled(This, pVal)
+#define ISearchAssistantOC2_get_SearchAssistantDefault(This, pVal) (This)->lpVtbl->get_SearchAssistantDefault(This, pVal)
+#define ISearchAssistantOC2_get_Searches(This, ppid) (This)->lpVtbl->get_Searches(This, ppid)
+#define ISearchAssistantOC2_get_InWebFolder(This, pVal) (This)->lpVtbl->get_InWebFolder(This, pVal)
+#define ISearchAssistantOC2_PutProperty(This, bPerLocale, bstrName, bstrValue) (This)->lpVtbl->PutProperty(This, bPerLocale, bstrName, bstrValue)
+#define ISearchAssistantOC2_GetProperty(This, bPerLocale, bstrName, pbstrValue) (This)->lpVtbl->GetProperty(This, bPerLocale, bstrName, pbstrValue)
+#define ISearchAssistantOC2_put_EventHandled(This, bHandled) (This)->lpVtbl->put_EventHandled(This, bHandled)
+#define ISearchAssistantOC2_ResetNextMenu(This) (This)->lpVtbl->ResetNextMenu(This)
+#define ISearchAssistantOC2_FindOnWeb(This) (This)->lpVtbl->FindOnWeb(This)
+#define ISearchAssistantOC2_FindFilesOrFolders(This) (This)->lpVtbl->FindFilesOrFolders(This)
+#define ISearchAssistantOC2_FindComputer(This) (This)->lpVtbl->FindComputer(This)
+#define ISearchAssistantOC2_FindPrinter(This) (This)->lpVtbl->FindPrinter(This)
+#define ISearchAssistantOC2_FindPeople(This) (This)->lpVtbl->FindPeople(This)
+#define ISearchAssistantOC2_GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue) (This)->lpVtbl->GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue)
+#define ISearchAssistantOC2_NotifySearchSettingsChanged(This) (This)->lpVtbl->NotifySearchSettingsChanged(This)
+#define ISearchAssistantOC2_put_ASProvider(This, Provider) (This)->lpVtbl->put_ASProvider(This, Provider)
+#define ISearchAssistantOC2_get_ASProvider(This, pProvider) (This)->lpVtbl->get_ASProvider(This, pProvider)
+#define ISearchAssistantOC2_put_ASSetting(This, Setting) (This)->lpVtbl->put_ASSetting(This, Setting)
+#define ISearchAssistantOC2_get_ASSetting(This, pSetting) (This)->lpVtbl->get_ASSetting(This, pSetting)
+#define ISearchAssistantOC2_NETDetectNextNavigate(This) (This)->lpVtbl->NETDetectNextNavigate(This)
+#define ISearchAssistantOC2_PutFindText(This, FindText) (This)->lpVtbl->PutFindText(This, FindText)
+#define ISearchAssistantOC2_get_Version(This, pVersion) (This)->lpVtbl->get_Version(This, pVersion)
+#define ISearchAssistantOC2_EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult) (This)->lpVtbl->EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult)
+#define ISearchAssistantOC2_get_ShowFindPrinter(This, pbShowFindPrinter) (This)->lpVtbl->get_ShowFindPrinter(This, pbShowFindPrinter)
 declare function ISearchAssistantOC2_get_ShowFindPrinter_Proxy(byval This as ISearchAssistantOC2 ptr, byval pbShowFindPrinter as VARIANT_BOOL ptr) as HRESULT
 declare sub ISearchAssistantOC2_get_ShowFindPrinter_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __ISearchAssistantOC3_INTERFACE_DEFINED__
@@ -1064,6 +1484,45 @@ type ISearchAssistantOC3_
 	lpVtbl as ISearchAssistantOC3Vtbl ptr
 end type
 
+#define ISearchAssistantOC3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ISearchAssistantOC3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ISearchAssistantOC3_Release(This) (This)->lpVtbl->Release(This)
+#define ISearchAssistantOC3_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define ISearchAssistantOC3_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define ISearchAssistantOC3_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define ISearchAssistantOC3_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
+#define ISearchAssistantOC3_AddNextMenuItem(This, bstrText, idItem) (This)->lpVtbl->AddNextMenuItem(This, bstrText, idItem)
+#define ISearchAssistantOC3_SetDefaultSearchUrl(This, bstrUrl) (This)->lpVtbl->SetDefaultSearchUrl(This, bstrUrl)
+#define ISearchAssistantOC3_NavigateToDefaultSearch(This) (This)->lpVtbl->NavigateToDefaultSearch(This)
+#define ISearchAssistantOC3_IsRestricted(This, bstrGuid, pVal) (This)->lpVtbl->IsRestricted(This, bstrGuid, pVal)
+#define ISearchAssistantOC3_get_ShellFeaturesEnabled(This, pVal) (This)->lpVtbl->get_ShellFeaturesEnabled(This, pVal)
+#define ISearchAssistantOC3_get_SearchAssistantDefault(This, pVal) (This)->lpVtbl->get_SearchAssistantDefault(This, pVal)
+#define ISearchAssistantOC3_get_Searches(This, ppid) (This)->lpVtbl->get_Searches(This, ppid)
+#define ISearchAssistantOC3_get_InWebFolder(This, pVal) (This)->lpVtbl->get_InWebFolder(This, pVal)
+#define ISearchAssistantOC3_PutProperty(This, bPerLocale, bstrName, bstrValue) (This)->lpVtbl->PutProperty(This, bPerLocale, bstrName, bstrValue)
+#define ISearchAssistantOC3_GetProperty(This, bPerLocale, bstrName, pbstrValue) (This)->lpVtbl->GetProperty(This, bPerLocale, bstrName, pbstrValue)
+#define ISearchAssistantOC3_put_EventHandled(This, bHandled) (This)->lpVtbl->put_EventHandled(This, bHandled)
+#define ISearchAssistantOC3_ResetNextMenu(This) (This)->lpVtbl->ResetNextMenu(This)
+#define ISearchAssistantOC3_FindOnWeb(This) (This)->lpVtbl->FindOnWeb(This)
+#define ISearchAssistantOC3_FindFilesOrFolders(This) (This)->lpVtbl->FindFilesOrFolders(This)
+#define ISearchAssistantOC3_FindComputer(This) (This)->lpVtbl->FindComputer(This)
+#define ISearchAssistantOC3_FindPrinter(This) (This)->lpVtbl->FindPrinter(This)
+#define ISearchAssistantOC3_FindPeople(This) (This)->lpVtbl->FindPeople(This)
+#define ISearchAssistantOC3_GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue) (This)->lpVtbl->GetSearchAssistantURL(This, bSubstitute, bCustomize, pbstrValue)
+#define ISearchAssistantOC3_NotifySearchSettingsChanged(This) (This)->lpVtbl->NotifySearchSettingsChanged(This)
+#define ISearchAssistantOC3_put_ASProvider(This, Provider) (This)->lpVtbl->put_ASProvider(This, Provider)
+#define ISearchAssistantOC3_get_ASProvider(This, pProvider) (This)->lpVtbl->get_ASProvider(This, pProvider)
+#define ISearchAssistantOC3_put_ASSetting(This, Setting) (This)->lpVtbl->put_ASSetting(This, Setting)
+#define ISearchAssistantOC3_get_ASSetting(This, pSetting) (This)->lpVtbl->get_ASSetting(This, pSetting)
+#define ISearchAssistantOC3_NETDetectNextNavigate(This) (This)->lpVtbl->NETDetectNextNavigate(This)
+#define ISearchAssistantOC3_PutFindText(This, FindText) (This)->lpVtbl->PutFindText(This, FindText)
+#define ISearchAssistantOC3_get_Version(This, pVersion) (This)->lpVtbl->get_Version(This, pVersion)
+#define ISearchAssistantOC3_EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult) (This)->lpVtbl->EncodeString(This, bstrValue, bstrCharSet, bUseUTF8, pbstrResult)
+#define ISearchAssistantOC3_get_ShowFindPrinter(This, pbShowFindPrinter) (This)->lpVtbl->get_ShowFindPrinter(This, pbShowFindPrinter)
+#define ISearchAssistantOC3_get_SearchCompanionAvailable(This, pbAvailable) (This)->lpVtbl->get_SearchCompanionAvailable(This, pbAvailable)
+#define ISearchAssistantOC3_put_UseSearchCompanion(This, bUseSC) (This)->lpVtbl->put_UseSearchCompanion(This, bUseSC)
+#define ISearchAssistantOC3_get_UseSearchCompanion(This, pbUseSC) (This)->lpVtbl->get_UseSearchCompanion(This, pbUseSC)
+
 declare function ISearchAssistantOC3_get_SearchCompanionAvailable_Proxy(byval This as ISearchAssistantOC3 ptr, byval pbAvailable as VARIANT_BOOL ptr) as HRESULT
 declare sub ISearchAssistantOC3_get_SearchCompanionAvailable_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function ISearchAssistantOC3_put_UseSearchCompanion_Proxy(byval This as ISearchAssistantOC3 ptr, byval bUseSC as VARIANT_BOOL) as HRESULT
@@ -1088,6 +1547,13 @@ type _SearchAssistantEvents_
 	lpVtbl as _SearchAssistantEventsVtbl ptr
 end type
 
+#define _SearchAssistantEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define _SearchAssistantEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define _SearchAssistantEvents_Release(This) (This)->lpVtbl->Release(This)
+#define _SearchAssistantEvents_GetTypeInfoCount(This, pctinfo) (This)->lpVtbl->GetTypeInfoCount(This, pctinfo)
+#define _SearchAssistantEvents_GetTypeInfo(This, iTInfo, lcid, ppTInfo) (This)->lpVtbl->GetTypeInfo(This, iTInfo, lcid, ppTInfo)
+#define _SearchAssistantEvents_GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId) (This)->lpVtbl->GetIDsOfNames(This, riid, rgszNames, cNames, lcid, rgDispId)
+#define _SearchAssistantEvents_Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr) (This)->lpVtbl->Invoke(This, dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr)
 extern CLSID_SearchAssistantOC as const CLSID
 
 end extern

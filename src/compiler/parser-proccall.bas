@@ -46,7 +46,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	has_ctor = symbHasCtor( parser.currproc )
 	has_defctor = symbHasDefCtor( parser.currproc )
-	var returns_byref = symbProcReturnsByref( parser.currproc )
+	var returns_byref = symbIsRef( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then
@@ -91,17 +91,25 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 				errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
 			end if
 
-			'' BYREF AS STRING and expression is a string literal?
-			if( (symbGetType( parser.currproc ) = FB_DATATYPE_STRING) and _
-			    (astGetStrLitSymbol( rhs ) <> NULL) ) then
-				'' Cannot be allowed, since a string literal is not
-				'' an FBSTRING descriptor...
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				astDelTree( rhs )
-				rhs = NULL
-			else
+			'' Even though we'll only assign a pointer (it's byref afterall),
+			'' check the types as if it was a direct assignment. Advantages:
+			''  * errors instead of warnings
+			''  * nicer error messages such as "type mismatch" instead of
+			''    "suspicious pointer assignment" warnings (which don't make sense
+			''    since the pointer basically is an implementation detail)
+			if( astCheckByrefAssign( parser.currproc->typ, parser.currproc->subtype, rhs ) ) then
 				'' Implicit addrof due to BYREF
 				rhs = astNewADDROF( rhs )
+			else
+				errReport( FB_ERRMSG_TYPEMISMATCHINBYREFRESULTASSIGN )
+				astDelTree( rhs )
+				'' Place-holder value to be assigned to the byref result pointer
+				'' Done separately from the astNewADDROF() on the main code path, because we
+				'' 1. shouldn't create a CONST and do astNewADDROF() on it
+				'' 2. would still get a zstring VAR if the result type is a string,
+				''    which would still trigger a "mismatch" warning which we don't want
+				''    during error recovery.
+				rhs = astNewCONSTz( typeAddrOf( parser.currproc->typ ), parser.currproc->subtype )
 			end if
 		end if
 	else

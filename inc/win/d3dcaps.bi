@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2000 Peter Hunnisett
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "ddraw.bi"
@@ -6,21 +28,37 @@ extern "Windows"
 
 #define __WINE_D3DCAPS_H
 
-type _D3DTRANSFORMCAPS
-	dwSize as DWORD
-	dwCaps as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DTRANSFORMCAPS
+		dwSize as DWORD
+		dwCaps as DWORD
+	end type
+#else
+	type _D3DTRANSFORMCAPS field = 4
+		dwSize as DWORD
+		dwCaps as DWORD
+	end type
+#endif
 
 type D3DTRANSFORMCAPS as _D3DTRANSFORMCAPS
 type LPD3DTRANSFORMCAPS as _D3DTRANSFORMCAPS ptr
 #define D3DTRANSFORMCAPS_CLIP __MSABI_LONG(&h00000001)
 
-type _D3DLIGHTINGCAPS
-	dwSize as DWORD
-	dwCaps as DWORD
-	dwLightingModel as DWORD
-	dwNumLights as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DLIGHTINGCAPS
+		dwSize as DWORD
+		dwCaps as DWORD
+		dwLightingModel as DWORD
+		dwNumLights as DWORD
+	end type
+#else
+	type _D3DLIGHTINGCAPS field = 4
+		dwSize as DWORD
+		dwCaps as DWORD
+		dwLightingModel as DWORD
+		dwNumLights as DWORD
+	end type
+#endif
 
 type D3DLIGHTINGCAPS as _D3DLIGHTINGCAPS
 type LPD3DLIGHTINGCAPS as _D3DLIGHTINGCAPS ptr
@@ -32,22 +70,41 @@ const D3DLIGHTCAPS_DIRECTIONAL = &h00000004
 const D3DLIGHTCAPS_PARALLELPOINT = &h00000008
 const D3DLIGHTCAPS_GLSPOT = &h00000010
 
-type _D3dPrimCaps
-	dwSize as DWORD
-	dwMiscCaps as DWORD
-	dwRasterCaps as DWORD
-	dwZCmpCaps as DWORD
-	dwSrcBlendCaps as DWORD
-	dwDestBlendCaps as DWORD
-	dwAlphaCmpCaps as DWORD
-	dwShadeCaps as DWORD
-	dwTextureCaps as DWORD
-	dwTextureFilterCaps as DWORD
-	dwTextureBlendCaps as DWORD
-	dwTextureAddressCaps as DWORD
-	dwStippleWidth as DWORD
-	dwStippleHeight as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3dPrimCaps
+		dwSize as DWORD
+		dwMiscCaps as DWORD
+		dwRasterCaps as DWORD
+		dwZCmpCaps as DWORD
+		dwSrcBlendCaps as DWORD
+		dwDestBlendCaps as DWORD
+		dwAlphaCmpCaps as DWORD
+		dwShadeCaps as DWORD
+		dwTextureCaps as DWORD
+		dwTextureFilterCaps as DWORD
+		dwTextureBlendCaps as DWORD
+		dwTextureAddressCaps as DWORD
+		dwStippleWidth as DWORD
+		dwStippleHeight as DWORD
+	end type
+#else
+	type _D3dPrimCaps field = 4
+		dwSize as DWORD
+		dwMiscCaps as DWORD
+		dwRasterCaps as DWORD
+		dwZCmpCaps as DWORD
+		dwSrcBlendCaps as DWORD
+		dwDestBlendCaps as DWORD
+		dwAlphaCmpCaps as DWORD
+		dwShadeCaps as DWORD
+		dwTextureCaps as DWORD
+		dwTextureFilterCaps as DWORD
+		dwTextureBlendCaps as DWORD
+		dwTextureAddressCaps as DWORD
+		dwStippleWidth as DWORD
+		dwStippleHeight as DWORD
+	end type
+#endif
 
 type D3DPRIMCAPS as _D3dPrimCaps
 type LPD3DPRIMCAPS as _D3dPrimCaps ptr
@@ -164,81 +221,157 @@ const D3DPTADDRESSCAPS_CLAMP = &h00000004
 const D3DPTADDRESSCAPS_BORDER = &h00000008
 const D3DPTADDRESSCAPS_INDEPENDENTUV = &h00000010
 
-type _D3DDeviceDesc
-	dwSize as DWORD
-	dwFlags as DWORD
-	dcmColorModel as D3DCOLORMODEL
-	dwDevCaps as DWORD
-	dtcTransformCaps as D3DTRANSFORMCAPS
-	bClipping as WINBOOL
-	dlcLightingCaps as D3DLIGHTINGCAPS
-	dpcLineCaps as D3DPRIMCAPS
-	dpcTriCaps as D3DPRIMCAPS
-	dwDeviceRenderBitDepth as DWORD
-	dwDeviceZBufferBitDepth as DWORD
-	dwMaxBufferSize as DWORD
-	dwMaxVertexCount as DWORD
-	dwMinTextureWidth as DWORD
-	dwMinTextureHeight as DWORD
-	dwMaxTextureWidth as DWORD
-	dwMaxTextureHeight as DWORD
-	dwMinStippleWidth as DWORD
-	dwMaxStippleWidth as DWORD
-	dwMinStippleHeight as DWORD
-	dwMaxStippleHeight as DWORD
-	dwMaxTextureRepeat as DWORD
-	dwMaxTextureAspectRatio as DWORD
-	dwMaxAnisotropy as DWORD
-	dvGuardBandLeft as D3DVALUE
-	dvGuardBandTop as D3DVALUE
-	dvGuardBandRight as D3DVALUE
-	dvGuardBandBottom as D3DVALUE
-	dvExtentsAdjust as D3DVALUE
-	dwStencilCaps as DWORD
-	dwFVFCaps as DWORD
-	dwTextureOpCaps as DWORD
-	wMaxTextureBlendStages as WORD
-	wMaxSimultaneousTextures as WORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDeviceDesc
+		dwSize as DWORD
+		dwFlags as DWORD
+		dcmColorModel as D3DCOLORMODEL
+		dwDevCaps as DWORD
+		dtcTransformCaps as D3DTRANSFORMCAPS
+		bClipping as WINBOOL
+		dlcLightingCaps as D3DLIGHTINGCAPS
+		dpcLineCaps as D3DPRIMCAPS
+		dpcTriCaps as D3DPRIMCAPS
+		dwDeviceRenderBitDepth as DWORD
+		dwDeviceZBufferBitDepth as DWORD
+		dwMaxBufferSize as DWORD
+		dwMaxVertexCount as DWORD
+		dwMinTextureWidth as DWORD
+		dwMinTextureHeight as DWORD
+		dwMaxTextureWidth as DWORD
+		dwMaxTextureHeight as DWORD
+		dwMinStippleWidth as DWORD
+		dwMaxStippleWidth as DWORD
+		dwMinStippleHeight as DWORD
+		dwMaxStippleHeight as DWORD
+		dwMaxTextureRepeat as DWORD
+		dwMaxTextureAspectRatio as DWORD
+		dwMaxAnisotropy as DWORD
+		dvGuardBandLeft as D3DVALUE
+		dvGuardBandTop as D3DVALUE
+		dvGuardBandRight as D3DVALUE
+		dvGuardBandBottom as D3DVALUE
+		dvExtentsAdjust as D3DVALUE
+		dwStencilCaps as DWORD
+		dwFVFCaps as DWORD
+		dwTextureOpCaps as DWORD
+		wMaxTextureBlendStages as WORD
+		wMaxSimultaneousTextures as WORD
+	end type
+#else
+	type _D3DDeviceDesc field = 4
+		dwSize as DWORD
+		dwFlags as DWORD
+		dcmColorModel as D3DCOLORMODEL
+		dwDevCaps as DWORD
+		dtcTransformCaps as D3DTRANSFORMCAPS
+		bClipping as WINBOOL
+		dlcLightingCaps as D3DLIGHTINGCAPS
+		dpcLineCaps as D3DPRIMCAPS
+		dpcTriCaps as D3DPRIMCAPS
+		dwDeviceRenderBitDepth as DWORD
+		dwDeviceZBufferBitDepth as DWORD
+		dwMaxBufferSize as DWORD
+		dwMaxVertexCount as DWORD
+		dwMinTextureWidth as DWORD
+		dwMinTextureHeight as DWORD
+		dwMaxTextureWidth as DWORD
+		dwMaxTextureHeight as DWORD
+		dwMinStippleWidth as DWORD
+		dwMaxStippleWidth as DWORD
+		dwMinStippleHeight as DWORD
+		dwMaxStippleHeight as DWORD
+		dwMaxTextureRepeat as DWORD
+		dwMaxTextureAspectRatio as DWORD
+		dwMaxAnisotropy as DWORD
+		dvGuardBandLeft as D3DVALUE
+		dvGuardBandTop as D3DVALUE
+		dvGuardBandRight as D3DVALUE
+		dvGuardBandBottom as D3DVALUE
+		dvExtentsAdjust as D3DVALUE
+		dwStencilCaps as DWORD
+		dwFVFCaps as DWORD
+		dwTextureOpCaps as DWORD
+		wMaxTextureBlendStages as WORD
+		wMaxSimultaneousTextures as WORD
+	end type
+#endif
 
 type D3DDEVICEDESC as _D3DDeviceDesc
 type LPD3DDEVICEDESC as _D3DDeviceDesc ptr
 #define D3DDEVICEDESCSIZE sizeof(D3DDEVICEDESC)
 
-type _D3DDeviceDesc7
-	dwDevCaps as DWORD
-	dpcLineCaps as D3DPRIMCAPS
-	dpcTriCaps as D3DPRIMCAPS
-	dwDeviceRenderBitDepth as DWORD
-	dwDeviceZBufferBitDepth as DWORD
-	dwMinTextureWidth as DWORD
-	dwMinTextureHeight as DWORD
-	dwMaxTextureWidth as DWORD
-	dwMaxTextureHeight as DWORD
-	dwMaxTextureRepeat as DWORD
-	dwMaxTextureAspectRatio as DWORD
-	dwMaxAnisotropy as DWORD
-	dvGuardBandLeft as D3DVALUE
-	dvGuardBandTop as D3DVALUE
-	dvGuardBandRight as D3DVALUE
-	dvGuardBandBottom as D3DVALUE
-	dvExtentsAdjust as D3DVALUE
-	dwStencilCaps as DWORD
-	dwFVFCaps as DWORD
-	dwTextureOpCaps as DWORD
-	wMaxTextureBlendStages as WORD
-	wMaxSimultaneousTextures as WORD
-	dwMaxActiveLights as DWORD
-	dvMaxVertexW as D3DVALUE
-	deviceGUID as GUID
-	wMaxUserClipPlanes as WORD
-	wMaxVertexBlendMatrices as WORD
-	dwVertexProcessingCaps as DWORD
-	dwReserved1 as DWORD
-	dwReserved2 as DWORD
-	dwReserved3 as DWORD
-	dwReserved4 as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDeviceDesc7
+		dwDevCaps as DWORD
+		dpcLineCaps as D3DPRIMCAPS
+		dpcTriCaps as D3DPRIMCAPS
+		dwDeviceRenderBitDepth as DWORD
+		dwDeviceZBufferBitDepth as DWORD
+		dwMinTextureWidth as DWORD
+		dwMinTextureHeight as DWORD
+		dwMaxTextureWidth as DWORD
+		dwMaxTextureHeight as DWORD
+		dwMaxTextureRepeat as DWORD
+		dwMaxTextureAspectRatio as DWORD
+		dwMaxAnisotropy as DWORD
+		dvGuardBandLeft as D3DVALUE
+		dvGuardBandTop as D3DVALUE
+		dvGuardBandRight as D3DVALUE
+		dvGuardBandBottom as D3DVALUE
+		dvExtentsAdjust as D3DVALUE
+		dwStencilCaps as DWORD
+		dwFVFCaps as DWORD
+		dwTextureOpCaps as DWORD
+		wMaxTextureBlendStages as WORD
+		wMaxSimultaneousTextures as WORD
+		dwMaxActiveLights as DWORD
+		dvMaxVertexW as D3DVALUE
+		deviceGUID as GUID
+		wMaxUserClipPlanes as WORD
+		wMaxVertexBlendMatrices as WORD
+		dwVertexProcessingCaps as DWORD
+		dwReserved1 as DWORD
+		dwReserved2 as DWORD
+		dwReserved3 as DWORD
+		dwReserved4 as DWORD
+	end type
+#else
+	type _D3DDeviceDesc7 field = 4
+		dwDevCaps as DWORD
+		dpcLineCaps as D3DPRIMCAPS
+		dpcTriCaps as D3DPRIMCAPS
+		dwDeviceRenderBitDepth as DWORD
+		dwDeviceZBufferBitDepth as DWORD
+		dwMinTextureWidth as DWORD
+		dwMinTextureHeight as DWORD
+		dwMaxTextureWidth as DWORD
+		dwMaxTextureHeight as DWORD
+		dwMaxTextureRepeat as DWORD
+		dwMaxTextureAspectRatio as DWORD
+		dwMaxAnisotropy as DWORD
+		dvGuardBandLeft as D3DVALUE
+		dvGuardBandTop as D3DVALUE
+		dvGuardBandRight as D3DVALUE
+		dvGuardBandBottom as D3DVALUE
+		dvExtentsAdjust as D3DVALUE
+		dwStencilCaps as DWORD
+		dwFVFCaps as DWORD
+		dwTextureOpCaps as DWORD
+		wMaxTextureBlendStages as WORD
+		wMaxSimultaneousTextures as WORD
+		dwMaxActiveLights as DWORD
+		dvMaxVertexW as D3DVALUE
+		deviceGUID as GUID
+		wMaxUserClipPlanes as WORD
+		wMaxVertexBlendMatrices as WORD
+		dwVertexProcessingCaps as DWORD
+		dwReserved1 as DWORD
+		dwReserved2 as DWORD
+		dwReserved3 as DWORD
+		dwReserved4 as DWORD
+	end type
+#endif
 
 type D3DDEVICEDESC7 as _D3DDeviceDesc7
 type LPD3DDEVICEDESC7 as _D3DDeviceDesc7 ptr
@@ -332,36 +465,67 @@ const D3DFDS_TEXTUREFILTERCAPS = &h00002000
 const D3DFDS_TEXTUREBLENDCAPS = &h00004000
 const D3DFDS_TEXTUREADDRESSCAPS = &h00008000
 
-type _D3DFINDDEVICESEARCH
-	dwSize as DWORD
-	dwFlags as DWORD
-	bHardware as WINBOOL
-	dcmColorModel as D3DCOLORMODEL
-	guid as GUID
-	dwCaps as DWORD
-	dpcPrimCaps as D3DPRIMCAPS
-end type
+#ifdef __FB_64BIT__
+	type _D3DFINDDEVICESEARCH
+		dwSize as DWORD
+		dwFlags as DWORD
+		bHardware as WINBOOL
+		dcmColorModel as D3DCOLORMODEL
+		guid as GUID
+		dwCaps as DWORD
+		dpcPrimCaps as D3DPRIMCAPS
+	end type
+#else
+	type _D3DFINDDEVICESEARCH field = 4
+		dwSize as DWORD
+		dwFlags as DWORD
+		bHardware as WINBOOL
+		dcmColorModel as D3DCOLORMODEL
+		guid as GUID
+		dwCaps as DWORD
+		dpcPrimCaps as D3DPRIMCAPS
+	end type
+#endif
 
 type D3DFINDDEVICESEARCH as _D3DFINDDEVICESEARCH
 type LPD3DFINDDEVICESEARCH as _D3DFINDDEVICESEARCH ptr
 
-type _D3DFINDDEVICERESULT
-	dwSize as DWORD
-	guid as GUID
-	ddHwDesc as D3DDEVICEDESC
-	ddSwDesc as D3DDEVICEDESC
-end type
+#ifdef __FB_64BIT__
+	type _D3DFINDDEVICERESULT
+		dwSize as DWORD
+		guid as GUID
+		ddHwDesc as D3DDEVICEDESC
+		ddSwDesc as D3DDEVICEDESC
+	end type
+#else
+	type _D3DFINDDEVICERESULT field = 4
+		dwSize as DWORD
+		guid as GUID
+		ddHwDesc as D3DDEVICEDESC
+		ddSwDesc as D3DDEVICEDESC
+	end type
+#endif
 
 type D3DFINDDEVICERESULT as _D3DFINDDEVICERESULT
 type LPD3DFINDDEVICERESULT as _D3DFINDDEVICERESULT ptr
 
-type _D3DExecuteBufferDesc
-	dwSize as DWORD
-	dwFlags as DWORD
-	dwCaps as DWORD
-	dwBufferSize as DWORD
-	lpData as any ptr
-end type
+#ifdef __FB_64BIT__
+	type _D3DExecuteBufferDesc
+		dwSize as DWORD
+		dwFlags as DWORD
+		dwCaps as DWORD
+		dwBufferSize as DWORD
+		lpData as any ptr
+	end type
+#else
+	type _D3DExecuteBufferDesc field = 4
+		dwSize as DWORD
+		dwFlags as DWORD
+		dwCaps as DWORD
+		dwBufferSize as DWORD
+		lpData as any ptr
+	end type
+#endif
 
 type D3DEXECUTEBUFFERDESC as _D3DExecuteBufferDesc
 type LPD3DEXECUTEBUFFERDESC as _D3DExecuteBufferDesc ptr
@@ -372,35 +536,66 @@ const D3DDEBCAPS_SYSTEMMEMORY = &h00000001
 const D3DDEBCAPS_VIDEOMEMORY = &h00000002
 #define D3DDEBCAPS_MEM (D3DDEBCAPS_SYSTEMMEMORY or D3DDEBCAPS_VIDEOMEMORY)
 
-type _D3DDEVINFO_TEXTUREMANAGER
-	bThrashing as WINBOOL
-	dwApproxBytesDownloaded as DWORD
-	dwNumEvicts as DWORD
-	dwNumVidCreates as DWORD
-	dwNumTexturesUsed as DWORD
-	dwNumUsedTexInVid as DWORD
-	dwWorkingSet as DWORD
-	dwWorkingSetBytes as DWORD
-	dwTotalManaged as DWORD
-	dwTotalBytes as DWORD
-	dwLastPri as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_TEXTUREMANAGER
+		bThrashing as WINBOOL
+		dwApproxBytesDownloaded as DWORD
+		dwNumEvicts as DWORD
+		dwNumVidCreates as DWORD
+		dwNumTexturesUsed as DWORD
+		dwNumUsedTexInVid as DWORD
+		dwWorkingSet as DWORD
+		dwWorkingSetBytes as DWORD
+		dwTotalManaged as DWORD
+		dwTotalBytes as DWORD
+		dwLastPri as DWORD
+	end type
+#else
+	type _D3DDEVINFO_TEXTUREMANAGER field = 4
+		bThrashing as WINBOOL
+		dwApproxBytesDownloaded as DWORD
+		dwNumEvicts as DWORD
+		dwNumVidCreates as DWORD
+		dwNumTexturesUsed as DWORD
+		dwNumUsedTexInVid as DWORD
+		dwWorkingSet as DWORD
+		dwWorkingSetBytes as DWORD
+		dwTotalManaged as DWORD
+		dwTotalBytes as DWORD
+		dwLastPri as DWORD
+	end type
+#endif
 
 type D3DDEVINFO_TEXTUREMANAGER as _D3DDEVINFO_TEXTUREMANAGER
 type LPD3DDEVINFO_TEXTUREMANAGER as _D3DDEVINFO_TEXTUREMANAGER ptr
 
-type _D3DDEVINFO_TEXTURING
-	dwNumLoads as DWORD
-	dwApproxBytesLoaded as DWORD
-	dwNumPreLoads as DWORD
-	dwNumSet as DWORD
-	dwNumCreates as DWORD
-	dwNumDestroys as DWORD
-	dwNumSetPriorities as DWORD
-	dwNumSetLODs as DWORD
-	dwNumLocks as DWORD
-	dwNumGetDCs as DWORD
-end type
+#ifdef __FB_64BIT__
+	type _D3DDEVINFO_TEXTURING
+		dwNumLoads as DWORD
+		dwApproxBytesLoaded as DWORD
+		dwNumPreLoads as DWORD
+		dwNumSet as DWORD
+		dwNumCreates as DWORD
+		dwNumDestroys as DWORD
+		dwNumSetPriorities as DWORD
+		dwNumSetLODs as DWORD
+		dwNumLocks as DWORD
+		dwNumGetDCs as DWORD
+	end type
+#else
+	type _D3DDEVINFO_TEXTURING field = 4
+		dwNumLoads as DWORD
+		dwApproxBytesLoaded as DWORD
+		dwNumPreLoads as DWORD
+		dwNumSet as DWORD
+		dwNumCreates as DWORD
+		dwNumDestroys as DWORD
+		dwNumSetPriorities as DWORD
+		dwNumSetLODs as DWORD
+		dwNumLocks as DWORD
+		dwNumGetDCs as DWORD
+	end type
+#endif
 
 type D3DDEVINFO_TEXTURING as _D3DDEVINFO_TEXTURING
 type LPD3DDEVINFO_TEXTURING as _D3DDEVINFO_TEXTURING ptr

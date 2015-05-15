@@ -1,3 +1,51 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/long.bi"
@@ -26,6 +74,7 @@ const ANYSIZE_ARRAY = 1
 	#define MAX_NATURAL_ALIGNMENT sizeof(ULONGLONG)
 	const MEMORY_ALLOCATION_ALIGNMENT = 16
 #else
+	#undef ALIGNMENT_MACHINE
 	#define MAX_NATURAL_ALIGNMENT sizeof(DWORD)
 	const MEMORY_ALLOCATION_ALIGNMENT = 8
 #endif
@@ -284,10 +333,14 @@ type PDWORDLONG as DWORDLONG ptr
 #define RotateLeft64 _rotl64
 #define RotateRight32 _rotr
 #define RotateRight64 _rotr64
-
+#undef _rotl
+#undef _rotr
+declare function _rotl cdecl(byval Value as ulong, byval Shift as long) as ulong
+declare function _rotr cdecl(byval Value as ulong, byval Shift as long) as ulong
+#undef _rotl64
+#undef _rotr64
 declare function _rotl64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
 declare function _rotr64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
-
 const ANSI_NULL = cbyte(0)
 const UNICODE_NULL = cast(wchar_t, 0)
 #define UNICODE_STRING_MAX_BYTES cast(WORD, 65534)
@@ -347,7 +400,7 @@ const MAXDWORD = &hffffffff
 #define RTL_FIELD_SIZE(type, field) sizeof(cptr(type ptr, 0)->field)
 #define RTL_SIZEOF_THROUGH_FIELD(type, field) (FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field))
 #define RTL_CONTAINS_FIELD(Struct, Size, Field) ((cast(PCHAR, @(Struct)->Field) + sizeof((Struct)->Field)) <= (cast(PCHAR, (Struct)) + (Size)))
-#define RTL_NUMBER_OF_V1(A) (sizeof((A)) / sizeof((A)[0]))
+#define RTL_NUMBER_OF_V1(A) (ubound(A) - lbound(A) + 1)
 #define RTL_NUMBER_OF_V2(A) RTL_NUMBER_OF_V1(A)
 #define RTL_NUMBER_OF(A) RTL_NUMBER_OF_V1(A)
 #define ARRAYSIZE(A) RTL_NUMBER_OF_V2(A)
@@ -747,6 +800,11 @@ const SUBLANG_KYRGYZ_KYRGYZSTAN = &h01
 const SUBLANG_LAO_LAO = &h01
 #define SUBLANG_LAO_LAO_PDR SUBLANG_LAO_LAO
 const SUBLANG_LATVIAN_LATVIA = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_LITHUANIAN_LITHUANIA = &h01
+#endif
+
 const SUBLANG_LITHUANIAN = &h01
 const SUBLANG_LOWER_SORBIAN_GERMANY = &h02
 const SUBLANG_LUXEMBOURGISH_LUXEMBOURG = &h01
@@ -771,6 +829,11 @@ const SUBLANG_PASHTO_AFGHANISTAN = &h01
 const SUBLANG_PERSIAN_IRAN = &h01
 const SUBLANG_POLISH_POLAND = &h01
 const SUBLANG_PORTUGUESE_BRAZILIAN = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_PORTUGUESE_PORTUGAL = &h02
+#endif
+
 const SUBLANG_PORTUGUESE = &h02
 const SUBLANG_PULAR_SENEGAL = &h02
 const SUBLANG_PUNJABI_INDIA = &h01
@@ -830,6 +893,11 @@ const SUBLANG_SPANISH_NICARAGUA = &h13
 const SUBLANG_SPANISH_PUERTO_RICO = &h14
 const SUBLANG_SPANISH_US = &h15
 const SUBLANG_SWAHILI_KENYA = &h01
+
+#if _WIN32_WINNT = &h0602
+	const SUBLANG_SWEDISH_SWEDEN = &h01
+#endif
+
 const SUBLANG_SWEDISH = &h01
 const SUBLANG_SWEDISH_FINLAND = &h02
 const SUBLANG_SYRIAC = &h01
@@ -1083,11 +1151,36 @@ type _TEB as _TEB_
 	#define InterlockedAnd _InterlockedAnd
 	#define InterlockedOr _InterlockedOr
 	#define InterlockedXor _InterlockedXor
+	#define InterlockedIncrement _InterlockedIncrement
+	#define InterlockedIncrementAcquire InterlockedIncrement
+	#define InterlockedIncrementRelease InterlockedIncrement
+	#define InterlockedDecrement _InterlockedDecrement
+	#define InterlockedDecrementAcquire InterlockedDecrement
+	#define InterlockedDecrementRelease InterlockedDecrement
 	#define InterlockedAdd _InterlockedAdd
+	#define InterlockedExchange _InterlockedExchange
+	#define InterlockedExchangeAdd _InterlockedExchangeAdd
+	#define InterlockedCompareExchange _InterlockedCompareExchange
+	#define InterlockedCompareExchangeAcquire InterlockedCompareExchange
+	#define InterlockedCompareExchangeRelease InterlockedCompareExchange
+	#define InterlockedAnd64 _InterlockedAnd64
 	#define InterlockedAndAffinity InterlockedAnd64
+	#define InterlockedOr64 _InterlockedOr64
 	#define InterlockedOrAffinity InterlockedOr64
+	#define InterlockedXor64 _InterlockedXor64
+	#define InterlockedIncrement64 _InterlockedIncrement64
+	#define InterlockedDecrement64 _InterlockedDecrement64
 	#define InterlockedAdd64 _InterlockedAdd64
+	#define InterlockedExchange64 _InterlockedExchange64
 	#define InterlockedExchangeAcquire64 InterlockedExchange64
+	#define InterlockedExchangeAdd64 _InterlockedExchangeAdd64
+	#define InterlockedCompareExchange64 _InterlockedCompareExchange64
+	#define InterlockedCompareExchangeAcquire64 InterlockedCompareExchange64
+	#define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
+	#define InterlockedExchangePointer _InterlockedExchangePointer
+	#define InterlockedCompareExchangePointer _InterlockedCompareExchangePointer
+	#define InterlockedCompareExchangePointerAcquire _InterlockedCompareExchangePointer
+	#define InterlockedCompareExchangePointerRelease _InterlockedCompareExchangePointer
 	#define InterlockedExchangeAddSizeT(a, b) InterlockedExchangeAdd64(cptr(LONG64 ptr, a), b)
 	#define InterlockedIncrementSizeT(a) InterlockedIncrement64(cptr(LONG64 ptr, a))
 	#define InterlockedDecrementSizeT(a) InterlockedDecrement64(cptr(LONG64 ptr, a))
@@ -1337,7 +1430,12 @@ type CONTEXT as _CONTEXT
 	type PRUNTIME_FUNCTION as _RUNTIME_FUNCTION ptr
 	type PGET_RUNTIME_FUNCTION_CALLBACK as function(byval ControlPc as DWORD64, byval Context as PVOID) as PRUNTIME_FUNCTION
 	type POUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK as function(byval Process as HANDLE, byval TableAddress as PVOID, byval Entries as PDWORD, byval Functions as PRUNTIME_FUNCTION ptr) as DWORD
+
 	#define OUT_OF_PROCESS_FUNCTION_TABLE_CALLBACK_EXPORT_NAME "OutOfProcessFunctionTableCallback"
+	const UNW_FLAG_NHANDLER = &h00
+	const UNW_FLAG_EHANDLER = &h01
+	const UNW_FLAG_UHANDLER = &h02
+	const UNW_FLAG_CHAININFO = &h04
 #else
 	type PCONTEXT as CONTEXT ptr
 #endif
@@ -3301,6 +3399,7 @@ const JOB_OBJECT_LIMIT_BREAKAWAY_OK = &h00000800
 const JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK = &h00001000
 const JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = &h00002000
 const JOB_OBJECT_LIMIT_SUBSET_AFFINITY = &h00004000
+const JOB_OBJECT_LIMIT_RESERVED3 = &h00008000
 const JOB_OBJECT_LIMIT_JOB_READ_BYTES = &h00010000
 const JOB_OBJECT_LIMIT_JOB_WRITE_BYTES = &h00020000
 const JOB_OBJECT_LIMIT_RATE_CONTROL = &h00040000
@@ -4158,18 +4257,15 @@ end enum
 
 type POWER_REQUEST_TYPE as _POWER_REQUEST_TYPE
 type PPOWER_REQUEST_TYPE as _POWER_REQUEST_TYPE ptr
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const PDCAP_D0_SUPPORTED = &h00000001
-	const PDCAP_D1_SUPPORTED = &h00000002
-	const PDCAP_D2_SUPPORTED = &h00000004
-	const PDCAP_D3_SUPPORTED = &h00000008
-	const PDCAP_WAKE_FROM_D0_SUPPORTED = &h00000010
-	const PDCAP_WAKE_FROM_D1_SUPPORTED = &h00000020
-	const PDCAP_WAKE_FROM_D2_SUPPORTED = &h00000040
-	const PDCAP_WAKE_FROM_D3_SUPPORTED = &h00000080
-	const PDCAP_WARM_EJECT_SUPPORTED = &h00000100
-#endif
+const PDCAP_D0_SUPPORTED = &h00000001
+const PDCAP_D1_SUPPORTED = &h00000002
+const PDCAP_D2_SUPPORTED = &h00000004
+const PDCAP_D3_SUPPORTED = &h00000008
+const PDCAP_WAKE_FROM_D0_SUPPORTED = &h00000010
+const PDCAP_WAKE_FROM_D1_SUPPORTED = &h00000020
+const PDCAP_WAKE_FROM_D2_SUPPORTED = &h00000040
+const PDCAP_WAKE_FROM_D3_SUPPORTED = &h00000080
+const PDCAP_WARM_EJECT_SUPPORTED = &h00000100
 
 type CM_Power_Data_s
 	PD_Size as DWORD
@@ -7936,7 +8032,7 @@ end sub
 
 #ifdef __FB_64BIT__
 	private function GetCurrentFiber() as PVOID
-		return cast(PVOID, __readgsqword(cast(LONG, cast(LONG_PTR, @cptr(NT_TIB ptr, 0)->FiberData))))
+		return cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
 	end function
 
 	private function GetFiberData() as PVOID
@@ -7944,7 +8040,7 @@ end sub
 	end function
 
 	private function NtCurrentTeb() as _TEB ptr
-		return cptr(_TEB ptr, __readgsqword(cast(LONG, cast(LONG_PTR, @cptr(NT_TIB ptr, 0)->Self))))
+		return cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
 	end function
 #endif
 

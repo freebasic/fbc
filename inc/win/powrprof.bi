@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "powrprof"
@@ -226,7 +241,6 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 	declare function PowerWriteValueUnitsSpecifier(byval RootPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval Buffer as UCHAR ptr, byval BufferSize as DWORD) as DWORD
 #endif
 
-#define _OVERRIDE_NTSTATUS_
 declare function CallNtPowerInformation(byval as POWER_INFORMATION_LEVEL, byval as PVOID, byval as ULONG, byval as PVOID, byval as ULONG) as LONG
 
 end extern

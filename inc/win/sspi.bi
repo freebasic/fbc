@@ -1,3 +1,18 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   DISCLAIMER
+''   This file has no copyright assigned and is placed in the Public Domain.
+''   This file is part of the mingw-w64 runtime package.
+''
+''   The mingw-w64 runtime package and its code is distributed in the hope that it 
+''   will be useful but WITHOUT ANY WARRANTY.  ALL WARRANTIES, EXPRESSED OR 
+''   IMPLIED ARE HEREBY DISCLAIMED.  This includes but is not limited to 
+''   warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw_unicode.bi"
@@ -10,12 +25,6 @@ const ISSP_LEVEL = 32
 const ISSP_MODE = 1
 type SEC_WCHAR as wstring
 type SEC_CHAR as zstring
-
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	type SECURITY_STATUS as LONG
-	#define __SECSTATUS_DEFINED__
-#endif
-
 #define SEC_TEXT __TEXT
 
 #ifdef UNICODE

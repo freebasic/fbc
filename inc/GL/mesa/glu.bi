@@ -1,3 +1,37 @@
+'' FreeBASIC binding for glu-9.0.0
+''
+'' based on the C header files:
+''   SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
+''   Copyright (C) 1991-2000 Silicon Graphics, Inc. All Rights Reserved.
+''
+''   Permission is hereby granted, free of charge, to any person obtaining a
+''   copy of this software and associated documentation files (the "Software"),
+''   to deal in the Software without restriction, including without limitation
+''   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+''   and/or sell copies of the Software, and to permit persons to whom the
+''   Software is furnished to do so, subject to the following conditions:
+''
+''   The above copyright notice including the dates of first publication and
+''   either this permission notice or a reference to
+''   http://oss.sgi.com/projects/FreeB/
+''   shall be included in all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+''   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+''   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+''   SILICON GRAPHICS, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+''   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+''   OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+''   SOFTWARE.
+''
+''   Except as contained in this notice, the name of Silicon Graphics, Inc.
+''   shall not be used in advertising or otherwise to promote the sale, use or
+''   other dealings in this Software without prior written authorization from
+''   Silicon Graphics, Inc.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #ifdef __FB_WIN32__
@@ -192,7 +226,7 @@ declare function gluBuild2DMipmapLevels(byval target as GLenum, byval internalFo
 declare function gluBuild2DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
 declare function gluBuild3DMipmapLevels(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval level as GLint, byval base as GLint, byval max as GLint, byval data as const any ptr) as GLint
 declare function gluBuild3DMipmaps(byval target as GLenum, byval internalFormat as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval data as const any ptr) as GLint
-declare function gluCheckExtension(byval extName as const GLubyte ptr, byval extString as const GLubyte ptr) as GLboolean
+declare function gluCheckExtension(byval extName as const zstring ptr, byval extString as const zstring ptr) as GLboolean
 declare sub gluCylinder(byval quad as GLUquadric ptr, byval base as GLdouble, byval top as GLdouble, byval height as GLdouble, byval slices as GLint, byval stacks as GLint)
 declare sub gluDeleteNurbsRenderer(byval nurb as GLUnurbs ptr)
 declare sub gluDeleteQuadric(byval quad as GLUquadric ptr)
@@ -202,9 +236,9 @@ declare sub gluEndCurve(byval nurb as GLUnurbs ptr)
 declare sub gluEndPolygon(byval tess as GLUtesselator ptr)
 declare sub gluEndSurface(byval nurb as GLUnurbs ptr)
 declare sub gluEndTrim(byval nurb as GLUnurbs ptr)
-declare function gluErrorString(byval error as GLenum) as const GLubyte ptr
+declare function gluErrorString(byval error as GLenum) as const zstring ptr
 declare sub gluGetNurbsProperty(byval nurb as GLUnurbs ptr, byval property as GLenum, byval data as GLfloat ptr)
-declare function gluGetString(byval name as GLenum) as const GLubyte ptr
+declare function gluGetString(byval name as GLenum) as const zstring ptr
 declare sub gluGetTessProperty(byval tess as GLUtesselator ptr, byval which as GLenum, byval data as GLdouble ptr)
 declare sub gluLoadSamplingMatrices(byval nurb as GLUnurbs ptr, byval model as const GLfloat ptr, byval perspective as const GLfloat ptr, byval view as const GLint ptr)
 declare sub gluLookAt(byval eyeX as GLdouble, byval eyeY as GLdouble, byval eyeZ as GLdouble, byval centerX as GLdouble, byval centerY as GLdouble, byval centerZ as GLdouble, byval upX as GLdouble, byval upY as GLdouble, byval upZ as GLdouble)

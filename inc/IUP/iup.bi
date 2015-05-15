@@ -1,3 +1,30 @@
+'' FreeBASIC binding for iup-3.13
+''
+'' based on the C header files:
+''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
+''
+''   Permission is hereby granted, free of charge, to any person obtaining
+''   a copy of this software and associated documentation files (the
+''   "Software"), to deal in the Software without restriction, including
+''   without limitation the rights to use, copy, modify, merge, publish,
+''   distribute, sublicense, and/or sell copies of the Software, and to
+''   permit persons to whom the Software is furnished to do so, subject to
+''   the following conditions:
+''
+''   The above copyright notice and this permission notice shall be
+''   included in all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "iup"
@@ -26,11 +53,11 @@ extern "C"
 
 #define __IUP_H
 #define IUP_NAME "IUP - Portable User Interface"
-#define IUP_COPYRIGHT "Copyright (C) 1994-2014 Tecgraf, PUC-Rio."
+#define IUP_COPYRIGHT "Copyright (C) 1994-2015 Tecgraf, PUC-Rio."
 #define IUP_DESCRIPTION "Multi-platform toolkit for building graphical user interfaces."
-#define IUP_VERSION "3.11"
-const IUP_VERSION_NUMBER = 311000
-#define IUP_VERSION_DATE "2014/07/28"
+#define IUP_VERSION "3.13"
+const IUP_VERSION_NUMBER = 313000
+#define IUP_VERSION_DATE "2015/02/04"
 type Ihandle as Ihandle_
 type Icallback as function(byval as Ihandle ptr) as long
 
@@ -243,6 +270,8 @@ declare function IupGetColor(byval x as long, byval y as long, byval r as ubyte 
 type Iparamcb as function(byval dialog as Ihandle ptr, byval param_index as long, byval user_data as any ptr) as long
 declare function IupGetParam(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, ...) as long
 declare function IupGetParamv(byval title as const zstring ptr, byval action as Iparamcb, byval user_data as any ptr, byval format as const zstring ptr, byval param_count as long, byval param_extra as long, byval param_data as any ptr ptr) as long
+declare function IupParamf(byval format as const zstring ptr) as Ihandle ptr
+declare function IupParamBox(byval parent as Ihandle ptr, byval params as Ihandle ptr ptr, byval count as long) as Ihandle ptr
 declare function IupLayoutDialog(byval dialog as Ihandle ptr) as Ihandle ptr
 declare function IupElementPropertiesDialog(byval elem as Ihandle ptr) as Ihandle ptr
 
@@ -315,6 +344,8 @@ end enum
 #define IUP_MASK_FLOAT "[+/-]?(/d+/.?/d*|/./d+)"
 #define IUP_MASK_UFLOAT "(/d+/.?/d*|/./d+)"
 #define IUP_MASK_EFLOAT "[+/-]?(/d+/.?/d*|/./d+)([eE][+/-]?/d+)?"
+#define IUP_MASK_FLOATCOMMA "[+/-]?(/d+/,?/d*|/,/d+)"
+#define IUP_MASK_UFLOATCOMMA "(/d+/,?/d*|/,/d+)"
 #define IUP_MASK_INT "[+/-]?/d+"
 #define IUP_MASK_UINT "/d+"
 #define IUPMASK_FLOAT IUP_MASK_FLOAT
@@ -322,10 +353,14 @@ end enum
 #define IUPMASK_EFLOAT IUP_MASK_EFLOAT
 #define IUPMASK_INT IUP_MASK_INT
 #define IUPMASK_UINT IUP_MASK_UINT
-const IUP_GETPARAM_OK = -1
+const IUP_GETPARAM_BUTTON1 = -1
 const IUP_GETPARAM_INIT = -2
-const IUP_GETPARAM_CANCEL = -3
-const IUP_GETPARAM_HELP = -4
+const IUP_GETPARAM_BUTTON2 = -3
+const IUP_GETPARAM_BUTTON3 = -4
+const IUP_GETPARAM_CLOSE = -5
+#define IUP_GETPARAM_OK IUP_GETPARAM_BUTTON1
+#define IUP_GETPARAM_CANCEL IUP_GETPARAM_BUTTON2
+#define IUP_GETPARAM_HELP IUP_GETPARAM_BUTTON3
 
 enum
 	IUP_RECBINARY

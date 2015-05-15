@@ -1,3 +1,37 @@
+'' FreeBASIC binding for ncurses-5.9
+''
+'' based on the C header files:
+''   /****************************************************************************
+''    * Copyright (c) 1998-2010,2011 Free Software Foundation, Inc.              *
+''    *                                                                          *
+''    * Permission is hereby granted, free of charge, to any person obtaining a  *
+''    * copy of this software and associated documentation files (the            *
+''    * "Software"), to deal in the Software without restriction, including      *
+''    * without limitation the rights to use, copy, modify, merge, publish,      *
+''    * distribute, distribute with modifications, sublicense, and/or sell       *
+''    * copies of the Software, and to permit persons to whom the Software is    *
+''    * furnished to do so, subject to the following conditions:                 *
+''    *                                                                          *
+''    * The above copyright notice and this permission notice shall be included  *
+''    * in all copies or substantial portions of the Software.                   *
+''    *                                                                          *
+''    * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
+''    * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
+''    * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
+''    * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
+''    * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
+''    * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
+''    * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+''    *                                                                          *
+''    * Except as contained in this notice, the name(s) of the above copyright   *
+''    * holders shall not be used in advertising or otherwise to promote the     *
+''    * sale, use or other dealings in this Software without prior written       *
+''    * authorization.                                                           *
+''    ****************************************************************************/
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "curses"
@@ -8,6 +42,7 @@
 
 '' The following symbols have been renamed:
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
+''     undef ERR => ERR_
 ''     constant ERR => ERR_
 ''     typedef SCREEN => SCREEN_
 ''     typedef WINDOW => WINDOW_
@@ -28,20 +63,31 @@ const CURSES_H = 1
 const NCURSES_VERSION_MAJOR = 5
 const NCURSES_VERSION_MINOR = 9
 const NCURSES_VERSION_PATCH = 20110404
+#undef NCURSES_VERSION
+#define NCURSES_VERSION "5.9"
 const NCURSES_MOUSE_VERSION = 1
 const NCURSES_DLL_H_incl = 1
+#undef NCURSES_DLL
 const NCURSES_ENABLE_STDBOOL_H = 1
 #define NCURSES_ATTR_T long
+#undef NCURSES_COLOR_T
 #define NCURSES_COLOR_T short
 const NCURSES_OPAQUE = 0
 const NCURSES_REENTRANT = 0
+#undef NCURSES_INTEROP_FUNCS
 const NCURSES_INTEROP_FUNCS = 0
+#undef NCURSES_SIZE_T
 #define NCURSES_SIZE_T short
+#undef NCURSES_TPARM_VARARGS
 const NCURSES_TPARM_VARARGS = 1
+#undef NCURSES_CH_T
 #define NCURSES_CH_T chtype
 type chtype as culong
 type mmask_t as culong
+#undef NCURSES_WIDECHAR
+#undef TRUE
 const TRUE = 1
+#undef FALSE
 const FALSE = 0
 type NCURSES_BOOL as ubyte
 #define NCURSES_BOOL_ bool
@@ -117,7 +163,9 @@ extern __acs_map alias "acs_map" as chtype
 #define ACS_BSBS ACS_HLINE
 #define ACS_SBSB ACS_VLINE
 #define ACS_SSSS ACS_PLUS
+#undef ERR_
 const ERR_ = -1
+#undef OK
 const OK = 0
 const _SUBWIN = &h01
 const _ENDLINE = &h02
@@ -333,6 +381,7 @@ declare function putp(byval as const zstring ptr) as long
 declare function tparm(byval as zstring ptr, ...) as zstring ptr
 declare function tiparm(byval as const zstring ptr, ...) as zstring ptr
 #define vid_attr(a, pair, opts) vidattr(a)
+#undef NCURSES_EXT_FUNCS
 const NCURSES_EXT_FUNCS = 20110404
 type NCURSES_WINDOW_CB as function(byval as WINDOW_ ptr, byval as any ptr) as long
 type NCURSES_SCREEN_CB as function(byval as SCREEN_ ptr, byval as any ptr) as long
@@ -355,6 +404,7 @@ declare function use_screen(byval as SCREEN_ ptr, byval as NCURSES_SCREEN_CB, by
 declare function use_window(byval as WINDOW_ ptr, byval as NCURSES_WINDOW_CB, byval as any ptr) as long
 declare function wresize(byval as WINDOW_ ptr, byval as long, byval as long) as long
 declare sub nofilter()
+#undef NCURSES_SP_FUNCS
 
 const NCURSES_SP_FUNCS = 0
 #define NCURSES_SP_NAME(name) name
@@ -770,7 +820,9 @@ const TRACE_ATTRS = &h1000
 const TRACE_SHIFT = 13
 #define TRACE_MAXIMUM ((1 shl TRACE_SHIFT) - 1)
 const NCURSES_UNCTRL_H_incl = 1
+#undef NCURSES_VERSION
 #define NCURSES_VERSION "5.9"
+#undef unctrl
 declare function unctrl(byval as chtype) as zstring ptr
 
 end extern

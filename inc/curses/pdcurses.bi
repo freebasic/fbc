@@ -1,3 +1,21 @@
+'' FreeBASIC binding for PDCurses-3.4
+''
+'' based on the C header files:
+''   The core package is in the public domain, but small portions of PDCurses 
+''   are subject to copyright under various licenses.  Each directory 
+''   contains a README file, with a section titled "Distribution Status" 
+''   which describes the status of the files in that directory.
+''
+''   If you use PDCurses in an application, an acknowledgement would be 
+''   appreciated, but is not mandatory. If you make corrections or 
+''   enhancements to PDCurses, please forward them to the current maintainer 
+''   for the benefit of other users.
+''
+''   This software is provided AS IS with NO WARRANTY whatsoever.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "pdcurses"

@@ -2241,15 +2241,11 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( PARAMBYREF )
 	checkAttrib( LITERAL )
 	checkAttrib( CONST )
-	if( symbIsProc( sym ) ) then
-		checkAttrib( STATICLOCALS )
-	else
-		checkAttrib( OPTIONAL )
-	end if
+	checkAttrib( STATICLOCALS )
 	checkAttrib( TEMP )
 	checkAttrib( DESCRIPTOR )
 	checkAttrib( FUNCRESULT )
-	checkAttrib( RETURNSBYREF )
+	checkAttrib( REF )
 	checkAttrib( VIS_PRIVATE )
 	checkAttrib( VIS_PROTECTED )
 	if( symbIsProc( sym ) ) then

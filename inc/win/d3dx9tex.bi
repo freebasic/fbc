@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2008 Tony Wasserka
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw_unicode.bi"
@@ -20,6 +42,9 @@ const D3DX_FILTER_DITHER_DIFFUSION = &h00100000
 const D3DX_FILTER_SRGB_IN = &h00200000
 const D3DX_FILTER_SRGB_OUT = &h00400000
 const D3DX_FILTER_SRGB = &h00600000
+const D3DX_SKIP_DDS_MIP_LEVELS_MASK = &h1f
+const D3DX_SKIP_DDS_MIP_LEVELS_SHIFT = 26
+#define D3DX_SKIP_DDS_MIP_LEVELS(l, f) ((((l) and D3DX_SKIP_DDS_MIP_LEVELS_MASK) shl D3DX_SKIP_DDS_MIP_LEVELS_SHIFT) or iif((f) = D3DX_DEFAULT, D3DX_FILTER_BOX, (f)))
 const D3DX_NORMALMAP_MIRROR_U = &h00010000
 const D3DX_NORMALMAP_MIRROR_V = &h00020000
 const D3DX_NORMALMAP_MIRROR = &h00030000

@@ -1,3 +1,51 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "crt/long.bi"
@@ -456,6 +504,13 @@ type IContextMenu_
 	lpVtbl as IContextMenuVtbl ptr
 end type
 
+#define IContextMenu_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IContextMenu_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IContextMenu_Release(This) (This)->lpVtbl->Release(This)
+#define IContextMenu_QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags) (This)->lpVtbl->QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags)
+#define IContextMenu_InvokeCommand(This, pici) (This)->lpVtbl->InvokeCommand(This, pici)
+#define IContextMenu_GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax) (This)->lpVtbl->GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax)
+
 declare function IContextMenu_QueryContextMenu_Proxy(byval This as IContextMenu ptr, byval hmenu as HMENU, byval indexMenu as UINT, byval idCmdFirst as UINT, byval idCmdLast as UINT, byval uFlags as UINT) as HRESULT
 declare sub IContextMenu_QueryContextMenu_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IContextMenu_InvokeCommand_Proxy(byval This as IContextMenu ptr, byval pici as CMINVOKECOMMANDINFO ptr) as HRESULT
@@ -481,6 +536,13 @@ type IContextMenu2_
 	lpVtbl as IContextMenu2Vtbl ptr
 end type
 
+#define IContextMenu2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IContextMenu2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IContextMenu2_Release(This) (This)->lpVtbl->Release(This)
+#define IContextMenu2_QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags) (This)->lpVtbl->QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags)
+#define IContextMenu2_InvokeCommand(This, pici) (This)->lpVtbl->InvokeCommand(This, pici)
+#define IContextMenu2_GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax) (This)->lpVtbl->GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax)
+#define IContextMenu2_HandleMenuMsg(This, uMsg, wParam, lParam) (This)->lpVtbl->HandleMenuMsg(This, uMsg, wParam, lParam)
 declare function IContextMenu2_HandleMenuMsg_Proxy(byval This as IContextMenu2 ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 declare sub IContextMenu2_HandleMenuMsg_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPCONTEXTMENU2 as IContextMenu2 ptr
@@ -503,6 +565,14 @@ type IContextMenu3_
 	lpVtbl as IContextMenu3Vtbl ptr
 end type
 
+#define IContextMenu3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IContextMenu3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IContextMenu3_Release(This) (This)->lpVtbl->Release(This)
+#define IContextMenu3_QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags) (This)->lpVtbl->QueryContextMenu(This, hmenu, indexMenu, idCmdFirst, idCmdLast, uFlags)
+#define IContextMenu3_InvokeCommand(This, pici) (This)->lpVtbl->InvokeCommand(This, pici)
+#define IContextMenu3_GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax) (This)->lpVtbl->GetCommandString(This, idCmd, uType, pReserved, pszName, cchMax)
+#define IContextMenu3_HandleMenuMsg(This, uMsg, wParam, lParam) (This)->lpVtbl->HandleMenuMsg(This, uMsg, wParam, lParam)
+#define IContextMenu3_HandleMenuMsg2(This, uMsg, wParam, lParam, plResult) (This)->lpVtbl->HandleMenuMsg2(This, uMsg, wParam, lParam, plResult)
 declare function IContextMenu3_HandleMenuMsg2_Proxy(byval This as IContextMenu3 ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval plResult as LRESULT ptr) as HRESULT
 declare sub IContextMenu3_HandleMenuMsg2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPCONTEXTMENU3 as IContextMenu3 ptr
@@ -526,6 +596,17 @@ end type
 type IExecuteCommand_
 	lpVtbl as IExecuteCommandVtbl ptr
 end type
+
+#define IExecuteCommand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExecuteCommand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExecuteCommand_Release(This) (This)->lpVtbl->Release(This)
+#define IExecuteCommand_SetKeyState(This, grfKeyState) (This)->lpVtbl->SetKeyState(This, grfKeyState)
+#define IExecuteCommand_SetParameters(This, pszParameters) (This)->lpVtbl->SetParameters(This, pszParameters)
+#define IExecuteCommand_SetPosition(This, pt) (This)->lpVtbl->SetPosition(This, pt)
+#define IExecuteCommand_SetShowWindow(This, nShow) (This)->lpVtbl->SetShowWindow(This, nShow)
+#define IExecuteCommand_SetNoShowUI(This, fNoShowUI) (This)->lpVtbl->SetNoShowUI(This, fNoShowUI)
+#define IExecuteCommand_SetDirectory(This, pszDirectory) (This)->lpVtbl->SetDirectory(This, pszDirectory)
+#define IExecuteCommand_Execute(This) (This)->lpVtbl->Execute(This)
 
 declare function IExecuteCommand_SetKeyState_Proxy(byval This as IExecuteCommand ptr, byval grfKeyState as DWORD) as HRESULT
 declare sub IExecuteCommand_SetKeyState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -557,6 +638,11 @@ type IPersistFolder_
 	lpVtbl as IPersistFolderVtbl ptr
 end type
 
+#define IPersistFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistFolder_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistFolder_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistFolder_Initialize(This, pidl) (This)->lpVtbl->Initialize(This, pidl)
 declare function IPersistFolder_Initialize_Proxy(byval This as IPersistFolder ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare sub IPersistFolder_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPPERSISTFOLDER as IPersistFolder ptr
@@ -583,6 +669,15 @@ end type
 type IRunnableTask_
 	lpVtbl as IRunnableTaskVtbl ptr
 end type
+
+#define IRunnableTask_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IRunnableTask_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IRunnableTask_Release(This) (This)->lpVtbl->Release(This)
+#define IRunnableTask_Run(This) (This)->lpVtbl->Run(This)
+#define IRunnableTask_Kill(This, bWait) (This)->lpVtbl->Kill(This, bWait)
+#define IRunnableTask_Suspend(This) (This)->lpVtbl->Suspend(This)
+#define IRunnableTask_Resume(This) (This)->lpVtbl->Resume(This)
+#define IRunnableTask_IsRunning(This) (This)->lpVtbl->IsRunning(This)
 
 declare function IRunnableTask_Run_Proxy(byval This as IRunnableTask ptr) as HRESULT
 declare sub IRunnableTask_Run_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -624,6 +719,14 @@ type IShellTaskScheduler_
 	lpVtbl as IShellTaskSchedulerVtbl ptr
 end type
 
+#define IShellTaskScheduler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellTaskScheduler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellTaskScheduler_Release(This) (This)->lpVtbl->Release(This)
+#define IShellTaskScheduler_AddTask(This, prt, rtoid, lParam, dwPriority) (This)->lpVtbl->AddTask(This, prt, rtoid, lParam, dwPriority)
+#define IShellTaskScheduler_RemoveTasks(This, rtoid, lParam, bWaitIfRunning) (This)->lpVtbl->RemoveTasks(This, rtoid, lParam, bWaitIfRunning)
+#define IShellTaskScheduler_CountTasks(This, rtoid) (This)->lpVtbl->CountTasks(This, rtoid)
+#define IShellTaskScheduler_Status(This, dwReleaseStatus, dwThreadTimeout) (This)->lpVtbl->Status(This, dwReleaseStatus, dwThreadTimeout)
+
 declare function IShellTaskScheduler_AddTask_Proxy(byval This as IShellTaskScheduler ptr, byval prt as IRunnableTask ptr, byval rtoid as const TASKOWNERID const ptr, byval lParam as DWORD_PTR, byval dwPriority as DWORD) as HRESULT
 declare sub IShellTaskScheduler_AddTask_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellTaskScheduler_RemoveTasks_Proxy(byval This as IShellTaskScheduler ptr, byval rtoid as const TASKOWNERID const ptr, byval lParam as DWORD_PTR, byval bWaitIfRunning as WINBOOL) as HRESULT
@@ -649,6 +752,12 @@ type IQueryCodePage_
 	lpVtbl as IQueryCodePageVtbl ptr
 end type
 
+#define IQueryCodePage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IQueryCodePage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IQueryCodePage_Release(This) (This)->lpVtbl->Release(This)
+#define IQueryCodePage_GetCodePage(This, puiCodePage) (This)->lpVtbl->GetCodePage(This, puiCodePage)
+#define IQueryCodePage_SetCodePage(This, uiCodePage) (This)->lpVtbl->SetCodePage(This, uiCodePage)
+
 declare function IQueryCodePage_GetCodePage_Proxy(byval This as IQueryCodePage ptr, byval puiCodePage as UINT ptr) as HRESULT
 declare sub IQueryCodePage_GetCodePage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IQueryCodePage_SetCodePage_Proxy(byval This as IQueryCodePage ptr, byval uiCodePage as UINT) as HRESULT
@@ -670,6 +779,12 @@ type IPersistFolder2_
 	lpVtbl as IPersistFolder2Vtbl ptr
 end type
 
+#define IPersistFolder2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistFolder2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistFolder2_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistFolder2_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistFolder2_Initialize(This, pidl) (This)->lpVtbl->Initialize(This, pidl)
+#define IPersistFolder2_GetCurFolder(This, ppidl) (This)->lpVtbl->GetCurFolder(This, ppidl)
 declare function IPersistFolder2_GetCurFolder_Proxy(byval This as IPersistFolder2 ptr, byval ppidl as LPITEMIDLIST ptr) as HRESULT
 declare sub IPersistFolder2_GetCurFolder_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define CSIDL_FLAG_PFTI_TRACKTARGET CSIDL_FLAG_DONT_VERIFY
@@ -702,6 +817,15 @@ type IPersistFolder3_
 	lpVtbl as IPersistFolder3Vtbl ptr
 end type
 
+#define IPersistFolder3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistFolder3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistFolder3_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistFolder3_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistFolder3_Initialize(This, pidl) (This)->lpVtbl->Initialize(This, pidl)
+#define IPersistFolder3_GetCurFolder(This, ppidl) (This)->lpVtbl->GetCurFolder(This, ppidl)
+#define IPersistFolder3_InitializeEx(This, pbc, pidlRoot, ppfti) (This)->lpVtbl->InitializeEx(This, pbc, pidlRoot, ppfti)
+#define IPersistFolder3_GetFolderTargetInfo(This, ppfti) (This)->lpVtbl->GetFolderTargetInfo(This, ppfti)
+
 declare function IPersistFolder3_InitializeEx_Proxy(byval This as IPersistFolder3 ptr, byval pbc as IBindCtx ptr, byval pidlRoot as LPCITEMIDLIST, byval ppfti as const PERSIST_FOLDER_TARGET_INFO ptr) as HRESULT
 declare sub IPersistFolder3_InitializeEx_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPersistFolder3_GetFolderTargetInfo_Proxy(byval This as IPersistFolder3 ptr, byval ppfti as PERSIST_FOLDER_TARGET_INFO ptr) as HRESULT
@@ -722,6 +846,13 @@ end type
 type IPersistIDList_
 	lpVtbl as IPersistIDListVtbl ptr
 end type
+
+#define IPersistIDList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPersistIDList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPersistIDList_Release(This) (This)->lpVtbl->Release(This)
+#define IPersistIDList_GetClassID(This, pClassID) (This)->lpVtbl->GetClassID(This, pClassID)
+#define IPersistIDList_SetIDList(This, pidl) (This)->lpVtbl->SetIDList(This, pidl)
+#define IPersistIDList_GetIDList(This, ppidl) (This)->lpVtbl->GetIDList(This, ppidl)
 
 declare function IPersistIDList_SetIDList_Proxy(byval This as IPersistIDList ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare sub IPersistIDList_SetIDList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -744,6 +875,14 @@ end type
 type IEnumIDList_
 	lpVtbl as IEnumIDListVtbl ptr
 end type
+
+#define IEnumIDList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumIDList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumIDList_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumIDList_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumIDList_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumIDList_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumIDList_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumIDList_RemoteNext_Proxy(byval This as IEnumIDList ptr, byval celt as ULONG, byval rgelt as LPITEMIDLIST ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumIDList_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -773,6 +912,14 @@ end type
 type IEnumFullIDList_
 	lpVtbl as IEnumFullIDListVtbl ptr
 end type
+
+#define IEnumFullIDList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumFullIDList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumFullIDList_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumFullIDList_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumFullIDList_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumFullIDList_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumFullIDList_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumFullIDList_RemoteNext_Proxy(byval This as IEnumFullIDList ptr, byval celt as ULONG, byval rgelt as LPITEMIDLIST ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumFullIDList_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -856,6 +1003,7 @@ type SHCONTF as DWORD
 type SFGAOF as ULONG
 #define STR_BIND_FORCE_FOLDER_SHORTCUT_RESOLVE wstr("Force Folder Shortcut Resolve")
 #define STR_AVOID_DRIVE_RESTRICTION_POLICY wstr("Avoid Drive Restriction Policy")
+#define STR_AVOID_DRIVE_RESTRICTION_POLICY wstr("Avoid Drive Restriction Policy")
 #define STR_SKIP_BINDING_CLSID wstr("Skip Binding CLSID")
 #define STR_PARSE_PREFER_FOLDER_BROWSING wstr("Parse Prefer Folder Browsing")
 #define STR_DONT_PARSE_RELATIVE wstr("Don't Parse Relative")
@@ -900,6 +1048,12 @@ type SFGAOF as ULONG
 		lpVtbl as IObjectWithFolderEnumModeVtbl ptr
 	end type
 
+	#define IObjectWithFolderEnumMode_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IObjectWithFolderEnumMode_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IObjectWithFolderEnumMode_Release(This) (This)->lpVtbl->Release(This)
+	#define IObjectWithFolderEnumMode_SetMode(This, feMode) (This)->lpVtbl->SetMode(This, feMode)
+	#define IObjectWithFolderEnumMode_GetMode(This, pfeMode) (This)->lpVtbl->GetMode(This, pfeMode)
+
 	declare function IObjectWithFolderEnumMode_SetMode_Proxy(byval This as IObjectWithFolderEnumMode ptr, byval feMode as FOLDER_ENUM_MODE) as HRESULT
 	declare sub IObjectWithFolderEnumMode_SetMode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IObjectWithFolderEnumMode_GetMode_Proxy(byval This as IObjectWithFolderEnumMode ptr, byval pfeMode as FOLDER_ENUM_MODE ptr) as HRESULT
@@ -927,6 +1081,12 @@ type SFGAOF as ULONG
 	type IParseAndCreateItem_
 		lpVtbl as IParseAndCreateItemVtbl ptr
 	end type
+
+	#define IParseAndCreateItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IParseAndCreateItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IParseAndCreateItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IParseAndCreateItem_SetItem(This, psi) (This)->lpVtbl->SetItem(This, psi)
+	#define IParseAndCreateItem_GetItem(This, riid, ppv) (This)->lpVtbl->GetItem(This, riid, ppv)
 
 	declare function IParseAndCreateItem_SetItem_Proxy(byval This as IParseAndCreateItem ptr, byval psi as IShellItem ptr) as HRESULT
 	declare sub IParseAndCreateItem_SetItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -958,6 +1118,20 @@ end type
 type IShellFolder_
 	lpVtbl as IShellFolderVtbl ptr
 end type
+
+#define IShellFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellFolder_Release(This) (This)->lpVtbl->Release(This)
+#define IShellFolder_ParseDisplayName(This, hwnd, pbc, pszDisplayName, pchEaten, ppidl, pdwAttributes) (This)->lpVtbl->ParseDisplayName(This, hwnd, pbc, pszDisplayName, pchEaten, ppidl, pdwAttributes)
+#define IShellFolder_EnumObjects(This, hwnd, grfFlags, ppenumIDList) (This)->lpVtbl->EnumObjects(This, hwnd, grfFlags, ppenumIDList)
+#define IShellFolder_BindToObject(This, pidl, pbc, riid, ppv) (This)->lpVtbl->BindToObject(This, pidl, pbc, riid, ppv)
+#define IShellFolder_BindToStorage(This, pidl, pbc, riid, ppv) (This)->lpVtbl->BindToStorage(This, pidl, pbc, riid, ppv)
+#define IShellFolder_CompareIDs(This, lParam, pidl1, pidl2) (This)->lpVtbl->CompareIDs(This, lParam, pidl1, pidl2)
+#define IShellFolder_CreateViewObject(This, hwndOwner, riid, ppv) (This)->lpVtbl->CreateViewObject(This, hwndOwner, riid, ppv)
+#define IShellFolder_GetAttributesOf(This, cidl, apidl, rgfInOut) (This)->lpVtbl->GetAttributesOf(This, cidl, apidl, rgfInOut)
+#define IShellFolder_GetUIObjectOf(This, hwndOwner, cidl, apidl, riid, rgfReserved, ppv) (This)->lpVtbl->GetUIObjectOf(This, hwndOwner, cidl, apidl, riid, rgfReserved, ppv)
+#define IShellFolder_GetDisplayNameOf(This, pidl, uFlags, pName) (This)->lpVtbl->GetDisplayNameOf(This, pidl, uFlags, pName)
+#define IShellFolder_SetNameOf(This, hwnd, pidl, pszName, uFlags, ppidlOut) (This)->lpVtbl->SetNameOf(This, hwnd, pidl, pszName, uFlags, ppidlOut)
 
 declare function IShellFolder_ParseDisplayName_Proxy(byval This as IShellFolder ptr, byval hwnd as HWND, byval pbc as IBindCtx ptr, byval pszDisplayName as LPWSTR, byval pchEaten as ULONG ptr, byval ppidl as LPITEMIDLIST ptr, byval pdwAttributes as ULONG ptr) as HRESULT
 declare sub IShellFolder_ParseDisplayName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1008,6 +1182,14 @@ type IEnumExtraSearch_
 	lpVtbl as IEnumExtraSearchVtbl ptr
 end type
 
+#define IEnumExtraSearch_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumExtraSearch_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumExtraSearch_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumExtraSearch_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumExtraSearch_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumExtraSearch_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumExtraSearch_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
+
 declare function IEnumExtraSearch_Next_Proxy(byval This as IEnumExtraSearch ptr, byval celt as ULONG, byval rgelt as EXTRASEARCH ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumExtraSearch_Next_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumExtraSearch_Skip_Proxy(byval This as IEnumExtraSearch ptr, byval celt as ULONG) as HRESULT
@@ -1047,6 +1229,27 @@ end type
 type IShellFolder2_
 	lpVtbl as IShellFolder2Vtbl ptr
 end type
+
+#define IShellFolder2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellFolder2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellFolder2_Release(This) (This)->lpVtbl->Release(This)
+#define IShellFolder2_ParseDisplayName(This, hwnd, pbc, pszDisplayName, pchEaten, ppidl, pdwAttributes) (This)->lpVtbl->ParseDisplayName(This, hwnd, pbc, pszDisplayName, pchEaten, ppidl, pdwAttributes)
+#define IShellFolder2_EnumObjects(This, hwnd, grfFlags, ppenumIDList) (This)->lpVtbl->EnumObjects(This, hwnd, grfFlags, ppenumIDList)
+#define IShellFolder2_BindToObject(This, pidl, pbc, riid, ppv) (This)->lpVtbl->BindToObject(This, pidl, pbc, riid, ppv)
+#define IShellFolder2_BindToStorage(This, pidl, pbc, riid, ppv) (This)->lpVtbl->BindToStorage(This, pidl, pbc, riid, ppv)
+#define IShellFolder2_CompareIDs(This, lParam, pidl1, pidl2) (This)->lpVtbl->CompareIDs(This, lParam, pidl1, pidl2)
+#define IShellFolder2_CreateViewObject(This, hwndOwner, riid, ppv) (This)->lpVtbl->CreateViewObject(This, hwndOwner, riid, ppv)
+#define IShellFolder2_GetAttributesOf(This, cidl, apidl, rgfInOut) (This)->lpVtbl->GetAttributesOf(This, cidl, apidl, rgfInOut)
+#define IShellFolder2_GetUIObjectOf(This, hwndOwner, cidl, apidl, riid, rgfReserved, ppv) (This)->lpVtbl->GetUIObjectOf(This, hwndOwner, cidl, apidl, riid, rgfReserved, ppv)
+#define IShellFolder2_GetDisplayNameOf(This, pidl, uFlags, pName) (This)->lpVtbl->GetDisplayNameOf(This, pidl, uFlags, pName)
+#define IShellFolder2_SetNameOf(This, hwnd, pidl, pszName, uFlags, ppidlOut) (This)->lpVtbl->SetNameOf(This, hwnd, pidl, pszName, uFlags, ppidlOut)
+#define IShellFolder2_GetDefaultSearchGUID(This, pguid) (This)->lpVtbl->GetDefaultSearchGUID(This, pguid)
+#define IShellFolder2_EnumSearches(This, ppenum) (This)->lpVtbl->EnumSearches(This, ppenum)
+#define IShellFolder2_GetDefaultColumn(This, dwRes, pSort, pDisplay) (This)->lpVtbl->GetDefaultColumn(This, dwRes, pSort, pDisplay)
+#define IShellFolder2_GetDefaultColumnState(This, iColumn, pcsFlags) (This)->lpVtbl->GetDefaultColumnState(This, iColumn, pcsFlags)
+#define IShellFolder2_GetDetailsEx(This, pidl, pscid, pv) (This)->lpVtbl->GetDetailsEx(This, pidl, pscid, pv)
+#define IShellFolder2_GetDetailsOf(This, pidl, iColumn, psd) (This)->lpVtbl->GetDetailsOf(This, pidl, iColumn, psd)
+#define IShellFolder2_MapColumnToSCID(This, iColumn, pscid) (This)->lpVtbl->MapColumnToSCID(This, iColumn, pscid)
 
 declare function IShellFolder2_GetDefaultSearchGUID_Proxy(byval This as IShellFolder2 ptr, byval pguid as GUID ptr) as HRESULT
 declare sub IShellFolder2_GetDefaultSearchGUID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1166,6 +1369,12 @@ type IFolderViewOptions_
 	lpVtbl as IFolderViewOptionsVtbl ptr
 end type
 
+#define IFolderViewOptions_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderViewOptions_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderViewOptions_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderViewOptions_SetFolderViewOptions(This, fvoMask, fvoFlags) (This)->lpVtbl->SetFolderViewOptions(This, fvoMask, fvoFlags)
+#define IFolderViewOptions_GetFolderViewOptions(This, pfvoFlags) (This)->lpVtbl->GetFolderViewOptions(This, pfvoFlags)
+
 declare function IFolderViewOptions_SetFolderViewOptions_Proxy(byval This as IFolderViewOptions ptr, byval fvoMask as FOLDERVIEWOPTIONS, byval fvoFlags as FOLDERVIEWOPTIONS) as HRESULT
 declare sub IFolderViewOptions_SetFolderViewOptions_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IFolderViewOptions_GetFolderViewOptions_Proxy(byval This as IFolderViewOptions ptr, byval pfvoFlags as FOLDERVIEWOPTIONS ptr) as HRESULT
@@ -1240,6 +1449,23 @@ type IShellView_
 	lpVtbl as IShellViewVtbl ptr
 end type
 
+#define IShellView_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellView_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellView_Release(This) (This)->lpVtbl->Release(This)
+#define IShellView_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IShellView_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+#define IShellView_TranslateAccelerator(This, pmsg) (This)->lpVtbl->TranslateAccelerator(This, pmsg)
+#define IShellView_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+#define IShellView_UIActivate(This, uState) (This)->lpVtbl->UIActivate(This, uState)
+#define IShellView_Refresh(This) (This)->lpVtbl->Refresh(This)
+#define IShellView_CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd) (This)->lpVtbl->CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd)
+#define IShellView_DestroyViewWindow(This) (This)->lpVtbl->DestroyViewWindow(This)
+#define IShellView_GetCurrentInfo(This, pfs) (This)->lpVtbl->GetCurrentInfo(This, pfs)
+#define IShellView_AddPropertySheetPages(This, dwReserved, pfn, lparam) (This)->lpVtbl->AddPropertySheetPages(This, dwReserved, pfn, lparam)
+#define IShellView_SaveViewState(This) (This)->lpVtbl->SaveViewState(This)
+#define IShellView_SelectItem(This, pidlItem, uFlags) (This)->lpVtbl->SelectItem(This, pidlItem, uFlags)
+#define IShellView_GetItemObject(This, uItem, riid, ppv) (This)->lpVtbl->GetItemObject(This, uItem, riid, ppv)
+
 declare function IShellView_TranslateAccelerator_Proxy(byval This as IShellView ptr, byval pmsg as MSG ptr) as HRESULT
 declare sub IShellView_TranslateAccelerator_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellView_EnableModeless_Proxy(byval This as IShellView ptr, byval fEnable as WINBOOL) as HRESULT
@@ -1308,6 +1534,27 @@ type IShellView2_
 	lpVtbl as IShellView2Vtbl ptr
 end type
 
+#define IShellView2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellView2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellView2_Release(This) (This)->lpVtbl->Release(This)
+#define IShellView2_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IShellView2_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+#define IShellView2_TranslateAccelerator(This, pmsg) (This)->lpVtbl->TranslateAccelerator(This, pmsg)
+#define IShellView2_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+#define IShellView2_UIActivate(This, uState) (This)->lpVtbl->UIActivate(This, uState)
+#define IShellView2_Refresh(This) (This)->lpVtbl->Refresh(This)
+#define IShellView2_CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd) (This)->lpVtbl->CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd)
+#define IShellView2_DestroyViewWindow(This) (This)->lpVtbl->DestroyViewWindow(This)
+#define IShellView2_GetCurrentInfo(This, pfs) (This)->lpVtbl->GetCurrentInfo(This, pfs)
+#define IShellView2_AddPropertySheetPages(This, dwReserved, pfn, lparam) (This)->lpVtbl->AddPropertySheetPages(This, dwReserved, pfn, lparam)
+#define IShellView2_SaveViewState(This) (This)->lpVtbl->SaveViewState(This)
+#define IShellView2_SelectItem(This, pidlItem, uFlags) (This)->lpVtbl->SelectItem(This, pidlItem, uFlags)
+#define IShellView2_GetItemObject(This, uItem, riid, ppv) (This)->lpVtbl->GetItemObject(This, uItem, riid, ppv)
+#define IShellView2_GetView(This, pvid, uView) (This)->lpVtbl->GetView(This, pvid, uView)
+#define IShellView2_CreateViewWindow2(This, lpParams) (This)->lpVtbl->CreateViewWindow2(This, lpParams)
+#define IShellView2_HandleRename(This, pidlNew) (This)->lpVtbl->HandleRename(This, pidlNew)
+#define IShellView2_SelectAndPositionItem(This, pidlItem, uFlags, ppt) (This)->lpVtbl->SelectAndPositionItem(This, pidlItem, uFlags, ppt)
+
 declare function IShellView2_GetView_Proxy(byval This as IShellView2 ptr, byval pvid as SHELLVIEWID ptr, byval uView as ULONG) as HRESULT
 declare sub IShellView2_GetView_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellView2_CreateViewWindow2_Proxy(byval This as IShellView2 ptr, byval lpParams as LPSV2CVW2_PARAMS) as HRESULT
@@ -1360,6 +1607,27 @@ declare sub IShellView2_SelectAndPositionItem_Stub(byval This as IRpcStubBuffer 
 		lpVtbl as IShellView3Vtbl ptr
 	end type
 
+	#define IShellView3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IShellView3_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IShellView3_Release(This) (This)->lpVtbl->Release(This)
+	#define IShellView3_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+	#define IShellView3_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+	#define IShellView3_TranslateAccelerator(This, pmsg) (This)->lpVtbl->TranslateAccelerator(This, pmsg)
+	#define IShellView3_EnableModeless(This, fEnable) (This)->lpVtbl->EnableModeless(This, fEnable)
+	#define IShellView3_UIActivate(This, uState) (This)->lpVtbl->UIActivate(This, uState)
+	#define IShellView3_Refresh(This) (This)->lpVtbl->Refresh(This)
+	#define IShellView3_CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd) (This)->lpVtbl->CreateViewWindow(This, psvPrevious, pfs, psb, prcView, phWnd)
+	#define IShellView3_DestroyViewWindow(This) (This)->lpVtbl->DestroyViewWindow(This)
+	#define IShellView3_GetCurrentInfo(This, pfs) (This)->lpVtbl->GetCurrentInfo(This, pfs)
+	#define IShellView3_AddPropertySheetPages(This, dwReserved, pfn, lparam) (This)->lpVtbl->AddPropertySheetPages(This, dwReserved, pfn, lparam)
+	#define IShellView3_SaveViewState(This) (This)->lpVtbl->SaveViewState(This)
+	#define IShellView3_SelectItem(This, pidlItem, uFlags) (This)->lpVtbl->SelectItem(This, pidlItem, uFlags)
+	#define IShellView3_GetItemObject(This, uItem, riid, ppv) (This)->lpVtbl->GetItemObject(This, uItem, riid, ppv)
+	#define IShellView3_GetView(This, pvid, uView) (This)->lpVtbl->GetView(This, pvid, uView)
+	#define IShellView3_CreateViewWindow2(This, lpParams) (This)->lpVtbl->CreateViewWindow2(This, lpParams)
+	#define IShellView3_HandleRename(This, pidlNew) (This)->lpVtbl->HandleRename(This, pidlNew)
+	#define IShellView3_SelectAndPositionItem(This, pidlItem, uFlags, ppt) (This)->lpVtbl->SelectAndPositionItem(This, pidlItem, uFlags, ppt)
+	#define IShellView3_CreateViewWindow3(This, psbOwner, psvPrev, dwViewFlags, dwMask, dwFlags, fvMode, pvid, prcView, phwndView) (This)->lpVtbl->CreateViewWindow3(This, psbOwner, psvPrev, dwViewFlags, dwMask, dwFlags, fvMode, pvid, prcView, phwndView)
 	declare function IShellView3_CreateViewWindow3_Proxy(byval This as IShellView3 ptr, byval psbOwner as IShellBrowser ptr, byval psvPrev as IShellView ptr, byval dwViewFlags as SV3CVW3_FLAGS, byval dwMask as FOLDERFLAGS, byval dwFlags as FOLDERFLAGS, byval fvMode as FOLDERVIEWMODE, byval pvid as const SHELLVIEWID ptr, byval prcView as const RECT ptr, byval phwndView as HWND ptr) as HRESULT
 	declare sub IShellView3_CreateViewWindow3_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -1391,6 +1659,24 @@ end type
 type IFolderView_
 	lpVtbl as IFolderViewVtbl ptr
 end type
+
+#define IFolderView_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderView_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderView_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderView_GetCurrentViewMode(This, pViewMode) (This)->lpVtbl->GetCurrentViewMode(This, pViewMode)
+#define IFolderView_SetCurrentViewMode(This, ViewMode) (This)->lpVtbl->SetCurrentViewMode(This, ViewMode)
+#define IFolderView_GetFolder(This, riid, ppv) (This)->lpVtbl->GetFolder(This, riid, ppv)
+#define IFolderView_Item(This, iItemIndex, ppidl) (This)->lpVtbl->Item(This, iItemIndex, ppidl)
+#define IFolderView_ItemCount(This, uFlags, pcItems) (This)->lpVtbl->ItemCount(This, uFlags, pcItems)
+#define IFolderView_Items(This, uFlags, riid, ppv) (This)->lpVtbl->Items(This, uFlags, riid, ppv)
+#define IFolderView_GetSelectionMarkedItem(This, piItem) (This)->lpVtbl->GetSelectionMarkedItem(This, piItem)
+#define IFolderView_GetFocusedItem(This, piItem) (This)->lpVtbl->GetFocusedItem(This, piItem)
+#define IFolderView_GetItemPosition(This, pidl, ppt) (This)->lpVtbl->GetItemPosition(This, pidl, ppt)
+#define IFolderView_GetSpacing(This, ppt) (This)->lpVtbl->GetSpacing(This, ppt)
+#define IFolderView_GetDefaultSpacing(This, ppt) (This)->lpVtbl->GetDefaultSpacing(This, ppt)
+#define IFolderView_GetAutoArrange(This) (This)->lpVtbl->GetAutoArrange(This)
+#define IFolderView_SelectItem(This, iItem, dwFlags) (This)->lpVtbl->SelectItem(This, iItem, dwFlags)
+#define IFolderView_SelectAndPositionItems(This, cidl, apidl, apt, dwFlags) (This)->lpVtbl->SelectAndPositionItems(This, cidl, apidl, apt, dwFlags)
 
 declare function IFolderView_GetCurrentViewMode_Proxy(byval This as IFolderView ptr, byval pViewMode as UINT ptr) as HRESULT
 declare sub IFolderView_GetCurrentViewMode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1438,6 +1724,12 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 	type ISearchBoxInfo_
 		lpVtbl as ISearchBoxInfoVtbl ptr
 	end type
+
+	#define ISearchBoxInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ISearchBoxInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ISearchBoxInfo_Release(This) (This)->lpVtbl->Release(This)
+	#define ISearchBoxInfo_GetCondition(This, riid, ppv) (This)->lpVtbl->GetCondition(This, riid, ppv)
+	#define ISearchBoxInfo_GetText(This, ppsz) (This)->lpVtbl->GetText(This, ppsz)
 
 	declare function ISearchBoxInfo_GetCondition_Proxy(byval This as ISearchBoxInfo ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 	declare sub ISearchBoxInfo_GetCondition_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1517,6 +1809,49 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 		lpVtbl as IFolderView2Vtbl ptr
 	end type
 
+	#define IFolderView2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFolderView2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFolderView2_Release(This) (This)->lpVtbl->Release(This)
+	#define IFolderView2_GetCurrentViewMode(This, pViewMode) (This)->lpVtbl->GetCurrentViewMode(This, pViewMode)
+	#define IFolderView2_SetCurrentViewMode(This, ViewMode) (This)->lpVtbl->SetCurrentViewMode(This, ViewMode)
+	#define IFolderView2_GetFolder(This, riid, ppv) (This)->lpVtbl->GetFolder(This, riid, ppv)
+	#define IFolderView2_Item(This, iItemIndex, ppidl) (This)->lpVtbl->Item(This, iItemIndex, ppidl)
+	#define IFolderView2_ItemCount(This, uFlags, pcItems) (This)->lpVtbl->ItemCount(This, uFlags, pcItems)
+	#define IFolderView2_Items(This, uFlags, riid, ppv) (This)->lpVtbl->Items(This, uFlags, riid, ppv)
+	#define IFolderView2_GetSelectionMarkedItem(This, piItem) (This)->lpVtbl->GetSelectionMarkedItem(This, piItem)
+	#define IFolderView2_GetFocusedItem(This, piItem) (This)->lpVtbl->GetFocusedItem(This, piItem)
+	#define IFolderView2_GetItemPosition(This, pidl, ppt) (This)->lpVtbl->GetItemPosition(This, pidl, ppt)
+	#define IFolderView2_GetSpacing(This, ppt) (This)->lpVtbl->GetSpacing(This, ppt)
+	#define IFolderView2_GetDefaultSpacing(This, ppt) (This)->lpVtbl->GetDefaultSpacing(This, ppt)
+	#define IFolderView2_GetAutoArrange(This) (This)->lpVtbl->GetAutoArrange(This)
+	#define IFolderView2_SelectItem(This, iItem, dwFlags) (This)->lpVtbl->SelectItem(This, iItem, dwFlags)
+	#define IFolderView2_SelectAndPositionItems(This, cidl, apidl, apt, dwFlags) (This)->lpVtbl->SelectAndPositionItems(This, cidl, apidl, apt, dwFlags)
+	#define IFolderView2_SetGroupBy(This, key, fAscending) (This)->lpVtbl->SetGroupBy(This, key, fAscending)
+	#define IFolderView2_GetGroupBy(This, pkey, pfAscending) (This)->lpVtbl->GetGroupBy(This, pkey, pfAscending)
+	#define IFolderView2_SetViewProperty(This, pidl, propkey, propvar) (This)->lpVtbl->SetViewProperty(This, pidl, propkey, propvar)
+	#define IFolderView2_GetViewProperty(This, pidl, propkey, ppropvar) (This)->lpVtbl->GetViewProperty(This, pidl, propkey, ppropvar)
+	#define IFolderView2_SetTileViewProperties(This, pidl, pszPropList) (This)->lpVtbl->SetTileViewProperties(This, pidl, pszPropList)
+	#define IFolderView2_SetExtendedTileViewProperties(This, pidl, pszPropList) (This)->lpVtbl->SetExtendedTileViewProperties(This, pidl, pszPropList)
+	#define IFolderView2_SetText(This, iType, pwszText) (This)->lpVtbl->SetText(This, iType, pwszText)
+	#define IFolderView2_SetCurrentFolderFlags(This, dwMask, dwFlags) (This)->lpVtbl->SetCurrentFolderFlags(This, dwMask, dwFlags)
+	#define IFolderView2_GetCurrentFolderFlags(This, pdwFlags) (This)->lpVtbl->GetCurrentFolderFlags(This, pdwFlags)
+	#define IFolderView2_GetSortColumnCount(This, pcColumns) (This)->lpVtbl->GetSortColumnCount(This, pcColumns)
+	#define IFolderView2_SetSortColumns(This, rgSortColumns, cColumns) (This)->lpVtbl->SetSortColumns(This, rgSortColumns, cColumns)
+	#define IFolderView2_GetSortColumns(This, rgSortColumns, cColumns) (This)->lpVtbl->GetSortColumns(This, rgSortColumns, cColumns)
+	#define IFolderView2_GetItem(This, iItem, riid, ppv) (This)->lpVtbl->GetItem(This, iItem, riid, ppv)
+	#define IFolderView2_GetVisibleItem(This, iStart, fPrevious, piItem) (This)->lpVtbl->GetVisibleItem(This, iStart, fPrevious, piItem)
+	#define IFolderView2_GetSelectedItem(This, iStart, piItem) (This)->lpVtbl->GetSelectedItem(This, iStart, piItem)
+	#define IFolderView2_GetSelection(This, fNoneImpliesFolder, ppsia) (This)->lpVtbl->GetSelection(This, fNoneImpliesFolder, ppsia)
+	#define IFolderView2_GetSelectionState(This, pidl, pdwFlags) (This)->lpVtbl->GetSelectionState(This, pidl, pdwFlags)
+	#define IFolderView2_InvokeVerbOnSelection(This, pszVerb) (This)->lpVtbl->InvokeVerbOnSelection(This, pszVerb)
+	#define IFolderView2_SetViewModeAndIconSize(This, uViewMode, iImageSize) (This)->lpVtbl->SetViewModeAndIconSize(This, uViewMode, iImageSize)
+	#define IFolderView2_GetViewModeAndIconSize(This, puViewMode, piImageSize) (This)->lpVtbl->GetViewModeAndIconSize(This, puViewMode, piImageSize)
+	#define IFolderView2_SetGroupSubsetCount(This, cVisibleRows) (This)->lpVtbl->SetGroupSubsetCount(This, cVisibleRows)
+	#define IFolderView2_GetGroupSubsetCount(This, pcVisibleRows) (This)->lpVtbl->GetGroupSubsetCount(This, pcVisibleRows)
+	#define IFolderView2_SetRedraw(This, fRedrawOn) (This)->lpVtbl->SetRedraw(This, fRedrawOn)
+	#define IFolderView2_IsMoveInSameFolder(This) (This)->lpVtbl->IsMoveInSameFolder(This)
+	#define IFolderView2_DoRename(This) (This)->lpVtbl->DoRename(This)
+
 	declare function IFolderView2_SetGroupBy_Proxy(byval This as IFolderView2 ptr, byval key as const PROPERTYKEY const ptr, byval fAscending as WINBOOL) as HRESULT
 	declare sub IFolderView2_SetGroupBy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IFolderView2_RemoteGetGroupBy_Proxy(byval This as IFolderView2 ptr, byval pkey as PROPERTYKEY ptr, byval pfAscending as WINBOOL ptr) as HRESULT
@@ -1590,6 +1925,17 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 		lpVtbl as IFolderViewSettingsVtbl ptr
 	end type
 
+	#define IFolderViewSettings_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFolderViewSettings_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFolderViewSettings_Release(This) (This)->lpVtbl->Release(This)
+	#define IFolderViewSettings_GetColumnPropertyList(This, riid, ppv) (This)->lpVtbl->GetColumnPropertyList(This, riid, ppv)
+	#define IFolderViewSettings_GetGroupByProperty(This, pkey, pfGroupAscending) (This)->lpVtbl->GetGroupByProperty(This, pkey, pfGroupAscending)
+	#define IFolderViewSettings_GetViewMode(This, plvm) (This)->lpVtbl->GetViewMode(This, plvm)
+	#define IFolderViewSettings_GetIconSize(This, puIconSize) (This)->lpVtbl->GetIconSize(This, puIconSize)
+	#define IFolderViewSettings_GetFolderFlags(This, pfolderMask, pfolderFlags) (This)->lpVtbl->GetFolderFlags(This, pfolderMask, pfolderFlags)
+	#define IFolderViewSettings_GetSortColumns(This, rgSortColumns, cColumnsIn, pcColumnsOut) (This)->lpVtbl->GetSortColumns(This, rgSortColumns, cColumnsIn, pcColumnsOut)
+	#define IFolderViewSettings_GetGroupSubsetCount(This, pcVisibleRows) (This)->lpVtbl->GetGroupSubsetCount(This, pcVisibleRows)
+
 	declare function IFolderViewSettings_GetColumnPropertyList_Proxy(byval This as IFolderViewSettings ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 	declare sub IFolderViewSettings_GetColumnPropertyList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IFolderViewSettings_GetGroupByProperty_Proxy(byval This as IFolderViewSettings ptr, byval pkey as PROPERTYKEY ptr, byval pfGroupAscending as WINBOOL ptr) as HRESULT
@@ -1620,6 +1966,13 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 	type IPreviewHandlerVisuals_
 		lpVtbl as IPreviewHandlerVisualsVtbl ptr
 	end type
+
+	#define IPreviewHandlerVisuals_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IPreviewHandlerVisuals_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IPreviewHandlerVisuals_Release(This) (This)->lpVtbl->Release(This)
+	#define IPreviewHandlerVisuals_SetBackgroundColor(This, color) (This)->lpVtbl->SetBackgroundColor(This, color)
+	#define IPreviewHandlerVisuals_SetFont(This, plf) (This)->lpVtbl->SetFont(This, plf)
+	#define IPreviewHandlerVisuals_SetTextColor(This, color) (This)->lpVtbl->SetTextColor(This, color)
 
 	declare function IPreviewHandlerVisuals_SetBackgroundColor_Proxy(byval This as IPreviewHandlerVisuals ptr, byval color as COLORREF) as HRESULT
 	declare sub IPreviewHandlerVisuals_SetBackgroundColor_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1665,6 +2018,18 @@ declare sub IFolderView_SelectAndPositionItems_Stub(byval This as IRpcStubBuffer
 		lpVtbl as IVisualPropertiesVtbl ptr
 	end type
 
+	#define IVisualProperties_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IVisualProperties_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IVisualProperties_Release(This) (This)->lpVtbl->Release(This)
+	#define IVisualProperties_SetWatermark(This, hbmp, vpwf) (This)->lpVtbl->SetWatermark(This, hbmp, vpwf)
+	#define IVisualProperties_SetColor(This, vpcf, cr) (This)->lpVtbl->SetColor(This, vpcf, cr)
+	#define IVisualProperties_GetColor(This, vpcf, pcr) (This)->lpVtbl->GetColor(This, vpcf, pcr)
+	#define IVisualProperties_SetItemHeight(This, cyItemInPixels) (This)->lpVtbl->SetItemHeight(This, cyItemInPixels)
+	#define IVisualProperties_GetItemHeight(This, cyItemInPixels) (This)->lpVtbl->GetItemHeight(This, cyItemInPixels)
+	#define IVisualProperties_SetFont(This, plf, bRedraw) (This)->lpVtbl->SetFont(This, plf, bRedraw)
+	#define IVisualProperties_GetFont(This, plf) (This)->lpVtbl->GetFont(This, plf)
+	#define IVisualProperties_SetTheme(This, pszSubAppName, pszSubIdList) (This)->lpVtbl->SetTheme(This, pszSubAppName, pszSubIdList)
+
 	declare function IVisualProperties_SetWatermark_Proxy(byval This as IVisualProperties ptr, byval hbmp as HBITMAP, byval vpwf as VPWATERMARKFLAGS) as HRESULT
 	declare sub IVisualProperties_SetWatermark_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IVisualProperties_SetColor_Proxy(byval This as IVisualProperties ptr, byval vpcf as VPCOLORFLAGS, byval cr as COLORREF) as HRESULT
@@ -1704,6 +2069,13 @@ end type
 type ICommDlgBrowser_
 	lpVtbl as ICommDlgBrowserVtbl ptr
 end type
+
+#define ICommDlgBrowser_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICommDlgBrowser_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICommDlgBrowser_Release(This) (This)->lpVtbl->Release(This)
+#define ICommDlgBrowser_OnDefaultCommand(This, ppshv) (This)->lpVtbl->OnDefaultCommand(This, ppshv)
+#define ICommDlgBrowser_OnStateChange(This, ppshv, uChange) (This)->lpVtbl->OnStateChange(This, ppshv, uChange)
+#define ICommDlgBrowser_IncludeObject(This, ppshv, pidl) (This)->lpVtbl->IncludeObject(This, ppshv, pidl)
 
 declare function ICommDlgBrowser_OnDefaultCommand_Proxy(byval This as ICommDlgBrowser ptr, byval ppshv as IShellView ptr) as HRESULT
 declare sub ICommDlgBrowser_OnDefaultCommand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1747,6 +2119,16 @@ type ICommDlgBrowser2_
 	lpVtbl as ICommDlgBrowser2Vtbl ptr
 end type
 
+#define ICommDlgBrowser2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICommDlgBrowser2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICommDlgBrowser2_Release(This) (This)->lpVtbl->Release(This)
+#define ICommDlgBrowser2_OnDefaultCommand(This, ppshv) (This)->lpVtbl->OnDefaultCommand(This, ppshv)
+#define ICommDlgBrowser2_OnStateChange(This, ppshv, uChange) (This)->lpVtbl->OnStateChange(This, ppshv, uChange)
+#define ICommDlgBrowser2_IncludeObject(This, ppshv, pidl) (This)->lpVtbl->IncludeObject(This, ppshv, pidl)
+#define ICommDlgBrowser2_Notify(This, ppshv, dwNotifyType) (This)->lpVtbl->Notify(This, ppshv, dwNotifyType)
+#define ICommDlgBrowser2_GetDefaultMenuText(This, ppshv, pszText, cchMax) (This)->lpVtbl->GetDefaultMenuText(This, ppshv, pszText, cchMax)
+#define ICommDlgBrowser2_GetViewFlags(This, pdwFlags) (This)->lpVtbl->GetViewFlags(This, pdwFlags)
+
 declare function ICommDlgBrowser2_Notify_Proxy(byval This as ICommDlgBrowser2 ptr, byval ppshv as IShellView ptr, byval dwNotifyType as DWORD) as HRESULT
 declare sub ICommDlgBrowser2_Notify_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICommDlgBrowser2_GetDefaultMenuText_Proxy(byval This as ICommDlgBrowser2 ptr, byval ppshv as IShellView ptr, byval pszText as LPWSTR, byval cchMax as long) as HRESULT
@@ -1778,6 +2160,19 @@ type LPCOMMDLGBROWSER2 as ICommDlgBrowser2 ptr
 	type ICommDlgBrowser3_
 		lpVtbl as ICommDlgBrowser3Vtbl ptr
 	end type
+
+	#define ICommDlgBrowser3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ICommDlgBrowser3_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ICommDlgBrowser3_Release(This) (This)->lpVtbl->Release(This)
+	#define ICommDlgBrowser3_OnDefaultCommand(This, ppshv) (This)->lpVtbl->OnDefaultCommand(This, ppshv)
+	#define ICommDlgBrowser3_OnStateChange(This, ppshv, uChange) (This)->lpVtbl->OnStateChange(This, ppshv, uChange)
+	#define ICommDlgBrowser3_IncludeObject(This, ppshv, pidl) (This)->lpVtbl->IncludeObject(This, ppshv, pidl)
+	#define ICommDlgBrowser3_Notify(This, ppshv, dwNotifyType) (This)->lpVtbl->Notify(This, ppshv, dwNotifyType)
+	#define ICommDlgBrowser3_GetDefaultMenuText(This, ppshv, pszText, cchMax) (This)->lpVtbl->GetDefaultMenuText(This, ppshv, pszText, cchMax)
+	#define ICommDlgBrowser3_GetViewFlags(This, pdwFlags) (This)->lpVtbl->GetViewFlags(This, pdwFlags)
+	#define ICommDlgBrowser3_OnColumnClicked(This, ppshv, iColumn) (This)->lpVtbl->OnColumnClicked(This, ppshv, iColumn)
+	#define ICommDlgBrowser3_GetCurrentFilter(This, pszFileSpec, cchFileSpec) (This)->lpVtbl->GetCurrentFilter(This, pszFileSpec, cchFileSpec)
+	#define ICommDlgBrowser3_OnPreViewCreated(This, ppshv) (This)->lpVtbl->OnPreViewCreated(This, ppshv)
 
 	declare function ICommDlgBrowser3_OnColumnClicked_Proxy(byval This as ICommDlgBrowser3 ptr, byval ppshv as IShellView ptr, byval iColumn as long) as HRESULT
 	declare sub ICommDlgBrowser3_OnColumnClicked_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1845,6 +2240,15 @@ type LPCOMMDLGBROWSER2 as ICommDlgBrowser2 ptr
 		lpVtbl as IColumnManagerVtbl ptr
 	end type
 
+	#define IColumnManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IColumnManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IColumnManager_Release(This) (This)->lpVtbl->Release(This)
+	#define IColumnManager_SetColumnInfo(This, propkey, pcmci) (This)->lpVtbl->SetColumnInfo(This, propkey, pcmci)
+	#define IColumnManager_GetColumnInfo(This, propkey, pcmci) (This)->lpVtbl->GetColumnInfo(This, propkey, pcmci)
+	#define IColumnManager_GetColumnCount(This, dwFlags, puCount) (This)->lpVtbl->GetColumnCount(This, dwFlags, puCount)
+	#define IColumnManager_GetColumns(This, dwFlags, rgkeyOrder, cColumns) (This)->lpVtbl->GetColumns(This, dwFlags, rgkeyOrder, cColumns)
+	#define IColumnManager_SetColumns(This, rgkeyOrder, cVisible) (This)->lpVtbl->SetColumns(This, rgkeyOrder, cVisible)
+
 	declare function IColumnManager_SetColumnInfo_Proxy(byval This as IColumnManager ptr, byval propkey as const PROPERTYKEY const ptr, byval pcmci as const CM_COLUMNINFO ptr) as HRESULT
 	declare sub IColumnManager_SetColumnInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IColumnManager_GetColumnInfo_Proxy(byval This as IColumnManager ptr, byval propkey as const PROPERTYKEY const ptr, byval pcmci as CM_COLUMNINFO ptr) as HRESULT
@@ -1872,6 +2276,10 @@ type IFolderFilterSite_
 	lpVtbl as IFolderFilterSiteVtbl ptr
 end type
 
+#define IFolderFilterSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderFilterSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderFilterSite_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderFilterSite_SetFilter(This, punk) (This)->lpVtbl->SetFilter(This, punk)
 declare function IFolderFilterSite_SetFilter_Proxy(byval This as IFolderFilterSite ptr, byval punk as IUnknown ptr) as HRESULT
 declare sub IFolderFilterSite_SetFilter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IFolderFilter_INTERFACE_DEFINED__
@@ -1889,6 +2297,12 @@ end type
 type IFolderFilter_
 	lpVtbl as IFolderFilterVtbl ptr
 end type
+
+#define IFolderFilter_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderFilter_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderFilter_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderFilter_ShouldShow(This, psf, pidlFolder, pidlItem) (This)->lpVtbl->ShouldShow(This, psf, pidlFolder, pidlItem)
+#define IFolderFilter_GetEnumFlags(This, psf, pidlFolder, phwnd, pgrfFlags) (This)->lpVtbl->GetEnumFlags(This, psf, pidlFolder, phwnd, pgrfFlags)
 
 declare function IFolderFilter_ShouldShow_Proxy(byval This as IFolderFilter ptr, byval psf as IShellFolder ptr, byval pidlFolder as LPCITEMIDLIST, byval pidlItem as LPCITEMIDLIST) as HRESULT
 declare sub IFolderFilter_ShouldShow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1909,6 +2323,10 @@ type IInputObjectSite_
 	lpVtbl as IInputObjectSiteVtbl ptr
 end type
 
+#define IInputObjectSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInputObjectSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInputObjectSite_Release(This) (This)->lpVtbl->Release(This)
+#define IInputObjectSite_OnFocusChangeIS(This, punkObj, fSetFocus) (This)->lpVtbl->OnFocusChangeIS(This, punkObj, fSetFocus)
 declare function IInputObjectSite_OnFocusChangeIS_Proxy(byval This as IInputObjectSite ptr, byval punkObj as IUnknown ptr, byval fSetFocus as WINBOOL) as HRESULT
 declare sub IInputObjectSite_OnFocusChangeIS_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IInputObject_INTERFACE_DEFINED__
@@ -1927,6 +2345,13 @@ end type
 type IInputObject_
 	lpVtbl as IInputObjectVtbl ptr
 end type
+
+#define IInputObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInputObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInputObject_Release(This) (This)->lpVtbl->Release(This)
+#define IInputObject_UIActivateIO(This, fActivate, pMsg) (This)->lpVtbl->UIActivateIO(This, fActivate, pMsg)
+#define IInputObject_HasFocusIO(This) (This)->lpVtbl->HasFocusIO(This)
+#define IInputObject_TranslateAcceleratorIO(This, pMsg) (This)->lpVtbl->TranslateAcceleratorIO(This, pMsg)
 
 declare function IInputObject_UIActivateIO_Proxy(byval This as IInputObject ptr, byval fActivate as WINBOOL, byval pMsg as MSG ptr) as HRESULT
 declare sub IInputObject_UIActivateIO_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -1952,6 +2377,13 @@ type IInputObject2_
 	lpVtbl as IInputObject2Vtbl ptr
 end type
 
+#define IInputObject2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInputObject2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInputObject2_Release(This) (This)->lpVtbl->Release(This)
+#define IInputObject2_UIActivateIO(This, fActivate, pMsg) (This)->lpVtbl->UIActivateIO(This, fActivate, pMsg)
+#define IInputObject2_HasFocusIO(This) (This)->lpVtbl->HasFocusIO(This)
+#define IInputObject2_TranslateAcceleratorIO(This, pMsg) (This)->lpVtbl->TranslateAcceleratorIO(This, pMsg)
+#define IInputObject2_TranslateAcceleratorGlobal(This, pMsg) (This)->lpVtbl->TranslateAcceleratorGlobal(This, pMsg)
 declare function IInputObject2_TranslateAcceleratorGlobal_Proxy(byval This as IInputObject2 ptr, byval pMsg as MSG ptr) as HRESULT
 declare sub IInputObject2_TranslateAcceleratorGlobal_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IShellIcon_INTERFACE_DEFINED__
@@ -1969,6 +2401,10 @@ type IShellIcon_
 	lpVtbl as IShellIconVtbl ptr
 end type
 
+#define IShellIcon_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellIcon_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellIcon_Release(This) (This)->lpVtbl->Release(This)
+#define IShellIcon_GetIconOf(This, pidl, flags, pIconIndex) (This)->lpVtbl->GetIconOf(This, pidl, flags, pIconIndex)
 declare function IShellIcon_GetIconOf_Proxy(byval This as IShellIcon ptr, byval pidl as LPCITEMIDLIST, byval flags as UINT, byval pIconIndex as long ptr) as HRESULT
 declare sub IShellIcon_GetIconOf_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 const SBSP_DEFBROWSER = &h0000
@@ -2044,6 +2480,25 @@ type IShellBrowser_
 	lpVtbl as IShellBrowserVtbl ptr
 end type
 
+#define IShellBrowser_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellBrowser_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellBrowser_Release(This) (This)->lpVtbl->Release(This)
+#define IShellBrowser_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IShellBrowser_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+#define IShellBrowser_InsertMenusSB(This, hmenuShared, lpMenuWidths) (This)->lpVtbl->InsertMenusSB(This, hmenuShared, lpMenuWidths)
+#define IShellBrowser_SetMenuSB(This, hmenuShared, holemenuRes, hwndActiveObject) (This)->lpVtbl->SetMenuSB(This, hmenuShared, holemenuRes, hwndActiveObject)
+#define IShellBrowser_RemoveMenusSB(This, hmenuShared) (This)->lpVtbl->RemoveMenusSB(This, hmenuShared)
+#define IShellBrowser_SetStatusTextSB(This, pszStatusText) (This)->lpVtbl->SetStatusTextSB(This, pszStatusText)
+#define IShellBrowser_EnableModelessSB(This, fEnable) (This)->lpVtbl->EnableModelessSB(This, fEnable)
+#define IShellBrowser_TranslateAcceleratorSB(This, pmsg, wID) (This)->lpVtbl->TranslateAcceleratorSB(This, pmsg, wID)
+#define IShellBrowser_BrowseObject(This, pidl, wFlags) (This)->lpVtbl->BrowseObject(This, pidl, wFlags)
+#define IShellBrowser_GetViewStateStream(This, grfMode, ppStrm) (This)->lpVtbl->GetViewStateStream(This, grfMode, ppStrm)
+#define IShellBrowser_GetControlWindow(This, id, phwnd) (This)->lpVtbl->GetControlWindow(This, id, phwnd)
+#define IShellBrowser_SendControlMsg(This, id, uMsg, wParam, lParam, pret) (This)->lpVtbl->SendControlMsg(This, id, uMsg, wParam, lParam, pret)
+#define IShellBrowser_QueryActiveShellView(This, ppshv) (This)->lpVtbl->QueryActiveShellView(This, ppshv)
+#define IShellBrowser_OnViewWindowActive(This, pshv) (This)->lpVtbl->OnViewWindowActive(This, pshv)
+#define IShellBrowser_SetToolbarItems(This, lpButtons, nButtons, uFlags) (This)->lpVtbl->SetToolbarItems(This, lpButtons, nButtons, uFlags)
+
 declare function IShellBrowser_InsertMenusSB_Proxy(byval This as IShellBrowser ptr, byval hmenuShared as HMENU, byval lpMenuWidths as LPOLEMENUGROUPWIDTHS) as HRESULT
 declare sub IShellBrowser_InsertMenusSB_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellBrowser_SetMenuSB_Proxy(byval This as IShellBrowser ptr, byval hmenuShared as HMENU, byval holemenuRes as HOLEMENU, byval hwndActiveObject as HWND) as HRESULT
@@ -2082,6 +2537,12 @@ end type
 type IProfferService_
 	lpVtbl as IProfferServiceVtbl ptr
 end type
+
+#define IProfferService_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IProfferService_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IProfferService_Release(This) (This)->lpVtbl->Release(This)
+#define IProfferService_ProfferService(This, guidService, psp, pdwCookie) (This)->lpVtbl->ProfferService(This, guidService, psp, pdwCookie)
+#define IProfferService_RevokeService(This, dwCookie) (This)->lpVtbl->RevokeService(This, dwCookie)
 
 declare function IProfferService_ProfferService_Proxy(byval This as IProfferService ptr, byval guidService as const GUID const ptr, byval psp as IServiceProvider ptr, byval pdwCookie as DWORD ptr) as HRESULT
 declare sub IProfferService_ProfferService_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2138,6 +2599,15 @@ end type
 type IShellItem_
 	lpVtbl as IShellItemVtbl ptr
 end type
+
+#define IShellItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellItem_Release(This) (This)->lpVtbl->Release(This)
+#define IShellItem_BindToHandler(This, pbc, bhid, riid, ppv) (This)->lpVtbl->BindToHandler(This, pbc, bhid, riid, ppv)
+#define IShellItem_GetParent(This, ppsi) (This)->lpVtbl->GetParent(This, ppsi)
+#define IShellItem_GetDisplayName(This, sigdnName, ppszName) (This)->lpVtbl->GetDisplayName(This, sigdnName, ppszName)
+#define IShellItem_GetAttributes(This, sfgaoMask, psfgaoAttribs) (This)->lpVtbl->GetAttributes(This, sfgaoMask, psfgaoAttribs)
+#define IShellItem_Compare(This, psi, hint, piOrder) (This)->lpVtbl->Compare(This, psi, hint, piOrder)
 
 declare function IShellItem_BindToHandler_Proxy(byval This as IShellItem ptr, byval pbc as IBindCtx ptr, byval bhid as const GUID const ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IShellItem_BindToHandler_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2213,6 +2683,28 @@ type IShellItem2_
 	lpVtbl as IShellItem2Vtbl ptr
 end type
 
+#define IShellItem2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellItem2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellItem2_Release(This) (This)->lpVtbl->Release(This)
+#define IShellItem2_BindToHandler(This, pbc, bhid, riid, ppv) (This)->lpVtbl->BindToHandler(This, pbc, bhid, riid, ppv)
+#define IShellItem2_GetParent(This, ppsi) (This)->lpVtbl->GetParent(This, ppsi)
+#define IShellItem2_GetDisplayName(This, sigdnName, ppszName) (This)->lpVtbl->GetDisplayName(This, sigdnName, ppszName)
+#define IShellItem2_GetAttributes(This, sfgaoMask, psfgaoAttribs) (This)->lpVtbl->GetAttributes(This, sfgaoMask, psfgaoAttribs)
+#define IShellItem2_Compare(This, psi, hint, piOrder) (This)->lpVtbl->Compare(This, psi, hint, piOrder)
+#define IShellItem2_GetPropertyStore(This, flags, riid, ppv) (This)->lpVtbl->GetPropertyStore(This, flags, riid, ppv)
+#define IShellItem2_GetPropertyStoreWithCreateObject(This, flags, punkCreateObject, riid, ppv) (This)->lpVtbl->GetPropertyStoreWithCreateObject(This, flags, punkCreateObject, riid, ppv)
+#define IShellItem2_GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv) (This)->lpVtbl->GetPropertyStoreForKeys(This, rgKeys, cKeys, flags, riid, ppv)
+#define IShellItem2_GetPropertyDescriptionList(This, keyType, riid, ppv) (This)->lpVtbl->GetPropertyDescriptionList(This, keyType, riid, ppv)
+#define IShellItem2_Update(This, pbc) (This)->lpVtbl->Update(This, pbc)
+#define IShellItem2_GetProperty(This, key, ppropvar) (This)->lpVtbl->GetProperty(This, key, ppropvar)
+#define IShellItem2_GetCLSID(This, key, pclsid) (This)->lpVtbl->GetCLSID(This, key, pclsid)
+#define IShellItem2_GetFileTime(This, key, pft) (This)->lpVtbl->GetFileTime(This, key, pft)
+#define IShellItem2_GetInt32(This, key, pi) (This)->lpVtbl->GetInt32(This, key, pi)
+#define IShellItem2_GetString(This, key, ppsz) (This)->lpVtbl->GetString(This, key, ppsz)
+#define IShellItem2_GetUInt32(This, key, pui) (This)->lpVtbl->GetUInt32(This, key, pui)
+#define IShellItem2_GetUInt64(This, key, pull) (This)->lpVtbl->GetUInt64(This, key, pull)
+#define IShellItem2_GetBool(This, key, pf) (This)->lpVtbl->GetBool(This, key, pf)
+
 declare function IShellItem2_GetPropertyStore_Proxy(byval This as IShellItem2 ptr, byval flags as GETPROPERTYSTOREFLAGS, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IShellItem2_GetPropertyStore_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellItem2_GetPropertyStoreWithCreateObject_Proxy(byval This as IShellItem2 ptr, byval flags as GETPROPERTYSTOREFLAGS, byval punkCreateObject as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -2270,6 +2762,10 @@ type IShellItemImageFactory_
 	lpVtbl as IShellItemImageFactoryVtbl ptr
 end type
 
+#define IShellItemImageFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellItemImageFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellItemImageFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IShellItemImageFactory_GetImage(This, size, flags, phbm) (This)->lpVtbl->GetImage(This, size, flags, phbm)
 declare function IShellItemImageFactory_GetImage_Proxy(byval This as IShellItemImageFactory ptr, byval size as SIZE, byval flags as SIIGBF, byval phbm as HBITMAP ptr) as HRESULT
 declare sub IShellItemImageFactory_GetImage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IUserAccountChangeCallback_INTERFACE_DEFINED__
@@ -2287,6 +2783,10 @@ type IUserAccountChangeCallback_
 	lpVtbl as IUserAccountChangeCallbackVtbl ptr
 end type
 
+#define IUserAccountChangeCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUserAccountChangeCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUserAccountChangeCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IUserAccountChangeCallback_OnPictureChange(This, pszUserName) (This)->lpVtbl->OnPictureChange(This, pszUserName)
 declare function IUserAccountChangeCallback_OnPictureChange_Proxy(byval This as IUserAccountChangeCallback ptr, byval pszUserName as LPCWSTR) as HRESULT
 declare sub IUserAccountChangeCallback_OnPictureChange_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IEnumShellItems_INTERFACE_DEFINED__
@@ -2306,6 +2806,14 @@ end type
 type IEnumShellItems_
 	lpVtbl as IEnumShellItemsVtbl ptr
 end type
+
+#define IEnumShellItems_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumShellItems_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumShellItems_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumShellItems_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
+#define IEnumShellItems_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumShellItems_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumShellItems_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumShellItems_RemoteNext_Proxy(byval This as IEnumShellItems ptr, byval celt as ULONG, byval rgelt as IShellItem ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumShellItems_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2384,6 +2892,17 @@ type ITransferAdviseSink as ITransferAdviseSink_
 		lpVtbl as ITransferAdviseSinkVtbl ptr
 	end type
 
+	#define ITransferAdviseSink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ITransferAdviseSink_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ITransferAdviseSink_Release(This) (This)->lpVtbl->Release(This)
+	#define ITransferAdviseSink_UpdateProgress(This, ullSizeCurrent, ullSizeTotal, nFilesCurrent, nFilesTotal, nFoldersCurrent, nFoldersTotal) (This)->lpVtbl->UpdateProgress(This, ullSizeCurrent, ullSizeTotal, nFilesCurrent, nFilesTotal, nFoldersCurrent, nFoldersTotal)
+	#define ITransferAdviseSink_UpdateTransferState(This, ts) (This)->lpVtbl->UpdateTransferState(This, ts)
+	#define ITransferAdviseSink_ConfirmOverwrite(This, psiSource, psiDestParent, pszName) (This)->lpVtbl->ConfirmOverwrite(This, psiSource, psiDestParent, pszName)
+	#define ITransferAdviseSink_ConfirmEncryptionLoss(This, psiSource) (This)->lpVtbl->ConfirmEncryptionLoss(This, psiSource)
+	#define ITransferAdviseSink_FileFailure(This, psi, pszItem, hrError, pszRename, cchRename) (This)->lpVtbl->FileFailure(This, psi, pszItem, hrError, pszRename, cchRename)
+	#define ITransferAdviseSink_SubStreamFailure(This, psi, pszStreamName, hrError) (This)->lpVtbl->SubStreamFailure(This, psi, pszStreamName, hrError)
+	#define ITransferAdviseSink_PropertyFailure(This, psi, pkey, hrError) (This)->lpVtbl->PropertyFailure(This, psi, pkey, hrError)
+
 	declare function ITransferAdviseSink_UpdateProgress_Proxy(byval This as ITransferAdviseSink ptr, byval ullSizeCurrent as ULONGLONG, byval ullSizeTotal as ULONGLONG, byval nFilesCurrent as long, byval nFilesTotal as long, byval nFoldersCurrent as long, byval nFoldersTotal as long) as HRESULT
 	declare sub ITransferAdviseSink_UpdateProgress_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function ITransferAdviseSink_UpdateTransferState_Proxy(byval This as ITransferAdviseSink ptr, byval ts as TRANSFER_ADVISE_STATE) as HRESULT
@@ -2424,6 +2943,23 @@ type ITransferAdviseSink as ITransferAdviseSink_
 	type ITransferSource_
 		lpVtbl as ITransferSourceVtbl ptr
 	end type
+
+	#define ITransferSource_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ITransferSource_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ITransferSource_Release(This) (This)->lpVtbl->Release(This)
+	#define ITransferSource_Advise(This, psink, pdwCookie) (This)->lpVtbl->Advise(This, psink, pdwCookie)
+	#define ITransferSource_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define ITransferSource_SetProperties(This, pproparray) (This)->lpVtbl->SetProperties(This, pproparray)
+	#define ITransferSource_OpenItem(This, psi, flags, riid, ppv) (This)->lpVtbl->OpenItem(This, psi, flags, riid, ppv)
+	#define ITransferSource_MoveItem(This, psi, psiParentDst, pszNameDst, flags, ppsiNew) (This)->lpVtbl->MoveItem(This, psi, psiParentDst, pszNameDst, flags, ppsiNew)
+	#define ITransferSource_RecycleItem(This, psiSource, psiParentDest, flags, ppsiNewDest) (This)->lpVtbl->RecycleItem(This, psiSource, psiParentDest, flags, ppsiNewDest)
+	#define ITransferSource_RemoveItem(This, psiSource, flags) (This)->lpVtbl->RemoveItem(This, psiSource, flags)
+	#define ITransferSource_RenameItem(This, psiSource, pszNewName, flags, ppsiNewDest) (This)->lpVtbl->RenameItem(This, psiSource, pszNewName, flags, ppsiNewDest)
+	#define ITransferSource_LinkItem(This, psiSource, psiParentDest, pszNewName, flags, ppsiNewDest) (This)->lpVtbl->LinkItem(This, psiSource, psiParentDest, pszNewName, flags, ppsiNewDest)
+	#define ITransferSource_ApplyPropertiesToItem(This, psiSource, ppsiNew) (This)->lpVtbl->ApplyPropertiesToItem(This, psiSource, ppsiNew)
+	#define ITransferSource_GetDefaultDestinationName(This, psiSource, psiParentDest, ppszDestinationName) (This)->lpVtbl->GetDefaultDestinationName(This, psiSource, psiParentDest, ppszDestinationName)
+	#define ITransferSource_EnterFolder(This, psiChildFolderDest) (This)->lpVtbl->EnterFolder(This, psiChildFolderDest)
+	#define ITransferSource_LeaveFolder(This, psiChildFolderDest) (This)->lpVtbl->LeaveFolder(This, psiChildFolderDest)
 
 	declare function ITransferSource_Advise_Proxy(byval This as ITransferSource ptr, byval psink as ITransferAdviseSink ptr, byval pdwCookie as DWORD ptr) as HRESULT
 	declare sub ITransferSource_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2476,6 +3012,14 @@ type IEnumResources_
 	lpVtbl as IEnumResourcesVtbl ptr
 end type
 
+#define IEnumResources_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumResources_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumResources_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumResources_Next(This, celt, psir, pceltFetched) (This)->lpVtbl->Next(This, celt, psir, pceltFetched)
+#define IEnumResources_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumResources_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumResources_Clone(This, ppenumr) (This)->lpVtbl->Clone(This, ppenumr)
+
 declare function IEnumResources_Next_Proxy(byval This as IEnumResources ptr, byval celt as ULONG, byval psir as SHELL_ITEM_RESOURCE ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumResources_Next_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IEnumResources_Skip_Proxy(byval This as IEnumResources ptr, byval celt as ULONG) as HRESULT
@@ -2507,6 +3051,20 @@ end type
 type IShellItemResources_
 	lpVtbl as IShellItemResourcesVtbl ptr
 end type
+
+#define IShellItemResources_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellItemResources_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellItemResources_Release(This) (This)->lpVtbl->Release(This)
+#define IShellItemResources_GetAttributes(This, pdwAttributes) (This)->lpVtbl->GetAttributes(This, pdwAttributes)
+#define IShellItemResources_GetSize(This, pullSize) (This)->lpVtbl->GetSize(This, pullSize)
+#define IShellItemResources_GetTimes(This, pftCreation, pftWrite, pftAccess) (This)->lpVtbl->GetTimes(This, pftCreation, pftWrite, pftAccess)
+#define IShellItemResources_SetTimes(This, pftCreation, pftWrite, pftAccess) (This)->lpVtbl->SetTimes(This, pftCreation, pftWrite, pftAccess)
+#define IShellItemResources_GetResourceDescription(This, pcsir, ppszDescription) (This)->lpVtbl->GetResourceDescription(This, pcsir, ppszDescription)
+#define IShellItemResources_EnumResources(This, ppenumr) (This)->lpVtbl->EnumResources(This, ppenumr)
+#define IShellItemResources_SupportsResource(This, pcsir) (This)->lpVtbl->SupportsResource(This, pcsir)
+#define IShellItemResources_OpenResource(This, pcsir, riid, ppv) (This)->lpVtbl->OpenResource(This, pcsir, riid, ppv)
+#define IShellItemResources_CreateResource(This, pcsir, riid, ppv) (This)->lpVtbl->CreateResource(This, pcsir, riid, ppv)
+#define IShellItemResources_MarkForDelete(This) (This)->lpVtbl->MarkForDelete(This)
 
 declare function IShellItemResources_GetAttributes_Proxy(byval This as IShellItemResources ptr, byval pdwAttributes as DWORD ptr) as HRESULT
 declare sub IShellItemResources_GetAttributes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2545,6 +3103,13 @@ type ITransferDestination_
 	lpVtbl as ITransferDestinationVtbl ptr
 end type
 
+#define ITransferDestination_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITransferDestination_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITransferDestination_Release(This) (This)->lpVtbl->Release(This)
+#define ITransferDestination_Advise(This, psink, pdwCookie) (This)->lpVtbl->Advise(This, psink, pdwCookie)
+#define ITransferDestination_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+#define ITransferDestination_CreateItem(This, pszName, dwAttributes, ullSize, flags, riidItem, ppvItem, riidResources, ppvResources) (This)->lpVtbl->CreateItem(This, pszName, dwAttributes, ullSize, flags, riidItem, ppvItem, riidResources, ppvResources)
+
 declare function ITransferDestination_Advise_Proxy(byval This as ITransferDestination ptr, byval psink as ITransferAdviseSink ptr, byval pdwCookie as DWORD ptr) as HRESULT
 declare sub ITransferDestination_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITransferDestination_Unadvise_Proxy(byval This as ITransferDestination ptr, byval dwCookie as DWORD) as HRESULT
@@ -2580,6 +3145,25 @@ type IStreamAsync_
 	lpVtbl as IStreamAsyncVtbl ptr
 end type
 
+#define IStreamAsync_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IStreamAsync_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IStreamAsync_Release(This) (This)->lpVtbl->Release(This)
+#define IStreamAsync_Read(This, pv, cb, pcbRead) (This)->lpVtbl->Read(This, pv, cb, pcbRead)
+#define IStreamAsync_Write(This, pv, cb, pcbWritten) (This)->lpVtbl->Write(This, pv, cb, pcbWritten)
+#define IStreamAsync_Seek(This, dlibMove, dwOrigin, plibNewPosition) (This)->lpVtbl->Seek(This, dlibMove, dwOrigin, plibNewPosition)
+#define IStreamAsync_SetSize(This, libNewSize) (This)->lpVtbl->SetSize(This, libNewSize)
+#define IStreamAsync_CopyTo(This, pstm, cb, pcbRead, pcbWritten) (This)->lpVtbl->CopyTo(This, pstm, cb, pcbRead, pcbWritten)
+#define IStreamAsync_Commit(This, grfCommitFlags) (This)->lpVtbl->Commit(This, grfCommitFlags)
+#define IStreamAsync_Revert(This) (This)->lpVtbl->Revert(This)
+#define IStreamAsync_LockRegion(This, libOffset, cb, dwLockType) (This)->lpVtbl->LockRegion(This, libOffset, cb, dwLockType)
+#define IStreamAsync_UnlockRegion(This, libOffset, cb, dwLockType) (This)->lpVtbl->UnlockRegion(This, libOffset, cb, dwLockType)
+#define IStreamAsync_Stat(This, pstatstg, grfStatFlag) (This)->lpVtbl->Stat(This, pstatstg, grfStatFlag)
+#define IStreamAsync_Clone(This, ppstm) (This)->lpVtbl->Clone(This, ppstm)
+#define IStreamAsync_ReadAsync(This, pv, cb, pcbRead, lpOverlapped) (This)->lpVtbl->ReadAsync(This, pv, cb, pcbRead, lpOverlapped)
+#define IStreamAsync_WriteAsync(This, lpBuffer, cb, pcbWritten, lpOverlapped) (This)->lpVtbl->WriteAsync(This, lpBuffer, cb, pcbWritten, lpOverlapped)
+#define IStreamAsync_OverlappedResult(This, lpOverlapped, lpNumberOfBytesTransferred, bWait) (This)->lpVtbl->OverlappedResult(This, lpOverlapped, lpNumberOfBytesTransferred, bWait)
+#define IStreamAsync_CancelIo(This) (This)->lpVtbl->CancelIo(This)
+
 declare function IStreamAsync_ReadAsync_Proxy(byval This as IStreamAsync ptr, byval pv as any ptr, byval cb as DWORD, byval pcbRead as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as HRESULT
 declare sub IStreamAsync_ReadAsync_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IStreamAsync_WriteAsync_Proxy(byval This as IStreamAsync ptr, byval lpBuffer as const any ptr, byval cb as DWORD, byval pcbWritten as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as HRESULT
@@ -2603,6 +3187,10 @@ type IStreamUnbufferedInfo_
 	lpVtbl as IStreamUnbufferedInfoVtbl ptr
 end type
 
+#define IStreamUnbufferedInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IStreamUnbufferedInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IStreamUnbufferedInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IStreamUnbufferedInfo_GetSectorSize(This, pcbSectorSize) (This)->lpVtbl->GetSectorSize(This, pcbSectorSize)
 declare function IStreamUnbufferedInfo_GetSectorSize_Proxy(byval This as IStreamUnbufferedInfo ptr, byval pcbSectorSize as ULONG ptr) as HRESULT
 declare sub IStreamUnbufferedInfo_GetSectorSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -2636,6 +3224,26 @@ declare sub IStreamUnbufferedInfo_GetSectorSize_Stub(byval This as IRpcStubBuffe
 	type IFileOperationProgressSink_
 		lpVtbl as IFileOperationProgressSinkVtbl ptr
 	end type
+
+	#define IFileOperationProgressSink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileOperationProgressSink_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileOperationProgressSink_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileOperationProgressSink_StartOperations(This) (This)->lpVtbl->StartOperations(This)
+	#define IFileOperationProgressSink_FinishOperations(This, hrResult) (This)->lpVtbl->FinishOperations(This, hrResult)
+	#define IFileOperationProgressSink_PreRenameItem(This, dwFlags, psiItem, pszNewName) (This)->lpVtbl->PreRenameItem(This, dwFlags, psiItem, pszNewName)
+	#define IFileOperationProgressSink_PostRenameItem(This, dwFlags, psiItem, pszNewName, hrRename, psiNewlyCreated) (This)->lpVtbl->PostRenameItem(This, dwFlags, psiItem, pszNewName, hrRename, psiNewlyCreated)
+	#define IFileOperationProgressSink_PreMoveItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName) (This)->lpVtbl->PreMoveItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName)
+	#define IFileOperationProgressSink_PostMoveItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName, hrMove, psiNewlyCreated) (This)->lpVtbl->PostMoveItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName, hrMove, psiNewlyCreated)
+	#define IFileOperationProgressSink_PreCopyItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName) (This)->lpVtbl->PreCopyItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName)
+	#define IFileOperationProgressSink_PostCopyItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName, hrCopy, psiNewlyCreated) (This)->lpVtbl->PostCopyItem(This, dwFlags, psiItem, psiDestinationFolder, pszNewName, hrCopy, psiNewlyCreated)
+	#define IFileOperationProgressSink_PreDeleteItem(This, dwFlags, psiItem) (This)->lpVtbl->PreDeleteItem(This, dwFlags, psiItem)
+	#define IFileOperationProgressSink_PostDeleteItem(This, dwFlags, psiItem, hrDelete, psiNewlyCreated) (This)->lpVtbl->PostDeleteItem(This, dwFlags, psiItem, hrDelete, psiNewlyCreated)
+	#define IFileOperationProgressSink_PreNewItem(This, dwFlags, psiDestinationFolder, pszNewName) (This)->lpVtbl->PreNewItem(This, dwFlags, psiDestinationFolder, pszNewName)
+	#define IFileOperationProgressSink_PostNewItem(This, dwFlags, psiDestinationFolder, pszNewName, pszTemplateName, dwFileAttributes, hrNew, psiNewItem) (This)->lpVtbl->PostNewItem(This, dwFlags, psiDestinationFolder, pszNewName, pszTemplateName, dwFileAttributes, hrNew, psiNewItem)
+	#define IFileOperationProgressSink_UpdateProgress(This, iWorkTotal, iWorkSoFar) (This)->lpVtbl->UpdateProgress(This, iWorkTotal, iWorkSoFar)
+	#define IFileOperationProgressSink_ResetTimer(This) (This)->lpVtbl->ResetTimer(This)
+	#define IFileOperationProgressSink_PauseTimer(This) (This)->lpVtbl->PauseTimer(This)
+	#define IFileOperationProgressSink_ResumeTimer(This) (This)->lpVtbl->ResumeTimer(This)
 
 	declare function IFileOperationProgressSink_StartOperations_Proxy(byval This as IFileOperationProgressSink ptr) as HRESULT
 	declare sub IFileOperationProgressSink_StartOperations_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2705,6 +3313,17 @@ type IShellItemArray_
 	lpVtbl as IShellItemArrayVtbl ptr
 end type
 
+#define IShellItemArray_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellItemArray_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellItemArray_Release(This) (This)->lpVtbl->Release(This)
+#define IShellItemArray_BindToHandler(This, pbc, bhid, riid, ppvOut) (This)->lpVtbl->BindToHandler(This, pbc, bhid, riid, ppvOut)
+#define IShellItemArray_GetPropertyStore(This, flags, riid, ppv) (This)->lpVtbl->GetPropertyStore(This, flags, riid, ppv)
+#define IShellItemArray_GetPropertyDescriptionList(This, keyType, riid, ppv) (This)->lpVtbl->GetPropertyDescriptionList(This, keyType, riid, ppv)
+#define IShellItemArray_GetAttributes(This, AttribFlags, sfgaoMask, psfgaoAttribs) (This)->lpVtbl->GetAttributes(This, AttribFlags, sfgaoMask, psfgaoAttribs)
+#define IShellItemArray_GetCount(This, pdwNumItems) (This)->lpVtbl->GetCount(This, pdwNumItems)
+#define IShellItemArray_GetItemAt(This, dwIndex, ppsi) (This)->lpVtbl->GetItemAt(This, dwIndex, ppsi)
+#define IShellItemArray_EnumItems(This, ppenumShellItems) (This)->lpVtbl->EnumItems(This, ppenumShellItems)
+
 declare function IShellItemArray_BindToHandler_Proxy(byval This as IShellItemArray ptr, byval pbc as IBindCtx ptr, byval bhid as const GUID const ptr, byval riid as const IID const ptr, byval ppvOut as any ptr ptr) as HRESULT
 declare sub IShellItemArray_BindToHandler_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellItemArray_GetPropertyStore_Proxy(byval This as IShellItemArray ptr, byval flags as GETPROPERTYSTOREFLAGS, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -2742,6 +3361,10 @@ type IInitializeWithItem_
 	lpVtbl as IInitializeWithItemVtbl ptr
 end type
 
+#define IInitializeWithItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeWithItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeWithItem_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeWithItem_Initialize(This, psi, grfMode) (This)->lpVtbl->Initialize(This, psi, grfMode)
 declare function IInitializeWithItem_Initialize_Proxy(byval This as IInitializeWithItem ptr, byval psi as IShellItem ptr, byval grfMode as DWORD) as HRESULT
 declare sub IInitializeWithItem_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IObjectWithSelection_INTERFACE_DEFINED__
@@ -2759,6 +3382,12 @@ end type
 type IObjectWithSelection_
 	lpVtbl as IObjectWithSelectionVtbl ptr
 end type
+
+#define IObjectWithSelection_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectWithSelection_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectWithSelection_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectWithSelection_SetSelection(This, psia) (This)->lpVtbl->SetSelection(This, psia)
+#define IObjectWithSelection_GetSelection(This, riid, ppv) (This)->lpVtbl->GetSelection(This, riid, ppv)
 
 declare function IObjectWithSelection_SetSelection_Proxy(byval This as IObjectWithSelection ptr, byval psia as IShellItemArray ptr) as HRESULT
 declare sub IObjectWithSelection_SetSelection_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2779,6 +3408,10 @@ type IObjectWithBackReferences_
 	lpVtbl as IObjectWithBackReferencesVtbl ptr
 end type
 
+#define IObjectWithBackReferences_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectWithBackReferences_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectWithBackReferences_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectWithBackReferences_RemoveBackReferences(This) (This)->lpVtbl->RemoveBackReferences(This)
 declare function IObjectWithBackReferences_RemoveBackReferences_Proxy(byval This as IObjectWithBackReferences ptr) as HRESULT
 declare sub IObjectWithBackReferences_RemoveBackReferences_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -2831,6 +3464,18 @@ type IPropertyUI_
 	lpVtbl as IPropertyUIVtbl ptr
 end type
 
+#define IPropertyUI_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPropertyUI_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPropertyUI_Release(This) (This)->lpVtbl->Release(This)
+#define IPropertyUI_ParsePropertyName(This, pszName, pfmtid, ppid, pchEaten) (This)->lpVtbl->ParsePropertyName(This, pszName, pfmtid, ppid, pchEaten)
+#define IPropertyUI_GetCannonicalName(This, fmtid, pid, pwszText, cchText) (This)->lpVtbl->GetCannonicalName(This, fmtid, pid, pwszText, cchText)
+#define IPropertyUI_GetDisplayName(This, fmtid, pid, flags, pwszText, cchText) (This)->lpVtbl->GetDisplayName(This, fmtid, pid, flags, pwszText, cchText)
+#define IPropertyUI_GetPropertyDescription(This, fmtid, pid, pwszText, cchText) (This)->lpVtbl->GetPropertyDescription(This, fmtid, pid, pwszText, cchText)
+#define IPropertyUI_GetDefaultWidth(This, fmtid, pid, pcxChars) (This)->lpVtbl->GetDefaultWidth(This, fmtid, pid, pcxChars)
+#define IPropertyUI_GetFlags(This, fmtid, pid, pflags) (This)->lpVtbl->GetFlags(This, fmtid, pid, pflags)
+#define IPropertyUI_FormatForDisplay(This, fmtid, pid, ppropvar, puiff, pwszText, cchText) (This)->lpVtbl->FormatForDisplay(This, fmtid, pid, ppropvar, puiff, pwszText, cchText)
+#define IPropertyUI_GetHelpInfo(This, fmtid, pid, pwszHelpFile, cch, puHelpID) (This)->lpVtbl->GetHelpInfo(This, fmtid, pid, pwszHelpFile, cch, puHelpID)
+
 declare function IPropertyUI_ParsePropertyName_Proxy(byval This as IPropertyUI ptr, byval pszName as LPCWSTR, byval pfmtid as FMTID ptr, byval ppid as PROPID ptr, byval pchEaten as ULONG ptr) as HRESULT
 declare sub IPropertyUI_ParsePropertyName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPropertyUI_GetCannonicalName_Proxy(byval This as IPropertyUI ptr, byval fmtid as const IID const ptr, byval pid as PROPID, byval pwszText as LPWSTR, byval cchText as DWORD) as HRESULT
@@ -2875,6 +3520,16 @@ end type
 type ICategoryProvider_
 	lpVtbl as ICategoryProviderVtbl ptr
 end type
+
+#define ICategoryProvider_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICategoryProvider_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICategoryProvider_Release(This) (This)->lpVtbl->Release(This)
+#define ICategoryProvider_CanCategorizeOnSCID(This, pscid) (This)->lpVtbl->CanCategorizeOnSCID(This, pscid)
+#define ICategoryProvider_GetDefaultCategory(This, pguid, pscid) (This)->lpVtbl->GetDefaultCategory(This, pguid, pscid)
+#define ICategoryProvider_GetCategoryForSCID(This, pscid, pguid) (This)->lpVtbl->GetCategoryForSCID(This, pscid, pguid)
+#define ICategoryProvider_EnumCategories(This, penum) (This)->lpVtbl->EnumCategories(This, penum)
+#define ICategoryProvider_GetCategoryName(This, pguid, pszName, cch) (This)->lpVtbl->GetCategoryName(This, pguid, pszName, cch)
+#define ICategoryProvider_CreateCategory(This, pguid, riid, ppv) (This)->lpVtbl->CreateCategory(This, pguid, riid, ppv)
 
 declare function ICategoryProvider_CanCategorizeOnSCID_Proxy(byval This as ICategoryProvider ptr, byval pscid as const SHCOLUMNID ptr) as HRESULT
 declare sub ICategoryProvider_CanCategorizeOnSCID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -2930,6 +3585,14 @@ type ICategorizer_
 	lpVtbl as ICategorizerVtbl ptr
 end type
 
+#define ICategorizer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICategorizer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICategorizer_Release(This) (This)->lpVtbl->Release(This)
+#define ICategorizer_GetDescription(This, pszDesc, cch) (This)->lpVtbl->GetDescription(This, pszDesc, cch)
+#define ICategorizer_GetCategory(This, cidl, apidl, rgCategoryIds) (This)->lpVtbl->GetCategory(This, cidl, apidl, rgCategoryIds)
+#define ICategorizer_GetCategoryInfo(This, dwCategoryId, pci) (This)->lpVtbl->GetCategoryInfo(This, dwCategoryId, pci)
+#define ICategorizer_CompareCategory(This, csfFlags, dwCategoryId1, dwCategoryId2) (This)->lpVtbl->CompareCategory(This, csfFlags, dwCategoryId1, dwCategoryId2)
+
 declare function ICategorizer_GetDescription_Proxy(byval This as ICategorizer ptr, byval pszDesc as LPWSTR, byval cch as UINT) as HRESULT
 declare sub ICategorizer_GetDescription_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ICategorizer_GetCategory_Proxy(byval This as ICategorizer ptr, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval rgCategoryIds as DWORD ptr) as HRESULT
@@ -2967,6 +3630,15 @@ type IDropTargetHelper_
 	lpVtbl as IDropTargetHelperVtbl ptr
 end type
 
+#define IDropTargetHelper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDropTargetHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDropTargetHelper_Release(This) (This)->lpVtbl->Release(This)
+#define IDropTargetHelper_DragEnter(This, hwndTarget, pDataObject, ppt, dwEffect) (This)->lpVtbl->DragEnter(This, hwndTarget, pDataObject, ppt, dwEffect)
+#define IDropTargetHelper_DragLeave(This) (This)->lpVtbl->DragLeave(This)
+#define IDropTargetHelper_DragOver(This, ppt, dwEffect) (This)->lpVtbl->DragOver(This, ppt, dwEffect)
+#define IDropTargetHelper_Drop(This, pDataObject, ppt, dwEffect) (This)->lpVtbl->Drop(This, pDataObject, ppt, dwEffect)
+#define IDropTargetHelper_Show(This, fShow) (This)->lpVtbl->Show(This, fShow)
+
 declare function IDropTargetHelper_DragEnter_Proxy(byval This as IDropTargetHelper ptr, byval hwndTarget as HWND, byval pDataObject as IDataObject ptr, byval ppt as POINT ptr, byval dwEffect as DWORD) as HRESULT
 declare sub IDropTargetHelper_DragEnter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDropTargetHelper_DragLeave_Proxy(byval This as IDropTargetHelper ptr) as HRESULT
@@ -2992,6 +3664,12 @@ end type
 type IDragSourceHelper_
 	lpVtbl as IDragSourceHelperVtbl ptr
 end type
+
+#define IDragSourceHelper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDragSourceHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDragSourceHelper_Release(This) (This)->lpVtbl->Release(This)
+#define IDragSourceHelper_InitializeFromBitmap(This, pshdi, pDataObject) (This)->lpVtbl->InitializeFromBitmap(This, pshdi, pDataObject)
+#define IDragSourceHelper_InitializeFromWindow(This, hwnd, ppt, pDataObject) (This)->lpVtbl->InitializeFromWindow(This, hwnd, ppt, pDataObject)
 
 declare function IDragSourceHelper_InitializeFromBitmap_Proxy(byval This as IDragSourceHelper ptr, byval pshdi as LPSHDRAGIMAGE, byval pDataObject as IDataObject ptr) as HRESULT
 declare sub IDragSourceHelper_InitializeFromBitmap_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3021,6 +3699,12 @@ declare sub IDragSourceHelper_InitializeFromWindow_Stub(byval This as IRpcStubBu
 		lpVtbl as IDragSourceHelper2Vtbl ptr
 	end type
 
+	#define IDragSourceHelper2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDragSourceHelper2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDragSourceHelper2_Release(This) (This)->lpVtbl->Release(This)
+	#define IDragSourceHelper2_InitializeFromBitmap(This, pshdi, pDataObject) (This)->lpVtbl->InitializeFromBitmap(This, pshdi, pDataObject)
+	#define IDragSourceHelper2_InitializeFromWindow(This, hwnd, ppt, pDataObject) (This)->lpVtbl->InitializeFromWindow(This, hwnd, ppt, pDataObject)
+	#define IDragSourceHelper2_SetFlags(This, dwFlags) (This)->lpVtbl->SetFlags(This, dwFlags)
 	declare function IDragSourceHelper2_SetFlags_Proxy(byval This as IDragSourceHelper2 ptr, byval dwFlags as DWORD) as HRESULT
 	declare sub IDragSourceHelper2_SetFlags_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -3087,6 +3771,28 @@ end type
 type IShellLinkA_
 	lpVtbl as IShellLinkAVtbl ptr
 end type
+
+#define IShellLinkA_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellLinkA_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellLinkA_Release(This) (This)->lpVtbl->Release(This)
+#define IShellLinkA_GetPath(This, pszFile, cch, pfd, fFlags) (This)->lpVtbl->GetPath(This, pszFile, cch, pfd, fFlags)
+#define IShellLinkA_GetIDList(This, ppidl) (This)->lpVtbl->GetIDList(This, ppidl)
+#define IShellLinkA_SetIDList(This, pidl) (This)->lpVtbl->SetIDList(This, pidl)
+#define IShellLinkA_GetDescription(This, pszName, cch) (This)->lpVtbl->GetDescription(This, pszName, cch)
+#define IShellLinkA_SetDescription(This, pszName) (This)->lpVtbl->SetDescription(This, pszName)
+#define IShellLinkA_GetWorkingDirectory(This, pszDir, cch) (This)->lpVtbl->GetWorkingDirectory(This, pszDir, cch)
+#define IShellLinkA_SetWorkingDirectory(This, pszDir) (This)->lpVtbl->SetWorkingDirectory(This, pszDir)
+#define IShellLinkA_GetArguments(This, pszArgs, cch) (This)->lpVtbl->GetArguments(This, pszArgs, cch)
+#define IShellLinkA_SetArguments(This, pszArgs) (This)->lpVtbl->SetArguments(This, pszArgs)
+#define IShellLinkA_GetHotkey(This, pwHotkey) (This)->lpVtbl->GetHotkey(This, pwHotkey)
+#define IShellLinkA_SetHotkey(This, wHotkey) (This)->lpVtbl->SetHotkey(This, wHotkey)
+#define IShellLinkA_GetShowCmd(This, piShowCmd) (This)->lpVtbl->GetShowCmd(This, piShowCmd)
+#define IShellLinkA_SetShowCmd(This, iShowCmd) (This)->lpVtbl->SetShowCmd(This, iShowCmd)
+#define IShellLinkA_GetIconLocation(This, pszIconPath, cch, piIcon) (This)->lpVtbl->GetIconLocation(This, pszIconPath, cch, piIcon)
+#define IShellLinkA_SetIconLocation(This, pszIconPath, iIcon) (This)->lpVtbl->SetIconLocation(This, pszIconPath, iIcon)
+#define IShellLinkA_SetRelativePath(This, pszPathRel, dwReserved) (This)->lpVtbl->SetRelativePath(This, pszPathRel, dwReserved)
+#define IShellLinkA_Resolve(This, hwnd, fFlags) (This)->lpVtbl->Resolve(This, hwnd, fFlags)
+#define IShellLinkA_SetPath(This, pszFile) (This)->lpVtbl->SetPath(This, pszFile)
 
 declare function IShellLinkA_GetPath_Proxy(byval This as IShellLinkA ptr, byval pszFile as LPSTR, byval cch as long, byval pfd as WIN32_FIND_DATAA ptr, byval fFlags as DWORD) as HRESULT
 declare sub IShellLinkA_GetPath_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3156,6 +3862,28 @@ type IShellLinkW_
 	lpVtbl as IShellLinkWVtbl ptr
 end type
 
+#define IShellLinkW_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellLinkW_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellLinkW_Release(This) (This)->lpVtbl->Release(This)
+#define IShellLinkW_GetPath(This, pszFile, cch, pfd, fFlags) (This)->lpVtbl->GetPath(This, pszFile, cch, pfd, fFlags)
+#define IShellLinkW_GetIDList(This, ppidl) (This)->lpVtbl->GetIDList(This, ppidl)
+#define IShellLinkW_SetIDList(This, pidl) (This)->lpVtbl->SetIDList(This, pidl)
+#define IShellLinkW_GetDescription(This, pszName, cch) (This)->lpVtbl->GetDescription(This, pszName, cch)
+#define IShellLinkW_SetDescription(This, pszName) (This)->lpVtbl->SetDescription(This, pszName)
+#define IShellLinkW_GetWorkingDirectory(This, pszDir, cch) (This)->lpVtbl->GetWorkingDirectory(This, pszDir, cch)
+#define IShellLinkW_SetWorkingDirectory(This, pszDir) (This)->lpVtbl->SetWorkingDirectory(This, pszDir)
+#define IShellLinkW_GetArguments(This, pszArgs, cch) (This)->lpVtbl->GetArguments(This, pszArgs, cch)
+#define IShellLinkW_SetArguments(This, pszArgs) (This)->lpVtbl->SetArguments(This, pszArgs)
+#define IShellLinkW_GetHotkey(This, pwHotkey) (This)->lpVtbl->GetHotkey(This, pwHotkey)
+#define IShellLinkW_SetHotkey(This, wHotkey) (This)->lpVtbl->SetHotkey(This, wHotkey)
+#define IShellLinkW_GetShowCmd(This, piShowCmd) (This)->lpVtbl->GetShowCmd(This, piShowCmd)
+#define IShellLinkW_SetShowCmd(This, iShowCmd) (This)->lpVtbl->SetShowCmd(This, iShowCmd)
+#define IShellLinkW_GetIconLocation(This, pszIconPath, cch, piIcon) (This)->lpVtbl->GetIconLocation(This, pszIconPath, cch, piIcon)
+#define IShellLinkW_SetIconLocation(This, pszIconPath, iIcon) (This)->lpVtbl->SetIconLocation(This, pszIconPath, iIcon)
+#define IShellLinkW_SetRelativePath(This, pszPathRel, dwReserved) (This)->lpVtbl->SetRelativePath(This, pszPathRel, dwReserved)
+#define IShellLinkW_Resolve(This, hwnd, fFlags) (This)->lpVtbl->Resolve(This, hwnd, fFlags)
+#define IShellLinkW_SetPath(This, pszFile) (This)->lpVtbl->SetPath(This, pszFile)
+
 declare function IShellLinkW_GetPath_Proxy(byval This as IShellLinkW ptr, byval pszFile as LPWSTR, byval cch as long, byval pfd as WIN32_FIND_DATAW ptr, byval fFlags as DWORD) as HRESULT
 declare sub IShellLinkW_GetPath_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellLinkW_GetIDList_Proxy(byval This as IShellLinkW ptr, byval ppidl as LPITEMIDLIST ptr) as HRESULT
@@ -3211,6 +3939,15 @@ type IShellLinkDataList_
 	lpVtbl as IShellLinkDataListVtbl ptr
 end type
 
+#define IShellLinkDataList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellLinkDataList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellLinkDataList_Release(This) (This)->lpVtbl->Release(This)
+#define IShellLinkDataList_AddDataBlock(This, pDataBlock) (This)->lpVtbl->AddDataBlock(This, pDataBlock)
+#define IShellLinkDataList_CopyDataBlock(This, dwSig, ppDataBlock) (This)->lpVtbl->CopyDataBlock(This, dwSig, ppDataBlock)
+#define IShellLinkDataList_RemoveDataBlock(This, dwSig) (This)->lpVtbl->RemoveDataBlock(This, dwSig)
+#define IShellLinkDataList_GetFlags(This, pdwFlags) (This)->lpVtbl->GetFlags(This, pdwFlags)
+#define IShellLinkDataList_SetFlags(This, dwFlags) (This)->lpVtbl->SetFlags(This, dwFlags)
+
 declare function IShellLinkDataList_RemoveDataBlock_Proxy(byval This as IShellLinkDataList ptr, byval dwSig as DWORD) as HRESULT
 declare sub IShellLinkDataList_RemoveDataBlock_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellLinkDataList_GetFlags_Proxy(byval This as IShellLinkDataList ptr, byval pdwFlags as DWORD ptr) as HRESULT
@@ -3232,6 +3969,10 @@ type IResolveShellLink_
 	lpVtbl as IResolveShellLinkVtbl ptr
 end type
 
+#define IResolveShellLink_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IResolveShellLink_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IResolveShellLink_Release(This) (This)->lpVtbl->Release(This)
+#define IResolveShellLink_ResolveShellLink(This, punkLink, hwnd, fFlags) (This)->lpVtbl->ResolveShellLink(This, punkLink, hwnd, fFlags)
 declare function IResolveShellLink_ResolveShellLink_Proxy(byval This as IResolveShellLink ptr, byval punkLink as IUnknown ptr, byval hwnd as HWND, byval fFlags as DWORD) as HRESULT
 declare sub IResolveShellLink_ResolveShellLink_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IActionProgressDialog_INTERFACE_DEFINED__
@@ -3259,6 +4000,12 @@ type IActionProgressDialog_
 	lpVtbl as IActionProgressDialogVtbl ptr
 end type
 
+#define IActionProgressDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActionProgressDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActionProgressDialog_Release(This) (This)->lpVtbl->Release(This)
+#define IActionProgressDialog_Initialize(This, flags, pszTitle, pszCancel) (This)->lpVtbl->Initialize(This, flags, pszTitle, pszCancel)
+#define IActionProgressDialog_Stop(This) (This)->lpVtbl->Stop(This)
+
 declare function IActionProgressDialog_Initialize_Proxy(byval This as IActionProgressDialog ptr, byval flags as SPINITF, byval pszTitle as LPCWSTR, byval pszCancel as LPCWSTR) as HRESULT
 declare sub IActionProgressDialog_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IActionProgressDialog_Stop_Proxy(byval This as IActionProgressDialog ptr) as HRESULT
@@ -3279,6 +4026,13 @@ end type
 type IHWEventHandler_
 	lpVtbl as IHWEventHandlerVtbl ptr
 end type
+
+#define IHWEventHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHWEventHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHWEventHandler_Release(This) (This)->lpVtbl->Release(This)
+#define IHWEventHandler_Initialize(This, pszParams) (This)->lpVtbl->Initialize(This, pszParams)
+#define IHWEventHandler_HandleEvent(This, pszDeviceID, pszAltDeviceID, pszEventType) (This)->lpVtbl->HandleEvent(This, pszDeviceID, pszAltDeviceID, pszEventType)
+#define IHWEventHandler_HandleEventWithContent(This, pszDeviceID, pszAltDeviceID, pszEventType, pszContentTypeHandler, pdataobject) (This)->lpVtbl->HandleEventWithContent(This, pszDeviceID, pszAltDeviceID, pszEventType, pszContentTypeHandler, pdataobject)
 
 declare function IHWEventHandler_Initialize_Proxy(byval This as IHWEventHandler ptr, byval pszParams as LPCWSTR) as HRESULT
 declare sub IHWEventHandler_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3304,6 +4058,13 @@ type IHWEventHandler2_
 	lpVtbl as IHWEventHandler2Vtbl ptr
 end type
 
+#define IHWEventHandler2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHWEventHandler2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHWEventHandler2_Release(This) (This)->lpVtbl->Release(This)
+#define IHWEventHandler2_Initialize(This, pszParams) (This)->lpVtbl->Initialize(This, pszParams)
+#define IHWEventHandler2_HandleEvent(This, pszDeviceID, pszAltDeviceID, pszEventType) (This)->lpVtbl->HandleEvent(This, pszDeviceID, pszAltDeviceID, pszEventType)
+#define IHWEventHandler2_HandleEventWithContent(This, pszDeviceID, pszAltDeviceID, pszEventType, pszContentTypeHandler, pdataobject) (This)->lpVtbl->HandleEventWithContent(This, pszDeviceID, pszAltDeviceID, pszEventType, pszContentTypeHandler, pdataobject)
+#define IHWEventHandler2_HandleEventWithHWND(This, pszDeviceID, pszAltDeviceID, pszEventType, hwndOwner) (This)->lpVtbl->HandleEventWithHWND(This, pszDeviceID, pszAltDeviceID, pszEventType, hwndOwner)
 declare function IHWEventHandler2_HandleEventWithHWND_Proxy(byval This as IHWEventHandler2 ptr, byval pszDeviceID as LPCWSTR, byval pszAltDeviceID as LPCWSTR, byval pszEventType as LPCWSTR, byval hwndOwner as HWND) as HRESULT
 declare sub IHWEventHandler2_HandleEventWithHWND_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 const ARCONTENT_AUTORUNINF = &h00000002
@@ -3348,6 +4109,10 @@ type IQueryCancelAutoPlay_
 	lpVtbl as IQueryCancelAutoPlayVtbl ptr
 end type
 
+#define IQueryCancelAutoPlay_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IQueryCancelAutoPlay_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IQueryCancelAutoPlay_Release(This) (This)->lpVtbl->Release(This)
+#define IQueryCancelAutoPlay_AllowAutoPlay(This, pszPath, dwContentType, pszLabel, dwSerialNumber) (This)->lpVtbl->AllowAutoPlay(This, pszPath, dwContentType, pszLabel, dwSerialNumber)
 declare function IQueryCancelAutoPlay_AllowAutoPlay_Proxy(byval This as IQueryCancelAutoPlay ptr, byval pszPath as LPCWSTR, byval dwContentType as DWORD, byval pszLabel as LPCWSTR, byval dwSerialNumber as DWORD) as HRESULT
 declare sub IQueryCancelAutoPlay_AllowAutoPlay_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -3367,6 +4132,10 @@ declare sub IQueryCancelAutoPlay_AllowAutoPlay_Stub(byval This as IRpcStubBuffer
 		lpVtbl as IDynamicHWHandlerVtbl ptr
 	end type
 
+	#define IDynamicHWHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDynamicHWHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDynamicHWHandler_Release(This) (This)->lpVtbl->Release(This)
+	#define IDynamicHWHandler_GetDynamicInfo(This, pszDeviceID, dwContentType, ppszAction) (This)->lpVtbl->GetDynamicInfo(This, pszDeviceID, dwContentType, ppszAction)
 	declare function IDynamicHWHandler_GetDynamicInfo_Proxy(byval This as IDynamicHWHandler ptr, byval pszDeviceID as LPCWSTR, byval dwContentType as DWORD, byval ppszAction as LPWSTR ptr) as HRESULT
 	declare sub IDynamicHWHandler_GetDynamicInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -3430,6 +4199,16 @@ type IActionProgress_
 	lpVtbl as IActionProgressVtbl ptr
 end type
 
+#define IActionProgress_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IActionProgress_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IActionProgress_Release(This) (This)->lpVtbl->Release(This)
+#define IActionProgress_Begin(This, action, flags) (This)->lpVtbl->Begin(This, action, flags)
+#define IActionProgress_UpdateProgress(This, ulCompleted, ulTotal) (This)->lpVtbl->UpdateProgress(This, ulCompleted, ulTotal)
+#define IActionProgress_UpdateText(This, sptext, pszText, fMayCompact) (This)->lpVtbl->UpdateText(This, sptext, pszText, fMayCompact)
+#define IActionProgress_QueryCancel(This, pfCancelled) (This)->lpVtbl->QueryCancel(This, pfCancelled)
+#define IActionProgress_ResetCancel(This) (This)->lpVtbl->ResetCancel(This)
+#define IActionProgress_End(This) (This)->lpVtbl->End(This)
+
 declare function IActionProgress_Begin_Proxy(byval This as IActionProgress ptr, byval action as SPACTION, byval flags as SPBEGINF) as HRESULT
 declare sub IActionProgress_Begin_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IActionProgress_UpdateProgress_Proxy(byval This as IActionProgress ptr, byval ulCompleted as ULONGLONG, byval ulTotal as ULONGLONG) as HRESULT
@@ -3457,6 +4236,10 @@ type IShellExtInit_
 	lpVtbl as IShellExtInitVtbl ptr
 end type
 
+#define IShellExtInit_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellExtInit_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellExtInit_Release(This) (This)->lpVtbl->Release(This)
+#define IShellExtInit_Initialize(This, pidlFolder, pdtobj, hkeyProgID) (This)->lpVtbl->Initialize(This, pidlFolder, pdtobj, hkeyProgID)
 declare function IShellExtInit_Initialize_Proxy(byval This as IShellExtInit ptr, byval pidlFolder as LPCITEMIDLIST, byval pdtobj as IDataObject ptr, byval hkeyProgID as HKEY) as HRESULT
 declare sub IShellExtInit_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPSHELLEXTINIT as IShellExtInit ptr
@@ -3483,6 +4266,12 @@ type IShellPropSheetExt_
 	lpVtbl as IShellPropSheetExtVtbl ptr
 end type
 
+#define IShellPropSheetExt_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellPropSheetExt_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellPropSheetExt_Release(This) (This)->lpVtbl->Release(This)
+#define IShellPropSheetExt_AddPages(This, pfnAddPage, lParam) (This)->lpVtbl->AddPages(This, pfnAddPage, lParam)
+#define IShellPropSheetExt_ReplacePage(This, uPageID, pfnReplaceWith, lParam) (This)->lpVtbl->ReplacePage(This, uPageID, pfnReplaceWith, lParam)
+
 declare function IShellPropSheetExt_AddPages_Proxy(byval This as IShellPropSheetExt ptr, byval pfnAddPage as LPFNSVADDPROPSHEETPAGE, byval lParam as LPARAM) as HRESULT
 declare sub IShellPropSheetExt_AddPages_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellPropSheetExt_ReplacePage_Proxy(byval This as IShellPropSheetExt ptr, byval uPageID as EXPPS, byval pfnReplaceWith as LPFNSVADDPROPSHEETPAGE, byval lParam as LPARAM) as HRESULT
@@ -3503,6 +4292,10 @@ type IRemoteComputer_
 	lpVtbl as IRemoteComputerVtbl ptr
 end type
 
+#define IRemoteComputer_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IRemoteComputer_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IRemoteComputer_Release(This) (This)->lpVtbl->Release(This)
+#define IRemoteComputer_Initialize(This, pszMachine, bEnumerating) (This)->lpVtbl->Initialize(This, pszMachine, bEnumerating)
 declare function IRemoteComputer_Initialize_Proxy(byval This as IRemoteComputer ptr, byval pszMachine as LPCWSTR, byval bEnumerating as WINBOOL) as HRESULT
 declare sub IRemoteComputer_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IQueryContinue_INTERFACE_DEFINED__
@@ -3520,6 +4313,10 @@ type IQueryContinue_
 	lpVtbl as IQueryContinueVtbl ptr
 end type
 
+#define IQueryContinue_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IQueryContinue_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IQueryContinue_Release(This) (This)->lpVtbl->Release(This)
+#define IQueryContinue_QueryContinue(This) (This)->lpVtbl->QueryContinue(This)
 declare function IQueryContinue_QueryContinue_Proxy(byval This as IQueryContinue ptr) as HRESULT
 declare sub IQueryContinue_QueryContinue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IObjectWithCancelEvent_INTERFACE_DEFINED__
@@ -3537,6 +4334,10 @@ type IObjectWithCancelEvent_
 	lpVtbl as IObjectWithCancelEventVtbl ptr
 end type
 
+#define IObjectWithCancelEvent_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IObjectWithCancelEvent_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IObjectWithCancelEvent_Release(This) (This)->lpVtbl->Release(This)
+#define IObjectWithCancelEvent_GetCancelEvent(This, phEvent) (This)->lpVtbl->GetCancelEvent(This, phEvent)
 declare function IObjectWithCancelEvent_GetCancelEvent_Proxy(byval This as IObjectWithCancelEvent ptr, byval phEvent as HANDLE ptr) as HRESULT
 declare sub IObjectWithCancelEvent_GetCancelEvent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IUserNotification_INTERFACE_DEFINED__
@@ -3562,6 +4363,15 @@ end type
 type IUserNotification_
 	lpVtbl as IUserNotificationVtbl ptr
 end type
+
+#define IUserNotification_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUserNotification_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUserNotification_Release(This) (This)->lpVtbl->Release(This)
+#define IUserNotification_SetBalloonInfo(This, pszTitle, pszText, dwInfoFlags) (This)->lpVtbl->SetBalloonInfo(This, pszTitle, pszText, dwInfoFlags)
+#define IUserNotification_SetBalloonRetry(This, dwShowTime, dwInterval, cRetryCount) (This)->lpVtbl->SetBalloonRetry(This, dwShowTime, dwInterval, cRetryCount)
+#define IUserNotification_SetIconInfo(This, hIcon, pszToolTip) (This)->lpVtbl->SetIconInfo(This, hIcon, pszToolTip)
+#define IUserNotification_Show(This, pqc, dwContinuePollInterval) (This)->lpVtbl->Show(This, pqc, dwContinuePollInterval)
+#define IUserNotification_PlaySound(This, pszSoundName) (This)->lpVtbl->PlaySound(This, pszSoundName)
 
 declare function IUserNotification_SetBalloonInfo_Proxy(byval This as IUserNotification ptr, byval pszTitle as LPCWSTR, byval pszText as LPCWSTR, byval dwInfoFlags as DWORD) as HRESULT
 declare sub IUserNotification_SetBalloonInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3589,6 +4399,13 @@ end type
 type IUserNotificationCallback_
 	lpVtbl as IUserNotificationCallbackVtbl ptr
 end type
+
+#define IUserNotificationCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUserNotificationCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUserNotificationCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IUserNotificationCallback_OnBalloonUserClick(This, pt) (This)->lpVtbl->OnBalloonUserClick(This, pt)
+#define IUserNotificationCallback_OnLeftClick(This, pt) (This)->lpVtbl->OnLeftClick(This, pt)
+#define IUserNotificationCallback_OnContextMenu(This, pt) (This)->lpVtbl->OnContextMenu(This, pt)
 
 declare function IUserNotificationCallback_OnBalloonUserClick_Proxy(byval This as IUserNotificationCallback ptr, byval pt as POINT ptr) as HRESULT
 declare sub IUserNotificationCallback_OnBalloonUserClick_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3620,6 +4437,15 @@ type IUserNotification2_
 	lpVtbl as IUserNotification2Vtbl ptr
 end type
 
+#define IUserNotification2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IUserNotification2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IUserNotification2_Release(This) (This)->lpVtbl->Release(This)
+#define IUserNotification2_SetBalloonInfo(This, pszTitle, pszText, dwInfoFlags) (This)->lpVtbl->SetBalloonInfo(This, pszTitle, pszText, dwInfoFlags)
+#define IUserNotification2_SetBalloonRetry(This, dwShowTime, dwInterval, cRetryCount) (This)->lpVtbl->SetBalloonRetry(This, dwShowTime, dwInterval, cRetryCount)
+#define IUserNotification2_SetIconInfo(This, hIcon, pszToolTip) (This)->lpVtbl->SetIconInfo(This, hIcon, pszToolTip)
+#define IUserNotification2_Show(This, pqc, dwContinuePollInterval, pSink) (This)->lpVtbl->Show(This, pqc, dwContinuePollInterval, pSink)
+#define IUserNotification2_PlaySound(This, pszSoundName) (This)->lpVtbl->PlaySound(This, pszSoundName)
+
 declare function IUserNotification2_SetBalloonInfo_Proxy(byval This as IUserNotification2 ptr, byval pszTitle as LPCWSTR, byval pszText as LPCWSTR, byval dwInfoFlags as DWORD) as HRESULT
 declare sub IUserNotification2_SetBalloonInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IUserNotification2_SetBalloonRetry_Proxy(byval This as IUserNotification2 ptr, byval dwShowTime as DWORD, byval dwInterval as DWORD, byval cRetryCount as UINT) as HRESULT
@@ -3645,6 +4471,12 @@ end type
 type IItemNameLimits_
 	lpVtbl as IItemNameLimitsVtbl ptr
 end type
+
+#define IItemNameLimits_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IItemNameLimits_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IItemNameLimits_Release(This) (This)->lpVtbl->Release(This)
+#define IItemNameLimits_GetValidCharacters(This, ppwszValidChars, ppwszInvalidChars) (This)->lpVtbl->GetValidCharacters(This, ppwszValidChars, ppwszInvalidChars)
+#define IItemNameLimits_GetMaxLength(This, pszName, piMaxNameLen) (This)->lpVtbl->GetMaxLength(This, pszName, piMaxNameLen)
 
 declare function IItemNameLimits_GetValidCharacters_Proxy(byval This as IItemNameLimits ptr, byval ppwszValidChars as LPWSTR ptr, byval ppwszInvalidChars as LPWSTR ptr) as HRESULT
 declare sub IItemNameLimits_GetValidCharacters_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3677,6 +4509,22 @@ declare sub IItemNameLimits_GetMaxLength_Stub(byval This as IRpcStubBuffer ptr, 
 	type ISearchFolderItemFactory_
 		lpVtbl as ISearchFolderItemFactoryVtbl ptr
 	end type
+
+	#define ISearchFolderItemFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ISearchFolderItemFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ISearchFolderItemFactory_Release(This) (This)->lpVtbl->Release(This)
+	#define ISearchFolderItemFactory_SetDisplayName(This, pszDisplayName) (This)->lpVtbl->SetDisplayName(This, pszDisplayName)
+	#define ISearchFolderItemFactory_SetFolderTypeID(This, ftid) (This)->lpVtbl->SetFolderTypeID(This, ftid)
+	#define ISearchFolderItemFactory_SetFolderLogicalViewMode(This, flvm) (This)->lpVtbl->SetFolderLogicalViewMode(This, flvm)
+	#define ISearchFolderItemFactory_SetIconSize(This, iIconSize) (This)->lpVtbl->SetIconSize(This, iIconSize)
+	#define ISearchFolderItemFactory_SetVisibleColumns(This, cVisibleColumns, rgKey) (This)->lpVtbl->SetVisibleColumns(This, cVisibleColumns, rgKey)
+	#define ISearchFolderItemFactory_SetSortColumns(This, cSortColumns, rgSortColumns) (This)->lpVtbl->SetSortColumns(This, cSortColumns, rgSortColumns)
+	#define ISearchFolderItemFactory_SetGroupColumn(This, keyGroup) (This)->lpVtbl->SetGroupColumn(This, keyGroup)
+	#define ISearchFolderItemFactory_SetStacks(This, cStackKeys, rgStackKeys) (This)->lpVtbl->SetStacks(This, cStackKeys, rgStackKeys)
+	#define ISearchFolderItemFactory_SetScope(This, psiaScope) (This)->lpVtbl->SetScope(This, psiaScope)
+	#define ISearchFolderItemFactory_SetCondition(This, pCondition) (This)->lpVtbl->SetCondition(This, pCondition)
+	#define ISearchFolderItemFactory_GetShellItem(This, riid, ppv) (This)->lpVtbl->GetShellItem(This, riid, ppv)
+	#define ISearchFolderItemFactory_GetIDList(This, ppidl) (This)->lpVtbl->GetIDList(This, ppidl)
 
 	declare function ISearchFolderItemFactory_SetDisplayName_Proxy(byval This as ISearchFolderItemFactory ptr, byval pszDisplayName as LPCWSTR) as HRESULT
 	declare sub ISearchFolderItemFactory_SetDisplayName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3734,6 +4582,12 @@ type IExtractImage_
 	lpVtbl as IExtractImageVtbl ptr
 end type
 
+#define IExtractImage_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExtractImage_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExtractImage_Release(This) (This)->lpVtbl->Release(This)
+#define IExtractImage_GetLocation(This, pszPathBuffer, cch, pdwPriority, prgSize, dwRecClrDepth, pdwFlags) (This)->lpVtbl->GetLocation(This, pszPathBuffer, cch, pdwPriority, prgSize, dwRecClrDepth, pdwFlags)
+#define IExtractImage_Extract(This, phBmpThumbnail) (This)->lpVtbl->Extract(This, phBmpThumbnail)
+
 declare function IExtractImage_GetLocation_Proxy(byval This as IExtractImage ptr, byval pszPathBuffer as LPWSTR, byval cch as DWORD, byval pdwPriority as DWORD ptr, byval prgSize as const SIZE ptr, byval dwRecClrDepth as DWORD, byval pdwFlags as DWORD ptr) as HRESULT
 declare sub IExtractImage_GetLocation_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IExtractImage_Extract_Proxy(byval This as IExtractImage ptr, byval phBmpThumbnail as HBITMAP ptr) as HRESULT
@@ -3756,6 +4610,12 @@ type IExtractImage2_
 	lpVtbl as IExtractImage2Vtbl ptr
 end type
 
+#define IExtractImage2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExtractImage2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExtractImage2_Release(This) (This)->lpVtbl->Release(This)
+#define IExtractImage2_GetLocation(This, pszPathBuffer, cch, pdwPriority, prgSize, dwRecClrDepth, pdwFlags) (This)->lpVtbl->GetLocation(This, pszPathBuffer, cch, pdwPriority, prgSize, dwRecClrDepth, pdwFlags)
+#define IExtractImage2_Extract(This, phBmpThumbnail) (This)->lpVtbl->Extract(This, phBmpThumbnail)
+#define IExtractImage2_GetDateStamp(This, pDateStamp) (This)->lpVtbl->GetDateStamp(This, pDateStamp)
 declare function IExtractImage2_GetDateStamp_Proxy(byval This as IExtractImage2 ptr, byval pDateStamp as FILETIME ptr) as HRESULT
 declare sub IExtractImage2_GetDateStamp_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 type LPEXTRACTIMAGE2 as IExtractImage2 ptr
@@ -3774,6 +4634,10 @@ type IThumbnailHandlerFactory_
 	lpVtbl as IThumbnailHandlerFactoryVtbl ptr
 end type
 
+#define IThumbnailHandlerFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IThumbnailHandlerFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IThumbnailHandlerFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IThumbnailHandlerFactory_GetThumbnailHandler(This, pidlChild, pbc, riid, ppv) (This)->lpVtbl->GetThumbnailHandler(This, pidlChild, pbc, riid, ppv)
 declare function IThumbnailHandlerFactory_GetThumbnailHandler_Proxy(byval This as IThumbnailHandlerFactory ptr, byval pidlChild as LPCITEMIDLIST, byval pbc as IBindCtx ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IThumbnailHandlerFactory_GetThumbnailHandler_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IParentAndItem_INTERFACE_DEFINED__
@@ -3791,6 +4655,12 @@ end type
 type IParentAndItem_
 	lpVtbl as IParentAndItemVtbl ptr
 end type
+
+#define IParentAndItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IParentAndItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IParentAndItem_Release(This) (This)->lpVtbl->Release(This)
+#define IParentAndItem_SetParentAndItem(This, pidlParent, psf, pidlChild) (This)->lpVtbl->SetParentAndItem(This, pidlParent, psf, pidlChild)
+#define IParentAndItem_GetParentAndItem(This, ppidlParent, ppsf, ppidlChild) (This)->lpVtbl->GetParentAndItem(This, ppidlParent, ppsf, ppidlChild)
 
 declare function IParentAndItem_SetParentAndItem_Proxy(byval This as IParentAndItem ptr, byval pidlParent as LPCITEMIDLIST, byval psf as IShellFolder ptr, byval pidlChild as LPCITEMIDLIST) as HRESULT
 declare sub IParentAndItem_SetParentAndItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3816,6 +4686,15 @@ end type
 type IDockingWindow_
 	lpVtbl as IDockingWindowVtbl ptr
 end type
+
+#define IDockingWindow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDockingWindow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDockingWindow_Release(This) (This)->lpVtbl->Release(This)
+#define IDockingWindow_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IDockingWindow_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+#define IDockingWindow_ShowDW(This, fShow) (This)->lpVtbl->ShowDW(This, fShow)
+#define IDockingWindow_CloseDW(This, dwReserved) (This)->lpVtbl->CloseDW(This, dwReserved)
+#define IDockingWindow_ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved) (This)->lpVtbl->ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved)
 
 declare function IDockingWindow_ShowDW_Proxy(byval This as IDockingWindow ptr, byval fShow as WINBOOL) as HRESULT
 declare sub IDockingWindow_ShowDW_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3901,6 +4780,15 @@ type IDeskBand_
 	lpVtbl as IDeskBandVtbl ptr
 end type
 
+#define IDeskBand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDeskBand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDeskBand_Release(This) (This)->lpVtbl->Release(This)
+#define IDeskBand_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+#define IDeskBand_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+#define IDeskBand_ShowDW(This, fShow) (This)->lpVtbl->ShowDW(This, fShow)
+#define IDeskBand_CloseDW(This, dwReserved) (This)->lpVtbl->CloseDW(This, dwReserved)
+#define IDeskBand_ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved) (This)->lpVtbl->ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved)
+#define IDeskBand_GetBandInfo(This, dwBandID, dwViewMode, pdbi) (This)->lpVtbl->GetBandInfo(This, dwBandID, dwViewMode, pdbi)
 declare function IDeskBand_GetBandInfo_Proxy(byval This as IDeskBand ptr, byval dwBandID as DWORD, byval dwViewMode as DWORD, byval pdbi as DESKBANDINFO ptr) as HRESULT
 declare sub IDeskBand_GetBandInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -3920,6 +4808,10 @@ declare sub IDeskBand_GetBandInfo_Stub(byval This as IRpcStubBuffer ptr, byval p
 		lpVtbl as IDeskBandInfoVtbl ptr
 	end type
 
+	#define IDeskBandInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDeskBandInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDeskBandInfo_Release(This) (This)->lpVtbl->Release(This)
+	#define IDeskBandInfo_GetDefaultBandWidth(This, dwBandID, dwViewMode, pnWidth) (This)->lpVtbl->GetDefaultBandWidth(This, dwBandID, dwViewMode, pnWidth)
 	declare function IDeskBandInfo_GetDefaultBandWidth_Proxy(byval This as IDeskBandInfo ptr, byval dwBandID as DWORD, byval dwViewMode as DWORD, byval pnWidth as long ptr) as HRESULT
 	declare sub IDeskBandInfo_GetDefaultBandWidth_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IDeskBand2_INTERFACE_DEFINED__
@@ -3944,6 +4836,19 @@ declare sub IDeskBand_GetBandInfo_Stub(byval This as IRpcStubBuffer ptr, byval p
 	type IDeskBand2_
 		lpVtbl as IDeskBand2Vtbl ptr
 	end type
+
+	#define IDeskBand2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDeskBand2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDeskBand2_Release(This) (This)->lpVtbl->Release(This)
+	#define IDeskBand2_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+	#define IDeskBand2_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+	#define IDeskBand2_ShowDW(This, fShow) (This)->lpVtbl->ShowDW(This, fShow)
+	#define IDeskBand2_CloseDW(This, dwReserved) (This)->lpVtbl->CloseDW(This, dwReserved)
+	#define IDeskBand2_ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved) (This)->lpVtbl->ResizeBorderDW(This, prcBorder, punkToolbarSite, fReserved)
+	#define IDeskBand2_GetBandInfo(This, dwBandID, dwViewMode, pdbi) (This)->lpVtbl->GetBandInfo(This, dwBandID, dwViewMode, pdbi)
+	#define IDeskBand2_CanRenderComposited(This, pfCanRenderComposited) (This)->lpVtbl->CanRenderComposited(This, pfCanRenderComposited)
+	#define IDeskBand2_SetCompositionState(This, fCompositionEnabled) (This)->lpVtbl->SetCompositionState(This, fCompositionEnabled)
+	#define IDeskBand2_GetCompositionState(This, pfCompositionEnabled) (This)->lpVtbl->GetCompositionState(This, pfCompositionEnabled)
 
 	declare function IDeskBand2_CanRenderComposited_Proxy(byval This as IDeskBand2 ptr, byval pfCanRenderComposited as WINBOOL ptr) as HRESULT
 	declare sub IDeskBand2_CanRenderComposited_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -3971,6 +4876,15 @@ end type
 type ITaskbarList_
 	lpVtbl as ITaskbarListVtbl ptr
 end type
+
+#define ITaskbarList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITaskbarList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITaskbarList_Release(This) (This)->lpVtbl->Release(This)
+#define ITaskbarList_HrInit(This) (This)->lpVtbl->HrInit(This)
+#define ITaskbarList_AddTab(This, hwnd) (This)->lpVtbl->AddTab(This, hwnd)
+#define ITaskbarList_DeleteTab(This, hwnd) (This)->lpVtbl->DeleteTab(This, hwnd)
+#define ITaskbarList_ActivateTab(This, hwnd) (This)->lpVtbl->ActivateTab(This, hwnd)
+#define ITaskbarList_SetActiveAlt(This, hwnd) (This)->lpVtbl->SetActiveAlt(This, hwnd)
 
 declare function ITaskbarList_HrInit_Proxy(byval This as ITaskbarList ptr) as HRESULT
 declare sub ITaskbarList_HrInit_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4002,6 +4916,15 @@ type ITaskbarList2_
 	lpVtbl as ITaskbarList2Vtbl ptr
 end type
 
+#define ITaskbarList2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITaskbarList2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITaskbarList2_Release(This) (This)->lpVtbl->Release(This)
+#define ITaskbarList2_HrInit(This) (This)->lpVtbl->HrInit(This)
+#define ITaskbarList2_AddTab(This, hwnd) (This)->lpVtbl->AddTab(This, hwnd)
+#define ITaskbarList2_DeleteTab(This, hwnd) (This)->lpVtbl->DeleteTab(This, hwnd)
+#define ITaskbarList2_ActivateTab(This, hwnd) (This)->lpVtbl->ActivateTab(This, hwnd)
+#define ITaskbarList2_SetActiveAlt(This, hwnd) (This)->lpVtbl->SetActiveAlt(This, hwnd)
+#define ITaskbarList2_MarkFullscreenWindow(This, hwnd, fFullscreen) (This)->lpVtbl->MarkFullscreenWindow(This, hwnd, fFullscreen)
 declare function ITaskbarList2_MarkFullscreenWindow_Proxy(byval This as ITaskbarList2 ptr, byval hwnd as HWND, byval fFullscreen as WINBOOL) as HRESULT
 declare sub ITaskbarList2_MarkFullscreenWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -4076,6 +4999,28 @@ type ITaskbarList3_
 	lpVtbl as ITaskbarList3Vtbl ptr
 end type
 
+#define ITaskbarList3_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITaskbarList3_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITaskbarList3_Release(This) (This)->lpVtbl->Release(This)
+#define ITaskbarList3_HrInit(This) (This)->lpVtbl->HrInit(This)
+#define ITaskbarList3_AddTab(This, hwnd) (This)->lpVtbl->AddTab(This, hwnd)
+#define ITaskbarList3_DeleteTab(This, hwnd) (This)->lpVtbl->DeleteTab(This, hwnd)
+#define ITaskbarList3_ActivateTab(This, hwnd) (This)->lpVtbl->ActivateTab(This, hwnd)
+#define ITaskbarList3_SetActiveAlt(This, hwnd) (This)->lpVtbl->SetActiveAlt(This, hwnd)
+#define ITaskbarList3_MarkFullscreenWindow(This, hwnd, fFullscreen) (This)->lpVtbl->MarkFullscreenWindow(This, hwnd, fFullscreen)
+#define ITaskbarList3_SetProgressValue(This, hwnd, ullCompleted, ullTotal) (This)->lpVtbl->SetProgressValue(This, hwnd, ullCompleted, ullTotal)
+#define ITaskbarList3_SetProgressState(This, hwnd, tbpFlags) (This)->lpVtbl->SetProgressState(This, hwnd, tbpFlags)
+#define ITaskbarList3_RegisterTab(This, hwndTab, hwndMDI) (This)->lpVtbl->RegisterTab(This, hwndTab, hwndMDI)
+#define ITaskbarList3_UnregisterTab(This, hwndTab) (This)->lpVtbl->UnregisterTab(This, hwndTab)
+#define ITaskbarList3_SetTabOrder(This, hwndTab, hwndInsertBefore) (This)->lpVtbl->SetTabOrder(This, hwndTab, hwndInsertBefore)
+#define ITaskbarList3_SetTabActive(This, hwndTab, hwndMDI, dwReserved) (This)->lpVtbl->SetTabActive(This, hwndTab, hwndMDI, dwReserved)
+#define ITaskbarList3_ThumbBarAddButtons(This, hwnd, cButtons, pButton) (This)->lpVtbl->ThumbBarAddButtons(This, hwnd, cButtons, pButton)
+#define ITaskbarList3_ThumbBarUpdateButtons(This, hwnd, cButtons, pButton) (This)->lpVtbl->ThumbBarUpdateButtons(This, hwnd, cButtons, pButton)
+#define ITaskbarList3_ThumbBarSetImageList(This, hwnd, himl) (This)->lpVtbl->ThumbBarSetImageList(This, hwnd, himl)
+#define ITaskbarList3_SetOverlayIcon(This, hwnd, hIcon, pszDescription) (This)->lpVtbl->SetOverlayIcon(This, hwnd, hIcon, pszDescription)
+#define ITaskbarList3_SetThumbnailTooltip(This, hwnd, pszTip) (This)->lpVtbl->SetThumbnailTooltip(This, hwnd, pszTip)
+#define ITaskbarList3_SetThumbnailClip(This, hwnd, prcClip) (This)->lpVtbl->SetThumbnailClip(This, hwnd, prcClip)
+
 declare function ITaskbarList3_SetProgressValue_Proxy(byval This as ITaskbarList3 ptr, byval hwnd as HWND, byval ullCompleted as ULONGLONG, byval ullTotal as ULONGLONG) as HRESULT
 declare sub ITaskbarList3_SetProgressValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function ITaskbarList3_SetProgressState_Proxy(byval This as ITaskbarList3 ptr, byval hwnd as HWND, byval tbpFlags as TBPFLAG) as HRESULT
@@ -4143,6 +5088,28 @@ type ITaskbarList4_
 	lpVtbl as ITaskbarList4Vtbl ptr
 end type
 
+#define ITaskbarList4_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ITaskbarList4_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ITaskbarList4_Release(This) (This)->lpVtbl->Release(This)
+#define ITaskbarList4_HrInit(This) (This)->lpVtbl->HrInit(This)
+#define ITaskbarList4_AddTab(This, hwnd) (This)->lpVtbl->AddTab(This, hwnd)
+#define ITaskbarList4_DeleteTab(This, hwnd) (This)->lpVtbl->DeleteTab(This, hwnd)
+#define ITaskbarList4_ActivateTab(This, hwnd) (This)->lpVtbl->ActivateTab(This, hwnd)
+#define ITaskbarList4_SetActiveAlt(This, hwnd) (This)->lpVtbl->SetActiveAlt(This, hwnd)
+#define ITaskbarList4_MarkFullscreenWindow(This, hwnd, fFullscreen) (This)->lpVtbl->MarkFullscreenWindow(This, hwnd, fFullscreen)
+#define ITaskbarList4_SetProgressValue(This, hwnd, ullCompleted, ullTotal) (This)->lpVtbl->SetProgressValue(This, hwnd, ullCompleted, ullTotal)
+#define ITaskbarList4_SetProgressState(This, hwnd, tbpFlags) (This)->lpVtbl->SetProgressState(This, hwnd, tbpFlags)
+#define ITaskbarList4_RegisterTab(This, hwndTab, hwndMDI) (This)->lpVtbl->RegisterTab(This, hwndTab, hwndMDI)
+#define ITaskbarList4_UnregisterTab(This, hwndTab) (This)->lpVtbl->UnregisterTab(This, hwndTab)
+#define ITaskbarList4_SetTabOrder(This, hwndTab, hwndInsertBefore) (This)->lpVtbl->SetTabOrder(This, hwndTab, hwndInsertBefore)
+#define ITaskbarList4_SetTabActive(This, hwndTab, hwndMDI, dwReserved) (This)->lpVtbl->SetTabActive(This, hwndTab, hwndMDI, dwReserved)
+#define ITaskbarList4_ThumbBarAddButtons(This, hwnd, cButtons, pButton) (This)->lpVtbl->ThumbBarAddButtons(This, hwnd, cButtons, pButton)
+#define ITaskbarList4_ThumbBarUpdateButtons(This, hwnd, cButtons, pButton) (This)->lpVtbl->ThumbBarUpdateButtons(This, hwnd, cButtons, pButton)
+#define ITaskbarList4_ThumbBarSetImageList(This, hwnd, himl) (This)->lpVtbl->ThumbBarSetImageList(This, hwnd, himl)
+#define ITaskbarList4_SetOverlayIcon(This, hwnd, hIcon, pszDescription) (This)->lpVtbl->SetOverlayIcon(This, hwnd, hIcon, pszDescription)
+#define ITaskbarList4_SetThumbnailTooltip(This, hwnd, pszTip) (This)->lpVtbl->SetThumbnailTooltip(This, hwnd, pszTip)
+#define ITaskbarList4_SetThumbnailClip(This, hwnd, prcClip) (This)->lpVtbl->SetThumbnailClip(This, hwnd, prcClip)
+#define ITaskbarList4_SetTabProperties(This, hwndTab, stpFlags) (This)->lpVtbl->SetTabProperties(This, hwndTab, stpFlags)
 declare function ITaskbarList4_SetTabProperties_Proxy(byval This as ITaskbarList4 ptr, byval hwndTab as HWND, byval stpFlags as STPFLAG) as HRESULT
 declare sub ITaskbarList4_SetTabProperties_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IStartMenuPinnedList_INTERFACE_DEFINED__
@@ -4160,6 +5127,10 @@ type IStartMenuPinnedList_
 	lpVtbl as IStartMenuPinnedListVtbl ptr
 end type
 
+#define IStartMenuPinnedList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IStartMenuPinnedList_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IStartMenuPinnedList_Release(This) (This)->lpVtbl->Release(This)
+#define IStartMenuPinnedList_RemoveFromList(This, pitem) (This)->lpVtbl->RemoveFromList(This, pitem)
 declare function IStartMenuPinnedList_RemoveFromList_Proxy(byval This as IStartMenuPinnedList ptr, byval pitem as IShellItem ptr) as HRESULT
 declare sub IStartMenuPinnedList_RemoveFromList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __ICDBurn_INTERFACE_DEFINED__
@@ -4178,6 +5149,13 @@ end type
 type ICDBurn_
 	lpVtbl as ICDBurnVtbl ptr
 end type
+
+#define ICDBurn_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICDBurn_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICDBurn_Release(This) (This)->lpVtbl->Release(This)
+#define ICDBurn_GetRecorderDriveLetter(This, pszDrive, cch) (This)->lpVtbl->GetRecorderDriveLetter(This, pszDrive, cch)
+#define ICDBurn_Burn(This, hwnd) (This)->lpVtbl->Burn(This, hwnd)
+#define ICDBurn_HasRecordableDrive(This, pfHasRecorder) (This)->lpVtbl->HasRecordableDrive(This, pfHasRecorder)
 
 declare function ICDBurn_GetRecorderDriveLetter_Proxy(byval This as ICDBurn ptr, byval pszDrive as LPWSTR, byval cch as UINT) as HRESULT
 declare sub ICDBurn_GetRecorderDriveLetter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4205,6 +5183,13 @@ type IWizardSite_
 	lpVtbl as IWizardSiteVtbl ptr
 end type
 
+#define IWizardSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWizardSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWizardSite_Release(This) (This)->lpVtbl->Release(This)
+#define IWizardSite_GetPreviousPage(This, phpage) (This)->lpVtbl->GetPreviousPage(This, phpage)
+#define IWizardSite_GetNextPage(This, phpage) (This)->lpVtbl->GetNextPage(This, phpage)
+#define IWizardSite_GetCancelledPage(This, phpage) (This)->lpVtbl->GetCancelledPage(This, phpage)
+
 declare function IWizardSite_GetPreviousPage_Proxy(byval This as IWizardSite ptr, byval phpage as HPROPSHEETPAGE ptr) as HRESULT
 declare sub IWizardSite_GetPreviousPage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IWizardSite_GetNextPage_Proxy(byval This as IWizardSite ptr, byval phpage as HPROPSHEETPAGE ptr) as HRESULT
@@ -4228,6 +5213,13 @@ end type
 type IWizardExtension_
 	lpVtbl as IWizardExtensionVtbl ptr
 end type
+
+#define IWizardExtension_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWizardExtension_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWizardExtension_Release(This) (This)->lpVtbl->Release(This)
+#define IWizardExtension_AddPages(This, aPages, cPages, pnPagesAdded) (This)->lpVtbl->AddPages(This, aPages, cPages, pnPagesAdded)
+#define IWizardExtension_GetFirstPage(This, phpage) (This)->lpVtbl->GetFirstPage(This, phpage)
+#define IWizardExtension_GetLastPage(This, phpage) (This)->lpVtbl->GetLastPage(This, phpage)
 
 declare function IWizardExtension_AddPages_Proxy(byval This as IWizardExtension ptr, byval aPages as HPROPSHEETPAGE ptr, byval cPages as UINT, byval pnPagesAdded as UINT ptr) as HRESULT
 declare sub IWizardExtension_AddPages_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4253,6 +5245,15 @@ end type
 type IWebWizardExtension_
 	lpVtbl as IWebWizardExtensionVtbl ptr
 end type
+
+#define IWebWizardExtension_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IWebWizardExtension_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IWebWizardExtension_Release(This) (This)->lpVtbl->Release(This)
+#define IWebWizardExtension_AddPages(This, aPages, cPages, pnPagesAdded) (This)->lpVtbl->AddPages(This, aPages, cPages, pnPagesAdded)
+#define IWebWizardExtension_GetFirstPage(This, phpage) (This)->lpVtbl->GetFirstPage(This, phpage)
+#define IWebWizardExtension_GetLastPage(This, phpage) (This)->lpVtbl->GetLastPage(This, phpage)
+#define IWebWizardExtension_SetInitialURL(This, pszURL) (This)->lpVtbl->SetInitialURL(This, pszURL)
+#define IWebWizardExtension_SetErrorURL(This, pszErrorURL) (This)->lpVtbl->SetErrorURL(This, pszErrorURL)
 
 declare function IWebWizardExtension_SetInitialURL_Proxy(byval This as IWebWizardExtension ptr, byval pszURL as LPCWSTR) as HRESULT
 declare sub IWebWizardExtension_SetInitialURL_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4289,6 +5290,15 @@ type IPublishingWizard_
 	lpVtbl as IPublishingWizardVtbl ptr
 end type
 
+#define IPublishingWizard_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPublishingWizard_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPublishingWizard_Release(This) (This)->lpVtbl->Release(This)
+#define IPublishingWizard_AddPages(This, aPages, cPages, pnPagesAdded) (This)->lpVtbl->AddPages(This, aPages, cPages, pnPagesAdded)
+#define IPublishingWizard_GetFirstPage(This, phpage) (This)->lpVtbl->GetFirstPage(This, phpage)
+#define IPublishingWizard_GetLastPage(This, phpage) (This)->lpVtbl->GetLastPage(This, phpage)
+#define IPublishingWizard_Initialize(This, pdo, dwOptions, pszServiceScope) (This)->lpVtbl->Initialize(This, pdo, dwOptions, pszServiceScope)
+#define IPublishingWizard_GetTransferManifest(This, phrFromTransfer, pdocManifest) (This)->lpVtbl->GetTransferManifest(This, phrFromTransfer, pdocManifest)
+
 declare function IPublishingWizard_Initialize_Proxy(byval This as IPublishingWizard ptr, byval pdo as IDataObject ptr, byval dwOptions as DWORD, byval pszServiceScope as LPCWSTR) as HRESULT
 declare sub IPublishingWizard_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPublishingWizard_GetTransferManifest_Proxy(byval This as IPublishingWizard ptr, byval phrFromTransfer as HRESULT ptr, byval pdocManifest as IXMLDOMDocument ptr ptr) as HRESULT
@@ -4308,6 +5318,10 @@ type IFolderViewHost_
 	lpVtbl as IFolderViewHostVtbl ptr
 end type
 
+#define IFolderViewHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderViewHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderViewHost_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderViewHost_Initialize(This, hwndParent, pdo, prc) (This)->lpVtbl->Initialize(This, hwndParent, pdo, prc)
 declare function IFolderViewHost_Initialize_Proxy(byval This as IFolderViewHost ptr, byval hwndParent as HWND, byval pdo as IDataObject ptr, byval prc as RECT ptr) as HRESULT
 declare sub IFolderViewHost_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -4329,6 +5343,14 @@ declare sub IFolderViewHost_Initialize_Stub(byval This as IRpcStubBuffer ptr, by
 	type IExplorerBrowserEvents_
 		lpVtbl as IExplorerBrowserEventsVtbl ptr
 	end type
+
+	#define IExplorerBrowserEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IExplorerBrowserEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IExplorerBrowserEvents_Release(This) (This)->lpVtbl->Release(This)
+	#define IExplorerBrowserEvents_OnNavigationPending(This, pidlFolder) (This)->lpVtbl->OnNavigationPending(This, pidlFolder)
+	#define IExplorerBrowserEvents_OnViewCreated(This, psv) (This)->lpVtbl->OnViewCreated(This, psv)
+	#define IExplorerBrowserEvents_OnNavigationComplete(This, pidlFolder) (This)->lpVtbl->OnNavigationComplete(This, pidlFolder)
+	#define IExplorerBrowserEvents_OnNavigationFailed(This, pidlFolder) (This)->lpVtbl->OnNavigationFailed(This, pidlFolder)
 
 	declare function IExplorerBrowserEvents_OnNavigationPending_Proxy(byval This as IExplorerBrowserEvents ptr, byval pidlFolder as LPCITEMIDLIST) as HRESULT
 	declare sub IExplorerBrowserEvents_OnNavigationPending_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4388,6 +5410,25 @@ declare sub IFolderViewHost_Initialize_Stub(byval This as IRpcStubBuffer ptr, by
 		lpVtbl as IExplorerBrowserVtbl ptr
 	end type
 
+	#define IExplorerBrowser_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IExplorerBrowser_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IExplorerBrowser_Release(This) (This)->lpVtbl->Release(This)
+	#define IExplorerBrowser_Initialize(This, hwndParent, prc, pfs) (This)->lpVtbl->Initialize(This, hwndParent, prc, pfs)
+	#define IExplorerBrowser_Destroy(This) (This)->lpVtbl->Destroy(This)
+	#define IExplorerBrowser_SetRect(This, phdwp, rcBrowser) (This)->lpVtbl->SetRect(This, phdwp, rcBrowser)
+	#define IExplorerBrowser_SetPropertyBag(This, pszPropertyBag) (This)->lpVtbl->SetPropertyBag(This, pszPropertyBag)
+	#define IExplorerBrowser_SetEmptyText(This, pszEmptyText) (This)->lpVtbl->SetEmptyText(This, pszEmptyText)
+	#define IExplorerBrowser_SetFolderSettings(This, pfs) (This)->lpVtbl->SetFolderSettings(This, pfs)
+	#define IExplorerBrowser_Advise(This, psbe, pdwCookie) (This)->lpVtbl->Advise(This, psbe, pdwCookie)
+	#define IExplorerBrowser_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IExplorerBrowser_SetOptions(This, dwFlag) (This)->lpVtbl->SetOptions(This, dwFlag)
+	#define IExplorerBrowser_GetOptions(This, pdwFlag) (This)->lpVtbl->GetOptions(This, pdwFlag)
+	#define IExplorerBrowser_BrowseToIDList(This, pidl, uFlags) (This)->lpVtbl->BrowseToIDList(This, pidl, uFlags)
+	#define IExplorerBrowser_BrowseToObject(This, punk, uFlags) (This)->lpVtbl->BrowseToObject(This, punk, uFlags)
+	#define IExplorerBrowser_FillFromObject(This, punk, dwFlags) (This)->lpVtbl->FillFromObject(This, punk, dwFlags)
+	#define IExplorerBrowser_RemoveAll(This) (This)->lpVtbl->RemoveAll(This)
+	#define IExplorerBrowser_GetCurrentView(This, riid, ppv) (This)->lpVtbl->GetCurrentView(This, riid, ppv)
+
 	declare function IExplorerBrowser_Destroy_Proxy(byval This as IExplorerBrowser ptr) as HRESULT
 	declare sub IExplorerBrowser_Destroy_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IExplorerBrowser_SetPropertyBag_Proxy(byval This as IExplorerBrowser ptr, byval pszPropertyBag as LPCWSTR) as HRESULT
@@ -4429,6 +5470,10 @@ declare sub IFolderViewHost_Initialize_Stub(byval This as IRpcStubBuffer ptr, by
 		lpVtbl as IAccessibleObjectVtbl ptr
 	end type
 
+	#define IAccessibleObject_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAccessibleObject_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAccessibleObject_Release(This) (This)->lpVtbl->Release(This)
+	#define IAccessibleObject_SetAccessibleName(This, pszName) (This)->lpVtbl->SetAccessibleName(This, pszName)
 	declare function IAccessibleObject_SetAccessibleName_Proxy(byval This as IAccessibleObject ptr, byval pszName as LPCWSTR) as HRESULT
 	declare sub IAccessibleObject_SetAccessibleName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -4451,6 +5496,15 @@ end type
 type IResultsFolder_
 	lpVtbl as IResultsFolderVtbl ptr
 end type
+
+#define IResultsFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IResultsFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IResultsFolder_Release(This) (This)->lpVtbl->Release(This)
+#define IResultsFolder_AddItem(This, psi) (This)->lpVtbl->AddItem(This, psi)
+#define IResultsFolder_AddIDList(This, pidl, ppidlAdded) (This)->lpVtbl->AddIDList(This, pidl, ppidlAdded)
+#define IResultsFolder_RemoveItem(This, psi) (This)->lpVtbl->RemoveItem(This, psi)
+#define IResultsFolder_RemoveIDList(This, pidl) (This)->lpVtbl->RemoveIDList(This, pidl)
+#define IResultsFolder_RemoveAll(This) (This)->lpVtbl->RemoveAll(This)
 
 declare function IResultsFolder_AddItem_Proxy(byval This as IResultsFolder ptr, byval psi as IShellItem ptr) as HRESULT
 declare sub IResultsFolder_AddItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4483,6 +5537,14 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 	type IEnumObjects_
 		lpVtbl as IEnumObjectsVtbl ptr
 	end type
+
+	#define IEnumObjects_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IEnumObjects_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IEnumObjects_Release(This) (This)->lpVtbl->Release(This)
+	#define IEnumObjects_Next(This, celt, riid, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, riid, rgelt, pceltFetched)
+	#define IEnumObjects_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+	#define IEnumObjects_Reset(This) (This)->lpVtbl->Reset(This)
+	#define IEnumObjects_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 	declare function IEnumObjects_RemoteNext_Proxy(byval This as IEnumObjects ptr, byval celt as ULONG, byval riid as const IID const ptr, byval rgelt as any ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 	declare sub IEnumObjects_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4554,6 +5616,21 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 		lpVtbl as IOperationsProgressDialogVtbl ptr
 	end type
 
+	#define IOperationsProgressDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IOperationsProgressDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IOperationsProgressDialog_Release(This) (This)->lpVtbl->Release(This)
+	#define IOperationsProgressDialog_StartProgressDialog(This, hwndOwner, flags) (This)->lpVtbl->StartProgressDialog(This, hwndOwner, flags)
+	#define IOperationsProgressDialog_StopProgressDialog(This) (This)->lpVtbl->StopProgressDialog(This)
+	#define IOperationsProgressDialog_SetOperation(This, action) (This)->lpVtbl->SetOperation(This, action)
+	#define IOperationsProgressDialog_SetMode(This, mode) (This)->lpVtbl->SetMode(This, mode)
+	#define IOperationsProgressDialog_UpdateProgress(This, ullPointsCurrent, ullPointsTotal, ullSizeCurrent, ullSizeTotal, ullItemsCurrent, ullItemsTotal) (This)->lpVtbl->UpdateProgress(This, ullPointsCurrent, ullPointsTotal, ullSizeCurrent, ullSizeTotal, ullItemsCurrent, ullItemsTotal)
+	#define IOperationsProgressDialog_UpdateLocations(This, psiSource, psiTarget, psiItem) (This)->lpVtbl->UpdateLocations(This, psiSource, psiTarget, psiItem)
+	#define IOperationsProgressDialog_ResetTimer(This) (This)->lpVtbl->ResetTimer(This)
+	#define IOperationsProgressDialog_PauseTimer(This) (This)->lpVtbl->PauseTimer(This)
+	#define IOperationsProgressDialog_ResumeTimer(This) (This)->lpVtbl->ResumeTimer(This)
+	#define IOperationsProgressDialog_GetMilliseconds(This, pullElapsed, pullRemaining) (This)->lpVtbl->GetMilliseconds(This, pullElapsed, pullRemaining)
+	#define IOperationsProgressDialog_GetOperationStatus(This, popstatus) (This)->lpVtbl->GetOperationStatus(This, popstatus)
+
 	declare function IOperationsProgressDialog_StartProgressDialog_Proxy(byval This as IOperationsProgressDialog ptr, byval hwndOwner as HWND, byval flags as OPPROGDLGF) as HRESULT
 	declare sub IOperationsProgressDialog_StartProgressDialog_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IOperationsProgressDialog_StopProgressDialog_Proxy(byval This as IOperationsProgressDialog ptr) as HRESULT
@@ -4591,6 +5668,12 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 	type IIOCancelInformation_
 		lpVtbl as IIOCancelInformationVtbl ptr
 	end type
+
+	#define IIOCancelInformation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IIOCancelInformation_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IIOCancelInformation_Release(This) (This)->lpVtbl->Release(This)
+	#define IIOCancelInformation_SetCancelInformation(This, dwThreadID, uMsgCancel) (This)->lpVtbl->SetCancelInformation(This, dwThreadID, uMsgCancel)
+	#define IIOCancelInformation_GetCancelInformation(This, pdwThreadID, puMsgCancel) (This)->lpVtbl->GetCancelInformation(This, pdwThreadID, puMsgCancel)
 
 	declare function IIOCancelInformation_SetCancelInformation_Proxy(byval This as IIOCancelInformation ptr, byval dwThreadID as DWORD, byval uMsgCancel as UINT) as HRESULT
 	declare sub IIOCancelInformation_SetCancelInformation_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4645,6 +5728,30 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 	type IFileOperation_
 		lpVtbl as IFileOperationVtbl ptr
 	end type
+
+	#define IFileOperation_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileOperation_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileOperation_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileOperation_Advise(This, pfops, pdwCookie) (This)->lpVtbl->Advise(This, pfops, pdwCookie)
+	#define IFileOperation_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFileOperation_SetOperationFlags(This, dwOperationFlags) (This)->lpVtbl->SetOperationFlags(This, dwOperationFlags)
+	#define IFileOperation_SetProgressMessage(This, pszMessage) (This)->lpVtbl->SetProgressMessage(This, pszMessage)
+	#define IFileOperation_SetProgressDialog(This, popd) (This)->lpVtbl->SetProgressDialog(This, popd)
+	#define IFileOperation_SetProperties(This, pproparray) (This)->lpVtbl->SetProperties(This, pproparray)
+	#define IFileOperation_SetOwnerWindow(This, hwndOwner) (This)->lpVtbl->SetOwnerWindow(This, hwndOwner)
+	#define IFileOperation_ApplyPropertiesToItem(This, psiItem) (This)->lpVtbl->ApplyPropertiesToItem(This, psiItem)
+	#define IFileOperation_ApplyPropertiesToItems(This, punkItems) (This)->lpVtbl->ApplyPropertiesToItems(This, punkItems)
+	#define IFileOperation_RenameItem(This, psiItem, pszNewName, pfopsItem) (This)->lpVtbl->RenameItem(This, psiItem, pszNewName, pfopsItem)
+	#define IFileOperation_RenameItems(This, pUnkItems, pszNewName) (This)->lpVtbl->RenameItems(This, pUnkItems, pszNewName)
+	#define IFileOperation_MoveItem(This, psiItem, psiDestinationFolder, pszNewName, pfopsItem) (This)->lpVtbl->MoveItem(This, psiItem, psiDestinationFolder, pszNewName, pfopsItem)
+	#define IFileOperation_MoveItems(This, punkItems, psiDestinationFolder) (This)->lpVtbl->MoveItems(This, punkItems, psiDestinationFolder)
+	#define IFileOperation_CopyItem(This, psiItem, psiDestinationFolder, pszCopyName, pfopsItem) (This)->lpVtbl->CopyItem(This, psiItem, psiDestinationFolder, pszCopyName, pfopsItem)
+	#define IFileOperation_CopyItems(This, punkItems, psiDestinationFolder) (This)->lpVtbl->CopyItems(This, punkItems, psiDestinationFolder)
+	#define IFileOperation_DeleteItem(This, psiItem, pfopsItem) (This)->lpVtbl->DeleteItem(This, psiItem, pfopsItem)
+	#define IFileOperation_DeleteItems(This, punkItems) (This)->lpVtbl->DeleteItems(This, punkItems)
+	#define IFileOperation_NewItem(This, psiDestinationFolder, dwFileAttributes, pszName, pszTemplateName, pfopsItem) (This)->lpVtbl->NewItem(This, psiDestinationFolder, dwFileAttributes, pszName, pszTemplateName, pfopsItem)
+	#define IFileOperation_PerformOperations(This) (This)->lpVtbl->PerformOperations(This)
+	#define IFileOperation_GetAnyOperationsAborted(This, pfAnyOperationsAborted) (This)->lpVtbl->GetAnyOperationsAborted(This, pfAnyOperationsAborted)
 
 	declare function IFileOperation_Advise_Proxy(byval This as IFileOperation ptr, byval pfops as IFileOperationProgressSink ptr, byval pdwCookie as DWORD ptr) as HRESULT
 	declare sub IFileOperation_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4701,6 +5808,10 @@ declare function IResultsFolder_AddIDList_Stub(byval This as IResultsFolder ptr,
 		lpVtbl as IObjectProviderVtbl ptr
 	end type
 
+	#define IObjectProvider_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IObjectProvider_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IObjectProvider_Release(This) (This)->lpVtbl->Release(This)
+	#define IObjectProvider_QueryObject(This, guidObject, riid, ppvOut) (This)->lpVtbl->QueryObject(This, guidObject, riid, ppvOut)
 	declare function IObjectProvider_QueryObject_Proxy(byval This as IObjectProvider ptr, byval guidObject as const GUID const ptr, byval riid as const IID const ptr, byval ppvOut as any ptr ptr) as HRESULT
 	declare sub IObjectProvider_QueryObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -4722,6 +5833,14 @@ end type
 type INamespaceWalkCB_
 	lpVtbl as INamespaceWalkCBVtbl ptr
 end type
+
+#define INamespaceWalkCB_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INamespaceWalkCB_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INamespaceWalkCB_Release(This) (This)->lpVtbl->Release(This)
+#define INamespaceWalkCB_FoundItem(This, psf, pidl) (This)->lpVtbl->FoundItem(This, psf, pidl)
+#define INamespaceWalkCB_EnterFolder(This, psf, pidl) (This)->lpVtbl->EnterFolder(This, psf, pidl)
+#define INamespaceWalkCB_LeaveFolder(This, psf, pidl) (This)->lpVtbl->LeaveFolder(This, psf, pidl)
+#define INamespaceWalkCB_InitializeProgressDialog(This, ppszTitle, ppszCancel) (This)->lpVtbl->InitializeProgressDialog(This, ppszTitle, ppszCancel)
 
 declare function INamespaceWalkCB_FoundItem_Proxy(byval This as INamespaceWalkCB ptr, byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare sub INamespaceWalkCB_FoundItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4752,6 +5871,14 @@ declare sub INamespaceWalkCB_InitializeProgressDialog_Stub(byval This as IRpcStu
 		lpVtbl as INamespaceWalkCB2Vtbl ptr
 	end type
 
+	#define INamespaceWalkCB2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define INamespaceWalkCB2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define INamespaceWalkCB2_Release(This) (This)->lpVtbl->Release(This)
+	#define INamespaceWalkCB2_FoundItem(This, psf, pidl) (This)->lpVtbl->FoundItem(This, psf, pidl)
+	#define INamespaceWalkCB2_EnterFolder(This, psf, pidl) (This)->lpVtbl->EnterFolder(This, psf, pidl)
+	#define INamespaceWalkCB2_LeaveFolder(This, psf, pidl) (This)->lpVtbl->LeaveFolder(This, psf, pidl)
+	#define INamespaceWalkCB2_InitializeProgressDialog(This, ppszTitle, ppszCancel) (This)->lpVtbl->InitializeProgressDialog(This, ppszTitle, ppszCancel)
+	#define INamespaceWalkCB2_WalkComplete(This, hr) (This)->lpVtbl->WalkComplete(This, hr)
 	declare function INamespaceWalkCB2_WalkComplete_Proxy(byval This as INamespaceWalkCB2 ptr, byval hr as HRESULT) as HRESULT
 	declare sub INamespaceWalkCB2_WalkComplete_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -4796,6 +5923,12 @@ type INamespaceWalk_
 	lpVtbl as INamespaceWalkVtbl ptr
 end type
 
+#define INamespaceWalk_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INamespaceWalk_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INamespaceWalk_Release(This) (This)->lpVtbl->Release(This)
+#define INamespaceWalk_Walk(This, punkToWalk, dwFlags, cDepth, pnswcb) (This)->lpVtbl->Walk(This, punkToWalk, dwFlags, cDepth, pnswcb)
+#define INamespaceWalk_GetIDArrayResult(This, pcItems, prgpidl) (This)->lpVtbl->GetIDArrayResult(This, pcItems, prgpidl)
+
 declare function INamespaceWalk_Walk_Proxy(byval This as INamespaceWalk ptr, byval punkToWalk as IUnknown ptr, byval dwFlags as DWORD, byval cDepth as long, byval pnswcb as INamespaceWalkCB ptr) as HRESULT
 declare sub INamespaceWalk_Walk_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INamespaceWalk_GetIDArrayResult_Proxy(byval This as INamespaceWalk ptr, byval pcItems as UINT ptr, byval prgpidl as LPITEMIDLIST ptr ptr) as HRESULT
@@ -4828,6 +5961,12 @@ end type
 type IAutoCompleteDropDown_
 	lpVtbl as IAutoCompleteDropDownVtbl ptr
 end type
+
+#define IAutoCompleteDropDown_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IAutoCompleteDropDown_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IAutoCompleteDropDown_Release(This) (This)->lpVtbl->Release(This)
+#define IAutoCompleteDropDown_GetDropDownStatus(This, pdwFlags, ppwszString) (This)->lpVtbl->GetDropDownStatus(This, pdwFlags, ppwszString)
+#define IAutoCompleteDropDown_ResetEnumerator(This) (This)->lpVtbl->ResetEnumerator(This)
 
 declare function IAutoCompleteDropDown_GetDropDownStatus_Proxy(byval This as IAutoCompleteDropDown ptr, byval pdwFlags as DWORD ptr, byval ppwszString as LPWSTR ptr) as HRESULT
 declare sub IAutoCompleteDropDown_GetDropDownStatus_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4893,6 +6032,18 @@ type IBandSite_
 	lpVtbl as IBandSiteVtbl ptr
 end type
 
+#define IBandSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IBandSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IBandSite_Release(This) (This)->lpVtbl->Release(This)
+#define IBandSite_AddBand(This, punk) (This)->lpVtbl->AddBand(This, punk)
+#define IBandSite_EnumBands(This, uBand, pdwBandID) (This)->lpVtbl->EnumBands(This, uBand, pdwBandID)
+#define IBandSite_QueryBand(This, dwBandID, ppstb, pdwState, pszName, cchName) (This)->lpVtbl->QueryBand(This, dwBandID, ppstb, pdwState, pszName, cchName)
+#define IBandSite_SetBandState(This, dwBandID, dwMask, dwState) (This)->lpVtbl->SetBandState(This, dwBandID, dwMask, dwState)
+#define IBandSite_RemoveBand(This, dwBandID) (This)->lpVtbl->RemoveBand(This, dwBandID)
+#define IBandSite_GetBandObject(This, dwBandID, riid, ppv) (This)->lpVtbl->GetBandObject(This, dwBandID, riid, ppv)
+#define IBandSite_SetBandSiteInfo(This, pbsinfo) (This)->lpVtbl->SetBandSiteInfo(This, pbsinfo)
+#define IBandSite_GetBandSiteInfo(This, pbsinfo) (This)->lpVtbl->GetBandSiteInfo(This, pbsinfo)
+
 declare function IBandSite_AddBand_Proxy(byval This as IBandSite ptr, byval punk as IUnknown ptr) as HRESULT
 declare sub IBandSite_AddBand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IBandSite_EnumBands_Proxy(byval This as IBandSite ptr, byval uBand as UINT, byval pdwBandID as DWORD ptr) as HRESULT
@@ -4925,6 +6076,11 @@ end type
 type IModalWindow_
 	lpVtbl as IModalWindowVtbl ptr
 end type
+
+#define IModalWindow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IModalWindow_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IModalWindow_Release(This) (This)->lpVtbl->Release(This)
+#define IModalWindow_Show(This, hwndOwner) (This)->lpVtbl->Show(This, hwndOwner)
 
 declare function IModalWindow_RemoteShow_Proxy(byval This as IModalWindow ptr, byval hwndOwner as HWND) as HRESULT
 declare sub IModalWindow_RemoteShow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -4964,6 +6120,10 @@ type ICDBurnExt_
 	lpVtbl as ICDBurnExtVtbl ptr
 end type
 
+#define ICDBurnExt_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define ICDBurnExt_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define ICDBurnExt_Release(This) (This)->lpVtbl->Release(This)
+#define ICDBurnExt_GetSupportedActionTypes(This, pdwActions) (This)->lpVtbl->GetSupportedActionTypes(This, pdwActions)
 declare function ICDBurnExt_GetSupportedActionTypes_Proxy(byval This as ICDBurnExt ptr, byval pdwActions as CDBE_ACTIONS ptr) as HRESULT
 declare sub ICDBurnExt_GetSupportedActionTypes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IContextMenuSite_INTERFACE_DEFINED__
@@ -4981,6 +6141,10 @@ type IContextMenuSite_
 	lpVtbl as IContextMenuSiteVtbl ptr
 end type
 
+#define IContextMenuSite_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IContextMenuSite_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IContextMenuSite_Release(This) (This)->lpVtbl->Release(This)
+#define IContextMenuSite_DoContextMenuPopup(This, punkContextMenu, fFlags, pt) (This)->lpVtbl->DoContextMenuPopup(This, punkContextMenu, fFlags, pt)
 declare function IContextMenuSite_DoContextMenuPopup_Proxy(byval This as IContextMenuSite ptr, byval punkContextMenu as IUnknown ptr, byval fFlags as UINT, byval pt as POINT) as HRESULT
 declare sub IContextMenuSite_DoContextMenuPopup_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IEnumReadyCallback_INTERFACE_DEFINED__
@@ -4998,6 +6162,10 @@ type IEnumReadyCallback_
 	lpVtbl as IEnumReadyCallbackVtbl ptr
 end type
 
+#define IEnumReadyCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumReadyCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumReadyCallback_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumReadyCallback_EnumReady(This) (This)->lpVtbl->EnumReady(This)
 declare function IEnumReadyCallback_EnumReady_Proxy(byval This as IEnumReadyCallback ptr) as HRESULT
 declare sub IEnumReadyCallback_EnumReady_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IEnumerableView_INTERFACE_DEFINED__
@@ -5015,6 +6183,12 @@ end type
 type IEnumerableView_
 	lpVtbl as IEnumerableViewVtbl ptr
 end type
+
+#define IEnumerableView_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumerableView_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumerableView_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumerableView_SetEnumReadyCallback(This, percb) (This)->lpVtbl->SetEnumReadyCallback(This, percb)
+#define IEnumerableView_CreateEnumIDListFromContents(This, pidlFolder, dwEnumFlags, ppEnumIDList) (This)->lpVtbl->CreateEnumIDListFromContents(This, pidlFolder, dwEnumFlags, ppEnumIDList)
 
 declare function IEnumerableView_SetEnumReadyCallback_Proxy(byval This as IEnumerableView ptr, byval percb as IEnumReadyCallback ptr) as HRESULT
 declare sub IEnumerableView_SetEnumReadyCallback_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5036,6 +6210,10 @@ type IInsertItem_
 	lpVtbl as IInsertItemVtbl ptr
 end type
 
+#define IInsertItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInsertItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInsertItem_Release(This) (This)->lpVtbl->Release(This)
+#define IInsertItem_InsertItem(This, pidl) (This)->lpVtbl->InsertItem(This, pidl)
 declare function IInsertItem_InsertItem_Proxy(byval This as IInsertItem ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare sub IInsertItem_InsertItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IMenuBand_INTERFACE_DEFINED__
@@ -5060,6 +6238,12 @@ type IMenuBand_
 	lpVtbl as IMenuBandVtbl ptr
 end type
 
+#define IMenuBand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IMenuBand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IMenuBand_Release(This) (This)->lpVtbl->Release(This)
+#define IMenuBand_IsMenuMessage(This, pmsg) (This)->lpVtbl->IsMenuMessage(This, pmsg)
+#define IMenuBand_TranslateMenuMessage(This, pmsg, plRet) (This)->lpVtbl->TranslateMenuMessage(This, pmsg, plRet)
+
 declare function IMenuBand_IsMenuMessage_Proxy(byval This as IMenuBand ptr, byval pmsg as MSG ptr) as HRESULT
 declare sub IMenuBand_IsMenuMessage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IMenuBand_TranslateMenuMessage_Proxy(byval This as IMenuBand ptr, byval pmsg as MSG ptr, byval plRet as LRESULT ptr) as HRESULT
@@ -5081,6 +6265,14 @@ end type
 type IFolderBandPriv_
 	lpVtbl as IFolderBandPrivVtbl ptr
 end type
+
+#define IFolderBandPriv_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFolderBandPriv_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFolderBandPriv_Release(This) (This)->lpVtbl->Release(This)
+#define IFolderBandPriv_SetCascade(This, fCascade) (This)->lpVtbl->SetCascade(This, fCascade)
+#define IFolderBandPriv_SetAccelerators(This, fAccelerators) (This)->lpVtbl->SetAccelerators(This, fAccelerators)
+#define IFolderBandPriv_SetNoIcons(This, fNoIcons) (This)->lpVtbl->SetNoIcons(This, fNoIcons)
+#define IFolderBandPriv_SetNoText(This, fNoText) (This)->lpVtbl->SetNoText(This, fNoText)
 
 declare function IFolderBandPriv_SetCascade_Proxy(byval This as IFolderBandPriv ptr, byval fCascade as WINBOOL) as HRESULT
 declare sub IFolderBandPriv_SetCascade_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5106,6 +6298,12 @@ type IRegTreeItem_
 	lpVtbl as IRegTreeItemVtbl ptr
 end type
 
+#define IRegTreeItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IRegTreeItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IRegTreeItem_Release(This) (This)->lpVtbl->Release(This)
+#define IRegTreeItem_GetCheckState(This, pbCheck) (This)->lpVtbl->GetCheckState(This, pbCheck)
+#define IRegTreeItem_SetCheckState(This, bCheck) (This)->lpVtbl->SetCheckState(This, bCheck)
+
 declare function IRegTreeItem_GetCheckState_Proxy(byval This as IRegTreeItem ptr, byval pbCheck as WINBOOL ptr) as HRESULT
 declare sub IRegTreeItem_GetCheckState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IRegTreeItem_SetCheckState_Proxy(byval This as IRegTreeItem ptr, byval bCheck as WINBOOL) as HRESULT
@@ -5125,6 +6323,10 @@ type IImageRecompress_
 	lpVtbl as IImageRecompressVtbl ptr
 end type
 
+#define IImageRecompress_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IImageRecompress_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IImageRecompress_Release(This) (This)->lpVtbl->Release(This)
+#define IImageRecompress_RecompressImage(This, psi, cx, cy, iQuality, pstg, ppstrmOut) (This)->lpVtbl->RecompressImage(This, psi, cx, cy, iQuality, pstg, ppstrmOut)
 declare function IImageRecompress_RecompressImage_Proxy(byval This as IImageRecompress ptr, byval psi as IShellItem ptr, byval cx as long, byval cy as long, byval iQuality as long, byval pstg as IStorage ptr, byval ppstrmOut as IStream ptr ptr) as HRESULT
 declare sub IImageRecompress_RecompressImage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -5147,6 +6349,15 @@ declare sub IImageRecompress_RecompressImage_Stub(byval This as IRpcStubBuffer p
 	type IDeskBar_
 		lpVtbl as IDeskBarVtbl ptr
 	end type
+
+	#define IDeskBar_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDeskBar_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDeskBar_Release(This) (This)->lpVtbl->Release(This)
+	#define IDeskBar_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+	#define IDeskBar_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+	#define IDeskBar_SetClient(This, punkClient) (This)->lpVtbl->SetClient(This, punkClient)
+	#define IDeskBar_GetClient(This, ppunkClient) (This)->lpVtbl->GetClient(This, ppunkClient)
+	#define IDeskBar_OnPosRectChangeDB(This, prc) (This)->lpVtbl->OnPosRectChangeDB(This, prc)
 
 	declare function IDeskBar_SetClient_Proxy(byval This as IDeskBar ptr, byval punkClient as IUnknown ptr) as HRESULT
 	declare sub IDeskBar_SetClient_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5206,6 +6417,18 @@ declare sub IImageRecompress_RecompressImage_Stub(byval This as IRpcStubBuffer p
 		lpVtbl as IMenuPopupVtbl ptr
 	end type
 
+	#define IMenuPopup_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IMenuPopup_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IMenuPopup_Release(This) (This)->lpVtbl->Release(This)
+	#define IMenuPopup_GetWindow(This, phwnd) (This)->lpVtbl->GetWindow(This, phwnd)
+	#define IMenuPopup_ContextSensitiveHelp(This, fEnterMode) (This)->lpVtbl->ContextSensitiveHelp(This, fEnterMode)
+	#define IMenuPopup_SetClient(This, punkClient) (This)->lpVtbl->SetClient(This, punkClient)
+	#define IMenuPopup_GetClient(This, ppunkClient) (This)->lpVtbl->GetClient(This, ppunkClient)
+	#define IMenuPopup_OnPosRectChangeDB(This, prc) (This)->lpVtbl->OnPosRectChangeDB(This, prc)
+	#define IMenuPopup_Popup(This, ppt, prcExclude, dwFlags) (This)->lpVtbl->Popup(This, ppt, prcExclude, dwFlags)
+	#define IMenuPopup_OnSelect(This, dwSelectType) (This)->lpVtbl->OnSelect(This, dwSelectType)
+	#define IMenuPopup_SetSubMenu(This, pmp, fSet) (This)->lpVtbl->SetSubMenu(This, pmp, fSet)
+
 	declare function IMenuPopup_Popup_Proxy(byval This as IMenuPopup ptr, byval ppt as POINTL ptr, byval prcExclude as RECTL ptr, byval dwFlags as MP_POPUPFLAGS) as HRESULT
 	declare sub IMenuPopup_Popup_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IMenuPopup_OnSelect_Proxy(byval This as IMenuPopup ptr, byval dwSelectType as DWORD) as HRESULT
@@ -5244,6 +6467,15 @@ type IShellItemFilter as IShellItemFilter_
 	type IFileIsInUse_
 		lpVtbl as IFileIsInUseVtbl ptr
 	end type
+
+	#define IFileIsInUse_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileIsInUse_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileIsInUse_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileIsInUse_GetAppName(This, ppszName) (This)->lpVtbl->GetAppName(This, ppszName)
+	#define IFileIsInUse_GetUsage(This, pfut) (This)->lpVtbl->GetUsage(This, pfut)
+	#define IFileIsInUse_GetCapabilities(This, pdwCapFlags) (This)->lpVtbl->GetCapabilities(This, pdwCapFlags)
+	#define IFileIsInUse_GetSwitchToHWND(This, phwnd) (This)->lpVtbl->GetSwitchToHWND(This, phwnd)
+	#define IFileIsInUse_CloseFile(This) (This)->lpVtbl->CloseFile(This)
 
 	declare function IFileIsInUse_GetAppName_Proxy(byval This as IFileIsInUse ptr, byval ppszName as LPWSTR ptr) as HRESULT
 	declare sub IFileIsInUse_GetAppName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5297,6 +6529,17 @@ type IShellItemFilter as IShellItemFilter_
 	type IFileDialogEvents_
 		lpVtbl as IFileDialogEventsVtbl ptr
 	end type
+
+	#define IFileDialogEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileDialogEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileDialogEvents_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileDialogEvents_OnFileOk(This, pfd) (This)->lpVtbl->OnFileOk(This, pfd)
+	#define IFileDialogEvents_OnFolderChanging(This, pfd, psiFolder) (This)->lpVtbl->OnFolderChanging(This, pfd, psiFolder)
+	#define IFileDialogEvents_OnFolderChange(This, pfd) (This)->lpVtbl->OnFolderChange(This, pfd)
+	#define IFileDialogEvents_OnSelectionChange(This, pfd) (This)->lpVtbl->OnSelectionChange(This, pfd)
+	#define IFileDialogEvents_OnShareViolation(This, pfd, psi, pResponse) (This)->lpVtbl->OnShareViolation(This, pfd, psi, pResponse)
+	#define IFileDialogEvents_OnTypeChange(This, pfd) (This)->lpVtbl->OnTypeChange(This, pfd)
+	#define IFileDialogEvents_OnOverwrite(This, pfd, psi, pResponse) (This)->lpVtbl->OnOverwrite(This, pfd, psi, pResponse)
 
 	declare function IFileDialogEvents_OnFileOk_Proxy(byval This as IFileDialogEvents ptr, byval pfd as IFileDialog ptr) as HRESULT
 	declare sub IFileDialogEvents_OnFileOk_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5375,6 +6618,34 @@ type IShellItemFilter as IShellItemFilter_
 	type IFileDialog_
 		lpVtbl as IFileDialogVtbl ptr
 	end type
+
+	#define IFileDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileDialog_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileDialog_Show(This, hwndOwner) (This)->lpVtbl->Show(This, hwndOwner)
+	#define IFileDialog_SetFileTypes(This, cFileTypes, rgFilterSpec) (This)->lpVtbl->SetFileTypes(This, cFileTypes, rgFilterSpec)
+	#define IFileDialog_SetFileTypeIndex(This, iFileType) (This)->lpVtbl->SetFileTypeIndex(This, iFileType)
+	#define IFileDialog_GetFileTypeIndex(This, piFileType) (This)->lpVtbl->GetFileTypeIndex(This, piFileType)
+	#define IFileDialog_Advise(This, pfde, pdwCookie) (This)->lpVtbl->Advise(This, pfde, pdwCookie)
+	#define IFileDialog_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFileDialog_SetOptions(This, fos) (This)->lpVtbl->SetOptions(This, fos)
+	#define IFileDialog_GetOptions(This, pfos) (This)->lpVtbl->GetOptions(This, pfos)
+	#define IFileDialog_SetDefaultFolder(This, psi) (This)->lpVtbl->SetDefaultFolder(This, psi)
+	#define IFileDialog_SetFolder(This, psi) (This)->lpVtbl->SetFolder(This, psi)
+	#define IFileDialog_GetFolder(This, ppsi) (This)->lpVtbl->GetFolder(This, ppsi)
+	#define IFileDialog_GetCurrentSelection(This, ppsi) (This)->lpVtbl->GetCurrentSelection(This, ppsi)
+	#define IFileDialog_SetFileName(This, pszName) (This)->lpVtbl->SetFileName(This, pszName)
+	#define IFileDialog_GetFileName(This, pszName) (This)->lpVtbl->GetFileName(This, pszName)
+	#define IFileDialog_SetTitle(This, pszTitle) (This)->lpVtbl->SetTitle(This, pszTitle)
+	#define IFileDialog_SetOkButtonLabel(This, pszText) (This)->lpVtbl->SetOkButtonLabel(This, pszText)
+	#define IFileDialog_SetFileNameLabel(This, pszLabel) (This)->lpVtbl->SetFileNameLabel(This, pszLabel)
+	#define IFileDialog_GetResult(This, ppsi) (This)->lpVtbl->GetResult(This, ppsi)
+	#define IFileDialog_AddPlace(This, psi, fdap) (This)->lpVtbl->AddPlace(This, psi, fdap)
+	#define IFileDialog_SetDefaultExtension(This, pszDefaultExtension) (This)->lpVtbl->SetDefaultExtension(This, pszDefaultExtension)
+	#define IFileDialog_Close(This, hr) (This)->lpVtbl->Close(This, hr)
+	#define IFileDialog_SetClientGuid(This, guid) (This)->lpVtbl->SetClientGuid(This, guid)
+	#define IFileDialog_ClearClientData(This) (This)->lpVtbl->ClearClientData(This)
+	#define IFileDialog_SetFilter(This, pFilter) (This)->lpVtbl->SetFilter(This, pFilter)
 
 	declare function IFileDialog_SetFileTypes_Proxy(byval This as IFileDialog ptr, byval cFileTypes as UINT, byval rgFilterSpec as const COMDLG_FILTERSPEC ptr) as HRESULT
 	declare sub IFileDialog_SetFileTypes_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5465,6 +6736,39 @@ type IShellItemFilter as IShellItemFilter_
 		lpVtbl as IFileSaveDialogVtbl ptr
 	end type
 
+	#define IFileSaveDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileSaveDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileSaveDialog_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileSaveDialog_Show(This, hwndOwner) (This)->lpVtbl->Show(This, hwndOwner)
+	#define IFileSaveDialog_SetFileTypes(This, cFileTypes, rgFilterSpec) (This)->lpVtbl->SetFileTypes(This, cFileTypes, rgFilterSpec)
+	#define IFileSaveDialog_SetFileTypeIndex(This, iFileType) (This)->lpVtbl->SetFileTypeIndex(This, iFileType)
+	#define IFileSaveDialog_GetFileTypeIndex(This, piFileType) (This)->lpVtbl->GetFileTypeIndex(This, piFileType)
+	#define IFileSaveDialog_Advise(This, pfde, pdwCookie) (This)->lpVtbl->Advise(This, pfde, pdwCookie)
+	#define IFileSaveDialog_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFileSaveDialog_SetOptions(This, fos) (This)->lpVtbl->SetOptions(This, fos)
+	#define IFileSaveDialog_GetOptions(This, pfos) (This)->lpVtbl->GetOptions(This, pfos)
+	#define IFileSaveDialog_SetDefaultFolder(This, psi) (This)->lpVtbl->SetDefaultFolder(This, psi)
+	#define IFileSaveDialog_SetFolder(This, psi) (This)->lpVtbl->SetFolder(This, psi)
+	#define IFileSaveDialog_GetFolder(This, ppsi) (This)->lpVtbl->GetFolder(This, ppsi)
+	#define IFileSaveDialog_GetCurrentSelection(This, ppsi) (This)->lpVtbl->GetCurrentSelection(This, ppsi)
+	#define IFileSaveDialog_SetFileName(This, pszName) (This)->lpVtbl->SetFileName(This, pszName)
+	#define IFileSaveDialog_GetFileName(This, pszName) (This)->lpVtbl->GetFileName(This, pszName)
+	#define IFileSaveDialog_SetTitle(This, pszTitle) (This)->lpVtbl->SetTitle(This, pszTitle)
+	#define IFileSaveDialog_SetOkButtonLabel(This, pszText) (This)->lpVtbl->SetOkButtonLabel(This, pszText)
+	#define IFileSaveDialog_SetFileNameLabel(This, pszLabel) (This)->lpVtbl->SetFileNameLabel(This, pszLabel)
+	#define IFileSaveDialog_GetResult(This, ppsi) (This)->lpVtbl->GetResult(This, ppsi)
+	#define IFileSaveDialog_AddPlace(This, psi, fdap) (This)->lpVtbl->AddPlace(This, psi, fdap)
+	#define IFileSaveDialog_SetDefaultExtension(This, pszDefaultExtension) (This)->lpVtbl->SetDefaultExtension(This, pszDefaultExtension)
+	#define IFileSaveDialog_Close(This, hr) (This)->lpVtbl->Close(This, hr)
+	#define IFileSaveDialog_SetClientGuid(This, guid) (This)->lpVtbl->SetClientGuid(This, guid)
+	#define IFileSaveDialog_ClearClientData(This) (This)->lpVtbl->ClearClientData(This)
+	#define IFileSaveDialog_SetFilter(This, pFilter) (This)->lpVtbl->SetFilter(This, pFilter)
+	#define IFileSaveDialog_SetSaveAsItem(This, psi) (This)->lpVtbl->SetSaveAsItem(This, psi)
+	#define IFileSaveDialog_SetProperties(This, pStore) (This)->lpVtbl->SetProperties(This, pStore)
+	#define IFileSaveDialog_SetCollectedProperties(This, pList, fAppendDefault) (This)->lpVtbl->SetCollectedProperties(This, pList, fAppendDefault)
+	#define IFileSaveDialog_GetProperties(This, ppStore) (This)->lpVtbl->GetProperties(This, ppStore)
+	#define IFileSaveDialog_ApplyProperties(This, psi, pStore, hwnd, pSink) (This)->lpVtbl->ApplyProperties(This, psi, pStore, hwnd, pSink)
+
 	declare function IFileSaveDialog_SetSaveAsItem_Proxy(byval This as IFileSaveDialog ptr, byval psi as IShellItem ptr) as HRESULT
 	declare sub IFileSaveDialog_SetSaveAsItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IFileSaveDialog_SetProperties_Proxy(byval This as IFileSaveDialog ptr, byval pStore as IPropertyStore ptr) as HRESULT
@@ -5514,6 +6818,36 @@ type IShellItemFilter as IShellItemFilter_
 	type IFileOpenDialog_
 		lpVtbl as IFileOpenDialogVtbl ptr
 	end type
+
+	#define IFileOpenDialog_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileOpenDialog_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileOpenDialog_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileOpenDialog_Show(This, hwndOwner) (This)->lpVtbl->Show(This, hwndOwner)
+	#define IFileOpenDialog_SetFileTypes(This, cFileTypes, rgFilterSpec) (This)->lpVtbl->SetFileTypes(This, cFileTypes, rgFilterSpec)
+	#define IFileOpenDialog_SetFileTypeIndex(This, iFileType) (This)->lpVtbl->SetFileTypeIndex(This, iFileType)
+	#define IFileOpenDialog_GetFileTypeIndex(This, piFileType) (This)->lpVtbl->GetFileTypeIndex(This, piFileType)
+	#define IFileOpenDialog_Advise(This, pfde, pdwCookie) (This)->lpVtbl->Advise(This, pfde, pdwCookie)
+	#define IFileOpenDialog_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFileOpenDialog_SetOptions(This, fos) (This)->lpVtbl->SetOptions(This, fos)
+	#define IFileOpenDialog_GetOptions(This, pfos) (This)->lpVtbl->GetOptions(This, pfos)
+	#define IFileOpenDialog_SetDefaultFolder(This, psi) (This)->lpVtbl->SetDefaultFolder(This, psi)
+	#define IFileOpenDialog_SetFolder(This, psi) (This)->lpVtbl->SetFolder(This, psi)
+	#define IFileOpenDialog_GetFolder(This, ppsi) (This)->lpVtbl->GetFolder(This, ppsi)
+	#define IFileOpenDialog_GetCurrentSelection(This, ppsi) (This)->lpVtbl->GetCurrentSelection(This, ppsi)
+	#define IFileOpenDialog_SetFileName(This, pszName) (This)->lpVtbl->SetFileName(This, pszName)
+	#define IFileOpenDialog_GetFileName(This, pszName) (This)->lpVtbl->GetFileName(This, pszName)
+	#define IFileOpenDialog_SetTitle(This, pszTitle) (This)->lpVtbl->SetTitle(This, pszTitle)
+	#define IFileOpenDialog_SetOkButtonLabel(This, pszText) (This)->lpVtbl->SetOkButtonLabel(This, pszText)
+	#define IFileOpenDialog_SetFileNameLabel(This, pszLabel) (This)->lpVtbl->SetFileNameLabel(This, pszLabel)
+	#define IFileOpenDialog_GetResult(This, ppsi) (This)->lpVtbl->GetResult(This, ppsi)
+	#define IFileOpenDialog_AddPlace(This, psi, fdap) (This)->lpVtbl->AddPlace(This, psi, fdap)
+	#define IFileOpenDialog_SetDefaultExtension(This, pszDefaultExtension) (This)->lpVtbl->SetDefaultExtension(This, pszDefaultExtension)
+	#define IFileOpenDialog_Close(This, hr) (This)->lpVtbl->Close(This, hr)
+	#define IFileOpenDialog_SetClientGuid(This, guid) (This)->lpVtbl->SetClientGuid(This, guid)
+	#define IFileOpenDialog_ClearClientData(This) (This)->lpVtbl->ClearClientData(This)
+	#define IFileOpenDialog_SetFilter(This, pFilter) (This)->lpVtbl->SetFilter(This, pFilter)
+	#define IFileOpenDialog_GetResults(This, ppenum) (This)->lpVtbl->GetResults(This, ppenum)
+	#define IFileOpenDialog_GetSelectedItems(This, ppsai) (This)->lpVtbl->GetSelectedItems(This, ppsai)
 
 	declare function IFileOpenDialog_GetResults_Proxy(byval This as IFileOpenDialog ptr, byval ppenum as IShellItemArray ptr ptr) as HRESULT
 	declare sub IFileOpenDialog_GetResults_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5568,6 +6902,37 @@ type IShellItemFilter as IShellItemFilter_
 	type IFileDialogCustomize_
 		lpVtbl as IFileDialogCustomizeVtbl ptr
 	end type
+
+	#define IFileDialogCustomize_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileDialogCustomize_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileDialogCustomize_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileDialogCustomize_EnableOpenDropDown(This, dwIDCtl) (This)->lpVtbl->EnableOpenDropDown(This, dwIDCtl)
+	#define IFileDialogCustomize_AddMenu(This, dwIDCtl, pszLabel) (This)->lpVtbl->AddMenu(This, dwIDCtl, pszLabel)
+	#define IFileDialogCustomize_AddPushButton(This, dwIDCtl, pszLabel) (This)->lpVtbl->AddPushButton(This, dwIDCtl, pszLabel)
+	#define IFileDialogCustomize_AddComboBox(This, dwIDCtl) (This)->lpVtbl->AddComboBox(This, dwIDCtl)
+	#define IFileDialogCustomize_AddRadioButtonList(This, dwIDCtl) (This)->lpVtbl->AddRadioButtonList(This, dwIDCtl)
+	#define IFileDialogCustomize_AddCheckButton(This, dwIDCtl, pszLabel, bChecked) (This)->lpVtbl->AddCheckButton(This, dwIDCtl, pszLabel, bChecked)
+	#define IFileDialogCustomize_AddEditBox(This, dwIDCtl, pszText) (This)->lpVtbl->AddEditBox(This, dwIDCtl, pszText)
+	#define IFileDialogCustomize_AddSeparator(This, dwIDCtl) (This)->lpVtbl->AddSeparator(This, dwIDCtl)
+	#define IFileDialogCustomize_AddText(This, dwIDCtl, pszText) (This)->lpVtbl->AddText(This, dwIDCtl, pszText)
+	#define IFileDialogCustomize_SetControlLabel(This, dwIDCtl, pszLabel) (This)->lpVtbl->SetControlLabel(This, dwIDCtl, pszLabel)
+	#define IFileDialogCustomize_GetControlState(This, dwIDCtl, pdwState) (This)->lpVtbl->GetControlState(This, dwIDCtl, pdwState)
+	#define IFileDialogCustomize_SetControlState(This, dwIDCtl, dwState) (This)->lpVtbl->SetControlState(This, dwIDCtl, dwState)
+	#define IFileDialogCustomize_GetEditBoxText(This, dwIDCtl, ppszText) (This)->lpVtbl->GetEditBoxText(This, dwIDCtl, ppszText)
+	#define IFileDialogCustomize_SetEditBoxText(This, dwIDCtl, pszText) (This)->lpVtbl->SetEditBoxText(This, dwIDCtl, pszText)
+	#define IFileDialogCustomize_GetCheckButtonState(This, dwIDCtl, pbChecked) (This)->lpVtbl->GetCheckButtonState(This, dwIDCtl, pbChecked)
+	#define IFileDialogCustomize_SetCheckButtonState(This, dwIDCtl, bChecked) (This)->lpVtbl->SetCheckButtonState(This, dwIDCtl, bChecked)
+	#define IFileDialogCustomize_AddControlItem(This, dwIDCtl, dwIDItem, pszLabel) (This)->lpVtbl->AddControlItem(This, dwIDCtl, dwIDItem, pszLabel)
+	#define IFileDialogCustomize_RemoveControlItem(This, dwIDCtl, dwIDItem) (This)->lpVtbl->RemoveControlItem(This, dwIDCtl, dwIDItem)
+	#define IFileDialogCustomize_RemoveAllControlItems(This, dwIDCtl) (This)->lpVtbl->RemoveAllControlItems(This, dwIDCtl)
+	#define IFileDialogCustomize_GetControlItemState(This, dwIDCtl, dwIDItem, pdwState) (This)->lpVtbl->GetControlItemState(This, dwIDCtl, dwIDItem, pdwState)
+	#define IFileDialogCustomize_SetControlItemState(This, dwIDCtl, dwIDItem, dwState) (This)->lpVtbl->SetControlItemState(This, dwIDCtl, dwIDItem, dwState)
+	#define IFileDialogCustomize_GetSelectedControlItem(This, dwIDCtl, pdwIDItem) (This)->lpVtbl->GetSelectedControlItem(This, dwIDCtl, pdwIDItem)
+	#define IFileDialogCustomize_SetSelectedControlItem(This, dwIDCtl, dwIDItem) (This)->lpVtbl->SetSelectedControlItem(This, dwIDCtl, dwIDItem)
+	#define IFileDialogCustomize_StartVisualGroup(This, dwIDCtl, pszLabel) (This)->lpVtbl->StartVisualGroup(This, dwIDCtl, pszLabel)
+	#define IFileDialogCustomize_EndVisualGroup(This) (This)->lpVtbl->EndVisualGroup(This)
+	#define IFileDialogCustomize_MakeProminent(This, dwIDCtl) (This)->lpVtbl->MakeProminent(This, dwIDCtl)
+	#define IFileDialogCustomize_SetControlItemText(This, dwIDCtl, dwIDItem, pszLabel) (This)->lpVtbl->SetControlItemText(This, dwIDCtl, dwIDItem, pszLabel)
 
 	declare function IFileDialogCustomize_EnableOpenDropDown_Proxy(byval This as IFileDialogCustomize ptr, byval dwIDCtl as DWORD) as HRESULT
 	declare sub IFileDialogCustomize_EnableOpenDropDown_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -5641,6 +7006,14 @@ type IShellItemFilter as IShellItemFilter_
 		lpVtbl as IFileDialogControlEventsVtbl ptr
 	end type
 
+	#define IFileDialogControlEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileDialogControlEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileDialogControlEvents_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileDialogControlEvents_OnItemSelected(This, pfdc, dwIDCtl, dwIDItem) (This)->lpVtbl->OnItemSelected(This, pfdc, dwIDCtl, dwIDItem)
+	#define IFileDialogControlEvents_OnButtonClicked(This, pfdc, dwIDCtl) (This)->lpVtbl->OnButtonClicked(This, pfdc, dwIDCtl)
+	#define IFileDialogControlEvents_OnCheckButtonToggled(This, pfdc, dwIDCtl, bChecked) (This)->lpVtbl->OnCheckButtonToggled(This, pfdc, dwIDCtl, bChecked)
+	#define IFileDialogControlEvents_OnControlActivating(This, pfdc, dwIDCtl) (This)->lpVtbl->OnControlActivating(This, pfdc, dwIDCtl)
+
 	declare function IFileDialogControlEvents_OnItemSelected_Proxy(byval This as IFileDialogControlEvents ptr, byval pfdc as IFileDialogCustomize ptr, byval dwIDCtl as DWORD, byval dwIDItem as DWORD) as HRESULT
 	declare sub IFileDialogControlEvents_OnItemSelected_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IFileDialogControlEvents_OnButtonClicked_Proxy(byval This as IFileDialogControlEvents ptr, byval pfdc as IFileDialogCustomize ptr, byval dwIDCtl as DWORD) as HRESULT
@@ -5689,6 +7062,36 @@ type IShellItemFilter as IShellItemFilter_
 		lpVtbl as IFileDialog2Vtbl ptr
 	end type
 
+	#define IFileDialog2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFileDialog2_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFileDialog2_Release(This) (This)->lpVtbl->Release(This)
+	#define IFileDialog2_Show(This, hwndOwner) (This)->lpVtbl->Show(This, hwndOwner)
+	#define IFileDialog2_SetFileTypes(This, cFileTypes, rgFilterSpec) (This)->lpVtbl->SetFileTypes(This, cFileTypes, rgFilterSpec)
+	#define IFileDialog2_SetFileTypeIndex(This, iFileType) (This)->lpVtbl->SetFileTypeIndex(This, iFileType)
+	#define IFileDialog2_GetFileTypeIndex(This, piFileType) (This)->lpVtbl->GetFileTypeIndex(This, piFileType)
+	#define IFileDialog2_Advise(This, pfde, pdwCookie) (This)->lpVtbl->Advise(This, pfde, pdwCookie)
+	#define IFileDialog2_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFileDialog2_SetOptions(This, fos) (This)->lpVtbl->SetOptions(This, fos)
+	#define IFileDialog2_GetOptions(This, pfos) (This)->lpVtbl->GetOptions(This, pfos)
+	#define IFileDialog2_SetDefaultFolder(This, psi) (This)->lpVtbl->SetDefaultFolder(This, psi)
+	#define IFileDialog2_SetFolder(This, psi) (This)->lpVtbl->SetFolder(This, psi)
+	#define IFileDialog2_GetFolder(This, ppsi) (This)->lpVtbl->GetFolder(This, ppsi)
+	#define IFileDialog2_GetCurrentSelection(This, ppsi) (This)->lpVtbl->GetCurrentSelection(This, ppsi)
+	#define IFileDialog2_SetFileName(This, pszName) (This)->lpVtbl->SetFileName(This, pszName)
+	#define IFileDialog2_GetFileName(This, pszName) (This)->lpVtbl->GetFileName(This, pszName)
+	#define IFileDialog2_SetTitle(This, pszTitle) (This)->lpVtbl->SetTitle(This, pszTitle)
+	#define IFileDialog2_SetOkButtonLabel(This, pszText) (This)->lpVtbl->SetOkButtonLabel(This, pszText)
+	#define IFileDialog2_SetFileNameLabel(This, pszLabel) (This)->lpVtbl->SetFileNameLabel(This, pszLabel)
+	#define IFileDialog2_GetResult(This, ppsi) (This)->lpVtbl->GetResult(This, ppsi)
+	#define IFileDialog2_AddPlace(This, psi, fdap) (This)->lpVtbl->AddPlace(This, psi, fdap)
+	#define IFileDialog2_SetDefaultExtension(This, pszDefaultExtension) (This)->lpVtbl->SetDefaultExtension(This, pszDefaultExtension)
+	#define IFileDialog2_Close(This, hr) (This)->lpVtbl->Close(This, hr)
+	#define IFileDialog2_SetClientGuid(This, guid) (This)->lpVtbl->SetClientGuid(This, guid)
+	#define IFileDialog2_ClearClientData(This) (This)->lpVtbl->ClearClientData(This)
+	#define IFileDialog2_SetFilter(This, pFilter) (This)->lpVtbl->SetFilter(This, pFilter)
+	#define IFileDialog2_SetCancelButtonLabel(This, pszLabel) (This)->lpVtbl->SetCancelButtonLabel(This, pszLabel)
+	#define IFileDialog2_SetNavigationRoot(This, psi) (This)->lpVtbl->SetNavigationRoot(This, psi)
+
 	declare function IFileDialog2_SetCancelButtonLabel_Proxy(byval This as IFileDialog2 ptr, byval pszLabel as LPCWSTR) as HRESULT
 	declare sub IFileDialog2_SetCancelButtonLabel_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IFileDialog2_SetNavigationRoot_Proxy(byval This as IFileDialog2 ptr, byval psi as IShellItem ptr) as HRESULT
@@ -5729,6 +7132,16 @@ type IShellItemFilter as IShellItemFilter_
 		lpVtbl as IApplicationAssociationRegistrationVtbl ptr
 	end type
 
+	#define IApplicationAssociationRegistration_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationAssociationRegistration_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationAssociationRegistration_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationAssociationRegistration_QueryCurrentDefault(This, pszQuery, atQueryType, alQueryLevel, ppszAssociation) (This)->lpVtbl->QueryCurrentDefault(This, pszQuery, atQueryType, alQueryLevel, ppszAssociation)
+	#define IApplicationAssociationRegistration_QueryAppIsDefault(This, pszQuery, atQueryType, alQueryLevel, pszAppRegistryName, pfDefault) (This)->lpVtbl->QueryAppIsDefault(This, pszQuery, atQueryType, alQueryLevel, pszAppRegistryName, pfDefault)
+	#define IApplicationAssociationRegistration_QueryAppIsDefaultAll(This, alQueryLevel, pszAppRegistryName, pfDefault) (This)->lpVtbl->QueryAppIsDefaultAll(This, alQueryLevel, pszAppRegistryName, pfDefault)
+	#define IApplicationAssociationRegistration_SetAppAsDefault(This, pszAppRegistryName, pszSet, atSetType) (This)->lpVtbl->SetAppAsDefault(This, pszAppRegistryName, pszSet, atSetType)
+	#define IApplicationAssociationRegistration_SetAppAsDefaultAll(This, pszAppRegistryName) (This)->lpVtbl->SetAppAsDefaultAll(This, pszAppRegistryName)
+	#define IApplicationAssociationRegistration_ClearUserAssociations(This) (This)->lpVtbl->ClearUserAssociations(This)
+
 	declare function IApplicationAssociationRegistration_QueryCurrentDefault_Proxy(byval This as IApplicationAssociationRegistration ptr, byval pszQuery as LPCWSTR, byval atQueryType as ASSOCIATIONTYPE, byval alQueryLevel as ASSOCIATIONLEVEL, byval ppszAssociation as LPWSTR ptr) as HRESULT
 	declare sub IApplicationAssociationRegistration_QueryCurrentDefault_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IApplicationAssociationRegistration_QueryAppIsDefault_Proxy(byval This as IApplicationAssociationRegistration ptr, byval pszQuery as LPCWSTR, byval atQueryType as ASSOCIATIONTYPE, byval alQueryLevel as ASSOCIATIONLEVEL, byval pszAppRegistryName as LPCWSTR, byval pfDefault as WINBOOL ptr) as HRESULT
@@ -5757,6 +7170,10 @@ type IShellItemFilter as IShellItemFilter_
 		lpVtbl as IApplicationAssociationRegistrationUIVtbl ptr
 	end type
 
+	#define IApplicationAssociationRegistrationUI_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationAssociationRegistrationUI_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationAssociationRegistrationUI_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationAssociationRegistrationUI_LaunchAdvancedAssociationUI(This, pszAppRegistryName) (This)->lpVtbl->LaunchAdvancedAssociationUI(This, pszAppRegistryName)
 	declare function IApplicationAssociationRegistrationUI_LaunchAdvancedAssociationUI_Proxy(byval This as IApplicationAssociationRegistrationUI ptr, byval pszAppRegistryName as LPCWSTR) as HRESULT
 	declare sub IApplicationAssociationRegistrationUI_LaunchAdvancedAssociationUI_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -5785,6 +7202,10 @@ type IDelegateFolder_
 	lpVtbl as IDelegateFolderVtbl ptr
 end type
 
+#define IDelegateFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDelegateFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDelegateFolder_Release(This) (This)->lpVtbl->Release(This)
+#define IDelegateFolder_SetItemAlloc(This, pmalloc) (This)->lpVtbl->SetItemAlloc(This, pmalloc)
 declare function IDelegateFolder_SetItemAlloc_Proxy(byval This as IDelegateFolder ptr, byval pmalloc as IMalloc ptr) as HRESULT
 declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -5831,6 +7252,10 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 		lpVtbl as IBrowserFrameOptionsVtbl ptr
 	end type
 
+	#define IBrowserFrameOptions_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IBrowserFrameOptions_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IBrowserFrameOptions_Release(This) (This)->lpVtbl->Release(This)
+	#define IBrowserFrameOptions_GetFrameOptions(This, dwMask, pdwOptions) (This)->lpVtbl->GetFrameOptions(This, dwMask, pdwOptions)
 	declare function IBrowserFrameOptions_GetFrameOptions_Proxy(byval This as IBrowserFrameOptions ptr, byval dwMask as BROWSERFRAMEOPTIONS, byval pdwOptions as BROWSERFRAMEOPTIONS ptr) as HRESULT
 	declare sub IBrowserFrameOptions_GetFrameOptions_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -5870,6 +7295,10 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 		lpVtbl as INewWindowManagerVtbl ptr
 	end type
 
+	#define INewWindowManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define INewWindowManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define INewWindowManager_Release(This) (This)->lpVtbl->Release(This)
+	#define INewWindowManager_EvaluateNewWindow(This, pszUrl, pszName, pszUrlContext, pszFeatures, fReplace, dwFlags, dwUserActionTime) (This)->lpVtbl->EvaluateNewWindow(This, pszUrl, pszName, pszUrlContext, pszFeatures, fReplace, dwFlags, dwUserActionTime)
 	declare function INewWindowManager_EvaluateNewWindow_Proxy(byval This as INewWindowManager ptr, byval pszUrl as LPCWSTR, byval pszName as LPCWSTR, byval pszUrlContext as LPCWSTR, byval pszFeatures as LPCWSTR, byval fReplace as WINBOOL, byval dwFlags as DWORD, byval dwUserActionTime as DWORD) as HRESULT
 	declare sub INewWindowManager_EvaluateNewWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IAttachmentExecute_INTERFACE_DEFINED__
@@ -5913,6 +7342,22 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 	type IAttachmentExecute_
 		lpVtbl as IAttachmentExecuteVtbl ptr
 	end type
+
+	#define IAttachmentExecute_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAttachmentExecute_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAttachmentExecute_Release(This) (This)->lpVtbl->Release(This)
+	#define IAttachmentExecute_SetClientTitle(This, pszTitle) (This)->lpVtbl->SetClientTitle(This, pszTitle)
+	#define IAttachmentExecute_SetClientGuid(This, guid) (This)->lpVtbl->SetClientGuid(This, guid)
+	#define IAttachmentExecute_SetLocalPath(This, pszLocalPath) (This)->lpVtbl->SetLocalPath(This, pszLocalPath)
+	#define IAttachmentExecute_SetFileName(This, pszFileName) (This)->lpVtbl->SetFileName(This, pszFileName)
+	#define IAttachmentExecute_SetSource(This, pszSource) (This)->lpVtbl->SetSource(This, pszSource)
+	#define IAttachmentExecute_SetReferrer(This, pszReferrer) (This)->lpVtbl->SetReferrer(This, pszReferrer)
+	#define IAttachmentExecute_CheckPolicy(This) (This)->lpVtbl->CheckPolicy(This)
+	#define IAttachmentExecute_Prompt(This, hwnd, prompt, paction) (This)->lpVtbl->Prompt(This, hwnd, prompt, paction)
+	#define IAttachmentExecute_Save(This) (This)->lpVtbl->Save(This)
+	#define IAttachmentExecute_Execute(This, hwnd, pszVerb, phProcess) (This)->lpVtbl->Execute(This, hwnd, pszVerb, phProcess)
+	#define IAttachmentExecute_SaveWithUI(This, hwnd) (This)->lpVtbl->SaveWithUI(This, hwnd)
+	#define IAttachmentExecute_ClearClientState(This) (This)->lpVtbl->ClearClientState(This)
 
 	declare function IAttachmentExecute_SetClientTitle_Proxy(byval This as IAttachmentExecute ptr, byval pszTitle as LPCWSTR) as HRESULT
 	declare sub IAttachmentExecute_SetClientTitle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -6062,6 +7507,10 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 		lpVtbl as IShellMenuCallbackVtbl ptr
 	end type
 
+	#define IShellMenuCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IShellMenuCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IShellMenuCallback_Release(This) (This)->lpVtbl->Release(This)
+	#define IShellMenuCallback_CallbackSM(This, psmd, uMsg, wParam, lParam) (This)->lpVtbl->CallbackSM(This, psmd, uMsg, wParam, lParam)
 	declare function IShellMenuCallback_CallbackSM_Proxy(byval This as IShellMenuCallback ptr, byval psmd as LPSMDATA, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 	declare sub IShellMenuCallback_CallbackSM_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	const SMINIT_DEFAULT = &h00000000
@@ -6108,6 +7557,19 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 		lpVtbl as IShellMenuVtbl ptr
 	end type
 
+	#define IShellMenu_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IShellMenu_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IShellMenu_Release(This) (This)->lpVtbl->Release(This)
+	#define IShellMenu_Initialize(This, psmc, uId, uIdAncestor, dwFlags) (This)->lpVtbl->Initialize(This, psmc, uId, uIdAncestor, dwFlags)
+	#define IShellMenu_GetMenuInfo(This, ppsmc, puId, puIdAncestor, pdwFlags) (This)->lpVtbl->GetMenuInfo(This, ppsmc, puId, puIdAncestor, pdwFlags)
+	#define IShellMenu_SetShellFolder(This, psf, pidlFolder, hKey, dwFlags) (This)->lpVtbl->SetShellFolder(This, psf, pidlFolder, hKey, dwFlags)
+	#define IShellMenu_GetShellFolder(This, pdwFlags, ppidl, riid, ppv) (This)->lpVtbl->GetShellFolder(This, pdwFlags, ppidl, riid, ppv)
+	#define IShellMenu_SetMenu(This, hmenu, hwnd, dwFlags) (This)->lpVtbl->SetMenu(This, hmenu, hwnd, dwFlags)
+	#define IShellMenu_GetMenu(This, phmenu, phwnd, pdwFlags) (This)->lpVtbl->GetMenu(This, phmenu, phwnd, pdwFlags)
+	#define IShellMenu_InvalidateItem(This, psmd, dwFlags) (This)->lpVtbl->InvalidateItem(This, psmd, dwFlags)
+	#define IShellMenu_GetState(This, psmd) (This)->lpVtbl->GetState(This, psmd)
+	#define IShellMenu_SetMenuToolbar(This, punk, dwFlags) (This)->lpVtbl->SetMenuToolbar(This, punk, dwFlags)
+
 	declare function IShellMenu_Initialize_Proxy(byval This as IShellMenu ptr, byval psmc as IShellMenuCallback ptr, byval uId as UINT, byval uIdAncestor as UINT, byval dwFlags as DWORD) as HRESULT
 	declare sub IShellMenu_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IShellMenu_GetMenuInfo_Proxy(byval This as IShellMenu ptr, byval ppsmc as IShellMenuCallback ptr ptr, byval puId as UINT ptr, byval puIdAncestor as UINT ptr, byval pdwFlags as DWORD ptr) as HRESULT
@@ -6143,6 +7605,10 @@ type IShellRunDll_
 	lpVtbl as IShellRunDllVtbl ptr
 end type
 
+#define IShellRunDll_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellRunDll_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellRunDll_Release(This) (This)->lpVtbl->Release(This)
+#define IShellRunDll_Run(This, pszArgs) (This)->lpVtbl->Run(This, pszArgs)
 declare function IShellRunDll_Run_Proxy(byval This as IShellRunDll ptr, byval pszArgs as LPCWSTR) as HRESULT
 declare sub IShellRunDll_Run_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -6234,6 +7700,19 @@ declare sub IShellRunDll_Run_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCh
 		lpVtbl as IKnownFolderVtbl ptr
 	end type
 
+	#define IKnownFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IKnownFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IKnownFolder_Release(This) (This)->lpVtbl->Release(This)
+	#define IKnownFolder_GetId(This, pkfid) (This)->lpVtbl->GetId(This, pkfid)
+	#define IKnownFolder_GetCategory(This, pCategory) (This)->lpVtbl->GetCategory(This, pCategory)
+	#define IKnownFolder_GetShellItem(This, dwFlags, riid, ppv) (This)->lpVtbl->GetShellItem(This, dwFlags, riid, ppv)
+	#define IKnownFolder_GetPath(This, dwFlags, ppszPath) (This)->lpVtbl->GetPath(This, dwFlags, ppszPath)
+	#define IKnownFolder_SetPath(This, dwFlags, pszPath) (This)->lpVtbl->SetPath(This, dwFlags, pszPath)
+	#define IKnownFolder_GetIDList(This, dwFlags, ppidl) (This)->lpVtbl->GetIDList(This, dwFlags, ppidl)
+	#define IKnownFolder_GetFolderType(This, pftid) (This)->lpVtbl->GetFolderType(This, pftid)
+	#define IKnownFolder_GetRedirectionCapabilities(This, pCapabilities) (This)->lpVtbl->GetRedirectionCapabilities(This, pCapabilities)
+	#define IKnownFolder_GetFolderDefinition(This, pKFD) (This)->lpVtbl->GetFolderDefinition(This, pKFD)
+
 	declare function IKnownFolder_GetId_Proxy(byval This as IKnownFolder ptr, byval pkfid as KNOWNFOLDERID ptr) as HRESULT
 	declare sub IKnownFolder_GetId_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IKnownFolder_GetCategory_Proxy(byval This as IKnownFolder ptr, byval pCategory as KF_CATEGORY ptr) as HRESULT
@@ -6282,6 +7761,20 @@ declare sub IShellRunDll_Run_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCh
 	type IKnownFolderManager_
 		lpVtbl as IKnownFolderManagerVtbl ptr
 	end type
+
+	#define IKnownFolderManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IKnownFolderManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IKnownFolderManager_Release(This) (This)->lpVtbl->Release(This)
+	#define IKnownFolderManager_FolderIdFromCsidl(This, nCsidl, pfid) (This)->lpVtbl->FolderIdFromCsidl(This, nCsidl, pfid)
+	#define IKnownFolderManager_FolderIdToCsidl(This, rfid, pnCsidl) (This)->lpVtbl->FolderIdToCsidl(This, rfid, pnCsidl)
+	#define IKnownFolderManager_GetFolderIds(This, ppKFId, pCount) (This)->lpVtbl->GetFolderIds(This, ppKFId, pCount)
+	#define IKnownFolderManager_GetFolder(This, rfid, ppkf) (This)->lpVtbl->GetFolder(This, rfid, ppkf)
+	#define IKnownFolderManager_GetFolderByName(This, pszCanonicalName, ppkf) (This)->lpVtbl->GetFolderByName(This, pszCanonicalName, ppkf)
+	#define IKnownFolderManager_RegisterFolder(This, rfid, pKFD) (This)->lpVtbl->RegisterFolder(This, rfid, pKFD)
+	#define IKnownFolderManager_UnregisterFolder(This, rfid) (This)->lpVtbl->UnregisterFolder(This, rfid)
+	#define IKnownFolderManager_FindFolderFromPath(This, pszPath, mode, ppkf) (This)->lpVtbl->FindFolderFromPath(This, pszPath, mode, ppkf)
+	#define IKnownFolderManager_FindFolderFromIDList(This, pidl, ppkf) (This)->lpVtbl->FindFolderFromIDList(This, pidl, ppkf)
+	#define IKnownFolderManager_Redirect(This, rfid, hwnd, flags, pszTargetPath, cFolders, pExclusion, ppszError) (This)->lpVtbl->Redirect(This, rfid, hwnd, flags, pszTargetPath, cFolders, pExclusion, ppszError)
 
 	declare function IKnownFolderManager_FolderIdFromCsidl_Proxy(byval This as IKnownFolderManager ptr, byval nCsidl as long, byval pfid as KNOWNFOLDERID ptr) as HRESULT
 	declare sub IKnownFolderManager_FolderIdFromCsidl_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -6355,6 +7848,17 @@ declare sub IShellRunDll_Run_Stub(byval This as IRpcStubBuffer ptr, byval pRpcCh
 		lpVtbl as ISharingConfigurationManagerVtbl ptr
 	end type
 
+	#define ISharingConfigurationManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ISharingConfigurationManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ISharingConfigurationManager_Release(This) (This)->lpVtbl->Release(This)
+	#define ISharingConfigurationManager_CreateShare(This, dsid, role) (This)->lpVtbl->CreateShare(This, dsid, role)
+	#define ISharingConfigurationManager_DeleteShare(This, dsid) (This)->lpVtbl->DeleteShare(This, dsid)
+	#define ISharingConfigurationManager_ShareExists(This, dsid) (This)->lpVtbl->ShareExists(This, dsid)
+	#define ISharingConfigurationManager_GetSharePermissions(This, dsid, pRole) (This)->lpVtbl->GetSharePermissions(This, dsid, pRole)
+	#define ISharingConfigurationManager_SharePrinters(This) (This)->lpVtbl->SharePrinters(This)
+	#define ISharingConfigurationManager_StopSharingPrinters(This) (This)->lpVtbl->StopSharingPrinters(This)
+	#define ISharingConfigurationManager_ArePrintersShared(This) (This)->lpVtbl->ArePrintersShared(This)
+
 	declare function ISharingConfigurationManager_CreateShare_Proxy(byval This as ISharingConfigurationManager ptr, byval dsid as DEF_SHARE_ID, byval role as SHARE_ROLE) as HRESULT
 	declare sub ISharingConfigurationManager_CreateShare_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function ISharingConfigurationManager_DeleteShare_Proxy(byval This as ISharingConfigurationManager ptr, byval dsid as DEF_SHARE_ID) as HRESULT
@@ -6386,6 +7890,10 @@ type IPreviousVersionsInfo_
 	lpVtbl as IPreviousVersionsInfoVtbl ptr
 end type
 
+#define IPreviousVersionsInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPreviousVersionsInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPreviousVersionsInfo_Release(This) (This)->lpVtbl->Release(This)
+#define IPreviousVersionsInfo_AreSnapshotsAvailable(This, pszPath, fOkToBeSlow, pfAvailable) (This)->lpVtbl->AreSnapshotsAvailable(This, pszPath, fOkToBeSlow, pfAvailable)
 declare function IPreviousVersionsInfo_AreSnapshotsAvailable_Proxy(byval This as IPreviousVersionsInfo ptr, byval pszPath as LPCWSTR, byval fOkToBeSlow as WINBOOL, byval pfAvailable as WINBOOL ptr) as HRESULT
 declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -6405,6 +7913,12 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 	type IRelatedItem_
 		lpVtbl as IRelatedItemVtbl ptr
 	end type
+
+	#define IRelatedItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IRelatedItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IRelatedItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IRelatedItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IRelatedItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 
 	declare function IRelatedItem_GetItemIDList_Proxy(byval This as IRelatedItem ptr, byval ppidl as LPITEMIDLIST ptr) as HRESULT
 	declare sub IRelatedItem_GetItemIDList_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -6426,6 +7940,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as IIdentityNameVtbl ptr
 	end type
 
+	#define IIdentityName_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IIdentityName_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IIdentityName_Release(This) (This)->lpVtbl->Release(This)
+	#define IIdentityName_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IIdentityName_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __IDelegateItem_INTERFACE_DEFINED__
 	extern IID_IDelegateItem as const GUID
 	type IDelegateItem as IDelegateItem_
@@ -6442,6 +7961,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as IDelegateItemVtbl ptr
 	end type
 
+	#define IDelegateItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDelegateItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDelegateItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IDelegateItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IDelegateItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __ICurrentItem_INTERFACE_DEFINED__
 	extern IID_ICurrentItem as const GUID
 	type ICurrentItem as ICurrentItem_
@@ -6458,6 +7982,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as ICurrentItemVtbl ptr
 	end type
 
+	#define ICurrentItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ICurrentItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ICurrentItem_Release(This) (This)->lpVtbl->Release(This)
+	#define ICurrentItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define ICurrentItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __ITransferMediumItem_INTERFACE_DEFINED__
 	extern IID_ITransferMediumItem as const GUID
 	type ITransferMediumItem as ITransferMediumItem_
@@ -6474,6 +8003,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as ITransferMediumItemVtbl ptr
 	end type
 
+	#define ITransferMediumItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ITransferMediumItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ITransferMediumItem_Release(This) (This)->lpVtbl->Release(This)
+	#define ITransferMediumItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define ITransferMediumItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __IUseToBrowseItem_INTERFACE_DEFINED__
 	extern IID_IUseToBrowseItem as const GUID
 	type IUseToBrowseItem as IUseToBrowseItem_
@@ -6490,6 +8024,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as IUseToBrowseItemVtbl ptr
 	end type
 
+	#define IUseToBrowseItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUseToBrowseItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUseToBrowseItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IUseToBrowseItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IUseToBrowseItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __IDisplayItem_INTERFACE_DEFINED__
 	extern IID_IDisplayItem as const GUID
 	type IDisplayItem as IDisplayItem_
@@ -6506,6 +8045,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as IDisplayItemVtbl ptr
 	end type
 
+	#define IDisplayItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDisplayItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDisplayItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IDisplayItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IDisplayItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __IViewStateIdentityItem_INTERFACE_DEFINED__
 	extern IID_IViewStateIdentityItem as const GUID
 	type IViewStateIdentityItem as IViewStateIdentityItem_
@@ -6522,6 +8066,11 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 		lpVtbl as IViewStateIdentityItemVtbl ptr
 	end type
 
+	#define IViewStateIdentityItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IViewStateIdentityItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IViewStateIdentityItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IViewStateIdentityItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IViewStateIdentityItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 	#define __IPreviewItem_INTERFACE_DEFINED__
 	extern IID_IPreviewItem as const GUID
 	type IPreviewItem as IPreviewItem_
@@ -6537,6 +8086,12 @@ declare sub IPreviousVersionsInfo_AreSnapshotsAvailable_Stub(byval This as IRpcS
 	type IPreviewItem_
 		lpVtbl as IPreviewItemVtbl ptr
 	end type
+
+	#define IPreviewItem_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IPreviewItem_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IPreviewItem_Release(This) (This)->lpVtbl->Release(This)
+	#define IPreviewItem_GetItemIDList(This, ppidl) (This)->lpVtbl->GetItemIDList(This, ppidl)
+	#define IPreviewItem_GetItem(This, ppsi) (This)->lpVtbl->GetItem(This, ppsi)
 #endif
 
 #define __IDestinationStreamFactory_INTERFACE_DEFINED__
@@ -6554,6 +8109,10 @@ type IDestinationStreamFactory_
 	lpVtbl as IDestinationStreamFactoryVtbl ptr
 end type
 
+#define IDestinationStreamFactory_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDestinationStreamFactory_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDestinationStreamFactory_Release(This) (This)->lpVtbl->Release(This)
+#define IDestinationStreamFactory_GetDestinationStream(This, ppstm) (This)->lpVtbl->GetDestinationStream(This, ppstm)
 declare function IDestinationStreamFactory_GetDestinationStream_Proxy(byval This as IDestinationStreamFactory ptr, byval ppstm as IStream ptr ptr) as HRESULT
 declare sub IDestinationStreamFactory_GetDestinationStream_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -6589,6 +8148,12 @@ type INewMenuClient_
 	lpVtbl as INewMenuClientVtbl ptr
 end type
 
+#define INewMenuClient_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INewMenuClient_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INewMenuClient_Release(This) (This)->lpVtbl->Release(This)
+#define INewMenuClient_IncludeItems(This, pflags) (This)->lpVtbl->IncludeItems(This, pflags)
+#define INewMenuClient_SelectAndEditItem(This, pidlItem, flags) (This)->lpVtbl->SelectAndEditItem(This, pidlItem, flags)
+
 declare function INewMenuClient_IncludeItems_Proxy(byval This as INewMenuClient ptr, byval pflags as NMCII_FLAGS ptr) as HRESULT
 declare sub INewMenuClient_IncludeItems_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INewMenuClient_SelectAndEditItem_Proxy(byval This as INewMenuClient ptr, byval pidlItem as LPCITEMIDLIST, byval flags as NMCSAEI_FLAGS) as HRESULT
@@ -6612,6 +8177,10 @@ extern SID_SCommandBarState as const GUID
 		lpVtbl as IInitializeWithBindCtxVtbl ptr
 	end type
 
+	#define IInitializeWithBindCtx_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInitializeWithBindCtx_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInitializeWithBindCtx_Release(This) (This)->lpVtbl->Release(This)
+	#define IInitializeWithBindCtx_Initialize(This, pbc) (This)->lpVtbl->Initialize(This, pbc)
 	declare function IInitializeWithBindCtx_Initialize_Proxy(byval This as IInitializeWithBindCtx ptr, byval pbc as IBindCtx ptr) as HRESULT
 	declare sub IInitializeWithBindCtx_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IShellItemFilter_INTERFACE_DEFINED__
@@ -6628,6 +8197,12 @@ extern SID_SCommandBarState as const GUID
 	type IShellItemFilter_
 		lpVtbl as IShellItemFilterVtbl ptr
 	end type
+
+	#define IShellItemFilter_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IShellItemFilter_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IShellItemFilter_Release(This) (This)->lpVtbl->Release(This)
+	#define IShellItemFilter_IncludeItem(This, psi) (This)->lpVtbl->IncludeItem(This, psi)
+	#define IShellItemFilter_GetEnumFlagsForItem(This, psi, pgrfFlags) (This)->lpVtbl->GetEnumFlagsForItem(This, psi, pgrfFlags)
 
 	declare function IShellItemFilter_IncludeItem_Proxy(byval This as IShellItemFilter ptr, byval psi as IShellItem ptr) as HRESULT
 	declare sub IShellItemFilter_IncludeItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -6738,6 +8313,29 @@ type INameSpaceTreeControl_
 	lpVtbl as INameSpaceTreeControlVtbl ptr
 end type
 
+#define INameSpaceTreeControl_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeControl_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeControl_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeControl_Initialize(This, hwndParent, prc, nsctsFlags) (This)->lpVtbl->Initialize(This, hwndParent, prc, nsctsFlags)
+#define INameSpaceTreeControl_TreeAdvise(This, punk, pdwCookie) (This)->lpVtbl->TreeAdvise(This, punk, pdwCookie)
+#define INameSpaceTreeControl_TreeUnadvise(This, dwCookie) (This)->lpVtbl->TreeUnadvise(This, dwCookie)
+#define INameSpaceTreeControl_AppendRoot(This, psiRoot, grfEnumFlags, grfRootStyle, pif) (This)->lpVtbl->AppendRoot(This, psiRoot, grfEnumFlags, grfRootStyle, pif)
+#define INameSpaceTreeControl_InsertRoot(This, iIndex, psiRoot, grfEnumFlags, grfRootStyle, pif) (This)->lpVtbl->InsertRoot(This, iIndex, psiRoot, grfEnumFlags, grfRootStyle, pif)
+#define INameSpaceTreeControl_RemoveRoot(This, psiRoot) (This)->lpVtbl->RemoveRoot(This, psiRoot)
+#define INameSpaceTreeControl_RemoveAllRoots(This) (This)->lpVtbl->RemoveAllRoots(This)
+#define INameSpaceTreeControl_GetRootItems(This, ppsiaRootItems) (This)->lpVtbl->GetRootItems(This, ppsiaRootItems)
+#define INameSpaceTreeControl_SetItemState(This, psi, nstcisMask, nstcisFlags) (This)->lpVtbl->SetItemState(This, psi, nstcisMask, nstcisFlags)
+#define INameSpaceTreeControl_GetItemState(This, psi, nstcisMask, pnstcisFlags) (This)->lpVtbl->GetItemState(This, psi, nstcisMask, pnstcisFlags)
+#define INameSpaceTreeControl_GetSelectedItems(This, psiaItems) (This)->lpVtbl->GetSelectedItems(This, psiaItems)
+#define INameSpaceTreeControl_GetItemCustomState(This, psi, piStateNumber) (This)->lpVtbl->GetItemCustomState(This, psi, piStateNumber)
+#define INameSpaceTreeControl_SetItemCustomState(This, psi, iStateNumber) (This)->lpVtbl->SetItemCustomState(This, psi, iStateNumber)
+#define INameSpaceTreeControl_EnsureItemVisible(This, psi) (This)->lpVtbl->EnsureItemVisible(This, psi)
+#define INameSpaceTreeControl_SetTheme(This, pszTheme) (This)->lpVtbl->SetTheme(This, pszTheme)
+#define INameSpaceTreeControl_GetNextItem(This, psi, nstcgi, ppsiNext) (This)->lpVtbl->GetNextItem(This, psi, nstcgi, ppsiNext)
+#define INameSpaceTreeControl_HitTest(This, ppt, ppsiOut) (This)->lpVtbl->HitTest(This, ppt, ppsiOut)
+#define INameSpaceTreeControl_GetItemRect(This, psi, prect) (This)->lpVtbl->GetItemRect(This, psi, prect)
+#define INameSpaceTreeControl_CollapseAll(This) (This)->lpVtbl->CollapseAll(This)
+
 declare function INameSpaceTreeControl_Initialize_Proxy(byval This as INameSpaceTreeControl ptr, byval hwndParent as HWND, byval prc as RECT ptr, byval nsctsFlags as NSTCSTYLE) as HRESULT
 declare sub INameSpaceTreeControl_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControl_TreeAdvise_Proxy(byval This as INameSpaceTreeControl ptr, byval punk as IUnknown ptr, byval pdwCookie as DWORD ptr) as HRESULT
@@ -6825,6 +8423,33 @@ type INameSpaceTreeControl2_
 	lpVtbl as INameSpaceTreeControl2Vtbl ptr
 end type
 
+#define INameSpaceTreeControl2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeControl2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeControl2_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeControl2_Initialize(This, hwndParent, prc, nsctsFlags) (This)->lpVtbl->Initialize(This, hwndParent, prc, nsctsFlags)
+#define INameSpaceTreeControl2_TreeAdvise(This, punk, pdwCookie) (This)->lpVtbl->TreeAdvise(This, punk, pdwCookie)
+#define INameSpaceTreeControl2_TreeUnadvise(This, dwCookie) (This)->lpVtbl->TreeUnadvise(This, dwCookie)
+#define INameSpaceTreeControl2_AppendRoot(This, psiRoot, grfEnumFlags, grfRootStyle, pif) (This)->lpVtbl->AppendRoot(This, psiRoot, grfEnumFlags, grfRootStyle, pif)
+#define INameSpaceTreeControl2_InsertRoot(This, iIndex, psiRoot, grfEnumFlags, grfRootStyle, pif) (This)->lpVtbl->InsertRoot(This, iIndex, psiRoot, grfEnumFlags, grfRootStyle, pif)
+#define INameSpaceTreeControl2_RemoveRoot(This, psiRoot) (This)->lpVtbl->RemoveRoot(This, psiRoot)
+#define INameSpaceTreeControl2_RemoveAllRoots(This) (This)->lpVtbl->RemoveAllRoots(This)
+#define INameSpaceTreeControl2_GetRootItems(This, ppsiaRootItems) (This)->lpVtbl->GetRootItems(This, ppsiaRootItems)
+#define INameSpaceTreeControl2_SetItemState(This, psi, nstcisMask, nstcisFlags) (This)->lpVtbl->SetItemState(This, psi, nstcisMask, nstcisFlags)
+#define INameSpaceTreeControl2_GetItemState(This, psi, nstcisMask, pnstcisFlags) (This)->lpVtbl->GetItemState(This, psi, nstcisMask, pnstcisFlags)
+#define INameSpaceTreeControl2_GetSelectedItems(This, psiaItems) (This)->lpVtbl->GetSelectedItems(This, psiaItems)
+#define INameSpaceTreeControl2_GetItemCustomState(This, psi, piStateNumber) (This)->lpVtbl->GetItemCustomState(This, psi, piStateNumber)
+#define INameSpaceTreeControl2_SetItemCustomState(This, psi, iStateNumber) (This)->lpVtbl->SetItemCustomState(This, psi, iStateNumber)
+#define INameSpaceTreeControl2_EnsureItemVisible(This, psi) (This)->lpVtbl->EnsureItemVisible(This, psi)
+#define INameSpaceTreeControl2_SetTheme(This, pszTheme) (This)->lpVtbl->SetTheme(This, pszTheme)
+#define INameSpaceTreeControl2_GetNextItem(This, psi, nstcgi, ppsiNext) (This)->lpVtbl->GetNextItem(This, psi, nstcgi, ppsiNext)
+#define INameSpaceTreeControl2_HitTest(This, ppt, ppsiOut) (This)->lpVtbl->HitTest(This, ppt, ppsiOut)
+#define INameSpaceTreeControl2_GetItemRect(This, psi, prect) (This)->lpVtbl->GetItemRect(This, psi, prect)
+#define INameSpaceTreeControl2_CollapseAll(This) (This)->lpVtbl->CollapseAll(This)
+#define INameSpaceTreeControl2_SetControlStyle(This, nstcsMask, nstcsStyle) (This)->lpVtbl->SetControlStyle(This, nstcsMask, nstcsStyle)
+#define INameSpaceTreeControl2_GetControlStyle(This, nstcsMask, pnstcsStyle) (This)->lpVtbl->GetControlStyle(This, nstcsMask, pnstcsStyle)
+#define INameSpaceTreeControl2_SetControlStyle2(This, nstcsMask, nstcsStyle) (This)->lpVtbl->SetControlStyle2(This, nstcsMask, nstcsStyle)
+#define INameSpaceTreeControl2_GetControlStyle2(This, nstcsMask, pnstcsStyle) (This)->lpVtbl->GetControlStyle2(This, nstcsMask, pnstcsStyle)
+
 declare function INameSpaceTreeControl2_SetControlStyle_Proxy(byval This as INameSpaceTreeControl2 ptr, byval nstcsMask as NSTCSTYLE, byval nstcsStyle as NSTCSTYLE) as HRESULT
 declare sub INameSpaceTreeControl2_SetControlStyle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControl2_GetControlStyle_Proxy(byval This as INameSpaceTreeControl2 ptr, byval nstcsMask as NSTCSTYLE, byval pnstcsStyle as NSTCSTYLE ptr) as HRESULT
@@ -6898,6 +8523,28 @@ type INameSpaceTreeControlEvents_
 	lpVtbl as INameSpaceTreeControlEventsVtbl ptr
 end type
 
+#define INameSpaceTreeControlEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeControlEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeControlEvents_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeControlEvents_OnItemClick(This, psi, nstceHitTest, nstceClickType) (This)->lpVtbl->OnItemClick(This, psi, nstceHitTest, nstceClickType)
+#define INameSpaceTreeControlEvents_OnPropertyItemCommit(This, psi) (This)->lpVtbl->OnPropertyItemCommit(This, psi)
+#define INameSpaceTreeControlEvents_OnItemStateChanging(This, psi, nstcisMask, nstcisState) (This)->lpVtbl->OnItemStateChanging(This, psi, nstcisMask, nstcisState)
+#define INameSpaceTreeControlEvents_OnItemStateChanged(This, psi, nstcisMask, nstcisState) (This)->lpVtbl->OnItemStateChanged(This, psi, nstcisMask, nstcisState)
+#define INameSpaceTreeControlEvents_OnSelectionChanged(This, psiaSelection) (This)->lpVtbl->OnSelectionChanged(This, psiaSelection)
+#define INameSpaceTreeControlEvents_OnKeyboardInput(This, uMsg, wParam, lParam) (This)->lpVtbl->OnKeyboardInput(This, uMsg, wParam, lParam)
+#define INameSpaceTreeControlEvents_OnBeforeExpand(This, psi) (This)->lpVtbl->OnBeforeExpand(This, psi)
+#define INameSpaceTreeControlEvents_OnAfterExpand(This, psi) (This)->lpVtbl->OnAfterExpand(This, psi)
+#define INameSpaceTreeControlEvents_OnBeginLabelEdit(This, psi) (This)->lpVtbl->OnBeginLabelEdit(This, psi)
+#define INameSpaceTreeControlEvents_OnEndLabelEdit(This, psi) (This)->lpVtbl->OnEndLabelEdit(This, psi)
+#define INameSpaceTreeControlEvents_OnGetToolTip(This, psi, pszTip, cchTip) (This)->lpVtbl->OnGetToolTip(This, psi, pszTip, cchTip)
+#define INameSpaceTreeControlEvents_OnBeforeItemDelete(This, psi) (This)->lpVtbl->OnBeforeItemDelete(This, psi)
+#define INameSpaceTreeControlEvents_OnItemAdded(This, psi, fIsRoot) (This)->lpVtbl->OnItemAdded(This, psi, fIsRoot)
+#define INameSpaceTreeControlEvents_OnItemDeleted(This, psi, fIsRoot) (This)->lpVtbl->OnItemDeleted(This, psi, fIsRoot)
+#define INameSpaceTreeControlEvents_OnBeforeContextMenu(This, psi, riid, ppv) (This)->lpVtbl->OnBeforeContextMenu(This, psi, riid, ppv)
+#define INameSpaceTreeControlEvents_OnAfterContextMenu(This, psi, pcmIn, riid, ppv) (This)->lpVtbl->OnAfterContextMenu(This, psi, pcmIn, riid, ppv)
+#define INameSpaceTreeControlEvents_OnBeforeStateImageChange(This, psi) (This)->lpVtbl->OnBeforeStateImageChange(This, psi)
+#define INameSpaceTreeControlEvents_OnGetDefaultIconIndex(This, psi, piDefaultIcon, piOpenIcon) (This)->lpVtbl->OnGetDefaultIconIndex(This, psi, piDefaultIcon, piOpenIcon)
+
 declare function INameSpaceTreeControlEvents_OnItemClick_Proxy(byval This as INameSpaceTreeControlEvents ptr, byval psi as IShellItem ptr, byval nstceHitTest as NSTCEHITTEST, byval nstceClickType as NSTCECLICKTYPE) as HRESULT
 declare sub INameSpaceTreeControlEvents_OnItemClick_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControlEvents_OnPropertyItemCommit_Proxy(byval This as INameSpaceTreeControlEvents ptr, byval psi as IShellItem ptr) as HRESULT
@@ -6955,6 +8602,16 @@ type INameSpaceTreeControlDropHandler_
 	lpVtbl as INameSpaceTreeControlDropHandlerVtbl ptr
 end type
 
+#define INameSpaceTreeControlDropHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeControlDropHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeControlDropHandler_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeControlDropHandler_OnDragEnter(This, psiOver, psiaData, fOutsideSource, grfKeyState, pdwEffect) (This)->lpVtbl->OnDragEnter(This, psiOver, psiaData, fOutsideSource, grfKeyState, pdwEffect)
+#define INameSpaceTreeControlDropHandler_OnDragOver(This, psiOver, psiaData, grfKeyState, pdwEffect) (This)->lpVtbl->OnDragOver(This, psiOver, psiaData, grfKeyState, pdwEffect)
+#define INameSpaceTreeControlDropHandler_OnDragPosition(This, psiOver, psiaData, iNewPosition, iOldPosition) (This)->lpVtbl->OnDragPosition(This, psiOver, psiaData, iNewPosition, iOldPosition)
+#define INameSpaceTreeControlDropHandler_OnDrop(This, psiOver, psiaData, iPosition, grfKeyState, pdwEffect) (This)->lpVtbl->OnDrop(This, psiOver, psiaData, iPosition, grfKeyState, pdwEffect)
+#define INameSpaceTreeControlDropHandler_OnDropPosition(This, psiOver, psiaData, iNewPosition, iOldPosition) (This)->lpVtbl->OnDropPosition(This, psiOver, psiaData, iNewPosition, iOldPosition)
+#define INameSpaceTreeControlDropHandler_OnDragLeave(This, psiOver) (This)->lpVtbl->OnDragLeave(This, psiOver)
+
 declare function INameSpaceTreeControlDropHandler_OnDragEnter_Proxy(byval This as INameSpaceTreeControlDropHandler ptr, byval psiOver as IShellItem ptr, byval psiaData as IShellItemArray ptr, byval fOutsideSource as WINBOOL, byval grfKeyState as DWORD, byval pdwEffect as DWORD ptr) as HRESULT
 declare sub INameSpaceTreeControlDropHandler_OnDragEnter_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControlDropHandler_OnDragOver_Proxy(byval This as INameSpaceTreeControlDropHandler ptr, byval psiOver as IShellItem ptr, byval psiaData as IShellItemArray ptr, byval grfKeyState as DWORD, byval pdwEffect as DWORD ptr) as HRESULT
@@ -6983,6 +8640,13 @@ end type
 type INameSpaceTreeAccessible_
 	lpVtbl as INameSpaceTreeAccessibleVtbl ptr
 end type
+
+#define INameSpaceTreeAccessible_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeAccessible_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeAccessible_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeAccessible_OnGetDefaultAccessibilityAction(This, psi, pbstrDefaultAction) (This)->lpVtbl->OnGetDefaultAccessibilityAction(This, psi, pbstrDefaultAction)
+#define INameSpaceTreeAccessible_OnDoDefaultAccessibilityAction(This, psi) (This)->lpVtbl->OnDoDefaultAccessibilityAction(This, psi)
+#define INameSpaceTreeAccessible_OnGetAccessibilityRole(This, psi, pvarRole) (This)->lpVtbl->OnGetAccessibilityRole(This, psi, pvarRole)
 
 declare function INameSpaceTreeAccessible_OnGetDefaultAccessibilityAction_Proxy(byval This as INameSpaceTreeAccessible ptr, byval psi as IShellItem ptr, byval pbstrDefaultAction as BSTR ptr) as HRESULT
 declare sub INameSpaceTreeAccessible_OnGetDefaultAccessibilityAction_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7020,6 +8684,14 @@ type INameSpaceTreeControlCustomDraw_
 	lpVtbl as INameSpaceTreeControlCustomDrawVtbl ptr
 end type
 
+#define INameSpaceTreeControlCustomDraw_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define INameSpaceTreeControlCustomDraw_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define INameSpaceTreeControlCustomDraw_Release(This) (This)->lpVtbl->Release(This)
+#define INameSpaceTreeControlCustomDraw_PrePaint(This, hdc, prc, plres) (This)->lpVtbl->PrePaint(This, hdc, prc, plres)
+#define INameSpaceTreeControlCustomDraw_PostPaint(This, hdc, prc) (This)->lpVtbl->PostPaint(This, hdc, prc)
+#define INameSpaceTreeControlCustomDraw_ItemPrePaint(This, hdc, prc, pnstccdItem, pclrText, pclrTextBk, plres) (This)->lpVtbl->ItemPrePaint(This, hdc, prc, pnstccdItem, pclrText, pclrTextBk, plres)
+#define INameSpaceTreeControlCustomDraw_ItemPostPaint(This, hdc, prc, pnstccdItem) (This)->lpVtbl->ItemPostPaint(This, hdc, prc, pnstccdItem)
+
 declare function INameSpaceTreeControlCustomDraw_PrePaint_Proxy(byval This as INameSpaceTreeControlCustomDraw ptr, byval hdc as HDC, byval prc as RECT ptr, byval plres as LRESULT ptr) as HRESULT
 declare sub INameSpaceTreeControlCustomDraw_PrePaint_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function INameSpaceTreeControlCustomDraw_PostPaint_Proxy(byval This as INameSpaceTreeControlCustomDraw ptr, byval hdc as HDC, byval prc as RECT ptr) as HRESULT
@@ -7053,6 +8725,10 @@ declare sub INameSpaceTreeControlCustomDraw_ItemPostPaint_Stub(byval This as IRp
 		lpVtbl as INameSpaceTreeControlFolderCapabilitiesVtbl ptr
 	end type
 
+	#define INameSpaceTreeControlFolderCapabilities_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define INameSpaceTreeControlFolderCapabilities_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define INameSpaceTreeControlFolderCapabilities_Release(This) (This)->lpVtbl->Release(This)
+	#define INameSpaceTreeControlFolderCapabilities_GetFolderCapabilities(This, nfcMask, pnfcValue) (This)->lpVtbl->GetFolderCapabilities(This, nfcMask, pnfcValue)
 	declare function INameSpaceTreeControlFolderCapabilities_GetFolderCapabilities_Proxy(byval This as INameSpaceTreeControlFolderCapabilities ptr, byval nfcMask as NSTCFOLDERCAPABILITIES, byval pnfcValue as NSTCFOLDERCAPABILITIES ptr) as HRESULT
 	declare sub INameSpaceTreeControlFolderCapabilities_GetFolderCapabilities_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -7081,6 +8757,17 @@ end type
 type IPreviewHandler_
 	lpVtbl as IPreviewHandlerVtbl ptr
 end type
+
+#define IPreviewHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPreviewHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPreviewHandler_Release(This) (This)->lpVtbl->Release(This)
+#define IPreviewHandler_SetWindow(This, hwnd, prc) (This)->lpVtbl->SetWindow(This, hwnd, prc)
+#define IPreviewHandler_SetRect(This, prc) (This)->lpVtbl->SetRect(This, prc)
+#define IPreviewHandler_DoPreview(This) (This)->lpVtbl->DoPreview(This)
+#define IPreviewHandler_Unload(This) (This)->lpVtbl->Unload(This)
+#define IPreviewHandler_SetFocus(This) (This)->lpVtbl->SetFocus(This)
+#define IPreviewHandler_QueryFocus(This, phwnd) (This)->lpVtbl->QueryFocus(This, phwnd)
+#define IPreviewHandler_TranslateAccelerator(This, pmsg) (This)->lpVtbl->TranslateAccelerator(This, pmsg)
 
 declare function IPreviewHandler_SetWindow_Proxy(byval This as IPreviewHandler ptr, byval hwnd as HWND, byval prc as const RECT ptr) as HRESULT
 declare sub IPreviewHandler_SetWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7118,6 +8805,12 @@ type IPreviewHandlerFrame_
 	lpVtbl as IPreviewHandlerFrameVtbl ptr
 end type
 
+#define IPreviewHandlerFrame_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPreviewHandlerFrame_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPreviewHandlerFrame_Release(This) (This)->lpVtbl->Release(This)
+#define IPreviewHandlerFrame_GetWindowContext(This, pinfo) (This)->lpVtbl->GetWindowContext(This, pinfo)
+#define IPreviewHandlerFrame_TranslateAccelerator(This, pmsg) (This)->lpVtbl->TranslateAccelerator(This, pmsg)
+
 declare function IPreviewHandlerFrame_GetWindowContext_Proxy(byval This as IPreviewHandlerFrame ptr, byval pinfo as PREVIEWHANDLERFRAMEINFO ptr) as HRESULT
 declare sub IPreviewHandlerFrame_GetWindowContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPreviewHandlerFrame_TranslateAccelerator_Proxy(byval This as IPreviewHandlerFrame ptr, byval pmsg as MSG ptr) as HRESULT
@@ -7144,6 +8837,14 @@ type IContextMenuCB as IContextMenuCB_
 		lpVtbl as ITrayDeskBandVtbl ptr
 	end type
 
+	#define ITrayDeskBand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ITrayDeskBand_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ITrayDeskBand_Release(This) (This)->lpVtbl->Release(This)
+	#define ITrayDeskBand_ShowDeskBand(This, clsid) (This)->lpVtbl->ShowDeskBand(This, clsid)
+	#define ITrayDeskBand_HideDeskBand(This, clsid) (This)->lpVtbl->HideDeskBand(This, clsid)
+	#define ITrayDeskBand_IsDeskBandShown(This, clsid) (This)->lpVtbl->IsDeskBandShown(This, clsid)
+	#define ITrayDeskBand_DeskBandRegistrationChanged(This) (This)->lpVtbl->DeskBandRegistrationChanged(This)
+
 	declare function ITrayDeskBand_ShowDeskBand_Proxy(byval This as ITrayDeskBand ptr, byval clsid as const IID const ptr) as HRESULT
 	declare sub ITrayDeskBand_ShowDeskBand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function ITrayDeskBand_HideDeskBand_Proxy(byval This as ITrayDeskBand ptr, byval clsid as const IID const ptr) as HRESULT
@@ -7169,6 +8870,13 @@ type IContextMenuCB as IContextMenuCB_
 		lpVtbl as IBandHostVtbl ptr
 	end type
 
+	#define IBandHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IBandHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IBandHost_Release(This) (This)->lpVtbl->Release(This)
+	#define IBandHost_CreateBand(This, rclsidBand, fAvailable, fVisible, riid, ppv) (This)->lpVtbl->CreateBand(This, rclsidBand, fAvailable, fVisible, riid, ppv)
+	#define IBandHost_SetBandAvailability(This, rclsidBand, fAvailable) (This)->lpVtbl->SetBandAvailability(This, rclsidBand, fAvailable)
+	#define IBandHost_DestroyBand(This, rclsidBand) (This)->lpVtbl->DestroyBand(This, rclsidBand)
+
 	declare function IBandHost_CreateBand_Proxy(byval This as IBandHost ptr, byval rclsidBand as const IID const ptr, byval fAvailable as WINBOOL, byval fVisible as WINBOOL, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 	declare sub IBandHost_CreateBand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IBandHost_SetBandAvailability_Proxy(byval This as IBandHost ptr, byval rclsidBand as const IID const ptr, byval fAvailable as WINBOOL) as HRESULT
@@ -7177,6 +8885,7 @@ type IContextMenuCB as IContextMenuCB_
 	declare sub IBandHost_DestroyBand_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define SID_SBandHost IID_IBandHost
 	type EXPLORERPANE as GUID
+	type REFEXPLORERPANE as const EXPLORERPANE const ptr
 	#define __IExplorerPaneVisibility_INTERFACE_DEFINED__
 
 	type _EXPLORERPANESTATE as long
@@ -7204,6 +8913,10 @@ type IContextMenuCB as IContextMenuCB_
 		lpVtbl as IExplorerPaneVisibilityVtbl ptr
 	end type
 
+	#define IExplorerPaneVisibility_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IExplorerPaneVisibility_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IExplorerPaneVisibility_Release(This) (This)->lpVtbl->Release(This)
+	#define IExplorerPaneVisibility_GetPaneState(This, ep, peps) (This)->lpVtbl->GetPaneState(This, ep, peps)
 	declare function IExplorerPaneVisibility_GetPaneState_Proxy(byval This as IExplorerPaneVisibility ptr, byval ep as const EXPLORERPANE const ptr, byval peps as EXPLORERPANESTATE ptr) as HRESULT
 	declare sub IExplorerPaneVisibility_GetPaneState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define SID_ExplorerPaneVisibility IID_IExplorerPaneVisibility
@@ -7221,6 +8934,10 @@ type IContextMenuCB as IContextMenuCB_
 		lpVtbl as IContextMenuCBVtbl ptr
 	end type
 
+	#define IContextMenuCB_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IContextMenuCB_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IContextMenuCB_Release(This) (This)->lpVtbl->Release(This)
+	#define IContextMenuCB_CallBack(This, psf, hwndOwner, pdtobj, uMsg, wParam, lParam) (This)->lpVtbl->CallBack(This, psf, hwndOwner, pdtobj, uMsg, wParam, lParam)
 	declare function IContextMenuCB_CallBack_Proxy(byval This as IContextMenuCB ptr, byval psf as IShellFolder ptr, byval hwndOwner as HWND, byval pdtobj as IDataObject ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 	declare sub IContextMenuCB_CallBack_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
@@ -7244,6 +8961,16 @@ end type
 type IDefaultExtractIconInit_
 	lpVtbl as IDefaultExtractIconInitVtbl ptr
 end type
+
+#define IDefaultExtractIconInit_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDefaultExtractIconInit_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDefaultExtractIconInit_Release(This) (This)->lpVtbl->Release(This)
+#define IDefaultExtractIconInit_SetFlags(This, uFlags) (This)->lpVtbl->SetFlags(This, uFlags)
+#define IDefaultExtractIconInit_SetKey(This, hkey) (This)->lpVtbl->SetKey(This, hkey)
+#define IDefaultExtractIconInit_SetNormalIcon(This, pszFile, iIcon) (This)->lpVtbl->SetNormalIcon(This, pszFile, iIcon)
+#define IDefaultExtractIconInit_SetOpenIcon(This, pszFile, iIcon) (This)->lpVtbl->SetOpenIcon(This, pszFile, iIcon)
+#define IDefaultExtractIconInit_SetShortcutIcon(This, pszFile, iIcon) (This)->lpVtbl->SetShortcutIcon(This, pszFile, iIcon)
+#define IDefaultExtractIconInit_SetDefaultIcon(This, pszFile, iIcon) (This)->lpVtbl->SetDefaultIcon(This, pszFile, iIcon)
 
 declare function IDefaultExtractIconInit_SetFlags_Proxy(byval This as IDefaultExtractIconInit ptr, byval uFlags as UINT) as HRESULT
 declare sub IDefaultExtractIconInit_SetFlags_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7310,6 +9037,18 @@ type IExplorerCommand_
 	lpVtbl as IExplorerCommandVtbl ptr
 end type
 
+#define IExplorerCommand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExplorerCommand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExplorerCommand_Release(This) (This)->lpVtbl->Release(This)
+#define IExplorerCommand_GetTitle(This, psiItemArray, ppszName) (This)->lpVtbl->GetTitle(This, psiItemArray, ppszName)
+#define IExplorerCommand_GetIcon(This, psiItemArray, ppszIcon) (This)->lpVtbl->GetIcon(This, psiItemArray, ppszIcon)
+#define IExplorerCommand_GetToolTip(This, psiItemArray, ppszInfotip) (This)->lpVtbl->GetToolTip(This, psiItemArray, ppszInfotip)
+#define IExplorerCommand_GetCanonicalName(This, pguidCommandName) (This)->lpVtbl->GetCanonicalName(This, pguidCommandName)
+#define IExplorerCommand_GetState(This, psiItemArray, fOkToBeSlow, pCmdState) (This)->lpVtbl->GetState(This, psiItemArray, fOkToBeSlow, pCmdState)
+#define IExplorerCommand_Invoke(This, psiItemArray, pbc) (This)->lpVtbl->Invoke(This, psiItemArray, pbc)
+#define IExplorerCommand_GetFlags(This, pFlags) (This)->lpVtbl->GetFlags(This, pFlags)
+#define IExplorerCommand_EnumSubCommands(This, ppEnum) (This)->lpVtbl->EnumSubCommands(This, ppEnum)
+
 declare function IExplorerCommand_GetTitle_Proxy(byval This as IExplorerCommand ptr, byval psiItemArray as IShellItemArray ptr, byval ppszName as LPWSTR ptr) as HRESULT
 declare sub IExplorerCommand_GetTitle_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IExplorerCommand_GetIcon_Proxy(byval This as IExplorerCommand ptr, byval psiItemArray as IShellItemArray ptr, byval ppszIcon as LPWSTR ptr) as HRESULT
@@ -7341,6 +9080,10 @@ type IExplorerCommandState_
 	lpVtbl as IExplorerCommandStateVtbl ptr
 end type
 
+#define IExplorerCommandState_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExplorerCommandState_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExplorerCommandState_Release(This) (This)->lpVtbl->Release(This)
+#define IExplorerCommandState_GetState(This, psiItemArray, fOkToBeSlow, pCmdState) (This)->lpVtbl->GetState(This, psiItemArray, fOkToBeSlow, pCmdState)
 declare function IExplorerCommandState_GetState_Proxy(byval This as IExplorerCommandState ptr, byval psiItemArray as IShellItemArray ptr, byval fOkToBeSlow as WINBOOL, byval pCmdState as EXPCMDSTATE ptr) as HRESULT
 declare sub IExplorerCommandState_GetState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IInitializeCommand_INTERFACE_DEFINED__
@@ -7358,6 +9101,10 @@ type IInitializeCommand_
 	lpVtbl as IInitializeCommandVtbl ptr
 end type
 
+#define IInitializeCommand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeCommand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeCommand_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeCommand_Initialize(This, pszCommandName, ppb) (This)->lpVtbl->Initialize(This, pszCommandName, ppb)
 declare function IInitializeCommand_Initialize_Proxy(byval This as IInitializeCommand ptr, byval pszCommandName as LPCWSTR, byval ppb as IPropertyBag ptr) as HRESULT
 declare sub IInitializeCommand_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IEnumExplorerCommand_INTERFACE_DEFINED__
@@ -7376,6 +9123,14 @@ end type
 type IEnumExplorerCommand_
 	lpVtbl as IEnumExplorerCommandVtbl ptr
 end type
+
+#define IEnumExplorerCommand_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IEnumExplorerCommand_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IEnumExplorerCommand_Release(This) (This)->lpVtbl->Release(This)
+#define IEnumExplorerCommand_Next(This, celt, pUICommand, pceltFetched) (This)->lpVtbl->Next(This, celt, pUICommand, pceltFetched)
+#define IEnumExplorerCommand_Skip(This, celt) (This)->lpVtbl->Skip(This, celt)
+#define IEnumExplorerCommand_Reset(This) (This)->lpVtbl->Reset(This)
+#define IEnumExplorerCommand_Clone(This, ppenum) (This)->lpVtbl->Clone(This, ppenum)
 
 declare function IEnumExplorerCommand_RemoteNext_Proxy(byval This as IEnumExplorerCommand ptr, byval celt as ULONG, byval pUICommand as IExplorerCommand ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 declare sub IEnumExplorerCommand_RemoteNext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7403,6 +9158,12 @@ type IExplorerCommandProvider_
 	lpVtbl as IExplorerCommandProviderVtbl ptr
 end type
 
+#define IExplorerCommandProvider_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IExplorerCommandProvider_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IExplorerCommandProvider_Release(This) (This)->lpVtbl->Release(This)
+#define IExplorerCommandProvider_GetCommands(This, punkSite, riid, ppv) (This)->lpVtbl->GetCommands(This, punkSite, riid, ppv)
+#define IExplorerCommandProvider_GetCommand(This, rguidCommandId, riid, ppv) (This)->lpVtbl->GetCommand(This, rguidCommandId, riid, ppv)
+
 declare function IExplorerCommandProvider_GetCommands_Proxy(byval This as IExplorerCommandProvider ptr, byval punkSite as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IExplorerCommandProvider_GetCommands_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IExplorerCommandProvider_GetCommand_Proxy(byval This as IExplorerCommandProvider ptr, byval rguidCommandId as const GUID const ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -7423,6 +9184,10 @@ type IInitializeNetworkFolder_
 	lpVtbl as IInitializeNetworkFolderVtbl ptr
 end type
 
+#define IInitializeNetworkFolder_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeNetworkFolder_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeNetworkFolder_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeNetworkFolder_Initialize(This, pidl, pidlTarget, uDisplayType, pszResName, pszProvider) (This)->lpVtbl->Initialize(This, pidl, pidlTarget, uDisplayType, pszResName, pszProvider)
 declare function IInitializeNetworkFolder_Initialize_Proxy(byval This as IInitializeNetworkFolder ptr, byval pidl as LPCITEMIDLIST, byval pidlTarget as LPCITEMIDLIST, byval uDisplayType as UINT, byval pszResName as LPCWSTR, byval pszProvider as LPCWSTR) as HRESULT
 declare sub IInitializeNetworkFolder_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -7451,6 +9216,13 @@ type IOpenControlPanel_
 	lpVtbl as IOpenControlPanelVtbl ptr
 end type
 
+#define IOpenControlPanel_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOpenControlPanel_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOpenControlPanel_Release(This) (This)->lpVtbl->Release(This)
+#define IOpenControlPanel_Open(This, pszName, pszPage, punkSite) (This)->lpVtbl->Open(This, pszName, pszPage, punkSite)
+#define IOpenControlPanel_GetPath(This, pszName, pszPath, cchPath) (This)->lpVtbl->GetPath(This, pszName, pszPath, cchPath)
+#define IOpenControlPanel_GetCurrentView(This, pView) (This)->lpVtbl->GetCurrentView(This, pView)
+
 declare function IOpenControlPanel_Open_Proxy(byval This as IOpenControlPanel ptr, byval pszName as LPCWSTR, byval pszPage as LPCWSTR, byval punkSite as IUnknown ptr) as HRESULT
 declare sub IOpenControlPanel_Open_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IOpenControlPanel_GetPath_Proxy(byval This as IOpenControlPanel ptr, byval pszName as LPCWSTR, byval pszPath as LPWSTR, byval cchPath as UINT) as HRESULT
@@ -7472,6 +9244,10 @@ type IComputerInfoChangeNotify_
 	lpVtbl as IComputerInfoChangeNotifyVtbl ptr
 end type
 
+#define IComputerInfoChangeNotify_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IComputerInfoChangeNotify_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IComputerInfoChangeNotify_Release(This) (This)->lpVtbl->Release(This)
+#define IComputerInfoChangeNotify_ComputerInfoChanged(This) (This)->lpVtbl->ComputerInfoChanged(This)
 declare function IComputerInfoChangeNotify_ComputerInfoChanged_Proxy(byval This as IComputerInfoChangeNotify ptr) as HRESULT
 declare sub IComputerInfoChangeNotify_ComputerInfoChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define STR_FILE_SYS_BIND_DATA wstr("File System Bind Data")
@@ -7490,6 +9266,12 @@ end type
 type IFileSystemBindData_
 	lpVtbl as IFileSystemBindDataVtbl ptr
 end type
+
+#define IFileSystemBindData_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFileSystemBindData_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFileSystemBindData_Release(This) (This)->lpVtbl->Release(This)
+#define IFileSystemBindData_SetFindData(This, pfd) (This)->lpVtbl->SetFindData(This, pfd)
+#define IFileSystemBindData_GetFindData(This, pfd) (This)->lpVtbl->GetFindData(This, pfd)
 
 declare function IFileSystemBindData_SetFindData_Proxy(byval This as IFileSystemBindData ptr, byval pfd as const WIN32_FIND_DATAW ptr) as HRESULT
 declare sub IFileSystemBindData_SetFindData_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7514,6 +9296,16 @@ end type
 type IFileSystemBindData2_
 	lpVtbl as IFileSystemBindData2Vtbl ptr
 end type
+
+#define IFileSystemBindData2_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IFileSystemBindData2_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IFileSystemBindData2_Release(This) (This)->lpVtbl->Release(This)
+#define IFileSystemBindData2_SetFindData(This, pfd) (This)->lpVtbl->SetFindData(This, pfd)
+#define IFileSystemBindData2_GetFindData(This, pfd) (This)->lpVtbl->GetFindData(This, pfd)
+#define IFileSystemBindData2_SetFileID(This, liFileID) (This)->lpVtbl->SetFileID(This, liFileID)
+#define IFileSystemBindData2_GetFileID(This, pliFileID) (This)->lpVtbl->GetFileID(This, pliFileID)
+#define IFileSystemBindData2_SetJunctionCLSID(This, clsid) (This)->lpVtbl->SetJunctionCLSID(This, clsid)
+#define IFileSystemBindData2_GetJunctionCLSID(This, pclsid) (This)->lpVtbl->GetJunctionCLSID(This, pclsid)
 
 declare function IFileSystemBindData2_SetFileID_Proxy(byval This as IFileSystemBindData2 ptr, byval liFileID as LARGE_INTEGER) as HRESULT
 declare sub IFileSystemBindData2_SetFileID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7555,6 +9347,19 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 		lpVtbl as ICustomDestinationListVtbl ptr
 	end type
 
+	#define ICustomDestinationList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ICustomDestinationList_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ICustomDestinationList_Release(This) (This)->lpVtbl->Release(This)
+	#define ICustomDestinationList_SetAppID(This, pszAppID) (This)->lpVtbl->SetAppID(This, pszAppID)
+	#define ICustomDestinationList_BeginList(This, pcMinSlots, riid, ppv) (This)->lpVtbl->BeginList(This, pcMinSlots, riid, ppv)
+	#define ICustomDestinationList_AppendCategory(This, pszCategory, poa) (This)->lpVtbl->AppendCategory(This, pszCategory, poa)
+	#define ICustomDestinationList_AppendKnownCategory(This, category) (This)->lpVtbl->AppendKnownCategory(This, category)
+	#define ICustomDestinationList_AddUserTasks(This, poa) (This)->lpVtbl->AddUserTasks(This, poa)
+	#define ICustomDestinationList_CommitList(This) (This)->lpVtbl->CommitList(This)
+	#define ICustomDestinationList_GetRemovedDestinations(This, riid, ppv) (This)->lpVtbl->GetRemovedDestinations(This, riid, ppv)
+	#define ICustomDestinationList_DeleteList(This, pszAppID) (This)->lpVtbl->DeleteList(This, pszAppID)
+	#define ICustomDestinationList_AbortList(This) (This)->lpVtbl->AbortList(This)
+
 	declare function ICustomDestinationList_SetAppID_Proxy(byval This as ICustomDestinationList ptr, byval pszAppID as LPCWSTR) as HRESULT
 	declare sub ICustomDestinationList_SetAppID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function ICustomDestinationList_BeginList_Proxy(byval This as ICustomDestinationList ptr, byval pcMinSlots as UINT ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -7590,6 +9395,13 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 		lpVtbl as IApplicationDestinationsVtbl ptr
 	end type
 
+	#define IApplicationDestinations_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationDestinations_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationDestinations_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationDestinations_SetAppID(This, pszAppID) (This)->lpVtbl->SetAppID(This, pszAppID)
+	#define IApplicationDestinations_RemoveDestination(This, punk) (This)->lpVtbl->RemoveDestination(This, punk)
+	#define IApplicationDestinations_RemoveAllDestinations(This) (This)->lpVtbl->RemoveAllDestinations(This)
+
 	declare function IApplicationDestinations_SetAppID_Proxy(byval This as IApplicationDestinations ptr, byval pszAppID as LPCWSTR) as HRESULT
 	declare sub IApplicationDestinations_SetAppID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IApplicationDestinations_RemoveDestination_Proxy(byval This as IApplicationDestinations ptr, byval punk as IUnknown ptr) as HRESULT
@@ -7619,6 +9431,12 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 		lpVtbl as IApplicationDocumentListsVtbl ptr
 	end type
 
+	#define IApplicationDocumentLists_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationDocumentLists_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationDocumentLists_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationDocumentLists_SetAppID(This, pszAppID) (This)->lpVtbl->SetAppID(This, pszAppID)
+	#define IApplicationDocumentLists_GetList(This, listtype, cItemsDesired, riid, ppv) (This)->lpVtbl->GetList(This, listtype, cItemsDesired, riid, ppv)
+
 	declare function IApplicationDocumentLists_SetAppID_Proxy(byval This as IApplicationDocumentLists ptr, byval pszAppID as LPCWSTR) as HRESULT
 	declare sub IApplicationDocumentLists_SetAppID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IApplicationDocumentLists_GetList_Proxy(byval This as IApplicationDocumentLists ptr, byval listtype as APPDOCLISTTYPE, byval cItemsDesired as UINT, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -7638,6 +9456,12 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 	type IObjectWithAppUserModelID_
 		lpVtbl as IObjectWithAppUserModelIDVtbl ptr
 	end type
+
+	#define IObjectWithAppUserModelID_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IObjectWithAppUserModelID_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IObjectWithAppUserModelID_Release(This) (This)->lpVtbl->Release(This)
+	#define IObjectWithAppUserModelID_SetAppID(This, pszAppID) (This)->lpVtbl->SetAppID(This, pszAppID)
+	#define IObjectWithAppUserModelID_GetAppID(This, ppszAppID) (This)->lpVtbl->GetAppID(This, ppszAppID)
 
 	declare function IObjectWithAppUserModelID_SetAppID_Proxy(byval This as IObjectWithAppUserModelID ptr, byval pszAppID as LPCWSTR) as HRESULT
 	declare sub IObjectWithAppUserModelID_SetAppID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7659,6 +9483,12 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 		lpVtbl as IObjectWithProgIDVtbl ptr
 	end type
 
+	#define IObjectWithProgID_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IObjectWithProgID_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IObjectWithProgID_Release(This) (This)->lpVtbl->Release(This)
+	#define IObjectWithProgID_SetProgID(This, pszProgID) (This)->lpVtbl->SetProgID(This, pszProgID)
+	#define IObjectWithProgID_GetProgID(This, ppszProgID) (This)->lpVtbl->GetProgID(This, ppszProgID)
+
 	declare function IObjectWithProgID_SetProgID_Proxy(byval This as IObjectWithProgID ptr, byval pszProgID as LPCWSTR) as HRESULT
 	declare sub IObjectWithProgID_SetProgID_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IObjectWithProgID_GetProgID_Proxy(byval This as IObjectWithProgID ptr, byval ppszProgID as LPWSTR ptr) as HRESULT
@@ -7677,6 +9507,11 @@ declare sub IFileSystemBindData2_GetJunctionCLSID_Stub(byval This as IRpcStubBuf
 	type IUpdateIDList_
 		lpVtbl as IUpdateIDListVtbl ptr
 	end type
+
+	#define IUpdateIDList_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IUpdateIDList_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IUpdateIDList_Release(This) (This)->lpVtbl->Release(This)
+	#define IUpdateIDList_Update(This, pbc, pidlIn, ppidlOut) (This)->lpVtbl->Update(This, pbc, pidlIn, ppidlOut)
 
 	declare function IUpdateIDList_Update_Proxy(byval This as IUpdateIDList ptr, byval pbc as IBindCtx ptr, byval pidlIn as LPCITEMIDLIST, byval ppidlOut as LPITEMIDLIST ptr) as HRESULT
 	declare sub IUpdateIDList_Update_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7699,6 +9534,10 @@ type IDesktopGadget_
 	lpVtbl as IDesktopGadgetVtbl ptr
 end type
 
+#define IDesktopGadget_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDesktopGadget_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDesktopGadget_Release(This) (This)->lpVtbl->Release(This)
+#define IDesktopGadget_RunGadget(This, gadgetPath) (This)->lpVtbl->RunGadget(This, gadgetPath)
 declare function IDesktopGadget_RunGadget_Proxy(byval This as IDesktopGadget ptr, byval gadgetPath as LPCWSTR) as HRESULT
 declare sub IDesktopGadget_RunGadget_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -7761,6 +9600,26 @@ declare sub IDesktopGadget_RunGadget_Stub(byval This as IRpcStubBuffer ptr, byva
 	type IDesktopWallpaper_
 		lpVtbl as IDesktopWallpaperVtbl ptr
 	end type
+
+	#define IDesktopWallpaper_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDesktopWallpaper_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDesktopWallpaper_Release(This) (This)->lpVtbl->Release(This)
+	#define IDesktopWallpaper_SetWallpaper(This, monitorID, wallpaper) (This)->lpVtbl->SetWallpaper(This, monitorID, wallpaper)
+	#define IDesktopWallpaper_GetWallpaper(This, monitorID, wallpaper) (This)->lpVtbl->GetWallpaper(This, monitorID, wallpaper)
+	#define IDesktopWallpaper_GetMonitorDevicePathAt(This, monitorIndex, monitorID) (This)->lpVtbl->GetMonitorDevicePathAt(This, monitorIndex, monitorID)
+	#define IDesktopWallpaper_GetMonitorDevicePathCount(This, count) (This)->lpVtbl->GetMonitorDevicePathCount(This, count)
+	#define IDesktopWallpaper_GetMonitorRECT(This, monitorID, displayRect) (This)->lpVtbl->GetMonitorRECT(This, monitorID, displayRect)
+	#define IDesktopWallpaper_SetBackgroundColor(This, color) (This)->lpVtbl->SetBackgroundColor(This, color)
+	#define IDesktopWallpaper_GetBackgroundColor(This, color) (This)->lpVtbl->GetBackgroundColor(This, color)
+	#define IDesktopWallpaper_SetPosition(This, position) (This)->lpVtbl->SetPosition(This, position)
+	#define IDesktopWallpaper_GetPosition(This, position) (This)->lpVtbl->GetPosition(This, position)
+	#define IDesktopWallpaper_SetSlideshow(This, items) (This)->lpVtbl->SetSlideshow(This, items)
+	#define IDesktopWallpaper_GetSlideshow(This, items) (This)->lpVtbl->GetSlideshow(This, items)
+	#define IDesktopWallpaper_SetSlideshowOptions(This, options, slideshowTick) (This)->lpVtbl->SetSlideshowOptions(This, options, slideshowTick)
+	#define IDesktopWallpaper_GetSlideshowOptions(This, options, slideshowTick) (This)->lpVtbl->GetSlideshowOptions(This, options, slideshowTick)
+	#define IDesktopWallpaper_AdvanceSlideshow(This, monitorID, direction) (This)->lpVtbl->AdvanceSlideshow(This, monitorID, direction)
+	#define IDesktopWallpaper_GetStatus(This, state) (This)->lpVtbl->GetStatus(This, state)
+	#define IDesktopWallpaper_Enable(This, enable) (This)->lpVtbl->Enable(This, enable)
 
 	declare function IDesktopWallpaper_SetWallpaper_Proxy(byval This as IDesktopWallpaper ptr, byval monitorID as LPCWSTR, byval wallpaper as LPCWSTR) as HRESULT
 	declare sub IDesktopWallpaper_SetWallpaper_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -7825,6 +9684,12 @@ type IHomeGroup_
 	lpVtbl as IHomeGroupVtbl ptr
 end type
 
+#define IHomeGroup_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IHomeGroup_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IHomeGroup_Release(This) (This)->lpVtbl->Release(This)
+#define IHomeGroup_IsMember(This, member) (This)->lpVtbl->IsMember(This, member)
+#define IHomeGroup_ShowSharingWizard(This, owner, sharingchoices) (This)->lpVtbl->ShowSharingWizard(This, owner, sharingchoices)
+
 declare function IHomeGroup_IsMember_Proxy(byval This as IHomeGroup ptr, byval member as WINBOOL ptr) as HRESULT
 declare sub IHomeGroup_IsMember_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IHomeGroup_ShowSharingWizard_Proxy(byval This as IHomeGroup ptr, byval owner as HWND, byval sharingchoices as HOMEGROUPSHARINGCHOICES ptr) as HRESULT
@@ -7844,6 +9709,10 @@ type IInitializeWithPropertyStore_
 	lpVtbl as IInitializeWithPropertyStoreVtbl ptr
 end type
 
+#define IInitializeWithPropertyStore_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IInitializeWithPropertyStore_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IInitializeWithPropertyStore_Release(This) (This)->lpVtbl->Release(This)
+#define IInitializeWithPropertyStore_Initialize(This, pps) (This)->lpVtbl->Initialize(This, pps)
 declare function IInitializeWithPropertyStore_Initialize_Proxy(byval This as IInitializeWithPropertyStore ptr, byval pps as IPropertyStore ptr) as HRESULT
 declare sub IInitializeWithPropertyStore_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IOpenSearchSource_INTERFACE_DEFINED__
@@ -7861,6 +9730,10 @@ type IOpenSearchSource_
 	lpVtbl as IOpenSearchSourceVtbl ptr
 end type
 
+#define IOpenSearchSource_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IOpenSearchSource_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IOpenSearchSource_Release(This) (This)->lpVtbl->Release(This)
+#define IOpenSearchSource_GetResults(This, hwnd, pszQuery, dwStartIndex, dwCount, riid, ppv) (This)->lpVtbl->GetResults(This, hwnd, pszQuery, dwStartIndex, dwCount, riid, ppv)
 declare function IOpenSearchSource_GetResults_Proxy(byval This as IOpenSearchSource ptr, byval hwnd as HWND, byval pszQuery as LPCWSTR, byval dwStartIndex as DWORD, byval dwCount as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 declare sub IOpenSearchSource_GetResults_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IShellLibrary_INTERFACE_DEFINED__
@@ -7923,6 +9796,27 @@ type IShellLibrary_
 	lpVtbl as IShellLibraryVtbl ptr
 end type
 
+#define IShellLibrary_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IShellLibrary_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IShellLibrary_Release(This) (This)->lpVtbl->Release(This)
+#define IShellLibrary_LoadLibraryFromItem(This, psiLibrary, grfMode) (This)->lpVtbl->LoadLibraryFromItem(This, psiLibrary, grfMode)
+#define IShellLibrary_LoadLibraryFromKnownFolder(This, kfidLibrary, grfMode) (This)->lpVtbl->LoadLibraryFromKnownFolder(This, kfidLibrary, grfMode)
+#define IShellLibrary_AddFolder(This, psiLocation) (This)->lpVtbl->AddFolder(This, psiLocation)
+#define IShellLibrary_RemoveFolder(This, psiLocation) (This)->lpVtbl->RemoveFolder(This, psiLocation)
+#define IShellLibrary_GetFolders(This, lff, riid, ppv) (This)->lpVtbl->GetFolders(This, lff, riid, ppv)
+#define IShellLibrary_ResolveFolder(This, psiFolderToResolve, dwTimeout, riid, ppv) (This)->lpVtbl->ResolveFolder(This, psiFolderToResolve, dwTimeout, riid, ppv)
+#define IShellLibrary_GetDefaultSaveFolder(This, dsft, riid, ppv) (This)->lpVtbl->GetDefaultSaveFolder(This, dsft, riid, ppv)
+#define IShellLibrary_SetDefaultSaveFolder(This, dsft, psi) (This)->lpVtbl->SetDefaultSaveFolder(This, dsft, psi)
+#define IShellLibrary_GetOptions(This, plofOptions) (This)->lpVtbl->GetOptions(This, plofOptions)
+#define IShellLibrary_SetOptions(This, lofMask, lofOptions) (This)->lpVtbl->SetOptions(This, lofMask, lofOptions)
+#define IShellLibrary_GetFolderType(This, pftid) (This)->lpVtbl->GetFolderType(This, pftid)
+#define IShellLibrary_SetFolderType(This, ftid) (This)->lpVtbl->SetFolderType(This, ftid)
+#define IShellLibrary_GetIcon(This, ppszIcon) (This)->lpVtbl->GetIcon(This, ppszIcon)
+#define IShellLibrary_SetIcon(This, pszIcon) (This)->lpVtbl->SetIcon(This, pszIcon)
+#define IShellLibrary_Commit(This) (This)->lpVtbl->Commit(This)
+#define IShellLibrary_Save(This, psiFolderToSaveIn, pszLibraryName, lsf, ppsiSavedTo) (This)->lpVtbl->Save(This, psiFolderToSaveIn, pszLibraryName, lsf, ppsiSavedTo)
+#define IShellLibrary_SaveInKnownFolder(This, kfidToSaveIn, pszLibraryName, lsf, ppsiSavedTo) (This)->lpVtbl->SaveInKnownFolder(This, kfidToSaveIn, pszLibraryName, lsf, ppsiSavedTo)
+
 declare function IShellLibrary_LoadLibraryFromItem_Proxy(byval This as IShellLibrary ptr, byval psiLibrary as IShellItem ptr, byval grfMode as DWORD) as HRESULT
 declare sub IShellLibrary_LoadLibraryFromItem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IShellLibrary_LoadLibraryFromKnownFolder_Proxy(byval This as IShellLibrary ptr, byval kfidLibrary as const KNOWNFOLDERID const ptr, byval grfMode as DWORD) as HRESULT
@@ -7979,6 +9873,10 @@ type IPlaybackManagerEvents_
 	lpVtbl as IPlaybackManagerEventsVtbl ptr
 end type
 
+#define IPlaybackManagerEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPlaybackManagerEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPlaybackManagerEvents_Release(This) (This)->lpVtbl->Release(This)
+#define IPlaybackManagerEvents_OnPlaybackManagerEvent(This, dwSessionId, mediaEvent) (This)->lpVtbl->OnPlaybackManagerEvent(This, dwSessionId, mediaEvent)
 declare function IPlaybackManagerEvents_OnPlaybackManagerEvent_Proxy(byval This as IPlaybackManagerEvents ptr, byval dwSessionId as DWORD, byval mediaEvent as PBM_EVENT) as HRESULT
 declare sub IPlaybackManagerEvents_OnPlaybackManagerEvent_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -8018,6 +9916,13 @@ type IPlaybackManager_
 	lpVtbl as IPlaybackManagerVtbl ptr
 end type
 
+#define IPlaybackManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IPlaybackManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IPlaybackManager_Release(This) (This)->lpVtbl->Release(This)
+#define IPlaybackManager_Advise(This, type, pEvents, pdwSessionId) (This)->lpVtbl->Advise(This, type, pEvents, pdwSessionId)
+#define IPlaybackManager_Unadvise(This, dwSessionId) (This)->lpVtbl->Unadvise(This, dwSessionId)
+#define IPlaybackManager_ChangeSessionState(This, dwSessionId, state, mute) (This)->lpVtbl->ChangeSessionState(This, dwSessionId, state, mute)
+
 declare function IPlaybackManager_Advise_Proxy(byval This as IPlaybackManager ptr, byval type as PBM_SESSION_TYPE, byval pEvents as IPlaybackManagerEvents ptr, byval pdwSessionId as DWORD ptr) as HRESULT
 declare sub IPlaybackManager_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IPlaybackManager_Unadvise_Proxy(byval This as IPlaybackManager ptr, byval dwSessionId as DWORD) as HRESULT
@@ -8056,6 +9961,14 @@ type IDefaultFolderMenuInitialize_
 	lpVtbl as IDefaultFolderMenuInitializeVtbl ptr
 end type
 
+#define IDefaultFolderMenuInitialize_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+#define IDefaultFolderMenuInitialize_AddRef(This) (This)->lpVtbl->AddRef(This)
+#define IDefaultFolderMenuInitialize_Release(This) (This)->lpVtbl->Release(This)
+#define IDefaultFolderMenuInitialize_Initialize(This, hwnd, pcmcb, pidlFolder, psf, cidl, apidl, punkAssociation, cKeys, aKeys) (This)->lpVtbl->Initialize(This, hwnd, pcmcb, pidlFolder, psf, cidl, apidl, punkAssociation, cKeys, aKeys)
+#define IDefaultFolderMenuInitialize_SetMenuRestrictions(This, dfmrValues) (This)->lpVtbl->SetMenuRestrictions(This, dfmrValues)
+#define IDefaultFolderMenuInitialize_GetMenuRestrictions(This, dfmrMask, pdfmrValues) (This)->lpVtbl->GetMenuRestrictions(This, dfmrMask, pdfmrValues)
+#define IDefaultFolderMenuInitialize_SetHandlerClsid(This, rclsid) (This)->lpVtbl->SetHandlerClsid(This, rclsid)
+
 declare function IDefaultFolderMenuInitialize_Initialize_Proxy(byval This as IDefaultFolderMenuInitialize ptr, byval hwnd as HWND, byval pcmcb as IContextMenuCB ptr, byval pidlFolder as LPCITEMIDLIST, byval psf as IShellFolder ptr, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval punkAssociation as IUnknown ptr, byval cKeys as UINT, byval aKeys as const HKEY ptr) as HRESULT
 declare sub IDefaultFolderMenuInitialize_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDefaultFolderMenuInitialize_SetMenuRestrictions_Proxy(byval This as IDefaultFolderMenuInitialize ptr, byval dfmrValues as DEFAULT_FOLDER_MENU_RESTRICTIONS) as HRESULT
@@ -8090,6 +10003,13 @@ declare sub IDefaultFolderMenuInitialize_SetHandlerClsid_Stub(byval This as IRpc
 	type IApplicationActivationManager_
 		lpVtbl as IApplicationActivationManagerVtbl ptr
 	end type
+
+	#define IApplicationActivationManager_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationActivationManager_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationActivationManager_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationActivationManager_ActivateApplication(This, appUserModelId, arguments, options, processId) (This)->lpVtbl->ActivateApplication(This, appUserModelId, arguments, options, processId)
+	#define IApplicationActivationManager_ActivateForFile(This, appUserModelId, itemArray, verb, processId) (This)->lpVtbl->ActivateForFile(This, appUserModelId, itemArray, verb, processId)
+	#define IApplicationActivationManager_ActivateForProtocol(This, appUserModelId, itemArray, processId) (This)->lpVtbl->ActivateForProtocol(This, appUserModelId, itemArray, processId)
 
 	declare function IApplicationActivationManager_ActivateApplication_Proxy(byval This as IApplicationActivationManager ptr, byval appUserModelId as LPCWSTR, byval arguments as LPCWSTR, byval options as ACTIVATEOPTIONS, byval processId as DWORD ptr) as HRESULT
 	declare sub IApplicationActivationManager_ActivateApplication_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8198,6 +10118,12 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IAssocHandlerInvokerVtbl ptr
 	end type
 
+	#define IAssocHandlerInvoker_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAssocHandlerInvoker_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAssocHandlerInvoker_Release(This) (This)->lpVtbl->Release(This)
+	#define IAssocHandlerInvoker_SupportsSelection(This) (This)->lpVtbl->SupportsSelection(This)
+	#define IAssocHandlerInvoker_Invoke(This) (This)->lpVtbl->Invoke(This)
+
 	declare function IAssocHandlerInvoker_SupportsSelection_Proxy(byval This as IAssocHandlerInvoker ptr) as HRESULT
 	declare sub IAssocHandlerInvoker_SupportsSelection_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IAssocHandlerInvoker_Invoke_Proxy(byval This as IAssocHandlerInvoker ptr) as HRESULT
@@ -8222,6 +10148,17 @@ extern CLSID_ExecuteFolder as const GUID
 	type IAssocHandler_
 		lpVtbl as IAssocHandlerVtbl ptr
 	end type
+
+	#define IAssocHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAssocHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAssocHandler_Release(This) (This)->lpVtbl->Release(This)
+	#define IAssocHandler_GetName(This, ppsz) (This)->lpVtbl->GetName(This, ppsz)
+	#define IAssocHandler_GetUIName(This, ppsz) (This)->lpVtbl->GetUIName(This, ppsz)
+	#define IAssocHandler_GetIconLocation(This, ppszPath, pIndex) (This)->lpVtbl->GetIconLocation(This, ppszPath, pIndex)
+	#define IAssocHandler_IsRecommended(This) (This)->lpVtbl->IsRecommended(This)
+	#define IAssocHandler_MakeDefault(This, pszDescription) (This)->lpVtbl->MakeDefault(This, pszDescription)
+	#define IAssocHandler_Invoke(This, pdo) (This)->lpVtbl->Invoke(This, pdo)
+	#define IAssocHandler_CreateInvoker(This, pdo, ppInvoker) (This)->lpVtbl->CreateInvoker(This, pdo, ppInvoker)
 
 	declare function IAssocHandler_GetName_Proxy(byval This as IAssocHandler ptr, byval ppsz as LPWSTR ptr) as HRESULT
 	declare sub IAssocHandler_GetName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8252,6 +10189,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IEnumAssocHandlersVtbl ptr
 	end type
 
+	#define IEnumAssocHandlers_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IEnumAssocHandlers_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IEnumAssocHandlers_Release(This) (This)->lpVtbl->Release(This)
+	#define IEnumAssocHandlers_Next(This, celt, rgelt, pceltFetched) (This)->lpVtbl->Next(This, celt, rgelt, pceltFetched)
 	declare function IEnumAssocHandlers_Next_Proxy(byval This as IEnumAssocHandlers ptr, byval celt as ULONG, byval rgelt as IAssocHandler ptr ptr, byval pceltFetched as ULONG ptr) as HRESULT
 	declare sub IEnumAssocHandlers_Next_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -8279,6 +10220,11 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IDataObjectProviderVtbl ptr
 	end type
 
+	#define IDataObjectProvider_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDataObjectProvider_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDataObjectProvider_Release(This) (This)->lpVtbl->Release(This)
+	#define IDataObjectProvider_GetDataObject(This, dataObject) (This)->lpVtbl->GetDataObject(This, dataObject)
+	#define IDataObjectProvider_SetDataObject(This, dataObject) (This)->lpVtbl->SetDataObject(This, dataObject)
 	declare function IDataObjectProvider_GetDataObject_Proxy(byval This as IDataObjectProvider ptr, byval dataObject as IDataObject ptr ptr) as HRESULT
 	declare sub IDataObjectProvider_GetDataObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IDataTransferManagerInterop_INTERFACE_DEFINED__
@@ -8296,6 +10242,12 @@ extern CLSID_ExecuteFolder as const GUID
 	type IDataTransferManagerInterop_
 		lpVtbl as IDataTransferManagerInteropVtbl ptr
 	end type
+
+	#define IDataTransferManagerInterop_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IDataTransferManagerInterop_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IDataTransferManagerInterop_Release(This) (This)->lpVtbl->Release(This)
+	#define IDataTransferManagerInterop_GetForWindow(This, appWindow, riid, dataTransferManager) (This)->lpVtbl->GetForWindow(This, appWindow, riid, dataTransferManager)
+	#define IDataTransferManagerInterop_ShowShareUIForWindow(This, appWindow) (This)->lpVtbl->ShowShareUIForWindow(This, appWindow)
 
 	declare function IDataTransferManagerInterop_GetForWindow_Proxy(byval This as IDataTransferManagerInterop ptr, byval appWindow as HWND, byval riid as const IID const ptr, byval dataTransferManager as any ptr ptr) as HRESULT
 	declare sub IDataTransferManagerInterop_GetForWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8316,6 +10268,12 @@ extern CLSID_ExecuteFolder as const GUID
 	type IFrameworkInputPaneHandler_
 		lpVtbl as IFrameworkInputPaneHandlerVtbl ptr
 	end type
+
+	#define IFrameworkInputPaneHandler_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFrameworkInputPaneHandler_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFrameworkInputPaneHandler_Release(This) (This)->lpVtbl->Release(This)
+	#define IFrameworkInputPaneHandler_Showing(This, prcInputPaneScreenLocation, fEnsureFocusedElementInView) (This)->lpVtbl->Showing(This, prcInputPaneScreenLocation, fEnsureFocusedElementInView)
+	#define IFrameworkInputPaneHandler_Hiding(This, fEnsureFocusedElementInView) (This)->lpVtbl->Hiding(This, fEnsureFocusedElementInView)
 
 	declare function IFrameworkInputPaneHandler_Showing_Proxy(byval This as IFrameworkInputPaneHandler ptr, byval prcInputPaneScreenLocation as RECT ptr, byval fEnsureFocusedElementInView as WINBOOL) as HRESULT
 	declare sub IFrameworkInputPaneHandler_Showing_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8338,6 +10296,14 @@ extern CLSID_ExecuteFolder as const GUID
 	type IFrameworkInputPane_
 		lpVtbl as IFrameworkInputPaneVtbl ptr
 	end type
+
+	#define IFrameworkInputPane_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IFrameworkInputPane_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IFrameworkInputPane_Release(This) (This)->lpVtbl->Release(This)
+	#define IFrameworkInputPane_Advise(This, pWindow, pHandler, pdwCookie) (This)->lpVtbl->Advise(This, pWindow, pHandler, pdwCookie)
+	#define IFrameworkInputPane_AdviseWithHWND(This, hwnd, pHandler, pdwCookie) (This)->lpVtbl->AdviseWithHWND(This, hwnd, pHandler, pdwCookie)
+	#define IFrameworkInputPane_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
+	#define IFrameworkInputPane_Location(This, prcInputPaneScreenLocation) (This)->lpVtbl->Location(This, prcInputPaneScreenLocation)
 
 	declare function IFrameworkInputPane_Advise_Proxy(byval This as IFrameworkInputPane ptr, byval pWindow as IUnknown ptr, byval pHandler as IFrameworkInputPaneHandler ptr, byval pdwCookie as DWORD ptr) as HRESULT
 	declare sub IFrameworkInputPane_Advise_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8376,6 +10342,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as ISearchableApplicationVtbl ptr
 	end type
 
+	#define ISearchableApplication_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define ISearchableApplication_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define ISearchableApplication_Release(This) (This)->lpVtbl->Release(This)
+	#define ISearchableApplication_GetSearchWindow(This, hwnd) (This)->lpVtbl->GetSearchWindow(This, hwnd)
 	declare function ISearchableApplication_GetSearchWindow_Proxy(byval This as ISearchableApplication ptr, byval hwnd as HWND ptr) as HRESULT
 	declare sub ISearchableApplication_GetSearchWindow_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -8400,6 +10370,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IAccessibilityDockingServiceCallbackVtbl ptr
 	end type
 
+	#define IAccessibilityDockingServiceCallback_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAccessibilityDockingServiceCallback_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAccessibilityDockingServiceCallback_Release(This) (This)->lpVtbl->Release(This)
+	#define IAccessibilityDockingServiceCallback_Undocked(This, undockReason) (This)->lpVtbl->Undocked(This, undockReason)
 	declare function IAccessibilityDockingServiceCallback_Undocked_Proxy(byval This as IAccessibilityDockingServiceCallback ptr, byval undockReason as UNDOCK_REASON) as HRESULT
 	declare sub IAccessibilityDockingServiceCallback_Undocked_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IAccessibilityDockingService_INTERFACE_DEFINED__
@@ -8418,6 +10392,13 @@ extern CLSID_ExecuteFolder as const GUID
 	type IAccessibilityDockingService_
 		lpVtbl as IAccessibilityDockingServiceVtbl ptr
 	end type
+
+	#define IAccessibilityDockingService_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAccessibilityDockingService_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAccessibilityDockingService_Release(This) (This)->lpVtbl->Release(This)
+	#define IAccessibilityDockingService_GetAvailableSize(This, hMonitor, pcxFixed, pcyMax) (This)->lpVtbl->GetAvailableSize(This, hMonitor, pcxFixed, pcyMax)
+	#define IAccessibilityDockingService_DockWindow(This, hwnd, hMonitor, cyRequested, pCallback) (This)->lpVtbl->DockWindow(This, hwnd, hMonitor, cyRequested, pCallback)
+	#define IAccessibilityDockingService_UndockWindow(This, hwnd) (This)->lpVtbl->UndockWindow(This, hwnd)
 
 	declare function IAccessibilityDockingService_GetAvailableSize_Proxy(byval This as IAccessibilityDockingService ptr, byval hMonitor as HMONITOR, byval pcxFixed as UINT ptr, byval pcyMax as UINT ptr) as HRESULT
 	declare sub IAccessibilityDockingService_GetAvailableSize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8449,6 +10430,12 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IAppVisibilityEventsVtbl ptr
 	end type
 
+	#define IAppVisibilityEvents_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAppVisibilityEvents_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAppVisibilityEvents_Release(This) (This)->lpVtbl->Release(This)
+	#define IAppVisibilityEvents_AppVisibilityOnMonitorChanged(This, hMonitor, previousMode, currentMode) (This)->lpVtbl->AppVisibilityOnMonitorChanged(This, hMonitor, previousMode, currentMode)
+	#define IAppVisibilityEvents_LauncherVisibilityChange(This, currentVisibleState) (This)->lpVtbl->LauncherVisibilityChange(This, currentVisibleState)
+
 	declare function IAppVisibilityEvents_AppVisibilityOnMonitorChanged_Proxy(byval This as IAppVisibilityEvents ptr, byval hMonitor as HMONITOR, byval previousMode as MONITOR_APP_VISIBILITY, byval currentMode as MONITOR_APP_VISIBILITY) as HRESULT
 	declare sub IAppVisibilityEvents_AppVisibilityOnMonitorChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IAppVisibilityEvents_LauncherVisibilityChange_Proxy(byval This as IAppVisibilityEvents ptr, byval currentVisibleState as WINBOOL) as HRESULT
@@ -8470,6 +10457,14 @@ extern CLSID_ExecuteFolder as const GUID
 	type IAppVisibility_
 		lpVtbl as IAppVisibilityVtbl ptr
 	end type
+
+	#define IAppVisibility_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IAppVisibility_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IAppVisibility_Release(This) (This)->lpVtbl->Release(This)
+	#define IAppVisibility_GetAppVisibilityOnMonitor(This, hMonitor, pMode) (This)->lpVtbl->GetAppVisibilityOnMonitor(This, hMonitor, pMode)
+	#define IAppVisibility_IsLauncherVisible(This, pfVisible) (This)->lpVtbl->IsLauncherVisible(This, pfVisible)
+	#define IAppVisibility_Advise(This, pCallback, pdwCookie) (This)->lpVtbl->Advise(This, pCallback, pdwCookie)
+	#define IAppVisibility_Unadvise(This, dwCookie) (This)->lpVtbl->Unadvise(This, dwCookie)
 
 	declare function IAppVisibility_GetAppVisibilityOnMonitor_Proxy(byval This as IAppVisibility ptr, byval hMonitor as HMONITOR, byval pMode as MONITOR_APP_VISIBILITY ptr) as HRESULT
 	declare sub IAppVisibility_GetAppVisibilityOnMonitor_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8504,6 +10499,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IPackageExecutionStateChangeNotificationVtbl ptr
 	end type
 
+	#define IPackageExecutionStateChangeNotification_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IPackageExecutionStateChangeNotification_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IPackageExecutionStateChangeNotification_Release(This) (This)->lpVtbl->Release(This)
+	#define IPackageExecutionStateChangeNotification_OnStateChanged(This, pszPackageFullName, pesNewState) (This)->lpVtbl->OnStateChanged(This, pszPackageFullName, pesNewState)
 	declare function IPackageExecutionStateChangeNotification_OnStateChanged_Proxy(byval This as IPackageExecutionStateChangeNotification ptr, byval pszPackageFullName as LPCWSTR, byval pesNewState as PACKAGE_EXECUTION_STATE) as HRESULT
 	declare sub IPackageExecutionStateChangeNotification_OnStateChanged_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IPackageDebugSettings_INTERFACE_DEFINED__
@@ -8534,6 +10533,25 @@ extern CLSID_ExecuteFolder as const GUID
 	type IPackageDebugSettings_
 		lpVtbl as IPackageDebugSettingsVtbl ptr
 	end type
+
+	#define IPackageDebugSettings_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IPackageDebugSettings_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IPackageDebugSettings_Release(This) (This)->lpVtbl->Release(This)
+	#define IPackageDebugSettings_EnableDebugging(This, packageFullName, debuggerCommandLine, environment) (This)->lpVtbl->EnableDebugging(This, packageFullName, debuggerCommandLine, environment)
+	#define IPackageDebugSettings_DisableDebugging(This, packageFullName) (This)->lpVtbl->DisableDebugging(This, packageFullName)
+	#define IPackageDebugSettings_Suspend(This, packageFullName) (This)->lpVtbl->Suspend(This, packageFullName)
+	#define IPackageDebugSettings_Resume(This, packageFullName) (This)->lpVtbl->Resume(This, packageFullName)
+	#define IPackageDebugSettings_TerminateAllProcesses(This, packageFullName) (This)->lpVtbl->TerminateAllProcesses(This, packageFullName)
+	#define IPackageDebugSettings_SetTargetSessionId(This, sessionId) (This)->lpVtbl->SetTargetSessionId(This, sessionId)
+	#define IPackageDebugSettings_EnumerateBackgroundTasks(This, packageFullName, taskCount, taskIds, taskNames) (This)->lpVtbl->EnumerateBackgroundTasks(This, packageFullName, taskCount, taskIds, taskNames)
+	#define IPackageDebugSettings_ActivateBackgroundTask(This, taskId) (This)->lpVtbl->ActivateBackgroundTask(This, taskId)
+	#define IPackageDebugSettings_StartServicing(This, packageFullName) (This)->lpVtbl->StartServicing(This, packageFullName)
+	#define IPackageDebugSettings_StopServicing(This, packageFullName) (This)->lpVtbl->StopServicing(This, packageFullName)
+	#define IPackageDebugSettings_StartSessionRedirection(This, packageFullName, sessionId) (This)->lpVtbl->StartSessionRedirection(This, packageFullName, sessionId)
+	#define IPackageDebugSettings_StopSessionRedirection(This, packageFullName) (This)->lpVtbl->StopSessionRedirection(This, packageFullName)
+	#define IPackageDebugSettings_GetPackageExecutionState(This, packageFullName, packageExecutionState) (This)->lpVtbl->GetPackageExecutionState(This, packageFullName, packageExecutionState)
+	#define IPackageDebugSettings_RegisterForPackageStateChanges(This, packageFullName, pPackageExecutionStateChangeNotification, pdwCookie) (This)->lpVtbl->RegisterForPackageStateChanges(This, packageFullName, pPackageExecutionStateChangeNotification, pdwCookie)
+	#define IPackageDebugSettings_UnregisterForPackageStateChanges(This, dwCookie) (This)->lpVtbl->UnregisterForPackageStateChanges(This, dwCookie)
 
 	declare function IPackageDebugSettings_EnableDebugging_Proxy(byval This as IPackageDebugSettings ptr, byval packageFullName as LPCWSTR, byval debuggerCommandLine as LPCWSTR, byval environment as PZZWSTR) as HRESULT
 	declare sub IPackageDebugSettings_EnableDebugging_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8587,6 +10605,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IExecuteCommandApplicationHostEnvironmentVtbl ptr
 	end type
 
+	#define IExecuteCommandApplicationHostEnvironment_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IExecuteCommandApplicationHostEnvironment_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IExecuteCommandApplicationHostEnvironment_Release(This) (This)->lpVtbl->Release(This)
+	#define IExecuteCommandApplicationHostEnvironment_GetValue(This, pahe) (This)->lpVtbl->GetValue(This, pahe)
 	declare function IExecuteCommandApplicationHostEnvironment_GetValue_Proxy(byval This as IExecuteCommandApplicationHostEnvironment ptr, byval pahe as AHE_TYPE ptr) as HRESULT
 	declare sub IExecuteCommandApplicationHostEnvironment_GetValue_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
@@ -8612,6 +10634,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IExecuteCommandHostVtbl ptr
 	end type
 
+	#define IExecuteCommandHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IExecuteCommandHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IExecuteCommandHost_Release(This) (This)->lpVtbl->Release(This)
+	#define IExecuteCommandHost_GetUIMode(This, pUIMode) (This)->lpVtbl->GetUIMode(This, pUIMode)
 	declare function IExecuteCommandHost_GetUIMode_Proxy(byval This as IExecuteCommandHost ptr, byval pUIMode as EC_HOST_UI_MODE ptr) as HRESULT
 	declare sub IExecuteCommandHost_GetUIMode_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define SID_ExecuteCommandHost IID_IExecuteCommandHost
@@ -8651,6 +10677,16 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IApplicationDesignModeSettingsVtbl ptr
 	end type
 
+	#define IApplicationDesignModeSettings_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IApplicationDesignModeSettings_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IApplicationDesignModeSettings_Release(This) (This)->lpVtbl->Release(This)
+	#define IApplicationDesignModeSettings_SetNativeDisplaySize(This, sizeNativeDisplay) (This)->lpVtbl->SetNativeDisplaySize(This, sizeNativeDisplay)
+	#define IApplicationDesignModeSettings_SetScaleFactor(This, scaleFactor) (This)->lpVtbl->SetScaleFactor(This, scaleFactor)
+	#define IApplicationDesignModeSettings_SetApplicationViewState(This, viewState) (This)->lpVtbl->SetApplicationViewState(This, viewState)
+	#define IApplicationDesignModeSettings_ComputeApplicationSize(This, psizeApplication) (This)->lpVtbl->ComputeApplicationSize(This, psizeApplication)
+	#define IApplicationDesignModeSettings_IsApplicationViewStateSupported(This, viewState, sizeNativeDisplay, scaleFactor, pfSupported) (This)->lpVtbl->IsApplicationViewStateSupported(This, viewState, sizeNativeDisplay, scaleFactor, pfSupported)
+	#define IApplicationDesignModeSettings_TriggerEdgeGesture(This, edgeGestureKind) (This)->lpVtbl->TriggerEdgeGesture(This, edgeGestureKind)
+
 	declare function IApplicationDesignModeSettings_SetNativeDisplaySize_Proxy(byval This as IApplicationDesignModeSettings ptr, byval sizeNativeDisplay as SIZE) as HRESULT
 	declare sub IApplicationDesignModeSettings_SetNativeDisplaySize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	declare function IApplicationDesignModeSettings_SetScaleFactor_Proxy(byval This as IApplicationDesignModeSettings ptr, byval scaleFactor as DEVICE_SCALE_FACTOR) as HRESULT
@@ -8678,6 +10714,10 @@ extern CLSID_ExecuteFolder as const GUID
 		lpVtbl as IInitializeWithWindowVtbl ptr
 	end type
 
+	#define IInitializeWithWindow_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IInitializeWithWindow_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IInitializeWithWindow_Release(This) (This)->lpVtbl->Release(This)
+	#define IInitializeWithWindow_Initialize(This, hwnd) (This)->lpVtbl->Initialize(This, hwnd)
 	declare function IInitializeWithWindow_Initialize_Proxy(byval This as IInitializeWithWindow ptr, byval hwnd as HWND) as HRESULT
 	declare sub IInitializeWithWindow_Initialize_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 	#define __IHandlerInfo_INTERFACE_DEFINED__
@@ -8696,6 +10736,13 @@ extern CLSID_ExecuteFolder as const GUID
 	type IHandlerInfo_
 		lpVtbl as IHandlerInfoVtbl ptr
 	end type
+
+	#define IHandlerInfo_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IHandlerInfo_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IHandlerInfo_Release(This) (This)->lpVtbl->Release(This)
+	#define IHandlerInfo_GetApplicationDisplayName(This, value) (This)->lpVtbl->GetApplicationDisplayName(This, value)
+	#define IHandlerInfo_GetApplicationPublisher(This, value) (This)->lpVtbl->GetApplicationPublisher(This, value)
+	#define IHandlerInfo_GetApplicationIconReference(This, value) (This)->lpVtbl->GetApplicationIconReference(This, value)
 
 	declare function IHandlerInfo_GetApplicationDisplayName_Proxy(byval This as IHandlerInfo ptr, byval value as LPWSTR ptr) as HRESULT
 	declare sub IHandlerInfo_GetApplicationDisplayName_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
@@ -8718,6 +10765,12 @@ extern CLSID_ExecuteFolder as const GUID
 	type IHandlerActivationHost_
 		lpVtbl as IHandlerActivationHostVtbl ptr
 	end type
+
+	#define IHandlerActivationHost_QueryInterface(This, riid, ppvObject) (This)->lpVtbl->QueryInterface(This, riid, ppvObject)
+	#define IHandlerActivationHost_AddRef(This) (This)->lpVtbl->AddRef(This)
+	#define IHandlerActivationHost_Release(This) (This)->lpVtbl->Release(This)
+	#define IHandlerActivationHost_BeforeCoCreateInstance(This, clsidHandler, itemsBeingActivated, handlerInfo) (This)->lpVtbl->BeforeCoCreateInstance(This, clsidHandler, itemsBeingActivated, handlerInfo)
+	#define IHandlerActivationHost_BeforeCreateProcess(This, applicationPath, commandLine, handlerInfo) (This)->lpVtbl->BeforeCreateProcess(This, applicationPath, commandLine, handlerInfo)
 
 	declare function IHandlerActivationHost_BeforeCoCreateInstance_Proxy(byval This as IHandlerActivationHost ptr, byval clsidHandler as const IID const ptr, byval itemsBeingActivated as IShellItemArray ptr, byval handlerInfo as IHandlerInfo ptr) as HRESULT
 	declare sub IHandlerActivationHost_BeforeCoCreateInstance_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)

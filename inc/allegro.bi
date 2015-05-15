@@ -1,6 +1,61 @@
+'' FreeBASIC binding for allegro-4.4.2
+''
+'' based on the C header files:
+''     ______   ___    ___
+''    /\  _  \ /\_ \  /\_ \
+''    \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___ 
+''     \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
+''      \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
+''       \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
+''        \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
+''                                       /\____/
+''                                       \_/__/     Version 4.4.2
+''
+''
+''                A game programming library.
+''
+''             By Shawn Hargreaves, May 19, 2011.
+''
+''   Allegro is gift-ware. It was created by a number of people working in 
+''   cooperation, and is given to you freely as a gift. You may use, modify, 
+''   redistribute, and generally hack it about in any way you like, and you do 
+''   not have to give us anything in return. However, if you like this product 
+''   you are encouraged to thank us by making a return gift to the Allegro 
+''   community. This could be by writing an add-on package, providing a useful 
+''   bug report, making an improvement to the library, or perhaps just 
+''   releasing the sources of your program so that other people can learn from 
+''   them. If you redistribute parts of this code or make a game using it, it 
+''   would be nice if you mentioned Allegro somewhere in the credits, but you 
+''   are not required to do this. We trust you not to abuse our generosity.
+''
+''   Disclaimer:
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+''   FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+''   SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+''   FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+''   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+''   DEALINGS IN THE SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
-#inclib "alleg"
+#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "alleg_s"
+#else
+	#inclib "alleg"
+#endif
+
+#ifdef __FB_LINUX__
+	#inclib "X11"
+	#inclib "Xext"
+	#inclib "Xpm"
+	#inclib "Xxf86vm"
+	#inclib "Xcursor"
+#endif
 
 #undef screen
 #undef circle
@@ -17,7 +72,12 @@
 #include once "crt/time.bi"
 #include once "crt/string.bi"
 
+#ifdef __FB_WIN32__
+	#include once "crt/stdint.bi"
+#endif
+
 '' The following symbols have been renamed:
+''     undef MID => AL_MID
 ''     #define MID => AL_MID
 ''     #define EMPTY_STRING => EMPTY_STRING_
 ''     #define SYSTEM_NONE => SYSTEM_NONE_
@@ -84,12 +144,17 @@ extern "C"
 
 #define ALLEGRO_H
 #define ALLEGRO_BASE_H
+#define ALLEGRO_COLOR8
+#define ALLEGRO_COLOR16
+#define ALLEGRO_COLOR24
+#define ALLEGRO_COLOR32
 
-#if defined(__FB_DOS__) or defined(__FB_WIN32__)
-	#define ALLEGRO_COLOR8
-	#define ALLEGRO_COLOR16
-	#define ALLEGRO_COLOR24
-	#define ALLEGRO_COLOR32
+#ifdef __FB_WIN32__
+	const ALLEGRO_MINGW32 = 1
+#elseif defined(__FB_LINUX__)
+	const ALLEGRO_UNIX = 1
+#else
+	const ALLEGRO_DJGPP = 1
 #endif
 
 #if defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
@@ -98,7 +163,38 @@ extern "C"
 	#define _AL_DLL
 #endif
 
-#ifdef __FB_WIN32__
+#define ALLEGRO_NO_ASM
+#define ALLEGRO_USE_C
+
+#ifdef __FB_LINUX__
+	#define ALLEGRO_PLATFORM_STR "Unix"
+#elseif defined(__FB_DOS__)
+	#define ALLEGRO_PLATFORM_STR "djgpp"
+	#define ALLEGRO_DOS
+	#define ALLEGRO_I386
+	#define ALLEGRO_LITTLE_ENDIAN
+	#define ALLEGRO_GUESS_INTTYPES_OK
+#endif
+
+#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+	#define ALLEGRO_CONSOLE_OK
+	#define ALLEGRO_VRAM_SINGLE_SURFACE
+#endif
+
+#ifdef __FB_LINUX__
+	#undef ALLEGRO_COLOR8
+	#undef ALLEGRO_COLOR16
+	#undef ALLEGRO_COLOR24
+	#undef ALLEGRO_COLOR32
+
+	const ALLEGRO_COLOR8 = 1
+	const ALLEGRO_COLOR16 = 1
+	const ALLEGRO_COLOR24 = 1
+	const ALLEGRO_COLOR32 = 1
+	const ALLEGRO_HAVE_INTTYPES_H = 1
+#endif
+
+#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 	const ALLEGRO_HAVE_STDINT_H = 1
 #endif
 
@@ -110,36 +206,20 @@ extern "C"
 
 #ifdef __FB_WIN32__
 	#define ALLEGRO_WINDOWS
-#elseif defined(__FB_DOS__)
-	#define ALLEGRO_PLATFORM_STR "djgpp"
-	#define ALLEGRO_DOS
-#endif
-
-#if defined(__FB_DOS__) or defined(__FB_WIN32__)
+	#define ALLEGRO_I386
 	#define ALLEGRO_LITTLE_ENDIAN
 #endif
 
-#ifdef __FB_WIN32__
+#if defined(__FB_DOS__) or defined(__FB_WIN32__)
 	#define ALLEGRO_USE_CONSTRUCTOR
-#elseif defined(__FB_LINUX__)
-	#define ALLEGRO_PLATFORM_STR "Unix"
 #else
-	#define ALLEGRO_GUESS_INTTYPES_OK
-#endif
-
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
-	#define ALLEGRO_CONSOLE_OK
-	#define ALLEGRO_VRAM_SINGLE_SURFACE
+	const ALLEGRO_HAVE_MEMCMP = 1
+	const ALLEGRO_LITTLE_ENDIAN = 1
 #endif
 
 #if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 	#define ALLEGRO_MULTITHREADED
-#endif
-
-#ifdef __FB_WIN32__
-	#define ENUM_CURRENT_SETTINGS (DWORD - 1)
-#elseif defined(__FB_DOS__)
-	#define ALLEGRO_USE_CONSTRUCTOR
+#else
 	declare sub _unlock_dpmi_data(byval addr as any ptr, byval size as long)
 	#define LOCK_DATA(d, s) _go32_dpmi_lock_data(cptr(any ptr, d), s)
 	#define LOCK_CODE(c, s) _go32_dpmi_lock_code(cptr(any ptr, c), s)
@@ -168,24 +248,23 @@ extern "C"
 
 #if defined(__FB_DOS__) or defined(__FB_WIN32__)
 	#define ALLEGRO_ASM_PREFIX "_"
-#endif
-
-#ifdef __FB_WIN32__
-	#define ALLEGRO_ASMCAPA_HEADER "obj/mingw32/asmcapa.h"
-#elseif defined(__FB_LINUX__)
+#else
 	#define ALLEGRO_NO_STRICMP
 	#define ALLEGRO_NO_STRLWR
 	#define ALLEGRO_NO_STRUPR
-#else
+#endif
+
+#ifdef __FB_DOS__
 	#define ALLEGRO_ASM_USE_FS
-	#define ALLEGRO_ASMCAPA_HEADER "obj/djgpp/asmcapa.h"
 #endif
 
 #define ASTDINT_H
+#define ALLEGRO_GCC
 
-#ifdef __FB_DOS__
-	#define int64_t longint
-	#define uint64_t ulongint
+#if defined(__FB_64BIT__) and (defined(__FB_LINUX__) or defined(__FB_WIN32__))
+	#define ALLEGRO_AMD64
+#else
+	#define ALLEGRO_I386
 #endif
 
 #macro _AL_SINCOS(x, s, c)
@@ -283,6 +362,11 @@ const ALLEGRO_WIP_VERSION = 2
 const ALLEGRO_DATE = 20110519
 const TRUE = -1
 const FALSE = 0
+
+#undef MIN
+#undef MAX
+#undef AL_MID
+
 #define MIN(x, y) iif((x) < (y), (x), (y))
 #define MAX(x, y) iif((x) > (y), (x), (y))
 #define AL_MID(x, y, z) iif((x) > (y), iif((y) > (z), (y), iif((x) > (z), (z), (x))), iif((y) > (z), iif((z) > (x), (z), (x)), (y)))
@@ -1530,10 +1614,15 @@ declare function get_display_switch_mode() as long
 declare function set_display_switch_callback(byval dir as long, byval cb as sub()) as long
 declare sub remove_display_switch_callback(byval cb as sub())
 declare sub lock_bitmap(byval bmp as BITMAP ptr)
+
 #define ALLEGRO_GFX_INL
+#define ALLEGRO_IMPORT_GFX_ASM
+#define ALLEGRO_USE_C
+#undef ALLEGRO_IMPORT_GFX_ASM
 declare function _default_ds() as long
 type _BMP_BANK_SWITCHER as function(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 type _BMP_UNBANK_SWITCHER as sub(byval bmp as BITMAP ptr)
+
 declare function bmp_write_line(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 declare function bmp_read_line(byval bmp as BITMAP ptr, byval lyne as long) as uinteger
 declare sub bmp_unwrite_line(byval bmp as BITMAP ptr)
@@ -2523,7 +2612,10 @@ extern _AL_DLL ___tan_tbl alias "_tan_tbl" as fixed
 extern _AL_DLL ___acos_tbl alias "_acos_tbl" as fixed
 
 #define ALLEGRO_FMATHS_INL
+#define ALLEGRO_IMPORT_MATH_ASM
 #define ALLEGRO_USE_C
+#undef ALLEGRO_IMPORT_MATH_ASM
+
 declare function ftofix(byval x as double) as fixed
 declare function fixtof(byval x as fixed) as double
 declare function fixadd(byval x as fixed, byval y as fixed) as fixed

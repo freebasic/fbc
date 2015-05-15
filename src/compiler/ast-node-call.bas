@@ -237,7 +237,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		else
 			'' When returning BYREF the CALL's dtype should have
 			'' been remapped by astBuildByrefResultDeref()
-			assert( iif( symbProcReturnsByref( proc ), _
+			assert( iif( symbIsRef( proc ), _
 					astGetDataType( n ) = typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
 					TRUE ) )
 
@@ -396,7 +396,7 @@ function astBuildCallResultUdt( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 	assert( astIsCALL( expr ) )
 	assert( astGetDataType( expr ) = FB_DATATYPE_STRUCT )
-	assert( symbProcReturnsByref( expr->sym ) = FALSE )
+	assert( symbIsRef( expr->sym ) = FALSE )
 
 	if( symbProcReturnsOnStack( expr->sym ) ) then
 		'' UDT returned in temp var already, just access that one
@@ -428,7 +428,7 @@ function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' And only if it actually has a BYREF result
-	if( symbProcReturnsByref( expr->sym ) = FALSE ) then
+	if( symbIsRef( expr->sym ) = FALSE ) then
 		return expr
 	end if
 
@@ -456,9 +456,10 @@ end function
 
 function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
-	if( astIsDEREF( expr ) ) then
+	'' DEREF with expression? (and not just DEREF of a constant)
+	if( astIsDEREF( expr ) andalso expr->l ) then
 		if( astIsCALL( expr->l ) ) then
-			function = symbProcReturnsByref( expr->l->sym )
+			function = symbIsRef( expr->l->sym )
 		end if
 	end if
 end function
@@ -509,7 +510,7 @@ function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
 		'' This mustn't be done if returning BYREF, but in that case
 		'' we shouldn't come here, since the CALL's dtype should be
 		'' remapped already.
-		assert( symbProcReturnsByref( n->sym ) = FALSE )
+		assert( symbIsRef( n->sym ) = FALSE )
 
 		if( dtype = FB_DATATYPE_WCHAR ) then
 			'' Actually returning a wstring ptr. Remap the type so the

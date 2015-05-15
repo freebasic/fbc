@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright 2011 Dylan Smith
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #include once "_mingw_unicode.bi"
@@ -387,11 +409,11 @@ declare function D3DXSaveMeshHierarchyToFileW(byval filename as const wstring pt
 #endif
 
 declare function D3DXFrameDestroy(byval frame_root as D3DXFRAME ptr, byval alloc as ID3DXAllocateHierarchy ptr) as HRESULT
-declare function D3DXFrameAppendChild(byval as LPD3DXFRAME, byval as const D3DXFRAME ptr) as HRESULT
+declare function D3DXFrameAppendChild(byval parent as D3DXFRAME ptr, byval child as const D3DXFRAME ptr) as HRESULT
 declare function D3DXFrameFind(byval root as const D3DXFRAME ptr, byval name as const zstring ptr) as D3DXFRAME ptr
 declare function D3DXFrameRegisterNamedMatrices(byval frame_root as D3DXFRAME ptr, byval animation_controller as ID3DXAnimationController ptr) as HRESULT
 declare function D3DXFrameNumNamedMatrices(byval frame_root as const D3DXFRAME ptr) as UINT
-declare function D3DXFrameCalculateBoundingSphere(byval as const D3DXFRAME ptr, byval as LPD3DXVECTOR3, byval as FLOAT ptr) as HRESULT
+declare function D3DXFrameCalculateBoundingSphere(byval frame_root as const D3DXFRAME ptr, byval center as D3DXVECTOR3 ptr, byval radius as FLOAT ptr) as HRESULT
 declare function D3DXCreateKeyframedAnimationSet(byval name as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval animation_count as UINT, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXKeyframedAnimationSet ptr ptr) as HRESULT
 declare function D3DXCreateCompressedAnimationSet(byval name as const zstring ptr, byval ticks_per_second as double, byval playback_type as D3DXPLAYBACK_TYPE, byval compressed_data as ID3DXBuffer ptr, byval callback_key_count as UINT, byval callback_keys as const D3DXKEY_CALLBACK ptr, byval animation_set as ID3DXCompressedAnimationSet ptr ptr) as HRESULT
 declare function D3DXCreateAnimationController(byval max_animation_output_count as UINT, byval max_animation_set_count as UINT, byval max_track_count as UINT, byval max_event_count as UINT, byval animation_controller as ID3DXAnimationController ptr ptr) as HRESULT

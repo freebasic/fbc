@@ -899,6 +899,13 @@ namespace derefConst
 	end sub
 end namespace
 
+namespace constness
+	function f1() byref as const integer
+		static i as integer
+		function = i
+	end function
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )

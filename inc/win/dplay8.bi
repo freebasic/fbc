@@ -1,3 +1,25 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   Copyright (C) 2003-2005 Raphael Junqueira
+''
+''   This library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU Lesser General Public
+''   License as published by the Free Software Foundation; either
+''   version 2.1 of the License, or (at your option) any later version.
+''
+''   This library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "dxguid"
@@ -631,25 +653,25 @@ type IDirectPlay8ClientVtbl_
 	QueryInterface as function(byval This as IDirectPlay8Client ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8Client ptr) as ULONG
 	Release as function(byval This as IDirectPlay8Client ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8Client ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	EnumServiceProviders as function(byval This as IDirectPlay8Client ptr, byval pguidServiceProvider as const GUID const ptr, byval pguidApplication as const GUID const ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO const ptr, byval pcbEnumData as const PDWORD, byval pcReturned as const PDWORD, byval dwFlags as const DWORD) as HRESULT
-	EnumHosts as function(byval This as IDirectPlay8Client ptr, byval pApplicationDesc as const PDPN_APPLICATION_DESC, byval pAddrHost as IDirectPlay8Address const ptr, byval pDeviceInfo as IDirectPlay8Address const ptr, byval pUserEnumData as const PVOID, byval dwUserEnumDataSize as const DWORD, byval dwEnumCount as const DWORD, byval dwRetryInterval as const DWORD, byval dwTimeOut as const DWORD, byval pvUserContext as const PVOID, byval pAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	CancelAsyncOperation as function(byval This as IDirectPlay8Client ptr, byval hAsyncHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	Connect as function(byval This as IDirectPlay8Client ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC const ptr, byval pHostAddr as IDirectPlay8Address const ptr, byval pDeviceInfo as IDirectPlay8Address const ptr, byval pdnSecurity as const DPN_SECURITY_DESC const ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS const ptr, byval pvUserConnectData as const any const ptr, byval dwUserConnectDataSize as const DWORD, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	Send as function(byval This as IDirectPlay8Client ptr, byval prgBufferDesc as const DPN_BUFFER_DESC const ptr, byval cBufferDesc as const DWORD, byval dwTimeOut as const DWORD, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetSendQueueInfo as function(byval This as IDirectPlay8Client ptr, byval pdwNumMsgs as DWORD const ptr, byval pdwNumBytes as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetApplicationDesc as function(byval This as IDirectPlay8Client ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC const ptr, byval pcbDataSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetClientInfo as function(byval This as IDirectPlay8Client ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO const ptr, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetServerInfo as function(byval This as IDirectPlay8Client ptr, byval pdpnPlayerInfo as DPN_PLAYER_INFO const ptr, byval pdwSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetServerAddress as function(byval This as IDirectPlay8Client ptr, byval pAddress as IDirectPlay8Address ptr const ptr, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8Client ptr, byval dwFlags as const DWORD) as HRESULT
-	ReturnBuffer as function(byval This as IDirectPlay8Client ptr, byval hBufferHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	GetCaps as function(byval This as IDirectPlay8Client ptr, byval pdpCaps as DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetCaps as function(byval This as IDirectPlay8Client ptr, byval pdpCaps as const DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetSPCaps as function(byval This as IDirectPlay8Client ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as const DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetSPCaps as function(byval This as IDirectPlay8Client ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetConnectionInfo as function(byval This as IDirectPlay8Client ptr, byval pdpConnectionInfo as DPN_CONNECTION_INFO const ptr, byval dwFlags as const DWORD) as HRESULT
-	RegisterLobby as function(byval This as IDirectPlay8Client ptr, byval dpnHandle as const DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication const ptr, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8Client ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	EnumServiceProviders as function(byval This as IDirectPlay8Client ptr, byval pguidServiceProvider as const GUID ptr, byval pguidApplication as const GUID ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO ptr, byval pcbEnumData as PDWORD, byval pcReturned as PDWORD, byval dwFlags as DWORD) as HRESULT
+	EnumHosts as function(byval This as IDirectPlay8Client ptr, byval pApplicationDesc as PDPN_APPLICATION_DESC, byval pAddrHost as IDirectPlay8Address ptr, byval pDeviceInfo as IDirectPlay8Address ptr, byval pUserEnumData as PVOID, byval dwUserEnumDataSize as DWORD, byval dwEnumCount as DWORD, byval dwRetryInterval as DWORD, byval dwTimeOut as DWORD, byval pvUserContext as PVOID, byval pAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	CancelAsyncOperation as function(byval This as IDirectPlay8Client ptr, byval hAsyncHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	Connect as function(byval This as IDirectPlay8Client ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC ptr, byval pHostAddr as IDirectPlay8Address ptr, byval pDeviceInfo as IDirectPlay8Address ptr, byval pdnSecurity as const DPN_SECURITY_DESC ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS ptr, byval pvUserConnectData as const any ptr, byval dwUserConnectDataSize as DWORD, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	Send as function(byval This as IDirectPlay8Client ptr, byval prgBufferDesc as const DPN_BUFFER_DESC ptr, byval cBufferDesc as DWORD, byval dwTimeOut as DWORD, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetSendQueueInfo as function(byval This as IDirectPlay8Client ptr, byval pdwNumMsgs as DWORD ptr, byval pdwNumBytes as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	GetApplicationDesc as function(byval This as IDirectPlay8Client ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC ptr, byval pcbDataSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetClientInfo as function(byval This as IDirectPlay8Client ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO ptr, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetServerInfo as function(byval This as IDirectPlay8Client ptr, byval pdpnPlayerInfo as DPN_PLAYER_INFO ptr, byval pdwSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	GetServerAddress as function(byval This as IDirectPlay8Client ptr, byval pAddress as IDirectPlay8Address ptr ptr, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8Client ptr, byval dwFlags as DWORD) as HRESULT
+	ReturnBuffer as function(byval This as IDirectPlay8Client ptr, byval hBufferHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	GetCaps as function(byval This as IDirectPlay8Client ptr, byval pdpCaps as DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetCaps as function(byval This as IDirectPlay8Client ptr, byval pdpCaps as const DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetSPCaps as function(byval This as IDirectPlay8Client ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as const DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetSPCaps as function(byval This as IDirectPlay8Client ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetConnectionInfo as function(byval This as IDirectPlay8Client ptr, byval pdpConnectionInfo as DPN_CONNECTION_INFO ptr, byval dwFlags as DWORD) as HRESULT
+	RegisterLobby as function(byval This as IDirectPlay8Client ptr, byval dpnHandle as DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8Client_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -684,37 +706,37 @@ type IDirectPlay8ServerVtbl_
 	QueryInterface as function(byval This as IDirectPlay8Server ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8Server ptr) as ULONG
 	Release as function(byval This as IDirectPlay8Server ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8Server ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	EnumServiceProviders as function(byval This as IDirectPlay8Server ptr, byval pguidServiceProvider as const GUID const ptr, byval pguidApplication as const GUID const ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO const ptr, byval pcbEnumData as const PDWORD, byval pcReturned as const PDWORD, byval dwFlags as const DWORD) as HRESULT
-	CancelAsyncOperation as function(byval This as IDirectPlay8Server ptr, byval hAsyncHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	GetSendQueueInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pdwNumMsgs as DWORD const ptr, byval pdwNumBytes as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetApplicationDesc as function(byval This as IDirectPlay8Server ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC const ptr, byval pcbDataSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetServerInfo as function(byval This as IDirectPlay8Server ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO const ptr, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetClientInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pdpnPlayerInfo as DPN_PLAYER_INFO const ptr, byval pdwSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetClientAddress as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pAddress as IDirectPlay8Address ptr const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetLocalHostAddresses as function(byval This as IDirectPlay8Server ptr, byval prgpAddress as IDirectPlay8Address ptr const ptr, byval pcAddress as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetApplicationDesc as function(byval This as IDirectPlay8Server ptr, byval pad as const DPN_APPLICATION_DESC const ptr, byval dwFlags as const DWORD) as HRESULT
-	Host as function(byval This as IDirectPlay8Server ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC const ptr, byval prgpDeviceInfo as IDirectPlay8Address ptr const ptr, byval cDeviceInfo as const DWORD, byval pdnSecurity as const DPN_SECURITY_DESC const ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS const ptr, byval pvPlayerContext as any const ptr, byval dwFlags as const DWORD) as HRESULT
-	SendTo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval prgBufferDesc as const DPN_BUFFER_DESC const ptr, byval cBufferDesc as const DWORD, byval dwTimeOut as const DWORD, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	CreateGroup as function(byval This as IDirectPlay8Server ptr, byval pdpnGroupInfo as const DPN_GROUP_INFO const ptr, byval pvGroupContext as any const ptr, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	DestroyGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	AddPlayerToGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as const DPNID, byval idClient as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	RemovePlayerFromGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as const DPNID, byval idClient as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetGroupInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO const ptr, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetGroupInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO const ptr, byval pdwSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumPlayersAndGroups as function(byval This as IDirectPlay8Server ptr, byval prgdpnid as DPNID const ptr, byval pcdpnid as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumGroupMembers as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval prgdpnid as DPNID const ptr, byval pcdpnid as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8Server ptr, byval dwFlags as const DWORD) as HRESULT
-	DestroyClient as function(byval This as IDirectPlay8Server ptr, byval dpnidClient as const DPNID, byval pvDestroyData as const any const ptr, byval dwDestroyDataSize as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	ReturnBuffer as function(byval This as IDirectPlay8Server ptr, byval hBufferHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	GetPlayerContext as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval ppvPlayerContext as PVOID const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetGroupContext as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval ppvGroupContext as PVOID const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetCaps as function(byval This as IDirectPlay8Server ptr, byval pdpCaps as DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetCaps as function(byval This as IDirectPlay8Server ptr, byval pdpCaps as const DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetSPCaps as function(byval This as IDirectPlay8Server ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as const DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetSPCaps as function(byval This as IDirectPlay8Server ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetConnectionInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as const DPNID, byval pdpConnectionInfo as DPN_CONNECTION_INFO const ptr, byval dwFlags as const DWORD) as HRESULT
-	RegisterLobby as function(byval This as IDirectPlay8Server ptr, byval dpnHandle as const DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication const ptr, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8Server ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	EnumServiceProviders as function(byval This as IDirectPlay8Server ptr, byval pguidServiceProvider as const GUID ptr, byval pguidApplication as const GUID ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO ptr, byval pcbEnumData as PDWORD, byval pcReturned as PDWORD, byval dwFlags as DWORD) as HRESULT
+	CancelAsyncOperation as function(byval This as IDirectPlay8Server ptr, byval hAsyncHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	GetSendQueueInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pdwNumMsgs as DWORD ptr, byval pdwNumBytes as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	GetApplicationDesc as function(byval This as IDirectPlay8Server ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC ptr, byval pcbDataSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetServerInfo as function(byval This as IDirectPlay8Server ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO ptr, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetClientInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pdpnPlayerInfo as DPN_PLAYER_INFO ptr, byval pdwSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	GetClientAddress as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pAddress as IDirectPlay8Address ptr ptr, byval dwFlags as DWORD) as HRESULT
+	GetLocalHostAddresses as function(byval This as IDirectPlay8Server ptr, byval prgpAddress as IDirectPlay8Address ptr ptr, byval pcAddress as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetApplicationDesc as function(byval This as IDirectPlay8Server ptr, byval pad as const DPN_APPLICATION_DESC ptr, byval dwFlags as DWORD) as HRESULT
+	Host as function(byval This as IDirectPlay8Server ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC ptr, byval prgpDeviceInfo as IDirectPlay8Address ptr ptr, byval cDeviceInfo as DWORD, byval pdnSecurity as const DPN_SECURITY_DESC ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS ptr, byval pvPlayerContext as any ptr, byval dwFlags as DWORD) as HRESULT
+	SendTo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval prgBufferDesc as const DPN_BUFFER_DESC ptr, byval cBufferDesc as DWORD, byval dwTimeOut as DWORD, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	CreateGroup as function(byval This as IDirectPlay8Server ptr, byval pdpnGroupInfo as const DPN_GROUP_INFO ptr, byval pvGroupContext as any ptr, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	DestroyGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	AddPlayerToGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as DPNID, byval idClient as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	RemovePlayerFromGroup as function(byval This as IDirectPlay8Server ptr, byval idGroup as DPNID, byval idClient as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	SetGroupInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO ptr, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetGroupInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO ptr, byval pdwSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	EnumPlayersAndGroups as function(byval This as IDirectPlay8Server ptr, byval prgdpnid as DPNID ptr, byval pcdpnid as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	EnumGroupMembers as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval prgdpnid as DPNID ptr, byval pcdpnid as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8Server ptr, byval dwFlags as DWORD) as HRESULT
+	DestroyClient as function(byval This as IDirectPlay8Server ptr, byval dpnidClient as DPNID, byval pvDestroyData as const any ptr, byval dwDestroyDataSize as DWORD, byval dwFlags as DWORD) as HRESULT
+	ReturnBuffer as function(byval This as IDirectPlay8Server ptr, byval hBufferHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	GetPlayerContext as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval ppvPlayerContext as PVOID ptr, byval dwFlags as DWORD) as HRESULT
+	GetGroupContext as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval ppvGroupContext as PVOID ptr, byval dwFlags as DWORD) as HRESULT
+	GetCaps as function(byval This as IDirectPlay8Server ptr, byval pdpCaps as DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetCaps as function(byval This as IDirectPlay8Server ptr, byval pdpCaps as const DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetSPCaps as function(byval This as IDirectPlay8Server ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as const DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetSPCaps as function(byval This as IDirectPlay8Server ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetConnectionInfo as function(byval This as IDirectPlay8Server ptr, byval dpnid as DPNID, byval pdpConnectionInfo as DPN_CONNECTION_INFO ptr, byval dwFlags as DWORD) as HRESULT
+	RegisterLobby as function(byval This as IDirectPlay8Server ptr, byval dpnHandle as DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8Server_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -761,40 +783,40 @@ type IDirectPlay8PeerVtbl_
 	QueryInterface as function(byval This as IDirectPlay8Peer ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8Peer ptr) as ULONG
 	Release as function(byval This as IDirectPlay8Peer ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8Peer ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	EnumServiceProviders as function(byval This as IDirectPlay8Peer ptr, byval pguidServiceProvider as const GUID const ptr, byval pguidApplication as const GUID const ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO const ptr, byval pcbEnumData as DWORD const ptr, byval pcReturned as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	CancelAsyncOperation as function(byval This as IDirectPlay8Peer ptr, byval hAsyncHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	Connect as function(byval This as IDirectPlay8Peer ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC const ptr, byval pHostAddr as IDirectPlay8Address const ptr, byval pDeviceInfo as IDirectPlay8Address const ptr, byval pdnSecurity as const DPN_SECURITY_DESC const ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS const ptr, byval pvUserConnectData as const any const ptr, byval dwUserConnectDataSize as const DWORD, byval pvPlayerContext as any const ptr, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	SendTo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval prgBufferDesc as const DPN_BUFFER_DESC const ptr, byval cBufferDesc as const DWORD, byval dwTimeOut as const DWORD, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetSendQueueInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pdwNumMsgs as DWORD const ptr, byval pdwNumBytes as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	Host as function(byval This as IDirectPlay8Peer ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC const ptr, byval prgpDeviceInfo as IDirectPlay8Address ptr const ptr, byval cDeviceInfo as const DWORD, byval pdnSecurity as const DPN_SECURITY_DESC const ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS const ptr, byval pvPlayerContext as any const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetApplicationDesc as function(byval This as IDirectPlay8Peer ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC const ptr, byval pcbDataSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetApplicationDesc as function(byval This as IDirectPlay8Peer ptr, byval pad as const DPN_APPLICATION_DESC const ptr, byval dwFlags as const DWORD) as HRESULT
-	CreateGroup as function(byval This as IDirectPlay8Peer ptr, byval pdpnGroupInfo as const DPN_GROUP_INFO const ptr, byval pvGroupContext as any const ptr, byval pvAsyncContext as any const ptr, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	DestroyGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	AddPlayerToGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as const DPNID, byval idClient as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	RemovePlayerFromGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as const DPNID, byval idClient as const DPNID, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetGroupInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO const ptr, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetGroupInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO const ptr, byval pdwSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumPlayersAndGroups as function(byval This as IDirectPlay8Peer ptr, byval prgdpnid as DPNID const ptr, byval pcdpnid as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumGroupMembers as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval prgdpnid as DPNID const ptr, byval pcdpnid as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetPeerInfo as function(byval This as IDirectPlay8Peer ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO const ptr, byval pvAsyncContext as const PVOID, byval phAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetPeerInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pdpnPlayerInfo as DPN_PLAYER_INFO const ptr, byval pdwSize as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetPeerAddress as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pAddress as IDirectPlay8Address ptr const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetLocalHostAddresses as function(byval This as IDirectPlay8Peer ptr, byval prgpAddress as IDirectPlay8Address ptr const ptr, byval pcAddress as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8Peer ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumHosts as function(byval This as IDirectPlay8Peer ptr, byval pApplicationDesc as const PDPN_APPLICATION_DESC, byval pAddrHost as IDirectPlay8Address const ptr, byval pDeviceInfo as IDirectPlay8Address const ptr, byval pUserEnumData as const PVOID, byval dwUserEnumDataSize as const DWORD, byval dwEnumCount as const DWORD, byval dwRetryInterval as const DWORD, byval dwTimeOut as const DWORD, byval pvUserContext as const PVOID, byval pAsyncHandle as DPNHANDLE const ptr, byval dwFlags as const DWORD) as HRESULT
-	DestroyPeer as function(byval This as IDirectPlay8Peer ptr, byval dpnidClient as const DPNID, byval pvDestroyData as const any const ptr, byval dwDestroyDataSize as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	ReturnBuffer as function(byval This as IDirectPlay8Peer ptr, byval hBufferHandle as const DPNHANDLE, byval dwFlags as const DWORD) as HRESULT
-	GetPlayerContext as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval ppvPlayerContext as PVOID const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetGroupContext as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval ppvGroupContext as PVOID const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetCaps as function(byval This as IDirectPlay8Peer ptr, byval pdpCaps as DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetCaps as function(byval This as IDirectPlay8Peer ptr, byval pdpCaps as const DPN_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetSPCaps as function(byval This as IDirectPlay8Peer ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as const DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetSPCaps as function(byval This as IDirectPlay8Peer ptr, byval pguidSP as const GUID const ptr, byval pdpspCaps as DPN_SP_CAPS const ptr, byval dwFlags as const DWORD) as HRESULT
-	GetConnectionInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as const DPNID, byval pdpConnectionInfo as DPN_CONNECTION_INFO const ptr, byval dwFlags as const DWORD) as HRESULT
-	RegisterLobby as function(byval This as IDirectPlay8Peer ptr, byval dpnHandle as const DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication const ptr, byval dwFlags as const DWORD) as HRESULT
-	TerminateSession as function(byval This as IDirectPlay8Peer ptr, byval pvTerminateData as any const ptr, byval dwTerminateDataSize as const DWORD, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8Peer ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	EnumServiceProviders as function(byval This as IDirectPlay8Peer ptr, byval pguidServiceProvider as const GUID ptr, byval pguidApplication as const GUID ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO ptr, byval pcbEnumData as DWORD ptr, byval pcReturned as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	CancelAsyncOperation as function(byval This as IDirectPlay8Peer ptr, byval hAsyncHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	Connect as function(byval This as IDirectPlay8Peer ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC ptr, byval pHostAddr as IDirectPlay8Address ptr, byval pDeviceInfo as IDirectPlay8Address ptr, byval pdnSecurity as const DPN_SECURITY_DESC ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS ptr, byval pvUserConnectData as const any ptr, byval dwUserConnectDataSize as DWORD, byval pvPlayerContext as any ptr, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	SendTo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval prgBufferDesc as const DPN_BUFFER_DESC ptr, byval cBufferDesc as DWORD, byval dwTimeOut as DWORD, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetSendQueueInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pdwNumMsgs as DWORD ptr, byval pdwNumBytes as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	Host as function(byval This as IDirectPlay8Peer ptr, byval pdnAppDesc as const DPN_APPLICATION_DESC ptr, byval prgpDeviceInfo as IDirectPlay8Address ptr ptr, byval cDeviceInfo as DWORD, byval pdnSecurity as const DPN_SECURITY_DESC ptr, byval pdnCredentials as const DPN_SECURITY_CREDENTIALS ptr, byval pvPlayerContext as any ptr, byval dwFlags as DWORD) as HRESULT
+	GetApplicationDesc as function(byval This as IDirectPlay8Peer ptr, byval pAppDescBuffer as DPN_APPLICATION_DESC ptr, byval pcbDataSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetApplicationDesc as function(byval This as IDirectPlay8Peer ptr, byval pad as const DPN_APPLICATION_DESC ptr, byval dwFlags as DWORD) as HRESULT
+	CreateGroup as function(byval This as IDirectPlay8Peer ptr, byval pdpnGroupInfo as const DPN_GROUP_INFO ptr, byval pvGroupContext as any ptr, byval pvAsyncContext as any ptr, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	DestroyGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	AddPlayerToGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as DPNID, byval idClient as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	RemovePlayerFromGroup as function(byval This as IDirectPlay8Peer ptr, byval idGroup as DPNID, byval idClient as DPNID, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	SetGroupInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO ptr, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetGroupInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pdpnGroupInfo as DPN_GROUP_INFO ptr, byval pdwSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	EnumPlayersAndGroups as function(byval This as IDirectPlay8Peer ptr, byval prgdpnid as DPNID ptr, byval pcdpnid as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	EnumGroupMembers as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval prgdpnid as DPNID ptr, byval pcdpnid as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetPeerInfo as function(byval This as IDirectPlay8Peer ptr, byval pdpnPlayerInfo as const DPN_PLAYER_INFO ptr, byval pvAsyncContext as PVOID, byval phAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	GetPeerInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pdpnPlayerInfo as DPN_PLAYER_INFO ptr, byval pdwSize as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	GetPeerAddress as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pAddress as IDirectPlay8Address ptr ptr, byval dwFlags as DWORD) as HRESULT
+	GetLocalHostAddresses as function(byval This as IDirectPlay8Peer ptr, byval prgpAddress as IDirectPlay8Address ptr ptr, byval pcAddress as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8Peer ptr, byval dwFlags as DWORD) as HRESULT
+	EnumHosts as function(byval This as IDirectPlay8Peer ptr, byval pApplicationDesc as PDPN_APPLICATION_DESC, byval pAddrHost as IDirectPlay8Address ptr, byval pDeviceInfo as IDirectPlay8Address ptr, byval pUserEnumData as PVOID, byval dwUserEnumDataSize as DWORD, byval dwEnumCount as DWORD, byval dwRetryInterval as DWORD, byval dwTimeOut as DWORD, byval pvUserContext as PVOID, byval pAsyncHandle as DPNHANDLE ptr, byval dwFlags as DWORD) as HRESULT
+	DestroyPeer as function(byval This as IDirectPlay8Peer ptr, byval dpnidClient as DPNID, byval pvDestroyData as const any ptr, byval dwDestroyDataSize as DWORD, byval dwFlags as DWORD) as HRESULT
+	ReturnBuffer as function(byval This as IDirectPlay8Peer ptr, byval hBufferHandle as DPNHANDLE, byval dwFlags as DWORD) as HRESULT
+	GetPlayerContext as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval ppvPlayerContext as PVOID ptr, byval dwFlags as DWORD) as HRESULT
+	GetGroupContext as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval ppvGroupContext as PVOID ptr, byval dwFlags as DWORD) as HRESULT
+	GetCaps as function(byval This as IDirectPlay8Peer ptr, byval pdpCaps as DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetCaps as function(byval This as IDirectPlay8Peer ptr, byval pdpCaps as const DPN_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	SetSPCaps as function(byval This as IDirectPlay8Peer ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as const DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetSPCaps as function(byval This as IDirectPlay8Peer ptr, byval pguidSP as const GUID ptr, byval pdpspCaps as DPN_SP_CAPS ptr, byval dwFlags as DWORD) as HRESULT
+	GetConnectionInfo as function(byval This as IDirectPlay8Peer ptr, byval dpnid as DPNID, byval pdpConnectionInfo as DPN_CONNECTION_INFO ptr, byval dwFlags as DWORD) as HRESULT
+	RegisterLobby as function(byval This as IDirectPlay8Peer ptr, byval dpnHandle as DPNHANDLE, byval pIDP8LobbiedApplication as IDirectPlay8LobbiedApplication ptr, byval dwFlags as DWORD) as HRESULT
+	TerminateSession as function(byval This as IDirectPlay8Peer ptr, byval pvTerminateData as any ptr, byval dwTerminateDataSize as DWORD, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8Peer_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -802,6 +824,7 @@ end type
 #define IDirectPlay8Peer_Release(p) (p)->lpVtbl->Release(p)
 #define IDirectPlay8Peer_Initialize(p, a, b, c) (p)->lpVtbl->Initialize(p, a, b, c)
 #define IDirectPlay8Peer_EnumServiceProviders(p, a, b, c, d, e, f) (p)->lpVtbl->EnumServiceProviders(p, a, b, c, d, e, f)
+#define IDirectPlay8Peer_EnumHosts(p, a, b, c, d, e, f, g, h, i, j, k) (p)->lpVtbl->EnumHosts(p, a, b, c, d, e, f, g, h, i, j, k)
 #define IDirectPlay8Peer_CancelAsyncOperation(p, a, b) (p)->lpVtbl->CancelAsyncOperation(p, a, b)
 #define IDirectPlay8Peer_Connect(p, a, b, c, d, e, f, g, h, i, j, k) (p)->lpVtbl->Connect(p, a, b, c, d, e, f, g, h, i, j, k)
 #define IDirectPlay8Peer_SendTo(p, a, b, c, d, e, f, g) (p)->lpVtbl->SendTo(p, a, b, c, d, e, f, g)
@@ -822,7 +845,6 @@ end type
 #define IDirectPlay8Peer_GetPeerAddress(p, a, b, c) (p)->lpVtbl->GetPeerAddress(p, a, b, c)
 #define IDirectPlay8Peer_GetLocalHostAddresses(p, a, b, c) (p)->lpVtbl->GetLocalHostAddresses(p, a, b, c)
 #define IDirectPlay8Peer_Close(p, a) (p)->lpVtbl->Close(p, a)
-#define IDirectPlay8Peer_EnumHosts(p, a, b, c, d, e, f, g, h, i, j, k) (p)->lpVtbl->EnumHosts(p, a, b, c, d, e, f, g, h, i, j, k)
 #define IDirectPlay8Peer_DestroyPeer(p, a, b, c, d) (p)->lpVtbl->DestroyPeer(p, a, b, c, d)
 #define IDirectPlay8Peer_ReturnBuffer(p, a, b) (p)->lpVtbl->ReturnBuffer(p, a, b)
 #define IDirectPlay8Peer_GetPlayerContext(p, a, b, c) (p)->lpVtbl->GetPlayerContext(p, a, b, c)
@@ -844,11 +866,11 @@ type IDirectPlay8ThreadPoolVtbl_
 	QueryInterface as function(byval This as IDirectPlay8ThreadPool ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8ThreadPool ptr) as ULONG
 	Release as function(byval This as IDirectPlay8ThreadPool ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8ThreadPool ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8ThreadPool ptr, byval dwFlags as const DWORD) as HRESULT
-	GetThreadCount as function(byval This as IDirectPlay8ThreadPool ptr, byval dwProcessorNum as const DWORD, byval pdwNumThreads as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
-	SetThreadCount as function(byval This as IDirectPlay8ThreadPool ptr, byval dwProcessorNum as const DWORD, byval dwNumThreads as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	DoWork as function(byval This as IDirectPlay8ThreadPool ptr, byval dwAllowedTimeSlice as const DWORD, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8ThreadPool ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8ThreadPool ptr, byval dwFlags as DWORD) as HRESULT
+	GetThreadCount as function(byval This as IDirectPlay8ThreadPool ptr, byval dwProcessorNum as DWORD, byval pdwNumThreads as DWORD ptr, byval dwFlags as DWORD) as HRESULT
+	SetThreadCount as function(byval This as IDirectPlay8ThreadPool ptr, byval dwProcessorNum as DWORD, byval dwNumThreads as DWORD, byval dwFlags as DWORD) as HRESULT
+	DoWork as function(byval This as IDirectPlay8ThreadPool ptr, byval dwAllowedTimeSlice as DWORD, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8ThreadPool_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)
@@ -869,11 +891,11 @@ type IDirectPlay8NATResolverVtbl_
 	QueryInterface as function(byval This as IDirectPlay8NATResolver ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IDirectPlay8NATResolver ptr) as ULONG
 	Release as function(byval This as IDirectPlay8NATResolver ptr) as ULONG
-	Initialize as function(byval This as IDirectPlay8NATResolver ptr, byval pvUserContext as const PVOID, byval pfn as const PFNDPNMESSAGEHANDLER, byval dwFlags as const DWORD) as HRESULT
-	Start as function(byval This as IDirectPlay8NATResolver ptr, byval ppDevices as IDirectPlay8Address ptr const ptr, byval dwNumDevices as const DWORD, byval dwFlags as const DWORD) as HRESULT
-	Close as function(byval This as IDirectPlay8NATResolver ptr, byval dwFlags as const DWORD) as HRESULT
-	EnumDevices as function(byval This as IDirectPlay8NATResolver ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO const ptr, byval pdwBufferSize as const PDWORD, byval pdwNumDevices as const PDWORD, byval dwFlags as const DWORD) as HRESULT
-	GetAddresses as function(byval This as IDirectPlay8NATResolver ptr, byval ppAddresses as IDirectPlay8Address ptr const ptr, byval pdwNumAddresses as DWORD const ptr, byval dwFlags as const DWORD) as HRESULT
+	Initialize as function(byval This as IDirectPlay8NATResolver ptr, byval pvUserContext as PVOID, byval pfn as PFNDPNMESSAGEHANDLER, byval dwFlags as DWORD) as HRESULT
+	Start as function(byval This as IDirectPlay8NATResolver ptr, byval ppDevices as IDirectPlay8Address ptr ptr, byval dwNumDevices as DWORD, byval dwFlags as DWORD) as HRESULT
+	Close as function(byval This as IDirectPlay8NATResolver ptr, byval dwFlags as DWORD) as HRESULT
+	EnumDevices as function(byval This as IDirectPlay8NATResolver ptr, byval pSPInfoBuffer as DPN_SERVICE_PROVIDER_INFO ptr, byval pdwBufferSize as PDWORD, byval pdwNumDevices as PDWORD, byval dwFlags as DWORD) as HRESULT
+	GetAddresses as function(byval This as IDirectPlay8NATResolver ptr, byval ppAddresses as IDirectPlay8Address ptr ptr, byval pdwNumAddresses as DWORD ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 #define IDirectPlay8NATResolver_QueryInterface(p, a, b) (p)->lpVtbl->QueryInterface(p, a, b)

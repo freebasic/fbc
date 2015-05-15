@@ -1,16 +1,73 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
 
 #inclib "userenv"
 
+#include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "wbemcli.bi"
 #include once "profinfo.bi"
 
 extern "Windows"
 
-#define _USERENV_H_
+#define _INC_USERENV
 const PI_NOUI = &h00000001
 const PI_APPLYPOLICY = &h00000002
+const PT_TEMPORARY = &h00000001
+const PT_ROAMING = &h00000002
+const PT_MANDATORY = &h00000004
+const RP_FORCE = 1
+const RP_SYNC = 2
+const GPC_BLOCK_POLICY = &h00000001
+const GPO_FLAG_DISABLE = &h00000001
+const GPO_FLAG_FORCE = &h00000002
 
 #ifdef UNICODE
 	#define LoadUserProfile LoadUserProfileW
@@ -33,13 +90,8 @@ const PI_APPLYPOLICY = &h00000002
 declare function LoadUserProfileA(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOA) as WINBOOL
 declare function LoadUserProfileW(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOW) as WINBOOL
 declare function UnloadUserProfile(byval hToken as HANDLE, byval hProfile as HANDLE) as WINBOOL
-declare function GetProfilesDirectoryA(byval lpProfilesDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
-declare function GetProfilesDirectoryW(byval lpProfilesDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
-
-const PT_TEMPORARY = &h00000001
-const PT_ROAMING = &h00000002
-const PT_MANDATORY = &h00000004
-
+declare function GetProfilesDirectoryA(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+declare function GetProfilesDirectoryW(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
 declare function GetProfileType(byval dwFlags as DWORD ptr) as WINBOOL
 declare function DeleteProfileA(byval lpSidString as LPCSTR, byval lpProfilePath as LPCSTR, byval lpComputerName as LPCSTR) as WINBOOL
 declare function DeleteProfileW(byval lpSidString as LPCWSTR, byval lpProfilePath as LPCWSTR, byval lpComputerName as LPCWSTR) as WINBOOL
@@ -54,16 +106,15 @@ declare function DestroyEnvironmentBlock(byval lpEnvironment as LPVOID) as WINBO
 declare function ExpandEnvironmentStringsForUserA(byval hToken as HANDLE, byval lpSrc as LPCSTR, byval lpDest as LPSTR, byval dwSize as DWORD) as WINBOOL
 declare function ExpandEnvironmentStringsForUserW(byval hToken as HANDLE, byval lpSrc as LPCWSTR, byval lpDest as LPWSTR, byval dwSize as DWORD) as WINBOOL
 declare function RefreshPolicy(byval bMachine as WINBOOL) as WINBOOL
-const RP_FORCE = 1
 declare function RefreshPolicyEx(byval bMachine as WINBOOL, byval dwOptions as DWORD) as WINBOOL
 declare function EnterCriticalPolicySection(byval bMachine as WINBOOL) as HANDLE
 declare function LeaveCriticalPolicySection(byval hSection as HANDLE) as WINBOOL
 declare function RegisterGPNotification(byval hEvent as HANDLE, byval bMachine as WINBOOL) as WINBOOL
 declare function UnregisterGPNotification(byval hEvent as HANDLE) as WINBOOL
 
-const GPC_BLOCK_POLICY = &h00000001
-const GPO_FLAG_DISABLE = &h00000001
-const GPO_FLAG_FORCE = &h00000002
+#if _WIN32_WINNT = &h0602
+	declare function CreateProfile(byval pszUserSid as LPCWSTR, byval pszUserName as LPCWSTR, byval pszProfilePath as LPWSTR, byval cchProfilePath as DWORD) as HRESULT
+#endif
 
 type _GPO_LINK as long
 enum
@@ -126,6 +177,7 @@ type PGROUP_POLICY_OBJECTW as _GROUP_POLICY_OBJECTW ptr
 const GPO_LIST_FLAG_MACHINE = &h00000001
 const GPO_LIST_FLAG_SITEONLY = &h00000002
 const GPO_LIST_FLAG_NO_WMIFILTERS = &h00000004
+const GPO_LIST_FLAG_NO_SECURITYFILTERS = &h00000008
 
 #ifdef UNICODE
 	#define GetGPOList GetGPOListW
@@ -166,7 +218,6 @@ const GPO_INFO_FLAG_LOGRSOP_TRANSITION = &h00000200
 const GPO_INFO_FLAG_FORCED_REFRESH = &h00000400
 const GPO_INFO_FLAG_SAFEMODE_BOOT = &h00000800
 const GPO_INFO_FLAG_ASYNC_FOREGROUND = &h00001000
-const GPO_INFO_FLAG_REPORT = &h00002000
 
 type ASYNCCOMPLETIONHANDLE as UINT_PTR
 type PFNSTATUSMESSAGECALLBACK as function cdecl(byval bVerbose as WINBOOL, byval lpMessage as LPWSTR) as DWORD
@@ -186,7 +237,11 @@ end type
 type RSOP_TARGET as _RSOP_TARGET
 type PRSOP_TARGET as _RSOP_TARGET ptr
 type PFNGENERATEGROUPPOLICY as function cdecl(byval dwFlags as DWORD, byval pbAbort as WINBOOL ptr, byval pwszSite as wstring ptr, byval pComputerTarget as PRSOP_TARGET, byval pUserTarget as PRSOP_TARGET) as DWORD
-#define REGISTRY_EXTENSION_GUID (&h35378EAC, &h683F, &h11D2, &hA8, &h9A, &h00, &hC0, &h4F, &hBB, &hCF, &hA2)
+
+#define REGISTRY_EXTENSION_GUID (&h35378eac, &h683f, &h11d2, &ha8, &h9a, &h00, &hc0, &h4f, &hbb, &hcf, &ha2)
+#define GROUP_POLICY_TRIGGER_EVENT_PROVIDER_GUID (&hbd2f4252, &h5e1e, &h49fc, &h9a, &h30, &hf3, &h97, &h8a, &hd8, &h9e, &he2)
+#define MACHINE_POLICY_PRESENT_TRIGGER_GUID (&h659fcae6, &h5bdb, &h4da9, &hb1, &hff, &hca, &h2a, &h17, &h8d, &h46, &he0)
+#define USER_POLICY_PRESENT_TRIGGER_GUID (&h54fb46c8, &hf089, &h464c, &hb1, &hfd, &h59, &hd1, &hb6, &h2c, &h3b, &h50)
 type REFGPEXTENSIONID as GUID ptr
 
 declare function ProcessGroupPolicyCompleted(byval extensionId as REFGPEXTENSIONID, byval pAsyncHandle as ASYNCCOMPLETIONHANDLE, byval dwStatus as DWORD) as DWORD
@@ -233,5 +288,14 @@ const FLAG_FORCE_CREATENAMESPACE = &h00000004
 const RSOP_USER_ACCESS_DENIED = &h00000001
 const RSOP_COMPUTER_ACCESS_DENIED = &h00000002
 const RSOP_TEMPNAMESPACE_EXISTS = &h00000004
+
+#if _WIN32_WINNT = &h0602
+	declare function GenerateGPNotification(byval bMachine as WINBOOL, byval lpwszMgmtProduct as LPCWSTR, byval dwMgmtProductOptions as DWORD) as DWORD
+	declare function CreateAppContainerProfile(byval pszAppContainerName as PCWSTR, byval pszDisplayName as PCWSTR, byval pszDescription as PCWSTR, byval pCapabilities as PSID_AND_ATTRIBUTES, byval dwCapabilityCount as DWORD, byval ppSidAppContainerSid as PSID ptr) as HRESULT
+	declare function DeleteAppContainerProfile(byval pszAppContainerName as PCWSTR) as HRESULT
+	declare function GetAppContainerRegistryLocation(byval desiredAccess as REGSAM, byval phAppContainerKey as PHKEY) as HRESULT
+	declare function GetAppContainerFolderPath(byval pszAppContainerSid as PCWSTR, byval ppszPath as PWSTR ptr) as HRESULT
+	declare function DeriveAppContainerSidFromAppContainerName(byval pszAppContainerName as PCWSTR, byval ppsidAppContainerSid as PSID ptr) as HRESULT
+#endif
 
 end extern

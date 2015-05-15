@@ -20,6 +20,7 @@ enum
 	PRINT_HOST
 	PRINT_TARGET
 	PRINT_X
+	PRINT_FBLIBDIR
 end enum
 
 type FBC_EXTOPT
@@ -212,18 +213,6 @@ private sub hSetOutName( )
 end sub
 
 private sub fbcEnd( byval errnum as integer )
-	if( errnum = 0 ) then
-		select case( fbc.print )
-		case PRINT_HOST
-			print fbGetHostId( )
-		case PRINT_TARGET
-			print fbGetTargetId( )
-		case PRINT_X
-			hSetOutName( )
-			print fbc.outname
-		end select
-	end if
-
 	'' Clean up temporary files
 	dim as string ptr file = listGetHead( @fbc.temps )
 	while( file )
@@ -1661,6 +1650,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "host"   : fbc.print = PRINT_HOST
 		case "target" : fbc.print = PRINT_TARGET
 		case "x"      : fbc.print = PRINT_X
+		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2230,13 +2220,21 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 	end select
 
-	'' -asm overrides the target's default
 	if( fbc.asmsyntax >= 0 ) then
+		'' -asm only applies to x86 and x86_64
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+		case else
+			errReportEx( FB_ERRMSG_ASMOPTIONGIVENFORNONX86, fbGetTargetId( ), -1 )
+		end select
+
 		'' -gen gas only supports -asm intel
 		if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
 		    (fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
 			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 		end if
+
+		'' -asm overrides the target's default
 		fbSetOption( FB_COMPOPT_ASMSYNTAX, fbc.asmsyntax )
 	end if
 
@@ -2306,14 +2304,19 @@ private sub fbcInit2( )
 	''
 	'' Normal has additional support for gcc targets (e.g. i686-pc-mingw32),
 	'' which have to be prefixed to the executable names of cross-compiling
-	'' tools in the bin/ directory (e.g. bin/i686-pc-mingw32-ld) and have
-	'' their own subdirs in lib/freebasic/ (containing the libfb.a etc.
-	'' built with that exact cross-compiler toolchain). For native
-	'' compilation, no target id is prefixed to bin/ tools at all.
+	'' tools in the bin/ directory (e.g. bin/i686-pc-mingw32-ld). However,
+	'' for native compilation, no target is prefixed to bin/ tools at all.
 	''
 	'' Normal uses include/freebasic/ and lib/freebasic/ to hold FB includes
 	'' and libraries, to stay out of the way of the C ones in include/ and
 	'' lib/ and to conform to Linux distro packaging standards.
+	''
+	'' With ENABLE_LIB64, we put 64bit libs into
+	''    lib64/freebasic/<target>/
+	'' instead of the default
+	''    lib/freebasic/<target>/
+	'' lib/ is then used for 32bit libs only. This is useful for some Linux
+	'' distros which use lib/ and lib64/ this way.
 	''
 	'' - The paths are not terminated with [back]slashes here,
 	''   except for the bin/ path. fbcFindBin() expects to only have to
@@ -2344,14 +2347,16 @@ private sub fbcInit2( )
 		fbname += ENABLE_SUFFIX
 	#endif
 
+	dim libdirname as string = "lib"
+	#ifdef ENABLE_LIB64
+		if( fbIs64Bit( ) ) then
+			libdirname = "lib64"
+		end if
+	#endif
+
 	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + fbc.targetprefix
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
-	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV
-	if( len( fbc.target ) > 0 ) then
-		fbc.libpath += fbc.target
-	else
-		fbc.libpath += targetid
-	end if
+	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV + targetid
 #endif
 
 	if( fbc.verbose ) then
@@ -2790,9 +2795,12 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-mfpmath=sse -msse2 "
 		end if
 
-		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
-			ln += "-masm=intel "
-		end if
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+			if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+				ln += "-masm=intel "
+			end if
+		end select
 
 	case FB_BACKEND_LLVM
 		select case( fbGetCpuFamily( ) )
@@ -3231,7 +3239,7 @@ private sub hPrintOptions( )
 	print "  @<file>          Read more command line arguments from a file"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
-	print "  -asm att|intel   Set asm format (-gen gcc)"
+	print "  -asm att|intel   Set asm format (-gen gcc|llvm, x86 or x86_64 only)"
 	print "  -b <file>        Treat file as .bas input file"
 	print "  -c               Compile only, do not link"
 	print "  -C               Preserve temporary .o files"
@@ -3266,6 +3274,7 @@ private sub hPrintOptions( )
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
 	print "  -print host|target  Display host/target system name"
+	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
 	print "  -r               Write out .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm) only"
@@ -3340,23 +3349,34 @@ end sub
 		fbcEnd( 1 )
 	end if
 
+	fbcInit2( )
+
+	'' Answer -print query, if any, and stop
+	'' The -print option is intended to allow shell scripts, makefiles, etc.
+	'' to query information from fbc.
+	if( fbc.print >= 0 ) then
+		select case( fbc.print )
+		case PRINT_HOST
+			print fbGetHostId( )
+		case PRINT_TARGET
+			print fbGetTargetId( )
+		case PRINT_X
+			hSetOutName( )
+			print fbc.outname
+		case PRINT_FBLIBDIR
+			print fbc.libpath
+		end select
+		fbcEnd( 0 )
+	end if
+
 	'' Show help if there are no input files
 	if( (listGetHead( @fbc.modules   ) = NULL) and _
 	    (listGetHead( @fbc.objlist   ) = NULL) and _
 	    (listGetHead( @fbc.libs.list ) = NULL) and _
 	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
-		'' ... unless there was a -print option that could be answered
-		'' without compiling anything.
-		select case( fbc.print )
-		case PRINT_HOST, PRINT_TARGET, PRINT_X
-			fbcEnd( 0 )
-		end select
-
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if
-
-	fbcInit2( )
 
 	''
 	'' Compile .bas modules

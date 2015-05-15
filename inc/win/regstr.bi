@@ -1,4 +1,54 @@
+'' FreeBASIC binding for mingw-w64-v4.0.1
+''
+'' based on the C header files:
+''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
+''
+''   Copyright (c) 2009, 2010 by the mingw-w64 project
+''
+''   See the AUTHORS file for the list of contributors to the mingw-w64 project.
+''
+''   This license has been certified as open source. It has also been designated
+''   as GPL compatible by the Free Software Foundation (FSF).
+''
+''   Redistribution and use in source and binary forms, with or without
+''   modification, are permitted provided that the following conditions are met:
+''
+''     1. Redistributions in source code must retain the accompanying copyright
+''        notice, this list of conditions, and the following disclaimer.
+''     2. Redistributions in binary form must reproduce the accompanying
+''        copyright notice, this list of conditions, and the following disclaimer
+''        in the documentation and/or other materials provided with the
+''        distribution.
+''     3. Names of the copyright holders must not be used to endorse or promote
+''        products derived from this software without prior written permission
+''        from the copyright holders.
+''     4. The right to distribute this software or to use it for any purpose does
+''        not give you the right to use Servicemarks (sm) or Trademarks (tm) of
+''        the copyright holders.  Use of them is covered by separate agreement
+''        with the copyright holders.
+''     5. If any files are modified, you must cause the modified files to carry
+''        prominent notices stating that you changed the files and the date of
+''        any change.
+''
+''   Disclaimer
+''
+''   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
+''   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+''   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+''   EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+''   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+''   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+''   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+''   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+''   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+''   EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
 #pragma once
+
+#include once "winapifamily.bi"
 
 #define _INC_REGSTR
 #define REGSTR_KEY_CLASS __TEXT("Class")
@@ -38,6 +88,7 @@
 #define REGSTR_PATH_RUNSERVICESONCE __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\RunServicesOnce")
 #define REGSTR_PATH_RUNSERVICES __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\RunServices")
 #define REGSTR_PATH_EXPLORER __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer")
+#define REGSTR_PATH_PROPERTYSYSTEM __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\PropertySystem")
 #define REGSTR_PATH_DETECT __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\Detect")
 #define REGSTR_PATH_APPPATHS __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\App Paths")
 #define REGSTR_PATH_UNINSTALL __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -127,8 +178,7 @@ const REGSTR_MAX_VALUE_LENGTH = 256
 #define REGSTR_VAL_CUSTOM_PROPERTY_CACHE_DATE __TEXT("CustomPropertyCacheDate")
 #define REGSTR_VAL_CUSTOM_PROPERTY_HW_ID_KEY __TEXT("CustomPropertyHwIdKey")
 #define REGSTR_VAL_LAST_UPDATE_TIME __TEXT("LastUpdateTime")
-#define REGSTR_VALUE_DEVICE_OBJECT_NAME __TEXT("DeviceObjectName")
-#define REGSTR_VALUE_DEVICE_SYMBOLIC_NAME __TEXT("DeviceSymbolicName")
+#define REGSTR_VAL_CONTAINERID __TEXT("ContainerID")
 #define REGSTR_VAL_EJECT_PRIORITY __TEXT("EjectPriority")
 #define REGSTR_KEY_CONTROL __TEXT("Control")
 #define REGSTR_VAL_ACTIVESERVICE __TEXT("ActiveService")
@@ -179,9 +229,21 @@ const IT_TYPICAL = &h0001
 const IT_PORTABLE = &h0002
 const IT_CUSTOM = &h0003
 #define REGSTR_VAL_WRAPPER __TEXT("Wrapper")
+#define REGSTR_KEY_RUNHISTORY __TEXT("RunHistory")
 #define REGSTR_VAL_LASTALIVEINTERVAL __TEXT("TimeStampInterval")
+#define REGSTR_VAL_DIRTYSHUTDOWN __TEXT("DirtyShutdown")
+#define REGSTR_VAL_DIRTYSHUTDOWNTIME __TEXT("DirtyShutdownTime")
+#define REGSTR_VAL_BT __TEXT("6005BT")
+#define REGSTR_VAL_LASTCOMPUTERNAME __TEXT("LastComputerName")
+#define REGSTR_VAL_LASTALIVEBT __TEXT("LastAliveBT")
 #define REGSTR_VAL_LASTALIVESTAMP __TEXT("LastAliveStamp")
+#define REGSTR_VAL_LASTALIVESTAMPFORCED __TEXT("LastAliveStampForced")
+#define REGSTR_VAL_LASTALIVESTAMPINTERVAL __TEXT("LastAliveStampInterval")
+#define REGSTR_VAL_LASTALIVESTAMPPOLICYINTERVAL __TEXT("LastAliveStampPolicyInterval")
 #define REGSTR_VAL_LASTALIVEUPTIME __TEXT("LastAliveUptime")
+#define REGSTR_VAL_LASTALIVEPMPOLICY __TEXT("LastAlivePMPolicy")
+#define REGSTR_VAL_REASONCODE __TEXT("ReasonCode")
+#define REGSTR_VAL_COMMENT __TEXT("Comment")
 #define REGSTR_VAL_SHUTDOWNREASON __TEXT("ShutdownReason")
 #define REGSTR_VAL_SHUTDOWNREASON_CODE __TEXT("ShutdownReasonCode")
 #define REGSTR_VAL_SHUTDOWNREASON_COMMENT __TEXT("ShutdownReasonComment")
@@ -358,8 +420,8 @@ const BIF_RAWDEVICENEEDSDRIVER = &h00000002
 #define PCMCIA_OPT_NO_AUDIO __MSABI_LONG(&h00000010)
 #define PCMCIA_OPT_NO_APMREMOVE __MSABI_LONG(&h00000020)
 #define REGSTR_VAL_PCMCIA_MEM __TEXT("Memory")
-const PCMCIA_DEF_MEMBEGIN = &h000C0000
-const PCMCIA_DEF_MEMEND = &h00FFFFFF
+const PCMCIA_DEF_MEMBEGIN = &h000c0000
+const PCMCIA_DEF_MEMEND = &h00ffffff
 const PCMCIA_DEF_MEMLEN = &h00001000
 #define REGSTR_VAL_PCMCIA_ALLOC __TEXT("AllocMemWin")
 #define REGSTR_VAL_PCMCIA_ATAD __TEXT("ATADelay")
@@ -381,8 +443,8 @@ const PCMCIA_DEF_MIN_REGION = &h00010000
 #define AGP_FLAG_REVERSE_INITIALIZATION __MSABI_LONG(&h00000080)
 #define AGP_FLAG_NO_SBA_ENABLE __MSABI_LONG(&h00000100)
 #define AGP_FLAG_NO_FW_ENABLE __MSABI_LONG(&h00000200)
-#define AGP_FLAG_SPECIAL_TARGET __MSABI_LONG(&h000FFFFF)
-#define AGP_FLAG_SPECIAL_RESERVE __MSABI_LONG(&h000F8000)
+#define AGP_FLAG_SPECIAL_TARGET __MSABI_LONG(&h000fffff)
+#define AGP_FLAG_SPECIAL_RESERVE __MSABI_LONG(&h000f8000)
 #define REGSTR_KEY_CRASHES __TEXT("Crashes")
 #define REGSTR_KEY_DANGERS __TEXT("Dangers")
 #define REGSTR_KEY_DETMODVARS __TEXT("DetModVars")
@@ -391,6 +453,7 @@ const PCMCIA_DEF_MIN_REGION = &h00010000
 #define REGSTR_VAL_RESOURCES __TEXT("Resources")
 #define REGSTR_VAL_CRASHFUNCS __TEXT("CrashFuncs")
 #define REGSTR_VAL_CLASS __TEXT("Class")
+#define REGSTR_VAL_CLASSDESC __TEXT("ClassDesc")
 #define REGSTR_VAL_DEVDESC __TEXT("DeviceDesc")
 #define REGSTR_VAL_BOOTCONFIG __TEXT("BootConfig")
 #define REGSTR_VAL_DETFUNC __TEXT("DetFunc")
@@ -508,6 +571,9 @@ const CONFIGFLAG_NEEDS_FORCED_CONFIG = &h00000800
 const CONFIGFLAG_PARTIAL_LOG_CONF = &h00002000
 const CONFIGFLAG_SUPPRESS_SURPRISE = &h00004000
 const CONFIGFLAG_VERIFY_HARDWARE = &h00008000
+const CONFIGFLAG_FINISHINSTALL_UI = &h00010000
+const CONFIGFLAG_FINISHINSTALL_ACTION = &h00020000
+const CONFIGFLAG_BOOT_DEVICE = &h00040000
 const CSCONFIGFLAG_BITS = &h00000007
 const CSCONFIGFLAG_DISABLED = &h00000001
 const CSCONFIGFLAG_DO_NOT_CREATE = &h00000002
@@ -532,7 +598,7 @@ const MF_FLAGS_CREATE_BUT_NO_SHOW_DISABLED = &h00000008
 #define REGSTR_VAL_EISA_SIMULATE_INT15 __TEXT("EISASimulateInt15")
 const EISAFLAG_NO_IO_MERGE = &h00000001
 const EISAFLAG_SLOT_IO_FIRST = &h00000002
-const EISA_NO_MAX_FUNCTION = &hFF
+const EISA_NO_MAX_FUNCTION = &hff
 const NUM_EISA_RANGES = 4
 #define REGSTR_VAL_DRVDESC __TEXT("DriverDesc")
 #define REGSTR_VAL_DEVLOADER __TEXT("DevLoader")
@@ -615,10 +681,11 @@ const NUM_EISA_RANGES = 4
 #define REGSTR_VAL_DPMS __TEXT("DPMS")
 #define REGSTR_VAL_RESUMERESET __TEXT("ResumeReset")
 #define REGSTR_VAL_DESCRIPTION __TEXT("Description")
+#define REGSTR_KEY_SYSTEM __TEXT("System")
 #define REGSTR_KEY_USER __TEXT("User")
 #define REGSTR_VAL_DPI __TEXT("dpi")
 #define REGSTR_VAL_PCICOPTIONS __TEXT("PCICOptions")
-const PCIC_DEFAULT_IRQMASK = &h4EB8
+const PCIC_DEFAULT_IRQMASK = &h4eb8
 const PCIC_DEFAULT_NUMSOCKETS = 0
 #define REGSTR_VAL_PCICIRQMAP __TEXT("PCICIRQMap")
 #define REGSTR_PATH_APPEARANCE __TEXT(!"Control Panel\\Appearance")
@@ -685,6 +752,8 @@ const PCIC_DEFAULT_NUMSOCKETS = 0
 #define REGSTR_KEY_SYSTEM __TEXT("System")
 #define REGSTR_KEY_PRINTERS __TEXT("Printers")
 #define REGSTR_KEY_WINOLDAPP __TEXT("WinOldApp")
+#define REGSTR_KEY_EXPLORER __TEXT("Explorer")
+#define REGSTR_PATH_RUN_POLICY (REGSTR_PATH_POLICIES + __TEXT(!"\\Explorer\\Run"))
 #define REGSTR_VAL_NOFILESHARING __TEXT("NoFileSharing")
 #define REGSTR_VAL_NOPRINTSHARING __TEXT("NoPrintSharing")
 #define REGSTR_VAL_NOFILESHARINGCTRL __TEXT("NoFileSharingControl")
@@ -725,6 +794,7 @@ const PCIC_DEFAULT_NUMSOCKETS = 0
 #define REGSTR_VAL_LEGALNOTICECAPTION __TEXT("LegalNoticeCaption")
 #define REGSTR_VAL_LEGALNOTICETEXT __TEXT("LegalNoticeText")
 #define REGSTR_VAL_DRIVE_SPINDOWN __TEXT("NoDispSpinDown")
+#define REGSTR_VAL_SHUTDOWN_FLAGS __TEXT("ShutdownFlags")
 #define REGSTR_VAL_RESTRICTRUN __TEXT("RestrictRun")
 #define REGSTR_KEY_POL_USERS __TEXT("Users")
 #define REGSTR_KEY_POL_COMPUTERS __TEXT("Computers")
@@ -882,6 +952,7 @@ const DTRESULTPART = 3
 #define REGSTR_VAL_AUDIO_BITMAP __TEXT("bitmap")
 #define REGSTR_VAL_AUDIO_ICON __TEXT("icon")
 #define REGSTR_PATH_DEVICEINSTALLER __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\Device Installer")
+#define REGSTR_PATH_DIFX __TEXT(!"Software\\Microsoft\\Windows\\CurrentVersion\\DIFX")
 #define REGSTR_VAL_SEARCHOPTIONS __TEXT("SearchOptions")
 #define REGSTR_PATH_BIOSINFO __TEXT(!"System\\CurrentControlSet\\Control\\BiosInfo")
 #define REGSTR_PATH_PCIIR __TEXT(!"System\\CurrentControlSet\\Control\\Pnp\\PciIrqRouting")
@@ -917,6 +988,6 @@ const PIR_STATUS_MINIPORT_INVALID = &h00000007
 const PIR_STATUS_MINIPORT_MAX = &h00000008
 #define REGSTR_PATH_LASTGOOD __TEXT(!"System\\LastKnownGoodRecovery\\LastGood")
 #define REGSTR_PATH_LASTGOODTMP __TEXT(!"System\\LastKnownGoodRecovery\\LastGood.Tmp")
-const LASTGOOD_OPERATION = &h000000FF
+const LASTGOOD_OPERATION = &h000000ff
 const LASTGOOD_OPERATION_NOPOSTPROC = &h00000000
 const LASTGOOD_OPERATION_DELETE = &h00000001
