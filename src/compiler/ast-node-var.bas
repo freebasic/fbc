@@ -47,10 +47,9 @@ function astNewVAR _
 	n->var_.ofs = ofs
 
 	'' boolean? do conversion on load
-	select case typeGetDtAndPtrOnly( dtype )
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BOOLEAN ) then
 		n = astNewCONV( dtype, NULL, n )
-	end select
+	end if
 
 	function = n
 end function

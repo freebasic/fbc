@@ -271,33 +271,8 @@ function cSymbolType _
 			dtype = FB_DATATYPE_VOID
 
 		case FB_TK_BOOLEAN
-
-			'' BOOLEAN
 			lexSkipToken( )
-
-			'' BYTE?
-			if( hMatch( FB_TK_BYTE ) ) then
-				dtype = FB_DATATYPE_BOOL8
-				lgt = 1
-
-			'' INTEGER?
-			elseif ( hMatch( FB_TK_INTEGER ) ) then
-				dtype = FB_DATATYPE_BOOL32
-				lgt = 4
-
-			'' not explicit? use arch default or user specified command line option
-			else
-				'' 4 byte booleans?
-				if( 0 <> ( fbGetOption( FB_COMPOPT_EXTRAOPT ) and FB_EXTRAOPT_INTEGER_BOOL ) ) then
-					dtype = FB_DATATYPE_BOOL32
-					lgt = 4
-				
-				'' Assume FB_EXTRAOPT_BYTE_BOOL
-				else
-					dtype = FB_DATATYPE_BOOL8
-					lgt = 1
-				end if
-			end if
+			dtype = FB_DATATYPE_BOOLEAN
 
 		case FB_TK_BYTE
 			lexSkipToken( )

@@ -666,11 +666,9 @@ function rtlPrint _
 			if( expr = NULL ) then
 				exit function
 			end if
-		end select
 
 		'' convert boolean to string
-		select case typeGet( astGetDataType( expr ) )
-		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
+		case FB_DATATYPE_BOOLEAN
 			expr = hConvertBoolToString( expr )
 
 		case else
@@ -680,7 +678,7 @@ function rtlPrint _
 			end if
 		end select
 
-		select case as const typeGet( astGetDataType( expr ) )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSTR )
@@ -877,11 +875,9 @@ function rtlWrite _
 			if( expr = NULL ) then
 				exit function
 			end if
-		end select
 
 		'' convert boolean to string
-		select case typeGet( astGetDataType( expr ) )
-		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
+		case FB_DATATYPE_BOOLEAN
 			expr = hConvertBoolToString( expr )
 
 		case else
@@ -891,7 +887,7 @@ function rtlWrite _
 			end if
 		end select
 
-		select case as const typeGet( astGetDataType( expr ) )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 

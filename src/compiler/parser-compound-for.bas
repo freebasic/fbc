@@ -761,7 +761,7 @@ sub cForStmtBegin( )
 	end if
 
 	select case as const dtype
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	case FB_DATATYPE_BOOLEAN
 		if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
 			exit function
 		else

@@ -497,7 +497,7 @@ function emitLOAD _
 			function = hNewBOP( EMIT_OP_LOADF2L, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2L, dvreg, svreg )
 
 		case else
@@ -517,7 +517,7 @@ function emitLOAD _
 			function = hNewBOP( EMIT_OP_LOADF2F, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2F, dvreg, svreg )
 
 		case else
@@ -525,7 +525,7 @@ function emitLOAD _
 		end select
 
 	'' boolean?
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	case FB_DATATYPE_BOOLEAN
 
 		select case as const svreg->dtype
 		'' longint?
@@ -537,7 +537,7 @@ function emitLOAD _
 			function = hNewBOP( EMIT_OP_LOADF2B, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2B, dvreg, svreg )
 
 		case else
@@ -556,7 +556,7 @@ function emitLOAD _
 			function = hNewBOP( EMIT_OP_LOADF2I, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_LOADB2I, dvreg, svreg )
 
 		case else
@@ -588,7 +588,7 @@ function emitSTORE _
 			function = hNewBOP( EMIT_OP_STORF2L, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2L, dvreg, svreg )
 
 		case else
@@ -608,7 +608,7 @@ function emitSTORE _
 			function = hNewBOP( EMIT_OP_STORF2F, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2F, dvreg, svreg )
 
 		case else
@@ -616,7 +616,7 @@ function emitSTORE _
 		end select
 	
 	'' boolean?
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	case FB_DATATYPE_BOOLEAN
 
 		select case as const svreg->dtype
 		'' longint?
@@ -628,7 +628,7 @@ function emitSTORE _
 			function = hNewBOP( EMIT_OP_STORF2B, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2B, dvreg, svreg )
 
 		case else
@@ -647,7 +647,7 @@ function emitSTORE _
 			function = hNewBOP( EMIT_OP_STORF2I, dvreg, svreg )
 
 		'' boolean?
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			function = hNewBOP( EMIT_OP_STORB2I, dvreg, svreg )
 
 		case else

@@ -91,8 +91,7 @@ declare function hGetDataType _
 		@"string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;", _
 		@"fixstr:t14=-2", _
 		@"pchar:t15=*4;", _
-		@"bool8:t16=@s8;-16", _
-		@"bool32:t17=@s32;-16" _
+		@"boolean:t16=@s8;-16" _
 	}
 
 sub edbgInit( )

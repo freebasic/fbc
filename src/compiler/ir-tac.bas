@@ -523,7 +523,7 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	select case( typeGetClass( v1->dtype ) )
 	case FB_DATACLASS_INTEGER
 		select case typeGet( dtype )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN, FB_DATATYPE_BOOL32
 			_emit( AST_OP_TOBOOL, v1, v2, NULL )
 		case else
 			_emit( AST_OP_TOINT, v1, v2, NULL )

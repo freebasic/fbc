@@ -337,14 +337,13 @@ function astNewFIELD _
 
 	assert( symbIsField( sym ) )
 	if( symbFieldIsBitfield( sym ) ) then
-		select case symbGetType( subtype )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		if( symbGetType( subtype ) = FB_DATATYPE_BOOLEAN ) then
 			'' final type is always a signed int
 			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
-		case else
+		else
 			'' final type is always an unsigned int
 			dtype = typeJoin( dtype, FB_DATATYPE_UINT )
-		end select
+		end if
 		subtype = NULL
 
 		ast.bitfieldcount += 1
@@ -403,16 +402,15 @@ private function astSetBitfield _
 	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
 	''
 
-	select case symbGetType( bitfield )
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
 		l->dtype = typeJoin( bitfield->typ, FB_DATATYPE_UINT )
 		l->subtype = NULL
-	case else
+	else
 		'' Remap type from bitfield to short/integer/etc., whichever was given
 		'' on the bitfield, to do a "full" field access.
 		l->dtype = bitfield->typ
 		l->subtype = bitfield->subtype
-	end select
+	end if
 
 	'' l is reused on the rhs and thus must be duplicated
 	l = astCloneTree( l )
@@ -427,8 +425,7 @@ private function astSetBitfield _
 	'' overwrite the old value.
 
 	'' boolean bitfield? - do a bool conversion before the bitfield store
-	select case symbGetType( bitfield )
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
 		if( r->class <> AST_NODECLASS_CONV ) then
 			r = astNewCONV( FB_DATATYPE_BOOL32, NULL, r )
 			astGetCASTDoConv( r ) = FALSE
@@ -438,7 +435,7 @@ private function astSetBitfield _
 		r = astNewBOP( AST_OP_AND, r, _
 		               astNewCONSTi( (ast_bitmaskTB(bitfield->bitfld.bits) shl s->bitfld.bitpos), _
 		                             FB_DATATYPE_UINT ) )
-	case else
+	else
 		'' Truncate r if it's too big, ensuring the OR below won't touch any
 		'' other bits outside the target bitfield.
 		r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
@@ -448,7 +445,7 @@ private function astSetBitfield _
 		if( bitfield->var_.bitpos > 0 ) then
 			r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( bitfield->var_.bitpos ) )
 		end if
-	end select
+	end if
 
 	'' OR in the new bitfield value r
 	function = astNewBOP( AST_OP_OR, l, r )
@@ -469,20 +466,15 @@ private function astAccessBitfield _
 	'' can't just be discarded.
 	'' if boolean make sure the bool conversion is after the bitfield access
 	dim boolconv as integer
-	select case typeGet( s->typ )
-	case FB_DATATYPE_BOOL8
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
 		l->dtype = typeJoin( l->dtype, FB_DATATYPE_BYTE )
 		l->subtype = NULL
 		boolconv = TRUE
-	case FB_DATATYPE_BOOL32
-		l->dtype = typeJoin( l->dtype, FB_DATATYPE_INTEGER )
-		l->subtype = NULL
-		boolconv = TRUE
-	case else
+	else
 		l->dtype = typeJoin( l->dtype, bitfield->typ )
 		l->subtype = bitfield->subtype
 		boolconv = FALSE
-	end select
+	end if
 
 	'' Shift into position, other bits to the right are shifted out
 	if( bitfield->var_.bitpos > 0 ) then
@@ -552,11 +544,10 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 				'' is returned.
 				n->r = astSetBitfield( bitfield, n->l, n->r )
 			else
-				select case( astGetDataType( n->l->l ) )
-				case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+				if( astGetDataType( n->l->l ) = FB_DATATYPE_BOOLEAN ) then
 					'' $$JRM
 					n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
-				end select
+				end if
 			end if
 		end if
 
@@ -573,10 +564,9 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 			return astUpdateBitfields( n )
 		end if
 
-		select case( astGetDataType( n->l ) )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		if( astGetDataType( n->l ) = FB_DATATYPE_BOOLEAN ) then
 			n->l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( n->l ) ), NULL, n->l )
-		end select
+		end if
 
 	end select
 
@@ -585,8 +575,7 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' $$JRM
 	'' convert to boolean if needed?
-	if( ( dtype = FB_DATATYPE_BOOL8 ) or _
-		( dtype = FB_DATATYPE_BOOL32 ) ) then
+	if( dtype = FB_DATATYPE_BOOLEAN ) then
 		n = astNewCONV( dtype, NULL, n )
 	end if
 

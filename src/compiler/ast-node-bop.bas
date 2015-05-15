@@ -1206,11 +1206,9 @@ function astNewBOP _
 	     AST_OP_ANDALSO, AST_OP_ORELSE
 
 		'' except, if it's boolean
-		select case typeGet( dtype )
-		case FB_DATATYPE_BOOL32, FB_DATATYPE_BOOL8
-		case else
+		if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_BOOLEAN ) then
 			dtype = FB_DATATYPE_INTEGER
-		end select
+		end if
 		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's

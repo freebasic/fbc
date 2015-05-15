@@ -7069,11 +7069,11 @@ end sub
 
 private function _getTypeString( byval dtype as integer ) as const zstring ptr
 	select case as const typeGet( dtype )
-	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE, FB_DATATYPE_BOOL8
+	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE, FB_DATATYPE_BOOLEAN
 		function = @".byte"
 	case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
 		function = @".short"
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, FB_DATATYPE_BOOL32
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
 		function = @".int"
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG, FB_DATATYPE_SINGLE
 		'' SINGLE: emitted as raw bytes in form of .long 0x...,

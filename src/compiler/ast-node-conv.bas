@@ -30,7 +30,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 		case FB_SIZETYPE_FLOAT64
 			'' SINGLE/DOUBLE -> DOUBLE:
 			'' Nothing to do, since float constants are stored as DOUBLE
-		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( l->val.f )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.f )
@@ -55,7 +55,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = csng( l->val.i )
 		case FB_SIZETYPE_FLOAT64
 			l->val.f = cdbl( l->val.i )
-		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( l->val.i )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.i )
@@ -80,7 +80,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = csng( cunsg( l->val.i ) )
 		case FB_SIZETYPE_FLOAT64
 			l->val.f = cdbl( cunsg( l->val.i ) )
-		case FB_SIZETYPE_BOOL8, FB_SIZETYPE_BOOL32
+		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( cunsg( l->val.i ) )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( cunsg( l->val.i ) )
@@ -440,7 +440,7 @@ function astNewCONV _
 
 	'' special rules for converting booleans and bitfields ...
 	select case typeGet( to_dtype )
-	case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+	case FB_DATATYPE_BOOLEAN
 		select case typeGet( ldtype )
 		case FB_DATATYPE_BITFIELD
 			doconv = FALSE
@@ -449,12 +449,12 @@ function astNewCONV _
 		end select
 	case FB_DATATYPE_BITFIELD
 		select case typeGet( ldtype )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			doconv = FALSE
 		end select
 	case else
 		select case typeGet( ldtype )
-		case FB_DATATYPE_BOOL8, FB_DATATYPE_BOOL32
+		case FB_DATATYPE_BOOLEAN
 			doconv = TRUE
 		end select
 	end select
