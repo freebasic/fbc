@@ -15,6 +15,7 @@ Version 1.03.0
 - New libbzip2 binding (64bit-capable)
 - New libcaca binding (64bit-capable), libcaca-0.99.beta19
 - New BASS 2.4 & BASSMOD 2.0 bindings (64bit-capable)
+- New OpenAL (openal-soft-1.16.0) and freealut (1.1.0) bindings (64bit-capable)
 - Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
 - 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
 - logic operation optimization: x <> 0 => x if x is a comparison operation already, and <comparison> = 0 => <inverted-comparison>, and NOT <comparison> => <inverted-comparison>
