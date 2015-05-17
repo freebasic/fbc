@@ -1543,16 +1543,8 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 			f = __f
 		end scope
 	#endmacro
-	#macro _JIT_ARCH_GET_NEXT_FRAME(n, f)
-		scope
-			(n) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->next_frame, 0))
-		end scope
-	#endmacro
-	#macro _JIT_ARCH_GET_RETURN_ADDRESS(r, f)
-		scope
-			(r) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->return_address, 0))
-		end scope
-	#endmacro
+	#define _JIT_ARCH_GET_NEXT_FRAME(n, f) scope : (n) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->next_frame, 0)) : end scope
+	#define _JIT_ARCH_GET_RETURN_ADDRESS(r, f) scope : (r) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->return_address, 0)) : end scope
 	#macro _JIT_ARCH_GET_CURRENT_RETURN(r)
 		scope
 			dim __frame as any ptr
@@ -1590,8 +1582,8 @@ declare function jit_malloc(byval size as ulong) as any ptr
 declare function jit_calloc(byval num as ulong, byval size as ulong) as any ptr
 declare function jit_realloc(byval ptr as any ptr, byval size as ulong) as any ptr
 declare sub jit_free(byval ptr as any ptr)
-#define jit_new(type) cptr(type ptr, jit_malloc(sizeof((type))))
-#define jit_cnew(type) cptr(type ptr, jit_calloc(1, sizeof((type))))
+#define jit_new(type) cptr(type ptr, jit_malloc(sizeof(type)))
+#define jit_cnew(type) cptr(type ptr, jit_calloc(1, sizeof(type)))
 declare function jit_memset(byval dest as any ptr, byval ch as long, byval len as ulong) as any ptr
 declare function jit_memcpy(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
 declare function jit_memmove(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
@@ -1691,8 +1683,8 @@ const JIT_FAST_GET_CURRENT_FRAME = 1
 declare function _jit_get_next_frame_address(byval frame as any ptr) as any ptr
 #define jit_get_next_frame_address(frame) _jit_get_next_frame_address(frame)
 declare function _jit_get_return_address(byval frame as any ptr, byval frame0 as any ptr, byval return0 as any ptr) as any ptr
-#define jit_get_return_address(frame) (_jit_get_return_address((frame), 0, 0))
-#define jit_get_current_return() (jit_get_return_address(jit_get_current_frame()))
+#define jit_get_return_address(frame) _jit_get_return_address((frame), 0, 0)
+#define jit_get_current_return() jit_get_return_address(jit_get_current_frame())
 
 type jit_crawl_mark_t
 	mark as any ptr

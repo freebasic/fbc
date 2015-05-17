@@ -52,6 +52,7 @@
 
 '' The following symbols have been renamed:
 ''     enum SDL_EventMask => SDL_EventMask_
+''     #define SDL_VERSION => SDL_VERSION_
 
 extern "C"
 
@@ -95,7 +96,7 @@ const NULL = cptr(any ptr, 0)
 #define SDL_calloc calloc
 #define SDL_realloc realloc
 #define SDL_free free
-#define SDL_stack_alloc(type, count) cptr(type ptr, alloca(sizeof((type)) * (count)))
+#define SDL_stack_alloc(type, count) cptr(type ptr, alloca(sizeof(type) * (count)))
 #define SDL_stack_free(data)
 
 #ifdef __FB_WIN32__
@@ -464,7 +465,7 @@ enum
 	CD_ERROR = -1
 end enum
 
-#define CD_INDRIVE(status) (clng((status)) > 0)
+#define CD_INDRIVE(status) (clng(status) > 0)
 
 type SDL_CDtrack
 	id as Uint8
@@ -487,11 +488,11 @@ const CD_FPS = 75
 #macro FRAMES_TO_MSF(f_, M, S, F)
 	scope
 		dim value as long = f_
-		*(F) = value mod CD_FPS
-		value \= CD_FPS
-		*(S) = value mod 60
-		value \= 60
-		*(M) = value
+		(*(F)) = value mod CD_FPS
+		value /= CD_FPS
+		(*(S)) = value mod 60
+		value /= 60
+		(*(M)) = value
 	end scope
 #endmacro
 #define MSF_TO_FRAMES(M, S, F) (((((M) * 60) * CD_FPS) + ((S) * CD_FPS)) + (F))
@@ -1327,6 +1328,7 @@ const SDL_INIT_JOYSTICK = &h00000200
 const SDL_INIT_NOPARACHUTE = &h00100000
 const SDL_INIT_EVENTTHREAD = &h01000000
 const SDL_INIT_EVERYTHING = &h0000FFFF
+
 declare function SDL_Init(byval flags as Uint32) as long
 declare function SDL_InitSubSystem(byval flags as Uint32) as long
 declare sub SDL_QuitSubSystem(byval flags as Uint32)

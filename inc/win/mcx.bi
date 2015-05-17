@@ -134,7 +134,7 @@ const MDM_SHIFT_PROTOCOLDATA = 20
 #define MDM_GET_EXTENDEDINFO(_dwOptions) ((_dwOptions) and MDM_MASK_EXTENDEDINFO)
 #macro MDM_SET_EXTENDEDINFO(_dwOptions, _extinfo)
 	scope
-		(_dwOptions) and= notMDM_MASK_EXTENDEDINFO
+		(_dwOptions) and= not MDM_MASK_EXTENDEDINFO
 		(_dwOptions) or= (_extinfo) and MDM_MASK_EXTENDEDINFO
 	end scope
 #endmacro

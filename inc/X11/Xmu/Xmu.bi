@@ -76,7 +76,7 @@ type XmuArea as _XmuArea
 #macro FreeArea(a)
 	scope
 		XmuDestroyScanlineList((a)->scanline)
-		a->scanline = 0
+		a->scanline = cptr(Scanline ptr, 0)
 	end scope
 #endmacro
 #define XmuValidSegment(s) ((s)->x1 < (s)->x2)

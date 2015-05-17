@@ -1038,12 +1038,10 @@ declare sub g_value_set_object_take_ownership(byval value as GValue ptr, byval v
 declare function g_object_compat_control(byval what as gsize, byval data as gpointer) as gsize
 #macro G_OBJECT_WARN_INVALID_PSPEC(object, pname, property_id, pspec)
 	scope
-		var _glib__pspec = cptr(GParamSpec ptr, pspec)
-		dim as guint _glib__property_id = (property_id)
-		g_warning(!"%s:%u: invalid %s id %u for \"%s\" of type '%s' in '%s'", _
-			__FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, _
-			g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), _
-			G_OBJECT_TYPE_NAME(cptr(GObject ptr, object)))
+		dim _glib__object as GObject ptr = cptr(GObject ptr, (object))
+		dim _glib__pspec as GParamSpec ptr = cptr(GParamSpec ptr, (pspec))
+		dim _glib__property_id as guint = (property_id)
+		g_warning("%s:%u: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
 	end scope
 #endmacro
 #define G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) G_OBJECT_WARN_INVALID_PSPEC((object), "property", (property_id), (pspec))

@@ -149,11 +149,7 @@ end type
 
 type XkbGroupAction as _XkbGroupAction
 #define XkbSAGroup(a) XkbCharToInt((a)->group_XXX)
-#macro XkbSASetGroup(a, g)
-	scope
-		(a)->group_XXX = (g)
-	end scope
-#endmacro
+#define XkbSASetGroup(a, g) scope : (a)->group_XXX = (g) : end scope
 
 type _XkbISOAction
 	as ubyte type
@@ -201,11 +197,7 @@ end type
 
 type XkbPtrDfltAction as _XkbPtrDfltAction
 #define XkbSAPtrDfltValue(a) XkbCharToInt((a)->valueXXX)
-#macro XkbSASetPtrDfltValue(a, c)
-	scope
-		(a)->valueXXX = (c) and &hff
-	end scope
-#endmacro
+#define XkbSASetPtrDfltValue(a, c) scope : (a)->valueXXX = (c) and &hff : end scope
 
 type _XkbSwitchScreenAction
 	as ubyte type
@@ -215,11 +207,7 @@ end type
 
 type XkbSwitchScreenAction as _XkbSwitchScreenAction
 #define XkbSAScreen(a) XkbCharToInt((a)->screenXXX)
-#macro XkbSASetScreen(a, s)
-	scope
-		(a)->screenXXX = (s) and &hff
-	end scope
-#endmacro
+#define XkbSASetScreen(a, s) scope : (a)->screenXXX = (s) and &hff : end scope
 
 type _XkbCtrlsAction
 	as ubyte type

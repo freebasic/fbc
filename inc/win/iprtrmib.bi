@@ -943,6 +943,6 @@ end enum
 type TCPIP_OWNER_MODULE_INFO_CLASS as _TCPIP_OWNER_MODULE_INFO_CLASS
 type PTCPIP_OWNER_MODULE_INFO_CLASS as _TCPIP_OWNER_MODULE_INFO_CLASS ptr
 const MAX_MIB_OFFSET = 8
-#define MIB_INFO_SIZE(S) (MAX_MIB_OFFSET + sizeof((S)))
+#define MIB_INFO_SIZE(S) (MAX_MIB_OFFSET + sizeof(S))
 #define MIB_INFO_SIZE_IN_DWORDS(S) ((MIB_INFO_SIZE(S) / sizeof(DWORD)) + 1)
 #define CAST_MIB_INFO(X, Y, Z) scope : Z = cast(Y, X->rgbyData) : end scope

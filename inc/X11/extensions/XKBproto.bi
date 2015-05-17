@@ -61,7 +61,7 @@
 ''     typedef xkbEvent => xkbEvent_
 
 #define _XKBPROTO_H_
-#define XkbPaddedSize(n) culng(culng(culng(culng((n)) + 3) shr 2) shl 2)
+#define XkbPaddedSize(n) culng(culng(culng(culng(n) + 3) shr 2) shl 2)
 
 type _xkbUseExtension
 	reqType as CARD8

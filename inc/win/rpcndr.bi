@@ -91,10 +91,11 @@ declare sub RpcSsDestroyClientContext(byval ContextHandle as any ptr ptr)
 		*cptr(byte ptr ptr, @(source)->Buffer) += 1
 	end scope
 #endmacro
+
 #macro byte_array_from_ndr(Source, LowerIndex, UpperIndex, Target)
 	scope
 		NDRcopy(cptr(zstring ptr, (Target)) + (LowerIndex), (Source)->Buffer, culng((UpperIndex) - (LowerIndex)))
-		*cptr(ulong ptr, @(Source)->Buffer) += ((UpperIndex) - (LowerIndex))
+		(*cptr(ulong ptr, @(Source)->Buffer)) += (UpperIndex) - (LowerIndex)
 	end scope
 #endmacro
 #define boolean_from_ndr(source, target) byte_from_ndr(source, target)

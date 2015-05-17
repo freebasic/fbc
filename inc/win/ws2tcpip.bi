@@ -158,12 +158,12 @@ private sub IN6_SET_ADDR_UNSPECIFIED(byval a as in6_addr ptr)
 	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
 end sub
 
-private sub IN6_SET_ADDR_LOOPBACK(byval a as in6_addr ptr)
-	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
+private sub IN6_SET_ADDR_LOOPBACK(byval a as IN6_ADDR ptr)
+	memset(@a->u.Byte(0), 0, sizeof(IN6_ADDR))
 	a->u.Byte(15) = 1
 end sub
 
-private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETANY(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0
@@ -171,7 +171,7 @@ private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
 	a->sin6_scope_id = 0
 end sub
 
-private sub IN6ADDR_SETLOOPBACK(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETLOOPBACK(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0

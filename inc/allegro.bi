@@ -224,7 +224,7 @@ extern "C"
 	#define LOCK_DATA(d, s) _go32_dpmi_lock_data(cptr(any ptr, d), s)
 	#define LOCK_CODE(c, s) _go32_dpmi_lock_code(cptr(any ptr, c), s)
 	#define UNLOCK_DATA(d, s) _unlock_dpmi_data(cptr(any ptr, d), s)
-	#define LOCK_VARIABLE(x) LOCK_DATA(cptr(any ptr, @x), sizeof((x)))
+	#define LOCK_VARIABLE(x) LOCK_DATA(cptr(any ptr, @x), sizeof(x))
 	#define LOCK_FUNCTION(x) LOCK_CODE(cptr(any ptr, x), cint(x##_end) - cint(x))
 	const ALLEGRO_LFN = 0
 	#define _video_ds() _dos_ds
@@ -313,32 +313,29 @@ const FA_NONE = 0
 #if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 	#define _video_ds() _default_ds()
 	#define _farsetsel(seg)
-	#define _farnspokeb(addr, val) *cptr(ubyte ptr, (addr)) = (val)
-	#define _farnspokew(addr, val) *cptr(ushort ptr, (addr)) = (val)
-	#define _farnspokel(addr, val) *cptr(ulong ptr, (addr)) = (val)
+	#define _farnspokeb(addr, val) scope : (*cptr(ubyte ptr, (addr))) = (val) : end scope
+	#define _farnspokew(addr, val) scope : (*cptr(ushort ptr, (addr))) = (val) : end scope
+	#define _farnspokel(addr, val) scope : (*cptr(ulong ptr, (addr))) = (val) : end scope
 	#define _farnspeekb(addr) (*cptr(ubyte ptr, (addr)))
 	#define _farnspeekw(addr) (*cptr(ushort ptr, (addr)))
 	#define _farnspeekl(addr) (*cptr(ulong ptr, (addr)))
 #endif
 
-#define READ3BYTES(p) _
-	( cptr(ubyte ptr, (p))[0]        or _
-	 (cptr(ubyte ptr, (p))[1] shl 8) or _
-	 (cptr(ubyte ptr, (p))[2] shl 16) )
+#define READ3BYTES(p) (((*cptr(ubyte ptr, (p))) or ((*(cptr(ubyte ptr, (p)) + 1)) shl 8)) or ((*(cptr(ubyte ptr, (p)) + 2)) shl 16))
 #macro WRITE3BYTES(p, c)
 	scope
-		cptr(ubyte ptr, (p))[0] = (c)
-		cptr(ubyte ptr, (p))[1] = (c) shr 8
-		cptr(ubyte ptr, (p))[2] = (c) shr 16
+		(*cptr(ubyte ptr, (p))) = (c)
+		(*(cptr(ubyte ptr, (p)) + 1)) = (c) shr 8
+		(*(cptr(ubyte ptr, (p)) + 2)) = (c) shr 16
 	end scope
 #endmacro
 
 #if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 	#define bmp_select(bmp)
-	#define bmp_write8(addr, c) *cptr(ubyte ptr, (addr)) = (c)
-	#define bmp_write15(addr, c) *cptr(ushort ptr, (addr)) = (c)
-	#define bmp_write16(addr, c) *cptr(ushort ptr, (addr)) = (c)
-	#define bmp_write32(addr, c) *cptr(ulong ptr, (addr)) = (c)
+	#define bmp_write8(addr, c) scope : (*cptr(ubyte ptr, (addr))) = (c) : end scope
+	#define bmp_write15(addr, c) scope : (*cptr(ushort ptr, (addr))) = (c) : end scope
+	#define bmp_write16(addr, c) scope : (*cptr(ushort ptr, (addr))) = (c) : end scope
+	#define bmp_write32(addr, c) scope : (*cptr(ulong ptr, (addr))) = (c) : end scope
 	#define bmp_read8(addr) (*cptr(ubyte ptr, (addr)))
 	#define bmp_read15(addr) (*cptr(ushort ptr, (addr)))
 	#define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
@@ -400,8 +397,8 @@ declare sub do_uconvert(byval s as const zstring ptr, byval type as long, byval 
 declare function uconvert(byval s as const zstring ptr, byval type as long, byval buf as zstring ptr, byval newtype as long, byval size as long) as zstring ptr
 declare function uwidth_max(byval type as long) as long
 
-#define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof((buf)))
-#define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof((buf)))
+#define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof(buf))
+#define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof(buf))
 #define EMPTY_STRING_ !"\0\0\0"
 extern _AL_DLL __empty_string alias "empty_string" as byte
 #define empty_string (*cptr(zstring ptr, @__empty_string))
@@ -2498,7 +2495,7 @@ type PACKFILE_VTABLE_
 	pf_ferror as function(byval userdata as any ptr) as long
 end type
 
-#define uconvert_tofilename(s, buf) uconvert(s, U_CURRENT, buf, get_filename_encoding(), sizeof((buf)))
+#define uconvert_tofilename(s, buf) uconvert(s, U_CURRENT, buf, get_filename_encoding(), sizeof(buf))
 declare sub set_filename_encoding(byval encoding as long)
 declare function get_filename_encoding() as long
 declare sub packfile_password(byval password as const zstring ptr)

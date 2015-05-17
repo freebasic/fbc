@@ -10316,7 +10316,7 @@ extern CLSID_ExecuteFolder as const GUID
 	#define PROP_CONTRACT_DELEGATE wstr("ContractDelegate")
 
 	private sub SetContractDelegateWindow cdecl(byval hwndSource as HWND, byval hwndDelegate as HWND)
-		if hwndDelegate <> NULL then
+		if hwndDelegate <> cptr(any ptr, 0) then
 			SetPropW(hwndSource, wstr("ContractDelegate"), cast(HANDLE, hwndDelegate))
 		else
 			RemovePropW(hwndSource, wstr("ContractDelegate"))

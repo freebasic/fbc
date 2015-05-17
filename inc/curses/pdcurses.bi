@@ -1042,14 +1042,34 @@ declare function PDC_save_key_modifiers(byval as bool) as long
 #define ungetch(ch) PDC_ungetch(ch)
 #define COLOR_PAIR(n) ((cast(chtype, (n)) shl PDC_COLOR_SHIFT) and A_COLOR)
 #define PAIR_NUMBER(n) (((n) and A_COLOR) shr PDC_COLOR_SHIFT)
-#define getbegyx(w, y, x) y = getbegy(w) : x = getbegx(w))
-#define getmaxyx(w, y, x) y = getmaxy(w) : x = getmaxx(w))
-#define getparyx(w, y, x) y = getpary(w) : x = getparx(w))
-#define getyx(w, y, x) y = getcury(w) : x = getcurx(w))
+#macro getbegyx(w, y, x)
+	scope
+		y = getbegy(w)
+		x = getbegx(w)
+	end scope
+#endmacro
+#macro getmaxyx(w, y, x)
+	scope
+		y = getmaxy(w)
+		x = getmaxx(w)
+	end scope
+#endmacro
+#macro getparyx(w, y, x)
+	scope
+		y = getpary(w)
+		x = getparx(w)
+	end scope
+#endmacro
+#macro getyx(w, y, x)
+	scope
+		y = getcury(w)
+		x = getcurx(w)
+	end scope
+#endmacro
 #macro getsyx(y, x)
-	if (curscr->_leaveit) then
-		(y) = -1
+	if curscr->_leaveit then
 		(x) = -1
+		(y) = -1
 	else
 		getyx(curscr, (y), (x))
 	end if

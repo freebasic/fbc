@@ -312,7 +312,7 @@ type PLUID as _LUID ptr
 type DWORDLONG as ULONGLONG
 type PDWORDLONG as DWORDLONG ptr
 #define Int32x32To64(a, b) (cast(LONGLONG, cast(LONG, (a))) * cast(LONGLONG, cast(LONG, (b))))
-#define UInt32x32To64(a, b) (cast(ULONGLONG, culng((a))) * cast(ULONGLONG, culng((b))))
+#define UInt32x32To64(a, b) (cast(ULONGLONG, culng(a)) * cast(ULONGLONG, culng(b)))
 #define Int64ShllMod32(a, b) (cast(ULONGLONG, (a)) shl (b))
 #define Int64ShraMod32(a, b) (cast(LONGLONG, (a)) shr (b))
 #define Int64ShrlMod32(a, b) (cast(ULONGLONG, (a)) shr (b))
@@ -414,7 +414,7 @@ const MAXDWORD = &hffffffff
 #define COMPILETIME_OR_3FLAGS(a, b, c) ((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c)))
 #define COMPILETIME_OR_4FLAGS(a, b, c, d) (((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c))) or cast(UINT, (d)))
 #define COMPILETIME_OR_5FLAGS(a, b, c, d, e) ((((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c))) or cast(UINT, (d))) or cast(UINT, (e)))
-#define RTL_BITS_OF(sizeOfArg) (sizeof((sizeOfArg)) * 8)
+#define RTL_BITS_OF(sizeOfArg) (sizeof(sizeOfArg) * 8)
 #define RTL_BITS_OF_FIELD(type, field) RTL_BITS_OF(RTL_FIELD_TYPE(type, field))
 #define CONTAINING_RECORD(address, type, field) cptr(type ptr, cast(PCHAR, (address)) - cast(ULONG_PTR, @cptr(type ptr, 0)->field))
 #define __PEXCEPTION_ROUTINE_DEFINED
@@ -5971,18 +5971,8 @@ const IMAGE_REL_EBC_ADDR32NB = &h0001
 const IMAGE_REL_EBC_REL32 = &h0002
 const IMAGE_REL_EBC_SECTION = &h0003
 const IMAGE_REL_EBC_SECREL = &h0004
-#macro EXT_IMM64(Value, Address, Size, InstPos, ValPos)
-	scope
-		Value or= cast(ULONGLONG, (*(Address) shr InstPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl ValPos
-	end scope
-#endmacro
-#macro INS_IMM64(Value, Address, Size, InstPos, ValPos)
-	scope
-		*cptr(PDWORD, Address) = _
-			(*cptr(PDWORD, Address) and not (((1 shl Size) - 1) shl InstPos)) or _
-			(cast(DWORD, (cast(ULONGLONG, Value) shr ValPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl InstPos)
-	end scope
-#endmacro
+#define EXT_IMM64(Value, Address, Size, InstPos, ValPos) scope : Value or= cast(ULONGLONG, ((*(Address)) shr InstPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl ValPos : end scope
+#define INS_IMM64(Value, Address, Size, InstPos, ValPos) scope : (*cast(PDWORD, Address)) = ((*cast(PDWORD, Address)) and (not (((1 shl Size) - 1) shl InstPos))) or (cast(DWORD, (cast(ULONGLONG, Value) shr ValPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl InstPos) : end scope
 const EMARCH_ENC_I17_IMM7B_INST_WORD_X = 3
 const EMARCH_ENC_I17_IMM7B_SIZE_X = 7
 const EMARCH_ENC_I17_IMM7B_INST_WORD_POS_X = 4
@@ -7435,11 +7425,7 @@ const APPLICATION_VERIFIER_PROBE_GUARD_PAGE = &h0605
 const APPLICATION_VERIFIER_PROBE_NULL = &h0606
 const APPLICATION_VERIFIER_PROBE_INVALID_START_OR_SIZE = &h0607
 const APPLICATION_VERIFIER_SIZE_HEAP_UNEXPECTED_EXCEPTION = &h0618
-#macro VERIFIER_STOP(Code, Msg, P1, S1, P2, S2, P3, S3, P4, S4)
-	scope
-		RtlApplicationVerifierStop((Code), (Msg), cast(ULONG_PTR, (P1)), (S1), cast(ULONG_PTR, (P2)), (S2), cast(ULONG_PTR, (P3)), (S3), cast(ULONG_PTR, (P4)), (S4))
-	end scope
-#endmacro
+#define VERIFIER_STOP(Code, Msg, P1, S1, P2, S2, P3, S3, P4, S4) scope : RtlApplicationVerifierStop((Code), (Msg), cast(ULONG_PTR, (P1)), (S1), cast(ULONG_PTR, (P2)), (S2), cast(ULONG_PTR, (P3)), (S3), cast(ULONG_PTR, (P4)), (S4)) : end scope
 
 declare sub RtlApplicationVerifierStop(byval Code as ULONG_PTR, byval Message as PSTR, byval Param1 as ULONG_PTR, byval Description1 as PSTR, byval Param2 as ULONG_PTR, byval Description2 as PSTR, byval Param3 as ULONG_PTR, byval Description3 as PSTR, byval Param4 as ULONG_PTR, byval Description4 as PSTR)
 declare function RtlSetHeapInformation(byval HeapHandle as PVOID, byval HeapInformationClass as HEAP_INFORMATION_CLASS, byval HeapInformation as PVOID, byval HeapInformationLength as SIZE_T_) as DWORD
@@ -7971,22 +7957,31 @@ type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Con
 type TP_IO as _TP_IO
 type PTP_IO as _TP_IO ptr
 
-private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-	cbe->Pool = 0
-	cbe->CleanupGroup = 0
-	cbe->CleanupGroupCancelCallback = 0
-	cbe->RaceDll = 0
-	cbe->ActivationContext = 0
-	cbe->FinalizationCallback = 0
-	cbe->u.Flags = 0
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
 		cbe->Version = 1
-	#else
+	end sub
+#else
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
 		cbe->Version = 3
 		cbe->CallbackPriority = TP_CALLBACK_PRIORITY_NORMAL
 		cbe->Size = sizeof(TP_CALLBACK_ENVIRON)
-	#endif
-end sub
+	end sub
+#endif
 
 private sub TpSetCallbackThreadpool cdecl(byval cbe as PTP_CALLBACK_ENVIRON, byval pool as PTP_POOL)
 	cbe->Pool = pool
@@ -8002,7 +7997,7 @@ private sub TpSetCallbackActivationContext cdecl(byval cbe as PTP_CALLBACK_ENVIR
 end sub
 
 private sub TpSetCallbackNoActivationContext cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-	cbe->ActivationContext = cptr(_ACTIVATION_CONTEXT ptr, -1)
+	cbe->ActivationContext = cptr(_ACTIVATION_CONTEXT ptr, cast(LONG_PTR, -1))
 end sub
 
 private sub TpSetCallbackLongFunction cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
@@ -8028,6 +8023,7 @@ private sub TpSetCallbackPersistent cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
 end sub
 
 private sub TpDestroyCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+	cbe = cbe
 end sub
 
 #ifdef __FB_64BIT__

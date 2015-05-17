@@ -127,7 +127,7 @@ end type
 	(B)->b[(B)->n] = (c)
 	(B)->n += 1
 #endmacro
-#define luaL_addsize(B,s) (B)->n += (s)
+#define luaL_addsize(B, s) scope : (B)->n += (s) : end scope
 declare sub luaL_buffinit(byval L as lua_State ptr, byval B as luaL_Buffer ptr)
 declare function luaL_prepbuffsize(byval B as luaL_Buffer ptr, byval sz as uinteger) as zstring ptr
 declare sub luaL_addlstring(byval B as luaL_Buffer ptr, byval s as const zstring ptr, byval l as uinteger)

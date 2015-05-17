@@ -1008,13 +1008,13 @@ type MSG as tagMSG
 type PMSG as tagMSG ptr
 type NPMSG as tagMSG ptr
 type LPMSG as tagMSG ptr
+
 #macro POINTSTOPOINT(pt, pts)
 	scope
 		(pt).x = cast(LONG, cast(SHORT, LOWORD(*cptr(LONG ptr, @pts))))
 		(pt).y = cast(LONG, cast(SHORT, HIWORD(*cptr(LONG ptr, @pts))))
 	end scope
 #endmacro
-
 #define POINTTOPOINTS(pt) MAKELONG(cshort((pt).x), cshort((pt).y))
 #define MAKEWPARAM(l, h) cast(WPARAM, cast(DWORD, MAKELONG(l, h)))
 #define MAKELPARAM(l, h) cast(LPARAM, cast(DWORD, MAKELONG(l, h)))
@@ -6524,7 +6524,7 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	type GESTURENOTIFYSTRUCT as tagGESTURENOTIFYSTRUCT
 	type PGESTURENOTIFYSTRUCT as tagGESTURENOTIFYSTRUCT ptr
 	#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_) cast(USHORT, (((_arg_) + (2.0 * 3.14159265)) / (4.0 * 3.14159265)) * 65535.0)
-	#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((cdbl((_arg_)) / 65535.0) * 4.0) * 3.14159265) - (2.0 * 3.14159265))
+	#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((cdbl(_arg_) / 65535.0) * 4.0) * 3.14159265) - (2.0 * 3.14159265))
 	declare function GetGestureInfo(byval hGestureInfo as HGESTUREINFO, byval pGestureInfo as PGESTUREINFO) as WINBOOL
 	declare function GetGestureExtraArgs(byval hGestureInfo as HGESTUREINFO, byval cbExtraArgs as UINT, byval pExtraArgs as PBYTE) as WINBOOL
 	declare function CloseGestureInfoHandle(byval hGestureInfo as HGESTUREINFO) as WINBOOL

@@ -221,7 +221,7 @@ declare function ExtractIconExW(byval lpszFile as LPCWSTR, byval nIconIndex as l
 	#define ExtractIconEx ExtractIconExA
 #endif
 
-#define EIRESID(x) ((-1) * clng((x)))
+#define EIRESID(x) ((-1) * clng(x))
 const FO_MOVE = &h1
 const FO_COPY = &h2
 const FO_DELETE = &h3

@@ -55,11 +55,7 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 		wend
 	end scope
 #endmacro
-#macro FD_ZERO(set)
-	scope
-		cptr(fd_set ptr, set)->fd_count = 0
-	end scope
-#endmacro
+#define FD_ZERO(set) scope : cptr(FD_SET ptr, (set))->fd_count = 0 : end scope
 #define FD_ISSET(fd, set) __WSAFDIsSet(cast(SOCKET, (fd)), cptr(FD_SET ptr, (set)))
 #define _FD_SET_WINSOCK_DEFINED
 #macro FD_SET_(fd, set)
@@ -197,8 +193,8 @@ const IOC_OUT = &h40000000
 const IOC_IN = &h80000000
 #define IOC_INOUT (IOC_IN or IOC_OUT)
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
-#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
-#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
 #define FIONREAD _IOR(asc("f"), 127, u_long)
 #define FIONBIO _IOW(asc("f"), 126, u_long)
 #define FIOASYNC _IOW(asc("f"), 125, u_long)
@@ -246,17 +242,17 @@ const IPPORT_RESERVED = 1024
 const IMPLINK_IP = 155
 const IMPLINK_LOWEXPER = 156
 const IMPLINK_HIGHEXPER = 158
-#define IN_CLASSA(i) ((clng((i)) and &h80000000) = 0)
+#define IN_CLASSA(i) ((clng(i) and &h80000000) = 0)
 const IN_CLASSA_NET = &hff000000
 const IN_CLASSA_NSHIFT = 24
 const IN_CLASSA_HOST = &h00ffffff
 const IN_CLASSA_MAX = 128
-#define IN_CLASSB(i) ((clng((i)) and &hc0000000) = &h80000000)
+#define IN_CLASSB(i) ((clng(i) and &hc0000000) = &h80000000)
 const IN_CLASSB_NET = &hffff0000
 const IN_CLASSB_NSHIFT = 16
 const IN_CLASSB_HOST = &h0000ffff
 const IN_CLASSB_MAX = 65536
-#define IN_CLASSC(i) ((clng((i)) and &he0000000) = &hc0000000)
+#define IN_CLASSC(i) ((clng(i) and &he0000000) = &hc0000000)
 const IN_CLASSC_NET = &hffffff00
 const IN_CLASSC_NSHIFT = 8
 const IN_CLASSC_HOST = &h000000ff

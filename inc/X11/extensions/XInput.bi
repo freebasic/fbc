@@ -101,56 +101,16 @@ const _propertyNotify = 6
 #define DeviceMappingNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _deviceMappingNotify)
 #define ChangeDeviceNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _changeDeviceNotify)
 #define DevicePropertyNotify(d, type, _class) FindTypeAndClass(d, type, _class, OtherClass, _propertyNotify)
-#macro DevicePointerMotionHint(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _devicePointerMotionHint
-	end scope
-#endmacro
-#macro DeviceButton1Motion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton1Motion
-	end scope
-#endmacro
-#macro DeviceButton2Motion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton2Motion
-	end scope
-#endmacro
-#macro DeviceButton3Motion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton3Motion
-	end scope
-#endmacro
-#macro DeviceButton4Motion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton4Motion
-	end scope
-#endmacro
-#macro DeviceButton5Motion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton5Motion
-	end scope
-#endmacro
-#macro DeviceButtonMotion(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonMotion
-	end scope
-#endmacro
-#macro DeviceOwnerGrabButton(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceOwnerGrabButton
-	end scope
-#endmacro
-#macro DeviceButtonPressGrab(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonGrab
-	end scope
-#endmacro
-#macro NoExtensionEvent(d, type, _class)
-	scope
-		_class = (cptr(XDevice ptr, d)->device_id shl 8) or _noExtensionEvent
-	end scope
-#endmacro
+#define DevicePointerMotionHint(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _devicePointerMotionHint : end scope
+#define DeviceButton1Motion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton1Motion : end scope
+#define DeviceButton2Motion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton2Motion : end scope
+#define DeviceButton3Motion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton3Motion : end scope
+#define DeviceButton4Motion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton4Motion : end scope
+#define DeviceButton5Motion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButton5Motion : end scope
+#define DeviceButtonMotion(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonMotion : end scope
+#define DeviceOwnerGrabButton(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceOwnerGrabButton : end scope
+#define DeviceButtonPressGrab(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _deviceButtonGrab : end scope
+#define NoExtensionEvent(d, type, _class) scope : _class = (cptr(XDevice ptr, d)->device_id shl 8) or _noExtensionEvent : end scope
 
 declare function _XiGetDevicePresenceNotifyEvent(byval as Display ptr) as long
 declare sub _xibaddevice(byval dpy as Display ptr, byval error as long ptr)
@@ -162,7 +122,7 @@ declare sub _xidevicebusy(byval dpy as Display ptr, byval error as long ptr)
 #macro DevicePresence(dpy, type, _class)
 	scope
 		type = _XiGetDevicePresenceNotifyEvent(dpy)
-		_class = (&h10000 or _devicePresence)
+		_class = &h10000 or _devicePresence
 	end scope
 #endmacro
 #define BadDevice(dpy, error) _xibaddevice(dpy, @error)

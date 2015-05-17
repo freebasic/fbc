@@ -82,7 +82,7 @@ const XSyncCAEvents = cast(clong, 1) shl 5
 		if t > (presult)->lo then
 			(presult)->hi += 1
 		end if
-		*poverflow = (signa = signb) andalso (signa <> XSyncValueIsNegative(*presult))
+		(*poverflow) = -((signa = signb) andalso ((signa = XSyncValueIsNegative(*presult)) = 0))
 	end scope
 #endmacro
 #macro _XSyncValueSubtract(presult, a, b, poverflow)
@@ -95,7 +95,7 @@ const XSyncCAEvents = cast(clong, 1) shl 5
 		if t < (presult)->lo then
 			(presult)->hi -= 1
 		end if
-		*poverflow = (signa = signb) andalso (signa <> XSyncValueIsNegative(*presult))
+		(*poverflow) = -((signa = signb) andalso ((signa = XSyncValueIsNegative(*presult)) = 0))
 	end scope
 #endmacro
 #macro _XSyncMaxValue(pv)
