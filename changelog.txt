@@ -47,6 +47,7 @@ Version 1.03.0
 - Better error recovery after byref function result assignment type mismatch errors
 - 1.01.0/1.02.0 regression: Various bindings: some macros using sizeof() were badly translated (doing sizeof((T)), which doesn't compile, instead of sizeof(T))
 - Various bindings: macros whose body is a scope block with just one statement are now translated as single-line statements, so that they can be used with single-line IF blocks
+- 1.01.0 regression: CGUI binding: InitCgui() macro was broken
 
 
 Version 1.02.0
