@@ -131,7 +131,7 @@ const TRUE = 1
 #define MIN(a, b) iif((a) < (b), (a), (b))
 #undef CLAMP
 #define CLAMP(x, low, high) iif((x) > (high), (high), iif((x) < (low), (low), (x)))
-#define G_N_ELEMENTS(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define G_N_ELEMENTS(arr) (ubound(arr)  - lbound(array) + 1)
 #define GPOINTER_TO_SIZE(p) cast(gsize, (p))
 #define GSIZE_TO_POINTER(s) cast(gpointer, cast(gsize, (s)))
 #define G_STRUCT_OFFSET(struct_type, member) cast(glong, offsetof(struct_type, member))
@@ -2066,7 +2066,7 @@ declare function g_bit_storage(byval number as gulong) as guint
 			dim tem as zstring ptr
 			select case fdwReason
 			case DLL_PROCESS_ATTACH
-				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, G_N_ELEMENTS(wcbfr))
+				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
 				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
 				dll_name = g_path_get_basename(tem)
 				g_free(tem)
