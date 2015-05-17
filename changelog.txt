@@ -49,6 +49,7 @@ Version 1.03.0
 - Various bindings: macros whose body is a scope block with just one statement are now translated as single-line statements, so that they can be used with single-line IF blocks
 - 1.01.0 regression: CGUI binding: InitCgui() macro was broken
 - 1.01.0 regression: GLib binding: G_N_ELEMENTS() macro was broken
+- Windows API binding: added #inclib "msimg32" to wingdi.bi, for using functions like GradientFill()
 
 
 Version 1.02.0
