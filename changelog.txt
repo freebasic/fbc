@@ -18,6 +18,7 @@ Version 1.03.0
 - New OpenAL (openal-soft-1.16.0) and freealut (1.1.0) bindings (64bit-capable)
 - New ASpell 0.60.6.1 binding (64bit-capable)
 - New libbfd binding (64bit-capable), supporting all binutils versions from 2.16 to 2.25
+- New CanvasDraw 5.8.1 binding (64bit-capable)
 - Updated CGUI binding to 2.0.4 (from CGUI project's CVS)
 - Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
 - 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
