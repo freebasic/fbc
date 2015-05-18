@@ -627,6 +627,11 @@ sub symbInsertInnerUDT _
 
     inner->parent = parent
 
+	'' Propagate FB_UDTOPT_HASBITFIELD flag, for the C backend
+	if( symbGetUdtHasBitfield( inner ) ) then
+		symbSetUdtHasBitfield( parent )
+	end if
+
 end sub
 
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
