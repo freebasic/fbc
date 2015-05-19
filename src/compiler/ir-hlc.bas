@@ -1586,7 +1586,8 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsParamBydescOrByref( sym ) ) then
+	'' TODO: handle symbIsImport( sym ) here?
+	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) ) then
 		return FALSE
 	end if
 
@@ -1705,7 +1706,7 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		subtype = symbGetSubtype( sym )
 
 		'' Emitted as pointer?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+		if( symbIsRef( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
 			dtype = typeAddrOf( dtype )
 		end if
 
