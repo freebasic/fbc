@@ -9,7 +9,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-declare sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
+declare sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 
 sub hComplainIfAbstractClass _
 	( _
@@ -1919,7 +1919,7 @@ end sub
 '' AutoVarDecl =
 ''    VAR [SHARED] AutoVar (',' AutoVar)*
 ''
-private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
+private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr parent = any, sym = any
@@ -1945,27 +1945,29 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 		'' can't use SHARED inside a proc
 		if( hCheckScope( ) = FALSE ) then
 			'' error recovery: don't make it shared
-			attrib or= FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_STATIC
 		else
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 		lexSkipToken( )
 	end if
 
 	'' this proc static?
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
-		attrib or= FB_SYMBATTRIB_STATIC
+		baseattrib or= FB_SYMBATTRIB_STATIC
 	end if
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
 		if( fbIsModLevel( ) ) then
 			'' variables will be always shared..
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
 	do
+		var attrib = baseattrib
+
 		'' id.id? if not, NULL
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
 					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
