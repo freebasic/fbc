@@ -883,7 +883,6 @@ private sub hEmitVarBss _
     '' align
     if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
     	hALIGN( 8 )
-    	emitWriteStr( ".balign 8", TRUE )
 	else
     	hALIGN( 4 )
     end if
