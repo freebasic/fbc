@@ -107,6 +107,254 @@ namespace simpleVars
 	end sub
 end namespace
 
+namespace allDtypes
+	type PodUdt
+		i as integer
+	end type
+
+	type ClassUdt
+		i as integer
+		declare constructor( )
+		declare destructor( )
+	end type
+
+	constructor ClassUdt( )
+		this.i = 15
+	end constructor
+
+	destructor ClassUdt( )
+	end destructor
+
+	dim shared b as byte = 1
+	dim shared ub as ubyte = 2
+	dim shared sh as short = 3
+	dim shared ush as ushort = 4
+	dim shared l as long = 5
+	dim shared ul as ulong = 6
+	dim shared ll as longint = 7
+	dim shared ull as ulongint = 8
+	dim shared i as integer = 9
+	dim shared ui as uinteger = 10
+	dim shared s as string '' = "11"
+	dim shared z as zstring * 10 = "12"
+	dim shared w as wstring * 10 = "13"
+	dim shared xpod as PodUdt = (14)
+	dim shared xclass as ClassUdt
+	dim shared pany as any ptr = cptr(any ptr, 16)
+
+	dim shared byref rb as byte = b
+	dim shared byref rub as ubyte = ub
+	dim shared byref rsh as short = sh
+	dim shared byref rush as ushort = ush
+	dim shared byref rl as long = l
+	dim shared byref rul as ulong = ul
+	dim shared byref rll as longint = ll
+	dim shared byref rull as ulongint = ull
+	dim shared byref ri as integer = i
+	dim shared byref rui as uinteger = ui
+	dim shared byref rs as string = s
+	dim shared byref rz as zstring = z
+	dim shared byref rw as wstring = w
+	dim shared byref rxpod as PodUdt = xpod
+	dim shared byref rxclass as ClassUdt = xclass
+	dim shared byref rpany as any ptr = pany
+
+	sub test cdecl( )
+		s = "11"
+
+		CU_ASSERT( rb   = 1 )
+		CU_ASSERT( rub  = 2 )
+		CU_ASSERT( rsh  = 3 )
+		CU_ASSERT( rush = 4 )
+		CU_ASSERT( rl   = 5 )
+		CU_ASSERT( rul  = 6 )
+		CU_ASSERT( rll  = 7 )
+		CU_ASSERT( rull = 8 )
+		CU_ASSERT( ri   = 9 )
+		CU_ASSERT( rui  = 10 )
+		CU_ASSERT( rs   = "11" )
+		CU_ASSERT( rz   = "12" )
+		CU_ASSERT( rw   = "13" )
+		CU_ASSERT( rxpod.i = 14 )
+		CU_ASSERT( rxclass.i = 15 )
+		CU_ASSERT( rpany = cptr( any ptr, 16 ) )
+
+		rb   = 101
+		rub  = 102
+		rsh  = 103
+		rush = 104
+		rl   = 105
+		rul  = 106
+		rll  = 107
+		rull = 108
+		ri   = 109
+		rui  = 110
+		rs   = "111"
+		rz   = "112"
+		rw   = "113"
+		rxpod.i = 114
+		rxclass.i = 115
+		rpany = cptr( any ptr, 116 )
+
+		CU_ASSERT( rb   = 101 )
+		CU_ASSERT( rub  = 102 )
+		CU_ASSERT( rsh  = 103 )
+		CU_ASSERT( rush = 104 )
+		CU_ASSERT( rl   = 105 )
+		CU_ASSERT( rul  = 106 )
+		CU_ASSERT( rll  = 107 )
+		CU_ASSERT( rull = 108 )
+		CU_ASSERT( ri   = 109 )
+		CU_ASSERT( rui  = 110 )
+		CU_ASSERT( rs   = "111" )
+		CU_ASSERT( rz   = "112" )
+		CU_ASSERT( rw   = "113" )
+		CU_ASSERT( rxpod.i = 114 )
+		CU_ASSERT( rxclass.i = 115 )
+		CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+
+		scope
+			dim byref rb as byte = b
+			dim byref rub as ubyte = ub
+			dim byref rsh as short = sh
+			dim byref rush as ushort = ush
+			dim byref rl as long = l
+			dim byref rul as ulong = ul
+			dim byref rll as longint = ll
+			dim byref rull as ulongint = ull
+			dim byref ri as integer = i
+			dim byref rui as uinteger = ui
+			dim byref rs as string = s
+			dim byref rz as zstring = z
+			dim byref rw as wstring = w
+			dim byref rxpod as PodUdt = xpod
+			dim byref rxclass as ClassUdt = xclass
+			dim byref rpany as any ptr = pany
+
+			CU_ASSERT( rb   = 101 )
+			CU_ASSERT( rub  = 102 )
+			CU_ASSERT( rsh  = 103 )
+			CU_ASSERT( rush = 104 )
+			CU_ASSERT( rl   = 105 )
+			CU_ASSERT( rul  = 106 )
+			CU_ASSERT( rll  = 107 )
+			CU_ASSERT( rull = 108 )
+			CU_ASSERT( ri   = 109 )
+			CU_ASSERT( rui  = 110 )
+			CU_ASSERT( rs   = "111" )
+			CU_ASSERT( rz   = "112" )
+			CU_ASSERT( rw   = "113" )
+			CU_ASSERT( rxpod.i = 114 )
+			CU_ASSERT( rxclass.i = 115 )
+			CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+
+			rb   = 1
+			rub  = 2
+			rsh  = 3
+			rush = 4
+			rl   = 5
+			rul  = 6
+			rll  = 7
+			rull = 8
+			ri   = 9
+			rui  = 10
+			rs   = "11"
+			rz   = "12"
+			rw   = "13"
+			rxpod.i = 14
+			rxclass.i = 15
+			rpany = cptr( any ptr, 16 )
+
+			CU_ASSERT( rb   = 1 )
+			CU_ASSERT( rub  = 2 )
+			CU_ASSERT( rsh  = 3 )
+			CU_ASSERT( rush = 4 )
+			CU_ASSERT( rl   = 5 )
+			CU_ASSERT( rul  = 6 )
+			CU_ASSERT( rll  = 7 )
+			CU_ASSERT( rull = 8 )
+			CU_ASSERT( ri   = 9 )
+			CU_ASSERT( rui  = 10 )
+			CU_ASSERT( rs   = "11" )
+			CU_ASSERT( rz   = "12" )
+			CU_ASSERT( rw   = "13" )
+			CU_ASSERT( rxpod.i = 14 )
+			CU_ASSERT( rxclass.i = 15 )
+			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
+		end scope
+
+		scope
+			static byref rb as byte = b
+			static byref rub as ubyte = ub
+			static byref rsh as short = sh
+			static byref rush as ushort = ush
+			static byref rl as long = l
+			static byref rul as ulong = ul
+			static byref rll as longint = ll
+			static byref rull as ulongint = ull
+			static byref ri as integer = i
+			static byref rui as uinteger = ui
+			static byref rs as string = s
+			static byref rz as zstring = z
+			static byref rw as wstring = w
+			static byref rxpod as PodUdt = xpod
+			static byref rxclass as ClassUdt = xclass
+			static byref rpany as any ptr = pany
+
+			CU_ASSERT( rb   = 1 )
+			CU_ASSERT( rub  = 2 )
+			CU_ASSERT( rsh  = 3 )
+			CU_ASSERT( rush = 4 )
+			CU_ASSERT( rl   = 5 )
+			CU_ASSERT( rul  = 6 )
+			CU_ASSERT( rll  = 7 )
+			CU_ASSERT( rull = 8 )
+			CU_ASSERT( ri   = 9 )
+			CU_ASSERT( rui  = 10 )
+			CU_ASSERT( rs   = "11" )
+			CU_ASSERT( rz   = "12" )
+			CU_ASSERT( rw   = "13" )
+			CU_ASSERT( rxpod.i = 14 )
+			CU_ASSERT( rxclass.i = 15 )
+			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
+
+			rb   = 101
+			rub  = 102
+			rsh  = 103
+			rush = 104
+			rl   = 105
+			rul  = 106
+			rll  = 107
+			rull = 108
+			ri   = 109
+			rui  = 110
+			rs   = "111"
+			rz   = "112"
+			rw   = "113"
+			rxpod.i = 114
+			rxclass.i = 115
+			rpany = cptr( any ptr, 116 )
+
+			CU_ASSERT( rb   = 101 )
+			CU_ASSERT( rub  = 102 )
+			CU_ASSERT( rsh  = 103 )
+			CU_ASSERT( rush = 104 )
+			CU_ASSERT( rl   = 105 )
+			CU_ASSERT( rul  = 106 )
+			CU_ASSERT( rll  = 107 )
+			CU_ASSERT( rull = 108 )
+			CU_ASSERT( ri   = 109 )
+			CU_ASSERT( rui  = 110 )
+			CU_ASSERT( rs   = "111" )
+			CU_ASSERT( rz   = "112" )
+			CU_ASSERT( rw   = "113" )
+			CU_ASSERT( rxpod.i = 114 )
+			CU_ASSERT( rxclass.i = 115 )
+			CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+		end scope
+	end sub
+end namespace
+
 namespace callByrefFunctionPtrThroughByref
 	dim shared i as integer = 123
 
@@ -131,6 +379,7 @@ end namespace
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
+	fbcu.add_test( "allDtypes", @allDtypes.test )
 	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )
 end sub
 
