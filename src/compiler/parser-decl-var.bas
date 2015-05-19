@@ -1968,6 +1968,11 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 	do
 		var attrib = baseattrib
 
+		'' BYREF?
+		if( hMatch( FB_TK_BYREF ) ) then
+			attrib or= FB_SYMBATTRIB_REF
+		end if
+
 		'' id.id? if not, NULL
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
 					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
