@@ -25,6 +25,22 @@ namespace simpleVars
 		'' Initialized from other reference
 		dim byref ri2 as integer = ri
 		CU_ASSERT( ri2 = 456 ) : CU_ASSERT( @ri2 = @i )
+
+		'' More complex expression
+		var pi = new integer[3]
+		CU_ASSERT( pi[0] = 0 )
+		CU_ASSERT( pi[1] = 0 )
+		CU_ASSERT( pi[2] = 0 )
+
+		dim byref ri3 as integer = pi[1]
+
+		pi[1] = 111
+		CU_ASSERT( ri3 = 111 )
+		CU_ASSERT( pi[0] = 0 )
+		CU_ASSERT( pi[1] = 111 )
+		CU_ASSERT( pi[2] = 0 )
+
+		delete pi
 	end sub
 end namespace
 
