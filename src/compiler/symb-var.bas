@@ -815,10 +815,11 @@ function symbCheckArraySize _
 end function
 
 function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
-	'' shared, static, param or temp?
+	'' shared, static, ref, param or temp?
 	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_REF or _
 	                    FB_SYMBATTRIB_PARAMBYDESC or _
 	                    FB_SYMBATTRIB_PARAMBYVAL or _
 	                    FB_SYMBATTRIB_PARAMBYREF or _
@@ -853,10 +854,11 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 end function
 
 function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
-	'' shared, static, param or temporary?
+	'' shared, static, ref, param or temporary?
 	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_REF or _
 	                    FB_SYMBATTRIB_PARAMBYDESC or _
 	                    FB_SYMBATTRIB_PARAMBYVAL or _
 	                    FB_SYMBATTRIB_PARAMBYREF or _

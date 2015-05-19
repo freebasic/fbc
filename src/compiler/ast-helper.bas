@@ -130,6 +130,8 @@ function astBuildVarDtorCall overload _
 	'' assuming conditions were checked already
 	function = NULL
 
+	assert( symbIsRef( s ) = FALSE )
+
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' destruct and/or free array, if needed

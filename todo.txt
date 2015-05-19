@@ -6,6 +6,7 @@ o Dim Byref
 	end function
   - check all FBSYMBOL->lgt/typ accesses, ISLONGINT, symbGet[Full]Type, symbGetLen
   - fields
+      - don't call ctors/dtors (hCallFieldDtors())
   - arrays of refs
   - extend temp var life-time like WITH
   - allow BYVAL initialization, like byref results/params?
