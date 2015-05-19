@@ -107,9 +107,31 @@ namespace simpleVars
 	end sub
 end namespace
 
+namespace callByrefFunctionPtrThroughByref
+	dim shared i as integer = 123
+
+	function f( ) byref as integer
+		function = i
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( f( ) = 123 )
+		CU_ASSERT( @(f( )) = @i )
+
+		dim p1 as function( ) byref as integer = @f
+		CU_ASSERT( p1( ) = 123 )
+		CU_ASSERT( @(p1( )) = @i )
+
+		dim byref p2 as function( ) byref as integer = p1
+		CU_ASSERT( p2( ) = 123 )
+		CU_ASSERT( @(p2( )) = @i )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
+	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )
 end sub
 
 end namespace
