@@ -9,7 +9,7 @@ namespace simpleVars
 	'' Normal syntax
 	dim shared byref gr1 as integer = gi
 	dim shared byref gr2 as integer = gi, byref gr3 as integer = gi
-	'var shared byref gr4 = gi, byref gr5 = gi
+	var shared byref gr4 = gi, byref gr5 = gi
 
 	'' Multdecl syntax
 	dim shared byref as integer gr6 = gi, gr7 = gi
@@ -28,8 +28,8 @@ namespace simpleVars
 			CU_ASSERT( gr1 = 123 ) : CU_ASSERT( @gr1 = @gi )
 			CU_ASSERT( gr2 = 123 ) : CU_ASSERT( @gr2 = @gi )
 			CU_ASSERT( gr3 = 123 ) : CU_ASSERT( @gr3 = @gi )
-			'CU_ASSERT( gr4 = 123 ) : CU_ASSERT( @gr4 = @gi )
-			'CU_ASSERT( gr5 = 123 ) : CU_ASSERT( @gr5 = @gi )
+			CU_ASSERT( gr4 = 123 ) : CU_ASSERT( @gr4 = @gi )
+			CU_ASSERT( gr5 = 123 ) : CU_ASSERT( @gr5 = @gi )
 			CU_ASSERT( gr6 = 123 ) : CU_ASSERT( @gr6 = @gi )
 			CU_ASSERT( gr7 = 123 ) : CU_ASSERT( @gr7 = @gi )
 		end scope

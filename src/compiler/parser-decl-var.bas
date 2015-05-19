@@ -747,6 +747,29 @@ private function hVarInitDefault _
 
 end function
 
+private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byref expr as ASTNODE ptr ) as ASTNODE ptr
+	if( astCheckByrefAssign( sym->typ, sym->subtype, expr ) = FALSE ) then
+		errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
+		astDelTree( expr )
+		'' build a NULL ptr deref with the expected dtype:
+		''    *cptr(dtype ptr, 0)
+		expr = astNewCONSTi( 0 )
+		expr = astNewCONV( typeAddrOf( sym->typ ), sym->subtype, expr, AST_CONVOPT_DONTCHKPTR )
+		expr = astNewDEREF( expr )
+	end if
+
+	'' Build the TYPEINI for initializing the reference/pointer
+	'' Do the implicit ADDROF due to BYREF
+	var ptrdtype = typeAddrOf( sym->typ )
+	var ptrsubtype = sym->subtype
+	var initree = astTypeIniBegin( ptrdtype, ptrsubtype, FALSE, 0 )
+	assert( astCanTakeAddrOf( expr ) )
+	astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
+	astTypeIniEnd( initree, TRUE )
+
+	function = initree
+end function
+
 '':::::
 private function hVarInit _
 	( _
@@ -791,29 +814,17 @@ private function hVarInit _
 
 	'' Reference? Must be initialized with a var/deref, not an arbitrary initializer
 	if( symbIsRef( sym ) ) then
+		assert( symbIsRef( sym ) )
+
 		var expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
 		if( expr = NULL ) then
+			'' For Dim Byref, the initializer isn't optional as for normal Dim
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
 			exit function
 		end if
 
-		if( astCheckByrefAssign( sym->typ, sym->subtype, expr ) = FALSE ) then
-			errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
-			hSkipStmt( )
-			exit function
-		end if
-
-		'' Build the TYPEINI for initializing the reference/pointer
-		'' Do the implicit ADDROF due to BYREF
-		var ptrdtype = typeAddrOf( sym->typ )
-		var ptrsubtype = sym->subtype
-		var initree = astTypeIniBegin( ptrdtype, ptrsubtype, FALSE, 0 )
-		assert( astCanTakeAddrOf( expr ) )
-		astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
-		astTypeIniEnd( initree, TRUE )
-
-		return initree
+		return hCheckAndBuildByrefInitializer( sym, expr )
 	end if
 
     '' ANY?
@@ -1912,7 +1923,7 @@ sub cArrayDecl _
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
-private function hBuildAutoVarInitializer _
+private function hCheckAndBuildAutoVarInitializer _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
@@ -2048,14 +2059,22 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 		end if
 
-		'' parse expression
-		dim as ASTNODE ptr expr = cExpression( )
+		'' Parse initializer expression
+		'' (before adding the symbol, so that it can't be used in the initializer)
+		dim expr as ASTNODE ptr
+		if( (attrib and FB_SYMBATTRIB_REF) orelse (sym andalso symbIsRef( sym )) ) then
+			'' Reference; must be initialized with a var/deref, not an arbitrary expression
+			expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+		else
+			expr = cExpression( )
+		end if
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
-			'' error recovery: fake an expr
+			hSkipStmt( )
 			expr = astNewCONSTi( 0 )
 		end if
 
+		'' Determine var's dtype based on the initializer expression
 		dim as integer dtype = astGetFullType( expr )
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
@@ -2092,7 +2111,11 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then
-			expr = hBuildAutoVarInitializer( dtype, subtype, has_ctor, has_dtor, sym, expr )
+			if( symbIsRef( sym ) ) then
+				expr = hCheckAndBuildByrefInitializer( sym, expr )
+			else
+				expr = hCheckAndBuildAutoVarInitializer( dtype, subtype, has_ctor, has_dtor, sym, expr )
+			end if
 
 			'' add to AST
 			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
