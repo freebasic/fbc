@@ -850,11 +850,19 @@ private sub hEndKeywordsTB
 
 end sub
 
-private function hGetGlobalVarAlign( byval sym as FBSYMBOL ptr ) as integer
-	if( (symbGetType( sym ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( sym )) ) then
+private function hGetGlobalTypeAlign( byval dtype as integer ) as integer
+	if( dtype = FB_DATATYPE_DOUBLE ) then
 		function = 8
 	else
 		function = 4
+	end if
+end function
+
+private function hGetGlobalVarAlign( byval sym as FBSYMBOL ptr ) as integer
+	if( symbIsRef( sym ) ) then
+		function = 4
+	else
+		function = hGetGlobalTypeAlign( symbGetType( sym ) )
 	end if
 end function
 
@@ -947,11 +955,7 @@ private sub hEmitVarConst _
 	if( s->var_.align ) then
 		hALIGN ( s->var_.align )
 	else
-		if( dtype = FB_DATATYPE_DOUBLE ) then
-			hALIGN( 8 )
-			else
-			hALIGN( 4 )
-		end if
+		hALIGN( hGetGlobalTypeAlign( dtype ) )
 	end if
 
 
