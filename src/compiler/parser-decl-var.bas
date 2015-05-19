@@ -747,15 +747,19 @@ private function hVarInitDefault _
 
 end function
 
+'' Build a NULL ptr deref with the given dtype:
+''    *cptr(dtype ptr, 0)
+private function hBuildFakeByrefInitExpr( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
+	var expr = astNewCONSTi( 0 )
+	expr = astNewCONV( typeAddrOf( dtype ), subtype, expr, AST_CONVOPT_DONTCHKPTR )
+	function = astNewDEREF( expr )
+end function
+
 private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byref expr as ASTNODE ptr ) as ASTNODE ptr
 	if( astCheckByrefAssign( sym->typ, sym->subtype, expr ) = FALSE ) then
 		errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
 		astDelTree( expr )
-		'' build a NULL ptr deref with the expected dtype:
-		''    *cptr(dtype ptr, 0)
-		expr = astNewCONSTi( 0 )
-		expr = astNewCONV( typeAddrOf( sym->typ ), sym->subtype, expr, AST_CONVOPT_DONTCHKPTR )
-		expr = astNewDEREF( expr )
+		expr = hBuildFakeByrefInitExpr( sym->typ, sym->subtype )
 	end if
 
 	'' Build the TYPEINI for initializing the reference/pointer
@@ -2062,7 +2066,8 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		'' Parse initializer expression
 		'' (before adding the symbol, so that it can't be used in the initializer)
 		dim expr as ASTNODE ptr
-		if( (attrib and FB_SYMBATTRIB_REF) orelse (sym andalso symbIsRef( sym )) ) then
+		var is_byref = (attrib and FB_SYMBATTRIB_REF) orelse (sym andalso symbIsRef( sym ))
+		if( is_byref ) then
 			'' Reference; must be initialized with a var/deref, not an arbitrary expression
 			expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
 		else
@@ -2071,7 +2076,12 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
 			hSkipStmt( )
-			expr = astNewCONSTi( 0 )
+			'' error recovery: build an expression with a simple dtype
+			if( is_byref ) then
+				expr = hBuildFakeByrefInitExpr( FB_DATATYPE_INTEGER, NULL )
+			else
+				expr = astNewCONSTi( 0 )
+			end if
 		end if
 
 		'' Determine var's dtype based on the initializer expression
