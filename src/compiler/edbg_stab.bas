@@ -996,13 +996,10 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 
 	if( symbIsParamByVal( sym ) ) then
 		desc += "p"
-
-	elseif( symbIsParamByRef( sym ) ) then
+	else
+		'' It's a reference or descriptor ptr
+		assert( symbIsParamBydescOrByref( sym ) )
 		desc += "v"
-
-	elseif( symbIsParamByDesc( sym ) ) then
-		'' (will be emitted as descriptor)
-    	desc += "v"
 	end if
 
     '' data type
