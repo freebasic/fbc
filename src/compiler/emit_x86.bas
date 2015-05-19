@@ -6113,7 +6113,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	'' Add debug info for public/shared globals, but not local statics
 	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
-   	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
+	if( (symbGetType( sym ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( sym )) ) then
     	hALIGN( 8 )
 	else
     	hALIGN( 4 )
