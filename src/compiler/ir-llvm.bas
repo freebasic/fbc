@@ -630,12 +630,17 @@ private function hEmitStrLitType( byval length as integer ) as string
 end function
 
 private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		function = hEmitStrLitType( symbGetLen( sym ) )
-	case else
-		function = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
-	end select
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	else
+		'' Special handling for fixed-length strings
+		select case( dtype )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			return hEmitStrLitType( sym->lgt )
+		end select
+	end if
+	function = hEmitType( dtype, sym->subtype )
 end function
 
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )

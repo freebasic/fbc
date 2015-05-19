@@ -6580,7 +6580,12 @@ private sub _procAllocLocal _
 		exit sub
 	end if
 
-	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
+	if( symbIsRef( sym ) ) then
+		lgt = env.pointersize
+	else
+		lgt = symbGetLen( sym )
+	end if
+	lgt *= symbGetArrayElements( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -6607,7 +6612,8 @@ private sub _procAllocArg _
 	if( symbIsParamByVal( sym ) ) then
 		lgt = symbGetLen( sym )
 	else
-		lgt = 4    '' it's just a pointer
+		'' Bydesc/byref
+		lgt = env.pointersize
 	end if
 
 	sym->ofs = proc->proc.ext->stk.argofs

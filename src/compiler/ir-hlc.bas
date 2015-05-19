@@ -740,7 +740,12 @@ private sub hEmitVarDecl _
 		ln += "static "
 	end if
 
-	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+
+	ln += hEmitType( dtype, sym->subtype )
 	ln += " " + *symbGetMangledName( sym )
 	ln += hEmitArrayDecl( sym )
 

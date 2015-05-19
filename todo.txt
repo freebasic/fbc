@@ -1,6 +1,10 @@
 o Dim Byref
-  - Var Byref: check initializer
-  - ref var's real dtype = pointer, matters at least when emitting/allocating
+  - backends: all irNewVR* functions should use ptr dtype if the sym is a ref, like astNewVAR()
+    Add symbGetRealParamDtype() for vars/fields too?
+	function symbIsByref( byval sym as FBSYMBOL ptr ) as integer
+		function = symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym )
+	end function
+  - fields
   - extend temp var life-time like WITH
   - allow BYVAL initialization, like byref results/params?
   - allow assignment from constants/literals, by creating a temp var?
