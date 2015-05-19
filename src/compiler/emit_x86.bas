@@ -850,6 +850,14 @@ private sub hEndKeywordsTB
 
 end sub
 
+private function hGetGlobalVarAlign( byval sym as FBSYMBOL ptr ) as integer
+	if( (symbGetType( sym ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( sym )) ) then
+		function = 8
+	else
+		function = 4
+	end if
+end function
+
 '':::::
 private sub hEmitVarBss _
 	( _
@@ -880,12 +888,7 @@ private sub hEmitVarBss _
        	alloc = ".comm"
     end if
 
-    '' align
-	if( (symbGetType( s ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( s )) ) then
-    	hALIGN( 8 )
-	else
-    	hALIGN( 4 )
-    end if
+	hALIGN( hGetGlobalVarAlign( s ) )
 
 	'' emit
     ostr = alloc + TABCHAR
@@ -6112,11 +6115,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	'' Add debug info for public/shared globals, but not local statics
 	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
-	if( (symbGetType( sym ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( sym )) ) then
-    	hALIGN( 8 )
-	else
-    	hALIGN( 4 )
-	end if
+	hALIGN( hGetGlobalVarAlign( sym ) )
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
