@@ -1943,22 +1943,19 @@ private function hBuildAutoVarInitializer _
 		end if
 	end if
 
+	astTypeIniEnd( initree, TRUE )
+
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 					FB_SYMBATTRIB_SHARED)) <> 0 ) then
 		'' only if it's not an object, static or global instances are allowed
 		if( has_ctor = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				'' error recovery: discard the tree
-				astDelTree( expr )
-				expr = astNewCONSTz( dtype, subtype )
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-				has_dtor = FALSE
+				astDelTree( initree )
+				initree = NULL
 			end if
 		end if
 	end if
-
-	astTypeIniEnd( initree, TRUE )
 
 	function = initree
 end function
