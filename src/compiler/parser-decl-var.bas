@@ -1912,6 +1912,57 @@ sub cArrayDecl _
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
+private function hBuildAutoVarInitializer _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byval has_ctor as integer, _
+		byref has_dtor as integer, _
+		byval sym as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' build a ini-tree
+	var initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
+
+	'' not an object?
+	if( has_ctor = FALSE ) then
+		astTypeIniAddAssign( initree, expr, sym )
+	'' handle constructors..
+	else
+		dim as integer is_ctorcall = any
+		expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+
+		if( expr <> NULL ) then
+			if( is_ctorcall ) then
+				astTypeIniAddCtorCall( initree, sym, expr )
+			else
+				'' no proper ctor, try an assign
+				astTypeIniAddAssign( initree, expr, sym )
+			end if
+		end if
+	end if
+
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+					FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		'' only if it's not an object, static or global instances are allowed
+		if( has_ctor = FALSE ) then
+			if( astTypeIniIsConst( initree ) = FALSE ) then
+				'' error recovery: discard the tree
+				astDelTree( expr )
+				expr = astNewCONSTz( dtype, subtype )
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
+				has_dtor = FALSE
+			end if
+		end if
+	end if
+
+	astTypeIniEnd( initree, TRUE )
+
+	function = initree
+end function
+
 ''
 '' AutoVar =
 ''    SymbolDef '=' Initializer
@@ -2044,45 +2095,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then
-			'' build a ini-tree
-			dim as ASTNODE ptr initree = any
-
-			initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
-
-			'' not an object?
-			if( has_ctor = FALSE ) then
-				astTypeIniAddAssign( initree, expr, sym )
-			'' handle constructors..
-			else
-				dim as integer is_ctorcall = any
-				expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
-
-				if( expr <> NULL ) then
-					if( is_ctorcall ) then
-						astTypeIniAddCtorCall( initree, sym, expr )
-					else
-						'' no proper ctor, try an assign
-						astTypeIniAddAssign( initree, expr, sym )
-					end if
-				end if
-			end if
-
-			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-							FB_SYMBATTRIB_SHARED)) <> 0 ) then
-				'' only if it's not an object, static or global instances are allowed
-				if( has_ctor = FALSE ) then
-					if( astTypeIniIsConst( initree ) = FALSE ) then
-						'' error recovery: discard the tree
-						astDelTree( expr )
-						expr = astNewCONSTz( dtype, subtype )
-						dtype = FB_DATATYPE_INTEGER
-						subtype = NULL
-						has_dtor = FALSE
-					end if
-				end if
-			end if
-
-			astTypeIniEnd( initree, TRUE )
+			expr = hBuildAutoVarInitializer( dtype, subtype, has_ctor, has_dtor, sym, expr )
 
 			'' add to AST
 			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
@@ -2091,7 +2104,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			symbSetIsDeclared( sym )
 
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, expr, has_dtor ) )
 		end if
 
 		'' (',' SymbolDef)*
