@@ -5,6 +5,7 @@ Version 1.03.0
 - non-standalone builds: -target <gcctarget> no longer searches libs in lib/freebasic/<gcctarget>, but rather in the normal lib/freebasic/<fbtarget> directory. I.e. the directory layout for native or cross compiling is the same, making packaging and distribution easier.
 
 [added]
+- Dim/Var Byref for creating local references to other objects, similar to Byref parameters
 - Package name + version to all the new/updated bindings
 - Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
 - Windows API binding updated to mingw-w64 4.0.1
