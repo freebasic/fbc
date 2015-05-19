@@ -21,6 +21,10 @@ namespace simpleVars
 		CU_ASSERT( r1 = 456 ) : CU_ASSERT( @r1 = @i )
 		CU_ASSERT( r2 = 456 ) : CU_ASSERT( @r2 = @i )
 		CU_ASSERT( r3 = 456 ) : CU_ASSERT( @r3 = @i )
+
+		'' Initialized from other reference
+		dim byref ri2 as integer = ri
+		CU_ASSERT( ri2 = 456 ) : CU_ASSERT( @ri2 = @i )
 	end sub
 end namespace
 
