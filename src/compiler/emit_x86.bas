@@ -891,7 +891,7 @@ private sub hEmitVarBss _
 	'' emit
     ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
-    ostr += "," + str( symbGetLen( s ) * elements )
+	ostr += "," + str( iif( symbIsRef( s ), env.pointersize, s->lgt ) * elements )
     emitWriteStr( ostr, TRUE )
 
 	'' Add debug info for public/shared globals, but not local statics
