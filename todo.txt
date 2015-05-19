@@ -6,9 +6,14 @@ o Dim Byref
 	end function
   - check all FBSYMBOL->lgt/typ accesses, ISLONGINT, symbGet[Full]Type, symbGetLen
   - fields
+  - arrays of refs
   - extend temp var life-time like WITH
   - allow BYVAL initialization, like byref results/params?
   - allow assignment from constants/literals, by creating a temp var?
+  - test that no ctors/dtors are called for class/string refs
+  - disallow [Z/W]String * N with Dim Byref, but allow Dim Byref As Z/Wstring,
+    as for Byref parameters
+  - Var Byref can allow Z/Wstring types, without converting to String
 
 o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding

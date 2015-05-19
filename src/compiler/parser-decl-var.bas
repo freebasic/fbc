@@ -37,11 +37,17 @@ sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byval is_byref as integer _
 	)
 
+	dim as integer options = FB_SYMBTYPEOPT_DEFAULT
+	if( is_byref ) then
+		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+	end if
+
 	'' parse the symbol type (INTEGER, STRING, etc...)
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
@@ -1262,7 +1268,7 @@ function cVarDecl _
 		lexSkipToken( )
 
 		'' parse the symbol type (INTEGER, STRING, etc...)
-		hSymbolType( dtype, subtype, lgt )
+		hSymbolType( dtype, subtype, lgt, has_byref_at_start )
 
 		'' Disallow creating objects of abstract classes
 		hComplainIfAbstractClass( dtype, subtype )
@@ -1452,7 +1458,7 @@ function cVarDecl _
 				lexSkipToken( )
 
 				'' parse the symbol type (INTEGER, STRING, etc...)
-				hSymbolType( dtype, subtype, lgt )
+				hSymbolType( dtype, subtype, lgt, ((attrib and FB_SYMBATTRIB_REF) <> 0) )
 
 				'' Disallow creating objects of abstract classes
 				hComplainIfAbstractClass( dtype, subtype )
