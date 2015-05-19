@@ -40,6 +40,18 @@ namespace simpleVars
 		CU_ASSERT( pi[1] = 111 )
 		CU_ASSERT( pi[2] = 0 )
 
+		'' Reference as lhs of assignment
+		ri3 = 222
+		CU_ASSERT( ri3 = 222 )
+		CU_ASSERT( pi[0] = 0 )
+		CU_ASSERT( pi[1] = 222 )
+		CU_ASSERT( pi[2] = 0 )
+
+		ri = 100
+		CU_ASSERT( i = 100 )
+		ri += 2
+		CU_ASSERT( i = 102 )
+
 		delete pi
 	end sub
 end namespace
