@@ -4,7 +4,7 @@ o Dim Byref
 	function symbIsByref( byval sym as FBSYMBOL ptr ) as integer
 		function = symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym )
 	end function
-  - check all FBSYMBOL->lgt/typ accesses
+  - check all FBSYMBOL->lgt/typ accesses, ISLONGINT, symbGet[Full]Type, symbGetLen
   - fields
   - extend temp var life-time like WITH
   - allow BYVAL initialization, like byref results/params?

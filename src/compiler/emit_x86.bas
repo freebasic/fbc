@@ -881,7 +881,7 @@ private sub hEmitVarBss _
     end if
 
     '' align
-    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
+	if( (symbGetType( s ) = FB_DATATYPE_DOUBLE) and (not symbIsRef( s )) ) then
     	hALIGN( 8 )
 	else
     	hALIGN( 4 )
