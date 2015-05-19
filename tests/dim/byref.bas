@@ -6,6 +6,14 @@ namespace simpleVars
 	dim shared gi as integer = 123
 	dim shared byref grgi as integer = gi
 
+	function fByval( byval i as integer ) as integer
+		function = i
+	end function
+
+	sub fByref( byref i as integer )
+		i += 1
+	end sub
+
 	sub test cdecl( )
 		'' Normal syntax
 		dim i as integer = 456
@@ -51,6 +59,11 @@ namespace simpleVars
 		CU_ASSERT( i = 100 )
 		ri += 2
 		CU_ASSERT( i = 102 )
+
+		'' Passing as procedure arguments
+		CU_ASSERT( fByval( ri ) = 102 )
+		fByref( ri )
+		CU_ASSERT( i = 103 )
 
 		delete pi
 	end sub
