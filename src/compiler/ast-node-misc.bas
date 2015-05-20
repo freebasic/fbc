@@ -542,11 +542,6 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 				'' The lhs' type is adjusted, and the new rhs
 				'' is returned.
 				n->r = astSetBitfield( bitfield, n->l, n->r )
-			else
-				if( astGetDataType( n->l->l ) = FB_DATATYPE_BOOLEAN ) then
-					'' $$JRM
-					n->r = astNewCONV( astGetFullType( n->l ), NULL, n->r )
-				end if
 			end if
 		end if
 
@@ -561,10 +556,6 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 			n = l
 
 			return astUpdateBitfields( n )
-		end if
-
-		if( astGetDataType( n->l ) = FB_DATATYPE_BOOLEAN ) then
-			n->l = astNewCONV( typeGetDtAndPtrOnly( astGetFullType( n->l ) ), NULL, n->l )
 		end if
 
 	end select
