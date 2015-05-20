@@ -2489,4 +2489,4 @@ extern symb as SYMBCTX
 
 extern symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE
 
-extern symb_dtypeMatchTB( FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE, FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE ) as integer
+extern symb_dtypeMatchTB(FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE, FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE) as integer
