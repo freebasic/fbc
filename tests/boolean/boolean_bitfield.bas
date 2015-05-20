@@ -4,14 +4,13 @@
 #define TRUE -1
 
 namespace fbc_tests.boolean_.bitfield
-
 	type T1
-		union	
+		union
 			type
-				as boolean byte b0:1
-				as boolean byte b1:1
-				as boolean byte b2:1
-				as boolean byte b3:1
+				as boolean b0:1
+				as boolean b1:1
+				as boolean b2:1
+				as boolean b3:1
 			end type
 			type
 				as byte xb0:1
@@ -22,9 +21,7 @@ namespace fbc_tests.boolean_.bitfield
 		end union
 	end type
 
-	''
 	sub test1 cdecl ( )
-
 		dim as T1 a
 
 		a.xb1 = 1
@@ -38,15 +35,10 @@ namespace fbc_tests.boolean_.bitfield
 		CU_ASSERT_EQUAL( a.b1, -1 )
 		CU_ASSERT_EQUAL( a.b2, 0 )
 		CU_ASSERT_EQUAL( a.b3, 0 )
-
 	end sub
-	
+
 	private sub ctor () constructor
-	
 		fbcu.add_suite("fbc_tests.boolean_.bitfield")
 		fbcu.add_test("test1", @test1)
-		
 	end sub
-	
 end namespace
-			
