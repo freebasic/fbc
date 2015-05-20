@@ -337,7 +337,7 @@ function astNewFIELD _
 
 	assert( symbIsField( sym ) )
 	if( symbFieldIsBitfield( sym ) ) then
-		if( symbGetType( subtype ) = FB_DATATYPE_BOOLEAN ) then
+		if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BOOLEAN ) then
 			'' final type is always a signed int
 			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
 		else
