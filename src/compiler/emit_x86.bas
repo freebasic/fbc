@@ -6236,19 +6236,17 @@ private sub _emitLOADI2B _
 
 end sub
 
-'':::::
-private sub _emitLOADB2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
+private sub hMovB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	dim as string dst, src
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+	hMOV( dst, src )
+end sub
 
+private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
+	hMovB2B( dvreg, svreg )
 	JRM_DEBUG()
-
 end sub
 
 '':::::
@@ -6281,19 +6279,10 @@ private sub _emitSTORI2B _
 
 end sub
 
-'':::::
-private sub _emitSTORB2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
+	hMovB2B( dvreg, svreg )
 	JRM_DEBUG()
-
 end sub
 
 '':::::
