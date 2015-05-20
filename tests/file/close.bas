@@ -17,10 +17,8 @@ enum FB_RTERROR
 	ILLEGALFUNCTIONCALL = 1
 end enum
 
-enum BOOLEAN
-	FALSE = 0
-	TRUE = not FALSE
-end enum
+const FALSE = 0
+const TRUE = -1
 
 private function openfile(byval fn as integer) as integer
 
