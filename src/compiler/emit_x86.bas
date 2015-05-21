@@ -532,10 +532,24 @@ sub hPrepOperand _
 		end if
 
 	case IR_VREGTYPE_IMM
+		dim i as longint
 		if( isaux = FALSE ) then
-			operand = str( vreg->value.i )
+			i = vreg->value.i
 		else
-			operand = str( vreg->vaux->value.i )
+			i = vreg->vaux->value.i
+		end if
+
+		if( dtype = FB_DATATYPE_BOOLEAN ) then
+			'' Currently the compiler stores boolean constant values as 0/-1 internally,
+			'' in the FBVALUE.i field which is a longint (i.e. an int, not a bool),
+			'' so we have to convert to 0/1 manually here.
+			if( i ) then
+				operand = "1"
+			else
+				operand = "0"
+			end if
+		else
+			operand = str( i )
 		end if
 
 	case else
@@ -6162,11 +6176,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.i ) then
-			hMOV( dst, "1" )
-		else
-			hMOV( dst, "0" )
-		end if
+		hMOV( dst, src )
 
 	'' 1-byte boolean? (then we can "setne" directly into it)
 	elseif( ddsize = 1 ) then
@@ -6221,22 +6231,10 @@ end sub
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	dim as string dst
+	dim as string dst, src
 	hPrepOperand( dvreg, dst )
-
-	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.i ) then
-			hMOV( dst, "1" )
-		else
-			hMOV( dst, "0" )
-		end if
-	else
-		dim as string src
-		hPrepOperand( svreg, src )
-		hMOV( dst, src )
-	end if
-
+	hPrepOperand( svreg, src )
+	hMOV( dst, src )
 	JRM_DEBUG()
 end sub
 
