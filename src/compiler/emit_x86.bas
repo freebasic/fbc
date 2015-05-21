@@ -6109,12 +6109,15 @@ end sub
 	outp "# " + __FUNCTION__
 #endmacro
 
-'':::::
-private sub hMovBool _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
+''
+'' Load/store b2i or i2b
+''
+'' Basic rules: booleans store 0/1 to be g++-compatible, but we produce 0/-1
+'' when converting to integers to be FB-compatible.
+''
+
+private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
 
 	dim as string src, dst
 	dim as integer ddsize, sdsize
@@ -6122,53 +6125,57 @@ private sub hMovBool _
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
-	ddsize = typeGetSize( dvreg->dtype )
-	sdsize = typeGetSize( dvreg->dtype )
+	if( svreg->typ = IR_VREGTYPE_IMM ) then
+		if( svreg->value.i <> 0 ) then
+			hMOV( dst, "-1" )
+		else
+			hMOV( dst, "0" )
+		end if
+	else
+		hMOV( dst, src )     '' copy the 0|1
+		outp( "neg " + dst ) '' convert 0|1 to 0|-1
+	end if
+
+	JRM_DEBUG()
+end sub
+
+private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+
+	dim as string src, dst
+	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst )
+
+	var ddsize = typeGetSize( dvreg->dtype )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+	assert( (ddsize = 1) or (ddsize = 4) )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-
 		if( svreg->value.i <> 0 ) then
-			hMOV dst, "-1"
+			hMOV( dst, "1" )
 		else
-			hMOV dst, "0"
+			hMOV( dst, "0" )
 		end if
 
-	'' dst is one-byte?
+	'' 1-byte boolean? (then we can "setne" directly into it)
 	elseif( ddsize = 1 ) then
+		'' int8 to boolean
+		'' if src is non-zero, produce 0|1 and store it into dst
+		outp( "cmp " + src + ", 0" )
+		outp( "setne " + dst )
 
-		'' is src zero ?
-		outp "cmp " + src + COMMA + "0"
+	'' 4-byte booleans: dst is register with 8-bit accessor? (then we can "setne" directly into it)
+	elseif( irIsREG( dvreg ) and (dvreg->reg <> EMIT_REG_ESI) and (dvreg->reg <> EMIT_REG_EDI) ) then
+		'' int to boolean reg
+		var dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+		outp( "cmp " + src + ", 0" )
+		outp( "setne " + dst8 )
+		outp( "movzx " + dst + ", " + dst8 )
 
-		'' set byte to one (1) if src not equal to zero
-		outp "setne " + dst
-
-		'' convert 0|1 to 0|-1
-		outp "neg " + dst
-
-	'' dst is register with 8-bit accessor?
-	elseif( (dvreg->typ = IR_VREGTYPE_REG) _
-		and (dvreg->reg <> EMIT_REG_ESI) _
-		and (dvreg->reg <> EMIT_REG_EDI) ) then
-
-		dim as string dst8
-
-		dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
-
-		'' is src zero ?
-		outp "cmp " + src + COMMA + "0"
-
-		'' set byte to one (1) if src not equal to zero
-		outp "setne " + dst8
-
-		'' convert 0|1 to 0|-1
-		outp "neg " + dst8
-
-		outp "movsx " + dst + COMMA + dst8
-
-	'' do it the hard way .. with an extra reg
+	'' 4-byte booleans: do it the hard way .. with an extra reg
 	else
-
 		dim as string aux, aux8
 		dim as integer reg, isfree
 
@@ -6188,229 +6195,118 @@ private sub hMovBool _
 		'' set byte to one (1) if src not equal to zero
 		outp "setne " + aux8
 
-		'' convert 0|1 to 0|-1
-		outp "neg " + aux8
-
-		if( dvreg->typ = IR_VREGTYPE_REG ) then
-			outp "movsx " + dst + COMMA + aux8
+		if( irIsREG( dvreg ) ) then
+			outp "movzx " + dst + COMMA + aux8
 		else
-			outp "movsx " + aux + COMMA + aux8
+			outp "movzx " + aux + COMMA + aux8
 			outp "mov " + dst + COMMA + aux
 		end if
 
 		if( isfree = FALSE ) then
 			hPOP aux
 		end if
-
 	end if
 
-end sub
-
-':::::
-private sub _emitLOADB2I _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
 	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
-	JRM_DEBUG()
-
-end sub
-
-'':::::
-private sub _emitLOADI2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
-	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
-	JRM_DEBUG()
-
-end sub
-
-private sub hMovB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	dim as string dst, src
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-	hMOV( dst, src )
 end sub
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-	hMovB2B( dvreg, svreg )
+	dim as string dst, src
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+	hMOV( dst, src )
 	JRM_DEBUG()
 end sub
 
-'':::::
-private sub _emitSTORB2I _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
+	_emitLOADB2I(dvreg, svreg)
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitSTORI2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	hMovBool(dvreg, svreg)
-
+	_emitLOADI2B( dvreg, svreg )
 	JRM_DEBUG()
-
 end sub
 
 private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-	hMovB2B( dvreg, svreg )
+	_emitLOADB2B( dvreg, svreg )
 	JRM_DEBUG()
 end sub
 
-'':::::
-private sub _emitLOADF2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitLOADF2I(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitLOADB2F _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitLOADI2F(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitLOADB2L _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitLOADI2L(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitLOADL2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitLOADL2I(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitSTORF2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitSTORF2I(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitSTORB2F _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitSTORI2F(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitSTORB2L _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitSTORI2L(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 
-'':::::
-private sub _emitSTORL2B _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
+private sub _emitSTORL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	'' !!!WRITEME!!! (BOOL)
 	_emitSTORL2I(dvreg, svreg)
 
 	JRM_DEBUG()
-
 end sub
 ''$$JRM
 
