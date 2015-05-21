@@ -6125,6 +6125,8 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
 		if( svreg->value.i <> 0 ) then
 			hMOV( dst, "-1" )
@@ -6132,8 +6134,15 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 			hMOV( dst, "0" )
 		end if
 	else
-		hMOV( dst, src )     '' copy the 0|1
-		outp( "neg " + dst ) '' convert 0|1 to 0|-1
+		'' copy the 0|1
+		if( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) ) then
+			outp( "movzx " + dst + ", " + src )
+		else
+			hMOV( dst, src )
+		end if
+
+		'' convert 0|1 to 0|-1
+		outp( "neg " + dst )
 	end if
 
 	JRM_DEBUG()
