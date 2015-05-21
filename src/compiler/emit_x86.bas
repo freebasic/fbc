@@ -6128,7 +6128,7 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
 
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.i <> 0 ) then
+		if( svreg->value.i ) then
 			hMOV( dst, "-1" )
 		else
 			hMOV( dst, "0" )
@@ -6162,7 +6162,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		if( svreg->value.i <> 0 ) then
+		if( svreg->value.i ) then
 			hMOV( dst, "1" )
 		else
 			hMOV( dst, "0" )
@@ -6221,10 +6221,22 @@ end sub
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-	dim as string dst, src
+
+	dim as string dst
 	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-	hMOV( dst, src )
+
+	if( svreg->typ = IR_VREGTYPE_IMM ) then
+		if( svreg->value.i ) then
+			hMOV( dst, "1" )
+		else
+			hMOV( dst, "0" )
+		end if
+	else
+		dim as string src
+		hPrepOperand( svreg, src )
+		hMOV( dst, src )
+	end if
+
 	JRM_DEBUG()
 end sub
 

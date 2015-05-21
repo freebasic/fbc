@@ -32,6 +32,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			'' Nothing to do, since float constants are stored as DOUBLE
 		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( l->val.f )
+			assert( (l->val.i = 0) or (l->val.i = -1) )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.f )
 		case FB_SIZETYPE_UINT8
@@ -57,6 +58,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = cdbl( l->val.i )
 		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( l->val.i )
+			assert( (l->val.i = 0) or (l->val.i = -1) )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.i )
 		case FB_SIZETYPE_UINT8
@@ -82,6 +84,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = cdbl( cunsg( l->val.i ) )
 		case FB_SIZETYPE_BOOLEAN
 			l->val.i = cbool( cunsg( l->val.i ) )
+			assert( (l->val.i = 0) or (l->val.i = -1) )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( cunsg( l->val.i ) )
 		case FB_SIZETYPE_UINT8
