@@ -1933,21 +1933,12 @@ sub cArrayDecl _
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
-private function hCheckAndBuildAutoVarInitializer _
-	( _
-		byref dtype as integer, _
-		byref subtype as FBSYMBOL ptr, _
-		byval has_ctor as integer, _
-		byref has_dtor as integer, _
-		byval sym as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hCheckAndBuildAutoVarInitializer( byval sym as FBSYMBOL ptr, byval expr as ASTNODE ptr ) as ASTNODE ptr
 	'' build a ini-tree
-	var initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
+	var initree = astTypeIniBegin( sym->typ, sym->subtype, symbIsLocal( sym ) )
 
 	'' not an object?
-	if( has_ctor = FALSE ) then
+	if( symbHasCtor( sym ) = FALSE ) then
 		astTypeIniAddAssign( initree, expr, sym )
 	'' handle constructors..
 	else
@@ -1969,7 +1960,7 @@ private function hCheckAndBuildAutoVarInitializer _
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
 					FB_SYMBATTRIB_SHARED)) <> 0 ) then
 		'' only if it's not an object, static or global instances are allowed
-		if( has_ctor = FALSE ) then
+		if( symbHasCtor( sym ) = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				'' error recovery: discard the tree
 				astDelTree( initree )
@@ -2095,11 +2086,6 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-		dim as integer has_ctor = any, has_dtor = any
-
-		has_ctor = typeHasCtor( dtype, subtype )
-		has_dtor = typeHasDtor( dtype, subtype )
-
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
 		case FB_DATATYPE_WCHAR
@@ -2130,7 +2116,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			if( symbIsRef( sym ) ) then
 				expr = hCheckAndBuildByrefInitializer( sym, expr )
 			else
-				expr = hCheckAndBuildAutoVarInitializer( dtype, subtype, has_ctor, has_dtor, sym, expr )
+				expr = hCheckAndBuildAutoVarInitializer( sym, expr )
 			end if
 
 			'' add to AST
@@ -2140,7 +2126,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 			symbSetIsDeclared( sym )
 
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, var_decl, expr, has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, expr, symbHasDtor( sym ) ) )
 		end if
 
 		'' (',' SymbolDef)*
