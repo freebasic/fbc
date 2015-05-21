@@ -6133,9 +6133,7 @@ end sub
 private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	dim as string src, dst
-
-	hPrepOperand( svreg, src )
+	dim as string dst
 	hPrepOperand( dvreg, dst )
 
 	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
@@ -6147,6 +6145,9 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 			hMOV( dst, "0" )
 		end if
 	else
+		dim as string src
+		hPrepOperand( svreg, src )
+
 		'' copy the 0|1
 		if( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) ) then
 			outp( "movzx " + dst + ", " + src )
@@ -6239,7 +6240,7 @@ end sub
 
 private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-	_emitLOADB2I(dvreg, svreg)
+	_emitLOADB2I( dvreg, svreg )
 	JRM_DEBUG()
 end sub
 
