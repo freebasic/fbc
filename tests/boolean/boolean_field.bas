@@ -53,15 +53,18 @@ namespace fbc_tests.boolean_.field_
 
 		a.a.b = 1
 		CU_ASSERT_EQUAL( a.a.b, TRUE )
-		CU_ASSERT_EQUAL( a.b.b, TRUE )
+		CU_ASSERT_EQUAL( a.b.b, 1 )
 
 		a.a.b = 256
 		CU_ASSERT_EQUAL( a.a.b, TRUE )
-		CU_ASSERT_EQUAL( a.b.b, TRUE )
+		CU_ASSERT_EQUAL( a.b.b, 1 )
 	end sub
 
 	sub test4 cdecl ( )
 		dim as U a
+
+		'' Storing into the byte, instead of the boolean -- should only
+		'' write values that are valid for the boolean type.
 
 		a.b.b = 0
 		CU_ASSERT_EQUAL( a.a.b, 0 )
@@ -70,10 +73,6 @@ namespace fbc_tests.boolean_.field_
 		a.b.b = 1
 		CU_ASSERT_EQUAL( a.a.b, TRUE )
 		CU_ASSERT_EQUAL( a.b.b, 1 )
-
-		a.b.b = 2
-		CU_ASSERT_EQUAL( a.a.b, TRUE )
-		CU_ASSERT_EQUAL( a.b.b, 2 )
 	end sub
 
 	private sub ctor () constructor

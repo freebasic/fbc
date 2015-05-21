@@ -74,29 +74,28 @@ namespace fbc_tests.boolean_.args
 	''
 	sub pass_by_pointer cdecl ( )
 
-		dim i as byte
-		dim as boolean ptr b = @i
+		dim b as boolean
+		dim pb as boolean ptr = @b
 
-		i =  0: foo3(  b, 0 )
-		CU_ASSERT_EQUAL( *b, FALSE )
-		CU_ASSERT_EQUAL( i, 0 )
+		b =  0: foo3( pb, 0 )
+		CU_ASSERT_EQUAL( *pb, FALSE )
+		CU_ASSERT_EQUAL( b, FALSE )
 
-		i =  1: foo3(  b, 1 )
-		CU_ASSERT_EQUAL( *b, TRUE )
-		CU_ASSERT_EQUAL( i, 1 )
+		b =  1: foo3( pb, 1 )
+		CU_ASSERT_EQUAL( *pb, TRUE )
+		CU_ASSERT_EQUAL( b, TRUE )
 
-		i =  2: foo3(  b, 2 )
-		CU_ASSERT_EQUAL( *b, TRUE )
-		CU_ASSERT_EQUAL( i, 2 )
+		b =  2: foo3( pb, 2 )
+		CU_ASSERT_EQUAL( *pb, TRUE )
+		CU_ASSERT_EQUAL( b, TRUE )
 
-		i = -1: foo3(  b, -1 )
-		CU_ASSERT_EQUAL( *b, TRUE )
-		CU_ASSERT_EQUAL( i, -1 )
+		b = -1: foo3( pb, -1 )
+		CU_ASSERT_EQUAL( *pb, TRUE )
+		CU_ASSERT_EQUAL( b, TRUE )
 
-		'' Expected to fail, i is only a byte
-		'' i = 256: foo3(  b, 256 )
-		'' CU_ASSERT_EQUAL( *b, TRUE )
-		'' CU_ASSERT_EQUAL( i, 256 )
+		b = 256: foo3( pb, 256 )
+		CU_ASSERT_EQUAL( *pb, TRUE )
+		CU_ASSERT_EQUAL( b, TRUE )
 
 	end sub
 
