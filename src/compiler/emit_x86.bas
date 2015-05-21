@@ -6134,7 +6134,6 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	dim as string src, dst
-	dim as integer ddsize, sdsize
 
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
