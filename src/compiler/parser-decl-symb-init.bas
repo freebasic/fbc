@@ -502,7 +502,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 			end if
 		end if
 
-		lgt += symbGetLen( fld ) * symbGetArrayElements( fld )
+		lgt += symbGetRealSize( fld )
 
 		'' next
 		fld = symbUdtGetNextInitableField( fld )

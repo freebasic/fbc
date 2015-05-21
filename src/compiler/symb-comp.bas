@@ -420,8 +420,7 @@ private function hCopyUnionFields _
 	base_ofs = symbGetOfs( base_fld )
 
 	do
-		lgt = (symbGetLen( fld ) * symbGetArrayElements( fld )) + _
-			  (symbGetOfs( fld ) - base_ofs)
+		lgt = symbGetRealSize( fld ) + (symbGetOfs( fld ) - base_ofs)
 		if( lgt > bytes ) then
 			bytes = lgt
 		end if

@@ -983,7 +983,7 @@ private function hCallFieldCtor _
 	else
 		function = astNewMEM( AST_OP_MEMCLEAR, _
 		                      astBuildVarField( this_, fld ), _
-		                      astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
+		                      astNewCONSTi( symbGetRealSize( fld ) ) )
 	end if
 end function
 
@@ -1003,8 +1003,7 @@ private function hClearUnionFields _
 	base_ofs = symbGetOfs( base_fld )
 
 	do
-		lgt = (symbGetLen( fld ) * symbGetArrayElements( fld )) + _
-			  (symbGetOfs( fld ) - base_ofs)
+		lgt = symbGetRealSize( fld ) + (symbGetOfs( fld ) - base_ofs)
 		if( lgt > bytes ) then
 			bytes = lgt
 		end if

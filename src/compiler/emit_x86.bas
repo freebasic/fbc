@@ -873,15 +873,12 @@ private sub hEmitVarBss _
 	) static
 
     dim as string alloc, ostr
-    dim as integer attrib, elements
+	dim as integer attrib
 
 	assert( symbIsExtern( s ) = FALSE )
 	assert( symbIsDynamic( s ) = FALSE )
 
 	attrib = symbGetAttrib( s )
-
-	elements = symbGetArrayElements( s )
-	assert( elements >= 1 )
 
     hEmitBssHeader( )
 
@@ -901,7 +898,7 @@ private sub hEmitVarBss _
 	'' emit
     ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
-	ostr += "," + str( iif( symbIsRef( s ), env.pointersize, s->lgt ) * elements )
+	ostr += "," + str( symbGetRealSize( s ) )
     emitWriteStr( ostr, TRUE )
 
 	'' Add debug info for public/shared globals, but not local statics
@@ -6582,12 +6579,7 @@ private sub _procAllocLocal _
 		exit sub
 	end if
 
-	if( symbIsRef( sym ) ) then
-		lgt = env.pointersize
-	else
-		lgt = symbGetLen( sym )
-	end if
-	lgt *= symbGetArrayElements( sym )
+	lgt = symbGetRealSize( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 

@@ -805,10 +805,7 @@ function astBuildArrayDescIniTree _
 
     '' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( _
-			iif( symbIsDynamic( array ), _
-				0ll, _
-				symbGetLen( array ) * symbGetArrayElements( array ) ) ), _
+		astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
 		elm )
 
     elm = symbGetNext( elm )
