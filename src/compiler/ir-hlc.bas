@@ -2748,9 +2748,14 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	expr = exprNewVREG( v2 )
 
+	'' Bool to float/int?
+	if( (v2->dtype = FB_DATATYPE_BOOLEAN) and (v1->dtype <> FB_DATATYPE_BOOLEAN) ) then
+		'' Convert 0/1 to 0/-1
+		expr = exprNewUOP( AST_OP_NEG, expr )
+
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour
-	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
-	    (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
+	elseif( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
+	        (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
 
 		'' ((type)fb_F2I( l ))
 		''
