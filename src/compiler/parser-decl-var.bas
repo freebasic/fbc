@@ -2100,13 +2100,14 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 			dtype = FB_DATATYPE_STRING
 
-		'' if it's a function pointer and not a fun ptr prototype, create one
-		case typeAddrOf( FB_DATATYPE_FUNCTION )
-			if( symbGetIsFuncPtr( subtype ) = FALSE ) then
-				subtype = symbAddProcPtrFromFunction( subtype )
-			end if
-
 		end select
+
+		'' For function pointers, the expression's subtype should be one of the special PROCs created by
+		'' symbAddProcPtr(), not a normal procedure symbol (e.g. in a case like "VAR foo = @myproc"), to
+		'' ensure the new function pointer var uses the same procptr subtype symbol as any other compatible
+		'' procptrs in the scope, allowing them to be seen as compatible. astNewVAR() should have done the
+		'' symbAddProcPtrFromFunction() if it was needed already.
+		assert( iif( typeGetDtOnly( dtype ) = FB_DATATYPE_FUNCTION, symbGetIsFuncPtr( subtype ), TRUE ) )
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hAddVar( sym, parent, id, NULL, dtype, subtype, _
