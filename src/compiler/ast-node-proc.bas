@@ -1008,11 +1008,9 @@ private function hClearUnionFields _
 			bytes = lgt
 		end if
 
+		'' Visit following union fields (but not any methods/static member vars/etc.)
 		fld = fld->next
-		if( fld = NULL ) then
-			exit do
-		end if
-	loop while( symbGetIsUnionField( fld ) )
+	loop while( fld andalso symbIsField( fld ) andalso symbGetIsUnionField( fld ) )
 
 	*pfinalfield = fld
 
