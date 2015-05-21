@@ -2082,25 +2082,30 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		end if
 
 		'' Determine var's dtype based on the initializer expression
-		dim as integer dtype = astGetFullType( expr )
-		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
+		var dtype = expr->dtype
+		var subtype = expr->subtype
 
-		'' check for special types
-		select case as const typeGetDtAndPtrOnly( dtype )
-		'' wstrings not allowed...
-		case FB_DATATYPE_WCHAR
-			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			'' error recovery: create a fake expression
-			astDelTree( expr )
-			expr = astNewCONSTi( 0 )
-			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
+		if( is_byref = FALSE ) then
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_WCHAR
+				'' wstrings: can't make a "wstring variable" to hold this expression,
+				'' because 1) we don't have dynamic wstrings yet, and 2) we can't use
+				'' a fixed-length wstring because we don't know the length (it may not
+				'' even be constant).
+				'' TODO: could allow VAR initialized with a wstring literal, then the length is known
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				'' error recovery: create a fake expression
+				astDelTree( expr )
+				expr = astNewCONSTi( 0 )
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
 
-		'' zstring... convert to string
-		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
-			dtype = FB_DATATYPE_STRING
+			case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
+				'' zstring: create a dynamic string variable to hold the zstring data
+				dtype = FB_DATATYPE_STRING
 
-		end select
+			end select
+		end if
 
 		'' For function pointers, the expression's subtype should be one of the special PROCs created by
 		'' symbAddProcPtr(), not a normal procedure symbol (e.g. in a case like "VAR foo = @myproc"), to

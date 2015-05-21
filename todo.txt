@@ -12,9 +12,7 @@ o Dim Byref
   - allow BYVAL initialization, like byref results/params?
   - allow assignment from constants/literals, by creating a temp var?
   - test that no ctors/dtors are called for class/string refs
-  - disallow [Z/W]String * N with Dim Byref, but allow Dim Byref As Z/Wstring,
-    as for Byref parameters
-  - Var Byref can allow Z/Wstring types, without converting to String
+  - disallow [Z/W]String * N with Dim Byref (same problem as with byref params, see bug #650)
 
 o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding

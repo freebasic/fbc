@@ -137,7 +137,7 @@ namespace allDtypes
 	dim shared ui as uinteger = 10
 	dim shared s as string '' = "11"
 	dim shared z as zstring * 10 = "12"
-	dim shared w as wstring * 10 = "13"
+	dim shared w as wstring * 10 = wstr( "13" )
 	dim shared xpod as PodUdt = (14)
 	dim shared xclass as ClassUdt
 	dim shared pany as any ptr = cptr(any ptr, 16)
@@ -174,7 +174,7 @@ namespace allDtypes
 		CU_ASSERT( rui  = 10 )
 		CU_ASSERT( rs   = "11" )
 		CU_ASSERT( rz   = "12" )
-		CU_ASSERT( rw   = "13" )
+		CU_ASSERT( rw   = wstr( "13" ) )
 		CU_ASSERT( rxpod.i = 14 )
 		CU_ASSERT( rxclass.i = 15 )
 		CU_ASSERT( rpany = cptr( any ptr, 16 ) )
@@ -260,7 +260,7 @@ namespace allDtypes
 			rui  = 10
 			rs   = "11"
 			rz   = "12"
-			rw   = "13"
+			rw   = wstr( "13" )
 			rxpod.i = 14
 			rxclass.i = 15
 			rpany = cptr( any ptr, 16 )
@@ -277,7 +277,7 @@ namespace allDtypes
 			CU_ASSERT( rui  = 10 )
 			CU_ASSERT( rs   = "11" )
 			CU_ASSERT( rz   = "12" )
-			CU_ASSERT( rw   = "13" )
+			CU_ASSERT( rw   = wstr( "13" ) )
 			CU_ASSERT( rxpod.i = 14 )
 			CU_ASSERT( rxclass.i = 15 )
 			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
@@ -313,7 +313,7 @@ namespace allDtypes
 			CU_ASSERT( rui  = 10 )
 			CU_ASSERT( rs   = "11" )
 			CU_ASSERT( rz   = "12" )
-			CU_ASSERT( rw   = "13" )
+			CU_ASSERT( rw   = wstr( "13" ) )
 			CU_ASSERT( rxpod.i = 14 )
 			CU_ASSERT( rxclass.i = 15 )
 			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
@@ -351,6 +351,93 @@ namespace allDtypes
 			CU_ASSERT( rxpod.i = 114 )
 			CU_ASSERT( rxclass.i = 115 )
 			CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+		end scope
+
+		scope
+			var byref rb = b
+			var byref rub = ub
+			var byref rsh = sh
+			var byref rush = ush
+			var byref rl = l
+			var byref rul = ul
+			var byref rll = ll
+			var byref rull = ull
+			var byref ri = i
+			var byref rui = ui
+			var byref rs = s
+			var byref rz = z
+			var byref rw = w
+			var byref rxpod = xpod
+			var byref rxclass = xclass
+			var byref rpany = pany
+
+			#assert( typeof( rb   ) = typeof( byte     ) )
+			#assert( typeof( rub  ) = typeof( ubyte    ) )
+			#assert( typeof( rsh  ) = typeof( short    ) )
+			#assert( typeof( rush ) = typeof( ushort   ) )
+			#assert( typeof( rl   ) = typeof( long     ) )
+			#assert( typeof( rul  ) = typeof( ulong    ) )
+			#assert( typeof( rll  ) = typeof( longint  ) )
+			#assert( typeof( rull ) = typeof( ulongint ) )
+			#assert( typeof( ri   ) = typeof( integer  ) )
+			#assert( typeof( rui  ) = typeof( uinteger ) )
+			#assert( typeof( rs   ) = typeof( string   ) )
+			#assert( typeof( rz   ) = typeof( zstring  ) )
+			#assert( typeof( rw   ) = typeof( wstring  ) )
+			#assert( typeof( rxpod   ) = typeof( PodUdt   ) )
+			#assert( typeof( rxclass ) = typeof( ClassUdt ) )
+			#assert( typeof( rpany   ) = typeof( any ptr  ) )
+
+			CU_ASSERT( rb   = 101 )
+			CU_ASSERT( rub  = 102 )
+			CU_ASSERT( rsh  = 103 )
+			CU_ASSERT( rush = 104 )
+			CU_ASSERT( rl   = 105 )
+			CU_ASSERT( rul  = 106 )
+			CU_ASSERT( rll  = 107 )
+			CU_ASSERT( rull = 108 )
+			CU_ASSERT( ri   = 109 )
+			CU_ASSERT( rui  = 110 )
+			CU_ASSERT( rs   = "111" )
+			CU_ASSERT( rz   = "112" )
+			CU_ASSERT( rw   = "113" )
+			CU_ASSERT( rxpod.i = 114 )
+			CU_ASSERT( rxclass.i = 115 )
+			CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+
+			rb   = 1
+			rub  = 2
+			rsh  = 3
+			rush = 4
+			rl   = 5
+			rul  = 6
+			rll  = 7
+			rull = 8
+			ri   = 9
+			rui  = 10
+			rs   = "11"
+			rz   = "12"
+			rw   = wstr( "13" )
+			rxpod.i = 14
+			rxclass.i = 15
+			rpany = cptr( any ptr, 16 )
+
+			CU_ASSERT( rb   = 1 )
+			CU_ASSERT( rub  = 2 )
+			CU_ASSERT( rsh  = 3 )
+			CU_ASSERT( rush = 4 )
+			CU_ASSERT( rl   = 5 )
+			CU_ASSERT( rul  = 6 )
+			CU_ASSERT( rll  = 7 )
+			CU_ASSERT( rull = 8 )
+			CU_ASSERT( ri   = 9 )
+			CU_ASSERT( rui  = 10 )
+			CU_ASSERT( rs   = "11" )
+			CU_ASSERT( rz   = "12" )
+			CU_ASSERT( rw   = wstr( "13" ) )
+			CU_ASSERT( rxpod.i = 14 )
+			CU_ASSERT( rxclass.i = 15 )
+			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
 		end scope
 	end sub
 end namespace
