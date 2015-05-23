@@ -22,6 +22,10 @@
 #include once "_bsd_types.bi"
 #include once "inaddr.bi"
 
+'' The following symbols have been renamed:
+''     procedure select => select_
+''     procedure socket => socket_
+
 extern "Windows"
 
 #define _WINSOCKAPI_
@@ -406,7 +410,7 @@ declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval l
 declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
-declare function socket(byval af as long, byval type as long, byval protocol as long) as SOCKET
+declare function socket_ alias "socket"(byval af as long, byval type as long, byval protocol as long) as SOCKET
 declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
 declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
 declare function gethostname(byval name as zstring ptr, byval namelen as long) as long

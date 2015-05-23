@@ -37,6 +37,7 @@ Version 1.03.0
 - 1.01.0 regression: GLib binding: G_N_ELEMENTS() macro was broken
 - Windows API binding: added #inclib "msimg32" to wingdi.bi, for using functions like GradientFill()
 - C backend: Bitfields in nested anonymous Types/Unions should no longer cause __fb_struct_size errors - fbc now uses the same work-around for them as for Types with bitfields at the toplevel, i.e. such Types are emitted as byte arrays, because fbc's/gcc's bitfield layout rules differ.
+- 1.02.0 regression: Windows API binding: The select() function from winsock headers is now renamed to select_() again, as before
 
 
 Version 1.02.1
