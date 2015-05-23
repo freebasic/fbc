@@ -1254,11 +1254,13 @@ declare function ntohs(byval netshort as u_short) as u_short
 declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long) as long
 declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long, byval from as SOCKADDR ptr, byval fromlen as long ptr) as long
 declare function select_ alias "select"(byval nfds as long, byval readfds as FD_SET ptr, byval writefds as FD_SET ptr, byval exceptfds as FD_SET ptr, byval timeout as const PTIMEVAL) as long
+#define selectsocket select_
 declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long) as long
 declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
 declare function socket_ alias "socket"(byval af as long, byval type as long, byval protocol as long) as SOCKET
+#define opensocket socket_
 declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
 declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
 declare function gethostname(byval name as zstring ptr, byval namelen as long) as long
