@@ -76,6 +76,13 @@
 ''    * For non-x86, there's no need to emit cdecl/stdcall/... at all because
 ''      they don't exist (on x86_64 or ARM etc.) and gcc ignores the attributes.
 ''
+'' - "boolean" is implemented as int8, instead of C99's _Bool type (even though
+''   FB's boolean is supposed to be compatible with C's _Bool), because that way
+''   we can avoid undefined behaviour if values other than 0/1 are stored in the
+''   boolean, and get the same behaviour as with the ASM backend. Of course that
+''   also means we have to add code for converting int/float to 0/1 when casting
+''   them to boolean.
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -221,7 +228,7 @@ dim shared as IRHLCCTX ctx
 dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
 	@"void"     , _ '' void
-	@"_Bool"    , _ '' boolean
+	@"int8"     , _ '' boolean
 	@"int8"     , _ '' byte
 	@"uint8"    , _ '' ubyte
 	NULL        , _ '' char
@@ -2751,6 +2758,13 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	'' Bool to float/int?
 	if( (v2->dtype = FB_DATATYPE_BOOLEAN) and (v1->dtype <> FB_DATATYPE_BOOLEAN) ) then
 		'' Convert 0/1 to 0/-1
+		'' -expr
+		expr = exprNewUOP( AST_OP_NEG, expr )
+
+	'' Float/int to bool?
+	elseif( (v2->dtype <> FB_DATATYPE_BOOLEAN) and (v1->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' -(expr != 0)
+		expr = exprNewBOP( AST_OP_NE, expr, exprNewIMMi( 0 ) )
 		expr = exprNewUOP( AST_OP_NEG, expr )
 
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour
