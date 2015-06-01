@@ -11,17 +11,89 @@ Stops execution of current thread until some condition becomes true
 	##//handle//##
 		The handle of a conditional variable, or the null pointer (0) on failure.
 	##//mutex//##
-		The mutex associated with this conditional variable, which must be locked when testing the condition and calling ##**Condwait**##
+		The mutex associated with this conditional variable, which must be locked when testing the condition and calling ##**Condwait**##.
 
 {{fbdoc item="desc"}}
 	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal Condsignal]]##s or ##[[KeyPgCondBroadcast Condbroadcast]]##s  the handle.
 
-	Once the conditional variable is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##**Condwait**## for the conditional; they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional variable is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##**Condwait**## for the conditional; they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
 
-	When calling ##**Condwait**##, ##//mutex//## should already be locked.  An atomic unlock of the mutex and wait on the conditional variable will occur.  When the condition variable becomes signaled, ##//mutex//## will be locked again and then execution will return to the thread after the ##**Condwait**## call.
+	When calling ##**Condwait**##, ##//mutex//## should already be locked (using the same ##//mutex//## as one used with ##[[KeyPgCondSignal Condsignal]]## or ##[[KeyPgCondBroadcast Condbroadcast]]##). An atomic unlock of the ##//mutex//## and wait on the conditional variable will occur. The calling thread execution is suspended and does not consume any CPU time until the condition variable is signaled. When the condition variable becomes signaled, ##//mutex//## will be locked again and then execution will return to the thread after the ##**Condwait**## call. The caller is then responsible for unlocking ##//mutex//## when the thread is finished with it.
+
+	**Note:** It is a good habit to use ##**Condwait**## in a protected way against eventual spurious wakeups.
+	For that, ##**Condwait**## is put within a loop for checking that a Boolean predicate is indeed true (set by another thread just before executing ##[[KeyPgCondSignal Condsignal]]## or ##[[KeyPgCondBroadcast Condbroadcast]]##) when the thread has finished waiting.
+	See example below for detailed coding.
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgCondCreate Condcreate]]##
+	See also ##[[KeyPgCondCreate Condcreate]]## and ##[[KeyPgCondSignal Condsignal]]##
+
+{{fbdoc item="filename" value="examples/manual/threads/condwait.bas"}}%%(freebasic)
+' This simple example code demonstrates the use of several condition variable routines.
+' The main routine creates three threads.
+' Two of the threads update a "count" variable.
+' The third thread waits until the count variable reaches a specified value.
+
+#define numThread  3
+#define countThreshold 6
+
+Dim Shared As Integer count = 0
+Dim Shared As Any Ptr countMutex
+Dim Shared As Any Ptr countThresholdCV
+Dim As Any Ptr threadID(0 To numThread-1)
+Dim Shared As Integer ok = 0
+
+Sub threadCount (ByVal p As Any Ptr)
+	Print "Starting threadCount(): thread#" & p
+	Do
+	    Print "threadCount(): thread#" & p & ", locking mutex"
+	    MutexLock(countMutex)
+	    count += 1
+	    ' Check the value of count and signal waiting thread when condition is reached.
+	    ' Note that this occurs while mutex is locked.
+	    If count >= countThreshold Then
+	        If count = countThreshold Then
+	            Print "threadCount(): thread#" & p & ", count = " & count & ", threshold reached, unlocking mutex"
+	            ok = 1
+	            CondSignal(countThresholdCV)
+	        Else
+	            Print "threadCount(): thread#" & p & ", count = " & count & ", threshold exceeded, unlocking mutex"
+	        End If
+	        MutexUnlock(countMutex)
+	        Exit Do
+	    End If
+	    Print "threadCount(): thread#" & p & ", count = " & count & ", unlocking mutex"
+	    MutexUnlock(countMutex)
+	    Sleep 100
+	Loop
+End Sub
+
+Sub threadWatch (ByVal p As Any Ptr)
+	Print "Starting threadWatch(): thread#" & p & ", locking mutex, waiting for conditional"
+	MutexLock(countMutex)
+	' Note that the Condwait routine will automatically and atomically unlock mutex while it waits.
+	While ok = 0
+	    CondWait(countThresholdCV, countMutex)
+	Wend
+	Print "threadWatch(): thread#" & p & ", condition signal received"
+	Print "threadWatch(): thread#" & p & ", count now = " & count & ", unlocking mutex"
+	MutexUnlock(countMutex)
+End Sub
+
+' Create mutex and condition variable
+countMutex = MutexCreate
+countThresholdCV = CondCreate
+' Create threads
+threadID(0) = ThreadCreate(@threadWatch, Cast(Any Ptr, 1))
+threadID(1) = ThreadCreate(@threadCount, Cast(Any Ptr, 2))
+threadID(2) = ThreadCreate(@threadCount, Cast(Any Ptr, 3))
+' Wait for all threads to complete
+For I As Integer = 0 To numThread-1
+	ThreadWait(threadID(I))
+	Print "Main(): Waited on thread#" & I+1 & " Done"
+Next I
+MutexDestroy(countMutex)
+CondDestroy(countThresholdCV)
+%%
 
 {{fbdoc item="target"}}
 	- **Condwait** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
