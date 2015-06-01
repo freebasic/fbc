@@ -62,6 +62,11 @@
 ''         procedure g_filename_from_utf8 => g_filename_from_utf8_
 ''         procedure g_filename_from_uri => g_filename_from_uri_
 ''         procedure g_filename_to_uri => g_filename_to_uri_
+''     #endif
+''     constant G_DATE_DAY => G_DATE_DAY_
+''     constant G_DATE_MONTH => G_DATE_MONTH_
+''     constant G_DATE_YEAR => G_DATE_YEAR_
+''     #ifdef __FB_WIN32__
 ''         procedure g_dir_open => g_dir_open_
 ''         procedure g_dir_read_name => g_dir_read_name_
 ''         procedure g_getenv => g_getenv_

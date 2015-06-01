@@ -35,6 +35,9 @@
 #include once "pango/pangocairo.bi"
 
 '' The following symbols have been renamed:
+''     constant GDK_DRAG_MOTION => GDK_DRAG_MOTION_
+''     constant GDK_DRAG_STATUS => GDK_DRAG_STATUS_
+''     constant GDK_PROPERTY_DELETE => GDK_PROPERTY_DELETE_
 ''     constant GDK_KEY_dead_A => GDK_KEY_dead_A_
 ''     constant GDK_KEY_dead_E => GDK_KEY_dead_E_
 ''     constant GDK_KEY_dead_I => GDK_KEY_dead_I_

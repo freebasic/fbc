@@ -51,6 +51,8 @@
 #endif
 
 '' The following symbols have been renamed:
+''     constant SDL_UNSUPPORTED => SDL_UNSUPPORTED_
+''     constant SDL_QUIT => SDL_QUIT_
 ''     enum SDL_EventMask => SDL_EventMask_
 ''     #define SDL_VERSION => SDL_VERSION_
 

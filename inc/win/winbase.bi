@@ -772,38 +772,14 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 #define _INTERLOCKAPI_H_
 
 #ifndef __FB_64BIT__
-	declare function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
-	declare function InterlockedDecrement(byval lpAddend as LONG ptr) as LONG
-	declare function InterlockedExchange(byval Target as LONG ptr, byval Value as LONG) as LONG
-	declare function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
-	declare function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
-	declare function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
 	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
 	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
-
-	private function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
-		return _InterlockedIncrement(lpAddend)
-	end function
-
-	private function InterlockedDecrement(byval lpAddend as LONG ptr) as LONG
-		return _InterlockedDecrement(lpAddend)
-	end function
-
-	private function InterlockedExchange(byval Target as LONG ptr, byval Value as LONG) as LONG
-		return _InterlockedExchange(Target, Value)
-	end function
-
-	private function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
-		return _InterlockedExchangeAdd(Addend, Value)
-	end function
-
-	private function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
-		return _InterlockedCompareExchange(Destination, Exchange, Comperand)
-	end function
-
-	private function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
-		return _InterlockedCompareExchange64(Destination, Exchange, Comperand)
-	end function
+	#define InterlockedIncrement(lpAddend) cast(LONG, _InterlockedIncrement(lpAddend))
+	#define InterlockedDecrement(lpAddend) cast(LONG, _InterlockedDecrement(lpAddend))
+	#define InterlockedExchange(Target, Value) cast(LONG, _InterlockedExchange(Target, Value))
+	#define InterlockedExchangeAdd(Addend, Value) cast(LONG, _InterlockedExchangeAdd(Addend, Value))
+	#define InterlockedCompareExchange(Destination, Exchange, Comperand) cast(LONG, _InterlockedCompareExchange(Destination, Exchange, Comperand))
+	#define InterlockedCompareExchange64(Destination, Exchange, Comperand) cast(LONGLONG, _InterlockedCompareExchange64(Destination, Exchange, Comperand))
 #endif
 
 declare sub InitializeSListHead(byval ListHead as PSLIST_HEADER)

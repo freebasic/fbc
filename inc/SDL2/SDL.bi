@@ -42,9 +42,11 @@
 #endif
 
 '' The following symbols have been renamed:
+''     constant SDL_UNSUPPORTED => SDL_UNSUPPORTED_
 ''     #ifdef __FB_WIN32__
 ''         procedure SDL_CreateThread => SDL_CreateThread_
 ''     #endif
+''     constant SDL_QUIT => SDL_QUIT_
 ''     procedure SDL_Log => SDL_Log_
 ''     #define SDL_VERSION => SDL_VERSION_
 

@@ -1194,20 +1194,9 @@ type _TEB as _TEB_
 	end function
 #else
 	const PcTeb = &h18
-
-	extern "C"
-		private function NtCurrentTeb() as _TEB ptr
-			return cptr(_TEB ptr, __readfsdword(&h18))
-		end function
-
-		private function GetCurrentFiber() as PVOID
-			return cast(PVOID, __readfsdword(&h10))
-		end function
-
-		private function GetFiberData() as PVOID
-			return *cptr(PVOID ptr, GetCurrentFiber())
-		end function
-	end extern
+	#define NtCurrentTeb() cptr(_TEB ptr, __readfsdword(&h18))
+	#define GetCurrentFiber() cast(PVOID, __readfsdword(&h10))
+	#define GetFiberData() cast(PVOID, *cptr(PVOID ptr, GetCurrentFiber()))
 #endif
 
 #ifdef __FB_64BIT__
@@ -8027,17 +8016,9 @@ private sub TpDestroyCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
 end sub
 
 #ifdef __FB_64BIT__
-	private function GetCurrentFiber() as PVOID
-		return cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
-	end function
-
-	private function GetFiberData() as PVOID
-		return *cptr(PVOID ptr, GetCurrentFiber())
-	end function
-
-	private function NtCurrentTeb() as _TEB ptr
-		return cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
-	end function
+	#define NtCurrentTeb() cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
+	#define GetCurrentFiber() cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
+	#define GetFiberData() cast(PVOID, *cptr(PVOID ptr, GetCurrentFiber()))
 #endif
 
 #define _NTTMAPI_
