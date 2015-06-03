@@ -1028,7 +1028,7 @@ private function hCallStaticCtor _
 		initcode = astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI )
 	end if
 
-	if( has_dtor ) then
+	if( has_dtor and (not symbIsRef( sym )) ) then
 		'' Register an atexit() handler to call the static var's dtor
 		'' at program exit.
 		'' atexit( @static_proc )
@@ -1057,11 +1057,10 @@ private function hCallGlobalCtor _
 
 	var_decl = hFlushDecl( var_decl )
 
-	if( (initree = NULL) and (has_dtor = FALSE) ) then
-		return var_decl
+	var call_dtor = has_dtor and (not symbIsRef( sym ))
+	if( (initree <> NULL) or call_dtor ) then
+		astProcAddGlobalInstance( sym, initree, call_dtor )
 	end if
-
-	astProcAddGlobalInstance( sym, initree, has_dtor )
 
 	'' No temp dtors should be left registered after the TYPEINI build-up
 	assert( astDtorListIsEmpty( ) )

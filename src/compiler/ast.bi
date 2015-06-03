@@ -456,7 +456,7 @@ declare sub astProcAddGlobalInstance _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_dtor as integer _
+		byval call_dtor as integer _
 	)
 
 declare function astScopeBegin( ) as ASTNODE ptr

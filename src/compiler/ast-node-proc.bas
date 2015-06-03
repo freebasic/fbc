@@ -20,7 +20,7 @@
 type FB_GLOBINSTANCE
 	sym				as FBSYMBOL_ ptr			'' for symbol
 	initree			as ASTNODE ptr				'' can't store in sym, or emit will use it
-	has_dtor		as integer
+	call_dtor		as integer
 end type
 
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
@@ -950,6 +950,7 @@ private function hCallFieldCtor _
 	) as ASTNODE ptr
 
 	assert( symbIsDescriptor( fld ) = FALSE )  '' should have had an initree
+	assert( symbIsRef( fld ) = FALSE )  '' reference? ditto
 
 	'' Fake dynamic array field that didn't have an initree - nothing to do
 	if( symbIsDynamic( fld ) ) then
@@ -1215,6 +1216,7 @@ private sub hCallFieldDtor _
 	)
 
 	assert( symbIsDescriptor( fld ) = FALSE )
+	assert( symbIsRef( fld ) = FALSE )
 
 	'' Dynamic array field?
 	if( symbIsDynamic( fld ) ) then
@@ -1341,6 +1343,8 @@ private sub hCallStaticCtor _
 end sub
 
 private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
+	assert( symbIsRef( sym ) = FALSE )
+
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
 		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), TRUE, FALSE ) )
@@ -1401,6 +1405,8 @@ function astProcAddStaticInstance _
 	dim as FB_DTORWRAPPER ptr wrap = any
 	dim as FBSYMBOL ptr proc = any
 
+	assert( symbIsRef( sym ) = FALSE )
+
 	dtorlist = parser.currproc->proc.ext->statdtor
 
 	'' create a new list
@@ -1432,7 +1438,7 @@ sub astProcAddGlobalInstance _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_dtor as integer _
+		byval call_dtor as integer _
 	)
 
     dim as FB_GLOBINSTANCE ptr wrap = any
@@ -1442,7 +1448,7 @@ sub astProcAddGlobalInstance _
 
     wrap->sym = sym
     wrap->initree = initree
-    wrap->has_dtor = has_dtor
+	wrap->call_dtor = call_dtor
 
     '' can't be undefined
 	symbSetCantUndef( sym )
@@ -1451,7 +1457,7 @@ sub astProcAddGlobalInstance _
 		ast.globinst.ctorcnt += 1
 	end if
 
-	if( has_dtor ) then
+	if( call_dtor ) then
 		ast.globinst.dtorcnt += 1
 	end if
 
@@ -1489,7 +1495,7 @@ private sub hGenGlobalInstancesCtor( )
 		'' for each node..
 		inst = listGetHead( @ast.globinst.list )
 		while( inst )
-			'' has ctor?
+			'' has ctor/initializer?
 			if( inst->initree <> NULL ) then
 				hCallStaticCtor( inst->sym, inst->initree )
 				inst->initree = NULL
@@ -1510,9 +1516,8 @@ private sub hGenGlobalInstancesCtor( )
 		'' for each node (in inverse order)..
 		inst = listGetTail( @ast.globinst.list )
 		while( inst )
-			'' has dtor?
-			if( inst->has_dtor ) then
-				'' call dtor
+			'' need to call dtor?
+			if( inst->call_dtor ) then
 				hCallStaticDtor( inst->sym )
 			end if
 
