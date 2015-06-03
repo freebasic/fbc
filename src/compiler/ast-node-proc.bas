@@ -1255,11 +1255,12 @@ private sub hCallFieldDtors _
 	''  - dynamic array descriptor fields: hCallFieldDtor() frees dynamic
 	''    array fields by calling ERASE on the fake dynamic array field,
 	''    for which astNewARG() will automagically pass the descriptor.
+	''  - excluding references (nothing to clean-up)
 	fld = symbGetCompSymbTb( parent ).tail
 	while( fld )
 
 		if( symbIsField( fld ) ) then
-			if( (not symbIsDescriptor( fld )) and (fld <> parent->udt.base) ) then
+			if( (not symbIsDescriptor( fld )) and (fld <> parent->udt.base) and (not symbIsRef( fld )) ) then
 				hCallFieldDtor( this_, fld )
 			end if
 		end if

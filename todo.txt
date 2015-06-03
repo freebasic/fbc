@@ -7,8 +7,6 @@ o Dim Byref
   - check all FBSYMBOL->lgt/typ accesses, ISLONGINT, symbGet[Full]Type, symbGetLen
     probably everywhere we need symbGetArrayElements(), we also need to check symbIsRef()
     also: symbGetArrayDimensions() checks
-  - fields
-      - don't call ctors/dtors (hCallFieldDtors())
   - arrays of refs
   - extend temp var life-time like WITH
   - allow BYVAL initialization, like byref results/params?
