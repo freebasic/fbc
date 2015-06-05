@@ -6138,7 +6138,7 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
 
-	if( svreg->typ = IR_VREGTYPE_IMM ) then
+	if( irIsIMM( svreg ) ) then
 		if( svreg->value.i ) then
 			hMOV( dst, "-1" )
 		else
@@ -6175,7 +6175,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	assert( (ddsize = 1) or (ddsize = 4) )
 
 	'' immediate?
-	if( svreg->typ = IR_VREGTYPE_IMM ) then
+	if( irIsIMM( svreg ) ) then
 		hMOV( dst, src )
 
 	'' 1-byte boolean? (then we can "setne" directly into it)
@@ -6274,11 +6274,41 @@ private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 end sub
 
+''
+'' Load/store b2l or l2b
+'' (same rules as _emitLOADB2I())
+''
+
 private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	'' !!!WRITEME!!! (BOOL)
-	_emitLOADI2L(dvreg, svreg)
+	dim as string dst1, dst2
+	hPrepOperand64( dvreg, dst1, dst2 )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst1, "-1" )
+			hMOV( dst2, "-1" )
+		else
+			hMOV( dst1, "0" )
+			hMOV( dst2, "0" )
+		end if
+	else
+		dim as string src
+		hPrepOperand( svreg, src )
+
+		'' copy the 0|1 into the low dword
+		assert( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) )
+		outp( "movzx " + dst1 + ", " + src )
+
+		'' convert 0|1 to 0|-1
+		outp( "neg " + dst1 )
+
+		'' copy 0|-1 into upper dword too
+		hMOV( dst2, dst1 )
+	end if
 
 	JRM_DEBUG()
 end sub
