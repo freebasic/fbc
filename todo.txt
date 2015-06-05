@@ -1,3 +1,6 @@
+o boolean
+  - ASM backend: implement b2l/l2b/b2f/f2b loads/stores
+
 o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding
     library even is available on 64bit)
