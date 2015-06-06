@@ -6176,6 +6176,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	'' immediate?
 	if( irIsIMM( svreg ) ) then
+		'' hPrepOperand() handles FB_DATATYPE_BOOLEAN
 		hMOV( dst, src )
 
 	'' 1-byte boolean? (then we can "setne" directly into it)
@@ -6316,8 +6317,63 @@ end sub
 private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	'' !!!WRITEME!!! (BOOL)
-	_emitLOADL2I(dvreg, svreg)
+	dim as string dst
+	hPrepOperand( dvreg, dst )
+
+	var ddsize = typeGetSize( dvreg->dtype )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+	assert( (ddsize = 1) or (ddsize = 4) )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst, "1" )
+		else
+			hMOV( dst, "0" )
+		end if
+	else
+		dim as string src1, src2
+		hPrepOperand64( svreg, src1, src2 )
+
+		dim as string aux, aux8
+		dim as integer reg, isfree
+
+		reg = hFindRegNotInVreg( dvreg, TRUE )
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		'' combine high/low dwords
+		if( reg = svreg->reg ) then
+			outp( "or " + aux + ", " + src2 )
+		elseif( reg = svreg->vaux->reg ) then
+			outp( "or " + aux + ", " + src1 )
+		else
+			hMOV( aux, src1 )
+			outp( "or " + aux + ", " + src2 )
+		end if
+		
+		'' if (src1 or src2) is non-zero, produce 0|1 and store it into dst
+		outp( "cmp " + aux + ", 0" )
+		outp( "setne " + aux8 )
+		outp( "movzx " + aux + ", " + aux8 )
+		if( ddsize = 1 ) then
+			hMOV( dst, aux8 )
+		else
+			hMOV( dst, aux )
+		end if
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+
+	end if
 
 	JRM_DEBUG()
 end sub
@@ -6342,19 +6398,13 @@ end sub
 
 private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	'' !!!WRITEME!!! (BOOL)
-	_emitSTORI2L(dvreg, svreg)
-
+	_emitLOADB2L(dvreg, svreg)
 	JRM_DEBUG()
 end sub
 
 private sub _emitSTORL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
-
-	'' !!!WRITEME!!! (BOOL)
-	_emitSTORL2I(dvreg, svreg)
-
+	_emitLOADL2B(dvreg, svreg)
 	JRM_DEBUG()
 end sub
 ''$$JRM

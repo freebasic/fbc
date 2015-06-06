@@ -429,14 +429,21 @@ function astNewCONV _
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
+	'' or one is a boolean and the other is not boolean
 	if( ldclass = typeGetClass( to_dtype ) ) then
 		select case( typeGet( to_dtype ) )
 		case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
 			'' do nothing
 			doconv = FALSE
 		case else
-			if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
-				doconv = FALSE
+			if( (ldtype = FB_DATATYPE_BOOLEAN) or (to_dtype = FB_DATATYPE_BOOLEAN) ) then
+				if( ldtype = to_dtype ) then
+					doconv = FALSE
+				end if
+			else
+				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
+					doconv = FALSE
+				end if
 			end if
 		end select
 	end if
