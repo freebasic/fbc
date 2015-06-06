@@ -6176,8 +6176,11 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	'' immediate?
 	if( irIsIMM( svreg ) ) then
-		'' hPrepOperand() handles FB_DATATYPE_BOOLEAN
-		hMOV( dst, src )
+		if( svreg->value.i ) then
+			hMOV( dst, "1" )
+		else
+			hMOV( dst, "0" )
+		end if
 
 	'' 1-byte boolean? (then we can "setne" directly into it)
 	elseif( ddsize = 1 ) then
