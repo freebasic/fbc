@@ -844,8 +844,7 @@ declare function symbLookup _
 	( _
 		byval id as zstring ptr, _
 		byref tk as FB_TOKEN, _
-		byref tk_class as FB_TKCLASS, _
-		byval preserve_case as integer = FALSE _
+		byref tk_class as FB_TKCLASS _
 	) as FBSYMCHAIN ptr
 
 declare function symbLookupAt _
