@@ -319,47 +319,12 @@ sub testTypeofProcPtr cdecl( )
 	CU_ASSERT( (*ppFunc)( ) = 123 )
 end sub
 
-namespace namespaces
-	namespace a
-		type T
-			i as integer
-		end type
-	end namespace
-
-	namespace b
-		type T
-			s as single
-		end type
-	end namespace
-
-	'' The namespace prefix should be encoded in the typeof() result,
-	'' to allow the two T's to be differentiated
-	#assert typeof(a.T) = "FBC_TESTS.QUIRK.TYPEOF_.NAMESPACES.A.T"
-	#assert typeof(b.T) = "FBC_TESTS.QUIRK.TYPEOF_.NAMESPACES.B.T"
-	#assert typeof(a.T) <> typeof(b.T)
-
-	sub test cdecl( )
-		scope
-			using a
-			#assert typeof(T) = typeof(a.T)
-			#assert typeof(T) <> typeof(b.T)
-		end scope
-
-		scope
-			using b
-			#assert typeof(T) <> typeof(a.T)
-			#assert typeof(T) = typeof(b.T)
-		end scope
-	end sub
-end namespace
-
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/quirk/typeof" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "sizeof(typeof(deref))", @testSizeofTypeofDeref )
 	fbcu.add_test( "sizeof(typeof(...))", @testSizeofTypeofOthers )
 	fbcu.add_test( "typeof( sub|function(...) )", @testTypeofProcPtr )
-	fbcu.add_test( "namespaces", @namespaces.test )
 end sub
 
 end namespace
