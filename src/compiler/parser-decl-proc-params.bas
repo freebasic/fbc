@@ -208,9 +208,8 @@ private function hParamDecl _
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer reclevel = 0
 	dim as zstring ptr id = any
-	dim as ASTNODE ptr optexpr = any
 	dim as integer dtype = any, mode = any, attrib = any, dimensions = any
-	dim as integer readid = any, dotpos = any, doskip = any, dontinit = any
+	dim as integer readid = any, dotpos = any, doskip = any
 	dim as integer use_default = any, have_bounds = any
 	dim as FBSYMBOL ptr subtype = any, param = any
 
@@ -477,10 +476,6 @@ private function hParamDecl _
 
     end select
 
-	'' default values
-	optexpr = NULL
-	dontinit = FALSE
-
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
 	                          dtype, subtype, dimensions, mode, attrib )
@@ -502,28 +497,22 @@ private function hParamDecl _
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then
 				lexSkipToken( )
-				dontinit = TRUE
+				symbSetDontInit( param )
 			else
 				hParamError( proc, id, , 0 )
 				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
 			end if
 		else
-			optexpr = hOptionalExpr( proc, id, param )
-			if( optexpr = NULL ) then
+			var optexpr = hOptionalExpr( proc, id, param )
+			if( optexpr ) then
+				symbMakeParamOptional( proc, param, optexpr )
+			else
 				hParamError( proc, id, , 0 )
 				'' error recovery: skip until next ',' or ')'
 				hSkipUntil( CHAR_COMMA )
 			end if
 		end if
-	end if
-
-	if( dontinit ) then
-		symbSetDontInit( param )
-	end if
-
-	if( optexpr ) then
-		symbMakeParamOptional( proc, param, optexpr )
 	end if
 
 	function = param
