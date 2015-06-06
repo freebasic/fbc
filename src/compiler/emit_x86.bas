@@ -6169,8 +6169,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
-	var ddsize = typeGetSize( dvreg->dtype )
-
+	var ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
 	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
 	assert( (ddsize = 1) or (ddsize = 4) )
 
@@ -6323,8 +6322,7 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	dim as string dst
 	hPrepOperand( dvreg, dst )
 
-	var ddsize = typeGetSize( dvreg->dtype )
-
+	var ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
 	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
 	assert( (ddsize = 1) or (ddsize = 4) )
 
