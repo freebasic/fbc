@@ -114,43 +114,22 @@ sub test cdecl( )
 
 		dim as string * 10 s10
 
-		#if typeof(cp) <> typeof(dp)
-			CU_ASSERT(0)
-		#endif
-		#if typeof(bar(0)) <> "STRING"
-			CU_ASSERT(0)
-		#endif
-		#if typeof(bar) <> "STRING"
-			CU_ASSERT(0)
-		#endif
-		#if typeof(thingy.__) <> "FBC_TESTS.QUIRK.TYPEOF_.UDT2"
-			CU_ASSERT(0)
-		#endif
-		#if typeof(thingy.__.__) <> "STRING"
-			CU_ASSERT(0)
-		#endif
-		#if typeof(thingy.__.something) <> "STRING"
-			CU_ASSERT(0)
-		#endif
-		#if typeof(ret_int()) <> "INTEGER"
-			CU_ASSERT(0)
-		#endif
-
-		#if typeof(s10) <> typeof(string * 10)
-			CU_ASSERT(0)
-		#endif
+		#assert typeof(cp) = typeof(dp)
+		#assert typeof(bar(0)) = "STRING"
+		#assert typeof(bar) = "STRING"
+		#assert typeof(thingy.__) = "FBC_TESTS.QUIRK.TYPEOF_.UDT2"
+		#assert typeof(thingy.__.__) = "STRING"
+		#assert typeof(thingy.__.something) = "STRING"
+		#assert typeof(ret_int()) = "INTEGER"
+		#assert typeof(s10) = typeof(string * 10)
 	end scope
 
 	scope
 		dim as integer x
 		dim as double y
-		#if typeof( x + y ) <> "DOUBLE"
-			CU_ASSERT(0)
-		#endif
+		#assert typeof( x + y ) = "DOUBLE"
 		dim as UDT1 f, g
-		#if typeof( f + g ) <> "FBC_TESTS.QUIRK.TYPEOF_.UDT1"
-			CU_ASSERT(0)
-		#endif
+		#assert typeof( f + g ) = "FBC_TESTS.QUIRK.TYPEOF_.UDT1"
 	end scope
 
 	checkVar( byte )

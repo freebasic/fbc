@@ -16,9 +16,7 @@ sub test cdecl ()
 		type int__##n as integer<n>
 
 		'' TYPEOF
-		#if typeof( integer<n> ) <> typeof( int_##n )
-		CU_FAIL()
-		#endif
+		#assert typeof( integer<n> ) = typeof( int_##n )
 
 		'' CONST a AS b / CONST AS b a; CINT<n>
 		const as integer<n> MIN= cint<n>( -1 ) shl ((n)-1)
@@ -50,9 +48,7 @@ sub test cdecl ()
 		type int__##n as T<n>
 
 		'' TYPEOF
-		#if typeof( T<n> ) <> typeof( uint_##n )
-		CU_FAIL()
-		#endif
+		#assert typeof( T<n> ) = typeof( uint_##n )
 
 		'' CONST a AS b / CONST AS b a; CUINT<n>
 		const as T<n> MIN= cuint<n>( 0 )
