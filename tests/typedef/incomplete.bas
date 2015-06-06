@@ -14,8 +14,8 @@ type A_
 end type
 
 #assert typeof(A) = typeof(B)
-#assert typeof(A) = "A_"
-#assert typeof(B) = "A_"
+#assert typeof(A) = "FBC_TESTS.TYPEDEF.INCOMPLETE.A_"
+#assert typeof(B) = "FBC_TESTS.TYPEDEF.INCOMPLETE.A_"
 
 sub test cdecl( )
 	'' A and B should both refer to the same UDT (A_)

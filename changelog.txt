@@ -42,6 +42,7 @@ Version 1.03.0
 - 1.02.0 regression: Windows API binding: can be used with MinGW.org again, for the most part, although some individual functions still won't work as they use MinGW-w64-specific helper functions
 - Various bindings: Some trivial "inline" functions are now turned into macros; fixed some cases of missing information about renamed symbols (e.g. in SDL2 binding)
 - Some built-in functions with wstring parameters (e.g. Val(), Left(), Right()) accepted integers and pointers in place of the wstring (e.g. Val(0)). This triggers an error now.
+- #772: Types with the same name but in different namespaces compared as equal in #if typeof(...) = typeof(...) checks and #print typeof(...) output, because the namespace prefix was not included in textual typeof()'s result string.
 
 
 Version 1.02.1

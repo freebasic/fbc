@@ -44,6 +44,7 @@ declare sub 		symbCompRTTIInit	( )
 
 declare sub 		symbCompRTTIEnd		( )
 
+declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
 ''globals
 	dim shared as SYMBCTX symb
@@ -1600,6 +1601,7 @@ function symbTypeToStr _
 
 	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+		s += hGetNamespacePrefix( subtype )
 		s += *symbGetName( subtype )
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
@@ -2006,7 +2008,6 @@ sub symbForEachGlobal _
 
 end sub
 
-#if __FB_DEBUG__
 private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	dim as FBSYMBOL ptr ns = any
 	dim as string s
@@ -2025,6 +2026,7 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
+#if __FB_DEBUG__
 static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _
 	@"var"      , _
