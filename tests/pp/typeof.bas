@@ -72,7 +72,9 @@ sub test cdecl( )
 	'' Also compare against the default calling convention
 	#if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_XBOX__ )
 		#assert typeof( sub cdecl( ) ) <> typeof( sub( ) )
+		#assert typeof( sub stdcall( ) ) = typeof( sub( ) )
 	#else
+		#assert typeof( sub cdecl( ) ) = typeof( sub( ) )
 		#assert typeof( sub stdcall( ) ) <> typeof( sub( ) )
 	#endif
 
