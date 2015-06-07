@@ -81,7 +81,6 @@ extern in6addr_loopback as const IN6_ADDR
 
 declare function IN6_IS_ADDR_UNSPECIFIED(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_LOOPBACK(byval as const IN6_ADDR ptr) as long
-declare function IN6_IS_ADDR_MULTICAST(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_LINKLOCAL(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_SITELOCAL(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_V4MAPPED(byval as const IN6_ADDR ptr) as long
@@ -106,9 +105,7 @@ private function IN6_IS_ADDR_LOOPBACK(byval a as const in6_addr ptr) as long
 	return -((((((((a->u.Word(0) = 0) andalso (a->u.Word(1) = 0)) andalso (a->u.Word(2) = 0)) andalso (a->u.Word(3) = 0)) andalso (a->u.Word(4) = 0)) andalso (a->u.Word(5) = 0)) andalso (a->u.Word(6) = 0)) andalso (a->u.Word(7) = &h0100))
 end function
 
-private function IN6_IS_ADDR_MULTICAST(byval a as const in6_addr ptr) as long
-	return -(a->u.Byte(0) = &hff)
-end function
+#define IN6_IS_ADDR_MULTICAST(a) clng(-(a->u.Byte(0) = &hff))
 
 private function IN6_IS_ADDR_LINKLOCAL(byval a as const in6_addr ptr) as long
 	return -((a->u.Byte(0) = &hfe) andalso ((a->u.Byte(1) and &hc0) = &h80))
@@ -158,12 +155,12 @@ private sub IN6_SET_ADDR_UNSPECIFIED(byval a as in6_addr ptr)
 	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
 end sub
 
-private sub IN6_SET_ADDR_LOOPBACK(byval a as in6_addr ptr)
-	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
+private sub IN6_SET_ADDR_LOOPBACK(byval a as IN6_ADDR ptr)
+	memset(@a->u.Byte(0), 0, sizeof(IN6_ADDR))
 	a->u.Byte(15) = 1
 end sub
 
-private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETANY(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0
@@ -171,7 +168,7 @@ private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
 	a->sin6_scope_id = 0
 end sub
 
-private sub IN6ADDR_SETLOOPBACK(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETLOOPBACK(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0

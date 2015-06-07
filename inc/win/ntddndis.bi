@@ -2042,9 +2042,9 @@ type PNDIS_IRDA_PACKET_INFO as _NDIS_IRDA_PACKET_INFO ptr
 #if _WIN32_WINNT = &h0602
 	#macro NDIS_MAKE_NET_LUID(PNLUID, IFTYPE, NLUIDIDX)
 		scope
-			'' TODO: (PNLUID)->Info.IfType = IFTYPE;
-			'' TODO: (PNLUID)->Info.NetLuidIndex = NLUIDIDX;
-			'' TODO: (PNLUID)->Info.Reserved = 0;
+			(PNLUID)->Info.IfType = IFTYPE
+			(PNLUID)->Info.NetLuidIndex = NLUIDIDX
+			(PNLUID)->Info.Reserved = 0
 		end scope
 	#endmacro
 	const MAXIMUM_IP_OPER_STATUS_ADDRESS_FAMILIES_SUPPORTED = 32

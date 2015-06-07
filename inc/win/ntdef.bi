@@ -49,7 +49,7 @@ extern "Windows"
 const ANYSIZE_ARRAY = 1
 const FALSE = 0
 const TRUE = 1
-const NULL64 = 0
+const NULL64 = cptr(any ptr, 0)
 
 #ifdef __FB_64BIT__
 	#define ALIGNMENT_MACHINE
@@ -417,9 +417,9 @@ end type
 type GROUP_AFFINITY as _GROUP_AFFINITY
 type PGROUP_AFFINITY as _GROUP_AFFINITY ptr
 #define RTL_FIELD_TYPE(type, field) cptr(type ptr, 0)->field
-#define RTL_BITS_OF(sizeOfArg) (sizeof((sizeOfArg)) * 8)
+#define RTL_BITS_OF(sizeOfArg) (sizeof(sizeOfArg) * 8)
 #define RTL_BITS_OF_FIELD(type, field) RTL_BITS_OF(RTL_FIELD_TYPE(type, field))
-#define RTL_CONSTANT_STRING(s) (sizeof((s)) - sizeof((s)[0]), sizeof((s)), s)
+#define RTL_CONSTANT_STRING(s) (sizeof(s) - sizeof((s)[0]), sizeof(s), s)
 #define RTL_FIELD_SIZE(type, field) sizeof(cptr(type ptr, 0)->field)
 #define RTL_SIZEOF_THROUGH_FIELD(type, field) (FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field))
 #define RTL_CONTAINS_FIELD(Struct, Size, Field) ((cast(PCHAR, @(Struct)->Field) + sizeof((Struct)->Field)) <= (cast(PCHAR, (Struct)) + (Size)))

@@ -11,95 +11,225 @@ Creates a conditional variable to be used in synchronizing threads
 	A handle to a newly created conditional variable, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Once the conditional is **Condcreate**d and the threads are started, one or more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional (including the main thread executing main program). At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional is **Condcreate**d and the threads are started, one or more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
 
 {{fbdoc item="ex"}}
+	See also ##[[KeyPgCondWait Condwait]]## and ##[[KeyPgCondSignal Condsignal]]##
+
 {{fbdoc item="filename" value="examples/manual/threads/condcreate.bas"}}%%(freebasic)
 ''
 '' make newly-created threads wait until all threads are ready, then start them all at once
 ''
 
-dim shared hcondstart as any ptr
-dim shared hmutexstart as any ptr
-dim shared start as integer = 0
+Dim Shared hcondstart As Any Ptr
+Dim Shared hmutexstart As Any Ptr
+Dim Shared start As Integer = 0
 
-dim shared threadcount as integer
-dim shared hmutexready as any ptr
-dim shared hcondready as any ptr
+Dim Shared threadcount As Integer
+Dim Shared hmutexready As Any Ptr
+Dim Shared hcondready As Any Ptr
 
-sub mythread(byval id_ptr as any ptr)
-	dim id as integer = cast(integer, id_ptr)
-
-	print "Thread #" & id & " is waiting..."
-
+Sub mythread(ByVal id_ptr As Any Ptr)
+	Dim id As Integer = Cast(Integer, id_ptr)
+  
 	'' signal that this thread is ready
-	mutexlock hmutexready
+	MutexLock hmutexready
 	threadcount += 1
-	condsignal hcondready
-	mutexunlock hmutexready
-	
+	Print "Thread #" & id & " is waiting..."
+	CondSignal hcondready
+	MutexUnlock hmutexready
+   
 	'' wait for the start signal
-	Mutexlock hmutexstart
-	do while start = 0	
-		Condwait hcondstart, hmutexstart
-	loop
+	MutexLock hmutexstart
+	Do While start = 0   
+	    CondWait hcondstart, hmutexstart
+	Loop
 
 	'' now this thread holds the lock on hmutexstart
-	
-	Mutexunlock hmutexstart
+   
+	MutexUnlock hmutexstart
 
 	'' print out the number of this thread
-	for i as integer = 1 to 40
-		print id;
-	next i
-end sub
+	For i As Integer = 1 To 40
+	    Print id;
+	Next i
+End Sub
 
-dim threads(1 to 9) as any ptr
+Dim threads(1 To 9) As Any Ptr
 
-hcondstart = condcreate()
-hmutexstart = mutexcreate()
+hcondstart = CondCreate()
+hmutexstart = MutexCreate()
 
-hcondready = condcreate()
-hmutexready = mutexcreate()
+hcondready = CondCreate()
+hmutexready = MutexCreate()
 
 threadcount = 0
 
+MutexLock(hmutexready)
+For i As Integer = 1 To 9
+	threads(i) = ThreadCreate(@mythread, Cast(Any Ptr, i))
+	If threads(i) = 0 Then
+	    Print "unable to create thread"
+	End If
+Next i
 
-for i as integer = 1 to 9
-	threads(i) = ThreadCreate(@mythread, cast(any ptr, i))
-	if threads(i) = 0 then
-		print "unable to create thread"
-	end if
-next i
+Print "Waiting until all threads are ready..."
 
-print "Waiting until all threads are ready..."
+Do Until threadcount = 9
+	CondWait(hcondready, hmutexready)
+Loop
+MutexUnlock(hmutexready)
 
-mutexlock(hmutexready)
-do until threadcount = 9
-	condwait(hcondready, hmutexready)
-loop
-mutexunlock(hmutexready)
+Print
+Print "Go!"
 
-print "Go!"
-
-mutexlock hmutexstart
+MutexLock hmutexstart
 start = 1
-condbroadcast hcondstart
-mutexunlock hmutexstart
+CondBroadcast hcondstart
+MutexUnlock hmutexstart
 
 '' wait for all threads to complete
-for i as integer = 1 to 9
-	if threads(i) <> 0 then
-		threadwait threads(i)
-	end if
-next i
+For i As Integer = 1 To 9
+	If threads(i) <> 0 Then
+	    ThreadWait threads(i)
+	End If
+Next i
 
-mutexdestroy hmutexready
-conddestroy hcondready
+MutexDestroy hmutexready
+CondDestroy hcondready
 
-mutexdestroy hmutexstart
-conddestroy hcondstart
+MutexDestroy hmutexstart
+CondDestroy hcondstart
 %%
+
+{{fbdoc item="filename" value="examples/manual/threads/condcreate2.bas"}}%%(freebasic)
+'Visual example of mutual exclusion + mutual synchronization between 2 threads
+'by using Mutex and CondVar:
+'the "user-defined thread" computes the points coordinates on a circle,
+'and the "main thread" plots the points.
+'
+'Principle of mutual exclusion + mutual synchronisation
+'          Thread#A                XOR + <==>           Thread#B
+'.....                                         .....
+'MutexLock(mut)                                MutexLock(mut)
+'  While Thread#A_signal <> false                While Thread#A_signal <> true
+'    CondWait(cond, mut)                           CondWait(cond, mut)
+'  Wend                                          Wend
+'  Do_something#A_with_exclusion                 Do_something#B_with_exclusion
+'  Thread#A_signal = true                        Thread#A_signal = false
+'  CondSignal(cond)                              CondSignal(cond)
+'MutexUnlock(mut)                              MutexUnlock(mut)
+'.....                                         .....
+'
+'Behavior:
+'- Unnecessary to pre-calculate the first point.
+'- Each calculated point is plotted one time only.
+'
+'If you comment out the lines containing "MutexLock" and "MutexUnlock",
+'"CondWait" and "CondSignal", ".ready"
+'(inside "user-defined thread" or/and "main thread"),
+'there will be no longer mutual exclusion nor mutual synchronization
+'between computation of coordinates and plotting of points,
+'and many points will not be plotted on circle (due to non coherent coordinates).
+
+'-----------------------------------------------------------------------------------------------------
+
+Type ThreadUDT                                   'Generic user thread UDT
+	Dim handle As Any Ptr                        'Any Ptr handle to user thread
+	Dim sync As Any Ptr                          'Any Ptr handle to mutex
+	Dim cond As Any Ptr                          'Any Ptr handle to conditional
+	Dim ready As Byte                            'Boolean to coordinates ready
+	Dim quit As Byte                             'Boolean to end user thread
+	Declare Static Sub Thread (ByVal As Any Ptr) 'Generic user thread procedure
+	Dim procedure As Sub (ByVal As Any Ptr)      'Procedure(Any Ptr) to be executed by user thread
+	Dim p As Any Ptr                             'Any Ptr to pass to procedure executed by user thread
+	Const false As Byte = 0                      'Constante "false"
+	Const true As Byte = Not false               'Constante "true"
+End Type
+
+Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread procedure
+	Dim tp As ThreadUDT Ptr = param                  'Casting to generic user thread UDT
+	Do
+	    Static As Integer I
+	    MutexLock(tp->sync)                          'Mutex (Lock) for user thread
+	    While tp->Ready <> false                     'Process loop against spurious wakeups
+	      CondWait(tp->cond, tp->sync)               'CondWait to receive signal from main-thread
+	    Wend
+	    tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
+	    I += 1
+	    Locate 30, 38
+	    Print I;
+	    tp->Ready = true                             'Set Ready
+	    CondSignal(tp->cond)                         'CondSignal to send signal to main thread
+	    MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
+	    Sleep 5
+	Loop Until tp->quit = tp->true                   'Test for ending user thread
+End Sub
+
+'-----------------------------------------------------------------------------------------------------
+
+Type Point2D
+	Dim x As Integer
+	Dim y As Integer
+End Type
+
+Const x0 As Integer = 640 / 2
+Const y0 As Integer = 480 / 2
+Const r0 As Integer = 200
+Const pi As Single = 4 * Atn(1)
+
+Sub PointOnCircle (ByVal p As Any Ptr)
+	Dim pp As Point2D Ptr = p
+	Dim teta As Single = 2 * pi * Rnd
+	pp->x = x0 + r0 * Cos(teta)
+	Sleep 5                            'To increase possibility of uncorrelated data occurrence
+	pp->y = y0 + r0 * Sin(teta)
+End Sub
+
+
+Screen 12
+Locate 30, 2
+Print "<any_key> : exit";
+Locate 30, 27
+Print "calculated:";
+Locate 30, 54
+Print "plotted:";
+
+Dim Pptr As Point2D Ptr = New Point2D
+
+Dim Tptr As ThreadUDT Ptr = New ThreadUDT
+Tptr->sync = MutexCreate
+Tptr->cond = CondCreate
+Tptr->procedure = @PointOnCircle
+Tptr->p = Pptr
+Tptr->handle = ThreadCreate(@ThreadUDT.Thread, Tptr)
+
+Do
+	Static As Integer I
+	Sleep 5
+	MutexLock(Tptr->sync)              'Mutex (Lock) for main thread
+	While Tptr->ready <> Tptr->true    'Process loop against spurious wakeups
+	  CondWait(Tptr->cond, Tptr->sync) 'CondWait to receive signal from user-thread
+	Wend
+	PSet (Pptr->x, Pptr->y)            'Plotting one point
+	I += 1
+	Locate 30, 62
+	Print I;
+	Tptr->Ready = Tptr->false          'Reset Ready
+	CondSignal(Tptr->cond)             'CondSignal to send signal to user thread
+	MutexUnlock(Tptr->sync)            'Mutex (Unlock) for main thread
+Loop Until Inkey <> ""
+ 
+Tptr->quit = Tptr->true
+ThreadWait(Tptr->handle)
+MutexDestroy(Tptr->sync)
+CondDestroy(Tptr->cond)
+Delete Tptr
+Delete Pptr
+
+Sleep
+%%
+	See also the similar ##[[KeyPgMutexCreate Mutexcreate]]## example
 
 {{fbdoc item="target"}}
 	- **Condcreate** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.

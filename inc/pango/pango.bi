@@ -76,9 +76,9 @@ type PangoRectangle as _PangoRectangle
 type PangoGlyph as guint32
 
 const PANGO_SCALE = 1024
-#define PANGO_PIXELS(d) ((clng((d)) + 512) shr 10)
-#define PANGO_PIXELS_FLOOR(d) (clng((d)) shr 10)
-#define PANGO_PIXELS_CEIL(d) ((clng((d)) + 1023) shr 10)
+#define PANGO_PIXELS(d) ((clng(d) + 512) shr 10)
+#define PANGO_PIXELS_FLOOR(d) (clng(d) shr 10)
+#define PANGO_PIXELS_CEIL(d) ((clng(d) + 1023) shr 10)
 #define PANGO_UNITS_ROUND(d) (((d) + (PANGO_SCALE shr 1)) and (not (PANGO_SCALE - 1)))
 declare function pango_units_from_double(byval d as double) as long
 declare function pango_units_to_double(byval i as long) as double

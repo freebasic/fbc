@@ -430,15 +430,35 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #define A_RIGHT NCURSES_BITS(cast(culong, 1), 20)
 #define A_TOP NCURSES_BITS(cast(culong, 1), 21)
 #define A_VERTICAL NCURSES_BITS(cast(culong, 1), 22)
-#define getyx(win,y,x) y = getcury(win) : x = getcurx(win)
-#define getbegyx(win,y,x) y = getbegy(win) : x = getbegx(win)
-#define getmaxyx(win,y,x) y = getmaxy(win) : x = getmaxx(win)
-#define getparyx(win,y,x) y = getpary(win) : x = getparx(win)
+#macro getyx(win, y, x)
+	scope
+		y = getcury(win)
+		x = getcurx(win)
+	end scope
+#endmacro
+#macro getbegyx(win, y, x)
+	scope
+		y = getbegy(win)
+		x = getbegx(win)
+	end scope
+#endmacro
+#macro getmaxyx(win, y, x)
+	scope
+		y = getmaxy(win)
+		x = getmaxx(win)
+	end scope
+#endmacro
+#macro getparyx(win, y, x)
+	scope
+		y = getpary(win)
+		x = getparx(win)
+	end scope
+#endmacro
 #macro getsyx(y, x)
 	if newscr then
 		if is_leaveok(newscr) then
-			(y) = -1
 			(x) = -1
+			(y) = -1
 		else
 			getyx(newscr, (y), (x))
 		end if
@@ -446,7 +466,7 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #endmacro
 #macro setsyx(y, x)
 	if newscr then
-		if (y) = -1 andalso (x) = -1 then
+		if ((y) = (-1)) andalso ((x) = (-1)) then
 			leaveok(newscr, TRUE)
 		else
 			leaveok(newscr, FALSE)
@@ -584,7 +604,7 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #define getbkgd(win) (win)->_bkgd
 #define slk_attr_off_(a, v) iif((v), ERR_, slk_attroff(a))
 #define slk_attr_on_(a, v) iif((v), ERR_, slk_attron(a))
-#define wattr_set(win,a,p,opts) (win)->_attrs = (((a) and not A_COLOR) or cast(attr_t, COLOR_PAIR(p)))
+#define wattr_set(win, a, p, opts) scope : (win)->_attrs = ((a) and (not A_COLOR)) or cast(attr_t, COLOR_PAIR(p)) : end scope
 #macro wattr_get(win,a,p,opts)
 	if a then
 		*(a) = (win)->_attrs

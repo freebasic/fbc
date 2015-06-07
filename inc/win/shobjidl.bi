@@ -10316,17 +10316,14 @@ extern CLSID_ExecuteFolder as const GUID
 	#define PROP_CONTRACT_DELEGATE wstr("ContractDelegate")
 
 	private sub SetContractDelegateWindow cdecl(byval hwndSource as HWND, byval hwndDelegate as HWND)
-		if hwndDelegate <> NULL then
+		if hwndDelegate <> cptr(any ptr, 0) then
 			SetPropW(hwndSource, wstr("ContractDelegate"), cast(HANDLE, hwndDelegate))
 		else
 			RemovePropW(hwndSource, wstr("ContractDelegate"))
 		end if
 	end sub
 
-	private function GetContractDelegateWindow cdecl(byval hwndSource as HWND) as HWND
-		return cast(HWND, GetPropW(hwndSource, wstr("ContractDelegate")))
-	end function
-
+	#define GetContractDelegateWindow(hwndSource) cast(HWND, GetPropW(hwndSource, wstr("ContractDelegate")))
 	#define __ISearchableApplication_INTERFACE_DEFINED__
 	extern IID_ISearchableApplication as const GUID
 	type ISearchableApplication as ISearchableApplication_

@@ -62,6 +62,11 @@
 ''         procedure g_filename_from_utf8 => g_filename_from_utf8_
 ''         procedure g_filename_from_uri => g_filename_from_uri_
 ''         procedure g_filename_to_uri => g_filename_to_uri_
+''     #endif
+''     constant G_DATE_DAY => G_DATE_DAY_
+''     constant G_DATE_MONTH => G_DATE_MONTH_
+''     constant G_DATE_YEAR => G_DATE_YEAR_
+''     #ifdef __FB_WIN32__
 ''         procedure g_dir_open => g_dir_open_
 ''         procedure g_dir_read_name => g_dir_read_name_
 ''         procedure g_getenv => g_getenv_
@@ -131,7 +136,7 @@ const TRUE = 1
 #define MIN(a, b) iif((a) < (b), (a), (b))
 #undef CLAMP
 #define CLAMP(x, low, high) iif((x) > (high), (high), iif((x) < (low), (low), (x)))
-#define G_N_ELEMENTS(arr) (sizeof((arr)) / sizeof((arr)[0]))
+#define G_N_ELEMENTS(arr) (ubound(arr)  - lbound(array) + 1)
 #define GPOINTER_TO_SIZE(p) cast(gsize, (p))
 #define GSIZE_TO_POINTER(s) cast(gpointer, cast(gsize, (s)))
 #define G_STRUCT_OFFSET(struct_type, member) cast(glong, offsetof(struct_type, member))
@@ -279,7 +284,7 @@ type _GTimeVal
 end type
 
 #define g_alloca(size) alloca(size)
-#define g_newa(struct_type, n_structs) cptr(struct_type ptr, g_alloca(sizeof((struct_type)) * cast(gsize, (n_structs))))
+#define g_newa(struct_type, n_structs) cptr(struct_type ptr, g_alloca(sizeof(struct_type) * cast(gsize, (n_structs))))
 #define __G_ARRAY_H__
 
 type GBytes as _GBytes
@@ -2066,7 +2071,7 @@ declare function g_bit_storage(byval number as gulong) as guint
 			dim tem as zstring ptr
 			select case fdwReason
 			case DLL_PROCESS_ATTACH
-				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, G_N_ELEMENTS(wcbfr))
+				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
 				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
 				dll_name = g_path_get_basename(tem)
 				g_free(tem)
@@ -2487,7 +2492,7 @@ declare sub g_warn_message(byval domain as const zstring ptr, byval file as cons
 declare sub g_assert_warning(byval log_domain as const zstring ptr, byval file as const zstring ptr, byval line as const long, byval pretty_function as const zstring ptr, byval expression as const zstring ptr)
 
 const G_LOG_DOMAIN = cptr(zstring ptr, 0)
-#define g_error(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, __VA_ARGS__)
+#define g_error(__VA_ARGS__...) scope : g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, __VA_ARGS__) : end scope
 #define g_message(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
 #define g_critical(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, __VA_ARGS__)
 #define g_warning(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, __VA_ARGS__)
@@ -2500,32 +2505,26 @@ declare function g_set_print_handler(byval func as GPrintFunc) as GPrintFunc
 declare sub g_printerr(byval format as const zstring ptr, ...)
 declare function g_set_printerr_handler(byval func as GPrintFunc) as GPrintFunc
 
-#define g_warn_if_reached() g_warn_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, NULL)
+#define g_warn_if_reached() scope : g_warn_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, NULL) : end scope
 #macro g_warn_if_fail(expr)
-	scope
-		if G_LIKELY(expr) then
-		else
-			g_warn_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #expr)
-		end if
-	end scope
+	if G_LIKELY(expr) then
+	else
+		g_warn_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #expr)
+	end if
 #endmacro
 #macro g_return_if_fail(expr)
-	scope
-		if G_LIKELY(expr) then
-		else
-			g_return_if_fail_warning(G_LOG_DOMAIN, G_STRFUNC, #expr)
-			return
-		end if
-	end scope
+	if G_LIKELY(expr) then
+	else
+		g_return_if_fail_warning(G_LOG_DOMAIN, G_STRFUNC, #expr)
+		return
+	end if
 #endmacro
 #macro g_return_val_if_fail(expr, val)
-	scope
-		if G_LIKELY(expr) then
-		else
-			g_return_if_fail_warning(G_LOG_DOMAIN, G_STRFUNC, #expr)
-			return (val)
-		end if
-	end scope
+	if G_LIKELY(expr) then
+	else
+		g_return_if_fail_warning(G_LOG_DOMAIN, G_STRFUNC, #expr)
+		return (val)
+	end if
 #endmacro
 #macro g_return_if_reached()
 	scope
@@ -2998,9 +2997,9 @@ declare sub g_scanner_unexp_token(byval scanner as GScanner ptr, byval expected_
 declare sub g_scanner_error(byval scanner as GScanner ptr, byval format as const zstring ptr, ...)
 declare sub g_scanner_warn(byval scanner as GScanner ptr, byval format as const zstring ptr, ...)
 
-#define g_scanner_add_symbol(scanner, symbol, value) g_scanner_scope_add_symbol((scanner), 0, (symbol), (value))
-#define g_scanner_remove_symbol(scanner, symbol) g_scanner_scope_remove_symbol((scanner), 0, (symbol))
-#define g_scanner_foreach_symbol(scanner, func, data) g_scanner_scope_foreach_symbol((scanner), 0, (func), (data))
+#define g_scanner_add_symbol(scanner, symbol, value) scope : g_scanner_scope_add_symbol((scanner), 0, (symbol), (value)) : end scope
+#define g_scanner_remove_symbol(scanner, symbol) scope : g_scanner_scope_remove_symbol((scanner), 0, (symbol)) : end scope
+#define g_scanner_foreach_symbol(scanner, func, data) scope : g_scanner_scope_foreach_symbol((scanner), 0, (func), (data)) : end scope
 #define g_scanner_freeze_symbol_table(scanner) 0
 #define g_scanner_thaw_symbol_table(scanner) 0
 #define __G_SEQUENCE_H__
@@ -3067,11 +3066,11 @@ declare function g_slice_copy(byval block_size as gsize, byval mem_block as gcon
 declare sub g_slice_free1(byval block_size as gsize, byval mem_block as gpointer)
 declare sub g_slice_free_chain_with_offset(byval block_size as gsize, byval mem_chain as gpointer, byval next_offset as gsize)
 
-#define g_slice_new(type) cptr(type ptr, g_slice_alloc(sizeof((type))))
-#define g_slice_new0(type) cptr(type ptr, g_slice_alloc0(sizeof((type))))
-#define g_slice_dup(type, mem) cptr(type ptr, g_slice_copy(sizeof((type)), (mem)))
-#define g_slice_free(type, mem) g_slice_free1(sizeof((type)), (mem))
-#define g_slice_free_chain(type, mem_chain, next) g_slice_free_chain_with_offset(sizeof((type)), (mem_chain), G_STRUCT_OFFSET(type, next))
+#define g_slice_new(type) cptr(type ptr, g_slice_alloc(sizeof(type)))
+#define g_slice_new0(type) cptr(type ptr, g_slice_alloc0(sizeof(type)))
+#define g_slice_dup(type, mem) cptr(type ptr, g_slice_copy(sizeof(type), (mem)))
+#define g_slice_free(type, mem) scope : g_slice_free1(sizeof(type), (mem)) : end scope
+#define g_slice_free_chain(type, mem_chain, next) scope : g_slice_free_chain_with_offset(sizeof(type), (mem_chain), G_STRUCT_OFFSET(type, next)) : end scope
 
 type GSliceConfig as long
 enum
@@ -3314,60 +3313,47 @@ type GTestFixtureFunc as sub(byval fixture as gpointer, byval user_data as gcons
 		end if
 	end scope
 #endmacro
+
 #macro g_assert_no_error(err)
-	scope
-		if err then
-			g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, 0, 0)
-		end if
-	end scope
+	if (err) then
+		g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, 0, 0)
+	end if
 #endmacro
 #macro g_assert_error(err, dom, c)
-	scope
-		if err = 0 orelse (err)->domain <> dom orelse (err)->code <> c then
-			g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, dom, c)
-		end if
-	end scope
+	if ((err = 0) orelse ((err)->domain <> dom)) orelse ((err)->code <> c) then
+		g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, dom, c)
+	end if
 #endmacro
 #macro g_assert_true(expr)
-	scope
-		if G_LIKELY(expr) then
-		else
-			g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be TRUE")
-		end if
-	end scope
+	if G_LIKELY(expr) then
+	else
+		g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be TRUE")
+	end if
 #endmacro
 #macro g_assert_false(expr)
-	scope
-		if G_LIKELY((expr) = 0) then
-		else
-			g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be FALSE")
-		end if
-	end scope
+	if G_LIKELY(-((expr) = 0)) then
+	else
+		g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be FALSE")
+	end if
 #endmacro
 #macro g_assert_null(expr)
-	scope
-		if G_LIKELY((expr) = NULL) then
-		else
-			g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be NULL")
-		end if
-	end scope
+	if G_LIKELY(-((expr) = NULL)) then
+	else
+		g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should be NULL")
+	end if
 #endmacro
 #macro g_assert_nonnull(expr)
-	scope
-		if G_LIKELY((expr) <> NULL) then
-		else
-			g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should not be NULL")
-		end if
-	end scope
+	if G_LIKELY(-((expr) <> NULL)) then
+	else
+		g_assertion_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, "'" #expr "' should not be NULL")
+	end if
 #endmacro
-#define g_assert_not_reached() g_assertion_message_expr(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, NULL)
+#define g_assert_not_reached() scope : g_assertion_message_expr(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, NULL) : end scope
 #macro g_assert(expr)
-	scope
-		if G_LIKELY(expr) then
-		else
-			g_assertion_message_expr(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #expr)
-		end if
-	end scope
+	if G_LIKELY(expr) then
+	else
+		g_assertion_message_expr(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #expr)
+	end if
 #endmacro
 
 declare function g_strcmp0(byval str1 as const zstring ptr, byval str2 as const zstring ptr) as long
@@ -3396,14 +3382,7 @@ declare function g_test_failed() as gboolean
 declare sub g_test_set_nonfatal_assertions()
 #macro g_test_add(testpath, Fixture, tdata, fsetup, ftest, fteardown)
 	scope
-		var add_vtable = cast(sub cdecl( _
-			byval as const zstring ptr, _
-			byval as gsize, _
-			byval as gconstpointer, _
-			byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), _
-			byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), _
-			byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer) _
-		), @g_test_add_vtable)
+		dim add_vtable as sub cdecl(byval as const zstring ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)) = cptr(sub cdecl(byval as const zstring ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)), @g_test_add_vtable)
 		add_vtable(testpath, sizeof(Fixture), tdata, fsetup, ftest, fteardown)
 	end scope
 #endmacro
@@ -3921,7 +3900,7 @@ const G_ALLOCATOR_NODE = 3
 #define g_chunk_new(type, chunk) cptr(type ptr, g_mem_chunk_alloc(chunk))
 #define g_chunk_new0(type, chunk) cptr(type ptr, g_mem_chunk_alloc0(chunk))
 #define g_chunk_free(mem, mem_chunk) g_mem_chunk_free(mem_chunk, mem)
-#define g_mem_chunk_create(type, x, y) g_mem_chunk_new(NULL, sizeof((type)), 0, 0)
+#define g_mem_chunk_create(type, x, y) g_mem_chunk_new(NULL, sizeof(type), 0, 0)
 
 declare function g_mem_chunk_new(byval name as const zstring ptr, byval atom_size as gint, byval area_size as gsize, byval type as gint) as GMemChunk ptr
 declare sub g_mem_chunk_destroy(byval mem_chunk as GMemChunk ptr)

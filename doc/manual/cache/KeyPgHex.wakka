@@ -34,7 +34,7 @@ Returns the hexadecimal of the given number
 
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for a ##[[KeyPgLong long]]##, 16 for a ##[[KeyPgLongint longint]])##.
 
-	If you want to do the opposite, i.e. convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgValint Valint]]("&HFF")##
+	If you want to do the opposite, i.e. convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it to an integer type, using a function like ##[[KeyPgCint Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint Cint]]("&HFF")##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/hex.bas"}}%%(freebasic)

@@ -30,6 +30,9 @@
 #include once "glib-object.bi"
 #include once "glib.bi"
 
+'' The following symbols have been renamed:
+''     constant ATK_HYPERLINK_IS_INLINE => ATK_HYPERLINK_IS_INLINE_
+
 #ifdef __FB_WIN32__
 #pragma push(msbitfields)
 #endif

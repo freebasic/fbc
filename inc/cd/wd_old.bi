@@ -1,59 +1,91 @@
+'' FreeBASIC binding for cd-5.8.1
 ''
+'' based on the C header files:
+''   Copyright (C) 1994-2014 Tecgraf, PUC-Rio.
 ''
-'' wd_old -- header translated with help of SWIG FB wrapper
+''   Permission is hereby granted, free of charge, to any person obtaining
+''   a copy of this software and associated documentation files (the
+''   "Software"), to deal in the Software without restriction, including
+''   without limitation the rights to use, copy, modify, merge, publish,
+''   distribute, sublicense, and/or sell copies of the Software, and to
+''   permit persons to whom the Software is furnished to do so, subject to
+''   the following conditions:
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   The above copyright notice and this permission notice shall be
+''   included in all copies or substantial portions of the Software.
 ''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ''
-#ifndef __wd_old_bi__
-#define __wd_old_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-declare sub wdWindow cdecl alias "wdWindow" (byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare sub wdGetWindow cdecl alias "wdGetWindow" (byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
-declare sub wdViewport cdecl alias "wdViewport" (byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub wdGetViewport cdecl alias "wdGetViewport" (byval xmin as integer ptr, byval xmax as integer ptr, byval ymin as integer ptr, byval ymax as integer ptr)
-declare sub wdWorld2Canvas cdecl alias "wdWorld2Canvas" (byval xw as double, byval yw as double, byval xv as integer ptr, byval yv as integer ptr)
-declare sub wdWorld2CanvasSize cdecl alias "wdWorld2CanvasSize" (byval hw as double, byval vw as double, byval hv as integer ptr, byval vv as integer ptr)
-declare sub wdCanvas2World cdecl alias "wdCanvas2World" (byval xv as integer, byval yv as integer, byval xw as double ptr, byval yw as double ptr)
-declare sub wdClipArea cdecl alias "wdClipArea" (byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare function wdGetClipArea cdecl alias "wdGetClipArea" (byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr) as integer
-declare function wdGetClipPoly cdecl alias "wdGetClipPoly" (byval n as integer ptr) as double ptr
-declare function wdPointInRegion cdecl alias "wdPointInRegion" (byval x as double, byval y as double) as integer
-declare sub wdOffsetRegion cdecl alias "wdOffsetRegion" (byval x as double, byval y as double)
-declare sub wdRegionBox cdecl alias "wdRegionBox" (byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
-declare sub wdHardcopy cdecl alias "wdHardcopy" (byval ctx as cdContext ptr, byval data as any ptr, byval cnv as cdCanvas ptr, byval draw_func as sub cdecl())
-declare sub wdPixel cdecl alias "wdPixel" (byval x as double, byval y as double, byval color as integer)
-declare sub wdMark cdecl alias "wdMark" (byval x as double, byval y as double)
-declare sub wdLine cdecl alias "wdLine" (byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
-declare sub wdVertex cdecl alias "wdVertex" (byval x as double, byval y as double)
-declare sub wdRect cdecl alias "wdRect" (byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare sub wdBox cdecl alias "wdBox" (byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
-declare sub wdArc cdecl alias "wdArc" (byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub wdSector cdecl alias "wdSector" (byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub wdChord cdecl alias "wdChord" (byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
-declare sub wdText cdecl alias "wdText" (byval x as double, byval y as double, byval s as zstring ptr)
-declare sub wdPutImageRect cdecl alias "wdPutImageRect" (byval image as cdImage ptr, byval x as double, byval y as double, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub wdPutImageRectRGB cdecl alias "wdPutImageRectRGB" (byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub wdPutImageRectRGBA cdecl alias "wdPutImageRectRGBA" (byval iw as integer, byval ih as integer, byval r as ubyte ptr, byval g as ubyte ptr, byval b as ubyte ptr, byval a as ubyte ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub wdPutImageRectMap cdecl alias "wdPutImageRectMap" (byval iw as integer, byval ih as integer, byval index as ubyte ptr, byval colors as integer ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as integer, byval xmax as integer, byval ymin as integer, byval ymax as integer)
-declare sub wdPutBitmap cdecl alias "wdPutBitmap" (byval bitmap as cdBitmap ptr, byval x as double, byval y as double, byval w as double, byval h as double)
-declare function wdLineWidth cdecl alias "wdLineWidth" (byval width as double) as double
-declare sub wdFont cdecl alias "wdFont" (byval type_face as integer, byval style as integer, byval size as double)
-declare sub wdGetFont cdecl alias "wdGetFont" (byval type_face as integer ptr, byval style as integer ptr, byval size as double ptr)
-declare function wdMarkSize cdecl alias "wdMarkSize" (byval size as double) as double
-declare sub wdFontDim cdecl alias "wdFontDim" (byval max_width as double ptr, byval height as double ptr, byval ascent as double ptr, byval descent as double ptr)
-declare sub wdTextSize cdecl alias "wdTextSize" (byval s as zstring ptr, byval width as double ptr, byval height as double ptr)
-declare sub wdTextBox cdecl alias "wdTextBox" (byval x as double, byval y as double, byval s as zstring ptr, byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
-declare sub wdTextBounds cdecl alias "wdTextBounds" (byval x as double, byval y as double, byval s as zstring ptr, byval rect as double ptr)
-declare sub wdStipple cdecl alias "wdStipple" (byval w as integer, byval h as integer, byval stipple as ubyte ptr, byval w_mm as double, byval h_mm as double)
-declare sub wdPattern cdecl alias "wdPattern" (byval w as integer, byval h as integer, byval pattern as integer ptr, byval w_mm as double, byval h_mm as double)
-declare sub wdVectorTextDirection cdecl alias "wdVectorTextDirection" (byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
-declare sub wdVectorTextSize cdecl alias "wdVectorTextSize" (byval size_x as double, byval size_y as double, byval s as zstring ptr)
-declare sub wdGetVectorTextSize cdecl alias "wdGetVectorTextSize" (byval s as zstring ptr, byval x as double ptr, byval y as double ptr)
-declare function wdVectorCharSize cdecl alias "wdVectorCharSize" (byval size as double) as double
-declare sub wdVectorText cdecl alias "wdVectorText" (byval x as double, byval y as double, byval s as zstring ptr)
-declare sub wdMultiLineVectorText cdecl alias "wdMultiLineVectorText" (byval x as double, byval y as double, byval s as zstring ptr)
-declare sub wdGetVectorTextBounds cdecl alias "wdGetVectorTextBounds" (byval s as zstring ptr, byval x as double, byval y as double, byval rect as double ptr)
+#pragma once
 
-#endif
+#include once "crt/long.bi"
+
+extern "C"
+
+#define WD_OLD_H
+declare sub wdWindow(byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare sub wdGetWindow(byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
+declare sub wdViewport(byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long)
+declare sub wdGetViewport(byval xmin as long ptr, byval xmax as long ptr, byval ymin as long ptr, byval ymax as long ptr)
+declare sub wdWorld2Canvas(byval xw as double, byval yw as double, byval xv as long ptr, byval yv as long ptr)
+declare sub wdWorld2CanvasSize(byval hw as double, byval vw as double, byval hv as long ptr, byval vv as long ptr)
+declare sub wdCanvas2World(byval xv as long, byval yv as long, byval xw as double ptr, byval yw as double ptr)
+declare sub wdClipArea(byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare function wdGetClipArea(byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr) as long
+declare function wdGetClipPoly(byval n as long ptr) as double ptr
+declare function wdPointInRegion(byval x as double, byval y as double) as long
+declare sub wdOffsetRegion(byval x as double, byval y as double)
+declare sub wdRegionBox(byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
+declare sub wdHardcopy(byval ctx as cdContext ptr, byval data as any ptr, byval cnv as cdCanvas ptr, byval draw_func as sub())
+declare sub wdPixel(byval x as double, byval y as double, byval color as clong)
+declare sub wdMark(byval x as double, byval y as double)
+declare sub wdLine(byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
+declare sub wdVertex(byval x as double, byval y as double)
+declare sub wdRect(byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare sub wdBox(byval xmin as double, byval xmax as double, byval ymin as double, byval ymax as double)
+declare sub wdArc(byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub wdSector(byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub wdChord(byval xc as double, byval yc as double, byval w as double, byval h as double, byval angle1 as double, byval angle2 as double)
+declare sub wdText(byval x as double, byval y as double, byval s as const zstring ptr)
+declare sub wdPutImageRect(byval image as cdImage ptr, byval x as double, byval y as double, byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long)
+declare sub wdPutImageRectRGB(byval iw as long, byval ih as long, byval r as const ubyte ptr, byval g as const ubyte ptr, byval b as const ubyte ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long)
+declare sub wdPutImageRectRGBA(byval iw as long, byval ih as long, byval r as const ubyte ptr, byval g as const ubyte ptr, byval b as const ubyte ptr, byval a as const ubyte ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long)
+declare sub wdPutImageRectMap(byval iw as long, byval ih as long, byval index as const ubyte ptr, byval colors as const clong ptr, byval x as double, byval y as double, byval w as double, byval h as double, byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long)
+declare sub wdPutBitmap(byval bitmap as cdBitmap ptr, byval x as double, byval y as double, byval w as double, byval h as double)
+declare function wdLineWidth(byval width as double) as double
+declare sub wdFont(byval type_face as long, byval style as long, byval size as double)
+declare sub wdGetFont(byval type_face as long ptr, byval style as long ptr, byval size as double ptr)
+declare function wdMarkSize(byval size as double) as double
+declare sub wdFontDim(byval max_width as double ptr, byval height as double ptr, byval ascent as double ptr, byval descent as double ptr)
+declare sub wdTextSize(byval s as const zstring ptr, byval width as double ptr, byval height as double ptr)
+declare sub wdTextBox(byval x as double, byval y as double, byval s as const zstring ptr, byval xmin as double ptr, byval xmax as double ptr, byval ymin as double ptr, byval ymax as double ptr)
+declare sub wdTextBounds(byval x as double, byval y as double, byval s as const zstring ptr, byval rect as double ptr)
+declare sub wdStipple(byval w as long, byval h as long, byval stipple as const ubyte ptr, byval w_mm as double, byval h_mm as double)
+declare sub wdPattern(byval w as long, byval h as long, byval pattern as const clong ptr, byval w_mm as double, byval h_mm as double)
+declare sub wdVectorTextDirection(byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double)
+declare sub wdVectorTextSize(byval size_x as double, byval size_y as double, byval s as const zstring ptr)
+declare sub wdGetVectorTextSize(byval s as const zstring ptr, byval x as double ptr, byval y as double ptr)
+declare function wdVectorCharSize(byval size as double) as double
+declare sub wdVectorText(byval x as double, byval y as double, byval s as const zstring ptr)
+declare sub wdMultiLineVectorText(byval x as double, byval y as double, byval s as const zstring ptr)
+declare sub wdGetVectorTextBounds(byval s as const zstring ptr, byval x as double, byval y as double, byval rect as double ptr)
+
+#define wdVectorFont cdVectorFont
+#define wdVectorTextTransform cdVectorTextTransform
+#define wdActivate cdActivate
+#define wdClip(mode) cdClip(mode)
+#define wdBegin(mode) cdBegin(mode)
+#define wdEnd() cdEnd()
+#define wdMM2Pixel(mm_dx, mm_dy, dx, dy) cdMM2Pixel(mm_dx, mm_dy, dx, dy)
+#define wdPixel2MM(dx, dy, mm_dx, mm_dy) cdPixel2MM(dx, dy, mm_dx, mm_dy)
+
+end extern

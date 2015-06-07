@@ -22,6 +22,10 @@
 #include once "_bsd_types.bi"
 #include once "inaddr.bi"
 
+'' The following symbols have been renamed:
+''     procedure select => select_
+''     procedure socket => socket_
+
 extern "Windows"
 
 #define _WINSOCKAPI_
@@ -55,11 +59,7 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 		wend
 	end scope
 #endmacro
-#macro FD_ZERO(set)
-	scope
-		cptr(fd_set ptr, set)->fd_count = 0
-	end scope
-#endmacro
+#define FD_ZERO(set) scope : cptr(FD_SET ptr, (set))->fd_count = 0 : end scope
 #define FD_ISSET(fd, set) __WSAFDIsSet(cast(SOCKET, (fd)), cptr(FD_SET ptr, (set)))
 #define _FD_SET_WINSOCK_DEFINED
 #macro FD_SET_(fd, set)
@@ -197,8 +197,8 @@ const IOC_OUT = &h40000000
 const IOC_IN = &h80000000
 #define IOC_INOUT (IOC_IN or IOC_OUT)
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
-#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
-#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
 #define FIONREAD _IOR(asc("f"), 127, u_long)
 #define FIONBIO _IOW(asc("f"), 126, u_long)
 #define FIOASYNC _IOW(asc("f"), 125, u_long)
@@ -246,17 +246,17 @@ const IPPORT_RESERVED = 1024
 const IMPLINK_IP = 155
 const IMPLINK_LOWEXPER = 156
 const IMPLINK_HIGHEXPER = 158
-#define IN_CLASSA(i) ((clng((i)) and &h80000000) = 0)
+#define IN_CLASSA(i) ((clng(i) and &h80000000) = 0)
 const IN_CLASSA_NET = &hff000000
 const IN_CLASSA_NSHIFT = 24
 const IN_CLASSA_HOST = &h00ffffff
 const IN_CLASSA_MAX = 128
-#define IN_CLASSB(i) ((clng((i)) and &hc0000000) = &h80000000)
+#define IN_CLASSB(i) ((clng(i) and &hc0000000) = &h80000000)
 const IN_CLASSB_NET = &hffff0000
 const IN_CLASSB_NSHIFT = 16
 const IN_CLASSB_HOST = &h0000ffff
 const IN_CLASSB_MAX = 65536
-#define IN_CLASSC(i) ((clng((i)) and &he0000000) = &hc0000000)
+#define IN_CLASSC(i) ((clng(i) and &he0000000) = &hc0000000)
 const IN_CLASSC_NET = &hffffff00
 const IN_CLASSC_NSHIFT = 8
 const IN_CLASSC_HOST = &h000000ff
@@ -406,11 +406,13 @@ declare function ntohs(byval netshort as u_short) as u_short
 declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long) as long
 declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long, byval from as SOCKADDR ptr, byval fromlen as long ptr) as long
 declare function select_ alias "select"(byval nfds as long, byval readfds as FD_SET ptr, byval writefds as FD_SET ptr, byval exceptfds as FD_SET ptr, byval timeout as const PTIMEVAL) as long
+#define selectsocket select_
 declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long) as long
 declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
-declare function socket(byval af as long, byval type as long, byval protocol as long) as SOCKET
+declare function socket_ alias "socket"(byval af as long, byval type as long, byval protocol as long) as SOCKET
+#define opensocket socket_
 declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
 declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
 declare function gethostname(byval name as zstring ptr, byval namelen as long) as long

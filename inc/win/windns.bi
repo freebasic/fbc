@@ -64,7 +64,7 @@ const IP6_ADDRESS_STRING_BUFFER_LENGTH = 48
 #macro INLINE_DWORD_FLIP(out, in)
 	scope
 		dim _in as DWORD = (in)
-		(out) = ((_in shl 8) and &h00ff0000) or (_in shl 24) or ((_in shr 8) and &h0000ff00) or (_in shr 24)
+		(out) = ((((_in shl 8) and &h00ff0000) or (_in shl 24)) or ((_in shr 8) and &h0000ff00)) or (_in shr 24)
 	end scope
 #endmacro
 #define INLINE_NTOHL(out, in) INLINE_DWORD_FLIP(out, in)
@@ -896,7 +896,7 @@ type PDNS_RRSET as _DnsRRSet ptr
 	scope
 		dim _prrset as PDNS_RRSET = @(rrset)
 		_prrset->pFirstRR = NULL
-		_prrset->pLastRR = cptr(PDNS_RECORD, @_prrset->pFirstRR)
+		_prrset->pLastRR = cast(PDNS_RECORD, @_prrset->pFirstRR)
 	end scope
 #endmacro
 #macro DNS_RRSET_ADD(rrset, pnewRR)

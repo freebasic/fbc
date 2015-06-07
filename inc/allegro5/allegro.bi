@@ -149,19 +149,16 @@ const ALLEGRO_LITTLE_ENDIAN = 1
 	#define ALLEGRO_I386
 #endif
 
-#define READ3BYTES(p) _
-	( cptr(ubyte ptr, (p))[0]        or _
-	 (cptr(ubyte ptr, (p))[1] shl 8) or _
-	 (cptr(ubyte ptr, (p))[2] shl 16) )
+#define READ3BYTES(p) (((*cptr(ubyte ptr, (p))) or ((*(cptr(ubyte ptr, (p)) + 1)) shl 8)) or ((*(cptr(ubyte ptr, (p)) + 2)) shl 16))
 #macro WRITE3BYTES(p, c)
 	scope
-		cptr(ubyte ptr, (p))[0] = (c)
-		cptr(ubyte ptr, (p))[1] = (c) shr 8
-		cptr(ubyte ptr, (p))[2] = (c) shr 16
+		(*cptr(ubyte ptr, (p))) = (c)
+		(*(cptr(ubyte ptr, (p)) + 1)) = (c) shr 8
+		(*(cptr(ubyte ptr, (p)) + 2)) = (c) shr 16
 	end scope
 #endmacro
-#define bmp_write16(addr, c) *cptr(ushort ptr, (addr)) = (c)
-#define bmp_write32(addr, c) *cptr(ulong ptr, (addr)) = (c)
+#define bmp_write16(addr, c) scope : (*cptr(ushort ptr, (addr))) = (c) : end scope
+#define bmp_write32(addr, c) scope : (*cptr(ulong ptr, (addr))) = (c) : end scope
 #define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
 #define bmp_read32(addr) (*cptr(ulong ptr, (addr)))
 #define AL_RAND() rand()

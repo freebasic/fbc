@@ -37,198 +37,69 @@ sub test cdecl( )
 	CU_ASSERT( strptr(s) = NULL )
 
 	'' PP typeof()'s result is upper-cased
-	#if typeof( s ) = "string"
-		CU_FAIL( )
-		i = 1
-	#else
-		CU_PASS( )
-		i = 2
-	#endif
-	CU_ASSERT( i = 2 )
+	#assert typeof( s ) <> "string"
 
-	i = 0
-	#if typeof( s ) = "STRING"
-		CU_PASS( )
-		i = 1
-	#else
-		CU_FAIL( )
-		i = 2
-	#endif
-	CU_ASSERT( i = 1 )
+	#assert typeof( s ) = "STRING"
+	#assert typeof( i ) = "INTEGER"
+	#assert typeof( pi ) = "INTEGER PTR"
+	#assert typeof( ppi ) = "INTEGER PTR PTR"
+	#assert typeof( pppi ) = "INTEGER PTR PTR PTR"
+	#assert typeof( ppppi ) = "INTEGER PTR PTR PTR PTR"
+	#assert typeof( pppppi ) = "INTEGER PTR PTR PTR PTR PTR"
+	#assert typeof( ppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR"
+	#assert typeof( pppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR PTR"
+	#assert typeof( ppppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR PTR PTR"
+	#assert typeof( pci ) = "CONST INTEGER PTR"
+	#assert typeof( cpi ) = "INTEGER CONST PTR"
+	#assert typeof( cpci ) = "CONST INTEGER CONST PTR"
 
-	#if typeof( i ) = "INTEGER"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
+	#assert typeof( integer ) <> typeof( const integer )
+	#assert typeof( integer const ptr ) <> typeof( integer ptr )
+	#assert typeof( integer const ptr ) <> typeof( const integer ptr )
+	#assert typeof( integer const ptr ) <> typeof( const integer const ptr )
+	#assert typeof( integer const ptr ) = typeof( integer const ptr )
 
-	#if typeof( pi ) = "INTEGER PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( ppi ) = "INTEGER PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( pppi ) = "INTEGER PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( ppppi ) = "INTEGER PTR PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( pppppi ) = "INTEGER PTR PTR PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( ppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( pppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( ppppppppi ) = "INTEGER PTR PTR PTR PTR PTR PTR PTR PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( pci ) = "CONST INTEGER PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( cpi ) = "INTEGER CONST PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( cpci ) = "CONST INTEGER CONST PTR"
-		CU_PASS( )
-	#else
-		CU_FAIL( )
-	#endif
-
-	#if typeof( integer ) = typeof( const integer )
-		CU_FAIL( )
-	#endif
-
-	#if typeof( integer const ptr ) = typeof( integer ptr )
-		CU_FAIL( )
-	#endif
-
-	#if typeof( integer const ptr ) = typeof( const integer ptr )
-		CU_FAIL( )
-	#endif
-
-	#if typeof( integer const ptr ) = typeof( const integer const ptr )
-		CU_FAIL( )
-	#endif
-
-	#if typeof( integer const ptr ) <> typeof( integer const ptr )
-		CU_FAIL( )
-	#endif
-
-	#if typeof( sub( ) ) <> typeof( sub( ) )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub( ) ) = typeof( sub( ) )
 
 	'' sub vs. function
-	#if typeof( sub( ) ) = typeof( function( ) as integer )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub( ) ) <> typeof( function( ) as integer )
 
 	'' Calling convention
-	#if typeof( sub cdecl( ) ) = typeof( sub stdcall( ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub cdecl( ) ) = typeof( sub pascal( ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub pascal( ) ) = typeof( sub stdcall( ) )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub cdecl( ) ) <> typeof( sub stdcall( ) )
+	#assert typeof( sub cdecl( ) ) <> typeof( sub pascal( ) )
+	#assert typeof( sub pascal( ) ) <> typeof( sub stdcall( ) )
 
 	'' Also compare against the default calling convention
 	#if defined( __FB_WIN32__ ) or defined( __FB_CYGWIN__ ) or defined( __FB_XBOX__ )
-		#if typeof( sub cdecl( ) ) = typeof( sub( ) )
-			CU_FAIL( )
-		#endif
+		#assert typeof( sub cdecl( ) ) <> typeof( sub( ) )
+		#assert typeof( sub stdcall( ) ) = typeof( sub( ) )
 	#else
-		#if typeof( sub stdcall( ) ) = typeof( sub( ) )
-			CU_FAIL( )
-		#endif
+		#assert typeof( sub cdecl( ) ) = typeof( sub( ) )
+		#assert typeof( sub stdcall( ) ) <> typeof( sub( ) )
 	#endif
 
 	'' Parameters
-	#if typeof( sub( as integer ) ) <> typeof( sub( as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( as byte ) ) = typeof( sub( as short ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( as single ) ) = typeof( sub( as double ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( as integer, as integer ) ) <> typeof( sub( as integer, as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( as integer, as integer ) ) = typeof( sub( as integer ) )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub( as integer ) ) = typeof( sub( as integer ) )
+	#assert typeof( sub( as byte ) ) <> typeof( sub( as short ) )
+	#assert typeof( sub( as single ) ) <> typeof( sub( as double ) )
+	#assert typeof( sub( as integer, as integer ) ) = typeof( sub( as integer, as integer ) )
+	#assert typeof( sub( as integer, as integer ) ) <> typeof( sub( as integer ) )
 
 	'' Parameter modes
-	#if typeof( sub( byval as integer ) ) = typeof( sub( byref as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( () as integer ) ) = typeof( sub( byref as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( () as integer ) ) = typeof( sub( byval as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub( as integer, byval as integer ) ) = typeof( sub( as integer, byref as integer ) )
-		CU_FAIL( )
-	#endif
-	#if typeof( sub cdecl( as integer, ... ) ) <> typeof( sub cdecl( as integer, ... ) )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub( byval as integer ) ) <> typeof( sub( byref as integer ) )
+	#assert typeof( sub( () as integer ) ) <> typeof( sub( byref as integer ) )
+	#assert typeof( sub( () as integer ) ) <> typeof( sub( byval as integer ) )
+	#assert typeof( sub( as integer, byval as integer ) ) <> typeof( sub( as integer, byref as integer ) )
+	#assert typeof( sub cdecl( as integer, ... ) ) = typeof( sub cdecl( as integer, ... ) )
 	'' -lang fb defaults to BYVAL, so this should be the same
-	#if typeof( sub( as integer ) ) <> typeof( sub( byval as integer ) )
-		CU_FAIL( )
-	#endif
+	#assert typeof( sub( as integer ) ) = typeof( sub( byval as integer ) )
 
 	'' Result type
-	#if typeof( function( ) as short ) = typeof( function( ) as integer )
-		CU_FAIL( )
-	#endif
+	#assert typeof( function( ) as short ) <> typeof( function( ) as integer )
 
 	'' Return Byref
-	#if typeof( function( ) byref as integer ) = typeof( function( ) as integer )
-		CU_FAIL( )
-	#endif
-	#if typeof( function( ) byref as integer ) <> typeof( function( ) byref as integer )
-		CU_FAIL( )
-	#endif
+	#assert typeof( function( ) byref as integer ) <> typeof( function( ) as integer )
+	#assert typeof( function( ) byref as integer ) = typeof( function( ) byref as integer )
 
 	'' Macro expansion of PP typeof()'s argument
 	#define myInteger integer
@@ -267,9 +138,44 @@ sub test cdecl( )
 	#endif
 end sub
 
+namespace namespaces
+	namespace a
+		type T
+			i as integer
+		end type
+	end namespace
+
+	namespace b
+		type T
+			s as single
+		end type
+	end namespace
+
+	'' The namespace prefix should be encoded in the typeof() result,
+	'' to allow the two T's to be differentiated
+	#assert typeof(a.T) = "FBC_TESTS.PP.TYPEOF_.NAMESPACES.A.T"
+	#assert typeof(b.T) = "FBC_TESTS.PP.TYPEOF_.NAMESPACES.B.T"
+	#assert typeof(a.T) <> typeof(b.T)
+
+	sub test cdecl( )
+		scope
+			using a
+			#assert typeof(T) = typeof(a.T)
+			#assert typeof(T) <> typeof(b.T)
+		end scope
+
+		scope
+			using b
+			#assert typeof(T) <> typeof(a.T)
+			#assert typeof(T) = typeof(b.T)
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/pp/typeof" )
 	fbcu.add_test( "typeof() with PP", @test )
+	fbcu.add_test( "namespaces", @namespaces.test )
 end sub
 
 end namespace

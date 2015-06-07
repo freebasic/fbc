@@ -54,8 +54,6 @@
 ''     typedef SIZE_T => SIZE_T_
 ''     typedef SSIZE_T => SSIZE_T_
 
-extern "C"
-
 #define _BASETSD_H_
 
 #ifdef __FB_64BIT__
@@ -69,8 +67,8 @@ extern "C"
 #define FIRMWARE_PTR
 #define POINTER_SIGNED
 #define POINTER_UNSIGNED
-#define SPOINTER_32 POINTER_SIGNED POINTER_32
-#define UPOINTER_32 POINTER_UNSIGNED POINTER_32
+#define SPOINTER_32 POINTER_SIGNED
+#define UPOINTER_32 POINTER_UNSIGNED
 
 type INT8 as byte
 type PINT8 as byte ptr
@@ -113,78 +111,27 @@ type PDWORD32 as ulong ptr
 	type HALF_PTR as long
 	type PHALF_PTR as long ptr
 
-	private function HandleToULong(byval h as const any ptr) as ulong
-		return culng(cast(ULONG_PTR, h))
-	end function
-
-	private function HandleToLong(byval h as const any ptr) as long
-		return clng(cast(LONG_PTR, h))
-	end function
-
-	private function ULongToHandle(byval h as const ulong) as any ptr
-		return cptr(any ptr, cast(UINT_PTR, h))
-	end function
-
-	private function LongToHandle(byval h as const long) as any ptr
-		return cptr(any ptr, cast(INT_PTR, h))
-	end function
-
-	private function PtrToUlong(byval p as const any ptr) as ulong
-		return culng(cast(ULONG_PTR, p))
-	end function
-
-	private function PtrToUint(byval p as const any ptr) as ulong
-		return culng(cast(UINT_PTR, p))
-	end function
-
-	private function PtrToUshort(byval p as const any ptr) as ushort
-		return cushort(culng(cast(ULONG_PTR, p)))
-	end function
-
-	private function PtrToLong(byval p as const any ptr) as long
-		return clng(cast(LONG_PTR, p))
-	end function
-
-	private function PtrToInt(byval p as const any ptr) as long
-		return clng(cast(INT_PTR, p))
-	end function
-
-	private function PtrToShort(byval p as const any ptr) as short
-		return cshort(clng(cast(LONG_PTR, p)))
-	end function
-
-	private function IntToPtr(byval i as const long) as any ptr
-		return cptr(any ptr, cast(INT_PTR, i))
-	end function
-
-	private function UIntToPtr(byval ui as const ulong) as any ptr
-		return cptr(any ptr, cast(UINT_PTR, ui))
-	end function
-
-	private function LongToPtr(byval l as const long) as any ptr
-		return cptr(any ptr, cast(LONG_PTR, l))
-	end function
-
-	private function ULongToPtr(byval ul as const ulong) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, ul))
-	end function
-
+	#define HandleToULong(h) culng(cast(ULONG_PTR, h))
+	#define HandleToLong(h) clng(cast(LONG_PTR, h))
+	#define ULongToHandle(h) cptr(any ptr, cast(UINT_PTR, h))
+	#define LongToHandle(h) cptr(any ptr, cast(INT_PTR, h))
+	#define PtrToUlong(p) culng(cast(ULONG_PTR, p))
+	#define PtrToUint(p) culng(cast(UINT_PTR, p))
+	#define PtrToUshort(p) cushort(culng(cast(ULONG_PTR, p)))
+	#define PtrToLong(p) clng(cast(LONG_PTR, p))
+	#define PtrToInt(p) clng(cast(INT_PTR, p))
+	#define PtrToShort(p) cshort(clng(cast(LONG_PTR, p)))
+	#define IntToPtr(i) cptr(any ptr, cast(INT_PTR, i))
+	#define UIntToPtr(ui) cptr(any ptr, cast(UINT_PTR, ui))
+	#define LongToPtr(l) cptr(any ptr, cast(LONG_PTR, l))
+	#define ULongToPtr(ul) cptr(any ptr, cast(ULONG_PTR, ul))
 	#define PtrToPtr64(p) cptr(any ptr, p)
 	#define Ptr64ToPtr(p) cptr(any ptr, p)
 	#define HandleToHandle64(h) PtrToPtr64(h)
 	#define Handle64ToHandle(h) Ptr64ToPtr(h)
-
-	private function Ptr32ToPtr(byval p as const any ptr) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, culng(cast(ULONG_PTR, p))))
-	end function
-
-	private function Handle32ToHandle(byval h as const any ptr) as any ptr
-		return cptr(any ptr, cast(LONG_PTR, clng(cast(ULONG_PTR, h))))
-	end function
-
-	private function PtrToPtr32(byval p as const any ptr) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, culng(cast(ULONG_PTR, p))))
-	end function
+	#define Ptr32ToPtr(p) cptr(any ptr, cast(ULONG_PTR, culng(cast(ULONG_PTR, p))))
+	#define Handle32ToHandle(h) cptr(any ptr, cast(LONG_PTR, clng(cast(ULONG_PTR, h))))
+	#define PtrToPtr32(p) cptr(any ptr, cast(ULONG_PTR, culng(cast(ULONG_PTR, p))))
 #else
 	type INT_PTR as long
 	type PINT_PTR as long ptr
@@ -217,23 +164,10 @@ type PDWORD32 as ulong ptr
 	#define UIntToPtr(ui) cptr(VOID ptr, cast(UINT_PTR, culng(ui)))
 	#define LongToPtr(l) cptr(VOID ptr, cast(LONG_PTR, clng(l)))
 	#define ULongToPtr(ul) cptr(VOID ptr, cast(ULONG_PTR, culng(ul)))
-
-	private function PtrToPtr64(byval p as const any ptr) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, p))
-	end function
-
-	private function Ptr64ToPtr(byval p as const any ptr) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, p))
-	end function
-
-	private function HandleToHandle64(byval h as const any ptr) as any ptr
-		return cptr(any ptr, cast(LONG_PTR, h))
-	end function
-
-	private function Handle64ToHandle(byval h as const any ptr) as any ptr
-		return cptr(any ptr, cast(ULONG_PTR, h))
-	end function
-
+	#define PtrToPtr64(p) cptr(any ptr, cast(ULONG_PTR, p))
+	#define Ptr64ToPtr(p) cptr(any ptr, cast(ULONG_PTR, p))
+	#define HandleToHandle64(h) cptr(any ptr, cast(LONG_PTR, h))
+	#define Handle64ToHandle(h) cptr(any ptr, cast(ULONG_PTR, h))
 	#define Ptr32ToPtr(p) cptr(any ptr, p)
 	#define Handle32ToHandle(h) Ptr32ToPtr(h)
 	#define PtrToPtr32(p) cptr(any ptr, p)
@@ -296,5 +230,3 @@ type DWORD64 as ulongint
 type PDWORD64 as ulongint ptr
 type KAFFINITY as ULONG_PTR
 type PKAFFINITY as KAFFINITY ptr
-
-end extern

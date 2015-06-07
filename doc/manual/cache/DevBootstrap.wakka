@@ -2,6 +2,18 @@
 
 fbc is written in FB itself, so you need a working fbc to build a new fbc. How to do this on a system where no working fbc exists yet? There are two options: pre-compiling (by cross-compiling) the fbc sources on a system where you have a working fbc and then taking the results to the target system, or full cross-compiling using a gcc cross-compiler toolchain.
 
+{{fbdoc item="section" value="Bootstrapping using the FreeBASIC-x.xx.x-source-bootstrap package (if available)"}}
+
+	The ""FreeBASIC-x.xx.x-source-bootstrap"" package contains the FB sources plus precompiled compiler sources, for multiple targets. After extracting, this can be built without requiring an existing fbc:
+	%%make bootstrap%%
+	
+	(as long as the package contains the precompiled sources for the target system)
+	
+	This package can be created by running:
+	%%make bootstrap-dist%%
+	
+	Doing ##make bootstrap-dist##, taking the package to the target system, and then doing ##make bootstrap## can replace the manual steps below, as long as the target is already supported by these commands in the FB makefile.
+
 {{fbdoc item="section" value="Bootstrapping by precompiling the compiler sources"}}
 
 	1) On Linux or ""Win32"" (or another system where you have a working fbc), use the existing fbc to cross-compile ##src/compiler/*.bas## into ##*.asm## (-gen gas, x86 only) or ##*.c## (-gen gcc, works for every target) files compatible to the target system:

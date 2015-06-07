@@ -12,10 +12,69 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 		The handle of a conditional variable, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Once the conditional is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+
+	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait Condwait]]##). If no threads are waiting on the conditional, nothing happens; if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait Condwait]]## routine to complete.
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgCondCreate Condcreate]]##
+	See also ##[[KeyPgCondCreate Condcreate]]## and ##[[KeyPgCondWait Condwait]]##
+
+{{fbdoc item="filename" value="examples/manual/threads/condsignal.bas"}}%%(freebasic)
+' This very simple example code demonstrates the use of several condition variable routines.
+' The main routine initializes a string and creates one thread.
+' The thread complementes the string, then sends a condition signal.
+' The main routine waits until receive the condition signal, then print the complemented string.
+'
+'Principle of mutual exclusion + simple synchronisation
+'          Thread#A                XOR + ==>            Thread#B
+'.....                                         .....
+'MutexLock(mut)                                MutexLock(mut)
+'  Do_something#A_with_exclusion                 While Thread#A_signal <> true
+'  Thread#A_signal = true                          CondWait(cond, mut)
+'  CondSignal(cond)                              Wend
+'MutexUnlock(mut)                                Do_something#B_with_exclusion
+'.....                                           Thread#A_signal = false
+'                                              MutexUnlock(mut)
+'                                              .....
+
+Dim Shared As Any Ptr mutex
+Dim Shared As Any Ptr cond
+Dim Shared As String txt
+Dim As Any Ptr pt
+Dim Shared As Integer ok = 0
+
+Sub thread (ByVal p As Any Ptr)
+	Print "thread is complementing the string"
+	MutexLock(mutex)
+	Sleep 400
+	txt &= " complemented by thread"
+	ok = 1
+	CondSignal(cond)
+	MutexUnlock(mutex)
+	Print "thread signals the processing completed"
+End Sub
+
+mutex = MutexCreate
+cond = CondCreate
+
+txt = "example of text"
+Print "main() initializes a string = " & txt
+Print "main creates one thread"
+Print
+pt = ThreadCreate(@thread)
+MutexLock(mutex)
+While ok <> 1
+	CondWait(cond, mutex)
+Wend
+Print
+Print "back in main(), the string = " & txt
+ok = 0
+MutexUnlock(mutex)
+
+ThreadWait(pt)
+MutexDestroy(mutex)
+CondDestroy(cond)
+%%
 
 {{fbdoc item="lang"}}
 	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//

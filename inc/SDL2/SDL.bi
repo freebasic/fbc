@@ -42,10 +42,13 @@
 #endif
 
 '' The following symbols have been renamed:
+''     constant SDL_UNSUPPORTED => SDL_UNSUPPORTED_
 ''     #ifdef __FB_WIN32__
 ''         procedure SDL_CreateThread => SDL_CreateThread_
 ''     #endif
+''     constant SDL_QUIT => SDL_QUIT_
 ''     procedure SDL_Log => SDL_Log_
+''     #define SDL_VERSION => SDL_VERSION_
 
 extern "C"
 
@@ -89,10 +92,10 @@ enum
 end enum
 
 #ifdef __FB_WIN32__
-	#define SDL_stack_alloc(type, count) cptr(type ptr, SDL_malloc(sizeof((type)) * (count)))
+	#define SDL_stack_alloc(type, count) cptr(type ptr, SDL_malloc(sizeof(type) * (count)))
 	#define SDL_stack_free(data) SDL_free(data)
 #else
-	#define SDL_stack_alloc(type, count) cptr(type ptr, alloca(sizeof((type)) * (count)))
+	#define SDL_stack_alloc(type, count) cptr(type ptr, alloca(sizeof(type) * (count)))
 	#define SDL_stack_free(data)
 #endif
 
@@ -111,7 +114,7 @@ declare function SDL_isspace(byval x as long) as long
 declare function SDL_toupper(byval x as long) as long
 declare function SDL_tolower(byval x as long) as long
 declare function SDL_memset(byval dst as any ptr, byval c as long, byval len as uinteger) as any ptr
-#define SDL_zero(x) SDL_memset(@(x), 0, sizeof((x)))
+#define SDL_zero(x) SDL_memset(@(x), 0, sizeof(x))
 #define SDL_zerop(x) SDL_memset((x), 0, sizeof(*(x)))
 #define SDL_memset4(dst, val, dwords) SDL_memset(dst, val, (dwords) * 4)
 declare function SDL_memcpy(byval dst as any ptr, byval src as const any ptr, byval len as uinteger) as any ptr

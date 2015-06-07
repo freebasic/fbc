@@ -124,8 +124,8 @@ end type
 type COLORSCHEME as tagCOLORSCHEME
 type LPCOLORSCHEME as tagCOLORSCHEME ptr
 const INFOTIPSIZE = 1024
-#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng((wParam)), cptr(NMHDR ptr, (lParam)))
-#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng((idFrom))), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
+#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng(wParam), cptr(NMHDR ptr, (lParam)))
+#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng(idFrom)), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
 #define NM_OUTOFMEMORY (NM_FIRST - 1)
 #define NM_CLICK (NM_FIRST - 2)
 #define NM_DBLCLK (NM_FIRST - 3)
@@ -637,9 +637,9 @@ const HDF_SORTDOWN = &h200
 	#define HDM_INSERTITEM HDM_INSERTITEMA
 #endif
 
-#define Header_InsertItem(hwndHD, i, phdi) clng(SNDMSG((hwndHD), HDM_INSERTITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
+#define Header_InsertItem(hwndHD, i, phdi) clng(SNDMSG((hwndHD), HDM_INSERTITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
 #define HDM_DELETEITEM (HDM_FIRST + 2)
-#define Header_DeleteItem(hwndHD, i) cast(WINBOOL, SNDMSG((hwndHD), HDM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define Header_DeleteItem(hwndHD, i) cast(WINBOOL, SNDMSG((hwndHD), HDM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define HDM_GETITEMA (HDM_FIRST + 3)
 #define HDM_GETITEMW (HDM_FIRST + 11)
 
@@ -649,7 +649,7 @@ const HDF_SORTDOWN = &h200
 	#define HDM_GETITEM HDM_GETITEMA
 #endif
 
-#define Header_GetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_GETITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(HD_ITEM ptr, (phdi)))))
+#define Header_GetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_GETITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(HD_ITEM ptr, (phdi)))))
 #define HDM_SETITEMA (HDM_FIRST + 4)
 #define HDM_SETITEMW (HDM_FIRST + 12)
 
@@ -659,7 +659,7 @@ const HDF_SORTDOWN = &h200
 	#define HDM_SETITEM HDM_SETITEMA
 #endif
 
-#define Header_SetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_SETITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
+#define Header_SetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_SETITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
 #define HD_LAYOUT HDLAYOUT
 
 type _HD_LAYOUT
@@ -2644,7 +2644,7 @@ const I_IMAGENONE = -2
 
 #define ListView_InsertItem(hwnd, pitem) clng(SNDMSG((hwnd), LVM_INSERTITEM, 0, cast(LPARAM, cptr(const LV_ITEM ptr, (pitem)))))
 #define LVM_DELETEITEM (LVM_FIRST + 8)
-#define ListView_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define ListView_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define LVM_DELETEALLITEMS (LVM_FIRST + 9)
 #define ListView_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEALLITEMS, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define LVM_GETCALLBACKMASK (LVM_FIRST + 10)
@@ -2667,7 +2667,7 @@ const LVNI_TOLEFT = &h400
 const LVNI_TORIGHT = &h800
 #define LVNI_DIRECTIONMASK (((LVNI_ABOVE or LVNI_BELOW) or LVNI_TOLEFT) or LVNI_TORIGHT)
 #define LVM_GETNEXTITEM (LVM_FIRST + 12)
-#define ListView_GetNextItem(hwnd, i, flags) clng(SNDMSG((hwnd), LVM_GETNEXTITEM, cast(WPARAM, clng((i))), MAKELPARAM((flags), 0)))
+#define ListView_GetNextItem(hwnd, i, flags) clng(SNDMSG((hwnd), LVM_GETNEXTITEM, cast(WPARAM, clng(i)), MAKELPARAM((flags), 0)))
 const LVFI_PARAM = &h1
 const LVFI_STRING = &h2
 const LVFI_PARTIAL = &h8
@@ -2714,7 +2714,7 @@ type LPFINDINFOW as tagLVFINDINFOW ptr
 	#define LVM_FINDITEM LVM_FINDITEMA
 #endif
 
-#define ListView_FindItem(hwnd, iStart, plvfi) clng(SNDMSG((hwnd), LVM_FINDITEM, cast(WPARAM, clng((iStart))), cast(LPARAM, cptr(const LV_FINDINFO ptr, (plvfi)))))
+#define ListView_FindItem(hwnd, iStart, plvfi) clng(SNDMSG((hwnd), LVM_FINDITEM, cast(WPARAM, clng(iStart)), cast(LPARAM, cptr(const LV_FINDINFO ptr, (plvfi)))))
 const LVIR_BOUNDS = 0
 const LVIR_ICON = 1
 const LVIR_LABEL = 2
@@ -2727,9 +2727,9 @@ private function ListView_GetItemRect(byval hwnd as HWND, byval i as long, byval
 	function = SNDMSG(hwnd, LVM_GETITEMRECT, cast(WPARAM, i), cast(LPARAM, prc))
 end function
 #define LVM_SETITEMPOSITION (LVM_FIRST + 15)
-#define ListView_SetItemPosition(hwndLV, i, x, y) cast(WINBOOL, SNDMSG((hwndLV), LVM_SETITEMPOSITION, cast(WPARAM, clng((i))), MAKELPARAM((x), (y))))
+#define ListView_SetItemPosition(hwndLV, i, x, y) cast(WINBOOL, SNDMSG((hwndLV), LVM_SETITEMPOSITION, cast(WPARAM, clng(i)), MAKELPARAM((x), (y))))
 #define LVM_GETITEMPOSITION (LVM_FIRST + 16)
-#define ListView_GetItemPosition(hwndLV, i, ppt) cast(WINBOOL, SNDMSG((hwndLV), LVM_GETITEMPOSITION, cast(WPARAM, clng((i))), cast(LPARAM, cptr(POINT ptr, (ppt)))))
+#define ListView_GetItemPosition(hwndLV, i, ppt) cast(WINBOOL, SNDMSG((hwndLV), LVM_GETITEMPOSITION, cast(WPARAM, clng(i)), cast(LPARAM, cptr(POINT ptr, (ppt)))))
 #define LVM_GETSTRINGWIDTHA (LVM_FIRST + 17)
 #define LVM_GETSTRINGWIDTHW (LVM_FIRST + 87)
 
@@ -2776,11 +2776,11 @@ type LPLVHITTESTINFO as tagLVHITTESTINFO ptr
 #define LVM_HITTEST (LVM_FIRST + 18)
 #define ListView_HitTest(hwndLV, pinfo) clng(SNDMSG((hwndLV), LVM_HITTEST, 0, cast(LPARAM, cptr(LV_HITTESTINFO ptr, (pinfo)))))
 #define LVM_ENSUREVISIBLE (LVM_FIRST + 19)
-#define ListView_EnsureVisible(hwndLV, i, fPartialOK) cast(WINBOOL, SNDMSG((hwndLV), LVM_ENSUREVISIBLE, cast(WPARAM, clng((i))), MAKELPARAM((fPartialOK), 0)))
+#define ListView_EnsureVisible(hwndLV, i, fPartialOK) cast(WINBOOL, SNDMSG((hwndLV), LVM_ENSUREVISIBLE, cast(WPARAM, clng(i)), MAKELPARAM((fPartialOK), 0)))
 #define LVM_SCROLL (LVM_FIRST + 20)
-#define ListView_Scroll(hwndLV, dx, dy) cast(WINBOOL, SNDMSG((hwndLV), LVM_SCROLL, cast(WPARAM, clng((dx))), cast(LPARAM, clng((dy)))))
+#define ListView_Scroll(hwndLV, dx, dy) cast(WINBOOL, SNDMSG((hwndLV), LVM_SCROLL, cast(WPARAM, clng(dx)), cast(LPARAM, clng(dy))))
 #define LVM_REDRAWITEMS (LVM_FIRST + 21)
-#define ListView_RedrawItems(hwndLV, iFirst, iLast) cast(WINBOOL, SNDMSG((hwndLV), LVM_REDRAWITEMS, cast(WPARAM, clng((iFirst))), cast(LPARAM, clng((iLast)))))
+#define ListView_RedrawItems(hwndLV, iFirst, iLast) cast(WINBOOL, SNDMSG((hwndLV), LVM_REDRAWITEMS, cast(WPARAM, clng(iFirst)), cast(LPARAM, clng(iLast))))
 const LVA_DEFAULT = &h0
 const LVA_ALIGNLEFT = &h1
 const LVA_ALIGNTOP = &h2
@@ -2796,7 +2796,7 @@ const LVA_SNAPTOGRID = &h5
 	#define LVM_EDITLABEL LVM_EDITLABELA
 #endif
 
-#define ListView_EditLabel(hwndLV, i) cast(HWND, SNDMSG((hwndLV), LVM_EDITLABEL, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define ListView_EditLabel(hwndLV, i) cast(HWND, SNDMSG((hwndLV), LVM_EDITLABEL, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define LVM_GETEDITCONTROL (LVM_FIRST + 24)
 #define ListView_GetEditControl(hwndLV) cast(HWND, SNDMSG((hwndLV), LVM_GETEDITCONTROL, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define LV_COLUMNA LVCOLUMNA
@@ -2897,7 +2897,7 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_GETCOLUMN LVM_GETCOLUMNA
 #endif
 
-#define ListView_GetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_GETCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(LV_COLUMN ptr, (pcol)))))
+#define ListView_GetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_GETCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(LV_COLUMN ptr, (pcol)))))
 #define LVM_SETCOLUMNA (LVM_FIRST + 26)
 #define LVM_SETCOLUMNW (LVM_FIRST + 96)
 
@@ -2907,7 +2907,7 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_SETCOLUMN LVM_SETCOLUMNA
 #endif
 
-#define ListView_SetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
+#define ListView_SetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
 #define LVM_INSERTCOLUMNA (LVM_FIRST + 27)
 #define LVM_INSERTCOLUMNW (LVM_FIRST + 97)
 
@@ -2917,19 +2917,19 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_INSERTCOLUMN LVM_INSERTCOLUMNA
 #endif
 
-#define ListView_InsertColumn(hwnd, iCol, pcol) clng(SNDMSG((hwnd), LVM_INSERTCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
+#define ListView_InsertColumn(hwnd, iCol, pcol) clng(SNDMSG((hwnd), LVM_INSERTCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
 #define LVM_DELETECOLUMN (LVM_FIRST + 28)
-#define ListView_DeleteColumn(hwnd, iCol) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETECOLUMN, cast(WPARAM, clng((iCol))), 0))
+#define ListView_DeleteColumn(hwnd, iCol) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETECOLUMN, cast(WPARAM, clng(iCol)), 0))
 #define LVM_GETCOLUMNWIDTH (LVM_FIRST + 29)
-#define ListView_GetColumnWidth(hwnd, iCol) clng(SNDMSG((hwnd), LVM_GETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), 0))
+#define ListView_GetColumnWidth(hwnd, iCol) clng(SNDMSG((hwnd), LVM_GETCOLUMNWIDTH, cast(WPARAM, clng(iCol)), 0))
 const LVSCW_AUTOSIZE = -1
 const LVSCW_AUTOSIZE_USEHEADER = -2
 #define LVM_SETCOLUMNWIDTH (LVM_FIRST + 30)
-#define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), MAKELPARAM((cx), 0)))
+#define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng(iCol)), MAKELPARAM((cx), 0)))
 #define LVM_GETHEADER (LVM_FIRST + 31)
 #define ListView_GetHeader(hwnd) cast(HWND, SNDMSG((hwnd), LVM_GETHEADER, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define LVM_CREATEDRAGIMAGE (LVM_FIRST + 33)
-#define ListView_CreateDragImage(hwnd, i, lpptUpLeft) cast(HIMAGELIST, SNDMSG((hwnd), LVM_CREATEDRAGIMAGE, cast(WPARAM, clng((i))), cast(LPARAM, cast(LPPOINT, (lpptUpLeft)))))
+#define ListView_CreateDragImage(hwnd, i, lpptUpLeft) cast(HIMAGELIST, SNDMSG((hwnd), LVM_CREATEDRAGIMAGE, cast(WPARAM, clng(i)), cast(LPARAM, cast(LPPOINT, (lpptUpLeft)))))
 #define LVM_GETVIEWRECT (LVM_FIRST + 34)
 #define ListView_GetViewRect(hwnd, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETVIEWRECT, 0, cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETTEXTCOLOR (LVM_FIRST + 35)
@@ -3010,7 +3010,7 @@ type PFNLVCOMPARE as function(byval as LPARAM, byval as LPARAM, byval as LPARAM)
 		dim ptNewPos as POINT
 		ptNewPos.x = x0
 		ptNewPos.y = y0
-		SNDMSG((hwndLV), LVM_SETITEMPOSITION32, cast(WPARAM, clng((i))), cast(LPARAM, @ptNewPos))
+		SNDMSG((hwndLV), LVM_SETITEMPOSITION32, cast(WPARAM, clng(i)), cast(LPARAM, @ptNewPos))
 	end scope
 #endmacro
 #define LVM_GETSELECTEDCOUNT (LVM_FIRST + 50)
@@ -3095,9 +3095,9 @@ end function
 #define ListView_ApproximateViewRect(hwnd, iWidth, iHeight, iCount) cast(DWORD, SNDMSG((hwnd), LVM_APPROXIMATEVIEWRECT, iCount, MAKELPARAM(iWidth, iHeight)))
 const LV_MAX_WORKAREAS = 16
 #define LVM_SETWORKAREAS (LVM_FIRST + 65)
-#define ListView_SetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_SETWORKAREAS, cast(WPARAM, clng((nWorkAreas))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define ListView_SetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_SETWORKAREAS, cast(WPARAM, clng(nWorkAreas)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETWORKAREAS (LVM_FIRST + 70)
-#define ListView_GetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETWORKAREAS, cast(WPARAM, clng((nWorkAreas))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define ListView_GetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETWORKAREAS, cast(WPARAM, clng(nWorkAreas)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETNUMBEROFWORKAREAS (LVM_FIRST + 73)
 #define ListView_GetNumberOfWorkAreas(hwnd, pnWorkAreas) cast(WINBOOL, SNDMSG((hwnd), LVM_GETNUMBEROFWORKAREAS, 0, cast(LPARAM, cptr(UINT ptr, (pnWorkAreas)))))
 #define LVM_GETSELECTIONMARK (LVM_FIRST + 66)
@@ -4900,7 +4900,7 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_GETITEM TCM_GETITEMA
 #endif
 
-#define TabCtrl_GetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
+#define TabCtrl_GetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
 #define TCM_SETITEMA (TCM_FIRST + 6)
 #define TCM_SETITEMW (TCM_FIRST + 61)
 
@@ -4910,7 +4910,7 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_SETITEM TCM_SETITEMA
 #endif
 
-#define TabCtrl_SetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_SETITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
+#define TabCtrl_SetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_SETITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
 #define TCM_INSERTITEMA (TCM_FIRST + 7)
 #define TCM_INSERTITEMW (TCM_FIRST + 62)
 
@@ -4920,13 +4920,13 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_INSERTITEM TCM_INSERTITEMA
 #endif
 
-#define TabCtrl_InsertItem(hwnd, iItem, pitem) clng(SNDMSG((hwnd), TCM_INSERTITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(const TC_ITEM ptr, (pitem)))))
+#define TabCtrl_InsertItem(hwnd, iItem, pitem) clng(SNDMSG((hwnd), TCM_INSERTITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(const TC_ITEM ptr, (pitem)))))
 #define TCM_DELETEITEM (TCM_FIRST + 8)
-#define TabCtrl_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define TabCtrl_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define TCM_DELETEALLITEMS (TCM_FIRST + 9)
 #define TabCtrl_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEALLITEMS, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define TCM_GETITEMRECT (TCM_FIRST + 10)
-#define TabCtrl_GetItemRect(hwnd, i, prc) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEMRECT, cast(WPARAM, clng((i))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define TabCtrl_GetItemRect(hwnd, i, prc) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEMRECT, cast(WPARAM, clng(i)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define TCM_GETCURSEL (TCM_FIRST + 11)
 #define TabCtrl_GetCurSel(hwnd) clng(SNDMSG((hwnd), TCM_GETCURSEL, 0, 0))
 #define TCM_SETCURSEL (TCM_FIRST + 12)
@@ -6009,7 +6009,7 @@ declare function DPA_GetPtr(byval hdpa as HDPA, byval i as INT_PTR) as PVOID
 declare function DPA_GetPtrIndex(byval hdpa as HDPA, byval p as const any ptr) as long
 
 #define DPA_GetPtrCount(hdpa) (*cptr(long ptr, (hdpa)))
-#define DPA_SetPtrCount(hdpa, cItems) scope : *cptr(long ptr, (hdpa)) = (cItems) : end scope
+#define DPA_SetPtrCount(hdpa, cItems) scope : (*cptr(long ptr, (hdpa))) = (cItems) : end scope
 #define DPA_FastDeleteLastPtr(hdpa) scope : *cptr(long ptr, (hdpa)) -= 1 : end scope
 #define DPA_GetPtrPtr(hdpa) (*cptr(any ptr ptr ptr, cptr(UBYTE ptr, (hdpa)) + sizeof(any ptr)))
 #define DPA_FastGetPtr(hdpa, i) DPA_GetPtrPtr(hdpa)[i]

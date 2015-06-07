@@ -131,8 +131,8 @@ declare function SDLNet_Read32_ alias "SDLNet_Read32"(byval area as any ptr) as 
 #define SDLNet_SetError SDL_SetError
 #define SDLNet_GetError SDL_GetError
 const SDL_DATA_ALIGNED = 0
-#define SDLNet_Write16(value, areap) scope : *cptr(Uint16 ptr, areap) = SDL_SwapBE16(value) : end scope
-#define SDLNet_Write32(value, areap) scope : *cptr(Uint32 ptr, areap) = SDL_SwapBE32(value) : end scope
+#define SDLNet_Write16(value, areap) scope : (*cptr(Uint16 ptr, areap)) = SDL_SwapBE16(value) : end scope
+#define SDLNet_Write32(value, areap) scope : (*cptr(Uint32 ptr, areap)) = SDL_SwapBE32(value) : end scope
 #define SDLNet_Read16(areap) SDL_SwapBE16(*cptr(Uint16 ptr, areap))
 #define SDLNet_Read32(areap) SDL_SwapBE32(*cptr(Uint32 ptr, areap))
 

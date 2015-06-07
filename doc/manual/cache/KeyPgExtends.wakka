@@ -12,6 +12,10 @@ Specifies a base type from which to derive a new type
 	
 	User-defined types that extend another type will include the base type structure at their beginning, and their size as reported by ##[[KeyPgSizeOf sizeof()]]## is the sum of their base type's size plus the size needed for any regular members. Since the inherited members make sure that the structure is not empty, a derived type is not required to have regular members of its own.
 	
+	In ##//typename//## (the derived user-defined type), the fields can share the same memory space than the ##//base_typename//## only if ##//typename//## is a ##[[KeyPgUnion Union]]##. Here it does not matter whether ##//base_typename//## is a ##[[KeyPgUnion Union]]## or not.
+	If only ##//base_typename//## is a ##[[KeyPgUnion Union]]##, then it will not be affected by fields from ##//typename//## (the derived user-defined type).
+	As a ##[[KeyPgUnion Union]]## is not allowed to have complex fields (i.e. user-defined types with constructor/destructor, or dynamic strings), a derived ##[[KeyPgUnion Union]]## cannot be allowed to have (contain) a complex ##//base_typename//##.
+	
 	The ##[[KeyPgBaseInit Base (initializer)]]## keyword can be used at the top of constructor of derived user-defined type. It allows to specify an initializer or constructor call for the base type.
 	
 	Extending the built-in ##[[KeyPgObject Object]]## type allows a user-defined type to be used with ##[[KeyPgOpIs Operator Is]]## to perform run-time type checks, to support ##[[KeyPgVirtual Virtual]]## and ##[[KeyPgAbstract Abstract]]## methods, and to use the ##[[KeyPgOverride Override]]## method attribute.

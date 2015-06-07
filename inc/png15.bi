@@ -930,13 +930,13 @@ const PNG_INTERLACE_ADAM7_PASSES = 7
 #macro png_composite(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + 128)
-		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
+		(composite) = cast(png_byte, (temp + (temp shr 8)) shr 8)
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * (65535 - cast(png_uint_32, (alpha))))) + 32768)
-		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
+		(composite) = cast(png_uint_16, (temp + (temp shr 16)) shr 16)
 	end scope
 #endmacro
 

@@ -1044,13 +1044,13 @@ const PNG_IO_MASK_LOC = &h00f0
 #macro png_composite(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + cast(png_uint_16, 128))
-		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
+		(composite) = cast(png_byte, (temp + (temp shr 8)) shr 8)
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * cast(png_uint_32, cast(clong, 65535) - cast(png_uint_32, (alpha))))) + cast(png_uint_32, cast(clong, 32768)))
-		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
+		(composite) = cast(png_uint_16, (temp + (temp shr 16)) shr 16)
 	end scope
 #endmacro
 #define png_get_uint_32_(buf) ((((cast(png_uint_32, (*(buf)) and &hff) shl 24) + (cast(png_uint_32, (*((buf) + 1)) and &hff) shl 16)) + (cast(png_uint_32, (*((buf) + 2)) and &hff) shl 8)) + cast(png_uint_32, (*((buf) + 3)) and &hff))

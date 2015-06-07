@@ -1055,16 +1055,8 @@ end enum
 
 #define GTK_OBJECT_FLAGS(obj) GTK_OBJECT(obj)->flags
 #define GTK_OBJECT_FLOATING(obj) g_object_is_floating(obj)
-#macro GTK_OBJECT_SET_FLAGS(obj, flag)
-	scope
-		GTK_OBJECT_FLAGS(obj) or= (flag)
-	end scope
-#endmacro
-#macro GTK_OBJECT_UNSET_FLAGS(obj, flag)
-	scope
-		GTK_OBJECT_FLAGS(obj) and= not (flag)
-	end scope
-#endmacro
+#define GTK_OBJECT_SET_FLAGS(obj, flag) scope : GTK_OBJECT_FLAGS(obj) or= (flag) : end scope
+#define GTK_OBJECT_UNSET_FLAGS(obj, flag) scope : GTK_OBJECT_FLAGS(obj) and= not (flag) : end scope
 type GtkObjectClass as _GtkObjectClass
 
 type _GtkObject
@@ -1616,16 +1608,8 @@ end enum
 #define GTK_WIDGET_APP_PAINTABLE(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_APP_PAINTABLE) <> 0)
 #define GTK_WIDGET_RECEIVES_DEFAULT(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_RECEIVES_DEFAULT) <> 0)
 #define GTK_WIDGET_DOUBLE_BUFFERED(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_DOUBLE_BUFFERED) <> 0)
-#macro GTK_WIDGET_SET_FLAGS(wid, flag)
-	scope
-		GTK_WIDGET_FLAGS(wid) or= (flag)
-	end scope
-#endmacro
-#macro GTK_WIDGET_UNSET_FLAGS(wid, flag)
-	scope
-		GTK_WIDGET_FLAGS(wid) and= not (flag)
-	end scope
-#endmacro
+#define GTK_WIDGET_SET_FLAGS(wid, flag) scope : GTK_WIDGET_FLAGS(wid) or= (flag) : end scope
+#define GTK_WIDGET_UNSET_FLAGS(wid, flag) scope : GTK_WIDGET_FLAGS(wid) and= not (flag) : end scope
 #define GTK_TYPE_REQUISITION gtk_requisition_get_type()
 
 type GtkRequisition as _GtkRequisition
@@ -11083,16 +11067,8 @@ end enum
 #define GTK_IS_CLIST_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_CLIST)
 #define GTK_CLIST_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_CLIST, GtkCListClass)
 #define GTK_CLIST_FLAGS(clist) GTK_CLIST(clist)->flags
-#macro GTK_CLIST_SET_FLAG(clist, flag)
-	scope
-		GTK_CLIST_FLAGS(clist) or= (GTK_##flag)
-	end scope
-#endmacro
-#macro GTK_CLIST_UNSET_FLAG(clist, flag)
-	scope
-		GTK_CLIST_FLAGS(clist) and= not (GTK_##flag)
-	end scope
-#endmacro
+#define GTK_CLIST_SET_FLAG(clist, flag) scope : GTK_CLIST_FLAGS(clist) or= GTK_##flag : end scope
+#define GTK_CLIST_UNSET_FLAG(clist, flag) scope : GTK_CLIST_FLAGS(clist) and= not GTK_##flag : end scope
 #define GTK_CLIST_IN_DRAG(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_IN_DRAG)
 #define GTK_CLIST_ROW_HEIGHT_SET(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_ROW_HEIGHT_SET)
 #define GTK_CLIST_SHOW_TITLES(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_SHOW_TITLES)

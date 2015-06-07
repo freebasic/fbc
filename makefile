@@ -861,16 +861,7 @@ bindist:
 
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
-	rm -r $(packinc)/AL
-	rm -r $(packinc)/aspell.bi
-	rm -r $(packinc)/bass.bi
-	rm -r $(packinc)/bassmod.bi
-	rm -r $(packinc)/bfd
-	rm -r $(packinc)/bfd.bi
 	rm -r $(packinc)/big_int
-	rm -r $(packinc)/bzlib.bi
-	rm -r $(packinc)/caca0.bi
-	rm -r $(packinc)/caca.bi
 	rm -r $(packinc)/cd
 	rm -r $(packinc)/cgi-util.bi
 	rm -r $(packinc)/chipmunk

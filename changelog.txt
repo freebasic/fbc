@@ -5,32 +5,24 @@ Version 1.03.0
 - non-standalone builds: -target <gcctarget> no longer searches libs in lib/freebasic/<gcctarget>, but rather in the normal lib/freebasic/<fbtarget> directory. I.e. the directory layout for native or cross compiling is the same, making packaging and distribution easier.
 
 [added]
-- Package name + version to all the new/updated bindings
-- Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
-- Windows API binding updated to mingw-w64 4.0.1
 - IUP binding updated to 3.13
 - #742: fbc can now use lib64/freebasic/... instead of lib/freebasic/ if built with ENABLE_LIB64=1
 - -print fblibdir option
 - All the recently updated bindings now have copyright/license information
 - New libbzip2 binding (64bit-capable)
+- New libcaca binding (64bit-capable), libcaca-0.99.beta19
+- New BASS 2.4 & BASSMOD 2.0 bindings (64bit-capable)
+- New OpenAL (openal-soft-1.16.0) and freealut (1.1.0) bindings (64bit-capable)
+- New ASpell 0.60.6.1 binding (64bit-capable)
+- New libbfd binding (64bit-capable), supporting all binutils versions from 2.16 to 2.25
+- New CanvasDraw 5.8.1 binding (64bit-capable)
+- Updated CGUI binding to 2.0.4 (from CGUI project's CVS)
 - Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
-- 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
 - logic operation optimization: x <> 0 => x if x is a comparison operation already, and <comparison> = 0 => <inverted-comparison>, and NOT <comparison> => <inverted-comparison>
 - ASM backend: slightly better code generation: Integer operand register will be re-used as Long result registers now (and vice-versa), which is ok since this is 32bit-only
 
 [fixed]
-- 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
-- 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
-- 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing; wsprintf/wvsprintf declarations were missing; ole2.bi couldn't be included directly/alone anymore.
-- bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
-- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too), some #defines were missing (e.g. lstrcpy/lstrcat), shlwapi.bi #includes shlobj.bi again (for backwards compatibility).
-- crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
-- #767: Illegal byref result assignments will now cause a proper error message, not just a warning
-- Using the -asm att|intel option for non-x86[_64] targets now triggers an error
-- C backend: -masm=... will now only be passed to gcc for x86[_64] targets
-- Screen didn't return an error code if it failed
-- Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
-- "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
+- Windows API binding: win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too)
 - LLVM backend: local vars were emitted twice
 - LLVM backend: the signature emitted for calls will now use the same param dtypes as in the declaration, as required by LLVM
 - LLVM backend: self-BOPs, and the self negation UOP, weren't working
@@ -39,6 +31,43 @@ Version 1.03.0
 - 1.00.0 regression: compiler crash on assignments with a dereferenced constant on the left side
 - 1.00.0 regression: C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
 - Better error recovery after byref function result assignment type mismatch errors
+- 1.01.0/1.02.0 regression: Various bindings: some macros using sizeof() were badly translated (doing sizeof((T)), which doesn't compile, instead of sizeof(T))
+- Various bindings: macros whose body is a scope block with just one statement are now translated as single-line statements, so that they can be used with single-line IF blocks
+- 1.01.0 regression: CGUI binding: InitCgui() macro was broken
+- 1.01.0 regression: GLib binding: G_N_ELEMENTS() macro was broken
+- Windows API binding: added #inclib "msimg32" to wingdi.bi, for using functions like GradientFill()
+- C backend: Bitfields in nested anonymous Types/Unions should no longer cause __fb_struct_size errors - fbc now uses the same work-around for them as for Types with bitfields at the toplevel, i.e. such Types are emitted as byte arrays, because fbc's/gcc's bitfield layout rules differ.
+- 1.02.0 regression: Windows API binding: The select() function from winsock headers is now renamed to select_() again, as before
+- 1.02.0 regression: Windows API binding: opensocket/selectsocket aliases for the socket_/select_ functions were missing
+- 1.02.0 regression: Windows API binding: can be used with MinGW.org again, for the most part, although some individual functions still won't work as they use MinGW-w64-specific helper functions
+- Various bindings: Some trivial "inline" functions are now turned into macros; fixed some cases of missing information about renamed symbols (e.g. in SDL2 binding)
+- Some built-in functions with wstring parameters (e.g. Val(), Left(), Right()) accepted integers and pointers in place of the wstring (e.g. Val(0)). This triggers an error now.
+- #772: Types with the same name but in different namespaces compared as equal in #if typeof(...) = typeof(...) checks and #print typeof(...) output, because the namespace prefix was not included in textual typeof()'s result string.
+
+
+Version 1.02.1
+
+[changed]
+
+[added]
+- Package name + version to all the new/updated bindings
+- Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
+- Windows API binding updated to mingw-w64 4.0.1
+- 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
+
+[fixed]
+- 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
+- 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
+- 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing; wsprintf/wvsprintf declarations were missing; ole2.bi couldn't be included directly/alone anymore.
+- bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
+- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; shlwapi.bi #includes shlobj.bi again (for backwards compatibility), some #defines were missing (e.g. lstrcpy/lstrcat).
+- crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
+- #767: Illegal byref result assignments will now cause a proper error message, not just a warning
+- Using the -asm att|intel option for non-x86[_64] targets now triggers an error
+- C backend: -masm=... will now only be passed to gcc for x86[_64] targets
+- Screen didn't return an error code if it failed
+- Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
+- "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
 
 
 Version 1.02.0

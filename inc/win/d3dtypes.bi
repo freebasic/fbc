@@ -28,9 +28,9 @@
 extern "Windows"
 
 #define __WINE_D3DTYPES_H
-#define D3DVALP(val, prec) csng((val))
-#define D3DVAL(val) csng((val))
-#define D3DDivide(a, b) csng(cdbl((a)) / cdbl((b)))
+#define D3DVALP(val, prec) csng(val)
+#define D3DVAL(val) csng(val)
+#define D3DDivide(a, b) csng(cdbl(a) / cdbl(b))
 #define D3DMultiply(a, b) ((a) * (b))
 type D3DFIXED as LONG
 #define CI_GETALPHA(ci) ((ci) shr 24)

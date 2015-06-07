@@ -1,4 +1,4 @@
-'' FreeBASIC binding for cgui-2.0.3
+'' FreeBASIC binding for cgui-2.0.4
 ''
 '' based on the C header files:
 ''   A C Graphical User Interface [add on to Allegro] by Christer Sandberg
@@ -188,10 +188,10 @@ extern "C"
 #define CGUI_INLINE_PROVIDE_CODE
 const CGUI_VERSION_MAJOR = 2
 const CGUI_VERSION_MINOR = 0
-const CGUI_VERSION_PATCH = 3
-#define CGUI_VERSION_STRING "2.0.3"
-const CGUI_DATE = 20091111
-#define CGUI_DATE_STRING "Nov 11, 2009"
+const CGUI_VERSION_PATCH = 4
+#define CGUI_VERSION_STRING "2.0.4"
+const CGUI_DATE = 20091206
+#define CGUI_DATE_STRING "Dec 06, 2009"
 const CGUI_INIT_CODE = 0
 const CGUI_INIT_LOAD = 0
 const CGUI_INIT_WINDOWED = 1
@@ -202,7 +202,7 @@ declare function InitCguiEx(byval w as long, byval h as long, byval colour_depth
 #define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
 #define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
 #define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
 
 declare sub DeInitCgui()
 declare sub CguiUseUTF8()
