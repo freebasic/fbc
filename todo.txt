@@ -1,5 +1,9 @@
 o boolean
-  - ASM backend: implement b2l/l2b/b2f/f2b loads/stores
+  - ASM backend: implement b2f/f2b loads/stores
+  - test boolean/float conversions vs. rounding issues, could affect the C backend at least
+  - add an -exx check to detect illegal boolean values on read?
+  - add proper fb_PrintBoolean?
+  - implement INPUT, DATA, etc. for booleans (see TODOs in rtl-*.bas)
 
 o 64bit
   - FB includes must be adjusted for 64bit compatibility (if the corresponding

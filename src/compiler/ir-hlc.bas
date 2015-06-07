@@ -217,6 +217,22 @@ declare sub _emitDBG _
 	)
 
 declare sub exprFreeNode( byval n as EXPRNODE ptr )
+declare function exprNewUOP _
+	( _
+		byval op as integer, _
+		byval l as EXPRNODE ptr _
+	) as EXPRNODE ptr
+declare function exprNewBOP _
+	( _
+		byval op as integer, _
+		byval l as EXPRNODE ptr, _
+		byval r as EXPRNODE ptr _
+	) as EXPRNODE ptr
+declare function exprFlush _
+	( _
+		byval n as EXPRNODE ptr, _
+		byval need_parens as integer = FALSE _
+	) as string
 #if __FB_DEBUG__
 declare sub exprDump( byval n as EXPRNODE ptr )
 #endif
@@ -1623,7 +1639,62 @@ private function exprNewCAST _
 		byval l as EXPRNODE ptr _
 	) as EXPRNODE ptr
 
-	dim as EXPRNODE ptr n = any
+	'' float/int := bool?
+	if( (dtype <> FB_DATATYPE_BOOLEAN) and (l->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' 0/-1 := 0/1
+		if( l->class = EXPRCLASS_IMM ) then
+			l->val.i = (l->val.i <> 0)
+			l->dtype = FB_DATATYPE_LONG
+		else
+			l = exprNewUOP( AST_OP_NEG, l )
+		end if
+
+	'' bool := float/int?
+	elseif( (dtype = FB_DATATYPE_BOOLEAN) and (l->dtype <> FB_DATATYPE_BOOLEAN) ) then
+		'' 0/1 := zero/non-zero
+		if( l->class = EXPRCLASS_IMM ) then
+			'' (FB's <> 0 produces 0/-1 so we have to negate to get 0/1)
+			l->val.i = - iif( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT, _
+			                  l->val.f <> 0, l->val.i <> 0 )
+			l->dtype = FB_DATATYPE_LONG
+		else
+			'' (expr != 0) (C's != produces the 0/1 we want)
+			l = exprNewBOP( AST_OP_NE, l, exprNewIMMi( 0 ) )
+		end if
+
+	'' int := float? Needs special treatment to achieve FB's rounding behaviour
+	elseif( (typeGetClass( dtype ) = FB_DATACLASS_INTEGER) and _
+	        (typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT) ) then
+
+		'' ((type)fb_F2I( l ))
+		''
+		'' If converting to integer <= int32: use fb_*2I()
+		'' If converting to integer >= uint32: use fb_*2L()
+		''
+		'' Treating uint32 like [u]int64 as a special case:
+		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
+		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
+		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
+
+		dim s as string, tempdtype as integer
+		if( typeGetSizeType( dtype ) < FB_SIZETYPE_UINT32 ) then
+			if( l->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
+			else
+				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
+			end if
+			tempdtype = FB_DATATYPE_LONG
+		else
+			if( l->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
+			else
+				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
+			end if
+			tempdtype = FB_DATATYPE_LONGINT
+		end if
+		s += "( " + exprFlush( l ) + " )"
+		l = exprNewTEXT( tempdtype, NULL, s )
+	end if
 
 	'' Don't add a CAST if l already has the desired type
 	if( (dtype = l->dtype) and (subtype = l->subtype) ) then
@@ -1631,11 +1702,10 @@ private function exprNewCAST _
 	end if
 
 	'' Don't cast if l has a compatible type (e.g. 32bit int vs. 32bit long)
-	'' (same class, same size, same signedness, and no pointers involved)
-	if( (typeGetClass( l->dtype ) = typeGetClass( dtype )) and _
-	    (typeIsSigned( l->dtype ) = typeIsSigned( dtype )) and _
-	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) and _
-	    (typeGetSize( l->dtype ) = typeGetSize( dtype )) ) then
+	'' (same class, same size, same signedness, no pointers involved,
+	'' both booleans or none)
+	if( (typeGetSizeType( l->dtype ) = typeGetSizeType( dtype )) and _
+	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) ) then
 		return l
 	end if
 
@@ -1649,9 +1719,8 @@ private function exprNewCAST _
 		end if
 	end if
 
-	n = exprNew( EXPRCLASS_CAST, dtype, subtype )
+	var n = exprNew( EXPRCLASS_CAST, dtype, subtype )
 	n->l = l
-
 	function = n
 end function
 
@@ -2747,63 +2816,6 @@ private sub _emitUop _
 
 end sub
 
-'' v1 = cast( <v1's type>, v2 )
-private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	dim as integer dtype = any
-	dim as EXPRNODE ptr expr = any
-	dim as string s
-
-	expr = exprNewVREG( v2 )
-
-	'' Bool to float/int?
-	if( (v2->dtype = FB_DATATYPE_BOOLEAN) and (v1->dtype <> FB_DATATYPE_BOOLEAN) ) then
-		'' Convert 0/1 to 0/-1
-		'' -expr
-		expr = exprNewUOP( AST_OP_NEG, expr )
-
-	'' Float/int to bool?
-	elseif( (v2->dtype <> FB_DATATYPE_BOOLEAN) and (v1->dtype = FB_DATATYPE_BOOLEAN) ) then
-		'' -(expr != 0)
-		expr = exprNewBOP( AST_OP_NE, expr, exprNewIMMi( 0 ) )
-		expr = exprNewUOP( AST_OP_NEG, expr )
-
-	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour
-	elseif( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
-	        (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
-
-		'' ((type)fb_F2I( l ))
-		''
-		'' If converting to integer <= int32: use fb_*2I()
-		'' If converting to integer >= uint32: use fb_*2L()
-		''
-		'' Treating uint32 like [u]int64 as a special case:
-		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
-		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
-		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
-
-		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
-			if( v2->dtype = FB_DATATYPE_SINGLE ) then
-				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
-			else
-				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
-			end if
-			dtype = FB_DATATYPE_LONG
-		else
-			if( v2->dtype = FB_DATATYPE_SINGLE ) then
-				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
-			else
-				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
-			end if
-			dtype = FB_DATATYPE_LONGINT
-		end if
-		s += "( " + exprFlush( expr ) + " )"
-
-		expr = exprNewTEXT( dtype, NULL, s )
-	end if
-
-	exprSTORE( v1, expr )
-end sub
-
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	exprSTORE( v1, exprNewVREG( v2 ) )
 end sub
@@ -3491,7 +3503,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_scopeBegin, _
 	@_scopeEnd, _
 	@_procAllocStaticVars, _
-	@_emitConvert, _
+	@_emitStore, _
 	@_emitLabel, _
 	@_emitLabel, _
 	NULL, _
