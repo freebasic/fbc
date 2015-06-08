@@ -6118,6 +6118,10 @@ private sub _emitSCOPEEND _
 
 end sub
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' boolean
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 '' $$JRM
 #macro JRM_DEBUG()
 	outp "# " + __FUNCTION__
@@ -6234,27 +6238,38 @@ end sub
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
+
+	'' Assumes that booleans are stored as 0|1 only, and any other value
+	'' is undefined.  Also assume src and dst are always same size.
+	
 	dim as string dst, src
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 	hMOV( dst, src )
+
 	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
+	'' storing boolean to integer same as loading to integer and LOADB2I
+	'' takes care of the zero-extension
 	_emitLOADB2I( dvreg, svreg )
 	JRM_DEBUG()
 end sub
 
 private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
+	'' storing integer to boolean same as loading to boolean and LOADI2B
+	'' takes care of the ESI/DSI as byte reg stuff
 	_emitLOADI2B( dvreg, svreg )
 	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
+	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
+	'' for assumptions
 	_emitLOADB2B( dvreg, svreg )
 	JRM_DEBUG()
 end sub
@@ -6363,10 +6378,10 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		'' if (src1 or src2) is non-zero, produce 0|1 and store it into dst
 		outp( "cmp " + aux + ", 0" )
 		outp( "setne " + aux8 )
-		outp( "movzx " + aux + ", " + aux8 )
 		if( ddsize = 1 ) then
 			hMOV( dst, aux8 )
 		else
+			outp( "movzx " + aux + ", " + aux8 )
 			hMOV( dst, aux )
 		end if
 
