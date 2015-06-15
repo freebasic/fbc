@@ -667,7 +667,8 @@ sub errReportWarnEx _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
-		byval options as FB_ERRMSGOPT _
+		byval options as FB_ERRMSGOPT, _
+		byval customText as const zstring ptr _
 	)
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
@@ -703,6 +704,9 @@ sub errReportWarnEx _
 
 	print " warning " & msgnum & "(" & warningMsgs(msgnum).level & "): ";
 	print *warningMsgs(msgnum).text;
+	if( customText ) then
+		print *customText;
+	end if
 
 	if( msgex <> NULL ) then
 		if( (options and FB_ERRMSGOPT_ADDCOMMA) <> 0 ) then
@@ -733,10 +737,11 @@ sub errReportWarn _
 	( _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr, _
-		byval options as FB_ERRMSGOPT _
+		byval options as FB_ERRMSGOPT, _
+		byval customText as const zstring ptr _
 	)
 
-	errReportWarnEx( msgnum, msgex, lexLineNum( ), options )
+	errReportWarnEx( msgnum, msgex, lexLineNum( ), options, customText )
 
 end sub
 

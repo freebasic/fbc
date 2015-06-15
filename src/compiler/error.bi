@@ -409,7 +409,8 @@ declare sub errReportWarn _
 	( _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr = NULL, _
-		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
+		byval customText as const zstring ptr = NULL _
 	)
 
 declare sub errReportWarnEx _
@@ -417,7 +418,8 @@ declare sub errReportWarnEx _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr = NULL, _
 		byval linenum as integer = 0, _
-		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
+		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
+		byval customText as const zstring ptr = NULL _
 	)
 
 declare sub errReportParam _
