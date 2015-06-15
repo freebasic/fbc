@@ -74,6 +74,21 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
 end function
 
+private function hGetTokenDescription( byval tk as integer ) as string
+	select case( tk )
+	case FB_TK_TYPEOF : function = "typeof"
+	case FB_TK_LEN    : function = "len"
+	case else         : function = "sizeof"
+	end select
+end function
+
+private sub hWarnAmbigiousLenSizeof( byval tk as integer, byval typ as FBSYMBOL ptr, byval nontype as FBSYMBOL ptr )
+	var msg = "Ambigious " + hGetTokenDescription( tk ) + "()"
+	msg += ", referring to " + symbDumpPretty( typ )
+	msg += ", instead of " + symbDumpPretty( nontype )
+	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
+end sub
+
 function cTypeOrExpression _
 	( _
 		byval tk as integer, _
@@ -99,6 +114,19 @@ function cTypeOrExpression _
 	''    type in a namespace.
 
 	maybe_type = TRUE
+
+	if( lexGetToken( ) = FB_TK_ID ) then
+		var chain_ = lexGetSymChain( )
+
+		'' Show a warning if the identifier could refer to both a type
+		'' and a non-type symbol
+		dim as FBSYMBOL ptr typ, nontype
+		symbCheckChainForTypesAndOthers( chain_, typ, nontype )
+
+		if( (typ <> NULL) and (nontype <> NULL) ) then
+			hWarnAmbigiousLenSizeof( tk, typ, nontype )
+		end if
+	end if
 
 	'' Token followed by an operator except '*' / '<'?
 	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _

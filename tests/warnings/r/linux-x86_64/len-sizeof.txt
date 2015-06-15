@@ -1,0 +1,6 @@
+1 warning:
+	Ambigious len(), referring to type MSG, instead of variable MSG
+1 warning:
+	Ambigious sizeof(), referring to type MSG, instead of variable MSG
+1 warning:
+	Ambigious typeof(), referring to type MSG, instead of variable MSG

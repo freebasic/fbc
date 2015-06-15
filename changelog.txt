@@ -20,6 +20,7 @@ Version 1.03.0
 - Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
 - logic operation optimization: x <> 0 => x if x is a comparison operation already, and <comparison> = 0 => <inverted-comparison>, and NOT <comparison> => <inverted-comparison>
 - ASM backend: slightly better code generation: Integer operand register will be re-used as Long result registers now (and vice-versa), which is ok since this is 32bit-only
+- len/sizeof/typeof will now warn if the given identifier is ambigious (i.e. if it could refer to both a type or a procedure/variable symbol), because currently the type will be preferred, which is typically unexpected, at least for len() on strings.
 
 [fixed]
 - Windows API binding: win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too)
