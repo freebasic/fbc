@@ -118,13 +118,16 @@ function cTypeOrExpression _
 	if( lexGetToken( ) = FB_TK_ID ) then
 		var chain_ = lexGetSymChain( )
 
-		'' Show a warning if the identifier could refer to both a type
-		'' and a non-type symbol
-		dim as FBSYMBOL ptr typ, nontype
-		symbCheckChainForTypesAndOthers( chain_, typ, nontype )
+		'' Known symbol(s)?
+		if( chain_ ) then
+			'' Show a warning if the identifier could refer to both a type
+			'' and a non-type symbol
+			dim as FBSYMBOL ptr typ, nontype
+			symbCheckChainForTypesAndOthers( chain_, typ, nontype )
 
-		if( (typ <> NULL) and (nontype <> NULL) ) then
-			hWarnAmbigiousLenSizeof( tk, typ, nontype )
+			if( (typ <> NULL) and (nontype <> NULL) ) then
+				hWarnAmbigiousLenSizeof( tk, typ, nontype )
+			end if
 		end if
 	end if
 
