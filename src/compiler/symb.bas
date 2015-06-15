@@ -2454,14 +2454,20 @@ end sub
 
 sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 	print "symchain [" + hex( chain_ ) + "]:"
-
-	if( chain_ = NULL ) then
-		exit sub
+	if( chain_ ) then
+		'' Also printing the "index" in the chain, so we can differentiate between
+		'' symbols from the same FBSYMCHAIN node (linked by their FBSYMBOL.hash.next fields),
+		'' and symbols in different FBSYMCHAIN nodes (linked via symbChainGetNext()).
+		var i = 0
+		do
+			var sym = chain_->sym
+			do
+				print "   " & i & "  " + symbDump( sym )
+				sym = sym->hash.next
+			loop while( sym )
+			i += 1
+			chain_ = symbChainGetNext( chain_ )
+		loop while( chain_ )
 	end if
-
-	do
-		print "    " + symbDump( chain_->sym )
-		chain_ = chain_->next
-	loop while( chain_ )
 end sub
 #endif
