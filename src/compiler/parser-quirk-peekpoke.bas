@@ -19,7 +19,7 @@ private function hOptionalTypeAndFirstExpr _
 
 	dim as ASTNODE ptr expr = any
 
-	expr = cTypeOrExpression( FALSE, dtype, subtype, 0 )
+	expr = cTypeOrExpression( FB_TK_SIZEOF, dtype, subtype, 0 )
 	if( expr = NULL ) then
 		'' SymbolType
 

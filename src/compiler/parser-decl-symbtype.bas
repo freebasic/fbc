@@ -76,7 +76,7 @@ end function
 
 function cTypeOrExpression _
 	( _
-		byval is_len as integer, _
+		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint _
@@ -122,7 +122,7 @@ function cTypeOrExpression _
 	end if
 
 	'' QB quirk: LEN() only takes expressions
-	if( maybe_type and is_len and fbLangIsSet( FB_LANG_QB ) ) then
+	if( maybe_type and (tk = FB_TK_LEN) and fbLangIsSet( FB_LANG_QB ) ) then
 		maybe_type = FALSE
 	end if
 
@@ -155,7 +155,7 @@ sub cTypeOf _
 	dim as ASTNODE ptr expr = any
 
 	'' Type or an Expression
-	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt )
 
 	'' Was it a type?
 	if( expr = NULL ) then

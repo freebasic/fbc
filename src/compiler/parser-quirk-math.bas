@@ -101,12 +101,7 @@ private function hLen _
 	return NULL
 end function
 
-private function hLenSizeof _
-	( _
-		byval is_len as integer, _
-		byval isasm as integer _
-	) as ASTNODE ptr
-
+private function hLenSizeof( byval tk as integer, byval isasm as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, initree = any
 	dim as integer dtype = any
 	dim as longint lgt = any
@@ -119,13 +114,13 @@ private function hLenSizeof _
 	hMatchLPRNT( )
 
 	'' Type or an Expression
-	expr = cTypeOrExpression( is_len, dtype, subtype, lgt )
+	expr = cTypeOrExpression( tk, dtype, subtype, lgt )
 
 	'' Was it an expression?
 	if( expr ) then
 		'' Array without index makes this a SIZEOF()
 		if( astIsNIDXARRAY( expr ) ) then
-			is_len = FALSE
+			tk = FB_TK_SIZEOF
 			expr = astRemoveNIDXARRAY( expr )
 		end if
 	end if
@@ -141,7 +136,7 @@ private function hLenSizeof _
 	end if
 
 	if( expr ) then
-		if( is_len ) then
+		if( tk = FB_TK_LEN ) then
 			'' len()
 			'' If an expression is returned, then it's an
 			'' fb_[W]StrLen() call, otherwise it's a sizeof() and
@@ -232,11 +227,8 @@ function cMathFunct _
 		function = hAtan2()
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
-	case FB_TK_LEN
-		function = hLenSizeof( TRUE, isasm )
-
-	case FB_TK_SIZEOF
-		function = hLenSizeof( FALSE, isasm )
+	case FB_TK_LEN, FB_TK_SIZEOF
+		function = hLenSizeof( tk, isasm )
 
 	end select
 
