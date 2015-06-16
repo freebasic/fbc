@@ -6128,16 +6128,42 @@ end sub
 #endmacro
 
 ''
-'' Load/store b2i or i2b
+'' Load/store b2b, b2i, i2b
 ''
 '' Basic rules: booleans store 0/1 to be g++-compatible, but we produce 0/-1
 '' when converting to integers to be FB-compatible.
 ''
 
+private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+
+	'' Assumes that booleans are stored as 0|1 only, and any other value
+	'' is undefined.  Also assume src and dst are always same size.
+	
+	dim as string dst, src
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	hMOV( dst, src )
+
+	JRM_DEBUG()
+end sub
+
+private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
+	'' for assumptions
+	_emitLOADB2B( dvreg, svreg )
+	JRM_DEBUG()
+end sub
+
 private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	dim as string dst
+	dim as string src, dst
+	
+	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
 	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
@@ -6148,32 +6174,42 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		else
 			hMOV( dst, "0" )
 		end if
-	else
-		dim as string src
-		hPrepOperand( svreg, src )
 
-		'' copy the 0|1
-		if( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) ) then
-			outp( "movzx " + dst + ", " + src )
-		else
-			hMOV( dst, src )
-		end if
-
-		'' convert 0|1 to 0|-1
-		outp( "neg " + dst )
+		exit sub
 	end if
 
+	'' copy the 0|1
+	if( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) ) then
+		outp( "movzx " + dst + ", " + src )
+	else
+		hMOV( dst, src )
+	end if
+
+	'' convert 0|1 to 0|-1
+	outp( "neg " + dst )
+
+	JRM_DEBUG()
+end sub
+
+private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+	'' storing boolean to integer same as loading to integer and LOADB2I
+	'' takes care of the zero-extension
+	_emitLOADB2I( dvreg, svreg )
 	JRM_DEBUG()
 end sub
 
 private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	dim as string src, dst
+	dim as string src, dst, dst8
+	dim as integer ddsize = any
+	
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
-	var ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+	ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+
 	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
 	assert( (ddsize = 1) or (ddsize = 4) )
 
@@ -6195,7 +6231,7 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	'' 4-byte booleans: dst is register with 8-bit accessor? (then we can "setne" directly into it)
 	elseif( irIsREG( dvreg ) and (dvreg->reg <> EMIT_REG_ESI) and (dvreg->reg <> EMIT_REG_EDI) ) then
 		'' int to boolean reg
-		var dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+		dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
 		outp( "cmp " + src + ", 0" )
 		outp( "setne " + dst8 )
 		outp( "movzx " + dst + ", " + dst8 )
@@ -6236,28 +6272,6 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 end sub
 
-private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-
-	'' Assumes that booleans are stored as 0|1 only, and any other value
-	'' is undefined.  Also assume src and dst are always same size.
-	
-	dim as string dst, src
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-	hMOV( dst, src )
-
-	JRM_DEBUG()
-end sub
-
-private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-	'' storing boolean to integer same as loading to integer and LOADB2I
-	'' takes care of the zero-extension
-	_emitLOADB2I( dvreg, svreg )
-	JRM_DEBUG()
-end sub
-
 private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 	'' storing integer to boolean same as loading to boolean and LOADI2B
@@ -6266,31 +6280,184 @@ private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 end sub
 
-private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
-	'' for assumptions
-	_emitLOADB2B( dvreg, svreg )
-	JRM_DEBUG()
-end sub
+''
+'' Load/store f2b or b2f
+''
+''
 
 private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
-	'' !!!WRITEME!!! (BOOL)
-	_emitLOADF2I(dvreg, svreg)
+    dim as string dst, src
+    dim as integer ddsize = any
+	dim as integer isfree = any
 
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ddsize = typeGetSize( dvreg->dtype )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isfree orelse= hIsRegInVreg( dvreg, EMIT_REG_EAX )
+
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		outp "fld " + src
+	end if
+	
+	if( isfree = FALSE ) then
+		outp "push eax"
+	end if
+
+	outp "ftst"
+	outp "fnstsw ax"
+	
+	#if 1
+	outp "sahf"
+	outp "setnz al"
+	#else
+	outp "test ah, 0b01000000"
+	outp "setz al"
+	#endif
+	
+	outp "fstp st(0)"
+
+	if( ddsize = 1 ) then
+		outp "mov " + dst + ", al"
+	else
+		outp "movzx " + dst + ", al"
+	end if
+
+	if( isfree = FALSE ) then
+		outp "pop eax"
+	end if
+
+	JRM_DEBUG()
+end sub
+
+private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+	_emitLOADF2B(dvreg, svreg)
 	JRM_DEBUG()
 end sub
 
 private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
+	
+	dim as string src, dst
+	dim as integer sdsize = any
+	
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
 
-	'' !!!WRITEME!!! (BOOL)
-	_emitLOADI2F(dvreg, svreg)
+	sdsize = typeGetSize( svreg->dtype )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			outp "fld1"
+			outp "fchs"
+		else
+			outp "fldz"
+		end if
+		exit sub
+	end if
+
+	'' byte source? damn..
+	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer isfree, reg
+
+		reg = hFindRegNotInVreg( svreg )
+
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		outp "movzx " + aux + COMMA + src
+
+		hPUSH aux
+		outp "fild dword ptr [esp]"
+		outp "fchs"
+		outp "add esp, 4"
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+	else
+		outp "fild " + src
+	end if
+	outp "fchs"
 
 	JRM_DEBUG()
 end sub
+
+private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+
+	dim as string src, dst
+	dim as integer sdsize = any
+	
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	sdsize = typeGetSize( svreg->dtype )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			outp "fld1"
+			outp "fchs"
+		else
+			outp "fldz"
+		end if
+		outp "fstp " + dst
+		exit sub
+	end if
+
+	'' byte source? damn..
+	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer isfree, reg
+
+		reg = hFindRegNotInVreg( svreg )
+
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		outp "movzx " + aux + COMMA + src
+
+		hPUSH aux
+		outp "fild dword ptr [esp]"
+		outp "add esp, 4"
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+	else
+		outp "fild " + src
+	end if
+
+	outp "fchs"
+	outp "fstp " + dst
+
+	JRM_DEBUG()
+end sub
+
 
 ''
 '' Load/store b2l or l2b
@@ -6331,13 +6498,22 @@ private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 end sub
 
+private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	JRM_DEBUG()
+	_emitLOADB2L(dvreg, svreg)
+	JRM_DEBUG()
+end sub
+
 private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	JRM_DEBUG()
 
 	dim as string dst
+	dim as integer ddsize
+
 	hPrepOperand( dvreg, dst )
 
-	var ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+	ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+
 	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
 	assert( (ddsize = 1) or (ddsize = 4) )
 
@@ -6391,30 +6567,6 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	end if
 
-	JRM_DEBUG()
-end sub
-
-private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-
-	'' !!!WRITEME!!! (BOOL)
-	_emitSTORF2I(dvreg, svreg)
-
-	JRM_DEBUG()
-end sub
-
-private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-
-	'' !!!WRITEME!!! (BOOL)
-	_emitSTORI2F(dvreg, svreg)
-
-	JRM_DEBUG()
-end sub
-
-private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-	_emitLOADB2L(dvreg, svreg)
 	JRM_DEBUG()
 end sub
 
