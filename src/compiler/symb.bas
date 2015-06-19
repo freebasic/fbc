@@ -2383,7 +2383,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		hDumpName( s, sym )
 
 		'' Array dimensions, if any
-		if( symbIsDynamic( sym ) ) then
+		if( symbGetIsDynamic( sym ) ) then
 			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
 			s += "("
