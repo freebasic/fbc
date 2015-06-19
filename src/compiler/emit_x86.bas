@@ -3979,7 +3979,11 @@ private sub _emitEQVI _
 	ostr = "xor " + dst + COMMA + src
 	outp ostr
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+	else
+		ostr = "not " + dst
+	end if
 	outp ostr
 
 end sub
@@ -4024,7 +4028,11 @@ private sub _emitIMPI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+	else
+		ostr = "not " + dst
+	end if
 	outp ostr
 
 	ostr = "or " + dst + COMMA + src
@@ -4233,17 +4241,23 @@ private sub hCMPI _
 			outp ostr
 		end if
 
-		'' convert 1 to -1 (TRUE in QB/FB)
-		ostr = "shr " + rname + ", 1"
-		outp ostr
+		if( rvreg->dtype <> FB_DATATYPE_BOOLEAN ) then 
+			'' convert 1 to -1 (TRUE in QB/FB)
+			ostr = "shr " + rname + ", 1"
+			outp ostr
 
-		ostr = "sbb " + rname + COMMA + rname
-		outp ostr
+			ostr = "sbb " + rname + COMMA + rname
+			outp ostr
+		end if
 
 	'' old (and slow) boolean set
 	else
 
-		ostr = "mov " + rname + ", -1"
+		if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then 
+			ostr = "mov " + rname + ", 1"
+		else
+			ostr = "mov " + rname + ", -1"
+		end if
 		outp ostr
 
 		ostr = "j" + *mnemonic
@@ -4774,7 +4788,13 @@ private sub _emitNOTI _
 
 	hPrepOperand( dvreg, dst )
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+
+	else
+		ostr = "not " + dst
+	end if
+	
 	outp ostr
 
 end sub
