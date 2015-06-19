@@ -675,6 +675,8 @@ function astNewBOP _
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
+	dim as integer is_boolean_only = any
+	dim as integer do_promote = any
 
 	function = NULL
 
@@ -696,6 +698,9 @@ function astNewBOP _
 	rdtype = astGetFullType( r )
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
+
+	is_boolean_only = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) and (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
+	do_promote = TRUE
 
 	'' UDT's? try auto-coercion
 	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
@@ -970,6 +975,7 @@ function astNewBOP _
 	''
 	'' - do nothing if this BOP is a string concatenation/comparison
 	'' - also, do nothing for float/UDT operands
+	'' - also, do nothing if both operands are boolean for some BOPs
 	''
 	'' - Pointers and bitfields should be treated as UINTEGER (their
 	''   "remap" types), i.e. they will effectively never be promoted.
@@ -981,7 +987,7 @@ function astNewBOP _
 	''   Bitfields must be treated as their remap type, since the BOP result
 	''   can't have bitfield type itself... (similar to enums)
 	''
-	'' - Enums would also be handled via their remap type here, but for now
+	'' - Enums would? also be handled via their remap type here, but for now
 	''   any enum operand is already converted to integer above anyways,
 	''   so enums never arrive here.
 	''
@@ -989,7 +995,20 @@ function astNewBOP _
 	ldtype0 = ldtype
 	rdtype0 = rdtype
 
-	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
+	do_promote = (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE)
+
+	if (is_boolean_only) then
+		select case as const op
+		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
+			 AST_OP_EQ, AST_OP_NE
+
+			do_promote = FALSE
+
+		end select
+	end if
+
+	if( do_promote ) then
+
 		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
 		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
 

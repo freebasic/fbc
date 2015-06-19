@@ -90,6 +90,16 @@ namespace fbc_tests.boolean_.bop
 		dot( TRUE, *, FALSE )
 		dot( TRUE, *, TRUE )
 
+		dot( FALSE, andalso, FALSE )
+		dot( FALSE, andalso, TRUE )
+		dot( TRUE, andalso, FALSE )
+		dot( TRUE, andalso, TRUE )
+
+		dot( FALSE, orelse, FALSE )
+		dot( FALSE, orelse, TRUE )
+		dot( TRUE, orelse, FALSE )
+		dot( TRUE, orelse, TRUE )
+
 	end sub
 	
 	private sub ctor () constructor
