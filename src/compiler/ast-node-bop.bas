@@ -987,7 +987,7 @@ function astNewBOP _
 	''   Bitfields must be treated as their remap type, since the BOP result
 	''   can't have bitfield type itself... (similar to enums)
 	''
-	'' - Enums would? also be handled via their remap type here, but for now
+	'' - Enums would also be handled via their remap type here, but for now
 	''   any enum operand is already converted to integer above anyways,
 	''   so enums never arrive here.
 	''
@@ -1182,7 +1182,7 @@ function astNewBOP _
 			end if
 		end if
 
-		'' lhs signed->unsigned?  (Except in SHR)
+		'' rhs signed->unsigned?  (Except in SHR)
 		if( (warning = 0) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
 			if( typeIsSigned( rdtype ) = FALSE ) then
 				if( astIsConst( r ) ) then
@@ -1239,6 +1239,57 @@ function astNewBOP _
 				rdclass = FB_DATACLASS_INTEGER
 			end if
 		end if
+	end select
+
+	'' warn on mixing boolean and non-boolean operands
+	select case as const op
+	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
+		 AST_OP_EQ, AST_OP_NE
+
+	    dim as FB_WARNINGMSG warning = 0
+
+		if( is_boolean_only = FALSE ) then
+
+			'' lhs boolean -> non-boolean?
+			if( typeGetDtAndPtrOnly( ldtype0 ) = FB_DATATYPE_BOOLEAN ) then
+				if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
+					if( astIsConst( l ) ) then
+						'' make exception for 0|-1
+						dim tmp as longint = astConstGetAsInt64( l )
+						if( (tmp <> 0) and (tmp <> -1) ) then
+							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+						end if
+					else
+						if( fbPdCheckIsSet( FB_PDCHECK_MIXEDOPERANDS ) ) then
+							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+						end if
+					end if
+				end if
+			end if
+
+			'' rhs boolean -> non-boolean?
+			if( typeGetDtAndPtrOnly( rdtype0 ) = FB_DATATYPE_BOOLEAN ) then
+				if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
+					if( astIsConst( r ) ) then
+						'' make exception for 0|-1
+						dim tmp as longint = astConstGetAsInt64( l )
+						if( (tmp <> 0) and (tmp <> -1) ) then
+							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+						end if
+					else
+						if( fbPdCheckIsSet( FB_PDCHECK_MIXEDOPERANDS ) ) then
+							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+						end if
+					end if
+				end if
+			end if
+				
+		end if
+
+		if( warning <> 0 ) then
+			errReportWarn( warning )
+		end if
+
 	end select
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
