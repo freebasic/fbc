@@ -1180,9 +1180,7 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		'' without offset:
 		'' (no "loading" necessary, handled purely in hVregToStr())
 		''    @global
-		if( v->ofs <> 0 ) then
-			hAddOffset( v, v->dtype, v->subtype, v->ofs )
-		end if
+		hPrepareAddress( v )
 
 	case else
 		'' memory accesses: stack/global vars, arrays, ptr derefs
