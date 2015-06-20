@@ -147,12 +147,19 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 	(@"declare double @llvm.nearbyint.f64(double) nounwind")  _
 }
 
+type IRLLVMVARINISCOPE
+	is_array as byte
+end type
+
+const MAXVARINISCOPES = 128
+
 type IRLLVMCONTEXT
 	indent				as integer  '' current indentation used by hWriteLine()
 	linenum				as integer
 
 	varini				as string
 	variniscopelevel		as integer
+	variniscopes(0 to MAXVARINISCOPES-1) as IRLLVMVARINISCOPE
 
 	ctors				as string
 	dtors				as string
@@ -2110,6 +2117,7 @@ private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 	ctx.varini += hEmitSymType( sym )
 	ctx.varini += " "
 	ctx.variniscopelevel = 0
+	ctx.variniscopes(0).is_array = FALSE
 end sub
 
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
@@ -2117,9 +2125,22 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 	ctx.varini = ""
 end sub
 
+'' For struct initializers, we have to emit each field's dtype in front of each
+'' field's initializer expression. E.g.:
+''    @myudtvar = global %UDT {i32 1, i32 2}
+'' but not for array initializers:
+''    @myarray = global [2 x i32] [1, 2]
+'' and not at all if at toplevel (i.e. neither struct nor array):
+''    @myintvar = global i32 1
 private sub hVarIniElementType( byval sym as FBSYMBOL ptr )
 	if( ctx.variniscopelevel > 0 ) then
-		ctx.varini += hEmitType( symbGetType( sym ), sym->subtype ) + " "
+		'' Can't use hEmitSymType() here in case it's the array and
+		'' we're just initializing one of its elements
+		if( ctx.variniscopes(ctx.variniscopelevel).is_array ) then
+			ctx.varini += hEmitType( symbGetType( sym ), sym->subtype ) + " "
+		else
+			ctx.varini += hEmitSymType( sym ) + " "
+		end if
 	end if
 end sub
 
@@ -2216,6 +2237,7 @@ private sub _emitVarIniStr _
 		byval litlength as longint _
 	)
 
+	'' also see hVarIniElementType()
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
@@ -2233,6 +2255,7 @@ private sub _emitVarIniWstr _
 		byval litlength as longint _
 	)
 
+	'' also see hVarIniElementType()
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
@@ -2250,8 +2273,23 @@ private sub _emitVarIniPad( byval bytes as longint )
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
+	'' If starting a nested initializer we have to emit its type (it will
+	'' be either a struct type or an array type).
+	hVarIniElementType( sym )
+
+	'' Add varini scope to stack
 	ctx.variniscopelevel += 1
-	ctx.varini += "{ "
+	if( ctx.variniscopelevel >= MAXVARINISCOPES ) then
+		errReport( FB_ERRMSG_INTERNAL, , "global variable/array initializer nesting level too deep (MAXVARINISCOPES=" & MAXVARINISCOPES & ")" )
+		ctx.variniscopelevel -= 1
+	end if
+	ctx.variniscopes(ctx.variniscopelevel).is_array = is_array
+
+	if( is_array ) then
+		ctx.varini += "[ "
+	else
+		ctx.varini += "{ "
+	end if
 end sub
 
 private sub _emitVarIniScopeEnd( )
@@ -2261,8 +2299,19 @@ private sub _emitVarIniScopeEnd( )
 		ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
 	end if
 
-	ctx.varini += " }"
-	ctx.variniscopelevel -= 1
+	if( ctx.variniscopes(ctx.variniscopelevel).is_array ) then
+		ctx.varini += " ]"
+	else
+		ctx.varini += " }"
+	end if
+
+	'' Pop varini scope from stack
+	'' (due to _emitVarIniScopeBegin's MAXVARINISCOPES handling there could
+	'' be a count misbalance during error recovery)
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.variniscopelevel -= 1
+	end if
+
 	hVarIniSeparator( )
 end sub
 
