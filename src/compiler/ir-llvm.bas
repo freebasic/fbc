@@ -630,12 +630,32 @@ private function hEmitStrLitType( byval length as integer ) as string
 end function
 
 private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
+	dim s as string
+
 	select case( symbGetType( sym ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		function = hEmitStrLitType( symbGetLen( sym ) )
+		s = hEmitStrLitType( symbGetLen( sym ) )
 	case else
-		function = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
+		s = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
 	end select
+
+	if( symbGetIsDynamic( sym ) ) then
+		'' Dynamic array vars/fields/params
+		'' TODO: emit descriptor type instead of array element type!?
+	else
+		select case( symbGetClass( sym ) )
+		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+			'' Fixed-size array vars/fields
+			''    (0 to 9) as long            =>   [10 x i32]
+			''    (0 to 9, 0 to 19) as long   =>   [10 x [20 x i32]]
+			for i as integer = symbGetArrayDimensions( sym ) - 1 to 0 step -1
+				var elements = symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1
+				s = "[" & elements & " x " + s + "]"
+			next
+		end select
+	end if
+
+	function = s
 end function
 
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )
