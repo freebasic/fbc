@@ -469,26 +469,31 @@ sub symbSetFixedSizeArrayDimensionElements _
 
 end sub
 
-'' Used to fill in the dimension count for dynamic array variables (not
-'' parameters) declared with (), i.e. unknown dimension count, when the parser
-'' sees the first REDIM or array access and can tell the dimension count based
-'' on it.
+'' - Show a compile-time error if a dynamic array access has a wrong number of
+''   dimensions.
+'' - Fill in the dimension count for dynamic array variables (not parameters)
+''   declared with (), i.e. unknown dimension count, when the parser sees the
+''   first REDIM or array access and can tell the dimension count based on it.
+''   We don't support doing this for bydesc parameters though, for backwards
+''   compatibility. It's generally weird or even dangerous anyways, because
+''   global () arrays, or () bydesc parameters for that matter, could be seen
+''   with different dimension counts in different modules.
 sub symbCheckDynamicArrayDimensions _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval dimensions as integer _
 	)
 
-	dim as FBSYMBOL ptr desc = any
-
-	assert( symbIsDynamic( sym ) )
-
 	'' Secondary declarations with dimensions = -1 don't make a difference.
+	'' (e.g. secondary REDIMs)
 	if( dimensions = -1 ) then
 		exit sub
 	end if
 
-	if( symbGetArrayDimensions( sym ) = -1 ) then
+	var existingdimensions = symbGetArrayDimensions( sym )
+
+	'' Fill in dimension count for array vars if unknown
+	if( symbIsDynamic( sym ) andalso (existingdimensions = -1) ) then
 		sym->var_.array.dimensions = dimensions
 
 		''
@@ -514,8 +519,8 @@ sub symbCheckDynamicArrayDimensions _
 		'' fbc wasn't designed for this kind of "multi-pass" things...
 		''
 
-	'' The array's dimension count is known; complain about mismatching dimension counts.
-	elseif( symbGetArrayDimensions( sym ) <> dimensions ) then
+	'' If the array var's/param's dimensions are known, check for mismatch
+	elseif( (existingdimensions <> -1) and (existingdimensions <> dimensions) ) then
 		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, symbGetName( sym ) )
 	end if
 
