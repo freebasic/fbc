@@ -2213,6 +2213,8 @@ private sub _emitVarIniOfs _
 		byval ofs as longint _
 	)
 
+	hVarIniElementType( sym )
+
 	var s = *symbGetMangledName( rhs )
 	var symdtype = symbGetType( sym )
 	var symtype = hEmitType( symdtype, sym->subtype )
@@ -2237,6 +2239,7 @@ private sub _emitVarIniOfs _
 	hMaybeAddConv( s, symdtype, sym->subtype, symtype, ptrdtype, rhs->subtype, ptrtype )
 
 	ctx.varini += s
+
 	hVarIniSeparator( )
 end sub
 
