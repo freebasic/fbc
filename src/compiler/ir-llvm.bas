@@ -486,39 +486,6 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr )
 	ctx.section = oldsection
 end sub
 
-'' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
-private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
-	dim as string s
-
-	'' Emit all array dimensions individually
-	'' (This lets array initializers rely on gcc to fill uninitialized
-	'' elements with zeroes)
-	select case( symbGetClass( sym ) )
-	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if( symbGetIsDynamic( sym ) = FALSE ) then
-			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-				'' elements = ubound( array, d ) - lbound( array, d ) + 1
-				s += "[" + str( symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1 ) + "]"
-			next
-		end if
-	end select
-
-	'' If it's a fixed-length string, add an extra array dimension
-	'' (zstring * 5 becomes char[5])
-	dim as integer length = 0
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		length = symbGetStrLen( sym )
-	case FB_DATATYPE_WCHAR
-		length = symbGetWstrLen( sym )
-	end select
-	if( length > 0 ) then
-		s += "[" + str( length ) + "]"
-	end if
-
-	function = s
-end function
-
 private sub hBuildStrLit _
 	( _
 		byref ln as string, _
@@ -839,7 +806,6 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 		'' Don't emit fake dynamic array fields
 		if( symbIsDynamic( fld ) = FALSE ) then
 			ln += hEmitSymType( fld )
-			ln += hEmitArrayDecl( fld )
 			ln += attrib
 		end if
 
