@@ -783,7 +783,7 @@ function astBuildArrayDescIniTree _
 		array_expr = astNewADDROF( array_expr )
 	end if
 
-    astTypeIniScopeBegin( tree, NULL )
+	astTypeIniScopeBegin( tree, NULL, FALSE )
 
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
@@ -836,14 +836,14 @@ function astBuildArrayDescIniTree _
     '' setup dimTB
     dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
 
-    astTypeIniScopeBegin( tree, NULL )
+	astTypeIniScopeBegin( tree, NULL, TRUE )
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
 		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
-			astTypeIniScopeBegin( tree, NULL )
+			astTypeIniScopeBegin( tree, NULL, FALSE )
 
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
 			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayUbound( array, i ) - symbArrayLbound( array, i ) + 1 ), elm )

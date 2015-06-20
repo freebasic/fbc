@@ -3309,7 +3309,7 @@ private sub _emitVarIniPad( byval bytes as longint )
 	'' aswell as add padding between fields etc. where needed.
 end sub
 
-private sub _emitVarIniScopeBegin( )
+private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
 	ctx.variniscopelevel += 1
 	ctx.varini += "{ "
 end sub
