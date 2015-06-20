@@ -1661,6 +1661,54 @@ private sub _emitUop _
 
 end sub
 
+private function hGetConvOpCode( byval ldtype as integer, byval rdtype as integer ) as zstring ptr
+	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			'' float to float (i.e. single <-> double)
+			assert( typeGetSize( ldtype ) <> typeGetSize( rdtype ) )
+			return iif( typeGetSize( ldtype ) < typeGetSize( rdtype ), @"fptrunc", @"fpext" )
+		end if
+
+		'' int to float
+		return iif( typeIsSigned( rdtype ), @"sitofp", @"uitofp" )
+	end if
+
+	if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		'' float to int (rounding was taken care of above)
+		return iif( typeIsSigned( ldtype ), @"fptosi", @"fptoui" )
+	end if
+
+	'' int to int
+
+	if( typeIsPtr( ldtype ) ) then
+		if( typeIsPtr( rdtype ) ) then
+			'' both are pointers, just convert the type
+			'' (bitcast only changes the compile-time type, not any bits)
+			return @"bitcast"
+		end if
+		return @"inttoptr"
+	elseif( typeIsPtr( rdtype ) ) then
+		return @"ptrtoint"
+	end if
+
+	'' same size ints?
+	if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
+		if( typeGetSizeType( ldtype ) = typeGetSizeType( rdtype ) ) then
+			'' Do nothing for 32bit Long <-> 32bit Integer, etc.
+			return NULL
+		end if
+
+		'' signed <-> unsigned
+		return @"bitcast"
+	end if
+
+	if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
+		return @"trunc"
+	end if
+
+	return iif( typeIsSigned( ldtype ), @"sext", @"zext" )
+end function
+
 private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour,
 	'' because LLVM's fptosi/fptoui just truncate.
@@ -1687,76 +1735,11 @@ private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		*v2 = *v0
 	end if
 
-	var ldtype = v1->dtype
-	var rdtype = v2->dtype
-	assert( (ldtype <> rdtype) or (v1->subtype <> v2->subtype) )
+	assert( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) )
 
-	dim op as zstring ptr
-	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' float to float (i.e. single <-> double)
-			if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
-				op = @"fptrunc"
-			else
-				assert( typeGetSize( ldtype ) > typeGetSize( rdtype ) )
-				op = @"fpext"
-			end if
-		else
-			'' int to float
-			if( typeIsSigned( rdtype ) ) then
-				op = @"sitofp"
-			else
-				op = @"uitofp"
-			end if
-		end if
-	else
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' float to int (rounding was taken care of above)
-			if( typeIsSigned( ldtype ) ) then
-				op = @"fptosi"
-			else
-				op = @"fptoui"
-			end if
-		else
-			'' int to int
-			if( typeIsPtr( ldtype ) ) then
-				if( typeIsPtr( rdtype ) ) then
-					'' both are pointers, just convert the type
-					'' (bitcast doesn't change any bits)
-					op = @"bitcast"
-				else
-					op = @"inttoptr"
-				end if
-			else
-				if( typeIsPtr( rdtype ) ) then
-					op = @"ptrtoint"
-				else
-					if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
-						'' same size ints, should happen only with signed <-> unsigned
-						if( typeGetSizeType( v1->dtype ) = typeGetSizeType( v2->dtype ) ) then
-							'' Do nothing for 32bit Long <-> 32bit Integer, etc.
-							op = NULL
-						else
-							'' signed <-> unsigned
-							op = @"bitcast"
-						end if
-					else
-						if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
-							op = @"trunc"
-						else
-							if( typeIsSigned( ldtype ) ) then
-								op = @"sext"
-							else
-								op = @"zext"
-							end if
-						end if
-					end if
-				end if
-			end if
-		end if
-	end if
-
+	var op = hGetConvOpCode( v1->dtype, v2->dtype )
 	if( op = NULL ) then
+		'' Do nothing for 32bit Long <-> 32bit Integer, etc.
 		*v1 = *v2
 		exit sub
 	end if
@@ -2183,13 +2166,63 @@ private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	hVarIniSeparator( )
 end sub
 
+'' Add inline conversion instruction, to convert the expression in "s" from rhs
+'' type to lhs type, if needed
+private sub hMaybeAddConv _
+	( _
+		byref s as string, _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byref ltype as string, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval rtype as string _
+	)
+
+	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
+		exit sub
+	end if
+
+	var op = hGetConvOpCode( ldtype, rdtype )
+	if( op = NULL ) then
+		exit sub
+	end if
+
+	s = *hGetConvOpCode( ldtype, rdtype ) + " (" + rtype + " " + s + " to " + ltype + ")"
+
+end sub
+
 private sub _emitVarIniOfs _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval rhs as FBSYMBOL ptr, _
 		byval ofs as longint _
 	)
-	ctx.varini += "TODO offset " + *symbGetMangledName( rhs ) + " + " + str( ofs )
+
+	var s = *symbGetMangledName( rhs )
+	var symdtype = symbGetType( sym )
+	var symtype = hEmitType( symdtype, sym->subtype )
+	var ptrdtype = typeAddrOf( symbGetType( rhs ) )
+	var ptrtype = hEmitType( ptrdtype, rhs->subtype )
+
+	if( ofs <> 0 ) then
+		var inttype = hEmitType( FB_DATATYPE_UINT, NULL )
+
+		'' Emit inline LLVM instructions for something like: cptr(cint(@rhs) + ofs)
+
+		'' %0 = ptrtoint foo* @global to i32
+		s = "ptrtoint (" + ptrtype + " " + s + " to " + inttype + ")"
+
+		'' %1 = add (i32 %0), i32 <offset>
+		s = "add (" + inttype + " " + s + ", " + inttype + " " & ofs & ")"
+
+		'' %2 = inttoptr (i32 %1) to foo*
+		s = "inttoptr (" + inttype + " " + s + " to " + ptrtype + ")"
+	end if
+
+	hMaybeAddConv( s, symdtype, sym->subtype, symtype, ptrdtype, rhs->subtype, ptrtype )
+
+	ctx.varini += s
 	hVarIniSeparator( )
 end sub
 
