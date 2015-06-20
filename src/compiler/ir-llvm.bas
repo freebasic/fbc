@@ -1752,7 +1752,6 @@ private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 
 	hLoadVreg( v2 )
-	_setVregDataType( v2, v2->dtype, v2->subtype )
 
 	var ln = hVregToStr( v0 ) + " = " + *op + " "
 	ln += hEmitType( v2->dtype, v2->subtype )
