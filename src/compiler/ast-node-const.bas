@@ -188,6 +188,8 @@ function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 		else
 			function = str( csng( n->val.f ) )
 		end if
+	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
+		function = str(cbool(n->val.i))
 	elseif( typeIsSigned( n->dtype ) ) then
 		function = str( n->val.i )
 	else
@@ -208,6 +210,8 @@ function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 		else
 			w = wstr( csng( n->val.f ) )
 		end if
+	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
+		w = wstr( cbool(n->val.i) )
 	elseif( typeIsSigned( n->dtype ) ) then
 		w = wstr( n->val.i )
 	else

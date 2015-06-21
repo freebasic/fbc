@@ -16,6 +16,7 @@
 #define FB_RTL_STRALLOCTMPDESCZ			"fb_StrAllocTempDescZ"
 #define FB_RTL_STRALLOCTMPDESCZEX		"fb_StrAllocTempDescZEx"
 
+#define FB_RTL_BOOL2STR					"fb_BoolToStr"
 #define FB_RTL_INT2STR					"fb_IntToStr"
 #define FB_RTL_UINT2STR					"fb_UIntToStr"
 #define FB_RTL_LONGINT2STR				"fb_LongintToStr"
@@ -31,6 +32,7 @@
 #define FB_RTL_FLT2STR_QB				"fb_FloatToStrQB"
 #define FB_RTL_DBL2STR_QB				"fb_DoubleToStrQB"
 
+#define FB_RTL_STR2BOOL					"valbool"
 #define FB_RTL_STR2INT					"valint"
 #define FB_RTL_STR2UINT					"valuint"
 #define FB_RTL_STR2LNG					"vallng"
@@ -93,6 +95,7 @@
 #define FB_RTL_WSTRCOMPARE				"fb_WstrCompare"
 #define FB_RTL_WSTRCONCATASSIGN			"fb_WstrConcatAssign"
 
+#define FB_RTL_BOOL2WSTR				"fb_BoolToWstr"
 #define FB_RTL_INT2WSTR					"fb_IntToWstr"
 #define FB_RTL_UINT2WSTR				"fb_UIntToWstr"
 #define FB_RTL_LONGINT2WSTR				"fb_LongintToWstr"
@@ -164,6 +167,7 @@
 #define FB_RTL_DATARESTORE 				"fb_DataRestore"
 #define FB_RTL_DATAREADSTR 				"fb_DataReadStr"
 #define FB_RTL_DATAREADWSTR 			"fb_DataReadWstr"
+#define FB_RTL_DATAREADBOOL				"fb_DataReadBool"
 #define FB_RTL_DATAREADBYTE 			"fb_DataReadByte"
 #define FB_RTL_DATAREADSHORT 			"fb_DataReadShort"
 #define FB_RTL_DATAREADINT 				"fb_DataReadInt"
@@ -178,6 +182,7 @@
 #define FB_RTL_POW 						"fb_Pow"
 
 #define FB_RTL_PRINTVOID 				"fb_PrintVoid"
+#define FB_RTL_PRINTBOOL				"fb_PrintBool"
 #define FB_RTL_PRINTBYTE 				"fb_PrintByte"
 #define FB_RTL_PRINTUBYTE 				"fb_PrintUByte"
 #define FB_RTL_PRINTSHORT 				"fb_PrintShort"
@@ -192,6 +197,7 @@
 #define FB_RTL_PRINTWSTR 				"fb_PrintWstr"
 
 #define FB_RTL_LPRINTVOID 				"fb_LPrintVoid"
+#define FB_RTL_LPRINTBOOL				"fb_LPrintBool"
 #define FB_RTL_LPRINTBYTE 				"fb_LPrintByte"
 #define FB_RTL_LPRINTUBYTE 				"fb_LPrintUByte"
 #define FB_RTL_LPRINTSHORT 				"fb_LPrintShort"
@@ -209,6 +215,7 @@
 #define FB_RTL_PRINTTAB 				"fb_PrintTab"
 
 #define FB_RTL_WRITEVOID 				"fb_WriteVoid"
+#define FB_RTL_WRITEBOOL				"fb_WriteBool"
 #define FB_RTL_WRITEBYTE 				"fb_WriteByte"
 #define FB_RTL_WRITEUBYTE 				"fb_WriteUByte"
 #define FB_RTL_WRITESHORT 				"fb_WriteShort"
@@ -294,6 +301,7 @@
 
 #define FB_RTL_FILEINPUT 				"fb_FileInput"
 #define FB_RTL_CONSOLEINPUT 			"fb_ConsoleInput"
+#define FB_RTL_INPUTBOOL				"fb_InputBool"
 #define FB_RTL_INPUTBYTE 				"fb_InputByte"
 #define FB_RTL_INPUTUBYTE 				"fb_InputUbyte"
 #define FB_RTL_INPUTSHORT 				"fb_InputShort"
@@ -416,6 +424,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRALLOCTMPDESCZ
 	FB_RTL_IDX_STRALLOCTMPDESCZEX
 
+	FB_RTL_IDX_BOOL2STR
 	FB_RTL_IDX_INT2STR
 	FB_RTL_IDX_UINT2STR
 	FB_RTL_IDX_LONGINT2STR
@@ -431,6 +440,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FLT2STR_QB
 	FB_RTL_IDX_DBL2STR_QB
 
+	FB_RTL_IDX_STR2BOOL
 	FB_RTL_IDX_STR2INT
 	FB_RTL_IDX_STR2UINT
 	FB_RTL_IDX_STR2LNG
@@ -493,6 +503,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRCOMPARE
 	FB_RTL_IDX_WSTRCONCATASSIGN
 
+	FB_RTL_IDX_BOOL2WSTR
 	FB_RTL_IDX_INT2WSTR
 	FB_RTL_IDX_UINT2WSTR
 	FB_RTL_IDX_LONGINT2WSTR
@@ -564,6 +575,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DATARESTORE
 	FB_RTL_IDX_DATAREADSTR
 	FB_RTL_IDX_DATAREADWSTR
+	FB_RTL_IDX_DATAREADBOOL
 	FB_RTL_IDX_DATAREADBYTE
 	FB_RTL_IDX_DATAREADSHORT
 	FB_RTL_IDX_DATAREADINT
@@ -578,6 +590,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_POW
 
 	FB_RTL_IDX_PRINTVOID
+	FB_RTL_IDX_PRINTBOOL
 	FB_RTL_IDX_PRINTBYTE
 	FB_RTL_IDX_PRINTUBYTE
 	FB_RTL_IDX_PRINTSHORT
@@ -592,6 +605,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PRINTWSTR
 
 	FB_RTL_IDX_LPRINTVOID
+	FB_RTL_IDX_LPRINTBOOL
 	FB_RTL_IDX_LPRINTBYTE
 	FB_RTL_IDX_LPRINTUBYTE
 	FB_RTL_IDX_LPRINTSHORT
@@ -609,6 +623,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PRINTTAB
 
 	FB_RTL_IDX_WRITEVOID
+	FB_RTL_IDX_WRITEBOOL
 	FB_RTL_IDX_WRITEBYTE
 	FB_RTL_IDX_WRITEUBYTE
 	FB_RTL_IDX_WRITESHORT
@@ -696,6 +711,7 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_FILEINPUT
 	FB_RTL_IDX_CONSOLEINPUT
+	FB_RTL_IDX_INPUTBOOL
 	FB_RTL_IDX_INPUTBYTE
 	FB_RTL_IDX_INPUTUBYTE
 	FB_RTL_IDX_INPUTSHORT

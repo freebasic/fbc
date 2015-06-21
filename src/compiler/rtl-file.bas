@@ -8,7 +8,7 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 66 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 67 ) = _
 	{ _
 		/' function fb_FileOpen _
 			( _
@@ -769,6 +769,16 @@
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
+		/' function fb_InputBool( byref dst as boolean ) as long '/ _
+		( _
+			@FB_RTL_INPUTBOOL, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+	 		{ _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_InputByte( byref dst as byte ) as long '/ _
@@ -1957,8 +1967,7 @@ function rtlFileInputGet _
 		args = 2
 
 	case FB_DATATYPE_BOOLEAN
-		'' !!!FIXME!!! (BOOL)
-		f = PROCLOOKUP( INPUTBYTE )
+		f = PROCLOOKUP( INPUTBOOL )
 
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _

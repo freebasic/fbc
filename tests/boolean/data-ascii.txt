@@ -1,0 +1,3 @@
+False,True,0,1
+FALSE,TRUE,0.0,-1e+0
+FaLsE,TrUe,000,-001
