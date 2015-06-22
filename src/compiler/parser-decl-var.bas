@@ -437,6 +437,22 @@ private function hAddVar _
 	end if
 
 	if( is_declared ) then
+		if( symbIsDynamic( sym ) ) then
+			'' Update dynamic array dimensions - set them if they were unknown and are now known.
+			''
+			'' This enables compile-time dimension count tracking for dynamic arrays that were
+			'' declared as () (unknown dimensions) but then REDIM'ed to certain dimension count.
+			''
+			'' Of course this isn't 100% reliable, because:
+			''  - it will only enable checking after the REDIM was seen, so it won't affect array
+			''    accesses parsed before that,
+			''  - it doesn't work across modules
+			''  - it doesn't handle multiple code paths
+			if( (dimensions <> -1) and (symbGetArrayDimensions( sym ) = -1) ) then
+				sym->var_.array.dimensions = dimensions
+			end if
+		end if
+
 		if( symbGetIsDynamic( sym ) ) then
 			symbCheckDynamicArrayDimensions( sym, dimensions )
 		end if

@@ -48,6 +48,7 @@ Version 1.03.0
 - Some built-in functions with wstring parameters (e.g. Val(), Left(), Right()) accepted integers and pointers in place of the wstring (e.g. Val(0)). This triggers an error now.
 - #772: Types with the same name but in different namespaces compared as equal in #if typeof(...) = typeof(...) checks and #print typeof(...) output, because the namespace prefix was not included in textual typeof()'s result string.
 - For dynamic array parameters with specified number of dimensions (e.g. <(any) as integer> instead of <() as integer>), the number of dimensions in accesses and REDIMs is now checked at compile-time, like dynamic array variables
+- 1.00.0 regression: Arrays declared with unknown dimensions ("()") could no longer be accessed with inconsistent dimension counts. This is now allowed again. If precise dimension count checking is wanted, the array should be declared using the "myArray(any, any, ...)" syntax.
 
 
 Version 1.02.1
