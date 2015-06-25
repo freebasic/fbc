@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include once "GL/windows/gl.bi"
+
 extern "Windows"
 
 const __glext_h_ = 1
