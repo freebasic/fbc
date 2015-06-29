@@ -591,6 +591,14 @@ sub astCheckConst _
 			end if
 		end select
 
+	case FB_DATATYPE_BOOLEAN
+		lval = astConstGetAsInt64( n )
+		if(( lval = 0 ) or (lval = 1) or (lval = -1)) then
+			result = TRUE
+		else
+			result = FALSE
+		end if
+
 	case else
 		'' TODO: bitfields, booleans
 
