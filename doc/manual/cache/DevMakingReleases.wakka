@@ -110,7 +110,7 @@ This script downloads & extracts ""DJGPP/MinGW.org/MinGW-w64"" toolchains, FB pa
 
 Usage:
 	%%cd contrib/release
-./build.sh <target> [<fbc-commit>]%%
+./build.sh <target> <fbc-commit>%%
 
 ##<target>## can be one of:
 	- ##dos##: DOS build: must run on ""Win32"". Uses ""Win32 MSYS"", but switches to DJGPP for building FB.
@@ -168,6 +168,7 @@ Some of the ideas behind this script:
 	- Update the wiki snapshot in the fbc sources
 	- Regenerate PrintToc and CompilerErrMsg
 	- If needed, update wiki samples in examples/manual/
+	- Build documentation packages (CHM on Windows, rest can be done on Linux)
 
 	- Check whether toolchains used in the ##contrib/release/build.sh## script need updating
 
@@ -175,18 +176,18 @@ Some of the ideas behind this script:
 	- For each system, update fbc sources (to have the latest version of the release script)
 	- On win32:
 		%%cd contrib/release
-./build.sh win32
-./build.sh win32-mingworg
-./build.sh dos%%
+./build.sh win32 <commitid>
+./build.sh win32-mingworg <commitid>
+./build.sh dos <commitid>%%
 	- On win64:
 		%%cd contrib/release
-./build.sh win64%%
+./build.sh win64 <commitid>%%
 	- On linux-x86:
 		%%cd contrib/release
-./build.sh linux-x86%%
+./build.sh linux-x86 <commitid>%%
 	- On linux-x86_64:
 		%%cd contrib/release
-./build.sh linux-x86_64%%
+./build.sh linux-x86_64 <commitid>%%
 	- Collect all the archives and manifests from the ##contrib/release/input## and ##contrib/release/output## directories
 
 	- Review the manifests to check for missing files etc.
