@@ -46,7 +46,7 @@ sub WORDS_Clear()
 end sub
 
 ''
-sub WORDS_Add( byref word as string )
+sub WORDS_Add( byref word as const string )
 	if( wordcount < MAX_WORDS ) then
 		wordlist( wordcount ) = word
 		wordcount += 1
@@ -118,9 +118,9 @@ end function
 function SpellCheck_Word( byref input_word as string ) as integer
 
 	dim as integer correct
-	dim as AspellWordList ptr suggestions
+	dim as const AspellWordList ptr suggestions
 	dim as AspellStringEnumeration ptr elements
-	dim as zstring ptr word
+	dim as const zstring ptr word
 
 	function = FALSE
 
