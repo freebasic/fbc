@@ -3353,7 +3353,10 @@ end sub
 	'' the command line ones, so those will be searched first)
 	fbAddIncludePath( fbc.incpath )
 
-	fbcDetermineMainName( )
+	var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
+	                       (listGetHead( @fbc.objlist   ) <> NULL) or _
+	                       (listGetHead( @fbc.libs.list ) <> NULL) or _
+	                       (listGetHead( @fbc.libfiles  ) <> NULL)
 
 	'' Answer -print query, if any, and stop
 	'' The -print option is intended to allow shell scripts, makefiles, etc.
@@ -3365,6 +3368,11 @@ end sub
 		case PRINT_TARGET
 			print fbGetTargetId( )
 		case PRINT_X
+			'' If we have input files, -print x should give the output name that we'd normally get.
+			'' However, a plain "fbc -print x" without input files should just give the .exe extension.
+			if( have_input_files ) then
+				fbcDetermineMainName( )
+			end if
 			hSetOutName( )
 			print fbc.outname
 		case PRINT_FBLIBDIR
@@ -3373,11 +3381,10 @@ end sub
 		fbcEnd( 0 )
 	end if
 
+	fbcDetermineMainName( )
+
 	'' Show help if there are no input files
-	if( (listGetHead( @fbc.modules   ) = NULL) and _
-	    (listGetHead( @fbc.objlist   ) = NULL) and _
-	    (listGetHead( @fbc.libs.list ) = NULL) and _
-	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
+	if( have_input_files = FALSE ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if

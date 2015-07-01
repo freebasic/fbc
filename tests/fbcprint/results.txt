@@ -1,5 +1,5 @@
--print x -target win32 = unnamed.exe
--print x -target linux = unnamed
+-print x -target win32 = .exe
+-print x -target linux = 
 -print x 1.bas -target win32 = 1.exe
 -print x lib1.a -target win32 = unnamed.exe
 -print x 1.o -target win32 = 1.exe
