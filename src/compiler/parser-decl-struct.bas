@@ -368,7 +368,7 @@ private sub hArrayOrBitfield _
 	if( lexGetToken( ) = FB_TK_STMTSEP ) then
 		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
 			lexSkipToken( )
-			bits = valint( *lexGetText( ) )
+			bits = clng( *lexGetText( ) )
 			lexSkipToken( )
 
 			if( (bits <= 0) or (dims <> 0) ) then

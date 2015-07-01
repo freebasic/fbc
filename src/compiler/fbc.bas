@@ -1587,7 +1587,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		if( arg = "inf" ) then
 			value = FB_ERR_INFINITE
 		else
-			value = valint( arg )
+			value = clng( arg )
 			if( value <= 0 ) then
 				hFatalInvalidOption( arg )
 			end if
@@ -1624,7 +1624,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		if (arg = "max") then
 			value = 3
 		else
-			value = valint(arg)
+			value = clng( arg )
 			if (value < 0) then
 				value = 0
 			elseif (value > 3) then
@@ -1692,7 +1692,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.staticlink = TRUE
 
 	case OPT_T
-		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
+		fbSetOption( FB_COMPOPT_STACKSIZE, clng( arg ) * 1024 )
 
 	case OPT_TARGET
 		dim as integer os, cputype, is_gnu_triplet
@@ -1772,7 +1772,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = -1
 
 		case else
-			value = valint(arg)
+			value = clng( arg )
 		end select
 
 		if( value >= -1 ) then

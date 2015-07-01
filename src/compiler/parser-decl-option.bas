@@ -74,7 +74,7 @@ sub cOptDecl( )
 				'' error recovery: skip stmt
 				hSkipStmt( )
 			else
-				env.opt.base = valint( *lexGetText( ) )
+				env.opt.base = clng( *lexGetText( ) )
 				lexSkipToken( )
 			end if
 
