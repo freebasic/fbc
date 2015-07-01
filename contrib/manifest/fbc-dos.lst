@@ -18,9 +18,6 @@ include/freebas/allegro/algif.bi
 include/freebas/allegro/alpng.bi
 include/freebas/aspell.bi
 include/freebas/bfd.bi
-include/freebas/bfd/bfd-216.bi
-include/freebas/bfd/bfd-217.bi
-include/freebas/bfd/bfd-218.bi
 include/freebas/big_int/basic_funcs.bi
 include/freebas/big_int/big_int.bi
 include/freebas/big_int/big_int_full.bi
@@ -430,6 +427,7 @@ include/freebas/png12.bi
 include/freebas/png14.bi
 include/freebas/png15.bi
 include/freebas/png16.bi
+include/freebas/pspell.bi
 include/freebas/quicklz.bi
 include/freebas/regex.bi
 include/freebas/sqlite2.bi

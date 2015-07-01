@@ -634,6 +634,7 @@ examples/manual/gfx/put-alpha.bas
 examples/manual/gfx/put-and.bas
 examples/manual/gfx/put-or.bas
 examples/manual/gfx/put-pset.bas
+examples/manual/gfx/put-trans-custom.bas
 examples/manual/gfx/put-trans.bas
 examples/manual/gfx/put-xor.bas
 examples/manual/gfx/put.bas
@@ -1118,7 +1119,11 @@ examples/manual/system/shell.bas
 examples/manual/system/sleep.bas
 examples/manual/system/system.bas
 examples/manual/threads/condcreate.bas
+examples/manual/threads/condcreate2.bas
+examples/manual/threads/condsignal.bas
+examples/manual/threads/condwait.bas
 examples/manual/threads/mutexcreate.bas
+examples/manual/threads/mutexlock.bas
 examples/manual/threads/threadcall.bas
 examples/manual/threads/threads1.bas
 examples/manual/threads/threads2.bas
@@ -1376,11 +1381,12 @@ examples/xml/expat.bas
 examples/xml/libxml.bas
 examples/xml/test.xml
 fbc.exe
-inc/AL/EFX-Util.bi
 inc/AL/al.bi
 inc/AL/alc.bi
 inc/AL/alext.bi
 inc/AL/alut.bi
+inc/AL/efx-creative.bi
+inc/AL/efx-presets.bi
 inc/AL/efx.bi
 inc/CUnit/Automated.bi
 inc/CUnit/Basic.bi
@@ -1410,7 +1416,9 @@ inc/GLFW/glfw3.bi
 inc/IL/il.bi
 inc/IL/ilu.bi
 inc/IUP/iup.bi
+inc/IUP/iup_config.bi
 inc/IUP/iup_mglplot.bi
+inc/IUP/iup_plot.bi
 inc/IUP/iup_pplot.bi
 inc/IUP/iup_scintilla.bi
 inc/IUP/iupcb.bi
@@ -1430,6 +1438,7 @@ inc/IUP/iupim.bi
 inc/IUP/iupkey.bi
 inc/IUP/iuplua.bi
 inc/IUP/iuplua_mglplot.bi
+inc/IUP/iuplua_plot.bi
 inc/IUP/iuplua_pplot.bi
 inc/IUP/iuplua_scintilla.bi
 inc/IUP/iupluacontrols.bi
@@ -1705,9 +1714,6 @@ inc/atk/atk.bi
 inc/bass.bi
 inc/bassmod.bi
 inc/bfd.bi
-inc/bfd/bfd-216.bi
-inc/bfd/bfd-217.bi
-inc/bfd/bfd-218.bi
 inc/big_int/basic_funcs.bi
 inc/big_int/big_int.bi
 inc/big_int/big_int_full.bi
@@ -2436,6 +2442,7 @@ inc/png16.bi
 inc/portaudio.bi
 inc/postgresql/libpq-fe.bi
 inc/postgresql/postgres_ext.bi
+inc/pspell.bi
 inc/quicklz.bi
 inc/regex.bi
 inc/sndfile.bi
@@ -2546,6 +2553,8 @@ inc/win/ddk/ddk_ntstatus.bi
 inc/win/ddk/mmddk.bi
 inc/win/ddk/winddk.bi
 inc/win/ddraw.bi
+inc/win/devpkey.bi
+inc/win/devpropdef.bi
 inc/win/dimm.bi
 inc/win/dinput.bi
 inc/win/dlgs.bi
@@ -2634,6 +2643,8 @@ inc/win/olectl.bi
 inc/win/olectlid.bi
 inc/win/oledlg.bi
 inc/win/oleidl.bi
+inc/win/pciprop.bi
+inc/win/portabledeviceconnectapi.bi
 inc/win/powrprof.bi
 inc/win/profinfo.bi
 inc/win/propidl.bi
@@ -2690,6 +2701,7 @@ inc/win/sqltypes.bi
 inc/win/sqlucode.bi
 inc/win/sspi.bi
 inc/win/strmif.bi
+inc/win/strsafe.bi
 inc/win/structuredquerycondition.bi
 inc/win/subauth.bi
 inc/win/tcpestats.bi
@@ -2714,6 +2726,8 @@ inc/win/wincon.bi
 inc/win/wincrypt.bi
 inc/win/windef.bi
 inc/win/windns.bi
+inc/win/windot11.bi
+inc/win/windowsx.bi
 inc/win/winefs.bi
 inc/win/winerror.bi
 inc/win/wingdi.bi
@@ -2735,6 +2749,7 @@ inc/win/winsvc.bi
 inc/win/wintrust.bi
 inc/win/winuser.bi
 inc/win/winver.bi
+inc/win/wlantypes.bi
 inc/win/ws2def.bi
 inc/win/ws2ipdef.bi
 inc/win/ws2spi.bi
@@ -2986,6 +3001,7 @@ lib/win32/libd3dcompiler_41.dll.a
 lib/win32/libd3dcompiler_42.dll.a
 lib/win32/libd3dcompiler_43.dll.a
 lib/win32/libd3dcompiler_46.dll.a
+lib/win32/libd3dcompiler_47.dll.a
 lib/win32/libd3dcsx_46.dll.a
 lib/win32/libd3dcsxd.dll.a
 lib/win32/libd3dcsxd_43.dll.a
@@ -3128,6 +3144,7 @@ lib/win32/libksguid.dll.a
 lib/win32/libksproxy.dll.a
 lib/win32/libksuser.dll.a
 lib/win32/libktmw32.dll.a
+lib/win32/liblocationapi.dll.a
 lib/win32/liblogoncli.dll.a
 lib/win32/liblz32.dll.a
 lib/win32/libmapi32.dll.a
@@ -3157,6 +3174,8 @@ lib/win32/libmstask.dll.a
 lib/win32/libmsvcp60.dll.a
 lib/win32/libmsvcr100.dll.a
 lib/win32/libmsvcr110.dll.a
+lib/win32/libmsvcr120.dll.a
+lib/win32/libmsvcr120d.dll.a
 lib/win32/libmsvcr80.dll.a
 lib/win32/libmsvcr90.dll.a
 lib/win32/libmsvcr90d.dll.a
