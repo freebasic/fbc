@@ -3,6 +3,7 @@
 -print x 1.bas -target win32 = 1.exe
 -print x lib1.a -target win32 = unnamed.exe
 -print x 1.o -target win32 = 1.exe
+-print x -m 1 -target win32 = 1.exe
 -print target -target cygwin-x86 = cygwin-x86
 -print target -target cygwin-x86_64 = cygwin-x86_64
 -print target -target darwin-x86 = darwin-x86

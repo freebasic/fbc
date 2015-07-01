@@ -11,6 +11,7 @@ all:
 	$(call test,-print x 1.bas -target win32)
 	$(call test,-print x lib1.a -target win32)
 	$(call test,-print x 1.o -target win32)
+	$(call test,-print x -m 1 -target win32)
 
 	# -print target with FB target ids passed to -target
 	$(call test,-print target -target cygwin-x86)
