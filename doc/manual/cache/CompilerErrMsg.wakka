@@ -41,6 +41,7 @@ During the program compilation three types of errors can arise:
 	- //34 '=' parsed as equality operator in function argument, not assignment to BYREF function result//
 	- //35 Mixing signed/unsigned operands//
 	- //36 Mismatching parameter initializer//
+	- //37 //
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -361,6 +362,8 @@ During the program compilation three types of errors can arise:
 	- //314 CONST used on destructor (not needed)//
 	- //315 Byref function result not set//
 	- //316 Function result assignment outside of the function//
+	- //317 Type mismatch in byref function result assignment//
+	- //318 -asm att|intel option given, but not supported for this target (only x86 or x86_64)//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
