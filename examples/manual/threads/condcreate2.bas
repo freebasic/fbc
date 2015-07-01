@@ -1,33 +1,38 @@
-'' examples/manual/threads/mutexcreate.bas
+'' examples/manual/threads/condcreate2.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMutexCreate
+'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondCreate
 '' --------
 
-'Visual example of mutual exclusion between 2 threads by using Mutex:
+'Visual example of mutual exclusion + mutual synchronization between 2 threads
+'by using Mutex and CondVar:
 'the "user-defined thread" computes the points coordinates on a circle,
 'and the "main thread" plots the points.
 '
-'Principle of mutual exclusion
-'          Thread#A                XOR                  Thread#B
+'Principle of mutual exclusion + mutual synchronisation
+'          Thread#A                XOR + <==>           Thread#B
 '.....                                         .....
 'MutexLock(mut)                                MutexLock(mut)
+'  While Thread#A_signal <> false                While Thread#A_signal <> true
+'    CondWait(cond, mut)                           CondWait(cond, mut)
+'  Wend                                          Wend
 '  Do_something#A_with_exclusion                 Do_something#B_with_exclusion
+'  Thread#A_signal = true                        Thread#A_signal = false
+'  CondSignal(cond)                              CondSignal(cond)
 'MutexUnlock(mut)                              MutexUnlock(mut)
 '.....                                         .....
 '
 'Behavior:
-'- The first point must be pre-calculated.
-'- Nothing prevents that a same calculated point could be plotted several times
-'(depends on execution times of the loops between main thread and user thread).
-'- Nothing prevents that a calculated point could be not plotted
-'(same remark on the loop times).
+'- Unnecessary to pre-calculate the first point.
+'- Each calculated point is plotted one time only.
 '
-'If you comment out the lines containing "MutexLock" and "MutexUnlock"
+'If you comment out the lines containing "MutexLock" and "MutexUnlock",
+'"CondWait" and "CondSignal", ".ready"
 '(inside "user-defined thread" or/and "main thread"),
-'there will be no longer mutual exclusion between computation of coordinates and plotting of points,
+'there will be no longer mutual exclusion nor mutual synchronization
+'between computation of coordinates and plotting of points,
 'and many points will not be plotted on circle (due to non coherent coordinates).
 
 '-----------------------------------------------------------------------------------------------------
@@ -35,6 +40,8 @@
 Type ThreadUDT                                   'Generic user thread UDT
 	Dim handle As Any Ptr                        'Any Ptr handle to user thread
 	Dim sync As Any Ptr                          'Any Ptr handle to mutex
+	Dim cond As Any Ptr                          'Any Ptr handle to conditional
+	Dim ready As Byte                            'Boolean to coordinates ready
 	Dim quit As Byte                             'Boolean to end user thread
 	Declare Static Sub Thread (ByVal As Any Ptr) 'Generic user thread procedure
 	Dim procedure As Sub (ByVal As Any Ptr)      'Procedure(Any Ptr) to be executed by user thread
@@ -48,10 +55,15 @@ Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread proced
 	Do
 	    Static As Integer I
 	    MutexLock(tp->sync)                          'Mutex (Lock) for user thread
+	    While tp->Ready <> false                     'Process loop against spurious wakeups
+	      CondWait(tp->cond, tp->sync)               'CondWait to receive signal from main-thread
+	    Wend
 	    tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
 	    I += 1
 	    Locate 30, 38
 	    Print I;
+	    tp->Ready = true                             'Set Ready
+	    CondSignal(tp->cond)                         'CondSignal to send signal to main thread
 	    MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
 	    Sleep 5
 	Loop Until tp->quit = tp->true                   'Test for ending user thread
@@ -87,10 +99,10 @@ Locate 30, 54
 Print "plotted:";
 
 Dim Pptr As Point2D Ptr = New Point2D
-PointOnCircle(Pptr)                   ' Computation for a first point valid on the circle
 
 Dim Tptr As ThreadUDT Ptr = New ThreadUDT
 Tptr->sync = MutexCreate
+Tptr->cond = CondCreate
 Tptr->procedure = @PointOnCircle
 Tptr->p = Pptr
 Tptr->handle = ThreadCreate(@ThreadUDT.Thread, Tptr)
@@ -98,17 +110,23 @@ Tptr->handle = ThreadCreate(@ThreadUDT.Thread, Tptr)
 Do
 	Static As Integer I
 	Sleep 5
-	MutexLock(Tptr->sync)   'Mutex (Lock) for main thread
-	PSet (Pptr->x, Pptr->y) 'Plotting one point
+	MutexLock(Tptr->sync)              'Mutex (Lock) for main thread
+	While Tptr->ready <> Tptr->true    'Process loop against spurious wakeups
+	  CondWait(Tptr->cond, Tptr->sync) 'CondWait to receive signal from user-thread
+	Wend
+	PSet (Pptr->x, Pptr->y)            'Plotting one point
 	I += 1
 	Locate 30, 62
 	Print I;
-	MutexUnlock(Tptr->sync) 'Mutex (Unlock) for main thread
+	Tptr->Ready = Tptr->false          'Reset Ready
+	CondSignal(Tptr->cond)             'CondSignal to send signal to user thread
+	MutexUnlock(Tptr->sync)            'Mutex (Unlock) for main thread
 Loop Until Inkey <> ""
  
 Tptr->quit = Tptr->true
 ThreadWait(Tptr->handle)
 MutexDestroy(Tptr->sync)
+CondDestroy(Tptr->cond)
 Delete Tptr
 Delete Pptr
 

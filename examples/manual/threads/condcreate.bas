@@ -20,28 +20,27 @@ Dim Shared hcondready As Any Ptr
 
 Sub mythread(ByVal id_ptr As Any Ptr)
 	Dim id As Integer = Cast(Integer, id_ptr)
-
-	Print "Thread #" & id & " is waiting..."
-
+  
 	'' signal that this thread is ready
 	MutexLock hmutexready
 	threadcount += 1
+	Print "Thread #" & id & " is waiting..."
 	CondSignal hcondready
 	MutexUnlock hmutexready
-	
+   
 	'' wait for the start signal
 	MutexLock hmutexstart
-	Do While start = 0	
-		CondWait hcondstart, hmutexstart
+	Do While start = 0   
+	    CondWait hcondstart, hmutexstart
 	Loop
 
 	'' now this thread holds the lock on hmutexstart
-	
+   
 	MutexUnlock hmutexstart
 
 	'' print out the number of this thread
 	For i As Integer = 1 To 40
-		Print id;
+	    Print id;
 	Next i
 End Sub
 
@@ -55,22 +54,22 @@ hmutexready = MutexCreate()
 
 threadcount = 0
 
-
+MutexLock(hmutexready)
 For i As Integer = 1 To 9
 	threads(i) = ThreadCreate(@mythread, Cast(Any Ptr, i))
 	If threads(i) = 0 Then
-		Print "unable to create thread"
+	    Print "unable to create thread"
 	End If
 Next i
 
 Print "Waiting until all threads are ready..."
 
-MutexLock(hmutexready)
 Do Until threadcount = 9
 	CondWait(hcondready, hmutexready)
 Loop
 MutexUnlock(hmutexready)
 
+Print
 Print "Go!"
 
 MutexLock hmutexstart
@@ -81,7 +80,7 @@ MutexUnlock hmutexstart
 '' wait for all threads to complete
 For i As Integer = 1 To 9
 	If threads(i) <> 0 Then
-		ThreadWait threads(i)
+	    ThreadWait threads(i)
 	End If
 Next i
 
