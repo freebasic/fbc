@@ -215,7 +215,7 @@ get_fbc_sources() {
 	mv fbc-$fbccommit fbc
 }
 
-bootfb_title=FreeBASIC-1.01.0-$fbtarget
+bootfb_title=FreeBASIC-1.02.1-$fbtarget
 
 case $fbtarget in
 linux*)
