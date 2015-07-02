@@ -43,6 +43,16 @@ scope
 	print len(msg2)
 end scope
 
+#print "--- fwdref + var ---"
+scope
+	type typedef as fwd
+
+	dim fwd as string
+
+	#print "1 warning:"
+	print len(fwd)
+end scope
+
 #print "--- syntax is enough to disambiguate ---"
 scope
 	type array
