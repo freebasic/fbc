@@ -4,3 +4,5 @@
 	Ambigious sizeof(), referring to type MSG, instead of variable MSG
 1 warning:
 	Ambigious typeof(), referring to type MSG, instead of variable MSG
+---
+no warning:

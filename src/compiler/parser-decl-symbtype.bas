@@ -115,7 +115,7 @@ function cTypeOrExpression _
 
 	maybe_type = TRUE
 
-	if( lexGetToken( ) = FB_TK_ID ) then
+	if( (lexGetToken( ) = FB_TK_ID) and (lexGetLookAhead( 1 ) = CHAR_RPRNT) ) then
 		var chain_ = lexGetSymChain( )
 
 		'' Known symbol(s)?
