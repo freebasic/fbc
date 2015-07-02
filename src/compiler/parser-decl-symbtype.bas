@@ -82,10 +82,57 @@ private function hGetTokenDescription( byval tk as integer ) as string
 	end select
 end function
 
-private sub hWarnAmbigiousLenSizeof( byval tk as integer, byval typ as FBSYMBOL ptr, byval nontype as FBSYMBOL ptr )
+type AmbigiousSizeofInfo
+	as FBSYMBOL ptr typ, nontype
+	declare sub checkSymChain( byval chain_ as FBSYMCHAIN ptr )
+	declare sub maybeWarn( byval tk as integer, byval refers_to_type as integer )
+end type
+
+'' Walk the symchain and check whether it contains types and non-type symbols,
+'' specifically vars/consts.
+'' This is useful to check whether one identifier refers to both a type and
+'' another kind of symbol (which is possible in FB because types are in a
+'' separate namespace). However, we're only checking for variables/constants
+'' and not procedures because an identifier referring to the latter can't appear
+'' by itself in a sizeof() anyways (only as part of a function call or
+'' address-of operation). Also, for types it looks like we only have to check
+'' structs/typedefs/fwdrefs, but not enums, because it's not allowed to declare
+'' vars with the same name as enums anyways.
+sub AmbigiousSizeofInfo.checkSymChain( byval chain_ as FBSYMCHAIN ptr )
+	do
+		var sym = chain_->sym
+
+		do
+			select case( sym->class )
+			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+				if( typ = NULL ) then
+					typ = sym
+				end if
+			case FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST
+				if( nontype = NULL ) then
+					nontype = sym
+				end if
+			end select
+
+			sym = sym->hash.next
+		loop while( sym )
+
+		chain_ = symbChainGetNext( chain_ )
+	loop while( chain_ )
+end sub
+
+sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as integer )
+	if( (typ = NULL) or (nontype = NULL) ) then exit sub
+
+	var sym1 = typ
+	var sym2 = nontype
+	if( refers_to_type = FALSE ) then
+		swap sym1, sym2
+	end if
+
 	var msg = "Ambigious " + hGetTokenDescription( tk ) + "()"
-	msg += ", referring to " + symbDumpPretty( typ )
-	msg += ", instead of " + symbDumpPretty( nontype )
+	msg += ", referring to " + symbDumpPretty( sym1 )
+	msg += ", instead of " + symbDumpPretty( sym2 )
 	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
 end sub
 
@@ -115,19 +162,16 @@ function cTypeOrExpression _
 
 	maybe_type = TRUE
 
+	'' If a simple identifier is given to sizeof/len, then collect
+	'' information about the symbols which it could refer to. If it could
+	'' refer to both a type and a non-type symbol, we may want to show a
+	'' warning later.
+	dim ambigioussizeof as AmbigiousSizeofInfo
 	if( (lexGetToken( ) = FB_TK_ID) and (lexGetLookAhead( 1 ) = CHAR_RPRNT) ) then
 		var chain_ = lexGetSymChain( )
-
 		'' Known symbol(s)?
 		if( chain_ ) then
-			'' Show a warning if the identifier could refer to both a type
-			'' and a non-type symbol
-			dim as FBSYMBOL ptr typ, nontype
-			symbCheckChainForTypesAndOthers( chain_, typ, nontype )
-
-			if( (typ <> NULL) and (nontype <> NULL) ) then
-				hWarnAmbigiousLenSizeof( tk, typ, nontype )
-			end if
+			ambigioussizeof.checkSymChain( chain_ )
 		end if
 	end if
 
@@ -161,9 +205,12 @@ function cTypeOrExpression _
 		'' Parse as type
 		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) ) then
 			'' Successful -- it's a type, not an expression
+			ambigioussizeof.maybeWarn( tk, TRUE )
 			return NULL
 		end if
 	end if
+
+	ambigioussizeof.maybeWarn( tk, FALSE )
 
 	'' Parse as expression, allowing NIDXARRAYs
 	expr = cExpressionWithNIDXARRAY( TRUE )

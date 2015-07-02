@@ -1525,46 +1525,6 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' Walk the symchain and check whether it contains types and non-type symbols,
-'' specifically vars/consts.
-'' This is useful to check whether one identifier refers to both a type and
-'' another kind of symbol (which is possible in FB because types are in a
-'' separate namespace). However, we're only checking for variables/constants
-'' and not procedures because an identifier referring to the latter can't appear
-'' by itself in a sizeof() anyways (only as part of a function call or
-'' address-of operation). Also, for types it looks like we only have to check
-'' structs/typedefs/fwdrefs, but not enums, because it's not allowed to declare
-'' vars with the same name as enums anyways.
-sub symbCheckChainForTypesAndOthers _
-	( _
-		byval chain_ as FBSYMCHAIN ptr, _
-		byref typ as FBSYMBOL ptr, _
-		byref nontype as FBSYMBOL ptr _
-	)
-
-	do
-		var sym = chain_->sym
-
-		do
-			select case( sym->class )
-			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
-				if( typ = NULL ) then
-					typ = sym
-				end if
-			case FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST
-				if( nontype = NULL ) then
-					nontype = sym
-				end if
-			end select
-
-			sym = sym->hash.next
-		loop while( sym )
-
-		chain_ = symbChainGetNext( chain_ )
-	loop while( chain_ )
-
-end sub
-
 function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
 	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
 	assert( symbIsStruct( sym ) = FALSE )

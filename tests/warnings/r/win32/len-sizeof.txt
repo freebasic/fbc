@@ -17,7 +17,7 @@
 	Ambigious len(), referring to type alias MSG2, instead of variable MSG2
 --- fwdref + var ---
 1 warning:
-	Ambigious len(), referring to forward reference FWD, instead of variable FWD
+	Ambigious len(), referring to variable FWD, instead of forward reference FWD
 --- syntax is enough to disambiguate ---
 no warning:
 no warning:
