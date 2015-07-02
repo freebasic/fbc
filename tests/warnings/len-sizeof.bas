@@ -1,3 +1,4 @@
+#print "--- UDT + var ---"
 scope
 	type MSG
 		i as integer
@@ -15,8 +16,34 @@ scope
 	dim x as typeof(msg)
 end scope
 
-#print "---"
+#print "--- UDT + const ---"
+scope
+	type MSG
+		i as integer
+	end type
 
+	const msg = "msg"
+
+	#print "1 warning:"
+	print len(msg)
+
+	#print "1 warning:"
+	print sizeof(msg)
+
+	#print "1 warning:"
+	dim x as typeof(msg)
+end scope
+
+#print "--- typedef + var ---"
+scope
+	type MSG2 as integer
+	dim msg2 as string
+
+	#print "1 warning:"
+	print len(msg2)
+end scope
+
+#print "--- syntax is enough to disambiguate ---"
 scope
 	type array
 		i as integer
@@ -26,4 +53,21 @@ scope
 
 	#print "no warning:"
 	print sizeof(array(1))
+
+	type a
+		i as integer
+	end type
+
+	dim as string a, b
+
+	#print "no warning:"
+	print sizeof(a + b)
 end scope
+
+#print "--- UDT + proc ---"
+type f1
+	i as integer
+end type
+declare sub f1
+#print "no warning:"
+print sizeof(f1)
