@@ -1532,7 +1532,9 @@ end sub
 '' separate namespace). However, we're only checking for variables/constants
 '' and not procedures because an identifier referring to the latter can't appear
 '' by itself in a sizeof() anyways (only as part of a function call or
-'' address-of operation).
+'' address-of operation). Also, for types it looks like we only have to check
+'' structs/typedefs/fwdrefs, but not enums, because it's not allowed to declare
+'' vars with the same name as enums anyways.
 sub symbCheckChainForTypesAndOthers _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
@@ -1545,7 +1547,7 @@ sub symbCheckChainForTypesAndOthers _
 
 		do
 			select case( sym->class )
-			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 				if( typ = NULL ) then
 					typ = sym
 				end if
