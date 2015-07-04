@@ -600,7 +600,7 @@ sub astCheckConst _
 		end if
 
 	case else
-		'' TODO: bitfields, booleans
+		'' TODO: bitfields
 
 		select case as const( typeGetSizeType( dtype ) )
 		case FB_SIZETYPE_INT8, FB_SIZETYPE_UINT8
