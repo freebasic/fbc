@@ -55,7 +55,10 @@ function symbReuseOrAddConst _
 		'' Duplicate definition; allow it if the existing symbol is also
 		'' a CONST and has the same dtype and value.
 		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), id, FB_SYMBCLASS_CONST, FALSE, FALSE )
-		assert( sym )
+		if( sym = NULL ) then
+			'' There is an existing symbol with that name but it's not a constant, duplicate definition.
+			exit function
+		end if
 
 		if( (sym->typ <> dtype) or (sym->subtype <> subtype) ) then
 			exit function
