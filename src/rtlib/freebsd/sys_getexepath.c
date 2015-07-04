@@ -1,24 +1,29 @@
 /* get the executable path */
 
 #include "../fb.h"
+#include "sys/sysctl.h"
 
 char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
-	const char *p = strrchr( __fb_ctx.argv[0], '/' );
-	if( p ) {
-		ssize_t len = p - __fb_ctx.argv[0];
-		if( len > maxlen ) {
-			len = maxlen;
-		}
-		else if( len == 0 ) {
-			/* keep the "/" rather than returning "" */
-			len = 1;
-		}
-
-		memcpy( dst, __fb_ctx.argv[0], len );
-		dst[len] = '\0';
+	size_t length = maxlen;
+	char *p;
+	int mib[4];
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_PROC;
+	mib[2] = KERN_PROC_PATHNAME;
+	mib[3] = -1;
+	
+	if (sysctl(mib, 4, dst, &length, NULL, 0) == 0) {
+		p = strrchr(dst, '/');
+		if (p == dst) /* keep the "/" rather than returning "" */
+			*(p + 1) = '\0';
+		else if (p)
+			*p = '\0';
+		else
+			dst[0] = '\0';
 	} else {
-		*dst = '\0';
+		p = NULL;
 	}
-	return dst;
+	
+	return p;
 }
