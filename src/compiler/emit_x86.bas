@@ -6142,11 +6142,6 @@ end sub
 '' boolean
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' $$JRM
-#macro JRM_DEBUG()
-	outp "# " + __FUNCTION__
-#endmacro
-
 ''
 '' Load/store b2b, b2i, i2b
 ''
@@ -6155,8 +6150,6 @@ end sub
 ''
 
 private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
-
 	'' Assumes that booleans are stored as 0|1 only, and any other value
 	'' is undefined.  Also assume src and dst are always same size.
 	
@@ -6167,19 +6160,15 @@ private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	hMOV( dst, src )
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
 	'' for assumptions
 	_emitLOADB2B( dvreg, svreg )
-	JRM_DEBUG()
 end sub
 
 private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
 	dim as string src, dst
 	
@@ -6208,19 +6197,15 @@ private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	'' convert 0|1 to 0|-1
 	outp( "neg " + dst )
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	'' storing boolean to integer same as loading to integer and LOADB2I
 	'' takes care of the zero-extension
 	_emitLOADB2I( dvreg, svreg )
-	JRM_DEBUG()
 end sub
 
 private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
 	dim as string src, dst, dst8
 	dim as integer ddsize = any
@@ -6289,15 +6274,12 @@ private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		end if
 	end if
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	'' storing integer to boolean same as loading to boolean and LOADI2B
 	'' takes care of the ESI/DSI as byte reg stuff
 	_emitLOADI2B( dvreg, svreg )
-	JRM_DEBUG()
 end sub
 
 ''
@@ -6306,7 +6288,6 @@ end sub
 ''
 
 private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
     dim as string dst, src
     dim as integer ddsize = any
@@ -6353,17 +6334,13 @@ private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		outp "pop eax"
 	end if
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	_emitLOADF2B(dvreg, svreg)
-	JRM_DEBUG()
 end sub
 
 private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	
 	dim as string src, dst
 	dim as integer sdsize = any
@@ -6416,11 +6393,9 @@ private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	end if
 	outp "fchs"
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
 	dim as string src, dst
 	dim as integer sdsize = any
@@ -6475,7 +6450,6 @@ private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 	outp "fchs"
 	outp "fstp " + dst
 
-	JRM_DEBUG()
 end sub
 
 
@@ -6485,7 +6459,6 @@ end sub
 ''
 
 private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
 	dim as string dst1, dst2
 	hPrepOperand64( dvreg, dst1, dst2 )
@@ -6515,17 +6488,13 @@ private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		hMOV( dst2, dst1 )
 	end if
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	_emitLOADB2L(dvreg, svreg)
-	JRM_DEBUG()
 end sub
 
 private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 
 	dim as string dst
 	dim as integer ddsize
@@ -6587,15 +6556,11 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	end if
 
-	JRM_DEBUG()
 end sub
 
 private sub _emitSTORL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
-	JRM_DEBUG()
 	_emitLOADL2B(dvreg, svreg)
-	JRM_DEBUG()
 end sub
-''$$JRM
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' initializers
