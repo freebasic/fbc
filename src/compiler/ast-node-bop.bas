@@ -1272,7 +1272,7 @@ function astNewBOP _
 				if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
 					if( astIsConst( r ) ) then
 						'' make exception for 0|-1
-						dim tmp as longint = astConstGetAsInt64( l )
+						dim tmp as longint = astConstGetAsInt64( r )
 						if( (tmp <> 0) and (tmp <> -1) ) then
 							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 						end if
