@@ -1,5 +1,10 @@
 # include "fbcu.bi"
 
+'' - don't mix false/true intrinsic constants 
+''   of the compiler in with the tests
+#undef FALSE
+#undef TRUE
+
 #define FALSE 0
 #define TRUE -1
 
@@ -12,7 +17,19 @@ namespace fbc_tests.boolean_.bop
 			a = arg1
 			b = arg2
 			c = arg1 op arg2
+
+			'' test (var bop var) = const(const bop const)
 			CU_ASSERT_EQUAL( a op b, c )
+
+			'' test (const bop var) = const(const bop const)
+			CU_ASSERT_EQUAL( arg1 op b, c )
+
+			'' test (var bop const) = const(const bop const)
+			CU_ASSERT_EQUAL( a op arg2, c )
+
+			'' test (const bop const) = const(const bop const)
+			CU_ASSERT_EQUAL( arg1 op arg2, c )
+
 		#endmacro
 
 		dim as boolean a, b
@@ -102,10 +119,109 @@ namespace fbc_tests.boolean_.bop
 
 	end sub
 	
+	sub test2 cdecl ( )
+
+		#define lhs_CIF  cint(FALSE)
+		#define lhs_CIT  cint(TRUE)
+		#define lhs_CBF  cbool(FALSE)
+		#define lhs_CBT  cbool(TRUE)
+
+		#define rhs_CIF  cint(FALSE)
+		#define rhs_CIT  cint(TRUE)
+		#define rhs_CBF  cbool(FALSE)
+		#define rhs_CBT  cbool(TRUE)
+
+		dim lhs_VIF as integer = cint(FALSE)
+		dim lhs_VIT as integer = cint(TRUE)
+		dim lhs_VBF as boolean = cbool(FALSE)
+		dim lhs_VBT as boolean = cbool(TRUE)
+
+		dim rhs_VIF as integer = cint(FALSE)
+		dim rhs_VIT as integer = cint(TRUE)
+		dim rhs_VBF as boolean = cbool(FALSE)
+		dim rhs_VBT as boolean = cbool(TRUE)
+
+		dim r as integer
+
+		r = (lhs_CIF = rhs_CIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CIT = rhs_CIF): CU_ASSERT( r = FALSE )
+		r = (lhs_CBF = rhs_CIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBT = rhs_CIF): CU_ASSERT( r = FALSE )
+		r = (lhs_VIF = rhs_CIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIT = rhs_CIF): CU_ASSERT( r = FALSE )
+		r = (lhs_VBF = rhs_CIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBT = rhs_CIF): CU_ASSERT( r = FALSE )
+
+		r = (lhs_CIF = rhs_CIT): CU_ASSERT( r = FALSE )
+		r = (lhs_CIT = rhs_CIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBF = rhs_CIT): CU_ASSERT( r = FALSE )
+		r = (lhs_CBT = rhs_CIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIF = rhs_CIT): CU_ASSERT( r = FALSE )
+		r = (lhs_VIT = rhs_CIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBF = rhs_CIT): CU_ASSERT( r = FALSE )
+		r = (lhs_VBT = rhs_CIT): CU_ASSERT( r = TRUE  )
+
+		r = (lhs_CIF = rhs_CBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CIT = rhs_CBF): CU_ASSERT( r = FALSE )
+		r = (lhs_CBF = rhs_CBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBT = rhs_CBF): CU_ASSERT( r = FALSE )
+		r = (lhs_VIF = rhs_CBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIT = rhs_CBF): CU_ASSERT( r = FALSE )
+		r = (lhs_VBF = rhs_CBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBT = rhs_CBF): CU_ASSERT( r = FALSE )
+
+		r = (lhs_CIF = rhs_CBT): CU_ASSERT( r = FALSE )
+		r = (lhs_CIT = rhs_CBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBF = rhs_CBT): CU_ASSERT( r = FALSE )
+		r = (lhs_CBT = rhs_CBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIF = rhs_CBT): CU_ASSERT( r = FALSE )
+		r = (lhs_VIT = rhs_CBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBF = rhs_CBT): CU_ASSERT( r = FALSE )
+		r = (lhs_VBT = rhs_CBT): CU_ASSERT( r = TRUE  )
+
+		r = (lhs_CIF = rhs_VIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CIT = rhs_VIF): CU_ASSERT( r = FALSE )
+		r = (lhs_CBF = rhs_VIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBT = rhs_VIF): CU_ASSERT( r = FALSE )
+		r = (lhs_VIF = rhs_VIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIT = rhs_VIF): CU_ASSERT( r = FALSE )
+		r = (lhs_VBF = rhs_VIF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBT = rhs_VIF): CU_ASSERT( r = FALSE )
+
+		r = (lhs_CIF = rhs_VIT): CU_ASSERT( r = FALSE )
+		r = (lhs_CIT = rhs_VIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBF = rhs_VIT): CU_ASSERT( r = FALSE )
+		r = (lhs_CBT = rhs_VIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIF = rhs_VIT): CU_ASSERT( r = FALSE )
+		r = (lhs_VIT = rhs_VIT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBF = rhs_VIT): CU_ASSERT( r = FALSE )
+		r = (lhs_VBT = rhs_VIT): CU_ASSERT( r = TRUE  )
+
+		r = (lhs_CIF = rhs_VBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CIT = rhs_VBF): CU_ASSERT( r = FALSE )
+		r = (lhs_CBF = rhs_VBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBT = rhs_VBF): CU_ASSERT( r = FALSE )
+		r = (lhs_VIF = rhs_VBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIT = rhs_VBF): CU_ASSERT( r = FALSE )
+		r = (lhs_VBF = rhs_VBF): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBT = rhs_VBF): CU_ASSERT( r = FALSE )
+
+		r = (lhs_CIF = rhs_VBT): CU_ASSERT( r = FALSE )
+		r = (lhs_CIT = rhs_VBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_CBF = rhs_VBT): CU_ASSERT( r = FALSE )
+		r = (lhs_CBT = rhs_VBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VIF = rhs_VBT): CU_ASSERT( r = FALSE )
+		r = (lhs_VIT = rhs_VBT): CU_ASSERT( r = TRUE  )
+		r = (lhs_VBF = rhs_VBT): CU_ASSERT( r = FALSE )
+		r = (lhs_VBT = rhs_VBT): CU_ASSERT( r = TRUE  )
+
+	end sub
+
 	private sub ctor () constructor
 	
 		fbcu.add_suite("fbc_tests.boolean_.bop")
-		fbcu.add_test("test1", @test1)
+		fbcu.add_test("test1", @test1 )
+		fbcu.add_test("test2", @test2 )
 		
 	end sub
 	

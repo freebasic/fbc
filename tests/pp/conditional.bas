@@ -1,5 +1,10 @@
 # include "fbcu.bi"
 
+'' - don't mix false/true intrinsic constants 
+''   of the compiler in with these tests
+#undef FALSE
+#undef TRUE
+
 # define FALSE 0
 # define TRUE NOT FALSE
 

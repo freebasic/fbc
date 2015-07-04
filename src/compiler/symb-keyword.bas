@@ -270,6 +270,11 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( NULL ) _
 }
 
+'' FALSE/TRUE are names of keyword constants but 
+'' don't exactly fit in purpose of the KwdTb().
+dim shared kwdFALSE as zstring * 6 = "FALSE"
+dim shared kwdTRUE as zstring * 5  = "TRUE"
+
 '':::::
 sub symbKeywordInit( )
 
@@ -354,3 +359,31 @@ function symbKeywordGetText( byval tk as integer ) as const zstring ptr
 	next
 	function = @""
 end function
+
+'':::::
+sub symbKeywordConstsInit( )
+
+	dim as FBVALUE v
+	dim id as string * 10
+
+	dim as FB_SYMBATTRIB attrib = any
+
+	attrib = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+
+	v.i = cint(0)
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		id = "__" + kwdFALSE
+	else
+		id = kwdFALSE
+	end if
+	symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+
+	v.i = cint(-1)
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		id = "__" + kwdTRUE
+	else
+		id = kwdTRUE
+	end if
+	symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+
+end sub
