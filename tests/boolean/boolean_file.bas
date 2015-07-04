@@ -58,7 +58,7 @@ namespace fbc_tests.boolean_.file_
 			input #h, b: CU_ASSERT_EQUAL( b, TRUE  )
 		close #h
 
-		'' kill "boolean/data-ascii-test.txt"
+		kill "boolean/data-ascii-test.txt"
 
 	end sub
 
@@ -154,7 +154,7 @@ namespace fbc_tests.boolean_.file_
 			get #h,,c: CU_ASSERT_EQUAL( c, 1 )
 		close #h
 
-		kill "boolean/data-binary.dat"
+		kill "boolean/data-binary-test.dat"
 
 	end sub
 
