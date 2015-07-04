@@ -831,7 +831,7 @@ private sub _emitVarIniPad( byval bytes as longint )
 	emitVARINIPAD( bytes )
 end sub
 
-private sub _emitVarIniScopeBegin( )
+private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
 	'' Used by C-emitter only
 end sub
 

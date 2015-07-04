@@ -82,7 +82,7 @@ enum
 end enum
 
 '' symbol classes
-'' When changing, update symb.bas:symbDump():classnames
+'' When changing, update symb.bas:classnames() and symb.bas:classnamesPretty()
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
 	FB_SYMBCLASS_CONST
@@ -1557,6 +1557,13 @@ declare function symbIsProcOverloadOf _
 		byval parent as FBSYMBOL ptr _
 	) as integer
 
+declare sub symbCheckChainForTypesAndOthers _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byref typ as FBSYMBOL ptr, _
+		byref nontype as FBSYMBOL ptr _
+	)
+
 declare function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
 declare function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
 declare function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
@@ -2480,6 +2487,8 @@ declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 '' FBARRAY: 5 pointer/integer fields + the dimTB with 3 integer fields per dimension
 #define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 5))
 #endif
+
+declare function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
 
 ''
 '' inter-module globals

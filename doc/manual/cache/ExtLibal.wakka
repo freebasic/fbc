@@ -4,7 +4,7 @@
 Website: http://www.openal.org
 Platforms supported: ""Win32"", Linux
 Headers to include: AL/al.bi, AL/alut.bi
-Header version: ""OpenAL"" 1.13, ALUT 1.1.0
+Header version: openal-soft-1.16.0, freealut 1.1.0
 Examples: in examples/sound/OpenAL/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

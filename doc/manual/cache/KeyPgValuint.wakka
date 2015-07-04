@@ -2,8 +2,8 @@
 Converts a string to an unsigned 32bit integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valuint** ( //strnum// )

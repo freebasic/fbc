@@ -65,6 +65,16 @@ o static member vars
 
 	print f( ).i
 
+o If parsing namespace prefixes (cIdentifier()), it should be possible to save
+  it into the parser context, so it could be restored and re-used by the next
+  parsing function that tries to make sense of the input.
+  - needed to fix #404: cSymbolType (using cIdentifier) will eat namespace prefixes,
+    and should "restore" them if it fails (i.e. if it's not a type), so then the
+    expression parsing can retry, with the proper namespace prefix.
+    This only really matters for len/sizeof.
+  - needed to show FB_WARNINGMSG_AMBIGIOUSLENSIZEOF for namespaced symbols
+  - alternative: lexSkip backwards, but that seems harder to implement
+
 o Allow typeless DIMs to implement EXTERNs:
     extern a as integer
     dim a
@@ -84,10 +94,6 @@ o -exx should catch...
     - ArrayClear will be used instead of a loop calling the dtors to destroy
       local non-dynamic arrays
       - callVarDtor will have to use astAddAfter then with scope blocks..
-
-[ ] make cUdtMember process symbols as cIdentifier does or ambiguous access
-    tests won't work
-    - check if the new optimizations won't break when -ex or -exx are used
 
 [ ] output member functions and static member data to the STABS TYPE/UDT info
     - operators must be handled as well

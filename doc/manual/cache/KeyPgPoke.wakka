@@ -6,7 +6,7 @@ Assigns a value to a location in memory.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] //datatype// )
 ##
 {{fbdoc item="usage"}}##
-	**Poke**( [ //datatype//, ] //address//, //value// )
+	**Poke** [ //datatype//, ] //address//, //value//
 ##
 {{fbdoc item="param"}}
 	##//datatype//##

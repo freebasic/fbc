@@ -22,6 +22,10 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpLet|LET (Assignment)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpLetlist|LET() (Assignment)"}}
 
+{{fbdoc item="section" value="Type Cast Operators"}}
+	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+	- {{fbdoc item="keyword" value="KeyPgCptr|CPTR"}}
+
 {{fbdoc item="section" value="Arithmetic Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAdd|+ (Add)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpSubtract|- (Subtract)"}}

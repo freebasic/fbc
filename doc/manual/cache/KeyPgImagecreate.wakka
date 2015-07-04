@@ -2,7 +2,7 @@
 Allocates and initializes storage for an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUlong ulong]] = **transparent_color** ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUlong ulong]] = **transparent_color** ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUlong ulong]] = **transparent_color**, [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##

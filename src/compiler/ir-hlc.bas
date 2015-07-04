@@ -2381,20 +2381,34 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	level += 1
 
+	'' Indentation
+	s += space( (level - 1) * 4 )
+
+	static names(0 to ...) as zstring ptr => { _
+		@"TEXT", _ '' EXPRCLASS_TEXT
+		@"IMM" , _ '' EXPRCLASS_IMM
+		@"SYM" , _ '' EXPRCLASS_SYM
+		@"CAST", _ '' EXPRCLASS_CAST
+		@"UOP" , _ '' EXPRCLASS_UOP
+		@"BOP"   _ '' EXPRCLASS_BOP
+	}
+
+	s += *names(n->class)
+	s += typeDump( n->dtype, n->subtype )
+	s += " "
+
 	select case as const( n->class )
 	case EXPRCLASS_TEXT
-		s = "TEXT( " + *n->text + " )"
+		s += *n->text
 
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = "IMM( " + hEmitFloat( n->dtype, n->val.f ) + " )"
+			s += hEmitFloat( n->dtype, n->val.f )
 		else
-			s = "IMM( " + hEmitInt( n->dtype, n->val.i ) + " )"
+			s += hEmitInt( n->dtype, n->val.i )
 		end if
 
 	case EXPRCLASS_SYM
-		s = "SYM( "
-
 		'' String literal?
 		if( symbGetIsLiteral( n->sym ) ) then
 			if( symbGetType( n->sym ) = FB_DATATYPE_WCHAR ) then
@@ -2411,16 +2425,13 @@ private sub exprDump( byval n as EXPRNODE ptr )
 			s += *symbGetMangledName( n->sym )
 		end if
 
-		s += " )"
-
 	case EXPRCLASS_CAST
-		s = "CAST( " + hEmitType( n->dtype, n->subtype ) + " )"
+		s += hEmitType( n->dtype, n->subtype )
 
 	case EXPRCLASS_UOP
-		s = "UOP( " + *hUopToStr( n->op, n->dtype, FALSE ) + " )"
+		s += *hUopToStr( n->op, n->dtype, FALSE )
 
 	case EXPRCLASS_BOP
-		s = "BOP( "
 		select case( n->op )
 		case AST_OP_ATAN2
 			if( n->dtype = FB_DATATYPE_SINGLE ) then
@@ -2431,13 +2442,10 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		case else
 			s += *hBopToStr( n->op )
 		end select
-		s += " )"
 
 	end select
 
-	s += " as " + typeDump( n->dtype, n->subtype )
-
-	print str( level ), string( level, " " ) + s
+	print s
 
 	select case( n->class )
 	case EXPRCLASS_CAST, EXPRCLASS_UOP
@@ -3333,7 +3341,7 @@ private sub _emitVarIniPad( byval bytes as longint )
 	'' aswell as add padding between fields etc. where needed.
 end sub
 
-private sub _emitVarIniScopeBegin( )
+private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
 	ctx.variniscopelevel += 1
 	ctx.varini += "{ "
 end sub

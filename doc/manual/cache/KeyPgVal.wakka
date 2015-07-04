@@ -2,7 +2,7 @@
 Converts a string to a floating point number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##

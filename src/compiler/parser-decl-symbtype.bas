@@ -74,9 +74,24 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
 end function
 
+private function hGetTokenDescription( byval tk as integer ) as string
+	select case( tk )
+	case FB_TK_TYPEOF : function = "typeof"
+	case FB_TK_LEN    : function = "len"
+	case else         : function = "sizeof"
+	end select
+end function
+
+private sub hWarnAmbigiousLenSizeof( byval tk as integer, byval typ as FBSYMBOL ptr, byval nontype as FBSYMBOL ptr )
+	var msg = "Ambigious " + hGetTokenDescription( tk ) + "()"
+	msg += ", referring to " + symbDumpPretty( typ )
+	msg += ", instead of " + symbDumpPretty( nontype )
+	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
+end sub
+
 function cTypeOrExpression _
 	( _
-		byval is_len as integer, _
+		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint _
@@ -100,6 +115,22 @@ function cTypeOrExpression _
 
 	maybe_type = TRUE
 
+	if( lexGetToken( ) = FB_TK_ID ) then
+		var chain_ = lexGetSymChain( )
+
+		'' Known symbol(s)?
+		if( chain_ ) then
+			'' Show a warning if the identifier could refer to both a type
+			'' and a non-type symbol
+			dim as FBSYMBOL ptr typ, nontype
+			symbCheckChainForTypesAndOthers( chain_, typ, nontype )
+
+			if( (typ <> NULL) and (nontype <> NULL) ) then
+				hWarnAmbigiousLenSizeof( tk, typ, nontype )
+			end if
+		end if
+	end if
+
 	'' Token followed by an operator except '*' / '<'?
 	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
 	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
@@ -122,7 +153,7 @@ function cTypeOrExpression _
 	end if
 
 	'' QB quirk: LEN() only takes expressions
-	if( maybe_type and is_len and fbLangIsSet( FB_LANG_QB ) ) then
+	if( maybe_type and (tk = FB_TK_LEN) and fbLangIsSet( FB_LANG_QB ) ) then
 		maybe_type = FALSE
 	end if
 
@@ -155,7 +186,7 @@ sub cTypeOf _
 	dim as ASTNODE ptr expr = any
 
 	'' Type or an Expression
-	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt )
 
 	'' Was it a type?
 	if( expr = NULL ) then

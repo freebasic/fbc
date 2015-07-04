@@ -469,56 +469,20 @@ sub symbSetFixedSizeArrayDimensionElements _
 
 end sub
 
-'' Used to fill in the dimension count for dynamic array variables (not
-'' parameters) declared with (), i.e. unknown dimension count, when the parser
-'' sees the first REDIM or array access and can tell the dimension count based
-'' on it.
-sub symbCheckDynamicArrayDimensions _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval dimensions as integer _
-	)
-
-	dim as FBSYMBOL ptr desc = any
-
-	assert( symbIsDynamic( sym ) )
-
+'' Show a compile-time error if a dynamic array access or REDIM has a wrong
+'' number of dimensions. This can only be done for dynamic arrays for which we
+'' know the dimension count.
+sub symbCheckDynamicArrayDimensions( byval sym as FBSYMBOL ptr, byval dimensions as integer )
 	'' Secondary declarations with dimensions = -1 don't make a difference.
+	'' (e.g. secondary REDIMs)
 	if( dimensions = -1 ) then
 		exit sub
 	end if
 
-	if( symbGetArrayDimensions( sym ) = -1 ) then
-		sym->var_.array.dimensions = dimensions
-
-		''
-		'' Note: Ideally we would resize the array descriptor (including
-		'' a new initree), now that the exact dimensions are known.
-		'' Unfortunately, it's too late for that...
-		''
-		'' Local descriptors (on stack): The initializer for the
-		'' descriptor has already been emitted via a DECL node. We'd
-		'' have to exchange this for the new initializer code...
-		''
-		'' If '()' were allowed on dynamic array fields: We couldn't
-		'' resize the descriptor field after the fact either. That would
-		'' require re-calculate the struct layout, all sizeof()s, etc.
-		''
-		'' COMMON descriptors: They can't be initialized due to being
-		'' emitted into BSS; the descriptor's "dimensions" field will
-		'' end up being initially 0, causing the rtlib to expect room
-		'' for FB_MAXARRAYDIMS anyways.
-		''
-		'' Thus shrinking the descriptor could only be done for
-		'' non-COMMON globals, though even then it'd be risky, because
-		'' fbc wasn't designed for this kind of "multi-pass" things...
-		''
-
-	'' The array's dimension count is known; complain about mismatching dimension counts.
-	elseif( symbGetArrayDimensions( sym ) <> dimensions ) then
+	var existingdimensions = symbGetArrayDimensions( sym )
+	if( (existingdimensions <> -1) and (existingdimensions <> dimensions) ) then
 		errReportEx( FB_ERRMSG_WRONGDIMENSIONS, symbGetName( sym ) )
 	end if
-
 end sub
 
 sub symbVarInitFields( byval sym as FBSYMBOL ptr )

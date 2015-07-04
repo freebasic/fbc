@@ -1525,6 +1525,36 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'' Walk the symchain and check whether it contains types and non-type symbols
+'' This is useful to check whether one identifier refers to both a type and
+'' another kind of symbol (which is possible in FB because types are in a
+'' separate namespace).
+sub symbCheckChainForTypesAndOthers _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byref typ as FBSYMBOL ptr, _
+		byref nontype as FBSYMBOL ptr _
+	)
+
+	do
+		var sym = chain_->sym
+
+		do
+			select case( sym->class )
+			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+				typ = sym
+			case else
+				nontype = sym
+			end select
+
+			sym = sym->hash.next
+		loop while( sym )
+
+		chain_ = symbChainGetNext( chain_ )
+	loop while( chain_ )
+
+end sub
+
 function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
 	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
 	assert( symbIsStruct( sym ) = FALSE )
@@ -2353,7 +2383,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		hDumpName( s, sym )
 
 		'' Array dimensions, if any
-		if( symbIsDynamic( sym ) ) then
+		if( symbGetIsDynamic( sym ) ) then
 			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
 			s += "("
@@ -2454,14 +2484,44 @@ end sub
 
 sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 	print "symchain [" + hex( chain_ ) + "]:"
-
-	if( chain_ = NULL ) then
-		exit sub
+	if( chain_ ) then
+		'' Also printing the "index" in the chain, so we can differentiate between
+		'' symbols from the same FBSYMCHAIN node (linked by their FBSYMBOL.hash.next fields),
+		'' and symbols in different FBSYMCHAIN nodes (linked via symbChainGetNext()).
+		var i = 0
+		do
+			var sym = chain_->sym
+			do
+				print "   " & i & "  " + symbDump( sym )
+				sym = sym->hash.next
+			loop while( sym )
+			i += 1
+			chain_ = symbChainGetNext( chain_ )
+		loop while( chain_ )
 	end if
-
-	do
-		print "    " + symbDump( chain_->sym )
-		chain_ = chain_->next
-	loop while( chain_ )
 end sub
 #endif
+
+dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+{ _
+	@"variable", _
+	@"constant", _
+	@"procedure", _
+	@"parameter", _
+	@"#define", _
+	@"keyword", _
+	@"label", _
+	@"namespace", _
+	@"enum", _
+	@"type", _
+	@"class", _
+	@"field", _
+	@"type alias", _
+	@"forward reference", _
+	@"scope", _
+	@"namespace import" _
+}
+
+function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
+	function = *classnamesPretty(sym->class) + " " + *sym->id.name
+end function

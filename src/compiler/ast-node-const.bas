@@ -129,7 +129,7 @@ function astNewCONSTz _
 		'' Build a TYPEINI tree for this struct, with a CONST( 0 )
 		'' initializer for each member
 		tree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
-		astTypeIniScopeBegin( tree, NULL )
+		astTypeIniScopeBegin( tree, NULL, FALSE )
 
 		fld = symbUdtGetFirstField( subtype )
 		while( fld )

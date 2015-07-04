@@ -291,7 +291,7 @@ declare function cInitializer _
 
 declare function cTypeOrExpression _
 	( _
-		byval is_len as integer, _
+		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint _

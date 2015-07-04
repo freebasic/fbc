@@ -4,7 +4,7 @@ Free and Open Source spell checker.
 Website: http://aspell.net/
 Platforms supported: ""Win32"", Linux
 Headers to include: aspell.bi
-Header version: 0.50
+Header version: 0.60.6.1
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/aspell.bas"}}%%(freebasic)

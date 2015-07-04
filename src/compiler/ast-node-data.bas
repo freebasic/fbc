@@ -111,7 +111,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 	'' initialize it
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, ast.data.desc, TRUE )
 
-	astTypeIniScopeBegin( initree, NULL )
+	astTypeIniScopeBegin( initree, NULL, TRUE )
 
 	'' for each node..
 	n = tree->l
@@ -119,7 +119,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 		id = n->data.id
 		expr = n->l
 
-		astTypeIniScopeBegin( initree, NULL )
+		astTypeIniScopeBegin( initree, NULL, FALSE )
 
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR

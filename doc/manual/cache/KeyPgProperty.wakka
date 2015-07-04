@@ -44,6 +44,8 @@ Declares or defines a property in a type or class
 
 	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
+	**Note:** A standard **Property** (get & set) does not work with combination operators (as "+="). But a result byref get-**Property** (as more generally any result byref function) works with combination operators.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/property.bas"}}%%(freebasic)
 type Vector2D

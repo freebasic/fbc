@@ -4,9 +4,9 @@ Provides an API to read and write object files in many different object file for
 Website: http://sourceware.org/binutils/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: bfd.bi
-Header version: 2.16, 2.17, 2.18
+Header version: binutils versions from 2.16 to 2.25
 
-Define ##""__BFD_VER__""## to 216, 217, or 218 to include the bfd header for binutils 2.16, 2.17, 2.18 respectively.
+Define ##""__BFD_VER__""## to 216, 217, 218, ..., 225 to include the bfd header for the corresponding binutils version.
 
 {{fbdoc item="ex"}}
 %%(freebasic)#define __BFD_VER__ 217

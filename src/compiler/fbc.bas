@@ -2259,12 +2259,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' ignore silently (that might not even be too bad for portability)?
 end sub
 
-'' After command line parsing
-private sub fbcInit2( )
-	''
-	'' Determine base/prefix path
-	''
-
+'' Determine base/prefix path
+private sub fbcDeterminePrefix( )
 	'' Not already set from -prefix command line option?
 	if( len( fbc.prefix ) = 0 ) then
 		'' Then default to exepath() or the hard-coded prefix
@@ -2281,9 +2277,9 @@ private sub fbcInit2( )
 	else
 		fbc.prefix += FB_HOST_PATHDIV
 	end if
+end sub
 
-	''
-	'' Setup compiler paths
+private sub fbcSetupCompilerPaths( )
 	''
 	'' Standalone (classic FB):
 	''
@@ -2358,23 +2354,21 @@ private sub fbcInit2( )
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
 	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV + targetid
 #endif
+end sub
 
-	if( fbc.verbose ) then
-		var s = targetid
-		s += ", " + *fbGetFbcArch( )
-		s += ", " & fbGetBits( ) & "bit"
-		#ifndef ENABLE_STANDALONE
-			if( len( fbc.target ) > 0 ) then
-				s += " (" + fbc.target + ")"
-			end if
-		#endif
-		print "target:", s
-	end if
+private sub fbcPrintTargetInfo( )
+	var s = fbGetTargetId( )
+	s += ", " + *fbGetFbcArch( )
+	s += ", " & fbGetBits( ) & "bit"
+	#ifndef ENABLE_STANDALONE
+		if( len( fbc.target ) > 0 ) then
+			s += " (" + fbc.target + ")"
+		end if
+	#endif
+	print "target:", s
+end sub
 
-	'' Tell the compiler about the default include path (added after
-	'' the command line ones, so those will be searched first)
-	fbAddIncludePath( fbc.incpath )
-
+private sub fbcDetermineMainName( )
 	'' Determine the main module path/name if not given via -m
 	if (len(fbc.mainname) = 0) then
 		'' 1) First input .bas module
@@ -2400,7 +2394,6 @@ private sub fbcInit2( )
 		end if
 		fbc.mainname = hStripExt(fbc.mainname)
 	end if
-
 end sub
 
 '' Build the intermediate file name for the given module and step
@@ -3349,7 +3342,21 @@ end sub
 		fbcEnd( 1 )
 	end if
 
-	fbcInit2( )
+	fbcDeterminePrefix( )
+	fbcSetupCompilerPaths( )
+
+	if( fbc.verbose ) then
+		fbcPrintTargetInfo( )
+	end if
+
+	'' Tell the compiler about the default include path (added after
+	'' the command line ones, so those will be searched first)
+	fbAddIncludePath( fbc.incpath )
+
+	var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
+	                       (listGetHead( @fbc.objlist   ) <> NULL) or _
+	                       (listGetHead( @fbc.libs.list ) <> NULL) or _
+	                       (listGetHead( @fbc.libfiles  ) <> NULL)
 
 	'' Answer -print query, if any, and stop
 	'' The -print option is intended to allow shell scripts, makefiles, etc.
@@ -3361,6 +3368,11 @@ end sub
 		case PRINT_TARGET
 			print fbGetTargetId( )
 		case PRINT_X
+			'' If we have input files, -print x should give the output name that we'd normally get.
+			'' However, a plain "fbc -print x" without input files should just give the .exe extension.
+			if( have_input_files ) then
+				fbcDetermineMainName( )
+			end if
 			hSetOutName( )
 			print fbc.outname
 		case PRINT_FBLIBDIR
@@ -3369,11 +3381,10 @@ end sub
 		fbcEnd( 0 )
 	end if
 
+	fbcDetermineMainName( )
+
 	'' Show help if there are no input files
-	if( (listGetHead( @fbc.modules   ) = NULL) and _
-	    (listGetHead( @fbc.objlist   ) = NULL) and _
-	    (listGetHead( @fbc.libs.list ) = NULL) and _
-	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
+	if( have_input_files = FALSE ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if

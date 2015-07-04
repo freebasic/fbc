@@ -335,7 +335,7 @@ type IR_VTBL
 	)
 
 	emitVarIniPad as sub( byval bytes as longint )
-	emitVarIniScopeBegin as sub( )
+	emitVarIniScopeBegin as sub( byval sym as FBSYMBOL ptr, byval is_array as integer )
 	emitVarIniScopeEnd as sub( )
 
 	emitFbctinfBegin as sub( )
@@ -518,7 +518,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitVARINISTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniStr( totlgt, litstr, litlgt )
 #define irEmitVARINIWSTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniWstr( totlgt, litstr, litlgt )
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
-#define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
+#define irEmitVARINISCOPEBEGIN( sym, is_array ) ir.vtbl.emitVarIniScopeBegin( sym, is_array )
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitFBCTINFBEGIN( )    ir.vtbl.emitFbctinfBegin( )
