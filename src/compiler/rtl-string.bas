@@ -1063,7 +1063,7 @@
  		), _
 		/' function valbool overload( byref str as string ) as boolean '/ _
 		( _
-			@FB_RTL_STR2BOOL, @"fb_VALBOOL", _
+			@FB_RTL_STR2BOOL, NULL, _
 			FB_DATATYPE_BOOLEAN, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
