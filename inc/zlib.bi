@@ -62,9 +62,15 @@ type voidpf as any ptr
 type voidp as any ptr
 type z_crc_t as culong
 
+#ifndef SEEK_SET
 const SEEK_SET = 0
+#endif
+#ifndef SEEK_CUR
 const SEEK_CUR = 1
+#endif
+#ifndef SEEK_END
 const SEEK_END = 2
+#endif
 #define z_off_t clong
 #define z_off64_t z_off_t
 #define ZLIB_VERSION "1.2.8"
