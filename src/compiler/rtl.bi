@@ -32,7 +32,7 @@
 #define FB_RTL_FLT2STR_QB				"fb_FloatToStrQB"
 #define FB_RTL_DBL2STR_QB				"fb_DoubleToStrQB"
 
-#define FB_RTL_STR2BOOL					"valbool"
+#define FB_RTL_STR2BOOL					"fb_VALBOOL"
 #define FB_RTL_STR2INT					"valint"
 #define FB_RTL_STR2UINT					"valuint"
 #define FB_RTL_STR2LNG					"vallng"

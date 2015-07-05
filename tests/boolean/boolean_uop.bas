@@ -1,5 +1,10 @@
 # include "fbcu.bi"
 
+'' - don't mix false/true intrinsic constants 
+''   of the compiler in with the tests
+#undef FALSE
+#undef TRUE
+
 #define FALSE 0
 #define TRUE -1
 
@@ -11,10 +16,15 @@ namespace fbc_tests.boolean_.uop
 		#macro dot( op, arg )
 			a = (arg)
 			c = op (arg)
+
+			'' test uop var = const(uop const)
 			CU_ASSERT_EQUAL( op (a), c )
+
+			'' test uop const = const(uop const)
+			CU_ASSERT_EQUAL( op (arg), c )
 		#endmacro
 
-		dim as boolean a, b
+		dim as boolean a
 		dim as integer c
 
 		''   (op a) == (op arg)
