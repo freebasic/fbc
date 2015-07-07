@@ -1,7 +1,6 @@
 /* console mode mouse functions */
 
 #include "../fb.h"
-#include "fb_private_console.h"
 
 int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 {
