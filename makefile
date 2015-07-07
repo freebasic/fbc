@@ -414,6 +414,11 @@ ifeq ($(TARGET_OS),xbox)
   DISABLE_MT := YesPlease
 endif
 
+ifeq ($(TARGET_OS),netbsd)
+  ALLCFLAGS += -I/usr/X11R7/include \
+    -I/usr/pkg/include
+endif
+
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   # Increase compiler's available stack size, it uses lots of recursion
   ALLFBLFLAGS += -t 2048
