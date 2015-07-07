@@ -1,24 +1,27 @@
 /* get the executable path */
 
 #include "../fb.h"
+#include <sys/stat.h>
 
 char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
-	const char *p = strrchr( __fb_ctx.argv[0], '/' );
-	if( p ) {
-		ssize_t len = p - __fb_ctx.argv[0];
-		if( len > maxlen ) {
-			len = maxlen;
-		}
-		else if( len == 0 ) {
-		/* keep the "/" rather than returning "" */
-			len = 1;
-		}
+	char *p;
+	struct stat finfo;
+	ssize_t len;
 
-		memcpy( dst, __fb_ctx.argv[0], len );
+	if ((stat("/proc/curproc/exe", &finfo) == 0) && ((len = readlink("/proc/curproc/exe", dst, maxlen - 1)) > -1)) {
+		/* NetBSD-like proc fs is available */
 		dst[len] = '\0';
+		p = strrchr(dst, '/');
+		if (p == dst) /* keep the "/" rather than returning "" */
+			*(p + 1) = '\0';
+		else if (p)
+			*p = '\0';
+		else
+			dst[0] = '\0';
 	} else {
-		*dst = '\0';
+		p = NULL;
 	}
-	return dst;
+
+	return p;
 }
