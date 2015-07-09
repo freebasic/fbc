@@ -1260,9 +1260,7 @@ function astNewBOP _
 							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 						end if
 					else
-						if( fbPdCheckIsSet( FB_PDCHECK_MIXEDOPERANDS ) ) then
-							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-						end if
+						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 					end if
 				end if
 			end if
@@ -1277,9 +1275,7 @@ function astNewBOP _
 							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 						end if
 					else
-						if( fbPdCheckIsSet( FB_PDCHECK_MIXEDOPERANDS ) ) then
-							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-						end if
+						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 					end if
 				end if
 			end if
