@@ -69,8 +69,11 @@ private function hReadType _
 	'' Note: cSymbolType() could have parsed a CONST before the unknown typname
 
 	'' Get the forward ref's name
+	'' The forward reference identifier can be anything that's valid for
+	'' UDTs. The UDT must be declared to resolve the forward reference, and
+	'' there's no point allowing names that couldn't be used then.
 	select case( lexGetClass( ) )
-	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 		tname = *lexGetText( )
 		lexSkipToken( )
 	case else
