@@ -419,6 +419,10 @@ ifeq ($(TARGET_OS),netbsd)
     -I/usr/pkg/include
 endif
 
+ifeq ($(TARGET_OS),darwin)
+  ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
+endif
+
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   # Increase compiler's available stack size, it uses lots of recursion
   ALLFBLFLAGS += -t 2048
