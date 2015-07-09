@@ -58,29 +58,32 @@ private function hReadType _
 	) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN+1 tname
-    dim as zstring ptr pfwdname = any
 
-    function = NULL
+	if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_ALLOWFORWARD ) ) then
+		return NULL
+	end if
 
-    if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_ALLOWFORWARD ) = FALSE ) then
-        '' Everything not recognized by cSymbolType() is either still undefined,
-        '' so we'll make it a forward ref, or it's an existing forward ref, and
-        '' we'll look it up.
-        '' Note: cSymbolType() could have parsed a CONST before the unknown typname
+	'' Everything not recognized by cSymbolType() is either still undefined,
+	'' so we'll make it a forward ref, or it's an existing forward ref, and
+	'' we'll look it up.
+	'' Note: cSymbolType() could have parsed a CONST before the unknown typname
 
-        '' Get the forward ref's name
-        tname = *lexGetText( )
-        pfwdname = @tname
+	'' Get the forward ref's name
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		tname = *lexGetText( )
+		lexSkipToken( )
+	case else
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		tname = *symbUniqueId( )
+		hSkipStmt( )
+	end select
 
-        lexSkipToken( )
+	'' Parse any PTR's since cSymbolType() didn't handle it
+	'' dtype is modified as needed
+	hPtrDecl( dtype )
 
-		'' Parse any PTR's since cSymbolType() didn't handle it
-		'' dtype is modified as needed
-		hPtrDecl( dtype )
-
-        function = pfwdname
-    end if
-
+	function = @tname
 end function
 
 private sub hAddForwardRef _

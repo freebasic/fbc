@@ -10,6 +10,7 @@ Version 1.04.0
 - Adjusted "ambigious sizeof" warning message for the case when it could refer to a forward reference or a variable
 - 1.03.0 regression: Compiler crash during error recovery in case a CONST declaration was a duplicate definition
 - 1.02.0 regression: zlib.bi couldn't be #included behind crt.bi due to the declarations for SEEK_SET & co
+- Typedefs allowed the data type or forward reference identifier to be omitted (e.g. "type T as")
 
 
 Version 1.03.0
