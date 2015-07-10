@@ -108,10 +108,11 @@ FBCALL void fb_PrintSPC( int fnum, ssize_t n )
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
 
+        /* Skip as many spaces as requested. We may even skip entire lines. */
     	newcol = col + n;
-        if( newcol > cols ) {
+        while( newcol > cols ) {
             fb_PrintVoidEx ( handle, FB_PRINT_NEWLINE );
-            newcol %= cols;
+            newcol -= cols;
         }
 
         fb_Locate( 0, newcol, -1, 0, 0 );
