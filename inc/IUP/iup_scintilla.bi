@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iup_scintilla"
+
 extern "C"
 
 #define __IUP_SCINTILLA_H

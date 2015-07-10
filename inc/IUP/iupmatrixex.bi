@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupmatrixex"
+
 extern "C"
 
 #define __IUPMATRIXEX_H

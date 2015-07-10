@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupglcontrols"
+
 extern "C"
 
 #define __IUPGLCONTROLS_H

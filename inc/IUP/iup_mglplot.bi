@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iup_mglplot"
+
 extern "C"
 
 #define __IUP_MGLPLOT_H

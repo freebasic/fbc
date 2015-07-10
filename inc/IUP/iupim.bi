@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupim"
+
 extern "C"
 
 #define __IUPIM_H

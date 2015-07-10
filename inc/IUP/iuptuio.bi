@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iuptuio"
+
 extern "C"
 
 #define __IUPTUIO_H

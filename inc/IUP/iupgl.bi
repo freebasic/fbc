@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupgl"
+
 extern "C"
 
 #define __IUPGL_H

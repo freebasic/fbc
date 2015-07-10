@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iup_pplot"
+
 extern "C"
 
 #define __IUP_PPLOT_H

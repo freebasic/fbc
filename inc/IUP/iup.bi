@@ -35,6 +35,9 @@
 	#inclib "comdlg32"
 	#inclib "comctl32"
 	#inclib "ole32"
+	#inclib "advapi32"
+	#inclib "shell32"
+	#inclib "uuid"
 #else
 	#inclib "gtk-x11-2.0"
 	#inclib "gdk-x11-2.0"

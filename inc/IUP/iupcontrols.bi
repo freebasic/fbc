@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupcontrols"
+
 extern "C"
 
 #define __IUPCONTROLS_H

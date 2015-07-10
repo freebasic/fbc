@@ -13,6 +13,7 @@ Version 1.04.0
 - Typedefs allowed the data type or forward reference identifier to be omitted (e.g. "type T as")
 - Typedefs allowed forward references named after keywords, even though no such type alias or UDT can be declared (only quirk keywords are allowed as type names, not "core" keywords though)
 - #747: SPC(n) only allowed skipping into the next line, and truncated bigger values of n. Now it can skip multiple lines if n is big enough.
+- IUP binding: added various missing #inclibs
 
 
 Version 1.03.0

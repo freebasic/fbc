@@ -27,6 +27,8 @@
 
 #pragma once
 
+#inclib "iupole"
+
 extern "C"
 
 #define __IUPOLE_H
