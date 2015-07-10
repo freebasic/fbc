@@ -50,49 +50,84 @@ function symbReuseOrAddConst _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
+	dim is_same as integer = FALSE
+
+	function = NULL
+
 	var sym = symbAddConst( id, dtype, subtype, value, attrib )
+	
 	if( sym = NULL ) then
-		'' Duplicate definition; allow it if the existing symbol is also
-		'' a CONST and has the same dtype and value.
+
+		'' Duplicate definition; allow it if the existing symbol is 
+		'' also a CONST and has the same dtype and value.  If it does
+		'' not have same dtype and value, allow it anyway if it is a 
+		'' symbol that may be redefined.
 		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), id, FB_SYMBCLASS_CONST, FALSE, FALSE )
 		assert( sym )
 
-		if( (sym->typ <> dtype) or (sym->subtype <> subtype) ) then
-			exit function
+		'' same type?
+		if( (sym->typ = dtype) and (sym->subtype = subtype) ) then
+
+			'' same value?
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_STRING, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				if( value->s = sym->val.s ) then
+					is_same = TRUE
+				end if
+
+				#if __FB_DEBUG__
+					assert( value->s->class = FB_SYMBCLASS_VAR )
+					assert( sym->val.s->class = FB_SYMBCLASS_VAR )
+					if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
+						assert( *value->s->var_.littextw = *sym->val.s->var_.littextw )
+					else
+						assert( *value->s->var_.littext = *sym->val.s->var_.littext )
+					end if
+				#endif
+
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				'' Redundant float CONSTs are disallowed for now,
+				'' because comparing floats is unreliable
+				exit function
+
+				'' TODO: compare with epsilon? probably still unreliable
+				'' instead, implement byte-by-byte comparison (big/little endian won't matter)
+				'if( memcmp( value->f, sym->val.f, sizeof(FBVALUE.f) ) = 0 ) then
+				'	is_same = TRUE
+				'end if
+				
+			case else
+				assert( typeGetClass( dtype ) = FB_DATACLASS_INTEGER )
+				if( value->i = sym->val.i ) then
+					is_same = TRUE
+				end if
+			end select
 		end if
 
-		select case( typeGetDtAndPtrOnly( dtype ) )
-		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			if( value->s <> sym->val.s ) then
-				exit function
-			end if
-
-			#if __FB_DEBUG__
-				assert( value->s->class = FB_SYMBCLASS_VAR )
-				assert( sym->val.s->class = FB_SYMBCLASS_VAR )
-				if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
-					assert( *value->s->var_.littextw = *sym->val.s->var_.littextw )
-				else
-					assert( *value->s->var_.littext = *sym->val.s->var_.littext )
+		'' even if there is a name-type-value collision, may still be allowed
+		if( is_same = FALSE ) then
+			'' redefinition allowed?
+			if( symbGetCanRedef( sym ) ) then
+				'' only global namespace symbols can be redefined
+				if( symbGetNamespace( sym ) = @symbGetGlobalNamespc( ) ) then
+					if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
+						if( symbGetCantUndef( sym ) = FALSE ) then
+							errReportWarn( FB_WARNINGMSG_REDEFINITIONOFINTRINSIC )
+							'' remove from lookup, but not type symbol data, it
+							'' may be referenced from elsewhere
+							symbDelFromHash( sym )
+							'' try again
+							sym = symbAddConst( id, dtype, subtype, value, attrib )
+						end if
+					end if
 				end if
-			#endif
-
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			'' Redundant float CONSTs are disallowed for now,
-			'' because comparing floats is unreliable
-			exit function
-
-			'' TODO: compare with epsilon? probably still unreliable
-			'if( value->f <> sym->val.f ) then
-			'	exit function
-			'end if
-
-		case else
-			assert( typeGetClass( dtype ) = FB_DATACLASS_INTEGER )
-			if( value->i <> sym->val.i ) then
-				exit function
+			else
+				'' duplicate definition
+				sym = NULL
 			end if
-		end select
+		else
+			sym->stats and= not FB_SYMBSTATS_CANREDEFINE
+		end if
 	end if
 
 	function = sym

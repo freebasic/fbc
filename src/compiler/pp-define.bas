@@ -1043,9 +1043,22 @@ sub ppDefine( byval ismultiline as integer )
 		sym = chain_->sym
 		if( symbIsDefine( sym ) = FALSE ) then
 			'' defines have no dups or respect namespaces
-			errReportEx( FB_ERRMSG_DUPDEFINITION, @defname )
-			'' error recovery: fake an id
-			defname = *symbUniqueLabel( )
+			if( symbGetCanRedef( sym ) ) then
+				'' only global namespace symbols can be redefined
+				if( symbGetNamespace( sym ) = @symbGetGlobalNamespc( ) ) then
+					if( symbGetCantUndef( sym ) = FALSE ) then
+						errReportWarn( FB_WARNINGMSG_REDEFINITIONOFINTRINSIC )
+						'' remove from lookup, but not type symbol data, it
+						'' may be referenced from elsewhere
+						symbDelFromHash( sym )
+						sym = NULL
+					end if
+				end if
+			else
+				errReportEx( FB_ERRMSG_DUPDEFINITION, @defname )
+				'' error recovery: fake an id
+				defname = *symbUniqueLabel( )
+			end if
 		end if
 	else
 		sym = NULL
