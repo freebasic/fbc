@@ -282,11 +282,6 @@ type EMIT_VTBL
 
 	close as sub( )
 
-	isKeyword as function _
-	( _
-		byval text as zstring ptr _
-	) as integer
-
 	isRegPreserved as function _
 	( _
 		byval dclass as integer, _
@@ -394,9 +389,6 @@ type EMITCTX
 	'' platform-dependent
 	lastsection							as integer
 	lastpriority                        as integer
-
-	keyinited							as integer
-	keyhash								as THASH
 
 	''
 	vtbl								as EMIT_VTBL
@@ -850,8 +842,6 @@ declare sub emitFlush _
 
 
 #define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
-
-#define emitIsKeyword( text ) emit.vtbl.isKeyword( text )
 
 #define emitOpen( ) emit.vtbl.open( )
 
