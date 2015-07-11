@@ -80,7 +80,8 @@ declare function hMakeParamDesc _
 		( 0, @"Mixing signed/unsigned operands" ), _
 		( 0, @"Mismatching parameter initializer" ), _
 		( 1, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
-		( 0, @"Mixing operand data types may have undefined results" ) _
+		( 0, @"Mixing operand data types may have undefined results" ), _
+		( 0, @"Redefinition of intrinsic" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _

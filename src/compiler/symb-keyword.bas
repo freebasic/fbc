@@ -367,8 +367,9 @@ sub symbKeywordConstsInit( )
 	dim id as string * 10
 
 	dim as FB_SYMBATTRIB attrib = any
+	dim as FBSYMBOL ptr sym = any
 
-	attrib = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+	attrib = FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 
 	v.i = cint(0)
 	if( fbLangIsSet( FB_LANG_QB ) ) then
@@ -376,7 +377,11 @@ sub symbKeywordConstsInit( )
 	else
 		id = kwdFALSE
 	end if
-	symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	sym = symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	'' Success? ... symbAddConst() may fail if id was defined on the command line
+	if( sym ) then
+		symbSetCanRedef( sym )
+	end if
 
 	v.i = cint(-1)
 	if( fbLangIsSet( FB_LANG_QB ) ) then
@@ -384,6 +389,10 @@ sub symbKeywordConstsInit( )
 	else
 		id = kwdTRUE
 	end if
-	symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	'' Success? ... symbAddConst() may fail if id was defined on the command line
+	sym = symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	if( sym ) then
+		symbSetCanRedef( sym )
+	end if
 
 end sub
