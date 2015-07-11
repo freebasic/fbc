@@ -78,16 +78,14 @@ function symbReuseOrAddConst _
 				end if
 
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				'' Redundant float CONSTs are disallowed for now,
-				'' because comparing floats is unreliable
-				exit function
+				'' Doing byte-by-byte comparison, instead of comparing floats,
+				'' as float comparisons are unreliable
+				assert( sizeof( value->f   ) = sizeof( ulongint ) )
+				assert( sizeof( sym->val.f ) = sizeof( ulongint ) )
+				if( *cptr( ulongint ptr, @value->f ) = *cptr( ulongint ptr, @sym->val.f ) ) then
+					is_same = TRUE
+				end if
 
-				'' TODO: compare with epsilon? probably still unreliable
-				'' instead, implement byte-by-byte comparison (big/little endian won't matter)
-				'if( memcmp( value->f, sym->val.f, sizeof(FBVALUE.f) ) = 0 ) then
-				'	is_same = TRUE
-				'end if
-				
 			case else
 				assert( typeGetClass( dtype ) = FB_DATACLASS_INTEGER )
 				if( value->i = sym->val.i ) then

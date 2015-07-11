@@ -19,6 +19,12 @@ const I2 = 123
 const I4 = &h8000000000000000ull
 const I4 = &h8000000000000000ull
 
+const F1 = 1.0
+const F1 = 1.0
+
+const F2 = 123.456789
+const F2 = 123.456789
+
 const S1 = "a"
 const S1 = "a"
 
