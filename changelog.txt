@@ -3,6 +3,7 @@ Version 1.04.0
 [changed]
 
 [added]
+- Redundant float constant declarations are now also allowed
 
 [fixed]
 
@@ -33,7 +34,6 @@ Version 1.03.0
 - crt/longdouble.bi: ARM support
 - LLVM backend: global variable initializers
 - LLVM backend: fixed-size array variables/fields
-- Redundant float constant declarations are now also allowed
 
 [fixed]
 - Windows API binding: win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too)
