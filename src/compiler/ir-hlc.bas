@@ -2820,7 +2820,22 @@ private sub _emitUop _
 		vr = v1
 	end if
 
-	exprSTORE( vr, exprNewUOP( op, exprNewVREG( v1 ) ) )
+	var expr = exprNewVREG( v1 )
+
+	'' boolean NOT?
+	if( (op = AST_OP_NOT) and (vr->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' booleans store 0/1, and a boolean NOT is supposed to produce
+		'' the inverse 1/0 boolean. Thus it can't be implemented as
+		'' bitwise NOT.
+		'' Do: <expr == 0>
+		'' We could also do <!expr>, but we don't support emitting the
+		'' ! operator at the moment.
+		expr = exprNewBOP( AST_OP_EQ, expr, exprNewIMMi( 0 ) )
+	else
+		expr = exprNewUOP( op, expr )
+	end if
+
+	exprSTORE( vr, expr )
 
 end sub
 
