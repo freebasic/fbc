@@ -2267,6 +2267,38 @@ private function hUopToStr _
 
 end function
 
+private sub hImm2Text( byref s as string, byval n as EXPRNODE ptr )
+	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+		s += hEmitFloat( n->dtype, n->val.f )
+	elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
+		if( n->val.i ) then
+			s += "1"
+		else
+			s += "0"
+		end if
+	else
+		s += hEmitInt( n->dtype, n->val.i )
+	end if
+end sub
+
+private sub hSym2Text( byref s as string, byval sym as FBSYMBOL ptr )
+	'' String literal?
+	if( symbGetIsLiteral( sym ) ) then
+		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
+		else
+			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
+		end if
+	else
+		if( symbIsLabel( sym ) ) then
+			s += "&&"
+		elseif( symbIsProc( sym ) ) then
+			s += "&"
+		end if
+		s += *symbGetMangledName( sym )
+	end if
+end sub
+
 '' Builds up final expression text, walking the EXPRNODE tree
 private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 	dim as EXPRNODE ptr l = any
@@ -2278,36 +2310,10 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		ctx.exprtext += *n->text
 
 	case EXPRCLASS_IMM
-		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
-		elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
-			if( n->val.i ) then
-				ctx.exprtext += "1"
-			else
-				ctx.exprtext += "0"
-			end if
-		else
-			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
-		end if
+		hImm2Text( ctx.exprtext, n )
 
 	case EXPRCLASS_SYM
-		sym = n->sym
-
-		'' String literal?
-		if( symbGetIsLiteral( sym ) ) then
-			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				hBuildWstrLit( ctx.exprtext, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
-			else
-				hBuildStrLit( ctx.exprtext, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
-			end if
-		else
-			if( symbIsLabel( sym ) ) then
-				ctx.exprtext += "&&"
-			elseif( symbIsProc( sym ) ) then
-				ctx.exprtext += "&"
-			end if
-			ctx.exprtext += *symbGetMangledName( sym )
-		end if
+		hSym2Text( ctx.exprtext, n->sym )
 
 	case EXPRCLASS_CAST
 		'' (type)l
@@ -2408,34 +2414,10 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		s += *n->text
 
 	case EXPRCLASS_IMM
-		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			s += hEmitFloat( n->dtype, n->val.f )
-		elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
-			if( n->val.i ) then
-				s += "1"
-			else
-				s += "0"
-			end if
-		else
-			s += hEmitInt( n->dtype, n->val.i )
-		end if
+		hImm2Text( s, n )
 
 	case EXPRCLASS_SYM
-		'' String literal?
-		if( symbGetIsLiteral( n->sym ) ) then
-			if( symbGetType( n->sym ) = FB_DATATYPE_WCHAR ) then
-				hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( n->sym ) ), symbGetWstrLen( n->sym ) )
-			else
-				hBuildStrLit( s, hUnescape( symbGetVarLitText( n->sym ) ), symbGetStrLen( n->sym ) )
-			end if
-		else
-			if( symbIsLabel( n->sym ) ) then
-				s += "&&"
-			elseif( symbIsProc( n->sym ) ) then
-				s += "&"
-			end if
-			s += *symbGetMangledName( n->sym )
-		end if
+		hSym2Text( s, n->sym )
 
 	case EXPRCLASS_CAST
 		s += hEmitType( n->dtype, n->subtype )
