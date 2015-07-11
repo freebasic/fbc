@@ -3,6 +3,10 @@ Version 1.04.0
 [changed]
 
 [added]
+- BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.
+- TRUE/FALSE built-in constants (programs may still declare them manually, but a warning will be shown)
+- CBOOL()
+- Boolean support for PRINT, INPUT, DATA, WRITE etc. Booleans are represented as "true"/"false" strings (case-insensitive).
 - Redundant float constant declarations are now also allowed
 
 [fixed]
