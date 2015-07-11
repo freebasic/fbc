@@ -50,8 +50,6 @@ function symbReuseOrAddConst _
 		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-	dim is_same as integer = FALSE
-
 	function = NULL
 
 	var sym = symbAddConst( id, dtype, subtype, value, attrib )
@@ -65,6 +63,8 @@ function symbReuseOrAddConst _
 		sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), id, FB_SYMBCLASS_CONST, FALSE, FALSE )
 		assert( sym )
 
+		dim is_same as integer = FALSE
+
 		'' same type?
 		if( (sym->typ = dtype) and (sym->subtype = subtype) ) then
 
@@ -73,24 +73,18 @@ function symbReuseOrAddConst _
 			case FB_DATATYPE_STRING, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				'' Compare the string literal symbol (global VAR),
 				'' symbAllocStrConst() will have re-used the same symbol if it's the same string.
-				if( value->s = sym->val.s ) then
-					is_same = TRUE
-				end if
+				is_same = (value->s = sym->val.s)
 
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				'' Doing byte-by-byte comparison, instead of comparing floats,
 				'' as float comparisons are unreliable
 				assert( sizeof( value->f   ) = sizeof( ulongint ) )
 				assert( sizeof( sym->val.f ) = sizeof( ulongint ) )
-				if( *cptr( ulongint ptr, @value->f ) = *cptr( ulongint ptr, @sym->val.f ) ) then
-					is_same = TRUE
-				end if
+				is_same = (*cptr( ulongint ptr, @value->f ) = *cptr( ulongint ptr, @sym->val.f ))
 
 			case else
 				assert( typeGetClass( dtype ) = FB_DATACLASS_INTEGER )
-				if( value->i = sym->val.i ) then
-					is_same = TRUE
-				end if
+				is_same = (value->i = sym->val.i)
 			end select
 		end if
 
