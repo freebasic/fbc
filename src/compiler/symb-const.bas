@@ -71,19 +71,11 @@ function symbReuseOrAddConst _
 			'' same value?
 			select case( typeGetDtAndPtrOnly( dtype ) )
 			case FB_DATATYPE_STRING, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' Compare the string literal symbol (global VAR),
+				'' symbAllocStrConst() will have re-used the same symbol if it's the same string.
 				if( value->s = sym->val.s ) then
 					is_same = TRUE
 				end if
-
-				#if __FB_DEBUG__
-					assert( value->s->class = FB_SYMBCLASS_VAR )
-					assert( sym->val.s->class = FB_SYMBCLASS_VAR )
-					if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_WCHAR ) then
-						assert( *value->s->var_.littextw = *sym->val.s->var_.littextw )
-					else
-						assert( *value->s->var_.littext = *sym->val.s->var_.littext )
-					end if
-				#endif
 
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				'' Redundant float CONSTs are disallowed for now,
