@@ -108,19 +108,12 @@ function symbReuseOrAddConst _
 		if( is_same = FALSE ) then
 			'' redefinition allowed?
 			if( symbGetCanRedef( sym ) ) then
-				'' only global namespace symbols can be redefined
-				if( symbGetNamespace( sym ) = @symbGetGlobalNamespc( ) ) then
-					if( symbGetCurrentNamespc( ) = @symbGetGlobalNamespc( ) ) then
-						if( symbGetCantUndef( sym ) = FALSE ) then
-							errReportWarn( FB_WARNINGMSG_REDEFINITIONOFINTRINSIC )
-							'' remove from lookup, but not type symbol data, it
-							'' may be referenced from elsewhere
-							symbDelFromHash( sym )
-							'' try again
-							sym = symbAddConst( id, dtype, subtype, value, attrib )
-						end if
-					end if
-				end if
+				errReportWarn( FB_WARNINGMSG_REDEFINITIONOFINTRINSIC )
+				'' remove from lookup, but not type symbol data, it
+				'' may be referenced from elsewhere
+				symbDelFromHash( sym )
+				'' try again
+				sym = symbAddConst( id, dtype, subtype, value, attrib )
 			else
 				'' duplicate definition
 				sym = NULL
