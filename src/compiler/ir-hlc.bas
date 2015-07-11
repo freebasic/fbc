@@ -2765,9 +2765,13 @@ private sub _emitBop _
 
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		'' Must work-around C's boolean logic values and convert the "boolean"
-		'' 1 to -1 while 0 stays 0 to match FB.
-		l = exprNewUOP( AST_OP_NEG, exprNewBOP( op, l, r ) )
+		l = exprNewBOP( op, l, r )
+
+		'' comparisons returning a boolean produce 0/1,
+		'' comparisons returning an integer produce 0/-1.
+		if( vr->dtype <> FB_DATATYPE_BOOLEAN ) then
+			l = exprNewUOP( AST_OP_NEG, l )
+		end if
 
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
 	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
