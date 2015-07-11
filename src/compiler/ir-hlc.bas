@@ -2280,6 +2280,12 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
+		elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
+			if( n->val.i ) then
+				ctx.exprtext += "1"
+			else
+				ctx.exprtext += "0"
+			end if
 		else
 			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
 		end if
@@ -2404,6 +2410,12 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	case EXPRCLASS_IMM
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 			s += hEmitFloat( n->dtype, n->val.f )
+		elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
+			if( n->val.i ) then
+				s += "1"
+			else
+				s += "0"
+			end if
 		else
 			s += hEmitInt( n->dtype, n->val.i )
 		end if
