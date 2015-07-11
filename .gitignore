@@ -12,3 +12,7 @@
 /lib/freebasic/*
 /lib64/freebasic/*
 /config.mk
+
+/doc/fbdoc/fbdoc
+/doc/makefbhelp/makefbhelp
+/doc/fbchkdoc/fbchkdoc.ini

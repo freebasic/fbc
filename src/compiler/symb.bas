@@ -1530,36 +1530,6 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' Walk the symchain and check whether it contains types and non-type symbols
-'' This is useful to check whether one identifier refers to both a type and
-'' another kind of symbol (which is possible in FB because types are in a
-'' separate namespace).
-sub symbCheckChainForTypesAndOthers _
-	( _
-		byval chain_ as FBSYMCHAIN ptr, _
-		byref typ as FBSYMBOL ptr, _
-		byref nontype as FBSYMBOL ptr _
-	)
-
-	do
-		var sym = chain_->sym
-
-		do
-			select case( sym->class )
-			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
-				typ = sym
-			case else
-				nontype = sym
-			end select
-
-			sym = sym->hash.next
-		loop while( sym )
-
-		chain_ = symbChainGetNext( chain_ )
-	loop while( chain_ )
-
-end sub
-
 function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
 	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
 	assert( symbIsStruct( sym ) = FALSE )
