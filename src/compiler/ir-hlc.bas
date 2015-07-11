@@ -217,22 +217,6 @@ declare sub _emitDBG _
 	)
 
 declare sub exprFreeNode( byval n as EXPRNODE ptr )
-declare function exprNewUOP _
-	( _
-		byval op as integer, _
-		byval l as EXPRNODE ptr _
-	) as EXPRNODE ptr
-declare function exprNewBOP _
-	( _
-		byval op as integer, _
-		byval l as EXPRNODE ptr, _
-		byval r as EXPRNODE ptr _
-	) as EXPRNODE ptr
-declare function exprFlush _
-	( _
-		byval n as EXPRNODE ptr, _
-		byval need_parens as integer = FALSE _
-	) as string
 #if __FB_DEBUG__
 declare sub exprDump( byval n as EXPRNODE ptr )
 #endif
@@ -1639,63 +1623,6 @@ private function exprNewCAST _
 		byval l as EXPRNODE ptr _
 	) as EXPRNODE ptr
 
-	'' float/int := bool?
-	if( (dtype <> FB_DATATYPE_BOOLEAN) and (l->dtype = FB_DATATYPE_BOOLEAN) ) then
-		'' 0/-1 := 0/1
-		if( l->class = EXPRCLASS_IMM ) then
-			l->val.i = (l->val.i <> 0)
-			l->dtype = FB_DATATYPE_LONG
-		else
-			l = exprNewUOP( AST_OP_NEG, l )
-		end if
-
-	'' bool := float/int?
-	elseif( (dtype = FB_DATATYPE_BOOLEAN) and (l->dtype <> FB_DATATYPE_BOOLEAN) ) then
-		'' 0/1 := zero/non-zero
-		if( l->class = EXPRCLASS_IMM ) then
-			'' (FB's <> 0 produces 0/-1 so we have to negate to get 0/1)
-			l->val.i = - iif( typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT, _
-			                  l->val.f <> 0, l->val.i <> 0 )
-			l->dtype = FB_DATATYPE_LONG
-		else
-			'' (expr != 0) (C's != produces the 0/1 we want)
-			l = exprNewBOP( AST_OP_NE, l, exprNewIMMi( 0 ) )
-		end if
-
-	'' int := float? Needs special treatment to achieve FB's rounding behaviour
-	elseif( (typeGetClass( dtype ) = FB_DATACLASS_INTEGER) and _
-	        (typeGetClass( l->dtype ) = FB_DATACLASS_FPOINT) ) then
-
-		'' ((type)fb_F2I( l ))
-		''
-		'' If converting to integer <= int32: use fb_*2I()
-		'' If converting to integer >= uint32: use fb_*2L()
-		''
-		'' Treating uint32 like [u]int64 as a special case:
-		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
-		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
-		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
-
-		dim s as string, tempdtype as integer
-		if( typeGetSizeType( dtype ) < FB_SIZETYPE_UINT32 ) then
-			if( l->dtype = FB_DATATYPE_SINGLE ) then
-				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
-			else
-				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
-			end if
-			tempdtype = FB_DATATYPE_LONG
-		else
-			if( l->dtype = FB_DATATYPE_SINGLE ) then
-				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
-			else
-				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
-			end if
-			tempdtype = FB_DATATYPE_LONGINT
-		end if
-		s += "( " + exprFlush( l ) + " )"
-		l = exprNewTEXT( tempdtype, NULL, s )
-	end if
-
 	'' Don't add a CAST if l already has the desired type
 	if( (dtype = l->dtype) and (subtype = l->subtype) ) then
 		return l
@@ -2270,13 +2197,8 @@ end function
 private sub hImm2Text( byref s as string, byval n as EXPRNODE ptr )
 	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 		s += hEmitFloat( n->dtype, n->val.f )
-	elseif( n->dtype = FB_DATATYPE_BOOLEAN ) then
-		if( n->val.i ) then
-			s += "1"
-		else
-			s += "0"
-		end if
 	else
+		assert( (n->dtype <> FB_DATATYPE_BOOLEAN) orelse ((n->val.i = 1) or (n->val.i = 0)) )
 		s += hEmitInt( n->dtype, n->val.i )
 	end if
 end sub
@@ -2837,6 +2759,70 @@ private sub _emitUop _
 
 	exprSTORE( vr, expr )
 
+end sub
+
+'' v1 = cast( <v1's dtype>, v2 )
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	var r = exprNewVREG( v2 )
+
+	'' float/int := bool?
+	if( (v1->dtype <> FB_DATATYPE_BOOLEAN) and (r->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' 0/-1 := 0/1
+		if( r->class = EXPRCLASS_IMM ) then
+			r->val.i = (r->val.i <> 0)
+			r->dtype = FB_DATATYPE_LONG
+		else
+			r = exprNewUOP( AST_OP_NEG, r )
+		end if
+
+	'' bool := float/int?
+	elseif( (v1->dtype = FB_DATATYPE_BOOLEAN) and (r->dtype <> FB_DATATYPE_BOOLEAN) ) then
+		'' 0/1 := zero/non-zero
+		if( r->class = EXPRCLASS_IMM ) then
+			'' (FB's <> 0 produces 0/-1 so we have to negate to get 0/1)
+			r->val.i = - iif( typeGetClass( r->dtype ) = FB_DATACLASS_FPOINT, _
+			                  r->val.f <> 0, r->val.i <> 0 )
+			r->dtype = FB_DATATYPE_LONG
+		else
+			'' (expr != 0) (C's != produces the 0/1 we want)
+			r = exprNewBOP( AST_OP_NE, r, exprNewIMMi( 0 ) )
+		end if
+
+	'' int := float? Needs special treatment to achieve FB's rounding behaviour
+	elseif( (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) and _
+	        (typeGetClass( r->dtype ) = FB_DATACLASS_FPOINT) ) then
+
+		'' ((type)fb_F2I( r ))
+		''
+		'' If converting to integer <= int32: use fb_*2I()
+		'' If converting to integer >= uint32: use fb_*2L()
+		''
+		'' Treating uint32 like [u]int64 as a special case:
+		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
+		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
+		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
+
+		dim s as string, tempdtype as integer
+		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
+			else
+				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
+			end if
+			tempdtype = FB_DATATYPE_LONG
+		else
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
+			else
+				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
+			end if
+			tempdtype = FB_DATATYPE_LONGINT
+		end if
+		s += "( " + exprFlush( r ) + " )"
+		r = exprNewTEXT( tempdtype, NULL, s )
+	end if
+
+	exprSTORE( v1, r )
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -3526,7 +3512,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_scopeBegin, _
 	@_scopeEnd, _
 	@_procAllocStaticVars, _
-	@_emitStore, _
+	@_emitConvert, _
 	@_emitLabel, _
 	@_emitLabel, _
 	NULL, _
