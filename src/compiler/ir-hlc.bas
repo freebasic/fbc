@@ -2624,6 +2624,8 @@ private function exprNewVREG _
 		dtype = vreg->dtype
 		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			l = exprNewIMMf( vreg->value.f, dtype )
+		elseif( dtype = FB_DATATYPE_BOOLEAN ) then
+			l = exprNewIMMi( iif( vreg->value.i, 1, 0 ) )
 		else
 			l = exprNewIMMi( vreg->value.i, dtype )
 		end if
