@@ -2719,12 +2719,24 @@ private sub _emitBop _
 		l = exprNewBOP( op, l, r )
 
 	case AST_OP_EQV
-		'' vr = ~(v1 ^ v2)
-		l = exprNewUOP( AST_OP_NOT, exprNewBOP( AST_OP_XOR, l, r ) )
+		l = exprNewBOP( AST_OP_XOR, l, r )
+		if( vr->dtype = FB_DATATYPE_BOOLEAN ) then
+			'' vr = (v1 xor v2) xor 1
+			l = exprNewBOP( AST_OP_XOR, l, exprNewIMMi( 1 ) )
+		else
+			'' vr = not (v1 xor v2)
+			l = exprNewUOP( AST_OP_NOT, l )
+		end if
 
 	case AST_OP_IMP
-		'' vr = ~v1 | v2
-		l = exprNewBOP( AST_OP_OR, exprNewUOP( AST_OP_NOT, l ), r )
+		if( vr->dtype = FB_DATATYPE_BOOLEAN ) then
+			'' vr = (v1 xor 1) or v2
+			l = exprNewBOP( AST_OP_XOR, l, exprNewIMMi( 1 ) )
+		else
+			'' vr = (not v1) or v2
+			l = exprNewUOP( AST_OP_NOT, l )
+		end if
+		l = exprNewBOP( AST_OP_OR, l, r )
 
 	end select
 

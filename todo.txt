@@ -1,11 +1,7 @@
 o boolean
-  - C backend: implement/test boolean UOPs/BOPs, at least <NOT cbool(1)> needs
-    to produce 0, not a &b11111110 byte
   - test overload resolution?
-  - test boolean/float conversions vs. rounding issues, could affect the C backend at least
   - add an -exx check to detect illegal boolean values on read?
   - add proper fb_PrintBoolean?
-  - implement INPUT, DATA, etc. for booleans (see TODOs in rtl-*.bas)
   - MacOSX/Darwin has 4-byte bool, that's the only case where gcc booleans aren't 1 byte.
     fbc has to do it the same way to be compatible.
 
