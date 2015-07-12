@@ -9,11 +9,11 @@ const I2 = 123
 const I2 = 123
 
 #ifdef __FB_64BIT__
-	const I3 = &hFFFFFFFFFFFFFFFF
-	const I3 = -1
+	const I3 as integer = &hFFFFFFFFFFFFFFFF
+	const I3 as integer = -1
 #else
-	const I3 = &hFFFFFFFF
-	const I3 = -1
+	const I3 as integer = &hFFFFFFFF
+	const I3 as integer = -1
 #endif
 
 const I4 = &h8000000000000000ull
