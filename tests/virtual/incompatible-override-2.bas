@@ -1,7 +1,7 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
 type A extends object
-	declare virtual function foo( ) as longint
+	declare virtual function foo( ) as byte
 end type
 
 type B extends A
