@@ -233,6 +233,9 @@ else
     ifeq ($(uname),OpenBSD)
       TARGET_OS := openbsd
     endif
+    ifeq ($(uname),SunOS)
+      TARGET_OS := solaris
+    endif
   endif
 
   ifndef TARGET_ARCH
