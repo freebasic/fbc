@@ -421,6 +421,10 @@ endif
 
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
+  
+  ifndef ENABLE_XQUARTZ
+    ALLCFLAGS += -DDISABLE_X11
+  endif
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
