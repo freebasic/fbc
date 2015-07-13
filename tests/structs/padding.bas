@@ -1440,6 +1440,25 @@ private sub testGccAlign cdecl( )
 	CU_ASSERT( bigx4.i(2) = &h3333444433334444ull )
 end sub
 
+sub testGenGccUdtFieldInPackedUdt cdecl( )
+	'' Regression test for -gen gcc's struct emitting
+
+	type UDT1  '' non-packed UDT
+		i as integer
+	end type
+	#assert sizeof( UDT1 ) = sizeof( integer )
+
+	type UDT2 field = 1  '' packed UDT
+		x1 as UDT1   '' UDT field, whose UDT is itself not packed
+		b as byte
+	end type
+	#assert sizeof( UDT2 ) = sizeof( integer ) + 1
+
+	dim x2 as UDT2 = ((11), 22)
+	CU_ASSERT( x2.x1.i = 11 )
+	CU_ASSERT( x2.b = 22 )
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite("tests/structs/padding")
 	fbcu.add_test("size1", @testSize1)
@@ -1450,6 +1469,7 @@ private sub ctor( ) constructor
 	fbcu.add_test("default mod 8 padding", @testDefaultPad8)
 	fbcu.add_test("bug #2828675 regression test", @bug2828675)
 	fbcu.add_test( "-gen gcc field alignment", @testGccAlign )
+	fbcu.add_test( "testGenGccUdtFieldInPackedUdt", @testGenGccUdtFieldInPackedUdt )
 end sub
 
 end namespace

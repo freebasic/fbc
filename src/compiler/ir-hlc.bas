@@ -971,7 +971,10 @@ private sub hEmitStructWithFields( byval s as FBSYMBOL ptr )
 				'' that are already packed to the same alignment,
 				'' gcc would show a warning in that case.
 				if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-					skip or= (align >= symbGetUDTAlign( subtype ))
+					var fieldudtalign = symbGetUDTAlign( subtype )
+					if( fieldudtalign > 0 ) then
+						skip or= (align >= fieldudtalign)
+					end if
 				end if
 
 				if( skip = FALSE ) then
