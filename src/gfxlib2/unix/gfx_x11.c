@@ -1,5 +1,7 @@
 /* x11 window management code shared by x11 and opengl drivers */
 
+#include <sys/types.h>
+
 #ifndef DISABLE_X11
 
 #include "../fb_gfx.h"
