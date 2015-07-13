@@ -5,6 +5,8 @@
 	Ambigious sizeof(), referring to type MSG, instead of variable MSG
 1 warning:
 	Ambigious typeof(), referring to type MSG, instead of variable MSG
+--- UDT + var of that type ---
+no warnings:
 --- UDT + const ---
 1 warning:
 	Ambigious len(), referring to type MSG, instead of constant MSG

@@ -16,6 +16,19 @@ scope
 	dim x as typeof(msg)
 end scope
 
+#print "--- UDT + var of that type ---"
+#print "no warnings:"
+scope
+	type UDT
+		i as integer
+	end type
+
+	dim udt as udt
+
+	print len(udt)
+	print sizeof(udt)
+end scope
+
 #print "--- UDT + const ---"
 scope
 	type MSG

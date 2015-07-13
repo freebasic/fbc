@@ -124,6 +124,14 @@ end sub
 sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as integer )
 	if( (typ = NULL) or (nontype = NULL) ) then exit sub
 
+	'' Don't warn if it's a type and a var of that type, because then the
+	'' len() or sizeof() would return the same value in either case.
+	if( symbIsVar( nontype ) and _
+	    (symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
+	    (nontype->subtype = typ) ) then
+		exit sub
+	end if
+
 	var sym1 = typ
 	var sym2 = nontype
 	if( refers_to_type = FALSE ) then

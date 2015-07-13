@@ -17,6 +17,7 @@ Version 1.04.0
 - #782: C backend: inline ASM keywords were turned into references to previously declared FB variables/procedures/labels, if those were named after ASM keywords. Inline ASM keywords will now be left untouched (using the same heuristic, a list of ASM keywords, as used by the ASM backend).
 - __FB_ASM__ wasn't #defined for x86_64 even though the -asm option can be used on x86_64 too
 - C backend: UDTs using Field=N were emitted incorrectly (causing gcc errors), if they contained a field of type of another UDT that didn't use Field=N.
+- False-positive "ambigious sizeof" warnings if the identifier could refer to a type or variable of that type (in this case the size is obviously the same, and it doesn't matter which one is used)
 
 
 Version 1.03.0
