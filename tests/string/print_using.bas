@@ -1,6 +1,6 @@
 # include "fbcu.bi"
 
-#define REMOVE_TEMP_FILE
+#define KEEP_TEMP_FILE
 #define PRINT_IF_UNEQUAL
 
 #define QT(s) ("""" & (s) & """")
@@ -23,7 +23,7 @@
 	open TESTFILE for output as #1
 #endmacro
 
-#macro CLOSE_TEST_FILE()
+#macro CLOSE_AND_TEST_FILE()
 	close #1
 
 	dim as string sResult, sExpected
@@ -39,7 +39,7 @@
 		loop
 	close #1
 
-#ifdef REMOVE_TEMP_FILE
+#ifndef KEEP_TEMP_FILE
 	kill TESTFILE
 #endif
 
@@ -68,6 +68,10 @@ private sub test_ll( _
 	end if
 	if num >= 0 then
 		PRINT_USING_( fmt & "ull", culngint(num), cmp & "ull" )
+	end if
+
+	if num = cint(cbool(num)) and (instr(fmt, "&") = 0) then
+		PRINT_USING_( fmt & "b", cmp, cmp & "b" )
 	end if
 
 	PRINT_USING( fmt & "ll", num, cmp & "ll" )
@@ -143,6 +147,20 @@ private sub test_str( _
 
 end sub
 
+private sub test_bool( _
+		byref fmt as string, _
+		byref num as boolean, _
+		byref cmp as string)
+
+	if instr(fmt, "&") then
+		'' test true/false
+		PRINT_USING( fmt & "b", iif(num, "true", "false"), cmp & "b" )
+	else
+		test_ll( fmt, clngint(num), cmp )
+	end if
+
+end sub
+
 private function pow_ull( byval m as ulongint, byval n as integer ) as ulongint
 
 	dim as ulongint ret = 1ull
@@ -176,7 +194,7 @@ sub stmttest cdecl ()
 	print #1, using """&&"""; "a", , "b"
 #endif
 
-	CLOSE_TEST_FILE()
+	CLOSE_AND_TEST_FILE()
 end sub
 
 sub numtest cdecl ()
@@ -265,7 +283,7 @@ sub numtest cdecl ()
 	test_dbl( fmt, 1e15 -.5, " 9999999999999995.E-1" )
 	test_dbl( fmt, 1e16 - 4, " 9999999999999996.E+0" )
 
-	CLOSE_TEST_FILE()
+	CLOSE_AND_TEST_FILE()
 
 end sub
 
@@ -347,7 +365,7 @@ sub fmttest cdecl ()
 	test_sng(  "#^^^^^-", 1,  "1E+000 " )
 	test_sng( "#^^^^^^-", 1, "1E+000^-" )
 
-	CLOSE_TEST_FILE()
+	CLOSE_AND_TEST_FILE()
 
 end sub
 
@@ -382,7 +400,7 @@ sub infnanindtest cdecl ()
 	test_sng( "##.",  ind,    "%-1." )
 	test_sng( "##",  ind,     "%-1" )
 
-	CLOSE_TEST_FILE()
+	CLOSE_AND_TEST_FILE()
 
 end sub
 
@@ -472,7 +490,24 @@ sub strtest cdecl ()
 	test_dbl( "&", 1.E+99, "1.E+99" )
 	test_dbl( "&", 1.E+100, "1.E+100" )
 
-	CLOSE_TEST_FILE()
+	CLOSE_AND_TEST_FILE()
+
+end sub
+
+sub booltest cdecl ()
+
+	OPEN_FILE( "print_using_booltest.txt" )
+
+	test_bool("&", false, "false")
+	test_bool("&", true,  "true")
+
+	test_bool("+#", false, "+0")
+	test_bool("+#", true,  "-1")
+
+	test_bool("#", false, "0")
+	test_bool("#", true,  "%-1")
+
+	CLOSE_AND_TEST_FILE()
 
 end sub
 
@@ -484,6 +519,7 @@ sub ctor () constructor
 	fbcu.add_test("format parsing test", @fmttest)
 	fbcu.add_test("inf/nan/ind printing test", @infnanindtest)
 	fbcu.add_test("string format test", @strtest)
+	fbcu.add_test("boolean test", @booltest)
 
 end sub
 

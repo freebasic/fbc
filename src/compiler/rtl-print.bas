@@ -615,6 +615,18 @@
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
+		/' function fb_PrintUsingBoolean( byval fnum as long, byval v as boolean, byval mask as long ) as long '/ _
+		( _
+			@FB_RTL_PRINTUSG_BOOL, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_PrintUsingEnd( byval fnum as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGEND, NULL, _
@@ -1093,6 +1105,10 @@ function rtlPrintUsing _
 	    FB_DATATYPE_UBYTE
 
 		f = PROCLOOKUP( PRINTUSG_ULL )
+
+	case FB_DATATYPE_BOOLEAN
+
+		f = PROCLOOKUP( PRINTUSG_BOOL )
 
 	case else
 		f = PROCLOOKUP( PRINTUSG_DBL )
