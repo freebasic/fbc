@@ -1,6 +1,5 @@
 # include "fbcu.bi"
 
-#define KEEP_TEMP_FILE
 #define PRINT_IF_UNEQUAL
 
 #define QT(s) ("""" & (s) & """")
@@ -27,22 +26,23 @@
 	close #1
 
 	dim as string sResult, sExpected
+	dim as integer errcount = 0
 	open TESTFILE for input as #1
 		do until eof(1)
 			input #1, sResult, sExpected
-#ifdef PRINT_IF_UNEQUAL
 			if( sResult <> sExpected ) then
+#ifdef PRINT_IF_UNEQUAL
 				print QT(sResult) & " <> " & QT(sExpected)
-			end if
+				errcount += 1
 #endif
+			end if
 			CU_ASSERT_EQUAL( sResult, sExpected )
 		loop
 	close #1
 
-#ifndef KEEP_TEMP_FILE
-	kill TESTFILE
-#endif
-
+	if errcount = 0 then
+		kill TESTFILE
+	end if
 #endmacro
 
 
@@ -71,7 +71,7 @@ private sub test_ll( _
 	end if
 
 	if num = cint(cbool(num)) and (instr(fmt, "&") = 0) then
-		PRINT_USING_( fmt & "b", cmp, cmp & "b" )
+		PRINT_USING_( fmt & "b", num, cmp & "b" )
 	end if
 
 	PRINT_USING( fmt & "ll", num, cmp & "ll" )
