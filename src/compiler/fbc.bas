@@ -772,15 +772,17 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
-		'' All have crti.o, except OpenBSD
-		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
-			ldcline += hFindLib( "crti.o" )
-		end if
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+			'' All have crti.o, except OpenBSD and Darwin
+			if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+				ldcline += hFindLib( "crti.o" )
+			end if
 
-		if( fbGetOption( FB_COMPOPT_PIC ) ) then
-			ldcline += hFindLib( "crtbeginS.o" )
-		else
-			ldcline += hFindLib( "crtbegin.o" )
+			if( fbGetOption( FB_COMPOPT_PIC ) ) then
+				ldcline += hFindLib( "crtbeginS.o" )
+			else
+				ldcline += hFindLib( "crtbegin.o" )
+			end if
 		end if
 
 	case FB_COMPTARGET_XBOX
@@ -810,7 +812,9 @@ private function hLinkFiles( ) as integer
 	'' Begin of lib group
 	'' All libraries are passed inside -( -) so we don't need to worry as
 	'' much about their order and/or listing them repeatedly.
-	ldcline += " ""-("""
+	if ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+		ldcline += " ""-("""
+	end if
 
 	'' Add libraries passed by file name
 	scope
@@ -837,14 +841,15 @@ private function hLinkFiles( ) as integer
 		wend
 	end scope
 
-	'' End of lib group
-	ldcline += " ""-)"""
+	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+		'' End of lib group
+		ldcline += " ""-)"""
+	end if
 
 	'' crt end
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then
 			ldcline += hFindLib( "crtendS.o" )
 		else
@@ -2849,13 +2854,23 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
-		ln += "--32 "
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ln += "-arch i386 "
+		else
+			ln += "--32 "
+		endif
 	case FB_CPUFAMILY_X86_64
-		ln += "--64 "
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ln += "-arch x86_64 "
+		else
+			ln += "--64 "
+		endif
 	end select
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-		ln += "--strip-local-absolute "
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+			ln += "--strip-local-absolute "
+		endif
 	end if
 	ln += """" + hGetAsmName( module, 2 ) + """ "
 	ln += "-o """ + *module->objfile + """"
@@ -3089,7 +3104,8 @@ private sub hAddDefaultLibs( )
 			fbcAddDefLib( "winmm" )
 
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
+		     FB_COMPTARGET_DARWIN
 
 			#if defined(__FB_LINUX__) or _
 			    defined(__FB_FREEBSD__) or _
@@ -3097,12 +3113,18 @@ private sub hAddDefaultLibs( )
 			    defined(__FB_NETBSD__)
 				fbcAddDefLibPath( "/usr/X11R6/lib" )
 			#endif
+			
+			#if defined(__FB_DARWIN__) and defined(ENABLE_XQUARTZ)
+				fbcAddDefLibPAth( "/opt/X11/lib" )
+			#endif
 
-			fbcAddDefLib( "X11" )
-			fbcAddDefLib( "Xext" )
-			fbcAddDefLib( "Xpm" )
-			fbcAddDefLib( "Xrandr" )
-			fbcAddDefLib( "Xrender" )
+			#if (not defined(__FB_DARWIN__)) or defined(ENABLE_XQUARTZ)
+				fbcAddDefLib( "X11" )
+				fbcAddDefLib( "Xext" )
+				fbcAddDefLib( "Xpm" )
+				fbcAddDefLib( "Xrandr" )
+				fbcAddDefLib( "Xrender" )
+			#endif
 
 		end select
 	end if
@@ -3122,6 +3144,8 @@ private sub hAddDefaultLibs( )
 	case FB_COMPTARGET_DARWIN
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "ncurses" )
 
 	case FB_COMPTARGET_DOS
 		fbcAddDefLib( "gcc" )

@@ -425,7 +425,9 @@ endif
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
   
-  ifndef ENABLE_XQUARTZ
+  ifdef ENABLE_XQUARTZ
+    ALLFBCFLAGS += -d ENABLE_XQUARTZ
+  else
     ALLCFLAGS += -DDISABLE_X11
   endif
 endif

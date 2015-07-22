@@ -23,6 +23,7 @@ Version 1.04.0
 - On Darwin, linking with rtlib failed due to __fb_errmsg being discarded
 - Correctly implemented fb_hGetExeName for FreeBSD, NetBSD, Darwin and Solaris (needed by gfxlib2)
 - The FB makefile can now detect the OS when building on Solaris
+- fbc will now pass the proper parameters to "as" on OS X
 
 
 Version 1.03.0
