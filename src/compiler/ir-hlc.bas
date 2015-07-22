@@ -681,12 +681,31 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
 
+	'' We're emitting procptr subtypes as typedefs, instead of expanding them in-place,
+	'' because that way we can keep doing the "type id" syntax for local vars, parameters, etc.,
+	'' while when expanding procptrs it would become more complicated ("returntype (*id)(parameters)").
 	case FB_SYMBCLASS_PROC
 		if( symbGetIsFuncPtr( s ) ) then
-			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ) + ";" )
-			symbSetIsEmitted( s )
-		end if
+			'' While emitting a procptr typedef, we may emit a UDT that references this procptr typedef.
+			'' For example:
+			''     type FBSYMBOL_ as FBSYMBOL
+			''     type FBRTLCALLBACK as function(byval as FBSYMBOL_ ptr) as integer
+			''     type FBSYMBOL
+			''         callback as FBRTLCALLBACK
+			''     end type
+			''     dim callback as FBRTLCALLBACK
+			'' In a case like that, we should take care not to emit the typedef twice, because that
+			'' isn't allowed by older gcc versions.
 
+			'' 1. Build the procedure declaration and emit its dependencies...
+			var decl = hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR )
+
+			'' 2. Emit this procptr typedef if it wasn't emitted by step 1
+			if( symbGetIsEmitted( s ) = FALSE ) then
+				hWriteLine( "typedef " + decl + ";" )
+				symbSetIsEmitted( s )
+			end if
+		end if
 	end select
 
 	sectionReturn( section )
