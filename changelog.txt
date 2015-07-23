@@ -3,7 +3,8 @@ Version 1.04.0
 [changed]
 
 [added]
-- exepath() now works on FreeBSD
+- exepath() now works on FreeBSD, NetBSD, Darwin and Solaris
+- The FB gfxlib can now be built on OS X using XQuartz by passing ENABLE_XQUARTZ=1 to make
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
@@ -19,6 +20,11 @@ Version 1.04.0
 - C backend: UDTs using Field=N were emitted incorrectly (causing gcc errors), if they contained a field of type of another UDT that didn't use Field=N.
 - False-positive "ambigious sizeof" warnings if the identifier could refer to a type or variable of that type (in this case the size is obviously the same, and it doesn't matter which one is used)
 - C backend: Procedure pointers having a circular dependency on themselves could result in duplicate typedefs being emitted, causing gcc errors with older gcc versions.
+- rtlib & gfxlib compilation was broken on NetBSD, Darwin and Solaris (header & include-path issues)
+- On Darwin, linking with rtlib failed due to __fb_errmsg being discarded
+- Correctly implemented fb_hGetExeName for FreeBSD, NetBSD, Darwin and Solaris (needed by gfxlib2)
+- The FB makefile can now detect the OS when building on Solaris
+- fbc will now pass the proper parameters to "as" on OS X
 
 
 Version 1.03.0

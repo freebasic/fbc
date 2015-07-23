@@ -6,11 +6,13 @@
 char *fb_hGetExeName( char *dst, ssize_t maxlen )
 {
 	char *p;
+	char linkname[1024];
 	struct stat finfo;
 	ssize_t len;
-	
-	if ((stat("/proc/curproc/exe", &finfo) == 0) && ((len = readlink("/proc/curproc/exe", dst, maxlen - 1)) > -1)) {
-		/* NetBSD-like proc fs is available */
+
+	sprintf(linkname, "/proc/%lu/path/a.out", getpid());
+	if ((stat(linkname, &finfo) == 0) && ((len = readlink(linkname, dst, maxlen - 1)) > -1)) {
+		/* Solaris-like proc fs is available */
 		dst[len] = '\0';
 		p = strrchr(dst, '/');
 		if (p != NULL)

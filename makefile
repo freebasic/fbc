@@ -233,6 +233,9 @@ else
     ifeq ($(uname),OpenBSD)
       TARGET_OS := openbsd
     endif
+    ifeq ($(uname),SunOS)
+      TARGET_OS := solaris
+    endif
   endif
 
   ifndef TARGET_ARCH
@@ -412,6 +415,21 @@ ifeq ($(TARGET_OS),xbox)
 
   # -DENABLE_MT parts of rtlib XBox code aren't finished
   DISABLE_MT := YesPlease
+endif
+
+ifeq ($(TARGET_OS),netbsd)
+  ALLCFLAGS += -I/usr/X11R7/include \
+    -I/usr/pkg/include
+endif
+
+ifeq ($(TARGET_OS),darwin)
+  ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
+  
+  ifdef ENABLE_XQUARTZ
+    ALLFBCFLAGS += -d ENABLE_XQUARTZ
+  else
+    ALLCFLAGS += -DDISABLE_X11
+  endif
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
