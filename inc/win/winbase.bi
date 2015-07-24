@@ -1030,7 +1030,7 @@ declare function OpenPrivateNamespaceW(byval lpBoundaryDescriptor as LPVOID, byv
 	#define CreatePrivateNamespace CreatePrivateNamespaceW
 #endif
 
-declare function ClosePrivateNamespace(byval Handle as HANDLE, byval Flags as ULONG) as BOOLEAN
+declare function ClosePrivateNamespace(byval Handle as HANDLE, byval Flags as ULONG) as WINBOOLEAN
 declare function CreateBoundaryDescriptorW(byval Name as LPCWSTR, byval Flags as ULONG) as HANDLE
 
 #ifdef UNICODE
@@ -1356,7 +1356,7 @@ declare function CheckTokenMembership(byval TokenHandle as HANDLE, byval SidToCh
 	declare function CheckTokenMembershipEx(byval TokenHandle as HANDLE, byval SidToCheck as PSID, byval Flags as DWORD, byval IsMember as PBOOL) as WINBOOL
 #endif
 
-declare function ConvertToAutoInheritPrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CurrentSecurityDescriptor as PSECURITY_DESCRIPTOR, byval NewSecurityDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsDirectoryObject as BOOLEAN, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
+declare function ConvertToAutoInheritPrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CurrentSecurityDescriptor as PSECURITY_DESCRIPTOR, byval NewSecurityDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsDirectoryObject as WINBOOLEAN, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
 declare function CopySid(byval nDestinationSidLength as DWORD, byval pDestinationSid as PSID, byval pSourceSid as PSID) as WINBOOL
 declare function CreatePrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CreatorDescriptor as PSECURITY_DESCRIPTOR, byval NewDescriptor as PSECURITY_DESCRIPTOR ptr, byval IsDirectoryObject as WINBOOL, byval Token as HANDLE, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
 declare function CreatePrivateObjectSecurityEx(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CreatorDescriptor as PSECURITY_DESCRIPTOR, byval NewDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsContainerObject as WINBOOL, byval AutoInheritFlags as ULONG, byval Token as HANDLE, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
@@ -1523,8 +1523,8 @@ declare sub WakeByAddressAll(byval Address as PVOID)
 	declare sub ReleaseSRWLockShared(byval SRWLock as PSRWLOCK)
 	declare sub AcquireSRWLockExclusive(byval SRWLock as PSRWLOCK)
 	declare sub AcquireSRWLockShared(byval SRWLock as PSRWLOCK)
-	declare function TryAcquireSRWLockExclusive(byval SRWLock as PSRWLOCK) as BOOLEAN
-	declare function TryAcquireSRWLockShared(byval SRWLock as PSRWLOCK) as BOOLEAN
+	declare function TryAcquireSRWLockExclusive(byval SRWLock as PSRWLOCK) as WINBOOLEAN
+	declare function TryAcquireSRWLockShared(byval SRWLock as PSRWLOCK) as WINBOOLEAN
 	declare function InitializeCriticalSectionEx(byval lpCriticalSection as LPCRITICAL_SECTION, byval dwSpinCount as DWORD, byval Flags as DWORD) as WINBOOL
 	declare sub InitOnceInitialize(byval InitOnce as PINIT_ONCE)
 	declare function InitOnceExecuteOnce(byval InitOnce as PINIT_ONCE, byval InitFn as PINIT_ONCE_FN, byval Parameter as PVOID, byval Context as LPVOID ptr) as WINBOOL
@@ -3164,7 +3164,7 @@ declare function GetSystemWow64DirectoryW(byval lpBuffer as LPWSTR, byval uSize 
 	#define GetSystemWow64Directory GetSystemWow64DirectoryA
 #endif
 
-declare function Wow64EnableWow64FsRedirection(byval Wow64FsEnableRedirection as BOOLEAN) as BOOLEAN
+declare function Wow64EnableWow64FsRedirection(byval Wow64FsEnableRedirection as WINBOOLEAN) as WINBOOLEAN
 type PGET_SYSTEM_WOW64_DIRECTORY_A as function(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
 type PGET_SYSTEM_WOW64_DIRECTORY_W as function(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
 #define GET_SYSTEM_WOW64_DIRECTORY_NAME_A_A "GetSystemWow64DirectoryA"
@@ -3950,7 +3950,7 @@ type _TIME_DYNAMIC_ZONE_INFORMATION
 	DaylightDate as SYSTEMTIME
 	DaylightBias as LONG
 	TimeZoneKeyName as wstring * 128
-	DynamicDaylightTimeDisabled as BOOLEAN
+	DynamicDaylightTimeDisabled as WINBOOLEAN
 end type
 
 type DYNAMIC_TIME_ZONE_INFORMATION as _TIME_DYNAMIC_ZONE_INFORMATION
@@ -4269,8 +4269,8 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 		AllocationSize as LARGE_INTEGER
 		EndOfFile as LARGE_INTEGER
 		NumberOfLinks as DWORD
-		DeletePending as BOOLEAN
-		Directory as BOOLEAN
+		DeletePending as WINBOOLEAN
+		Directory as WINBOOLEAN
 	end type
 
 	type FILE_STANDARD_INFO as _FILE_STANDARD_INFO
@@ -4285,7 +4285,7 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 	type PFILE_NAME_INFO as _FILE_NAME_INFO ptr
 
 	type _FILE_RENAME_INFO
-		ReplaceIfExists as BOOLEAN
+		ReplaceIfExists as WINBOOLEAN
 		RootDirectory as HANDLE
 		FileNameLength as DWORD
 		FileName as wstring * 1
@@ -4341,9 +4341,9 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 
 	type _FILE_DISPOSITION_INFO
 		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-			DeleteFileW as BOOLEAN
+			DeleteFileW as WINBOOLEAN
 		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-			DeleteFileA as BOOLEAN
+			DeleteFileA as WINBOOLEAN
 		#endif
 	end type
 
@@ -4537,10 +4537,10 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 	declare function OpenFileById(byval hVolumeHint as HANDLE, byval lpFileId as LPFILE_ID_DESCRIPTOR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwFlagsAndAttributes as DWORD) as HANDLE
 	const SYMBOLIC_LINK_FLAG_DIRECTORY = &h1
 	#define VALID_SYMBOLIC_LINK_FLAGS SYMBOLIC_LINK_FLAG_DIRECTORY
-	declare function CreateSymbolicLinkA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as BOOLEAN
-	declare function CreateSymbolicLinkW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as BOOLEAN
-	declare function CreateSymbolicLinkTransactedA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as BOOLEAN
-	declare function CreateSymbolicLinkTransactedW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as BOOLEAN
+	declare function CreateSymbolicLinkA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransactedA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransactedW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
 	declare function QueryActCtxSettingsW(byval dwFlags as DWORD, byval hActCtx as HANDLE, byval settingsNameSpace as PCWSTR, byval settingName as PCWSTR, byval pvBuffer as PWSTR, byval dwBuffer as SIZE_T_, byval pdwWrittenOrRequired as SIZE_T_ ptr) as WINBOOL
 	declare function ReplacePartitionUnit(byval TargetPartition as PWSTR, byval SparePartition as PWSTR, byval Flags as ULONG) as WINBOOL
 	declare function AddSecureMemoryCacheCallback(byval pfnCallBack as PSECURE_MEMORY_CACHE_CALLBACK) as WINBOOL

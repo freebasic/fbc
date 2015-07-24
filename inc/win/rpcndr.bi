@@ -49,7 +49,6 @@ const TARGET_IS_NT40_OR_LATER = 1
 const TARGET_IS_NT351_OR_WIN95_OR_LATER = 1
 
 type cs_byte as ubyte
-type BOOLEAN as ubyte
 #define _HYPER_DEFINED
 #define __MIDL_user_allocate_free_DEFINED__
 declare function MIDL_user_allocate(byval as SIZE_T_) as any ptr
@@ -66,7 +65,7 @@ type NDR_SCONTEXT as _NDR_SCONTEXT ptr
 const cbNDRContext = 20
 type NDR_RUNDOWN as sub(byval context as any ptr)
 type NDR_NOTIFY_ROUTINE as sub()
-type NDR_NOTIFY2_ROUTINE as sub(byval flag as BOOLEAN)
+type NDR_NOTIFY2_ROUTINE as sub(byval flag as WINBOOLEAN)
 
 type _SCONTEXT_QUEUE
 	NumberOfObjects as ulong

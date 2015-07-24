@@ -61,6 +61,7 @@
 
 '' The following symbols have been renamed:
 ''     typedef INT => INT_
+''     typedef BOOLEAN => WINBOOLEAN
 ''     #define DELETE => DELETE__
 
 extern "Windows"
@@ -346,8 +347,11 @@ const UNICODE_NULL = cast(wchar_t, 0)
 #define UNICODE_STRING_MAX_BYTES cast(WORD, 65534)
 const UNICODE_STRING_MAX_CHARS = 32767
 #define _BOOLEAN_
-type BOOLEAN as UBYTE
-type PBOOLEAN as BOOLEAN ptr
+type WINBOOLEAN as UBYTE
+#ifndef BOOLEAN
+	type BOOLEAN as WINBOOLEAN
+#endif
+type PBOOLEAN as WINBOOLEAN ptr
 #define _LIST_ENTRY_DEFINED
 
 type _LIST_ENTRY
@@ -2829,14 +2833,14 @@ type CLAIM_SECURITY_ATTRIBUTES_INFORMATION as _CLAIM_SECURITY_ATTRIBUTES_INFORMA
 type PCLAIM_SECURITY_ATTRIBUTES_INFORMATION as _CLAIM_SECURITY_ATTRIBUTES_INFORMATION ptr
 #define SECURITY_DYNAMIC_TRACKING TRUE
 #define SECURITY_STATIC_TRACKING FALSE
-type SECURITY_CONTEXT_TRACKING_MODE as BOOLEAN
-type PSECURITY_CONTEXT_TRACKING_MODE as BOOLEAN ptr
+type SECURITY_CONTEXT_TRACKING_MODE as WINBOOLEAN
+type PSECURITY_CONTEXT_TRACKING_MODE as WINBOOLEAN ptr
 
 type _SECURITY_QUALITY_OF_SERVICE
 	Length as DWORD
 	ImpersonationLevel as SECURITY_IMPERSONATION_LEVEL
 	ContextTrackingMode as SECURITY_CONTEXT_TRACKING_MODE
-	EffectiveOnly as BOOLEAN
+	EffectiveOnly as WINBOOLEAN
 end type
 
 type SECURITY_QUALITY_OF_SERVICE as _SECURITY_QUALITY_OF_SERVICE
@@ -2844,8 +2848,8 @@ type PSECURITY_QUALITY_OF_SERVICE as _SECURITY_QUALITY_OF_SERVICE ptr
 
 type _SE_IMPERSONATION_STATE
 	Token as PACCESS_TOKEN
-	CopyOnOpen as BOOLEAN
-	EffectiveOnly as BOOLEAN
+	CopyOnOpen as WINBOOLEAN
+	EffectiveOnly as WINBOOLEAN
 	Level as SECURITY_IMPERSONATION_LEVEL
 end type
 
@@ -3151,7 +3155,7 @@ type _PROCESS_MITIGATION_DEP_POLICY
 		end type
 	end union
 
-	Permanent as BOOLEAN
+	Permanent as WINBOOLEAN
 end type
 
 type PROCESS_MITIGATION_DEP_POLICY as _PROCESS_MITIGATION_DEP_POLICY
@@ -4372,8 +4376,8 @@ type POWER_USER_PRESENCE as _POWER_USER_PRESENCE
 type PPOWER_USER_PRESENCE as _POWER_USER_PRESENCE ptr
 
 type _POWER_SESSION_CONNECT
-	Connected as BOOLEAN
-	Console as BOOLEAN
+	Connected as WINBOOLEAN
+	Console as WINBOOLEAN
 end type
 
 type POWER_SESSION_CONNECT as _POWER_SESSION_CONNECT
@@ -4388,7 +4392,7 @@ type POWER_SESSION_TIMEOUTS as _POWER_SESSION_TIMEOUTS
 type PPOWER_SESSION_TIMEOUTS as _POWER_SESSION_TIMEOUTS ptr
 
 type _POWER_SESSION_RIT_STATE
-	Active as BOOLEAN
+	Active as WINBOOLEAN
 	LastInputTime as DWORD
 end type
 
@@ -4397,8 +4401,8 @@ type PPOWER_SESSION_RIT_STATE as _POWER_SESSION_RIT_STATE ptr
 
 type _POWER_SESSION_WINLOGON
 	SessionId as DWORD
-	Console as BOOLEAN
-	Locked as BOOLEAN
+	Console as WINBOOLEAN
+	Locked as WINBOOLEAN
 end type
 
 type POWER_SESSION_WINLOGON as _POWER_SESSION_WINLOGON
@@ -4432,8 +4436,8 @@ enum
 end enum
 
 type _POWER_MONITOR_INVOCATION
-	On as BOOLEAN
-	Console as BOOLEAN
+	On as WINBOOLEAN
+	Console as WINBOOLEAN
 	RequestReason as POWER_MONITOR_REQUEST_REASON
 end type
 
@@ -4501,7 +4505,7 @@ type POWER_PLATFORM_ROLE as _POWER_PLATFORM_ROLE
 type PPOWER_PLATFORM_ROLE as _POWER_PLATFORM_ROLE ptr
 
 type _POWER_PLATFORM_INFORMATION
-	AoAc as BOOLEAN
+	AoAc as WINBOOLEAN
 end type
 
 type POWER_PLATFORM_INFORMATION as _POWER_PLATFORM_INFORMATION
@@ -4820,7 +4824,7 @@ end type
 type PPROCESSOR_IDLESTATE_INFO as PROCESSOR_IDLESTATE_INFO ptr
 
 type SYSTEM_POWER_LEVEL
-	Enable as BOOLEAN
+	Enable as WINBOOLEAN
 	Spare(0 to 2) as UBYTE
 	BatteryLevel as DWORD
 	PowerPolicy as POWER_ACTION_POLICY
@@ -4850,10 +4854,10 @@ type _SYSTEM_POWER_POLICY
 	BroadcastCapacityResolution as DWORD
 	DischargePolicy(0 to 3) as SYSTEM_POWER_LEVEL
 	VideoTimeout as DWORD
-	VideoDimDisplay as BOOLEAN
+	VideoDimDisplay as WINBOOLEAN
 	VideoReserved(0 to 2) as DWORD
 	SpindownTimeout as DWORD
-	OptimizeForPower as BOOLEAN
+	OptimizeForPower as WINBOOLEAN
 	FanThrottleTolerance as UBYTE
 	ForcedThrottle as UBYTE
 	MinThrottle as UBYTE
@@ -4959,29 +4963,29 @@ type ADMINISTRATOR_POWER_POLICY as _ADMINISTRATOR_POWER_POLICY
 type PADMINISTRATOR_POWER_POLICY as _ADMINISTRATOR_POWER_POLICY ptr
 
 type SYSTEM_POWER_CAPABILITIES
-	PowerButtonPresent as BOOLEAN
-	SleepButtonPresent as BOOLEAN
-	LidPresent as BOOLEAN
-	SystemS1 as BOOLEAN
-	SystemS2 as BOOLEAN
-	SystemS3 as BOOLEAN
-	SystemS4 as BOOLEAN
-	SystemS5 as BOOLEAN
-	HiberFilePresent as BOOLEAN
-	FullWake as BOOLEAN
-	VideoDimPresent as BOOLEAN
-	ApmPresent as BOOLEAN
-	UpsPresent as BOOLEAN
-	ThermalControl as BOOLEAN
-	ProcessorThrottle as BOOLEAN
+	PowerButtonPresent as WINBOOLEAN
+	SleepButtonPresent as WINBOOLEAN
+	LidPresent as WINBOOLEAN
+	SystemS1 as WINBOOLEAN
+	SystemS2 as WINBOOLEAN
+	SystemS3 as WINBOOLEAN
+	SystemS4 as WINBOOLEAN
+	SystemS5 as WINBOOLEAN
+	HiberFilePresent as WINBOOLEAN
+	FullWake as WINBOOLEAN
+	VideoDimPresent as WINBOOLEAN
+	ApmPresent as WINBOOLEAN
+	UpsPresent as WINBOOLEAN
+	ThermalControl as WINBOOLEAN
+	ProcessorThrottle as WINBOOLEAN
 	ProcessorMinThrottle as UBYTE
 	ProcessorMaxThrottle as UBYTE
-	FastSystemS4 as BOOLEAN
+	FastSystemS4 as WINBOOLEAN
 	spare2(0 to 2) as UBYTE
-	DiskSpinDown as BOOLEAN
+	DiskSpinDown as WINBOOLEAN
 	spare3(0 to 7) as UBYTE
-	SystemBatteriesPresent as BOOLEAN
-	BatteriesAreShortTerm as BOOLEAN
+	SystemBatteriesPresent as WINBOOLEAN
+	BatteriesAreShortTerm as WINBOOLEAN
 	BatteryScale(0 to 2) as BATTERY_REPORTING_SCALE
 	AcOnLineWake as SYSTEM_POWER_STATE
 	SoftLidWake as SYSTEM_POWER_STATE
@@ -4993,11 +4997,11 @@ end type
 type PSYSTEM_POWER_CAPABILITIES as SYSTEM_POWER_CAPABILITIES ptr
 
 type SYSTEM_BATTERY_STATE
-	AcOnLine as BOOLEAN
-	BatteryPresent as BOOLEAN
-	Charging as BOOLEAN
-	Discharging as BOOLEAN
-	Spare1(0 to 3) as BOOLEAN
+	AcOnLine as WINBOOLEAN
+	BatteryPresent as WINBOOLEAN
+	Charging as WINBOOLEAN
+	Discharging as WINBOOLEAN
+	Spare1(0 to 3) as WINBOOLEAN
 	MaxCapacity as DWORD
 	RemainingCapacity as DWORD
 	Rate as DWORD
@@ -6507,7 +6511,7 @@ const IMAGE_DEBUG_MISC_EXENAME = 1
 type _IMAGE_DEBUG_MISC field = 4
 	DataType as DWORD
 	Length as DWORD
-	Unicode_ as BOOLEAN
+	Unicode_ as WINBOOLEAN
 	Reserved(0 to 2) as UBYTE
 	Data(0 to 0) as UBYTE
 end type
@@ -6688,9 +6692,9 @@ declare function RtlCompareMemory(byval Source1 as const any ptr, byval Source2 
 #endif
 
 #ifdef __FB_64BIT__
-	declare function RtlAddFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval BaseAddress as DWORD64) as BOOLEAN
-	declare function RtlDeleteFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION) as BOOLEAN
-	declare function RtlInstallFunctionTableCallback(byval TableIdentifier as DWORD64, byval BaseAddress as DWORD64, byval Length as DWORD, byval Callback as PGET_RUNTIME_FUNCTION_CALLBACK, byval Context as PVOID, byval OutOfProcessCallbackDll as PCWSTR) as BOOLEAN
+	declare function RtlAddFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval BaseAddress as DWORD64) as WINBOOLEAN
+	declare function RtlDeleteFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION) as WINBOOLEAN
+	declare function RtlInstallFunctionTableCallback(byval TableIdentifier as DWORD64, byval BaseAddress as DWORD64, byval Length as DWORD, byval Callback as PGET_RUNTIME_FUNCTION_CALLBACK, byval Context as PVOID, byval OutOfProcessCallbackDll as PCWSTR) as WINBOOLEAN
 	declare sub RtlRestoreContext(byval ContextRecord as PCONTEXT, byval ExceptionRecord as _EXCEPTION_RECORD ptr)
 	declare function RtlVirtualUnwind(byval HandlerType as DWORD, byval ImageBase as DWORD64, byval ControlPc as DWORD64, byval FunctionEntry as PRUNTIME_FUNCTION, byval ContextRecord as PCONTEXT, byval HandlerData as PVOID ptr, byval EstablisherFrame as PDWORD64, byval ContextPointers as PKNONVOLATILE_CONTEXT_POINTERS) as PEXCEPTION_ROUTINE
 #endif
@@ -7001,7 +7005,7 @@ declare function VerSetConditionMask(byval ConditionMask as ULONGLONG, byval Typ
 #define VER_SET_CONDITION(_m_, _t_, _c_) scope : (_m_) = VerSetConditionMask((_m_), (_t_), (_c_)) : end scope
 
 #if _WIN32_WINNT = &h0602
-	declare function RtlGetProductInfo(byval OSMajorVersion as DWORD, byval OSMinorVersion as DWORD, byval SpMajorVersion as DWORD, byval SpMinorVersion as DWORD, byval ReturnedProductType as PDWORD) as BOOLEAN
+	declare function RtlGetProductInfo(byval OSMajorVersion as DWORD, byval OSMinorVersion as DWORD, byval SpMajorVersion as DWORD, byval SpMinorVersion as DWORD, byval ReturnedProductType as PDWORD) as WINBOOLEAN
 #endif
 
 const RTL_UMS_VERSION = &h0100
@@ -7114,10 +7118,10 @@ end enum
 type HEAP_INFORMATION_CLASS as _HEAP_INFORMATION_CLASS
 type WORKERCALLBACKFUNC as sub(byval as PVOID)
 type APC_CALLBACK_FUNCTION as sub(byval as DWORD, byval as PVOID, byval as PVOID)
-type WAITORTIMERCALLBACKFUNC as sub(byval as PVOID, byval as BOOLEAN)
+type WAITORTIMERCALLBACKFUNC as sub(byval as PVOID, byval as WINBOOLEAN)
 type WAITORTIMERCALLBACK as WAITORTIMERCALLBACKFUNC
 type PFLS_CALLBACK_FUNCTION as sub(byval lpFlsData as PVOID)
-type PSECURE_MEMORY_CACHE_CALLBACK as function(byval Addr as PVOID, byval Range as SIZE_T_) as BOOLEAN
+type PSECURE_MEMORY_CACHE_CALLBACK as function(byval Addr as PVOID, byval Range as SIZE_T_) as WINBOOLEAN
 
 const WT_EXECUTEDEFAULT = &h00000000
 const WT_EXECUTEINIOTHREAD = &h00000001
@@ -7634,7 +7638,7 @@ const CM_SERVICE_WINPE_BOOT_LOAD = &h00000080
 
 type _TAPE_ERASE
 	as DWORD Type
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_ERASE as _TAPE_ERASE
@@ -7648,7 +7652,7 @@ type PTAPE_ERASE as _TAPE_ERASE ptr
 
 type _TAPE_PREPARE
 	Operation as DWORD
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_PREPARE as _TAPE_PREPARE
@@ -7661,7 +7665,7 @@ type PTAPE_PREPARE as _TAPE_PREPARE ptr
 type _TAPE_WRITE_MARKS
 	as DWORD Type
 	Count as DWORD
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_WRITE_MARKS as _TAPE_WRITE_MARKS
@@ -7693,7 +7697,7 @@ type _TAPE_SET_POSITION
 	Method as DWORD
 	Partition as DWORD
 	Offset as LARGE_INTEGER
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_SET_POSITION as _TAPE_SET_POSITION
@@ -7756,10 +7760,10 @@ const TAPE_DRIVE_FORMAT_IMMEDIATE = &hC0000000
 const TAPE_DRIVE_HIGH_FEATURES = &h80000000
 
 type _TAPE_GET_DRIVE_PARAMETERS
-	ECC as BOOLEAN
-	Compression as BOOLEAN
-	DataPadding as BOOLEAN
-	ReportSetmarks as BOOLEAN
+	ECC as WINBOOLEAN
+	Compression as WINBOOLEAN
+	DataPadding as WINBOOLEAN
+	ReportSetmarks as WINBOOLEAN
 	DefaultBlockSize as DWORD
 	MaximumBlockSize as DWORD
 	MinimumBlockSize as DWORD
@@ -7773,10 +7777,10 @@ type TAPE_GET_DRIVE_PARAMETERS as _TAPE_GET_DRIVE_PARAMETERS
 type PTAPE_GET_DRIVE_PARAMETERS as _TAPE_GET_DRIVE_PARAMETERS ptr
 
 type _TAPE_SET_DRIVE_PARAMETERS
-	ECC as BOOLEAN
-	Compression as BOOLEAN
-	DataPadding as BOOLEAN
-	ReportSetmarks as BOOLEAN
+	ECC as WINBOOLEAN
+	Compression as WINBOOLEAN
+	DataPadding as WINBOOLEAN
+	ReportSetmarks as WINBOOLEAN
 	EOTWarningZoneSize as DWORD
 end type
 
@@ -7788,7 +7792,7 @@ type _TAPE_GET_MEDIA_PARAMETERS
 	Remaining as LARGE_INTEGER
 	BlockSize as DWORD
 	PartitionCount as DWORD
-	WriteProtected as BOOLEAN
+	WriteProtected as WINBOOLEAN
 end type
 
 type TAPE_GET_MEDIA_PARAMETERS as _TAPE_GET_MEDIA_PARAMETERS

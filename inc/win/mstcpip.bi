@@ -168,8 +168,8 @@ const RCVALL_IPLEVEL = 3
 #endif
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	declare function RtlIpv4StringToAddressA(byval S as PCSTR, byval Strict as BOOLEAN, byval Terminator as LPSTR ptr, byval Addr as IN_ADDR ptr) as LONG
-	declare function RtlIpv4StringToAddressW(byval S as PCWSTR, byval Strict as BOOLEAN, byval Terminator as LPWSTR ptr, byval Addr as IN_ADDR ptr) as LONG
+	declare function RtlIpv4StringToAddressA(byval S as PCSTR, byval Strict as WINBOOLEAN, byval Terminator as LPSTR ptr, byval Addr as IN_ADDR ptr) as LONG
+	declare function RtlIpv4StringToAddressW(byval S as PCWSTR, byval Strict as WINBOOLEAN, byval Terminator as LPWSTR ptr, byval Addr as IN_ADDR ptr) as LONG
 #endif
 
 #if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
@@ -179,8 +179,8 @@ const RCVALL_IPLEVEL = 3
 #endif
 
 #if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	declare function RtlIpv4StringToAddressExA(byval AddressString as PCSTR, byval Strict as BOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
-	declare function RtlIpv4StringToAddressExW(byval AddressString as PCWSTR, byval Strict as BOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
+	declare function RtlIpv4StringToAddressExA(byval AddressString as PCSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
+	declare function RtlIpv4StringToAddressExW(byval AddressString as PCWSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
 #endif
 
 #if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))

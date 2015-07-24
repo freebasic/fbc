@@ -105,10 +105,10 @@ type _USER_ALL_INFORMATION field = 4
 	LogonCount as USHORT
 	CountryCode as USHORT
 	CodePage as USHORT
-	LmPasswordPresent as BOOLEAN
-	NtPasswordPresent as BOOLEAN
-	PasswordExpired as BOOLEAN
-	PrivateDataSensitive as BOOLEAN
+	LmPasswordPresent as WINBOOLEAN
+	NtPasswordPresent as WINBOOLEAN
+	PasswordExpired as WINBOOLEAN
+	PrivateDataSensitive as WINBOOLEAN
 end type
 
 type USER_ALL_INFORMATION as _USER_ALL_INFORMATION
@@ -225,7 +225,7 @@ type _MSV1_0_VALIDATION_INFO
 	LogonServer as UNICODE_STRING
 	LogonDomainName as UNICODE_STRING
 	SessionKey as USER_SESSION_KEY
-	Authoritative as BOOLEAN
+	Authoritative as WINBOOLEAN
 	UserFlags as ULONG
 	WhichFields as ULONG
 	UserId as ULONG

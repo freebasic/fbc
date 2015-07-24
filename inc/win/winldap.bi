@@ -263,9 +263,9 @@ type BerValue as BERVAL
 		Request as PVOID
 		lm_returncode as ULONG
 		lm_referral as USHORT
-		lm_chased as BOOLEAN
-		lm_eom as BOOLEAN
-		ConnectionReferenced as BOOLEAN
+		lm_chased as WINBOOLEAN
+		lm_eom as WINBOOLEAN
+		ConnectionReferenced as WINBOOLEAN
 	end type
 #else
 	type ldapmsg field = 4
@@ -279,9 +279,9 @@ type BerValue as BERVAL
 		Request as PVOID
 		lm_returncode as ULONG
 		lm_referral as USHORT
-		lm_chased as BOOLEAN
-		lm_eom as BOOLEAN
-		ConnectionReferenced as BOOLEAN
+		lm_chased as WINBOOLEAN
+		lm_eom as WINBOOLEAN
+		ConnectionReferenced as WINBOOLEAN
 	end type
 #endif
 
@@ -292,13 +292,13 @@ type PLDAPMessage as ldapmsg ptr
 	type LDAPControlA
 		ldctl_oid as PCHAR
 		ldctl_value as BERVAL
-		ldctl_iscritical as BOOLEAN
+		ldctl_iscritical as WINBOOLEAN
 	end type
 #else
 	type LDAPControlA field = 4
 		ldctl_oid as PCHAR
 		ldctl_value as BERVAL
-		ldctl_iscritical as BOOLEAN
+		ldctl_iscritical as WINBOOLEAN
 	end type
 #endif
 
@@ -308,13 +308,13 @@ type PLDAPControlA as LDAPControlA ptr
 	type LDAPControlW
 		ldctl_oid as PWCHAR
 		ldctl_value as BERVAL
-		ldctl_iscritical as BOOLEAN
+		ldctl_iscritical as WINBOOLEAN
 	end type
 #else
 	type LDAPControlW field = 4
 		ldctl_oid as PWCHAR
 		ldctl_value as BERVAL
-		ldctl_iscritical as BOOLEAN
+		ldctl_iscritical as WINBOOLEAN
 	end type
 #endif
 
@@ -694,10 +694,10 @@ const LDAP_MSG_RECEIVED = 2
 declare function ldap_result(byval ld as LDAP ptr, byval msgid as ULONG, byval all as ULONG, byval timeout as l_timeval ptr, byval res as LDAPMessage ptr ptr) as ULONG
 declare function ldap_msgfree(byval res as LDAPMessage ptr) as ULONG
 declare function ldap_result2error(byval ld as LDAP ptr, byval res as LDAPMessage ptr, byval freeit as ULONG) as ULONG
-declare function ldap_parse_resultW(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PWCHAR ptr, byval ErrorMessage as PWCHAR ptr, byval Referrals as PWCHAR ptr ptr, byval ServerControls as PLDAPControlW ptr ptr, byval Freeit as BOOLEAN) as ULONG
-declare function ldap_parse_resultA(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PCHAR ptr, byval ErrorMessage as PCHAR ptr, byval Referrals as PCHAR ptr ptr, byval ServerControls as PLDAPControlA ptr ptr, byval Freeit as BOOLEAN) as ULONG
-declare function ldap_parse_extended_resultA(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ResultOID as PCHAR ptr, byval ResultData as BERVAL ptr ptr, byval Freeit as BOOLEAN) as ULONG
-declare function ldap_parse_extended_resultW(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ResultOID as PWCHAR ptr, byval ResultData as BERVAL ptr ptr, byval Freeit as BOOLEAN) as ULONG
+declare function ldap_parse_resultW(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PWCHAR ptr, byval ErrorMessage as PWCHAR ptr, byval Referrals as PWCHAR ptr ptr, byval ServerControls as PLDAPControlW ptr ptr, byval Freeit as WINBOOLEAN) as ULONG
+declare function ldap_parse_resultA(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PCHAR ptr, byval ErrorMessage as PCHAR ptr, byval Referrals as PCHAR ptr ptr, byval ServerControls as PLDAPControlA ptr ptr, byval Freeit as WINBOOLEAN) as ULONG
+declare function ldap_parse_extended_resultA(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ResultOID as PCHAR ptr, byval ResultData as BERVAL ptr ptr, byval Freeit as WINBOOLEAN) as ULONG
+declare function ldap_parse_extended_resultW(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ResultOID as PWCHAR ptr, byval ResultData as BERVAL ptr ptr, byval Freeit as WINBOOLEAN) as ULONG
 declare function ldap_controls_freeA(byval Controls as LDAPControlA ptr ptr) as ULONG
 declare function ldap_control_freeA(byval Controls as LDAPControlA ptr) as ULONG
 declare function ldap_controls_freeW(byval Control as LDAPControlW ptr ptr) as ULONG
@@ -713,7 +713,7 @@ declare function ldap_free_controlsA(byval Controls as LDAPControlA ptr ptr) as 
 	#define ldap_parse_extended_result ldap_parse_extended_resultW
 #else
 	#define ldap_parse_extended_result ldap_parse_extended_resultA
-	declare function ldap_parse_result(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PCHAR ptr, byval ErrorMessage as PCHAR ptr, byval Referrals as PCHAR ptr ptr, byval ServerControls as PLDAPControlA ptr ptr, byval Freeit as BOOLEAN) as ULONG
+	declare function ldap_parse_result(byval Connection as LDAP ptr, byval ResultMessage as LDAPMessage ptr, byval ReturnCode as ULONG ptr, byval MatchedDNs as PCHAR ptr, byval ErrorMessage as PCHAR ptr, byval Referrals as PCHAR ptr ptr, byval ServerControls as PLDAPControlA ptr ptr, byval Freeit as WINBOOLEAN) as ULONG
 	declare function ldap_controls_free(byval Controls as LDAPControlA ptr ptr) as ULONG
 	declare function ldap_control_free(byval Control as LDAPControlA ptr) as ULONG
 	declare function ldap_free_controls(byval Controls as LDAPControlA ptr ptr) as ULONG
@@ -930,7 +930,7 @@ type PLDAPSearch as LDAPSearch ptr
 type LDAPSortKeyW
 	sk_attrtype as PWCHAR
 	sk_matchruleoid as PWCHAR
-	sk_reverseorder as BOOLEAN
+	sk_reverseorder as WINBOOLEAN
 end type
 
 type PLDAPSortKeyW as LDAPSortKeyW ptr
@@ -938,7 +938,7 @@ type PLDAPSortKeyW as LDAPSortKeyW ptr
 type LDAPSortKeyA
 	sk_attrtype as PCHAR
 	sk_matchruleoid as PCHAR
-	sk_reverseorder as BOOLEAN
+	sk_reverseorder as WINBOOLEAN
 end type
 
 type PLDAPSortKeyA as LDAPSortKeyA ptr
@@ -964,13 +964,13 @@ declare function ldap_parse_sort_controlW(byval ExternalHandle as PLDAP, byval C
 	declare function ldap_parse_sort_control(byval ExternalHandle as PLDAP, byval Control as PLDAPControlA ptr, byval Result as ULONG ptr, byval Attribute as PCHAR ptr) as ULONG
 #endif
 
-declare function ldap_encode_sort_controlW(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyW ptr, byval Control as PLDAPControlW, byval Criticality as BOOLEAN) as ULONG
-declare function ldap_encode_sort_controlA(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyA ptr, byval Control as PLDAPControlA, byval Criticality as BOOLEAN) as ULONG
+declare function ldap_encode_sort_controlW(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyW ptr, byval Control as PLDAPControlW, byval Criticality as WINBOOLEAN) as ULONG
+declare function ldap_encode_sort_controlA(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyA ptr, byval Control as PLDAPControlA, byval Criticality as WINBOOLEAN) as ULONG
 
 #ifdef UNICODE
 	#define ldap_encode_sort_control ldap_encode_sort_controlW
 #else
-	declare function ldap_encode_sort_control(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyA ptr, byval Control as PLDAPControlA, byval Criticality as BOOLEAN) as ULONG
+	declare function ldap_encode_sort_control(byval ExternalHandle as PLDAP, byval SortKeys as PLDAPSortKeyA ptr, byval Control as PLDAPControlA, byval Criticality as WINBOOLEAN) as ULONG
 #endif
 
 declare function ldap_create_page_controlW(byval ExternalHandle as PLDAP, byval PageSize as ULONG, byval Cookie as BERVAL ptr, byval IsCritical as UCHAR, byval Control as PLDAPControlW ptr) as ULONG
@@ -1038,7 +1038,7 @@ declare function ldap_parse_vlv_controlA(byval ExternalHandle as PLDAP, byval Co
 #define LDAP_START_TLS_OID_W wstr("1.3.6.1.4.1.1466.20037")
 declare function ldap_start_tls_sW(byval ExternalHandle as PLDAP, byval ServerReturnValue as PULONG, byval result as LDAPMessage ptr ptr, byval ServerControls as PLDAPControlW ptr, byval ClientControls as PLDAPControlW ptr) as ULONG
 declare function ldap_start_tls_sA(byval ExternalHandle as PLDAP, byval ServerReturnValue as PULONG, byval result as LDAPMessage ptr ptr, byval ServerControls as PLDAPControlA ptr, byval ClientControls as PLDAPControlA ptr) as ULONG
-declare function ldap_stop_tls_s(byval ExternalHandle as PLDAP) as BOOLEAN
+declare function ldap_stop_tls_s(byval ExternalHandle as PLDAP) as WINBOOLEAN
 
 #ifdef UNICODE
 	#define ldap_start_tls_s ldap_start_tls_sW
@@ -1079,7 +1079,7 @@ const LDAP_OPT_REFERRAL_CALLBACK = &h70
 type LdapReferralCallback
 	SizeOfCallbacks as ULONG
 	QueryForConnection as function(byval PrimaryConnection as PLDAP, byval ReferralFromConnection as PLDAP, byval NewDN as PWCHAR, byval HostName as PCHAR, byval PortNumber as ULONG, byval SecAuthIdentity as PVOID, byval CurrentUserToken as PVOID, byval ConnectionToUse as PLDAP ptr) as ULONG
-	NotifyRoutine as function(byval PrimaryConnection as PLDAP, byval ReferralFromConnection as PLDAP, byval NewDN as PWCHAR, byval HostName as PCHAR, byval NewConnection as PLDAP, byval PortNumber as ULONG, byval SecAuthIdentity as PVOID, byval CurrentUser as PVOID, byval ErrorCodeFromBind as ULONG) as BOOLEAN
+	NotifyRoutine as function(byval PrimaryConnection as PLDAP, byval ReferralFromConnection as PLDAP, byval NewDN as PWCHAR, byval HostName as PCHAR, byval NewConnection as PLDAP, byval PortNumber as ULONG, byval SecAuthIdentity as PVOID, byval CurrentUser as PVOID, byval ErrorCodeFromBind as ULONG) as WINBOOLEAN
 	DereferenceRoutine as function(byval PrimaryConnection as PLDAP, byval ConnectionToDereference as PLDAP) as ULONG
 end type
 

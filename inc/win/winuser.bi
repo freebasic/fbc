@@ -2152,7 +2152,7 @@ const ISMEX_REPLIED = &h00000008
 declare function RegisterDeviceNotificationA(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
 declare function RegisterDeviceNotificationW(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
 declare function UnregisterDeviceNotification(byval Handle as HDEVNOTIFY) as WINBOOL
-type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as BOOLEAN
+type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as WINBOOLEAN
 
 #ifdef UNICODE
 	#define CreateWindowEx CreateWindowExW

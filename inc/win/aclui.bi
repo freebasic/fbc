@@ -279,7 +279,7 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 		pData2 as PVOID
 		cbData2 as DWORD
 		Id as DWORD
-		fWellKnown as BOOLEAN
+		fWellKnown as WINBOOLEAN
 	end type
 
 	type SECURITY_OBJECT as _SECURITY_OBJECT
@@ -290,7 +290,7 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 	const SECURITY_OBJECT_ID_CENTRAL_ACCESS_RULE = 4
 
 	type _EFFPERM_RESULT_LIST
-		fEvaluated as BOOLEAN
+		fEvaluated as WINBOOLEAN
 		cObjectTypeListLength as ULONG
 		pObjectTypeList as OBJECT_TYPE_LIST ptr
 		pGrantedAccessList as ACCESS_MASK ptr

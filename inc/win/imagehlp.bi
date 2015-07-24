@@ -45,9 +45,9 @@ type _LOADED_IMAGE
 	NumberOfSections as ULONG
 	Sections as PIMAGE_SECTION_HEADER
 	Characteristics as ULONG
-	fSystemImage as BOOLEAN
-	fDOSImage as BOOLEAN
-	fReadOnly as BOOLEAN
+	fSystemImage as WINBOOLEAN
+	fDOSImage as WINBOOLEAN
+	fReadOnly as WINBOOLEAN
 	Version as UCHAR
 	Links as LIST_ENTRY
 	SizeOfImage as ULONG
@@ -181,8 +181,8 @@ declare function FindExecutableImage(byval FileName as PCSTR, byval SymbolPath a
 declare function FindExecutableImageEx(byval FileName as PCSTR, byval SymbolPath as PCSTR, byval ImageFilePath as PSTR, byval Callback as PFIND_EXE_FILE_CALLBACK, byval CallerData as PVOID) as HANDLE
 declare function FindExecutableImageExW(byval FileName as PCWSTR, byval SymbolPath as PCWSTR, byval ImageFilePath as PWSTR, byval Callback as PFIND_EXE_FILE_CALLBACKW, byval CallerData as PVOID) as HANDLE
 declare function ImageNtHeader(byval Base as PVOID) as PIMAGE_NT_HEADERS
-declare function ImageDirectoryEntryToDataEx(byval Base as PVOID, byval MappedAsImage as BOOLEAN, byval DirectoryEntry as USHORT, byval Size as PULONG, byval FoundHeader as PIMAGE_SECTION_HEADER ptr) as PVOID
-declare function ImageDirectoryEntryToData(byval Base as PVOID, byval MappedAsImage as BOOLEAN, byval DirectoryEntry as USHORT, byval Size as PULONG) as PVOID
+declare function ImageDirectoryEntryToDataEx(byval Base as PVOID, byval MappedAsImage as WINBOOLEAN, byval DirectoryEntry as USHORT, byval Size as PULONG, byval FoundHeader as PIMAGE_SECTION_HEADER ptr) as PVOID
+declare function ImageDirectoryEntryToData(byval Base as PVOID, byval MappedAsImage as WINBOOLEAN, byval DirectoryEntry as USHORT, byval Size as PULONG) as PVOID
 declare function ImageRvaToSection(byval NtHeaders as PIMAGE_NT_HEADERS, byval Base as PVOID, byval Rva as ULONG) as PIMAGE_SECTION_HEADER
 declare function ImageRvaToVa(byval NtHeaders as PIMAGE_NT_HEADERS, byval Base as PVOID, byval Rva as ULONG, byval LastRvaSection as PIMAGE_SECTION_HEADER ptr) as PVOID
 
@@ -757,7 +757,7 @@ type _IMAGEHLP_DEFERRED_SYMBOL_LOAD64
 	CheckSum as DWORD
 	TimeDateStamp as DWORD
 	FileName as zstring * 260
-	Reparse as BOOLEAN
+	Reparse as WINBOOLEAN
 	hFile as HANDLE
 	Flags as DWORD
 end type
@@ -777,7 +777,7 @@ const DSLFLAG_MISMATCHED_DBG = &h2
 		CheckSum as DWORD
 		TimeDateStamp as DWORD
 		FileName as zstring * 260
-		Reparse as BOOLEAN
+		Reparse as WINBOOLEAN
 		hFile as HANDLE
 	end type
 
