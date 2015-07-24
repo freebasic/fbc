@@ -47,8 +47,12 @@ extern "Windows"
 #define NOTHING
 #define CRITICAL
 const ANYSIZE_ARRAY = 1
-const FALSE = 0
-const TRUE = 1
+#ifndef FALSE
+	const FALSE = 0
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
 const NULL64 = 0
 
 #ifdef __FB_64BIT__
