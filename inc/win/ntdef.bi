@@ -49,7 +49,7 @@ extern "Windows"
 const ANYSIZE_ARRAY = 1
 const FALSE = 0
 const TRUE = 1
-const NULL64 = cptr(any ptr, 0)
+const NULL64 = 0
 
 #ifdef __FB_64BIT__
 	#define ALIGNMENT_MACHINE

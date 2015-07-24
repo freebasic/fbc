@@ -122,7 +122,7 @@ extern "C"
 #define G_STRLOC __FILE__ ":" G_STRINGIFY(__LINE__)
 #define G_STRFUNC cptr(const zstring ptr, __func__)
 #ifndef NULL
-const NULL = cptr(any ptr, 0)
+	const NULL = 0
 #endif
 #ifndef FALSE
 const FALSE = 0

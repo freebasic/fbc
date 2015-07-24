@@ -59,7 +59,7 @@ extern "C"
 #define _SDL_platform_h
 #define SDLCALL cdecl
 #ifndef NULL
-	const NULL = cptr(any ptr, 0)
+	const NULL = 0
 #endif
 declare function SDL_GetPlatform() as const zstring ptr
 

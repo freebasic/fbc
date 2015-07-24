@@ -25,6 +25,7 @@ Version 1.04.0
 - Correctly implemented fb_hGetExeName for FreeBSD, NetBSD, Darwin and Solaris (needed by gfxlib2)
 - The FB makefile can now detect the OS when building on Solaris
 - fbc will now pass the proper parameters to "as" on OS X
+- 1.02.0 regression: NULL was declared with pointer type in updated bindings (Windows API, SDL, etc.), and is now just an integer constant again, so it can be passed to things like WPARAM/LPARAM without triggering a compiler warning.
 
 
 Version 1.03.0
