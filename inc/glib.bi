@@ -125,10 +125,10 @@ extern "C"
 	const NULL = 0
 #endif
 #ifndef FALSE
-const FALSE = 0
+	const FALSE = 0
 #endif
 #ifndef TRUE
-const TRUE = 1
+	const TRUE = 1
 #endif
 #undef MAX
 #define MAX(a, b) iif((a) > (b), (a), (b))
