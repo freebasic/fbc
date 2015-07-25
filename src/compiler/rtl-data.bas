@@ -49,6 +49,16 @@
 				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
+		/' sub fb_DataReadBool( byref dst as boolean ) '/ _
+		( _
+			@FB_RTL_DATAREADBOOL, NULL, _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+	 		NULL, FB_RTL_OPT_NOQB, _
+	 		1, _
+	 		{ _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYREF, FALSE ) _
+	 		} _
+		), _
 		/' sub fb_DataReadByte( byref dst as byte ) '/ _
 		( _
 			@FB_RTL_DATAREADBYTE, NULL, _
@@ -194,6 +204,9 @@ function rtlDataRead _
 	case FB_DATATYPE_WCHAR
 		f = PROCLOOKUP( DATAREADWSTR )
 		args = 2
+
+	case FB_DATATYPE_BOOLEAN
+		f = PROCLOOKUP( DATAREADBOOL )
 
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _

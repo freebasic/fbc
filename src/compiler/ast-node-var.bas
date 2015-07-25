@@ -46,6 +46,11 @@ function astNewVAR _
 	n->sym = sym
 	n->var_.ofs = ofs
 
+	'' boolean? do conversion on load
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BOOLEAN ) then
+		n = astNewCONV( dtype, NULL, n )
+	end if
+
 	function = n
 end function
 

@@ -761,7 +761,22 @@ sub cForStmtBegin( )
 	end if
 
 	select case as const dtype
-	case FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE
+	case FB_DATATYPE_BOOLEAN
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		'' error recovery: fake a var
+		astDelTree( idexpr )
+		idexpr = CREATEFAKEID( )
+		dtype = astGetDataType( idexpr )
+
+	'' allow all other scalars ...
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
+	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	case FB_DATATYPE_ENUM
+	case FB_DATATYPE_LONG,FB_DATATYPE_ULONG
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		flags or= FOR_ISUDT

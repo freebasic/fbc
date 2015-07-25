@@ -20,6 +20,7 @@ FBCALL void         fb_DataRestore      ( FB_DATADESC *labeladdr );
        void         fb_DataNext         ( void );
 FBCALL void         fb_DataReadStr      ( void *dst, ssize_t dst_size, int fillrem );
 FBCALL void         fb_DataReadWstr     ( FB_WCHAR *dst, ssize_t dst_size );
+FBCALL void         fb_DataReadBool     ( char *dst );
 FBCALL void         fb_DataReadByte     ( char *dst );
 FBCALL void         fb_DataReadUByte    ( unsigned char *dst );
 FBCALL void         fb_DataReadShort    ( short *dst );

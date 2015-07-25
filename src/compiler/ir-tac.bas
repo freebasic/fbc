@@ -522,7 +522,11 @@ end sub
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	select case( typeGetClass( v1->dtype ) )
 	case FB_DATACLASS_INTEGER
-		_emit( AST_OP_TOINT, v1, v2, NULL )
+		if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_BOOLEAN ) then
+			_emit( AST_OP_TOBOOL, v1, v2, NULL )
+		else
+			_emit( AST_OP_TOINT, v1, v2, NULL )
+		end if
 	case FB_DATACLASS_FPOINT
 		_emit( AST_OP_TOFLT, v1, v2, NULL )
 	end select

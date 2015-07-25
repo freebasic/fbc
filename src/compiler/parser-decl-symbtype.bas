@@ -290,6 +290,7 @@ end function
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
 ''				      ANY
+''				  |   BOOLEAN (BYTE|INTEGER)?
 ''				  |   CHAR|BYTE
 ''				  |	  SHORT|WORD
 ''				  |	  INTEGER|LONG|DWORD
@@ -354,6 +355,10 @@ function cSymbolType _
 		case FB_TK_ANY
 			lexSkipToken( )
 			dtype = FB_DATATYPE_VOID
+
+		case FB_TK_BOOLEAN
+			lexSkipToken( )
+			dtype = FB_DATATYPE_BOOLEAN
 
 		case FB_TK_BYTE
 			lexSkipToken( )

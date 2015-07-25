@@ -337,8 +337,13 @@ function astNewFIELD _
 
 	assert( symbIsField( sym ) )
 	if( symbFieldIsBitfield( sym ) ) then
-		'' final type is always an unsigned int
-		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
+		if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_BOOLEAN ) then
+			'' final type is always a signed int
+			dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+		else
+			'' final type is always an unsigned int
+			dtype = typeJoin( dtype, FB_DATATYPE_UINT )
+		end if
 		subtype = NULL
 
 		ast.bitfieldcount += 1
@@ -397,10 +402,15 @@ private function astSetBitfield _
 	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
 	''
 
-	'' Remap type from bitfield to short/integer/etc., whichever was given
-	'' on the bitfield, to do a "full" field access.
-	l->dtype = bitfield->typ
-	l->subtype = bitfield->subtype
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
+		l->dtype = typeJoin( bitfield->typ, FB_DATATYPE_UINT )
+		l->subtype = NULL
+	else
+		'' Remap type from bitfield to short/integer/etc., whichever was given
+		'' on the bitfield, to do a "full" field access.
+		l->dtype = bitfield->typ
+		l->subtype = bitfield->subtype
+	end if
 
 	'' l is reused on the rhs and thus must be duplicated
 	l = astCloneTree( l )
@@ -414,14 +424,26 @@ private function astSetBitfield _
 	'' old values may have one-bits, the OR alone wouldn't necessarily
 	'' overwrite the old value.
 
-	'' Truncate r if it's too big, ensuring the OR below won't touch any
-	'' other bits outside the target bitfield.
-	r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+	'' boolean bitfield? - do a bool conversion before the bitfield store
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
+		if( r->class <> AST_NODECLASS_CONV ) then
+			r = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, r )
+		end if
+		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
 
-	'' Move r into position if the bitfield doesn't lie at the beginning of
-	'' the accessed field.
-	if( bitfield->var_.bitpos > 0 ) then
-		r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( bitfield->var_.bitpos ) )
+		r = astNewBOP( AST_OP_AND, r, _
+		               astNewCONSTi( (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos), _
+		                             FB_DATATYPE_UINT ) )
+	else
+		'' Truncate r if it's too big, ensuring the OR below won't touch any
+		'' other bits outside the target bitfield.
+		r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+
+		'' Move r into position if the bitfield doesn't lie at the beginning of
+		'' the accessed field.
+		if( bitfield->var_.bitpos > 0 ) then
+			r = astNewBOP( AST_OP_SHL, r, astNewCONSTi( bitfield->var_.bitpos ) )
+		end if
 	end if
 
 	'' OR in the new bitfield value r
@@ -441,8 +463,17 @@ private function astAccessBitfield _
 	'' Remap type from bitfield to short/integer/etc, while keeping in
 	'' mind that the bitfield may have been casted, so the FIELD's type
 	'' can't just be discarded.
-	l->dtype = typeJoin( l->dtype, bitfield->typ )
-	l->subtype = bitfield->subtype
+	'' if boolean make sure the bool conversion is after the bitfield access
+	dim boolconv as integer
+	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
+		l->dtype = typeJoin( l->dtype, FB_DATATYPE_BYTE )
+		l->subtype = NULL
+		boolconv = TRUE
+	else
+		l->dtype = typeJoin( l->dtype, bitfield->typ )
+		l->subtype = bitfield->subtype
+		boolconv = FALSE
+	end if
 
 	'' Shift into position, other bits to the right are shifted out
 	if( bitfield->var_.bitpos > 0 ) then
@@ -450,7 +481,16 @@ private function astAccessBitfield _
 	end if
 
 	'' Mask out other bits to the left
-	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+
+	'' do boolean conversion after bitfield access
+	if( boolconv ) then
+		l->dtype = typeJoin( l->dtype, bitfield->typ )
+		l->subtype = bitfield->subtype
+		l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
+	end if
+
+	function = l
 end function
 
 #if __FB_DEBUG__
@@ -477,9 +517,6 @@ end function
 '' corresponding code instead. Non-bitfield FIELD nodes stay in,
 '' they're used by astProcVectorize().
 function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr l = any
-	dim as FBSYMBOL ptr bitfield = any
-
 	'' Shouldn't miss any bitfields
 	assert( astCountBitfields( n ) <= ast.bitfieldcount )
 
@@ -495,7 +532,7 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_ASSIGN
 		'' Assigning to a bitfield?
 		if( n->l->class = AST_NODECLASS_FIELD ) then
-			bitfield = n->l->sym
+			var bitfield = n->l->sym
 			if( symbFieldIsBitfield( bitfield ) ) then
 				'' Delete and link out the FIELD
 				ast.bitfieldcount -= 1
@@ -509,8 +546,8 @@ function astUpdateBitfields( byval n as ASTNODE ptr ) as ASTNODE ptr
 		end if
 
 	case AST_NODECLASS_FIELD
-		l = n->l
 		if( symbFieldIsBitfield( n->sym ) ) then
+			var l = n->l
 			l = astAccessBitfield( n->sym, l )
 
 			'' Delete and link out the FIELD
@@ -763,6 +800,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_DEL_VEC"         , '/ @"DEL_VEC"      /' , 0 '/ ), _
 	( /' @"AST_OP_TOINT"           , '/ @"TOINT"        /' , 0 '/ ), _
 	( /' @"AST_OP_TOFLT"           , '/ @"TOFLT"        /' , 0 '/ ), _
+	( /' @"AST_OP_TOBOOL"          , '/ @"TOBOOL"       /' , 0 '/ ), _
 	( /' @"AST_OP_LOAD"            , '/ @"LOAD"         /' , 0 '/ ), _
 	( /' @"AST_OP_LOADRES"         , '/ @"LOADRES"      /' , 0 '/ ), _
 	( /' @"AST_OP_SPILLREGS"       , '/ @"SPILLREGS"    /' , 0 '/ ), _
@@ -1034,6 +1072,14 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 		s += typeDump( n->dtype, n->subtype )
 
 		select case as const( n->class )
+		case AST_NODECLASS_MEM
+			select case n->mem.op
+			case AST_OP_MEMCLEAR
+				s += " memclear"
+			case AST_OP_MEMMOVE
+				s += " memmove"
+			end select
+			s += " bytes=" & n->mem.bytes
 		case AST_NODECLASS_VAR     : if( n->var_.ofs ) then s += " ofs=" & n->var_.ofs
 		case AST_NODECLASS_DEREF   : if( n->ptr.ofs  ) then s += " ofs=" & n->ptr.ofs
 		case AST_NODECLASS_OFFSET  : if( n->ofs.ofs  ) then s += " ofs=" & n->ofs.ofs

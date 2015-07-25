@@ -286,6 +286,16 @@
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
  		), _
+		/' function fb_BoolToStr( byval num as boolean ) as string '/ _
+		( _
+			@FB_RTL_BOOL2STR, NULL, _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+ 		), _
 		/' function fb_IntToStr( byval num as long ) as string '/ _
 		( _
 			@FB_RTL_INT2STR, NULL, _
@@ -304,6 +314,16 @@
 			1, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+ 		), _
+		/' function fb_BoolToWstr( byval num as boolean ) as wstring '/ _
+		( _
+			@FB_RTL_BOOL2WSTR, NULL, _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
  		), _
 		/' function fb_IntToWstr( byval num as long ) as wstring '/ _
@@ -1035,6 +1055,26 @@
 		( _
 			@FB_RTL_STR2DBL, @"fb_WstrVal", _
 			FB_DATATYPE_DOUBLE, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+ 		), _
+		/' function valbool overload( byref str as string ) as boolean '/ _
+		( _
+			@FB_RTL_STR2BOOL, NULL, _
+			FB_DATATYPE_BOOLEAN, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+ 		), _
+		/' function valbool overload( byref str as wstring ) as boolean '/ _
+		( _
+			@FB_RTL_STR2BOOL, @"fb_WstrValBool", _
+			FB_DATATYPE_BOOLEAN, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -2776,13 +2816,17 @@ function rtlToStr _
 	'' constant? evaluate
 	if( astIsCONST( expr ) ) then
 		dim s As String
-		if( pad ) then
-			if( typeIsSigned( astGetDataType( expr ) ) ) then
-				if astConstGetAsDouble( expr ) >= 0 then
+		if( astGetDataType( expr ) = FB_DATATYPE_BOOLEAN ) then
+
+		else
+			if( pad ) then
+				if( typeIsSigned( astGetDataType( expr ) ) ) then
+					if astConstGetAsDouble( expr ) >= 0 then
+						s = " "
+					end if
+				else
 					s = " "
 				end if
-			else
-				s = " "
 			end if
 		end if
 		s += astConstFlushToStr( expr )
@@ -2819,29 +2863,20 @@ function rtlToStr _
 		'' wstring? convert..
 		case FB_DATATYPE_WCHAR
 			return rtlWStrToA( expr )
-		end select
-
-		select case as const( typeGetSizeType( dtype ) )
-		case FB_SIZETYPE_INT64
-			f = iif( pad = FALSE, _
-				 PROCLOOKUP( LONGINT2STR ), _
-				 PROCLOOKUP( LONGINT2STR_QB ) )
-
-		case FB_SIZETYPE_UINT64
-			f = iif( pad = FALSE, _
-				 PROCLOOKUP( ULONGINT2STR ), _
-				 PROCLOOKUP( ULONGINT2STR_QB ) )
-
-		case FB_SIZETYPE_INT8, FB_SIZETYPE_INT16, FB_SIZETYPE_INT32
-			f = iif( pad = FALSE, _
-				 PROCLOOKUP( INT2STR ), _
-				 PROCLOOKUP( INT2STR_QB ) )
-
-		case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
-			f = iif( pad = FALSE, _
-				 PROCLOOKUP( UINT2STR ), _
-				 PROCLOOKUP( UINT2STR_QB ) )
-
+		'' boolean?
+		case FB_DATATYPE_BOOLEAN
+			f = PROCLOOKUP( BOOL2STR )
+		case else
+			select case as const( typeGetSizeType( dtype ) )
+			case FB_SIZETYPE_INT64
+				f = iif( pad = FALSE, PROCLOOKUP( LONGINT2STR ), PROCLOOKUP( LONGINT2STR_QB ) )
+			case FB_SIZETYPE_UINT64
+				f = iif( pad = FALSE, PROCLOOKUP( ULONGINT2STR ), PROCLOOKUP( ULONGINT2STR_QB ) )
+			case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
+				f = iif( pad = FALSE, PROCLOOKUP( UINT2STR ), PROCLOOKUP( UINT2STR_QB ) )
+			case else
+				f = iif( pad = FALSE, PROCLOOKUP( INT2STR ), PROCLOOKUP( INT2STR_QB ) )
+			end select
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -2926,19 +2961,21 @@ function rtlToWstr _
 		'' zstring? convert..
 		case FB_DATATYPE_CHAR
 			return rtlAToWstr( expr )
+		'' boolean?
+		case FB_DATATYPE_BOOLEAN
+			f = PROCLOOKUP( BOOL2WSTR )
+		case else
+			select case as const( typeGetSizeType( dtype ) )
+			case FB_SIZETYPE_INT64
+				f = PROCLOOKUP( LONGINT2WSTR )
+			case FB_SIZETYPE_UINT64
+				f = PROCLOOKUP( ULONGINT2WSTR )
+			case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
+				f = PROCLOOKUP( UINT2WSTR )
+			case else
+				f = PROCLOOKUP( INT2WSTR )
+			end select
 		end select
-
-		select case as const( typeGetSizeType( dtype ) )
-		case FB_SIZETYPE_INT64
-			f = PROCLOOKUP( LONGINT2WSTR )
-		case FB_SIZETYPE_UINT64
-			f = PROCLOOKUP( ULONGINT2WSTR )
-		case FB_SIZETYPE_INT8, FB_SIZETYPE_INT16, FB_SIZETYPE_INT32
-			f = PROCLOOKUP( INT2WSTR )
-		case FB_SIZETYPE_UINT8, FB_SIZETYPE_UINT16, FB_SIZETYPE_UINT32
-			f = PROCLOOKUP( UINT2WSTR )
-		end select
-
 	case FB_DATACLASS_FPOINT
 		if( astGetDataType( expr ) = FB_DATATYPE_SINGLE ) then
 			f = PROCLOOKUP( FLT2WSTR )
@@ -2993,6 +3030,9 @@ function rtlStrToVal _
 	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		f = PROCLOOKUP( STR2DBL )
+
+	case FB_DATATYPE_BOOLEAN
+		f = PROCLOOKUP( STR2BOOL )
 
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _

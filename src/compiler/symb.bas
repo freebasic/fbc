@@ -44,6 +44,8 @@ declare sub 		symbCompRTTIInit	( )
 
 declare sub 		symbCompRTTIEnd		( )
 
+declare sub 		symbKeywordConstsInit ( )
+
 declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
 ''globals
@@ -158,6 +160,9 @@ sub symbInit _
 	
 	''
 	symbCompRTTIInit( )
+
+	''
+	symbKeywordConstsInit( )
 
     ''
     symb.inited = TRUE

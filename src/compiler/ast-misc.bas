@@ -591,7 +591,13 @@ sub astCheckConst _
 			end if
 		end select
 
+	case FB_DATATYPE_BOOLEAN
+		lval = astConstGetAsInt64( n )
+		result = (lval = 0) or (lval = 1) or (lval = -1)
+
 	case else
+		'' TODO: bitfields
+
 		select case as const( typeGetSizeType( dtype ) )
 		case FB_SIZETYPE_INT8, FB_SIZETYPE_UINT8
 			lval = astConstGetAsInt64( n )

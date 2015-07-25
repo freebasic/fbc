@@ -10,6 +10,7 @@
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 { _
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"any"      ), _
+	( FB_DATACLASS_INTEGER,  1, TRUE ,  1, FB_DATATYPE_BOOLEAN , FB_SIZETYPE_BOOLEAN, @"boolean"  ), _
 	( FB_DATACLASS_INTEGER,  1, TRUE , 10, FB_DATATYPE_BYTE    , FB_SIZETYPE_INT8   , @"byte"     ), _
 	( FB_DATACLASS_INTEGER,  1, FALSE, 15, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"ubyte"    ), _
 	( FB_DATACLASS_INTEGER,  1, FALSE,  0, FB_DATATYPE_UBYTE   , FB_SIZETYPE_UINT8  , @"zstring"  ), _
@@ -53,7 +54,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 '' result type being the same no matter whether we're doing signed + unsigned
 '' or unsigned + signed, we need to have this kind of rule to decide)
 
-dim shared symb_dtypeMatchTB( FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE, FB_DATATYPE_BYTE to FB_DATATYPE_DOUBLE ) as integer
+dim shared symb_dtypeMatchTB(FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE, FB_DATATYPE_BOOLEAN to FB_DATATYPE_DOUBLE) as integer
 
 declare function closestType _
 	( _
@@ -175,6 +176,7 @@ sub typeMax _
 	'' the remap types), decide based on integer rank
 	elseif( (typeGetClass( dtype1 ) = FB_DATACLASS_INTEGER) and _
 	        (typeGetClass( dtype2 ) = FB_DATACLASS_INTEGER) ) then
+
 		if( typeGetIntRank( dtype1 ) > typeGetIntRank( dtype2 ) ) then
 			dtype = ldtype
 			subtype = lsubtype
@@ -435,6 +437,15 @@ function closestType _
 
 	if( dtype1 <> FB_DATATYPE_WCHAR and dtype2 = FB_DATATYPE_WCHAR ) then return dtype1
 	if( dtype2 <> FB_DATATYPE_WCHAR and dtype1 = FB_DATATYPE_WCHAR ) then return dtype2
+
+
+	'' prefer any non-boolean type for non-boolean types
+	if( dtype <> FB_DATATYPE_BOOLEAN ) then
+		dim as integer isbool1 = (dtype1 = FB_DATATYPE_BOOLEAN)
+		dim as integer isbool2 = (dtype2 = FB_DATATYPE_BOOLEAN)
+		if( isbool2 and not isbool1 ) then return dtype1
+		if( isbool1 and not isbool2 ) then return dtype2
+	end if
 
 
 	'' prefer same dataclass (integer / floating-point)
