@@ -1,7 +1,6 @@
 o boolean
   - test overload resolution?
   - add an -exx check to detect illegal boolean values on read?
-  - add proper fb_PrintBoolean?
   - MacOSX/Darwin has 4-byte bool, that's the only case where gcc booleans aren't 1 byte.
     fbc has to do it the same way to be compatible.
 
