@@ -458,14 +458,4 @@ declare function fbGetLangId _
 
 #define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
 
-
-''
-'' new implementation
-''
-
-'' !!!TODO!!! - remove when 0.21.0 or later is released
-#ifndef cbool
-#define cbool(x_) iif((x_),-1,0)
-#endif
-
 #endif '' __FB_BI__

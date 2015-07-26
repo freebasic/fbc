@@ -189,7 +189,14 @@ function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 			function = str( csng( n->val.f ) )
 		end if
 	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
-		function = str(cbool(n->val.i))
+		'' Producing "true"/"false", like str(boolean) with boolean-capable rtlib
+		'' Doing it manually here makes bootstrapping easier, because we don't
+		'' rely on the new boolean features.
+		if( n->val.i ) then
+			function = "true"
+		else
+			function = "false"
+		end if
 	elseif( typeIsSigned( n->dtype ) ) then
 		function = str( n->val.i )
 	else
@@ -211,7 +218,12 @@ function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 			w = wstr( csng( n->val.f ) )
 		end if
 	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
-		w = wstr( cbool(n->val.i) )
+		'' ditto
+		if( n->val.i ) then
+			w = wstr( "true" )
+		else
+			w = wstr( "false" )
+		end if
 	elseif( typeIsSigned( n->dtype ) ) then
 		w = wstr( n->val.i )
 	else
