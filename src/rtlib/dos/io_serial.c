@@ -1,6 +1,7 @@
 /* serial port driver for Dos */
 
 #include "../fb.h"
+#include "../io_serial_private.h"
 #include <dos.h>
 #include <pc.h>
 #include <go32.h>
@@ -115,12 +116,6 @@ typedef struct
 	int txclear;	/* transmit buffer cleared */
 	int flags;		/* additional flags */
 } comm_props_t;
-
-typedef struct
-{
-	int com_num;
-	FB_SERIAL_OPTIONS * pOptions;
-} DOS_SERIAL_INFO;
 
 /* private local procs */
 static int UART_detect_chiptype( unsigned int baseaddr );

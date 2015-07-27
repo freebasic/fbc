@@ -1,13 +1,7 @@
 /* COMx device */
 
 #include "fb.h"
-
-typedef struct _DEV_COM_INFO {
-    void                     *hSerial;  /* This memmber must be first */
-    char                     *pszDevice;
-    int                       iPort;
-    FB_SERIAL_OPTIONS         Options;
-} DEV_COM_INFO;
+#include "dev_com_private.h"
 
 static int fb_DevComClose( FB_FILE *handle )
 {

@@ -1,15 +1,9 @@
 /* serial port access for Windows */
 
 #include "../fb.h"
-#include <windows.h>
+#include "../io_serial_private.h"
 
 #define GET_MSEC_TIME() ((DWORD) (fb_Timer() * 1000.0))
-
-typedef struct _W32_SERIAL_INFO {
-    HANDLE                    hDevice;
-    int                       iPort;
-    FB_SERIAL_OPTIONS        *pOptions;
-} W32_SERIAL_INFO;
 
 static int fb_hSerialWaitSignal( HANDLE hDevice, DWORD dwMask, DWORD dwResult, DWORD dwTimeout )
 {

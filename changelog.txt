@@ -1,6 +1,7 @@
 Version 1.04.0
 
 [changed]
+- FileAttr() now returns an Integer instead of a Long, and now supports returning OS handles on 64bit
 
 [added]
 - BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.

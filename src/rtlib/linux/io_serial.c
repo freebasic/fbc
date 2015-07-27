@@ -1,15 +1,13 @@
 /* serial port access for Linux */
 
 #include "../fb.h"
+#include "../io_serial_private.h"
+
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <signal.h>
 #include <fcntl.h>
 
-/* Uncomment HAS_LOCKDEV to active lock file funcionality, not forget
- * compile whith -llockdev
- */
-/* #define HAS_LOCKDEV 1 */
 #ifdef HAS_LOCKDEV
 #include <lockdev.h>
 #endif
@@ -19,17 +17,6 @@
 #define BADSPEED	999999
 #define SERIAL_TIMEOUT	3	/* seconds  for write on open*/
 #define SREAD_TIMEOUT	70	/* if not receive any character in less 50 millisecs finish read process */
-
-
-typedef struct _LINUX_SERIAL_INFO {
-    int					sfd;
-    struct				termios	oldtty, newtty;
-#ifdef HAS_LOCKDEV
-    pid_t 				pplckid;
-#endif
-    int					iPort;
-    FB_SERIAL_OPTIONS	*pOptions;
-} LINUX_SERIAL_INFO;
 
 static void alrm()
 {
