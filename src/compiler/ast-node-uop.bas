@@ -177,6 +177,11 @@ function astNewUOP _
 	if( typeGetDtAndPtrOnly( o->dtype ) = FB_DATATYPE_BOOLEAN ) then
 		if( op = AST_OP_NOT ) then
 			do_promote = FALSE
+		elseif( op = AST_OP_NEG ) then
+			'' allow it or test suite can't compile
+		else
+			'' no other operation allowed with booleans
+			exit function
 		end if
 	end if
 
