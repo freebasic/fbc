@@ -183,6 +183,7 @@ int fb_SerialOpen( FB_FILE *handle,
     /* setup generic COM port configuration */
     if( res==FB_RTERROR_OK ) {
         DCB dcb;
+        dcb.DCBlength = sizeof( DCB );
         if( !GetCommState( hDevice, &dcb ) ) {
             res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
         } else {
