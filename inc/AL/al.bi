@@ -127,18 +127,18 @@ const AL_EXPONENT_DISTANCE_CLAMPED = &hD006
 
 declare sub alEnable(byval capability as ALenum)
 declare sub alDisable(byval capability as ALenum)
-declare function alIsEnabled(byval capability as ALenum) as byte
+declare function alIsEnabled(byval capability as ALenum) as ALboolean
 declare function alGetString(byval param as ALenum) as const zstring ptr
-declare sub alGetBooleanv(byval param as ALenum, byval values as zstring ptr)
+declare sub alGetBooleanv(byval param as ALenum, byval values as ALboolean ptr)
 declare sub alGetIntegerv(byval param as ALenum, byval values as ALint ptr)
 declare sub alGetFloatv(byval param as ALenum, byval values as ALfloat ptr)
 declare sub alGetDoublev(byval param as ALenum, byval values as ALdouble ptr)
-declare function alGetBoolean(byval param as ALenum) as byte
+declare function alGetBoolean(byval param as ALenum) as ALboolean
 declare function alGetInteger(byval param as ALenum) as ALint
 declare function alGetFloat(byval param as ALenum) as ALfloat
 declare function alGetDouble(byval param as ALenum) as ALdouble
 declare function alGetError() as ALenum
-declare function alIsExtensionPresent(byval extname as const zstring ptr) as byte
+declare function alIsExtensionPresent(byval extname as const zstring ptr) as ALboolean
 declare function alGetProcAddress(byval fname as const zstring ptr) as any ptr
 declare function alGetEnumValue(byval ename as const zstring ptr) as ALenum
 declare sub alListenerf(byval param as ALenum, byval value as ALfloat)
@@ -155,7 +155,7 @@ declare sub alGetListener3i(byval param as ALenum, byval value1 as ALint ptr, by
 declare sub alGetListeneriv(byval param as ALenum, byval values as ALint ptr)
 declare sub alGenSources(byval n as ALsizei, byval sources as ALuint ptr)
 declare sub alDeleteSources(byval n as ALsizei, byval sources as const ALuint ptr)
-declare function alIsSource(byval source as ALuint) as byte
+declare function alIsSource(byval source as ALuint) as ALboolean
 declare sub alSourcef(byval source as ALuint, byval param as ALenum, byval value as ALfloat)
 declare sub alSource3f(byval source as ALuint, byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)
 declare sub alSourcefv(byval source as ALuint, byval param as ALenum, byval values as const ALfloat ptr)
@@ -180,7 +180,7 @@ declare sub alSourceQueueBuffers(byval source as ALuint, byval nb as ALsizei, by
 declare sub alSourceUnqueueBuffers(byval source as ALuint, byval nb as ALsizei, byval buffers as ALuint ptr)
 declare sub alGenBuffers(byval n as ALsizei, byval buffers as ALuint ptr)
 declare sub alDeleteBuffers(byval n as ALsizei, byval buffers as const ALuint ptr)
-declare function alIsBuffer(byval buffer as ALuint) as byte
+declare function alIsBuffer(byval buffer as ALuint) as ALboolean
 declare sub alBufferData(byval buffer as ALuint, byval format as ALenum, byval data as const any ptr, byval size as ALsizei, byval freq as ALsizei)
 declare sub alBufferf(byval buffer as ALuint, byval param as ALenum, byval value as ALfloat)
 declare sub alBuffer3f(byval buffer as ALuint, byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)
@@ -197,18 +197,18 @@ declare sub alGetBufferiv(byval buffer as ALuint, byval param as ALenum, byval v
 
 type LPALENABLE as sub(byval capability as ALenum)
 type LPALDISABLE as sub(byval capability as ALenum)
-type LPALISENABLED as function(byval capability as ALenum) as byte
+type LPALISENABLED as function(byval capability as ALenum) as ALboolean
 type LPALGETSTRING as function(byval param as ALenum) as const zstring ptr
-type LPALGETBOOLEANV as sub(byval param as ALenum, byval values as zstring ptr)
+type LPALGETBOOLEANV as sub(byval param as ALenum, byval values as ALboolean ptr)
 type LPALGETINTEGERV as sub(byval param as ALenum, byval values as ALint ptr)
 type LPALGETFLOATV as sub(byval param as ALenum, byval values as ALfloat ptr)
 type LPALGETDOUBLEV as sub(byval param as ALenum, byval values as ALdouble ptr)
-type LPALGETBOOLEAN as function(byval param as ALenum) as byte
+type LPALGETBOOLEAN as function(byval param as ALenum) as ALboolean
 type LPALGETINTEGER as function(byval param as ALenum) as ALint
 type LPALGETFLOAT as function(byval param as ALenum) as ALfloat
 type LPALGETDOUBLE as function(byval param as ALenum) as ALdouble
 type LPALGETERROR as function() as ALenum
-type LPALISEXTENSIONPRESENT as function(byval extname as const zstring ptr) as byte
+type LPALISEXTENSIONPRESENT as function(byval extname as const zstring ptr) as ALboolean
 type LPALGETPROCADDRESS as function(byval fname as const zstring ptr) as any ptr
 type LPALGETENUMVALUE as function(byval ename as const zstring ptr) as ALenum
 type LPALLISTENERF as sub(byval param as ALenum, byval value as ALfloat)
@@ -225,7 +225,7 @@ type LPALGETLISTENER3I as sub(byval param as ALenum, byval value1 as ALint ptr, 
 type LPALGETLISTENERIV as sub(byval param as ALenum, byval values as ALint ptr)
 type LPALGENSOURCES as sub(byval n as ALsizei, byval sources as ALuint ptr)
 type LPALDELETESOURCES as sub(byval n as ALsizei, byval sources as const ALuint ptr)
-type LPALISSOURCE as function(byval source as ALuint) as byte
+type LPALISSOURCE as function(byval source as ALuint) as ALboolean
 type LPALSOURCEF as sub(byval source as ALuint, byval param as ALenum, byval value as ALfloat)
 type LPALSOURCE3F as sub(byval source as ALuint, byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)
 type LPALSOURCEFV as sub(byval source as ALuint, byval param as ALenum, byval values as const ALfloat ptr)
@@ -250,7 +250,7 @@ type LPALSOURCEQUEUEBUFFERS as sub(byval source as ALuint, byval nb as ALsizei, 
 type LPALSOURCEUNQUEUEBUFFERS as sub(byval source as ALuint, byval nb as ALsizei, byval buffers as ALuint ptr)
 type LPALGENBUFFERS as sub(byval n as ALsizei, byval buffers as ALuint ptr)
 type LPALDELETEBUFFERS as sub(byval n as ALsizei, byval buffers as const ALuint ptr)
-type LPALISBUFFER as function(byval buffer as ALuint) as byte
+type LPALISBUFFER as function(byval buffer as ALuint) as ALboolean
 type LPALBUFFERDATA as sub(byval buffer as ALuint, byval format as ALenum, byval data as const any ptr, byval size as ALsizei, byval freq as ALsizei)
 type LPALBUFFERF as sub(byval buffer as ALuint, byval param as ALenum, byval value as ALfloat)
 type LPALBUFFER3F as sub(byval buffer as ALuint, byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)

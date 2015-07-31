@@ -92,7 +92,7 @@ const ALC_EXT_EFX = 1
 const ALC_EXT_disconnect = 1
 const ALC_CONNECTED = &h313
 const ALC_EXT_thread_local_context = 1
-type PFNALCSETTHREADCONTEXTPROC as function(byval context as ALCcontext ptr) as byte
+type PFNALCSETTHREADCONTEXTPROC as function(byval context as ALCcontext ptr) as ALCboolean
 type PFNALCGETTHREADCONTEXTPROC as function() as ALCcontext ptr
 const AL_EXT_source_distance_model = 1
 const AL_SOURCE_DISTANCE_MODEL = &h200
@@ -165,7 +165,7 @@ const AL_SEC_LENGTH_SOFT = &h200B
 type LPALBUFFERSAMPLESSOFT as sub(byval as ALuint, byval as ALuint, byval as ALenum, byval as ALsizei, byval as ALenum, byval as ALenum, byval as const any ptr)
 type LPALBUFFERSUBSAMPLESSOFT as sub(byval as ALuint, byval as ALsizei, byval as ALsizei, byval as ALenum, byval as ALenum, byval as const any ptr)
 type LPALGETBUFFERSAMPLESSOFT as sub(byval as ALuint, byval as ALsizei, byval as ALsizei, byval as ALenum, byval as ALenum, byval as any ptr)
-type LPALISBUFFERFORMATSUPPORTEDSOFT as function(byval as ALenum) as byte
+type LPALISBUFFERFORMATSUPPORTEDSOFT as function(byval as ALenum) as ALboolean
 
 const AL_SOFT_direct_channels = 1
 const AL_DIRECT_CHANNELS_SOFT = &h1033
@@ -187,7 +187,7 @@ const ALC_6POINT1_SOFT = &h1505
 const ALC_7POINT1_SOFT = &h1506
 
 type LPALCLOOPBACKOPENDEVICESOFT as function(byval as const zstring ptr) as ALCdevice ptr
-type LPALCISRENDERFORMATSUPPORTEDSOFT as function(byval as ALCdevice ptr, byval as ALCsizei, byval as ALCenum, byval as ALCenum) as byte
+type LPALCISRENDERFORMATSUPPORTEDSOFT as function(byval as ALCdevice ptr, byval as ALCsizei, byval as ALCenum, byval as ALCenum) as ALCboolean
 type LPALCRENDERSAMPLESSOFT as sub(byval as ALCdevice ptr, byval as ALCvoid ptr, byval as ALCsizei)
 
 const AL_EXT_STEREO_ANGLES = 1

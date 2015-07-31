@@ -33,6 +33,7 @@ Version 1.04.0
 - fbc will now pass the proper parameters to "as" on OS X
 - 1.02.0 regression: NULL was declared with pointer type in updated bindings (Windows API, SDL, etc.), and is now just an integer constant again, so it can be passed to things like WPARAM/LPARAM without triggering a compiler warning.
 - Open Com on Windows didn't invoke GetCommState() properly, leading to potentially undefined results
+- 1.03.0 regression: OpenAL binding: The ALboolean and ALCboolean typedefs were incorrectly expanded and translated as zstring in some places
 
 
 Version 1.03.0

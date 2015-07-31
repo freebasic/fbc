@@ -72,9 +72,9 @@ const ALUT_WAVEFORM_IMPULSE = &h104
 const ALUT_LOADER_BUFFER = &h300
 const ALUT_LOADER_MEMORY = &h301
 
-declare function alutInit(byval argcp as long ptr, byval argv as zstring ptr ptr) as byte
-declare function alutInitWithoutContext(byval argcp as long ptr, byval argv as zstring ptr ptr) as byte
-declare function alutExit() as byte
+declare function alutInit(byval argcp as long ptr, byval argv as zstring ptr ptr) as ALboolean
+declare function alutInitWithoutContext(byval argcp as long ptr, byval argv as zstring ptr ptr) as ALboolean
+declare function alutExit() as ALboolean
 declare function alutGetError() as ALenum
 declare function alutGetErrorString(byval error as ALenum) as const zstring ptr
 declare function alutCreateBufferFromFile(byval fileName as const zstring ptr) as ALuint
@@ -88,9 +88,9 @@ declare function alutLoadMemoryWaveform(byval waveshape as ALenum, byval frequen
 declare function alutGetMIMETypes(byval loader as ALenum) as const zstring ptr
 declare function alutGetMajorVersion() as ALint
 declare function alutGetMinorVersion() as ALint
-declare function alutSleep(byval duration as ALfloat) as byte
-declare sub alutLoadWAVFile(byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as zstring ptr)
-declare sub alutLoadWAVMemory(byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as zstring ptr)
+declare function alutSleep(byval duration as ALfloat) as ALboolean
+declare sub alutLoadWAVFile(byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
+declare sub alutLoadWAVMemory(byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
 declare sub alutUnloadWAV(byval format as ALenum, byval data as any ptr, byval size as ALsizei, byval frequency as ALsizei)
 
 end extern

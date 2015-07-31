@@ -169,7 +169,7 @@ const AL_FILTER_BANDPASS = &h0003
 
 type LPALGENEFFECTS as sub(byval as ALsizei, byval as ALuint ptr)
 type LPALDELETEEFFECTS as sub(byval as ALsizei, byval as const ALuint ptr)
-type LPALISEFFECT as function(byval as ALuint) as byte
+type LPALISEFFECT as function(byval as ALuint) as ALboolean
 type LPALEFFECTI as sub(byval as ALuint, byval as ALenum, byval as ALint)
 type LPALEFFECTIV as sub(byval as ALuint, byval as ALenum, byval as const ALint ptr)
 type LPALEFFECTF as sub(byval as ALuint, byval as ALenum, byval as ALfloat)
@@ -180,7 +180,7 @@ type LPALGETEFFECTF as sub(byval as ALuint, byval as ALenum, byval as ALfloat pt
 type LPALGETEFFECTFV as sub(byval as ALuint, byval as ALenum, byval as ALfloat ptr)
 type LPALGENFILTERS as sub(byval as ALsizei, byval as ALuint ptr)
 type LPALDELETEFILTERS as sub(byval as ALsizei, byval as const ALuint ptr)
-type LPALISFILTER as function(byval as ALuint) as byte
+type LPALISFILTER as function(byval as ALuint) as ALboolean
 type LPALFILTERI as sub(byval as ALuint, byval as ALenum, byval as ALint)
 type LPALFILTERIV as sub(byval as ALuint, byval as ALenum, byval as const ALint ptr)
 type LPALFILTERF as sub(byval as ALuint, byval as ALenum, byval as ALfloat)
@@ -191,7 +191,7 @@ type LPALGETFILTERF as sub(byval as ALuint, byval as ALenum, byval as ALfloat pt
 type LPALGETFILTERFV as sub(byval as ALuint, byval as ALenum, byval as ALfloat ptr)
 type LPALGENAUXILIARYEFFECTSLOTS as sub(byval as ALsizei, byval as ALuint ptr)
 type LPALDELETEAUXILIARYEFFECTSLOTS as sub(byval as ALsizei, byval as const ALuint ptr)
-type LPALISAUXILIARYEFFECTSLOT as function(byval as ALuint) as byte
+type LPALISAUXILIARYEFFECTSLOT as function(byval as ALuint) as ALboolean
 type LPALAUXILIARYEFFECTSLOTI as sub(byval as ALuint, byval as ALenum, byval as ALint)
 type LPALAUXILIARYEFFECTSLOTIV as sub(byval as ALuint, byval as ALenum, byval as const ALint ptr)
 type LPALAUXILIARYEFFECTSLOTF as sub(byval as ALuint, byval as ALenum, byval as ALfloat)

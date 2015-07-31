@@ -76,43 +76,43 @@ const ALC_DEFAULT_ALL_DEVICES_SPECIFIER = &h1012
 const ALC_ALL_DEVICES_SPECIFIER = &h1013
 
 declare function alcCreateContext(byval device as ALCdevice ptr, byval attrlist as const ALCint ptr) as ALCcontext ptr
-declare function alcMakeContextCurrent(byval context as ALCcontext ptr) as byte
+declare function alcMakeContextCurrent(byval context as ALCcontext ptr) as ALCboolean
 declare sub alcProcessContext(byval context as ALCcontext ptr)
 declare sub alcSuspendContext(byval context as ALCcontext ptr)
 declare sub alcDestroyContext(byval context as ALCcontext ptr)
 declare function alcGetCurrentContext() as ALCcontext ptr
 declare function alcGetContextsDevice(byval context as ALCcontext ptr) as ALCdevice ptr
 declare function alcOpenDevice(byval devicename as const zstring ptr) as ALCdevice ptr
-declare function alcCloseDevice(byval device as ALCdevice ptr) as byte
+declare function alcCloseDevice(byval device as ALCdevice ptr) as ALCboolean
 declare function alcGetError(byval device as ALCdevice ptr) as ALCenum
-declare function alcIsExtensionPresent(byval device as ALCdevice ptr, byval extname as const zstring ptr) as byte
+declare function alcIsExtensionPresent(byval device as ALCdevice ptr, byval extname as const zstring ptr) as ALCboolean
 declare function alcGetProcAddress(byval device as ALCdevice ptr, byval funcname as const zstring ptr) as any ptr
 declare function alcGetEnumValue(byval device as ALCdevice ptr, byval enumname as const zstring ptr) as ALCenum
 declare function alcGetString(byval device as ALCdevice ptr, byval param as ALCenum) as const zstring ptr
 declare sub alcGetIntegerv(byval device as ALCdevice ptr, byval param as ALCenum, byval size as ALCsizei, byval values as ALCint ptr)
 declare function alcCaptureOpenDevice(byval devicename as const zstring ptr, byval frequency as ALCuint, byval format as ALCenum, byval buffersize as ALCsizei) as ALCdevice ptr
-declare function alcCaptureCloseDevice(byval device as ALCdevice ptr) as byte
+declare function alcCaptureCloseDevice(byval device as ALCdevice ptr) as ALCboolean
 declare sub alcCaptureStart(byval device as ALCdevice ptr)
 declare sub alcCaptureStop(byval device as ALCdevice ptr)
 declare sub alcCaptureSamples(byval device as ALCdevice ptr, byval buffer as ALCvoid ptr, byval samples as ALCsizei)
 
 type LPALCCREATECONTEXT as function(byval device as ALCdevice ptr, byval attrlist as const ALCint ptr) as ALCcontext ptr
-type LPALCMAKECONTEXTCURRENT as function(byval context as ALCcontext ptr) as byte
+type LPALCMAKECONTEXTCURRENT as function(byval context as ALCcontext ptr) as ALCboolean
 type LPALCPROCESSCONTEXT as sub(byval context as ALCcontext ptr)
 type LPALCSUSPENDCONTEXT as sub(byval context as ALCcontext ptr)
 type LPALCDESTROYCONTEXT as sub(byval context as ALCcontext ptr)
 type LPALCGETCURRENTCONTEXT as function() as ALCcontext ptr
 type LPALCGETCONTEXTSDEVICE as function(byval context as ALCcontext ptr) as ALCdevice ptr
 type LPALCOPENDEVICE as function(byval devicename as const zstring ptr) as ALCdevice ptr
-type LPALCCLOSEDEVICE as function(byval device as ALCdevice ptr) as byte
+type LPALCCLOSEDEVICE as function(byval device as ALCdevice ptr) as ALCboolean
 type LPALCGETERROR as function(byval device as ALCdevice ptr) as ALCenum
-type LPALCISEXTENSIONPRESENT as function(byval device as ALCdevice ptr, byval extname as const zstring ptr) as byte
+type LPALCISEXTENSIONPRESENT as function(byval device as ALCdevice ptr, byval extname as const zstring ptr) as ALCboolean
 type LPALCGETPROCADDRESS as function(byval device as ALCdevice ptr, byval funcname as const zstring ptr) as any ptr
 type LPALCGETENUMVALUE as function(byval device as ALCdevice ptr, byval enumname as const zstring ptr) as ALCenum
 type LPALCGETSTRING as function(byval device as ALCdevice ptr, byval param as ALCenum) as const zstring ptr
 type LPALCGETINTEGERV as sub(byval device as ALCdevice ptr, byval param as ALCenum, byval size as ALCsizei, byval values as ALCint ptr)
 type LPALCCAPTUREOPENDEVICE as function(byval devicename as const zstring ptr, byval frequency as ALCuint, byval format as ALCenum, byval buffersize as ALCsizei) as ALCdevice ptr
-type LPALCCAPTURECLOSEDEVICE as function(byval device as ALCdevice ptr) as byte
+type LPALCCAPTURECLOSEDEVICE as function(byval device as ALCdevice ptr) as ALCboolean
 type LPALCCAPTURESTART as sub(byval device as ALCdevice ptr)
 type LPALCCAPTURESTOP as sub(byval device as ALCdevice ptr)
 type LPALCCAPTURESAMPLES as sub(byval device as ALCdevice ptr, byval buffer as ALCvoid ptr, byval samples as ALCsizei)
