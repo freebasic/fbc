@@ -274,7 +274,8 @@ private function hConstBop _
 			assert( FALSE )
 		end select
 
-	elseif ( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_BOOLEAN ) then
+	elseif ( ( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_BOOLEAN ) or _
+		    ( typeGetDtAndPtrOnly( r->dtype ) = FB_DATATYPE_BOOLEAN ) ) then
 		'' boolean BOP
 		select case as const( op )
 		case AST_OP_AND : l->val.i = cbool( l->val.i ) and cbool( r->val.i )
@@ -690,7 +691,7 @@ function astNewBOP _
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
-	dim as integer is_boolean_only = any
+	dim as integer is_boolean = any
 	dim as integer do_promote = any
 
 	function = NULL
@@ -714,7 +715,7 @@ function astNewBOP _
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
 
-	is_boolean_only = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) and (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
+	is_boolean = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
 	do_promote = TRUE
 
 	'' UDT's? try auto-coercion
@@ -1012,7 +1013,7 @@ function astNewBOP _
 
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE)
 
-	if (is_boolean_only) then
+	if (is_boolean) then
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 			 AST_OP_EQ, AST_OP_NE
@@ -1264,37 +1265,33 @@ function astNewBOP _
 	end select
 
 	'' warn on mixing boolean and non-boolean operands
-	if( is_boolean_only = FALSE ) then
+	if( is_boolean ) then
 		
 		dim as FB_WARNINGMSG warning = 0
 
 		'' lhs boolean -> non-boolean?
-		if( typeGetDtAndPtrOnly( ldtype0 ) = FB_DATATYPE_BOOLEAN ) then
-			if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
-				if( astIsConst( l ) ) then
-					'' make exception for 0|-1
-					dim tmp as longint = astConstGetAsInt64( l )
-					if( (tmp <> 0) and (tmp <> -1) ) then
-						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-					end if
-				else
+		if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( l ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( l )
+				if( (tmp <> 0) and (tmp <> -1) ) then
 					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
 		end if
 
 		'' rhs boolean -> non-boolean?
-		if( typeGetDtAndPtrOnly( rdtype0 ) = FB_DATATYPE_BOOLEAN ) then
-			if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
-				if( astIsConst( r ) ) then
-					'' make exception for 0|-1
-					dim tmp as longint = astConstGetAsInt64( r )
-					if( (tmp <> 0) and (tmp <> -1) ) then
-						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-					end if
-				else
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( r ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( r )
+				if( (tmp <> 0) and (tmp <> -1) ) then
 					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
 		end if
 
