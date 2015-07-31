@@ -6429,8 +6429,10 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 		'' combine high/low dwords
 		if( reg = svreg->reg ) then
+			hMOV( aux, src1 )
 			outp( "or " + aux + ", " + src2 )
 		elseif( reg = svreg->vaux->reg ) then
+			hMOV( aux, src1 )
 			outp( "or " + aux + ", " + src1 )
 		else
 			hMOV( aux, src1 )
