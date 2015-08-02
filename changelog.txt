@@ -35,6 +35,7 @@ Version 1.04.0
 - Open Com on Windows didn't invoke GetCommState() properly, meaning it could "randomly" fail. Also, the port was not always opened for exclusive access, even though MSDN says that is the only possibility.
 - 1.03.0 regression: OpenAL binding: The ALboolean and ALCboolean typedefs were incorrectly expanded and translated as zstring in some places
 - format(now(), "ttttt") now works as expected under unix-like systems
+- -profile now works on win64; the compiler generated calls to "mcount" which doesn't exist on win64; it's named "_mcount" instead. (with MinGW-w64's libgmon at least)
 
 
 Version 1.03.0
