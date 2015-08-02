@@ -6395,7 +6395,10 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 	dim as string dst
 	dim as integer ddsize
+	dim as string src1, src2
+	dim as string aux, aux8
 
+	hPrepOperand64( svreg, src1, src2 )
 	hPrepOperand( dvreg, dst )
 
 	ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
@@ -6410,12 +6413,25 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 		else
 			hMOV( dst, "0" )
 		end if
-	else
-		dim as string src1, src2
-		hPrepOperand64( svreg, src1, src2 )
 
-		dim as string aux, aux8
-		dim as integer reg, isfree
+	'' destine is register with 8-bit accessor? use it
+	elseif( irIsREG( dvreg ) and (dvreg->reg <> EMIT_REG_ESI) and (dvreg->reg <> EMIT_REG_EDI) ) then
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
+
+		hMOV( aux, src1 )
+		outp( "or " + aux + ", " + src2 )
+		outp( "cmp " + aux + ", 0" )
+		outp( "setne " + aux8 )
+		if( ddsize <> 1 ) then
+			outp( "movzx " + aux + ", " + aux8 )
+		end if
+	
+	'' use an extra reg
+	else
+
+		dim as integer reg, isfree = FALSE
 
 		reg = hFindRegNotInVreg( dvreg, TRUE )
 
@@ -6427,16 +6443,25 @@ private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 			hPUSH aux
 		end if
 
-		'' combine high/low dwords
-		if( reg = svreg->reg ) then
-			outp( "or " + aux + ", " + src2 )
-		elseif( reg = svreg->vaux->reg ) then
-			outp( "or " + aux + ", " + src1 )
+		'' source is also a reg?
+		if( irIsREG( svreg ) ) then
+			'' combine high/low dwords (check is source is already has one of the dwords)
+			if( reg = svreg->reg ) then
+				'' reg already has src1
+				outp( "or " + aux + ", " + src2 )
+			elseif( reg = svreg->vaux->reg ) then
+				'' reg already has src2
+				outp( "or " + aux + ", " + src1 )
+			else
+				hMOV( aux, src1 )
+				outp( "or " + aux + ", " + src2 )
+			end if
 		else
+			'' combine high/low dwords
 			hMOV( aux, src1 )
 			outp( "or " + aux + ", " + src2 )
 		end if
-		
+	
 		'' if (src1 or src2) is non-zero, produce 0|1 and store it into dst
 		outp( "cmp " + aux + ", 0" )
 		outp( "setne " + aux8 )

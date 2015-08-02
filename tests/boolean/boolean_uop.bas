@@ -35,12 +35,6 @@ namespace fbc_tests.boolean_.uop
 		dot( -, FALSE )
 		dot( -, TRUE )
 
-		dot( sgn, FALSE )
-		dot( sgn, TRUE )
-
-		dot( abs, FALSE )
-		dot( abs, TRUE )
-
 	end sub
 	
 	private sub ctor () constructor

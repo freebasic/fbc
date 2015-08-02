@@ -62,50 +62,15 @@ namespace fbc_tests.boolean_.bop
 		dot( TRUE, eqv, FALSE )
 		dot( TRUE, eqv, TRUE )
 
-		dot( FALSE, <, FALSE )
-		dot( FALSE, <, TRUE )
-		dot( TRUE, <, FALSE )
-		dot( TRUE, <, TRUE )
-
-		dot( FALSE, <=, FALSE )
-		dot( FALSE, <=, TRUE )
-		dot( TRUE, <=, FALSE )
-		dot( TRUE, <=, TRUE )
-
 		dot( FALSE, =, FALSE )
 		dot( FALSE, =, TRUE )
 		dot( TRUE, =, FALSE )
 		dot( TRUE, =, TRUE )
 
-		dot( FALSE, >=, FALSE )
-		dot( FALSE, >=, TRUE )
-		dot( TRUE, >=, FALSE )
-		dot( TRUE, >=, TRUE )
-
-		dot( FALSE, >, FALSE )
-		dot( FALSE, >, TRUE )
-		dot( TRUE, >, FALSE )
-		dot( TRUE, >, TRUE )
-
 		dot( FALSE, <>, FALSE )
 		dot( FALSE, <>, TRUE )
 		dot( TRUE, <>, FALSE )
 		dot( TRUE, <>, TRUE )
-
-		dot( FALSE, +, FALSE )
-		dot( FALSE, +, TRUE )
-		dot( TRUE, +, FALSE )
-		dot( TRUE, +, TRUE )
-
-		dot( FALSE, -, FALSE )
-		dot( FALSE, -, TRUE )
-		dot( TRUE, -, FALSE )
-		dot( TRUE, -, TRUE )
-
-		dot( FALSE, *, FALSE )
-		dot( FALSE, *, TRUE )
-		dot( TRUE, *, FALSE )
-		dot( TRUE, *, TRUE )
 
 		dot( FALSE, andalso, FALSE )
 		dot( FALSE, andalso, TRUE )

@@ -274,6 +274,21 @@ private function hConstBop _
 			assert( FALSE )
 		end select
 
+	elseif ( ( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_BOOLEAN ) or _
+		    ( typeGetDtAndPtrOnly( r->dtype ) = FB_DATATYPE_BOOLEAN ) ) then
+		'' boolean BOP
+		select case as const( op )
+		case AST_OP_AND : l->val.i = cbool( l->val.i ) and cbool( r->val.i )
+		case AST_OP_OR  : l->val.i = cbool( l->val.i ) or  cbool( r->val.i )
+		case AST_OP_XOR : l->val.i = cbool( l->val.i ) xor cbool( r->val.i )
+		case AST_OP_EQV : l->val.i = cbool( l->val.i ) eqv cbool( r->val.i )
+		case AST_OP_IMP : l->val.i = cbool( l->val.i ) imp cbool( r->val.i )
+		case AST_OP_NE  : l->val.i = cbool( l->val.i ) <>  cbool( r->val.i )
+		case AST_OP_EQ  : l->val.i = cbool( l->val.i ) =   cbool( r->val.i )
+		case else
+			assert( FALSE )
+		end select
+
 	elseif( typeIsSigned( l->dtype ) ) then
 		'' Signed integer BOP
 		select case as const( op )
@@ -329,6 +344,7 @@ private function hConstBop _
 		end select
 
 		l = astConvertRawCONSTi( dtype, subtype, l )
+
 	else
 		'' Unsigned integer BOP
 		select case as const( op )
@@ -675,7 +691,7 @@ function astNewBOP _
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
-	dim as integer is_boolean_only = any
+	dim as integer is_boolean = any
 	dim as integer do_promote = any
 
 	function = NULL
@@ -699,7 +715,7 @@ function astNewBOP _
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
 
-	is_boolean_only = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) and (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
+	is_boolean = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
 	do_promote = TRUE
 
 	'' UDT's? try auto-coercion
@@ -997,12 +1013,19 @@ function astNewBOP _
 
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE)
 
-	if (is_boolean_only) then
+	if (is_boolean) then
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 			 AST_OP_EQ, AST_OP_NE
 
 			do_promote = FALSE
+		
+		case AST_OP_ANDALSO, AST_OP_ORELSE
+
+		case else
+
+			'' No other BOP's allowed with booleans
+			exit function
 
 		end select
 	end if
@@ -1242,51 +1265,41 @@ function astNewBOP _
 	end select
 
 	'' warn on mixing boolean and non-boolean operands
-	select case as const op
-	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
-		 AST_OP_EQ, AST_OP_NE
+	if( is_boolean ) then
+		
+		dim as FB_WARNINGMSG warning = 0
 
-	    dim as FB_WARNINGMSG warning = 0
-
-		if( is_boolean_only = FALSE ) then
-
-			'' lhs boolean -> non-boolean?
-			if( typeGetDtAndPtrOnly( ldtype0 ) = FB_DATATYPE_BOOLEAN ) then
-				if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
-					if( astIsConst( l ) ) then
-						'' make exception for 0|-1
-						dim tmp as longint = astConstGetAsInt64( l )
-						if( (tmp <> 0) and (tmp <> -1) ) then
-							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-						end if
-					else
-						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-					end if
+		'' lhs boolean -> non-boolean?
+		if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( l ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( l )
+				if( (tmp <> 0) and (tmp <> -1) ) then
+					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
+		end if
 
-			'' rhs boolean -> non-boolean?
-			if( typeGetDtAndPtrOnly( rdtype0 ) = FB_DATATYPE_BOOLEAN ) then
-				if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
-					if( astIsConst( r ) ) then
-						'' make exception for 0|-1
-						dim tmp as longint = astConstGetAsInt64( r )
-						if( (tmp <> 0) and (tmp <> -1) ) then
-							warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-						end if
-					else
-						warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-					end if
+		'' rhs boolean -> non-boolean?
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( r ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( r )
+				if( (tmp <> 0) and (tmp <> -1) ) then
+					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
-				
 		end if
 
 		if( warning <> 0 ) then
 			errReportWarn( warning )
 		end if
-
-	end select
+			
+	end if
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	''
