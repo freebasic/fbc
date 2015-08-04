@@ -180,8 +180,8 @@ type _DOCHOSTUIINFO
 	cbSize as ULONG
 	dwFlags as DWORD
 	dwDoubleClick as DWORD
-	pchHostCss as wstring ptr
-	pchHostNS as wstring ptr
+	pchHostCss as OLECHAR ptr
+	pchHostNS as OLECHAR ptr
 end type
 
 type DOCHOSTUIINFO as _DOCHOSTUIINFO
@@ -193,7 +193,7 @@ type IHostDialogHelperVtbl
 	QueryInterface as function(byval This as IHostDialogHelper ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as IHostDialogHelper ptr) as ULONG
 	Release as function(byval This as IHostDialogHelper ptr) as ULONG
-	ShowHTMLDialog as function(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
+	ShowHTMLDialog as function(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as WCHAR ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
 end type
 
 type IHostDialogHelper_
@@ -204,7 +204,7 @@ end type
 #define IHostDialogHelper_AddRef(This) (This)->lpVtbl->AddRef(This)
 #define IHostDialogHelper_Release(This) (This)->lpVtbl->Release(This)
 #define IHostDialogHelper_ShowHTMLDialog(This, hwndParent, pMk, pvarArgIn, pchOptions, pvarArgOut, punkHost) (This)->lpVtbl->ShowHTMLDialog(This, hwndParent, pMk, pvarArgIn, pchOptions, pvarArgOut, punkHost)
-declare function IHostDialogHelper_ShowHTMLDialog_Proxy(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as wstring ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
+declare function IHostDialogHelper_ShowHTMLDialog_Proxy(byval This as IHostDialogHelper ptr, byval hwndParent as HWND, byval pMk as IMoniker ptr, byval pvarArgIn as VARIANT ptr, byval pchOptions as WCHAR ptr, byval pvarArgOut as VARIANT ptr, byval punkHost as IUnknown ptr) as HRESULT
 declare sub IHostDialogHelper_ShowHTMLDialog_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 extern CLSID_HostDialogHelper as const GUID
 #define __IDocHostUIHandler_INTERFACE_DEFINED__

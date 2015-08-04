@@ -259,14 +259,14 @@ type tagVARIANT
 				pparray as SAFEARRAY ptr ptr
 				pvarVal as VARIANT ptr
 				byref as PVOID
-				cVal as byte
+				cVal as CHAR
 				uiVal as USHORT
 				ulVal as ULONG
 				ullVal as ULONGLONG
 				intVal as INT_
 				uintVal as UINT
 				pdecVal as DECIMAL ptr
-				pcVal as zstring ptr
+				pcVal as CHAR ptr
 				puiVal as USHORT ptr
 				pulVal as ULONG ptr
 				pullVal as ULONGLONG ptr
@@ -336,7 +336,7 @@ type _wireVARIANT
 		ppdispVal as IDispatch ptr ptr
 		pparray as wirePSAFEARRAY ptr
 		pvarVal as wireVARIANT ptr
-		cVal as byte
+		cVal as CHAR
 		uiVal as USHORT
 		ulVal as ULONG
 		ullVal as ULONGLONG
@@ -344,7 +344,7 @@ type _wireVARIANT
 		uintVal as UINT
 		decVal as DECIMAL
 		pdecVal as DECIMAL ptr
-		pcVal as zstring ptr
+		pcVal as CHAR ptr
 		puiVal as USHORT ptr
 		pulVal as ULONG ptr
 		pullVal as ULONGLONG ptr

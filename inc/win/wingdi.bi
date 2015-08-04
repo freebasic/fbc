@@ -796,7 +796,7 @@ const TMPF_DEVICE = &h08
 const TMPF_TRUETYPE = &h04
 
 #ifdef UNICODE
-	type BCHAR as wstring
+	type BCHAR as WCHAR
 #else
 	type BCHAR as UBYTE
 #endif
@@ -843,10 +843,10 @@ type tagTEXTMETRICW field = 4
 	tmOverhang as LONG
 	tmDigitizedAspectX as LONG
 	tmDigitizedAspectY as LONG
-	tmFirstChar as wchar_t
-	tmLastChar as wchar_t
-	tmDefaultChar as wchar_t
-	tmBreakChar as wchar_t
+	tmFirstChar as WCHAR
+	tmLastChar as WCHAR
+	tmDefaultChar as WCHAR
+	tmBreakChar as WCHAR
 	tmItalic as UBYTE
 	tmUnderlined as UBYTE
 	tmStruckOut as UBYTE
@@ -925,10 +925,10 @@ type tagNEWTEXTMETRICW field = 4
 	tmOverhang as LONG
 	tmDigitizedAspectX as LONG
 	tmDigitizedAspectY as LONG
-	tmFirstChar as wchar_t
-	tmLastChar as wchar_t
-	tmDefaultChar as wchar_t
-	tmBreakChar as wchar_t
+	tmFirstChar as WCHAR
+	tmLastChar as WCHAR
+	tmDefaultChar as WCHAR
+	tmBreakChar as WCHAR
 	tmItalic as UBYTE
 	tmUnderlined as UBYTE
 	tmStruckOut as UBYTE
@@ -1142,8 +1142,8 @@ const LF_FULLFACESIZE = 64
 
 type tagENUMLOGFONTA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 63) as UBYTE
-	elfStyle(0 to 31) as UBYTE
+	elfFullName as zstring * 64
+	elfStyle as zstring * 32
 end type
 
 type ENUMLOGFONTA as tagENUMLOGFONTA
@@ -1168,9 +1168,9 @@ type LPENUMLOGFONTW as tagENUMLOGFONTW ptr
 
 type tagENUMLOGFONTEXA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 63) as UBYTE
-	elfStyle(0 to 31) as UBYTE
-	elfScript(0 to 31) as UBYTE
+	elfFullName as zstring * 64
+	elfStyle as zstring * 32
+	elfScript as zstring * 32
 end type
 
 type ENUMLOGFONTEXA as tagENUMLOGFONTEXA
@@ -1412,8 +1412,8 @@ const ELF_VENDOR_SIZE = 4
 
 type tagEXTLOGFONTA
 	elfLogFont as LOGFONTA
-	elfFullName(0 to 63) as UBYTE
-	elfStyle(0 to 31) as UBYTE
+	elfFullName as zstring * 64
+	elfStyle as zstring * 32
 	elfVersion as DWORD
 	elfStyleSize as DWORD
 	elfMatch as DWORD
@@ -1696,7 +1696,7 @@ const CCHDEVICENAME = 32
 const CCHFORMNAME = 32
 
 type _devicemodeA
-	dmDeviceName(0 to 31) as UBYTE
+	dmDeviceName as zstring * 32
 	dmSpecVersion as WORD
 	dmDriverVersion as WORD
 	dmSize as WORD
@@ -1727,7 +1727,7 @@ type _devicemodeA
 	dmYResolution as short
 	dmTTOption as short
 	dmCollate as short
-	dmFormName(0 to 31) as UBYTE
+	dmFormName as zstring * 32
 	dmLogPixels as WORD
 	dmBitsPerPel as DWORD
 	dmPelsWidth as DWORD
@@ -3034,7 +3034,7 @@ declare function GetCharacterPlacementA(byval hdc as HDC, byval lpString as LPCS
 declare function GetCharacterPlacementW(byval hdc as HDC, byval lpString as LPCWSTR, byval nCount as long, byval nMexExtent as long, byval lpResults as LPGCP_RESULTSW, byval dwFlags as DWORD) as DWORD
 
 type tagWCRANGE
-	wcLow as wchar_t
+	wcLow as WCHAR
 	cGlyphs as USHORT
 end type
 
@@ -3106,7 +3106,7 @@ const MM_MAX_AXES_NAMELEN = 16
 type tagAXISINFOA
 	axMinValue as LONG
 	axMaxValue as LONG
-	axAxisName(0 to 15) as UBYTE
+	axAxisName as zstring * 16
 end type
 
 type AXISINFOA as tagAXISINFOA

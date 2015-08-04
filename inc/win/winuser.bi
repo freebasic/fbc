@@ -2501,14 +2501,14 @@ declare function CharPrevExA(byval CodePage as WORD, byval lpStart as LPCSTR, by
 	#define IsCharLower IsCharLowerA
 #endif
 
-declare function IsCharAlphaA(byval ch as byte) as WINBOOL
-declare function IsCharAlphaW(byval ch as wchar_t) as WINBOOL
-declare function IsCharAlphaNumericA(byval ch as byte) as WINBOOL
-declare function IsCharAlphaNumericW(byval ch as wchar_t) as WINBOOL
-declare function IsCharUpperA(byval ch as byte) as WINBOOL
-declare function IsCharUpperW(byval ch as wchar_t) as WINBOOL
-declare function IsCharLowerA(byval ch as byte) as WINBOOL
-declare function IsCharLowerW(byval ch as wchar_t) as WINBOOL
+declare function IsCharAlphaA(byval ch as CHAR) as WINBOOL
+declare function IsCharAlphaW(byval ch as WCHAR) as WINBOOL
+declare function IsCharAlphaNumericA(byval ch as CHAR) as WINBOOL
+declare function IsCharAlphaNumericW(byval ch as WCHAR) as WINBOOL
+declare function IsCharUpperA(byval ch as CHAR) as WINBOOL
+declare function IsCharUpperW(byval ch as WCHAR) as WINBOOL
+declare function IsCharLowerA(byval ch as CHAR) as WINBOOL
+declare function IsCharLowerW(byval ch as WCHAR) as WINBOOL
 
 #ifdef UNICODE
 	#define GetKeyNameText GetKeyNameTextW
@@ -2535,10 +2535,10 @@ declare function ToAscii_ alias "ToAscii"(byval uVirtKey as UINT, byval uScanCod
 declare function ToAsciiEx(byval uVirtKey as UINT, byval uScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval lpChar as LPWORD, byval uFlags as UINT, byval dwhkl as HKL) as long
 declare function ToUnicode(byval wVirtKey as UINT, byval wScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval pwszBuff as LPWSTR, byval cchBuff as long, byval wFlags as UINT) as long
 declare function OemKeyScan(byval wOemChar as WORD) as DWORD
-declare function VkKeyScanA(byval ch as byte) as SHORT
-declare function VkKeyScanW(byval ch as wchar_t) as SHORT
-declare function VkKeyScanExA(byval ch as byte, byval dwhkl as HKL) as SHORT
-declare function VkKeyScanExW(byval ch as wchar_t, byval dwhkl as HKL) as SHORT
+declare function VkKeyScanA(byval ch as CHAR) as SHORT
+declare function VkKeyScanW(byval ch as WCHAR) as SHORT
+declare function VkKeyScanExA(byval ch as CHAR, byval dwhkl as HKL) as SHORT
+declare function VkKeyScanExW(byval ch as WCHAR, byval dwhkl as HKL) as SHORT
 declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
 
 const KEYEVENTF_EXTENDEDKEY = &h0001

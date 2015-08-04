@@ -26,9 +26,9 @@ extern "Windows"
 
 #define _INC_SHLWAPI
 declare function StrChrA(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
-declare function StrChrW(byval lpStart as LPCWSTR, byval wMatch as wchar_t) as LPWSTR
+declare function StrChrW(byval lpStart as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 declare function StrChrIA(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
-declare function StrChrIW(byval lpStart as LPCWSTR, byval wMatch as wchar_t) as LPWSTR
+declare function StrChrIW(byval lpStart as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 declare function StrCmpNA(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
 declare function StrCmpNW(byval lpStr1 as LPCWSTR, byval lpStr2 as LPCWSTR, byval nChar as long) as long
 declare function StrCmpNIA(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
@@ -53,9 +53,9 @@ declare function StrNCatW(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cch
 declare function StrPBrkA(byval psz as LPCSTR, byval pszSet as LPCSTR) as LPSTR
 declare function StrPBrkW(byval psz as LPCWSTR, byval pszSet as LPCWSTR) as LPWSTR
 declare function StrRChrA(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
-declare function StrRChrW(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as wchar_t) as LPWSTR
+declare function StrRChrW(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 declare function StrRChrIA(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
-declare function StrRChrIW(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as wchar_t) as LPWSTR
+declare function StrRChrIW(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 declare function StrRStrIA(byval lpSource as LPCSTR, byval lpLast as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
 declare function StrRStrIW(byval lpSource as LPCWSTR, byval lpLast as LPCWSTR, byval lpSrch as LPCWSTR) as LPWSTR
 declare function StrSpnA(byval psz as LPCSTR, byval pszSet as LPCSTR) as long
@@ -84,7 +84,7 @@ declare function StrCpyNW(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cch
 declare function StrCatBuffW(byval pszDest as LPWSTR, byval pszSrc as LPCWSTR, byval cchDestBuffSize as long) as LPWSTR
 declare function StrCatBuffA(byval pszDest as LPSTR, byval pszSrc as LPCSTR, byval cchDestBuffSize as long) as LPSTR
 declare function ChrCmpIA(byval w1 as WORD, byval w2 as WORD) as WINBOOL
-declare function ChrCmpIW(byval w1 as wchar_t, byval w2 as wchar_t) as WINBOOL
+declare function ChrCmpIW(byval w1 as WCHAR, byval w2 as WCHAR) as WINBOOL
 declare function wvnsprintfA(byval lpOut as LPSTR, byval cchLimitIn as long, byval lpFmt as LPCSTR, byval arglist as va_list) as long
 declare function wvnsprintfW(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, byval arglist as va_list) as long
 declare function wnsprintfA cdecl(byval lpOut as LPSTR, byval cchLimitIn as long, byval lpFmt as LPCSTR, ...) as long
@@ -117,8 +117,8 @@ declare function StrCatChainW(byval pszDst as LPWSTR, byval cchDst as DWORD, byv
 declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBuf as LPWSTR, byval cchOutBuf as UINT, byval ppvReserved as any ptr ptr) as HRESULT
 
 #if _WIN32_WINNT = &h0602
-	declare function IsCharSpaceA(byval wch as byte) as WINBOOL
-	declare function IsCharSpaceW(byval wch as wchar_t) as WINBOOL
+	declare function IsCharSpaceA(byval wch as CHAR) as WINBOOL
+	declare function IsCharSpaceW(byval wch as WCHAR) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
@@ -398,7 +398,7 @@ declare function PathIsLFNFileSpecW(byval lpName as LPCWSTR) as WINBOOL
 #endif
 
 declare function PathGetCharTypeA(byval ch as UCHAR) as UINT
-declare function PathGetCharTypeW(byval ch as wchar_t) as UINT
+declare function PathGetCharTypeW(byval ch as WCHAR) as UINT
 const GCT_INVALID = &h0000
 const GCT_LFNCHAR = &h0001
 const GCT_SHORTCHAR = &h0002

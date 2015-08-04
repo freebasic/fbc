@@ -361,7 +361,7 @@ type DECIMAL as tagDEC
 #endmacro
 type LPDECIMAL as DECIMAL ptr
 type wireBSTR as FLAGGED_WORD_BLOB ptr
-type BSTR as wstring ptr
+type BSTR as OLECHAR ptr
 type LPBSTR as BSTR ptr
 type VARIANT_BOOL as short
 #define _tagBSTRBLOB_DEFINED

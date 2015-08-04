@@ -2782,7 +2782,7 @@
 	const DISCOVERY_FILTER_BITMASK_ANY = &hf
 
 	type _DOT11_WFD_DISCOVER_DEVICE_FILTER
-		DeviceID(0 to 5) as UCHAR
+		DeviceID as zstring * 6
 		ucBitmask as UCHAR
 		GroupSSID as DOT11_SSID
 	end type

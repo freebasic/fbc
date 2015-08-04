@@ -78,7 +78,7 @@ type PVOID64 as any ptr
 type HANDLE as PVOID
 type PHANDLE as HANDLE ptr
 #define VOID any
-type CHAR as zstring
+type CHAR as byte
 type INT_ as long
 type UCHAR as ubyte
 type PUCHAR as ubyte ptr
@@ -119,11 +119,11 @@ type PULONGLONG as ulongint ptr
 type DWORDLONG as ULONGLONG
 type PDWORDLONG as ULONGLONG ptr
 type USN as LONGLONG
-type PCHAR as zstring ptr
-type LPCH as zstring ptr
-type PCH as zstring ptr
-type LPCCH as const zstring ptr
-type PCCH as const zstring ptr
+type PCHAR as CHAR ptr
+type LPCH as CHAR ptr
+type PCH as CHAR ptr
+type LPCCH as const CHAR ptr
+type PCCH as const CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
@@ -135,12 +135,12 @@ type PZPCSTR as PCSTR ptr
 type PSZ as zstring ptr
 type PCSZ as const zstring ptr
 #define __WCHAR_DEFINED
-type WCHAR as wstring
-type PWCHAR as wstring ptr
-type LPWCH as wstring ptr
-type PWCH as wstring ptr
-type LPCWCH as const wstring ptr
-type PCWCH as const wstring ptr
+type WCHAR as wchar_t
+type PWCHAR as WCHAR ptr
+type LPWCH as WCHAR ptr
+type PWCH as WCHAR ptr
+type LPCWCH as const WCHAR ptr
+type PCWCH as const WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
@@ -239,7 +239,7 @@ type PUNICODE_STRING as _UNICODE_STRING ptr
 #endif
 
 type PCUNICODE_STRING as const UNICODE_STRING ptr
-const UNICODE_NULL = cast(wchar_t, 0)
+#define UNICODE_NULL cast(WCHAR, 0)
 
 type _CSTRING
 	Length as USHORT
@@ -249,7 +249,7 @@ end type
 
 type CSTRING as _CSTRING
 type PCSTRING as _CSTRING ptr
-const ANSI_NULL = cbyte(0)
+#define ANSI_NULL cast(CHAR, 0)
 #ifndef __STRING_DEFINED
 #define __STRING_DEFINED
 type _STRING

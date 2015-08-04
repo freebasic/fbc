@@ -44,8 +44,8 @@ type SMALL_RECT as _SMALL_RECT
 type PSMALL_RECT as _SMALL_RECT ptr
 
 union _KEY_EVENT_RECORD_uChar
-	UnicodeChar as wchar_t
-	AsciiChar as byte
+	UnicodeChar as WCHAR
+	AsciiChar as CHAR
 end union
 
 type _KEY_EVENT_RECORD
@@ -141,8 +141,8 @@ const MENU_EVENT = &h8
 const FOCUS_EVENT = &h10
 
 union _CHAR_INFO_Char
-	UnicodeChar as wchar_t
-	AsciiChar as byte
+	UnicodeChar as WCHAR
+	AsciiChar as CHAR
 end union
 
 type _CHAR_INFO
@@ -285,8 +285,8 @@ declare function ReadConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byva
 declare function WriteConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
 declare function WriteConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCWSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
 declare function WriteConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byval lpAttribute as const WORD ptr, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfAttrsWritten as LPDWORD) as WINBOOL
-declare function FillConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval cCharacter as byte, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
-declare function FillConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval cCharacter as wchar_t, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+declare function FillConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval cCharacter as CHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+declare function FillConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval cCharacter as WCHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
 declare function FillConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byval wAttribute as WORD, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfAttrsWritten as LPDWORD) as WINBOOL
 declare function GetConsoleMode(byval hConsoleHandle as HANDLE, byval lpMode as LPDWORD) as WINBOOL
 declare function GetNumberOfConsoleInputEvents(byval hConsoleInput as HANDLE, byval lpNumberOfEvents as LPDWORD) as WINBOOL

@@ -1133,7 +1133,7 @@ const BOE_UNICODEBIDI = &h0080
 const FR_MATCHDIAC = &h20000000
 const FR_MATCHKASHIDA = &h40000000
 const FR_MATCHALEFHAMZA = &h80000000
-const WCH_EMBEDDING = cast(wchar_t, &hfffc)
+#define WCH_EMBEDDING cast(WCHAR, &hfffc)
 
 type tagKHYPH as long
 enum
@@ -1151,7 +1151,7 @@ type KHYPH as tagKHYPH
 type HYPHRESULT field = 4
 	khyph as KHYPH
 	ichHyph as long
-	chHyph as wchar_t
+	chHyph as WCHAR
 end type
 
 declare sub HyphenateProc(byval pszWord as wstring ptr, byval langid as LANGID, byval ichExceed as long, byval phyphresult as HYPHRESULT ptr)

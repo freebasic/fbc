@@ -414,13 +414,7 @@
 #define Edit_SetHandle(hwndCtl, h) SNDMSG((hwndCtl), EM_SETHANDLE, cast(WPARAM, cast(UINT_PTR, cast(HLOCAL, (h)))), cast(LPARAM, 0))
 #define Edit_GetFirstVisibleLine(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETFIRSTVISIBLELINE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetReadOnly(hwndCtl, fReadOnly) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_SETREADONLY, cast(WPARAM, cast(WINBOOL, (fReadOnly))), cast(LPARAM, 0))))
-
-#ifdef UNICODE
-	#define Edit_GetPasswordChar(hwndCtl) cast(wchar_t, cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
-#else
-	#define Edit_GetPasswordChar(hwndCtl) cbyte(cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
-#endif
-
+#define Edit_GetPasswordChar(hwndCtl) cast(TCHAR, cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetWordBreakProc(hwndCtl, lpfnWordBreak) SNDMSG((hwndCtl), EM_SETWORDBREAKPROC, cast(LPARAM, 0), cast(LPARAM, cast(EDITWORDBREAKPROC, (lpfnWordBreak))))
 #define Edit_GetWordBreakProc(hwndCtl) cast(EDITWORDBREAKPROC, SNDMSG((hwndCtl), EM_GETWORDBREAKPROC, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define ScrollBar_Enable(hwndCtl, flags) EnableScrollBar((hwndCtl), SB_CTL, (flags))
@@ -506,13 +500,7 @@
 #define GET_WM_ACTIVATE_FMINIMIZED(wp, lp) cast(WINBOOL, HIWORD(wp))
 #define GET_WM_ACTIVATE_HWND(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_ACTIVATE_MPS(s,fmin,hwnd) (WPARAM)MAKELONG((s),(fmin)),(LPARAM)(hwnd)
-
-#ifdef UNICODE
-	#define GET_WM_CHARTOITEM_CHAR(wp, lp) cast(wchar_t, LOWORD(wp))
-#else
-	#define GET_WM_CHARTOITEM_CHAR(wp, lp) cbyte(LOWORD(wp))
-#endif
-
+#define GET_WM_CHARTOITEM_CHAR(wp, lp) cast(TCHAR, LOWORD(wp))
 #define GET_WM_CHARTOITEM_POS(wp, lp) HIWORD(wp)
 #define GET_WM_CHARTOITEM_HWND(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_CHARTOITEM_MPS(ch,pos,hwnd) (WPARAM)MAKELONG((pos),(ch)),(LPARAM)(hwnd)
@@ -535,13 +523,7 @@ const WM_CTLCOLOR = &h0019
 #define GET_WM_MDIACTIVATE_HWNDACTIVATE(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_MDIACTIVATE_MPS(f,hwndD,hwndA) (WPARAM)(hwndA),0
 '' TODO: #define GET_WM_MDISETMENU_MPS(hmenuF,hmenuW) (WPARAM)hmenuF,(LPARAM)hmenuW
-
-#ifdef UNICODE
-	#define GET_WM_MENUCHAR_CHAR(wp, lp) cast(wchar_t, LOWORD(wp))
-#else
-	#define GET_WM_MENUCHAR_CHAR(wp, lp) cbyte(LOWORD(wp))
-#endif
-
+#define GET_WM_MENUCHAR_CHAR(wp, lp) cast(TCHAR, LOWORD(wp))
 #define GET_WM_MENUCHAR_HMENU(wp, lp) cast(HMENU, (lp))
 #define GET_WM_MENUCHAR_FMENU(wp, lp) cast(WINBOOL, HIWORD(wp))
 '' TODO: #define GET_WM_MENUCHAR_MPS(ch,hmenu,f) (WPARAM)MAKELONG(ch,f),(LPARAM)(hmenu)

@@ -54,7 +54,7 @@ extern "C"
 #define __IWinTypesBase_INTERFACE_DEFINED__
 extern IWinTypesBase_v0_1_c_ifspec as RPC_IF_HANDLE
 extern IWinTypesBase_v0_1_s_ifspec as RPC_IF_HANDLE
-type OLECHAR as wstring
+type OLECHAR as WCHAR
 type LPOLESTR as wstring ptr
 type LPCOLESTR as const wstring ptr
 #define OLESTR(str) wstr(str)

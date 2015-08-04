@@ -824,7 +824,7 @@ end type
 type PMIB_MCAST_LIMIT_ROW as MIB_MCAST_LIMIT_ROW ptr
 const MAX_SCOPE_NAME_LEN = 255
 #define SN_UNICODE
-type SN_CHAR as wstring
+type SN_CHAR as WCHAR
 type SCOPE_NAME as wstring ptr
 
 type _MIB_IPMCAST_SCOPE

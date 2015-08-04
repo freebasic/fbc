@@ -652,7 +652,7 @@ type _cpinfoexA
 	MaxCharSize as UINT
 	DefaultChar(0 to 1) as UBYTE
 	LeadByte(0 to 11) as UBYTE
-	UnicodeDefaultChar as wchar_t
+	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as zstring * 260
 end type
@@ -664,7 +664,7 @@ type _cpinfoexW
 	MaxCharSize as UINT
 	DefaultChar(0 to 1) as UBYTE
 	LeadByte(0 to 11) as UBYTE
-	UnicodeDefaultChar as wchar_t
+	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as wstring * 260
 end type

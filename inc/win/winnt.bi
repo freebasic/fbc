@@ -85,15 +85,15 @@ const PRAGMA_DEPRECATED_DDK = 0
 type PVOID as any ptr
 type PVOID64 as any ptr
 #define VOID any
-type CHAR as zstring
+type CHAR as byte
 type INT_ as long
 #define __WCHAR_DEFINED
-type WCHAR as wstring
-type PWCHAR as wstring ptr
-type LPWCH as wstring ptr
-type PWCH as wstring ptr
-type LPCWCH as const wstring ptr
-type PCWCH as const wstring ptr
+type WCHAR as wchar_t
+type PWCHAR as WCHAR ptr
+type LPWCH as WCHAR ptr
+type PWCH as WCHAR ptr
+type LPCWCH as const WCHAR ptr
+type PCWCH as const WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
@@ -110,16 +110,16 @@ type PZZWSTR as wstring ptr
 type PCZZWSTR as const wstring ptr
 type PUZZWSTR as wstring ptr
 type PCUZZWSTR as const wstring ptr
-type PNZWCH as wstring ptr
-type PCNZWCH as const wstring ptr
-type PUNZWCH as wstring ptr
-type PCUNZWCH as const wstring ptr
+type PNZWCH as WCHAR ptr
+type PCNZWCH as const WCHAR ptr
+type PUNZWCH as WCHAR ptr
+type PCUNZWCH as const WCHAR ptr
 
 #if _WIN32_WINNT = &h0602
-	type LPCWCHAR as const wstring ptr
-	type PCWCHAR as const wstring ptr
-	type LPCUWCHAR as const wstring ptr
-	type PCUWCHAR as const wstring ptr
+	type LPCWCHAR as const WCHAR ptr
+	type PCWCHAR as const WCHAR ptr
+	type LPCUWCHAR as const WCHAR ptr
+	type PCUWCHAR as const WCHAR ptr
 	type UCSCHAR as ulong
 
 	const UCSCHAR_INVALID_CHARACTER = &hffffffff
@@ -136,11 +136,11 @@ type PCUNZWCH as const wstring ptr
 	type PCUUCSCHAR as const UCSCHAR ptr
 #endif
 
-type PCHAR as zstring ptr
-type LPCH as zstring ptr
-type PCH as zstring ptr
-type LPCCH as const zstring ptr
-type PCCH as const zstring ptr
+type PCHAR as CHAR ptr
+type LPCH as CHAR ptr
+type PCH as CHAR ptr
+type LPCCH as const CHAR ptr
+type PCCH as const CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
@@ -151,15 +151,15 @@ type PCSTR as const zstring ptr
 type PZPCSTR as PCSTR ptr
 type PZZSTR as zstring ptr
 type PCZZSTR as const zstring ptr
-type PNZCH as zstring ptr
-type PCNZCH as const zstring ptr
+type PNZCH as CHAR ptr
+type PCNZCH as const CHAR ptr
 #define _TCHAR_DEFINED
 
 #ifdef UNICODE
-	type TCHAR as wstring
-	type PTCHAR as wstring ptr
-	type TBYTE as wstring
-	type PTBYTE as wstring ptr
+	type TCHAR as WCHAR
+	type PTCHAR as WCHAR ptr
+	type TBYTE as WCHAR
+	type PTBYTE as WCHAR ptr
 	type LPTCH as LPWSTR
 	type PTCH as LPWSTR
 	type PTSTR as LPWSTR
@@ -182,8 +182,8 @@ type PCNZCH as const zstring ptr
 	type PCUNZTCH as PCUNZWCH
 	#define __TEXT(quote) wstr(quote)
 #else
-	type TCHAR as zstring
-	type PTCHAR as zstring ptr
+	type TCHAR as byte
+	type PTCHAR as byte ptr
 	type TBYTE as ubyte
 	type PTBYTE as ubyte ptr
 	type LPTCH as LPSTR
@@ -342,8 +342,8 @@ declare function _rotr cdecl(byval Value as ulong, byval Shift as long) as ulong
 #undef _rotr64
 declare function _rotl64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
 declare function _rotr64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
-const ANSI_NULL = cbyte(0)
-const UNICODE_NULL = cast(wchar_t, 0)
+#define ANSI_NULL cast(CHAR, 0)
+#define UNICODE_NULL cast(WCHAR, 0)
 #define UNICODE_STRING_MAX_BYTES cast(WORD, 65534)
 const UNICODE_STRING_MAX_CHARS = 32767
 #define _BOOLEAN_
@@ -5044,8 +5044,8 @@ type PIMAGE_DOS_HEADER as _IMAGE_DOS_HEADER ptr
 
 type _IMAGE_OS2_HEADER field = 2
 	ne_magic as WORD
-	ne_ver as byte
-	ne_rev as byte
+	ne_ver as CHAR
+	ne_rev as CHAR
 	ne_enttab as WORD
 	ne_cbenttab as WORD
 	ne_crc as LONG

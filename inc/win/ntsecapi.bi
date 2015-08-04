@@ -821,7 +821,7 @@ type PSAM_INIT_NOTIFICATION_ROUTINE as function cdecl() as WINBOOLEAN
 type PSAM_PASSWORD_FILTER_ROUTINE as function cdecl(byval AccountName as PUNICODE_STRING, byval FullName as PUNICODE_STRING, byval Password as PUNICODE_STRING, byval SetOperation as WINBOOLEAN) as WINBOOLEAN
 #define MSV1_0_PACKAGE_NAME "MICROSOFT_AUTHENTICATION_PACKAGE_V1_0"
 #define MSV1_0_PACKAGE_NAMEW wstr("MICROSOFT_AUTHENTICATION_PACKAGE_V1_0")
-#define MSV1_0_PACKAGE_NAMEW_LENGTH (sizeof(MSV1_0_PACKAGE_NAMEW) - sizeof(wchar_t))
+#define MSV1_0_PACKAGE_NAMEW_LENGTH (sizeof(MSV1_0_PACKAGE_NAMEW) - sizeof(WCHAR))
 #define MSV1_0_SUBAUTHENTICATION_KEY !"SYSTEM\\CurrentControlSet\\Control\\Lsa\\MSV1_0"
 #define MSV1_0_SUBAUTHENTICATION_VALUE "Auth"
 
@@ -988,7 +988,7 @@ type _MSV1_0_NTLM3_RESPONSE
 	TimeStamp as ULONGLONG
 	ChallengeFromClient(0 to 7) as UCHAR
 	AvPairsOff as ULONG
-	Buffer(0 to 0) as UCHAR
+	Buffer as zstring * 1
 end type
 
 type MSV1_0_NTLM3_RESPONSE as _MSV1_0_NTLM3_RESPONSE
@@ -1747,12 +1747,7 @@ type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 		nReaderNameOffset as ULONG
 		nContainerNameOffset as ULONG
 		nCSPNameOffset as ULONG
-
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-			bBuffer as wchar_t
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-			bBuffer as byte
-		#endif
+		bBuffer as TCHAR
 	end type
 
 	type KERB_SMARTCARD_CSP_INFO as _KERB_SMARTCARD_CSP_INFO
