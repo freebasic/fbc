@@ -37,6 +37,7 @@ Version 1.04.0
 - format(now(), "ttttt") now works as expected under unix-like systems
 - -profile now works on win64; the compiler generated calls to "mcount" which doesn't exist on win64; it's named "_mcount" instead. (with MinGW-w64's libgmon at least)
 - 1.02.0 regression: CHAR/WCHAR typedefs (and others) in the Windows API bindings were translated as zstring/wstring; they're now translated as byte/wchar_t again (and accordingly in some cases where fields/parameters use them as type and clearly don't want a zero-terminated string), to allow them to refer to a single char again.
+- 1.01.0 regression: CGUI binding: InitCgui*() macros were all broken, not just InitCgui() (that was fixed before)
 
 
 Version 1.03.0

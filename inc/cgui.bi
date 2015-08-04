@@ -198,10 +198,10 @@ const CGUI_INIT_WINDOWED = 1
 const CGUI_INIT_FULLSCREEN = 2
 const CGUI_INIT_KEEP_CURRENT = 0
 declare function InitCguiEx(byval w as long, byval h as long, byval colour_depth as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval f as sub()) as long) as long
-#define InitCguiLoadMode() InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCguiLoadMode() InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
 #define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
 
 declare sub DeInitCgui()
