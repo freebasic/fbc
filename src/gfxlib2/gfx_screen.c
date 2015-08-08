@@ -355,11 +355,17 @@ static int set_mode
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;
 
-            /* Tell the rtlib to clean-up the gfxlib2 before it exits.
+            /* Tell the rtlib to clean-up the gfxlib2 during fb_End().
 
                We can't use atexit() for this, because then the gfxlib2 clean-up
                may run after the rtlib clean-up which isn't safe because gfxlib2
-               uses the rtlib. atexit() is unreliable -- see fb_hRtExit().
+               uses the rtlib. atexit() is unreliable; see the comment in
+               fb_hRtExit().
+
+               We can't use a global destructor either, at least not on Windows,
+               because the win32 backends use a background thread and we mustn't
+               wait for that to exit during a global destructor due to the
+               loader lock; see the comment in fb_hRtExit().
 
                This way we can at least ensure that gfxlib2 is cleaned up before
                the rtlib, regardless of what method that will use for clean-up. */
