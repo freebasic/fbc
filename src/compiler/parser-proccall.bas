@@ -129,11 +129,11 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	'' set accessed flag here, as proc will be ended before AST is flushed
 	symbSetIsAccessed( res )
 
-	'' For RETURN, the result object is only being constructed now, so try
-	'' to call a constructor, or fallback to copy-construction by shallow
-	'' copy.
+	'' For RETURN in return-byval functions, the result object is only being
+	'' constructed now, so try to call a constructor, or fallback to
+	'' copy-construction by shallow copy.
 	assignoptions = 0
-	if( is_return ) then
+	if( is_return and (not returns_byref) ) then
 		if( has_ctor ) then
 			dim as integer is_ctorcall = any
 			rhs = astBuildImplicitCtorCallEx( res, rhs, cBydescArrayArgParens( rhs ), is_ctorcall )
@@ -142,6 +142,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 			end if
 
 			if( is_ctorcall ) then
+				'' Result constructed by ctor call, no assignment needed after this.
 				astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
 				return TRUE
 			end if

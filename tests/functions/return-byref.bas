@@ -906,6 +906,69 @@ namespace constness
 	end function
 end namespace
 
+namespace returnCtorCall
+	'' In return-byval functions, RETURN can call a ctor to construct the result.
+	'' This shouldn't be done in return-byref functions, because there is no
+	'' result object (it's just a pointer).
+
+	dim shared as integer ctorcalls, ptrctorcalls, copyctorcalls
+
+	type UDT
+		dummy as integer
+		declare constructor()
+		declare constructor(byval as const UDT ptr)
+		declare constructor(byref as const UDT)
+	end type
+
+	constructor UDT()
+		ctorcalls += 1
+	end constructor
+
+	constructor UDT(byval px as const UDT ptr)
+		'' This ctor overload triggered the bug (byref function results
+		'' are pointers)
+		ptrctorcalls += 1
+	end constructor
+
+	constructor UDT(byref x as const UDT)
+		copyctorcalls += 1
+	end constructor
+
+	dim shared p as UDT ptr
+
+	function f() byref as UDT
+		'' should just do assignment, no ctor calls
+		return *p
+	end function
+
+	sub test cdecl( )
+		CU_ASSERT( ctorcalls = 0 )
+		CU_ASSERT( ptrctorcalls = 0 )
+		CU_ASSERT( copyctorcalls = 0 )
+
+		p = new UDT()
+		CU_ASSERT( ctorcalls = 1 )
+		CU_ASSERT( ptrctorcalls = 0 )
+		CU_ASSERT( copyctorcalls = 0 )
+
+		scope
+			dim px as UDT ptr = @(f())
+			CU_ASSERT( ctorcalls = 1 )
+			CU_ASSERT( ptrctorcalls = 0 )
+			CU_ASSERT( copyctorcalls = 0 )
+		end scope
+
+		scope
+			dim x as UDT = f()
+			CU_ASSERT( ctorcalls = 1 )
+			CU_ASSERT( ptrctorcalls = 0 )
+			CU_ASSERT( copyctorcalls = 1 )
+		end scope
+
+		delete p
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/functions/return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
@@ -932,6 +995,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "C++ mangling", @cxxMangling.test )
 	fbcu.add_test( "ReturnVsFunction", @returnVsFunction.test )
 	fbcu.add_test( "derefConst", @derefConst.test )
+	fbcu.add_test( "returnCtorCall", @returnCtorCall.test )
 end sub
 
 end namespace

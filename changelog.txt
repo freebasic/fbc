@@ -40,6 +40,7 @@ Version 1.04.0
 - 1.02.0 regression: CHAR/WCHAR typedefs (and others) in the Windows API bindings were translated as zstring/wstring; they're now translated as byte/wchar_t again (and accordingly in some cases where fields/parameters use them as type and clearly don't want a zero-terminated string), to allow them to refer to a single char again.
 - 1.01.0 regression: CGUI binding: InitCgui*() macros were all broken, not just InitCgui() (that was fixed before)
 - GdiPlus binding: Fixed GdipMeasureCharacterRanges() declaration (wrong parameter type)
+- RETURN in BYREF-result functions could erronously try to construct a result object, if the result UDT had constructor overloads taking a pointer
 
 
 Version 1.03.0
