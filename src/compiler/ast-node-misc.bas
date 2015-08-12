@@ -1101,7 +1101,14 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 
 		if( n->sym ) then
 			#if 1
-				s += " " + *symbGetName( n->sym )
+				s += " "
+				if( symbIsProc( n->sym ) ) then
+					s += symbMethodToStr( n->sym )
+				elseif n->sym->id.name = NULL then
+					s += *n->sym->id.alias
+				else
+					s += *n->sym->id.name
+				end if
 			#else
 				s += " " + symbDump( n->sym )
 			#endif
