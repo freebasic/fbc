@@ -783,7 +783,7 @@ function astBuildArrayDescIniTree _
 		array_expr = astNewADDROF( array_expr )
 	end if
 
-	astTypeIniScopeBegin( tree, NULL, FALSE )
+	astTypeIniScopeBegin( tree, desc, FALSE )
 
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
@@ -834,16 +834,17 @@ function astBuildArrayDescIniTree _
     elm = symbGetNext( elm )
 
     '' setup dimTB
+	var dimtbfield = elm
     dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
 
-	astTypeIniScopeBegin( tree, NULL, TRUE )
+	astTypeIniScopeBegin( tree, dimtbfield, TRUE )
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
 		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
-			astTypeIniScopeBegin( tree, NULL, FALSE )
+			astTypeIniScopeBegin( tree, dimtbfield, FALSE )
 
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
 			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayUbound( array, i ) - symbArrayLbound( array, i ) + 1 ), elm )
@@ -858,7 +859,7 @@ function astBuildArrayDescIniTree _
 			'' .ubound = ubound( array, d )
 			astTypeIniAddAssign( tree, astNewCONSTi( symbArrayUbound( array, i ) ), elm )
 
-			astTypeIniScopeEnd( tree, NULL )
+			astTypeIniScopeEnd( tree, dimtbfield )
 		next
 	else
 		'' Just clear the dimTB entries (dynamic array; not yet allocated)
@@ -873,8 +874,8 @@ function astBuildArrayDescIniTree _
 		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
 	end if
 
-    astTypeIniScopeEnd( tree, NULL )
-    astTypeIniScopeEnd( tree, NULL )
+    astTypeIniScopeEnd( tree, dimtbfield )
+    astTypeIniScopeEnd( tree, desc )
     astTypeIniEnd( tree, TRUE )
 
     function = tree

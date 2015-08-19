@@ -111,7 +111,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 	'' initialize it
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, ast.data.desc, TRUE )
 
-	astTypeIniScopeBegin( initree, NULL, TRUE )
+	astTypeIniScopeBegin( initree, array, TRUE )
 
 	'' for each node..
 	n = tree->l
@@ -119,7 +119,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 		id = n->data.id
 		expr = n->l
 
-		astTypeIniScopeBegin( initree, NULL, FALSE )
+		astTypeIniScopeBegin( initree, array, FALSE )
 
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR
@@ -152,7 +152,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
         '' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
 
-    	astTypeIniScopeEnd( initree, NULL )
+		astTypeIniScopeEnd( initree, array )
 
     	'' next
 		dim as ASTNODE ptr nxt = n->r
@@ -161,7 +161,7 @@ sub astDataStmtEnd( byval tree as ASTNODE ptr )
 	next
 
     ''
-    astTypeIniScopeEnd( initree, NULL )
+	astTypeIniScopeEnd( initree, array )
 
     astTypeIniEnd( initree, TRUE )
 
