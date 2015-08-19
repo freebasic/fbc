@@ -1116,11 +1116,18 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 	'' If there is an offset or index, it must be added on top of the
 	'' base address.
 
-	var addrdtype = typeAddrOf( v->dtype )
+	var addrdtype = v->dtype
 	var addrsubtype = v->subtype
 	var ofs = v->ofs
 	var vidx = v->vidx
 	var sym = v->sym
+
+	'' OFS vregs already have pointer type, but others don't
+	if( v->typ = IR_VREGTYPE_OFS ) then
+		assert( typeIsPtr( addrdtype ) )
+	else
+		addrdtype = typeAddrOf( addrdtype )
+	end if
 
 	if( irIsPTR( v ) ) then
 		assert( irIsREG( vidx ) )
@@ -1178,9 +1185,7 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 	case else
 		'' memory accesses: stack/global vars, arrays, ptr derefs
 		'' Get the address and then load the value stored there.
-
 		hPrepareAddress( v )
-
 		assert( typeIsPtr( v->dtype ) )
 		var temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
 		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
