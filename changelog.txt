@@ -42,6 +42,7 @@ Version 1.04.0
 - GdiPlus binding: Fixed GdipMeasureCharacterRanges() declaration (wrong parameter type)
 - RETURN in BYREF-result functions could erronously try to construct a result object, if the result UDT had constructor overloads taking a pointer
 - LLVM backend: Accesses to fixed-length strings now use the proper types
+- LLVM backend: Structs using FIELD=1 are now emitted as packed structs
 
 
 Version 1.03.0

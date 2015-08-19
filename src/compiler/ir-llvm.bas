@@ -794,17 +794,11 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 		ln += "%" + *symbUniqueId( )
 	end if
 
-	ln += " = type { "
+	var packed = (s->udt.align = 1)
 
-	'' Alignment (field = N)
-	var attrib = ""
-	if( s->udt.align > 0 ) then
-		if( s->udt.align = 1 ) then
-			attrib = " __attribute__((packed))"
-		else
-			attrib = " __attribute__((aligned (" & s->udt.align & ")))"
-		end if
-	end if
+	ln += " = type "
+	if( packed ) then ln += "<"
+	ln += "{ "
 
 	'' Write out the elements
 	fld = symbUdtGetFirstField( s )
@@ -813,7 +807,6 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 		'' Don't emit fake dynamic array fields
 		if( symbIsDynamic( fld ) = FALSE ) then
 			ln += hEmitSymType( fld )
-			ln += attrib
 		end if
 
 		fld = symbUdtGetNextField( fld )
@@ -824,6 +817,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 
 	'' Close UDT body
 	ln += " }"
+	if( packed ) then ln += ">"
 
 	hWriteLine( ln )
 
