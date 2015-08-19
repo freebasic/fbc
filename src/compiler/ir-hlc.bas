@@ -228,7 +228,7 @@ dim shared as IRHLCCTX ctx
 dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
 	@"void"     , _ '' void
-	@"int8"     , _ '' boolean
+	@"boolean"  , _ '' boolean
 	@"int8"     , _ '' byte
 	@"uint8"    , _ '' ubyte
 	NULL        , _ '' char
@@ -1254,6 +1254,7 @@ private function _emitBegin( ) as integer
 	else
 		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )
 	end if
+	hWriteLine( "typedef int8 boolean;", TRUE )
 
 	'' body
 	sectionBegin( )
