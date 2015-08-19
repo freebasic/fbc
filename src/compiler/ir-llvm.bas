@@ -2268,9 +2268,6 @@ private sub _emitVarIniWstr _
 end sub
 
 private sub _emitVarIniPad( byval bytes as longint )
-	'' Nothing to do -- we're using {...} for structs and each array
-	'' dimension, and gcc will zero-initialize any uninitialized elements,
-	'' aswell as add padding between fields etc. where needed.
 end sub
 
 private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )

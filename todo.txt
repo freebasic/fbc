@@ -11,6 +11,9 @@ o 64bit
   - 64bit bitfields aren't working properly - see tests/structs/bitfield-types.bas
 
 o LLVM backend
+  - astTypeIniAddPad() must be ignored, but in exchange all fields must be
+    initialized explicitly by specifying the data type
+    (can use "zeroinitializer" as the value at least)
   - Check whether F2I conversions work correctly for unsigned integers (compare
     to issues in C/ASM backends), and overall can't trigger fptosi/fptoui's
     conditions for undefined behaviour
@@ -23,10 +26,6 @@ o LLVM backend
      - LLVM has "type <{ fields... }>" for packed structs, but that's just
        FIELD = 1, there is no direct way to do FIELD = 2 or 4.
        clang uses a packed struct and then inserts padding fields (i8) manually.
-     - getelementptr can't be used anyways, since the AST lowers field accesses
-       to deref/bop/addrof, plus it doesn't work with bitfields anyways.
-       For now it should be ok to use bops and inttoptr/ptrtoint instructions,
-       to let the AST do address calculations, as with the C/ASM backends.
      - LLVM doesn't have unions, it'd be easier to emit them as byte arrays
        (instead of a struct containing the biggest member only)
   - Debugging metadata
