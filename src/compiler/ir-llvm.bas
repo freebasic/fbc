@@ -2189,7 +2189,7 @@ private sub hMaybeAddConv _
 		exit sub
 	end if
 
-	s = *hGetConvOpCode( ldtype, rdtype ) + " (" + rtype + " " + s + " to " + ltype + ")"
+	s = *op + " (" + rtype + " " + s + " to " + ltype + ")"
 
 end sub
 
