@@ -1299,50 +1299,52 @@ private function hEmitFloat( byval value as double ) as string
 	function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 end function
 
+private function hIsFixLenStr( byval sym as FBSYMBOL ptr ) as integer
+	if( symbIsVar( sym ) ) then
+		select case( symbGetType( sym ) )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			return TRUE
+		end select
+	end if
+	return FALSE
+end function
+
 private function hVregToStr( byval v as IRVREG ptr ) as string
-	dim as string s
-	dim as FBSYMBOL ptr sym = any
-
 	select case as const( v->typ )
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-		s = *symbGetMangledName( v->sym )
-
-	case IR_VREGTYPE_OFS
-		assert( v->ofs = 0 ) '' TODO
-
-		sym = v->sym
-		if( symbGetIsLiteral( sym ) ) then
-			'' Use an inline bitcast operation to convert from
-			'' the char array pointer type to just a char pointer
-			s = "bitcast ("
-			s += hEmitSymType( sym ) + "* "
-			s += *symbGetMangledName( sym )
-			s += " to "
-			s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
-			s += ")"
-		else
-			s = *symbGetMangledName( sym )
-		end if
-
 	case IR_VREGTYPE_IMM
 		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = hEmitFloat( v->value.f )
-		elseif( typeGetSize( v->dtype ) = 8 ) then
-			s = hEmitLong( v->value.i )
-		else
-			s = hEmitInt( v->dtype, v->subtype, v->value.i )
+			return hEmitFloat( v->value.f )
 		end if
+		if( typeGetSize( v->dtype ) = 8 ) then
+			return hEmitLong( v->value.i )
+		end if
+		return hEmitInt( v->dtype, v->subtype, v->value.i )
 
 	case IR_VREGTYPE_REG
-		if( v->sym ) then
-			s = *symbGetMangledName( v->sym )
-		else
-			s = "%vr" + str( v->reg )
+		'' Normally REGs will have their reg field set, but if
+		'' hPrepareAddress() left the sym intact, we're supposed to use
+		'' that instead.
+		if( v->sym = NULL ) then
+			return "%vr" + str( v->reg )
 		end if
-
 	end select
 
-	function = s
+	var sym = v->sym
+
+	'' If accessing global fixed-length strings (including string literals)
+	'' we have to add an inline type cast, because for example the symbol
+	'' reference will be "[10 x i8]*", but we want to have "i8*" instead.
+	if( hIsFixLenStr( sym ) ) then
+		var s = "bitcast ("
+		s += hEmitSymType( sym ) + "* "
+		s += *symbGetMangledName( sym )
+		s += " to "
+		s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
+		s += ")"
+		return s
+	end if
+
+	return *symbGetMangledName( sym )
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )

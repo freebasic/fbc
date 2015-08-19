@@ -41,6 +41,7 @@ Version 1.04.0
 - 1.01.0 regression: CGUI binding: InitCgui*() macros were all broken, not just InitCgui() (that was fixed before)
 - GdiPlus binding: Fixed GdipMeasureCharacterRanges() declaration (wrong parameter type)
 - RETURN in BYREF-result functions could erronously try to construct a result object, if the result UDT had constructor overloads taking a pointer
+- LLVM backend: Accesses to fixed-length strings now use the proper types
 
 
 Version 1.03.0
