@@ -277,12 +277,44 @@ sub cAsmCode()
 	end if
 end sub
 
+'Ignore CHAR_SPACE and CHAR_TAB
+function CheckFirstChar(byval pVS as ubyte ptr,byval KeyChar as ubyte) as integer
+	function=false
+	if pVS then
+		do
+			select case *pVS
+				case KeyChar
+					function=true
+					exit do
+				case CHAR_SPACE,CHAR_TAB'Ignore
+
+				case else
+					exit do
+			End Select
+			pVS+=1
+		Loop
+	EndIf
+end function
+
+function IgnoreDbg4AsmCode() as integer
+	dim pS as ubyte ptr=any
+	function=false
+	pS=lexGetText()
+	if pS then
+		if CheckFirstChar(pS,asc(".")/'user defined data,section etc?'/) then
+			function=true
+		elseif CheckFirstChar(lex.ctx->buffptr,asc(":")/'user label?'/)  then
+			function=true
+		EndIf
+	EndIf
+end function
+
 '':::::
 ''AsmBlock        =   ASM Comment? SttSeparator
 ''                        (AsmCode Comment? NewLine)+
 ''					  END ASM .
 function cAsmBlock as integer
-    dim as integer issingleline = any
+	dim as integer issingleline = any,isIgnoreline = any
 
 	function = FALSE
 
@@ -318,8 +350,10 @@ function cAsmBlock as integer
 
 	'' (AsmCode Comment? NewLine)+
 	do
-		if( issingleline = FALSE ) then
-			astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
+		isIgnoreline=IgnoreDbg4AsmCode()
+
+		if( issingleline = FALSE and isIgnoreline=false) then
+			astAdd(astNewDBG(AST_OP_DBG_LINEINI, lexLineNum()))
 		end if
 
 		cAsmCode( )
@@ -351,7 +385,7 @@ function cAsmBlock as integer
 			hSkipUntil( FB_TK_EOL, TRUE )
 		end select
 
-		if( issingleline = FALSE ) then
+		if( issingleline = FALSE  and isIgnoreline=false) then
 			astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 		end if
 	loop
