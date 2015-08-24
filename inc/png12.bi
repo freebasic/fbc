@@ -164,6 +164,12 @@ const PNG_ZBUF_SIZE = 8192
 #define PNG_CHECK_cHRM_SUPPORTED
 #define PNG_MNG_FEATURES_SUPPORTED
 #define PNG_FLOATING_POINT_SUPPORTED
+
+#ifdef __FB_CYGWIN__
+	#define PNG_USE_DLL
+	#define PNG_DLL
+#endif
+
 #define PNG_STDIO_SUPPORTED
 #define PNG_CONSOLE_IO_SUPPORTED
 #define PNG_SETJMP_SUPPORTED
@@ -218,7 +224,13 @@ const PNG_ZBUF_SIZE = 8192
 #define PNG_EASY_ACCESS_SUPPORTED
 #define PNG_OPTIMIZED_CODE_SUPPORTED
 #define PNG_ASSEMBLER_CODE_SUPPORTED
-#define PNG_MMX_CODE_SUPPORTED
+
+#ifdef __FB_DARWIN__
+	#define PNG_NO_MMX_CODE
+#else
+	#define PNG_MMX_CODE_SUPPORTED
+#endif
+
 #define PNG_USER_MEM_SUPPORTED
 #define PNG_SET_USER_LIMITS_SUPPORTED
 #define PNG_USER_LIMITS_SUPPORTED
@@ -328,7 +340,12 @@ type png_zcharp as charf ptr
 type png_zcharpp as charf ptr ptr
 type png_zstreamp as z_stream ptr
 
-#define PNG_USE_GLOBAL_ARRAYS
+#ifdef __FB_CYGWIN__
+	#define PNG_USE_LOCAL_ARRAYS
+#else
+	#define PNG_USE_GLOBAL_ARRAYS
+#endif
+
 #define PNG_ABORT() abort()
 #define png_jmpbuf(png_ptr) (@(png_ptr)->jmpbuf)
 #define png_snprintf snprintf
@@ -355,13 +372,17 @@ type png_zstreamp as z_stream ptr
 #define png_voidp_NULL NULL
 #define png_write_status_ptr_NULL NULL
 
-extern png_libpng_ver as const zstring * 18
-extern png_pass_start(0 to 6) as const long
-extern png_pass_inc(0 to 6) as const long
-extern png_pass_ystart(0 to 6) as const long
-extern png_pass_yinc(0 to 6) as const long
-extern png_pass_mask(0 to 6) as const long
-extern png_pass_dsp_mask(0 to 6) as const long
+#ifdef __FB_CYGWIN__
+	#define png_libpng_ver png_get_header_ver(NULL)
+#else
+	extern png_libpng_ver as const zstring * 18
+	extern png_pass_start(0 to 6) as const long
+	extern png_pass_inc(0 to 6) as const long
+	extern png_pass_ystart(0 to 6) as const long
+	extern png_pass_yinc(0 to 6) as const long
+	extern png_pass_mask(0 to 6) as const long
+	extern png_pass_dsp_mask(0 to 6) as const long
+#endif
 
 type png_color_struct
 	red as png_byte
@@ -774,8 +795,12 @@ type png_struct_def
 	mng_features_permitted as png_uint_32
 	int_gamma as png_fixed_point
 	filter_type as png_byte
-	mmx_bitdepth_threshold as png_byte
-	mmx_rowbytes_threshold as png_uint_32
+
+	#if defined(__FB_DOS__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+		mmx_bitdepth_threshold as png_byte
+		mmx_rowbytes_threshold as png_uint_32
+	#endif
+
 	asm_flags as png_uint_32
 	mem_ptr as png_voidp
 	malloc_fn as png_malloc_ptr
@@ -1040,20 +1065,23 @@ const PNG_HANDLE_CHUNK_AS_DEFAULT = 0
 const PNG_HANDLE_CHUNK_NEVER = 1
 const PNG_HANDLE_CHUNK_IF_SAFE = 2
 const PNG_HANDLE_CHUNK_ALWAYS = 3
-const PNG_ASM_FLAG_MMX_SUPPORT_COMPILED = &h01
-const PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU = &h02
-const PNG_ASM_FLAG_MMX_READ_COMBINE_ROW = &h04
-const PNG_ASM_FLAG_MMX_READ_INTERLACE = &h08
-const PNG_ASM_FLAG_MMX_READ_FILTER_SUB = &h10
-const PNG_ASM_FLAG_MMX_READ_FILTER_UP = &h20
-const PNG_ASM_FLAG_MMX_READ_FILTER_AVG = &h40
-const PNG_ASM_FLAG_MMX_READ_FILTER_PAETH = &h80
-const PNG_ASM_FLAGS_INITIALIZED = &h80000000
-#define PNG_MMX_READ_FLAGS (((((PNG_ASM_FLAG_MMX_READ_COMBINE_ROW or PNG_ASM_FLAG_MMX_READ_INTERLACE) or PNG_ASM_FLAG_MMX_READ_FILTER_SUB) or PNG_ASM_FLAG_MMX_READ_FILTER_UP) or PNG_ASM_FLAG_MMX_READ_FILTER_AVG) or PNG_ASM_FLAG_MMX_READ_FILTER_PAETH)
-const PNG_MMX_WRITE_FLAGS = 0
-#define PNG_MMX_FLAGS (((PNG_ASM_FLAG_MMX_SUPPORT_COMPILED or PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU) or PNG_MMX_READ_FLAGS) or PNG_MMX_WRITE_FLAGS)
-const PNG_SELECT_READ = 1
-const PNG_SELECT_WRITE = 2
+
+#if defined(__FB_DOS__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+	const PNG_ASM_FLAG_MMX_SUPPORT_COMPILED = &h01
+	const PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU = &h02
+	const PNG_ASM_FLAG_MMX_READ_COMBINE_ROW = &h04
+	const PNG_ASM_FLAG_MMX_READ_INTERLACE = &h08
+	const PNG_ASM_FLAG_MMX_READ_FILTER_SUB = &h10
+	const PNG_ASM_FLAG_MMX_READ_FILTER_UP = &h20
+	const PNG_ASM_FLAG_MMX_READ_FILTER_AVG = &h40
+	const PNG_ASM_FLAG_MMX_READ_FILTER_PAETH = &h80
+	const PNG_ASM_FLAGS_INITIALIZED = &h80000000
+	#define PNG_MMX_READ_FLAGS (((((PNG_ASM_FLAG_MMX_READ_COMBINE_ROW or PNG_ASM_FLAG_MMX_READ_INTERLACE) or PNG_ASM_FLAG_MMX_READ_FILTER_SUB) or PNG_ASM_FLAG_MMX_READ_FILTER_UP) or PNG_ASM_FLAG_MMX_READ_FILTER_AVG) or PNG_ASM_FLAG_MMX_READ_FILTER_PAETH)
+	const PNG_MMX_WRITE_FLAGS = 0
+	#define PNG_MMX_FLAGS (((PNG_ASM_FLAG_MMX_SUPPORT_COMPILED or PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU) or PNG_MMX_READ_FLAGS) or PNG_MMX_WRITE_FLAGS)
+	const PNG_SELECT_READ = 1
+	const PNG_SELECT_WRITE = 2
+#endif
 
 declare function png_get_mmx_flagmask(byval flag_select as long, byval compilerID as long ptr) as png_uint_32
 declare function png_get_asm_flagmask(byval flag_select as long) as png_uint_32

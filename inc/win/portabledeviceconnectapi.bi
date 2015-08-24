@@ -19,10 +19,10 @@
 	#include once "objbase.bi"
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	extern "C"
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
 	extern "Windows"
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	extern "C"
 #endif
 
 #if _WIN32_WINNT = &h0602

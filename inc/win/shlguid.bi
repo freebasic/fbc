@@ -121,7 +121,7 @@ extern IID_IShellIconOverlayManager as const GUID
 extern IID_IThumbnailCapture as const GUID
 extern IID_IShellImageStore as const GUID
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	extern CLSID_ShellThumbnailDiskCache as const GUID
 #endif
 
@@ -182,7 +182,7 @@ extern CLSID_ACListISF as const GUID
 extern CLSID_ACLMRU as const GUID
 extern CLSID_ACLMulti as const GUID
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	extern CLSID_ACLCustomMRU as const GUID
 #endif
 
@@ -327,7 +327,7 @@ extern BHID_AssociationArray as const GUID
 extern BHID_Filter as const GUID
 extern BHID_EnumAssocHandlers as const GUID
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	extern SID_CtxQueryAssociations as const GUID
 #endif
 

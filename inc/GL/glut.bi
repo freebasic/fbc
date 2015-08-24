@@ -12,13 +12,13 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	#inclib "glut"
+#elseif defined(__FB_WIN32__)
 	#inclib "glut32"
-#elseif defined(__FB_DOS__)
+#else
 	#inclib "GLUT"
 	#inclib "alleg"
-#else
-	#inclib "glut"
 #endif
 
 #include once "GL/gl.bi"

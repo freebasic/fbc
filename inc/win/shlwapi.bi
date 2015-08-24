@@ -69,7 +69,7 @@ declare function StrToIntW(byval lpSrc as LPCWSTR) as long
 declare function StrToIntExA(byval pszString as LPCSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 declare function StrToIntExW(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function StrToInt64ExA(byval pszString as LPCSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 	declare function StrToInt64ExW(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 #endif
@@ -143,11 +143,11 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	declare function StrCmpICW(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define StrCmpIC StrCmpICW
-#endif
-
 #ifdef UNICODE
+	#if _WIN32_WINNT = &h0602
+		#define StrCmpIC StrCmpICW
+	#endif
+
 	#define StrChr StrChrW
 	#define StrRChr StrRChrW
 	#define StrChrI StrChrIW
@@ -164,13 +164,11 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrToInt StrToIntW
 	#define StrPBrk StrPBrkW
 	#define StrToIntEx StrToIntExW
-#endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define StrToInt64Ex StrToInt64ExW
-#endif
+	#if _WIN32_WINNT >= &h0502
+		#define StrToInt64Ex StrToInt64ExW
+	#endif
 
-#ifdef UNICODE
 	#define StrFromTimeInterval StrFromTimeIntervalW
 	#define StrIntlEqN StrIntlEqNW
 	#define StrIntlEqNI StrIntlEqNIW
@@ -205,13 +203,11 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrToInt StrToIntA
 	#define StrPBrk StrPBrkA
 	#define StrToIntEx StrToIntExA
-#endif
 
-#if (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define StrToInt64Ex StrToInt64ExA
-#endif
+	#if _WIN32_WINNT >= &h0502
+		#define StrToInt64Ex StrToInt64ExA
+	#endif
 
-#ifndef UNICODE
 	#define StrFromTimeInterval StrFromTimeIntervalA
 	#define StrIntlEqN StrIntlEqNA
 	#define StrIntlEqNI StrIntlEqNIA
@@ -856,11 +852,11 @@ declare function SHSetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byv
 
 #ifdef UNICODE
 	#define SHSetValue SHSetValueW
-#elseif (not defined(UNICODE)) and ((not defined(__FB_64BIT__)) or (defined(__FB_64BIT__) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))))
+#elseif (not defined(UNICODE)) and (defined(__FB_64BIT__) or ((not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0502)))
 	#define SHSetValue SHSetValueA
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	type SRRF as DWORD
 	const SRRF_RT_REG_NONE = &h00000001
 	const SRRF_RT_REG_SZ = &h00000002
@@ -882,11 +878,11 @@ declare function SHSetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byv
 	declare function SHRegGetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byval pszValue as LPCWSTR, byval dwFlags as SRRF, byval pdwType as DWORD ptr, byval pvData as any ptr, byval pcbData as DWORD ptr) as LONG
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define SHRegGetValue SHRegGetValueW
-#endif
-
 #ifdef UNICODE
+	#if _WIN32_WINNT >= &h0502
+		#define SHRegGetValue SHRegGetValueW
+	#endif
+
 	#define SHQueryValueEx SHQueryValueExW
 	#define SHEnumKeyEx SHEnumKeyExW
 	#define SHEnumValue SHEnumValueW
@@ -894,9 +890,9 @@ declare function SHSetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byv
 	#define SHCopyKey SHCopyKeyW
 	#define SHRegGetPath SHRegGetPathW
 	#define SHRegSetPath SHRegSetPathW
-#elseif defined(__FB_64BIT__) and (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
 	#define SHSetValue SHSetValueA
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
 	#define SHRegGetValue SHRegGetValueA
 #endif
 
@@ -1111,7 +1107,7 @@ declare function AssocQueryStringByKeyW(byval flags as ASSOCF, byval str as ASSO
 declare function AssocQueryKeyA(byval flags as ASSOCF, byval key as ASSOCKEY, byval pszAssoc as LPCSTR, byval pszExtra as LPCSTR, byval phkeyOut as HKEY ptr) as HRESULT
 declare function AssocQueryKeyW(byval flags as ASSOCF, byval key as ASSOCKEY, byval pszAssoc as LPCWSTR, byval pszExtra as LPCWSTR, byval phkeyOut as HKEY ptr) as HRESULT
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function AssocIsDangerous(byval pszAssoc as LPCWSTR) as WINBOOL
 #endif
 
@@ -1138,7 +1134,7 @@ declare function SHOpenRegStream2W(byval hkey as HKEY, byval pszSubkey as LPCWST
 declare function SHCreateStreamOnFileA(byval pszFile as LPCSTR, byval grfMode as DWORD, byval ppstm as IStream ptr ptr) as HRESULT
 declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode as DWORD, byval ppstm as IStream ptr ptr) as HRESULT
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function SHCreateStreamOnFileEx(byval pszFile as LPCWSTR, byval grfMode as DWORD, byval dwAttributes as DWORD, byval fCreate as WINBOOL, byval pstmTemplate as IStream ptr, byval ppstm as IStream ptr ptr) as HRESULT
 #endif
 
@@ -1153,7 +1149,7 @@ declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode a
 	declare function GetAcceptLanguagesW(byval psz as LPWSTR, byval pcch as DWORD ptr) as HRESULT
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const SHGVSPB_PERUSER = &h00000001
 	const SHGVSPB_ALLUSERS = &h00000002
 	const SHGVSPB_PERFOLDER = &h00000004
@@ -1183,7 +1179,7 @@ const SHACF_URLMRU = &h00000004
 const SHACF_USETAB = &h00000008
 const SHACF_FILESYS_ONLY = &h00000010
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const SHACF_FILESYS_DIRS = &h00000020
 #endif
 
@@ -1243,7 +1239,7 @@ const DLLVER_QFE_MASK = &h000000000000FFFF
 type DLLGETVERSIONPROC as function(byval as DLLVERSIONINFO ptr) as HRESULT
 declare function DllInstall(byval bInstall as WINBOOL, byval pszCmdLine as LPCWSTR) as HRESULT
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function IsInternetESCEnabled() as WINBOOL
 #endif
 

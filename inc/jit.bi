@@ -1527,7 +1527,16 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 #define JIT_OP_BR_NFNE_INV JIT_OP_BR_NFNE
 #define _JIT_UNWIND_H
 
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))
+#if defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))))
+	#define _JIT_ARCH_X86_H
+	#macro _JIT_ARCH_GET_CURRENT_FRAME(f)
+		scope
+			dim __f as any ptr
+			asm mov dword ptr [__f], ebp
+			f = __f
+		end scope
+	#endmacro
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
 	#define _JIT_ARCH_X86_64_H
 	type _jit_arch_frame_t as _jit_arch_frame
 
@@ -1553,14 +1562,11 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 		end scope
 	#endmacro
 #else
-	#define _JIT_ARCH_X86_H
-	#macro _JIT_ARCH_GET_CURRENT_FRAME(f)
-		scope
-			dim __f as any ptr
-			asm mov dword ptr [__f], ebp
-			f = __f
-		end scope
-	#endmacro
+	#define _JIT_ARCH_GENERIC_H
+	#undef _JIT_ARCH_GET_CURRENT_FRAME
+	#undef _JIT_ARCH_GET_NEXT_FRAME
+	#undef _JIT_ARCH_GET_RETURN_ADDRESS
+	#define _JIT_ARCH_GET_CURRENT_RETURN
 #endif
 
 type jit_unwind_context_t

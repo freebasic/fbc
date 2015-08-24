@@ -33,6 +33,10 @@
 #include once "X11/Xosdefs.bi"
 #include once "crt/string.bi"
 
+#ifdef __FB_CYGWIN__
+	#include once "strings.bi"
+#endif
+
 #define _XFUNCS_H_
 #define _XFUNCS_H_INCLUDED_STRING_H
 #undef bzero

@@ -2909,10 +2909,10 @@ const PROCESS_QUERY_INFORMATION = &h0400
 const PROCESS_SUSPEND_RESUME = &h0800
 const PROCESS_QUERY_LIMITED_INFORMATION = &h1000
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hfff)
-#else
+#if _WIN32_WINNT = &h0602
 	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff)
+#else
+	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hfff)
 #endif
 
 #ifdef __FB_64BIT__
@@ -2934,10 +2934,10 @@ const THREAD_DIRECT_IMPERSONATION = &h0200
 const THREAD_SET_LIMITED_INFORMATION = &h0400
 const THREAD_QUERY_LIMITED_INFORMATION = &h0800
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &h3ff)
-#else
+#if _WIN32_WINNT = &h0602
 	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff)
+#else
+	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &h3ff)
 #endif
 
 const JOB_OBJECT_ASSIGN_PROCESS = &h0001
@@ -4515,12 +4515,12 @@ const POWER_PLATFORM_ROLE_V1 = &h00000001
 const POWER_PLATFORM_ROLE_V2 = &h00000002
 #define POWER_PLATFORM_ROLE_V2_MAX (PlatformRoleSlate + 1)
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define POWER_PLATFORM_ROLE_VERSION POWER_PLATFORM_ROLE_V1
-	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V1_MAX
-#else
+#if _WIN32_WINNT = &h0602
 	#define POWER_PLATFORM_ROLE_VERSION POWER_PLATFORM_ROLE_V2
 	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V2_MAX
+#else
+	#define POWER_PLATFORM_ROLE_VERSION POWER_PLATFORM_ROLE_V1
+	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V1_MAX
 #endif
 
 type BATTERY_REPORTING_SCALE
@@ -6685,13 +6685,13 @@ declare function RtlCaptureStackBackTrace(byval FramesToSkip as DWORD, byval Fra
 declare sub RtlCaptureContext(byval ContextRecord as PCONTEXT)
 declare function RtlCompareMemory(byval Source1 as const any ptr, byval Source2 as const any ptr, byval Length as SIZE_T_) as SIZE_T_
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	declare function RtlAddGrowableFunctionTable(byval DynamicTable as PVOID ptr, byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval MaximumEntryCount as DWORD, byval RangeBase as ULONG_PTR, byval RangeEnd as ULONG_PTR) as DWORD
-	declare sub RtlGrowFunctionTable(byval DynamicTable as PVOID, byval NewEntryCount as DWORD)
-	declare sub RtlDeleteGrowableFunctionTable(byval DynamicTable as PVOID)
-#endif
-
 #ifdef __FB_64BIT__
+	#if _WIN32_WINNT = &h0602
+		declare function RtlAddGrowableFunctionTable(byval DynamicTable as PVOID ptr, byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval MaximumEntryCount as DWORD, byval RangeBase as ULONG_PTR, byval RangeEnd as ULONG_PTR) as DWORD
+		declare sub RtlGrowFunctionTable(byval DynamicTable as PVOID, byval NewEntryCount as DWORD)
+		declare sub RtlDeleteGrowableFunctionTable(byval DynamicTable as PVOID)
+	#endif
+
 	declare function RtlAddFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval BaseAddress as DWORD64) as WINBOOLEAN
 	declare function RtlDeleteFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION) as WINBOOLEAN
 	declare function RtlInstallFunctionTableCallback(byval TableIdentifier as DWORD64, byval BaseAddress as DWORD64, byval Length as DWORD, byval Callback as PGET_RUNTIME_FUNCTION_CALLBACK, byval Context as PVOID, byval OutOfProcessCallbackDll as PCWSTR) as WINBOOLEAN
@@ -7879,35 +7879,8 @@ type PTP_POOL_STACK_INFORMATION as _TP_POOL_STACK_INFORMATION ptr
 type TP_CLEANUP_GROUP as _TP_CLEANUP_GROUP
 type PTP_CLEANUP_GROUP as _TP_CLEANUP_GROUP ptr
 type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byval CleanupContext as PVOID)
-type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	type _TP_CALLBACK_ENVIRON_V1_u_s
-		LongFunction : 1 as DWORD
-		Persistent : 1 as DWORD
-		as DWORD Private : 30
-	end type
-
-	union _TP_CALLBACK_ENVIRON_V1_u
-		Flags as DWORD
-		s as _TP_CALLBACK_ENVIRON_V1_u_s
-	end union
-
-	type _TP_CALLBACK_ENVIRON_V1
-		Version as TP_VERSION
-		Pool as PTP_POOL
-		CleanupGroup as PTP_CLEANUP_GROUP
-		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
-		RaceDll as PVOID
-		ActivationContext as _ACTIVATION_CONTEXT ptr
-		FinalizationCallback as PTP_SIMPLE_CALLBACK
-		u as _TP_CALLBACK_ENVIRON_V1_u
-	end type
-
-	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
-	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
-	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
-#else
+#if _WIN32_WINNT = &h0602
 	type _TP_CALLBACK_ENVIRON_V3_u_s
 		LongFunction : 1 as DWORD
 		Persistent : 1 as DWORD
@@ -7918,7 +7891,22 @@ type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 		Flags as DWORD
 		s as _TP_CALLBACK_ENVIRON_V3_u_s
 	end union
+#else
+	type _TP_CALLBACK_ENVIRON_V1_u_s
+		LongFunction : 1 as DWORD
+		Persistent : 1 as DWORD
+		as DWORD Private : 30
+	end type
 
+	union _TP_CALLBACK_ENVIRON_V1_u
+		Flags as DWORD
+		s as _TP_CALLBACK_ENVIRON_V1_u_s
+	end union
+#endif
+
+type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
+
+#if _WIN32_WINNT = &h0602
 	type _TP_CALLBACK_ENVIRON_V3
 		Version as TP_VERSION
 		Pool as PTP_POOL
@@ -7935,6 +7923,21 @@ type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 	type TP_CALLBACK_ENVIRON_V3 as _TP_CALLBACK_ENVIRON_V3
 	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3
 	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3 ptr
+#else
+	type _TP_CALLBACK_ENVIRON_V1
+		Version as TP_VERSION
+		Pool as PTP_POOL
+		CleanupGroup as PTP_CLEANUP_GROUP
+		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
+		RaceDll as PVOID
+		ActivationContext as _ACTIVATION_CONTEXT ptr
+		FinalizationCallback as PTP_SIMPLE_CALLBACK
+		u as _TP_CALLBACK_ENVIRON_V1_u
+	end type
+
+	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
+	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
+	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
 #endif
 
 type TP_WORK as _TP_WORK
@@ -7950,18 +7953,7 @@ type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Con
 type TP_IO as _TP_IO
 type PTP_IO as _TP_IO ptr
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-		cbe->Pool = cptr(any ptr, 0)
-		cbe->CleanupGroup = cptr(any ptr, 0)
-		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
-		cbe->RaceDll = cptr(any ptr, 0)
-		cbe->ActivationContext = cptr(any ptr, 0)
-		cbe->FinalizationCallback = cptr(any ptr, 0)
-		cbe->u.Flags = 0
-		cbe->Version = 1
-	end sub
-#else
+#if _WIN32_WINNT = &h0602
 	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
 		cbe->Pool = cptr(any ptr, 0)
 		cbe->CleanupGroup = cptr(any ptr, 0)
@@ -7973,6 +7965,17 @@ type PTP_IO as _TP_IO ptr
 		cbe->Version = 3
 		cbe->CallbackPriority = TP_CALLBACK_PRIORITY_NORMAL
 		cbe->Size = sizeof(TP_CALLBACK_ENVIRON)
+	end sub
+#else
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
+		cbe->Version = 1
 	end sub
 #endif
 

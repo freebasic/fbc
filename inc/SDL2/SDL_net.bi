@@ -106,11 +106,11 @@ end type
 type SDLNet_GenericSocket as _SDLNet_GenericSocket ptr
 declare function SDLNet_AllocSocketSet(byval maxsockets as long) as SDLNet_SocketSet
 declare function SDLNet_AddSocket(byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as long
-#define SDLNet_TCP_AddSocket(set, sock) clng(SDLNet_AddSocket(set, cast(SDLNet_GenericSocket, sock)))
-#define SDLNet_UDP_AddSocket(set, sock) clng(SDLNet_AddSocket(set, cast(SDLNet_GenericSocket, sock)))
+#define SDLNet_TCP_AddSocket(set, sock) clng(SDLNet_AddSocket((set), cast(SDLNet_GenericSocket, (sock))))
+#define SDLNet_UDP_AddSocket(set, sock) clng(SDLNet_AddSocket((set), cast(SDLNet_GenericSocket, (sock))))
 declare function SDLNet_DelSocket(byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as long
-#define SDLNet_TCP_DelSocket(set, sock) clng(SDLNet_DelSocket(set, cast(SDLNet_GenericSocket, sock)))
-#define SDLNet_UDP_DelSocket(set, sock) clng(SDLNet_DelSocket(set, cast(SDLNet_GenericSocket, sock)))
+#define SDLNet_TCP_DelSocket(set, sock) clng(SDLNet_DelSocket((set), cast(SDLNet_GenericSocket, (sock))))
+#define SDLNet_UDP_DelSocket(set, sock) clng(SDLNet_DelSocket((set), cast(SDLNet_GenericSocket, (sock))))
 declare function SDLNet_CheckSockets(byval set as SDLNet_SocketSet, byval timeout as Uint32) as long
 #define SDLNet_SocketReady(sock) _SDLNet_SocketReady(cast(SDLNet_GenericSocket, (sock)))
 
@@ -122,11 +122,46 @@ declare sub SDLNet_FreeSocketSet(byval set as SDLNet_SocketSet)
 declare sub SDLNet_SetError(byval fmt as const zstring ptr, ...)
 declare function SDLNet_GetError() as const zstring ptr
 
-const SDL_DATA_ALIGNED = 0
+#if (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	const SDL_DATA_ALIGNED = 1
+#else
+	const SDL_DATA_ALIGNED = 0
+#endif
 
-#define SDLNet_Write16(value, areap) scope : *cptr(Uint16 ptr, areap) = SDL_Swap16(value) : end scope
-#define SDLNet_Write32(value, areap) scope : *cptr(Uint32 ptr, areap) = SDL_Swap32(value) : end scope
-#define SDLNet_Read16(areap) SDL_Swap16(*cptr(const Uint16 ptr, areap))
-#define SDLNet_Read32(areap) SDL_Swap32(*cptr(const Uint32 ptr, areap))
+#define SDLNet_Write16(value, areap) _SDLNet_Write16(value, areap)
+#define SDLNet_Write32(value, areap) _SDLNet_Write32(value, areap)
+#define SDLNet_Read16(areap) _SDLNet_Read16(areap)
+#define SDLNet_Read32(areap) _SDLNet_Read32(areap)
+
+#if (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	private sub _SDLNet_Write16(byval value as Uint16, byval areap as any ptr)
+		dim area as Uint8 ptr = cptr(Uint8 ptr, areap)
+		area[0] = (value shr 8) and &hFF
+		area[1] = value and &hFF
+	end sub
+
+	private sub _SDLNet_Write32(byval value as Uint32, byval areap as any ptr)
+		dim area as Uint8 ptr = cptr(Uint8 ptr, areap)
+		area[0] = (value shr 24) and &hFF
+		area[1] = (value shr 16) and &hFF
+		area[2] = (value shr 8) and &hFF
+		area[3] = value and &hFF
+	end sub
+
+	private function _SDLNet_Read16(byval areap as any ptr) as Uint16
+		dim area as Uint8 ptr = cptr(Uint8 ptr, areap)
+		return (cast(Uint16, area[0]) shl 8) or cast(Uint16, area[1])
+	end function
+
+	private function _SDLNet_Read32(byval areap as const any ptr) as Uint32
+		dim area as const Uint8 ptr = cptr(const Uint8 ptr, areap)
+		return (((cast(Uint32, area[0]) shl 24) or (cast(Uint32, area[1]) shl 16)) or (cast(Uint32, area[2]) shl 8)) or cast(Uint32, area[3])
+	end function
+#else
+	#define _SDLNet_Write16(value, areap) scope : *cptr(Uint16 ptr, areap) = SDL_Swap16(value) : end sco
+	#define _SDLNet_Write32(value, areap) scope : *cptr(Uint32 ptr, areap) = SDL_Swap32(value) : end sco
+	#define _SDLNet_Read16(areap) SDL_Swap16(*cptr(const Uint16 ptr, areap))
+	#define _SDLNet_Read32(areap) SDL_Swap32(*cptr(const Uint32 ptr, areap))
+#endif
 
 end extern

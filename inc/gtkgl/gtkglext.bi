@@ -24,10 +24,10 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
-	#inclib "gtkglext-win32-1.0"
-#else
+#ifdef __FB_UNIX__
 	#inclib "gtkglext-x11-1.0"
+#else
+	#inclib "gtkglext-win32-1.0"
 #endif
 
 #include once "gtkgl/gdkglext.bi"
@@ -57,18 +57,18 @@ const GTKGLEXT_INTERFACE_AGE = 0
 const GTKGLEXT_BINARY_AGE = 0
 #define GTKGLEXT_CHECK_VERSION(major, minor, micro) (((GTKGLEXT_MAJOR_VERSION > (major)) orelse ((GTKGLEXT_MAJOR_VERSION = (major)) andalso (GTKGLEXT_MINOR_VERSION > (minor)))) orelse (((GTKGLEXT_MAJOR_VERSION = (major)) andalso (GTKGLEXT_MINOR_VERSION = (minor))) andalso (GTKGLEXT_MICRO_VERSION >= (micro))))
 
-#ifdef __FB_WIN32__
-	extern import gtkglext_major_version_ alias "gtkglext_major_version" as const guint
-	extern import gtkglext_minor_version_ alias "gtkglext_minor_version" as const guint
-	extern import gtkglext_micro_version_ alias "gtkglext_micro_version" as const guint
-	extern import gtkglext_interface_age_ alias "gtkglext_interface_age" as const guint
-	extern import gtkglext_binary_age_ alias "gtkglext_binary_age" as const guint
-#else
+#ifdef __FB_UNIX__
 	extern gtkglext_major_version_ alias "gtkglext_major_version" as const guint
 	extern gtkglext_minor_version_ alias "gtkglext_minor_version" as const guint
 	extern gtkglext_micro_version_ alias "gtkglext_micro_version" as const guint
 	extern gtkglext_interface_age_ alias "gtkglext_interface_age" as const guint
 	extern gtkglext_binary_age_ alias "gtkglext_binary_age" as const guint
+#else
+	extern import gtkglext_major_version_ alias "gtkglext_major_version" as const guint
+	extern import gtkglext_minor_version_ alias "gtkglext_minor_version" as const guint
+	extern import gtkglext_micro_version_ alias "gtkglext_micro_version" as const guint
+	extern import gtkglext_interface_age_ alias "gtkglext_interface_age" as const guint
+	extern import gtkglext_binary_age_ alias "gtkglext_binary_age" as const guint
 #endif
 
 #define __GTK_GL_INIT_H__

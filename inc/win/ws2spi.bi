@@ -334,8 +334,8 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type LPNSPV2STARTUP as function(byval lpProviderId as LPGUID, byval ppvClientSessionArg as LPVOID ptr) as long
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	type _NSPV2_ROUTINE
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+	type _NSPV2_ROUTINE field = 4
 		cbSize as DWORD
 		dwMajorVersion as DWORD
 		dwMinorVersion as DWORD
@@ -347,8 +347,8 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 		NSPv2SetServiceEx as LPNSPV2SETSERVICEEX
 		NSPv2ClientSessionRundown as LPNSPV2CLIENTSESSIONRUNDOWN
 	end type
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	type _NSPV2_ROUTINE field = 4
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	type _NSPV2_ROUTINE
 		cbSize as DWORD
 		dwMajorVersion as DWORD
 		dwMinorVersion as DWORD
@@ -386,13 +386,13 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type WSC_PROVIDER_INFO_TYPE as _WSC_PROVIDER_INFO_TYPE
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	type _WSC_PROVIDER_AUDIT_INFO
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+	type _WSC_PROVIDER_AUDIT_INFO field = 4
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	type _WSC_PROVIDER_AUDIT_INFO field = 4
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	type _WSC_PROVIDER_AUDIT_INFO
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type

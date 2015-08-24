@@ -3105,7 +3105,13 @@ const GL_ARB_shader_group_vote = 1
 const GL_ARB_shader_image_load_store = 1
 const GL_ARB_shader_image_size = 1
 const GL_ARB_shader_objects = 1
-type GLhandleARB as ulong
+
+#ifdef __FB_DARWIN__
+	type GLhandleARB as any ptr
+#else
+	type GLhandleARB as ulong
+#endif
+
 type GLcharARB as zstring
 const GL_PROGRAM_OBJECT_ARB = &h8B40
 const GL_SHADER_OBJECT_ARB = &h8B48

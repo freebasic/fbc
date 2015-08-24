@@ -53,10 +53,10 @@ type GModuleCheckInit as function(byval module as GModule ptr) as const zstring 
 type GModuleUnload as sub(byval module as GModule ptr)
 declare function g_module_supported() as gboolean
 
-#ifdef __FB_WIN32__
-	declare function g_module_open_ alias "g_module_open"(byval file_name as const zstring ptr, byval flags as GModuleFlags) as GModule ptr
-#else
+#ifdef __FB_UNIX__
 	declare function g_module_open(byval file_name as const zstring ptr, byval flags as GModuleFlags) as GModule ptr
+#else
+	declare function g_module_open_ alias "g_module_open"(byval file_name as const zstring ptr, byval flags as GModuleFlags) as GModule ptr
 #endif
 
 declare function g_module_close(byval module as GModule ptr) as gboolean
@@ -64,10 +64,10 @@ declare sub g_module_make_resident(byval module as GModule ptr)
 declare function g_module_error() as const zstring ptr
 declare function g_module_symbol(byval module as GModule ptr, byval symbol_name as const zstring ptr, byval symbol as gpointer ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare function g_module_name_ alias "g_module_name"(byval module as GModule ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function g_module_name(byval module as GModule ptr) as const zstring ptr
+#else
+	declare function g_module_name_ alias "g_module_name"(byval module as GModule ptr) as const zstring ptr
 #endif
 
 declare function g_module_build_path(byval directory as const zstring ptr, byval module_name as const zstring ptr) as zstring ptr

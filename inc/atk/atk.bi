@@ -1395,10 +1395,10 @@ type _AtkMisc
 	parent as GObject
 end type
 
-#if (defined(__FB_WIN32__) and defined(ATK_STATIC_COMPILATION)) or defined(__FB_LINUX__)
-	extern atk_misc_instance as AtkMisc ptr
-#else
+#if (defined(__FB_WIN32__) and (not defined(ATK_STATIC_COMPILATION))) or defined(__FB_CYGWIN__)
 	extern import atk_misc_instance as AtkMisc ptr
+#else
+	extern atk_misc_instance as AtkMisc ptr
 #endif
 
 type _AtkMiscClass

@@ -59,21 +59,23 @@ const LIBCURL_VERSION_NUM = &h072700
 #define LIBCURL_TIMESTAMP "Wed Nov  5 07:24:58 UTC 2014"
 #define __CURL_CURLBUILD_H
 
-#ifdef __FB_WIN32__
+#if (defined(__FB_WIN32__) and defined(__FB_64BIT__)) or defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))))
 	const CURL_SIZEOF_LONG = 4
-	#define CURL_FORMAT_CURL_OFF_T "I64d"
-	#define CURL_FORMAT_CURL_OFF_TU "I64u"
-	#define CURL_FORMAT_OFF_T "%I64d"
-#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
+#endif
+
+#if defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))))
+	#define CURL_FORMAT_CURL_OFF_T "lld"
+	#define CURL_FORMAT_CURL_OFF_TU "llu"
+	#define CURL_FORMAT_OFF_T "%lld"
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
 	const CURL_SIZEOF_LONG = 8
 	#define CURL_FORMAT_CURL_OFF_T "ld"
 	#define CURL_FORMAT_CURL_OFF_TU "lu"
 	#define CURL_FORMAT_OFF_T "%ld"
 #else
-	const CURL_SIZEOF_LONG = 4
-	#define CURL_FORMAT_CURL_OFF_T "lld"
-	#define CURL_FORMAT_CURL_OFF_TU "llu"
-	#define CURL_FORMAT_OFF_T "%lld"
+	#define CURL_FORMAT_CURL_OFF_T "I64d"
+	#define CURL_FORMAT_CURL_OFF_TU "I64u"
+	#define CURL_FORMAT_OFF_T "%I64d"
 #endif
 
 const CURL_SIZEOF_CURL_OFF_T = 8

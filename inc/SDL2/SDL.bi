@@ -30,15 +30,15 @@
 #include once "crt/long.bi"
 #include once "crt/stdarg.bi"
 
-#ifdef __FB_WIN32__
-	#include once "windows.bi"
-	#include once "win/d3d9.bi"
-#else
+#ifdef __FB_UNIX__
 	#include once "crt/stdio.bi"
 	#include once "crt/string.bi"
 	#include once "crt/ctype.bi"
 	#include once "crt/math.bi"
 	#include once "crt/iconv.bi"
+#else
+	#include once "windows.bi"
+	#include once "win/d3d9.bi"
 #endif
 
 '' The following symbols have been renamed:
@@ -58,15 +58,19 @@ extern "C"
 #define _SDL_config_h
 #define _SDL_platform_h
 #define SDLCALL cdecl
-#ifndef NULL
-	const NULL = 0
+
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+	#ifndef NULL
+		const NULL = 0
+	#endif
 #endif
+
 declare function SDL_GetPlatform() as const zstring ptr
 
-#ifdef __FB_WIN32__
-	#define _SDL_config_windows_h
-#else
+#ifdef __FB_UNIX__
 	#define SDL_BYTEORDER SDL_LIL_ENDIAN
+#else
+	#define _SDL_config_windows_h
 #endif
 
 #define SDL_FOURCC(A, B, C, D) ((((cast(Uint32, cast(Uint8, (A))) shl 0) or (cast(Uint32, cast(Uint8, (B))) shl 8)) or (cast(Uint32, cast(Uint8, (C))) shl 16)) or (cast(Uint32, cast(Uint8, (D))) shl 24))
@@ -91,12 +95,12 @@ enum
 	DUMMY_ENUM_VALUE
 end enum
 
-#ifdef __FB_WIN32__
-	#define SDL_stack_alloc(type, count) cptr(type ptr, SDL_malloc(sizeof(type) * (count)))
-	#define SDL_stack_free(data) SDL_free(data)
-#else
+#ifdef __FB_UNIX__
 	#define SDL_stack_alloc(type, count) cptr(type ptr, alloca(sizeof(type) * (count)))
 	#define SDL_stack_free(data)
+#else
+	#define SDL_stack_alloc(type, count) cptr(type ptr, SDL_malloc(sizeof(type) * (count)))
+	#define SDL_stack_free(data) SDL_free(data)
 #endif
 
 declare function SDL_malloc(byval size as uinteger) as any ptr
@@ -114,11 +118,13 @@ declare function SDL_isspace(byval x as long) as long
 declare function SDL_toupper(byval x as long) as long
 declare function SDL_tolower(byval x as long) as long
 declare function SDL_memset(byval dst as any ptr, byval c as long, byval len as uinteger) as any ptr
+
 #define SDL_zero(x) SDL_memset(@(x), 0, sizeof(x))
 #define SDL_zerop(x) SDL_memset((x), 0, sizeof(*(x)))
-#define SDL_memset4(dst, val, dwords) SDL_memset(dst, val, (dwords) * 4)
+#define SDL_memset4(dst, val, dwords) SDL_memset((dst), (val), (dwords) * 4)
 declare function SDL_memcpy(byval dst as any ptr, byval src as const any ptr, byval len as uinteger) as any ptr
-#define SDL_memcpy4(dst, src, dwords) SDL_memcpy(dst, src, (dwords) * 4)
+#define SDL_memcpy4(dst, src, dwords) SDL_memcpy((dst), (src), (dwords) * 4)
+
 declare function SDL_memmove(byval dst as any ptr, byval src as const any ptr, byval len as uinteger) as any ptr
 declare function SDL_memcmp(byval s1 as const any ptr, byval s2 as const any ptr, byval len as uinteger) as long
 declare function SDL_wcslen(byval wstr as const wstring ptr) as uinteger
@@ -190,19 +196,25 @@ declare function SDL_iconv_string(byval tocode as const zstring ptr, byval fromc
 declare function SDL_main(byval argc as long, byval argv as zstring ptr ptr) as long
 declare sub SDL_SetMainReady()
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	declare function SDL_RegisterApp(byval name as zstring ptr, byval style as Uint32, byval hInst as any ptr) as long
 	declare sub SDL_UnregisterApp()
 #endif
 
 #define _SDL_assert_h
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#define SDL_BYTEORDER SDL_LIL_ENDIAN
 #endif
 
 const SDL_ASSERT_LEVEL = 2
-#define SDL_TriggerBreakpoint() asm int 3
+
+#if defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define SDL_TriggerBreakpoint() raise(SIGTRAP)
+#else
+	#define SDL_TriggerBreakpoint() asm int 3
+#endif
+
 #define SDL_FUNCTION __FUNCTION__
 #define SDL_FILE __FILE__
 #define SDL_LINE __LINE__
@@ -315,6 +327,7 @@ const SDL_BIG_ENDIAN = 4321
 #define SDL_Swap64(x) _
 	culngint((SDL_Swap32(culngint(x) and &hFFFFFFFF) shl 32) or _
 	         SDL_Swap32(culngint(x) shr 32))
+
 private function SDL_SwapFloat(byval x as single) as single
 	union swapper
 		f as single
@@ -376,25 +389,23 @@ type SDL_ThreadFunction as function(byval data as any ptr) as long
 
 #ifdef __FB_WIN32__
 	#define SDL_PASSED_BEGINTHREAD_ENDTHREAD
-#endif
 
-#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
-#elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
-	type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function stdcall(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
-#endif
+	#ifdef __FB_64BIT__
+		type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
+	#else
+		type pfnSDL_CurrentBeginThread as function(byval as any ptr, byval as ulong, byval func as function stdcall(byval as any ptr) as ulong, byval arg as any ptr, byval as ulong, byval threadID as ulong ptr) as uinteger
+	#endif
 
-#ifdef __FB_WIN32__
 	type pfnSDL_CurrentEndThread as sub(byval code as ulong)
 #endif
 
 type SDL_Thread as SDL_Thread_
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	declare function SDL_CreateThread(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr) as SDL_Thread ptr
+#else
 	declare function SDL_CreateThread_ alias "SDL_CreateThread"(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr, byval pfnBeginThread as pfnSDL_CurrentBeginThread, byval pfnEndThread as pfnSDL_CurrentEndThread) as SDL_Thread ptr
 	#define SDL_CreateThread(fn, name, data) SDL_CreateThread_(fn, name, data, cast(pfnSDL_CurrentBeginThread, _beginthreadex), cast(pfnSDL_CurrentEndThread, _endthreadex))
-#else
-	declare function SDL_CreateThread(byval fn as SDL_ThreadFunction, byval name as const zstring ptr, byval data as any ptr) as SDL_Thread ptr
 #endif
 
 declare function SDL_GetThreadName(byval thread as SDL_Thread ptr) as const zstring ptr
@@ -415,7 +426,7 @@ const SDL_RWOPS_JNIFILE = 3
 const SDL_RWOPS_MEMORY = 4
 const SDL_RWOPS_MEMORY_RO = 5
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	type SDL_RWops_hidden_windowsio_buffer
 		data as any ptr
 		size as uinteger
@@ -434,6 +445,13 @@ const SDL_RWOPS_MEMORY_RO = 5
 	end type
 #endif
 
+#ifdef __FB_CYGWIN__
+	type SDL_RWops_hidden_stdio
+		autoclose as SDL_bool
+		fp as FILE ptr
+	end type
+#endif
+
 type SDL_RWops_hidden_mem
 	base as Uint8 ptr
 	here as Uint8 ptr
@@ -446,10 +464,14 @@ type SDL_RWops_hidden_unknown
 end type
 
 union SDL_RWops_hidden
-	#ifdef __FB_WIN32__
+	#ifdef __FB_CYGWIN__
 		windowsio as SDL_RWops_hidden_windowsio
-	#else
+	#endif
+
+	#ifdef __FB_UNIX__
 		stdio as SDL_RWops_hidden_stdio
+	#else
+		windowsio as SDL_RWops_hidden_windowsio
 	#endif
 
 	mem as SDL_RWops_hidden_mem
@@ -468,10 +490,10 @@ end type
 
 declare function SDL_RWFromFile(byval file as const zstring ptr, byval mode as const zstring ptr) as SDL_RWops ptr
 
-#ifdef __FB_WIN32__
-	declare function SDL_RWFromFP(byval fp as any ptr, byval autoclose as SDL_bool) as SDL_RWops ptr
-#else
+#ifdef __FB_UNIX__
 	declare function SDL_RWFromFP(byval fp as FILE ptr, byval autoclose as SDL_bool) as SDL_RWops ptr
+#else
+	declare function SDL_RWFromFP(byval fp as any ptr, byval autoclose as SDL_bool) as SDL_RWops ptr
 #endif
 
 declare function SDL_RWFromMem(byval mem as any ptr, byval size as long) as SDL_RWops ptr
@@ -2552,7 +2574,7 @@ declare function SDL_GL_BindTexture(byval texture as SDL_Texture ptr, byval texw
 declare function SDL_GL_UnbindTexture(byval texture as SDL_Texture ptr) as long
 #define _SDL_system_h
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	declare function SDL_Direct3D9GetAdapterIndex(byval displayIndex as long) as long
 	declare function SDL_RenderGetD3D9Device(byval renderer as SDL_Renderer ptr) as IDirect3DDevice9 ptr
 	declare sub SDL_DXGIGetOutputInfo(byval displayIndex as long, byval adapterIndex as long ptr, byval outputIndex as long ptr)

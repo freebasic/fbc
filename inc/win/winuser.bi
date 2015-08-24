@@ -1277,11 +1277,11 @@ const WM_XBUTTONDOWN = &h020B
 const WM_XBUTTONUP = &h020C
 const WM_XBUTTONDBLCLK = &h020D
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const WM_MOUSELAST = &h020d
-#else
+#if _WIN32_WINNT = &h0602
 	const WM_MOUSEHWHEEL = &h020e
 	const WM_MOUSELAST = &h020e
+#else
+	const WM_MOUSELAST = &h020d
 #endif
 
 const WHEEL_DELTA = 120
@@ -1315,7 +1315,7 @@ const PBT_APMPOWERSTATUSCHANGE = &h000A
 const PBT_APMOEMEVENT = &h000B
 const PBT_APMRESUMEAUTOMATIC = &h0012
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const PBT_POWERSETTINGCHANGE = 32787
 
 	type POWERBROADCAST_SETTING
@@ -2065,7 +2065,7 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	#define GetClassInfoEx GetClassInfoExW
 #endif
 
-#if defined(__FB_64BIT__) and (defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)))
+#if (not defined(__FB_64BIT__)) and defined(UNICODE) and (_WIN32_WINNT >= &h0502)
 	#define _HPOWERNOTIFY_DEF_
 	type HPOWERNOTIFY as HANDLE
 	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
@@ -2087,7 +2087,7 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	#define GetClassInfoEx GetClassInfoExA
 #endif
 
-#if ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))) or ((not defined(__FB_64BIT__)) and (defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))))
+#if (_WIN32_WINNT >= &h0502) and ((not defined(UNICODE)) or (defined(__FB_64BIT__) and defined(UNICODE)))
 	#define _HPOWERNOTIFY_DEF_
 	type HPOWERNOTIFY as HANDLE
 	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
@@ -2137,7 +2137,7 @@ const ISMEX_NOTIFY = &h00000002
 const ISMEX_CALLBACK = &h00000004
 const ISMEX_REPLIED = &h00000008
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	extern GUID_POWERSCHEME_PERSONALITY as const GUID
 	extern GUID_MIN_POWER_SAVINGS as const GUID
 	extern GUID_MAX_POWER_SAVINGS as const GUID
@@ -2190,7 +2190,7 @@ end type
 type UPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO
 type PUPDATELAYEREDWINDOWINFO as tagUPDATELAYEREDWINDOWINFO ptr
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function UpdateLayeredWindowIndirect(byval hWnd as HWND, byval pULWInfo as const UPDATELAYEREDWINDOWINFO ptr) as WINBOOL
 #endif
 
@@ -2937,10 +2937,10 @@ const QS_RAWINPUT = &h0400
 
 #define QS_MOUSE (QS_MOUSEMOVE or QS_MOUSEBUTTON)
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define QS_INPUT ((QS_MOUSE or QS_KEY) or QS_RAWINPUT)
-#else
+#if _WIN32_WINNT = &h0602
 	#define QS_INPUT ((((QS_MOUSE or QS_KEY) or QS_RAWINPUT) or QS_TOUCH) or QS_POINTER)
+#else
+	#define QS_INPUT ((QS_MOUSE or QS_KEY) or QS_RAWINPUT)
 #endif
 
 #define QS_ALLEVENTS ((((QS_INPUT or QS_POSTMESSAGE) or QS_TIMER) or QS_PAINT) or QS_HOTKEY)
@@ -3091,7 +3091,7 @@ const SM_SERVERR2 = 89
 	const SM_MAXIMUMTOUCHES = 95
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const SM_CMETRICS = 97
 #endif
 
@@ -6368,10 +6368,10 @@ const RIDEV_EXMODEMASK = &h000000F0
 const GIDC_ARRIVAL = 1
 const GIDC_REMOVAL = 2
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define GET_DEVICE_CHANGE_LPARAM(lParam) LOWORD(lParam)
-#else
+#if _WIN32_WINNT = &h0602
 	#define GET_DEVICE_CHANGE_WPARAM(wParam) LOWORD(wParam)
+#else
+	#define GET_DEVICE_CHANGE_LPARAM(lParam) LOWORD(lParam)
 #endif
 
 type tagRAWINPUTDEVICELIST

@@ -1452,11 +1452,11 @@ type ColorPalette
 	Entries(0 to 0) as ARGB
 end type
 
-#define GetPixelFormatSize(pixfmt) cast(UINT, (cast(UINT, pixfmt) and &hff00u) shr 8)
-#define IsAlphaPixelFormat(pixfmt) cast(BOOL, -((pixfmt and cast(INT_, &h00040000)) <> 0))
-#define IsCanonicalPixelFormat(pixfmt) cast(BOOL, -((pixfmt and cast(INT_, &h00200000)) <> 0))
-#define IsExtendedPixelFormat(pixfmt) cast(BOOL, -((pixfmt and cast(INT_, &h00100000)) <> 0))
-#define IsIndexedPixelFormat(pixfmt) cast(BOOL, -((pixfmt and cast(INT_, &h00010000)) <> 0))
+#define GetPixelFormatSize(pixfmt) cast(UINT, (cast(UINT, (pixfmt)) and &hff00u) shr 8)
+#define IsAlphaPixelFormat(pixfmt) cast(BOOL, -(((pixfmt) and cast(INT_, &h00040000)) <> 0))
+#define IsCanonicalPixelFormat(pixfmt) cast(BOOL, -(((pixfmt) and cast(INT_, &h00200000)) <> 0))
+#define IsExtendedPixelFormat(pixfmt) cast(BOOL, -(((pixfmt) and cast(INT_, &h00100000)) <> 0))
+#define IsIndexedPixelFormat(pixfmt) cast(BOOL, -(((pixfmt) and cast(INT_, &h00010000)) <> 0))
 #define __GDIPLUS_COLOR_H
 
 type ColorChannelFlags as long
@@ -2220,9 +2220,9 @@ extern SharpenEffectGuid as const GUID
 extern TintEffectGuid as const GUID
 
 #define __GDIPLUS_IMAGECODEC_H
-#define GetImageDecoders(numDecoders, size, decoders) cast(GpStatus, GdipGetImageDecoders(numDecoders, size, decoders))
-#define GetImageDecodersSize(numDecoders, size) cast(GpStatus, GdipGetImageDecodersSize(numDecoders, size))
-#define GetImageEncoders(numEncoders, size, encoders) cast(GpStatus, GdipGetImageEncoders(numEncoders, size, encoders))
-#define GetImageEncodersSize(numEncoders, size) cast(GpStatus, GdipGetImageEncodersSize(numEncoders, size))
+#define GetImageDecoders(numDecoders, size, decoders) cast(GpStatus, GdipGetImageDecoders((numDecoders), (size), (decoders)))
+#define GetImageDecodersSize(numDecoders, size) cast(GpStatus, GdipGetImageDecodersSize((numDecoders), (size)))
+#define GetImageEncoders(numEncoders, size, encoders) cast(GpStatus, GdipGetImageEncoders((numEncoders), (size), (encoders)))
+#define GetImageEncodersSize(numEncoders, size) cast(GpStatus, GdipGetImageEncodersSize((numEncoders), (size)))
 
 end extern

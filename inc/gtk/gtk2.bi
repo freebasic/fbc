@@ -25,10 +25,10 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
-	#inclib "gtk-win32-2.0"
-#else
+#ifdef __FB_UNIX__
 	#inclib "gtk-x11-2.0"
+#else
+	#inclib "gtk-win32-2.0"
 #endif
 
 #include once "gdk/gdk2.bi"
@@ -1030,10 +1030,10 @@ end enum
 
 #define GTK_NOTE(type, action)
 
-#ifdef __FB_WIN32__
-	extern import gtk_debug_flags as guint
-#else
+#ifdef __FB_UNIX__
 	extern gtk_debug_flags as guint
+#else
+	extern import gtk_debug_flags as guint
 #endif
 
 #define GTK_TYPE_OBJECT gtk_object_get_type()
@@ -1401,12 +1401,12 @@ declare function _gtk_rc_parse_widget_class_path(byval pattern as const zstring 
 declare sub _gtk_rc_free_widget_class_path(byval list as GSList ptr)
 declare function _gtk_rc_match_widget_class(byval list as GSList ptr, byval length as gint, byval path as zstring ptr, byval path_reversed as zstring ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_rc_add_default_file_utf8(byval filename as const zstring ptr)
-	declare sub gtk_rc_set_default_files_utf8(byval filenames as zstring ptr ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_rc_add_default_file(byval filename as const zstring ptr)
 	declare sub gtk_rc_set_default_files(byval filenames as zstring ptr ptr)
+#else
+	declare sub gtk_rc_add_default_file_utf8(byval filename as const zstring ptr)
+	declare sub gtk_rc_set_default_files_utf8(byval filenames as zstring ptr ptr)
 #endif
 
 declare function gtk_rc_get_default_files() as zstring ptr ptr
@@ -1416,10 +1416,10 @@ declare function gtk_rc_reparse_all_for_settings(byval settings as GtkSettings p
 declare sub gtk_rc_reset_styles(byval settings as GtkSettings ptr)
 declare function gtk_rc_find_pixmap_in_path(byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as const zstring ptr) as zstring ptr
 
-#ifdef __FB_WIN32__
-	declare sub gtk_rc_parse_utf8(byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_rc_parse(byval filename as const zstring ptr)
+#else
+	declare sub gtk_rc_parse_utf8(byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_rc_parse_string(byval rc_string as const zstring ptr)
@@ -2188,10 +2188,10 @@ declare function gtk_window_get_icon_list(byval window as GtkWindow ptr) as GLis
 declare sub gtk_window_set_icon(byval window as GtkWindow ptr, byval icon as GdkPixbuf ptr)
 declare sub gtk_window_set_icon_name(byval window as GtkWindow ptr, byval name as const zstring ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_window_set_icon_from_file(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+#else
+	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare function gtk_window_get_icon(byval window as GtkWindow ptr) as GdkPixbuf ptr
@@ -2202,10 +2202,10 @@ declare sub gtk_window_set_default_icon(byval icon as GdkPixbuf ptr)
 declare sub gtk_window_set_default_icon_name(byval name as const zstring ptr)
 declare function gtk_window_get_default_icon_name() as const zstring ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_window_set_default_icon_from_file(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+#else
+	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare sub gtk_window_set_auto_startup_notification(byval setting as gboolean)
@@ -2732,12 +2732,12 @@ declare sub gtk_accel_map_add_entry(byval accel_path as const zstring ptr, byval
 declare function gtk_accel_map_lookup_entry(byval accel_path as const zstring ptr, byval key as GtkAccelKey ptr) as gboolean
 declare function gtk_accel_map_change_entry(byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval replace as gboolean) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_accel_map_load_utf8(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_save_utf8(byval file_name as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_accel_map_load(byval file_name as const zstring ptr)
 	declare sub gtk_accel_map_save(byval file_name as const zstring ptr)
+#else
+	declare sub gtk_accel_map_load_utf8(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_save_utf8(byval file_name as const zstring ptr)
 #endif
 
 declare sub gtk_accel_map_foreach(byval data as gpointer, byval foreach_func as GtkAccelMapForeach)
@@ -3520,10 +3520,10 @@ declare function gtk_image_new() as GtkWidget ptr
 declare function gtk_image_new_from_pixmap(byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 declare function gtk_image_new_from_image(byval image as GdkImage ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_image_new_from_file_utf8(byval filename as const zstring ptr) as GtkWidget ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_image_new_from_file(byval filename as const zstring ptr) as GtkWidget ptr
+#else
+	declare function gtk_image_new_from_file_utf8(byval filename as const zstring ptr) as GtkWidget ptr
 #endif
 
 declare function gtk_image_new_from_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
@@ -3536,10 +3536,10 @@ declare sub gtk_image_clear(byval image as GtkImage ptr)
 declare sub gtk_image_set_from_pixmap(byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_image_set_from_image(byval image as GtkImage ptr, byval gdk_image as GdkImage ptr, byval mask as GdkBitmap ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_image_set_from_file(byval image as GtkImage ptr, byval filename as const zstring ptr)
+#else
+	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_image_set_from_pixbuf(byval image as GtkImage ptr, byval pixbuf as GdkPixbuf ptr)
@@ -6237,7 +6237,12 @@ declare sub gtk_file_chooser_set_create_folders(byval chooser as GtkFileChooser 
 declare function gtk_file_chooser_get_create_folders(byval chooser as GtkFileChooser ptr) as gboolean
 declare sub gtk_file_chooser_set_current_name(byval chooser as GtkFileChooser ptr, byval name as const zstring ptr)
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	declare function gtk_file_chooser_get_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_set_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_select_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare sub gtk_file_chooser_unselect_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
+#else
 	#define gtk_file_chooser_get_filename gtk_file_chooser_get_filename_utf8
 	#define gtk_file_chooser_set_filename gtk_file_chooser_set_filename_utf8
 	#define gtk_file_chooser_select_filename gtk_file_chooser_select_filename_utf8
@@ -6254,24 +6259,19 @@ declare sub gtk_file_chooser_set_current_name(byval chooser as GtkFileChooser pt
 	declare function gtk_file_chooser_set_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_select_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare sub gtk_file_chooser_unselect_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
-#else
-	declare function gtk_file_chooser_get_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
-	declare function gtk_file_chooser_set_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_select_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare sub gtk_file_chooser_unselect_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_file_chooser_select_all(byval chooser as GtkFileChooser ptr)
 declare sub gtk_file_chooser_unselect_all(byval chooser as GtkFileChooser ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_get_filenames_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
-	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_filenames(byval chooser as GtkFileChooser ptr) as GSList ptr
 	declare function gtk_file_chooser_set_current_folder(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_get_current_folder(byval chooser as GtkFileChooser ptr) as zstring ptr
+#else
+	declare function gtk_file_chooser_get_filenames_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
+	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
 #endif
 
 declare function gtk_file_chooser_get_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
@@ -6295,10 +6295,10 @@ declare function gtk_file_chooser_get_preview_widget_active(byval chooser as Gtk
 declare sub gtk_file_chooser_set_use_preview_label(byval chooser as GtkFileChooser ptr, byval use_label as gboolean)
 declare function gtk_file_chooser_get_use_preview_label(byval chooser as GtkFileChooser ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_get_preview_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_preview_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
+#else
+	declare function gtk_file_chooser_get_preview_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
 #endif
 
 declare function gtk_file_chooser_get_preview_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
@@ -6311,14 +6311,14 @@ declare function gtk_file_chooser_list_filters(byval chooser as GtkFileChooser p
 declare sub gtk_file_chooser_set_filter(byval chooser as GtkFileChooser ptr, byval filter as GtkFileFilter ptr)
 declare function gtk_file_chooser_get_filter(byval chooser as GtkFileChooser ptr) as GtkFileFilter ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_add_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	declare function gtk_file_chooser_remove_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	declare function gtk_file_chooser_list_shortcut_folders_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_add_shortcut_folder(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
 	declare function gtk_file_chooser_remove_shortcut_folder(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
 	declare function gtk_file_chooser_list_shortcut_folders(byval chooser as GtkFileChooser ptr) as GSList ptr
+#else
+	declare function gtk_file_chooser_add_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_remove_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_list_shortcut_folders_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
 #endif
 
 declare function gtk_file_chooser_add_shortcut_folder_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
@@ -7132,19 +7132,19 @@ declare function gtk_icon_source_new() as GtkIconSource ptr
 declare function gtk_icon_source_copy(byval source as const GtkIconSource ptr) as GtkIconSource ptr
 declare sub gtk_icon_source_free(byval source as GtkIconSource ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_icon_source_set_filename(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
+#else
+	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_icon_source_set_icon_name(byval source as GtkIconSource ptr, byval icon_name as const zstring ptr)
 declare sub gtk_icon_source_set_pixbuf(byval source as GtkIconSource ptr, byval pixbuf as GdkPixbuf ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_icon_source_get_filename(byval source as const GtkIconSource ptr) as const zstring ptr
+#else
+	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const zstring ptr
 #endif
 
 declare function gtk_icon_source_get_icon_name(byval source as const GtkIconSource ptr) as const zstring ptr
@@ -7222,16 +7222,16 @@ declare function gtk_icon_theme_get_default() as GtkIconTheme ptr
 declare function gtk_icon_theme_get_for_screen(byval screen as GdkScreen ptr) as GtkIconTheme ptr
 declare sub gtk_icon_theme_set_screen(byval icon_theme as GtkIconTheme ptr, byval screen as GdkScreen ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
-	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_icon_theme_set_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
 	declare sub gtk_icon_theme_get_search_path(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
 	declare sub gtk_icon_theme_append_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
 	declare sub gtk_icon_theme_prepend_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+#else
+	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
 #endif
 
 declare sub gtk_icon_theme_set_custom_theme(byval icon_theme as GtkIconTheme ptr, byval theme_name as const zstring ptr)
@@ -7252,10 +7252,10 @@ declare sub gtk_icon_info_free(byval icon_info as GtkIconInfo ptr)
 declare function gtk_icon_info_new_for_pixbuf(byval icon_theme as GtkIconTheme ptr, byval pixbuf as GdkPixbuf ptr) as GtkIconInfo ptr
 declare function gtk_icon_info_get_base_size(byval icon_info as GtkIconInfo ptr) as gint
 
-#ifdef __FB_WIN32__
-	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_icon_info_get_filename(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+#else
+	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const zstring ptr
 #endif
 
 declare function gtk_icon_info_get_builtin_pixbuf(byval icon_info as GtkIconInfo ptr) as GdkPixbuf ptr
@@ -7652,7 +7652,7 @@ declare sub gtk_link_button_set_visited(byval link_button as GtkLinkButton ptr, 
 #define GTK_PRIORITY_LOW G_PRIORITY_LOW
 type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event as GdkEventKey ptr, byval func_data as gpointer) as gint
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	extern import gtk_major_version_ alias "gtk_major_version" as const guint
 	extern import gtk_minor_version_ alias "gtk_minor_version" as const guint
 	extern import gtk_micro_version_ alias "gtk_micro_version" as const guint
@@ -7669,18 +7669,18 @@ type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event
 declare function gtk_check_version_ alias "gtk_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const zstring ptr
 declare function gtk_parse_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
-	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_init(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
 	declare function gtk_init_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
+#else
+	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
+	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 #endif
 
 declare function gtk_init_with_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval parameter_string as const zstring ptr, byval entries as GOptionEntry ptr, byval translation_domain as const zstring ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_get_option_group(byval open_default_display as gboolean) as GOptionGroup ptr
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	declare sub gtk_init_abi_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval num_checks as long, byval sizeof_GtkWindow as uinteger, byval sizeof_GtkBox as uinteger)
 	declare function gtk_init_check_abi_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval num_checks as long, byval sizeof_GtkWindow as uinteger, byval sizeof_GtkBox as uinteger) as gboolean
 	#define gtk_init(argc, argv) gtk_init_abi_check(argc, argv, 2, sizeof(GtkWindow), sizeof(GtkBox))
@@ -10869,10 +10869,10 @@ declare function gtk_ui_manager_get_toplevels(byval self as GtkUIManager ptr, by
 declare function gtk_ui_manager_get_action(byval self as GtkUIManager ptr, byval path as const zstring ptr) as GtkAction ptr
 declare function gtk_ui_manager_add_ui_from_string(byval self as GtkUIManager ptr, byval buffer as const zstring ptr, byval length as gssize, byval error as GError ptr ptr) as guint
 
-#ifdef __FB_WIN32__
-	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_ui_manager_add_ui_from_file(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
+#else
+	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
 #endif
 
 declare sub gtk_ui_manager_add_ui(byval self as GtkUIManager ptr, byval merge_id as guint, byval path as const zstring ptr, byval name as const zstring ptr, byval action as const zstring ptr, byval type as GtkUIManagerItemType, byval top as gboolean)
@@ -11670,22 +11670,22 @@ end type
 declare function gtk_file_selection_get_type() as GType
 declare function gtk_file_selection_new(byval title as const zstring ptr) as GtkWidget ptr
 
-#ifdef __FB_WIN32__
-	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
-	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_file_selection_set_filename(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
 	declare function gtk_file_selection_get_filename(byval filesel as GtkFileSelection ptr) as const zstring ptr
+#else
+	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
+	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const zstring ptr
 #endif
 
 declare sub gtk_file_selection_complete(byval filesel as GtkFileSelection ptr, byval pattern as const zstring ptr)
 declare sub gtk_file_selection_show_fileop_buttons(byval filesel as GtkFileSelection ptr)
 declare sub gtk_file_selection_hide_fileop_buttons(byval filesel as GtkFileSelection ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_selection_get_selections(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+#else
+	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
 #endif
 
 declare sub gtk_file_selection_set_select_multiple(byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)

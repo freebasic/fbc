@@ -1240,11 +1240,11 @@ type XIMValuesList
 	supported_values as zstring ptr ptr
 end type
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	extern _Xdebug as long
+#else
 	#define _Xdebug (*_Xdebug_p)
 	extern _Xdebug_p as long ptr
-#else
-	extern _Xdebug as long
 #endif
 
 declare function XLoadQueryFont(byval as Display ptr, byval as const zstring ptr) as XFontStruct ptr

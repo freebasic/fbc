@@ -238,19 +238,19 @@ type MARGINS as _MARGINS
 type PMARGINS as _MARGINS ptr
 declare function GetThemeMargins(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval prc as RECT ptr, byval pMargins as MARGINS ptr) as HRESULT
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const MAX_INTLIST_COUNT = 10
-#else
+#if _WIN32_WINNT = &h0602
 	const MAX_INTLIST_COUNT = 402
+#else
+	const MAX_INTLIST_COUNT = 10
 #endif
 
 type _INTLIST
 	iValueCount as long
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-		iValues(0 to 9) as long
-	#else
+	#if _WIN32_WINNT = &h0602
 		iValues(0 to 401) as long
+	#else
+		iValues(0 to 9) as long
 	#endif
 end type
 

@@ -699,7 +699,7 @@ declare function WriteFile(byval hFile as HANDLE, byval lpBuffer as LPCVOID, byv
 	#define SetFileAttributes SetFileAttributesW
 #endif
 
-#if defined(__FB_64BIT__) and defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	declare function SetFileInformationByHandle(byval hFile as HANDLE, byval FileInformationClass as FILE_INFO_BY_HANDLE_CLASS, byval lpFileInformation as LPVOID, byval dwBufferSize as DWORD) as WINBOOL
 	declare function CreateFile2(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval dwCreationDisposition as DWORD, byval pCreateExParams as LPCREATEFILE2_EXTENDED_PARAMETERS) as HANDLE
 #elseif not defined(UNICODE)
@@ -713,7 +713,7 @@ declare function WriteFile(byval hFile as HANDLE, byval lpBuffer as LPCVOID, byv
 	#define SetFileAttributes SetFileAttributesA
 #endif
 
-#if (_WIN32_WINNT = &h0602) and (((not defined(__FB_64BIT__)) and defined(UNICODE)) or (not defined(UNICODE)))
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	declare function SetFileInformationByHandle(byval hFile as HANDLE, byval FileInformationClass as FILE_INFO_BY_HANDLE_CLASS, byval lpFileInformation as LPVOID, byval dwBufferSize as DWORD) as WINBOOL
 	declare function CreateFile2(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval dwCreationDisposition as DWORD, byval pCreateExParams as LPCREATEFILE2_EXTENDED_PARAMETERS) as HANDLE
 #endif
@@ -774,12 +774,12 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 #ifndef __FB_64BIT__
 	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
 	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
-	#define InterlockedIncrement(lpAddend) cast(LONG, _InterlockedIncrement(lpAddend))
-	#define InterlockedDecrement(lpAddend) cast(LONG, _InterlockedDecrement(lpAddend))
-	#define InterlockedExchange(Target, Value) cast(LONG, _InterlockedExchange(Target, Value))
-	#define InterlockedExchangeAdd(Addend, Value) cast(LONG, _InterlockedExchangeAdd(Addend, Value))
-	#define InterlockedCompareExchange(Destination, Exchange, Comperand) cast(LONG, _InterlockedCompareExchange(Destination, Exchange, Comperand))
-	#define InterlockedCompareExchange64(Destination, Exchange, Comperand) cast(LONGLONG, _InterlockedCompareExchange64(Destination, Exchange, Comperand))
+	#define InterlockedIncrement(lpAddend) cast(LONG, _InterlockedIncrement((lpAddend)))
+	#define InterlockedDecrement(lpAddend) cast(LONG, _InterlockedDecrement((lpAddend)))
+	#define InterlockedExchange(Target, Value) cast(LONG, _InterlockedExchange((Target), (Value)))
+	#define InterlockedExchangeAdd(Addend, Value) cast(LONG, _InterlockedExchangeAdd((Addend), (Value)))
+	#define InterlockedCompareExchange(Destination, Exchange, Comperand) cast(LONG, _InterlockedCompareExchange((Destination), (Exchange), (Comperand)))
+	#define InterlockedCompareExchange64(Destination, Exchange, Comperand) cast(LONGLONG, _InterlockedCompareExchange64((Destination), (Exchange), (Comperand)))
 #endif
 
 declare sub InitializeSListHead(byval ListHead as PSLIST_HEADER)
@@ -1101,7 +1101,7 @@ declare function NeedCurrentDirectoryForExePathW(byval ExeName as LPCWSTR) as WI
 
 #define _PROCESSTHREADSAPI_H_
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define FLS_OUT_OF_INDEXES cast(DWORD, &hffffffff)
 #endif
 
@@ -1542,13 +1542,13 @@ declare sub WakeByAddressAll(byval Address as PVOID)
 	declare function CreateSemaphoreExW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateMutexEx CreateMutexExW
-	#define CreateEventEx CreateEventExW
-	#define CreateSemaphoreEx CreateSemaphoreExW
-#endif
-
 #ifdef UNICODE
+	#if _WIN32_WINNT = &h0602
+		#define CreateMutexEx CreateMutexExW
+		#define CreateEventEx CreateEventExW
+		#define CreateSemaphoreEx CreateSemaphoreExW
+	#endif
+
 	#define OpenMutex OpenMutexW
 	#define OpenSemaphore OpenSemaphoreW
 	#define OpenEvent OpenEventW
@@ -2989,7 +2989,7 @@ declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_ON = &h00000001ull shl 32
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_OFF = &h00000002ull shl 32
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_RESERVED = &h00000003ull shl 32
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define OpenMutex OpenMutexA
 	#define OpenSemaphore OpenSemaphoreA
 	#define OpenWaitableTimer OpenWaitableTimerA
@@ -3208,7 +3208,7 @@ declare function CreateDirectoryExW(byval lpTemplateDirectory as LPCWSTR, byval 
 
 #ifdef UNICODE
 	#define CreateDirectoryEx CreateDirectoryExW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
 	#define CreateDirectoryEx CreateDirectoryExA
 #endif
 
@@ -3225,7 +3225,7 @@ declare function CreateDirectoryExW(byval lpTemplateDirectory as LPCWSTR, byval 
 	#define CreateDirectoryTransacted CreateDirectoryTransactedW
 	#define RemoveDirectoryTransacted RemoveDirectoryTransactedW
 	#define GetFullPathNameTransacted GetFullPathNameTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define CreateDirectoryEx CreateDirectoryExA
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	#define CreateDirectoryTransacted CreateDirectoryTransactedA
@@ -3281,7 +3281,7 @@ declare function GetCompressedFileSizeW(byval lpFileName as LPCWSTR, byval lpFil
 
 #ifdef UNICODE
 	#define GetCompressedFileSize GetCompressedFileSizeW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
 	#define GetCompressedFileSize GetCompressedFileSizeA
 #endif
 
@@ -3295,7 +3295,7 @@ declare function GetCompressedFileSizeW(byval lpFileName as LPCWSTR, byval lpFil
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define DeleteFileTransacted DeleteFileTransactedW
 	#define GetCompressedFileSizeTransacted GetCompressedFileSizeTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define GetCompressedFileSize GetCompressedFileSizeA
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	#define DeleteFileTransacted DeleteFileTransactedA
@@ -3317,12 +3317,12 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 	declare function CopyFileTransactedW(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define FindFirstFileTransacted FindFirstFileTransactedW
-	#define CopyFileTransacted CopyFileTransactedW
-#endif
-
 #ifdef UNICODE
+	#if _WIN32_WINNT = &h0602
+		#define FindFirstFileTransacted FindFirstFileTransactedW
+		#define CopyFileTransacted CopyFileTransactedW
+	#endif
+
 	#define CheckNameLegalDOS8Dot3 CheckNameLegalDOS8Dot3W
 	#define CopyFile CopyFileW
 	#define CopyFileEx CopyFileExW
@@ -3461,7 +3461,7 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 	end type
 
 	declare function CopyFile2(byval pwszExistingFileName as PCWSTR, byval pwszNewFileName as PCWSTR, byval pExtendedParameters as COPYFILE2_EXTENDED_PARAMETERS ptr) as HRESULT
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define CheckNameLegalDOS8Dot3 CheckNameLegalDOS8Dot3A
 	#define CopyFile CopyFileA
 	#define CopyFileEx CopyFileExA
@@ -3490,7 +3490,7 @@ declare function MoveFileWithProgressW(byval lpExistingFileName as LPCWSTR, byva
 
 #ifdef UNICODE
 	#define MoveFileWithProgress MoveFileWithProgressW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
 	#define MoveFileWithProgress MoveFileWithProgressA
 #endif
 
@@ -3501,7 +3501,7 @@ declare function MoveFileWithProgressW(byval lpExistingFileName as LPCWSTR, byva
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define MoveFileTransacted MoveFileTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define MoveFileWithProgress MoveFileWithProgressA
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	#define MoveFileTransacted MoveFileTransactedA
@@ -3522,7 +3522,7 @@ declare function CreateHardLinkW(byval lpFileName as LPCWSTR, byval lpExistingFi
 #ifdef UNICODE
 	#define ReplaceFile ReplaceFileW
 	#define CreateHardLink CreateHardLinkW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
 	#define ReplaceFile ReplaceFileA
 	#define CreateHardLink CreateHardLinkA
 #endif
@@ -3534,7 +3534,7 @@ declare function CreateHardLinkW(byval lpFileName as LPCWSTR, byval lpExistingFi
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define CreateHardLinkTransacted CreateHardLinkTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define ReplaceFile ReplaceFileA
 	#define CreateHardLink CreateHardLinkA
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
@@ -3724,23 +3724,23 @@ declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccou
 	#define LookupAccountName LookupAccountNameA
 #endif
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define LookupAccountNameLocalA(n, s, cs, d, cd, u) LookupAccountNameA(NULL, n, s, cs, d, cd, u)
 	#define LookupAccountNameLocalW(n, s, cs, d, cd, u) LookupAccountNameW(NULL, n, s, cs, d, cd, u)
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountNameLocal(n, s, cs, d, cd, u) LookupAccountNameW(NULL, n, s, cs, d, cd, u)
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountNameLocal(n, s, cs, d, cd, u) LookupAccountNameA(NULL, n, s, cs, d, cd, u)
 #endif
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define LookupAccountSidLocalA(s, n, cn, d, cd, u) LookupAccountSidA(NULL, s, n, cn, d, cd, u)
 	#define LookupAccountSidLocalW(s, n, cn, d, cd, u) LookupAccountSidW(NULL, s, n, cn, d, cd, u)
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountSidLocal(s, n, cn, d, cd, u) LookupAccountSidW(NULL, s, n, cn, d, cd, u)
 #elseif _WIN32_WINNT = &h0602
 	declare function LookupAccountNameLocalA(byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
@@ -3752,7 +3752,7 @@ declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccou
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define LookupAccountNameLocal LookupAccountNameLocalW
 	#define LookupAccountSidLocal LookupAccountSidLocalW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountSidLocal(s, n, cn, d, cd, u) LookupAccountSidA(NULL, s, n, cn, d, cd, u)
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	#define LookupAccountNameLocal LookupAccountNameLocalA

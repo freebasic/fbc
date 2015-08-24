@@ -27,7 +27,9 @@
 
 #pragma once
 
-extern "C"
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	extern "C"
+#endif
 
 #define __IUPLUA_H
 
@@ -37,7 +39,9 @@ extern "C"
 	declare function iuplua_checkihandle(byval pos as long) as Ihandle ptr
 	declare sub iuplua_pushihandle(byval n as Ihandle ptr)
 	declare function iuplua_dofile(byval filename as zstring ptr) as long
-#else
+#endif
+
+#ifdef LUA_TNONE
 	declare function iuplua_open(byval L as lua_State ptr) as long
 	declare function iupkey_open(byval L as lua_State ptr) as long
 	declare function iuplua_close(byval L as lua_State ptr) as long
@@ -47,4 +51,6 @@ extern "C"
 	declare function iuplua_dostring(byval L as lua_State ptr, byval string as const zstring ptr, byval chunk_name as const zstring ptr) as long
 #endif
 
-end extern
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	end extern
+#endif

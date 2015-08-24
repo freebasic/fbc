@@ -89,8 +89,15 @@ declare function alutGetMIMETypes(byval loader as ALenum) as const zstring ptr
 declare function alutGetMajorVersion() as ALint
 declare function alutGetMinorVersion() as ALint
 declare function alutSleep(byval duration as ALfloat) as ALboolean
-declare sub alutLoadWAVFile(byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
-declare sub alutLoadWAVMemory(byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
+
+#ifdef __FB_DARWIN__
+	declare sub alutLoadWAVFile(byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr)
+	declare sub alutLoadWAVMemory(byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr)
+#else
+	declare sub alutLoadWAVFile(byval fileName as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
+	declare sub alutLoadWAVMemory(byval buffer as ALbyte ptr, byval format as ALenum ptr, byval data as any ptr ptr, byval size as ALsizei ptr, byval frequency as ALsizei ptr, byval loop as ALboolean ptr)
+#endif
+
 declare sub alutUnloadWAV(byval format as ALenum, byval data as any ptr, byval size as ALsizei, byval frequency as ALsizei)
 
 end extern

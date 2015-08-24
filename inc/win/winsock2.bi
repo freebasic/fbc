@@ -309,14 +309,14 @@ type SERVENT
 	s_name as zstring ptr
 	s_aliases as zstring ptr ptr
 
-	#ifndef __FB_64BIT__
-		s_port as short
+	#ifdef __FB_64BIT__
+		s_proto as zstring ptr
 	#endif
 
-	s_proto as zstring ptr
+	s_port as short
 
-	#ifdef __FB_64BIT__
-		s_port as short
+	#ifndef __FB_64BIT__
+		s_proto as zstring ptr
 	#endif
 end type
 

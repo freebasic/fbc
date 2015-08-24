@@ -25,10 +25,10 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
-	#inclib "gdk-win32-2.0"
-#else
+#ifdef __FB_UNIX__
 	#inclib "gdk-x11-2.0"
+#else
+	#inclib "gdk-win32-2.0"
 #endif
 
 #include once "crt/long.bi"
@@ -70,19 +70,19 @@ type GdkAtom as _GdkAtom ptr
 #define GDK_ATOM_TO_POINTER(atom) (atom)
 #define GDK_POINTER_TO_ATOM(ptr) cast(GdkAtom, (ptr))
 
-#ifdef __FB_WIN32__
-	#define GDK_GPOINTER_TO_NATIVE_WINDOW(p) cast(GdkNativeWindow, (p))
-#else
+#ifdef __FB_UNIX__
 	#define GDK_GPOINTER_TO_NATIVE_WINDOW(p) GPOINTER_TO_UINT(p)
+#else
+	#define GDK_GPOINTER_TO_NATIVE_WINDOW(p) cast(GdkNativeWindow, (p))
 #endif
 
 #define _GDK_MAKE_ATOM(val) cast(GdkAtom, GUINT_TO_POINTER(val))
 #define GDK_NONE _GDK_MAKE_ATOM(0)
 
-#ifdef __FB_WIN32__
-	type GdkNativeWindow as gpointer
-#else
+#ifdef __FB_UNIX__
 	type GdkNativeWindow as guint32
+#else
+	type GdkNativeWindow as gpointer
 #endif
 
 type GdkColor as _GdkColor
@@ -2384,14 +2384,14 @@ declare function gdk_event_send_client_message_for_display(byval display as GdkD
 declare sub gdk_notify_startup_complete()
 declare sub gdk_notify_startup_complete_with_id(byval startup_id as const zstring ptr)
 
-#ifdef __FB_WIN32__
-	extern import gdk_threads_mutex as GMutex ptr
-	extern import gdk_threads_lock as GCallback
-	extern import gdk_threads_unlock as GCallback
-#else
+#ifdef __FB_UNIX__
 	extern gdk_threads_mutex as GMutex ptr
 	extern gdk_threads_lock as GCallback
 	extern gdk_threads_unlock as GCallback
+#else
+	extern import gdk_threads_mutex as GMutex ptr
+	extern import gdk_threads_lock as GCallback
+	extern import gdk_threads_unlock as GCallback
 #endif
 
 declare sub gdk_threads_enter_ alias "gdk_threads_enter"()

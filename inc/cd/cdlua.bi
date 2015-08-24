@@ -29,7 +29,9 @@
 
 #inclib "cdlua52"
 
-extern "C"
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	extern "C"
+#endif
 
 #define __CD_LUA_H
 
@@ -39,7 +41,9 @@ extern "C"
 	declare function cdlua_getcanvas() as cdCanvas ptr
 	declare function cdlua_checkcanvas(byval pos as long) as cdCanvas ptr
 	declare sub cdlua_pushcanvas(byval canvas as cdCanvas ptr)
-#else
+#endif
+
+#ifdef LUA_TNONE
 	declare function cdlua_open(byval L as lua_State ptr) as long
 	declare function cdlua_close(byval L as lua_State ptr) as long
 	declare function cdlua_getcanvas(byval L as lua_State ptr) as cdCanvas ptr
@@ -47,4 +51,6 @@ extern "C"
 	declare sub cdlua_pushcanvas(byval L as lua_State ptr, byval canvas as cdCanvas ptr)
 #endif
 
-end extern
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	end extern
+#endif

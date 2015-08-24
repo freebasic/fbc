@@ -388,12 +388,12 @@ extern "C"
 #define __GDK_H__
 #define __GDK_H_INSIDE__
 
-#ifdef __FB_WIN32__
-	#define GDK_WINDOWING_WIN32
-#else
+#ifdef __FB_UNIX__
 	#define GDK_WINDOWING_X11
 	#define GDK_WINDOWING_WAYLAND
 	#define GDK_WINDOWING_MIR
+#else
+	#define GDK_WINDOWING_WIN32
 #endif
 
 #define __GDK_VERSION_MACROS_H__
@@ -415,12 +415,12 @@ const GDK_MICRO_VERSION = 10
 #define __GDK_APP_LAUNCH_CONTEXT_H__
 #define __GDK_TYPES_H__
 
-#ifdef __FB_WIN32__
-	#define GDK_WINDOWING_WIN32
-#else
+#ifdef __FB_UNIX__
 	#define GDK_WINDOWING_X11
 	#define GDK_WINDOWING_WAYLAND
 	#define GDK_WINDOWING_MIR
+#else
+	#define GDK_WINDOWING_WIN32
 #endif
 
 const GDK_CURRENT_TIME = cast(clong, 0)

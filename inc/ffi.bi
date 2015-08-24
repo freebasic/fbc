@@ -57,21 +57,34 @@ extern "C"
 
 #define LIBFFI_H
 
-#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	#define X86_WIN64
-#elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
+#if (not defined(__FB_64BIT__)) and (not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_NETBSD__))
+	#define X86
+#elseif defined(__FB_64BIT__) and (not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define X86_64
+#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define ARM
+#elseif defined(__FB_64BIT__) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define AARCH64
+#elseif (not defined(__FB_64BIT__)) and (not defined(__FB_ARM__)) and (defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__))
+	#define X86_FREEBSD
+#elseif defined(__FB_DARWIN__)
+	#define X86_DARWIN
+#elseif (not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	#define X86_WIN32
 #else
-	#define X86
+	#define X86_WIN64
 #endif
 
 #define LIBFFI_TARGET_H
-#define X86_ANY
 
 type ffi_arg as uinteger
 type ffi_sarg as integer
 
-#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
+#if ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	#define X86_ANY
+#endif
+
+#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	const FFI_SIZEOF_ARG = 8
 	const USE_BUILTIN_FFS = 0
 #endif
@@ -79,51 +92,93 @@ type ffi_sarg as integer
 type ffi_abi as long
 enum
 	FFI_FIRST_ABI = 0
-	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-		FFI_WIN64
-		FFI_LAST_ABI
-		FFI_DEFAULT_ABI = FFI_WIN64
-	#elseif defined(__FB_WIN32__)
+
+	#if (not defined(__FB_64BIT__)) or (defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
 		FFI_SYSV
-		FFI_STDCALL
-		FFI_THISCALL
-		FFI_FASTCALL
-		FFI_MS_CDECL
-		FFI_LAST_ABI
-		FFI_DEFAULT_ABI = FFI_SYSV
-	#else
-		FFI_SYSV
+	#endif
+
+	#if ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__)
 		FFI_UNIX64
+	#elseif (not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
+		FFI_STDCALL
+	#endif
+
+	#if (defined(__FB_DARWIN__) and defined(__FB_64BIT__)) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__)))
 		FFI_THISCALL
 		FFI_FASTCALL
+	#endif
+
+	#if ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__)
 		FFI_STDCALL
-		FFI_LAST_ABI
-		#ifdef __FB_64BIT__
-			FFI_DEFAULT_ABI = FFI_UNIX64
-		#else
-			FFI_DEFAULT_ABI = FFI_SYSV
-		#endif
+	#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+		FFI_VFP
+	#elseif (not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
+		FFI_MS_CDECL
+	#elseif defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
+		FFI_WIN64
+	#endif
+
+	FFI_LAST_ABI
+
+	#if ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))) or (defined(__FB_64BIT__) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
+		FFI_DEFAULT_ABI = FFI_SYSV
+	#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
+		FFI_DEFAULT_ABI = FFI_UNIX64
+	#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+		FFI_DEFAULT_ABI = FFI_VFP
+	#else
+		FFI_DEFAULT_ABI = FFI_WIN64
 	#endif
 end enum
 
-const FFI_CLOSURES = 1
-#define FFI_TYPE_SMALL_STRUCT_1B (FFI_TYPE_LAST + 1)
-#define FFI_TYPE_SMALL_STRUCT_2B (FFI_TYPE_LAST + 2)
-#define FFI_TYPE_SMALL_STRUCT_4B (FFI_TYPE_LAST + 3)
-#define FFI_TYPE_MS_STRUCT (FFI_TYPE_LAST + 4)
-
-#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	const FFI_TRAMPOLINE_SIZE = 29
-	const FFI_NATIVE_RAW_API = 0
-	const FFI_NO_RAW_API = 1
-#elseif defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
-	const FFI_TRAMPOLINE_SIZE = 52
-#else
-	const FFI_TRAMPOLINE_SIZE = 10
+#if (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define FFI_TYPE_STRUCT_VFP_FLOAT (FFI_TYPE_LAST + 1)
+	#define FFI_TYPE_STRUCT_VFP_DOUBLE (FFI_TYPE_LAST + 2)
+	#define FFI_TARGET_SPECIFIC_VARIADIC
 #endif
 
-#if (defined(__FB_LINUX__) and defined(__FB_64BIT__)) or (not defined(__FB_64BIT__))
+const FFI_CLOSURES = 1
+
+#if ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	#define FFI_TYPE_SMALL_STRUCT_1B (FFI_TYPE_LAST + 1)
+	#define FFI_TYPE_SMALL_STRUCT_2B (FFI_TYPE_LAST + 2)
+	#define FFI_TYPE_SMALL_STRUCT_4B (FFI_TYPE_LAST + 3)
+	#define FFI_TYPE_MS_STRUCT (FFI_TYPE_LAST + 4)
+#endif
+
+#ifndef __FB_64BIT__
+	#if defined(__FB_DARWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
+		const FFI_TRAMPOLINE_SIZE = 10
+	#elseif defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+		const FFI_TRAMPOLINE_SIZE = 52
+	#endif
+#endif
+
+#if (not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
 	const FFI_NATIVE_RAW_API = 1
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
+	const FFI_TRAMPOLINE_SIZE = 24
+#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	const FFI_TRAMPOLINE_SIZE = 20
+#elseif defined(__FB_64BIT__) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	const FFI_TRAMPOLINE_SIZE = 36
+#else
+	const FFI_TRAMPOLINE_SIZE = 29
+#endif
+
+#if defined(__FB_64BIT__) or ((not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
+	const FFI_NATIVE_RAW_API = 0
+#endif
+
+#ifdef __FB_64BIT__
+	#if defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+		const AARCH64_FFI_WITH_V_BIT = 0
+		const AARCH64_N_XREG = 32
+		const AARCH64_N_VREG = 32
+		#define AARCH64_CALL_CONTEXT_SIZE ((AARCH64_N_XREG * 8) + (AARCH64_N_VREG * 16))
+	#elseif defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+		const FFI_NO_RAW_API = 1
+	#endif
 #endif
 
 const FFI_64_BIT_MAX = 9223372036854775807
@@ -144,12 +199,12 @@ type ffi_type as _ffi_type
 #define ffi_type_uint ffi_type_uint32
 #define ffi_type_sint ffi_type_sint32
 
-#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_WIN32__)
-	#define ffi_type_ulong ffi_type_uint32
-	#define ffi_type_slong ffi_type_sint32
-#else
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
 	#define ffi_type_ulong ffi_type_uint64
 	#define ffi_type_slong ffi_type_sint64
+#else
+	#define ffi_type_ulong ffi_type_uint32
+	#define ffi_type_slong ffi_type_sint32
 #endif
 
 extern ffi_type_void as ffi_type
@@ -182,13 +237,22 @@ type ffi_cif
 	rtype as ffi_type ptr
 	bytes as ulong
 	flags as ulong
+
+	#if (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+		vfp_used as long
+		vfp_reg_free as short
+		vfp_nargs as short
+		vfp_args(0 to 15) as byte
+	#elseif defined(__FB_64BIT__) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+		aarch64_flags as ulong
+	#endif
 end type
 
 declare function ffi_prep_cif_core(byval cif as ffi_cif ptr, byval abi as ffi_abi, byval isvariadic as ulong, byval nfixedargs as ulong, byval ntotalargs as ulong, byval rtype as ffi_type ptr, byval atypes as ffi_type ptr ptr) as ffi_status
 
 #ifndef __FB_64BIT__
 	const FFI_SIZEOF_ARG = 4
-#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__)
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
 	const FFI_SIZEOF_ARG = 8
 #endif
 
@@ -228,7 +292,7 @@ type ffi_raw_closure
 	tramp as zstring * FFI_TRAMPOLINE_SIZE
 	cif as ffi_cif ptr
 
-	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	#if defined(__FB_64BIT__) or ((not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
 		translate_args as sub(byval as ffi_cif ptr, byval as any ptr, byval as any ptr ptr, byval as any ptr)
 		this_closure as any ptr
 	#endif
@@ -241,7 +305,7 @@ type ffi_java_raw_closure
 	tramp as zstring * FFI_TRAMPOLINE_SIZE
 	cif as ffi_cif ptr
 
-	#if defined(__FB_WIN32__) and defined(__FB_64BIT__)
+	#if defined(__FB_64BIT__) or ((not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))
 		translate_args as sub(byval as ffi_cif ptr, byval as any ptr, byval as any ptr ptr, byval as any ptr)
 		this_closure as any ptr
 	#endif

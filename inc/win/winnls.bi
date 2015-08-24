@@ -995,7 +995,7 @@ declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 	#define EnumTimeFormats EnumTimeFormatsW
 	#define EnumDateFormats EnumDateFormatsW
 	#define EnumDateFormatsEx EnumDateFormatsExW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define SetLocaleInfo SetLocaleInfoA
 	#define GetCalendarInfo GetCalendarInfoA
 	#define SetCalendarInfo SetCalendarInfoA
@@ -1129,7 +1129,7 @@ declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMP
 	declare function EnumSystemLocalesEx(byval lpLocaleEnumProcEx as LOCALE_ENUMPROCEX, byval dwFlags as DWORD, byval lParam as LPARAM, byval lpReserved as LPVOID) as WINBOOL
 	declare function ResolveLocaleName(byval lpNameToResolve as LPCWSTR, byval lpLocaleName as LPWSTR, byval cchLocaleName as long) as long
 	declare function IsValidNLSVersion(byval function as NLS_FUNCTION, byval lpLocaleName as LPCWSTR, byval lpVersionInformation as LPNLSVERSIONINFOEX) as DWORD
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define EnumSystemCodePages EnumSystemCodePagesA
 #endif
 

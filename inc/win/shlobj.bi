@@ -204,7 +204,7 @@ enum
 	SLDF_HAS_EXP_SZ = &h00000200
 	SLDF_RUN_IN_SEPARATE = &h00000400
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		SLDF_HAS_LOGO3ID = &h00000800
 	#endif
 
@@ -570,7 +570,7 @@ const PANE_SSL = 4
 const PANE_NAVIGATION = 5
 const PANE_PROGRESS = 6
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const PANE_PRIVACY = 7
 #endif
 
@@ -641,7 +641,7 @@ declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWS
 #if _WIN32_WINNT = &h0602
 	const OFASI_EDIT = &h0001
 	const OFASI_OPENDESKTOP = &h0002
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define SHGetPathFromIDList SHGetPathFromIDListA
 	#define SHCreateDirectoryEx SHCreateDirectoryExA
 #endif
@@ -751,7 +751,7 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	declare function SHSetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval pszPath as PCWSTR) as HRESULT
 	declare function SHGetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval ppszPath as PWSTR ptr) as HRESULT
 	declare function SHGetKnownFolderItem(byval rfid as const KNOWNFOLDERID const ptr, byval flags as KNOWN_FOLDER_FLAG, byval hToken as HANDLE, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define SHGetSpecialFolderPath SHGetSpecialFolderPathA
 	#define SHGetFolderPath SHGetFolderPathA
 	#define SHSetFolderPath SHSetFolderPathA
@@ -947,7 +947,7 @@ enum
 	ACLO_FAVORITES = 8
 	ACLO_FILESYSONLY = 16
 
-	#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	#if _WIN32_WINNT >= &h0502
 		ACLO_FILESYSDIRS = 32
 	#endif
 
@@ -1121,7 +1121,7 @@ const ISFB_STATE_BTNMINSIZE = &h00000100
 const ISFBVIEWMODE_SMALLICONS = &h0001
 const ISFBVIEWMODE_LARGEICONS = &h0002
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const ISFBVIEWMODE_LOGOS = &h0003
 #endif
 
@@ -1831,7 +1831,7 @@ enum
 	REST_NORESOLVETRACK = &h4000001a
 	REST_FORCECOPYACLWITHFILE = &h4000001b
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NOLOGO3CHANNELNOTIFY = &h4000001c
 	#endif
 
@@ -1935,20 +1935,20 @@ enum
 	REST_REVERTWEBVIEWSECURITY = &h40000084
 	REST_INHERITCONSOLEHANDLES = &h40000086
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_SORTMAXITEMCOUNT = &h40000087
 	#endif
 
 	REST_NOREMOTERECURSIVEEVENTS = &h40000089
 	REST_NOREMOTECHANGENOTIFY = &h40000091
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NOSIMPLENETIDLIST = &h40000092
 	#endif
 
 	REST_NOENUMENTIRENETWORK = &h40000093
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NODETAILSTHUMBNAILONNETWORK = &h40000094
 	#endif
 
@@ -1963,7 +1963,7 @@ enum
 	REST_NOFILEASSOCIATE = &h41000003
 	REST_ALLOWCOMMENTTOGGLE = &h41000004
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_USEDESKTOPINICACHE = &h41000005
 	#endif
 end enum
@@ -1974,7 +1974,7 @@ declare sub PathGetShortPath(byval pszLongPath as PWSTR)
 declare function PathYetAnotherMakeUniqueName(byval pszUniqueName as PWSTR, byval pszPath as PCWSTR, byval pszShort as PCWSTR, byval pszFileSpec as PCWSTR) as WINBOOL
 declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const PPCF_ADDQUOTES = &h00000001
 	const PPCF_ADDARGUMENTS = &h00000003
 	const PPCF_NODIRECTORIES = &h00000010
@@ -1986,10 +1986,10 @@ declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 declare function SHRestricted(byval rest as RESTRICTIONS) as DWORD
 declare function SignalFileOpen(byval pidl as LPCITEMIDLIST) as WINBOOL
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	declare function SHLoadOLE(byval lParam as LPARAM) as HRESULT
-#else
+#if _WIN32_WINNT = &h0602
 	declare function AssocGetDetailsOfPropKey(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval pkey as const PROPERTYKEY ptr, byval pv as VARIANT ptr, byval pfFoundPropKey as WINBOOL ptr) as HRESULT
+#else
+	declare function SHLoadOLE(byval lParam as LPARAM) as HRESULT
 #endif
 
 declare function SHStartNetConnectionDialogA(byval hwnd as HWND, byval pszRemoteName as LPCSTR, byval dwType as DWORD) as HRESULT
@@ -2062,11 +2062,11 @@ const VALIDATEUNC_CONNECT = &h0001
 const VALIDATEUNC_NOUI = &h0002
 const VALIDATEUNC_PRINT = &h0004
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const VALIDATEUNC_VALID = &h0007
-#else
+#if _WIN32_WINNT = &h0602
 	const VALIDATEUNC_PERSIST = &h0008
 	const VALIDATEUNC_VALID = &h000f
+#else
+	const VALIDATEUNC_VALID = &h0007
 #endif
 
 declare function SHValidateUNC(byval hwndOwner as HWND, byval pszFile as PWSTR, byval fConnect as UINT) as WINBOOL
@@ -2576,12 +2576,12 @@ type SHELLFLAGSTATE field = 1
 	fShowInfoTip : 1 as WINBOOL
 	fHideIcons : 1 as WINBOOL
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-		fRestFlags : 3 as UINT
-	#else
+	#if _WIN32_WINNT = &h0602
 		fAutoCheckSelect : 1 as WINBOOL
 		fIconsOnly : 1 as WINBOOL
 		fRestFlags : 1 as UINT
+	#else
+		fRestFlags : 3 as UINT
 	#endif
 end type
 
@@ -2721,7 +2721,7 @@ type LPAASHELLMENUITEM as tagAASHELLMENUITEM ptr
 	type IESHORTCUTFLAGS as tagIESHORTCUTFLAGS
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function ImportPrivacySettings(byval pszFilename as PCWSTR, byval pfParsePrivacyPreferences as WINBOOL ptr, byval pfParsePerSiteRules as WINBOOL ptr) as WINBOOL
 	declare function DoPrivacyDlg(byval hwndOwner as HWND, byval pszUrl as PCWSTR, byval pPrivacyEnum as IEnumPrivacyRecords ptr, byval fReportAllSites as WINBOOL) as HRESULT
 #endif

@@ -144,7 +144,7 @@ end type
 const RASEDFLAG_PositionDlg = &h00000001
 const RASEDFLAG_NewEntry = &h00000002
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const RASEDFLAG_CloneEntry = &h00000004
 #endif
 
@@ -153,7 +153,7 @@ const RASEDFLAG_ShellOwned = &h40000000
 const RASEDFLAG_NewPhoneEntry = &h00000010
 const RASEDFLAG_NewTunnelEntry = &h00000020
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const RASEDFLAG_NewDirectEntry = &h00000040
 #endif
 

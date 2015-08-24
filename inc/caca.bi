@@ -400,12 +400,12 @@ declare function caca_get_event_mouse_y(byval as const caca_event_t ptr) as long
 declare function caca_get_event_resize_width(byval as const caca_event_t ptr) as long
 declare function caca_get_event_resize_height(byval as const caca_event_t ptr) as long
 
-#if defined(__FB_DOS__) or (defined(__FB_WIN32__) and defined(CACA_STATIC)) or defined(__FB_LINUX__)
-	extern caca_optind as long
-	extern caca_optarg as zstring ptr
-#else
+#if defined(__FB_WIN32__) and (not defined(CACA_STATIC))
 	extern import caca_optind as long
 	extern import caca_optarg as zstring ptr
+#else
+	extern caca_optind as long
+	extern caca_optarg as zstring ptr
 #endif
 
 declare function caca_getopt(byval as long, byval as zstring const ptr ptr, byval as const zstring ptr, byval as const caca_option ptr, byval as long ptr) as long
@@ -463,12 +463,12 @@ type caca_conio_text_info
 	cury as ubyte
 end type
 
-#if defined(__FB_DOS__) or (defined(__FB_WIN32__) and defined(CACA_STATIC)) or defined(__FB_LINUX__)
-	extern caca_conio_directvideo as long
-	extern caca_conio__wscroll as long
-#else
+#if defined(__FB_WIN32__) and (not defined(CACA_STATIC))
 	extern import caca_conio_directvideo as long
 	extern import caca_conio__wscroll as long
+#else
+	extern caca_conio_directvideo as long
+	extern caca_conio__wscroll as long
 #endif
 
 declare function caca_conio_cgets(byval str as zstring ptr) as zstring ptr
@@ -526,7 +526,7 @@ declare function cucul_free_buffer(byval as cucul_buffer_t ptr) as long
 declare function cucul_export_canvas(byval as caca_canvas_t ptr, byval as const zstring ptr) as cucul_buffer_t ptr
 declare function cucul_import_canvas(byval as cucul_buffer_t ptr, byval as const zstring ptr) as caca_canvas_t ptr
 
-#if defined(__FB_LINUX__) or defined(__FB_DOS__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	declare function caca_import_memory(byval as caca_canvas_t ptr, byval as const any ptr, byval as uinteger, byval as const zstring ptr) as integer
 	declare function caca_import_file(byval as caca_canvas_t ptr, byval as const zstring ptr, byval as const zstring ptr) as integer
 	declare function caca_export_memory(byval as const caca_canvas_t ptr, byval as const zstring ptr, byval as uinteger ptr) as any ptr

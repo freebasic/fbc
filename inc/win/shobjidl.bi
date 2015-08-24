@@ -373,10 +373,10 @@ const CMF_NOVERBS = &h8
 const CMF_CANRENAME = &h10
 const CMF_NODEFAULT = &h20
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const CMF_INCLUDESTATIC = &h40
-#else
+#if _WIN32_WINNT = &h0602
 	const CMF_ITEMMENU = &h80
+#else
+	const CMF_INCLUDESTATIC = &h40
 #endif
 
 const CMF_EXTENDEDVERBS = &h100
@@ -432,7 +432,7 @@ const GCS_UNICODE = &h4
 #define CMIC_MASK_UNICODE SEE_MASK_UNICODE
 #define CMIC_MASK_NO_CONSOLE SEE_MASK_NO_CONSOLE
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define CMIC_MASK_HASLINKNAME SEE_MASK_HASLINKNAME
 	#define CMIC_MASK_HASTITLE SEE_MASK_HASTITLE
 #endif
@@ -2581,7 +2581,7 @@ end enum
 type SICHINTF as DWORD
 extern IID_IShellItem as const GUID
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	type IShellItem as IShellItem_
 #endif
 
@@ -3292,7 +3292,7 @@ end enum
 
 extern IID_IShellItemArray as const GUID
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	type IShellItemArray as IShellItemArray_
 #endif
 
@@ -6330,7 +6330,7 @@ end type
 declare function IImageRecompress_RecompressImage_Proxy(byval This as IImageRecompress ptr, byval psi as IShellItem ptr, byval cx as long, byval cy as long, byval iQuality as long, byval pstg as IStorage ptr, byval ppstrmOut as IStream ptr ptr) as HRESULT
 declare sub IImageRecompress_RecompressImage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define __IDeskBar_INTERFACE_DEFINED__
 	extern IID_IDeskBar as const GUID
 	type IDeskBar as IDeskBar_
@@ -7209,7 +7209,7 @@ end type
 declare function IDelegateFolder_SetItemAlloc_Proxy(byval This as IDelegateFolder ptr, byval pmalloc as IMalloc ptr) as HRESULT
 declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define __IBrowserFrameOptions_INTERFACE_DEFINED__
 	type IBrowserFrameOptions as IBrowserFrameOptions_
 	type LPBROWSERFRAMEOPTIONS as IBrowserFrameOptions ptr
@@ -7385,7 +7385,7 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 	declare sub IAttachmentExecute_ClearClientState_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	type tagSMDATA
 		dwMask as DWORD
 		dwFlags as DWORD
@@ -7491,7 +7491,7 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 	const SMAE_VALID = &h00000007
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define __IShellMenuCallback_INTERFACE_DEFINED__
 	extern IID_IShellMenuCallback as const GUID
 	type IShellMenuCallback as IShellMenuCallback_
@@ -7525,7 +7525,7 @@ declare sub IDelegateFolder_SetItemAlloc_Stub(byval This as IRpcStubBuffer ptr, 
 	const SMINIT_DROPONCONTAINER = &h00000400
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const SMINIT_VERTICAL = &h10000000
 	const SMINIT_HORIZONTAL = &h20000000
 	#define ANCESTORDEFAULT cast(UINT, -1)
@@ -10323,7 +10323,7 @@ extern CLSID_ExecuteFolder as const GUID
 		end if
 	end sub
 
-	#define GetContractDelegateWindow(hwndSource) cast(HWND, GetPropW(hwndSource, wstr("ContractDelegate")))
+	#define GetContractDelegateWindow(hwndSource) cast(HWND, GetPropW((hwndSource), wstr("ContractDelegate")))
 	#define __ISearchableApplication_INTERFACE_DEFINED__
 	extern IID_ISearchableApplication as const GUID
 	type ISearchableApplication as ISearchableApplication_

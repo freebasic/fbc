@@ -31,10 +31,10 @@
 
 #inclib "bass"
 
-#ifdef __FB_WIN32__
-	#include once "win/wtypes.bi"
-#else
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#include once "crt/stdint.bi"
+#elseif defined(__FB_WIN32__)
+	#include once "win/wtypes.bi"
 #endif
 
 #ifdef __FB_WIN32__
@@ -45,14 +45,14 @@
 
 #define BASS_H
 
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	type WORD as ushort
 	type DWORD as ulong
 #endif
 
 type QWORD as ulongint
 
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	type BOOL as long
 	#ifndef TRUE
 		const TRUE = 1
@@ -225,7 +225,7 @@ end type
 #define DSCCAPS_EMULDRIVER DSCAPS_EMULDRIVER
 #define DSCCAPS_CERTIFIED DSCAPS_CERTIFIED
 
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	const WAVE_FORMAT_1M08 = &h00000001
 	const WAVE_FORMAT_1S08 = &h00000002
 	const WAVE_FORMAT_1M16 = &h00000004
@@ -441,12 +441,12 @@ end enum
 #define EAX_PRESET_PSYCHOTIC EAX_ENVIRONMENT_PSYCHOTIC, 0.486f, 7.563f, 0.806f
 const BASS_STREAMPROC_END = &h80000000
 
-#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_DOS__) or (defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))
-	#define STREAMPROC_DUMMY cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
-	#define STREAMPROC_PUSH cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
-#else
+#if defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
 	#define STREAMPROC_DUMMY cptr(function stdcall(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
 	#define STREAMPROC_PUSH cptr(function stdcall(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
+#else
+	#define STREAMPROC_DUMMY cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
+	#define STREAMPROC_PUSH cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
 #endif
 
 const STREAMFILE_NOBUFFER = 0
@@ -612,7 +612,7 @@ type TAG_CA_CODEC
 	name as const zstring ptr
 end type
 
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#define _WAVEFORMATEX_
 
 	type tWAVEFORMATEX field = 1

@@ -27,14 +27,20 @@
 
 #pragma once
 
-extern "C"
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	extern "C"
+#endif
 
 #define __IUPLUAOLE_H
 
 #ifdef LUA_NOOBJECT
 	declare function iupolelua_open() as long
-#else
+#endif
+
+#ifdef LUA_TNONE
 	declare function iupolelua_open(byval L as lua_State ptr) as long
 #endif
 
-end extern
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	end extern
+#endif

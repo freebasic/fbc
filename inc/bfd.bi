@@ -50,7 +50,7 @@
 type stat as stat_  '' TODO: remove as soon as fbc's CRT headers define it
 
 '' The following symbols have been renamed:
-''     #if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+''     #if __BFD_VER__ <= 218
 ''         constant DYNAMIC => DYNAMIC_
 ''     #endif
 ''     enum bfd_print_symbol => bfd_print_symbol_
@@ -58,7 +58,7 @@ type stat as stat_  '' TODO: remove as soon as fbc's CRT headers define it
 ''     procedure bfd_is_local_label_name => bfd_is_local_label_name_
 ''     procedure bfd_is_target_special_symbol => bfd_is_target_special_symbol_
 ''     procedure bfd_copy_private_symbol_data => bfd_copy_private_symbol_data_
-''     #if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+''     #if __BFD_VER__ >= 219
 ''         constant DYNAMIC => DYNAMIC_
 ''     #endif
 ''     procedure bfd_copy_private_header_data => bfd_copy_private_header_data_
@@ -74,11 +74,11 @@ extern "C"
 #undef CONCAT4
 #define CONCAT4(a, b, c, d) XCONCAT2(CONCAT2(a, b), CONCAT2(c, d))
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const BFD_SUPPORTS_PLUGINS = 1
 #endif
 
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))
+#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
 	const BFD_ARCH_SIZE = 64
 	const BFD_DEFAULT_TARGET_SIZE = 64
 #else
@@ -88,11 +88,11 @@ extern "C"
 
 const BFD_HOST_64BIT_LONG = 0
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const BFD_HOST_64BIT_LONG_LONG = 1
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	const BFD_HOST_LONG_LONG = 1
 #endif
 
@@ -101,12 +101,14 @@ const BFD_HOST_64BIT_LONG = 0
 type bfd_int64_t as longint
 type bfd_uint64_t as ulongint
 
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))
+#if defined(__FB_64BIT__) and (((not defined(__FB_ARM__)) and ((defined(__FB_LINUX__) and (__BFD_VER__ >= 218)) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or (defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	#define BFD64
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	type bfd_hostptr_t as uinteger
+#elseif defined(__FB_LINUX__) and defined(__FB_64BIT__) and (not defined(__FB_ARM__)) and (__BFD_VER__ <= 217)
+	#define BFD64
 #endif
 
 type bfd_boolean as long
@@ -115,60 +117,60 @@ type bfd_boolean as long
 const FALSE = 0
 const TRUE = 1
 
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))
-	type bfd_vma as ulongint
-	type bfd_signed_vma as longint
-	type bfd_size_type as ulongint
-	type symvalue as ulongint
-#endif
-
-#if defined(__FB_64BIT__) and (((__BFD_VER__ = 216) or (__BFD_VER__ = 217)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))
-	#define _bfd_int64_low(x) cast(culong, (x) and &hffffffff)
-	#define _bfd_int64_high(x) cast(culong, ((x) shr 32) and &hffffffff)
-	#define fprintf_vma(s, x) fprintf((s), "%08lx%08lx", _bfd_int64_high(x), _bfd_int64_low(x))
-	#define sprintf_vma(s, x) sprintf((s), "%08lx%08lx", _bfd_int64_high(x), _bfd_int64_low(x))
-#elseif defined(__FB_64BIT__) and ((__BFD_VER__ = 218) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))
-	#define sprintf_vma(s, x) sprintf(s, "%016llx", x)
-	#define fprintf_vma(f, x) fprintf(f, "%016llx", x)
-#elseif defined(__FB_WIN32__) and (defined(__FB_64BIT__) and ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))
-	#define BFD_VMA_FMT "I64"
-#elseif defined(__FB_LINUX__) and (defined(__FB_64BIT__) and ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))
-	#define BFD_VMA_FMT "ll"
-#endif
-
-#if defined(__FB_64BIT__) and (((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))
-	#define sprintf_vma(s, x) sprintf(s, "%016" BFD_VMA_FMT "x", x)
-	#define fprintf_vma(f, x) fprintf(f, "%016" BFD_VMA_FMT "x", x)
-#endif
-
-#if defined(__FB_WIN32__) and (defined(__FB_64BIT__) and ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))
-	#define HALF_BFD_SIZE_TYPE (cast(bfd_size_type, 1) shl ((8 * sizeof(bfd_size_type)) / 2))
-#elseif ((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))) or defined(__FB_DOS__)
+#if ((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))) or defined(__FB_DOS__)
 	type bfd_vma as culong
 	type bfd_signed_vma as clong
 	type symvalue as culong
 	type bfd_size_type as culong
 #endif
 
-#if ((not defined(__FB_64BIT__)) and (((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))) or (defined(__FB_DOS__) and ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)))
+#if (__BFD_VER__ <= 218) and (((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))) or defined(__FB_DOS__))
 	#define fprintf_vma(s, x) fprintf(s, "%08lx", x)
 	#define sprintf_vma(s, x) sprintf(s, "%08lx", x)
-#elseif ((not defined(__FB_64BIT__)) and (((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))) or (defined(__FB_DOS__) and ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))
+#elseif (__BFD_VER__ >= 219) and (((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))) or defined(__FB_DOS__))
 	#define BFD_VMA_FMT "l"
 	#define fprintf_vma(s, x) fprintf(s, "%08" BFD_VMA_FMT "x", x)
 	#define sprintf_vma(s, x) sprintf(s, "%08" BFD_VMA_FMT "x", x)
 #endif
 
-#if ((not defined(__FB_64BIT__)) and (((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_WIN32__) or defined(__FB_LINUX__)))) or (defined(__FB_LINUX__) and (defined(__FB_64BIT__) and ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))) or (defined(__FB_DOS__) and ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)))
+#if (__BFD_VER__ >= 217) and ((defined(__FB_LINUX__) and (not defined(__FB_64BIT__)) and (not defined(__FB_ARM__))) or defined(__FB_DOS__))
+	#define HALF_BFD_SIZE_TYPE (cast(bfd_size_type, 1) shl ((8 * sizeof(bfd_size_type)) / 2))
+#elseif defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
+	type bfd_vma as ulongint
+	type bfd_signed_vma as longint
+	type bfd_size_type as ulongint
+	type symvalue as ulongint
+#endif
+
+#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__)) and (__BFD_VER__ <= 217)
+	#define _bfd_int64_low(x) cast(culong, (x) and &hffffffff)
+	#define _bfd_int64_high(x) cast(culong, ((x) shr 32) and &hffffffff)
+	#define fprintf_vma(s, x) fprintf((s), "%08lx%08lx", _bfd_int64_high(x), _bfd_int64_low(x))
+	#define sprintf_vma(s, x) sprintf((s), "%08lx%08lx", _bfd_int64_high(x), _bfd_int64_low(x))
+#elseif defined(__FB_64BIT__) and (__BFD_VER__ = 218) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
+	#define sprintf_vma(s, x) sprintf(s, "%016llx", x)
+	#define fprintf_vma(f, x) fprintf(f, "%016llx", x)
+#elseif defined(__FB_64BIT__) and (__BFD_VER__ >= 219) and defined(__FB_UNIX__)
+	#define BFD_VMA_FMT "ll"
+#elseif defined(__FB_WIN32__) and defined(__FB_64BIT__) and (__BFD_VER__ >= 219)
+	#define BFD_VMA_FMT "I64"
+#endif
+
+#if defined(__FB_64BIT__) and (__BFD_VER__ >= 219) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))
+	#define sprintf_vma(s, x) sprintf(s, "%016" BFD_VMA_FMT "x", x)
+	#define fprintf_vma(f, x) fprintf(f, "%016" BFD_VMA_FMT "x", x)
+#endif
+
+#if (__BFD_VER__ >= 217) and ((defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))) or ((not defined(__FB_64BIT__)) and ((defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or ((not defined(__FB_ARM__)) and (defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__))))
 	#define HALF_BFD_SIZE_TYPE (cast(bfd_size_type, 1) shl ((8 * sizeof(bfd_size_type)) / 2))
 #endif
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
-	type file_ptr as longint
-	type ufile_ptr as ulongint
-#else
+#ifdef __FB_DOS__
 	type file_ptr as clong
 	type ufile_ptr as culong
+#else
+	type file_ptr as longint
+	type ufile_ptr as ulongint
 #endif
 
 type bfd as bfd_
@@ -188,7 +190,7 @@ enum
 	bfd_type_end
 end enum
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	const BFD_NO_FLAGS = &h00
 	const HAS_RELOC = &h01
 	const EXEC_P = &h02
@@ -217,7 +219,7 @@ type reloc_howto_type as const reloc_howto_struct
 #define bfd_asymbol_name(x) (x)->name
 #define bfd_asymbol_bfd(x) (x)->the_bfd
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	#define bfd_asymbol_flavour(x) bfd_asymbol_bfd(x)->xvec->flavour
 #else
 	#define bfd_asymbol_flavour(x) iif(((x)->flags and BSF_SYNTHETIC) <> 0, bfd_target_unknown_flavour, bfd_asymbol_bfd(x)->xvec->flavour)
@@ -256,7 +258,7 @@ type alent as lineno_cache_entry
 type bfd_section as bfd_section_
 type sec_ptr as bfd_section ptr
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	#define bfd_get_section_name(bfd, ptr_) ((ptr_)->name + 0)
 	#define bfd_get_section_vma(bfd, ptr_) ((ptr_)->vma + 0)
 	#define bfd_get_section_lma(bfd, ptr_) ((ptr_)->lma + 0)
@@ -275,7 +277,7 @@ type sec_ptr as bfd_section ptr
 #define bfd_section_lma(bfd, ptr_) (ptr_)->lma
 #define bfd_section_alignment(bfd, ptr_) (ptr_)->alignment_power
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	#define bfd_get_section_flags(bfd, ptr_) ((ptr_)->flags + 0)
 #else
 	#define bfd_get_section_flags(bfd, ptr_) (ptr_)->flags
@@ -284,7 +286,7 @@ type sec_ptr as bfd_section ptr
 #define bfd_get_section_userdata(bfd, ptr_) (ptr_)->userdata
 #define bfd_is_com_section(ptr_) (((ptr_)->flags and SEC_IS_COMMON) <> 0)
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	#macro bfd_set_section_vma(bfd, ptr, val)
 		scope
 			var __val = (val)
@@ -297,19 +299,19 @@ type sec_ptr as bfd_section ptr
 	#define bfd_set_section_userdata(bfd, ptr_, val_) scope : (ptr_)->userdata = (val_) : end scope
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 221
 	#define bfd_get_section_limit(bfd, sec) (iif((sec)->rawsize, (sec)->rawsize, (sec)->size) / bfd_octets_per_byte(bfd))
 #endif
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	type stat_type as stat
-#elseif ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 222
 	#define bfd_get_section_limit(bfd, sec) (iif(((bfd)->direction <> write_direction) andalso ((sec)->rawsize <> 0), (sec)->rawsize, (sec)->size) / bfd_octets_per_byte(bfd))
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 218) and (__BFD_VER__ <= 222)
 	#define elf_discarded_section(sec) ((((bfd_is_abs_section(sec) = 0) andalso bfd_is_abs_section((sec)->output_section)) andalso ((sec)->sec_info_type <> ELF_INFO_TYPE_MERGE)) andalso ((sec)->sec_info_type <> ELF_INFO_TYPE_JUST_SYMS))
-#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 223
 	#define discarded_section(sec) ((((bfd_is_abs_section(sec) = 0) andalso bfd_is_abs_section((sec)->output_section)) andalso ((sec)->sec_info_type <> SEC_INFO_TYPE_MERGE)) andalso ((sec)->sec_info_type <> SEC_INFO_TYPE_JUST_SYMS))
 #endif
 
@@ -344,7 +346,7 @@ end type
 type bfd_hash_table
 	table as bfd_hash_entry ptr ptr
 
-	#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+	#if __BFD_VER__ <= 217
 		size as ulong
 	#endif
 
@@ -355,7 +357,7 @@ type bfd_hash_table
 	newfunc as function(byval as bfd_hash_entry ptr, byval as bfd_hash_table ptr, byval as const zstring ptr) as bfd_hash_entry ptr
 	memory as any ptr
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		size as ulong
 		count as ulong
 		entsize as ulong
@@ -374,11 +376,11 @@ end type
 declare sub bfd_hash_table_free(byval as bfd_hash_table ptr)
 declare function bfd_hash_lookup(byval as bfd_hash_table ptr, byval as const zstring ptr, byval create as bfd_boolean, byval copy as bfd_boolean) as bfd_hash_entry ptr
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	declare function bfd_hash_insert(byval as bfd_hash_table ptr, byval as const zstring ptr, byval as culong) as bfd_hash_entry ptr
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare sub bfd_hash_rename(byval as bfd_hash_table ptr, byval as const zstring ptr, byval as bfd_hash_entry ptr)
 #endif
 
@@ -387,7 +389,7 @@ declare function bfd_hash_newfunc(byval as bfd_hash_entry ptr, byval as bfd_hash
 declare function bfd_hash_allocate(byval as bfd_hash_table ptr, byval as ulong) as any ptr
 declare sub bfd_hash_traverse(byval as bfd_hash_table ptr, byval as function(byval as bfd_hash_entry ptr, byval as any ptr) as bfd_boolean, byval info as any ptr)
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 221
 	declare sub bfd_hash_set_default_size(byval as bfd_size_type)
 #else
 	declare function bfd_hash_set_default_size(byval as culong) as culong
@@ -428,7 +430,7 @@ declare sub warn_deprecated(byval as const zstring ptr, byval as const zstring p
 #define bfd_my_archive(abfd) (abfd)->my_archive
 #define bfd_has_map(abfd) (abfd)->has_armap
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	#define bfd_is_thin_archive(abfd) (abfd)->is_thin_archive
 #endif
 
@@ -441,7 +443,7 @@ declare sub warn_deprecated(byval as const zstring ptr, byval as const zstring p
 #define bfd_get_dynamic_symcount(abfd) (abfd)->dynsymcount
 #define bfd_get_symbol_leading_char(abfd) (abfd)->xvec->symbol_leading_char
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	#define bfd_set_cacheable(abfd, bool) scope : (abfd)->cacheable = bool : end scope
 #endif
 
@@ -471,7 +473,7 @@ declare sub bfd_put_bits(byval as bfd_uint64_t, byval as any ptr, byval as long,
 declare function bfd_section_already_linked_table_init() as bfd_boolean
 declare sub bfd_section_already_linked_table_free()
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	type bfd_section_already_linked_t as bfd_section_already_linked_t_
 	type bfd_link_info as bfd_link_info_
 	declare function _bfd_handle_already_linked(byval as bfd_section ptr, byval as bfd_section_already_linked_t ptr, byval as bfd_link_info ptr) as bfd_boolean
@@ -483,7 +485,7 @@ declare function bfd_ecoff_set_regmasks(byval abfd as bfd ptr, byval gprmask as 
 type ecoff_debug_info as ecoff_debug_info_
 type ecoff_debug_swap as ecoff_debug_swap_
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 221
 	type bfd_link_info as bfd_link_info_
 #endif
 
@@ -515,7 +517,7 @@ end enum
 
 #if __BFD_VER__ = 216
 	declare function bfd_elf_record_link_assignment(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr, byval as bfd_boolean) as bfd_boolean
-#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 218
 	type notice_asneeded_action as long
 	enum
 		notice_as_needed
@@ -524,37 +526,37 @@ end enum
 	end enum
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_elf_record_link_assignment(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr, byval as bfd_boolean, byval as bfd_boolean) as bfd_boolean
 #endif
 
 declare function bfd_elf_get_needed_list(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_link_needed_list ptr
 declare function bfd_elf_get_bfd_needed_list(byval as bfd ptr, byval as bfd_link_needed_list ptr ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 221
 	type bfd_elf_version_tree as bfd_elf_version_tree_
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 220
 	declare function bfd_elf_size_dynamic_sections(byval as bfd ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring const ptr ptr, byval as bfd_link_info ptr, byval as bfd_section ptr ptr, byval as bfd_elf_version_tree ptr) as bfd_boolean
 #elseif __BFD_VER__ = 221
 	declare function bfd_elf_size_dynamic_sections(byval as bfd ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring const ptr ptr, byval as bfd_link_info ptr, byval as bfd_section ptr ptr, byval as bfd_elf_version_tree ptr) as bfd_boolean
-#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#elseif __BFD_VER__ >= 224
 	declare function bfd_elf_stack_segment_size(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr, byval as bfd_vma) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	declare function bfd_elf_size_dynamic_sections(byval as bfd ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring const ptr ptr, byval as bfd_link_info ptr, byval as bfd_section ptr ptr) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_elf_size_dynsym_hash_dynstr(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 #endif
 
 declare sub bfd_elf_set_dt_needed_name(byval as bfd ptr, byval as const zstring ptr)
 declare function bfd_elf_get_dt_soname(byval as bfd ptr) as const zstring ptr
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare sub bfd_elf_set_dyn_lib_class(byval as bfd ptr, byval as long)
 #else
 	declare sub bfd_elf_set_dyn_lib_class(byval as bfd ptr, byval as dynamic_lib_link_class)
@@ -563,20 +565,20 @@ declare function bfd_elf_get_dt_soname(byval as bfd ptr) as const zstring ptr
 declare function bfd_elf_get_dyn_lib_class(byval as bfd ptr) as long
 declare function bfd_elf_get_runpath_list(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_link_needed_list ptr
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
-	declare function bfd_elf_discard_info(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
-#else
+#if __BFD_VER__ = 225
 	declare function bfd_elf_discard_info(byval as bfd ptr, byval as bfd_link_info ptr) as long
+#else
+	declare function bfd_elf_discard_info(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function _bfd_elf_default_action_discarded(byval as bfd_section ptr) as ulong
 #endif
 
 declare function bfd_get_elf_phdr_upper_bound(byval abfd as bfd ptr) as clong
 declare function bfd_get_elf_phdrs(byval abfd as bfd ptr, byval phdrs as any ptr) as long
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	declare function bfd_elf_bfd_from_remote_memory(byval templ as bfd ptr, byval ehdr_vma as bfd_vma, byval loadbasep as bfd_vma ptr, byval target_read_memory as function(byval vma as bfd_vma, byval myaddr as bfd_byte ptr, byval len as long) as long) as bfd ptr
 #elseif (__BFD_VER__ = 223) or (__BFD_VER__ = 224)
 	declare function bfd_elf_bfd_from_remote_memory(byval templ as bfd ptr, byval ehdr_vma as bfd_vma, byval loadbasep as bfd_vma ptr, byval target_read_memory as function(byval vma as bfd_vma, byval myaddr as bfd_byte ptr, byval len as bfd_size_type) as long) as bfd ptr
@@ -586,11 +588,11 @@ declare function bfd_get_elf_phdrs(byval abfd as bfd ptr, byval phdrs as any ptr
 
 declare function _bfd_elf_tls_setup(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_section ptr
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	declare function _bfd_nearby_section(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_vma) as bfd_section ptr
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare sub _bfd_fix_excluded_sec_syms(byval as bfd ptr, byval as bfd_link_info ptr)
 	declare function bfd_m68k_mach_to_features(byval as long) as ulong
 	declare function bfd_m68k_features_to_mach(byval as ulong) as long
@@ -598,15 +600,15 @@ declare function _bfd_elf_tls_setup(byval as bfd ptr, byval as bfd_link_info ptr
 
 declare function bfd_m68k_elf32_create_embedded_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_section ptr, byval as bfd_section ptr, byval as zstring ptr ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	declare sub bfd_elf_m68k_set_target_options(byval as bfd_link_info ptr, byval as long)
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_bfin_elf32_create_embedded_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_section ptr, byval as bfd_section ptr, byval as zstring ptr ptr) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare function bfd_cr16_elf32_create_embedded_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_section ptr, byval as bfd_section ptr, byval as zstring ptr ptr) as bfd_boolean
 #endif
 
@@ -630,7 +632,7 @@ declare sub bfd_init_window(byval as bfd_window ptr)
 declare sub bfd_free_window(byval as bfd_window ptr)
 declare function bfd_get_file_window(byval as bfd ptr, byval as file_ptr, byval as bfd_size_type, byval as bfd_window ptr, byval as bfd_boolean) as bfd_boolean
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare function bfd_xcoff_split_import_path(byval as bfd ptr, byval as const zstring ptr, byval as const zstring ptr ptr, byval as const zstring ptr ptr) as bfd_boolean
 	declare function bfd_xcoff_set_archive_import_path(byval as bfd_link_info ptr, byval as bfd ptr, byval as const zstring ptr) as bfd_boolean
 #endif
@@ -642,7 +644,7 @@ declare function bfd_xcoff_export_symbol(byval as bfd ptr, byval as bfd_link_inf
 declare function bfd_xcoff_link_count_reloc(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr) as bfd_boolean
 declare function bfd_xcoff_record_link_assignment(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 219
 	declare function bfd_xcoff_size_dynamic_sections(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr, byval as const zstring ptr, byval as culong, byval as culong, byval as culong, byval as bfd_boolean, byval as long, byval as bfd_boolean, byval as bfd_boolean, byval as bfd_section ptr ptr, byval as bfd_boolean) as bfd_boolean
 #else
 	declare function bfd_xcoff_size_dynamic_sections(byval as bfd ptr, byval as bfd_link_info ptr, byval as const zstring ptr, byval as const zstring ptr, byval as culong, byval as culong, byval as culong, byval as bfd_boolean, byval as long, byval as bfd_boolean, byval as ulong, byval as bfd_section ptr ptr, byval as bfd_boolean) as bfd_boolean
@@ -657,7 +659,7 @@ declare function bfd_coff_get_auxent(byval as bfd ptr, byval as bfd_symbol ptr, 
 declare function bfd_coff_set_symbol_class(byval as bfd ptr, byval as bfd_symbol ptr, byval as ulong) as bfd_boolean
 declare function bfd_m68k_coff_create_embedded_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_section ptr, byval as bfd_section ptr, byval as zstring ptr ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	type bfd_arm_vfp11_fix as long
 	enum
 		BFD_ARM_VFP11_FIX_DEFAULT
@@ -670,11 +672,11 @@ declare function bfd_m68k_coff_create_embedded_relocs(byval as bfd ptr, byval as
 	declare sub bfd_elf32_arm_set_vfp11_fix(byval as bfd ptr, byval as bfd_link_info ptr)
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare sub bfd_elf32_arm_set_cortex_a8_fix(byval as bfd ptr, byval as bfd_link_info ptr)
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	declare function bfd_elf32_arm_vfp11_erratum_scan(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 	declare sub bfd_elf32_arm_vfp11_fix_veneer_locations(byval as bfd ptr, byval as bfd_link_info ptr)
 #endif
@@ -687,7 +689,7 @@ declare function bfd_arm_pe_process_before_allocation(byval as bfd ptr, byval as
 declare function bfd_arm_pe_get_bfd_for_interworking(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 declare function bfd_elf32_arm_allocate_interworking_sections(byval as bfd_link_info ptr) as bfd_boolean
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare function bfd_elf32_arm_process_before_allocation(byval as bfd ptr, byval as bfd_link_info ptr, byval as long) as bfd_boolean
 #endif
 
@@ -705,7 +707,7 @@ declare function bfd_elf32_arm_allocate_interworking_sections(byval as bfd_link_
 	declare sub bfd_elf32_arm_set_target_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as long, byval as zstring ptr, byval as long, byval as long, byval as bfd_arm_vfp11_fix, byval as long, byval as long, byval as long)
 #elseif (__BFD_VER__ = 220) or (__BFD_VER__ = 221)
 	declare sub bfd_elf32_arm_set_target_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as long, byval as zstring ptr, byval as long, byval as long, byval as bfd_arm_vfp11_fix, byval as long, byval as long, byval as long, byval as long)
-#elseif ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 222
 	declare sub bfd_elf32_arm_set_target_relocs(byval as bfd ptr, byval as bfd_link_info ptr, byval as long, byval as zstring ptr, byval as long, byval as long, byval as bfd_arm_vfp11_fix, byval as long, byval as long, byval as long, byval as long, byval as long)
 #endif
 
@@ -714,20 +716,20 @@ declare function bfd_elf32_arm_add_glue_sections_to_bfd(byval as bfd ptr, byval 
 
 #if __BFD_VER__ = 217
 	declare function bfd_is_arm_mapping_symbol_name(byval name as const zstring ptr) as bfd_boolean
-#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 218
 	const BFD_ARM_SPECIAL_SYM_TYPE_MAP = 1 shl 0
 	const BFD_ARM_SPECIAL_SYM_TYPE_TAG = 1 shl 1
 	const BFD_ARM_SPECIAL_SYM_TYPE_OTHER = 1 shl 2
 	const BFD_ARM_SPECIAL_SYM_TYPE_ANY = not 0
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 218) and (__BFD_VER__ <= 224)
 	declare function bfd_is_arm_special_symbol_name(byval name as const zstring ptr, byval type as long) as bfd_boolean
 #elseif __BFD_VER__ = 225
 	declare function bfd_is_arm_special_symbol_name(byval as const zstring ptr, byval as long) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	declare sub bfd_elf32_arm_set_byteswap_code(byval as bfd_link_info ptr, byval as long)
 #endif
 
@@ -739,41 +741,41 @@ declare function bfd_arm_merge_machines(byval as bfd ptr, byval as bfd ptr) as b
 declare function bfd_arm_update_notes(byval as bfd ptr, byval as const zstring ptr) as bfd_boolean
 declare function bfd_arm_get_mach_from_notes(byval as bfd ptr, byval as const zstring ptr) as ulong
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	declare function elf32_arm_setup_section_lists(byval as bfd ptr, byval as bfd_link_info ptr) as long
 	declare sub elf32_arm_next_input_section(byval as bfd_link_info ptr, byval as bfd_section ptr)
 #endif
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 219) and (__BFD_VER__ <= 223)
 	declare function elf32_arm_size_stubs(byval as bfd ptr, byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_signed_vma, byval as function(byval as const zstring ptr, byval as bfd_section ptr) as bfd_section ptr, byval as sub()) as bfd_boolean
-#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#elseif __BFD_VER__ >= 224
 	declare function elf32_arm_size_stubs(byval as bfd ptr, byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_signed_vma, byval as function(byval as const zstring ptr, byval as bfd_section ptr, byval as ulong) as bfd_section ptr, byval as sub()) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	declare function elf32_arm_build_stubs(byval as bfd_link_info ptr) as bfd_boolean
 #endif
 
 #if __BFD_VER__ = 220
 	declare function elf32_arm_fix_exidx_coverage(byval as bfd_section ptr ptr, byval as ulong, byval as bfd_link_info ptr) as bfd_boolean
-#elseif ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 221
 	declare function elf32_arm_fix_exidx_coverage(byval as bfd_section ptr ptr, byval as ulong, byval as bfd_link_info ptr, byval as bfd_boolean) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	declare function elf32_tic6x_fix_exidx_coverage(byval as bfd_section ptr ptr, byval as ulong, byval as bfd_link_info ptr, byval as bfd_boolean) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare function _bfd_elf_ppc_at_tls_transform(byval as ulong, byval as ulong) as ulong
 	declare function _bfd_elf_ppc_at_tprel_transform(byval as ulong, byval as ulong) as ulong
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	declare sub bfd_elf64_aarch64_init_maps(byval as bfd ptr)
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	declare sub bfd_elf32_aarch64_init_maps(byval as bfd ptr)
 #endif
 
@@ -788,7 +790,7 @@ declare function bfd_arm_get_mach_from_notes(byval as bfd ptr, byval as const zs
 	declare sub bfd_elf32_aarch64_set_options(byval as bfd ptr, byval as bfd_link_info ptr, byval as long, byval as long, byval as long, byval as long)
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const BFD_AARCH64_SPECIAL_SYM_TYPE_MAP = 1 shl 0
 	const BFD_AARCH64_SPECIAL_SYM_TYPE_TAG = 1 shl 1
 	const BFD_AARCH64_SPECIAL_SYM_TYPE_OTHER = 1 shl 2
@@ -801,7 +803,7 @@ declare function bfd_arm_get_mach_from_notes(byval as bfd ptr, byval as const zs
 	declare function elf64_aarch64_build_stubs(byval as bfd_link_info ptr) as bfd_boolean
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	declare function elf32_aarch64_setup_section_lists(byval as bfd ptr, byval as bfd_link_info ptr) as long
 	declare sub elf32_aarch64_next_input_section(byval as bfd_link_info ptr, byval as bfd_section ptr)
 	declare function elf32_aarch64_size_stubs(byval as bfd ptr, byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_signed_vma, byval as function(byval as const zstring ptr, byval as bfd_section ptr) as bfd_section ptr, byval as sub()) as bfd_boolean
@@ -822,30 +824,30 @@ end type
 declare function bfd_coff_get_comdat_section(byval as bfd ptr, byval as bfd_section ptr) as coff_comdat_info ptr
 declare sub bfd_init()
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	extern bfd_use_reserved_id as ulong
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_fopen(byval filename as const zstring ptr, byval target as const zstring ptr, byval mode as const zstring ptr, byval fd as long) as bfd ptr
 #endif
 
 declare function bfd_openr(byval filename as const zstring ptr, byval target as const zstring ptr) as bfd ptr
 declare function bfd_fdopenr(byval filename as const zstring ptr, byval target as const zstring ptr, byval fd as long) as bfd ptr
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	declare function bfd_openstreamr(byval as const zstring ptr, byval as const zstring ptr, byval as any ptr) as bfd ptr
 #endif
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare function bfd_openr_iovec(byval filename as const zstring ptr, byval target as const zstring ptr, byval open as function(byval nbfd as bfd ptr, byval open_closure as any ptr) as any ptr, byval open_closure as any ptr, byval pread as function(byval nbfd as bfd ptr, byval stream as any ptr, byval buf as any ptr, byval nbytes as file_ptr, byval offset as file_ptr) as file_ptr, byval close as function(byval nbfd as bfd ptr, byval stream as any ptr) as long) as bfd ptr
-#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif (__BFD_VER__ >= 218) and (__BFD_VER__ <= 220)
 	declare function bfd_openr_iovec(byval filename as const zstring ptr, byval target as const zstring ptr, byval open as function(byval nbfd as bfd ptr, byval open_closure as any ptr) as any ptr, byval open_closure as any ptr, byval pread as function(byval nbfd as bfd ptr, byval stream as any ptr, byval buf as any ptr, byval nbytes as file_ptr, byval offset as file_ptr) as file_ptr, byval close as function(byval nbfd as bfd ptr, byval stream as any ptr) as long, byval stat as function(byval abfd as bfd ptr, byval stream as any ptr, byval sb as stat ptr) as long) as bfd ptr
 #elseif __BFD_VER__ = 225
 	declare function bfd_openstreamr(byval filename as const zstring ptr, byval target as const zstring ptr, byval stream as any ptr) as bfd ptr
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare function bfd_openr_iovec(byval filename as const zstring ptr, byval target as const zstring ptr, byval open_func as function(byval nbfd as bfd ptr, byval open_closure as any ptr) as any ptr, byval open_closure as any ptr, byval pread_func as function(byval nbfd as bfd ptr, byval stream as any ptr, byval buf as any ptr, byval nbytes as file_ptr, byval offset as file_ptr) as file_ptr, byval close_func as function(byval nbfd as bfd ptr, byval stream as any ptr) as long, byval stat_func as function(byval abfd as bfd ptr, byval stream as any ptr, byval sb as stat ptr) as long) as bfd ptr
 #endif
 
@@ -856,14 +858,14 @@ declare function bfd_create(byval filename as const zstring ptr, byval templ as 
 declare function bfd_make_writable(byval abfd as bfd ptr) as bfd_boolean
 declare function bfd_make_readable(byval abfd as bfd ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare function bfd_alloc(byval abfd as bfd ptr, byval wanted as bfd_size_type) as any ptr
 	declare function bfd_zalloc(byval abfd as bfd ptr, byval wanted as bfd_size_type) as any ptr
 #endif
 
 declare function bfd_calc_gnu_debuglink_crc32(byval crc as culong, byval buf as const ubyte ptr, byval len as bfd_size_type) as culong
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	declare function bfd_get_debug_link_info(byval abfd as bfd ptr, byval crc32_out as culong ptr) as zstring ptr
 #endif
 
@@ -875,7 +877,7 @@ declare function bfd_calc_gnu_debuglink_crc32(byval crc as culong, byval buf as 
 
 declare function bfd_follow_gnu_debuglink(byval abfd as bfd ptr, byval dir as const zstring ptr) as zstring ptr
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	declare function bfd_follow_gnu_debugaltlink(byval abfd as bfd ptr, byval dir as const zstring ptr) as zstring ptr
 #endif
 
@@ -884,7 +886,7 @@ declare function bfd_fill_in_gnu_debuglink_section(byval abfd as bfd ptr, byval 
 #define bfd_put_8(abfd, val_, ptr_) scope : (*cptr(ubyte ptr, (ptr_))) = (val_) and &hff : end scope
 #define bfd_put_signed_8 bfd_put_8
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 220
 	#define bfd_get_8(abfd, ptr_) ((*cptr(ubyte ptr, (ptr_))) and &hff)
 	#define bfd_get_signed_8(abfd, ptr_) ((((*cptr(ubyte ptr, (ptr_))) and &hff) xor &h80) - &h80)
 #else
@@ -949,7 +951,7 @@ declare function bfd_fill_in_gnu_debuglink_section(byval abfd as bfd ptr, byval 
 #define H_GET_S8 bfd_h_get_signed_8
 declare function bfd_get_mtime(byval abfd as bfd ptr) as clong
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare function bfd_get_size(byval abfd as bfd ptr) as clong
 #else
 	declare function bfd_get_size(byval abfd as bfd ptr) as file_ptr
@@ -957,11 +959,11 @@ declare function bfd_get_mtime(byval abfd as bfd ptr) as clong
 
 #if (__BFD_VER__ = 220) or (__BFD_VER__ = 221)
 	declare function bfd_mmap(byval abfd as bfd ptr, byval addr as any ptr, byval len as bfd_size_type, byval prot as long, byval flags as long, byval offset as file_ptr) as any ptr
-#elseif ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 222
 	declare function bfd_mmap(byval abfd as bfd ptr, byval addr as any ptr, byval len as bfd_size_type, byval prot as long, byval flags as long, byval offset as file_ptr, byval map_addr as any ptr ptr, byval map_len as bfd_size_type ptr) as any ptr
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	type bfd_link_order as bfd_link_order_
 
 	union bfd_section_map_head
@@ -970,7 +972,7 @@ declare function bfd_get_mtime(byval abfd as bfd ptr) as clong
 	end union
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	type relax_table as relax_table_
 #endif
 
@@ -989,7 +991,7 @@ type bfd_section_
 	index as long
 	next as bfd_section ptr
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		prev as bfd_section ptr
 	#endif
 
@@ -1001,7 +1003,7 @@ type bfd_section_
 
 	#if (__BFD_VER__ = 217) or (__BFD_VER__ = 218)
 		gc_mark_from_eh : 1 as ulong
-	#elseif ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif __BFD_VER__ >= 221
 		compress_status : 2 as ulong
 	#endif
 
@@ -1009,7 +1011,7 @@ type bfd_section_
 	sec_info_type : 3 as ulong
 	use_rela_p : 1 as ulong
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 220
 		has_tls_reloc : 1 as ulong
 	#endif
 
@@ -1017,7 +1019,7 @@ type bfd_section_
 		has_tls_get_addr_call : 1 as ulong
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 220
 		has_gp_reloc : 1 as ulong
 		need_finalize_relax : 1 as ulong
 		reloc_done : 1 as ulong
@@ -1035,11 +1037,11 @@ type bfd_section_
 	size as bfd_size_type
 	rawsize as bfd_size_type
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		compressed_size as bfd_size_type
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		relax as relax_table ptr
 		relax_count as long
 	#endif
@@ -1102,7 +1104,7 @@ const SEC_EXCLUDE = &h8000
 const SEC_SORT_ENTRIES = &h10000
 const SEC_LINK_ONCE = &h20000
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	const SEC_LINK_DUPLICATES = &h40000
 #else
 	const SEC_LINK_DUPLICATES = &hc0000
@@ -1110,7 +1112,7 @@ const SEC_LINK_ONCE = &h20000
 
 const SEC_LINK_DUPLICATES_DISCARD = &h0
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	const SEC_LINK_DUPLICATES_ONE_ONLY = &h80000
 	const SEC_LINK_DUPLICATES_SAME_SIZE = &h100000
 #else
@@ -1120,7 +1122,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 
 #define SEC_LINK_DUPLICATES_SAME_CONTENTS (SEC_LINK_DUPLICATES_ONE_ONLY or SEC_LINK_DUPLICATES_SAME_SIZE)
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 218
 	const SEC_LINKER_CREATED = &h200000
 	const SEC_KEEP = &h400000
 	const SEC_SMALL_DATA = &h800000
@@ -1141,27 +1143,27 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	const SEC_COFF_SHARED_LIBRARY = &h4000000
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	const SEC_ELF_REVERSE_COPY = &h4000000
 #endif
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const SEC_COFF_SHARED = &h8000000
 	const SEC_TIC54X_BLOCK = &h10000000
 	const SEC_TIC54X_CLINK = &h20000000
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const SEC_COFF_NOREAD = &h40000000
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	const COMPRESS_SECTION_NONE = 0
 	const COMPRESS_SECTION_DONE = 1
 	const DECOMPRESS_SECTION_SIZED = 2
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	const ELF_INFO_TYPE_NONE = 0
 	const ELF_INFO_TYPE_STABS = 1
 	const ELF_INFO_TYPE_MERGE = 2
@@ -1179,7 +1181,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	const SEC_INFO_TYPE_TARGET = 5
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	type relax_table_
 		addr as bfd_vma
 		size as long
@@ -1207,7 +1209,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	end function
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	extern _bfd_std_section(0 to 3) as asection
 #endif
 
@@ -1216,7 +1218,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 #define BFD_COM_SECTION_NAME "*COM*"
 #define BFD_IND_SECTION_NAME "*IND*"
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	extern bfd_abs_section as asection
 	#define bfd_abs_section_ptr cptr(asection ptr, @bfd_abs_section)
 #elseif __BFD_VER__ = 223
@@ -1231,13 +1233,13 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	#define bfd_ind_section_ptr (@_bfd_std_section[3])
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	#define bfd_is_und_section(sec) ((sec) = bfd_und_section_ptr)
 #endif
 
 #define bfd_is_abs_section(sec) ((sec) = bfd_abs_section_ptr)
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 222
 	extern bfd_und_section as asection
 	#define bfd_und_section_ptr cptr(asection ptr, @bfd_und_section)
 	#define bfd_is_und_section(sec) ((sec) = bfd_und_section_ptr)
@@ -1250,7 +1252,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 #define bfd_is_ind_section(sec) ((sec) = bfd_ind_section_ptr)
 #define bfd_is_const_section(SEC) (((((SEC) = bfd_abs_section_ptr) orelse ((SEC) = bfd_und_section_ptr)) orelse ((SEC) = bfd_com_section_ptr)) orelse ((SEC) = bfd_ind_section_ptr))
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	extern bfd_abs_symbol as const bfd_symbol const ptr
 	extern bfd_com_symbol as const bfd_symbol const ptr
 	extern bfd_und_symbol as const bfd_symbol const ptr
@@ -1372,14 +1374,14 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	#define BFD_FAKE_SECTION(SEC, FLAGS, SYM, NAME, IDX) (NAME, IDX, 0, NULL, NULL, FLAGS, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, cptr(bfd_section ptr, @SEC), 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, cptr(bfd_symbol ptr, SYM), @SEC.symbol, (NULL), (NULL))
 #elseif __BFD_VER__ = 222
 	#define BFD_FAKE_SECTION(SEC, FLAGS, SYM, NAME, IDX) (NAME, IDX, 0, NULL, NULL, FLAGS, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, cptr(bfd_section ptr, @SEC), 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, NULL, cptr(bfd_symbol ptr, SYM), @SEC.symbol, (NULL), (NULL))
-#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 223
 	#define BFD_FAKE_SECTION(SEC, FLAGS, SYM, NAME, IDX) (NAME, IDX, 0, NULL, NULL, FLAGS, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, @SEC, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 0, 0, NULL, 0, 0, NULL, NULL, NULL, cptr(bfd_symbol ptr, SYM), @SEC.symbol, (NULL), (NULL))
 #endif
 
 declare sub bfd_section_list_clear(byval as bfd ptr)
 declare function bfd_get_section_by_name(byval abfd as bfd ptr, byval name as const zstring ptr) as asection ptr
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	declare function bfd_get_next_section_by_name(byval sec as asection ptr) as asection ptr
 	declare function bfd_get_linker_section(byval abfd as bfd ptr, byval name as const zstring ptr) as asection ptr
 #endif
@@ -1388,20 +1390,20 @@ declare function bfd_get_section_by_name_if(byval abfd as bfd ptr, byval name as
 declare function bfd_get_unique_section_name(byval abfd as bfd ptr, byval templat as const zstring ptr, byval count as long ptr) as zstring ptr
 declare function bfd_make_section_old_way(byval abfd as bfd ptr, byval name as const zstring ptr) as asection ptr
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_make_section_anyway_with_flags(byval abfd as bfd ptr, byval name as const zstring ptr, byval flags as flagword) as asection ptr
 #endif
 
 declare function bfd_make_section_anyway(byval abfd as bfd ptr, byval name as const zstring ptr) as asection ptr
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function bfd_make_section_with_flags(byval as bfd ptr, byval name as const zstring ptr, byval flags as flagword) as asection ptr
 #endif
 
 declare function bfd_make_section(byval as bfd ptr, byval name as const zstring ptr) as asection ptr
 declare function bfd_set_section_flags(byval abfd as bfd ptr, byval sec as asection ptr, byval flags as flagword) as bfd_boolean
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare sub bfd_rename_section(byval abfd as bfd ptr, byval sec as asection ptr, byval newname as const zstring ptr)
 #endif
 
@@ -1429,7 +1431,7 @@ enum
 	bfd_arch_vax
 	bfd_arch_i960
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		bfd_arch_or32
 	#endif
 
@@ -1441,18 +1443,18 @@ enum
 
 	bfd_arch_sparc
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		bfd_arch_spu
 	#endif
 
 	bfd_arch_mips
 	bfd_arch_i386
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		bfd_arch_l1om
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		bfd_arch_k1om
 	#endif
 
@@ -1473,7 +1475,7 @@ enum
 	bfd_arch_h8300
 	bfd_arch_pdp11
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		bfd_arch_plugin
 	#endif
 
@@ -1486,7 +1488,7 @@ enum
 	bfd_arch_m68hc11
 	bfd_arch_m68hc12
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		bfd_arch_m9s12x
 		bfd_arch_m9s12xg
 	#endif
@@ -1507,20 +1509,20 @@ enum
 	bfd_arch_tic4x
 	bfd_arch_tic54x
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		bfd_arch_tic6x
 	#endif
 
 	bfd_arch_tic80
 	bfd_arch_v850
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		bfd_arch_v850_rh850
 	#endif
 
 	bfd_arch_arc
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		bfd_arch_m32c
 	#endif
 
@@ -1530,17 +1532,17 @@ enum
 	bfd_arch_fr30
 	bfd_arch_frv
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		bfd_arch_moxie
 	#endif
 
 	bfd_arch_mcore
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		bfd_arch_mep
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		bfd_arch_metag
 	#endif
 
@@ -1548,22 +1550,22 @@ enum
 	bfd_arch_ip2k
 	bfd_arch_iq2000
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		bfd_arch_epiphany
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		bfd_arch_mt
 	#endif
 
 	bfd_arch_pj
 	bfd_arch_avr
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		bfd_arch_bfin
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		bfd_arch_cr16
 	#endif
 
@@ -1571,21 +1573,21 @@ enum
 	bfd_arch_crx
 	bfd_arch_cris
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		bfd_arch_rl78
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		bfd_arch_rx
 	#endif
 
 	bfd_arch_s390
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		bfd_arch_score
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		bfd_arch_openrisc
 	#endif
 
@@ -1593,39 +1595,39 @@ enum
 	bfd_arch_xstormy16
 	bfd_arch_msp430
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		bfd_arch_xc16x
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		bfd_arch_xgate
 	#endif
 
 	bfd_arch_xtensa
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 220
 		bfd_arch_maxq
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		bfd_arch_z80
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		bfd_arch_lm32
 		bfd_arch_microblaze
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		bfd_arch_tilepro
 		bfd_arch_tilegx
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		bfd_arch_aarch64
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		bfd_arch_nios2
 	#endif
 
@@ -1692,7 +1694,7 @@ const bfd_mach_cpu32 = 8
 	const bfd_mach_mcf_isa_c_emac = 28
 #endif
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_mcf_isa_c_nodiv = 29
 	const bfd_mach_mcf_isa_c_nodiv_mac = 30
 	const bfd_mach_mcf_isa_c_nodiv_emac = 31
@@ -1725,7 +1727,7 @@ const bfd_mach_sparc_v9b = 10
 #define bfd_mach_sparc_v9_p(mach) ((((mach) >= bfd_mach_sparc_v8plus) andalso ((mach) <= bfd_mach_sparc_v9b)) andalso ((mach) <> bfd_mach_sparc_sparclite_le))
 #define bfd_mach_sparc_64bit_p(mach) (((mach) >= bfd_mach_sparc_v9) andalso ((mach) <> bfd_mach_sparc_v8plusb))
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const bfd_mach_spu = 256
 #endif
 
@@ -1744,7 +1746,7 @@ const bfd_mach_mips5000 = 5000
 const bfd_mach_mips5400 = 5400
 const bfd_mach_mips5500 = 5500
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_mips5900 = 5900
 #endif
 
@@ -1755,7 +1757,7 @@ const bfd_mach_mips9000 = 9000
 const bfd_mach_mips10000 = 10000
 const bfd_mach_mips12000 = 12000
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_mips14000 = 14000
 	const bfd_mach_mips16000 = 16000
 #endif
@@ -1763,27 +1765,27 @@ const bfd_mach_mips12000 = 12000
 const bfd_mach_mips16 = 16
 const bfd_mach_mips5 = 5
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_mips_loongson_2e = 3001
 	const bfd_mach_mips_loongson_2f = 3002
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	const bfd_mach_mips_loongson_3a = 3003
 #endif
 
 const bfd_mach_mips_sb1 = 12310201
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_mips_octeon = 6501
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_mips_octeonp = 6601
 	const bfd_mach_mips_octeon2 = 6502
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_mips_xlr = 887682
 #endif
 
@@ -1799,7 +1801,7 @@ const bfd_mach_mipsisa32r2 = 33
 const bfd_mach_mipsisa64 = 64
 const bfd_mach_mipsisa64r2 = 65
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 221
 	const bfd_mach_i386_i386 = 1
 	const bfd_mach_i386_i8086 = 2
 	const bfd_mach_i386_i386_intel_syntax = 3
@@ -1816,7 +1818,7 @@ const bfd_mach_mipsisa64r2 = 65
 	const bfd_mach_mipsisa64r6 = 69
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	const bfd_mach_mips_micromips = 96
 	const bfd_mach_i386_intel_syntax = 1 shl 0
 	const bfd_mach_i386_i8086 = 1 shl 1
@@ -1832,7 +1834,7 @@ const bfd_mach_mipsisa64r2 = 65
 	#define bfd_mach_k1om_intel_syntax (bfd_mach_k1om or bfd_mach_i386_intel_syntax)
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_i386_nacl = 1 shl 7
 	#define bfd_mach_i386_i386_nacl (bfd_mach_i386_i386 or bfd_mach_i386_nacl)
 	#define bfd_mach_x86_64_nacl (bfd_mach_x86_64 or bfd_mach_i386_nacl)
@@ -1851,7 +1853,7 @@ const bfd_mach_ppc64 = 64
 const bfd_mach_ppc_403 = 403
 const bfd_mach_ppc_403gc = 4030
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_ppc_405 = 405
 #endif
 
@@ -1871,24 +1873,24 @@ const bfd_mach_ppc_rs64iii = 643
 const bfd_mach_ppc_7400 = 7400
 const bfd_mach_ppc_e500 = 500
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_ppc_e500mc = 5001
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	const bfd_mach_ppc_e500mc64 = 5005
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_ppc_e5500 = 5006
 	const bfd_mach_ppc_e6500 = 5007
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	const bfd_mach_ppc_titan = 83
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_ppc_vle = 84
 #endif
 
@@ -1946,7 +1948,7 @@ const bfd_mach_arm_XScale = 10
 const bfd_mach_arm_ep9312 = 11
 const bfd_mach_arm_iWMMXt = 12
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const bfd_mach_arm_iWMMXt2 = 13
 #endif
 
@@ -1964,12 +1966,12 @@ const bfd_mach_v850 = 1
 #define bfd_mach_v850e asc("E")
 #define bfd_mach_v850e1 asc("1")
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	const bfd_mach_v850e2 = &h4532
 	const bfd_mach_v850e2v3 = &h45325633
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_v850e3v5 = &h45335635
 #endif
 
@@ -1978,7 +1980,7 @@ const bfd_mach_arc_6 = 6
 const bfd_mach_arc_7 = 7
 const bfd_mach_arc_8 = 8
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_m16c = &h75
 	const bfd_mach_m32c = &h78
 #endif
@@ -1999,20 +2001,20 @@ const bfd_mach_frvtomcat = 499
 const bfd_mach_fr500 = 500
 const bfd_mach_fr550 = 550
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_moxie = 1
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const bfd_mach_mep = 1
 	const bfd_mach_mep_h1 = &h6831
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_mep_c5 = &h6335
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_metag = 1
 #endif
 
@@ -2023,12 +2025,12 @@ const bfd_mach_ip2022ext = 2
 const bfd_mach_iq2000 = 1
 const bfd_mach_iq10 = 2
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_epiphany16 = 1
 	const bfd_mach_epiphany32 = 2
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_ms1 = 1
 	const bfd_mach_mrisc2 = 2
 	const bfd_mach_ms2 = 3
@@ -2037,13 +2039,13 @@ const bfd_mach_iq10 = 2
 const bfd_mach_avr1 = 1
 const bfd_mach_avr2 = 2
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_avr25 = 25
 #endif
 
 const bfd_mach_avr3 = 3
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_avr31 = 31
 	const bfd_mach_avr35 = 35
 #endif
@@ -2051,11 +2053,11 @@ const bfd_mach_avr3 = 3
 const bfd_mach_avr4 = 4
 const bfd_mach_avr5 = 5
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const bfd_mach_avr51 = 51
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const bfd_mach_avr6 = 6
 #endif
 
@@ -2063,7 +2065,7 @@ const bfd_mach_avr5 = 5
 	const bfd_mach_avrtiny = 100
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	const bfd_mach_avrxmega1 = 101
 	const bfd_mach_avrxmega2 = 102
 	const bfd_mach_avrxmega3 = 103
@@ -2073,11 +2075,11 @@ const bfd_mach_avr5 = 5
 	const bfd_mach_avrxmega7 = 107
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_bfin = 1
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	const bfd_mach_cr16 = 1
 #endif
 
@@ -2087,18 +2089,18 @@ const bfd_mach_cris_v0_v10 = 255
 const bfd_mach_cris_v32 = 32
 const bfd_mach_cris_v10_v32 = 1032
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_rl78 = &h75
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	const bfd_mach_rx = &h75
 #endif
 
 const bfd_mach_s390_31 = 31
 const bfd_mach_s390_64 = 64
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_score3 = 3
 	const bfd_mach_score7 = 7
 #endif
@@ -2112,15 +2114,15 @@ const bfd_mach_msp14 = 14
 const bfd_mach_msp15 = 15
 const bfd_mach_msp16 = 16
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_msp20 = 20
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_msp21 = 21
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_msp22 = 22
 	const bfd_mach_msp23 = 23
 	const bfd_mach_msp24 = 24
@@ -2135,52 +2137,52 @@ const bfd_mach_msp42 = 42
 const bfd_mach_msp43 = 43
 const bfd_mach_msp44 = 44
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_msp430x = 45
 	const bfd_mach_msp46 = 46
 	const bfd_mach_msp47 = 47
 	const bfd_mach_msp54 = 54
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_xc16x = 1
 	const bfd_mach_xc16xl = 2
 	const bfd_mach_xc16xs = 3
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_xgate = 1
 #endif
 
 const bfd_mach_xtensa = 1
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 220
 	const bfd_mach_maxq10 = 10
 	const bfd_mach_maxq20 = 20
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	const bfd_mach_z80strict = 1
 	const bfd_mach_z80 = 3
 	const bfd_mach_z80full = 7
 	const bfd_mach_r800 = 11
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	const bfd_mach_lm32 = 1
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	const bfd_mach_tilepro = 1
 	const bfd_mach_tilegx = 1
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	const bfd_mach_tilegx32 = 2
 	const bfd_mach_aarch64 = 0
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	const bfd_mach_aarch64_ilp32 = 32
 	const bfd_mach_nios2 = 0
 #endif
@@ -2198,7 +2200,7 @@ type bfd_arch_info
 	compatible as function(byval a as const bfd_arch_info ptr, byval b as const bfd_arch_info ptr) as const bfd_arch_info ptr
 	scan as function(byval as const bfd_arch_info ptr, byval as const zstring ptr) as bfd_boolean
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		fill as function(byval count as bfd_size_type, byval is_bigendian as bfd_boolean, byval code as bfd_boolean) as any ptr
 	#endif
 
@@ -2331,7 +2333,7 @@ enum
 	BFD_RELOC_HI16_S_PLTOFF
 	BFD_RELOC_8_PLTOFF
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_SIZE32
 		BFD_RELOC_SIZE64
 	#endif
@@ -2340,7 +2342,7 @@ enum
 	BFD_RELOC_68K_JMP_SLOT
 	BFD_RELOC_68K_RELATIVE
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_68K_TLS_GD32
 		BFD_RELOC_68K_TLS_GD16
 		BFD_RELOC_68K_TLS_GD8
@@ -2392,7 +2394,7 @@ enum
 	BFD_RELOC_SPARC_UA32
 	BFD_RELOC_SPARC_UA64
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_SPARC_GOTDATA_HIX22
 		BFD_RELOC_SPARC_GOTDATA_LOX10
 		BFD_RELOC_SPARC_GOTDATA_OP_HIX22
@@ -2400,7 +2402,7 @@ enum
 		BFD_RELOC_SPARC_GOTDATA_OP
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_SPARC_JMP_IREL
 		BFD_RELOC_SPARC_IRELATIVE
 	#endif
@@ -2430,7 +2432,7 @@ enum
 	BFD_RELOC_SPARC_L44
 	BFD_RELOC_SPARC_REGISTER
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_SPARC_H34
 		BFD_RELOC_SPARC_SIZE32
 		BFD_RELOC_SPARC_SIZE64
@@ -2463,7 +2465,7 @@ enum
 	BFD_RELOC_SPARC_TLS_TPOFF32
 	BFD_RELOC_SPARC_TLS_TPOFF64
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_SPU_IMM7
 		BFD_RELOC_SPU_IMM8
 		BFD_RELOC_SPU_IMM10
@@ -2480,7 +2482,7 @@ enum
 		BFD_RELOC_SPU_PPU64
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_SPU_ADD_PIC
 	#endif
 
@@ -2497,7 +2499,7 @@ enum
 	BFD_RELOC_ALPHA_GPREL_LO16
 	BFD_RELOC_ALPHA_BRSGP
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_ALPHA_NOP
 		BFD_RELOC_ALPHA_BSR
 		BFD_RELOC_ALPHA_LDA
@@ -2519,7 +2521,7 @@ enum
 	BFD_RELOC_ALPHA_TPREL16
 	BFD_RELOC_MIPS_JMP
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_JMP
 	#endif
 
@@ -2529,13 +2531,13 @@ enum
 	BFD_RELOC_HI16_S
 	BFD_RELOC_LO16
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_HI16_PCREL
 		BFD_RELOC_HI16_S_PCREL
 		BFD_RELOC_LO16_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_MIPS16_GOT16
 		BFD_RELOC_MIPS16_CALL16
 	#endif
@@ -2544,7 +2546,7 @@ enum
 	BFD_RELOC_MIPS16_HI16_S
 	BFD_RELOC_MIPS16_LO16
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_MIPS16_TLS_GD
 		BFD_RELOC_MIPS16_TLS_LDM
 		BFD_RELOC_MIPS16_TLS_DTPREL_HI16
@@ -2556,7 +2558,7 @@ enum
 
 	BFD_RELOC_MIPS_LITERAL
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_LITERAL
 		BFD_RELOC_MICROMIPS_7_PCREL_S1
 		BFD_RELOC_MICROMIPS_10_PCREL_S1
@@ -2570,7 +2572,7 @@ enum
 		BFD_RELOC_MIPS_19_PCREL_S2
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GPREL16
 		BFD_RELOC_MICROMIPS_HI16
 		BFD_RELOC_MICROMIPS_HI16_S
@@ -2579,61 +2581,61 @@ enum
 
 	BFD_RELOC_MIPS_GOT16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT16
 	#endif
 
 	BFD_RELOC_MIPS_CALL16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_CALL16
 	#endif
 
 	BFD_RELOC_MIPS_GOT_HI16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT_HI16
 	#endif
 
 	BFD_RELOC_MIPS_GOT_LO16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT_LO16
 	#endif
 
 	BFD_RELOC_MIPS_CALL_HI16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_CALL_HI16
 	#endif
 
 	BFD_RELOC_MIPS_CALL_LO16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_CALL_LO16
 	#endif
 
 	BFD_RELOC_MIPS_SUB
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_SUB
 	#endif
 
 	BFD_RELOC_MIPS_GOT_PAGE
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT_PAGE
 	#endif
 
 	BFD_RELOC_MIPS_GOT_OFST
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT_OFST
 	#endif
 
 	BFD_RELOC_MIPS_GOT_DISP
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_GOT_DISP
 	#endif
 
@@ -2644,19 +2646,19 @@ enum
 	BFD_RELOC_MIPS_DELETE
 	BFD_RELOC_MIPS_HIGHEST
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_HIGHEST
 	#endif
 
 	BFD_RELOC_MIPS_HIGHER
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_HIGHER
 	#endif
 
 	BFD_RELOC_MIPS_SCN_DISP
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_SCN_DISP
 	#endif
 
@@ -2664,7 +2666,7 @@ enum
 	BFD_RELOC_MIPS_RELGOT
 	BFD_RELOC_MIPS_JALR
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_JALR
 	#endif
 
@@ -2674,31 +2676,31 @@ enum
 	BFD_RELOC_MIPS_TLS_DTPREL64
 	BFD_RELOC_MIPS_TLS_GD
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_GD
 	#endif
 
 	BFD_RELOC_MIPS_TLS_LDM
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_LDM
 	#endif
 
 	BFD_RELOC_MIPS_TLS_DTPREL_HI16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_DTPREL_HI16
 	#endif
 
 	BFD_RELOC_MIPS_TLS_DTPREL_LO16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_DTPREL_LO16
 	#endif
 
 	BFD_RELOC_MIPS_TLS_GOTTPREL
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_GOTTPREL
 	#endif
 
@@ -2706,26 +2708,26 @@ enum
 	BFD_RELOC_MIPS_TLS_TPREL64
 	BFD_RELOC_MIPS_TLS_TPREL_HI16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_TPREL_HI16
 	#endif
 
 	BFD_RELOC_MIPS_TLS_TPREL_LO16
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_MICROMIPS_TLS_TPREL_LO16
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_MIPS_EH
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_MIPS_COPY
 		BFD_RELOC_MIPS_JUMP_SLOT
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_MOXIE_10_PCREL
 	#endif
 
@@ -2777,12 +2779,12 @@ enum
 	BFD_RELOC_MN10300_JMP_SLOT
 	BFD_RELOC_MN10300_RELATIVE
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_MN10300_SYM_DIFF
 		BFD_RELOC_MN10300_ALIGN
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_MN10300_TLS_GD
 		BFD_RELOC_MN10300_TLS_LD
 		BFD_RELOC_MN10300_TLS_LDO
@@ -2817,13 +2819,13 @@ enum
 	BFD_RELOC_386_TLS_DTPOFF32
 	BFD_RELOC_386_TLS_TPOFF32
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_386_TLS_GOTDESC
 		BFD_RELOC_386_TLS_DESC_CALL
 		BFD_RELOC_386_TLS_DESC
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_386_IRELATIVE
 	#endif
 
@@ -2844,7 +2846,7 @@ enum
 	BFD_RELOC_X86_64_GOTTPOFF
 	BFD_RELOC_X86_64_TPOFF32
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_X86_64_GOTOFF64
 		BFD_RELOC_X86_64_GOTPC32
 		BFD_RELOC_X86_64_GOT64
@@ -2857,11 +2859,11 @@ enum
 		BFD_RELOC_X86_64_TLSDESC
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_X86_64_IRELATIVE
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_X86_64_PC32_BND
 		BFD_RELOC_X86_64_PLT32_BND
 	#endif
@@ -2917,7 +2919,7 @@ enum
 	BFD_RELOC_PPC_EMB_BIT_FLD
 	BFD_RELOC_PPC_EMB_RELSDA
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_PPC_VLE_REL8
 		BFD_RELOC_PPC_VLE_REL15
 		BFD_RELOC_PPC_VLE_REL24
@@ -2961,7 +2963,7 @@ enum
 	BFD_RELOC_PPC64_PLTGOT16_DS
 	BFD_RELOC_PPC64_PLTGOT16_LO_DS
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_PPC64_ADDR16_HIGH
 		BFD_RELOC_PPC64_ADDR16_HIGHA
 	#endif
@@ -2972,7 +2974,7 @@ enum
 
 	BFD_RELOC_PPC_TLS
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_PPC_TLSGD
 		BFD_RELOC_PPC_TLSLD
 	#endif
@@ -3017,7 +3019,7 @@ enum
 	BFD_RELOC_PPC64_DTPREL16_HIGHEST
 	BFD_RELOC_PPC64_DTPREL16_HIGHESTA
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_PPC64_TPREL16_HIGH
 		BFD_RELOC_PPC64_TPREL16_HIGHA
 		BFD_RELOC_PPC64_DTPREL16_HIGH
@@ -3030,7 +3032,7 @@ enum
 	BFD_RELOC_ARM_PCREL_BLX
 	BFD_RELOC_THUMB_PCREL_BLX
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_PCREL_CALL
 		BFD_RELOC_ARM_PCREL_JUMP
 		BFD_RELOC_THUMB_PCREL_BRANCH7
@@ -3048,7 +3050,7 @@ enum
 		BFD_RELOC_ARM_PREL31
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_ARM_MOVW
 		BFD_RELOC_ARM_MOVT
 		BFD_RELOC_ARM_MOVW_PCREL
@@ -3059,7 +3061,7 @@ enum
 		BFD_RELOC_ARM_THUMB_MOVT_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_JUMP_SLOT
 		BFD_RELOC_ARM_GLOB_DAT
 		BFD_RELOC_ARM_GOT32
@@ -3069,11 +3071,11 @@ enum
 		BFD_RELOC_ARM_GOTPC
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_ARM_GOT_PREL
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_TLS_GD32
 		BFD_RELOC_ARM_TLS_LDO32
 		BFD_RELOC_ARM_TLS_LDM32
@@ -3084,7 +3086,7 @@ enum
 		BFD_RELOC_ARM_TLS_LE32
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_ARM_TLS_GOTDESC
 		BFD_RELOC_ARM_TLS_CALL
 		BFD_RELOC_ARM_THM_TLS_CALL
@@ -3093,7 +3095,7 @@ enum
 		BFD_RELOC_ARM_TLS_DESC
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_ARM_ALU_PC_G0_NC
 		BFD_RELOC_ARM_ALU_PC_G0
 		BFD_RELOC_ARM_ALU_PC_G1_NC
@@ -3124,11 +3126,11 @@ enum
 		BFD_RELOC_ARM_LDC_SB_G2
 	#endif
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_ARM_V4BX
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_ARM_IRELATIVE
 	#endif
 
@@ -3141,11 +3143,11 @@ enum
 		BFD_RELOC_ARM_T32_IMMEDIATE
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_ARM_T32_ADD_IMM
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_T32_IMM12
 		BFD_RELOC_ARM_T32_ADD_PC12
 	#endif
@@ -3158,7 +3160,7 @@ enum
 		BFD_RELOC_ARM_SMC
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_ARM_HVC
 	#endif
 
@@ -3167,7 +3169,7 @@ enum
 	BFD_RELOC_ARM_CP_OFF_IMM
 	BFD_RELOC_ARM_CP_OFF_IMM_S2
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_T32_CP_OFF_IMM
 		BFD_RELOC_ARM_T32_CP_OFF_IMM_S2
 	#endif
@@ -3178,7 +3180,7 @@ enum
 	BFD_RELOC_ARM_IN_POOL
 	BFD_RELOC_ARM_OFFSET_IMM8
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_ARM_T32_OFFSET_U8
 		BFD_RELOC_ARM_T32_OFFSET_IMM
 	#endif
@@ -3301,7 +3303,7 @@ enum
 		BFD_RELOC_THUMB_PCREL_BRANCH9
 		BFD_RELOC_THUMB_PCREL_BRANCH12
 		BFD_RELOC_THUMB_PCREL_BRANCH23
-	#elseif ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif __BFD_VER__ >= 221
 		BFD_RELOC_SH_GOT20
 		BFD_RELOC_SH_GOTOFF20
 		BFD_RELOC_SH_GOTFUNCDESC
@@ -3314,7 +3316,7 @@ enum
 	BFD_RELOC_ARC_B22_PCREL
 	BFD_RELOC_ARC_B26
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_BFIN_16_IMM
 		BFD_RELOC_BFIN_16_HIGH
 		BFD_RELOC_BFIN_4_PCREL
@@ -3383,7 +3385,7 @@ enum
 	BFD_RELOC_DLX_LO16
 	BFD_RELOC_DLX_JMP26
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_M32C_HI8
 		BFD_RELOC_M32C_RL_JUMP
 		BFD_RELOC_M32C_RL_1ADDR
@@ -3555,7 +3557,7 @@ enum
 	BFD_RELOC_V850_ALIGN
 	BFD_RELOC_V850_LO16_SPLIT_OFFSET
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_V850_16_PCREL
 		BFD_RELOC_V850_17_PCREL
 		BFD_RELOC_V850_23
@@ -3580,7 +3582,7 @@ enum
 		BFD_RELOC_V850_DATA
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 222
 		BFD_RELOC_MN10300_32_PCREL
 		BFD_RELOC_MN10300_16_PCREL
 	#endif
@@ -3592,7 +3594,7 @@ enum
 	BFD_RELOC_TIC54X_16_OF_23
 	BFD_RELOC_TIC54X_MS7_OF_23
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_C6000_PCR_S21
 		BFD_RELOC_C6000_PCR_S12
 		BFD_RELOC_C6000_PCR_S10
@@ -3618,14 +3620,14 @@ enum
 		BFD_RELOC_C6000_COPY
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_C6000_JUMP_SLOT
 		BFD_RELOC_C6000_EHTYPE
 		BFD_RELOC_C6000_PCR_H16
 		BFD_RELOC_C6000_PCR_L16
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_C6000_ALIGN
 		BFD_RELOC_C6000_FPHEAD
 		BFD_RELOC_C6000_NOCMP
@@ -3646,7 +3648,7 @@ enum
 	BFD_RELOC_MCORE_PCREL_JSR_IMM11BY2
 	BFD_RELOC_MCORE_RVA
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_MEP_8
 		BFD_RELOC_MEP_16
 		BFD_RELOC_MEP_32
@@ -3669,7 +3671,7 @@ enum
 		BFD_RELOC_MEP_GNU_VTENTRY
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_METAG_HIADDR16
 		BFD_RELOC_METAG_LOADDR16
 		BFD_RELOC_METAG_RELBRANCH
@@ -3741,7 +3743,7 @@ enum
 	BFD_RELOC_AVR_HI8_LDI
 	BFD_RELOC_AVR_HH8_LDI
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_AVR_MS8_LDI
 	#endif
 
@@ -3749,19 +3751,19 @@ enum
 	BFD_RELOC_AVR_HI8_LDI_NEG
 	BFD_RELOC_AVR_HH8_LDI_NEG
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_AVR_MS8_LDI_NEG
 	#endif
 
 	BFD_RELOC_AVR_LO8_LDI_PM
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_AVR_LO8_LDI_GS
 	#endif
 
 	BFD_RELOC_AVR_HI8_LDI_PM
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_AVR_HI8_LDI_GS
 	#endif
 
@@ -3774,7 +3776,7 @@ enum
 	BFD_RELOC_AVR_6
 	BFD_RELOC_AVR_6_ADIW
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AVR_8_LO
 		BFD_RELOC_AVR_8_HI
 		BFD_RELOC_AVR_8_HLO
@@ -3789,7 +3791,7 @@ enum
 		BFD_RELOC_AVR_PORT5
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_RL78_NEG8
 		BFD_RELOC_RL78_NEG16
 		BFD_RELOC_RL78_NEG24
@@ -3824,11 +3826,11 @@ enum
 		BFD_RELOC_RL78_LO16
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_RL78_CODE
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_RX_NEG8
 		BFD_RELOC_RX_NEG16
 		BFD_RELOC_RX_NEG24
@@ -3848,28 +3850,28 @@ enum
 		BFD_RELOC_RX_OP_SUBTRACT
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_RX_OP_NEG
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_RX_ABS8
 		BFD_RELOC_RX_ABS16
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_RX_ABS16_REV
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_RX_ABS32
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_RX_ABS32_REV
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_RX_ABS16U
 		BFD_RELOC_RX_ABS16UW
 		BFD_RELOC_RX_ABS16UL
@@ -3886,7 +3888,7 @@ enum
 	BFD_RELOC_390_GOTPC
 	BFD_RELOC_390_GOT16
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_390_PC12DBL
 		BFD_RELOC_390_PLT12DBL
 	#endif
@@ -3894,7 +3896,7 @@ enum
 	BFD_RELOC_390_PC16DBL
 	BFD_RELOC_390_PLT16DBL
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_390_PC24DBL
 		BFD_RELOC_390_PLT24DBL
 	#endif
@@ -3941,32 +3943,32 @@ enum
 
 	#if (__BFD_VER__ = 218) or (__BFD_VER__ = 219)
 		BFD_RELOC_SCORE_DUMMY1
-	#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif __BFD_VER__ >= 223
 		BFD_RELOC_390_IRELATIVE
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_SCORE_GPREL15
 		BFD_RELOC_SCORE_DUMMY2
 		BFD_RELOC_SCORE_JMP
 		BFD_RELOC_SCORE_BRANCH
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_SCORE_IMM30
 		BFD_RELOC_SCORE_IMM32
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_SCORE16_JMP
 		BFD_RELOC_SCORE16_BRANCH
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_SCORE_BCMP
 	#endif
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_SCORE_GOT15
 		BFD_RELOC_SCORE_GOT_LO16
 		BFD_RELOC_SCORE_CALL15
@@ -4078,7 +4080,7 @@ enum
 	BFD_RELOC_M68HC11_24
 	BFD_RELOC_M68HC12_5B
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_XGATE_RL_JUMP
 		BFD_RELOC_XGATE_RL_GROUP
 		BFD_RELOC_XGATE_LO16
@@ -4140,7 +4142,7 @@ enum
 	BFD_RELOC_16C_IMM32
 	BFD_RELOC_16C_IMM32_C
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_CR16_NUM8
 		BFD_RELOC_CR16_NUM16
 		BFD_RELOC_CR16_NUM32
@@ -4170,13 +4172,13 @@ enum
 		BFD_RELOC_CR16_DISP24a
 	#endif
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_CR16_SWITCH8
 		BFD_RELOC_CR16_SWITCH16
 		BFD_RELOC_CR16_SWITCH32
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_CR16_GOT_REGREL20
 		BFD_RELOC_CR16_GOTC_REGREL20
 		BFD_RELOC_CR16_GLOB_DAT
@@ -4224,7 +4226,7 @@ enum
 	BFD_RELOC_CRIS_32_PLT_GOTREL
 	BFD_RELOC_CRIS_32_PLT_PCREL
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_CRIS_32_GOT_GD
 		BFD_RELOC_CRIS_16_GOT_GD
 		BFD_RELOC_CRIS_32_GD
@@ -4272,10 +4274,7 @@ enum
 	BFD_RELOC_860_HIGOT
 	BFD_RELOC_860_HIGOTOFF
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
-		BFD_RELOC_OPENRISC_ABS_26
-		BFD_RELOC_OPENRISC_REL_26
-	#else
+	#if __BFD_VER__ = 225
 		BFD_RELOC_OR1K_REL_26
 		BFD_RELOC_OR1K_GOTPC_HI16
 		BFD_RELOC_OR1K_GOTPC_LO16
@@ -4300,6 +4299,9 @@ enum
 		BFD_RELOC_OR1K_TLS_TPOFF
 		BFD_RELOC_OR1K_TLS_DTPOFF
 		BFD_RELOC_OR1K_TLS_DTPMOD
+	#else
+		BFD_RELOC_OPENRISC_ABS_26
+		BFD_RELOC_OPENRISC_REL_26
 	#endif
 
 	BFD_RELOC_H8_DIR16A8
@@ -4308,7 +4310,7 @@ enum
 	BFD_RELOC_H8_DIR24R8
 	BFD_RELOC_H8_DIR32A16
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_H8_DISP32A16
 	#endif
 
@@ -4317,11 +4319,11 @@ enum
 	BFD_RELOC_XSTORMY16_24
 	BFD_RELOC_XSTORMY16_FPTR16
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		BFD_RELOC_RELC
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_XC16X_PAG
 		BFD_RELOC_XC16X_POF
 		BFD_RELOC_XC16X_SEG
@@ -4332,7 +4334,7 @@ enum
 	BFD_RELOC_VAX_JMP_SLOT
 	BFD_RELOC_VAX_RELATIVE
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_MT_PC16
 		BFD_RELOC_MT_HI16
 		BFD_RELOC_MT_LO16
@@ -4349,7 +4351,7 @@ enum
 	BFD_RELOC_MSP430_2X_PCREL
 	BFD_RELOC_MSP430_RL_PCREL
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_MSP430_ABS8
 		BFD_RELOC_MSP430X_PCR20_EXT_SRC
 		BFD_RELOC_MSP430X_PCR20_EXT_DST
@@ -4456,7 +4458,7 @@ enum
 	BFD_RELOC_XTENSA_ASM_EXPAND
 	BFD_RELOC_XTENSA_ASM_SIMPLIFY
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		BFD_RELOC_XTENSA_TLSDESC_FN
 		BFD_RELOC_XTENSA_TLSDESC_ARG
 		BFD_RELOC_XTENSA_TLS_DTPOFF
@@ -4466,14 +4468,14 @@ enum
 		BFD_RELOC_XTENSA_TLS_CALL
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		BFD_RELOC_Z80_DISP8
 		BFD_RELOC_Z8K_DISP7
 		BFD_RELOC_Z8K_CALLR
 		BFD_RELOC_Z8K_IMM4L
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_LM32_CALL
 		BFD_RELOC_LM32_BRANCH
 		BFD_RELOC_LM32_16_GOT
@@ -4486,15 +4488,15 @@ enum
 		BFD_RELOC_MACH_O_SECTDIFF
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_MACH_O_LOCAL_SECTDIFF
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_MACH_O_PAIR
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		BFD_RELOC_MACH_O_X86_64_BRANCH32
 		BFD_RELOC_MACH_O_X86_64_BRANCH8
 		BFD_RELOC_MACH_O_X86_64_GOT
@@ -4506,7 +4508,7 @@ enum
 		BFD_RELOC_MACH_O_X86_64_PCREL32_4
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		BFD_RELOC_MICROBLAZE_32_LO
 		BFD_RELOC_MICROBLAZE_32_LO_PCREL
 		BFD_RELOC_MICROBLAZE_32_ROSDA
@@ -4524,7 +4526,7 @@ enum
 	#if __BFD_VER__ = 223
 		BFD_RELOC_AARCH64_ADD_LO12
 		BFD_RELOC_AARCH64_ADR_GOT_PAGE
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_MICROBLAZE_64_TLS
 		BFD_RELOC_MICROBLAZE_64_TLSGD
 		BFD_RELOC_MICROBLAZE_64_TLSLD
@@ -4555,28 +4557,28 @@ enum
 		BFD_RELOC_AARCH64_ADR_LO21_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_ADR_HI21_PCREL
 		BFD_RELOC_AARCH64_ADR_HI21_NC_PCREL
 	#endif
 
 	#if __BFD_VER__ = 223
 		BFD_RELOC_AARCH64_ADR_LO21_PCREL
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_ADD_LO12
 		BFD_RELOC_AARCH64_LDST8_LO12
 		BFD_RELOC_AARCH64_TSTBR14
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_BRANCH19
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_JUMP26
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_CALL26
 	#endif
 
@@ -4589,7 +4591,7 @@ enum
 		BFD_RELOC_AARCH64_LDST8_LO12
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_LDST16_LO12
 		BFD_RELOC_AARCH64_LDST32_LO12
 		BFD_RELOC_AARCH64_LDST64_LO12
@@ -4618,7 +4620,7 @@ enum
 		BFD_RELOC_AARCH64_TLSDESC_LDR
 		BFD_RELOC_AARCH64_TLSDESC_OFF_G0_NC
 		BFD_RELOC_AARCH64_TLSDESC_OFF_G1
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_GOT_LD_PREL19
 		BFD_RELOC_AARCH64_ADR_GOT_PAGE
 		BFD_RELOC_AARCH64_LD64_GOT_LO12_NC
@@ -4626,27 +4628,27 @@ enum
 		BFD_RELOC_AARCH64_TLSGD_ADR_PAGE21
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_TLSGD_ADD_LO12_NC
 	#endif
 
 	#if __BFD_VER__ = 223
 		BFD_RELOC_AARCH64_TLSGD_ADR_PAGE21
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_TLSIE_MOVW_GOTTPREL_G1
 		BFD_RELOC_AARCH64_TLSIE_MOVW_GOTTPREL_G0_NC
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_TLSIE_ADR_GOTTPREL_PAGE21
 	#endif
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_TLSIE_LD64_GOTTPREL_LO12_NC
 		BFD_RELOC_AARCH64_TLSIE_LD32_GOTTPREL_LO12_NC
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_TLSIE_LD_GOTTPREL_PREL19
 	#endif
 
@@ -4654,7 +4656,7 @@ enum
 		BFD_RELOC_AARCH64_TLSIE_LD64_GOTTPREL_LO12_NC
 		BFD_RELOC_AARCH64_TLSIE_MOVW_GOTTPREL_G0_NC
 		BFD_RELOC_AARCH64_TLSIE_MOVW_GOTTPREL_G1
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_TLSLE_MOVW_TPREL_G2
 		BFD_RELOC_AARCH64_TLSLE_MOVW_TPREL_G1
 		BFD_RELOC_AARCH64_TLSLE_MOVW_TPREL_G1_NC
@@ -4662,7 +4664,7 @@ enum
 		BFD_RELOC_AARCH64_TLSLE_MOVW_TPREL_G0_NC
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_AARCH64_TLSLE_ADD_TPREL_HI12
 		BFD_RELOC_AARCH64_TLSLE_ADD_TPREL_LO12
 		BFD_RELOC_AARCH64_TLSLE_ADD_TPREL_LO12_NC
@@ -4678,7 +4680,7 @@ enum
 		BFD_RELOC_AARCH64_TLS_DTPREL64
 		BFD_RELOC_AARCH64_TLS_TPREL64
 		BFD_RELOC_AARCH64_TSTBR14
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_AARCH64_TLSDESC_LD_PREL19
 		BFD_RELOC_AARCH64_TLSDESC_ADR_PREL21
 		BFD_RELOC_AARCH64_TLSDESC_ADR_PAGE21
@@ -4707,7 +4709,7 @@ enum
 		BFD_RELOC_AARCH64_TLSDESC_LD_LO12_NC
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEPRO_COPY
 		BFD_RELOC_TILEPRO_GLOB_DAT
 		BFD_RELOC_TILEPRO_JMP_SLOT
@@ -4756,7 +4758,7 @@ enum
 		BFD_RELOC_TILEPRO_SHAMT_Y1
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_TILEPRO_TLS_GD_CALL
 		BFD_RELOC_TILEPRO_IMM8_X0_TLS_GD_ADD
 		BFD_RELOC_TILEPRO_IMM8_X1_TLS_GD_ADD
@@ -4765,7 +4767,7 @@ enum
 		BFD_RELOC_TILEPRO_TLS_IE_LOAD
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEPRO_IMM16_X0_TLS_GD
 		BFD_RELOC_TILEPRO_IMM16_X1_TLS_GD
 		BFD_RELOC_TILEPRO_IMM16_X0_TLS_GD_LO
@@ -4787,7 +4789,7 @@ enum
 		BFD_RELOC_TILEPRO_TLS_TPOFF32
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_TILEPRO_IMM16_X0_TLS_LE
 		BFD_RELOC_TILEPRO_IMM16_X1_TLS_LE
 		BFD_RELOC_TILEPRO_IMM16_X0_TLS_LE_LO
@@ -4798,7 +4800,7 @@ enum
 		BFD_RELOC_TILEPRO_IMM16_X1_TLS_LE_HA
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_HW0
 		BFD_RELOC_TILEGX_HW1
 		BFD_RELOC_TILEGX_HW2
@@ -4865,7 +4867,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_GOT
 		BFD_RELOC_TILEGX_IMM16_X0_HW3_GOT
 		BFD_RELOC_TILEGX_IMM16_X1_HW3_GOT
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_PLT_PCREL
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_PLT_PCREL
 		BFD_RELOC_TILEGX_IMM16_X0_HW1_PLT_PCREL
@@ -4874,7 +4876,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_PLT_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_LAST_GOT
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_LAST_GOT
 		BFD_RELOC_TILEGX_IMM16_X0_HW1_LAST_GOT
@@ -4884,12 +4886,12 @@ enum
 	#if __BFD_VER__ = 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW2_LAST_GOT
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_LAST_GOT
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_TILEGX_IMM16_X0_HW3_PLT_PCREL
 		BFD_RELOC_TILEGX_IMM16_X1_HW3_PLT_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_TLS_GD
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_TLS_GD
 	#endif
@@ -4901,7 +4903,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_TLS_GD
 		BFD_RELOC_TILEGX_IMM16_X0_HW3_TLS_GD
 		BFD_RELOC_TILEGX_IMM16_X1_HW3_TLS_GD
-	#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif __BFD_VER__ >= 223
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_TLS_LE
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_TLS_LE
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_LAST_TLS_LE
@@ -4910,7 +4912,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW1_LAST_TLS_LE
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_LAST_TLS_GD
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_LAST_TLS_GD
 		BFD_RELOC_TILEGX_IMM16_X0_HW1_LAST_TLS_GD
@@ -4922,7 +4924,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_LAST_TLS_GD
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_TLS_IE
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_TLS_IE
 	#endif
@@ -4934,7 +4936,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_TLS_IE
 		BFD_RELOC_TILEGX_IMM16_X0_HW3_TLS_IE
 		BFD_RELOC_TILEGX_IMM16_X1_HW3_TLS_IE
-	#elseif (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#elseif __BFD_VER__ >= 224
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_LAST_PLT_PCREL
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_LAST_PLT_PCREL
 		BFD_RELOC_TILEGX_IMM16_X0_HW1_LAST_PLT_PCREL
@@ -4943,7 +4945,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_LAST_PLT_PCREL
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_IMM16_X0_HW0_LAST_TLS_IE
 		BFD_RELOC_TILEGX_IMM16_X1_HW0_LAST_TLS_IE
 		BFD_RELOC_TILEGX_IMM16_X0_HW1_LAST_TLS_IE
@@ -4955,7 +4957,7 @@ enum
 		BFD_RELOC_TILEGX_IMM16_X1_HW2_LAST_TLS_IE
 	#endif
 
-	#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 222
 		BFD_RELOC_TILEGX_TLS_DTPMOD64
 		BFD_RELOC_TILEGX_TLS_DTPOFF64
 		BFD_RELOC_TILEGX_TLS_TPOFF64
@@ -4964,7 +4966,7 @@ enum
 		BFD_RELOC_TILEGX_TLS_TPOFF32
 	#endif
 
-	#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 223
 		BFD_RELOC_TILEGX_TLS_GD_CALL
 		BFD_RELOC_TILEGX_IMM8_X0_TLS_GD_ADD
 		BFD_RELOC_TILEGX_IMM8_X1_TLS_GD_ADD
@@ -4992,7 +4994,7 @@ end enum
 type bfd_reloc_code_real_type as bfd_reloc_code_real
 declare function bfd_reloc_type_lookup(byval abfd as bfd ptr, byval code as bfd_reloc_code_real_type) as reloc_howto_type ptr
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	declare function bfd_reloc_name_lookup(byval abfd as bfd ptr, byval reloc_name as const zstring ptr) as reloc_howto_type ptr
 #endif
 
@@ -5015,7 +5017,7 @@ end type
 type asymbol as bfd_symbol
 const BSF_NO_FLAGS = &h00
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 219
 	const BSF_LOCAL = &h01
 	const BSF_GLOBAL = &h02
 #else
@@ -5025,7 +5027,7 @@ const BSF_NO_FLAGS = &h00
 
 #define BSF_EXPORT BSF_GLOBAL
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 219
 	const BSF_DEBUGGING = &h08
 	const BSF_FUNCTION = &h10
 	const BSF_KEEP = &h20
@@ -5052,7 +5054,7 @@ const BSF_NO_FLAGS = &h00
 
 #if __BFD_VER__ = 219
 	const BSF_SYNTHETIC = &h200000
-#elseif ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 220
 	const BSF_DEBUGGING = 1 shl 2
 	const BSF_FUNCTION = 1 shl 3
 	const BSF_KEEP = 1 shl 5
@@ -5123,7 +5125,7 @@ type ieee_data_struct as ieee_data_struct_
 type ieee_ar_data_struct as ieee_ar_data_struct_
 type srec_data_struct as srec_data_struct_
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	type verilog_data_struct as verilog_data_struct_
 #endif
 
@@ -5148,7 +5150,7 @@ type netbsd_core_struct as netbsd_core_struct_
 type mach_o_data_struct as mach_o_data_struct_
 type mach_o_fat_data_struct as mach_o_fat_data_struct_
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	type plugin_data_struct as plugin_data_struct_
 #endif
 
@@ -5169,7 +5171,7 @@ union bfd_tdata
 	ieee_ar_data as ieee_ar_data_struct ptr
 	srec_data as srec_data_struct ptr
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		verilog_data as verilog_data_struct ptr
 	#endif
 
@@ -5194,7 +5196,7 @@ union bfd_tdata
 	mach_o_data as mach_o_data_struct ptr
 	mach_o_fat_data as mach_o_fat_data_struct ptr
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		plugin_data as plugin_data_struct ptr
 	#endif
 
@@ -5208,7 +5210,7 @@ type bfd_target as bfd_target_
 type bfd_iovec as bfd_iovec_
 
 type bfd_
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		id as ulong
 	#endif
 
@@ -5217,7 +5219,7 @@ type bfd_
 	iostream as any ptr
 	iovec as const bfd_iovec ptr
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 218
 		cacheable as bfd_boolean
 		target_defaulted as bfd_boolean
 	#endif
@@ -5226,14 +5228,14 @@ type bfd_
 	lru_next as bfd ptr
 	where as ufile_ptr
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 218
 		opened_once as bfd_boolean
 		mtime_set as bfd_boolean
 	#endif
 
 	mtime as clong
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		ifd as long
 		format as bfd_format
 		direction as bfd_direction
@@ -5241,24 +5243,24 @@ type bfd_
 		origin as ufile_ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 218
 		output_has_begun as bfd_boolean
-	#elseif ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif (__BFD_VER__ >= 219) and (__BFD_VER__ <= 224)
 		proxy_origin as ufile_ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		section_htab as bfd_hash_table
 		sections as bfd_section ptr
 	#endif
 
 	#if __BFD_VER__ = 216
 		section_tail as bfd_section ptr ptr
-	#elseif ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif (__BFD_VER__ >= 217) and (__BFD_VER__ <= 224)
 		section_last as bfd_section ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		section_count as ulong
 		start_address as bfd_vma
 		symcount as ulong
@@ -5267,45 +5269,45 @@ type bfd_
 		arch_info as const bfd_arch_info ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 218
 		no_export as bfd_boolean
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		arelt_data as any ptr
 		my_archive as bfd ptr
 	#endif
 
-	#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+	#if __BFD_VER__ <= 217
 		next as bfd ptr
-	#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif (__BFD_VER__ >= 218) and (__BFD_VER__ <= 224)
 		archive_next as bfd ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		archive_head as bfd ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 218
 		has_armap as bfd_boolean
-	#elseif ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif (__BFD_VER__ >= 219) and (__BFD_VER__ <= 224)
 		nested_archives as bfd ptr
 	#endif
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ = 225
+		id as ulong
+		format : 3 as bfd_format
+		direction : 2 as bfd_direction
+		flags : 17 as flagword
+	#else
 		link_next as bfd ptr
 		archive_pass as long
 		tdata as bfd_tdata
 		usrdata as any ptr
 		memory as any ptr
-	#else
-		id as ulong
-		format : 3 as bfd_format
-		direction : 2 as bfd_direction
-		flags : 17 as flagword
 	#endif
 
-	#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 219
 		cacheable : 1 as ulong
 		target_defaulted : 1 as ulong
 		opened_once : 1 as ulong
@@ -5316,7 +5318,7 @@ type bfd_
 		is_thin_archive : 1 as ulong
 	#endif
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		selective_search : 1 as ulong
 	#endif
 
@@ -5346,7 +5348,7 @@ type bfd_
 	#endif
 end type
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 219
 	const BFD_NO_FLAGS = &h00
 	const HAS_RELOC = &h01
 	const EXEC_P = &h02
@@ -5362,16 +5364,16 @@ end type
 	const BFD_IN_MEMORY = &h800
 #endif
 
-#if ((__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 219) and (__BFD_VER__ <= 224)
 	const HAS_LOAD_PAGE = &h1000
 	const BFD_LINKER_CREATED = &h2000
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 220) and (__BFD_VER__ <= 224)
 	const BFD_DETERMINISTIC_OUTPUT = &h4000
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if (__BFD_VER__ >= 221) and (__BFD_VER__ <= 224)
 	const BFD_COMPRESS = &h8000
 	const BFD_DECOMPRESS = &h10000
 	const BFD_PLUGIN = &h20000
@@ -5383,7 +5385,7 @@ end type
 	const BFD_PLUGIN = &h10000
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	#define BFD_FLAGS_SAVED (((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_PLUGIN)
 	#define BFD_FLAGS_FOR_BFD_USE_MASK ((((((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_LINKER_CREATED) or BFD_PLUGIN) or BFD_TRADITIONAL_FORMAT) or BFD_DETERMINISTIC_OUTPUT)
 #endif
@@ -5409,7 +5411,7 @@ enum
 	bfd_error_no_more_archived_files
 	bfd_error_malformed_archive
 
-	#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+	#if __BFD_VER__ >= 224
 		bfd_error_missing_dso
 	#endif
 
@@ -5422,7 +5424,7 @@ enum
 	bfd_error_file_truncated
 	bfd_error_file_too_big
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		bfd_error_on_input
 	#endif
 
@@ -5432,7 +5434,7 @@ end enum
 type bfd_error_type as bfd_error
 declare function bfd_get_error() as bfd_error_type
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare sub bfd_set_error(byval error_tag as bfd_error_type)
 #else
 	declare sub bfd_set_error(byval error_tag as bfd_error_type, ...)
@@ -5445,7 +5447,7 @@ declare function bfd_set_error_handler(byval as bfd_error_handler_type) as bfd_e
 declare sub bfd_set_error_program_name(byval as const zstring ptr)
 declare function bfd_get_error_handler() as bfd_error_handler_type
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	type bfd_assert_handler_type as sub(byval bfd_formatmsg as const zstring ptr, byval bfd_version as const zstring ptr, byval bfd_file as const zstring ptr, byval bfd_line as long)
 	declare function bfd_set_assert_handler(byval as bfd_assert_handler_type) as bfd_assert_handler_type
 	declare function bfd_get_assert_handler() as bfd_assert_handler_type
@@ -5470,13 +5472,13 @@ declare function bfd_merge_private_bfd_data_ alias "bfd_merge_private_bfd_data"(
 declare function bfd_set_private_flags_ alias "bfd_set_private_flags"(byval abfd as bfd ptr, byval flags as flagword) as bfd_boolean
 #define bfd_set_private_flags(abfd, flags) BFD_SEND (abfd, _bfd_set_private_flags, (abfd, flags))
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	#define bfd_sizeof_headers(abfd, reloc) BFD_SEND (abfd, _bfd_sizeof_headers, (abfd, reloc))
 #else
 	#define bfd_sizeof_headers(abfd, info) BFD_SEND (abfd, _bfd_sizeof_headers, (abfd, info))
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	#define bfd_find_nearest_line(abfd, sec, syms, off, file, func, line) BFD_SEND (abfd, _bfd_find_nearest_line, (abfd, sec, syms, off, file, func, line))
 #endif
 
@@ -5487,7 +5489,7 @@ declare function bfd_set_private_flags_ alias "bfd_set_private_flags"(byval abfd
 	#define bfd_find_nearest_line_discriminator(abfd, sec, syms, off, file, func, line, disc) BFD_SEND (abfd, _bfd_find_nearest_line, (abfd, syms, sec, off, file, func, line, disc))
 #endif
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	#define bfd_find_line(abfd, syms, sym, file, line) BFD_SEND (abfd, _bfd_find_line, (abfd, syms, sym, file, line))
 	#define bfd_find_inliner_info(abfd, file, func, line) BFD_SEND (abfd, _bfd_find_inliner_info, (abfd, file, func, line))
 #endif
@@ -5503,7 +5505,7 @@ declare function bfd_set_private_flags_ alias "bfd_set_private_flags"(byval abfd
 
 #if __BFD_VER__ = 222
 	#define bfd_lookup_section_flags(link_info, flag_info) BFD_SEND (abfd, _bfd_lookup_section_flags, (link_info, flag_info))
-#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 223
 	#define bfd_lookup_section_flags(link_info, flag_info, section) BFD_SEND (abfd, _bfd_lookup_section_flags, (link_info, flag_info, section))
 #endif
 
@@ -5512,7 +5514,7 @@ declare function bfd_set_private_flags_ alias "bfd_set_private_flags"(byval abfd
 #define bfd_discard_group(abfd, sec) BFD_SEND (abfd, _bfd_discard_group, (abfd, sec))
 #define bfd_link_hash_table_create(abfd) BFD_SEND(abfd, _bfd_link_hash_table_create, (abfd))
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	#define bfd_link_hash_table_free(abfd, hash) BFD_SEND(abfd, _bfd_link_hash_table_free, (hash))
 #endif
 
@@ -5529,7 +5531,7 @@ declare function bfd_set_private_flags_ alias "bfd_set_private_flags"(byval abfd
 declare function bfd_get_relocated_section_contents(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_link_order ptr, byval as bfd_byte ptr, byval as bfd_boolean, byval as asymbol ptr ptr) as bfd_byte ptr
 declare function bfd_alt_mach_code(byval abfd as bfd ptr, byval alternative as long) as bfd_boolean
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 223
 	type bfd_preserve
 		marker as any ptr
 		tdata as any ptr
@@ -5539,7 +5541,7 @@ declare function bfd_alt_mach_code(byval abfd as bfd ptr, byval alternative as l
 
 		#if __BFD_VER__ = 216
 			section_tail as bfd_section ptr ptr
-		#elseif ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+		#elseif (__BFD_VER__ >= 217) and (__BFD_VER__ <= 223)
 			section_last as bfd_section ptr
 		#endif
 
@@ -5552,7 +5554,7 @@ declare function bfd_alt_mach_code(byval abfd as bfd ptr, byval alternative as l
 	declare sub bfd_preserve_finish(byval as bfd ptr, byval as bfd_preserve ptr)
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	declare function bfd_emul_get_maxpagesize(byval as const zstring ptr) as bfd_vma
 	declare sub bfd_emul_set_maxpagesize(byval as const zstring ptr, byval as bfd_vma)
 	declare function bfd_emul_get_commonpagesize(byval as const zstring ptr) as bfd_vma
@@ -5566,13 +5568,13 @@ declare function bfd_openr_next_archived_file(byval archive as bfd ptr, byval pr
 declare function bfd_core_file_failing_command(byval abfd as bfd ptr) as const zstring ptr
 declare function bfd_core_file_failing_signal(byval abfd as bfd ptr) as long
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare function bfd_core_file_pid(byval abfd as bfd ptr) as long
 #endif
 
 declare function core_file_matches_executable_p(byval core_bfd as bfd ptr, byval exec_bfd as bfd ptr) as bfd_boolean
 
-#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 217
 	declare function generic_core_file_matches_executable_p(byval core_bfd as bfd ptr, byval exec_bfd as bfd ptr) as bfd_boolean
 #endif
 
@@ -5593,7 +5595,7 @@ enum
 	bfd_target_tekhex_flavour
 	bfd_target_srec_flavour
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		bfd_target_verilog_flavour
 	#endif
 
@@ -5620,11 +5622,11 @@ end enum
 
 type _bfd_link_info as bfd_link_info
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 224
 	type bfd_link_hash_table as bfd_link_hash_table_
 #endif
 
-#if ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 223
 	type flag_info as flag_info_
 #endif
 
@@ -5638,7 +5640,7 @@ type bfd_target_
 	symbol_leading_char as byte
 	ar_pad_char as byte
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 221
 		ar_max_namelen as ushort
 	#else
 		ar_max_namelen as ubyte
@@ -5674,7 +5676,7 @@ type bfd_target_
 	_bfd_copy_private_bfd_data as function(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 	_bfd_merge_private_bfd_data as function(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		_bfd_init_private_section_data as function(byval as bfd ptr, byval as sec_ptr, byval as bfd ptr, byval as sec_ptr, byval as bfd_link_info ptr) as bfd_boolean
 	#endif
 
@@ -5687,7 +5689,7 @@ type bfd_target_
 	_core_file_failing_signal as function(byval as bfd ptr) as long
 	_core_file_matches_executable_p as function(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		_core_file_pid as function(byval as bfd ptr) as long
 	#endif
 
@@ -5698,7 +5700,7 @@ type bfd_target_
 	write_armap as function(byval as bfd ptr, byval as ulong, byval as orl ptr, byval as ulong, byval as long) as bfd_boolean
 	_bfd_read_ar_hdr_fn as function(byval as bfd ptr) as any ptr
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		_bfd_write_ar_hdr_fn as function(byval as bfd ptr, byval as bfd ptr) as bfd_boolean
 	#endif
 
@@ -5715,7 +5717,7 @@ type bfd_target_
 	_bfd_is_target_special_symbol as function(byval as bfd ptr, byval as asymbol ptr) as bfd_boolean
 	_get_lineno as function(byval as bfd ptr, byval as bfd_symbol ptr) as alent ptr
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		_bfd_find_nearest_line as function(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_symbol ptr ptr, byval as bfd_vma, byval as const zstring ptr ptr, byval as const zstring ptr ptr, byval as ulong ptr) as bfd_boolean
 	#endif
 
@@ -5725,7 +5727,7 @@ type bfd_target_
 		_bfd_find_nearest_line as function(byval as bfd ptr, byval as bfd_symbol ptr ptr, byval as bfd_section ptr, byval as bfd_vma, byval as const zstring ptr ptr, byval as const zstring ptr ptr, byval as ulong ptr, byval as ulong ptr) as bfd_boolean
 	#endif
 
-	#if ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 217
 		_bfd_find_line as function(byval as bfd ptr, byval as bfd_symbol ptr ptr, byval as bfd_symbol ptr, byval as const zstring ptr ptr, byval as ulong ptr) as bfd_boolean
 		_bfd_find_inliner_info as function(byval as bfd ptr, byval as const zstring ptr ptr, byval as const zstring ptr ptr, byval as ulong ptr) as bfd_boolean
 	#endif
@@ -5737,14 +5739,14 @@ type bfd_target_
 	_bfd_canonicalize_reloc as function(byval as bfd ptr, byval as sec_ptr, byval as arelent ptr ptr, byval as bfd_symbol ptr ptr) as clong
 	reloc_type_lookup as function(byval as bfd ptr, byval as bfd_reloc_code_real_type) as reloc_howto_type ptr
 
-	#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 218
 		reloc_name_lookup as function(byval as bfd ptr, byval as const zstring ptr) as reloc_howto_type ptr
 	#endif
 
 	_bfd_set_arch_mach as function(byval as bfd ptr, byval as bfd_architecture, byval as culong) as bfd_boolean
 	_bfd_set_section_contents as function(byval as bfd ptr, byval as sec_ptr, byval as const any ptr, byval as file_ptr, byval as bfd_size_type) as bfd_boolean
 
-	#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+	#if __BFD_VER__ <= 217
 		_bfd_sizeof_headers as function(byval as bfd ptr, byval as bfd_boolean) as long
 	#else
 		_bfd_sizeof_headers as function(byval as bfd ptr, byval as bfd_link_info ptr) as long
@@ -5754,14 +5756,14 @@ type bfd_target_
 	_bfd_relax_section as function(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_link_info ptr, byval as bfd_boolean ptr) as bfd_boolean
 	_bfd_link_hash_table_create as function(byval as bfd ptr) as bfd_link_hash_table ptr
 
-	#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ <= 224
 		_bfd_link_hash_table_free as sub(byval as bfd_link_hash_table ptr)
 	#endif
 
 	_bfd_link_add_symbols as function(byval as bfd ptr, byval as bfd_link_info ptr) as bfd_boolean
 	_bfd_link_just_syms as sub(byval as asection ptr, byval as bfd_link_info ptr)
 
-	#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 221
 		_bfd_copy_link_hash_symbol_type as sub(byval as bfd ptr, byval as bfd_link_hash_entry ptr, byval as bfd_link_hash_entry ptr)
 	#endif
 
@@ -5771,7 +5773,7 @@ type bfd_target_
 
 	#if __BFD_VER__ = 222
 		_bfd_lookup_section_flags as sub(byval as bfd_link_info ptr, byval as flag_info ptr)
-	#elseif ((__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif __BFD_VER__ >= 223
 		_bfd_lookup_section_flags as function(byval as bfd_link_info ptr, byval as flag_info ptr, byval as asection ptr) as bfd_boolean
 	#endif
 
@@ -5779,15 +5781,15 @@ type bfd_target_
 	_bfd_is_group_section as function(byval as bfd ptr, byval as const bfd_section ptr) as bfd_boolean
 	_bfd_discard_group as function(byval as bfd ptr, byval as bfd_section ptr) as bfd_boolean
 
-	#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+	#if __BFD_VER__ <= 217
 		_section_already_linked as sub(byval as bfd ptr, byval as bfd_section ptr)
-	#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#elseif (__BFD_VER__ >= 218) and (__BFD_VER__ <= 221)
 		_section_already_linked as sub(byval as bfd ptr, byval as bfd_section ptr, byval as bfd_link_info ptr)
 	#else
 		_section_already_linked as function(byval as bfd ptr, byval as asection ptr, byval as bfd_link_info ptr) as bfd_boolean
 	#endif
 
-	#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+	#if __BFD_VER__ >= 220
 		_bfd_define_common_symbol as function(byval as bfd ptr, byval as bfd_link_info ptr, byval as bfd_link_hash_entry ptr) as bfd_boolean
 	#endif
 
@@ -5809,7 +5811,7 @@ end type
 	#define bfd_init_private_section_data(ibfd, isec, obfd, osec, link_info) BFD_SEND (obfd, _bfd_init_private_section_data, (ibfd, isec, obfd, osec, link_info))
 #endif
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 220
 	#define BFD_JUMP_TABLE_CORE(NAME) NAME##_core_file_failing_command, NAME##_core_file_failing_signal, NAME##_core_file_matches_executable_p
 	#define BFD_JUMP_TABLE_ARCHIVE(NAME) NAME##_slurp_armap, NAME##_slurp_extended_name_table, NAME##_construct_extended_name_table, NAME##_truncate_arname, NAME##_write_armap, NAME##_read_ar_hdr, NAME##_openr_next_archived_file, NAME##_get_elt_at_index, NAME##_generic_stat_arch_elt, NAME##_update_armap_timestamp
 #else
@@ -5821,7 +5823,7 @@ end type
 
 #if __BFD_VER__ = 216
 	#define BFD_JUMP_TABLE_SYMBOLS(NAME) NAME##_get_symtab_upper_bound, NAME##_canonicalize_symtab, NAME##_make_empty_symbol, NAME##_print_symbol, NAME##_get_symbol_info, NAME##_bfd_is_local_label_name, NAME##_bfd_is_target_special_symbol, NAME##_get_lineno, NAME##_find_nearest_line, NAME##_bfd_make_debug_symbol, NAME##_read_minisymbols, NAME##_minisymbol_to_symbol
-#elseif ((__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif (__BFD_VER__ >= 217) and (__BFD_VER__ <= 222)
 	#define BFD_JUMP_TABLE_SYMBOLS(NAME) NAME##_get_symtab_upper_bound, NAME##_canonicalize_symtab, NAME##_make_empty_symbol, NAME##_print_symbol, NAME##_get_symbol_info, NAME##_bfd_is_local_label_name, NAME##_bfd_is_target_special_symbol, NAME##_get_lineno, NAME##_find_nearest_line, _bfd_generic_find_line, NAME##_find_inliner_info, NAME##_bfd_make_debug_symbol, NAME##_read_minisymbols, NAME##_minisymbol_to_symbol
 #elseif (__BFD_VER__ = 223) or (__BFD_VER__ = 224)
 	#define BFD_JUMP_TABLE_SYMBOLS(NAME) NAME##_get_symtab_upper_bound, NAME##_canonicalize_symtab, NAME##_make_empty_symbol, NAME##_print_symbol, NAME##_get_symbol_info, NAME##_bfd_is_local_label_name, NAME##_bfd_is_target_special_symbol, NAME##_get_lineno, NAME##_find_nearest_line, _bfd_generic_find_nearest_line_discriminator, _bfd_generic_find_line, NAME##_find_inliner_info, NAME##_bfd_make_debug_symbol, NAME##_read_minisymbols, NAME##_minisymbol_to_symbol
@@ -5834,7 +5836,7 @@ end type
 #define bfd_read_minisymbols(b, d, m, s) BFD_SEND (b, _read_minisymbols, (b, d, m, s))
 #define bfd_minisymbol_to_symbol(b, d, m, f) BFD_SEND (b, _minisymbol_to_symbol, (b, d, m, f))
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	#define BFD_JUMP_TABLE_RELOCS(NAME) NAME##_get_reloc_upper_bound, NAME##_canonicalize_reloc, NAME##_bfd_reloc_type_lookup
 #else
 	#define BFD_JUMP_TABLE_RELOCS(NAME) NAME##_get_reloc_upper_bound, NAME##_canonicalize_reloc, NAME##_bfd_reloc_type_lookup, NAME##_bfd_reloc_name_lookup
@@ -5842,19 +5844,19 @@ end type
 
 #define BFD_JUMP_TABLE_WRITE(NAME) NAME##_set_arch_mach, NAME##_set_section_contents
 
-#if ((__BFD_VER__ = 216) or (__BFD_VER__ = 217) or (__BFD_VER__ = 218) or (__BFD_VER__ = 219)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ <= 219
 	#define BFD_JUMP_TABLE_LINK(NAME) NAME##_sizeof_headers, NAME##_bfd_get_relocated_section_contents, NAME##_bfd_relax_section, NAME##_bfd_link_hash_table_create, NAME##_bfd_link_hash_table_free, NAME##_bfd_link_add_symbols, NAME##_bfd_link_just_syms, NAME##_bfd_final_link, NAME##_bfd_link_split_section, NAME##_bfd_gc_sections, NAME##_bfd_merge_sections, NAME##_bfd_is_group_section, NAME##_bfd_discard_group, NAME##_section_already_linked
 #elseif __BFD_VER__ = 220
 	#define BFD_JUMP_TABLE_LINK(NAME) NAME##_sizeof_headers, NAME##_bfd_get_relocated_section_contents, NAME##_bfd_relax_section, NAME##_bfd_link_hash_table_create, NAME##_bfd_link_hash_table_free, NAME##_bfd_link_add_symbols, NAME##_bfd_link_just_syms, NAME##_bfd_final_link, NAME##_bfd_link_split_section, NAME##_bfd_gc_sections, NAME##_bfd_merge_sections, NAME##_bfd_is_group_section, NAME##_bfd_discard_group, NAME##_section_already_linked, NAME##_bfd_define_common_symbol
 #elseif __BFD_VER__ = 221
 	#define BFD_JUMP_TABLE_LINK(NAME) NAME##_sizeof_headers, NAME##_bfd_get_relocated_section_contents, NAME##_bfd_relax_section, NAME##_bfd_link_hash_table_create, NAME##_bfd_link_hash_table_free, NAME##_bfd_link_add_symbols, NAME##_bfd_link_just_syms, NAME##_bfd_copy_link_hash_symbol_type, NAME##_bfd_final_link, NAME##_bfd_link_split_section, NAME##_bfd_gc_sections, NAME##_bfd_merge_sections, NAME##_bfd_is_group_section, NAME##_bfd_discard_group, NAME##_section_already_linked, NAME##_bfd_define_common_symbol
-#elseif ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif (__BFD_VER__ >= 222) and (__BFD_VER__ <= 224)
 	#define BFD_JUMP_TABLE_LINK(NAME) NAME##_sizeof_headers, NAME##_bfd_get_relocated_section_contents, NAME##_bfd_relax_section, NAME##_bfd_link_hash_table_create, NAME##_bfd_link_hash_table_free, NAME##_bfd_link_add_symbols, NAME##_bfd_link_just_syms, NAME##_bfd_copy_link_hash_symbol_type, NAME##_bfd_final_link, NAME##_bfd_link_split_section, NAME##_bfd_gc_sections, NAME##_bfd_lookup_section_flags, NAME##_bfd_merge_sections, NAME##_bfd_is_group_section, NAME##_bfd_discard_group, NAME##_section_already_linked, NAME##_bfd_define_common_symbol
 #else
 	#define BFD_JUMP_TABLE_LINK(NAME) NAME##_sizeof_headers, NAME##_bfd_get_relocated_section_contents, NAME##_bfd_relax_section, NAME##_bfd_link_hash_table_create, NAME##_bfd_link_add_symbols, NAME##_bfd_link_just_syms, NAME##_bfd_copy_link_hash_symbol_type, NAME##_bfd_final_link, NAME##_bfd_link_split_section, NAME##_bfd_gc_sections, NAME##_bfd_lookup_section_flags, NAME##_bfd_merge_sections, NAME##_bfd_is_group_section, NAME##_bfd_discard_group, NAME##_section_already_linked, NAME##_bfd_define_common_symbol
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	#define bfd_copy_link_hash_symbol_type(b, t, f) BFD_SEND (b, _bfd_copy_link_hash_symbol_type, (b, t, f))
 #endif
 
@@ -5862,7 +5864,7 @@ end type
 declare function bfd_set_default_target(byval name as const zstring ptr) as bfd_boolean
 declare function bfd_find_target(byval target_name as const zstring ptr, byval abfd as bfd ptr) as const bfd_target ptr
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare function bfd_get_target_info(byval target_name as const zstring ptr, byval abfd as bfd ptr, byval is_bigendian as bfd_boolean ptr, byval underscoring as long ptr, byval def_target_arch as const zstring ptr ptr) as const bfd_target ptr
 #endif
 
@@ -5875,33 +5877,33 @@ declare function bfd_format_string(byval format as bfd_format) as const zstring 
 declare function bfd_link_split_section_ alias "bfd_link_split_section"(byval abfd as bfd ptr, byval sec as asection ptr) as bfd_boolean
 #define bfd_link_split_section(abfd, sec) BFD_SEND (abfd, _bfd_link_split_section, (abfd, sec))
 
-#if (__BFD_VER__ = 216) or (__BFD_VER__ = 217)
+#if __BFD_VER__ <= 217
 	declare sub bfd_section_already_linked_ alias "bfd_section_already_linked"(byval abfd as bfd ptr, byval sec as asection ptr)
 	#define bfd_section_already_linked(abfd, sec) BFD_SEND (abfd, _section_already_linked, (abfd, sec))
-#elseif ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif (__BFD_VER__ >= 218) and (__BFD_VER__ <= 221)
 	declare sub bfd_section_already_linked_ alias "bfd_section_already_linked"(byval abfd as bfd ptr, byval sec as asection ptr, byval info as bfd_link_info ptr)
 #else
 	declare function bfd_section_already_linked_ alias "bfd_section_already_linked"(byval abfd as bfd ptr, byval sec as asection ptr, byval info as bfd_link_info ptr) as bfd_boolean
 #endif
 
-#if ((__BFD_VER__ = 218) or (__BFD_VER__ = 219) or (__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 218
 	#define bfd_section_already_linked(abfd, sec, info) BFD_SEND (abfd, _section_already_linked, (abfd, sec, info))
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare function bfd_generic_define_common_symbol(byval output_bfd as bfd ptr, byval info as bfd_link_info ptr, byval h as bfd_link_hash_entry ptr) as bfd_boolean
 	#define bfd_define_common_symbol(output_bfd, info, h) BFD_SEND (output_bfd, _bfd_define_common_symbol, (output_bfd, info, h))
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	type bfd_elf_version_tree as bfd_elf_version_tree_
 #endif
 
-#if ((__BFD_VER__ = 220) or (__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 220
 	declare function bfd_find_version_for_sym(byval verdefs as bfd_elf_version_tree ptr, byval sym_name as const zstring ptr, byval hide as bfd_boolean ptr) as bfd_elf_version_tree ptr
 #endif
 
-#if ((__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 222
 	declare function bfd_hide_sym_by_version(byval verdefs as bfd_elf_version_tree ptr, byval sym_name as const zstring ptr) as bfd_boolean
 #endif
 
@@ -5909,16 +5911,16 @@ declare function bfd_simple_get_relocated_section_contents(byval abfd as bfd ptr
 
 #if (__BFD_VER__ = 219) or (__BFD_VER__ = 220)
 	declare function bfd_uncompress_section_contents(byval buffer as bfd_byte ptr ptr, byval size as bfd_size_type ptr) as bfd_boolean
-#elseif ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#elseif __BFD_VER__ >= 221
 	declare function bfd_compress_section_contents(byval abfd as bfd ptr, byval section as asection ptr, byval uncompressed_buffer as bfd_byte ptr, byval uncompressed_size as bfd_size_type) as bfd_boolean
 	declare function bfd_get_full_section_contents(byval abfd as bfd ptr, byval section as asection ptr, byval ptr_ as bfd_byte ptr ptr) as bfd_boolean
 #endif
 
-#if (__BFD_VER__ = 224) or (__BFD_VER__ = 225)
+#if __BFD_VER__ >= 224
 	declare sub bfd_cache_section_contents(byval sec as asection ptr, byval contents as any ptr)
 #endif
 
-#if ((__BFD_VER__ = 221) or (__BFD_VER__ = 222) or (__BFD_VER__ = 223) or (__BFD_VER__ = 224) or (__BFD_VER__ = 225)) and (defined(__FB_LINUX__) or (defined(__FB_WIN32__) or defined(__FB_DOS__)))
+#if __BFD_VER__ >= 221
 	declare function bfd_is_section_compressed(byval abfd as bfd ptr, byval section as asection ptr) as bfd_boolean
 	declare function bfd_init_section_decompress_status(byval abfd as bfd ptr, byval section as asection ptr) as bfd_boolean
 	declare function bfd_init_section_compress_status(byval abfd as bfd ptr, byval section as asection ptr) as bfd_boolean

@@ -14,7 +14,7 @@
 
 #inclib "aspell"
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	#inclib "stdc++"
 #endif
 

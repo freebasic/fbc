@@ -193,7 +193,13 @@ type _XLockPtrs_
 	unlock_display as sub(byval dpy as Display ptr)
 end type
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	extern _XCreateMutex_fn as sub(byval as LockInfoPtr)
+	extern _XFreeMutex_fn as sub(byval as LockInfoPtr)
+	extern _XLockMutex_fn as sub(byval as LockInfoPtr)
+	extern _XUnlockMutex_fn as sub(byval as LockInfoPtr)
+	extern _Xglobal_lock as LockInfoPtr
+#else
 	#define _XCreateMutex_fn (*_XCreateMutex_fn_p)
 	#define _XFreeMutex_fn (*_XFreeMutex_fn_p)
 	#define _XLockMutex_fn (*_XLockMutex_fn_p)
@@ -205,12 +211,6 @@ end type
 	extern _XLockMutex_fn_p as typeof(sub(byval as LockInfoPtr)) ptr
 	extern _XUnlockMutex_fn_p as typeof(sub(byval as LockInfoPtr)) ptr
 	extern _Xglobal_lock_p as LockInfoPtr ptr
-#else
-	extern _XCreateMutex_fn as sub(byval as LockInfoPtr)
-	extern _XFreeMutex_fn as sub(byval as LockInfoPtr)
-	extern _XLockMutex_fn as sub(byval as LockInfoPtr)
-	extern _XUnlockMutex_fn as sub(byval as LockInfoPtr)
-	extern _Xglobal_lock as LockInfoPtr
 #endif
 
 #macro LockDisplay(d)
@@ -497,10 +497,10 @@ declare function _XAsyncErrorHandler(byval as Display ptr, byval as xReply ptr, 
 declare function _XGetAsyncReply(byval as Display ptr, byval as zstring ptr, byval as xReply ptr, byval as zstring ptr, byval as long, byval as long, byval as long) as zstring ptr
 declare sub _XGetAsyncData(byval as Display ptr, byval as zstring ptr, byval as zstring ptr, byval as long, byval as long, byval as long, byval as long)
 
-#ifdef __FB_WIN32__
-	declare sub _XFlushIt(byval as Display ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub _XFlush(byval as Display ptr)
+#else
+	declare sub _XFlushIt(byval as Display ptr)
 #endif
 
 declare function _XEventsQueued(byval as Display ptr, byval as long) as long
@@ -561,15 +561,15 @@ end type
 declare function _XTextHeight(byval as XFontStruct ptr, byval as const zstring ptr, byval as long) as long
 declare function _XTextHeight16(byval as XFontStruct ptr, byval as const XChar2b ptr, byval as long) as long
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	#define _XOpenFile(path, flags) open(path, flags)
+	#define _XOpenFileMode(path, flags, mode) open(path, flags, mode)
+	#define _XFopenFile(path, mode) fopen(path, mode)
+#else
 	declare function _XOpenFile(byval as const zstring ptr, byval as long) as long
 	declare function _XOpenFileMode(byval as const zstring ptr, byval as long, byval as _mode_t) as long
 	declare function _XFopenFile(byval as const zstring ptr, byval as const zstring ptr) as any ptr
 	declare function _XAccessFile(byval as const zstring ptr) as long
-#else
-	#define _XOpenFile(path, flags) open(path, flags)
-	#define _XOpenFileMode(path, flags, mode) open(path, flags, mode)
-	#define _XFopenFile(path, mode) fopen(path, mode)
 #endif
 
 declare function _XEventToWire(byval dpy as Display ptr, byval re as XEvent ptr, byval event as xEvent_ ptr) as long

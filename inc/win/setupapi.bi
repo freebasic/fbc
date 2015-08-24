@@ -878,10 +878,12 @@ type DI_FUNCTION as UINT
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if defined(__FB_64BIT__) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif defined(__FB_64BIT__) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifdef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -897,10 +899,12 @@ type DI_FUNCTION as UINT
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if (not defined(__FB_64BIT__)) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifndef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -921,10 +925,12 @@ type PSP_DEVINSTALL_PARAMS_A as _SP_DEVINSTALL_PARAMS_A ptr
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if defined(__FB_64BIT__) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif defined(__FB_64BIT__) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifdef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -940,10 +946,12 @@ type PSP_DEVINSTALL_PARAMS_A as _SP_DEVINSTALL_PARAMS_A ptr
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if (not defined(__FB_64BIT__)) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifndef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID

@@ -1411,7 +1411,7 @@ declare function g_param_spec_override_ alias "g_param_spec_override"(byval name
 declare function g_param_spec_gtype_ alias "g_param_spec_gtype"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval is_a_type as GType, byval flags as GParamFlags) as GParamSpec ptr
 declare function g_param_spec_variant_ alias "g_param_spec_variant"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval type as const GVariantType ptr, byval default_value as GVariant ptr, byval flags as GParamFlags) as GParamSpec ptr
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	extern import g_param_spec_types as GType ptr
 #else
 	extern g_param_spec_types as GType ptr

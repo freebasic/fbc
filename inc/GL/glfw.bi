@@ -50,7 +50,7 @@
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 
-#if defined(__FB_WIN32__) and defined(GLFW_DLL)
+#if defined(GLFW_DLL) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	extern "Windows"
 #else
 	extern "C"
@@ -61,7 +61,7 @@
 	const NULL = 0
 #endif
 
-#if defined(__FB_WIN32__) and defined(GLFW_DLL)
+#if defined(GLFW_DLL) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	#define GLFWCALL stdcall
 #else
 	#define GLFWCALL cdecl

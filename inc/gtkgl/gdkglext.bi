@@ -24,10 +24,10 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
-	#inclib "gdkglext-win32-1.0"
-#else
+#ifdef __FB_UNIX__
 	#inclib "gdkglext-x11-1.0"
+#else
+	#inclib "gdkglext-win32-1.0"
 #endif
 
 #include once "crt/long.bi"
@@ -58,18 +58,18 @@ const GDKGLEXT_INTERFACE_AGE = 0
 const GDKGLEXT_BINARY_AGE = 0
 #define GDKGLEXT_CHECK_VERSION(major, minor, micro) (((GDKGLEXT_MAJOR_VERSION > (major)) orelse ((GDKGLEXT_MAJOR_VERSION = (major)) andalso (GDKGLEXT_MINOR_VERSION > (minor)))) orelse (((GDKGLEXT_MAJOR_VERSION = (major)) andalso (GDKGLEXT_MINOR_VERSION = (minor))) andalso (GDKGLEXT_MICRO_VERSION >= (micro))))
 
-#ifdef __FB_WIN32__
-	extern import gdkglext_major_version_ alias "gdkglext_major_version" as const guint
-	extern import gdkglext_minor_version_ alias "gdkglext_minor_version" as const guint
-	extern import gdkglext_micro_version_ alias "gdkglext_micro_version" as const guint
-	extern import gdkglext_interface_age_ alias "gdkglext_interface_age" as const guint
-	extern import gdkglext_binary_age_ alias "gdkglext_binary_age" as const guint
-#else
+#ifdef __FB_UNIX__
 	extern gdkglext_major_version_ alias "gdkglext_major_version" as const guint
 	extern gdkglext_minor_version_ alias "gdkglext_minor_version" as const guint
 	extern gdkglext_micro_version_ alias "gdkglext_micro_version" as const guint
 	extern gdkglext_interface_age_ alias "gdkglext_interface_age" as const guint
 	extern gdkglext_binary_age_ alias "gdkglext_binary_age" as const guint
+#else
+	extern import gdkglext_major_version_ alias "gdkglext_major_version" as const guint
+	extern import gdkglext_minor_version_ alias "gdkglext_minor_version" as const guint
+	extern import gdkglext_micro_version_ alias "gdkglext_micro_version" as const guint
+	extern import gdkglext_interface_age_ alias "gdkglext_interface_age" as const guint
+	extern import gdkglext_binary_age_ alias "gdkglext_binary_age" as const guint
 #endif
 
 #define __GDK_GL_TOKENS_H__

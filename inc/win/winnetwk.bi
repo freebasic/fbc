@@ -248,10 +248,10 @@ declare function WNetUseConnectionW(byval hwndOwner as HWND, byval lpNetResource
 declare function WNetConnectionDialog(byval hwnd as HWND, byval dwType as DWORD) as DWORD
 declare function WNetDisconnectDialog(byval hwnd as HWND, byval dwType as DWORD) as DWORD
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	declare function WNetRestoreConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR) as DWORD
-#else
+#if _WIN32_WINNT = &h0602
 	declare function WNetRestoreSingleConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR, byval fUseUI as BOOL) as DWORD
+#else
+	declare function WNetRestoreConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR) as DWORD
 #endif
 
 type _CONNECTDLGSTRUCTA
