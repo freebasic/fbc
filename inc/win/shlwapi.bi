@@ -90,8 +90,8 @@ declare function wvnsprintfW(byval lpOut as LPWSTR, byval cchLimitIn as long, by
 declare function wnsprintfA cdecl(byval lpOut as LPSTR, byval cchLimitIn as long, byval lpFmt as LPCSTR, ...) as long
 declare function wnsprintfW cdecl(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, ...) as long
 
-#define StrIntlEqNA(s1, s2, nChar) StrIsIntlEqualA(TRUE, s1, s2, nChar)
-#define StrIntlEqNW(s1, s2, nChar) StrIsIntlEqualW(TRUE, s1, s2, nChar)
+#define StrIntlEqNA(s1, s2, nChar) StrIsIntlEqualA(CTRUE, s1, s2, nChar)
+#define StrIntlEqNW(s1, s2, nChar) StrIsIntlEqualW(CTRUE, s1, s2, nChar)
 #define StrIntlEqNIA(s1, s2, nChar) StrIsIntlEqualA(FALSE, s1, s2, nChar)
 #define StrIntlEqNIW(s1, s2, nChar) StrIsIntlEqualW(FALSE, s1, s2, nChar)
 
@@ -225,8 +225,8 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 
 declare function IntlStrEqWorkerA(byval fCaseSens as WINBOOL, byval lpString1 as LPCSTR, byval lpString2 as LPCSTR, byval nChar as long) as WINBOOL
 declare function IntlStrEqWorkerW(byval fCaseSens as WINBOOL, byval lpString1 as LPCWSTR, byval lpString2 as LPCWSTR, byval nChar as long) as WINBOOL
-#define IntlStrEqNA(s1, s2, nChar) IntlStrEqWorkerA(TRUE, s1, s2, nChar)
-#define IntlStrEqNW(s1, s2, nChar) IntlStrEqWorkerW(TRUE, s1, s2, nChar)
+#define IntlStrEqNA(s1, s2, nChar) IntlStrEqWorkerA(CTRUE, s1, s2, nChar)
+#define IntlStrEqNW(s1, s2, nChar) IntlStrEqWorkerW(CTRUE, s1, s2, nChar)
 #define IntlStrEqNIA(s1, s2, nChar) IntlStrEqWorkerA(FALSE, s1, s2, nChar)
 #define IntlStrEqNIW(s1, s2, nChar) IntlStrEqWorkerW(FALSE, s1, s2, nChar)
 

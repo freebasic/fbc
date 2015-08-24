@@ -224,7 +224,7 @@ type PFN_PROVIDER_CLEANUP_CALL as function(byval pProvData as _CRYPT_PROVIDER_DA
 type PFN_PROVIDER_CERTCHKPOLICY_CALL as function(byval pProvData as _CRYPT_PROVIDER_DATA ptr, byval idxSigner as DWORD, byval fCounterSignerChain as WINBOOL, byval idxCounterSigner as DWORD) as WINBOOL
 
 #define WVT_OFFSETOF(t, f) cast(ULONG, cast(ULONG_PTR, @cptr(t ptr, 0)->f))
-#define WVT_ISINSTRUCT(structtypedef, structpassedsize, member) iif(WVT_OFFSETOF(structtypedef, member) < structpassedsize, TRUE, FALSE)
+#define WVT_ISINSTRUCT(structtypedef, structpassedsize, member) iif(WVT_OFFSETOF(structtypedef, member) < structpassedsize, CTRUE, FALSE)
 #define WVT_IS_CBSTRUCT_GT_MEMBEROFFSET(structtypedef, structpassedsize, member) WVT_ISINSTRUCT(structtypedef, structpassedsize, member)
 const CPD_CHOICE_SIP = 1
 const CPD_USE_NT5_CHAIN_FLAG = &h80000000

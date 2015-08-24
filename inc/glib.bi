@@ -41,6 +41,7 @@
 #endif
 
 '' The following symbols have been renamed:
+''     constant TRUE => CTRUE
 ''     procedure g_atomic_int_get => g_atomic_int_get_
 ''     procedure g_atomic_int_set => g_atomic_int_set_
 ''     procedure g_atomic_int_inc => g_atomic_int_inc_
@@ -126,6 +127,9 @@ extern "C"
 #endif
 #ifndef FALSE
 	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
 #endif
 #ifndef TRUE
 	const TRUE = 1
@@ -1579,7 +1583,7 @@ const G_PRIORITY_HIGH_IDLE = 100
 const G_PRIORITY_DEFAULT_IDLE = 200
 const G_PRIORITY_LOW = 300
 #define G_SOURCE_REMOVE FALSE
-#define G_SOURCE_CONTINUE TRUE
+#define G_SOURCE_CONTINUE CTRUE
 
 declare function g_main_context_new() as GMainContext ptr
 declare function g_main_context_ref(byval context as GMainContext ptr) as GMainContext ptr
@@ -2081,7 +2085,7 @@ declare function g_bit_storage(byval number as gulong) as guint
 				dll_name = g_path_get_basename(tem)
 				g_free(tem)
 			end select
-			return TRUE
+			return CTRUE
 		end function
 	#endmacro
 #else
@@ -3884,8 +3888,8 @@ declare function glib_check_version_ alias "glib_check_version"(byval required_m
 	declare function g_win32_get_windows_version() as guint
 	declare function g_win32_locale_filename_from_utf8(byval utf8filename as const zstring ptr) as zstring ptr
 	declare function g_win32_get_command_line() as zstring ptr ptr
-	#define G_WIN32_IS_NT_BASED() TRUE
-	#define G_WIN32_HAVE_WIDECHAR_API() TRUE
+	#define G_WIN32_IS_NT_BASED() CTRUE
+	#define G_WIN32_HAVE_WIDECHAR_API() CTRUE
 #endif
 
 #ifdef __FB_WIN32__

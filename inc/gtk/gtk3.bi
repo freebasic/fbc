@@ -975,9 +975,9 @@ declare sub gtk_widget_remove_tick_callback(byval widget as GtkWidget ptr, byval
 
 #define gtk_widget_class_bind_template_callback(widget_class, callback) gtk_widget_class_bind_template_callback_full(GTK_WIDGET_CLASS(widget_class), #callback, G_CALLBACK(callback))
 #define gtk_widget_class_bind_template_child(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, FALSE, G_STRUCT_OFFSET(TypeName, member_name))
-#define gtk_widget_class_bind_template_child_internal(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, TRUE, G_STRUCT_OFFSET(TypeName, member_name))
+#define gtk_widget_class_bind_template_child_internal(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, CTRUE, G_STRUCT_OFFSET(TypeName, member_name))
 #define gtk_widget_class_bind_template_child_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, FALSE, G_PRIVATE_OFFSET(TypeName, member_name))
-#define gtk_widget_class_bind_template_child_internal_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, TRUE, G_PRIVATE_OFFSET(TypeName, member_name))
+#define gtk_widget_class_bind_template_child_internal_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, CTRUE, G_PRIVATE_OFFSET(TypeName, member_name))
 
 declare sub gtk_widget_init_template(byval widget as GtkWidget ptr)
 declare function gtk_widget_get_template_child(byval widget as GtkWidget ptr, byval widget_type as GType, byval name as const zstring ptr) as GObject ptr

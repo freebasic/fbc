@@ -465,19 +465,19 @@ declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as cons
 	iif(cptr(GTypeInstance ptr, ip) = 0, _
 		FALSE, _
 		iif(cptr(GTypeInstance ptr, ip)->g_class andalso cptr(GTypeInstance ptr, ip)->g_class->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_instance_is_a(cptr(GTypeInstance ptr, ip), gt)))
 #define _G_TYPE_CCT(cp, gt) _
 	iif(cptr(GTypeClass ptr, cp) = 0, _
 		FALSE, _
 		iif(cptr(GTypeClass ptr, cp)->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_class_is_a(cptr(GTypeClass ptr, cp), gt)))
 #define _G_TYPE_CVH(vl, gt) _
 	iif(cptr(GValue ptr, vl) = 0 _
 		FALSE, _
 		iif(cptr(GValue ptr, vl)->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_value_holds(cptr(GValue ptr, vl), gt)))
 #define G_TYPE_FLAG_RESERVED_ID_BIT cast(GType, 1 shl 0)
 #define __G_VALUE_H__

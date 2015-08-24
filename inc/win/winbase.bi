@@ -2943,17 +2943,17 @@ declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 
 	type PROC_THREAD_ATTRIBUTE_NUM as _PROC_THREAD_ATTRIBUTE_NUM
 	#define ProcThreadAttributeValue(Number, Thread, Input, Additive) (((((Number) and PROC_THREAD_ATTRIBUTE_NUMBER) or iif(Thread <> FALSE, PROC_THREAD_ATTRIBUTE_THREAD, 0)) or iif(Input <> FALSE, PROC_THREAD_ATTRIBUTE_INPUT, 0)) or iif(Additive <> FALSE, PROC_THREAD_ATTRIBUTE_ADDITIVE, 0))
-	#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS ProcThreadAttributeValue(ProcThreadAttributeParentProcess, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST ProcThreadAttributeValue(ProcThreadAttributeHandleList, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_GROUP_AFFINITY ProcThreadAttributeValue(ProcThreadAttributeGroupAffinity, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_PREFERRED_NODE ProcThreadAttributeValue(ProcThreadAttributePreferredNode, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_IDEAL_PROCESSOR ProcThreadAttributeValue(ProcThreadAttributeIdealProcessor, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_UMS_THREAD ProcThreadAttributeValue(ProcThreadAttributeUmsThread, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY ProcThreadAttributeValue(ProcThreadAttributeMitigationPolicy, FALSE, TRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS ProcThreadAttributeValue(ProcThreadAttributeParentProcess, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST ProcThreadAttributeValue(ProcThreadAttributeHandleList, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_GROUP_AFFINITY ProcThreadAttributeValue(ProcThreadAttributeGroupAffinity, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_PREFERRED_NODE ProcThreadAttributeValue(ProcThreadAttributePreferredNode, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_IDEAL_PROCESSOR ProcThreadAttributeValue(ProcThreadAttributeIdealProcessor, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_UMS_THREAD ProcThreadAttributeValue(ProcThreadAttributeUmsThread, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY ProcThreadAttributeValue(ProcThreadAttributeMitigationPolicy, FALSE, CTRUE, FALSE)
 	const PROCESS_CREATION_MITIGATION_POLICY_DEP_ENABLE = &h01
 	const PROCESS_CREATION_MITIGATION_POLICY_DEP_ATL_THUNK_ENABLE = &h02
 	const PROCESS_CREATION_MITIGATION_POLICY_SEHOP_ENABLE = &h04
-	#define PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES ProcThreadAttributeValue(ProcThreadAttributeSecurityCapabilities, FALSE, TRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES ProcThreadAttributeValue(ProcThreadAttributeSecurityCapabilities, FALSE, CTRUE, FALSE)
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_MASK = &h00000003 shl 8
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_DEFER = &h00000000 shl 8
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON = &h00000001 shl 8

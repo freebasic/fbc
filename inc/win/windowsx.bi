@@ -77,7 +77,7 @@
 '' TODO: #define SetDlgMsgResult(hwnd,msg,result) (((msg)==WM_CTLCOLORMSGBOX || (msg)==WM_CTLCOLOREDIT || (msg)==WM_CTLCOLORLISTBOX || (msg)==WM_CTLCOLORBTN || (msg)==WM_CTLCOLORDLG || (msg)==WM_CTLCOLORSCROLLBAR || (msg)==WM_CTLCOLORSTATIC || (msg)==WM_COMPAREITEM || (msg)==WM_VKEYTOITEM || (msg)==WM_CHARTOITEM || (msg)==WM_QUERYDRAGICON || (msg)==WM_INITDIALOG) ? (WINBOOL)(result) : (SetWindowLongPtr((hwnd),DWLP_MSGRESULT,(LPARAM)(LRESULT)(result)),TRUE))
 #macro DefDlgProcEx(hwnd, msg, wParam, lParam, pfRecursion)
 	scope
-		(*(pfRecursion)) = TRUE
+		(*(pfRecursion)) = CTRUE
 		DefDlgProc(hwnd, msg, wParam, lParam)
 	end scope
 #endmacro
@@ -378,7 +378,7 @@
 #define Button_SetCheck(hwndCtl, check) SNDMSG((hwndCtl), BM_SETCHECK, cast(WPARAM, clng(check)), cast(LPARAM, 0))
 #define Button_GetState(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), BM_GETSTATE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Button_SetState(hwndCtl, state) cast(UINT, cast(DWORD, SNDMSG((hwndCtl), BM_SETSTATE, cast(WPARAM, clng(state)), cast(LPARAM, 0))))
-#define Button_SetStyle(hwndCtl, style, fRedraw) SNDMSG((hwndCtl), BM_SETSTYLE, cast(WPARAM, LOWORD(style)), MAKELPARAM(iif((fRedraw), TRUE, FALSE), 0))
+#define Button_SetStyle(hwndCtl, style, fRedraw) SNDMSG((hwndCtl), BM_SETSTYLE, cast(WPARAM, LOWORD(style)), MAKELPARAM(iif((fRedraw), CTRUE, FALSE), 0))
 #define Edit_Enable(hwndCtl, fEnable) EnableWindow((hwndCtl), (fEnable))
 #define Edit_GetText(hwndCtl, lpch, cchMax) GetWindowText((hwndCtl), (lpch), (cchMax))
 #define Edit_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)

@@ -53,6 +53,7 @@
 #include once "basetsd.bi"
 
 '' The following symbols have been renamed:
+''     constant TRUE => CTRUE
 ''     typedef BYTE => UBYTE
 ''     typedef INT => INT_
 
@@ -76,6 +77,9 @@ const MAX_PATH = 260
 #endif
 #ifndef FALSE
 	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
 #endif
 #ifndef TRUE
 	const TRUE = 1

@@ -4660,7 +4660,7 @@ declare sub _gtk_menu_item_popup_submenu(byval menu_item as GtkWidget ptr, byval
 declare sub _gtk_menu_item_popdown_submenu(byval menu_item as GtkWidget ptr)
 declare sub gtk_menu_item_remove_submenu(byval menu_item as GtkMenuItem ptr)
 
-#define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
+#define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), CTRUE)
 #define GTK_TYPE_CHECK_MENU_ITEM gtk_check_menu_item_get_type()
 #define GTK_CHECK_MENU_ITEM(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_CHECK_MENU_ITEM, GtkCheckMenuItem)
 #define GTK_CHECK_MENU_ITEM_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_CHECK_MENU_ITEM, GtkCheckMenuItemClass)

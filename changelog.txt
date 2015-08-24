@@ -4,6 +4,7 @@ Version 1.04.0
 - FileAttr() now returns an Integer instead of a Long, and now supports returning OS handles on 64bit
 - #750: The gfxlib is now cleaned-up by END (which also happens automatically at the end of the implicit main function), instead of the FB runtime's global destructor. This should fix the "hang on exit on Windows 10" issues. The reason is that the gfxlib clean-up needs to wait for the background thread to exit, which cannot safely be done in a global destructor on Windows, due to the loader lock. This means it is definitely not safe anymore to use FB graphics commands during global variable destructors or module-level destructors.
 - Windows API binding: The BOOLEAN typedef has been renamed to WINBOOLEAN due to the addition of built-in Boolean type to FB. You can #undef Boolean before #including windows.bi to get the Windows API BOOLEAN typedef again.
+- Many bindings now declare CTRUE (1) instead of TRUE (1), to avoid conflicting with the new built-in True (-1) keyword. You can #undef True before #including them to get their old TRUE (1) again.
 
 [added]
 - BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.

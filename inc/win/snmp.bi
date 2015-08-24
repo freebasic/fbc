@@ -154,7 +154,7 @@ const SNMP_ACCESS_READ_ONLY = 2
 const SNMP_ACCESS_READ_WRITE = 3
 const SNMP_ACCESS_READ_CREATE = 4
 #define SNMPAPI INT_
-#define SNMPAPI_NOERROR TRUE
+#define SNMPAPI_NOERROR CTRUE
 #define SNMPAPI_ERROR FALSE
 
 declare function SnmpExtensionInit(byval dwUptimeReference as DWORD, byval phSubagentTrapEvent as HANDLE ptr, byval pFirstSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL

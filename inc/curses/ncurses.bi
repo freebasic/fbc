@@ -41,6 +41,8 @@
 #include once "crt/stdarg.bi"
 
 '' The following symbols have been renamed:
+''     undef TRUE => CTRUE
+''     constant TRUE => CTRUE
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
 ''     undef ERR => ERR_
 ''     constant ERR => ERR_
@@ -85,10 +87,15 @@ const NCURSES_TPARM_VARARGS = 1
 type chtype as culong
 type mmask_t as culong
 #undef NCURSES_WIDECHAR
-#undef TRUE
-const TRUE = 1
-#undef FALSE
-const FALSE = 0
+#ifndef CTRUE
+	const CTRUE = 1
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
+#ifndef FALSE
+	const FALSE = 0
+#endif
 type NCURSES_BOOL as ubyte
 #define NCURSES_BOOL_ bool
 #define NCURSES_CAST(type, value) cast(type, value)
@@ -467,7 +474,7 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #macro setsyx(y, x)
 	if newscr then
 		if ((y) = (-1)) andalso ((x) = (-1)) then
-			leaveok(newscr, TRUE)
+			leaveok(newscr, CTRUE)
 		else
 			leaveok(newscr, FALSE)
 			wmove(newscr, (y), (x))

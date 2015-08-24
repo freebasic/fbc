@@ -50,6 +50,8 @@
 type stat as stat_  '' TODO: remove as soon as fbc's CRT headers define it
 
 '' The following symbols have been renamed:
+''     undef TRUE => CTRUE
+''     constant TRUE => CTRUE
 ''     #if __BFD_VER__ <= 218
 ''         constant DYNAMIC => DYNAMIC_
 ''     #endif
@@ -112,10 +114,15 @@ type bfd_uint64_t as ulongint
 #endif
 
 type bfd_boolean as long
-#undef FALSE
-#undef TRUE
-const FALSE = 0
-const TRUE = 1
+#ifndef FALSE
+	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
 
 #if ((not defined(__FB_64BIT__)) and (defined(__FB_WIN32__) or defined(__FB_UNIX__))) or defined(__FB_DOS__)
 	type bfd_vma as culong
@@ -292,7 +299,7 @@ type sec_ptr as bfd_section ptr
 			var __val = (val)
 			(ptr)->vma = __val
 			(ptr)->lma = __val
-			(ptr)->user_set_vma = TRUE
+			(ptr)->user_set_vma = CTRUE
 		end scope
 	#endmacro
 	#define bfd_set_section_alignment(bfd, ptr_, val_) scope : (ptr_)->alignment_power = (val_) : end scope
