@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glibc-2.21
+'' FreeBASIC binding for glibc-2.22
 ''
 '' based on the C header files:
 ''   Definitions for POSIX 1003.1b-1993 (aka POSIX.4) scheduling interface.
