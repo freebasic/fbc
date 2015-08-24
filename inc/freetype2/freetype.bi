@@ -1,9 +1,9 @@
-'' FreeBASIC binding for freetype-2.5.5
+'' FreeBASIC binding for freetype-2.6
 ''
 '' based on the C header files:
 ''   /*    FreeType high-level API and common types (specification only).       */
 ''   /*                                                                         */
-''   /*  Copyright 1996-2014 by                                                 */
+''   /*  Copyright 1996-2015 by                                                 */
 ''   /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 ''
 ''   This program is free software; you can redistribute it and/or modify
@@ -373,8 +373,8 @@ declare function FT_FloorFix(byval a as FT_Fixed) as FT_Fixed
 declare sub FT_Vector_Transform(byval vec as FT_Vector ptr, byval matrix as const FT_Matrix ptr)
 
 const FREETYPE_MAJOR = 2
-const FREETYPE_MINOR = 5
-const FREETYPE_PATCH = 5
+const FREETYPE_MINOR = 6
+const FREETYPE_PATCH = 0
 
 declare sub FT_Library_Version(byval library as FT_Library, byval amajor as FT_Int ptr, byval aminor as FT_Int ptr, byval apatch as FT_Int ptr)
 declare function FT_Face_CheckTrueTypePatents(byval face as FT_Face) as FT_Bool

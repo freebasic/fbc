@@ -1,9 +1,9 @@
-'' FreeBASIC binding for freetype-2.5.5
+'' FreeBASIC binding for freetype-2.6
 ''
 '' based on the C header files:
 ''   /*    FreeType high-level API and common types (specification only).       */
 ''   /*                                                                         */
-''   /*  Copyright 1996-2014 by                                                 */
+''   /*  Copyright 1996-2015 by                                                 */
 ''   /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 ''
 ''   This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,6 @@ const FT_MAX_MODULES = 32
 #define TT_CONFIG_CMAP_FORMAT_13
 #define TT_CONFIG_CMAP_FORMAT_14
 #define TT_CONFIG_OPTION_BYTECODE_INTERPRETER
-#define TT_CONFIG_OPTION_INTERPRETER_SWITCH
 #undef TT_CONFIG_OPTION_COMPONENT_OFFSET_SCALED
 #define TT_CONFIG_OPTION_GX_VAR_SUPPORT
 #define TT_CONFIG_OPTION_BDF
@@ -72,5 +71,6 @@ const CFF_CONFIG_OPTION_DARKENING_PARAMETER_X4 = 2333
 const CFF_CONFIG_OPTION_DARKENING_PARAMETER_Y4 = 0
 #define AF_CONFIG_OPTION_CJK
 #define AF_CONFIG_OPTION_INDIC
+#define AF_CONFIG_OPTION_USE_WARPER
 #define TT_USE_BYTECODE_INTERPRETER
 #undef TT_CONFIG_OPTION_UNPATENTED_HINTING

@@ -1,9 +1,9 @@
-'' FreeBASIC binding for freetype-2.5.5
+'' FreeBASIC binding for freetype-2.6
 ''
 '' based on the C header files:
 ''   /*    FreeType high-level API and common types (specification only).       */
 ''   /*                                                                         */
-''   /*  Copyright 1996-2014 by                                                 */
+''   /*  Copyright 1996-2015 by                                                 */
 ''   /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 ''
 ''   This program is free software; you can redistribute it and/or modify
@@ -67,7 +67,6 @@
 #define ft_smalloc malloc
 #define ft_srealloc realloc
 #define ft_atol atol
-#define ft_labs labs
 #define ft_jmp_buf jmp_buf
 #define ft_longjmp longjmp
 #define ft_setjmp(b) setjmp(*cptr(ft_jmp_buf ptr, @(b)))
