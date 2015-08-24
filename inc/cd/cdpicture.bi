@@ -1,4 +1,4 @@
-'' FreeBASIC binding for cd-5.8.1
+'' FreeBASIC binding for cd-5.8.2
 ''
 '' based on the C header files:
 ''   Copyright (C) 1994-2014 Tecgraf, PUC-Rio.
