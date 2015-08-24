@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mesa-10.5.1
+'' FreeBASIC binding for mesa-10.6.4
 ''
 '' based on the C header files:
 ''   Mesa 3-D graphics library
