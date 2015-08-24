@@ -1,7 +1,7 @@
-'' FreeBASIC binding for lua-5.2.3
+'' FreeBASIC binding for lua-5.3.1
 ''
 '' based on the C header files:
-''   Copyright (C) 1994-2013 Lua.org, PUC-Rio.
+''   Copyright (C) 1994-2015 Lua.org, PUC-Rio.
 ''
 ''   Permission is hereby granted, free of charge, to any person obtaining
 ''   a copy of this software and associated documentation files (the
@@ -43,6 +43,8 @@ declare function luaopen_io(byval L as lua_State ptr) as long
 declare function luaopen_os(byval L as lua_State ptr) as long
 #define LUA_STRLIBNAME "string"
 declare function luaopen_string(byval L as lua_State ptr) as long
+#define LUA_UTF8LIBNAME "utf8"
+declare function luaopen_utf8(byval L as lua_State ptr) as long
 #define LUA_BITLIBNAME "bit32"
 declare function luaopen_bit32(byval L as lua_State ptr) as long
 #define LUA_MATHLIBNAME "math"
