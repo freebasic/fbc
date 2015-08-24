@@ -1,7 +1,7 @@
-'' FreeBASIC binding for curl-7.39.0
+'' FreeBASIC binding for curl-7.44.0
 ''
 '' based on the C header files:
-''   Copyright (c) 1996 - 2014, Daniel Stenberg, <daniel@haxx.se>.
+''   Copyright (c) 1996 - 2015, Daniel Stenberg, <daniel@haxx.se>.
 ''
 ''   All rights reserved.
 ''
@@ -50,13 +50,15 @@ extern "C"
 
 #define __CURL_CURL_H
 #define __CURL_CURLVER_H
-#define LIBCURL_COPYRIGHT "1996 - 2014 Daniel Stenberg, <daniel@haxx.se>."
-#define LIBCURL_VERSION "7.39.0"
+#define LIBCURL_COPYRIGHT "1996 - 2015 Daniel Stenberg, <daniel@haxx.se>."
+#define LIBCURL_VERSION "7.44.0"
 const LIBCURL_VERSION_MAJOR = 7
-const LIBCURL_VERSION_MINOR = 39
+const LIBCURL_VERSION_MINOR = 44
 const LIBCURL_VERSION_PATCH = 0
-const LIBCURL_VERSION_NUM = &h072700
-#define LIBCURL_TIMESTAMP "Wed Nov  5 07:24:58 UTC 2014"
+const LIBCURL_VERSION_NUM = &h072c00
+#define LIBCURL_TIMESTAMP "Wed Aug 12 06:10:30 UTC 2015"
+#define CURL_VERSION_BITS(x, y, z) ((((x) shl 16) or ((y) shl 8)) or z)
+#define CURL_AT_LEAST_VERSION(x, y, z) (LIBCURL_VERSION_NUM >= CURL_VERSION_BITS(x, y, z))
 #define __CURL_CURLBUILD_H
 
 #if (defined(__FB_WIN32__) and defined(__FB_64BIT__)) or defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))))
@@ -356,6 +358,7 @@ enum
 	CURLE_CHUNK_FAILED
 	CURLE_NO_CONNECTION_AVAILABLE
 	CURLE_SSL_PINNEDPUBKEYNOTMATCH
+	CURLE_SSL_INVALIDCERTSTATUS
 	CURL_LAST
 end enum
 
@@ -477,6 +480,7 @@ enum
 end enum
 
 const CURLSSLOPT_ALLOW_BEAST = 1 shl 0
+const CURLSSLOPT_NO_REVOKE = 1 shl 1
 #define CURLFTPSSL_NONE CURLUSESSL_NONE
 #define CURLFTPSSL_TRY CURLUSESSL_TRY
 #define CURLFTPSSL_CONTROL CURLUSESSL_CONTROL
@@ -545,6 +549,8 @@ const CURLPROTO_RTMPTE = 1 shl 22
 const CURLPROTO_RTMPS = 1 shl 23
 const CURLPROTO_RTMPTS = 1 shl 24
 const CURLPROTO_GOPHER = 1 shl 25
+const CURLPROTO_SMB = 1 shl 26
+const CURLPROTO_SMBS = 1 shl 27
 const CURLPROTO_ALL = not 0
 const CURLOPTTYPE_LONG = 0
 const CURLOPTTYPE_OBJECTPOINT = 10000
@@ -765,6 +771,13 @@ enum
 	CURLOPT_PROXYHEADER = CURLOPTTYPE_OBJECTPOINT + 228
 	CURLOPT_HEADEROPT = CURLOPTTYPE_LONG + 229
 	CURLOPT_PINNEDPUBLICKEY = CURLOPTTYPE_OBJECTPOINT + 230
+	CURLOPT_UNIX_SOCKET_PATH = CURLOPTTYPE_OBJECTPOINT + 231
+	CURLOPT_SSL_VERIFYSTATUS = CURLOPTTYPE_LONG + 232
+	CURLOPT_SSL_FALSESTART = CURLOPTTYPE_LONG + 233
+	CURLOPT_PATH_AS_IS = CURLOPTTYPE_LONG + 234
+	CURLOPT_PROXY_SERVICE_NAME = CURLOPTTYPE_OBJECTPOINT + 235
+	CURLOPT_SERVICE_NAME = CURLOPTTYPE_OBJECTPOINT + 236
+	CURLOPT_PIPEWAIT = CURLOPTTYPE_LONG + 237
 	CURLOPT_LASTENTRY
 end enum
 
@@ -789,6 +802,8 @@ enum
 	CURL_HTTP_VERSION_2_0
 	CURL_HTTP_VERSION_LAST
 end enum
+
+#define CURL_HTTP_VERSION_2 CURL_HTTP_VERSION_2_0
 
 enum
 	CURL_RTSPREQ_NONE
@@ -1113,6 +1128,8 @@ const CURL_VERSION_TLSAUTH_SRP = 1 shl 14
 const CURL_VERSION_NTLM_WB = 1 shl 15
 const CURL_VERSION_HTTP2 = 1 shl 16
 const CURL_VERSION_GSSAPI = 1 shl 17
+const CURL_VERSION_KERBEROS5 = 1 shl 18
+const CURL_VERSION_UNIX_SOCKETS = 1 shl 19
 
 declare function curl_version_info(byval as CURLversion) as curl_version_info_data ptr
 declare function curl_easy_strerror(byval as CURLcode) as const zstring ptr
@@ -1154,6 +1171,9 @@ enum
 end enum
 
 #define CURLM_CALL_MULTI_SOCKET CURLM_CALL_MULTI_PERFORM
+const CURLPIPE_NOTHING = cast(clong, 0)
+const CURLPIPE_HTTP1 = cast(clong, 1)
+const CURLPIPE_MULTIPLEX = cast(clong, 2)
 
 type CURLMSG_ as long
 enum
@@ -1226,10 +1246,18 @@ enum
 	CURLMOPT_PIPELINING_SITE_BL = CURLOPTTYPE_OBJECTPOINT + 11
 	CURLMOPT_PIPELINING_SERVER_BL = CURLOPTTYPE_OBJECTPOINT + 12
 	CURLMOPT_MAX_TOTAL_CONNECTIONS = CURLOPTTYPE_LONG + 13
+	CURLMOPT_PUSHFUNCTION = CURLOPTTYPE_FUNCTIONPOINT + 14
+	CURLMOPT_PUSHDATA = CURLOPTTYPE_OBJECTPOINT + 15
 	CURLMOPT_LASTENTRY
 end enum
 
 declare function curl_multi_setopt(byval multi_handle as CURLM ptr, byval option as CURLMoption, ...) as CURLMcode
 declare function curl_multi_assign(byval multi_handle as CURLM ptr, byval sockfd as curl_socket_t, byval sockp as any ptr) as CURLMcode
+const CURL_PUSH_OK = 0
+const CURL_PUSH_DENY = 1
+type curl_pushheaders as curl_pushheaders_
+declare function curl_pushheader_bynum(byval h as curl_pushheaders ptr, byval num as uinteger) as zstring ptr
+declare function curl_pushheader_byname(byval h as curl_pushheaders ptr, byval name as const zstring ptr) as zstring ptr
+type curl_push_callback as function(byval parent as CURL ptr, byval easy as CURL ptr, byval num_headers as uinteger, byval headers as curl_pushheaders ptr, byval userp as any ptr) as long
 
 end extern
