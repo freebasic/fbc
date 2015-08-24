@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -51,6 +51,8 @@
 #inclib "shell32"
 
 #include once "crt/long.bi"
+#include once "wtypesbase.bi"
+#include once "wincrypt.bi"
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "ole2.bi"

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2002-2003 Jason Edmeades 

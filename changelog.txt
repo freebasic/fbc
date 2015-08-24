@@ -14,6 +14,7 @@ Version 1.04.0
 - The FB gfxlib can now be built on OS X using XQuartz by passing ENABLE_XQUARTZ=1 to make
 - Redundant float constant declarations are now also allowed
 - Updated Mesa OpenGL binding to 10.6.4
+- Updated Windows API binding to MinGW-w64 4.0.4
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
