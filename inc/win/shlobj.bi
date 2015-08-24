@@ -51,6 +51,8 @@
 #inclib "shell32"
 
 #include once "crt/long.bi"
+#include once "rpc.bi"
+#include once "rpcndr.bi"
 #include once "wtypesbase.bi"
 #include once "wincrypt.bi"
 #include once "winapifamily.bi"
