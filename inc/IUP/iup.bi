@@ -58,9 +58,9 @@ extern "C"
 #define IUP_NAME "IUP - Portable User Interface"
 #define IUP_COPYRIGHT "Copyright (C) 1994-2015 Tecgraf, PUC-Rio."
 #define IUP_DESCRIPTION "Multi-platform toolkit for building graphical user interfaces."
-#define IUP_VERSION "3.13"
-const IUP_VERSION_NUMBER = 313000
-#define IUP_VERSION_DATE "2015/02/04"
+#define IUP_VERSION "3.15"
+const IUP_VERSION_NUMBER = 315000
+#define IUP_VERSION_DATE "2015/07/06"
 type Ihandle as Ihandle_
 type Icallback as function(byval as Ihandle ptr) as long
 
@@ -231,6 +231,7 @@ declare function IupTabs(byval child as Ihandle ptr, ...) as Ihandle ptr
 declare function IupTabsv(byval children as Ihandle ptr ptr) as Ihandle ptr
 declare function IupTree() as Ihandle ptr
 declare function IupLink(byval url as const zstring ptr, byval title as const zstring ptr) as Ihandle ptr
+declare function IupFlatButton(byval title as const zstring ptr) as Ihandle ptr
 declare function IupSpin() as Ihandle ptr
 declare function IupSpinbox(byval child as Ihandle ptr) as Ihandle ptr
 declare function IupSaveImageAsText(byval ih as Ihandle ptr, byval file_name as const zstring ptr, byval format as const zstring ptr, byval name as const zstring ptr) as long

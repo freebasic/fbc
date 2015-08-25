@@ -49,6 +49,7 @@
 	declare sub iuplua_pushihandle(byval L as lua_State ptr, byval n as Ihandle ptr)
 	declare function iuplua_dofile(byval L as lua_State ptr, byval filename as const zstring ptr) as long
 	declare function iuplua_dostring(byval L as lua_State ptr, byval string as const zstring ptr, byval chunk_name as const zstring ptr) as long
+	declare function iuplua_dobuffer(byval L as lua_State ptr, byval buffer as const zstring ptr, byval len as long, byval chunk_name as const zstring ptr) as long
 #endif
 
 #if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
