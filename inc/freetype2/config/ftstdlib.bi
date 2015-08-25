@@ -34,7 +34,7 @@
 #include once "crt/stdarg.bi"
 
 #define __FTSTDLIB_H__
-#define ft_ptrdiff_t integer
+type ft_ptrdiff_t as integer
 #define FT_CHAR_BIT CHAR_BIT
 #define FT_USHORT_MAX USHRT_MAX
 #define FT_INT_MAX INT_MAX

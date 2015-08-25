@@ -68,43 +68,94 @@ const RP_SYNC = 2
 const GPC_BLOCK_POLICY = &h00000001
 const GPO_FLAG_DISABLE = &h00000001
 const GPO_FLAG_FORCE = &h00000002
+declare function LoadUserProfileA(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOA) as WINBOOL
 
-#ifdef UNICODE
-	#define LoadUserProfile LoadUserProfileW
-	#define GetProfilesDirectory GetProfilesDirectoryW
-	#define DeleteProfile DeleteProfileW
-	#define GetDefaultUserProfileDirectory GetDefaultUserProfileDirectoryW
-	#define GetAllUsersProfileDirectory GetAllUsersProfileDirectoryW
-	#define GetUserProfileDirectory GetUserProfileDirectoryW
-	#define ExpandEnvironmentStringsForUser ExpandEnvironmentStringsForUserW
-#else
-	#define LoadUserProfile LoadUserProfileA
-	#define GetProfilesDirectory GetProfilesDirectoryA
-	#define DeleteProfile DeleteProfileA
-	#define GetDefaultUserProfileDirectory GetDefaultUserProfileDirectoryA
-	#define GetAllUsersProfileDirectory GetAllUsersProfileDirectoryA
-	#define GetUserProfileDirectory GetUserProfileDirectoryA
-	#define ExpandEnvironmentStringsForUser ExpandEnvironmentStringsForUserA
+#ifndef UNICODE
+	declare function LoadUserProfile alias "LoadUserProfileA"(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOA) as WINBOOL
 #endif
 
-declare function LoadUserProfileA(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOA) as WINBOOL
 declare function LoadUserProfileW(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOW) as WINBOOL
+
+#ifdef UNICODE
+	declare function LoadUserProfile alias "LoadUserProfileW"(byval hToken as HANDLE, byval lpProfileInfo as LPPROFILEINFOW) as WINBOOL
+#endif
+
 declare function UnloadUserProfile(byval hToken as HANDLE, byval hProfile as HANDLE) as WINBOOL
 declare function GetProfilesDirectoryA(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetProfilesDirectory alias "GetProfilesDirectoryA"(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetProfilesDirectoryW(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetProfilesDirectory alias "GetProfilesDirectoryW"(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetProfileType(byval dwFlags as DWORD ptr) as WINBOOL
 declare function DeleteProfileA(byval lpSidString as LPCSTR, byval lpProfilePath as LPCSTR, byval lpComputerName as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeleteProfile alias "DeleteProfileA"(byval lpSidString as LPCSTR, byval lpProfilePath as LPCSTR, byval lpComputerName as LPCSTR) as WINBOOL
+#endif
+
 declare function DeleteProfileW(byval lpSidString as LPCWSTR, byval lpProfilePath as LPCWSTR, byval lpComputerName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeleteProfile alias "DeleteProfileW"(byval lpSidString as LPCWSTR, byval lpProfilePath as LPCWSTR, byval lpComputerName as LPCWSTR) as WINBOOL
+#endif
+
 declare function GetDefaultUserProfileDirectoryA(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetDefaultUserProfileDirectory alias "GetDefaultUserProfileDirectoryA"(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetDefaultUserProfileDirectoryW(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetDefaultUserProfileDirectory alias "GetDefaultUserProfileDirectoryW"(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetAllUsersProfileDirectoryA(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetAllUsersProfileDirectory alias "GetAllUsersProfileDirectoryA"(byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetAllUsersProfileDirectoryW(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetAllUsersProfileDirectory alias "GetAllUsersProfileDirectoryW"(byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetUserProfileDirectoryA(byval hToken as HANDLE, byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetUserProfileDirectory alias "GetUserProfileDirectoryA"(byval hToken as HANDLE, byval lpProfileDir as LPSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function GetUserProfileDirectoryW(byval hToken as HANDLE, byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetUserProfileDirectory alias "GetUserProfileDirectoryW"(byval hToken as HANDLE, byval lpProfileDir as LPWSTR, byval lpcchSize as LPDWORD) as WINBOOL
+#endif
+
 declare function CreateEnvironmentBlock(byval lpEnvironment as LPVOID ptr, byval hToken as HANDLE, byval bInherit as WINBOOL) as WINBOOL
 declare function DestroyEnvironmentBlock(byval lpEnvironment as LPVOID) as WINBOOL
 declare function ExpandEnvironmentStringsForUserA(byval hToken as HANDLE, byval lpSrc as LPCSTR, byval lpDest as LPSTR, byval dwSize as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function ExpandEnvironmentStringsForUser alias "ExpandEnvironmentStringsForUserA"(byval hToken as HANDLE, byval lpSrc as LPCSTR, byval lpDest as LPSTR, byval dwSize as DWORD) as WINBOOL
+#endif
+
 declare function ExpandEnvironmentStringsForUserW(byval hToken as HANDLE, byval lpSrc as LPCWSTR, byval lpDest as LPWSTR, byval dwSize as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function ExpandEnvironmentStringsForUser alias "ExpandEnvironmentStringsForUserW"(byval hToken as HANDLE, byval lpSrc as LPCWSTR, byval lpDest as LPWSTR, byval dwSize as DWORD) as WINBOOL
+#endif
+
 declare function RefreshPolicy(byval bMachine as WINBOOL) as WINBOOL
 declare function RefreshPolicyEx(byval bMachine as WINBOOL, byval dwOptions as DWORD) as WINBOOL
 declare function EnterCriticalPolicySection(byval bMachine as WINBOOL) as HANDLE
@@ -178,23 +229,41 @@ const GPO_LIST_FLAG_MACHINE = &h00000001
 const GPO_LIST_FLAG_SITEONLY = &h00000002
 const GPO_LIST_FLAG_NO_WMIFILTERS = &h00000004
 const GPO_LIST_FLAG_NO_SECURITYFILTERS = &h00000008
+declare function GetGPOListA(byval hToken as HANDLE, byval lpName as LPCSTR, byval lpHostName as LPCSTR, byval lpComputerName as LPCSTR, byval dwFlags as DWORD, byval pGPOList as PGROUP_POLICY_OBJECTA ptr) as WINBOOL
 
-#ifdef UNICODE
-	#define GetGPOList GetGPOListW
-	#define FreeGPOList FreeGPOListW
-	#define GetAppliedGPOList GetAppliedGPOListW
-#else
-	#define GetGPOList GetGPOListA
-	#define FreeGPOList FreeGPOListA
-	#define GetAppliedGPOList GetAppliedGPOListA
+#ifndef UNICODE
+	declare function GetGPOList alias "GetGPOListA"(byval hToken as HANDLE, byval lpName as LPCSTR, byval lpHostName as LPCSTR, byval lpComputerName as LPCSTR, byval dwFlags as DWORD, byval pGPOList as PGROUP_POLICY_OBJECTA ptr) as WINBOOL
 #endif
 
-declare function GetGPOListA(byval hToken as HANDLE, byval lpName as LPCSTR, byval lpHostName as LPCSTR, byval lpComputerName as LPCSTR, byval dwFlags as DWORD, byval pGPOList as PGROUP_POLICY_OBJECTA ptr) as WINBOOL
 declare function GetGPOListW(byval hToken as HANDLE, byval lpName as LPCWSTR, byval lpHostName as LPCWSTR, byval lpComputerName as LPCWSTR, byval dwFlags as DWORD, byval pGPOList as PGROUP_POLICY_OBJECTW ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetGPOList alias "GetGPOListW"(byval hToken as HANDLE, byval lpName as LPCWSTR, byval lpHostName as LPCWSTR, byval lpComputerName as LPCWSTR, byval dwFlags as DWORD, byval pGPOList as PGROUP_POLICY_OBJECTW ptr) as WINBOOL
+#endif
+
 declare function FreeGPOListA(byval pGPOList as PGROUP_POLICY_OBJECTA) as WINBOOL
+
+#ifndef UNICODE
+	declare function FreeGPOList alias "FreeGPOListA"(byval pGPOList as PGROUP_POLICY_OBJECTA) as WINBOOL
+#endif
+
 declare function FreeGPOListW(byval pGPOList as PGROUP_POLICY_OBJECTW) as WINBOOL
+
+#ifdef UNICODE
+	declare function FreeGPOList alias "FreeGPOListW"(byval pGPOList as PGROUP_POLICY_OBJECTW) as WINBOOL
+#endif
+
 declare function GetAppliedGPOListA(byval dwFlags as DWORD, byval pMachineName as LPCSTR, byval pSidUser as PSID, byval pGuidExtension as GUID ptr, byval ppGPOList as PGROUP_POLICY_OBJECTA ptr) as DWORD
+
+#ifndef UNICODE
+	declare function GetAppliedGPOList alias "GetAppliedGPOListA"(byval dwFlags as DWORD, byval pMachineName as LPCSTR, byval pSidUser as PSID, byval pGuidExtension as GUID ptr, byval ppGPOList as PGROUP_POLICY_OBJECTA ptr) as DWORD
+#endif
+
 declare function GetAppliedGPOListW(byval dwFlags as DWORD, byval pMachineName as LPCWSTR, byval pSidUser as PSID, byval pGuidExtension as GUID ptr, byval ppGPOList as PGROUP_POLICY_OBJECTW ptr) as DWORD
+
+#ifdef UNICODE
+	declare function GetAppliedGPOList alias "GetAppliedGPOListW"(byval dwFlags as DWORD, byval pMachineName as LPCWSTR, byval pSidUser as PSID, byval pGuidExtension as GUID ptr, byval ppGPOList as PGROUP_POLICY_OBJECTW ptr) as DWORD
+#endif
 
 #define GP_DLLNAME __TEXT("DllName")
 #define GP_ENABLEASYNCHRONOUSPROCESSING __TEXT("EnableAsynchronousProcessing")

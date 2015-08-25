@@ -64,9 +64,7 @@ extern "C"
 #define _SDL_config_h
 #define _SDL_platform_h
 
-#ifdef __FB_UNIX__
-	#define SDL_BYTEORDER SDL_LIL_ENDIAN
-#else
+#ifdef __FB_WIN32__
 	#define _SDL_config_win32_h
 #endif
 
@@ -265,10 +263,15 @@ end enum
 declare sub SDL_Error(byval code as SDL_errorcode)
 #define _SDL_endian_h
 const SDL_LIL_ENDIAN = 1234
-const SDL_BIG_ENDIAN = 4321
 
 #ifdef __FB_WIN32__
-	#define SDL_BYTEORDER SDL_LIL_ENDIAN
+	const SDL_BIG_ENDIAN = 4321
+#endif
+
+const SDL_BYTEORDER = SDL_LIL_ENDIAN
+
+#ifdef __FB_UNIX__
+	const SDL_BIG_ENDIAN = 4321
 #endif
 
 #define SDL_Swap16(x) cushort((cushort(x) shl 8) or (cushort(x) shr 8))
@@ -415,10 +418,10 @@ const AUDIO_U16LSB = &h0010
 const AUDIO_S16LSB = &h8010
 const AUDIO_U16MSB = &h1010
 const AUDIO_S16MSB = &h9010
-#define AUDIO_U16 AUDIO_U16LSB
-#define AUDIO_S16 AUDIO_S16LSB
-#define AUDIO_U16SYS AUDIO_U16LSB
-#define AUDIO_S16SYS AUDIO_S16LSB
+const AUDIO_U16 = AUDIO_U16LSB
+const AUDIO_S16 = AUDIO_S16LSB
+const AUDIO_U16SYS = AUDIO_U16LSB
+const AUDIO_S16SYS = AUDIO_S16LSB
 
 type SDL_AudioCVT
 	needed as long
@@ -832,7 +835,7 @@ type SDL_Color
 	unused as Uint8
 end type
 
-#define SDL_Colour SDL_Color
+type SDL_Colour as SDL_Color
 
 type SDL_Palette
 	ncolors as long
@@ -982,8 +985,8 @@ declare function SDL_MapRGB(byval format as const SDL_PixelFormat const ptr, byv
 declare function SDL_MapRGBA(byval format as const SDL_PixelFormat const ptr, byval r as const Uint8, byval g as const Uint8, byval b as const Uint8, byval a as const Uint8) as Uint32
 declare sub SDL_GetRGB(byval pixel as Uint32, byval fmt as const SDL_PixelFormat const ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr)
 declare sub SDL_GetRGBA(byval pixel as Uint32, byval fmt as const SDL_PixelFormat const ptr, byval r as Uint8 ptr, byval g as Uint8 ptr, byval b as Uint8 ptr, byval a as Uint8 ptr)
-#define SDL_AllocSurface SDL_CreateRGBSurface
 declare function SDL_CreateRGBSurface(byval flags as Uint32, byval width as long, byval height as long, byval depth as long, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
+declare function SDL_AllocSurface alias "SDL_CreateRGBSurface"(byval flags as Uint32, byval width as long, byval height as long, byval depth as long, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
 declare function SDL_CreateRGBSurfaceFrom(byval pixels as any ptr, byval width as long, byval height as long, byval depth as long, byval pitch as long, byval Rmask as Uint32, byval Gmask as Uint32, byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
 declare sub SDL_FreeSurface(byval surface as SDL_Surface ptr)
 declare function SDL_LockSurface(byval surface as SDL_Surface ptr) as long
@@ -997,8 +1000,8 @@ declare function SDL_SetAlpha(byval surface as SDL_Surface ptr, byval flag as Ui
 declare function SDL_SetClipRect(byval surface as SDL_Surface ptr, byval rect as const SDL_Rect ptr) as SDL_bool
 declare sub SDL_GetClipRect(byval surface as SDL_Surface ptr, byval rect as SDL_Rect ptr)
 declare function SDL_ConvertSurface(byval src as SDL_Surface ptr, byval fmt as SDL_PixelFormat ptr, byval flags as Uint32) as SDL_Surface ptr
-#define SDL_BlitSurface SDL_UpperBlit
 declare function SDL_UpperBlit(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
+declare function SDL_BlitSurface alias "SDL_UpperBlit"(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_LowerBlit(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_FillRect(byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr, byval color as Uint32) as long
 declare function SDL_DisplayFormat(byval surface as SDL_Surface ptr) as SDL_Surface ptr

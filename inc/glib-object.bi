@@ -731,12 +731,12 @@ declare sub g_cclosure_marshal_VOID__UINT_POINTER(byval closure as GClosure ptr,
 declare sub g_cclosure_marshal_VOID__UINT_POINTERv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
 declare sub g_cclosure_marshal_BOOLEAN__FLAGS(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_BOOLEAN__FLAGSv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
-#define g_cclosure_marshal_BOOL__FLAGS g_cclosure_marshal_BOOLEAN__FLAGS
+declare sub g_cclosure_marshal_BOOL__FLAGS alias "g_cclosure_marshal_BOOLEAN__FLAGS"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_STRING__OBJECT_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_STRING__OBJECT_POINTERv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
 declare sub g_cclosure_marshal_BOOLEAN__BOXED_BOXED(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_BOOLEAN__BOXED_BOXEDv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
-#define g_cclosure_marshal_BOOL__BOXED_BOXED g_cclosure_marshal_BOOLEAN__BOXED_BOXED
+declare sub g_cclosure_marshal_BOOL__BOXED_BOXED alias "g_cclosure_marshal_BOOLEAN__BOXED_BOXED"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 
 type GSignalQuery as _GSignalQuery
 type GSignalInvocationHint as _GSignalInvocationHint

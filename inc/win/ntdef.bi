@@ -81,7 +81,7 @@ type PVOID as any ptr
 type PVOID64 as any ptr
 type HANDLE as PVOID
 type PHANDLE as HANDLE ptr
-#define VOID any
+type VOID as any
 type CHAR as byte
 type INT_ as long
 type UCHAR as ubyte

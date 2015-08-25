@@ -575,9 +575,9 @@ end type
 
 const sz_xRRSetCrtcGammaReq = 12
 type xRRGetScreenResourcesCurrentReq as xRRGetScreenResourcesReq
-#define sz_xRRGetScreenResourcesCurrentReq sz_xRRGetScreenResourcesReq
+const sz_xRRGetScreenResourcesCurrentReq = sz_xRRGetScreenResourcesReq
 type xRRGetScreenResourcesCurrentReply as xRRGetScreenResourcesReply
-#define sz_xRRGetScreenResourcesCurrentReply sz_xRRGetScreenResourcesReply
+const sz_xRRGetScreenResourcesCurrentReply = sz_xRRGetScreenResourcesReply
 
 type xRRSetCrtcTransformReq
 	reqType as CARD8

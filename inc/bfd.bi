@@ -98,8 +98,8 @@ const BFD_HOST_64BIT_LONG = 0
 	const BFD_HOST_LONG_LONG = 1
 #endif
 
-#define BFD_HOST_64_BIT longint
-#define BFD_HOST_U_64_BIT ulongint
+type BFD_HOST_64_BIT as longint
+type BFD_HOST_U_64_BIT as ulongint
 type bfd_int64_t as longint
 type bfd_uint64_t as ulongint
 
@@ -4996,8 +4996,8 @@ enum
 	BFD_RELOC_UNUSED
 end enum
 
-#define BFD_RELOC_SPARC_64 BFD_RELOC_64
-#define BFD_RELOC_SPARC_DISP64 BFD_RELOC_64_PCREL
+const BFD_RELOC_SPARC_64 = BFD_RELOC_64
+const BFD_RELOC_SPARC_DISP64 = BFD_RELOC_64_PCREL
 type bfd_reloc_code_real_type as bfd_reloc_code_real
 declare function bfd_reloc_type_lookup(byval abfd as bfd ptr, byval code as bfd_reloc_code_real_type) as reloc_howto_type ptr
 
@@ -5032,7 +5032,7 @@ const BSF_NO_FLAGS = &h00
 	const BSF_GLOBAL = 1 shl 1
 #endif
 
-#define BSF_EXPORT BSF_GLOBAL
+const BSF_EXPORT = BSF_GLOBAL
 
 #if __BFD_VER__ <= 219
 	const BSF_DEBUGGING = &h08

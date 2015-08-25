@@ -415,7 +415,7 @@ declare sub gdk_input_set_extension_events(byval window as GdkWindow ptr, byval 
 declare function gdk_device_get_core_pointer() as GdkDevice ptr
 
 #define GDK_TYPE_EVENT gdk_event_get_type()
-#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
+const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
 
 type GdkEventAny as _GdkEventAny
@@ -1056,7 +1056,6 @@ declare sub gdk_rgb_init()
 declare function gdk_rgb_xpixel_from_rgb(byval rgb as guint32) as gulong
 declare sub gdk_rgb_gc_set_foreground(byval gc as GdkGC ptr, byval rgb as guint32)
 declare sub gdk_rgb_gc_set_background(byval gc as GdkGC ptr, byval rgb as guint32)
-#define gdk_rgb_get_cmap gdk_rgb_get_colormap
 declare sub gdk_rgb_find_color(byval colormap as GdkColormap ptr, byval color as GdkColor ptr)
 declare sub gdk_draw_rgb_image(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval dith as GdkRgbDither, byval rgb_buf as const guchar ptr, byval rowstride as gint)
 declare sub gdk_draw_rgb_image_dithalign(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval dith as GdkRgbDither, byval rgb_buf as const guchar ptr, byval rowstride as gint, byval xdith as gint, byval ydith as gint)
@@ -1070,6 +1069,7 @@ declare sub gdk_rgb_set_verbose(byval verbose as gboolean)
 declare sub gdk_rgb_set_install(byval install as gboolean)
 declare sub gdk_rgb_set_min_colors(byval min_colors as gint)
 declare function gdk_rgb_get_colormap() as GdkColormap ptr
+declare function gdk_rgb_get_cmap alias "gdk_rgb_get_colormap"() as GdkColormap ptr
 declare function gdk_rgb_get_visual() as GdkVisual ptr
 declare function gdk_rgb_ditherable() as gboolean
 declare function gdk_rgb_colormap_ditherable(byval cmap as GdkColormap ptr) as gboolean
@@ -1191,7 +1191,7 @@ declare sub gdk_cursor_unref(byval cursor as GdkCursor ptr)
 declare function gdk_cursor_new_from_name(byval display as GdkDisplay ptr, byval name as const zstring ptr) as GdkCursor ptr
 declare function gdk_cursor_get_image(byval cursor as GdkCursor ptr) as GdkPixbuf ptr
 declare function gdk_cursor_get_cursor_type(byval cursor as GdkCursor ptr) as GdkCursorType
-#define gdk_cursor_destroy gdk_cursor_unref
+declare sub gdk_cursor_destroy alias "gdk_cursor_unref"(byval cursor as GdkCursor ptr)
 #define __GDK_DISPLAY_MANAGER_H__
 type GdkDisplayManager as _GdkDisplayManager
 type GdkDisplayManagerClass as _GdkDisplayManagerClass
@@ -1374,7 +1374,7 @@ declare function gdk_gc_get_colormap(byval gc as GdkGC ptr) as GdkColormap ptr
 declare sub gdk_gc_set_rgb_fg_color(byval gc as GdkGC ptr, byval color as const GdkColor ptr)
 declare sub gdk_gc_set_rgb_bg_color(byval gc as GdkGC ptr, byval color as const GdkColor ptr)
 declare function gdk_gc_get_screen(byval gc as GdkGC ptr) as GdkScreen ptr
-#define gdk_gc_destroy g_object_unref
+declare sub gdk_gc_destroy alias "g_object_unref"(byval object as gpointer)
 type GdkDrawableClass as _GdkDrawableClass
 type GdkTrapezoid as _GdkTrapezoid
 
@@ -1474,8 +1474,8 @@ declare sub gdk_draw_layout_line_with_colors(byval drawable as GdkDrawable ptr, 
 declare sub gdk_draw_layout_with_colors(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval layout as PangoLayout ptr, byval foreground as const GdkColor ptr, byval background as const GdkColor ptr)
 declare sub gdk_draw_glyphs_transformed(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval matrix as const PangoMatrix ptr, byval font as PangoFont ptr, byval x as gint, byval y as gint, byval glyphs as PangoGlyphString ptr)
 declare sub gdk_draw_trapezoids(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval trapezoids as const GdkTrapezoid ptr, byval n_trapezoids as gint)
-#define gdk_draw_pixmap gdk_draw_drawable
-#define gdk_draw_bitmap gdk_draw_drawable
+declare sub gdk_draw_pixmap alias "gdk_draw_drawable"(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval src as GdkDrawable ptr, byval xsrc as gint, byval ysrc as gint, byval xdest as gint, byval ydest as gint, byval width as gint, byval height as gint)
+declare sub gdk_draw_bitmap alias "gdk_draw_drawable"(byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval src as GdkDrawable ptr, byval xsrc as gint, byval ysrc as gint, byval xdest as gint, byval ydest as gint, byval width as gint, byval height as gint)
 declare function gdk_drawable_get_image(byval drawable as GdkDrawable ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint) as GdkImage ptr
 declare function gdk_drawable_copy_to_image(byval drawable as GdkDrawable ptr, byval image as GdkImage ptr, byval src_x as gint, byval src_y as gint, byval dest_x as gint, byval dest_y as gint, byval width as gint, byval height as gint) as GdkImage ptr
 declare function gdk_drawable_get_clip_region(byval drawable as GdkDrawable ptr) as GdkRegion ptr
@@ -1671,7 +1671,7 @@ declare function gdk_image_get_bytes_per_pixel(byval image as GdkImage ptr) as g
 declare function gdk_image_get_bytes_per_line(byval image as GdkImage ptr) as guint16
 declare function gdk_image_get_bits_per_pixel(byval image as GdkImage ptr) as guint16
 declare function gdk_image_get_pixels(byval image as GdkImage ptr) as gpointer
-#define gdk_image_destroy g_object_unref
+declare sub gdk_image_destroy alias "g_object_unref"(byval object as gpointer)
 #define __GDK_KEYS_H__
 type GdkKeymapKey as _GdkKeymapKey
 
@@ -1816,11 +1816,10 @@ declare function gdk_pixmap_lookup(byval anid as GdkNativeWindow) as GdkPixmap p
 declare function gdk_pixmap_foreign_new_for_display(byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkPixmap ptr
 declare function gdk_pixmap_lookup_for_display(byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkPixmap ptr
 declare function gdk_pixmap_foreign_new_for_screen(byval screen as GdkScreen ptr, byval anid as GdkNativeWindow, byval width as gint, byval height as gint, byval depth as gint) as GdkPixmap ptr
-
-#define gdk_bitmap_ref g_object_ref
-#define gdk_bitmap_unref g_object_unref
-#define gdk_pixmap_ref g_object_ref
-#define gdk_pixmap_unref g_object_unref
+declare function gdk_bitmap_ref alias "g_object_ref"(byval object as gpointer) as gpointer
+declare sub gdk_bitmap_unref alias "g_object_unref"(byval object as gpointer)
+declare function gdk_pixmap_ref alias "g_object_ref"(byval object as gpointer) as gpointer
+declare sub gdk_pixmap_unref alias "g_object_unref"(byval object as gpointer)
 #define __GDK_PROPERTY_H__
 
 type GdkPropMode as long
@@ -2265,16 +2264,14 @@ declare sub gdk_window_geometry_changed(byval window as GdkWindow ptr)
 declare sub gdk_window_redirect_to_drawable(byval window as GdkWindow ptr, byval drawable as GdkDrawable ptr, byval src_x as gint, byval src_y as gint, byval dest_x as gint, byval dest_y as gint, byval width as gint, byval height as gint)
 declare sub gdk_window_remove_redirection(byval window as GdkWindow ptr)
 declare function gdk_set_pointer_hooks(byval new_hooks as const GdkPointerHooks ptr) as GdkPointerHooks ptr
-
 #define GDK_ROOT_PARENT() gdk_get_default_root_window()
-#define gdk_window_get_size gdk_drawable_get_size
-#define gdk_window_get_type gdk_window_get_window_type
-#define gdk_window_get_colormap gdk_drawable_get_colormap
-#define gdk_window_set_colormap gdk_drawable_set_colormap
-#define gdk_window_ref g_object_ref
-#define gdk_window_unref g_object_unref
+declare sub gdk_window_get_size alias "gdk_drawable_get_size"(byval drawable as GdkDrawable ptr, byval width as gint ptr, byval height as gint ptr)
+declare function gdk_window_get_type alias "gdk_window_get_window_type"(byval window as GdkWindow ptr) as GdkWindowType
+declare function gdk_window_get_colormap alias "gdk_drawable_get_colormap"(byval drawable as GdkDrawable ptr) as GdkColormap ptr
+declare sub gdk_window_set_colormap alias "gdk_drawable_set_colormap"(byval drawable as GdkDrawable ptr, byval colormap as GdkColormap ptr)
+declare function gdk_window_ref alias "g_object_ref"(byval object as gpointer) as gpointer
+declare sub gdk_window_unref alias "g_object_unref"(byval object as gpointer)
 #define gdk_window_copy_area(drawable, gc, x, y, source_drawable, source_x, source_y, width, height) gdk_draw_pixmap(drawable, gc, source_drawable, source_x, source_y, x, y, width, height)
-
 declare sub gdk_test_render_sync(byval window as GdkWindow ptr)
 declare function gdk_test_simulate_key(byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval keyval as guint, byval modifiers as GdkModifierType, byval key_pressrelease as GdkEventType) as gboolean
 declare function gdk_test_simulate_button(byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval button as guint, byval modifiers as GdkModifierType, byval button_pressrelease as GdkEventType) as gboolean
@@ -2339,7 +2336,7 @@ declare sub gdk_visual_get_blue_pixel_details(byval visual as GdkVisual ptr, byv
 #define gdk_visual_ref(v) g_object_ref(v)
 #define gdk_visual_unref(v) g_object_unref(v)
 #undef __GDK_H_INSIDE__
-#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
+const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
 declare sub gdk_parse_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare sub gdk_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare function gdk_init_check(byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean

@@ -436,9 +436,9 @@ const DDF_NOTKEYFRAME = &h0400
 const DDF_HURRYUP = &h0800
 const DDF_HALFTONE = &h1000
 const DDF_2000 = &h2000
-#define DDF_PREROLL DDF_DONTDRAW
-#define DDF_SAME_DIB DDF_SAME_DRAW
-#define DDF_SAME_SIZE DDF_SAME_DRAW
+const DDF_PREROLL = DDF_DONTDRAW
+const DDF_SAME_DIB = DDF_SAME_DRAW
+const DDF_SAME_SIZE = DDF_SAME_DRAW
 
 declare function DrawDibInit() as WINBOOL
 declare function DrawDibOpen() as HDRAWDIB
@@ -617,10 +617,10 @@ type LPAVISTREAMINFOA as _AVISTREAMINFOA ptr
 
 #ifdef UNICODE
 	type AVISTREAMINFO as AVISTREAMINFOW
-	#define LPAVISTREAMINFO LPAVISTREAMINFOW
+	type LPAVISTREAMINFO as LPAVISTREAMINFOW
 #else
 	type AVISTREAMINFO as AVISTREAMINFOA
-	#define LPAVISTREAMINFO LPAVISTREAMINFOA
+	type LPAVISTREAMINFO as LPAVISTREAMINFOA
 #endif
 
 const AVISTREAMINFO_DISABLED = &h00000001
@@ -664,10 +664,10 @@ type LPAVIFILEINFOA as _AVIFILEINFOA ptr
 
 #ifdef UNICODE
 	type AVIFILEINFO as AVIFILEINFOW
-	#define LPAVIFILEINFO LPAVIFILEINFOW
+	type LPAVIFILEINFO as LPAVIFILEINFOW
 #else
 	type AVIFILEINFO as AVIFILEINFOA
-	#define LPAVIFILEINFO LPAVIFILEINFOA
+	type LPAVIFILEINFO as LPAVIFILEINFOA
 #endif
 
 const AVIFILEINFO_HASINDEX = &h00000010
@@ -769,7 +769,7 @@ type IAVIPersistFileVtbl_
 end type
 
 type PAVIPERSISTFILE as IAVIPersistFile ptr
-#define PAVIFILE IAVIFile ptr
+type PAVIFILE as IAVIFile ptr
 type IAVIFileVtbl as IAVIFileVtbl_
 
 type IAVIFile
@@ -791,7 +791,7 @@ end type
 
 #undef PAVIFILE
 type PAVIFILE as IAVIFile ptr
-#define PGETFRAME IGetFrame ptr
+type PGETFRAME as IGetFrame ptr
 type IGetFrameVtbl as IGetFrameVtbl_
 
 type IGetFrame
@@ -827,38 +827,64 @@ const AVIFILEHANDLER_CANREAD = &h0001
 const AVIFILEHANDLER_CANWRITE = &h0002
 const AVIFILEHANDLER_CANACCEPTNONRGB = &h0004
 
-#ifdef UNICODE
-	#define AVIFileOpen AVIFileOpenW
-	declare function AVIFileInfo alias "AVIFileInfoW"(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOW, byval lSize as LONG) as HRESULT
-	#define AVIFileCreateStream AVIFileCreateStreamW
-	declare function AVIStreamInfo alias "AVIStreamInfoW"(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOW, byval lSize as LONG) as HRESULT
-	#define AVIStreamOpenFromFile AVIStreamOpenFromFileW
-#else
-	#define AVIFileOpen AVIFileOpenA
-	declare function AVIFileInfo alias "AVIFileInfoA"(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOA, byval lSize as LONG) as HRESULT
-	#define AVIFileCreateStream AVIFileCreateStreamA
-	declare function AVIStreamInfo alias "AVIStreamInfoA"(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOA, byval lSize as LONG) as HRESULT
-	#define AVIStreamOpenFromFile AVIStreamOpenFromFileA
-#endif
-
 declare sub AVIFileInit()
 declare sub AVIFileExit()
 declare function AVIFileAddRef(byval pfile as PAVIFILE) as ULONG
 declare function AVIFileRelease(byval pfile as PAVIFILE) as ULONG
 declare function AVIFileOpenA(byval ppfile as PAVIFILE ptr, byval szFile as LPCSTR, byval uMode as UINT, byval lpHandler as LPCLSID) as HRESULT
+
+#ifndef UNICODE
+	declare function AVIFileOpen alias "AVIFileOpenA"(byval ppfile as PAVIFILE ptr, byval szFile as LPCSTR, byval uMode as UINT, byval lpHandler as LPCLSID) as HRESULT
+#endif
+
 declare function AVIFileOpenW(byval ppfile as PAVIFILE ptr, byval szFile as LPCWSTR, byval uMode as UINT, byval lpHandler as LPCLSID) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIFileOpen alias "AVIFileOpenW"(byval ppfile as PAVIFILE ptr, byval szFile as LPCWSTR, byval uMode as UINT, byval lpHandler as LPCLSID) as HRESULT
+#endif
+
 declare function AVIFileInfoW(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOW, byval lSize as LONG) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIFileInfo alias "AVIFileInfoW"(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOW, byval lSize as LONG) as HRESULT
+#endif
+
 declare function AVIFileInfoA(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOA, byval lSize as LONG) as HRESULT
+
+#ifndef UNICODE
+	declare function AVIFileInfo alias "AVIFileInfoA"(byval pfile as PAVIFILE, byval pfi as LPAVIFILEINFOA, byval lSize as LONG) as HRESULT
+#endif
+
 declare function AVIFileGetStream(byval pfile as PAVIFILE, byval ppavi as PAVISTREAM ptr, byval fccType as DWORD, byval lParam as LONG) as HRESULT
 declare function AVIFileCreateStreamW(byval pfile as PAVIFILE, byval ppavi as PAVISTREAM ptr, byval psi as AVISTREAMINFOW ptr) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIFileCreateStream alias "AVIFileCreateStreamW"(byval pfile as PAVIFILE, byval ppavi as PAVISTREAM ptr, byval psi as AVISTREAMINFOW ptr) as HRESULT
+#endif
+
 declare function AVIFileCreateStreamA(byval pfile as PAVIFILE, byval ppavi as PAVISTREAM ptr, byval psi as AVISTREAMINFOA ptr) as HRESULT
+
+#ifndef UNICODE
+	declare function AVIFileCreateStream alias "AVIFileCreateStreamA"(byval pfile as PAVIFILE, byval ppavi as PAVISTREAM ptr, byval psi as AVISTREAMINFOA ptr) as HRESULT
+#endif
+
 declare function AVIFileWriteData(byval pfile as PAVIFILE, byval ckid as DWORD, byval lpData as LPVOID, byval cbData as LONG) as HRESULT
 declare function AVIFileReadData(byval pfile as PAVIFILE, byval ckid as DWORD, byval lpData as LPVOID, byval lpcbData as LONG ptr) as HRESULT
 declare function AVIFileEndRecord(byval pfile as PAVIFILE) as HRESULT
 declare function AVIStreamAddRef(byval pavi as PAVISTREAM) as ULONG
 declare function AVIStreamRelease(byval pavi as PAVISTREAM) as ULONG
 declare function AVIStreamInfoW(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOW, byval lSize as LONG) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIStreamInfo alias "AVIStreamInfoW"(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOW, byval lSize as LONG) as HRESULT
+#endif
+
 declare function AVIStreamInfoA(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOA, byval lSize as LONG) as HRESULT
+
+#ifndef UNICODE
+	declare function AVIStreamInfo alias "AVIStreamInfoA"(byval pavi as PAVISTREAM, byval psi as LPAVISTREAMINFOA, byval lSize as LONG) as HRESULT
+#endif
+
 declare function AVIStreamFindSample(byval pavi as PAVISTREAM, byval lPos as LONG, byval lFlags as LONG) as LONG
 declare function AVIStreamReadFormat(byval pavi as PAVISTREAM, byval lPos as LONG, byval lpFormat as LPVOID, byval lpcbFormat as LONG ptr) as HRESULT
 declare function AVIStreamSetFormat(byval pavi as PAVISTREAM, byval lPos as LONG, byval lpFormat as LPVOID, byval cbFormat as LONG) as HRESULT
@@ -877,9 +903,18 @@ declare function AVIStreamGetFrameOpen(byval pavi as PAVISTREAM, byval lpbiWante
 declare function AVIStreamGetFrame(byval pg as PGETFRAME, byval lPos as LONG) as LPVOID
 declare function AVIStreamGetFrameClose(byval pg as PGETFRAME) as HRESULT
 declare function AVIStreamOpenFromFileA(byval ppavi as PAVISTREAM ptr, byval szFile as LPCSTR, byval fccType as DWORD, byval lParam as LONG, byval mode as UINT, byval pclsidHandler as CLSID ptr) as HRESULT
-declare function AVIStreamOpenFromFileW(byval ppavi as PAVISTREAM ptr, byval szFile as LPCWSTR, byval fccType as DWORD, byval lParam as LONG, byval mode as UINT, byval pclsidHandler as CLSID ptr) as HRESULT
-declare function AVIStreamCreate(byval ppavi as PAVISTREAM ptr, byval lParam1 as LONG, byval lParam2 as LONG, byval pclsidHandler as CLSID ptr) as HRESULT
 
+#ifndef UNICODE
+	declare function AVIStreamOpenFromFile alias "AVIStreamOpenFromFileA"(byval ppavi as PAVISTREAM ptr, byval szFile as LPCSTR, byval fccType as DWORD, byval lParam as LONG, byval mode as UINT, byval pclsidHandler as CLSID ptr) as HRESULT
+#endif
+
+declare function AVIStreamOpenFromFileW(byval ppavi as PAVISTREAM ptr, byval szFile as LPCWSTR, byval fccType as DWORD, byval lParam as LONG, byval mode as UINT, byval pclsidHandler as CLSID ptr) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIStreamOpenFromFile alias "AVIStreamOpenFromFileW"(byval ppavi as PAVISTREAM ptr, byval szFile as LPCWSTR, byval fccType as DWORD, byval lParam as LONG, byval mode as UINT, byval pclsidHandler as CLSID ptr) as HRESULT
+#endif
+
+declare function AVIStreamCreate(byval ppavi as PAVISTREAM ptr, byval lParam1 as LONG, byval lParam2 as LONG, byval pclsidHandler as CLSID ptr) as HRESULT
 #define FIND_DIR __MSABI_LONG(&h0000000F)
 #define FIND_NEXT __MSABI_LONG(&h00000001)
 #define FIND_PREV __MSABI_LONG(&h00000004)
@@ -894,12 +929,14 @@ declare function AVIStreamCreate(byval ppavi as PAVISTREAM ptr, byval lParam1 as
 #define FIND_OFFSET __MSABI_LONG(&h00002000)
 #define FIND_SIZE __MSABI_LONG(&h00003000)
 #define FIND_INDEX __MSABI_LONG(&h00004000)
-#define AVIStreamFindKeyFrame AVIStreamFindSample
+declare function AVIStreamFindKeyFrame alias "AVIStreamFindSample"(byval pavi as PAVISTREAM, byval lPos as LONG, byval lFlags as LONG) as LONG
 #define FindKeyFrame FindSample
-#define AVIStreamClose AVIStreamRelease
-#define AVIFileClose AVIFileRelease
-#define AVIStreamInit AVIFileInit
-#define AVIStreamExit AVIFileExit
+
+declare function AVIStreamClose alias "AVIStreamRelease"(byval pavi as PAVISTREAM) as ULONG
+declare function AVIFileClose alias "AVIFileRelease"(byval pfile as PAVIFILE) as ULONG
+declare sub AVIStreamInit alias "AVIFileInit"()
+declare sub AVIStreamExit alias "AVIFileExit"()
+
 #define SEARCH_NEAREST FIND_PREV
 #define SEARCH_BACKWARD FIND_PREV
 #define SEARCH_FORWARD FIND_NEXT
@@ -929,30 +966,45 @@ declare function AVIStreamCreate(byval ppavi as PAVISTREAM ptr, byval lParam1 as
 #define AVStreamNextKeyFrame(pavi, pos) AVIStreamFindSample(pavi, pos + 1, FIND_NEXT or FIND_KEY)
 #define AVStreamPrevKeyFrame(pavi, pos) AVIStreamFindSample(pavi, pos - 1, FIND_NEXT or FIND_KEY)
 #define comptypeDIB mmioFOURCC(asc("D"), asc("I"), asc("B"), asc(" "))
-
-#ifdef UNICODE
-	#define AVISave AVISaveW
-	#define AVISaveV AVISaveVW
-	#define AVIBuildFilter AVIBuildFilterW
-	#define EditStreamSetInfo EditStreamSetInfoW
-	#define EditStreamSetName EditStreamSetNameW
-#else
-	#define AVISave AVISaveA
-	#define AVISaveV AVISaveVA
-	#define AVIBuildFilter AVIBuildFilterA
-	#define EditStreamSetInfo EditStreamSetInfoA
-	#define EditStreamSetName EditStreamSetNameA
-#endif
-
 declare function AVIMakeCompressedStream(byval ppsCompressed as PAVISTREAM ptr, byval ppsSource as PAVISTREAM, byval lpOptions as AVICOMPRESSOPTIONS ptr, byval pclsidHandler as CLSID ptr) as HRESULT
 declare function AVISaveA cdecl(byval szFile as LPCSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval pfile as PAVISTREAM, byval lpOptions as LPAVICOMPRESSOPTIONS, ...) as HRESULT
+
+#ifndef UNICODE
+	declare function AVISave cdecl alias "AVISaveA"(byval szFile as LPCSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval pfile as PAVISTREAM, byval lpOptions as LPAVICOMPRESSOPTIONS, ...) as HRESULT
+#endif
+
 declare function AVISaveVA(byval szFile as LPCSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval ppavi as PAVISTREAM ptr, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as HRESULT
+
+#ifndef UNICODE
+	declare function AVISaveV alias "AVISaveVA"(byval szFile as LPCSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval ppavi as PAVISTREAM ptr, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as HRESULT
+#endif
+
 declare function AVISaveW cdecl(byval szFile as LPCWSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval pfile as PAVISTREAM, byval lpOptions as LPAVICOMPRESSOPTIONS, ...) as HRESULT
+
+#ifdef UNICODE
+	declare function AVISave cdecl alias "AVISaveW"(byval szFile as LPCWSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval pfile as PAVISTREAM, byval lpOptions as LPAVICOMPRESSOPTIONS, ...) as HRESULT
+#endif
+
 declare function AVISaveVW(byval szFile as LPCWSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval ppavi as PAVISTREAM ptr, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as HRESULT
+
+#ifdef UNICODE
+	declare function AVISaveV alias "AVISaveVW"(byval szFile as LPCWSTR, byval pclsidHandler as CLSID ptr, byval lpfnCallback as AVISAVECALLBACK, byval nStreams as long, byval ppavi as PAVISTREAM ptr, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as HRESULT
+#endif
+
 declare function AVISaveOptions(byval hwnd as HWND, byval uiFlags as UINT, byval nStreams as long, byval ppavi as PAVISTREAM ptr, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as INT_PTR
 declare function AVISaveOptionsFree(byval nStreams as long, byval plpOptions as LPAVICOMPRESSOPTIONS ptr) as HRESULT
 declare function AVIBuildFilterW(byval lpszFilter as LPWSTR, byval cbFilter as LONG, byval fSaving as WINBOOL) as HRESULT
+
+#ifdef UNICODE
+	declare function AVIBuildFilter alias "AVIBuildFilterW"(byval lpszFilter as LPWSTR, byval cbFilter as LONG, byval fSaving as WINBOOL) as HRESULT
+#endif
+
 declare function AVIBuildFilterA(byval lpszFilter as LPSTR, byval cbFilter as LONG, byval fSaving as WINBOOL) as HRESULT
+
+#ifndef UNICODE
+	declare function AVIBuildFilter alias "AVIBuildFilterA"(byval lpszFilter as LPSTR, byval cbFilter as LONG, byval fSaving as WINBOOL) as HRESULT
+#endif
+
 declare function AVIMakeFileFromStreams(byval ppfile as PAVIFILE ptr, byval nStreams as long, byval papStreams as PAVISTREAM ptr) as HRESULT
 declare function AVIMakeStreamFromClipboard(byval cfFormat as UINT, byval hGlobal as HANDLE, byval ppstream as PAVISTREAM ptr) as HRESULT
 declare function AVIPutFileOnClipboard(byval pf as PAVIFILE) as HRESULT
@@ -964,9 +1016,28 @@ declare function EditStreamCopy(byval pavi as PAVISTREAM, byval plStart as LONG 
 declare function EditStreamPaste(byval pavi as PAVISTREAM, byval plPos as LONG ptr, byval plLength as LONG ptr, byval pstream as PAVISTREAM, byval lStart as LONG, byval lEnd as LONG) as HRESULT
 declare function EditStreamClone(byval pavi as PAVISTREAM, byval ppResult as PAVISTREAM ptr) as HRESULT
 declare function EditStreamSetNameA(byval pavi as PAVISTREAM, byval lpszName as LPCSTR) as HRESULT
+
+#ifndef UNICODE
+	declare function EditStreamSetName alias "EditStreamSetNameA"(byval pavi as PAVISTREAM, byval lpszName as LPCSTR) as HRESULT
+#endif
+
 declare function EditStreamSetNameW(byval pavi as PAVISTREAM, byval lpszName as LPCWSTR) as HRESULT
+
+#ifdef UNICODE
+	declare function EditStreamSetName alias "EditStreamSetNameW"(byval pavi as PAVISTREAM, byval lpszName as LPCWSTR) as HRESULT
+#endif
+
 declare function EditStreamSetInfoW(byval pavi as PAVISTREAM, byval lpInfo as LPAVISTREAMINFOW, byval cbInfo as LONG) as HRESULT
+
+#ifdef UNICODE
+	declare function EditStreamSetInfo alias "EditStreamSetInfoW"(byval pavi as PAVISTREAM, byval lpInfo as LPAVISTREAMINFOW, byval cbInfo as LONG) as HRESULT
+#endif
+
 declare function EditStreamSetInfoA(byval pavi as PAVISTREAM, byval lpInfo as LPAVISTREAMINFOA, byval cbInfo as LONG) as HRESULT
+
+#ifndef UNICODE
+	declare function EditStreamSetInfo alias "EditStreamSetInfoA"(byval pavi as PAVISTREAM, byval lpInfo as LPAVISTREAMINFOA, byval cbInfo as LONG) as HRESULT
+#endif
 
 #define AVIERR_OK __MSABI_LONG(0)
 #define MAKE_AVIERR(error) MAKE_SCODE(SEVERITY_ERROR, FACILITY_ITF, &h4000 + error)
@@ -989,19 +1060,27 @@ declare function EditStreamSetInfoA(byval pavi as PAVISTREAM, byval lpInfo as LP
 #define AVIERR_CANTCOMPRESS MAKE_AVIERR(117)
 #define AVIERR_USERABORT MAKE_AVIERR(198)
 #define AVIERR_ERROR MAKE_AVIERR(199)
-#define MCIWndSM SendMessage
-#define MCIWND_WINDOW_CLASS __TEXT("MCIWndClass")
 
 #ifdef UNICODE
-	#define MCIWndCreate MCIWndCreateW
+	declare function MCIWndSM alias "SendMessageW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #else
-	#define MCIWndCreate MCIWndCreateA
+	declare function MCIWndSM alias "SendMessageA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #endif
 
+#define MCIWND_WINDOW_CLASS __TEXT("MCIWndClass")
 declare function MCIWndCreateA cdecl(byval hwndParent as HWND, byval hInstance as HINSTANCE, byval dwStyle as DWORD, byval szFile as LPCSTR) as HWND
-declare function MCIWndCreateW cdecl(byval hwndParent as HWND, byval hInstance as HINSTANCE, byval dwStyle as DWORD, byval szFile as LPCWSTR) as HWND
-declare function MCIWndRegisterClass cdecl() as WINBOOL
 
+#ifndef UNICODE
+	declare function MCIWndCreate cdecl alias "MCIWndCreateA"(byval hwndParent as HWND, byval hInstance as HINSTANCE, byval dwStyle as DWORD, byval szFile as LPCSTR) as HWND
+#endif
+
+declare function MCIWndCreateW cdecl(byval hwndParent as HWND, byval hInstance as HINSTANCE, byval dwStyle as DWORD, byval szFile as LPCWSTR) as HWND
+
+#ifdef UNICODE
+	declare function MCIWndCreate cdecl alias "MCIWndCreateW"(byval hwndParent as HWND, byval hInstance as HINSTANCE, byval dwStyle as DWORD, byval szFile as LPCWSTR) as HWND
+#endif
+
+declare function MCIWndRegisterClass cdecl() as WINBOOL
 const MCIWNDOPENF_NEW = &h0001
 const MCIWNDF_NOAUTOSIZEWINDOW = &h0001
 const MCIWNDF_NOPLAYBAR = &h0002
@@ -1021,9 +1100,9 @@ const MCIWNDF_NOTIFYMEDIAA = &h0880
 const MCIWNDF_NOTIFYMEDIAW = &h0800
 
 #ifdef UNICODE
-	#define MCIWNDF_NOTIFYMEDIA MCIWNDF_NOTIFYMEDIAW
+	const MCIWNDF_NOTIFYMEDIA = MCIWNDF_NOTIFYMEDIAW
 #else
-	#define MCIWNDF_NOTIFYMEDIA MCIWNDF_NOTIFYMEDIAA
+	const MCIWNDF_NOTIFYMEDIA = MCIWNDF_NOTIFYMEDIAA
 #endif
 
 const MCIWNDF_RECORD = &h2000
@@ -1209,7 +1288,7 @@ type HVIDEO as HVIDEO__ ptr
 type LPHVIDEO as HVIDEO ptr
 const DV_ERR_OK = 0
 const DV_ERR_BASE = 1
-#define DV_ERR_NONSPECIFIC DV_ERR_BASE
+const DV_ERR_NONSPECIFIC = DV_ERR_BASE
 #define DV_ERR_BADFORMAT (DV_ERR_BASE + 1)
 #define DV_ERR_STILLPLAYING (DV_ERR_BASE + 2)
 #define DV_ERR_UNPREPARED (DV_ERR_BASE + 3)
@@ -1239,10 +1318,10 @@ const DV_ERR_BASE = 1
 #define DV_ERR_PROTECT_ONLY (DV_ERR_BASE + 27)
 #define DV_ERR_LASTERROR (DV_ERR_BASE + 27)
 #define DV_ERR_USER_MSG (DV_ERR_BASE + 1000)
-#define DV_VM_OPEN MM_DRVM_OPEN
-#define DV_VM_CLOSE MM_DRVM_CLOSE
-#define DV_VM_DATA MM_DRVM_DATA
-#define DV_VM_ERROR MM_DRVM_ERROR
+const DV_VM_OPEN = MM_DRVM_OPEN
+const DV_VM_CLOSE = MM_DRVM_CLOSE
+const DV_VM_DATA = MM_DRVM_DATA
+const DV_VM_ERROR = MM_DRVM_ERROR
 
 type videohdr_tag
 	lpData as LPBYTE
@@ -1306,7 +1385,7 @@ const DVM_CONFIGURE_END = &h1FFF
 #define DVM_SRC_RECT (DVM_CONFIGURE_START + 4)
 #define DVM_DST_RECT (DVM_CONFIGURE_START + 5)
 #define AVICapSM(hwnd, m, w, l) iif(IsWindow(hwnd), SendMessage(hwnd, m, w, l), 0)
-#define WM_CAP_START WM_USER
+const WM_CAP_START = WM_USER
 #define WM_CAP_UNICODE_START (WM_USER + 100)
 #define WM_CAP_GET_CAPSTREAMPTR (WM_CAP_START + 1)
 #define WM_CAP_SET_CALLBACK_ERRORW (WM_CAP_UNICODE_START + 2)
@@ -1573,11 +1652,11 @@ type CAPSTATUSCALLBACKA as function(byval hWnd as HWND, byval nID as long, byval
 type CAPERRORCALLBACKA as function(byval hWnd as HWND, byval nID as long, byval lpsz as LPCSTR) as LRESULT
 
 #ifdef UNICODE
-	#define CAPSTATUSCALLBACK CAPSTATUSCALLBACKW
-	#define CAPERRORCALLBACK CAPERRORCALLBACKW
+	type CAPSTATUSCALLBACK as CAPSTATUSCALLBACKW
+	type CAPERRORCALLBACK as CAPERRORCALLBACKW
 #else
-	#define CAPSTATUSCALLBACK CAPSTATUSCALLBACKA
-	#define CAPERRORCALLBACK CAPERRORCALLBACKA
+	type CAPSTATUSCALLBACK as CAPSTATUSCALLBACKA
+	type CAPERRORCALLBACK as CAPERRORCALLBACKA
 #endif
 
 type CAPVIDEOCALLBACK as function(byval hWnd as HWND, byval lpVHdr as LPVIDEOHDR) as LRESULT
@@ -1592,11 +1671,11 @@ declare function capCreateCaptureWindowW(byval lpszWindowName as LPCWSTR, byval 
 declare function capGetDriverDescriptionW(byval wDriverIndex as UINT, byval lpszName as LPWSTR, byval cbName as long, byval lpszVer as LPWSTR, byval cbVer as long) as WINBOOL
 
 #ifdef UNICODE
-	#define capCreateCaptureWindow capCreateCaptureWindowW
-	#define capGetDriverDescription capGetDriverDescriptionW
+	declare function capCreateCaptureWindow alias "capCreateCaptureWindowW"(byval lpszWindowName as LPCWSTR, byval dwStyle as DWORD, byval x as long, byval y as long, byval nWidth as long, byval nHeight as long, byval hwndParent as HWND, byval nID as long) as HWND
+	declare function capGetDriverDescription alias "capGetDriverDescriptionW"(byval wDriverIndex as UINT, byval lpszName as LPWSTR, byval cbName as long, byval lpszVer as LPWSTR, byval cbVer as long) as WINBOOL
 #else
-	#define capCreateCaptureWindow capCreateCaptureWindowA
-	#define capGetDriverDescription capGetDriverDescriptionA
+	declare function capCreateCaptureWindow alias "capCreateCaptureWindowA"(byval lpszWindowName as LPCSTR, byval dwStyle as DWORD, byval x as long, byval y as long, byval nWidth as long, byval nHeight as long, byval hwndParent as HWND, byval nID as long) as HWND
+	declare function capGetDriverDescription alias "capGetDriverDescriptionA"(byval wDriverIndex as UINT, byval lpszName as LPSTR, byval cbName as long, byval lpszVer as LPSTR, byval cbVer as long) as WINBOOL
 #endif
 
 #define infotypeDIGITIZATION_TIME mmioFOURCC(asc("I"), asc("D"), asc("I"), asc("T"))
@@ -1666,11 +1745,11 @@ declare function GetOpenFileNamePreviewW(byval lpofn as LPOPENFILENAMEW) as WINB
 declare function GetSaveFileNamePreviewW(byval lpofn as LPOPENFILENAMEW) as WINBOOL
 
 #ifdef UNICODE
-	#define GetOpenFileNamePreview GetOpenFileNamePreviewW
-	#define GetSaveFileNamePreview GetSaveFileNamePreviewW
+	declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewW"(byval lpofn as LPOPENFILENAMEW) as WINBOOL
+	declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewW"(byval lpofn as LPOPENFILENAMEW) as WINBOOL
 #else
-	#define GetOpenFileNamePreview GetOpenFileNamePreviewA
-	#define GetSaveFileNamePreview GetSaveFileNamePreviewA
+	declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewA"(byval lpofn as LPOPENFILENAMEA) as WINBOOL
+	declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewA"(byval lpofn as LPOPENFILENAMEA) as WINBOOL
 #endif
 
 end extern

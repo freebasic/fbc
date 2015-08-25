@@ -107,12 +107,7 @@ const XkbAXN_BKAcceptMask = cast(clong, 1) shl 4
 const XkbAXN_BKRejectMask = cast(clong, 1) shl 5
 const XkbAXN_AXKWarningMask = cast(clong, 1) shl 6
 const XkbAllAccessXEventsMask = &h7f
-#define XkbAllStateEventsMask XkbAllStateComponentsMask
 #define XkbAllMapEventsMask XkbAllMapComponentsMask
-#define XkbAllControlEventsMask XkbAllControlsMask
-#define XkbAllIndicatorEventsMask XkbAllIndicatorsMask
-#define XkbAllNameEventsMask XkbAllNamesMask
-#define XkbAllCompatMapEventsMask XkbAllCompatMask
 const XkbAllBellEventsMask = cast(clong, 1) shl 0
 const XkbAllActionMessagesMask = cast(clong, 1) shl 0
 const XkbKeyboard = 0
@@ -143,6 +138,7 @@ const XkbLookupModsMask = cast(clong, 1) shl 11
 const XkbCompatLookupModsMask = cast(clong, 1) shl 12
 const XkbPointerButtonMask = cast(clong, 1) shl 13
 const XkbAllStateComponentsMask = &h3fff
+const XkbAllStateEventsMask = XkbAllStateComponentsMask
 const XkbRepeatKeysMask = cast(clong, 1) shl 0
 const XkbSlowKeysMask = cast(clong, 1) shl 1
 const XkbBounceKeysMask = cast(clong, 1) shl 2
@@ -164,7 +160,8 @@ const XkbControlsEnabledMask = cast(clong, 1) shl 31
 #define XkbAccessXOptionsMask (XkbStickyKeysMask or XkbAccessXFeedbackMask)
 const XkbAllBooleanCtrlsMask = &h00001FFF
 const XkbAllControlsMask = &hF8001FFF
-#define XkbAllControlEventsMask XkbAllControlsMask
+const XkbAllControlEventsMask = XkbAllControlsMask
+const XkbAllControlEventsMask = XkbAllControlsMask
 const XkbAX_SKPressFBMask = cast(clong, 1) shl 0
 const XkbAX_SKAcceptFBMask = cast(clong, 1) shl 1
 const XkbAX_FeatureFBMask = cast(clong, 1) shl 2
@@ -276,7 +273,7 @@ const XkbSA_RedirectKey = &h11
 const XkbSA_DeviceBtn = &h12
 const XkbSA_LockDeviceBtn = &h13
 const XkbSA_DeviceValuator = &h14
-#define XkbSA_LastAction XkbSA_DeviceValuator
+const XkbSA_LastAction = XkbSA_DeviceValuator
 #define XkbSA_NumActions (XkbSA_LastAction + 1)
 const XkbSA_XFree86Private = &h86
 #define XkbSA_BreakLatch (((((((((((1 shl XkbSA_NoAction) or (1 shl XkbSA_PtrBtn)) or (1 shl XkbSA_LockPtrBtn)) or (1 shl XkbSA_Terminate)) or (1 shl XkbSA_SwitchScreen)) or (1 shl XkbSA_SetControls)) or (1 shl XkbSA_LockControls)) or (1 shl XkbSA_ActionMessage)) or (1 shl XkbSA_RedirectKey)) or (1 shl XkbSA_DeviceBtn)) or (1 shl XkbSA_LockDeviceBtn))
@@ -300,6 +297,7 @@ const XkbNumModifiers = 8
 const XkbNumVirtualMods = 16
 const XkbNumIndicators = 32
 const XkbAllIndicatorsMask = &hffffffff
+const XkbAllIndicatorEventsMask = XkbAllIndicatorsMask
 const XkbMaxRadioGroups = 32
 const XkbAllRadioGroupsMask = &hffffffff
 const XkbMaxShiftLevel = 63
@@ -316,7 +314,7 @@ const XkbOneLevelIndex = 0
 const XkbTwoLevelIndex = 1
 const XkbAlphabeticIndex = 2
 const XkbKeypadIndex = 3
-#define XkbLastRequiredType XkbKeypadIndex
+const XkbLastRequiredType = XkbKeypadIndex
 #define XkbNumRequiredTypes (XkbLastRequiredType + 1)
 const XkbMaxKeyTypes = 255
 const XkbOneLevelMask = 1 shl 0
@@ -373,6 +371,7 @@ const XkbIM_UseNone = 0
 const XkbSymInterpMask = 1 shl 0
 const XkbGroupCompatMask = 1 shl 1
 const XkbAllCompatMask = &h3
+const XkbAllCompatMapEventsMask = XkbAllCompatMask
 const XkbKeycodesNameMask = 1 shl 0
 const XkbGeometryNameMask = 1 shl 1
 const XkbSymbolsNameMask = 1 shl 2
@@ -389,6 +388,7 @@ const XkbGroupNamesMask = 1 shl 12
 const XkbRGNamesMask = 1 shl 13
 const XkbComponentNamesMask = &h3f
 const XkbAllNamesMask = &h3fff
+const XkbAllNameEventsMask = XkbAllNamesMask
 const XkbGBN_TypesMask = cast(clong, 1) shl 0
 const XkbGBN_CompatMapMask = cast(clong, 1) shl 1
 const XkbGBN_ClientSymbolsMask = cast(clong, 1) shl 2

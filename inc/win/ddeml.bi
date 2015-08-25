@@ -159,9 +159,9 @@ const TIMEOUT_ASYNC = &hFFFFFFFF
 const QID_SYNC = &hFFFFFFFF
 
 #ifdef UNICODE
-	#define CP_WINNEUTRAL CP_WINUNICODE
+	const CP_WINNEUTRAL = CP_WINUNICODE
 #else
-	#define CP_WINNEUTRAL CP_WINANSI
+	const CP_WINNEUTRAL = CP_WINANSI
 #endif
 
 #define SZDDESYS_TOPIC __MINGW_STRING_AW("System")
@@ -172,17 +172,20 @@ const QID_SYNC = &hFFFFFFFF
 #define SZDDESYS_ITEM_FORMATS __MINGW_STRING_AW("Formats")
 #define SZDDESYS_ITEM_HELP __MINGW_STRING_AW("Help")
 #define SZDDE_ITEM_ITEMLIST __MINGW_STRING_AW("TopicItemList")
-
-#ifdef UNICODE
-	#define DdeInitialize DdeInitializeW
-#else
-	#define DdeInitialize DdeInitializeA
-#endif
-
 type PFNCALLBACK as function(byval wType as UINT, byval wFmt as UINT, byval hConv as HCONV, byval hsz1 as HSZ, byval hsz2 as HSZ, byval hData as HDDEDATA, byval dwData1 as ULONG_PTR, byval dwData2 as ULONG_PTR) as HDDEDATA
 #define CBR_BLOCK cast(HDDEDATA, -1)
 declare function DdeInitializeA(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
+
+#ifndef UNICODE
+	declare function DdeInitialize alias "DdeInitializeA"(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
+#endif
+
 declare function DdeInitializeW(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
+
+#ifdef UNICODE
+	declare function DdeInitialize alias "DdeInitializeW"(byval pidInst as LPDWORD, byval pfnCallback as PFNCALLBACK, byval afCmd as DWORD, byval ulRes as DWORD) as UINT
+#endif
+
 const CBF_FAIL_SELFCONNECTIONS = &h00001000
 const CBF_FAIL_CONNECTIONS = &h00002000
 const CBF_FAIL_ADVISES = &h00004000
@@ -216,8 +219,8 @@ declare function DdeEnableCallback(byval idInst as DWORD, byval hConv as HCONV, 
 declare function DdeImpersonateClient(byval hConv as HCONV) as WINBOOL
 
 const EC_ENABLEALL = 0
-#define EC_ENABLEONE ST_BLOCKNEXT
-#define EC_DISABLE ST_BLOCKED
+const EC_ENABLEONE = ST_BLOCKNEXT
+const EC_DISABLE = ST_BLOCKED
 const EC_QUERYWAITING = 2
 const DNS_REGISTER = &h0001
 const DNS_UNREGISTER = &h0002
@@ -266,11 +269,11 @@ declare function DdeKeepStringHandle(byval idInst as DWORD, byval hsz as HSZ) as
 declare function DdeCmpStringHandles(byval hsz1 as HSZ, byval hsz2 as HSZ) as long
 
 #ifdef UNICODE
-	#define DdeCreateStringHandle DdeCreateStringHandleW
-	#define DdeQueryString DdeQueryStringW
+	declare function DdeCreateStringHandle alias "DdeCreateStringHandleW"(byval idInst as DWORD, byval psz as LPCWSTR, byval iCodePage as long) as HSZ
+	declare function DdeQueryString alias "DdeQueryStringW"(byval idInst as DWORD, byval hsz as HSZ, byval psz as LPWSTR, byval cchMax as DWORD, byval iCodePage as long) as DWORD
 #else
-	#define DdeCreateStringHandle DdeCreateStringHandleA
-	#define DdeQueryString DdeQueryStringA
+	declare function DdeCreateStringHandle alias "DdeCreateStringHandleA"(byval idInst as DWORD, byval psz as LPCSTR, byval iCodePage as long) as HSZ
+	declare function DdeQueryString alias "DdeQueryStringA"(byval idInst as DWORD, byval hsz as HSZ, byval psz as LPSTR, byval cchMax as DWORD, byval iCodePage as long) as DWORD
 #endif
 
 type tagDDEML_MSG_HOOK_DATA

@@ -318,11 +318,11 @@ type SSL_EMPTY_CACHE_FN_W as function(byval pszTargetName as LPWSTR, byval dwFla
 declare function SslEmptyCacheW(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define SSL_EMPTY_CACHE_FN SSL_EMPTY_CACHE_FN_W
-	#define SslEmptyCache SslEmptyCacheW
+	type SSL_EMPTY_CACHE_FN as SSL_EMPTY_CACHE_FN_W
+	declare function SslEmptyCache alias "SslEmptyCacheW"(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
 #else
-	#define SSL_EMPTY_CACHE_FN SSL_EMPTY_CACHE_FN_A
-	#define SslEmptyCache SslEmptyCacheA
+	type SSL_EMPTY_CACHE_FN as SSL_EMPTY_CACHE_FN_A
+	declare function SslEmptyCache alias "SslEmptyCacheA"(byval pszTargetName as LPSTR, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 type _SSL_CREDENTIAL_CERTIFICATE

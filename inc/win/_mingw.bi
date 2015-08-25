@@ -46,7 +46,7 @@ const __MINGW_HAVE_WIDE_C99_PRINTF = 1
 const __MINGW_HAVE_ANSI_C99_SCANF = 1
 const __MINGW_HAVE_WIDE_C99_SCANF = 1
 #define __MSABI_LONG(x) x##l
-#define __LONG32 long
+type __LONG32 as long
 #undef __USE_CRTIMP
 const __USE_CRTIMP = 1
 const USE___UUIDOF = 0
@@ -58,13 +58,15 @@ const __MSVCRT_VERSION__ = &h0700
 	const WINVER = _WIN32_WINNT
 #endif
 #define _INT128_DEFINED
-#define __int8 byte
-#define __int16 short
-#define __int32 long
-#define __int64 longint
+
+type __int8 as byte
+type __int16 as short
+type __int32 as long
+type __int64 as longint
+
 #define MINGW_SDK_INIT
 const __STDC_SECURE_LIB__ = cast(clong, 200411)
-#define __GOT_SECURE_LIB__ __STDC_SECURE_LIB__
+const __GOT_SECURE_LIB__ = __STDC_SECURE_LIB__
 const __MINGW_HAS_DXSDK = 1
 const MINGW_HAS_DDRAW_H = 1
 const MINGW_DDRAW_VERSION = 7

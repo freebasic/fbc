@@ -383,12 +383,10 @@ declare function IDocHostShowUI_ShowMessage_Proxy(byval This as IDocHostShowUI p
 declare sub IDocHostShowUI_ShowMessage_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IDocHostShowUI_ShowHelp_Proxy(byval This as IDocHostShowUI ptr, byval hwnd as HWND, byval pszHelpFile as LPOLESTR, byval uCommand as UINT, byval dwData as DWORD, byval ptMouse as POINT, byval pDispatchObjectHit as IDispatch ptr) as HRESULT
 declare sub IDocHostShowUI_ShowHelp_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
-
-#define IClassFactory3 IClassFactoryEx
-#define IID_IClassFactory3 IID_IClassFactoryEx
-#define SID_SHTMLOMWindowServices IID_IHTMLOMWindowServices
+type IClassFactory3 as IClassFactoryEx
 #define __IClassFactoryEx_INTERFACE_DEFINED__
 extern IID_IClassFactoryEx as const GUID
+extern IID_IClassFactory3 alias "IID_IClassFactoryEx" as const GUID
 type IClassFactoryEx as IClassFactoryEx_
 
 type IClassFactoryExVtbl
@@ -414,6 +412,7 @@ declare function IClassFactoryEx_CreateInstanceWithContext_Proxy(byval This as I
 declare sub IClassFactoryEx_CreateInstanceWithContext_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #define __IHTMLOMWindowServices_INTERFACE_DEFINED__
 extern IID_IHTMLOMWindowServices as const GUID
+extern SID_SHTMLOMWindowServices alias "IID_IHTMLOMWindowServices" as const GUID
 type IHTMLOMWindowServices as IHTMLOMWindowServices_
 
 type IHTMLOMWindowServicesVtbl

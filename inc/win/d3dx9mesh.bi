@@ -701,9 +701,9 @@ declare function D3DXLoadMeshFromXA(byval filename as const zstring ptr, byval f
 declare function D3DXLoadMeshFromXW(byval filename as const wstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadMeshFromX D3DXLoadMeshFromXW
+	declare function D3DXLoadMeshFromX alias "D3DXLoadMeshFromXW"(byval filename as const wstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 #else
-	#define D3DXLoadMeshFromX D3DXLoadMeshFromXA
+	declare function D3DXLoadMeshFromX alias "D3DXLoadMeshFromXA"(byval filename as const zstring ptr, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
 #endif
 
 declare function D3DXLoadMeshFromXInMemory(byval data as const any ptr, byval data_size as DWORD, byval flags as DWORD, byval device as IDirect3DDevice9 ptr, byval adjacency as ID3DXBuffer ptr ptr, byval materials as ID3DXBuffer ptr ptr, byval effect_instances as ID3DXBuffer ptr ptr, byval material_count as DWORD ptr, byval mesh as ID3DXMesh ptr ptr) as HRESULT
@@ -715,45 +715,45 @@ declare function D3DXLoadPRTBufferFromFileA(byval filename as const zstring ptr,
 declare function D3DXLoadPRTBufferFromFileW(byval filename as const wstring ptr, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadPRTBufferFromFile D3DXLoadPRTBufferFromFileW
+	declare function D3DXLoadPRTBufferFromFile alias "D3DXLoadPRTBufferFromFileW"(byval filename as const wstring ptr, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXLoadPRTBufferFromFile D3DXLoadPRTBufferFromFileA
+	declare function D3DXLoadPRTBufferFromFile alias "D3DXLoadPRTBufferFromFileA"(byval filename as const zstring ptr, byval buffer as ID3DXPRTBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXLoadPRTCompBufferFromFileA(byval filename as const zstring ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
 declare function D3DXLoadPRTCompBufferFromFileW(byval filename as const wstring ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadPRTCompBufferFromFile D3DXLoadPRTCompBufferFromFileW
+	declare function D3DXLoadPRTCompBufferFromFile alias "D3DXLoadPRTCompBufferFromFileW"(byval filename as const wstring ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXLoadPRTCompBufferFromFile D3DXLoadPRTCompBufferFromFileA
+	declare function D3DXLoadPRTCompBufferFromFile alias "D3DXLoadPRTCompBufferFromFileA"(byval filename as const zstring ptr, byval buffer as ID3DXPRTCompBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXSaveMeshToXA(byval filename as const zstring ptr, byval mesh as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval material_count as DWORD, byval format as DWORD) as HRESULT
 declare function D3DXSaveMeshToXW(byval filename as const wstring ptr, byval mesh as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval material_count as DWORD, byval format as DWORD) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSaveMeshToX D3DXSaveMeshToXW
+	declare function D3DXSaveMeshToX alias "D3DXSaveMeshToXW"(byval filename as const wstring ptr, byval mesh as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval material_count as DWORD, byval format as DWORD) as HRESULT
 #else
-	#define D3DXSaveMeshToX D3DXSaveMeshToXA
+	declare function D3DXSaveMeshToX alias "D3DXSaveMeshToXA"(byval filename as const zstring ptr, byval mesh as ID3DXMesh ptr, byval adjacency as const DWORD ptr, byval materials as const D3DXMATERIAL ptr, byval effect_instances as const D3DXEFFECTINSTANCE ptr, byval material_count as DWORD, byval format as DWORD) as HRESULT
 #endif
 
 declare function D3DXSavePRTBufferToFileA(byval filename as const zstring ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
 declare function D3DXSavePRTBufferToFileW(byval filename as const wstring ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSavePRTBufferToFile D3DXSavePRTBufferToFileW
+	declare function D3DXSavePRTBufferToFile alias "D3DXSavePRTBufferToFileW"(byval filename as const wstring ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
 #else
-	#define D3DXSavePRTBufferToFile D3DXSavePRTBufferToFileA
+	declare function D3DXSavePRTBufferToFile alias "D3DXSavePRTBufferToFileA"(byval filename as const zstring ptr, byval buffer as ID3DXPRTBuffer ptr) as HRESULT
 #endif
 
 declare function D3DXSavePRTCompBufferToFileA(byval filename as const zstring ptr, byval buffer as ID3DXPRTCompBuffer ptr) as HRESULT
 declare function D3DXSavePRTCompBufferToFileW(byval filename as const wstring ptr, byval buffer as ID3DXPRTCompBuffer ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSavePRTCompBufferToFile D3DXSavePRTCompBufferToFileW
+	declare function D3DXSavePRTCompBufferToFile alias "D3DXSavePRTCompBufferToFileW"(byval filename as const wstring ptr, byval buffer as ID3DXPRTCompBuffer ptr) as HRESULT
 #else
-	#define D3DXSavePRTCompBufferToFile D3DXSavePRTCompBufferToFileA
+	declare function D3DXSavePRTCompBufferToFile alias "D3DXSavePRTCompBufferToFileA"(byval filename as const zstring ptr, byval buffer as ID3DXPRTCompBuffer ptr) as HRESULT
 #endif
 
 declare function D3DXGetDeclLength(byval decl as const D3DVERTEXELEMENT9 ptr) as UINT

@@ -312,27 +312,27 @@ declare function GetOpenFileNameA(byval as LPOPENFILENAMEA) as WINBOOL
 declare function GetOpenFileNameW(byval as LPOPENFILENAMEW) as WINBOOL
 
 #ifdef UNICODE
-	#define GetOpenFileName GetOpenFileNameW
+	declare function GetOpenFileName alias "GetOpenFileNameW"(byval as LPOPENFILENAMEW) as WINBOOL
 #else
-	#define GetOpenFileName GetOpenFileNameA
+	declare function GetOpenFileName alias "GetOpenFileNameA"(byval as LPOPENFILENAMEA) as WINBOOL
 #endif
 
 declare function GetSaveFileNameA(byval as LPOPENFILENAMEA) as WINBOOL
 declare function GetSaveFileNameW(byval as LPOPENFILENAMEW) as WINBOOL
 
 #ifdef UNICODE
-	#define GetSaveFileName GetSaveFileNameW
+	declare function GetSaveFileName alias "GetSaveFileNameW"(byval as LPOPENFILENAMEW) as WINBOOL
 #else
-	#define GetSaveFileName GetSaveFileNameA
+	declare function GetSaveFileName alias "GetSaveFileNameA"(byval as LPOPENFILENAMEA) as WINBOOL
 #endif
 
 declare function GetFileTitleA(byval as LPCSTR, byval as LPSTR, byval as WORD) as short
 declare function GetFileTitleW(byval as LPCWSTR, byval as LPWSTR, byval as WORD) as short
 
 #ifdef UNICODE
-	#define GetFileTitle GetFileTitleW
+	declare function GetFileTitle alias "GetFileTitleW"(byval as LPCWSTR, byval as LPWSTR, byval as WORD) as short
 #else
-	#define GetFileTitle GetFileTitleA
+	declare function GetFileTitle alias "GetFileTitleA"(byval as LPCSTR, byval as LPSTR, byval as WORD) as short
 #endif
 
 const OFN_READONLY = &h1
@@ -457,7 +457,7 @@ type LPOFNOTIFYEXW as _OFNOTIFYEXW ptr
 
 const CDN_FIRST = culng(0u - 601u)
 const CDN_LAST = culng(0u - 699u)
-#define CDN_INITDONE CDN_FIRST
+const CDN_INITDONE = CDN_FIRST
 #define CDN_SELCHANGE culng(CDN_FIRST - 1)
 #define CDN_FOLDERCHANGE culng(CDN_FIRST - 2)
 #define CDN_SHAREVIOLATION culng(CDN_FIRST - 3)
@@ -700,9 +700,9 @@ declare function ReplaceTextA(byval as LPFINDREPLACEA) as HWND
 declare function ReplaceTextW(byval as LPFINDREPLACEW) as HWND
 
 #ifdef UNICODE
-	#define ReplaceText ReplaceTextW
+	declare function ReplaceText alias "ReplaceTextW"(byval as LPFINDREPLACEW) as HWND
 #else
-	#define ReplaceText ReplaceTextA
+	declare function ReplaceText alias "ReplaceTextA"(byval as LPFINDREPLACEA) as HWND
 #endif
 
 type LPCFHOOKPROC as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
@@ -1265,7 +1265,7 @@ type DEVNAMES as tagDEVNAMES
 type LPDEVNAMES as tagDEVNAMES ptr
 const DN_DEFAULTPRN = &h1
 declare function CommDlgExtendedError() as DWORD
-#define WM_PSD_PAGESETUPDLG WM_USER
+const WM_PSD_PAGESETUPDLG = WM_USER
 #define WM_PSD_FULLPAGERECT (WM_USER + 1)
 #define WM_PSD_MINMARGINRECT (WM_USER + 2)
 #define WM_PSD_MARGINRECT (WM_USER + 3)

@@ -55,7 +55,7 @@
 extern "Windows"
 
 #define _INC_OLE
-#define OLE_LPCSTR LPCSTR
+type OLE_LPCSTR as LPCSTR
 #define OT_LINK __MSABI_LONG(1)
 #define OT_EMBEDDED __MSABI_LONG(2)
 #define OT_STATIC __MSABI_LONG(3)

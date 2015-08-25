@@ -67,7 +67,7 @@ type DPLDATA_PLAYERSCORE as tagDPLDATA_PLAYERSCORE
 type LPDPLDATA_PLAYERSCORE as tagDPLDATA_PLAYERSCORE ptr
 const DPLMSG_SYSTEM = &h00000001
 const DPLMSG_STANDARD = &h00000002
-#define DPLAD_SYSTEM DPLMSG_SYSTEM
+const DPLAD_SYSTEM = DPLMSG_SYSTEM
 const DPLSYS_CONNECTIONSETTINGSREAD = &h00000001
 const DPLSYS_DPLAYCONNECTFAILED = &h00000002
 const DPLSYS_DPLAYCONNECTSUCCEEDED = &h00000003
@@ -248,9 +248,9 @@ declare function DirectPlayLobbyCreateW(byval as LPGUID, byval as LPDIRECTPLAYLO
 declare function DirectPlayLobbyCreateA(byval as LPGUID, byval as LPDIRECTPLAYLOBBYA ptr, byval as IUnknown ptr, byval as LPVOID, byval as DWORD) as HRESULT
 
 #ifdef UNICODE
-	#define DirectPlayLobbyCreate DirectPlayLobbyCreateW
+	declare function DirectPlayLobbyCreate alias "DirectPlayLobbyCreateW"(byval as LPGUID, byval as LPDIRECTPLAYLOBBY ptr, byval as IUnknown ptr, byval as LPVOID, byval as DWORD) as HRESULT
 #else
-	#define DirectPlayLobbyCreate DirectPlayLobbyCreateA
+	declare function DirectPlayLobbyCreate alias "DirectPlayLobbyCreateA"(byval as LPGUID, byval as LPDIRECTPLAYLOBBYA ptr, byval as IUnknown ptr, byval as LPVOID, byval as DWORD) as HRESULT
 #endif
 
 type LPDPENUMADDRESSCALLBACK as function(byval guidDataType as const GUID const ptr, byval dwDataSize as DWORD, byval lpData as LPCVOID, byval lpContext as LPVOID) as WINBOOL

@@ -53,11 +53,6 @@
 extern "C"
 
 const _X11_XLIBINT_H_ = 1
-
-#ifdef __FB_WIN32__
-	#define _XFlush _XFlushIt
-#endif
-
 const XCONN_CHECK_FREQ = 256
 
 type _XGC
@@ -501,6 +496,7 @@ declare sub _XGetAsyncData(byval as Display ptr, byval as zstring ptr, byval as 
 	declare sub _XFlush(byval as Display ptr)
 #else
 	declare sub _XFlushIt(byval as Display ptr)
+	declare sub _XFlush alias "_XFlushIt"(byval as Display ptr)
 #endif
 
 declare function _XEventsQueued(byval as Display ptr, byval as long) as long

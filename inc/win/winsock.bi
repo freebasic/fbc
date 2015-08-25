@@ -325,7 +325,7 @@ const AF_CHAOS = 5
 const AF_IPX = 6
 const AF_NS = 6
 const AF_ISO = 7
-#define AF_OSI AF_ISO
+const AF_OSI = AF_ISO
 const AF_ECMA = 8
 const AF_DATAKIT = 9
 const AF_CCITT = 10
@@ -341,30 +341,30 @@ const AF_FIREFOX = 19
 const AF_UNKNOWN1 = 20
 const AF_BAN = 21
 const AF_MAX = 22
-#define PF_UNSPEC AF_UNSPEC
-#define PF_UNIX AF_UNIX
-#define PF_INET AF_INET
-#define PF_IMPLINK AF_IMPLINK
-#define PF_PUP AF_PUP
-#define PF_CHAOS AF_CHAOS
-#define PF_NS AF_NS
-#define PF_IPX AF_IPX
-#define PF_ISO AF_ISO
-#define PF_OSI AF_OSI
-#define PF_ECMA AF_ECMA
-#define PF_DATAKIT AF_DATAKIT
-#define PF_CCITT AF_CCITT
-#define PF_SNA AF_SNA
-#define PF_DECnet AF_DECnet
-#define PF_DLI AF_DLI
-#define PF_LAT AF_LAT
-#define PF_HYLINK AF_HYLINK
-#define PF_APPLETALK AF_APPLETALK
-#define PF_VOICEVIEW AF_VOICEVIEW
-#define PF_FIREFOX AF_FIREFOX
-#define PF_UNKNOWN1 AF_UNKNOWN1
-#define PF_BAN AF_BAN
-#define PF_MAX AF_MAX
+const PF_UNSPEC = AF_UNSPEC
+const PF_UNIX = AF_UNIX
+const PF_INET = AF_INET
+const PF_IMPLINK = AF_IMPLINK
+const PF_PUP = AF_PUP
+const PF_CHAOS = AF_CHAOS
+const PF_NS = AF_NS
+const PF_IPX = AF_IPX
+const PF_ISO = AF_ISO
+const PF_OSI = AF_OSI
+const PF_ECMA = AF_ECMA
+const PF_DATAKIT = AF_DATAKIT
+const PF_CCITT = AF_CCITT
+const PF_SNA = AF_SNA
+const PF_DECnet = AF_DECnet
+const PF_DLI = AF_DLI
+const PF_LAT = AF_LAT
+const PF_HYLINK = AF_HYLINK
+const PF_APPLETALK = AF_APPLETALK
+const PF_VOICEVIEW = AF_VOICEVIEW
+const PF_FIREFOX = AF_FIREFOX
+const PF_UNKNOWN1 = AF_UNKNOWN1
+const PF_BAN = AF_BAN
+const PF_MAX = AF_MAX
 const SOL_SOCKET = &hffff
 const SOMAXCONN = 5
 const MSG_OOB = &h1

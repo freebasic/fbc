@@ -1355,8 +1355,8 @@ declare sub al_invert_transform(byval trans as ALLEGRO_TRANSFORM ptr)
 declare function al_check_inverse(byval trans as const ALLEGRO_TRANSFORM ptr, byval tol as single) as long
 
 #define __al_included_allegro5_alcompat_h
-#define ALLEGRO_DST_COLOR ALLEGRO_DEST_COLOR
-#define ALLEGRO_INVERSE_DST_COLOR ALLEGRO_INVERSE_DEST_COLOR
+const ALLEGRO_DST_COLOR = ALLEGRO_DEST_COLOR
+const ALLEGRO_INVERSE_DST_COLOR = ALLEGRO_INVERSE_DEST_COLOR
 #define al_current_time() al_get_time()
 #define al_event_queue_is_empty(q) al_is_event_queue_empty(q)
 

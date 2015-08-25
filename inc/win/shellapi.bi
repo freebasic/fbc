@@ -68,44 +68,94 @@ extern "Windows"
 #endif
 
 type HDROP as HDROP__ ptr
+declare function DragQueryFileA(byval hDrop as HDROP, byval iFile as UINT, byval lpszFile as LPSTR, byval cch as UINT) as UINT
 
-#ifdef UNICODE
-	#define DragQueryFile DragQueryFileW
-	#define ShellExecute ShellExecuteW
-	#define FindExecutable FindExecutableW
-	#define ShellAbout ShellAboutW
-	#define ExtractAssociatedIcon ExtractAssociatedIconW
-	#define ExtractAssociatedIconEx ExtractAssociatedIconExW
-	#define ExtractIcon ExtractIconW
-#else
-	#define DragQueryFile DragQueryFileA
-	#define ShellExecute ShellExecuteA
-	#define FindExecutable FindExecutableA
-	#define ShellAbout ShellAboutA
-	#define ExtractAssociatedIcon ExtractAssociatedIconA
-	#define ExtractAssociatedIconEx ExtractAssociatedIconExA
-	#define ExtractIcon ExtractIconA
+#ifndef UNICODE
+	declare function DragQueryFile alias "DragQueryFileA"(byval hDrop as HDROP, byval iFile as UINT, byval lpszFile as LPSTR, byval cch as UINT) as UINT
 #endif
 
-declare function DragQueryFileA(byval hDrop as HDROP, byval iFile as UINT, byval lpszFile as LPSTR, byval cch as UINT) as UINT
 declare function DragQueryFileW(byval hDrop as HDROP, byval iFile as UINT, byval lpszFile as LPWSTR, byval cch as UINT) as UINT
+
+#ifdef UNICODE
+	declare function DragQueryFile alias "DragQueryFileW"(byval hDrop as HDROP, byval iFile as UINT, byval lpszFile as LPWSTR, byval cch as UINT) as UINT
+#endif
+
 declare function DragQueryPoint(byval hDrop as HDROP, byval ppt as POINT ptr) as WINBOOL
 declare sub DragFinish(byval hDrop as HDROP)
 declare sub DragAcceptFiles(byval hWnd as HWND, byval fAccept as WINBOOL)
 declare function ShellExecuteA(byval hwnd as HWND, byval lpOperation as LPCSTR, byval lpFile as LPCSTR, byval lpParameters as LPCSTR, byval lpDirectory as LPCSTR, byval nShowCmd as INT_) as HINSTANCE
+
+#ifndef UNICODE
+	declare function ShellExecute alias "ShellExecuteA"(byval hwnd as HWND, byval lpOperation as LPCSTR, byval lpFile as LPCSTR, byval lpParameters as LPCSTR, byval lpDirectory as LPCSTR, byval nShowCmd as INT_) as HINSTANCE
+#endif
+
 declare function ShellExecuteW(byval hwnd as HWND, byval lpOperation as LPCWSTR, byval lpFile as LPCWSTR, byval lpParameters as LPCWSTR, byval lpDirectory as LPCWSTR, byval nShowCmd as INT_) as HINSTANCE
+
+#ifdef UNICODE
+	declare function ShellExecute alias "ShellExecuteW"(byval hwnd as HWND, byval lpOperation as LPCWSTR, byval lpFile as LPCWSTR, byval lpParameters as LPCWSTR, byval lpDirectory as LPCWSTR, byval nShowCmd as INT_) as HINSTANCE
+#endif
+
 declare function FindExecutableA(byval lpFile as LPCSTR, byval lpDirectory as LPCSTR, byval lpResult as LPSTR) as HINSTANCE
+
+#ifndef UNICODE
+	declare function FindExecutable alias "FindExecutableA"(byval lpFile as LPCSTR, byval lpDirectory as LPCSTR, byval lpResult as LPSTR) as HINSTANCE
+#endif
+
 declare function FindExecutableW(byval lpFile as LPCWSTR, byval lpDirectory as LPCWSTR, byval lpResult as LPWSTR) as HINSTANCE
+
+#ifdef UNICODE
+	declare function FindExecutable alias "FindExecutableW"(byval lpFile as LPCWSTR, byval lpDirectory as LPCWSTR, byval lpResult as LPWSTR) as HINSTANCE
+#endif
+
 declare function CommandLineToArgvW(byval lpCmdLine as LPCWSTR, byval pNumArgs as long ptr) as LPWSTR ptr
 declare function ShellAboutA(byval hWnd as HWND, byval szApp as LPCSTR, byval szOtherStuff as LPCSTR, byval hIcon as HICON) as INT_
+
+#ifndef UNICODE
+	declare function ShellAbout alias "ShellAboutA"(byval hWnd as HWND, byval szApp as LPCSTR, byval szOtherStuff as LPCSTR, byval hIcon as HICON) as INT_
+#endif
+
 declare function ShellAboutW(byval hWnd as HWND, byval szApp as LPCWSTR, byval szOtherStuff as LPCWSTR, byval hIcon as HICON) as INT_
+
+#ifdef UNICODE
+	declare function ShellAbout alias "ShellAboutW"(byval hWnd as HWND, byval szApp as LPCWSTR, byval szOtherStuff as LPCWSTR, byval hIcon as HICON) as INT_
+#endif
+
 declare function DuplicateIcon(byval hInst as HINSTANCE, byval hIcon as HICON) as HICON
 declare function ExtractAssociatedIconA(byval hInst as HINSTANCE, byval pszIconPath as LPSTR, byval piIcon as WORD ptr) as HICON
+
+#ifndef UNICODE
+	declare function ExtractAssociatedIcon alias "ExtractAssociatedIconA"(byval hInst as HINSTANCE, byval pszIconPath as LPSTR, byval piIcon as WORD ptr) as HICON
+#endif
+
 declare function ExtractAssociatedIconW(byval hInst as HINSTANCE, byval pszIconPath as LPWSTR, byval piIcon as WORD ptr) as HICON
+
+#ifdef UNICODE
+	declare function ExtractAssociatedIcon alias "ExtractAssociatedIconW"(byval hInst as HINSTANCE, byval pszIconPath as LPWSTR, byval piIcon as WORD ptr) as HICON
+#endif
+
 declare function ExtractAssociatedIconExA(byval hInst as HINSTANCE, byval pszIconPath as LPSTR, byval piIconIndex as WORD ptr, byval piIconId as WORD ptr) as HICON
+
+#ifndef UNICODE
+	declare function ExtractAssociatedIconEx alias "ExtractAssociatedIconExA"(byval hInst as HINSTANCE, byval pszIconPath as LPSTR, byval piIconIndex as WORD ptr, byval piIconId as WORD ptr) as HICON
+#endif
+
 declare function ExtractAssociatedIconExW(byval hInst as HINSTANCE, byval pszIconPath as LPWSTR, byval piIconIndex as WORD ptr, byval piIconId as WORD ptr) as HICON
+
+#ifdef UNICODE
+	declare function ExtractAssociatedIconEx alias "ExtractAssociatedIconExW"(byval hInst as HINSTANCE, byval pszIconPath as LPWSTR, byval piIconIndex as WORD ptr, byval piIconId as WORD ptr) as HICON
+#endif
+
 declare function ExtractIconA(byval hInst as HINSTANCE, byval pszExeFileName as LPCSTR, byval nIconIndex as UINT) as HICON
+
+#ifndef UNICODE
+	declare function ExtractIcon alias "ExtractIconA"(byval hInst as HINSTANCE, byval pszExeFileName as LPCSTR, byval nIconIndex as UINT) as HICON
+#endif
+
 declare function ExtractIconW(byval hInst as HINSTANCE, byval pszExeFileName as LPCWSTR, byval nIconIndex as UINT) as HICON
+
+#ifdef UNICODE
+	declare function ExtractIcon alias "ExtractIconW"(byval hInst as HINSTANCE, byval pszExeFileName as LPCWSTR, byval nIconIndex as UINT) as HICON
+#endif
 
 #ifdef __FB_64BIT__
 	type _DRAGINFOA
@@ -214,11 +264,11 @@ declare function ExtractIconExA(byval lpszFile as LPCSTR, byval nIconIndex as lo
 declare function ExtractIconExW(byval lpszFile as LPCWSTR, byval nIconIndex as long, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIcons as UINT) as UINT
 
 #ifdef UNICODE
-	#define DoEnvironmentSubst DoEnvironmentSubstW
-	#define ExtractIconEx ExtractIconExW
+	declare function DoEnvironmentSubst alias "DoEnvironmentSubstW"(byval pszSrc as LPWSTR, byval cchSrc as UINT) as DWORD
+	declare function ExtractIconEx alias "ExtractIconExW"(byval lpszFile as LPCWSTR, byval nIconIndex as long, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIcons as UINT) as UINT
 #else
-	#define DoEnvironmentSubst DoEnvironmentSubstA
-	#define ExtractIconEx ExtractIconExA
+	declare function DoEnvironmentSubst alias "DoEnvironmentSubstA"(byval pszSrc as LPSTR, byval cchSrc as UINT) as DWORD
+	declare function ExtractIconEx alias "ExtractIconExA"(byval lpszFile as LPCSTR, byval nIconIndex as long, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIcons as UINT) as UINT
 #endif
 
 #define EIRESID(x) ((-1) * clng(x))
@@ -316,9 +366,9 @@ declare function SHFileOperationA(byval lpFileOp as LPSHFILEOPSTRUCTA) as long
 declare function SHFileOperationW(byval lpFileOp as LPSHFILEOPSTRUCTW) as long
 
 #ifdef UNICODE
-	#define SHFileOperation SHFileOperationW
+	declare function SHFileOperation alias "SHFileOperationW"(byval lpFileOp as LPSHFILEOPSTRUCTW) as long
 #else
-	#define SHFileOperation SHFileOperationA
+	declare function SHFileOperation alias "SHFileOperationA"(byval lpFileOp as LPSHFILEOPSTRUCTA) as long
 #endif
 
 declare sub SHFreeNameMappings(byval hNameMappings as HANDLE)
@@ -394,7 +444,7 @@ const SEE_MASK_HOTKEY = &h20
 const SEE_MASK_NOCLOSEPROCESS = &h40
 const SEE_MASK_CONNECTNETDRV = &h80
 const SEE_MASK_NOASYNC = &h100
-#define SEE_MASK_FLAG_DDEWAIT SEE_MASK_NOASYNC
+const SEE_MASK_FLAG_DDEWAIT = SEE_MASK_NOASYNC
 const SEE_MASK_DOENVSUBST = &h200
 const SEE_MASK_FLAG_NO_UI = &h400
 const SEE_MASK_UNICODE = &h4000
@@ -524,9 +574,9 @@ declare function ShellExecuteExA(byval pExecInfo as SHELLEXECUTEINFOA ptr) as WI
 declare function ShellExecuteExW(byval pExecInfo as SHELLEXECUTEINFOW ptr) as WINBOOL
 
 #ifdef UNICODE
-	#define ShellExecuteEx ShellExecuteExW
+	declare function ShellExecuteEx alias "ShellExecuteExW"(byval pExecInfo as SHELLEXECUTEINFOW ptr) as WINBOOL
 #else
-	#define ShellExecuteEx ShellExecuteExA
+	declare function ShellExecuteEx alias "ShellExecuteExA"(byval pExecInfo as SHELLEXECUTEINFOA ptr) as WINBOOL
 #endif
 
 #ifdef __FB_64BIT__
@@ -628,18 +678,18 @@ declare function SHQueryRecycleBinA(byval pszRootPath as LPCSTR, byval pSHQueryR
 declare function SHQueryRecycleBinW(byval pszRootPath as LPCWSTR, byval pSHQueryRBInfo as LPSHQUERYRBINFO) as HRESULT
 
 #ifdef UNICODE
-	#define SHQueryRecycleBin SHQueryRecycleBinW
+	declare function SHQueryRecycleBin alias "SHQueryRecycleBinW"(byval pszRootPath as LPCWSTR, byval pSHQueryRBInfo as LPSHQUERYRBINFO) as HRESULT
 #else
-	#define SHQueryRecycleBin SHQueryRecycleBinA
+	declare function SHQueryRecycleBin alias "SHQueryRecycleBinA"(byval pszRootPath as LPCSTR, byval pSHQueryRBInfo as LPSHQUERYRBINFO) as HRESULT
 #endif
 
 declare function SHEmptyRecycleBinA(byval hwnd as HWND, byval pszRootPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 
 #ifdef UNICODE
-	#define SHEmptyRecycleBin SHEmptyRecycleBinW
+	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinW"(byval hwnd as HWND, byval pszRootPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 #elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
-	#define SHEmptyRecycleBin SHEmptyRecycleBinA
+	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinA"(byval hwnd as HWND, byval pszRootPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -657,7 +707,7 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 	declare function SHQueryUserNotificationState(byval pquns as QUERY_USER_NOTIFICATION_STATE ptr) as HRESULT
 	declare function SHGetPropertyStoreForWindow(byval hwnd as HWND, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
-	#define SHEmptyRecycleBin SHEmptyRecycleBinA
+	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinA"(byval hwnd as HWND, byval pszRootPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 #endif
 
 #ifdef __FB_64BIT__
@@ -875,15 +925,15 @@ declare function Shell_NotifyIconA(byval dwMessage as DWORD, byval lpData as PNO
 declare function Shell_NotifyIconW(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAW) as WINBOOL
 
 #ifdef UNICODE
-	#define Shell_NotifyIcon Shell_NotifyIconW
+	declare function Shell_NotifyIcon alias "Shell_NotifyIconW"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAW) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define Shell_NotifyIcon Shell_NotifyIconA
+	declare function Shell_NotifyIcon alias "Shell_NotifyIconA"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAA) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
 	declare function Shell_NotifyIconGetRect(byval identifier as const NOTIFYICONIDENTIFIER ptr, byval iconLocation as RECT ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
-	#define Shell_NotifyIcon Shell_NotifyIconA
+	declare function Shell_NotifyIcon alias "Shell_NotifyIconA"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAA) as WINBOOL
 #endif
 
 #define SHFILEINFO_DEFINED
@@ -956,9 +1006,9 @@ declare function SHGetFileInfoA(byval pszPath as LPCSTR, byval dwFileAttributes 
 declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOW ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 
 #ifdef UNICODE
-	#define SHGetFileInfo SHGetFileInfoW
+	declare function SHGetFileInfo alias "SHGetFileInfoW"(byval pszPath as LPCWSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOW ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SHGetFileInfo SHGetFileInfoA
+	declare function SHGetFileInfo alias "SHGetFileInfoA"(byval pszPath as LPCSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOA ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 #endif
 
 #if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
@@ -982,13 +1032,13 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 #if _WIN32_WINNT = &h0602
 	type SHSTOCKICONINFO as _SHSTOCKICONINFO
 	const SHGSI_ICONLOCATION = 0
-	#define SHGSI_ICON SHGFI_ICON
-	#define SHGSI_SYSICONINDEX SHGFI_SYSICONINDEX
-	#define SHGSI_LINKOVERLAY SHGFI_LINKOVERLAY
-	#define SHGSI_SELECTED SHGFI_SELECTED
-	#define SHGSI_LARGEICON SHGFI_LARGEICON
-	#define SHGSI_SMALLICON SHGFI_SMALLICON
-	#define SHGSI_SHELLICONSIZE SHGFI_SHELLICONSIZE
+	const SHGSI_ICON = SHGFI_ICON
+	const SHGSI_SYSICONINDEX = SHGFI_SYSICONINDEX
+	const SHGSI_LINKOVERLAY = SHGFI_LINKOVERLAY
+	const SHGSI_SELECTED = SHGFI_SELECTED
+	const SHGSI_LARGEICON = SHGFI_LARGEICON
+	const SHGSI_SMALLICON = SHGFI_SMALLICON
+	const SHGSI_SHELLICONSIZE = SHGFI_SHELLICONSIZE
 
 	type SHSTOCKICONID as long
 	enum
@@ -1091,21 +1141,22 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 	#define SIID_INVALID cast(SHSTOCKICONID, -1)
 	declare function SHGetStockIconInfo(byval siid as SHSTOCKICONID, byval uFlags as UINT, byval psii as SHSTOCKICONINFO ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
-	#define SHGetFileInfo SHGetFileInfoA
+	declare function SHGetFileInfo alias "SHGetFileInfoA"(byval pszPath as LPCSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOA ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 #endif
 
-#define SHGetDiskFreeSpace SHGetDiskFreeSpaceEx
 declare function SHGetDiskFreeSpaceExA(byval pszDirectoryName as LPCSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
 declare function SHGetDiskFreeSpaceExW(byval pszDirectoryName as LPCWSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
 declare function SHGetNewLinkInfoA(byval pszLinkTo as LPCSTR, byval pszDir as LPCSTR, byval pszName as LPSTR, byval pfMustCopy as WINBOOL ptr, byval uFlags as UINT) as WINBOOL
 declare function SHGetNewLinkInfoW(byval pszLinkTo as LPCWSTR, byval pszDir as LPCWSTR, byval pszName as LPWSTR, byval pfMustCopy as WINBOOL ptr, byval uFlags as UINT) as WINBOOL
 
 #ifdef UNICODE
-	#define SHGetDiskFreeSpaceEx SHGetDiskFreeSpaceExW
-	#define SHGetNewLinkInfo SHGetNewLinkInfoW
+	declare function SHGetDiskFreeSpaceEx alias "SHGetDiskFreeSpaceExW"(byval pszDirectoryName as LPCWSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
+	declare function SHGetDiskFreeSpace alias "SHGetDiskFreeSpaceExW"(byval pszDirectoryName as LPCWSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
+	declare function SHGetNewLinkInfo alias "SHGetNewLinkInfoW"(byval pszLinkTo as LPCWSTR, byval pszDir as LPCWSTR, byval pszName as LPWSTR, byval pfMustCopy as WINBOOL ptr, byval uFlags as UINT) as WINBOOL
 #else
-	#define SHGetDiskFreeSpaceEx SHGetDiskFreeSpaceExA
-	#define SHGetNewLinkInfo SHGetNewLinkInfoA
+	declare function SHGetDiskFreeSpaceEx alias "SHGetDiskFreeSpaceExA"(byval pszDirectoryName as LPCSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
+	declare function SHGetDiskFreeSpace alias "SHGetDiskFreeSpaceExA"(byval pszDirectoryName as LPCSTR, byval pulFreeBytesAvailableToCaller as ULARGE_INTEGER ptr, byval pulTotalNumberOfBytes as ULARGE_INTEGER ptr, byval pulTotalNumberOfFreeBytes as ULARGE_INTEGER ptr) as WINBOOL
+	declare function SHGetNewLinkInfo alias "SHGetNewLinkInfoA"(byval pszLinkTo as LPCSTR, byval pszDir as LPCSTR, byval pszName as LPSTR, byval pfMustCopy as WINBOOL ptr, byval uFlags as UINT) as WINBOOL
 #endif
 
 const SHGNLI_PIDL = &h000000001
@@ -1133,9 +1184,9 @@ declare function SHInvokePrinterCommandA(byval hwnd as HWND, byval uAction as UI
 declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCWSTR, byval lpBuf2 as LPCWSTR, byval fModal as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define SHInvokePrinterCommand SHInvokePrinterCommandW
+	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandW"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCWSTR, byval lpBuf2 as LPCWSTR, byval fModal as WINBOOL) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SHInvokePrinterCommand SHInvokePrinterCommandA
+	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandA"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCSTR, byval lpBuf2 as LPCSTR, byval fModal as WINBOOL) as WINBOOL
 #endif
 
 #if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
@@ -1195,7 +1246,7 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 #if _WIN32_WINNT = &h0602
 	const PRINT_PROP_FORCE_NAME = &h01
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
-	#define SHInvokePrinterCommand SHInvokePrinterCommandA
+	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandA"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCSTR, byval lpBuf2 as LPCSTR, byval fModal as WINBOOL) as WINBOOL
 #endif
 
 declare function SHLoadNonloadedIconOverlayIdentifiers() as HRESULT
@@ -1214,18 +1265,18 @@ declare function ShellMessageBoxA cdecl(byval hAppInst as HINSTANCE, byval hWnd 
 declare function ShellMessageBoxW cdecl(byval hAppInst as HINSTANCE, byval hWnd as HWND, byval lpcText as LPCWSTR, byval lpcTitle as LPCWSTR, byval fuStyle as UINT, ...) as long
 
 #ifdef UNICODE
-	#define ShellMessageBox ShellMessageBoxW
+	declare function ShellMessageBox cdecl alias "ShellMessageBoxW"(byval hAppInst as HINSTANCE, byval hWnd as HWND, byval lpcText as LPCWSTR, byval lpcTitle as LPCWSTR, byval fuStyle as UINT, ...) as long
 #else
-	#define ShellMessageBox ShellMessageBoxA
+	declare function ShellMessageBox cdecl alias "ShellMessageBoxA"(byval hAppInst as HINSTANCE, byval hWnd as HWND, byval lpcText as LPCSTR, byval lpcTitle as LPCSTR, byval fuStyle as UINT, ...) as long
 #endif
 
 declare function IsLFNDriveA(byval pszPath as LPCSTR) as WINBOOL
 declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
-	#define IsLFNDrive IsLFNDriveW
+	declare function IsLFNDrive alias "IsLFNDriveW"(byval pszPath as LPCWSTR) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define IsLFNDrive IsLFNDriveA
+	declare function IsLFNDrive alias "IsLFNDriveA"(byval pszPath as LPCSTR) as WINBOOL
 #endif
 
 #if _WIN32_WINNT >= &h0502
@@ -1238,13 +1289,13 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define SHEnumerateUnreadMailAccounts SHEnumerateUnreadMailAccountsW
-	#define SHGetUnreadMailCount SHGetUnreadMailCountW
-	#define SHSetUnreadMailCount SHSetUnreadMailCountW
+	declare function SHEnumerateUnreadMailAccounts alias "SHEnumerateUnreadMailAccountsW"(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPWSTR, byval cchMailAddress as long) as HRESULT
+	declare function SHGetUnreadMailCount alias "SHGetUnreadMailCountW"(byval hKeyUser as HKEY, byval pszMailAddress as LPCWSTR, byval pdwCount as DWORD ptr, byval pFileTime as FILETIME ptr, byval pszShellExecuteCommand as LPWSTR, byval cchShellExecuteCommand as long) as HRESULT
+	declare function SHSetUnreadMailCount alias "SHSetUnreadMailCountW"(byval pszMailAddress as LPCWSTR, byval dwCount as DWORD, byval pszShellExecuteCommand as LPCWSTR) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define SHEnumerateUnreadMailAccounts SHEnumerateUnreadMailAccountsA
-	#define SHGetUnreadMailCount SHGetUnreadMailCountA
-	#define SHSetUnreadMailCount SHSetUnreadMailCountA
+	declare function SHEnumerateUnreadMailAccounts alias "SHEnumerateUnreadMailAccountsA"(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPSTR, byval cchMailAddress as long) as HRESULT
+	declare function SHGetUnreadMailCount alias "SHGetUnreadMailCountA"(byval hKeyUser as HKEY, byval pszMailAddress as LPCSTR, byval pdwCount as DWORD ptr, byval pFileTime as FILETIME ptr, byval pszShellExecuteCommand as LPSTR, byval cchShellExecuteCommand as long) as HRESULT
+	declare function SHSetUnreadMailCount alias "SHSetUnreadMailCountA"(byval pszMailAddress as LPCSTR, byval dwCount as DWORD, byval pszShellExecuteCommand as LPCSTR) as HRESULT
 #endif
 
 #if _WIN32_WINNT >= &h0502
@@ -1257,10 +1308,10 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0502
-	#define SHIL_LAST SHIL_SYSSMALL
+	const SHIL_LAST = SHIL_SYSSMALL
 #elseif _WIN32_WINNT = &h0602
 	const SHIL_JUMBO = 4
-	#define SHIL_LAST SHIL_JUMBO
+	const SHIL_LAST = SHIL_JUMBO
 #endif
 
 #if _WIN32_WINNT >= &h0502
@@ -1291,7 +1342,7 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 	#define NetAddr_DisplayErrorTip(hwnd) cast(HRESULT, SNDMSG(hwnd, NCM_DISPLAYERRORTIP, 0, 0))
 	declare function SHGetDriveMedia(byval pszDrive as PCWSTR, byval pdwMediaContent as DWORD ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
-	#define IsLFNDrive IsLFNDriveA
+	declare function IsLFNDrive alias "IsLFNDriveA"(byval pszPath as LPCSTR) as WINBOOL
 #endif
 
 end extern

@@ -142,19 +142,6 @@ declare function I_RpcReceive(byval Message as PRPC_MESSAGE, byval Size as ulong
 declare function I_RpcFreePipeBuffer(byval Message as RPC_MESSAGE ptr) as RPC_STATUS
 declare function I_RpcReallocPipeBuffer(byval Message as PRPC_MESSAGE, byval NewSize as ulong) as RPC_STATUS
 type I_RPC_MUTEX as any ptr
-
-#ifdef UNICODE
-	#define I_RpcNsBindingSetEntryName I_RpcNsBindingSetEntryNameW
-	#define I_RpcServerUseProtseqEp2 I_RpcServerUseProtseqEp2W
-	#define I_RpcServerUseProtseq2 I_RpcServerUseProtseq2W
-	#define I_RpcBindingInqDynamicEndpoint I_RpcBindingInqDynamicEndpointW
-#else
-	#define I_RpcNsBindingSetEntryName I_RpcNsBindingSetEntryNameA
-	#define I_RpcServerUseProtseqEp2 I_RpcServerUseProtseqEp2A
-	#define I_RpcServerUseProtseq2 I_RpcServerUseProtseq2A
-	#define I_RpcBindingInqDynamicEndpoint I_RpcBindingInqDynamicEndpointA
-#endif
-
 declare sub I_RpcRequestMutex(byval Mutex as I_RPC_MUTEX ptr)
 declare sub I_RpcClearMutex(byval Mutex as I_RPC_MUTEX)
 declare sub I_RpcDeleteMutex(byval Mutex as I_RPC_MUTEX)
@@ -178,15 +165,54 @@ declare function I_RpcBindingInqMarshalledTargetInfo(byval Binding as RPC_BINDIN
 declare function I_RpcBindingInqLocalClientPID(byval Binding as RPC_BINDING_HANDLE, byval Pid as ulong ptr) as RPC_STATUS
 declare function I_RpcBindingHandleToAsyncHandle(byval Binding as RPC_BINDING_HANDLE, byval AsyncHandle as any ptr ptr) as RPC_STATUS
 declare function I_RpcNsBindingSetEntryNameW(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_WSTR) as RPC_STATUS
-declare function I_RpcNsBindingSetEntryNameA(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR) as RPC_STATUS
-declare function I_RpcServerUseProtseqEp2A(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval Endpoint as RPC_CSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
-declare function I_RpcServerUseProtseqEp2W(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval Endpoint as RPC_WSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
-declare function I_RpcServerUseProtseq2W(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
-declare function I_RpcServerUseProtseq2A(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
-declare function I_RpcBindingInqDynamicEndpointW(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_WSTR ptr) as RPC_STATUS
-declare function I_RpcBindingInqDynamicEndpointA(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_CSTR ptr) as RPC_STATUS
-declare function I_RpcServerCheckClientRestriction(byval Context as RPC_BINDING_HANDLE) as RPC_STATUS
 
+#ifdef UNICODE
+	declare function I_RpcNsBindingSetEntryName alias "I_RpcNsBindingSetEntryNameW"(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_WSTR) as RPC_STATUS
+#endif
+
+declare function I_RpcNsBindingSetEntryNameA(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR) as RPC_STATUS
+
+#ifndef UNICODE
+	declare function I_RpcNsBindingSetEntryName alias "I_RpcNsBindingSetEntryNameA"(byval Binding as RPC_BINDING_HANDLE, byval EntryNameSyntax as ulong, byval EntryName as RPC_CSTR) as RPC_STATUS
+#endif
+
+declare function I_RpcServerUseProtseqEp2A(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval Endpoint as RPC_CSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+
+#ifndef UNICODE
+	declare function I_RpcServerUseProtseqEp2 alias "I_RpcServerUseProtseqEp2A"(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval Endpoint as RPC_CSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcServerUseProtseqEp2W(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval Endpoint as RPC_WSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+
+#ifdef UNICODE
+	declare function I_RpcServerUseProtseqEp2 alias "I_RpcServerUseProtseqEp2W"(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval Endpoint as RPC_WSTR, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcServerUseProtseq2W(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+
+#ifdef UNICODE
+	declare function I_RpcServerUseProtseq2 alias "I_RpcServerUseProtseq2W"(byval NetworkAddress as RPC_WSTR, byval Protseq as RPC_WSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcServerUseProtseq2A(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+
+#ifndef UNICODE
+	declare function I_RpcServerUseProtseq2 alias "I_RpcServerUseProtseq2A"(byval NetworkAddress as RPC_CSTR, byval Protseq as RPC_CSTR, byval MaxCalls as ulong, byval SecurityDescriptor as any ptr, byval Policy as any ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcBindingInqDynamicEndpointW(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_WSTR ptr) as RPC_STATUS
+
+#ifdef UNICODE
+	declare function I_RpcBindingInqDynamicEndpoint alias "I_RpcBindingInqDynamicEndpointW"(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_WSTR ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcBindingInqDynamicEndpointA(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_CSTR ptr) as RPC_STATUS
+
+#ifndef UNICODE
+	declare function I_RpcBindingInqDynamicEndpoint alias "I_RpcBindingInqDynamicEndpointA"(byval Binding as RPC_BINDING_HANDLE, byval DynamicEndpoint as RPC_CSTR ptr) as RPC_STATUS
+#endif
+
+declare function I_RpcServerCheckClientRestriction(byval Context as RPC_BINDING_HANDLE) as RPC_STATUS
 const TRANSPORT_TYPE_CN = &h01
 const TRANSPORT_TYPE_DG = &h02
 const TRANSPORT_TYPE_LPC = &h04

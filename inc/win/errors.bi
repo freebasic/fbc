@@ -44,9 +44,9 @@ declare function AMGetErrorTextA(byval as HRESULT, byval as LPSTR, byval as DWOR
 declare function AMGetErrorTextW(byval as HRESULT, byval as LPWSTR, byval as DWORD) as DWORD
 
 #ifdef UNICODE
-	#define AMGetErrorText AMGetErrorTextW
+	declare function AMGetErrorText alias "AMGetErrorTextW"(byval as HRESULT, byval as LPWSTR, byval as DWORD) as DWORD
 #else
-	#define AMGetErrorText AMGetErrorTextA
+	declare function AMGetErrorText alias "AMGetErrorTextA"(byval as HRESULT, byval as LPSTR, byval as DWORD) as DWORD
 #endif
 
 end extern

@@ -111,12 +111,6 @@ const SPLITSYM_REMOVE_PRIVATE = &h00000001
 const SPLITSYM_EXTRACT_ALL = &h00000002
 const SPLITSYM_SYMBOLPATH_IS_SRC = &h00000004
 
-#ifdef UNICODE
-	#define MapFileAndCheckSum MapFileAndCheckSumW
-#else
-	#define MapFileAndCheckSum MapFileAndCheckSumA
-#endif
-
 declare function BindImage(byval ImageName as PCSTR, byval DllPath as PCSTR, byval SymbolPath as PCSTR) as WINBOOL
 declare function BindImageEx(byval Flags as DWORD, byval ImageName as PCSTR, byval DllPath as PCSTR, byval SymbolPath as PCSTR, byval StatusRoutine as PIMAGEHLP_STATUS_ROUTINE) as WINBOOL
 declare function ReBaseImage(byval CurrentImageName as PCSTR, byval SymbolPath as PCSTR, byval fReBase as WINBOOL, byval fRebaseSysfileOk as WINBOOL, byval fGoingDown as WINBOOL, byval CheckImageSize as ULONG, byval OldImageSize as ULONG ptr, byval OldImageBase as ULONG_PTR ptr, byval NewImageSize as ULONG ptr, byval NewImageBase as ULONG_PTR ptr, byval TimeStamp as ULONG) as WINBOOL
@@ -126,7 +120,16 @@ declare function GetImageUnusedHeaderBytes(byval LoadedImage as PLOADED_IMAGE, b
 declare function SetImageConfigInformation(byval LoadedImage as PLOADED_IMAGE, byval ImageConfigInformation as PIMAGE_LOAD_CONFIG_DIRECTORY) as WINBOOL
 declare function CheckSumMappedFile(byval BaseAddress as PVOID, byval FileLength as DWORD, byval HeaderSum as PDWORD, byval CheckSum as PDWORD) as PIMAGE_NT_HEADERS
 declare function MapFileAndCheckSumA(byval Filename as PCSTR, byval HeaderSum as PDWORD, byval CheckSum as PDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function MapFileAndCheckSum alias "MapFileAndCheckSumA"(byval Filename as PCSTR, byval HeaderSum as PDWORD, byval CheckSum as PDWORD) as DWORD
+#endif
+
 declare function MapFileAndCheckSumW(byval Filename as PCWSTR, byval HeaderSum as PDWORD, byval CheckSum as PDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function MapFileAndCheckSum alias "MapFileAndCheckSumW"(byval Filename as PCWSTR, byval HeaderSum as PDWORD, byval CheckSum as PDWORD) as DWORD
+#endif
 
 const CERT_PE_IMAGE_DIGEST_DEBUG_INFO = &h01
 const CERT_PE_IMAGE_DIGEST_RESOURCES = &h02
@@ -306,8 +309,8 @@ type ADDRESS64 as _tagADDRESS64
 type LPADDRESS64 as _tagADDRESS64 ptr
 
 #ifdef __FB_64BIT__
-	#define ADDRESS ADDRESS64
-	#define LPADDRESS LPADDRESS64
+	type ADDRESS as ADDRESS64
+	type LPADDRESS as LPADDRESS64
 #else
 	type _tagADDRESS
 		Offset as DWORD
@@ -350,8 +353,8 @@ type KDHELP64 as _KDHELP64
 type PKDHELP64 as _KDHELP64 ptr
 
 #ifdef __FB_64BIT__
-	#define KDHELP KDHELP64
-	#define PKDHELP PKDHELP64
+	type KDHELP as KDHELP64
+	type PKDHELP as PKDHELP64
 #else
 	type _KDHELP
 		Thread as DWORD
@@ -403,8 +406,8 @@ type STACKFRAME64 as _tagSTACKFRAME64
 type LPSTACKFRAME64 as _tagSTACKFRAME64 ptr
 
 #ifdef __FB_64BIT__
-	#define STACKFRAME STACKFRAME64
-	#define LPSTACKFRAME LPSTACKFRAME64
+	type STACKFRAME as STACKFRAME64
+	type LPSTACKFRAME as LPSTACKFRAME64
 #else
 	type _tagSTACKFRAME
 		AddrPC as ADDRESS
@@ -431,11 +434,11 @@ type PTRANSLATE_ADDRESS_ROUTINE64 as function(byval hProcess as HANDLE, byval hT
 declare function StackWalk64(byval MachineType as DWORD, byval hProcess as HANDLE, byval hThread as HANDLE, byval StackFrame as LPSTACKFRAME64, byval ContextRecord as PVOID, byval ReadMemoryRoutine as PREAD_PROCESS_MEMORY_ROUTINE64, byval FunctionTableAccessRoutine as PFUNCTION_TABLE_ACCESS_ROUTINE64, byval GetModuleBaseRoutine as PGET_MODULE_BASE_ROUTINE64, byval TranslateAddress as PTRANSLATE_ADDRESS_ROUTINE64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define PREAD_PROCESS_MEMORY_ROUTINE PREAD_PROCESS_MEMORY_ROUTINE64
-	#define PFUNCTION_TABLE_ACCESS_ROUTINE PFUNCTION_TABLE_ACCESS_ROUTINE64
-	#define PGET_MODULE_BASE_ROUTINE PGET_MODULE_BASE_ROUTINE64
-	#define PTRANSLATE_ADDRESS_ROUTINE PTRANSLATE_ADDRESS_ROUTINE64
-	#define StackWalk StackWalk64
+	type PREAD_PROCESS_MEMORY_ROUTINE as PREAD_PROCESS_MEMORY_ROUTINE64
+	type PFUNCTION_TABLE_ACCESS_ROUTINE as PFUNCTION_TABLE_ACCESS_ROUTINE64
+	type PGET_MODULE_BASE_ROUTINE as PGET_MODULE_BASE_ROUTINE64
+	type PTRANSLATE_ADDRESS_ROUTINE as PTRANSLATE_ADDRESS_ROUTINE64
+	declare function StackWalk alias "StackWalk64"(byval MachineType as DWORD, byval hProcess as HANDLE, byval hThread as HANDLE, byval StackFrame as LPSTACKFRAME64, byval ContextRecord as PVOID, byval ReadMemoryRoutine as PREAD_PROCESS_MEMORY_ROUTINE64, byval FunctionTableAccessRoutine as PFUNCTION_TABLE_ACCESS_ROUTINE64, byval GetModuleBaseRoutine as PGET_MODULE_BASE_ROUTINE64, byval TranslateAddress as PTRANSLATE_ADDRESS_ROUTINE64) as WINBOOL
 #else
 	type PREAD_PROCESS_MEMORY_ROUTINE as function(byval hProcess as HANDLE, byval lpBaseAddress as DWORD, byval lpBuffer as PVOID, byval nSize as DWORD, byval lpNumberOfBytesRead as PDWORD) as WINBOOL
 	type PFUNCTION_TABLE_ACCESS_ROUTINE as function(byval hProcess as HANDLE, byval AddrBase as DWORD) as PVOID
@@ -469,12 +472,12 @@ type PSYMBOL_FUNCENTRY_CALLBACK32 as function(byval hProcess as HANDLE, byval Ad
 type PSYMBOL_FUNCENTRY_CALLBACK64 as function(byval hProcess as HANDLE, byval AddrBase as ULONG64, byval UserContext as ULONG64) as PVOID
 
 #ifdef __FB_64BIT__
-	#define PSYM_ENUMMODULES_CALLBACK PSYM_ENUMMODULES_CALLBACK64
-	#define PSYM_ENUMSYMBOLS_CALLBACK PSYM_ENUMSYMBOLS_CALLBACK64
-	#define PSYM_ENUMSYMBOLS_CALLBACKW PSYM_ENUMSYMBOLS_CALLBACK64W
-	#define PENUMLOADED_MODULES_CALLBACK PENUMLOADED_MODULES_CALLBACK64
-	#define PSYMBOL_REGISTERED_CALLBACK PSYMBOL_REGISTERED_CALLBACK64
-	#define PSYMBOL_FUNCENTRY_CALLBACK PSYMBOL_FUNCENTRY_CALLBACK64
+	type PSYM_ENUMMODULES_CALLBACK as PSYM_ENUMMODULES_CALLBACK64
+	type PSYM_ENUMSYMBOLS_CALLBACK as PSYM_ENUMSYMBOLS_CALLBACK64
+	type PSYM_ENUMSYMBOLS_CALLBACKW as PSYM_ENUMSYMBOLS_CALLBACK64W
+	type PENUMLOADED_MODULES_CALLBACK as PENUMLOADED_MODULES_CALLBACK64
+	type PSYMBOL_REGISTERED_CALLBACK as PSYMBOL_REGISTERED_CALLBACK64
+	type PSYMBOL_FUNCENTRY_CALLBACK as PSYMBOL_FUNCENTRY_CALLBACK64
 #else
 	type PSYM_ENUMMODULES_CALLBACK as function(byval ModuleName as PCSTR, byval BaseOfDll as ULONG, byval UserContext as PVOID) as WINBOOL
 	type PSYM_ENUMSYMBOLS_CALLBACK as function(byval SymbolName as PCSTR, byval SymbolAddress as ULONG, byval SymbolSize as ULONG, byval UserContext as PVOID) as WINBOOL
@@ -533,10 +536,10 @@ type IMAGEHLP_SYMBOL64_PACKAGE as _IMAGEHLP_SYMBOL64_PACKAGE
 type PIMAGEHLP_SYMBOL64_PACKAGE as _IMAGEHLP_SYMBOL64_PACKAGE ptr
 
 #ifdef __FB_64BIT__
-	#define IMAGEHLP_SYMBOL IMAGEHLP_SYMBOL64
-	#define PIMAGEHLP_SYMBOL PIMAGEHLP_SYMBOL64
-	#define IMAGEHLP_SYMBOL_PACKAGE IMAGEHLP_SYMBOL64_PACKAGE
-	#define PIMAGEHLP_SYMBOL_PACKAGE PIMAGEHLP_SYMBOL64_PACKAGE
+	type IMAGEHLP_SYMBOL as IMAGEHLP_SYMBOL64
+	type PIMAGEHLP_SYMBOL as PIMAGEHLP_SYMBOL64
+	type IMAGEHLP_SYMBOL_PACKAGE as IMAGEHLP_SYMBOL64_PACKAGE
+	type PIMAGEHLP_SYMBOL_PACKAGE as PIMAGEHLP_SYMBOL64_PACKAGE
 #else
 	type _IMAGEHLP_SYMBOL
 		SizeOfStruct as DWORD
@@ -618,10 +621,10 @@ type IMAGEHLP_MODULEW64 as _IMAGEHLP_MODULE64W
 type PIMAGEHLP_MODULEW64 as _IMAGEHLP_MODULE64W ptr
 
 #ifdef __FB_64BIT__
-	#define IMAGEHLP_MODULE IMAGEHLP_MODULE64
-	#define PIMAGEHLP_MODULE PIMAGEHLP_MODULE64
-	#define IMAGEHLP_MODULEW IMAGEHLP_MODULEW64
-	#define PIMAGEHLP_MODULEW PIMAGEHLP_MODULEW64
+	type IMAGEHLP_MODULE as IMAGEHLP_MODULE64
+	type PIMAGEHLP_MODULE as PIMAGEHLP_MODULE64
+	type IMAGEHLP_MODULEW as IMAGEHLP_MODULEW64
+	type PIMAGEHLP_MODULEW as PIMAGEHLP_MODULEW64
 #else
 	type _IMAGEHLP_MODULE
 		SizeOfStruct as DWORD
@@ -679,8 +682,8 @@ type IMAGEHLP_LINEW64 as _IMAGEHLP_LINEW64
 type PIMAGEHLP_LINEW64 as _IMAGEHLP_LINEW64 ptr
 
 #ifdef __FB_64BIT__
-	#define IMAGEHLP_LINE IMAGEHLP_LINE64
-	#define PIMAGEHLP_LINE PIMAGEHLP_LINE64
+	type IMAGEHLP_LINE as IMAGEHLP_LINE64
+	type PIMAGEHLP_LINE as PIMAGEHLP_LINE64
 #else
 	type _IMAGEHLP_LINE
 		SizeOfStruct as DWORD
@@ -768,8 +771,8 @@ const DSLFLAG_MISMATCHED_PDB = &h1
 const DSLFLAG_MISMATCHED_DBG = &h2
 
 #ifdef __FB_64BIT__
-	#define IMAGEHLP_DEFERRED_SYMBOL_LOAD IMAGEHLP_DEFERRED_SYMBOL_LOAD64
-	#define PIMAGEHLP_DEFERRED_SYMBOL_LOAD PIMAGEHLP_DEFERRED_SYMBOL_LOAD64
+	type IMAGEHLP_DEFERRED_SYMBOL_LOAD as IMAGEHLP_DEFERRED_SYMBOL_LOAD64
+	type PIMAGEHLP_DEFERRED_SYMBOL_LOAD as PIMAGEHLP_DEFERRED_SYMBOL_LOAD64
 #else
 	type _IMAGEHLP_DEFERRED_SYMBOL_LOAD
 		SizeOfStruct as DWORD
@@ -796,8 +799,8 @@ type IMAGEHLP_DUPLICATE_SYMBOL64 as _IMAGEHLP_DUPLICATE_SYMBOL64
 type PIMAGEHLP_DUPLICATE_SYMBOL64 as _IMAGEHLP_DUPLICATE_SYMBOL64 ptr
 
 #ifdef __FB_64BIT__
-	#define IMAGEHLP_DUPLICATE_SYMBOL IMAGEHLP_DUPLICATE_SYMBOL64
-	#define PIMAGEHLP_DUPLICATE_SYMBOL PIMAGEHLP_DUPLICATE_SYMBOL64
+	type IMAGEHLP_DUPLICATE_SYMBOL as IMAGEHLP_DUPLICATE_SYMBOL64
+	type PIMAGEHLP_DUPLICATE_SYMBOL as PIMAGEHLP_DUPLICATE_SYMBOL64
 #else
 	type _IMAGEHLP_DUPLICATE_SYMBOL
 		SizeOfStruct as DWORD
@@ -884,16 +887,18 @@ declare function SymGetOptions() as DWORD
 declare function SymCleanup(byval hProcess as HANDLE) as WINBOOL
 declare function SymMatchString(byval string as PCSTR, byval expression as PCSTR, byval fCase as WINBOOL) as WINBOOL
 declare function SymMatchStringW(byval string as PCWSTR, byval expression as PCWSTR, byval fCase as WINBOOL) as WINBOOL
+
 type PSYM_ENUMSOURCEFILES_CALLBACK as function(byval pSourceFile as PSOURCEFILE, byval UserContext as PVOID) as WINBOOL
 type PSYM_ENUMSOURCEFILES_CALLBACKW as function(byval pSourceFile as PSOURCEFILEW, byval UserContext as PVOID) as WINBOOL
-#define PSYM_ENUMSOURCFILES_CALLBACK PSYM_ENUMSOURCEFILES_CALLBACK
+type PSYM_ENUMSOURCFILES_CALLBACK as PSYM_ENUMSOURCEFILES_CALLBACK
+
 declare function SymEnumSourceFiles(byval hProcess as HANDLE, byval ModBase as ULONG64, byval Mask as PCSTR, byval cbSrcFiles as PSYM_ENUMSOURCEFILES_CALLBACK, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumSourceFilesW(byval hProcess as HANDLE, byval ModBase as ULONG64, byval Mask as PCWSTR, byval cbSrcFiles as PSYM_ENUMSOURCEFILES_CALLBACKW, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumerateModules64(byval hProcess as HANDLE, byval EnumModulesCallback as PSYM_ENUMMODULES_CALLBACK64, byval UserContext as PVOID) as WINBOOL
 declare function SymEnumerateModulesW64(byval hProcess as HANDLE, byval EnumModulesCallback as PSYM_ENUMMODULES_CALLBACKW64, byval UserContext as PVOID) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymEnumerateModules SymEnumerateModules64
+	declare function SymEnumerateModules alias "SymEnumerateModules64"(byval hProcess as HANDLE, byval EnumModulesCallback as PSYM_ENUMMODULES_CALLBACK64, byval UserContext as PVOID) as WINBOOL
 #else
 	declare function SymEnumerateModules(byval hProcess as HANDLE, byval EnumModulesCallback as PSYM_ENUMMODULES_CALLBACK, byval UserContext as PVOID) as WINBOOL
 #endif
@@ -902,8 +907,8 @@ declare function SymEnumerateSymbols64(byval hProcess as HANDLE, byval BaseOfDll
 declare function SymEnumerateSymbolsW64(byval hProcess as HANDLE, byval BaseOfDll as DWORD64, byval EnumSymbolsCallback as PSYM_ENUMSYMBOLS_CALLBACK64W, byval UserContext as PVOID) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymEnumerateSymbols SymEnumerateSymbols64
-	#define SymEnumerateSymbolsW SymEnumerateSymbolsW64
+	declare function SymEnumerateSymbols alias "SymEnumerateSymbols64"(byval hProcess as HANDLE, byval BaseOfDll as DWORD64, byval EnumSymbolsCallback as PSYM_ENUMSYMBOLS_CALLBACK64, byval UserContext as PVOID) as WINBOOL
+	declare function SymEnumerateSymbolsW alias "SymEnumerateSymbolsW64"(byval hProcess as HANDLE, byval BaseOfDll as DWORD64, byval EnumSymbolsCallback as PSYM_ENUMSYMBOLS_CALLBACK64W, byval UserContext as PVOID) as WINBOOL
 #else
 	declare function SymEnumerateSymbols(byval hProcess as HANDLE, byval BaseOfDll as DWORD, byval EnumSymbolsCallback as PSYM_ENUMSYMBOLS_CALLBACK, byval UserContext as PVOID) as WINBOOL
 	declare function SymEnumerateSymbolsW(byval hProcess as HANDLE, byval BaseOfDll as DWORD, byval EnumSymbolsCallback as PSYM_ENUMSYMBOLS_CALLBACKW, byval UserContext as PVOID) as WINBOOL
@@ -913,7 +918,7 @@ declare function EnumerateLoadedModules64(byval hProcess as HANDLE, byval EnumLo
 declare function EnumerateLoadedModulesW64(byval hProcess as HANDLE, byval EnumLoadedModulesCallback as PENUMLOADED_MODULES_CALLBACKW64, byval UserContext as PVOID) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define EnumerateLoadedModules EnumerateLoadedModules64
+	declare function EnumerateLoadedModules alias "EnumerateLoadedModules64"(byval hProcess as HANDLE, byval EnumLoadedModulesCallback as PENUMLOADED_MODULES_CALLBACK64, byval UserContext as PVOID) as WINBOOL
 #else
 	declare function EnumerateLoadedModules(byval hProcess as HANDLE, byval EnumLoadedModulesCallback as PENUMLOADED_MODULES_CALLBACK, byval UserContext as PVOID) as WINBOOL
 #endif
@@ -921,7 +926,7 @@ declare function EnumerateLoadedModulesW64(byval hProcess as HANDLE, byval EnumL
 declare function SymFunctionTableAccess64(byval hProcess as HANDLE, byval AddrBase as DWORD64) as PVOID
 
 #ifdef __FB_64BIT__
-	#define SymFunctionTableAccess SymFunctionTableAccess64
+	declare function SymFunctionTableAccess alias "SymFunctionTableAccess64"(byval hProcess as HANDLE, byval AddrBase as DWORD64) as PVOID
 #else
 	declare function SymFunctionTableAccess(byval hProcess as HANDLE, byval AddrBase as DWORD) as PVOID
 #endif
@@ -930,8 +935,8 @@ declare function SymGetModuleInfo64(byval hProcess as HANDLE, byval qwAddr as DW
 declare function SymGetModuleInfoW64(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval ModuleInfo as PIMAGEHLP_MODULEW64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetModuleInfo SymGetModuleInfo64
-	#define SymGetModuleInfoW SymGetModuleInfoW64
+	declare function SymGetModuleInfo alias "SymGetModuleInfo64"(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval ModuleInfo as PIMAGEHLP_MODULE64) as WINBOOL
+	declare function SymGetModuleInfoW alias "SymGetModuleInfoW64"(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval ModuleInfo as PIMAGEHLP_MODULEW64) as WINBOOL
 #else
 	declare function SymGetModuleInfo(byval hProcess as HANDLE, byval dwAddr as DWORD, byval ModuleInfo as PIMAGEHLP_MODULE) as WINBOOL
 	declare function SymGetModuleInfoW(byval hProcess as HANDLE, byval dwAddr as DWORD, byval ModuleInfo as PIMAGEHLP_MODULEW) as WINBOOL
@@ -940,7 +945,7 @@ declare function SymGetModuleInfoW64(byval hProcess as HANDLE, byval qwAddr as D
 declare function SymGetModuleBase64(byval hProcess as HANDLE, byval qwAddr as DWORD64) as DWORD64
 
 #ifdef __FB_64BIT__
-	#define SymGetModuleBase SymGetModuleBase64
+	declare function SymGetModuleBase alias "SymGetModuleBase64"(byval hProcess as HANDLE, byval qwAddr as DWORD64) as DWORD64
 #else
 	declare function SymGetModuleBase(byval hProcess as HANDLE, byval dwAddr as DWORD) as DWORD
 #endif
@@ -948,7 +953,7 @@ declare function SymGetModuleBase64(byval hProcess as HANDLE, byval qwAddr as DW
 declare function SymGetSymNext64(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetSymNext SymGetSymNext64
+	declare function SymGetSymNext alias "SymGetSymNext64"(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 #else
 	declare function SymGetSymNext(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL) as WINBOOL
 #endif
@@ -956,7 +961,7 @@ declare function SymGetSymNext64(byval hProcess as HANDLE, byval Symbol as PIMAG
 declare function SymGetSymPrev64(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetSymPrev SymGetSymPrev64
+	declare function SymGetSymPrev alias "SymGetSymPrev64"(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 #else
 	declare function SymGetSymPrev(byval hProcess as HANDLE, byval Symbol as PIMAGEHLP_SYMBOL) as WINBOOL
 #endif
@@ -995,7 +1000,7 @@ declare function SymGetLineFromAddr64(byval hProcess as HANDLE, byval qwAddr as 
 declare function SymGetLineFromAddrW64(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval pdwDisplacement as PDWORD, byval Line64 as PIMAGEHLP_LINEW64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetLineFromAddr SymGetLineFromAddr64
+	declare function SymGetLineFromAddr alias "SymGetLineFromAddr64"(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval pdwDisplacement as PDWORD, byval Line64 as PIMAGEHLP_LINE64) as WINBOOL
 #else
 	declare function SymGetLineFromAddr(byval hProcess as HANDLE, byval dwAddr as DWORD, byval pdwDisplacement as PDWORD, byval Line as PIMAGEHLP_LINE) as WINBOOL
 #endif
@@ -1004,7 +1009,7 @@ declare function SymGetLineFromName64(byval hProcess as HANDLE, byval ModuleName
 declare function SymGetLineFromNameW64(byval hProcess as HANDLE, byval ModuleName as PCWSTR, byval FileName as PCWSTR, byval dwLineNumber as DWORD, byval plDisplacement as PLONG, byval Line as PIMAGEHLP_LINEW64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetLineFromName SymGetLineFromName64
+	declare function SymGetLineFromName alias "SymGetLineFromName64"(byval hProcess as HANDLE, byval ModuleName as PCSTR, byval FileName as PCSTR, byval dwLineNumber as DWORD, byval plDisplacement as PLONG, byval Line as PIMAGEHLP_LINE64) as WINBOOL
 #else
 	declare function SymGetLineFromName(byval hProcess as HANDLE, byval ModuleName as PCSTR, byval FileName as PCSTR, byval dwLineNumber as DWORD, byval plDisplacement as PLONG, byval Line as PIMAGEHLP_LINE) as WINBOOL
 #endif
@@ -1013,7 +1018,7 @@ declare function SymGetLineNext64(byval hProcess as HANDLE, byval Line as PIMAGE
 declare function SymGetLineNextW64(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINEW64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetLineNext SymGetLineNext64
+	declare function SymGetLineNext alias "SymGetLineNext64"(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINE64) as WINBOOL
 #else
 	declare function SymGetLineNext(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINE) as WINBOOL
 #endif
@@ -1022,7 +1027,7 @@ declare function SymGetLinePrev64(byval hProcess as HANDLE, byval Line as PIMAGE
 declare function SymGetLinePrevW64(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINEW64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetLinePrev SymGetLinePrev64
+	declare function SymGetLinePrev alias "SymGetLinePrev64"(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINE64) as WINBOOL
 #else
 	declare function SymGetLinePrev(byval hProcess as HANDLE, byval Line as PIMAGEHLP_LINE) as WINBOOL
 #endif
@@ -1050,7 +1055,7 @@ declare function SymLoadModuleEx(byval hProcess as HANDLE, byval hFile as HANDLE
 declare function SymLoadModuleExW(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PCWSTR, byval ModuleName as PCWSTR, byval BaseOfDll as DWORD64, byval DllSize as DWORD, byval Data as PMODLOAD_DATA, byval Flags as DWORD) as DWORD64
 
 #ifdef __FB_64BIT__
-	#define SymLoadModule SymLoadModule64
+	declare function SymLoadModule alias "SymLoadModule64"(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PSTR, byval ModuleName as PSTR, byval BaseOfDll as DWORD64, byval SizeOfDll as DWORD) as DWORD64
 #else
 	declare function SymLoadModule(byval hProcess as HANDLE, byval hFile as HANDLE, byval ImageName as PCSTR, byval ModuleName as PCSTR, byval BaseOfDll as DWORD, byval SizeOfDll as DWORD) as DWORD
 #endif
@@ -1058,7 +1063,7 @@ declare function SymLoadModuleExW(byval hProcess as HANDLE, byval hFile as HANDL
 declare function SymUnloadModule64(byval hProcess as HANDLE, byval BaseOfDll as DWORD64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymUnloadModule SymUnloadModule64
+	declare function SymUnloadModule alias "SymUnloadModule64"(byval hProcess as HANDLE, byval BaseOfDll as DWORD64) as WINBOOL
 #else
 	declare function SymUnloadModule(byval hProcess as HANDLE, byval BaseOfDll as DWORD) as WINBOOL
 #endif
@@ -1066,7 +1071,7 @@ declare function SymUnloadModule64(byval hProcess as HANDLE, byval BaseOfDll as 
 declare function SymUnDName64(byval sym as PIMAGEHLP_SYMBOL64, byval UnDecName as PSTR, byval UnDecNameLength as DWORD) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymUnDName SymUnDName64
+	declare function SymUnDName alias "SymUnDName64"(byval sym as PIMAGEHLP_SYMBOL64, byval UnDecName as PSTR, byval UnDecNameLength as DWORD) as WINBOOL
 #else
 	declare function SymUnDName(byval sym as PIMAGEHLP_SYMBOL, byval UnDecName as PSTR, byval UnDecNameLength as DWORD) as WINBOOL
 #endif
@@ -1076,8 +1081,8 @@ declare function SymRegisterCallback64W(byval hProcess as HANDLE, byval Callback
 declare function SymRegisterFunctionEntryCallback64(byval hProcess as HANDLE, byval CallbackFunction as PSYMBOL_FUNCENTRY_CALLBACK64, byval UserContext as ULONG64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymRegisterCallback SymRegisterCallback64
-	#define SymRegisterFunctionEntryCallback SymRegisterFunctionEntryCallback64
+	declare function SymRegisterCallback alias "SymRegisterCallback64"(byval hProcess as HANDLE, byval CallbackFunction as PSYMBOL_REGISTERED_CALLBACK64, byval UserContext as ULONG64) as WINBOOL
+	declare function SymRegisterFunctionEntryCallback alias "SymRegisterFunctionEntryCallback64"(byval hProcess as HANDLE, byval CallbackFunction as PSYMBOL_FUNCENTRY_CALLBACK64, byval UserContext as ULONG64) as WINBOOL
 #else
 	declare function SymRegisterCallback(byval hProcess as HANDLE, byval CallbackFunction as PSYMBOL_REGISTERED_CALLBACK, byval UserContext as PVOID) as WINBOOL
 	declare function SymRegisterFunctionEntryCallback(byval hProcess as HANDLE, byval CallbackFunction as PSYMBOL_FUNCENTRY_CALLBACK, byval UserContext as PVOID) as WINBOOL
@@ -1257,7 +1262,7 @@ declare function DbgHelpCreateUserDumpW(byval FileName as LPCWSTR, byval Callbac
 declare function SymGetSymFromAddr64(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval pdwDisplacement as PDWORD64, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetSymFromAddr SymGetSymFromAddr64
+	declare function SymGetSymFromAddr alias "SymGetSymFromAddr64"(byval hProcess as HANDLE, byval qwAddr as DWORD64, byval pdwDisplacement as PDWORD64, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 #else
 	declare function SymGetSymFromAddr(byval hProcess as HANDLE, byval dwAddr as DWORD, byval pdwDisplacement as PDWORD, byval Symbol as PIMAGEHLP_SYMBOL) as WINBOOL
 #endif
@@ -1265,7 +1270,7 @@ declare function SymGetSymFromAddr64(byval hProcess as HANDLE, byval qwAddr as D
 declare function SymGetSymFromName64(byval hProcess as HANDLE, byval Name as PCSTR, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 
 #ifdef __FB_64BIT__
-	#define SymGetSymFromName SymGetSymFromName64
+	declare function SymGetSymFromName alias "SymGetSymFromName64"(byval hProcess as HANDLE, byval Name as PCSTR, byval Symbol as PIMAGEHLP_SYMBOL64) as WINBOOL
 #else
 	declare function SymGetSymFromName(byval hProcess as HANDLE, byval Name as PCSTR, byval Symbol as PIMAGEHLP_SYMBOL) as WINBOOL
 #endif
@@ -1294,16 +1299,16 @@ const SYMF_VIRTUAL = &h00001000
 const SYMF_THUNK = &h00002000
 const SYMF_TLSREL = &h00004000
 const IMAGEHLP_SYMBOL_INFO_VALUEPRESENT = 1
-#define IMAGEHLP_SYMBOL_INFO_REGISTER SYMF_REGISTER
-#define IMAGEHLP_SYMBOL_INFO_REGRELATIVE SYMF_REGREL
-#define IMAGEHLP_SYMBOL_INFO_FRAMERELATIVE SYMF_FRAMEREL
-#define IMAGEHLP_SYMBOL_INFO_PARAMETER SYMF_PARAMETER
-#define IMAGEHLP_SYMBOL_INFO_LOCAL SYMF_LOCAL
-#define IMAGEHLP_SYMBOL_INFO_CONSTANT SYMF_CONSTANT
-#define IMAGEHLP_SYMBOL_FUNCTION SYMF_FUNCTION
-#define IMAGEHLP_SYMBOL_VIRTUAL SYMF_VIRTUAL
-#define IMAGEHLP_SYMBOL_THUNK SYMF_THUNK
-#define IMAGEHLP_SYMBOL_INFO_TLSRELATIVE SYMF_TLSREL
+const IMAGEHLP_SYMBOL_INFO_REGISTER = SYMF_REGISTER
+const IMAGEHLP_SYMBOL_INFO_REGRELATIVE = SYMF_REGREL
+const IMAGEHLP_SYMBOL_INFO_FRAMERELATIVE = SYMF_FRAMEREL
+const IMAGEHLP_SYMBOL_INFO_PARAMETER = SYMF_PARAMETER
+const IMAGEHLP_SYMBOL_INFO_LOCAL = SYMF_LOCAL
+const IMAGEHLP_SYMBOL_INFO_CONSTANT = SYMF_CONSTANT
+const IMAGEHLP_SYMBOL_FUNCTION = SYMF_FUNCTION
+const IMAGEHLP_SYMBOL_VIRTUAL = SYMF_VIRTUAL
+const IMAGEHLP_SYMBOL_THUNK = SYMF_THUNK
+const IMAGEHLP_SYMBOL_INFO_TLSRELATIVE = SYMF_TLSREL
 #define MINIDUMP_SIGNATURE asc("PMDM")
 const MINIDUMP_VERSION = 42899
 type RVA as DWORD

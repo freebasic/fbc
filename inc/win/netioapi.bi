@@ -54,10 +54,9 @@
 	extern "Windows"
 
 	#define _NETIOAPI_H_
-	#define NETIO_STATUS DWORD
+	type NETIO_STATUS as DWORD
 	#define NETIO_SUCCESS(x) ((x) = NO_ERROR)
 	#define _NETIOAPI_SUCCESS_
-	#define IF_NAMESIZE NDIS_IF_MAX_STRING_SIZE
 
 	type _MIB_NOTIFICATION_TYPE as long
 	enum

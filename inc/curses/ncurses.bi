@@ -71,19 +71,20 @@ const NCURSES_MOUSE_VERSION = 1
 const NCURSES_DLL_H_incl = 1
 #undef NCURSES_DLL
 const NCURSES_ENABLE_STDBOOL_H = 1
-#define NCURSES_ATTR_T long
+type NCURSES_ATTR_T as long
 #undef NCURSES_COLOR_T
-#define NCURSES_COLOR_T short
+type NCURSES_COLOR_T as short
 const NCURSES_OPAQUE = 0
 const NCURSES_REENTRANT = 0
 #undef NCURSES_INTEROP_FUNCS
 const NCURSES_INTEROP_FUNCS = 0
 #undef NCURSES_SIZE_T
-#define NCURSES_SIZE_T short
+type NCURSES_SIZE_T as short
 #undef NCURSES_TPARM_VARARGS
 const NCURSES_TPARM_VARARGS = 1
 #undef NCURSES_CH_T
-#define NCURSES_CH_T chtype
+
+type NCURSES_CH_T as chtype
 type chtype as culong
 type mmask_t as culong
 #undef NCURSES_WIDECHAR
@@ -97,10 +98,10 @@ type mmask_t as culong
 	const FALSE = 0
 #endif
 type NCURSES_BOOL as ubyte
+
 #define NCURSES_BOOL_ bool
 #define NCURSES_CAST(type, value) cast(type, value)
 #define WA_ATTRIBUTES A_ATTRIBUTES
-#define WA_NORMAL A_NORMAL
 #define WA_STANDOUT A_STANDOUT
 #define WA_UNDERLINE A_UNDERLINE
 #define WA_REVERSE A_REVERSE
@@ -412,13 +413,14 @@ declare function use_window(byval as WINDOW_ ptr, byval as NCURSES_WINDOW_CB, by
 declare function wresize(byval as WINDOW_ ptr, byval as long, byval as long) as long
 declare sub nofilter()
 #undef NCURSES_SP_FUNCS
-
 const NCURSES_SP_FUNCS = 0
 #define NCURSES_SP_NAME(name) name
-#define NCURSES_SP_OUTC NCURSES_OUTC
+type NCURSES_SP_OUTC as NCURSES_OUTC
+
 const NCURSES_ATTR_SHIFT = 8
 #define NCURSES_BITS(mask, shift) ((mask) shl ((shift) + NCURSES_ATTR_SHIFT))
 const A_NORMAL = cast(culong, 1) - cast(culong, 1)
+const WA_NORMAL = A_NORMAL
 #define A_ATTRIBUTES NCURSES_BITS(not (cast(culong, 1) - cast(culong, 1)), 0)
 #define A_CHARTEXT (NCURSES_BITS(cast(culong, 1), 0) - cast(culong, 1))
 #define A_COLOR NCURSES_BITS((cast(culong, 1) shl 8) - cast(culong, 1), 0)
@@ -620,8 +622,8 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 		*(p) = cshort(PAIR_NUMBER((win)->_attrs))
 	end if
 #endmacro
-#define vw_printw vwprintw
-#define vw_scanw vwscanw
+declare function vw_printw alias "vwprintw"(byval as WINDOW_ ptr, byval as const zstring ptr, byval as va_list) as long
+declare function vw_scanw alias "vwscanw"(byval as WINDOW_ ptr, byval as zstring ptr, byval as va_list) as long
 #define is_cleared(win) iif((win), (win)->_clear, FALSE)
 #define is_idcok(win) iif((win), (win)->_idcok, FALSE)
 #define is_idlok(win) iif((win), (win)->_idlok, FALSE)
@@ -824,8 +826,8 @@ declare function _nc_tracebits() as zstring ptr
 declare function _tracechar(byval as long) as zstring ptr
 declare function _tracechtype(byval as chtype) as zstring ptr
 declare function _tracechtype2(byval as long, byval as chtype) as zstring ptr
-#define _tracech_t _tracechtype
-#define _tracech_t2 _tracechtype2
+declare function _tracech_t alias "_tracechtype"(byval as chtype) as zstring ptr
+declare function _tracech_t2 alias "_tracechtype2"(byval as long, byval as chtype) as zstring ptr
 declare function _tracemouse(byval as const MEVENT ptr) as zstring ptr
 declare sub trace(byval as const ulong)
 

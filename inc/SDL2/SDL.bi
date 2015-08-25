@@ -67,9 +67,7 @@ extern "C"
 
 declare function SDL_GetPlatform() as const zstring ptr
 
-#ifdef __FB_UNIX__
-	#define SDL_BYTEORDER SDL_LIL_ENDIAN
-#else
+#ifdef __FB_WIN32__
 	#define _SDL_config_windows_h
 #endif
 
@@ -202,11 +200,6 @@ declare sub SDL_SetMainReady()
 #endif
 
 #define _SDL_assert_h
-
-#ifdef __FB_UNIX__
-	#define SDL_BYTEORDER SDL_LIL_ENDIAN
-#endif
-
 const SDL_ASSERT_LEVEL = 2
 
 #if defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
@@ -312,10 +305,16 @@ end enum
 declare function SDL_Error(byval code as SDL_errorcode) as long
 #define _SDL_endian_h
 const SDL_LIL_ENDIAN = 1234
-const SDL_BIG_ENDIAN = 4321
 
 #ifdef __FB_WIN32__
-	#define SDL_BYTEORDER SDL_LIL_ENDIAN
+	const SDL_BIG_ENDIAN = 4321
+#endif
+
+const SDL_BYTEORDER = SDL_LIL_ENDIAN
+
+#ifdef __FB_UNIX__
+	const SDL_BYTEORDER = SDL_LIL_ENDIAN
+	const SDL_BIG_ENDIAN = 4321
 #endif
 
 #define SDL_Swap16(x) cushort((cushort(x) shl 8) or (cushort(x) shr 8))
@@ -544,18 +543,18 @@ const AUDIO_U16LSB = &h0010
 const AUDIO_S16LSB = &h8010
 const AUDIO_U16MSB = &h1010
 const AUDIO_S16MSB = &h9010
-#define AUDIO_U16 AUDIO_U16LSB
-#define AUDIO_S16 AUDIO_S16LSB
+const AUDIO_U16 = AUDIO_U16LSB
+const AUDIO_S16 = AUDIO_S16LSB
 const AUDIO_S32LSB = &h8020
 const AUDIO_S32MSB = &h9020
-#define AUDIO_S32 AUDIO_S32LSB
+const AUDIO_S32 = AUDIO_S32LSB
 const AUDIO_F32LSB = &h8120
 const AUDIO_F32MSB = &h9120
-#define AUDIO_F32 AUDIO_F32LSB
-#define AUDIO_U16SYS AUDIO_U16LSB
-#define AUDIO_S16SYS AUDIO_S16LSB
-#define AUDIO_S32SYS AUDIO_S32LSB
-#define AUDIO_F32SYS AUDIO_F32LSB
+const AUDIO_F32 = AUDIO_F32LSB
+const AUDIO_U16SYS = AUDIO_U16LSB
+const AUDIO_S16SYS = AUDIO_S16LSB
+const AUDIO_S32SYS = AUDIO_S32LSB
+const AUDIO_F32SYS = AUDIO_F32LSB
 const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE = &h00000001
 const SDL_AUDIO_ALLOW_FORMAT_CHANGE = &h00000002
 const SDL_AUDIO_ALLOW_CHANNELS_CHANGE = &h00000004
@@ -766,7 +765,7 @@ type SDL_Color
 	a as Uint8
 end type
 
-#define SDL_Colour SDL_Color
+type SDL_Colour as SDL_Color
 
 type SDL_Palette
 	ncolors as long
@@ -898,12 +897,12 @@ declare function SDL_ConvertSurfaceFormat(byval src as SDL_Surface ptr, byval pi
 declare function SDL_ConvertPixels(byval width as long, byval height as long, byval src_format as Uint32, byval src as const any ptr, byval src_pitch as long, byval dst_format as Uint32, byval dst as any ptr, byval dst_pitch as long) as long
 declare function SDL_FillRect(byval dst as SDL_Surface ptr, byval rect as const SDL_Rect ptr, byval color as Uint32) as long
 declare function SDL_FillRects(byval dst as SDL_Surface ptr, byval rects as const SDL_Rect ptr, byval count as long, byval color as Uint32) as long
-#define SDL_BlitSurface SDL_UpperBlit
 declare function SDL_UpperBlit(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
+declare function SDL_BlitSurface alias "SDL_UpperBlit"(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_LowerBlit(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_SoftStretch(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as const SDL_Rect ptr) as long
-#define SDL_BlitScaled SDL_UpperBlitScaled
 declare function SDL_UpperBlitScaled(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
+declare function SDL_BlitScaled alias "SDL_UpperBlitScaled"(byval src as SDL_Surface ptr, byval srcrect as const SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 declare function SDL_LowerBlitScaled(byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as long
 
 type SDL_DisplayMode

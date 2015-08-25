@@ -211,6 +211,7 @@ const G_PI_2 = 1.5707963267948966192313216916397514420985846996876
 const G_PI_4 = 0.78539816339744830961566084581987572104929234984378
 const G_SQRT2 = 1.4142135623730950488016887242096980785696718753769
 const G_LITTLE_ENDIAN = 1234
+const G_BYTE_ORDER = G_LITTLE_ENDIAN
 const G_BIG_ENDIAN = 4321
 const G_PDP_ENDIAN = 3412
 #define GUINT16_SWAP_LE_BE_CONSTANT(val) cast(guint16, cast(guint16, cast(guint16, (val)) shr 8) or cast(guint16, cast(guint16, (val)) shl 8))
@@ -723,15 +724,14 @@ declare function g_filename_display_basename(byval filename as const zstring ptr
 declare function g_uri_list_extract_uris(byval uri_list as const zstring ptr) as zstring ptr ptr
 
 #ifdef __FB_WIN32__
-	#define g_filename_to_utf8 g_filename_to_utf8_utf8
-	#define g_filename_from_utf8 g_filename_from_utf8_utf8
-	#define g_filename_from_uri g_filename_from_uri_utf8
-	#define g_filename_to_uri g_filename_to_uri_utf8
-
 	declare function g_filename_to_utf8_utf8(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_to_utf8 alias "g_filename_to_utf8_utf8"(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
 	declare function g_filename_from_utf8_utf8(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_from_utf8 alias "g_filename_from_utf8_utf8"(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
 	declare function g_filename_from_uri_utf8(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_from_uri alias "g_filename_from_uri_utf8"(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
 	declare function g_filename_to_uri_utf8(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_to_uri alias "g_filename_to_uri_utf8"(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
 #endif
 
 #define __G_DATASET_H__
@@ -876,18 +876,17 @@ declare sub g_date_to_struct_tm(byval date as const GDate ptr, byval tm as tm pt
 declare sub g_date_clamp(byval date as GDate ptr, byval min_date as const GDate ptr, byval max_date as const GDate ptr)
 declare sub g_date_order(byval date1 as GDate ptr, byval date2 as GDate ptr)
 declare function g_date_strftime(byval s as zstring ptr, byval slen as gsize, byval format as const zstring ptr, byval date as const GDate ptr) as gsize
-
-#define g_date_weekday g_date_get_weekday
-#define g_date_month g_date_get_month
-#define g_date_year g_date_get_year
-#define g_date_day g_date_get_day
-#define g_date_julian g_date_get_julian
-#define g_date_day_of_year g_date_get_day_of_year
-#define g_date_monday_week_of_year g_date_get_monday_week_of_year
-#define g_date_sunday_week_of_year g_date_get_sunday_week_of_year
-#define g_date_days_in_month g_date_get_days_in_month
-#define g_date_monday_weeks_in_year g_date_get_monday_weeks_in_year
-#define g_date_sunday_weeks_in_year g_date_get_sunday_weeks_in_year
+declare function g_date_weekday alias "g_date_get_weekday"(byval date as const GDate ptr) as GDateWeekday
+declare function g_date_month alias "g_date_get_month"(byval date as const GDate ptr) as GDateMonth
+declare function g_date_year alias "g_date_get_year"(byval date as const GDate ptr) as GDateYear
+declare function g_date_day alias "g_date_get_day"(byval date as const GDate ptr) as GDateDay
+declare function g_date_julian alias "g_date_get_julian"(byval date as const GDate ptr) as guint32
+declare function g_date_day_of_year alias "g_date_get_day_of_year"(byval date as const GDate ptr) as guint
+declare function g_date_monday_week_of_year alias "g_date_get_monday_week_of_year"(byval date as const GDate ptr) as guint
+declare function g_date_sunday_week_of_year alias "g_date_get_sunday_week_of_year"(byval date as const GDate ptr) as guint
+declare function g_date_days_in_month alias "g_date_get_days_in_month"(byval month as GDateMonth, byval year as GDateYear) as guint8
+declare function g_date_monday_weeks_in_year alias "g_date_get_monday_weeks_in_year"(byval year as GDateYear) as guint8
+declare function g_date_sunday_weeks_in_year alias "g_date_get_sunday_weeks_in_year"(byval year as GDateYear) as guint8
 #define __G_DATE_TIME_H__
 #define __G_TIME_ZONE_H__
 type GTimeZone as _GTimeZone
@@ -980,10 +979,10 @@ declare sub g_dir_rewind(byval dir as GDir ptr)
 declare sub g_dir_close(byval dir as GDir ptr)
 
 #ifdef __FB_WIN32__
-	#define g_dir_open g_dir_open_utf8
-	#define g_dir_read_name g_dir_read_name_utf8
 	declare function g_dir_open_utf8(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+	declare function g_dir_open alias "g_dir_open_utf8"(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
 	declare function g_dir_read_name_utf8(byval dir as GDir ptr) as const zstring ptr
+	declare function g_dir_read_name alias "g_dir_read_name_utf8"(byval dir as GDir ptr) as const zstring ptr
 #endif
 
 #define __G_ENVIRON_H__
@@ -1005,13 +1004,12 @@ declare function g_environ_setenv(byval envp as zstring ptr ptr, byval variable 
 declare function g_environ_unsetenv(byval envp as zstring ptr ptr, byval variable as const zstring ptr) as zstring ptr ptr
 
 #ifdef __FB_WIN32__
-	#define g_getenv g_getenv_utf8
-	#define g_setenv g_setenv_utf8
-	#define g_unsetenv g_unsetenv_utf8
-
 	declare function g_getenv_utf8(byval variable as const zstring ptr) as const zstring ptr
+	declare function g_getenv alias "g_getenv_utf8"(byval variable as const zstring ptr) as const zstring ptr
 	declare function g_setenv_utf8(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
+	declare function g_setenv alias "g_setenv_utf8"(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
 	declare sub g_unsetenv_utf8(byval variable as const zstring ptr)
+	declare sub g_unsetenv alias "g_unsetenv_utf8"(byval variable as const zstring ptr)
 #endif
 
 #define __G_FILEUTILS_H__
@@ -1109,7 +1107,6 @@ declare function g_mkdir_with_parents(byval pathname as const zstring ptr, byval
 declare function g_path_is_absolute(byval file_name as const zstring ptr) as gboolean
 declare function g_path_skip_root(byval file_name as const zstring ptr) as const zstring ptr
 declare function g_basename(byval file_name as const zstring ptr) as const zstring ptr
-#define g_dirname g_path_get_dirname
 
 #ifdef __FB_UNIX__
 	declare function g_get_current_dir() as zstring ptr
@@ -1119,19 +1116,19 @@ declare function g_basename(byval file_name as const zstring ptr) as const zstri
 
 declare function g_path_get_basename(byval file_name as const zstring ptr) as zstring ptr
 declare function g_path_get_dirname(byval file_name as const zstring ptr) as zstring ptr
+declare function g_dirname alias "g_path_get_dirname"(byval file_name as const zstring ptr) as zstring ptr
 
 #ifdef __FB_WIN32__
-	#define g_file_test g_file_test_utf8
-	#define g_file_get_contents g_file_get_contents_utf8
-	#define g_mkstemp g_mkstemp_utf8
-	#define g_file_open_tmp g_file_open_tmp_utf8
-	#define g_get_current_dir g_get_current_dir_utf8
-
 	declare function g_file_test_utf8(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
+	declare function g_file_test alias "g_file_test_utf8"(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
 	declare function g_file_get_contents_utf8(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_file_get_contents alias "g_file_get_contents_utf8"(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
 	declare function g_mkstemp_utf8(byval tmpl as zstring ptr) as gint
+	declare function g_mkstemp alias "g_mkstemp_utf8"(byval tmpl as zstring ptr) as gint
 	declare function g_file_open_tmp_utf8(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
+	declare function g_file_open_tmp alias "g_file_open_tmp_utf8"(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
 	declare function g_get_current_dir_utf8() as zstring ptr
+	declare function g_get_current_dir alias "g_get_current_dir_utf8"() as zstring ptr
 #endif
 
 #define __G_GETTEXT_H__
@@ -1148,9 +1145,9 @@ declare function g_dpgettext2(byval domain as const zstring ptr, byval context a
 type GMemVTable as _GMemVTable
 
 #if defined(__FB_WIN32__) and defined(__FB_64BIT__)
-	#define G_MEM_ALIGN GLIB_SIZEOF_VOID_P
+	const G_MEM_ALIGN = GLIB_SIZEOF_VOID_P
 #else
-	#define G_MEM_ALIGN GLIB_SIZEOF_LONG
+	const G_MEM_ALIGN = GLIB_SIZEOF_LONG
 #endif
 
 declare sub g_free(byval mem as gpointer)
@@ -1282,7 +1279,7 @@ end type
 declare function g_list_alloc() as GList ptr
 declare sub g_list_free(byval list as GList ptr)
 declare sub g_list_free_1(byval list as GList ptr)
-#define g_list_free1 g_list_free_1
+declare sub g_list_free1 alias "g_list_free_1"(byval list as GList ptr)
 declare sub g_list_free_full(byval list as GList ptr, byval free_func as GDestroyNotify)
 declare function g_list_append(byval list as GList ptr, byval data as gpointer) as GList ptr
 declare function g_list_prepend(byval list as GList ptr, byval data as gpointer) as GList ptr
@@ -1496,7 +1493,7 @@ end type
 declare function g_slist_alloc() as GSList ptr
 declare sub g_slist_free(byval list as GSList ptr)
 declare sub g_slist_free_1(byval list as GSList ptr)
-#define g_slist_free1 g_slist_free_1
+declare sub g_slist_free1 alias "g_slist_free_1"(byval list as GSList ptr)
 declare sub g_slist_free_full(byval list as GSList ptr, byval free_func as GDestroyNotify)
 declare function g_slist_append(byval list as GSList ptr, byval data as gpointer) as GSList ptr
 declare function g_slist_prepend(byval list as GSList ptr, byval data as gpointer) as GSList ptr
@@ -1582,8 +1579,8 @@ const G_PRIORITY_DEFAULT = 0
 const G_PRIORITY_HIGH_IDLE = 100
 const G_PRIORITY_DEFAULT_IDLE = 200
 const G_PRIORITY_LOW = 300
-#define G_SOURCE_REMOVE FALSE
-#define G_SOURCE_CONTINUE CTRUE
+const G_SOURCE_REMOVE = FALSE
+const G_SOURCE_CONTINUE = CTRUE
 
 declare function g_main_context_new() as GMainContext ptr
 declare function g_main_context_ref(byval context as GMainContext ptr) as GMainContext ptr
@@ -1735,7 +1732,7 @@ enum
 	G_UNICODE_SPACE_SEPARATOR
 end enum
 
-#define G_UNICODE_COMBINING_MARK G_UNICODE_SPACING_MARK
+const G_UNICODE_COMBINING_MARK = G_UNICODE_SPACING_MARK
 
 type GUnicodeBreakType as long
 enum
@@ -2134,8 +2131,8 @@ declare sub g_string_append_printf(byval string as GString ptr, byval format as 
 declare function g_string_append_uri_escaped(byval string as GString ptr, byval unescaped as const zstring ptr, byval reserved_chars_allowed as const zstring ptr, byval allow_utf8 as gboolean) as GString ptr
 declare function g_string_down(byval string as GString ptr) as GString ptr
 declare function g_string_up(byval string as GString ptr) as GString ptr
-#define g_string_sprintf g_string_printf
-#define g_string_sprintfa g_string_append_printf
+declare sub g_string_sprintf alias "g_string_printf"(byval string as GString ptr, byval format as const zstring ptr, ...)
+declare sub g_string_sprintfa alias "g_string_append_printf"(byval string as GString ptr, byval format as const zstring ptr, ...)
 type GIOChannel as _GIOChannel
 type GIOFuncs as _GIOFuncs
 
@@ -2293,8 +2290,8 @@ declare function g_io_channel_unix_get_fd(byval channel as GIOChannel ptr) as gi
 	declare function g_io_channel_win32_new_socket(byval socket as gint) as GIOChannel ptr
 	declare function g_io_channel_win32_new_stream_socket(byval socket as gint) as GIOChannel ptr
 	declare sub g_io_channel_win32_set_debug(byval channel as GIOChannel ptr, byval flag as gboolean)
-	#define g_io_channel_new_file g_io_channel_new_file_utf8
 	declare function g_io_channel_new_file_utf8(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
+	declare function g_io_channel_new_file alias "g_io_channel_new_file_utf8"(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
 #endif
 
 #define __G_KEY_FILE_H__
@@ -3158,17 +3155,16 @@ declare function g_spawn_check_exit_status(byval exit_status as gint, byval erro
 declare sub g_spawn_close_pid(byval pid as GPid)
 
 #ifdef __FB_WIN32__
-	#define g_spawn_async g_spawn_async_utf8
-	#define g_spawn_async_with_pipes g_spawn_async_with_pipes_utf8
-	#define g_spawn_sync g_spawn_sync_utf8
-	#define g_spawn_command_line_sync g_spawn_command_line_sync_utf8
-	#define g_spawn_command_line_async g_spawn_command_line_async_utf8
-
 	declare function g_spawn_async_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async alias "g_spawn_async_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
 	declare function g_spawn_async_with_pipes_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_with_pipes alias "g_spawn_async_with_pipes_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
 	declare function g_spawn_sync_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_sync alias "g_spawn_sync_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
 	declare function g_spawn_command_line_sync_utf8(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_sync alias "g_spawn_command_line_sync_utf8"(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
 	declare function g_spawn_command_line_async_utf8(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_async alias "g_spawn_command_line_async_utf8"(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
 #define __G_STRFUNCS_H__
@@ -3893,13 +3889,17 @@ declare function glib_check_version_ alias "glib_check_version"(byval required_m
 #endif
 
 #ifdef __FB_WIN32__
+	declare function g_win32_get_package_installation_directory_utf8(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
+
 	#ifdef __FB_64BIT__
-		#define g_win32_get_package_installation_directory g_win32_get_package_installation_directory_utf8
-		#define g_win32_get_package_installation_subdirectory g_win32_get_package_installation_subdirectory_utf8
+		declare function g_win32_get_package_installation_directory alias "g_win32_get_package_installation_directory_utf8"(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
 	#endif
 
-	declare function g_win32_get_package_installation_directory_utf8(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
 	declare function g_win32_get_package_installation_subdirectory_utf8(byval package as const zstring ptr, byval dll_name as const zstring ptr, byval subdir as const zstring ptr) as zstring ptr
+
+	#ifdef __FB_64BIT__
+		declare function g_win32_get_package_installation_subdirectory alias "g_win32_get_package_installation_subdirectory_utf8"(byval package as const zstring ptr, byval dll_name as const zstring ptr, byval subdir as const zstring ptr) as zstring ptr
+	#endif
 #endif
 
 #define __G_ALLOCATOR_H__
@@ -4054,7 +4054,6 @@ declare function g_thread_create(byval func as GThreadFunc, byval data as gpoint
 declare function g_thread_create_full(byval func as GThreadFunc, byval data as gpointer, byval stack_size as gulong, byval joinable as gboolean, byval bound as gboolean, byval priority as GThreadPriority, byval error as GError ptr ptr) as GThread ptr
 declare sub g_thread_set_priority(byval thread as GThread ptr, byval priority as GThreadPriority)
 declare sub g_thread_foreach(byval thread_func as GFunc, byval user_data as gpointer)
-#define g_static_mutex_get_mutex g_static_mutex_get_mutex_impl
 #define G_STATIC_MUTEX_INIT_ (NULL)
 
 type GStaticMutex
@@ -4072,6 +4071,7 @@ end type
 declare sub g_static_mutex_init(byval mutex as GStaticMutex ptr)
 declare sub g_static_mutex_free(byval mutex as GStaticMutex ptr)
 declare function g_static_mutex_get_mutex_impl(byval mutex as GStaticMutex ptr) as GMutex ptr
+declare function g_static_mutex_get_mutex alias "g_static_mutex_get_mutex_impl"(byval mutex as GStaticMutex ptr) as GMutex ptr
 type GStaticRecMutex as _GStaticRecMutex
 
 union _GStaticRecMutex_unused

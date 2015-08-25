@@ -42,10 +42,10 @@
 #endif
 
 '' The following symbols have been renamed:
-''     #define LUA_NUMBER => LUA_NUMBER_
-''     #define LUA_UNSIGNED => LUA_UNSIGNED_
-''     #define LUA_INTEGER => LUA_INTEGER_
-''     #define LUA_KCONTEXT => LUA_KCONTEXT_
+''     typedef LUA_NUMBER => LUA_NUMBER_
+''     typedef LUA_UNSIGNED => LUA_UNSIGNED_
+''     typedef LUA_INTEGER => LUA_INTEGER_
+''     typedef LUA_KCONTEXT => LUA_KCONTEXT_
 ''     #define LUA_VERSION => LUA_VERSION_
 ''     constant LUA_YIELD => LUA_YIELD_
 
@@ -69,16 +69,16 @@ const LUA_FLOAT_DOUBLE = 2
 const LUA_FLOAT_LONGDOUBLE = 3
 
 #ifdef LUA_32BITS
-	#define LUA_INT_TYPE LUA_INT_INT
-	#define LUA_FLOAT_TYPE LUA_FLOAT_FLOAT
+	const LUA_INT_TYPE = LUA_INT_INT
+	const LUA_FLOAT_TYPE = LUA_FLOAT_FLOAT
 #elseif (not defined(LUA_32BITS)) and defined(LUA_C89_NUMBERS)
-	#define LUA_INT_TYPE LUA_INT_LONG
+	const LUA_INT_TYPE = LUA_INT_LONG
 #else
-	#define LUA_INT_TYPE LUA_INT_LONGLONG
+	const LUA_INT_TYPE = LUA_INT_LONGLONG
 #endif
 
 #ifndef LUA_32BITS
-	#define LUA_FLOAT_TYPE LUA_FLOAT_DOUBLE
+	const LUA_FLOAT_TYPE = LUA_FLOAT_DOUBLE
 #endif
 
 #define LUA_VDIR LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
@@ -100,14 +100,14 @@ const LUA_FLOAT_LONGDOUBLE = 3
 #endif
 
 #ifdef LUA_32BITS
-	#define LUA_NUMBER_ single
+	type LUA_NUMBER_ as single
 	#define l_mathlim(n) FLT_##n
 #else
-	#define LUA_NUMBER_ double
+	type LUA_NUMBER_ as double
 	#define l_mathlim(n) DBL_##n
 #endif
 
-#define LUAI_UACNUMBER double
+type LUAI_UACNUMBER as double
 #define LUA_NUMBER_FRMLEN ""
 
 #ifdef LUA_32BITS
@@ -125,21 +125,21 @@ const LUA_FLOAT_LONGDOUBLE = 3
 #define lua_number2str(s, n) sprintf((s), LUA_NUMBER_FMT, (n))
 #define LUA_INTEGER_FMT "%" LUA_INTEGER_FRMLEN "d"
 #define lua_integer2str(s, n) sprintf((s), LUA_INTEGER_FMT, (n))
-#define LUAI_UACINT LUA_INTEGER_
-#define LUA_UNSIGNED_ lua_Unsigned
+type LUAI_UACINT as LUA_INTEGER_
+type LUA_UNSIGNED_ as lua_Unsigned
 
 #ifdef LUA_32BITS
-	#define LUA_INTEGER_ long
+	type LUA_INTEGER_ as long
 	#define LUA_INTEGER_FRMLEN ""
 	#define LUA_MAXINTEGER INT_MAX
 	#define LUA_MININTEGER INT_MIN
 #elseif (not defined(LUA_32BITS)) and defined(LUA_C89_NUMBERS)
-	#define LUA_INTEGER_ clong
+	type LUA_INTEGER_ as clong
 	#define LUA_INTEGER_FRMLEN "l"
 	#define LUA_MAXINTEGER LONG_MAX
 	#define LUA_MININTEGER LONG_MIN
 #else
-	#define LUA_INTEGER_ longint
+	type LUA_INTEGER_ as longint
 	#define LUA_INTEGER_FRMLEN "ll"
 	#define LUA_MAXINTEGER LLONG_MAX
 	#define LUA_MININTEGER LLONG_MIN
@@ -163,7 +163,7 @@ end function
 	#define lua_number2strx(L, b, f, n) sprintf(b, f, n)
 #endif
 
-#define LUA_KCONTEXT_ integer
+type LUA_KCONTEXT_ as integer
 #define lua_getlocaledecpoint() localeconv()->decimal_point[0]
 const LUAI_MAXSTACK = 1000000
 #define LUA_EXTRASPACE sizeof(any ptr)
@@ -204,7 +204,7 @@ const LUA_NUMTAGS = 9
 const LUA_MINSTACK = 20
 const LUA_RIDX_MAINTHREAD = 1
 const LUA_RIDX_GLOBALS = 2
-#define LUA_RIDX_LAST LUA_RIDX_GLOBALS
+const LUA_RIDX_LAST = LUA_RIDX_GLOBALS
 
 #ifdef LUA_32BITS
 	type lua_Number as single

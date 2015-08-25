@@ -20,8 +20,8 @@
 
 extern "C"
 
-#define MEDIATYPE_NULL GUID_NULL
-#define MEDIASUBTYPE_NULL GUID_NULL
+extern MEDIATYPE_NULL alias "GUID_NULL" as const IID
+extern MEDIASUBTYPE_NULL alias "GUID_NULL" as const IID
 extern MEDIASUBTYPE_None as const GUID
 extern MEDIATYPE_Video as const GUID
 extern MEDIATYPE_Audio as const GUID

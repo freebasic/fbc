@@ -59,7 +59,6 @@ const CAIRO_VERSION_MAJOR = 1
 const CAIRO_VERSION_MINOR = 14
 const CAIRO_VERSION_MICRO = 2
 #define CAIRO_DEPRECATED_H
-#define CAIRO_FONT_TYPE_ATSUI CAIRO_FONT_TYPE_QUARTZ
 #define cairo_current_font_extents cairo_current_font_extents_REPLACED_BY_cairo_font_extents
 #define cairo_get_font_extents cairo_get_font_extents_REPLACED_BY_cairo_font_extents
 #define cairo_current_operator cairo_current_operator_REPLACED_BY_cairo_get_operator
@@ -536,6 +535,7 @@ enum
 	CAIRO_FONT_TYPE_USER
 end enum
 
+const CAIRO_FONT_TYPE_ATSUI = CAIRO_FONT_TYPE_QUARTZ
 type cairo_font_type_t as _cairo_font_type
 declare function cairo_font_face_get_type(byval font_face as cairo_font_face_t ptr) as cairo_font_type_t
 declare function cairo_font_face_get_user_data(byval font_face as cairo_font_face_t ptr, byval key as const cairo_user_data_key_t ptr) as any ptr

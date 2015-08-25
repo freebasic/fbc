@@ -641,25 +641,25 @@ declare function XtCvtStringToGravity(byval as Display ptr, byval as XrmValuePtr
 declare function XtCvtStringToInitialState(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToInt(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-#define XtCvtStringToPosition XtCvtStringToShort
 declare function XtCvtStringToRestartStyle(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
+declare function XtCvtStringToPosition alias "XtCvtStringToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToTranslationTable(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtStringToVisual(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToBool(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToBoolean(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToColor(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-#define XtCvtIntToDimension XtCvtIntToShort
 declare function XtCvtIntToFloat(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToFont(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToPixmap(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-#define XtCvtIntToPosition XtCvtIntToShort
 declare function XtCvtIntToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
+declare function XtCvtIntToDimension alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
+declare function XtCvtIntToPosition alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtIntToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 declare function XtCvtColorToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-#define XtCvtPixelToColor XtCvtIntToColor
+declare function XtCvtPixelToColor alias "XtCvtIntToColor"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
 
 end extern
 

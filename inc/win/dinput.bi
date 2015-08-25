@@ -104,54 +104,54 @@ type LPSYSKEYBOARDA as SysKeyboardA ptr
 type LPSYSMOUSEA as SysMouseA ptr
 
 #ifdef UNICODE
-	#define IID_IDirectInput IID_IDirectInputW
-	#define IDirectInput IDirectInputW
+	extern IID_IDirectInput alias "IID_IDirectInputW" as const GUID
+	type IDirectInput as IDirectInputW
 	type LPDIRECTINPUT as LPDIRECTINPUTW
-	#define IID_IDirectInput2 IID_IDirectInput2W
-	#define IDirectInput2 IDirectInput2W
+	extern IID_IDirectInput2 alias "IID_IDirectInput2W" as const GUID
+	type IDirectInput2 as IDirectInput2W
 	type LPDIRECTINPUT2 as LPDIRECTINPUT2W
-	#define IID_IDirectInput7 IID_IDirectInput7W
-	#define IDirectInput7 IDirectInput7W
+	extern IID_IDirectInput7 alias "IID_IDirectInput7W" as const GUID
+	type IDirectInput7 as IDirectInput7W
 	type LPDIRECTINPUT7 as LPDIRECTINPUT7W
-	#define IID_IDirectInput8 IID_IDirectInput8W
-	#define IDirectInput8 IDirectInput8W
+	extern IID_IDirectInput8 alias "IID_IDirectInput8W" as const GUID
+	type IDirectInput8 as IDirectInput8W
 	type LPDIRECTINPUT8 as LPDIRECTINPUT8W
-	#define IID_IDirectInputDevice IID_IDirectInputDeviceW
-	#define IDirectInputDevice IDirectInputDeviceW
+	extern IID_IDirectInputDevice alias "IID_IDirectInputDeviceW" as const GUID
+	type IDirectInputDevice as IDirectInputDeviceW
 	type LPDIRECTINPUTDEVICE as LPDIRECTINPUTDEVICEW
-	#define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
-	#define IDirectInputDevice2 IDirectInputDevice2W
+	extern IID_IDirectInputDevice2 alias "IID_IDirectInputDevice2W" as const GUID
+	type IDirectInputDevice2 as IDirectInputDevice2W
 	type LPDIRECTINPUTDEVICE2 as LPDIRECTINPUTDEVICE2W
-	#define IID_IDirectInputDevice7 IID_IDirectInputDevice7W
-	#define IDirectInputDevice7 IDirectInputDevice7W
+	extern IID_IDirectInputDevice7 alias "IID_IDirectInputDevice7W" as const GUID
+	type IDirectInputDevice7 as IDirectInputDevice7W
 	type LPDIRECTINPUTDEVICE7 as LPDIRECTINPUTDEVICE7W
-	#define IID_IDirectInputDevice8 IID_IDirectInputDevice8W
-	#define IDirectInputDevice8 IDirectInputDevice8W
+	extern IID_IDirectInputDevice8 alias "IID_IDirectInputDevice8W" as const GUID
+	type IDirectInputDevice8 as IDirectInputDevice8W
 	type LPDIRECTINPUTDEVICE8 as LPDIRECTINPUTDEVICE8W
 #else
-	#define IID_IDirectInput IID_IDirectInputA
-	#define IDirectInput IDirectInputA
+	extern IID_IDirectInput alias "IID_IDirectInputA" as const GUID
+	type IDirectInput as IDirectInputA
 	type LPDIRECTINPUT as LPDIRECTINPUTA
-	#define IID_IDirectInput2 IID_IDirectInput2A
-	#define IDirectInput2 IDirectInput2A
+	extern IID_IDirectInput2 alias "IID_IDirectInput2A" as const GUID
+	type IDirectInput2 as IDirectInput2A
 	type LPDIRECTINPUT2 as LPDIRECTINPUT2A
-	#define IID_IDirectInput7 IID_IDirectInput7A
-	#define IDirectInput7 IDirectInput7A
+	extern IID_IDirectInput7 alias "IID_IDirectInput7A" as const GUID
+	type IDirectInput7 as IDirectInput7A
 	type LPDIRECTINPUT7 as LPDIRECTINPUT7A
-	#define IID_IDirectInput8 IID_IDirectInput8A
-	#define IDirectInput8 IDirectInput8A
+	extern IID_IDirectInput8 alias "IID_IDirectInput8A" as const GUID
+	type IDirectInput8 as IDirectInput8A
 	type LPDIRECTINPUT8 as LPDIRECTINPUT8A
-	#define IID_IDirectInputDevice IID_IDirectInputDeviceA
-	#define IDirectInputDevice IDirectInputDeviceA
+	extern IID_IDirectInputDevice alias "IID_IDirectInputDeviceA" as const GUID
+	type IDirectInputDevice as IDirectInputDeviceA
 	type LPDIRECTINPUTDEVICE as LPDIRECTINPUTDEVICEA
-	#define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
-	#define IDirectInputDevice2 IDirectInputDevice2A
+	extern IID_IDirectInputDevice2 alias "IID_IDirectInputDevice2A" as const GUID
+	type IDirectInputDevice2 as IDirectInputDevice2A
 	type LPDIRECTINPUTDEVICE2 as LPDIRECTINPUTDEVICE2A
-	#define IID_IDirectInputDevice7 IID_IDirectInputDevice7A
-	#define IDirectInputDevice7 IDirectInputDevice7A
+	extern IID_IDirectInputDevice7 alias "IID_IDirectInputDevice7A" as const GUID
+	type IDirectInputDevice7 as IDirectInputDevice7A
 	type LPDIRECTINPUTDEVICE7 as LPDIRECTINPUTDEVICE7A
-	#define IID_IDirectInputDevice8 IID_IDirectInputDevice8A
-	#define IDirectInputDevice8 IDirectInputDevice8A
+	extern IID_IDirectInputDevice8 alias "IID_IDirectInputDevice8A" as const GUID
+	type IDirectInputDevice8 as IDirectInputDevice8A
 	type LPDIRECTINPUTDEVICE8 as LPDIRECTINPUTDEVICE8A
 #endif
 
@@ -274,21 +274,21 @@ const DI8DEVTYPEKEYBOARD_JAPAN106 = 10
 const DI8DEVTYPEKEYBOARD_JAPANAX = 11
 const DI8DEVTYPEKEYBOARD_J3100 = 12
 const DI8DEVTYPE_LIMITEDGAMESUBTYPE = 1
-#define DI8DEVTYPEJOYSTICK_LIMITED DI8DEVTYPE_LIMITEDGAMESUBTYPE
+const DI8DEVTYPEJOYSTICK_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE
 const DI8DEVTYPEJOYSTICK_STANDARD = 2
-#define DI8DEVTYPEGAMEPAD_LIMITED DI8DEVTYPE_LIMITEDGAMESUBTYPE
+const DI8DEVTYPEGAMEPAD_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE
 const DI8DEVTYPEGAMEPAD_STANDARD = 2
 const DI8DEVTYPEGAMEPAD_TILT = 3
-#define DI8DEVTYPEDRIVING_LIMITED DI8DEVTYPE_LIMITEDGAMESUBTYPE
+const DI8DEVTYPEDRIVING_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE
 const DI8DEVTYPEDRIVING_COMBINEDPEDALS = 2
 const DI8DEVTYPEDRIVING_DUALPEDALS = 3
 const DI8DEVTYPEDRIVING_THREEPEDALS = 4
 const DI8DEVTYPEDRIVING_HANDHELD = 5
-#define DI8DEVTYPEFLIGHT_LIMITED DI8DEVTYPE_LIMITEDGAMESUBTYPE
+const DI8DEVTYPEFLIGHT_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE
 const DI8DEVTYPEFLIGHT_STICK = 2
 const DI8DEVTYPEFLIGHT_YOKE = 3
 const DI8DEVTYPEFLIGHT_RC = 4
-#define DI8DEVTYPE1STPERSON_LIMITED DI8DEVTYPE_LIMITEDGAMESUBTYPE
+const DI8DEVTYPE1STPERSON_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE
 const DI8DEVTYPE1STPERSON_UNKNOWN = 2
 const DI8DEVTYPE1STPERSON_SIXDOF = 3
 const DI8DEVTYPE1STPERSON_SHOOTER = 4
@@ -490,7 +490,7 @@ const DIEDBS_RECENTDEVICE = &h00000010
 const DIEDBS_NEWDEVICE = &h00000020
 const DIEDBSFL_ATTACHEDONLY = &h00000000
 const DIEDBSFL_THISUSER = &h00000010
-#define DIEDBSFL_FORCEFEEDBACK DIEDFL_FORCEFEEDBACK
+const DIEDBSFL_FORCEFEEDBACK = DIEDFL_FORCEFEEDBACK
 const DIEDBSFL_AVAILABLEDEVICES = &h00001000
 const DIEDBSFL_MULTIMICEKEYBOARDS = &h00002000
 const DIEDBSFL_NONGAMINGDEVICES = &h00004000
@@ -659,21 +659,21 @@ const DIK_WEBBACK = &hEA
 const DIK_MYCOMPUTER = &hEB
 const DIK_MAIL = &hEC
 const DIK_MEDIASELECT = &hED
-#define DIK_BACKSPACE DIK_BACK
-#define DIK_NUMPADSTAR DIK_MULTIPLY
-#define DIK_LALT DIK_LMENU
-#define DIK_CAPSLOCK DIK_CAPITAL
-#define DIK_NUMPADMINUS DIK_SUBTRACT
-#define DIK_NUMPADPLUS DIK_ADD
-#define DIK_NUMPADPERIOD DIK_DECIMAL
-#define DIK_NUMPADSLASH DIK_DIVIDE
-#define DIK_RALT DIK_RMENU
-#define DIK_UPARROW DIK_UP
-#define DIK_PGUP DIK_PRIOR
-#define DIK_LEFTARROW DIK_LEFT
-#define DIK_RIGHTARROW DIK_RIGHT
-#define DIK_DOWNARROW DIK_DOWN
-#define DIK_PGDN DIK_NEXT
+const DIK_BACKSPACE = DIK_BACK
+const DIK_NUMPADSTAR = DIK_MULTIPLY
+const DIK_LALT = DIK_LMENU
+const DIK_CAPSLOCK = DIK_CAPITAL
+const DIK_NUMPADMINUS = DIK_SUBTRACT
+const DIK_NUMPADPLUS = DIK_ADD
+const DIK_NUMPADPERIOD = DIK_DECIMAL
+const DIK_NUMPADSLASH = DIK_DIVIDE
+const DIK_RALT = DIK_RMENU
+const DIK_UPARROW = DIK_UP
+const DIK_PGUP = DIK_PRIOR
+const DIK_LEFTARROW = DIK_LEFT
+const DIK_RIGHTARROW = DIK_RIGHT
+const DIK_DOWNARROW = DIK_DOWN
+const DIK_PGDN = DIK_NEXT
 const DIDFT_ALL = &h00000000
 const DIDFT_RELAXIS = &h00000001
 const DIDFT_ABSAXIS = &h00000002
@@ -685,7 +685,7 @@ const DIDFT_POV = &h00000010
 const DIDFT_COLLECTION = &h00000040
 const DIDFT_NODATA = &h00000080
 const DIDFT_ANYINSTANCE = &h00FFFF00
-#define DIDFT_INSTANCEMASK DIDFT_ANYINSTANCE
+const DIDFT_INSTANCEMASK = DIDFT_ANYINSTANCE
 #define DIDFT_MAKEINSTANCE(n) (cast(WORD, (n)) shl 8)
 #define DIDFT_GETTYPE(n) LOBYTE(n)
 #define DIDFT_GETINSTANCE(n) LOWORD((n) shr 8)

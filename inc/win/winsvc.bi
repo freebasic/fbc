@@ -341,9 +341,9 @@ type LPSERVICE_MAIN_FUNCTIONW as sub(byval dwNumServicesArgs as DWORD, byval lpS
 type LPSERVICE_MAIN_FUNCTIONA as sub(byval dwNumServicesArgs as DWORD, byval lpServiceArgVectors as LPSTR ptr)
 
 #ifdef UNICODE
-	#define LPSERVICE_MAIN_FUNCTION LPSERVICE_MAIN_FUNCTIONW
+	type LPSERVICE_MAIN_FUNCTION as LPSERVICE_MAIN_FUNCTIONW
 #else
-	#define LPSERVICE_MAIN_FUNCTION LPSERVICE_MAIN_FUNCTIONA
+	type LPSERVICE_MAIN_FUNCTION as LPSERVICE_MAIN_FUNCTIONA
 #endif
 
 type _SERVICE_TABLE_ENTRYA
@@ -372,89 +372,220 @@ type LPSERVICE_TABLE_ENTRYW as _SERVICE_TABLE_ENTRYW ptr
 
 type LPHANDLER_FUNCTION as sub(byval dwControl as DWORD)
 type LPHANDLER_FUNCTION_EX as function(byval dwControl as DWORD, byval dwEventType as DWORD, byval lpEventData as LPVOID, byval lpContext as LPVOID) as DWORD
+declare function ChangeServiceConfigA(byval hService as SC_HANDLE, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCSTR, byval lpLoadOrderGroup as LPCSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCSTR, byval lpServiceStartName as LPCSTR, byval lpPassword as LPCSTR, byval lpDisplayName as LPCSTR) as WINBOOL
 
-#ifdef UNICODE
-	#define ChangeServiceConfig ChangeServiceConfigW
-	#define ChangeServiceConfig2 ChangeServiceConfig2W
-	#define CreateService CreateServiceW
-	#define EnumDependentServices EnumDependentServicesW
-	#define EnumServicesStatus EnumServicesStatusW
-	#define EnumServicesStatusEx EnumServicesStatusExW
-	#define GetServiceKeyName GetServiceKeyNameW
-	#define GetServiceDisplayName GetServiceDisplayNameW
-	#define OpenSCManager OpenSCManagerW
-	#define OpenService OpenServiceW
-	#define QueryServiceConfig QueryServiceConfigW
-	#define QueryServiceConfig2 QueryServiceConfig2W
-	#define QueryServiceLockStatus QueryServiceLockStatusW
-	#define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerW
-	#define RegisterServiceCtrlHandlerEx RegisterServiceCtrlHandlerExW
-	#define StartServiceCtrlDispatcher StartServiceCtrlDispatcherW
-	#define StartService StartServiceW
-#else
-	#define ChangeServiceConfig ChangeServiceConfigA
-	#define ChangeServiceConfig2 ChangeServiceConfig2A
-	#define CreateService CreateServiceA
-	#define EnumDependentServices EnumDependentServicesA
-	#define EnumServicesStatus EnumServicesStatusA
-	#define EnumServicesStatusEx EnumServicesStatusExA
-	#define GetServiceKeyName GetServiceKeyNameA
-	#define GetServiceDisplayName GetServiceDisplayNameA
-	#define OpenSCManager OpenSCManagerA
-	#define OpenService OpenServiceA
-	#define QueryServiceConfig QueryServiceConfigA
-	#define QueryServiceConfig2 QueryServiceConfig2A
-	#define QueryServiceLockStatus QueryServiceLockStatusA
-	#define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerA
-	#define RegisterServiceCtrlHandlerEx RegisterServiceCtrlHandlerExA
-	#define StartServiceCtrlDispatcher StartServiceCtrlDispatcherA
-	#define StartService StartServiceA
+#ifndef UNICODE
+	declare function ChangeServiceConfig alias "ChangeServiceConfigA"(byval hService as SC_HANDLE, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCSTR, byval lpLoadOrderGroup as LPCSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCSTR, byval lpServiceStartName as LPCSTR, byval lpPassword as LPCSTR, byval lpDisplayName as LPCSTR) as WINBOOL
 #endif
 
-declare function ChangeServiceConfigA(byval hService as SC_HANDLE, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCSTR, byval lpLoadOrderGroup as LPCSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCSTR, byval lpServiceStartName as LPCSTR, byval lpPassword as LPCSTR, byval lpDisplayName as LPCSTR) as WINBOOL
 declare function ChangeServiceConfigW(byval hService as SC_HANDLE, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCWSTR, byval lpLoadOrderGroup as LPCWSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCWSTR, byval lpServiceStartName as LPCWSTR, byval lpPassword as LPCWSTR, byval lpDisplayName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function ChangeServiceConfig alias "ChangeServiceConfigW"(byval hService as SC_HANDLE, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCWSTR, byval lpLoadOrderGroup as LPCWSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCWSTR, byval lpServiceStartName as LPCWSTR, byval lpPassword as LPCWSTR, byval lpDisplayName as LPCWSTR) as WINBOOL
+#endif
+
 declare function ChangeServiceConfig2A(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpInfo as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function ChangeServiceConfig2 alias "ChangeServiceConfig2A"(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpInfo as LPVOID) as WINBOOL
+#endif
+
 declare function ChangeServiceConfig2W(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpInfo as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function ChangeServiceConfig2 alias "ChangeServiceConfig2W"(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpInfo as LPVOID) as WINBOOL
+#endif
+
 declare function CloseServiceHandle(byval hSCObject as SC_HANDLE) as WINBOOL
 declare function ControlService(byval hService as SC_HANDLE, byval dwControl as DWORD, byval lpServiceStatus as LPSERVICE_STATUS) as WINBOOL
 declare function CreateServiceA(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval lpDisplayName as LPCSTR, byval dwDesiredAccess as DWORD, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCSTR, byval lpLoadOrderGroup as LPCSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCSTR, byval lpServiceStartName as LPCSTR, byval lpPassword as LPCSTR) as SC_HANDLE
+
+#ifndef UNICODE
+	declare function CreateService alias "CreateServiceA"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval lpDisplayName as LPCSTR, byval dwDesiredAccess as DWORD, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCSTR, byval lpLoadOrderGroup as LPCSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCSTR, byval lpServiceStartName as LPCSTR, byval lpPassword as LPCSTR) as SC_HANDLE
+#endif
+
 declare function CreateServiceW(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval lpDisplayName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCWSTR, byval lpLoadOrderGroup as LPCWSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCWSTR, byval lpServiceStartName as LPCWSTR, byval lpPassword as LPCWSTR) as SC_HANDLE
+
+#ifdef UNICODE
+	declare function CreateService alias "CreateServiceW"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval lpDisplayName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwServiceType as DWORD, byval dwStartType as DWORD, byval dwErrorControl as DWORD, byval lpBinaryPathName as LPCWSTR, byval lpLoadOrderGroup as LPCWSTR, byval lpdwTagId as LPDWORD, byval lpDependencies as LPCWSTR, byval lpServiceStartName as LPCWSTR, byval lpPassword as LPCWSTR) as SC_HANDLE
+#endif
+
 declare function DeleteService(byval hService as SC_HANDLE) as WINBOOL
 declare function EnumDependentServicesA(byval hService as SC_HANDLE, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumDependentServices alias "EnumDependentServicesA"(byval hService as SC_HANDLE, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumDependentServicesW(byval hService as SC_HANDLE, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumDependentServices alias "EnumDependentServicesW"(byval hService as SC_HANDLE, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumServicesStatusA(byval hSCManager as SC_HANDLE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumServicesStatus alias "EnumServicesStatusA"(byval hSCManager as SC_HANDLE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumServicesStatusW(byval hSCManager as SC_HANDLE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumServicesStatus alias "EnumServicesStatusW"(byval hSCManager as SC_HANDLE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPENUM_SERVICE_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumServicesStatusExA(byval hSCManager as SC_HANDLE, byval InfoLevel as SC_ENUM_TYPE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD, byval pszGroupName as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumServicesStatusEx alias "EnumServicesStatusExA"(byval hSCManager as SC_HANDLE, byval InfoLevel as SC_ENUM_TYPE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD, byval pszGroupName as LPCSTR) as WINBOOL
+#endif
+
 declare function EnumServicesStatusExW(byval hSCManager as SC_HANDLE, byval InfoLevel as SC_ENUM_TYPE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD, byval pszGroupName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumServicesStatusEx alias "EnumServicesStatusExW"(byval hSCManager as SC_HANDLE, byval InfoLevel as SC_ENUM_TYPE, byval dwServiceType as DWORD, byval dwServiceState as DWORD, byval lpServices as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD, byval lpServicesReturned as LPDWORD, byval lpResumeHandle as LPDWORD, byval pszGroupName as LPCWSTR) as WINBOOL
+#endif
+
 declare function GetServiceKeyNameA(byval hSCManager as SC_HANDLE, byval lpDisplayName as LPCSTR, byval lpServiceName as LPSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetServiceKeyName alias "GetServiceKeyNameA"(byval hSCManager as SC_HANDLE, byval lpDisplayName as LPCSTR, byval lpServiceName as LPSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function GetServiceKeyNameW(byval hSCManager as SC_HANDLE, byval lpDisplayName as LPCWSTR, byval lpServiceName as LPWSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetServiceKeyName alias "GetServiceKeyNameW"(byval hSCManager as SC_HANDLE, byval lpDisplayName as LPCWSTR, byval lpServiceName as LPWSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function GetServiceDisplayNameA(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval lpDisplayName as LPSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetServiceDisplayName alias "GetServiceDisplayNameA"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval lpDisplayName as LPSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function GetServiceDisplayNameW(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval lpDisplayName as LPWSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetServiceDisplayName alias "GetServiceDisplayNameW"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval lpDisplayName as LPWSTR, byval lpcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function LockServiceDatabase(byval hSCManager as SC_HANDLE) as SC_LOCK
 declare function NotifyBootConfigStatus(byval BootAcceptable as WINBOOL) as WINBOOL
 declare function OpenSCManagerA(byval lpMachineName as LPCSTR, byval lpDatabaseName as LPCSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+
+#ifndef UNICODE
+	declare function OpenSCManager alias "OpenSCManagerA"(byval lpMachineName as LPCSTR, byval lpDatabaseName as LPCSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+#endif
+
 declare function OpenSCManagerW(byval lpMachineName as LPCWSTR, byval lpDatabaseName as LPCWSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+
+#ifdef UNICODE
+	declare function OpenSCManager alias "OpenSCManagerW"(byval lpMachineName as LPCWSTR, byval lpDatabaseName as LPCWSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+#endif
+
 declare function OpenServiceA(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+
+#ifndef UNICODE
+	declare function OpenService alias "OpenServiceA"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+#endif
+
 declare function OpenServiceW(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+
+#ifdef UNICODE
+	declare function OpenService alias "OpenServiceW"(byval hSCManager as SC_HANDLE, byval lpServiceName as LPCWSTR, byval dwDesiredAccess as DWORD) as SC_HANDLE
+#endif
+
 declare function QueryServiceConfigA(byval hService as SC_HANDLE, byval lpServiceConfig as LPQUERY_SERVICE_CONFIGA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function QueryServiceConfig alias "QueryServiceConfigA"(byval hService as SC_HANDLE, byval lpServiceConfig as LPQUERY_SERVICE_CONFIGA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceConfigW(byval hService as SC_HANDLE, byval lpServiceConfig as LPQUERY_SERVICE_CONFIGW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function QueryServiceConfig alias "QueryServiceConfigW"(byval hService as SC_HANDLE, byval lpServiceConfig as LPQUERY_SERVICE_CONFIGW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceConfig2A(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpBuffer as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function QueryServiceConfig2 alias "QueryServiceConfig2A"(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpBuffer as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceConfig2W(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpBuffer as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function QueryServiceConfig2 alias "QueryServiceConfig2W"(byval hService as SC_HANDLE, byval dwInfoLevel as DWORD, byval lpBuffer as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceLockStatusA(byval hSCManager as SC_HANDLE, byval lpLockStatus as LPQUERY_SERVICE_LOCK_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function QueryServiceLockStatus alias "QueryServiceLockStatusA"(byval hSCManager as SC_HANDLE, byval lpLockStatus as LPQUERY_SERVICE_LOCK_STATUSA, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceLockStatusW(byval hSCManager as SC_HANDLE, byval lpLockStatus as LPQUERY_SERVICE_LOCK_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function QueryServiceLockStatus alias "QueryServiceLockStatusW"(byval hSCManager as SC_HANDLE, byval lpLockStatus as LPQUERY_SERVICE_LOCK_STATUSW, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function QueryServiceObjectSecurity(byval hService as SC_HANDLE, byval dwSecurityInformation as SECURITY_INFORMATION, byval lpSecurityDescriptor as PSECURITY_DESCRIPTOR, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
 declare function QueryServiceStatus(byval hService as SC_HANDLE, byval lpServiceStatus as LPSERVICE_STATUS) as WINBOOL
 declare function QueryServiceStatusEx(byval hService as SC_HANDLE, byval InfoLevel as SC_STATUS_TYPE, byval lpBuffer as LPBYTE, byval cbBufSize as DWORD, byval pcbBytesNeeded as LPDWORD) as WINBOOL
 declare function RegisterServiceCtrlHandlerA(byval lpServiceName as LPCSTR, byval lpHandlerProc as LPHANDLER_FUNCTION) as SERVICE_STATUS_HANDLE
+
+#ifndef UNICODE
+	declare function RegisterServiceCtrlHandler alias "RegisterServiceCtrlHandlerA"(byval lpServiceName as LPCSTR, byval lpHandlerProc as LPHANDLER_FUNCTION) as SERVICE_STATUS_HANDLE
+#endif
+
 declare function RegisterServiceCtrlHandlerW(byval lpServiceName as LPCWSTR, byval lpHandlerProc as LPHANDLER_FUNCTION) as SERVICE_STATUS_HANDLE
+
+#ifdef UNICODE
+	declare function RegisterServiceCtrlHandler alias "RegisterServiceCtrlHandlerW"(byval lpServiceName as LPCWSTR, byval lpHandlerProc as LPHANDLER_FUNCTION) as SERVICE_STATUS_HANDLE
+#endif
+
 declare function RegisterServiceCtrlHandlerExA(byval lpServiceName as LPCSTR, byval lpHandlerProc as LPHANDLER_FUNCTION_EX, byval lpContext as LPVOID) as SERVICE_STATUS_HANDLE
+
+#ifndef UNICODE
+	declare function RegisterServiceCtrlHandlerEx alias "RegisterServiceCtrlHandlerExA"(byval lpServiceName as LPCSTR, byval lpHandlerProc as LPHANDLER_FUNCTION_EX, byval lpContext as LPVOID) as SERVICE_STATUS_HANDLE
+#endif
+
 declare function RegisterServiceCtrlHandlerExW(byval lpServiceName as LPCWSTR, byval lpHandlerProc as LPHANDLER_FUNCTION_EX, byval lpContext as LPVOID) as SERVICE_STATUS_HANDLE
+
+#ifdef UNICODE
+	declare function RegisterServiceCtrlHandlerEx alias "RegisterServiceCtrlHandlerExW"(byval lpServiceName as LPCWSTR, byval lpHandlerProc as LPHANDLER_FUNCTION_EX, byval lpContext as LPVOID) as SERVICE_STATUS_HANDLE
+#endif
+
 declare function SetServiceObjectSecurity(byval hService as SC_HANDLE, byval dwSecurityInformation as SECURITY_INFORMATION, byval lpSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOL
 declare function SetServiceStatus(byval hServiceStatus as SERVICE_STATUS_HANDLE, byval lpServiceStatus as LPSERVICE_STATUS) as WINBOOL
 declare function StartServiceCtrlDispatcherA(byval lpServiceStartTable as const SERVICE_TABLE_ENTRYA ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function StartServiceCtrlDispatcher alias "StartServiceCtrlDispatcherA"(byval lpServiceStartTable as const SERVICE_TABLE_ENTRYA ptr) as WINBOOL
+#endif
+
 declare function StartServiceCtrlDispatcherW(byval lpServiceStartTable as const SERVICE_TABLE_ENTRYW ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function StartServiceCtrlDispatcher alias "StartServiceCtrlDispatcherW"(byval lpServiceStartTable as const SERVICE_TABLE_ENTRYW ptr) as WINBOOL
+#endif
+
 declare function StartServiceA(byval hService as SC_HANDLE, byval dwNumServiceArgs as DWORD, byval lpServiceArgVectors as LPCSTR ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function StartService alias "StartServiceA"(byval hService as SC_HANDLE, byval dwNumServiceArgs as DWORD, byval lpServiceArgVectors as LPCSTR ptr) as WINBOOL
+#endif
+
 declare function StartServiceW(byval hService as SC_HANDLE, byval dwNumServiceArgs as DWORD, byval lpServiceArgVectors as LPCWSTR ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function StartService alias "StartServiceW"(byval hService as SC_HANDLE, byval dwNumServiceArgs as DWORD, byval lpServiceArgVectors as LPCWSTR ptr) as WINBOOL
+#endif
+
 declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 
 #if _WIN32_WINNT = &h0602
@@ -621,16 +752,25 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define ControlServiceEx ControlServiceExW
-	#define NotifyServiceStatusChange NotifyServiceStatusChangeW
+	declare function ControlServiceEx alias "ControlServiceExW"(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define ControlServiceEx ControlServiceExA
-	#define NotifyServiceStatusChange NotifyServiceStatusChangeA
+	declare function ControlServiceEx alias "ControlServiceExA"(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
 	declare function NotifyServiceStatusChangeA(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYA) as DWORD
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function NotifyServiceStatusChange alias "NotifyServiceStatusChangeA"(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYA) as DWORD
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function NotifyServiceStatusChangeW(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYW) as DWORD
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function NotifyServiceStatusChange alias "NotifyServiceStatusChangeW"(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYW) as DWORD
 #endif
 
 end extern

@@ -226,67 +226,104 @@ const ENABLE_EXTENDED_FLAGS = &h80
 const ENABLE_AUTO_POSITION = &h100
 const ENABLE_PROCESSED_OUTPUT = &h1
 const ENABLE_WRAP_AT_EOL_OUTPUT = &h2
+declare function PeekConsoleInputA(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define PeekConsoleInput PeekConsoleInputW
-	#define ReadConsoleInput ReadConsoleInputW
-	#define WriteConsoleInput WriteConsoleInputW
-	#define ReadConsoleOutput ReadConsoleOutputW
-	#define WriteConsoleOutput WriteConsoleOutputW
-	#define ReadConsoleOutputCharacter ReadConsoleOutputCharacterW
-	#define WriteConsoleOutputCharacter WriteConsoleOutputCharacterW
-	#define FillConsoleOutputCharacter FillConsoleOutputCharacterW
-	#define ScrollConsoleScreenBuffer ScrollConsoleScreenBufferW
-	#define GetConsoleTitle GetConsoleTitleW
-	#define SetConsoleTitle SetConsoleTitleW
-	#define ReadConsole ReadConsoleW
-	#define WriteConsole WriteConsoleW
-	#define AddConsoleAlias AddConsoleAliasW
-	#define GetConsoleAlias GetConsoleAliasW
-	#define GetConsoleAliasesLength GetConsoleAliasesLengthW
-	#define GetConsoleAliasExesLength GetConsoleAliasExesLengthW
-	#define GetConsoleAliases GetConsoleAliasesW
-	#define GetConsoleAliasExes GetConsoleAliasExesW
-#else
-	#define PeekConsoleInput PeekConsoleInputA
-	#define ReadConsoleInput ReadConsoleInputA
-	#define WriteConsoleInput WriteConsoleInputA
-	#define ReadConsoleOutput ReadConsoleOutputA
-	#define WriteConsoleOutput WriteConsoleOutputA
-	#define ReadConsoleOutputCharacter ReadConsoleOutputCharacterA
-	#define WriteConsoleOutputCharacter WriteConsoleOutputCharacterA
-	#define FillConsoleOutputCharacter FillConsoleOutputCharacterA
-	#define ScrollConsoleScreenBuffer ScrollConsoleScreenBufferA
-	#define GetConsoleTitle GetConsoleTitleA
-	#define SetConsoleTitle SetConsoleTitleA
-	#define ReadConsole ReadConsoleA
-	#define WriteConsole WriteConsoleA
-	#define AddConsoleAlias AddConsoleAliasA
-	#define GetConsoleAlias GetConsoleAliasA
-	#define GetConsoleAliasesLength GetConsoleAliasesLengthA
-	#define GetConsoleAliasExesLength GetConsoleAliasExesLengthA
-	#define GetConsoleAliases GetConsoleAliasesA
-	#define GetConsoleAliasExes GetConsoleAliasExesA
+#ifndef UNICODE
+	declare function PeekConsoleInput alias "PeekConsoleInputA"(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
 #endif
 
-declare function PeekConsoleInputA(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
 declare function PeekConsoleInputW(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function PeekConsoleInput alias "PeekConsoleInputW"(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+#endif
+
 declare function ReadConsoleInputA(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function ReadConsoleInput alias "ReadConsoleInputA"(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+#endif
+
 declare function ReadConsoleInputW(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function ReadConsoleInput alias "ReadConsoleInputW"(byval hConsoleInput as HANDLE, byval lpBuffer as PINPUT_RECORD, byval nLength as DWORD, byval lpNumberOfEventsRead as LPDWORD) as WINBOOL
+#endif
+
 declare function WriteConsoleInputA(byval hConsoleInput as HANDLE, byval lpBuffer as const INPUT_RECORD ptr, byval nLength as DWORD, byval lpNumberOfEventsWritten as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function WriteConsoleInput alias "WriteConsoleInputA"(byval hConsoleInput as HANDLE, byval lpBuffer as const INPUT_RECORD ptr, byval nLength as DWORD, byval lpNumberOfEventsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function WriteConsoleInputW(byval hConsoleInput as HANDLE, byval lpBuffer as const INPUT_RECORD ptr, byval nLength as DWORD, byval lpNumberOfEventsWritten as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function WriteConsoleInput alias "WriteConsoleInputW"(byval hConsoleInput as HANDLE, byval lpBuffer as const INPUT_RECORD ptr, byval nLength as DWORD, byval lpNumberOfEventsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function ReadConsoleOutputA(byval hConsoleOutput as HANDLE, byval lpBuffer as PCHAR_INFO, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpReadRegion as PSMALL_RECT) as WINBOOL
+
+#ifndef UNICODE
+	declare function ReadConsoleOutput alias "ReadConsoleOutputA"(byval hConsoleOutput as HANDLE, byval lpBuffer as PCHAR_INFO, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpReadRegion as PSMALL_RECT) as WINBOOL
+#endif
+
 declare function ReadConsoleOutputW(byval hConsoleOutput as HANDLE, byval lpBuffer as PCHAR_INFO, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpReadRegion as PSMALL_RECT) as WINBOOL
+
+#ifdef UNICODE
+	declare function ReadConsoleOutput alias "ReadConsoleOutputW"(byval hConsoleOutput as HANDLE, byval lpBuffer as PCHAR_INFO, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpReadRegion as PSMALL_RECT) as WINBOOL
+#endif
+
 declare function WriteConsoleOutputA(byval hConsoleOutput as HANDLE, byval lpBuffer as const CHAR_INFO ptr, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpWriteRegion as PSMALL_RECT) as WINBOOL
+
+#ifndef UNICODE
+	declare function WriteConsoleOutput alias "WriteConsoleOutputA"(byval hConsoleOutput as HANDLE, byval lpBuffer as const CHAR_INFO ptr, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpWriteRegion as PSMALL_RECT) as WINBOOL
+#endif
+
 declare function WriteConsoleOutputW(byval hConsoleOutput as HANDLE, byval lpBuffer as const CHAR_INFO ptr, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpWriteRegion as PSMALL_RECT) as WINBOOL
+
+#ifdef UNICODE
+	declare function WriteConsoleOutput alias "WriteConsoleOutputW"(byval hConsoleOutput as HANDLE, byval lpBuffer as const CHAR_INFO ptr, byval dwBufferSize as COORD, byval dwBufferCoord as COORD, byval lpWriteRegion as PSMALL_RECT) as WINBOOL
+#endif
+
 declare function ReadConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval lpCharacter as LPSTR, byval nLength as DWORD, byval dwReadCoord as COORD, byval lpNumberOfCharsRead as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function ReadConsoleOutputCharacter alias "ReadConsoleOutputCharacterA"(byval hConsoleOutput as HANDLE, byval lpCharacter as LPSTR, byval nLength as DWORD, byval dwReadCoord as COORD, byval lpNumberOfCharsRead as LPDWORD) as WINBOOL
+#endif
+
 declare function ReadConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval lpCharacter as LPWSTR, byval nLength as DWORD, byval dwReadCoord as COORD, byval lpNumberOfCharsRead as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function ReadConsoleOutputCharacter alias "ReadConsoleOutputCharacterW"(byval hConsoleOutput as HANDLE, byval lpCharacter as LPWSTR, byval nLength as DWORD, byval dwReadCoord as COORD, byval lpNumberOfCharsRead as LPDWORD) as WINBOOL
+#endif
+
 declare function ReadConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byval lpAttribute as LPWORD, byval nLength as DWORD, byval dwReadCoord as COORD, byval lpNumberOfAttrsRead as LPDWORD) as WINBOOL
 declare function WriteConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function WriteConsoleOutputCharacter alias "WriteConsoleOutputCharacterA"(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function WriteConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCWSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function WriteConsoleOutputCharacter alias "WriteConsoleOutputCharacterW"(byval hConsoleOutput as HANDLE, byval lpCharacter as LPCWSTR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function WriteConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byval lpAttribute as const WORD ptr, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfAttrsWritten as LPDWORD) as WINBOOL
 declare function FillConsoleOutputCharacterA(byval hConsoleOutput as HANDLE, byval cCharacter as CHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function FillConsoleOutputCharacter alias "FillConsoleOutputCharacterA"(byval hConsoleOutput as HANDLE, byval cCharacter as CHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function FillConsoleOutputCharacterW(byval hConsoleOutput as HANDLE, byval cCharacter as WCHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function FillConsoleOutputCharacter alias "FillConsoleOutputCharacterW"(byval hConsoleOutput as HANDLE, byval cCharacter as WCHAR, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfCharsWritten as LPDWORD) as WINBOOL
+#endif
+
 declare function FillConsoleOutputAttribute(byval hConsoleOutput as HANDLE, byval wAttribute as WORD, byval nLength as DWORD, byval dwWriteCoord as COORD, byval lpNumberOfAttrsWritten as LPDWORD) as WINBOOL
 declare function GetConsoleMode(byval hConsoleHandle as HANDLE, byval lpMode as LPDWORD) as WINBOOL
 declare function GetNumberOfConsoleInputEvents(byval hConsoleInput as HANDLE, byval lpNumberOfEvents as LPDWORD) as WINBOOL
@@ -304,7 +341,17 @@ declare function SetConsoleScreenBufferSize(byval hConsoleOutput as HANDLE, byva
 declare function SetConsoleCursorPosition(byval hConsoleOutput as HANDLE, byval dwCursorPosition as COORD) as WINBOOL
 declare function SetConsoleCursorInfo(byval hConsoleOutput as HANDLE, byval lpConsoleCursorInfo as const CONSOLE_CURSOR_INFO ptr) as WINBOOL
 declare function ScrollConsoleScreenBufferA(byval hConsoleOutput as HANDLE, byval lpScrollRectangle as const SMALL_RECT ptr, byval lpClipRectangle as const SMALL_RECT ptr, byval dwDestinationOrigin as COORD, byval lpFill as const CHAR_INFO ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function ScrollConsoleScreenBuffer alias "ScrollConsoleScreenBufferA"(byval hConsoleOutput as HANDLE, byval lpScrollRectangle as const SMALL_RECT ptr, byval lpClipRectangle as const SMALL_RECT ptr, byval dwDestinationOrigin as COORD, byval lpFill as const CHAR_INFO ptr) as WINBOOL
+#endif
+
 declare function ScrollConsoleScreenBufferW(byval hConsoleOutput as HANDLE, byval lpScrollRectangle as const SMALL_RECT ptr, byval lpClipRectangle as const SMALL_RECT ptr, byval dwDestinationOrigin as COORD, byval lpFill as const CHAR_INFO ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function ScrollConsoleScreenBuffer alias "ScrollConsoleScreenBufferW"(byval hConsoleOutput as HANDLE, byval lpScrollRectangle as const SMALL_RECT ptr, byval lpClipRectangle as const SMALL_RECT ptr, byval dwDestinationOrigin as COORD, byval lpFill as const CHAR_INFO ptr) as WINBOOL
+#endif
+
 declare function SetConsoleWindowInfo(byval hConsoleOutput as HANDLE, byval bAbsolute as WINBOOL, byval lpConsoleWindow as const SMALL_RECT ptr) as WINBOOL
 declare function SetConsoleTextAttribute(byval hConsoleOutput as HANDLE, byval wAttributes as WORD) as WINBOOL
 declare function SetConsoleCtrlHandler(byval HandlerRoutine as PHANDLER_ROUTINE, byval Add as WINBOOL) as WINBOOL
@@ -314,13 +361,53 @@ declare function FreeConsole() as WINBOOL
 declare function AttachConsole(byval dwProcessId as DWORD) as WINBOOL
 #define ATTACH_PARENT_PROCESS cast(DWORD, -1)
 declare function GetConsoleTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleTitle alias "GetConsoleTitleA"(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetConsoleTitleW(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleTitle alias "GetConsoleTitleW"(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function SetConsoleTitleA(byval lpConsoleTitle as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetConsoleTitle alias "SetConsoleTitleA"(byval lpConsoleTitle as LPCSTR) as WINBOOL
+#endif
+
 declare function SetConsoleTitleW(byval lpConsoleTitle as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetConsoleTitle alias "SetConsoleTitleW"(byval lpConsoleTitle as LPCWSTR) as WINBOOL
+#endif
+
 declare function ReadConsoleA(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function ReadConsole alias "ReadConsoleA"(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function ReadConsoleW(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function ReadConsole alias "ReadConsoleW"(byval hConsoleInput as HANDLE, byval lpBuffer as LPVOID, byval nNumberOfCharsToRead as DWORD, byval lpNumberOfCharsRead as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function WriteConsoleA(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function WriteConsole alias "WriteConsoleA"(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function WriteConsoleW(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function WriteConsole alias "WriteConsoleW"(byval hConsoleOutput as HANDLE, byval lpBuffer as const any ptr, byval nNumberOfCharsToWrite as DWORD, byval lpNumberOfCharsWritten as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 const CONSOLE_TEXTMODE_BUFFER = 1
 declare function CreateConsoleScreenBuffer(byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as const SECURITY_ATTRIBUTES ptr, byval dwFlags as DWORD, byval lpScreenBufferData as LPVOID) as HANDLE
 declare function GetConsoleCP() as UINT
@@ -336,17 +423,76 @@ declare function SetConsoleDisplayMode(byval hConsoleOutput as HANDLE, byval dwF
 declare function GetConsoleWindow() as HWND
 declare function GetConsoleProcessList(byval lpdwProcessList as LPDWORD, byval dwProcessCount as DWORD) as DWORD
 declare function AddConsoleAliasA(byval Source as LPSTR, byval Target as LPSTR, byval ExeName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddConsoleAlias alias "AddConsoleAliasA"(byval Source as LPSTR, byval Target as LPSTR, byval ExeName as LPSTR) as WINBOOL
+#endif
+
 declare function AddConsoleAliasW(byval Source as LPWSTR, byval Target as LPWSTR, byval ExeName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddConsoleAlias alias "AddConsoleAliasW"(byval Source as LPWSTR, byval Target as LPWSTR, byval ExeName as LPWSTR) as WINBOOL
+#endif
+
 declare function GetConsoleAliasA(byval Source as LPSTR, byval TargetBuffer as LPSTR, byval TargetBufferLength as DWORD, byval ExeName as LPSTR) as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleAlias alias "GetConsoleAliasA"(byval Source as LPSTR, byval TargetBuffer as LPSTR, byval TargetBufferLength as DWORD, byval ExeName as LPSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasW(byval Source as LPWSTR, byval TargetBuffer as LPWSTR, byval TargetBufferLength as DWORD, byval ExeName as LPWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleAlias alias "GetConsoleAliasW"(byval Source as LPWSTR, byval TargetBuffer as LPWSTR, byval TargetBufferLength as DWORD, byval ExeName as LPWSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasesLengthA(byval ExeName as LPSTR) as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleAliasesLength alias "GetConsoleAliasesLengthA"(byval ExeName as LPSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasesLengthW(byval ExeName as LPWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleAliasesLength alias "GetConsoleAliasesLengthW"(byval ExeName as LPWSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasExesLengthA() as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleAliasExesLength alias "GetConsoleAliasExesLengthA"() as DWORD
+#endif
+
 declare function GetConsoleAliasExesLengthW() as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleAliasExesLength alias "GetConsoleAliasExesLengthW"() as DWORD
+#endif
+
 declare function GetConsoleAliasesA(byval AliasBuffer as LPSTR, byval AliasBufferLength as DWORD, byval ExeName as LPSTR) as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleAliases alias "GetConsoleAliasesA"(byval AliasBuffer as LPSTR, byval AliasBufferLength as DWORD, byval ExeName as LPSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasesW(byval AliasBuffer as LPWSTR, byval AliasBufferLength as DWORD, byval ExeName as LPWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleAliases alias "GetConsoleAliasesW"(byval AliasBuffer as LPWSTR, byval AliasBufferLength as DWORD, byval ExeName as LPWSTR) as DWORD
+#endif
+
 declare function GetConsoleAliasExesA(byval ExeNameBuffer as LPSTR, byval ExeNameBufferLength as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetConsoleAliasExes alias "GetConsoleAliasExesA"(byval ExeNameBuffer as LPSTR, byval ExeNameBufferLength as DWORD) as DWORD
+#endif
+
 declare function GetConsoleAliasExesW(byval ExeNameBuffer as LPWSTR, byval ExeNameBufferLength as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetConsoleAliasExes alias "GetConsoleAliasExesW"(byval ExeNameBuffer as LPWSTR, byval ExeNameBufferLength as DWORD) as DWORD
+#endif
 
 type _CONSOLE_FONT_INFOEX
 	cbSize as ULONG
@@ -396,15 +542,20 @@ type CONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX
 type PCONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX ptr
 declare function GetConsoleHistoryInfo(byval lpConsoleHistoryInfo as PCONSOLE_HISTORY_INFO) as WINBOOL
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define GetConsoleOriginalTitle GetConsoleOriginalTitleW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define GetConsoleOriginalTitle GetConsoleOriginalTitleA
+#if _WIN32_WINNT = &h0602
+	declare function GetConsoleOriginalTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetConsoleOriginalTitle alias "GetConsoleOriginalTitleA"(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 #endif
 
 #if _WIN32_WINNT = &h0602
-	declare function GetConsoleOriginalTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 	declare function GetConsoleOriginalTitleW(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetConsoleOriginalTitle alias "GetConsoleOriginalTitleW"(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
 #endif
 
 declare function GetConsoleScreenBufferInfoEx(byval hConsoleOutput as HANDLE, byval lpConsoleScreenBufferInfoEx as PCONSOLE_SCREEN_BUFFER_INFOEX) as WINBOOL

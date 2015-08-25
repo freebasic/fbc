@@ -83,17 +83,16 @@ extern IID_IDirectMusicSegmentState as const GUID
 extern IID_IDirectMusicSegmentState8 as const GUID
 extern IID_IDirectMusicStyle as const GUID
 extern IID_IDirectMusicStyle8 as const GUID
-
-#define IID_IDirectMusicAudioPath8 IID_IDirectMusicAudioPath
-#define IID_IDirectMusicBand8 IID_IDirectMusicBand
-#define IID_IDirectMusicChordMap8 IID_IDirectMusicChordMap
-#define IID_IDirectMusicComposer8 IID_IDirectMusicComposer
-#define IID_IDirectMusicContainer8 IID_IDirectMusicContainer
-#define IID_IDirectMusicGetLoader8 IID_IDirectMusicGetLoader
-#define IID_IDirectMusicGraph8 IID_IDirectMusicGraph
-#define IID_IDirectMusicObject8 IID_IDirectMusicObject
-#define IID_IDirectMusicPatternTrack8 IID_IDirectMusicPatternTrack
-#define IID_IDirectMusicScript8 IID_IDirectMusicScript
+extern IID_IDirectMusicAudioPath8 alias "IID_IDirectMusicAudioPath" as const GUID
+extern IID_IDirectMusicBand8 alias "IID_IDirectMusicBand" as const GUID
+extern IID_IDirectMusicChordMap8 alias "IID_IDirectMusicChordMap" as const GUID
+extern IID_IDirectMusicComposer8 alias "IID_IDirectMusicComposer" as const GUID
+extern IID_IDirectMusicContainer8 alias "IID_IDirectMusicContainer" as const GUID
+extern IID_IDirectMusicGetLoader8 alias "IID_IDirectMusicGetLoader" as const GUID
+extern IID_IDirectMusicGraph8 alias "IID_IDirectMusicGraph" as const GUID
+extern IID_IDirectMusicObject8 alias "IID_IDirectMusicObject" as const GUID
+extern IID_IDirectMusicPatternTrack8 alias "IID_IDirectMusicPatternTrack" as const GUID
+extern IID_IDirectMusicScript8 alias "IID_IDirectMusicScript" as const GUID
 
 type IDirectMusicBand as IDirectMusicBand_
 type LPDIRECTMUSICBAND as IDirectMusicBand ptr
@@ -163,9 +162,9 @@ extern GUID_DownloadToAudioPath as const GUID
 extern GUID_Enable_Auto_Download as const GUID
 extern GUID_EnableTempo as const GUID
 extern GUID_EnableTimeSig as const GUID
-#define GUID_IgnoreBankSelectForGM GUID_StandardMIDIFile
 extern GUID_SeedVariations as const GUID
 extern GUID_StandardMIDIFile as const GUID
+extern GUID_IgnoreBankSelectForGM alias "GUID_StandardMIDIFile" as const GUID
 extern GUID_Unload as const GUID
 extern GUID_UnloadFromAudioPath as const GUID
 extern GUID_Variations as const GUID
@@ -208,7 +207,7 @@ const DMUS_MASTERTEMPO_MAX = 100.0f
 const DMUS_MASTERTEMPO_MIN = 0.01f
 const DMUS_MAX_NAME = &h40
 const DMUS_MAX_CATEGORY = &h40
-#define DMUS_MAX_FILENAME MAX_PATH
+const DMUS_MAX_FILENAME = MAX_PATH
 const DMUS_MAXSUBCHORD = &h8
 const DMUS_NOTIFICATION_SEGSTART = &h0
 const DMUS_NOTIFICATION_SEGEND = &h1
@@ -257,8 +256,6 @@ const DMUS_PCHANNEL_BROADCAST_SEGMENT = &hFFFFFFFD
 const DMUS_PCHANNEL_BROADCAST_GROUPS = &hFFFFFFFC
 const DMUS_PCHANNEL_ALL = &hFFFFFFFB
 const DMUS_PLAYMODE_FIXED = &h0
-#define DMUS_PLAYMODE_FIXEDTOKEY DMUS_PLAYMODE_KEY_ROOT
-#define DMUS_PLAYMODE_FIXEDTOCHORD DMUS_PLAYMODE_CHORD_ROOT
 #define DMUS_PLAYMODE_PEDALPOINT (DMUS_PLAYMODE_KEY_ROOT or DMUS_PLAYMODE_SCALE_INTERVALS)
 #define DMUS_PLAYMODE_MELODIC (DMUS_PLAYMODE_CHORD_ROOT or DMUS_PLAYMODE_SCALE_INTERVALS)
 #define DMUS_PLAYMODE_NORMALCHORD (DMUS_PLAYMODE_CHORD_ROOT or DMUS_PLAYMODE_CHORD_INTERVALS)
@@ -266,8 +263,6 @@ const DMUS_PLAYMODE_FIXED = &h0
 #define DMUS_PLAYMODE_PEDALPOINTCHORD (DMUS_PLAYMODE_KEY_ROOT or DMUS_PLAYMODE_CHORD_INTERVALS)
 #define DMUS_PLAYMODE_PEDALPOINTALWAYS (DMUS_PLAYMODE_PEDALPOINT or DMUS_PLAYMODE_PEDALPOINTCHORD)
 #define DMUS_PLAYMODE_PURPLEIZED DMUS_PLAYMODE_ALWAYSPLAY
-#define DMUS_PLAYMODE_SCALE_ROOT DMUS_PLAYMODE_KEY_ROOT
-#define DMUS_PLAYMODE_FIXEDTOSCALE DMUS_PLAYMODE_FIXEDTOKEY
 const DMUS_PPQ = 768
 const DMUS_SEG_REPEAT_INFINITE = &hFFFFFFFF
 const DMUS_SEG_ALLTRACKS = &h80000000
@@ -463,6 +458,11 @@ enum
 	DMUS_PLAYMODE_CHORD_INTERVALS = &h08
 	DMUS_PLAYMODE_NONE = &h10
 end enum
+
+const DMUS_PLAYMODE_FIXEDTOCHORD = DMUS_PLAYMODE_CHORD_ROOT
+const DMUS_PLAYMODE_FIXEDTOKEY = DMUS_PLAYMODE_KEY_ROOT
+const DMUS_PLAYMODE_FIXEDTOSCALE = DMUS_PLAYMODE_FIXEDTOKEY
+const DMUS_PLAYMODE_SCALE_ROOT = DMUS_PLAYMODE_KEY_ROOT
 
 type enumDMUS_CURVE_FLAGS as long
 enum

@@ -149,7 +149,7 @@ const PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK = 7
 const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
-#define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
+const PNG_LIBPNG_BUILD_BASE_TYPE = PNG_LIBPNG_BUILD_STABLE
 const PNG_LIBPNG_VER_ = 10253
 #define PNGCONF_H
 #define PNG_1_2_X
@@ -157,8 +157,6 @@ const PNG_WARN_UNINITIALIZED_ROW = 1
 const PNG_ZBUF_SIZE = 8192
 #define PNG_READ_SUPPORTED
 #define PNG_WRITE_SUPPORTED
-#define png_benign_error png_error
-#define png_chunk_benign_error png_chunk_error
 #define PNG_WARNINGS_SUPPORTED
 #define PNG_ERROR_TEXT_SUPPORTED
 #define PNG_CHECK_cHRM_SUPPORTED
@@ -355,7 +353,7 @@ type png_zstreamp as z_stream ptr
 #define png_memcmp memcmp
 #define png_memcpy memcpy
 #define png_memset memset
-#define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
+const PNG_LIBPNG_BUILD_TYPE = PNG_LIBPNG_BUILD_BASE_TYPE
 #define int_p_NULL NULL
 #define png_bytep_NULL NULL
 #define png_bytepp_NULL NULL
@@ -573,16 +571,16 @@ const PNG_COLOR_MASK_COLOR = 2
 const PNG_COLOR_MASK_ALPHA = 4
 const PNG_COLOR_TYPE_GRAY = 0
 #define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
-#define PNG_COLOR_TYPE_RGB PNG_COLOR_MASK_COLOR
+const PNG_COLOR_TYPE_RGB = PNG_COLOR_MASK_COLOR
 #define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
-#define PNG_COLOR_TYPE_GRAY_ALPHA PNG_COLOR_MASK_ALPHA
+const PNG_COLOR_TYPE_GRAY_ALPHA = PNG_COLOR_MASK_ALPHA
 #define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
-#define PNG_COLOR_TYPE_GA PNG_COLOR_TYPE_GRAY_ALPHA
+const PNG_COLOR_TYPE_GA = PNG_COLOR_TYPE_GRAY_ALPHA
 const PNG_COMPRESSION_TYPE_BASE = 0
-#define PNG_COMPRESSION_TYPE_DEFAULT PNG_COMPRESSION_TYPE_BASE
+const PNG_COMPRESSION_TYPE_DEFAULT = PNG_COMPRESSION_TYPE_BASE
 const PNG_FILTER_TYPE_BASE = 0
 const PNG_INTRAPIXEL_DIFFERENCING = 64
-#define PNG_FILTER_TYPE_DEFAULT PNG_FILTER_TYPE_BASE
+const PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE
 const PNG_INTERLACE_NONE = 0
 const PNG_INTERLACE_ADAM7 = 1
 const PNG_INTERLACE_LAST = 2
@@ -979,7 +977,9 @@ declare sub png_free_default(byval png_ptr as png_structp, byval ptr as png_void
 declare function png_memcpy_check(byval png_ptr as png_structp, byval s1 as png_voidp, byval s2 as png_voidp, byval size as png_uint_32) as png_voidp
 declare function png_memset_check(byval png_ptr as png_structp, byval s1 as png_voidp, byval value as long, byval size as png_uint_32) as png_voidp
 declare sub png_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_benign_error alias "png_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_chunk_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_chunk_benign_error alias "png_chunk_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare sub png_chunk_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare function png_get_valid(byval png_ptr as png_structp, byval info_ptr as png_infop, byval flag as png_uint_32) as png_uint_32

@@ -1206,16 +1206,24 @@ type LPPRINTER_ENUM_VALUESW as _PRINTER_ENUM_VALUESW ptr
 	type PRINTER_ENUM_VALUES as PRINTER_ENUM_VALUESW
 	type PPRINTER_ENUM_VALUES as PPRINTER_ENUM_VALUESW
 	type LPPRINTER_ENUM_VALUES as LPPRINTER_ENUM_VALUESW
-	#define EnumPrinters EnumPrintersW
 #else
 	type PRINTER_ENUM_VALUES as PRINTER_ENUM_VALUESA
 	type PPRINTER_ENUM_VALUES as PPRINTER_ENUM_VALUESA
 	type LPPRINTER_ENUM_VALUES as LPPRINTER_ENUM_VALUESA
-	#define EnumPrinters EnumPrintersA
 #endif
 
 declare function EnumPrintersA(byval Flags as DWORD, byval Name as LPSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPrinters alias "EnumPrintersA"(byval Flags as DWORD, byval Name as LPSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPrintersW(byval Flags as DWORD, byval Name as LPWSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPrinters alias "EnumPrintersW"(byval Flags as DWORD, byval Name as LPWSTR, byval Level as DWORD, byval pPrinterEnum as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 const PRINTER_ENUM_DEFAULT = &h00000001
 const PRINTER_ENUM_LOCAL = &h00000002
 const PRINTER_ENUM_CONNECTIONS = &h00000004
@@ -1238,122 +1246,259 @@ const PRINTER_ENUM_ICON8 = &h00800000
 const PRINTER_ENUM_HIDE = &h01000000
 const SPOOL_FILE_PERSISTENT = &h00000001
 const SPOOL_FILE_TEMPORARY = &h00000002
+declare function OpenPrinterA(byval pPrinterName as LPSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
 
-#ifdef UNICODE
-	#define OpenPrinter OpenPrinterW
-	#define ResetPrinter ResetPrinterW
-	#define SetJob SetJobW
-	#define GetJob GetJobW
-	#define EnumJobs EnumJobsW
-	#define AddPrinter AddPrinterW
-	#define SetPrinter SetPrinterW
-	#define GetPrinter GetPrinterW
-	#define AddPrinterDriver AddPrinterDriverW
-	#define AddPrinterDriverEx AddPrinterDriverExW
-	#define EnumPrinterDrivers EnumPrinterDriversW
-	#define GetPrinterDriver GetPrinterDriverW
-	#define GetPrinterDriverDirectory GetPrinterDriverDirectoryW
-	#define DeletePrinterDriver DeletePrinterDriverW
-	#define DeletePrinterDriverEx DeletePrinterDriverExW
-	#define AddPrintProcessor AddPrintProcessorW
-	#define EnumPrintProcessors EnumPrintProcessorsW
-	#define GetPrintProcessorDirectory GetPrintProcessorDirectoryW
-	#define EnumPrintProcessorDatatypes EnumPrintProcessorDatatypesW
-	#define DeletePrintProcessor DeletePrintProcessorW
-	#define StartDocPrinter StartDocPrinterW
-	#define AddJob AddJobW
-	#define DocumentProperties DocumentPropertiesW
-	#define AdvancedDocumentProperties AdvancedDocumentPropertiesW
-	#define GetPrinterData GetPrinterDataW
-	#define GetPrinterDataEx GetPrinterDataExW
-	#define EnumPrinterData EnumPrinterDataW
-	#define EnumPrinterDataEx EnumPrinterDataExW
-	#define EnumPrinterKey EnumPrinterKeyW
-	#define SetPrinterData SetPrinterDataW
-	#define SetPrinterDataEx SetPrinterDataExW
-	#define DeletePrinterData DeletePrinterDataW
-	#define DeletePrinterDataEx DeletePrinterDataExW
-	#define DeletePrinterKey DeletePrinterKeyW
-#else
-	#define OpenPrinter OpenPrinterA
-	#define ResetPrinter ResetPrinterA
-	#define SetJob SetJobA
-	#define GetJob GetJobA
-	#define EnumJobs EnumJobsA
-	#define AddPrinter AddPrinterA
-	#define SetPrinter SetPrinterA
-	#define GetPrinter GetPrinterA
-	#define AddPrinterDriver AddPrinterDriverA
-	#define AddPrinterDriverEx AddPrinterDriverExA
-	#define EnumPrinterDrivers EnumPrinterDriversA
-	#define GetPrinterDriver GetPrinterDriverA
-	#define GetPrinterDriverDirectory GetPrinterDriverDirectoryA
-	#define DeletePrinterDriver DeletePrinterDriverA
-	#define DeletePrinterDriverEx DeletePrinterDriverExA
-	#define AddPrintProcessor AddPrintProcessorA
-	#define EnumPrintProcessors EnumPrintProcessorsA
-	#define GetPrintProcessorDirectory GetPrintProcessorDirectoryA
-	#define EnumPrintProcessorDatatypes EnumPrintProcessorDatatypesA
-	#define DeletePrintProcessor DeletePrintProcessorA
-	#define StartDocPrinter StartDocPrinterA
-	#define AddJob AddJobA
-	#define DocumentProperties DocumentPropertiesA
-	#define AdvancedDocumentProperties AdvancedDocumentPropertiesA
-	#define GetPrinterData GetPrinterDataA
-	#define GetPrinterDataEx GetPrinterDataExA
-	#define EnumPrinterData EnumPrinterDataA
-	#define EnumPrinterDataEx EnumPrinterDataExA
-	#define EnumPrinterKey EnumPrinterKeyA
-	#define SetPrinterData SetPrinterDataA
-	#define SetPrinterDataEx SetPrinterDataExA
-	#define DeletePrinterData DeletePrinterDataA
-	#define DeletePrinterDataEx DeletePrinterDataExA
-	#define DeletePrinterKey DeletePrinterKeyA
+#ifndef UNICODE
+	declare function OpenPrinter alias "OpenPrinterA"(byval pPrinterName as LPSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
 #endif
 
-declare function OpenPrinterA(byval pPrinterName as LPSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
 declare function OpenPrinterW(byval pPrinterName as LPWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
+
+#ifdef UNICODE
+	declare function OpenPrinter alias "OpenPrinterW"(byval pPrinterName as LPWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
+#endif
+
 declare function ResetPrinterA(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
+
+#ifndef UNICODE
+	declare function ResetPrinter alias "ResetPrinterA"(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSA) as WINBOOL
+#endif
+
 declare function ResetPrinterW(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
+
+#ifdef UNICODE
+	declare function ResetPrinter alias "ResetPrinterW"(byval hPrinter as HANDLE, byval pDefault as LPPRINTER_DEFAULTSW) as WINBOOL
+#endif
+
 declare function SetJobA(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetJob alias "SetJobA"(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
+#endif
+
 declare function SetJobW(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetJob alias "SetJobW"(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval Command as DWORD) as WINBOOL
+#endif
+
 declare function GetJobA(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetJob alias "GetJobA"(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetJobW(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetJob alias "GetJobW"(byval hPrinter as HANDLE, byval JobId as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumJobsA(byval hPrinter as HANDLE, byval FirstJob as DWORD, byval NoJobs as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumJobs alias "EnumJobsA"(byval hPrinter as HANDLE, byval FirstJob as DWORD, byval NoJobs as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumJobsW(byval hPrinter as HANDLE, byval FirstJob as DWORD, byval NoJobs as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumJobs alias "EnumJobsW"(byval hPrinter as HANDLE, byval FirstJob as DWORD, byval NoJobs as DWORD, byval Level as DWORD, byval pJob as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function AddPrinterA(byval pName as LPSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
+
+#ifndef UNICODE
+	declare function AddPrinter alias "AddPrinterA"(byval pName as LPSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
+#endif
+
 declare function AddPrinterW(byval pName as LPWSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
+
+#ifdef UNICODE
+	declare function AddPrinter alias "AddPrinterW"(byval pName as LPWSTR, byval Level as DWORD, byval pPrinter as LPBYTE) as HANDLE
+#endif
+
 declare function DeletePrinter(byval hPrinter as HANDLE) as WINBOOL
 declare function SetPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetPrinter alias "SetPrinterA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
+#endif
+
 declare function SetPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetPrinter alias "SetPrinterW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval Command as DWORD) as WINBOOL
+#endif
+
 declare function GetPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetPrinter alias "GetPrinterA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetPrinter alias "GetPrinterW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pPrinter as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function AddPrinterDriverA(byval pName as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPrinterDriver alias "AddPrinterDriverA"(byval pName as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function AddPrinterDriverW(byval pName as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPrinterDriver alias "AddPrinterDriverW"(byval pName as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function AddPrinterDriverExA(byval pName as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval dwFileCopyFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPrinterDriverEx alias "AddPrinterDriverExA"(byval pName as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval dwFileCopyFlags as DWORD) as WINBOOL
+#endif
+
 declare function AddPrinterDriverExW(byval pName as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval dwFileCopyFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPrinterDriverEx alias "AddPrinterDriverExW"(byval pName as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval dwFileCopyFlags as DWORD) as WINBOOL
+#endif
+
 declare function EnumPrinterDriversA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPrinterDrivers alias "EnumPrinterDriversA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPrinterDriversW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPrinterDrivers alias "EnumPrinterDriversW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrinterDriverA(byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetPrinterDriver alias "GetPrinterDriverA"(byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrinterDriverW(byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetPrinterDriver alias "GetPrinterDriverW"(byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrinterDriverDirectoryA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverDirectory as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetPrinterDriverDirectory alias "GetPrinterDriverDirectoryA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverDirectory as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrinterDriverDirectoryW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverDirectory as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetPrinterDriverDirectory alias "GetPrinterDriverDirectoryW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverDirectory as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function DeletePrinterDriverA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pDriverName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePrinterDriver alias "DeletePrinterDriverA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pDriverName as LPSTR) as WINBOOL
+#endif
+
 declare function DeletePrinterDriverW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pDriverName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePrinterDriver alias "DeletePrinterDriverW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pDriverName as LPWSTR) as WINBOOL
+#endif
+
 declare function DeletePrinterDriverExA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pDriverName as LPSTR, byval dwDeleteFlag as DWORD, byval dwVersionFlag as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePrinterDriverEx alias "DeletePrinterDriverExA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pDriverName as LPSTR, byval dwDeleteFlag as DWORD, byval dwVersionFlag as DWORD) as WINBOOL
+#endif
+
 declare function DeletePrinterDriverExW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pDriverName as LPWSTR, byval dwDeleteFlag as DWORD, byval dwVersionFlag as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePrinterDriverEx alias "DeletePrinterDriverExW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pDriverName as LPWSTR, byval dwDeleteFlag as DWORD, byval dwVersionFlag as DWORD) as WINBOOL
+#endif
+
 declare function AddPrintProcessorA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPathName as LPSTR, byval pPrintProcessorName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPrintProcessor alias "AddPrintProcessorA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPathName as LPSTR, byval pPrintProcessorName as LPSTR) as WINBOOL
+#endif
+
 declare function AddPrintProcessorW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPathName as LPWSTR, byval pPrintProcessorName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPrintProcessor alias "AddPrintProcessorW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPathName as LPWSTR, byval pPrintProcessorName as LPWSTR) as WINBOOL
+#endif
+
 declare function EnumPrintProcessorsA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPrintProcessors alias "EnumPrintProcessorsA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPrintProcessorsW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPrintProcessors alias "EnumPrintProcessorsW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrintProcessorDirectoryA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetPrintProcessorDirectory alias "GetPrintProcessorDirectoryA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetPrintProcessorDirectoryW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetPrintProcessorDirectory alias "GetPrintProcessorDirectoryW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pPrintProcessorInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPrintProcessorDatatypesA(byval pName as LPSTR, byval pPrintProcessorName as LPSTR, byval Level as DWORD, byval pDatatypes as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPrintProcessorDatatypes alias "EnumPrintProcessorDatatypesA"(byval pName as LPSTR, byval pPrintProcessorName as LPSTR, byval Level as DWORD, byval pDatatypes as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPrintProcessorDatatypesW(byval pName as LPWSTR, byval pPrintProcessorName as LPWSTR, byval Level as DWORD, byval pDatatypes as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPrintProcessorDatatypes alias "EnumPrintProcessorDatatypesW"(byval pName as LPWSTR, byval pPrintProcessorName as LPWSTR, byval Level as DWORD, byval pDatatypes as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function DeletePrintProcessorA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPrintProcessorName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePrintProcessor alias "DeletePrintProcessorA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPrintProcessorName as LPSTR) as WINBOOL
+#endif
+
 declare function DeletePrintProcessorW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPrintProcessorName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePrintProcessor alias "DeletePrintProcessorW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPrintProcessorName as LPWSTR) as WINBOOL
+#endif
+
 declare function StartDocPrinterA(byval hPrinter as HANDLE, byval Level as DWORD, byval pDocInfo as LPBYTE) as DWORD
+
+#ifndef UNICODE
+	declare function StartDocPrinter alias "StartDocPrinterA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pDocInfo as LPBYTE) as DWORD
+#endif
+
 declare function StartDocPrinterW(byval hPrinter as HANDLE, byval Level as DWORD, byval pDocInfo as LPBYTE) as DWORD
+
+#ifdef UNICODE
+	declare function StartDocPrinter alias "StartDocPrinterW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pDocInfo as LPBYTE) as DWORD
+#endif
+
 declare function StartPagePrinter(byval hPrinter as HANDLE) as WINBOOL
 declare function WritePrinter(byval hPrinter as HANDLE, byval pBuf as LPVOID, byval cbBuf as DWORD, byval pcWritten as LPDWORD) as WINBOOL
 declare function FlushPrinter(byval hPrinter as HANDLE, byval pBuf as LPVOID, byval cbBuf as DWORD, byval pcWritten as LPDWORD, byval cSleep as DWORD) as WINBOOL
@@ -1362,34 +1507,163 @@ declare function AbortPrinter(byval hPrinter as HANDLE) as WINBOOL
 declare function ReadPrinter(byval hPrinter as HANDLE, byval pBuf as LPVOID, byval cbBuf as DWORD, byval pNoBytesRead as LPDWORD) as WINBOOL
 declare function EndDocPrinter(byval hPrinter as HANDLE) as WINBOOL
 declare function AddJobA(byval hPrinter as HANDLE, byval Level as DWORD, byval pData as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddJob alias "AddJobA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pData as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function AddJobW(byval hPrinter as HANDLE, byval Level as DWORD, byval pData as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddJob alias "AddJobW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pData as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function ScheduleJob(byval hPrinter as HANDLE, byval JobId as DWORD) as WINBOOL
 declare function PrinterProperties(byval hWnd as HWND, byval hPrinter as HANDLE) as WINBOOL
 declare function DocumentPropertiesA(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPSTR, byval pDevModeOutput as PDEVMODEA, byval pDevModeInput as PDEVMODEA, byval fMode as DWORD) as LONG
+
+#ifndef UNICODE
+	declare function DocumentProperties alias "DocumentPropertiesA"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPSTR, byval pDevModeOutput as PDEVMODEA, byval pDevModeInput as PDEVMODEA, byval fMode as DWORD) as LONG
+#endif
+
 declare function DocumentPropertiesW(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPWSTR, byval pDevModeOutput as PDEVMODEW, byval pDevModeInput as PDEVMODEW, byval fMode as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function DocumentProperties alias "DocumentPropertiesW"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPWSTR, byval pDevModeOutput as PDEVMODEW, byval pDevModeInput as PDEVMODEW, byval fMode as DWORD) as LONG
+#endif
+
 declare function AdvancedDocumentPropertiesA(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPSTR, byval pDevModeOutput as PDEVMODEA, byval pDevModeInput as PDEVMODEA) as LONG
+
+#ifndef UNICODE
+	declare function AdvancedDocumentProperties alias "AdvancedDocumentPropertiesA"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPSTR, byval pDevModeOutput as PDEVMODEA, byval pDevModeInput as PDEVMODEA) as LONG
+#endif
+
 declare function AdvancedDocumentPropertiesW(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPWSTR, byval pDevModeOutput as PDEVMODEW, byval pDevModeInput as PDEVMODEW) as LONG
+
+#ifdef UNICODE
+	declare function AdvancedDocumentProperties alias "AdvancedDocumentPropertiesW"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pDeviceName as LPWSTR, byval pDevModeOutput as PDEVMODEW, byval pDevModeInput as PDEVMODEW) as LONG
+#endif
+
 declare function ExtDeviceMode cdecl(byval hWnd as HWND, byval hInst as HANDLE, byval pDevModeOutput as LPDEVMODEA, byval pDeviceName as LPSTR, byval pPort as LPSTR, byval pDevModeInput as LPDEVMODEA, byval pProfile as LPSTR, byval fMode as DWORD) as LONG
 declare function GetPrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetPrinterData alias "GetPrinterDataA"(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+#endif
+
 declare function GetPrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetPrinterData alias "GetPrinterDataW"(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+#endif
+
 declare function GetPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetPrinterDataEx alias "GetPrinterDataExA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+#endif
+
 declare function GetPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetPrinterDataEx alias "GetPrinterDataExW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval pType as LPDWORD, byval pData as LPBYTE, byval nSize as DWORD, byval pcbNeeded as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterDataA(byval hPrinter as HANDLE, byval dwIndex as DWORD, byval pValueName as LPSTR, byval cbValueName as DWORD, byval pcbValueName as LPDWORD, byval pType as LPDWORD, byval pData as LPBYTE, byval cbData as DWORD, byval pcbData as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function EnumPrinterData alias "EnumPrinterDataA"(byval hPrinter as HANDLE, byval dwIndex as DWORD, byval pValueName as LPSTR, byval cbValueName as DWORD, byval pcbValueName as LPDWORD, byval pType as LPDWORD, byval pData as LPBYTE, byval cbData as DWORD, byval pcbData as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterDataW(byval hPrinter as HANDLE, byval dwIndex as DWORD, byval pValueName as LPWSTR, byval cbValueName as DWORD, byval pcbValueName as LPDWORD, byval pType as LPDWORD, byval pData as LPBYTE, byval cbData as DWORD, byval pcbData as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function EnumPrinterData alias "EnumPrinterDataW"(byval hPrinter as HANDLE, byval dwIndex as DWORD, byval pValueName as LPWSTR, byval cbValueName as DWORD, byval pcbValueName as LPDWORD, byval pType as LPDWORD, byval pData as LPBYTE, byval cbData as DWORD, byval pcbData as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pEnumValues as LPBYTE, byval cbEnumValues as DWORD, byval pcbEnumValues as LPDWORD, byval pnEnumValues as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function EnumPrinterDataEx alias "EnumPrinterDataExA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pEnumValues as LPBYTE, byval cbEnumValues as DWORD, byval pcbEnumValues as LPDWORD, byval pnEnumValues as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pEnumValues as LPBYTE, byval cbEnumValues as DWORD, byval pcbEnumValues as LPDWORD, byval pnEnumValues as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function EnumPrinterDataEx alias "EnumPrinterDataExW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pEnumValues as LPBYTE, byval cbEnumValues as DWORD, byval pcbEnumValues as LPDWORD, byval pnEnumValues as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterKeyA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pSubkey as LPSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function EnumPrinterKey alias "EnumPrinterKeyA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pSubkey as LPSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
+#endif
+
 declare function EnumPrinterKeyW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pSubkey as LPWSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function EnumPrinterKey alias "EnumPrinterKeyW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pSubkey as LPWSTR, byval cbSubkey as DWORD, byval pcbSubkey as LPDWORD) as DWORD
+#endif
+
 declare function SetPrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function SetPrinterData alias "SetPrinterDataA"(byval hPrinter as HANDLE, byval pValueName as LPSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+#endif
+
 declare function SetPrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function SetPrinterData alias "SetPrinterDataW"(byval hPrinter as HANDLE, byval pValueName as LPWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+#endif
+
 declare function SetPrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function SetPrinterDataEx alias "SetPrinterDataExA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+#endif
+
 declare function SetPrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function SetPrinterDataEx alias "SetPrinterDataExW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR, byval Type as DWORD, byval pData as LPBYTE, byval cbData as DWORD) as DWORD
+#endif
+
 declare function DeletePrinterDataA(byval hPrinter as HANDLE, byval pValueName as LPSTR) as DWORD
+
+#ifndef UNICODE
+	declare function DeletePrinterData alias "DeletePrinterDataA"(byval hPrinter as HANDLE, byval pValueName as LPSTR) as DWORD
+#endif
+
 declare function DeletePrinterDataW(byval hPrinter as HANDLE, byval pValueName as LPWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function DeletePrinterData alias "DeletePrinterDataW"(byval hPrinter as HANDLE, byval pValueName as LPWSTR) as DWORD
+#endif
+
 declare function DeletePrinterDataExA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR) as DWORD
+
+#ifndef UNICODE
+	declare function DeletePrinterDataEx alias "DeletePrinterDataExA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR, byval pValueName as LPCSTR) as DWORD
+#endif
+
 declare function DeletePrinterDataExW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function DeletePrinterDataEx alias "DeletePrinterDataExW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR, byval pValueName as LPCWSTR) as DWORD
+#endif
+
 declare function DeletePrinterKeyA(byval hPrinter as HANDLE, byval pKeyName as LPCSTR) as DWORD
+
+#ifndef UNICODE
+	declare function DeletePrinterKey alias "DeletePrinterKeyA"(byval hPrinter as HANDLE, byval pKeyName as LPCSTR) as DWORD
+#endif
+
 declare function DeletePrinterKeyW(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function DeletePrinterKey alias "DeletePrinterKeyW"(byval hPrinter as HANDLE, byval pKeyName as LPCWSTR) as DWORD
+#endif
 
 const PRINTER_NOTIFY_TYPE = &h00
 const JOB_NOTIFY_TYPE = &h01
@@ -1633,93 +1907,231 @@ const PRINTER_CHANGE_DELETE_PRINTER_DRIVER = &h40000000
 const PRINTER_CHANGE_PRINTER_DRIVER = &h70000000
 const PRINTER_CHANGE_TIMEOUT = &h80000000
 const PRINTER_CHANGE_ALL = &h7777FFFF
+declare function PrinterMessageBoxA(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPSTR, byval pCaption as LPSTR, byval dwType as DWORD) as DWORD
 
-#ifdef UNICODE
-	#define PrinterMessageBox PrinterMessageBoxW
-	#define AddForm AddFormW
-	#define DeleteForm DeleteFormW
-	#define GetForm GetFormW
-	#define SetForm SetFormW
-	#define EnumForms EnumFormsW
-	#define EnumMonitors EnumMonitorsW
-	#define AddMonitor AddMonitorW
-	#define DeleteMonitor DeleteMonitorW
-	#define EnumPorts EnumPortsW
-	#define AddPort AddPortW
-	#define ConfigurePort ConfigurePortW
-	#define DeletePort DeletePortW
-	#define GetDefaultPrinter GetDefaultPrinterW
-	#define SetDefaultPrinter SetDefaultPrinterW
-	#define SetPort SetPortW
-	#define AddPrinterConnection AddPrinterConnectionW
-	#define DeletePrinterConnection DeletePrinterConnectionW
-#else
-	#define PrinterMessageBox PrinterMessageBoxA
-	#define AddForm AddFormA
-	#define DeleteForm DeleteFormA
-	#define GetForm GetFormA
-	#define SetForm SetFormA
-	#define EnumForms EnumFormsA
-	#define EnumMonitors EnumMonitorsA
-	#define AddMonitor AddMonitorA
-	#define DeleteMonitor DeleteMonitorA
-	#define EnumPorts EnumPortsA
-	#define AddPort AddPortA
-	#define ConfigurePort ConfigurePortA
-	#define DeletePort DeletePortA
-	#define GetDefaultPrinter GetDefaultPrinterA
-	#define SetDefaultPrinter SetDefaultPrinterA
-	#define SetPort SetPortA
-	#define AddPrinterConnection AddPrinterConnectionA
-	#define DeletePrinterConnection DeletePrinterConnectionA
+#ifndef UNICODE
+	declare function PrinterMessageBox alias "PrinterMessageBoxA"(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPSTR, byval pCaption as LPSTR, byval dwType as DWORD) as DWORD
 #endif
 
-declare function PrinterMessageBoxA(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPSTR, byval pCaption as LPSTR, byval dwType as DWORD) as DWORD
 declare function PrinterMessageBoxW(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPWSTR, byval pCaption as LPWSTR, byval dwType as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function PrinterMessageBox alias "PrinterMessageBoxW"(byval hPrinter as HANDLE, byval Error as DWORD, byval hWnd as HWND, byval pText as LPWSTR, byval pCaption as LPWSTR, byval dwType as DWORD) as DWORD
+#endif
+
 const PRINTER_ERROR_INFORMATION = &h80000000
 const PRINTER_ERROR_WARNING = &h40000000
 const PRINTER_ERROR_SEVERE = &h20000000
 const PRINTER_ERROR_OUTOFPAPER = &h00000001
 const PRINTER_ERROR_JAM = &h00000002
 const PRINTER_ERROR_OUTOFTONER = &h00000004
-
 declare function ClosePrinter(byval hPrinter as HANDLE) as WINBOOL
 declare function AddFormA(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddForm alias "AddFormA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+#endif
+
 declare function AddFormW(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddForm alias "AddFormW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+#endif
+
 declare function DeleteFormA(byval hPrinter as HANDLE, byval pFormName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeleteForm alias "DeleteFormA"(byval hPrinter as HANDLE, byval pFormName as LPSTR) as WINBOOL
+#endif
+
 declare function DeleteFormW(byval hPrinter as HANDLE, byval pFormName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeleteForm alias "DeleteFormW"(byval hPrinter as HANDLE, byval pFormName as LPWSTR) as WINBOOL
+#endif
+
 declare function GetFormA(byval hPrinter as HANDLE, byval pFormName as LPSTR, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetForm alias "GetFormA"(byval hPrinter as HANDLE, byval pFormName as LPSTR, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function GetFormW(byval hPrinter as HANDLE, byval pFormName as LPWSTR, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetForm alias "GetFormW"(byval hPrinter as HANDLE, byval pFormName as LPWSTR, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function SetFormA(byval hPrinter as HANDLE, byval pFormName as LPSTR, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetForm alias "SetFormA"(byval hPrinter as HANDLE, byval pFormName as LPSTR, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+#endif
+
 declare function SetFormW(byval hPrinter as HANDLE, byval pFormName as LPWSTR, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetForm alias "SetFormW"(byval hPrinter as HANDLE, byval pFormName as LPWSTR, byval Level as DWORD, byval pForm as LPBYTE) as WINBOOL
+#endif
+
 declare function EnumFormsA(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumForms alias "EnumFormsA"(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumFormsW(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumForms alias "EnumFormsW"(byval hPrinter as HANDLE, byval Level as DWORD, byval pForm as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumMonitorsA(byval pName as LPSTR, byval Level as DWORD, byval pMonitor as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumMonitors alias "EnumMonitorsA"(byval pName as LPSTR, byval Level as DWORD, byval pMonitor as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumMonitorsW(byval pName as LPWSTR, byval Level as DWORD, byval pMonitor as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumMonitors alias "EnumMonitorsW"(byval pName as LPWSTR, byval Level as DWORD, byval pMonitor as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function AddMonitorA(byval pName as LPSTR, byval Level as DWORD, byval pMonitorInfo as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddMonitor alias "AddMonitorA"(byval pName as LPSTR, byval Level as DWORD, byval pMonitorInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function AddMonitorW(byval pName as LPWSTR, byval Level as DWORD, byval pMonitorInfo as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddMonitor alias "AddMonitorW"(byval pName as LPWSTR, byval Level as DWORD, byval pMonitorInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function DeleteMonitorA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pMonitorName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeleteMonitor alias "DeleteMonitorA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pMonitorName as LPSTR) as WINBOOL
+#endif
+
 declare function DeleteMonitorW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pMonitorName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeleteMonitor alias "DeleteMonitorW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pMonitorName as LPWSTR) as WINBOOL
+#endif
+
 declare function EnumPortsA(byval pName as LPSTR, byval Level as DWORD, byval pPorts as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPorts alias "EnumPortsA"(byval pName as LPSTR, byval Level as DWORD, byval pPorts as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function EnumPortsW(byval pName as LPWSTR, byval Level as DWORD, byval pPorts as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPorts alias "EnumPortsW"(byval pName as LPWSTR, byval Level as DWORD, byval pPorts as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD, byval pcReturned as LPDWORD) as WINBOOL
+#endif
+
 declare function AddPortA(byval pName as LPSTR, byval hWnd as HWND, byval pMonitorName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPort alias "AddPortA"(byval pName as LPSTR, byval hWnd as HWND, byval pMonitorName as LPSTR) as WINBOOL
+#endif
+
 declare function AddPortW(byval pName as LPWSTR, byval hWnd as HWND, byval pMonitorName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPort alias "AddPortW"(byval pName as LPWSTR, byval hWnd as HWND, byval pMonitorName as LPWSTR) as WINBOOL
+#endif
+
 declare function ConfigurePortA(byval pName as LPSTR, byval hWnd as HWND, byval pPortName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function ConfigurePort alias "ConfigurePortA"(byval pName as LPSTR, byval hWnd as HWND, byval pPortName as LPSTR) as WINBOOL
+#endif
+
 declare function ConfigurePortW(byval pName as LPWSTR, byval hWnd as HWND, byval pPortName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function ConfigurePort alias "ConfigurePortW"(byval pName as LPWSTR, byval hWnd as HWND, byval pPortName as LPWSTR) as WINBOOL
+#endif
+
 declare function DeletePortA(byval pName as LPSTR, byval hWnd as HWND, byval pPortName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePort alias "DeletePortA"(byval pName as LPSTR, byval hWnd as HWND, byval pPortName as LPSTR) as WINBOOL
+#endif
+
 declare function DeletePortW(byval pName as LPWSTR, byval hWnd as HWND, byval pPortName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePort alias "DeletePortW"(byval pName as LPWSTR, byval hWnd as HWND, byval pPortName as LPWSTR) as WINBOOL
+#endif
+
 declare function XcvDataW(byval hXcv as HANDLE, byval pszDataName as PCWSTR, byval pInputData as PBYTE, byval cbInputData as DWORD, byval pOutputData as PBYTE, byval cbOutputData as DWORD, byval pcbOutputNeeded as PDWORD, byval pdwStatus as PDWORD) as WINBOOL
-#define XcvData XcvDataW
+declare function XcvData alias "XcvDataW"(byval hXcv as HANDLE, byval pszDataName as PCWSTR, byval pInputData as PBYTE, byval cbInputData as DWORD, byval pOutputData as PBYTE, byval cbOutputData as DWORD, byval pcbOutputNeeded as PDWORD, byval pdwStatus as PDWORD) as WINBOOL
 declare function GetDefaultPrinterA(byval pszBuffer as LPSTR, byval pcchBuffer as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetDefaultPrinter alias "GetDefaultPrinterA"(byval pszBuffer as LPSTR, byval pcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function GetDefaultPrinterW(byval pszBuffer as LPWSTR, byval pcchBuffer as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetDefaultPrinter alias "GetDefaultPrinterW"(byval pszBuffer as LPWSTR, byval pcchBuffer as LPDWORD) as WINBOOL
+#endif
+
 declare function SetDefaultPrinterA(byval pszPrinter as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetDefaultPrinter alias "SetDefaultPrinterA"(byval pszPrinter as LPCSTR) as WINBOOL
+#endif
+
 declare function SetDefaultPrinterW(byval pszPrinter as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetDefaultPrinter alias "SetDefaultPrinterW"(byval pszPrinter as LPCWSTR) as WINBOOL
+#endif
+
 declare function SetPortA(byval pName as LPSTR, byval pPortName as LPSTR, byval dwLevel as DWORD, byval pPortInfo as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetPort alias "SetPortA"(byval pName as LPSTR, byval pPortName as LPSTR, byval dwLevel as DWORD, byval pPortInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function SetPortW(byval pName as LPWSTR, byval pPortName as LPWSTR, byval dwLevel as DWORD, byval pPortInfo as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetPort alias "SetPortW"(byval pName as LPWSTR, byval pPortName as LPWSTR, byval dwLevel as DWORD, byval pPortInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function AddPrinterConnectionA(byval pName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPrinterConnection alias "AddPrinterConnectionA"(byval pName as LPSTR) as WINBOOL
+#endif
+
 declare function AddPrinterConnectionW(byval pName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPrinterConnection alias "AddPrinterConnectionW"(byval pName as LPWSTR) as WINBOOL
+#endif
+
 declare function DeletePrinterConnectionA(byval pName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePrinterConnection alias "DeletePrinterConnectionA"(byval pName as LPSTR) as WINBOOL
+#endif
+
 declare function DeletePrinterConnectionW(byval pName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePrinterConnection alias "DeletePrinterConnectionW"(byval pName as LPWSTR) as WINBOOL
+#endif
+
 declare function ConnectToPrinterDlg(byval hwnd as HWND, byval Flags as DWORD) as HANDLE
 
 type _PROVIDOR_INFO_1A
@@ -1772,26 +2184,47 @@ type LPPROVIDOR_INFO_2W as _PROVIDOR_INFO_2W ptr
 	type PROVIDOR_INFO_2 as PROVIDOR_INFO_2W
 	type PPROVIDOR_INFO_2 as PPROVIDOR_INFO_2W
 	type LPPROVIDOR_INFO_2 as LPPROVIDOR_INFO_2W
-
-	#define AddPrintProvidor AddPrintProvidorW
-	#define DeletePrintProvidor DeletePrintProvidorW
-	#define IsValidDevmode IsValidDevmodeW
 #else
 	type PROVIDOR_INFO_2 as PROVIDOR_INFO_2A
 	type PPROVIDOR_INFO_2 as PPROVIDOR_INFO_2A
 	type LPPROVIDOR_INFO_2 as LPPROVIDOR_INFO_2A
-
-	#define AddPrintProvidor AddPrintProvidorA
-	#define DeletePrintProvidor DeletePrintProvidorA
-	#define IsValidDevmode IsValidDevmodeA
 #endif
 
 declare function AddPrintProvidorA(byval pName as LPSTR, byval level as DWORD, byval pProvidorInfo as LPBYTE) as WINBOOL
+
+#ifndef UNICODE
+	declare function AddPrintProvidor alias "AddPrintProvidorA"(byval pName as LPSTR, byval level as DWORD, byval pProvidorInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function AddPrintProvidorW(byval pName as LPWSTR, byval level as DWORD, byval pProvidorInfo as LPBYTE) as WINBOOL
+
+#ifdef UNICODE
+	declare function AddPrintProvidor alias "AddPrintProvidorW"(byval pName as LPWSTR, byval level as DWORD, byval pProvidorInfo as LPBYTE) as WINBOOL
+#endif
+
 declare function DeletePrintProvidorA(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPrintProvidorName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function DeletePrintProvidor alias "DeletePrintProvidorA"(byval pName as LPSTR, byval pEnvironment as LPSTR, byval pPrintProvidorName as LPSTR) as WINBOOL
+#endif
+
 declare function DeletePrintProvidorW(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPrintProvidorName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeletePrintProvidor alias "DeletePrintProvidorW"(byval pName as LPWSTR, byval pEnvironment as LPWSTR, byval pPrintProvidorName as LPWSTR) as WINBOOL
+#endif
+
 declare function IsValidDevmodeA(byval pDevmode as PDEVMODEA, byval DevmodeSize as uinteger) as WINBOOL
+
+#ifndef UNICODE
+	declare function IsValidDevmode alias "IsValidDevmodeA"(byval pDevmode as PDEVMODEA, byval DevmodeSize as uinteger) as WINBOOL
+#endif
+
 declare function IsValidDevmodeW(byval pDevmode as PDEVMODEW, byval DevmodeSize as uinteger) as WINBOOL
+
+#ifdef UNICODE
+	declare function IsValidDevmode alias "IsValidDevmodeW"(byval pDevmode as PDEVMODEW, byval DevmodeSize as uinteger) as WINBOOL
+#endif
 
 #define SPLREG_DEFAULT_SPOOL_DIRECTORY __TEXT("DefaultSpoolDirectory")
 #define SPLREG_PORT_THREAD_PRIORITY_DEFAULT __TEXT("PortThreadPriorityDefault")
@@ -1888,16 +2321,6 @@ const JOB_ACCESS_READ = &h00000020
 #define SPLDS_PRINTER_LOCATIONS __TEXT("printerLocations")
 #define SPLDS_PRINTER_MODEL __TEXT("printerModel")
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define AddPrinterConnection2 AddPrinterConnection2W
-	#define DeletePrinterDriverPackage DeletePrinterDriverPackageW
-	#define DocumentEvent DocumentEventW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define AddPrinterConnection2 AddPrinterConnection2A
-	#define DeletePrinterDriverPackage DeletePrinterDriverPackageA
-	#define DocumentEvent DocumentEventA
-#endif
-
 #if _WIN32_WINNT = &h0602
 	const PRINTER_CONNECTION_MISMATCH = &h00000020
 	const PRINTER_CONNECTION_NO_UI = &h00000040
@@ -1943,12 +2366,53 @@ const JOB_ACCESS_READ = &h00000020
 	type PRINTER_CONNECTION_INFO_1 as _PRINTER_CONNECTION_INFO_1
 	type PPRINTER_CONNECTION_INFO_1 as _PRINTER_CONNECTION_INFO_1 ptr
 	declare function AddPrinterConnection2W cdecl(byval hWnd as HWND, byval pszName as LPCWSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
-	declare function AddPrinterConnection2A cdecl(byval hWnd as HWND, byval pszName as LPCSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
-	declare function DeletePrinterDriverPackageA(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR) as HRESULT
-	declare function DeletePrinterDriverPackageW(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR) as HRESULT
-	declare function DocumentEventA cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
-	declare function DocumentEventW cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
+#endif
 
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function AddPrinterConnection2 cdecl alias "AddPrinterConnection2W"(byval hWnd as HWND, byval pszName as LPCWSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function AddPrinterConnection2A cdecl(byval hWnd as HWND, byval pszName as LPCSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function AddPrinterConnection2 cdecl alias "AddPrinterConnection2A"(byval hWnd as HWND, byval pszName as LPCSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function DeletePrinterDriverPackageA(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR) as HRESULT
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function DeletePrinterDriverPackage alias "DeletePrinterDriverPackageA"(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function DeletePrinterDriverPackageW(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR) as HRESULT
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function DeletePrinterDriverPackage alias "DeletePrinterDriverPackageW"(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function DocumentEventA cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function DocumentEvent cdecl alias "DocumentEventA"(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function DocumentEventW cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function DocumentEvent cdecl alias "DocumentEventW"(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
 	type _DRIVER_INFO_8W
 		cVersion as DWORD
 		pName as LPWSTR
@@ -2109,28 +2573,76 @@ const JOB_ACCESS_READ = &h00000020
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	type CORE_PRINTER_DRIVER as CORE_PRINTER_DRIVERW
 	type PCORE_PRINTER_DRIVER as PCORE_PRINTER_DRIVERW
-	#define GetCorePrinterDrivers GetCorePrinterDriversW
-	#define GetPrinterDriver2 GetPrinterDriver2W
-	#define GetPrinterDriverPackagePath GetPrinterDriverPackagePathW
-	#define GetSpoolFileHandle GetSpoolFileHandleW
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	type CORE_PRINTER_DRIVER as CORE_PRINTER_DRIVERA
 	type PCORE_PRINTER_DRIVER as PCORE_PRINTER_DRIVERA
-	#define GetCorePrinterDrivers GetCorePrinterDriversA
-	#define GetPrinterDriver2 GetPrinterDriver2A
-	#define GetPrinterDriverPackagePath GetPrinterDriverPackagePathA
-	#define GetSpoolFileHandle GetSpoolFileHandleA
 #endif
 
 #if _WIN32_WINNT = &h0602
 	declare function GetCorePrinterDriversA(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszzCoreDriverDependencies as LPCSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERA) as HRESULT
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetCorePrinterDrivers alias "GetCorePrinterDriversA"(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszzCoreDriverDependencies as LPCSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERA) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetCorePrinterDriversW(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszzCoreDriverDependencies as LPCWSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERW) as HRESULT
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetCorePrinterDrivers alias "GetCorePrinterDriversW"(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszzCoreDriverDependencies as LPCWSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERW) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetPrinterDriver2A(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetPrinterDriver2 alias "GetPrinterDriver2A"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetPrinterDriver2W(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetPrinterDriver2 alias "GetPrinterDriver2W"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetPrinterDriverPackagePathA(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszLanguage as LPCSTR, byval pszPackageID as LPCSTR, byval pszDriverPackageCab as LPSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetPrinterDriverPackagePath alias "GetPrinterDriverPackagePathA"(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszLanguage as LPCSTR, byval pszPackageID as LPCSTR, byval pszDriverPackageCab as LPSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetPrinterDriverPackagePathW(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszLanguage as LPCWSTR, byval pszPackageID as LPCWSTR, byval pszDriverPackageCab as LPWSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetPrinterDriverPackagePath alias "GetPrinterDriverPackagePathW"(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszLanguage as LPCWSTR, byval pszPackageID as LPCWSTR, byval pszDriverPackageCab as LPWSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetSpoolFileHandleA(byval hPrinter as HANDLE) as HANDLE
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetSpoolFileHandle alias "GetSpoolFileHandleA"(byval hPrinter as HANDLE) as HANDLE
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetSpoolFileHandleW(byval hPrinter as HANDLE) as HANDLE
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetSpoolFileHandle alias "GetSpoolFileHandleW"(byval hPrinter as HANDLE) as HANDLE
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function CommitSpoolData(byval hPrinter as HANDLE, byval hSpoolFile as HANDLE, byval cbCommit as DWORD) as HANDLE
 	declare function CloseSpoolFileHandle(byval hPrinter as HANDLE, byval hSpoolFile as HANDLE) as WINBOOL
 	declare function OpenPrinter2A(byval pPrinterName as LPCSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
@@ -2138,9 +2650,9 @@ const JOB_ACCESS_READ = &h00000020
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define OpenPrinter2 OpenPrinter2W
+	declare function OpenPrinter2 alias "OpenPrinter2W"(byval pPrinterName as LPCWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define OpenPrinter2 OpenPrinter2A
+	declare function OpenPrinter2 alias "OpenPrinter2A"(byval pPrinterName as LPCSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -2149,9 +2661,9 @@ const JOB_ACCESS_READ = &h00000020
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define UploadPrinterDriverPackage UploadPrinterDriverPackageW
+	declare function UploadPrinterDriverPackage alias "UploadPrinterDriverPackageW"(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPWSTR, byval pcchDestInfPath as PULONG) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define UploadPrinterDriverPackage UploadPrinterDriverPackageA
+	declare function UploadPrinterDriverPackage alias "UploadPrinterDriverPackageA"(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPSTR, byval pcchDestInfPath as PULONG) as HRESULT
 #endif
 
 end extern

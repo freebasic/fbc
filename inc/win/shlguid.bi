@@ -63,13 +63,7 @@ extern "C"
 #define STR_MYDOCS_CLSID "{450D8FBA-AD25-11D0-98A8-0800361B1103}"
 #define PSGUID_INTERNETSHORTCUT (&h000214a0, 0, 0, &hc0, 0, 0, 0, 0, 0, 0, &h46)
 #define PSGUID_INTERNETSITE (__MSABI_LONG(&h000214a1), 0, 0, &hc0, 0, 0, 0, 0, 0, 0, &h46)
-#define IDefViewID IUnknown
-#define IID_IShellCopyHookA IID_ICopyHookA
-#define IID_IShellCopyHookW IID_ICopyHookW
-#define SID_LinkSite IID_IShellLinkW
-#define SID_ShellFolderViewCB IID_IShellFolderViewCB
-#define SID_SShellBrowser IID_IShellBrowser
-#define SID_SShellDesktop CLSID_ShellDesktop
+type IDefViewID as IUnknown
 
 extern CLSID_NetworkDomain as const GUID
 extern CLSID_NetworkServer as const GUID
@@ -95,6 +89,7 @@ extern IID_INewShortcutHookA as const GUID
 extern IID_IExtractIconA as const GUID
 extern IID_IShellDetails as const GUID
 extern IID_ICopyHookA as const GUID
+extern IID_IShellCopyHookA alias "IID_ICopyHookA" as const GUID
 extern IID_IFileViewerA as const GUID
 extern IID_IFileViewerSite as const GUID
 extern IID_IShellExecuteHookA as const GUID
@@ -104,6 +99,7 @@ extern IID_IFileViewerW as const GUID
 extern IID_IExtractIconW as const GUID
 extern IID_IShellExecuteHookW as const GUID
 extern IID_ICopyHookW as const GUID
+extern IID_IShellCopyHookW alias "IID_ICopyHookW" as const GUID
 extern IID_IQueryInfo as const GUID
 extern IID_IBriefcaseStg as const GUID
 extern IID_IURLSearchHook as const GUID
@@ -116,6 +112,7 @@ extern IID_IDockingWindowFrame as const GUID
 extern IID_IShellIconOverlay as const GUID
 extern IID_IShellIconOverlayIdentifier as const GUID
 extern IID_IShellFolderViewCB as const GUID
+extern SID_ShellFolderViewCB alias "IID_IShellFolderViewCB" as const GUID
 extern CLSID_CFSIconOverlayManager as const GUID
 extern IID_IShellIconOverlayManager as const GUID
 extern IID_IThumbnailCapture as const GUID
@@ -149,28 +146,24 @@ extern IID_IDiscardableBrowserProperty as const GUID
 extern IID_IShellChangeNotify as const GUID
 
 #ifdef UNICODE
-	#define IID_IFileViewer IID_IFileViewerW
-	#define IID_IShellLink IID_IShellLinkW
-	#define IID_IExtractIcon IID_IExtractIconW
-	#define IID_IShellCopyHook IID_IShellCopyHookW
-	#define IID_IShellExecuteHook IID_IShellExecuteHookW
-	#define IID_INewShortcutHook IID_INewShortcutHookW
+	extern IID_IFileViewer alias "IID_IFileViewerW" as const GUID
+	extern IID_IExtractIcon alias "IID_IExtractIconW" as const GUID
+	extern IID_IShellCopyHook alias "IID_ICopyHookW" as const GUID
+	extern IID_IShellExecuteHook alias "IID_IShellExecuteHookW" as const GUID
+	extern IID_INewShortcutHook alias "IID_INewShortcutHookW" as const GUID
 #else
-	#define IID_IFileViewer IID_IFileViewerA
-	#define IID_IShellLink IID_IShellLinkA
-	#define IID_IExtractIcon IID_IExtractIconA
-	#define IID_IShellCopyHook IID_IShellCopyHookA
-	#define IID_IShellExecuteHook IID_IShellExecuteHookA
-	#define IID_INewShortcutHook IID_INewShortcutHookA
+	extern IID_IFileViewer alias "IID_IFileViewerA" as const GUID
+	extern IID_IExtractIcon alias "IID_IExtractIconA" as const GUID
+	extern IID_IShellCopyHook alias "IID_ICopyHookA" as const GUID
+	extern IID_IShellExecuteHook alias "IID_IShellExecuteHookA" as const GUID
+	extern IID_INewShortcutHook alias "IID_INewShortcutHookA" as const GUID
 #endif
 
-#define SID_SInternetExplorer IID_IWebBrowserApp
-#define SID_SProgressUI CLSID_ProgressDialog
-#define SID_SUrlHistory CLSID_CUrlHistory
-#define SID_SWebBrowserApp IID_IWebBrowserApp
+extern SID_SInternetExplorer alias "IID_IWebBrowserApp" as const IID
+extern SID_SWebBrowserApp alias "IID_IWebBrowserApp" as const IID
 #define SID_SWebBrowserEventsService IID_IWebBrowserEventsService
-
 extern CLSID_CUrlHistory as const GUID
+extern SID_SUrlHistory alias "CLSID_CUrlHistory" as const GUID
 extern CLSID_CURLSearchHook as const GUID
 extern IID_IObjMgr as const GUID
 extern IID_IACList as const GUID
@@ -187,6 +180,7 @@ extern CLSID_ACLMulti as const GUID
 #endif
 
 extern CLSID_ProgressDialog as const GUID
+extern SID_SProgressUI alias "CLSID_ProgressDialog" as const GUID
 extern IID_IProgressDialog as const GUID
 extern SID_STopLevelBrowser as const GUID
 

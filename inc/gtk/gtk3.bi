@@ -358,7 +358,7 @@ enum
 	GTK_UNIT_MM
 end enum
 
-#define GTK_UNIT_PIXEL GTK_UNIT_NONE
+const GTK_UNIT_PIXEL = GTK_UNIT_NONE
 
 type GtkTreeViewGridLines as long
 enum

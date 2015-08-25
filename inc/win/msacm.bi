@@ -70,9 +70,9 @@ const ACMERR_BASE = 512
 #define ACMERR_BUSY (ACMERR_BASE + 1)
 #define ACMERR_UNPREPARED (ACMERR_BASE + 2)
 #define ACMERR_CANCELED (ACMERR_BASE + 3)
-#define MM_ACM_OPEN MM_STREAM_OPEN
-#define MM_ACM_CLOSE MM_STREAM_CLOSE
-#define MM_ACM_DONE MM_STREAM_DONE
+const MM_ACM_OPEN = MM_STREAM_OPEN
+const MM_ACM_CLOSE = MM_STREAM_CLOSE
+const MM_ACM_DONE = MM_STREAM_DONE
 declare function acmGetVersion() as DWORD
 declare function acmMetrics(byval hao as HACMOBJ, byval uMetric as UINT, byval pMetric as LPVOID) as MMRESULT
 const ACM_METRIC_COUNT_DRIVERS = 1
@@ -102,9 +102,9 @@ declare function acmDriverAddA(byval phadid as LPHACMDRIVERID, byval hinstModule
 declare function acmDriverAddW(byval phadid as LPHACMDRIVERID, byval hinstModule as HINSTANCE, byval lParam as LPARAM, byval dwPriority as DWORD, byval fdwAdd as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define acmDriverAdd acmDriverAddW
+	declare function acmDriverAdd alias "acmDriverAddW"(byval phadid as LPHACMDRIVERID, byval hinstModule as HINSTANCE, byval lParam as LPARAM, byval dwPriority as DWORD, byval fdwAdd as DWORD) as MMRESULT
 #else
-	#define acmDriverAdd acmDriverAddA
+	declare function acmDriverAdd alias "acmDriverAddA"(byval phadid as LPHACMDRIVERID, byval hinstModule as HINSTANCE, byval lParam as LPARAM, byval dwPriority as DWORD, byval fdwAdd as DWORD) as MMRESULT
 #endif
 
 #define ACM_DRIVERADDF_NAME __MSABI_LONG(&h00000001)
@@ -272,11 +272,11 @@ declare function acmFormatTagEnumA(byval had as HACMDRIVER, byval paftd as LPACM
 declare function acmFormatTagEnumW(byval had as HACMDRIVER, byval paftd as LPACMFORMATTAGDETAILSW, byval fnCallback as ACMFORMATTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define ACMFORMATTAGENUMCB ACMFORMATTAGENUMCBW
-	#define acmFormatTagEnum acmFormatTagEnumW
+	type ACMFORMATTAGENUMCB as ACMFORMATTAGENUMCBW
+	declare function acmFormatTagEnum alias "acmFormatTagEnumW"(byval had as HACMDRIVER, byval paftd as LPACMFORMATTAGDETAILSW, byval fnCallback as ACMFORMATTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #else
-	#define ACMFORMATTAGENUMCB ACMFORMATTAGENUMCBA
-	#define acmFormatTagEnum acmFormatTagEnumA
+	type ACMFORMATTAGENUMCB as ACMFORMATTAGENUMCBA
+	declare function acmFormatTagEnum alias "acmFormatTagEnumA"(byval had as HACMDRIVER, byval paftd as LPACMFORMATTAGDETAILSA, byval fnCallback as ACMFORMATTAGENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #endif
 
 const ACMFORMATDETAILS_FORMAT_CHARS = 128
@@ -337,11 +337,11 @@ declare function acmFormatEnumA(byval had as HACMDRIVER, byval pafd as LPACMFORM
 declare function acmFormatEnumW(byval had as HACMDRIVER, byval pafd as LPACMFORMATDETAILSW, byval fnCallback as ACMFORMATENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define ACMFORMATENUMCB ACMFORMATENUMCBW
-	#define acmFormatEnum acmFormatEnumW
+	type ACMFORMATENUMCB as ACMFORMATENUMCBW
+	declare function acmFormatEnum alias "acmFormatEnumW"(byval had as HACMDRIVER, byval pafd as LPACMFORMATDETAILSW, byval fnCallback as ACMFORMATENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #else
-	#define ACMFORMATENUMCB ACMFORMATENUMCBA
-	#define acmFormatEnum acmFormatEnumA
+	type ACMFORMATENUMCB as ACMFORMATENUMCBA
+	declare function acmFormatEnum alias "acmFormatEnumA"(byval had as HACMDRIVER, byval pafd as LPACMFORMATDETAILSA, byval fnCallback as ACMFORMATENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #endif
 
 #define ACM_FORMATENUMF_WFORMATTAG __MSABI_LONG(&h00010000)
@@ -385,9 +385,9 @@ type ACMFORMATCHOOSEHOOKPROCA as function(byval hwnd as HWND, byval uMsg as UINT
 type ACMFORMATCHOOSEHOOKPROCW as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 
 #ifdef UNICODE
-	#define ACMFORMATCHOOSEHOOKPROC ACMFORMATCHOOSEHOOKPROCW
+	type ACMFORMATCHOOSEHOOKPROC as ACMFORMATCHOOSEHOOKPROCW
 #else
-	#define ACMFORMATCHOOSEHOOKPROC ACMFORMATCHOOSEHOOKPROCA
+	type ACMFORMATCHOOSEHOOKPROC as ACMFORMATCHOOSEHOOKPROCA
 #endif
 
 type tACMFORMATCHOOSEA field = 1
@@ -520,11 +520,11 @@ declare function acmFilterTagEnumA(byval had as HACMDRIVER, byval paftd as LPACM
 declare function acmFilterTagEnumW(byval had as HACMDRIVER, byval paftd as LPACMFILTERTAGDETAILSW, byval fnCallback as ACMFILTERTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define ACMFILTERTAGENUMCB ACMFILTERTAGENUMCBW
-	#define acmFilterTagEnum acmFilterTagEnumW
+	type ACMFILTERTAGENUMCB as ACMFILTERTAGENUMCBW
+	declare function acmFilterTagEnum alias "acmFilterTagEnumW"(byval had as HACMDRIVER, byval paftd as LPACMFILTERTAGDETAILSW, byval fnCallback as ACMFILTERTAGENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #else
-	#define ACMFILTERTAGENUMCB ACMFILTERTAGENUMCBA
-	#define acmFilterTagEnum acmFilterTagEnumA
+	type ACMFILTERTAGENUMCB as ACMFILTERTAGENUMCBA
+	declare function acmFilterTagEnum alias "acmFilterTagEnumA"(byval had as HACMDRIVER, byval paftd as LPACMFILTERTAGDETAILSA, byval fnCallback as ACMFILTERTAGENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #endif
 
 const ACMFILTERDETAILS_FILTER_CHARS = 128
@@ -585,11 +585,11 @@ declare function acmFilterEnumA(byval had as HACMDRIVER, byval pafd as LPACMFILT
 declare function acmFilterEnumW(byval had as HACMDRIVER, byval pafd as LPACMFILTERDETAILSW, byval fnCallback as ACMFILTERENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define ACMFILTERENUMCB ACMFILTERENUMCBW
-	#define acmFilterEnum acmFilterEnumW
+	type ACMFILTERENUMCB as ACMFILTERENUMCBW
+	declare function acmFilterEnum alias "acmFilterEnumW"(byval had as HACMDRIVER, byval pafd as LPACMFILTERDETAILSW, byval fnCallback as ACMFILTERENUMCBW, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #else
-	#define ACMFILTERENUMCB ACMFILTERENUMCBA
-	#define acmFilterEnum acmFilterEnumA
+	type ACMFILTERENUMCB as ACMFILTERENUMCBA
+	declare function acmFilterEnum alias "acmFilterEnumA"(byval had as HACMDRIVER, byval pafd as LPACMFILTERDETAILSA, byval fnCallback as ACMFILTERENUMCBA, byval dwInstance as DWORD_PTR, byval fdwEnum as DWORD) as MMRESULT
 #endif
 
 #define ACM_FILTERENUMF_DWFILTERTAG __MSABI_LONG(&h00010000)
@@ -602,9 +602,9 @@ type ACMFILTERCHOOSEHOOKPROCA as function(byval hwnd as HWND, byval uMsg as UINT
 type ACMFILTERCHOOSEHOOKPROCW as function(byval hwnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as UINT
 
 #ifdef UNICODE
-	#define ACMFILTERCHOOSEHOOKPROC ACMFILTERCHOOSEHOOKPROCW
+	type ACMFILTERCHOOSEHOOKPROC as ACMFILTERCHOOSEHOOKPROCW
 #else
-	#define ACMFILTERCHOOSEHOOKPROC ACMFILTERCHOOSEHOOKPROCA
+	type ACMFILTERCHOOSEHOOKPROC as ACMFILTERCHOOSEHOOKPROCA
 #endif
 
 type tACMFILTERCHOOSEA field = 1

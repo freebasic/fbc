@@ -271,10 +271,10 @@ end type
 
 type NL_BANDWIDTH_INFORMATION as _NL_BANDWIDTH_INFORMATION
 type PNL_BANDWIDTH_INFORMATION as _NL_BANDWIDTH_INFORMATION ptr
-#define NlpoOther IpPrefixOriginOther
-#define NlpoManual IpPrefixOriginManual
-#define NlpoWellKnown IpPrefixOriginWellKnown
-#define NlpoDhcp IpPrefixOriginDhcp
-#define NlpoRouterAdvertisement IpPrefixOriginRouterAdvertisement
+const NlpoOther = IpPrefixOriginOther
+const NlpoManual = IpPrefixOriginManual
+const NlpoWellKnown = IpPrefixOriginWellKnown
+const NlpoDhcp = IpPrefixOriginDhcp
+const NlpoRouterAdvertisement = IpPrefixOriginRouterAdvertisement
 #define NL_MAX_METRIC_COMPONENT ((cast(ULONG, 1) shl 31) - 1)
 #define NET_IF_CURRENT_SESSION cast(ULONG, -1)

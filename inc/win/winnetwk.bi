@@ -56,8 +56,8 @@ extern "Windows"
 #define _WINNETWK_
 #define _WNNC_
 const WNNC_NET_MSNET = &h00010000
-#define WNNC_NET_LANMAN WNNC_NET_SMB
 const WNNC_NET_SMB = &h00020000
+const WNNC_NET_LANMAN = WNNC_NET_SMB
 const WNNC_NET_NETWARE = &h00030000
 const WNNC_NET_VINES = &h00040000
 const WNNC_NET_10NET = &h00050000
@@ -210,48 +210,111 @@ const CONNECT_CMD_SAVECRED = &h00001000
 	const CONNECT_CRED_RESET = &h00002000
 #endif
 
-#ifdef UNICODE
-	#define WNetAddConnection WNetAddConnectionW
-	#define WNetAddConnection2 WNetAddConnection2W
-	#define WNetAddConnection3 WNetAddConnection3W
-	#define WNetCancelConnection WNetCancelConnectionW
-	#define WNetCancelConnection2 WNetCancelConnection2W
-	#define WNetGetConnection WNetGetConnectionW
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define WNetRestoreConnection WNetRestoreConnectionW
-	#define WNetUseConnection WNetUseConnectionW
-#else
-	#define WNetAddConnection WNetAddConnectionA
-	#define WNetAddConnection2 WNetAddConnection2A
-	#define WNetAddConnection3 WNetAddConnection3A
-	#define WNetCancelConnection WNetCancelConnectionA
-	#define WNetCancelConnection2 WNetCancelConnection2A
-	#define WNetGetConnection WNetGetConnectionA
-	#define WNetRestoreConnection WNetRestoreConnectionA
-	#define WNetUseConnection WNetUseConnectionA
 #endif
 
 declare function WNetAddConnectionA(byval lpRemoteName as LPCSTR, byval lpPassword as LPCSTR, byval lpLocalName as LPCSTR) as DWORD
+
+#ifndef UNICODE
+	declare function WNetAddConnection alias "WNetAddConnectionA"(byval lpRemoteName as LPCSTR, byval lpPassword as LPCSTR, byval lpLocalName as LPCSTR) as DWORD
+#endif
+
 declare function WNetAddConnectionW(byval lpRemoteName as LPCWSTR, byval lpPassword as LPCWSTR, byval lpLocalName as LPCWSTR) as DWORD
+
+#ifdef UNICODE
+	declare function WNetAddConnection alias "WNetAddConnectionW"(byval lpRemoteName as LPCWSTR, byval lpPassword as LPCWSTR, byval lpLocalName as LPCWSTR) as DWORD
+#endif
+
 declare function WNetAddConnection2A(byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserName as LPCSTR, byval dwFlags as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetAddConnection2 alias "WNetAddConnection2A"(byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserName as LPCSTR, byval dwFlags as DWORD) as DWORD
+#endif
+
 declare function WNetAddConnection2W(byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserName as LPCWSTR, byval dwFlags as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetAddConnection2 alias "WNetAddConnection2W"(byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserName as LPCWSTR, byval dwFlags as DWORD) as DWORD
+#endif
+
 declare function WNetAddConnection3A(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserName as LPCSTR, byval dwFlags as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetAddConnection3 alias "WNetAddConnection3A"(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserName as LPCSTR, byval dwFlags as DWORD) as DWORD
+#endif
+
 declare function WNetAddConnection3W(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserName as LPCWSTR, byval dwFlags as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetAddConnection3 alias "WNetAddConnection3W"(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserName as LPCWSTR, byval dwFlags as DWORD) as DWORD
+#endif
+
 declare function WNetCancelConnectionA(byval lpName as LPCSTR, byval fForce as WINBOOL) as DWORD
+
+#ifndef UNICODE
+	declare function WNetCancelConnection alias "WNetCancelConnectionA"(byval lpName as LPCSTR, byval fForce as WINBOOL) as DWORD
+#endif
+
 declare function WNetCancelConnectionW(byval lpName as LPCWSTR, byval fForce as WINBOOL) as DWORD
+
+#ifdef UNICODE
+	declare function WNetCancelConnection alias "WNetCancelConnectionW"(byval lpName as LPCWSTR, byval fForce as WINBOOL) as DWORD
+#endif
+
 declare function WNetCancelConnection2A(byval lpName as LPCSTR, byval dwFlags as DWORD, byval fForce as WINBOOL) as DWORD
+
+#ifndef UNICODE
+	declare function WNetCancelConnection2 alias "WNetCancelConnection2A"(byval lpName as LPCSTR, byval dwFlags as DWORD, byval fForce as WINBOOL) as DWORD
+#endif
+
 declare function WNetCancelConnection2W(byval lpName as LPCWSTR, byval dwFlags as DWORD, byval fForce as WINBOOL) as DWORD
+
+#ifdef UNICODE
+	declare function WNetCancelConnection2 alias "WNetCancelConnection2W"(byval lpName as LPCWSTR, byval dwFlags as DWORD, byval fForce as WINBOOL) as DWORD
+#endif
+
 declare function WNetGetConnectionA(byval lpLocalName as LPCSTR, byval lpRemoteName as LPSTR, byval lpnLength as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetConnection alias "WNetGetConnectionA"(byval lpLocalName as LPCSTR, byval lpRemoteName as LPSTR, byval lpnLength as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetConnectionW(byval lpLocalName as LPCWSTR, byval lpRemoteName as LPWSTR, byval lpnLength as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetConnection alias "WNetGetConnectionW"(byval lpLocalName as LPCWSTR, byval lpRemoteName as LPWSTR, byval lpnLength as LPDWORD) as DWORD
+#endif
+
 declare function WNetRestoreConnectionA(byval hwndParent as HWND, byval lpDevice as LPCSTR) as DWORD
+
+#ifndef UNICODE
+	declare function WNetRestoreConnection alias "WNetRestoreConnectionA"(byval hwndParent as HWND, byval lpDevice as LPCSTR) as DWORD
+#endif
+
 declare function WNetUseConnectionA(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserID as LPCSTR, byval dwFlags as DWORD, byval lpAccessName as LPSTR, byval lpBufferSize as LPDWORD, byval lpResult as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetUseConnection alias "WNetUseConnectionA"(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEA, byval lpPassword as LPCSTR, byval lpUserID as LPCSTR, byval dwFlags as DWORD, byval lpAccessName as LPSTR, byval lpBufferSize as LPDWORD, byval lpResult as LPDWORD) as DWORD
+#endif
+
 declare function WNetUseConnectionW(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserID as LPCWSTR, byval dwFlags as DWORD, byval lpAccessName as LPWSTR, byval lpBufferSize as LPDWORD, byval lpResult as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetUseConnection alias "WNetUseConnectionW"(byval hwndOwner as HWND, byval lpNetResource as LPNETRESOURCEW, byval lpPassword as LPCWSTR, byval lpUserID as LPCWSTR, byval dwFlags as DWORD, byval lpAccessName as LPWSTR, byval lpBufferSize as LPDWORD, byval lpResult as LPDWORD) as DWORD
+#endif
+
 declare function WNetConnectionDialog(byval hwnd as HWND, byval dwType as DWORD) as DWORD
 declare function WNetDisconnectDialog(byval hwnd as HWND, byval dwType as DWORD) as DWORD
 
-#if _WIN32_WINNT = &h0602
-	declare function WNetRestoreSingleConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR, byval fUseUI as BOOL) as DWORD
-#else
+#if _WIN32_WINNT <= &h0502
 	declare function WNetRestoreConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR) as DWORD
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
+	declare function WNetRestoreConnection alias "WNetRestoreConnectionW"(byval hwndParent as HWND, byval lpDevice as LPCWSTR) as DWORD
+#elseif _WIN32_WINNT = &h0602
+	declare function WNetRestoreSingleConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR, byval fUseUI as BOOL) as DWORD
 #endif
 
 type _CONNECTDLGSTRUCTA
@@ -290,15 +353,17 @@ const CONNDLG_USE_MRU = &h00000004
 const CONNDLG_HIDE_BOX = &h00000008
 const CONNDLG_PERSIST = &h00000010
 const CONNDLG_NOT_PERSIST = &h00000020
+declare function WNetConnectionDialog1A(byval lpConnDlgStruct as LPCONNECTDLGSTRUCTA) as DWORD
 
-#ifdef UNICODE
-	#define WNetConnectionDialog1 WNetConnectionDialog1W
-#else
-	#define WNetConnectionDialog1 WNetConnectionDialog1A
+#ifndef UNICODE
+	declare function WNetConnectionDialog1 alias "WNetConnectionDialog1A"(byval lpConnDlgStruct as LPCONNECTDLGSTRUCTA) as DWORD
 #endif
 
-declare function WNetConnectionDialog1A(byval lpConnDlgStruct as LPCONNECTDLGSTRUCTA) as DWORD
 declare function WNetConnectionDialog1W(byval lpConnDlgStruct as LPCONNECTDLGSTRUCTW) as DWORD
+
+#ifdef UNICODE
+	declare function WNetConnectionDialog1 alias "WNetConnectionDialog1W"(byval lpConnDlgStruct as LPCONNECTDLGSTRUCTW) as DWORD
+#endif
 
 type _DISCDLGSTRUCTA
 	cbStructure as DWORD
@@ -332,32 +397,67 @@ type LPDISCDLGSTRUCTW as _DISCDLGSTRUCTW ptr
 
 const DISC_UPDATE_PROFILE = &h00000001
 const DISC_NO_FORCE = &h00000040
+declare function WNetDisconnectDialog1A(byval lpConnDlgStruct as LPDISCDLGSTRUCTA) as DWORD
 
-#ifdef UNICODE
-	#define WNetDisconnectDialog1 WNetDisconnectDialog1W
-	#define WNetOpenEnum WNetOpenEnumW
-	#define WNetEnumResource WNetEnumResourceW
-	#define WNetGetResourceParent WNetGetResourceParentW
-	#define WNetGetResourceInformation WNetGetResourceInformationW
-#else
-	#define WNetDisconnectDialog1 WNetDisconnectDialog1A
-	#define WNetOpenEnum WNetOpenEnumA
-	#define WNetEnumResource WNetEnumResourceA
-	#define WNetGetResourceParent WNetGetResourceParentA
-	#define WNetGetResourceInformation WNetGetResourceInformationA
+#ifndef UNICODE
+	declare function WNetDisconnectDialog1 alias "WNetDisconnectDialog1A"(byval lpConnDlgStruct as LPDISCDLGSTRUCTA) as DWORD
 #endif
 
-declare function WNetDisconnectDialog1A(byval lpConnDlgStruct as LPDISCDLGSTRUCTA) as DWORD
 declare function WNetDisconnectDialog1W(byval lpConnDlgStruct as LPDISCDLGSTRUCTW) as DWORD
+
+#ifdef UNICODE
+	declare function WNetDisconnectDialog1 alias "WNetDisconnectDialog1W"(byval lpConnDlgStruct as LPDISCDLGSTRUCTW) as DWORD
+#endif
+
 declare function WNetOpenEnumA(byval dwScope as DWORD, byval dwType as DWORD, byval dwUsage as DWORD, byval lpNetResource as LPNETRESOURCEA, byval lphEnum as LPHANDLE) as DWORD
+
+#ifndef UNICODE
+	declare function WNetOpenEnum alias "WNetOpenEnumA"(byval dwScope as DWORD, byval dwType as DWORD, byval dwUsage as DWORD, byval lpNetResource as LPNETRESOURCEA, byval lphEnum as LPHANDLE) as DWORD
+#endif
+
 declare function WNetOpenEnumW(byval dwScope as DWORD, byval dwType as DWORD, byval dwUsage as DWORD, byval lpNetResource as LPNETRESOURCEW, byval lphEnum as LPHANDLE) as DWORD
+
+#ifdef UNICODE
+	declare function WNetOpenEnum alias "WNetOpenEnumW"(byval dwScope as DWORD, byval dwType as DWORD, byval dwUsage as DWORD, byval lpNetResource as LPNETRESOURCEW, byval lphEnum as LPHANDLE) as DWORD
+#endif
+
 declare function WNetEnumResourceA(byval hEnum as HANDLE, byval lpcCount as LPDWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetEnumResource alias "WNetEnumResourceA"(byval hEnum as HANDLE, byval lpcCount as LPDWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+#endif
+
 declare function WNetEnumResourceW(byval hEnum as HANDLE, byval lpcCount as LPDWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetEnumResource alias "WNetEnumResourceW"(byval hEnum as HANDLE, byval lpcCount as LPDWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+#endif
+
 declare function WNetCloseEnum(byval hEnum as HANDLE) as DWORD
 declare function WNetGetResourceParentA(byval lpNetResource as LPNETRESOURCEA, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetResourceParent alias "WNetGetResourceParentA"(byval lpNetResource as LPNETRESOURCEA, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetResourceParentW(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetResourceParent alias "WNetGetResourceParentW"(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetResourceInformationA(byval lpNetResource as LPNETRESOURCEA, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPSTR ptr) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetResourceInformation alias "WNetGetResourceInformationA"(byval lpNetResource as LPNETRESOURCEA, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPSTR ptr) as DWORD
+#endif
+
 declare function WNetGetResourceInformationW(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPWSTR ptr) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetResourceInformation alias "WNetGetResourceInformationW"(byval lpNetResource as LPNETRESOURCEW, byval lpBuffer as LPVOID, byval lpcbBuffer as LPDWORD, byval lplpSystem as LPWSTR ptr) as DWORD
+#endif
+
 const UNIVERSAL_NAME_INFO_LEVEL = &h00000001
 const REMOTE_NAME_INFO_LEVEL = &h00000002
 
@@ -404,28 +504,50 @@ type LPREMOTE_NAME_INFOW as _REMOTE_NAME_INFOW ptr
 #ifdef UNICODE
 	type REMOTE_NAME_INFO as REMOTE_NAME_INFOW
 	type LPREMOTE_NAME_INFO as LPREMOTE_NAME_INFOW
-	#define WNetGetUniversalName WNetGetUniversalNameW
-	#define WNetGetUser WNetGetUserW
-	#define WNetGetProviderName WNetGetProviderNameW
 #else
 	type REMOTE_NAME_INFO as REMOTE_NAME_INFOA
 	type LPREMOTE_NAME_INFO as LPREMOTE_NAME_INFOA
-	#define WNetGetUniversalName WNetGetUniversalNameA
-	#define WNetGetUser WNetGetUserA
-	#define WNetGetProviderName WNetGetProviderNameA
 #endif
 
 declare function WNetGetUniversalNameA(byval lpLocalPath as LPCSTR, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetUniversalName alias "WNetGetUniversalNameA"(byval lpLocalPath as LPCSTR, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetUniversalNameW(byval lpLocalPath as LPCWSTR, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetUniversalName alias "WNetGetUniversalNameW"(byval lpLocalPath as LPCWSTR, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpBufferSize as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetUserA(byval lpName as LPCSTR, byval lpUserName as LPSTR, byval lpnLength as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetUser alias "WNetGetUserA"(byval lpName as LPCSTR, byval lpUserName as LPSTR, byval lpnLength as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetUserW(byval lpName as LPCWSTR, byval lpUserName as LPWSTR, byval lpnLength as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetUser alias "WNetGetUserW"(byval lpName as LPCWSTR, byval lpUserName as LPWSTR, byval lpnLength as LPDWORD) as DWORD
+#endif
 
 const WNFMT_MULTILINE = &h01
 const WNFMT_ABBREVIATED = &h02
 const WNFMT_INENUM = &h10
 const WNFMT_CONNECTION = &h20
 declare function WNetGetProviderNameA(byval dwNetType as DWORD, byval lpProviderName as LPSTR, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function WNetGetProviderName alias "WNetGetProviderNameA"(byval dwNetType as DWORD, byval lpProviderName as LPSTR, byval lpBufferSize as LPDWORD) as DWORD
+#endif
+
 declare function WNetGetProviderNameW(byval dwNetType as DWORD, byval lpProviderName as LPWSTR, byval lpBufferSize as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetProviderName alias "WNetGetProviderNameW"(byval dwNetType as DWORD, byval lpProviderName as LPWSTR, byval lpBufferSize as LPDWORD) as DWORD
+#endif
 
 type _NETINFOSTRUCT
 	cbStructure as DWORD
@@ -443,31 +565,34 @@ type LPNETINFOSTRUCT as _NETINFOSTRUCT ptr
 const NETINFO_DLL16 = &h00000001
 const NETINFO_DISKRED = &h00000004
 const NETINFO_PRINTERRED = &h00000008
+declare function WNetGetNetworkInformationA(byval lpProvider as LPCSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
 
-#ifdef UNICODE
-	#define WNetGetNetworkInformation WNetGetNetworkInformationW
-#else
-	#define WNetGetNetworkInformation WNetGetNetworkInformationA
+#ifndef UNICODE
+	declare function WNetGetNetworkInformation alias "WNetGetNetworkInformationA"(byval lpProvider as LPCSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
 #endif
 
-declare function WNetGetNetworkInformationA(byval lpProvider as LPCSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
 declare function WNetGetNetworkInformationW(byval lpProvider as LPCWSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetNetworkInformation alias "WNetGetNetworkInformationW"(byval lpProvider as LPCWSTR, byval lpNetInfoStruct as LPNETINFOSTRUCT) as DWORD
+#endif
+
 type PFNGETPROFILEPATHA as function(byval pszUsername as LPCSTR, byval pszBuffer as LPSTR, byval cbBuffer as UINT) as UINT
 type PFNGETPROFILEPATHW as function(byval pszUsername as LPCWSTR, byval pszBuffer as LPWSTR, byval cbBuffer as UINT) as UINT
 
 #ifdef UNICODE
-	#define PFNGETPROFILEPATH PFNGETPROFILEPATHW
+	type PFNGETPROFILEPATH as PFNGETPROFILEPATHW
 #else
-	#define PFNGETPROFILEPATH PFNGETPROFILEPATHA
+	type PFNGETPROFILEPATH as PFNGETPROFILEPATHA
 #endif
 
 type PFNRECONCILEPROFILEA as function(byval pszCentralFile as LPCSTR, byval pszLocalFile as LPCSTR, byval dwFlags as DWORD) as UINT
 type PFNRECONCILEPROFILEW as function(byval pszCentralFile as LPCWSTR, byval pszLocalFile as LPCWSTR, byval dwFlags as DWORD) as UINT
 
 #ifdef UNICODE
-	#define PFNRECONCILEPROFILE PFNRECONCILEPROFILEW
+	type PFNRECONCILEPROFILE as PFNRECONCILEPROFILEW
 #else
-	#define PFNRECONCILEPROFILE PFNRECONCILEPROFILEA
+	type PFNRECONCILEPROFILE as PFNRECONCILEPROFILEA
 #endif
 
 const RP_LOGON = &h01
@@ -476,21 +601,24 @@ type PFNPROCESSPOLICIESA as function(byval hwnd as HWND, byval pszPath as LPCSTR
 type PFNPROCESSPOLICIESW as function(byval hwnd as HWND, byval pszPath as LPCWSTR, byval pszUsername as LPCWSTR, byval pszComputerName as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define PFNPROCESSPOLICIES PFNPROCESSPOLICIESW
+	type PFNPROCESSPOLICIES as PFNPROCESSPOLICIESW
 #else
-	#define PFNPROCESSPOLICIES PFNPROCESSPOLICIESA
+	type PFNPROCESSPOLICIES as PFNPROCESSPOLICIESA
 #endif
 
 const PP_DISPLAYERRORS = &h01
+declare function WNetGetLastErrorA(byval lpError as LPDWORD, byval lpErrorBuf as LPSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPSTR, byval nNameBufSize as DWORD) as DWORD
 
-#ifdef UNICODE
-	#define WNetGetLastError WNetGetLastErrorW
-#else
-	#define WNetGetLastError WNetGetLastErrorA
+#ifndef UNICODE
+	declare function WNetGetLastError alias "WNetGetLastErrorA"(byval lpError as LPDWORD, byval lpErrorBuf as LPSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPSTR, byval nNameBufSize as DWORD) as DWORD
 #endif
 
-declare function WNetGetLastErrorA(byval lpError as LPDWORD, byval lpErrorBuf as LPSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPSTR, byval nNameBufSize as DWORD) as DWORD
 declare function WNetGetLastErrorW(byval lpError as LPDWORD, byval lpErrorBuf as LPWSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPWSTR, byval nNameBufSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function WNetGetLastError alias "WNetGetLastErrorW"(byval lpError as LPDWORD, byval lpErrorBuf as LPWSTR, byval nErrorBufSize as DWORD, byval lpNameBuf as LPWSTR, byval nNameBufSize as DWORD) as DWORD
+#endif
+
 #define WN_SUCCESS NO_ERROR
 #define WN_NO_ERROR NO_ERROR
 #define WN_NOT_SUPPORTED ERROR_NOT_SUPPORTED
@@ -548,14 +676,16 @@ const WNCON_FORNETCARD = &h00000001
 const WNCON_NOTROUTED = &h00000002
 const WNCON_SLOWLINK = &h00000004
 const WNCON_DYNAMIC = &h00000008
+declare function MultinetGetConnectionPerformanceA(byval lpNetResource as LPNETRESOURCEA, byval lpNetConnectInfoStruct as LPNETCONNECTINFOSTRUCT) as DWORD
 
-#ifdef UNICODE
-	#define MultinetGetConnectionPerformance MultinetGetConnectionPerformanceW
-#else
-	#define MultinetGetConnectionPerformance MultinetGetConnectionPerformanceA
+#ifndef UNICODE
+	declare function MultinetGetConnectionPerformance alias "MultinetGetConnectionPerformanceA"(byval lpNetResource as LPNETRESOURCEA, byval lpNetConnectInfoStruct as LPNETCONNECTINFOSTRUCT) as DWORD
 #endif
 
-declare function MultinetGetConnectionPerformanceA(byval lpNetResource as LPNETRESOURCEA, byval lpNetConnectInfoStruct as LPNETCONNECTINFOSTRUCT) as DWORD
 declare function MultinetGetConnectionPerformanceW(byval lpNetResource as LPNETRESOURCEW, byval lpNetConnectInfoStruct as LPNETCONNECTINFOSTRUCT) as DWORD
+
+#ifdef UNICODE
+	declare function MultinetGetConnectionPerformance alias "MultinetGetConnectionPerformanceW"(byval lpNetResource as LPNETRESOURCEW, byval lpNetConnectInfoStruct as LPNETCONNECTINFOSTRUCT) as DWORD
+#endif
 
 end extern

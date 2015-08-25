@@ -333,66 +333,66 @@ declare function VarDecFromUI8(byval ui64In as ULONG64, byval pdecOut as DECIMAL
 #define VarI4FromI4(in, pOut) scope : (*(pOut)) = (in) : end scope
 #define VarUI8FromUI8(in, pOut) scope : (*(pOut)) = (in) : end scope
 #define VarI8FromI8(in, pOut) scope : (*(pOut)) = (in) : end scope
-#define VarUI1FromInt VarUI1FromI4
-#define VarUI1FromUint VarUI1FromUI4
-#define VarI2FromInt VarI2FromI4
-#define VarI2FromUint VarI2FromUI4
-#define VarI4FromUint VarI4FromUI4
-#define VarI8FromUint VarI8FromUI4
-#define VarR4FromInt VarR4FromI4
-#define VarR4FromUint VarR4FromUI4
-#define VarR8FromInt VarR8FromI4
-#define VarR8FromUint VarR8FromUI4
-#define VarDateFromInt VarDateFromI4
-#define VarDateFromUint VarDateFromUI4
-#define VarCyFromInt VarCyFromI4
-#define VarCyFromUint VarCyFromUI4
-#define VarBstrFromInt VarBstrFromI4
-#define VarBstrFromUint VarBstrFromUI4
-#define VarBoolFromInt VarBoolFromI4
-#define VarBoolFromUint VarBoolFromUI4
-#define VarI1FromInt VarI1FromI4
-#define VarI1FromUint VarI1FromUI4
-#define VarUI2FromInt VarUI2FromI4
-#define VarUI2FromUint VarUI2FromUI4
-#define VarUI4FromInt VarUI4FromI4
+declare function VarUI1FromInt alias "VarUI1FromI4"(byval lIn as LONG, byval pbOut as UBYTE ptr) as HRESULT
+declare function VarUI1FromUint alias "VarUI1FromUI4"(byval ulIn as ULONG, byval pbOut as UBYTE ptr) as HRESULT
+declare function VarI2FromInt alias "VarI2FromI4"(byval lIn as LONG, byval psOut as SHORT ptr) as HRESULT
+declare function VarI2FromUint alias "VarI2FromUI4"(byval ulIn as ULONG, byval psOut as SHORT ptr) as HRESULT
+declare function VarI4FromUint alias "VarI4FromUI4"(byval ulIn as ULONG, byval plOut as LONG ptr) as HRESULT
+declare function VarI8FromUint alias "VarI8FromUI4"(byval ulIn as ULONG, byval pi64Out as LONG64 ptr) as HRESULT
+declare function VarR4FromInt alias "VarR4FromI4"(byval lIn as LONG, byval pfltOut as FLOAT ptr) as HRESULT
+declare function VarR4FromUint alias "VarR4FromUI4"(byval ulIn as ULONG, byval pfltOut as FLOAT ptr) as HRESULT
+declare function VarR8FromInt alias "VarR8FromI4"(byval lIn as LONG, byval pdblOut as DOUBLE ptr) as HRESULT
+declare function VarR8FromUint alias "VarR8FromUI4"(byval ulIn as ULONG, byval pdblOut as DOUBLE ptr) as HRESULT
+declare function VarDateFromInt alias "VarDateFromI4"(byval lIn as LONG, byval pdateOut as DATE_ ptr) as HRESULT
+declare function VarDateFromUint alias "VarDateFromUI4"(byval ulIn as ULONG, byval pdateOut as DATE_ ptr) as HRESULT
+declare function VarCyFromInt alias "VarCyFromI4"(byval lIn as LONG, byval pcyOut as CY ptr) as HRESULT
+declare function VarCyFromUint alias "VarCyFromUI4"(byval ulIn as ULONG, byval pcyOut as CY ptr) as HRESULT
+declare function VarBstrFromInt alias "VarBstrFromI4"(byval lIn as LONG, byval lcid as LCID, byval dwFlags as ULONG, byval pbstrOut as BSTR ptr) as HRESULT
+declare function VarBstrFromUint alias "VarBstrFromUI4"(byval ulIn as ULONG, byval lcid as LCID, byval dwFlags as ULONG, byval pbstrOut as BSTR ptr) as HRESULT
+declare function VarBoolFromInt alias "VarBoolFromI4"(byval lIn as LONG, byval pboolOut as VARIANT_BOOL ptr) as HRESULT
+declare function VarBoolFromUint alias "VarBoolFromUI4"(byval ulIn as ULONG, byval pboolOut as VARIANT_BOOL ptr) as HRESULT
+declare function VarI1FromInt alias "VarI1FromI4"(byval lIn as LONG, byval pcOut as CHAR ptr) as HRESULT
+declare function VarI1FromUint alias "VarI1FromUI4"(byval ulIn as ULONG, byval pcOut as CHAR ptr) as HRESULT
+declare function VarUI2FromInt alias "VarUI2FromI4"(byval lIn as LONG, byval puiOut as USHORT ptr) as HRESULT
+declare function VarUI2FromUint alias "VarUI2FromUI4"(byval ulIn as ULONG, byval puiOut as USHORT ptr) as HRESULT
+declare function VarUI4FromInt alias "VarUI4FromI4"(byval lIn as LONG, byval pulOut as ULONG ptr) as HRESULT
 #define VarUI4FromUint VarUI4FromUI4
-#define VarDecFromInt VarDecFromI4
-#define VarDecFromUint VarDecFromUI4
-#define VarIntFromUI1 VarI4FromUI1
-#define VarIntFromI2 VarI4FromI2
+declare function VarDecFromInt alias "VarDecFromI4"(byval lIn as LONG, byval pdecOut as DECIMAL ptr) as HRESULT
+declare function VarDecFromUint alias "VarDecFromUI4"(byval ulIn as ULONG, byval pdecOut as DECIMAL ptr) as HRESULT
+declare function VarIntFromUI1 alias "VarI4FromUI1"(byval bIn as UBYTE, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromI2 alias "VarI4FromI2"(byval sIn as SHORT, byval plOut as LONG ptr) as HRESULT
 #define VarIntFromI4 VarI4FromI4
 #define VarIntFromI8 VarI4FromI8
-#define VarIntFromR4 VarI4FromR4
-#define VarIntFromR8 VarI4FromR8
-#define VarIntFromDate VarI4FromDate
-#define VarIntFromCy VarI4FromCy
-#define VarIntFromStr VarI4FromStr
-#define VarIntFromDisp VarI4FromDisp
-#define VarIntFromBool VarI4FromBool
-#define VarIntFromI1 VarI4FromI1
-#define VarIntFromUI2 VarI4FromUI2
-#define VarIntFromUI4 VarI4FromUI4
+declare function VarIntFromR4 alias "VarI4FromR4"(byval fltIn as FLOAT, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromR8 alias "VarI4FromR8"(byval dblIn as DOUBLE, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromDate alias "VarI4FromDate"(byval dateIn as DATE_, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromCy alias "VarI4FromCy"(byval cyIn as CY, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromStr alias "VarI4FromStr"(byval strIn as wstring ptr, byval lcid as LCID, byval dwFlags as ULONG, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromDisp alias "VarI4FromDisp"(byval pdispIn as IDispatch ptr, byval lcid as LCID, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromBool alias "VarI4FromBool"(byval boolIn as VARIANT_BOOL, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromI1 alias "VarI4FromI1"(byval cIn as CHAR, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromUI2 alias "VarI4FromUI2"(byval uiIn as USHORT, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromUI4 alias "VarI4FromUI4"(byval ulIn as ULONG, byval plOut as LONG ptr) as HRESULT
 #define VarIntFromUI8 VarI4FromUI8
-#define VarIntFromDec VarI4FromDec
-#define VarIntFromUint VarI4FromUI4
-#define VarUintFromUI1 VarUI4FromUI1
-#define VarUintFromI2 VarUI4FromI2
-#define VarUintFromI4 VarUI4FromI4
-#define VarUintFromI8 VarUI4FromI8
-#define VarUintFromR4 VarUI4FromR4
-#define VarUintFromR8 VarUI4FromR8
-#define VarUintFromDate VarUI4FromDate
-#define VarUintFromCy VarUI4FromCy
-#define VarUintFromStr VarUI4FromStr
-#define VarUintFromDisp VarUI4FromDisp
-#define VarUintFromBool VarUI4FromBool
-#define VarUintFromI1 VarUI4FromI1
-#define VarUintFromUI2 VarUI4FromUI2
+declare function VarIntFromDec alias "VarI4FromDec"(byval pdecIn as DECIMAL ptr, byval plOut as LONG ptr) as HRESULT
+declare function VarIntFromUint alias "VarI4FromUI4"(byval ulIn as ULONG, byval plOut as LONG ptr) as HRESULT
+declare function VarUintFromUI1 alias "VarUI4FromUI1"(byval bIn as UBYTE, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromI2 alias "VarUI4FromI2"(byval uiIn as SHORT, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromI4 alias "VarUI4FromI4"(byval lIn as LONG, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromI8 alias "VarUI4FromI8"(byval i64In as LONG64, byval plOut as ULONG ptr) as HRESULT
+declare function VarUintFromR4 alias "VarUI4FromR4"(byval fltIn as FLOAT, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromR8 alias "VarUI4FromR8"(byval dblIn as DOUBLE, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromDate alias "VarUI4FromDate"(byval dateIn as DATE_, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromCy alias "VarUI4FromCy"(byval cyIn as CY, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromStr alias "VarUI4FromStr"(byval strIn as wstring ptr, byval lcid as LCID, byval dwFlags as ULONG, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromDisp alias "VarUI4FromDisp"(byval pdispIn as IDispatch ptr, byval lcid as LCID, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromBool alias "VarUI4FromBool"(byval boolIn as VARIANT_BOOL, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromI1 alias "VarUI4FromI1"(byval cIn as CHAR, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromUI2 alias "VarUI4FromUI2"(byval uiIn as USHORT, byval pulOut as ULONG ptr) as HRESULT
 #define VarUintFromUI4 VarUI4FromUI4
-#define VarUintFromUI8 VarUI4FromUI8
-#define VarUintFromDec VarUI4FromDec
-#define VarUintFromInt VarUI4FromI4
+declare function VarUintFromUI8 alias "VarUI4FromUI8"(byval ui64In as ULONG64, byval plOut as ULONG ptr) as HRESULT
+declare function VarUintFromDec alias "VarUI4FromDec"(byval pdecIn as DECIMAL ptr, byval pulOut as ULONG ptr) as HRESULT
+declare function VarUintFromInt alias "VarUI4FromI4"(byval lIn as LONG, byval pulOut as ULONG ptr) as HRESULT
 
 type NUMPARSE
 	cDig as INT_
@@ -487,7 +487,7 @@ const VARCMP_LT = 0
 const VARCMP_EQ = 1
 const VARCMP_GT = 2
 const VARCMP_NULL = 3
-#define VT_HARDTYPE VT_RESERVED
+const VT_HARDTYPE = VT_RESERVED
 
 type UDATE
 	st as SYSTEMTIME
@@ -513,7 +513,7 @@ type LPTYPELIB as ITypeLib ptr
 type DISPID as LONG
 type MEMBERID as DISPID
 
-#define MEMBERID_NIL DISPID_UNKNOWN
+const MEMBERID_NIL = DISPID_UNKNOWN
 const ID_DEFAULTINST = -2
 const DISPATCH_METHOD = &h1
 const DISPATCH_PROPERTYGET = &h2

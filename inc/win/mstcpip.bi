@@ -122,76 +122,117 @@ const RCVALL_IPLEVEL = 3
 	end type
 
 	type SOCKET_SECURITY_SETTINGS_IPSEC as _SOCKET_SECURITY_SETTINGS_IPSEC
+	declare function RtlIpv6AddressToStringA(byval Addr as const IN6_ADDR ptr, byval S as LPSTR) as LPSTR
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv6AddressToString RtlIpv6AddressToStringW
-	#define RtlIpv6AddressToStringEx RtlIpv6AddressToStringExW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv6AddressToString RtlIpv6AddressToStringA
-	#define RtlIpv6AddressToStringEx RtlIpv6AddressToStringExA
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv6AddressToString alias "RtlIpv6AddressToStringA"(byval Addr as const IN6_ADDR ptr, byval S as LPSTR) as LPSTR
 #endif
 
 #if _WIN32_WINNT >= &h0502
-	declare function RtlIpv6AddressToStringA(byval Addr as const IN6_ADDR ptr, byval S as LPSTR) as LPSTR
 	declare function RtlIpv6AddressToStringW(byval Addr as const IN6_ADDR ptr, byval S as LPWSTR) as LPWSTR
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv6AddressToString alias "RtlIpv6AddressToStringW"(byval Addr as const IN6_ADDR ptr, byval S as LPWSTR) as LPWSTR
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv6AddressToStringExA(byval Address as const IN6_ADDR ptr, byval ScopeId as ULONG, byval Port as USHORT, byval AddressString as LPSTR, byval AddressStringLength as PULONG) as LONG
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv6AddressToStringEx alias "RtlIpv6AddressToStringExA"(byval Address as const IN6_ADDR ptr, byval ScopeId as ULONG, byval Port as USHORT, byval AddressString as LPSTR, byval AddressStringLength as PULONG) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv6AddressToStringExW(byval Address as const IN6_ADDR ptr, byval ScopeId as ULONG, byval Port as USHORT, byval AddressString as LPWSTR, byval AddressStringLength as PULONG) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4AddressToString RtlIpv4AddressToStringW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4AddressToString RtlIpv4AddressToStringA
+	declare function RtlIpv6AddressToStringEx alias "RtlIpv6AddressToStringExW"(byval Address as const IN6_ADDR ptr, byval ScopeId as ULONG, byval Port as USHORT, byval AddressString as LPWSTR, byval AddressStringLength as PULONG) as LONG
 #endif
 
 #if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4AddressToStringA(byval Addr as const IN_ADDR ptr, byval S as LPSTR) as LPSTR
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv4AddressToString alias "RtlIpv4AddressToStringA"(byval Addr as const IN_ADDR ptr, byval S as LPSTR) as LPSTR
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4AddressToStringW(byval Addr as const IN_ADDR ptr, byval S as LPWSTR) as LPWSTR
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4AddressToStringEx RtlIpv4AddressToStringExW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4AddressToStringEx RtlIpv4AddressToStringExA
+	declare function RtlIpv4AddressToString alias "RtlIpv4AddressToStringW"(byval Addr as const IN_ADDR ptr, byval S as LPWSTR) as LPWSTR
 #endif
 
 #if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4AddressToStringExA(byval Address as const IN_ADDR ptr, byval Port as USHORT, byval AddressString as LPSTR, byval AddressStringLength as PULONG) as LONG
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv4AddressToStringEx alias "RtlIpv4AddressToStringExA"(byval Address as const IN_ADDR ptr, byval Port as USHORT, byval AddressString as LPSTR, byval AddressStringLength as PULONG) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4AddressToStringExW(byval Address as const IN_ADDR ptr, byval Port as USHORT, byval AddressString as LPWSTR, byval AddressStringLength as PULONG) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4StringToAddress RtlIpv4StringToAddressW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4StringToAddress RtlIpv4StringToAddressA
+	declare function RtlIpv4AddressToStringEx alias "RtlIpv4AddressToStringExW"(byval Address as const IN_ADDR ptr, byval Port as USHORT, byval AddressString as LPWSTR, byval AddressStringLength as PULONG) as LONG
 #endif
 
 #if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4StringToAddressA(byval S as PCSTR, byval Strict as WINBOOLEAN, byval Terminator as LPSTR ptr, byval Addr as IN_ADDR ptr) as LONG
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv4StringToAddress alias "RtlIpv4StringToAddressA"(byval S as PCSTR, byval Strict as WINBOOLEAN, byval Terminator as LPSTR ptr, byval Addr as IN_ADDR ptr) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4StringToAddressW(byval S as PCWSTR, byval Strict as WINBOOLEAN, byval Terminator as LPWSTR ptr, byval Addr as IN_ADDR ptr) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4StringToAddressEx RtlIpv4StringToAddressExW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv4StringToAddressEx RtlIpv4StringToAddressExA
+	declare function RtlIpv4StringToAddress alias "RtlIpv4StringToAddressW"(byval S as PCWSTR, byval Strict as WINBOOLEAN, byval Terminator as LPWSTR ptr, byval Addr as IN_ADDR ptr) as LONG
 #endif
 
 #if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4StringToAddressExA(byval AddressString as PCSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv4StringToAddressEx alias "RtlIpv4StringToAddressExA"(byval AddressString as PCSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	declare function RtlIpv4StringToAddressExW(byval AddressString as PCWSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv6StringToAddressEx RtlIpv6StringToAddressExW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
-	#define RtlIpv6StringToAddressEx RtlIpv6StringToAddressExA
+	declare function RtlIpv4StringToAddressEx alias "RtlIpv4StringToAddressExW"(byval AddressString as PCWSTR, byval Strict as WINBOOLEAN, byval Address as IN_ADDR ptr, byval Port as PUSHORT) as LONG
 #endif
 
 #if _WIN32_WINNT >= &h0502
 	declare function RtlIpv6StringToAddressExA(byval AddressString as PCSTR, byval Address as IN6_ADDR ptr, byval ScopeId as PULONG, byval Port as PUSHORT) as LONG
-	declare function RtlIpv6StringToAddressExW(byval AddressString as PCWSTR, byval Address as IN6_ADDR ptr, byval ScopeId as PULONG, byval Port as PUSHORT) as LONG
+#endif
 
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv6StringToAddressEx alias "RtlIpv6StringToAddressExA"(byval AddressString as PCSTR, byval Address as IN6_ADDR ptr, byval ScopeId as PULONG, byval Port as PUSHORT) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
+	declare function RtlIpv6StringToAddressExW(byval AddressString as PCWSTR, byval Address as IN6_ADDR ptr, byval ScopeId as PULONG, byval Port as PUSHORT) as LONG
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+	declare function RtlIpv6StringToAddressEx alias "RtlIpv6StringToAddressExW"(byval AddressString as PCWSTR, byval Address as IN6_ADDR ptr, byval ScopeId as PULONG, byval Port as PUSHORT) as LONG
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	end extern
 #endif

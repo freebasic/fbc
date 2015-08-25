@@ -369,54 +369,54 @@ declare function D3DXCreateEffectFromFileExA(byval device as IDirect3DDevice9 pt
 declare function D3DXCreateEffectFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectFromFileEx D3DXCreateEffectFromFileExW
+	declare function D3DXCreateEffectFromFileEx alias "D3DXCreateEffectFromFileExW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectFromFileEx D3DXCreateEffectFromFileExA
+	declare function D3DXCreateEffectFromFileEx alias "D3DXCreateEffectFromFileExA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateEffectFromFileA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCreateEffectFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileW
+	declare function D3DXCreateEffectFromFile alias "D3DXCreateEffectFromFileW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectFromFile D3DXCreateEffectFromFileA
+	declare function D3DXCreateEffectFromFile alias "D3DXCreateEffectFromFileA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateEffectFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCreateEffectFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectFromResourceEx D3DXCreateEffectFromResourceExW
+	declare function D3DXCreateEffectFromResourceEx alias "D3DXCreateEffectFromResourceExW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectFromResourceEx D3DXCreateEffectFromResourceExA
+	declare function D3DXCreateEffectFromResourceEx alias "D3DXCreateEffectFromResourceExA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval skip_constants as const zstring ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateEffectFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCreateEffectFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectFromResource D3DXCreateEffectFromResourceW
+	declare function D3DXCreateEffectFromResource alias "D3DXCreateEffectFromResourceW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectFromResource D3DXCreateEffectFromResourceA
+	declare function D3DXCreateEffectFromResource alias "D3DXCreateEffectFromResourceA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval pool as ID3DXEffectPool ptr, byval effect as ID3DXEffect ptr ptr, byval compilation_errors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateEffectCompilerFromFileA(byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCreateEffectCompilerFromFileW(byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectCompilerFromFile D3DXCreateEffectCompilerFromFileW
+	declare function D3DXCreateEffectCompilerFromFile alias "D3DXCreateEffectCompilerFromFileW"(byval srcfile as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectCompilerFromFile D3DXCreateEffectCompilerFromFileA
+	declare function D3DXCreateEffectCompilerFromFile alias "D3DXCreateEffectCompilerFromFileA"(byval srcfile as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateEffectCompilerFromResourceA(byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 declare function D3DXCreateEffectCompilerFromResourceW(byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateEffectCompilerFromResource D3DXCreateEffectCompilerFromResourceW
+	declare function D3DXCreateEffectCompilerFromResource alias "D3DXCreateEffectCompilerFromResourceW"(byval srcmodule as HMODULE, byval srcresource as const wstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 #else
-	#define D3DXCreateEffectCompilerFromResource D3DXCreateEffectCompilerFromResourceA
+	declare function D3DXCreateEffectCompilerFromResource alias "D3DXCreateEffectCompilerFromResourceA"(byval srcmodule as HMODULE, byval srcresource as const zstring ptr, byval defines as const D3DXMACRO ptr, byval include as ID3DXInclude ptr, byval flags as DWORD, byval effectcompiler as ID3DXEffectCompiler ptr ptr, byval parseerrors as ID3DXBuffer ptr ptr) as HRESULT
 #endif
 
 end extern

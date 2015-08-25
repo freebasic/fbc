@@ -202,30 +202,41 @@ type _ffi_type
 end type
 
 type ffi_type as _ffi_type
-#define ffi_type_uchar ffi_type_uint8
-#define ffi_type_schar ffi_type_sint8
-#define ffi_type_ushort ffi_type_uint16
-#define ffi_type_sshort ffi_type_sint16
-#define ffi_type_uint ffi_type_uint32
-#define ffi_type_sint ffi_type_sint32
-
-#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
-	#define ffi_type_ulong ffi_type_uint64
-	#define ffi_type_slong ffi_type_sint64
-#else
-	#define ffi_type_ulong ffi_type_uint32
-	#define ffi_type_slong ffi_type_sint32
-#endif
-
 extern ffi_type_void as ffi_type
 extern ffi_type_uint8 as ffi_type
+extern ffi_type_uchar alias "ffi_type_uint8" as ffi_type
 extern ffi_type_sint8 as ffi_type
+extern ffi_type_schar alias "ffi_type_sint8" as ffi_type
 extern ffi_type_uint16 as ffi_type
+extern ffi_type_ushort alias "ffi_type_uint16" as ffi_type
 extern ffi_type_sint16 as ffi_type
+extern ffi_type_sshort alias "ffi_type_sint16" as ffi_type
 extern ffi_type_uint32 as ffi_type
+extern ffi_type_uint alias "ffi_type_uint32" as ffi_type
+
+#if (defined(__FB_WIN32__) and defined(__FB_64BIT__)) or (not defined(__FB_64BIT__))
+	extern ffi_type_ulong alias "ffi_type_uint32" as ffi_type
+#endif
+
 extern ffi_type_sint32 as ffi_type
+extern ffi_type_sint alias "ffi_type_sint32" as ffi_type
+
+#if (defined(__FB_WIN32__) and defined(__FB_64BIT__)) or (not defined(__FB_64BIT__))
+	extern ffi_type_slong alias "ffi_type_sint32" as ffi_type
+#endif
+
 extern ffi_type_uint64 as ffi_type
+
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
+	extern ffi_type_ulong alias "ffi_type_uint64" as ffi_type
+#endif
+
 extern ffi_type_sint64 as ffi_type
+
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
+	extern ffi_type_slong alias "ffi_type_sint64" as ffi_type
+#endif
+
 extern ffi_type_float as ffi_type
 extern ffi_type_double as ffi_type
 extern ffi_type_pointer as ffi_type
@@ -272,7 +283,7 @@ declare function ffi_prep_cif_core(byval cif as ffi_cif ptr, byval abi as ffi_ab
 	const FFI_SIZEOF_ARG = 8
 #endif
 
-#define FFI_SIZEOF_JAVA_RAW FFI_SIZEOF_ARG
+const FFI_SIZEOF_JAVA_RAW = FFI_SIZEOF_ARG
 
 union ffi_raw
 	sint as ffi_sarg
@@ -355,6 +366,6 @@ const FFI_TYPE_SINT64_ = 12
 const FFI_TYPE_STRUCT = 13
 const FFI_TYPE_POINTER_ = 14
 const FFI_TYPE_COMPLEX = 15
-#define FFI_TYPE_LAST FFI_TYPE_COMPLEX
+const FFI_TYPE_LAST = FFI_TYPE_COMPLEX
 
 end extern

@@ -105,14 +105,15 @@ const FT_CURVE_TAG_HAS_SCANMODE = 4
 const FT_CURVE_TAG_TOUCH_X = 8
 const FT_CURVE_TAG_TOUCH_Y = 16
 #define FT_CURVE_TAG_TOUCH_BOTH (FT_CURVE_TAG_TOUCH_X or FT_CURVE_TAG_TOUCH_Y)
+
 type FT_Outline_MoveToFunc as function(byval to as const FT_Vector ptr, byval user as any ptr) as long
-#define FT_Outline_MoveTo_Func FT_Outline_MoveToFunc
+type FT_Outline_MoveTo_Func as FT_Outline_MoveToFunc
 type FT_Outline_LineToFunc as function(byval to as const FT_Vector ptr, byval user as any ptr) as long
-#define FT_Outline_LineTo_Func FT_Outline_LineToFunc
+type FT_Outline_LineTo_Func as FT_Outline_LineToFunc
 type FT_Outline_ConicToFunc as function(byval control as const FT_Vector ptr, byval to as const FT_Vector ptr, byval user as any ptr) as long
-#define FT_Outline_ConicTo_Func FT_Outline_ConicToFunc
+type FT_Outline_ConicTo_Func as FT_Outline_ConicToFunc
 type FT_Outline_CubicToFunc as function(byval control1 as const FT_Vector ptr, byval control2 as const FT_Vector ptr, byval to as const FT_Vector ptr, byval user as any ptr) as long
-#define FT_Outline_CubicTo_Func FT_Outline_CubicToFunc
+type FT_Outline_CubicTo_Func as FT_Outline_CubicToFunc
 
 type FT_Outline_Funcs_
 	move_to as FT_Outline_MoveToFunc
@@ -145,9 +146,10 @@ end type
 
 type FT_Span as FT_Span_
 type FT_SpanFunc as sub(byval y as long, byval count as long, byval spans as const FT_Span ptr, byval user as any ptr)
-#define FT_Raster_Span_Func FT_SpanFunc
+type FT_Raster_Span_Func as FT_SpanFunc
 type FT_Raster_BitTest_Func as function(byval y as long, byval x as long, byval user as any ptr) as long
 type FT_Raster_BitSet_Func as sub(byval y as long, byval x as long, byval user as any ptr)
+
 const FT_RASTER_FLAG_DEFAULT = &h0
 const FT_RASTER_FLAG_AA = &h1
 const FT_RASTER_FLAG_DIRECT = &h2
@@ -167,15 +169,15 @@ end type
 
 type FT_Raster_Params as FT_Raster_Params_
 type FT_Raster_NewFunc as function(byval memory as any ptr, byval raster as FT_Raster ptr) as long
-#define FT_Raster_New_Func FT_Raster_NewFunc
+type FT_Raster_New_Func as FT_Raster_NewFunc
 type FT_Raster_DoneFunc as sub(byval raster as FT_Raster)
-#define FT_Raster_Done_Func FT_Raster_DoneFunc
+type FT_Raster_Done_Func as FT_Raster_DoneFunc
 type FT_Raster_ResetFunc as sub(byval raster as FT_Raster, byval pool_base as ubyte ptr, byval pool_size as culong)
-#define FT_Raster_Reset_Func FT_Raster_ResetFunc
+type FT_Raster_Reset_Func as FT_Raster_ResetFunc
 type FT_Raster_SetModeFunc as function(byval raster as FT_Raster, byval mode as culong, byval args as any ptr) as long
-#define FT_Raster_Set_Mode_Func FT_Raster_SetModeFunc
+type FT_Raster_Set_Mode_Func as FT_Raster_SetModeFunc
 type FT_Raster_RenderFunc as function(byval raster as FT_Raster, byval params as const FT_Raster_Params ptr) as long
-#define FT_Raster_Render_Func FT_Raster_RenderFunc
+type FT_Raster_Render_Func as FT_Raster_RenderFunc
 
 type FT_Raster_Funcs_
 	glyph_format as FT_Glyph_Format

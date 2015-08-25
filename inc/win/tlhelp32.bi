@@ -108,14 +108,14 @@ declare function Process32FirstA alias "Process32First"(byval hSnapshot as HANDL
 declare function Process32NextA alias "Process32Next"(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32A) as WINBOOL
 
 #ifdef UNICODE
-	#define Process32First Process32FirstW
-	#define Process32Next Process32NextW
+	declare function Process32First alias "Process32FirstW"(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32W) as WINBOOL
+	declare function Process32Next alias "Process32NextW"(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32W) as WINBOOL
 	type PROCESSENTRY32 as PROCESSENTRY32W
 	type PPROCESSENTRY32 as PPROCESSENTRY32W
 	type LPPROCESSENTRY32 as LPPROCESSENTRY32W
 #else
-	#define Process32First Process32FirstA
-	#define Process32Next Process32NextA
+	declare function Process32First(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32A) as WINBOOL
+	declare function Process32Next(byval hSnapshot as HANDLE, byval lppe as LPPROCESSENTRY32A) as WINBOOL
 	type PROCESSENTRY32 as PROCESSENTRY32A
 	type PPROCESSENTRY32 as PPROCESSENTRY32A
 	type LPPROCESSENTRY32 as LPPROCESSENTRY32A
@@ -176,14 +176,14 @@ declare function Module32FirstA alias "Module32First"(byval hSnapshot as HANDLE,
 declare function Module32NextA alias "Module32Next"(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32A) as WINBOOL
 
 #ifdef UNICODE
-	#define Module32First Module32FirstW
-	#define Module32Next Module32NextW
+	declare function Module32First alias "Module32FirstW"(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32W) as WINBOOL
+	declare function Module32Next alias "Module32NextW"(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32W) as WINBOOL
 	type MODULEENTRY32 as MODULEENTRY32W
 	type PMODULEENTRY32 as PMODULEENTRY32W
 	type LPMODULEENTRY32 as LPMODULEENTRY32W
 #else
-	#define Module32First Module32FirstA
-	#define Module32Next Module32NextA
+	declare function Module32First(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32A) as WINBOOL
+	declare function Module32Next(byval hSnapshot as HANDLE, byval lpme as LPMODULEENTRY32A) as WINBOOL
 	type MODULEENTRY32 as MODULEENTRY32A
 	type PMODULEENTRY32 as PMODULEENTRY32A
 	type LPMODULEENTRY32 as LPMODULEENTRY32A

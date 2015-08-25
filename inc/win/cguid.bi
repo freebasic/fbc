@@ -21,6 +21,9 @@ extern "C"
 
 #define __CGUID_H__
 extern GUID_NULL as const IID
+extern IID_NULL alias "GUID_NULL" as const IID
+extern CLSID_NULL alias "GUID_NULL" as const IID
+extern FMTID_NULL alias "GUID_NULL" as const IID
 extern CATID_MARSHALER as const IID
 extern IID_IRpcChannel as const IID
 extern IID_IRpcStub as const IID

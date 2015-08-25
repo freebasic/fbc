@@ -88,7 +88,7 @@ declare function IMG_LoadXPM_RW(byval src as SDL_RWops ptr) as SDL_Surface ptr
 declare function IMG_LoadXV_RW(byval src as SDL_RWops ptr) as SDL_Surface ptr
 declare function IMG_LoadWEBP_RW(byval src as SDL_RWops ptr) as SDL_Surface ptr
 declare function IMG_ReadXPMFromArray(byval xpm as zstring ptr ptr) as SDL_Surface ptr
-#define IMG_SetError SDL_SetError
-#define IMG_GetError SDL_GetError
+declare sub IMG_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...)
+declare function IMG_GetError alias "SDL_GetError"() as zstring ptr
 
 end extern

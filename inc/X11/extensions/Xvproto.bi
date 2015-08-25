@@ -144,7 +144,7 @@ const xv_ListImageFormats = 16
 const xv_QueryImageAttributes = 17
 const xv_PutImage = 18
 const xv_ShmPutImage = 19
-#define xv_LastRequest xv_ShmPutImage
+const xv_LastRequest = xv_ShmPutImage
 #define xvNumRequests (xv_LastRequest + 1)
 
 type xvQueryExtensionReq

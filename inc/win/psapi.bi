@@ -24,23 +24,9 @@ extern "Windows"
 #define _PSAPI_H_
 
 #ifdef UNICODE
-	#define GetModuleBaseName GetModuleBaseNameW
-	#define GetModuleFileNameEx GetModuleFileNameExW
-	#define GetMappedFileName GetMappedFileNameW
-	#define GetDeviceDriverBaseName GetDeviceDriverBaseNameW
-	#define GetDeviceDriverFileName GetDeviceDriverFileNameW
-	#define PENUM_PAGE_FILE_CALLBACK PENUM_PAGE_FILE_CALLBACKW
-	#define EnumPageFiles EnumPageFilesW
-	#define GetProcessImageFileName GetProcessImageFileNameW
+	type PENUM_PAGE_FILE_CALLBACK as PENUM_PAGE_FILE_CALLBACKW
 #else
-	#define GetModuleBaseName GetModuleBaseNameA
-	#define GetModuleFileNameEx GetModuleFileNameExA
-	#define GetMappedFileName GetMappedFileNameA
-	#define GetDeviceDriverBaseName GetDeviceDriverBaseNameA
-	#define GetDeviceDriverFileName GetDeviceDriverFileNameA
-	#define PENUM_PAGE_FILE_CALLBACK PENUM_PAGE_FILE_CALLBACKA
-	#define EnumPageFiles EnumPageFilesA
-	#define GetProcessImageFileName GetProcessImageFileNameA
+	type PENUM_PAGE_FILE_CALLBACK as PENUM_PAGE_FILE_CALLBACKA
 #endif
 
 const LIST_MODULES_DEFAULT = &h0
@@ -51,9 +37,28 @@ const LIST_MODULES_64BIT = &h02
 declare function EnumProcesses(byval lpidProcess as DWORD ptr, byval cb as DWORD, byval cbNeeded as DWORD ptr) as WINBOOL
 declare function EnumProcessModules(byval hProcess as HANDLE, byval lphModule as HMODULE ptr, byval cb as DWORD, byval lpcbNeeded as LPDWORD) as WINBOOL
 declare function GetModuleBaseNameA(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpBaseName as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetModuleBaseName alias "GetModuleBaseNameA"(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpBaseName as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetModuleBaseNameW(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpBaseName as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetModuleBaseName alias "GetModuleBaseNameW"(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpBaseName as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetModuleFileNameExA(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetModuleFileNameEx alias "GetModuleFileNameExA"(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetModuleFileNameExW(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetModuleFileNameEx alias "GetModuleFileNameExW"(byval hProcess as HANDLE, byval hModule as HMODULE, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
 
 type _MODULEINFO
 	lpBaseOfDll as LPVOID
@@ -78,12 +83,41 @@ type PSAPI_WS_WATCH_INFORMATION as _PSAPI_WS_WATCH_INFORMATION
 type PPSAPI_WS_WATCH_INFORMATION as _PSAPI_WS_WATCH_INFORMATION ptr
 declare function GetWsChanges(byval hProcess as HANDLE, byval lpWatchInfo as PPSAPI_WS_WATCH_INFORMATION, byval cb as DWORD) as WINBOOL
 declare function GetMappedFileNameW(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetMappedFileName alias "GetMappedFileNameW"(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetMappedFileNameA(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetMappedFileName alias "GetMappedFileNameA"(byval hProcess as HANDLE, byval lpv as LPVOID, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function EnumDeviceDrivers(byval lpImageBase as LPVOID ptr, byval cb as DWORD, byval lpcbNeeded as LPDWORD) as WINBOOL
 declare function GetDeviceDriverBaseNameA(byval ImageBase as LPVOID, byval lpBaseName as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetDeviceDriverBaseName alias "GetDeviceDriverBaseNameA"(byval ImageBase as LPVOID, byval lpBaseName as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetDeviceDriverBaseNameW(byval ImageBase as LPVOID, byval lpBaseName as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetDeviceDriverBaseName alias "GetDeviceDriverBaseNameW"(byval ImageBase as LPVOID, byval lpBaseName as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetDeviceDriverFileNameA(byval ImageBase as LPVOID, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetDeviceDriverFileName alias "GetDeviceDriverFileNameA"(byval ImageBase as LPVOID, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetDeviceDriverFileNameW(byval ImageBase as LPVOID, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetDeviceDriverFileName alias "GetDeviceDriverFileNameW"(byval ImageBase as LPVOID, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
 
 type _PROCESS_MEMORY_COUNTERS
 	cb as DWORD
@@ -154,11 +188,29 @@ type ENUM_PAGE_FILE_INFORMATION as _ENUM_PAGE_FILE_INFORMATION
 type PENUM_PAGE_FILE_INFORMATION as _ENUM_PAGE_FILE_INFORMATION ptr
 type PENUM_PAGE_FILE_CALLBACKW as function cdecl(byval pContext as LPVOID, byval pPageFileInfo as PENUM_PAGE_FILE_INFORMATION, byval lpFilename as LPCWSTR) as WINBOOL
 type PENUM_PAGE_FILE_CALLBACKA as function cdecl(byval pContext as LPVOID, byval pPageFileInfo as PENUM_PAGE_FILE_INFORMATION, byval lpFilename as LPCSTR) as WINBOOL
-
 declare function EnumPageFilesW(byval pCallBackRoutine as PENUM_PAGE_FILE_CALLBACKW, byval pContext as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumPageFiles alias "EnumPageFilesW"(byval pCallBackRoutine as PENUM_PAGE_FILE_CALLBACKW, byval pContext as LPVOID) as WINBOOL
+#endif
+
 declare function EnumPageFilesA(byval pCallBackRoutine as PENUM_PAGE_FILE_CALLBACKA, byval pContext as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumPageFiles alias "EnumPageFilesA"(byval pCallBackRoutine as PENUM_PAGE_FILE_CALLBACKA, byval pContext as LPVOID) as WINBOOL
+#endif
+
 declare function GetProcessImageFileNameA(byval hProcess as HANDLE, byval lpImageFileName as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetProcessImageFileName alias "GetProcessImageFileNameA"(byval hProcess as HANDLE, byval lpImageFileName as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function GetProcessImageFileNameW(byval hProcess as HANDLE, byval lpImageFileName as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetProcessImageFileName alias "GetProcessImageFileNameW"(byval hProcess as HANDLE, byval lpImageFileName as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
 
 type _PSAPI_WS_WATCH_INFORMATION_EX
 	BasicInfo as PSAPI_WS_WATCH_INFORMATION

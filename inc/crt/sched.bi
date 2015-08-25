@@ -46,7 +46,7 @@ declare function sched_get_priority_max(byval __algorithm as long) as long
 declare function sched_get_priority_min(byval __algorithm as long) as long
 declare function sched_rr_get_interval(byval __pid as __pid_t, byval __t as timespec ptr) as long
 
-#define CPU_SETSIZE __CPU_SETSIZE
+const CPU_SETSIZE = __CPU_SETSIZE
 #define CPU_ALLOC_SIZE(count) __CPU_ALLOC_SIZE(count)
 #define CPU_ALLOC(count) __CPU_ALLOC(count)
 #define CPU_FREE(cpuset) __CPU_FREE(cpuset)

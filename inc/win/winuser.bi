@@ -441,13 +441,13 @@ const WH_CALLWNDPROCRET = 12
 const WH_KEYBOARD_LL = 13
 const WH_MOUSE_LL = 14
 const WH_MAX = 14
-#define WH_MINHOOK WH_MIN
-#define WH_MAXHOOK WH_MAX
+const WH_MINHOOK = WH_MIN
+const WH_MAXHOOK = WH_MAX
 const HC_ACTION = 0
 const HC_GETNEXT = 1
 const HC_SKIP = 2
 const HC_NOREMOVE = 3
-#define HC_NOREM HC_NOREMOVE
+const HC_NOREM = HC_NOREMOVE
 const HC_SYSMODALON = 4
 const HC_SYSMODALOFF = 5
 const HCBT_MOVESIZE = 0
@@ -749,22 +749,33 @@ const INPUTLANGCHANGE_SYSCHARSET = &h0001
 const INPUTLANGCHANGE_FORWARD = &h0002
 const INPUTLANGCHANGE_BACKWARD = &h0004
 const KL_NAMELENGTH = 9
+declare function LoadKeyboardLayoutA(byval pwszKLID as LPCSTR, byval Flags as UINT) as HKL
 
-#ifdef UNICODE
-	#define LoadKeyboardLayout LoadKeyboardLayoutW
-	#define GetKeyboardLayoutName GetKeyboardLayoutNameW
-#else
-	#define LoadKeyboardLayout LoadKeyboardLayoutA
-	#define GetKeyboardLayoutName GetKeyboardLayoutNameA
+#ifndef UNICODE
+	declare function LoadKeyboardLayout alias "LoadKeyboardLayoutA"(byval pwszKLID as LPCSTR, byval Flags as UINT) as HKL
 #endif
 
-declare function LoadKeyboardLayoutA(byval pwszKLID as LPCSTR, byval Flags as UINT) as HKL
 declare function LoadKeyboardLayoutW(byval pwszKLID as LPCWSTR, byval Flags as UINT) as HKL
+
+#ifdef UNICODE
+	declare function LoadKeyboardLayout alias "LoadKeyboardLayoutW"(byval pwszKLID as LPCWSTR, byval Flags as UINT) as HKL
+#endif
+
 declare function ActivateKeyboardLayout(byval hkl as HKL, byval Flags as UINT) as HKL
 declare function ToUnicodeEx(byval wVirtKey as UINT, byval wScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval pwszBuff as LPWSTR, byval cchBuff as long, byval wFlags as UINT, byval dwhkl as HKL) as long
 declare function UnloadKeyboardLayout(byval hkl as HKL) as WINBOOL
 declare function GetKeyboardLayoutNameA(byval pwszKLID as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetKeyboardLayoutName alias "GetKeyboardLayoutNameA"(byval pwszKLID as LPSTR) as WINBOOL
+#endif
+
 declare function GetKeyboardLayoutNameW(byval pwszKLID as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetKeyboardLayoutName alias "GetKeyboardLayoutNameW"(byval pwszKLID as LPWSTR) as WINBOOL
+#endif
+
 declare function GetKeyboardLayoutList(byval nBuff as long, byval lpList as HKL ptr) as long
 declare function GetKeyboardLayout(byval idThread as DWORD) as HKL
 
@@ -792,33 +803,55 @@ const GMMP_USE_HIGH_RESOLUTION_POINTS = 2
 #define DESKTOP_WRITEOBJECTS __MSABI_LONG(&h0080)
 #define DESKTOP_SWITCHDESKTOP __MSABI_LONG(&h0100)
 #define DF_ALLOWOTHERACCOUNTHOOK __MSABI_LONG(&h0001)
+declare function CreateDesktopA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as LPDEVMODEA, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
 
-#ifdef UNICODE
-	#define CreateDesktop CreateDesktopW
-	#define CreateDesktopEx CreateDesktopExW
-#else
-	#define CreateDesktop CreateDesktopA
-	#define CreateDesktopEx CreateDesktopExA
+#ifndef UNICODE
+	declare function CreateDesktop alias "CreateDesktopA"(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as LPDEVMODEA, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
 #endif
 
-declare function CreateDesktopA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as LPDEVMODEA, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
 declare function CreateDesktopW(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as LPDEVMODEW, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
+
+#ifdef UNICODE
+	declare function CreateDesktop alias "CreateDesktopW"(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as LPDEVMODEW, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HDESK
+#endif
+
 declare function CreateDesktopExA(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as DEVMODEA ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
+
+#ifndef UNICODE
+	declare function CreateDesktopEx alias "CreateDesktopExA"(byval lpszDesktop as LPCSTR, byval lpszDevice as LPCSTR, byval pDevmode as DEVMODEA ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
+#endif
+
 declare function CreateDesktopExW(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as DEVMODEW ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
 
 #ifdef UNICODE
-	#define OpenDesktop OpenDesktopW
-	#define EnumDesktops EnumDesktopsW
-#else
-	#define OpenDesktop OpenDesktopA
-	#define EnumDesktops EnumDesktopsA
+	declare function CreateDesktopEx alias "CreateDesktopExW"(byval lpszDesktop as LPCWSTR, byval lpszDevice as LPCWSTR, byval pDevmode as DEVMODEW ptr, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES, byval ulHeapSize as ULONG, byval pvoid as PVOID) as HDESK
 #endif
 
 declare function OpenDesktopA(byval lpszDesktop as LPCSTR, byval dwFlags as DWORD, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HDESK
+
+#ifndef UNICODE
+	declare function OpenDesktop alias "OpenDesktopA"(byval lpszDesktop as LPCSTR, byval dwFlags as DWORD, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HDESK
+#endif
+
 declare function OpenDesktopW(byval lpszDesktop as LPCWSTR, byval dwFlags as DWORD, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HDESK
+
+#ifdef UNICODE
+	declare function OpenDesktop alias "OpenDesktopW"(byval lpszDesktop as LPCWSTR, byval dwFlags as DWORD, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HDESK
+#endif
+
 declare function OpenInputDesktop(byval dwFlags as DWORD, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HDESK
 declare function EnumDesktopsA(byval hwinsta as HWINSTA, byval lpEnumFunc as DESKTOPENUMPROCA, byval lParam as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumDesktops alias "EnumDesktopsA"(byval hwinsta as HWINSTA, byval lpEnumFunc as DESKTOPENUMPROCA, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function EnumDesktopsW(byval hwinsta as HWINSTA, byval lpEnumFunc as DESKTOPENUMPROCW, byval lParam as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumDesktops alias "EnumDesktopsW"(byval hwinsta as HWINSTA, byval lpEnumFunc as DESKTOPENUMPROCW, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function EnumDesktopWindows(byval hDesktop as HDESK, byval lpfn as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 declare function SwitchDesktop(byval hDesktop as HDESK) as WINBOOL
 declare function SetThreadDesktop(byval hDesktop as HDESK) as WINBOOL
@@ -837,23 +870,42 @@ declare function GetThreadDesktop(byval dwThreadId as DWORD) as HDESK
 #define WINSTA_ALL_ACCESS ((((((((WINSTA_ENUMDESKTOPS or WINSTA_READATTRIBUTES) or WINSTA_ACCESSCLIPBOARD) or WINSTA_CREATEDESKTOP) or WINSTA_WRITEATTRIBUTES) or WINSTA_ACCESSGLOBALATOMS) or WINSTA_EXITWINDOWS) or WINSTA_ENUMERATE) or WINSTA_READSCREEN)
 const CWF_CREATE_ONLY = &h00000001
 #define WSF_VISIBLE __MSABI_LONG(&h0001)
+declare function CreateWindowStationA(byval lpwinsta as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HWINSTA
 
-#ifdef UNICODE
-	#define CreateWindowStation CreateWindowStationW
-	#define OpenWindowStation OpenWindowStationW
-	#define EnumWindowStations EnumWindowStationsW
-#else
-	#define CreateWindowStation CreateWindowStationA
-	#define OpenWindowStation OpenWindowStationA
-	#define EnumWindowStations EnumWindowStationsA
+#ifndef UNICODE
+	declare function CreateWindowStation alias "CreateWindowStationA"(byval lpwinsta as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HWINSTA
 #endif
 
-declare function CreateWindowStationA(byval lpwinsta as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HWINSTA
 declare function CreateWindowStationW(byval lpwinsta as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HWINSTA
+
+#ifdef UNICODE
+	declare function CreateWindowStation alias "CreateWindowStationW"(byval lpwinsta as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as ACCESS_MASK, byval lpsa as LPSECURITY_ATTRIBUTES) as HWINSTA
+#endif
+
 declare function OpenWindowStationA(byval lpszWinSta as LPCSTR, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HWINSTA
+
+#ifndef UNICODE
+	declare function OpenWindowStation alias "OpenWindowStationA"(byval lpszWinSta as LPCSTR, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HWINSTA
+#endif
+
 declare function OpenWindowStationW(byval lpszWinSta as LPCWSTR, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HWINSTA
+
+#ifdef UNICODE
+	declare function OpenWindowStation alias "OpenWindowStationW"(byval lpszWinSta as LPCWSTR, byval fInherit as WINBOOL, byval dwDesiredAccess as ACCESS_MASK) as HWINSTA
+#endif
+
 declare function EnumWindowStationsA(byval lpEnumFunc as WINSTAENUMPROCA, byval lParam as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumWindowStations alias "EnumWindowStationsA"(byval lpEnumFunc as WINSTAENUMPROCA, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function EnumWindowStationsW(byval lpEnumFunc as WINSTAENUMPROCW, byval lParam as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumWindowStations alias "EnumWindowStationsW"(byval lpEnumFunc as WINSTAENUMPROCW, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function CloseWindowStation(byval hWinSta as HWINSTA) as WINBOOL
 declare function SetProcessWindowStation(byval hWinSta as HWINSTA) as WINBOOL
 declare function GetProcessWindowStation() as HWINSTA
@@ -878,19 +930,29 @@ end type
 
 type USEROBJECTFLAGS as tagUSEROBJECTFLAGS
 type PUSEROBJECTFLAGS as tagUSEROBJECTFLAGS ptr
+declare function GetUserObjectInformationA(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define GetUserObjectInformation GetUserObjectInformationW
-	#define SetUserObjectInformation SetUserObjectInformationW
-#else
-	#define GetUserObjectInformation GetUserObjectInformationA
-	#define SetUserObjectInformation SetUserObjectInformationA
+#ifndef UNICODE
+	declare function GetUserObjectInformation alias "GetUserObjectInformationA"(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
 #endif
 
-declare function GetUserObjectInformationA(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
 declare function GetUserObjectInformationW(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetUserObjectInformation alias "GetUserObjectInformationW"(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
+#endif
+
 declare function SetUserObjectInformationA(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetUserObjectInformation alias "SetUserObjectInformationA"(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD) as WINBOOL
+#endif
+
 declare function SetUserObjectInformationW(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetUserObjectInformation alias "SetUserObjectInformationW"(byval hObj as HANDLE, byval nIndex as long, byval pvInfo as PVOID, byval nLength as DWORD) as WINBOOL
+#endif
 
 type tagWNDCLASSEXA
 	cbSize as UINT
@@ -1094,7 +1156,7 @@ const WM_ERASEBKGND = &h0014
 const WM_SYSCOLORCHANGE = &h0015
 const WM_SHOWWINDOW = &h0018
 const WM_WININICHANGE = &h001A
-#define WM_SETTINGCHANGE WM_WININICHANGE
+const WM_SETTINGCHANGE = WM_WININICHANGE
 const WM_DEVMODECHANGE = &h001B
 const WM_ACTIVATEAPP = &h001C
 const WM_FONTCHANGE = &h001D
@@ -1286,7 +1348,6 @@ const WM_XBUTTONDBLCLK = &h020D
 
 const WHEEL_DELTA = 120
 #define GET_WHEEL_DELTA_WPARAM(wParam) cshort(HIWORD(wParam))
-#define WHEEL_PAGESCROLL UINT_MAX
 #define GET_KEYSTATE_WPARAM(wParam) LOWORD(wParam)
 #define GET_NCHITTEST_WPARAM(wParam) cshort(LOWORD(wParam))
 #define GET_XBUTTON_WPARAM(wParam) HIWORD(wParam)
@@ -1438,7 +1499,7 @@ const HTCLIENT = 1
 const HTCAPTION = 2
 const HTSYSMENU = 3
 const HTGROWBOX = 4
-#define HTSIZE HTGROWBOX
+const HTSIZE = HTGROWBOX
 const HTMENU = 5
 const HTHSCROLL = 6
 const HTVSCROLL = 7
@@ -1453,10 +1514,10 @@ const HTBOTTOM = 15
 const HTBOTTOMLEFT = 16
 const HTBOTTOMRIGHT = 17
 const HTBORDER = 18
-#define HTREDUCE HTMINBUTTON
-#define HTZOOM HTMAXBUTTON
-#define HTSIZEFIRST HTLEFT
-#define HTSIZELAST HTBOTTOMRIGHT
+const HTREDUCE = HTMINBUTTON
+const HTZOOM = HTMAXBUTTON
+const HTSIZEFIRST = HTLEFT
+const HTSIZELAST = HTBOTTOMRIGHT
 const HTOBJECT = 19
 const HTCLOSE = 20
 const HTHELP = 21
@@ -1476,25 +1537,28 @@ const MA_NOACTIVATEANDEAT = 4
 const ICON_SMALL = 0
 const ICON_BIG = 1
 const ICON_SMALL2 = 2
+declare function RegisterWindowMessageA(byval lpString as LPCSTR) as UINT
 
-#ifdef UNICODE
-	#define RegisterWindowMessage RegisterWindowMessageW
-#else
-	#define RegisterWindowMessage RegisterWindowMessageA
+#ifndef UNICODE
+	declare function RegisterWindowMessage alias "RegisterWindowMessageA"(byval lpString as LPCSTR) as UINT
 #endif
 
-declare function RegisterWindowMessageA(byval lpString as LPCSTR) as UINT
 declare function RegisterWindowMessageW(byval lpString as LPCWSTR) as UINT
+
+#ifdef UNICODE
+	declare function RegisterWindowMessage alias "RegisterWindowMessageW"(byval lpString as LPCWSTR) as UINT
+#endif
+
 const SIZE_RESTORED = 0
 const SIZE_MINIMIZED = 1
 const SIZE_MAXIMIZED = 2
 const SIZE_MAXSHOW = 3
 const SIZE_MAXHIDE = 4
-#define SIZENORMAL SIZE_RESTORED
-#define SIZEICONIC SIZE_MINIMIZED
-#define SIZEFULLSCREEN SIZE_MAXIMIZED
-#define SIZEZOOMSHOW SIZE_MAXSHOW
-#define SIZEZOOMHIDE SIZE_MAXHIDE
+const SIZENORMAL = SIZE_RESTORED
+const SIZEICONIC = SIZE_MINIMIZED
+const SIZEFULLSCREEN = SIZE_MAXIMIZED
+const SIZEZOOMSHOW = SIZE_MAXSHOW
+const SIZEZOOMHIDE = SIZE_MAXHIDE
 
 type tagWINDOWPOS
 	hwnd as HWND
@@ -1732,7 +1796,7 @@ const CF_PRIVATEFIRST = &h0200
 const CF_PRIVATELAST = &h02FF
 const CF_GDIOBJFIRST = &h0300
 const CF_GDIOBJLAST = &h03FF
-#define FVIRTKEY CTRUE
+const FVIRTKEY = CTRUE
 const FNOINVERT = &h02
 const FSHIFT = &h04
 const FCONTROL = &h08
@@ -1913,25 +1977,43 @@ end type
 type COMPAREITEMSTRUCT as tagCOMPAREITEMSTRUCT
 type PCOMPAREITEMSTRUCT as tagCOMPAREITEMSTRUCT ptr
 type LPCOMPAREITEMSTRUCT as tagCOMPAREITEMSTRUCT ptr
+declare function GetMessageA(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT) as WINBOOL
 
-#ifdef UNICODE
-	#define GetMessage GetMessageW
-	#define DispatchMessage DispatchMessageW
-	#define PeekMessage PeekMessageW
-#else
-	#define GetMessage GetMessageA
-	#define DispatchMessage DispatchMessageA
-	#define PeekMessage PeekMessageA
+#ifndef UNICODE
+	declare function GetMessage alias "GetMessageA"(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT) as WINBOOL
 #endif
 
-declare function GetMessageA(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT) as WINBOOL
 declare function GetMessageW(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetMessage alias "GetMessageW"(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT) as WINBOOL
+#endif
+
 declare function TranslateMessage(byval lpMsg as const MSG ptr) as WINBOOL
 declare function DispatchMessageA(byval lpMsg as const MSG ptr) as LRESULT
+
+#ifndef UNICODE
+	declare function DispatchMessage alias "DispatchMessageA"(byval lpMsg as const MSG ptr) as LRESULT
+#endif
+
 declare function DispatchMessageW(byval lpMsg as const MSG ptr) as LRESULT
+
+#ifdef UNICODE
+	declare function DispatchMessage alias "DispatchMessageW"(byval lpMsg as const MSG ptr) as LRESULT
+#endif
+
 declare function SetMessageQueue(byval cMessagesMax as long) as WINBOOL
 declare function PeekMessageA(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT, byval wRemoveMsg as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function PeekMessage alias "PeekMessageA"(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT, byval wRemoveMsg as UINT) as WINBOOL
+#endif
+
 declare function PeekMessageW(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT, byval wRemoveMsg as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function PeekMessage alias "PeekMessageW"(byval lpMsg as LPMSG, byval hWnd as HWND, byval wMsgFilterMin as UINT, byval wMsgFilterMax as UINT, byval wRemoveMsg as UINT) as WINBOOL
+#endif
 
 const PM_NOREMOVE = &h0000
 const PM_REMOVE = &h0001
@@ -1972,18 +2054,6 @@ const EWX_HYBRID_SHUTDOWN = &h00400000
 const EWX_BOOTOPTIONS = &h01000000
 #define ExitWindows(dwReserved, Code) ExitWindowsEx(EWX_LOGOFF, &hFFFFFFFF)
 
-#ifdef UNICODE
-	#define SendMessage SendMessageW
-	#define SendMessageTimeout SendMessageTimeoutW
-	#define SendNotifyMessage SendNotifyMessageW
-	#define SendMessageCallback SendMessageCallbackW
-#else
-	#define SendMessage SendMessageA
-	#define SendMessageTimeout SendMessageTimeoutA
-	#define SendNotifyMessage SendNotifyMessageA
-	#define SendMessageCallback SendMessageCallbackA
-#endif
-
 declare function ExitWindowsEx(byval uFlags as UINT, byval dwReason as DWORD) as WINBOOL
 declare function SwapMouseButton(byval fSwap as WINBOOL) as WINBOOL
 declare function GetMessagePos() as DWORD
@@ -1997,13 +2067,52 @@ declare function GetMessageExtraInfo() as LPARAM
 declare function IsWow64Message() as WINBOOL
 declare function SetMessageExtraInfo(byval lParam as LPARAM) as LPARAM
 declare function SendMessageA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifndef UNICODE
+	declare function SendMessage alias "SendMessageA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function SendMessageW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function SendMessage alias "SendMessageW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function SendMessageTimeoutA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval fuFlags as UINT, byval uTimeout as UINT, byval lpdwResult as PDWORD_PTR) as LRESULT
+
+#ifndef UNICODE
+	declare function SendMessageTimeout alias "SendMessageTimeoutA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval fuFlags as UINT, byval uTimeout as UINT, byval lpdwResult as PDWORD_PTR) as LRESULT
+#endif
+
 declare function SendMessageTimeoutW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval fuFlags as UINT, byval uTimeout as UINT, byval lpdwResult as PDWORD_PTR) as LRESULT
+
+#ifdef UNICODE
+	declare function SendMessageTimeout alias "SendMessageTimeoutW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval fuFlags as UINT, byval uTimeout as UINT, byval lpdwResult as PDWORD_PTR) as LRESULT
+#endif
+
 declare function SendNotifyMessageA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function SendNotifyMessage alias "SendNotifyMessageA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function SendNotifyMessageW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function SendNotifyMessage alias "SendNotifyMessageW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function SendMessageCallbackA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpResultCallBack as SENDASYNCPROC, byval dwData as ULONG_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SendMessageCallback alias "SendMessageCallbackA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpResultCallBack as SENDASYNCPROC, byval dwData as ULONG_PTR) as WINBOOL
+#endif
+
 declare function SendMessageCallbackW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpResultCallBack as SENDASYNCPROC, byval dwData as ULONG_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SendMessageCallback alias "SendMessageCallbackW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpResultCallBack as SENDASYNCPROC, byval dwData as ULONG_PTR) as WINBOOL
+#endif
 
 type BSMINFO
 	cbSize as UINT
@@ -2013,19 +2122,29 @@ type BSMINFO
 end type
 
 type PBSMINFO as BSMINFO ptr
+declare function BroadcastSystemMessageExA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pbsmInfo as PBSMINFO) as long
 
-#ifdef UNICODE
-	#define BroadcastSystemMessageEx BroadcastSystemMessageExW
-	#define BroadcastSystemMessage BroadcastSystemMessageW
-#else
-	#define BroadcastSystemMessageEx BroadcastSystemMessageExA
-	#define BroadcastSystemMessage BroadcastSystemMessageA
+#ifndef UNICODE
+	declare function BroadcastSystemMessageEx alias "BroadcastSystemMessageExA"(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pbsmInfo as PBSMINFO) as long
 #endif
 
-declare function BroadcastSystemMessageExA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pbsmInfo as PBSMINFO) as long
 declare function BroadcastSystemMessageExW(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pbsmInfo as PBSMINFO) as long
+
+#ifdef UNICODE
+	declare function BroadcastSystemMessageEx alias "BroadcastSystemMessageExW"(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval pbsmInfo as PBSMINFO) as long
+#endif
+
 declare function BroadcastSystemMessageA(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
+
+#ifndef UNICODE
+	declare function BroadcastSystemMessage alias "BroadcastSystemMessageA"(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
+#endif
+
 declare function BroadcastSystemMessageW(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
+
+#ifdef UNICODE
+	declare function BroadcastSystemMessage alias "BroadcastSystemMessageW"(byval flags as DWORD, byval lpInfo as LPDWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as long
+#endif
 
 const BSM_ALLCOMPONENTS = &h00000000
 const BSM_VXDS = &h00000001
@@ -2052,42 +2171,12 @@ const DEVICE_NOTIFY_SERVICE_HANDLE = &h00000001
 const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 
 #ifdef UNICODE
-	#define RegisterDeviceNotification RegisterDeviceNotificationW
-	#define PostMessage PostMessageW
-	#define PostThreadMessage PostThreadMessageW
 	#define PostAppMessage PostAppMessageW
-	#define DefWindowProc DefWindowProcW
-	#define CallWindowProc CallWindowProcW
-	#define RegisterClass RegisterClassW
-	#define UnregisterClass UnregisterClassW
-	#define GetClassInfo GetClassInfoW
-	#define RegisterClassEx RegisterClassExW
-	#define GetClassInfoEx GetClassInfoExW
-#endif
-
-#if (not defined(__FB_64BIT__)) and defined(UNICODE) and (_WIN32_WINNT >= &h0502)
-	#define _HPOWERNOTIFY_DEF_
-	type HPOWERNOTIFY as HANDLE
-	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
-	declare function RegisterPowerSettingNotification(byval hRecipient as HANDLE, byval PowerSettingGuid as LPCGUID, byval Flags as DWORD) as HPOWERNOTIFY
-	declare function UnregisterPowerSettingNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
-	declare function RegisterSuspendResumeNotification(byval hRecipient as HANDLE, byval Flags as DWORD) as HPOWERNOTIFY
-	declare function UnregisterSuspendResumeNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
-#elseif not defined(UNICODE)
-	#define RegisterDeviceNotification RegisterDeviceNotificationA
-	#define PostMessage PostMessageA
-	#define PostThreadMessage PostThreadMessageA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
 	#define PostAppMessage PostAppMessageA
-	#define DefWindowProc DefWindowProcA
-	#define CallWindowProc CallWindowProcA
-	#define RegisterClass RegisterClassA
-	#define UnregisterClass UnregisterClassA
-	#define GetClassInfo GetClassInfoA
-	#define RegisterClassEx RegisterClassExA
-	#define GetClassInfoEx GetClassInfoExA
 #endif
 
-#if (_WIN32_WINNT >= &h0502) and ((not defined(UNICODE)) or (defined(__FB_64BIT__) and defined(UNICODE)))
+#if _WIN32_WINNT >= &h0502
 	#define _HPOWERNOTIFY_DEF_
 	type HPOWERNOTIFY as HANDLE
 	type PHPOWERNOTIFY as HPOWERNOTIFY ptr
@@ -2095,12 +2184,34 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	declare function UnregisterPowerSettingNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
 	declare function RegisterSuspendResumeNotification(byval hRecipient as HANDLE, byval Flags as DWORD) as HPOWERNOTIFY
 	declare function UnregisterSuspendResumeNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+	#define PostAppMessage PostAppMessageA
 #endif
 
 declare function PostMessageA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function PostMessage alias "PostMessageA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function PostMessageW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function PostMessage alias "PostMessageW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function PostThreadMessageA(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function PostThreadMessage alias "PostThreadMessageA"(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 declare function PostThreadMessageW(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function PostThreadMessage alias "PostThreadMessageW"(byval idThread as DWORD, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
+#endif
+
 #define PostAppMessageA(idThread, wMsg, wParam, lParam) PostThreadMessageA(cast(DWORD, idThread), wMsg, wParam, lParam)
 #define PostAppMessageW(idThread, wMsg, wParam, lParam) PostThreadMessageW(cast(DWORD, idThread), wMsg, wParam, lParam)
 declare function AttachThreadInput(byval idAttach as DWORD, byval idAttachTo as DWORD, byval fAttach as WINBOOL) as WINBOOL
@@ -2108,24 +2219,93 @@ declare function ReplyMessage(byval lResult as LRESULT) as WINBOOL
 declare function WaitMessage() as WINBOOL
 declare function WaitForInputIdle(byval hProcess as HANDLE, byval dwMilliseconds as DWORD) as DWORD
 declare function DefWindowProcA(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifndef UNICODE
+	declare function DefWindowProc alias "DefWindowProcA"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function DefWindowProcW(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function DefWindowProc alias "DefWindowProcW"(byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare sub PostQuitMessage(byval nExitCode as long)
 declare function InSendMessage() as WINBOOL
 declare function InSendMessageEx(byval lpReserved as LPVOID) as DWORD
 declare function GetDoubleClickTime() as UINT
 declare function SetDoubleClickTime(byval as UINT) as WINBOOL
 declare function RegisterClassA(byval lpWndClass as const WNDCLASSA ptr) as ATOM
+
+#ifndef UNICODE
+	declare function RegisterClass alias "RegisterClassA"(byval lpWndClass as const WNDCLASSA ptr) as ATOM
+#endif
+
 declare function RegisterClassW(byval lpWndClass as const WNDCLASSW ptr) as ATOM
+
+#ifdef UNICODE
+	declare function RegisterClass alias "RegisterClassW"(byval lpWndClass as const WNDCLASSW ptr) as ATOM
+#endif
+
 declare function UnregisterClassA(byval lpClassName as LPCSTR, byval hInstance as HINSTANCE) as WINBOOL
+
+#ifndef UNICODE
+	declare function UnregisterClass alias "UnregisterClassA"(byval lpClassName as LPCSTR, byval hInstance as HINSTANCE) as WINBOOL
+#endif
+
 declare function UnregisterClassW(byval lpClassName as LPCWSTR, byval hInstance as HINSTANCE) as WINBOOL
+
+#ifdef UNICODE
+	declare function UnregisterClass alias "UnregisterClassW"(byval lpClassName as LPCWSTR, byval hInstance as HINSTANCE) as WINBOOL
+#endif
+
 declare function GetClassInfoA(byval hInstance as HINSTANCE, byval lpClassName as LPCSTR, byval lpWndClass as LPWNDCLASSA) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetClassInfo alias "GetClassInfoA"(byval hInstance as HINSTANCE, byval lpClassName as LPCSTR, byval lpWndClass as LPWNDCLASSA) as WINBOOL
+#endif
+
 declare function GetClassInfoW(byval hInstance as HINSTANCE, byval lpClassName as LPCWSTR, byval lpWndClass as LPWNDCLASSW) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetClassInfo alias "GetClassInfoW"(byval hInstance as HINSTANCE, byval lpClassName as LPCWSTR, byval lpWndClass as LPWNDCLASSW) as WINBOOL
+#endif
+
 declare function RegisterClassExA(byval as const WNDCLASSEXA ptr) as ATOM
+
+#ifndef UNICODE
+	declare function RegisterClassEx alias "RegisterClassExA"(byval as const WNDCLASSEXA ptr) as ATOM
+#endif
+
 declare function RegisterClassExW(byval as const WNDCLASSEXW ptr) as ATOM
+
+#ifdef UNICODE
+	declare function RegisterClassEx alias "RegisterClassExW"(byval as const WNDCLASSEXW ptr) as ATOM
+#endif
+
 declare function GetClassInfoExA(byval hInstance as HINSTANCE, byval lpszClass as LPCSTR, byval lpwcx as LPWNDCLASSEXA) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetClassInfoEx alias "GetClassInfoExA"(byval hInstance as HINSTANCE, byval lpszClass as LPCSTR, byval lpwcx as LPWNDCLASSEXA) as WINBOOL
+#endif
+
 declare function GetClassInfoExW(byval hInstance as HINSTANCE, byval lpszClass as LPCWSTR, byval lpwcx as LPWNDCLASSEXW) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetClassInfoEx alias "GetClassInfoExW"(byval hInstance as HINSTANCE, byval lpszClass as LPCWSTR, byval lpwcx as LPWNDCLASSEXW) as WINBOOL
+#endif
+
 declare function CallWindowProcA(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifndef UNICODE
+	declare function CallWindowProc alias "CallWindowProcA"(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function CallWindowProcW(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function CallWindowProc alias "CallWindowProcW"(byval lpPrevWndFunc as WNDPROC, byval hWnd as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
 
 const CW_USEDEFAULT = clng(&h80000000)
 #define HWND_BROADCAST cast(HWND, &hffff)
@@ -2150,20 +2330,38 @@ const ISMEX_REPLIED = &h00000008
 #endif
 
 declare function RegisterDeviceNotificationA(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+
+#ifndef UNICODE
+	declare function RegisterDeviceNotification alias "RegisterDeviceNotificationA"(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+#endif
+
 declare function RegisterDeviceNotificationW(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+
+#ifdef UNICODE
+	declare function RegisterDeviceNotification alias "RegisterDeviceNotificationW"(byval hRecipient as HANDLE, byval NotificationFilter as LPVOID, byval Flags as DWORD) as HDEVNOTIFY
+#endif
+
 declare function UnregisterDeviceNotification(byval Handle as HDEVNOTIFY) as WINBOOL
 type PREGISTERCLASSNAMEW as function(byval as LPCWSTR) as WINBOOLEAN
 
 #ifdef UNICODE
-	#define CreateWindowEx CreateWindowExW
 	#define CreateWindow CreateWindowW
 #else
-	#define CreateWindowEx CreateWindowExA
 	#define CreateWindow CreateWindowA
 #endif
 
 declare function CreateWindowExA(byval dwExStyle as DWORD, byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
+
+#ifndef UNICODE
+	declare function CreateWindowEx alias "CreateWindowExA"(byval dwExStyle as DWORD, byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
+#endif
+
 declare function CreateWindowExW(byval dwExStyle as DWORD, byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
+
+#ifdef UNICODE
+	declare function CreateWindowEx alias "CreateWindowExW"(byval dwExStyle as DWORD, byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hMenu as HMENU, byval hInstance as HINSTANCE, byval lpParam as LPVOID) as HWND
+#endif
+
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(cast(DWORD, 0), lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 #define CreateWindowW(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExW(cast(DWORD, 0), lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 declare function IsWindow(byval hWnd as HWND) as WINBOOL
@@ -2258,8 +2456,8 @@ const SWP_HIDEWINDOW = &h0080
 const SWP_NOCOPYBITS = &h0100
 const SWP_NOOWNERZORDER = &h0200
 const SWP_NOSENDCHANGING = &h0400
-#define SWP_DRAWFRAME SWP_FRAMECHANGED
-#define SWP_NOREPOSITION SWP_NOOWNERZORDER
+const SWP_DRAWFRAME = SWP_FRAMECHANGED
+const SWP_NOREPOSITION = SWP_NOOWNERZORDER
 const SWP_DEFERERASE = &h2000
 const SWP_ASYNCWINDOWPOS = &h4000
 #define HWND_TOP cast(HWND, 0)
@@ -2319,48 +2517,69 @@ type LPDLGITEMTEMPLATEW as DLGITEMTEMPLATE ptr
 
 #ifdef UNICODE
 	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEW
-	#define CreateDialogParam CreateDialogParamW
-	#define CreateDialogIndirectParam CreateDialogIndirectParamW
 	#define CreateDialog CreateDialogW
 	#define CreateDialogIndirect CreateDialogIndirectW
-	#define DialogBoxParam DialogBoxParamW
-	#define DialogBoxIndirectParam DialogBoxIndirectParamW
 	#define DialogBox DialogBoxW
 	#define DialogBoxIndirect DialogBoxIndirectW
-	#define SetDlgItemText SetDlgItemTextW
-	#define GetDlgItemText GetDlgItemTextW
-	#define SendDlgItemMessage SendDlgItemMessageW
-	#define DefDlgProc DefDlgProcW
 #else
 	type LPDLGITEMTEMPLATE as LPDLGITEMTEMPLATEA
-	#define CreateDialogParam CreateDialogParamA
-	#define CreateDialogIndirectParam CreateDialogIndirectParamA
 	#define CreateDialog CreateDialogA
 	#define CreateDialogIndirect CreateDialogIndirectA
-	#define DialogBoxParam DialogBoxParamA
-	#define DialogBoxIndirectParam DialogBoxIndirectParamA
 	#define DialogBox DialogBoxA
 	#define DialogBoxIndirect DialogBoxIndirectA
-	#define SetDlgItemText SetDlgItemTextA
-	#define GetDlgItemText GetDlgItemTextA
-	#define SendDlgItemMessage SendDlgItemMessageA
-	#define DefDlgProc DefDlgProcA
 #endif
 
 declare function CreateDialogParamA(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+
+#ifndef UNICODE
+	declare function CreateDialogParam alias "CreateDialogParamA"(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+#endif
+
 declare function CreateDialogParamW(byval hInstance as HINSTANCE, byval lpTemplateName as LPCWSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+
+#ifdef UNICODE
+	declare function CreateDialogParam alias "CreateDialogParamW"(byval hInstance as HINSTANCE, byval lpTemplateName as LPCWSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+#endif
+
 declare function CreateDialogIndirectParamA(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEA, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+
+#ifndef UNICODE
+	declare function CreateDialogIndirectParam alias "CreateDialogIndirectParamA"(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEA, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+#endif
+
 declare function CreateDialogIndirectParamW(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEW, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+
+#ifdef UNICODE
+	declare function CreateDialogIndirectParam alias "CreateDialogIndirectParamW"(byval hInstance as HINSTANCE, byval lpTemplate as LPCDLGTEMPLATEW, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as HWND
+#endif
 
 #define CreateDialogA(hInstance, lpName, hWndParent, lpDialogFunc) CreateDialogParamA(hInstance, lpName, hWndParent, lpDialogFunc, cast(LPARAM, 0))
 #define CreateDialogW(hInstance, lpName, hWndParent, lpDialogFunc) CreateDialogParamW(hInstance, lpName, hWndParent, lpDialogFunc, cast(LPARAM, 0))
 #define CreateDialogIndirectA(hInstance, lpTemplate, hWndParent, lpDialogFunc) CreateDialogIndirectParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc, cast(LPARAM, 0))
 #define CreateDialogIndirectW(hInstance, lpTemplate, hWndParent, lpDialogFunc) CreateDialogIndirectParamW(hInstance, lpTemplate, hWndParent, lpDialogFunc, cast(LPARAM, 0))
-
 declare function DialogBoxParamA(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+
+#ifndef UNICODE
+	declare function DialogBoxParam alias "DialogBoxParamA"(byval hInstance as HINSTANCE, byval lpTemplateName as LPCSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+#endif
+
 declare function DialogBoxParamW(byval hInstance as HINSTANCE, byval lpTemplateName as LPCWSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+
+#ifdef UNICODE
+	declare function DialogBoxParam alias "DialogBoxParamW"(byval hInstance as HINSTANCE, byval lpTemplateName as LPCWSTR, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+#endif
+
 declare function DialogBoxIndirectParamA(byval hInstance as HINSTANCE, byval hDialogTemplate as LPCDLGTEMPLATEA, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+
+#ifndef UNICODE
+	declare function DialogBoxIndirectParam alias "DialogBoxIndirectParamA"(byval hInstance as HINSTANCE, byval hDialogTemplate as LPCDLGTEMPLATEA, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+#endif
+
 declare function DialogBoxIndirectParamW(byval hInstance as HINSTANCE, byval hDialogTemplate as LPCDLGTEMPLATEW, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+
+#ifdef UNICODE
+	declare function DialogBoxIndirectParam alias "DialogBoxIndirectParamW"(byval hInstance as HINSTANCE, byval hDialogTemplate as LPCDLGTEMPLATEW, byval hWndParent as HWND, byval lpDialogFunc as DLGPROC, byval dwInitParam as LPARAM) as INT_PTR
+#endif
 
 #define DialogBoxA(hInstance, lpTemplate, hWndParent, lpDialogFunc) DialogBoxParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc, cast(LPARAM, 0))
 #define DialogBoxW(hInstance, lpTemplate, hWndParent, lpDialogFunc) DialogBoxParamW(hInstance, lpTemplate, hWndParent, lpDialogFunc, cast(LPARAM, 0))
@@ -2372,37 +2591,71 @@ declare function GetDlgItem(byval hDlg as HWND, byval nIDDlgItem as long) as HWN
 declare function SetDlgItemInt(byval hDlg as HWND, byval nIDDlgItem as long, byval uValue as UINT, byval bSigned as WINBOOL) as WINBOOL
 declare function GetDlgItemInt(byval hDlg as HWND, byval nIDDlgItem as long, byval lpTranslated as WINBOOL ptr, byval bSigned as WINBOOL) as UINT
 declare function SetDlgItemTextA(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetDlgItemText alias "SetDlgItemTextA"(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPCSTR) as WINBOOL
+#endif
+
 declare function SetDlgItemTextW(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetDlgItemText alias "SetDlgItemTextW"(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPCWSTR) as WINBOOL
+#endif
+
 declare function GetDlgItemTextA(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPSTR, byval cchMax as long) as UINT
+
+#ifndef UNICODE
+	declare function GetDlgItemText alias "GetDlgItemTextA"(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPSTR, byval cchMax as long) as UINT
+#endif
+
 declare function GetDlgItemTextW(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPWSTR, byval cchMax as long) as UINT
+
+#ifdef UNICODE
+	declare function GetDlgItemText alias "GetDlgItemTextW"(byval hDlg as HWND, byval nIDDlgItem as long, byval lpString as LPWSTR, byval cchMax as long) as UINT
+#endif
+
 declare function CheckDlgButton(byval hDlg as HWND, byval nIDButton as long, byval uCheck as UINT) as WINBOOL
 declare function CheckRadioButton(byval hDlg as HWND, byval nIDFirstButton as long, byval nIDLastButton as long, byval nIDCheckButton as long) as WINBOOL
 declare function IsDlgButtonChecked(byval hDlg as HWND, byval nIDButton as long) as UINT
 declare function SendDlgItemMessageA(byval hDlg as HWND, byval nIDDlgItem as long, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifndef UNICODE
+	declare function SendDlgItemMessage alias "SendDlgItemMessageA"(byval hDlg as HWND, byval nIDDlgItem as long, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function SendDlgItemMessageW(byval hDlg as HWND, byval nIDDlgItem as long, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function SendDlgItemMessage alias "SendDlgItemMessageW"(byval hDlg as HWND, byval nIDDlgItem as long, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function GetNextDlgGroupItem(byval hDlg as HWND, byval hCtl as HWND, byval bPrevious as WINBOOL) as HWND
 declare function GetNextDlgTabItem(byval hDlg as HWND, byval hCtl as HWND, byval bPrevious as WINBOOL) as HWND
 declare function GetDlgCtrlID(byval hWnd as HWND) as long
 declare function GetDialogBaseUnits() as long
 declare function DefDlgProcA(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-declare function DefDlgProcW(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-const DLGWINDOWEXTRA = 30
 
-#ifdef UNICODE
-	#define CallMsgFilter CallMsgFilterW
-#else
-	#define CallMsgFilter CallMsgFilterA
+#ifndef UNICODE
+	declare function DefDlgProc alias "DefDlgProcA"(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #endif
 
+declare function DefDlgProcW(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function DefDlgProc alias "DefDlgProcW"(byval hDlg as HWND, byval Msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
+const DLGWINDOWEXTRA = 30
 declare function CallMsgFilterA(byval lpMsg as LPMSG, byval nCode as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function CallMsgFilter alias "CallMsgFilterA"(byval lpMsg as LPMSG, byval nCode as long) as WINBOOL
+#endif
+
 declare function CallMsgFilterW(byval lpMsg as LPMSG, byval nCode as long) as WINBOOL
 
 #ifdef UNICODE
-	#define RegisterClipboardFormat RegisterClipboardFormatW
-	#define GetClipboardFormatName GetClipboardFormatNameW
-#else
-	#define RegisterClipboardFormat RegisterClipboardFormatA
-	#define GetClipboardFormatName GetClipboardFormatNameA
+	declare function CallMsgFilter alias "CallMsgFilterW"(byval lpMsg as LPMSG, byval nCode as long) as WINBOOL
 #endif
 
 declare function OpenClipboard(byval hWndNewOwner as HWND) as WINBOOL
@@ -2415,11 +2668,31 @@ declare function ChangeClipboardChain(byval hWndRemove as HWND, byval hWndNewNex
 declare function SetClipboardData(byval uFormat as UINT, byval hMem as HANDLE) as HANDLE
 declare function GetClipboardData(byval uFormat as UINT) as HANDLE
 declare function RegisterClipboardFormatA(byval lpszFormat as LPCSTR) as UINT
+
+#ifndef UNICODE
+	declare function RegisterClipboardFormat alias "RegisterClipboardFormatA"(byval lpszFormat as LPCSTR) as UINT
+#endif
+
 declare function RegisterClipboardFormatW(byval lpszFormat as LPCWSTR) as UINT
+
+#ifdef UNICODE
+	declare function RegisterClipboardFormat alias "RegisterClipboardFormatW"(byval lpszFormat as LPCWSTR) as UINT
+#endif
+
 declare function CountClipboardFormats() as long
 declare function EnumClipboardFormats(byval format as UINT) as UINT
 declare function GetClipboardFormatNameA(byval format as UINT, byval lpszFormatName as LPSTR, byval cchMaxCount as long) as long
+
+#ifndef UNICODE
+	declare function GetClipboardFormatName alias "GetClipboardFormatNameA"(byval format as UINT, byval lpszFormatName as LPSTR, byval cchMaxCount as long) as long
+#endif
+
 declare function GetClipboardFormatNameW(byval format as UINT, byval lpszFormatName as LPWSTR, byval cchMaxCount as long) as long
+
+#ifdef UNICODE
+	declare function GetClipboardFormatName alias "GetClipboardFormatNameW"(byval format as UINT, byval lpszFormatName as LPWSTR, byval cchMaxCount as long) as long
+#endif
+
 declare function EmptyClipboard() as WINBOOL
 declare function IsClipboardFormatAvailable(byval format as UINT) as WINBOOL
 declare function GetPriorityClipboardFormat(byval paFormatPriorityList as UINT ptr, byval cFormats as long) as long
@@ -2431,93 +2704,184 @@ declare function GetOpenClipboardWindow() as HWND
 	declare function GetUpdatedClipboardFormats(byval lpuiFormats as PUINT, byval cFormats as UINT, byval pcFormatsOut as PUINT) as WINBOOL
 #endif
 
-#ifdef UNICODE
-	#define CharToOem CharToOemW
-	#define OemToChar OemToCharW
-	#define CharToOemBuff CharToOemBuffW
-	#define OemToCharBuff OemToCharBuffW
-	#define CharUpper CharUpperW
-	#define CharUpperBuff CharUpperBuffW
-	#define CharLower CharLowerW
-	#define CharLowerBuff CharLowerBuffW
-	#define CharNext CharNextW
-	#define CharPrev CharPrevW
-#else
-	#define CharToOem CharToOemA
-	#define OemToChar OemToCharA
-	#define CharToOemBuff CharToOemBuffA
-	#define OemToCharBuff OemToCharBuffA
-	#define CharUpper CharUpperA
-	#define CharUpperBuff CharUpperBuffA
-	#define CharLower CharLowerA
-	#define CharLowerBuff CharLowerBuffA
-	#define CharNext CharNextA
-	#define CharPrev CharPrevA
+declare function CharToOemA(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function CharToOem alias "CharToOemA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
 #endif
 
-declare function CharToOemA(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
 declare function CharToOemW(byval lpszSrc as LPCWSTR, byval lpszDst as LPSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function CharToOem alias "CharToOemW"(byval lpszSrc as LPCWSTR, byval lpszDst as LPSTR) as WINBOOL
+#endif
+
 declare function OemToCharA(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function OemToChar alias "OemToCharA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
+#endif
+
 declare function OemToCharW(byval lpszSrc as LPCSTR, byval lpszDst as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function OemToChar alias "OemToCharW"(byval lpszSrc as LPCSTR, byval lpszDst as LPWSTR) as WINBOOL
+#endif
+
 declare function CharToOemBuffA(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function CharToOemBuff alias "CharToOemBuffA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+#endif
+
 declare function CharToOemBuffW(byval lpszSrc as LPCWSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function CharToOemBuff alias "CharToOemBuffW"(byval lpszSrc as LPCWSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+#endif
+
 declare function OemToCharBuffA(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function OemToCharBuff alias "OemToCharBuffA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+#endif
+
 declare function OemToCharBuffW(byval lpszSrc as LPCSTR, byval lpszDst as LPWSTR, byval cchDstLength as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function OemToCharBuff alias "OemToCharBuffW"(byval lpszSrc as LPCSTR, byval lpszDst as LPWSTR, byval cchDstLength as DWORD) as WINBOOL
+#endif
+
 declare function CharUpperA(byval lpsz as LPSTR) as LPSTR
+
+#ifndef UNICODE
+	declare function CharUpper alias "CharUpperA"(byval lpsz as LPSTR) as LPSTR
+#endif
+
 declare function CharUpperW(byval lpsz as LPWSTR) as LPWSTR
+
+#ifdef UNICODE
+	declare function CharUpper alias "CharUpperW"(byval lpsz as LPWSTR) as LPWSTR
+#endif
+
 declare function CharUpperBuffA(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function CharUpperBuff alias "CharUpperBuffA"(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+#endif
+
 declare function CharUpperBuffW(byval lpsz as LPWSTR, byval cchLength as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function CharUpperBuff alias "CharUpperBuffW"(byval lpsz as LPWSTR, byval cchLength as DWORD) as DWORD
+#endif
+
 declare function CharLowerA(byval lpsz as LPSTR) as LPSTR
+
+#ifndef UNICODE
+	declare function CharLower alias "CharLowerA"(byval lpsz as LPSTR) as LPSTR
+#endif
+
 declare function CharLowerW(byval lpsz as LPWSTR) as LPWSTR
+
+#ifdef UNICODE
+	declare function CharLower alias "CharLowerW"(byval lpsz as LPWSTR) as LPWSTR
+#endif
+
 declare function CharLowerBuffA(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function CharLowerBuff alias "CharLowerBuffA"(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+#endif
+
 declare function CharLowerBuffW(byval lpsz as LPWSTR, byval cchLength as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function CharLowerBuff alias "CharLowerBuffW"(byval lpsz as LPWSTR, byval cchLength as DWORD) as DWORD
+#endif
+
 declare function CharNextA(byval lpsz as LPCSTR) as LPSTR
+
+#ifndef UNICODE
+	declare function CharNext alias "CharNextA"(byval lpsz as LPCSTR) as LPSTR
+#endif
+
 declare function CharNextW(byval lpsz as LPCWSTR) as LPWSTR
+
+#ifdef UNICODE
+	declare function CharNext alias "CharNextW"(byval lpsz as LPCWSTR) as LPWSTR
+#endif
+
 declare function CharPrevA(byval lpszStart as LPCSTR, byval lpszCurrent as LPCSTR) as LPSTR
+
+#ifndef UNICODE
+	declare function CharPrev alias "CharPrevA"(byval lpszStart as LPCSTR, byval lpszCurrent as LPCSTR) as LPSTR
+#endif
+
 declare function CharPrevW(byval lpszStart as LPCWSTR, byval lpszCurrent as LPCWSTR) as LPWSTR
+
+#ifdef UNICODE
+	declare function CharPrev alias "CharPrevW"(byval lpszStart as LPCWSTR, byval lpszCurrent as LPCWSTR) as LPWSTR
+#endif
+
 declare function CharNextExA(byval CodePage as WORD, byval lpCurrentChar as LPCSTR, byval dwFlags as DWORD) as LPSTR
 declare function CharPrevExA(byval CodePage as WORD, byval lpStart as LPCSTR, byval lpCurrentChar as LPCSTR, byval dwFlags as DWORD) as LPSTR
+declare function AnsiToOem alias "CharToOemA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
+declare function OemToAnsi alias "OemToCharA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR) as WINBOOL
+declare function AnsiToOemBuff alias "CharToOemBuffA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+declare function OemToAnsiBuff alias "OemToCharBuffA"(byval lpszSrc as LPCSTR, byval lpszDst as LPSTR, byval cchDstLength as DWORD) as WINBOOL
+declare function AnsiUpper alias "CharUpperA"(byval lpsz as LPSTR) as LPSTR
+declare function AnsiUpperBuff alias "CharUpperBuffA"(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+declare function AnsiLower alias "CharLowerA"(byval lpsz as LPSTR) as LPSTR
+declare function AnsiLowerBuff alias "CharLowerBuffA"(byval lpsz as LPSTR, byval cchLength as DWORD) as DWORD
+declare function AnsiNext alias "CharNextA"(byval lpsz as LPCSTR) as LPSTR
+declare function AnsiPrev alias "CharPrevA"(byval lpszStart as LPCSTR, byval lpszCurrent as LPCSTR) as LPSTR
+declare function IsCharAlphaA(byval ch as CHAR) as WINBOOL
 
-#define AnsiToOem CharToOemA
-#define OemToAnsi OemToCharA
-#define AnsiToOemBuff CharToOemBuffA
-#define OemToAnsiBuff OemToCharBuffA
-#define AnsiUpper CharUpperA
-#define AnsiUpperBuff CharUpperBuffA
-#define AnsiLower CharLowerA
-#define AnsiLowerBuff CharLowerBuffA
-#define AnsiNext CharNextA
-#define AnsiPrev CharPrevA
-
-#ifdef UNICODE
-	#define IsCharAlpha IsCharAlphaW
-	#define IsCharAlphaNumeric IsCharAlphaNumericW
-	#define IsCharUpper IsCharUpperW
-	#define IsCharLower IsCharLowerW
-#else
-	#define IsCharAlpha IsCharAlphaA
-	#define IsCharAlphaNumeric IsCharAlphaNumericA
-	#define IsCharUpper IsCharUpperA
-	#define IsCharLower IsCharLowerA
+#ifndef UNICODE
+	declare function IsCharAlpha alias "IsCharAlphaA"(byval ch as CHAR) as WINBOOL
 #endif
 
-declare function IsCharAlphaA(byval ch as CHAR) as WINBOOL
 declare function IsCharAlphaW(byval ch as WCHAR) as WINBOOL
+
+#ifdef UNICODE
+	declare function IsCharAlpha alias "IsCharAlphaW"(byval ch as WCHAR) as WINBOOL
+#endif
+
 declare function IsCharAlphaNumericA(byval ch as CHAR) as WINBOOL
+
+#ifndef UNICODE
+	declare function IsCharAlphaNumeric alias "IsCharAlphaNumericA"(byval ch as CHAR) as WINBOOL
+#endif
+
 declare function IsCharAlphaNumericW(byval ch as WCHAR) as WINBOOL
+
+#ifdef UNICODE
+	declare function IsCharAlphaNumeric alias "IsCharAlphaNumericW"(byval ch as WCHAR) as WINBOOL
+#endif
+
 declare function IsCharUpperA(byval ch as CHAR) as WINBOOL
+
+#ifndef UNICODE
+	declare function IsCharUpper alias "IsCharUpperA"(byval ch as CHAR) as WINBOOL
+#endif
+
 declare function IsCharUpperW(byval ch as WCHAR) as WINBOOL
+
+#ifdef UNICODE
+	declare function IsCharUpper alias "IsCharUpperW"(byval ch as WCHAR) as WINBOOL
+#endif
+
 declare function IsCharLowerA(byval ch as CHAR) as WINBOOL
+
+#ifndef UNICODE
+	declare function IsCharLower alias "IsCharLowerA"(byval ch as CHAR) as WINBOOL
+#endif
+
 declare function IsCharLowerW(byval ch as WCHAR) as WINBOOL
 
 #ifdef UNICODE
-	#define GetKeyNameText GetKeyNameTextW
-	#define VkKeyScan VkKeyScanW
-	#define VkKeyScanEx VkKeyScanExW
-#else
-	#define GetKeyNameText GetKeyNameTextA
-	#define VkKeyScan VkKeyScanA
-	#define VkKeyScanEx VkKeyScanExA
+	declare function IsCharLower alias "IsCharLowerW"(byval ch as WCHAR) as WINBOOL
 #endif
 
 declare function SetFocus(byval hWnd as HWND) as HWND
@@ -2529,18 +2893,47 @@ declare function GetAsyncKeyState(byval vKey as long) as SHORT
 declare function GetKeyboardState(byval lpKeyState as PBYTE) as WINBOOL
 declare function SetKeyboardState(byval lpKeyState as LPBYTE) as WINBOOL
 declare function GetKeyNameTextA(byval lParam as LONG, byval lpString as LPSTR, byval cchSize as long) as long
+
+#ifndef UNICODE
+	declare function GetKeyNameText alias "GetKeyNameTextA"(byval lParam as LONG, byval lpString as LPSTR, byval cchSize as long) as long
+#endif
+
 declare function GetKeyNameTextW(byval lParam as LONG, byval lpString as LPWSTR, byval cchSize as long) as long
+
+#ifdef UNICODE
+	declare function GetKeyNameText alias "GetKeyNameTextW"(byval lParam as LONG, byval lpString as LPWSTR, byval cchSize as long) as long
+#endif
+
 declare function GetKeyboardType(byval nTypeFlag as long) as long
 declare function ToAscii_ alias "ToAscii"(byval uVirtKey as UINT, byval uScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval lpChar as LPWORD, byval uFlags as UINT) as long
 declare function ToAsciiEx(byval uVirtKey as UINT, byval uScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval lpChar as LPWORD, byval uFlags as UINT, byval dwhkl as HKL) as long
 declare function ToUnicode(byval wVirtKey as UINT, byval wScanCode as UINT, byval lpKeyState as const UBYTE ptr, byval pwszBuff as LPWSTR, byval cchBuff as long, byval wFlags as UINT) as long
 declare function OemKeyScan(byval wOemChar as WORD) as DWORD
 declare function VkKeyScanA(byval ch as CHAR) as SHORT
-declare function VkKeyScanW(byval ch as WCHAR) as SHORT
-declare function VkKeyScanExA(byval ch as CHAR, byval dwhkl as HKL) as SHORT
-declare function VkKeyScanExW(byval ch as WCHAR, byval dwhkl as HKL) as SHORT
-declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
 
+#ifndef UNICODE
+	declare function VkKeyScan alias "VkKeyScanA"(byval ch as CHAR) as SHORT
+#endif
+
+declare function VkKeyScanW(byval ch as WCHAR) as SHORT
+
+#ifdef UNICODE
+	declare function VkKeyScan alias "VkKeyScanW"(byval ch as WCHAR) as SHORT
+#endif
+
+declare function VkKeyScanExA(byval ch as CHAR, byval dwhkl as HKL) as SHORT
+
+#ifndef UNICODE
+	declare function VkKeyScanEx alias "VkKeyScanExA"(byval ch as CHAR, byval dwhkl as HKL) as SHORT
+#endif
+
+declare function VkKeyScanExW(byval ch as WCHAR, byval dwhkl as HKL) as SHORT
+
+#ifdef UNICODE
+	declare function VkKeyScanEx alias "VkKeyScanExW"(byval ch as WCHAR, byval dwhkl as HKL) as SHORT
+#endif
+
+declare sub keybd_event(byval bVk as UBYTE, byval bScan as UBYTE, byval dwFlags as DWORD, byval dwExtraInfo as ULONG_PTR)
 const KEYEVENTF_EXTENDEDKEY = &h0001
 const KEYEVENTF_KEYUP = &h0002
 const KEYEVENTF_UNICODE = &h0004
@@ -2640,8 +3033,8 @@ const INPUT_HARDWARE = 2
 	#define IS_POINTER_PRIMARY_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_PRIMARY)
 	#define HAS_POINTER_CONFIDENCE_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CONFIDENCE)
 	#define IS_POINTER_CANCELED_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CANCELED)
-	#define PA_ACTIVATE MA_ACTIVATE
-	#define PA_NOACTIVATE MA_NOACTIVATE
+	const PA_ACTIVATE = MA_ACTIVATE
+	const PA_NOACTIVATE = MA_NOACTIVATE
 	const MAX_TOUCH_COUNT = 256
 	const TOUCH_FEEDBACK_DEFAULT = &h1
 	const TOUCH_FEEDBACK_INDIRECT = &h2
@@ -2885,20 +3278,31 @@ end type
 
 type LASTINPUTINFO as tagLASTINPUTINFO
 type PLASTINPUTINFO as tagLASTINPUTINFO ptr
-
-#ifdef UNICODE
-	#define MapVirtualKey MapVirtualKeyW
-	#define MapVirtualKeyEx MapVirtualKeyExW
-#else
-	#define MapVirtualKey MapVirtualKeyA
-	#define MapVirtualKeyEx MapVirtualKeyExA
-#endif
-
 declare function GetLastInputInfo(byval plii as PLASTINPUTINFO) as WINBOOL
 declare function MapVirtualKeyA(byval uCode as UINT, byval uMapType as UINT) as UINT
+
+#ifndef UNICODE
+	declare function MapVirtualKey alias "MapVirtualKeyA"(byval uCode as UINT, byval uMapType as UINT) as UINT
+#endif
+
 declare function MapVirtualKeyW(byval uCode as UINT, byval uMapType as UINT) as UINT
+
+#ifdef UNICODE
+	declare function MapVirtualKey alias "MapVirtualKeyW"(byval uCode as UINT, byval uMapType as UINT) as UINT
+#endif
+
 declare function MapVirtualKeyExA(byval uCode as UINT, byval uMapType as UINT, byval dwhkl as HKL) as UINT
+
+#ifndef UNICODE
+	declare function MapVirtualKeyEx alias "MapVirtualKeyExA"(byval uCode as UINT, byval uMapType as UINT, byval dwhkl as HKL) as UINT
+#endif
+
 declare function MapVirtualKeyExW(byval uCode as UINT, byval uMapType as UINT, byval dwhkl as HKL) as UINT
+
+#ifdef UNICODE
+	declare function MapVirtualKeyEx alias "MapVirtualKeyExW"(byval uCode as UINT, byval uMapType as UINT, byval dwhkl as HKL) as UINT
+#endif
+
 declare function GetInputState() as WINBOOL
 declare function GetQueueStatus(byval flags as UINT) as DWORD
 declare function GetCapture() as HWND
@@ -2955,37 +3359,59 @@ const USER_TIMER_MINIMUM = &h0000000A
 	const TIMERV_COALESCING_MAX = &h7ffffff5
 #endif
 
-#ifdef UNICODE
-	#define LoadAccelerators LoadAcceleratorsW
-	#define CreateAcceleratorTable CreateAcceleratorTableW
-	#define CopyAcceleratorTable CopyAcceleratorTableW
-#else
-	#define LoadAccelerators LoadAcceleratorsA
-	#define CreateAcceleratorTable CreateAcceleratorTableA
-	#define CopyAcceleratorTable CopyAcceleratorTableA
-#endif
-
 declare function SetTimer(byval hWnd as HWND, byval nIDEvent as UINT_PTR, byval uElapse as UINT, byval lpTimerFunc as TIMERPROC) as UINT_PTR
 declare function KillTimer(byval hWnd as HWND, byval uIDEvent as UINT_PTR) as WINBOOL
 declare function IsWindowUnicode(byval hWnd as HWND) as WINBOOL
 declare function EnableWindow(byval hWnd as HWND, byval bEnable as WINBOOL) as WINBOOL
 declare function IsWindowEnabled(byval hWnd as HWND) as WINBOOL
 declare function LoadAcceleratorsA(byval hInstance as HINSTANCE, byval lpTableName as LPCSTR) as HACCEL
+
+#ifndef UNICODE
+	declare function LoadAccelerators alias "LoadAcceleratorsA"(byval hInstance as HINSTANCE, byval lpTableName as LPCSTR) as HACCEL
+#endif
+
 declare function LoadAcceleratorsW(byval hInstance as HINSTANCE, byval lpTableName as LPCWSTR) as HACCEL
+
+#ifdef UNICODE
+	declare function LoadAccelerators alias "LoadAcceleratorsW"(byval hInstance as HINSTANCE, byval lpTableName as LPCWSTR) as HACCEL
+#endif
+
 declare function CreateAcceleratorTableA(byval paccel as LPACCEL, byval cAccel as long) as HACCEL
+
+#ifndef UNICODE
+	declare function CreateAcceleratorTable alias "CreateAcceleratorTableA"(byval paccel as LPACCEL, byval cAccel as long) as HACCEL
+#endif
+
 declare function CreateAcceleratorTableW(byval paccel as LPACCEL, byval cAccel as long) as HACCEL
+
+#ifdef UNICODE
+	declare function CreateAcceleratorTable alias "CreateAcceleratorTableW"(byval paccel as LPACCEL, byval cAccel as long) as HACCEL
+#endif
+
 declare function DestroyAcceleratorTable(byval hAccel as HACCEL) as WINBOOL
 declare function CopyAcceleratorTableA(byval hAccelSrc as HACCEL, byval lpAccelDst as LPACCEL, byval cAccelEntries as long) as long
+
+#ifndef UNICODE
+	declare function CopyAcceleratorTable alias "CopyAcceleratorTableA"(byval hAccelSrc as HACCEL, byval lpAccelDst as LPACCEL, byval cAccelEntries as long) as long
+#endif
+
 declare function CopyAcceleratorTableW(byval hAccelSrc as HACCEL, byval lpAccelDst as LPACCEL, byval cAccelEntries as long) as long
 
 #ifdef UNICODE
-	#define TranslateAccelerator TranslateAcceleratorW
-#else
-	#define TranslateAccelerator TranslateAcceleratorA
+	declare function CopyAcceleratorTable alias "CopyAcceleratorTableW"(byval hAccelSrc as HACCEL, byval lpAccelDst as LPACCEL, byval cAccelEntries as long) as long
 #endif
 
 declare function TranslateAcceleratorA(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
+
+#ifndef UNICODE
+	declare function TranslateAccelerator alias "TranslateAcceleratorA"(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
+#endif
+
 declare function TranslateAcceleratorW(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
+
+#ifdef UNICODE
+	declare function TranslateAccelerator alias "TranslateAcceleratorW"(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
+#endif
 
 #if _WIN32_WINNT = &h0602
 	declare function SetCoalescableTimer(byval hWnd as HWND, byval nIDEvent as UINT_PTR, byval uElapse as UINT, byval lpTimerFunc as TIMERPROC, byval uToleranceDelay as ULONG) as UINT_PTR
@@ -3035,10 +3461,10 @@ const SM_MENUDROPALIGNMENT = 40
 const SM_PENWINDOWS = 41
 const SM_DBCSENABLED = 42
 const SM_CMOUSEBUTTONS = 43
-#define SM_CXFIXEDFRAME SM_CXDLGFRAME
-#define SM_CYFIXEDFRAME SM_CYDLGFRAME
-#define SM_CXSIZEFRAME SM_CXFRAME
-#define SM_CYSIZEFRAME SM_CYFRAME
+const SM_CXFIXEDFRAME = SM_CXDLGFRAME
+const SM_CYFIXEDFRAME = SM_CYDLGFRAME
+const SM_CXSIZEFRAME = SM_CXFRAME
+const SM_CYSIZEFRAME = SM_CYFRAME
 const SM_SECURE = 44
 const SM_CXEDGE = 45
 const SM_CYEDGE = 46
@@ -3149,36 +3575,57 @@ const MIIM_FTYPE = &h00000100
 #define HBMMENU_POPUP_RESTORE cast(HBITMAP, 9)
 #define HBMMENU_POPUP_MAXIMIZE cast(HBITMAP, 10)
 #define HBMMENU_POPUP_MINIMIZE cast(HBITMAP, 11)
+declare function LoadMenuA(byval hInstance as HINSTANCE, byval lpMenuName as LPCSTR) as HMENU
 
-#ifdef UNICODE
-	#define LoadMenu LoadMenuW
-	#define LoadMenuIndirect LoadMenuIndirectW
-	#define ChangeMenu ChangeMenuW
-	#define GetMenuString GetMenuStringW
-	#define InsertMenu InsertMenuW
-	#define AppendMenu AppendMenuW
-	#define ModifyMenu ModifyMenuW
-#else
-	#define LoadMenu LoadMenuA
-	#define LoadMenuIndirect LoadMenuIndirectA
-	#define ChangeMenu ChangeMenuA
-	#define GetMenuString GetMenuStringA
-	#define InsertMenu InsertMenuA
-	#define AppendMenu AppendMenuA
-	#define ModifyMenu ModifyMenuA
+#ifndef UNICODE
+	declare function LoadMenu alias "LoadMenuA"(byval hInstance as HINSTANCE, byval lpMenuName as LPCSTR) as HMENU
 #endif
 
-declare function LoadMenuA(byval hInstance as HINSTANCE, byval lpMenuName as LPCSTR) as HMENU
 declare function LoadMenuW(byval hInstance as HINSTANCE, byval lpMenuName as LPCWSTR) as HMENU
+
+#ifdef UNICODE
+	declare function LoadMenu alias "LoadMenuW"(byval hInstance as HINSTANCE, byval lpMenuName as LPCWSTR) as HMENU
+#endif
+
 declare function LoadMenuIndirectA(byval lpMenuTemplate as const MENUTEMPLATEA ptr) as HMENU
+
+#ifndef UNICODE
+	declare function LoadMenuIndirect alias "LoadMenuIndirectA"(byval lpMenuTemplate as const MENUTEMPLATEA ptr) as HMENU
+#endif
+
 declare function LoadMenuIndirectW(byval lpMenuTemplate as const MENUTEMPLATEW ptr) as HMENU
+
+#ifdef UNICODE
+	declare function LoadMenuIndirect alias "LoadMenuIndirectW"(byval lpMenuTemplate as const MENUTEMPLATEW ptr) as HMENU
+#endif
+
 declare function GetMenu(byval hWnd as HWND) as HMENU
 declare function SetMenu(byval hWnd as HWND, byval hMenu as HMENU) as WINBOOL
 declare function ChangeMenuA(byval hMenu as HMENU, byval cmd as UINT, byval lpszNewItem as LPCSTR, byval cmdInsert as UINT, byval flags as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function ChangeMenu alias "ChangeMenuA"(byval hMenu as HMENU, byval cmd as UINT, byval lpszNewItem as LPCSTR, byval cmdInsert as UINT, byval flags as UINT) as WINBOOL
+#endif
+
 declare function ChangeMenuW(byval hMenu as HMENU, byval cmd as UINT, byval lpszNewItem as LPCWSTR, byval cmdInsert as UINT, byval flags as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function ChangeMenu alias "ChangeMenuW"(byval hMenu as HMENU, byval cmd as UINT, byval lpszNewItem as LPCWSTR, byval cmdInsert as UINT, byval flags as UINT) as WINBOOL
+#endif
+
 declare function HiliteMenuItem(byval hWnd as HWND, byval hMenu as HMENU, byval uIDHiliteItem as UINT, byval uHilite as UINT) as WINBOOL
 declare function GetMenuStringA(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPSTR, byval cchMax as long, byval flags as UINT) as long
+
+#ifndef UNICODE
+	declare function GetMenuString alias "GetMenuStringA"(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPSTR, byval cchMax as long, byval flags as UINT) as long
+#endif
+
 declare function GetMenuStringW(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPWSTR, byval cchMax as long, byval flags as UINT) as long
+
+#ifdef UNICODE
+	declare function GetMenuString alias "GetMenuStringW"(byval hMenu as HMENU, byval uIDItem as UINT, byval lpString as LPWSTR, byval cchMax as long, byval flags as UINT) as long
+#endif
+
 declare function GetMenuState(byval hMenu as HMENU, byval uId as UINT, byval uFlags as UINT) as UINT
 declare function DrawMenuBar(byval hWnd as HWND) as WINBOOL
 declare function GetSystemMenu(byval hWnd as HWND, byval bRevert as WINBOOL) as HMENU
@@ -3191,11 +3638,41 @@ declare function GetSubMenu(byval hMenu as HMENU, byval nPos as long) as HMENU
 declare function GetMenuItemID(byval hMenu as HMENU, byval nPos as long) as UINT
 declare function GetMenuItemCount(byval hMenu as HMENU) as long
 declare function InsertMenuA(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function InsertMenu alias "InsertMenuA"(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+#endif
+
 declare function InsertMenuW(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function InsertMenu alias "InsertMenuW"(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+#endif
+
 declare function AppendMenuA(byval hMenu as HMENU, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function AppendMenu alias "AppendMenuA"(byval hMenu as HMENU, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+#endif
+
 declare function AppendMenuW(byval hMenu as HMENU, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function AppendMenu alias "AppendMenuW"(byval hMenu as HMENU, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+#endif
+
 declare function ModifyMenuA(byval hMnu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function ModifyMenu alias "ModifyMenuA"(byval hMnu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCSTR) as WINBOOL
+#endif
+
 declare function ModifyMenuW(byval hMnu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function ModifyMenu alias "ModifyMenuW"(byval hMnu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval uIDNewItem as UINT_PTR, byval lpNewItem as LPCWSTR) as WINBOOL
+#endif
+
 declare function RemoveMenu(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT) as WINBOOL
 declare function DeleteMenu(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT) as WINBOOL
 declare function SetMenuItemBitmaps(byval hMenu as HMENU, byval uPosition as UINT, byval uFlags as UINT, byval hBitmapUnchecked as HBITMAP, byval hBitmapChecked as HBITMAP) as WINBOOL
@@ -3293,22 +3770,46 @@ type LPCMENUITEMINFOW as const MENUITEMINFOW ptr
 
 #ifdef UNICODE
 	type LPCMENUITEMINFO as LPCMENUITEMINFOW
-	#define InsertMenuItem InsertMenuItemW
-	#define GetMenuItemInfo GetMenuItemInfoW
-	#define SetMenuItemInfo SetMenuItemInfoW
 #else
 	type LPCMENUITEMINFO as LPCMENUITEMINFOA
-	#define InsertMenuItem InsertMenuItemA
-	#define GetMenuItemInfo GetMenuItemInfoA
-	#define SetMenuItemInfo SetMenuItemInfoA
 #endif
 
 declare function InsertMenuItemA(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmi as LPCMENUITEMINFOA) as WINBOOL
+
+#ifndef UNICODE
+	declare function InsertMenuItem alias "InsertMenuItemA"(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmi as LPCMENUITEMINFOA) as WINBOOL
+#endif
+
 declare function InsertMenuItemW(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmi as LPCMENUITEMINFOW) as WINBOOL
+
+#ifdef UNICODE
+	declare function InsertMenuItem alias "InsertMenuItemW"(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmi as LPCMENUITEMINFOW) as WINBOOL
+#endif
+
 declare function GetMenuItemInfoA(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmii as LPMENUITEMINFOA) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetMenuItemInfo alias "GetMenuItemInfoA"(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmii as LPMENUITEMINFOA) as WINBOOL
+#endif
+
 declare function GetMenuItemInfoW(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmii as LPMENUITEMINFOW) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetMenuItemInfo alias "GetMenuItemInfoW"(byval hmenu as HMENU, byval item as UINT, byval fByPosition as WINBOOL, byval lpmii as LPMENUITEMINFOW) as WINBOOL
+#endif
+
 declare function SetMenuItemInfoA(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetMenuItemInfo alias "SetMenuItemInfoA"(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOA) as WINBOOL
+#endif
+
 declare function SetMenuItemInfoW(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOW) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetMenuItemInfo alias "SetMenuItemInfoW"(byval hmenu as HMENU, byval item as UINT, byval fByPositon as WINBOOL, byval lpmii as LPCMENUITEMINFOW) as WINBOOL
+#endif
+
 #define GMDI_USEDISABLED __MSABI_LONG(&h0001)
 #define GMDI_GOINTOPOPUPS __MSABI_LONG(&h0002)
 declare function GetMenuDefaultItem(byval hMenu as HMENU, byval fByPos as UINT, byval gmdiFlags as UINT) as UINT
@@ -3401,40 +3902,78 @@ end type
 
 type DRAWTEXTPARAMS as tagDRAWTEXTPARAMS
 type LPDRAWTEXTPARAMS as tagDRAWTEXTPARAMS ptr
+declare function DrawTextA(byval hdc as HDC, byval lpchText as LPCSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT) as long
 
-#ifdef UNICODE
-	#define DrawText DrawTextW
-	#define DrawTextEx DrawTextExW
-#else
-	#define DrawText DrawTextA
-	#define DrawTextEx DrawTextExA
+#ifndef UNICODE
+	declare function DrawText alias "DrawTextA"(byval hdc as HDC, byval lpchText as LPCSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT) as long
 #endif
 
-declare function DrawTextA(byval hdc as HDC, byval lpchText as LPCSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT) as long
 declare function DrawTextW(byval hdc as HDC, byval lpchText as LPCWSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT) as long
+
+#ifdef UNICODE
+	declare function DrawText alias "DrawTextW"(byval hdc as HDC, byval lpchText as LPCWSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT) as long
+#endif
+
 declare function DrawTextExA(byval hdc as HDC, byval lpchText as LPSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT, byval lpdtp as LPDRAWTEXTPARAMS) as long
+
+#ifndef UNICODE
+	declare function DrawTextEx alias "DrawTextExA"(byval hdc as HDC, byval lpchText as LPSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT, byval lpdtp as LPDRAWTEXTPARAMS) as long
+#endif
+
 declare function DrawTextExW(byval hdc as HDC, byval lpchText as LPWSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT, byval lpdtp as LPDRAWTEXTPARAMS) as long
 
 #ifdef UNICODE
-	#define GrayString GrayStringW
-	#define DrawState DrawStateW
-	#define TabbedTextOut TabbedTextOutW
-	#define GetTabbedTextExtent GetTabbedTextExtentW
-#else
-	#define GrayString GrayStringA
-	#define DrawState DrawStateA
-	#define TabbedTextOut TabbedTextOutA
-	#define GetTabbedTextExtent GetTabbedTextExtentA
+	declare function DrawTextEx alias "DrawTextExW"(byval hdc as HDC, byval lpchText as LPWSTR, byval cchText as long, byval lprc as LPRECT, byval format as UINT, byval lpdtp as LPDRAWTEXTPARAMS) as long
 #endif
 
 declare function GrayStringA(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function GrayString alias "GrayStringA"(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
+#endif
+
 declare function GrayStringW(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
+
+#ifdef UNICODE
+	declare function GrayString alias "GrayStringW"(byval hDC as HDC, byval hBrush as HBRUSH, byval lpOutputFunc as GRAYSTRINGPROC, byval lpData as LPARAM, byval nCount as long, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long) as WINBOOL
+#endif
+
 declare function DrawStateA(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function DrawState alias "DrawStateA"(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
+#endif
+
 declare function DrawStateW(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function DrawState alias "DrawStateW"(byval hdc as HDC, byval hbrFore as HBRUSH, byval qfnCallBack as DRAWSTATEPROC, byval lData as LPARAM, byval wData as WPARAM, byval x as long, byval y as long, byval cx as long, byval cy as long, byval uFlags as UINT) as WINBOOL
+#endif
+
 declare function TabbedTextOutA(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr, byval nTabOrigin as long) as LONG
+
+#ifndef UNICODE
+	declare function TabbedTextOut alias "TabbedTextOutA"(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr, byval nTabOrigin as long) as LONG
+#endif
+
 declare function TabbedTextOutW(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCWSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr, byval nTabOrigin as long) as LONG
+
+#ifdef UNICODE
+	declare function TabbedTextOut alias "TabbedTextOutW"(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCWSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr, byval nTabOrigin as long) as LONG
+#endif
+
 declare function GetTabbedTextExtentA(byval hdc as HDC, byval lpString as LPCSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr) as DWORD
+
+#ifndef UNICODE
+	declare function GetTabbedTextExtent alias "GetTabbedTextExtentA"(byval hdc as HDC, byval lpString as LPCSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr) as DWORD
+#endif
+
 declare function GetTabbedTextExtentW(byval hdc as HDC, byval lpString as LPCWSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr) as DWORD
+
+#ifdef UNICODE
+	declare function GetTabbedTextExtent alias "GetTabbedTextExtentW"(byval hdc as HDC, byval lpString as LPCWSTR, byval chCount as long, byval nTabPositions as long, byval lpnTabStopPositions as const INT_ ptr) as DWORD
+#endif
+
 declare function UpdateWindow(byval hWnd as HWND) as WINBOOL
 declare function SetActiveWindow(byval hWnd as HWND) as HWND
 declare function GetForegroundWindow() as HWND
@@ -3527,45 +4066,104 @@ const ESB_DISABLE_LEFT = &h0001
 const ESB_DISABLE_RIGHT = &h0002
 const ESB_DISABLE_UP = &h0001
 const ESB_DISABLE_DOWN = &h0002
-#define ESB_DISABLE_LTUP ESB_DISABLE_LEFT
-#define ESB_DISABLE_RTDN ESB_DISABLE_RIGHT
+const ESB_DISABLE_LTUP = ESB_DISABLE_LEFT
+const ESB_DISABLE_RTDN = ESB_DISABLE_RIGHT
+declare function SetPropA(byval hWnd as HWND, byval lpString as LPCSTR, byval hData as HANDLE) as WINBOOL
 
-#ifdef UNICODE
-	#define SetProp SetPropW
-	#define GetProp GetPropW
-	#define RemoveProp RemovePropW
-	#define EnumPropsEx EnumPropsExW
-	#define EnumProps EnumPropsW
-	#define SetWindowText SetWindowTextW
-	#define GetWindowText GetWindowTextW
-	#define GetWindowTextLength GetWindowTextLengthW
-#else
-	#define SetProp SetPropA
-	#define GetProp GetPropA
-	#define RemoveProp RemovePropA
-	#define EnumPropsEx EnumPropsExA
-	#define EnumProps EnumPropsA
-	#define SetWindowText SetWindowTextA
-	#define GetWindowText GetWindowTextA
-	#define GetWindowTextLength GetWindowTextLengthA
+#ifndef UNICODE
+	declare function SetProp alias "SetPropA"(byval hWnd as HWND, byval lpString as LPCSTR, byval hData as HANDLE) as WINBOOL
 #endif
 
-declare function SetPropA(byval hWnd as HWND, byval lpString as LPCSTR, byval hData as HANDLE) as WINBOOL
 declare function SetPropW(byval hWnd as HWND, byval lpString as LPCWSTR, byval hData as HANDLE) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetProp alias "SetPropW"(byval hWnd as HWND, byval lpString as LPCWSTR, byval hData as HANDLE) as WINBOOL
+#endif
+
 declare function GetPropA(byval hWnd as HWND, byval lpString as LPCSTR) as HANDLE
+
+#ifndef UNICODE
+	declare function GetProp alias "GetPropA"(byval hWnd as HWND, byval lpString as LPCSTR) as HANDLE
+#endif
+
 declare function GetPropW(byval hWnd as HWND, byval lpString as LPCWSTR) as HANDLE
+
+#ifdef UNICODE
+	declare function GetProp alias "GetPropW"(byval hWnd as HWND, byval lpString as LPCWSTR) as HANDLE
+#endif
+
 declare function RemovePropA(byval hWnd as HWND, byval lpString as LPCSTR) as HANDLE
+
+#ifndef UNICODE
+	declare function RemoveProp alias "RemovePropA"(byval hWnd as HWND, byval lpString as LPCSTR) as HANDLE
+#endif
+
 declare function RemovePropW(byval hWnd as HWND, byval lpString as LPCWSTR) as HANDLE
+
+#ifdef UNICODE
+	declare function RemoveProp alias "RemovePropW"(byval hWnd as HWND, byval lpString as LPCWSTR) as HANDLE
+#endif
+
 declare function EnumPropsExA(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCEXA, byval lParam as LPARAM) as long
+
+#ifndef UNICODE
+	declare function EnumPropsEx alias "EnumPropsExA"(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCEXA, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumPropsExW(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCEXW, byval lParam as LPARAM) as long
+
+#ifdef UNICODE
+	declare function EnumPropsEx alias "EnumPropsExW"(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCEXW, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumPropsA(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCA) as long
+
+#ifndef UNICODE
+	declare function EnumProps alias "EnumPropsA"(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCA) as long
+#endif
+
 declare function EnumPropsW(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCW) as long
+
+#ifdef UNICODE
+	declare function EnumProps alias "EnumPropsW"(byval hWnd as HWND, byval lpEnumFunc as PROPENUMPROCW) as long
+#endif
+
 declare function SetWindowTextA(byval hWnd as HWND, byval lpString as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetWindowText alias "SetWindowTextA"(byval hWnd as HWND, byval lpString as LPCSTR) as WINBOOL
+#endif
+
 declare function SetWindowTextW(byval hWnd as HWND, byval lpString as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetWindowText alias "SetWindowTextW"(byval hWnd as HWND, byval lpString as LPCWSTR) as WINBOOL
+#endif
+
 declare function GetWindowTextA(byval hWnd as HWND, byval lpString as LPSTR, byval nMaxCount as long) as long
+
+#ifndef UNICODE
+	declare function GetWindowText alias "GetWindowTextA"(byval hWnd as HWND, byval lpString as LPSTR, byval nMaxCount as long) as long
+#endif
+
 declare function GetWindowTextW(byval hWnd as HWND, byval lpString as LPWSTR, byval nMaxCount as long) as long
+
+#ifdef UNICODE
+	declare function GetWindowText alias "GetWindowTextW"(byval hWnd as HWND, byval lpString as LPWSTR, byval nMaxCount as long) as long
+#endif
+
 declare function GetWindowTextLengthA(byval hWnd as HWND) as long
+
+#ifndef UNICODE
+	declare function GetWindowTextLength alias "GetWindowTextLengthA"(byval hWnd as HWND) as long
+#endif
+
 declare function GetWindowTextLengthW(byval hWnd as HWND) as long
+
+#ifdef UNICODE
+	declare function GetWindowTextLength alias "GetWindowTextLengthW"(byval hWnd as HWND) as long
+#endif
+
 declare function GetClientRect(byval hWnd as HWND, byval lpRect as LPRECT) as WINBOOL
 declare function GetWindowRect(byval hWnd as HWND, byval lpRect as LPRECT) as WINBOOL
 declare function AdjustWindowRect(byval lpRect as LPRECT, byval dwStyle as DWORD, byval bMenu as WINBOOL) as WINBOOL
@@ -3626,19 +4224,30 @@ declare function GetMenuContextHelpId(byval as HMENU) as DWORD
 #define MB_DEFMASK __MSABI_LONG(&h00000F00)
 #define MB_MODEMASK __MSABI_LONG(&h00003000)
 #define MB_MISCMASK __MSABI_LONG(&h0000C000)
+declare function MessageBoxA(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT) as long
 
-#ifdef UNICODE
-	#define MessageBox MessageBoxW
-	#define MessageBoxEx MessageBoxExW
-#else
-	#define MessageBox MessageBoxA
-	#define MessageBoxEx MessageBoxExA
+#ifndef UNICODE
+	declare function MessageBox alias "MessageBoxA"(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT) as long
 #endif
 
-declare function MessageBoxA(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT) as long
 declare function MessageBoxW(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT) as long
+
+#ifdef UNICODE
+	declare function MessageBox alias "MessageBoxW"(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT) as long
+#endif
+
 declare function MessageBoxExA(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT, byval wLanguageId as WORD) as long
+
+#ifndef UNICODE
+	declare function MessageBoxEx alias "MessageBoxExA"(byval hWnd as HWND, byval lpText as LPCSTR, byval lpCaption as LPCSTR, byval uType as UINT, byval wLanguageId as WORD) as long
+#endif
+
 declare function MessageBoxExW(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT, byval wLanguageId as WORD) as long
+
+#ifdef UNICODE
+	declare function MessageBoxEx alias "MessageBoxExW"(byval hWnd as HWND, byval lpText as LPCWSTR, byval lpCaption as LPCWSTR, byval uType as UINT, byval wLanguageId as WORD) as long
+#endif
+
 type MSGBOXCALLBACK as sub(byval lpHelpInfo as LPHELPINFO)
 
 type tagMSGBOXPARAMSA
@@ -3679,16 +4288,24 @@ type LPMSGBOXPARAMSW as tagMSGBOXPARAMSW ptr
 	type MSGBOXPARAMS as MSGBOXPARAMSW
 	type PMSGBOXPARAMS as PMSGBOXPARAMSW
 	type LPMSGBOXPARAMS as LPMSGBOXPARAMSW
-	#define MessageBoxIndirect MessageBoxIndirectW
 #else
 	type MSGBOXPARAMS as MSGBOXPARAMSA
 	type PMSGBOXPARAMS as PMSGBOXPARAMSA
 	type LPMSGBOXPARAMS as LPMSGBOXPARAMSA
-	#define MessageBoxIndirect MessageBoxIndirectA
 #endif
 
 declare function MessageBoxIndirectA(byval lpmbp as const MSGBOXPARAMSA ptr) as long
+
+#ifndef UNICODE
+	declare function MessageBoxIndirect alias "MessageBoxIndirectA"(byval lpmbp as const MSGBOXPARAMSA ptr) as long
+#endif
+
 declare function MessageBoxIndirectW(byval lpmbp as const MSGBOXPARAMSW ptr) as long
+
+#ifdef UNICODE
+	declare function MessageBoxIndirect alias "MessageBoxIndirectW"(byval lpmbp as const MSGBOXPARAMSW ptr) as long
+#endif
+
 declare function MessageBeep(byval uType as UINT) as WINBOOL
 declare function ShowCursor(byval bShow as WINBOOL) as long
 declare function SetCursorPos(byval X as long, byval Y as long) as WINBOOL
@@ -3762,12 +4379,12 @@ const COLOR_GRADIENTACTIVECAPTION = 27
 const COLOR_GRADIENTINACTIVECAPTION = 28
 const COLOR_MENUHILIGHT = 29
 const COLOR_MENUBAR = 30
-#define COLOR_DESKTOP COLOR_BACKGROUND
-#define COLOR_3DFACE COLOR_BTNFACE
-#define COLOR_3DSHADOW COLOR_BTNSHADOW
-#define COLOR_3DHIGHLIGHT COLOR_BTNHIGHLIGHT
-#define COLOR_3DHILIGHT COLOR_BTNHIGHLIGHT
-#define COLOR_BTNHILIGHT COLOR_BTNHIGHLIGHT
+const COLOR_DESKTOP = COLOR_BACKGROUND
+const COLOR_3DFACE = COLOR_BTNFACE
+const COLOR_3DSHADOW = COLOR_BTNSHADOW
+const COLOR_3DHIGHLIGHT = COLOR_BTNHIGHLIGHT
+const COLOR_3DHILIGHT = COLOR_BTNHIGHLIGHT
+const COLOR_BTNHILIGHT = COLOR_BTNHIGHLIGHT
 
 declare function GetSysColor(byval nIndex as long) as DWORD
 declare function GetSysColorBrush(byval nIndex as long) as HBRUSH
@@ -3787,81 +4404,160 @@ declare function OffsetRect(byval lprc as LPRECT, byval dx as long, byval dy as 
 declare function IsRectEmpty(byval lprc as const RECT ptr) as WINBOOL
 declare function EqualRect(byval lprc1 as const RECT ptr, byval lprc2 as const RECT ptr) as WINBOOL
 declare function PtInRect(byval lprc as const RECT ptr, byval pt as POINT) as WINBOOL
-
-#ifdef UNICODE
-	#define GetWindowLong GetWindowLongW
-	#define SetWindowLong SetWindowLongW
-	#define GetClassLong GetClassLongW
-	#define SetClassLong SetClassLongW
-#else
-	#define GetWindowLong GetWindowLongA
-	#define SetWindowLong SetWindowLongA
-	#define GetClassLong GetClassLongA
-	#define SetClassLong SetClassLongA
-#endif
-
 declare function GetWindowWord(byval hWnd as HWND, byval nIndex as long) as WORD
 declare function SetWindowWord(byval hWnd as HWND, byval nIndex as long, byval wNewWord as WORD) as WORD
 declare function GetWindowLongA(byval hWnd as HWND, byval nIndex as long) as LONG
+
+#ifndef UNICODE
+	declare function GetWindowLong alias "GetWindowLongA"(byval hWnd as HWND, byval nIndex as long) as LONG
+#endif
+
 declare function GetWindowLongW(byval hWnd as HWND, byval nIndex as long) as LONG
+
+#ifdef UNICODE
+	declare function GetWindowLong alias "GetWindowLongW"(byval hWnd as HWND, byval nIndex as long) as LONG
+#endif
+
 declare function SetWindowLongA(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+
+#ifndef UNICODE
+	declare function SetWindowLong alias "SetWindowLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+#endif
+
 declare function SetWindowLongW(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
 
 #ifdef UNICODE
-	#define GetWindowLongPtr GetWindowLongPtrW
-	#define SetWindowLongPtr SetWindowLongPtrW
-#else
-	#define GetWindowLongPtr GetWindowLongPtrA
-	#define SetWindowLongPtr SetWindowLongPtrA
+	declare function SetWindowLong alias "SetWindowLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+#endif
+
+#ifndef __FB_64BIT__
+	declare function GetWindowLongPtrA alias "GetWindowLongA"(byval hWnd as HWND, byval nIndex as long) as LONG
+
+	#ifndef UNICODE
+		declare function GetWindowLongPtr alias "GetWindowLongA"(byval hWnd as HWND, byval nIndex as long) as LONG
+	#endif
+
+	declare function GetWindowLongPtrW alias "GetWindowLongW"(byval hWnd as HWND, byval nIndex as long) as LONG
+
+	#ifdef UNICODE
+		declare function GetWindowLongPtr alias "GetWindowLongW"(byval hWnd as HWND, byval nIndex as long) as LONG
+	#endif
+
+	declare function SetWindowLongPtrA alias "SetWindowLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+
+	#ifndef UNICODE
+		declare function SetWindowLongPtr alias "SetWindowLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+	#endif
+
+	declare function SetWindowLongPtrW alias "SetWindowLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+#endif
+
+#if (not defined(__FB_64BIT__)) and defined(UNICODE)
+	declare function SetWindowLongPtr alias "SetWindowLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as LONG
+#elseif defined(__FB_64BIT__)
+	declare function GetWindowLongPtrA(byval hWnd as HWND, byval nIndex as long) as LONG_PTR
 #endif
 
 #ifdef __FB_64BIT__
-	declare function GetWindowLongPtrA(byval hWnd as HWND, byval nIndex as long) as LONG_PTR
+	#ifndef UNICODE
+		declare function GetWindowLongPtr alias "GetWindowLongPtrA"(byval hWnd as HWND, byval nIndex as long) as LONG_PTR
+	#endif
+
 	declare function GetWindowLongPtrW(byval hWnd as HWND, byval nIndex as long) as LONG_PTR
+
+	#ifdef UNICODE
+		declare function GetWindowLongPtr alias "GetWindowLongPtrW"(byval hWnd as HWND, byval nIndex as long) as LONG_PTR
+	#endif
+
 	declare function SetWindowLongPtrA(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as LONG_PTR
+
+	#ifndef UNICODE
+		declare function SetWindowLongPtr alias "SetWindowLongPtrA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as LONG_PTR
+	#endif
+
 	declare function SetWindowLongPtrW(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as LONG_PTR
-#else
-	#define GetWindowLongPtrA GetWindowLongA
-	#define GetWindowLongPtrW GetWindowLongW
-	#define SetWindowLongPtrA SetWindowLongA
-	#define SetWindowLongPtrW SetWindowLongW
+
+	#ifdef UNICODE
+		declare function SetWindowLongPtr alias "SetWindowLongPtrW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as LONG_PTR
+	#endif
 #endif
 
 declare function GetClassWord(byval hWnd as HWND, byval nIndex as long) as WORD
 declare function SetClassWord(byval hWnd as HWND, byval nIndex as long, byval wNewWord as WORD) as WORD
 declare function GetClassLongA(byval hWnd as HWND, byval nIndex as long) as DWORD
+
+#ifndef UNICODE
+	declare function GetClassLong alias "GetClassLongA"(byval hWnd as HWND, byval nIndex as long) as DWORD
+#endif
+
 declare function GetClassLongW(byval hWnd as HWND, byval nIndex as long) as DWORD
+
+#ifdef UNICODE
+	declare function GetClassLong alias "GetClassLongW"(byval hWnd as HWND, byval nIndex as long) as DWORD
+#endif
+
 declare function SetClassLongA(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+
+#ifndef UNICODE
+	declare function SetClassLong alias "SetClassLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+#endif
+
 declare function SetClassLongW(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
 
 #ifdef UNICODE
-	#define GetClassLongPtr GetClassLongPtrW
-	#define SetClassLongPtr SetClassLongPtrW
-#else
-	#define GetClassLongPtr GetClassLongPtrA
-	#define SetClassLongPtr SetClassLongPtrA
+	declare function SetClassLong alias "SetClassLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+#endif
+
+#ifndef __FB_64BIT__
+	declare function GetClassLongPtrA alias "GetClassLongA"(byval hWnd as HWND, byval nIndex as long) as DWORD
+
+	#ifndef UNICODE
+		declare function GetClassLongPtr alias "GetClassLongA"(byval hWnd as HWND, byval nIndex as long) as DWORD
+	#endif
+
+	declare function GetClassLongPtrW alias "GetClassLongW"(byval hWnd as HWND, byval nIndex as long) as DWORD
+
+	#ifdef UNICODE
+		declare function GetClassLongPtr alias "GetClassLongW"(byval hWnd as HWND, byval nIndex as long) as DWORD
+	#endif
+
+	declare function SetClassLongPtrA alias "SetClassLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+
+	#ifndef UNICODE
+		declare function SetClassLongPtr alias "SetClassLongA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+	#endif
+
+	declare function SetClassLongPtrW alias "SetClassLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+#endif
+
+#if (not defined(__FB_64BIT__)) and defined(UNICODE)
+	declare function SetClassLongPtr alias "SetClassLongW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG) as DWORD
+#elseif defined(__FB_64BIT__)
+	declare function GetClassLongPtrA(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
 #endif
 
 #ifdef __FB_64BIT__
-	declare function GetClassLongPtrA(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
-	declare function GetClassLongPtrW(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
-	declare function SetClassLongPtrA(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
-	declare function SetClassLongPtrW(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
-#else
-	#define GetClassLongPtrA GetClassLongA
-	#define GetClassLongPtrW GetClassLongW
-	#define SetClassLongPtrA SetClassLongA
-	#define SetClassLongPtrW SetClassLongW
-#endif
+	#ifndef UNICODE
+		declare function GetClassLongPtr alias "GetClassLongPtrA"(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
+	#endif
 
-#ifdef UNICODE
-	#define FindWindow FindWindowW
-	#define FindWindowEx FindWindowExW
-	#define GetClassName GetClassNameW
-#else
-	#define FindWindow FindWindowA
-	#define FindWindowEx FindWindowExA
-	#define GetClassName GetClassNameA
+	declare function GetClassLongPtrW(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
+
+	#ifdef UNICODE
+		declare function GetClassLongPtr alias "GetClassLongPtrW"(byval hWnd as HWND, byval nIndex as long) as ULONG_PTR
+	#endif
+
+	declare function SetClassLongPtrA(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
+
+	#ifndef UNICODE
+		declare function SetClassLongPtr alias "SetClassLongPtrA"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
+	#endif
+
+	declare function SetClassLongPtrW(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
+
+	#ifdef UNICODE
+		declare function SetClassLongPtr alias "SetClassLongPtrW"(byval hWnd as HWND, byval nIndex as long, byval dwNewLong as LONG_PTR) as ULONG_PTR
+	#endif
 #endif
 
 declare function GetProcessDefaultLayout(byval pdwDefaultLayout as DWORD ptr) as WINBOOL
@@ -3871,9 +4567,29 @@ declare function GetParent(byval hWnd as HWND) as HWND
 declare function SetParent(byval hWndChild as HWND, byval hWndNewParent as HWND) as HWND
 declare function EnumChildWindows(byval hWndParent as HWND, byval lpEnumFunc as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 declare function FindWindowA(byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR) as HWND
+
+#ifndef UNICODE
+	declare function FindWindow alias "FindWindowA"(byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR) as HWND
+#endif
+
 declare function FindWindowW(byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR) as HWND
+
+#ifdef UNICODE
+	declare function FindWindow alias "FindWindowW"(byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR) as HWND
+#endif
+
 declare function FindWindowExA(byval hWndParent as HWND, byval hWndChildAfter as HWND, byval lpszClass as LPCSTR, byval lpszWindow as LPCSTR) as HWND
+
+#ifndef UNICODE
+	declare function FindWindowEx alias "FindWindowExA"(byval hWndParent as HWND, byval hWndChildAfter as HWND, byval lpszClass as LPCSTR, byval lpszWindow as LPCSTR) as HWND
+#endif
+
 declare function FindWindowExW(byval hWndParent as HWND, byval hWndChildAfter as HWND, byval lpszClass as LPCWSTR, byval lpszWindow as LPCWSTR) as HWND
+
+#ifdef UNICODE
+	declare function FindWindowEx alias "FindWindowExW"(byval hWndParent as HWND, byval hWndChildAfter as HWND, byval lpszClass as LPCWSTR, byval lpszWindow as LPCWSTR) as HWND
+#endif
+
 declare function GetShellWindow() as HWND
 declare function RegisterShellHookWindow(byval hwnd as HWND) as WINBOOL
 declare function DeregisterShellHookWindow(byval hwnd as HWND) as WINBOOL
@@ -3881,9 +4597,18 @@ declare function EnumWindows(byval lpEnumFunc as WNDENUMPROC, byval lParam as LP
 declare function EnumThreadWindows(byval dwThreadId as DWORD, byval lpfn as WNDENUMPROC, byval lParam as LPARAM) as WINBOOL
 #define EnumTaskWindows(hTask, lpfn, lParam) EnumThreadWindows(HandleToUlong(hTask), lpfn, lParam)
 declare function GetClassNameA(byval hWnd as HWND, byval lpClassName as LPSTR, byval nMaxCount as long) as long
-declare function GetClassNameW(byval hWnd as HWND, byval lpClassName as LPWSTR, byval nMaxCount as long) as long
-declare function GetTopWindow(byval hWnd as HWND) as HWND
 
+#ifndef UNICODE
+	declare function GetClassName alias "GetClassNameA"(byval hWnd as HWND, byval lpClassName as LPSTR, byval nMaxCount as long) as long
+#endif
+
+declare function GetClassNameW(byval hWnd as HWND, byval lpClassName as LPWSTR, byval nMaxCount as long) as long
+
+#ifdef UNICODE
+	declare function GetClassName alias "GetClassNameW"(byval hWnd as HWND, byval lpClassName as LPWSTR, byval nMaxCount as long) as long
+#endif
+
+declare function GetTopWindow(byval hWnd as HWND) as HWND
 #define GetNextWindow(hWnd, wCmd) GetWindow(hWnd, wCmd)
 #define GetSysModalWindow() NULL
 #define SetSysModalWindow(hWnd) NULL
@@ -3900,24 +4625,34 @@ const GW_CHILD = 5
 const GW_ENABLEDPOPUP = 6
 const GW_MAX = 6
 declare function GetWindow(byval hWnd as HWND, byval uCmd as UINT) as HWND
+declare function SetWindowsHookA(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
 
-#ifdef UNICODE
-	#define SetWindowsHook SetWindowsHookW
-	#define SetWindowsHookEx SetWindowsHookExW
-#else
-	#define SetWindowsHook SetWindowsHookA
-	#define SetWindowsHookEx SetWindowsHookExA
+#ifndef UNICODE
+	declare function SetWindowsHook alias "SetWindowsHookA"(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
 #endif
 
-declare function SetWindowsHookA(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
 declare function SetWindowsHookW(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
+
+#ifdef UNICODE
+	declare function SetWindowsHook alias "SetWindowsHookW"(byval nFilterType as long, byval pfnFilterProc as HOOKPROC) as HHOOK
+#endif
+
 #define DefHookProc(nCode, wParam, lParam, phhk) CallNextHookEx(*phhk, nCode, wParam, lParam)
 declare function UnhookWindowsHook(byval nCode as long, byval pfnFilterProc as HOOKPROC) as WINBOOL
 declare function SetWindowsHookExA(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
+
+#ifndef UNICODE
+	declare function SetWindowsHookEx alias "SetWindowsHookExA"(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
+#endif
+
 declare function SetWindowsHookExW(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
+
+#ifdef UNICODE
+	declare function SetWindowsHookEx alias "SetWindowsHookExW"(byval idHook as long, byval lpfn as HOOKPROC, byval hmod as HINSTANCE, byval dwThreadId as DWORD) as HHOOK
+#endif
+
 declare function UnhookWindowsHookEx(byval hhk as HHOOK) as WINBOOL
 declare function CallNextHookEx(byval hhk as HHOOK, byval nCode as long, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-
 #define MF_INSERT __MSABI_LONG(&h00000000)
 #define MF_CHANGE __MSABI_LONG(&h00000080)
 #define MF_APPEND __MSABI_LONG(&h00000100)
@@ -4006,28 +4741,46 @@ const SC_SEPARATOR = &hF00F
 #endif
 
 #define GET_SC_WPARAM(wParam) (clng(wParam) and &hfff0)
-#define SC_ICON SC_MINIMIZE
-#define SC_ZOOM SC_MAXIMIZE
+const SC_ICON = SC_MINIMIZE
+const SC_ZOOM = SC_MAXIMIZE
+declare function LoadBitmapA(byval hInstance as HINSTANCE, byval lpBitmapName as LPCSTR) as HBITMAP
 
-#ifdef UNICODE
-	#define LoadBitmap LoadBitmapW
-	#define LoadCursor LoadCursorW
-	#define LoadCursorFromFile LoadCursorFromFileW
-#else
-	#define LoadBitmap LoadBitmapA
-	#define LoadCursor LoadCursorA
-	#define LoadCursorFromFile LoadCursorFromFileA
+#ifndef UNICODE
+	declare function LoadBitmap alias "LoadBitmapA"(byval hInstance as HINSTANCE, byval lpBitmapName as LPCSTR) as HBITMAP
 #endif
 
-declare function LoadBitmapA(byval hInstance as HINSTANCE, byval lpBitmapName as LPCSTR) as HBITMAP
 declare function LoadBitmapW(byval hInstance as HINSTANCE, byval lpBitmapName as LPCWSTR) as HBITMAP
+
+#ifdef UNICODE
+	declare function LoadBitmap alias "LoadBitmapW"(byval hInstance as HINSTANCE, byval lpBitmapName as LPCWSTR) as HBITMAP
+#endif
+
 declare function LoadCursorA(byval hInstance as HINSTANCE, byval lpCursorName as LPCSTR) as HCURSOR
+
+#ifndef UNICODE
+	declare function LoadCursor alias "LoadCursorA"(byval hInstance as HINSTANCE, byval lpCursorName as LPCSTR) as HCURSOR
+#endif
+
 declare function LoadCursorW(byval hInstance as HINSTANCE, byval lpCursorName as LPCWSTR) as HCURSOR
+
+#ifdef UNICODE
+	declare function LoadCursor alias "LoadCursorW"(byval hInstance as HINSTANCE, byval lpCursorName as LPCWSTR) as HCURSOR
+#endif
+
 declare function LoadCursorFromFileA(byval lpFileName as LPCSTR) as HCURSOR
+
+#ifndef UNICODE
+	declare function LoadCursorFromFile alias "LoadCursorFromFileA"(byval lpFileName as LPCSTR) as HCURSOR
+#endif
+
 declare function LoadCursorFromFileW(byval lpFileName as LPCWSTR) as HCURSOR
+
+#ifdef UNICODE
+	declare function LoadCursorFromFile alias "LoadCursorFromFileW"(byval lpFileName as LPCWSTR) as HCURSOR
+#endif
+
 declare function CreateCursor(byval hInst as HINSTANCE, byval xHotSpot as long, byval yHotSpot as long, byval nWidth as long, byval nHeight as long, byval pvANDPlane as const any ptr, byval pvXORPlane as const any ptr) as HCURSOR
 declare function DestroyCursor(byval hCursor as HCURSOR) as WINBOOL
-
 #define CopyCursor(pcur) cast(HCURSOR, CopyIcon(cast(HICON, (pcur))))
 #define IDC_ARROW MAKEINTRESOURCE(32512)
 #define IDC_IBEAM MAKEINTRESOURCE(32513)
@@ -4056,20 +4809,31 @@ end type
 
 type ICONINFO as _ICONINFO
 type PICONINFO as ICONINFO ptr
-
-#ifdef UNICODE
-	#define LoadIcon LoadIconW
-	#define PrivateExtractIcons PrivateExtractIconsW
-#else
-	#define LoadIcon LoadIconA
-	#define PrivateExtractIcons PrivateExtractIconsA
-#endif
-
 declare function SetSystemCursor(byval hcur as HCURSOR, byval id as DWORD) as WINBOOL
 declare function LoadIconA(byval hInstance as HINSTANCE, byval lpIconName as LPCSTR) as HICON
+
+#ifndef UNICODE
+	declare function LoadIcon alias "LoadIconA"(byval hInstance as HINSTANCE, byval lpIconName as LPCSTR) as HICON
+#endif
+
 declare function LoadIconW(byval hInstance as HINSTANCE, byval lpIconName as LPCWSTR) as HICON
+
+#ifdef UNICODE
+	declare function LoadIcon alias "LoadIconW"(byval hInstance as HINSTANCE, byval lpIconName as LPCWSTR) as HICON
+#endif
+
 declare function PrivateExtractIconsA(byval szFileName as LPCSTR, byval nIconIndex as long, byval cxIcon as long, byval cyIcon as long, byval phicon as HICON ptr, byval piconid as UINT ptr, byval nIcons as UINT, byval flags as UINT) as UINT
+
+#ifndef UNICODE
+	declare function PrivateExtractIcons alias "PrivateExtractIconsA"(byval szFileName as LPCSTR, byval nIconIndex as long, byval cxIcon as long, byval cyIcon as long, byval phicon as HICON ptr, byval piconid as UINT ptr, byval nIcons as UINT, byval flags as UINT) as UINT
+#endif
+
 declare function PrivateExtractIconsW(byval szFileName as LPCWSTR, byval nIconIndex as long, byval cxIcon as long, byval cyIcon as long, byval phicon as HICON ptr, byval piconid as UINT ptr, byval nIcons as UINT, byval flags as UINT) as UINT
+
+#ifdef UNICODE
+	declare function PrivateExtractIcons alias "PrivateExtractIconsW"(byval szFileName as LPCWSTR, byval nIconIndex as long, byval cxIcon as long, byval cyIcon as long, byval phicon as HICON ptr, byval piconid as UINT ptr, byval nIcons as UINT, byval flags as UINT) as UINT
+#endif
+
 declare function CreateIcon(byval hInstance as HINSTANCE, byval nWidth as long, byval nHeight as long, byval cPlanes as UBYTE, byval cBitsPixel as UBYTE, byval lpbANDbits as const UBYTE ptr, byval lpbXORbits as const UBYTE ptr) as HICON
 declare function DestroyIcon(byval hIcon as HICON) as WINBOOL
 declare function LookupIconIdFromDirectory(byval presbits as PBYTE, byval fIcon as WINBOOL) as long
@@ -4106,15 +4870,18 @@ const LR_LOADMAP3DCOLORS = &h1000
 const LR_CREATEDIBSECTION = &h2000
 const LR_COPYFROMRESOURCE = &h4000
 const LR_SHARED = &h8000
+declare function LoadImageA(byval hInst as HINSTANCE, byval name as LPCSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
 
-#ifdef UNICODE
-	#define LoadImage LoadImageW
-#else
-	#define LoadImage LoadImageA
+#ifndef UNICODE
+	declare function LoadImage alias "LoadImageA"(byval hInst as HINSTANCE, byval name as LPCSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
 #endif
 
-declare function LoadImageA(byval hInst as HINSTANCE, byval name as LPCSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
 declare function LoadImageW(byval hInst as HINSTANCE, byval name as LPCWSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
+
+#ifdef UNICODE
+	declare function LoadImage alias "LoadImageW"(byval hInst as HINSTANCE, byval name as LPCWSTR, byval type as UINT, byval cx as long, byval cy as long, byval fuLoad as UINT) as HANDLE
+#endif
+
 declare function CopyImage(byval h as HANDLE, byval type as UINT, byval cx as long, byval cy as long, byval flags as UINT) as HANDLE
 declare function DrawIconEx(byval hdc as HDC, byval xLeft as long, byval yTop as long, byval hIcon as HICON, byval cxWidth as long, byval cyWidth as long, byval istepIfAniCur as UINT, byval hbrFlickerFreeDraw as HBRUSH, byval diFlags as UINT) as WINBOOL
 declare function CreateIconIndirect(byval piconinfo as PICONINFO) as HICON
@@ -4156,16 +4923,25 @@ declare function GetIconInfo(byval hIcon as HICON, byval piconinfo as PICONINFO)
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	type ICONINFOEX as ICONINFOEXW
 	type PICONINFOEX as PICONINFOEXW
-	#define GetIconInfoEx GetIconInfoExW
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	type ICONINFOEX as ICONINFOEXA
 	type PICONINFOEX as PICONINFOEXA
-	#define GetIconInfoEx GetIconInfoExA
 #endif
 
 #if _WIN32_WINNT = &h0602
 	declare function GetIconInfoExA(byval hicon as HICON, byval piconinfo as PICONINFOEXA) as WINBOOL
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function GetIconInfoEx alias "GetIconInfoExA"(byval hicon as HICON, byval piconinfo as PICONINFOEXA) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function GetIconInfoExW(byval hicon as HICON, byval piconinfo as PICONINFOEXW) as WINBOOL
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function GetIconInfoEx alias "GetIconInfoExW"(byval hicon as HICON, byval piconinfo as PICONINFOEXW) as WINBOOL
 #endif
 
 const DI_MASK = &h0001
@@ -4232,9 +5008,9 @@ const OIC_QUES = 32514
 const OIC_BANG = 32515
 const OIC_NOTE = 32516
 const OIC_WINLOGO = 32517
-#define OIC_WARNING OIC_BANG
-#define OIC_ERROR OIC_HAND
-#define OIC_INFORMATION OIC_NOTE
+const OIC_WARNING = OIC_BANG
+const OIC_ERROR = OIC_HAND
+const OIC_INFORMATION = OIC_NOTE
 
 #if _WIN32_WINNT = &h0602
 	const OIC_SHIELD = 32518
@@ -4331,7 +5107,7 @@ const EM_GETWORDBREAKPROC = &h00D1
 const EM_GETPASSWORDCHAR = &h00D2
 const EM_SETMARGINS = &h00D3
 const EM_GETMARGINS = &h00D4
-#define EM_SETLIMITTEXT EM_LIMITTEXT
+const EM_SETLIMITTEXT = EM_LIMITTEXT
 const EM_GETLIMITTEXT = &h00D5
 const EM_POSFROMCHAR = &h00D6
 const EM_CHARFROMPOS = &h00D7
@@ -4374,9 +5150,9 @@ const BN_HILITE = 2
 const BN_UNHILITE = 3
 const BN_DISABLE = 4
 const BN_DOUBLECLICKED = 5
-#define BN_PUSHED BN_HILITE
-#define BN_UNPUSHED BN_UNHILITE
-#define BN_DBLCLK BN_DOUBLECLICKED
+const BN_PUSHED = BN_HILITE
+const BN_UNPUSHED = BN_UNHILITE
+const BN_DBLCLK = BN_DOUBLECLICKED
 const BN_SETFOCUS = 6
 const BN_KILLFOCUS = 7
 const BM_GETCHECK = &h00F0
@@ -4461,37 +5237,66 @@ const DDL_ARCHIVE = &h0020
 const DDL_POSTMSGS = &h2000
 const DDL_DRIVES = &h4000
 const DDL_EXCLUSIVE = &h8000
+declare function IsDialogMessageA(byval hDlg as HWND, byval lpMsg as LPMSG) as WINBOOL
 
-#ifdef UNICODE
-	#define IsDialogMessage IsDialogMessageW
-#else
-	#define IsDialogMessage IsDialogMessageA
+#ifndef UNICODE
+	declare function IsDialogMessage alias "IsDialogMessageA"(byval hDlg as HWND, byval lpMsg as LPMSG) as WINBOOL
 #endif
 
-declare function IsDialogMessageA(byval hDlg as HWND, byval lpMsg as LPMSG) as WINBOOL
 declare function IsDialogMessageW(byval hDlg as HWND, byval lpMsg as LPMSG) as WINBOOL
 
 #ifdef UNICODE
-	#define DlgDirList DlgDirListW
-	#define DlgDirSelectEx DlgDirSelectExW
-	#define DlgDirListComboBox DlgDirListComboBoxW
-	#define DlgDirSelectComboBoxEx DlgDirSelectComboBoxExW
-#else
-	#define DlgDirList DlgDirListA
-	#define DlgDirSelectEx DlgDirSelectExA
-	#define DlgDirListComboBox DlgDirListComboBoxA
-	#define DlgDirSelectComboBoxEx DlgDirSelectComboBoxExA
+	declare function IsDialogMessage alias "IsDialogMessageW"(byval hDlg as HWND, byval lpMsg as LPMSG) as WINBOOL
 #endif
 
 declare function MapDialogRect(byval hDlg as HWND, byval lpRect as LPRECT) as WINBOOL
 declare function DlgDirListA(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
+
+#ifndef UNICODE
+	declare function DlgDirList alias "DlgDirListA"(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
+#endif
+
 declare function DlgDirListW(byval hDlg as HWND, byval lpPathSpec as LPWSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
+
+#ifdef UNICODE
+	declare function DlgDirList alias "DlgDirListW"(byval hDlg as HWND, byval lpPathSpec as LPWSTR, byval nIDListBox as long, byval nIDStaticPath as long, byval uFileType as UINT) as long
+#endif
+
 declare function DlgDirSelectExA(byval hwndDlg as HWND, byval lpString as LPSTR, byval chCount as long, byval idListBox as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function DlgDirSelectEx alias "DlgDirSelectExA"(byval hwndDlg as HWND, byval lpString as LPSTR, byval chCount as long, byval idListBox as long) as WINBOOL
+#endif
+
 declare function DlgDirSelectExW(byval hwndDlg as HWND, byval lpString as LPWSTR, byval chCount as long, byval idListBox as long) as WINBOOL
+
+#ifdef UNICODE
+	declare function DlgDirSelectEx alias "DlgDirSelectExW"(byval hwndDlg as HWND, byval lpString as LPWSTR, byval chCount as long, byval idListBox as long) as WINBOOL
+#endif
+
 declare function DlgDirListComboBoxA(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDComboBox as long, byval nIDStaticPath as long, byval uFiletype as UINT) as long
+
+#ifndef UNICODE
+	declare function DlgDirListComboBox alias "DlgDirListComboBoxA"(byval hDlg as HWND, byval lpPathSpec as LPSTR, byval nIDComboBox as long, byval nIDStaticPath as long, byval uFiletype as UINT) as long
+#endif
+
 declare function DlgDirListComboBoxW(byval hDlg as HWND, byval lpPathSpec as LPWSTR, byval nIDComboBox as long, byval nIDStaticPath as long, byval uFiletype as UINT) as long
+
+#ifdef UNICODE
+	declare function DlgDirListComboBox alias "DlgDirListComboBoxW"(byval hDlg as HWND, byval lpPathSpec as LPWSTR, byval nIDComboBox as long, byval nIDStaticPath as long, byval uFiletype as UINT) as long
+#endif
+
 declare function DlgDirSelectComboBoxExA(byval hwndDlg as HWND, byval lpString as LPSTR, byval cchOut as long, byval idComboBox as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function DlgDirSelectComboBoxEx alias "DlgDirSelectComboBoxExA"(byval hwndDlg as HWND, byval lpString as LPSTR, byval cchOut as long, byval idComboBox as long) as WINBOOL
+#endif
+
 declare function DlgDirSelectComboBoxExW(byval hwndDlg as HWND, byval lpString as LPWSTR, byval cchOut as long, byval idComboBox as long) as WINBOOL
+
+#ifdef UNICODE
+	declare function DlgDirSelectComboBoxEx alias "DlgDirSelectComboBoxExW"(byval hwndDlg as HWND, byval lpString as LPWSTR, byval cchOut as long, byval idComboBox as long) as WINBOOL
+#endif
 
 #define DS_ABSALIGN __MSABI_LONG(&h01)
 #define DS_SYSMODAL __MSABI_LONG(&h02)
@@ -4748,25 +5553,44 @@ end type
 
 type CLIENTCREATESTRUCT as tagCLIENTCREATESTRUCT
 type LPCLIENTCREATESTRUCT as tagCLIENTCREATESTRUCT ptr
+declare function DefFrameProcA(byval hWnd as HWND, byval hWndMDIClient as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 
-#ifdef UNICODE
-	#define DefFrameProc DefFrameProcW
-	#define DefMDIChildProc DefMDIChildProcW
-	#define CreateMDIWindow CreateMDIWindowW
-#else
-	#define DefFrameProc DefFrameProcA
-	#define DefMDIChildProc DefMDIChildProcA
-	#define CreateMDIWindow CreateMDIWindowA
+#ifndef UNICODE
+	declare function DefFrameProc alias "DefFrameProcA"(byval hWnd as HWND, byval hWndMDIClient as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #endif
 
-declare function DefFrameProcA(byval hWnd as HWND, byval hWndMDIClient as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare function DefFrameProcW(byval hWnd as HWND, byval hWndMDIClient as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function DefFrameProc alias "DefFrameProcW"(byval hWnd as HWND, byval hWndMDIClient as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function DefMDIChildProcA(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifndef UNICODE
+	declare function DefMDIChildProc alias "DefMDIChildProcA"(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function DefMDIChildProcW(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+
+#ifdef UNICODE
+	declare function DefMDIChildProc alias "DefMDIChildProcW"(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
+#endif
+
 declare function TranslateMDISysAccel(byval hWndClient as HWND, byval lpMsg as LPMSG) as WINBOOL
 declare function ArrangeIconicWindows(byval hWnd as HWND) as UINT
 declare function CreateMDIWindowA(byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hInstance as HINSTANCE, byval lParam as LPARAM) as HWND
+
+#ifndef UNICODE
+	declare function CreateMDIWindow alias "CreateMDIWindowA"(byval lpClassName as LPCSTR, byval lpWindowName as LPCSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hInstance as HINSTANCE, byval lParam as LPARAM) as HWND
+#endif
+
 declare function CreateMDIWindowW(byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hInstance as HINSTANCE, byval lParam as LPARAM) as HWND
+
+#ifdef UNICODE
+	declare function CreateMDIWindow alias "CreateMDIWindowW"(byval lpClassName as LPCWSTR, byval lpWindowName as LPCWSTR, byval dwStyle as DWORD, byval X as long, byval Y as long, byval nWidth as long, byval nHeight as long, byval hWndParent as HWND, byval hInstance as HINSTANCE, byval lParam as LPARAM) as HWND
+#endif
+
 declare function TileWindows(byval hwndParent as HWND, byval wHow as UINT, byval lpRect as const RECT ptr, byval cKids as UINT, byval lpKids as const HWND ptr) as WORD
 declare function CascadeWindows(byval hwndParent as HWND, byval wHow as UINT, byval lpRect as const RECT ptr, byval cKids as UINT, byval lpKids as const HWND ptr) as WORD
 type HELPPOLY as DWORD
@@ -4833,16 +5657,24 @@ type LPHELPWININFOW as tagHELPWININFOW ptr
 	type HELPWININFO as HELPWININFOW
 	type PHELPWININFO as PHELPWININFOW
 	type LPHELPWININFO as LPHELPWININFOW
-	#define WinHelp WinHelpW
 #else
 	type HELPWININFO as HELPWININFOA
 	type PHELPWININFO as PHELPWININFOA
 	type LPHELPWININFO as LPHELPWININFOA
-	#define WinHelp WinHelpA
 #endif
 
 declare function WinHelpA(byval hWndMain as HWND, byval lpszHelp as LPCSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function WinHelp alias "WinHelpA"(byval hWndMain as HWND, byval lpszHelp as LPCSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
+#endif
+
 declare function WinHelpW(byval hWndMain as HWND, byval lpszHelp as LPCWSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function WinHelp alias "WinHelpW"(byval hWndMain as HWND, byval lpszHelp as LPCWSTR, byval uCommand as UINT, byval dwData as ULONG_PTR) as WINBOOL
+#endif
+
 const HELP_CONTEXT = &h0001
 const HELP_QUIT = &h0002
 const HELP_INDEX = &h0003
@@ -4954,7 +5786,7 @@ const SPI_GETWINDOWSEXTENSION = &h005C
 const SPI_SETMOUSETRAILS = &h005D
 const SPI_GETMOUSETRAILS = &h005E
 const SPI_SETSCREENSAVERRUNNING = &h0061
-#define SPI_SCREENSAVERRUNNING SPI_SETSCREENSAVERRUNNING
+const SPI_SCREENSAVERRUNNING = SPI_SETSCREENSAVERRUNNING
 const SPI_GETFILTERKEYS = &h0032
 const SPI_SETFILTERKEYS = &h0033
 const SPI_GETTOGGLEKEYS = &h0034
@@ -5049,8 +5881,8 @@ const SPI_GETGRADIENTCAPTIONS = &h1008
 const SPI_SETGRADIENTCAPTIONS = &h1009
 const SPI_GETKEYBOARDCUES = &h100A
 const SPI_SETKEYBOARDCUES = &h100B
-#define SPI_GETMENUUNDERLINES SPI_GETKEYBOARDCUES
-#define SPI_SETMENUUNDERLINES SPI_SETKEYBOARDCUES
+const SPI_GETMENUUNDERLINES = SPI_GETKEYBOARDCUES
+const SPI_SETMENUUNDERLINES = SPI_SETKEYBOARDCUES
 const SPI_GETACTIVEWNDTRKZORDER = &h100C
 const SPI_SETACTIVEWNDTRKZORDER = &h100D
 const SPI_GETHOTTRACKING = &h100E
@@ -5167,7 +5999,7 @@ const FE_FONTSMOOTHINGORIENTATIONBGR = &h0000
 const FE_FONTSMOOTHINGORIENTATIONRGB = &h0001
 const SPIF_UPDATEINIFILE = &h0001
 const SPIF_SENDWININICHANGE = &h0002
-#define SPIF_SENDCHANGE SPIF_SENDWININICHANGE
+const SPIF_SENDCHANGE = SPIF_SENDWININICHANGE
 const METRICS_USEDEFAULT = -1
 
 type tagNONCLIENTMETRICSA
@@ -5464,34 +6296,69 @@ const DISP_CHANGE_NOTUPDATED = -3
 const DISP_CHANGE_BADFLAGS = -4
 const DISP_CHANGE_BADPARAM = -5
 const DISP_CHANGE_BADDUALVIEW = -6
+declare function ChangeDisplaySettingsA(byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as LONG
 
-#ifdef UNICODE
-	#define ChangeDisplaySettings ChangeDisplaySettingsW
-	#define ChangeDisplaySettingsEx ChangeDisplaySettingsExW
-	#define EnumDisplaySettings EnumDisplaySettingsW
-	#define EnumDisplaySettingsEx EnumDisplaySettingsExW
-	#define EnumDisplayDevices EnumDisplayDevicesW
-#else
-	#define ChangeDisplaySettings ChangeDisplaySettingsA
-	#define ChangeDisplaySettingsEx ChangeDisplaySettingsExA
-	#define EnumDisplaySettings EnumDisplaySettingsA
-	#define EnumDisplaySettingsEx EnumDisplaySettingsExA
-	#define EnumDisplayDevices EnumDisplayDevicesA
+#ifndef UNICODE
+	declare function ChangeDisplaySettings alias "ChangeDisplaySettingsA"(byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as LONG
 #endif
 
-declare function ChangeDisplaySettingsA(byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as LONG
 declare function ChangeDisplaySettingsW(byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function ChangeDisplaySettings alias "ChangeDisplaySettingsW"(byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as LONG
+#endif
+
 declare function ChangeDisplaySettingsExA(byval lpszDeviceName as LPCSTR, byval lpDevMode as LPDEVMODEA, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
+
+#ifndef UNICODE
+	declare function ChangeDisplaySettingsEx alias "ChangeDisplaySettingsExA"(byval lpszDeviceName as LPCSTR, byval lpDevMode as LPDEVMODEA, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
+#endif
+
 declare function ChangeDisplaySettingsExW(byval lpszDeviceName as LPCWSTR, byval lpDevMode as LPDEVMODEW, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
+
+#ifdef UNICODE
+	declare function ChangeDisplaySettingsEx alias "ChangeDisplaySettingsExW"(byval lpszDeviceName as LPCWSTR, byval lpDevMode as LPDEVMODEW, byval hwnd as HWND, byval dwflags as DWORD, byval lParam as LPVOID) as LONG
+#endif
+
 #define ENUM_CURRENT_SETTINGS cast(DWORD, -1)
 #define ENUM_REGISTRY_SETTINGS cast(DWORD, -2)
 declare function EnumDisplaySettingsA(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumDisplaySettings alias "EnumDisplaySettingsA"(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA) as WINBOOL
+#endif
+
 declare function EnumDisplaySettingsW(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumDisplaySettings alias "EnumDisplaySettingsW"(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW) as WINBOOL
+#endif
+
 declare function EnumDisplaySettingsExA(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumDisplaySettingsEx alias "EnumDisplaySettingsExA"(byval lpszDeviceName as LPCSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEA, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function EnumDisplaySettingsExW(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumDisplaySettingsEx alias "EnumDisplaySettingsExW"(byval lpszDeviceName as LPCWSTR, byval iModeNum as DWORD, byval lpDevMode as LPDEVMODEW, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 const EDS_RAWMODE = &h00000002
 declare function EnumDisplayDevicesA(byval lpDevice as LPCSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEA, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function EnumDisplayDevices alias "EnumDisplayDevicesA"(byval lpDevice as LPCSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEA, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function EnumDisplayDevicesW(byval lpDevice as LPCWSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEW, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function EnumDisplayDevices alias "EnumDisplayDevicesW"(byval lpDevice as LPCWSTR, byval iDevNum as DWORD, byval lpDisplayDevice as PDISPLAY_DEVICEW, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 const EDD_GET_DEVICE_INTERFACE_NAME = &h00000001
 
 #if _WIN32_WINNT = &h0602
@@ -5502,14 +6369,17 @@ const EDD_GET_DEVICE_INTERFACE_NAME = &h00000001
 	declare function DisplayConfigSetDeviceInfo(byval setPacket as DISPLAYCONFIG_DEVICE_INFO_HEADER ptr) as LONG
 #endif
 
-#ifdef UNICODE
-	#define SystemParametersInfo SystemParametersInfoW
-#else
-	#define SystemParametersInfo SystemParametersInfoA
+declare function SystemParametersInfoA(byval uiAction as UINT, byval uiParam as UINT, byval pvParam as PVOID, byval fWinIni as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SystemParametersInfo alias "SystemParametersInfoA"(byval uiAction as UINT, byval uiParam as UINT, byval pvParam as PVOID, byval fWinIni as UINT) as WINBOOL
 #endif
 
-declare function SystemParametersInfoA(byval uiAction as UINT, byval uiParam as UINT, byval pvParam as PVOID, byval fWinIni as UINT) as WINBOOL
 declare function SystemParametersInfoW(byval uiAction as UINT, byval uiParam as UINT, byval pvParam as PVOID, byval fWinIni as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SystemParametersInfo alias "SystemParametersInfoW"(byval uiAction as UINT, byval uiParam as UINT, byval pvParam as PVOID, byval fWinIni as UINT) as WINBOOL
+#endif
 
 type tagFILTERKEYS
 	cbSize as UINT
@@ -5742,16 +6612,19 @@ declare function EndTask(byval hWnd as HWND, byval fShutDown as WINBOOL, byval f
 	declare function SoundSentry() as WINBOOL
 #endif
 
-#ifdef UNICODE
-	#define GetMonitorInfo GetMonitorInfoW
-#else
-	#define GetMonitorInfo GetMonitorInfoA
+declare function GetMonitorInfoA(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetMonitorInfo alias "GetMonitorInfoA"(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
 #endif
 
-declare function GetMonitorInfoA(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
 declare function GetMonitorInfoW(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
-declare function EnumDisplayMonitors(byval hdc as HDC, byval lprcClip as LPCRECT, byval lpfnEnum as MONITORENUMPROC, byval dwData as LPARAM) as WINBOOL
 
+#ifdef UNICODE
+	declare function GetMonitorInfo alias "GetMonitorInfoW"(byval hMonitor as HMONITOR, byval lpmi as LPMONITORINFO) as WINBOOL
+#endif
+
+declare function EnumDisplayMonitors(byval hdc as HDC, byval lprcClip as LPCRECT, byval lpfnEnum as MONITORENUMPROC, byval dwData as LPARAM) as WINBOOL
 const TKF_TOGGLEKEYSON = &h00000001
 const TKF_AVAILABLE = &h00000002
 const TKF_HOTKEYACTIVE = &h00000004
@@ -5951,16 +6824,19 @@ const GUI_POPUPMENUMODE = &h00000010
 	const GUI_16BITTASK = &h00000020
 #endif
 
-#ifdef UNICODE
-	#define GetWindowModuleFileName GetWindowModuleFileNameW
-#else
-	#define GetWindowModuleFileName GetWindowModuleFileNameA
-#endif
-
 declare function GetGUIThreadInfo(byval idThread as DWORD, byval pgui as PGUITHREADINFO) as WINBOOL
 declare function BlockInput(byval fBlockIt as WINBOOL) as WINBOOL
 declare function GetWindowModuleFileNameA(byval hwnd as HWND, byval pszFileName as LPSTR, byval cchFileNameMax as UINT) as UINT
+
+#ifndef UNICODE
+	declare function GetWindowModuleFileName alias "GetWindowModuleFileNameA"(byval hwnd as HWND, byval pszFileName as LPSTR, byval cchFileNameMax as UINT) as UINT
+#endif
+
 declare function GetWindowModuleFileNameW(byval hwnd as HWND, byval pszFileName as LPWSTR, byval cchFileNameMax as UINT) as UINT
+
+#ifdef UNICODE
+	declare function GetWindowModuleFileName alias "GetWindowModuleFileNameW"(byval hwnd as HWND, byval pszFileName as LPWSTR, byval cchFileNameMax as UINT) as UINT
+#endif
 
 #if _WIN32_WINNT = &h0602
 	const USER_DEFAULT_SCREEN_DPI = 96
@@ -5974,7 +6850,7 @@ const STATE_SYSTEM_FOCUSED = &h00000004
 const STATE_SYSTEM_PRESSED = &h00000008
 const STATE_SYSTEM_CHECKED = &h00000010
 const STATE_SYSTEM_MIXED = &h00000020
-#define STATE_SYSTEM_INDETERMINATE STATE_SYSTEM_MIXED
+const STATE_SYSTEM_INDETERMINATE = STATE_SYSTEM_MIXED
 const STATE_SYSTEM_READONLY = &h00000040
 const STATE_SYSTEM_HOTTRACKED = &h00000080
 const STATE_SYSTEM_DEFAULT = &h00000100
@@ -6112,16 +6988,19 @@ const GA_PARENT = 1
 const GA_ROOT = 2
 const GA_ROOTOWNER = 3
 
-#ifdef UNICODE
-	#define RealGetWindowClass RealGetWindowClassW
-#else
-	#define RealGetWindowClass RealGetWindowClassA
-#endif
-
 declare function GetAncestor(byval hwnd as HWND, byval gaFlags as UINT) as HWND
 declare function RealChildWindowFromPoint(byval hwndParent as HWND, byval ptParentClientCoords as POINT) as HWND
 declare function RealGetWindowClassA(byval hwnd as HWND, byval ptszClassName as LPSTR, byval cchClassNameMax as UINT) as UINT
+
+#ifndef UNICODE
+	declare function RealGetWindowClass alias "RealGetWindowClassA"(byval hwnd as HWND, byval ptszClassName as LPSTR, byval cchClassNameMax as UINT) as UINT
+#endif
+
 declare function RealGetWindowClassW(byval hwnd as HWND, byval ptszClassName as LPWSTR, byval cchClassNameMax as UINT) as UINT
+
+#ifdef UNICODE
+	declare function RealGetWindowClass alias "RealGetWindowClassW"(byval hwnd as HWND, byval ptszClassName as LPWSTR, byval cchClassNameMax as UINT) as UINT
+#endif
 
 type tagALTTABINFO
 	cbSize as DWORD
@@ -6138,15 +7017,18 @@ end type
 type ALTTABINFO as tagALTTABINFO
 type PALTTABINFO as tagALTTABINFO ptr
 type LPALTTABINFO as tagALTTABINFO ptr
+declare function GetAltTabInfoA(byval hwnd as HWND, byval iItem as long, byval pati as PALTTABINFO, byval pszItemText as LPSTR, byval cchItemText as UINT) as WINBOOL
 
-#ifdef UNICODE
-	#define GetAltTabInfo GetAltTabInfoW
-#else
-	#define GetAltTabInfo GetAltTabInfoA
+#ifndef UNICODE
+	declare function GetAltTabInfo alias "GetAltTabInfoA"(byval hwnd as HWND, byval iItem as long, byval pati as PALTTABINFO, byval pszItemText as LPSTR, byval cchItemText as UINT) as WINBOOL
 #endif
 
-declare function GetAltTabInfoA(byval hwnd as HWND, byval iItem as long, byval pati as PALTTABINFO, byval pszItemText as LPSTR, byval cchItemText as UINT) as WINBOOL
 declare function GetAltTabInfoW(byval hwnd as HWND, byval iItem as long, byval pati as PALTTABINFO, byval pszItemText as LPWSTR, byval cchItemText as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetAltTabInfo alias "GetAltTabInfoW"(byval hwnd as HWND, byval iItem as long, byval pati as PALTTABINFO, byval pszItemText as LPWSTR, byval cchItemText as UINT) as WINBOOL
+#endif
+
 declare function GetListBoxInfo(byval hwnd as HWND) as DWORD
 declare function LockWorkStation() as WINBOOL
 declare function UserHandleGrantAccess(byval hUserHandle as HANDLE, byval hJob as HANDLE, byval bGrant as WINBOOL) as WINBOOL
@@ -6208,12 +7090,12 @@ const RI_MOUSE_BUTTON_4_UP = &h0080
 const RI_MOUSE_BUTTON_5_DOWN = &h0100
 const RI_MOUSE_BUTTON_5_UP = &h0200
 const RI_MOUSE_WHEEL = &h0400
-#define RI_MOUSE_BUTTON_1_DOWN RI_MOUSE_LEFT_BUTTON_DOWN
-#define RI_MOUSE_BUTTON_1_UP RI_MOUSE_LEFT_BUTTON_UP
-#define RI_MOUSE_BUTTON_2_DOWN RI_MOUSE_RIGHT_BUTTON_DOWN
-#define RI_MOUSE_BUTTON_2_UP RI_MOUSE_RIGHT_BUTTON_UP
-#define RI_MOUSE_BUTTON_3_DOWN RI_MOUSE_MIDDLE_BUTTON_DOWN
-#define RI_MOUSE_BUTTON_3_UP RI_MOUSE_MIDDLE_BUTTON_UP
+const RI_MOUSE_BUTTON_1_DOWN = RI_MOUSE_LEFT_BUTTON_DOWN
+const RI_MOUSE_BUTTON_1_UP = RI_MOUSE_LEFT_BUTTON_UP
+const RI_MOUSE_BUTTON_2_DOWN = RI_MOUSE_RIGHT_BUTTON_DOWN
+const RI_MOUSE_BUTTON_2_UP = RI_MOUSE_RIGHT_BUTTON_UP
+const RI_MOUSE_BUTTON_3_DOWN = RI_MOUSE_MIDDLE_BUTTON_DOWN
+const RI_MOUSE_BUTTON_3_UP = RI_MOUSE_MIDDLE_BUTTON_UP
 const MOUSE_MOVE_RELATIVE = 0
 const MOUSE_MOVE_ABSOLUTE = 1
 const MOUSE_VIRTUAL_DESKTOP = &h02
@@ -6330,15 +7212,18 @@ end type
 type RID_DEVICE_INFO as tagRID_DEVICE_INFO
 type PRID_DEVICE_INFO as tagRID_DEVICE_INFO ptr
 type LPRID_DEVICE_INFO as tagRID_DEVICE_INFO ptr
+declare function GetRawInputDeviceInfoA(byval hDevice as HANDLE, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT) as UINT
 
-#ifdef UNICODE
-	#define GetRawInputDeviceInfo GetRawInputDeviceInfoW
-#else
-	#define GetRawInputDeviceInfo GetRawInputDeviceInfoA
+#ifndef UNICODE
+	declare function GetRawInputDeviceInfo alias "GetRawInputDeviceInfoA"(byval hDevice as HANDLE, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT) as UINT
 #endif
 
-declare function GetRawInputDeviceInfoA(byval hDevice as HANDLE, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT) as UINT
 declare function GetRawInputDeviceInfoW(byval hDevice as HANDLE, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT) as UINT
+
+#ifdef UNICODE
+	declare function GetRawInputDeviceInfo alias "GetRawInputDeviceInfoW"(byval hDevice as HANDLE, byval uiCommand as UINT, byval pData as LPVOID, byval pcbSize as PUINT) as UINT
+#endif
+
 declare function GetRawInputBuffer(byval pData as PRAWINPUT, byval pcbSize as PUINT, byval cbSizeHeader as UINT) as UINT
 
 type tagRAWINPUTDEVICE
@@ -6489,7 +7374,7 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	const GID_ROTATE = 5
 	const GID_TWOFINGERTAP = 6
 	const GID_PRESSANDTAP = 7
-	#define GID_ROLLOVER GID_PRESSANDTAP
+	const GID_ROLLOVER = GID_PRESSANDTAP
 
 	type HGESTUREINFO__
 		unused as long
@@ -6547,7 +7432,7 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	const GC_ROTATE = &h00000001
 	const GC_TWOFINGERTAP = &h00000001
 	const GC_PRESSANDTAP = &h00000001
-	#define GC_ROLLOVER GC_PRESSANDTAP
+	const GC_ROLLOVER = GC_PRESSANDTAP
 	const GESTURECONFIGMAXCOUNT = 256
 	const GCF_INCLUDE_ANCESTORS = &h00000001
 	declare function SetGestureConfig(byval hwnd as HWND, byval dwReserved as DWORD, byval cIDs as UINT, byval pGestureConfig as PGESTURECONFIG, byval cbSize as UINT) as WINBOOL

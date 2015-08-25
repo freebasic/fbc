@@ -276,7 +276,6 @@ const G_HAVE_GROWING_STACK = 0
 	#define GSSIZE_TO_BE(val) cast(gssize, GINT32_TO_BE(val))
 #endif
 
-#define G_BYTE_ORDER G_LITTLE_ENDIAN
 #define GLIB_SYSDEF_POLLIN =1
 #define GLIB_SYSDEF_POLLOUT =4
 #define GLIB_SYSDEF_POLLPRI =2

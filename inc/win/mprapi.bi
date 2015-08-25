@@ -99,40 +99,40 @@ end type
 
 type MPR_INTERFACE_1 as _MPR_INTERFACE_1
 type PMPR_INTERFACE_1 as _MPR_INTERFACE_1 ptr
-#define MPR_MaxDeviceType RAS_MaxDeviceType
-#define MPR_MaxPhoneNumber RAS_MaxPhoneNumber
-#define MPR_MaxIpAddress RAS_MaxIpAddress
-#define MPR_MaxIpxAddress RAS_MaxIpxAddress
-#define MPR_MaxEntryName RAS_MaxEntryName
-#define MPR_MaxDeviceName RAS_MaxDeviceName
-#define MPR_MaxCallbackNumber RAS_MaxCallbackNumber
-#define MPR_MaxAreaCode RAS_MaxAreaCode
-#define MPR_MaxPadType RAS_MaxPadType
-#define MPR_MaxX25Address RAS_MaxX25Address
-#define MPR_MaxFacilities RAS_MaxFacilities
-#define MPR_MaxUserData RAS_MaxUserData
-#define MPRIO_SpecificIpAddr RASEO_SpecificIpAddr
-#define MPRIO_SpecificNameServers RASEO_SpecificNameServers
-#define MPRIO_IpHeaderCompression RASEO_IpHeaderCompression
-#define MPRIO_RemoteDefaultGateway RASEO_RemoteDefaultGateway
-#define MPRIO_DisableLcpExtensions RASEO_DisableLcpExtensions
-#define MPRIO_SwCompression RASEO_SwCompression
-#define MPRIO_RequireEncryptedPw RASEO_RequireEncryptedPw
-#define MPRIO_RequireMsEncryptedPw RASEO_RequireMsEncryptedPw
-#define MPRIO_RequireDataEncryption RASEO_RequireDataEncryption
-#define MPRIO_NetworkLogon RASEO_NetworkLogon
-#define MPRIO_PromoteAlternates RASEO_PromoteAlternates
-#define MPRIO_SecureLocalFiles RASEO_SecureLocalFiles
-#define MPRIO_RequireEAP RASEO_RequireEAP
-#define MPRIO_RequirePAP RASEO_RequirePAP
-#define MPRIO_RequireSPAP RASEO_RequireSPAP
-#define MPRIO_SharedPhoneNumbers RASEO_SharedPhoneNumbers
-#define MPRIO_RequireCHAP RASEO_RequireCHAP
-#define MPRIO_RequireMsCHAP RASEO_RequireMsCHAP
-#define MPRIO_RequireMsCHAP2 RASEO_RequireMsCHAP2
+const MPR_MaxDeviceType = RAS_MaxDeviceType
+const MPR_MaxPhoneNumber = RAS_MaxPhoneNumber
+const MPR_MaxIpAddress = RAS_MaxIpAddress
+const MPR_MaxIpxAddress = RAS_MaxIpxAddress
+const MPR_MaxEntryName = RAS_MaxEntryName
+const MPR_MaxDeviceName = RAS_MaxDeviceName
+const MPR_MaxCallbackNumber = RAS_MaxCallbackNumber
+const MPR_MaxAreaCode = RAS_MaxAreaCode
+const MPR_MaxPadType = RAS_MaxPadType
+const MPR_MaxX25Address = RAS_MaxX25Address
+const MPR_MaxFacilities = RAS_MaxFacilities
+const MPR_MaxUserData = RAS_MaxUserData
+const MPRIO_SpecificIpAddr = RASEO_SpecificIpAddr
+const MPRIO_SpecificNameServers = RASEO_SpecificNameServers
+const MPRIO_IpHeaderCompression = RASEO_IpHeaderCompression
+const MPRIO_RemoteDefaultGateway = RASEO_RemoteDefaultGateway
+const MPRIO_DisableLcpExtensions = RASEO_DisableLcpExtensions
+const MPRIO_SwCompression = RASEO_SwCompression
+const MPRIO_RequireEncryptedPw = RASEO_RequireEncryptedPw
+const MPRIO_RequireMsEncryptedPw = RASEO_RequireMsEncryptedPw
+const MPRIO_RequireDataEncryption = RASEO_RequireDataEncryption
+const MPRIO_NetworkLogon = RASEO_NetworkLogon
+const MPRIO_PromoteAlternates = RASEO_PromoteAlternates
+const MPRIO_SecureLocalFiles = RASEO_SecureLocalFiles
+const MPRIO_RequireEAP = RASEO_RequireEAP
+const MPRIO_RequirePAP = RASEO_RequirePAP
+const MPRIO_RequireSPAP = RASEO_RequireSPAP
+const MPRIO_SharedPhoneNumbers = RASEO_SharedPhoneNumbers
+const MPRIO_RequireCHAP = RASEO_RequireCHAP
+const MPRIO_RequireMsCHAP = RASEO_RequireMsCHAP
+const MPRIO_RequireMsCHAP2 = RASEO_RequireMsCHAP2
 const MPRIO_IpSecPreSharedKey = &h80000000
-#define MPRNP_Ipx RASNP_Ipx
-#define MPRNP_Ip RASNP_Ip
+const MPRNP_Ipx = RASNP_Ipx
+const MPRNP_Ip = RASNP_Ip
 #define MPRDT_Modem RASDT_Modem
 #define MPRDT_Isdn RASDT_Isdn
 #define MPRDT_X25 RASDT_X25
@@ -146,23 +146,23 @@ const MPRIO_IpSecPreSharedKey = &h80000000
 #define MPRDT_SW56 RASDT_SW56
 #define MPRDT_Irda RASDT_Irda
 #define MPRDT_Parallel RASDT_Parallel
-#define MPRET_Phone RASET_Phone
-#define MPRET_Vpn RASET_Vpn
-#define MPRET_Direct RASET_Direct
+const MPRET_Phone = RASET_Phone
+const MPRET_Vpn = RASET_Vpn
+const MPRET_Direct = RASET_Direct
 const MPRDM_DialFirst = 0
-#define MPRDM_DialAll RASEDM_DialAll
-#define MPRDM_DialAsNeeded RASEDM_DialAsNeeded
-#define MPRIDS_Disabled RASIDS_Disabled
-#define MPRIDS_UseGlobalValue RASIDS_UseGlobalValue
-#define MPR_ET_None ET_None
-#define MPR_ET_Require ET_Require
-#define MPR_ET_RequireMax ET_RequireMax
-#define MPR_ET_Optional ET_Optional
-#define MPR_VS_Default VS_Default
-#define MPR_VS_PptpOnly VS_PptpOnly
-#define MPR_VS_PptpFirst VS_PptpFirst
-#define MPR_VS_L2tpOnly VS_L2tpOnly
-#define MPR_VS_L2tpFirst VS_L2tpFirst
+const MPRDM_DialAll = RASEDM_DialAll
+const MPRDM_DialAsNeeded = RASEDM_DialAsNeeded
+const MPRIDS_Disabled = RASIDS_Disabled
+const MPRIDS_UseGlobalValue = RASIDS_UseGlobalValue
+const MPR_ET_None = ET_None
+const MPR_ET_Require = ET_Require
+const MPR_ET_RequireMax = ET_RequireMax
+const MPR_ET_Optional = ET_Optional
+const MPR_VS_Default = VS_Default
+const MPR_VS_PptpOnly = VS_PptpOnly
+const MPR_VS_PptpFirst = VS_PptpFirst
+const MPR_VS_L2tpOnly = VS_L2tpOnly
+const MPR_VS_L2tpFirst = VS_L2tpFirst
 
 type _MPR_INTERFACE_2
 	wszInterfaceName as wstring * 256 + 1

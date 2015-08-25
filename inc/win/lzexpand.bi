@@ -29,23 +29,35 @@ const LZERROR_GLOBLOCK = -6
 const LZERROR_BADVALUE = -7
 const LZERROR_UNKNOWNALG = -8
 
-#ifdef UNICODE
-	#define GetExpandedName GetExpandedNameW
-	#define LZOpenFile LZOpenFileW
-#else
-	#define GetExpandedName GetExpandedNameA
-	#define LZOpenFile LZOpenFileA
-#endif
-
 declare function LZStart() as INT_
 declare sub LZDone()
 declare function CopyLZFile(byval as INT_, byval as INT_) as LONG
 declare function LZCopy(byval as INT_, byval as INT_) as LONG
 declare function LZInit(byval as INT_) as INT_
 declare function GetExpandedNameA(byval as LPSTR, byval as LPSTR) as INT_
+
+#ifndef UNICODE
+	declare function GetExpandedName alias "GetExpandedNameA"(byval as LPSTR, byval as LPSTR) as INT_
+#endif
+
 declare function GetExpandedNameW(byval as LPWSTR, byval as LPWSTR) as INT_
+
+#ifdef UNICODE
+	declare function GetExpandedName alias "GetExpandedNameW"(byval as LPWSTR, byval as LPWSTR) as INT_
+#endif
+
 declare function LZOpenFileA(byval as LPSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+
+#ifndef UNICODE
+	declare function LZOpenFile alias "LZOpenFileA"(byval as LPSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+#endif
+
 declare function LZOpenFileW(byval as LPWSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+
+#ifdef UNICODE
+	declare function LZOpenFile alias "LZOpenFileW"(byval as LPWSTR, byval as LPOFSTRUCT, byval as WORD) as INT_
+#endif
+
 declare function LZSeek(byval as INT_, byval as LONG, byval as INT_) as LONG
 declare function LZRead(byval as INT_, byval as LPSTR, byval as INT_) as INT_
 declare sub LZClose(byval as INT_)

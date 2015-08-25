@@ -537,217 +537,187 @@ declare function cucul_set_dither_invert(byval as caca_dither_t ptr, byval as lo
 declare function cucul_set_dither_mode(byval as caca_dither_t ptr, byval as const zstring ptr) as long
 declare function cucul_get_dither_mode_list(byval as const caca_dither_t ptr) as const zstring const ptr ptr
 
-#define CUCUL_COLOR_BLACK CACA_BLACK
-#define CUCUL_COLOR_BLUE CACA_BLUE
-#define CUCUL_COLOR_GREEN CACA_GREEN
-#define CUCUL_COLOR_CYAN CACA_CYAN
-#define CUCUL_COLOR_RED CACA_RED
-#define CUCUL_COLOR_MAGENTA CACA_MAGENTA
-#define CUCUL_COLOR_BROWN CACA_BROWN
-#define CUCUL_COLOR_LIGHTGRAY CACA_LIGHTGRAY
-#define CUCUL_COLOR_DARKGRAY CACA_DARKGRAY
-#define CUCUL_COLOR_LIGHTBLUE CACA_LIGHTBLUE
-#define CUCUL_COLOR_LIGHTGREEN CACA_LIGHTGREEN
-#define CUCUL_COLOR_LIGHTCYAN CACA_LIGHTCYAN
-#define CUCUL_COLOR_LIGHTRED CACA_LIGHTRED
-#define CUCUL_COLOR_LIGHTMAGENTA CACA_LIGHTMAGENTA
-#define CUCUL_COLOR_YELLOW CACA_YELLOW
-#define CUCUL_COLOR_WHITE CACA_YELLOW
-#define CUCUL_COLOR_DEFAULT CACA_DEFAULT
-#define CUCUL_COLOR_TRANSPARENT CACA_TRANSPARENT
-#define cucul_canvas_t caca_canvas_t
-#define cucul_dither_t caca_dither_t
-#define cucul_font_t caca_font_t
-#define cucul_file_t caca_file_t
-#define cucul_display_t caca_display_t
-#define cucul_event_t caca_event_t
-#define CUCUL_BLACK CACA_BLACK
-#define CUCUL_BLUE CACA_BLUE
-#define CUCUL_GREEN CACA_GREEN
-#define CUCUL_CYAN CACA_CYAN
-#define CUCUL_RED CACA_RED
-#define CUCUL_MAGENTA CACA_MAGENTA
-#define CUCUL_BROWN CACA_BROWN
-#define CUCUL_LIGHTGRAY CACA_LIGHTGRAY
-#define CUCUL_DARKGRAY CACA_DARKGRAY
-#define CUCUL_LIGHTBLUE CACA_LIGHTBLUE
-#define CUCUL_LIGHTGREEN CACA_LIGHTGREEN
-#define CUCUL_LIGHTCYAN CACA_LIGHTCYAN
-#define CUCUL_LIGHTRED CACA_LIGHTRED
-#define CUCUL_LIGHTMAGENTA CACA_LIGHTMAGENTA
-#define CUCUL_YELLOW CACA_YELLOW
-#define CUCUL_WHITE CACA_YELLOW
-#define CUCUL_DEFAULT CACA_DEFAULT
-#define CUCUL_TRANSPARENT CACA_TRANSPARENT
-#define CUCUL_BOLD CACA_BOLD
-#define CUCUL_ITALICS CACA_ITALICS
-#define CUCUL_UNDERLINE CACA_UNDERLINE
-#define CUCUL_BLINK CACA_BLINK
-#define caca_get_cursor_x caca_wherex
-#define caca_get_cursor_y caca_wherey
+const CUCUL_COLOR_BLACK = CACA_BLACK
+const CUCUL_COLOR_BLUE = CACA_BLUE
+const CUCUL_COLOR_GREEN = CACA_GREEN
+const CUCUL_COLOR_CYAN = CACA_CYAN
+const CUCUL_COLOR_RED = CACA_RED
+const CUCUL_COLOR_MAGENTA = CACA_MAGENTA
+const CUCUL_COLOR_BROWN = CACA_BROWN
+const CUCUL_COLOR_LIGHTGRAY = CACA_LIGHTGRAY
+const CUCUL_COLOR_DARKGRAY = CACA_DARKGRAY
+const CUCUL_COLOR_LIGHTBLUE = CACA_LIGHTBLUE
+const CUCUL_COLOR_LIGHTGREEN = CACA_LIGHTGREEN
+const CUCUL_COLOR_LIGHTCYAN = CACA_LIGHTCYAN
+const CUCUL_COLOR_LIGHTRED = CACA_LIGHTRED
+const CUCUL_COLOR_LIGHTMAGENTA = CACA_LIGHTMAGENTA
+const CUCUL_COLOR_YELLOW = CACA_YELLOW
+const CUCUL_COLOR_WHITE = CACA_YELLOW
+const CUCUL_COLOR_DEFAULT = CACA_DEFAULT
+const CUCUL_COLOR_TRANSPARENT = CACA_TRANSPARENT
 
-#ifdef __CACA0_H__
-	#define cucul_draw_triangle caca1_draw_triangle
-	#define cucul_draw_thin_triangle caca1_draw_thin_triangle
-	#define cucul_fill_triangle caca1_fill_triangle
+type cucul_canvas_t as caca_canvas_t
+type cucul_dither_t as caca_dither_t
+type cucul_font_t as caca_font_t
+type cucul_file_t as caca_file_t
+type cucul_display_t as caca_display_t
+type cucul_event_t as caca_event_t
+
+const CUCUL_BLACK = CACA_BLACK
+const CUCUL_BLUE = CACA_BLUE
+const CUCUL_GREEN = CACA_GREEN
+const CUCUL_CYAN = CACA_CYAN
+const CUCUL_RED = CACA_RED
+const CUCUL_MAGENTA = CACA_MAGENTA
+const CUCUL_BROWN = CACA_BROWN
+const CUCUL_LIGHTGRAY = CACA_LIGHTGRAY
+const CUCUL_DARKGRAY = CACA_DARKGRAY
+const CUCUL_LIGHTBLUE = CACA_LIGHTBLUE
+const CUCUL_LIGHTGREEN = CACA_LIGHTGREEN
+const CUCUL_LIGHTCYAN = CACA_LIGHTCYAN
+const CUCUL_LIGHTRED = CACA_LIGHTRED
+const CUCUL_LIGHTMAGENTA = CACA_LIGHTMAGENTA
+const CUCUL_YELLOW = CACA_YELLOW
+const CUCUL_WHITE = CACA_YELLOW
+const CUCUL_DEFAULT = CACA_DEFAULT
+const CUCUL_TRANSPARENT = CACA_TRANSPARENT
+const CUCUL_BOLD = CACA_BOLD
+const CUCUL_ITALICS = CACA_ITALICS
+const CUCUL_UNDERLINE = CACA_UNDERLINE
+const CUCUL_BLINK = CACA_BLINK
+
+declare function caca_get_cursor_x alias "caca_wherex"(byval as const caca_canvas_t ptr) as long
+declare function caca_get_cursor_y alias "caca_wherey"(byval as const caca_canvas_t ptr) as long
+declare function cucul_draw_triangle alias "caca_draw_triangle"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_draw_thin_triangle alias "caca_draw_thin_triangle"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long) as long
+declare function cucul_fill_triangle alias "caca_fill_triangle"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_load_font alias "caca_load_font"(byval as const any ptr, byval as uinteger) as caca_font_t ptr
+declare function cucul_get_font_list alias "caca_get_font_list"() as const zstring const ptr ptr
+declare function cucul_get_font_width alias "caca_get_font_width"(byval as const caca_font_t ptr) as long
+declare function cucul_get_font_height alias "caca_get_font_height"(byval as const caca_font_t ptr) as long
+declare function cucul_get_font_blocks alias "caca_get_font_blocks"(byval as const caca_font_t ptr) as const ulong ptr
+declare function cucul_render_canvas alias "caca_render_canvas"(byval as const caca_canvas_t ptr, byval as const caca_font_t ptr, byval as any ptr, byval as long, byval as long, byval as long) as long
+declare function cucul_free_font alias "caca_free_font"(byval as caca_font_t ptr) as long
+declare function cucul_gotoxy alias "caca_gotoxy"(byval as caca_canvas_t ptr, byval as long, byval as long) as long
+declare function cucul_get_cursor_x alias "caca_wherex"(byval as const caca_canvas_t ptr) as long
+declare function cucul_get_cursor_y alias "caca_wherey"(byval as const caca_canvas_t ptr) as long
+declare function cucul_put_char alias "caca_put_char"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as ulong) as long
+declare function cucul_get_char alias "caca_get_char"(byval as const caca_canvas_t ptr, byval as long, byval as long) as ulong
+declare function cucul_put_str alias "caca_put_str"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as const zstring ptr) as long
+declare function cucul_printf alias "caca_printf"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as const zstring ptr, ...) as long
+declare function cucul_clear_canvas alias "caca_clear_canvas"(byval as caca_canvas_t ptr) as long
+declare function cucul_set_canvas_handle alias "caca_set_canvas_handle"(byval as caca_canvas_t ptr, byval as long, byval as long) as long
+declare function cucul_get_canvas_handle_x alias "caca_get_canvas_handle_x"(byval as const caca_canvas_t ptr) as long
+declare function cucul_get_canvas_handle_y alias "caca_get_canvas_handle_y"(byval as const caca_canvas_t ptr) as long
+declare function cucul_blit alias "caca_blit"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as const caca_canvas_t ptr, byval as const caca_canvas_t ptr) as long
+declare function cucul_set_canvas_boundaries alias "caca_set_canvas_boundaries"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long) as long
+
+#ifdef __FB_WIN32__
+	#define cucul_import_memory caca_import_memory
+	#define cucul_import_file caca_import_file
 #else
-	#define cucul_draw_triangle caca_draw_triangle
-	#define cucul_draw_thin_triangle caca_draw_thin_triangle
-	#define cucul_fill_triangle caca_fill_triangle
+	declare function cucul_import_memory alias "caca_import_memory"(byval as caca_canvas_t ptr, byval as const any ptr, byval as uinteger, byval as const zstring ptr) as integer
+	declare function cucul_import_file alias "caca_import_file"(byval as caca_canvas_t ptr, byval as const zstring ptr, byval as const zstring ptr) as integer
 #endif
 
-#define cucul_load_font caca_load_font
-#define cucul_get_font_list caca_get_font_list
-#define cucul_get_font_width caca_get_font_width
-#define cucul_get_font_height caca_get_font_height
-#define cucul_get_font_blocks caca_get_font_blocks
-#define cucul_render_canvas caca_render_canvas
-#define cucul_free_font caca_free_font
-#define cucul_gotoxy caca_gotoxy
-#define cucul_get_cursor_x caca_wherex
-#define cucul_get_cursor_y caca_wherey
-#define cucul_put_char caca_put_char
-#define cucul_get_char caca_get_char
-#define cucul_put_str caca_put_str
+declare function cucul_get_import_list alias "caca_get_import_list"() as const zstring const ptr ptr
+declare function cucul_create_canvas alias "caca_create_canvas"(byval as long, byval as long) as caca_canvas_t ptr
+declare function cucul_manage_canvas alias "caca_manage_canvas"(byval as caca_canvas_t ptr, byval as function(byval as any ptr) as long, byval as any ptr) as long
+declare function cucul_unmanage_canvas alias "caca_unmanage_canvas"(byval as caca_canvas_t ptr, byval as function(byval as any ptr) as long, byval as any ptr) as long
+declare function cucul_set_canvas_size alias "caca_set_canvas_size"(byval as caca_canvas_t ptr, byval as long, byval as long) as long
+declare function cucul_get_canvas_width alias "caca_get_canvas_width"(byval as const caca_canvas_t ptr) as long
+declare function cucul_get_canvas_height alias "caca_get_canvas_height"(byval as const caca_canvas_t ptr) as long
+declare function cucul_get_canvas_chars alias "caca_get_canvas_chars"(byval as const caca_canvas_t ptr) as const ulong ptr
+declare function cucul_get_canvas_attrs alias "caca_get_canvas_attrs"(byval as const caca_canvas_t ptr) as const ulong ptr
+declare function cucul_free_canvas alias "caca_free_canvas"(byval as caca_canvas_t ptr) as long
+declare function cucul_rand alias "caca_rand"(byval as long, byval as long) as long
 
-#ifdef __CACA0_H__
-	#define cucul_printf caca1_printf
+#ifdef __FB_WIN32__
+	#define cucul_export_memory caca_export_memory
 #else
-	#define cucul_printf caca_printf
+	declare function cucul_export_memory alias "caca_export_memory"(byval as const caca_canvas_t ptr, byval as const zstring ptr, byval as uinteger ptr) as any ptr
 #endif
 
-#define cucul_clear_canvas caca_clear_canvas
-#define cucul_set_canvas_handle caca_set_canvas_handle
-#define cucul_get_canvas_handle_x caca_get_canvas_handle_x
-#define cucul_get_canvas_handle_y caca_get_canvas_handle_y
-#define cucul_blit caca_blit
-#define cucul_set_canvas_boundaries caca_set_canvas_boundaries
-#define cucul_import_memory caca_import_memory
-#define cucul_import_file caca_import_file
-#define cucul_get_import_list caca_get_import_list
-#define cucul_create_canvas caca_create_canvas
-#define cucul_manage_canvas caca_manage_canvas
-#define cucul_unmanage_canvas caca_unmanage_canvas
-#define cucul_set_canvas_size caca_set_canvas_size
-#define cucul_get_canvas_width caca_get_canvas_width
-#define cucul_get_canvas_height caca_get_canvas_height
-#define cucul_get_canvas_chars caca_get_canvas_chars
-#define cucul_get_canvas_attrs caca_get_canvas_attrs
-#define cucul_free_canvas caca_free_canvas
-
-#ifdef __CACA0_H__
-	#define cucul_rand caca1_rand
-#else
-	#define cucul_rand caca_rand
-#endif
-
-#define cucul_export_memory caca_export_memory
-#define cucul_get_export_list caca_get_export_list
-#define cucul_get_version caca_get_version
-#define cucul_utf8_to_utf32 caca_utf8_to_utf32
-#define cucul_utf32_to_utf8 caca_utf32_to_utf8
-#define cucul_utf32_to_cp437 caca_utf32_to_cp437
-#define cucul_cp437_to_utf32 caca_cp437_to_utf32
-#define cucul_utf32_to_ascii caca_utf32_to_ascii
-#define cucul_utf32_is_fullwidth caca_utf32_is_fullwidth
-
-#ifdef __CACA0_H__
-	#define cucul_draw_circle caca1_draw_circle
-	#define cucul_draw_ellipse caca1_draw_ellipse
-	#define cucul_draw_thin_ellipse caca1_draw_thin_ellipse
-	#define cucul_fill_ellipse caca1_fill_ellipse
-#else
-	#define cucul_draw_circle caca_draw_circle
-	#define cucul_draw_ellipse caca_draw_ellipse
-	#define cucul_draw_thin_ellipse caca_draw_thin_ellipse
-	#define cucul_fill_ellipse caca_fill_ellipse
-#endif
-
-#define cucul_canvas_set_figfont caca_canvas_set_figfont
-#define cucul_put_figchar caca_put_figchar
-#define cucul_flush_figlet caca_flush_figlet
+declare function cucul_get_export_list alias "caca_get_export_list"() as const zstring const ptr ptr
+declare function cucul_get_version alias "caca_get_version"() as const zstring ptr
+declare function cucul_utf8_to_utf32 alias "caca_utf8_to_utf32"(byval as const zstring ptr, byval as uinteger ptr) as ulong
+declare function cucul_utf32_to_utf8 alias "caca_utf32_to_utf8"(byval as zstring ptr, byval as ulong) as uinteger
+declare function cucul_utf32_to_cp437 alias "caca_utf32_to_cp437"(byval as ulong) as ubyte
+declare function cucul_cp437_to_utf32 alias "caca_cp437_to_utf32"(byval as ubyte) as ulong
+declare function cucul_utf32_to_ascii alias "caca_utf32_to_ascii"(byval as ulong) as byte
+declare function cucul_utf32_is_fullwidth alias "caca_utf32_is_fullwidth"(byval as ulong) as long
+declare function cucul_draw_circle alias "caca_draw_circle"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_draw_ellipse alias "caca_draw_ellipse"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_draw_thin_ellipse alias "caca_draw_thin_ellipse"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long) as long
+declare function cucul_fill_ellipse alias "caca_fill_ellipse"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_canvas_set_figfont alias "caca_canvas_set_figfont"(byval as caca_canvas_t ptr, byval as const zstring ptr) as long
+declare function cucul_put_figchar alias "caca_put_figchar"(byval as caca_canvas_t ptr, byval as ulong) as long
+declare function cucul_flush_figlet alias "caca_flush_figlet"(byval as caca_canvas_t ptr) as long
 #undef cucul_putchar
 #define cucul_putchar caca_putchar
 #undef cucul_getchar
 #define cucul_getchar caca_getchar
-#define cucul_get_attr caca_get_attr
-#define cucul_set_attr caca_set_attr
-#define cucul_put_attr caca_put_attr
-#define cucul_set_color_ansi caca_set_color_ansi
-#define cucul_set_color_argb caca_set_color_argb
-#define cucul_attr_to_ansi caca_attr_to_ansi
-#define cucul_attr_to_ansi_fg caca_attr_to_ansi_fg
-#define cucul_attr_to_ansi_bg caca_attr_to_ansi_bg
-#define cucul_attr_to_rgb12_fg caca_attr_to_rgb12_fg
-#define cucul_attr_to_rgb12_bg caca_attr_to_rgb12_bg
-#define cucul_attr_to_argb64 caca_attr_to_argb64
-#define cucul_invert caca_invert
-#define cucul_flip caca_flip
-#define cucul_flop caca_flop
-#define cucul_rotate_180 caca_rotate_180
-#define cucul_rotate_left caca_rotate_left
-#define cucul_rotate_right caca_rotate_right
-#define cucul_stretch_left caca_stretch_left
-#define cucul_stretch_right caca_stretch_right
-#define cucul_file_open caca_file_open
-#define cucul_file_close caca_file_close
-#define cucul_file_tell caca_file_tell
-#define cucul_file_read caca_file_read
-#define cucul_file_write caca_file_write
-#define cucul_file_gets caca_file_gets
-#define cucul_file_eof caca_file_eof
-#define cucul_create_dither caca_create_dither
-#define cucul_set_dither_palette caca_set_dither_palette
-#define cucul_set_dither_brightness caca_set_dither_brightness
-#define cucul_get_dither_brightness caca_get_dither_brightness
-#define cucul_set_dither_gamma caca_set_dither_gamma
-#define cucul_get_dither_gamma caca_get_dither_gamma
-#define cucul_set_dither_contrast caca_set_dither_contrast
-#define cucul_get_dither_contrast caca_get_dither_contrast
-#define cucul_set_dither_antialias caca_set_dither_antialias
-#define cucul_get_dither_antialias_list caca_get_dither_antialias_list
-#define cucul_get_dither_antialias caca_get_dither_antialias
-#define cucul_set_dither_color caca_set_dither_color
-#define cucul_get_dither_color_list caca_get_dither_color_list
-#define cucul_get_dither_color caca_get_dither_color
-#define cucul_set_dither_charset caca_set_dither_charset
-#define cucul_get_dither_charset_list caca_get_dither_charset_list
-#define cucul_get_dither_charset caca_get_dither_charset
-#define cucul_set_dither_algorithm caca_set_dither_algorithm
-#define cucul_get_dither_algorithm_list caca_get_dither_algorithm_list
-#define cucul_get_dither_algorithm caca_get_dither_algorithm
-#define cucul_dither_bitmap caca_dither_bitmap
-#define cucul_free_dither caca_free_dither
-
-#ifdef __CACA0_H__
-	#define cucul_draw_line caca1_draw_line
-	#define cucul_draw_polyline caca1_draw_polyline
-	#define cucul_draw_thin_line caca1_draw_thin_line
-	#define cucul_draw_thin_polyline caca1_draw_thin_polyline
-	#define cucul_draw_box caca1_draw_box
-	#define cucul_draw_thin_box caca1_draw_thin_box
-#else
-	#define cucul_draw_line caca_draw_line
-	#define cucul_draw_polyline caca_draw_polyline
-	#define cucul_draw_thin_line caca_draw_thin_line
-	#define cucul_draw_thin_polyline caca_draw_thin_polyline
-	#define cucul_draw_box caca_draw_box
-	#define cucul_draw_thin_box caca_draw_thin_box
-#endif
-
-#define cucul_draw_cp437_box caca_draw_cp437_box
-
-#ifdef __CACA0_H__
-	#define cucul_fill_box caca1_fill_box
-#else
-	#define cucul_fill_box caca_fill_box
-#endif
-
-#define cucul_get_frame_count caca_get_frame_count
-#define cucul_set_frame caca_set_frame
-#define cucul_get_frame_name caca_get_frame_name
-#define cucul_set_frame_name caca_set_frame_name
-#define cucul_create_frame caca_create_frame
-#define cucul_free_frame caca_free_frame
+declare function cucul_get_attr alias "caca_get_attr"(byval as const caca_canvas_t ptr, byval as long, byval as long) as ulong
+declare function cucul_set_attr alias "caca_set_attr"(byval as caca_canvas_t ptr, byval as ulong) as long
+declare function cucul_put_attr alias "caca_put_attr"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as ulong) as long
+declare function cucul_set_color_ansi alias "caca_set_color_ansi"(byval as caca_canvas_t ptr, byval as ubyte, byval as ubyte) as long
+declare function cucul_set_color_argb alias "caca_set_color_argb"(byval as caca_canvas_t ptr, byval as ushort, byval as ushort) as long
+declare function cucul_attr_to_ansi alias "caca_attr_to_ansi"(byval as ulong) as ubyte
+declare function cucul_attr_to_ansi_fg alias "caca_attr_to_ansi_fg"(byval as ulong) as ubyte
+declare function cucul_attr_to_ansi_bg alias "caca_attr_to_ansi_bg"(byval as ulong) as ubyte
+declare function cucul_attr_to_rgb12_fg alias "caca_attr_to_rgb12_fg"(byval as ulong) as ushort
+declare function cucul_attr_to_rgb12_bg alias "caca_attr_to_rgb12_bg"(byval as ulong) as ushort
+declare sub cucul_attr_to_argb64 alias "caca_attr_to_argb64"(byval as ulong, byval as ubyte ptr)
+declare function cucul_invert alias "caca_invert"(byval as caca_canvas_t ptr) as long
+declare function cucul_flip alias "caca_flip"(byval as caca_canvas_t ptr) as long
+declare function cucul_flop alias "caca_flop"(byval as caca_canvas_t ptr) as long
+declare function cucul_rotate_180 alias "caca_rotate_180"(byval as caca_canvas_t ptr) as long
+declare function cucul_rotate_left alias "caca_rotate_left"(byval as caca_canvas_t ptr) as long
+declare function cucul_rotate_right alias "caca_rotate_right"(byval as caca_canvas_t ptr) as long
+declare function cucul_stretch_left alias "caca_stretch_left"(byval as caca_canvas_t ptr) as long
+declare function cucul_stretch_right alias "caca_stretch_right"(byval as caca_canvas_t ptr) as long
+declare function cucul_file_open alias "caca_file_open"(byval as const zstring ptr, byval as const zstring ptr) as caca_file_t ptr
+declare function cucul_file_close alias "caca_file_close"(byval as caca_file_t ptr) as long
+declare function cucul_file_tell alias "caca_file_tell"(byval as caca_file_t ptr) as ulongint
+declare function cucul_file_read alias "caca_file_read"(byval as caca_file_t ptr, byval as any ptr, byval as uinteger) as uinteger
+declare function cucul_file_write alias "caca_file_write"(byval as caca_file_t ptr, byval as const any ptr, byval as uinteger) as uinteger
+declare function cucul_file_gets alias "caca_file_gets"(byval as caca_file_t ptr, byval as zstring ptr, byval as long) as zstring ptr
+declare function cucul_file_eof alias "caca_file_eof"(byval as caca_file_t ptr) as long
+declare function cucul_create_dither alias "caca_create_dither"(byval as long, byval as long, byval as long, byval as long, byval as ulong, byval as ulong, byval as ulong, byval as ulong) as caca_dither_t ptr
+declare function cucul_set_dither_palette alias "caca_set_dither_palette"(byval as caca_dither_t ptr, byval r as ulong ptr, byval g as ulong ptr, byval b as ulong ptr, byval a as ulong ptr) as long
+declare function cucul_set_dither_brightness alias "caca_set_dither_brightness"(byval as caca_dither_t ptr, byval as single) as long
+declare function cucul_get_dither_brightness alias "caca_get_dither_brightness"(byval as const caca_dither_t ptr) as single
+declare function cucul_set_dither_gamma alias "caca_set_dither_gamma"(byval as caca_dither_t ptr, byval as single) as long
+declare function cucul_get_dither_gamma alias "caca_get_dither_gamma"(byval as const caca_dither_t ptr) as single
+declare function cucul_set_dither_contrast alias "caca_set_dither_contrast"(byval as caca_dither_t ptr, byval as single) as long
+declare function cucul_get_dither_contrast alias "caca_get_dither_contrast"(byval as const caca_dither_t ptr) as single
+declare function cucul_set_dither_antialias alias "caca_set_dither_antialias"(byval as caca_dither_t ptr, byval as const zstring ptr) as long
+declare function cucul_get_dither_antialias_list alias "caca_get_dither_antialias_list"(byval as const caca_dither_t ptr) as const zstring const ptr ptr
+declare function cucul_get_dither_antialias alias "caca_get_dither_antialias"(byval as const caca_dither_t ptr) as const zstring ptr
+declare function cucul_set_dither_color alias "caca_set_dither_color"(byval as caca_dither_t ptr, byval as const zstring ptr) as long
+declare function cucul_get_dither_color_list alias "caca_get_dither_color_list"(byval as const caca_dither_t ptr) as const zstring const ptr ptr
+declare function cucul_get_dither_color alias "caca_get_dither_color"(byval as const caca_dither_t ptr) as const zstring ptr
+declare function cucul_set_dither_charset alias "caca_set_dither_charset"(byval as caca_dither_t ptr, byval as const zstring ptr) as long
+declare function cucul_get_dither_charset_list alias "caca_get_dither_charset_list"(byval as const caca_dither_t ptr) as const zstring const ptr ptr
+declare function cucul_get_dither_charset alias "caca_get_dither_charset"(byval as const caca_dither_t ptr) as const zstring ptr
+declare function cucul_set_dither_algorithm alias "caca_set_dither_algorithm"(byval as caca_dither_t ptr, byval as const zstring ptr) as long
+declare function cucul_get_dither_algorithm_list alias "caca_get_dither_algorithm_list"(byval as const caca_dither_t ptr) as const zstring const ptr ptr
+declare function cucul_get_dither_algorithm alias "caca_get_dither_algorithm"(byval as const caca_dither_t ptr) as const zstring ptr
+declare function cucul_dither_bitmap alias "caca_dither_bitmap"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as const caca_dither_t ptr, byval as const any ptr) as long
+declare function cucul_free_dither alias "caca_free_dither"(byval as caca_dither_t ptr) as long
+declare function cucul_draw_line alias "caca_draw_line"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_draw_polyline alias "caca_draw_polyline"(byval as caca_canvas_t ptr, byval x as const long ptr, byval y as const long ptr, byval as long, byval as ulong) as long
+declare function cucul_draw_thin_line alias "caca_draw_thin_line"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long) as long
+declare function cucul_draw_thin_polyline alias "caca_draw_thin_polyline"(byval as caca_canvas_t ptr, byval x as const long ptr, byval y as const long ptr, byval as long) as long
+declare function cucul_draw_box alias "caca_draw_box"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_draw_thin_box alias "caca_draw_thin_box"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long) as long
+declare function cucul_draw_cp437_box alias "caca_draw_cp437_box"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long) as long
+declare function cucul_fill_box alias "caca_fill_box"(byval as caca_canvas_t ptr, byval as long, byval as long, byval as long, byval as long, byval as ulong) as long
+declare function cucul_get_frame_count alias "caca_get_frame_count"(byval as const caca_canvas_t ptr) as long
+declare function cucul_set_frame alias "caca_set_frame"(byval as caca_canvas_t ptr, byval as long) as long
+declare function cucul_get_frame_name alias "caca_get_frame_name"(byval as const caca_canvas_t ptr) as const zstring ptr
+declare function cucul_set_frame_name alias "caca_set_frame_name"(byval as caca_canvas_t ptr, byval as const zstring ptr) as long
+declare function cucul_create_frame alias "caca_create_frame"(byval as caca_canvas_t ptr, byval as long) as long
+declare function cucul_free_frame alias "caca_free_frame"(byval as caca_canvas_t ptr, byval as long) as long
 
 end extern

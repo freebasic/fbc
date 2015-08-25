@@ -87,7 +87,7 @@ end type
 type RPC_ASYNC_STATE as _RPC_ASYNC_STATE
 type PRPC_ASYNC_STATE as _RPC_ASYNC_STATE ptr
 const RPC_C_NOTIFY_ON_SEND_COMPLETE = &h1
-#define RPC_C_INFINITE_TIMEOUT INFINITE
+const RPC_C_INFINITE_TIMEOUT = INFINITE
 #define RpcAsyncGetCallHandle(pAsync) cast(PRPC_ASYNC_STATE, pAsync)->RuntimeInfo
 
 declare function RpcAsyncInitializeHandle(byval pAsync as PRPC_ASYNC_STATE, byval Size as ulong) as RPC_STATUS
@@ -215,19 +215,23 @@ end type
 type RPC_CALL_ATTRIBUTES_V1_A as tagRPC_CALL_ATTRIBUTES_V1_A
 
 #ifdef UNICODE
-	#define RPC_CALL_ATTRIBUTES_V1 RPC_CALL_ATTRIBUTES_V1_W
-	#define RpcServerInqCallAttributes RpcServerInqCallAttributesW
+	type RPC_CALL_ATTRIBUTES_V1 as RPC_CALL_ATTRIBUTES_V1_W
 #else
-	#define RPC_CALL_ATTRIBUTES_V1 RPC_CALL_ATTRIBUTES_V1_A
-	#define RpcServerInqCallAttributes RpcServerInqCallAttributesA
+	type RPC_CALL_ATTRIBUTES_V1 as RPC_CALL_ATTRIBUTES_V1_A
 #endif
 
 declare function RpcServerInqCallAttributesW(byval ClientBinding as RPC_BINDING_HANDLE, byval RpcCallAttributes as any ptr) as RPC_STATUS
+
+#ifdef UNICODE
+	declare function RpcServerInqCallAttributes alias "RpcServerInqCallAttributesW"(byval ClientBinding as RPC_BINDING_HANDLE, byval RpcCallAttributes as any ptr) as RPC_STATUS
+#endif
+
 declare function RpcServerInqCallAttributesA(byval ClientBinding as RPC_BINDING_HANDLE, byval RpcCallAttributes as any ptr) as RPC_STATUS
 
 #ifdef UNICODE
 	type RPC_CALL_ATTRIBUTES as RPC_CALL_ATTRIBUTES_V1_W
 #else
+	declare function RpcServerInqCallAttributes alias "RpcServerInqCallAttributesA"(byval ClientBinding as RPC_BINDING_HANDLE, byval RpcCallAttributes as any ptr) as RPC_STATUS
 	type RPC_CALL_ATTRIBUTES as RPC_CALL_ATTRIBUTES_V1_A
 #endif
 
@@ -328,11 +332,11 @@ declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDIN
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define RPC_CALL_LOCAL_ADDRESS_V1 RPC_CALL_LOCAL_ADDRESS_V1_W
-	#define RPC_CALL_LOCAL_ADDRESS RPC_CALL_LOCAL_ADDRESS_W
+	type RPC_CALL_LOCAL_ADDRESS_V1 as RPC_CALL_LOCAL_ADDRESS_V1_W
+	type RPC_CALL_LOCAL_ADDRESS as RPC_CALL_LOCAL_ADDRESS_W
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define RPC_CALL_LOCAL_ADDRESS_V1 RPC_CALL_LOCAL_ADDRESS_V1_A
-	#define RPC_CALL_LOCAL_ADDRESS RPC_CALL_LOCAL_ADDRESS_A
+	type RPC_CALL_LOCAL_ADDRESS_V1 as RPC_CALL_LOCAL_ADDRESS_V1_A
+	type RPC_CALL_LOCAL_ADDRESS as RPC_CALL_LOCAL_ADDRESS_A
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -386,9 +390,9 @@ declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDIN
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define RPC_CALL_ATTRIBUTES_V2 RPC_CALL_ATTRIBUTES_V2_W
+	type RPC_CALL_ATTRIBUTES_V2 as RPC_CALL_ATTRIBUTES_V2_W
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define RPC_CALL_ATTRIBUTES_V2 RPC_CALL_ATTRIBUTES_V2_A
+	type RPC_CALL_ATTRIBUTES_V2 as RPC_CALL_ATTRIBUTES_V2_A
 #endif
 
 #if _WIN32_WINNT = &h0602

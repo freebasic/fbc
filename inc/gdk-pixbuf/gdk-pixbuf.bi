@@ -119,13 +119,12 @@ declare function gdk_pixbuf_new_subpixbuf(byval src_pixbuf as GdkPixbuf ptr, byv
 	declare function gdk_pixbuf_new_from_file_at_size(byval filename as const zstring ptr, byval width as long, byval height as long, byval error as GError ptr ptr) as GdkPixbuf ptr
 	declare function gdk_pixbuf_new_from_file_at_scale(byval filename as const zstring ptr, byval width as long, byval height as long, byval preserve_aspect_ratio as gboolean, byval error as GError ptr ptr) as GdkPixbuf ptr
 #else
-	#define gdk_pixbuf_new_from_file gdk_pixbuf_new_from_file_utf8
-	#define gdk_pixbuf_new_from_file_at_size gdk_pixbuf_new_from_file_at_size_utf8
-	#define gdk_pixbuf_new_from_file_at_scale gdk_pixbuf_new_from_file_at_scale_utf8
-
 	declare function gdk_pixbuf_new_from_file_utf8(byval filename as const zstring ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
+	declare function gdk_pixbuf_new_from_file alias "gdk_pixbuf_new_from_file_utf8"(byval filename as const zstring ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
 	declare function gdk_pixbuf_new_from_file_at_size_utf8(byval filename as const zstring ptr, byval width as long, byval height as long, byval error as GError ptr ptr) as GdkPixbuf ptr
+	declare function gdk_pixbuf_new_from_file_at_size alias "gdk_pixbuf_new_from_file_at_size_utf8"(byval filename as const zstring ptr, byval width as long, byval height as long, byval error as GError ptr ptr) as GdkPixbuf ptr
 	declare function gdk_pixbuf_new_from_file_at_scale_utf8(byval filename as const zstring ptr, byval width as long, byval height as long, byval preserve_aspect_ratio as gboolean, byval error as GError ptr ptr) as GdkPixbuf ptr
+	declare function gdk_pixbuf_new_from_file_at_scale alias "gdk_pixbuf_new_from_file_at_scale_utf8"(byval filename as const zstring ptr, byval width as long, byval height as long, byval preserve_aspect_ratio as gboolean, byval error as GError ptr ptr) as GdkPixbuf ptr
 #endif
 
 declare function gdk_pixbuf_new_from_resource(byval resource_path as const zstring ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
@@ -139,10 +138,10 @@ declare sub gdk_pixbuf_fill(byval pixbuf as GdkPixbuf ptr, byval pixel as guint3
 	declare function gdk_pixbuf_save(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
 	declare function gdk_pixbuf_savev(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
 #else
-	#define gdk_pixbuf_save gdk_pixbuf_save_utf8
-	#define gdk_pixbuf_savev gdk_pixbuf_savev_utf8
 	declare function gdk_pixbuf_save_utf8(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
+	declare function gdk_pixbuf_save alias "gdk_pixbuf_save_utf8"(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
 	declare function gdk_pixbuf_savev_utf8(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
+	declare function gdk_pixbuf_savev alias "gdk_pixbuf_savev_utf8"(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
 type GdkPixbufSaveFunc as function(byval buf as const zstring ptr, byval count as gsize, byval error as GError ptr ptr, byval data as gpointer) as gboolean
@@ -203,8 +202,8 @@ declare function gdk_pixbuf_animation_get_type() as GType
 #ifdef __FB_UNIX__
 	declare function gdk_pixbuf_animation_new_from_file(byval filename as const zstring ptr, byval error as GError ptr ptr) as GdkPixbufAnimation ptr
 #else
-	#define gdk_pixbuf_animation_new_from_file gdk_pixbuf_animation_new_from_file_utf8
 	declare function gdk_pixbuf_animation_new_from_file_utf8(byval filename as const zstring ptr, byval error as GError ptr ptr) as GdkPixbufAnimation ptr
+	declare function gdk_pixbuf_animation_new_from_file alias "gdk_pixbuf_animation_new_from_file_utf8"(byval filename as const zstring ptr, byval error as GError ptr ptr) as GdkPixbufAnimation ptr
 #endif
 
 declare function gdk_pixbuf_animation_new_from_stream(byval stream as GInputStream ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GdkPixbufAnimation ptr

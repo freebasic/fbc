@@ -22,15 +22,17 @@
 extern "C"
 
 #define _ISGUIDS_H_
-
-#ifdef UNICODE
-	#define IID_IUniformResourceLocator IID_IUniformResourceLocatorW
-#else
-	#define IID_IUniformResourceLocator IID_IUniformResourceLocatorA
-#endif
-
 extern CLSID_InternetShortcut as const GUID
 extern IID_IUniformResourceLocatorA as const GUID
+
+#ifndef UNICODE
+	extern IID_IUniformResourceLocator alias "IID_IUniformResourceLocatorA" as const GUID
+#endif
+
 extern IID_IUniformResourceLocatorW as const GUID
+
+#ifdef UNICODE
+	extern IID_IUniformResourceLocator alias "IID_IUniformResourceLocatorW" as const GUID
+#endif
 
 end extern

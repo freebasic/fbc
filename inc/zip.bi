@@ -183,7 +183,7 @@ const ZIP_OPSYS_BEOS = &h10u
 const ZIP_OPSYS_TANDEM = &h11u
 const ZIP_OPSYS_OS_400 = &h12u
 const ZIP_OPSYS_OS_X = &h13u
-#define ZIP_OPSYS_DEFAULT ZIP_OPSYS_UNIX
+const ZIP_OPSYS_DEFAULT = ZIP_OPSYS_UNIX
 
 type zip_source_cmd as long
 enum

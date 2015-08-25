@@ -199,10 +199,10 @@ declare function DrvGetModuleHandle(byval hDriver as HDRVR) as HMODULE
 declare function GetDriverModuleHandle(byval hDriver as HDRVR) as HMODULE
 declare function DefDriverProc(byval dwDriverIdentifier as DWORD_PTR, byval hdrvr as HDRVR, byval uMsg as UINT, byval lParam1 as LPARAM, byval lParam2 as LPARAM) as LRESULT
 
-#define DRV_CANCEL DRVCNF_CANCEL
-#define DRV_OK DRVCNF_OK
-#define DRV_RESTART DRVCNF_RESTART
-#define DRV_MCI_FIRST DRV_RESERVED
+const DRV_CANCEL = DRVCNF_CANCEL
+const DRV_OK = DRVCNF_OK
+const DRV_RESTART = DRVCNF_RESTART
+const DRV_MCI_FIRST = DRV_RESERVED
 #define DRV_MCI_LAST (DRV_RESERVED + &hFFF)
 #define CALLBACK_TYPEMASK __MSABI_LONG(&h00070000)
 #define CALLBACK_NULL __MSABI_LONG(&h00000000)
@@ -213,14 +213,20 @@ declare function DefDriverProc(byval dwDriverIdentifier as DWORD_PTR, byval hdrv
 #define CALLBACK_EVENT __MSABI_LONG(&h00050000)
 type LPDRVCALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
 type PDRVCALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
-#define OutputDebugStr OutputDebugString
+
+#ifdef UNICODE
+	declare sub OutputDebugStr alias "OutputDebugStringW"(byval lpOutputString as LPCWSTR)
+#else
+	declare sub OutputDebugStr alias "OutputDebugStringA"(byval lpOutputString as LPCSTR)
+#endif
+
 declare function sndPlaySoundA(byval pszSound as LPCSTR, byval fuSound as UINT) as WINBOOL
 declare function sndPlaySoundW(byval pszSound as LPCWSTR, byval fuSound as UINT) as WINBOOL
 
 #ifdef UNICODE
-	#define sndPlaySound sndPlaySoundW
+	declare function sndPlaySound alias "sndPlaySoundW"(byval pszSound as LPCWSTR, byval fuSound as UINT) as WINBOOL
 #else
-	#define sndPlaySound sndPlaySoundA
+	declare function sndPlaySound alias "sndPlaySoundA"(byval pszSound as LPCSTR, byval fuSound as UINT) as WINBOOL
 #endif
 
 const SND_SYNC = &h0000
@@ -250,9 +256,9 @@ declare function PlaySoundA(byval pszSound as LPCSTR, byval hmod as HMODULE, byv
 declare function PlaySoundW(byval pszSound as LPCWSTR, byval hmod as HMODULE, byval fdwSound as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define PlaySound PlaySoundW
+	declare function PlaySound alias "PlaySoundW"(byval pszSound as LPCWSTR, byval hmod as HMODULE, byval fdwSound as DWORD) as WINBOOL
 #else
-	#define PlaySound PlaySoundA
+	declare function PlaySound alias "PlaySoundA"(byval pszSound as LPCSTR, byval hmod as HMODULE, byval fdwSound as DWORD) as WINBOOL
 #endif
 
 #define WAVERR_BADFORMAT (WAVERR_BASE + 0)
@@ -282,12 +288,12 @@ type LPHWAVEIN as HWAVEIN ptr
 type LPHWAVEOUT as HWAVEOUT ptr
 type LPWAVECALLBACK as sub(byval hdrvr as HDRVR, byval uMsg as UINT, byval dwUser as DWORD_PTR, byval dw1 as DWORD_PTR, byval dw2 as DWORD_PTR)
 
-#define WOM_OPEN MM_WOM_OPEN
-#define WOM_CLOSE MM_WOM_CLOSE
-#define WOM_DONE MM_WOM_DONE
-#define WIM_OPEN MM_WIM_OPEN
-#define WIM_CLOSE MM_WIM_CLOSE
-#define WIM_DATA MM_WIM_DATA
+const WOM_OPEN = MM_WOM_OPEN
+const WOM_CLOSE = MM_WOM_CLOSE
+const WOM_DONE = MM_WOM_DONE
+const WIM_OPEN = MM_WIM_OPEN
+const WIM_CLOSE = MM_WIM_CLOSE
+const WIM_DATA = MM_WIM_DATA
 #define WAVE_MAPPER cast(UINT, -1)
 const WAVE_FORMAT_QUERY = &h0001
 const WAVE_ALLOWSYNC = &h0002
@@ -580,9 +586,9 @@ declare function waveOutGetDevCapsA(byval uDeviceID as UINT_PTR, byval pwoc as L
 declare function waveOutGetDevCapsW(byval uDeviceID as UINT_PTR, byval pwoc as LPWAVEOUTCAPSW, byval cbwoc as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define waveOutGetDevCaps waveOutGetDevCapsW
+	declare function waveOutGetDevCaps alias "waveOutGetDevCapsW"(byval uDeviceID as UINT_PTR, byval pwoc as LPWAVEOUTCAPSW, byval cbwoc as UINT) as MMRESULT
 #else
-	#define waveOutGetDevCaps waveOutGetDevCapsA
+	declare function waveOutGetDevCaps alias "waveOutGetDevCapsA"(byval uDeviceID as UINT_PTR, byval pwoc as LPWAVEOUTCAPSA, byval cbwoc as UINT) as MMRESULT
 #endif
 
 declare function waveOutGetVolume(byval hwo as HWAVEOUT, byval pdwVolume as LPDWORD) as MMRESULT
@@ -591,9 +597,9 @@ declare function waveOutGetErrorTextA(byval mmrError as MMRESULT, byval pszText 
 declare function waveOutGetErrorTextW(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define waveOutGetErrorText waveOutGetErrorTextW
+	declare function waveOutGetErrorText alias "waveOutGetErrorTextW"(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 #else
-	#define waveOutGetErrorText waveOutGetErrorTextA
+	declare function waveOutGetErrorText alias "waveOutGetErrorTextA"(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 #endif
 
 declare function waveOutOpen(byval phwo as LPHWAVEOUT, byval uDeviceID as UINT, byval pwfx as LPCWAVEFORMATEX, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
@@ -617,18 +623,18 @@ declare function waveInGetDevCapsA(byval uDeviceID as UINT_PTR, byval pwic as LP
 declare function waveInGetDevCapsW(byval uDeviceID as UINT_PTR, byval pwic as LPWAVEINCAPSW, byval cbwic as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define waveInGetDevCaps waveInGetDevCapsW
+	declare function waveInGetDevCaps alias "waveInGetDevCapsW"(byval uDeviceID as UINT_PTR, byval pwic as LPWAVEINCAPSW, byval cbwic as UINT) as MMRESULT
 #else
-	#define waveInGetDevCaps waveInGetDevCapsA
+	declare function waveInGetDevCaps alias "waveInGetDevCapsA"(byval uDeviceID as UINT_PTR, byval pwic as LPWAVEINCAPSA, byval cbwic as UINT) as MMRESULT
 #endif
 
 declare function waveInGetErrorTextA(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 declare function waveInGetErrorTextW(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define waveInGetErrorText waveInGetErrorTextW
+	declare function waveInGetErrorText alias "waveInGetErrorTextW"(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 #else
-	#define waveInGetErrorText waveInGetErrorTextA
+	declare function waveInGetErrorText alias "waveInGetErrorTextA"(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 #endif
 
 declare function waveInOpen(byval phwi as LPHWAVEIN, byval uDeviceID as UINT, byval pwfx as LPCWAVEFORMATEX, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
@@ -685,17 +691,17 @@ const MIDIPATCHSIZE = 128
 type LPPATCHARRAY as WORD ptr
 type LPKEYARRAY as WORD ptr
 
-#define MIM_OPEN MM_MIM_OPEN
-#define MIM_CLOSE MM_MIM_CLOSE
-#define MIM_DATA MM_MIM_DATA
-#define MIM_LONGDATA MM_MIM_LONGDATA
-#define MIM_ERROR MM_MIM_ERROR
-#define MIM_LONGERROR MM_MIM_LONGERROR
-#define MOM_OPEN MM_MOM_OPEN
-#define MOM_CLOSE MM_MOM_CLOSE
-#define MOM_DONE MM_MOM_DONE
-#define MIM_MOREDATA MM_MIM_MOREDATA
-#define MOM_POSITIONCB MM_MOM_POSITIONCB
+const MIM_OPEN = MM_MIM_OPEN
+const MIM_CLOSE = MM_MIM_CLOSE
+const MIM_DATA = MM_MIM_DATA
+const MIM_LONGDATA = MM_MIM_LONGDATA
+const MIM_ERROR = MM_MIM_ERROR
+const MIM_LONGERROR = MM_MIM_LONGERROR
+const MOM_OPEN = MM_MOM_OPEN
+const MOM_CLOSE = MM_MOM_CLOSE
+const MOM_DONE = MM_MOM_DONE
+const MIM_MOREDATA = MM_MIM_MOREDATA
+const MOM_POSITIONCB = MM_MOM_POSITIONCB
 #define MIDIMAPPER cast(UINT, -1)
 #define MIDI_MAPPER cast(UINT, -1)
 #define MIDI_IO_STATUS __MSABI_LONG(&h00000020)
@@ -980,9 +986,9 @@ declare function midiOutGetDevCapsA(byval uDeviceID as UINT_PTR, byval pmoc as L
 declare function midiOutGetDevCapsW(byval uDeviceID as UINT_PTR, byval pmoc as LPMIDIOUTCAPSW, byval cbmoc as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define midiOutGetDevCaps midiOutGetDevCapsW
+	declare function midiOutGetDevCaps alias "midiOutGetDevCapsW"(byval uDeviceID as UINT_PTR, byval pmoc as LPMIDIOUTCAPSW, byval cbmoc as UINT) as MMRESULT
 #else
-	#define midiOutGetDevCaps midiOutGetDevCapsA
+	declare function midiOutGetDevCaps alias "midiOutGetDevCapsA"(byval uDeviceID as UINT_PTR, byval pmoc as LPMIDIOUTCAPSA, byval cbmoc as UINT) as MMRESULT
 #endif
 
 declare function midiOutGetVolume(byval hmo as HMIDIOUT, byval pdwVolume as LPDWORD) as MMRESULT
@@ -991,9 +997,9 @@ declare function midiOutGetErrorTextA(byval mmrError as MMRESULT, byval pszText 
 declare function midiOutGetErrorTextW(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define midiOutGetErrorText midiOutGetErrorTextW
+	declare function midiOutGetErrorText alias "midiOutGetErrorTextW"(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 #else
-	#define midiOutGetErrorText midiOutGetErrorTextA
+	declare function midiOutGetErrorText alias "midiOutGetErrorTextA"(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 #endif
 
 declare function midiOutOpen(byval phmo as LPHMIDIOUT, byval uDeviceID as UINT, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
@@ -1012,18 +1018,18 @@ declare function midiInGetDevCapsA(byval uDeviceID as UINT_PTR, byval pmic as LP
 declare function midiInGetDevCapsW(byval uDeviceID as UINT_PTR, byval pmic as LPMIDIINCAPSW, byval cbmic as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define midiInGetDevCaps midiInGetDevCapsW
+	declare function midiInGetDevCaps alias "midiInGetDevCapsW"(byval uDeviceID as UINT_PTR, byval pmic as LPMIDIINCAPSW, byval cbmic as UINT) as MMRESULT
 #else
-	#define midiInGetDevCaps midiInGetDevCapsA
+	declare function midiInGetDevCaps alias "midiInGetDevCapsA"(byval uDeviceID as UINT_PTR, byval pmic as LPMIDIINCAPSA, byval cbmic as UINT) as MMRESULT
 #endif
 
 declare function midiInGetErrorTextA(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 declare function midiInGetErrorTextW(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define midiInGetErrorText midiInGetErrorTextW
+	declare function midiInGetErrorText alias "midiInGetErrorTextW"(byval mmrError as MMRESULT, byval pszText as LPWSTR, byval cchText as UINT) as MMRESULT
 #else
-	#define midiInGetErrorText midiInGetErrorTextA
+	declare function midiInGetErrorText alias "midiInGetErrorTextA"(byval mmrError as MMRESULT, byval pszText as LPSTR, byval cchText as UINT) as MMRESULT
 #endif
 
 declare function midiInOpen(byval phmi as LPHMIDIIN, byval uDeviceID as UINT, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
@@ -1138,9 +1144,9 @@ declare function auxGetDevCapsA(byval uDeviceID as UINT_PTR, byval pac as LPAUXC
 declare function auxGetDevCapsW(byval uDeviceID as UINT_PTR, byval pac as LPAUXCAPSW, byval cbac as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define auxGetDevCaps auxGetDevCapsW
+	declare function auxGetDevCaps alias "auxGetDevCapsW"(byval uDeviceID as UINT_PTR, byval pac as LPAUXCAPSW, byval cbac as UINT) as MMRESULT
 #else
-	#define auxGetDevCaps auxGetDevCapsA
+	declare function auxGetDevCaps alias "auxGetDevCapsA"(byval uDeviceID as UINT_PTR, byval pac as LPAUXCAPSA, byval cbac as UINT) as MMRESULT
 #endif
 
 declare function auxSetVolume(byval uDeviceID as UINT, byval dwVolume as DWORD) as MMRESULT
@@ -1262,9 +1268,9 @@ declare function mixerGetDevCapsA(byval uMxId as UINT_PTR, byval pmxcaps as LPMI
 declare function mixerGetDevCapsW(byval uMxId as UINT_PTR, byval pmxcaps as LPMIXERCAPSW, byval cbmxcaps as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define mixerGetDevCaps mixerGetDevCapsW
+	declare function mixerGetDevCaps alias "mixerGetDevCapsW"(byval uMxId as UINT_PTR, byval pmxcaps as LPMIXERCAPSW, byval cbmxcaps as UINT) as MMRESULT
 #else
-	#define mixerGetDevCaps mixerGetDevCapsA
+	declare function mixerGetDevCaps alias "mixerGetDevCapsA"(byval uMxId as UINT_PTR, byval pmxcaps as LPMIXERCAPSA, byval cbmxcaps as UINT) as MMRESULT
 #endif
 
 declare function mixerOpen(byval phmx as LPHMIXER, byval uMxId as UINT, byval dwCallback as DWORD_PTR, byval dwInstance as DWORD_PTR, byval fdwOpen as DWORD) as MMRESULT
@@ -1376,9 +1382,9 @@ declare function mixerGetLineInfoA(byval hmxobj as HMIXEROBJ, byval pmxl as LPMI
 declare function mixerGetLineInfoW(byval hmxobj as HMIXEROBJ, byval pmxl as LPMIXERLINEW, byval fdwInfo as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define mixerGetLineInfo mixerGetLineInfoW
+	declare function mixerGetLineInfo alias "mixerGetLineInfoW"(byval hmxobj as HMIXEROBJ, byval pmxl as LPMIXERLINEW, byval fdwInfo as DWORD) as MMRESULT
 #else
-	#define mixerGetLineInfo mixerGetLineInfoA
+	declare function mixerGetLineInfo alias "mixerGetLineInfoA"(byval hmxobj as HMIXEROBJ, byval pmxl as LPMIXERLINEA, byval fdwInfo as DWORD) as MMRESULT
 #endif
 
 #define MIXER_GETLINEINFOF_DESTINATION __MSABI_LONG(&h00000000)
@@ -1580,9 +1586,9 @@ declare function mixerGetLineControlsA(byval hmxobj as HMIXEROBJ, byval pmxlc as
 declare function mixerGetLineControlsW(byval hmxobj as HMIXEROBJ, byval pmxlc as LPMIXERLINECONTROLSW, byval fdwControls as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define mixerGetLineControls mixerGetLineControlsW
+	declare function mixerGetLineControls alias "mixerGetLineControlsW"(byval hmxobj as HMIXEROBJ, byval pmxlc as LPMIXERLINECONTROLSW, byval fdwControls as DWORD) as MMRESULT
 #else
-	#define mixerGetLineControls mixerGetLineControlsA
+	declare function mixerGetLineControls alias "mixerGetLineControlsA"(byval hmxobj as HMIXEROBJ, byval pmxlc as LPMIXERLINECONTROLSA, byval fdwControls as DWORD) as MMRESULT
 #endif
 
 #define MIXER_GETLINECONTROLSF_ALL __MSABI_LONG(&h00000000)
@@ -1665,9 +1671,9 @@ declare function mixerGetControlDetailsA(byval hmxobj as HMIXEROBJ, byval pmxcd 
 declare function mixerGetControlDetailsW(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define mixerGetControlDetails mixerGetControlDetailsW
+	declare function mixerGetControlDetails alias "mixerGetControlDetailsW"(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
 #else
-	#define mixerGetControlDetails mixerGetControlDetailsA
+	declare function mixerGetControlDetails alias "mixerGetControlDetailsA"(byval hmxobj as HMIXEROBJ, byval pmxcd as LPMIXERCONTROLDETAILS, byval fdwDetails as DWORD) as MMRESULT
 #endif
 
 #define MIXER_GETCONTROLDETAILSF_VALUE __MSABI_LONG(&h00000000)
@@ -1982,9 +1988,9 @@ declare function joyGetDevCapsA(byval uJoyID as UINT_PTR, byval pjc as LPJOYCAPS
 declare function joyGetDevCapsW(byval uJoyID as UINT_PTR, byval pjc as LPJOYCAPSW, byval cbjc as UINT) as MMRESULT
 
 #ifdef UNICODE
-	#define joyGetDevCaps joyGetDevCapsW
+	declare function joyGetDevCaps alias "joyGetDevCapsW"(byval uJoyID as UINT_PTR, byval pjc as LPJOYCAPSW, byval cbjc as UINT) as MMRESULT
 #else
-	#define joyGetDevCaps joyGetDevCapsA
+	declare function joyGetDevCaps alias "joyGetDevCapsA"(byval uJoyID as UINT_PTR, byval pjc as LPJOYCAPSA, byval cbjc as UINT) as MMRESULT
 #endif
 
 declare function joyGetPos(byval uJoyID as UINT, byval pji as LPJOYINFO) as MMRESULT
@@ -2091,8 +2097,8 @@ const MMIO_FINDRIFF = &h0020
 const MMIO_FINDLIST = &h0040
 const MMIO_CREATERIFF = &h0020
 const MMIO_CREATELIST = &h0040
-#define MMIOM_READ MMIO_READ
-#define MMIOM_WRITE MMIO_WRITE
+const MMIOM_READ = MMIO_READ
+const MMIOM_WRITE = MMIO_WRITE
 const MMIOM_SEEK = 2
 const MMIOM_OPEN = 3
 const MMIOM_CLOSE = 4
@@ -2109,36 +2115,36 @@ declare function mmioStringToFOURCCA(byval sz as LPCSTR, byval uFlags as UINT) a
 declare function mmioStringToFOURCCW(byval sz as LPCWSTR, byval uFlags as UINT) as FOURCC
 
 #ifdef UNICODE
-	#define mmioStringToFOURCC mmioStringToFOURCCW
+	declare function mmioStringToFOURCC alias "mmioStringToFOURCCW"(byval sz as LPCWSTR, byval uFlags as UINT) as FOURCC
 #else
-	#define mmioStringToFOURCC mmioStringToFOURCCA
+	declare function mmioStringToFOURCC alias "mmioStringToFOURCCA"(byval sz as LPCSTR, byval uFlags as UINT) as FOURCC
 #endif
 
 declare function mmioInstallIOProcA(byval fccIOProc as FOURCC, byval pIOProc as LPMMIOPROC, byval dwFlags as DWORD) as LPMMIOPROC
 declare function mmioInstallIOProcW(byval fccIOProc as FOURCC, byval pIOProc as LPMMIOPROC, byval dwFlags as DWORD) as LPMMIOPROC
 
 #ifdef UNICODE
-	#define mmioInstallIOProc mmioInstallIOProcW
+	declare function mmioInstallIOProc alias "mmioInstallIOProcW"(byval fccIOProc as FOURCC, byval pIOProc as LPMMIOPROC, byval dwFlags as DWORD) as LPMMIOPROC
 #else
-	#define mmioInstallIOProc mmioInstallIOProcA
+	declare function mmioInstallIOProc alias "mmioInstallIOProcA"(byval fccIOProc as FOURCC, byval pIOProc as LPMMIOPROC, byval dwFlags as DWORD) as LPMMIOPROC
 #endif
 
 declare function mmioOpenA(byval pszFileName as LPSTR, byval pmmioinfo as LPMMIOINFO, byval fdwOpen as DWORD) as HMMIO
 declare function mmioOpenW(byval pszFileName as LPWSTR, byval pmmioinfo as LPMMIOINFO, byval fdwOpen as DWORD) as HMMIO
 
 #ifdef UNICODE
-	#define mmioOpen mmioOpenW
+	declare function mmioOpen alias "mmioOpenW"(byval pszFileName as LPWSTR, byval pmmioinfo as LPMMIOINFO, byval fdwOpen as DWORD) as HMMIO
 #else
-	#define mmioOpen mmioOpenA
+	declare function mmioOpen alias "mmioOpenA"(byval pszFileName as LPSTR, byval pmmioinfo as LPMMIOINFO, byval fdwOpen as DWORD) as HMMIO
 #endif
 
 declare function mmioRenameA(byval pszFileName as LPCSTR, byval pszNewFileName as LPCSTR, byval pmmioinfo as LPCMMIOINFO, byval fdwRename as DWORD) as MMRESULT
 declare function mmioRenameW(byval pszFileName as LPCWSTR, byval pszNewFileName as LPCWSTR, byval pmmioinfo as LPCMMIOINFO, byval fdwRename as DWORD) as MMRESULT
 
 #ifdef UNICODE
-	#define mmioRename mmioRenameW
+	declare function mmioRename alias "mmioRenameW"(byval pszFileName as LPCWSTR, byval pszNewFileName as LPCWSTR, byval pmmioinfo as LPCMMIOINFO, byval fdwRename as DWORD) as MMRESULT
 #else
-	#define mmioRename mmioRenameA
+	declare function mmioRename alias "mmioRenameA"(byval pszFileName as LPCSTR, byval pszNewFileName as LPCSTR, byval pmmioinfo as LPCMMIOINFO, byval fdwRename as DWORD) as MMRESULT
 #endif
 
 declare function mmioClose(byval hmmio as HMMIO, byval fuClose as UINT) as MMRESULT
@@ -2163,45 +2169,45 @@ declare function mciSendCommandA(byval mciId as MCIDEVICEID, byval uMsg as UINT,
 declare function mciSendCommandW(byval mciId as MCIDEVICEID, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as MCIERROR
 
 #ifdef UNICODE
-	#define mciSendCommand mciSendCommandW
+	declare function mciSendCommand alias "mciSendCommandW"(byval mciId as MCIDEVICEID, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as MCIERROR
 #else
-	#define mciSendCommand mciSendCommandA
+	declare function mciSendCommand alias "mciSendCommandA"(byval mciId as MCIDEVICEID, byval uMsg as UINT, byval dwParam1 as DWORD_PTR, byval dwParam2 as DWORD_PTR) as MCIERROR
 #endif
 
 declare function mciSendStringA(byval lpstrCommand as LPCSTR, byval lpstrReturnString as LPSTR, byval uReturnLength as UINT, byval hwndCallback as HWND) as MCIERROR
 declare function mciSendStringW(byval lpstrCommand as LPCWSTR, byval lpstrReturnString as LPWSTR, byval uReturnLength as UINT, byval hwndCallback as HWND) as MCIERROR
 
 #ifdef UNICODE
-	#define mciSendString mciSendStringW
+	declare function mciSendString alias "mciSendStringW"(byval lpstrCommand as LPCWSTR, byval lpstrReturnString as LPWSTR, byval uReturnLength as UINT, byval hwndCallback as HWND) as MCIERROR
 #else
-	#define mciSendString mciSendStringA
+	declare function mciSendString alias "mciSendStringA"(byval lpstrCommand as LPCSTR, byval lpstrReturnString as LPSTR, byval uReturnLength as UINT, byval hwndCallback as HWND) as MCIERROR
 #endif
 
 declare function mciGetDeviceIDA(byval pszDevice as LPCSTR) as MCIDEVICEID
 declare function mciGetDeviceIDW(byval pszDevice as LPCWSTR) as MCIDEVICEID
 
 #ifdef UNICODE
-	#define mciGetDeviceID mciGetDeviceIDW
+	declare function mciGetDeviceID alias "mciGetDeviceIDW"(byval pszDevice as LPCWSTR) as MCIDEVICEID
 #else
-	#define mciGetDeviceID mciGetDeviceIDA
+	declare function mciGetDeviceID alias "mciGetDeviceIDA"(byval pszDevice as LPCSTR) as MCIDEVICEID
 #endif
 
 declare function mciGetDeviceIDFromElementIDA(byval dwElementID as DWORD, byval lpstrType as LPCSTR) as MCIDEVICEID
 declare function mciGetDeviceIDFromElementIDW(byval dwElementID as DWORD, byval lpstrType as LPCWSTR) as MCIDEVICEID
 
 #ifdef UNICODE
-	#define mciGetDeviceIDFromElementID mciGetDeviceIDFromElementIDW
+	declare function mciGetDeviceIDFromElementID alias "mciGetDeviceIDFromElementIDW"(byval dwElementID as DWORD, byval lpstrType as LPCWSTR) as MCIDEVICEID
 #else
-	#define mciGetDeviceIDFromElementID mciGetDeviceIDFromElementIDA
+	declare function mciGetDeviceIDFromElementID alias "mciGetDeviceIDFromElementIDA"(byval dwElementID as DWORD, byval lpstrType as LPCSTR) as MCIDEVICEID
 #endif
 
 declare function mciGetErrorStringA(byval mcierr as MCIERROR, byval pszText as LPSTR, byval cchText as UINT) as WINBOOL
 declare function mciGetErrorStringW(byval mcierr as MCIERROR, byval pszText as LPWSTR, byval cchText as UINT) as WINBOOL
 
 #ifdef UNICODE
-	#define mciGetErrorString mciGetErrorStringW
+	declare function mciGetErrorString alias "mciGetErrorStringW"(byval mcierr as MCIERROR, byval pszText as LPWSTR, byval cchText as UINT) as WINBOOL
 #else
-	#define mciGetErrorString mciGetErrorStringA
+	declare function mciGetErrorString alias "mciGetErrorStringA"(byval mcierr as MCIERROR, byval pszText as LPSTR, byval cchText as UINT) as WINBOOL
 #endif
 
 declare function mciSetYieldProc(byval mciId as MCIDEVICEID, byval fpYieldProc as YIELDPROC, byval dwYieldData as DWORD) as WINBOOL
@@ -2284,7 +2290,7 @@ declare function mciGetYieldProc(byval mciId as MCIDEVICEID, byval pdwYieldData 
 #define MCIERR_FILE_WRITE (MCIERR_BASE + 93)
 #define MCIERR_NO_IDENTITY (MCIERR_BASE + 94)
 #define MCIERR_CUSTOM_DRIVER_BASE (MCIERR_BASE + 256)
-#define MCI_FIRST DRV_MCI_FIRST
+const MCI_FIRST = DRV_MCI_FIRST
 const MCI_OPEN = &h0803
 const MCI_CLOSE = &h0804
 const MCI_ESCAPE = &h0805
@@ -2330,8 +2336,8 @@ const MCI_DEVTYPE_DIGITAL_VIDEO = 520
 const MCI_DEVTYPE_OTHER = 521
 const MCI_DEVTYPE_WAVEFORM_AUDIO = 522
 const MCI_DEVTYPE_SEQUENCER = 523
-#define MCI_DEVTYPE_FIRST MCI_DEVTYPE_VCR
-#define MCI_DEVTYPE_LAST MCI_DEVTYPE_SEQUENCER
+const MCI_DEVTYPE_FIRST = MCI_DEVTYPE_VCR
+const MCI_DEVTYPE_LAST = MCI_DEVTYPE_SEQUENCER
 const MCI_DEVTYPE_FIRST_USER = &h1000
 #define MCI_MODE_NOT_READY (MCI_STRING_OFFSET + 12)
 #define MCI_MODE_STOP (MCI_STRING_OFFSET + 13)

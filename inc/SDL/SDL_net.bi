@@ -127,9 +127,9 @@ declare sub SDLNet_Write16_ alias "SDLNet_Write16"(byval value as Uint16, byval 
 declare sub SDLNet_Write32_ alias "SDLNet_Write32"(byval value as Uint32, byval area as any ptr)
 declare function SDLNet_Read16_ alias "SDLNet_Read16"(byval area as any ptr) as Uint16
 declare function SDLNet_Read32_ alias "SDLNet_Read32"(byval area as any ptr) as Uint32
+declare sub SDLNet_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...)
+declare function SDLNet_GetError alias "SDL_GetError"() as zstring ptr
 
-#define SDLNet_SetError SDL_SetError
-#define SDLNet_GetError SDL_GetError
 const SDL_DATA_ALIGNED = 0
 #define SDLNet_Write16(value, areap) scope : (*cptr(Uint16 ptr, areap)) = SDL_SwapBE16(value) : end scope
 #define SDLNet_Write32(value, areap) scope : (*cptr(Uint32 ptr, areap)) = SDL_SwapBE32(value) : end scope

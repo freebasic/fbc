@@ -502,7 +502,7 @@ declare function D3DRMVectorAdd(byval ret as D3DVECTOR ptr, byval x as D3DVECTOR
 declare function D3DRMVectorCrossProduct(byval ret as D3DVECTOR ptr, byval x as D3DVECTOR ptr, byval y as D3DVECTOR ptr) as D3DVECTOR ptr
 declare function D3DRMVectorDotProduct(byval x as D3DVECTOR ptr, byval y as D3DVECTOR ptr) as D3DVALUE
 declare function D3DRMVectorNormalize(byval x as D3DVECTOR ptr) as D3DVECTOR ptr
-#define D3DRMVectorNormalise D3DRMVectorNormalize
+declare function D3DRMVectorNormalise alias "D3DRMVectorNormalize"(byval x as D3DVECTOR ptr) as D3DVECTOR ptr
 declare function D3DRMVectorModulus(byval x as D3DVECTOR ptr) as D3DVALUE
 declare function D3DRMVectorRandom(byval ret as D3DVECTOR ptr) as D3DVECTOR ptr
 declare function D3DRMVectorRotate(byval ret as D3DVECTOR ptr, byval x as D3DVECTOR ptr, byval axis as D3DVECTOR ptr, byval theta as D3DVALUE) as D3DVECTOR ptr

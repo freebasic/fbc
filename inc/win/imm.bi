@@ -217,34 +217,43 @@ type PIMECHARPOSITION as tagIMECHARPOSITION ptr
 type NPIMECHARPOSITION as tagIMECHARPOSITION ptr
 type LPIMECHARPOSITION as tagIMECHARPOSITION ptr
 type IMCENUMPROC as function(byval as HIMC, byval as LPARAM) as WINBOOL
+declare function ImmInstallIMEA(byval lpszIMEFileName as LPCSTR, byval lpszLayoutText as LPCSTR) as HKL
 
-#ifdef UNICODE
-	#define ImmInstallIME ImmInstallIMEW
-	#define ImmGetDescription ImmGetDescriptionW
-	#define ImmGetIMEFileName ImmGetIMEFileNameW
-	#define ImmGetCompositionString ImmGetCompositionStringW
-	#define ImmSetCompositionString ImmSetCompositionStringW
-	#define ImmGetCandidateListCount ImmGetCandidateListCountW
-	#define ImmGetCandidateList ImmGetCandidateListW
-	#define ImmGetGuideLine ImmGetGuideLineW
-#else
-	#define ImmInstallIME ImmInstallIMEA
-	#define ImmGetDescription ImmGetDescriptionA
-	#define ImmGetIMEFileName ImmGetIMEFileNameA
-	#define ImmGetCompositionString ImmGetCompositionStringA
-	#define ImmSetCompositionString ImmSetCompositionStringA
-	#define ImmGetCandidateListCount ImmGetCandidateListCountA
-	#define ImmGetCandidateList ImmGetCandidateListA
-	#define ImmGetGuideLine ImmGetGuideLineA
+#ifndef UNICODE
+	declare function ImmInstallIME alias "ImmInstallIMEA"(byval lpszIMEFileName as LPCSTR, byval lpszLayoutText as LPCSTR) as HKL
 #endif
 
-declare function ImmInstallIMEA(byval lpszIMEFileName as LPCSTR, byval lpszLayoutText as LPCSTR) as HKL
 declare function ImmInstallIMEW(byval lpszIMEFileName as LPCWSTR, byval lpszLayoutText as LPCWSTR) as HKL
+
+#ifdef UNICODE
+	declare function ImmInstallIME alias "ImmInstallIMEW"(byval lpszIMEFileName as LPCWSTR, byval lpszLayoutText as LPCWSTR) as HKL
+#endif
+
 declare function ImmGetDefaultIMEWnd(byval as HWND) as HWND
 declare function ImmGetDescriptionA(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+
+#ifndef UNICODE
+	declare function ImmGetDescription alias "ImmGetDescriptionA"(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+#endif
+
 declare function ImmGetDescriptionW(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+
+#ifdef UNICODE
+	declare function ImmGetDescription alias "ImmGetDescriptionW"(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+#endif
+
 declare function ImmGetIMEFileNameA(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+
+#ifndef UNICODE
+	declare function ImmGetIMEFileName alias "ImmGetIMEFileNameA"(byval as HKL, byval as LPSTR, byval uBufLen as UINT) as UINT
+#endif
+
 declare function ImmGetIMEFileNameW(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+
+#ifdef UNICODE
+	declare function ImmGetIMEFileName alias "ImmGetIMEFileNameW"(byval as HKL, byval as LPWSTR, byval uBufLen as UINT) as UINT
+#endif
+
 declare function ImmGetProperty(byval as HKL, byval as DWORD) as DWORD
 declare function ImmIsIME(byval as HKL) as WINBOOL
 declare function ImmSimulateHotKey(byval as HWND, byval as DWORD) as WINBOOL
@@ -255,65 +264,138 @@ declare function ImmReleaseContext(byval as HWND, byval as HIMC) as WINBOOL
 declare function ImmAssociateContext(byval as HWND, byval as HIMC) as HIMC
 declare function ImmAssociateContextEx(byval as HWND, byval as HIMC, byval as DWORD) as WINBOOL
 declare function ImmGetCompositionStringA(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+
+#ifndef UNICODE
+	declare function ImmGetCompositionString alias "ImmGetCompositionStringA"(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+#endif
+
 declare function ImmGetCompositionStringW(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function ImmGetCompositionString alias "ImmGetCompositionStringW"(byval as HIMC, byval as DWORD, byval as LPVOID, byval as DWORD) as LONG
+#endif
+
 declare function ImmSetCompositionStringA(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmSetCompositionString alias "ImmSetCompositionStringA"(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+#endif
+
 declare function ImmSetCompositionStringW(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmSetCompositionString alias "ImmSetCompositionStringW"(byval as HIMC, byval dwIndex as DWORD, byval lpComp as LPVOID, byval as DWORD, byval lpRead as LPVOID, byval as DWORD) as WINBOOL
+#endif
+
 declare function ImmGetCandidateListCountA(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function ImmGetCandidateListCount alias "ImmGetCandidateListCountA"(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+#endif
+
 declare function ImmGetCandidateListCountW(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function ImmGetCandidateListCount alias "ImmGetCandidateListCountW"(byval as HIMC, byval lpdwListCount as LPDWORD) as DWORD
+#endif
+
 declare function ImmGetCandidateListA(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function ImmGetCandidateList alias "ImmGetCandidateListA"(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+#endif
+
 declare function ImmGetCandidateListW(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function ImmGetCandidateList alias "ImmGetCandidateListW"(byval as HIMC, byval deIndex as DWORD, byval as LPCANDIDATELIST, byval dwBufLen as DWORD) as DWORD
+#endif
+
 declare function ImmGetGuideLineA(byval as HIMC, byval dwIndex as DWORD, byval as LPSTR, byval dwBufLen as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function ImmGetGuideLine alias "ImmGetGuideLineA"(byval as HIMC, byval dwIndex as DWORD, byval as LPSTR, byval dwBufLen as DWORD) as DWORD
+#endif
+
 declare function ImmGetGuideLineW(byval as HIMC, byval dwIndex as DWORD, byval as LPWSTR, byval dwBufLen as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function ImmGetGuideLine alias "ImmGetGuideLineW"(byval as HIMC, byval dwIndex as DWORD, byval as LPWSTR, byval dwBufLen as DWORD) as DWORD
+#endif
+
 declare function ImmGetConversionStatus(byval as HIMC, byval as LPDWORD, byval as LPDWORD) as WINBOOL
 declare function ImmSetConversionStatus(byval as HIMC, byval as DWORD, byval as DWORD) as WINBOOL
 declare function ImmGetOpenStatus(byval as HIMC) as WINBOOL
 declare function ImmSetOpenStatus(byval as HIMC, byval as WINBOOL) as WINBOOL
+declare function ImmGetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
 
-#ifdef UNICODE
-	#define ImmGetCompositionFont ImmGetCompositionFontW
-	#define ImmSetCompositionFont ImmSetCompositionFontW
-#else
-	#define ImmGetCompositionFont ImmGetCompositionFontA
-	#define ImmSetCompositionFont ImmSetCompositionFontA
+#ifndef UNICODE
+	declare function ImmGetCompositionFont alias "ImmGetCompositionFontA"(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
 #endif
 
-declare function ImmGetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
 declare function ImmGetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmGetCompositionFont alias "ImmGetCompositionFontW"(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+#endif
+
 declare function ImmSetCompositionFontA(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmSetCompositionFont alias "ImmSetCompositionFontA"(byval as HIMC, byval as LPLOGFONTA) as WINBOOL
+#endif
+
 declare function ImmSetCompositionFontW(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmSetCompositionFont alias "ImmSetCompositionFontW"(byval as HIMC, byval as LPLOGFONTW) as WINBOOL
+#endif
+
 type REGISTERWORDENUMPROCA as function(byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as LPVOID) as long
 type REGISTERWORDENUMPROCW as function(byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as LPVOID) as long
 
 #ifdef UNICODE
-	#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCW
-	#define ImmConfigureIME ImmConfigureIMEW
-	#define ImmEscape ImmEscapeW
-	#define ImmGetConversionList ImmGetConversionListW
-	#define ImmIsUIMessage ImmIsUIMessageW
-	#define ImmRegisterWord ImmRegisterWordW
-	#define ImmUnregisterWord ImmUnregisterWordW
-	#define ImmGetRegisterWordStyle ImmGetRegisterWordStyleW
-	#define ImmEnumRegisterWord ImmEnumRegisterWordW
-	#define ImmGetImeMenuItems ImmGetImeMenuItemsW
+	type REGISTERWORDENUMPROC as REGISTERWORDENUMPROCW
 #else
-	#define REGISTERWORDENUMPROC REGISTERWORDENUMPROCA
-	#define ImmConfigureIME ImmConfigureIMEA
-	#define ImmEscape ImmEscapeA
-	#define ImmGetConversionList ImmGetConversionListA
-	#define ImmIsUIMessage ImmIsUIMessageA
-	#define ImmRegisterWord ImmRegisterWordA
-	#define ImmUnregisterWord ImmUnregisterWordA
-	#define ImmGetRegisterWordStyle ImmGetRegisterWordStyleA
-	#define ImmEnumRegisterWord ImmEnumRegisterWordA
-	#define ImmGetImeMenuItems ImmGetImeMenuItemsA
+	type REGISTERWORDENUMPROC as REGISTERWORDENUMPROCA
 #endif
 
 declare function ImmConfigureIMEA(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmConfigureIME alias "ImmConfigureIMEA"(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+#endif
+
 declare function ImmConfigureIMEW(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmConfigureIME alias "ImmConfigureIMEW"(byval as HKL, byval as HWND, byval as DWORD, byval as LPVOID) as WINBOOL
+#endif
+
 declare function ImmEscapeA(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+
+#ifndef UNICODE
+	declare function ImmEscape alias "ImmEscapeA"(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+#endif
+
 declare function ImmEscapeW(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+
+#ifdef UNICODE
+	declare function ImmEscape alias "ImmEscapeW"(byval as HKL, byval as HIMC, byval as UINT, byval as LPVOID) as LRESULT
+#endif
+
 declare function ImmGetConversionListA(byval as HKL, byval as HIMC, byval as LPCSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+
+#ifndef UNICODE
+	declare function ImmGetConversionList alias "ImmGetConversionListA"(byval as HKL, byval as HIMC, byval as LPCSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+#endif
+
 declare function ImmGetConversionListW(byval as HKL, byval as HIMC, byval as LPCWSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+
+#ifdef UNICODE
+	declare function ImmGetConversionList alias "ImmGetConversionListW"(byval as HKL, byval as HIMC, byval as LPCWSTR, byval as LPCANDIDATELIST, byval dwBufLen as DWORD, byval uFlag as UINT) as DWORD
+#endif
+
 declare function ImmNotifyIME(byval as HIMC, byval dwAction as DWORD, byval dwIndex as DWORD, byval dwValue as DWORD) as WINBOOL
 declare function ImmGetStatusWindowPos(byval as HIMC, byval as LPPOINT) as WINBOOL
 declare function ImmSetStatusWindowPos(byval as HIMC, byval as LPPOINT) as WINBOOL
@@ -322,22 +404,81 @@ declare function ImmSetCompositionWindow(byval as HIMC, byval as LPCOMPOSITIONFO
 declare function ImmGetCandidateWindow(byval as HIMC, byval as DWORD, byval as LPCANDIDATEFORM) as WINBOOL
 declare function ImmSetCandidateWindow(byval as HIMC, byval as LPCANDIDATEFORM) as WINBOOL
 declare function ImmIsUIMessageA(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmIsUIMessage alias "ImmIsUIMessageA"(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+#endif
+
 declare function ImmIsUIMessageW(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmIsUIMessage alias "ImmIsUIMessageW"(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as WINBOOL
+#endif
+
 declare function ImmGetVirtualKey(byval as HWND) as UINT
 declare function ImmRegisterWordA(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmRegisterWord alias "ImmRegisterWordA"(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR) as WINBOOL
+#endif
+
 declare function ImmRegisterWordW(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmRegisterWord alias "ImmRegisterWordW"(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR) as WINBOOL
+#endif
+
 declare function ImmUnregisterWordA(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszUnregister as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function ImmUnregisterWord alias "ImmUnregisterWordA"(byval as HKL, byval lpszReading as LPCSTR, byval as DWORD, byval lpszUnregister as LPCSTR) as WINBOOL
+#endif
+
 declare function ImmUnregisterWordW(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszUnregister as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function ImmUnregisterWord alias "ImmUnregisterWordW"(byval as HKL, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszUnregister as LPCWSTR) as WINBOOL
+#endif
+
 declare function ImmGetRegisterWordStyleA(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFA) as UINT
+
+#ifndef UNICODE
+	declare function ImmGetRegisterWordStyle alias "ImmGetRegisterWordStyleA"(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFA) as UINT
+#endif
+
 declare function ImmGetRegisterWordStyleW(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFW) as UINT
+
+#ifdef UNICODE
+	declare function ImmGetRegisterWordStyle alias "ImmGetRegisterWordStyleW"(byval as HKL, byval nItem as UINT, byval as LPSTYLEBUFW) as UINT
+#endif
+
 declare function ImmEnumRegisterWordA(byval as HKL, byval as REGISTERWORDENUMPROCA, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR, byval as LPVOID) as UINT
+
+#ifndef UNICODE
+	declare function ImmEnumRegisterWord alias "ImmEnumRegisterWordA"(byval as HKL, byval as REGISTERWORDENUMPROCA, byval lpszReading as LPCSTR, byval as DWORD, byval lpszRegister as LPCSTR, byval as LPVOID) as UINT
+#endif
+
 declare function ImmEnumRegisterWordW(byval as HKL, byval as REGISTERWORDENUMPROCW, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR, byval as LPVOID) as UINT
+
+#ifdef UNICODE
+	declare function ImmEnumRegisterWord alias "ImmEnumRegisterWordW"(byval as HKL, byval as REGISTERWORDENUMPROCW, byval lpszReading as LPCWSTR, byval as DWORD, byval lpszRegister as LPCWSTR, byval as LPVOID) as UINT
+#endif
+
 declare function ImmDisableIME(byval as DWORD) as WINBOOL
 declare function ImmEnumInputContext(byval idThread as DWORD, byval lpfn as IMCENUMPROC, byval lParam as LPARAM) as WINBOOL
 declare function ImmGetImeMenuItemsA(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOA, byval as LPIMEMENUITEMINFOA, byval as DWORD) as DWORD
-declare function ImmGetImeMenuItemsW(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOW, byval as LPIMEMENUITEMINFOW, byval as DWORD) as DWORD
-declare function ImmDisableTextFrameService(byval idThread as DWORD) as WINBOOL
 
+#ifndef UNICODE
+	declare function ImmGetImeMenuItems alias "ImmGetImeMenuItemsA"(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOA, byval as LPIMEMENUITEMINFOA, byval as DWORD) as DWORD
+#endif
+
+declare function ImmGetImeMenuItemsW(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOW, byval as LPIMEMENUITEMINFOW, byval as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function ImmGetImeMenuItems alias "ImmGetImeMenuItemsW"(byval as HIMC, byval as DWORD, byval as DWORD, byval as LPIMEMENUITEMINFOW, byval as LPIMEMENUITEMINFOW, byval as DWORD) as DWORD
+#endif
+
+declare function ImmDisableTextFrameService(byval idThread as DWORD) as WINBOOL
 const IMC_GETCANDIDATEPOS = &h0007
 const IMC_SETCANDIDATEPOS = &h0008
 const IMC_GETCOMPOSITIONFONT = &h0009
@@ -474,10 +615,10 @@ const GCL_REVERSECONVERSION = &h0002
 const GCL_REVERSE_LENGTH = &h0003
 const IME_CMODE_ALPHANUMERIC = &h0000
 const IME_CMODE_NATIVE = &h0001
-#define IME_CMODE_CHINESE IME_CMODE_NATIVE
-#define IME_CMODE_HANGEUL IME_CMODE_NATIVE
-#define IME_CMODE_HANGUL IME_CMODE_NATIVE
-#define IME_CMODE_JAPANESE IME_CMODE_NATIVE
+const IME_CMODE_CHINESE = IME_CMODE_NATIVE
+const IME_CMODE_HANGEUL = IME_CMODE_NATIVE
+const IME_CMODE_HANGUL = IME_CMODE_NATIVE
+const IME_CMODE_JAPANESE = IME_CMODE_NATIVE
 const IME_CMODE_KATAKANA = &h0002
 const IME_CMODE_LANGUAGE = &h0003
 const IME_CMODE_FULLSHAPE = &h0008

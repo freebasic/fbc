@@ -145,9 +145,9 @@ type MEVENT
 	bstate as mmask_t
 end type
 
-#define BUTTON_SHIFT PDC_BUTTON_SHIFT
-#define BUTTON_CONTROL PDC_BUTTON_CONTROL
-#define BUTTON_ALT PDC_BUTTON_ALT
+const BUTTON_SHIFT = PDC_BUTTON_SHIFT
+const BUTTON_CONTROL = PDC_BUTTON_CONTROL
+const BUTTON_ALT = PDC_BUTTON_ALT
 
 type _win
 	_cury as long
@@ -611,8 +611,8 @@ const KEY_ALT_R = &h221
 const KEY_RESIZE = &h222
 const KEY_SUP = &h223
 const KEY_SDOWN = &h224
-#define KEY_MIN KEY_BREAK
-#define KEY_MAX KEY_SDOWN
+const KEY_MIN = KEY_BREAK
+const KEY_MAX = KEY_SDOWN
 #define KEY_F(n) (KEY_F0 + (n))
 
 declare function addch(byval as const chtype) as long

@@ -425,34 +425,76 @@ end type
 type SERVICE_ASYNC_INFO as _SERVICE_ASYNC_INFO
 type PSERVICE_ASYNC_INFO as _SERVICE_ASYNC_INFO ptr
 type LPSERVICE_ASYNC_INFO as _SERVICE_ASYNC_INFO ptr
+declare function EnumProtocolsA(byval lpiProtocols as LPINT, byval lpProtocolBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as INT_
 
-#ifdef UNICODE
-	#define EnumProtocols EnumProtocolsW
-	#define GetAddressByName GetAddressByNameW
-	#define GetTypeByName GetTypeByNameW
-	#define GetNameByType GetNameByTypeW
-	#define SetService SetServiceW
-	#define GetService GetServiceW
-#else
-	#define EnumProtocols EnumProtocolsA
-	#define GetAddressByName GetAddressByNameA
-	#define GetTypeByName GetTypeByNameA
-	#define GetNameByType GetNameByTypeA
-	#define SetService SetServiceA
-	#define GetService GetServiceA
+#ifndef UNICODE
+	declare function EnumProtocols alias "EnumProtocolsA"(byval lpiProtocols as LPINT, byval lpProtocolBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as INT_
 #endif
 
-declare function EnumProtocolsA(byval lpiProtocols as LPINT, byval lpProtocolBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as INT_
 declare function EnumProtocolsW(byval lpiProtocols as LPINT, byval lpProtocolBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as INT_
+
+#ifdef UNICODE
+	declare function EnumProtocols alias "EnumProtocolsW"(byval lpiProtocols as LPINT, byval lpProtocolBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as INT_
+#endif
+
 declare function GetAddressByNameA(byval dwNameSpace as DWORD, byval lpServiceType as LPGUID, byval lpServiceName as LPSTR, byval lpiProtocols as LPINT, byval dwResolution as DWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpCsaddrBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpAliasBuffer as LPSTR, byval lpdwAliasBufferLength as LPDWORD) as INT_
+
+#ifndef UNICODE
+	declare function GetAddressByName alias "GetAddressByNameA"(byval dwNameSpace as DWORD, byval lpServiceType as LPGUID, byval lpServiceName as LPSTR, byval lpiProtocols as LPINT, byval dwResolution as DWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpCsaddrBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpAliasBuffer as LPSTR, byval lpdwAliasBufferLength as LPDWORD) as INT_
+#endif
+
 declare function GetAddressByNameW(byval dwNameSpace as DWORD, byval lpServiceType as LPGUID, byval lpServiceName as LPWSTR, byval lpiProtocols as LPINT, byval dwResolution as DWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpCsaddrBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpAliasBuffer as LPWSTR, byval lpdwAliasBufferLength as LPDWORD) as INT_
+
+#ifdef UNICODE
+	declare function GetAddressByName alias "GetAddressByNameW"(byval dwNameSpace as DWORD, byval lpServiceType as LPGUID, byval lpServiceName as LPWSTR, byval lpiProtocols as LPINT, byval dwResolution as DWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpCsaddrBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpAliasBuffer as LPWSTR, byval lpdwAliasBufferLength as LPDWORD) as INT_
+#endif
+
 declare function GetTypeByNameA(byval lpServiceName as LPSTR, byval lpServiceType as LPGUID) as INT_
+
+#ifndef UNICODE
+	declare function GetTypeByName alias "GetTypeByNameA"(byval lpServiceName as LPSTR, byval lpServiceType as LPGUID) as INT_
+#endif
+
 declare function GetTypeByNameW(byval lpServiceName as LPWSTR, byval lpServiceType as LPGUID) as INT_
+
+#ifdef UNICODE
+	declare function GetTypeByName alias "GetTypeByNameW"(byval lpServiceName as LPWSTR, byval lpServiceType as LPGUID) as INT_
+#endif
+
 declare function GetNameByTypeA(byval lpServiceType as LPGUID, byval lpServiceName as LPSTR, byval dwNameLength as DWORD) as INT_
+
+#ifndef UNICODE
+	declare function GetNameByType alias "GetNameByTypeA"(byval lpServiceType as LPGUID, byval lpServiceName as LPSTR, byval dwNameLength as DWORD) as INT_
+#endif
+
 declare function GetNameByTypeW(byval lpServiceType as LPGUID, byval lpServiceName as LPWSTR, byval dwNameLength as DWORD) as INT_
+
+#ifdef UNICODE
+	declare function GetNameByType alias "GetNameByTypeW"(byval lpServiceType as LPGUID, byval lpServiceName as LPWSTR, byval dwNameLength as DWORD) as INT_
+#endif
+
 declare function SetServiceA(byval dwNameSpace as DWORD, byval dwOperation as DWORD, byval dwFlags as DWORD, byval lpServiceInfo as LPSERVICE_INFOA, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpdwStatusFlags as LPDWORD) as INT_
+
+#ifndef UNICODE
+	declare function SetService alias "SetServiceA"(byval dwNameSpace as DWORD, byval dwOperation as DWORD, byval dwFlags as DWORD, byval lpServiceInfo as LPSERVICE_INFOA, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpdwStatusFlags as LPDWORD) as INT_
+#endif
+
 declare function SetServiceW(byval dwNameSpace as DWORD, byval dwOperation as DWORD, byval dwFlags as DWORD, byval lpServiceInfo as LPSERVICE_INFOW, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpdwStatusFlags as LPDWORD) as INT_
+
+#ifdef UNICODE
+	declare function SetService alias "SetServiceW"(byval dwNameSpace as DWORD, byval dwOperation as DWORD, byval dwFlags as DWORD, byval lpServiceInfo as LPSERVICE_INFOW, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO, byval lpdwStatusFlags as LPDWORD) as INT_
+#endif
+
 declare function GetServiceA(byval dwNameSpace as DWORD, byval lpGuid as LPGUID, byval lpServiceName as LPSTR, byval dwProperties as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferSize as LPDWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO) as INT_
+
+#ifndef UNICODE
+	declare function GetService alias "GetServiceA"(byval dwNameSpace as DWORD, byval lpGuid as LPGUID, byval lpServiceName as LPSTR, byval dwProperties as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferSize as LPDWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO) as INT_
+#endif
+
 declare function GetServiceW(byval dwNameSpace as DWORD, byval lpGuid as LPGUID, byval lpServiceName as LPWSTR, byval dwProperties as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferSize as LPDWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO) as INT_
+
+#ifdef UNICODE
+	declare function GetService alias "GetServiceW"(byval dwNameSpace as DWORD, byval lpGuid as LPGUID, byval lpServiceName as LPWSTR, byval dwProperties as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferSize as LPDWORD, byval lpServiceAsyncInfo as LPSERVICE_ASYNC_INFO) as INT_
+#endif
 
 end extern

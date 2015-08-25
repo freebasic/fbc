@@ -38,24 +38,28 @@
 
 #include once "tre.bi"
 
+extern "C"
+
 const TRE_REGEX_H = 1
 
 #ifndef TRE_USE_SYSTEM_REGEX_H
-	#define regcomp tre_regcomp
-	#define regerror tre_regerror
-	#define regexec tre_regexec
-	#define regfree tre_regfree
+	declare function regcomp alias "tre_regcomp"(byval preg as regex_t ptr, byval regex as const zstring ptr, byval cflags as long) as long
+	declare function regerror alias "tre_regerror"(byval errcode as long, byval preg as const regex_t ptr, byval errbuf as zstring ptr, byval errbuf_size as uinteger) as uinteger
+	declare function regexec alias "tre_regexec"(byval preg as const regex_t ptr, byval string as const zstring ptr, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
+	declare sub regfree alias "tre_regfree"(byval preg as regex_t ptr)
 #endif
 
 #define regacomp tre_regacomp
-#define regaexec tre_regaexec
+declare function regaexec alias "tre_regaexec"(byval preg as const regex_t ptr, byval string as const zstring ptr, byval match as regamatch_t ptr, byval params as regaparams_t, byval eflags as long) as long
 #define regancomp tre_regancomp
-#define reganexec tre_reganexec
+declare function reganexec alias "tre_reganexec"(byval preg as const regex_t ptr, byval string as const zstring ptr, byval len as uinteger, byval match as regamatch_t ptr, byval params as regaparams_t, byval eflags as long) as long
 #define regawncomp tre_regawncomp
-#define regawnexec tre_regawnexec
-#define regncomp tre_regncomp
-#define regnexec tre_regnexec
-#define regwcomp tre_regwcomp
-#define regwexec tre_regwexec
-#define regwncomp tre_regwncomp
-#define regwnexec tre_regwnexec
+declare function regawnexec alias "tre_regawnexec"(byval preg as const regex_t ptr, byval string as const wstring ptr, byval len as uinteger, byval match as regamatch_t ptr, byval params as regaparams_t, byval eflags as long) as long
+declare function regncomp alias "tre_regncomp"(byval preg as regex_t ptr, byval regex as const zstring ptr, byval len as uinteger, byval cflags as long) as long
+declare function regnexec alias "tre_regnexec"(byval preg as const regex_t ptr, byval string as const zstring ptr, byval len as uinteger, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
+declare function regwcomp alias "tre_regwcomp"(byval preg as regex_t ptr, byval regex as const wstring ptr, byval cflags as long) as long
+declare function regwexec alias "tre_regwexec"(byval preg as const regex_t ptr, byval string as const wstring ptr, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
+declare function regwncomp alias "tre_regwncomp"(byval preg as regex_t ptr, byval regex as const wstring ptr, byval len as uinteger, byval cflags as long) as long
+declare function regwnexec alias "tre_regwnexec"(byval preg as const regex_t ptr, byval string as const wstring ptr, byval len as uinteger, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
+
+end extern

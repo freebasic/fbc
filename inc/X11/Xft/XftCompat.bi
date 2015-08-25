@@ -88,7 +88,6 @@ type XftPattern as FcPattern
 type XftFontSet as FcFontSet
 type XftObjectSet as FcObjectSet
 
-#define XftGlyphExists XftCharExists
 #define XftObjectSetCreate FcObjectSetCreate
 #define XftObjectSetAdd FcObjectSetAdd
 #define XftObjectSetDestroy FcObjectSetDestroy

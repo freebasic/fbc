@@ -92,7 +92,7 @@ declare function IMG_LoadWEBP_RW(byval src as SDL_RWops ptr) as SDL_Surface ptr
 declare function IMG_ReadXPMFromArray(byval xpm as zstring ptr ptr) as SDL_Surface ptr
 declare function IMG_SavePNG(byval surface as SDL_Surface ptr, byval file as const zstring ptr) as long
 declare function IMG_SavePNG_RW(byval surface as SDL_Surface ptr, byval dst as SDL_RWops ptr, byval freedst as long) as long
-#define IMG_SetError SDL_SetError
-#define IMG_GetError SDL_GetError
+declare function IMG_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...) as long
+declare function IMG_GetError alias "SDL_GetError"() as const zstring ptr
 
 end extern

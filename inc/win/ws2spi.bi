@@ -256,7 +256,7 @@ declare function WPUSetEvent(byval hEvent as HANDLE, byval lpErrno as LPINT) as 
 declare function WPUCompleteOverlappedRequest(byval s as SOCKET, byval lpOverlapped as LPWSAOVERLAPPED, byval dwError as DWORD, byval cbTransferred as DWORD, byval lpErrno as LPINT) as long
 declare function WPUOpenCurrentThread(byval lpThreadId as LPWSATHREADID, byval lpErrno as LPINT) as long
 declare function WPUCloseThread(byval lpThreadId as LPWSATHREADID, byval lpErrno as LPINT) as long
-#define WSCEnumNameSpaceProviders WSAEnumNameSpaceProvidersW
+declare function WSCEnumNameSpaceProviders alias "WSAEnumNameSpaceProvidersW"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOW) as INT_
 #define LPFN_WSCENUMNAMESPACEPROVIDERS LPFN_WSAENUMNAMESPACEPROVIDERSW
 
 #ifdef __FB_64BIT__
@@ -416,7 +416,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	declare function WSCSetApplicationCategory(byval Path as LPCWSTR, byval PathLength as DWORD, byval Extra as LPCWSTR, byval ExtraLength as DWORD, byval PermittedLspCategories as DWORD, byval pPrevPermLspCat as DWORD ptr, byval lpErrno as LPINT) as long
 	declare function WSCSetProviderInfo(byval lpProviderId as LPGUID, byval InfoType as WSC_PROVIDER_INFO_TYPE, byval Info as PBYTE, byval InfoSize as uinteger, byval Flags as DWORD, byval lpErrno as LPINT) as long
 	declare function WSCInstallNameSpaceEx(byval lpszIdentifier as LPWSTR, byval lpszPathName as LPWSTR, byval dwNameSpace as DWORD, byval dwVersion as DWORD, byval lpProviderId as LPGUID, byval lpProviderInfo as LPBLOB) as long
-	#define WSCEnumNameSpaceProvidersEx WSAEnumNameSpaceProvidersExW
+	declare function WSCEnumNameSpaceProvidersEx alias "WSAEnumNameSpaceProvidersExW"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXW) as INT_
 	#define LPFN_WSCENUMNAMESPACEPROVIDERSEX LPFN_WSAENUMNAMESPACEPROVIDERSEXW
 #endif
 

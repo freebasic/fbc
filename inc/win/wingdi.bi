@@ -78,23 +78,23 @@ const ERROR_ = 0
 const NULLREGION = 1
 const SIMPLEREGION = 2
 const COMPLEXREGION = 3
-#define RGN_ERROR ERROR_
+const RGN_ERROR = ERROR_
 const RGN_AND = 1
 const RGN_OR = 2
 const RGN_XOR = 3
 const RGN_DIFF = 4
 const RGN_COPY = 5
-#define RGN_MIN RGN_AND
-#define RGN_MAX RGN_COPY
+const RGN_MIN = RGN_AND
+const RGN_MAX = RGN_COPY
 const BLACKONWHITE = 1
 const WHITEONBLACK = 2
 const COLORONCOLOR = 3
 const HALFTONE = 4
 const MAXSTRETCHBLTMODE = 4
-#define STRETCH_ANDSCANS BLACKONWHITE
-#define STRETCH_ORSCANS WHITEONBLACK
-#define STRETCH_DELETESCANS COLORONCOLOR
-#define STRETCH_HALFTONE HALFTONE
+const STRETCH_ANDSCANS = BLACKONWHITE
+const STRETCH_ORSCANS = WHITEONBLACK
+const STRETCH_DELETESCANS = COLORONCOLOR
+const STRETCH_HALFTONE = HALFTONE
 const ALTERNATE = 1
 const WINDING = 2
 const POLYFILL_LAST = 2
@@ -113,12 +113,12 @@ const TA_BOTTOM = 8
 const TA_BASELINE = 24
 const TA_RTLREADING = 256
 #define TA_MASK (((TA_BASELINE + TA_CENTER) + TA_UPDATECP) + TA_RTLREADING)
-#define VTA_BASELINE TA_BASELINE
-#define VTA_LEFT TA_BOTTOM
-#define VTA_RIGHT TA_TOP
-#define VTA_CENTER TA_CENTER
-#define VTA_BOTTOM TA_RIGHT
-#define VTA_TOP TA_LEFT
+const VTA_BASELINE = TA_BASELINE
+const VTA_LEFT = TA_BOTTOM
+const VTA_RIGHT = TA_TOP
+const VTA_CENTER = TA_CENTER
+const VTA_BOTTOM = TA_RIGHT
+const VTA_TOP = TA_LEFT
 const ETO_OPAQUE = &h0002
 const ETO_CLIPPED = &h0004
 const ETO_GLYPH_INDEX = &h0010
@@ -135,7 +135,7 @@ const ETO_PDY = &h2000
 const ASPECT_FILTERING = &h0001
 const DCB_RESET = &h0001
 const DCB_ACCUMULATE = &h0002
-#define DCB_DIRTY DCB_ACCUMULATE
+const DCB_DIRTY = DCB_ACCUMULATE
 #define DCB_SET (DCB_RESET or DCB_ACCUMULATE)
 const DCB_ENABLE = &h0004
 const DCB_DISABLE = &h0008
@@ -408,12 +408,12 @@ const OBJ_EXTPEN = 11
 const OBJ_ENHMETADC = 12
 const OBJ_ENHMETAFILE = 13
 const OBJ_COLORSPACE = 14
-#define GDI_OBJ_LAST OBJ_COLORSPACE
+const GDI_OBJ_LAST = OBJ_COLORSPACE
 const MWT_IDENTITY = 1
 const MWT_LEFTMULTIPLY = 2
 const MWT_RIGHTMULTIPLY = 3
-#define MWT_MIN MWT_IDENTITY
-#define MWT_MAX MWT_RIGHTMULTIPLY
+const MWT_MIN = MWT_IDENTITY
+const MWT_MAX = MWT_RIGHTMULTIPLY
 #define _XFORM_
 
 type tagXFORM
@@ -1280,11 +1280,11 @@ const FW_SEMIBOLD = 600
 const FW_BOLD = 700
 const FW_EXTRABOLD = 800
 const FW_HEAVY = 900
-#define FW_ULTRALIGHT FW_EXTRALIGHT
-#define FW_REGULAR FW_NORMAL
-#define FW_DEMIBOLD FW_SEMIBOLD
-#define FW_ULTRABOLD FW_EXTRABOLD
-#define FW_BLACK FW_HEAVY
+const FW_ULTRALIGHT = FW_EXTRALIGHT
+const FW_REGULAR = FW_NORMAL
+const FW_DEMIBOLD = FW_SEMIBOLD
+const FW_ULTRABOLD = FW_EXTRABOLD
+const FW_BLACK = FW_HEAVY
 const PANOSE_COUNT = 10
 const PAN_FAMILYTYPE_INDEX = 0
 const PAN_SERIFSTYLE_INDEX = 1
@@ -1491,9 +1491,9 @@ const MM_HIENGLISH = 5
 const MM_TWIPS = 6
 const MM_ISOTROPIC = 7
 const MM_ANISOTROPIC = 8
-#define MM_MIN MM_TEXT
-#define MM_MAX MM_ANISOTROPIC
-#define MM_MAX_FIXEDSCALE MM_TWIPS
+const MM_MIN = MM_TEXT
+const MM_MAX = MM_ANISOTROPIC
+const MM_MAX_FIXEDSCALE = MM_TWIPS
 const ABSOLUTE = 1
 const RELATIVE = 2
 const WHITE_BRUSH = 0
@@ -1502,7 +1502,7 @@ const GRAY_BRUSH = 2
 const DKGRAY_BRUSH = 3
 const BLACK_BRUSH = 4
 const NULL_BRUSH = 5
-#define HOLLOW_BRUSH NULL_BRUSH
+const HOLLOW_BRUSH = NULL_BRUSH
 const WHITE_PEN = 6
 const BLACK_PEN = 7
 const NULL_PEN = 8
@@ -1520,7 +1520,7 @@ const STOCK_LAST = 19
 const CLR_INVALID = &hFFFFFFFF
 const BS_SOLID = 0
 const BS_NULL = 1
-#define BS_HOLLOW BS_NULL
+const BS_HOLLOW = BS_NULL
 const BS_HATCHED = 2
 const BS_PATTERN = 3
 const BS_INDEXED = 4
@@ -1858,8 +1858,8 @@ const DM_SPECVERSION = &h0401
 #define DM_DISPLAYFIXEDOUTPUT __MSABI_LONG(&h20000000)
 const DMORIENT_PORTRAIT = 1
 const DMORIENT_LANDSCAPE = 2
-#define DMPAPER_FIRST DMPAPER_LETTER
 const DMPAPER_LETTER = 1
+const DMPAPER_FIRST = DMPAPER_LETTER
 const DMPAPER_LETTERSMALL = 2
 const DMPAPER_TABLOID = 3
 const DMPAPER_LEDGER = 4
@@ -1977,10 +1977,10 @@ const DMPAPER_PENV_7_ROTATED = 115
 const DMPAPER_PENV_8_ROTATED = 116
 const DMPAPER_PENV_9_ROTATED = 117
 const DMPAPER_PENV_10_ROTATED = 118
-#define DMPAPER_LAST DMPAPER_PENV_10_ROTATED
+const DMPAPER_LAST = DMPAPER_PENV_10_ROTATED
 const DMPAPER_USER = 256
-#define DMBIN_FIRST DMBIN_UPPER
 const DMBIN_UPPER = 1
+const DMBIN_FIRST = DMBIN_UPPER
 const DMBIN_ONLYONE = 1
 const DMBIN_LOWER = 2
 const DMBIN_MIDDLE = 3
@@ -1994,7 +1994,7 @@ const DMBIN_LARGEFMT = 10
 const DMBIN_LARGECAPACITY = 11
 const DMBIN_CASSETTE = 14
 const DMBIN_FORMSOURCE = 15
-#define DMBIN_LAST DMBIN_FORMSOURCE
+const DMBIN_LAST = DMBIN_FORMSOURCE
 const DMBIN_USER = 256
 const DMRES_DRAFT = -1
 const DMRES_LOW = -2
@@ -2750,9 +2750,9 @@ type OLDFONTENUMPROCA as function(byval as const LOGFONTA ptr, byval as const TE
 type OLDFONTENUMPROCW as function(byval as const LOGFONTW ptr, byval as const TEXTMETRICW ptr, byval as DWORD, byval as LPARAM) as long
 
 #ifdef UNICODE
-	#define OLDFONTENUMPROC OLDFONTENUMPROCW
+	type OLDFONTENUMPROC as OLDFONTENUMPROCW
 #else
-	#define OLDFONTENUMPROC OLDFONTENUMPROCA
+	type OLDFONTENUMPROC as OLDFONTENUMPROCA
 #endif
 
 type FONTENUMPROCA as OLDFONTENUMPROCA
@@ -2766,29 +2766,18 @@ type FONTENUMPROCW as OLDFONTENUMPROCW
 
 type GOBJENUMPROC as function(byval as LPVOID, byval as LPARAM) as long
 type LINEDDAPROC as sub(byval as long, byval as long, byval as LPARAM)
+declare function AddFontResourceA(byval as LPCSTR) as long
 
-#ifdef UNICODE
-	#define AddFontResource AddFontResourceW
-	#define CopyMetaFile CopyMetaFileW
-	#define CreateDC CreateDCW
-	#define CreateFontIndirect CreateFontIndirectW
-	#define CreateFont CreateFontW
-	#define CreateIC CreateICW
-	#define CreateMetaFile CreateMetaFileW
-	#define CreateScalableFontResource CreateScalableFontResourceW
-#else
-	#define AddFontResource AddFontResourceA
-	#define CopyMetaFile CopyMetaFileA
-	#define CreateDC CreateDCA
-	#define CreateFontIndirect CreateFontIndirectA
-	#define CreateFont CreateFontA
-	#define CreateIC CreateICA
-	#define CreateMetaFile CreateMetaFileA
-	#define CreateScalableFontResource CreateScalableFontResourceA
+#ifndef UNICODE
+	declare function AddFontResource alias "AddFontResourceA"(byval as LPCSTR) as long
 #endif
 
-declare function AddFontResourceA(byval as LPCSTR) as long
 declare function AddFontResourceW(byval as LPCWSTR) as long
+
+#ifdef UNICODE
+	declare function AddFontResource alias "AddFontResourceW"(byval as LPCWSTR) as long
+#endif
+
 declare function AnimatePalette(byval hPal as HPALETTE, byval iStartIndex as UINT, byval cEntries as UINT, byval ppe as const PALETTEENTRY ptr) as WINBOOL
 declare function Arc(byval hdc as HDC, byval x1 as long, byval y1 as long, byval x2 as long, byval y2 as long, byval x3 as long, byval y3 as long, byval x4 as long, byval y4 as long) as WINBOOL
 declare function BitBlt(byval hdc as HDC, byval x as long, byval y as long, byval cx as long, byval cy as long, byval hdcSrc as HDC, byval x1 as long, byval y1 as long, byval rop as DWORD) as WINBOOL
@@ -2798,7 +2787,17 @@ declare function ChoosePixelFormat(byval hdc as HDC, byval ppfd as const PIXELFO
 declare function CloseMetaFile(byval hdc as HDC) as HMETAFILE
 declare function CombineRgn(byval hrgnDst as HRGN, byval hrgnSrc1 as HRGN, byval hrgnSrc2 as HRGN, byval iMode as long) as long
 declare function CopyMetaFileA(byval as HMETAFILE, byval as LPCSTR) as HMETAFILE
+
+#ifndef UNICODE
+	declare function CopyMetaFile alias "CopyMetaFileA"(byval as HMETAFILE, byval as LPCSTR) as HMETAFILE
+#endif
+
 declare function CopyMetaFileW(byval as HMETAFILE, byval as LPCWSTR) as HMETAFILE
+
+#ifdef UNICODE
+	declare function CopyMetaFile alias "CopyMetaFileW"(byval as HMETAFILE, byval as LPCWSTR) as HMETAFILE
+#endif
+
 declare function CreateBitmap(byval nWidth as long, byval nHeight as long, byval nPlanes as UINT, byval nBitCount as UINT, byval lpBits as const any ptr) as HBITMAP
 declare function CreateBitmapIndirect(byval pbm as const BITMAP ptr) as HBITMAP
 declare function CreateBrushIndirect(byval plbrush as const LOGBRUSH ptr) as HBRUSH
@@ -2806,21 +2805,71 @@ declare function CreateCompatibleBitmap(byval hdc as HDC, byval cx as long, byva
 declare function CreateDiscardableBitmap(byval hdc as HDC, byval cx as long, byval cy as long) as HBITMAP
 declare function CreateCompatibleDC(byval hdc as HDC) as HDC
 declare function CreateDCA(byval pwszDriver as LPCSTR, byval pwszDevice as LPCSTR, byval pszPort as LPCSTR, byval pdm as const DEVMODEA ptr) as HDC
+
+#ifndef UNICODE
+	declare function CreateDC alias "CreateDCA"(byval pwszDriver as LPCSTR, byval pwszDevice as LPCSTR, byval pszPort as LPCSTR, byval pdm as const DEVMODEA ptr) as HDC
+#endif
+
 declare function CreateDCW(byval pwszDriver as LPCWSTR, byval pwszDevice as LPCWSTR, byval pszPort as LPCWSTR, byval pdm as const DEVMODEW ptr) as HDC
+
+#ifdef UNICODE
+	declare function CreateDC alias "CreateDCW"(byval pwszDriver as LPCWSTR, byval pwszDevice as LPCWSTR, byval pszPort as LPCWSTR, byval pdm as const DEVMODEW ptr) as HDC
+#endif
+
 declare function CreateDIBitmap(byval hdc as HDC, byval pbmih as const BITMAPINFOHEADER ptr, byval flInit as DWORD, byval pjBits as const any ptr, byval pbmi as const BITMAPINFO ptr, byval iUsage as UINT) as HBITMAP
 declare function CreateDIBPatternBrush(byval h as HGLOBAL, byval iUsage as UINT) as HBRUSH
 declare function CreateDIBPatternBrushPt(byval lpPackedDIB as const any ptr, byval iUsage as UINT) as HBRUSH
 declare function CreateEllipticRgn(byval x1 as long, byval y1 as long, byval x2 as long, byval y2 as long) as HRGN
 declare function CreateEllipticRgnIndirect(byval lprect as const RECT ptr) as HRGN
 declare function CreateFontIndirectA(byval lplf as const LOGFONTA ptr) as HFONT
+
+#ifndef UNICODE
+	declare function CreateFontIndirect alias "CreateFontIndirectA"(byval lplf as const LOGFONTA ptr) as HFONT
+#endif
+
 declare function CreateFontIndirectW(byval lplf as const LOGFONTW ptr) as HFONT
+
+#ifdef UNICODE
+	declare function CreateFontIndirect alias "CreateFontIndirectW"(byval lplf as const LOGFONTW ptr) as HFONT
+#endif
+
 declare function CreateFontA(byval cHeight as long, byval cWidth as long, byval cEscapement as long, byval cOrientation as long, byval cWeight as long, byval bItalic as DWORD, byval bUnderline as DWORD, byval bStrikeOut as DWORD, byval iCharSet as DWORD, byval iOutPrecision as DWORD, byval iClipPrecision as DWORD, byval iQuality as DWORD, byval iPitchAndFamily as DWORD, byval pszFaceName as LPCSTR) as HFONT
+
+#ifndef UNICODE
+	declare function CreateFont alias "CreateFontA"(byval cHeight as long, byval cWidth as long, byval cEscapement as long, byval cOrientation as long, byval cWeight as long, byval bItalic as DWORD, byval bUnderline as DWORD, byval bStrikeOut as DWORD, byval iCharSet as DWORD, byval iOutPrecision as DWORD, byval iClipPrecision as DWORD, byval iQuality as DWORD, byval iPitchAndFamily as DWORD, byval pszFaceName as LPCSTR) as HFONT
+#endif
+
 declare function CreateFontW(byval cHeight as long, byval cWidth as long, byval cEscapement as long, byval cOrientation as long, byval cWeight as long, byval bItalic as DWORD, byval bUnderline as DWORD, byval bStrikeOut as DWORD, byval iCharSet as DWORD, byval iOutPrecision as DWORD, byval iClipPrecision as DWORD, byval iQuality as DWORD, byval iPitchAndFamily as DWORD, byval pszFaceName as LPCWSTR) as HFONT
+
+#ifdef UNICODE
+	declare function CreateFont alias "CreateFontW"(byval cHeight as long, byval cWidth as long, byval cEscapement as long, byval cOrientation as long, byval cWeight as long, byval bItalic as DWORD, byval bUnderline as DWORD, byval bStrikeOut as DWORD, byval iCharSet as DWORD, byval iOutPrecision as DWORD, byval iClipPrecision as DWORD, byval iQuality as DWORD, byval iPitchAndFamily as DWORD, byval pszFaceName as LPCWSTR) as HFONT
+#endif
+
 declare function CreateHatchBrush(byval iHatch as long, byval color as COLORREF) as HBRUSH
 declare function CreateICA(byval pszDriver as LPCSTR, byval pszDevice as LPCSTR, byval pszPort as LPCSTR, byval pdm as const DEVMODEA ptr) as HDC
+
+#ifndef UNICODE
+	declare function CreateIC alias "CreateICA"(byval pszDriver as LPCSTR, byval pszDevice as LPCSTR, byval pszPort as LPCSTR, byval pdm as const DEVMODEA ptr) as HDC
+#endif
+
 declare function CreateICW(byval pszDriver as LPCWSTR, byval pszDevice as LPCWSTR, byval pszPort as LPCWSTR, byval pdm as const DEVMODEW ptr) as HDC
+
+#ifdef UNICODE
+	declare function CreateIC alias "CreateICW"(byval pszDriver as LPCWSTR, byval pszDevice as LPCWSTR, byval pszPort as LPCWSTR, byval pdm as const DEVMODEW ptr) as HDC
+#endif
+
 declare function CreateMetaFileA(byval pszFile as LPCSTR) as HDC
+
+#ifndef UNICODE
+	declare function CreateMetaFile alias "CreateMetaFileA"(byval pszFile as LPCSTR) as HDC
+#endif
+
 declare function CreateMetaFileW(byval pszFile as LPCWSTR) as HDC
+
+#ifdef UNICODE
+	declare function CreateMetaFile alias "CreateMetaFileW"(byval pszFile as LPCWSTR) as HDC
+#endif
+
 declare function CreatePalette(byval plpal as const LOGPALETTE ptr) as HPALETTE
 declare function CreatePen(byval iStyle as long, byval cWidth as long, byval color as COLORREF) as HPEN
 declare function CreatePenIndirect(byval plpen as const LOGPEN ptr) as HPEN
@@ -2830,7 +2879,17 @@ declare function CreateRectRgn(byval x1 as long, byval y1 as long, byval x2 as l
 declare function CreateRectRgnIndirect(byval lprect as const RECT ptr) as HRGN
 declare function CreateRoundRectRgn(byval x1 as long, byval y1 as long, byval x2 as long, byval y2 as long, byval w as long, byval h as long) as HRGN
 declare function CreateScalableFontResourceA(byval fdwHidden as DWORD, byval lpszFont as LPCSTR, byval lpszFile as LPCSTR, byval lpszPath as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function CreateScalableFontResource alias "CreateScalableFontResourceA"(byval fdwHidden as DWORD, byval lpszFont as LPCSTR, byval lpszFile as LPCSTR, byval lpszPath as LPCSTR) as WINBOOL
+#endif
+
 declare function CreateScalableFontResourceW(byval fdwHidden as DWORD, byval lpszFont as LPCWSTR, byval lpszFile as LPCWSTR, byval lpszPath as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function CreateScalableFontResource alias "CreateScalableFontResourceW"(byval fdwHidden as DWORD, byval lpszFont as LPCWSTR, byval lpszFile as LPCWSTR, byval lpszPath as LPCWSTR) as WINBOOL
+#endif
+
 declare function CreateSolidBrush(byval color as COLORREF) as HBRUSH
 declare function DeleteDC(byval hdc as HDC) as WINBOOL
 declare function DeleteMetaFile(byval hmf as HMETAFILE) as WINBOOL
@@ -2898,43 +2957,56 @@ const DCBA_FACEDOWNNONE = &h0100
 const DCBA_FACEDOWNCENTER = &h0101
 const DCBA_FACEDOWNLEFT = &h0102
 const DCBA_FACEDOWNRIGHT = &h0103
+declare function DeviceCapabilitiesA(byval pDevice as LPCSTR, byval pPort as LPCSTR, byval fwCapability as WORD, byval pOutput as LPSTR, byval pDevMode as const DEVMODEA ptr) as long
 
-#ifdef UNICODE
-	#define DeviceCapabilities DeviceCapabilitiesW
-	#define EnumFontFamiliesEx EnumFontFamiliesExW
-	#define EnumFontFamilies EnumFontFamiliesW
-	#define EnumFonts EnumFontsW
-	#define GetCharWidth GetCharWidthW
-	#define GetCharWidth32 GetCharWidth32W
-	#define GetCharWidthFloat GetCharWidthFloatW
-	#define GetCharABCWidths GetCharABCWidthsW
-	#define GetCharABCWidthsFloat GetCharABCWidthsFloatW
-	#define GetGlyphOutline GetGlyphOutlineW
-	#define GetMetaFile GetMetaFileW
-#else
-	#define DeviceCapabilities DeviceCapabilitiesA
-	#define EnumFontFamiliesEx EnumFontFamiliesExA
-	#define EnumFontFamilies EnumFontFamiliesA
-	#define EnumFonts EnumFontsA
-	#define GetCharWidth GetCharWidthA
-	#define GetCharWidth32 GetCharWidth32A
-	#define GetCharWidthFloat GetCharWidthFloatA
-	#define GetCharABCWidths GetCharABCWidthsA
-	#define GetCharABCWidthsFloat GetCharABCWidthsFloatA
-	#define GetGlyphOutline GetGlyphOutlineA
-	#define GetMetaFile GetMetaFileA
+#ifndef UNICODE
+	declare function DeviceCapabilities alias "DeviceCapabilitiesA"(byval pDevice as LPCSTR, byval pPort as LPCSTR, byval fwCapability as WORD, byval pOutput as LPSTR, byval pDevMode as const DEVMODEA ptr) as long
 #endif
 
-declare function DeviceCapabilitiesA(byval pDevice as LPCSTR, byval pPort as LPCSTR, byval fwCapability as WORD, byval pOutput as LPSTR, byval pDevMode as const DEVMODEA ptr) as long
 declare function DeviceCapabilitiesW(byval pDevice as LPCWSTR, byval pPort as LPCWSTR, byval fwCapability as WORD, byval pOutput as LPWSTR, byval pDevMode as const DEVMODEW ptr) as long
+
+#ifdef UNICODE
+	declare function DeviceCapabilities alias "DeviceCapabilitiesW"(byval pDevice as LPCWSTR, byval pPort as LPCWSTR, byval fwCapability as WORD, byval pOutput as LPWSTR, byval pDevMode as const DEVMODEW ptr) as long
+#endif
+
 declare function DrawEscape(byval hdc as HDC, byval iEscape as long, byval cjIn as long, byval lpIn as LPCSTR) as long
 declare function Ellipse(byval hdc as HDC, byval left as long, byval top as long, byval right as long, byval bottom as long) as WINBOOL
 declare function EnumFontFamiliesExA(byval hdc as HDC, byval lpLogfont as LPLOGFONTA, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM, byval dwFlags as DWORD) as long
+
+#ifndef UNICODE
+	declare function EnumFontFamiliesEx alias "EnumFontFamiliesExA"(byval hdc as HDC, byval lpLogfont as LPLOGFONTA, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM, byval dwFlags as DWORD) as long
+#endif
+
 declare function EnumFontFamiliesExW(byval hdc as HDC, byval lpLogfont as LPLOGFONTW, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM, byval dwFlags as DWORD) as long
+
+#ifdef UNICODE
+	declare function EnumFontFamiliesEx alias "EnumFontFamiliesExW"(byval hdc as HDC, byval lpLogfont as LPLOGFONTW, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM, byval dwFlags as DWORD) as long
+#endif
+
 declare function EnumFontFamiliesA(byval hdc as HDC, byval lpLogfont as LPCSTR, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM) as long
+
+#ifndef UNICODE
+	declare function EnumFontFamilies alias "EnumFontFamiliesA"(byval hdc as HDC, byval lpLogfont as LPCSTR, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumFontFamiliesW(byval hdc as HDC, byval lpLogfont as LPCWSTR, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM) as long
+
+#ifdef UNICODE
+	declare function EnumFontFamilies alias "EnumFontFamiliesW"(byval hdc as HDC, byval lpLogfont as LPCWSTR, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumFontsA(byval hdc as HDC, byval lpLogfont as LPCSTR, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM) as long
+
+#ifndef UNICODE
+	declare function EnumFonts alias "EnumFontsA"(byval hdc as HDC, byval lpLogfont as LPCSTR, byval lpProc as FONTENUMPROCA, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumFontsW(byval hdc as HDC, byval lpLogfont as LPCWSTR, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM) as long
+
+#ifdef UNICODE
+	declare function EnumFonts alias "EnumFontsW"(byval hdc as HDC, byval lpLogfont as LPCWSTR, byval lpProc as FONTENUMPROCW, byval lParam as LPARAM) as long
+#endif
+
 declare function EnumObjects(byval hdc as HDC, byval nType as long, byval lpFunc as GOBJENUMPROC, byval lParam as LPARAM) as long
 declare function EqualRgn(byval hrgn1 as HRGN, byval hrgn2 as HRGN) as WINBOOL
 declare function Escape(byval hdc as HDC, byval iEscape as long, byval cjIn as long, byval pvIn as LPCSTR, byval pvOut as LPVOID) as long
@@ -2956,15 +3028,65 @@ declare function GetBitmapDimensionEx(byval hbit as HBITMAP, byval lpsize as LPS
 declare function GetBoundsRect(byval hdc as HDC, byval lprect as LPRECT, byval flags as UINT) as UINT
 declare function GetBrushOrgEx(byval hdc as HDC, byval lppt as LPPOINT) as WINBOOL
 declare function GetCharWidthA(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetCharWidth alias "GetCharWidthA"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+#endif
+
 declare function GetCharWidthW(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetCharWidth alias "GetCharWidthW"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+#endif
+
 declare function GetCharWidth32A(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetCharWidth32 alias "GetCharWidth32A"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+#endif
+
 declare function GetCharWidth32W(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetCharWidth32 alias "GetCharWidth32W"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as LPINT) as WINBOOL
+#endif
+
 declare function GetCharWidthFloatA(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as PFLOAT) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetCharWidthFloat alias "GetCharWidthFloatA"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as PFLOAT) as WINBOOL
+#endif
+
 declare function GetCharWidthFloatW(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as PFLOAT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetCharWidthFloat alias "GetCharWidthFloatW"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpBuffer as PFLOAT) as WINBOOL
+#endif
+
 declare function GetCharABCWidthsA(byval hdc as HDC, byval wFirst as UINT, byval wLast as UINT, byval lpABC as LPABC) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetCharABCWidths alias "GetCharABCWidthsA"(byval hdc as HDC, byval wFirst as UINT, byval wLast as UINT, byval lpABC as LPABC) as WINBOOL
+#endif
+
 declare function GetCharABCWidthsW(byval hdc as HDC, byval wFirst as UINT, byval wLast as UINT, byval lpABC as LPABC) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetCharABCWidths alias "GetCharABCWidthsW"(byval hdc as HDC, byval wFirst as UINT, byval wLast as UINT, byval lpABC as LPABC) as WINBOOL
+#endif
+
 declare function GetCharABCWidthsFloatA(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpABC as LPABCFLOAT) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetCharABCWidthsFloat alias "GetCharABCWidthsFloatA"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpABC as LPABCFLOAT) as WINBOOL
+#endif
+
 declare function GetCharABCWidthsFloatW(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpABC as LPABCFLOAT) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetCharABCWidthsFloat alias "GetCharABCWidthsFloatW"(byval hdc as HDC, byval iFirst as UINT, byval iLast as UINT, byval lpABC as LPABCFLOAT) as WINBOOL
+#endif
+
 declare function GetClipBox(byval hdc as HDC, byval lprect as LPRECT) as long
 declare function GetClipRgn(byval hdc as HDC, byval hrgn as HRGN) as long
 declare function GetMetaRgn(byval hdc as HDC, byval hrgn as HRGN) as long
@@ -2974,35 +3096,45 @@ declare function GetDeviceCaps(byval hdc as HDC, byval index as long) as long
 declare function GetDIBits(byval hdc as HDC, byval hbm as HBITMAP, byval start as UINT, byval cLines as UINT, byval lpvBits as LPVOID, byval lpbmi as LPBITMAPINFO, byval usage as UINT) as long
 declare function GetFontData(byval hdc as HDC, byval dwTable as DWORD, byval dwOffset as DWORD, byval pvBuffer as PVOID, byval cjBuffer as DWORD) as DWORD
 declare function GetGlyphOutlineA(byval hdc as HDC, byval uChar as UINT, byval fuFormat as UINT, byval lpgm as LPGLYPHMETRICS, byval cjBuffer as DWORD, byval pvBuffer as LPVOID, byval lpmat2 as const MAT2 ptr) as DWORD
+
+#ifndef UNICODE
+	declare function GetGlyphOutline alias "GetGlyphOutlineA"(byval hdc as HDC, byval uChar as UINT, byval fuFormat as UINT, byval lpgm as LPGLYPHMETRICS, byval cjBuffer as DWORD, byval pvBuffer as LPVOID, byval lpmat2 as const MAT2 ptr) as DWORD
+#endif
+
 declare function GetGlyphOutlineW(byval hdc as HDC, byval uChar as UINT, byval fuFormat as UINT, byval lpgm as LPGLYPHMETRICS, byval cjBuffer as DWORD, byval pvBuffer as LPVOID, byval lpmat2 as const MAT2 ptr) as DWORD
+
+#ifdef UNICODE
+	declare function GetGlyphOutline alias "GetGlyphOutlineW"(byval hdc as HDC, byval uChar as UINT, byval fuFormat as UINT, byval lpgm as LPGLYPHMETRICS, byval cjBuffer as DWORD, byval pvBuffer as LPVOID, byval lpmat2 as const MAT2 ptr) as DWORD
+#endif
+
 declare function GetGraphicsMode(byval hdc as HDC) as long
 declare function GetMapMode(byval hdc as HDC) as long
 declare function GetMetaFileBitsEx(byval hMF as HMETAFILE, byval cbBuffer as UINT, byval lpData as LPVOID) as UINT
 declare function GetMetaFileA(byval lpName as LPCSTR) as HMETAFILE
+
+#ifndef UNICODE
+	declare function GetMetaFile alias "GetMetaFileA"(byval lpName as LPCSTR) as HMETAFILE
+#endif
+
 declare function GetMetaFileW(byval lpName as LPCWSTR) as HMETAFILE
+
+#ifdef UNICODE
+	declare function GetMetaFile alias "GetMetaFileW"(byval lpName as LPCWSTR) as HMETAFILE
+#endif
+
 declare function GetNearestColor(byval hdc as HDC, byval color as COLORREF) as COLORREF
 declare function GetNearestPaletteIndex(byval h as HPALETTE, byval color as COLORREF) as UINT
 declare function GetObjectType(byval h as HGDIOBJ) as DWORD
+declare function GetOutlineTextMetricsA(byval hdc as HDC, byval cjCopy as UINT, byval potm as LPOUTLINETEXTMETRICA) as UINT
 
-#ifdef UNICODE
-	#define GetOutlineTextMetrics GetOutlineTextMetricsW
-#else
-	#define GetOutlineTextMetrics GetOutlineTextMetricsA
+#ifndef UNICODE
+	declare function GetOutlineTextMetrics alias "GetOutlineTextMetricsA"(byval hdc as HDC, byval cjCopy as UINT, byval potm as LPOUTLINETEXTMETRICA) as UINT
 #endif
 
-declare function GetOutlineTextMetricsA(byval hdc as HDC, byval cjCopy as UINT, byval potm as LPOUTLINETEXTMETRICA) as UINT
 declare function GetOutlineTextMetricsW(byval hdc as HDC, byval cjCopy as UINT, byval potm as LPOUTLINETEXTMETRICW) as UINT
 
 #ifdef UNICODE
-	#define GetTextExtentPoint GetTextExtentPointW
-	#define GetTextExtentPoint32 GetTextExtentPoint32W
-	#define GetTextExtentExPoint GetTextExtentExPointW
-	#define GetCharacterPlacement GetCharacterPlacementW
-#else
-	#define GetTextExtentPoint GetTextExtentPointA
-	#define GetTextExtentPoint32 GetTextExtentPoint32A
-	#define GetTextExtentExPoint GetTextExtentExPointA
-	#define GetCharacterPlacement GetCharacterPlacementA
+	declare function GetOutlineTextMetrics alias "GetOutlineTextMetricsW"(byval hdc as HDC, byval cjCopy as UINT, byval potm as LPOUTLINETEXTMETRICW) as UINT
 #endif
 
 declare function GetPaletteEntries(byval hpal as HPALETTE, byval iStart as UINT, byval cEntries as UINT, byval pPalEntries as LPPALETTEENTRY) as UINT
@@ -3021,17 +3153,56 @@ declare function GetTextCharacterExtra(byval hdc as HDC) as long
 declare function GetTextAlign(byval hdc as HDC) as UINT
 declare function GetTextColor(byval hdc as HDC) as COLORREF
 declare function GetTextExtentPointA(byval hdc as HDC, byval lpString as LPCSTR, byval c as long, byval lpsz as LPSIZE) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetTextExtentPoint alias "GetTextExtentPointA"(byval hdc as HDC, byval lpString as LPCSTR, byval c as long, byval lpsz as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextExtentPointW(byval hdc as HDC, byval lpString as LPCWSTR, byval c as long, byval lpsz as LPSIZE) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetTextExtentPoint alias "GetTextExtentPointW"(byval hdc as HDC, byval lpString as LPCWSTR, byval c as long, byval lpsz as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextExtentPoint32A(byval hdc as HDC, byval lpString as LPCSTR, byval c as long, byval psizl as LPSIZE) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetTextExtentPoint32 alias "GetTextExtentPoint32A"(byval hdc as HDC, byval lpString as LPCSTR, byval c as long, byval psizl as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextExtentPoint32W(byval hdc as HDC, byval lpString as LPCWSTR, byval c as long, byval psizl as LPSIZE) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetTextExtentPoint32 alias "GetTextExtentPoint32W"(byval hdc as HDC, byval lpString as LPCWSTR, byval c as long, byval psizl as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextExtentExPointA(byval hdc as HDC, byval lpszString as LPCSTR, byval cchString as long, byval nMaxExtent as long, byval lpnFit as LPINT, byval lpnDx as LPINT, byval lpSize as LPSIZE) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetTextExtentExPoint alias "GetTextExtentExPointA"(byval hdc as HDC, byval lpszString as LPCSTR, byval cchString as long, byval nMaxExtent as long, byval lpnFit as LPINT, byval lpnDx as LPINT, byval lpSize as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextExtentExPointW(byval hdc as HDC, byval lpszString as LPCWSTR, byval cchString as long, byval nMaxExtent as long, byval lpnFit as LPINT, byval lpnDx as LPINT, byval lpSize as LPSIZE) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetTextExtentExPoint alias "GetTextExtentExPointW"(byval hdc as HDC, byval lpszString as LPCWSTR, byval cchString as long, byval nMaxExtent as long, byval lpnFit as LPINT, byval lpnDx as LPINT, byval lpSize as LPSIZE) as WINBOOL
+#endif
+
 declare function GetTextCharset(byval hdc as HDC) as long
 declare function GetTextCharsetInfo(byval hdc as HDC, byval lpSig as LPFONTSIGNATURE, byval dwFlags as DWORD) as long
 declare function TranslateCharsetInfo(byval lpSrc as DWORD ptr, byval lpCs as LPCHARSETINFO, byval dwFlags as DWORD) as WINBOOL
 declare function GetFontLanguageInfo(byval hdc as HDC) as DWORD
 declare function GetCharacterPlacementA(byval hdc as HDC, byval lpString as LPCSTR, byval nCount as long, byval nMexExtent as long, byval lpResults as LPGCP_RESULTSA, byval dwFlags as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetCharacterPlacement alias "GetCharacterPlacementA"(byval hdc as HDC, byval lpString as LPCSTR, byval nCount as long, byval nMexExtent as long, byval lpResults as LPGCP_RESULTSA, byval dwFlags as DWORD) as DWORD
+#endif
+
 declare function GetCharacterPlacementW(byval hdc as HDC, byval lpString as LPCWSTR, byval nCount as long, byval nMexExtent as long, byval lpResults as LPGCP_RESULTSW, byval dwFlags as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetCharacterPlacement alias "GetCharacterPlacementW"(byval hdc as HDC, byval lpString as LPCWSTR, byval nCount as long, byval nMexExtent as long, byval lpResults as LPGCP_RESULTSW, byval dwFlags as DWORD) as DWORD
+#endif
 
 type tagWCRANGE
 	wcLow as WCHAR
@@ -3055,16 +3226,19 @@ type PGLYPHSET as tagGLYPHSET ptr
 type LPGLYPHSET as tagGLYPHSET ptr
 const GS_8BIT_INDICES = &h00000001
 const GGI_MARK_NONEXISTING_GLYPHS = &h0001
-
-#ifdef UNICODE
-	#define GetGlyphIndices GetGlyphIndicesW
-#else
-	#define GetGlyphIndices GetGlyphIndicesA
-#endif
-
 declare function GetFontUnicodeRanges(byval hdc as HDC, byval lpgs as LPGLYPHSET) as DWORD
 declare function GetGlyphIndicesA(byval hdc as HDC, byval lpstr as LPCSTR, byval c as long, byval pgi as LPWORD, byval fl as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetGlyphIndices alias "GetGlyphIndicesA"(byval hdc as HDC, byval lpstr as LPCSTR, byval c as long, byval pgi as LPWORD, byval fl as DWORD) as DWORD
+#endif
+
 declare function GetGlyphIndicesW(byval hdc as HDC, byval lpstr as LPCWSTR, byval c as long, byval pgi as LPWORD, byval fl as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetGlyphIndices alias "GetGlyphIndicesW"(byval hdc as HDC, byval lpstr as LPCWSTR, byval c as long, byval pgi as LPWORD, byval fl as DWORD) as DWORD
+#endif
+
 declare function GetTextExtentPointI(byval hdc as HDC, byval pgiIn as LPWORD, byval cgi as long, byval psize as LPSIZE) as WINBOOL
 declare function GetTextExtentExPointI(byval hdc as HDC, byval lpwszString as LPWORD, byval cwchString as long, byval nMaxExtent as long, byval lpnFit as LPINT, byval lpnDx as LPINT, byval lpSize as LPSIZE) as WINBOOL
 declare function GetCharWidthI(byval hdc as HDC, byval giFirst as UINT, byval cgi as UINT, byval pgi as LPWORD, byval piWidths as LPINT) as WINBOOL
@@ -3083,22 +3257,32 @@ end type
 type DESIGNVECTOR as tagDESIGNVECTOR
 type PDESIGNVECTOR as tagDESIGNVECTOR ptr
 type LPDESIGNVECTOR as tagDESIGNVECTOR ptr
+declare function AddFontResourceExA(byval name as LPCSTR, byval fl as DWORD, byval res as PVOID) as long
 
-#ifdef UNICODE
-	#define AddFontResourceEx AddFontResourceExW
-	#define RemoveFontResourceEx RemoveFontResourceExW
-#else
-	#define AddFontResourceEx AddFontResourceExA
-	#define RemoveFontResourceEx RemoveFontResourceExA
+#ifndef UNICODE
+	declare function AddFontResourceEx alias "AddFontResourceExA"(byval name as LPCSTR, byval fl as DWORD, byval res as PVOID) as long
 #endif
 
-declare function AddFontResourceExA(byval name as LPCSTR, byval fl as DWORD, byval res as PVOID) as long
 declare function AddFontResourceExW(byval name as LPCWSTR, byval fl as DWORD, byval res as PVOID) as long
+
+#ifdef UNICODE
+	declare function AddFontResourceEx alias "AddFontResourceExW"(byval name as LPCWSTR, byval fl as DWORD, byval res as PVOID) as long
+#endif
+
 declare function RemoveFontResourceExA(byval name as LPCSTR, byval fl as DWORD, byval pdv as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function RemoveFontResourceEx alias "RemoveFontResourceExA"(byval name as LPCSTR, byval fl as DWORD, byval pdv as PVOID) as WINBOOL
+#endif
+
 declare function RemoveFontResourceExW(byval name as LPCWSTR, byval fl as DWORD, byval pdv as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function RemoveFontResourceEx alias "RemoveFontResourceExW"(byval name as LPCWSTR, byval fl as DWORD, byval pdv as PVOID) as WINBOOL
+#endif
+
 declare function AddFontMemResourceEx(byval pFileView as PVOID, byval cjSize as DWORD, byval pvResrved as PVOID, byval pNumFonts as DWORD ptr) as HANDLE
 declare function RemoveFontMemResourceEx(byval h as HANDLE) as WINBOOL
-
 const FR_PRIVATE = &h10
 const FR_NOT_ENUM = &h20
 const MM_MAX_AXES_NAMELEN = 16
@@ -3185,16 +3369,23 @@ type LPENUMLOGFONTEXDVW as tagENUMLOGFONTEXDVW ptr
 	type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVW
 	type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVW
 	type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVW
-	#define CreateFontIndirectEx CreateFontIndirectExW
 #else
 	type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVA
 	type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVA
 	type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVA
-	#define CreateFontIndirectEx CreateFontIndirectExA
 #endif
 
 declare function CreateFontIndirectExA(byval as const ENUMLOGFONTEXDVA ptr) as HFONT
+
+#ifndef UNICODE
+	declare function CreateFontIndirectEx alias "CreateFontIndirectExA"(byval as const ENUMLOGFONTEXDVA ptr) as HFONT
+#endif
+
 declare function CreateFontIndirectExW(byval as const ENUMLOGFONTEXDVW ptr) as HFONT
+
+#ifdef UNICODE
+	declare function CreateFontIndirectEx alias "CreateFontIndirectExW"(byval as const ENUMLOGFONTEXDVW ptr) as HFONT
+#endif
 
 type tagENUMTEXTMETRICA
 	etmNewTextMetricEx as NEWTEXTMETRICEXA
@@ -3218,14 +3409,10 @@ type LPENUMTEXTMETRICW as tagENUMTEXTMETRICW ptr
 	type ENUMTEXTMETRIC as ENUMTEXTMETRICW
 	type PENUMTEXTMETRIC as PENUMTEXTMETRICW
 	type LPENUMTEXTMETRIC as LPENUMTEXTMETRICW
-	#define ResetDC ResetDCW
-	#define RemoveFontResource RemoveFontResourceW
 #else
 	type ENUMTEXTMETRIC as ENUMTEXTMETRICA
 	type PENUMTEXTMETRIC as PENUMTEXTMETRICA
 	type LPENUMTEXTMETRIC as LPENUMTEXTMETRICA
-	#define ResetDC ResetDCA
-	#define RemoveFontResource RemoveFontResourceA
 #endif
 
 declare function GetViewportExtEx(byval hdc as HDC, byval lpsize as LPSIZE) as WINBOOL
@@ -3252,10 +3439,30 @@ declare function RectVisible(byval hdc as HDC, byval lprect as const RECT ptr) a
 declare function Rectangle(byval hdc as HDC, byval left as long, byval top as long, byval right as long, byval bottom as long) as WINBOOL
 declare function RestoreDC(byval hdc as HDC, byval nSavedDC as long) as WINBOOL
 declare function ResetDCA(byval hdc as HDC, byval lpdm as const DEVMODEA ptr) as HDC
+
+#ifndef UNICODE
+	declare function ResetDC alias "ResetDCA"(byval hdc as HDC, byval lpdm as const DEVMODEA ptr) as HDC
+#endif
+
 declare function ResetDCW(byval hdc as HDC, byval lpdm as const DEVMODEW ptr) as HDC
+
+#ifdef UNICODE
+	declare function ResetDC alias "ResetDCW"(byval hdc as HDC, byval lpdm as const DEVMODEW ptr) as HDC
+#endif
+
 declare function RealizePalette(byval hdc as HDC) as UINT
 declare function RemoveFontResourceA(byval lpFileName as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function RemoveFontResource alias "RemoveFontResourceA"(byval lpFileName as LPCSTR) as WINBOOL
+#endif
+
 declare function RemoveFontResourceW(byval lpFileName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function RemoveFontResource alias "RemoveFontResourceW"(byval lpFileName as LPCWSTR) as WINBOOL
+#endif
+
 declare function RoundRect(byval hdc as HDC, byval left as long, byval top as long, byval right as long, byval bottom as long, byval width as long, byval height as long) as WINBOOL
 declare function ResizePalette(byval hpal as HPALETTE, byval n as UINT) as WINBOOL
 declare function SaveDC(byval hdc as HDC) as long
@@ -3348,37 +3555,65 @@ const GRADIENT_FILL_RECT_H = &h00000000
 const GRADIENT_FILL_RECT_V = &h00000001
 const GRADIENT_FILL_TRIANGLE = &h00000002
 const GRADIENT_FILL_OP_FLAG = &h000000ff
+
 declare function GradientFill(byval hdc as HDC, byval pVertex as PTRIVERTEX, byval nVertex as ULONG, byval pMesh as PVOID, byval nMesh as ULONG, byval ulMode as ULONG) as WINBOOL
 declare function GdiGradientFill(byval hdc as HDC, byval pVertex as PTRIVERTEX, byval nVertex as ULONG, byval pMesh as PVOID, byval nMesh as ULONG, byval ulMode as ULONG) as WINBOOL
-
-#ifdef UNICODE
-	#define CopyEnhMetaFile CopyEnhMetaFileW
-	#define CreateEnhMetaFile CreateEnhMetaFileW
-	#define GetEnhMetaFile GetEnhMetaFileW
-	#define GetEnhMetaFileDescription GetEnhMetaFileDescriptionW
-#else
-	#define CopyEnhMetaFile CopyEnhMetaFileA
-	#define CreateEnhMetaFile CreateEnhMetaFileA
-	#define GetEnhMetaFile GetEnhMetaFileA
-	#define GetEnhMetaFileDescription GetEnhMetaFileDescriptionA
-#endif
-
 declare function PlayMetaFileRecord(byval hdc as HDC, byval lpHandleTable as LPHANDLETABLE, byval lpMR as LPMETARECORD, byval noObjs as UINT) as WINBOOL
 type MFENUMPROC as function(byval hdc as HDC, byval lpht as HANDLETABLE ptr, byval lpMR as METARECORD ptr, byval nObj as long, byval lParam as LPARAM) as long
 declare function EnumMetaFile(byval hdc as HDC, byval hmf as HMETAFILE, byval lpProc as MFENUMPROC, byval lParam as LPARAM) as WINBOOL
 type ENHMFENUMPROC as function(byval hdc as HDC, byval lpht as HANDLETABLE ptr, byval lpmr as const ENHMETARECORD ptr, byval hHandles as long, byval data as LPARAM) as long
 declare function CloseEnhMetaFile(byval hdc as HDC) as HENHMETAFILE
 declare function CopyEnhMetaFileA(byval hEnh as HENHMETAFILE, byval lpFileName as LPCSTR) as HENHMETAFILE
+
+#ifndef UNICODE
+	declare function CopyEnhMetaFile alias "CopyEnhMetaFileA"(byval hEnh as HENHMETAFILE, byval lpFileName as LPCSTR) as HENHMETAFILE
+#endif
+
 declare function CopyEnhMetaFileW(byval hEnh as HENHMETAFILE, byval lpFileName as LPCWSTR) as HENHMETAFILE
+
+#ifdef UNICODE
+	declare function CopyEnhMetaFile alias "CopyEnhMetaFileW"(byval hEnh as HENHMETAFILE, byval lpFileName as LPCWSTR) as HENHMETAFILE
+#endif
+
 declare function CreateEnhMetaFileA(byval hdc as HDC, byval lpFilename as LPCSTR, byval lprc as const RECT ptr, byval lpDesc as LPCSTR) as HDC
+
+#ifndef UNICODE
+	declare function CreateEnhMetaFile alias "CreateEnhMetaFileA"(byval hdc as HDC, byval lpFilename as LPCSTR, byval lprc as const RECT ptr, byval lpDesc as LPCSTR) as HDC
+#endif
+
 declare function CreateEnhMetaFileW(byval hdc as HDC, byval lpFilename as LPCWSTR, byval lprc as const RECT ptr, byval lpDesc as LPCWSTR) as HDC
+
+#ifdef UNICODE
+	declare function CreateEnhMetaFile alias "CreateEnhMetaFileW"(byval hdc as HDC, byval lpFilename as LPCWSTR, byval lprc as const RECT ptr, byval lpDesc as LPCWSTR) as HDC
+#endif
+
 declare function DeleteEnhMetaFile(byval hmf as HENHMETAFILE) as WINBOOL
 declare function EnumEnhMetaFile(byval hdc as HDC, byval hmf as HENHMETAFILE, byval lpProc as ENHMFENUMPROC, byval lpParam as LPVOID, byval lpRect as const RECT ptr) as WINBOOL
 declare function GetEnhMetaFileA(byval lpName as LPCSTR) as HENHMETAFILE
+
+#ifndef UNICODE
+	declare function GetEnhMetaFile alias "GetEnhMetaFileA"(byval lpName as LPCSTR) as HENHMETAFILE
+#endif
+
 declare function GetEnhMetaFileW(byval lpName as LPCWSTR) as HENHMETAFILE
+
+#ifdef UNICODE
+	declare function GetEnhMetaFile alias "GetEnhMetaFileW"(byval lpName as LPCWSTR) as HENHMETAFILE
+#endif
+
 declare function GetEnhMetaFileBits(byval hEMF as HENHMETAFILE, byval nSize as UINT, byval lpData as LPBYTE) as UINT
 declare function GetEnhMetaFileDescriptionA(byval hemf as HENHMETAFILE, byval cchBuffer as UINT, byval lpDescription as LPSTR) as UINT
+
+#ifndef UNICODE
+	declare function GetEnhMetaFileDescription alias "GetEnhMetaFileDescriptionA"(byval hemf as HENHMETAFILE, byval cchBuffer as UINT, byval lpDescription as LPSTR) as UINT
+#endif
+
 declare function GetEnhMetaFileDescriptionW(byval hemf as HENHMETAFILE, byval cchBuffer as UINT, byval lpDescription as LPWSTR) as UINT
+
+#ifdef UNICODE
+	declare function GetEnhMetaFileDescription alias "GetEnhMetaFileDescriptionW"(byval hemf as HENHMETAFILE, byval cchBuffer as UINT, byval lpDescription as LPWSTR) as UINT
+#endif
+
 declare function GetEnhMetaFileHeader(byval hemf as HENHMETAFILE, byval nSize as UINT, byval lpEnhMetaHeader as LPENHMETAHEADER) as UINT
 declare function GetEnhMetaFilePaletteEntries(byval hemf as HENHMETAFILE, byval nNumEntries as UINT, byval lpPaletteEntries as LPPALETTEENTRY) as UINT
 declare function GetEnhMetaFilePixelFormat(byval hemf as HENHMETAFILE, byval cbBuffer as UINT, byval ppfd as PIXELFORMATDESCRIPTOR ptr) as UINT
@@ -3388,15 +3623,17 @@ declare function PlayEnhMetaFileRecord(byval hdc as HDC, byval pht as LPHANDLETA
 declare function SetEnhMetaFileBits(byval nSize as UINT, byval pb as const UBYTE ptr) as HENHMETAFILE
 declare function SetWinMetaFileBits(byval nSize as UINT, byval lpMeta16Data as const UBYTE ptr, byval hdcRef as HDC, byval lpMFP as const METAFILEPICT ptr) as HENHMETAFILE
 declare function GdiComment(byval hdc as HDC, byval nSize as UINT, byval lpData as const UBYTE ptr) as WINBOOL
+declare function GetTextMetricsA(byval hdc as HDC, byval lptm as LPTEXTMETRICA) as WINBOOL
 
-#ifdef UNICODE
-	#define GetTextMetrics GetTextMetricsW
-#else
-	#define GetTextMetrics GetTextMetricsA
+#ifndef UNICODE
+	declare function GetTextMetrics alias "GetTextMetricsA"(byval hdc as HDC, byval lptm as LPTEXTMETRICA) as WINBOOL
 #endif
 
-declare function GetTextMetricsA(byval hdc as HDC, byval lptm as LPTEXTMETRICA) as WINBOOL
 declare function GetTextMetricsW(byval hdc as HDC, byval lptm as LPTEXTMETRICW) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetTextMetrics alias "GetTextMetricsW"(byval hdc as HDC, byval lptm as LPTEXTMETRICW) as WINBOOL
+#endif
 
 type tagDIBSECTION
 	dsBm as BITMAP
@@ -3431,11 +3668,11 @@ const ILLUMINANT_D55 = 5
 const ILLUMINANT_D65 = 6
 const ILLUMINANT_D75 = 7
 const ILLUMINANT_F2 = 8
-#define ILLUMINANT_MAX_INDEX ILLUMINANT_F2
-#define ILLUMINANT_TUNGSTEN ILLUMINANT_A
-#define ILLUMINANT_DAYLIGHT ILLUMINANT_C
-#define ILLUMINANT_FLUORESCENT ILLUMINANT_F2
-#define ILLUMINANT_NTSC ILLUMINANT_C
+const ILLUMINANT_MAX_INDEX = ILLUMINANT_F2
+const ILLUMINANT_TUNGSTEN = ILLUMINANT_A
+const ILLUMINANT_DAYLIGHT = ILLUMINANT_C
+const ILLUMINANT_FLUORESCENT = ILLUMINANT_F2
+const ILLUMINANT_NTSC = ILLUMINANT_C
 #define RGB_GAMMA_MIN cast(WORD, &o2500)
 #define RGB_GAMMA_MAX cast(WORD, 65000)
 #define REFERENCE_WHITE_MIN cast(WORD, 6000)
@@ -3501,25 +3738,18 @@ type LPDOCINFOW as _DOCINFOW ptr
 
 const DI_APPBANDING = &h00000001
 const DI_ROPS_READ_DESTINATION = &h00000002
+declare function StartDocA(byval hdc as HDC, byval lpdi as const DOCINFOA ptr) as long
 
-#ifdef UNICODE
-	#define StartDoc StartDocW
-	#define GetObject GetObjectW
-	#define TextOut TextOutW
-	#define ExtTextOut ExtTextOutW
-	#define PolyTextOut PolyTextOutW
-	#define GetTextFace GetTextFaceW
-#else
-	#define StartDoc StartDocA
-	#define GetObject GetObjectA
-	#define TextOut TextOutA
-	#define ExtTextOut ExtTextOutA
-	#define PolyTextOut PolyTextOutA
-	#define GetTextFace GetTextFaceA
+#ifndef UNICODE
+	declare function StartDoc alias "StartDocA"(byval hdc as HDC, byval lpdi as const DOCINFOA ptr) as long
 #endif
 
-declare function StartDocA(byval hdc as HDC, byval lpdi as const DOCINFOA ptr) as long
 declare function StartDocW(byval hdc as HDC, byval lpdi as const DOCINFOW ptr) as long
+
+#ifdef UNICODE
+	declare function StartDoc alias "StartDocW"(byval hdc as HDC, byval lpdi as const DOCINFOW ptr) as long
+#endif
+
 declare function EndDoc(byval hdc as HDC) as long
 declare function StartPage(byval hdc as HDC) as long
 declare function EndPage(byval hdc as HDC) as long
@@ -3545,14 +3775,54 @@ declare function ExtCreatePen(byval iPenStyle as DWORD, byval cWidth as DWORD, b
 declare function GetMiterLimit(byval hdc as HDC, byval plimit as PFLOAT) as WINBOOL
 declare function GetArcDirection(byval hdc as HDC) as long
 declare function GetObjectA(byval h as HANDLE, byval c as long, byval pv as LPVOID) as long
+
+#ifndef UNICODE
+	declare function GetObject alias "GetObjectA"(byval h as HANDLE, byval c as long, byval pv as LPVOID) as long
+#endif
+
 declare function GetObjectW(byval h as HANDLE, byval c as long, byval pv as LPVOID) as long
+
+#ifdef UNICODE
+	declare function GetObject alias "GetObjectW"(byval h as HANDLE, byval c as long, byval pv as LPVOID) as long
+#endif
+
 declare function MoveToEx(byval hdc as HDC, byval x as long, byval y as long, byval lppt as LPPOINT) as WINBOOL
 declare function TextOutA(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCSTR, byval c as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function TextOut alias "TextOutA"(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCSTR, byval c as long) as WINBOOL
+#endif
+
 declare function TextOutW(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCWSTR, byval c as long) as WINBOOL
+
+#ifdef UNICODE
+	declare function TextOut alias "TextOutW"(byval hdc as HDC, byval x as long, byval y as long, byval lpString as LPCWSTR, byval c as long) as WINBOOL
+#endif
+
 declare function ExtTextOutA(byval hdc as HDC, byval x as long, byval y as long, byval options as UINT, byval lprect as const RECT ptr, byval lpString as LPCSTR, byval c as UINT, byval lpDx as const INT_ ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function ExtTextOut alias "ExtTextOutA"(byval hdc as HDC, byval x as long, byval y as long, byval options as UINT, byval lprect as const RECT ptr, byval lpString as LPCSTR, byval c as UINT, byval lpDx as const INT_ ptr) as WINBOOL
+#endif
+
 declare function ExtTextOutW(byval hdc as HDC, byval x as long, byval y as long, byval options as UINT, byval lprect as const RECT ptr, byval lpString as LPCWSTR, byval c as UINT, byval lpDx as const INT_ ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function ExtTextOut alias "ExtTextOutW"(byval hdc as HDC, byval x as long, byval y as long, byval options as UINT, byval lprect as const RECT ptr, byval lpString as LPCWSTR, byval c as UINT, byval lpDx as const INT_ ptr) as WINBOOL
+#endif
+
 declare function PolyTextOutA(byval hdc as HDC, byval ppt as const POLYTEXTA ptr, byval nstrings as long) as WINBOOL
+
+#ifndef UNICODE
+	declare function PolyTextOut alias "PolyTextOutA"(byval hdc as HDC, byval ppt as const POLYTEXTA ptr, byval nstrings as long) as WINBOOL
+#endif
+
 declare function PolyTextOutW(byval hdc as HDC, byval ppt as const POLYTEXTW ptr, byval nstrings as long) as WINBOOL
+
+#ifdef UNICODE
+	declare function PolyTextOut alias "PolyTextOutW"(byval hdc as HDC, byval ppt as const POLYTEXTW ptr, byval nstrings as long) as WINBOOL
+#endif
+
 declare function CreatePolygonRgn(byval pptl as const POINT ptr, byval cPoint as long, byval iMode as long) as HRGN
 declare function DPtoLP(byval hdc as HDC, byval lppt as LPPOINT, byval c as long) as WINBOOL
 declare function LPtoDP(byval hdc as HDC, byval lppt as LPPOINT, byval c as long) as WINBOOL
@@ -3572,7 +3842,17 @@ declare function ScaleWindowExtEx(byval hdc as HDC, byval xn as long, byval xd a
 declare function SetBitmapDimensionEx(byval hbm as HBITMAP, byval w as long, byval h as long, byval lpsz as LPSIZE) as WINBOOL
 declare function SetBrushOrgEx(byval hdc as HDC, byval x as long, byval y as long, byval lppt as LPPOINT) as WINBOOL
 declare function GetTextFaceA(byval hdc as HDC, byval c as long, byval lpName as LPSTR) as long
+
+#ifndef UNICODE
+	declare function GetTextFace alias "GetTextFaceA"(byval hdc as HDC, byval c as long, byval lpName as LPSTR) as long
+#endif
+
 declare function GetTextFaceW(byval hdc as HDC, byval c as long, byval lpName as LPWSTR) as long
+
+#ifdef UNICODE
+	declare function GetTextFace alias "GetTextFaceW"(byval hdc as HDC, byval c as long, byval lpName as LPWSTR) as long
+#endif
+
 const FONTMAPPER_MAX = 10
 
 type tagKERNINGPAIR
@@ -3583,15 +3863,18 @@ end type
 
 type KERNINGPAIR as tagKERNINGPAIR
 type LPKERNINGPAIR as tagKERNINGPAIR ptr
+declare function GetKerningPairsA(byval hdc as HDC, byval nPairs as DWORD, byval lpKernPair as LPKERNINGPAIR) as DWORD
 
-#ifdef UNICODE
-	#define GetKerningPairs GetKerningPairsW
-#else
-	#define GetKerningPairs GetKerningPairsA
+#ifndef UNICODE
+	declare function GetKerningPairs alias "GetKerningPairsA"(byval hdc as HDC, byval nPairs as DWORD, byval lpKernPair as LPKERNINGPAIR) as DWORD
 #endif
 
-declare function GetKerningPairsA(byval hdc as HDC, byval nPairs as DWORD, byval lpKernPair as LPKERNINGPAIR) as DWORD
 declare function GetKerningPairsW(byval hdc as HDC, byval nPairs as DWORD, byval lpKernPair as LPKERNINGPAIR) as DWORD
+
+#ifdef UNICODE
+	declare function GetKerningPairs alias "GetKerningPairsW"(byval hdc as HDC, byval nPairs as DWORD, byval lpKernPair as LPKERNINGPAIR) as DWORD
+#endif
+
 declare function GetDCOrgEx(byval hdc as HDC, byval lppt as LPPOINT) as WINBOOL
 declare function FixBrushOrgEx(byval hdc as HDC, byval x as long, byval y as long, byval ptl as LPPOINT) as WINBOOL
 declare function UnrealizeObject(byval h as HGDIOBJ) as WINBOOL
@@ -3607,45 +3890,92 @@ type ICMENUMPROCA as function(byval as LPSTR, byval as LPARAM) as long
 type ICMENUMPROCW as function(byval as LPWSTR, byval as LPARAM) as long
 
 #ifdef UNICODE
-	#define ICMENUMPROC ICMENUMPROCW
-	#define EnumICMProfiles EnumICMProfilesW
-	#define UpdateICMRegKey UpdateICMRegKeyW
-	#define GetLogColorSpace GetLogColorSpaceW
-	#define CreateColorSpace CreateColorSpaceW
-	#define GetICMProfile GetICMProfileW
-	#define SetICMProfile SetICMProfileW
+	type ICMENUMPROC as ICMENUMPROCW
 #else
-	#define ICMENUMPROC ICMENUMPROCA
-	#define EnumICMProfiles EnumICMProfilesA
-	#define UpdateICMRegKey UpdateICMRegKeyA
-	#define GetLogColorSpace GetLogColorSpaceA
-	#define CreateColorSpace CreateColorSpaceA
-	#define GetICMProfile GetICMProfileA
-	#define SetICMProfile SetICMProfileA
+	type ICMENUMPROC as ICMENUMPROCA
 #endif
 
 declare function SetICMMode(byval hdc as HDC, byval mode as long) as long
 declare function CheckColorsInGamut(byval hdc as HDC, byval lpRGBTriple as LPVOID, byval dlpBuffer as LPVOID, byval nCount as DWORD) as WINBOOL
 declare function GetColorSpace(byval hdc as HDC) as HCOLORSPACE
 declare function GetLogColorSpaceA(byval hColorSpace as HCOLORSPACE, byval lpBuffer as LPLOGCOLORSPACEA, byval nSize as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetLogColorSpace alias "GetLogColorSpaceA"(byval hColorSpace as HCOLORSPACE, byval lpBuffer as LPLOGCOLORSPACEA, byval nSize as DWORD) as WINBOOL
+#endif
+
 declare function GetLogColorSpaceW(byval hColorSpace as HCOLORSPACE, byval lpBuffer as LPLOGCOLORSPACEW, byval nSize as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetLogColorSpace alias "GetLogColorSpaceW"(byval hColorSpace as HCOLORSPACE, byval lpBuffer as LPLOGCOLORSPACEW, byval nSize as DWORD) as WINBOOL
+#endif
+
 declare function CreateColorSpaceA(byval lplcs as LPLOGCOLORSPACEA) as HCOLORSPACE
+
+#ifndef UNICODE
+	declare function CreateColorSpace alias "CreateColorSpaceA"(byval lplcs as LPLOGCOLORSPACEA) as HCOLORSPACE
+#endif
+
 declare function CreateColorSpaceW(byval lplcs as LPLOGCOLORSPACEW) as HCOLORSPACE
+
+#ifdef UNICODE
+	declare function CreateColorSpace alias "CreateColorSpaceW"(byval lplcs as LPLOGCOLORSPACEW) as HCOLORSPACE
+#endif
+
 declare function SetColorSpace(byval hdc as HDC, byval hcs as HCOLORSPACE) as HCOLORSPACE
 declare function DeleteColorSpace(byval hcs as HCOLORSPACE) as WINBOOL
 declare function GetICMProfileA(byval hdc as HDC, byval pBufSize as LPDWORD, byval pszFilename as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetICMProfile alias "GetICMProfileA"(byval hdc as HDC, byval pBufSize as LPDWORD, byval pszFilename as LPSTR) as WINBOOL
+#endif
+
 declare function GetICMProfileW(byval hdc as HDC, byval pBufSize as LPDWORD, byval pszFilename as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetICMProfile alias "GetICMProfileW"(byval hdc as HDC, byval pBufSize as LPDWORD, byval pszFilename as LPWSTR) as WINBOOL
+#endif
+
 declare function SetICMProfileA(byval hdc as HDC, byval lpFileName as LPSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetICMProfile alias "SetICMProfileA"(byval hdc as HDC, byval lpFileName as LPSTR) as WINBOOL
+#endif
+
 declare function SetICMProfileW(byval hdc as HDC, byval lpFileName as LPWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetICMProfile alias "SetICMProfileW"(byval hdc as HDC, byval lpFileName as LPWSTR) as WINBOOL
+#endif
+
 declare function GetDeviceGammaRamp(byval hdc as HDC, byval lpRamp as LPVOID) as WINBOOL
 declare function SetDeviceGammaRamp(byval hdc as HDC, byval lpRamp as LPVOID) as WINBOOL
 declare function ColorMatchToTarget(byval hdc as HDC, byval hdcTarget as HDC, byval action as DWORD) as WINBOOL
 declare function EnumICMProfilesA(byval hdc as HDC, byval lpProc as ICMENUMPROCA, byval lParam as LPARAM) as long
-declare function EnumICMProfilesW(byval hdc as HDC, byval lpProc as ICMENUMPROCW, byval lParam as LPARAM) as long
-declare function UpdateICMRegKeyA(byval reserved as DWORD, byval lpszCMID as LPSTR, byval lpszFileName as LPSTR, byval command as UINT) as WINBOOL
-declare function UpdateICMRegKeyW(byval reserved as DWORD, byval lpszCMID as LPWSTR, byval lpszFileName as LPWSTR, byval command as UINT) as WINBOOL
-declare function ColorCorrectPalette(byval hdc as HDC, byval hPal as HPALETTE, byval deFirst as DWORD, byval num as DWORD) as WINBOOL
 
+#ifndef UNICODE
+	declare function EnumICMProfiles alias "EnumICMProfilesA"(byval hdc as HDC, byval lpProc as ICMENUMPROCA, byval lParam as LPARAM) as long
+#endif
+
+declare function EnumICMProfilesW(byval hdc as HDC, byval lpProc as ICMENUMPROCW, byval lParam as LPARAM) as long
+
+#ifdef UNICODE
+	declare function EnumICMProfiles alias "EnumICMProfilesW"(byval hdc as HDC, byval lpProc as ICMENUMPROCW, byval lParam as LPARAM) as long
+#endif
+
+declare function UpdateICMRegKeyA(byval reserved as DWORD, byval lpszCMID as LPSTR, byval lpszFileName as LPSTR, byval command as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function UpdateICMRegKey alias "UpdateICMRegKeyA"(byval reserved as DWORD, byval lpszCMID as LPSTR, byval lpszFileName as LPSTR, byval command as UINT) as WINBOOL
+#endif
+
+declare function UpdateICMRegKeyW(byval reserved as DWORD, byval lpszCMID as LPWSTR, byval lpszFileName as LPWSTR, byval command as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function UpdateICMRegKey alias "UpdateICMRegKeyW"(byval reserved as DWORD, byval lpszCMID as LPWSTR, byval lpszFileName as LPWSTR, byval command as UINT) as WINBOOL
+#endif
+
+declare function ColorCorrectPalette(byval hdc as HDC, byval hPal as HPALETTE, byval deFirst as DWORD, byval num as DWORD) as WINBOOL
 const ENHMETA_SIGNATURE = &h464D4520
 const ENHMETA_STOCK_OBJECT = &h80000000
 const EMR_HEADER = 1
@@ -4685,12 +5015,6 @@ const EPS_SIGNATURE = &h46535045
 const GDICOMMENT_UNICODE_STRING = &h00000040
 const GDICOMMENT_UNICODE_END = &h00000080
 
-#ifdef UNICODE
-	#define wglUseFontBitmaps wglUseFontBitmapsW
-#else
-	#define wglUseFontBitmaps wglUseFontBitmapsA
-#endif
-
 declare function wglCopyContext(byval as HGLRC, byval as HGLRC, byval as UINT) as WINBOOL
 declare function wglCreateContext(byval as HDC) as HGLRC
 declare function wglCreateLayerContext(byval as HDC, byval as long) as HGLRC
@@ -4701,7 +5025,17 @@ declare function wglGetProcAddress(byval as LPCSTR) as PROC
 declare function wglMakeCurrent(byval as HDC, byval as HGLRC) as WINBOOL
 declare function wglShareLists(byval as HGLRC, byval as HGLRC) as WINBOOL
 declare function wglUseFontBitmapsA(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function wglUseFontBitmaps alias "wglUseFontBitmapsA"(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as WINBOOL
+#endif
+
 declare function wglUseFontBitmapsW(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function wglUseFontBitmaps alias "wglUseFontBitmapsW"(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as WINBOOL
+#endif
+
 declare function SwapBuffers(byval as HDC) as WINBOOL
 
 type _POINTFLOAT
@@ -4725,15 +5059,17 @@ type PGLYPHMETRICSFLOAT as _GLYPHMETRICSFLOAT ptr
 type LPGLYPHMETRICSFLOAT as _GLYPHMETRICSFLOAT ptr
 const WGL_FONT_LINES = 0
 const WGL_FONT_POLYGONS = 1
+declare function wglUseFontOutlinesA(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as long, byval as LPGLYPHMETRICSFLOAT) as WINBOOL
 
-#ifdef UNICODE
-	#define wglUseFontOutlines wglUseFontOutlinesW
-#else
-	#define wglUseFontOutlines wglUseFontOutlinesA
+#ifndef UNICODE
+	declare function wglUseFontOutlines alias "wglUseFontOutlinesA"(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as long, byval as LPGLYPHMETRICSFLOAT) as WINBOOL
 #endif
 
-declare function wglUseFontOutlinesA(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as long, byval as LPGLYPHMETRICSFLOAT) as WINBOOL
 declare function wglUseFontOutlinesW(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as long, byval as LPGLYPHMETRICSFLOAT) as WINBOOL
+
+#ifdef UNICODE
+	declare function wglUseFontOutlines alias "wglUseFontOutlinesW"(byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as long, byval as LPGLYPHMETRICSFLOAT) as WINBOOL
+#endif
 
 type tagLAYERPLANEDESCRIPTOR
 	nSize as WORD

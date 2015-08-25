@@ -1096,15 +1096,17 @@ end type
 
 type MSV1_0_SUBAUTH_RESPONSE as _MSV1_0_SUBAUTH_RESPONSE
 type PMSV1_0_SUBAUTH_RESPONSE as _MSV1_0_SUBAUTH_RESPONSE ptr
-#define RtlGenRandom SystemFunction036
-#define RtlEncryptMemory SystemFunction040
-#define RtlDecryptMemory SystemFunction041
 declare function SystemFunction036 cdecl(byval RandomBuffer as PVOID, byval RandomBufferLength as ULONG) as WINBOOLEAN
+declare function RtlGenRandom cdecl alias "SystemFunction036"(byval RandomBuffer as PVOID, byval RandomBufferLength as ULONG) as WINBOOLEAN
 const RTL_ENCRYPT_MEMORY_SIZE = 8
 const RTL_ENCRYPT_OPTION_CROSS_PROCESS = &h01
 const RTL_ENCRYPT_OPTION_SAME_LOGON = &h02
+
 declare function SystemFunction040 cdecl(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+declare function RtlEncryptMemory cdecl alias "SystemFunction040"(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
 declare function SystemFunction041 cdecl(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+declare function RtlDecryptMemory cdecl alias "SystemFunction041"(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+
 const KERBEROS_VERSION = 5
 const KERBEROS_REVISION = 6
 const KERB_ETYPE_NULL = 0
@@ -1764,21 +1766,38 @@ type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 	declare function AuditEnumerateSubCategories(byval pAuditCategoryGuid as const GUID ptr, byval bRetrieveAllSubCategories as WINBOOLEAN, byval ppAuditSubCategoriesArray as GUID ptr ptr, byval pCountReturned as PULONG) as WINBOOLEAN
 	declare function AuditLookupCategoryGuidFromCategoryId(byval AuditCategoryId as POLICY_AUDIT_EVENT_TYPE, byval pAuditCategoryGuid as GUID ptr) as WINBOOLEAN
 	declare function AuditQuerySecurity(byval SecurityInformation as SECURITY_INFORMATION, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as WINBOOLEAN
+	declare function AuditLookupSubCategoryNameA(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define AuditLookupSubCategoryName AuditLookupSubCategoryNameW
-	#define AuditLookupCategoryName AuditLookupCategoryNameW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define AuditLookupSubCategoryName AuditLookupSubCategoryNameA
-	#define AuditLookupCategoryName AuditLookupCategoryNameA
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameA"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
 #if _WIN32_WINNT = &h0602
-	declare function AuditLookupSubCategoryNameA(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 	declare function AuditLookupSubCategoryNameW(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameW"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function AuditLookupCategoryNameA(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameA"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function AuditLookupCategoryNameW(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameW"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function AuditLookupCategoryIdFromCategoryGuid(byval pAuditCategoryGuid as const GUID ptr, byval pAuditCategoryId as PPOLICY_AUDIT_EVENT_TYPE) as WINBOOLEAN
 	declare function AuditSetSecurity(byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOLEAN
 #endif

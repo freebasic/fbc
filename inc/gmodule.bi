@@ -73,10 +73,10 @@ declare function g_module_symbol(byval module as GModule ptr, byval symbol_name 
 declare function g_module_build_path(byval directory as const zstring ptr, byval module_name as const zstring ptr) as zstring ptr
 
 #ifdef __FB_WIN32__
-	#define g_module_open g_module_open_utf8
-	#define g_module_name g_module_name_utf8
 	declare function g_module_open_utf8(byval file_name as const zstring ptr, byval flags as GModuleFlags) as GModule ptr
+	declare function g_module_open alias "g_module_open_utf8"(byval file_name as const zstring ptr, byval flags as GModuleFlags) as GModule ptr
 	declare function g_module_name_utf8(byval module as GModule ptr) as const zstring ptr
+	declare function g_module_name alias "g_module_name_utf8"(byval module as GModule ptr) as const zstring ptr
 #endif
 
 end extern

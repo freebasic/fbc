@@ -153,9 +153,9 @@ const SNMP_ACCESS_NOTIFY = 1
 const SNMP_ACCESS_READ_ONLY = 2
 const SNMP_ACCESS_READ_WRITE = 3
 const SNMP_ACCESS_READ_CREATE = 4
-#define SNMPAPI INT_
-#define SNMPAPI_NOERROR CTRUE
-#define SNMPAPI_ERROR FALSE
+type SNMPAPI as INT_
+const SNMPAPI_NOERROR = CTRUE
+const SNMPAPI_ERROR = FALSE
 
 declare function SnmpExtensionInit(byval dwUptimeReference as DWORD, byval phSubagentTrapEvent as HANDLE ptr, byval pFirstSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL
 declare function SnmpExtensionInitEx(byval pNextSupportedRegion as AsnObjectIdentifier ptr) as WINBOOL
@@ -232,22 +232,24 @@ const SNMP_PDUAPI_INVALID_GT = 22
 const SNMP_AUTHAPI_INVALID_VERSION = 30
 const SNMP_AUTHAPI_INVALID_MSG_TYPE = 31
 const SNMP_AUTHAPI_TRIV_AUTH_FAILED = 32
-#define SNMP_oidcpy SnmpUtilOidCpy
-#define SNMP_oidappend SnmpUtilOidAppend
-#define SNMP_oidncmp SnmpUtilOidNCmp
-#define SNMP_oidcmp SnmpUtilOidCmp
-#define SNMP_oidfree SnmpUtilOidFree
-#define SNMP_CopyVarBindList SnmpUtilVarBindListCpy
-#define SNMP_FreeVarBindList SnmpUtilVarBindListFree
-#define SNMP_CopyVarBind SnmpUtilVarBindCpy
-#define SNMP_FreeVarBind SnmpUtilVarBindFree
-#define SNMP_printany SnmpUtilPrintAsnAny
-#define SNMP_free SnmpUtilMemFree
-#define SNMP_malloc SnmpUtilMemAlloc
-#define SNMP_realloc SnmpUtilMemReAlloc
-#define SNMP_DBG_free SnmpUtilMemFree
-#define SNMP_DBG_malloc SnmpUtilMemAlloc
-#define SNMP_DBG_realloc SnmpUtilMemReAlloc
+
+declare function SNMP_oidcpy alias "SnmpUtilOidCpy"(byval pOidDst as AsnObjectIdentifier ptr, byval pOidSrc as AsnObjectIdentifier ptr) as INT_
+declare function SNMP_oidappend alias "SnmpUtilOidAppend"(byval pOidDst as AsnObjectIdentifier ptr, byval pOidSrc as AsnObjectIdentifier ptr) as INT_
+declare function SNMP_oidncmp alias "SnmpUtilOidNCmp"(byval pOid1 as AsnObjectIdentifier ptr, byval pOid2 as AsnObjectIdentifier ptr, byval nSubIds as UINT) as INT_
+declare function SNMP_oidcmp alias "SnmpUtilOidCmp"(byval pOid1 as AsnObjectIdentifier ptr, byval pOid2 as AsnObjectIdentifier ptr) as INT_
+declare sub SNMP_oidfree alias "SnmpUtilOidFree"(byval pOid as AsnObjectIdentifier ptr)
+declare function SNMP_CopyVarBindList alias "SnmpUtilVarBindListCpy"(byval pVblDst as SnmpVarBindList ptr, byval pVblSrc as SnmpVarBindList ptr) as INT_
+declare sub SNMP_FreeVarBindList alias "SnmpUtilVarBindListFree"(byval pVbl as SnmpVarBindList ptr)
+declare function SNMP_CopyVarBind alias "SnmpUtilVarBindCpy"(byval pVbDst as SnmpVarBind ptr, byval pVbSrc as SnmpVarBind ptr) as INT_
+declare sub SNMP_FreeVarBind alias "SnmpUtilVarBindFree"(byval pVb as SnmpVarBind ptr)
+declare sub SNMP_printany alias "SnmpUtilPrintAsnAny"(byval pAny as AsnAny ptr)
+declare sub SNMP_free alias "SnmpUtilMemFree"(byval pMem as LPVOID)
+declare function SNMP_malloc alias "SnmpUtilMemAlloc"(byval nBytes as UINT) as LPVOID
+declare function SNMP_realloc alias "SnmpUtilMemReAlloc"(byval pMem as LPVOID, byval nBytes as UINT) as LPVOID
+declare sub SNMP_DBG_free alias "SnmpUtilMemFree"(byval pMem as LPVOID)
+declare function SNMP_DBG_malloc alias "SnmpUtilMemAlloc"(byval nBytes as UINT) as LPVOID
+declare function SNMP_DBG_realloc alias "SnmpUtilMemReAlloc"(byval pMem as LPVOID, byval nBytes as UINT) as LPVOID
+
 #define ASN_RFC1155_IPADDRESS ASN_IPADDRESS
 #define ASN_RFC1155_COUNTER ASN_COUNTER32
 #define ASN_RFC1155_GAUGE ASN_GAUGE32
@@ -261,11 +263,12 @@ const SNMP_AUTHAPI_TRIV_AUTH_FAILED = 32
 #define ASN_RFC1157_TRAP SNMP_PDU_V1TRAP
 #define ASN_CONTEXTSPECIFIC ASN_CONTEXT
 #define ASN_PRIMATIVE ASN_PRIMITIVE
-#define RFC1157VarBindList SnmpVarBindList
-#define RFC1157VarBind SnmpVarBind
-#define AsnInteger AsnInteger32
-#define AsnCounter AsnCounter32
-#define AsnGauge AsnGauge32
+
+type RFC1157VarBindList as SnmpVarBindList
+type RFC1157VarBind as SnmpVarBind
+type AsnInteger as AsnInteger32
+type AsnCounter as AsnCounter32
+type AsnGauge as AsnGauge32
 #define ASN_UNSIGNED32 ASN_UINTEGER32
 
 end extern

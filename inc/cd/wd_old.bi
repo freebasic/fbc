@@ -78,10 +78,10 @@ declare function wdVectorCharSize(byval size as double) as double
 declare sub wdVectorText(byval x as double, byval y as double, byval s as const zstring ptr)
 declare sub wdMultiLineVectorText(byval x as double, byval y as double, byval s as const zstring ptr)
 declare sub wdGetVectorTextBounds(byval s as const zstring ptr, byval x as double, byval y as double, byval rect as double ptr)
+type wdVectorFont as cdVectorFont
+declare function wdVectorTextTransform alias "cdVectorTextTransform"(byval matrix as const double ptr) as double ptr
+declare function wdActivate alias "cdActivate"(byval canvas as cdCanvas ptr) as long
 
-#define wdVectorFont cdVectorFont
-#define wdVectorTextTransform cdVectorTextTransform
-#define wdActivate cdActivate
 #define wdClip(mode) cdClip(mode)
 #define wdBegin(mode) cdBegin(mode)
 #define wdEnd() cdEnd()

@@ -133,12 +133,12 @@ enum
 	CD_NATIVE
 end enum
 
-#define CD_CLIPON CD_CLIPAREA
-#define CD_CENTER_BASE CD_BASE_CENTER
-#define CD_LEFT_BASE CD_BASE_LEFT
-#define CD_RIGHT_BASE CD_BASE_RIGHT
+const CD_CLIPON = CD_CLIPAREA
+const CD_CENTER_BASE = CD_BASE_CENTER
+const CD_LEFT_BASE = CD_BASE_LEFT
+const CD_RIGHT_BASE = CD_BASE_RIGHT
 #define CD_ITALIC_BOLD CD_BOLD_ITALIC
-#define cdScrollImage cdScrollArea
+declare sub cdScrollImage alias "cdScrollArea"(byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long, byval dx as long, byval dy as long)
 #define cdCanvas2Raster(x, y) scope : cdUpdateYAxis(y) : end scope
 
 end extern
