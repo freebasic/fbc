@@ -90,6 +90,9 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		Note: The ##include/freebasic/## directory name is not affected, and the FB headers are always shared by all installed FB versions (FB's headers and their directory layouts are designed to be able to do that).
 		
 		This is only supported for the normal (non-standalone) build. It is not needed for the standalone build, because everyone of those can be in a separate installation directory anyways, while normal (non-standalone) builds may have to share a common installation directory such as ##/usr/local## or ##""C:\MinGW""##.
+	
+	- ##ENABLE_LIB64=1##
+		This causes the makefile to use ##-d ENABLE_LIB64## when building the compiler. 64bit libraries are placed into ##lib64/freebasic/## instead of ##lib/freebasic/##.
 
 {{fbdoc item="section" value="Compiler source code configuration (FBFLAGS)"}}
 
@@ -101,6 +104,9 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	
 	- ##-d ENABLE_PREFIX=/some/path##
 		This causes the given prefix path to be hard-coded into the compiler, disabling the use of ##[[KeyPgExepath exepath()]]##. Thus it will no longer be relocatable. This is useful if its known that the compiler does not need to be relocatable, or if ##exepath()## does not work properly (for example, in FB 0.90.1, this is the case for ""FreeBSD"").
+	
+	- ##-d ENABLE_LIB64##
+		This makes the compiler search 64bit libraries in ##lib64/freebasic/## instead of ##lib/freebasic/##. This only affects the normal (non-standalone) build. 32bit libraries are still searched in ##lib/freebasic/##.
 
 {{fbdoc item="section" value="rtlib and gfxlib2 source code configuration (CFLAGS)"}}
 

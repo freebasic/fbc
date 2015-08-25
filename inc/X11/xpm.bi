@@ -138,24 +138,24 @@ const XpmCharsPerPixel = cast(clong, 1) shl 5
 const XpmColorSymbols = cast(clong, 1) shl 6
 const XpmRgbFilename = cast(clong, 1) shl 7
 const XpmInfos = cast(clong, 1) shl 8
-#define XpmReturnInfos XpmInfos
+const XpmReturnInfos = XpmInfos
 const XpmReturnPixels = cast(clong, 1) shl 9
 const XpmExtensions = cast(clong, 1) shl 10
-#define XpmReturnExtensions XpmExtensions
+const XpmReturnExtensions = XpmExtensions
 const XpmExactColors = cast(clong, 1) shl 11
 const XpmCloseness = cast(clong, 1) shl 12
 const XpmRGBCloseness = cast(clong, 1) shl 13
 const XpmColorKey = cast(clong, 1) shl 14
 const XpmColorTable = cast(clong, 1) shl 15
-#define XpmReturnColorTable XpmColorTable
+const XpmReturnColorTable = XpmColorTable
 const XpmReturnAllocPixels = cast(clong, 1) shl 16
 const XpmAllocCloseColors = cast(clong, 1) shl 17
 const XpmBitmapFormat = cast(clong, 1) shl 18
 const XpmAllocColor = cast(clong, 1) shl 19
 const XpmFreeColors = cast(clong, 1) shl 20
 const XpmColorClosure = cast(clong, 1) shl 21
-#define XpmComments XpmInfos
-#define XpmReturnComments XpmComments
+const XpmComments = XpmInfos
+const XpmReturnComments = XpmComments
 const XpmUndefPixel = &h80000000
 const XPM_MONO = 2
 const XPM_GREY4 = 3
@@ -200,21 +200,21 @@ declare function XpmCreateBufferFromXpmImage(byval buffer_return as zstring ptr 
 declare function XpmGetParseError(byval filename as zstring ptr, byval linenum_return as long ptr, byval charnum_return as long ptr) as long
 declare sub XpmFree(byval ptr as any ptr)
 
-#define XpmPixmapColorError XpmColorError
-#define XpmPixmapSuccess XpmSuccess
-#define XpmPixmapOpenFailed XpmOpenFailed
-#define XpmPixmapFileInvalid XpmFileInvalid
-#define XpmPixmapNoMemory XpmNoMemory
-#define XpmPixmapColorFailed XpmColorFailed
+const XpmPixmapColorError = XpmColorError
+const XpmPixmapSuccess = XpmSuccess
+const XpmPixmapOpenFailed = XpmOpenFailed
+const XpmPixmapFileInvalid = XpmFileInvalid
+const XpmPixmapNoMemory = XpmNoMemory
+const XpmPixmapColorFailed = XpmColorFailed
 #define XpmReadPixmapFile(dpy, d, file, pix, mask, att) XpmReadFileToPixmap(dpy, d, file, pix, mask, att)
 #define XpmWritePixmapFile(dpy, file, pix, mask, att) XpmWriteFileFromPixmap(dpy, file, pix, mask, att)
-#define PixmapColorError XpmColorError
-#define PixmapSuccess XpmSuccess
-#define PixmapOpenFailed XpmOpenFailed
-#define PixmapFileInvalid XpmFileInvalid
-#define PixmapNoMemory XpmNoMemory
-#define PixmapColorFailed XpmColorFailed
-#define ColorSymbol XpmColorSymbol
+const PixmapColorError = XpmColorError
+const PixmapSuccess = XpmSuccess
+const PixmapOpenFailed = XpmOpenFailed
+const PixmapFileInvalid = XpmFileInvalid
+const PixmapNoMemory = XpmNoMemory
+const PixmapColorFailed = XpmColorFailed
+type ColorSymbol as XpmColorSymbol
 #define XReadPixmapFile(dpy, d, file, pix, mask, att) XpmReadFileToPixmap(dpy, d, file, pix, mask, att)
 #define XWritePixmapFile(dpy, file, pix, mask, att) XpmWriteFileFromPixmap(dpy, file, pix, mask, att)
 #define XCreatePixmapFromData(dpy, d, data, pix, mask, att) XpmCreatePixmapFromData(dpy, d, data, pix, mask, att)

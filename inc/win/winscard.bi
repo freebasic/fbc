@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -55,73 +55,190 @@ declare function SCardIsValidContext(byval hContext as SCARDCONTEXT) as LONG
 #define SCARD_SYSTEM_READERS __TEXT(!"SCard$SystemReaders\0")
 const SCARD_PROVIDER_PRIMARY = 1
 const SCARD_PROVIDER_CSP = 2
+declare function SCardListReaderGroupsA(byval hContext as SCARDCONTEXT, byval mszGroups as LPSTR, byval pcchGroups as LPDWORD) as LONG
 
-#ifdef UNICODE
-	#define SCardListReaderGroups SCardListReaderGroupsW
-	#define SCardListReaders SCardListReadersW
-	#define SCardListCards SCardListCardsW
-	#define SCardListInterfaces SCardListInterfacesW
-	#define SCardGetProviderId SCardGetProviderIdW
-	#define SCardGetCardTypeProviderName SCardGetCardTypeProviderNameW
-	#define SCardIntroduceReaderGroup SCardIntroduceReaderGroupW
-	#define SCardForgetReaderGroup SCardForgetReaderGroupW
-	#define SCardIntroduceReader SCardIntroduceReaderW
-	#define SCardForgetReader SCardForgetReaderW
-	#define SCardAddReaderToGroup SCardAddReaderToGroupW
-	#define SCardRemoveReaderFromGroup SCardRemoveReaderFromGroupW
-	#define SCardIntroduceCardType SCardIntroduceCardTypeW
-	#define SCardSetCardTypeProviderName SCardSetCardTypeProviderNameW
-	#define SCardForgetCardType SCardForgetCardTypeW
-#else
-	#define SCardListReaderGroups SCardListReaderGroupsA
-	#define SCardListReaders SCardListReadersA
-	#define SCardListCards SCardListCardsA
-	#define SCardListInterfaces SCardListInterfacesA
-	#define SCardGetProviderId SCardGetProviderIdA
-	#define SCardGetCardTypeProviderName SCardGetCardTypeProviderNameA
-	#define SCardIntroduceReaderGroup SCardIntroduceReaderGroupA
-	#define SCardForgetReaderGroup SCardForgetReaderGroupA
-	#define SCardIntroduceReader SCardIntroduceReaderA
-	#define SCardForgetReader SCardForgetReaderA
-	#define SCardAddReaderToGroup SCardAddReaderToGroupA
-	#define SCardRemoveReaderFromGroup SCardRemoveReaderFromGroupA
-	#define SCardIntroduceCardType SCardIntroduceCardTypeA
-	#define SCardSetCardTypeProviderName SCardSetCardTypeProviderNameA
-	#define SCardForgetCardType SCardForgetCardTypeA
+#ifndef UNICODE
+	declare function SCardListReaderGroups alias "SCardListReaderGroupsA"(byval hContext as SCARDCONTEXT, byval mszGroups as LPSTR, byval pcchGroups as LPDWORD) as LONG
 #endif
 
-declare function SCardListReaderGroupsA(byval hContext as SCARDCONTEXT, byval mszGroups as LPSTR, byval pcchGroups as LPDWORD) as LONG
 declare function SCardListReaderGroupsW(byval hContext as SCARDCONTEXT, byval mszGroups as LPWSTR, byval pcchGroups as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardListReaderGroups alias "SCardListReaderGroupsW"(byval hContext as SCARDCONTEXT, byval mszGroups as LPWSTR, byval pcchGroups as LPDWORD) as LONG
+#endif
+
 declare function SCardListReadersA(byval hContext as SCARDCONTEXT, byval mszGroups as LPCSTR, byval mszReaders as LPSTR, byval pcchReaders as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardListReaders alias "SCardListReadersA"(byval hContext as SCARDCONTEXT, byval mszGroups as LPCSTR, byval mszReaders as LPSTR, byval pcchReaders as LPDWORD) as LONG
+#endif
+
 declare function SCardListReadersW(byval hContext as SCARDCONTEXT, byval mszGroups as LPCWSTR, byval mszReaders as LPWSTR, byval pcchReaders as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardListReaders alias "SCardListReadersW"(byval hContext as SCARDCONTEXT, byval mszGroups as LPCWSTR, byval mszReaders as LPWSTR, byval pcchReaders as LPDWORD) as LONG
+#endif
+
 declare function SCardListCardsA(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPSTR, byval pcchCards as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardListCards alias "SCardListCardsA"(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPSTR, byval pcchCards as LPDWORD) as LONG
+#endif
+
 declare function SCardListCardsW(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPWSTR, byval pcchCards as LPDWORD) as LONG
-#define SCardListCardTypes SCardListCards
+
+#ifdef UNICODE
+	declare function SCardListCards alias "SCardListCardsW"(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPWSTR, byval pcchCards as LPDWORD) as LONG
+	declare function SCardListCardTypes alias "SCardListCardsW"(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPWSTR, byval pcchCards as LPDWORD) as LONG
+#else
+	declare function SCardListCardTypes alias "SCardListCardsA"(byval hContext as SCARDCONTEXT, byval pbAtr as LPCBYTE, byval rgquidInterfaces as LPCGUID, byval cguidInterfaceCount as DWORD, byval mszCards as LPSTR, byval pcchCards as LPDWORD) as LONG
+#endif
+
 declare function SCardListInterfacesA(byval hContext as SCARDCONTEXT, byval szCard as LPCSTR, byval pguidInterfaces as LPGUID, byval pcguidInterfaces as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardListInterfaces alias "SCardListInterfacesA"(byval hContext as SCARDCONTEXT, byval szCard as LPCSTR, byval pguidInterfaces as LPGUID, byval pcguidInterfaces as LPDWORD) as LONG
+#endif
+
 declare function SCardListInterfacesW(byval hContext as SCARDCONTEXT, byval szCard as LPCWSTR, byval pguidInterfaces as LPGUID, byval pcguidInterfaces as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardListInterfaces alias "SCardListInterfacesW"(byval hContext as SCARDCONTEXT, byval szCard as LPCWSTR, byval pguidInterfaces as LPGUID, byval pcguidInterfaces as LPDWORD) as LONG
+#endif
+
 declare function SCardGetProviderIdA(byval hContext as SCARDCONTEXT, byval szCard as LPCSTR, byval pguidProviderId as LPGUID) as LONG
+
+#ifndef UNICODE
+	declare function SCardGetProviderId alias "SCardGetProviderIdA"(byval hContext as SCARDCONTEXT, byval szCard as LPCSTR, byval pguidProviderId as LPGUID) as LONG
+#endif
+
 declare function SCardGetProviderIdW(byval hContext as SCARDCONTEXT, byval szCard as LPCWSTR, byval pguidProviderId as LPGUID) as LONG
+
+#ifdef UNICODE
+	declare function SCardGetProviderId alias "SCardGetProviderIdW"(byval hContext as SCARDCONTEXT, byval szCard as LPCWSTR, byval pguidProviderId as LPGUID) as LONG
+#endif
+
 declare function SCardGetCardTypeProviderNameA(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval dwProviderId as DWORD, byval szProvider as LPSTR, byval pcchProvider as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardGetCardTypeProviderName alias "SCardGetCardTypeProviderNameA"(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval dwProviderId as DWORD, byval szProvider as LPSTR, byval pcchProvider as LPDWORD) as LONG
+#endif
+
 declare function SCardGetCardTypeProviderNameW(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval dwProviderId as DWORD, byval szProvider as LPWSTR, byval pcchProvider as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardGetCardTypeProviderName alias "SCardGetCardTypeProviderNameW"(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval dwProviderId as DWORD, byval szProvider as LPWSTR, byval pcchProvider as LPDWORD) as LONG
+#endif
+
 declare function SCardIntroduceReaderGroupA(byval hContext as SCARDCONTEXT, byval szGroupName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardIntroduceReaderGroup alias "SCardIntroduceReaderGroupA"(byval hContext as SCARDCONTEXT, byval szGroupName as LPCSTR) as LONG
+#endif
+
 declare function SCardIntroduceReaderGroupW(byval hContext as SCARDCONTEXT, byval szGroupName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardIntroduceReaderGroup alias "SCardIntroduceReaderGroupW"(byval hContext as SCARDCONTEXT, byval szGroupName as LPCWSTR) as LONG
+#endif
+
 declare function SCardForgetReaderGroupA(byval hContext as SCARDCONTEXT, byval szGroupName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardForgetReaderGroup alias "SCardForgetReaderGroupA"(byval hContext as SCARDCONTEXT, byval szGroupName as LPCSTR) as LONG
+#endif
+
 declare function SCardForgetReaderGroupW(byval hContext as SCARDCONTEXT, byval szGroupName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardForgetReaderGroup alias "SCardForgetReaderGroupW"(byval hContext as SCARDCONTEXT, byval szGroupName as LPCWSTR) as LONG
+#endif
+
 declare function SCardIntroduceReaderA(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szDeviceName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardIntroduceReader alias "SCardIntroduceReaderA"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szDeviceName as LPCSTR) as LONG
+#endif
+
 declare function SCardIntroduceReaderW(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szDeviceName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardIntroduceReader alias "SCardIntroduceReaderW"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szDeviceName as LPCWSTR) as LONG
+#endif
+
 declare function SCardForgetReaderA(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardForgetReader alias "SCardForgetReaderA"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR) as LONG
+#endif
+
 declare function SCardForgetReaderW(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardForgetReader alias "SCardForgetReaderW"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR) as LONG
+#endif
+
 declare function SCardAddReaderToGroupA(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szGroupName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardAddReaderToGroup alias "SCardAddReaderToGroupA"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szGroupName as LPCSTR) as LONG
+#endif
+
 declare function SCardAddReaderToGroupW(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szGroupName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardAddReaderToGroup alias "SCardAddReaderToGroupW"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szGroupName as LPCWSTR) as LONG
+#endif
+
 declare function SCardRemoveReaderFromGroupA(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szGroupName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardRemoveReaderFromGroup alias "SCardRemoveReaderFromGroupA"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCSTR, byval szGroupName as LPCSTR) as LONG
+#endif
+
 declare function SCardRemoveReaderFromGroupW(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szGroupName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardRemoveReaderFromGroup alias "SCardRemoveReaderFromGroupW"(byval hContext as SCARDCONTEXT, byval szReaderName as LPCWSTR, byval szGroupName as LPCWSTR) as LONG
+#endif
+
 declare function SCardIntroduceCardTypeA(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval pguidPrimaryProvider as LPCGUID, byval rgguidInterfaces as LPCGUID, byval dwInterfaceCount as DWORD, byval pbAtr as LPCBYTE, byval pbAtrMask as LPCBYTE, byval cbAtrLen as DWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardIntroduceCardType alias "SCardIntroduceCardTypeA"(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval pguidPrimaryProvider as LPCGUID, byval rgguidInterfaces as LPCGUID, byval dwInterfaceCount as DWORD, byval pbAtr as LPCBYTE, byval pbAtrMask as LPCBYTE, byval cbAtrLen as DWORD) as LONG
+#endif
+
 declare function SCardIntroduceCardTypeW(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval pguidPrimaryProvider as LPCGUID, byval rgguidInterfaces as LPCGUID, byval dwInterfaceCount as DWORD, byval pbAtr as LPCBYTE, byval pbAtrMask as LPCBYTE, byval cbAtrLen as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardIntroduceCardType alias "SCardIntroduceCardTypeW"(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval pguidPrimaryProvider as LPCGUID, byval rgguidInterfaces as LPCGUID, byval dwInterfaceCount as DWORD, byval pbAtr as LPCBYTE, byval pbAtrMask as LPCBYTE, byval cbAtrLen as DWORD) as LONG
+#endif
+
 #define PCSCardIntroduceCardType(hContext, szCardName, pbAtr, pbAtrMask, cbAtrLen, pguidPrimaryProvider, rgguidInterfaces, dwInterfaceCount) SCardIntroduceCardType(hContext, szCardName, pguidPrimaryProvider, rgguidInterfaces, dwInterfaceCount, pbAtr, pbAtrMask, cbAtrLen)
 declare function SCardSetCardTypeProviderNameA(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval dwProviderId as DWORD, byval szProvider as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardSetCardTypeProviderName alias "SCardSetCardTypeProviderNameA"(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR, byval dwProviderId as DWORD, byval szProvider as LPCSTR) as LONG
+#endif
+
 declare function SCardSetCardTypeProviderNameW(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval dwProviderId as DWORD, byval szProvider as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardSetCardTypeProviderName alias "SCardSetCardTypeProviderNameW"(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR, byval dwProviderId as DWORD, byval szProvider as LPCWSTR) as LONG
+#endif
+
 declare function SCardForgetCardTypeA(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SCardForgetCardType alias "SCardForgetCardTypeA"(byval hContext as SCARDCONTEXT, byval szCardName as LPCSTR) as LONG
+#endif
+
 declare function SCardForgetCardTypeW(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SCardForgetCardType alias "SCardForgetCardTypeW"(byval hContext as SCARDCONTEXT, byval szCardName as LPCWSTR) as LONG
+#endif
+
 declare function SCardFreeMemory(byval hContext as SCARDCONTEXT, byval pvMem as LPCVOID) as LONG
 declare function SCardAccessStartedEvent() as HANDLE
 declare sub SCardReleaseStartedEvent()
@@ -154,30 +271,19 @@ type LPSCARD_READERSTATEW as SCARD_READERSTATEW ptr
 	type SCARD_READERSTATE as SCARD_READERSTATEW
 	type PSCARD_READERSTATE as PSCARD_READERSTATEW
 	type LPSCARD_READERSTATE as LPSCARD_READERSTATEW
-
-	#define SCardLocateCards SCardLocateCardsW
-	#define SCardLocateCardsByATR SCardLocateCardsByATRW
-	#define SCardGetStatusChange SCardGetStatusChangeW
-	#define SCardConnect SCardConnectW
-	#define SCardStatus SCardStatusW
 #else
 	type SCARD_READERSTATE as SCARD_READERSTATEA
 	type PSCARD_READERSTATE as PSCARD_READERSTATEA
 	type LPSCARD_READERSTATE as LPSCARD_READERSTATEA
-
-	#define SCardLocateCards SCardLocateCardsA
-	#define SCardLocateCardsByATR SCardLocateCardsByATRA
-	#define SCardGetStatusChange SCardGetStatusChangeA
-	#define SCardConnect SCardConnectA
-	#define SCardStatus SCardStatusA
 #endif
 
-#define SCARD_READERSTATE_A SCARD_READERSTATEA
-#define SCARD_READERSTATE_W SCARD_READERSTATEW
-#define PSCARD_READERSTATE_A PSCARD_READERSTATEA
-#define PSCARD_READERSTATE_W PSCARD_READERSTATEW
-#define LPSCARD_READERSTATE_A LPSCARD_READERSTATEA
-#define LPSCARD_READERSTATE_W LPSCARD_READERSTATEW
+type SCARD_READERSTATE_A as SCARD_READERSTATEA
+type SCARD_READERSTATE_W as SCARD_READERSTATEW
+type PSCARD_READERSTATE_A as PSCARD_READERSTATEA
+type PSCARD_READERSTATE_W as PSCARD_READERSTATEW
+type LPSCARD_READERSTATE_A as LPSCARD_READERSTATEA
+type LPSCARD_READERSTATE_W as LPSCARD_READERSTATEW
+
 const SCARD_STATE_UNAWARE = &h00000000
 const SCARD_STATE_IGNORE = &h00000001
 const SCARD_STATE_CHANGED = &h00000002
@@ -191,7 +297,16 @@ const SCARD_STATE_INUSE = &h00000100
 const SCARD_STATE_MUTE = &h00000200
 const SCARD_STATE_UNPOWERED = &h00000400
 declare function SCardLocateCardsA(byval hContext as SCARDCONTEXT, byval mszCards as LPCSTR, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardLocateCards alias "SCardLocateCardsA"(byval hContext as SCARDCONTEXT, byval mszCards as LPCSTR, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
+#endif
+
 declare function SCardLocateCardsW(byval hContext as SCARDCONTEXT, byval mszCards as LPCWSTR, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardLocateCards alias "SCardLocateCardsW"(byval hContext as SCARDCONTEXT, byval mszCards as LPCWSTR, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+#endif
 
 type _SCARD_ATRMASK
 	cbAtr as DWORD
@@ -202,13 +317,31 @@ end type
 type SCARD_ATRMASK as _SCARD_ATRMASK
 type PSCARD_ATRMASK as _SCARD_ATRMASK ptr
 type LPSCARD_ATRMASK as _SCARD_ATRMASK ptr
-
 declare function SCardLocateCardsByATRA(byval hContext as SCARDCONTEXT, byval rgAtrMasks as LPSCARD_ATRMASK, byval cAtrs as DWORD, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
-declare function SCardLocateCardsByATRW(byval hContext as SCARDCONTEXT, byval rgAtrMasks as LPSCARD_ATRMASK, byval cAtrs as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
-declare function SCardGetStatusChangeA(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
-declare function SCardGetStatusChangeW(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
-declare function SCardCancel(byval hContext as SCARDCONTEXT) as LONG
 
+#ifndef UNICODE
+	declare function SCardLocateCardsByATR alias "SCardLocateCardsByATRA"(byval hContext as SCARDCONTEXT, byval rgAtrMasks as LPSCARD_ATRMASK, byval cAtrs as DWORD, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
+#endif
+
+declare function SCardLocateCardsByATRW(byval hContext as SCARDCONTEXT, byval rgAtrMasks as LPSCARD_ATRMASK, byval cAtrs as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardLocateCardsByATR alias "SCardLocateCardsByATRW"(byval hContext as SCARDCONTEXT, byval rgAtrMasks as LPSCARD_ATRMASK, byval cAtrs as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+#endif
+
+declare function SCardGetStatusChangeA(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardGetStatusChange alias "SCardGetStatusChangeA"(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEA, byval cReaders as DWORD) as LONG
+#endif
+
+declare function SCardGetStatusChangeW(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardGetStatusChange alias "SCardGetStatusChangeW"(byval hContext as SCARDCONTEXT, byval dwTimeout as DWORD, byval rgReaderStates as LPSCARD_READERSTATEW, byval cReaders as DWORD) as LONG
+#endif
+
+declare function SCardCancel(byval hContext as SCARDCONTEXT) as LONG
 const SCARD_SHARE_EXCLUSIVE = 1
 const SCARD_SHARE_SHARED = 2
 const SCARD_SHARE_DIRECT = 3
@@ -216,9 +349,18 @@ const SCARD_LEAVE_CARD = 0
 const SCARD_RESET_CARD = 1
 const SCARD_UNPOWER_CARD = 2
 const SCARD_EJECT_CARD = 3
-
 declare function SCardConnectA(byval hContext as SCARDCONTEXT, byval szReader as LPCSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardConnect alias "SCardConnectA"(byval hContext as SCARDCONTEXT, byval szReader as LPCSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
+#endif
+
 declare function SCardConnectW(byval hContext as SCARDCONTEXT, byval szReader as LPCWSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardConnect alias "SCardConnectW"(byval hContext as SCARDCONTEXT, byval szReader as LPCWSTR, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval phCard as LPSCARDHANDLE, byval pdwActiveProtocol as LPDWORD) as LONG
+#endif
+
 declare function SCardReconnect(byval hCard as SCARDHANDLE, byval dwShareMode as DWORD, byval dwPreferredProtocols as DWORD, byval dwInitialization as DWORD, byval pdwActiveProtocol as LPDWORD) as LONG
 declare function SCardDisconnect(byval hCard as SCARDHANDLE, byval dwDisposition as DWORD) as LONG
 declare function SCardBeginTransaction(byval hCard as SCARDHANDLE) as LONG
@@ -226,14 +368,24 @@ declare function SCardEndTransaction(byval hCard as SCARDHANDLE, byval dwDisposi
 declare function SCardCancelTransaction(byval hCard as SCARDHANDLE) as LONG
 declare function SCardState(byval hCard as SCARDHANDLE, byval pdwState as LPDWORD, byval pdwProtocol as LPDWORD, byval pbAtr as LPBYTE, byval pcbAtrLen as LPDWORD) as LONG
 declare function SCardStatusA(byval hCard as SCARDHANDLE, byval szReaderName as LPSTR, byval pcchReaderLen as LPDWORD, byval pdwState as LPDWORD, byval pdwProtocol as LPDWORD, byval pbAtr as LPBYTE, byval pcbAtrLen as LPDWORD) as LONG
+
+#ifndef UNICODE
+	declare function SCardStatus alias "SCardStatusA"(byval hCard as SCARDHANDLE, byval szReaderName as LPSTR, byval pcchReaderLen as LPDWORD, byval pdwState as LPDWORD, byval pdwProtocol as LPDWORD, byval pbAtr as LPBYTE, byval pcbAtrLen as LPDWORD) as LONG
+#endif
+
 declare function SCardStatusW(byval hCard as SCARDHANDLE, byval szReaderName as LPWSTR, byval pcchReaderLen as LPDWORD, byval pdwState as LPDWORD, byval pdwProtocol as LPDWORD, byval pbAtr as LPBYTE, byval pcbAtrLen as LPDWORD) as LONG
+
+#ifdef UNICODE
+	declare function SCardStatus alias "SCardStatusW"(byval hCard as SCARDHANDLE, byval szReaderName as LPWSTR, byval pcchReaderLen as LPDWORD, byval pdwState as LPDWORD, byval pdwProtocol as LPDWORD, byval pbAtr as LPBYTE, byval pcbAtrLen as LPDWORD) as LONG
+#endif
+
 declare function SCardTransmit(byval hCard as SCARDHANDLE, byval pioSendPci as LPCSCARD_IO_REQUEST, byval pbSendBuffer as LPCBYTE, byval cbSendLength as DWORD, byval pioRecvPci as LPSCARD_IO_REQUEST, byval pbRecvBuffer as LPBYTE, byval pcbRecvLength as LPDWORD) as LONG
 declare function SCardControl(byval hCard as SCARDHANDLE, byval dwControlCode as DWORD, byval lpInBuffer as LPCVOID, byval nInBufferSize as DWORD, byval lpOutBuffer as LPVOID, byval nOutBufferSize as DWORD, byval lpBytesReturned as LPDWORD) as LONG
 declare function SCardGetAttrib(byval hCard as SCARDHANDLE, byval dwAttrId as DWORD, byval pbAttr as LPBYTE, byval pcbAttrLen as LPDWORD) as LONG
-#define SCardGetReaderCapabilities SCardGetAttrib
+declare function SCardGetReaderCapabilities alias "SCardGetAttrib"(byval hCard as SCARDHANDLE, byval dwAttrId as DWORD, byval pbAttr as LPBYTE, byval pcbAttrLen as LPDWORD) as LONG
 declare function SCardSetAttrib(byval hCard as SCARDHANDLE, byval dwAttrId as DWORD, byval pbAttr as LPCBYTE, byval cbAttrLen as DWORD) as LONG
+declare function SCardSetReaderCapabilities alias "SCardSetAttrib"(byval hCard as SCARDHANDLE, byval dwAttrId as DWORD, byval pbAttr as LPCBYTE, byval cbAttrLen as DWORD) as LONG
 
-#define SCardSetReaderCapabilities SCardSetAttrib
 const SC_DLG_MINIMAL_UI = &h01
 const SC_DLG_NO_UI = &h02
 const SC_DLG_FORCE_UI = &h04
@@ -241,9 +393,9 @@ const SCERR_NOCARDNAME = &h4000
 const SCERR_NOGUIDS = &h8000
 
 #ifdef UNICODE
-	#define LPOCNCONNPROC LPOCNCONNPROCW
+	type LPOCNCONNPROC as LPOCNCONNPROCW
 #else
-	#define LPOCNCONNPROC LPOCNCONNPROCA
+	type LPOCNCONNPROC as LPOCNCONNPROCA
 #endif
 
 type LPOCNCONNPROCA as function(byval as SCARDCONTEXT, byval as LPSTR, byval as LPSTR, byval as PVOID) as SCARDHANDLE
@@ -357,21 +509,23 @@ type LPOPENCARDNAME_EXW as OPENCARDNAME_EXW ptr
 	type LPOPENCARDNAME_EX as LPOPENCARDNAME_EXA
 #endif
 
-#define OPENCARDNAMEA_EX OPENCARDNAME_EXA
-#define OPENCARDNAMEW_EX OPENCARDNAME_EXW
-#define POPENCARDNAMEA_EX POPENCARDNAME_EXA
-#define POPENCARDNAMEW_EX POPENCARDNAME_EXW
-#define LPOPENCARDNAMEA_EX LPOPENCARDNAME_EXA
-#define LPOPENCARDNAMEW_EX LPOPENCARDNAME_EXW
+type OPENCARDNAMEA_EX as OPENCARDNAME_EXA
+type OPENCARDNAMEW_EX as OPENCARDNAME_EXW
+type POPENCARDNAMEA_EX as POPENCARDNAME_EXA
+type POPENCARDNAMEW_EX as POPENCARDNAME_EXW
+type LPOPENCARDNAMEA_EX as LPOPENCARDNAME_EXA
+type LPOPENCARDNAMEW_EX as LPOPENCARDNAME_EXW
+declare function SCardUIDlgSelectCardA(byval as LPOPENCARDNAME_EXA) as LONG
 
-#ifdef UNICODE
-	#define SCardUIDlgSelectCard SCardUIDlgSelectCardW
-#else
-	#define SCardUIDlgSelectCard SCardUIDlgSelectCardA
+#ifndef UNICODE
+	declare function SCardUIDlgSelectCard alias "SCardUIDlgSelectCardA"(byval as LPOPENCARDNAME_EXA) as LONG
 #endif
 
-declare function SCardUIDlgSelectCardA(byval as LPOPENCARDNAME_EXA) as LONG
 declare function SCardUIDlgSelectCardW(byval as LPOPENCARDNAME_EXW) as LONG
+
+#ifdef UNICODE
+	declare function SCardUIDlgSelectCard alias "SCardUIDlgSelectCardW"(byval as LPOPENCARDNAME_EXW) as LONG
+#endif
 
 type OPENCARDNAMEA
 	dwStructSize as DWORD
@@ -441,21 +595,24 @@ type LPOPENCARDNAMEW as OPENCARDNAMEW ptr
 	type LPOPENCARDNAME as LPOPENCARDNAMEA
 #endif
 
-#define OPENCARDNAME_A OPENCARDNAMEA
-#define OPENCARDNAME_W OPENCARDNAMEW
-#define POPENCARDNAME_A POPENCARDNAMEA
-#define POPENCARDNAME_W POPENCARDNAMEW
-#define LPOPENCARDNAME_A LPOPENCARDNAMEA
-#define LPOPENCARDNAME_W LPOPENCARDNAMEW
+type OPENCARDNAME_A as OPENCARDNAMEA
+type OPENCARDNAME_W as OPENCARDNAMEW
+type POPENCARDNAME_A as POPENCARDNAMEA
+type POPENCARDNAME_W as POPENCARDNAMEW
+type LPOPENCARDNAME_A as LPOPENCARDNAMEA
+type LPOPENCARDNAME_W as LPOPENCARDNAMEW
+declare function GetOpenCardNameA(byval as LPOPENCARDNAMEA) as LONG
 
-#ifdef UNICODE
-	#define GetOpenCardName GetOpenCardNameW
-#else
-	#define GetOpenCardName GetOpenCardNameA
+#ifndef UNICODE
+	declare function GetOpenCardName alias "GetOpenCardNameA"(byval as LPOPENCARDNAMEA) as LONG
 #endif
 
-declare function GetOpenCardNameA(byval as LPOPENCARDNAMEA) as LONG
 declare function GetOpenCardNameW(byval as LPOPENCARDNAMEW) as LONG
+
+#ifdef UNICODE
+	declare function GetOpenCardName alias "GetOpenCardNameW"(byval as LPOPENCARDNAMEW) as LONG
+#endif
+
 declare function SCardDlgExtendedError() as LONG
 
 #if _WIN32_WINNT = &h0602
@@ -465,9 +622,9 @@ declare function SCardDlgExtendedError() as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define SCardReadCache SCardReadCacheW
+	declare function SCardReadCache alias "SCardReadCacheW"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SCardReadCache SCardReadCacheA
+	declare function SCardReadCache alias "SCardReadCacheA"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -476,9 +633,9 @@ declare function SCardDlgExtendedError() as LONG
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define SCardWriteCache SCardWriteCacheW
+	declare function SCardWriteCache alias "SCardWriteCacheW"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SCardWriteCache SCardWriteCacheA
+	declare function SCardWriteCache alias "SCardWriteCacheA"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 #endif
 
 end extern

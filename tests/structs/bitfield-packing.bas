@@ -91,10 +91,38 @@ namespace gengccRegressionTest
 	end sub
 end namespace
 
+namespace bitfieldsInNestedTypes
+	'' -gen gcc struct emitting regression test
+
+	type UDT
+		i as integer
+		union
+			type
+				a : 1 as integer
+				b : 1 as integer
+			end type
+		end union
+	end type
+
+	sub test cdecl( )
+		CU_ASSERT( sizeof( UDT ) = sizeof( integer ) * 2 )
+
+		dim x as UDT
+		CU_ASSERT( sizeof( x ) = sizeof( integer ) * 2 )
+
+		x.i = 123
+		x.a = 1
+		CU_ASSERT( x.i = 123 )
+		CU_ASSERT( x.a = 1 )
+		CU_ASSERT( x.b = 0 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/bitfield-packing" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "gengccRegressionTest", @gengccRegressionTest.test )
+	fbcu.add_test( "bitfieldsInNestedTypes", @bitfieldsInNestedTypes.test )
 end sub
 
 end namespace

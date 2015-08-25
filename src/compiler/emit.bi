@@ -9,7 +9,7 @@
 const EMIT_INITNODES	= 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
-'' TODO: x86 specific
+'' x86 specific: FB_DATACLASS_INTEGER and FB_DATACLASS_FPOINT
 const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
 
 '' if changed, update the _opFnTB() arrays at emit_*.bas
@@ -17,14 +17,16 @@ enum EMIT_NODEOP
 	EMIT_OP_NOP
 
 	'' load
-	EMIT_OP_LOADI2I, EMIT_OP_LOADF2I, EMIT_OP_LOADL2I
-	EMIT_OP_LOADI2F, EMIT_OP_LOADF2F, EMIT_OP_LOADL2F
-	EMIT_OP_LOADI2L, EMIT_OP_LOADF2L, EMIT_OP_LOADL2L
+	EMIT_OP_LOADI2I, EMIT_OP_LOADF2I, EMIT_OP_LOADL2I, EMIT_OP_LOADB2I
+	EMIT_OP_LOADI2F, EMIT_OP_LOADF2F, EMIT_OP_LOADL2F, EMIT_OP_LOADB2F
+	EMIT_OP_LOADI2L, EMIT_OP_LOADF2L, EMIT_OP_LOADL2L, EMIT_OP_LOADB2L
+	EMIT_OP_LOADI2B, EMIT_OP_LOADF2B, EMIT_OP_LOADL2B, EMIT_OP_LOADB2B
 
 	'' store
-	EMIT_OP_STORI2I, EMIT_OP_STORF2I, EMIT_OP_STORL2I
-	EMIT_OP_STORI2F, EMIT_OP_STORF2F, EMIT_OP_STORL2F
-	EMIT_OP_STORI2L, EMIT_OP_STORF2L, EMIT_OP_STORL2L
+	EMIT_OP_STORI2I, EMIT_OP_STORF2I, EMIT_OP_STORL2I, EMIT_OP_STORB2I
+	EMIT_OP_STORI2F, EMIT_OP_STORF2F, EMIT_OP_STORL2F, EMIT_OP_STORB2F
+	EMIT_OP_STORI2L, EMIT_OP_STORF2L, EMIT_OP_STORL2L, EMIT_OP_STORB2L
+	EMIT_OP_STORI2B, EMIT_OP_STORF2B, EMIT_OP_STORL2B, EMIT_OP_STORB2B
 
 	'' bop
 	EMIT_OP_MOVI, EMIT_OP_MOVF, EMIT_OP_MOVL
@@ -282,11 +284,6 @@ type EMIT_VTBL
 
 	close as sub( )
 
-	isKeyword as function _
-	( _
-		byval text as zstring ptr _
-	) as integer
-
 	isRegPreserved as function _
 	( _
 		byval dclass as integer, _
@@ -394,9 +391,6 @@ type EMITCTX
 	'' platform-dependent
 	lastsection							as integer
 	lastpriority                        as integer
-
-	keyinited							as integer
-	keyhash								as THASH
 
 	''
 	vtbl								as EMIT_VTBL
@@ -850,8 +844,6 @@ declare sub emitFlush _
 
 
 #define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
-
-#define emitIsKeyword( text ) emit.vtbl.isKeyword( text )
 
 #define emitOpen( ) emit.vtbl.open( )
 

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2007, 2008 Tony Wasserka
@@ -345,18 +345,18 @@ declare function D3DXCreateFontA(byval device as IDirect3DDevice9 ptr, byval hei
 declare function D3DXCreateFontW(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const wstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateFont D3DXCreateFontW
+	declare function D3DXCreateFont alias "D3DXCreateFontW"(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const wstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 #else
-	#define D3DXCreateFont D3DXCreateFontA
+	declare function D3DXCreateFont alias "D3DXCreateFontA"(byval device as IDirect3DDevice9 ptr, byval height as INT_, byval width as UINT, byval weight as UINT, byval miplevels as UINT, byval italic as WINBOOL, byval charset as DWORD, byval precision as DWORD, byval quality as DWORD, byval pitchandfamily as DWORD, byval facename as const zstring ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateFontIndirectA(byval device as IDirect3DDevice9 ptr, byval desc as const D3DXFONT_DESCA ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 declare function D3DXCreateFontIndirectW(byval device as IDirect3DDevice9 ptr, byval desc as const D3DXFONT_DESCW ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateFontIndirect D3DXCreateFontIndirectW
+	declare function D3DXCreateFontIndirect alias "D3DXCreateFontIndirectW"(byval device as IDirect3DDevice9 ptr, byval desc as const D3DXFONT_DESCW ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 #else
-	#define D3DXCreateFontIndirect D3DXCreateFontIndirectA
+	declare function D3DXCreateFontIndirect alias "D3DXCreateFontIndirectA"(byval device as IDirect3DDevice9 ptr, byval desc as const D3DXFONT_DESCA ptr, byval font as ID3DXFont ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateLine(byval device as IDirect3DDevice9 ptr, byval line as ID3DXLine ptr ptr) as HRESULT

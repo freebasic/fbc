@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -124,8 +124,8 @@ end type
 type COLORSCHEME as tagCOLORSCHEME
 type LPCOLORSCHEME as tagCOLORSCHEME ptr
 const INFOTIPSIZE = 1024
-#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng((wParam)), cptr(NMHDR ptr, (lParam)))
-#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng((idFrom))), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
+#define HANDLE_WM_NOTIFY(hwnd, wParam, lParam, fn) fn((hwnd), clng(wParam), cptr(NMHDR ptr, (lParam)))
+#define FORWARD_WM_NOTIFY(hwnd, idFrom, pnmhdr, fn) cast(LRESULT, fn((hwnd), WM_NOTIFY, cast(WPARAM, clng(idFrom)), cast(LPARAM, cptr(NMHDR ptr, (pnmhdr)))))
 #define NM_OUTOFMEMORY (NM_FIRST - 1)
 #define NM_CLICK (NM_FIRST - 2)
 #define NM_DBLCLK (NM_FIRST - 3)
@@ -204,7 +204,7 @@ end type
 type NMCHAR as tagNMCHAR
 type LPNMCHAR as tagNMCHAR ptr
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	type tagNMCUSTOMTEXT
 		hdr as NMHDR
 		hDC as HDC
@@ -404,9 +404,9 @@ const ILD_DPISCALE = &h4000
 	const ILD_ASYNC = &h8000
 #endif
 
-#define ILD_SELECTED ILD_BLEND50
-#define ILD_FOCUS ILD_BLEND25
-#define ILD_BLEND ILD_BLEND50
+const ILD_SELECTED = ILD_BLEND50
+const ILD_FOCUS = ILD_BLEND25
+const ILD_BLEND = ILD_BLEND50
 #define CLR_HILIGHT CLR_DEFAULT
 const ILS_NORMAL = &h0
 const ILS_GLOW = &h1
@@ -431,9 +431,9 @@ declare function ImageList_LoadImageA(byval hi as HINSTANCE, byval lpbmp as LPCS
 declare function ImageList_LoadImageW(byval hi as HINSTANCE, byval lpbmp as LPCWSTR, byval cx as long, byval cGrow as long, byval crMask as COLORREF, byval uType as UINT, byval uFlags as UINT) as HIMAGELIST
 
 #ifdef UNICODE
-	#define ImageList_LoadImage ImageList_LoadImageW
+	declare function ImageList_LoadImage alias "ImageList_LoadImageW"(byval hi as HINSTANCE, byval lpbmp as LPCWSTR, byval cx as long, byval cGrow as long, byval crMask as COLORREF, byval uType as UINT, byval uFlags as UINT) as HIMAGELIST
 #else
-	#define ImageList_LoadImage ImageList_LoadImageA
+	declare function ImageList_LoadImage alias "ImageList_LoadImageA"(byval hi as HINSTANCE, byval lpbmp as LPCSTR, byval cx as long, byval cGrow as long, byval crMask as COLORREF, byval uType as UINT, byval uFlags as UINT) as HIMAGELIST
 #endif
 
 const ILCF_MOVE = &h0
@@ -506,15 +506,15 @@ const HDFT_ISDATE = &h2
 const HDFT_HASNOVALUE = &h8000
 
 #ifdef UNICODE
-	#define HD_TEXTFILTER HD_TEXTFILTERW
-	#define HDTEXTFILTER HD_TEXTFILTERW
-	#define LPHD_TEXTFILTER LPHD_TEXTFILTERW
-	#define LPHDTEXTFILTER LPHD_TEXTFILTERW
+	type HD_TEXTFILTER as HD_TEXTFILTERW
+	type HDTEXTFILTER as HD_TEXTFILTERW
+	type LPHD_TEXTFILTER as LPHD_TEXTFILTERW
+	type LPHDTEXTFILTER as LPHD_TEXTFILTERW
 #else
-	#define HD_TEXTFILTER HD_TEXTFILTERA
-	#define HDTEXTFILTER HD_TEXTFILTERA
-	#define LPHD_TEXTFILTER LPHD_TEXTFILTERA
-	#define LPHDTEXTFILTER LPHD_TEXTFILTERA
+	type HD_TEXTFILTER as HD_TEXTFILTERA
+	type HDTEXTFILTER as HD_TEXTFILTERA
+	type LPHD_TEXTFILTER as LPHD_TEXTFILTERA
+	type LPHDTEXTFILTER as LPHD_TEXTFILTERA
 #endif
 
 type _HD_TEXTFILTERA
@@ -532,9 +532,8 @@ end type
 
 type HD_TEXTFILTERW as _HD_TEXTFILTERW
 type LPHD_TEXTFILTERW as _HD_TEXTFILTERW ptr
-#define HD_ITEMA HDITEMA
-#define HD_ITEMW HDITEMW
-#define HD_ITEM HDITEM
+type HD_ITEMA as HDITEMA
+type HD_ITEMW as HDITEMW
 
 type _HD_ITEMA
 	mask as UINT
@@ -581,17 +580,23 @@ type HDITEMW as _HD_ITEMW
 type LPHDITEMW as _HD_ITEMW ptr
 
 #ifdef UNICODE
-	#define HDITEM HDITEMW
-	#define LPHDITEM LPHDITEMW
+	type HDITEM as HDITEMW
+#else
+	type HDITEM as HDITEMA
+#endif
+
+type HD_ITEM as HDITEM
+
+#ifdef UNICODE
+	type LPHDITEM as LPHDITEMW
 	#define HDITEM_V1_SIZE HDITEMW_V1_SIZE
 #else
-	#define HDITEM HDITEMA
-	#define LPHDITEM LPHDITEMA
+	type LPHDITEM as LPHDITEMA
 	#define HDITEM_V1_SIZE HDITEMA_V1_SIZE
 #endif
 
 const HDI_WIDTH = &h1
-#define HDI_HEIGHT HDI_WIDTH
+const HDI_HEIGHT = HDI_WIDTH
 const HDI_TEXT = &h2
 const HDI_FORMAT = &h4
 const HDI_LPARAM = &h8
@@ -637,9 +642,9 @@ const HDF_SORTDOWN = &h200
 	#define HDM_INSERTITEM HDM_INSERTITEMA
 #endif
 
-#define Header_InsertItem(hwndHD, i, phdi) clng(SNDMSG((hwndHD), HDM_INSERTITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
+#define Header_InsertItem(hwndHD, i, phdi) clng(SNDMSG((hwndHD), HDM_INSERTITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
 #define HDM_DELETEITEM (HDM_FIRST + 2)
-#define Header_DeleteItem(hwndHD, i) cast(WINBOOL, SNDMSG((hwndHD), HDM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define Header_DeleteItem(hwndHD, i) cast(WINBOOL, SNDMSG((hwndHD), HDM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define HDM_GETITEMA (HDM_FIRST + 3)
 #define HDM_GETITEMW (HDM_FIRST + 11)
 
@@ -649,7 +654,7 @@ const HDF_SORTDOWN = &h200
 	#define HDM_GETITEM HDM_GETITEMA
 #endif
 
-#define Header_GetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_GETITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(HD_ITEM ptr, (phdi)))))
+#define Header_GetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_GETITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(HD_ITEM ptr, (phdi)))))
 #define HDM_SETITEMA (HDM_FIRST + 4)
 #define HDM_SETITEMW (HDM_FIRST + 12)
 
@@ -659,8 +664,8 @@ const HDF_SORTDOWN = &h200
 	#define HDM_SETITEM HDM_SETITEMA
 #endif
 
-#define Header_SetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_SETITEM, cast(WPARAM, clng((i))), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
-#define HD_LAYOUT HDLAYOUT
+#define Header_SetItem(hwndHD, i, phdi) cast(WINBOOL, SNDMSG((hwndHD), HDM_SETITEM, cast(WPARAM, clng(i)), cast(LPARAM, cptr(const HD_ITEM ptr, (phdi)))))
+type HD_LAYOUT as HDLAYOUT
 
 type _HD_LAYOUT
 	prc as RECT ptr
@@ -688,7 +693,7 @@ const HHT_TOLEFT = &h800
 	const HHT_ONOVERFLOW = &h4000
 #endif
 
-#define HD_HITTESTINFO HDHITTESTINFO
+type HD_HITTESTINFO as HDHITTESTINFO
 
 type _HD_HITTESTINFO
 	pt as POINT
@@ -730,7 +735,7 @@ const HDSIL_STATE = 1
 #define HDM_EDITFILTER (HDM_FIRST + 23)
 #define Header_EditFilter(hwnd, i, fDiscardChanges) clng(SNDMSG((hwnd), HDM_EDITFILTER, cast(WPARAM, (i)), MAKELPARAM(fDiscardChanges, 0)))
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define HDM_TRANSLATEACCELERATOR CCM_TRANSLATEACCELERATOR
 #endif
 
@@ -772,7 +777,7 @@ const HDSIL_STATE = 1
 #define HDN_FILTERCHANGE culng(HDN_FIRST - 12)
 #define HDN_FILTERBTNCLICK culng(HDN_FIRST - 13)
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define HDN_BEGINFILTEREDIT culng(HDN_FIRST - 14)
 	#define HDN_ENDFILTEREDIT culng(HDN_FIRST - 15)
 #endif
@@ -806,9 +811,8 @@ const HDSIL_STATE = 1
 	#define HDN_GETDISPINFO HDN_GETDISPINFOA
 #endif
 
-#define HD_NOTIFYA NMHEADERA
-#define HD_NOTIFYW NMHEADERW
-#define HD_NOTIFY NMHEADER
+type HD_NOTIFYA as NMHEADERA
+type HD_NOTIFYW as NMHEADERW
 
 type tagNMHEADERA
 	hdr as NMHDR
@@ -831,11 +835,17 @@ type NMHEADERW as tagNMHEADERW
 type LPNMHEADERW as tagNMHEADERW ptr
 
 #ifdef UNICODE
-	#define NMHEADER NMHEADERW
-	#define LPNMHEADER LPNMHEADERW
+	type NMHEADER as NMHEADERW
 #else
-	#define NMHEADER NMHEADERA
-	#define LPNMHEADER LPNMHEADERA
+	type NMHEADER as NMHEADERA
+#endif
+
+type HD_NOTIFY as NMHEADER
+
+#ifdef UNICODE
+	type LPNMHEADER as LPNMHEADERW
+#else
+	type LPNMHEADER as LPNMHEADERA
 #endif
 
 type tagNMHDDISPINFOW
@@ -865,11 +875,11 @@ type NMHDDISPINFOA as tagNMHDDISPINFOA
 type LPNMHDDISPINFOA as tagNMHDDISPINFOA ptr
 
 #ifdef UNICODE
-	#define NMHDDISPINFO NMHDDISPINFOW
-	#define LPNMHDDISPINFO LPNMHDDISPINFOW
+	type NMHDDISPINFO as NMHDDISPINFOW
+	type LPNMHDDISPINFO as LPNMHDDISPINFOW
 #else
-	#define NMHDDISPINFO NMHDDISPINFOA
-	#define LPNMHDDISPINFO LPNMHDDISPINFOA
+	type NMHDDISPINFO as NMHDDISPINFOA
+	type LPNMHDDISPINFO as LPNMHDDISPINFOA
 #endif
 
 type tagNMHDFILTERBTNCLICK
@@ -945,14 +955,14 @@ const TBSTYLE_CUSTOMERASE = &h2000
 const TBSTYLE_REGISTERDROP = &h4000
 const TBSTYLE_TRANSPARENT = &h8000
 const TBSTYLE_EX_DRAWDDARROWS = &h1
-#define BTNS_BUTTON TBSTYLE_BUTTON
-#define BTNS_SEP TBSTYLE_SEP
-#define BTNS_CHECK TBSTYLE_CHECK
-#define BTNS_GROUP TBSTYLE_GROUP
+const BTNS_BUTTON = TBSTYLE_BUTTON
+const BTNS_SEP = TBSTYLE_SEP
+const BTNS_CHECK = TBSTYLE_CHECK
+const BTNS_GROUP = TBSTYLE_GROUP
 #define BTNS_CHECKGROUP TBSTYLE_CHECKGROUP
-#define BTNS_DROPDOWN TBSTYLE_DROPDOWN
-#define BTNS_AUTOSIZE TBSTYLE_AUTOSIZE
-#define BTNS_NOPREFIX TBSTYLE_NOPREFIX
+const BTNS_DROPDOWN = TBSTYLE_DROPDOWN
+const BTNS_AUTOSIZE = TBSTYLE_AUTOSIZE
+const BTNS_NOPREFIX = TBSTYLE_NOPREFIX
 const BTNS_SHOWTEXT = &h40
 const BTNS_WHOLEDROPDOWN = &h80
 const TBSTYLE_EX_MULTICOLUMN = &h2
@@ -1089,11 +1099,11 @@ type TBSAVEPARAMSW as tagTBSAVEPARAMSW
 type LPTBSAVEPARAMW as tagTBSAVEPARAMSW ptr
 
 #ifdef UNICODE
-	#define TBSAVEPARAMS TBSAVEPARAMSW
+	type TBSAVEPARAMS as TBSAVEPARAMSW
 	#define LPTBSAVEPARAMS LPTBSAVEPARAMSW
 #else
-	#define TBSAVEPARAMS TBSAVEPARAMSA
-	#define LPTBSAVEPARAMS LPTBSAVEPARAMSA
+	type TBSAVEPARAMS as TBSAVEPARAMSA
+	type LPTBSAVEPARAMS as LPTBSAVEPARAMSA
 #endif
 
 #define TB_SAVERESTOREA (WM_USER + 26)
@@ -1232,11 +1242,11 @@ end type
 type LPTBBUTTONINFOW as TBBUTTONINFOW ptr
 
 #ifdef UNICODE
-	#define TBBUTTONINFO TBBUTTONINFOW
-	#define LPTBBUTTONINFO LPTBBUTTONINFOW
+	type TBBUTTONINFO as TBBUTTONINFOW
+	type LPTBBUTTONINFO as LPTBBUTTONINFOW
 #else
-	#define TBBUTTONINFO TBBUTTONINFOA
-	#define LPTBBUTTONINFO LPTBBUTTONINFOA
+	type TBBUTTONINFO as TBBUTTONINFOA
+	type LPTBBUTTONINFO as LPTBBUTTONINFOA
 #endif
 
 #define TB_GETBUTTONINFOW (WM_USER + 63)
@@ -1407,12 +1417,12 @@ type LPNMTBGETINFOTIPW as tagNMTBGETINFOTIPW ptr
 
 #ifdef UNICODE
 	#define TBN_GETINFOTIP TBN_GETINFOTIPW
-	#define NMTBGETINFOTIP NMTBGETINFOTIPW
-	#define LPNMTBGETINFOTIP LPNMTBGETINFOTIPW
+	type NMTBGETINFOTIP as NMTBGETINFOTIPW
+	type LPNMTBGETINFOTIP as LPNMTBGETINFOTIPW
 #else
 	#define TBN_GETINFOTIP TBN_GETINFOTIPA
-	#define NMTBGETINFOTIP NMTBGETINFOTIPA
-	#define LPNMTBGETINFOTIP LPNMTBGETINFOTIPA
+	type NMTBGETINFOTIP as NMTBGETINFOTIPA
+	type LPNMTBGETINFOTIP as LPNMTBGETINFOTIPA
 #endif
 
 const TBNF_IMAGE = &h1
@@ -1445,12 +1455,12 @@ type LPNMTBDISPINFOW as NMTBDISPINFOW ptr
 
 #ifdef UNICODE
 	#define TBN_GETDISPINFO TBN_GETDISPINFOW
-	#define NMTBDISPINFO NMTBDISPINFOW
-	#define LPNMTBDISPINFO LPNMTBDISPINFOW
+	type NMTBDISPINFO as NMTBDISPINFOW
+	type LPNMTBDISPINFO as LPNMTBDISPINFOW
 #else
 	#define TBN_GETDISPINFO TBN_GETDISPINFOA
-	#define NMTBDISPINFO NMTBDISPINFOA
-	#define LPNMTBDISPINFO LPNMTBDISPINFOA
+	type NMTBDISPINFO as NMTBDISPINFOA
+	type LPNMTBDISPINFO as LPNMTBDISPINFOA
 #endif
 
 const TBDDRET_DEFAULT = 0
@@ -1463,12 +1473,10 @@ const TBDDRET_TREATPRESSED = 2
 	#define TBN_GETBUTTONINFO TBN_GETBUTTONINFOA
 #endif
 
-#define TBNOTIFYA NMTOOLBARA
-#define TBNOTIFYW NMTOOLBARW
-#define LPTBNOTIFYA LPNMTOOLBARA
-#define LPTBNOTIFYW LPNMTOOLBARW
-#define TBNOTIFY NMTOOLBAR
-#define LPTBNOTIFY LPNMTOOLBAR
+type TBNOTIFYA as NMTOOLBARA
+type TBNOTIFYW as NMTOOLBARW
+type LPTBNOTIFYA as LPNMTOOLBARA
+type LPTBNOTIFYW as LPNMTOOLBARW
 
 type tagNMTOOLBARA
 	hdr as NMHDR
@@ -1495,13 +1503,20 @@ type NMTOOLBARW as tagNMTOOLBARW
 type LPNMTOOLBARW as tagNMTOOLBARW ptr
 
 #ifdef UNICODE
-	#define NMTOOLBAR NMTOOLBARW
-	#define LPNMTOOLBAR LPNMTOOLBARW
+	type NMTOOLBAR as NMTOOLBARW
 #else
-	#define NMTOOLBAR NMTOOLBARA
-	#define LPNMTOOLBAR LPNMTOOLBARA
+	type NMTOOLBAR as NMTOOLBARA
 #endif
 
+type TBNOTIFY as NMTOOLBAR
+
+#ifdef UNICODE
+	type LPNMTOOLBAR as LPNMTOOLBARW
+#else
+	type LPNMTOOLBAR as LPNMTOOLBARA
+#endif
+
+type LPTBNOTIFY as LPNMTOOLBAR
 #define REBARCLASSNAMEW wstr("ReBarWindow32")
 #define REBARCLASSNAMEA "ReBarWindow32"
 
@@ -1629,15 +1644,15 @@ type LPREBARBANDINFOW as tagREBARBANDINFOW ptr
 type LPCREBARBANDINFOW as const REBARBANDINFOW ptr
 
 #ifdef UNICODE
-	#define REBARBANDINFO REBARBANDINFOW
-	#define LPREBARBANDINFO LPREBARBANDINFOW
-	#define LPCREBARBANDINFO LPCREBARBANDINFOW
+	type REBARBANDINFO as REBARBANDINFOW
+	type LPREBARBANDINFO as LPREBARBANDINFOW
+	type LPCREBARBANDINFO as LPCREBARBANDINFOW
 	#define REBARBANDINFO_V3_SIZE REBARBANDINFOW_V3_SIZE
 	#define REBARBANDINFO_V6_SIZE REBARBANDINFOW_V6_SIZE
 #else
-	#define REBARBANDINFO REBARBANDINFOA
-	#define LPREBARBANDINFO LPREBARBANDINFOA
-	#define LPCREBARBANDINFO LPCREBARBANDINFOA
+	type REBARBANDINFO as REBARBANDINFOA
+	type LPREBARBANDINFO as LPREBARBANDINFOA
+	type LPCREBARBANDINFO as LPCREBARBANDINFOA
 	#define REBARBANDINFO_V3_SIZE REBARBANDINFOA_V3_SIZE
 	#define REBARBANDINFO_V6_SIZE REBARBANDINFOA_V6_SIZE
 #endif
@@ -1701,7 +1716,7 @@ const RBSTR_CHANGERECT = &h1
 #define RB_GETBANDMARGINS (WM_USER + 40)
 #define RB_SETWINDOWTHEME CCM_SETWINDOWTHEME
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define RB_SETEXTENDEDSTYLE (WM_USER + 41)
 	#define RB_GETEXTENDEDSTYLE (WM_USER + 42)
 #endif
@@ -1723,7 +1738,7 @@ const RBSTR_CHANGERECT = &h1
 #define RBN_CHILDSIZE culng(RBN_FIRST - 8)
 #define RBN_CHEVRONPUSHED culng(RBN_FIRST - 10)
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define RBN_SPLITTERDRAG culng(RBN_FIRST - 11)
 #endif
 
@@ -1778,7 +1793,7 @@ end type
 type NMREBARCHEVRON as tagNMREBARCHEVRON
 type LPNMREBARCHEVRON as tagNMREBARCHEVRON ptr
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	type tagNMREBARSPLITTER
 		hdr as NMHDR
 		rcSizing as RECT
@@ -1809,7 +1824,7 @@ const RBHT_CLIENT = &h3
 const RBHT_GRABBER = &h4
 const RBHT_CHEVRON = &h8
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const RBHT_SPLITTER = &h10
 #endif
 
@@ -1830,12 +1845,11 @@ type LPRBHITTESTINFO as _RB_HITTESTINFO ptr
 	#define TOOLTIPS_CLASS TOOLTIPS_CLASSA
 #endif
 
-#define LPTOOLINFOA LPTTTOOLINFOA
-#define LPTOOLINFOW LPTTTOOLINFOW
-#define TOOLINFOA TTTOOLINFOA
-#define TOOLINFOW TTTOOLINFOW
-#define LPTOOLINFO LPTTTOOLINFO
-#define TOOLINFO TTTOOLINFO
+type LPTOOLINFOA as LPTTTOOLINFOA
+type LPTOOLINFOW as LPTTTOOLINFOW
+type TOOLINFOA as TTTOOLINFOA
+type TOOLINFOW as TTTOOLINFOW
+
 #define TTTOOLINFOA_V1_SIZE CCSIZEOF_STRUCT(TTTOOLINFOA, lpszText)
 #define TTTOOLINFOW_V1_SIZE CCSIZEOF_STRUCT(TTTOOLINFOW, lpszText)
 #define TTTOOLINFOA_V2_SIZE CCSIZEOF_STRUCT(TTTOOLINFOA, lParam)
@@ -1876,14 +1890,26 @@ type PTOOLINFOW as tagTOOLINFOW ptr
 type LPTTTOOLINFOW as tagTOOLINFOW ptr
 
 #ifdef UNICODE
-	#define TTTOOLINFO TTTOOLINFOW
-	#define PTOOLINFO PTOOLINFOW
-	#define LPTTTOOLINFO LPTTTOOLINFOW
+	type TTTOOLINFO as TTTOOLINFOW
+#else
+	type TTTOOLINFO as TTTOOLINFOA
+#endif
+
+type TOOLINFO as TTTOOLINFO
+
+#ifdef UNICODE
+	type PTOOLINFO as PTOOLINFOW
+	type LPTTTOOLINFO as LPTTTOOLINFOW
+#else
+	type PTOOLINFO as PTOOLINFOA
+	type LPTTTOOLINFO as LPTTTOOLINFOA
+#endif
+
+type LPTOOLINFO as LPTTTOOLINFO
+
+#ifdef UNICODE
 	#define TTTOOLINFO_V1_SIZE TTTOOLINFOW_V1_SIZE
 #else
-	#define TTTOOLINFO TTTOOLINFOA
-	#define PTOOLINFO PTOOLINFOA
-	#define LPTTTOOLINFO LPTTTOOLINFOA
 	#define TTTOOLINFO_V1_SIZE TTTOOLINFOA_V1_SIZE
 #endif
 
@@ -2004,9 +2030,8 @@ type PTTGETTITLE as _TTGETTITLE ptr
 #endif
 
 #define TTM_SETWINDOWTHEME CCM_SETWINDOWTHEME
-#define LPHITTESTINFOW LPTTHITTESTINFOW
-#define LPHITTESTINFOA LPTTHITTESTINFOA
-#define LPHITTESTINFO LPTTHITTESTINFO
+type LPHITTESTINFOW as LPTTHITTESTINFOW
+type LPHITTESTINFOA as LPTTHITTESTINFOA
 
 type _TT_HITTESTINFOA
 	hwnd as HWND
@@ -2027,13 +2052,14 @@ type TTHITTESTINFOW as _TT_HITTESTINFOW
 type LPTTHITTESTINFOW as _TT_HITTESTINFOW ptr
 
 #ifdef UNICODE
-	#define TTHITTESTINFO TTHITTESTINFOW
-	#define LPTTHITTESTINFO LPTTHITTESTINFOW
+	type TTHITTESTINFO as TTHITTESTINFOW
+	type LPTTHITTESTINFO as LPTTHITTESTINFOW
 #else
-	#define TTHITTESTINFO TTHITTESTINFOA
-	#define LPTTHITTESTINFO LPTTHITTESTINFOA
+	type TTHITTESTINFO as TTHITTESTINFOA
+	type LPTTHITTESTINFO as LPTTHITTESTINFOA
 #endif
 
+type LPHITTESTINFO as LPTTHITTESTINFO
 #define TTN_GETDISPINFOA culng(TTN_FIRST - 0)
 #define TTN_GETDISPINFOW culng(TTN_FIRST - 10)
 #define TTN_SHOW culng(TTN_FIRST - 1)
@@ -2049,12 +2075,11 @@ type LPTTHITTESTINFOW as _TT_HITTESTINFOW ptr
 #define TTN_NEEDTEXT TTN_GETDISPINFO
 #define TTN_NEEDTEXTA TTN_GETDISPINFOA
 #define TTN_NEEDTEXTW TTN_GETDISPINFOW
-#define TOOLTIPTEXTW NMTTDISPINFOW
-#define TOOLTIPTEXTA NMTTDISPINFOA
-#define LPTOOLTIPTEXTA LPNMTTDISPINFOA
-#define LPTOOLTIPTEXTW LPNMTTDISPINFOW
-#define TOOLTIPTEXT NMTTDISPINFO
-#define LPTOOLTIPTEXT LPNMTTDISPINFO
+
+type TOOLTIPTEXTW as NMTTDISPINFOW
+type TOOLTIPTEXTA as NMTTDISPINFOA
+type LPTOOLTIPTEXTA as LPNMTTDISPINFOA
+type LPTOOLTIPTEXTW as LPNMTTDISPINFOW
 #define NMTTDISPINFOA_V1_SIZE CCSIZEOF_STRUCT(NMTTDISPINFOA, uFlags)
 #define NMTTDISPINFOW_V1_SIZE CCSIZEOF_STRUCT(NMTTDISPINFOW, uFlags)
 
@@ -2083,12 +2108,24 @@ type NMTTDISPINFOW as tagNMTTDISPINFOW
 type LPNMTTDISPINFOW as tagNMTTDISPINFOW ptr
 
 #ifdef UNICODE
-	#define NMTTDISPINFO NMTTDISPINFOW
-	#define LPNMTTDISPINFO LPNMTTDISPINFOW
+	type NMTTDISPINFO as NMTTDISPINFOW
+#else
+	type NMTTDISPINFO as NMTTDISPINFOA
+#endif
+
+type TOOLTIPTEXT as NMTTDISPINFO
+
+#ifdef UNICODE
+	type LPNMTTDISPINFO as LPNMTTDISPINFOW
+#else
+	type LPNMTTDISPINFO as LPNMTTDISPINFOA
+#endif
+
+type LPTOOLTIPTEXT as LPNMTTDISPINFO
+
+#ifdef UNICODE
 	#define NMTTDISPINFO_V1_SIZE NMTTDISPINFOW_V1_SIZE
 #else
-	#define NMTTDISPINFO NMTTDISPINFOA
-	#define LPNMTTDISPINFO LPNMTTDISPINFOA
 	#define NMTTDISPINFO_V1_SIZE NMTTDISPINFOA_V1_SIZE
 #endif
 
@@ -2102,11 +2139,11 @@ declare function CreateStatusWindowA(byval style as LONG, byval lpszText as LPCS
 declare function CreateStatusWindowW(byval style as LONG, byval lpszText as LPCWSTR, byval hwndParent as HWND, byval wID as UINT) as HWND
 
 #ifdef UNICODE
-	#define CreateStatusWindow CreateStatusWindowW
-	#define DrawStatusText DrawStatusTextW
+	declare function CreateStatusWindow alias "CreateStatusWindowW"(byval style as LONG, byval lpszText as LPCWSTR, byval hwndParent as HWND, byval wID as UINT) as HWND
+	declare sub DrawStatusText alias "DrawStatusTextW"(byval hDC as HDC, byval lprc as LPCRECT, byval pszText as LPCWSTR, byval uFlags as UINT)
 #else
-	#define CreateStatusWindow CreateStatusWindowA
-	#define DrawStatusText DrawStatusTextA
+	declare function CreateStatusWindow alias "CreateStatusWindowA"(byval style as LONG, byval lpszText as LPCSTR, byval hwndParent as HWND, byval wID as UINT) as HWND
+	declare sub DrawStatusText alias "DrawStatusTextA"(byval hDC as HDC, byval lprc as LPCRECT, byval pszText as LPCSTR, byval uFlags as UINT)
 #endif
 
 #define STATUSCLASSNAMEW wstr("msctls_statusbar32")
@@ -2167,7 +2204,7 @@ declare sub MenuHelp(byval uMsg as UINT, byval wParam as WPARAM, byval lParam as
 declare function ShowHideMenuCtl(byval hWnd as HWND, byval uFlags as UINT_PTR, byval lpInfo as LPINT) as WINBOOL
 declare sub GetEffectiveClientRect(byval hWnd as HWND, byval lprc as LPRECT, byval lpInfo as const INT_ ptr)
 
-#define MINSYSCOMMAND SC_SIZE
+const MINSYSCOMMAND = SC_SIZE
 #define TRACKBAR_CLASSA "msctls_trackbar32"
 #define TRACKBAR_CLASSW wstr("msctls_trackbar32")
 
@@ -2193,7 +2230,7 @@ const TBS_TOOLTIPS = &h100
 const TBS_REVERSED = &h200
 const TBS_DOWNISLEFT = &h400
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const TBS_NOTIFYBEFOREMOVE = &h800
 #endif
 
@@ -2201,7 +2238,7 @@ const TBS_DOWNISLEFT = &h400
 	const TBS_TRANSPARENTBKGND = &h1000
 #endif
 
-#define TBM_GETPOS WM_USER
+const TBM_GETPOS = WM_USER
 #define TBM_GETRANGEMIN (WM_USER + 1)
 #define TBM_GETRANGEMAX (WM_USER + 2)
 #define TBM_GETTIC (WM_USER + 3)
@@ -2330,8 +2367,8 @@ const UDS_HOTTRACK = &h100
 #define UDM_SETPOS32 (WM_USER + 113)
 #define UDM_GETPOS32 (WM_USER + 114)
 declare function CreateUpDownControl(byval dwStyle as DWORD, byval x as long, byval y as long, byval cx as long, byval cy as long, byval hParent as HWND, byval nID as long, byval hInst as HINSTANCE, byval hBuddy as HWND, byval nUpper as long, byval nLower as long, byval nPos as long) as HWND
-#define NM_UPDOWN NMUPDOWN
-#define LPNM_UPDOWN LPNMUPDOWN
+type NM_UPDOWN as NMUPDOWN
+type LPNM_UPDOWN as LPNMUPDOWN
 
 type _NM_UPDOWN
 	hdr as NMHDR
@@ -2524,11 +2561,10 @@ const LVIS_OVERLAYMASK = &hf00
 const LVIS_STATEIMAGEMASK = &hF000
 #define INDEXTOSTATEIMAGEMASK(i) ((i) shl 12)
 const I_INDENTCALLBACK = -1
-#define LV_ITEMA LVITEMA
-#define LV_ITEMW LVITEMW
+type LV_ITEMA as LVITEMA
+type LV_ITEMW as LVITEMW
 const I_GROUPIDCALLBACK = -1
 const I_GROUPIDNONE = -2
-#define LV_ITEM LVITEM
 #define LVITEMA_V1_SIZE CCSIZEOF_STRUCT(LVITEMA, lParam)
 #define LVITEMW_V1_SIZE CCSIZEOF_STRUCT(LVITEMW, lParam)
 
@@ -2592,12 +2628,18 @@ type LVITEMW as tagLVITEMW
 type LPLVITEMW as tagLVITEMW ptr
 
 #ifdef UNICODE
-	#define LVITEM LVITEMW
-	#define LPLVITEM LPLVITEMW
+	type LVITEM as LVITEMW
+#else
+	type LVITEM as LVITEMA
+#endif
+
+type LV_ITEM as LVITEM
+
+#ifdef UNICODE
+	type LPLVITEM as LPLVITEMW
 	#define LVITEM_V1_SIZE LVITEMW_V1_SIZE
 #else
-	#define LVITEM LVITEMA
-	#define LPLVITEM LPLVITEMA
+	type LPLVITEM as LPLVITEMA
 	#define LVITEM_V1_SIZE LVITEMA_V1_SIZE
 #endif
 
@@ -2644,7 +2686,7 @@ const I_IMAGENONE = -2
 
 #define ListView_InsertItem(hwnd, pitem) clng(SNDMSG((hwnd), LVM_INSERTITEM, 0, cast(LPARAM, cptr(const LV_ITEM ptr, (pitem)))))
 #define LVM_DELETEITEM (LVM_FIRST + 8)
-#define ListView_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define ListView_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define LVM_DELETEALLITEMS (LVM_FIRST + 9)
 #define ListView_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETEALLITEMS, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define LVM_GETCALLBACKMASK (LVM_FIRST + 10)
@@ -2667,15 +2709,14 @@ const LVNI_TOLEFT = &h400
 const LVNI_TORIGHT = &h800
 #define LVNI_DIRECTIONMASK (((LVNI_ABOVE or LVNI_BELOW) or LVNI_TOLEFT) or LVNI_TORIGHT)
 #define LVM_GETNEXTITEM (LVM_FIRST + 12)
-#define ListView_GetNextItem(hwnd, i, flags) clng(SNDMSG((hwnd), LVM_GETNEXTITEM, cast(WPARAM, clng((i))), MAKELPARAM((flags), 0)))
+#define ListView_GetNextItem(hwnd, i, flags) clng(SNDMSG((hwnd), LVM_GETNEXTITEM, cast(WPARAM, clng(i)), MAKELPARAM((flags), 0)))
 const LVFI_PARAM = &h1
 const LVFI_STRING = &h2
 const LVFI_PARTIAL = &h8
 const LVFI_WRAP = &h20
 const LVFI_NEARESTXY = &h40
-#define LV_FINDINFOA LVFINDINFOA
-#define LV_FINDINFOW LVFINDINFOW
-#define LV_FINDINFO LVFINDINFO
+type LV_FINDINFOA as LVFINDINFOA
+type LV_FINDINFOW as LVFINDINFOW
 
 type tagLVFINDINFOA
 	flags as UINT
@@ -2700,11 +2741,12 @@ type LVFINDINFOW as tagLVFINDINFOW
 type LPFINDINFOW as tagLVFINDINFOW ptr
 
 #ifdef UNICODE
-	#define LVFINDINFO LVFINDINFOW
+	type LVFINDINFO as LVFINDINFOW
 #else
-	#define LVFINDINFO LVFINDINFOA
+	type LVFINDINFO as LVFINDINFOA
 #endif
 
+type LV_FINDINFO as LVFINDINFO
 #define LVM_FINDITEMA (LVM_FIRST + 13)
 #define LVM_FINDITEMW (LVM_FIRST + 83)
 
@@ -2714,7 +2756,7 @@ type LPFINDINFOW as tagLVFINDINFOW ptr
 	#define LVM_FINDITEM LVM_FINDITEMA
 #endif
 
-#define ListView_FindItem(hwnd, iStart, plvfi) clng(SNDMSG((hwnd), LVM_FINDITEM, cast(WPARAM, clng((iStart))), cast(LPARAM, cptr(const LV_FINDINFO ptr, (plvfi)))))
+#define ListView_FindItem(hwnd, iStart, plvfi) clng(SNDMSG((hwnd), LVM_FINDITEM, cast(WPARAM, clng(iStart)), cast(LPARAM, cptr(const LV_FINDINFO ptr, (plvfi)))))
 const LVIR_BOUNDS = 0
 const LVIR_ICON = 1
 const LVIR_LABEL = 2
@@ -2727,9 +2769,9 @@ private function ListView_GetItemRect(byval hwnd as HWND, byval i as long, byval
 	function = SNDMSG(hwnd, LVM_GETITEMRECT, cast(WPARAM, i), cast(LPARAM, prc))
 end function
 #define LVM_SETITEMPOSITION (LVM_FIRST + 15)
-#define ListView_SetItemPosition(hwndLV, i, x, y) cast(WINBOOL, SNDMSG((hwndLV), LVM_SETITEMPOSITION, cast(WPARAM, clng((i))), MAKELPARAM((x), (y))))
+#define ListView_SetItemPosition(hwndLV, i, x, y) cast(WINBOOL, SNDMSG((hwndLV), LVM_SETITEMPOSITION, cast(WPARAM, clng(i)), MAKELPARAM((x), (y))))
 #define LVM_GETITEMPOSITION (LVM_FIRST + 16)
-#define ListView_GetItemPosition(hwndLV, i, ppt) cast(WINBOOL, SNDMSG((hwndLV), LVM_GETITEMPOSITION, cast(WPARAM, clng((i))), cast(LPARAM, cptr(POINT ptr, (ppt)))))
+#define ListView_GetItemPosition(hwndLV, i, ppt) cast(WINBOOL, SNDMSG((hwndLV), LVM_GETITEMPOSITION, cast(WPARAM, clng(i)), cast(LPARAM, cptr(POINT ptr, (ppt)))))
 #define LVM_GETSTRINGWIDTHA (LVM_FIRST + 17)
 #define LVM_GETSTRINGWIDTHW (LVM_FIRST + 87)
 
@@ -2757,7 +2799,7 @@ const LVHT_EX_GROUP_STATEICON = &h01000000
 const LVHT_EX_GROUP_SUBSETLINK = &h02000000
 #define LVHT_EX_GROUP (((((LVHT_EX_GROUP_BACKGROUND or LVHT_EX_GROUP_COLLAPSE) or LVHT_EX_GROUP_FOOTER) or LVHT_EX_GROUP_HEADER) or LVHT_EX_GROUP_STATEICON) or LVHT_EX_GROUP_SUBSETLINK)
 const LVHT_EX_ONCONTENTS = &h04000000
-#define LV_HITTESTINFO LVHITTESTINFO
+type LV_HITTESTINFO as LVHITTESTINFO
 #define LVHITTESTINFO_V1_SIZE CCSIZEOF_STRUCT(LVHITTESTINFO, iItem)
 
 type tagLVHITTESTINFO
@@ -2776,11 +2818,11 @@ type LPLVHITTESTINFO as tagLVHITTESTINFO ptr
 #define LVM_HITTEST (LVM_FIRST + 18)
 #define ListView_HitTest(hwndLV, pinfo) clng(SNDMSG((hwndLV), LVM_HITTEST, 0, cast(LPARAM, cptr(LV_HITTESTINFO ptr, (pinfo)))))
 #define LVM_ENSUREVISIBLE (LVM_FIRST + 19)
-#define ListView_EnsureVisible(hwndLV, i, fPartialOK) cast(WINBOOL, SNDMSG((hwndLV), LVM_ENSUREVISIBLE, cast(WPARAM, clng((i))), MAKELPARAM((fPartialOK), 0)))
+#define ListView_EnsureVisible(hwndLV, i, fPartialOK) cast(WINBOOL, SNDMSG((hwndLV), LVM_ENSUREVISIBLE, cast(WPARAM, clng(i)), MAKELPARAM((fPartialOK), 0)))
 #define LVM_SCROLL (LVM_FIRST + 20)
-#define ListView_Scroll(hwndLV, dx, dy) cast(WINBOOL, SNDMSG((hwndLV), LVM_SCROLL, cast(WPARAM, clng((dx))), cast(LPARAM, clng((dy)))))
+#define ListView_Scroll(hwndLV, dx, dy) cast(WINBOOL, SNDMSG((hwndLV), LVM_SCROLL, cast(WPARAM, clng(dx)), cast(LPARAM, clng(dy))))
 #define LVM_REDRAWITEMS (LVM_FIRST + 21)
-#define ListView_RedrawItems(hwndLV, iFirst, iLast) cast(WINBOOL, SNDMSG((hwndLV), LVM_REDRAWITEMS, cast(WPARAM, clng((iFirst))), cast(LPARAM, clng((iLast)))))
+#define ListView_RedrawItems(hwndLV, iFirst, iLast) cast(WINBOOL, SNDMSG((hwndLV), LVM_REDRAWITEMS, cast(WPARAM, clng(iFirst)), cast(LPARAM, clng(iLast))))
 const LVA_DEFAULT = &h0
 const LVA_ALIGNLEFT = &h1
 const LVA_ALIGNTOP = &h2
@@ -2796,12 +2838,11 @@ const LVA_SNAPTOGRID = &h5
 	#define LVM_EDITLABEL LVM_EDITLABELA
 #endif
 
-#define ListView_EditLabel(hwndLV, i) cast(HWND, SNDMSG((hwndLV), LVM_EDITLABEL, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define ListView_EditLabel(hwndLV, i) cast(HWND, SNDMSG((hwndLV), LVM_EDITLABEL, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define LVM_GETEDITCONTROL (LVM_FIRST + 24)
 #define ListView_GetEditControl(hwndLV) cast(HWND, SNDMSG((hwndLV), LVM_GETEDITCONTROL, cast(WPARAM, 0), cast(LPARAM, 0)))
-#define LV_COLUMNA LVCOLUMNA
-#define LV_COLUMNW LVCOLUMNW
-#define LV_COLUMN LVCOLUMN
+type LV_COLUMNA as LVCOLUMNA
+type LV_COLUMNW as LVCOLUMNW
 #define LVCOLUMNA_V1_SIZE CCSIZEOF_STRUCT(LVCOLUMNA, iSubItem)
 #define LVCOLUMNW_V1_SIZE CCSIZEOF_STRUCT(LVCOLUMNW, iSubItem)
 
@@ -2846,12 +2887,18 @@ type LVCOLUMNW as tagLVCOLUMNW
 type LPLVCOLUMNW as tagLVCOLUMNW ptr
 
 #ifdef UNICODE
-	#define LVCOLUMN LVCOLUMNW
-	#define LPLVCOLUMN LPLVCOLUMNW
+	type LVCOLUMN as LVCOLUMNW
+#else
+	type LVCOLUMN as LVCOLUMNA
+#endif
+
+type LV_COLUMN as LVCOLUMN
+
+#ifdef UNICODE
+	type LPLVCOLUMN as LPLVCOLUMNW
 	#define LVCOLUMN_V1_SIZE LVCOLUMNW_V1_SIZE
 #else
-	#define LVCOLUMN LVCOLUMNA
-	#define LPLVCOLUMN LPLVCOLUMNA
+	type LPLVCOLUMN as LPLVCOLUMNA
 	#define LVCOLUMN_V1_SIZE LVCOLUMNA_V1_SIZE
 #endif
 
@@ -2897,7 +2944,7 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_GETCOLUMN LVM_GETCOLUMNA
 #endif
 
-#define ListView_GetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_GETCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(LV_COLUMN ptr, (pcol)))))
+#define ListView_GetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_GETCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(LV_COLUMN ptr, (pcol)))))
 #define LVM_SETCOLUMNA (LVM_FIRST + 26)
 #define LVM_SETCOLUMNW (LVM_FIRST + 96)
 
@@ -2907,7 +2954,7 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_SETCOLUMN LVM_SETCOLUMNA
 #endif
 
-#define ListView_SetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
+#define ListView_SetColumn(hwnd, iCol, pcol) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
 #define LVM_INSERTCOLUMNA (LVM_FIRST + 27)
 #define LVM_INSERTCOLUMNW (LVM_FIRST + 97)
 
@@ -2917,19 +2964,19 @@ const LVCFMT_COL_HAS_IMAGES = &h8000
 	#define LVM_INSERTCOLUMN LVM_INSERTCOLUMNA
 #endif
 
-#define ListView_InsertColumn(hwnd, iCol, pcol) clng(SNDMSG((hwnd), LVM_INSERTCOLUMN, cast(WPARAM, clng((iCol))), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
+#define ListView_InsertColumn(hwnd, iCol, pcol) clng(SNDMSG((hwnd), LVM_INSERTCOLUMN, cast(WPARAM, clng(iCol)), cast(LPARAM, cptr(const LV_COLUMN ptr, (pcol)))))
 #define LVM_DELETECOLUMN (LVM_FIRST + 28)
-#define ListView_DeleteColumn(hwnd, iCol) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETECOLUMN, cast(WPARAM, clng((iCol))), 0))
+#define ListView_DeleteColumn(hwnd, iCol) cast(WINBOOL, SNDMSG((hwnd), LVM_DELETECOLUMN, cast(WPARAM, clng(iCol)), 0))
 #define LVM_GETCOLUMNWIDTH (LVM_FIRST + 29)
-#define ListView_GetColumnWidth(hwnd, iCol) clng(SNDMSG((hwnd), LVM_GETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), 0))
+#define ListView_GetColumnWidth(hwnd, iCol) clng(SNDMSG((hwnd), LVM_GETCOLUMNWIDTH, cast(WPARAM, clng(iCol)), 0))
 const LVSCW_AUTOSIZE = -1
 const LVSCW_AUTOSIZE_USEHEADER = -2
 #define LVM_SETCOLUMNWIDTH (LVM_FIRST + 30)
-#define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng((iCol))), MAKELPARAM((cx), 0)))
+#define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng(iCol)), MAKELPARAM((cx), 0)))
 #define LVM_GETHEADER (LVM_FIRST + 31)
 #define ListView_GetHeader(hwnd) cast(HWND, SNDMSG((hwnd), LVM_GETHEADER, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define LVM_CREATEDRAGIMAGE (LVM_FIRST + 33)
-#define ListView_CreateDragImage(hwnd, i, lpptUpLeft) cast(HIMAGELIST, SNDMSG((hwnd), LVM_CREATEDRAGIMAGE, cast(WPARAM, clng((i))), cast(LPARAM, cast(LPPOINT, (lpptUpLeft)))))
+#define ListView_CreateDragImage(hwnd, i, lpptUpLeft) cast(HIMAGELIST, SNDMSG((hwnd), LVM_CREATEDRAGIMAGE, cast(WPARAM, clng(i)), cast(LPARAM, cast(LPPOINT, (lpptUpLeft)))))
 #define LVM_GETVIEWRECT (LVM_FIRST + 34)
 #define ListView_GetViewRect(hwnd, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETVIEWRECT, 0, cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETTEXTCOLOR (LVM_FIRST + 35)
@@ -3010,7 +3057,7 @@ type PFNLVCOMPARE as function(byval as LPARAM, byval as LPARAM, byval as LPARAM)
 		dim ptNewPos as POINT
 		ptNewPos.x = x0
 		ptNewPos.y = y0
-		SNDMSG((hwndLV), LVM_SETITEMPOSITION32, cast(WPARAM, clng((i))), cast(LPARAM, @ptNewPos))
+		SNDMSG((hwndLV), LVM_SETITEMPOSITION32, cast(WPARAM, clng(i)), cast(LPARAM, @ptNewPos))
 	end scope
 #endmacro
 #define LVM_GETSELECTEDCOUNT (LVM_FIRST + 50)
@@ -3095,9 +3142,9 @@ end function
 #define ListView_ApproximateViewRect(hwnd, iWidth, iHeight, iCount) cast(DWORD, SNDMSG((hwnd), LVM_APPROXIMATEVIEWRECT, iCount, MAKELPARAM(iWidth, iHeight)))
 const LV_MAX_WORKAREAS = 16
 #define LVM_SETWORKAREAS (LVM_FIRST + 65)
-#define ListView_SetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_SETWORKAREAS, cast(WPARAM, clng((nWorkAreas))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define ListView_SetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_SETWORKAREAS, cast(WPARAM, clng(nWorkAreas)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETWORKAREAS (LVM_FIRST + 70)
-#define ListView_GetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETWORKAREAS, cast(WPARAM, clng((nWorkAreas))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define ListView_GetWorkAreas(hwnd, nWorkAreas, prc) cast(WINBOOL, SNDMSG((hwnd), LVM_GETWORKAREAS, cast(WPARAM, clng(nWorkAreas)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define LVM_GETNUMBEROFWORKAREAS (LVM_FIRST + 73)
 #define ListView_GetNumberOfWorkAreas(hwnd, pnWorkAreas) cast(WINBOOL, SNDMSG((hwnd), LVM_GETNUMBEROFWORKAREAS, 0, cast(LPARAM, cptr(UINT ptr, (pnWorkAreas)))))
 #define LVM_GETSELECTIONMARK (LVM_FIRST + 66)
@@ -3489,21 +3536,21 @@ type PLVSETINFOTIP as tagLVSETINFOTIP ptr
 #endif
 
 #ifdef UNICODE
-	#define LVBKIMAGE LVBKIMAGEW
-	#define LPLVBKIMAGE LPLVBKIMAGEW
+	type LVBKIMAGE as LVBKIMAGEW
+	type LPLVBKIMAGE as LPLVBKIMAGEW
 	#define LVM_SETBKIMAGE LVM_SETBKIMAGEW
 	#define LVM_GETBKIMAGE LVM_GETBKIMAGEW
 #else
-	#define LVBKIMAGE LVBKIMAGEA
-	#define LPLVBKIMAGE LPLVBKIMAGEA
+	type LVBKIMAGE as LVBKIMAGEA
+	type LPLVBKIMAGE as LPLVBKIMAGEA
 	#define LVM_SETBKIMAGE LVM_SETBKIMAGEA
 	#define LVM_GETBKIMAGE LVM_GETBKIMAGEA
 #endif
 
 #define ListView_SetBkImage(hwnd, plvbki) cast(WINBOOL, SNDMSG((hwnd), LVM_SETBKIMAGE, 0, cast(LPARAM, (plvbki))))
 #define ListView_GetBkImage(hwnd, plvbki) cast(WINBOOL, SNDMSG((hwnd), LVM_GETBKIMAGE, 0, cast(LPARAM, (plvbki))))
-#define LPNM_LISTVIEW LPNMLISTVIEW
-#define NM_LISTVIEW NMLISTVIEW
+type LPNM_LISTVIEW as LPNMLISTVIEW
+type NM_LISTVIEW as NMLISTVIEW
 
 type tagNMLISTVIEW
 	hdr as NMHDR
@@ -3569,9 +3616,9 @@ end type
 
 type NMLVCACHEHINT as tagNMLVCACHEHINT
 type LPNMLVCACHEHINT as tagNMLVCACHEHINT ptr
-#define LPNM_CACHEHINT LPNMLVCACHEHINT
-#define PNM_CACHEHINT LPNMLVCACHEHINT
-#define NM_CACHEHINT NMLVCACHEHINT
+type LPNM_CACHEHINT as LPNMLVCACHEHINT
+type PNM_CACHEHINT as LPNMLVCACHEHINT
+type NM_CACHEHINT as NMLVCACHEHINT
 
 type tagNMLVFINDITEMA
 	hdr as NMHDR
@@ -3590,25 +3637,25 @@ end type
 
 type NMLVFINDITEMW as tagNMLVFINDITEMW
 type LPNMLVFINDITEMW as tagNMLVFINDITEMW ptr
-#define PNM_FINDITEMA LPNMLVFINDITEMA
-#define LPNM_FINDITEMA LPNMLVFINDITEMA
-#define NM_FINDITEMA NMLVFINDITEMA
-#define PNM_FINDITEMW LPNMLVFINDITEMW
-#define LPNM_FINDITEMW LPNMLVFINDITEMW
-#define NM_FINDITEMW NMLVFINDITEMW
+type PNM_FINDITEMA as LPNMLVFINDITEMA
+type LPNM_FINDITEMA as LPNMLVFINDITEMA
+type NM_FINDITEMA as NMLVFINDITEMA
+type PNM_FINDITEMW as LPNMLVFINDITEMW
+type LPNM_FINDITEMW as LPNMLVFINDITEMW
+type NM_FINDITEMW as NMLVFINDITEMW
 
 #ifdef UNICODE
-	#define PNM_FINDITEM PNM_FINDITEMW
-	#define LPNM_FINDITEM LPNM_FINDITEMW
-	#define NM_FINDITEM NM_FINDITEMW
-	#define NMLVFINDITEM NMLVFINDITEMW
-	#define LPNMLVFINDITEM LPNMLVFINDITEMW
+	type PNM_FINDITEM as PNM_FINDITEMW
+	type LPNM_FINDITEM as LPNM_FINDITEMW
+	type NM_FINDITEM as NM_FINDITEMW
+	type NMLVFINDITEM as NMLVFINDITEMW
+	type LPNMLVFINDITEM as LPNMLVFINDITEMW
 #else
-	#define PNM_FINDITEM PNM_FINDITEMA
-	#define LPNM_FINDITEM LPNM_FINDITEMA
-	#define NM_FINDITEM NM_FINDITEMA
-	#define NMLVFINDITEM NMLVFINDITEMA
-	#define LPNMLVFINDITEM LPNMLVFINDITEMA
+	type PNM_FINDITEM as PNM_FINDITEMA
+	type LPNM_FINDITEM as LPNM_FINDITEMA
+	type NM_FINDITEM as NM_FINDITEMA
+	type NMLVFINDITEM as NMLVFINDITEMA
+	type LPNMLVFINDITEM as LPNMLVFINDITEMA
 #endif
 
 type tagNMLVODSTATECHANGE
@@ -3621,9 +3668,10 @@ end type
 
 type NMLVODSTATECHANGE as tagNMLVODSTATECHANGE
 type LPNMLVODSTATECHANGE as tagNMLVODSTATECHANGE ptr
-#define PNM_ODSTATECHANGE LPNMLVODSTATECHANGE
-#define LPNM_ODSTATECHANGE LPNMLVODSTATECHANGE
-#define NM_ODSTATECHANGE NMLVODSTATECHANGE
+type PNM_ODSTATECHANGE as LPNMLVODSTATECHANGE
+type LPNM_ODSTATECHANGE as LPNMLVODSTATECHANGE
+type NM_ODSTATECHANGE as NMLVODSTATECHANGE
+
 #define LVN_ITEMCHANGING culng(LVN_FIRST - 0)
 #define LVN_ITEMCHANGED culng(LVN_FIRST - 1)
 #define LVN_INSERTITEM culng(LVN_FIRST - 2)
@@ -3667,9 +3715,8 @@ type LPNMLVODSTATECHANGE as tagNMLVODSTATECHANGE ptr
 #endif
 
 const LVIF_DI_SETITEM = &h1000
-#define LV_DISPINFOA NMLVDISPINFOA
-#define LV_DISPINFOW NMLVDISPINFOW
-#define LV_DISPINFO NMLVDISPINFO
+type LV_DISPINFOA as NMLVDISPINFOA
+type LV_DISPINFOW as NMLVDISPINFOW
 
 type tagLVDISPINFO
 	hdr as NMHDR
@@ -3688,13 +3735,14 @@ type NMLVDISPINFOW as tagLVDISPINFOW
 type LPNMLVDISPINFOW as tagLVDISPINFOW ptr
 
 #ifdef UNICODE
-	#define NMLVDISPINFO NMLVDISPINFOW
+	type NMLVDISPINFO as NMLVDISPINFOW
 #else
-	#define NMLVDISPINFO NMLVDISPINFOA
+	type NMLVDISPINFO as NMLVDISPINFOA
 #endif
 
+type LV_DISPINFO as NMLVDISPINFO
 #define LVN_KEYDOWN culng(LVN_FIRST - 55)
-#define LV_KEYDOWN NMLVKEYDOWN
+type LV_KEYDOWN as NMLVKEYDOWN
 
 type tagLVKEYDOWN field = 1
 	hdr as NMHDR
@@ -3749,12 +3797,12 @@ const LVGIT_UNFOLDED = &h1
 
 #ifdef UNICODE
 	#define LVN_GETINFOTIP LVN_GETINFOTIPW
-	#define NMLVGETINFOTIP NMLVGETINFOTIPW
-	#define LPNMLVGETINFOTIP LPNMLVGETINFOTIPW
+	type NMLVGETINFOTIP as NMLVGETINFOTIPW
+	type LPNMLVGETINFOTIP as LPNMLVGETINFOTIPW
 #else
 	#define LVN_GETINFOTIP LVN_GETINFOTIPA
-	#define NMLVGETINFOTIP NMLVGETINFOTIPA
-	#define LPNMLVGETINFOTIP LPNMLVGETINFOTIPA
+	type NMLVGETINFOTIP as NMLVGETINFOTIPA
+	type LPNMLVGETINFOTIP as LPNMLVGETINFOTIPA
 #endif
 
 const LVNSCH_DEFAULT = -1
@@ -3772,7 +3820,7 @@ const LVNSCH_IGNORE = -3
 #if _WIN32_WINNT = &h0602
 	#define LVN_COLUMNDROPDOWN culng(LVN_FIRST - 64)
 	#define LVN_COLUMNOVERFLOWCLICK culng(LVN_FIRST - 66)
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define LVN_INCREMENTALSEARCH LVN_INCREMENTALSEARCHA
 #endif
 
@@ -3851,7 +3899,7 @@ const TVIF_SELECTEDIMAGE = &h20
 const TVIF_CHILDREN = &h40
 const TVIF_INTEGRAL = &h80
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const TVIF_STATEEX = &h100
 	const TVIF_EXPANDEDIMAGE = &h200
 #endif
@@ -3867,7 +3915,7 @@ const TVIS_OVERLAYMASK = &hf00
 const TVIS_STATEIMAGEMASK = &hF000
 const TVIS_USERMASK = &hF000
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const TVIS_EX_FLAT = &h1
 #endif
 
@@ -3875,7 +3923,7 @@ const TVIS_USERMASK = &hF000
 	const TVIS_EX_DISABLED = &h2
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const TVIS_EX_ALL = &h0002
 
 	type tagNMTVSTATEIMAGECHANGING
@@ -3891,12 +3939,11 @@ const TVIS_USERMASK = &hF000
 
 const I_CHILDRENCALLBACK = -1
 const I_CHILDRENAUTO = -2
-#define LPTV_ITEMW LPTVITEMW
-#define LPTV_ITEMA LPTVITEMA
-#define TV_ITEMW TVITEMW
-#define TV_ITEMA TVITEMA
-#define LPTV_ITEM LPTVITEM
-#define TV_ITEM TVITEM
+type LPTV_ITEMW as LPTVITEMW
+type LPTV_ITEMA as LPTVITEMA
+type TV_ITEMW as TVITEMW
+type TV_ITEMA as TVITEMA
+type TV_ITEM as TVITEM
 
 type tagTVITEMA
 	mask as UINT
@@ -3943,7 +3990,7 @@ type tagTVITEMEXA
 	lParam as LPARAM
 	iIntegral as long
 
-	#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	#if _WIN32_WINNT >= &h0502
 		uStateEx as UINT
 		hwnd as HWND
 		iExpandedImage as long
@@ -3970,7 +4017,7 @@ type tagTVITEMEXW
 	lParam as LPARAM
 	iIntegral as long
 
-	#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	#if _WIN32_WINNT >= &h0502
 		uStateEx as UINT
 		hwnd as HWND
 		iExpandedImage as long
@@ -3987,25 +4034,25 @@ type LPTVITEMEXW as tagTVITEMEXW ptr
 #ifdef UNICODE
 	type TVITEMEX as TVITEMEXW
 	type LPTVITEMEX as LPTVITEMEXW
-	#define TVITEM TVITEMW
-	#define LPTVITEM LPTVITEMW
+	type TVITEM as TVITEMW
+	type LPTVITEM as LPTVITEMW
 #else
 	type TVITEMEX as TVITEMEXA
 	type LPTVITEMEX as LPTVITEMEXA
-	#define TVITEM TVITEMA
-	#define LPTVITEM LPTVITEMA
+	type TVITEM as TVITEMA
+	type LPTVITEM as LPTVITEMA
 #endif
 
+type LPTV_ITEM as LPTVITEM
 #define TVI_ROOT cast(HTREEITEM, cast(ULONG_PTR, -&h10000))
 #define TVI_FIRST cast(HTREEITEM, cast(ULONG_PTR, -&hffff))
 #define TVI_LAST cast(HTREEITEM, cast(ULONG_PTR, -&hfffe))
 #define TVI_SORT cast(HTREEITEM, cast(ULONG_PTR, -&hfffd))
-#define LPTV_INSERTSTRUCTA LPTVINSERTSTRUCTA
-#define LPTV_INSERTSTRUCTW LPTVINSERTSTRUCTW
-#define TV_INSERTSTRUCTA TVINSERTSTRUCTA
-#define TV_INSERTSTRUCTW TVINSERTSTRUCTW
-#define TV_INSERTSTRUCT TVINSERTSTRUCT
-#define LPTV_INSERTSTRUCT LPTVINSERTSTRUCT
+
+type LPTV_INSERTSTRUCTA as LPTVINSERTSTRUCTA
+type LPTV_INSERTSTRUCTW as LPTVINSERTSTRUCTW
+type TV_INSERTSTRUCTA as TVINSERTSTRUCTA
+type TV_INSERTSTRUCTW as TVINSERTSTRUCTW
 #define TVINSERTSTRUCTA_V1_SIZE CCSIZEOF_STRUCT(TVINSERTSTRUCTA, item)
 #define TVINSERTSTRUCTW_V1_SIZE CCSIZEOF_STRUCT(TVINSERTSTRUCTW, item)
 
@@ -4036,12 +4083,24 @@ type TVINSERTSTRUCTW as tagTVINSERTSTRUCTW
 type LPTVINSERTSTRUCTW as tagTVINSERTSTRUCTW ptr
 
 #ifdef UNICODE
-	#define TVINSERTSTRUCT TVINSERTSTRUCTW
-	#define LPTVINSERTSTRUCT LPTVINSERTSTRUCTW
+	type TVINSERTSTRUCT as TVINSERTSTRUCTW
+#else
+	type TVINSERTSTRUCT as TVINSERTSTRUCTA
+#endif
+
+type TV_INSERTSTRUCT as TVINSERTSTRUCT
+
+#ifdef UNICODE
+	type LPTVINSERTSTRUCT as LPTVINSERTSTRUCTW
+#else
+	type LPTVINSERTSTRUCT as LPTVINSERTSTRUCTA
+#endif
+
+type LPTV_INSERTSTRUCT as LPTVINSERTSTRUCT
+
+#ifdef UNICODE
 	#define TVINSERTSTRUCT_V1_SIZE TVINSERTSTRUCTW_V1_SIZE
 #else
-	#define TVINSERTSTRUCT TVINSERTSTRUCTA
-	#define LPTVINSERTSTRUCT LPTVINSERTSTRUCTA
 	#define TVINSERTSTRUCT_V1_SIZE TVINSERTSTRUCTA_V1_SIZE
 #endif
 
@@ -4096,7 +4155,7 @@ const TVGN_DROPHILITE = &h8
 const TVGN_CARET = &h9
 const TVGN_LASTVISIBLE = &ha
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const TVGN_NEXTSELECTED = &hb
 #endif
 
@@ -4113,7 +4172,7 @@ const TVSI_NOSINGLEEXPAND = &h8000
 #define TreeView_GetRoot(hwnd) TreeView_GetNextItem(hwnd, NULL, TVGN_ROOT)
 #define TreeView_GetLastVisible(hwnd) TreeView_GetNextItem(hwnd, NULL, TVGN_LASTVISIBLE)
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define TreeView_GetNextSelected(hwnd, hitem) TreeView_GetNextItem(hwnd, hitem, TVGN_NEXTSELECTED)
 #endif
 
@@ -4158,8 +4217,8 @@ const TVSI_NOSINGLEEXPAND = &h8000
 #define TreeView_GetVisibleCount(hwnd) cast(UINT, SNDMSG((hwnd), TVM_GETVISIBLECOUNT, 0, 0))
 #define TVM_HITTEST (TV_FIRST + 17)
 #define TreeView_HitTest(hwnd, lpht) cast(HTREEITEM, SNDMSG((hwnd), TVM_HITTEST, 0, cast(LPARAM, cast(LPTV_HITTESTINFO, (lpht)))))
-#define LPTV_HITTESTINFO LPTVHITTESTINFO
-#define TV_HITTESTINFO TVHITTESTINFO
+type LPTV_HITTESTINFO as LPTVHITTESTINFO
+type TV_HITTESTINFO as TVHITTESTINFO
 
 type tagTVHITTESTINFO
 	pt as POINT
@@ -4297,8 +4356,8 @@ const TVSBF_YBORDER = &h2
 #endif
 
 type PFNTVCOMPARE as function(byval lParam1 as LPARAM, byval lParam2 as LPARAM, byval lParamSort as LPARAM) as long
-#define LPTV_SORTCB LPTVSORTCB
-#define TV_SORTCB TVSORTCB
+type LPTV_SORTCB as LPTVSORTCB
+type TV_SORTCB as TVSORTCB
 
 type tagTVSORTCB
 	hParent as HTREEITEM
@@ -4308,12 +4367,10 @@ end type
 
 type TVSORTCB as tagTVSORTCB
 type LPTVSORTCB as tagTVSORTCB ptr
-#define LPNM_TREEVIEWA LPNMTREEVIEWA
-#define LPNM_TREEVIEWW LPNMTREEVIEWW
-#define NM_TREEVIEWW NMTREEVIEWW
-#define NM_TREEVIEWA NMTREEVIEWA
-#define LPNM_TREEVIEW LPNMTREEVIEW
-#define NM_TREEVIEW NMTREEVIEW
+type LPNM_TREEVIEWA as LPNMTREEVIEWA
+type LPNM_TREEVIEWW as LPNMTREEVIEWW
+type NM_TREEVIEWW as NMTREEVIEWW
+type NM_TREEVIEWA as NMTREEVIEWA
 
 type tagNMTREEVIEWA
 	hdr as NMHDR
@@ -4338,13 +4395,20 @@ type NMTREEVIEWW as tagNMTREEVIEWW
 type LPNMTREEVIEWW as tagNMTREEVIEWW ptr
 
 #ifdef UNICODE
-	#define NMTREEVIEW NMTREEVIEWW
-	#define LPNMTREEVIEW LPNMTREEVIEWW
+	type NMTREEVIEW as NMTREEVIEWW
 #else
-	#define NMTREEVIEW NMTREEVIEWA
-	#define LPNMTREEVIEW LPNMTREEVIEWA
+	type NMTREEVIEW as NMTREEVIEWA
 #endif
 
+type NM_TREEVIEW as NMTREEVIEW
+
+#ifdef UNICODE
+	type LPNMTREEVIEW as LPNMTREEVIEWW
+#else
+	type LPNMTREEVIEW as LPNMTREEVIEWA
+#endif
+
+type LPNM_TREEVIEW as LPNMTREEVIEW
 #define TVN_SELCHANGINGA culng(TVN_FIRST - 1)
 #define TVN_SELCHANGINGW culng(TVN_FIRST - 50)
 #define TVN_SELCHANGEDA culng(TVN_FIRST - 2)
@@ -4357,9 +4421,8 @@ const TVC_BYKEYBOARD = &h2
 #define TVN_SETDISPINFOA culng(TVN_FIRST - 4)
 #define TVN_SETDISPINFOW culng(TVN_FIRST - 53)
 const TVIF_DI_SETITEM = &h1000
-#define TV_DISPINFOA NMTVDISPINFOA
-#define TV_DISPINFOW NMTVDISPINFOW
-#define TV_DISPINFO NMTVDISPINFO
+type TV_DISPINFOA as NMTVDISPINFOA
+type TV_DISPINFOW as NMTVDISPINFOW
 
 type tagTVDISPINFOA
 	hdr as NMHDR
@@ -4378,14 +4441,20 @@ type NMTVDISPINFOW as tagTVDISPINFOW
 type LPNMTVDISPINFOW as tagTVDISPINFOW ptr
 
 #ifdef UNICODE
-	#define NMTVDISPINFO NMTVDISPINFOW
-	#define LPNMTVDISPINFO LPNMTVDISPINFOW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define NMTVDISPINFO NMTVDISPINFOA
-	#define LPNMTVDISPINFO LPNMTVDISPINFOA
+	type NMTVDISPINFO as NMTVDISPINFOW
+#else
+	type NMTVDISPINFO as NMTVDISPINFOA
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+type TV_DISPINFO as NMTVDISPINFO
+
+#ifdef UNICODE
+	type LPNMTVDISPINFO as LPNMTVDISPINFOW
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	type LPNMTVDISPINFO as LPNMTVDISPINFOA
+#endif
+
+#if _WIN32_WINNT >= &h0502
 	type tagTVDISPINFOEXA
 		hdr as NMHDR
 		item as TVITEMEXA
@@ -4403,21 +4472,20 @@ type LPNMTVDISPINFOW as tagTVDISPINFOW ptr
 	type LPNMTVDISPINFOEXW as tagTVDISPINFOEXW ptr
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define NMTVDISPINFOEX NMTVDISPINFOEXW
-	#define LPNMTVDISPINFOEX LPNMTVDISPINFOEXW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
-	#define NMTVDISPINFOEX NMTVDISPINFOEXA
-	#define LPNMTVDISPINFOEX LPNMTVDISPINFOEXA
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+	type NMTVDISPINFOEX as NMTVDISPINFOEXW
+	type LPNMTVDISPINFOEX as LPNMTVDISPINFOEXW
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+	type NMTVDISPINFOEX as NMTVDISPINFOEXA
+	type LPNMTVDISPINFOEX as LPNMTVDISPINFOEXA
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
-	#define TV_DISPINFOEXA NMTVDISPINFOEXA
-	#define TV_DISPINFOEXW NMTVDISPINFOEXW
-	#define TV_DISPINFOEX NMTVDISPINFOEX
+#if _WIN32_WINNT >= &h0502
+	type TV_DISPINFOEXA as NMTVDISPINFOEXA
+	type TV_DISPINFOEXW as NMTVDISPINFOEXW
+	type TV_DISPINFOEX as NMTVDISPINFOEX
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
-	#define NMTVDISPINFO NMTVDISPINFOA
-	#define LPNMTVDISPINFO LPNMTVDISPINFOA
+	type LPNMTVDISPINFO as LPNMTVDISPINFOA
 #endif
 
 #define TVN_ITEMEXPANDINGA culng(TVN_FIRST - 5)
@@ -4442,7 +4510,7 @@ const TVNRET_DEFAULT = 0
 const TVNRET_SKIPOLD = 1
 const TVNRET_SKIPNEW = 2
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	#define TVN_ITEMCHANGINGA culng(TVN_FIRST - 16)
 	#define TVN_ITEMCHANGINGW culng(TVN_FIRST - 17)
 	#define TVN_ITEMCHANGEDA culng(TVN_FIRST - 18)
@@ -4450,7 +4518,7 @@ const TVNRET_SKIPNEW = 2
 	#define TVN_ASYNCDRAW culng(TVN_FIRST - 20)
 #endif
 
-#define TV_KEYDOWN NMTVKEYDOWN
+type TV_KEYDOWN as NMTVKEYDOWN
 
 type tagTVKEYDOWN field = 1
 	hdr as NMHDR
@@ -4523,17 +4591,17 @@ type LPNMTVGETINFOTIPW as tagNMTVGETINFOTIPW ptr
 
 #ifdef UNICODE
 	#define TVN_GETINFOTIP TVN_GETINFOTIPW
-	#define NMTVGETINFOTIP NMTVGETINFOTIPW
-	#define LPNMTVGETINFOTIP LPNMTVGETINFOTIPW
+	type NMTVGETINFOTIP as NMTVGETINFOTIPW
+	type LPNMTVGETINFOTIP as LPNMTVGETINFOTIPW
 #else
 	#define TVN_GETINFOTIP TVN_GETINFOTIPA
-	#define NMTVGETINFOTIP NMTVGETINFOTIPA
-	#define LPNMTVGETINFOTIP LPNMTVGETINFOTIPA
+	type NMTVGETINFOTIP as NMTVGETINFOTIPA
+	type LPNMTVGETINFOTIP as LPNMTVGETINFOTIPA
 #endif
 
 const TVCDRF_NOIMAGES = &h10000
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	type tagTVITEMCHANGE
 		hdr as NMHDR
 		uChanged as UINT
@@ -4558,10 +4626,10 @@ const TVCDRF_NOIMAGES = &h10000
 	type NMTVASYNCDRAW as tagNMTVASYNCDRAW
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
 	#define TVN_ITEMCHANGING TVN_ITEMCHANGINGW
 	#define TVN_ITEMCHANGED TVN_ITEMCHANGEDW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
 	#define TVN_ITEMCHANGING TVN_ITEMCHANGINGA
 	#define TVN_ITEMCHANGED TVN_ITEMCHANGEDA
 #endif
@@ -4616,12 +4684,12 @@ type PCOMBOBOXEXITEMW as tagCOMBOBOXEXITEMW ptr
 type PCCOMBOEXITEMW as const COMBOBOXEXITEMW ptr
 
 #ifdef UNICODE
-	#define COMBOBOXEXITEM COMBOBOXEXITEMW
-	#define PCOMBOBOXEXITEM PCOMBOBOXEXITEMW
+	type COMBOBOXEXITEM as COMBOBOXEXITEMW
+	type PCOMBOBOXEXITEM as PCOMBOBOXEXITEMW
 	#define PCCOMBOBOXEXITEM PCCOMBOBOXEXITEMW
 #else
-	#define COMBOBOXEXITEM COMBOBOXEXITEMA
-	#define PCOMBOBOXEXITEM PCOMBOBOXEXITEMA
+	type COMBOBOXEXITEM as COMBOBOXEXITEMA
+	type PCOMBOBOXEXITEM as PCOMBOBOXEXITEMA
 	#define PCCOMBOBOXEXITEM PCCOMBOBOXEXITEMA
 #endif
 
@@ -4630,7 +4698,7 @@ type PCCOMBOEXITEMW as const COMBOBOXEXITEMW ptr
 #define CBEM_GETIMAGELIST (WM_USER + 3)
 #define CBEM_GETITEMA (WM_USER + 4)
 #define CBEM_SETITEMA (WM_USER + 5)
-#define CBEM_DELETEITEM CB_DELETESTRING
+const CBEM_DELETEITEM = CB_DELETESTRING
 #define CBEM_GETCOMBOCONTROL (WM_USER + 6)
 #define CBEM_GETEDITCONTROL (WM_USER + 7)
 #define CBEM_SETEXSTYLE (WM_USER + 8)
@@ -4680,12 +4748,12 @@ end type
 type PNMCOMBOBOXEXW as NMCOMBOBOXEXW ptr
 
 #ifdef UNICODE
-	#define NMCOMBOBOXEX NMCOMBOBOXEXW
-	#define PNMCOMBOBOXEX PNMCOMBOBOXEXW
+	type NMCOMBOBOXEX as NMCOMBOBOXEXW
+	type PNMCOMBOBOXEX as PNMCOMBOBOXEXW
 	#define CBEN_GETDISPINFO CBEN_GETDISPINFOW
 #else
-	#define NMCOMBOBOXEX NMCOMBOBOXEXA
-	#define PNMCOMBOBOXEX PNMCOMBOBOXEXA
+	type NMCOMBOBOXEX as NMCOMBOBOXEXA
+	type PNMCOMBOBOXEX as PNMCOMBOBOXEXA
 	#define CBEN_GETDISPINFO CBEN_GETDISPINFOA
 #endif
 
@@ -4732,13 +4800,13 @@ type LPNMCBEDRAGBEGINA as NMCBEDRAGBEGINA ptr
 type PNMCBEDRAGBEGINA as NMCBEDRAGBEGINA ptr
 
 #ifdef UNICODE
-	#define NMCBEDRAGBEGIN NMCBEDRAGBEGINW
-	#define LPNMCBEDRAGBEGIN LPNMCBEDRAGBEGINW
-	#define PNMCBEDRAGBEGIN PNMCBEDRAGBEGINW
+	type NMCBEDRAGBEGIN as NMCBEDRAGBEGINW
+	type LPNMCBEDRAGBEGIN as LPNMCBEDRAGBEGINW
+	type PNMCBEDRAGBEGIN as PNMCBEDRAGBEGINW
 #else
-	#define NMCBEDRAGBEGIN NMCBEDRAGBEGINA
-	#define LPNMCBEDRAGBEGIN LPNMCBEDRAGBEGINA
-	#define PNMCBEDRAGBEGIN PNMCBEDRAGBEGINA
+	type NMCBEDRAGBEGIN as NMCBEDRAGBEGINA
+	type LPNMCBEDRAGBEGIN as LPNMCBEDRAGBEGINA
+	type PNMCBEDRAGBEGIN as PNMCBEDRAGBEGINA
 #endif
 
 type NMCBEENDEDITW
@@ -4764,13 +4832,13 @@ type LPNMCBEENDEDITA as NMCBEENDEDITA ptr
 type PNMCBEENDEDITA as NMCBEENDEDITA ptr
 
 #ifdef UNICODE
-	#define NMCBEENDEDIT NMCBEENDEDITW
-	#define LPNMCBEENDEDIT LPNMCBEENDEDITW
-	#define PNMCBEENDEDIT PNMCBEENDEDITW
+	type NMCBEENDEDIT as NMCBEENDEDITW
+	type LPNMCBEENDEDIT as LPNMCBEENDEDITW
+	type PNMCBEENDEDIT as PNMCBEENDEDITW
 #else
-	#define NMCBEENDEDIT NMCBEENDEDITA
-	#define LPNMCBEENDEDIT LPNMCBEENDEDITA
-	#define PNMCBEENDEDIT PNMCBEENDEDITA
+	type NMCBEENDEDIT as NMCBEENDEDITA
+	type LPNMCBEENDEDIT as LPNMCBEENDEDITA
+	type PNMCBEENDEDIT as PNMCBEENDEDITA
 #endif
 
 #define WC_TABCONTROLA "SysTabControl32"
@@ -4817,9 +4885,8 @@ const TCIF_PARAM = &h8
 const TCIF_STATE = &h10
 const TCIS_BUTTONPRESSED = &h1
 const TCIS_HIGHLIGHTED = &h2
-#define TC_ITEMHEADERA TCITEMHEADERA
-#define TC_ITEMHEADERW TCITEMHEADERW
-#define TC_ITEMHEADER TCITEMHEADER
+type TC_ITEMHEADERA as TCITEMHEADERA
+type TC_ITEMHEADERW as TCITEMHEADERW
 
 type tagTCITEMHEADERA
 	mask as UINT
@@ -4846,16 +4913,21 @@ type TCITEMHEADERW as tagTCITEMHEADERW
 type LPTCITEMHEADERW as tagTCITEMHEADERW ptr
 
 #ifdef UNICODE
-	#define TCITEMHEADER TCITEMHEADERW
-	#define LPTCITEMHEADER LPTCITEMHEADERW
+	type TCITEMHEADER as TCITEMHEADERW
 #else
-	#define TCITEMHEADER TCITEMHEADERA
-	#define LPTCITEMHEADER LPTCITEMHEADERA
+	type TCITEMHEADER as TCITEMHEADERA
 #endif
 
-#define TC_ITEMA TCITEMA
-#define TC_ITEMW TCITEMW
-#define TC_ITEM TCITEM
+type TC_ITEMHEADER as TCITEMHEADER
+
+#ifdef UNICODE
+	type LPTCITEMHEADER as LPTCITEMHEADERW
+#else
+	type LPTCITEMHEADER as LPTCITEMHEADERA
+#endif
+
+type TC_ITEMA as TCITEMA
+type TC_ITEMW as TCITEMW
 
 type tagTCITEMA
 	mask as UINT
@@ -4884,11 +4956,17 @@ type TCITEMW as tagTCITEMW
 type LPTCITEMW as tagTCITEMW ptr
 
 #ifdef UNICODE
-	#define TCITEM TCITEMW
-	#define LPTCITEM LPTCITEMW
+	type TCITEM as TCITEMW
 #else
-	#define TCITEM TCITEMA
-	#define LPTCITEM LPTCITEMA
+	type TCITEM as TCITEMA
+#endif
+
+type TC_ITEM as TCITEM
+
+#ifdef UNICODE
+	type LPTCITEM as LPTCITEMW
+#else
+	type LPTCITEM as LPTCITEMA
 #endif
 
 #define TCM_GETITEMA (TCM_FIRST + 5)
@@ -4900,7 +4978,7 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_GETITEM TCM_GETITEMA
 #endif
 
-#define TabCtrl_GetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
+#define TabCtrl_GetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
 #define TCM_SETITEMA (TCM_FIRST + 6)
 #define TCM_SETITEMW (TCM_FIRST + 61)
 
@@ -4910,7 +4988,7 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_SETITEM TCM_SETITEMA
 #endif
 
-#define TabCtrl_SetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_SETITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
+#define TabCtrl_SetItem(hwnd, iItem, pitem) cast(WINBOOL, SNDMSG((hwnd), TCM_SETITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(TC_ITEM ptr, (pitem)))))
 #define TCM_INSERTITEMA (TCM_FIRST + 7)
 #define TCM_INSERTITEMW (TCM_FIRST + 62)
 
@@ -4920,13 +4998,13 @@ type LPTCITEMW as tagTCITEMW ptr
 	#define TCM_INSERTITEM TCM_INSERTITEMA
 #endif
 
-#define TabCtrl_InsertItem(hwnd, iItem, pitem) clng(SNDMSG((hwnd), TCM_INSERTITEM, cast(WPARAM, clng((iItem))), cast(LPARAM, cptr(const TC_ITEM ptr, (pitem)))))
+#define TabCtrl_InsertItem(hwnd, iItem, pitem) clng(SNDMSG((hwnd), TCM_INSERTITEM, cast(WPARAM, clng(iItem)), cast(LPARAM, cptr(const TC_ITEM ptr, (pitem)))))
 #define TCM_DELETEITEM (TCM_FIRST + 8)
-#define TabCtrl_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEITEM, cast(WPARAM, clng((i))), cast(LPARAM, 0)))
+#define TabCtrl_DeleteItem(hwnd, i) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEITEM, cast(WPARAM, clng(i)), cast(LPARAM, 0)))
 #define TCM_DELETEALLITEMS (TCM_FIRST + 9)
 #define TabCtrl_DeleteAllItems(hwnd) cast(WINBOOL, SNDMSG((hwnd), TCM_DELETEALLITEMS, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define TCM_GETITEMRECT (TCM_FIRST + 10)
-#define TabCtrl_GetItemRect(hwnd, i, prc) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEMRECT, cast(WPARAM, clng((i))), cast(LPARAM, cptr(RECT ptr, (prc)))))
+#define TabCtrl_GetItemRect(hwnd, i, prc) cast(WINBOOL, SNDMSG((hwnd), TCM_GETITEMRECT, cast(WPARAM, clng(i)), cast(LPARAM, cptr(RECT ptr, (prc)))))
 #define TCM_GETCURSEL (TCM_FIRST + 11)
 #define TabCtrl_GetCurSel(hwnd) clng(SNDMSG((hwnd), TCM_GETCURSEL, 0, 0))
 #define TCM_SETCURSEL (TCM_FIRST + 12)
@@ -4935,8 +5013,8 @@ const TCHT_NOWHERE = &h1
 const TCHT_ONITEMICON = &h2
 const TCHT_ONITEMLABEL = &h4
 #define TCHT_ONITEM (TCHT_ONITEMICON or TCHT_ONITEMLABEL)
-#define LPTC_HITTESTINFO LPTCHITTESTINFO
-#define TC_HITTESTINFO TCHITTESTINFO
+type LPTC_HITTESTINFO as LPTCHITTESTINFO
+type TC_HITTESTINFO as TCHITTESTINFO
 
 type tagTCHITTESTINFO
 	pt as POINT
@@ -4982,7 +5060,7 @@ type LPTCHITTESTINFO as tagTCHITTESTINFO ptr
 #define TCM_GETUNICODEFORMAT CCM_GETUNICODEFORMAT
 #define TabCtrl_GetUnicodeFormat(hwnd) cast(WINBOOL, SNDMSG((hwnd), TCM_GETUNICODEFORMAT, 0, 0))
 #define TCN_KEYDOWN culng(TCN_FIRST - 0)
-#define TC_KEYDOWN NMTCKEYDOWN
+type TC_KEYDOWN as NMTCKEYDOWN
 
 type tagTCKEYDOWN field = 1
 	hdr as NMHDR
@@ -5104,12 +5182,12 @@ const MCHT_TODAYLINK = &h30000
 const MCHT_NEXT = &h1000000
 const MCHT_PREV = &h2000000
 const MCHT_NOWHERE = &h0
-#define MCHT_TITLEBK MCHT_TITLE
+const MCHT_TITLEBK = MCHT_TITLE
 #define MCHT_TITLEMONTH (MCHT_TITLE or &h1)
 #define MCHT_TITLEYEAR (MCHT_TITLE or &h2)
 #define MCHT_TITLEBTNNEXT ((MCHT_TITLE or MCHT_NEXT) or &h3)
 #define MCHT_TITLEBTNPREV ((MCHT_TITLE or MCHT_PREV) or &h3)
-#define MCHT_CALENDARBK MCHT_CALENDAR
+const MCHT_CALENDARBK = MCHT_CALENDAR
 #define MCHT_CALENDARDATE (MCHT_CALENDAR or &h1)
 #define MCHT_CALENDARDATENEXT (MCHT_CALENDARDATE or MCHT_NEXT)
 #define MCHT_CALENDARDATEPREV (MCHT_CALENDARDATE or MCHT_PREV)
@@ -5141,7 +5219,7 @@ const MCHT_NOWHERE = &h0
 	const MCMV_YEAR = 1
 	const MCMV_DECADE = 2
 	const MCMV_CENTURY = 3
-	#define MCMV_MAX MCMV_CENTURY
+	const MCMV_MAX = MCMV_CENTURY
 	#define MCM_GETCURRENTVIEW (MCM_FIRST + 22)
 	#define MonthCal_GetCurrentView(hmc) cast(DWORD, SNDMSG(hmc, MCM_GETCURRENTVIEW, 0, 0))
 	#define MCM_GETCALENDARCOUNT (MCM_FIRST + 23)
@@ -5214,7 +5292,7 @@ type LPNMDAYSTATE as tagNMDAYSTATE ptr
 #define MCN_GETDAYSTATE culng(MCN_FIRST + 3)
 type NMSELECT as NMSELCHANGE
 type LPNMSELECT as NMSELCHANGE ptr
-#define MCN_SELECT MCN_FIRST
+const MCN_SELECT = MCN_FIRST
 
 type tagNMVIEWCHANGE
 	nmhdr as NMHDR
@@ -5262,7 +5340,7 @@ const GMR_DAYSTATE = 1
 
 	type DATETIMEPICKERINFO as tagDATETIMEPICKERINFO
 	type LPDATETIMEPICKERINFO as tagDATETIMEPICKERINFO ptr
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define DATETIMEPICK_CLASS DATETIMEPICK_CLASSA
 #endif
 
@@ -5352,12 +5430,12 @@ type LPNMDATETIMESTRINGW as tagNMDATETIMESTRINGW ptr
 
 #ifdef UNICODE
 	#define DTN_USERSTRING DTN_USERSTRINGW
-	#define NMDATETIMESTRING NMDATETIMESTRINGW
-	#define LPNMDATETIMESTRING LPNMDATETIMESTRINGW
+	type NMDATETIMESTRING as NMDATETIMESTRINGW
+	type LPNMDATETIMESTRING as LPNMDATETIMESTRINGW
 #else
 	#define DTN_USERSTRING DTN_USERSTRINGA
-	#define NMDATETIMESTRING NMDATETIMESTRINGA
-	#define LPNMDATETIMESTRING LPNMDATETIMESTRINGA
+	type NMDATETIMESTRING as NMDATETIMESTRINGA
+	type LPNMDATETIMESTRING as LPNMDATETIMESTRINGA
 #endif
 
 #define DTN_WMKEYDOWNA culng(DTN_FIRST2 - 4)
@@ -5385,12 +5463,12 @@ type LPNMDATETIMEWMKEYDOWNW as tagNMDATETIMEWMKEYDOWNW ptr
 
 #ifdef UNICODE
 	#define DTN_WMKEYDOWN DTN_WMKEYDOWNW
-	#define NMDATETIMEWMKEYDOWN NMDATETIMEWMKEYDOWNW
-	#define LPNMDATETIMEWMKEYDOWN LPNMDATETIMEWMKEYDOWNW
+	type NMDATETIMEWMKEYDOWN as NMDATETIMEWMKEYDOWNW
+	type LPNMDATETIMEWMKEYDOWN as LPNMDATETIMEWMKEYDOWNW
 #else
 	#define DTN_WMKEYDOWN DTN_WMKEYDOWNA
-	#define NMDATETIMEWMKEYDOWN NMDATETIMEWMKEYDOWNA
-	#define LPNMDATETIMEWMKEYDOWN LPNMDATETIMEWMKEYDOWNA
+	type NMDATETIMEWMKEYDOWN as NMDATETIMEWMKEYDOWNA
+	type LPNMDATETIMEWMKEYDOWN as LPNMDATETIMEWMKEYDOWNA
 #endif
 
 #define DTN_FORMATA culng(DTN_FIRST2 - 3)
@@ -5420,12 +5498,12 @@ type LPNMDATETIMEFORMATW as tagNMDATETIMEFORMATW ptr
 
 #ifdef UNICODE
 	#define DTN_FORMAT DTN_FORMATW
-	#define NMDATETIMEFORMAT NMDATETIMEFORMATW
-	#define LPNMDATETIMEFORMAT LPNMDATETIMEFORMATW
+	type NMDATETIMEFORMAT as NMDATETIMEFORMATW
+	type LPNMDATETIMEFORMAT as LPNMDATETIMEFORMATW
 #else
 	#define DTN_FORMAT DTN_FORMATA
-	#define NMDATETIMEFORMAT NMDATETIMEFORMATA
-	#define LPNMDATETIMEFORMAT LPNMDATETIMEFORMATA
+	type NMDATETIMEFORMAT as NMDATETIMEFORMATA
+	type LPNMDATETIMEFORMAT as LPNMDATETIMEFORMATA
 #endif
 
 #define DTN_FORMATQUERYA culng(DTN_FIRST2 - 2)
@@ -5451,16 +5529,16 @@ type LPNMDATETIMEFORMATQUERYW as tagNMDATETIMEFORMATQUERYW ptr
 
 #ifdef UNICODE
 	#define DTN_FORMATQUERY DTN_FORMATQUERYW
-	#define NMDATETIMEFORMATQUERY NMDATETIMEFORMATQUERYW
-	#define LPNMDATETIMEFORMATQUERY LPNMDATETIMEFORMATQUERYW
+	type NMDATETIMEFORMATQUERY as NMDATETIMEFORMATQUERYW
+	type LPNMDATETIMEFORMATQUERY as LPNMDATETIMEFORMATQUERYW
 #else
 	#define DTN_FORMATQUERY DTN_FORMATQUERYA
-	#define NMDATETIMEFORMATQUERY NMDATETIMEFORMATQUERYA
-	#define LPNMDATETIMEFORMATQUERY LPNMDATETIMEFORMATQUERYA
+	type NMDATETIMEFORMATQUERY as NMDATETIMEFORMATQUERYA
+	type LPNMDATETIMEFORMATQUERY as LPNMDATETIMEFORMATQUERYA
 #endif
 
 #define DTN_DROPDOWN culng(DTN_FIRST2 - 1)
-#define DTN_CLOSEUP DTN_FIRST2
+const DTN_CLOSEUP = DTN_FIRST2
 const GDTR_MIN = &h1
 const GDTR_MAX = &h2
 const GDT_ERROR = -1
@@ -5986,12 +6064,12 @@ declare function DSA_SetItem(byval hdsa as HDSA, byval i as long, byval pitem as
 	declare function DSA_Sort(byval pdsa as HDSA, byval pfnCompare as PFNDACOMPARE, byval lParam as LPARAM) as WINBOOL
 #endif
 
-#define DSA_APPEND DA_LAST
-#define DSA_ERR DA_ERR
-#define PFNDSAENUMCALLBACK PFNDAENUMCALLBACK
-#define PFNDSAENUMCALLBACKCONST PFNDAENUMCALLBACKCONST
-#define PFNDSACOMPARE PFNDACOMPARE
-#define PFNDSACOMPARECONST PFNDACOMPARECONST
+const DSA_APPEND = DA_LAST
+const DSA_ERR = DA_ERR
+type PFNDSAENUMCALLBACK as PFNDAENUMCALLBACK
+type PFNDSAENUMCALLBACKCONST as PFNDAENUMCALLBACKCONST
+type PFNDSACOMPARE as PFNDACOMPARE
+type PFNDSACOMPARECONST as PFNDACOMPARECONST
 type HDPA as _DPA ptr
 
 declare function DPA_Create(byval cItemGrow as long) as HDPA
@@ -6009,7 +6087,7 @@ declare function DPA_GetPtr(byval hdpa as HDPA, byval i as INT_PTR) as PVOID
 declare function DPA_GetPtrIndex(byval hdpa as HDPA, byval p as const any ptr) as long
 
 #define DPA_GetPtrCount(hdpa) (*cptr(long ptr, (hdpa)))
-#define DPA_SetPtrCount(hdpa, cItems) scope : *cptr(long ptr, (hdpa)) = (cItems) : end scope
+#define DPA_SetPtrCount(hdpa, cItems) scope : (*cptr(long ptr, (hdpa))) = (cItems) : end scope
 #define DPA_FastDeleteLastPtr(hdpa) scope : *cptr(long ptr, (hdpa)) -= 1 : end scope
 #define DPA_GetPtrPtr(hdpa) (*cptr(any ptr ptr ptr, cptr(UBYTE ptr, (hdpa)) + sizeof(any ptr)))
 #define DPA_FastGetPtr(hdpa, i) DPA_GetPtrPtr(hdpa)[i]
@@ -6045,14 +6123,16 @@ const DPAS_INSERTBEFORE = &h2
 const DPAS_INSERTAFTER = &h4
 declare function DPA_Search(byval hdpa as HDPA, byval pFind as any ptr, byval iStart as long, byval pfnCompare as PFNDACOMPARE, byval lParam as LPARAM, byval options as UINT) as long
 #define DPA_SortedInsertPtr(hdpa, pFind, iStart, pfnCompare, lParam, options, pitem) DPA_InsertPtr(hdpa, DPA_Search(hdpa, pFind, iStart, pfnCompare, lParam, DPAS_SORTED or (options)), (pitem))
-#define DPA_APPEND DA_LAST
-#define DPA_ERR DA_ERR
-#define PFNDPAENUMCALLBACK PFNDAENUMCALLBACK
-#define PFNDPAENUMCALLBACKCONST PFNDAENUMCALLBACKCONST
-#define PFNDPACOMPARE PFNDACOMPARE
-#define PFNDPACOMPARECONST PFNDACOMPARECONST
+const DPA_APPEND = DA_LAST
+const DPA_ERR = DA_ERR
+
+type PFNDPAENUMCALLBACK as PFNDAENUMCALLBACK
+type PFNDPAENUMCALLBACKCONST as PFNDAENUMCALLBACKCONST
+type PFNDPACOMPARE as PFNDACOMPARE
+type PFNDPACOMPARECONST as PFNDACOMPARECONST
 declare function Str_SetPtrW(byval ppsz as LPWSTR ptr, byval psz as LPCWSTR) as WINBOOL
 declare function _TrackMouseEvent(byval lpEventTrack as LPTRACKMOUSEEVENT) as WINBOOL
+
 #define WSB_PROP_CYVSCROLL __MSABI_LONG(&h1)
 #define WSB_PROP_CXHSCROLL __MSABI_LONG(&h2)
 #define WSB_PROP_CYHSCROLL __MSABI_LONG(&h4)
@@ -6080,14 +6160,14 @@ declare function FlatSB_GetScrollProp(byval as HWND, byval propIndex as long, by
 #ifdef __FB_64BIT__
 	declare function FlatSB_GetScrollPropPtr(byval as HWND, byval propIndex as long, byval as PINT_PTR) as WINBOOL
 #else
-	#define FlatSB_GetScrollPropPtr FlatSB_GetScrollProp
+	declare function FlatSB_GetScrollPropPtr alias "FlatSB_GetScrollProp"(byval as HWND, byval propIndex as long, byval as LPINT) as WINBOOL
 #endif
 
 declare function FlatSB_SetScrollPos(byval as HWND, byval code as long, byval pos as long, byval fRedraw as WINBOOL) as long
 declare function FlatSB_SetScrollInfo(byval as HWND, byval code as long, byval as LPSCROLLINFO, byval fRedraw as WINBOOL) as long
 declare function FlatSB_SetScrollRange(byval as HWND, byval code as long, byval min as long, byval max as long, byval fRedraw as WINBOOL) as long
 declare function FlatSB_SetScrollProp(byval as HWND, byval index as UINT, byval newValue as INT_PTR, byval as WINBOOL) as WINBOOL
-#define FlatSB_SetScrollPropPtr FlatSB_SetScrollProp
+declare function FlatSB_SetScrollPropPtr alias "FlatSB_SetScrollProp"(byval as HWND, byval index as UINT, byval newValue as INT_PTR, byval as WINBOOL) as WINBOOL
 declare function InitializeFlatSB(byval as HWND) as WINBOOL
 declare function UninitializeFlatSB(byval as HWND) as HRESULT
 type SUBCLASSPROC as function(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval uIdSubclass as UINT_PTR, byval dwRefData as DWORD_PTR) as LRESULT

@@ -1,0 +1,27 @@
+--- UDT + var ---
+1 warning:
+	Ambigious len(), referring to type MSG, instead of variable MSG
+1 warning:
+	Ambigious sizeof(), referring to type MSG, instead of variable MSG
+1 warning:
+	Ambigious typeof(), referring to type MSG, instead of variable MSG
+--- UDT + var of that type ---
+no warnings:
+--- UDT + const ---
+1 warning:
+	Ambigious len(), referring to type MSG, instead of constant MSG
+1 warning:
+	Ambigious sizeof(), referring to type MSG, instead of constant MSG
+1 warning:
+	Ambigious typeof(), referring to type MSG, instead of constant MSG
+--- typedef + var ---
+1 warning:
+	Ambigious len(), referring to type alias MSG2, instead of variable MSG2
+--- fwdref + var ---
+1 warning:
+	Ambigious len(), referring to variable FWD, instead of forward reference FWD
+--- syntax is enough to disambiguate ---
+no warning:
+no warning:
+--- UDT + proc ---
+no warning:

@@ -24,6 +24,9 @@ function cTypeConvExpr _
 	op = INVALID
 
 	select case as const tk
+	case FB_TK_CBOOL
+		dtype = FB_DATATYPE_BOOLEAN
+
 	case FB_TK_CBYTE
 		dtype = FB_DATATYPE_BYTE
 

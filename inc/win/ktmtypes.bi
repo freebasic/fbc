@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -101,10 +101,10 @@ const TRANSACTION_NOTIFY_COMMIT_FINALIZE = &h40000000
 #define TRANSACTION_OBJECT_PATH wstr(!"\\Transaction\\")
 #define ENLISTMENT_OBJECT_PATH wstr(!"\\Enlistment\\")
 #define RESOURCE_MANAGER_OBJECT_PATH wstr(!"\\ResourceManager\\")
-#define TRANSACTIONMANAGER_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(TRANSACTIONMANAGER_OBJECT_PATH) + (38 * sizeof(wchar_t)))
-#define TRANSACTION_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(TRANSACTION_OBJECT_PATH) + (38 * sizeof(wchar_t)))
-#define ENLISTMENT_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(ENLISTMENT_OBJECT_PATH) + (38 * sizeof(wchar_t)))
-#define RESOURCE_MANAGER_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(RESOURCE_MANAGER_OBJECT_PATH) + (38 * sizeof(wchar_t)))
+#define TRANSACTIONMANAGER_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(TRANSACTIONMANAGER_OBJECT_PATH) + (38 * sizeof(WCHAR)))
+#define TRANSACTION_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(TRANSACTION_OBJECT_PATH) + (38 * sizeof(WCHAR)))
+#define ENLISTMENT_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(ENLISTMENT_OBJECT_PATH) + (38 * sizeof(WCHAR)))
+#define RESOURCE_MANAGER_OBJECT_NAME_LENGTH_IN_BYTES (sizeof(RESOURCE_MANAGER_OBJECT_PATH) + (38 * sizeof(WCHAR)))
 
 type _TRANSACTION_NOTIFICATION
 	TransactionKey as PVOID

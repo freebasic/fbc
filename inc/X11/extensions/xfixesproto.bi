@@ -245,9 +245,9 @@ type xXFixesIntersectRegionReq as xXFixesCombineRegionReq
 type xXFixesSubtractRegionReq as xXFixesCombineRegionReq
 
 const sz_xXFixesCombineRegionReq = 16
-#define sz_xXFixesUnionRegionReq sz_xXFixesCombineRegionReq
-#define sz_xXFixesIntersectRegionReq sz_xXFixesCombineRegionReq
-#define sz_xXFixesSubtractRegionReq sz_xXFixesCombineRegionReq
+const sz_xXFixesUnionRegionReq = sz_xXFixesCombineRegionReq
+const sz_xXFixesIntersectRegionReq = sz_xXFixesCombineRegionReq
+const sz_xXFixesSubtractRegionReq = sz_xXFixesCombineRegionReq
 
 type xXFixesInvertRegionReq
 	reqType as CARD8

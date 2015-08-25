@@ -44,6 +44,9 @@ declare sub 		symbCompRTTIInit	( )
 
 declare sub 		symbCompRTTIEnd		( )
 
+declare sub 		symbKeywordConstsInit ( )
+
+declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
 ''globals
 	dim shared as SYMBCTX symb
@@ -157,6 +160,9 @@ sub symbInit _
 	
 	''
 	symbCompRTTIInit( )
+
+	''
+	symbKeywordConstsInit( )
 
     ''
     symb.inited = TRUE
@@ -825,8 +831,7 @@ function symbLookup _
 	( _
 		byval id as zstring ptr, _
 		byref tk as FB_TOKEN, _
-		byref tk_class as FB_TKCLASS, _
-		byval preserve_case as integer _
+		byref tk_class as FB_TKCLASS _
 	) as FBSYMCHAIN ptr
 
     static as zstring * FB_MAXNAMELEN+1 sname
@@ -835,10 +840,8 @@ function symbLookup _
 	tk = FB_TK_ID
 	tk_class = FB_TKCLASS_IDENTIFIER
 
-    if( preserve_case = FALSE ) then
-    	hUcase( *id, sname )
-    	id = @sname
-    end if
+	hUcase( *id, sname )
+	id = @sname
 
     dim as uinteger index = hashHash( id )
     dim as FBSYMCHAIN ptr chain_ = NULL
@@ -1600,6 +1603,7 @@ function symbTypeToStr _
 
 	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+		s += hGetNamespacePrefix( subtype )
 		s += *symbGetName( subtype )
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
@@ -2006,7 +2010,6 @@ sub symbForEachGlobal _
 
 end sub
 
-#if __FB_DEBUG__
 private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	dim as FBSYMBOL ptr ns = any
 	dim as string s
@@ -2025,6 +2028,7 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
+#if __FB_DEBUG__
 static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
 { _
 	@"var"      , _
@@ -2354,7 +2358,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		hDumpName( s, sym )
 
 		'' Array dimensions, if any
-		if( symbIsDynamic( sym ) ) then
+		if( symbGetIsDynamic( sym ) ) then
 			s += hDumpDynamicArrayDimensions( symbGetArrayDimensions( sym ) )
 		elseif( symbGetArrayDimensions( sym ) > 0 ) then
 			s += "("
@@ -2455,14 +2459,44 @@ end sub
 
 sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 	print "symchain [" + hex( chain_ ) + "]:"
-
-	if( chain_ = NULL ) then
-		exit sub
+	if( chain_ ) then
+		'' Also printing the "index" in the chain, so we can differentiate between
+		'' symbols from the same FBSYMCHAIN node (linked by their FBSYMBOL.hash.next fields),
+		'' and symbols in different FBSYMCHAIN nodes (linked via symbChainGetNext()).
+		var i = 0
+		do
+			var sym = chain_->sym
+			do
+				print "   " & i & "  " + symbDump( sym )
+				sym = sym->hash.next
+			loop while( sym )
+			i += 1
+			chain_ = symbChainGetNext( chain_ )
+		loop while( chain_ )
 	end if
-
-	do
-		print "    " + symbDump( chain_->sym )
-		chain_ = chain_->next
-	loop while( chain_ )
 end sub
 #endif
+
+dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+{ _
+	@"variable", _
+	@"constant", _
+	@"procedure", _
+	@"parameter", _
+	@"#define", _
+	@"keyword", _
+	@"label", _
+	@"namespace", _
+	@"enum", _
+	@"type", _
+	@"class", _
+	@"field", _
+	@"type alias", _
+	@"forward reference", _
+	@"scope", _
+	@"namespace import" _
+}
+
+function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
+	function = *classnamesPretty(sym->class) + " " + *sym->id.name
+end function

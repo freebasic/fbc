@@ -1,15 +1,9 @@
 /* serial port access for Windows */
 
 #include "../fb.h"
-#include <windows.h>
+#include "../io_serial_private.h"
 
 #define GET_MSEC_TIME() ((DWORD) (fb_Timer() * 1000.0))
-
-typedef struct _W32_SERIAL_INFO {
-    HANDLE                    hDevice;
-    int                       iPort;
-    FB_SERIAL_OPTIONS        *pOptions;
-} W32_SERIAL_INFO;
 
 static int fb_hSerialWaitSignal( HANDLE hDevice, DWORD dwMask, DWORD dwResult, DWORD dwTimeout )
 {
@@ -55,7 +49,6 @@ int fb_SerialOpen( FB_FILE *handle,
     DWORD dwDefaultTxBufferSize = 16384;
     DWORD dwDefaultRxBufferSize = 16384;
     DWORD dwDesiredAccess = 0;
-    DWORD dwShareMode = 0;
     char *pszDev, *p;
     HANDLE hDevice;
     int res;
@@ -76,20 +69,6 @@ int fb_SerialOpen( FB_FILE *handle,
     case FB_FILE_ACCESS_READWRITE:
     case FB_FILE_ACCESS_ANY:
         dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
-        break;
-    }
-
-    switch( handle->lock ) {
-    case FB_FILE_LOCK_SHARED:
-        dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-        break;
-    case FB_FILE_LOCK_READ:
-        dwShareMode = FILE_SHARE_WRITE;
-        break;
-    case FB_FILE_LOCK_WRITE:
-        dwShareMode = FILE_SHARE_READ;
-        break;
-    case FB_FILE_LOCK_READWRITE:
         break;
     }
 
@@ -124,7 +103,7 @@ int fb_SerialOpen( FB_FILE *handle,
     hDevice =
         CreateFileA( pszDev,
                      dwDesiredAccess,
-                     dwShareMode,
+                     0 /* dwShareMode: must be zero (exclusive access) for COM port according to MSDN */,
                      NULL,
                      OPEN_EXISTING,
                      0,
@@ -189,6 +168,7 @@ int fb_SerialOpen( FB_FILE *handle,
     /* setup generic COM port configuration */
     if( res==FB_RTERROR_OK ) {
         DCB dcb;
+        dcb.DCBlength = sizeof( DCB );
         if( !GetCommState( hDevice, &dcb ) ) {
             res = fb_ErrorSetNum( FB_RTERROR_NOPRIVILEGES );
         } else {

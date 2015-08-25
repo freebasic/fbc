@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -117,53 +117,53 @@ declare function ConfigDSNW(byval hwndParent as HWND, byval fRequest as WORD, by
 declare function ConfigDriverW(byval hwndParent as HWND, byval fRequest as WORD, byval lpszDriver as LPCWSTR, byval lpszArgs as LPCWSTR, byval lpszMsg as LPWSTR, byval cbMsgMax as WORD, byval pcbMsgOut as WORD ptr) as WINBOOL
 
 #ifdef UNICODE
-	#define SQLInstallODBC SQLInstallODBCW
-	#define SQLCreateDataSource SQLCreateDataSourceW
-	#define SQLGetTranslator SQLGetTranslatorW
-	#define SQLInstallDriver SQLInstallDriverW
-	#define SQLInstallDriverManager SQLInstallDriverManagerW
-	#define SQLGetInstalledDrivers SQLGetInstalledDriversW
-	#define SQLGetAvailableDrivers SQLGetAvailableDriversW
-	#define SQLConfigDataSource SQLConfigDataSourceW
-	#define SQLWriteDSNToIni SQLWriteDSNToIniW
-	#define SQLRemoveDSNFromIni SQLRemoveDSNFromIniW
-	#define SQLValidDSN SQLValidDSNW
-	#define SQLWritePrivateProfileString SQLWritePrivateProfileStringW
-	#define SQLGetPrivateProfileString SQLGetPrivateProfileStringW
-	#define SQLInstallTranslator SQLInstallTranslatorW
-	#define SQLRemoveTranslator SQLRemoveTranslatorW
-	#define SQLRemoveDriver SQLRemoveDriverW
-	#define SQLConfigDriver SQLConfigDriverW
-	#define SQLInstallerError SQLInstallerErrorW
-	#define SQLPostInstallerError SQLPostInstallerErrorW
-	#define SQLReadFileDSN SQLReadFileDSNW
-	#define SQLWriteFileDSN SQLWriteFileDSNW
-	#define SQLInstallDriverEx SQLInstallDriverExW
-	#define SQLInstallTranslatorEx SQLInstallTranslatorExW
+	declare function SQLInstallODBC alias "SQLInstallODBCW"(byval hwndParent as HWND, byval lpszInfFile as LPCWSTR, byval lpszSrcPath as LPCWSTR, byval lpszDrivers as LPCWSTR) as WINBOOL
+	declare function SQLCreateDataSource alias "SQLCreateDataSourceW"(byval hwndParent as HWND, byval lpszDSN as LPCWSTR) as WINBOOL
+	declare function SQLGetTranslator alias "SQLGetTranslatorW"(byval hwnd as HWND, byval lpszName as LPWSTR, byval cbNameMax as WORD, byval pcbNameOut as WORD ptr, byval lpszPath as LPWSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr, byval pvOption as DWORD ptr) as WINBOOL
+	declare function SQLInstallDriver alias "SQLInstallDriverW"(byval lpszInfFile as LPCWSTR, byval lpszDriver as LPCWSTR, byval lpszPath as LPWSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr) as WINBOOL
+	declare function SQLInstallDriverManager alias "SQLInstallDriverManagerW"(byval lpszPath as LPWSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr) as WINBOOL
+	declare function SQLGetInstalledDrivers alias "SQLGetInstalledDriversW"(byval lpszBuf as LPWSTR, byval cbBufMax as WORD, byval pcbBufOut as WORD ptr) as WINBOOL
+	declare function SQLGetAvailableDrivers alias "SQLGetAvailableDriversW"(byval lpszInfFile as LPCWSTR, byval lpszBuf as LPWSTR, byval cbBufMax as WORD, byval pcbBufOut as WORD ptr) as WINBOOL
+	declare function SQLConfigDataSource alias "SQLConfigDataSourceW"(byval hwndParent as HWND, byval fRequest as WORD, byval lpszDriver as LPCWSTR, byval lpszAttributes as LPCWSTR) as WINBOOL
+	declare function SQLWriteDSNToIni alias "SQLWriteDSNToIniW"(byval lpszDSN as LPCWSTR, byval lpszDriver as LPCWSTR) as WINBOOL
+	declare function SQLRemoveDSNFromIni alias "SQLRemoveDSNFromIniW"(byval lpszDSN as LPCWSTR) as WINBOOL
+	declare function SQLValidDSN alias "SQLValidDSNW"(byval lpszDSN as LPCWSTR) as WINBOOL
+	declare function SQLWritePrivateProfileString alias "SQLWritePrivateProfileStringW"(byval lpszSection as LPCWSTR, byval lpszEntry as LPCWSTR, byval lpszString as LPCWSTR, byval lpszFilename as LPCWSTR) as WINBOOL
+	declare function SQLGetPrivateProfileString alias "SQLGetPrivateProfileStringW"(byval lpszSection as LPCWSTR, byval lpszEntry as LPCWSTR, byval lpszDefault as LPCWSTR, byval lpszRetBuffer as LPWSTR, byval cbRetBuffer as long, byval lpszFilename as LPCWSTR) as long
+	declare function SQLInstallTranslator alias "SQLInstallTranslatorW"(byval lpszInfFile as LPCWSTR, byval lpszTranslator as LPCWSTR, byval lpszPathIn as LPCWSTR, byval lpszPathOut as LPWSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLRemoveTranslator alias "SQLRemoveTranslatorW"(byval lpszTranslator as LPCWSTR, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLRemoveDriver alias "SQLRemoveDriverW"(byval lpszDriver as LPCWSTR, byval fRemoveDSN as WINBOOL, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLConfigDriver alias "SQLConfigDriverW"(byval hwndParent as HWND, byval fRequest as WORD, byval lpszDriver as LPCWSTR, byval lpszArgs as LPCWSTR, byval lpszMsg as LPWSTR, byval cbMsgMax as WORD, byval pcbMsgOut as WORD ptr) as WINBOOL
+	declare function SQLInstallerError alias "SQLInstallerErrorW"(byval iError as WORD, byval pfErrorCode as DWORD ptr, byval lpszErrorMsg as LPWSTR, byval cbErrorMsgMax as WORD, byval pcbErrorMsg as WORD ptr) as SQLRETURN
+	declare function SQLPostInstallerError alias "SQLPostInstallerErrorW"(byval dwErrorCode as DWORD, byval lpszErrorMsg as LPCWSTR) as SQLRETURN
+	declare function SQLReadFileDSN alias "SQLReadFileDSNW"(byval lpszFileName as LPCWSTR, byval lpszAppName as LPCWSTR, byval lpszKeyName as LPCWSTR, byval lpszString as LPWSTR, byval cbString as WORD, byval pcbString as WORD ptr) as WINBOOL
+	declare function SQLWriteFileDSN alias "SQLWriteFileDSNW"(byval lpszFileName as LPCWSTR, byval lpszAppName as LPCWSTR, byval lpszKeyName as LPCWSTR, byval lpszString as LPCWSTR) as WINBOOL
+	declare function SQLInstallDriverEx alias "SQLInstallDriverExW"(byval lpszDriver as LPCWSTR, byval lpszPathIn as LPCWSTR, byval lpszPathOut as LPWSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLInstallTranslatorEx alias "SQLInstallTranslatorExW"(byval lpszTranslator as LPCWSTR, byval lpszPathIn as LPCWSTR, byval lpszPathOut as LPWSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
 #else
-	#define SQLInstallODBC SQLInstallODBCA
-	#define SQLCreateDataSource SQLCreateDataSourceA
-	#define SQLGetTranslator SQLGetTranslatorA
-	#define SQLInstallDriver SQLInstallDriverA
-	#define SQLInstallDriverManager SQLInstallDriverManagerA
-	#define SQLGetInstalledDrivers SQLGetInstalledDriversA
-	#define SQLGetAvailableDrivers SQLGetAvailableDriversA
-	#define SQLConfigDataSource SQLConfigDataSourceA
-	#define SQLWriteDSNToIni SQLWriteDSNToIniA
-	#define SQLRemoveDSNFromIni SQLRemoveDSNFromIniA
-	#define SQLValidDSN SQLValidDSNA
-	#define SQLWritePrivateProfileString SQLWritePrivateProfileStringA
-	#define SQLGetPrivateProfileString SQLGetPrivateProfileStringA
-	#define SQLInstallTranslator SQLInstallTranslatorA
-	#define SQLRemoveTranslator SQLRemoveTranslatorA
-	#define SQLRemoveDriver SQLRemoveDriverA
-	#define SQLConfigDriver SQLConfigDriverA
-	#define SQLInstallerError SQLInstallerErrorA
-	#define SQLPostInstallerError SQLPostInstallerErrorA
-	#define SQLReadFileDSN SQLReadFileDSNA
-	#define SQLWriteFileDSN SQLWriteFileDSNA
-	#define SQLInstallDriverEx SQLInstallDriverExA
-	#define SQLInstallTranslatorEx SQLInstallTranslatorExA
+	declare function SQLInstallODBC(byval hwndParent as HWND, byval lpszInfFile as LPCSTR, byval lpszSrcPath as LPCSTR, byval lpszDrivers as LPCSTR) as WINBOOL
+	declare function SQLCreateDataSource(byval hwndParent as HWND, byval lpszDSN as LPCSTR) as WINBOOL
+	declare function SQLGetTranslator(byval hwnd as HWND, byval lpszName as LPSTR, byval cbNameMax as WORD, byval pcbNameOut as WORD ptr, byval lpszPath as LPSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr, byval pvOption as DWORD ptr) as WINBOOL
+	declare function SQLInstallDriver(byval lpszInfFile as LPCSTR, byval lpszDriver as LPCSTR, byval lpszPath as LPSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr) as WINBOOL
+	declare function SQLInstallDriverManager(byval lpszPath as LPSTR, byval cbPathMax as WORD, byval pcbPathOut as WORD ptr) as WINBOOL
+	declare function SQLGetInstalledDrivers(byval lpszBuf as LPSTR, byval cbBufMax as WORD, byval pcbBufOut as WORD ptr) as WINBOOL
+	declare function SQLGetAvailableDrivers(byval lpszInfFile as LPCSTR, byval lpszBuf as LPSTR, byval cbBufMax as WORD, byval pcbBufOut as WORD ptr) as WINBOOL
+	declare function SQLConfigDataSource(byval hwndParent as HWND, byval fRequest as WORD, byval lpszDriver as LPCSTR, byval lpszAttributes as LPCSTR) as WINBOOL
+	declare function SQLWriteDSNToIni(byval lpszDSN as LPCSTR, byval lpszDriver as LPCSTR) as WINBOOL
+	declare function SQLRemoveDSNFromIni(byval lpszDSN as LPCSTR) as WINBOOL
+	declare function SQLValidDSN(byval lpszDSN as LPCSTR) as WINBOOL
+	declare function SQLWritePrivateProfileString(byval lpszSection as LPCSTR, byval lpszEntry as LPCSTR, byval lpszString as LPCSTR, byval lpszFilename as LPCSTR) as WINBOOL
+	declare function SQLGetPrivateProfileString(byval lpszSection as LPCSTR, byval lpszEntry as LPCSTR, byval lpszDefault as LPCSTR, byval lpszRetBuffer as LPSTR, byval cbRetBuffer as long, byval lpszFilename as LPCSTR) as long
+	declare function SQLInstallTranslator(byval lpszInfFile as LPCSTR, byval lpszTranslator as LPCSTR, byval lpszPathIn as LPCSTR, byval lpszPathOut as LPSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLRemoveTranslator(byval lpszTranslator as LPCSTR, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLRemoveDriver(byval lpszDriver as LPCSTR, byval fRemoveDSN as WINBOOL, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLConfigDriver(byval hwndParent as HWND, byval fRequest as WORD, byval lpszDriver as LPCSTR, byval lpszArgs as LPCSTR, byval lpszMsg as LPSTR, byval cbMsgMax as WORD, byval pcbMsgOut as WORD ptr) as WINBOOL
+	declare function SQLInstallerError(byval iError as WORD, byval pfErrorCode as DWORD ptr, byval lpszErrorMsg as LPSTR, byval cbErrorMsgMax as WORD, byval pcbErrorMsg as WORD ptr) as SQLRETURN
+	declare function SQLPostInstallerError(byval dwErrorCode as DWORD, byval lpszErrMsg as LPCSTR) as SQLRETURN
+	declare function SQLWriteFileDSN(byval lpszFileName as LPCSTR, byval lpszAppName as LPCSTR, byval lpszKeyName as LPCSTR, byval lpszString as LPCSTR) as WINBOOL
+	declare function SQLReadFileDSN(byval lpszFileName as LPCSTR, byval lpszAppName as LPCSTR, byval lpszKeyName as LPCSTR, byval lpszString as LPSTR, byval cbString as WORD, byval pcbString as WORD ptr) as WINBOOL
+	declare function SQLInstallDriverEx(byval lpszDriver as LPCSTR, byval lpszPathIn as LPCSTR, byval lpszPathOut as LPSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
+	declare function SQLInstallTranslatorEx(byval lpszTranslator as LPCSTR, byval lpszPathIn as LPCSTR, byval lpszPathOut as LPSTR, byval cbPathOutMax as WORD, byval pcbPathOut as WORD ptr, byval fRequest as WORD, byval lpdwUsageCount as LPDWORD) as WINBOOL
 #endif
 
 end extern

@@ -46,6 +46,9 @@ typedef struct {
 #define CHARS_IND  ('#' << 24 | 'I' << 16 | 'N' << 8 | 'D')
 #define CHARS_TRUNC ('$' << 24 | '0' << 16 | '0' << 8 | '0') /* QB glitch: truncation "rounds up" the text chars */
 
+#define CHARS_TRUE  ('t' << 24 | 'r' << 16 | 'u' << 8 | 'e')
+#define CHARS_FALSE (((uint64_t)'f') << 32 | 'a' << 24 | 'l' << 16 | 's' << 8 | 'e')
+
 #define ADD_CHAR( c )              \
     do {                           \
         DBG_ASSERT( p >= buffer ); \
@@ -110,6 +113,8 @@ static int hIsNan(double d)
 
 #define VAL_ISFLOAT 0x10
 #define VAL_ISSNG 0x20
+
+#define VAL_ISBOOL 0x40
 
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -559,7 +564,7 @@ static int hPrintNumber
 	int intdigs2, expsignchar, totdigs, decpoint;
 	int isamp;
 	int i;
-	uint32_t chars = 0;
+	uint64_t chars = 0;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -802,6 +807,24 @@ static int hPrintNumber
 		/* Set value to 1.1234 (placeholder for "1.#XYZ") */
 		val = 11234;
 		val_exp = -4;
+	}
+
+	if( isamp && (flags & VAL_ISBOOL) != 0 )
+	{
+		/* String value for '&': return 'true'/'false'
+		   (use val to placehold digits) */
+		if( val != 0 )
+		{
+			chars = CHARS_TRUE;
+			val = 1234;
+			val_isneg = FALSE;
+		}
+		else
+		{
+			chars = CHARS_FALSE;
+			val = 12345;
+		}
+		val_exp = 0;
 	}
 
 	if( val != 0 )
@@ -1112,7 +1135,7 @@ static int hPrintNumber
 
 
 	/* INF/IND/NAN: characters truncated? */
-	if( chars != 0 && val_digs < 5 )
+	if( chars != 0 && val_digs < 5 && (flags & VAL_ISBOOL) == 0)
 	{
 		/* QB wouldn't add the '%'.  But otherwise "#" will result in
 		   an innocent-looking "1".  Also, QB corrupts the string data
@@ -1475,6 +1498,24 @@ FBCALL int fb_PrintUsingLongint( int fnum, long long val_ll, int mask )
 	{
 		flags = 0;
 		val_ull = val_ll;
+	}
+
+	return hPrintNumber( fnum, val_ull, 0, flags, mask );
+}
+
+FBCALL int fb_PrintUsingBoolean( int fnum, char val, int mask )
+{
+	int flags = VAL_ISBOOL;
+	unsigned long long val_ull;
+
+	if( val != 0 )
+	{
+		flags |= VAL_ISNEG;
+		val_ull = 1ull;
+	}
+	else
+	{
+		val_ull = 0ull;
 	}
 
 	return hPrintNumber( fnum, val_ull, 0, flags, mask );

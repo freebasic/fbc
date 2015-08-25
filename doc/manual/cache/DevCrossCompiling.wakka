@@ -35,9 +35,9 @@ This tells fbc to cross-compile using the system's ##i686-w64-mingw32## gcc/binu
 
 **2. ""Win32"" FB libraries**
 
-Install ""Win32"" FB libraries such that fbc can find them. For the ##-target i686-w64-mingw32## example from above, the directory where the ""Win32"" FB libraries need to be is ##/usr/local/lib/freebasic/i686-w64-mingw32/##, assuming fbc is installed at ##/usr/local/bin/fbc##. You have two options to get them.
+Install ""Win32"" FB libraries such that fbc can find them. For the ##-target i686-w64-mingw32## example from above, the directory where the ""Win32"" FB libraries need to be is ##/usr/local/lib/freebasic/win32/##, assuming fbc is installed at ##/usr/local/bin/fbc##. You have two options to get them.
 
-a) Copy the libraries from the official ""Win32"" FB release package (or some other existing ""Win32"" build of FB). Create the ##/usr/local/lib/freebasic/i686-w64-mingw32/## directory and copy the libraries into it. This should be safe as long as the ""Win32"" FB libraries are from the same FB version as the FB-linux setup you have installed. However, if the ""Win32"" libraries were created with a ""MinGW"" toolchain that is incompatible with the one from Ubuntu, then there can be errors.
+a) Copy the libraries from the official ""Win32"" FB release package (or some other existing ""Win32"" build of FB). Create the ##/usr/local/lib/freebasic/win32/## directory and copy the libraries into it. This should be safe as long as the ""Win32"" FB libraries are from the same FB version as the FB-linux setup you have installed. However, if the ""Win32"" libraries were created with a ""MinGW"" toolchain that is incompatible with the one from Ubuntu, then there can be errors.
 
 b) Compile the ""Win32"" FB libraries manually using Ubuntu's toolchain. Assuming you have the FB source code in ##fbc/##, you can do:
 	%%cd fbc

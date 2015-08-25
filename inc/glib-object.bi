@@ -465,19 +465,19 @@ declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as cons
 	iif(cptr(GTypeInstance ptr, ip) = 0, _
 		FALSE, _
 		iif(cptr(GTypeInstance ptr, ip)->g_class andalso cptr(GTypeInstance ptr, ip)->g_class->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_instance_is_a(cptr(GTypeInstance ptr, ip), gt)))
 #define _G_TYPE_CCT(cp, gt) _
 	iif(cptr(GTypeClass ptr, cp) = 0, _
 		FALSE, _
 		iif(cptr(GTypeClass ptr, cp)->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_class_is_a(cptr(GTypeClass ptr, cp), gt)))
 #define _G_TYPE_CVH(vl, gt) _
 	iif(cptr(GValue ptr, vl) = 0 _
 		FALSE, _
 		iif(cptr(GValue ptr, vl)->g_type = gt, _
-			TRUE, _
+			CTRUE, _
 			g_type_check_value_holds(cptr(GValue ptr, vl), gt)))
 #define G_TYPE_FLAG_RESERVED_ID_BIT cast(GType, 1 shl 0)
 #define __G_VALUE_H__
@@ -731,12 +731,12 @@ declare sub g_cclosure_marshal_VOID__UINT_POINTER(byval closure as GClosure ptr,
 declare sub g_cclosure_marshal_VOID__UINT_POINTERv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
 declare sub g_cclosure_marshal_BOOLEAN__FLAGS(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_BOOLEAN__FLAGSv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
-#define g_cclosure_marshal_BOOL__FLAGS g_cclosure_marshal_BOOLEAN__FLAGS
+declare sub g_cclosure_marshal_BOOL__FLAGS alias "g_cclosure_marshal_BOOLEAN__FLAGS"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_STRING__OBJECT_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_STRING__OBJECT_POINTERv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
 declare sub g_cclosure_marshal_BOOLEAN__BOXED_BOXED(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub g_cclosure_marshal_BOOLEAN__BOXED_BOXEDv(byval closure as GClosure ptr, byval return_value as GValue ptr, byval instance as gpointer, byval args as va_list, byval marshal_data as gpointer, byval n_params as long, byval param_types as GType ptr)
-#define g_cclosure_marshal_BOOL__BOXED_BOXED g_cclosure_marshal_BOOLEAN__BOXED_BOXED
+declare sub g_cclosure_marshal_BOOL__BOXED_BOXED alias "g_cclosure_marshal_BOOLEAN__BOXED_BOXED"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 
 type GSignalQuery as _GSignalQuery
 type GSignalInvocationHint as _GSignalInvocationHint
@@ -1038,12 +1038,10 @@ declare sub g_value_set_object_take_ownership(byval value as GValue ptr, byval v
 declare function g_object_compat_control(byval what as gsize, byval data as gpointer) as gsize
 #macro G_OBJECT_WARN_INVALID_PSPEC(object, pname, property_id, pspec)
 	scope
-		var _glib__pspec = cptr(GParamSpec ptr, pspec)
-		dim as guint _glib__property_id = (property_id)
-		g_warning(!"%s:%u: invalid %s id %u for \"%s\" of type '%s' in '%s'", _
-			__FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, _
-			g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), _
-			G_OBJECT_TYPE_NAME(cptr(GObject ptr, object)))
+		dim _glib__object as GObject ptr = cptr(GObject ptr, (object))
+		dim _glib__pspec as GParamSpec ptr = cptr(GParamSpec ptr, (pspec))
+		dim _glib__property_id as guint = (property_id)
+		g_warning("%s:%u: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
 	end scope
 #endmacro
 #define G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) G_OBJECT_WARN_INVALID_PSPEC((object), "property", (property_id), (pspec))
@@ -1413,7 +1411,7 @@ declare function g_param_spec_override_ alias "g_param_spec_override"(byval name
 declare function g_param_spec_gtype_ alias "g_param_spec_gtype"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval is_a_type as GType, byval flags as GParamFlags) as GParamSpec ptr
 declare function g_param_spec_variant_ alias "g_param_spec_variant"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval type as const GVariantType ptr, byval default_value as GVariant ptr, byval flags as GParamFlags) as GParamSpec ptr
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	extern import g_param_spec_types as GType ptr
 #else
 	extern g_param_spec_types as GType ptr

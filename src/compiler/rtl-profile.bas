@@ -9,30 +9,51 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
+	'' On win32, dos, linux-x86 and linux-x86_64, it's called "mcount"
+	dim shared as FB_RTL_PROCDEF dataMcountNormal(0 to 1) = _
 	{ _
-		/' mcount cdecl ( void ) as void'/ _
+		/' sub mcount cdecl( ) '/ _
 		( _
 			@FB_RTL_PROFILEMCOUNT, @"mcount", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' _monstartup CDECL ( ) as void '/ _
+		( NULL ) _
+	}
+
+	'' but on win64, it's called "_mcount"
+	dim shared as FB_RTL_PROCDEF dataMcountWin64(0 to 1) = _
+	{ _
+		/' sub _mcount cdecl( ) '/ _
+		( _
+			@FB_RTL_PROFILEMCOUNT, @"_mcount", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		( NULL ) _
+	}
+
+	dim shared as FB_RTL_PROCDEF dataMonstartup(0 to 1) = _
+	{ _
+		/' sub _monstartup cdecl( ) '/ _
 		( _
 			@FB_RTL_PROFILEMONSTARTUP, @"_monstartup", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' EOL '/ _
-		( _
-			NULL _
-		) _
+		( NULL ) _
 	}
 
 sub rtlProfileModInit( )
-	rtlAddIntrinsicProcs( @funcdata(0) )
+	if( (env.clopt.target = FB_COMPTARGET_WIN32) and fbIs64bit( ) ) then
+		rtlAddIntrinsicProcs( @dataMcountWin64(0) )
+	else
+		rtlAddIntrinsicProcs( @dataMcountNormal(0) )
+	end if
+	rtlAddIntrinsicProcs( @dataMonstartup(0) )
 end sub
 
 sub rtlProfileModEnd( )

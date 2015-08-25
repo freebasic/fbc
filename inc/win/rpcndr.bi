@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -35,12 +35,12 @@ const __RPCNDR_H_VERSION__ = 475
 #define NDR_LOCAL_DATA_REPRESENTATION __MSABI_LONG(&h00000010u)
 #define NDR_LOCAL_ENDIAN NDR_LITTLE_ENDIAN
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const TARGET_IS_NT61_OR_LATER = 0
-	const TARGET_IS_NT60_OR_LATER = 0
-#else
+#if _WIN32_WINNT = &h0602
 	const TARGET_IS_NT61_OR_LATER = 1
 	const TARGET_IS_NT60_OR_LATER = 1
+#else
+	const TARGET_IS_NT61_OR_LATER = 0
+	const TARGET_IS_NT60_OR_LATER = 0
 #endif
 
 const TARGET_IS_NT51_OR_LATER = 1
@@ -49,7 +49,6 @@ const TARGET_IS_NT40_OR_LATER = 1
 const TARGET_IS_NT351_OR_WIN95_OR_LATER = 1
 
 type cs_byte as ubyte
-type BOOLEAN as ubyte
 #define _HYPER_DEFINED
 #define __MIDL_user_allocate_free_DEFINED__
 declare function MIDL_user_allocate(byval as SIZE_T_) as any ptr
@@ -66,7 +65,7 @@ type NDR_SCONTEXT as _NDR_SCONTEXT ptr
 const cbNDRContext = 20
 type NDR_RUNDOWN as sub(byval context as any ptr)
 type NDR_NOTIFY_ROUTINE as sub()
-type NDR_NOTIFY2_ROUTINE as sub(byval flag as BOOLEAN)
+type NDR_NOTIFY2_ROUTINE as sub(byval flag as WINBOOLEAN)
 
 type _SCONTEXT_QUEUE
 	NumberOfObjects as ulong
@@ -91,10 +90,11 @@ declare sub RpcSsDestroyClientContext(byval ContextHandle as any ptr ptr)
 		*cptr(byte ptr ptr, @(source)->Buffer) += 1
 	end scope
 #endmacro
+
 #macro byte_array_from_ndr(Source, LowerIndex, UpperIndex, Target)
 	scope
 		NDRcopy(cptr(zstring ptr, (Target)) + (LowerIndex), (Source)->Buffer, culng((UpperIndex) - (LowerIndex)))
-		*cptr(ulong ptr, @(Source)->Buffer) += ((UpperIndex) - (LowerIndex))
+		(*cptr(ulong ptr, @(Source)->Buffer)) += (UpperIndex) - (LowerIndex)
 	end scope
 #endmacro
 #define boolean_from_ndr(source, target) byte_from_ndr(source, target)

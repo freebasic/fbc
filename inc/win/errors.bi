@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2006 Hans Leidekker
@@ -44,9 +44,9 @@ declare function AMGetErrorTextA(byval as HRESULT, byval as LPSTR, byval as DWOR
 declare function AMGetErrorTextW(byval as HRESULT, byval as LPWSTR, byval as DWORD) as DWORD
 
 #ifdef UNICODE
-	#define AMGetErrorText AMGetErrorTextW
+	declare function AMGetErrorText alias "AMGetErrorTextW"(byval as HRESULT, byval as LPWSTR, byval as DWORD) as DWORD
 #else
-	#define AMGetErrorText AMGetErrorTextA
+	declare function AMGetErrorText alias "AMGetErrorTextA"(byval as HRESULT, byval as LPSTR, byval as DWORD) as DWORD
 #endif
 
 end extern

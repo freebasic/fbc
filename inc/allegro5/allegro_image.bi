@@ -27,12 +27,12 @@
 
 #pragma once
 
-#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
-	#inclib "allegro_image-5.0.10-static-md"
-#elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
-	#inclib "allegro_image-5.0.10-md"
-#else
+#ifdef __FB_UNIX__
 	#inclib "allegro_image"
+#elseif defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "allegro_image-5.0.10-static-md"
+#else
+	#inclib "allegro_image-5.0.10-md"
 #endif
 
 extern "C"

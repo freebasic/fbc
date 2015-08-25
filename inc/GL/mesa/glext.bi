@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mesa-10.5.1
+'' FreeBASIC binding for mesa-10.6.4
 ''
 '' based on the C header files:
 ''   Copyright (c) 2013-2014 The Khronos Group Inc.
@@ -3105,7 +3105,13 @@ const GL_ARB_shader_group_vote = 1
 const GL_ARB_shader_image_load_store = 1
 const GL_ARB_shader_image_size = 1
 const GL_ARB_shader_objects = 1
-type GLhandleARB as ulong
+
+#ifdef __FB_DARWIN__
+	type GLhandleARB as any ptr
+#else
+	type GLhandleARB as ulong
+#endif
+
 type GLcharARB as zstring
 const GL_PROGRAM_OBJECT_ARB = &h8B40
 const GL_SHADER_OBJECT_ARB = &h8B48

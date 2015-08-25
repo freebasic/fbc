@@ -35,6 +35,9 @@
 #include once "pango/pangocairo.bi"
 
 '' The following symbols have been renamed:
+''     constant GDK_DRAG_MOTION => GDK_DRAG_MOTION_
+''     constant GDK_DRAG_STATUS => GDK_DRAG_STATUS_
+''     constant GDK_PROPERTY_DELETE => GDK_PROPERTY_DELETE_
 ''     constant GDK_KEY_dead_A => GDK_KEY_dead_A_
 ''     constant GDK_KEY_dead_E => GDK_KEY_dead_E_
 ''     constant GDK_KEY_dead_I => GDK_KEY_dead_I_
@@ -385,12 +388,12 @@ extern "C"
 #define __GDK_H__
 #define __GDK_H_INSIDE__
 
-#ifdef __FB_WIN32__
-	#define GDK_WINDOWING_WIN32
-#else
+#ifdef __FB_UNIX__
 	#define GDK_WINDOWING_X11
 	#define GDK_WINDOWING_WAYLAND
 	#define GDK_WINDOWING_MIR
+#else
+	#define GDK_WINDOWING_WIN32
 #endif
 
 #define __GDK_VERSION_MACROS_H__
@@ -412,12 +415,12 @@ const GDK_MICRO_VERSION = 10
 #define __GDK_APP_LAUNCH_CONTEXT_H__
 #define __GDK_TYPES_H__
 
-#ifdef __FB_WIN32__
-	#define GDK_WINDOWING_WIN32
-#else
+#ifdef __FB_UNIX__
 	#define GDK_WINDOWING_X11
 	#define GDK_WINDOWING_WAYLAND
 	#define GDK_WINDOWING_MIR
+#else
+	#define GDK_WINDOWING_WIN32
 #endif
 
 const GDK_CURRENT_TIME = cast(clong, 0)
@@ -691,10 +694,10 @@ declare function gdk_drag_drop_succeeded(byval context as GdkDragContext ptr) as
 
 #define GDK_TYPE_EVENT gdk_event_get_type()
 #define GDK_TYPE_EVENT_SEQUENCE gdk_event_sequence_get_type()
-#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
+const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
-#define GDK_EVENT_PROPAGATE FALSE
-#define GDK_EVENT_STOP TRUE
+const GDK_EVENT_PROPAGATE = FALSE
+#define GDK_EVENT_STOP CTRUE
 const GDK_BUTTON_PRIMARY = 1
 const GDK_BUTTON_MIDDLE = 2
 const GDK_BUTTON_SECONDARY = 3
@@ -3819,7 +3822,7 @@ const GDK_KEY_Prev_VMode = &h1008fe23
 const GDK_KEY_LogWindowTree = &h1008fe24
 const GDK_KEY_LogGrabInfo = &h1008fe25
 #define __GDK_MAIN_H__
-#define GDK_PRIORITY_EVENTS G_PRIORITY_DEFAULT
+const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
 
 declare sub gdk_parse_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare sub gdk_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)

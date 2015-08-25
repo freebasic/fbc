@@ -56,21 +56,29 @@ void fb_hRtExit( void )
 	   atexit().
 
 	   FB supports global ctors/dtors, and thus FB programs can call FB
-	   functions from there. Hence the rtlib/gfxlib2 initialization must
-	   be the first global ctor, and the clean-up must be the last global
+	   functions from there. Hence the rtlib/gfxlib2 initialization should
+	   be the first global ctor, and the clean-up should be the last global
 	   dtor. This is done by fbrt0.c. We can't rely on atexit() for this,
 	   because sometimes the atexit handlers can be called before the global
 	   dtors, sometimes after.
 
+	   However, on Windows it's not safe to do certain things such as
+	   waiting for a thread to finish from inside a global
+	   constructor/destructor due to the loader lock. (A lock is acquired
+	   to synchronize calls to DllMain() etc., so waiting for a thread from
+	   inside a global destructor may cause a dead-lock, as that thread
+	   needs to acquire the same lock to be able to exit.) Because of this,
+	   gfxlib2 clean-up can't be done during a global dtor, at least not on
+	   Windows, because its win32 backends use a background thread. So the
+	   gfxlib clean-up must be done during fb_End() instead.
+
 	   Some observations about atexit() behaviour: it depends on context,
 	   e.g. whether it's called from a global ctor or global dtor or main(),
 	   or whether it's a shared lib/DLL or executable,
-	   and it depends on the platform (e.g. GNU/Linux vs MinGW-w64). */
+	   and it depends on the platform (e.g. GNU/Linux vs MinGW-w64).
+	   Thus it can't be used reliably. */
 
 	fb_FileReset( );
-
-	if( __fb_ctx.exit_gfxlib2 )
-		__fb_ctx.exit_gfxlib2( );
 
 	/* os-dep termination */
 	fb_hEnd( 0 );
@@ -100,8 +108,11 @@ FBCALL void fb_Init( int argc, char **argv, int lang )
 	__fb_ctx.lang = lang;
 }
 
-/* called by FB program */
+/* called by FB program,
+   or fb_Die() in case of assert() failure or runtime error */
 FBCALL void fb_End( int errlevel )
 {
+	if( __fb_ctx.exit_gfxlib2 )
+		__fb_ctx.exit_gfxlib2( );
 	exit( errlevel );
 }

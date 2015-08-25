@@ -43,10 +43,15 @@
 #endif
 
 #define _XOS_H_
-#define index(s, c) strchr((s), (c))
-#define rindex(s, c) strrchr((s), (c))
 
-#ifdef __FB_WIN32__
+#if defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+	#define index(s, c) strchr((s), (c))
+	#define rindex(s, c) strrchr((s), (c))
+#endif
+
+#ifdef __FB_UNIX__
+	#define X_GETTIMEOFDAY(t) gettimeofday(t, cptr(timezone ptr, 0))
+#else
 	type timeval
 		tv_sec as clong
 		tv_usec as clong
@@ -62,6 +67,4 @@
 		end scope
 	#endmacro
 	#define X_GETTIMEOFDAY(t) gettimeofday(t)
-#else
-	#define X_GETTIMEOFDAY(t) gettimeofday(t, cptr(timezone ptr, 0))
 #endif

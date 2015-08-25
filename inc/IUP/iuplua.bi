@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.13
+'' FreeBASIC binding for iup-3.15
 ''
 '' based on the C header files:
 ''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
@@ -27,7 +27,9 @@
 
 #pragma once
 
-extern "C"
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	extern "C"
+#endif
 
 #define __IUPLUA_H
 
@@ -37,7 +39,9 @@ extern "C"
 	declare function iuplua_checkihandle(byval pos as long) as Ihandle ptr
 	declare sub iuplua_pushihandle(byval n as Ihandle ptr)
 	declare function iuplua_dofile(byval filename as zstring ptr) as long
-#else
+#endif
+
+#ifdef LUA_TNONE
 	declare function iuplua_open(byval L as lua_State ptr) as long
 	declare function iupkey_open(byval L as lua_State ptr) as long
 	declare function iuplua_close(byval L as lua_State ptr) as long
@@ -45,6 +49,9 @@ extern "C"
 	declare sub iuplua_pushihandle(byval L as lua_State ptr, byval n as Ihandle ptr)
 	declare function iuplua_dofile(byval L as lua_State ptr, byval filename as const zstring ptr) as long
 	declare function iuplua_dostring(byval L as lua_State ptr, byval string as const zstring ptr, byval chunk_name as const zstring ptr) as long
+	declare function iuplua_dobuffer(byval L as lua_State ptr, byval buffer as const zstring ptr, byval len as long, byval chunk_name as const zstring ptr) as long
 #endif
 
-end extern
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	end extern
+#endif

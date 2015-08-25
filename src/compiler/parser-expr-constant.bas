@@ -122,9 +122,9 @@ function cNumLiteral( byval skiptoken as integer ) as ASTNODE ptr
 
 	case else
 		if( typeIsSigned( dtype ) ) then
-			function = astNewCONSTi( vallng( *lexGetText( ) ), dtype )
+			function = astNewCONSTi( clngint( *lexGetText( ) ), dtype )
 		else
-			function = astNewCONSTi( valulng( *lexGetText( ) ), dtype )
+			function = astNewCONSTi( culngint( *lexGetText( ) ), dtype )
 		end if
 	end select
 

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -35,7 +35,7 @@ const idsDefKeyword = 1010
 
 #ifdef UNICODE
 	declare function ScreenSaverProcW(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
-	#define ScreenSaverProc ScreenSaverProcW
+	declare function ScreenSaverProc alias "ScreenSaverProcW"(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #else
 	declare function ScreenSaverProc(byval hWnd as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 #endif
@@ -71,7 +71,7 @@ extern fChildPreview as WINBOOL
 #endif
 
 extern MyHelpMessage as UINT
-#define SCRM_VERIFYPW WM_APP
+const SCRM_VERIFYPW = WM_APP
 declare sub ScreenSaverChangePassword(byval hParent as HWND)
 
 end extern

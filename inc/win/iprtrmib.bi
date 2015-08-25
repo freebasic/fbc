@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -824,7 +824,7 @@ end type
 type PMIB_MCAST_LIMIT_ROW as MIB_MCAST_LIMIT_ROW ptr
 const MAX_SCOPE_NAME_LEN = 255
 #define SN_UNICODE
-type SN_CHAR as wstring
+type SN_CHAR as WCHAR
 type SCOPE_NAME as wstring ptr
 
 type _MIB_IPMCAST_SCOPE
@@ -943,6 +943,6 @@ end enum
 type TCPIP_OWNER_MODULE_INFO_CLASS as _TCPIP_OWNER_MODULE_INFO_CLASS
 type PTCPIP_OWNER_MODULE_INFO_CLASS as _TCPIP_OWNER_MODULE_INFO_CLASS ptr
 const MAX_MIB_OFFSET = 8
-#define MIB_INFO_SIZE(S) (MAX_MIB_OFFSET + sizeof((S)))
+#define MIB_INFO_SIZE(S) (MAX_MIB_OFFSET + sizeof(S))
 #define MIB_INFO_SIZE_IN_DWORDS(S) ((MIB_INFO_SIZE(S) / sizeof(DWORD)) + 1)
 #define CAST_MIB_INFO(X, Y, Z) scope : Z = cast(Y, X->rgbyData) : end scope

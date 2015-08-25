@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2004 Robert Reif
@@ -33,18 +33,18 @@ declare function DXGetErrorString8A(byval hr as HRESULT) as const zstring ptr
 declare function DXGetErrorString8W(byval hr as HRESULT) as const wstring ptr
 
 #ifdef UNICODE
-	#define DXGetErrorString8 DXGetErrorString8W
+	declare function DXGetErrorString8 alias "DXGetErrorString8W"(byval hr as HRESULT) as const wstring ptr
 #else
-	#define DXGetErrorString8 DXGetErrorString8A
+	declare function DXGetErrorString8 alias "DXGetErrorString8A"(byval hr as HRESULT) as const zstring ptr
 #endif
 
 declare function DXGetErrorDescription8A(byval hr as HRESULT) as const zstring ptr
 declare function DXGetErrorDescription8W(byval hr as HRESULT) as const wstring ptr
 
 #ifdef UNICODE
-	#define DXGetErrorDescription8 DXGetErrorDescription8W
+	declare function DXGetErrorDescription8 alias "DXGetErrorDescription8W"(byval hr as HRESULT) as const wstring ptr
 #else
-	#define DXGetErrorDescription8 DXGetErrorDescription8A
+	declare function DXGetErrorDescription8 alias "DXGetErrorDescription8A"(byval hr as HRESULT) as const zstring ptr
 #endif
 
 declare function DXTraceA(byval strFile as const zstring ptr, byval dwLine as DWORD, byval hr as HRESULT, byval strMsg as const zstring ptr, byval bPopMsgBox as WINBOOL) as HRESULT

@@ -21,7 +21,7 @@ Returns command line parameters used to call the program
 
 	If ##//index//## is greater than the number of arguments passed to the program, the null string (##"####"##) is returned.
 
-	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
+	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single block, and is returned without the double quotes.
 
 	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of ""FreeBASIC"" for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
 

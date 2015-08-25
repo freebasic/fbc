@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -61,6 +61,7 @@
 
 '' The following symbols have been renamed:
 ''     typedef INT => INT_
+''     typedef BOOLEAN => WINBOOLEAN
 ''     #define DELETE => DELETE__
 
 extern "Windows"
@@ -83,16 +84,16 @@ const SYSTEM_CACHE_ALIGNMENT_SIZE = 64
 const PRAGMA_DEPRECATED_DDK = 0
 type PVOID as any ptr
 type PVOID64 as any ptr
-#define VOID any
-type CHAR as zstring
+type VOID as any
+type CHAR as byte
 type INT_ as long
 #define __WCHAR_DEFINED
-type WCHAR as wstring
-type PWCHAR as wstring ptr
-type LPWCH as wstring ptr
-type PWCH as wstring ptr
-type LPCWCH as const wstring ptr
-type PCWCH as const wstring ptr
+type WCHAR as wchar_t
+type PWCHAR as WCHAR ptr
+type LPWCH as WCHAR ptr
+type PWCH as WCHAR ptr
+type LPCWCH as const WCHAR ptr
+type PCWCH as const WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
@@ -109,16 +110,16 @@ type PZZWSTR as wstring ptr
 type PCZZWSTR as const wstring ptr
 type PUZZWSTR as wstring ptr
 type PCUZZWSTR as const wstring ptr
-type PNZWCH as wstring ptr
-type PCNZWCH as const wstring ptr
-type PUNZWCH as wstring ptr
-type PCUNZWCH as const wstring ptr
+type PNZWCH as WCHAR ptr
+type PCNZWCH as const WCHAR ptr
+type PUNZWCH as WCHAR ptr
+type PCUNZWCH as const WCHAR ptr
 
 #if _WIN32_WINNT = &h0602
-	type LPCWCHAR as const wstring ptr
-	type PCWCHAR as const wstring ptr
-	type LPCUWCHAR as const wstring ptr
-	type PCUWCHAR as const wstring ptr
+	type LPCWCHAR as const WCHAR ptr
+	type PCWCHAR as const WCHAR ptr
+	type LPCUWCHAR as const WCHAR ptr
+	type PCUWCHAR as const WCHAR ptr
 	type UCSCHAR as ulong
 
 	const UCSCHAR_INVALID_CHARACTER = &hffffffff
@@ -135,11 +136,11 @@ type PCUNZWCH as const wstring ptr
 	type PCUUCSCHAR as const UCSCHAR ptr
 #endif
 
-type PCHAR as zstring ptr
-type LPCH as zstring ptr
-type PCH as zstring ptr
-type LPCCH as const zstring ptr
-type PCCH as const zstring ptr
+type PCHAR as CHAR ptr
+type LPCH as CHAR ptr
+type PCH as CHAR ptr
+type LPCCH as const CHAR ptr
+type PCCH as const CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
@@ -150,15 +151,15 @@ type PCSTR as const zstring ptr
 type PZPCSTR as PCSTR ptr
 type PZZSTR as zstring ptr
 type PCZZSTR as const zstring ptr
-type PNZCH as zstring ptr
-type PCNZCH as const zstring ptr
+type PNZCH as CHAR ptr
+type PCNZCH as const CHAR ptr
 #define _TCHAR_DEFINED
 
 #ifdef UNICODE
-	type TCHAR as wstring
-	type PTCHAR as wstring ptr
-	type TBYTE as wstring
-	type PTBYTE as wstring ptr
+	type TCHAR as WCHAR
+	type PTCHAR as WCHAR ptr
+	type TBYTE as WCHAR
+	type PTBYTE as WCHAR ptr
 	type LPTCH as LPWSTR
 	type PTCH as LPWSTR
 	type PTSTR as LPWSTR
@@ -181,8 +182,8 @@ type PCNZCH as const zstring ptr
 	type PCUNZTCH as PCUNZWCH
 	#define __TEXT(quote) wstr(quote)
 #else
-	type TCHAR as zstring
-	type PTCHAR as zstring ptr
+	type TCHAR as byte
+	type PTCHAR as byte ptr
 	type TBYTE as ubyte
 	type PTBYTE as ubyte ptr
 	type LPTCH as LPSTR
@@ -312,21 +313,20 @@ type PLUID as _LUID ptr
 type DWORDLONG as ULONGLONG
 type PDWORDLONG as DWORDLONG ptr
 #define Int32x32To64(a, b) (cast(LONGLONG, cast(LONG, (a))) * cast(LONGLONG, cast(LONG, (b))))
-#define UInt32x32To64(a, b) (cast(ULONGLONG, culng((a))) * cast(ULONGLONG, culng((b))))
+#define UInt32x32To64(a, b) (cast(ULONGLONG, culng(a)) * cast(ULONGLONG, culng(b)))
 #define Int64ShllMod32(a, b) (cast(ULONGLONG, (a)) shl (b))
 #define Int64ShraMod32(a, b) (cast(LONGLONG, (a)) shr (b))
 #define Int64ShrlMod32(a, b) (cast(ULONGLONG, (a)) shr (b))
 
 #ifdef __FB_64BIT__
-	#define RotateLeft8 _rotl8
-	#define RotateLeft16 _rotl16
-	#define RotateRight8 _rotr8
-	#define RotateRight16 _rotr16
-
 	declare function _rotl8(byval Value as ubyte, byval Shift as ubyte) as ubyte
+	declare function RotateLeft8 alias "_rotl8"(byval Value as ubyte, byval Shift as ubyte) as ubyte
 	declare function _rotl16(byval Value as ushort, byval Shift as ubyte) as ushort
+	declare function RotateLeft16 alias "_rotl16"(byval Value as ushort, byval Shift as ubyte) as ushort
 	declare function _rotr8(byval Value as ubyte, byval Shift as ubyte) as ubyte
+	declare function RotateRight8 alias "_rotr8"(byval Value as ubyte, byval Shift as ubyte) as ubyte
 	declare function _rotr16(byval Value as ushort, byval Shift as ubyte) as ushort
+	declare function RotateRight16 alias "_rotr16"(byval Value as ushort, byval Shift as ubyte) as ushort
 #endif
 
 #define RotateLeft32 _rotl
@@ -341,13 +341,16 @@ declare function _rotr cdecl(byval Value as ulong, byval Shift as long) as ulong
 #undef _rotr64
 declare function _rotl64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
 declare function _rotr64 cdecl(byval Value as ulongint, byval Shift as long) as ulongint
-const ANSI_NULL = cbyte(0)
-const UNICODE_NULL = cast(wchar_t, 0)
+#define ANSI_NULL cast(CHAR, 0)
+#define UNICODE_NULL cast(WCHAR, 0)
 #define UNICODE_STRING_MAX_BYTES cast(WORD, 65534)
 const UNICODE_STRING_MAX_CHARS = 32767
 #define _BOOLEAN_
-type BOOLEAN as UBYTE
-type PBOOLEAN as BOOLEAN ptr
+type WINBOOLEAN as UBYTE
+#ifndef BOOLEAN
+	type BOOLEAN as WINBOOLEAN
+#endif
+type PBOOLEAN as WINBOOLEAN ptr
 #define _LIST_ENTRY_DEFINED
 
 type _LIST_ENTRY
@@ -414,7 +417,7 @@ const MAXDWORD = &hffffffff
 #define COMPILETIME_OR_3FLAGS(a, b, c) ((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c)))
 #define COMPILETIME_OR_4FLAGS(a, b, c, d) (((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c))) or cast(UINT, (d)))
 #define COMPILETIME_OR_5FLAGS(a, b, c, d, e) ((((cast(UINT, (a)) or cast(UINT, (b))) or cast(UINT, (c))) or cast(UINT, (d))) or cast(UINT, (e)))
-#define RTL_BITS_OF(sizeOfArg) (sizeof((sizeOfArg)) * 8)
+#define RTL_BITS_OF(sizeOfArg) (sizeof(sizeOfArg) * 8)
 #define RTL_BITS_OF_FIELD(type, field) RTL_BITS_OF(RTL_FIELD_TYPE(type, field))
 #define CONTAINING_RECORD(address, type, field) cptr(type ptr, cast(PCHAR, (address)) - cast(ULONG_PTR, @cptr(type ptr, 0)->field))
 #define __PEXCEPTION_ROUTINE_DEFINED
@@ -773,7 +776,7 @@ const SUBLANG_GREEK_GREECE = &h01
 const SUBLANG_GREENLANDIC_GREENLAND = &h01
 const SUBLANG_GUJARATI_INDIA = &h01
 const SUBLANG_HAUSA_NIGERIA_LATIN = &h01
-#define SUBLANG_HAUSA_NIGERIA SUBLANG_HAUSA_NIGERIA_LATIN
+const SUBLANG_HAUSA_NIGERIA = SUBLANG_HAUSA_NIGERIA_LATIN
 const SUBLANG_HAWAIIAN_US = &h01
 const SUBLANG_HEBREW_ISRAEL = &h01
 const SUBLANG_HINDI_INDIA = &h01
@@ -798,7 +801,7 @@ const SUBLANG_KONKANI_INDIA = &h01
 const SUBLANG_KOREAN = &h01
 const SUBLANG_KYRGYZ_KYRGYZSTAN = &h01
 const SUBLANG_LAO_LAO = &h01
-#define SUBLANG_LAO_LAO_PDR SUBLANG_LAO_LAO
+const SUBLANG_LAO_LAO_PDR = SUBLANG_LAO_LAO
 const SUBLANG_LATVIAN_LATVIA = &h01
 
 #if _WIN32_WINNT = &h0602
@@ -901,7 +904,7 @@ const SUBLANG_SWAHILI_KENYA = &h01
 const SUBLANG_SWEDISH = &h01
 const SUBLANG_SWEDISH_FINLAND = &h02
 const SUBLANG_SYRIAC = &h01
-#define SUBLANG_SYRIAC_SYRIA SUBLANG_SYRIAC
+const SUBLANG_SYRIAC_SYRIA = SUBLANG_SYRIAC
 const SUBLANG_TAJIK_TAJIKISTAN = &h01
 const SUBLANG_TAMAZIGHT_ALGERIA_LATIN = &h02
 const SUBLANG_TAMAZIGHT_MOROCCO_TIFINAGH = &h04
@@ -1030,7 +1033,7 @@ const LOCALE_NAME_MAX_LENGTH = 85
 #define STATUS_SXS_EARLY_DEACTIVATION cast(DWORD, &hC015000F)
 #define STATUS_SXS_INVALID_DEACTIVATION cast(DWORD, &hC0150010)
 const MAXIMUM_WAIT_OBJECTS = 64
-#define MAXIMUM_SUSPEND_COUNT MAXCHAR
+const MAXIMUM_SUSPEND_COUNT = MAXCHAR
 type KSPIN_LOCK as ULONG_PTR
 type PKSPIN_LOCK as KSPIN_LOCK ptr
 
@@ -1194,40 +1197,29 @@ type _TEB as _TEB_
 	end function
 #else
 	const PcTeb = &h18
-
-	extern "C"
-		private function NtCurrentTeb() as _TEB ptr
-			return cptr(_TEB ptr, __readfsdword(&h18))
-		end function
-
-		private function GetCurrentFiber() as PVOID
-			return cast(PVOID, __readfsdword(&h10))
-		end function
-
-		private function GetFiberData() as PVOID
-			return *cptr(PVOID ptr, GetCurrentFiber())
-		end function
-	end extern
+	#define NtCurrentTeb() cptr(_TEB ptr, __readfsdword(&h18))
+	#define GetCurrentFiber() cast(PVOID, __readfsdword(&h10))
+	#define GetFiberData() cast(PVOID, *cptr(PVOID ptr, GetCurrentFiber()))
 #endif
 
 #ifdef __FB_64BIT__
 	#define GetCallersEflags() __getcallerseflags()
 	declare function __getcallerseflags() as ulong
-	#define GetSegmentLimit __segmentlimit
 	declare function __segmentlimit(byval Selector as DWORD) as DWORD
+	declare function GetSegmentLimit alias "__segmentlimit"(byval Selector as DWORD) as DWORD
 	#define ReadTimeStampCounter() __rdtsc()
-	#define MultiplyHigh __mulh
-	#define UnsignedMultiplyHigh __umulh
 	declare function __mulh(byval Multiplier as LONGLONG, byval Multiplicand as LONGLONG) as LONGLONG
+	declare function MultiplyHigh alias "__mulh"(byval Multiplier as LONGLONG, byval Multiplicand as LONGLONG) as LONGLONG
 	declare function __umulh(byval Multiplier as ULONGLONG, byval Multiplicand as ULONGLONG) as ULONGLONG
-	#define ShiftLeft128 __shiftleft128
-	#define ShiftRight128 __shiftright128
+	declare function UnsignedMultiplyHigh alias "__umulh"(byval Multiplier as ULONGLONG, byval Multiplicand as ULONGLONG) as ULONGLONG
 	declare function __shiftleft128(byval LowPart as DWORD64, byval HighPart as DWORD64, byval Shift as UBYTE) as DWORD64
+	declare function ShiftLeft128 alias "__shiftleft128"(byval LowPart as DWORD64, byval HighPart as DWORD64, byval Shift as UBYTE) as DWORD64
 	declare function __shiftright128(byval LowPart as DWORD64, byval HighPart as DWORD64, byval Shift as UBYTE) as DWORD64
-	#define Multiply128 _mul128
+	declare function ShiftRight128 alias "__shiftright128"(byval LowPart as DWORD64, byval HighPart as DWORD64, byval Shift as UBYTE) as DWORD64
 	declare function _mul128(byval Multiplier as LONG64, byval Multiplicand as LONG64, byval HighProduct as LONG64 ptr) as LONG64
-	#define UnsignedMultiply128 _umul128
+	declare function Multiply128 alias "_mul128"(byval Multiplier as LONG64, byval Multiplicand as LONG64, byval HighProduct as LONG64 ptr) as LONG64
 	declare function _umul128(byval Multiplier as DWORD64, byval Multiplicand as DWORD64, byval HighProduct as DWORD64 ptr) as DWORD64
+	declare function UnsignedMultiply128 alias "_umul128"(byval Multiplier as DWORD64, byval Multiplicand as DWORD64, byval HighProduct as DWORD64 ptr) as DWORD64
 	declare function MultiplyExtract128(byval Multiplier as LONG64, byval Multiplicand as LONG64, byval Shift as UBYTE) as LONG64
 	declare function UnsignedMultiplyExtract128(byval Multiplier as DWORD64, byval Multiplicand as DWORD64, byval Shift as UBYTE) as DWORD64
 #endif
@@ -1980,11 +1972,11 @@ end enum
 const ACL_REVISION = 2
 const ACL_REVISION_DS = 4
 const ACL_REVISION1 = 1
-#define MIN_ACL_REVISION ACL_REVISION2
 const ACL_REVISION2 = 2
+const MIN_ACL_REVISION = ACL_REVISION2
 const ACL_REVISION3 = 3
 const ACL_REVISION4 = 4
-#define MAX_ACL_REVISION ACL_REVISION4
+const MAX_ACL_REVISION = ACL_REVISION4
 
 type _ACL
 	AclRevision as UBYTE
@@ -2471,9 +2463,9 @@ end enum
 
 type SECURITY_IMPERSONATION_LEVEL as _SECURITY_IMPERSONATION_LEVEL
 type PSECURITY_IMPERSONATION_LEVEL as _SECURITY_IMPERSONATION_LEVEL ptr
-#define SECURITY_MAX_IMPERSONATION_LEVEL SecurityDelegation
-#define SECURITY_MIN_IMPERSONATION_LEVEL SecurityAnonymous
-#define DEFAULT_IMPERSONATION_LEVEL SecurityImpersonation
+const SECURITY_MAX_IMPERSONATION_LEVEL = SecurityDelegation
+const SECURITY_MIN_IMPERSONATION_LEVEL = SecurityAnonymous
+const DEFAULT_IMPERSONATION_LEVEL = SecurityImpersonation
 #define VALID_IMPERSONATION_LEVEL(L) (((L) >= SECURITY_MIN_IMPERSONATION_LEVEL) andalso ((L) <= SECURITY_MAX_IMPERSONATION_LEVEL))
 const TOKEN_ASSIGN_PRIMARY = &h0001
 const TOKEN_DUPLICATE = &h0002
@@ -2823,7 +2815,7 @@ end type
 type CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 as _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1
 type PCLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 as _CLAIM_SECURITY_ATTRIBUTE_RELATIVE_V1 ptr
 const CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 = 1
-#define CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1
+const CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION = CLAIM_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1
 
 union _CLAIM_SECURITY_ATTRIBUTES_INFORMATION_Attribute
 	pAttributeV1 as PCLAIM_SECURITY_ATTRIBUTE_V1
@@ -2838,16 +2830,16 @@ end type
 
 type CLAIM_SECURITY_ATTRIBUTES_INFORMATION as _CLAIM_SECURITY_ATTRIBUTES_INFORMATION
 type PCLAIM_SECURITY_ATTRIBUTES_INFORMATION as _CLAIM_SECURITY_ATTRIBUTES_INFORMATION ptr
-#define SECURITY_DYNAMIC_TRACKING TRUE
-#define SECURITY_STATIC_TRACKING FALSE
-type SECURITY_CONTEXT_TRACKING_MODE as BOOLEAN
-type PSECURITY_CONTEXT_TRACKING_MODE as BOOLEAN ptr
+const SECURITY_DYNAMIC_TRACKING = CTRUE
+const SECURITY_STATIC_TRACKING = FALSE
+type SECURITY_CONTEXT_TRACKING_MODE as WINBOOLEAN
+type PSECURITY_CONTEXT_TRACKING_MODE as WINBOOLEAN ptr
 
 type _SECURITY_QUALITY_OF_SERVICE
 	Length as DWORD
 	ImpersonationLevel as SECURITY_IMPERSONATION_LEVEL
 	ContextTrackingMode as SECURITY_CONTEXT_TRACKING_MODE
-	EffectiveOnly as BOOLEAN
+	EffectiveOnly as WINBOOLEAN
 end type
 
 type SECURITY_QUALITY_OF_SERVICE as _SECURITY_QUALITY_OF_SERVICE
@@ -2855,8 +2847,8 @@ type PSECURITY_QUALITY_OF_SERVICE as _SECURITY_QUALITY_OF_SERVICE ptr
 
 type _SE_IMPERSONATION_STATE
 	Token as PACCESS_TOKEN
-	CopyOnOpen as BOOLEAN
-	EffectiveOnly as BOOLEAN
+	CopyOnOpen as WINBOOLEAN
+	EffectiveOnly as WINBOOLEAN
 	Level as SECURITY_IMPERSONATION_LEVEL
 end type
 
@@ -2916,10 +2908,10 @@ const PROCESS_QUERY_INFORMATION = &h0400
 const PROCESS_SUSPEND_RESUME = &h0800
 const PROCESS_QUERY_LIMITED_INFORMATION = &h1000
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hfff)
-#else
+#if _WIN32_WINNT = &h0602
 	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff)
+#else
+	#define PROCESS_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hfff)
 #endif
 
 #ifdef __FB_64BIT__
@@ -2928,7 +2920,7 @@ const PROCESS_QUERY_LIMITED_INFORMATION = &h1000
 	const MAXIMUM_PROC_PER_GROUP = 32
 #endif
 
-#define MAXIMUM_PROCESSORS MAXIMUM_PROC_PER_GROUP
+const MAXIMUM_PROCESSORS = MAXIMUM_PROC_PER_GROUP
 const THREAD_TERMINATE = &h0001
 const THREAD_SUSPEND_RESUME = &h0002
 const THREAD_GET_CONTEXT = &h0008
@@ -2941,10 +2933,10 @@ const THREAD_DIRECT_IMPERSONATION = &h0200
 const THREAD_SET_LIMITED_INFORMATION = &h0400
 const THREAD_QUERY_LIMITED_INFORMATION = &h0800
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &h3ff)
-#else
+#if _WIN32_WINNT = &h0602
 	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff)
+#else
+	#define THREAD_ALL_ACCESS ((STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &h3ff)
 #endif
 
 const JOB_OBJECT_ASSIGN_PROCESS = &h0001
@@ -3162,7 +3154,7 @@ type _PROCESS_MITIGATION_DEP_POLICY
 		end type
 	end union
 
-	Permanent as BOOLEAN
+	Permanent as WINBOOLEAN
 end type
 
 type PROCESS_MITIGATION_DEP_POLICY as _PROCESS_MITIGATION_DEP_POLICY
@@ -3687,7 +3679,7 @@ const PF_ARM_FMAC_INSTRUCTIONS_AVAILABLE = 27
 const XSTATE_LEGACY_FLOATING_POINT = 0
 const XSTATE_LEGACY_SSE = 1
 const XSTATE_GSSE = 2
-#define XSTATE_AVX XSTATE_GSSE
+const XSTATE_AVX = XSTATE_GSSE
 #define XSTATE_MASK_LEGACY_FLOATING_POINT (1ull shl XSTATE_LEGACY_FLOATING_POINT)
 #define XSTATE_MASK_LEGACY_SSE (1ull shl XSTATE_LEGACY_SSE)
 #define XSTATE_MASK_LEGACY (XSTATE_MASK_LEGACY_FLOATING_POINT or XSTATE_MASK_LEGACY_SSE)
@@ -3798,7 +3790,7 @@ const SEC_NOCACHE = &h10000000
 const SEC_WRITECOMBINE = &h40000000
 const SEC_LARGE_PAGES = &h80000000
 #define SEC_IMAGE_NO_EXECUTE (SEC_IMAGE or SEC_NOCACHE)
-#define MEM_IMAGE SEC_IMAGE
+const MEM_IMAGE = SEC_IMAGE
 const WRITE_WATCH_FLAG_RESET = &h01
 const MEM_UNMAP_WITH_TRANSIENT_BOOST = &h01
 const FILE_READ_DATA = &h0001
@@ -3952,7 +3944,7 @@ const MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16 * 1024
 const SYMLINK_FLAG_RELATIVE = 1
 const IO_REPARSE_TAG_RESERVED_ZERO = 0
 const IO_REPARSE_TAG_RESERVED_ONE = 1
-#define IO_REPARSE_TAG_RESERVED_RANGE IO_REPARSE_TAG_RESERVED_ONE
+const IO_REPARSE_TAG_RESERVED_RANGE = IO_REPARSE_TAG_RESERVED_ONE
 #define IsReparseTagMicrosoft(_tag) ((_tag) and &h80000000)
 #define IsReparseTagNameSurrogate(_tag) ((_tag) and &h20000000)
 #define IO_REPARSE_TAG_MOUNT_POINT __MSABI_LONG(&hA0000003)
@@ -4020,7 +4012,7 @@ const POWERBUTTON_ACTION_VALUE_SHUTDOWN = 6
 const PERFSTATE_POLICY_CHANGE_IDEAL = 0
 const PERFSTATE_POLICY_CHANGE_SINGLE = 1
 const PERFSTATE_POLICY_CHANGE_ROCKET = 2
-#define PERFSTATE_POLICY_CHANGE_MAX PERFSTATE_POLICY_CHANGE_ROCKET
+const PERFSTATE_POLICY_CHANGE_MAX = PERFSTATE_POLICY_CHANGE_ROCKET
 const PROCESSOR_PERF_BOOST_POLICY_DISABLED = 0
 const PROCESSOR_PERF_BOOST_POLICY_MAX = 100
 const PROCESSOR_PERF_BOOST_MODE_DISABLED = 0
@@ -4028,12 +4020,12 @@ const PROCESSOR_PERF_BOOST_MODE_ENABLED = 1
 const PROCESSOR_PERF_BOOST_MODE_AGGRESSIVE = 2
 const PROCESSOR_PERF_BOOST_MODE_EFFICIENT_ENABLED = 3
 const PROCESSOR_PERF_BOOST_MODE_EFFICIENT_AGGRESSIVE = 4
-#define PROCESSOR_PERF_BOOST_MODE_MAX PROCESSOR_PERF_BOOST_MODE_EFFICIENT_AGGRESSIVE
+const PROCESSOR_PERF_BOOST_MODE_MAX = PROCESSOR_PERF_BOOST_MODE_EFFICIENT_AGGRESSIVE
 const CORE_PARKING_POLICY_CHANGE_IDEAL = 0
 const CORE_PARKING_POLICY_CHANGE_SINGLE = 1
 const CORE_PARKING_POLICY_CHANGE_ROCKET = 2
 const CORE_PARKING_POLICY_CHANGE_MULTISTEP = 3
-#define CORE_PARKING_POLICY_CHANGE_MAX CORE_PARKING_POLICY_CHANGE_MULTISTEP
+const CORE_PARKING_POLICY_CHANGE_MAX = CORE_PARKING_POLICY_CHANGE_MULTISTEP
 const POWER_DEVICE_IDLE_POLICY_PERFORMANCE = 0
 const POWER_DEVICE_IDLE_POLICY_CONSERVATIVE = 1
 
@@ -4383,8 +4375,8 @@ type POWER_USER_PRESENCE as _POWER_USER_PRESENCE
 type PPOWER_USER_PRESENCE as _POWER_USER_PRESENCE ptr
 
 type _POWER_SESSION_CONNECT
-	Connected as BOOLEAN
-	Console as BOOLEAN
+	Connected as WINBOOLEAN
+	Console as WINBOOLEAN
 end type
 
 type POWER_SESSION_CONNECT as _POWER_SESSION_CONNECT
@@ -4399,7 +4391,7 @@ type POWER_SESSION_TIMEOUTS as _POWER_SESSION_TIMEOUTS
 type PPOWER_SESSION_TIMEOUTS as _POWER_SESSION_TIMEOUTS ptr
 
 type _POWER_SESSION_RIT_STATE
-	Active as BOOLEAN
+	Active as WINBOOLEAN
 	LastInputTime as DWORD
 end type
 
@@ -4408,8 +4400,8 @@ type PPOWER_SESSION_RIT_STATE as _POWER_SESSION_RIT_STATE ptr
 
 type _POWER_SESSION_WINLOGON
 	SessionId as DWORD
-	Console as BOOLEAN
-	Locked as BOOLEAN
+	Console as WINBOOLEAN
+	Locked as WINBOOLEAN
 end type
 
 type POWER_SESSION_WINLOGON as _POWER_SESSION_WINLOGON
@@ -4443,8 +4435,8 @@ enum
 end enum
 
 type _POWER_MONITOR_INVOCATION
-	On as BOOLEAN
-	Console as BOOLEAN
+	On as WINBOOLEAN
+	Console as WINBOOLEAN
 	RequestReason as POWER_MONITOR_REQUEST_REASON
 end type
 
@@ -4512,7 +4504,7 @@ type POWER_PLATFORM_ROLE as _POWER_PLATFORM_ROLE
 type PPOWER_PLATFORM_ROLE as _POWER_PLATFORM_ROLE ptr
 
 type _POWER_PLATFORM_INFORMATION
-	AoAc as BOOLEAN
+	AoAc as WINBOOLEAN
 end type
 
 type POWER_PLATFORM_INFORMATION as _POWER_PLATFORM_INFORMATION
@@ -4522,12 +4514,12 @@ const POWER_PLATFORM_ROLE_V1 = &h00000001
 const POWER_PLATFORM_ROLE_V2 = &h00000002
 #define POWER_PLATFORM_ROLE_V2_MAX (PlatformRoleSlate + 1)
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	#define POWER_PLATFORM_ROLE_VERSION POWER_PLATFORM_ROLE_V1
-	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V1_MAX
-#else
-	#define POWER_PLATFORM_ROLE_VERSION POWER_PLATFORM_ROLE_V2
+#if _WIN32_WINNT = &h0602
+	const POWER_PLATFORM_ROLE_VERSION = POWER_PLATFORM_ROLE_V2
 	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V2_MAX
+#else
+	const POWER_PLATFORM_ROLE_VERSION = POWER_PLATFORM_ROLE_V1
+	#define POWER_PLATFORM_ROLE_VERSION_MAX POWER_PLATFORM_ROLE_V1_MAX
 #endif
 
 type BATTERY_REPORTING_SCALE
@@ -4831,7 +4823,7 @@ end type
 type PPROCESSOR_IDLESTATE_INFO as PROCESSOR_IDLESTATE_INFO ptr
 
 type SYSTEM_POWER_LEVEL
-	Enable as BOOLEAN
+	Enable as WINBOOLEAN
 	Spare(0 to 2) as UBYTE
 	BatteryLevel as DWORD
 	PowerPolicy as POWER_ACTION_POLICY
@@ -4861,10 +4853,10 @@ type _SYSTEM_POWER_POLICY
 	BroadcastCapacityResolution as DWORD
 	DischargePolicy(0 to 3) as SYSTEM_POWER_LEVEL
 	VideoTimeout as DWORD
-	VideoDimDisplay as BOOLEAN
+	VideoDimDisplay as WINBOOLEAN
 	VideoReserved(0 to 2) as DWORD
 	SpindownTimeout as DWORD
-	OptimizeForPower as BOOLEAN
+	OptimizeForPower as WINBOOLEAN
 	FanThrottleTolerance as UBYTE
 	ForcedThrottle as UBYTE
 	MinThrottle as UBYTE
@@ -4970,29 +4962,29 @@ type ADMINISTRATOR_POWER_POLICY as _ADMINISTRATOR_POWER_POLICY
 type PADMINISTRATOR_POWER_POLICY as _ADMINISTRATOR_POWER_POLICY ptr
 
 type SYSTEM_POWER_CAPABILITIES
-	PowerButtonPresent as BOOLEAN
-	SleepButtonPresent as BOOLEAN
-	LidPresent as BOOLEAN
-	SystemS1 as BOOLEAN
-	SystemS2 as BOOLEAN
-	SystemS3 as BOOLEAN
-	SystemS4 as BOOLEAN
-	SystemS5 as BOOLEAN
-	HiberFilePresent as BOOLEAN
-	FullWake as BOOLEAN
-	VideoDimPresent as BOOLEAN
-	ApmPresent as BOOLEAN
-	UpsPresent as BOOLEAN
-	ThermalControl as BOOLEAN
-	ProcessorThrottle as BOOLEAN
+	PowerButtonPresent as WINBOOLEAN
+	SleepButtonPresent as WINBOOLEAN
+	LidPresent as WINBOOLEAN
+	SystemS1 as WINBOOLEAN
+	SystemS2 as WINBOOLEAN
+	SystemS3 as WINBOOLEAN
+	SystemS4 as WINBOOLEAN
+	SystemS5 as WINBOOLEAN
+	HiberFilePresent as WINBOOLEAN
+	FullWake as WINBOOLEAN
+	VideoDimPresent as WINBOOLEAN
+	ApmPresent as WINBOOLEAN
+	UpsPresent as WINBOOLEAN
+	ThermalControl as WINBOOLEAN
+	ProcessorThrottle as WINBOOLEAN
 	ProcessorMinThrottle as UBYTE
 	ProcessorMaxThrottle as UBYTE
-	FastSystemS4 as BOOLEAN
+	FastSystemS4 as WINBOOLEAN
 	spare2(0 to 2) as UBYTE
-	DiskSpinDown as BOOLEAN
+	DiskSpinDown as WINBOOLEAN
 	spare3(0 to 7) as UBYTE
-	SystemBatteriesPresent as BOOLEAN
-	BatteriesAreShortTerm as BOOLEAN
+	SystemBatteriesPresent as WINBOOLEAN
+	BatteriesAreShortTerm as WINBOOLEAN
 	BatteryScale(0 to 2) as BATTERY_REPORTING_SCALE
 	AcOnLineWake as SYSTEM_POWER_STATE
 	SoftLidWake as SYSTEM_POWER_STATE
@@ -5004,11 +4996,11 @@ end type
 type PSYSTEM_POWER_CAPABILITIES as SYSTEM_POWER_CAPABILITIES ptr
 
 type SYSTEM_BATTERY_STATE
-	AcOnLine as BOOLEAN
-	BatteryPresent as BOOLEAN
-	Charging as BOOLEAN
-	Discharging as BOOLEAN
-	Spare1(0 to 3) as BOOLEAN
+	AcOnLine as WINBOOLEAN
+	BatteryPresent as WINBOOLEAN
+	Charging as WINBOOLEAN
+	Discharging as WINBOOLEAN
+	Spare1(0 to 3) as WINBOOLEAN
 	MaxCapacity as DWORD
 	RemainingCapacity as DWORD
 	Rate as DWORD
@@ -5051,8 +5043,8 @@ type PIMAGE_DOS_HEADER as _IMAGE_DOS_HEADER ptr
 
 type _IMAGE_OS2_HEADER field = 2
 	ne_magic as WORD
-	ne_ver as byte
-	ne_rev as byte
+	ne_ver as CHAR
+	ne_rev as CHAR
 	ne_enttab as WORD
 	ne_cbenttab as WORD
 	ne_crc as LONG
@@ -5194,7 +5186,7 @@ const IMAGE_FILE_MACHINE_MIPS16 = &h0266
 const IMAGE_FILE_MACHINE_ALPHA64 = &h0284
 const IMAGE_FILE_MACHINE_MIPSFPU = &h0366
 const IMAGE_FILE_MACHINE_MIPSFPU16 = &h0466
-#define IMAGE_FILE_MACHINE_AXP64 IMAGE_FILE_MACHINE_ALPHA64
+const IMAGE_FILE_MACHINE_AXP64 = IMAGE_FILE_MACHINE_ALPHA64
 const IMAGE_FILE_MACHINE_TRICORE = &h0520
 const IMAGE_FILE_MACHINE_CEF = &h0CEF
 const IMAGE_FILE_MACHINE_EBC = &h0EBC
@@ -5313,13 +5305,13 @@ const IMAGE_ROM_OPTIONAL_HDR_MAGIC = &h107
 #ifdef __FB_64BIT__
 	type IMAGE_OPTIONAL_HEADER as IMAGE_OPTIONAL_HEADER64
 	type PIMAGE_OPTIONAL_HEADER as PIMAGE_OPTIONAL_HEADER64
-	#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL64_HEADER
-	#define IMAGE_NT_OPTIONAL_HDR_MAGIC IMAGE_NT_OPTIONAL_HDR64_MAGIC
+	const IMAGE_SIZEOF_NT_OPTIONAL_HEADER = IMAGE_SIZEOF_NT_OPTIONAL64_HEADER
+	const IMAGE_NT_OPTIONAL_HDR_MAGIC = IMAGE_NT_OPTIONAL_HDR64_MAGIC
 #else
 	type IMAGE_OPTIONAL_HEADER as IMAGE_OPTIONAL_HEADER32
 	type PIMAGE_OPTIONAL_HEADER as PIMAGE_OPTIONAL_HEADER32
-	#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL32_HEADER
-	#define IMAGE_NT_OPTIONAL_HDR_MAGIC IMAGE_NT_OPTIONAL_HDR32_MAGIC
+	const IMAGE_SIZEOF_NT_OPTIONAL_HEADER = IMAGE_SIZEOF_NT_OPTIONAL32_HEADER
+	const IMAGE_NT_OPTIONAL_HDR_MAGIC = IMAGE_NT_OPTIONAL_HDR32_MAGIC
 #endif
 
 type _IMAGE_NT_HEADERS64 field = 4
@@ -5548,7 +5540,7 @@ type PIMAGE_SYMBOL_EX as _IMAGE_SYMBOL_EX ptr
 #define IMAGE_SYM_ABSOLUTE cast(SHORT, -1)
 #define IMAGE_SYM_DEBUG cast(SHORT, -2)
 const IMAGE_SYM_SECTION_MAX = &hFEFF
-#define IMAGE_SYM_SECTION_MAX_EX MAXLONG
+const IMAGE_SYM_SECTION_MAX_EX = MAXLONG
 const IMAGE_SYM_TYPE_NULL = &h0000
 const IMAGE_SYM_TYPE_VOID = &h0001
 const IMAGE_SYM_TYPE_CHAR = &h0002
@@ -5971,18 +5963,8 @@ const IMAGE_REL_EBC_ADDR32NB = &h0001
 const IMAGE_REL_EBC_REL32 = &h0002
 const IMAGE_REL_EBC_SECTION = &h0003
 const IMAGE_REL_EBC_SECREL = &h0004
-#macro EXT_IMM64(Value, Address, Size, InstPos, ValPos)
-	scope
-		Value or= cast(ULONGLONG, (*(Address) shr InstPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl ValPos
-	end scope
-#endmacro
-#macro INS_IMM64(Value, Address, Size, InstPos, ValPos)
-	scope
-		*cptr(PDWORD, Address) = _
-			(*cptr(PDWORD, Address) and not (((1 shl Size) - 1) shl InstPos)) or _
-			(cast(DWORD, (cast(ULONGLONG, Value) shr ValPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl InstPos)
-	end scope
-#endmacro
+#define EXT_IMM64(Value, Address, Size, InstPos, ValPos) scope : Value or= cast(ULONGLONG, ((*(Address)) shr InstPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl ValPos : end scope
+#define INS_IMM64(Value, Address, Size, InstPos, ValPos) scope : (*cast(PDWORD, Address)) = ((*cast(PDWORD, Address)) and (not (((1 shl Size) - 1) shl InstPos))) or (cast(DWORD, (cast(ULONGLONG, Value) shr ValPos) and ((cast(ULONGLONG, 1) shl Size) - 1)) shl InstPos) : end scope
 const EMARCH_ENC_I17_IMM7B_INST_WORD_X = 3
 const EMARCH_ENC_I17_IMM7B_SIZE_X = 7
 const EMARCH_ENC_I17_IMM7B_INST_WORD_POS_X = 4
@@ -6195,7 +6177,7 @@ type IMAGE_TLS_DIRECTORY32 as _IMAGE_TLS_DIRECTORY32
 type PIMAGE_TLS_DIRECTORY32 as IMAGE_TLS_DIRECTORY32 ptr
 
 #ifdef __FB_64BIT__
-	#define IMAGE_ORDINAL_FLAG IMAGE_ORDINAL_FLAG64
+	const IMAGE_ORDINAL_FLAG = IMAGE_ORDINAL_FLAG64
 	#define IMAGE_ORDINAL(Ordinal) IMAGE_ORDINAL64(Ordinal)
 	type IMAGE_THUNK_DATA as IMAGE_THUNK_DATA64
 	type PIMAGE_THUNK_DATA as PIMAGE_THUNK_DATA64
@@ -6203,7 +6185,7 @@ type PIMAGE_TLS_DIRECTORY32 as IMAGE_TLS_DIRECTORY32 ptr
 	type IMAGE_TLS_DIRECTORY as IMAGE_TLS_DIRECTORY64
 	type PIMAGE_TLS_DIRECTORY as PIMAGE_TLS_DIRECTORY64
 #else
-	#define IMAGE_ORDINAL_FLAG IMAGE_ORDINAL_FLAG32
+	const IMAGE_ORDINAL_FLAG = IMAGE_ORDINAL_FLAG32
 	#define IMAGE_ORDINAL(Ordinal) IMAGE_ORDINAL32(Ordinal)
 	type IMAGE_THUNK_DATA as IMAGE_THUNK_DATA32
 	type PIMAGE_THUNK_DATA as PIMAGE_THUNK_DATA32
@@ -6528,7 +6510,7 @@ const IMAGE_DEBUG_MISC_EXENAME = 1
 type _IMAGE_DEBUG_MISC field = 4
 	DataType as DWORD
 	Length as DWORD
-	Unicode_ as BOOLEAN
+	Unicode_ as WINBOOLEAN
 	Reserved(0 to 2) as UBYTE
 	Data(0 to 0) as UBYTE
 end type
@@ -6702,16 +6684,16 @@ declare function RtlCaptureStackBackTrace(byval FramesToSkip as DWORD, byval Fra
 declare sub RtlCaptureContext(byval ContextRecord as PCONTEXT)
 declare function RtlCompareMemory(byval Source1 as const any ptr, byval Source2 as const any ptr, byval Length as SIZE_T_) as SIZE_T_
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	declare function RtlAddGrowableFunctionTable(byval DynamicTable as PVOID ptr, byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval MaximumEntryCount as DWORD, byval RangeBase as ULONG_PTR, byval RangeEnd as ULONG_PTR) as DWORD
-	declare sub RtlGrowFunctionTable(byval DynamicTable as PVOID, byval NewEntryCount as DWORD)
-	declare sub RtlDeleteGrowableFunctionTable(byval DynamicTable as PVOID)
-#endif
-
 #ifdef __FB_64BIT__
-	declare function RtlAddFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval BaseAddress as DWORD64) as BOOLEAN
-	declare function RtlDeleteFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION) as BOOLEAN
-	declare function RtlInstallFunctionTableCallback(byval TableIdentifier as DWORD64, byval BaseAddress as DWORD64, byval Length as DWORD, byval Callback as PGET_RUNTIME_FUNCTION_CALLBACK, byval Context as PVOID, byval OutOfProcessCallbackDll as PCWSTR) as BOOLEAN
+	#if _WIN32_WINNT = &h0602
+		declare function RtlAddGrowableFunctionTable(byval DynamicTable as PVOID ptr, byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval MaximumEntryCount as DWORD, byval RangeBase as ULONG_PTR, byval RangeEnd as ULONG_PTR) as DWORD
+		declare sub RtlGrowFunctionTable(byval DynamicTable as PVOID, byval NewEntryCount as DWORD)
+		declare sub RtlDeleteGrowableFunctionTable(byval DynamicTable as PVOID)
+	#endif
+
+	declare function RtlAddFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION, byval EntryCount as DWORD, byval BaseAddress as DWORD64) as WINBOOLEAN
+	declare function RtlDeleteFunctionTable(byval FunctionTable as PRUNTIME_FUNCTION) as WINBOOLEAN
+	declare function RtlInstallFunctionTableCallback(byval TableIdentifier as DWORD64, byval BaseAddress as DWORD64, byval Length as DWORD, byval Callback as PGET_RUNTIME_FUNCTION_CALLBACK, byval Context as PVOID, byval OutOfProcessCallbackDll as PCWSTR) as WINBOOLEAN
 	declare sub RtlRestoreContext(byval ContextRecord as PCONTEXT, byval ExceptionRecord as _EXCEPTION_RECORD ptr)
 	declare function RtlVirtualUnwind(byval HandlerType as DWORD, byval ImageBase as DWORD64, byval ControlPc as DWORD64, byval FunctionEntry as PRUNTIME_FUNCTION, byval ContextRecord as PCONTEXT, byval HandlerData as PVOID ptr, byval EstablisherFrame as PDWORD64, byval ContextPointers as PKNONVOLATILE_CONTEXT_POINTERS) as PEXCEPTION_ROUTINE
 #endif
@@ -7022,7 +7004,7 @@ declare function VerSetConditionMask(byval ConditionMask as ULONGLONG, byval Typ
 #define VER_SET_CONDITION(_m_, _t_, _c_) scope : (_m_) = VerSetConditionMask((_m_), (_t_), (_c_)) : end scope
 
 #if _WIN32_WINNT = &h0602
-	declare function RtlGetProductInfo(byval OSMajorVersion as DWORD, byval OSMinorVersion as DWORD, byval SpMajorVersion as DWORD, byval SpMinorVersion as DWORD, byval ReturnedProductType as PDWORD) as BOOLEAN
+	declare function RtlGetProductInfo(byval OSMajorVersion as DWORD, byval OSMinorVersion as DWORD, byval SpMajorVersion as DWORD, byval SpMinorVersion as DWORD, byval ReturnedProductType as PDWORD) as WINBOOLEAN
 #endif
 
 const RTL_UMS_VERSION = &h0100
@@ -7057,7 +7039,7 @@ type PRTL_UMS_SCHEDULER_ENTRY_POINT as sub(byval Reason as RTL_UMS_SCHEDULER_REA
 	#define IS_VALIDATION_ENABLED(C, L) ((L) and (C))
 	const VRL_PREDEFINED_CLASS_BEGIN = 1
 	const VRL_CUSTOM_CLASS_BEGIN = 1 shl 8
-	#define VRL_CLASS_CONSISTENCY VRL_PREDEFINED_CLASS_BEGIN
+	const VRL_CLASS_CONSISTENCY = VRL_PREDEFINED_CLASS_BEGIN
 	const VRL_ENABLE_KERNEL_BREAKS = 1 shl 31
 	#define CTMF_INCLUDE_APPCONTAINER __MSABI_LONG(&h1u)
 	#define CTMF_VALID_FLAGS CTMF_INCLUDE_APPCONTAINER
@@ -7135,10 +7117,10 @@ end enum
 type HEAP_INFORMATION_CLASS as _HEAP_INFORMATION_CLASS
 type WORKERCALLBACKFUNC as sub(byval as PVOID)
 type APC_CALLBACK_FUNCTION as sub(byval as DWORD, byval as PVOID, byval as PVOID)
-type WAITORTIMERCALLBACKFUNC as sub(byval as PVOID, byval as BOOLEAN)
+type WAITORTIMERCALLBACKFUNC as sub(byval as PVOID, byval as WINBOOLEAN)
 type WAITORTIMERCALLBACK as WAITORTIMERCALLBACKFUNC
 type PFLS_CALLBACK_FUNCTION as sub(byval lpFlsData as PVOID)
-type PSECURE_MEMORY_CACHE_CALLBACK as function(byval Addr as PVOID, byval Range as SIZE_T_) as BOOLEAN
+type PSECURE_MEMORY_CACHE_CALLBACK as function(byval Addr as PVOID, byval Range as SIZE_T_) as WINBOOLEAN
 
 const WT_EXECUTEDEFAULT = &h00000000
 const WT_EXECUTEINIOTHREAD = &h00000001
@@ -7289,19 +7271,19 @@ type PCACTIVATION_CONTEXT_RUN_LEVEL_INFORMATION as const _ACTIVATION_CONTEXT_RUN
 type PCCOMPATIBILITY_CONTEXT_ELEMENT as const _COMPATIBILITY_CONTEXT_ELEMENT ptr
 type PCACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION as const _ACTIVATION_CONTEXT_COMPATIBILITY_INFORMATION ptr
 type PCACTIVATION_CONTEXT_DETAILED_INFORMATION as const _ACTIVATION_CONTEXT_DETAILED_INFORMATION ptr
+type ACTIVATIONCONTEXTINFOCLASS as ACTIVATION_CONTEXT_INFO_CLASS
 
-#define ACTIVATIONCONTEXTINFOCLASS ACTIVATION_CONTEXT_INFO_CLASS
 const ACTIVATION_CONTEXT_PATH_TYPE_NONE = 1
 const ACTIVATION_CONTEXT_PATH_TYPE_WIN32_FILE = 2
 const ACTIVATION_CONTEXT_PATH_TYPE_URL = 3
 const ACTIVATION_CONTEXT_PATH_TYPE_ASSEMBLYREF = 4
-#define _ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION _ASSEMBLY_FILE_DETAILED_INFORMATION
-#define ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION ASSEMBLY_FILE_DETAILED_INFORMATION
-#define PASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION PASSEMBLY_FILE_DETAILED_INFORMATION
-#define PCASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION PCASSEMBLY_FILE_DETAILED_INFORMATION
+
+type _ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION as _ASSEMBLY_FILE_DETAILED_INFORMATION
+type ASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION as ASSEMBLY_FILE_DETAILED_INFORMATION
+type PASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION as PASSEMBLY_FILE_DETAILED_INFORMATION
+type PCASSEMBLY_DLL_REDIRECTION_DETAILED_INFORMATION as PCASSEMBLY_FILE_DETAILED_INFORMATION
 const INVALID_OS_COUNT = &hffff
 const CREATE_BOUNDARY_DESCRIPTOR_ADD_APPCONTAINER_SID = &h1
-
 type RTL_VERIFIER_DLL_LOAD_CALLBACK as sub(byval DllName as PWSTR, byval DllBase as PVOID, byval DllSize as SIZE_T_, byval Reserved as PVOID)
 type RTL_VERIFIER_DLL_UNLOAD_CALLBACK as sub(byval DllName as PWSTR, byval DllBase as PVOID, byval DllSize as SIZE_T_, byval Reserved as PVOID)
 type RTL_VERIFIER_NTDLLHEAPFREE_CALLBACK as sub(byval AllocationBase as PVOID, byval AllocationSize as SIZE_T_)
@@ -7435,11 +7417,7 @@ const APPLICATION_VERIFIER_PROBE_GUARD_PAGE = &h0605
 const APPLICATION_VERIFIER_PROBE_NULL = &h0606
 const APPLICATION_VERIFIER_PROBE_INVALID_START_OR_SIZE = &h0607
 const APPLICATION_VERIFIER_SIZE_HEAP_UNEXPECTED_EXCEPTION = &h0618
-#macro VERIFIER_STOP(Code, Msg, P1, S1, P2, S2, P3, S3, P4, S4)
-	scope
-		RtlApplicationVerifierStop((Code), (Msg), cast(ULONG_PTR, (P1)), (S1), cast(ULONG_PTR, (P2)), (S2), cast(ULONG_PTR, (P3)), (S3), cast(ULONG_PTR, (P4)), (S4))
-	end scope
-#endmacro
+#define VERIFIER_STOP(Code, Msg, P1, S1, P2, S2, P3, S3, P4, S4) scope : RtlApplicationVerifierStop((Code), (Msg), cast(ULONG_PTR, (P1)), (S1), cast(ULONG_PTR, (P2)), (S2), cast(ULONG_PTR, (P3)), (S3), cast(ULONG_PTR, (P4)), (S4)) : end scope
 
 declare sub RtlApplicationVerifierStop(byval Code as ULONG_PTR, byval Message as PSTR, byval Param1 as ULONG_PTR, byval Description1 as PSTR, byval Param2 as ULONG_PTR, byval Description2 as PSTR, byval Param3 as ULONG_PTR, byval Description3 as PSTR, byval Param4 as ULONG_PTR, byval Description4 as PSTR)
 declare function RtlSetHeapInformation(byval HeapHandle as PVOID, byval HeapInformationClass as HEAP_INFORMATION_CLASS, byval HeapInformation as PVOID, byval HeapInformationLength as SIZE_T_) as DWORD
@@ -7659,7 +7637,7 @@ const CM_SERVICE_WINPE_BOOT_LOAD = &h00000080
 
 type _TAPE_ERASE
 	as DWORD Type
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_ERASE as _TAPE_ERASE
@@ -7673,7 +7651,7 @@ type PTAPE_ERASE as _TAPE_ERASE ptr
 
 type _TAPE_PREPARE
 	Operation as DWORD
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_PREPARE as _TAPE_PREPARE
@@ -7686,7 +7664,7 @@ type PTAPE_PREPARE as _TAPE_PREPARE ptr
 type _TAPE_WRITE_MARKS
 	as DWORD Type
 	Count as DWORD
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_WRITE_MARKS as _TAPE_WRITE_MARKS
@@ -7718,7 +7696,7 @@ type _TAPE_SET_POSITION
 	Method as DWORD
 	Partition as DWORD
 	Offset as LARGE_INTEGER
-	Immediate as BOOLEAN
+	Immediate as WINBOOLEAN
 end type
 
 type TAPE_SET_POSITION as _TAPE_SET_POSITION
@@ -7781,10 +7759,10 @@ const TAPE_DRIVE_FORMAT_IMMEDIATE = &hC0000000
 const TAPE_DRIVE_HIGH_FEATURES = &h80000000
 
 type _TAPE_GET_DRIVE_PARAMETERS
-	ECC as BOOLEAN
-	Compression as BOOLEAN
-	DataPadding as BOOLEAN
-	ReportSetmarks as BOOLEAN
+	ECC as WINBOOLEAN
+	Compression as WINBOOLEAN
+	DataPadding as WINBOOLEAN
+	ReportSetmarks as WINBOOLEAN
 	DefaultBlockSize as DWORD
 	MaximumBlockSize as DWORD
 	MinimumBlockSize as DWORD
@@ -7798,10 +7776,10 @@ type TAPE_GET_DRIVE_PARAMETERS as _TAPE_GET_DRIVE_PARAMETERS
 type PTAPE_GET_DRIVE_PARAMETERS as _TAPE_GET_DRIVE_PARAMETERS ptr
 
 type _TAPE_SET_DRIVE_PARAMETERS
-	ECC as BOOLEAN
-	Compression as BOOLEAN
-	DataPadding as BOOLEAN
-	ReportSetmarks as BOOLEAN
+	ECC as WINBOOLEAN
+	Compression as WINBOOLEAN
+	DataPadding as WINBOOLEAN
+	ReportSetmarks as WINBOOLEAN
 	EOTWarningZoneSize as DWORD
 end type
 
@@ -7813,7 +7791,7 @@ type _TAPE_GET_MEDIA_PARAMETERS
 	Remaining as LARGE_INTEGER
 	BlockSize as DWORD
 	PartitionCount as DWORD
-	WriteProtected as BOOLEAN
+	WriteProtected as WINBOOLEAN
 end type
 
 type TAPE_GET_MEDIA_PARAMETERS as _TAPE_GET_MEDIA_PARAMETERS
@@ -7900,35 +7878,8 @@ type PTP_POOL_STACK_INFORMATION as _TP_POOL_STACK_INFORMATION ptr
 type TP_CLEANUP_GROUP as _TP_CLEANUP_GROUP
 type PTP_CLEANUP_GROUP as _TP_CLEANUP_GROUP ptr
 type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byval CleanupContext as PVOID)
-type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	type _TP_CALLBACK_ENVIRON_V1_u_s
-		LongFunction : 1 as DWORD
-		Persistent : 1 as DWORD
-		as DWORD Private : 30
-	end type
-
-	union _TP_CALLBACK_ENVIRON_V1_u
-		Flags as DWORD
-		s as _TP_CALLBACK_ENVIRON_V1_u_s
-	end union
-
-	type _TP_CALLBACK_ENVIRON_V1
-		Version as TP_VERSION
-		Pool as PTP_POOL
-		CleanupGroup as PTP_CLEANUP_GROUP
-		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
-		RaceDll as PVOID
-		ActivationContext as _ACTIVATION_CONTEXT ptr
-		FinalizationCallback as PTP_SIMPLE_CALLBACK
-		u as _TP_CALLBACK_ENVIRON_V1_u
-	end type
-
-	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
-	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
-	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
-#else
+#if _WIN32_WINNT = &h0602
 	type _TP_CALLBACK_ENVIRON_V3_u_s
 		LongFunction : 1 as DWORD
 		Persistent : 1 as DWORD
@@ -7939,7 +7890,22 @@ type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 		Flags as DWORD
 		s as _TP_CALLBACK_ENVIRON_V3_u_s
 	end union
+#else
+	type _TP_CALLBACK_ENVIRON_V1_u_s
+		LongFunction : 1 as DWORD
+		Persistent : 1 as DWORD
+		as DWORD Private : 30
+	end type
 
+	union _TP_CALLBACK_ENVIRON_V1_u
+		Flags as DWORD
+		s as _TP_CALLBACK_ENVIRON_V1_u_s
+	end union
+#endif
+
+type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
+
+#if _WIN32_WINNT = &h0602
 	type _TP_CALLBACK_ENVIRON_V3
 		Version as TP_VERSION
 		Pool as PTP_POOL
@@ -7956,6 +7922,21 @@ type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 	type TP_CALLBACK_ENVIRON_V3 as _TP_CALLBACK_ENVIRON_V3
 	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3
 	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3 ptr
+#else
+	type _TP_CALLBACK_ENVIRON_V1
+		Version as TP_VERSION
+		Pool as PTP_POOL
+		CleanupGroup as PTP_CLEANUP_GROUP
+		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
+		RaceDll as PVOID
+		ActivationContext as _ACTIVATION_CONTEXT ptr
+		FinalizationCallback as PTP_SIMPLE_CALLBACK
+		u as _TP_CALLBACK_ENVIRON_V1_u
+	end type
+
+	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
+	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
+	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
 #endif
 
 type TP_WORK as _TP_WORK
@@ -7971,22 +7952,31 @@ type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Con
 type TP_IO as _TP_IO
 type PTP_IO as _TP_IO ptr
 
-private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-	cbe->Pool = 0
-	cbe->CleanupGroup = 0
-	cbe->CleanupGroupCancelCallback = 0
-	cbe->RaceDll = 0
-	cbe->ActivationContext = 0
-	cbe->FinalizationCallback = 0
-	cbe->u.Flags = 0
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-		cbe->Version = 1
-	#else
+#if _WIN32_WINNT = &h0602
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
 		cbe->Version = 3
 		cbe->CallbackPriority = TP_CALLBACK_PRIORITY_NORMAL
 		cbe->Size = sizeof(TP_CALLBACK_ENVIRON)
-	#endif
-end sub
+	end sub
+#else
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
+		cbe->Version = 1
+	end sub
+#endif
 
 private sub TpSetCallbackThreadpool cdecl(byval cbe as PTP_CALLBACK_ENVIRON, byval pool as PTP_POOL)
 	cbe->Pool = pool
@@ -8002,7 +7992,7 @@ private sub TpSetCallbackActivationContext cdecl(byval cbe as PTP_CALLBACK_ENVIR
 end sub
 
 private sub TpSetCallbackNoActivationContext cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-	cbe->ActivationContext = cptr(_ACTIVATION_CONTEXT ptr, -1)
+	cbe->ActivationContext = cptr(_ACTIVATION_CONTEXT ptr, cast(LONG_PTR, -1))
 end sub
 
 private sub TpSetCallbackLongFunction cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
@@ -8028,20 +8018,13 @@ private sub TpSetCallbackPersistent cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
 end sub
 
 private sub TpDestroyCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+	cbe = cbe
 end sub
 
 #ifdef __FB_64BIT__
-	private function GetCurrentFiber() as PVOID
-		return cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
-	end function
-
-	private function GetFiberData() as PVOID
-		return *cptr(PVOID ptr, GetCurrentFiber())
-	end function
-
-	private function NtCurrentTeb() as _TEB ptr
-		return cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
-	end function
+	#define NtCurrentTeb() cptr(_TEB ptr, __readgsqword(cast(LONG, offsetof(NT_TIB, Self))))
+	#define GetCurrentFiber() cast(PVOID, __readgsqword(cast(LONG, offsetof(NT_TIB, FiberData))))
+	#define GetFiberData() cast(PVOID, *cptr(PVOID ptr, GetCurrentFiber()))
 #endif
 
 #define _NTTMAPI_

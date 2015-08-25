@@ -116,7 +116,7 @@ private sub hBuildRtti( byval udt as FBSYMBOL ptr )
 
 	'' initializer
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
-	astTypeIniScopeBegin( initree, rtti )
+	astTypeIniScopeBegin( initree, rtti, FALSE )
 
 		'' stdlibvtable = NULL
 		fld = symbUdtGetFirstField( symb.rtti.fb_rtti )
@@ -188,7 +188,7 @@ private sub hBuildVtable( byval udt as FBSYMBOL ptr )
 
 	'' {
 	initree = astTypeIniBegin( typeAddrOf( FB_DATATYPE_VOID ), NULL, FALSE, 0 )
-	astTypeIniScopeBegin( initree, vtable )
+	astTypeIniScopeBegin( initree, vtable, TRUE )
 
 	'' 0. null pointer = NULL
 	astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ) ), vtable )

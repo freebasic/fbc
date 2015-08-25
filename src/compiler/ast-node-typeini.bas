@@ -266,16 +266,19 @@ function astTypeIniAddCtorList _
 	function = n
 end function
 
+'' is_array tells the LLVM backend whether the initializer is for an array or a struct.
 function astTypeIniScopeBegin _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_array as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
 
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_SCOPEINI )
 	n->sym = sym
+	n->typeiniscope.is_array = is_array
 
 	function = n
 end function
@@ -621,7 +624,7 @@ sub astLoadStaticInitializer _
     		irEmitVARINIPAD( n->typeini.bytes )
 
     	case AST_NODECLASS_TYPEINI_SCOPEINI
-			irEmitVARINISCOPEBEGIN( )
+			irEmitVARINISCOPEBEGIN( n->sym, n->typeiniscope.is_array )
 
     	case AST_NODECLASS_TYPEINI_SCOPEEND
 			irEmitVARINISCOPEEND( )

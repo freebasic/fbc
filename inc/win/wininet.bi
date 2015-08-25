@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -57,10 +57,10 @@ const INTERNET_FLAG_EXISTING_CONNECT = &h20000000
 const INTERNET_FLAG_ASYNC = &h10000000
 const INTERNET_FLAG_PASSIVE = &h08000000
 const INTERNET_FLAG_NO_CACHE_WRITE = &h04000000
-#define INTERNET_FLAG_DONT_CACHE INTERNET_FLAG_NO_CACHE_WRITE
+const INTERNET_FLAG_DONT_CACHE = INTERNET_FLAG_NO_CACHE_WRITE
 const INTERNET_FLAG_MAKE_PERSISTENT = &h02000000
 const INTERNET_FLAG_FROM_CACHE = &h01000000
-#define INTERNET_FLAG_OFFLINE INTERNET_FLAG_FROM_CACHE
+const INTERNET_FLAG_OFFLINE = INTERNET_FLAG_FROM_CACHE
 const INTERNET_FLAG_SECURE = &h00800000
 const INTERNET_FLAG_KEEP_CONNECTION = &h00400000
 const INTERNET_FLAG_NO_AUTO_REDIRECT = &h00200000
@@ -81,9 +81,7 @@ const INTERNET_FLAG_CACHE_ASYNC = &h00000080
 const INTERNET_FLAG_FORMS_SUBMIT = &h00000040
 const INTERNET_FLAG_FWD_BACK = &h00000020
 const INTERNET_FLAG_NEED_FILE = &h00000010
-#define INTERNET_FLAG_MUST_CACHE_REQUEST INTERNET_FLAG_NEED_FILE
-#define INTERNET_FLAG_TRANSFER_ASCII FTP_TRANSFER_TYPE_ASCII
-#define INTERNET_FLAG_TRANSFER_BINARY FTP_TRANSFER_TYPE_BINARY
+const INTERNET_FLAG_MUST_CACHE_REQUEST = INTERNET_FLAG_NEED_FILE
 #define SECURITY_INTERNET_MASK (((INTERNET_FLAG_IGNORE_CERT_CN_INVALID or INTERNET_FLAG_IGNORE_CERT_DATE_INVALID) or INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS) or INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTP)
 #define INTERNET_FLAGS_MASK (((((((((((((((((((((((((((INTERNET_FLAG_RELOAD or INTERNET_FLAG_RAW_DATA) or INTERNET_FLAG_EXISTING_CONNECT) or INTERNET_FLAG_ASYNC) or INTERNET_FLAG_PASSIVE) or INTERNET_FLAG_NO_CACHE_WRITE) or INTERNET_FLAG_MAKE_PERSISTENT) or INTERNET_FLAG_FROM_CACHE) or INTERNET_FLAG_SECURE) or INTERNET_FLAG_KEEP_CONNECTION) or INTERNET_FLAG_NO_AUTO_REDIRECT) or INTERNET_FLAG_READ_PREFETCH) or INTERNET_FLAG_NO_COOKIES) or INTERNET_FLAG_NO_AUTH) or INTERNET_FLAG_CACHE_IF_NET_FAIL) or SECURITY_INTERNET_MASK) or INTERNET_FLAG_RESYNCHRONIZE) or INTERNET_FLAG_HYPERLINK) or INTERNET_FLAG_NO_UI) or INTERNET_FLAG_PRAGMA_NOCACHE) or INTERNET_FLAG_CACHE_ASYNC) or INTERNET_FLAG_FORMS_SUBMIT) or INTERNET_FLAG_NEED_FILE) or INTERNET_FLAG_RESTRICTED_ZONE) or INTERNET_FLAG_TRANSFER_BINARY) or INTERNET_FLAG_TRANSFER_ASCII) or INTERNET_FLAG_FWD_BACK) or INTERNET_FLAG_BGUPDATE)
 const INTERNET_ERROR_MASK_INSERT_CDROM = &h1
@@ -522,7 +520,6 @@ type LPINTERNET_BUFFERSW as _INTERNET_BUFFERSW ptr
 #ifdef UNICODE
 	type INTERNET_BUFFERS as INTERNET_BUFFERSW
 	type LPINTERNET_BUFFERS as LPINTERNET_BUFFERSW
-	#define InternetTimeFromSystemTime InternetTimeFromSystemTimeW
 #else
 	type INTERNET_BUFFERS as INTERNET_BUFFERSA
 	type LPINTERNET_BUFFERS as LPINTERNET_BUFFERSA
@@ -531,33 +528,72 @@ type LPINTERNET_BUFFERSW as _INTERNET_BUFFERSW ptr
 
 declare function InternetTimeFromSystemTimeA(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPSTR, byval cbTime as DWORD) as WINBOOL
 declare function InternetTimeFromSystemTimeW(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPWSTR, byval cbTime as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetTimeFromSystemTime alias "InternetTimeFromSystemTimeW"(byval pst as const SYSTEMTIME ptr, byval dwRFC as DWORD, byval lpszTime as LPWSTR, byval cbTime as DWORD) as WINBOOL
+#endif
+
 const INTERNET_RFC1123_FORMAT = 0
 const INTERNET_RFC1123_BUFSIZE = 30
 
-#ifdef UNICODE
-	#define InternetCrackUrl InternetCrackUrlW
-	#define InternetCreateUrl InternetCreateUrlW
-	#define InternetCanonicalizeUrl InternetCanonicalizeUrlW
-	#define InternetCombineUrl InternetCombineUrlW
-	#define InternetTimeToSystemTime InternetTimeToSystemTimeW
-#else
-	#define InternetCrackUrl InternetCrackUrlA
-	#define InternetCreateUrl InternetCreateUrlA
-	#define InternetCanonicalizeUrl InternetCanonicalizeUrlA
-	#define InternetCombineUrl InternetCombineUrlA
+#ifndef UNICODE
 	declare function InternetTimeToSystemTime(byval lpszTime as LPCSTR, byval pst as SYSTEMTIME ptr, byval dwReserved as DWORD) as WINBOOL
 #endif
 
 declare function InternetTimeToSystemTimeA(byval lpszTime as LPCSTR, byval pst as SYSTEMTIME ptr, byval dwReserved as DWORD) as WINBOOL
 declare function InternetTimeToSystemTimeW(byval lpszTime as LPCWSTR, byval pst as SYSTEMTIME ptr, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetTimeToSystemTime alias "InternetTimeToSystemTimeW"(byval lpszTime as LPCWSTR, byval pst as SYSTEMTIME ptr, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function InternetCrackUrlA(byval lpszUrl as LPCSTR, byval dwUrlLength as DWORD, byval dwFlags as DWORD, byval lpUrlComponents as LPURL_COMPONENTSA) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetCrackUrl alias "InternetCrackUrlA"(byval lpszUrl as LPCSTR, byval dwUrlLength as DWORD, byval dwFlags as DWORD, byval lpUrlComponents as LPURL_COMPONENTSA) as WINBOOL
+#endif
+
 declare function InternetCrackUrlW(byval lpszUrl as LPCWSTR, byval dwUrlLength as DWORD, byval dwFlags as DWORD, byval lpUrlComponents as LPURL_COMPONENTSW) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetCrackUrl alias "InternetCrackUrlW"(byval lpszUrl as LPCWSTR, byval dwUrlLength as DWORD, byval dwFlags as DWORD, byval lpUrlComponents as LPURL_COMPONENTSW) as WINBOOL
+#endif
+
 declare function InternetCreateUrlA(byval lpUrlComponents as LPURL_COMPONENTSA, byval dwFlags as DWORD, byval lpszUrl as LPSTR, byval lpdwUrlLength as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetCreateUrl alias "InternetCreateUrlA"(byval lpUrlComponents as LPURL_COMPONENTSA, byval dwFlags as DWORD, byval lpszUrl as LPSTR, byval lpdwUrlLength as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetCreateUrlW(byval lpUrlComponents as LPURL_COMPONENTSW, byval dwFlags as DWORD, byval lpszUrl as LPWSTR, byval lpdwUrlLength as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetCreateUrl alias "InternetCreateUrlW"(byval lpUrlComponents as LPURL_COMPONENTSW, byval dwFlags as DWORD, byval lpszUrl as LPWSTR, byval lpdwUrlLength as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetCanonicalizeUrlA(byval lpszUrl as LPCSTR, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetCanonicalizeUrl alias "InternetCanonicalizeUrlA"(byval lpszUrl as LPCSTR, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function InternetCanonicalizeUrlW(byval lpszUrl as LPCWSTR, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetCanonicalizeUrl alias "InternetCanonicalizeUrlW"(byval lpszUrl as LPCWSTR, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function InternetCombineUrlA(byval lpszBaseUrl as LPCSTR, byval lpszRelativeUrl as LPCSTR, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetCombineUrl alias "InternetCombineUrlA"(byval lpszBaseUrl as LPCSTR, byval lpszRelativeUrl as LPCSTR, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function InternetCombineUrlW(byval lpszBaseUrl as LPCWSTR, byval lpszRelativeUrl as LPCWSTR, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetCombineUrl alias "InternetCombineUrlW"(byval lpszBaseUrl as LPCWSTR, byval lpszRelativeUrl as LPCWSTR, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
 
 const ICU_ESCAPE = &h80000000
 const ICU_USERNAME = &h40000000
@@ -567,82 +603,124 @@ const ICU_NO_META = &h08000000
 const ICU_ENCODE_SPACES_ONLY = &h04000000
 const ICU_BROWSER_MODE = &h02000000
 const ICU_ENCODE_PERCENT = &h00001000
+declare function InternetOpenA(byval lpszAgent as LPCSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCSTR, byval lpszProxyBypass as LPCSTR, byval dwFlags as DWORD) as HINTERNET
 
-#ifdef UNICODE
-	#define InternetOpen InternetOpenW
-#else
-	#define InternetOpen InternetOpenA
+#ifndef UNICODE
+	declare function InternetOpen alias "InternetOpenA"(byval lpszAgent as LPCSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCSTR, byval lpszProxyBypass as LPCSTR, byval dwFlags as DWORD) as HINTERNET
 #endif
 
-declare function InternetOpenA(byval lpszAgent as LPCSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCSTR, byval lpszProxyBypass as LPCSTR, byval dwFlags as DWORD) as HINTERNET
 declare function InternetOpenW(byval lpszAgent as LPCWSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCWSTR, byval lpszProxyBypass as LPCWSTR, byval dwFlags as DWORD) as HINTERNET
+
+#ifdef UNICODE
+	declare function InternetOpen alias "InternetOpenW"(byval lpszAgent as LPCWSTR, byval dwAccessType as DWORD, byval lpszProxy as LPCWSTR, byval lpszProxyBypass as LPCWSTR, byval dwFlags as DWORD) as HINTERNET
+#endif
+
 const INTERNET_OPEN_TYPE_PRECONFIG = 0
 const INTERNET_OPEN_TYPE_DIRECT = 1
 const INTERNET_OPEN_TYPE_PROXY = 3
 const INTERNET_OPEN_TYPE_PRECONFIG_WITH_NO_AUTOPROXY = 4
-#define PRE_CONFIG_INTERNET_ACCESS INTERNET_OPEN_TYPE_PRECONFIG
-#define LOCAL_INTERNET_ACCESS INTERNET_OPEN_TYPE_DIRECT
-#define CERN_PROXY_INTERNET_ACCESS INTERNET_OPEN_TYPE_PROXY
-
-#ifdef UNICODE
-	#define InternetConnect InternetConnectW
-#else
-	#define InternetConnect InternetConnectA
-#endif
-
+const PRE_CONFIG_INTERNET_ACCESS = INTERNET_OPEN_TYPE_PRECONFIG
+const LOCAL_INTERNET_ACCESS = INTERNET_OPEN_TYPE_DIRECT
+const CERN_PROXY_INTERNET_ACCESS = INTERNET_OPEN_TYPE_PROXY
 declare function InternetCloseHandle(byval hInternet as HINTERNET) as WINBOOL
 declare function InternetConnectA(byval hInternet as HINTERNET, byval lpszServerName as LPCSTR, byval nServerPort as INTERNET_PORT, byval lpszUserName as LPCSTR, byval lpszPassword as LPCSTR, byval dwService as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifndef UNICODE
+	declare function InternetConnect alias "InternetConnectA"(byval hInternet as HINTERNET, byval lpszServerName as LPCSTR, byval nServerPort as INTERNET_PORT, byval lpszUserName as LPCSTR, byval lpszPassword as LPCSTR, byval dwService as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function InternetConnectW(byval hInternet as HINTERNET, byval lpszServerName as LPCWSTR, byval nServerPort as INTERNET_PORT, byval lpszUserName as LPCWSTR, byval lpszPassword as LPCWSTR, byval dwService as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function InternetConnect alias "InternetConnectW"(byval hInternet as HINTERNET, byval lpszServerName as LPCWSTR, byval nServerPort as INTERNET_PORT, byval lpszUserName as LPCWSTR, byval lpszPassword as LPCWSTR, byval dwService as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
 
 const INTERNET_SERVICE_FTP = 1
 const INTERNET_SERVICE_GOPHER = 2
 const INTERNET_SERVICE_HTTP = 3
+declare function InternetOpenUrlA(byval hInternet as HINTERNET, byval lpszUrl as LPCSTR, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 
-#ifdef UNICODE
-	#define InternetOpenUrl InternetOpenUrlW
-	#define InternetReadFileEx InternetReadFileExW
-#else
-	#define InternetOpenUrl InternetOpenUrlA
-	#define InternetReadFileEx InternetReadFileExA
+#ifndef UNICODE
+	declare function InternetOpenUrl alias "InternetOpenUrlA"(byval hInternet as HINTERNET, byval lpszUrl as LPCSTR, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 #endif
 
-declare function InternetOpenUrlA(byval hInternet as HINTERNET, byval lpszUrl as LPCSTR, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 declare function InternetOpenUrlW(byval hInternet as HINTERNET, byval lpszUrl as LPCWSTR, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function InternetOpenUrl alias "InternetOpenUrlW"(byval hInternet as HINTERNET, byval lpszUrl as LPCWSTR, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function InternetReadFile(byval hFile as HINTERNET, byval lpBuffer as LPVOID, byval dwNumberOfBytesToRead as DWORD, byval lpdwNumberOfBytesRead as LPDWORD) as WINBOOL
 declare function InternetReadFileExA(byval hFile as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetReadFileEx alias "InternetReadFileExA"(byval hFile as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function InternetReadFileExW(byval hFile as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 
-#define IRF_ASYNC WININET_API_FLAG_ASYNC
-#define IRF_SYNC WININET_API_FLAG_SYNC
-#define IRF_USE_CONTEXT WININET_API_FLAG_USE_CONTEXT
-const IRF_NO_WAIT = &h00000008
-
 #ifdef UNICODE
-	#define InternetFindNextFile InternetFindNextFileW
-	#define InternetQueryOption InternetQueryOptionW
-	#define InternetSetOption InternetSetOptionW
-	#define InternetSetOptionEx InternetSetOptionExW
-#else
-	#define InternetFindNextFile InternetFindNextFileA
-	#define InternetQueryOption InternetQueryOptionA
-	#define InternetSetOption InternetSetOptionA
-	#define InternetSetOptionEx InternetSetOptionExA
+	declare function InternetReadFileEx alias "InternetReadFileExW"(byval hFile as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 #endif
+
+const IRF_ASYNC = WININET_API_FLAG_ASYNC
+const IRF_SYNC = WININET_API_FLAG_SYNC
+const IRF_USE_CONTEXT = WININET_API_FLAG_USE_CONTEXT
+const IRF_NO_WAIT = &h00000008
 
 declare function InternetSetFilePointer(byval hFile as HINTERNET, byval lDistanceToMove as LONG, byval pReserved as PVOID, byval dwMoveMethod as DWORD, byval dwContext as DWORD_PTR) as DWORD
 declare function InternetWriteFile(byval hFile as HINTERNET, byval lpBuffer as LPCVOID, byval dwNumberOfBytesToWrite as DWORD, byval lpdwNumberOfBytesWritten as LPDWORD) as WINBOOL
 declare function InternetQueryDataAvailable(byval hFile as HINTERNET, byval lpdwNumberOfBytesAvailable as LPDWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 declare function InternetFindNextFileA(byval hFind as HINTERNET, byval lpvFindData as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetFindNextFile alias "InternetFindNextFileA"(byval hFind as HINTERNET, byval lpvFindData as LPVOID) as WINBOOL
+#endif
+
 declare function InternetFindNextFileW(byval hFind as HINTERNET, byval lpvFindData as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetFindNextFile alias "InternetFindNextFileW"(byval hFind as HINTERNET, byval lpvFindData as LPVOID) as WINBOOL
+#endif
+
 declare function InternetQueryOptionA(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetQueryOption alias "InternetQueryOptionA"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetQueryOptionW(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetQueryOption alias "InternetQueryOptionW"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetSetOptionA(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetSetOption alias "InternetSetOptionA"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD) as WINBOOL
+#endif
+
 declare function InternetSetOptionW(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetSetOption alias "InternetSetOptionW"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD) as WINBOOL
+#endif
+
 declare function InternetSetOptionExA(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetSetOptionEx alias "InternetSetOptionExA"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function InternetSetOptionExW(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetSetOptionEx alias "InternetSetOptionExW"(byval hInternet as HINTERNET, byval dwOption as DWORD, byval lpBuffer as LPVOID, byval dwBufferLength as DWORD, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function InternetLockRequestFile(byval hInternet as HINTERNET, byval lphLockRequestInfo as HANDLE ptr) as WINBOOL
 declare function InternetUnlockRequestFile(byval hLockRequestInfo as HANDLE) as WINBOOL
-
 const ISO_GLOBAL = &h00000001
 const ISO_REGISTRY = &h00000002
 #define ISO_VALID_FLAGS (ISO_GLOBAL or ISO_REGISTRY)
@@ -651,9 +729,9 @@ const INTERNET_OPTION_CONNECT_TIMEOUT = 2
 const INTERNET_OPTION_CONNECT_RETRIES = 3
 const INTERNET_OPTION_CONNECT_BACKOFF = 4
 const INTERNET_OPTION_SEND_TIMEOUT = 5
-#define INTERNET_OPTION_CONTROL_SEND_TIMEOUT INTERNET_OPTION_SEND_TIMEOUT
+const INTERNET_OPTION_CONTROL_SEND_TIMEOUT = INTERNET_OPTION_SEND_TIMEOUT
 const INTERNET_OPTION_RECEIVE_TIMEOUT = 6
-#define INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT INTERNET_OPTION_RECEIVE_TIMEOUT
+const INTERNET_OPTION_CONTROL_RECEIVE_TIMEOUT = INTERNET_OPTION_RECEIVE_TIMEOUT
 const INTERNET_OPTION_DATA_SEND_TIMEOUT = 7
 const INTERNET_OPTION_DATA_RECEIVE_TIMEOUT = 8
 const INTERNET_OPTION_HANDLE_TYPE = 9
@@ -732,8 +810,8 @@ const INTERNET_OPTION_RESTORE_WORKER_THREAD_DEFAULTS = 93
 const INTERNET_OPTION_SOCKET_SEND_BUFFER_LENGTH = 94
 const INTERNET_OPTION_PROXY_SETTINGS_CHANGED = 95
 const INTERNET_OPTION_DATAFILE_EXT = 96
-#define INTERNET_FIRST_OPTION INTERNET_OPTION_CALLBACK
-#define INTERNET_LAST_OPTION INTERNET_OPTION_DATAFILE_EXT
+const INTERNET_FIRST_OPTION = INTERNET_OPTION_CALLBACK
+const INTERNET_LAST_OPTION = INTERNET_OPTION_DATAFILE_EXT
 const INTERNET_PRIORITY_FOREGROUND = 1000
 const INTERNET_HANDLE_TYPE_INTERNET = 1
 const INTERNET_HANDLE_TYPE_CONNECT_FTP = 2
@@ -758,46 +836,52 @@ const SECURITY_FLAG_STRENGTH_MEDIUM = &h40000000
 const SECURITY_FLAG_STRENGTH_STRONG = &h20000000
 const SECURITY_FLAG_UNKNOWNBIT = &h80000000
 const SECURITY_FLAG_FORTEZZA = &h08000000
-#define SECURITY_FLAG_NORMALBITNESS SECURITY_FLAG_STRENGTH_WEAK
+const SECURITY_FLAG_NORMALBITNESS = SECURITY_FLAG_STRENGTH_WEAK
 const SECURITY_FLAG_SSL = &h00000002
 const SECURITY_FLAG_SSL3 = &h00000004
 const SECURITY_FLAG_PCT = &h00000008
 const SECURITY_FLAG_PCT4 = &h00000010
 const SECURITY_FLAG_IETFSSL4 = &h00000020
-#define SECURITY_FLAG_40BIT SECURITY_FLAG_STRENGTH_WEAK
-#define SECURITY_FLAG_128BIT SECURITY_FLAG_STRENGTH_STRONG
-#define SECURITY_FLAG_56BIT SECURITY_FLAG_STRENGTH_MEDIUM
+const SECURITY_FLAG_40BIT = SECURITY_FLAG_STRENGTH_WEAK
+const SECURITY_FLAG_128BIT = SECURITY_FLAG_STRENGTH_STRONG
+const SECURITY_FLAG_56BIT = SECURITY_FLAG_STRENGTH_MEDIUM
 const SECURITY_FLAG_IGNORE_REVOCATION = &h00000080
 const SECURITY_FLAG_IGNORE_UNKNOWN_CA = &h00000100
 const SECURITY_FLAG_IGNORE_WRONG_USAGE = &h00000200
-#define SECURITY_FLAG_IGNORE_CERT_CN_INVALID INTERNET_FLAG_IGNORE_CERT_CN_INVALID
-#define SECURITY_FLAG_IGNORE_CERT_DATE_INVALID INTERNET_FLAG_IGNORE_CERT_DATE_INVALID
-#define SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTPS INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS
-#define SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTP INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTP
+const SECURITY_FLAG_IGNORE_CERT_CN_INVALID = INTERNET_FLAG_IGNORE_CERT_CN_INVALID
+const SECURITY_FLAG_IGNORE_CERT_DATE_INVALID = INTERNET_FLAG_IGNORE_CERT_DATE_INVALID
+const SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTPS = INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTPS
+const SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTP = INTERNET_FLAG_IGNORE_REDIRECT_TO_HTTP
 #define SECURITY_SET_MASK ((((SECURITY_FLAG_IGNORE_REVOCATION or SECURITY_FLAG_IGNORE_UNKNOWN_CA) or SECURITY_FLAG_IGNORE_CERT_CN_INVALID) or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID) or SECURITY_FLAG_IGNORE_WRONG_USAGE)
 const AUTODIAL_MODE_NEVER = 1
 const AUTODIAL_MODE_ALWAYS = 2
 const AUTODIAL_MODE_NO_NETWORK_PRESENT = 4
+declare function InternetGetLastResponseInfoA(byval lpdwError as LPDWORD, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define InternetGetLastResponseInfo InternetGetLastResponseInfoW
-#else
-	#define InternetGetLastResponseInfo InternetGetLastResponseInfoA
+#ifndef UNICODE
+	declare function InternetGetLastResponseInfo alias "InternetGetLastResponseInfoA"(byval lpdwError as LPDWORD, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 #endif
 
-declare function InternetGetLastResponseInfoA(byval lpdwError as LPDWORD, byval lpszBuffer as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 declare function InternetGetLastResponseInfoW(byval lpdwError as LPDWORD, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetGetLastResponseInfo alias "InternetGetLastResponseInfoW"(byval lpdwError as LPDWORD, byval lpszBuffer as LPWSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
+#endif
+
 type INTERNET_STATUS_CALLBACK as sub(byval hInternet as HINTERNET, byval dwContext as DWORD_PTR, byval dwInternetStatus as DWORD, byval lpvStatusInformation as LPVOID, byval dwStatusInformationLength as DWORD)
 type LPINTERNET_STATUS_CALLBACK as INTERNET_STATUS_CALLBACK ptr
 
-#ifdef UNICODE
-	#define InternetSetStatusCallback InternetSetStatusCallbackW
-#else
+#ifndef UNICODE
 	declare function InternetSetStatusCallback(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
 #endif
 
 declare function InternetSetStatusCallbackA(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
 declare function InternetSetStatusCallbackW(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
+
+#ifdef UNICODE
+	declare function InternetSetStatusCallback alias "InternetSetStatusCallbackW"(byval hInternet as HINTERNET, byval lpfnInternetCallback as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
+#endif
+
 const INTERNET_STATUS_RESOLVING_NAME = 10
 const INTERNET_STATUS_NAME_RESOLVED = 11
 const INTERNET_STATUS_CONNECTING_TO_SERVER = 20
@@ -902,64 +986,148 @@ end enum
 #define INTERNET_INVALID_STATUS_CALLBACK cast(INTERNET_STATUS_CALLBACK, cast(INT_PTR, -1))
 const FTP_TRANSFER_TYPE_UNKNOWN = &h00000000
 const FTP_TRANSFER_TYPE_ASCII = &h00000001
+const INTERNET_FLAG_TRANSFER_ASCII = FTP_TRANSFER_TYPE_ASCII
 const FTP_TRANSFER_TYPE_BINARY = &h00000002
+const INTERNET_FLAG_TRANSFER_BINARY = FTP_TRANSFER_TYPE_BINARY
 #define FTP_TRANSFER_TYPE_MASK (FTP_TRANSFER_TYPE_ASCII or FTP_TRANSFER_TYPE_BINARY)
+declare function FtpFindFirstFileA(byval hConnect as HINTERNET, byval lpszSearchFile as LPCSTR, byval lpFindFileData as LPWIN32_FIND_DATAA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 
-#ifdef UNICODE
-	#define FtpFindFirstFile FtpFindFirstFileW
-	#define FtpGetFile FtpGetFileW
-	#define FtpPutFile FtpPutFileW
-	#define FtpDeleteFile FtpDeleteFileW
-	#define FtpRenameFile FtpRenameFileW
-	#define FtpOpenFile FtpOpenFileW
-	#define FtpCreateDirectory FtpCreateDirectoryW
-	#define FtpRemoveDirectory FtpRemoveDirectoryW
-	#define FtpSetCurrentDirectory FtpSetCurrentDirectoryW
-	#define FtpGetCurrentDirectory FtpGetCurrentDirectoryW
-	#define FtpCommand FtpCommandW
-#else
-	#define FtpFindFirstFile FtpFindFirstFileA
-	#define FtpGetFile FtpGetFileA
-	#define FtpPutFile FtpPutFileA
-	#define FtpDeleteFile FtpDeleteFileA
-	#define FtpRenameFile FtpRenameFileA
-	#define FtpOpenFile FtpOpenFileA
-	#define FtpCreateDirectory FtpCreateDirectoryA
-	#define FtpRemoveDirectory FtpRemoveDirectoryA
-	#define FtpSetCurrentDirectory FtpSetCurrentDirectoryA
-	#define FtpGetCurrentDirectory FtpGetCurrentDirectoryA
-	#define FtpCommand FtpCommandA
+#ifndef UNICODE
+	declare function FtpFindFirstFile alias "FtpFindFirstFileA"(byval hConnect as HINTERNET, byval lpszSearchFile as LPCSTR, byval lpFindFileData as LPWIN32_FIND_DATAA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 #endif
 
-declare function FtpFindFirstFileA(byval hConnect as HINTERNET, byval lpszSearchFile as LPCSTR, byval lpFindFileData as LPWIN32_FIND_DATAA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 declare function FtpFindFirstFileW(byval hConnect as HINTERNET, byval lpszSearchFile as LPCWSTR, byval lpFindFileData as LPWIN32_FIND_DATAW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function FtpFindFirstFile alias "FtpFindFirstFileW"(byval hConnect as HINTERNET, byval lpszSearchFile as LPCWSTR, byval lpFindFileData as LPWIN32_FIND_DATAW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function FtpGetFileA(byval hConnect as HINTERNET, byval lpszRemoteFile as LPCSTR, byval lpszNewFile as LPCSTR, byval fFailIfExists as WINBOOL, byval dwFlagsAndAttributes as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpGetFile alias "FtpGetFileA"(byval hConnect as HINTERNET, byval lpszRemoteFile as LPCSTR, byval lpszNewFile as LPCSTR, byval fFailIfExists as WINBOOL, byval dwFlagsAndAttributes as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function FtpGetFileW(byval hConnect as HINTERNET, byval lpszRemoteFile as LPCWSTR, byval lpszNewFile as LPCWSTR, byval fFailIfExists as WINBOOL, byval dwFlagsAndAttributes as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpGetFile alias "FtpGetFileW"(byval hConnect as HINTERNET, byval lpszRemoteFile as LPCWSTR, byval lpszNewFile as LPCWSTR, byval fFailIfExists as WINBOOL, byval dwFlagsAndAttributes as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function FtpPutFileA(byval hConnect as HINTERNET, byval lpszLocalFile as LPCSTR, byval lpszNewRemoteFile as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpPutFile alias "FtpPutFileA"(byval hConnect as HINTERNET, byval lpszLocalFile as LPCSTR, byval lpszNewRemoteFile as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function FtpPutFileW(byval hConnect as HINTERNET, byval lpszLocalFile as LPCWSTR, byval lpszNewRemoteFile as LPCWSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpPutFile alias "FtpPutFileW"(byval hConnect as HINTERNET, byval lpszLocalFile as LPCWSTR, byval lpszNewRemoteFile as LPCWSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function FtpGetFileEx(byval hFtpSession as HINTERNET, byval lpszRemoteFile as LPCSTR, byval lpszNewFile as LPCWSTR, byval fFailIfExists as WINBOOL, byval dwFlagsAndAttributes as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 declare function FtpPutFileEx(byval hFtpSession as HINTERNET, byval lpszLocalFile as LPCWSTR, byval lpszNewRemoteFile as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 declare function FtpDeleteFileA(byval hConnect as HINTERNET, byval lpszFileName as LPCSTR) as WINBOOL
-declare function FtpDeleteFileW(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR) as WINBOOL
-declare function FtpRenameFileA(byval hConnect as HINTERNET, byval lpszExisting as LPCSTR, byval lpszNew as LPCSTR) as WINBOOL
-declare function FtpRenameFileW(byval hConnect as HINTERNET, byval lpszExisting as LPCWSTR, byval lpszNew as LPCWSTR) as WINBOOL
-declare function FtpOpenFileA(byval hConnect as HINTERNET, byval lpszFileName as LPCSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
-declare function FtpOpenFileW(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
-declare function FtpCreateDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
-declare function FtpCreateDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
-declare function FtpRemoveDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
-declare function FtpRemoveDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
-declare function FtpSetCurrentDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
-declare function FtpSetCurrentDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
-declare function FtpGetCurrentDirectoryA(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
-declare function FtpGetCurrentDirectoryW(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPWSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
-declare function FtpCommandA(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
-declare function FtpCommandW(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCWSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
-declare function FtpGetFileSize(byval hFile as HINTERNET, byval lpdwFileSizeHigh as LPDWORD) as DWORD
 
+#ifndef UNICODE
+	declare function FtpDeleteFile alias "FtpDeleteFileA"(byval hConnect as HINTERNET, byval lpszFileName as LPCSTR) as WINBOOL
+#endif
+
+declare function FtpDeleteFileW(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpDeleteFile alias "FtpDeleteFileW"(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR) as WINBOOL
+#endif
+
+declare function FtpRenameFileA(byval hConnect as HINTERNET, byval lpszExisting as LPCSTR, byval lpszNew as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpRenameFile alias "FtpRenameFileA"(byval hConnect as HINTERNET, byval lpszExisting as LPCSTR, byval lpszNew as LPCSTR) as WINBOOL
+#endif
+
+declare function FtpRenameFileW(byval hConnect as HINTERNET, byval lpszExisting as LPCWSTR, byval lpszNew as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpRenameFile alias "FtpRenameFileW"(byval hConnect as HINTERNET, byval lpszExisting as LPCWSTR, byval lpszNew as LPCWSTR) as WINBOOL
+#endif
+
+declare function FtpOpenFileA(byval hConnect as HINTERNET, byval lpszFileName as LPCSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifndef UNICODE
+	declare function FtpOpenFile alias "FtpOpenFileA"(byval hConnect as HINTERNET, byval lpszFileName as LPCSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
+declare function FtpOpenFileW(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function FtpOpenFile alias "FtpOpenFileW"(byval hConnect as HINTERNET, byval lpszFileName as LPCWSTR, byval dwAccess as DWORD, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
+declare function FtpCreateDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpCreateDirectory alias "FtpCreateDirectoryA"(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+#endif
+
+declare function FtpCreateDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpCreateDirectory alias "FtpCreateDirectoryW"(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+#endif
+
+declare function FtpRemoveDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpRemoveDirectory alias "FtpRemoveDirectoryA"(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+#endif
+
+declare function FtpRemoveDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpRemoveDirectory alias "FtpRemoveDirectoryW"(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+#endif
+
+declare function FtpSetCurrentDirectoryA(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpSetCurrentDirectory alias "FtpSetCurrentDirectoryA"(byval hConnect as HINTERNET, byval lpszDirectory as LPCSTR) as WINBOOL
+#endif
+
+declare function FtpSetCurrentDirectoryW(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpSetCurrentDirectory alias "FtpSetCurrentDirectoryW"(byval hConnect as HINTERNET, byval lpszDirectory as LPCWSTR) as WINBOOL
+#endif
+
+declare function FtpGetCurrentDirectoryA(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpGetCurrentDirectory alias "FtpGetCurrentDirectoryA"(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
+#endif
+
+declare function FtpGetCurrentDirectoryW(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPWSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpGetCurrentDirectory alias "FtpGetCurrentDirectoryW"(byval hConnect as HINTERNET, byval lpszCurrentDirectory as LPWSTR, byval lpdwCurrentDirectory as LPDWORD) as WINBOOL
+#endif
+
+declare function FtpCommandA(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function FtpCommand alias "FtpCommandA"(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
+#endif
+
+declare function FtpCommandW(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCWSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function FtpCommand alias "FtpCommandW"(byval hConnect as HINTERNET, byval fExpectResponse as WINBOOL, byval dwFlags as DWORD, byval lpszCommand as LPCWSTR, byval dwContext as DWORD_PTR, byval phFtpCommand as HINTERNET ptr) as WINBOOL
+#endif
+
+declare function FtpGetFileSize(byval hFile as HINTERNET, byval lpdwFileSizeHigh as LPDWORD) as DWORD
 const MAX_GOPHER_DISPLAY_TEXT = 128
 const MAX_GOPHER_SELECTOR_TEXT = 256
-#define MAX_GOPHER_HOST_NAME INTERNET_MAX_HOST_NAME_LENGTH
+const MAX_GOPHER_HOST_NAME = INTERNET_MAX_HOST_NAME_LENGTH
 #define MAX_GOPHER_LOCATOR_LENGTH ((((((((((1 + MAX_GOPHER_DISPLAY_TEXT) + 1) + MAX_GOPHER_SELECTOR_TEXT) + 1) + MAX_GOPHER_HOST_NAME) + 1) + INTERNET_MAX_PORT_NUMBER_LENGTH) + 1) + 1) + 2)
 
 #ifdef __FB_64BIT__
@@ -1038,17 +1206,17 @@ const GOPHER_TYPE_INLINE = &h00100000
 const GOPHER_TYPE_UNKNOWN = &h20000000
 const GOPHER_TYPE_ASK = &h40000000
 const GOPHER_TYPE_GOPHER_PLUS = &h80000000
-#define IS_GOPHER_FILE(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_FILE_MASK, TRUE, FALSE))
-#define IS_GOPHER_DIRECTORY(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_DIRECTORY, TRUE, FALSE))
-#define IS_GOPHER_PHONE_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_CSO, TRUE, FALSE))
-#define IS_GOPHER_ERROR(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_ERROR, TRUE, FALSE))
-#define IS_GOPHER_INDEX_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_INDEX_SERVER, TRUE, FALSE))
-#define IS_GOPHER_TELNET_SESSION(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_TELNET, TRUE, FALSE))
-#define IS_GOPHER_BACKUP_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_REDUNDANT, TRUE, FALSE))
-#define IS_GOPHER_TN3270_SESSION(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_TN3270, TRUE, FALSE))
-#define IS_GOPHER_ASK(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_ASK, TRUE, FALSE))
-#define IS_GOPHER_PLUS(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_GOPHER_PLUS, TRUE, FALSE))
-#define IS_GOPHER_TYPE_KNOWN(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_UNKNOWN, FALSE, TRUE))
+#define IS_GOPHER_FILE(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_FILE_MASK, CTRUE, FALSE))
+#define IS_GOPHER_DIRECTORY(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_DIRECTORY, CTRUE, FALSE))
+#define IS_GOPHER_PHONE_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_CSO, CTRUE, FALSE))
+#define IS_GOPHER_ERROR(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_ERROR, CTRUE, FALSE))
+#define IS_GOPHER_INDEX_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_INDEX_SERVER, CTRUE, FALSE))
+#define IS_GOPHER_TELNET_SESSION(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_TELNET, CTRUE, FALSE))
+#define IS_GOPHER_BACKUP_SERVER(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_REDUNDANT, CTRUE, FALSE))
+#define IS_GOPHER_TN3270_SESSION(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_TN3270, CTRUE, FALSE))
+#define IS_GOPHER_ASK(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_ASK, CTRUE, FALSE))
+#define IS_GOPHER_PLUS(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_GOPHER_PLUS, CTRUE, FALSE))
+#define IS_GOPHER_TYPE_KNOWN(type) cast(WINBOOL, iif((type) and GOPHER_TYPE_UNKNOWN, FALSE, CTRUE))
 #define GOPHER_TYPE_FILE_MASK (((((((((((((GOPHER_TYPE_TEXT_FILE or GOPHER_TYPE_MAC_BINHEX) or GOPHER_TYPE_DOS_ARCHIVE) or GOPHER_TYPE_UNIX_UUENCODED) or GOPHER_TYPE_BINARY) or GOPHER_TYPE_GIF) or GOPHER_TYPE_IMAGE) or GOPHER_TYPE_BITMAP) or GOPHER_TYPE_MOVIE) or GOPHER_TYPE_SOUND) or GOPHER_TYPE_HTML) or GOPHER_TYPE_PDF) or GOPHER_TYPE_CALENDAR) or GOPHER_TYPE_INLINE)
 
 #ifdef __FB_64BIT__
@@ -1381,32 +1549,66 @@ const GOPHER_ATTRIBUTE_ID_BASE = &habcccc00
 #define GOPHER_ATTRIBUTE_ID_VIEW (GOPHER_ATTRIBUTE_ID_BASE + 23)
 #define GOPHER_ATTRIBUTE_ID_TREEWALK (GOPHER_ATTRIBUTE_ID_BASE + 24)
 #define GOPHER_ATTRIBUTE_ID_UNKNOWN (GOPHER_ATTRIBUTE_ID_BASE + 25)
+declare function GopherCreateLocatorA(byval lpszHost as LPCSTR, byval nServerPort as INTERNET_PORT, byval lpszDisplayString as LPCSTR, byval lpszSelectorString as LPCSTR, byval dwGopherType as DWORD, byval lpszLocator as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define GopherCreateLocator GopherCreateLocatorW
-	#define GopherGetLocatorType GopherGetLocatorTypeW
-	#define GopherFindFirstFile GopherFindFirstFileW
-	#define GopherOpenFile GopherOpenFileW
-	#define GopherGetAttribute GopherGetAttributeW
-#else
-	#define GopherCreateLocator GopherCreateLocatorA
-	#define GopherGetLocatorType GopherGetLocatorTypeA
-	#define GopherFindFirstFile GopherFindFirstFileA
-	#define GopherOpenFile GopherOpenFileA
-	#define GopherGetAttribute GopherGetAttributeA
+#ifndef UNICODE
+	declare function GopherCreateLocator alias "GopherCreateLocatorA"(byval lpszHost as LPCSTR, byval nServerPort as INTERNET_PORT, byval lpszDisplayString as LPCSTR, byval lpszSelectorString as LPCSTR, byval dwGopherType as DWORD, byval lpszLocator as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 #endif
 
-declare function GopherCreateLocatorA(byval lpszHost as LPCSTR, byval nServerPort as INTERNET_PORT, byval lpszDisplayString as LPCSTR, byval lpszSelectorString as LPCSTR, byval dwGopherType as DWORD, byval lpszLocator as LPSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
 declare function GopherCreateLocatorW(byval lpszHost as LPCWSTR, byval nServerPort as INTERNET_PORT, byval lpszDisplayString as LPCWSTR, byval lpszSelectorString as LPCWSTR, byval dwGopherType as DWORD, byval lpszLocator as LPWSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GopherCreateLocator alias "GopherCreateLocatorW"(byval lpszHost as LPCWSTR, byval nServerPort as INTERNET_PORT, byval lpszDisplayString as LPCWSTR, byval lpszSelectorString as LPCWSTR, byval dwGopherType as DWORD, byval lpszLocator as LPWSTR, byval lpdwBufferLength as LPDWORD) as WINBOOL
+#endif
+
 declare function GopherGetLocatorTypeA(byval lpszLocator as LPCSTR, byval lpdwGopherType as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GopherGetLocatorType alias "GopherGetLocatorTypeA"(byval lpszLocator as LPCSTR, byval lpdwGopherType as LPDWORD) as WINBOOL
+#endif
+
 declare function GopherGetLocatorTypeW(byval lpszLocator as LPCWSTR, byval lpdwGopherType as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GopherGetLocatorType alias "GopherGetLocatorTypeW"(byval lpszLocator as LPCWSTR, byval lpdwGopherType as LPDWORD) as WINBOOL
+#endif
+
 declare function GopherFindFirstFileA(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszSearchString as LPCSTR, byval lpFindData as LPGOPHER_FIND_DATAA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifndef UNICODE
+	declare function GopherFindFirstFile alias "GopherFindFirstFileA"(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszSearchString as LPCSTR, byval lpFindData as LPGOPHER_FIND_DATAA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function GopherFindFirstFileW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszSearchString as LPCWSTR, byval lpFindData as LPGOPHER_FIND_DATAW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function GopherFindFirstFile alias "GopherFindFirstFileW"(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszSearchString as LPCWSTR, byval lpFindData as LPGOPHER_FIND_DATAW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function GopherOpenFileA(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszView as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifndef UNICODE
+	declare function GopherOpenFile alias "GopherOpenFileA"(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszView as LPCSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function GopherOpenFileW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszView as LPCWSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function GopherOpenFile alias "GopherOpenFileW"(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszView as LPCWSTR, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 type GOPHER_ATTRIBUTE_ENUMERATOR as function(byval lpAttributeInfo as LPGOPHER_ATTRIBUTE_TYPE, byval dwError as DWORD) as WINBOOL
 declare function GopherGetAttributeA(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszAttributeName as LPCSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function GopherGetAttribute alias "GopherGetAttributeA"(byval hConnect as HINTERNET, byval lpszLocator as LPCSTR, byval lpszAttributeName as LPCSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function GopherGetAttributeW(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszAttributeName as LPCWSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function GopherGetAttribute alias "GopherGetAttributeW"(byval hConnect as HINTERNET, byval lpszLocator as LPCWSTR, byval lpszAttributeName as LPCWSTR, byval lpBuffer as LPBYTE, byval dwBufferLength as DWORD, byval lpdwCharactersReturned as LPDWORD, byval lpfnEnumerator as GOPHER_ATTRIBUTE_ENUMERATOR, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
 
 const HTTP_MAJOR_VERSION = 1
 const HTTP_MINOR_VERSION = 0
@@ -1545,21 +1747,31 @@ const HTTP_STATUS_BAD_GATEWAY = 502
 const HTTP_STATUS_SERVICE_UNAVAIL = 503
 const HTTP_STATUS_GATEWAY_TIMEOUT = 504
 const HTTP_STATUS_VERSION_NOT_SUP = 505
-#define HTTP_STATUS_FIRST HTTP_STATUS_CONTINUE
-#define HTTP_STATUS_LAST HTTP_STATUS_VERSION_NOT_SUP
+const HTTP_STATUS_FIRST = HTTP_STATUS_CONTINUE
+const HTTP_STATUS_LAST = HTTP_STATUS_VERSION_NOT_SUP
+declare function HttpOpenRequestA(byval hConnect as HINTERNET, byval lpszVerb as LPCSTR, byval lpszObjectName as LPCSTR, byval lpszVersion as LPCSTR, byval lpszReferrer as LPCSTR, byval lplpszAcceptTypes as LPCSTR ptr, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 
-#ifdef UNICODE
-	#define HttpOpenRequest HttpOpenRequestW
-	#define HttpAddRequestHeaders HttpAddRequestHeadersW
-#else
-	#define HttpOpenRequest HttpOpenRequestA
-	#define HttpAddRequestHeaders HttpAddRequestHeadersA
+#ifndef UNICODE
+	declare function HttpOpenRequest alias "HttpOpenRequestA"(byval hConnect as HINTERNET, byval lpszVerb as LPCSTR, byval lpszObjectName as LPCSTR, byval lpszVersion as LPCSTR, byval lpszReferrer as LPCSTR, byval lplpszAcceptTypes as LPCSTR ptr, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 #endif
 
-declare function HttpOpenRequestA(byval hConnect as HINTERNET, byval lpszVerb as LPCSTR, byval lpszObjectName as LPCSTR, byval lpszVersion as LPCSTR, byval lpszReferrer as LPCSTR, byval lplpszAcceptTypes as LPCSTR ptr, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
 declare function HttpOpenRequestW(byval hConnect as HINTERNET, byval lpszVerb as LPCWSTR, byval lpszObjectName as LPCWSTR, byval lpszVersion as LPCWSTR, byval lpszReferrer as LPCWSTR, byval lplpszAcceptTypes as LPCWSTR ptr, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+
+#ifdef UNICODE
+	declare function HttpOpenRequest alias "HttpOpenRequestW"(byval hConnect as HINTERNET, byval lpszVerb as LPCWSTR, byval lpszObjectName as LPCWSTR, byval lpszVersion as LPCWSTR, byval lpszReferrer as LPCWSTR, byval lplpszAcceptTypes as LPCWSTR ptr, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as HINTERNET
+#endif
+
 declare function HttpAddRequestHeadersA(byval hRequest as HINTERNET, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval dwModifiers as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function HttpAddRequestHeaders alias "HttpAddRequestHeadersA"(byval hRequest as HINTERNET, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval dwModifiers as DWORD) as WINBOOL
+#endif
+
 declare function HttpAddRequestHeadersW(byval hRequest as HINTERNET, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval dwModifiers as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function HttpAddRequestHeaders alias "HttpAddRequestHeadersW"(byval hRequest as HINTERNET, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval dwModifiers as DWORD) as WINBOOL
+#endif
 
 const HTTP_ADDREQ_INDEX_MASK = &h0000FFFF
 const HTTP_ADDREQ_FLAGS_MASK = &hFFFF0000
@@ -1567,41 +1779,61 @@ const HTTP_ADDREQ_FLAG_ADD_IF_NEW = &h10000000
 const HTTP_ADDREQ_FLAG_ADD = &h20000000
 const HTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA = &h40000000
 const HTTP_ADDREQ_FLAG_COALESCE_WITH_SEMICOLON = &h01000000
-#define HTTP_ADDREQ_FLAG_COALESCE HTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA
+const HTTP_ADDREQ_FLAG_COALESCE = HTTP_ADDREQ_FLAG_COALESCE_WITH_COMMA
 const HTTP_ADDREQ_FLAG_REPLACE = &h80000000
+declare function HttpSendRequestA(byval hRequest as HINTERNET, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval lpOptional as LPVOID, byval dwOptionalLength as DWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define HttpSendRequest HttpSendRequestW
-	#define HttpSendRequestEx HttpSendRequestExW
-#else
-	#define HttpSendRequest HttpSendRequestA
-	#define HttpSendRequestEx HttpSendRequestExA
+#ifndef UNICODE
+	declare function HttpSendRequest alias "HttpSendRequestA"(byval hRequest as HINTERNET, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval lpOptional as LPVOID, byval dwOptionalLength as DWORD) as WINBOOL
 #endif
 
-declare function HttpSendRequestA(byval hRequest as HINTERNET, byval lpszHeaders as LPCSTR, byval dwHeadersLength as DWORD, byval lpOptional as LPVOID, byval dwOptionalLength as DWORD) as WINBOOL
 declare function HttpSendRequestW(byval hRequest as HINTERNET, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval lpOptional as LPVOID, byval dwOptionalLength as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function HttpSendRequest alias "HttpSendRequestW"(byval hRequest as HINTERNET, byval lpszHeaders as LPCWSTR, byval dwHeadersLength as DWORD, byval lpOptional as LPVOID, byval dwOptionalLength as DWORD) as WINBOOL
+#endif
+
 declare function HttpSendRequestExA(byval hRequest as HINTERNET, byval lpBuffersIn as LPINTERNET_BUFFERSA, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function HttpSendRequestEx alias "HttpSendRequestExA"(byval hRequest as HINTERNET, byval lpBuffersIn as LPINTERNET_BUFFERSA, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function HttpSendRequestExW(byval hRequest as HINTERNET, byval lpBuffersIn as LPINTERNET_BUFFERSW, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 
-#define HSR_ASYNC WININET_API_FLAG_ASYNC
-#define HSR_SYNC WININET_API_FLAG_SYNC
-#define HSR_USE_CONTEXT WININET_API_FLAG_USE_CONTEXT
+#ifdef UNICODE
+	declare function HttpSendRequestEx alias "HttpSendRequestExW"(byval hRequest as HINTERNET, byval lpBuffersIn as LPINTERNET_BUFFERSW, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
+const HSR_ASYNC = WININET_API_FLAG_ASYNC
+const HSR_SYNC = WININET_API_FLAG_SYNC
+const HSR_USE_CONTEXT = WININET_API_FLAG_USE_CONTEXT
 const HSR_INITIATE = &h00000008
 const HSR_DOWNLOAD = &h00000010
 const HSR_CHUNKED = &h00000020
+declare function HttpEndRequestA(byval hRequest as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 
-#ifdef UNICODE
-	#define HttpEndRequest HttpEndRequestW
-	#define HttpQueryInfo HttpQueryInfoW
-#else
-	#define HttpEndRequest HttpEndRequestA
-	#define HttpQueryInfo HttpQueryInfoA
+#ifndef UNICODE
+	declare function HttpEndRequest alias "HttpEndRequestA"(byval hRequest as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 #endif
 
-declare function HttpEndRequestA(byval hRequest as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSA, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
 declare function HttpEndRequestW(byval hRequest as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function HttpEndRequest alias "HttpEndRequestW"(byval hRequest as HINTERNET, byval lpBuffersOut as LPINTERNET_BUFFERSW, byval dwFlags as DWORD, byval dwContext as DWORD_PTR) as WINBOOL
+#endif
+
 declare function HttpQueryInfoA(byval hRequest as HINTERNET, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpdwIndex as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function HttpQueryInfo alias "HttpQueryInfoA"(byval hRequest as HINTERNET, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpdwIndex as LPDWORD) as WINBOOL
+#endif
+
 declare function HttpQueryInfoW(byval hRequest as HINTERNET, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpdwIndex as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function HttpQueryInfo alias "HttpQueryInfoW"(byval hRequest as HINTERNET, byval dwInfoLevel as DWORD, byval lpBuffer as LPVOID, byval lpdwBufferLength as LPDWORD, byval lpdwIndex as LPDWORD) as WINBOOL
+#endif
 
 const INTERNET_COOKIE_IS_SECURE = &h01
 const INTERNET_COOKIE_IS_SESSION = &h02
@@ -1613,32 +1845,66 @@ const INTERNET_COOKIE_P3P_ENABLED = &h100
 const INTERNET_COOKIE_IS_RESTRICTED = &h200
 const INTERNET_COOKIE_IE6 = &h400
 const INTERNET_COOKIE_IS_LEGACY = &h800
+declare function InternetSetCookieA(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPCSTR) as WINBOOL
 
-#ifdef UNICODE
-	#define InternetSetCookie InternetSetCookieW
-	#define InternetGetCookie InternetGetCookieW
-	#define InternetSetCookieEx InternetSetCookieExW
-	#define InternetGetCookieEx InternetGetCookieExW
-	#define InternetCheckConnection InternetCheckConnectionW
-#else
-	#define InternetSetCookie InternetSetCookieA
-	#define InternetGetCookie InternetGetCookieA
-	#define InternetSetCookieEx InternetSetCookieExA
-	#define InternetGetCookieEx InternetGetCookieExA
-	#define InternetCheckConnection InternetCheckConnectionA
+#ifndef UNICODE
+	declare function InternetSetCookie alias "InternetSetCookieA"(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPCSTR) as WINBOOL
 #endif
 
-declare function InternetSetCookieA(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPCSTR) as WINBOOL
 declare function InternetSetCookieW(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetSetCookie alias "InternetSetCookieW"(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPCWSTR) as WINBOOL
+#endif
+
 declare function InternetGetCookieA(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPSTR, byval lpdwSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetGetCookie alias "InternetGetCookieA"(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPSTR, byval lpdwSize as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetGetCookieW(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPWSTR, byval lpdwSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetGetCookie alias "InternetGetCookieW"(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPWSTR, byval lpdwSize as LPDWORD) as WINBOOL
+#endif
+
 declare function InternetSetCookieExA(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPCSTR, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR) as DWORD
+
+#ifndef UNICODE
+	declare function InternetSetCookieEx alias "InternetSetCookieExA"(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPCSTR, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR) as DWORD
+#endif
+
 declare function InternetSetCookieExW(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPCWSTR, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR) as DWORD
+
+#ifdef UNICODE
+	declare function InternetSetCookieEx alias "InternetSetCookieExW"(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPCWSTR, byval dwFlags as DWORD, byval dwReserved as DWORD_PTR) as DWORD
+#endif
+
 declare function InternetGetCookieExA(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPSTR, byval lpdwSize as LPDWORD, byval dwFlags as DWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetGetCookieEx alias "InternetGetCookieExA"(byval lpszUrl as LPCSTR, byval lpszCookieName as LPCSTR, byval lpszCookieData as LPSTR, byval lpdwSize as LPDWORD, byval dwFlags as DWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function InternetGetCookieExW(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPWSTR, byval lpdwSize as LPDWORD, byval dwFlags as DWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetGetCookieEx alias "InternetGetCookieExW"(byval lpszUrl as LPCWSTR, byval lpszCookieName as LPCWSTR, byval lpszCookieData as LPWSTR, byval lpdwSize as LPDWORD, byval dwFlags as DWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function InternetAttemptConnect(byval dwReserved as DWORD) as DWORD
 declare function InternetCheckConnectionA(byval lpszUrl as LPCSTR, byval dwFlags as DWORD, byval dwReserved as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetCheckConnection alias "InternetCheckConnectionA"(byval lpszUrl as LPCSTR, byval dwFlags as DWORD, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function InternetCheckConnectionW(byval lpszUrl as LPCWSTR, byval dwFlags as DWORD, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetCheckConnection alias "InternetCheckConnectionW"(byval lpszUrl as LPCWSTR, byval dwFlags as DWORD, byval dwReserved as DWORD) as WINBOOL
+#endif
 
 const FLAG_ICC_FORCE_CONNECTION = &h00000001
 const FLAGS_ERROR_UI_FILTER_FOR_ERRORS = &h01
@@ -1649,32 +1915,41 @@ const FLAGS_ERROR_UI_SERIALIZE_DIALOGS = &h10
 declare function InternetAuthNotifyCallback cdecl(byval dwContext as DWORD_PTR, byval dwReturn as DWORD, byval lpReserved as LPVOID) as DWORD
 type PFN_AUTH_NOTIFY as function(byval as DWORD_PTR, byval as DWORD, byval as LPVOID) as DWORD
 
-#ifdef __FB_64BIT__
-	type INTERNET_AUTH_NOTIFY_DATA
-		cbStruct as DWORD
-		dwOptions as DWORD
-		pfnNotify as PFN_AUTH_NOTIFY
-		dwContext as DWORD_PTR
-	end type
-#else
+#ifndef __FB_64BIT__
 	type INTERNET_AUTH_NOTIFY_DATA field = 4
 		cbStruct as DWORD
 		dwOptions as DWORD
 		pfnNotify as PFN_AUTH_NOTIFY
 		dwContext as DWORD_PTR
 	end type
+#elseif defined(__FB_64BIT__) and (not defined(UNICODE))
+	type INTERNET_AUTH_NOTIFY_DATA
+		cbStruct as DWORD
+		dwOptions as DWORD
+		pfnNotify as PFN_AUTH_NOTIFY
+		dwContext as DWORD_PTR
+	end type
 #endif
 
-#ifdef UNICODE
-	#define InternetConfirmZoneCrossing InternetConfirmZoneCrossingW
-#else
+#ifndef UNICODE
 	declare function InternetConfirmZoneCrossing(byval hWnd as HWND, byval szUrlPrev as LPSTR, byval szUrlNew as LPSTR, byval bPost as WINBOOL) as DWORD
+#elseif defined(__FB_64BIT__) and defined(UNICODE)
+	type INTERNET_AUTH_NOTIFY_DATA
+		cbStruct as DWORD
+		dwOptions as DWORD
+		pfnNotify as PFN_AUTH_NOTIFY
+		dwContext as DWORD_PTR
+	end type
 #endif
 
 declare function ResumeSuspendedDownload(byval hRequest as HINTERNET, byval dwResultCode as DWORD) as WINBOOL
 declare function InternetErrorDlg(byval hWnd as HWND, byval hRequest as HINTERNET, byval dwError as DWORD, byval dwFlags as DWORD, byval lppvData as LPVOID ptr) as DWORD
 declare function InternetConfirmZoneCrossingA(byval hWnd as HWND, byval szUrlPrev as LPSTR, byval szUrlNew as LPSTR, byval bPost as WINBOOL) as DWORD
 declare function InternetConfirmZoneCrossingW(byval hWnd as HWND, byval szUrlPrev as LPWSTR, byval szUrlNew as LPWSTR, byval bPost as WINBOOL) as DWORD
+
+#ifdef UNICODE
+	declare function InternetConfirmZoneCrossing alias "InternetConfirmZoneCrossingW"(byval hWnd as HWND, byval szUrlPrev as LPWSTR, byval szUrlNew as LPWSTR, byval bPost as WINBOOL) as DWORD
+#endif
 
 const INTERNET_ERROR_BASE = 12000
 #define ERROR_INTERNET_OUT_OF_HANDLES (INTERNET_ERROR_BASE + 1)
@@ -1976,53 +2251,124 @@ type LPINTERNET_CACHE_GROUP_INFOW as _INTERNET_CACHE_GROUP_INFOW ptr
 #ifdef UNICODE
 	type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOW
 	type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOW
-	#define CreateUrlCacheEntry CreateUrlCacheEntryW
-	#define CommitUrlCacheEntry CommitUrlCacheEntryW
-	#define RetrieveUrlCacheEntryFile RetrieveUrlCacheEntryFileW
-	#define UnlockUrlCacheEntryFile UnlockUrlCacheEntryFileW
-	#define RetrieveUrlCacheEntryStream RetrieveUrlCacheEntryStreamW
-	#define GetUrlCacheEntryInfo GetUrlCacheEntryInfoW
-	#define GetUrlCacheGroupAttribute GetUrlCacheGroupAttributeW
-	#define SetUrlCacheGroupAttribute SetUrlCacheGroupAttributeW
-	#define GetUrlCacheEntryInfoEx GetUrlCacheEntryInfoExW
 #else
 	type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOA
 	type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOA
-	#define CreateUrlCacheEntry CreateUrlCacheEntryA
-	#define CommitUrlCacheEntry CommitUrlCacheEntryA
-	#define RetrieveUrlCacheEntryFile RetrieveUrlCacheEntryFileA
-	#define UnlockUrlCacheEntryFile UnlockUrlCacheEntryFileA
-	#define RetrieveUrlCacheEntryStream RetrieveUrlCacheEntryStreamA
-	#define GetUrlCacheEntryInfo GetUrlCacheEntryInfoA
-	#define GetUrlCacheGroupAttribute GetUrlCacheGroupAttributeA
-	#define SetUrlCacheGroupAttribute SetUrlCacheGroupAttributeA
-	#define GetUrlCacheEntryInfoEx GetUrlCacheEntryInfoExA
 #endif
 
 declare function CreateUrlCacheEntryA(byval lpszUrlName as LPCSTR, byval dwExpectedFileSize as DWORD, byval lpszFileExtension as LPCSTR, byval lpszFileName as LPSTR, byval dwReserved as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function CreateUrlCacheEntry alias "CreateUrlCacheEntryA"(byval lpszUrlName as LPCSTR, byval dwExpectedFileSize as DWORD, byval lpszFileExtension as LPCSTR, byval lpszFileName as LPSTR, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function CreateUrlCacheEntryW(byval lpszUrlName as LPCWSTR, byval dwExpectedFileSize as DWORD, byval lpszFileExtension as LPCWSTR, byval lpszFileName as LPWSTR, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function CreateUrlCacheEntry alias "CreateUrlCacheEntryW"(byval lpszUrlName as LPCWSTR, byval dwExpectedFileSize as DWORD, byval lpszFileExtension as LPCWSTR, byval lpszFileName as LPWSTR, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function CommitUrlCacheEntryA(byval lpszUrlName as LPCSTR, byval lpszLocalFileName as LPCSTR, byval ExpireTime as FILETIME, byval LastModifiedTime as FILETIME, byval CacheEntryType as DWORD, byval lpHeaderInfo as LPBYTE, byval dwHeaderSize as DWORD, byval lpszFileExtension as LPCSTR, byval lpszOriginalUrl as LPCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function CommitUrlCacheEntry alias "CommitUrlCacheEntryA"(byval lpszUrlName as LPCSTR, byval lpszLocalFileName as LPCSTR, byval ExpireTime as FILETIME, byval LastModifiedTime as FILETIME, byval CacheEntryType as DWORD, byval lpHeaderInfo as LPBYTE, byval dwHeaderSize as DWORD, byval lpszFileExtension as LPCSTR, byval lpszOriginalUrl as LPCSTR) as WINBOOL
+#endif
+
 declare function CommitUrlCacheEntryW(byval lpszUrlName as LPCWSTR, byval lpszLocalFileName as LPCWSTR, byval ExpireTime as FILETIME, byval LastModifiedTime as FILETIME, byval CacheEntryType as DWORD, byval lpszHeaderInfo as LPWSTR, byval dwHeaders as DWORD, byval lpszFileExtension as LPCWSTR, byval lpszOriginalUrl as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function CommitUrlCacheEntry alias "CommitUrlCacheEntryW"(byval lpszUrlName as LPCWSTR, byval lpszLocalFileName as LPCWSTR, byval ExpireTime as FILETIME, byval LastModifiedTime as FILETIME, byval CacheEntryType as DWORD, byval lpszHeaderInfo as LPWSTR, byval dwHeaders as DWORD, byval lpszFileExtension as LPCWSTR, byval lpszOriginalUrl as LPCWSTR) as WINBOOL
+#endif
+
 declare function RetrieveUrlCacheEntryFileA(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval dwReserved as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function RetrieveUrlCacheEntryFile alias "RetrieveUrlCacheEntryFileA"(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function RetrieveUrlCacheEntryFileW(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function RetrieveUrlCacheEntryFile alias "RetrieveUrlCacheEntryFileW"(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function UnlockUrlCacheEntryFileA(byval lpszUrlName as LPCSTR, byval dwReserved as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function UnlockUrlCacheEntryFile alias "UnlockUrlCacheEntryFileA"(byval lpszUrlName as LPCSTR, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function UnlockUrlCacheEntryFileW(byval lpszUrlName as LPCWSTR, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function UnlockUrlCacheEntryFile alias "UnlockUrlCacheEntryFileW"(byval lpszUrlName as LPCWSTR, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 declare function RetrieveUrlCacheEntryStreamA(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval fRandomRead as WINBOOL, byval dwReserved as DWORD) as HANDLE
+
+#ifndef UNICODE
+	declare function RetrieveUrlCacheEntryStream alias "RetrieveUrlCacheEntryStreamA"(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval fRandomRead as WINBOOL, byval dwReserved as DWORD) as HANDLE
+#endif
+
 declare function RetrieveUrlCacheEntryStreamW(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval fRandomRead as WINBOOL, byval dwReserved as DWORD) as HANDLE
+
+#ifdef UNICODE
+	declare function RetrieveUrlCacheEntryStream alias "RetrieveUrlCacheEntryStreamW"(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval fRandomRead as WINBOOL, byval dwReserved as DWORD) as HANDLE
+#endif
+
 declare function ReadUrlCacheEntryStream(byval hUrlCacheStream as HANDLE, byval dwLocation as DWORD, byval lpBuffer as LPVOID, byval lpdwLen as LPDWORD, byval Reserved as DWORD) as WINBOOL
 declare function UnlockUrlCacheEntryStream(byval hUrlCacheStream as HANDLE, byval Reserved as DWORD) as WINBOOL
 declare function GetUrlCacheEntryInfoA(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetUrlCacheEntryInfo alias "GetUrlCacheEntryInfoA"(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+#endif
+
 declare function GetUrlCacheEntryInfoW(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetUrlCacheEntryInfo alias "GetUrlCacheEntryInfoW"(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+#endif
+
 declare function FindFirstUrlCacheGroup(byval dwFlags as DWORD, byval dwFilter as DWORD, byval lpSearchCondition as LPVOID, byval dwSearchCondition as DWORD, byval lpGroupId as GROUPID ptr, byval lpReserved as LPVOID) as HANDLE
 declare function FindNextUrlCacheGroup(byval hFind as HANDLE, byval lpGroupId as GROUPID ptr, byval lpReserved as LPVOID) as WINBOOL
 declare function GetUrlCacheGroupAttributeA(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOA, byval lpdwGroupInfo as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetUrlCacheGroupAttribute alias "GetUrlCacheGroupAttributeA"(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOA, byval lpdwGroupInfo as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function GetUrlCacheGroupAttributeW(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOW, byval lpdwGroupInfo as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetUrlCacheGroupAttribute alias "GetUrlCacheGroupAttributeW"(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOW, byval lpdwGroupInfo as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function SetUrlCacheGroupAttributeA(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOA, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetUrlCacheGroupAttribute alias "SetUrlCacheGroupAttributeA"(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOA, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function SetUrlCacheGroupAttributeW(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOW, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetUrlCacheGroupAttribute alias "SetUrlCacheGroupAttributeW"(byval gid as GROUPID, byval dwFlags as DWORD, byval dwAttributes as DWORD, byval lpGroupInfo as LPINTERNET_CACHE_GROUP_INFOW, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function CreateUrlCacheGroup(byval dwFlags as DWORD, byval lpReserved as LPVOID) as GROUPID
 declare function DeleteUrlCacheGroup(byval GroupId as GROUPID, byval dwFlags as DWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function GetUrlCacheEntryInfoExA(byval lpszUrl as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval lpszRedirectUrl as LPSTR, byval lpcbRedirectUrl as LPDWORD, byval lpReserved as LPVOID, byval dwFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetUrlCacheEntryInfoEx alias "GetUrlCacheEntryInfoExA"(byval lpszUrl as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD, byval lpszRedirectUrl as LPSTR, byval lpcbRedirectUrl as LPDWORD, byval lpReserved as LPVOID, byval dwFlags as DWORD) as WINBOOL
+#endif
+
 declare function GetUrlCacheEntryInfoExW(byval lpszUrl as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval lpszRedirectUrl as LPWSTR, byval lpcbRedirectUrl as LPDWORD, byval lpReserved as LPVOID, byval dwFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetUrlCacheEntryInfoEx alias "GetUrlCacheEntryInfoExW"(byval lpszUrl as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD, byval lpszRedirectUrl as LPWSTR, byval lpcbRedirectUrl as LPDWORD, byval lpReserved as LPVOID, byval dwFlags as DWORD) as WINBOOL
+#endif
 
 const CACHE_ENTRY_ATTRIBUTE_FC = &h00000004
 const CACHE_ENTRY_HITRATE_FC = &h00000010
@@ -2033,23 +2379,7 @@ const CACHE_ENTRY_SYNCTIME_FC = &h00000200
 const CACHE_ENTRY_HEADERINFO_FC = &h00000400
 const CACHE_ENTRY_EXEMPT_DELTA_FC = &h00000800
 
-#ifdef UNICODE
-	#define SetUrlCacheEntryInfo SetUrlCacheEntryInfoW
-	#define FindFirstUrlCacheEntryEx FindFirstUrlCacheEntryExW
-	#define FindNextUrlCacheEntryEx FindNextUrlCacheEntryExW
-	#define FindFirstUrlCacheEntry FindFirstUrlCacheEntryW
-	#define FindNextUrlCacheEntry FindNextUrlCacheEntryW
-	#define InternetDial InternetDialW
-	#define InternetGoOnline InternetGoOnlineW
-	#define DeleteUrlCacheEntry DeleteUrlCacheEntryW
-	#define SetUrlCacheEntryGroup SetUrlCacheEntryGroupW
-#else
-	#define SetUrlCacheEntryInfo SetUrlCacheEntryInfoA
-	#define FindFirstUrlCacheEntryEx FindFirstUrlCacheEntryExA
-	#define FindNextUrlCacheEntryEx FindNextUrlCacheEntryExA
-	#define FindFirstUrlCacheEntry FindFirstUrlCacheEntryA
-	#define FindNextUrlCacheEntry FindNextUrlCacheEntryA
-
+#ifndef UNICODE
 	declare function SetUrlCacheEntryGroup(byval lpszUrlName as LPCSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
 	declare function DeleteUrlCacheEntry(byval lpszUrlName as LPCSTR) as WINBOOL
 	declare function InternetDial(byval hwndParent as HWND, byval lpszConnectoid as LPSTR, byval dwFlags as DWORD, byval lpdwConnection as LPDWORD, byval dwReserved as DWORD) as DWORD
@@ -2057,24 +2387,88 @@ const CACHE_ENTRY_EXEMPT_DELTA_FC = &h00000800
 #endif
 
 declare function SetUrlCacheEntryInfoA(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval dwFieldControl as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetUrlCacheEntryInfo alias "SetUrlCacheEntryInfoA"(byval lpszUrlName as LPCSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval dwFieldControl as DWORD) as WINBOOL
+#endif
+
 declare function SetUrlCacheEntryInfoW(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval dwFieldControl as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetUrlCacheEntryInfo alias "SetUrlCacheEntryInfoW"(byval lpszUrlName as LPCWSTR, byval lpCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval dwFieldControl as DWORD) as WINBOOL
+#endif
+
 const INTERNET_CACHE_GROUP_ADD = 0
 const INTERNET_CACHE_GROUP_REMOVE = 1
 declare function SetUrlCacheEntryGroupA(byval lpszUrlName as LPCSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
 declare function SetUrlCacheEntryGroupW(byval lpszUrlName as LPCWSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetUrlCacheEntryGroup alias "SetUrlCacheEntryGroupW"(byval lpszUrlName as LPCWSTR, byval dwFlags as DWORD, byval GroupId as GROUPID, byval pbGroupAttributes as LPBYTE, byval cbGroupAttributes as DWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function FindFirstUrlCacheEntryExA(byval lpszUrlSearchPattern as LPCSTR, byval dwFlags as DWORD, byval dwFilter as DWORD, byval GroupId as GROUPID, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as HANDLE
+
+#ifndef UNICODE
+	declare function FindFirstUrlCacheEntryEx alias "FindFirstUrlCacheEntryExA"(byval lpszUrlSearchPattern as LPCSTR, byval dwFlags as DWORD, byval dwFilter as DWORD, byval GroupId as GROUPID, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as HANDLE
+#endif
+
 declare function FindFirstUrlCacheEntryExW(byval lpszUrlSearchPattern as LPCWSTR, byval dwFlags as DWORD, byval dwFilter as DWORD, byval GroupId as GROUPID, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as HANDLE
+
+#ifdef UNICODE
+	declare function FindFirstUrlCacheEntryEx alias "FindFirstUrlCacheEntryExW"(byval lpszUrlSearchPattern as LPCWSTR, byval dwFlags as DWORD, byval dwFilter as DWORD, byval GroupId as GROUPID, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as HANDLE
+#endif
+
 declare function FindNextUrlCacheEntryExA(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function FindNextUrlCacheEntryEx alias "FindNextUrlCacheEntryExA"(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function FindNextUrlCacheEntryExW(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function FindNextUrlCacheEntryEx alias "FindNextUrlCacheEntryExW"(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbEntryInfo as LPDWORD, byval lpGroupAttributes as LPVOID, byval lpcbGroupAttributes as LPDWORD, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
 declare function FindFirstUrlCacheEntryA(byval lpszUrlSearchPattern as LPCSTR, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as HANDLE
+
+#ifndef UNICODE
+	declare function FindFirstUrlCacheEntry alias "FindFirstUrlCacheEntryA"(byval lpszUrlSearchPattern as LPCSTR, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as HANDLE
+#endif
+
 declare function FindFirstUrlCacheEntryW(byval lpszUrlSearchPattern as LPCWSTR, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as HANDLE
+
+#ifdef UNICODE
+	declare function FindFirstUrlCacheEntry alias "FindFirstUrlCacheEntryW"(byval lpszUrlSearchPattern as LPCWSTR, byval lpFirstCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as HANDLE
+#endif
+
 declare function FindNextUrlCacheEntryA(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function FindNextUrlCacheEntry alias "FindNextUrlCacheEntryA"(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOA, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+#endif
+
 declare function FindNextUrlCacheEntryW(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function FindNextUrlCacheEntry alias "FindNextUrlCacheEntryW"(byval hEnumHandle as HANDLE, byval lpNextCacheEntryInfo as LPINTERNET_CACHE_ENTRY_INFOW, byval lpcbCacheEntryInfo as LPDWORD) as WINBOOL
+#endif
+
 declare function FindCloseUrlCache(byval hEnumHandle as HANDLE) as WINBOOL
 declare function DeleteUrlCacheEntryA(byval lpszUrlName as LPCSTR) as WINBOOL
 declare function DeleteUrlCacheEntryW(byval lpszUrlName as LPCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function DeleteUrlCacheEntry alias "DeleteUrlCacheEntryW"(byval lpszUrlName as LPCWSTR) as WINBOOL
+#endif
+
 declare function InternetDialA(byval hwndParent as HWND, byval lpszConnectoid as LPSTR, byval dwFlags as DWORD, byval lpdwConnection as DWORD_PTR ptr, byval dwReserved as DWORD) as DWORD
 declare function InternetDialW(byval hwndParent as HWND, byval lpszConnectoid as LPWSTR, byval dwFlags as DWORD, byval lpdwConnection as DWORD_PTR ptr, byval dwReserved as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function InternetDial alias "InternetDialW"(byval hwndParent as HWND, byval lpszConnectoid as LPWSTR, byval dwFlags as DWORD, byval lpdwConnection as DWORD_PTR ptr, byval dwReserved as DWORD) as DWORD
+#endif
 
 const INTERNET_DIAL_FORCE_PROMPT = &h2000
 const INTERNET_DIAL_SHOW_OFFLINE = &h4000
@@ -2082,11 +2476,14 @@ const INTERNET_DIAL_UNATTENDED = &h8000
 declare function InternetHangUp(byval dwConnection as DWORD_PTR, byval dwReserved as DWORD) as DWORD
 const INTERENT_GOONLINE_REFRESH = &h00000001
 const INTERENT_GOONLINE_MASK = &h00000001
-
 declare function InternetGoOnlineA(byval lpszURL as LPSTR, byval hwndParent as HWND, byval dwFlags as DWORD) as WINBOOL
 declare function InternetGoOnlineW(byval lpszURL as LPWSTR, byval hwndParent as HWND, byval dwFlags as DWORD) as WINBOOL
-declare function InternetAutodial(byval dwFlags as DWORD, byval hwndParent as HWND) as WINBOOL
 
+#ifdef UNICODE
+	declare function InternetGoOnline alias "InternetGoOnlineW"(byval lpszURL as LPWSTR, byval hwndParent as HWND, byval dwFlags as DWORD) as WINBOOL
+#endif
+
+declare function InternetAutodial(byval dwFlags as DWORD, byval hwndParent as HWND) as WINBOOL
 const INTERNET_AUTODIAL_FORCE_ONLINE = 1
 const INTERNET_AUTODIAL_FORCE_UNATTENDED = 2
 const INTERNET_AUTODIAL_FAILIFSECURITYCHECK = 4
@@ -2145,7 +2542,7 @@ type pfnInternetDeInitializeAutoProxyDll as function(byval lpszMime as LPSTR, by
 type pfnInternetGetProxyInfo as function(byval lpszUrl as LPCSTR, byval dwUrlLength as DWORD, byval lpszUrlHostName as LPSTR, byval dwUrlHostNameLength as DWORD, byval lplpszProxyHostName as LPSTR ptr, byval lpdwProxyHostNameLength as LPDWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define InternetGetConnectedStateEx InternetGetConnectedStateExW
+	declare function InternetGetConnectedStateEx alias "InternetGetConnectedStateExW"(byval lpdwFlags as LPDWORD, byval lpszConnectionName as LPWSTR, byval dwBufLen as DWORD, byval dwReserved as DWORD) as WINBOOL
 #else
 	declare function InternetGetConnectedStateEx(byval lpdwFlags as LPDWORD, byval lpszConnectionName as LPSTR, byval dwNameLen as DWORD, byval dwReserved as DWORD) as WINBOOL
 #endif
@@ -2172,28 +2569,54 @@ const INTERNET_CUSTOMDIAL_SAFE_FOR_UNATTENDED = 1
 const INTERNET_CUSTOMDIAL_WILL_SUPPLY_STATE = 2
 const INTERNET_CUSTOMDIAL_CAN_HANGUP = 4
 
-#ifdef UNICODE
-	#define InternetSetPerSiteCookieDecision InternetSetPerSiteCookieDecisionW
-	#define InternetGetPerSiteCookieDecision InternetGetPerSiteCookieDecisionW
-	#define InternetEnumPerSiteCookieDecision InternetEnumPerSiteCookieDecisionW
-	#define InternetSetDialState InternetSetDialStateW
-#else
-	#define InternetSetPerSiteCookieDecision InternetSetPerSiteCookieDecisionA
-	#define InternetGetPerSiteCookieDecision InternetGetPerSiteCookieDecisionA
-	#define InternetEnumPerSiteCookieDecision InternetEnumPerSiteCookieDecisionA
+#ifndef UNICODE
 	declare function InternetSetDialState(byval lpszConnectoid as LPCSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
 #endif
 
 declare function InternetSetDialStateA(byval lpszConnectoid as LPCSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
 declare function InternetSetDialStateW(byval lpszConnectoid as LPCWSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetSetDialState alias "InternetSetDialStateW"(byval lpszConnectoid as LPCWSTR, byval dwState as DWORD, byval dwReserved as DWORD) as WINBOOL
+#endif
+
 const INTERNET_DIALSTATE_DISCONNECTED = 1
 declare function InternetSetPerSiteCookieDecisionA(byval pchHostName as LPCSTR, byval dwDecision as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetSetPerSiteCookieDecision alias "InternetSetPerSiteCookieDecisionA"(byval pchHostName as LPCSTR, byval dwDecision as DWORD) as WINBOOL
+#endif
+
 declare function InternetSetPerSiteCookieDecisionW(byval pchHostName as LPCWSTR, byval dwDecision as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetSetPerSiteCookieDecision alias "InternetSetPerSiteCookieDecisionW"(byval pchHostName as LPCWSTR, byval dwDecision as DWORD) as WINBOOL
+#endif
+
 declare function InternetGetPerSiteCookieDecisionA(byval pchHostName as LPCSTR, byval pResult as ulong ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetGetPerSiteCookieDecision alias "InternetGetPerSiteCookieDecisionA"(byval pchHostName as LPCSTR, byval pResult as ulong ptr) as WINBOOL
+#endif
+
 declare function InternetGetPerSiteCookieDecisionW(byval pchHostName as LPCWSTR, byval pResult as ulong ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetGetPerSiteCookieDecision alias "InternetGetPerSiteCookieDecisionW"(byval pchHostName as LPCWSTR, byval pResult as ulong ptr) as WINBOOL
+#endif
+
 declare function InternetClearAllPerSiteCookieDecisions() as WINBOOL
 declare function InternetEnumPerSiteCookieDecisionA(byval pszSiteName as LPSTR, byval pcSiteNameSize as ulong ptr, byval pdwDecision as ulong ptr, byval dwIndex as ulong) as WINBOOL
+
+#ifndef UNICODE
+	declare function InternetEnumPerSiteCookieDecision alias "InternetEnumPerSiteCookieDecisionA"(byval pszSiteName as LPSTR, byval pcSiteNameSize as ulong ptr, byval pdwDecision as ulong ptr, byval dwIndex as ulong) as WINBOOL
+#endif
+
 declare function InternetEnumPerSiteCookieDecisionW(byval pszSiteName as LPWSTR, byval pcSiteNameSize as ulong ptr, byval pdwDecision as ulong ptr, byval dwIndex as ulong) as WINBOOL
+
+#ifdef UNICODE
+	declare function InternetEnumPerSiteCookieDecision alias "InternetEnumPerSiteCookieDecisionW"(byval pszSiteName as LPWSTR, byval pcSiteNameSize as ulong ptr, byval pdwDecision as ulong ptr, byval dwIndex as ulong) as WINBOOL
+#endif
 
 const INTERNET_IDENTITY_FLAG_PRIVATE_CACHE = &h01
 const INTERNET_IDENTITY_FLAG_SHARED_CACHE = &h02
@@ -2212,7 +2635,7 @@ const PRIVACY_TEMPLATE_MEDIUM_LOW = 4
 const PRIVACY_TEMPLATE_LOW = 5
 const PRIVACY_TEMPLATE_CUSTOM = 100
 const PRIVACY_TEMPLATE_ADVANCED = 101
-#define PRIVACY_TEMPLATE_MAX PRIVACY_TEMPLATE_LOW
+const PRIVACY_TEMPLATE_MAX = PRIVACY_TEMPLATE_LOW
 const PRIVACY_TYPE_FIRST_PARTY = 0
 const PRIVACY_TYPE_THIRD_PARTY = 1
 declare function PrivacySetZonePreferenceW(byval dwZone as DWORD, byval dwType as DWORD, byval dwTemplate as DWORD, byval pszPreference as LPCWSTR) as DWORD

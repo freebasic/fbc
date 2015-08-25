@@ -78,7 +78,10 @@ declare function hMakeParamDesc _
 		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
 		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ), _
 		( 0, @"Mixing signed/unsigned operands" ), _
-		( 0, @"Mismatching parameter initializer" ) _
+		( 0, @"Mismatching parameter initializer" ), _
+		( 1, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
+		( 0, @"Mixing operand data types may have undefined results" ), _
+		( 0, @"Redefinition of intrinsic" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
@@ -669,7 +672,8 @@ sub errReportWarnEx _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
-		byval options as FB_ERRMSGOPT _
+		byval options as FB_ERRMSGOPT, _
+		byval customText as const zstring ptr _
 	)
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
@@ -705,6 +709,9 @@ sub errReportWarnEx _
 
 	print " warning " & msgnum & "(" & warningMsgs(msgnum).level & "): ";
 	print *warningMsgs(msgnum).text;
+	if( customText ) then
+		print *customText;
+	end if
 
 	if( msgex <> NULL ) then
 		if( (options and FB_ERRMSGOPT_ADDCOMMA) <> 0 ) then
@@ -735,10 +742,11 @@ sub errReportWarn _
 	( _
 		byval msgnum as integer, _
 		byval msgex as const zstring ptr, _
-		byval options as FB_ERRMSGOPT _
+		byval options as FB_ERRMSGOPT, _
+		byval customText as const zstring ptr _
 	)
 
-	errReportWarnEx( msgnum, msgex, lexLineNum( ), options )
+	errReportWarnEx( msgnum, msgex, lexLineNum( ), options, customText )
 
 end sub
 

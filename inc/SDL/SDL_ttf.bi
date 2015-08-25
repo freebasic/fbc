@@ -43,9 +43,9 @@ const SDL_TTF_PATCHLEVEL = 11
 		(X)->patch = SDL_TTF_PATCHLEVEL
 	end scope
 #endmacro
-#define TTF_MAJOR_VERSION SDL_TTF_MAJOR_VERSION
-#define TTF_MINOR_VERSION SDL_TTF_MINOR_VERSION
-#define TTF_PATCHLEVEL SDL_TTF_PATCHLEVEL
+const TTF_MAJOR_VERSION = SDL_TTF_MAJOR_VERSION
+const TTF_MINOR_VERSION = SDL_TTF_MINOR_VERSION
+const TTF_PATCHLEVEL = SDL_TTF_PATCHLEVEL
 #define TTF_VERSION(X) SDL_TTF_VERSION(X)
 declare function TTF_Linked_Version() as const SDL_version ptr
 const UNICODE_BOM_NATIVE = &hFEFF
@@ -113,7 +113,7 @@ declare sub TTF_CloseFont(byval font as TTF_Font ptr)
 declare sub TTF_Quit()
 declare function TTF_WasInit() as long
 declare function TTF_GetFontKerningSize(byval font as TTF_Font ptr, byval prev_index as long, byval index as long) as long
-#define TTF_SetError SDL_SetError
-#define TTF_GetError SDL_GetError
+declare sub TTF_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...)
+declare function TTF_GetError alias "SDL_GetError"() as zstring ptr
 
 end extern

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DirectMusic Core API Stuff
@@ -52,15 +52,13 @@ extern IID_IDirectMusicInstrument as const GUID
 extern IID_IDirectMusicPort as const GUID
 extern IID_IDirectMusicPortDownload as const GUID
 extern IID_IDirectMusicThru as const GUID
-
-#define IID_IDirectMusicCollection8 IID_IDirectMusicCollection
-#define IID_IDirectMusicDownload8 IID_IDirectMusicDownload
-#define IID_IDirectMusicDownloadedInstrument8 IID_IDirectMusicDownloadedInstrument
-#define IID_IDirectMusicInstrument8 IID_IDirectMusicInstrument
-#define IID_IDirectMusicPort8 IID_IDirectMusicPort
-#define IID_IDirectMusicPortDownload8 IID_IDirectMusicPortDownload
-#define IID_IDirectMusicThru8 IID_IDirectMusicThru
-
+extern IID_IDirectMusicCollection8 alias "IID_IDirectMusicCollection" as const GUID
+extern IID_IDirectMusicDownload8 alias "IID_IDirectMusicDownload" as const GUID
+extern IID_IDirectMusicDownloadedInstrument8 alias "IID_IDirectMusicDownloadedInstrument" as const GUID
+extern IID_IDirectMusicInstrument8 alias "IID_IDirectMusicInstrument" as const GUID
+extern IID_IDirectMusicPort8 alias "IID_IDirectMusicPort" as const GUID
+extern IID_IDirectMusicPortDownload8 alias "IID_IDirectMusicPortDownload" as const GUID
+extern IID_IDirectMusicThru8 alias "IID_IDirectMusicThru" as const GUID
 extern GUID_DMUS_PROP_GM_Hardware as const GUID
 extern GUID_DMUS_PROP_GS_Capable as const GUID
 extern GUID_DMUS_PROP_GS_Hardware as const GUID
@@ -193,7 +191,7 @@ const DMUS_SYNTHSTATS_CPU_PER_VOICE = &h04
 const DMUS_SYNTHSTATS_LOST_NOTES = &h08
 const DMUS_SYNTHSTATS_PEAK_VOLUME = &h10
 const DMUS_SYNTHSTATS_FREE_MEMORY = &h20
-#define DMUS_SYNTHSTATS_SYSTEMMEMORY DMUS_PC_SYSTEMMEMORY
+const DMUS_SYNTHSTATS_SYSTEMMEMORY = DMUS_PC_SYSTEMMEMORY
 const DSBUSID_FIRST_SPKR_LOC = &h00000000
 const DSBUSID_FRONT_LEFT = &h00000000
 const DSBUSID_LEFT = &h00000000

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -51,7 +51,7 @@
 #define _INC_WINAPIFAMILY
 const WINAPI_PARTITION_DESKTOP = &h1
 const WINAPI_PARTITION_APP = &h2
-#define WINAPI_FAMILY_APP WINAPI_PARTITION_APP
+const WINAPI_FAMILY_APP = WINAPI_PARTITION_APP
 #define WINAPI_FAMILY_DESKTOP_APP (WINAPI_PARTITION_DESKTOP or WINAPI_PARTITION_APP)
 #define WINAPI_FAMILY WINAPI_FAMILY_DESKTOP_APP
 #define WINAPI_FAMILY_PARTITION(v) ((WINAPI_FAMILY and v) = v)

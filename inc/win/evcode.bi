@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2004 Christian Costa
@@ -85,5 +85,5 @@ const EC_CODECAPI_EVENT = &h57
 const EC_BUILT = &h300
 const EC_UNBUILT = &h301
 const EC_WMT_EVENT_BASE = &h0251
-#define EC_WMT_INDEX_EVENT EC_WMT_EVENT_BASE
+const EC_WMT_INDEX_EVENT = EC_WMT_EVENT_BASE
 #define EC_WMT_EVENT (EC_WMT_EVENT_BASE + 1)

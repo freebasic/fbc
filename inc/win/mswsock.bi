@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -104,9 +104,9 @@ const TP_ELEMENT_FILE = 2
 const TP_ELEMENT_EOP = 4
 #define TP_DISCONNECT TF_DISCONNECT
 #define TP_REUSE_SOCKET TF_REUSE_SOCKET
-#define TP_USE_DEFAULT_WORKER TF_USE_DEFAULT_WORKER
-#define TP_USE_SYSTEM_THREAD TF_USE_SYSTEM_THREAD
-#define TP_USE_KERNEL_APC TF_USE_KERNEL_APC
+const TP_USE_DEFAULT_WORKER = TF_USE_DEFAULT_WORKER
+const TP_USE_SYSTEM_THREAD = TF_USE_SYSTEM_THREAD
+const TP_USE_KERNEL_APC = TF_USE_KERNEL_APC
 type LPFN_TRANSMITPACKETS as function(byval hSocket as SOCKET, byval lpPacketArray as LPTRANSMIT_PACKETS_ELEMENT, byval nElementCount as DWORD, byval nSendSize as DWORD, byval lpOverlapped as LPOVERLAPPED, byval dwFlags as DWORD) as WINBOOL
 #define WSAID_TRANSMITPACKETS (&hd9689da0, &h1f90, &h11d3, (&h99, &h71, &h00, &hc0, &h4f, &h68, &hc8, &h76))
 type LPFN_CONNECTEX as function(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long, byval lpSendBuffer as PVOID, byval dwSendDataLength as DWORD, byval lpdwBytesSent as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL

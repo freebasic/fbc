@@ -50,19 +50,18 @@
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 
-#if defined(__FB_WIN32__) and defined(GLFW_DLL)
+#if defined(GLFW_DLL) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	extern "Windows"
 #else
 	extern "C"
 #endif
 
 #define __glfw_h_
-
 #ifndef NULL
-const NULL = cptr(any ptr, 0)
+	const NULL = 0
 #endif
 
-#if defined(__FB_WIN32__) and defined(GLFW_DLL)
+#if defined(GLFW_DLL) and (defined(__FB_WIN32__) or defined(__FB_CYGWIN__))
 	#define GLFWCALL stdcall
 #else
 	#define GLFWCALL cdecl
@@ -154,10 +153,10 @@ const GLFW_MOUSE_BUTTON_5 = 4
 const GLFW_MOUSE_BUTTON_6 = 5
 const GLFW_MOUSE_BUTTON_7 = 6
 const GLFW_MOUSE_BUTTON_8 = 7
-#define GLFW_MOUSE_BUTTON_LAST GLFW_MOUSE_BUTTON_8
-#define GLFW_MOUSE_BUTTON_LEFT GLFW_MOUSE_BUTTON_1
-#define GLFW_MOUSE_BUTTON_RIGHT GLFW_MOUSE_BUTTON_2
-#define GLFW_MOUSE_BUTTON_MIDDLE GLFW_MOUSE_BUTTON_3
+const GLFW_MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_8
+const GLFW_MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_1
+const GLFW_MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_2
+const GLFW_MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_3
 const GLFW_JOYSTICK_1 = 0
 const GLFW_JOYSTICK_2 = 1
 const GLFW_JOYSTICK_3 = 2
@@ -174,7 +173,7 @@ const GLFW_JOYSTICK_13 = 12
 const GLFW_JOYSTICK_14 = 13
 const GLFW_JOYSTICK_15 = 14
 const GLFW_JOYSTICK_16 = 15
-#define GLFW_JOYSTICK_LAST GLFW_JOYSTICK_16
+const GLFW_JOYSTICK_LAST = GLFW_JOYSTICK_16
 const GLFW_WINDOW = &h00010001
 const GLFW_FULLSCREEN = &h00010002
 const GLFW_OPENED = &h00020001

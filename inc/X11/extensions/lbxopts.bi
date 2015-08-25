@@ -28,7 +28,7 @@
 #pragma once
 
 #include once "crt/sys/types.bi"
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#include once "crt/sys/uio.bi"
 #endif
 #include once "X11/Xdefs.bi"

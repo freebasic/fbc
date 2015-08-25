@@ -314,38 +314,18 @@ private sub hCheckByrefParam _
 	hBuildByrefArg( param, n )
 end sub
 
-private function hCheckBydescDimensions _
-	( _
-		byval param as FBSYMBOL ptr, _
-		byval arg as FBSYMBOL ptr _
-	) as integer
-
+'' Check whether an array (could be a var/field or a paramvar itself) can be passed
+'' to an array parameter.
+'' 1. If the BYDESC param itself has unknown dimensions, it can accept any arrays
+'' 2. If the argument array has unknown dimensions, it can be passed to any array parameter
+'' 3. Otherwise (if both have known dimensions) they must have the same dimension count
+private function hCheckBydescDimensions( byval param as FBSYMBOL ptr, byval arg as FBSYMBOL ptr ) as integer
 	assert( param->class = FB_SYMBCLASS_PARAM )
 	assert( symbIsVar( arg ) or symbIsField( arg ) )
 
-	if( param->param.bydescdimensions <> symbGetArrayDimensions( arg ) ) then
-		'' 1. BYDESC param itself has unknown dimensions? (then it can't affect the arg array anyways)
-		if( param->param.bydescdimensions = -1 ) then
-			'' Note: Can't update the BYDESC param from unknown to known dimensions,
-			'' because that would break rtlib functions like lbound(): they couldn't
-			'' accept any arrays anymore within the same module.
-			'''param->param.bydescdimensions = symbGetArrayDimensions( arg )
-
-		'' 2. Arg array has unknown dimensions, while BYDESC param has known dimensions?
-		elseif( symbGetArrayDimensions( arg ) = -1 ) then
-			'' Then the arg array can be updated to the BYDESC param's known dimensions,
-			'' if it's a variable/field and not a parameter.
-			if( symbIsDynamic( arg ) ) then
-				symbCheckDynamicArrayDimensions( arg, param->param.bydescdimensions )
-			end if
-
-		'' 3. Both have known dimensions, but they're different, i.e. incompatible
-		else
-			exit function
-		end if
-	end if
-
-	function = TRUE
+	return (symbGetArrayDimensions( arg ) = -1) or _
+	       (param->param.bydescdimensions = -1) or _
+	       (param->param.bydescdimensions = symbGetArrayDimensions( arg ))
 end function
 
 private function hCheckByDescParam _

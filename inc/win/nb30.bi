@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -82,7 +82,7 @@ type ADAPTER_STATUS as _ADAPTER_STATUS
 type PADAPTER_STATUS as _ADAPTER_STATUS ptr
 
 type _NAME_BUFFER
-	name(0 to 15) as UCHAR
+	name as zstring * 16
 	name_num as UCHAR
 	name_flags as UCHAR
 end type

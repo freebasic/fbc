@@ -149,7 +149,7 @@ const PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK = 7
 const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
-#define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
+const PNG_LIBPNG_BUILD_BASE_TYPE = PNG_LIBPNG_BUILD_STABLE
 const PNG_LIBPNG_VER_ = 10253
 #define PNGCONF_H
 #define PNG_1_2_X
@@ -157,13 +157,17 @@ const PNG_WARN_UNINITIALIZED_ROW = 1
 const PNG_ZBUF_SIZE = 8192
 #define PNG_READ_SUPPORTED
 #define PNG_WRITE_SUPPORTED
-#define png_benign_error png_error
-#define png_chunk_benign_error png_chunk_error
 #define PNG_WARNINGS_SUPPORTED
 #define PNG_ERROR_TEXT_SUPPORTED
 #define PNG_CHECK_cHRM_SUPPORTED
 #define PNG_MNG_FEATURES_SUPPORTED
 #define PNG_FLOATING_POINT_SUPPORTED
+
+#ifdef __FB_CYGWIN__
+	#define PNG_USE_DLL
+	#define PNG_DLL
+#endif
+
 #define PNG_STDIO_SUPPORTED
 #define PNG_CONSOLE_IO_SUPPORTED
 #define PNG_SETJMP_SUPPORTED
@@ -218,7 +222,13 @@ const PNG_ZBUF_SIZE = 8192
 #define PNG_EASY_ACCESS_SUPPORTED
 #define PNG_OPTIMIZED_CODE_SUPPORTED
 #define PNG_ASSEMBLER_CODE_SUPPORTED
-#define PNG_MMX_CODE_SUPPORTED
+
+#ifdef __FB_DARWIN__
+	#define PNG_NO_MMX_CODE
+#else
+	#define PNG_MMX_CODE_SUPPORTED
+#endif
+
 #define PNG_USER_MEM_SUPPORTED
 #define PNG_SET_USER_LIMITS_SUPPORTED
 #define PNG_USER_LIMITS_SUPPORTED
@@ -328,7 +338,12 @@ type png_zcharp as charf ptr
 type png_zcharpp as charf ptr ptr
 type png_zstreamp as z_stream ptr
 
-#define PNG_USE_GLOBAL_ARRAYS
+#ifdef __FB_CYGWIN__
+	#define PNG_USE_LOCAL_ARRAYS
+#else
+	#define PNG_USE_GLOBAL_ARRAYS
+#endif
+
 #define PNG_ABORT() abort()
 #define png_jmpbuf(png_ptr) (@(png_ptr)->jmpbuf)
 #define png_snprintf snprintf
@@ -338,7 +353,7 @@ type png_zstreamp as z_stream ptr
 #define png_memcmp memcmp
 #define png_memcpy memcpy
 #define png_memset memset
-#define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
+const PNG_LIBPNG_BUILD_TYPE = PNG_LIBPNG_BUILD_BASE_TYPE
 #define int_p_NULL NULL
 #define png_bytep_NULL NULL
 #define png_bytepp_NULL NULL
@@ -355,13 +370,17 @@ type png_zstreamp as z_stream ptr
 #define png_voidp_NULL NULL
 #define png_write_status_ptr_NULL NULL
 
-extern png_libpng_ver as const zstring * 18
-extern png_pass_start(0 to 6) as const long
-extern png_pass_inc(0 to 6) as const long
-extern png_pass_ystart(0 to 6) as const long
-extern png_pass_yinc(0 to 6) as const long
-extern png_pass_mask(0 to 6) as const long
-extern png_pass_dsp_mask(0 to 6) as const long
+#ifdef __FB_CYGWIN__
+	#define png_libpng_ver png_get_header_ver(NULL)
+#else
+	extern png_libpng_ver as const zstring * 18
+	extern png_pass_start(0 to 6) as const long
+	extern png_pass_inc(0 to 6) as const long
+	extern png_pass_ystart(0 to 6) as const long
+	extern png_pass_yinc(0 to 6) as const long
+	extern png_pass_mask(0 to 6) as const long
+	extern png_pass_dsp_mask(0 to 6) as const long
+#endif
 
 type png_color_struct
 	red as png_byte
@@ -552,16 +571,16 @@ const PNG_COLOR_MASK_COLOR = 2
 const PNG_COLOR_MASK_ALPHA = 4
 const PNG_COLOR_TYPE_GRAY = 0
 #define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
-#define PNG_COLOR_TYPE_RGB PNG_COLOR_MASK_COLOR
+const PNG_COLOR_TYPE_RGB = PNG_COLOR_MASK_COLOR
 #define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
-#define PNG_COLOR_TYPE_GRAY_ALPHA PNG_COLOR_MASK_ALPHA
+const PNG_COLOR_TYPE_GRAY_ALPHA = PNG_COLOR_MASK_ALPHA
 #define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
-#define PNG_COLOR_TYPE_GA PNG_COLOR_TYPE_GRAY_ALPHA
+const PNG_COLOR_TYPE_GA = PNG_COLOR_TYPE_GRAY_ALPHA
 const PNG_COMPRESSION_TYPE_BASE = 0
-#define PNG_COMPRESSION_TYPE_DEFAULT PNG_COMPRESSION_TYPE_BASE
+const PNG_COMPRESSION_TYPE_DEFAULT = PNG_COMPRESSION_TYPE_BASE
 const PNG_FILTER_TYPE_BASE = 0
 const PNG_INTRAPIXEL_DIFFERENCING = 64
-#define PNG_FILTER_TYPE_DEFAULT PNG_FILTER_TYPE_BASE
+const PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE
 const PNG_INTERLACE_NONE = 0
 const PNG_INTERLACE_ADAM7 = 1
 const PNG_INTERLACE_LAST = 2
@@ -774,8 +793,12 @@ type png_struct_def
 	mng_features_permitted as png_uint_32
 	int_gamma as png_fixed_point
 	filter_type as png_byte
-	mmx_bitdepth_threshold as png_byte
-	mmx_rowbytes_threshold as png_uint_32
+
+	#if defined(__FB_DOS__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+		mmx_bitdepth_threshold as png_byte
+		mmx_rowbytes_threshold as png_uint_32
+	#endif
+
 	asm_flags as png_uint_32
 	mem_ptr as png_voidp
 	malloc_fn as png_malloc_ptr
@@ -954,7 +977,9 @@ declare sub png_free_default(byval png_ptr as png_structp, byval ptr as png_void
 declare function png_memcpy_check(byval png_ptr as png_structp, byval s1 as png_voidp, byval s2 as png_voidp, byval size as png_uint_32) as png_voidp
 declare function png_memset_check(byval png_ptr as png_structp, byval s1 as png_voidp, byval value as long, byval size as png_uint_32) as png_voidp
 declare sub png_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_benign_error alias "png_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_chunk_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_chunk_benign_error alias "png_chunk_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare sub png_chunk_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare function png_get_valid(byval png_ptr as png_structp, byval info_ptr as png_infop, byval flag as png_uint_32) as png_uint_32
@@ -1040,20 +1065,23 @@ const PNG_HANDLE_CHUNK_AS_DEFAULT = 0
 const PNG_HANDLE_CHUNK_NEVER = 1
 const PNG_HANDLE_CHUNK_IF_SAFE = 2
 const PNG_HANDLE_CHUNK_ALWAYS = 3
-const PNG_ASM_FLAG_MMX_SUPPORT_COMPILED = &h01
-const PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU = &h02
-const PNG_ASM_FLAG_MMX_READ_COMBINE_ROW = &h04
-const PNG_ASM_FLAG_MMX_READ_INTERLACE = &h08
-const PNG_ASM_FLAG_MMX_READ_FILTER_SUB = &h10
-const PNG_ASM_FLAG_MMX_READ_FILTER_UP = &h20
-const PNG_ASM_FLAG_MMX_READ_FILTER_AVG = &h40
-const PNG_ASM_FLAG_MMX_READ_FILTER_PAETH = &h80
-const PNG_ASM_FLAGS_INITIALIZED = &h80000000
-#define PNG_MMX_READ_FLAGS (((((PNG_ASM_FLAG_MMX_READ_COMBINE_ROW or PNG_ASM_FLAG_MMX_READ_INTERLACE) or PNG_ASM_FLAG_MMX_READ_FILTER_SUB) or PNG_ASM_FLAG_MMX_READ_FILTER_UP) or PNG_ASM_FLAG_MMX_READ_FILTER_AVG) or PNG_ASM_FLAG_MMX_READ_FILTER_PAETH)
-const PNG_MMX_WRITE_FLAGS = 0
-#define PNG_MMX_FLAGS (((PNG_ASM_FLAG_MMX_SUPPORT_COMPILED or PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU) or PNG_MMX_READ_FLAGS) or PNG_MMX_WRITE_FLAGS)
-const PNG_SELECT_READ = 1
-const PNG_SELECT_WRITE = 2
+
+#if defined(__FB_DOS__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+	const PNG_ASM_FLAG_MMX_SUPPORT_COMPILED = &h01
+	const PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU = &h02
+	const PNG_ASM_FLAG_MMX_READ_COMBINE_ROW = &h04
+	const PNG_ASM_FLAG_MMX_READ_INTERLACE = &h08
+	const PNG_ASM_FLAG_MMX_READ_FILTER_SUB = &h10
+	const PNG_ASM_FLAG_MMX_READ_FILTER_UP = &h20
+	const PNG_ASM_FLAG_MMX_READ_FILTER_AVG = &h40
+	const PNG_ASM_FLAG_MMX_READ_FILTER_PAETH = &h80
+	const PNG_ASM_FLAGS_INITIALIZED = &h80000000
+	#define PNG_MMX_READ_FLAGS (((((PNG_ASM_FLAG_MMX_READ_COMBINE_ROW or PNG_ASM_FLAG_MMX_READ_INTERLACE) or PNG_ASM_FLAG_MMX_READ_FILTER_SUB) or PNG_ASM_FLAG_MMX_READ_FILTER_UP) or PNG_ASM_FLAG_MMX_READ_FILTER_AVG) or PNG_ASM_FLAG_MMX_READ_FILTER_PAETH)
+	const PNG_MMX_WRITE_FLAGS = 0
+	#define PNG_MMX_FLAGS (((PNG_ASM_FLAG_MMX_SUPPORT_COMPILED or PNG_ASM_FLAG_MMX_SUPPORT_IN_CPU) or PNG_MMX_READ_FLAGS) or PNG_MMX_WRITE_FLAGS)
+	const PNG_SELECT_READ = 1
+	const PNG_SELECT_WRITE = 2
+#endif
 
 declare function png_get_mmx_flagmask(byval flag_select as long, byval compilerID as long ptr) as png_uint_32
 declare function png_get_asm_flagmask(byval flag_select as long) as png_uint_32
@@ -1070,13 +1098,13 @@ declare function png_get_user_height_max(byval png_ptr as png_structp) as png_ui
 #macro png_composite(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + cast(png_uint_16, 128))
-		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
+		(composite) = cast(png_byte, (temp + (temp shr 8)) shr 8)
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * cast(png_uint_32, cast(clong, 65535) - cast(png_uint_32, (alpha))))) + cast(png_uint_32, cast(clong, 32768)))
-		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
+		(composite) = cast(png_uint_16, (temp + (temp shr 16)) shr 16)
 	end scope
 #endmacro
 declare function png_get_uint_32(byval buf as png_bytep) as png_uint_32

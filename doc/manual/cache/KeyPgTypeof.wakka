@@ -14,8 +14,9 @@ Returns the type of a variable.
 {{fbdoc item="desc"}}
 	##**Typeof**## is a compiler intrinsic that replaces itself with the type of the variable passed to it. It can either be used in a variable declaration (Example 1) or it can be used in the preprocessor for comparison, printing. (Example 2)
 	
-	##**Typeof**## also supports passing any intrinsic data type, or user-defined type, not only variables defined as those types. Also supported are expressions, the type is inferred from the expression (much like ##[[KeyPgVar Var]]##)
-
+	##**Typeof**## also supports passing any intrinsic data type, or user-defined type, not only variables defined as those types. Also supported are expressions, the type is inferred from the expression (much like ##[[KeyPgVar Var]]##).
+	
+	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Typeof**## takes the variable instead of the user defined type, wrap the argument to ##**Typeof**## with parentheses to force it to be seen as an expression.  For example ##Typeof((variable))##.
 
 {{fbdoc item="ex"}}
 Example 1:

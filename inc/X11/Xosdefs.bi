@@ -32,6 +32,12 @@
 
 #define _XOSDEFS_H_
 
-#ifdef __FB_WIN32__
+#ifdef __FB_DARWIN__
+	#define NULL_NOT_ZERO
+#endif
+
+#if defined(__FB_DARWIN__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+	#define CSRG_BASED
+#elseif defined(__FB_WIN32__)
 	#define X_NOT_POSIX
 #endif

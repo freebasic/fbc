@@ -100,6 +100,11 @@
 	#include "xbox/fb_xbox.h"
 #endif
 
+#if defined HOST_SOLARIS
+	#undef alloca
+	#define alloca(x) __builtin_alloca(x)
+#endif
+
 #if defined ENABLE_MT && !defined HOST_DOS && !defined HOST_XBOX
 	FBCALL void fb_Lock( void );
 	FBCALL void fb_Unlock( void );

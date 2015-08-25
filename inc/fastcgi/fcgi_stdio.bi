@@ -109,7 +109,7 @@ declare function FCGI_pclose(byval as FCGI_FILE ptr) as long
 
 #ifndef NO_FCGI_DEFINES
 	#undef FILE
-	#define FILE FCGI_FILE
+	type FILE as FCGI_FILE
 	#undef stdin
 	#define stdin FCGI_stdin_
 	#undef stdout
@@ -117,79 +117,79 @@ declare function FCGI_pclose(byval as FCGI_FILE ptr) as long
 	#undef stderr
 	#define stderr FCGI_stderr_
 	#undef perror
-	#define perror FCGI_perror
+	declare sub perror alias "FCGI_perror"(byval str as const zstring ptr)
 	#undef fopen
-	#define fopen FCGI_fopen
+	declare function fopen alias "FCGI_fopen"(byval path as const zstring ptr, byval mode as const zstring ptr) as FCGI_FILE ptr
 	#undef fclose
-	#define fclose FCGI_fclose
+	declare function fclose alias "FCGI_fclose"(byval fp as FCGI_FILE ptr) as long
 	#undef fflush
-	#define fflush FCGI_fflush
+	declare function fflush alias "FCGI_fflush"(byval fp as FCGI_FILE ptr) as long
 	#undef freopen
-	#define freopen FCGI_freopen
+	declare function freopen alias "FCGI_freopen"(byval path as const zstring ptr, byval mode as const zstring ptr, byval fp as FCGI_FILE ptr) as FCGI_FILE ptr
 	#undef setvbuf
-	#define setvbuf FCGI_setvbuf
+	declare function setvbuf alias "FCGI_setvbuf"(byval fp as FCGI_FILE ptr, byval buf as zstring ptr, byval bufmode as long, byval size as uinteger) as long
 	#undef setbuf
-	#define setbuf FCGI_setbuf
+	declare sub setbuf alias "FCGI_setbuf"(byval fp as FCGI_FILE ptr, byval buf as zstring ptr)
 	#undef fseek
-	#define fseek FCGI_fseek
+	declare function fseek alias "FCGI_fseek"(byval fp as FCGI_FILE ptr, byval offset as clong, byval whence as long) as long
 	#undef ftell
-	#define ftell FCGI_ftell
+	declare function ftell alias "FCGI_ftell"(byval fp as FCGI_FILE ptr) as long
 	#undef rewind
-	#define rewind FCGI_rewind
+	declare sub rewind alias "FCGI_rewind"(byval fp as FCGI_FILE ptr)
 	#undef fgetpos
 	#define fgetpos FCGI_fgetpos
 	#undef fsetpos
 	#define fsetpos FCGI_fsetpos
 	#undef fgetc
-	#define fgetc FCGI_fgetc
+	declare function fgetc alias "FCGI_fgetc"(byval fp as FCGI_FILE ptr) as long
 	#undef getc
-	#define getc FCGI_fgetc
+	declare function getc alias "FCGI_fgetc"(byval fp as FCGI_FILE ptr) as long
 	#undef getchar
-	#define getchar FCGI_getchar
+	declare function getchar alias "FCGI_getchar"() as long
 	#undef ungetc
-	#define ungetc FCGI_ungetc
+	declare function ungetc alias "FCGI_ungetc"(byval c as long, byval fp as FCGI_FILE ptr) as long
 	#undef fgets
-	#define fgets FCGI_fgets
+	declare function fgets alias "FCGI_fgets"(byval str as zstring ptr, byval size as long, byval fp as FCGI_FILE ptr) as zstring ptr
 	#undef gets
-	#define gets FCGI_gets
+	declare function gets alias "FCGI_gets"(byval str as zstring ptr) as zstring ptr
 	#undef fputc
-	#define fputc FCGI_fputc
+	declare function fputc alias "FCGI_fputc"(byval c as long, byval fp as FCGI_FILE ptr) as long
 	#undef putc
-	#define putc FCGI_fputc
+	declare function putc alias "FCGI_fputc"(byval c as long, byval fp as FCGI_FILE ptr) as long
 	#undef putchar
-	#define putchar FCGI_putchar
+	declare function putchar alias "FCGI_putchar"(byval c as long) as long
 	#undef fputs
-	#define fputs FCGI_fputs
+	declare function fputs alias "FCGI_fputs"(byval str as const zstring ptr, byval fp as FCGI_FILE ptr) as long
 	#undef puts
-	#define puts FCGI_puts
+	declare function puts alias "FCGI_puts"(byval str as const zstring ptr) as long
 	#undef fprintf
-	#define fprintf FCGI_fprintf
+	declare function fprintf alias "FCGI_fprintf"(byval fp as FCGI_FILE ptr, byval format as const zstring ptr, ...) as long
 	#undef printf
-	#define printf FCGI_printf
+	declare function printf alias "FCGI_printf"(byval format as const zstring ptr, ...) as long
 	#undef vfprintf
-	#define vfprintf FCGI_vfprintf
+	declare function vfprintf alias "FCGI_vfprintf"(byval fp as FCGI_FILE ptr, byval format as const zstring ptr, byval ap as va_list) as long
 	#undef vprintf
-	#define vprintf FCGI_vprintf
+	declare function vprintf alias "FCGI_vprintf"(byval format as const zstring ptr, byval ap as va_list) as long
 	#undef fread
-	#define fread FCGI_fread
+	declare function fread alias "FCGI_fread"(byval ptr as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
 	#undef fwrite
-	#define fwrite FCGI_fwrite
+	declare function fwrite alias "FCGI_fwrite"(byval ptr as any ptr, byval size as uinteger, byval nmemb as uinteger, byval fp as FCGI_FILE ptr) as uinteger
 	#undef feof
-	#define feof FCGI_feof
+	declare function feof alias "FCGI_feof"(byval fp as FCGI_FILE ptr) as long
 	#undef ferror
-	#define ferror FCGI_ferror
+	declare function ferror alias "FCGI_ferror"(byval fp as FCGI_FILE ptr) as long
 	#undef clearerr
-	#define clearerr FCGI_clearerr
+	declare sub clearerr alias "FCGI_clearerr"(byval fp as FCGI_FILE ptr)
 	#undef tmpfile
-	#define tmpfile FCGI_tmpfile
+	declare function tmpfile alias "FCGI_tmpfile"() as FCGI_FILE ptr
 	#undef fileno
-	#define fileno FCGI_fileno
+	declare function fileno alias "FCGI_fileno"(byval fp as FCGI_FILE ptr) as long
 	#undef fdopen
-	#define fdopen FCGI_fdopen
+	declare function fdopen alias "FCGI_fdopen"(byval fd as long, byval mode as const zstring ptr) as FCGI_FILE ptr
 	#undef popen
-	#define popen FCGI_popen
+	declare function popen alias "FCGI_popen"(byval cmd as const zstring ptr, byval type as const zstring ptr) as FCGI_FILE ptr
 	#undef pclose
-	#define pclose FCGI_pclose
+	declare function pclose alias "FCGI_pclose"(byval as FCGI_FILE ptr) as long
 #endif
 
 end extern

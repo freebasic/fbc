@@ -56,12 +56,12 @@
 #include once "Xtrans.bi"
 #include once "crt/errno.bi"
 
-#ifdef __FB_WIN32__
-	#include once "crt/limits.bi"
-#else
+#ifdef __FB_UNIX__
 	#include once "crt/sys/socket.bi"
 	#include once "crt/netinet/in.bi"
 	#include once "crt/arpa/inet.bi"
+#else
+	#include once "crt/limits.bi"
 #endif
 
 #include once "crt/stddef.bi"
@@ -70,13 +70,13 @@ extern "C"
 
 #define _XTRANSINT_H_
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	#define ESET(val) scope : errno = val : end scope
+	#define EGET() errno
+#else
 	#define _WILLWINSOCK_
 	#define ESET(val) WSASetLastError(val)
 	#define EGET() WSAGetLastError()
-#else
-	#define ESET(val) scope : errno = val : end scope
-	#define EGET() errno
 #endif
 
 type _Xtransport as _Xtransport_

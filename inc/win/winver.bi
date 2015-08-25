@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -119,34 +119,76 @@ type tagVS_FIXEDFILEINFO
 end type
 
 type VS_FIXEDFILEINFO as tagVS_FIXEDFILEINFO
+declare function VerFindFileA(byval uFlags as DWORD, byval szFileName as LPSTR, byval szWinDir as LPSTR, byval szAppDir as LPSTR, byval szCurDir as LPSTR, byval lpuCurDirLen as PUINT, byval szDestDir as LPSTR, byval lpuDestDirLen as PUINT) as DWORD
 
-#ifdef UNICODE
-	#define VerFindFile VerFindFileW
-	#define VerInstallFile VerInstallFileW
-	#define GetFileVersionInfoSize GetFileVersionInfoSizeW
-	#define GetFileVersionInfo GetFileVersionInfoW
-	#define VerLanguageName VerLanguageNameW
-	#define VerQueryValue VerQueryValueW
-#else
-	#define VerFindFile VerFindFileA
-	#define VerInstallFile VerInstallFileA
-	#define GetFileVersionInfoSize GetFileVersionInfoSizeA
-	#define GetFileVersionInfo GetFileVersionInfoA
-	#define VerLanguageName VerLanguageNameA
-	#define VerQueryValue VerQueryValueA
+#ifndef UNICODE
+	declare function VerFindFile alias "VerFindFileA"(byval uFlags as DWORD, byval szFileName as LPSTR, byval szWinDir as LPSTR, byval szAppDir as LPSTR, byval szCurDir as LPSTR, byval lpuCurDirLen as PUINT, byval szDestDir as LPSTR, byval lpuDestDirLen as PUINT) as DWORD
 #endif
 
-declare function VerFindFileA(byval uFlags as DWORD, byval szFileName as LPSTR, byval szWinDir as LPSTR, byval szAppDir as LPSTR, byval szCurDir as LPSTR, byval lpuCurDirLen as PUINT, byval szDestDir as LPSTR, byval lpuDestDirLen as PUINT) as DWORD
 declare function VerFindFileW(byval uFlags as DWORD, byval szFileName as LPWSTR, byval szWinDir as LPWSTR, byval szAppDir as LPWSTR, byval szCurDir as LPWSTR, byval lpuCurDirLen as PUINT, byval szDestDir as LPWSTR, byval lpuDestDirLen as PUINT) as DWORD
+
+#ifdef UNICODE
+	declare function VerFindFile alias "VerFindFileW"(byval uFlags as DWORD, byval szFileName as LPWSTR, byval szWinDir as LPWSTR, byval szAppDir as LPWSTR, byval szCurDir as LPWSTR, byval lpuCurDirLen as PUINT, byval szDestDir as LPWSTR, byval lpuDestDirLen as PUINT) as DWORD
+#endif
+
 declare function VerInstallFileA(byval uFlags as DWORD, byval szSrcFileName as LPSTR, byval szDestFileName as LPSTR, byval szSrcDir as LPSTR, byval szDestDir as LPSTR, byval szCurDir as LPSTR, byval szTmpFile as LPSTR, byval lpuTmpFileLen as PUINT) as DWORD
+
+#ifndef UNICODE
+	declare function VerInstallFile alias "VerInstallFileA"(byval uFlags as DWORD, byval szSrcFileName as LPSTR, byval szDestFileName as LPSTR, byval szSrcDir as LPSTR, byval szDestDir as LPSTR, byval szCurDir as LPSTR, byval szTmpFile as LPSTR, byval lpuTmpFileLen as PUINT) as DWORD
+#endif
+
 declare function VerInstallFileW(byval uFlags as DWORD, byval szSrcFileName as LPWSTR, byval szDestFileName as LPWSTR, byval szSrcDir as LPWSTR, byval szDestDir as LPWSTR, byval szCurDir as LPWSTR, byval szTmpFile as LPWSTR, byval lpuTmpFileLen as PUINT) as DWORD
+
+#ifdef UNICODE
+	declare function VerInstallFile alias "VerInstallFileW"(byval uFlags as DWORD, byval szSrcFileName as LPWSTR, byval szDestFileName as LPWSTR, byval szSrcDir as LPWSTR, byval szDestDir as LPWSTR, byval szCurDir as LPWSTR, byval szTmpFile as LPWSTR, byval lpuTmpFileLen as PUINT) as DWORD
+#endif
+
 declare function GetFileVersionInfoSizeA(byval lptstrFilename as LPCSTR, byval lpdwHandle as LPDWORD) as DWORD
+
+#ifndef UNICODE
+	declare function GetFileVersionInfoSize alias "GetFileVersionInfoSizeA"(byval lptstrFilename as LPCSTR, byval lpdwHandle as LPDWORD) as DWORD
+#endif
+
 declare function GetFileVersionInfoSizeW(byval lptstrFilename as LPCWSTR, byval lpdwHandle as LPDWORD) as DWORD
+
+#ifdef UNICODE
+	declare function GetFileVersionInfoSize alias "GetFileVersionInfoSizeW"(byval lptstrFilename as LPCWSTR, byval lpdwHandle as LPDWORD) as DWORD
+#endif
+
 declare function GetFileVersionInfoA(byval lptstrFilename as LPCSTR, byval dwHandle as DWORD, byval dwLen as DWORD, byval lpData as LPVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function GetFileVersionInfo alias "GetFileVersionInfoA"(byval lptstrFilename as LPCSTR, byval dwHandle as DWORD, byval dwLen as DWORD, byval lpData as LPVOID) as WINBOOL
+#endif
+
 declare function GetFileVersionInfoW(byval lptstrFilename as LPCWSTR, byval dwHandle as DWORD, byval dwLen as DWORD, byval lpData as LPVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function GetFileVersionInfo alias "GetFileVersionInfoW"(byval lptstrFilename as LPCWSTR, byval dwHandle as DWORD, byval dwLen as DWORD, byval lpData as LPVOID) as WINBOOL
+#endif
+
 declare function VerLanguageNameA(byval wLang as DWORD, byval szLang as LPSTR, byval nSize as DWORD) as DWORD
+
+#ifndef UNICODE
+	declare function VerLanguageName alias "VerLanguageNameA"(byval wLang as DWORD, byval szLang as LPSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function VerLanguageNameW(byval wLang as DWORD, byval szLang as LPWSTR, byval nSize as DWORD) as DWORD
+
+#ifdef UNICODE
+	declare function VerLanguageName alias "VerLanguageNameW"(byval wLang as DWORD, byval szLang as LPWSTR, byval nSize as DWORD) as DWORD
+#endif
+
 declare function VerQueryValueA(byval pBlock as const LPVOID, byval lpSubBlock as LPCSTR, byval lplpBuffer as LPVOID ptr, byval puLen as PUINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function VerQueryValue alias "VerQueryValueA"(byval pBlock as const LPVOID, byval lpSubBlock as LPCSTR, byval lplpBuffer as LPVOID ptr, byval puLen as PUINT) as WINBOOL
+#endif
+
 declare function VerQueryValueW(byval pBlock as const LPVOID, byval lpSubBlock as LPCWSTR, byval lplpBuffer as LPVOID ptr, byval puLen as PUINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function VerQueryValue alias "VerQueryValueW"(byval pBlock as const LPVOID, byval lpSubBlock as LPCWSTR, byval lplpBuffer as LPVOID ptr, byval puLen as PUINT) as WINBOOL
+#endif
 
 end extern

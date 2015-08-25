@@ -159,6 +159,7 @@ declare sub XftFontUnloadGlyphs(byval dpy as Display ptr, byval pub as XftFont p
 const XFT_NMISSING = 256
 declare function XftFontCheckGlyph(byval dpy as Display ptr, byval pub as XftFont ptr, byval need_bitmaps as FcBool, byval glyph as FT_UInt, byval missing as FT_UInt ptr, byval nmissing as long ptr) as FcBool
 declare function XftCharExists(byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FcBool
+declare function XftGlyphExists alias "XftCharExists"(byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FcBool
 declare function XftCharIndex(byval dpy as Display ptr, byval pub as XftFont ptr, byval ucs4 as FcChar32) as FT_UInt
 declare function XftInit(byval config as const zstring ptr) as FcBool
 declare function XftGetVersion() as long

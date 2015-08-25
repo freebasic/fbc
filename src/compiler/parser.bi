@@ -238,6 +238,8 @@ enum FB_VAREXPROPT
 	FB_VAREXPROPT_ISASSIGN     = &h00000010  '' Used by SWAP to disallow CALLs etc.
 end enum
 
+declare sub parserInlineAsmEnd( )
+
 declare sub cProgram()
 
 declare function cLabel _
@@ -291,7 +293,7 @@ declare function cInitializer _
 
 declare function cTypeOrExpression _
 	( _
-		byval is_len as integer, _
+		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint _

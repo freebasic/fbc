@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -156,9 +156,9 @@ const IPV6_MULTICAST_IF = 9
 const IPV6_MULTICAST_HOPS = 10
 const IPV6_MULTICAST_LOOP = 11
 const IPV6_ADD_MEMBERSHIP = 12
-#define IPV6_JOIN_GROUP IPV6_ADD_MEMBERSHIP
+const IPV6_JOIN_GROUP = IPV6_ADD_MEMBERSHIP
 const IPV6_DROP_MEMBERSHIP = 13
-#define IPV6_LEAVE_GROUP IPV6_DROP_MEMBERSHIP
+const IPV6_LEAVE_GROUP = IPV6_DROP_MEMBERSHIP
 const IPV6_DONTFRAG = 14
 const IPV6_PKTINFO = 19
 const IPV6_HOPLIMIT = 21
@@ -176,12 +176,7 @@ const IPV6_RECVRTHDR = 38
 const IPV6_TCLASS = 39
 const IPV6_RECVTCLASS = 40
 #define WS2TCPIP_INLINE __CRT_INLINE
-declare function IN6_ADDR_EQUAL(byval as const IN6_ADDR ptr, byval as const IN6_ADDR ptr) as long
-
-private function IN6_ADDR_EQUAL(byval a as const IN6_ADDR ptr, byval b as const IN6_ADDR ptr) as long
-	return -(memcmp(a, b, sizeof(IN6_ADDR)) = 0)
-end function
-
+#define IN6_ADDR_EQUAL(a, b) clng(-(memcmp((a), (b), sizeof(IN6_ADDR)) = 0))
 #define IN6_ARE_ADDR_EQUAL IN6_ADDR_EQUAL
 
 end extern

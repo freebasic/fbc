@@ -208,6 +208,16 @@ type AST_NODE_TYPEINI
     lastscp			as FBSYMBOL ptr
 end type
 
+type AST_NODE_TYPEINISCOPE
+	'' Whether the typeini scope corresponds to an array initializer or a
+	'' UDT initializer.
+	'' This matters to the LLVM backend when emitting varinis, because
+	'' global array/struct initiializers have different syntax there.
+	'' It doesn't matter to the C backend (all initializers use "{...}"
+	'' braces) or the ASM backend (varini scopes aren't used at all).
+	is_array as integer
+end type
+
 type AST_NODE_BREAK
 	parent			as ASTNODE_ ptr
 	scope			as integer
@@ -281,6 +291,7 @@ type ASTNODE
 		mem			as AST_NODE_MEM
 		stack		as AST_NODE_STACK
 		typeini		as AST_NODE_TYPEINI
+		typeiniscope	as AST_NODE_TYPEINISCOPE
 		block		as AST_NODE_BLOCK				'' shared by PROC and SCOPE nodes
 		break		as AST_NODE_BREAK
 		data		as AST_NODE_DATASTMT
@@ -988,7 +999,8 @@ declare function astTypeIniAddCtorList _
 declare function astTypeIniScopeBegin _
 	( _
 		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval is_array as integer _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeEnd _

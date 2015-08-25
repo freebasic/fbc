@@ -30,6 +30,8 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 		case FB_SIZETYPE_FLOAT64
 			'' SINGLE/DOUBLE -> DOUBLE:
 			'' Nothing to do, since float constants are stored as DOUBLE
+		case FB_SIZETYPE_BOOLEAN
+			l->val.i = cbool( l->val.f )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.f )
 		case FB_SIZETYPE_UINT8
@@ -53,6 +55,8 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = csng( l->val.i )
 		case FB_SIZETYPE_FLOAT64
 			l->val.f = cdbl( l->val.i )
+		case FB_SIZETYPE_BOOLEAN
+			l->val.i = cbool( l->val.i )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( l->val.i )
 		case FB_SIZETYPE_UINT8
@@ -76,6 +80,8 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 			l->val.f = csng( cunsg( l->val.i ) )
 		case FB_SIZETYPE_FLOAT64
 			l->val.f = cdbl( cunsg( l->val.i ) )
+		case FB_SIZETYPE_BOOLEAN
+			l->val.i = cbool( cunsg( l->val.i ) )
 		case FB_SIZETYPE_INT8
 			l->val.i = cbyte( cunsg( l->val.i ) )
 		case FB_SIZETYPE_UINT8
@@ -96,6 +102,7 @@ private sub hConstConv( byval todtype as integer, byval l as ASTNODE ptr )
 	end if
 end sub
 
+'':::::
 private function hGetTypeMismatchErrMsg( byval options as AST_CONVOPT ) as integer
 	if( options and AST_CONVOPT_PTRONLY ) then
 		function = FB_ERRMSG_EXPECTEDPOINTER
@@ -419,14 +426,21 @@ function astNewCONV _
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
+	'' or one is a boolean and the other is not boolean
 	if( ldclass = typeGetClass( to_dtype ) ) then
 		select case( typeGet( to_dtype ) )
 		case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
 			'' do nothing
 			doconv = FALSE
 		case else
-			if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
-				doconv = FALSE
+			if( (ldtype = FB_DATATYPE_BOOLEAN) or (to_dtype = FB_DATATYPE_BOOLEAN) ) then
+				if( ldtype = to_dtype ) then
+					doconv = FALSE
+				end if
+			else
+				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
+					doconv = FALSE
+				end if
 			end if
 		end select
 	end if

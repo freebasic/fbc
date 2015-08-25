@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -64,15 +64,15 @@ type CURLINVOKECOMMANDINFOW as const URLINVOKECOMMANDINFOW
 type PCURLINVOKECOMMANDINFOW as const URLINVOKECOMMANDINFOW ptr
 
 #ifdef UNICODE
-	#define URLINVOKECOMMANDINFO URLINVOKECOMMANDINFOW
-	#define PURLINVOKECOMMANDINFO PURLINVOKECOMMANDINFOW
-	#define CURLINVOKECOMMANDINFO CURLINVOKECOMMANDINFOW
-	#define PCURLINVOKECOMMANDINFO PCURLINVOKECOMMANDINFOW
+	type URLINVOKECOMMANDINFO as URLINVOKECOMMANDINFOW
+	type PURLINVOKECOMMANDINFO as PURLINVOKECOMMANDINFOW
+	type CURLINVOKECOMMANDINFO as CURLINVOKECOMMANDINFOW
+	type PCURLINVOKECOMMANDINFO as PCURLINVOKECOMMANDINFOW
 #else
-	#define URLINVOKECOMMANDINFO URLINVOKECOMMANDINFOA
-	#define PURLINVOKECOMMANDINFO PURLINVOKECOMMANDINFOA
-	#define CURLINVOKECOMMANDINFO CURLINVOKECOMMANDINFOA
-	#define PCURLINVOKECOMMANDINFO PCURLINVOKECOMMANDINFOA
+	type URLINVOKECOMMANDINFO as URLINVOKECOMMANDINFOA
+	type PURLINVOKECOMMANDINFO as PURLINVOKECOMMANDINFOA
+	type CURLINVOKECOMMANDINFO as CURLINVOKECOMMANDINFOA
+	type PCURLINVOKECOMMANDINFO as PCURLINVOKECOMMANDINFOA
 #endif
 
 type IUniformResourceLocatorAVtbl as IUniformResourceLocatorAVtbl_
@@ -106,14 +106,14 @@ type IUniformResourceLocatorWVtbl_
 end type
 
 #ifdef UNICODE
-	#define IUniformResourceLocator IUniformResourceLocatorW
-	#define IUniformResourceLocatorVtbl IUniformResourceLocatorWVtbl
+	type IUniformResourceLocator as IUniformResourceLocatorW
+	type IUniformResourceLocatorVtbl as IUniformResourceLocatorWVtbl
 	type PIUniformResourceLocator as IUniformResourceLocatorW ptr
 	type CIUniformResourceLocator as const IUniformResourceLocatorW
 	type PCIUniformResourceLocator as const IUniformResourceLocatorW ptr
 #else
-	#define IUniformResourceLocator IUniformResourceLocatorA
-	#define IUniformResourceLocatorVtbl IUniformResourceLocatorAVtbl
+	type IUniformResourceLocator as IUniformResourceLocatorA
+	type IUniformResourceLocatorVtbl as IUniformResourceLocatorAVtbl
 	type PIUniformResourceLocator as IUniformResourceLocatorA ptr
 	type CIUniformResourceLocator as const IUniformResourceLocatorA
 	type PCIUniformResourceLocator as const IUniformResourceLocatorA ptr
@@ -129,9 +129,9 @@ declare function TranslateURLA(byval pcszURL as PCSTR, byval dwInFlags as DWORD,
 declare function TranslateURLW(byval pcszURL as PCWSTR, byval dwInFlags as DWORD, byval ppszTranslatedURL as PWSTR ptr) as HRESULT
 
 #ifdef UNICODE
-	#define TranslateURL TranslateURLW
+	declare function TranslateURL alias "TranslateURLW"(byval pcszURL as PCWSTR, byval dwInFlags as DWORD, byval ppszTranslatedURL as PWSTR ptr) as HRESULT
 #else
-	#define TranslateURL TranslateURLA
+	declare function TranslateURL alias "TranslateURLA"(byval pcszURL as PCSTR, byval dwInFlags as DWORD, byval ppszTranslatedURL as PSTR ptr) as HRESULT
 #endif
 
 type URLASSOCIATIONDIALOG_IN_FLAGS as long
@@ -144,9 +144,9 @@ declare function URLAssociationDialogA(byval hwndParent as HWND, byval dwInFlags
 declare function URLAssociationDialogW(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCWSTR, byval pcszURL as PCWSTR, byval pszAppBuf as PWSTR, byval ucAppBufLen as UINT) as HRESULT
 
 #ifdef UNICODE
-	#define URLAssociationDialog URLAssociationDialogW
+	declare function URLAssociationDialog alias "URLAssociationDialogW"(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCWSTR, byval pcszURL as PCWSTR, byval pszAppBuf as PWSTR, byval ucAppBufLen as UINT) as HRESULT
 #else
-	#define URLAssociationDialog URLAssociationDialogA
+	declare function URLAssociationDialog alias "URLAssociationDialogA"(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCSTR, byval pcszURL as PCSTR, byval pszAppBuf as PSTR, byval ucAppBufLen as UINT) as HRESULT
 #endif
 
 type MIMEASSOCIATIONDIALOG_IN_FLAGS as long
@@ -158,9 +158,9 @@ declare function MIMEAssociationDialogA(byval hwndParent as HWND, byval dwInFlag
 declare function MIMEAssociationDialogW(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCWSTR, byval pcszMIMEContentType as PCWSTR, byval pszAppBuf as PWSTR, byval ucAppBufLen as UINT) as HRESULT
 
 #ifdef UNICODE
-	#define MIMEAssociationDialog MIMEAssociationDialogW
+	declare function MIMEAssociationDialog alias "MIMEAssociationDialogW"(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCWSTR, byval pcszMIMEContentType as PCWSTR, byval pszAppBuf as PWSTR, byval ucAppBufLen as UINT) as HRESULT
 #else
-	#define MIMEAssociationDialog MIMEAssociationDialogA
+	declare function MIMEAssociationDialog alias "MIMEAssociationDialogA"(byval hwndParent as HWND, byval dwInFlags as DWORD, byval pcszFile as PCSTR, byval pcszMIMEContentType as PCSTR, byval pszAppBuf as PSTR, byval ucAppBufLen as UINT) as HRESULT
 #endif
 
 declare function InetIsOffline(byval dwFlags as DWORD) as WINBOOL

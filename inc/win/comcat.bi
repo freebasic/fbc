@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -65,15 +65,14 @@ extern "Windows"
 #define __ICatRegister_FWD_DEFINED__
 #define __ICatInformation_FWD_DEFINED__
 extern CLSID_StdComponentCategoriesMgr as const CLSID
+
 type CATID as GUID
 type REFCATID as const GUID const ptr
-#define IID_IEnumCLSID IID_IEnumGUID
-#define IEnumCLSID IEnumGUID
-#define LPENUMCLSID LPENUMGUID
-#define CATID_NULL GUID_NULL
+type IEnumCLSID as IEnumGUID
+type LPENUMCLSID as LPENUMGUID
+extern CATID_NULL alias "GUID_NULL" as const IID
 #define IsEqualCATID(rcatid1, rcatid2) IsEqualGUID(rcatid1, rcatid2)
-#define IID_IEnumCATID IID_IEnumGUID
-#define IEnumCATID IEnumGUID
+type IEnumCATID as IEnumGUID
 
 extern CATID_Insertable as const CATID
 extern CATID_Control as const CATID
@@ -97,6 +96,8 @@ extern CATID_DesignTimeUIActivatableControl as const CATID
 type IEnumGUID as IEnumGUID_
 type LPENUMGUID as IEnumGUID ptr
 extern IID_IEnumGUID as const GUID
+extern IID_IEnumCLSID alias "IID_IEnumGUID" as const GUID
+extern IID_IEnumCATID alias "IID_IEnumGUID" as const GUID
 
 type IEnumGUIDVtbl
 	QueryInterface as function(byval This as IEnumGUID ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

@@ -91,6 +91,7 @@ function astNewUOP _
 	dim as ASTNODE ptr n = any
 	dim as integer dtype = any, rank = any, intrank = any, uintrank = any
 	dim as FBSYMBOL ptr subtype = any
+	dim as integer do_promote = any
 
 	function = NULL
 
@@ -169,9 +170,23 @@ function astNewUOP _
 	'' Promote smaller integer types to [U]INTEGER before the operation,
 	'' see also astNewBOP()
 	''
+	'' - do nothing if operand is boolean with NOT operator
+	
+	do_promote = (env.clopt.lang <> FB_LANG_QB) and (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER)
 
-	if( (env.clopt.lang <> FB_LANG_QB) and _
-	    (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER) ) then
+	if( typeGetDtAndPtrOnly( o->dtype ) = FB_DATATYPE_BOOLEAN ) then
+		if( op = AST_OP_NOT ) then
+			do_promote = FALSE
+		elseif( op = AST_OP_NEG ) then
+			'' allow it or test suite can't compile
+		else
+			'' no other operation allowed with booleans
+			exit function
+		end if
+	end if
+
+	if( do_promote ) then
+
 		rank = typeGetIntRank( typeGetRemapType( o->dtype ) )
 		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
 		uintrank = typeGetIntRank( FB_DATATYPE_UINT )

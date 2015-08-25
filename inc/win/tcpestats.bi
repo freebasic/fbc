@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -23,8 +23,8 @@
 		InboundBandwidth as ULONG64
 		OutboundInstability as ULONG64
 		InboundInstability as ULONG64
-		OutboundBandwidthPeaked as BOOLEAN
-		InboundBandwidthPeaked as BOOLEAN
+		OutboundBandwidthPeaked as WINBOOLEAN
+		InboundBandwidthPeaked as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_BANDWIDTH_ROD_v0 as _TCP_ESTATS_BANDWIDTH_ROD_v0
@@ -68,7 +68,7 @@
 	type PTCP_ESTATS_DATA_ROD_v0 as _TCP_ESTATS_DATA_ROD_v0 ptr
 
 	type _TCP_ESTATS_DATA_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_DATA_RW_v0 as _TCP_ESTATS_DATA_RW_v0
@@ -85,7 +85,7 @@
 	type PTCP_ESTATS_FINE_RTT_ROD_v0 as _TCP_ESTATS_FINE_RTT_ROD_v0 ptr
 
 	type _TCP_ESTATS_FINE_RTT_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_FINE_RTT_RW_v0 as _TCP_ESTATS_FINE_RTT_RW_v0
@@ -102,7 +102,7 @@
 	type PTCP_ESTATS_OBS_REC_ROD_v0 as _TCP_ESTATS_OBS_REC_ROD_v0 ptr
 
 	type _TCP_ESTATS_OBS_REC_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_OBS_REC_RW_v0 as _TCP_ESTATS_OBS_REC_RW_v0
@@ -155,7 +155,7 @@
 	type PTCP_ESTATS_PATH_ROD_v0 as _TCP_ESTATS_PATH_ROD_v0 ptr
 
 	type _TCP_ESTATS_PATH_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_PATH_RW_v0 as _TCP_ESTATS_PATH_RW_v0
@@ -182,7 +182,7 @@
 	type PTCP_ESTATS_REC_ROD_v0 as _TCP_ESTATS_REC_ROD_v0 ptr
 
 	type _TCP_ESTATS_REC_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_REC_RW_v0 as _TCP_ESTATS_REC_RW_v0
@@ -199,7 +199,7 @@
 	type PTCP_ESTATS_SEND_BUFF_ROD_v0 as _TCP_ESTATS_SEND_BUFF_ROD_v0 ptr
 
 	type _TCP_ESTATS_SEND_BUFF_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_SEND_BUFF_RW_v0 as _TCP_ESTATS_SEND_BUFF_RW_v0
@@ -237,14 +237,14 @@
 	type PTCP_ESTATS_SND_CONG_ROS_v0 as _TCP_ESTATS_SND_CONG_ROS_v0 ptr
 
 	type _TCP_ESTATS_SND_CONG_RW_v0
-		EnableCollection as BOOLEAN
+		EnableCollection as WINBOOLEAN
 	end type
 
 	type TCP_ESTATS_SND_CONG_RW_v0 as _TCP_ESTATS_SND_CONG_RW_v0
 	type PTCP_ESTATS_SND_CONG_RW_v0 as _TCP_ESTATS_SND_CONG_RW_v0 ptr
 
 	type _TCP_ESTATS_SYN_OPTS_ROS_v0
-		ActiveOpen as BOOLEAN
+		ActiveOpen as WINBOOLEAN
 		MssRcvd as ULONG
 		MssSent as ULONG
 	end type

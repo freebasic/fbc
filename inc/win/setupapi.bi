@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -190,7 +190,7 @@ const DIRID_SRCPATH = 1
 const DIRID_WINDOWS = 10
 const DIRID_SYSTEM = 11
 const DIRID_DRIVERS = 12
-#define DIRID_IOSUBSYS DIRID_DRIVERS
+const DIRID_IOSUBSYS = DIRID_DRIVERS
 const DIRID_INF = 17
 const DIRID_HELP = 18
 const DIRID_FONTS = 20
@@ -205,7 +205,7 @@ const DIRID_SPOOLDRIVERS = 52
 const DIRID_USERPROFILE = 53
 const DIRID_LOADER = 54
 const DIRID_PRINTPROCESSOR = 55
-#define DIRID_DEFAULT DIRID_SYSTEM
+const DIRID_DEFAULT = DIRID_SYSTEM
 const DIRID_COMMON_STARTMENU = 16406
 const DIRID_COMMON_PROGRAMS = 16407
 const DIRID_COMMON_STARTUP = 16408
@@ -224,9 +224,9 @@ type PSP_FILE_CALLBACK_A as function(byval Context as PVOID, byval Notification 
 type PSP_FILE_CALLBACK_W as function(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
 
 #ifdef UNICODE
-	#define PSP_FILE_CALLBACK PSP_FILE_CALLBACK_W
+	type PSP_FILE_CALLBACK as PSP_FILE_CALLBACK_W
 #else
-	#define PSP_FILE_CALLBACK PSP_FILE_CALLBACK_A
+	type PSP_FILE_CALLBACK as PSP_FILE_CALLBACK_A
 #endif
 
 const SPFILENOTIFY_STARTQUEUE = &h00000001
@@ -266,7 +266,7 @@ const FILEOP_BACKUP = 3
 const FILEOP_ABORT = 0
 const FILEOP_DOIT = 1
 const FILEOP_SKIP = 2
-#define FILEOP_RETRY FILEOP_DOIT
+const FILEOP_RETRY = FILEOP_DOIT
 const FILEOP_NEWPATH = 4
 const COPYFLG_WARN_IF_SKIP = &h00000001
 const COPYFLG_NOSKIP = &h00000002
@@ -726,9 +726,9 @@ const SPINT_DEFAULT = &h00000002
 const SPINT_REMOVED = &h00000004
 type SP_INTERFACE_DEVICE_DATA as SP_DEVICE_INTERFACE_DATA
 type PSP_INTERFACE_DEVICE_DATA as PSP_DEVICE_INTERFACE_DATA
-#define SPID_ACTIVE SPINT_ACTIVE
-#define SPID_DEFAULT SPINT_DEFAULT
-#define SPID_REMOVED SPINT_REMOVED
+const SPID_ACTIVE = SPINT_ACTIVE
+const SPID_DEFAULT = SPINT_DEFAULT
+const SPID_REMOVED = SPINT_REMOVED
 
 #ifdef __FB_64BIT__
 	type _SP_DEVICE_INTERFACE_DETAIL_DATA_A
@@ -878,10 +878,12 @@ type DI_FUNCTION as UINT
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if defined(__FB_64BIT__) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif defined(__FB_64BIT__) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifdef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -897,10 +899,12 @@ type DI_FUNCTION as UINT
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if (not defined(__FB_64BIT__)) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifndef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -921,10 +925,12 @@ type PSP_DEVINSTALL_PARAMS_A as _SP_DEVINSTALL_PARAMS_A ptr
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if defined(__FB_64BIT__) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif defined(__FB_64BIT__) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifdef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -940,10 +946,12 @@ type PSP_DEVINSTALL_PARAMS_A as _SP_DEVINSTALL_PARAMS_A ptr
 		FlagsEx as DWORD
 		hwndParent as HWND
 
-		#if (not defined(__FB_64BIT__)) and defined(UNICODE)
-			InstallMsgHandler as PSP_FILE_CALLBACK_W
-		#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE))
-			InstallMsgHandler as PSP_FILE_CALLBACK_A
+		#ifndef __FB_64BIT__
+			#ifdef UNICODE
+				InstallMsgHandler as PSP_FILE_CALLBACK_W
+			#else
+				InstallMsgHandler as PSP_FILE_CALLBACK_A
+			#endif
 		#endif
 
 		InstallMsgHandlerContext as PVOID
@@ -1835,67 +1843,9 @@ const INFINFO_REVERSE_DEFAULT_SEARCH = 4
 const INFINFO_INF_PATH_LIST_SEARCH = 5
 
 #ifdef UNICODE
-	#define SetupGetInfInformation SetupGetInfInformationW
-	#define SetupQueryInfFileInformation SetupQueryInfFileInformationW
-	#define SetupQueryInfOriginalFileInformation SetupQueryInfOriginalFileInformationW
-	#define SetupQueryInfVersionInformation SetupQueryInfVersionInformationW
-	#define SetupGetInfFileList SetupGetInfFileListW
-	#define SetupOpenInfFile SetupOpenInfFileW
-	#define SetupOpenAppendInfFile SetupOpenAppendInfFileW
-	#define SetupFindFirstLine SetupFindFirstLineW
-	#define SetupFindNextMatchLine SetupFindNextMatchLineW
-	#define SetupGetLineByIndex SetupGetLineByIndexW
-	#define SetupGetLineCount SetupGetLineCountW
-	#define SetupGetLineText SetupGetLineTextW
-	#define SetupGetStringField SetupGetStringFieldW
-	#define SetupGetMultiSzField SetupGetMultiSzFieldW
-	#define SetupGetFileCompressionInfo SetupGetFileCompressionInfoW
-	#define SetupGetFileCompressionInfoEx SetupGetFileCompressionInfoExW
-	#define SetupDecompressOrCopyFile SetupDecompressOrCopyFileW
-	#define SetupGetSourceFileLocation SetupGetSourceFileLocationW
-	#define SetupGetSourceFileSize SetupGetSourceFileSizeW
-	#define SetupGetTargetPath SetupGetTargetPathW
-	#define SetupSetSourceList SetupSetSourceListW
-	#define SetupAddToSourceList SetupAddToSourceListW
-	#define SetupRemoveFromSourceList SetupRemoveFromSourceListW
-	#define SetupQuerySourceList SetupQuerySourceListW
-	#define SetupFreeSourceList SetupFreeSourceListW
-	#define SetupPromptForDisk SetupPromptForDiskW
-	#define SetupCopyError SetupCopyErrorW
-	#define SetupRenameError SetupRenameErrorW
-	#define SetupDeleteError SetupDeleteErrorW
-	#define SetupBackupError SetupBackupErrorW
+	declare function SetupGetInfInformation alias "SetupGetInfInformationW"(byval InfSpec as LPCVOID, byval SearchControl as DWORD, byval ReturnBuffer as PSP_INF_INFORMATION, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 #else
-	#define SetupGetInfInformation SetupGetInfInformationA
-	#define SetupQueryInfFileInformation SetupQueryInfFileInformationA
-	#define SetupQueryInfOriginalFileInformation SetupQueryInfOriginalFileInformationA
-	#define SetupQueryInfVersionInformation SetupQueryInfVersionInformationA
-	#define SetupGetInfFileList SetupGetInfFileListA
-	#define SetupOpenInfFile SetupOpenInfFileA
-	#define SetupOpenAppendInfFile SetupOpenAppendInfFileA
-	#define SetupFindFirstLine SetupFindFirstLineA
-	#define SetupFindNextMatchLine SetupFindNextMatchLineA
-	#define SetupGetLineByIndex SetupGetLineByIndexA
-	#define SetupGetLineCount SetupGetLineCountA
-	#define SetupGetLineText SetupGetLineTextA
-	#define SetupGetStringField SetupGetStringFieldA
-	#define SetupGetMultiSzField SetupGetMultiSzFieldA
-	#define SetupGetFileCompressionInfo SetupGetFileCompressionInfoA
-	#define SetupGetFileCompressionInfoEx SetupGetFileCompressionInfoExA
-	#define SetupDecompressOrCopyFile SetupDecompressOrCopyFileA
-	#define SetupGetSourceFileLocation SetupGetSourceFileLocationA
-	#define SetupGetSourceFileSize SetupGetSourceFileSizeA
-	#define SetupGetTargetPath SetupGetTargetPathA
-	#define SetupSetSourceList SetupSetSourceListA
-	#define SetupAddToSourceList SetupAddToSourceListA
-	#define SetupRemoveFromSourceList SetupRemoveFromSourceListA
-	#define SetupQuerySourceList SetupQuerySourceListA
-	#define SetupFreeSourceList SetupFreeSourceListA
-	#define SetupPromptForDisk SetupPromptForDiskA
-	#define SetupCopyError SetupCopyErrorA
-	#define SetupRenameError SetupRenameErrorA
-	#define SetupDeleteError SetupDeleteErrorA
-	#define SetupBackupError SetupBackupErrorA
+	declare function SetupGetInfInformation alias "SetupGetInfInformationA"(byval InfSpec as LPCVOID, byval SearchControl as DWORD, byval ReturnBuffer as PSP_INF_INFORMATION, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 #endif
 
 const SRCLIST_TEMPORARY = &h00000001
@@ -1910,72 +1860,360 @@ const FILE_COMPRESSION_NONE = 0
 const FILE_COMPRESSION_WINLZA = 1
 const FILE_COMPRESSION_MSZIP = 2
 const FILE_COMPRESSION_NTCAB = 3
-
 declare function SetupQueryInfFileInformationA(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueryInfFileInformation alias "SetupQueryInfFileInformationA"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupQueryInfFileInformationW(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueryInfFileInformation alias "SetupQueryInfFileInformationW"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupQueryInfOriginalFileInformationA(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval OriginalFileInfo as PSP_ORIGINAL_FILE_INFO_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueryInfOriginalFileInformation alias "SetupQueryInfOriginalFileInformationA"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval OriginalFileInfo as PSP_ORIGINAL_FILE_INFO_A) as WINBOOL
+#endif
+
 declare function SetupQueryInfOriginalFileInformationW(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval OriginalFileInfo as PSP_ORIGINAL_FILE_INFO_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueryInfOriginalFileInformation alias "SetupQueryInfOriginalFileInformationW"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval OriginalFileInfo as PSP_ORIGINAL_FILE_INFO_W) as WINBOOL
+#endif
+
 declare function SetupQueryInfVersionInformationA(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval Key as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueryInfVersionInformation alias "SetupQueryInfVersionInformationA"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval Key as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupQueryInfVersionInformationW(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval Key as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueryInfVersionInformation alias "SetupQueryInfVersionInformationW"(byval InfInformation as PSP_INF_INFORMATION, byval InfIndex as UINT, byval Key as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetInfFileListA(byval DirectoryPath as PCSTR, byval InfStyle as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetInfFileList alias "SetupGetInfFileListA"(byval DirectoryPath as PCSTR, byval InfStyle as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetInfFileListW(byval DirectoryPath as PCWSTR, byval InfStyle as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetInfFileList alias "SetupGetInfFileListW"(byval DirectoryPath as PCWSTR, byval InfStyle as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupOpenInfFileW(byval FileName as PCWSTR, byval InfClass as PCWSTR, byval InfStyle as DWORD, byval ErrorLine as PUINT) as HINF
+
+#ifdef UNICODE
+	declare function SetupOpenInfFile alias "SetupOpenInfFileW"(byval FileName as PCWSTR, byval InfClass as PCWSTR, byval InfStyle as DWORD, byval ErrorLine as PUINT) as HINF
+#endif
+
 declare function SetupOpenInfFileA(byval FileName as PCSTR, byval InfClass as PCSTR, byval InfStyle as DWORD, byval ErrorLine as PUINT) as HINF
+
+#ifndef UNICODE
+	declare function SetupOpenInfFile alias "SetupOpenInfFileA"(byval FileName as PCSTR, byval InfClass as PCSTR, byval InfStyle as DWORD, byval ErrorLine as PUINT) as HINF
+#endif
+
 declare function SetupOpenMasterInf() as HINF
 declare function SetupOpenAppendInfFileW(byval FileName as PCWSTR, byval InfHandle as HINF, byval ErrorLine as PUINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupOpenAppendInfFile alias "SetupOpenAppendInfFileW"(byval FileName as PCWSTR, byval InfHandle as HINF, byval ErrorLine as PUINT) as WINBOOL
+#endif
+
 declare function SetupOpenAppendInfFileA(byval FileName as PCSTR, byval InfHandle as HINF, byval ErrorLine as PUINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupOpenAppendInfFile alias "SetupOpenAppendInfFileA"(byval FileName as PCSTR, byval InfHandle as HINF, byval ErrorLine as PUINT) as WINBOOL
+#endif
+
 declare sub SetupCloseInfFile(byval InfHandle as HINF)
 declare function SetupFindFirstLineA(byval InfHandle as HINF, byval Section as PCSTR, byval Key as PCSTR, byval Context as PINFCONTEXT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupFindFirstLine alias "SetupFindFirstLineA"(byval InfHandle as HINF, byval Section as PCSTR, byval Key as PCSTR, byval Context as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupFindFirstLineW(byval InfHandle as HINF, byval Section as PCWSTR, byval Key as PCWSTR, byval Context as PINFCONTEXT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupFindFirstLine alias "SetupFindFirstLineW"(byval InfHandle as HINF, byval Section as PCWSTR, byval Key as PCWSTR, byval Context as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupFindNextLine(byval ContextIn as PINFCONTEXT, byval ContextOut as PINFCONTEXT) as WINBOOL
 declare function SetupFindNextMatchLineA(byval ContextIn as PINFCONTEXT, byval Key as PCSTR, byval ContextOut as PINFCONTEXT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupFindNextMatchLine alias "SetupFindNextMatchLineA"(byval ContextIn as PINFCONTEXT, byval Key as PCSTR, byval ContextOut as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupFindNextMatchLineW(byval ContextIn as PINFCONTEXT, byval Key as PCWSTR, byval ContextOut as PINFCONTEXT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupFindNextMatchLine alias "SetupFindNextMatchLineW"(byval ContextIn as PINFCONTEXT, byval Key as PCWSTR, byval ContextOut as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupGetLineByIndexA(byval InfHandle as HINF, byval Section as PCSTR, byval Index as DWORD, byval Context as PINFCONTEXT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetLineByIndex alias "SetupGetLineByIndexA"(byval InfHandle as HINF, byval Section as PCSTR, byval Index as DWORD, byval Context as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupGetLineByIndexW(byval InfHandle as HINF, byval Section as PCWSTR, byval Index as DWORD, byval Context as PINFCONTEXT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetLineByIndex alias "SetupGetLineByIndexW"(byval InfHandle as HINF, byval Section as PCWSTR, byval Index as DWORD, byval Context as PINFCONTEXT) as WINBOOL
+#endif
+
 declare function SetupGetLineCountA(byval InfHandle as HINF, byval Section as PCSTR) as LONG
+
+#ifndef UNICODE
+	declare function SetupGetLineCount alias "SetupGetLineCountA"(byval InfHandle as HINF, byval Section as PCSTR) as LONG
+#endif
+
 declare function SetupGetLineCountW(byval InfHandle as HINF, byval Section as PCWSTR) as LONG
+
+#ifdef UNICODE
+	declare function SetupGetLineCount alias "SetupGetLineCountW"(byval InfHandle as HINF, byval Section as PCWSTR) as LONG
+#endif
+
 declare function SetupGetLineTextA(byval Context as PINFCONTEXT, byval InfHandle as HINF, byval Section as PCSTR, byval Key as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetLineText alias "SetupGetLineTextA"(byval Context as PINFCONTEXT, byval InfHandle as HINF, byval Section as PCSTR, byval Key as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetLineTextW(byval Context as PINFCONTEXT, byval InfHandle as HINF, byval Section as PCWSTR, byval Key as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetLineText alias "SetupGetLineTextW"(byval Context as PINFCONTEXT, byval InfHandle as HINF, byval Section as PCWSTR, byval Key as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetFieldCount(byval Context as PINFCONTEXT) as DWORD
 declare function SetupGetStringFieldA(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetStringField alias "SetupGetStringFieldA"(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetStringFieldW(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetStringField alias "SetupGetStringFieldW"(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetIntField(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval IntegerValue as PINT) as WINBOOL
 declare function SetupGetMultiSzFieldA(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as LPDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetMultiSzField alias "SetupGetMultiSzFieldA"(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as LPDWORD) as WINBOOL
+#endif
+
 declare function SetupGetMultiSzFieldW(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as LPDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetMultiSzField alias "SetupGetMultiSzFieldW"(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as LPDWORD) as WINBOOL
+#endif
+
 declare function SetupGetBinaryField(byval Context as PINFCONTEXT, byval FieldIndex as DWORD, byval ReturnBuffer as PBYTE, byval ReturnBufferSize as DWORD, byval RequiredSize as LPDWORD) as WINBOOL
 declare function SetupGetFileCompressionInfoA(byval SourceFileName as PCSTR, byval ActualSourceFileName as PSTR ptr, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as DWORD
+
+#ifndef UNICODE
+	declare function SetupGetFileCompressionInfo alias "SetupGetFileCompressionInfoA"(byval SourceFileName as PCSTR, byval ActualSourceFileName as PSTR ptr, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as DWORD
+#endif
+
 declare function SetupGetFileCompressionInfoW(byval SourceFileName as PCWSTR, byval ActualSourceFileName as PWSTR ptr, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as DWORD
+
+#ifdef UNICODE
+	declare function SetupGetFileCompressionInfo alias "SetupGetFileCompressionInfoW"(byval SourceFileName as PCWSTR, byval ActualSourceFileName as PWSTR ptr, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as DWORD
+#endif
+
 declare function SetupGetFileCompressionInfoExA(byval SourceFileName as PCSTR, byval ActualSourceFileNameBuffer as PSTR, byval ActualSourceFileNameBufferLen as DWORD, byval RequiredBufferLen as PDWORD, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetFileCompressionInfoEx alias "SetupGetFileCompressionInfoExA"(byval SourceFileName as PCSTR, byval ActualSourceFileNameBuffer as PSTR, byval ActualSourceFileNameBufferLen as DWORD, byval RequiredBufferLen as PDWORD, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as WINBOOL
+#endif
+
 declare function SetupGetFileCompressionInfoExW(byval SourceFileName as PCWSTR, byval ActualSourceFileNameBuffer as PWSTR, byval ActualSourceFileNameBufferLen as DWORD, byval RequiredBufferLen as PDWORD, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetFileCompressionInfoEx alias "SetupGetFileCompressionInfoExW"(byval SourceFileName as PCWSTR, byval ActualSourceFileNameBuffer as PWSTR, byval ActualSourceFileNameBufferLen as DWORD, byval RequiredBufferLen as PDWORD, byval SourceFileSize as PDWORD, byval TargetFileSize as PDWORD, byval CompressionType as PUINT) as WINBOOL
+#endif
+
 declare function SetupDecompressOrCopyFileA(byval SourceFileName as PCSTR, byval TargetFileName as PCSTR, byval CompressionType as PUINT) as DWORD
+
+#ifndef UNICODE
+	declare function SetupDecompressOrCopyFile alias "SetupDecompressOrCopyFileA"(byval SourceFileName as PCSTR, byval TargetFileName as PCSTR, byval CompressionType as PUINT) as DWORD
+#endif
+
 declare function SetupDecompressOrCopyFileW(byval SourceFileName as PCWSTR, byval TargetFileName as PCWSTR, byval CompressionType as PUINT) as DWORD
+
+#ifdef UNICODE
+	declare function SetupDecompressOrCopyFile alias "SetupDecompressOrCopyFileW"(byval SourceFileName as PCWSTR, byval TargetFileName as PCWSTR, byval CompressionType as PUINT) as DWORD
+#endif
+
 declare function SetupGetSourceFileLocationA(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCSTR, byval SourceId as PUINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetSourceFileLocation alias "SetupGetSourceFileLocationA"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCSTR, byval SourceId as PUINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetSourceFileLocationW(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCWSTR, byval SourceId as PUINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetSourceFileLocation alias "SetupGetSourceFileLocationW"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCWSTR, byval SourceId as PUINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetSourceFileSizeA(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCSTR, byval Section as PCSTR, byval FileSize as PDWORD, byval RoundingFactor as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetSourceFileSize alias "SetupGetSourceFileSizeA"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCSTR, byval Section as PCSTR, byval FileSize as PDWORD, byval RoundingFactor as UINT) as WINBOOL
+#endif
+
 declare function SetupGetSourceFileSizeW(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCWSTR, byval Section as PCWSTR, byval FileSize as PDWORD, byval RoundingFactor as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetSourceFileSize alias "SetupGetSourceFileSizeW"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval FileName as PCWSTR, byval Section as PCWSTR, byval FileSize as PDWORD, byval RoundingFactor as UINT) as WINBOOL
+#endif
+
 declare function SetupGetTargetPathA(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval Section as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetTargetPath alias "SetupGetTargetPathA"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval Section as PCSTR, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetTargetPathW(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval Section as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetTargetPath alias "SetupGetTargetPathW"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval Section as PCWSTR, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupSetSourceListA(byval Flags as DWORD, byval SourceList as PCSTR ptr, byval SourceCount as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupSetSourceList alias "SetupSetSourceListA"(byval Flags as DWORD, byval SourceList as PCSTR ptr, byval SourceCount as UINT) as WINBOOL
+#endif
+
 declare function SetupSetSourceListW(byval Flags as DWORD, byval SourceList as PCWSTR ptr, byval SourceCount as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupSetSourceList alias "SetupSetSourceListW"(byval Flags as DWORD, byval SourceList as PCWSTR ptr, byval SourceCount as UINT) as WINBOOL
+#endif
+
 declare function SetupCancelTemporarySourceList() as WINBOOL
 declare function SetupAddToSourceListA(byval Flags as DWORD, byval Source as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupAddToSourceList alias "SetupAddToSourceListA"(byval Flags as DWORD, byval Source as PCSTR) as WINBOOL
+#endif
+
 declare function SetupAddToSourceListW(byval Flags as DWORD, byval Source as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupAddToSourceList alias "SetupAddToSourceListW"(byval Flags as DWORD, byval Source as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupRemoveFromSourceListA(byval Flags as DWORD, byval Source as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupRemoveFromSourceList alias "SetupRemoveFromSourceListA"(byval Flags as DWORD, byval Source as PCSTR) as WINBOOL
+#endif
+
 declare function SetupRemoveFromSourceListW(byval Flags as DWORD, byval Source as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupRemoveFromSourceList alias "SetupRemoveFromSourceListW"(byval Flags as DWORD, byval Source as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupQuerySourceListA(byval Flags as DWORD, byval List as PCSTR ptr ptr, byval Count as PUINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQuerySourceList alias "SetupQuerySourceListA"(byval Flags as DWORD, byval List as PCSTR ptr ptr, byval Count as PUINT) as WINBOOL
+#endif
+
 declare function SetupQuerySourceListW(byval Flags as DWORD, byval List as PCWSTR ptr ptr, byval Count as PUINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQuerySourceList alias "SetupQuerySourceListW"(byval Flags as DWORD, byval List as PCWSTR ptr ptr, byval Count as PUINT) as WINBOOL
+#endif
+
 declare function SetupFreeSourceListA(byval List as PCSTR ptr ptr, byval Count as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupFreeSourceList alias "SetupFreeSourceListA"(byval List as PCSTR ptr ptr, byval Count as UINT) as WINBOOL
+#endif
+
 declare function SetupFreeSourceListW(byval List as PCWSTR ptr ptr, byval Count as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupFreeSourceList alias "SetupFreeSourceListW"(byval List as PCWSTR ptr ptr, byval Count as UINT) as WINBOOL
+#endif
+
 declare function SetupPromptForDiskA(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval DiskName as PCSTR, byval PathToSource as PCSTR, byval FileSought as PCSTR, byval TagFile as PCSTR, byval DiskPromptStyle as DWORD, byval PathBuffer as PSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+
+#ifndef UNICODE
+	declare function SetupPromptForDisk alias "SetupPromptForDiskA"(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval DiskName as PCSTR, byval PathToSource as PCSTR, byval FileSought as PCSTR, byval TagFile as PCSTR, byval DiskPromptStyle as DWORD, byval PathBuffer as PSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+#endif
+
 declare function SetupPromptForDiskW(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval DiskName as PCWSTR, byval PathToSource as PCWSTR, byval FileSought as PCWSTR, byval TagFile as PCWSTR, byval DiskPromptStyle as DWORD, byval PathBuffer as PWSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+
+#ifdef UNICODE
+	declare function SetupPromptForDisk alias "SetupPromptForDiskW"(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval DiskName as PCWSTR, byval PathToSource as PCWSTR, byval FileSought as PCWSTR, byval TagFile as PCWSTR, byval DiskPromptStyle as DWORD, byval PathBuffer as PWSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+#endif
+
 declare function SetupCopyErrorA(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval DiskName as PCSTR, byval PathToSource as PCSTR, byval SourceFile as PCSTR, byval TargetPathFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD, byval PathBuffer as PSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+
+#ifndef UNICODE
+	declare function SetupCopyError alias "SetupCopyErrorA"(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval DiskName as PCSTR, byval PathToSource as PCSTR, byval SourceFile as PCSTR, byval TargetPathFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD, byval PathBuffer as PSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+#endif
+
 declare function SetupCopyErrorW(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval DiskName as PCWSTR, byval PathToSource as PCWSTR, byval SourceFile as PCWSTR, byval TargetPathFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD, byval PathBuffer as PWSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+
+#ifdef UNICODE
+	declare function SetupCopyError alias "SetupCopyErrorW"(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval DiskName as PCWSTR, byval PathToSource as PCWSTR, byval SourceFile as PCWSTR, byval TargetPathFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD, byval PathBuffer as PWSTR, byval PathBufferSize as DWORD, byval PathRequiredSize as PDWORD) as UINT
+#endif
+
 declare function SetupRenameErrorA(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval SourceFile as PCSTR, byval TargetFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifndef UNICODE
+	declare function SetupRenameError alias "SetupRenameErrorA"(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval SourceFile as PCSTR, byval TargetFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
+
 declare function SetupRenameErrorW(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval SourceFile as PCWSTR, byval TargetFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifdef UNICODE
+	declare function SetupRenameError alias "SetupRenameErrorW"(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval SourceFile as PCWSTR, byval TargetFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
+
 declare function SetupDeleteErrorA(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval File as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifndef UNICODE
+	declare function SetupDeleteError alias "SetupDeleteErrorA"(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval File as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
+
 declare function SetupDeleteErrorW(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval File as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifdef UNICODE
+	declare function SetupDeleteError alias "SetupDeleteErrorW"(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval File as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
+
 declare function SetupBackupErrorA(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval SourceFile as PCSTR, byval TargetFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifndef UNICODE
+	declare function SetupBackupError alias "SetupBackupErrorA"(byval hwndParent as HWND, byval DialogTitle as PCSTR, byval SourceFile as PCSTR, byval TargetFile as PCSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
+
 declare function SetupBackupErrorW(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval SourceFile as PCWSTR, byval TargetFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+
+#ifdef UNICODE
+	declare function SetupBackupError alias "SetupBackupErrorW"(byval hwndParent as HWND, byval DialogTitle as PCWSTR, byval SourceFile as PCWSTR, byval TargetFile as PCWSTR, byval Win32ErrorCode as UINT, byval Style as DWORD) as UINT
+#endif
 
 const IDF_NOBROWSE = &h00000001
 const IDF_NOSKIP = &h00000002
@@ -2000,36 +2238,70 @@ const SRCINFO_DESCRIPTION = 3
 const SRCINFO_FLAGS = 4
 const SRCINFO_TAGFILE2 = 5
 const SRC_FLAGS_CABFILE = &h0010
+declare function SetupSetDirectoryIdA(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCSTR) as WINBOOL
 
-#ifdef UNICODE
-	#define SetupSetDirectoryId SetupSetDirectoryIdW
-	#define SetupSetDirectoryIdEx SetupSetDirectoryIdExW
-	#define SetupGetSourceInfo SetupGetSourceInfoW
-	#define SetupInstallFile SetupInstallFileW
-	#define SetupInstallFileEx SetupInstallFileExW
-#else
-	#define SetupSetDirectoryId SetupSetDirectoryIdA
-	#define SetupSetDirectoryIdEx SetupSetDirectoryIdExA
-	#define SetupGetSourceInfo SetupGetSourceInfoA
-	#define SetupInstallFile SetupInstallFileA
-	#define SetupInstallFileEx SetupInstallFileExA
+#ifndef UNICODE
+	declare function SetupSetDirectoryId alias "SetupSetDirectoryIdA"(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCSTR) as WINBOOL
 #endif
 
-declare function SetupSetDirectoryIdA(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCSTR) as WINBOOL
 declare function SetupSetDirectoryIdW(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupSetDirectoryId alias "SetupSetDirectoryIdW"(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupSetDirectoryIdExA(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCSTR, byval Flags as DWORD, byval Reserved1 as DWORD, byval Reserved2 as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupSetDirectoryIdEx alias "SetupSetDirectoryIdExA"(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCSTR, byval Flags as DWORD, byval Reserved1 as DWORD, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare function SetupSetDirectoryIdExW(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCWSTR, byval Flags as DWORD, byval Reserved1 as DWORD, byval Reserved2 as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupSetDirectoryIdEx alias "SetupSetDirectoryIdExW"(byval InfHandle as HINF, byval Id as DWORD, byval Directory as PCWSTR, byval Flags as DWORD, byval Reserved1 as DWORD, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare function SetupGetSourceInfoA(byval InfHandle as HINF, byval SourceId as UINT, byval InfoDesired as UINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetSourceInfo alias "SetupGetSourceInfoA"(byval InfHandle as HINF, byval SourceId as UINT, byval InfoDesired as UINT, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupGetSourceInfoW(byval InfHandle as HINF, byval SourceId as UINT, byval InfoDesired as UINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetSourceInfo alias "SetupGetSourceInfoW"(byval InfHandle as HINF, byval SourceId as UINT, byval InfoDesired as UINT, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupInstallFileA(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCSTR, byval SourcePathRoot as PCSTR, byval DestinationName as PCSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupInstallFile alias "SetupInstallFileA"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCSTR, byval SourcePathRoot as PCSTR, byval DestinationName as PCSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+#endif
+
 declare function SetupInstallFileW(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCWSTR, byval SourcePathRoot as PCWSTR, byval DestinationName as PCWSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallFile alias "SetupInstallFileW"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCWSTR, byval SourcePathRoot as PCWSTR, byval DestinationName as PCWSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+#endif
+
 declare function SetupInstallFileExA(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCSTR, byval SourcePathRoot as PCSTR, byval DestinationName as PCSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval FileWasInUse as PBOOL) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupInstallFileEx alias "SetupInstallFileExA"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCSTR, byval SourcePathRoot as PCSTR, byval DestinationName as PCSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval FileWasInUse as PBOOL) as WINBOOL
+#endif
+
 declare function SetupInstallFileExW(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCWSTR, byval SourcePathRoot as PCWSTR, byval DestinationName as PCWSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID, byval FileWasInUse as PBOOL) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallFileEx alias "SetupInstallFileExW"(byval InfHandle as HINF, byval InfContext as PINFCONTEXT, byval SourceFile as PCWSTR, byval SourcePathRoot as PCWSTR, byval DestinationName as PCWSTR, byval CopyStyle as DWORD, byval CopyMsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID, byval FileWasInUse as PBOOL) as WINBOOL
+#endif
 
 const SP_COPY_DELETESOURCE = &h0000001
 const SP_COPY_REPLACEONLY = &h0000002
 const SP_COPY_NEWER = &h0000004
-#define SP_COPY_NEWER_OR_SAME SP_COPY_NEWER
+const SP_COPY_NEWER_OR_SAME = SP_COPY_NEWER
 const SP_COPY_NOOVERWRITE = &h0000008
 const SP_COPY_NODECOMP = &h0000010
 const SP_COPY_LANGUAGEAWARE = &h0000020
@@ -2054,60 +2326,151 @@ const SP_BACKUP_DEMANDPASS = &h00000002
 const SP_BACKUP_SPECIAL = &h00000004
 const SP_BACKUP_BOOTFILE = &h00000008
 
-#ifdef UNICODE
-	#define SetupSetFileQueueAlternatePlatform SetupSetFileQueueAlternatePlatformW
-	#define SetupQueueDeleteSection SetupQueueDeleteSectionW
-	#define SetupQueueRename SetupQueueRenameW
-	#define SetupQueueRenameSection SetupQueueRenameSectionW
-	#define SetupCommitFileQueue SetupCommitFileQueueW
-	#define SetupScanFileQueue SetupScanFileQueueW
-	#define SetupSetPlatformPathOverride SetupSetPlatformPathOverrideW
-	#define SetupQueueCopy SetupQueueCopyW
-	#define SetupQueueCopyIndirect SetupQueueCopyIndirectW
-	#define SetupQueueDefaultCopy SetupQueueDefaultCopyW
-	#define SetupQueueCopySection SetupQueueCopySectionW
-	#define SetupQueueDelete SetupQueueDeleteW
-#else
-	#define SetupSetFileQueueAlternatePlatform SetupSetFileQueueAlternatePlatformA
-	#define SetupQueueDeleteSection SetupQueueDeleteSectionA
-	#define SetupQueueRename SetupQueueRenameA
-	#define SetupQueueRenameSection SetupQueueRenameSectionA
-	#define SetupCommitFileQueue SetupCommitFileQueueA
-	#define SetupScanFileQueue SetupScanFileQueueA
-	#define SetupSetPlatformPathOverride SetupSetPlatformPathOverrideA
-	#define SetupQueueCopy SetupQueueCopyA
-	#define SetupQueueCopyIndirect SetupQueueCopyIndirectA
-	#define SetupQueueDefaultCopy SetupQueueDefaultCopyA
-	#define SetupQueueCopySection SetupQueueCopySectionA
-	#define SetupQueueDelete SetupQueueDeleteA
-#endif
-
 declare function SetupOpenFileQueue() as HSPFILEQ
 declare function SetupCloseFileQueue(byval QueueHandle as HSPFILEQ) as WINBOOL
 declare function SetupSetFileQueueAlternatePlatformA(byval QueueHandle as HSPFILEQ, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval AlternateDefaultCatalogFile as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupSetFileQueueAlternatePlatform alias "SetupSetFileQueueAlternatePlatformA"(byval QueueHandle as HSPFILEQ, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval AlternateDefaultCatalogFile as PCSTR) as WINBOOL
+#endif
+
 declare function SetupSetFileQueueAlternatePlatformW(byval QueueHandle as HSPFILEQ, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval AlternateDefaultCatalogFile as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupSetFileQueueAlternatePlatform alias "SetupSetFileQueueAlternatePlatformW"(byval QueueHandle as HSPFILEQ, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval AlternateDefaultCatalogFile as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupSetPlatformPathOverrideA(byval Override as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupSetPlatformPathOverride alias "SetupSetPlatformPathOverrideA"(byval Override as PCSTR) as WINBOOL
+#endif
+
 declare function SetupSetPlatformPathOverrideW(byval Override as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupSetPlatformPathOverride alias "SetupSetPlatformPathOverrideW"(byval Override as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupQueueCopyA(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCSTR, byval SourcePath as PCSTR, byval SourceFilename as PCSTR, byval SourceDescription as PCSTR, byval SourceTagfile as PCSTR, byval TargetDirectory as PCSTR, byval TargetFilename as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueCopy alias "SetupQueueCopyA"(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCSTR, byval SourcePath as PCSTR, byval SourceFilename as PCSTR, byval SourceDescription as PCSTR, byval SourceTagfile as PCSTR, byval TargetDirectory as PCSTR, byval TargetFilename as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueCopyW(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCWSTR, byval SourcePath as PCWSTR, byval SourceFilename as PCWSTR, byval SourceDescription as PCWSTR, byval SourceTagfile as PCWSTR, byval TargetDirectory as PCWSTR, byval TargetFilename as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueCopy alias "SetupQueueCopyW"(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCWSTR, byval SourcePath as PCWSTR, byval SourceFilename as PCWSTR, byval SourceDescription as PCWSTR, byval SourceTagfile as PCWSTR, byval TargetDirectory as PCWSTR, byval TargetFilename as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueCopyIndirectA(byval CopyParams as PSP_FILE_COPY_PARAMS_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueCopyIndirect alias "SetupQueueCopyIndirectA"(byval CopyParams as PSP_FILE_COPY_PARAMS_A) as WINBOOL
+#endif
+
 declare function SetupQueueCopyIndirectW(byval CopyParams as PSP_FILE_COPY_PARAMS_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueCopyIndirect alias "SetupQueueCopyIndirectW"(byval CopyParams as PSP_FILE_COPY_PARAMS_W) as WINBOOL
+#endif
+
 declare function SetupQueueDefaultCopyA(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval SourceRootPath as PCSTR, byval SourceFilename as PCSTR, byval TargetFilename as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueDefaultCopy alias "SetupQueueDefaultCopyA"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval SourceRootPath as PCSTR, byval SourceFilename as PCSTR, byval TargetFilename as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueDefaultCopyW(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval SourceRootPath as PCWSTR, byval SourceFilename as PCWSTR, byval TargetFilename as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueDefaultCopy alias "SetupQueueDefaultCopyW"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval SourceRootPath as PCWSTR, byval SourceFilename as PCWSTR, byval TargetFilename as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueCopySectionA(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCSTR, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueCopySection alias "SetupQueueCopySectionA"(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCSTR, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueCopySectionW(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCWSTR, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueCopySection alias "SetupQueueCopySectionW"(byval QueueHandle as HSPFILEQ, byval SourceRootPath as PCWSTR, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR, byval CopyStyle as DWORD) as WINBOOL
+#endif
+
 declare function SetupQueueDeleteA(byval QueueHandle as HSPFILEQ, byval PathPart1 as PCSTR, byval PathPart2 as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueDelete alias "SetupQueueDeleteA"(byval QueueHandle as HSPFILEQ, byval PathPart1 as PCSTR, byval PathPart2 as PCSTR) as WINBOOL
+#endif
+
 declare function SetupQueueDeleteW(byval QueueHandle as HSPFILEQ, byval PathPart1 as PCWSTR, byval PathPart2 as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueDelete alias "SetupQueueDeleteW"(byval QueueHandle as HSPFILEQ, byval PathPart1 as PCWSTR, byval PathPart2 as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupQueueDeleteSectionA(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueDeleteSection alias "SetupQueueDeleteSectionA"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR) as WINBOOL
+#endif
+
 declare function SetupQueueDeleteSectionW(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueDeleteSection alias "SetupQueueDeleteSectionW"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupQueueRenameA(byval QueueHandle as HSPFILEQ, byval SourcePath as PCSTR, byval SourceFilename as PCSTR, byval TargetPath as PCSTR, byval TargetFilename as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueRename alias "SetupQueueRenameA"(byval QueueHandle as HSPFILEQ, byval SourcePath as PCSTR, byval SourceFilename as PCSTR, byval TargetPath as PCSTR, byval TargetFilename as PCSTR) as WINBOOL
+#endif
+
 declare function SetupQueueRenameW(byval QueueHandle as HSPFILEQ, byval SourcePath as PCWSTR, byval SourceFilename as PCWSTR, byval TargetPath as PCWSTR, byval TargetFilename as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueRename alias "SetupQueueRenameW"(byval QueueHandle as HSPFILEQ, byval SourcePath as PCWSTR, byval SourceFilename as PCWSTR, byval TargetPath as PCWSTR, byval TargetFilename as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupQueueRenameSectionA(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueueRenameSection alias "SetupQueueRenameSectionA"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCSTR) as WINBOOL
+#endif
+
 declare function SetupQueueRenameSectionW(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueueRenameSection alias "SetupQueueRenameSectionW"(byval QueueHandle as HSPFILEQ, byval InfHandle as HINF, byval ListInfHandle as HINF, byval Section as PCWSTR) as WINBOOL
+#endif
+
 declare function SetupCommitFileQueueA(byval Owner as HWND, byval QueueHandle as HSPFILEQ, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupCommitFileQueue alias "SetupCommitFileQueueA"(byval Owner as HWND, byval QueueHandle as HSPFILEQ, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+#endif
+
 declare function SetupCommitFileQueueW(byval Owner as HWND, byval QueueHandle as HSPFILEQ, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupCommitFileQueue alias "SetupCommitFileQueueW"(byval Owner as HWND, byval QueueHandle as HSPFILEQ, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+#endif
+
 declare function SetupScanFileQueueA(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Window as HWND, byval CallbackRoutine as PSP_FILE_CALLBACK_A, byval CallbackContext as PVOID, byval Result as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupScanFileQueue alias "SetupScanFileQueueA"(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Window as HWND, byval CallbackRoutine as PSP_FILE_CALLBACK_A, byval CallbackContext as PVOID, byval Result as PDWORD) as WINBOOL
+#endif
+
 declare function SetupScanFileQueueW(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Window as HWND, byval CallbackRoutine as PSP_FILE_CALLBACK_W, byval CallbackContext as PVOID, byval Result as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupScanFileQueue alias "SetupScanFileQueueW"(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Window as HWND, byval CallbackRoutine as PSP_FILE_CALLBACK_W, byval CallbackContext as PVOID, byval Result as PDWORD) as WINBOOL
+#endif
 
 const SPQ_SCAN_FILE_PRESENCE = &h00000001
 const SPQ_SCAN_FILE_VALIDITY = &h00000002
@@ -2131,99 +2494,198 @@ const SPOST_NONE = 0
 const SPOST_PATH = 1
 const SPOST_URL = 2
 const SPOST_MAX = 3
-
-#ifdef UNICODE
-	#define SetupCopyOEMInf SetupCopyOEMInfW
-#else
-	#define SetupCopyOEMInf SetupCopyOEMInfA
-#endif
-
 declare function SetupCopyOEMInfA(byval SourceInfFileName as PCSTR, byval OEMSourceMediaLocation as PCSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PSTR ptr) as WINBOOL
-declare function SetupCopyOEMInfW(byval SourceInfFileName as PCWSTR, byval OEMSourceMediaLocation as PCWSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PWSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PWSTR ptr) as WINBOOL
-const SUOI_FORCEDELETE = &h00000001
 
-#ifdef UNICODE
-	#define SetupUninstallOEMInf SetupUninstallOEMInfW
-	#define SetupCreateDiskSpaceList SetupCreateDiskSpaceListW
-#else
-	#define SetupUninstallOEMInf SetupUninstallOEMInfA
-	#define SetupCreateDiskSpaceList SetupCreateDiskSpaceListA
+#ifndef UNICODE
+	declare function SetupCopyOEMInf alias "SetupCopyOEMInfA"(byval SourceInfFileName as PCSTR, byval OEMSourceMediaLocation as PCSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PSTR ptr) as WINBOOL
 #endif
 
+declare function SetupCopyOEMInfW(byval SourceInfFileName as PCWSTR, byval OEMSourceMediaLocation as PCWSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PWSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PWSTR ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupCopyOEMInf alias "SetupCopyOEMInfW"(byval SourceInfFileName as PCWSTR, byval OEMSourceMediaLocation as PCWSTR, byval OEMSourceMediaType as DWORD, byval CopyStyle as DWORD, byval DestinationInfFileName as PWSTR, byval DestinationInfFileNameSize as DWORD, byval RequiredSize as PDWORD, byval DestinationInfFileNameComponent as PWSTR ptr) as WINBOOL
+#endif
+
+const SUOI_FORCEDELETE = &h00000001
 declare function SetupUninstallOEMInfA(byval InfFileName as PCSTR, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupUninstallOEMInf alias "SetupUninstallOEMInfA"(byval InfFileName as PCSTR, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupUninstallOEMInfW(byval InfFileName as PCWSTR, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupUninstallOEMInf alias "SetupUninstallOEMInfW"(byval InfFileName as PCWSTR, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupUninstallNewlyCopiedInfs(byval FileQueue as HSPFILEQ, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
 declare function SetupCreateDiskSpaceListA(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
-declare function SetupCreateDiskSpaceListW(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
-const SPDSL_IGNORE_DISK = &h00000001
-const SPDSL_DISALLOW_NEGATIVE_ADJUST = &h00000002
 
-#ifdef UNICODE
-	#define SetupDuplicateDiskSpaceList SetupDuplicateDiskSpaceListW
-	#define SetupQueryDrivesInDiskSpaceList SetupQueryDrivesInDiskSpaceListW
-	#define SetupQuerySpaceRequiredOnDrive SetupQuerySpaceRequiredOnDriveW
-	#define SetupAdjustDiskSpaceList SetupAdjustDiskSpaceListW
-	#define SetupAddToDiskSpaceList SetupAddToDiskSpaceListW
-	#define SetupAddSectionToDiskSpaceList SetupAddSectionToDiskSpaceListW
-	#define SetupAddInstallSectionToDiskSpaceList SetupAddInstallSectionToDiskSpaceListW
-	#define SetupRemoveFromDiskSpaceList SetupRemoveFromDiskSpaceListW
-	#define SetupRemoveSectionFromDiskSpaceList SetupRemoveSectionFromDiskSpaceListW
-	#define SetupRemoveInstallSectionFromDiskSpaceList SetupRemoveInstallSectionFromDiskSpaceListW
-	#define SetupIterateCabinet SetupIterateCabinetW
-#else
-	#define SetupDuplicateDiskSpaceList SetupDuplicateDiskSpaceListA
-	#define SetupQueryDrivesInDiskSpaceList SetupQueryDrivesInDiskSpaceListA
-	#define SetupQuerySpaceRequiredOnDrive SetupQuerySpaceRequiredOnDriveA
-	#define SetupAdjustDiskSpaceList SetupAdjustDiskSpaceListA
-	#define SetupAddToDiskSpaceList SetupAddToDiskSpaceListA
-	#define SetupAddSectionToDiskSpaceList SetupAddSectionToDiskSpaceListA
-	#define SetupAddInstallSectionToDiskSpaceList SetupAddInstallSectionToDiskSpaceListA
-	#define SetupRemoveFromDiskSpaceList SetupRemoveFromDiskSpaceListA
-	#define SetupRemoveSectionFromDiskSpaceList SetupRemoveSectionFromDiskSpaceListA
-	#define SetupRemoveInstallSectionFromDiskSpaceList SetupRemoveInstallSectionFromDiskSpaceListA
-	#define SetupIterateCabinet SetupIterateCabinetA
+#ifndef UNICODE
+	declare function SetupCreateDiskSpaceList alias "SetupCreateDiskSpaceListA"(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
 #endif
 
+declare function SetupCreateDiskSpaceListW(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+
+#ifdef UNICODE
+	declare function SetupCreateDiskSpaceList alias "SetupCreateDiskSpaceListW"(byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+#endif
+
+const SPDSL_IGNORE_DISK = &h00000001
+const SPDSL_DISALLOW_NEGATIVE_ADJUST = &h00000002
 declare function SetupDuplicateDiskSpaceListA(byval DiskSpace as HDSKSPC, byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+
+#ifndef UNICODE
+	declare function SetupDuplicateDiskSpaceList alias "SetupDuplicateDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+#endif
+
 declare function SetupDuplicateDiskSpaceListW(byval DiskSpace as HDSKSPC, byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+
+#ifdef UNICODE
+	declare function SetupDuplicateDiskSpaceList alias "SetupDuplicateDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval Reserved1 as PVOID, byval Reserved2 as DWORD, byval Flags as UINT) as HDSKSPC
+#endif
+
 declare function SetupDestroyDiskSpaceList(byval DiskSpace as HDSKSPC) as WINBOOL
 declare function SetupQueryDrivesInDiskSpaceListA(byval DiskSpace as HDSKSPC, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupQueryDrivesInDiskSpaceListW(byval DiskSpace as HDSKSPC, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupQuerySpaceRequiredOnDriveA(byval DiskSpace as HDSKSPC, byval DriveSpec as PCSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupQuerySpaceRequiredOnDriveW(byval DiskSpace as HDSKSPC, byval DriveSpec as PCWSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAdjustDiskSpaceListA(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAdjustDiskSpaceListW(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCWSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddSectionToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddSectionToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddInstallSectionToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupAddInstallSectionToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveSectionFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveSectionFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveInstallSectionFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupRemoveInstallSectionFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
-declare function SetupIterateCabinetA(byval CabinetFile as PCSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
-declare function SetupIterateCabinetW(byval CabinetFile as PCWSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
-declare function SetupPromptReboot(byval FileQueue as HSPFILEQ, byval Owner as HWND, byval ScanOnly as WINBOOL) as INT_
 
+#ifndef UNICODE
+	declare function SetupQueryDrivesInDiskSpaceList alias "SetupQueryDrivesInDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval ReturnBuffer as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupQueryDrivesInDiskSpaceListW(byval DiskSpace as HDSKSPC, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQueryDrivesInDiskSpaceList alias "SetupQueryDrivesInDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval ReturnBuffer as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupQuerySpaceRequiredOnDriveA(byval DiskSpace as HDSKSPC, byval DriveSpec as PCSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQuerySpaceRequiredOnDrive alias "SetupQuerySpaceRequiredOnDriveA"(byval DiskSpace as HDSKSPC, byval DriveSpec as PCSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupQuerySpaceRequiredOnDriveW(byval DiskSpace as HDSKSPC, byval DriveSpec as PCWSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupQuerySpaceRequiredOnDrive alias "SetupQuerySpaceRequiredOnDriveW"(byval DiskSpace as HDSKSPC, byval DriveSpec as PCWSTR, byval SpaceRequired as LONGLONG ptr, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAdjustDiskSpaceListA(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupAdjustDiskSpaceList alias "SetupAdjustDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAdjustDiskSpaceListW(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCWSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupAdjustDiskSpaceList alias "SetupAdjustDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval DriveRoot as LPCWSTR, byval Amount as LONGLONG, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupAddToDiskSpaceList alias "SetupAddToDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupAddToDiskSpaceList alias "SetupAddToDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval FileSize as LONGLONG, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddSectionToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupAddSectionToDiskSpaceList alias "SetupAddSectionToDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddSectionToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupAddSectionToDiskSpaceList alias "SetupAddSectionToDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddInstallSectionToDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupAddInstallSectionToDiskSpaceList alias "SetupAddInstallSectionToDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupAddInstallSectionToDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupAddInstallSectionToDiskSpaceList alias "SetupAddInstallSectionToDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupRemoveFromDiskSpaceList alias "SetupRemoveFromDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupRemoveFromDiskSpaceList alias "SetupRemoveFromDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval TargetFilespec as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveSectionFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupRemoveSectionFromDiskSpaceList alias "SetupRemoveSectionFromDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveSectionFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupRemoveSectionFromDiskSpaceList alias "SetupRemoveSectionFromDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval ListInfHandle as HINF, byval SectionName as PCWSTR, byval Operation as UINT, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveInstallSectionFromDiskSpaceListA(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupRemoveInstallSectionFromDiskSpaceList alias "SetupRemoveInstallSectionFromDiskSpaceListA"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupRemoveInstallSectionFromDiskSpaceListW(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupRemoveInstallSectionFromDiskSpaceList alias "SetupRemoveInstallSectionFromDiskSpaceListW"(byval DiskSpace as HDSKSPC, byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval SectionName as PCWSTR, byval Reserved1 as PVOID, byval Reserved2 as UINT) as WINBOOL
+#endif
+
+declare function SetupIterateCabinetA(byval CabinetFile as PCSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupIterateCabinet alias "SetupIterateCabinetA"(byval CabinetFile as PCSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID) as WINBOOL
+#endif
+
+declare function SetupIterateCabinetW(byval CabinetFile as PCWSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupIterateCabinet alias "SetupIterateCabinetW"(byval CabinetFile as PCWSTR, byval Reserved as DWORD, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID) as WINBOOL
+#endif
+
+declare function SetupPromptReboot(byval FileQueue as HSPFILEQ, byval Owner as HWND, byval ScanOnly as WINBOOL) as INT_
 const SPFILEQ_FILE_IN_USE = &h00000001
 const SPFILEQ_REBOOT_RECOMMENDED = &h00000002
 const SPFILEQ_REBOOT_IN_PROGRESS = &h00000004
-
-#ifdef UNICODE
-	#define SetupDefaultQueueCallback SetupDefaultQueueCallbackW
-#else
-	#define SetupDefaultQueueCallback SetupDefaultQueueCallbackA
-#endif
 
 declare function SetupInitDefaultQueueCallback(byval OwnerWindow as HWND) as PVOID
 declare function SetupInitDefaultQueueCallbackEx(byval OwnerWindow as HWND, byval AlternateProgressWindow as HWND, byval ProgressMessage as UINT, byval Reserved1 as DWORD, byval Reserved2 as PVOID) as PVOID
 declare sub SetupTermDefaultQueueCallback(byval Context as PVOID)
 declare function SetupDefaultQueueCallbackA(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
+
+#ifndef UNICODE
+	declare function SetupDefaultQueueCallback alias "SetupDefaultQueueCallbackA"(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
+#endif
+
 declare function SetupDefaultQueueCallbackW(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
+
+#ifdef UNICODE
+	declare function SetupDefaultQueueCallback alias "SetupDefaultQueueCallbackW"(byval Context as PVOID, byval Notification as UINT, byval Param1 as UINT_PTR, byval Param2 as UINT_PTR) as UINT
+#endif
 
 const FLG_ADDREG_DELREG_BIT = &h00008000
 const FLG_ADDREG_BINVALUETYPE = &h00000001
@@ -2244,15 +2706,15 @@ const FLG_ADDREG_TYPE_EXPAND_SZ = &h00020000
 #define FLG_ADDREG_TYPE_NONE (&h00020000 or FLG_ADDREG_BINVALUETYPE)
 const FLG_DELREG_VALUE = &h00000000
 #define FLG_DELREG_TYPE_MASK FLG_ADDREG_TYPE_MASK
-#define FLG_DELREG_TYPE_SZ FLG_ADDREG_TYPE_SZ
-#define FLG_DELREG_TYPE_MULTI_SZ FLG_ADDREG_TYPE_MULTI_SZ
-#define FLG_DELREG_TYPE_EXPAND_SZ FLG_ADDREG_TYPE_EXPAND_SZ
+const FLG_DELREG_TYPE_SZ = FLG_ADDREG_TYPE_SZ
+const FLG_DELREG_TYPE_MULTI_SZ = FLG_ADDREG_TYPE_MULTI_SZ
+const FLG_DELREG_TYPE_EXPAND_SZ = FLG_ADDREG_TYPE_EXPAND_SZ
 #define FLG_DELREG_TYPE_BINARY FLG_ADDREG_TYPE_BINARY
 #define FLG_DELREG_TYPE_DWORD FLG_ADDREG_TYPE_DWORD
 #define FLG_DELREG_TYPE_NONE FLG_ADDREG_TYPE_NONE
-#define FLG_DELREG_64BITKEY FLG_ADDREG_64BITKEY
-#define FLG_DELREG_KEYONLY_COMMON FLG_ADDREG_KEYONLY_COMMON
-#define FLG_DELREG_32BITKEY FLG_ADDREG_32BITKEY
+const FLG_DELREG_64BITKEY = FLG_ADDREG_64BITKEY
+const FLG_DELREG_KEYONLY_COMMON = FLG_ADDREG_KEYONLY_COMMON
+const FLG_DELREG_32BITKEY = FLG_ADDREG_32BITKEY
 const FLG_DELREG_OPERATION_MASK = &h000000FE
 #define FLG_DELREG_MULTI_SZ_DELSTRING ((FLG_DELREG_TYPE_MULTI_SZ or FLG_ADDREG_DELREG_BIT) or &h00000002)
 const FLG_BITREG_CLEARBITS = &h00000000
@@ -2267,15 +2729,18 @@ const FLG_PROFITEM_CURRENTUSER = &h00000001
 const FLG_PROFITEM_DELETE = &h00000002
 const FLG_PROFITEM_GROUP = &h00000004
 const FLG_PROFITEM_CSIDL = &h00000008
+declare function SetupInstallFromInfSectionA(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 
-#ifdef UNICODE
-	#define SetupInstallFromInfSection SetupInstallFromInfSectionW
-#else
-	#define SetupInstallFromInfSection SetupInstallFromInfSectionA
+#ifndef UNICODE
+	declare function SetupInstallFromInfSection alias "SetupInstallFromInfSectionA"(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 #endif
 
-declare function SetupInstallFromInfSectionA(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_A, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupInstallFromInfSectionW(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallFromInfSection alias "SetupInstallFromInfSectionW"(byval Owner as HWND, byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as UINT, byval RelativeKeyRoot as HKEY, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT, byval MsgHandler as PSP_FILE_CALLBACK_W, byval Context as PVOID, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 const SPINST_LOGCONFIG = &h00000001
 const SPINST_INIFILES = &h00000002
 const SPINST_REGISTRY = &h00000004
@@ -2291,15 +2756,18 @@ const SPINST_SINGLESECTION = &h00010000
 const SPINST_LOGCONFIG_IS_FORCED = &h00020000
 const SPINST_LOGCONFIGS_ARE_OVERRIDES = &h00040000
 const SPINST_REGISTERCALLBACKAWARE = &h00080000
+declare function SetupInstallFilesFromInfSectionA(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCSTR, byval SourceRootPath as PCSTR, byval CopyFlags as UINT) as WINBOOL
 
-#ifdef UNICODE
-	#define SetupInstallFilesFromInfSection SetupInstallFilesFromInfSectionW
-#else
-	#define SetupInstallFilesFromInfSection SetupInstallFilesFromInfSectionA
+#ifndef UNICODE
+	declare function SetupInstallFilesFromInfSection alias "SetupInstallFilesFromInfSectionA"(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCSTR, byval SourceRootPath as PCSTR, byval CopyFlags as UINT) as WINBOOL
 #endif
 
-declare function SetupInstallFilesFromInfSectionA(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCSTR, byval SourceRootPath as PCSTR, byval CopyFlags as UINT) as WINBOOL
 declare function SetupInstallFilesFromInfSectionW(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCWSTR, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallFilesFromInfSection alias "SetupInstallFilesFromInfSectionW"(byval InfHandle as HINF, byval LayoutInfHandle as HINF, byval FileQueue as HSPFILEQ, byval SectionName as PCWSTR, byval SourceRootPath as PCWSTR, byval CopyFlags as UINT) as WINBOOL
+#endif
+
 const SPSVCINST_TAGTOFRONT = &h00000001
 const SPSVCINST_ASSOCSERVICE = &h00000002
 const SPSVCINST_DELETEEVENTLOGENTRY = &h00000004
@@ -2316,36 +2784,78 @@ const SPFILELOG_FORCENEW = &h00000002
 const SPFILELOG_QUERYONLY = &h00000004
 const SPFILELOG_OEMFILE = &h00000001
 type HSPFILELOG as PVOID
+declare function SetupInstallServicesFromInfSectionA(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define SetupInstallServicesFromInfSection SetupInstallServicesFromInfSectionW
-	#define SetupInstallServicesFromInfSectionEx SetupInstallServicesFromInfSectionExW
-	#define InstallHinfSection InstallHinfSectionW
-	#define SetupInitializeFileLog SetupInitializeFileLogW
-	#define SetupLogFile SetupLogFileW
-	#define SetupRemoveFileLogEntry SetupRemoveFileLogEntryW
-#else
-	#define SetupInstallServicesFromInfSection SetupInstallServicesFromInfSectionA
-	#define SetupInstallServicesFromInfSectionEx SetupInstallServicesFromInfSectionExA
-	#define InstallHinfSection InstallHinfSectionA
-	#define SetupInitializeFileLog SetupInitializeFileLogA
-	#define SetupLogFile SetupLogFileA
-	#define SetupRemoveFileLogEntry SetupRemoveFileLogEntryA
+#ifndef UNICODE
+	declare function SetupInstallServicesFromInfSection alias "SetupInstallServicesFromInfSectionA"(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
 #endif
 
-declare function SetupInstallServicesFromInfSectionA(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
 declare function SetupInstallServicesFromInfSectionW(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallServicesFromInfSection alias "SetupInstallServicesFromInfSectionW"(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD) as WINBOOL
+#endif
+
 declare function SetupInstallServicesFromInfSectionExA(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupInstallServicesFromInfSectionEx alias "SetupInstallServicesFromInfSectionExA"(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare function SetupInstallServicesFromInfSectionExW(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupInstallServicesFromInfSectionEx alias "SetupInstallServicesFromInfSectionExW"(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare sub InstallHinfSectionA(byval Window as HWND, byval ModuleHandle as HINSTANCE, byval CommandLine as PCSTR, byval ShowCommand as INT_)
+
+#ifndef UNICODE
+	declare sub InstallHinfSection alias "InstallHinfSectionA"(byval Window as HWND, byval ModuleHandle as HINSTANCE, byval CommandLine as PCSTR, byval ShowCommand as INT_)
+#endif
+
 declare sub InstallHinfSectionW(byval Window as HWND, byval ModuleHandle as HINSTANCE, byval CommandLine as PCWSTR, byval ShowCommand as INT_)
+
+#ifdef UNICODE
+	declare sub InstallHinfSection alias "InstallHinfSectionW"(byval Window as HWND, byval ModuleHandle as HINSTANCE, byval CommandLine as PCWSTR, byval ShowCommand as INT_)
+#endif
+
 declare function SetupInitializeFileLogA(byval LogFileName as PCSTR, byval Flags as DWORD) as HSPFILELOG
+
+#ifndef UNICODE
+	declare function SetupInitializeFileLog alias "SetupInitializeFileLogA"(byval LogFileName as PCSTR, byval Flags as DWORD) as HSPFILELOG
+#endif
+
 declare function SetupInitializeFileLogW(byval LogFileName as PCWSTR, byval Flags as DWORD) as HSPFILELOG
+
+#ifdef UNICODE
+	declare function SetupInitializeFileLog alias "SetupInitializeFileLogW"(byval LogFileName as PCWSTR, byval Flags as DWORD) as HSPFILELOG
+#endif
+
 declare function SetupTerminateFileLog(byval FileLogHandle as HSPFILELOG) as WINBOOL
 declare function SetupLogFileA(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval SourceFilename as PCSTR, byval TargetFilename as PCSTR, byval Checksum as DWORD, byval DiskTagfile as PCSTR, byval DiskDescription as PCSTR, byval OtherInfo as PCSTR, byval Flags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupLogFile alias "SetupLogFileA"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval SourceFilename as PCSTR, byval TargetFilename as PCSTR, byval Checksum as DWORD, byval DiskTagfile as PCSTR, byval DiskDescription as PCSTR, byval OtherInfo as PCSTR, byval Flags as DWORD) as WINBOOL
+#endif
+
 declare function SetupLogFileW(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval SourceFilename as PCWSTR, byval TargetFilename as PCWSTR, byval Checksum as DWORD, byval DiskTagfile as PCWSTR, byval DiskDescription as PCWSTR, byval OtherInfo as PCWSTR, byval Flags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupLogFile alias "SetupLogFileW"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval SourceFilename as PCWSTR, byval TargetFilename as PCWSTR, byval Checksum as DWORD, byval DiskTagfile as PCWSTR, byval DiskDescription as PCWSTR, byval OtherInfo as PCWSTR, byval Flags as DWORD) as WINBOOL
+#endif
+
 declare function SetupRemoveFileLogEntryA(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupRemoveFileLogEntry alias "SetupRemoveFileLogEntryA"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR) as WINBOOL
+#endif
+
 declare function SetupRemoveFileLogEntryW(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval TargetFilename as PCWSTR) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupRemoveFileLogEntry alias "SetupRemoveFileLogEntryW"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval TargetFilename as PCWSTR) as WINBOOL
+#endif
 
 type SetupFileLogInfo as long
 enum
@@ -2357,15 +2867,19 @@ enum
 	SetupFileLogMax
 end enum
 
-#ifdef UNICODE
-	#define SetupQueryFileLog SetupQueryFileLogW
-#else
-	#define SetupQueryFileLog SetupQueryFileLogA
+declare function SetupQueryFileLogA(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupQueryFileLog alias "SetupQueryFileLogA"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 #endif
 
-declare function SetupQueryFileLogA(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCSTR, byval TargetFilename as PCSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupQueryFileLogW(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval TargetFilename as PCWSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-#define LogSeverity DWORD
+
+#ifdef UNICODE
+	declare function SetupQueryFileLog alias "SetupQueryFileLogW"(byval FileLogHandle as HSPFILELOG, byval LogSectionName as PCWSTR, byval TargetFilename as PCWSTR, byval DesiredInfo as SetupFileLogInfo, byval DataOut as PWSTR, byval ReturnBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+type LogSeverity as DWORD
 const LogSevInformation = &h00000000
 const LogSevWarning = &h00000001
 const LogSevError = &h00000002
@@ -2380,165 +2894,308 @@ const SPRDI_FIND_DUPS = &h00000001
 const SPDIT_NODRIVER = &h00000000
 const SPDIT_CLASSDRIVER = &h00000001
 const SPDIT_COMPATDRIVER = &h00000002
-
-#ifdef UNICODE
-	#define SetupLogError SetupLogErrorW
-	#define SetupGetBackupInformation SetupGetBackupInformationW
-	#define SetupPrepareQueueForRestore SetupPrepareQueueForRestoreW
-	#define SetupDiCreateDeviceInfoListEx SetupDiCreateDeviceInfoListExW
-	#define SetupDiGetDeviceInfoListDetail SetupDiGetDeviceInfoListDetailW
-	#define SetupDiCreateDeviceInfo SetupDiCreateDeviceInfoW
-	#define SetupDiOpenDeviceInfo SetupDiOpenDeviceInfoW
-	#define SetupDiGetDeviceInstanceId SetupDiGetDeviceInstanceIdW
-	#define SetupDiCreateDeviceInterface SetupDiCreateDeviceInterfaceW
-	#define SetupDiCreateInterfaceDevice SetupDiCreateDeviceInterfaceW
-	#define SetupDiOpenDeviceInterface SetupDiOpenDeviceInterfaceW
-#else
-	#define SetupLogError SetupLogErrorA
-	#define SetupGetBackupInformation SetupGetBackupInformationA
-	#define SetupPrepareQueueForRestore SetupPrepareQueueForRestoreA
-	#define SetupDiCreateDeviceInfoListEx SetupDiCreateDeviceInfoListExA
-	#define SetupDiGetDeviceInfoListDetail SetupDiGetDeviceInfoListDetailA
-	#define SetupDiCreateDeviceInfo SetupDiCreateDeviceInfoA
-	#define SetupDiOpenDeviceInfo SetupDiOpenDeviceInfoA
-	#define SetupDiGetDeviceInstanceId SetupDiGetDeviceInstanceIdA
-	#define SetupDiCreateDeviceInterface SetupDiCreateDeviceInterfaceA
-	#define SetupDiCreateInterfaceDevice SetupDiCreateDeviceInterfaceA
-	#define SetupDiOpenDeviceInterface SetupDiOpenDeviceInterfaceA
-#endif
-
 declare function SetupOpenLog(byval Erase as WINBOOL) as WINBOOL
 declare function SetupLogErrorA(byval MessageString as LPCSTR, byval Severity as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupLogError alias "SetupLogErrorA"(byval MessageString as LPCSTR, byval Severity as DWORD) as WINBOOL
+#endif
+
 declare function SetupLogErrorW(byval MessageString as LPCWSTR, byval Severity as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupLogError alias "SetupLogErrorW"(byval MessageString as LPCWSTR, byval Severity as DWORD) as WINBOOL
+#endif
+
 declare sub SetupCloseLog()
 declare function SetupGetBackupInformationA(byval QueueHandle as HSPFILEQ, byval BackupParams as PSP_BACKUP_QUEUE_PARAMS_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupGetBackupInformation alias "SetupGetBackupInformationA"(byval QueueHandle as HSPFILEQ, byval BackupParams as PSP_BACKUP_QUEUE_PARAMS_A) as WINBOOL
+#endif
+
 declare function SetupGetBackupInformationW(byval QueueHandle as HSPFILEQ, byval BackupParams as PSP_BACKUP_QUEUE_PARAMS_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupGetBackupInformation alias "SetupGetBackupInformationW"(byval QueueHandle as HSPFILEQ, byval BackupParams as PSP_BACKUP_QUEUE_PARAMS_W) as WINBOOL
+#endif
+
 declare function SetupPrepareQueueForRestoreA(byval QueueHandle as HSPFILEQ, byval BackupPath as PCSTR, byval RestoreFlags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupPrepareQueueForRestore alias "SetupPrepareQueueForRestoreA"(byval QueueHandle as HSPFILEQ, byval BackupPath as PCSTR, byval RestoreFlags as DWORD) as WINBOOL
+#endif
+
 declare function SetupPrepareQueueForRestoreW(byval QueueHandle as HSPFILEQ, byval BackupPath as PCWSTR, byval RestoreFlags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupPrepareQueueForRestore alias "SetupPrepareQueueForRestoreW"(byval QueueHandle as HSPFILEQ, byval BackupPath as PCWSTR, byval RestoreFlags as DWORD) as WINBOOL
+#endif
+
 declare function SetupSetNonInteractiveMode(byval NonInteractiveFlag as WINBOOL) as WINBOOL
 declare function SetupGetNonInteractiveMode() as WINBOOL
 declare function SetupDiCreateDeviceInfoList(byval ClassGuid as const GUID ptr, byval hwndParent as HWND) as HDEVINFO
 declare function SetupDiCreateDeviceInfoListExA(byval ClassGuid as const GUID ptr, byval hwndParent as HWND, byval MachineName as PCSTR, byval Reserved as PVOID) as HDEVINFO
+
+#ifndef UNICODE
+	declare function SetupDiCreateDeviceInfoListEx alias "SetupDiCreateDeviceInfoListExA"(byval ClassGuid as const GUID ptr, byval hwndParent as HWND, byval MachineName as PCSTR, byval Reserved as PVOID) as HDEVINFO
+#endif
+
 declare function SetupDiCreateDeviceInfoListExW(byval ClassGuid as const GUID ptr, byval hwndParent as HWND, byval MachineName as PCWSTR, byval Reserved as PVOID) as HDEVINFO
+
+#ifdef UNICODE
+	declare function SetupDiCreateDeviceInfoListEx alias "SetupDiCreateDeviceInfoListExW"(byval ClassGuid as const GUID ptr, byval hwndParent as HWND, byval MachineName as PCWSTR, byval Reserved as PVOID) as HDEVINFO
+#endif
+
 declare function SetupDiGetDeviceInfoListClass(byval DeviceInfoSet as HDEVINFO, byval ClassGuid as LPGUID) as WINBOOL
 declare function SetupDiGetDeviceInfoListDetailA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoSetDetailData as PSP_DEVINFO_LIST_DETAIL_DATA_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDeviceInfoListDetail alias "SetupDiGetDeviceInfoListDetailA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoSetDetailData as PSP_DEVINFO_LIST_DETAIL_DATA_A) as WINBOOL
+#endif
+
 declare function SetupDiGetDeviceInfoListDetailW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoSetDetailData as PSP_DEVINFO_LIST_DETAIL_DATA_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetDeviceInfoListDetail alias "SetupDiGetDeviceInfoListDetailW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoSetDetailData as PSP_DEVINFO_LIST_DETAIL_DATA_W) as WINBOOL
+#endif
+
 declare function SetupDiCreateDeviceInfoA(byval DeviceInfoSet as HDEVINFO, byval DeviceName as PCSTR, byval ClassGuid as const GUID ptr, byval DeviceDescription as PCSTR, byval hwndParent as HWND, byval CreationFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiCreateDeviceInfo alias "SetupDiCreateDeviceInfoA"(byval DeviceInfoSet as HDEVINFO, byval DeviceName as PCSTR, byval ClassGuid as const GUID ptr, byval DeviceDescription as PCSTR, byval hwndParent as HWND, byval CreationFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 declare function SetupDiCreateDeviceInfoW(byval DeviceInfoSet as HDEVINFO, byval DeviceName as PCWSTR, byval ClassGuid as const GUID ptr, byval DeviceDescription as PCWSTR, byval hwndParent as HWND, byval CreationFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiCreateDeviceInfo alias "SetupDiCreateDeviceInfoW"(byval DeviceInfoSet as HDEVINFO, byval DeviceName as PCWSTR, byval ClassGuid as const GUID ptr, byval DeviceDescription as PCWSTR, byval hwndParent as HWND, byval CreationFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 declare function SetupDiOpenDeviceInfoA(byval DeviceInfoSet as HDEVINFO, byval DeviceInstanceId as PCSTR, byval hwndParent as HWND, byval OpenFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiOpenDeviceInfo alias "SetupDiOpenDeviceInfoA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInstanceId as PCSTR, byval hwndParent as HWND, byval OpenFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 declare function SetupDiOpenDeviceInfoW(byval DeviceInfoSet as HDEVINFO, byval DeviceInstanceId as PCWSTR, byval hwndParent as HWND, byval OpenFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiOpenDeviceInfo alias "SetupDiOpenDeviceInfoW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInstanceId as PCWSTR, byval hwndParent as HWND, byval OpenFlags as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 declare function SetupDiGetDeviceInstanceIdA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstanceId as PSTR, byval DeviceInstanceIdSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDeviceInstanceId alias "SetupDiGetDeviceInstanceIdA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstanceId as PSTR, byval DeviceInstanceIdSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetDeviceInstanceIdW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstanceId as PWSTR, byval DeviceInstanceIdSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetDeviceInstanceId alias "SetupDiGetDeviceInstanceIdW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstanceId as PWSTR, byval DeviceInstanceIdSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiDeleteDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiEnumDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval MemberIndex as DWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiDestroyDeviceInfoList(byval DeviceInfoSet as HDEVINFO) as WINBOOL
 declare function SetupDiEnumDeviceInterfaces(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval MemberIndex as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiEnumInterfaceDevice SetupDiEnumDeviceInterfaces
+declare function SetupDiEnumInterfaceDevice alias "SetupDiEnumDeviceInterfaces"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval MemberIndex as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiCreateDeviceInterfaceA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiCreateDeviceInterface alias "SetupDiCreateDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+	declare function SetupDiCreateInterfaceDevice alias "SetupDiCreateDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+#endif
+
 declare function SetupDiCreateDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCWSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiCreateInterfaceDeviceW SetupDiCreateDeviceInterfaceW
-#define SetupDiCreateInterfaceDeviceA SetupDiCreateDeviceInterfaceA
-declare function SetupDiOpenDeviceInterfaceA(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-declare function SetupDiOpenDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiOpenInterfaceDeviceW SetupDiOpenDeviceInterfaceW
-#define SetupDiOpenInterfaceDeviceA SetupDiOpenDeviceInterfaceA
 
 #ifdef UNICODE
-	#define SetupDiOpenInterfaceDevice SetupDiOpenDeviceInterfaceW
-	#define SetupDiGetDeviceInterfaceDetail SetupDiGetDeviceInterfaceDetailW
-	#define SetupDiGetInterfaceDeviceDetail SetupDiGetDeviceInterfaceDetailW
-	#define SetupDiEnumDriverInfo SetupDiEnumDriverInfoW
-	#define SetupDiGetSelectedDriver SetupDiGetSelectedDriverW
-	#define SetupDiSetSelectedDriver SetupDiSetSelectedDriverW
-	#define SetupDiGetDriverInfoDetail SetupDiGetDriverInfoDetailW
+	declare function SetupDiCreateDeviceInterface alias "SetupDiCreateDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCWSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+	declare function SetupDiCreateInterfaceDevice alias "SetupDiCreateDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCWSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+#endif
+
+declare function SetupDiCreateInterfaceDeviceW alias "SetupDiCreateDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCWSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+declare function SetupDiCreateInterfaceDeviceA alias "SetupDiCreateDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InterfaceClassGuid as const GUID ptr, byval ReferenceString as PCSTR, byval CreationFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+declare function SetupDiOpenDeviceInterfaceA(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiOpenDeviceInterface alias "SetupDiOpenDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+#endif
+
+declare function SetupDiOpenDeviceInterfaceW(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiOpenDeviceInterface alias "SetupDiOpenDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+#endif
+
+declare function SetupDiOpenInterfaceDeviceW alias "SetupDiOpenDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+declare function SetupDiOpenInterfaceDeviceA alias "SetupDiOpenDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiOpenInterfaceDevice alias "SetupDiOpenDeviceInterfaceW"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCWSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 #else
-	#define SetupDiOpenInterfaceDevice SetupDiOpenDeviceInterfaceA
-	#define SetupDiGetDeviceInterfaceDetail SetupDiGetDeviceInterfaceDetailA
-	#define SetupDiGetInterfaceDeviceDetail SetupDiGetDeviceInterfaceDetailA
-	#define SetupDiEnumDriverInfo SetupDiEnumDriverInfoA
-	#define SetupDiGetSelectedDriver SetupDiGetSelectedDriverA
-	#define SetupDiSetSelectedDriver SetupDiSetSelectedDriverA
-	#define SetupDiGetDriverInfoDetail SetupDiGetDriverInfoDetailA
+	declare function SetupDiOpenInterfaceDevice alias "SetupDiOpenDeviceInterfaceA"(byval DeviceInfoSet as HDEVINFO, byval DevicePath as PCSTR, byval OpenFlags as DWORD, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 #endif
 
 declare function SetupDiGetDeviceInterfaceAlias(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval AliasInterfaceClassGuid as const GUID ptr, byval AliasDeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiGetInterfaceDeviceAlias SetupDiGetDeviceInterfaceAlias
+declare function SetupDiGetInterfaceDeviceAlias alias "SetupDiGetDeviceInterfaceAlias"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval AliasInterfaceClassGuid as const GUID ptr, byval AliasDeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiDeleteDeviceInterfaceData(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiDeleteInterfaceDeviceData SetupDiDeleteDeviceInterfaceData
+declare function SetupDiDeleteInterfaceDeviceData alias "SetupDiDeleteDeviceInterfaceData"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiRemoveDeviceInterface(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
-#define SetupDiRemoveInterfaceDevice SetupDiRemoveDeviceInterface
+declare function SetupDiRemoveInterfaceDevice alias "SetupDiRemoveDeviceInterface"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA) as WINBOOL
 declare function SetupDiGetDeviceInterfaceDetailA(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_A, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDeviceInterfaceDetail alias "SetupDiGetDeviceInterfaceDetailA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_A, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+	declare function SetupDiGetInterfaceDeviceDetail alias "SetupDiGetDeviceInterfaceDetailA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_A, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
 declare function SetupDiGetDeviceInterfaceDetailW(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_W, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
-#define SetupDiGetInterfaceDeviceDetailW SetupDiGetDeviceInterfaceDetailW
-#define SetupDiGetInterfaceDeviceDetailA SetupDiGetDeviceInterfaceDetailA
+
+#ifdef UNICODE
+	declare function SetupDiGetDeviceInterfaceDetail alias "SetupDiGetDeviceInterfaceDetailW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_W, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+	declare function SetupDiGetInterfaceDeviceDetail alias "SetupDiGetDeviceInterfaceDetailW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_W, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+#endif
+
+declare function SetupDiGetInterfaceDeviceDetailW alias "SetupDiGetDeviceInterfaceDetailW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_W, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
+declare function SetupDiGetInterfaceDeviceDetailA alias "SetupDiGetDeviceInterfaceDetailA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval DeviceInterfaceDetailData as PSP_DEVICE_INTERFACE_DETAIL_DATA_A, byval DeviceInterfaceDetailDataSize as DWORD, byval RequiredSize as PDWORD, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiInstallDeviceInterfaces(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
-#define SetupDiInstallInterfaceDevices SetupDiInstallDeviceInterfaces
+declare function SetupDiInstallInterfaceDevices alias "SetupDiInstallDeviceInterfaces"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSetDeviceInterfaceDefault(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Flags as DWORD, byval Reserved as PVOID) as WINBOOL
 declare function SetupDiRegisterDeviceInfo(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Flags as DWORD, byval CompareProc as PSP_DETSIG_CMPPROC, byval CompareContext as PVOID, byval DupDeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiBuildDriverInfoList(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD) as WINBOOL
 declare function SetupDiCancelDriverInfoSearch(byval DeviceInfoSet as HDEVINFO) as WINBOOL
 declare function SetupDiEnumDriverInfoA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD, byval MemberIndex as DWORD, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
-declare function SetupDiEnumDriverInfoW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD, byval MemberIndex as DWORD, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
-declare function SetupDiGetSelectedDriverA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
-declare function SetupDiGetSelectedDriverW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
-declare function SetupDiSetSelectedDriverA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
-declare function SetupDiSetSelectedDriverW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
-declare function SetupDiGetDriverInfoDetailA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_A, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupDiGetDriverInfoDetailW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_W, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupDiDestroyDriverInfoList(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD) as WINBOOL
 
+#ifndef UNICODE
+	declare function SetupDiEnumDriverInfo alias "SetupDiEnumDriverInfoA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD, byval MemberIndex as DWORD, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
+#endif
+
+declare function SetupDiEnumDriverInfoW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD, byval MemberIndex as DWORD, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiEnumDriverInfo alias "SetupDiEnumDriverInfoW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD, byval MemberIndex as DWORD, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+#endif
+
+declare function SetupDiGetSelectedDriverA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetSelectedDriver alias "SetupDiGetSelectedDriverA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
+#endif
+
+declare function SetupDiGetSelectedDriverW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetSelectedDriver alias "SetupDiGetSelectedDriverW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+#endif
+
+declare function SetupDiSetSelectedDriverA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetSelectedDriver alias "SetupDiSetSelectedDriverA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A) as WINBOOL
+#endif
+
+declare function SetupDiSetSelectedDriverW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetSelectedDriver alias "SetupDiSetSelectedDriverW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W) as WINBOOL
+#endif
+
+declare function SetupDiGetDriverInfoDetailA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_A, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDriverInfoDetail alias "SetupDiGetDriverInfoDetailA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_A, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupDiGetDriverInfoDetailW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_W, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetDriverInfoDetail alias "SetupDiGetDriverInfoDetailW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInfoDetailData as PSP_DRVINFO_DETAIL_DATA_W, byval DriverInfoDetailDataSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupDiDestroyDriverInfoList(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverType as DWORD) as WINBOOL
 const DIGCF_DEFAULT = &h00000001
 const DIGCF_PRESENT = &h00000002
 const DIGCF_ALLCLASSES = &h00000004
 const DIGCF_PROFILE = &h00000008
 const DIGCF_DEVICEINTERFACE = &h00000010
-#define DIGCF_INTERFACEDEVICE DIGCF_DEVICEINTERFACE
+const DIGCF_INTERFACEDEVICE = DIGCF_DEVICEINTERFACE
 const DIBCI_NOINSTALLCLASS = &h00000001
 const DIBCI_NODISPLAYCLASS = &h00000002
+declare function SetupDiGetClassDevsA(byval ClassGuid as const GUID ptr, byval Enumerator as PCSTR, byval hwndParent as HWND, byval Flags as DWORD) as HDEVINFO
 
-#ifdef UNICODE
-	#define SetupDiGetClassDevs SetupDiGetClassDevsW
-	#define SetupDiGetClassDevsEx SetupDiGetClassDevsExW
-	#define SetupDiGetINFClass SetupDiGetINFClassW
-	#define SetupDiBuildClassInfoListEx SetupDiBuildClassInfoListExW
-	#define SetupDiGetClassDescription SetupDiGetClassDescriptionW
-	#define SetupDiGetClassDescriptionEx SetupDiGetClassDescriptionExW
-	#define SetupDiInstallClass SetupDiInstallClassW
-	#define SetupDiInstallClassEx SetupDiInstallClassExW
-	#define SetupDiOpenClassRegKeyEx SetupDiOpenClassRegKeyExW
-	#define SetupDiCreateDeviceInterfaceRegKey SetupDiCreateDeviceInterfaceRegKeyW
-	#define SetupDiCreateInterfaceDeviceRegKey SetupDiCreateDeviceInterfaceRegKeyW
-	#define SetupDiCreateDevRegKey SetupDiCreateDevRegKeyW
-	#define SetupDiGetHwProfileListEx SetupDiGetHwProfileListExW
-#else
-	#define SetupDiGetClassDevs SetupDiGetClassDevsA
-	#define SetupDiGetClassDevsEx SetupDiGetClassDevsExA
-	#define SetupDiGetINFClass SetupDiGetINFClassA
-	#define SetupDiBuildClassInfoListEx SetupDiBuildClassInfoListExA
-	#define SetupDiGetClassDescription SetupDiGetClassDescriptionA
-	#define SetupDiGetClassDescriptionEx SetupDiGetClassDescriptionExA
-	#define SetupDiInstallClass SetupDiInstallClassA
-	#define SetupDiInstallClassEx SetupDiInstallClassExA
-	#define SetupDiOpenClassRegKeyEx SetupDiOpenClassRegKeyExA
-	#define SetupDiCreateDeviceInterfaceRegKey SetupDiCreateDeviceInterfaceRegKeyA
-	#define SetupDiCreateInterfaceDeviceRegKey SetupDiCreateDeviceInterfaceRegKeyA
-	#define SetupDiCreateDevRegKey SetupDiCreateDevRegKeyA
-	#define SetupDiGetHwProfileListEx SetupDiGetHwProfileListExA
+#ifndef UNICODE
+	declare function SetupDiGetClassDevs alias "SetupDiGetClassDevsA"(byval ClassGuid as const GUID ptr, byval Enumerator as PCSTR, byval hwndParent as HWND, byval Flags as DWORD) as HDEVINFO
 #endif
 
-declare function SetupDiGetClassDevsA(byval ClassGuid as const GUID ptr, byval Enumerator as PCSTR, byval hwndParent as HWND, byval Flags as DWORD) as HDEVINFO
 declare function SetupDiGetClassDevsW(byval ClassGuid as const GUID ptr, byval Enumerator as PCWSTR, byval hwndParent as HWND, byval Flags as DWORD) as HDEVINFO
+
+#ifdef UNICODE
+	declare function SetupDiGetClassDevs alias "SetupDiGetClassDevsW"(byval ClassGuid as const GUID ptr, byval Enumerator as PCWSTR, byval hwndParent as HWND, byval Flags as DWORD) as HDEVINFO
+#endif
+
 declare function SetupDiGetClassDevsExA(byval ClassGuid as const GUID ptr, byval Enumerator as PCSTR, byval hwndParent as HWND, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval MachineName as PCSTR, byval Reserved as PVOID) as HDEVINFO
+
+#ifndef UNICODE
+	declare function SetupDiGetClassDevsEx alias "SetupDiGetClassDevsExA"(byval ClassGuid as const GUID ptr, byval Enumerator as PCSTR, byval hwndParent as HWND, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval MachineName as PCSTR, byval Reserved as PVOID) as HDEVINFO
+#endif
+
 declare function SetupDiGetClassDevsExW(byval ClassGuid as const GUID ptr, byval Enumerator as PCWSTR, byval hwndParent as HWND, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval MachineName as PCWSTR, byval Reserved as PVOID) as HDEVINFO
+
+#ifdef UNICODE
+	declare function SetupDiGetClassDevsEx alias "SetupDiGetClassDevsExW"(byval ClassGuid as const GUID ptr, byval Enumerator as PCWSTR, byval hwndParent as HWND, byval Flags as DWORD, byval DeviceInfoSet as HDEVINFO, byval MachineName as PCWSTR, byval Reserved as PVOID) as HDEVINFO
+#endif
+
 declare function SetupDiGetINFClassA(byval InfName as PCSTR, byval ClassGuid as LPGUID, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetINFClass alias "SetupDiGetINFClassA"(byval InfName as PCSTR, byval ClassGuid as LPGUID, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetINFClassW(byval InfName as PCWSTR, byval ClassGuid as LPGUID, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetINFClass alias "SetupDiGetINFClassW"(byval InfName as PCWSTR, byval ClassGuid as LPGUID, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiBuildClassInfoList(byval Flags as DWORD, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupDiBuildClassInfoListExA(byval Flags as DWORD, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiBuildClassInfoListEx alias "SetupDiBuildClassInfoListExA"(byval Flags as DWORD, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiBuildClassInfoListExW(byval Flags as DWORD, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiBuildClassInfoListEx alias "SetupDiBuildClassInfoListExW"(byval Flags as DWORD, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetClassDescriptionA(byval ClassGuid as const GUID ptr, byval ClassDescription as PSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassDescription alias "SetupDiGetClassDescriptionA"(byval ClassGuid as const GUID ptr, byval ClassDescription as PSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetClassDescriptionW(byval ClassGuid as const GUID ptr, byval ClassDescription as PWSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassDescription alias "SetupDiGetClassDescriptionW"(byval ClassGuid as const GUID ptr, byval ClassDescription as PWSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetClassDescriptionExA(byval ClassGuid as const GUID ptr, byval ClassDescription as PSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassDescriptionEx alias "SetupDiGetClassDescriptionExA"(byval ClassGuid as const GUID ptr, byval ClassDescription as PSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetClassDescriptionExW(byval ClassGuid as const GUID ptr, byval ClassDescription as PWSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassDescriptionEx alias "SetupDiGetClassDescriptionExW"(byval ClassGuid as const GUID ptr, byval ClassDescription as PWSTR, byval ClassDescriptionSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiCallClassInstaller(byval InstallFunction as DI_FUNCTION, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSelectDevice(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSelectBestCompatDrv(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
@@ -2550,34 +3207,94 @@ declare function SetupDiUnremoveDevice(byval DeviceInfoSet as HDEVINFO, byval De
 declare function SetupDiRestartDevices(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiChangeState(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiInstallClassA(byval hwndParent as HWND, byval InfFileName as PCSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiInstallClass alias "SetupDiInstallClassA"(byval hwndParent as HWND, byval InfFileName as PCSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ) as WINBOOL
+#endif
+
 declare function SetupDiInstallClassW(byval hwndParent as HWND, byval InfFileName as PCWSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiInstallClass alias "SetupDiInstallClassW"(byval hwndParent as HWND, byval InfFileName as PCWSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ) as WINBOOL
+#endif
+
 declare function SetupDiInstallClassExA(byval hwndParent as HWND, byval InfFileName as PCSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiInstallClassEx alias "SetupDiInstallClassExA"(byval hwndParent as HWND, byval InfFileName as PCSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiInstallClassExW(byval hwndParent as HWND, byval InfFileName as PCWSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiInstallClassEx alias "SetupDiInstallClassExW"(byval hwndParent as HWND, byval InfFileName as PCWSTR, byval Flags as DWORD, byval FileQueue as HSPFILEQ, byval InterfaceClassGuid as const GUID ptr, byval Reserved1 as PVOID, byval Reserved2 as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiOpenClassRegKey(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM) as HKEY
 const DIOCR_INSTALLER = &h00000001
 const DIOCR_INTERFACE = &h00000002
 declare function SetupDiOpenClassRegKeyExA(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as HKEY
-declare function SetupDiOpenClassRegKeyExW(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as HKEY
-declare function SetupDiCreateDeviceInterfaceRegKeyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
-declare function SetupDiCreateDeviceInterfaceRegKeyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
-#define SetupDiCreateInterfaceDeviceRegKeyW SetupDiCreateDeviceInterfaceRegKeyW
-#define SetupDiCreateInterfaceDeviceRegKeyA SetupDiCreateDeviceInterfaceRegKeyA
-declare function SetupDiOpenDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM) as HKEY
-#define SetupDiOpenInterfaceDeviceRegKey SetupDiOpenDeviceInterfaceRegKey
-declare function SetupDiDeleteDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD) as WINBOOL
 
-#define SetupDiDeleteInterfaceDeviceRegKey SetupDiDeleteDeviceInterfaceRegKey
+#ifndef UNICODE
+	declare function SetupDiOpenClassRegKeyEx alias "SetupDiOpenClassRegKeyExA"(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as HKEY
+#endif
+
+declare function SetupDiOpenClassRegKeyExW(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as HKEY
+
+#ifdef UNICODE
+	declare function SetupDiOpenClassRegKeyEx alias "SetupDiOpenClassRegKeyExW"(byval ClassGuid as const GUID ptr, byval samDesired as REGSAM, byval Flags as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as HKEY
+#endif
+
+declare function SetupDiCreateDeviceInterfaceRegKeyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+
+#ifndef UNICODE
+	declare function SetupDiCreateDeviceInterfaceRegKey alias "SetupDiCreateDeviceInterfaceRegKeyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+	declare function SetupDiCreateInterfaceDeviceRegKey alias "SetupDiCreateDeviceInterfaceRegKeyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+#endif
+
+declare function SetupDiCreateDeviceInterfaceRegKeyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+
+#ifdef UNICODE
+	declare function SetupDiCreateDeviceInterfaceRegKey alias "SetupDiCreateDeviceInterfaceRegKeyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+	declare function SetupDiCreateInterfaceDeviceRegKey alias "SetupDiCreateDeviceInterfaceRegKeyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+#endif
+
+declare function SetupDiCreateInterfaceDeviceRegKeyW alias "SetupDiCreateDeviceInterfaceRegKeyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+declare function SetupDiCreateInterfaceDeviceRegKeyA alias "SetupDiCreateDeviceInterfaceRegKeyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+declare function SetupDiOpenDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM) as HKEY
+declare function SetupDiOpenInterfaceDeviceRegKey alias "SetupDiOpenDeviceInterfaceRegKey"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD, byval samDesired as REGSAM) as HKEY
+declare function SetupDiDeleteDeviceInterfaceRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD) as WINBOOL
+declare function SetupDiDeleteInterfaceDeviceRegKey alias "SetupDiDeleteDeviceInterfaceRegKey"(byval DeviceInfoSet as HDEVINFO, byval DeviceInterfaceData as PSP_DEVICE_INTERFACE_DATA, byval Reserved as DWORD) as WINBOOL
+
 const DIREG_DEV = &h00000001
 const DIREG_DRV = &h00000002
 const DIREG_BOTH = &h00000004
-
 declare function SetupDiCreateDevRegKeyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+
+#ifndef UNICODE
+	declare function SetupDiCreateDevRegKey alias "SetupDiCreateDevRegKeyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD, byval InfHandle as HINF, byval InfSectionName as PCSTR) as HKEY
+#endif
+
 declare function SetupDiCreateDevRegKeyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+
+#ifdef UNICODE
+	declare function SetupDiCreateDevRegKey alias "SetupDiCreateDevRegKeyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD, byval InfHandle as HINF, byval InfSectionName as PCWSTR) as HKEY
+#endif
+
 declare function SetupDiOpenDevRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD, byval samDesired as REGSAM) as HKEY
 declare function SetupDiDeleteDevRegKey(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Scope as DWORD, byval HwProfile as DWORD, byval KeyType as DWORD) as WINBOOL
 declare function SetupDiGetHwProfileList(byval HwProfileList as PDWORD, byval HwProfileListSize as DWORD, byval RequiredSize as PDWORD, byval CurrentlyActiveIndex as PDWORD) as WINBOOL
 declare function SetupDiGetHwProfileListExA(byval HwProfileList as PDWORD, byval HwProfileListSize as DWORD, byval RequiredSize as PDWORD, byval CurrentlyActiveIndex as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetHwProfileListEx alias "SetupDiGetHwProfileListExA"(byval HwProfileList as PDWORD, byval HwProfileListSize as DWORD, byval RequiredSize as PDWORD, byval CurrentlyActiveIndex as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetHwProfileListExW(byval HwProfileList as PDWORD, byval HwProfileListSize as DWORD, byval RequiredSize as PDWORD, byval CurrentlyActiveIndex as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetHwProfileListEx alias "SetupDiGetHwProfileListExW"(byval HwProfileList as PDWORD, byval HwProfileListSize as DWORD, byval RequiredSize as PDWORD, byval CurrentlyActiveIndex as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
 
 const SPDRP_DEVICEDESC = &h00000000
 const SPDRP_HARDWAREID = &h00000001
@@ -2622,77 +3339,127 @@ const SPCRP_DEVTYPE = &h00000019
 const SPCRP_EXCLUSIVE = &h0000001A
 const SPCRP_CHARACTERISTICS = &h0000001B
 const SPCRP_MAXIMUM_PROPERTY = &h0000001C
+declare function SetupDiGetDeviceRegistryPropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 
-#ifdef UNICODE
-	#define SetupDiGetDeviceRegistryProperty SetupDiGetDeviceRegistryPropertyW
-	#define SetupDiGetClassRegistryProperty SetupDiGetClassRegistryPropertyW
-	#define SetupDiSetDeviceRegistryProperty SetupDiSetDeviceRegistryPropertyW
-	#define SetupDiSetClassRegistryProperty SetupDiSetClassRegistryPropertyW
-	#define SetupDiGetDeviceInstallParams SetupDiGetDeviceInstallParamsW
-	#define SetupDiGetClassInstallParams SetupDiGetClassInstallParamsW
-	#define SetupDiSetDeviceInstallParams SetupDiSetDeviceInstallParamsW
-	#define SetupDiSetClassInstallParams SetupDiSetClassInstallParamsW
-	#define SetupDiGetDriverInstallParams SetupDiGetDriverInstallParamsW
-	#define SetupDiSetDriverInstallParams SetupDiSetDriverInstallParamsW
-	#define SetupDiGetClassImageListEx SetupDiGetClassImageListExW
-	#define SetupDiGetClassDevPropertySheets SetupDiGetClassDevPropertySheetsW
-	#define SetupDiClassNameFromGuid SetupDiClassNameFromGuidW
-	#define SetupDiClassNameFromGuidEx SetupDiClassNameFromGuidExW
-	#define SetupDiClassGuidsFromName SetupDiClassGuidsFromNameW
-	#define SetupDiClassGuidsFromNameEx SetupDiClassGuidsFromNameExW
-	#define SetupDiGetHwProfileFriendlyName SetupDiGetHwProfileFriendlyNameW
-	#define SetupDiGetHwProfileFriendlyNameEx SetupDiGetHwProfileFriendlyNameExW
-	#define SetupDiGetActualModelsSection SetupDiGetActualModelsSectionW
-	#define SetupDiGetActualSectionToInstall SetupDiGetActualSectionToInstallW
-	#define SetupDiGetActualSectionToInstallEx SetupDiGetActualSectionToInstallExW
-	#define SetupEnumInfSections SetupEnumInfSectionsW
-#else
-	#define SetupDiGetDeviceRegistryProperty SetupDiGetDeviceRegistryPropertyA
-	#define SetupDiGetClassRegistryProperty SetupDiGetClassRegistryPropertyA
-	#define SetupDiSetDeviceRegistryProperty SetupDiSetDeviceRegistryPropertyA
-	#define SetupDiSetClassRegistryProperty SetupDiSetClassRegistryPropertyA
-	#define SetupDiGetDeviceInstallParams SetupDiGetDeviceInstallParamsA
-	#define SetupDiGetClassInstallParams SetupDiGetClassInstallParamsA
-	#define SetupDiSetDeviceInstallParams SetupDiSetDeviceInstallParamsA
-	#define SetupDiSetClassInstallParams SetupDiSetClassInstallParamsA
-	#define SetupDiGetDriverInstallParams SetupDiGetDriverInstallParamsA
-	#define SetupDiSetDriverInstallParams SetupDiSetDriverInstallParamsA
-	#define SetupDiGetClassImageListEx SetupDiGetClassImageListExA
-	#define SetupDiGetClassDevPropertySheets SetupDiGetClassDevPropertySheetsA
-	#define SetupDiClassNameFromGuid SetupDiClassNameFromGuidA
-	#define SetupDiClassNameFromGuidEx SetupDiClassNameFromGuidExA
-	#define SetupDiClassGuidsFromName SetupDiClassGuidsFromNameA
-	#define SetupDiClassGuidsFromNameEx SetupDiClassGuidsFromNameExA
-	#define SetupDiGetHwProfileFriendlyName SetupDiGetHwProfileFriendlyNameA
-	#define SetupDiGetHwProfileFriendlyNameEx SetupDiGetHwProfileFriendlyNameExA
-	#define SetupDiGetActualModelsSection SetupDiGetActualModelsSectionA
-	#define SetupDiGetActualSectionToInstall SetupDiGetActualSectionToInstallA
-	#define SetupDiGetActualSectionToInstallEx SetupDiGetActualSectionToInstallExA
-	#define SetupEnumInfSections SetupEnumInfSectionsA
+#ifndef UNICODE
+	declare function SetupDiGetDeviceRegistryProperty alias "SetupDiGetDeviceRegistryPropertyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 #endif
 
-declare function SetupDiGetDeviceRegistryPropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
 declare function SetupDiGetDeviceRegistryPropertyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupDiGetClassRegistryPropertyA(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
-declare function SetupDiGetClassRegistryPropertyW(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
-declare function SetupDiSetDeviceRegistryPropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
-declare function SetupDiSetDeviceRegistryPropertyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
-declare function SetupDiSetClassRegistryPropertyA(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
-declare function SetupDiSetClassRegistryPropertyW(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
-declare function SetupDiGetDeviceInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
-declare function SetupDiGetDeviceInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
-declare function SetupDiGetClassInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupDiGetClassInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
-declare function SetupDiSetDeviceInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
-declare function SetupDiSetDeviceInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
-declare function SetupDiSetClassInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
-declare function SetupDiSetClassInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
-declare function SetupDiGetDriverInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
-declare function SetupDiGetDriverInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
-declare function SetupDiSetDriverInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
-declare function SetupDiSetDriverInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
-declare function SetupDiLoadClassIcon(byval ClassGuid as const GUID ptr, byval LargeIcon as HICON ptr, byval MiniIconIndex as PINT) as WINBOOL
 
+#ifdef UNICODE
+	declare function SetupDiGetDeviceRegistryProperty alias "SetupDiGetDeviceRegistryPropertyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupDiGetClassRegistryPropertyA(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassRegistryProperty alias "SetupDiGetClassRegistryPropertyA"(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
+declare function SetupDiGetClassRegistryPropertyW(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassRegistryProperty alias "SetupDiGetClassRegistryPropertyW"(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
+declare function SetupDiSetDeviceRegistryPropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
+#endif
+
+declare function SetupDiSetDeviceRegistryPropertyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetDeviceRegistryProperty alias "SetupDiSetDeviceRegistryPropertyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD) as WINBOOL
+#endif
+
+declare function SetupDiSetClassRegistryPropertyA(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyA"(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
+declare function SetupDiSetClassRegistryPropertyW(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetClassRegistryProperty alias "SetupDiSetClassRegistryPropertyW"(byval ClassGuid as const GUID ptr, byval Property as DWORD, byval PropertyBuffer as const UBYTE ptr, byval PropertyBufferSize as DWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
+declare function SetupDiGetDeviceInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDeviceInstallParams alias "SetupDiGetDeviceInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
+#endif
+
+declare function SetupDiGetDeviceInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetDeviceInstallParams alias "SetupDiGetDeviceInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
+#endif
+
+declare function SetupDiGetClassInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassInstallParams alias "SetupDiGetClassInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupDiGetClassInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassInstallParams alias "SetupDiGetClassInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
+declare function SetupDiSetDeviceInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetDeviceInstallParams alias "SetupDiSetDeviceInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_A) as WINBOOL
+#endif
+
+declare function SetupDiSetDeviceInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetDeviceInstallParams alias "SetupDiSetDeviceInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DeviceInstallParams as PSP_DEVINSTALL_PARAMS_W) as WINBOOL
+#endif
+
+declare function SetupDiSetClassInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetClassInstallParams alias "SetupDiSetClassInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
+#endif
+
+declare function SetupDiSetClassInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetClassInstallParams alias "SetupDiSetClassInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval ClassInstallParams as PSP_CLASSINSTALL_HEADER, byval ClassInstallParamsSize as DWORD) as WINBOOL
+#endif
+
+declare function SetupDiGetDriverInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetDriverInstallParams alias "SetupDiGetDriverInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+#endif
+
+declare function SetupDiGetDriverInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetDriverInstallParams alias "SetupDiGetDriverInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+#endif
+
+declare function SetupDiSetDriverInstallParamsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiSetDriverInstallParams alias "SetupDiSetDriverInstallParamsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_A, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+#endif
+
+declare function SetupDiSetDriverInstallParamsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiSetDriverInstallParams alias "SetupDiSetDriverInstallParamsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval DriverInfoData as PSP_DRVINFO_DATA_W, byval DriverInstallParams as PSP_DRVINSTALL_PARAMS) as WINBOOL
+#endif
+
+declare function SetupDiLoadClassIcon(byval ClassGuid as const GUID ptr, byval LargeIcon as HICON ptr, byval MiniIconIndex as PINT) as WINBOOL
 const DMI_MASK = &h00000001
 const DMI_BKCOLOR = &h00000002
 const DMI_USERECT = &h00000004
@@ -2701,16 +3468,35 @@ declare function SetupDiDrawMiniIcon(byval hdc as HDC, byval rc as RECT, byval M
 declare function SetupDiGetClassBitmapIndex(byval ClassGuid as const GUID ptr, byval MiniIconIndex as PINT) as WINBOOL
 declare function SetupDiGetClassImageList(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA) as WINBOOL
 declare function SetupDiGetClassImageListExA(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassImageListEx alias "SetupDiGetClassImageListExA"(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetClassImageListExW(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassImageListEx alias "SetupDiGetClassImageListExW"(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetClassImageIndex(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA, byval ClassGuid as const GUID ptr, byval ImageIndex as PINT) as WINBOOL
 declare function SetupDiDestroyClassImageList(byval ClassImageListData as PSP_CLASSIMAGELIST_DATA) as WINBOOL
-
 const DIGCDP_FLAG_BASIC = &h00000001
 const DIGCDP_FLAG_ADVANCED = &h00000002
 const DIGCDP_FLAG_REMOTE_BASIC = &h00000003
 const DIGCDP_FLAG_REMOTE_ADVANCED = &h00000004
 declare function SetupDiGetClassDevPropertySheetsA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERA, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetClassDevPropertySheets alias "SetupDiGetClassDevPropertySheetsA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERA, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetClassDevPropertySheetsW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERW, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetClassDevPropertySheets alias "SetupDiGetClassDevPropertySheetsW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval PropertySheetHeader as LPPROPSHEETHEADERW, byval PropertySheetHeaderPageListSize as DWORD, byval RequiredSize as PDWORD, byval PropertySheetType as DWORD) as WINBOOL
+#endif
+
 const IDI_RESOURCEFIRST = 159
 const IDI_RESOURCE = 159
 const IDI_RESOURCELAST = 161
@@ -2726,30 +3512,129 @@ const IDI_FORCED_OVL = 502
 declare function SetupDiAskForOEMDisk(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSelectOEMDrv(byval hwndParent as HWND, byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiClassNameFromGuidA(byval ClassGuid as const GUID ptr, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiClassNameFromGuid alias "SetupDiClassNameFromGuidA"(byval ClassGuid as const GUID ptr, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiClassNameFromGuidW(byval ClassGuid as const GUID ptr, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiClassNameFromGuid alias "SetupDiClassNameFromGuidW"(byval ClassGuid as const GUID ptr, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiClassNameFromGuidExA(byval ClassGuid as const GUID ptr, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiClassNameFromGuidEx alias "SetupDiClassNameFromGuidExA"(byval ClassGuid as const GUID ptr, byval ClassName as PSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiClassNameFromGuidExW(byval ClassGuid as const GUID ptr, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiClassNameFromGuidEx alias "SetupDiClassNameFromGuidExW"(byval ClassGuid as const GUID ptr, byval ClassName as PWSTR, byval ClassNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiClassGuidsFromNameA(byval ClassName as PCSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiClassGuidsFromName alias "SetupDiClassGuidsFromNameA"(byval ClassName as PCSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiClassGuidsFromNameW(byval ClassName as PCWSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiClassGuidsFromName alias "SetupDiClassGuidsFromNameW"(byval ClassName as PCWSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiClassGuidsFromNameExA(byval ClassName as PCSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiClassGuidsFromNameEx alias "SetupDiClassGuidsFromNameExA"(byval ClassName as PCSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiClassGuidsFromNameExW(byval ClassName as PCWSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiClassGuidsFromNameEx alias "SetupDiClassGuidsFromNameExW"(byval ClassName as PCWSTR, byval ClassGuidList as LPGUID, byval ClassGuidListSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetHwProfileFriendlyNameA(byval HwProfile as DWORD, byval FriendlyName as PSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetHwProfileFriendlyName alias "SetupDiGetHwProfileFriendlyNameA"(byval HwProfile as DWORD, byval FriendlyName as PSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetHwProfileFriendlyNameW(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetHwProfileFriendlyName alias "SetupDiGetHwProfileFriendlyNameW"(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetHwProfileFriendlyNameExA(byval HwProfile as DWORD, byval FriendlyName as PSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetHwProfileFriendlyNameEx alias "SetupDiGetHwProfileFriendlyNameExA"(byval HwProfile as DWORD, byval FriendlyName as PSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetHwProfileFriendlyNameExW(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetHwProfileFriendlyNameEx alias "SetupDiGetHwProfileFriendlyNameExW"(byval HwProfile as DWORD, byval FriendlyName as PWSTR, byval FriendlyNameSize as DWORD, byval RequiredSize as PDWORD, byval MachineName as PCWSTR, byval Reserved as PVOID) as WINBOOL
+#endif
+
 const SPWPT_SELECTDEVICE = &h00000001
 const SPWP_USE_DEVINFO_DATA = &h00000001
 declare function SetupDiGetWizardPage(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval InstallWizardData as PSP_INSTALLWIZARD_DATA, byval PageType as DWORD, byval Flags as DWORD) as HPROPSHEETPAGE
 declare function SetupDiGetSelectedDevice(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiSetSelectedDevice(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA) as WINBOOL
 declare function SetupDiGetActualModelsSectionA(byval Context as PINFCONTEXT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetActualModelsSection alias "SetupDiGetActualModelsSectionA"(byval Context as PINFCONTEXT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetActualModelsSectionW(byval Context as PINFCONTEXT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetActualModelsSection alias "SetupDiGetActualModelsSectionW"(byval Context as PINFCONTEXT, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetActualSectionToInstallA(byval InfHandle as HINF, byval InfSectionName as PCSTR, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PSTR ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetActualSectionToInstall alias "SetupDiGetActualSectionToInstallA"(byval InfHandle as HINF, byval InfSectionName as PCSTR, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PSTR ptr) as WINBOOL
+#endif
+
 declare function SetupDiGetActualSectionToInstallW(byval InfHandle as HINF, byval InfSectionName as PCWSTR, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PWSTR ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetActualSectionToInstall alias "SetupDiGetActualSectionToInstallW"(byval InfHandle as HINF, byval InfSectionName as PCWSTR, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PWSTR ptr) as WINBOOL
+#endif
+
 declare function SetupDiGetActualSectionToInstallExA(byval InfHandle as HINF, byval InfSectionName as PCSTR, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PSTR ptr, byval Reserved as PVOID) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetActualSectionToInstallEx alias "SetupDiGetActualSectionToInstallExA"(byval InfHandle as HINF, byval InfSectionName as PCSTR, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PSTR ptr, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupDiGetActualSectionToInstallExW(byval InfHandle as HINF, byval InfSectionName as PCWSTR, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PWSTR ptr, byval Reserved as PVOID) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetActualSectionToInstallEx alias "SetupDiGetActualSectionToInstallExW"(byval InfHandle as HINF, byval InfSectionName as PCWSTR, byval AlternatePlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSectionWithExt as PWSTR, byval InfSectionWithExtSize as DWORD, byval RequiredSize as PDWORD, byval Extension as PWSTR ptr, byval Reserved as PVOID) as WINBOOL
+#endif
+
 declare function SetupEnumInfSectionsA(byval InfHandle as HINF, byval Index as UINT, byval Buffer as PSTR, byval Size as UINT, byval SizeNeeded as UINT ptr) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupEnumInfSections alias "SetupEnumInfSectionsA"(byval InfHandle as HINF, byval Index as UINT, byval Buffer as PSTR, byval Size as UINT, byval SizeNeeded as UINT ptr) as WINBOOL
+#endif
+
 declare function SetupEnumInfSectionsW(byval InfHandle as HINF, byval Index as UINT, byval Buffer as PWSTR, byval Size as UINT, byval SizeNeeded as UINT ptr) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupEnumInfSections alias "SetupEnumInfSectionsW"(byval InfHandle as HINF, byval Index as UINT, byval Buffer as PWSTR, byval Size as UINT, byval SizeNeeded as UINT ptr) as WINBOOL
+#endif
 
 #ifdef __FB_64BIT__
 	type _SP_INF_SIGNER_INFO_A
@@ -2792,24 +3677,47 @@ type PSP_INF_SIGNER_INFO_W as _SP_INF_SIGNER_INFO_W ptr
 #ifdef UNICODE
 	type SP_INF_SIGNER_INFO as SP_INF_SIGNER_INFO_W
 	type PSP_INF_SIGNER_INFO as PSP_INF_SIGNER_INFO_W
-	#define SetupVerifyInfFile SetupVerifyInfFileW
-	#define SetupDiGetCustomDeviceProperty SetupDiGetCustomDevicePropertyW
-	#define SetupConfigureWmiFromInfSection SetupConfigureWmiFromInfSectionW
 #else
 	type SP_INF_SIGNER_INFO as SP_INF_SIGNER_INFO_A
 	type PSP_INF_SIGNER_INFO as PSP_INF_SIGNER_INFO_A
-	#define SetupVerifyInfFile SetupVerifyInfFileA
-	#define SetupDiGetCustomDeviceProperty SetupDiGetCustomDevicePropertyA
-	#define SetupConfigureWmiFromInfSection SetupConfigureWmiFromInfSectionA
 #endif
 
 declare function SetupVerifyInfFileA(byval InfName as PCSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_A) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupVerifyInfFile alias "SetupVerifyInfFileA"(byval InfName as PCSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_A) as WINBOOL
+#endif
+
 declare function SetupVerifyInfFileW(byval InfName as PCWSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_W) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupVerifyInfFile alias "SetupVerifyInfFileW"(byval InfName as PCWSTR, byval AltPlatformInfo as PSP_ALTPLATFORM_INFO, byval InfSignerInfo as PSP_INF_SIGNER_INFO_W) as WINBOOL
+#endif
+
 const DICUSTOMDEVPROP_MERGE_MULTISZ = &h00000001
 declare function SetupDiGetCustomDevicePropertyA(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupDiGetCustomDeviceProperty alias "SetupDiGetCustomDevicePropertyA"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 declare function SetupDiGetCustomDevicePropertyW(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCWSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupDiGetCustomDeviceProperty alias "SetupDiGetCustomDevicePropertyW"(byval DeviceInfoSet as HDEVINFO, byval DeviceInfoData as PSP_DEVINFO_DATA, byval CustomPropertyName as PCWSTR, byval Flags as DWORD, byval PropertyRegDataType as PDWORD, byval PropertyBuffer as PBYTE, byval PropertyBufferSize as DWORD, byval RequiredSize as PDWORD) as WINBOOL
+#endif
+
 const SCWMI_CLOBBER_SECURITY = &h00000001
 declare function SetupConfigureWmiFromInfSectionA(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
+
+#ifndef UNICODE
+	declare function SetupConfigureWmiFromInfSection alias "SetupConfigureWmiFromInfSectionA"(byval InfHandle as HINF, byval SectionName as PCSTR, byval Flags as DWORD) as WINBOOL
+#endif
+
 declare function SetupConfigureWmiFromInfSectionW(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD) as WINBOOL
+
+#ifdef UNICODE
+	declare function SetupConfigureWmiFromInfSection alias "SetupConfigureWmiFromInfSectionW"(byval InfHandle as HINF, byval SectionName as PCWSTR, byval Flags as DWORD) as WINBOOL
+#endif
 
 end extern

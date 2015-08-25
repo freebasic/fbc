@@ -129,7 +129,7 @@ function astNewCONSTz _
 		'' Build a TYPEINI tree for this struct, with a CONST( 0 )
 		'' initializer for each member
 		tree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
-		astTypeIniScopeBegin( tree, NULL )
+		astTypeIniScopeBegin( tree, NULL, FALSE )
 
 		fld = symbUdtGetFirstField( subtype )
 		while( fld )
@@ -188,6 +188,8 @@ function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 		else
 			function = str( csng( n->val.f ) )
 		end if
+	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
+		function = INT_BOOL_TO_STR( cbool(n->val.i) )
 	elseif( typeIsSigned( n->dtype ) ) then
 		function = str( n->val.i )
 	else
@@ -208,6 +210,8 @@ function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 		else
 			w = wstr( csng( n->val.f ) )
 		end if
+	elseif( typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN ) then
+		w = INT_BOOL_TO_WSTR( cbool(n->val.i) )
 	elseif( typeIsSigned( n->dtype ) ) then
 		w = wstr( n->val.i )
 	else
@@ -229,7 +233,6 @@ end function
 
 function astConstGetAsDouble( byval n as ASTNODE ptr ) as double
 	assert( astIsCONST( n ) )
-
 	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 		function = n->val.f
 	elseif( typeIsSigned( n->dtype ) ) then

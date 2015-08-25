@@ -1,8 +1,8 @@
-'' FreeBASIC binding for libzip-0.11.2
+'' FreeBASIC binding for libzip-1.0.1
 ''
 '' based on the C header files:
 ''   zip.h -- exported declarations.
-''   Copyright (C) 1999-2012 Dieter Baron and Thomas Klausner
+''   Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
 ''
 ''   This file is part of libzip, a library to manipulate ZIP archives.
 ''   The authors can be contacted at <libzip@nih.at>
@@ -45,15 +45,28 @@
 #include once "crt/stdint.bi"
 
 '' The following symbols have been renamed:
-''     enum constant ZIP_SOURCE_FREE => ZIP_SOURCE_FREE_
+''     constant ZIP_SOURCE_OPEN => ZIP_SOURCE_OPEN_
+''     constant ZIP_SOURCE_READ => ZIP_SOURCE_READ_
+''     constant ZIP_SOURCE_CLOSE => ZIP_SOURCE_CLOSE_
+''     constant ZIP_SOURCE_STAT => ZIP_SOURCE_STAT_
+''     constant ZIP_SOURCE_ERROR => ZIP_SOURCE_ERROR_
+''     constant ZIP_SOURCE_FREE => ZIP_SOURCE_FREE_
+''     constant ZIP_SOURCE_SEEK => ZIP_SOURCE_SEEK_
+''     constant ZIP_SOURCE_TELL => ZIP_SOURCE_TELL_
+''     constant ZIP_SOURCE_BEGIN_WRITE => ZIP_SOURCE_BEGIN_WRITE_
+''     constant ZIP_SOURCE_COMMIT_WRITE => ZIP_SOURCE_COMMIT_WRITE_
+''     constant ZIP_SOURCE_ROLLBACK_WRITE => ZIP_SOURCE_ROLLBACK_WRITE_
+''     constant ZIP_SOURCE_WRITE => ZIP_SOURCE_WRITE_
+''     constant ZIP_SOURCE_SEEK_WRITE => ZIP_SOURCE_SEEK_WRITE_
+''     constant ZIP_SOURCE_TELL_WRITE => ZIP_SOURCE_TELL_WRITE_
 ''     constant ZIP_STAT_INDEX => ZIP_STAT_INDEX_
 
 extern "C"
 
-#define LIBZIP_VERSION "0.11.2"
-const LIBZIP_VERSION_MAJOR = 0
-const LIBZIP_VERSION_MINOR = 11
-const LIBZIP_VERSION_MICRO = 0
+#define LIBZIP_VERSION "1.0.1"
+const LIBZIP_VERSION_MAJOR = 1
+const LIBZIP_VERSION_MINOR = 0
+const LIBZIP_VERSION_MICRO = 1
 type zip_int8_t as byte
 #define ZIP_INT8_MIN INT8_MIN
 #define ZIP_INT8_MAX INT8_MAX
@@ -78,6 +91,7 @@ const ZIP_CREATE = 1
 const ZIP_EXCL = 2
 const ZIP_CHECKCONS = 4
 const ZIP_TRUNCATE = 8
+const ZIP_RDONLY = 16
 const ZIP_FL_NOCASE = 1u
 const ZIP_FL_NODIR = 2u
 const ZIP_FL_COMPRESSED = 4u
@@ -92,12 +106,9 @@ const ZIP_FL_CENTRAL = 512u
 const ZIP_FL_ENC_UTF_8 = 2048u
 const ZIP_FL_ENC_CP437 = 4096u
 const ZIP_FL_OVERWRITE = 8192u
-const ZIP_AFL_TORRENT = 1u
 const ZIP_AFL_RDONLY = 2u
 #define ZIP_EXTRA_FIELD_ALL ZIP_UINT16_MAX
 #define ZIP_EXTRA_FIELD_NEW ZIP_UINT16_MAX
-const ZIP_CODEC_DECODE = 0
-const ZIP_CODEC_ENCODE = 1
 const ZIP_ER_OK = 0
 const ZIP_ER_MULTIDISK = 1
 const ZIP_ER_RENAME = 2
@@ -126,6 +137,9 @@ const ZIP_ER_ENCRNOTSUPP = 24
 const ZIP_ER_RDONLY = 25
 const ZIP_ER_NOPASSWD = 26
 const ZIP_ER_WRONGPASSWD = 27
+const ZIP_ER_OPNOTSUPP = 28
+const ZIP_ER_INUSE = 29
+const ZIP_ER_TELL = 30
 const ZIP_ET_NONE = 0
 const ZIP_ET_SYS = 1
 const ZIP_ET_ZLIB = 2
@@ -169,19 +183,48 @@ const ZIP_OPSYS_BEOS = &h10u
 const ZIP_OPSYS_TANDEM = &h11u
 const ZIP_OPSYS_OS_400 = &h12u
 const ZIP_OPSYS_OS_X = &h13u
-#define ZIP_OPSYS_DEFAULT ZIP_OPSYS_UNIX
+const ZIP_OPSYS_DEFAULT = ZIP_OPSYS_UNIX
 
 type zip_source_cmd as long
 enum
-	ZIP_SOURCE_OPEN
-	ZIP_SOURCE_READ
-	ZIP_SOURCE_CLOSE
-	ZIP_SOURCE_STAT
-	ZIP_SOURCE_ERROR
+	ZIP_SOURCE_OPEN_
+	ZIP_SOURCE_READ_
+	ZIP_SOURCE_CLOSE_
+	ZIP_SOURCE_STAT_
+	ZIP_SOURCE_ERROR_
 	ZIP_SOURCE_FREE_
+	ZIP_SOURCE_SEEK_
+	ZIP_SOURCE_TELL_
+	ZIP_SOURCE_BEGIN_WRITE_
+	ZIP_SOURCE_COMMIT_WRITE_
+	ZIP_SOURCE_ROLLBACK_WRITE_
+	ZIP_SOURCE_WRITE_
+	ZIP_SOURCE_SEEK_WRITE_
+	ZIP_SOURCE_TELL_WRITE_
+	ZIP_SOURCE_SUPPORTS
+	ZIP_SOURCE_REMOVE
 end enum
 
-const ZIP_SOURCE_ERR_LOWER = -2
+type zip_source_cmd_t as zip_source_cmd
+#define ZIP_SOURCE_MAKE_COMMAND_BITMASK(cmd) (1 shl (cmd))
+#define ZIP_SOURCE_SUPPORTS_READABLE (((((ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_OPEN_) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_READ_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_CLOSE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_STAT_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_ERROR_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_FREE_))
+#define ZIP_SOURCE_SUPPORTS_SEEKABLE (((ZIP_SOURCE_SUPPORTS_READABLE or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_SEEK_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_TELL_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_SUPPORTS))
+#define ZIP_SOURCE_SUPPORTS_WRITABLE (((((((ZIP_SOURCE_SUPPORTS_SEEKABLE or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_BEGIN_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_COMMIT_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_ROLLBACK_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_SEEK_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_TELL_WRITE_)) or ZIP_SOURCE_MAKE_COMMAND_BITMASK(ZIP_SOURCE_REMOVE))
+
+type zip_source_args_seek
+	offset as zip_int64_t
+	whence as long
+end type
+
+type zip_source_args_seek_t as zip_source_args_seek
+'' TODO: #define ZIP_SOURCE_GET_ARGS(type, data, len, error) ((len) < sizeof(type) ? zip_error_set((error), ZIP_ER_INVAL, 0), (type *)NULL : (type *)(data))
+
+type zip_error
+	zip_err as long
+	sys_err as long
+	str as zstring ptr
+end type
+
 const ZIP_STAT_NAME = &h0001u
 const ZIP_STAT_INDEX_ = &h0002u
 const ZIP_STAT_SIZE = &h0004u
@@ -205,74 +248,120 @@ type zip_stat
 	flags as zip_uint32_t
 end type
 
+type zip_t as zip
+type zip_error_t as zip_error
+type zip_file_t as zip_file
+type zip_source_t as zip_source
+type zip_stat_t as zip_stat
 type zip_flags_t as zip_uint32_t
-type zip_source_callback as function(byval as any ptr, byval as any ptr, byval as zip_uint64_t, byval as zip_source_cmd) as zip_int64_t
-type zip as zip_
-type zip_source as zip_source_
+type zip_source_callback as function(byval as any ptr, byval as any ptr, byval as zip_uint64_t, byval as zip_source_cmd_t) as zip_int64_t
 
-declare function zip_add(byval as zip ptr, byval as const zstring ptr, byval as zip_source ptr) as zip_int64_t
-declare function zip_add_dir(byval as zip ptr, byval as const zstring ptr) as zip_int64_t
-declare function zip_get_file_comment(byval as zip ptr, byval as zip_uint64_t, byval as long ptr, byval as long) as const zstring ptr
-declare function zip_get_num_files(byval as zip ptr) as long
-declare function zip_rename(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr) as long
-declare function zip_replace(byval as zip ptr, byval as zip_uint64_t, byval as zip_source ptr) as long
-declare function zip_set_file_comment(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as long) as long
-declare function zip_archive_set_tempdir(byval as zip ptr, byval as const zstring ptr) as long
-declare function zip_close(byval as zip ptr) as long
-declare function zip_delete(byval as zip ptr, byval as zip_uint64_t) as long
-declare function zip_dir_add(byval as zip ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_int64_t
-declare sub zip_discard(byval as zip ptr)
-declare sub zip_error_clear(byval as zip ptr)
-declare sub zip_error_get(byval as zip ptr, byval as long ptr, byval as long ptr)
+declare function zip_add(byval as zip_t ptr, byval as const zstring ptr, byval as zip_source_t ptr) as zip_int64_t
+declare function zip_add_dir(byval as zip_t ptr, byval as const zstring ptr) as zip_int64_t
+declare function zip_get_file_comment(byval as zip_t ptr, byval as zip_uint64_t, byval as long ptr, byval as long) as const zstring ptr
+declare function zip_get_num_files(byval as zip_t ptr) as long
+declare function zip_rename(byval as zip_t ptr, byval as zip_uint64_t, byval as const zstring ptr) as long
+declare function zip_replace(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_source_t ptr) as long
+declare function zip_set_file_comment(byval as zip_t ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as long) as long
 declare function zip_error_get_sys_type(byval as long) as long
+declare sub zip_error_get(byval as zip_t ptr, byval as long ptr, byval as long ptr)
 declare function zip_error_to_str(byval as zstring ptr, byval as zip_uint64_t, byval as long, byval as long) as long
-type zip_file as zip_file_
-declare function zip_fclose(byval as zip_file ptr) as long
-declare function zip_fdopen(byval as long, byval as long, byval as long ptr) as zip ptr
-declare function zip_file_add(byval as zip ptr, byval as const zstring ptr, byval as zip_source ptr, byval as zip_flags_t) as zip_int64_t
-declare sub zip_file_error_clear(byval as zip_file ptr)
-declare sub zip_file_error_get(byval as zip_file ptr, byval as long ptr, byval as long ptr)
-declare function zip_file_extra_field_delete(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_flags_t) as long
-declare function zip_file_extra_field_delete_by_id(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as zip_flags_t) as long
-declare function zip_file_extra_field_set(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as const zip_uint8_t ptr, byval as zip_uint16_t, byval as zip_flags_t) as long
-declare function zip_file_extra_fields_count(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t) as zip_int16_t
-declare function zip_file_extra_fields_count_by_id(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_flags_t) as zip_int16_t
-declare function zip_file_extra_field_get(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t ptr, byval as zip_uint16_t ptr, byval as zip_flags_t) as const zip_uint8_t ptr
-declare function zip_file_extra_field_get_by_id(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as zip_uint16_t ptr, byval as zip_flags_t) as const zip_uint8_t ptr
-declare function zip_file_get_comment(byval as zip ptr, byval as zip_uint64_t, byval as zip_uint32_t ptr, byval as zip_flags_t) as const zstring ptr
-declare function zip_file_get_external_attributes(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint8_t ptr, byval as zip_uint32_t ptr) as long
-declare function zip_file_rename(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as zip_flags_t) as long
-declare function zip_file_replace(byval as zip ptr, byval as zip_uint64_t, byval as zip_source ptr, byval as zip_flags_t) as long
-declare function zip_file_set_comment(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as zip_uint16_t, byval as zip_flags_t) as long
-declare function zip_file_set_external_attributes(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint8_t, byval as zip_uint32_t) as long
-declare function zip_file_strerror(byval as zip_file ptr) as const zstring ptr
-declare function zip_fopen(byval as zip ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_file ptr
-declare function zip_fopen_encrypted(byval as zip ptr, byval as const zstring ptr, byval as zip_flags_t, byval as const zstring ptr) as zip_file ptr
-declare function zip_fopen_index(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t) as zip_file ptr
-declare function zip_fopen_index_encrypted(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as const zstring ptr) as zip_file ptr
-declare function zip_fread(byval as zip_file ptr, byval as any ptr, byval as zip_uint64_t) as zip_int64_t
-declare function zip_get_archive_comment(byval as zip ptr, byval as long ptr, byval as zip_flags_t) as const zstring ptr
-declare function zip_get_archive_flag(byval as zip ptr, byval as zip_flags_t, byval as zip_flags_t) as long
-declare function zip_get_name(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t) as const zstring ptr
-declare function zip_get_num_entries(byval as zip ptr, byval as zip_flags_t) as zip_int64_t
-declare function zip_name_locate(byval as zip ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_int64_t
-declare function zip_open(byval as const zstring ptr, byval as long, byval as long ptr) as zip ptr
-declare function zip_set_archive_comment(byval as zip ptr, byval as const zstring ptr, byval as zip_uint16_t) as long
-declare function zip_set_archive_flag(byval as zip ptr, byval as zip_flags_t, byval as long) as long
-declare function zip_set_default_password(byval as zip ptr, byval as const zstring ptr) as long
-declare function zip_set_file_compression(byval as zip ptr, byval as zip_uint64_t, byval as zip_int32_t, byval as zip_uint32_t) as long
-declare function zip_source_buffer(byval as zip ptr, byval as const any ptr, byval as zip_uint64_t, byval as long) as zip_source ptr
-declare function zip_source_file(byval as zip ptr, byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
-declare function zip_source_filep(byval as zip ptr, byval as FILE ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
-declare sub zip_source_free(byval as zip_source ptr)
-declare function zip_source_function(byval as zip ptr, byval as zip_source_callback, byval as any ptr) as zip_source ptr
-declare function zip_source_zip(byval as zip ptr, byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
-declare function zip_stat(byval as zip ptr, byval as const zstring ptr, byval as zip_flags_t, byval as zip_stat ptr) as long
-declare function zip_stat_index(byval as zip ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_stat ptr) as long
-declare sub zip_stat_init(byval as zip_stat ptr)
-declare function zip_strerror(byval as zip ptr) as const zstring ptr
-declare function zip_unchange(byval as zip ptr, byval as zip_uint64_t) as long
-declare function zip_unchange_all(byval as zip ptr) as long
-declare function zip_unchange_archive(byval as zip ptr) as long
+declare sub zip_file_error_get(byval as zip_file_t ptr, byval as long ptr, byval as long ptr)
+declare function zip_archive_set_tempdir(byval as zip_t ptr, byval as const zstring ptr) as long
+declare function zip_close(byval as zip_t ptr) as long
+declare function zip_delete(byval as zip_t ptr, byval as zip_uint64_t) as long
+declare function zip_dir_add(byval as zip_t ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_int64_t
+declare sub zip_discard(byval as zip_t ptr)
+declare function zip_get_error(byval as zip_t ptr) as zip_error_t ptr
+declare sub zip_error_clear(byval as zip_t ptr)
+declare function zip_error_code_zip(byval as const zip_error_t ptr) as long
+declare function zip_error_code_system(byval as const zip_error_t ptr) as long
+declare sub zip_error_fini(byval as zip_error_t ptr)
+declare sub zip_error_init(byval as zip_error_t ptr)
+declare sub zip_error_init_with_code(byval as zip_error_t ptr, byval as long)
+declare sub zip_error_set(byval as zip_error_t ptr, byval as long, byval as long)
+declare function zip_error_strerror(byval as zip_error_t ptr) as const zstring ptr
+declare function zip_error_system_type(byval as const zip_error_t ptr) as long
+declare function zip_error_to_data(byval as const zip_error_t ptr, byval as any ptr, byval as zip_uint64_t) as zip_int64_t
+declare function zip_fclose(byval as zip_file_t ptr) as long
+declare function zip_fdopen(byval as long, byval as long, byval as long ptr) as zip_t ptr
+declare function zip_file_add(byval as zip_t ptr, byval as const zstring ptr, byval as zip_source_t ptr, byval as zip_flags_t) as zip_int64_t
+declare sub zip_file_error_clear(byval as zip_file_t ptr)
+declare function zip_file_extra_field_delete(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_flags_t) as long
+declare function zip_file_extra_field_delete_by_id(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as zip_flags_t) as long
+declare function zip_file_extra_field_set(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as const zip_uint8_t ptr, byval as zip_uint16_t, byval as zip_flags_t) as long
+declare function zip_file_extra_fields_count(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t) as zip_int16_t
+declare function zip_file_extra_fields_count_by_id(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_flags_t) as zip_int16_t
+declare function zip_file_extra_field_get(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t ptr, byval as zip_uint16_t ptr, byval as zip_flags_t) as const zip_uint8_t ptr
+declare function zip_file_extra_field_get_by_id(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint16_t, byval as zip_uint16_t, byval as zip_uint16_t ptr, byval as zip_flags_t) as const zip_uint8_t ptr
+declare function zip_file_get_comment(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_uint32_t ptr, byval as zip_flags_t) as const zstring ptr
+declare function zip_file_get_error(byval as zip_file_t ptr) as zip_error_t ptr
+declare function zip_file_get_external_attributes(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint8_t ptr, byval as zip_uint32_t ptr) as long
+declare function zip_file_rename(byval as zip_t ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as zip_flags_t) as long
+declare function zip_file_replace(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_source_t ptr, byval as zip_flags_t) as long
+declare function zip_file_set_comment(byval as zip_t ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as zip_uint16_t, byval as zip_flags_t) as long
+declare function zip_file_set_external_attributes(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint8_t, byval as zip_uint32_t) as long
+declare function zip_file_set_mtime(byval as zip_t ptr, byval as zip_uint64_t, byval as time_t, byval as zip_flags_t) as long
+declare function zip_file_strerror(byval as zip_file_t ptr) as const zstring ptr
+declare function zip_fopen(byval as zip_t ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_file_t ptr
+declare function zip_fopen_encrypted(byval as zip_t ptr, byval as const zstring ptr, byval as zip_flags_t, byval as const zstring ptr) as zip_file_t ptr
+declare function zip_fopen_index(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t) as zip_file_t ptr
+declare function zip_fopen_index_encrypted(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as const zstring ptr) as zip_file_t ptr
+declare function zip_fread(byval as zip_file_t ptr, byval as any ptr, byval as zip_uint64_t) as zip_int64_t
+declare function zip_get_archive_comment(byval as zip_t ptr, byval as long ptr, byval as zip_flags_t) as const zstring ptr
+declare function zip_get_archive_flag(byval as zip_t ptr, byval as zip_flags_t, byval as zip_flags_t) as long
+declare function zip_get_name(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t) as const zstring ptr
+declare function zip_get_num_entries(byval as zip_t ptr, byval as zip_flags_t) as zip_int64_t
+declare function zip_name_locate(byval as zip_t ptr, byval as const zstring ptr, byval as zip_flags_t) as zip_int64_t
+declare function zip_open(byval as const zstring ptr, byval as long, byval as long ptr) as zip_t ptr
+declare function zip_open_from_source(byval as zip_source_t ptr, byval as long, byval as zip_error_t ptr) as zip_t ptr
+declare function zip_set_archive_comment(byval as zip_t ptr, byval as const zstring ptr, byval as zip_uint16_t) as long
+declare function zip_set_archive_flag(byval as zip_t ptr, byval as zip_flags_t, byval as long) as long
+declare function zip_set_default_password(byval as zip_t ptr, byval as const zstring ptr) as long
+declare function zip_set_file_compression(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_int32_t, byval as zip_uint32_t) as long
+declare function zip_source_begin_write(byval as zip_source_t ptr) as long
+declare function zip_source_buffer(byval as zip_t ptr, byval as const any ptr, byval as zip_uint64_t, byval as long) as zip_source_t ptr
+declare function zip_source_buffer_create(byval as const any ptr, byval as zip_uint64_t, byval as long, byval as zip_error_t ptr) as zip_source_t ptr
+declare function zip_source_close(byval as zip_source_t ptr) as long
+declare function zip_source_commit_write(byval as zip_source_t ptr) as long
+declare function zip_source_error(byval src as zip_source_t ptr) as zip_error_t ptr
+declare function zip_source_file(byval as zip_t ptr, byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+declare function zip_source_file_create(byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t, byval as zip_error_t ptr) as zip_source_t ptr
+declare function zip_source_filep(byval as zip_t ptr, byval as FILE ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+declare function zip_source_filep_create(byval as FILE ptr, byval as zip_uint64_t, byval as zip_int64_t, byval as zip_error_t ptr) as zip_source_t ptr
+declare sub zip_source_free(byval as zip_source_t ptr)
+declare function zip_source_function(byval as zip_t ptr, byval as zip_source_callback, byval as any ptr) as zip_source_t ptr
+declare function zip_source_function_create(byval as zip_source_callback, byval as any ptr, byval as zip_error_t ptr) as zip_source_t ptr
+declare function zip_source_is_deleted(byval as zip_source_t ptr) as long
+declare sub zip_source_keep(byval as zip_source_t ptr)
+declare function zip_source_make_command_bitmap(byval as zip_source_cmd_t, ...) as zip_int64_t
+declare function zip_source_open(byval as zip_source_t ptr) as long
+declare function zip_source_read(byval as zip_source_t ptr, byval as any ptr, byval as zip_uint64_t) as zip_int64_t
+declare sub zip_source_rollback_write(byval as zip_source_t ptr)
+declare function zip_source_seek(byval as zip_source_t ptr, byval as zip_int64_t, byval as long) as long
+declare function zip_source_seek_compute_offset(byval as zip_uint64_t, byval as zip_uint64_t, byval as any ptr, byval as zip_uint64_t, byval as zip_error_t ptr) as zip_int64_t
+declare function zip_source_seek_write(byval as zip_source_t ptr, byval as zip_int64_t, byval as long) as long
+declare function zip_source_stat(byval as zip_source_t ptr, byval as zip_stat_t ptr) as long
+declare function zip_source_tell(byval as zip_source_t ptr) as zip_int64_t
+declare function zip_source_tell_write(byval as zip_source_t ptr) as zip_int64_t
+
+#ifdef __FB_WIN32__
+	declare function zip_source_win32a(byval as zip_t ptr, byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+	declare function zip_source_win32a_create(byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t, byval as zip_error_t ptr) as zip_source_t ptr
+	declare function zip_source_win32handle(byval as zip_t ptr, byval as any ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+	declare function zip_source_win32handle_create(byval as any ptr, byval as zip_uint64_t, byval as zip_int64_t, byval as zip_error_t ptr) as zip_source_t ptr
+	declare function zip_source_win32w(byval as zip_t ptr, byval as const wstring ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+	declare function zip_source_win32w_create(byval as const wstring ptr, byval as zip_uint64_t, byval as zip_int64_t, byval as zip_error_t ptr) as zip_source_t ptr
+#endif
+
+declare function zip_source_write(byval as zip_source_t ptr, byval as const any ptr, byval as zip_uint64_t) as zip_int64_t
+declare function zip_source_zip(byval as zip_t ptr, byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_uint64_t, byval as zip_int64_t) as zip_source_t ptr
+declare function zip_stat(byval as zip_t ptr, byval as const zstring ptr, byval as zip_flags_t, byval as zip_stat_t ptr) as long
+declare function zip_stat_index(byval as zip_t ptr, byval as zip_uint64_t, byval as zip_flags_t, byval as zip_stat_t ptr) as long
+declare sub zip_stat_init(byval as zip_stat_t ptr)
+declare function zip_strerror(byval as zip_t ptr) as const zstring ptr
+declare function zip_unchange(byval as zip_t ptr, byval as zip_uint64_t) as long
+declare function zip_unchange_all(byval as zip_t ptr) as long
+declare function zip_unchange_archive(byval as zip_t ptr) as long
 
 end extern

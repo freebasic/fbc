@@ -2,7 +2,7 @@
 Removes surrounding substrings or characters on the left and right side of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) the Wine project
@@ -736,7 +736,7 @@ const DDFXCAPS_OVERLAYSTRETCHY = &h02000000
 const DDFXCAPS_OVERLAYSTRETCHYN = &h04000000
 const DDFXCAPS_OVERLAYMIRRORLEFTRIGHT = &h08000000
 const DDFXCAPS_OVERLAYMIRRORUPDOWN = &h10000000
-#define DDFXCAPS_OVERLAYFILTER DDFXCAPS_OVERLAYARITHSTRETCHY
+const DDFXCAPS_OVERLAYFILTER = DDFXCAPS_OVERLAYARITHSTRETCHY
 const DDFXALPHACAPS_BLTALPHAEDGEBLEND = &h00000001
 const DDFXALPHACAPS_BLTALPHAPIXELS = &h00000002
 const DDFXALPHACAPS_BLTALPHAPIXELSNEG = &h00000004
@@ -1016,18 +1016,18 @@ declare function DirectDrawEnumerateA(byval as LPDDENUMCALLBACKA, byval as LPVOI
 declare function DirectDrawEnumerateW(byval as LPDDENUMCALLBACKW, byval as LPVOID) as HRESULT
 
 #ifdef UNICODE
-	#define DirectDrawEnumerate DirectDrawEnumerateW
+	declare function DirectDrawEnumerate alias "DirectDrawEnumerateW"(byval as LPDDENUMCALLBACKW, byval as LPVOID) as HRESULT
 #else
-	#define DirectDrawEnumerate DirectDrawEnumerateA
+	declare function DirectDrawEnumerate alias "DirectDrawEnumerateA"(byval as LPDDENUMCALLBACKA, byval as LPVOID) as HRESULT
 #endif
 
 declare function DirectDrawEnumerateExA(byval lpCallback as LPDDENUMCALLBACKEXA, byval lpContext as LPVOID, byval dwFlags as DWORD) as HRESULT
 declare function DirectDrawEnumerateExW(byval lpCallback as LPDDENUMCALLBACKEXW, byval lpContext as LPVOID, byval dwFlags as DWORD) as HRESULT
 
 #ifdef UNICODE
-	#define DirectDrawEnumerateEx DirectDrawEnumerateExW
+	declare function DirectDrawEnumerateEx alias "DirectDrawEnumerateExW"(byval lpCallback as LPDDENUMCALLBACKEXW, byval lpContext as LPVOID, byval dwFlags as DWORD) as HRESULT
 #else
-	#define DirectDrawEnumerateEx DirectDrawEnumerateExA
+	declare function DirectDrawEnumerateEx alias "DirectDrawEnumerateExA"(byval lpCallback as LPDDENUMCALLBACKEXA, byval lpContext as LPVOID, byval dwFlags as DWORD) as HRESULT
 #endif
 
 type LPDIRECTDRAWENUMERATEEXA as function(byval lpCallback as LPDDENUMCALLBACKEXA, byval lpContext as LPVOID, byval dwFlags as DWORD) as HRESULT

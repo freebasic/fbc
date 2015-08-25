@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -54,10 +54,9 @@
 	extern "Windows"
 
 	#define _NETIOAPI_H_
-	#define NETIO_STATUS DWORD
+	type NETIO_STATUS as DWORD
 	#define NETIO_SUCCESS(x) ((x) = NO_ERROR)
 	#define _NETIOAPI_SUCCESS_
-	#define IF_NAMESIZE NDIS_IF_MAX_STRING_SIZE
 
 	type _MIB_NOTIFICATION_TYPE as long
 	enum

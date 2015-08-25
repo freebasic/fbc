@@ -274,6 +274,21 @@ private function hConstBop _
 			assert( FALSE )
 		end select
 
+	elseif ( ( typeGetDtAndPtrOnly( l->dtype ) = FB_DATATYPE_BOOLEAN ) or _
+		    ( typeGetDtAndPtrOnly( r->dtype ) = FB_DATATYPE_BOOLEAN ) ) then
+		'' boolean BOP
+		select case as const( op )
+		case AST_OP_AND : l->val.i = cbool( l->val.i ) and cbool( r->val.i )
+		case AST_OP_OR  : l->val.i = cbool( l->val.i ) or  cbool( r->val.i )
+		case AST_OP_XOR : l->val.i = cbool( l->val.i ) xor cbool( r->val.i )
+		case AST_OP_EQV : l->val.i = cbool( l->val.i ) eqv cbool( r->val.i )
+		case AST_OP_IMP : l->val.i = cbool( l->val.i ) imp cbool( r->val.i )
+		case AST_OP_NE  : l->val.i = cbool( l->val.i ) <>  cbool( r->val.i )
+		case AST_OP_EQ  : l->val.i = cbool( l->val.i ) =   cbool( r->val.i )
+		case else
+			assert( FALSE )
+		end select
+
 	elseif( typeIsSigned( l->dtype ) ) then
 		'' Signed integer BOP
 		select case as const( op )
@@ -329,6 +344,7 @@ private function hConstBop _
 		end select
 
 		l = astConvertRawCONSTi( dtype, subtype, l )
+
 	else
 		'' Unsigned integer BOP
 		select case as const( op )
@@ -675,6 +691,8 @@ function astNewBOP _
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
+	dim as integer is_boolean = any
+	dim as integer do_promote = any
 
 	function = NULL
 
@@ -696,6 +714,9 @@ function astNewBOP _
 	rdtype = astGetFullType( r )
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
+
+	is_boolean = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
+	do_promote = TRUE
 
 	'' UDT's? try auto-coercion
 	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
@@ -970,6 +991,7 @@ function astNewBOP _
 	''
 	'' - do nothing if this BOP is a string concatenation/comparison
 	'' - also, do nothing for float/UDT operands
+	'' - also, do nothing if both operands are boolean for some BOPs
 	''
 	'' - Pointers and bitfields should be treated as UINTEGER (their
 	''   "remap" types), i.e. they will effectively never be promoted.
@@ -989,7 +1011,27 @@ function astNewBOP _
 	ldtype0 = ldtype
 	rdtype0 = rdtype
 
-	if( (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE) ) then
+	do_promote = (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE)
+
+	if (is_boolean) then
+		select case as const op
+		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
+			 AST_OP_EQ, AST_OP_NE
+
+			do_promote = FALSE
+		
+		case AST_OP_ANDALSO, AST_OP_ORELSE
+
+		case else
+
+			'' No other BOP's allowed with booleans
+			exit function
+
+		end select
+	end if
+
+	if( do_promote ) then
+
 		intrank = typeGetIntRank( FB_DATATYPE_INTEGER )
 		uintrank = typeGetIntRank( FB_DATATYPE_UINT )
 
@@ -1163,7 +1205,7 @@ function astNewBOP _
 			end if
 		end if
 
-		'' lhs signed->unsigned?  (Except in SHR)
+		'' rhs signed->unsigned?  (Except in SHR)
 		if( (warning = 0) andalso op <> AST_OP_SHR andalso typeIsSigned( rdtype0 ) ) then
 			if( typeIsSigned( rdtype ) = FALSE ) then
 				if( astIsConst( r ) ) then
@@ -1192,7 +1234,11 @@ function astNewBOP _
 	'' relational operations always return an integer
 	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE, _
 	     AST_OP_ANDALSO, AST_OP_ORELSE
-		dtype = FB_DATATYPE_INTEGER
+
+		'' except, if it's boolean
+		if( typeGetDtAndPtrOnly( dtype ) <> FB_DATATYPE_BOOLEAN ) then
+			dtype = FB_DATATYPE_INTEGER
+		end if
 		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
@@ -1217,6 +1263,43 @@ function astNewBOP _
 			end if
 		end if
 	end select
+
+	'' warn on mixing boolean and non-boolean operands
+	if( is_boolean ) then
+		
+		dim as FB_WARNINGMSG warning = 0
+
+		'' lhs boolean -> non-boolean?
+		if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( l ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( l )
+				if( (tmp <> 0) and (tmp <> -1) ) then
+					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+			end if
+		end if
+
+		'' rhs boolean -> non-boolean?
+		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
+			if( astIsConst( r ) ) then
+				'' make exception for 0|-1
+				dim tmp as longint = astConstGetAsInt64( r )
+				if( (tmp <> 0) and (tmp <> -1) ) then
+					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+				end if
+			else
+				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
+			end if
+		end if
+
+		if( warning <> 0 ) then
+			errReportWarn( warning )
+		end if
+			
+	end if
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	''

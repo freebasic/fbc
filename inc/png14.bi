@@ -153,14 +153,12 @@ const PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK = 7
 const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
-#define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
+const PNG_LIBPNG_BUILD_BASE_TYPE = PNG_LIBPNG_BUILD_STABLE
 const PNG_LIBPNG_VER_ = 10416
 #define PNGCONF_H
 const PNG_ZBUF_SIZE = 8192
 #define PNG_READ_SUPPORTED
 #define PNG_WRITE_SUPPORTED
-#define png_benign_error png_error
-#define png_chunk_benign_error png_chunk_error
 #define PNG_WARNINGS_SUPPORTED
 #define PNG_ERROR_TEXT_SUPPORTED
 #define PNG_CHECK_cHRM_SUPPORTED
@@ -168,6 +166,12 @@ const PNG_ZBUF_SIZE = 8192
 #define PNG_MNG_FEATURES_SUPPORTED
 #define PNG_FLOATING_POINT_SUPPORTED
 #define PNG_CALLOC_SUPPORTED
+
+#ifdef __FB_CYGWIN__
+	#define PNG_USE_DLL
+	#define PNG_DLL
+#endif
+
 #define PNG_STDIO_SUPPORTED
 #define PNG_CONSOLE_IO_SUPPORTED
 #define PNG_SETJMP_SUPPORTED
@@ -346,7 +350,7 @@ type png_charppp as zstring ptr ptr ptr
 #define png_snprintf2 snprintf
 #define png_snprintf6 snprintf
 type png_alloc_size_t as png_size_t
-#define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
+const PNG_LIBPNG_BUILD_TYPE = PNG_LIBPNG_BUILD_BASE_TYPE
 #define png_libpng_ver png_get_header_ver(NULL)
 
 type png_color_struct
@@ -540,16 +544,16 @@ const PNG_COLOR_MASK_COLOR = 2
 const PNG_COLOR_MASK_ALPHA = 4
 const PNG_COLOR_TYPE_GRAY = 0
 #define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
-#define PNG_COLOR_TYPE_RGB PNG_COLOR_MASK_COLOR
+const PNG_COLOR_TYPE_RGB = PNG_COLOR_MASK_COLOR
 #define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
-#define PNG_COLOR_TYPE_GRAY_ALPHA PNG_COLOR_MASK_ALPHA
+const PNG_COLOR_TYPE_GRAY_ALPHA = PNG_COLOR_MASK_ALPHA
 #define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
-#define PNG_COLOR_TYPE_GA PNG_COLOR_TYPE_GRAY_ALPHA
+const PNG_COLOR_TYPE_GA = PNG_COLOR_TYPE_GRAY_ALPHA
 const PNG_COMPRESSION_TYPE_BASE = 0
-#define PNG_COMPRESSION_TYPE_DEFAULT PNG_COMPRESSION_TYPE_BASE
+const PNG_COMPRESSION_TYPE_DEFAULT = PNG_COMPRESSION_TYPE_BASE
 const PNG_FILTER_TYPE_BASE = 0
 const PNG_INTRAPIXEL_DIFFERENCING = 64
-#define PNG_FILTER_TYPE_DEFAULT PNG_FILTER_TYPE_BASE
+const PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE
 const PNG_INTERLACE_NONE = 0
 const PNG_INTERLACE_ADAM7 = 1
 const PNG_INTERLACE_LAST = 2
@@ -633,7 +637,7 @@ const PNG_TRANSFORM_SWAP_ALPHA = &h0100
 const PNG_TRANSFORM_SWAP_ENDIAN = &h0200
 const PNG_TRANSFORM_INVERT_ALPHA = &h0400
 const PNG_TRANSFORM_STRIP_FILLER = &h0800
-#define PNG_TRANSFORM_STRIP_FILLER_BEFORE PNG_TRANSFORM_STRIP_FILLER
+const PNG_TRANSFORM_STRIP_FILLER_BEFORE = PNG_TRANSFORM_STRIP_FILLER
 const PNG_TRANSFORM_STRIP_FILLER_AFTER = &h1000
 const PNG_TRANSFORM_GRAY_TO_RGB = &h2000
 const PNG_FLAG_MNG_EMPTY_PLTE = &h01
@@ -840,10 +844,10 @@ const PNG_BACKGROUND_GAMMA_UNKNOWN = 0
 const PNG_BACKGROUND_GAMMA_SCREEN = 1
 const PNG_BACKGROUND_GAMMA_FILE = 2
 const PNG_BACKGROUND_GAMMA_UNIQUE = 3
+
 declare sub png_set_strip_16(byval png_ptr as png_structp)
 declare sub png_set_quantize(byval png_ptr as png_structp, byval palette as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_uint_16p, byval full_quantize as long)
-#define png_set_dither png_set_quantize
-
+declare sub png_set_dither alias "png_set_quantize"(byval png_ptr as png_structp, byval palette as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_uint_16p, byval full_quantize as long)
 declare sub png_set_gamma(byval png_ptr as png_structp, byval screen_gamma as double, byval default_file_gamma as double)
 declare sub png_set_flush(byval png_ptr as png_structp, byval nrows as long)
 declare sub png_write_flush(byval png_ptr as png_structp)
@@ -940,7 +944,9 @@ const PNG_FREE_MUL = &h4220
 declare function png_malloc_default(byval png_ptr as png_structp, byval size as png_alloc_size_t) as png_voidp
 declare sub png_free_default(byval png_ptr as png_structp, byval ptr as png_voidp)
 declare sub png_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_benign_error alias "png_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_chunk_error(byval png_ptr as png_structp, byval error_message as png_const_charp)
+declare sub png_chunk_benign_error alias "png_chunk_error"(byval png_ptr as png_structp, byval error_message as png_const_charp)
 declare sub png_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare sub png_chunk_warning(byval png_ptr as png_structp, byval warning_message as png_const_charp)
 declare function png_get_valid(byval png_ptr as png_const_structp, byval info_ptr as png_const_infop, byval flag as png_uint_32) as png_uint_32
@@ -1044,13 +1050,13 @@ const PNG_IO_MASK_LOC = &h00f0
 #macro png_composite(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + cast(png_uint_16, 128))
-		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
+		(composite) = cast(png_byte, (temp + (temp shr 8)) shr 8)
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * cast(png_uint_32, cast(clong, 65535) - cast(png_uint_32, (alpha))))) + cast(png_uint_32, cast(clong, 32768)))
-		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
+		(composite) = cast(png_uint_16, (temp + (temp shr 16)) shr 16)
 	end scope
 #endmacro
 #define png_get_uint_32_(buf) ((((cast(png_uint_32, (*(buf)) and &hff) shl 24) + (cast(png_uint_32, (*((buf) + 1)) and &hff) shl 16)) + (cast(png_uint_32, (*((buf) + 2)) and &hff) shl 8)) + cast(png_uint_32, (*((buf) + 3)) and &hff))

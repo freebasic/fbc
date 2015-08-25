@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glibc-2.21
+'' FreeBASIC binding for glibc-2.22
 ''
 '' based on the C header files:
 ''   Copyright (C) 1999-2015 Free Software Foundation, Inc.

@@ -15,8 +15,8 @@
 ''
 ''   You should have received a copy of the GNU Library General Public
 ''   License along with this library; if not, write to the
-''   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-''   Boston, MA 02111-1307, USA.
+''   Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+''   Boston, MA 02111-1301, USA.
 ''
 '' translated to FreeBASIC by:
 ''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
@@ -76,9 +76,9 @@ type PangoRectangle as _PangoRectangle
 type PangoGlyph as guint32
 
 const PANGO_SCALE = 1024
-#define PANGO_PIXELS(d) ((clng((d)) + 512) shr 10)
-#define PANGO_PIXELS_FLOOR(d) (clng((d)) shr 10)
-#define PANGO_PIXELS_CEIL(d) ((clng((d)) + 1023) shr 10)
+#define PANGO_PIXELS(d) ((clng(d) + 512) shr 10)
+#define PANGO_PIXELS_FLOOR(d) (clng(d) shr 10)
+#define PANGO_PIXELS_CEIL(d) ((clng(d) + 1023) shr 10)
 #define PANGO_UNITS_ROUND(d) (((d) + (PANGO_SCALE shr 1)) and (not (PANGO_SCALE - 1)))
 declare function pango_units_from_double(byval d as double) as long
 declare function pango_units_to_double(byval i as long) as double

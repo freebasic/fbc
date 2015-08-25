@@ -19,7 +19,7 @@ Converts numeric or string expression to a ##[[KeyPgUinteger Uinteger]]## or ##[
 	##//bits//##
 		A numeric constant expression indicating the size in bits of unsigned integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uintger]]<//bits//>## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##

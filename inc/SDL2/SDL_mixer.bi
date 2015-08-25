@@ -42,9 +42,9 @@ const SDL_MIXER_PATCHLEVEL = 0
 		(X)->patch = SDL_MIXER_PATCHLEVEL
 	end scope
 #endmacro
-#define MIX_MAJOR_VERSION SDL_MIXER_MAJOR_VERSION
-#define MIX_MINOR_VERSION SDL_MIXER_MINOR_VERSION
-#define MIX_PATCHLEVEL SDL_MIXER_PATCHLEVEL
+const MIX_MAJOR_VERSION = SDL_MIXER_MAJOR_VERSION
+const MIX_MINOR_VERSION = SDL_MIXER_MINOR_VERSION
+const MIX_PATCHLEVEL = SDL_MIXER_PATCHLEVEL
 #define MIX_VERSION(X) SDL_MIXER_VERSION(X)
 declare function Mix_Linked_Version() as const SDL_version ptr
 
@@ -62,7 +62,7 @@ declare function Mix_Init(byval flags as long) as long
 declare sub Mix_Quit()
 const MIX_CHANNELS = 8
 const MIX_DEFAULT_FREQUENCY = 22050
-#define MIX_DEFAULT_FORMAT AUDIO_S16LSB
+const MIX_DEFAULT_FORMAT = AUDIO_S16LSB
 const MIX_DEFAULT_CHANNELS = 2
 const MIX_MAX_VOLUME = 128
 
@@ -172,7 +172,7 @@ declare function Mix_GetSoundFonts() as const zstring ptr
 declare function Mix_EachSoundFont(byval function as function(byval as const zstring ptr, byval as any ptr) as long, byval data as any ptr) as long
 declare function Mix_GetChunk(byval channel as long) as Mix_Chunk ptr
 declare sub Mix_CloseAudio()
-#define Mix_SetError SDL_SetError
-#define Mix_GetError SDL_GetError
+declare function Mix_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...) as long
+declare function Mix_GetError alias "SDL_GetError"() as const zstring ptr
 
 end extern

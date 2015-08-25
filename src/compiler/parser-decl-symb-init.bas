@@ -196,7 +196,7 @@ private function hArrayInit _
 	end if
 
 	if( isarray ) then
-		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		astTypeIniScopeBegin( ctx.tree, ctx.sym, TRUE )
 	end if
 
 	'' Determine the expected number of initializer elements
@@ -407,7 +407,7 @@ private function hUDTInit( byref ctx as FB_INITCTX ) as integer
 		comma = (lexGetLookAhead(1) = CHAR_COMMA)
 		parenth = FALSE
 	else
-		astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		astTypeIniScopeBegin( ctx.tree, ctx.sym, FALSE )
 		lexSkipToken( )
 	end if
 

@@ -233,6 +233,9 @@ else
     ifeq ($(uname),OpenBSD)
       TARGET_OS := openbsd
     endif
+    ifeq ($(uname),SunOS)
+      TARGET_OS := solaris
+    endif
   endif
 
   ifndef TARGET_ARCH
@@ -412,6 +415,21 @@ ifeq ($(TARGET_OS),xbox)
 
   # -DENABLE_MT parts of rtlib XBox code aren't finished
   DISABLE_MT := YesPlease
+endif
+
+ifeq ($(TARGET_OS),netbsd)
+  ALLCFLAGS += -I/usr/X11R7/include \
+    -I/usr/pkg/include
+endif
+
+ifeq ($(TARGET_OS),darwin)
+  ALLCFLAGS += -I/opt/X11/include -I/usr/include/ffi
+  
+  ifdef ENABLE_XQUARTZ
+    ALLFBCFLAGS += -d ENABLE_XQUARTZ
+  else
+    ALLCFLAGS += -DDISABLE_X11
+  endif
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
@@ -861,16 +879,7 @@ bindist:
 
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
-	rm -r $(packinc)/AL
-	rm -r $(packinc)/aspell.bi
-	rm -r $(packinc)/bass.bi
-	rm -r $(packinc)/bassmod.bi
-	rm -r $(packinc)/bfd
-	rm -r $(packinc)/bfd.bi
 	rm -r $(packinc)/big_int
-	rm -r $(packinc)/bzlib.bi
-	rm -r $(packinc)/caca0.bi
-	rm -r $(packinc)/caca.bi
 	rm -r $(packinc)/cd
 	rm -r $(packinc)/cgi-util.bi
 	rm -r $(packinc)/chipmunk

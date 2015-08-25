@@ -53,11 +53,6 @@
 extern "C"
 
 const _X11_XLIBINT_H_ = 1
-
-#ifdef __FB_WIN32__
-	#define _XFlush _XFlushIt
-#endif
-
 const XCONN_CHECK_FREQ = 256
 
 type _XGC
@@ -193,7 +188,13 @@ type _XLockPtrs_
 	unlock_display as sub(byval dpy as Display ptr)
 end type
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	extern _XCreateMutex_fn as sub(byval as LockInfoPtr)
+	extern _XFreeMutex_fn as sub(byval as LockInfoPtr)
+	extern _XLockMutex_fn as sub(byval as LockInfoPtr)
+	extern _XUnlockMutex_fn as sub(byval as LockInfoPtr)
+	extern _Xglobal_lock as LockInfoPtr
+#else
 	#define _XCreateMutex_fn (*_XCreateMutex_fn_p)
 	#define _XFreeMutex_fn (*_XFreeMutex_fn_p)
 	#define _XLockMutex_fn (*_XLockMutex_fn_p)
@@ -205,12 +206,6 @@ end type
 	extern _XLockMutex_fn_p as typeof(sub(byval as LockInfoPtr)) ptr
 	extern _XUnlockMutex_fn_p as typeof(sub(byval as LockInfoPtr)) ptr
 	extern _Xglobal_lock_p as LockInfoPtr ptr
-#else
-	extern _XCreateMutex_fn as sub(byval as LockInfoPtr)
-	extern _XFreeMutex_fn as sub(byval as LockInfoPtr)
-	extern _XLockMutex_fn as sub(byval as LockInfoPtr)
-	extern _XUnlockMutex_fn as sub(byval as LockInfoPtr)
-	extern _Xglobal_lock as LockInfoPtr
 #endif
 
 #macro LockDisplay(d)
@@ -281,11 +276,7 @@ declare function _XGetRequest(byval dpy as Display ptr, byval type as CARD8, byv
 		req->id = (rid)
 	end scope
 #endmacro
-#macro GetEmptyReq(name, req)
-	scope
-		req = cptr(xReq ptr, _XGetRequest(dpy, X_##name, XSIZEOF(xReq)))
-	end scope
-#endmacro
+#define GetEmptyReq(name, req) scope : req = cptr(xReq ptr, _XGetRequest(dpy, X_##name, XSIZEOF(xReq))) : end scope
 
 #ifdef __FB_64BIT__
 	#macro MakeBigReq(req, n)
@@ -295,7 +286,7 @@ declare function _XGetRequest(byval dpy as Display ptr, byval type as CARD8, byv
 			req->length = 0
 			_BRdat = cptr(CARD32 ptr, req)[_BRlen]
 			memmove(cptr(zstring ptr, req) + 8, cptr(zstring ptr, req) + 4, (_BRlen - 1) shl 2)
-			cptr(CARD32 ptr, req)[1] = _BRlen + n + 2
+			cptr(CARD32 ptr, req)[1] = (_BRlen + n) + 2
 			Data32(dpy, @_BRdat, 4)
 		end scope
 	#endmacro
@@ -307,7 +298,7 @@ declare function _XGetRequest(byval dpy as Display ptr, byval type as CARD8, byv
 			req->length = 0
 			_BRdat = cptr(CARD32 ptr, req)[_BRlen]
 			memmove(cptr(zstring ptr, req) + 8, cptr(zstring ptr, req) + 4, (_BRlen - 1) shl 2)
-			cptr(CARD32 ptr, req)[1] = _BRlen + n + 2
+			cptr(CARD32 ptr, req)[1] = (_BRlen + n) + 2
 			Data32(dpy, @_BRdat, 4)
 		end scope
 	#endmacro
@@ -337,14 +328,12 @@ declare sub _XFlushGCCache(byval dpy as Display ptr, byval gc as GC)
 	end if
 #endmacro
 #macro Data_(dpy, data, len)
-	scope
-		if dpy->bufptr + (len) <= dpy->bufmax then
-			memcpy(dpy->bufptr, data, clng(len))
-			dpy->bufptr += ((len) + 3) and (not 3)
-		else
-			_XSend(dpy, data, len)
-		end if
-	end scope
+	if (dpy->bufptr + (len)) <= dpy->bufmax then
+		memcpy(dpy->bufptr, data, clng(len))
+		dpy->bufptr += ((len) + 3) and (not 3)
+	else
+		_XSend(dpy, data, len)
+	end if
 #endmacro
 #macro BufAlloc(type, ptr, n)
 	if dpy->bufptr + (n) > dpy->bufmax then
@@ -374,11 +363,11 @@ declare sub _XFlushGCCache(byval dpy as Display ptr, byval gc as GC)
 #macro CI_GET_CHAR_INFO_1D(fs, col, def, cs)
 	scope
 		cs = def
-		if col >= fs->min_char_or_byte2 andalso col <= fs->max_char_or_byte2 then
-			if fs->per_char == NULL then
+		if (col >= fs->min_char_or_byte2) andalso (col <= fs->max_char_or_byte2) then
+			if fs->per_char = NULL then
 				cs = @fs->min_bounds
 			else
-				cs = @fs->per_char[col - fs->min_char_or_byte2]
+				cs = @fs->per_char[(col - fs->min_char_or_byte2)]
 				if CI_NONEXISTCHAR(cs) then
 					cs = def
 				end if
@@ -390,11 +379,11 @@ declare sub _XFlushGCCache(byval dpy as Display ptr, byval gc as GC)
 #macro CI_GET_CHAR_INFO_2D(fs, row, col, def, cs)
 	scope
 		cs = def
-		if row >= fs->min_byte1 andalso row <= fs->max_byte1 andalso col >= fs->min_char_or_byte2 andalso col <= fs->max_char_or_byte2 then
+		if (((row >= fs->min_byte1) andalso (row <= fs->max_byte1)) andalso (col >= fs->min_char_or_byte2)) andalso (col <= fs->max_char_or_byte2) then
 			if fs->per_char = NULL then
 				cs = @fs->min_bounds
 			else
-				cs = @fs->per_char[((row - fs->min_byte1) * (fs->max_char_or_byte2 - fs->min_char_or_byte2 + 1)) + (col - fs->min_char_or_byte2)]
+				cs = @fs->per_char[(((row - fs->min_byte1) * ((fs->max_char_or_byte2 - fs->min_char_or_byte2) + 1)) + (col - fs->min_char_or_byte2))]
 				if CI_NONEXISTCHAR(cs) then
 					cs = def
 				end if
@@ -409,11 +398,7 @@ declare sub _XFlushGCCache(byval dpy as Display ptr, byval gc as GC)
 		CI_GET_CHAR_INFO_2D(fs, r, c, NULL, cs)
 	end scope
 #endmacro
-#macro OneDataCard32(dpy, dstaddr, srcvar)
-	scope
-		*cptr(CARD32 ptr, dstaddr) = (srcvar)
-	end scope
-#endmacro
+#define OneDataCard32(dpy, dstaddr, srcvar) scope : (*cptr(CARD32 ptr, (dstaddr))) = (srcvar) : end scope
 
 type _XInternalAsync_
 	next as _XInternalAsync ptr
@@ -436,13 +421,11 @@ end type
 type _XAsyncErrorState as _XAsyncEState
 declare sub _XDeqAsyncHandler(byval dpy as Display ptr, byval handler as _XAsyncHandler ptr)
 #macro DeqAsyncHandler(dpy, handler)
-	scope
-		if dpy->async_handlers = (handler) then
-			dpy->async_handlers = (handler)->next
-		else
-			_XDeqAsyncHandler(dpy, handler)
-		end if
-	end scope
+	if dpy->async_handlers = (handler) then
+		dpy->async_handlers = (handler)->next
+	else
+		_XDeqAsyncHandler(dpy, handler)
+	end if
 #endmacro
 type FreeFuncType as sub(byval as Display ptr)
 type FreeModmapType as function(byval as XModifierKeymap ptr) as long
@@ -509,10 +492,11 @@ declare function _XAsyncErrorHandler(byval as Display ptr, byval as xReply ptr, 
 declare function _XGetAsyncReply(byval as Display ptr, byval as zstring ptr, byval as xReply ptr, byval as zstring ptr, byval as long, byval as long, byval as long) as zstring ptr
 declare sub _XGetAsyncData(byval as Display ptr, byval as zstring ptr, byval as zstring ptr, byval as long, byval as long, byval as long, byval as long)
 
-#ifdef __FB_WIN32__
-	declare sub _XFlushIt(byval as Display ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub _XFlush(byval as Display ptr)
+#else
+	declare sub _XFlushIt(byval as Display ptr)
+	declare sub _XFlush alias "_XFlushIt"(byval as Display ptr)
 #endif
 
 declare function _XEventsQueued(byval as Display ptr, byval as long) as long
@@ -573,15 +557,15 @@ end type
 declare function _XTextHeight(byval as XFontStruct ptr, byval as const zstring ptr, byval as long) as long
 declare function _XTextHeight16(byval as XFontStruct ptr, byval as const XChar2b ptr, byval as long) as long
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	#define _XOpenFile(path, flags) open(path, flags)
+	#define _XOpenFileMode(path, flags, mode) open(path, flags, mode)
+	#define _XFopenFile(path, mode) fopen(path, mode)
+#else
 	declare function _XOpenFile(byval as const zstring ptr, byval as long) as long
 	declare function _XOpenFileMode(byval as const zstring ptr, byval as long, byval as _mode_t) as long
 	declare function _XFopenFile(byval as const zstring ptr, byval as const zstring ptr) as any ptr
 	declare function _XAccessFile(byval as const zstring ptr) as long
-#else
-	#define _XOpenFile(path, flags) open(path, flags)
-	#define _XOpenFileMode(path, flags, mode) open(path, flags, mode)
-	#define _XFopenFile(path, mode) fopen(path, mode)
 #endif
 
 declare function _XEventToWire(byval dpy as Display ptr, byval re as XEvent ptr, byval event as xEvent_ ptr) as long

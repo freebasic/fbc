@@ -16,8 +16,8 @@
 ''
 ''   You should have received a copy of the GNU Library General Public
 ''   License along with this library; if not, write to the
-''   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-''   Boston, MA 02111-1307, USA.
+''   Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+''   Boston, MA 02111-1301, USA.
 ''
 '' translated to FreeBASIC by:
 ''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
@@ -29,6 +29,9 @@
 
 #include once "glib-object.bi"
 #include once "glib.bi"
+
+'' The following symbols have been renamed:
+''     constant ATK_HYPERLINK_IS_INLINE => ATK_HYPERLINK_IS_INLINE_
 
 #ifdef __FB_WIN32__
 #pragma push(msbitfields)
@@ -1392,10 +1395,10 @@ type _AtkMisc
 	parent as GObject
 end type
 
-#if (defined(__FB_WIN32__) and defined(ATK_STATIC_COMPILATION)) or defined(__FB_LINUX__)
-	extern atk_misc_instance as AtkMisc ptr
-#else
+#if (defined(__FB_WIN32__) and (not defined(ATK_STATIC_COMPILATION))) or defined(__FB_CYGWIN__)
 	extern import atk_misc_instance as AtkMisc ptr
+#else
+	extern atk_misc_instance as AtkMisc ptr
 #endif
 
 type _AtkMiscClass

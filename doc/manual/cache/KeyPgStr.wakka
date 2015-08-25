@@ -2,7 +2,7 @@
 Returns a string representation of a number or Unicode character string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]

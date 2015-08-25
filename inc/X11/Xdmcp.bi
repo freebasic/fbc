@@ -22,6 +22,10 @@
 #include once "X11/Xmd.bi"
 #include once "X11/Xfuncproto.bi"
 
+'' The following symbols have been renamed:
+''     constant ACCEPT => XACCEPT
+''     constant FAILED => XFAILED
+
 extern "C"
 
 #define _XDMCP_H_

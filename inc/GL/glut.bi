@@ -12,13 +12,13 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
+#ifdef __FB_UNIX__
+	#inclib "glut"
+#elseif defined(__FB_WIN32__)
 	#inclib "glut32"
-#elseif defined(__FB_DOS__)
+#else
 	#inclib "GLUT"
 	#inclib "alleg"
-#else
-	#inclib "glut"
 #endif
 
 #include once "GL/gl.bi"
@@ -42,7 +42,7 @@
 const GLUT_API_VERSION = 3
 const GLUT_XLIB_IMPLEMENTATION = 13
 const GLUT_RGB = 0
-#define GLUT_RGBA GLUT_RGB
+const GLUT_RGBA = GLUT_RGB
 const GLUT_INDEX = 1
 const GLUT_SINGLE = 0
 const GLUT_DOUBLE = 2

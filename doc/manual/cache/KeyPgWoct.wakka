@@ -2,7 +2,7 @@
 Converts a number to a Unicode octal representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

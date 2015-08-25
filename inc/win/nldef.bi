@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -229,14 +229,14 @@ type NL_INTERFACE_NETWORK_CATEGORY_STATE as _NL_INTERFACE_NETWORK_CATEGORY_STATE
 type PNL_INTERFACE_NETWORK_CATEGORY_STATE as _NL_INTERFACE_NETWORK_CATEGORY_STATE ptr
 
 type _NL_INTERFACE_OFFLOAD_ROD
-	NlChecksumSupported : 1 as BOOLEAN
-	NlOptionsSupported : 1 as BOOLEAN
-	TlDatagramChecksumSupported : 1 as BOOLEAN
-	TlStreamChecksumSupported : 1 as BOOLEAN
-	TlStreamOptionsSupported : 1 as BOOLEAN
-	FastPathCompatible : 1 as BOOLEAN
-	TlLargeSendOffloadSupported : 1 as BOOLEAN
-	TlGiantSendOffloadSupported : 1 as BOOLEAN
+	NlChecksumSupported : 1 as WINBOOLEAN
+	NlOptionsSupported : 1 as WINBOOLEAN
+	TlDatagramChecksumSupported : 1 as WINBOOLEAN
+	TlStreamChecksumSupported : 1 as WINBOOLEAN
+	TlStreamOptionsSupported : 1 as WINBOOLEAN
+	FastPathCompatible : 1 as WINBOOLEAN
+	TlLargeSendOffloadSupported : 1 as WINBOOLEAN
+	TlGiantSendOffloadSupported : 1 as WINBOOLEAN
 end type
 
 type NL_INTERFACE_OFFLOAD_ROD as _NL_INTERFACE_OFFLOAD_ROD
@@ -245,7 +245,7 @@ type PNL_INTERFACE_OFFLOAD_ROD as _NL_INTERFACE_OFFLOAD_ROD ptr
 type _NL_PATH_BANDWIDTH_ROD
 	Bandwidth as ULONG64
 	Instability as ULONG64
-	BandwidthPeaked as BOOLEAN
+	BandwidthPeaked as WINBOOLEAN
 end type
 
 type NL_PATH_BANDWIDTH_ROD as _NL_PATH_BANDWIDTH_ROD
@@ -266,15 +266,15 @@ type PNL_NETWORK_CATEGORY as _NL_NETWORK_CATEGORY ptr
 type _NL_BANDWIDTH_INFORMATION
 	Bandwidth as ULONG64
 	Instability as ULONG64
-	BandwidthPeaked as BOOLEAN
+	BandwidthPeaked as WINBOOLEAN
 end type
 
 type NL_BANDWIDTH_INFORMATION as _NL_BANDWIDTH_INFORMATION
 type PNL_BANDWIDTH_INFORMATION as _NL_BANDWIDTH_INFORMATION ptr
-#define NlpoOther IpPrefixOriginOther
-#define NlpoManual IpPrefixOriginManual
-#define NlpoWellKnown IpPrefixOriginWellKnown
-#define NlpoDhcp IpPrefixOriginDhcp
-#define NlpoRouterAdvertisement IpPrefixOriginRouterAdvertisement
+const NlpoOther = IpPrefixOriginOther
+const NlpoManual = IpPrefixOriginManual
+const NlpoWellKnown = IpPrefixOriginWellKnown
+const NlpoDhcp = IpPrefixOriginDhcp
+const NlpoRouterAdvertisement = IpPrefixOriginRouterAdvertisement
 #define NL_MAX_METRIC_COMPONENT ((cast(ULONG, 1) shl 31) - 1)
 #define NET_IF_CURRENT_SESSION cast(ULONG, -1)

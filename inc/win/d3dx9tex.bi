@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2008 Tony Wasserka
@@ -89,18 +89,18 @@ declare function D3DXGetImageInfoFromFileA(byval file as const zstring ptr, byva
 declare function D3DXGetImageInfoFromFileW(byval file as const wstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXGetImageInfoFromFile D3DXGetImageInfoFromFileW
+	declare function D3DXGetImageInfoFromFile alias "D3DXGetImageInfoFromFileW"(byval file as const wstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXGetImageInfoFromFile D3DXGetImageInfoFromFileA
+	declare function D3DXGetImageInfoFromFile alias "D3DXGetImageInfoFromFileA"(byval file as const zstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXGetImageInfoFromResourceA(byval module as HMODULE, byval resource as const zstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 declare function D3DXGetImageInfoFromResourceW(byval module as HMODULE, byval resource as const wstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXGetImageInfoFromResource D3DXGetImageInfoFromResourceW
+	declare function D3DXGetImageInfoFromResource alias "D3DXGetImageInfoFromResourceW"(byval module as HMODULE, byval resource as const wstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXGetImageInfoFromResource D3DXGetImageInfoFromResourceA
+	declare function D3DXGetImageInfoFromResource alias "D3DXGetImageInfoFromResourceA"(byval module as HMODULE, byval resource as const zstring ptr, byval info as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXGetImageInfoFromFileInMemory(byval data as const any ptr, byval data_size as UINT, byval info as D3DXIMAGE_INFO ptr) as HRESULT
@@ -108,18 +108,18 @@ declare function D3DXLoadSurfaceFromFileA(byval destsurface as IDirect3DSurface9
 declare function D3DXLoadSurfaceFromFileW(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcfile as const wstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadSurfaceFromFile D3DXLoadSurfaceFromFileW
+	declare function D3DXLoadSurfaceFromFile alias "D3DXLoadSurfaceFromFileW"(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcfile as const wstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXLoadSurfaceFromFile D3DXLoadSurfaceFromFileA
+	declare function D3DXLoadSurfaceFromFile alias "D3DXLoadSurfaceFromFileA"(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcfile as const zstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXLoadSurfaceFromResourceA(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 declare function D3DXLoadSurfaceFromResourceW(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadSurfaceFromResource D3DXLoadSurfaceFromResourceW
+	declare function D3DXLoadSurfaceFromResource alias "D3DXLoadSurfaceFromResourceW"(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXLoadSurfaceFromResource D3DXLoadSurfaceFromResourceA
+	declare function D3DXLoadSurfaceFromResource alias "D3DXLoadSurfaceFromResourceA"(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXLoadSurfaceFromFileInMemory(byval destsurface as IDirect3DSurface9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destrect as const RECT ptr, byval srcdata as const any ptr, byval srcdatasize as UINT, byval srcrect as const RECT ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
@@ -130,27 +130,27 @@ declare function D3DXSaveSurfaceToFileA(byval destfile as const zstring ptr, byv
 declare function D3DXSaveSurfaceToFileW(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcsurface as IDirect3DSurface9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcrect as const RECT ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSaveSurfaceToFile D3DXSaveSurfaceToFileW
+	declare function D3DXSaveSurfaceToFile alias "D3DXSaveSurfaceToFileW"(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcsurface as IDirect3DSurface9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcrect as const RECT ptr) as HRESULT
 #else
-	#define D3DXSaveSurfaceToFile D3DXSaveSurfaceToFileA
+	declare function D3DXSaveSurfaceToFile alias "D3DXSaveSurfaceToFileA"(byval destfile as const zstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcsurface as IDirect3DSurface9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcrect as const RECT ptr) as HRESULT
 #endif
 
 declare function D3DXLoadVolumeFromFileA(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcfile as const zstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 declare function D3DXLoadVolumeFromFileW(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcfile as const wstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadVolumeFromFile D3DXLoadVolumeFromFileW
+	declare function D3DXLoadVolumeFromFile alias "D3DXLoadVolumeFromFileW"(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcfile as const wstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXLoadVolumeFromFile D3DXLoadVolumeFromFileA
+	declare function D3DXLoadVolumeFromFile alias "D3DXLoadVolumeFromFileA"(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcfile as const zstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXLoadVolumeFromResourceA(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 declare function D3DXLoadVolumeFromResourceW(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXLoadVolumeFromResource D3DXLoadVolumeFromResourceW
+	declare function D3DXLoadVolumeFromResource alias "D3DXLoadVolumeFromResourceW"(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #else
-	#define D3DXLoadVolumeFromResource D3DXLoadVolumeFromResourceA
+	declare function D3DXLoadVolumeFromResource alias "D3DXLoadVolumeFromResourceA"(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
 #endif
 
 declare function D3DXLoadVolumeFromFileInMemory(byval destvolume as IDirect3DVolume9 ptr, byval destpalette as const PALETTEENTRY ptr, byval destbox as const D3DBOX ptr, byval srcdata as const any ptr, byval srcdatasize as UINT, byval srcbox as const D3DBOX ptr, byval filter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr) as HRESULT
@@ -160,9 +160,9 @@ declare function D3DXSaveVolumeToFileA(byval destfile as const zstring ptr, byva
 declare function D3DXSaveVolumeToFileW(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcvolume as IDirect3DVolume9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcbox as const D3DBOX ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSaveVolumeToFile D3DXSaveVolumeToFileW
+	declare function D3DXSaveVolumeToFile alias "D3DXSaveVolumeToFileW"(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcvolume as IDirect3DVolume9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcbox as const D3DBOX ptr) as HRESULT
 #else
-	#define D3DXSaveVolumeToFile D3DXSaveVolumeToFileA
+	declare function D3DXSaveVolumeToFile alias "D3DXSaveVolumeToFileA"(byval destfile as const zstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srcvolume as IDirect3DVolume9 ptr, byval srcpalette as const PALETTEENTRY ptr, byval srcbox as const D3DBOX ptr) as HRESULT
 #endif
 
 declare function D3DXCheckTextureRequirements(byval device as IDirect3DDevice9 ptr, byval width as UINT ptr, byval height as UINT ptr, byval miplevels as UINT ptr, byval usage as DWORD, byval format as D3DFORMAT ptr, byval pool as D3DPOOL) as HRESULT
@@ -175,108 +175,108 @@ declare function D3DXCreateTextureFromFileA(byval device as IDirect3DDevice9 ptr
 declare function D3DXCreateTextureFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateTextureFromFile D3DXCreateTextureFromFileW
+	declare function D3DXCreateTextureFromFile alias "D3DXCreateTextureFromFileW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateTextureFromFile D3DXCreateTextureFromFileA
+	declare function D3DXCreateTextureFromFile alias "D3DXCreateTextureFromFileA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateCubeTextureFromFileA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateCubeTextureFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateCubeTextureFromFile D3DXCreateCubeTextureFromFileW
+	declare function D3DXCreateCubeTextureFromFile alias "D3DXCreateCubeTextureFromFileW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateCubeTextureFromFile D3DXCreateCubeTextureFromFileA
+	declare function D3DXCreateCubeTextureFromFile alias "D3DXCreateCubeTextureFromFileA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateVolumeTextureFromFileA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateVolumeTextureFromFileW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateVolumeTextureFromFile D3DXCreateVolumeTextureFromFileW
+	declare function D3DXCreateVolumeTextureFromFile alias "D3DXCreateVolumeTextureFromFileW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateVolumeTextureFromFile D3DXCreateVolumeTextureFromFileA
+	declare function D3DXCreateVolumeTextureFromFile alias "D3DXCreateVolumeTextureFromFileA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateTextureFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateTextureFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateTextureFromResource D3DXCreateTextureFromResourceW
+	declare function D3DXCreateTextureFromResource alias "D3DXCreateTextureFromResourceW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateTextureFromResource D3DXCreateTextureFromResourceA
+	declare function D3DXCreateTextureFromResource alias "D3DXCreateTextureFromResourceA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateCubeTextureFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateCubeTextureFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateCubeTextureFromResource D3DXCreateCubeTextureFromResourceW
+	declare function D3DXCreateCubeTextureFromResource alias "D3DXCreateCubeTextureFromResourceW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateCubeTextureFromResource D3DXCreateCubeTextureFromResourceA
+	declare function D3DXCreateCubeTextureFromResource alias "D3DXCreateCubeTextureFromResourceA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateVolumeTextureFromResourceA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateVolumeTextureFromResourceW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateVolumeTextureFromResource D3DXCreateVolumeTextureFromResourceW
+	declare function D3DXCreateVolumeTextureFromResource alias "D3DXCreateVolumeTextureFromResourceW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateVolumeTextureFromResource D3DXCreateVolumeTextureFromResourceA
+	declare function D3DXCreateVolumeTextureFromResource alias "D3DXCreateVolumeTextureFromResourceA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateTextureFromFileExA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateTextureFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateTextureFromFileEx D3DXCreateTextureFromFileExW
+	declare function D3DXCreateTextureFromFileEx alias "D3DXCreateTextureFromFileExW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateTextureFromFileEx D3DXCreateTextureFromFileExA
+	declare function D3DXCreateTextureFromFileEx alias "D3DXCreateTextureFromFileExA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateCubeTextureFromFileExA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateCubeTextureFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateCubeTextureFromFileEx D3DXCreateCubeTextureFromFileExW
+	declare function D3DXCreateCubeTextureFromFileEx alias "D3DXCreateCubeTextureFromFileExW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateCubeTextureFromFileEx D3DXCreateCubeTextureFromFileExA
+	declare function D3DXCreateCubeTextureFromFileEx alias "D3DXCreateCubeTextureFromFileExA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateVolumeTextureFromFileExA(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateVolumeTextureFromFileExW(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateVolumeTextureFromFileEx D3DXCreateVolumeTextureFromFileExW
+	declare function D3DXCreateVolumeTextureFromFileEx alias "D3DXCreateVolumeTextureFromFileExW"(byval device as IDirect3DDevice9 ptr, byval srcfile as const wstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateVolumeTextureFromFileEx D3DXCreateVolumeTextureFromFileExA
+	declare function D3DXCreateVolumeTextureFromFileEx alias "D3DXCreateVolumeTextureFromFileExA"(byval device as IDirect3DDevice9 ptr, byval srcfile as const zstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateTextureFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateTextureFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateTextureFromResourceEx D3DXCreateTextureFromResourceExW
+	declare function D3DXCreateTextureFromResourceEx alias "D3DXCreateTextureFromResourceExW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateTextureFromResourceEx D3DXCreateTextureFromResourceExA
+	declare function D3DXCreateTextureFromResourceEx alias "D3DXCreateTextureFromResourceExA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval width as UINT, byval height as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateCubeTextureFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateCubeTextureFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateCubeTextureFromResourceEx D3DXCreateCubeTextureFromResourceExW
+	declare function D3DXCreateCubeTextureFromResourceEx alias "D3DXCreateCubeTextureFromResourceExW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateCubeTextureFromResourceEx D3DXCreateCubeTextureFromResourceExA
+	declare function D3DXCreateCubeTextureFromResourceEx alias "D3DXCreateCubeTextureFromResourceExA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval size as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval cube as IDirect3DCubeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateVolumeTextureFromResourceExA(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 declare function D3DXCreateVolumeTextureFromResourceExW(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateVolumeTextureFromResourceEx D3DXCreateVolumeTextureFromResourceExW
+	declare function D3DXCreateVolumeTextureFromResourceEx alias "D3DXCreateVolumeTextureFromResourceExW"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const wstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #else
-	#define D3DXCreateVolumeTextureFromResourceEx D3DXCreateVolumeTextureFromResourceExA
+	declare function D3DXCreateVolumeTextureFromResourceEx alias "D3DXCreateVolumeTextureFromResourceExA"(byval device as IDirect3DDevice9 ptr, byval srcmodule as HMODULE, byval resource as const zstring ptr, byval width as UINT, byval height as UINT, byval depth as UINT, byval miplevels as UINT, byval usage as DWORD, byval format as D3DFORMAT, byval pool as D3DPOOL, byval filter as DWORD, byval mipfilter as DWORD, byval colorkey as D3DCOLOR, byval srcinfo as D3DXIMAGE_INFO ptr, byval palette as PALETTEENTRY ptr, byval volume as IDirect3DVolumeTexture9 ptr ptr) as HRESULT
 #endif
 
 declare function D3DXCreateTextureFromFileInMemory(byval device as IDirect3DDevice9 ptr, byval srcdata as const any ptr, byval srcdatasize as UINT, byval texture as IDirect3DTexture9 ptr ptr) as HRESULT
@@ -290,14 +290,14 @@ declare function D3DXSaveTextureToFileA(byval destfile as const zstring ptr, byv
 declare function D3DXSaveTextureToFileW(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srctexture as IDirect3DBaseTexture9 ptr, byval srcpalette as const PALETTEENTRY ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXSaveTextureToFile D3DXSaveTextureToFileW
+	declare function D3DXSaveTextureToFile alias "D3DXSaveTextureToFileW"(byval destfile as const wstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srctexture as IDirect3DBaseTexture9 ptr, byval srcpalette as const PALETTEENTRY ptr) as HRESULT
 #else
-	#define D3DXSaveTextureToFile D3DXSaveTextureToFileA
+	declare function D3DXSaveTextureToFile alias "D3DXSaveTextureToFileA"(byval destfile as const zstring ptr, byval destformat as D3DXIMAGE_FILEFORMAT, byval srctexture as IDirect3DBaseTexture9 ptr, byval srcpalette as const PALETTEENTRY ptr) as HRESULT
 #endif
 
 declare function D3DXFilterTexture(byval texture as IDirect3DBaseTexture9 ptr, byval palette as const PALETTEENTRY ptr, byval srclevel as UINT, byval filter as DWORD) as HRESULT
-#define D3DXFilterCubeTexture D3DXFilterTexture
-#define D3DXFilterVolumeTexture D3DXFilterTexture
+declare function D3DXFilterCubeTexture alias "D3DXFilterTexture"(byval texture as IDirect3DBaseTexture9 ptr, byval palette as const PALETTEENTRY ptr, byval srclevel as UINT, byval filter as DWORD) as HRESULT
+declare function D3DXFilterVolumeTexture alias "D3DXFilterTexture"(byval texture as IDirect3DBaseTexture9 ptr, byval palette as const PALETTEENTRY ptr, byval srclevel as UINT, byval filter as DWORD) as HRESULT
 declare function D3DXFillTexture(byval texture as IDirect3DTexture9 ptr, byval function as LPD3DXFILL2D, byval data as any ptr) as HRESULT
 declare function D3DXFillCubeTexture(byval cube as IDirect3DCubeTexture9 ptr, byval function as LPD3DXFILL3D, byval data as any ptr) as HRESULT
 declare function D3DXFillVolumeTexture(byval volume as IDirect3DVolumeTexture9 ptr, byval function as LPD3DXFILL3D, byval data as any ptr) as HRESULT

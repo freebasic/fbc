@@ -1,4 +1,4 @@
-'' FreeBASIC binding for cgui-2.0.3
+'' FreeBASIC binding for cgui-2.0.4
 ''
 '' based on the C header files:
 ''   A C Graphical User Interface [add on to Allegro] by Christer Sandberg
@@ -41,7 +41,6 @@
 ''     #define W_CENTRE_H => CGUI_W_CENTRE_H
 ''     #define W_CENTRE_V => CGUI_W_CENTRE_V
 ''     #define W_CENTRE => CGUI_W_CENTRE
-''     #define ID_DESKTOP => CGUI_ID_DESKTOP
 ''     constant R_HORIZONTAL => CGUI_R_HORIZONTAL
 ''     constant R_VERTICAL => CGUI_R_VERTICAL
 ''     constant TR_SHOWPOS => CGUI_TR_SHOWPOS
@@ -147,17 +146,16 @@
 ''     constant FM_HIDE_FILE_VEW => CGUI_FM_HIDE_FILE_VEW
 ''     constant FM_DO_NOT_SHOW_MENU => CGUI_FM_DO_NOT_SHOW_MENU
 ''     constant FM_NO_FLOATING => CGUI_FM_NO_FLOATING
-''     #define FM_BROWSE_DAT => CGUI_FM_BROWSE_DAT
-''     #define FM_DISABLE_EDIT_DAT => CGUI_FM_DISABLE_EDIT_DAT
-''     #define FM_DISABLE_CREATE_DIR => CGUI_FM_DISABLE_CREATE_DIR
-''     #define FM_DISABLE_DELETING => CGUI_FM_DISABLE_DELETING
-''     #define FM_DISABLE_COPYING => CGUI_FM_DISABLE_COPYING
-''     #define FM_NO_SETTINGS_IN_CONFIG => CGUI_FM_NO_SETTINGS_IN_CONFIG
-''     #define FM_SHOW_DIR_TREE => CGUI_FM_SHOW_DIR_TREE
-''     #define FM_SHOW_DIRS_IN_FILE_VIEW => CGUI_FM_SHOW_DIRS_IN_FILE_VIEW
-''     #define FM_HIDE_LOCATION => CGUI_FM_HIDE_LOCATION
-''     #define FM_HIDE_UP_BUTTON => CGUI_FM_HIDE_UP_BUTTON
-''     #define FM_HIDE_UP_DIRECTORY => CGUI_FM_HIDE_UP_DIRECTORY
+''     constant FM_BROWSE_DAT => CGUI_FM_BROWSE_DAT
+''     constant FM_DISABLE_EDIT_DAT => CGUI_FM_DISABLE_EDIT_DAT
+''     constant FM_DISABLE_CREATE_DIR => CGUI_FM_DISABLE_CREATE_DIR
+''     constant FM_DISABLE_DELETING => CGUI_FM_DISABLE_DELETING
+''     constant FM_DISABLE_COPYING => CGUI_FM_DISABLE_COPYING
+''     constant FM_NO_SETTINGS_IN_CONFIG => CGUI_FM_NO_SETTINGS_IN_CONFIG
+''     constant FM_SHOW_DIRS_IN_FILE_VIEW => CGUI_FM_SHOW_DIRS_IN_FILE_VIEW
+''     constant FM_HIDE_LOCATION => CGUI_FM_HIDE_LOCATION
+''     constant FM_HIDE_UP_BUTTON => CGUI_FM_HIDE_UP_BUTTON
+''     constant FM_HIDE_UP_DIRECTORY => CGUI_FM_HIDE_UP_DIRECTORY
 ''     constant CLOCK_SHOW_SECONDS => CGUI_CLOCK_SHOW_SECONDS
 ''     constant CLOCK_SHOW_MINUTES => CGUI_CLOCK_SHOW_MINUTES
 ''     constant CLOCK_NO_DIALOGUE => CGUI_CLOCK_NO_DIALOGUE
@@ -170,9 +168,9 @@
 ''     constant CURS_DEFAULT => CGUI_CURS_DEFAULT
 ''     constant NO_VERTICAL => CGUI_NO_VERTICAL
 ''     constant NO_HORIZONTAL => CGUI_NO_HORIZONTAL
-''     #define FRAMERAISE => CGUI_FRAMERAISE
-''     #define FRAMESINK => CGUI_FRAMESINK
-''     #define W_NOMODAL => CGUI_W_NOMODAL
+''     constant FRAMERAISE => CGUI_FRAMERAISE
+''     constant FRAMESINK => CGUI_FRAMESINK
+''     constant W_NOMODAL => CGUI_W_NOMODAL
 ''     constant W_CHILD => CGUI_W_CHILD
 
 extern "C"
@@ -188,21 +186,21 @@ extern "C"
 #define CGUI_INLINE_PROVIDE_CODE
 const CGUI_VERSION_MAJOR = 2
 const CGUI_VERSION_MINOR = 0
-const CGUI_VERSION_PATCH = 3
-#define CGUI_VERSION_STRING "2.0.3"
-const CGUI_DATE = 20091111
-#define CGUI_DATE_STRING "Nov 11, 2009"
+const CGUI_VERSION_PATCH = 4
+#define CGUI_VERSION_STRING "2.0.4"
+const CGUI_DATE = 20091206
+#define CGUI_DATE_STRING "Dec 06, 2009"
 const CGUI_INIT_CODE = 0
 const CGUI_INIT_LOAD = 0
 const CGUI_INIT_WINDOWED = 1
 const CGUI_INIT_FULLSCREEN = 2
 const CGUI_INIT_KEEP_CURRENT = 0
 declare function InitCguiEx(byval w as long, byval h as long, byval colour_depth as long, byval errno_ptr as long ptr, byval atexit_ptr as function(byval f as sub()) as long) as long
-#define InitCguiLoadMode() InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
-#define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, atexit))
+#define InitCguiLoadMode() InitCguiEx(0, CGUI_INIT_LOAD, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiFullscreenMode() InitCguiEx(0, CGUI_INIT_FULLSCREEN, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiWindowedMode() InitCguiEx(0, CGUI_INIT_WINDOWED, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCguiKeepCurrent() InitCguiEx(0, CGUI_INIT_KEEP_CURRENT, CGUI_INIT_CODE, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
+#define InitCgui(w, h, bpp) InitCguiEx(w, h, bpp, @errno, cptr(function cdecl(byval as sub cdecl()) as long, @atexit))
 
 declare sub DeInitCgui()
 declare sub CguiUseUTF8()
@@ -258,8 +256,8 @@ declare function Request(byval title as const zstring ptr, byval options as long
 declare sub RedrawScreen()
 declare sub ScrMode(byval CallBack as sub())
 declare function MkProgressWindow(byval wlabel as const zstring ptr, byval blabel as const zstring ptr, byval w as long) as long
-#define CGUI_ID_DESKTOP cgui_desktop_id
 EXTERNVAR cgui_desktop_id as long
+EXTERNVAR CGUI_ID_DESKTOP alias "cgui_desktop_id" as long
 declare function MkMenu(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
 declare function MakeMenuBar() as long
 declare function MkMenuBarItem(byval text as const zstring ptr, byval CallBack as sub(byval as any ptr), byval data as any ptr) as long
@@ -505,17 +503,16 @@ const CGUI_FS_FILE_FILTER_IS_READ_ONLY = 1 shl 20
 const CGUI_FM_HIDE_FILE_VEW = 1 shl 21
 const CGUI_FM_DO_NOT_SHOW_MENU = 1 shl 22
 const CGUI_FM_NO_FLOATING = 1 shl 23
-#define CGUI_FM_BROWSE_DAT CGUI_FS_BROWSE_DAT
-#define CGUI_FM_DISABLE_EDIT_DAT CGUI_FS_DISABLE_EDIT_DAT
-#define CGUI_FM_DISABLE_CREATE_DIR CGUI_FS_DISABLE_CREATE_DIR
-#define CGUI_FM_DISABLE_DELETING CGUI_FS_DISABLE_DELETING
-#define CGUI_FM_DISABLE_COPYING CGUI_FS_DISABLE_COPYING
-#define CGUI_FM_NO_SETTINGS_IN_CONFIG CGUI_FS_NO_SETTINGS_IN_CONFIG
-#define CGUI_FM_SHOW_DIR_TREE CGUI_FM_SHOW_DIR_TREE
-#define CGUI_FM_SHOW_DIRS_IN_FILE_VIEW CGUI_FS_SHOW_DIRS_IN_FILE_VIEW
-#define CGUI_FM_HIDE_LOCATION CGUI_FS_HIDE_LOCATION
-#define CGUI_FM_HIDE_UP_BUTTON CGUI_FS_HIDE_UP_BUTTON
-#define CGUI_FM_HIDE_UP_DIRECTORY CGUI_FS_HIDE_UP_DIRECTORY
+const CGUI_FM_BROWSE_DAT = CGUI_FS_BROWSE_DAT
+const CGUI_FM_DISABLE_EDIT_DAT = CGUI_FS_DISABLE_EDIT_DAT
+const CGUI_FM_DISABLE_CREATE_DIR = CGUI_FS_DISABLE_CREATE_DIR
+const CGUI_FM_DISABLE_DELETING = CGUI_FS_DISABLE_DELETING
+const CGUI_FM_DISABLE_COPYING = CGUI_FS_DISABLE_COPYING
+const CGUI_FM_NO_SETTINGS_IN_CONFIG = CGUI_FS_NO_SETTINGS_IN_CONFIG
+const CGUI_FM_SHOW_DIRS_IN_FILE_VIEW = CGUI_FS_SHOW_DIRS_IN_FILE_VIEW
+const CGUI_FM_HIDE_LOCATION = CGUI_FS_HIDE_LOCATION
+const CGUI_FM_HIDE_UP_BUTTON = CGUI_FS_HIDE_UP_BUTTON
+const CGUI_FM_HIDE_UP_DIRECTORY = CGUI_FS_HIDE_UP_DIRECTORY
 
 declare sub CguiUseIcons(byval filename as const zstring ptr)
 declare function CreateTabWindow(byval x as long, byval y as long, byval width as long, byval height as long, byval status as long ptr) as long
@@ -652,9 +649,9 @@ declare function MakeStretchable(byval id as long, byval Notify as sub(byval as 
 const CGUI_NO_VERTICAL = 1
 const CGUI_NO_HORIZONTAL = 2
 EXTERNVAR continous_update_resize as long
-#define CGUI_FRAMERAISE CGUI_TB_FRAMERAISE
-#define CGUI_FRAMESINK CGUI_TB_FRAMESINK
-#define CGUI_W_NOMODAL CGUI_W_FLOATING
+const CGUI_FRAMERAISE = CGUI_TB_FRAMERAISE
+const CGUI_FRAMESINK = CGUI_TB_FRAMESINK
+const CGUI_W_NOMODAL = CGUI_W_FLOATING
 const CGUI_W_CHILD = 0
 
 end extern

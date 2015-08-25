@@ -147,12 +147,19 @@ dim shared as BUILTIN builtins(0 to BUILTIN__COUNT-1) => _
 	(@"declare double @llvm.nearbyint.f64(double) nounwind")  _
 }
 
+type IRLLVMVARINISCOPE
+	is_array as byte
+end type
+
+const MAXVARINISCOPES = 128
+
 type IRLLVMCONTEXT
 	indent				as integer  '' current indentation used by hWriteLine()
 	linenum				as integer
 
 	varini				as string
 	variniscopelevel		as integer
+	variniscopes(0 to MAXVARINISCOPES-1) as IRLLVMVARINISCOPE
 
 	ctors				as string
 	dtors				as string
@@ -486,39 +493,6 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr )
 	ctx.section = oldsection
 end sub
 
-'' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
-private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
-	dim as string s
-
-	'' Emit all array dimensions individually
-	'' (This lets array initializers rely on gcc to fill uninitialized
-	'' elements with zeroes)
-	select case( symbGetClass( sym ) )
-	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if( symbGetIsDynamic( sym ) = FALSE ) then
-			for i as integer = 0 to symbGetArrayDimensions( sym ) - 1
-				'' elements = ubound( array, d ) - lbound( array, d ) + 1
-				s += "[" + str( symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1 ) + "]"
-			next
-		end if
-	end select
-
-	'' If it's a fixed-length string, add an extra array dimension
-	'' (zstring * 5 becomes char[5])
-	dim as integer length = 0
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		length = symbGetStrLen( sym )
-	case FB_DATATYPE_WCHAR
-		length = symbGetWstrLen( sym )
-	end select
-	if( length > 0 ) then
-		s += "[" + str( length ) + "]"
-	end if
-
-	function = s
-end function
-
 private sub hBuildStrLit _
 	( _
 		byref ln as string, _
@@ -630,17 +604,37 @@ private function hEmitStrLitType( byval length as integer ) as string
 end function
 
 private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
+	dim s as string
+
 	var dtype = symbGetType( sym )
 	if( symbIsRef( sym ) ) then
-		dtype = typeAddrOf( dtype )
+		s = hEmitType( typeAddrOf( dtype ), sym->subtype )
 	else
-		'' Special handling for fixed-length strings
 		select case( dtype )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return hEmitStrLitType( sym->lgt )
+			s = hEmitStrLitType( sym->lgt )
+		case else
+			s = hEmitType( dtype, sym->subtype )
 		end select
 	end if
-	function = hEmitType( dtype, sym->subtype )
+
+	if( symbGetIsDynamic( sym ) ) then
+		'' Dynamic array vars/fields/params
+		'' TODO: emit descriptor type instead of array element type!?
+	else
+		select case( symbGetClass( sym ) )
+		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+			'' Fixed-size array vars/fields
+			''    (0 to 9) as long            =>   [10 x i32]
+			''    (0 to 9, 0 to 19) as long   =>   [10 x [20 x i32]]
+			for i as integer = symbGetArrayDimensions( sym ) - 1 to 0 step -1
+				var elements = symbArrayUbound( sym, i ) - symbArrayLbound( sym, i ) + 1
+				s = "[" & elements & " x " + s + "]"
+			next
+		end select
+	end if
+
+	function = s
 end function
 
 private sub hEmitVariable( byval sym as FBSYMBOL ptr )
@@ -805,17 +799,11 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 		ln += "%" + *symbUniqueId( )
 	end if
 
-	ln += " = type { "
+	var packed = (s->udt.align = 1)
 
-	'' Alignment (field = N)
-	var attrib = ""
-	if( s->udt.align > 0 ) then
-		if( s->udt.align = 1 ) then
-			attrib = " __attribute__((packed))"
-		else
-			attrib = " __attribute__((aligned (" & s->udt.align & ")))"
-		end if
-	end if
+	ln += " = type "
+	if( packed ) then ln += "<"
+	ln += "{ "
 
 	'' Write out the elements
 	fld = symbUdtGetFirstField( s )
@@ -824,8 +812,6 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 		'' Don't emit fake dynamic array fields
 		if( symbIsDynamic( fld ) = FALSE ) then
 			ln += hEmitSymType( fld )
-			ln += hEmitArrayDecl( fld )
-			ln += attrib
 		end if
 
 		fld = symbUdtGetNextField( fld )
@@ -836,6 +822,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 
 	'' Close UDT body
 	ln += " }"
+	if( packed ) then ln += ">"
 
 	hWriteLine( ln )
 
@@ -1128,11 +1115,18 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 	'' If there is an offset or index, it must be added on top of the
 	'' base address.
 
-	var addrdtype = typeAddrOf( v->dtype )
+	var addrdtype = v->dtype
 	var addrsubtype = v->subtype
 	var ofs = v->ofs
 	var vidx = v->vidx
 	var sym = v->sym
+
+	'' OFS vregs already have pointer type, but others don't
+	if( v->typ = IR_VREGTYPE_OFS ) then
+		assert( typeIsPtr( addrdtype ) )
+	else
+		addrdtype = typeAddrOf( addrdtype )
+	end if
 
 	if( irIsPTR( v ) ) then
 		assert( irIsREG( vidx ) )
@@ -1185,16 +1179,12 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		'' without offset:
 		'' (no "loading" necessary, handled purely in hVregToStr())
 		''    @global
-		if( v->ofs <> 0 ) then
-			hAddOffset( v, v->dtype, v->subtype, v->ofs )
-		end if
+		hPrepareAddress( v )
 
 	case else
 		'' memory accesses: stack/global vars, arrays, ptr derefs
 		'' Get the address and then load the value stored there.
-
 		hPrepareAddress( v )
-
 		assert( typeIsPtr( v->dtype ) )
 		var temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
 		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
@@ -1308,50 +1298,52 @@ private function hEmitFloat( byval value as double ) as string
 	function = "0x" + hex( *cptr( ulongint ptr, @value ), 16 )
 end function
 
+private function hIsFixLenStr( byval sym as FBSYMBOL ptr ) as integer
+	if( symbIsVar( sym ) ) then
+		select case( symbGetType( sym ) )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			return TRUE
+		end select
+	end if
+	return FALSE
+end function
+
 private function hVregToStr( byval v as IRVREG ptr ) as string
-	dim as string s
-	dim as FBSYMBOL ptr sym = any
-
 	select case as const( v->typ )
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-		s = *symbGetMangledName( v->sym )
-
-	case IR_VREGTYPE_OFS
-		assert( v->ofs = 0 ) '' TODO
-
-		sym = v->sym
-		if( symbGetIsLiteral( sym ) ) then
-			'' Use an inline bitcast operation to convert from
-			'' the char array pointer type to just a char pointer
-			s = "bitcast ("
-			s += hEmitSymType( sym ) + "* "
-			s += *symbGetMangledName( sym )
-			s += " to "
-			s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
-			s += ")"
-		else
-			s = *symbGetMangledName( sym )
-		end if
-
 	case IR_VREGTYPE_IMM
 		if( typeGetClass( v->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = hEmitFloat( v->value.f )
-		elseif( typeGetSize( v->dtype ) = 8 ) then
-			s = hEmitLong( v->value.i )
-		else
-			s = hEmitInt( v->dtype, v->subtype, v->value.i )
+			return hEmitFloat( v->value.f )
 		end if
+		if( typeGetSize( v->dtype ) = 8 ) then
+			return hEmitLong( v->value.i )
+		end if
+		return hEmitInt( v->dtype, v->subtype, v->value.i )
 
 	case IR_VREGTYPE_REG
-		if( v->sym ) then
-			s = *symbGetMangledName( v->sym )
-		else
-			s = "%vr" + str( v->reg )
+		'' Normally REGs will have their reg field set, but if
+		'' hPrepareAddress() left the sym intact, we're supposed to use
+		'' that instead.
+		if( v->sym = NULL ) then
+			return "%vr" + str( v->reg )
 		end if
-
 	end select
 
-	function = s
+	var sym = v->sym
+
+	'' If accessing global fixed-length strings (including string literals)
+	'' we have to add an inline type cast, because for example the symbol
+	'' reference will be "[10 x i8]*", but we want to have "i8*" instead.
+	if( hIsFixLenStr( sym ) ) then
+		var s = "bitcast ("
+		s += hEmitSymType( sym ) + "* "
+		s += *symbGetMangledName( sym )
+		s += " to "
+		s += hEmitType( typeAddrOf( symbGetType( sym ) ), NULL )
+		s += ")"
+		return s
+	end if
+
+	return *symbGetMangledName( sym )
 end function
 
 private sub _emitLabel( byval label as FBSYMBOL ptr )
@@ -1668,6 +1660,54 @@ private sub _emitUop _
 
 end sub
 
+private function hGetConvOpCode( byval ldtype as integer, byval rdtype as integer ) as zstring ptr
+	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+			'' float to float (i.e. single <-> double)
+			assert( typeGetSize( ldtype ) <> typeGetSize( rdtype ) )
+			return iif( typeGetSize( ldtype ) < typeGetSize( rdtype ), @"fptrunc", @"fpext" )
+		end if
+
+		'' int to float
+		return iif( typeIsSigned( rdtype ), @"sitofp", @"uitofp" )
+	end if
+
+	if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		'' float to int (rounding was taken care of above)
+		return iif( typeIsSigned( ldtype ), @"fptosi", @"fptoui" )
+	end if
+
+	'' int to int
+
+	if( typeIsPtr( ldtype ) ) then
+		if( typeIsPtr( rdtype ) ) then
+			'' both are pointers, just convert the type
+			'' (bitcast only changes the compile-time type, not any bits)
+			return @"bitcast"
+		end if
+		return @"inttoptr"
+	elseif( typeIsPtr( rdtype ) ) then
+		return @"ptrtoint"
+	end if
+
+	'' same size ints?
+	if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
+		if( typeGetSizeType( ldtype ) = typeGetSizeType( rdtype ) ) then
+			'' Do nothing for 32bit Long <-> 32bit Integer, etc.
+			return NULL
+		end if
+
+		'' signed <-> unsigned
+		return @"bitcast"
+	end if
+
+	if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
+		return @"trunc"
+	end if
+
+	return iif( typeIsSigned( ldtype ), @"sext", @"zext" )
+end function
+
 private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour,
 	'' because LLVM's fptosi/fptoui just truncate.
@@ -1694,76 +1734,11 @@ private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		*v2 = *v0
 	end if
 
-	var ldtype = v1->dtype
-	var rdtype = v2->dtype
-	assert( (ldtype <> rdtype) or (v1->subtype <> v2->subtype) )
+	assert( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) )
 
-	dim op as zstring ptr
-	if( typeGetClass( ldtype ) = FB_DATACLASS_FPOINT ) then
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' float to float (i.e. single <-> double)
-			if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
-				op = @"fptrunc"
-			else
-				assert( typeGetSize( ldtype ) > typeGetSize( rdtype ) )
-				op = @"fpext"
-			end if
-		else
-			'' int to float
-			if( typeIsSigned( rdtype ) ) then
-				op = @"sitofp"
-			else
-				op = @"uitofp"
-			end if
-		end if
-	else
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			'' float to int (rounding was taken care of above)
-			if( typeIsSigned( ldtype ) ) then
-				op = @"fptosi"
-			else
-				op = @"fptoui"
-			end if
-		else
-			'' int to int
-			if( typeIsPtr( ldtype ) ) then
-				if( typeIsPtr( rdtype ) ) then
-					'' both are pointers, just convert the type
-					'' (bitcast doesn't change any bits)
-					op = @"bitcast"
-				else
-					op = @"inttoptr"
-				end if
-			else
-				if( typeIsPtr( rdtype ) ) then
-					op = @"ptrtoint"
-				else
-					if( typeGetSize( ldtype ) = typeGetSize( rdtype ) ) then
-						'' same size ints, should happen only with signed <-> unsigned
-						if( typeGetSizeType( v1->dtype ) = typeGetSizeType( v2->dtype ) ) then
-							'' Do nothing for 32bit Long <-> 32bit Integer, etc.
-							op = NULL
-						else
-							'' signed <-> unsigned
-							op = @"bitcast"
-						end if
-					else
-						if( typeGetSize( ldtype ) < typeGetSize( rdtype ) ) then
-							op = @"trunc"
-						else
-							if( typeIsSigned( ldtype ) ) then
-								op = @"sext"
-							else
-								op = @"zext"
-							end if
-						end if
-					end if
-				end if
-			end if
-		end if
-	end if
-
+	var op = hGetConvOpCode( v1->dtype, v2->dtype )
 	if( op = NULL ) then
+		'' Do nothing for 32bit Long <-> 32bit Integer, etc.
 		*v1 = *v2
 		exit sub
 	end if
@@ -1776,7 +1751,6 @@ private sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	end if
 
 	hLoadVreg( v2 )
-	_setVregDataType( v2, v2->dtype, v2->subtype )
 
 	var ln = hVregToStr( v0 ) + " = " + *op + " "
 	ln += hEmitType( v2->dtype, v2->subtype )
@@ -2149,6 +2123,7 @@ private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 	ctx.varini += hEmitSymType( sym )
 	ctx.varini += " "
 	ctx.variniscopelevel = 0
+	ctx.variniscopes(0).is_array = FALSE
 end sub
 
 private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
@@ -2156,13 +2131,22 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 	ctx.varini = ""
 end sub
 
-private sub hVarIniElementType _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	)
+'' For struct initializers, we have to emit each field's dtype in front of each
+'' field's initializer expression. E.g.:
+''    @myudtvar = global %UDT {i32 1, i32 2}
+'' but not for array initializers:
+''    @myarray = global [2 x i32] [1, 2]
+'' and not at all if at toplevel (i.e. neither struct nor array):
+''    @myintvar = global i32 1
+private sub hVarIniElementType( byval sym as FBSYMBOL ptr )
 	if( ctx.variniscopelevel > 0 ) then
-		ctx.varini += hEmitType( dtype, subtype ) + " "
+		'' Can't use hEmitSymType() here in case it's the array and
+		'' we're just initializing one of its elements
+		if( ctx.variniscopes(ctx.variniscopelevel).is_array ) then
+			ctx.varini += hEmitType( symbGetType( sym ), sym->subtype ) + " "
+		else
+			ctx.varini += hEmitSymType( sym ) + " "
+		end if
 	end if
 end sub
 
@@ -2173,8 +2157,8 @@ private sub hVarIniSeparator( )
 end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
+	hVarIniElementType( sym )
 	var dtype = symbGetType( sym )
-	hVarIniElementType( dtype, sym->subtype )
 	if( typeGetSize( dtype ) = 8 ) then
 		ctx.varini += hEmitLong( value )
 	else
@@ -2184,10 +2168,35 @@ private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 end sub
 
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
-	var dtype = symbGetType( sym )
-	hVarIniElementType( dtype, sym->subtype )
+	hVarIniElementType( sym )
 	ctx.varini += hEmitFloat( value )
 	hVarIniSeparator( )
+end sub
+
+'' Add inline conversion instruction, to convert the expression in "s" from rhs
+'' type to lhs type, if needed
+private sub hMaybeAddConv _
+	( _
+		byref s as string, _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byref ltype as string, _
+		byval rdtype as integer, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval rtype as string _
+	)
+
+	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
+		exit sub
+	end if
+
+	var op = hGetConvOpCode( ldtype, rdtype )
+	if( op = NULL ) then
+		exit sub
+	end if
+
+	s = *op + " (" + rtype + " " + s + " to " + ltype + ")"
+
 end sub
 
 private sub _emitVarIniOfs _
@@ -2196,7 +2205,34 @@ private sub _emitVarIniOfs _
 		byval rhs as FBSYMBOL ptr, _
 		byval ofs as longint _
 	)
-	ctx.varini += "TODO offset " + *symbGetMangledName( rhs ) + " + " + str( ofs )
+
+	hVarIniElementType( sym )
+
+	var s = *symbGetMangledName( rhs )
+	var symdtype = symbGetType( sym )
+	var symtype = hEmitType( symdtype, sym->subtype )
+	var ptrdtype = typeAddrOf( symbGetType( rhs ) )
+	var ptrtype = hEmitType( ptrdtype, rhs->subtype )
+
+	if( ofs <> 0 ) then
+		var inttype = hEmitType( FB_DATATYPE_UINT, NULL )
+
+		'' Emit inline LLVM instructions for something like: cptr(cint(@rhs) + ofs)
+
+		'' %0 = ptrtoint foo* @global to i32
+		s = "ptrtoint (" + ptrtype + " " + s + " to " + inttype + ")"
+
+		'' %1 = add (i32 %0), i32 <offset>
+		s = "add (" + inttype + " " + s + ", " + inttype + " " & ofs & ")"
+
+		'' %2 = inttoptr (i32 %1) to foo*
+		s = "inttoptr (" + inttype + " " + s + " to " + ptrtype + ")"
+	end if
+
+	hMaybeAddConv( s, symdtype, sym->subtype, symtype, ptrdtype, rhs->subtype, ptrtype )
+
+	ctx.varini += s
+
 	hVarIniSeparator( )
 end sub
 
@@ -2207,6 +2243,7 @@ private sub _emitVarIniStr _
 		byval litlength as longint _
 	)
 
+	'' also see hVarIniElementType()
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
@@ -2224,6 +2261,7 @@ private sub _emitVarIniWstr _
 		byval litlength as longint _
 	)
 
+	'' also see hVarIniElementType()
 	if( ctx.variniscopelevel > 0 ) then
 		ctx.varini += hEmitStrLitType( varlength ) + " "
 	end if
@@ -2235,14 +2273,26 @@ private sub _emitVarIniWstr _
 end sub
 
 private sub _emitVarIniPad( byval bytes as longint )
-	'' Nothing to do -- we're using {...} for structs and each array
-	'' dimension, and gcc will zero-initialize any uninitialized elements,
-	'' aswell as add padding between fields etc. where needed.
 end sub
 
-private sub _emitVarIniScopeBegin( )
+private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
+	'' If starting a nested initializer we have to emit its type (it will
+	'' be either a struct type or an array type).
+	hVarIniElementType( sym )
+
+	'' Add varini scope to stack
 	ctx.variniscopelevel += 1
-	ctx.varini += "{ "
+	if( ctx.variniscopelevel >= MAXVARINISCOPES ) then
+		errReport( FB_ERRMSG_INTERNAL, , "global variable/array initializer nesting level too deep (MAXVARINISCOPES=" & MAXVARINISCOPES & ")" )
+		ctx.variniscopelevel -= 1
+	end if
+	ctx.variniscopes(ctx.variniscopelevel).is_array = is_array
+
+	if( is_array ) then
+		ctx.varini += "[ "
+	else
+		ctx.varini += "{ "
+	end if
 end sub
 
 private sub _emitVarIniScopeEnd( )
@@ -2252,8 +2302,19 @@ private sub _emitVarIniScopeEnd( )
 		ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
 	end if
 
-	ctx.varini += " }"
-	ctx.variniscopelevel -= 1
+	if( ctx.variniscopes(ctx.variniscopelevel).is_array ) then
+		ctx.varini += " ]"
+	else
+		ctx.varini += " }"
+	end if
+
+	'' Pop varini scope from stack
+	'' (due to _emitVarIniScopeBegin's MAXVARINISCOPES handling there could
+	'' be a count misbalance during error recovery)
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.variniscopelevel -= 1
+	end if
+
 	hVarIniSeparator( )
 end sub
 

@@ -43,18 +43,18 @@
 
 #pragma once
 
-#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
-	#inclib "alleg_s"
-#else
+#if defined(__FB_DOS__) or (defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))) or defined(__FB_UNIX__)
 	#inclib "alleg"
 #endif
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#inclib "X11"
 	#inclib "Xext"
 	#inclib "Xpm"
 	#inclib "Xxf86vm"
 	#inclib "Xcursor"
+#elseif defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+	#inclib "alleg_s"
 #endif
 
 #undef screen
@@ -90,18 +90,10 @@
 ''     #define cpu_fpu => cpu_fpu_
 ''     #define cpu_mmx => cpu_mmx_
 ''     #define cpu_3dnow => cpu_3dnow_
-''     #ifdef __FB_WIN32__
-''         #define SYSTEM_DIRECTX => SYSTEM_DIRECTX_
-''         #define GFX_DIRECTX_ACCEL => GFX_DIRECTX_ACCEL_
-''         #define GFX_DIRECTX_SAFE => GFX_DIRECTX_SAFE_
-''         #define GFX_DIRECTX_SOFT => GFX_DIRECTX_SOFT_
-''         #define GFX_DIRECTX_WIN => GFX_DIRECTX_WIN_
-''         #define GFX_DIRECTX_OVL => GFX_DIRECTX_OVL_
-''         #define GFX_GDI => GFX_GDI_
-''     #elseif defined(__FB_LINUX__)
+''     #ifdef __FB_UNIX__
 ''         #define TIMERDRV_UNIX_PTHREADS => TIMERDRV_UNIX_PTHREADS_
 ''         #define SYSTEM_LINUX => SYSTEM_LINUX_
-''     #else
+''     #elseif defined(__FB_DOS__)
 ''         #define SYSTEM_DOS => SYSTEM_DOS_
 ''         #define KEYDRV_PCDOS => KEYDRV_PCDOS_
 ''         #define TIMEDRV_FIXED_RATE => TIMEDRV_FIXED_RATE_
@@ -112,19 +104,27 @@
 ''         #define MOUSEDRV_WINNT => MOUSEDRV_WINNT_
 ''         #define MOUSEDRV_WIN2K => MOUSEDRV_WIN2K_
 ''     #endif
-''     #if defined(__FB_DOS__) or defined(__FB_LINUX__)
+''     #if defined(__FB_DOS__) or defined(__FB_UNIX__)
 ''         #define GFX_VGA => GFX_VGA_
 ''         #define GFX_MODEX => GFX_MODEX_
 ''         #define GFX_VBEAF => GFX_VBEAF_
 ''     #endif
-''     #ifdef __FB_LINUX__
+''     #ifdef __FB_UNIX__
 ''         #define MOUSEDRV_LINUX_PS2 => MOUSEDRV_LINUX_PS2_
 ''         #define MOUSEDRV_LINUX_IPS2 => MOUSEDRV_LINUX_IPS2_
 ''         #define MOUSEDRV_LINUX_GPMDATA => MOUSEDRV_LINUX_GPMDATA_
 ''         #define MOUSEDRV_LINUX_MS => MOUSEDRV_LINUX_MS_
 ''         #define MOUSEDRV_LINUX_IMS => MOUSEDRV_LINUX_IMS_
 ''         #define MOUSEDRV_LINUX_EVDEV => MOUSEDRV_LINUX_EVDEV_
-''     #elseif defined(__FB_DOS__)
+''     #elseif defined(__FB_WIN32__)
+''         #define SYSTEM_DIRECTX => SYSTEM_DIRECTX_
+''         #define GFX_DIRECTX_ACCEL => GFX_DIRECTX_ACCEL_
+''         #define GFX_DIRECTX_SAFE => GFX_DIRECTX_SAFE_
+''         #define GFX_DIRECTX_SOFT => GFX_DIRECTX_SOFT_
+''         #define GFX_DIRECTX_WIN => GFX_DIRECTX_WIN_
+''         #define GFX_DIRECTX_OVL => GFX_DIRECTX_OVL_
+''         #define GFX_GDI => GFX_GDI_
+''     #else
 ''         #define GFX_XTENDED => GFX_XTENDED_
 ''         #define DIGI_SB10 => DIGI_SB10_
 ''         #define DIGI_SB15 => DIGI_SB15_
@@ -149,10 +149,10 @@ extern "C"
 #define ALLEGRO_COLOR24
 #define ALLEGRO_COLOR32
 
-#ifdef __FB_WIN32__
-	const ALLEGRO_MINGW32 = 1
-#elseif defined(__FB_LINUX__)
+#ifdef __FB_UNIX__
 	const ALLEGRO_UNIX = 1
+#elseif defined(__FB_WIN32__)
+	const ALLEGRO_MINGW32 = 1
 #else
 	const ALLEGRO_DJGPP = 1
 #endif
@@ -166,7 +166,7 @@ extern "C"
 #define ALLEGRO_NO_ASM
 #define ALLEGRO_USE_C
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#define ALLEGRO_PLATFORM_STR "Unix"
 #elseif defined(__FB_DOS__)
 	#define ALLEGRO_PLATFORM_STR "djgpp"
@@ -176,12 +176,12 @@ extern "C"
 	#define ALLEGRO_GUESS_INTTYPES_OK
 #endif
 
-#if defined(__FB_DOS__) or defined(__FB_LINUX__)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#define ALLEGRO_CONSOLE_OK
 	#define ALLEGRO_VRAM_SINGLE_SURFACE
 #endif
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#undef ALLEGRO_COLOR8
 	#undef ALLEGRO_COLOR16
 	#undef ALLEGRO_COLOR24
@@ -194,11 +194,14 @@ extern "C"
 	const ALLEGRO_HAVE_INTTYPES_H = 1
 #endif
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	const ALLEGRO_HAVE_STDINT_H = 1
 #endif
 
-#if defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
+#ifdef __FB_UNIX__
+	const ALLEGRO_HAVE_MEMCMP = 1
+	const ALLEGRO_LITTLE_ENDIAN = 1
+#elseif defined(__FB_WIN32__) and defined(ALLEGRO_STATICLINK)
 	#define ALLEGRO_PLATFORM_STR "MinGW32.s"
 #elseif defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
 	#define ALLEGRO_PLATFORM_STR "MinGW32"
@@ -212,19 +215,22 @@ extern "C"
 
 #if defined(__FB_DOS__) or defined(__FB_WIN32__)
 	#define ALLEGRO_USE_CONSTRUCTOR
-#else
-	const ALLEGRO_HAVE_MEMCMP = 1
-	const ALLEGRO_LITTLE_ENDIAN = 1
 #endif
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	#define ALLEGRO_MULTITHREADED
-#else
+#endif
+
+#ifdef __FB_UNIX__
+	#define ALLEGRO_NO_STRICMP
+	#define ALLEGRO_NO_STRLWR
+	#define ALLEGRO_NO_STRUPR
+#elseif defined(__FB_DOS__)
 	declare sub _unlock_dpmi_data(byval addr as any ptr, byval size as long)
 	#define LOCK_DATA(d, s) _go32_dpmi_lock_data(cptr(any ptr, d), s)
 	#define LOCK_CODE(c, s) _go32_dpmi_lock_code(cptr(any ptr, c), s)
 	#define UNLOCK_DATA(d, s) _unlock_dpmi_data(cptr(any ptr, d), s)
-	#define LOCK_VARIABLE(x) LOCK_DATA(cptr(any ptr, @x), sizeof((x)))
+	#define LOCK_VARIABLE(x) LOCK_DATA(cptr(any ptr, @x), sizeof(x))
 	#define LOCK_FUNCTION(x) LOCK_CODE(cptr(any ptr, x), cint(x##_end) - cint(x))
 	const ALLEGRO_LFN = 0
 	#define _video_ds() _dos_ds
@@ -248,10 +254,6 @@ extern "C"
 
 #if defined(__FB_DOS__) or defined(__FB_WIN32__)
 	#define ALLEGRO_ASM_PREFIX "_"
-#else
-	#define ALLEGRO_NO_STRICMP
-	#define ALLEGRO_NO_STRLWR
-	#define ALLEGRO_NO_STRUPR
 #endif
 
 #ifdef __FB_DOS__
@@ -261,10 +263,12 @@ extern "C"
 #define ASTDINT_H
 #define ALLEGRO_GCC
 
-#if defined(__FB_64BIT__) and (defined(__FB_LINUX__) or defined(__FB_WIN32__))
-	#define ALLEGRO_AMD64
-#else
+#if defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_WIN32__)))
 	#define ALLEGRO_I386
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))) or defined(__FB_WIN32__))
+	#define ALLEGRO_AMD64
+#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))
+	#define ALLEGRO_ARM
 #endif
 
 #macro _AL_SINCOS(x, s, c)
@@ -275,7 +279,7 @@ extern "C"
 #endmacro
 #define END_OF_MAIN()
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	#define LOCK_DATA(d, s)
 	#define LOCK_CODE(c, s)
 	#define UNLOCK_DATA(d, s)
@@ -284,12 +288,12 @@ extern "C"
 	const ALLEGRO_LFN = 1
 #endif
 
-#if defined(__FB_DOS__) or defined(__FB_WIN32__)
-	#define OTHER_PATH_SEPARATOR asc(!"\\")
-	#define DEVICE_SEPARATOR asc(":")
-#else
+#ifdef __FB_UNIX__
 	#define OTHER_PATH_SEPARATOR asc("/")
 	#define DEVICE_SEPARATOR asc(!"\0")
+#else
+	#define OTHER_PATH_SEPARATOR asc(!"\\")
+	#define DEVICE_SEPARATOR asc(":")
 #endif
 
 const FA_RDONLY = 1
@@ -301,44 +305,41 @@ const FA_ARCH = 32
 const FA_NONE = 0
 #define FA_ALL (not FA_NONE)
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	declare function _alemu_stricmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as long
-	#define stricmp _alemu_stricmp
+	declare function stricmp alias "_alemu_stricmp"(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as long
 	declare function _alemu_strlwr(byval string as zstring ptr) as zstring ptr
-	#define strlwr _alemu_strlwr
+	declare function strlwr alias "_alemu_strlwr"(byval string as zstring ptr) as zstring ptr
 	declare function _alemu_strupr(byval string as zstring ptr) as zstring ptr
-	#define strupr _alemu_strupr
+	declare function strupr alias "_alemu_strupr"(byval string as zstring ptr) as zstring ptr
 #endif
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	#define _video_ds() _default_ds()
 	#define _farsetsel(seg)
-	#define _farnspokeb(addr, val) *cptr(ubyte ptr, (addr)) = (val)
-	#define _farnspokew(addr, val) *cptr(ushort ptr, (addr)) = (val)
-	#define _farnspokel(addr, val) *cptr(ulong ptr, (addr)) = (val)
+	#define _farnspokeb(addr, val) scope : (*cptr(ubyte ptr, (addr))) = (val) : end scope
+	#define _farnspokew(addr, val) scope : (*cptr(ushort ptr, (addr))) = (val) : end scope
+	#define _farnspokel(addr, val) scope : (*cptr(ulong ptr, (addr))) = (val) : end scope
 	#define _farnspeekb(addr) (*cptr(ubyte ptr, (addr)))
 	#define _farnspeekw(addr) (*cptr(ushort ptr, (addr)))
 	#define _farnspeekl(addr) (*cptr(ulong ptr, (addr)))
 #endif
 
-#define READ3BYTES(p) _
-	( cptr(ubyte ptr, (p))[0]        or _
-	 (cptr(ubyte ptr, (p))[1] shl 8) or _
-	 (cptr(ubyte ptr, (p))[2] shl 16) )
+#define READ3BYTES(p) (((*cptr(ubyte ptr, (p))) or ((*(cptr(ubyte ptr, (p)) + 1)) shl 8)) or ((*(cptr(ubyte ptr, (p)) + 2)) shl 16))
 #macro WRITE3BYTES(p, c)
 	scope
-		cptr(ubyte ptr, (p))[0] = (c)
-		cptr(ubyte ptr, (p))[1] = (c) shr 8
-		cptr(ubyte ptr, (p))[2] = (c) shr 16
+		(*cptr(ubyte ptr, (p))) = (c)
+		(*(cptr(ubyte ptr, (p)) + 1)) = (c) shr 8
+		(*(cptr(ubyte ptr, (p)) + 2)) = (c) shr 16
 	end scope
 #endmacro
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	#define bmp_select(bmp)
-	#define bmp_write8(addr, c) *cptr(ubyte ptr, (addr)) = (c)
-	#define bmp_write15(addr, c) *cptr(ushort ptr, (addr)) = (c)
-	#define bmp_write16(addr, c) *cptr(ushort ptr, (addr)) = (c)
-	#define bmp_write32(addr, c) *cptr(ulong ptr, (addr)) = (c)
+	#define bmp_write8(addr, c) scope : (*cptr(ubyte ptr, (addr))) = (c) : end scope
+	#define bmp_write15(addr, c) scope : (*cptr(ushort ptr, (addr))) = (c) : end scope
+	#define bmp_write16(addr, c) scope : (*cptr(ushort ptr, (addr))) = (c) : end scope
+	#define bmp_write32(addr, c) scope : (*cptr(ulong ptr, (addr))) = (c) : end scope
 	#define bmp_read8(addr) (*cptr(ubyte ptr, (addr)))
 	#define bmp_read15(addr) (*cptr(ushort ptr, (addr)))
 	#define bmp_read16(addr) (*cptr(ushort ptr, (addr)))
@@ -360,8 +361,12 @@ const ALLEGRO_WIP_VERSION = 2
 #define ALLEGRO_VERSION_STR "4.4.2"
 #define ALLEGRO_DATE_STR "2011"
 const ALLEGRO_DATE = 20110519
-const TRUE = -1
-const FALSE = 0
+#ifndef TRUE
+	const TRUE = -1
+#endif
+#ifndef FALSE
+	const FALSE = 0
+#endif
 
 #undef MIN
 #undef MAX
@@ -400,11 +405,10 @@ declare sub do_uconvert(byval s as const zstring ptr, byval type as long, byval 
 declare function uconvert(byval s as const zstring ptr, byval type as long, byval buf as zstring ptr, byval newtype as long, byval size as long) as zstring ptr
 declare function uwidth_max(byval type as long) as long
 
-#define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof((buf)))
-#define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof((buf)))
+#define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof(buf))
+#define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof(buf))
 #define EMPTY_STRING_ !"\0\0\0"
-extern _AL_DLL __empty_string alias "empty_string" as byte
-#define empty_string (*cptr(zstring ptr, @__empty_string))
+extern _AL_DLL empty_string as zstring * 4
 extern _AL_DLL ugetc as function(byval s as const zstring ptr) as long
 extern _AL_DLL ugetx as function(byval s as zstring ptr ptr) as long
 extern _AL_DLL ugetxc as function(byval s as const zstring ptr ptr) as long
@@ -487,8 +491,7 @@ const ALLEGRO_ERROR_SIZE = 256
 
 extern _AL_DLL __allegro_id alias "allegro_id" as byte
 #define allegro_id (*cptr(zstring ptr, @__allegro_id))
-extern _AL_DLL __allegro_error alias "allegro_error" as byte
-#define allegro_error (*cptr(zstring ptr, @__allegro_error))
+extern _AL_DLL allegro_error as zstring * ALLEGRO_ERROR_SIZE
 
 const OSTYPE_UNKNOWN = 0
 #define OSTYPE_WIN3 AL_ID(asc("W"), asc("I"), asc("N"), asc("3"))
@@ -603,8 +606,7 @@ const CPU_MODEL_POWERPC_750 = 9
 const CPU_MODEL_POWERPC_7400 = 10
 const CPU_MODEL_POWERPC_7450 = 11
 const _AL_CPU_VENDOR_SIZE = 32
-extern _AL_DLL __cpu_vendor alias "cpu_vendor" as byte
-#define cpu_vendor (*cptr(zstring ptr, @__cpu_vendor))
+extern _AL_DLL cpu_vendor as zstring * _AL_CPU_VENDOR_SIZE
 extern _AL_DLL cpu_family as long
 extern _AL_DLL cpu_model as long
 extern _AL_DLL cpu_capabilities as long
@@ -992,149 +994,149 @@ enum
 	__allegro_KEY_MAX = 127
 end enum
 
-#define KB_SHIFT_FLAG __allegro_KB_SHIFT_FLAG
-#define KB_CTRL_FLAG __allegro_KB_CTRL_FLAG
-#define KB_ALT_FLAG __allegro_KB_ALT_FLAG
-#define KB_LWIN_FLAG __allegro_KB_LWIN_FLAG
-#define KB_RWIN_FLAG __allegro_KB_RWIN_FLAG
-#define KB_MENU_FLAG __allegro_KB_MENU_FLAG
-#define KB_COMMAND_FLAG __allegro_KB_COMMAND_FLAG
-#define KB_SCROLOCK_FLAG __allegro_KB_SCROLOCK_FLAG
-#define KB_NUMLOCK_FLAG __allegro_KB_NUMLOCK_FLAG
-#define KB_CAPSLOCK_FLAG __allegro_KB_CAPSLOCK_FLAG
-#define KB_INALTSEQ_FLAG __allegro_KB_INALTSEQ_FLAG
-#define KB_ACCENT1_FLAG __allegro_KB_ACCENT1_FLAG
-#define KB_ACCENT2_FLAG __allegro_KB_ACCENT2_FLAG
-#define KB_ACCENT3_FLAG __allegro_KB_ACCENT3_FLAG
-#define KB_ACCENT4_FLAG __allegro_KB_ACCENT4_FLAG
-#define KEY_A __allegro_KEY_A
-#define KEY_B __allegro_KEY_B
-#define KEY_C __allegro_KEY_C
-#define KEY_D __allegro_KEY_D
-#define KEY_E __allegro_KEY_E
-#define KEY_F __allegro_KEY_F
-#define KEY_G __allegro_KEY_G
-#define KEY_H __allegro_KEY_H
-#define KEY_I __allegro_KEY_I
-#define KEY_J __allegro_KEY_J
-#define KEY_K __allegro_KEY_K
-#define KEY_L __allegro_KEY_L
-#define KEY_M __allegro_KEY_M
-#define KEY_N __allegro_KEY_N
-#define KEY_O __allegro_KEY_O
-#define KEY_P __allegro_KEY_P
-#define KEY_Q __allegro_KEY_Q
-#define KEY_R __allegro_KEY_R
-#define KEY_S __allegro_KEY_S
-#define KEY_T __allegro_KEY_T
-#define KEY_U __allegro_KEY_U
-#define KEY_V __allegro_KEY_V
-#define KEY_W __allegro_KEY_W
-#define KEY_X __allegro_KEY_X
-#define KEY_Y __allegro_KEY_Y
-#define KEY_Z __allegro_KEY_Z
-#define KEY_0 __allegro_KEY_0
-#define KEY_1 __allegro_KEY_1
-#define KEY_2 __allegro_KEY_2
-#define KEY_3 __allegro_KEY_3
-#define KEY_4 __allegro_KEY_4
-#define KEY_5 __allegro_KEY_5
-#define KEY_6 __allegro_KEY_6
-#define KEY_7 __allegro_KEY_7
-#define KEY_8 __allegro_KEY_8
-#define KEY_9 __allegro_KEY_9
-#define KEY_0_PAD __allegro_KEY_0_PAD
-#define KEY_1_PAD __allegro_KEY_1_PAD
-#define KEY_2_PAD __allegro_KEY_2_PAD
-#define KEY_3_PAD __allegro_KEY_3_PAD
-#define KEY_4_PAD __allegro_KEY_4_PAD
-#define KEY_5_PAD __allegro_KEY_5_PAD
-#define KEY_6_PAD __allegro_KEY_6_PAD
-#define KEY_7_PAD __allegro_KEY_7_PAD
-#define KEY_8_PAD __allegro_KEY_8_PAD
-#define KEY_9_PAD __allegro_KEY_9_PAD
-#define KEY_F1 __allegro_KEY_F1
-#define KEY_F2 __allegro_KEY_F2
-#define KEY_F3 __allegro_KEY_F3
-#define KEY_F4 __allegro_KEY_F4
-#define KEY_F5 __allegro_KEY_F5
-#define KEY_F6 __allegro_KEY_F6
-#define KEY_F7 __allegro_KEY_F7
-#define KEY_F8 __allegro_KEY_F8
-#define KEY_F9 __allegro_KEY_F9
-#define KEY_F10 __allegro_KEY_F10
-#define KEY_F11 __allegro_KEY_F11
-#define KEY_F12 __allegro_KEY_F12
-#define KEY_ESC __allegro_KEY_ESC
-#define KEY_TILDE __allegro_KEY_TILDE
-#define KEY_MINUS __allegro_KEY_MINUS
-#define KEY_EQUALS __allegro_KEY_EQUALS
-#define KEY_BACKSPACE __allegro_KEY_BACKSPACE
-#define KEY_TAB __allegro_KEY_TAB
-#define KEY_OPENBRACE __allegro_KEY_OPENBRACE
-#define KEY_CLOSEBRACE __allegro_KEY_CLOSEBRACE
-#define KEY_ENTER __allegro_KEY_ENTER
-#define KEY_COLON __allegro_KEY_COLON
-#define KEY_QUOTE __allegro_KEY_QUOTE
-#define KEY_BACKSLASH __allegro_KEY_BACKSLASH
-#define KEY_BACKSLASH2 __allegro_KEY_BACKSLASH2
-#define KEY_COMMA __allegro_KEY_COMMA
-#define KEY_STOP __allegro_KEY_STOP
-#define KEY_SLASH __allegro_KEY_SLASH
-#define KEY_SPACE __allegro_KEY_SPACE
-#define KEY_INSERT __allegro_KEY_INSERT
-#define KEY_DEL __allegro_KEY_DEL
-#define KEY_HOME __allegro_KEY_HOME
-#define KEY_END __allegro_KEY_END
-#define KEY_PGUP __allegro_KEY_PGUP
-#define KEY_PGDN __allegro_KEY_PGDN
-#define KEY_LEFT __allegro_KEY_LEFT
-#define KEY_RIGHT __allegro_KEY_RIGHT
-#define KEY_UP __allegro_KEY_UP
-#define KEY_DOWN __allegro_KEY_DOWN
-#define KEY_SLASH_PAD __allegro_KEY_SLASH_PAD
-#define KEY_ASTERISK __allegro_KEY_ASTERISK
-#define KEY_MINUS_PAD __allegro_KEY_MINUS_PAD
-#define KEY_PLUS_PAD __allegro_KEY_PLUS_PAD
-#define KEY_DEL_PAD __allegro_KEY_DEL_PAD
-#define KEY_ENTER_PAD __allegro_KEY_ENTER_PAD
-#define KEY_PRTSCR __allegro_KEY_PRTSCR
-#define KEY_PAUSE __allegro_KEY_PAUSE
-#define KEY_ABNT_C1 __allegro_KEY_ABNT_C1
-#define KEY_YEN __allegro_KEY_YEN
-#define KEY_KANA __allegro_KEY_KANA
-#define KEY_CONVERT __allegro_KEY_CONVERT
-#define KEY_NOCONVERT __allegro_KEY_NOCONVERT
-#define KEY_AT __allegro_KEY_AT
-#define KEY_CIRCUMFLEX __allegro_KEY_CIRCUMFLEX
-#define KEY_COLON2 __allegro_KEY_COLON2
-#define KEY_KANJI __allegro_KEY_KANJI
-#define KEY_EQUALS_PAD __allegro_KEY_EQUALS_PAD
-#define KEY_BACKQUOTE __allegro_KEY_BACKQUOTE
-#define KEY_SEMICOLON __allegro_KEY_SEMICOLON
-#define KEY_COMMAND __allegro_KEY_COMMAND
-#define KEY_UNKNOWN1 __allegro_KEY_UNKNOWN1
-#define KEY_UNKNOWN2 __allegro_KEY_UNKNOWN2
-#define KEY_UNKNOWN3 __allegro_KEY_UNKNOWN3
-#define KEY_UNKNOWN4 __allegro_KEY_UNKNOWN4
-#define KEY_UNKNOWN5 __allegro_KEY_UNKNOWN5
-#define KEY_UNKNOWN6 __allegro_KEY_UNKNOWN6
-#define KEY_UNKNOWN7 __allegro_KEY_UNKNOWN7
-#define KEY_UNKNOWN8 __allegro_KEY_UNKNOWN8
-#define KEY_MODIFIERS __allegro_KEY_MODIFIERS
-#define KEY_LSHIFT __allegro_KEY_LSHIFT
-#define KEY_RSHIFT __allegro_KEY_RSHIFT
-#define KEY_LCONTROL __allegro_KEY_LCONTROL
-#define KEY_RCONTROL __allegro_KEY_RCONTROL
-#define KEY_ALT __allegro_KEY_ALT
-#define KEY_ALTGR __allegro_KEY_ALTGR
-#define KEY_LWIN __allegro_KEY_LWIN
-#define KEY_RWIN __allegro_KEY_RWIN
-#define KEY_MENU __allegro_KEY_MENU
-#define KEY_SCRLOCK __allegro_KEY_SCRLOCK
-#define KEY_NUMLOCK __allegro_KEY_NUMLOCK
-#define KEY_CAPSLOCK __allegro_KEY_CAPSLOCK
-#define KEY_MAX __allegro_KEY_MAX
+const KB_SHIFT_FLAG = __allegro_KB_SHIFT_FLAG
+const KB_CTRL_FLAG = __allegro_KB_CTRL_FLAG
+const KB_ALT_FLAG = __allegro_KB_ALT_FLAG
+const KB_LWIN_FLAG = __allegro_KB_LWIN_FLAG
+const KB_RWIN_FLAG = __allegro_KB_RWIN_FLAG
+const KB_MENU_FLAG = __allegro_KB_MENU_FLAG
+const KB_COMMAND_FLAG = __allegro_KB_COMMAND_FLAG
+const KB_SCROLOCK_FLAG = __allegro_KB_SCROLOCK_FLAG
+const KB_NUMLOCK_FLAG = __allegro_KB_NUMLOCK_FLAG
+const KB_CAPSLOCK_FLAG = __allegro_KB_CAPSLOCK_FLAG
+const KB_INALTSEQ_FLAG = __allegro_KB_INALTSEQ_FLAG
+const KB_ACCENT1_FLAG = __allegro_KB_ACCENT1_FLAG
+const KB_ACCENT2_FLAG = __allegro_KB_ACCENT2_FLAG
+const KB_ACCENT3_FLAG = __allegro_KB_ACCENT3_FLAG
+const KB_ACCENT4_FLAG = __allegro_KB_ACCENT4_FLAG
+const KEY_A = __allegro_KEY_A
+const KEY_B = __allegro_KEY_B
+const KEY_C = __allegro_KEY_C
+const KEY_D = __allegro_KEY_D
+const KEY_E = __allegro_KEY_E
+const KEY_F = __allegro_KEY_F
+const KEY_G = __allegro_KEY_G
+const KEY_H = __allegro_KEY_H
+const KEY_I = __allegro_KEY_I
+const KEY_J = __allegro_KEY_J
+const KEY_K = __allegro_KEY_K
+const KEY_L = __allegro_KEY_L
+const KEY_M = __allegro_KEY_M
+const KEY_N = __allegro_KEY_N
+const KEY_O = __allegro_KEY_O
+const KEY_P = __allegro_KEY_P
+const KEY_Q = __allegro_KEY_Q
+const KEY_R = __allegro_KEY_R
+const KEY_S = __allegro_KEY_S
+const KEY_T = __allegro_KEY_T
+const KEY_U = __allegro_KEY_U
+const KEY_V = __allegro_KEY_V
+const KEY_W = __allegro_KEY_W
+const KEY_X = __allegro_KEY_X
+const KEY_Y = __allegro_KEY_Y
+const KEY_Z = __allegro_KEY_Z
+const KEY_0 = __allegro_KEY_0
+const KEY_1 = __allegro_KEY_1
+const KEY_2 = __allegro_KEY_2
+const KEY_3 = __allegro_KEY_3
+const KEY_4 = __allegro_KEY_4
+const KEY_5 = __allegro_KEY_5
+const KEY_6 = __allegro_KEY_6
+const KEY_7 = __allegro_KEY_7
+const KEY_8 = __allegro_KEY_8
+const KEY_9 = __allegro_KEY_9
+const KEY_0_PAD = __allegro_KEY_0_PAD
+const KEY_1_PAD = __allegro_KEY_1_PAD
+const KEY_2_PAD = __allegro_KEY_2_PAD
+const KEY_3_PAD = __allegro_KEY_3_PAD
+const KEY_4_PAD = __allegro_KEY_4_PAD
+const KEY_5_PAD = __allegro_KEY_5_PAD
+const KEY_6_PAD = __allegro_KEY_6_PAD
+const KEY_7_PAD = __allegro_KEY_7_PAD
+const KEY_8_PAD = __allegro_KEY_8_PAD
+const KEY_9_PAD = __allegro_KEY_9_PAD
+const KEY_F1 = __allegro_KEY_F1
+const KEY_F2 = __allegro_KEY_F2
+const KEY_F3 = __allegro_KEY_F3
+const KEY_F4 = __allegro_KEY_F4
+const KEY_F5 = __allegro_KEY_F5
+const KEY_F6 = __allegro_KEY_F6
+const KEY_F7 = __allegro_KEY_F7
+const KEY_F8 = __allegro_KEY_F8
+const KEY_F9 = __allegro_KEY_F9
+const KEY_F10 = __allegro_KEY_F10
+const KEY_F11 = __allegro_KEY_F11
+const KEY_F12 = __allegro_KEY_F12
+const KEY_ESC = __allegro_KEY_ESC
+const KEY_TILDE = __allegro_KEY_TILDE
+const KEY_MINUS = __allegro_KEY_MINUS
+const KEY_EQUALS = __allegro_KEY_EQUALS
+const KEY_BACKSPACE = __allegro_KEY_BACKSPACE
+const KEY_TAB = __allegro_KEY_TAB
+const KEY_OPENBRACE = __allegro_KEY_OPENBRACE
+const KEY_CLOSEBRACE = __allegro_KEY_CLOSEBRACE
+const KEY_ENTER = __allegro_KEY_ENTER
+const KEY_COLON = __allegro_KEY_COLON
+const KEY_QUOTE = __allegro_KEY_QUOTE
+const KEY_BACKSLASH = __allegro_KEY_BACKSLASH
+const KEY_BACKSLASH2 = __allegro_KEY_BACKSLASH2
+const KEY_COMMA = __allegro_KEY_COMMA
+const KEY_STOP = __allegro_KEY_STOP
+const KEY_SLASH = __allegro_KEY_SLASH
+const KEY_SPACE = __allegro_KEY_SPACE
+const KEY_INSERT = __allegro_KEY_INSERT
+const KEY_DEL = __allegro_KEY_DEL
+const KEY_HOME = __allegro_KEY_HOME
+const KEY_END = __allegro_KEY_END
+const KEY_PGUP = __allegro_KEY_PGUP
+const KEY_PGDN = __allegro_KEY_PGDN
+const KEY_LEFT = __allegro_KEY_LEFT
+const KEY_RIGHT = __allegro_KEY_RIGHT
+const KEY_UP = __allegro_KEY_UP
+const KEY_DOWN = __allegro_KEY_DOWN
+const KEY_SLASH_PAD = __allegro_KEY_SLASH_PAD
+const KEY_ASTERISK = __allegro_KEY_ASTERISK
+const KEY_MINUS_PAD = __allegro_KEY_MINUS_PAD
+const KEY_PLUS_PAD = __allegro_KEY_PLUS_PAD
+const KEY_DEL_PAD = __allegro_KEY_DEL_PAD
+const KEY_ENTER_PAD = __allegro_KEY_ENTER_PAD
+const KEY_PRTSCR = __allegro_KEY_PRTSCR
+const KEY_PAUSE = __allegro_KEY_PAUSE
+const KEY_ABNT_C1 = __allegro_KEY_ABNT_C1
+const KEY_YEN = __allegro_KEY_YEN
+const KEY_KANA = __allegro_KEY_KANA
+const KEY_CONVERT = __allegro_KEY_CONVERT
+const KEY_NOCONVERT = __allegro_KEY_NOCONVERT
+const KEY_AT = __allegro_KEY_AT
+const KEY_CIRCUMFLEX = __allegro_KEY_CIRCUMFLEX
+const KEY_COLON2 = __allegro_KEY_COLON2
+const KEY_KANJI = __allegro_KEY_KANJI
+const KEY_EQUALS_PAD = __allegro_KEY_EQUALS_PAD
+const KEY_BACKQUOTE = __allegro_KEY_BACKQUOTE
+const KEY_SEMICOLON = __allegro_KEY_SEMICOLON
+const KEY_COMMAND = __allegro_KEY_COMMAND
+const KEY_UNKNOWN1 = __allegro_KEY_UNKNOWN1
+const KEY_UNKNOWN2 = __allegro_KEY_UNKNOWN2
+const KEY_UNKNOWN3 = __allegro_KEY_UNKNOWN3
+const KEY_UNKNOWN4 = __allegro_KEY_UNKNOWN4
+const KEY_UNKNOWN5 = __allegro_KEY_UNKNOWN5
+const KEY_UNKNOWN6 = __allegro_KEY_UNKNOWN6
+const KEY_UNKNOWN7 = __allegro_KEY_UNKNOWN7
+const KEY_UNKNOWN8 = __allegro_KEY_UNKNOWN8
+const KEY_MODIFIERS = __allegro_KEY_MODIFIERS
+const KEY_LSHIFT = __allegro_KEY_LSHIFT
+const KEY_RSHIFT = __allegro_KEY_RSHIFT
+const KEY_LCONTROL = __allegro_KEY_LCONTROL
+const KEY_RCONTROL = __allegro_KEY_RCONTROL
+const KEY_ALT = __allegro_KEY_ALT
+const KEY_ALTGR = __allegro_KEY_ALTGR
+const KEY_LWIN = __allegro_KEY_LWIN
+const KEY_RWIN = __allegro_KEY_RWIN
+const KEY_MENU = __allegro_KEY_MENU
+const KEY_SCRLOCK = __allegro_KEY_SCRLOCK
+const KEY_NUMLOCK = __allegro_KEY_NUMLOCK
+const KEY_CAPSLOCK = __allegro_KEY_CAPSLOCK
+const KEY_MAX = __allegro_KEY_MAX
 #define ALLEGRO_JOYSTICK_H
 const JOY_TYPE_AUTODETECT = -1
 const JOY_TYPE_NONE = 0
@@ -1177,8 +1179,8 @@ const JOYFLAG_CALIB_ANALOGUE = 8
 const JOYFLAG_CALIBRATE = 16
 const JOYFLAG_SIGNED = 32
 const JOYFLAG_UNSIGNED = 64
-#define JOYFLAG_ANALOG JOYFLAG_ANALOGUE
-#define JOYFLAG_CALIB_ANALOG JOYFLAG_CALIB_ANALOGUE
+const JOYFLAG_ANALOG = JOYFLAG_ANALOGUE
+const JOYFLAG_CALIB_ANALOG = JOYFLAG_CALIB_ANALOGUE
 
 #define joy(i) ((@__joy)[i])
 extern _AL_DLL __joy alias "joy" as JOYSTICK_INFO
@@ -1558,8 +1560,8 @@ const COLORCONV_KEEP_TRANS = &h4000000
 #define COLORCONV_DITHER (COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI)
 #define COLORCONV_EXPAND_256 (((COLORCONV_8_TO_15 or COLORCONV_8_TO_16) or COLORCONV_8_TO_24) or COLORCONV_8_TO_32)
 #define COLORCONV_REDUCE_TO_256 ((((COLORCONV_15_TO_8 or COLORCONV_16_TO_8) or COLORCONV_24_TO_8) or COLORCONV_32_TO_8) or COLORCONV_32A_TO_8)
-#define COLORCONV_EXPAND_15_TO_16 COLORCONV_15_TO_16
-#define COLORCONV_REDUCE_16_TO_15 COLORCONV_16_TO_15
+const COLORCONV_EXPAND_15_TO_16 = COLORCONV_15_TO_16
+const COLORCONV_REDUCE_16_TO_15 = COLORCONV_16_TO_15
 #define COLORCONV_EXPAND_HI_TO_TRUE (((COLORCONV_15_TO_24 or COLORCONV_15_TO_32) or COLORCONV_16_TO_24) or COLORCONV_16_TO_32)
 #define COLORCONV_REDUCE_TRUE_TO_HI (((COLORCONV_24_TO_15 or COLORCONV_24_TO_16) or COLORCONV_32_TO_15) or COLORCONV_32_TO_16)
 #define COLORCONV_24_EQUALS_32 (COLORCONV_24_TO_32 or COLORCONV_32_TO_24)
@@ -1770,7 +1772,7 @@ declare function getg32(byval c as long) as long
 declare function getb32(byval c as long) as long
 declare function geta32(byval c as long) as long
 
-#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
+#if defined(__FB_WIN32__) or defined(__FB_UNIX__)
 	declare sub _set_color(byval idx as long, byval p as const RGB ptr)
 #endif
 
@@ -2498,7 +2500,7 @@ type PACKFILE_VTABLE_
 	pf_ferror as function(byval userdata as any ptr) as long
 end type
 
-#define uconvert_tofilename(s, buf) uconvert(s, U_CURRENT, buf, get_filename_encoding(), sizeof((buf)))
+#define uconvert_tofilename(s, buf) uconvert(s, U_CURRENT, buf, get_filename_encoding(), sizeof(buf))
 declare sub set_filename_encoding(byval encoding as long)
 declare function get_filename_encoding() as long
 declare sub packfile_password(byval password as const zstring ptr)
@@ -2731,7 +2733,7 @@ declare sub persp_project_f(byval x as single, byval y as single, byval z as sin
 #define ALLEGRO_COMPAT_H
 const KB_NORMAL = 1
 const KB_EXTENDED = 2
-#define SEND_MESSAGE object_message
+declare function SEND_MESSAGE alias "object_message"(byval dialog as DIALOG ptr, byval msg as long, byval c as long) as long
 #define cpu_fpu_ (cpu_capabilities and CPU_FPU)
 #define cpu_mmx_ (cpu_capabilities and CPU_MMX)
 #define cpu_3dnow_ (cpu_capabilities and CPU_3DNOW)
@@ -2767,23 +2769,36 @@ const JOY_HAT_DOWN = 2
 const JOY_HAT_RIGHT = 3
 const JOY_HAT_UP = 4
 declare function initialise_joystick() as long
-#define black_pallete black_palette
-#define desktop_pallete desktop_palette
-#define set_pallete set_palette
-#define get_pallete get_palette
-#define set_pallete_range set_palette_range
-#define get_pallete_range get_palette_range
-#define fli_pallete fli_palette
-#define pallete_color palette_color
+
+#if defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
+	extern import black_pallete alias "black_palette" as RGB
+	extern import desktop_pallete alias "desktop_palette" as RGB
+#else
+	extern black_pallete alias "black_palette" as RGB
+	extern desktop_pallete alias "desktop_palette" as RGB
+#endif
+
+declare sub set_pallete alias "set_palette"(byval p as const RGB ptr)
+declare sub get_pallete alias "get_palette"(byval p as RGB ptr)
+declare sub set_pallete_range alias "set_palette_range"(byval p as const RGB ptr, byval from as long, byval to as long, byval retracesync as long)
+declare sub get_pallete_range alias "get_palette_range"(byval p as RGB ptr, byval from as long, byval to as long)
+
+#if defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
+	extern import fli_pallete alias "fli_palette" as RGB
+	extern import pallete_color alias "palette_color" as long ptr
+#else
+	extern fli_pallete alias "fli_palette" as RGB
+	extern pallete_color alias "palette_color" as long ptr
+#endif
+
 #define DAT_PALLETE DAT_PALETTE
-#define select_pallete select_palette
-#define unselect_pallete unselect_palette
-#define generate_332_pallete generate_332_palette
+declare sub select_pallete alias "select_palette"(byval p as const RGB ptr)
+declare sub unselect_pallete alias "unselect_palette"()
+declare sub generate_332_pallete alias "generate_332_palette"(byval pal as RGB ptr)
 #define generate_optimised_pallete generate_optimised_palette
-#define fix_filename_path canonicalize_filename
+declare function fix_filename_path alias "canonicalize_filename"(byval dest as zstring ptr, byval filename as const zstring ptr, byval size as long) as zstring ptr
 const OLD_FILESEL_WIDTH = -1
 const OLD_FILESEL_HEIGHT = -1
-
 declare function file_select(byval message as const zstring ptr, byval path as zstring ptr, byval ext as const zstring ptr) as long
 declare function for_each_file(byval name as const zstring ptr, byval attrib as long, byval callback as sub(byval filename as const zstring ptr, byval attrib as long, byval param as long), byval param as long) as long
 declare function file_size(byval filename as const zstring ptr) as clong
@@ -2814,42 +2829,7 @@ declare function timer_can_simulate_retrace() as long
 declare sub timer_simulate_retrace(byval enable as long)
 declare function timer_is_using_retrace() as long
 
-#ifdef __FB_WIN32__
-	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
-	#define SYSTEM_DIRECTX_ AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-	extern _AL_DLL system_directx as SYSTEM_DRIVER
-
-	#define TIMER_WIN32_HIGH_PERF AL_ID(asc("W"), asc("3"), asc("2"), asc("H"))
-	#define TIMER_WIN32_LOW_PERF AL_ID(asc("W"), asc("3"), asc("2"), asc("L"))
-	#define KEYBOARD_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-	#define MOUSE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-	#define GFX_DIRECTX AL_ID(asc("D"), asc("X"), asc("A"), asc("C"))
-	#define GFX_DIRECTX_ACCEL_ AL_ID(asc("D"), asc("X"), asc("A"), asc("C"))
-	#define GFX_DIRECTX_SAFE_ AL_ID(asc("D"), asc("X"), asc("S"), asc("A"))
-	#define GFX_DIRECTX_SOFT_ AL_ID(asc("D"), asc("X"), asc("S"), asc("O"))
-	#define GFX_DIRECTX_WIN_ AL_ID(asc("D"), asc("X"), asc("W"), asc("N"))
-	#define GFX_DIRECTX_OVL_ AL_ID(asc("D"), asc("X"), asc("O"), asc("V"))
-	#define GFX_GDI_ AL_ID(asc("G"), asc("D"), asc("I"), asc("B"))
-	extern _AL_DLL gfx_directx_accel as GFX_DRIVER
-	extern _AL_DLL gfx_directx_safe as GFX_DRIVER
-	extern _AL_DLL gfx_directx_soft as GFX_DRIVER
-	extern _AL_DLL gfx_directx_win as GFX_DRIVER
-	extern _AL_DLL gfx_directx_ovl as GFX_DRIVER
-	extern _AL_DLL gfx_gdi as GFX_DRIVER
-	#define GFX_DRIVER_DIRECTX ( GFX_DIRECTX_ACCEL, @gfx_directx_accel, TRUE ), ( GFX_DIRECTX_SOFT, @gfx_directx_soft, TRUE ), ( GFX_DIRECTX_SAFE, @gfx_directx_safe, TRUE ), ( GFX_DIRECTX_WIN, @gfx_directx_win, TRUE ), ( GFX_DIRECTX_OVL, @gfx_directx_ovl, TRUE ), ( GFX_GDI, @gfx_gdi, FALSE ),
-	#define DIGI_DIRECTX(n) AL_ID(asc("D"), asc("X"), asc("A") + (n), asc(" "))
-	#define DIGI_DIRECTAMX(n) AL_ID(asc("A"), asc("X"), asc("A") + (n), asc(" "))
-	#define DIGI_WAVOUTID(n) AL_ID(asc("W"), asc("O"), asc("A") + (n), asc(" "))
-	#define MIDI_WIN32MAPPER AL_ID(asc("W"), asc("3"), asc("2"), asc("M"))
-	#define MIDI_WIN32(n) AL_ID(asc("W"), asc("3"), asc("2"), asc("A") + (n))
-	#define MIDI_WIN32_IN(n) AL_ID(asc("W"), asc("3"), asc("2"), asc("A") + (n))
-	#define JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
-	#define JOY_TYPE_WIN32 AL_ID(asc("W"), asc("3"), asc("2"), asc(" "))
-	extern _AL_DLL joystick_directx as JOYSTICK_DRIVER
-	extern _AL_DLL joystick_win32 as JOYSTICK_DRIVER
-	#define JOYSTICK_DRIVER_DIRECTX ( JOY_TYPE_DIRECTX, @joystick_directx, TRUE ),
-	#define JOYSTICK_DRIVER_WIN32 ( JOY_TYPE_WIN32, @joystick_win32, TRUE ),
-#elseif defined(__FB_LINUX__)
+#ifdef __FB_UNIX__
 	extern __crt0_argc as long
 	extern __crt0_argv as zstring ptr ptr
 	#define TIMERDRV_UNIX_PTHREADS_ AL_ID(asc("P"), asc("T"), asc("H"), asc("R"))
@@ -2873,27 +2853,7 @@ declare function timer_is_using_retrace() as long
 	#define GFX_XDGA2 AL_ID(asc("D"), asc("G"), asc("A"), asc("2"))
 	#define GFX_XDGA2_SOFT AL_ID(asc("D"), asc("G"), asc("A"), asc("S"))
 	#define SYSTEM_LINUX_ AL_ID(asc("L"), asc("N"), asc("X"), asc("C"))
-	#define GFX_VGA AL_ID(asc("V"), asc("G"), asc("A"), asc(" "))
-	#define GFX_MODEX AL_ID(asc("M"), asc("O"), asc("D"), asc("X"))
-	#define GFX_FBCON AL_ID(asc("F"), asc("B"), asc(" "), asc(" "))
-	#define GFX_VBEAF AL_ID(asc("V"), asc("B"), asc("A"), asc("F"))
-	#define GFX_SVGALIB AL_ID(asc("S"), asc("V"), asc("G"), asc("A"))
-	#define KEYDRV_LINUX AL_ID(asc("L"), asc("N"), asc("X"), asc("C"))
-	#define MOUSEDRV_LINUX_PS2_ AL_ID(asc("L"), asc("P"), asc("S"), asc("2"))
-	#define MOUSEDRV_LINUX_IPS2_ AL_ID(asc("L"), asc("I"), asc("P"), asc("S"))
-	#define MOUSEDRV_LINUX_GPMDATA_ AL_ID(asc("G"), asc("P"), asc("M"), asc("D"))
-	#define MOUSEDRV_LINUX_MS_ AL_ID(asc("M"), asc("S"), asc(" "), asc(" "))
-	#define MOUSEDRV_LINUX_IMS_ AL_ID(asc("I"), asc("M"), asc("S"), asc(" "))
-	#define MOUSEDRV_LINUX_EVDEV_ AL_ID(asc("E"), asc("V"), asc(" "), asc(" "))
-	#define JOY_TYPE_LINUX_ANALOGUE AL_ID(asc("L"), asc("N"), asc("X"), asc("A"))
-	extern system_linux as SYSTEM_DRIVER
-	extern mousedrv_linux_ps2 as MOUSE_DRIVER
-	extern mousedrv_linux_ips2 as MOUSE_DRIVER
-	extern mousedrv_linux_gpmdata as MOUSE_DRIVER
-	extern mousedrv_linux_ms as MOUSE_DRIVER
-	extern mousedrv_linux_ims as MOUSE_DRIVER
-	extern mousedrv_linux_evdev as MOUSE_DRIVER
-#else
+#elseif defined(__FB_DOS__)
 	#define SYSTEM_DOS_ AL_ID(asc("D"), asc("O"), asc("S"), asc(" "))
 	extern system_dos as SYSTEM_DRIVER
 	extern i_love_bill as long
@@ -3005,13 +2965,47 @@ declare function timer_is_using_retrace() as long
 	declare function calibrate_joystick_hat(byval direction as long) as long
 	#define ALLEGRO_GFX_HAS_VGA
 	#define ALLEGRO_GFX_HAS_VBEAF
+#endif
+
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#define GFX_VGA_ AL_ID(asc("V"), asc("G"), asc("A"), asc(" "))
 	#define GFX_MODEX_ AL_ID(asc("M"), asc("O"), asc("D"), asc("X"))
+#endif
+
+#ifdef __FB_UNIX__
+	#define GFX_FBCON AL_ID(asc("F"), asc("B"), asc(" "), asc(" "))
+#elseif defined(__FB_DOS__)
 	#define GFX_VESA1 AL_ID(asc("V"), asc("B"), asc("E"), asc("1"))
 	#define GFX_VESA2B AL_ID(asc("V"), asc("B"), asc("2"), asc("B"))
 	#define GFX_VESA2L AL_ID(asc("V"), asc("B"), asc("2"), asc("L"))
 	#define GFX_VESA3 AL_ID(asc("V"), asc("B"), asc("E"), asc("3"))
+#endif
+
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
 	#define GFX_VBEAF_ AL_ID(asc("V"), asc("B"), asc("A"), asc("F"))
+#endif
+
+#ifdef __FB_UNIX__
+	#define GFX_SVGALIB AL_ID(asc("S"), asc("V"), asc("G"), asc("A"))
+	#define KEYDRV_LINUX AL_ID(asc("L"), asc("N"), asc("X"), asc("C"))
+	#define MOUSEDRV_LINUX_PS2_ AL_ID(asc("L"), asc("P"), asc("S"), asc("2"))
+	#define MOUSEDRV_LINUX_IPS2_ AL_ID(asc("L"), asc("I"), asc("P"), asc("S"))
+	#define MOUSEDRV_LINUX_GPMDATA_ AL_ID(asc("G"), asc("P"), asc("M"), asc("D"))
+	#define MOUSEDRV_LINUX_MS_ AL_ID(asc("M"), asc("S"), asc(" "), asc(" "))
+	#define MOUSEDRV_LINUX_IMS_ AL_ID(asc("I"), asc("M"), asc("S"), asc(" "))
+	#define MOUSEDRV_LINUX_EVDEV_ AL_ID(asc("E"), asc("V"), asc(" "), asc(" "))
+	#define JOY_TYPE_LINUX_ANALOGUE AL_ID(asc("L"), asc("N"), asc("X"), asc("A"))
+#endif
+
+#ifdef __FB_LINUX__
+	extern system_linux as SYSTEM_DRIVER
+	extern mousedrv_linux_ps2 as MOUSE_DRIVER
+	extern mousedrv_linux_ips2 as MOUSE_DRIVER
+	extern mousedrv_linux_gpmdata as MOUSE_DRIVER
+	extern mousedrv_linux_ms as MOUSE_DRIVER
+	extern mousedrv_linux_ims as MOUSE_DRIVER
+	extern mousedrv_linux_evdev as MOUSE_DRIVER
+#elseif defined(__FB_DOS__)
 	#define GFX_XTENDED_ AL_ID(asc("X"), asc("T"), asc("N"), asc("D"))
 	extern gfx_vga as GFX_DRIVER
 	extern gfx_modex as GFX_DRIVER
@@ -3033,9 +3027,41 @@ declare function timer_is_using_retrace() as long
 
 #if defined(__FB_DOS__) or defined(__FB_LINUX__)
 	declare sub split_modex_screen(byval lyne as long)
-#endif
-
-#ifdef __FB_DOS__
+#elseif defined(__FB_WIN32__)
+	declare function _WinMain(byval _main as any ptr, byval hInst as any ptr, byval hPrev as any ptr, byval Cmd as zstring ptr, byval nShow as long) as long
+	#define SYSTEM_DIRECTX_ AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
+	extern _AL_DLL system_directx as SYSTEM_DRIVER
+	#define TIMER_WIN32_HIGH_PERF AL_ID(asc("W"), asc("3"), asc("2"), asc("H"))
+	#define TIMER_WIN32_LOW_PERF AL_ID(asc("W"), asc("3"), asc("2"), asc("L"))
+	#define KEYBOARD_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
+	#define MOUSE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
+	#define GFX_DIRECTX AL_ID(asc("D"), asc("X"), asc("A"), asc("C"))
+	#define GFX_DIRECTX_ACCEL_ AL_ID(asc("D"), asc("X"), asc("A"), asc("C"))
+	#define GFX_DIRECTX_SAFE_ AL_ID(asc("D"), asc("X"), asc("S"), asc("A"))
+	#define GFX_DIRECTX_SOFT_ AL_ID(asc("D"), asc("X"), asc("S"), asc("O"))
+	#define GFX_DIRECTX_WIN_ AL_ID(asc("D"), asc("X"), asc("W"), asc("N"))
+	#define GFX_DIRECTX_OVL_ AL_ID(asc("D"), asc("X"), asc("O"), asc("V"))
+	#define GFX_GDI_ AL_ID(asc("G"), asc("D"), asc("I"), asc("B"))
+	extern _AL_DLL gfx_directx_accel as GFX_DRIVER
+	extern _AL_DLL gfx_directx_safe as GFX_DRIVER
+	extern _AL_DLL gfx_directx_soft as GFX_DRIVER
+	extern _AL_DLL gfx_directx_win as GFX_DRIVER
+	extern _AL_DLL gfx_directx_ovl as GFX_DRIVER
+	extern _AL_DLL gfx_gdi as GFX_DRIVER
+	#define GFX_DRIVER_DIRECTX ( GFX_DIRECTX_ACCEL, @gfx_directx_accel, TRUE ), ( GFX_DIRECTX_SOFT, @gfx_directx_soft, TRUE ), ( GFX_DIRECTX_SAFE, @gfx_directx_safe, TRUE ), ( GFX_DIRECTX_WIN, @gfx_directx_win, TRUE ), ( GFX_DIRECTX_OVL, @gfx_directx_ovl, TRUE ), ( GFX_GDI, @gfx_gdi, FALSE ),
+	#define DIGI_DIRECTX(n) AL_ID(asc("D"), asc("X"), asc("A") + (n), asc(" "))
+	#define DIGI_DIRECTAMX(n) AL_ID(asc("A"), asc("X"), asc("A") + (n), asc(" "))
+	#define DIGI_WAVOUTID(n) AL_ID(asc("W"), asc("O"), asc("A") + (n), asc(" "))
+	#define MIDI_WIN32MAPPER AL_ID(asc("W"), asc("3"), asc("2"), asc("M"))
+	#define MIDI_WIN32(n) AL_ID(asc("W"), asc("3"), asc("2"), asc("A") + (n))
+	#define MIDI_WIN32_IN(n) AL_ID(asc("W"), asc("3"), asc("2"), asc("A") + (n))
+	#define JOY_TYPE_DIRECTX AL_ID(asc("D"), asc("X"), asc(" "), asc(" "))
+	#define JOY_TYPE_WIN32 AL_ID(asc("W"), asc("3"), asc("2"), asc(" "))
+	extern _AL_DLL joystick_directx as JOYSTICK_DRIVER
+	extern _AL_DLL joystick_win32 as JOYSTICK_DRIVER
+	#define JOYSTICK_DRIVER_DIRECTX ( JOY_TYPE_DIRECTX, @joystick_directx, TRUE ),
+	#define JOYSTICK_DRIVER_WIN32 ( JOY_TYPE_WIN32, @joystick_win32, TRUE ),
+#elseif defined(__FB_DOS__)
 	declare sub _set_color(byval index as long, byval p as const RGB ptr)
 	#define DIGI_SB10_ AL_ID(asc("S"), asc("B"), asc("1"), asc("0"))
 	#define DIGI_SB15_ AL_ID(asc("S"), asc("B"), asc("1"), asc("5"))

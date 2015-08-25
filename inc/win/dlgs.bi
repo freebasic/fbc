@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -33,7 +33,7 @@ const psh12 = &h040b
 const psh13 = &h040c
 const psh14 = &h040d
 const psh15 = &h040e
-#define pshHelp psh15
+const pshHelp = psh15
 const psh16 = &h040f
 const chx1 = &h0410
 const chx2 = &h0411

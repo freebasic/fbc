@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -20,8 +20,8 @@
 
 extern "C"
 
-#define MEDIATYPE_NULL GUID_NULL
-#define MEDIASUBTYPE_NULL GUID_NULL
+extern MEDIATYPE_NULL alias "GUID_NULL" as const IID
+extern MEDIASUBTYPE_NULL alias "GUID_NULL" as const IID
 extern MEDIASUBTYPE_None as const GUID
 extern MEDIATYPE_Video as const GUID
 extern MEDIATYPE_Audio as const GUID
@@ -347,7 +347,7 @@ extern AM_INTERFACESETID_Standard as const GUID
 	extern MEDIASUBTYPE_MPEG2DATA as const GUID
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	extern MEDIASUBTYPE_MPEG2_TRANSPORT_STRIDE as const GUID
 	extern MEDIASUBTYPE_MPEG2_UDCR_TRANSPORT as const GUID
 	extern MEDIASUBTYPE_MPEG2_PBDA_TRANSPORT_RAW as const GUID

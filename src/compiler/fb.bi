@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR  = "1"
-const FB_VER_MINOR  = "03"
+const FB_VER_MINOR  = "04"
 const FB_VER_PATCH  = "0"
 const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
 const FB_BUILD_DATE = __DATE__
@@ -458,5 +458,19 @@ declare function fbGetLangId _
 
 #define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
 
+
+''
+'' new implementation
+''
+
+'' !!!TODO!!! - remove when 1.05 or later is released
+#ifndef cbool
+	#define cbool(x_) iif((x_),-1,0)
+	#define INT_BOOL_TO_STR(y_) *iif(y_,@"true",@"false")
+	#define INT_BOOL_TO_WSTR(y_) *iif(y_,@wstr("true"),@wstr("false"))
+#else
+	#define INT_BOOL_TO_STR(y_) str(y_)
+	#define INT_BOOL_TO_WSTR(y_) wstr(y_)
+#endif
 
 #endif '' __FB_BI__

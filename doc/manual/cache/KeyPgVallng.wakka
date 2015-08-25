@@ -2,8 +2,8 @@
 Converts a string to a 64bit integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Vallng** ( //strnum// )

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -73,7 +73,7 @@ const maxNetworkSoHSize = 4000
 #define maxIpv4CountPerSoHAttribute (maxSoHAttributeSize / 4)
 #define maxIpv6CountPerSoHAttribute (maxSoHAttributeSize / 16)
 const maxStringLength = 1024
-#define maxStringLengthInBytes ((maxStringLength + 1) * sizeof(wchar_t))
+#define maxStringLengthInBytes ((maxStringLength + 1) * sizeof(WCHAR))
 const maxSystemHealthEntityCount = 20
 const maxEnforcerCount = 20
 const maxPrivateDataSize = 200

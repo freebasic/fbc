@@ -30,7 +30,7 @@
 
 #include once "glib-object.bi"
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#include once "crt/sys/types.bi"
 #endif
 
@@ -346,10 +346,16 @@ enum
 	G_SOCKET_FAMILY_UNIX = 1
 	G_SOCKET_FAMILY_IPV4 = 2
 
-	#ifdef __FB_WIN32__
-		G_SOCKET_FAMILY_IPV6 = 23
-	#else
+	#ifdef __FB_LINUX__
 		G_SOCKET_FAMILY_IPV6 = 10
+	#elseif defined(__FB_FREEBSD__)
+		G_SOCKET_FAMILY_IPV6 = 28
+	#elseif defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)
+		G_SOCKET_FAMILY_IPV6 = 24
+	#elseif defined(__FB_DARWIN__)
+		G_SOCKET_FAMILY_IPV6 = 30
+	#else
+		G_SOCKET_FAMILY_IPV6 = 23
 	#endif
 end enum
 
@@ -1663,7 +1669,7 @@ declare function g_credentials_get_native(byval credentials as GCredentials ptr,
 declare sub g_credentials_set_native(byval credentials as GCredentials ptr, byval native_type as GCredentialsType, byval native as gpointer)
 declare function g_credentials_is_same_user(byval credentials as GCredentials ptr, byval other_credentials as GCredentials ptr, byval error as GError ptr ptr) as gboolean
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	declare function g_credentials_get_unix_pid(byval credentials as GCredentials ptr, byval error as GError ptr ptr) as pid_t
 	declare function g_credentials_get_unix_user(byval credentials as GCredentials ptr, byval error as GError ptr ptr) as uid_t
 	declare function g_credentials_set_unix_user(byval credentials as GCredentials ptr, byval uid as uid_t, byval error as GError ptr ptr) as gboolean
@@ -4578,7 +4584,7 @@ declare function g_subprocess_get_stdout_pipe(byval subprocess as GSubprocess pt
 declare function g_subprocess_get_stderr_pipe(byval subprocess as GSubprocess ptr) as GInputStream ptr
 declare function g_subprocess_get_identifier(byval subprocess as GSubprocess ptr) as const zstring ptr
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	declare sub g_subprocess_send_signal(byval subprocess as GSubprocess ptr, byval signal_num as gint)
 #endif
 
@@ -4618,7 +4624,7 @@ declare function g_subprocess_launcher_getenv(byval self as GSubprocessLauncher 
 declare sub g_subprocess_launcher_set_cwd(byval self as GSubprocessLauncher ptr, byval cwd as const zstring ptr)
 declare sub g_subprocess_launcher_set_flags(byval self as GSubprocessLauncher ptr, byval flags as GSubprocessFlags)
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	declare sub g_subprocess_launcher_set_stdin_file_path(byval self as GSubprocessLauncher ptr, byval path as const zstring ptr)
 	declare sub g_subprocess_launcher_take_stdin_fd(byval self as GSubprocessLauncher ptr, byval fd as gint)
 	declare sub g_subprocess_launcher_set_stdout_file_path(byval self as GSubprocessLauncher ptr, byval path as const zstring ptr)

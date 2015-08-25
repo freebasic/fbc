@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -259,14 +259,14 @@ type tagVARIANT
 				pparray as SAFEARRAY ptr ptr
 				pvarVal as VARIANT ptr
 				byref as PVOID
-				cVal as byte
+				cVal as CHAR
 				uiVal as USHORT
 				ulVal as ULONG
 				ullVal as ULONGLONG
 				intVal as INT_
 				uintVal as UINT
 				pdecVal as DECIMAL ptr
-				pcVal as zstring ptr
+				pcVal as CHAR ptr
 				puiVal as USHORT ptr
 				pulVal as ULONG ptr
 				pullVal as ULONGLONG ptr
@@ -336,7 +336,7 @@ type _wireVARIANT
 		ppdispVal as IDispatch ptr ptr
 		pparray as wirePSAFEARRAY ptr
 		pvarVal as wireVARIANT ptr
-		cVal as byte
+		cVal as CHAR
 		uiVal as USHORT
 		ulVal as ULONG
 		ullVal as ULONGLONG
@@ -344,7 +344,7 @@ type _wireVARIANT
 		uintVal as UINT
 		decVal as DECIMAL
 		pdecVal as DECIMAL ptr
-		pcVal as zstring ptr
+		pcVal as CHAR ptr
 		puiVal as USHORT ptr
 		pulVal as ULONG ptr
 		pullVal as ULONGLONG ptr
@@ -424,11 +424,11 @@ end type
 
 type IDLDESC as tagIDLDESC
 type LPIDLDESC as tagIDLDESC ptr
-#define IDLFLAG_NONE PARAMFLAG_NONE
-#define IDLFLAG_FIN PARAMFLAG_FIN
-#define IDLFLAG_FOUT PARAMFLAG_FOUT
-#define IDLFLAG_FLCID PARAMFLAG_FLCID
-#define IDLFLAG_FRETVAL PARAMFLAG_FRETVAL
+const IDLFLAG_NONE = PARAMFLAG_NONE
+const IDLFLAG_FIN = PARAMFLAG_FIN
+const IDLFLAG_FOUT = PARAMFLAG_FOUT
+const IDLFLAG_FLCID = PARAMFLAG_FLCID
+const IDLFLAG_FRETVAL = PARAMFLAG_FRETVAL
 
 type tagELEMDESC
 	tdesc as TYPEDESC

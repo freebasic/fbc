@@ -34,14 +34,14 @@
 
 #pragma once
 
-#if defined(__FB_WIN32__) and defined(GLFW_DLL)
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
+	#inclib "glfw"
+#elseif defined(__FB_WIN32__) and defined(GLFW_DLL)
 	#inclib "glfw3dll"
-#elseif defined(__FB_WIN32__) and (not defined(GLFW_DLL))
+#else
 	#inclib "glfw3"
 	#inclib "user32"
 	#inclib "gdi32"
-#else
-	#inclib "glfw"
 #endif
 
 #include once "GL/gl.bi"
@@ -176,7 +176,7 @@ const GLFW_KEY_RIGHT_CONTROL = 345
 const GLFW_KEY_RIGHT_ALT = 346
 const GLFW_KEY_RIGHT_SUPER = 347
 const GLFW_KEY_MENU = 348
-#define GLFW_KEY_LAST GLFW_KEY_MENU
+const GLFW_KEY_LAST = GLFW_KEY_MENU
 const GLFW_MOD_SHIFT = &h0001
 const GLFW_MOD_CONTROL = &h0002
 const GLFW_MOD_ALT = &h0004
@@ -189,10 +189,10 @@ const GLFW_MOUSE_BUTTON_5 = 4
 const GLFW_MOUSE_BUTTON_6 = 5
 const GLFW_MOUSE_BUTTON_7 = 6
 const GLFW_MOUSE_BUTTON_8 = 7
-#define GLFW_MOUSE_BUTTON_LAST GLFW_MOUSE_BUTTON_8
-#define GLFW_MOUSE_BUTTON_LEFT GLFW_MOUSE_BUTTON_1
-#define GLFW_MOUSE_BUTTON_RIGHT GLFW_MOUSE_BUTTON_2
-#define GLFW_MOUSE_BUTTON_MIDDLE GLFW_MOUSE_BUTTON_3
+const GLFW_MOUSE_BUTTON_LAST = GLFW_MOUSE_BUTTON_8
+const GLFW_MOUSE_BUTTON_LEFT = GLFW_MOUSE_BUTTON_1
+const GLFW_MOUSE_BUTTON_RIGHT = GLFW_MOUSE_BUTTON_2
+const GLFW_MOUSE_BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_3
 const GLFW_JOYSTICK_1 = 0
 const GLFW_JOYSTICK_2 = 1
 const GLFW_JOYSTICK_3 = 2
@@ -209,7 +209,7 @@ const GLFW_JOYSTICK_13 = 12
 const GLFW_JOYSTICK_14 = 13
 const GLFW_JOYSTICK_15 = 14
 const GLFW_JOYSTICK_16 = 15
-#define GLFW_JOYSTICK_LAST GLFW_JOYSTICK_16
+const GLFW_JOYSTICK_LAST = GLFW_JOYSTICK_16
 const GLFW_NOT_INITIALIZED = &h00010001
 const GLFW_NO_CURRENT_CONTEXT = &h00010002
 const GLFW_INVALID_ENUM = &h00010003

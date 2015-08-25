@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) the Wine project
@@ -58,7 +58,7 @@ type LPLPDIRECTSOUNDBUFFER8 as IDirectSoundBuffer8 ptr ptr
 extern IID_IDirectSoundNotify as const GUID
 type LPDIRECTSOUNDNOTIFY as IDirectSoundNotify ptr
 type LPLPDIRECTSOUNDNOTIFY as IDirectSoundNotify ptr ptr
-#define IID_IDirectSoundNotify8 IID_IDirectSoundNotify
+extern IID_IDirectSoundNotify8 alias "IID_IDirectSoundNotify" as const GUID
 extern IID_IDirectSound3DListener as const GUID
 type LPDIRECTSOUND3DLISTENER as IDirectSound3DListener ptr
 type LPLPDIRECTSOUND3DLISTENER as IDirectSound3DListener ptr ptr
@@ -68,7 +68,7 @@ type LPLPDIRECTSOUND3DBUFFER as IDirectSound3DBuffer ptr ptr
 extern IID_IDirectSoundCapture as const GUID
 type LPDIRECTSOUNDCAPTURE as IDirectSoundCapture ptr
 type LPLPDIRECTSOUNDCAPTURE as IDirectSoundCapture ptr ptr
-#define IID_IDirectSoundCapture8 IID_IDirectSoundCapture
+extern IID_IDirectSoundCapture8 alias "IID_IDirectSoundCapture" as const GUID
 
 type IDirectSoundCapture8 as IDirectSoundCapture
 type LPDIRECTSOUNDCAPTURE8 as IDirectSoundCapture ptr
@@ -82,8 +82,8 @@ type LPLPDIRECTSOUNDCAPTUREBUFFER8 as IDirectSoundCaptureBuffer8 ptr ptr
 extern IID_IDirectSoundFullDuplex as const GUID
 type LPDIRECTSOUNDFULLDUPLEX as IDirectSoundFullDuplex ptr
 type LPLPDIRECTSOUNDFULLDUPLEX as IDirectSoundFullDuplex ptr ptr
-#define IID_IDirectSoundFullDuplex8 IID_IDirectSoundFullDuplex
 
+extern IID_IDirectSoundFullDuplex8 alias "IID_IDirectSoundFullDuplex" as const GUID
 extern DSDEVID_DefaultPlayback as const GUID
 extern DSDEVID_DefaultCapture as const GUID
 extern DSDEVID_DefaultVoicePlayback as const GUID
@@ -319,7 +319,7 @@ const DSSPEAKER_GEOMETRY_MAX = &h000000B4
 #define DSSPEAKER_GEOMETRY(a) cast(UBYTE, (cast(DWORD, (a)) shr 16) and &h00FF)
 const DS_CERTIFIED = &h00000000
 const DS_UNCERTIFIED = &h00000001
-#define DS3DALG_DEFAULT GUID_NULL
+extern DS3DALG_DEFAULT alias "GUID_NULL" as const IID
 
 type _DSCEFFECTDESC
 	dwSize as DWORD
@@ -386,8 +386,8 @@ type DSCBCAPS as _DSCBCAPS
 type LPDSCBCAPS as _DSCBCAPS ptr
 type LPCDSCBCAPS as const DSCBCAPS ptr
 
-#define DSCCAPS_EMULDRIVER DSCAPS_EMULDRIVER
-#define DSCCAPS_CERTIFIED DSCAPS_CERTIFIED
+const DSCCAPS_EMULDRIVER = DSCAPS_EMULDRIVER
+const DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED
 const DSCCAPS_MULTIPLECAPTURE = &h00000001
 const DSCBCAPS_WAVEMAPPED = &h80000000
 const DSCBCAPS_CTRLFX = &h00000200
@@ -410,9 +410,9 @@ declare function DirectSoundEnumerateA(byval as LPDSENUMCALLBACKA, byval as LPVO
 declare function DirectSoundEnumerateW(byval as LPDSENUMCALLBACKW, byval as LPVOID) as HRESULT
 
 #ifdef UNICODE
-	#define DirectSoundEnumerate DirectSoundEnumerateW
+	declare function DirectSoundEnumerate alias "DirectSoundEnumerateW"(byval as LPDSENUMCALLBACKW, byval as LPVOID) as HRESULT
 #else
-	#define DirectSoundEnumerate DirectSoundEnumerateA
+	declare function DirectSoundEnumerate alias "DirectSoundEnumerateA"(byval as LPDSENUMCALLBACKA, byval as LPVOID) as HRESULT
 #endif
 
 declare function DirectSoundCaptureCreate(byval lpGUID as LPCGUID, byval ppDSC as LPDIRECTSOUNDCAPTURE ptr, byval pUnkOuter as LPUNKNOWN) as HRESULT
@@ -420,15 +420,15 @@ declare function DirectSoundCaptureEnumerateA(byval as LPDSENUMCALLBACKA, byval 
 declare function DirectSoundCaptureEnumerateW(byval as LPDSENUMCALLBACKW, byval as LPVOID) as HRESULT
 
 #ifdef UNICODE
-	#define DirectSoundCaptureEnumerate DirectSoundCaptureEnumerateW
+	declare function DirectSoundCaptureEnumerate alias "DirectSoundCaptureEnumerateW"(byval as LPDSENUMCALLBACKW, byval as LPVOID) as HRESULT
 #else
-	#define DirectSoundCaptureEnumerate DirectSoundCaptureEnumerateA
+	declare function DirectSoundCaptureEnumerate alias "DirectSoundCaptureEnumerateA"(byval as LPDSENUMCALLBACKA, byval as LPVOID) as HRESULT
 #endif
 
 declare function DirectSoundCreate8(byval lpGUID as LPCGUID, byval ppDS8 as LPDIRECTSOUND8 ptr, byval pUnkOuter as LPUNKNOWN) as HRESULT
 declare function DirectSoundCaptureCreate8(byval lpGUID as LPCGUID, byval ppDSC8 as LPDIRECTSOUNDCAPTURE8 ptr, byval pUnkOuter as LPUNKNOWN) as HRESULT
 declare function DirectSoundFullDuplexCreate(byval pcGuidCaptureDevice as LPCGUID, byval pcGuidRenderDevice as LPCGUID, byval pcDSCBufferDesc as LPCDSCBUFFERDESC, byval pcDSBufferDesc as LPCDSBUFFERDESC, byval hWnd as HWND, byval dwLevel as DWORD, byval ppDSFD as LPDIRECTSOUNDFULLDUPLEX ptr, byval ppDSCBuffer8 as LPDIRECTSOUNDCAPTUREBUFFER8 ptr, byval ppDSBuffer8 as LPDIRECTSOUNDBUFFER8 ptr, byval pUnkOuter as LPUNKNOWN) as HRESULT
-#define DirectSoundFullDuplexCreate8 DirectSoundFullDuplexCreate
+declare function DirectSoundFullDuplexCreate8 alias "DirectSoundFullDuplexCreate"(byval pcGuidCaptureDevice as LPCGUID, byval pcGuidRenderDevice as LPCGUID, byval pcDSCBufferDesc as LPCDSCBUFFERDESC, byval pcDSBufferDesc as LPCDSBUFFERDESC, byval hWnd as HWND, byval dwLevel as DWORD, byval ppDSFD as LPDIRECTSOUNDFULLDUPLEX ptr, byval ppDSCBuffer8 as LPDIRECTSOUNDCAPTUREBUFFER8 ptr, byval ppDSBuffer8 as LPDIRECTSOUNDBUFFER8 ptr, byval pUnkOuter as LPUNKNOWN) as HRESULT
 declare function GetDeviceID(byval lpGuidSrc as LPCGUID, byval lpGuidDest as LPGUID) as HRESULT
 type IDirectSoundVtbl as IDirectSoundVtbl_
 
@@ -732,7 +732,7 @@ const DS3D_DEFAULTMAXDISTANCE = 1000000000.0f
 const DS3D_MINCONEANGLE = 0
 const DS3D_MAXCONEANGLE = 360
 const DS3D_DEFAULTCONEANGLE = 360
-#define DS3D_DEFAULTCONEOUTSIDEVOLUME DSBVOLUME_MAX
+const DS3D_DEFAULTCONEOUTSIDEVOLUME = DSBVOLUME_MAX
 
 type _DS3DLISTENER
 	dwSize as DWORD
@@ -793,7 +793,7 @@ end type
 #define IDirectSound3DListener_SetRolloffFactor(p, a, b) (p)->lpVtbl->SetRolloffFactor(p, a, b)
 #define IDirectSound3DListener_SetVelocity(p, a, b, c, d) (p)->lpVtbl->SetVelocity(p, a, b, c, d)
 #define IDirectSound3DListener_CommitDeferredSettings(p) (p)->lpVtbl->CommitDeferredSettings(p)
-#define IDirectSound3DListener8 IDirectSound3DListener
+type IDirectSound3DListener8 as IDirectSound3DListener
 
 type _DS3DBUFFER
 	dwSize as DWORD
@@ -862,7 +862,7 @@ end type
 #define IDirectSound3DBuffer_SetMode(p, a, b) (p)->lpVtbl->SetMode(p, a, b)
 #define IDirectSound3DBuffer_SetPosition(p, a, b, c, d) (p)->lpVtbl->SetPosition(p, a, b, c, d)
 #define IDirectSound3DBuffer_SetVelocity(p, a, b, c, d) (p)->lpVtbl->SetVelocity(p, a, b, c, d)
-#define IDirectSound3DBuffer8 IDirectSound3DBuffer
+type IDirectSound3DBuffer8 as IDirectSound3DBuffer
 type IDirectSoundFullDuplexVtbl as IDirectSoundFullDuplexVtbl_
 
 type IDirectSoundFullDuplex

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -64,7 +64,7 @@ const IP6_ADDRESS_STRING_BUFFER_LENGTH = 48
 #macro INLINE_DWORD_FLIP(out, in)
 	scope
 		dim _in as DWORD = (in)
-		(out) = ((_in shl 8) and &h00ff0000) or (_in shl 24) or ((_in shr 8) and &h0000ff00) or (_in shr 24)
+		(out) = ((((_in shl 8) and &h00ff0000) or (_in shl 24)) or ((_in shr 8) and &h0000ff00)) or (_in shr 24)
 	end scope
 #endmacro
 #define INLINE_NTOHL(out, in) INLINE_DWORD_FLIP(out, in)
@@ -172,11 +172,11 @@ const DNS_RCODE_BADVERS = 16
 const DNS_RCODE_BADSIG = 16
 const DNS_RCODE_BADKEY = 17
 const DNS_RCODE_BADTIME = 18
-#define DNS_RCODE_NO_ERROR DNS_RCODE_NOERROR
-#define DNS_RCODE_FORMAT_ERROR DNS_RCODE_FORMERR
-#define DNS_RCODE_SERVER_FAILURE DNS_RCODE_SERVFAIL
-#define DNS_RCODE_NAME_ERROR DNS_RCODE_NXDOMAIN
-#define DNS_RCODE_NOT_IMPLEMENTED DNS_RCODE_NOTIMPL
+const DNS_RCODE_NO_ERROR = DNS_RCODE_NOERROR
+const DNS_RCODE_FORMAT_ERROR = DNS_RCODE_FORMERR
+const DNS_RCODE_SERVER_FAILURE = DNS_RCODE_SERVFAIL
+const DNS_RCODE_NAME_ERROR = DNS_RCODE_NXDOMAIN
+const DNS_RCODE_NOT_IMPLEMENTED = DNS_RCODE_NOTIMPL
 const DNS_CLASS_INTERNET = &h0001
 const DNS_CLASS_CSNET = &h0002
 const DNS_CLASS_CHAOS = &h0003
@@ -248,7 +248,7 @@ const DNS_TYPE_ALL = &h00ff
 const DNS_TYPE_ANY = &h00ff
 const DNS_TYPE_WINS = &hff01
 const DNS_TYPE_WINSR = &hff02
-#define DNS_TYPE_NBSTAT DNS_TYPE_WINSR
+const DNS_TYPE_NBSTAT = DNS_TYPE_WINSR
 const DNS_RTYPE_A = &h0100
 const DNS_RTYPE_NS = &h0200
 const DNS_RTYPE_MD = &h0300
@@ -752,9 +752,9 @@ enum
 end enum
 
 type DNS_SECTION as _DnsSection
-#define DnsSectionZone DnsSectionQuestion
-#define DnsSectionPrereq DnsSectionAnswer
-#define DnsSectionUpdate DnsSectionAuthority
+const DnsSectionZone = DnsSectionQuestion
+const DnsSectionPrereq = DnsSectionAnswer
+const DnsSectionUpdate = DnsSectionAuthority
 const DNSREC_SECTION = &h00000003
 const DNSREC_QUESTION = &h00000000
 const DNSREC_ANSWER = &h00000001
@@ -896,7 +896,7 @@ type PDNS_RRSET as _DnsRRSet ptr
 	scope
 		dim _prrset as PDNS_RRSET = @(rrset)
 		_prrset->pFirstRR = NULL
-		_prrset->pLastRR = cptr(PDNS_RECORD, @_prrset->pFirstRR)
+		_prrset->pLastRR = cast(PDNS_RECORD, @_prrset->pFirstRR)
 	end scope
 #endmacro
 #macro DNS_RRSET_ADD(rrset, pnewRR)
@@ -946,7 +946,7 @@ enum
 end enum
 
 declare sub DnsFree(byval pData as PVOID, byval FreeType as DNS_FREE_TYPE)
-#define DnsFreeRecordListDeep DnsFreeRecordList
+const DnsFreeRecordListDeep = DnsFreeRecordList
 declare sub DnsRecordListFree(byval pRecordList as PDNS_RECORD, byval FreeType as DNS_FREE_TYPE)
 const DNS_QUERY_STANDARD = &h00000000
 const DNS_QUERY_ACCEPT_TRUNCATED_RESPONSE = &h00000001
@@ -965,16 +965,16 @@ const DNS_QUERY_TREAT_AS_FQDN = &h00001000
 const DNS_QUERY_APPEND_MULTILABEL = &h00800000
 const DNS_QUERY_DONT_RESET_TTL_VALUES = &h00100000
 const DNS_QUERY_RESERVED = &hff000000
-#define DNS_QUERY_CACHE_ONLY DNS_QUERY_NO_WIRE_QUERY
+const DNS_QUERY_CACHE_ONLY = DNS_QUERY_NO_WIRE_QUERY
 
 declare function DnsQuery_A(byval pszName as PCSTR, byval wType as WORD, byval Options as DWORD, byval aipServers as PIP4_ARRAY, byval ppQueryResults as PDNS_RECORD ptr, byval pReserved as PVOID ptr) as DNS_STATUS
 declare function DnsQuery_UTF8(byval pszName as PCSTR, byval wType as WORD, byval Options as DWORD, byval aipServers as PIP4_ARRAY, byval ppQueryResults as PDNS_RECORD ptr, byval pReserved as PVOID ptr) as DNS_STATUS
 declare function DnsQuery_W(byval pszName as PCWSTR, byval wType as WORD, byval Options as DWORD, byval aipServers as PIP4_ARRAY, byval ppQueryResults as PDNS_RECORD ptr, byval pReserved as PVOID ptr) as DNS_STATUS
 
 #ifdef UNICODE
-	#define DnsQuery DnsQuery_W
+	declare function DnsQuery alias "DnsQuery_W"(byval pszName as PCWSTR, byval wType as WORD, byval Options as DWORD, byval aipServers as PIP4_ARRAY, byval ppQueryResults as PDNS_RECORD ptr, byval pReserved as PVOID ptr) as DNS_STATUS
 #else
-	#define DnsQuery DnsQuery_A
+	declare function DnsQuery alias "DnsQuery_A"(byval pszName as PCSTR, byval wType as WORD, byval Options as DWORD, byval aipServers as PIP4_ARRAY, byval ppQueryResults as PDNS_RECORD ptr, byval pReserved as PVOID ptr) as DNS_STATUS
 #endif
 
 const DNS_UPDATE_SECURITY_USE_DEFAULT = &h00000000
@@ -990,27 +990,51 @@ const DNS_UPDATE_REMOTE_SERVER = &h00004000
 const DNS_UPDATE_RESERVED = &hffff0000
 
 #ifdef UNICODE
-	#define DnsAcquireContextHandle DnsAcquireContextHandle_W
-	#define DnsModifyRecordsInSet DnsModifyRecordsInSet_W
-	#define DnsReplaceRecordSet DnsReplaceRecordSetW
 	#define DnsValidateName(p, f) DnsValidateName_W((p), (f))
 	#define DnsNameCompare(n1, n2) DnsNameCompare_W((n1), (n2))
 #else
-	#define DnsAcquireContextHandle DnsAcquireContextHandle_A
-	#define DnsModifyRecordsInSet DnsModifyRecordsInSet_A
-	#define DnsReplaceRecordSet DnsReplaceRecordSetA
 	#define DnsValidateName(p, f) DnsValidateName_A((p), (f))
 	#define DnsNameCompare(n1, n2) DnsNameCompare_A((n1), (n2))
 #endif
 
 declare function DnsAcquireContextHandle_W(byval CredentialFlags as DWORD, byval pCredentials as PVOID, byval pContextHandle as PHANDLE) as DNS_STATUS
+
+#ifdef UNICODE
+	declare function DnsAcquireContextHandle alias "DnsAcquireContextHandle_W"(byval CredentialFlags as DWORD, byval pCredentials as PVOID, byval pContextHandle as PHANDLE) as DNS_STATUS
+#endif
+
 declare function DnsAcquireContextHandle_A(byval CredentialFlags as DWORD, byval pCredentials as PVOID, byval pContextHandle as PHANDLE) as DNS_STATUS
+
+#ifndef UNICODE
+	declare function DnsAcquireContextHandle alias "DnsAcquireContextHandle_A"(byval CredentialFlags as DWORD, byval pCredentials as PVOID, byval pContextHandle as PHANDLE) as DNS_STATUS
+#endif
+
 declare sub DnsReleaseContextHandle(byval hContext as HANDLE)
 declare function DnsModifyRecordsInSet_W(byval pAddRecords as PDNS_RECORD, byval pDeleteRecords as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+
+#ifdef UNICODE
+	declare function DnsModifyRecordsInSet alias "DnsModifyRecordsInSet_W"(byval pAddRecords as PDNS_RECORD, byval pDeleteRecords as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+#endif
+
 declare function DnsModifyRecordsInSet_A(byval pAddRecords as PDNS_RECORD, byval pDeleteRecords as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+
+#ifndef UNICODE
+	declare function DnsModifyRecordsInSet alias "DnsModifyRecordsInSet_A"(byval pAddRecords as PDNS_RECORD, byval pDeleteRecords as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+#endif
+
 declare function DnsModifyRecordsInSet_UTF8(byval pAddRecords as PDNS_RECORD, byval pDeleteRecords as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
 declare function DnsReplaceRecordSetW(byval pNewSet as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+
+#ifdef UNICODE
+	declare function DnsReplaceRecordSet alias "DnsReplaceRecordSetW"(byval pNewSet as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+#endif
+
 declare function DnsReplaceRecordSetA(byval pNewSet as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+
+#ifndef UNICODE
+	declare function DnsReplaceRecordSet alias "DnsReplaceRecordSetA"(byval pNewSet as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
+#endif
+
 declare function DnsReplaceRecordSetUTF8(byval pNewSet as PDNS_RECORD, byval Options as DWORD, byval hContext as HANDLE, byval pServerList as PIP4_ARRAY, byval pReserved as PVOID) as DNS_STATUS
 
 type _DNS_NAME_FORMAT as long

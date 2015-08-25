@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -103,11 +103,6 @@
 	type DOT11_WFD_MINOR_REASON_CODE as UCHAR
 
 	const NDIS_PACKET_TYPE_MEDIA_SPECIFIC_MASK = &h0fff0000u
-	#define NDIS_PACKET_TYPE_802_11_DIRECTED_DATA NDIS_PACKET_TYPE_DIRECTED
-	#define NDIS_PACKET_TYPE_802_11_BROADCAST_DATA NDIS_PACKET_TYPE_BROADCAST
-	#define NDIS_PACKET_TYPE_802_11_MULTICAST_DATA NDIS_PACKET_TYPE_MULTICAST
-	#define NDIS_PACKET_TYPE_802_11_ALL_MULTICAST_DATA NDIS_PACKET_TYPE_ALL_MULTICAST
-	#define NDIS_PACKET_TYPE_802_11_PROMISCUOUS_DATA NDIS_PACKET_TYPE_PROMISCUOUS
 	const NDIS_PACKET_TYPE_802_11_RAW_DATA = &h00010000u
 	const NDIS_PACKET_TYPE_802_11_DIRECTED_MGMT = &h00020000u
 	const NDIS_PACKET_TYPE_802_11_BROADCAST_MGMT = &h00040000u
@@ -219,8 +214,8 @@
 		hOffload as HANDLE
 		dot11OffloadType as DOT11_OFFLOAD_TYPE
 		dwAlgorithm as ULONG
-		bRowIsOutbound as BOOLEAN
-		bUseDefault as BOOLEAN
+		bRowIsOutbound as WINBOOLEAN
+		bUseDefault as WINBOOLEAN
 		uFlags as ULONG
 		ucMacAddress(0 to 5) as UCHAR
 		uNumOfRWsOnPeer as ULONG
@@ -324,8 +319,8 @@
 		dot11BSSID(0 to 5) as UCHAR
 		dot11SSID as DOT11_SSID
 		dot11ScanType as DOT11_SCAN_TYPE
-		bRestrictedScan as BOOLEAN
-		bUseRequestIE as BOOLEAN
+		bRestrictedScan as WINBOOLEAN
+		bUseRequestIE as WINBOOLEAN
 		uRequestIDsOffset as ULONG
 		uNumOfRequestIDs as ULONG
 		uPhyTypesOffset as ULONG
@@ -350,7 +345,7 @@
 
 	type _DOT11_PHY_TYPE_INFO
 		dot11PhyType as DOT11_PHY_TYPE
-		bUseParameters as BOOLEAN
+		bUseParameters as WINBOOLEAN
 		uProbeDelay as ULONG
 		uMinChannelTime as ULONG
 		uMaxChannelTime as ULONG
@@ -366,10 +361,10 @@
 		dot11BSSType as DOT11_BSS_TYPE
 		dot11BSSID(0 to 5) as UCHAR
 		dot11ScanType as DOT11_SCAN_TYPE
-		bRestrictedScan as BOOLEAN
+		bRestrictedScan as WINBOOLEAN
 		udot11SSIDsOffset as ULONG
 		uNumOfdot11SSIDs as ULONG
-		bUseRequestIE as BOOLEAN
+		bUseRequestIE as WINBOOLEAN
 		uRequestIDsOffset as ULONG
 		uNumOfRequestIDs as ULONG
 		uPhyTypeInfosOffset as ULONG
@@ -474,7 +469,7 @@
 	type _DOT11_RESET_REQUEST
 		dot11ResetType as DOT11_RESET_TYPE
 		dot11MacAddress(0 to 5) as UCHAR
-		bSetDefaultMIB as BOOLEAN
+		bSetDefaultMIB as WINBOOLEAN
 	end type
 
 	type DOT11_RESET_REQUEST as _DOT11_RESET_REQUEST
@@ -482,9 +477,9 @@
 
 	type _DOT11_OPTIONAL_CAPABILITY
 		uReserved as ULONG
-		bDot11PCF as BOOLEAN
-		bDot11PCFMPDUTransferToPC as BOOLEAN
-		bStrictlyOrderedServiceClass as BOOLEAN
+		bDot11PCF as WINBOOLEAN
+		bDot11PCFMPDUTransferToPC as WINBOOLEAN
+		bStrictlyOrderedServiceClass as WINBOOLEAN
 	end type
 
 	type DOT11_OPTIONAL_CAPABILITY as _DOT11_OPTIONAL_CAPABILITY
@@ -513,10 +508,10 @@
 
 	type _DOT11_CURRENT_OPTIONAL_CAPABILITY
 		uReserved as ULONG
-		bDot11CFPollable as BOOLEAN
-		bDot11PCF as BOOLEAN
-		bDot11PCFMPDUTransferToPC as BOOLEAN
-		bStrictlyOrderedServiceClass as BOOLEAN
+		bDot11CFPollable as WINBOOLEAN
+		bDot11PCF as WINBOOLEAN
+		bDot11PCFMPDUTransferToPC as WINBOOLEAN
+		bStrictlyOrderedServiceClass as WINBOOLEAN
 	end type
 
 	type DOT11_CURRENT_OPTIONAL_CAPABILITY as _DOT11_CURRENT_OPTIONAL_CAPABILITY
@@ -539,7 +534,7 @@
 		uPowerSaveLevel as ULONG
 		usListenInterval as USHORT
 		usAID as USHORT
-		bReceiveDTIMs as BOOLEAN
+		bReceiveDTIMs as WINBOOLEAN
 	end type
 
 	type DOT11_POWER_MGMT_MODE as _DOT11_POWER_MGMT_MODE
@@ -672,7 +667,7 @@
 
 	type _DOT11_SUPPORTED_ANTENNA
 		uAntennaListIndex as ULONG
-		bSupportedAntenna as BOOLEAN
+		bSupportedAntenna as WINBOOLEAN
 	end type
 
 	type DOT11_SUPPORTED_ANTENNA as _DOT11_SUPPORTED_ANTENNA
@@ -689,7 +684,7 @@
 
 	type _DOT11_DIVERSITY_SELECTION_RX
 		uAntennaListIndex as ULONG
-		bDiversitySelectionRX as BOOLEAN
+		bDiversitySelectionRX as WINBOOLEAN
 	end type
 
 	type DOT11_DIVERSITY_SELECTION_RX as _DOT11_DIVERSITY_SELECTION_RX
@@ -1006,7 +1001,7 @@
 		dot11BSSType as DOT11_BSS_TYPE
 		lRSSI as LONG
 		uLinkQuality as ULONG
-		bInRegDomain as BOOLEAN
+		bInRegDomain as WINBOOLEAN
 		usBeaconPeriod as USHORT
 		ullTimestamp as ULONGLONG
 		ullHostTimestamp as ULONGLONG
@@ -1189,8 +1184,8 @@
 		uKeyIndex as ULONG
 		AlgorithmId as DOT11_CIPHER_ALGORITHM
 		MacAddr(0 to 5) as UCHAR
-		bDelete as BOOLEAN
-		bStatic as BOOLEAN
+		bDelete as WINBOOLEAN
+		bStatic as WINBOOLEAN
 		usKeyLength as USHORT
 		ucKey(0 to 0) as UCHAR
 	end type
@@ -1239,8 +1234,8 @@
 		PeerMacAddr(0 to 5) as UCHAR
 		AlgorithmId as DOT11_CIPHER_ALGORITHM
 		Direction as DOT11_DIRECTION
-		bDelete as BOOLEAN
-		bStatic as BOOLEAN
+		bDelete as WINBOOLEAN
+		bStatic as WINBOOLEAN
 		usKeyLength as USHORT
 		ucKey(0 to 0) as UCHAR
 	end type
@@ -1352,14 +1347,14 @@
 	type DOT11_PORT_STATE_NOTIFICATION
 		Header as NDIS_OBJECT_HEADER
 		PeerMac(0 to 5) as UCHAR
-		bOpen as BOOLEAN
+		bOpen as WINBOOLEAN
 	end type
 
 	type PDOT11_PORT_STATE_NOTIFICATION as DOT11_PORT_STATE_NOTIFICATION ptr
 
 	type DOT11_IBSS_PARAMS
 		Header as NDIS_OBJECT_HEADER
-		bJoinOnly as BOOLEAN
+		bJoinOnly as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -1436,9 +1431,9 @@
 	type PDOT11_PHY_ATTRIBUTES as DOT11_PHY_ATTRIBUTES ptr
 
 	type DOT11_HRDSSS_PHY_ATTRIBUTES
-		bShortPreambleOptionImplemented as BOOLEAN
-		bPBCCOptionImplemented as BOOLEAN
-		bChannelAgilityPresent as BOOLEAN
+		bShortPreambleOptionImplemented as WINBOOLEAN
+		bPBCCOptionImplemented as WINBOOLEAN
+		bChannelAgilityPresent as WINBOOLEAN
 		uHRCCAModeSupported as ULONG
 	end type
 
@@ -1453,16 +1448,16 @@
 	type DOT11_ERP_PHY_ATTRIBUTES
 		union
 			type
-				bShortPreambleOptionImplemented as BOOLEAN
-				bPBCCOptionImplemented as BOOLEAN
-				bChannelAgilityPresent as BOOLEAN
+				bShortPreambleOptionImplemented as WINBOOLEAN
+				bPBCCOptionImplemented as WINBOOLEAN
+				bChannelAgilityPresent as WINBOOLEAN
 				uHRCCAModeSupported as ULONG
 			end type
 		end union
 
-		bERPPBCCOptionImplemented as BOOLEAN
-		bDSSSOFDMOptionImplemented as BOOLEAN
-		bShortSlotTimeOptionImplemented as BOOLEAN
+		bERPPBCCOptionImplemented as WINBOOLEAN
+		bDSSSOFDMOptionImplemented as WINBOOLEAN
+		bShortSlotTimeOptionImplemented as WINBOOLEAN
 	end type
 
 	type PDOT11_ERP_PHY_ATTRIBUTES as DOT11_ERP_PHY_ATTRIBUTES ptr
@@ -1471,9 +1466,9 @@
 	type DOT11_PHY_ATTRIBUTES
 		Header as NDIS_OBJECT_HEADER
 		PhyType as DOT11_PHY_TYPE
-		bHardwarePhyState as BOOLEAN
-		bSoftwarePhyState as BOOLEAN
-		bCFPollable as BOOLEAN
+		bHardwarePhyState as WINBOOLEAN
+		bSoftwarePhyState as WINBOOLEAN
+		bCFPollable as WINBOOLEAN
 		uMPDUMaxLength as ULONG
 		TempType as DOT11_TEMP_TYPE
 		DiversitySupport as DOT11_DIVERSITY_SUPPORT
@@ -1511,9 +1506,9 @@
 		uWEPKeyValueMaxLength as ULONG
 		uPMKIDCacheSize as ULONG
 		uMaxNumPerSTADefaultKeyTables as ULONG
-		bStrictlyOrderedServiceClassImplemented as BOOLEAN
+		bStrictlyOrderedServiceClassImplemented as WINBOOLEAN
 		ucSupportedQoSProtocolFlags as UCHAR
-		bSafeModeImplemented as BOOLEAN
+		bSafeModeImplemented as WINBOOLEAN
 		uNumSupportedCountryOrRegionStrings as ULONG
 		pSupportedCountryOrRegionStrings as PDOT11_COUNTRY_OR_REGION_STRING
 		uInfraNumSupportedUcastAlgoPairs as ULONG
@@ -1524,9 +1519,9 @@
 		pAdhocSupportedUcastAlgoPairs as PDOT11_AUTH_CIPHER_PAIR
 		uAdhocNumSupportedMcastAlgoPairs as ULONG
 		pAdhocSupportedMcastAlgoPairs as PDOT11_AUTH_CIPHER_PAIR
-		bAutoPowerSaveMode as BOOLEAN
+		bAutoPowerSaveMode as WINBOOLEAN
 		uMaxNetworkOffloadListSize as ULONG
-		bMFPCapable as BOOLEAN
+		bMFPCapable as WINBOOLEAN
 		uInfraNumSupportedMcastMgmtAlgoPairs as ULONG
 		pInfraSupportedMcastMgmtAlgoPairs as PDOT11_AUTH_CIPHER_PAIR
 	end type
@@ -1673,13 +1668,13 @@
 	const DOT11_ASSOC_STATUS_ROAMING_ASSOCIATION_LOST = &h0000000cu
 	const DOT11_ASSOC_STATUS_ROAMING_ADHOC = &h0000000du
 	const DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED = &h00010000u
-	#define DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED_START DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED
+	const DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED_START = DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED
 	const DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED_END = &h0001ffffu
 	const DOT11_ASSOC_STATUS_PEER_DISASSOCIATED = &h00020000u
-	#define DOT11_ASSOC_STATUS_PEER_DISASSOCIATED_START DOT11_ASSOC_STATUS_PEER_DISASSOCIATED
+	const DOT11_ASSOC_STATUS_PEER_DISASSOCIATED_START = DOT11_ASSOC_STATUS_PEER_DISASSOCIATED
 	const DOT11_ASSOC_STATUS_PEER_DISASSOCIATED_END = &h0002ffffu
 	const DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE = &h00030000u
-	#define DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE_START DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE
+	const DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE_START = DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE
 	const DOT11_ASSOC_STATUS_ASSOCIATION_RESPONSE_END = &h0003ffffu
 	const DOT11_ASSOC_STATUS_REASON_CODE_MASK = &hffffu
 	const DOT11_ASSOC_STATUS_IHV_START = &h80000000u
@@ -1691,8 +1686,8 @@
 		Header as NDIS_OBJECT_HEADER
 		MacAddr(0 to 5) as UCHAR
 		uStatus as DOT11_ASSOC_STATUS
-		bReAssocReq as BOOLEAN
-		bReAssocResp as BOOLEAN
+		bReAssocReq as WINBOOLEAN
+		bReAssocResp as WINBOOLEAN
 		uAssocReqOffset as ULONG
 		uAssocReqSize as ULONG
 		uAssocRespOffset as ULONG
@@ -1706,8 +1701,8 @@
 		MulticastCipher as DOT11_CIPHER_ALGORITHM
 		uActivePhyListOffset as ULONG
 		uActivePhyListSize as ULONG
-		bFourAddressSupported as BOOLEAN
-		bPortAuthorized as BOOLEAN
+		bFourAddressSupported as WINBOOLEAN
+		bPortAuthorized as WINBOOLEAN
 		ucActiveQoSProtocol as UCHAR
 		DSInfo as DOT11_DS_INFO
 		uEncapTableOffset as ULONG
@@ -1717,26 +1712,26 @@
 	end type
 
 	type PDOT11_ASSOCIATION_COMPLETION_PARAMETERS as DOT11_ASSOCIATION_COMPLETION_PARAMETERS ptr
-	#define DOT11_CONNECTION_STATUS_SUCCESS DOT11_ASSOC_STATUS_SUCCESS
-	#define DOT11_CONNECTION_STATUS_FAILURE DOT11_ASSOC_STATUS_FAILURE
-	#define DOT11_CONNECTION_STATUS_CANDIDATE_LIST_EXHAUSTED DOT11_ASSOC_STATUS_CANDIDATE_LIST_EXHAUSTED
-	#define DOT11_CONNECTION_STATUS_PHY_POWER_DOWN DOT11_ASSOC_STATUS_RADIO_OFF
-	#define DOT11_CONNECTION_STATUS_CANCELLED DOT11_ASSOC_STATUS_CANCELLED
-	#define DOT11_CONNECTION_STATUS_IHV_START DOT11_ASSOC_STATUS_IHV_START
-	#define DOT11_CONNECTION_STATUS_IHV_END DOT11_ASSOC_STATUS_IHV_END
-	#define DOT11_ROAMING_REASON_BETTER_AP_FOUND DOT11_ASSOC_STATUS_ROAMING_BETTER_AP_FOUND
-	#define DOT11_ROAMING_REASON_ASSOCIATION_LOST DOT11_ASSOC_STATUS_ROAMING_ASSOCIATION_LOST
-	#define DOT11_ROAMING_REASON_ADHOC DOT11_ASSOC_STATUS_ROAMING_ADHOC
-	#define DOT11_ROAMING_REASON_IHV_START DOT11_ASSOC_STATUS_IHV_START
-	#define DOT11_ROAMING_REASON_IHV_END DOT11_ASSOC_STATUS_IHV_END
-	#define DOT11_DISASSOC_REASON_OS DOT11_ASSOC_STATUS_DISASSOCIATED_BY_OS
-	#define DOT11_DISASSOC_REASON_PEER_UNREACHABLE DOT11_ASSOC_STATUS_UNREACHABLE
-	#define DOT11_DISASSOC_REASON_PEER_DEAUTHENTICATED DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED
-	#define DOT11_DISASSOC_REASON_PEER_DISASSOCIATED DOT11_ASSOC_STATUS_PEER_DISASSOCIATED
-	#define DOT11_DISASSOC_REASON_RADIO_OFF DOT11_ASSOC_STATUS_RADIO_OFF
-	#define DOT11_DISASSOC_REASON_PHY_DISABLED DOT11_ASSOC_STATUS_PHY_DISABLED
-	#define DOT11_DISASSOC_REASON_IHV_START DOT11_ASSOC_STATUS_IHV_START
-	#define DOT11_DISASSOC_REASON_IHV_END DOT11_ASSOC_STATUS_IHV_END
+	const DOT11_CONNECTION_STATUS_SUCCESS = DOT11_ASSOC_STATUS_SUCCESS
+	const DOT11_CONNECTION_STATUS_FAILURE = DOT11_ASSOC_STATUS_FAILURE
+	const DOT11_CONNECTION_STATUS_CANDIDATE_LIST_EXHAUSTED = DOT11_ASSOC_STATUS_CANDIDATE_LIST_EXHAUSTED
+	const DOT11_CONNECTION_STATUS_PHY_POWER_DOWN = DOT11_ASSOC_STATUS_RADIO_OFF
+	const DOT11_CONNECTION_STATUS_CANCELLED = DOT11_ASSOC_STATUS_CANCELLED
+	const DOT11_CONNECTION_STATUS_IHV_START = DOT11_ASSOC_STATUS_IHV_START
+	const DOT11_CONNECTION_STATUS_IHV_END = DOT11_ASSOC_STATUS_IHV_END
+	const DOT11_ROAMING_REASON_BETTER_AP_FOUND = DOT11_ASSOC_STATUS_ROAMING_BETTER_AP_FOUND
+	const DOT11_ROAMING_REASON_ASSOCIATION_LOST = DOT11_ASSOC_STATUS_ROAMING_ASSOCIATION_LOST
+	const DOT11_ROAMING_REASON_ADHOC = DOT11_ASSOC_STATUS_ROAMING_ADHOC
+	const DOT11_ROAMING_REASON_IHV_START = DOT11_ASSOC_STATUS_IHV_START
+	const DOT11_ROAMING_REASON_IHV_END = DOT11_ASSOC_STATUS_IHV_END
+	const DOT11_DISASSOC_REASON_OS = DOT11_ASSOC_STATUS_DISASSOCIATED_BY_OS
+	const DOT11_DISASSOC_REASON_PEER_UNREACHABLE = DOT11_ASSOC_STATUS_UNREACHABLE
+	const DOT11_DISASSOC_REASON_PEER_DEAUTHENTICATED = DOT11_ASSOC_STATUS_PEER_DEAUTHENTICATED
+	const DOT11_DISASSOC_REASON_PEER_DISASSOCIATED = DOT11_ASSOC_STATUS_PEER_DISASSOCIATED
+	const DOT11_DISASSOC_REASON_RADIO_OFF = DOT11_ASSOC_STATUS_RADIO_OFF
+	const DOT11_DISASSOC_REASON_PHY_DISABLED = DOT11_ASSOC_STATUS_PHY_DISABLED
+	const DOT11_DISASSOC_REASON_IHV_START = DOT11_ASSOC_STATUS_IHV_START
+	const DOT11_DISASSOC_REASON_IHV_END = DOT11_ASSOC_STATUS_IHV_END
 	const DOT11_CONNECTION_START_PARAMETERS_REVISION_1 = 1
 	const DOT11_CONNECTION_COMPLETION_PARAMETERS_REVISION_1 = 1
 	const DOT11_ROAMING_START_PARAMETERS_REVISION_1 = 1
@@ -1793,7 +1788,7 @@
 
 	type DOT11_TKIPMIC_FAILURE_PARAMETERS
 		Header as NDIS_OBJECT_HEADER
-		bDefaultKeyFailure as BOOLEAN
+		bDefaultKeyFailure as WINBOOLEAN
 		uKeyIndex as ULONG
 		PeerMac(0 to 5) as UCHAR
 	end type
@@ -1818,8 +1813,8 @@
 	type DOT11_PHY_STATE_PARAMETERS
 		Header as NDIS_OBJECT_HEADER
 		uPhyId as ULONG
-		bHardwarePhyState as BOOLEAN
-		bSoftwarePhyState as BOOLEAN
+		bHardwarePhyState as WINBOOLEAN
+		bSoftwarePhyState as WINBOOLEAN
 	end type
 
 	type PDOT11_PHY_STATE_PARAMETERS as DOT11_PHY_STATE_PARAMETERS ptr
@@ -2078,7 +2073,7 @@
 		uAssociationTableSize as ULONG
 		uDefaultKeyTableSize as ULONG
 		uWEPKeyValueMaxLength as ULONG
-		bStrictlyOrderedServiceClassImplemented as BOOLEAN
+		bStrictlyOrderedServiceClassImplemented as WINBOOLEAN
 		uNumSupportedCountryOrRegionStrings as ULONG
 		pSupportedCountryOrRegionStrings as PDOT11_COUNTRY_OR_REGION_STRING
 		uInfraNumSupportedUcastAlgoPairs as ULONG
@@ -2101,7 +2096,7 @@
 	type _DOT11_INCOMING_ASSOC_REQUEST_RECEIVED_PARAMETERS
 		Header as NDIS_OBJECT_HEADER
 		PeerMacAddr(0 to 5) as UCHAR
-		bReAssocReq as BOOLEAN
+		bReAssocReq as WINBOOLEAN
 		uAssocReqOffset as ULONG
 		uAssocReqSize as ULONG
 	end type
@@ -2114,8 +2109,8 @@
 		PeerMacAddr(0 to 5) as UCHAR
 		uStatus as ULONG
 		ucErrorSource as UCHAR
-		bReAssocReq as BOOLEAN
-		bReAssocResp as BOOLEAN
+		bReAssocReq as WINBOOLEAN
+		bReAssocResp as WINBOOLEAN
 		uAssocReqOffset as ULONG
 		uAssocReqSize as ULONG
 		uAssocRespOffset as ULONG
@@ -2193,7 +2188,7 @@
 	type _DOT11_INCOMING_ASSOC_DECISION
 		Header as NDIS_OBJECT_HEADER
 		PeerMacAddr(0 to 5) as UCHAR
-		bAccept as BOOLEAN
+		bAccept as WINBOOLEAN
 		usReasonCode as USHORT
 		uAssocResponseIEsOffset as ULONG
 		uAssocResponseIEsLength as ULONG
@@ -2205,7 +2200,7 @@
 	type _DOT11_INCOMING_ASSOC_DECISION_V2
 		Header as NDIS_OBJECT_HEADER
 		PeerMacAddr(0 to 5) as UCHAR
-		bAccept as BOOLEAN
+		bAccept as WINBOOLEAN
 		usReasonCode as USHORT
 		uAssocResponseIEsOffset as ULONG
 		uAssocResponseIEsLength as ULONG
@@ -2248,7 +2243,7 @@
 		AuthAlgo as DOT11_AUTH_ALGORITHM
 		UnicastCipherAlgo as DOT11_CIPHER_ALGORITHM
 		MulticastCipherAlgo as DOT11_CIPHER_ALGORITHM
-		bWpsEnabled as BOOLEAN
+		bWpsEnabled as WINBOOLEAN
 		usListenInterval as USHORT
 		ucSupportedRates(0 to 254) as UCHAR
 		usAssociationID as USHORT
@@ -2349,9 +2344,9 @@
 		uNumConcurrentGORole as ULONG
 		uNumConcurrentClientRole as ULONG
 		WPSVersionsSupported as ULONG
-		bServiceDiscoverySupported as BOOLEAN
-		bClientDiscoverabilitySupported as BOOLEAN
-		bInfrastructureManagementSupported as BOOLEAN
+		bServiceDiscoverySupported as WINBOOLEAN
+		bClientDiscoverabilitySupported as WINBOOLEAN
+		bInfrastructureManagementSupported as WINBOOLEAN
 		uMaxSecondaryDeviceTypeListSize as ULONG
 		DeviceAddress(0 to 5) as UCHAR
 		uInterfaceAddressListCount as ULONG
@@ -2710,12 +2705,12 @@
 
 	type _DOT11_WFD_DEVICE_CAPABILITY_CONFIG
 		Header as NDIS_OBJECT_HEADER
-		bServiceDiscoveryEnabled as BOOLEAN
-		bClientDiscoverabilityEnabled as BOOLEAN
-		bConcurrentOperationSupported as BOOLEAN
-		bInfrastructureManagementEnabled as BOOLEAN
-		bDeviceLimitReached as BOOLEAN
-		bInvitationProcedureEnabled as BOOLEAN
+		bServiceDiscoveryEnabled as WINBOOLEAN
+		bClientDiscoverabilityEnabled as WINBOOLEAN
+		bConcurrentOperationSupported as WINBOOLEAN
+		bInfrastructureManagementEnabled as WINBOOLEAN
+		bDeviceLimitReached as WINBOOLEAN
+		bInvitationProcedureEnabled as WINBOOLEAN
 		WPSVersionsEnabled as ULONG
 	end type
 
@@ -2724,11 +2719,11 @@
 
 	type _DOT11_WFD_GROUP_OWNER_CAPABILITY_CONFIG
 		Header as NDIS_OBJECT_HEADER
-		bPersistentGroupEnabled as BOOLEAN
-		bIntraBSSDistributionSupported as BOOLEAN
-		bCrossConnectionSupported as BOOLEAN
-		bPersistentReconnectSupported as BOOLEAN
-		bGroupFormationEnabled as BOOLEAN
+		bPersistentGroupEnabled as WINBOOLEAN
+		bIntraBSSDistributionSupported as WINBOOLEAN
+		bCrossConnectionSupported as WINBOOLEAN
+		bPersistentReconnectSupported as WINBOOLEAN
+		bGroupFormationEnabled as WINBOOLEAN
 		uMaximumGroupLimit as ULONG
 	end type
 
@@ -2782,7 +2777,7 @@
 	const DISCOVERY_FILTER_BITMASK_ANY = &hf
 
 	type _DOT11_WFD_DISCOVER_DEVICE_FILTER
-		DeviceID(0 to 5) as UCHAR
+		DeviceID as zstring * 6
 		ucBitmask as UCHAR
 		GroupSSID as DOT11_SSID
 	end type
@@ -2799,7 +2794,7 @@
 		uNumDeviceFilters as ULONG
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
-		bForceScanLegacyNetworks as BOOLEAN
+		bForceScanLegacyNetworks as WINBOOLEAN
 	end type
 
 	type DOT11_WFD_DISCOVER_REQUEST as _DOT11_WFD_DISCOVER_REQUEST
@@ -2847,19 +2842,19 @@
 	#define DOT11_WFD_ADDITIONAL_IE_GET_HEADER_SIZE(ADDIE) sizeof(DOT11_WFD_ADDITIONAL_IE)
 	#define DOT11_WFD_ADDITIONAL_IE_GET_HEADER_END(ADDIE) (cast(PCHAR, (ADDIE)) + sizeof(DOT11_WFD_ADDITIONAL_IE))
 	#define DOT11_WFD_ADDITIONAL_IE_GET_BEACON_IE(ADDIE) (cast(PCHAR, (ADDIE)) + (ADDIE)->uBeaconIEsOffset)
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_BEACON_IE(ADDIE, B) (ADDIE)->uBeaconIEsOffset = (DWORD) (((SIZE_T) (B))- ((SIZE_T) (ADDIE)))
+	#define DOT11_WFD_ADDITIONAL_IE_SET_BEACON_IE(ADDIE, B) scope : (ADDIE)->uBeaconIEsOffset = cast(DWORD, cast(SIZE_T_, (B)) - cast(SIZE_T_, (ADDIE))) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_BEACON_IE_SIZE(ADDIE) (ADDIE)->uBeaconIEsLength
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_BEACON_IE_SIZE(ADDIE, SZ) (ADDIE)->uBeaconIEsLength = (DWORD) (SZ)
+	#define DOT11_WFD_ADDITIONAL_IE_SET_BEACON_IE_SIZE(ADDIE, SZ) scope : (ADDIE)->uBeaconIEsLength = cast(DWORD, (SZ)) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_BEACON_IE_END(ADDIE) ((cast(PCHAR, (ADDIE)) + (ADDIE)->uBeaconIEsOffset) + DOT11_WFD_ADDITIONAL_IE_GET_BEACON_IE_SIZE(ADDIE))
 	#define DOT11_WFD_ADDITIONAL_IE_GET_PROBE_RESPONSE_IE(ADDIE) (cast(PCHAR, (ADDIE)) + (ADDIE)->uProbeResponseIEsOffset)
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_RESPONSE_IE(ADDIE, _response_) (ADDIE)->uProbeResponseIEsOffset = (DWORD) (((SIZE_T) (_response_))- ((SIZE_T) (ADDIE)))
+	#define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_RESPONSE_IE(ADDIE, _response_) scope : (ADDIE)->uProbeResponseIEsOffset = cast(DWORD, cast(SIZE_T_, (_response_)) - cast(SIZE_T_, (ADDIE))) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_PROBE_RESPONSE_IE_SIZE(ADDIE) (ADDIE)->uProbeResponseIEsLength
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_RESPONSE_IE_SIZE(ADDIE, SZ) (ADDIE)->uProbeResponseIEsLength = (DWORD) (SZ)
+	#define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_RESPONSE_IE_SIZE(ADDIE, SZ) scope : (ADDIE)->uProbeResponseIEsLength = cast(DWORD, (SZ)) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_PROBE_RESPONSE_IE_END(ADDIE) ((cast(PCHAR, (ADDIE)) + (ADDIE)->uProbeResponseIEsOffset) + DOT11_WFD_ADDITIONAL_IE_GET_PROBE_RESPONSE_IE_SIZE(ADDIE))
 	#define DOT11_WFD_ADDITIONAL_IE_GET_PROBE_REQUEST_IE(ADDIE) (cast(PCHAR, (ADDIE)) + (ADDIE)->uDefaultRequestIEsOffset)
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_REQUEST_IE(ADDIE, REQ) (ADDIE)->uDefaultRequestIEsOffset = (DWORD) (((SIZE_T) (REQ))- ((SIZE_T) (ADDIE)))
+	#define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_REQUEST_IE(ADDIE, REQ) scope : (ADDIE)->uDefaultRequestIEsOffset = cast(DWORD, cast(SIZE_T_, (REQ)) - cast(SIZE_T_, (ADDIE))) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_PROBE_REQUEST_IE_SIZE(ADDIE) (ADDIE)->uDefaultRequestIEsLength
-	'' TODO: #define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_REQUEST_IE_SIZE(ADDIE, SZ) (ADDIE)->uDefaultRequestIEsLength = (DWORD) (SZ)
+	#define DOT11_WFD_ADDITIONAL_IE_SET_PROBE_REQUEST_IE_SIZE(ADDIE, SZ) scope : (ADDIE)->uDefaultRequestIEsLength = cast(DWORD, (SZ)) : end scope
 	#define DOT11_WFD_ADDITIONAL_IE_GET_ALL_IE_SIZE(ADDIE) (((ADDIE)->uBeaconIEsLength + (ADDIE)->uProbeResponseIEsLength) + (ADDIE)->uDefaultRequestIEsLength)
 	#define DOT11_WFD_ADDITIONAL_IE_GET_TOTAL_SIZE(ADDIE) (DOT11_WFD_ADDITIONAL_IE_GET_HEADER_SIZE(ADDIE) + DOT11_WFD_ADDITIONAL_IE_GET_ALL_IE_SIZE(ADDIE))
 	#define OID_DOT11_WFD_FLUSH_DEVICE_LIST NWF_DEFINE_OID(&h09, NWF_WFD_DEVICE_OID, NWF_MANDATORY_OID)
@@ -2897,7 +2892,7 @@
 		IntendedInterfaceAddress(0 to 5) as UCHAR
 		GroupCapability as DOT11_WFD_GROUP_CAPABILITY
 		GroupID as DOT11_WFD_GROUP_ID
-		bUseGroupID as BOOLEAN
+		bUseGroupID as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -2917,7 +2912,7 @@
 		Status as DOT11_WFD_STATUS_CODE
 		GroupCapability as DOT11_WFD_GROUP_CAPABILITY
 		GroupID as DOT11_WFD_GROUP_ID
-		bUseGroupID as BOOLEAN
+		bUseGroupID as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -2943,11 +2938,11 @@
 		MinimumConfigTimeout as DOT11_WFD_CONFIGURATION_TIMEOUT
 		InvitationFlags as DOT11_WFD_INVITATION_FLAGS
 		GroupBSSID(0 to 5) as UCHAR
-		bUseGroupBSSID as BOOLEAN
+		bUseGroupBSSID as WINBOOLEAN
 		OperatingChannel as DOT11_WFD_CHANNEL
-		bUseSpecifiedOperatingChannel as BOOLEAN
+		bUseSpecifiedOperatingChannel as WINBOOLEAN
 		GroupID as DOT11_WFD_GROUP_ID
-		bLocalGO as BOOLEAN
+		bLocalGO as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -2964,9 +2959,9 @@
 		Status as DOT11_WFD_STATUS_CODE
 		MinimumConfigTimeout as DOT11_WFD_CONFIGURATION_TIMEOUT
 		GroupBSSID(0 to 5) as UCHAR
-		bUseGroupBSSID as BOOLEAN
+		bUseGroupBSSID as WINBOOLEAN
 		OperatingChannel as DOT11_WFD_CHANNEL
-		bUseSpecifiedOperatingChannel as BOOLEAN
+		bUseSpecifiedOperatingChannel as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -2988,7 +2983,7 @@
 		uSendTimeout as ULONG
 		GroupCapability as DOT11_WFD_GROUP_CAPABILITY
 		GroupID as DOT11_WFD_GROUP_ID
-		bUseGroupID as BOOLEAN
+		bUseGroupID as WINBOOLEAN
 		uIEsOffset as ULONG
 		uIEsLength as ULONG
 	end type
@@ -3029,8 +3024,8 @@
 		Header as NDIS_OBJECT_HEADER
 		GOOperatingChannel as DOT11_WFD_CHANNEL
 		GOConfigTime as ULONG
-		bInGroupFormation as BOOLEAN
-		bWaitForWPSReady as BOOLEAN
+		bInGroupFormation as WINBOOLEAN
+		bWaitForWPSReady as WINBOOLEAN
 	end type
 
 	type DOT11_WFD_GROUP_JOIN_PARAMETERS as _DOT11_WFD_GROUP_JOIN_PARAMETERS
@@ -3073,7 +3068,7 @@
 
 	type _DOT11_POWER_MGMT_AUTO_MODE_ENABLED_INFO
 		Header as NDIS_OBJECT_HEADER
-		bEnabled as BOOLEAN
+		bEnabled as WINBOOLEAN
 	end type
 
 	type DOT11_POWER_MGMT_AUTO_MODE_ENABLED_INFO as _DOT11_POWER_MGMT_AUTO_MODE_ENABLED_INFO
@@ -3196,7 +3191,7 @@
 	type _DOT11_MANUFACTURING_SELF_TEST_QUERY_RESULTS
 		SelfTestType as DOT11_MANUFACTURING_SELF_TEST_TYPE
 		uTestID as ULONG
-		bResult as BOOLEAN
+		bResult as WINBOOLEAN
 		uPinFailedBitMask as ULONG
 		pvContext as PVOID
 		uBytesWrittenOut as ULONG
@@ -3216,7 +3211,7 @@
 	type PDOT11_BAND as DOT11_BAND ptr
 
 	type _DOT11_MANUFACTURING_FUNCTIONAL_TEST_RX
-		bEnabled as BOOLEAN
+		bEnabled as WINBOOLEAN
 		Dot11Band as DOT11_BAND
 		uChannel as ULONG
 		PowerLevel as LONG
@@ -3226,8 +3221,8 @@
 	type PDOT11_MANUFACTURING_FUNCTIONAL_TEST_RX as _DOT11_MANUFACTURING_FUNCTIONAL_TEST_RX ptr
 
 	type _DOT11_MANUFACTURING_FUNCTIONAL_TEST_TX
-		bEnable as BOOLEAN
-		bOpenLoop as BOOLEAN
+		bEnable as WINBOOLEAN
+		bOpenLoop as WINBOOLEAN
 		Dot11Band as DOT11_BAND
 		uChannel as ULONG
 		uSetPowerLevel as ULONG

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -449,8 +449,8 @@ const LMEM_VALID_FLAGS = &hf72
 const LMEM_INVALID_HANDLE = &h8000
 #define LHND (LMEM_MOVEABLE or LMEM_ZEROINIT)
 #define LPTR (LMEM_FIXED or LMEM_ZEROINIT)
-#define NONZEROLHND LMEM_MOVEABLE
-#define NONZEROLPTR LMEM_FIXED
+const NONZEROLHND = LMEM_MOVEABLE
+const NONZEROLPTR = LMEM_FIXED
 #define LocalDiscard(h) LocalReAlloc((h), 0, LMEM_MOVEABLE)
 const LMEM_DISCARDED = &h4000
 const LMEM_LOCKCOUNT = &hff
@@ -471,9 +471,9 @@ declare sub OutputDebugStringA(byval lpOutputString as LPCSTR)
 declare sub OutputDebugStringW(byval lpOutputString as LPCWSTR)
 
 #ifdef UNICODE
-	#define OutputDebugString OutputDebugStringW
+	declare sub OutputDebugString alias "OutputDebugStringW"(byval lpOutputString as LPCWSTR)
 #else
-	#define OutputDebugString OutputDebugStringA
+	declare sub OutputDebugString alias "OutputDebugStringA"(byval lpOutputString as LPCSTR)
 #endif
 
 declare sub DebugBreak()
@@ -590,50 +590,50 @@ declare function GetVolumeNameForVolumeMountPointW(byval lpszVolumeMountPoint as
 declare function GetVolumePathNamesForVolumeNameW(byval lpszVolumeName as LPCWSTR, byval lpszVolumePathNames as LPWCH, byval cchBufferLength as DWORD, byval lpcchReturnLength as PDWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateFile CreateFileW
-	#define DefineDosDevice DefineDosDeviceW
-	#define DeleteVolumeMountPoint DeleteVolumeMountPointW
-	#define FindFirstVolume FindFirstVolumeW
-	#define FindNextVolume FindNextVolumeW
-	#define GetLogicalDriveStrings GetLogicalDriveStringsW
-	#define GetShortPathName GetShortPathNameW
-	#define GetTempFileName GetTempFileNameW
-	#define GetVolumeInformation GetVolumeInformationW
-	#define GetVolumePathName GetVolumePathNameW
-	#define QueryDosDevice QueryDosDeviceW
-	#define GetTempPath GetTempPathW
-	#define GetVolumeNameForVolumeMountPoint GetVolumeNameForVolumeMountPointW
-	#define GetVolumePathNamesForVolumeName GetVolumePathNamesForVolumeNameW
-	#define FindFirstChangeNotification FindFirstChangeNotificationW
-	#define FindFirstFile FindFirstFileW
-	#define GetDiskFreeSpace GetDiskFreeSpaceW
-	#define GetDriveType GetDriveTypeW
-	#define GetFileAttributes GetFileAttributesW
-	#define GetFullPathName GetFullPathNameW
-	#define GetLongPathName GetLongPathNameW
+	declare function CreateFile alias "CreateFileW"(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwCreationDisposition as DWORD, byval dwFlagsAndAttributes as DWORD, byval hTemplateFile as HANDLE) as HANDLE
+	declare function DefineDosDevice alias "DefineDosDeviceW"(byval dwFlags as DWORD, byval lpDeviceName as LPCWSTR, byval lpTargetPath as LPCWSTR) as WINBOOL
+	declare function DeleteVolumeMountPoint alias "DeleteVolumeMountPointW"(byval lpszVolumeMountPoint as LPCWSTR) as WINBOOL
+	declare function FindFirstVolume alias "FindFirstVolumeW"(byval lpszVolumeName as LPWSTR, byval cchBufferLength as DWORD) as HANDLE
+	declare function FindNextVolume alias "FindNextVolumeW"(byval hFindVolume as HANDLE, byval lpszVolumeName as LPWSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function GetLogicalDriveStrings alias "GetLogicalDriveStringsW"(byval nBufferLength as DWORD, byval lpBuffer as LPWSTR) as DWORD
+	declare function GetShortPathName alias "GetShortPathNameW"(byval lpszLongPath as LPCWSTR, byval lpszShortPath as LPWSTR, byval cchBuffer as DWORD) as DWORD
+	declare function GetTempFileName alias "GetTempFileNameW"(byval lpPathName as LPCWSTR, byval lpPrefixString as LPCWSTR, byval uUnique as UINT, byval lpTempFileName as LPWSTR) as UINT
+	declare function GetVolumeInformation alias "GetVolumeInformationW"(byval lpRootPathName as LPCWSTR, byval lpVolumeNameBuffer as LPWSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPWSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
+	declare function GetVolumePathName alias "GetVolumePathNameW"(byval lpszFileName as LPCWSTR, byval lpszVolumePathName as LPWSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function QueryDosDevice alias "QueryDosDeviceW"(byval lpDeviceName as LPCWSTR, byval lpTargetPath as LPWSTR, byval ucchMax as DWORD) as DWORD
+	declare function GetTempPath alias "GetTempPathW"(byval nBufferLength as DWORD, byval lpBuffer as LPWSTR) as DWORD
+	declare function GetVolumeNameForVolumeMountPoint alias "GetVolumeNameForVolumeMountPointW"(byval lpszVolumeMountPoint as LPCWSTR, byval lpszVolumeName as LPWSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function GetVolumePathNamesForVolumeName alias "GetVolumePathNamesForVolumeNameW"(byval lpszVolumeName as LPCWSTR, byval lpszVolumePathNames as LPWCH, byval cchBufferLength as DWORD, byval lpcchReturnLength as PDWORD) as WINBOOL
+	declare function FindFirstChangeNotification alias "FindFirstChangeNotificationW"(byval lpPathName as LPCWSTR, byval bWatchSubtree as WINBOOL, byval dwNotifyFilter as DWORD) as HANDLE
+	declare function FindFirstFile alias "FindFirstFileW"(byval lpFileName as LPCWSTR, byval lpFindFileData as LPWIN32_FIND_DATAW) as HANDLE
+	declare function GetDiskFreeSpace alias "GetDiskFreeSpaceW"(byval lpRootPathName as LPCWSTR, byval lpSectorsPerCluster as LPDWORD, byval lpBytesPerSector as LPDWORD, byval lpNumberOfFreeClusters as LPDWORD, byval lpTotalNumberOfClusters as LPDWORD) as WINBOOL
+	declare function GetDriveType alias "GetDriveTypeW"(byval lpRootPathName as LPCWSTR) as UINT
+	declare function GetFileAttributes alias "GetFileAttributesW"(byval lpFileName as LPCWSTR) as DWORD
+	declare function GetFullPathName alias "GetFullPathNameW"(byval lpFileName as LPCWSTR, byval nBufferLength as DWORD, byval lpBuffer as LPWSTR, byval lpFilePart as LPWSTR ptr) as DWORD
+	declare function GetLongPathName alias "GetLongPathNameW"(byval lpszShortPath as LPCWSTR, byval lpszLongPath as LPWSTR, byval cchBuffer as DWORD) as DWORD
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	declare function GetFinalPathNameByHandleA(byval hFile as HANDLE, byval lpszFilePath as LPSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetFinalPathNameByHandleW(byval hFile as HANDLE, byval lpszFilePath as LPWSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetVolumeInformationByHandleW(byval hFile as HANDLE, byval lpVolumeNameBuffer as LPWSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPWSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
-	#define GetFinalPathNameByHandle GetFinalPathNameByHandleW
+	declare function GetFinalPathNameByHandle alias "GetFinalPathNameByHandleW"(byval hFile as HANDLE, byval lpszFilePath as LPWSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 #elseif not defined(UNICODE)
-	#define CreateFile CreateFileA
-	#define FindFirstChangeNotification FindFirstChangeNotificationA
-	#define FindFirstFile FindFirstFileA
-	#define GetDiskFreeSpace GetDiskFreeSpaceA
-	#define GetDriveType GetDriveTypeA
-	#define GetFileAttributes GetFileAttributesA
-	#define GetFullPathName GetFullPathNameA
-	#define GetLongPathName GetLongPathNameA
+	declare function CreateFile alias "CreateFileA"(byval lpFileName as LPCSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwCreationDisposition as DWORD, byval dwFlagsAndAttributes as DWORD, byval hTemplateFile as HANDLE) as HANDLE
+	declare function FindFirstChangeNotification alias "FindFirstChangeNotificationA"(byval lpPathName as LPCSTR, byval bWatchSubtree as WINBOOL, byval dwNotifyFilter as DWORD) as HANDLE
+	declare function FindFirstFile alias "FindFirstFileA"(byval lpFileName as LPCSTR, byval lpFindFileData as LPWIN32_FIND_DATAA) as HANDLE
+	declare function GetDiskFreeSpace alias "GetDiskFreeSpaceA"(byval lpRootPathName as LPCSTR, byval lpSectorsPerCluster as LPDWORD, byval lpBytesPerSector as LPDWORD, byval lpNumberOfFreeClusters as LPDWORD, byval lpTotalNumberOfClusters as LPDWORD) as WINBOOL
+	declare function GetDriveType alias "GetDriveTypeA"(byval lpRootPathName as LPCSTR) as UINT
+	declare function GetFileAttributes alias "GetFileAttributesA"(byval lpFileName as LPCSTR) as DWORD
+	declare function GetFullPathName alias "GetFullPathNameA"(byval lpFileName as LPCSTR, byval nBufferLength as DWORD, byval lpBuffer as LPSTR, byval lpFilePart as LPSTR ptr) as DWORD
+	declare function GetLongPathName alias "GetLongPathNameA"(byval lpszShortPath as LPCSTR, byval lpszLongPath as LPSTR, byval cchBuffer as DWORD) as DWORD
 #endif
 
 #if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	declare function GetFinalPathNameByHandleA(byval hFile as HANDLE, byval lpszFilePath as LPSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetFinalPathNameByHandleW(byval hFile as HANDLE, byval lpszFilePath as LPWSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 	declare function GetVolumeInformationByHandleW(byval hFile as HANDLE, byval lpVolumeNameBuffer as LPWSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPWSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
-	#define GetFinalPathNameByHandle GetFinalPathNameByHandleA
+	declare function GetFinalPathNameByHandle alias "GetFinalPathNameByHandleA"(byval hFile as HANDLE, byval lpszFilePath as LPSTR, byval cchFilePath as DWORD, byval dwFlags as DWORD) as DWORD
 #endif
 
 type _WIN32_FILE_ATTRIBUTE_DATA
@@ -689,31 +689,31 @@ declare function UnlockFileEx(byval hFile as HANDLE, byval dwReserved as DWORD, 
 declare function WriteFile(byval hFile as HANDLE, byval lpBuffer as LPCVOID, byval nNumberOfBytesToWrite as DWORD, byval lpNumberOfBytesWritten as LPDWORD, byval lpOverlapped as LPOVERLAPPED) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateDirectory CreateDirectoryW
-	#define DeleteFile DeleteFileW
-	#define FindFirstFileEx FindFirstFileExW
-	#define FindNextFile FindNextFileW
-	#define GetDiskFreeSpaceEx GetDiskFreeSpaceExW
-	#define GetFileAttributesEx GetFileAttributesExW
-	#define RemoveDirectory RemoveDirectoryW
-	#define SetFileAttributes SetFileAttributesW
+	declare function CreateDirectory alias "CreateDirectoryW"(byval lpPathName as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
+	declare function DeleteFile alias "DeleteFileW"(byval lpFileName as LPCWSTR) as WINBOOL
+	declare function FindFirstFileEx alias "FindFirstFileExW"(byval lpFileName as LPCWSTR, byval fInfoLevelId as FINDEX_INFO_LEVELS, byval lpFindFileData as LPVOID, byval fSearchOp as FINDEX_SEARCH_OPS, byval lpSearchFilter as LPVOID, byval dwAdditionalFlags as DWORD) as HANDLE
+	declare function FindNextFile alias "FindNextFileW"(byval hFindFile as HANDLE, byval lpFindFileData as LPWIN32_FIND_DATAW) as WINBOOL
+	declare function GetDiskFreeSpaceEx alias "GetDiskFreeSpaceExW"(byval lpDirectoryName as LPCWSTR, byval lpFreeBytesAvailableToCaller as PULARGE_INTEGER, byval lpTotalNumberOfBytes as PULARGE_INTEGER, byval lpTotalNumberOfFreeBytes as PULARGE_INTEGER) as WINBOOL
+	declare function GetFileAttributesEx alias "GetFileAttributesExW"(byval lpFileName as LPCWSTR, byval fInfoLevelId as GET_FILEEX_INFO_LEVELS, byval lpFileInformation as LPVOID) as WINBOOL
+	declare function RemoveDirectory alias "RemoveDirectoryW"(byval lpPathName as LPCWSTR) as WINBOOL
+	declare function SetFileAttributes alias "SetFileAttributesW"(byval lpFileName as LPCWSTR, byval dwFileAttributes as DWORD) as WINBOOL
 #endif
 
-#if defined(__FB_64BIT__) and defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	declare function SetFileInformationByHandle(byval hFile as HANDLE, byval FileInformationClass as FILE_INFO_BY_HANDLE_CLASS, byval lpFileInformation as LPVOID, byval dwBufferSize as DWORD) as WINBOOL
 	declare function CreateFile2(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval dwCreationDisposition as DWORD, byval pCreateExParams as LPCREATEFILE2_EXTENDED_PARAMETERS) as HANDLE
 #elseif not defined(UNICODE)
-	#define CreateDirectory CreateDirectoryA
-	#define DeleteFile DeleteFileA
-	#define FindFirstFileEx FindFirstFileExA
-	#define FindNextFile FindNextFileA
-	#define GetDiskFreeSpaceEx GetDiskFreeSpaceExA
-	#define GetFileAttributesEx GetFileAttributesExA
-	#define RemoveDirectory RemoveDirectoryA
-	#define SetFileAttributes SetFileAttributesA
+	declare function CreateDirectory alias "CreateDirectoryA"(byval lpPathName as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
+	declare function DeleteFile alias "DeleteFileA"(byval lpFileName as LPCSTR) as WINBOOL
+	declare function FindFirstFileEx alias "FindFirstFileExA"(byval lpFileName as LPCSTR, byval fInfoLevelId as FINDEX_INFO_LEVELS, byval lpFindFileData as LPVOID, byval fSearchOp as FINDEX_SEARCH_OPS, byval lpSearchFilter as LPVOID, byval dwAdditionalFlags as DWORD) as HANDLE
+	declare function FindNextFile alias "FindNextFileA"(byval hFindFile as HANDLE, byval lpFindFileData as LPWIN32_FIND_DATAA) as WINBOOL
+	declare function GetDiskFreeSpaceEx alias "GetDiskFreeSpaceExA"(byval lpDirectoryName as LPCSTR, byval lpFreeBytesAvailableToCaller as PULARGE_INTEGER, byval lpTotalNumberOfBytes as PULARGE_INTEGER, byval lpTotalNumberOfFreeBytes as PULARGE_INTEGER) as WINBOOL
+	declare function GetFileAttributesEx alias "GetFileAttributesExA"(byval lpFileName as LPCSTR, byval fInfoLevelId as GET_FILEEX_INFO_LEVELS, byval lpFileInformation as LPVOID) as WINBOOL
+	declare function RemoveDirectory alias "RemoveDirectoryA"(byval lpPathName as LPCSTR) as WINBOOL
+	declare function SetFileAttributes alias "SetFileAttributesA"(byval lpFileName as LPCSTR, byval dwFileAttributes as DWORD) as WINBOOL
 #endif
 
-#if (_WIN32_WINNT = &h0602) and (((not defined(__FB_64BIT__)) and defined(UNICODE)) or (not defined(UNICODE)))
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	declare function SetFileInformationByHandle(byval hFile as HANDLE, byval FileInformationClass as FILE_INFO_BY_HANDLE_CLASS, byval lpFileInformation as LPVOID, byval dwBufferSize as DWORD) as WINBOOL
 	declare function CreateFile2(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval dwCreationDisposition as DWORD, byval pCreateExParams as LPCREATEFILE2_EXTENDED_PARAMETERS) as HANDLE
 #endif
@@ -772,38 +772,14 @@ declare function GetOverlappedResultEx(byval hFile as HANDLE, byval lpOverlapped
 #define _INTERLOCKAPI_H_
 
 #ifndef __FB_64BIT__
-	declare function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
-	declare function InterlockedDecrement(byval lpAddend as LONG ptr) as LONG
-	declare function InterlockedExchange(byval Target as LONG ptr, byval Value as LONG) as LONG
-	declare function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
-	declare function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
-	declare function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
 	#define InterlockedExchangePointer(Target, Value) cast(PVOID, InterlockedExchange(cast(PLONG, (Target)), cast(LONG, cast(LONG_PTR, (Value)))))
 	#define InterlockedExchangePointerNoFence InterlockedExchangePointer
-
-	private function InterlockedIncrement(byval lpAddend as LONG ptr) as LONG
-		return _InterlockedIncrement(lpAddend)
-	end function
-
-	private function InterlockedDecrement(byval lpAddend as LONG ptr) as LONG
-		return _InterlockedDecrement(lpAddend)
-	end function
-
-	private function InterlockedExchange(byval Target as LONG ptr, byval Value as LONG) as LONG
-		return _InterlockedExchange(Target, Value)
-	end function
-
-	private function InterlockedExchangeAdd(byval Addend as LONG ptr, byval Value as LONG) as LONG
-		return _InterlockedExchangeAdd(Addend, Value)
-	end function
-
-	private function InterlockedCompareExchange(byval Destination as LONG ptr, byval Exchange as LONG, byval Comperand as LONG) as LONG
-		return _InterlockedCompareExchange(Destination, Exchange, Comperand)
-	end function
-
-	private function InterlockedCompareExchange64(byval Destination as LONGLONG ptr, byval Exchange as LONGLONG, byval Comperand as LONGLONG) as LONGLONG
-		return _InterlockedCompareExchange64(Destination, Exchange, Comperand)
-	end function
+	#define InterlockedIncrement(lpAddend) cast(LONG, _InterlockedIncrement((lpAddend)))
+	#define InterlockedDecrement(lpAddend) cast(LONG, _InterlockedDecrement((lpAddend)))
+	#define InterlockedExchange(Target, Value) cast(LONG, _InterlockedExchange((Target), (Value)))
+	#define InterlockedExchangeAdd(Addend, Value) cast(LONG, _InterlockedExchangeAdd((Addend), (Value)))
+	#define InterlockedCompareExchange(Destination, Exchange, Comperand) cast(LONG, _InterlockedCompareExchange((Destination), (Exchange), (Comperand)))
+	#define InterlockedCompareExchange64(Destination, Exchange, Comperand) cast(LONGLONG, _InterlockedCompareExchange64((Destination), (Exchange), (Comperand)))
 #endif
 
 declare sub InitializeSListHead(byval ListHead as PSLIST_HEADER)
@@ -813,8 +789,8 @@ declare function InterlockedFlushSList(byval ListHead as PSLIST_HEADER) as PSLIS
 declare function QueryDepthSList(byval ListHead as PSLIST_HEADER) as USHORT
 
 #if _WIN32_WINNT = &h0602
-	#define InterlockedPushListSList InterlockedPushListSListEx
 	declare function InterlockedPushListSListEx(byval ListHead as PSLIST_HEADER, byval List as PSLIST_ENTRY, byval ListEnd as PSLIST_ENTRY, byval Count as ULONG) as PSLIST_ENTRY
+	declare function InterlockedPushListSList alias "InterlockedPushListSListEx"(byval ListHead as PSLIST_HEADER, byval List as PSLIST_ENTRY, byval ListEnd as PSLIST_ENTRY, byval Count as ULONG) as PSLIST_ENTRY
 #endif
 
 #define _JOBAPISET_H_
@@ -866,13 +842,13 @@ const GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT = &h2
 const GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS = &h4
 
 #ifdef UNICODE
-	#define ENUMRESLANGPROC ENUMRESLANGPROCW
-	#define ENUMRESNAMEPROC ENUMRESNAMEPROCW
-	#define ENUMRESTYPEPROC ENUMRESTYPEPROCW
+	type ENUMRESLANGPROC as ENUMRESLANGPROCW
+	type ENUMRESNAMEPROC as ENUMRESNAMEPROCW
+	type ENUMRESTYPEPROC as ENUMRESTYPEPROCW
 #else
-	#define ENUMRESLANGPROC ENUMRESLANGPROCA
-	#define ENUMRESNAMEPROC ENUMRESNAMEPROCA
-	#define ENUMRESTYPEPROC ENUMRESTYPEPROCA
+	type ENUMRESLANGPROC as ENUMRESLANGPROCA
+	type ENUMRESNAMEPROC as ENUMRESNAMEPROCA
+	type ENUMRESTYPEPROC as ENUMRESTYPEPROCA
 #endif
 
 declare function FindResourceExW(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval wLanguage as WORD) as HRSRC
@@ -896,21 +872,21 @@ declare function GetModuleHandleExA(byval dwFlags as DWORD, byval lpModuleName a
 declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName as LPCWSTR, byval phModule as HMODULE ptr) as WINBOOL
 
 #ifdef UNICODE
-	#define PGET_MODULE_HANDLE_EX PGET_MODULE_HANDLE_EXW
-	#define GetModuleHandleEx GetModuleHandleExW
-	#define FindResourceEx FindResourceExW
-	#define LoadString LoadStringW
-	#define GetModuleFileName GetModuleFileNameW
-	#define GetModuleHandle GetModuleHandleW
-	#define LoadLibraryEx LoadLibraryExW
+	type PGET_MODULE_HANDLE_EX as PGET_MODULE_HANDLE_EXW
+	declare function GetModuleHandleEx alias "GetModuleHandleExW"(byval dwFlags as DWORD, byval lpModuleName as LPCWSTR, byval phModule as HMODULE ptr) as WINBOOL
+	declare function FindResourceEx alias "FindResourceExW"(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval wLanguage as WORD) as HRSRC
+	declare function LoadString alias "LoadStringW"(byval hInstance as HINSTANCE, byval uID as UINT, byval lpBuffer as LPWSTR, byval cchBufferMax as long) as long
+	declare function GetModuleFileName alias "GetModuleFileNameW"(byval hModule as HMODULE, byval lpFilename as LPWSTR, byval nSize as DWORD) as DWORD
+	declare function GetModuleHandle alias "GetModuleHandleW"(byval lpModuleName as LPCWSTR) as HMODULE
+	declare function LoadLibraryEx alias "LoadLibraryExW"(byval lpLibFileName as LPCWSTR, byval hFile as HANDLE, byval dwFlags as DWORD) as HMODULE
 	#define EnumResourceLanguages EnumResourceLanguagesW
 #else
-	#define PGET_MODULE_HANDLE_EX PGET_MODULE_HANDLE_EXA
-	#define GetModuleHandleEx GetModuleHandleExA
-	#define LoadString LoadStringA
-	#define GetModuleFileName GetModuleFileNameA
-	#define GetModuleHandle GetModuleHandleA
-	#define LoadLibraryEx LoadLibraryExA
+	type PGET_MODULE_HANDLE_EX as PGET_MODULE_HANDLE_EXA
+	declare function GetModuleHandleEx alias "GetModuleHandleExA"(byval dwFlags as DWORD, byval lpModuleName as LPCSTR, byval phModule as HMODULE ptr) as WINBOOL
+	declare function LoadString alias "LoadStringA"(byval hInstance as HINSTANCE, byval uID as UINT, byval lpBuffer as LPSTR, byval cchBufferMax as long) as long
+	declare function GetModuleFileName alias "GetModuleFileNameA"(byval hModule as HMODULE, byval lpFilename as LPSTR, byval nSize as DWORD) as DWORD
+	declare function GetModuleHandle alias "GetModuleHandleA"(byval lpModuleName as LPCSTR) as HMODULE
+	declare function LoadLibraryEx alias "LoadLibraryExA"(byval lpLibFileName as LPCSTR, byval hFile as HANDLE, byval dwFlags as DWORD) as HMODULE
 	#define EnumResourceLanguages EnumResourceLanguagesA
 #endif
 
@@ -925,13 +901,13 @@ declare function GetModuleHandleExW(byval dwFlags as DWORD, byval lpModuleName a
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define EnumResourceLanguagesEx EnumResourceLanguagesExW
-	#define EnumResourceNamesEx EnumResourceNamesExW
-	#define EnumResourceTypesEx EnumResourceTypesExW
+	declare function EnumResourceLanguagesEx alias "EnumResourceLanguagesExW"(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval lpEnumFunc as ENUMRESLANGPROCW, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
+	declare function EnumResourceNamesEx alias "EnumResourceNamesExW"(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpEnumFunc as ENUMRESNAMEPROCW, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
+	declare function EnumResourceTypesEx alias "EnumResourceTypesExW"(byval hModule as HMODULE, byval lpEnumFunc as ENUMRESTYPEPROCW, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define EnumResourceLanguagesEx EnumResourceLanguagesExA
-	#define EnumResourceNamesEx EnumResourceNamesExA
-	#define EnumResourceTypesEx EnumResourceTypesExA
+	declare function EnumResourceLanguagesEx alias "EnumResourceLanguagesExA"(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval lpEnumFunc as ENUMRESLANGPROCA, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
+	declare function EnumResourceNamesEx alias "EnumResourceNamesExA"(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpEnumFunc as ENUMRESNAMEPROCA, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
+	declare function EnumResourceTypesEx alias "EnumResourceTypesExA"(byval hModule as HMODULE, byval lpEnumFunc as ENUMRESTYPEPROCA, byval lParam as LONG_PTR, byval dwFlags as DWORD, byval LangId as LANGID) as WINBOOL
 #endif
 
 declare function DisableThreadLibraryCalls(byval hLibModule as HMODULE) as WINBOOL
@@ -962,8 +938,8 @@ type MEMORY_RESOURCE_NOTIFICATION_TYPE as _MEMORY_RESOURCE_NOTIFICATION_TYPE
 	type PWIN32_MEMORY_RANGE_ENTRY as _WIN32_MEMORY_RANGE_ENTRY ptr
 #endif
 
-#define FILE_MAP_WRITE SECTION_MAP_WRITE
-#define FILE_MAP_READ SECTION_MAP_READ
+const FILE_MAP_WRITE = SECTION_MAP_WRITE
+const FILE_MAP_READ = SECTION_MAP_READ
 #define FILE_MAP_ALL_ACCESS SECTION_ALL_ACCESS
 const FILE_MAP_COPY = &h1
 const FILE_MAP_RESERVE = &h80000000
@@ -974,7 +950,7 @@ declare function UnmapViewOfFile(byval lpBaseAddress as LPCVOID) as WINBOOL
 declare function CreateFileMappingFromApp(byval hFile as HANDLE, byval SecurityAttributes as PSECURITY_ATTRIBUTES, byval PageProtection as ULONG, byval MaximumSize as ULONG64, byval Name as PCWSTR) as HANDLE
 declare function MapViewOfFileFromApp(byval hFileMappingObject as HANDLE, byval DesiredAccess as ULONG, byval FileOffset as ULONG64, byval NumberOfBytesToMap as SIZE_T_) as PVOID
 
-#define FILE_MAP_EXECUTE SECTION_MAP_EXECUTE_EXPLICIT
+const FILE_MAP_EXECUTE = SECTION_MAP_EXECUTE_EXPLICIT
 #define FILE_CACHE_FLAGS_DEFINED
 const FILE_CACHE_MAX_HARD_ENABLE = &h00000001
 const FILE_CACHE_MAX_HARD_DISABLE = &h00000002
@@ -1007,8 +983,8 @@ declare function GetSystemFileCacheSize(byval lpMinimumFileCacheSize as PSIZE_T,
 declare function SetSystemFileCacheSize(byval MinimumFileCacheSize as SIZE_T_, byval MaximumFileCacheSize as SIZE_T_, byval Flags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateFileMapping CreateFileMappingW
-	#define OpenFileMapping OpenFileMappingW
+	declare function CreateFileMapping alias "CreateFileMappingW"(byval hFile as HANDLE, byval lpFileMappingAttributes as LPSECURITY_ATTRIBUTES, byval flProtect as DWORD, byval dwMaximumSizeHigh as DWORD, byval dwMaximumSizeLow as DWORD, byval lpName as LPCWSTR) as HANDLE
+	declare function OpenFileMapping alias "OpenFileMappingW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCWSTR) as HANDLE
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1016,7 +992,7 @@ declare function SetSystemFileCacheSize(byval MinimumFileCacheSize as SIZE_T_, b
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateFileMappingNuma CreateFileMappingNumaW
+	declare function CreateFileMappingNuma alias "CreateFileMappingNumaW"(byval hFile as HANDLE, byval lpFileMappingAttributes as LPSECURITY_ATTRIBUTES, byval flProtect as DWORD, byval dwMaximumSizeHigh as DWORD, byval dwMaximumSizeLow as DWORD, byval lpName as LPCWSTR, byval nndPreferred as DWORD) as HANDLE
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1040,9 +1016,14 @@ declare function WaitNamedPipeW(byval lpNamedPipeName as LPCWSTR, byval nTimeOut
 #endif
 
 #ifdef UNICODE
-	#define CreateNamedPipe CreateNamedPipeW
-	#define WaitNamedPipe WaitNamedPipeW
-	#define GetNamedPipeClientComputerName GetNamedPipeClientComputerNameW
+	declare function CreateNamedPipe alias "CreateNamedPipeW"(byval lpName as LPCWSTR, byval dwOpenMode as DWORD, byval dwPipeMode as DWORD, byval nMaxInstances as DWORD, byval nOutBufferSize as DWORD, byval nInBufferSize as DWORD, byval nDefaultTimeOut as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as HANDLE
+	declare function WaitNamedPipe alias "WaitNamedPipeW"(byval lpNamedPipeName as LPCWSTR, byval nTimeOut as DWORD) as WINBOOL
+
+	#if _WIN32_WINNT <= &h0502
+		#define GetNamedPipeClientComputerName GetNamedPipeClientComputerNameW
+	#elseif _WIN32_WINNT = &h0602
+		declare function GetNamedPipeClientComputerName alias "GetNamedPipeClientComputerNameW"(byval Pipe as HANDLE, byval ClientComputerName as LPWSTR, byval ClientComputerNameLength as ULONG) as WINBOOL
+	#endif
 #endif
 
 #define _APISETNAMESPACE_
@@ -1051,14 +1032,14 @@ declare function CreatePrivateNamespaceW(byval lpPrivateNamespaceAttributes as L
 declare function OpenPrivateNamespaceW(byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCWSTR) as HANDLE
 
 #ifdef UNICODE
-	#define CreatePrivateNamespace CreatePrivateNamespaceW
+	declare function CreatePrivateNamespace alias "CreatePrivateNamespaceW"(byval lpPrivateNamespaceAttributes as LPSECURITY_ATTRIBUTES, byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCWSTR) as HANDLE
 #endif
 
-declare function ClosePrivateNamespace(byval Handle as HANDLE, byval Flags as ULONG) as BOOLEAN
+declare function ClosePrivateNamespace(byval Handle as HANDLE, byval Flags as ULONG) as WINBOOLEAN
 declare function CreateBoundaryDescriptorW(byval Name as LPCWSTR, byval Flags as ULONG) as HANDLE
 
 #ifdef UNICODE
-	#define CreateBoundaryDescriptor CreateBoundaryDescriptorW
+	declare function CreateBoundaryDescriptor alias "CreateBoundaryDescriptorW"(byval Name as LPCWSTR, byval Flags as ULONG) as HANDLE
 #endif
 
 declare function AddSIDToBoundaryDescriptor(byval BoundaryDescriptor as HANDLE ptr, byval RequiredSid as PSID) as WINBOOL
@@ -1069,10 +1050,10 @@ declare function GetEnvironmentStringsW() as LPWCH
 declare function SetEnvironmentStringsW(byval NewEnvironment as LPWCH) as WINBOOL
 
 #ifdef UNICODE
-	#define GetEnvironmentStrings GetEnvironmentStringsW
-	#define SetEnvironmentStrings SetEnvironmentStringsW
+	declare function GetEnvironmentStrings alias "GetEnvironmentStringsW"() as LPWCH
+	declare function SetEnvironmentStrings alias "SetEnvironmentStringsW"(byval NewEnvironment as LPWCH) as WINBOOL
 #else
-	#define GetEnvironmentStrings GetEnvironmentStringsA
+	declare function GetEnvironmentStrings() as LPCH
 #endif
 
 declare function FreeEnvironmentStringsA(byval penv as LPCH) as WINBOOL
@@ -1102,30 +1083,30 @@ declare function NeedCurrentDirectoryForExePathA(byval ExeName as LPCSTR) as WIN
 declare function NeedCurrentDirectoryForExePathW(byval ExeName as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
-	#define ExpandEnvironmentStrings ExpandEnvironmentStringsW
-	#define FreeEnvironmentStrings FreeEnvironmentStringsW
-	#define GetCommandLine GetCommandLineW
-	#define GetCurrentDirectory GetCurrentDirectoryW
-	#define GetEnvironmentVariable GetEnvironmentVariableW
-	#define NeedCurrentDirectoryForExePath NeedCurrentDirectoryForExePathW
-	#define SearchPath SearchPathW
-	#define SetCurrentDirectory SetCurrentDirectoryW
-	#define SetEnvironmentVariable SetEnvironmentVariableW
+	declare function ExpandEnvironmentStrings alias "ExpandEnvironmentStringsW"(byval lpSrc as LPCWSTR, byval lpDst as LPWSTR, byval nSize as DWORD) as DWORD
+	declare function FreeEnvironmentStrings alias "FreeEnvironmentStringsW"(byval penv as LPWCH) as WINBOOL
+	declare function GetCommandLine alias "GetCommandLineW"() as LPWSTR
+	declare function GetCurrentDirectory alias "GetCurrentDirectoryW"(byval nBufferLength as DWORD, byval lpBuffer as LPWSTR) as DWORD
+	declare function GetEnvironmentVariable alias "GetEnvironmentVariableW"(byval lpName as LPCWSTR, byval lpBuffer as LPWSTR, byval nSize as DWORD) as DWORD
+	declare function NeedCurrentDirectoryForExePath alias "NeedCurrentDirectoryForExePathW"(byval ExeName as LPCWSTR) as WINBOOL
+	declare function SearchPath alias "SearchPathW"(byval lpPath as LPCWSTR, byval lpFileName as LPCWSTR, byval lpExtension as LPCWSTR, byval nBufferLength as DWORD, byval lpBuffer as LPWSTR, byval lpFilePart as LPWSTR ptr) as DWORD
+	declare function SetCurrentDirectory alias "SetCurrentDirectoryW"(byval lpPathName as LPCWSTR) as WINBOOL
+	declare function SetEnvironmentVariable alias "SetEnvironmentVariableW"(byval lpName as LPCWSTR, byval lpValue as LPCWSTR) as WINBOOL
 #else
-	#define ExpandEnvironmentStrings ExpandEnvironmentStringsA
-	#define FreeEnvironmentStrings FreeEnvironmentStringsA
-	#define GetCommandLine GetCommandLineA
-	#define GetCurrentDirectory GetCurrentDirectoryA
-	#define GetEnvironmentVariable GetEnvironmentVariableA
-	#define NeedCurrentDirectoryForExePath NeedCurrentDirectoryForExePathA
-	#define SearchPath SearchPathA
-	#define SetCurrentDirectory SetCurrentDirectoryA
-	#define SetEnvironmentVariable SetEnvironmentVariableA
+	declare function ExpandEnvironmentStrings alias "ExpandEnvironmentStringsA"(byval lpSrc as LPCSTR, byval lpDst as LPSTR, byval nSize as DWORD) as DWORD
+	declare function FreeEnvironmentStrings alias "FreeEnvironmentStringsA"(byval penv as LPCH) as WINBOOL
+	declare function GetCommandLine alias "GetCommandLineA"() as LPSTR
+	declare function GetCurrentDirectory alias "GetCurrentDirectoryA"(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
+	declare function GetEnvironmentVariable alias "GetEnvironmentVariableA"(byval lpName as LPCSTR, byval lpBuffer as LPSTR, byval nSize as DWORD) as DWORD
+	declare function NeedCurrentDirectoryForExePath alias "NeedCurrentDirectoryForExePathA"(byval ExeName as LPCSTR) as WINBOOL
+	declare function SearchPath alias "SearchPathA"(byval lpPath as LPCSTR, byval lpFileName as LPCSTR, byval lpExtension as LPCSTR, byval nBufferLength as DWORD, byval lpBuffer as LPSTR, byval lpFilePart as LPSTR ptr) as DWORD
+	declare function SetCurrentDirectory alias "SetCurrentDirectoryA"(byval lpPathName as LPCSTR) as WINBOOL
+	declare function SetEnvironmentVariable alias "SetEnvironmentVariableA"(byval lpName as LPCSTR, byval lpValue as LPCSTR) as WINBOOL
 #endif
 
 #define _PROCESSTHREADSAPI_H_
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define FLS_OUT_OF_INDEXES cast(DWORD, &hffffffff)
 #endif
 
@@ -1233,22 +1214,22 @@ declare function GetProcessHandleCount(byval hProcess as HANDLE, byval pdwHandle
 declare function GetCurrentProcessorNumber() as DWORD
 
 #ifdef UNICODE
-	#define GetStartupInfo GetStartupInfoW
+	declare sub GetStartupInfo alias "GetStartupInfoW"(byval lpStartupInfo as LPSTARTUPINFOW)
 #endif
 
 declare function CreateProcessA(byval lpApplicationName as LPCSTR, byval lpCommandLine as LPSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCSTR, byval lpStartupInfo as LPSTARTUPINFOA, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 declare function CreateProcessW(byval lpApplicationName as LPCWSTR, byval lpCommandLine as LPWSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCWSTR, byval lpStartupInfo as LPSTARTUPINFOW, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateProcess CreateProcessW
+	declare function CreateProcess alias "CreateProcessW"(byval lpApplicationName as LPCWSTR, byval lpCommandLine as LPWSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCWSTR, byval lpStartupInfo as LPSTARTUPINFOW, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 #else
-	#define CreateProcess CreateProcessA
+	declare function CreateProcess alias "CreateProcessA"(byval lpApplicationName as LPCSTR, byval lpCommandLine as LPSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCSTR, byval lpStartupInfo as LPSTARTUPINFOA, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 #endif
 
 declare function CreateProcessAsUserW(byval hToken as HANDLE, byval lpApplicationName as LPCWSTR, byval lpCommandLine as LPWSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCWSTR, byval lpStartupInfo as LPSTARTUPINFOW, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateProcessAsUser CreateProcessAsUserW
+	declare function CreateProcessAsUser alias "CreateProcessAsUserW"(byval hToken as HANDLE, byval lpApplicationName as LPCWSTR, byval lpCommandLine as LPWSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCWSTR, byval lpStartupInfo as LPSTARTUPINFOW, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1326,7 +1307,7 @@ declare function AccessCheck(byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, 
 declare function AccessCheckAndAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPWSTR, byval ObjectName as LPWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval DesiredAccess as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define AccessCheckAndAuditAlarm AccessCheckAndAuditAlarmW
+	declare function AccessCheckAndAuditAlarm alias "AccessCheckAndAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPWSTR, byval ObjectName as LPWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval DesiredAccess as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 #endif
 
 declare function AccessCheckByType(byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval PrivilegeSet as PPRIVILEGE_SET, byval PrivilegeSetLength as LPDWORD, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL) as WINBOOL
@@ -1334,19 +1315,19 @@ declare function AccessCheckByTypeResultList(byval pSecurityDescriptor as PSECUR
 declare function AccessCheckByTypeAndAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define AccessCheckByTypeAndAuditAlarm AccessCheckByTypeAndAuditAlarmW
+	declare function AccessCheckByTypeAndAuditAlarm alias "AccessCheckByTypeAndAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 #endif
 
 declare function AccessCheckByTypeResultListAndAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccessList as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define AccessCheckByTypeResultListAndAuditAlarm AccessCheckByTypeResultListAndAuditAlarmW
+	declare function AccessCheckByTypeResultListAndAuditAlarm alias "AccessCheckByTypeResultListAndAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccessList as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 #endif
 
 declare function AccessCheckByTypeResultListAndAuditAlarmByHandleW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccessList as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define AccessCheckByTypeResultListAndAuditAlarmByHandle AccessCheckByTypeResultListAndAuditAlarmByHandleW
+	declare function AccessCheckByTypeResultListAndAuditAlarmByHandle alias "AccessCheckByTypeResultListAndAuditAlarmByHandleW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval ObjectTypeName as LPCWSTR, byval ObjectName as LPCWSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccessList as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
 #endif
 
 declare function AddAccessAllowedAce(byval pAcl as PACL, byval dwAceRevision as DWORD, byval AccessMask as DWORD, byval pSid as PSID) as WINBOOL
@@ -1380,7 +1361,7 @@ declare function CheckTokenMembership(byval TokenHandle as HANDLE, byval SidToCh
 	declare function CheckTokenMembershipEx(byval TokenHandle as HANDLE, byval SidToCheck as PSID, byval Flags as DWORD, byval IsMember as PBOOL) as WINBOOL
 #endif
 
-declare function ConvertToAutoInheritPrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CurrentSecurityDescriptor as PSECURITY_DESCRIPTOR, byval NewSecurityDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsDirectoryObject as BOOLEAN, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
+declare function ConvertToAutoInheritPrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CurrentSecurityDescriptor as PSECURITY_DESCRIPTOR, byval NewSecurityDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsDirectoryObject as WINBOOLEAN, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
 declare function CopySid(byval nDestinationSidLength as DWORD, byval pDestinationSid as PSID, byval pSourceSid as PSID) as WINBOOL
 declare function CreatePrivateObjectSecurity(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CreatorDescriptor as PSECURITY_DESCRIPTOR, byval NewDescriptor as PSECURITY_DESCRIPTOR ptr, byval IsDirectoryObject as WINBOOL, byval Token as HANDLE, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
 declare function CreatePrivateObjectSecurityEx(byval ParentDescriptor as PSECURITY_DESCRIPTOR, byval CreatorDescriptor as PSECURITY_DESCRIPTOR, byval NewDescriptor as PSECURITY_DESCRIPTOR ptr, byval ObjectType as GUID ptr, byval IsContainerObject as WINBOOL, byval AutoInheritFlags as ULONG, byval Token as HANDLE, byval GenericMapping as PGENERIC_MAPPING) as WINBOOL
@@ -1401,7 +1382,7 @@ declare function GetAclInformation(byval pAcl as PACL, byval pAclInformation as 
 declare function GetFileSecurityW(byval lpFileName as LPCWSTR, byval RequestedInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define GetFileSecurity GetFileSecurityW
+	declare function GetFileSecurity alias "GetFileSecurityW"(byval lpFileName as LPCWSTR, byval RequestedInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
 #endif
 
 declare function GetKernelObjectSecurity(byval Handle as HANDLE, byval RequestedInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
@@ -1437,32 +1418,32 @@ declare sub MapGenericMask(byval AccessMask as PDWORD, byval GenericMapping as P
 declare function ObjectCloseAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define ObjectCloseAuditAlarm ObjectCloseAuditAlarmW
+	declare function ObjectCloseAuditAlarm alias "ObjectCloseAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
 #endif
 
 declare function ObjectDeleteAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define ObjectDeleteAuditAlarm ObjectDeleteAuditAlarmW
+	declare function ObjectDeleteAuditAlarm alias "ObjectDeleteAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
 #endif
 
 declare function ObjectOpenAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPWSTR, byval ObjectName as LPWSTR, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval GrantedAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval ObjectCreation as WINBOOL, byval AccessGranted as WINBOOL, byval GenerateOnClose as LPBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define ObjectOpenAuditAlarm ObjectOpenAuditAlarmW
+	declare function ObjectOpenAuditAlarm alias "ObjectOpenAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPWSTR, byval ObjectName as LPWSTR, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval GrantedAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval ObjectCreation as WINBOOL, byval AccessGranted as WINBOOL, byval GenerateOnClose as LPBOOL) as WINBOOL
 #endif
 
 declare function ObjectPrivilegeAuditAlarmW(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define ObjectPrivilegeAuditAlarm ObjectPrivilegeAuditAlarmW
+	declare function ObjectPrivilegeAuditAlarm alias "ObjectPrivilegeAuditAlarmW"(byval SubsystemName as LPCWSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
 #endif
 
 declare function PrivilegeCheck(byval ClientToken as HANDLE, byval RequiredPrivileges as PPRIVILEGE_SET, byval pfResult as LPBOOL) as WINBOOL
 declare function PrivilegedServiceAuditAlarmW(byval SubsystemName as LPCWSTR, byval ServiceName as LPCWSTR, byval ClientToken as HANDLE, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define PrivilegedServiceAuditAlarm PrivilegedServiceAuditAlarmW
+	declare function PrivilegedServiceAuditAlarm alias "PrivilegedServiceAuditAlarmW"(byval SubsystemName as LPCWSTR, byval ServiceName as LPCWSTR, byval ClientToken as HANDLE, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1474,7 +1455,7 @@ declare function SetAclInformation(byval pAcl as PACL, byval pAclInformation as 
 declare function SetFileSecurityW(byval lpFileName as LPCWSTR, byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOL
 
 #ifdef UNICODE
-	#define SetFileSecurity SetFileSecurityW
+	declare function SetFileSecurity alias "SetFileSecurityW"(byval lpFileName as LPCWSTR, byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOL
 #endif
 
 declare function SetKernelObjectSecurity(byval Handle as HANDLE, byval SecurityInformation as SECURITY_INFORMATION, byval SecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOL
@@ -1504,10 +1485,10 @@ declare function SetTokenInformation(byval TokenHandle as HANDLE, byval TokenInf
 #define INIT_ONCE_CHECK_ONLY RTL_RUN_ONCE_CHECK_ONLY
 #define INIT_ONCE_ASYNC RTL_RUN_ONCE_ASYNC
 #define INIT_ONCE_INIT_FAILED RTL_RUN_ONCE_INIT_FAILED
-#define INIT_ONCE_CTX_RESERVED_BITS RTL_RUN_ONCE_CTX_RESERVED_BITS
+const INIT_ONCE_CTX_RESERVED_BITS = RTL_RUN_ONCE_CTX_RESERVED_BITS
 #define CONDITION_VARIABLE_INIT RTL_CONDITION_VARIABLE_INIT
-#define CONDITION_VARIABLE_LOCKMODE_SHARED RTL_CONDITION_VARIABLE_LOCKMODE_SHARED
-#define MUTEX_MODIFY_STATE MUTANT_QUERY_STATE
+const CONDITION_VARIABLE_LOCKMODE_SHARED = RTL_CONDITION_VARIABLE_LOCKMODE_SHARED
+const MUTEX_MODIFY_STATE = MUTANT_QUERY_STATE
 #define MUTEX_ALL_ACCESS MUTANT_ALL_ACCESS
 
 type SRWLOCK as RTL_SRWLOCK
@@ -1547,8 +1528,8 @@ declare sub WakeByAddressAll(byval Address as PVOID)
 	declare sub ReleaseSRWLockShared(byval SRWLock as PSRWLOCK)
 	declare sub AcquireSRWLockExclusive(byval SRWLock as PSRWLOCK)
 	declare sub AcquireSRWLockShared(byval SRWLock as PSRWLOCK)
-	declare function TryAcquireSRWLockExclusive(byval SRWLock as PSRWLOCK) as BOOLEAN
-	declare function TryAcquireSRWLockShared(byval SRWLock as PSRWLOCK) as BOOLEAN
+	declare function TryAcquireSRWLockExclusive(byval SRWLock as PSRWLOCK) as WINBOOLEAN
+	declare function TryAcquireSRWLockShared(byval SRWLock as PSRWLOCK) as WINBOOLEAN
 	declare function InitializeCriticalSectionEx(byval lpCriticalSection as LPCRITICAL_SECTION, byval dwSpinCount as DWORD, byval Flags as DWORD) as WINBOOL
 	declare sub InitOnceInitialize(byval InitOnce as PINIT_ONCE)
 	declare function InitOnceExecuteOnce(byval InitOnce as PINIT_ONCE, byval InitFn as PINIT_ONCE_FN, byval Parameter as PVOID, byval Context as LPVOID ptr) as WINBOOL
@@ -1566,23 +1547,23 @@ declare sub WakeByAddressAll(byval Address as PVOID)
 	declare function CreateSemaphoreExW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateMutexEx CreateMutexExW
-	#define CreateEventEx CreateEventExW
-	#define CreateSemaphoreEx CreateSemaphoreExW
-#endif
-
 #ifdef UNICODE
-	#define OpenMutex OpenMutexW
-	#define OpenSemaphore OpenSemaphoreW
-	#define OpenEvent OpenEventW
+	#if _WIN32_WINNT = &h0602
+		declare function CreateMutexEx alias "CreateMutexExW"(byval lpMutexAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+		declare function CreateEventEx alias "CreateEventExW"(byval lpEventAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+		declare function CreateSemaphoreEx alias "CreateSemaphoreExW"(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+	#endif
+
+	declare function OpenMutex alias "OpenMutexW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCWSTR) as HANDLE
+	declare function OpenSemaphore alias "OpenSemaphoreW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCWSTR) as HANDLE
+	declare function OpenEvent alias "OpenEventW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCWSTR) as HANDLE
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateMutexEx CreateMutexExA
-	#define CreateEventEx CreateEventExA
+	declare function CreateMutexEx alias "CreateMutexExA"(byval lpMutexAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+	declare function CreateEventEx alias "CreateEventExA"(byval lpEventAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
 #endif
 
 #ifndef UNICODE
-	#define OpenEvent OpenEventA
+	declare function OpenEvent alias "OpenEventA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 #endif
 
 type PTIMERAPCROUTINE as sub(byval lpArgToCompletionRoutine as LPVOID, byval dwTimerLowValue as DWORD, byval dwTimerHighValue as DWORD)
@@ -1618,7 +1599,7 @@ declare function SignalObjectAndWait(byval hObjectToSignal as HANDLE, byval hObj
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateWaitableTimerEx CreateWaitableTimerExW
+	declare function CreateWaitableTimerEx alias "CreateWaitableTimerExW"(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval lpTimerName as LPCWSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1626,12 +1607,12 @@ declare function SignalObjectAndWait(byval hObjectToSignal as HANDLE, byval hObj
 #endif
 
 #ifdef UNICODE
-	#define CreateMutex CreateMutexW
-	#define CreateEvent CreateEventW
-	#define OpenWaitableTimer OpenWaitableTimerW
+	declare function CreateMutex alias "CreateMutexW"(byval lpMutexAttributes as LPSECURITY_ATTRIBUTES, byval bInitialOwner as WINBOOL, byval lpName as LPCWSTR) as HANDLE
+	declare function CreateEvent alias "CreateEventW"(byval lpEventAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval bInitialState as WINBOOL, byval lpName as LPCWSTR) as HANDLE
+	declare function OpenWaitableTimer alias "OpenWaitableTimerW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpTimerName as LPCWSTR) as HANDLE
 #else
-	#define CreateMutex CreateMutexA
-	#define CreateEvent CreateEventA
+	declare function CreateMutex alias "CreateMutexA"(byval lpMutexAttributes as LPSECURITY_ATTRIBUTES, byval bInitialOwner as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function CreateEvent alias "CreateEventA"(byval lpEventAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval bInitialState as WINBOOL, byval lpName as LPCSTR) as HANDLE
 #endif
 
 #define _SYSINFOAPI_H_
@@ -1728,18 +1709,18 @@ declare function GetSystemFirmwareTable(byval FirmwareTableProviderSignature as 
 #endif
 
 #ifdef UNICODE
-	#define GetSystemDirectory GetSystemDirectoryW
-	#define GetWindowsDirectory GetWindowsDirectoryW
-	#define GetSystemWindowsDirectory GetSystemWindowsDirectoryW
-	#define GetComputerNameEx GetComputerNameExW
-	#define GetVersionEx GetVersionExW
-	#define SetComputerNameEx SetComputerNameExW
+	declare function GetSystemDirectory alias "GetSystemDirectoryW"(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
+	declare function GetWindowsDirectory alias "GetWindowsDirectoryW"(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
+	declare function GetSystemWindowsDirectory alias "GetSystemWindowsDirectoryW"(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
+	declare function GetComputerNameEx alias "GetComputerNameExW"(byval NameType as COMPUTER_NAME_FORMAT, byval lpBuffer as LPWSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function GetVersionEx alias "GetVersionExW"(byval lpVersionInformation as LPOSVERSIONINFOW) as WINBOOL
+	declare function SetComputerNameEx alias "SetComputerNameExW"(byval NameType as COMPUTER_NAME_FORMAT, byval lpBuffer as LPCWSTR) as WINBOOL
 #else
-	#define GetSystemDirectory GetSystemDirectoryA
-	#define GetWindowsDirectory GetWindowsDirectoryA
-	#define GetSystemWindowsDirectory GetSystemWindowsDirectoryA
-	#define GetComputerNameEx GetComputerNameExA
-	#define GetVersionEx GetVersionExA
+	declare function GetSystemDirectory alias "GetSystemDirectoryA"(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
+	declare function GetWindowsDirectory alias "GetWindowsDirectoryA"(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
+	declare function GetSystemWindowsDirectory alias "GetSystemWindowsDirectoryA"(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
+	declare function GetComputerNameEx alias "GetComputerNameExA"(byval NameType as COMPUTER_NAME_FORMAT, byval lpBuffer as LPSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function GetVersionEx alias "GetVersionExA"(byval lpVersionInformation as LPOSVERSIONINFOA) as WINBOOL
 #endif
 
 #define _SYSTEMTOPOLOGY_H_
@@ -1825,8 +1806,8 @@ const FILE_END = 2
 #define WAIT_ABANDONED (STATUS_ABANDONED_WAIT_0 + 0)
 #define WAIT_ABANDONED_0 (STATUS_ABANDONED_WAIT_0 + 0)
 #define WAIT_IO_COMPLETION STATUS_USER_APC
-#define SecureZeroMemory RtlSecureZeroMemory
-#define CaptureStackBackTrace RtlCaptureStackBackTrace
+declare function SecureZeroMemory alias "RtlSecureZeroMemory"(byval ptr as PVOID, byval cnt as SIZE_T_) as PVOID
+declare function CaptureStackBackTrace alias "RtlCaptureStackBackTrace"(byval FramesToSkip as DWORD, byval FramesToCapture as DWORD, byval BackTrace as PVOID ptr, byval BackTraceHash as PDWORD) as WORD
 const FILE_FLAG_WRITE_THROUGH = &h80000000
 const FILE_FLAG_OVERLAPPED = &h40000000
 const FILE_FLAG_NO_BUFFERING = &h20000000
@@ -2089,7 +2070,7 @@ const GMEM_NOT_BANKED = &h1000
 const GMEM_SHARE = &h2000
 const GMEM_DDESHARE = &h2000
 const GMEM_NOTIFY = &h4000
-#define GMEM_LOWER GMEM_NOT_BANKED
+const GMEM_LOWER = GMEM_NOT_BANKED
 const GMEM_VALID_FLAGS = &h7f72
 const GMEM_INVALID_HANDLE = &h8000
 #define GHND_ (GMEM_MOVEABLE or GMEM_ZEROINIT)
@@ -2145,14 +2126,14 @@ const PROFILE_KERNEL = &h20000000
 const PROFILE_SERVER = &h40000000
 const CREATE_IGNORE_SYSTEM_DEFAULT = &h80000000
 const STACK_SIZE_PARAM_IS_A_RESERVATION = &h10000
-#define THREAD_PRIORITY_LOWEST THREAD_BASE_PRIORITY_MIN
+const THREAD_PRIORITY_LOWEST = THREAD_BASE_PRIORITY_MIN
 #define THREAD_PRIORITY_BELOW_NORMAL (THREAD_PRIORITY_LOWEST + 1)
 const THREAD_PRIORITY_NORMAL = 0
-#define THREAD_PRIORITY_HIGHEST THREAD_BASE_PRIORITY_MAX
+const THREAD_PRIORITY_HIGHEST = THREAD_BASE_PRIORITY_MAX
 #define THREAD_PRIORITY_ABOVE_NORMAL (THREAD_PRIORITY_HIGHEST - 1)
-#define THREAD_PRIORITY_ERROR_RETURN MAXLONG
-#define THREAD_PRIORITY_TIME_CRITICAL THREAD_BASE_PRIORITY_LOWRT
-#define THREAD_PRIORITY_IDLE THREAD_BASE_PRIORITY_IDLE
+const THREAD_PRIORITY_ERROR_RETURN = MAXLONG
+const THREAD_PRIORITY_TIME_CRITICAL = THREAD_BASE_PRIORITY_LOWRT
+const THREAD_PRIORITY_IDLE = THREAD_BASE_PRIORITY_IDLE
 const THREAD_MODE_BACKGROUND_BEGIN = &h00010000
 const THREAD_MODE_BACKGROUND_END = &h00020000
 const VOLUME_NAME_DOS = &h0
@@ -2305,13 +2286,13 @@ const S_SERDST = -16
 const NMPWAIT_WAIT_FOREVER = &hffffffff
 const NMPWAIT_NOWAIT = &h1
 const NMPWAIT_USE_DEFAULT_WAIT = &h0
-#define FS_CASE_IS_PRESERVED FILE_CASE_PRESERVED_NAMES
-#define FS_CASE_SENSITIVE FILE_CASE_SENSITIVE_SEARCH
-#define FS_UNICODE_STORED_ON_DISK FILE_UNICODE_ON_DISK
-#define FS_PERSISTENT_ACLS FILE_PERSISTENT_ACLS
-#define FS_VOL_IS_COMPRESSED FILE_VOLUME_IS_COMPRESSED
-#define FS_FILE_COMPRESSION FILE_FILE_COMPRESSION
-#define FS_FILE_ENCRYPTION FILE_SUPPORTS_ENCRYPTION
+const FS_CASE_IS_PRESERVED = FILE_CASE_PRESERVED_NAMES
+const FS_CASE_SENSITIVE = FILE_CASE_SENSITIVE_SEARCH
+const FS_UNICODE_STORED_ON_DISK = FILE_UNICODE_ON_DISK
+const FS_PERSISTENT_ACLS = FILE_PERSISTENT_ACLS
+const FS_VOL_IS_COMPRESSED = FILE_VOLUME_IS_COMPRESSED
+const FS_FILE_COMPRESSION = FILE_FILE_COMPRESSION
+const FS_FILE_ENCRYPTION = FILE_SUPPORTS_ENCRYPTION
 const OF_READ = &h0
 const OF_WRITE = &h1
 const OF_READWRITE = &h2
@@ -2446,22 +2427,21 @@ type POFSTRUCT as _OFSTRUCT ptr
 #define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
 
 #ifdef __FB_64BIT__
-	#define InterlockedAnd8 _InterlockedAnd8
-	#define InterlockedOr8 _InterlockedOr8
-	#define InterlockedXor8 _InterlockedXor8
-	#define InterlockedAnd16 _InterlockedAnd16
-	#define InterlockedOr16 _InterlockedOr16
-	#define InterlockedXor16 _InterlockedXor16
-
 	declare function _InterlockedAnd(byval Destination as LONG ptr, byval Value as LONG) as LONG
 	declare function _InterlockedOr(byval Destination as LONG ptr, byval Value as LONG) as LONG
 	declare function _InterlockedXor(byval Destination as LONG ptr, byval Value as LONG) as LONG
 	declare function _InterlockedAnd8(byval Destination as zstring ptr, byval Value as byte) as byte
+	declare function InterlockedAnd8 alias "_InterlockedAnd8"(byval Destination as zstring ptr, byval Value as byte) as byte
 	declare function _InterlockedOr8(byval Destination as zstring ptr, byval Value as byte) as byte
+	declare function InterlockedOr8 alias "_InterlockedOr8"(byval Destination as zstring ptr, byval Value as byte) as byte
 	declare function _InterlockedXor8(byval Destination as zstring ptr, byval Value as byte) as byte
+	declare function InterlockedXor8 alias "_InterlockedXor8"(byval Destination as zstring ptr, byval Value as byte) as byte
 	declare function _InterlockedAnd16(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
+	declare function InterlockedAnd16 alias "_InterlockedAnd16"(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
 	declare function _InterlockedOr16(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
+	declare function InterlockedOr16 alias "_InterlockedOr16"(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
 	declare function _InterlockedXor16(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
+	declare function InterlockedXor16 alias "_InterlockedXor16"(byval Destination as SHORT ptr, byval Value as SHORT) as SHORT
 #else
 	#define InterlockedCompareExchangePointerAcquire InterlockedCompareExchangePointer
 	#define InterlockedCompareExchangePointerRelease InterlockedCompareExchangePointer
@@ -2511,9 +2491,9 @@ const SCS_OS216_BINARY = 5
 const SCS_64BIT_BINARY = 6
 
 #ifdef __FB_64BIT__
-	#define SCS_THIS_PLATFORM_BINARY SCS_64BIT_BINARY
+	const SCS_THIS_PLATFORM_BINARY = SCS_64BIT_BINARY
 #else
-	#define SCS_THIS_PLATFORM_BINARY SCS_32BIT_BINARY
+	const SCS_THIS_PLATFORM_BINARY = SCS_32BIT_BINARY
 #endif
 
 declare function GetBinaryTypeA(byval lpApplicationName as LPCSTR, byval lpBinaryType as LPDWORD) as WINBOOL
@@ -2534,19 +2514,19 @@ declare sub FatalExit(byval ExitCode as long)
 declare function SetEnvironmentStringsA(byval NewEnvironment as LPCH) as WINBOOL
 
 #ifdef UNICODE
-	#define GetBinaryType GetBinaryTypeW
+	declare function GetBinaryType alias "GetBinaryTypeW"(byval lpApplicationName as LPCWSTR, byval lpBinaryType as LPDWORD) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define GetLongPathNameTransacted GetLongPathNameTransactedW
+	declare function GetLongPathNameTransacted alias "GetLongPathNameTransactedW"(byval lpszShortPath as LPCWSTR, byval lpszLongPath as LPWSTR, byval cchBuffer as DWORD, byval hTransaction as HANDLE) as DWORD
 #elseif not defined(UNICODE)
-	#define SetEnvironmentStrings SetEnvironmentStringsA
-	#define GetShortPathName GetShortPathNameA
-	#define GetBinaryType GetBinaryTypeA
+	declare function SetEnvironmentStrings alias "SetEnvironmentStringsA"(byval NewEnvironment as LPCH) as WINBOOL
+	declare function GetShortPathName alias "GetShortPathNameA"(byval lpszLongPath as LPCSTR, byval lpszShortPath as LPSTR, byval cchBuffer as DWORD) as DWORD
+	declare function GetBinaryType alias "GetBinaryTypeA"(byval lpApplicationName as LPCSTR, byval lpBinaryType as LPDWORD) as WINBOOL
 #endif
 
 #if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define GetLongPathNameTransacted GetLongPathNameTransactedA
+	declare function GetLongPathNameTransacted alias "GetLongPathNameTransactedA"(byval lpszShortPath as LPCSTR, byval lpszLongPath as LPSTR, byval cchBuffer as DWORD, byval hTransaction as HANDLE) as DWORD
 #endif
 
 declare sub RaiseFailFastException(byval pExceptionRecord as PEXCEPTION_RECORD, byval pContextRecord as PCONTEXT, byval dwFlags as DWORD)
@@ -2646,7 +2626,7 @@ declare function SetThreadErrorMode(byval dwNewMode as DWORD, byval lpOldMode as
 
 declare function DebugSetProcessKillOnExit(byval KillOnExit as WINBOOL) as WINBOOL
 declare function DebugBreakProcess(byval Process as HANDLE) as WINBOOL
-#define CRITICAL_SECTION_NO_DEBUG_INFO RTL_CRITICAL_SECTION_FLAG_NO_DEBUG_INFO
+const CRITICAL_SECTION_NO_DEBUG_INFO = RTL_CRITICAL_SECTION_FLAG_NO_DEBUG_INFO
 
 type _DEP_SYSTEM_POLICY_TYPE as long
 enum
@@ -2715,9 +2695,9 @@ declare function DosDateTimeToFileTime(byval wFatDate as WORD, byval wFatTime as
 declare function SetSystemTimeAdjustment(byval dwTimeAdjustment as DWORD, byval bTimeAdjustmentDisabled as WINBOOL) as WINBOOL
 
 #ifdef UNICODE
-	#define SetFileShortName SetFileShortNameW
+	declare function SetFileShortName alias "SetFileShortNameW"(byval hFile as HANDLE, byval lpShortName as LPCWSTR) as WINBOOL
 #else
-	#define SetFileShortName SetFileShortNameA
+	declare function SetFileShortName alias "SetFileShortNameA"(byval hFile as HANDLE, byval lpShortName as LPCSTR) as WINBOOL
 #endif
 
 declare function MulDiv(byval nNumber as long, byval nNumerator as long, byval nDenominator as long) as long
@@ -2725,9 +2705,9 @@ declare function FormatMessageA(byval dwFlags as DWORD, byval lpSource as LPCVOI
 declare function FormatMessageW(byval dwFlags as DWORD, byval lpSource as LPCVOID, byval dwMessageId as DWORD, byval dwLanguageId as DWORD, byval lpBuffer as LPWSTR, byval nSize as DWORD, byval Arguments as va_list ptr) as DWORD
 
 #ifdef UNICODE
-	#define FormatMessage FormatMessageW
+	declare function FormatMessage alias "FormatMessageW"(byval dwFlags as DWORD, byval lpSource as LPCVOID, byval dwMessageId as DWORD, byval dwLanguageId as DWORD, byval lpBuffer as LPWSTR, byval nSize as DWORD, byval Arguments as va_list ptr) as DWORD
 #else
-	#define FormatMessage FormatMessageA
+	declare function FormatMessage alias "FormatMessageA"(byval dwFlags as DWORD, byval lpSource as LPCVOID, byval dwMessageId as DWORD, byval dwLanguageId as DWORD, byval lpBuffer as LPSTR, byval nSize as DWORD, byval Arguments as va_list ptr) as DWORD
 #endif
 
 const FORMAT_MESSAGE_IGNORE_INSERTS = &h00000200
@@ -2798,29 +2778,29 @@ declare function BackupSeek(byval hFile as HANDLE, byval dwLowBytesToSeek as DWO
 declare function BackupWrite(byval hFile as HANDLE, byval lpBuffer as LPBYTE, byval nNumberOfBytesToWrite as DWORD, byval lpNumberOfBytesWritten as LPDWORD, byval bAbort as WINBOOL, byval bProcessSecurity as WINBOOL, byval lpContext as LPVOID ptr) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateMailslot CreateMailslotW
-	#define EncryptFile EncryptFileW
-	#define DecryptFile DecryptFileW
-	#define FileEncryptionStatus FileEncryptionStatusW
-	#define OpenEncryptedFileRaw OpenEncryptedFileRawW
-	#define lstrcmp lstrcmpW
-	#define lstrcmpi lstrcmpiW
-	#define lstrcpyn lstrcpynW
+	declare function CreateMailslot alias "CreateMailslotW"(byval lpName as LPCWSTR, byval nMaxMessageSize as DWORD, byval lReadTimeout as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as HANDLE
+	declare function EncryptFile alias "EncryptFileW"(byval lpFileName as LPCWSTR) as WINBOOL
+	declare function DecryptFile alias "DecryptFileW"(byval lpFileName as LPCWSTR, byval dwReserved as DWORD) as WINBOOL
+	declare function FileEncryptionStatus alias "FileEncryptionStatusW"(byval lpFileName as LPCWSTR, byval lpStatus as LPDWORD) as WINBOOL
+	declare function OpenEncryptedFileRaw alias "OpenEncryptedFileRawW"(byval lpFileName as LPCWSTR, byval ulFlags as ULONG, byval pvContext as PVOID ptr) as DWORD
+	declare function lstrcmp alias "lstrcmpW"(byval lpString1 as LPCWSTR, byval lpString2 as LPCWSTR) as long
+	declare function lstrcmpi alias "lstrcmpiW"(byval lpString1 as LPCWSTR, byval lpString2 as LPCWSTR) as long
+	declare function lstrcpyn alias "lstrcpynW"(byval lpString1 as LPWSTR, byval lpString2 as LPCWSTR, byval iMaxLength as long) as LPWSTR
 	#define lstrcpy lstrcpyW
 	#define lstrcat lstrcatW
-	#define lstrlen lstrlenW
+	declare function lstrlen alias "lstrlenW"(byval lpString as LPCWSTR) as long
 #else
-	#define CreateMailslot CreateMailslotA
-	#define EncryptFile EncryptFileA
-	#define DecryptFile DecryptFileA
-	#define FileEncryptionStatus FileEncryptionStatusA
-	#define OpenEncryptedFileRaw OpenEncryptedFileRawA
-	#define lstrcmp lstrcmpA
-	#define lstrcmpi lstrcmpiA
-	#define lstrcpyn lstrcpynA
+	declare function CreateMailslot alias "CreateMailslotA"(byval lpName as LPCSTR, byval nMaxMessageSize as DWORD, byval lReadTimeout as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as HANDLE
+	declare function EncryptFile alias "EncryptFileA"(byval lpFileName as LPCSTR) as WINBOOL
+	declare function DecryptFile alias "DecryptFileA"(byval lpFileName as LPCSTR, byval dwReserved as DWORD) as WINBOOL
+	declare function FileEncryptionStatus alias "FileEncryptionStatusA"(byval lpFileName as LPCSTR, byval lpStatus as LPDWORD) as WINBOOL
+	declare function OpenEncryptedFileRaw alias "OpenEncryptedFileRawA"(byval lpFileName as LPCSTR, byval ulFlags as ULONG, byval pvContext as PVOID ptr) as DWORD
+	declare function lstrcmp alias "lstrcmpA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
+	declare function lstrcmpi alias "lstrcmpiA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
+	declare function lstrcpyn alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpString2 as LPCSTR, byval iMaxLength as long) as LPSTR
 	#define lstrcpy lstrcpyA
 	#define lstrcat lstrcatA
-	#define lstrlen lstrlenA
+	declare function lstrlen alias "lstrlenA"(byval lpString as LPCSTR) as long
 #endif
 
 type _WIN32_STREAM_ID
@@ -2890,17 +2870,20 @@ const STARTF_PREVENTPINNING = &h00002000
 #endif
 
 const SHUTDOWN_NORETRY = &h1
+declare function CreateSemaphoreW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR) as HANDLE
 
 #ifdef UNICODE
-	#define CreateSemaphore CreateSemaphoreW
-#else
-	#define CreateSemaphore CreateSemaphoreA
+	declare function CreateSemaphore alias "CreateSemaphoreW"(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR) as HANDLE
 #endif
 
-declare function CreateSemaphoreW(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCWSTR) as HANDLE
 declare function LoadLibraryW(byval lpLibFileName as LPCWSTR) as HMODULE
 declare function OpenMutexA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function CreateSemaphoreA(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCSTR) as HANDLE
+
+#ifndef UNICODE
+	declare function CreateSemaphore alias "CreateSemaphoreA"(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCSTR) as HANDLE
+#endif
+
 declare function OpenSemaphoreA(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
 declare function CreateWaitableTimerA(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval lpTimerName as LPCSTR) as HANDLE
 declare function CreateWaitableTimerW(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval lpTimerName as LPCWSTR) as HANDLE
@@ -2918,20 +2901,20 @@ declare function GetLogicalDriveStringsA(byval nBufferLength as DWORD, byval lpB
 declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 
 #ifdef UNICODE
-	#define CreateWaitableTimer CreateWaitableTimerW
-	#define LoadLibrary LoadLibraryW
+	declare function CreateWaitableTimer alias "CreateWaitableTimerW"(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval lpTimerName as LPCWSTR) as HANDLE
+	declare function LoadLibrary alias "LoadLibraryW"(byval lpLibFileName as LPCWSTR) as HMODULE
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define OpenMutex OpenMutexA
-	#define OpenSemaphore OpenSemaphoreA
-	#define OpenWaitableTimer OpenWaitableTimerA
-	#define CreateFileMapping CreateFileMappingA
-	#define OpenFileMapping OpenFileMappingA
-	#define GetLogicalDriveStrings GetLogicalDriveStringsA
-	#define CreateWaitableTimer CreateWaitableTimerA
-	#define LoadLibrary LoadLibraryA
-	#define CreateSemaphoreEx CreateSemaphoreExA
-	#define CreateWaitableTimerEx CreateWaitableTimerExA
-	#define CreateFileMappingNuma CreateFileMappingNumaA
+	declare function OpenMutex alias "OpenMutexA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function OpenSemaphore alias "OpenSemaphoreA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function OpenWaitableTimer alias "OpenWaitableTimerA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpTimerName as LPCSTR) as HANDLE
+	declare function CreateFileMapping alias "CreateFileMappingA"(byval hFile as HANDLE, byval lpFileMappingAttributes as LPSECURITY_ATTRIBUTES, byval flProtect as DWORD, byval dwMaximumSizeHigh as DWORD, byval dwMaximumSizeLow as DWORD, byval lpName as LPCSTR) as HANDLE
+	declare function OpenFileMapping alias "OpenFileMappingA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function GetLogicalDriveStrings alias "GetLogicalDriveStringsA"(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
+	declare function CreateWaitableTimer alias "CreateWaitableTimerA"(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval lpTimerName as LPCSTR) as HANDLE
+	declare function LoadLibrary alias "LoadLibraryA"(byval lpLibFileName as LPCSTR) as HMODULE
+	declare function CreateSemaphoreEx alias "CreateSemaphoreExA"(byval lpSemaphoreAttributes as LPSECURITY_ATTRIBUTES, byval lInitialCount as LONG, byval lMaximumCount as LONG, byval lpName as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+	declare function CreateWaitableTimerEx alias "CreateWaitableTimerExA"(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval lpTimerName as LPCSTR, byval dwFlags as DWORD, byval dwDesiredAccess as DWORD) as HANDLE
+	declare function CreateFileMappingNuma alias "CreateFileMappingNumaA"(byval hFile as HANDLE, byval lpFileMappingAttributes as LPSECURITY_ATTRIBUTES, byval flProtect as DWORD, byval dwMaximumSizeHigh as DWORD, byval dwMaximumSizeLow as DWORD, byval lpName as LPCSTR, byval nndPreferred as DWORD) as HANDLE
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -2942,9 +2925,9 @@ declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define QueryFullProcessImageName QueryFullProcessImageNameW
+	declare function QueryFullProcessImageName alias "QueryFullProcessImageNameW"(byval hProcess as HANDLE, byval dwFlags as DWORD, byval lpExeName as LPWSTR, byval lpdwSize as PDWORD) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define QueryFullProcessImageName QueryFullProcessImageNameA
+	declare function QueryFullProcessImageName alias "QueryFullProcessImageNameA"(byval hProcess as HANDLE, byval dwFlags as DWORD, byval lpExeName as LPSTR, byval lpdwSize as PDWORD) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -2967,17 +2950,17 @@ declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 
 	type PROC_THREAD_ATTRIBUTE_NUM as _PROC_THREAD_ATTRIBUTE_NUM
 	#define ProcThreadAttributeValue(Number, Thread, Input, Additive) (((((Number) and PROC_THREAD_ATTRIBUTE_NUMBER) or iif(Thread <> FALSE, PROC_THREAD_ATTRIBUTE_THREAD, 0)) or iif(Input <> FALSE, PROC_THREAD_ATTRIBUTE_INPUT, 0)) or iif(Additive <> FALSE, PROC_THREAD_ATTRIBUTE_ADDITIVE, 0))
-	#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS ProcThreadAttributeValue(ProcThreadAttributeParentProcess, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST ProcThreadAttributeValue(ProcThreadAttributeHandleList, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_GROUP_AFFINITY ProcThreadAttributeValue(ProcThreadAttributeGroupAffinity, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_PREFERRED_NODE ProcThreadAttributeValue(ProcThreadAttributePreferredNode, FALSE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_IDEAL_PROCESSOR ProcThreadAttributeValue(ProcThreadAttributeIdealProcessor, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_UMS_THREAD ProcThreadAttributeValue(ProcThreadAttributeUmsThread, TRUE, TRUE, FALSE)
-	#define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY ProcThreadAttributeValue(ProcThreadAttributeMitigationPolicy, FALSE, TRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_PARENT_PROCESS ProcThreadAttributeValue(ProcThreadAttributeParentProcess, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_HANDLE_LIST ProcThreadAttributeValue(ProcThreadAttributeHandleList, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_GROUP_AFFINITY ProcThreadAttributeValue(ProcThreadAttributeGroupAffinity, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_PREFERRED_NODE ProcThreadAttributeValue(ProcThreadAttributePreferredNode, FALSE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_IDEAL_PROCESSOR ProcThreadAttributeValue(ProcThreadAttributeIdealProcessor, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_UMS_THREAD ProcThreadAttributeValue(ProcThreadAttributeUmsThread, CTRUE, CTRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY ProcThreadAttributeValue(ProcThreadAttributeMitigationPolicy, FALSE, CTRUE, FALSE)
 	const PROCESS_CREATION_MITIGATION_POLICY_DEP_ENABLE = &h01
 	const PROCESS_CREATION_MITIGATION_POLICY_DEP_ATL_THUNK_ENABLE = &h02
 	const PROCESS_CREATION_MITIGATION_POLICY_SEHOP_ENABLE = &h04
-	#define PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES ProcThreadAttributeValue(ProcThreadAttributeSecurityCapabilities, FALSE, TRUE, FALSE)
+	#define PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES ProcThreadAttributeValue(ProcThreadAttributeSecurityCapabilities, FALSE, CTRUE, FALSE)
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_MASK = &h00000003 shl 8
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_DEFER = &h00000000 shl 8
 	const PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON = &h00000001 shl 8
@@ -3013,15 +2996,15 @@ declare function LoadLibraryA(byval lpLibFileName as LPCSTR) as HMODULE
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_ON = &h00000001ull shl 32
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_OFF = &h00000002ull shl 32
 	const PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_RESERVED = &h00000003ull shl 32
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define OpenMutex OpenMutexA
-	#define OpenSemaphore OpenSemaphoreA
-	#define OpenWaitableTimer OpenWaitableTimerA
-	#define CreateFileMapping CreateFileMappingA
-	#define OpenFileMapping OpenFileMappingA
-	#define GetLogicalDriveStrings GetLogicalDriveStringsA
-	#define CreateWaitableTimer CreateWaitableTimerA
-	#define LoadLibrary LoadLibraryA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function OpenMutex alias "OpenMutexA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function OpenSemaphore alias "OpenSemaphoreA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function OpenWaitableTimer alias "OpenWaitableTimerA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpTimerName as LPCSTR) as HANDLE
+	declare function CreateFileMapping alias "CreateFileMappingA"(byval hFile as HANDLE, byval lpFileMappingAttributes as LPSECURITY_ATTRIBUTES, byval flProtect as DWORD, byval dwMaximumSizeHigh as DWORD, byval dwMaximumSizeLow as DWORD, byval lpName as LPCSTR) as HANDLE
+	declare function OpenFileMapping alias "OpenFileMappingA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function GetLogicalDriveStrings alias "GetLogicalDriveStringsA"(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
+	declare function CreateWaitableTimer alias "CreateWaitableTimerA"(byval lpTimerAttributes as LPSECURITY_ATTRIBUTES, byval bManualReset as WINBOOL, byval lpTimerName as LPCSTR) as HANDLE
+	declare function LoadLibrary alias "LoadLibraryA"(byval lpLibFileName as LPCSTR) as HMODULE
 #endif
 
 const ATOM_FLAG_GLOBAL = &h2
@@ -3102,93 +3085,93 @@ declare function GetTempPathA(byval nBufferLength as DWORD, byval lpBuffer as LP
 declare function GetTempFileNameA(byval lpPathName as LPCSTR, byval lpPrefixString as LPCSTR, byval uUnique as UINT, byval lpTempFileName as LPSTR) as UINT
 
 #ifdef UNICODE
-	#define FatalAppExit FatalAppExitW
-	#define GetFirmwareEnvironmentVariable GetFirmwareEnvironmentVariableW
-	#define SetFirmwareEnvironmentVariable SetFirmwareEnvironmentVariableW
-	#define FindResource FindResourceW
-	#define EnumResourceTypes EnumResourceTypesW
-	#define EnumResourceNames EnumResourceNamesW
+	declare sub FatalAppExit alias "FatalAppExitW"(byval uAction as UINT, byval lpMessageText as LPCWSTR)
+	declare function GetFirmwareEnvironmentVariable alias "GetFirmwareEnvironmentVariableW"(byval lpName as LPCWSTR, byval lpGuid as LPCWSTR, byval pBuffer as PVOID, byval nSize as DWORD) as DWORD
+	declare function SetFirmwareEnvironmentVariable alias "SetFirmwareEnvironmentVariableW"(byval lpName as LPCWSTR, byval lpGuid as LPCWSTR, byval pValue as PVOID, byval nSize as DWORD) as WINBOOL
+	declare function FindResource alias "FindResourceW"(byval hModule as HMODULE, byval lpName as LPCWSTR, byval lpType as LPCWSTR) as HRSRC
+	declare function EnumResourceTypes alias "EnumResourceTypesW"(byval hModule as HMODULE, byval lpEnumFunc as ENUMRESTYPEPROCW, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumResourceNames alias "EnumResourceNamesW"(byval hModule as HMODULE, byval lpType as LPCWSTR, byval lpEnumFunc as ENUMRESNAMEPROCW, byval lParam as LONG_PTR) as WINBOOL
 	#define EnumResourceLanguages EnumResourceLanguagesW
-	#define BeginUpdateResource BeginUpdateResourceW
-	#define UpdateResource UpdateResourceW
-	#define EndUpdateResource EndUpdateResourceW
-	#define GlobalAddAtom GlobalAddAtomW
-	#define GlobalAddAtomEx GlobalAddAtomExW
-	#define GlobalFindAtom GlobalFindAtomW
-	#define GlobalGetAtomName GlobalGetAtomNameW
-	#define AddAtom AddAtomW
-	#define FindAtom FindAtomW
-	#define GetAtomName GetAtomNameW
-	#define GetProfileInt GetProfileIntW
-	#define GetProfileString GetProfileStringW
-	#define WriteProfileString WriteProfileStringW
-	#define GetProfileSection GetProfileSectionW
-	#define WriteProfileSection WriteProfileSectionW
-	#define GetPrivateProfileInt GetPrivateProfileIntW
-	#define GetPrivateProfileString GetPrivateProfileStringW
-	#define WritePrivateProfileString WritePrivateProfileStringW
-	#define GetPrivateProfileSection GetPrivateProfileSectionW
-	#define WritePrivateProfileSection WritePrivateProfileSectionW
-	#define GetPrivateProfileSectionNames GetPrivateProfileSectionNamesW
-	#define GetPrivateProfileStruct GetPrivateProfileStructW
-	#define WritePrivateProfileStruct WritePrivateProfileStructW
+	declare function BeginUpdateResource alias "BeginUpdateResourceW"(byval pFileName as LPCWSTR, byval bDeleteExistingResources as WINBOOL) as HANDLE
+	declare function UpdateResource alias "UpdateResourceW"(byval hUpdate as HANDLE, byval lpType as LPCWSTR, byval lpName as LPCWSTR, byval wLanguage as WORD, byval lpData as LPVOID, byval cb as DWORD) as WINBOOL
+	declare function EndUpdateResource alias "EndUpdateResourceW"(byval hUpdate as HANDLE, byval fDiscard as WINBOOL) as WINBOOL
+	declare function GlobalAddAtom alias "GlobalAddAtomW"(byval lpString as LPCWSTR) as ATOM
+	declare function GlobalAddAtomEx alias "GlobalAddAtomExW"(byval lpString as LPCWSTR, byval Flags as DWORD) as ATOM
+	declare function GlobalFindAtom alias "GlobalFindAtomW"(byval lpString as LPCWSTR) as ATOM
+	declare function GlobalGetAtomName alias "GlobalGetAtomNameW"(byval nAtom as ATOM, byval lpBuffer as LPWSTR, byval nSize as long) as UINT
+	declare function AddAtom alias "AddAtomW"(byval lpString as LPCWSTR) as ATOM
+	declare function FindAtom alias "FindAtomW"(byval lpString as LPCWSTR) as ATOM
+	declare function GetAtomName alias "GetAtomNameW"(byval nAtom as ATOM, byval lpBuffer as LPWSTR, byval nSize as long) as UINT
+	declare function GetProfileInt alias "GetProfileIntW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval nDefault as INT_) as UINT
+	declare function GetProfileString alias "GetProfileStringW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval lpDefault as LPCWSTR, byval lpReturnedString as LPWSTR, byval nSize as DWORD) as DWORD
+	declare function WriteProfileString alias "WriteProfileStringW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval lpString as LPCWSTR) as WINBOOL
+	declare function GetProfileSection alias "GetProfileSectionW"(byval lpAppName as LPCWSTR, byval lpReturnedString as LPWSTR, byval nSize as DWORD) as DWORD
+	declare function WriteProfileSection alias "WriteProfileSectionW"(byval lpAppName as LPCWSTR, byval lpString as LPCWSTR) as WINBOOL
+	declare function GetPrivateProfileInt alias "GetPrivateProfileIntW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval nDefault as INT_, byval lpFileName as LPCWSTR) as UINT
+	declare function GetPrivateProfileString alias "GetPrivateProfileStringW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval lpDefault as LPCWSTR, byval lpReturnedString as LPWSTR, byval nSize as DWORD, byval lpFileName as LPCWSTR) as DWORD
+	declare function WritePrivateProfileString alias "WritePrivateProfileStringW"(byval lpAppName as LPCWSTR, byval lpKeyName as LPCWSTR, byval lpString as LPCWSTR, byval lpFileName as LPCWSTR) as WINBOOL
+	declare function GetPrivateProfileSection alias "GetPrivateProfileSectionW"(byval lpAppName as LPCWSTR, byval lpReturnedString as LPWSTR, byval nSize as DWORD, byval lpFileName as LPCWSTR) as DWORD
+	declare function WritePrivateProfileSection alias "WritePrivateProfileSectionW"(byval lpAppName as LPCWSTR, byval lpString as LPCWSTR, byval lpFileName as LPCWSTR) as WINBOOL
+	declare function GetPrivateProfileSectionNames alias "GetPrivateProfileSectionNamesW"(byval lpszReturnBuffer as LPWSTR, byval nSize as DWORD, byval lpFileName as LPCWSTR) as DWORD
+	declare function GetPrivateProfileStruct alias "GetPrivateProfileStructW"(byval lpszSection as LPCWSTR, byval lpszKey as LPCWSTR, byval lpStruct as LPVOID, byval uSizeStruct as UINT, byval szFile as LPCWSTR) as WINBOOL
+	declare function WritePrivateProfileStruct alias "WritePrivateProfileStructW"(byval lpszSection as LPCWSTR, byval lpszKey as LPCWSTR, byval lpStruct as LPVOID, byval uSizeStruct as UINT, byval szFile as LPCWSTR) as WINBOOL
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define GetFirmwareEnvironmentVariableEx GetFirmwareEnvironmentVariableExW
-	#define SetFirmwareEnvironmentVariableEx SetFirmwareEnvironmentVariableExW
+	declare function GetFirmwareEnvironmentVariableEx alias "GetFirmwareEnvironmentVariableExW"(byval lpName as LPCWSTR, byval lpGuid as LPCWSTR, byval pBuffer as PVOID, byval nSize as DWORD, byval pdwAttribubutes as PDWORD) as DWORD
+	declare function SetFirmwareEnvironmentVariableEx alias "SetFirmwareEnvironmentVariableExW"(byval lpName as LPCWSTR, byval lpGuid as LPCWSTR, byval pValue as PVOID, byval nSize as DWORD, byval dwAttributes as DWORD) as WINBOOL
 #elseif not defined(UNICODE)
-	#define GetStartupInfo GetStartupInfoA
-	#define FindResourceEx FindResourceExA
-	#define GetTempPath GetTempPathA
-	#define GetTempFileName GetTempFileNameA
-	#define FatalAppExit FatalAppExitA
-	#define GetFirmwareEnvironmentVariable GetFirmwareEnvironmentVariableA
-	#define SetFirmwareEnvironmentVariable SetFirmwareEnvironmentVariableA
-	#define FindResource FindResourceA
-	#define EnumResourceTypes EnumResourceTypesA
-	#define EnumResourceNames EnumResourceNamesA
+	declare sub GetStartupInfo alias "GetStartupInfoA"(byval lpStartupInfo as LPSTARTUPINFOA)
+	declare function FindResourceEx alias "FindResourceExA"(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval wLanguage as WORD) as HRSRC
+	declare function GetTempPath alias "GetTempPathA"(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
+	declare function GetTempFileName alias "GetTempFileNameA"(byval lpPathName as LPCSTR, byval lpPrefixString as LPCSTR, byval uUnique as UINT, byval lpTempFileName as LPSTR) as UINT
+	declare sub FatalAppExit alias "FatalAppExitA"(byval uAction as UINT, byval lpMessageText as LPCSTR)
+	declare function GetFirmwareEnvironmentVariable alias "GetFirmwareEnvironmentVariableA"(byval lpName as LPCSTR, byval lpGuid as LPCSTR, byval pBuffer as PVOID, byval nSize as DWORD) as DWORD
+	declare function SetFirmwareEnvironmentVariable alias "SetFirmwareEnvironmentVariableA"(byval lpName as LPCSTR, byval lpGuid as LPCSTR, byval pValue as PVOID, byval nSize as DWORD) as WINBOOL
+	declare function FindResource alias "FindResourceA"(byval hModule as HMODULE, byval lpName as LPCSTR, byval lpType as LPCSTR) as HRSRC
+	declare function EnumResourceTypes alias "EnumResourceTypesA"(byval hModule as HMODULE, byval lpEnumFunc as ENUMRESTYPEPROCA, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumResourceNames alias "EnumResourceNamesA"(byval hModule as HMODULE, byval lpType as LPCSTR, byval lpEnumFunc as ENUMRESNAMEPROCA, byval lParam as LONG_PTR) as WINBOOL
 	#define EnumResourceLanguages EnumResourceLanguagesA
-	#define BeginUpdateResource BeginUpdateResourceA
-	#define UpdateResource UpdateResourceA
-	#define EndUpdateResource EndUpdateResourceA
-	#define GlobalAddAtom GlobalAddAtomA
-	#define GlobalAddAtomEx GlobalAddAtomExA
-	#define GlobalFindAtom GlobalFindAtomA
-	#define GlobalGetAtomName GlobalGetAtomNameA
-	#define AddAtom AddAtomA
-	#define FindAtom FindAtomA
-	#define GetAtomName GetAtomNameA
-	#define GetProfileInt GetProfileIntA
-	#define GetProfileString GetProfileStringA
-	#define WriteProfileString WriteProfileStringA
-	#define GetProfileSection GetProfileSectionA
-	#define WriteProfileSection WriteProfileSectionA
-	#define GetPrivateProfileInt GetPrivateProfileIntA
-	#define GetPrivateProfileString GetPrivateProfileStringA
-	#define WritePrivateProfileString WritePrivateProfileStringA
-	#define GetPrivateProfileSection GetPrivateProfileSectionA
-	#define WritePrivateProfileSection WritePrivateProfileSectionA
-	#define GetPrivateProfileSectionNames GetPrivateProfileSectionNamesA
-	#define GetPrivateProfileStruct GetPrivateProfileStructA
-	#define WritePrivateProfileStruct WritePrivateProfileStructA
+	declare function BeginUpdateResource alias "BeginUpdateResourceA"(byval pFileName as LPCSTR, byval bDeleteExistingResources as WINBOOL) as HANDLE
+	declare function UpdateResource alias "UpdateResourceA"(byval hUpdate as HANDLE, byval lpType as LPCSTR, byval lpName as LPCSTR, byval wLanguage as WORD, byval lpData as LPVOID, byval cb as DWORD) as WINBOOL
+	declare function EndUpdateResource alias "EndUpdateResourceA"(byval hUpdate as HANDLE, byval fDiscard as WINBOOL) as WINBOOL
+	declare function GlobalAddAtom alias "GlobalAddAtomA"(byval lpString as LPCSTR) as ATOM
+	declare function GlobalAddAtomEx alias "GlobalAddAtomExA"(byval lpString as LPCSTR, byval Flags as DWORD) as ATOM
+	declare function GlobalFindAtom alias "GlobalFindAtomA"(byval lpString as LPCSTR) as ATOM
+	declare function GlobalGetAtomName alias "GlobalGetAtomNameA"(byval nAtom as ATOM, byval lpBuffer as LPSTR, byval nSize as long) as UINT
+	declare function AddAtom alias "AddAtomA"(byval lpString as LPCSTR) as ATOM
+	declare function FindAtom alias "FindAtomA"(byval lpString as LPCSTR) as ATOM
+	declare function GetAtomName alias "GetAtomNameA"(byval nAtom as ATOM, byval lpBuffer as LPSTR, byval nSize as long) as UINT
+	declare function GetProfileInt alias "GetProfileIntA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval nDefault as INT_) as UINT
+	declare function GetProfileString alias "GetProfileStringA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval lpDefault as LPCSTR, byval lpReturnedString as LPSTR, byval nSize as DWORD) as DWORD
+	declare function WriteProfileString alias "WriteProfileStringA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval lpString as LPCSTR) as WINBOOL
+	declare function GetProfileSection alias "GetProfileSectionA"(byval lpAppName as LPCSTR, byval lpReturnedString as LPSTR, byval nSize as DWORD) as DWORD
+	declare function WriteProfileSection alias "WriteProfileSectionA"(byval lpAppName as LPCSTR, byval lpString as LPCSTR) as WINBOOL
+	declare function GetPrivateProfileInt alias "GetPrivateProfileIntA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval nDefault as INT_, byval lpFileName as LPCSTR) as UINT
+	declare function GetPrivateProfileString alias "GetPrivateProfileStringA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval lpDefault as LPCSTR, byval lpReturnedString as LPSTR, byval nSize as DWORD, byval lpFileName as LPCSTR) as DWORD
+	declare function WritePrivateProfileString alias "WritePrivateProfileStringA"(byval lpAppName as LPCSTR, byval lpKeyName as LPCSTR, byval lpString as LPCSTR, byval lpFileName as LPCSTR) as WINBOOL
+	declare function GetPrivateProfileSection alias "GetPrivateProfileSectionA"(byval lpAppName as LPCSTR, byval lpReturnedString as LPSTR, byval nSize as DWORD, byval lpFileName as LPCSTR) as DWORD
+	declare function WritePrivateProfileSection alias "WritePrivateProfileSectionA"(byval lpAppName as LPCSTR, byval lpString as LPCSTR, byval lpFileName as LPCSTR) as WINBOOL
+	declare function GetPrivateProfileSectionNames alias "GetPrivateProfileSectionNamesA"(byval lpszReturnBuffer as LPSTR, byval nSize as DWORD, byval lpFileName as LPCSTR) as DWORD
+	declare function GetPrivateProfileStruct alias "GetPrivateProfileStructA"(byval lpszSection as LPCSTR, byval lpszKey as LPCSTR, byval lpStruct as LPVOID, byval uSizeStruct as UINT, byval szFile as LPCSTR) as WINBOOL
+	declare function WritePrivateProfileStruct alias "WritePrivateProfileStructA"(byval lpszSection as LPCSTR, byval lpszKey as LPCSTR, byval lpStruct as LPVOID, byval uSizeStruct as UINT, byval szFile as LPCSTR) as WINBOOL
 #endif
 
 #if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define GetFirmwareEnvironmentVariableEx GetFirmwareEnvironmentVariableExA
-	#define SetFirmwareEnvironmentVariableEx SetFirmwareEnvironmentVariableExA
+	declare function GetFirmwareEnvironmentVariableEx alias "GetFirmwareEnvironmentVariableExA"(byval lpName as LPCSTR, byval lpGuid as LPCSTR, byval pBuffer as PVOID, byval nSize as DWORD, byval pdwAttribubutes as PDWORD) as DWORD
+	declare function SetFirmwareEnvironmentVariableEx alias "SetFirmwareEnvironmentVariableExA"(byval lpName as LPCSTR, byval lpGuid as LPCSTR, byval pValue as PVOID, byval nSize as DWORD, byval dwAttributes as DWORD) as WINBOOL
 #endif
 
 declare function GetSystemWow64DirectoryA(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
 declare function GetSystemWow64DirectoryW(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
 
 #ifdef UNICODE
-	#define GetSystemWow64Directory GetSystemWow64DirectoryW
+	declare function GetSystemWow64Directory alias "GetSystemWow64DirectoryW"(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
 #else
-	#define GetSystemWow64Directory GetSystemWow64DirectoryA
+	declare function GetSystemWow64Directory alias "GetSystemWow64DirectoryA"(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
 #endif
 
-declare function Wow64EnableWow64FsRedirection(byval Wow64FsEnableRedirection as BOOLEAN) as BOOLEAN
+declare function Wow64EnableWow64FsRedirection(byval Wow64FsEnableRedirection as WINBOOLEAN) as WINBOOLEAN
 type PGET_SYSTEM_WOW64_DIRECTORY_A as function(byval lpBuffer as LPSTR, byval uSize as UINT) as UINT
 type PGET_SYSTEM_WOW64_DIRECTORY_W as function(byval lpBuffer as LPWSTR, byval uSize as UINT) as UINT
 #define GET_SYSTEM_WOW64_DIRECTORY_NAME_A_A "GetSystemWow64DirectoryA"
@@ -3214,11 +3197,11 @@ declare function GetDllDirectoryA(byval nBufferLength as DWORD, byval lpBuffer a
 declare function GetDllDirectoryW(byval nBufferLength as DWORD, byval lpBuffer as LPWSTR) as DWORD
 
 #ifdef UNICODE
-	#define SetDllDirectory SetDllDirectoryW
-	#define GetDllDirectory GetDllDirectoryW
+	declare function SetDllDirectory alias "SetDllDirectoryW"(byval lpPathName as LPCWSTR) as WINBOOL
+	declare function GetDllDirectory alias "GetDllDirectoryW"(byval nBufferLength as DWORD, byval lpBuffer as LPWSTR) as DWORD
 #else
-	#define SetDllDirectory SetDllDirectoryA
-	#define GetDllDirectory GetDllDirectoryA
+	declare function SetDllDirectory alias "SetDllDirectoryA"(byval lpPathName as LPCSTR) as WINBOOL
+	declare function GetDllDirectory alias "GetDllDirectoryA"(byval nBufferLength as DWORD, byval lpBuffer as LPSTR) as DWORD
 #endif
 
 const BASE_SEARCH_PATH_ENABLE_SAFE_SEARCHMODE = &h1
@@ -3231,9 +3214,9 @@ declare function CreateDirectoryExA(byval lpTemplateDirectory as LPCSTR, byval l
 declare function CreateDirectoryExW(byval lpTemplateDirectory as LPCWSTR, byval lpNewDirectory as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateDirectoryEx CreateDirectoryExW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
-	#define CreateDirectoryEx CreateDirectoryExA
+	declare function CreateDirectoryEx alias "CreateDirectoryExW"(byval lpTemplateDirectory as LPCWSTR, byval lpNewDirectory as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
+	declare function CreateDirectoryEx alias "CreateDirectoryExA"(byval lpTemplateDirectory as LPCSTR, byval lpNewDirectory as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -3246,15 +3229,15 @@ declare function CreateDirectoryExW(byval lpTemplateDirectory as LPCWSTR, byval 
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateDirectoryTransacted CreateDirectoryTransactedW
-	#define RemoveDirectoryTransacted RemoveDirectoryTransactedW
-	#define GetFullPathNameTransacted GetFullPathNameTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
-	#define CreateDirectoryEx CreateDirectoryExA
+	declare function CreateDirectoryTransacted alias "CreateDirectoryTransactedW"(byval lpTemplateDirectory as LPCWSTR, byval lpNewDirectory as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval hTransaction as HANDLE) as WINBOOL
+	declare function RemoveDirectoryTransacted alias "RemoveDirectoryTransactedW"(byval lpPathName as LPCWSTR, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetFullPathNameTransacted alias "GetFullPathNameTransactedW"(byval lpFileName as LPCWSTR, byval nBufferLength as DWORD, byval lpBuffer as LPWSTR, byval lpFilePart as LPWSTR ptr, byval hTransaction as HANDLE) as DWORD
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function CreateDirectoryEx alias "CreateDirectoryExA"(byval lpTemplateDirectory as LPCSTR, byval lpNewDirectory as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateDirectoryTransacted CreateDirectoryTransactedA
-	#define RemoveDirectoryTransacted RemoveDirectoryTransactedA
-	#define GetFullPathNameTransacted GetFullPathNameTransactedA
+	declare function CreateDirectoryTransacted alias "CreateDirectoryTransactedA"(byval lpTemplateDirectory as LPCSTR, byval lpNewDirectory as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval hTransaction as HANDLE) as WINBOOL
+	declare function RemoveDirectoryTransacted alias "RemoveDirectoryTransactedA"(byval lpPathName as LPCSTR, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetFullPathNameTransacted alias "GetFullPathNameTransactedA"(byval lpFileName as LPCSTR, byval nBufferLength as DWORD, byval lpBuffer as LPSTR, byval lpFilePart as LPSTR ptr, byval hTransaction as HANDLE) as DWORD
 #endif
 
 const DDD_RAW_TARGET_PATH = &h00000001
@@ -3266,8 +3249,8 @@ declare function DefineDosDeviceA(byval dwFlags as DWORD, byval lpDeviceName as 
 declare function QueryDosDeviceA(byval lpDeviceName as LPCSTR, byval lpTargetPath as LPSTR, byval ucchMax as DWORD) as DWORD
 
 #ifndef UNICODE
-	#define DefineDosDevice DefineDosDeviceA
-	#define QueryDosDevice QueryDosDeviceA
+	declare function DefineDosDevice alias "DefineDosDeviceA"(byval dwFlags as DWORD, byval lpDeviceName as LPCSTR, byval lpTargetPath as LPCSTR) as WINBOOL
+	declare function QueryDosDevice alias "QueryDosDeviceA"(byval lpDeviceName as LPCSTR, byval lpTargetPath as LPSTR, byval ucchMax as DWORD) as DWORD
 #endif
 
 #define EXPAND_LOCAL_DRIVES
@@ -3278,9 +3261,9 @@ declare function QueryDosDeviceA(byval lpDeviceName as LPCSTR, byval lpTargetPat
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateFileTransacted CreateFileTransactedW
+	declare function CreateFileTransacted alias "CreateFileTransactedW"(byval lpFileName as LPCWSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwCreationDisposition as DWORD, byval dwFlagsAndAttributes as DWORD, byval hTemplateFile as HANDLE, byval hTransaction as HANDLE, byval pusMiniVersion as PUSHORT, byval lpExtendedParameter as PVOID) as HANDLE
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateFileTransacted CreateFileTransactedA
+	declare function CreateFileTransacted alias "CreateFileTransactedA"(byval lpFileName as LPCSTR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwCreationDisposition as DWORD, byval dwFlagsAndAttributes as DWORD, byval hTemplateFile as HANDLE, byval hTransaction as HANDLE, byval pusMiniVersion as PUSHORT, byval lpExtendedParameter as PVOID) as HANDLE
 #endif
 
 declare function ReOpenFile(byval hOriginalFile as HANDLE, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval dwFlagsAndAttributes as DWORD) as HANDLE
@@ -3293,20 +3276,20 @@ declare function ReOpenFile(byval hOriginalFile as HANDLE, byval dwDesiredAccess
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define SetFileAttributesTransacted SetFileAttributesTransactedW
-	#define GetFileAttributesTransacted GetFileAttributesTransactedW
+	declare function SetFileAttributesTransacted alias "SetFileAttributesTransactedW"(byval lpFileName as LPCWSTR, byval dwFileAttributes as DWORD, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetFileAttributesTransacted alias "GetFileAttributesTransactedW"(byval lpFileName as LPCWSTR, byval fInfoLevelId as GET_FILEEX_INFO_LEVELS, byval lpFileInformation as LPVOID, byval hTransaction as HANDLE) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SetFileAttributesTransacted SetFileAttributesTransactedA
-	#define GetFileAttributesTransacted GetFileAttributesTransactedA
+	declare function SetFileAttributesTransacted alias "SetFileAttributesTransactedA"(byval lpFileName as LPCSTR, byval dwFileAttributes as DWORD, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetFileAttributesTransacted alias "GetFileAttributesTransactedA"(byval lpFileName as LPCSTR, byval fInfoLevelId as GET_FILEEX_INFO_LEVELS, byval lpFileInformation as LPVOID, byval hTransaction as HANDLE) as WINBOOL
 #endif
 
 declare function GetCompressedFileSizeA(byval lpFileName as LPCSTR, byval lpFileSizeHigh as LPDWORD) as DWORD
 declare function GetCompressedFileSizeW(byval lpFileName as LPCWSTR, byval lpFileSizeHigh as LPDWORD) as DWORD
 
 #ifdef UNICODE
-	#define GetCompressedFileSize GetCompressedFileSizeW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
-	#define GetCompressedFileSize GetCompressedFileSizeA
+	declare function GetCompressedFileSize alias "GetCompressedFileSizeW"(byval lpFileName as LPCWSTR, byval lpFileSizeHigh as LPDWORD) as DWORD
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
+	declare function GetCompressedFileSize alias "GetCompressedFileSizeA"(byval lpFileName as LPCSTR, byval lpFileSizeHigh as LPDWORD) as DWORD
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -3317,13 +3300,13 @@ declare function GetCompressedFileSizeW(byval lpFileName as LPCWSTR, byval lpFil
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define DeleteFileTransacted DeleteFileTransactedW
-	#define GetCompressedFileSizeTransacted GetCompressedFileSizeTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
-	#define GetCompressedFileSize GetCompressedFileSizeA
+	declare function DeleteFileTransacted alias "DeleteFileTransactedW"(byval lpFileName as LPCWSTR, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetCompressedFileSizeTransacted alias "GetCompressedFileSizeTransactedW"(byval lpFileName as LPCWSTR, byval lpFileSizeHigh as LPDWORD, byval hTransaction as HANDLE) as DWORD
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function GetCompressedFileSize alias "GetCompressedFileSizeA"(byval lpFileName as LPCSTR, byval lpFileSizeHigh as LPDWORD) as DWORD
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define DeleteFileTransacted DeleteFileTransactedA
-	#define GetCompressedFileSizeTransacted GetCompressedFileSizeTransactedA
+	declare function DeleteFileTransacted alias "DeleteFileTransactedA"(byval lpFileName as LPCSTR, byval hTransaction as HANDLE) as WINBOOL
+	declare function GetCompressedFileSizeTransacted alias "GetCompressedFileSizeTransactedA"(byval lpFileName as LPCSTR, byval lpFileSizeHigh as LPDWORD, byval hTransaction as HANDLE) as DWORD
 #endif
 
 type LPPROGRESS_ROUTINE as function(byval TotalFileSize as LARGE_INTEGER, byval TotalBytesTransferred as LARGE_INTEGER, byval StreamSize as LARGE_INTEGER, byval StreamBytesTransferred as LARGE_INTEGER, byval dwStreamNumber as DWORD, byval dwCallbackReason as DWORD, byval hSourceFile as HANDLE, byval hDestinationFile as HANDLE, byval lpData as LPVOID) as DWORD
@@ -3341,21 +3324,21 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 	declare function CopyFileTransactedW(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define FindFirstFileTransacted FindFirstFileTransactedW
-	#define CopyFileTransacted CopyFileTransactedW
-#endif
-
 #ifdef UNICODE
-	#define CheckNameLegalDOS8Dot3 CheckNameLegalDOS8Dot3W
-	#define CopyFile CopyFileW
-	#define CopyFileEx CopyFileExW
+	#if _WIN32_WINNT = &h0602
+		declare function FindFirstFileTransacted alias "FindFirstFileTransactedW"(byval lpFileName as LPCWSTR, byval fInfoLevelId as FINDEX_INFO_LEVELS, byval lpFindFileData as LPVOID, byval fSearchOp as FINDEX_SEARCH_OPS, byval lpSearchFilter as LPVOID, byval dwAdditionalFlags as DWORD, byval hTransaction as HANDLE) as HANDLE
+		declare function CopyFileTransacted alias "CopyFileTransactedW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
+	#endif
+
+	declare function CheckNameLegalDOS8Dot3 alias "CheckNameLegalDOS8Dot3W"(byval lpName as LPCWSTR, byval lpOemName as LPSTR, byval OemNameSize as DWORD, byval pbNameContainsSpaces as PBOOL, byval pbNameLegal as PBOOL) as WINBOOL
+	declare function CopyFile alias "CopyFileW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval bFailIfExists as WINBOOL) as WINBOOL
+	declare function CopyFileEx alias "CopyFileExW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define FindFirstFileTransacted FindFirstFileTransactedA
-	#define CopyFileTransacted CopyFileTransactedA
-	#define CheckNameLegalDOS8Dot3 CheckNameLegalDOS8Dot3A
-	#define CopyFile CopyFileA
-	#define CopyFileEx CopyFileExA
+	declare function FindFirstFileTransacted alias "FindFirstFileTransactedA"(byval lpFileName as LPCSTR, byval fInfoLevelId as FINDEX_INFO_LEVELS, byval lpFindFileData as LPVOID, byval fSearchOp as FINDEX_SEARCH_OPS, byval lpSearchFilter as LPVOID, byval dwAdditionalFlags as DWORD, byval hTransaction as HANDLE) as HANDLE
+	declare function CopyFileTransacted alias "CopyFileTransactedA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
+	declare function CheckNameLegalDOS8Dot3 alias "CheckNameLegalDOS8Dot3A"(byval lpName as LPCSTR, byval lpOemName as LPSTR, byval OemNameSize as DWORD, byval pbNameContainsSpaces as PBOOL, byval pbNameLegal as PBOOL) as WINBOOL
+	declare function CopyFile alias "CopyFileA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval bFailIfExists as WINBOOL) as WINBOOL
+	declare function CopyFileEx alias "CopyFileExA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -3485,37 +3468,37 @@ declare function CopyFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFil
 	end type
 
 	declare function CopyFile2(byval pwszExistingFileName as PCWSTR, byval pwszNewFileName as PCWSTR, byval pExtendedParameters as COPYFILE2_EXTENDED_PARAMETERS ptr) as HRESULT
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define CheckNameLegalDOS8Dot3 CheckNameLegalDOS8Dot3A
-	#define CopyFile CopyFileA
-	#define CopyFileEx CopyFileExA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function CheckNameLegalDOS8Dot3 alias "CheckNameLegalDOS8Dot3A"(byval lpName as LPCSTR, byval lpOemName as LPSTR, byval OemNameSize as DWORD, byval pbNameContainsSpaces as PBOOL, byval pbNameLegal as PBOOL) as WINBOOL
+	declare function CopyFile alias "CopyFileA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval bFailIfExists as WINBOOL) as WINBOOL
+	declare function CopyFileEx alias "CopyFileExA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval pbCancel as LPBOOL, byval dwCopyFlags as DWORD) as WINBOOL
 #endif
 
 declare function MoveFileA(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR) as WINBOOL
 declare function MoveFileW(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
-	#define MoveFile MoveFileW
+	declare function MoveFile alias "MoveFileW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR) as WINBOOL
 #else
-	#define MoveFile MoveFileA
+	declare function MoveFile alias "MoveFileA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR) as WINBOOL
 #endif
 
 declare function MoveFileExA(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval dwFlags as DWORD) as WINBOOL
 declare function MoveFileExW(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define MoveFileEx MoveFileExW
+	declare function MoveFileEx alias "MoveFileExW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 #else
-	#define MoveFileEx MoveFileExA
+	declare function MoveFileEx alias "MoveFileExA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 declare function MoveFileWithProgressA(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD) as WINBOOL
 declare function MoveFileWithProgressW(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define MoveFileWithProgress MoveFileWithProgressW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
-	#define MoveFileWithProgress MoveFileWithProgressA
+	declare function MoveFileWithProgress alias "MoveFileWithProgressW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD) as WINBOOL
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
+	declare function MoveFileWithProgress alias "MoveFileWithProgressA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -3524,11 +3507,11 @@ declare function MoveFileWithProgressW(byval lpExistingFileName as LPCWSTR, byva
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define MoveFileTransacted MoveFileTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
-	#define MoveFileWithProgress MoveFileWithProgressA
+	declare function MoveFileTransacted alias "MoveFileTransactedW"(byval lpExistingFileName as LPCWSTR, byval lpNewFileName as LPCWSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function MoveFileWithProgress alias "MoveFileWithProgressA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define MoveFileTransacted MoveFileTransactedA
+	declare function MoveFileTransacted alias "MoveFileTransactedA"(byval lpExistingFileName as LPCSTR, byval lpNewFileName as LPCSTR, byval lpProgressRoutine as LPPROGRESS_ROUTINE, byval lpData as LPVOID, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOL
 #endif
 
 const MOVEFILE_REPLACE_EXISTING = &h00000001
@@ -3544,11 +3527,11 @@ declare function CreateHardLinkA(byval lpFileName as LPCSTR, byval lpExistingFil
 declare function CreateHardLinkW(byval lpFileName as LPCWSTR, byval lpExistingFileName as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 
 #ifdef UNICODE
-	#define ReplaceFile ReplaceFileW
-	#define CreateHardLink CreateHardLinkW
-#elseif (not defined(UNICODE)) and ((defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)) or (not defined(__FB_64BIT__)))
-	#define ReplaceFile ReplaceFileA
-	#define CreateHardLink CreateHardLinkA
+	declare function ReplaceFile alias "ReplaceFileW"(byval lpReplacedFileName as LPCWSTR, byval lpReplacementFileName as LPCWSTR, byval lpBackupFileName as LPCWSTR, byval dwReplaceFlags as DWORD, byval lpExclude as LPVOID, byval lpReserved as LPVOID) as WINBOOL
+	declare function CreateHardLink alias "CreateHardLinkW"(byval lpFileName as LPCWSTR, byval lpExistingFileName as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
+#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
+	declare function ReplaceFile alias "ReplaceFileA"(byval lpReplacedFileName as LPCSTR, byval lpReplacementFileName as LPCSTR, byval lpBackupFileName as LPCSTR, byval dwReplaceFlags as DWORD, byval lpExclude as LPVOID, byval lpReserved as LPVOID) as WINBOOL
+	declare function CreateHardLink alias "CreateHardLinkA"(byval lpFileName as LPCSTR, byval lpExistingFileName as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -3557,12 +3540,12 @@ declare function CreateHardLinkW(byval lpFileName as LPCWSTR, byval lpExistingFi
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateHardLinkTransacted CreateHardLinkTransactedW
-#elseif defined(__FB_64BIT__) and ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)))
-	#define ReplaceFile ReplaceFileA
-	#define CreateHardLink CreateHardLinkA
+	declare function CreateHardLinkTransacted alias "CreateHardLinkTransactedW"(byval lpFileName as LPCWSTR, byval lpExistingFileName as LPCWSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval hTransaction as HANDLE) as WINBOOL
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function ReplaceFile alias "ReplaceFileA"(byval lpReplacedFileName as LPCSTR, byval lpReplacementFileName as LPCSTR, byval lpBackupFileName as LPCSTR, byval dwReplaceFlags as DWORD, byval lpExclude as LPVOID, byval lpReserved as LPVOID) as WINBOOL
+	declare function CreateHardLink alias "CreateHardLinkA"(byval lpFileName as LPCSTR, byval lpExistingFileName as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateHardLinkTransacted CreateHardLinkTransactedA
+	declare function CreateHardLinkTransacted alias "CreateHardLinkTransactedA"(byval lpFileName as LPCSTR, byval lpExistingFileName as LPCSTR, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval hTransaction as HANDLE) as WINBOOL
 #endif
 
 type _STREAM_INFO_LEVELS as long
@@ -3630,34 +3613,34 @@ declare function ReportEventA(byval hEventLog as HANDLE, byval wType as WORD, by
 declare function ReportEventW(byval hEventLog as HANDLE, byval wType as WORD, byval wCategory as WORD, byval dwEventID as DWORD, byval lpUserSid as PSID, byval wNumStrings as WORD, byval dwDataSize as DWORD, byval lpStrings as LPCWSTR ptr, byval lpRawData as LPVOID) as WINBOOL
 
 #ifdef UNICODE
-	#define GetNamedPipeHandleState GetNamedPipeHandleStateW
-	#define CallNamedPipe CallNamedPipeW
-	#define SetVolumeLabel SetVolumeLabelW
-	#define ClearEventLog ClearEventLogW
-	#define BackupEventLog BackupEventLogW
-	#define OpenEventLog OpenEventLogW
-	#define RegisterEventSource RegisterEventSourceW
-	#define OpenBackupEventLog OpenBackupEventLogW
-	#define ReadEventLog ReadEventLogW
-	#define ReportEvent ReportEventW
+	declare function GetNamedPipeHandleState alias "GetNamedPipeHandleStateW"(byval hNamedPipe as HANDLE, byval lpState as LPDWORD, byval lpCurInstances as LPDWORD, byval lpMaxCollectionCount as LPDWORD, byval lpCollectDataTimeout as LPDWORD, byval lpUserName as LPWSTR, byval nMaxUserNameSize as DWORD) as WINBOOL
+	declare function CallNamedPipe alias "CallNamedPipeW"(byval lpNamedPipeName as LPCWSTR, byval lpInBuffer as LPVOID, byval nInBufferSize as DWORD, byval lpOutBuffer as LPVOID, byval nOutBufferSize as DWORD, byval lpBytesRead as LPDWORD, byval nTimeOut as DWORD) as WINBOOL
+	declare function SetVolumeLabel alias "SetVolumeLabelW"(byval lpRootPathName as LPCWSTR, byval lpVolumeName as LPCWSTR) as WINBOOL
+	declare function ClearEventLog alias "ClearEventLogW"(byval hEventLog as HANDLE, byval lpBackupFileName as LPCWSTR) as WINBOOL
+	declare function BackupEventLog alias "BackupEventLogW"(byval hEventLog as HANDLE, byval lpBackupFileName as LPCWSTR) as WINBOOL
+	declare function OpenEventLog alias "OpenEventLogW"(byval lpUNCServerName as LPCWSTR, byval lpSourceName as LPCWSTR) as HANDLE
+	declare function RegisterEventSource alias "RegisterEventSourceW"(byval lpUNCServerName as LPCWSTR, byval lpSourceName as LPCWSTR) as HANDLE
+	declare function OpenBackupEventLog alias "OpenBackupEventLogW"(byval lpUNCServerName as LPCWSTR, byval lpFileName as LPCWSTR) as HANDLE
+	declare function ReadEventLog alias "ReadEventLogW"(byval hEventLog as HANDLE, byval dwReadFlags as DWORD, byval dwRecordOffset as DWORD, byval lpBuffer as LPVOID, byval nNumberOfBytesToRead as DWORD, byval pnBytesRead as DWORD ptr, byval pnMinNumberOfBytesNeeded as DWORD ptr) as WINBOOL
+	declare function ReportEvent alias "ReportEventW"(byval hEventLog as HANDLE, byval wType as WORD, byval wCategory as WORD, byval dwEventID as DWORD, byval lpUserSid as PSID, byval wNumStrings as WORD, byval dwDataSize as DWORD, byval lpStrings as LPCWSTR ptr, byval lpRawData as LPVOID) as WINBOOL
 #else
-	#define CreateNamedPipe CreateNamedPipeA
-	#define WaitNamedPipe WaitNamedPipeA
-	#define GetVolumeInformation GetVolumeInformationA
-	#define GetNamedPipeHandleState GetNamedPipeHandleStateA
-	#define CallNamedPipe CallNamedPipeA
-	#define SetVolumeLabel SetVolumeLabelA
-	#define ClearEventLog ClearEventLogA
-	#define BackupEventLog BackupEventLogA
-	#define OpenEventLog OpenEventLogA
-	#define RegisterEventSource RegisterEventSourceA
-	#define OpenBackupEventLog OpenBackupEventLogA
-	#define ReadEventLog ReadEventLogA
-	#define ReportEvent ReportEventA
+	declare function CreateNamedPipe alias "CreateNamedPipeA"(byval lpName as LPCSTR, byval dwOpenMode as DWORD, byval dwPipeMode as DWORD, byval nMaxInstances as DWORD, byval nOutBufferSize as DWORD, byval nInBufferSize as DWORD, byval nDefaultTimeOut as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES) as HANDLE
+	declare function WaitNamedPipe alias "WaitNamedPipeA"(byval lpNamedPipeName as LPCSTR, byval nTimeOut as DWORD) as WINBOOL
+	declare function GetVolumeInformation alias "GetVolumeInformationA"(byval lpRootPathName as LPCSTR, byval lpVolumeNameBuffer as LPSTR, byval nVolumeNameSize as DWORD, byval lpVolumeSerialNumber as LPDWORD, byval lpMaximumComponentLength as LPDWORD, byval lpFileSystemFlags as LPDWORD, byval lpFileSystemNameBuffer as LPSTR, byval nFileSystemNameSize as DWORD) as WINBOOL
+	declare function GetNamedPipeHandleState alias "GetNamedPipeHandleStateA"(byval hNamedPipe as HANDLE, byval lpState as LPDWORD, byval lpCurInstances as LPDWORD, byval lpMaxCollectionCount as LPDWORD, byval lpCollectDataTimeout as LPDWORD, byval lpUserName as LPSTR, byval nMaxUserNameSize as DWORD) as WINBOOL
+	declare function CallNamedPipe alias "CallNamedPipeA"(byval lpNamedPipeName as LPCSTR, byval lpInBuffer as LPVOID, byval nInBufferSize as DWORD, byval lpOutBuffer as LPVOID, byval nOutBufferSize as DWORD, byval lpBytesRead as LPDWORD, byval nTimeOut as DWORD) as WINBOOL
+	declare function SetVolumeLabel alias "SetVolumeLabelA"(byval lpRootPathName as LPCSTR, byval lpVolumeName as LPCSTR) as WINBOOL
+	declare function ClearEventLog alias "ClearEventLogA"(byval hEventLog as HANDLE, byval lpBackupFileName as LPCSTR) as WINBOOL
+	declare function BackupEventLog alias "BackupEventLogA"(byval hEventLog as HANDLE, byval lpBackupFileName as LPCSTR) as WINBOOL
+	declare function OpenEventLog alias "OpenEventLogA"(byval lpUNCServerName as LPCSTR, byval lpSourceName as LPCSTR) as HANDLE
+	declare function RegisterEventSource alias "RegisterEventSourceA"(byval lpUNCServerName as LPCSTR, byval lpSourceName as LPCSTR) as HANDLE
+	declare function OpenBackupEventLog alias "OpenBackupEventLogA"(byval lpUNCServerName as LPCSTR, byval lpFileName as LPCSTR) as HANDLE
+	declare function ReadEventLog alias "ReadEventLogA"(byval hEventLog as HANDLE, byval dwReadFlags as DWORD, byval dwRecordOffset as DWORD, byval lpBuffer as LPVOID, byval nNumberOfBytesToRead as DWORD, byval pnBytesRead as DWORD ptr, byval pnMinNumberOfBytesNeeded as DWORD ptr) as WINBOOL
+	declare function ReportEvent alias "ReportEventA"(byval hEventLog as HANDLE, byval wType as WORD, byval wCategory as WORD, byval dwEventID as DWORD, byval lpUserSid as PSID, byval wNumStrings as WORD, byval dwDataSize as DWORD, byval lpStrings as LPCSTR ptr, byval lpRawData as LPVOID) as WINBOOL
 #endif
 
 #if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define GetNamedPipeClientComputerName GetNamedPipeClientComputerNameA
+	declare function GetNamedPipeClientComputerName alias "GetNamedPipeClientComputerNameA"(byval Pipe as HANDLE, byval ClientComputerName as LPSTR, byval ClientComputerNameLength as ULONG) as WINBOOL
 #endif
 
 const EVENTLOG_FULL_INFO = 0
@@ -3728,43 +3711,43 @@ declare function LookupAccountNameA(byval lpSystemName as LPCSTR, byval lpAccoun
 declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccountName as LPCWSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 
 #ifdef UNICODE
-	#define IsBadStringPtr IsBadStringPtrW
-	#define LookupAccountSid LookupAccountSidW
-	#define LookupAccountName LookupAccountNameW
+	declare function IsBadStringPtr alias "IsBadStringPtrW"(byval lpsz as LPCWSTR, byval ucchMax as UINT_PTR) as WINBOOL
+	declare function LookupAccountSid alias "LookupAccountSidW"(byval lpSystemName as LPCWSTR, byval Sid as PSID, byval Name as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountName alias "LookupAccountNameW"(byval lpSystemName as LPCWSTR, byval lpAccountName as LPCWSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 #else
-	#define AccessCheckAndAuditAlarm AccessCheckAndAuditAlarmA
-	#define AccessCheckByTypeAndAuditAlarm AccessCheckByTypeAndAuditAlarmA
-	#define AccessCheckByTypeResultListAndAuditAlarm AccessCheckByTypeResultListAndAuditAlarmA
-	#define AccessCheckByTypeResultListAndAuditAlarmByHandle AccessCheckByTypeResultListAndAuditAlarmByHandleA
-	#define ObjectOpenAuditAlarm ObjectOpenAuditAlarmA
-	#define ObjectPrivilegeAuditAlarm ObjectPrivilegeAuditAlarmA
-	#define ObjectCloseAuditAlarm ObjectCloseAuditAlarmA
-	#define ObjectDeleteAuditAlarm ObjectDeleteAuditAlarmA
-	#define PrivilegedServiceAuditAlarm PrivilegedServiceAuditAlarmA
-	#define SetFileSecurity SetFileSecurityA
-	#define GetFileSecurity GetFileSecurityA
-	#define IsBadStringPtr IsBadStringPtrA
-	#define LookupAccountSid LookupAccountSidA
-	#define LookupAccountName LookupAccountNameA
+	declare function AccessCheckAndAuditAlarm alias "AccessCheckAndAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPSTR, byval ObjectName as LPSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval DesiredAccess as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
+	declare function AccessCheckByTypeAndAuditAlarm alias "AccessCheckByTypeAndAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCSTR, byval ObjectName as LPCSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatus as LPBOOL, byval pfGenerateOnClose as LPBOOL) as WINBOOL
+	declare function AccessCheckByTypeResultListAndAuditAlarm alias "AccessCheckByTypeResultListAndAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPCSTR, byval ObjectName as LPCSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
+	declare function AccessCheckByTypeResultListAndAuditAlarmByHandle alias "AccessCheckByTypeResultListAndAuditAlarmByHandleA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval ObjectTypeName as LPCSTR, byval ObjectName as LPCSTR, byval SecurityDescriptor as PSECURITY_DESCRIPTOR, byval PrincipalSelfSid as PSID, byval DesiredAccess as DWORD, byval AuditType as AUDIT_EVENT_TYPE, byval Flags as DWORD, byval ObjectTypeList as POBJECT_TYPE_LIST, byval ObjectTypeListLength as DWORD, byval GenericMapping as PGENERIC_MAPPING, byval ObjectCreation as WINBOOL, byval GrantedAccess as LPDWORD, byval AccessStatusList as LPDWORD, byval pfGenerateOnClose as LPBOOL) as WINBOOL
+	declare function ObjectOpenAuditAlarm alias "ObjectOpenAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ObjectTypeName as LPSTR, byval ObjectName as LPSTR, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval GrantedAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval ObjectCreation as WINBOOL, byval AccessGranted as WINBOOL, byval GenerateOnClose as LPBOOL) as WINBOOL
+	declare function ObjectPrivilegeAuditAlarm alias "ObjectPrivilegeAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval ClientToken as HANDLE, byval DesiredAccess as DWORD, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
+	declare function ObjectCloseAuditAlarm alias "ObjectCloseAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
+	declare function ObjectDeleteAuditAlarm alias "ObjectDeleteAuditAlarmA"(byval SubsystemName as LPCSTR, byval HandleId as LPVOID, byval GenerateOnClose as WINBOOL) as WINBOOL
+	declare function PrivilegedServiceAuditAlarm alias "PrivilegedServiceAuditAlarmA"(byval SubsystemName as LPCSTR, byval ServiceName as LPCSTR, byval ClientToken as HANDLE, byval Privileges as PPRIVILEGE_SET, byval AccessGranted as WINBOOL) as WINBOOL
+	declare function SetFileSecurity alias "SetFileSecurityA"(byval lpFileName as LPCSTR, byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOL
+	declare function GetFileSecurity alias "GetFileSecurityA"(byval lpFileName as LPCSTR, byval RequestedInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR, byval nLength as DWORD, byval lpnLengthNeeded as LPDWORD) as WINBOOL
+	declare function IsBadStringPtr alias "IsBadStringPtrA"(byval lpsz as LPCSTR, byval ucchMax as UINT_PTR) as WINBOOL
+	declare function LookupAccountSid alias "LookupAccountSidA"(byval lpSystemName as LPCSTR, byval Sid as PSID, byval Name as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountName alias "LookupAccountNameA"(byval lpSystemName as LPCSTR, byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 #endif
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define LookupAccountNameLocalA(n, s, cs, d, cd, u) LookupAccountNameA(NULL, n, s, cs, d, cd, u)
 	#define LookupAccountNameLocalW(n, s, cs, d, cd, u) LookupAccountNameW(NULL, n, s, cs, d, cd, u)
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountNameLocal(n, s, cs, d, cd, u) LookupAccountNameW(NULL, n, s, cs, d, cd, u)
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountNameLocal(n, s, cs, d, cd, u) LookupAccountNameA(NULL, n, s, cs, d, cd, u)
 #endif
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	#define LookupAccountSidLocalA(s, n, cn, d, cd, u) LookupAccountSidA(NULL, s, n, cn, d, cd, u)
 	#define LookupAccountSidLocalW(s, n, cn, d, cd, u) LookupAccountSidW(NULL, s, n, cn, d, cd, u)
 #endif
 
-#if defined(UNICODE) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+#if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountSidLocal(s, n, cn, d, cd, u) LookupAccountSidW(NULL, s, n, cn, d, cd, u)
 #elseif _WIN32_WINNT = &h0602
 	declare function LookupAccountNameLocalA(byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
@@ -3774,13 +3757,13 @@ declare function LookupAccountNameW(byval lpSystemName as LPCWSTR, byval lpAccou
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define LookupAccountNameLocal LookupAccountNameLocalW
-	#define LookupAccountSidLocal LookupAccountSidLocalW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
+	declare function LookupAccountNameLocal alias "LookupAccountNameLocalW"(byval lpAccountName as LPCWSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountSidLocal alias "LookupAccountSidLocalW"(byval Sid as PSID, byval Name as LPWSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPWSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	#define LookupAccountSidLocal(s, n, cn, d, cd, u) LookupAccountSidA(NULL, s, n, cn, d, cd, u)
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define LookupAccountNameLocal LookupAccountNameLocalA
-	#define LookupAccountSidLocal LookupAccountSidLocalA
+	declare function LookupAccountNameLocal alias "LookupAccountNameLocalA"(byval lpAccountName as LPCSTR, byval Sid as PSID, byval cbSid as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
+	declare function LookupAccountSidLocal alias "LookupAccountSidLocalA"(byval Sid as PSID, byval Name as LPSTR, byval cchName as LPDWORD, byval ReferencedDomainName as LPSTR, byval cchReferencedDomainName as LPDWORD, byval peUse as PSID_NAME_USE) as WINBOOL
 #endif
 
 declare function LookupPrivilegeValueA(byval lpSystemName as LPCSTR, byval lpName as LPCSTR, byval lpLuid as PLUID) as WINBOOL
@@ -3801,23 +3784,23 @@ declare function SetDefaultCommConfigA(byval lpszName as LPCSTR, byval lpCC as L
 declare function SetDefaultCommConfigW(byval lpszName as LPCWSTR, byval lpCC as LPCOMMCONFIG, byval dwSize as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define LookupPrivilegeValue LookupPrivilegeValueW
-	#define LookupPrivilegeName LookupPrivilegeNameW
-	#define LookupPrivilegeDisplayName LookupPrivilegeDisplayNameW
-	#define BuildCommDCB BuildCommDCBW
-	#define BuildCommDCBAndTimeouts BuildCommDCBAndTimeoutsW
-	#define CommConfigDialog CommConfigDialogW
-	#define GetDefaultCommConfig GetDefaultCommConfigW
-	#define SetDefaultCommConfig SetDefaultCommConfigW
+	declare function LookupPrivilegeValue alias "LookupPrivilegeValueW"(byval lpSystemName as LPCWSTR, byval lpName as LPCWSTR, byval lpLuid as PLUID) as WINBOOL
+	declare function LookupPrivilegeName alias "LookupPrivilegeNameW"(byval lpSystemName as LPCWSTR, byval lpLuid as PLUID, byval lpName as LPWSTR, byval cchName as LPDWORD) as WINBOOL
+	declare function LookupPrivilegeDisplayName alias "LookupPrivilegeDisplayNameW"(byval lpSystemName as LPCWSTR, byval lpName as LPCWSTR, byval lpDisplayName as LPWSTR, byval cchDisplayName as LPDWORD, byval lpLanguageId as LPDWORD) as WINBOOL
+	declare function BuildCommDCB alias "BuildCommDCBW"(byval lpDef as LPCWSTR, byval lpDCB as LPDCB) as WINBOOL
+	declare function BuildCommDCBAndTimeouts alias "BuildCommDCBAndTimeoutsW"(byval lpDef as LPCWSTR, byval lpDCB as LPDCB, byval lpCommTimeouts as LPCOMMTIMEOUTS) as WINBOOL
+	declare function CommConfigDialog alias "CommConfigDialogW"(byval lpszName as LPCWSTR, byval hWnd as HWND, byval lpCC as LPCOMMCONFIG) as WINBOOL
+	declare function GetDefaultCommConfig alias "GetDefaultCommConfigW"(byval lpszName as LPCWSTR, byval lpCC as LPCOMMCONFIG, byval lpdwSize as LPDWORD) as WINBOOL
+	declare function SetDefaultCommConfig alias "SetDefaultCommConfigW"(byval lpszName as LPCWSTR, byval lpCC as LPCOMMCONFIG, byval dwSize as DWORD) as WINBOOL
 #else
-	#define LookupPrivilegeValue LookupPrivilegeValueA
-	#define LookupPrivilegeName LookupPrivilegeNameA
-	#define LookupPrivilegeDisplayName LookupPrivilegeDisplayNameA
-	#define BuildCommDCB BuildCommDCBA
-	#define BuildCommDCBAndTimeouts BuildCommDCBAndTimeoutsA
-	#define CommConfigDialog CommConfigDialogA
-	#define GetDefaultCommConfig GetDefaultCommConfigA
-	#define SetDefaultCommConfig SetDefaultCommConfigA
+	declare function LookupPrivilegeValue alias "LookupPrivilegeValueA"(byval lpSystemName as LPCSTR, byval lpName as LPCSTR, byval lpLuid as PLUID) as WINBOOL
+	declare function LookupPrivilegeName alias "LookupPrivilegeNameA"(byval lpSystemName as LPCSTR, byval lpLuid as PLUID, byval lpName as LPSTR, byval cchName as LPDWORD) as WINBOOL
+	declare function LookupPrivilegeDisplayName alias "LookupPrivilegeDisplayNameA"(byval lpSystemName as LPCSTR, byval lpName as LPCSTR, byval lpDisplayName as LPSTR, byval cchDisplayName as LPDWORD, byval lpLanguageId as LPDWORD) as WINBOOL
+	declare function BuildCommDCB alias "BuildCommDCBA"(byval lpDef as LPCSTR, byval lpDCB as LPDCB) as WINBOOL
+	declare function BuildCommDCBAndTimeouts alias "BuildCommDCBAndTimeoutsA"(byval lpDef as LPCSTR, byval lpDCB as LPDCB, byval lpCommTimeouts as LPCOMMTIMEOUTS) as WINBOOL
+	declare function CommConfigDialog alias "CommConfigDialogA"(byval lpszName as LPCSTR, byval hWnd as HWND, byval lpCC as LPCOMMCONFIG) as WINBOOL
+	declare function GetDefaultCommConfig alias "GetDefaultCommConfigA"(byval lpszName as LPCSTR, byval lpCC as LPCOMMCONFIG, byval lpdwSize as LPDWORD) as WINBOOL
+	declare function SetDefaultCommConfig alias "SetDefaultCommConfigA"(byval lpszName as LPCSTR, byval lpCC as LPCOMMCONFIG, byval dwSize as DWORD) as WINBOOL
 #endif
 
 const MAX_COMPUTERNAME_LENGTH = 15
@@ -3832,16 +3815,16 @@ declare function GetUserNameA(byval lpBuffer as LPSTR, byval pcbBuffer as LPDWOR
 declare function GetUserNameW(byval lpBuffer as LPWSTR, byval pcbBuffer as LPDWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define GetComputerName GetComputerNameW
-	#define SetComputerName SetComputerNameW
-	#define DnsHostnameToComputerName DnsHostnameToComputerNameW
-	#define GetUserName GetUserNameW
+	declare function GetComputerName alias "GetComputerNameW"(byval lpBuffer as LPWSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function SetComputerName alias "SetComputerNameW"(byval lpComputerName as LPCWSTR) as WINBOOL
+	declare function DnsHostnameToComputerName alias "DnsHostnameToComputerNameW"(byval Hostname as LPCWSTR, byval ComputerName as LPWSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function GetUserName alias "GetUserNameW"(byval lpBuffer as LPWSTR, byval pcbBuffer as LPDWORD) as WINBOOL
 #else
-	#define SetComputerNameEx SetComputerNameExA
-	#define GetComputerName GetComputerNameA
-	#define SetComputerName SetComputerNameA
-	#define DnsHostnameToComputerName DnsHostnameToComputerNameA
-	#define GetUserName GetUserNameA
+	declare function SetComputerNameEx alias "SetComputerNameExA"(byval NameType as COMPUTER_NAME_FORMAT, byval lpBuffer as LPCTSTR) as WINBOOL
+	declare function GetComputerName alias "GetComputerNameA"(byval lpBuffer as LPSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function SetComputerName alias "SetComputerNameA"(byval lpComputerName as LPCSTR) as WINBOOL
+	declare function DnsHostnameToComputerName alias "DnsHostnameToComputerNameA"(byval Hostname as LPCSTR, byval ComputerName as LPSTR, byval nSize as LPDWORD) as WINBOOL
+	declare function GetUserName alias "GetUserNameA"(byval lpBuffer as LPSTR, byval pcbBuffer as LPDWORD) as WINBOOL
 #endif
 
 const LOGON32_LOGON_INTERACTIVE = 2
@@ -3867,12 +3850,12 @@ declare function LogonUserExW(byval lpszUsername as LPCWSTR, byval lpszDomain as
 declare function CreateProcessAsUserA(byval hToken as HANDLE, byval lpApplicationName as LPCSTR, byval lpCommandLine as LPSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCSTR, byval lpStartupInfo as LPSTARTUPINFOA, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
 
 #ifdef UNICODE
-	#define LogonUser LogonUserW
-	#define LogonUserEx LogonUserExW
+	declare function LogonUser alias "LogonUserW"(byval lpszUsername as LPCWSTR, byval lpszDomain as LPCWSTR, byval lpszPassword as LPCWSTR, byval dwLogonType as DWORD, byval dwLogonProvider as DWORD, byval phToken as PHANDLE) as WINBOOL
+	declare function LogonUserEx alias "LogonUserExW"(byval lpszUsername as LPCWSTR, byval lpszDomain as LPCWSTR, byval lpszPassword as LPCWSTR, byval dwLogonType as DWORD, byval dwLogonProvider as DWORD, byval phToken as PHANDLE, byval ppLogonSid as PSID ptr, byval ppProfileBuffer as PVOID ptr, byval pdwProfileLength as LPDWORD, byval pQuotaLimits as PQUOTA_LIMITS) as WINBOOL
 #else
-	#define CreateProcessAsUser CreateProcessAsUserA
-	#define LogonUser LogonUserA
-	#define LogonUserEx LogonUserExA
+	declare function CreateProcessAsUser alias "CreateProcessAsUserA"(byval hToken as HANDLE, byval lpApplicationName as LPCSTR, byval lpCommandLine as LPSTR, byval lpProcessAttributes as LPSECURITY_ATTRIBUTES, byval lpThreadAttributes as LPSECURITY_ATTRIBUTES, byval bInheritHandles as WINBOOL, byval dwCreationFlags as DWORD, byval lpEnvironment as LPVOID, byval lpCurrentDirectory as LPCSTR, byval lpStartupInfo as LPSTARTUPINFOA, byval lpProcessInformation as LPPROCESS_INFORMATION) as WINBOOL
+	declare function LogonUser alias "LogonUserA"(byval lpszUsername as LPCSTR, byval lpszDomain as LPCSTR, byval lpszPassword as LPCSTR, byval dwLogonType as DWORD, byval dwLogonProvider as DWORD, byval phToken as PHANDLE) as WINBOOL
+	declare function LogonUserEx alias "LogonUserExA"(byval lpszUsername as LPCSTR, byval lpszDomain as LPCSTR, byval lpszPassword as LPCSTR, byval dwLogonType as DWORD, byval dwLogonProvider as DWORD, byval phToken as PHANDLE, byval ppLogonSid as PSID ptr, byval ppProfileBuffer as PVOID ptr, byval pdwProfileLength as LPDWORD, byval pQuotaLimits as PQUOTA_LIMITS) as WINBOOL
 #endif
 
 const LOGON_WITH_PROFILE = &h00000001
@@ -3894,11 +3877,11 @@ declare function CreateBoundaryDescriptorA(byval Name as LPCSTR, byval Flags as 
 declare function AddIntegrityLabelToBoundaryDescriptor(byval BoundaryDescriptor as HANDLE ptr, byval IntegrityLabel as PSID) as WINBOOL
 
 #ifdef UNICODE
-	#define OpenPrivateNamespace OpenPrivateNamespaceW
+	declare function OpenPrivateNamespace alias "OpenPrivateNamespaceW"(byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCWSTR) as HANDLE
 #else
-	#define CreatePrivateNamespace CreatePrivateNamespaceA
-	#define OpenPrivateNamespace OpenPrivateNamespaceA
-	#define CreateBoundaryDescriptor CreateBoundaryDescriptorA
+	declare function CreatePrivateNamespace alias "CreatePrivateNamespaceA"(byval lpPrivateNamespaceAttributes as LPSECURITY_ATTRIBUTES, byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCSTR) as HANDLE
+	declare function OpenPrivateNamespace alias "OpenPrivateNamespaceA"(byval lpBoundaryDescriptor as LPVOID, byval lpAliasPrefix as LPCSTR) as HANDLE
+	declare function CreateBoundaryDescriptor alias "CreateBoundaryDescriptorA"(byval Name as LPCSTR, byval Flags as ULONG) as HANDLE
 #endif
 
 const HW_PROFILE_GUIDLEN = 39
@@ -3941,11 +3924,11 @@ declare function VerifyVersionInfoA(byval lpVersionInformation as LPOSVERSIONINF
 declare function VerifyVersionInfoW(byval lpVersionInformation as LPOSVERSIONINFOEXW, byval dwTypeMask as DWORD, byval dwlConditionMask as DWORDLONG) as WINBOOL
 
 #ifdef UNICODE
-	#define GetCurrentHwProfile GetCurrentHwProfileW
-	#define VerifyVersionInfo VerifyVersionInfoW
+	declare function GetCurrentHwProfile alias "GetCurrentHwProfileW"(byval lpHwProfileInfo as LPHW_PROFILE_INFOW) as WINBOOL
+	declare function VerifyVersionInfo alias "VerifyVersionInfoW"(byval lpVersionInformation as LPOSVERSIONINFOEXW, byval dwTypeMask as DWORD, byval dwlConditionMask as DWORDLONG) as WINBOOL
 #else
-	#define GetCurrentHwProfile GetCurrentHwProfileA
-	#define VerifyVersionInfo VerifyVersionInfoA
+	declare function GetCurrentHwProfile alias "GetCurrentHwProfileA"(byval lpHwProfileInfo as LPHW_PROFILE_INFOA) as WINBOOL
+	declare function VerifyVersionInfo alias "VerifyVersionInfoA"(byval lpVersionInformation as LPOSVERSIONINFOEXA, byval dwTypeMask as DWORD, byval dwlConditionMask as DWORDLONG) as WINBOOL
 #endif
 
 #define _TIMEZONEAPI_H_
@@ -3974,7 +3957,7 @@ type _TIME_DYNAMIC_ZONE_INFORMATION
 	DaylightDate as SYSTEMTIME
 	DaylightBias as LONG
 	TimeZoneKeyName as wstring * 128
-	DynamicDaylightTimeDisabled as BOOLEAN
+	DynamicDaylightTimeDisabled as WINBOOLEAN
 end type
 
 type DYNAMIC_TIME_ZONE_INFORMATION as _TIME_DYNAMIC_ZONE_INFORMATION
@@ -4071,23 +4054,23 @@ declare function GetVolumePathNamesForVolumeNameA(byval lpszVolumeName as LPCSTR
 #endif
 
 #ifdef UNICODE
-	#define CreateJobObject CreateJobObjectW
-	#define OpenJobObject OpenJobObjectW
-	#define FindFirstVolumeMountPoint FindFirstVolumeMountPointW
-	#define FindNextVolumeMountPoint FindNextVolumeMountPointW
-	#define SetVolumeMountPoint SetVolumeMountPointW
+	declare function CreateJobObject alias "CreateJobObjectW"(byval lpJobAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCWSTR) as HANDLE
+	declare function OpenJobObject alias "OpenJobObjectW"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCWSTR) as HANDLE
+	declare function FindFirstVolumeMountPoint alias "FindFirstVolumeMountPointW"(byval lpszRootPathName as LPCWSTR, byval lpszVolumeMountPoint as LPWSTR, byval cchBufferLength as DWORD) as HANDLE
+	declare function FindNextVolumeMountPoint alias "FindNextVolumeMountPointW"(byval hFindVolumeMountPoint as HANDLE, byval lpszVolumeMountPoint as LPWSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function SetVolumeMountPoint alias "SetVolumeMountPointW"(byval lpszVolumeMountPoint as LPCWSTR, byval lpszVolumeName as LPCWSTR) as WINBOOL
 #else
-	#define FindFirstVolume FindFirstVolumeA
-	#define FindNextVolume FindNextVolumeA
-	#define DeleteVolumeMountPoint DeleteVolumeMountPointA
-	#define GetVolumeNameForVolumeMountPoint GetVolumeNameForVolumeMountPointA
-	#define GetVolumePathName GetVolumePathNameA
-	#define GetVolumePathNamesForVolumeName GetVolumePathNamesForVolumeNameA
-	#define CreateJobObject CreateJobObjectA
-	#define OpenJobObject OpenJobObjectA
-	#define FindFirstVolumeMountPoint FindFirstVolumeMountPointA
-	#define FindNextVolumeMountPoint FindNextVolumeMountPointA
-	#define SetVolumeMountPoint SetVolumeMountPointA
+	declare function FindFirstVolume alias "FindFirstVolumeA"(byval lpszVolumeName as LPSTR, byval cchBufferLength as DWORD) as HANDLE
+	declare function FindNextVolume alias "FindNextVolumeA"(byval hFindVolume as HANDLE, byval lpszVolumeName as LPSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function DeleteVolumeMountPoint alias "DeleteVolumeMountPointA"(byval lpszVolumeMountPoint as LPCSTR) as WINBOOL
+	declare function GetVolumeNameForVolumeMountPoint alias "GetVolumeNameForVolumeMountPointA"(byval lpszVolumeMountPoint as LPCSTR, byval lpszVolumeName as LPSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function GetVolumePathName alias "GetVolumePathNameA"(byval lpszFileName as LPCSTR, byval lpszVolumePathName as LPSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function GetVolumePathNamesForVolumeName alias "GetVolumePathNamesForVolumeNameA"(byval lpszVolumeName as LPCSTR, byval lpszVolumePathNames as LPCH, byval cchBufferLength as DWORD, byval lpcchReturnLength as PDWORD) as WINBOOL
+	declare function CreateJobObject alias "CreateJobObjectA"(byval lpJobAttributes as LPSECURITY_ATTRIBUTES, byval lpName as LPCSTR) as HANDLE
+	declare function OpenJobObject alias "OpenJobObjectA"(byval dwDesiredAccess as DWORD, byval bInheritHandle as WINBOOL, byval lpName as LPCSTR) as HANDLE
+	declare function FindFirstVolumeMountPoint alias "FindFirstVolumeMountPointA"(byval lpszRootPathName as LPCSTR, byval lpszVolumeMountPoint as LPSTR, byval cchBufferLength as DWORD) as HANDLE
+	declare function FindNextVolumeMountPoint alias "FindNextVolumeMountPointA"(byval hFindVolumeMountPoint as HANDLE, byval lpszVolumeMountPoint as LPSTR, byval cchBufferLength as DWORD) as WINBOOL
+	declare function SetVolumeMountPoint alias "SetVolumeMountPointA"(byval lpszVolumeMountPoint as LPCSTR, byval lpszVolumeName as LPCSTR) as WINBOOL
 #endif
 
 const ACTCTX_FLAG_PROCESSOR_ARCHITECTURE_VALID = &h00000001
@@ -4156,9 +4139,9 @@ declare function DeactivateActCtx(byval dwFlags as DWORD, byval ulCookie as ULON
 declare function GetCurrentActCtx(byval lphActCtx as HANDLE ptr) as WINBOOL
 
 #ifdef UNICODE
-	#define CreateActCtx CreateActCtxW
+	declare function CreateActCtx alias "CreateActCtxW"(byval pActCtx as PCACTCTXW) as HANDLE
 #else
-	#define CreateActCtx CreateActCtxA
+	declare function CreateActCtx alias "CreateActCtxA"(byval pActCtx as PCACTCTXA) as HANDLE
 #endif
 
 const DEACTIVATE_ACTCTX_FLAG_FORCE_EARLY_DEACTIVATION = &h00000001
@@ -4220,9 +4203,9 @@ declare function FindActCtxSectionStringW(byval dwFlags as DWORD, byval lpExtens
 declare function FindActCtxSectionGuid(byval dwFlags as DWORD, byval lpExtensionGuid as const GUID ptr, byval ulSectionId as ULONG, byval lpGuidToFind as const GUID ptr, byval ReturnedData as PACTCTX_SECTION_KEYED_DATA) as WINBOOL
 
 #ifdef UNICODE
-	#define FindActCtxSectionString FindActCtxSectionStringW
+	declare function FindActCtxSectionString alias "FindActCtxSectionStringW"(byval dwFlags as DWORD, byval lpExtensionGuid as const GUID ptr, byval ulSectionId as ULONG, byval lpStringToFind as LPCWSTR, byval ReturnedData as PACTCTX_SECTION_KEYED_DATA) as WINBOOL
 #else
-	#define FindActCtxSectionString FindActCtxSectionStringA
+	declare function FindActCtxSectionString alias "FindActCtxSectionStringA"(byval dwFlags as DWORD, byval lpExtensionGuid as const GUID ptr, byval ulSectionId as ULONG, byval lpStringToFind as LPCSTR, byval ReturnedData as PACTCTX_SECTION_KEYED_DATA) as WINBOOL
 #endif
 
 type _ACTIVATION_CONTEXT_BASIC_INFORMATION
@@ -4293,8 +4276,8 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 		AllocationSize as LARGE_INTEGER
 		EndOfFile as LARGE_INTEGER
 		NumberOfLinks as DWORD
-		DeletePending as BOOLEAN
-		Directory as BOOLEAN
+		DeletePending as WINBOOLEAN
+		Directory as WINBOOLEAN
 	end type
 
 	type FILE_STANDARD_INFO as _FILE_STANDARD_INFO
@@ -4309,7 +4292,7 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 	type PFILE_NAME_INFO as _FILE_NAME_INFO ptr
 
 	type _FILE_RENAME_INFO
-		ReplaceIfExists as BOOLEAN
+		ReplaceIfExists as WINBOOLEAN
 		RootDirectory as HANDLE
 		FileNameLength as DWORD
 		FileName as wstring * 1
@@ -4365,9 +4348,9 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 
 	type _FILE_DISPOSITION_INFO
 		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-			DeleteFileW as BOOLEAN
+			DeleteFileW as WINBOOLEAN
 		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-			DeleteFileA as BOOLEAN
+			DeleteFileA as WINBOOLEAN
 		#endif
 	end type
 
@@ -4560,11 +4543,11 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 	type LPFILE_ID_DESCRIPTOR as FILE_ID_DESCRIPTOR ptr
 	declare function OpenFileById(byval hVolumeHint as HANDLE, byval lpFileId as LPFILE_ID_DESCRIPTOR, byval dwDesiredAccess as DWORD, byval dwShareMode as DWORD, byval lpSecurityAttributes as LPSECURITY_ATTRIBUTES, byval dwFlagsAndAttributes as DWORD) as HANDLE
 	const SYMBOLIC_LINK_FLAG_DIRECTORY = &h1
-	#define VALID_SYMBOLIC_LINK_FLAGS SYMBOLIC_LINK_FLAG_DIRECTORY
-	declare function CreateSymbolicLinkA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as BOOLEAN
-	declare function CreateSymbolicLinkW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as BOOLEAN
-	declare function CreateSymbolicLinkTransactedA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as BOOLEAN
-	declare function CreateSymbolicLinkTransactedW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as BOOLEAN
+	const VALID_SYMBOLIC_LINK_FLAGS = SYMBOLIC_LINK_FLAG_DIRECTORY
+	declare function CreateSymbolicLinkA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransactedA(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransactedW(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
 	declare function QueryActCtxSettingsW(byval dwFlags as DWORD, byval hActCtx as HANDLE, byval settingsNameSpace as PCWSTR, byval settingName as PCWSTR, byval pvBuffer as PWSTR, byval dwBuffer as SIZE_T_, byval pdwWrittenOrRequired as SIZE_T_ ptr) as WINBOOL
 	declare function ReplacePartitionUnit(byval TargetPartition as PWSTR, byval SparePartition as PWSTR, byval Flags as ULONG) as WINBOOL
 	declare function AddSecureMemoryCacheCallback(byval pfnCallBack as PSECURE_MEMORY_CACHE_CALLBACK) as WINBOOL
@@ -4572,11 +4555,11 @@ const RECOVERY_MAX_PING_INTERVAL = (5 * 60) * 1000
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define CreateSymbolicLink CreateSymbolicLinkW
-	#define CreateSymbolicLinkTransacted CreateSymbolicLinkTransactedW
+	declare function CreateSymbolicLink alias "CreateSymbolicLinkW"(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransacted alias "CreateSymbolicLinkTransactedW"(byval lpSymlinkFileName as LPCWSTR, byval lpTargetFileName as LPCWSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define CreateSymbolicLink CreateSymbolicLinkA
-	#define CreateSymbolicLinkTransacted CreateSymbolicLinkTransactedA
+	declare function CreateSymbolicLink alias "CreateSymbolicLinkA"(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD) as WINBOOLEAN
+	declare function CreateSymbolicLinkTransacted alias "CreateSymbolicLinkTransactedA"(byval lpSymlinkFileName as LPCSTR, byval lpTargetFileName as LPCSTR, byval dwFlags as DWORD, byval hTransaction as HANDLE) as WINBOOLEAN
 #endif
 
 declare function CopyContext(byval Destination as PCONTEXT, byval ContextFlags as DWORD, byval Source as PCONTEXT) as WINBOOL

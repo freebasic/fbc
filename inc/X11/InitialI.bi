@@ -56,7 +56,7 @@
 #include once "crt/long.bi"
 #include once "crt/sys/time.bi"
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#include once "crt/limits.bi"
 #elseif defined(__FB_WIN32__)
 	#include once "win/winsock2.bi"

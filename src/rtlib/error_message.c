@@ -2,4 +2,4 @@
 
 #include "fb.h"
 
-char __fb_errmsg[FB_ERRMSG_SIZE];
+char __fb_errmsg[FB_ERRMSG_SIZE] = "";

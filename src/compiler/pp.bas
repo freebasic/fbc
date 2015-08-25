@@ -377,7 +377,7 @@ private sub ppLine()
 		'' error recovery: skip
 		hSkipUntil( FB_TK_EOL )
 	else
-		lex.ctx->linenum = valint( *lexGetText( ) )
+		lex.ctx->linenum = clng( *lexGetText( ) )
 		lexSkipToken( )
 
 		'' LIT_STR?

@@ -397,6 +397,7 @@ examples/manual/gfx/put-alpha.bas
 examples/manual/gfx/put-and.bas
 examples/manual/gfx/put-or.bas
 examples/manual/gfx/put-pset.bas
+examples/manual/gfx/put-trans-custom.bas
 examples/manual/gfx/put-trans.bas
 examples/manual/gfx/put-xor.bas
 examples/manual/gfx/put.bas
@@ -999,9 +1000,6 @@ inc/allegro/algif.bi
 inc/allegro/alpng.bi
 inc/aspell.bi
 inc/bfd.bi
-inc/bfd/bfd-216.bi
-inc/bfd/bfd-217.bi
-inc/bfd/bfd-218.bi
 inc/big_int/basic_funcs.bi
 inc/big_int/big_int.bi
 inc/big_int/big_int_full.bi
@@ -1411,6 +1409,7 @@ inc/png12.bi
 inc/png14.bi
 inc/png15.bi
 inc/png16.bi
+inc/pspell.bi
 inc/quicklz.bi
 inc/regex.bi
 inc/sqlite2.bi

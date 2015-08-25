@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -81,7 +81,6 @@ extern in6addr_loopback as const IN6_ADDR
 
 declare function IN6_IS_ADDR_UNSPECIFIED(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_LOOPBACK(byval as const IN6_ADDR ptr) as long
-declare function IN6_IS_ADDR_MULTICAST(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_LINKLOCAL(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_SITELOCAL(byval as const IN6_ADDR ptr) as long
 declare function IN6_IS_ADDR_V4MAPPED(byval as const IN6_ADDR ptr) as long
@@ -106,9 +105,7 @@ private function IN6_IS_ADDR_LOOPBACK(byval a as const in6_addr ptr) as long
 	return -((((((((a->u.Word(0) = 0) andalso (a->u.Word(1) = 0)) andalso (a->u.Word(2) = 0)) andalso (a->u.Word(3) = 0)) andalso (a->u.Word(4) = 0)) andalso (a->u.Word(5) = 0)) andalso (a->u.Word(6) = 0)) andalso (a->u.Word(7) = &h0100))
 end function
 
-private function IN6_IS_ADDR_MULTICAST(byval a as const in6_addr ptr) as long
-	return -(a->u.Byte(0) = &hff)
-end function
+#define IN6_IS_ADDR_MULTICAST(a) clng(-((a)->u.Byte(0) = &hff))
 
 private function IN6_IS_ADDR_LINKLOCAL(byval a as const in6_addr ptr) as long
 	return -((a->u.Byte(0) = &hfe) andalso ((a->u.Byte(1) and &hc0) = &h80))
@@ -158,12 +155,12 @@ private sub IN6_SET_ADDR_UNSPECIFIED(byval a as in6_addr ptr)
 	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
 end sub
 
-private sub IN6_SET_ADDR_LOOPBACK(byval a as in6_addr ptr)
-	memset(@a->u.Byte(0), 0, sizeof(in6_addr))
+private sub IN6_SET_ADDR_LOOPBACK(byval a as IN6_ADDR ptr)
+	memset(@a->u.Byte(0), 0, sizeof(IN6_ADDR))
 	a->u.Byte(15) = 1
 end sub
 
-private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETANY(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0
@@ -171,7 +168,7 @@ private sub IN6ADDR_SETANY(byval a as sockaddr_in6 ptr)
 	a->sin6_scope_id = 0
 end sub
 
-private sub IN6ADDR_SETLOOPBACK(byval a as sockaddr_in6 ptr)
+private sub IN6ADDR_SETLOOPBACK(byval a as SOCKADDR_IN6 ptr)
 	a->sin6_family = 23
 	a->sin6_port = 0
 	a->sin6_flowinfo = 0
@@ -266,59 +263,71 @@ const AI_NUMERICHOST = &h00000004
 	const AI_FILESERVER = &h00040000
 #endif
 
-#ifdef UNICODE
-	#define GetAddrInfo GetAddrInfoW
-#else
-	#define GetAddrInfo GetAddrInfoA
-#endif
-
 #ifdef __FB_64BIT__
 	declare function GetAddrInfoA alias "getaddrinfo"(byval nodename as const zstring ptr, byval servname as const zstring ptr, byval hints as const addrinfo ptr, byval res as addrinfo ptr ptr) as long
-	declare function GetAddrInfoW(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const addrinfoW ptr, byval ppResult as PADDRINFOW ptr) as long
-#else
-	declare function GetAddrInfoA stdcall alias "getaddrinfo"(byval nodename as const zstring ptr, byval servname as const zstring ptr, byval hints as const addrinfo ptr, byval res as addrinfo ptr ptr) as long
-	declare function GetAddrInfoW stdcall(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const addrinfoW ptr, byval ppResult as PADDRINFOW ptr) as long
-#endif
-
-#ifdef UNICODE
-	#define FreeAddrInfo FreeAddrInfoW
-#else
-	#define FreeAddrInfo FreeAddrInfoA
-#endif
-
-#ifdef __FB_64BIT__
+	declare function GetAddrInfoW(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const ADDRINFOW ptr, byval ppResult as PADDRINFOW ptr) as long
+	#ifdef UNICODE
+		declare function GetAddrInfo alias "GetAddrInfoW"(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const ADDRINFOW ptr, byval ppResult as PADDRINFOW ptr) as long
+	#else
+		declare function getaddrinfo(byval nodename as const zstring ptr, byval servname as const zstring ptr, byval hints as const addrinfo ptr, byval res as addrinfo ptr ptr) as long
+	#endif
 	declare sub FreeAddrInfoA alias "freeaddrinfo"(byval pAddrInfo as LPADDRINFO)
 	declare sub FreeAddrInfoW(byval pAddrInfo as PADDRINFOW)
+	#ifdef UNICODE
+		declare sub FreeAddrInfo alias "FreeAddrInfoW"(byval pAddrInfo as PADDRINFOW)
+	#else
+		declare sub freeaddrinfo(byval pAddrInfo as LPADDRINFO)
+	#endif
 #else
+	declare function GetAddrInfoA stdcall alias "getaddrinfo"(byval nodename as const zstring ptr, byval servname as const zstring ptr, byval hints as const addrinfo ptr, byval res as addrinfo ptr ptr) as long
+	declare function GetAddrInfoW stdcall(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const ADDRINFOW ptr, byval ppResult as PADDRINFOW ptr) as long
+	#ifdef UNICODE
+		declare function GetAddrInfo stdcall alias "GetAddrInfoW"(byval pNodeName as PCWSTR, byval pServiceName as PCWSTR, byval pHints as const ADDRINFOW ptr, byval ppResult as PADDRINFOW ptr) as long
+	#else
+		declare function getaddrinfo stdcall(byval nodename as const zstring ptr, byval servname as const zstring ptr, byval hints as const addrinfo ptr, byval res as addrinfo ptr ptr) as long
+	#endif
 	declare sub FreeAddrInfoA stdcall alias "freeaddrinfo"(byval pAddrInfo as LPADDRINFO)
 	declare sub FreeAddrInfoW stdcall(byval pAddrInfo as PADDRINFOW)
+	#ifdef UNICODE
+		declare sub FreeAddrInfo stdcall alias "FreeAddrInfoW"(byval pAddrInfo as PADDRINFOW)
+	#else
+		declare sub freeaddrinfo stdcall(byval pAddrInfo as LPADDRINFO)
+	#endif
 #endif
 
 type socklen_t as long
 
-#ifdef UNICODE
-	#define GetNameInfo GetNameInfoW
-#else
-	#define GetNameInfo GetNameInfoA
-#endif
-
 #ifdef __FB_64BIT__
-	declare function GetNameInfoA alias "getnameinfo"(byval sa as const sockaddr ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
-	declare function GetNameInfoW(byval pSockaddr as const sockaddr ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
+	declare function GetNameInfoA alias "getnameinfo"(byval sa as const SOCKADDR ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
+	declare function GetNameInfoW(byval pSockaddr as const SOCKADDR ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
+	#ifdef UNICODE
+		declare function GetNameInfo alias "GetNameInfoW"(byval pSockaddr as const SOCKADDR ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
+	#else
+		declare function getnameinfo(byval sa as const SOCKADDR ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
+	#endif
 #else
-	declare function GetNameInfoA stdcall alias "getnameinfo"(byval sa as const sockaddr ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
-	declare function GetNameInfoW stdcall(byval pSockaddr as const sockaddr ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
-#endif
-
-#ifdef UNICODE
-	#define gai_strerror gai_strerrorW
-#else
-	#define gai_strerror gai_strerrorA
+	declare function GetNameInfoA stdcall alias "getnameinfo"(byval sa as const SOCKADDR ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
+	declare function GetNameInfoW stdcall(byval pSockaddr as const SOCKADDR ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
+	#ifdef UNICODE
+		declare function GetNameInfo stdcall alias "GetNameInfoW"(byval pSockaddr as const SOCKADDR ptr, byval SockaddrLength as socklen_t, byval pNodeBuffer as PWCHAR, byval NodeBufferSize as DWORD, byval pServiceBuffer as PWCHAR, byval ServiceBufferSize as DWORD, byval Flags as INT_) as INT_
+	#else
+		declare function getnameinfo stdcall(byval sa as const SOCKADDR ptr, byval salen as socklen_t, byval host as zstring ptr, byval hostlen as DWORD, byval serv as zstring ptr, byval servlen as DWORD, byval flags as long) as long
+	#endif
 #endif
 
 const GAI_STRERROR_BUFFER_SIZE = 1024
 declare function gai_strerrorA(byval as long) as zstring ptr
+
+#ifndef UNICODE
+	declare function gai_strerror alias "gai_strerrorA"(byval as long) as zstring ptr
+#endif
+
 declare function gai_strerrorW(byval as long) as wstring ptr
+
+#ifdef UNICODE
+	declare function gai_strerror alias "gai_strerrorW"(byval as long) as wstring ptr
+#endif
+
 const NI_MAXHOST = 1025
 const NI_MAXSERV = 32
 const INET_ADDRSTRLEN = 22
@@ -331,16 +340,10 @@ const NI_DGRAM = &h10
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
 	#define addrinfoEx addrinfoExW
-	#define PADDRINFOEX PADDRINFOEXW
-	#define GetAddrInfoEx GetAddrInfoExW
-	#define SetAddrInfoEx SetAddrInfoExW
-	#define FreeAddrInfoEx FreeAddrInfoExW
+	type PADDRINFOEX as PADDRINFOEXW
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
 	#define addrinfoEx addrinfoExA
-	#define PADDRINFOEX PADDRINFOEXA
-	#define GetAddrInfoEx GetAddrInfoExA
-	#define SetAddrInfoEx SetAddrInfoExA
-	#define FreeAddrInfoEx FreeAddrInfoExA
+	type PADDRINFOEX as PADDRINFOEXA
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -378,66 +381,160 @@ const NI_DGRAM = &h10
 	type LPLOOKUPSERVICE_COMPLETION_ROUTINE as PVOID
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#ifndef __FB_64BIT__
+	#if _WIN32_WINNT = &h0602
+		declare function GetAddrInfoExA stdcall(byval pName as PCSTR, byval pServiceName as PCSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXA ptr, byval ppResult as PADDRINFOEXA ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function GetAddrInfoEx stdcall alias "GetAddrInfoExA"(byval pName as PCSTR, byval pServiceName as PCSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXA ptr, byval ppResult as PADDRINFOEXA ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function GetAddrInfoExW stdcall(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function GetAddrInfoEx stdcall alias "GetAddrInfoExW"(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function SetAddrInfoExA stdcall(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function SetAddrInfoEx stdcall alias "SetAddrInfoExA"(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function SetAddrInfoExW stdcall(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function SetAddrInfoEx stdcall alias "SetAddrInfoExW"(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare sub FreeAddrInfoExA stdcall(byval pAddrInfo as PADDRINFOEXA)
+	#endif
+
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare sub FreeAddrInfoEx stdcall alias "FreeAddrInfoExA"(byval pAddrInfo as PADDRINFOEXA)
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare sub FreeAddrInfoExW stdcall(byval pAddrInfo as PADDRINFOEXW)
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare sub FreeAddrInfoEx stdcall alias "FreeAddrInfoExW"(byval pAddrInfo as PADDRINFOEXW)
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function WSAImpersonateSocketPeer stdcall(byval Socket as SOCKET, byval PeerAddress as const SOCKADDR ptr, byval peerAddressLen as ULONG) as long
+		declare function WSAQuerySocketSecurity stdcall(byval Socket as SOCKET, byval SecurityQueryTemplate as const SOCKET_SECURITY_QUERY_TEMPLATE ptr, byval SecurityQueryTemplateLen as ULONG, byval SecurityQueryInfo as SOCKET_SECURITY_QUERY_INFO ptr, byval SecurityQueryInfoLen as ULONG ptr, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function WSARevertImpersonation stdcall() as long
+		declare function WSASetSocketPeerTargetName stdcall(byval Socket as SOCKET, byval PeerTargetName as const SOCKET_PEER_TARGET_NAME ptr, byval PeerTargetNameLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function WSASetSocketSecurity stdcall(byval Socket as SOCKET, byval SecuritySettings as const SOCKET_SECURITY_SETTINGS ptr, byval SecuritySettingsLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function InetNtopW stdcall(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
+		declare function inet_ntop stdcall(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+		declare function InetNtopA stdcall alias "inet_ntop"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function InetNtop stdcall alias "InetNtopW"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
+	#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function InetNtop stdcall alias "inet_ntop"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function InetPtonW stdcall(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
+		declare function inet_pton stdcall(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+		declare function InetPtonA stdcall alias "inet_pton"(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+	#endif
+#endif
+
+#if (not defined(__FB_64BIT__)) and defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function InetPton stdcall alias "InetPtonW"(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function InetPton stdcall alias "inet_pton"(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
 	declare function GetAddrInfoExA(byval pName as PCSTR, byval pServiceName as PCSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXA ptr, byval ppResult as PADDRINFOEXA ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function GetAddrInfoExW(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function SetAddrInfoExA(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function SetAddrInfoExW(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare sub FreeAddrInfoExA(byval pAddrInfo as PADDRINFOEXA)
-	declare sub FreeAddrInfoExW(byval pAddrInfo as PADDRINFOEXW)
-	declare function WSAImpersonateSocketPeer(byval Socket as SOCKET, byval PeerAddress as const SOCKADDR ptr, byval peerAddressLen as ULONG) as long
-	declare function WSAQuerySocketSecurity(byval Socket as SOCKET, byval SecurityQueryTemplate as const SOCKET_SECURITY_QUERY_TEMPLATE ptr, byval SecurityQueryTemplateLen as ULONG, byval SecurityQueryInfo as SOCKET_SECURITY_QUERY_INFO ptr, byval SecurityQueryInfoLen as ULONG ptr, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-	declare function WSARevertImpersonation() as long
-	declare function WSASetSocketPeerTargetName(byval Socket as SOCKET, byval PeerTargetName as const SOCKET_PEER_TARGET_NAME ptr, byval PeerTargetNameLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-	declare function WSASetSocketSecurity(byval Socket as SOCKET, byval SecuritySettings as const SOCKET_SECURITY_SETTINGS ptr, byval SecuritySettingsLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	declare function GetAddrInfoExA stdcall(byval pName as PCSTR, byval pServiceName as PCSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXA ptr, byval ppResult as PADDRINFOEXA ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function GetAddrInfoExW stdcall(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function SetAddrInfoExA stdcall(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare function SetAddrInfoExW stdcall(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
-	declare sub FreeAddrInfoExA stdcall(byval pAddrInfo as PADDRINFOEXA)
-	declare sub FreeAddrInfoExW stdcall(byval pAddrInfo as PADDRINFOEXW)
-	declare function WSAImpersonateSocketPeer stdcall(byval Socket as SOCKET, byval PeerAddress as const SOCKADDR ptr, byval peerAddressLen as ULONG) as long
-	declare function WSAQuerySocketSecurity stdcall(byval Socket as SOCKET, byval SecurityQueryTemplate as const SOCKET_SECURITY_QUERY_TEMPLATE ptr, byval SecurityQueryTemplateLen as ULONG, byval SecurityQueryInfo as SOCKET_SECURITY_QUERY_INFO ptr, byval SecurityQueryInfoLen as ULONG ptr, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-	declare function WSARevertImpersonation stdcall() as long
-	declare function WSASetSocketPeerTargetName stdcall(byval Socket as SOCKET, byval PeerTargetName as const SOCKET_PEER_TARGET_NAME ptr, byval PeerTargetNameLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
-	declare function WSASetSocketSecurity stdcall(byval Socket as SOCKET, byval SecuritySettings as const SOCKET_SECURITY_SETTINGS ptr, byval SecuritySettingsLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
-	#define InetNtopA inet_ntop
-#endif
+#ifdef __FB_64BIT__
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function GetAddrInfoEx alias "GetAddrInfoExA"(byval pName as PCSTR, byval pServiceName as PCSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXA ptr, byval ppResult as PADDRINFOEXA ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	declare function InetNtopW(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
-	declare function inet_ntop(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	declare function InetNtopW stdcall(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
-	declare function inet_ntop stdcall(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
-#endif
+	#if _WIN32_WINNT = &h0602
+		declare function GetAddrInfoExW(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define InetNtop InetNtopW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define InetNtop InetNtopA
-#endif
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function GetAddrInfoEx alias "GetAddrInfoExW"(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval pHints as const ADDRINFOEXW ptr, byval ppResult as PADDRINFOEXW ptr, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
 
-#if _WIN32_WINNT = &h0602
-	#define InetPtonA inet_pton
-#endif
+	#if _WIN32_WINNT = &h0602
+		declare function SetAddrInfoExA(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	declare function InetPtonW(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
-	declare function inet_pton(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	declare function InetPtonW stdcall(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
-	declare function inet_pton stdcall(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
-#endif
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function SetAddrInfoEx alias "SetAddrInfoExA"(byval pName as PCSTR, byval pServiceName as PCSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define InetPton InetPtonW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define InetPton InetPtonA
+	#if _WIN32_WINNT = &h0602
+		declare function SetAddrInfoExW(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function SetAddrInfoEx alias "SetAddrInfoExW"(byval pName as PCWSTR, byval pServiceName as PCWSTR, byval pAddresses as SOCKET_ADDRESS ptr, byval dwAddressCount as DWORD, byval lpBlob as LPBLOB, byval dwFlags as DWORD, byval dwNameSpace as DWORD, byval lpNspId as LPGUID, byval timeout as PTIMEVAL, byval lpOverlapped as LPOVERLAPPED, byval lpCompletionRoutine as LPLOOKUPSERVICE_COMPLETION_ROUTINE, byval lpNameHandle as LPHANDLE) as long
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare sub FreeAddrInfoExA(byval pAddrInfo as PADDRINFOEXA)
+	#endif
+
+	#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare sub FreeAddrInfoEx alias "FreeAddrInfoExA"(byval pAddrInfo as PADDRINFOEXA)
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare sub FreeAddrInfoExW(byval pAddrInfo as PADDRINFOEXW)
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare sub FreeAddrInfoEx alias "FreeAddrInfoExW"(byval pAddrInfo as PADDRINFOEXW)
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function WSAImpersonateSocketPeer(byval Socket as SOCKET, byval PeerAddress as const SOCKADDR ptr, byval peerAddressLen as ULONG) as long
+		declare function WSAQuerySocketSecurity(byval Socket as SOCKET, byval SecurityQueryTemplate as const SOCKET_SECURITY_QUERY_TEMPLATE ptr, byval SecurityQueryTemplateLen as ULONG, byval SecurityQueryInfo as SOCKET_SECURITY_QUERY_INFO ptr, byval SecurityQueryInfoLen as ULONG ptr, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function WSARevertImpersonation() as long
+		declare function WSASetSocketPeerTargetName(byval Socket as SOCKET, byval PeerTargetName as const SOCKET_PEER_TARGET_NAME ptr, byval PeerTargetNameLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function WSASetSocketSecurity(byval Socket as SOCKET, byval SecuritySettings as const SOCKET_SECURITY_SETTINGS ptr, byval SecuritySettingsLen as ULONG, byval Overlapped as LPWSAOVERLAPPED, byval CompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
+		declare function InetNtopW(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
+		declare function inet_ntop(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+		declare function InetNtopA alias "inet_ntop"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function InetNtop alias "InetNtopW"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPWSTR, byval StringBufSIze as uinteger) as LPCWSTR
+	#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function InetNtop alias "inet_ntop"(byval Family as INT_, byval pAddr as PVOID, byval pStringBuf as LPSTR, byval StringBufSize as uinteger) as LPCSTR
+	#endif
+
+	#if _WIN32_WINNT = &h0602
+		declare function InetPtonW(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
+		declare function inet_pton(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+		declare function InetPtonA alias "inet_pton"(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+	#endif
+
+	#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		declare function InetPton alias "InetPtonW"(byval Family as INT_, byval pStringBuf as LPCWSTR, byval pAddr as PVOID) as INT_
+	#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		declare function InetPton alias "inet_pton"(byval Family as INT_, byval pStringBuf as LPCSTR, byval pAddr as PVOID) as INT_
+	#endif
 #endif
 
 end extern

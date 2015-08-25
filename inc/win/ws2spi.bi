@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -256,7 +256,7 @@ declare function WPUSetEvent(byval hEvent as HANDLE, byval lpErrno as LPINT) as 
 declare function WPUCompleteOverlappedRequest(byval s as SOCKET, byval lpOverlapped as LPWSAOVERLAPPED, byval dwError as DWORD, byval cbTransferred as DWORD, byval lpErrno as LPINT) as long
 declare function WPUOpenCurrentThread(byval lpThreadId as LPWSATHREADID, byval lpErrno as LPINT) as long
 declare function WPUCloseThread(byval lpThreadId as LPWSATHREADID, byval lpErrno as LPINT) as long
-#define WSCEnumNameSpaceProviders WSAEnumNameSpaceProvidersW
+declare function WSCEnumNameSpaceProviders alias "WSAEnumNameSpaceProvidersW"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOW) as INT_
 #define LPFN_WSCENUMNAMESPACEPROVIDERS LPFN_WSAENUMNAMESPACEPROVIDERSW
 
 #ifdef __FB_64BIT__
@@ -334,8 +334,8 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type LPNSPV2STARTUP as function(byval lpProviderId as LPGUID, byval ppvClientSessionArg as LPVOID ptr) as long
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	type _NSPV2_ROUTINE
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+	type _NSPV2_ROUTINE field = 4
 		cbSize as DWORD
 		dwMajorVersion as DWORD
 		dwMinorVersion as DWORD
@@ -347,8 +347,8 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 		NSPv2SetServiceEx as LPNSPV2SETSERVICEEX
 		NSPv2ClientSessionRundown as LPNSPV2CLIENTSESSIONRUNDOWN
 	end type
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	type _NSPV2_ROUTINE field = 4
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	type _NSPV2_ROUTINE
 		cbSize as DWORD
 		dwMajorVersion as DWORD
 		dwMinorVersion as DWORD
@@ -386,13 +386,13 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type WSC_PROVIDER_INFO_TYPE as _WSC_PROVIDER_INFO_TYPE
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
-	type _WSC_PROVIDER_AUDIT_INFO
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+	type _WSC_PROVIDER_AUDIT_INFO field = 4
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
-	type _WSC_PROVIDER_AUDIT_INFO field = 4
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	type _WSC_PROVIDER_AUDIT_INFO
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type
@@ -416,7 +416,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	declare function WSCSetApplicationCategory(byval Path as LPCWSTR, byval PathLength as DWORD, byval Extra as LPCWSTR, byval ExtraLength as DWORD, byval PermittedLspCategories as DWORD, byval pPrevPermLspCat as DWORD ptr, byval lpErrno as LPINT) as long
 	declare function WSCSetProviderInfo(byval lpProviderId as LPGUID, byval InfoType as WSC_PROVIDER_INFO_TYPE, byval Info as PBYTE, byval InfoSize as uinteger, byval Flags as DWORD, byval lpErrno as LPINT) as long
 	declare function WSCInstallNameSpaceEx(byval lpszIdentifier as LPWSTR, byval lpszPathName as LPWSTR, byval dwNameSpace as DWORD, byval dwVersion as DWORD, byval lpProviderId as LPGUID, byval lpProviderInfo as LPBLOB) as long
-	#define WSCEnumNameSpaceProvidersEx WSAEnumNameSpaceProvidersExW
+	declare function WSCEnumNameSpaceProvidersEx alias "WSAEnumNameSpaceProvidersExW"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXW) as INT_
 	#define LPFN_WSCENUMNAMESPACEPROVIDERSEX LPFN_WSAENUMNAMESPACEPROVIDERSEXW
 #endif
 

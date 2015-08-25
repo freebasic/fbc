@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -76,11 +76,11 @@ declare function GetUdpTable(byval UdpTable as PMIB_UDPTABLE, byval SizePointer 
 declare function GetExtendedUdpTable(byval pUdpTable as PVOID, byval pdwSize as PDWORD, byval bOrder as WINBOOL, byval ulAf as ULONG, byval TableClass as UDP_TABLE_CLASS, byval Reserved as ULONG) as DWORD
 declare function GetOwnerModuleFromUdpEntry(byval pUdpEntry as PMIB_UDPROW_OWNER_MODULE, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval pBuffer as PVOID, byval pdwSize as PDWORD) as DWORD
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT = &h0602
+	declare function GetTcpTable2(byval TcpTable as PMIB_TCPTABLE2, byval SizePointer as PULONG, byval Order as WINBOOL) as ULONG
+#else
 	declare function AllocateAndGetTcpExTableFromStack cdecl(byval ppTcpTable as PVOID ptr, byval bOrder as WINBOOL, byval hHeap as HANDLE, byval dwFlags as DWORD, byval dwFamily as DWORD) as DWORD
 	declare function AllocateAndGetUdpExTableFromStack cdecl(byval ppUdpTable as PVOID ptr, byval bOrder as WINBOOL, byval hHeap as HANDLE, byval dwFlags as DWORD, byval dwFamily as DWORD) as DWORD
-#else
-	declare function GetTcpTable2(byval TcpTable as PMIB_TCPTABLE2, byval SizePointer as PULONG, byval Order as WINBOOL) as ULONG
 #endif
 
 declare function GetOwnerModuleFromPidAndInfo cdecl(byval ulPid as ULONG, byval pInfo as ULONGLONG ptr, byval Class as TCPIP_OWNER_MODULE_INFO_CLASS, byval pBuffer as PVOID, byval pdwSize as PDWORD) as DWORD

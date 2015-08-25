@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="Installing gcc for -gen gcc"}}----
+
+{{fbdoc item="section" value="Windows 32bit"}}
+
+If you are using the ##""FreeBASIC-x.xx.x-win32""## package, you can use our pre-made gcc package. Download ##gcc-x.x.x-for-FB-win32-gengcc.zip## from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/More/ Binaries - Windows/More/]] directory at the fbc downloads area, and extract it into the ""FreeBASIC"" installation directory (where fbc.exe is), such that ##gcc.exe## and ##cc1.exe## will be placed in these locations:
+
+	- ##bin\win32\gcc.exe##
+	- ##bin\libexec\gcc\i686-w64-mingw32\x.x.x\cc1.exe##
+
+You can also download ""Win32"" versions of gcc directly from the [[http://www.mingw.org/ ""MinGW.org""]] or [[http://sourceforge.net/projects/mingw-w64/ ""MinGW-w64""]] projects.
+
+{{fbdoc item="section" value="Windows 64bit"}}
+
+The ##""FreeBASIC-x.xx.x-win64""## package already comes with gcc included, and uses ##-gen gcc## by default (because ##-gen gas## does not support 64bit).
+
+{{fbdoc item="section" value="DOS"}}
+
+It requires a (minimal) DJGPP installation. DJGPP can be downloaded from the [[http://www.delorie.com/djgpp/ DJGPP website]]. At least the ##djdev*.zip## and ##gcc*b.zip## are needed. In order to run the DJGPP gcc, the ##DJGPP## environment variable must be set to point to the ##djgpp.env## file.
+
+To use the DJGPP gcc with the ##""FreeBASIC-x.xx.x-dos""## package, copy gcc.exe and cc1.exe into the ""FreeBASIC"" installation directory, such that they will be placed in these locations:
+
+	- ##bin\dos\gcc.exe##
+	- ##bin\libexec\gcc\djgpp\x.xx\cc1.exe##
+
+{{fbdoc item="section" value="Linux"}}
+
+Typically the ##gcc## package is already installed, or it can be installed by doing something like:
+	##sudo apt-get install gcc##
+(the exact command depends on your GNU/Linux distribution)
+
+{{fbdoc item="section" value="Non-standalone fbc installed into DJGPP/MinGW toolchains"}}
+
+If you are using a non-standalone version of fbc (e.g. from one of the ##fbc-x.xx.x-win32## packages), and have it installed inside a DJGPP or ""MinGW"" toolchain, then ##-gen gcc## should already work, as the DJGPP or ""MinGW"" toolchains provide gcc.
+
+As long as gcc.exe is in the same directory as fbc.exe (typically ##C:\DJGPP\bin\## or ##""C:\MinGW\bin\""##), or available in the ##PATH## environment variable, fbc.exe should be able to find and use it.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptgen -gen <backend>]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

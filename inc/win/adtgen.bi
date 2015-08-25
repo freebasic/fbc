@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -85,7 +85,7 @@ const AP_ParamTypeBits = 8
 const _AUTHZ_SS_MAXSIZE = 128
 const APF_AuditFailure = &h0
 const APF_AuditSuccess = &h1
-#define APF_ValidFlags APF_AuditSuccess
+const APF_ValidFlags = APF_AuditSuccess
 const AUTHZ_ALLOW_MULTIPLE_SOURCE_INSTANCES = &h1
 const AUTHZ_MIGRATED_LEGACY_PUBLISHER = &h2
 const AUTHZ_AUDIT_INSTANCE_INFORMATION = &h2

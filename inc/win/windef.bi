@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -53,6 +53,7 @@
 #include once "basetsd.bi"
 
 '' The following symbols have been renamed:
+''     constant TRUE => CTRUE
 ''     typedef BYTE => UBYTE
 ''     typedef INT => INT_
 
@@ -72,13 +73,16 @@ type PSZ as zstring ptr
 const MAX_PATH = 260
 #endif
 #ifndef NULL
-const NULL = cptr(any ptr, 0)
+	const NULL = 0
 #endif
 #ifndef FALSE
-const FALSE = 0
+	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
 #endif
 #ifndef TRUE
-const TRUE = 1
+	const TRUE = 1
 #endif
 #define _DEF_WINBOOL_
 

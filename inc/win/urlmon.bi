@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -132,13 +132,7 @@ extern CLSID_SBS_CdlProtocol as const IID
 extern CLSID_SBS_ClassInstallFilter as const IID
 extern CLSID_SBS_InternetSecurityManager as const IID
 extern CLSID_SBS_InternetZoneManager as const IID
-
-#define BINDF_DONTUSECACHE BINDF_GETNEWESTVERSION
-#define BINDF_DONTPUTINCACHE BINDF_NOWRITECACHE
-#define BINDF_NOCOPYDATA BINDF_PULLDATA
 #define INVALID_P_ROOT_SECURITY_ID cptr(UBYTE ptr, -1)
-#define PI_DOCFILECLSIDLOOKUP PI_CLSIDLOOKUP
-
 extern IID_IAsyncMoniker as const IID
 extern CLSID_StdURLMoniker as const IID
 extern CLSID_HttpProtocol as const IID
@@ -514,6 +508,9 @@ enum
 	BINDF_RESERVED_8 = &h20000000
 end enum
 
+const BINDF_NOCOPYDATA = BINDF_PULLDATA
+const BINDF_DONTPUTINCACHE = BINDF_NOWRITECACHE
+const BINDF_DONTUSECACHE = BINDF_GETNEWESTVERSION
 type BINDF as __WIDL_urlmon_generated_name_00000005
 
 type __WIDL_urlmon_generated_name_00000006 as long
@@ -1594,14 +1591,14 @@ declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubB
 	declare sub IWinInetCacheHints2_SetCacheExtension2_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 #endif
 
-#define SID_IBindHost IID_IBindHost
-#define SID_SBindHost IID_IBindHost
 #define _LPBINDHOST_DEFINED
 extern SID_BindHost as const GUID
 #define __IBindHost_INTERFACE_DEFINED__
 type IBindHost as IBindHost_
 type LPBINDHOST as IBindHost ptr
 extern IID_IBindHost as const GUID
+extern SID_IBindHost alias "IID_IBindHost" as const GUID
+extern SID_SBindHost alias "IID_IBindHost" as const GUID
 
 type IBindHostVtbl
 	QueryInterface as function(byval This as IBindHost ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -1652,17 +1649,17 @@ declare function URLOpenBlockingStreamA(byval as LPUNKNOWN, byval as LPCSTR, byv
 declare function URLOpenBlockingStreamW(byval as LPUNKNOWN, byval as LPCWSTR, byval as LPSTREAM ptr, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
 
 #ifdef UNICODE
-	#define URLOpenStream URLOpenStreamW
-	#define URLOpenPullStream URLOpenPullStreamW
-	#define URLDownloadToFile URLDownloadToFileW
-	#define URLDownloadToCacheFile URLDownloadToCacheFileW
-	#define URLOpenBlockingStream URLOpenBlockingStreamW
+	declare function URLOpenStream alias "URLOpenStreamW"(byval as LPUNKNOWN, byval as LPCWSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLOpenPullStream alias "URLOpenPullStreamW"(byval as LPUNKNOWN, byval as LPCWSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLDownloadToFile alias "URLDownloadToFileW"(byval as LPUNKNOWN, byval as LPCWSTR, byval as LPCWSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLDownloadToCacheFile alias "URLDownloadToCacheFileW"(byval as LPUNKNOWN, byval as LPCWSTR, byval as LPWSTR, byval as DWORD, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLOpenBlockingStream alias "URLOpenBlockingStreamW"(byval as LPUNKNOWN, byval as LPCWSTR, byval as LPSTREAM ptr, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
 #else
-	#define URLOpenStream URLOpenStreamA
-	#define URLOpenPullStream URLOpenPullStreamA
-	#define URLDownloadToFile URLDownloadToFileA
-	#define URLDownloadToCacheFile URLDownloadToCacheFileA
-	#define URLOpenBlockingStream URLOpenBlockingStreamA
+	declare function URLOpenStream alias "URLOpenStreamA"(byval as LPUNKNOWN, byval as LPCSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLOpenPullStream alias "URLOpenPullStreamA"(byval as LPUNKNOWN, byval as LPCSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLDownloadToFile alias "URLDownloadToFileA"(byval as LPUNKNOWN, byval as LPCSTR, byval as LPCSTR, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLDownloadToCacheFile alias "URLDownloadToCacheFileA"(byval as LPUNKNOWN, byval as LPCSTR, byval as LPSTR, byval as DWORD, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
+	declare function URLOpenBlockingStream alias "URLOpenBlockingStreamA"(byval as LPUNKNOWN, byval as LPCSTR, byval as LPSTREAM ptr, byval as DWORD, byval as LPBINDSTATUSCALLBACK) as HRESULT
 #endif
 
 declare function HlinkGoBack(byval pUnk as IUnknown ptr) as HRESULT
@@ -1796,6 +1793,7 @@ enum
 	PI_PREFERDEFAULTHANDLER = &h20000
 end enum
 
+const PI_DOCFILECLSIDLOOKUP = PI_CLSIDLOOKUP
 type PI_FLAGS as _tagPI_FLAGS
 
 type _tagPROTOCOLDATA
@@ -2219,57 +2217,58 @@ declare function IInternetProtocolInfo_CompareUrl_Proxy(byval This as IInternetP
 declare sub IInternetProtocolInfo_CompareUrl_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 declare function IInternetProtocolInfo_QueryInfo_Proxy(byval This as IInternetProtocolInfo ptr, byval pwzUrl as LPCWSTR, byval OueryOption as QUERYOPTION, byval dwQueryFlags as DWORD, byval pBuffer as LPVOID, byval cbBuffer as DWORD, byval pcbBuf as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 declare sub IInternetProtocolInfo_QueryInfo_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
+const PARSE_ENCODE = PARSE_ENCODE_IS_UNESCAPE
+const PARSE_DECODE = PARSE_DECODE_IS_ESCAPE
 
-#define PARSE_ENCODE PARSE_ENCODE_IS_UNESCAPE
-#define PARSE_DECODE PARSE_DECODE_IS_ESCAPE
-#define IOInet IInternet
-#define IOInetBindInfo IInternetBindInfo
-#define IOInetBindInfoEx IInternetBindInfoEx
-#define IOInetProtocolRoot IInternetProtocolRoot
-#define IOInetProtocol IInternetProtocol
+type IOInet as IInternet
+type IOInetBindInfo as IInternetBindInfo
+type IOInetBindInfoEx as IInternetBindInfoEx
+type IOInetProtocolRoot as IInternetProtocolRoot
+type IOInetProtocol as IInternetProtocol
 
 #if _WIN32_WINNT = &h0602
-	#define IOInetProtocolEx IInternetProtocolEx
+	type IOInetProtocolEx as IInternetProtocolEx
 #endif
 
-#define IOInetProtocolSink IInternetProtocolSink
-#define IOInetProtocolInfo IInternetProtocolInfo
-#define IOInetSession IInternetSession
-#define IOInetPriority IInternetPriority
-#define IOInetThreadSwitch IInternetThreadSwitch
-#define IOInetProtocolSinkStackable IInternetProtocolSinkStackable
-#define LPOINET LPIINTERNET
-#define LPOINETPROTOCOLINFO LPIINTERNETPROTOCOLINFO
-#define LPOINETBINDINFO LPIINTERNETBINDINFO
-#define LPOINETPROTOCOLROOT LPIINTERNETPROTOCOLROOT
-#define LPOINETPROTOCOL LPIINTERNETPROTOCOL
+type IOInetProtocolSink as IInternetProtocolSink
+type IOInetProtocolInfo as IInternetProtocolInfo
+type IOInetSession as IInternetSession
+type IOInetPriority as IInternetPriority
+type IOInetThreadSwitch as IInternetThreadSwitch
+type IOInetProtocolSinkStackable as IInternetProtocolSinkStackable
+type LPOINET as LPIINTERNET
+type LPOINETPROTOCOLINFO as LPIINTERNETPROTOCOLINFO
+type LPOINETBINDINFO as LPIINTERNETBINDINFO
+type LPOINETPROTOCOLROOT as LPIINTERNETPROTOCOLROOT
+type LPOINETPROTOCOL as LPIINTERNETPROTOCOL
 
 #if _WIN32_WINNT = &h0602
 	#define LPOINETPROTOCOLEX LPIINTERNETPROTOCOLEX
 #endif
 
-#define LPOINETPROTOCOLSINK LPIINTERNETPROTOCOLSINK
-#define LPOINETSESSION LPIINTERNETSESSION
-#define LPOINETTHREADSWITCH LPIINTERNETTHREADSWITCH
-#define LPOINETPRIORITY LPIINTERNETPRIORITY
-#define LPOINETPROTOCOLINFO LPIINTERNETPROTOCOLINFO
+type LPOINETPROTOCOLSINK as LPIINTERNETPROTOCOLSINK
+type LPOINETSESSION as LPIINTERNETSESSION
+type LPOINETTHREADSWITCH as LPIINTERNETTHREADSWITCH
+type LPOINETPRIORITY as LPIINTERNETPRIORITY
+type LPOINETPROTOCOLINFO as LPIINTERNETPROTOCOLINFO
 #define LPOINETPROTOCOLSINKSTACKABLE LPIINTERNETPROTOCOLSINKSTACKABLE
-#define IID_IOInet IID_IInternet
-#define IID_IOInetBindInfo IID_IInternetBindInfo
-#define IID_IOInetBindInfoEx IID_IInternetBindInfoEx
-#define IID_IOInetProtocolRoot IID_IInternetProtocolRoot
-#define IID_IOInetProtocol IID_IInternetProtocol
+
+extern IID_IOInet alias "IID_IInternet" as const GUID
+extern IID_IOInetBindInfo alias "IID_IInternetBindInfo" as const GUID
+extern IID_IOInetBindInfoEx alias "IID_IInternetBindInfoEx" as const GUID
+extern IID_IOInetProtocolRoot alias "IID_IInternetProtocolRoot" as const GUID
+extern IID_IOInetProtocol alias "IID_IInternetProtocol" as const GUID
 
 #if _WIN32_WINNT = &h0602
-	#define IID_IOInetProtocolEx IID_IInternetProtocolEx
+	extern IID_IOInetProtocolEx alias "IID_IInternetProtocolEx" as const GUID
 #endif
 
-#define IID_IOInetProtocolSink IID_IInternetProtocolSink
-#define IID_IOInetProtocolInfo IID_IInternetProtocolInfo
-#define IID_IOInetSession IID_IInternetSession
-#define IID_IOInetPriority IID_IInternetPriority
-#define IID_IOInetThreadSwitch IID_IInternetThreadSwitch
-#define IID_IOInetProtocolSinkStackable IID_IInternetProtocolSinkStackable
+extern IID_IOInetProtocolSink alias "IID_IInternetProtocolSink" as const GUID
+extern IID_IOInetProtocolInfo alias "IID_IInternetProtocolInfo" as const GUID
+extern IID_IOInetSession alias "IID_IInternetSession" as const GUID
+extern IID_IOInetPriority alias "IID_IInternetPriority" as const GUID
+extern IID_IOInetThreadSwitch alias "IID_IInternetThreadSwitch" as const GUID
+extern IID_IOInetProtocolSinkStackable alias "IID_IInternetProtocolSinkStackable" as const GUID
 declare function CoInternetParseUrl(byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
 #if _WIN32_WINNT = &h0602
@@ -2362,20 +2361,20 @@ declare sub ReleaseBindInfo(byval pbindinfo as BINDINFO ptr)
 #define INET_E_DEFAULT_ACTION INET_E_USE_DEFAULT_PROTOCOLHANDLER
 #define INET_E_QUERYOPTION_UNKNOWN _HRESULT_TYPEDEF_(__MSABI_LONG(&h800C0013))
 #define INET_E_REDIRECTING _HRESULT_TYPEDEF_(__MSABI_LONG(&h800C0014))
-#define OInetParseUrl CoInternetParseUrl
-#define OInetCombineUrl CoInternetCombineUrl
+declare function OInetParseUrl alias "CoInternetParseUrl"(byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
+declare function OInetCombineUrl alias "CoInternetCombineUrl"(byval pwzBaseUrl as LPCWSTR, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
 #if _WIN32_WINNT = &h0602
-	#define OInetCombineUrlEx CoInternetCombineUrlEx
-	#define OInetCombineIUri CoInternetCombineIUri
+	declare function OInetCombineUrlEx alias "CoInternetCombineUrlEx"(byval pBaseUri as IUri ptr, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
+	declare function OInetCombineIUri alias "CoInternetCombineIUri"(byval pBaseUri as IUri ptr, byval pRelativeUri as IUri ptr, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
 #endif
 
-#define OInetCompareUrl CoInternetCompareUrl
-#define OInetQueryInfo CoInternetQueryInfo
-#define OInetGetSession CoInternetGetSession
+declare function OInetCompareUrl alias "CoInternetCompareUrl"(byval pwzUrl1 as LPCWSTR, byval pwzUrl2 as LPCWSTR, byval dwFlags as DWORD) as HRESULT
+declare function OInetQueryInfo alias "CoInternetQueryInfo"(byval pwzUrl as LPCWSTR, byval QueryOptions as QUERYOPTION, byval dwQueryFlags as DWORD, byval pvBuffer as LPVOID, byval cbBuffer as DWORD, byval pcbBuffer as DWORD ptr, byval dwReserved as DWORD) as HRESULT
+declare function OInetGetSession alias "CoInternetGetSession"(byval dwSessionMode as DWORD, byval ppIInternetSession as IInternetSession ptr ptr, byval dwReserved as DWORD) as HRESULT
 const PROTOCOLFLAG_NO_PICS_CHECK = &h1
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	type IInternetSecurityManager as IInternetSecurityManager_
 #endif
 
@@ -2389,14 +2388,6 @@ extern CLSID_InternetZoneManager as const IID
 	extern CLSID_PersistentZoneIdentifier as const IID
 #endif
 
-#define SID_SInternetSecurityManager IID_IInternetSecurityManager
-
-#if _WIN32_WINNT = &h0602
-	#define SID_SInternetSecurityManagerEx IID_IInternetSecurityManagerEx
-	#define SID_SInternetSecurityManagerEx2 IID_IInternetSecurityManagerEx2
-#endif
-
-#define SID_SInternetHostSecurityManager IID_IInternetHostSecurityManager
 #define _LPINTERNETSECURITYMGRSITE_DEFINED
 #define __IInternetSecurityMgrSite_INTERFACE_DEFINED__
 extern IID_IInternetSecurityMgrSite as const GUID
@@ -2482,6 +2473,7 @@ end enum
 
 type SZM_FLAGS as __WIDL_urlmon_generated_name_00000010
 extern IID_IInternetSecurityManager as const GUID
+extern SID_SInternetSecurityManager alias "IID_IInternetSecurityManager" as const GUID
 
 type IInternetSecurityManagerVtbl
 	QueryInterface as function(byval This as IInternetSecurityManager ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -2534,6 +2526,7 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 	#define _LPINTERNETSECURITYMANANGEREX_DEFINED
 	#define __IInternetSecurityManagerEx_INTERFACE_DEFINED__
 	extern IID_IInternetSecurityManagerEx as const GUID
+	extern SID_SInternetSecurityManagerEx alias "IID_IInternetSecurityManagerEx" as const GUID
 	type IInternetSecurityManagerEx as IInternetSecurityManagerEx_
 
 	type IInternetSecurityManagerExVtbl
@@ -2572,6 +2565,7 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 	#define _LPINTERNETSECURITYMANANGEREx2_DEFINED
 	#define __IInternetSecurityManagerEx2_INTERFACE_DEFINED__
 	extern IID_IInternetSecurityManagerEx2 as const GUID
+	extern SID_SInternetSecurityManagerEx2 alias "IID_IInternetSecurityManagerEx2" as const GUID
 
 	type IInternetSecurityManagerEx2Vtbl
 		QueryInterface as function(byval This as IInternetSecurityManagerEx2 ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
@@ -2656,6 +2650,7 @@ declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStub
 #define _LPINTERNETHOSTSECURITYMANANGER_DEFINED
 #define __IInternetHostSecurityManager_INTERFACE_DEFINED__
 extern IID_IInternetHostSecurityManager as const GUID
+extern SID_SInternetHostSecurityManager alias "IID_IInternetHostSecurityManager" as const GUID
 type IInternetHostSecurityManager as IInternetHostSecurityManager_
 
 type IInternetHostSecurityManagerVtbl
@@ -3316,9 +3311,9 @@ declare function IsLoggingEnabledA(byval pszUrl as LPCSTR) as WINBOOL
 declare function IsLoggingEnabledW(byval pwszUrl as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
-	#define IsLoggingEnabled IsLoggingEnabledW
+	declare function IsLoggingEnabled alias "IsLoggingEnabledW"(byval pwszUrl as LPCWSTR) as WINBOOL
 #else
-	#define IsLoggingEnabled IsLoggingEnabledA
+	declare function IsLoggingEnabled alias "IsLoggingEnabledA"(byval pszUrl as LPCSTR) as WINBOOL
 #endif
 
 type _tagHIT_LOGGING_INFO

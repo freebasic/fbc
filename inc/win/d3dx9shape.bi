@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright 2010 Christian Costa
@@ -38,9 +38,9 @@ declare function D3DXCreateTextW(byval device as IDirect3DDevice9 ptr, byval hdc
 declare function D3DXCreateTorus(byval device as IDirect3DDevice9 ptr, byval innerradius as single, byval outerradius as single, byval sides as UINT, byval rings as UINT, byval mesh as ID3DXMesh ptr ptr, byval adjacency as ID3DXBuffer ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define D3DXCreateText D3DXCreateTextW
+	declare function D3DXCreateText alias "D3DXCreateTextW"(byval device as IDirect3DDevice9 ptr, byval hdc as HDC, byval text as const wstring ptr, byval deviation as single, byval extrusion as FLOAT, byval mesh as ID3DXMesh ptr ptr, byval adjacency as ID3DXBuffer ptr ptr, byval glyphmetrics as GLYPHMETRICSFLOAT ptr) as HRESULT
 #else
-	#define D3DXCreateText D3DXCreateTextA
+	declare function D3DXCreateText alias "D3DXCreateTextA"(byval device as IDirect3DDevice9 ptr, byval hdc as HDC, byval text as const zstring ptr, byval deviation as single, byval extrusion as single, byval mesh as ID3DXMesh ptr ptr, byval adjacency as ID3DXBuffer ptr ptr, byval glyphmetrics as GLYPHMETRICSFLOAT ptr) as HRESULT
 #endif
 
 end extern

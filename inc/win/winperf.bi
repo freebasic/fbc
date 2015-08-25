@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -20,7 +20,7 @@ const PERF_DATA_VERSION = 1
 const PERF_DATA_REVISION = 1
 
 type _PERF_DATA_BLOCK
-	Signature as wstring * 4
+	Signature(0 to 3) as WCHAR
 	LittleEndian_ as DWORD
 	Version as DWORD
 	Revision as DWORD

@@ -12,7 +12,7 @@ Formats a number in a specified format
 	##//numerical_expression//##
 		number to format
 	##//formatting_expression//##
-		formatting pattern pattern 
+		formatting pattern
 
 {{fbdoc item="ret"}}
 	##**Format**## returns a string with the result of the numerical expression formatted as indicated in the formatting expression.

@@ -1,4 +1,11 @@
 bin/fbc.exe
+include/freebasic/AL/al.bi
+include/freebasic/AL/alc.bi
+include/freebasic/AL/alext.bi
+include/freebasic/AL/alut.bi
+include/freebasic/AL/efx-creative.bi
+include/freebasic/AL/efx-presets.bi
+include/freebasic/AL/efx.bi
 include/freebasic/CUnit/Automated.bi
 include/freebasic/CUnit/Basic.bi
 include/freebasic/CUnit/CUCurses.bi
@@ -24,7 +31,9 @@ include/freebasic/GL/windows/glext.bi
 include/freebasic/GL/windows/glu.bi
 include/freebasic/GLFW/glfw3.bi
 include/freebasic/IUP/iup.bi
+include/freebasic/IUP/iup_config.bi
 include/freebasic/IUP/iup_mglplot.bi
+include/freebasic/IUP/iup_plot.bi
 include/freebasic/IUP/iup_pplot.bi
 include/freebasic/IUP/iup_scintilla.bi
 include/freebasic/IUP/iupcb.bi
@@ -44,6 +53,7 @@ include/freebasic/IUP/iupim.bi
 include/freebasic/IUP/iupkey.bi
 include/freebasic/IUP/iuplua.bi
 include/freebasic/IUP/iuplua_mglplot.bi
+include/freebasic/IUP/iuplua_plot.bi
 include/freebasic/IUP/iuplua_pplot.bi
 include/freebasic/IUP/iuplua_scintilla.bi
 include/freebasic/IUP/iupluacontrols.bi
@@ -312,7 +322,14 @@ include/freebasic/allegro5/allegro_native_dialog.bi
 include/freebasic/allegro5/allegro_physfs.bi
 include/freebasic/allegro5/allegro_primitives.bi
 include/freebasic/allegro5/allegro_ttf.bi
+include/freebasic/aspell.bi
 include/freebasic/atk/atk.bi
+include/freebasic/bass.bi
+include/freebasic/bassmod.bi
+include/freebasic/bfd.bi
+include/freebasic/bzlib.bi
+include/freebasic/caca.bi
+include/freebasic/caca0.bi
 include/freebasic/cairo/cairo-gl.bi
 include/freebasic/cairo/cairo-pdf.bi
 include/freebasic/cairo/cairo-ps.bi
@@ -448,6 +465,7 @@ include/freebasic/png12.bi
 include/freebasic/png14.bi
 include/freebasic/png15.bi
 include/freebasic/png16.bi
+include/freebasic/pspell.bi
 include/freebasic/regex.bi
 include/freebasic/string.bi
 include/freebasic/tre/regex.bi
@@ -517,6 +535,8 @@ include/freebasic/win/dbt.bi
 include/freebasic/win/dde.bi
 include/freebasic/win/ddeml.bi
 include/freebasic/win/ddraw.bi
+include/freebasic/win/devpkey.bi
+include/freebasic/win/devpropdef.bi
 include/freebasic/win/dimm.bi
 include/freebasic/win/dinput.bi
 include/freebasic/win/dlgs.bi
@@ -605,6 +625,8 @@ include/freebasic/win/olectl.bi
 include/freebasic/win/olectlid.bi
 include/freebasic/win/oledlg.bi
 include/freebasic/win/oleidl.bi
+include/freebasic/win/pciprop.bi
+include/freebasic/win/portabledeviceconnectapi.bi
 include/freebasic/win/powrprof.bi
 include/freebasic/win/profinfo.bi
 include/freebasic/win/propidl.bi
@@ -652,6 +674,7 @@ include/freebasic/win/sqltypes.bi
 include/freebasic/win/sqlucode.bi
 include/freebasic/win/sspi.bi
 include/freebasic/win/strmif.bi
+include/freebasic/win/strsafe.bi
 include/freebasic/win/structuredquerycondition.bi
 include/freebasic/win/subauth.bi
 include/freebasic/win/tcpestats.bi
@@ -676,6 +699,8 @@ include/freebasic/win/wincon.bi
 include/freebasic/win/wincrypt.bi
 include/freebasic/win/windef.bi
 include/freebasic/win/windns.bi
+include/freebasic/win/windot11.bi
+include/freebasic/win/windowsx.bi
 include/freebasic/win/winefs.bi
 include/freebasic/win/winerror.bi
 include/freebasic/win/wingdi.bi
@@ -697,6 +722,7 @@ include/freebasic/win/winsvc.bi
 include/freebasic/win/wintrust.bi
 include/freebasic/win/winuser.bi
 include/freebasic/win/winver.bi
+include/freebasic/win/wlantypes.bi
 include/freebasic/win/ws2def.bi
 include/freebasic/win/ws2ipdef.bi
 include/freebasic/win/ws2spi.bi

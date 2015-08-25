@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.13
+'' FreeBASIC binding for iup-3.15
 ''
 '' based on the C header files:
 ''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
@@ -27,14 +27,20 @@
 
 #pragma once
 
-extern "C"
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	extern "C"
+#endif
 
 #define __IUPLUAOLE_H
 
 #ifdef LUA_NOOBJECT
 	declare function iupolelua_open() as long
-#else
+#endif
+
+#ifdef LUA_TNONE
 	declare function iupolelua_open(byval L as lua_State ptr) as long
 #endif
 
-end extern
+#if defined(LUA_NOOBJECT) or ((not defined(LUA_NOOBJECT)) and defined(LUA_TNONE))
+	end extern
+#endif

@@ -17,7 +17,7 @@
 ''
 ''   You should have received a copy of the GNU Library General Public
 ''   License along with this library; if not, write to the Free Software
-''   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301  USA
 ''
 '' translated to FreeBASIC by:
 ''   Copyright © 2015 FreeBASIC development team
@@ -68,11 +68,11 @@ const CU_FALSE = 0
 #define CU_ASSERT_STRING_EQUAL_FATAL(actual, expected) CU_assertImplementation(-(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))) = 0), __LINE__, "CU_ASSERT_STRING_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
 #define CU_ASSERT_STRING_NOT_EQUAL(actual, expected) CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, "CU_ASSERT_STRING_NOT_EQUAL(" #actual "," #expected ")", __FILE__, "", CU_FALSE)
 #define CU_ASSERT_STRING_NOT_EQUAL_FATAL(actual, expected) CU_assertImplementation(strcmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected))), __LINE__, "CU_ASSERT_STRING_NOT_EQUAL_FATAL(" #actual "," #expected ")", __FILE__, "", CU_TRUE)
-#define CU_ASSERT_NSTRING_EQUAL(actual, expected, count) CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
-#define CU_ASSERT_NSTRING_EQUAL_FATAL(actual, expected, count) CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
-#define CU_ASSERT_NSTRING_NOT_EQUAL(actual, expected, count) CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
-#define CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(actual, expected, count) CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint((count))), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
-#define CU_ASSERT_DOUBLE_EQUAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
-#define CU_ASSERT_DOUBLE_EQUAL_FATAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) <= fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)
-#define CU_ASSERT_DOUBLE_NOT_EQUAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
-#define CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl((actual)) - (expected)) > fabs(cdbl((granularity)))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)
+#define CU_ASSERT_NSTRING_EQUAL(actual, expected, count) CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint(count)) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
+#define CU_ASSERT_NSTRING_EQUAL_FATAL(actual, expected, count) CU_assertImplementation(-(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint(count)) = 0), __LINE__, "CU_ASSERT_NSTRING_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
+#define CU_ASSERT_NSTRING_NOT_EQUAL(actual, expected, count) CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint(count)), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_FALSE)
+#define CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(actual, expected, count) CU_assertImplementation(strncmp(cptr(const zstring ptr, (actual)), cptr(const zstring ptr, (expected)), cuint(count)), __LINE__, "CU_ASSERT_NSTRING_NOT_EQUAL_FATAL(" #actual "," #expected "," #count ")", __FILE__, "", CU_TRUE)
+#define CU_ASSERT_DOUBLE_EQUAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl(actual) - (expected)) <= fabs(cdbl(granularity))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
+#define CU_ASSERT_DOUBLE_EQUAL_FATAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl(actual) - (expected)) <= fabs(cdbl(granularity))), __LINE__, "CU_ASSERT_DOUBLE_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)
+#define CU_ASSERT_DOUBLE_NOT_EQUAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl(actual) - (expected)) > fabs(cdbl(granularity))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_FALSE)
+#define CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(actual, expected, granularity) CU_assertImplementation(-(fabs(cdbl(actual) - (expected)) > fabs(cdbl(granularity))), __LINE__, "CU_ASSERT_DOUBLE_NOT_EQUAL_FATAL(" #actual "," #expected "," #granularity ")", __FILE__, "", CU_TRUE)

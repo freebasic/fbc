@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -993,7 +993,7 @@ enum
 end enum
 
 type EOLE_AUTHENTICATION_CAPABILITIES as tagEOLE_AUTHENTICATION_CAPABILITIES
-#define COLE_DEFAULT_PRINCIPAL cptr(wstring ptr, cast(INT_PTR, -1))
+#define COLE_DEFAULT_PRINCIPAL cptr(OLECHAR ptr, cast(INT_PTR, -1))
 #define COLE_DEFAULT_AUTHINFO cptr(any ptr, cast(INT_PTR, -1))
 
 type tagSOLE_AUTHENTICATION_INFO

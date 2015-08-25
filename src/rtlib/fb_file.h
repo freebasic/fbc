@@ -270,6 +270,7 @@ FBCALL FB_WCHAR    *fb_FileWstrInput    ( ssize_t chars, int fnum );
 FBCALL int          fb_FileLineInput    ( int fnum, void *dst, ssize_t dst_len, int fillrem );
 FBCALL int          fb_FileLineInputWstr( int fnum, FB_WCHAR *dst, ssize_t max_chars );
 
+FBCALL int          fb_InputBool        ( char *dst );
 FBCALL int          fb_InputByte        ( char *dst );
 FBCALL int          fb_InputUbyte       ( unsigned char *dst );
 FBCALL int          fb_InputShort       ( short *dst );

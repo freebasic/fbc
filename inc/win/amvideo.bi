@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2003 Robert Shearman
@@ -45,7 +45,7 @@ const AMDDS_YUVOFF = &h20
 const AMDDS_RGBFLP = &h40
 const AMDDS_YUVFLP = &h80
 const AMDDS_ALL = &hFF
-#define AMDDS_DEFAULT AMDDS_ALL
+const AMDDS_DEFAULT = AMDDS_ALL
 #define AMDDS_YUV ((AMDDS_YUVOFF or AMDDS_YUVOVR) or AMDDS_YUVFLP)
 #define AMDDS_RGB ((AMDDS_RGBOFF or AMDDS_RGBOVR) or AMDDS_RGBFLP)
 #define AMDSS_PRIMARY (AMDDS_DCIPS or AMDDS_PS)

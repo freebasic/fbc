@@ -48,6 +48,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"INT"        , FB_TK_INT         , FB_TKCLASS_KEYWORD ), _
 	( @"STATIC"     , FB_TK_STATIC      , FB_TKCLASS_KEYWORD ), _
 	( @"SHARED"     , FB_TK_SHARED      , FB_TKCLASS_KEYWORD ), _
+	( @"BOOLEAN"    , FB_TK_BOOLEAN     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"BYTE"       , FB_TK_BYTE        , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"UBYTE"      , FB_TK_UBYTE       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"SHORT"      , FB_TK_SHORT       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
@@ -72,6 +73,7 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"UNTIL"      , FB_TK_UNTIL       , FB_TKCLASS_KEYWORD ), _
 	( @"WEND"       , FB_TK_WEND        , FB_TKCLASS_KEYWORD ), _
 	( @"CONTINUE"   , FB_TK_CONTINUE    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+	( @"CBOOL"      , FB_TK_CBOOL       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"CBYTE"      , FB_TK_CBYTE       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"CSHORT"     , FB_TK_CSHORT      , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( @"CINT"       , FB_TK_CINT        , FB_TKCLASS_KEYWORD ), _
@@ -268,6 +270,11 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( NULL ) _
 }
 
+'' FALSE/TRUE are names of keyword constants but 
+'' don't exactly fit in purpose of the KwdTb().
+dim shared kwdFALSE as zstring * 6 = "FALSE"
+dim shared kwdTRUE as zstring * 5  = "TRUE"
+
 '':::::
 sub symbKeywordInit( )
 
@@ -352,3 +359,40 @@ function symbKeywordGetText( byval tk as integer ) as const zstring ptr
 	next
 	function = @""
 end function
+
+'':::::
+sub symbKeywordConstsInit( )
+
+	dim as FBVALUE v
+	dim id as string * 10
+
+	dim as FB_SYMBATTRIB attrib = any
+	dim as FBSYMBOL ptr sym = any
+
+	attrib = FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
+
+	v.i = cint(0)
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		id = "__" + kwdFALSE
+	else
+		id = kwdFALSE
+	end if
+	sym = symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	'' Success? ... symbAddConst() may fail if id was defined on the command line
+	if( sym ) then
+		symbSetCanRedef( sym )
+	end if
+
+	v.i = cint(-1)
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		id = "__" + kwdTRUE
+	else
+		id = kwdTRUE
+	end if
+	'' Success? ... symbAddConst() may fail if id was defined on the command line
+	sym = symbAddConst( strptr(id), FB_DATATYPE_BOOLEAN, NULL, @v, attrib )
+	if( sym ) then
+		symbSetCanRedef( sym )
+	end if
+
+end sub

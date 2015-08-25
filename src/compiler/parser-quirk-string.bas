@@ -617,7 +617,7 @@ end function
 
 
 '':::::
-'' cStringFunct	=	W|STR$ '(' Expression{int|float|double} ')'
+'' cStringFunct	=	W|STR$ '(' Expression{bool|int|float|double} ')'
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   W|STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
@@ -632,7 +632,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	function = NULL
 
 	select case tk
-	'' W|STR '(' Expression{int|float|double|wstring} ')'
+	'' W|STR '(' Expression{bool|int|float|double|wstring} ')'
 	case FB_TK_STR, FB_TK_WSTR
 		is_wstr = (tk = FB_TK_WSTR)
 		lexSkipToken( )

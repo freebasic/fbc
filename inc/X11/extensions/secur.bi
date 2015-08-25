@@ -46,7 +46,7 @@ const XSecurityGroup = 1 shl 2
 const XSecurityEventMask = 1 shl 3
 #define XSecurityAllAuthorizationAttributes (((XSecurityTimeout or XSecurityTrustLevel) or XSecurityGroup) or XSecurityEventMask)
 const XSecurityAuthorizationRevokedMask = 1 shl 0
-#define XSecurityAllEventMasks XSecurityAuthorizationRevokedMask
+const XSecurityAllEventMasks = XSecurityAuthorizationRevokedMask
 const XSecurityAuthorizationRevoked = 0
 #define XSecurityAuthorizationName "XC-QUERY-SECURITY-1"
 const XSecurityAuthorizationNameLen = 19

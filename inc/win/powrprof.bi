@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -98,8 +98,8 @@ type _USER_POWER_POLICY
 	VideoTimeoutDc as ULONG
 	SpindownTimeoutAc as ULONG
 	SpindownTimeoutDc as ULONG
-	OptimizeForPowerAc as BOOLEAN
-	OptimizeForPowerDc as BOOLEAN
+	OptimizeForPowerAc as WINBOOLEAN
+	OptimizeForPowerDc as WINBOOLEAN
 	FanThrottleToleranceAc as UCHAR
 	FanThrottleToleranceDc as UCHAR
 	ForcedThrottleAc as UCHAR
@@ -122,29 +122,29 @@ const EnablePasswordLogon = &h04
 const EnableWakeOnRing = &h08
 const EnableVideoDimDisplay = &h10
 #define NEWSCHEME cast(UINT, -1)
-type PWRSCHEMESENUMPROC as function(byval as UINT, byval as DWORD, byval as LPTSTR, byval as DWORD, byval as LPTSTR, byval as PPOWER_POLICY, byval as LPARAM) as BOOLEAN
-type PFNNTINITIATEPWRACTION as function(byval as POWER_ACTION, byval as SYSTEM_POWER_STATE, byval as ULONG, byval as BOOLEAN) as BOOLEAN
+type PWRSCHEMESENUMPROC as function(byval as UINT, byval as DWORD, byval as LPTSTR, byval as DWORD, byval as LPTSTR, byval as PPOWER_POLICY, byval as LPARAM) as WINBOOLEAN
+type PFNNTINITIATEPWRACTION as function(byval as POWER_ACTION, byval as SYSTEM_POWER_STATE, byval as ULONG, byval as WINBOOLEAN) as WINBOOLEAN
 
-declare function GetPwrDiskSpindownRange(byval as PUINT, byval as PUINT) as BOOLEAN
-declare function EnumPwrSchemes(byval as PWRSCHEMESENUMPROC, byval as LPARAM) as BOOLEAN
-declare function ReadGlobalPwrPolicy(byval as PGLOBAL_POWER_POLICY) as BOOLEAN
-declare function ReadPwrScheme(byval as UINT, byval as PPOWER_POLICY) as BOOLEAN
-declare function WritePwrScheme(byval as PUINT, byval as LPTSTR, byval as LPTSTR, byval as PPOWER_POLICY) as BOOLEAN
-declare function WriteGlobalPwrPolicy(byval as PGLOBAL_POWER_POLICY) as BOOLEAN
-declare function DeletePwrScheme(byval as UINT) as BOOLEAN
-declare function GetActivePwrScheme(byval as PUINT) as BOOLEAN
-declare function SetActivePwrScheme(byval as UINT, byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as BOOLEAN
-declare function GetPwrCapabilities(byval as PSYSTEM_POWER_CAPABILITIES) as BOOLEAN
-declare function IsPwrSuspendAllowed() as BOOLEAN
-declare function IsPwrHibernateAllowed() as BOOLEAN
-declare function IsPwrShutdownAllowed() as BOOLEAN
-declare function IsAdminOverrideActive(byval as PADMINISTRATOR_POWER_POLICY) as BOOLEAN
-declare function SetSuspendState(byval as BOOLEAN, byval as BOOLEAN, byval as BOOLEAN) as BOOLEAN
-declare function GetCurrentPowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as BOOLEAN
-declare function CanUserWritePwrScheme() as BOOLEAN
-declare function ReadProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESSOR_POWER_POLICY) as BOOLEAN
-declare function WriteProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESSOR_POWER_POLICY) as BOOLEAN
-declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as BOOLEAN
+declare function GetPwrDiskSpindownRange(byval as PUINT, byval as PUINT) as WINBOOLEAN
+declare function EnumPwrSchemes(byval as PWRSCHEMESENUMPROC, byval as LPARAM) as WINBOOLEAN
+declare function ReadGlobalPwrPolicy(byval as PGLOBAL_POWER_POLICY) as WINBOOLEAN
+declare function ReadPwrScheme(byval as UINT, byval as PPOWER_POLICY) as WINBOOLEAN
+declare function WritePwrScheme(byval as PUINT, byval as LPTSTR, byval as LPTSTR, byval as PPOWER_POLICY) as WINBOOLEAN
+declare function WriteGlobalPwrPolicy(byval as PGLOBAL_POWER_POLICY) as WINBOOLEAN
+declare function DeletePwrScheme(byval as UINT) as WINBOOLEAN
+declare function GetActivePwrScheme(byval as PUINT) as WINBOOLEAN
+declare function SetActivePwrScheme(byval as UINT, byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as WINBOOLEAN
+declare function GetPwrCapabilities(byval as PSYSTEM_POWER_CAPABILITIES) as WINBOOLEAN
+declare function IsPwrSuspendAllowed() as WINBOOLEAN
+declare function IsPwrHibernateAllowed() as WINBOOLEAN
+declare function IsPwrShutdownAllowed() as WINBOOLEAN
+declare function IsAdminOverrideActive(byval as PADMINISTRATOR_POWER_POLICY) as WINBOOLEAN
+declare function SetSuspendState(byval as WINBOOLEAN, byval as WINBOOLEAN, byval as WINBOOLEAN) as WINBOOLEAN
+declare function GetCurrentPowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as WINBOOLEAN
+declare function CanUserWritePwrScheme() as WINBOOLEAN
+declare function ReadProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESSOR_POWER_POLICY) as WINBOOLEAN
+declare function WriteProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESSOR_POWER_POLICY) as WINBOOLEAN
+declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as WINBOOLEAN
 
 #if _WIN32_WINNT = &h0602
 	const DEVICEPOWER_HARDWAREID = &h80000000
@@ -187,9 +187,9 @@ declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as P
 
 	type POWER_DATA_ACCESSOR as _POWER_DATA_ACCESSOR
 	type PPOWER_DATA_ACCESSOR as _POWER_DATA_ACCESSOR ptr
-	declare function DevicePowerClose() as BOOLEAN
-	declare function DevicePowerEnumDevices(byval QueryIndex as ULONG, byval QueryInterpretationFlags as ULONG, byval QueryFlags as ULONG, byval pReturnBuffer as PBYTE, byval pBufferSize as PULONG) as BOOLEAN
-	declare function DevicePowerOpen(byval Flags as ULONG) as BOOLEAN
+	declare function DevicePowerClose() as WINBOOLEAN
+	declare function DevicePowerEnumDevices(byval QueryIndex as ULONG, byval QueryInterpretationFlags as ULONG, byval QueryFlags as ULONG, byval pReturnBuffer as PBYTE, byval pBufferSize as PULONG) as WINBOOLEAN
+	declare function DevicePowerOpen(byval Flags as ULONG) as WINBOOLEAN
 	declare function DevicePowerSetDeviceState(byval DeviceDescription as LPCWSTR, byval SetFlags as ULONG, byval SetData as LPCVOID) as DWORD
 	declare function PowerCanRestoreIndividualDefaultPowerScheme(byval SchemeGuid as const GUID ptr) as DWORD
 	declare function PowerCreatePossibleSetting(byval RootSystemPowerKey as HKEY, byval SubGroupOfPowerSettingsGuid as const GUID ptr, byval PowerSettingGuid as const GUID ptr, byval PossibleSettingIndex as ULONG) as DWORD

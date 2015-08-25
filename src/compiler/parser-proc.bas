@@ -1468,7 +1468,7 @@ function cProcHeader _
 				'' error recovery: skip token
 				lexSkipToken( )
 			else
-				priority = valint( *lexGetText() )
+				priority = clng( *lexGetText() )
 				if priority < 101 or priority > 65535 then
 					errReport( FB_ERRMSG_INVALIDPRIORITY )
 					'' error recovery: skip token

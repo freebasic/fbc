@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   ntdef.h
@@ -32,7 +32,9 @@
 #include once "crt/stdarg.bi"
 
 '' The following symbols have been renamed:
+''     constant TRUE => CTRUE
 ''     typedef INT => INT_
+''     typedef BOOLEAN => WINBOOLEAN
 ''     typedef CSHORT => CSHORT_
 ''     typedef STRING => STRING_
 
@@ -47,8 +49,15 @@ extern "Windows"
 #define NOTHING
 #define CRITICAL
 const ANYSIZE_ARRAY = 1
-const FALSE = 0
-const TRUE = 1
+#ifndef FALSE
+	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
 const NULL64 = 0
 
 #ifdef __FB_64BIT__
@@ -72,8 +81,8 @@ type PVOID as any ptr
 type PVOID64 as any ptr
 type HANDLE as PVOID
 type PHANDLE as HANDLE ptr
-#define VOID any
-type CHAR as zstring
+type VOID as any
+type CHAR as byte
 type INT_ as long
 type UCHAR as ubyte
 type PUCHAR as ubyte ptr
@@ -85,7 +94,10 @@ type PCULONG as const ULONG ptr
 type FCHAR as UCHAR
 type FSHORT as USHORT
 type FLONG as ULONG
-type BOOLEAN as UCHAR
+type WINBOOLEAN as UCHAR
+#ifndef BOOLEAN
+	type BOOLEAN as WINBOOLEAN
+#endif
 type PBOOLEAN as UCHAR ptr
 type LOGICAL as ULONG
 type PLOGICAL as ULONG ptr
@@ -111,11 +123,11 @@ type PULONGLONG as ulongint ptr
 type DWORDLONG as ULONGLONG
 type PDWORDLONG as ULONGLONG ptr
 type USN as LONGLONG
-type PCHAR as zstring ptr
-type LPCH as zstring ptr
-type PCH as zstring ptr
-type LPCCH as const zstring ptr
-type PCCH as const zstring ptr
+type PCHAR as CHAR ptr
+type LPCH as CHAR ptr
+type PCH as CHAR ptr
+type LPCCH as const CHAR ptr
+type PCCH as const CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
@@ -127,12 +139,12 @@ type PZPCSTR as PCSTR ptr
 type PSZ as zstring ptr
 type PCSZ as const zstring ptr
 #define __WCHAR_DEFINED
-type WCHAR as wstring
-type PWCHAR as wstring ptr
-type LPWCH as wstring ptr
-type PWCH as wstring ptr
-type LPCWCH as const wstring ptr
-type PCWCH as const wstring ptr
+type WCHAR as wchar_t
+type PWCHAR as WCHAR ptr
+type LPWCH as WCHAR ptr
+type PWCH as WCHAR ptr
+type LPCWCH as const WCHAR ptr
+type PCWCH as const WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
@@ -231,7 +243,7 @@ type PUNICODE_STRING as _UNICODE_STRING ptr
 #endif
 
 type PCUNICODE_STRING as const UNICODE_STRING ptr
-const UNICODE_NULL = cast(wchar_t, 0)
+#define UNICODE_NULL cast(WCHAR, 0)
 
 type _CSTRING
 	Length as USHORT
@@ -241,7 +253,7 @@ end type
 
 type CSTRING as _CSTRING
 type PCSTRING as _CSTRING ptr
-const ANSI_NULL = cbyte(0)
+#define ANSI_NULL cast(CHAR, 0)
 #ifndef __STRING_DEFINED
 #define __STRING_DEFINED
 type _STRING
@@ -417,9 +429,9 @@ end type
 type GROUP_AFFINITY as _GROUP_AFFINITY
 type PGROUP_AFFINITY as _GROUP_AFFINITY ptr
 #define RTL_FIELD_TYPE(type, field) cptr(type ptr, 0)->field
-#define RTL_BITS_OF(sizeOfArg) (sizeof((sizeOfArg)) * 8)
+#define RTL_BITS_OF(sizeOfArg) (sizeof(sizeOfArg) * 8)
 #define RTL_BITS_OF_FIELD(type, field) RTL_BITS_OF(RTL_FIELD_TYPE(type, field))
-#define RTL_CONSTANT_STRING(s) (sizeof((s)) - sizeof((s)[0]), sizeof((s)), s)
+#define RTL_CONSTANT_STRING(s) (sizeof(s) - sizeof((s)[0]), sizeof(s), s)
 #define RTL_FIELD_SIZE(type, field) sizeof(cptr(type ptr, 0)->field)
 #define RTL_SIZEOF_THROUGH_FIELD(type, field) (FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field))
 #define RTL_CONTAINS_FIELD(Struct, Size, Field) ((cast(PCHAR, @(Struct)->Field) + sizeof((Struct)->Field)) <= (cast(PCHAR, (Struct)) + (Size)))

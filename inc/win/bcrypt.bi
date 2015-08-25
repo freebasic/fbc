@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -88,7 +88,7 @@ const BCRYPT_AUTH_MODE_CHAIN_CALLS_FLAG = &h00000001
 const BCRYPT_AUTH_MODE_IN_PROGRESS_FLAG = &h00000002
 #macro BCRYPT_INIT_AUTH_MODE_INFO(_AUTH_INFO_STRUCT_)
 	scope
-		RtlZeroMemory((@_AUTH_INFO_STRUCT_), sizeof(BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO))
+		RtlZeroMemory(@_AUTH_INFO_STRUCT_, sizeof(BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO))
 		(_AUTH_INFO_STRUCT_).cbSize = sizeof(BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO)
 		(_AUTH_INFO_STRUCT_).dwInfoVersion = BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_VERSION
 	end scope
@@ -636,7 +636,7 @@ declare function BCryptGenRandom(byval hAlgorithm as BCRYPT_ALG_HANDLE, byval pb
 declare function BCryptDeriveKeyCapi(byval hHash as BCRYPT_HASH_HANDLE, byval hTargetAlg as BCRYPT_ALG_HANDLE, byval pbDerivedKey as PUCHAR, byval cbDerivedKey as ULONG, byval dwFlags as ULONG) as NTSTATUS
 declare function BCryptDeriveKeyPBKDF2(byval hPrf as BCRYPT_ALG_HANDLE, byval pbPassword as PUCHAR, byval cbPassword as ULONG, byval pbSalt as PUCHAR, byval cbSalt as ULONG, byval cIterations as ULONGLONG, byval pbDerivedKey as PUCHAR, byval cbDerivedKey as ULONG, byval dwFlags as ULONG) as NTSTATUS
 declare function BCryptResolveProviders(byval pszContext as LPCWSTR, byval dwInterface as ULONG, byval pszFunction as LPCWSTR, byval pszProvider as LPCWSTR, byval dwMode as ULONG, byval dwFlags as ULONG, byval pcbBuffer as ULONG ptr, byval ppBuffer as PCRYPT_PROVIDER_REFS ptr) as NTSTATUS
-declare function BCryptGetFipsAlgorithmMode(byval pfEnabled as BOOLEAN ptr) as NTSTATUS
+declare function BCryptGetFipsAlgorithmMode(byval pfEnabled as WINBOOLEAN ptr) as NTSTATUS
 declare function BCryptQueryProviderRegistration(byval pszProvider as LPCWSTR, byval dwMode as ULONG, byval dwInterface as ULONG, byval pcbBuffer as ULONG ptr, byval ppBuffer as PCRYPT_PROVIDER_REG ptr) as NTSTATUS
 declare function BCryptEnumRegisteredProviders(byval pcbBuffer as ULONG ptr, byval ppBuffer as PCRYPT_PROVIDERS ptr) as NTSTATUS
 declare function BCryptCreateContext(byval dwTable as ULONG, byval pszContext as LPCWSTR, byval pConfig as PCRYPT_CONTEXT_CONFIG) as NTSTATUS

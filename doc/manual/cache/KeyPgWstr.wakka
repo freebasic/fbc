@@ -2,7 +2,7 @@
 Returns a wide-character string representation of a number or ASCII character string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]

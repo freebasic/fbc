@@ -1,9 +1,9 @@
-'' FreeBASIC binding for freetype-2.5.5
+'' FreeBASIC binding for freetype-2.6
 ''
 '' based on the C header files:
 ''   /*    FreeType high-level API and common types (specification only).       */
 ''   /*                                                                         */
-''   /*  Copyright 1996-2014 by                                                 */
+''   /*  Copyright 1996-2015 by                                                 */
 ''   /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 ''
 ''   This program is free software; you can redistribute it and/or modify
@@ -25,20 +25,28 @@
 
 #pragma once
 
-#if defined(__FB_LINUX__) and defined(__FB_64BIT__)
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
 	#include once "crt/long.bi"
 #endif
 
 #include once "ftoption.bi"
 #include once "ftstdlib.bi"
 
+#ifdef __FB_DARWIN__
+	#include once "crt/errno.bi"
+#endif
+
 #define __FTCONFIG_H__
 #define FT_SIZEOF_INT (32 / FT_CHAR_BIT)
 
-#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_DOS__) or defined(__FB_WIN32__)
-	#define FT_SIZEOF_LONG (32 / FT_CHAR_BIT)
-#else
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
 	#define FT_SIZEOF_LONG (64 / FT_CHAR_BIT)
+#else
+	#define FT_SIZEOF_LONG (32 / FT_CHAR_BIT)
+#endif
+
+#if defined(__FB_DARWIN__) and defined(__FB_64BIT__)
+	#undef FT_MACINTOSH
 #endif
 
 type FT_Int16 as short
@@ -49,10 +57,10 @@ type FT_Fast as long
 type FT_UFast as ulong
 #define FT_LONG64
 
-#if (defined(__FB_LINUX__) and (not defined(__FB_64BIT__))) or defined(__FB_DOS__) or defined(__FB_WIN32__)
-	type FT_Int64 as longint
-	type FT_UInt64 as ulongint
-#else
+#if defined(__FB_64BIT__) and defined(__FB_UNIX__)
 	type FT_Int64 as clong
 	type FT_UInt64 as culong
+#else
+	type FT_Int64 as longint
+	type FT_UInt64 as ulongint
 #endif

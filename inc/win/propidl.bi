@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -82,7 +82,7 @@ type PROPVARIANT as tagPROPVARIANT
 
 type tagCAC
 	cElems as ULONG
-	pElems as zstring ptr
+	pElems as CHAR ptr
 end type
 
 type CAC as tagCAC
@@ -247,7 +247,7 @@ type tagPROPVARIANT
 			wReserved3 as PROPVAR_PAD3
 
 			union
-				cVal as byte
+				cVal as CHAR
 				bVal as UCHAR
 				iVal as SHORT
 				uiVal as USHORT
@@ -299,7 +299,7 @@ type tagPROPVARIANT
 				calpstr as CALPSTR
 				calpwstr as CALPWSTR
 				capropvar as CAPROPVARIANT
-				pcVal as zstring ptr
+				pcVal as CHAR ptr
 				pbVal as UCHAR ptr
 				piVal as SHORT ptr
 				puiVal as USHORT ptr
@@ -632,7 +632,7 @@ type tagSERIALIZEDPROPERTYVALUE
 end type
 
 type SERIALIZEDPROPERTYVALUE as tagSERIALIZEDPROPERTYVALUE
-declare function StgConvertVariantToProperty(byval pvar as const PROPVARIANT ptr, byval CodePage as USHORT, byval pprop as SERIALIZEDPROPERTYVALUE ptr, byval pcb as ULONG ptr, byval pid as PROPID, byval fReserved as BOOLEAN, byval pcIndirect as ULONG ptr) as SERIALIZEDPROPERTYVALUE ptr
+declare function StgConvertVariantToProperty(byval pvar as const PROPVARIANT ptr, byval CodePage as USHORT, byval pprop as SERIALIZEDPROPERTYVALUE ptr, byval pcb as ULONG ptr, byval pid as PROPID, byval fReserved as WINBOOLEAN, byval pcIndirect as ULONG ptr) as SERIALIZEDPROPERTYVALUE ptr
 
 end extern
 

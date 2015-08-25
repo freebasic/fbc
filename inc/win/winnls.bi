@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -63,11 +63,11 @@ declare function GetTimeFormatA(byval Locale as LCID, byval dwFlags as DWORD, by
 declare function GetTimeFormatW(byval Locale as LCID, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpTimeStr as LPWSTR, byval cchTime as long) as long
 
 #ifdef UNICODE
-	#define GetDateFormat GetDateFormatW
-	#define GetTimeFormat GetTimeFormatW
+	declare function GetDateFormat alias "GetDateFormatW"(byval Locale as LCID, byval dwFlags as DWORD, byval lpDate as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpDateStr as LPWSTR, byval cchDate as long) as long
+	declare function GetTimeFormat alias "GetTimeFormatW"(byval Locale as LCID, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCWSTR, byval lpTimeStr as LPWSTR, byval cchTime as long) as long
 #else
-	#define GetDateFormat GetDateFormatA
-	#define GetTimeFormat GetTimeFormatA
+	declare function GetDateFormat alias "GetDateFormatA"(byval Locale as LCID, byval dwFlags as DWORD, byval lpDate as const SYSTEMTIME ptr, byval lpFormat as LPCSTR, byval lpDateStr as LPSTR, byval cchDate as long) as long
+	declare function GetTimeFormat alias "GetTimeFormatA"(byval Locale as LCID, byval dwFlags as DWORD, byval lpTime as const SYSTEMTIME ptr, byval lpFormat as LPCSTR, byval lpTimeStr as LPSTR, byval cchTime as long) as long
 #endif
 
 const MAX_LEADBYTES = 12
@@ -500,12 +500,12 @@ const DATE_RTLREADING = &h00000020
 	const DATE_AUTOLAYOUT = &h00000040
 #endif
 
-#define CAL_NOUSEROVERRIDE LOCALE_NOUSEROVERRIDE
-#define CAL_USE_CP_ACP LOCALE_USE_CP_ACP
-#define CAL_RETURN_NUMBER LOCALE_RETURN_NUMBER
+const CAL_NOUSEROVERRIDE = LOCALE_NOUSEROVERRIDE
+const CAL_USE_CP_ACP = LOCALE_USE_CP_ACP
+const CAL_RETURN_NUMBER = LOCALE_RETURN_NUMBER
 
 #if _WIN32_WINNT = &h0602
-	#define CAL_RETURN_GENITIVE_NAMES LOCALE_RETURN_GENITIVE_NAMES
+	const CAL_RETURN_GENITIVE_NAMES = LOCALE_RETURN_GENITIVE_NAMES
 #endif
 
 const CAL_ICALINTVALUE = &h00000001
@@ -652,7 +652,7 @@ type _cpinfoexA
 	MaxCharSize as UINT
 	DefaultChar(0 to 1) as UBYTE
 	LeadByte(0 to 11) as UBYTE
-	UnicodeDefaultChar as wchar_t
+	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as zstring * 260
 end type
@@ -664,7 +664,7 @@ type _cpinfoexW
 	MaxCharSize as UINT
 	DefaultChar(0 to 1) as UBYTE
 	LeadByte(0 to 11) as UBYTE
-	UnicodeDefaultChar as wchar_t
+	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
 	CodePageName as wstring * 260
 end type
@@ -850,27 +850,27 @@ type CALINFO_ENUMPROCEXW as function(byval as LPWSTR, byval as CALID) as WINBOOL
 type GEO_ENUMPROC as function(byval as GEOID) as WINBOOL
 
 #ifdef UNICODE
-	#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCW
-	#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCW
-	#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCW
-	#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCW
-	#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCW
-	#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXW
-	#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCW
-	#define CALINFO_ENUMPROC CALINFO_ENUMPROCW
-	#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXW
-	#define LOCALE_ENUMPROC LOCALE_ENUMPROCW
+	type LANGUAGEGROUP_ENUMPROC as LANGUAGEGROUP_ENUMPROCW
+	type LANGGROUPLOCALE_ENUMPROC as LANGGROUPLOCALE_ENUMPROCW
+	type UILANGUAGE_ENUMPROC as UILANGUAGE_ENUMPROCW
+	type CODEPAGE_ENUMPROC as CODEPAGE_ENUMPROCW
+	type DATEFMT_ENUMPROC as DATEFMT_ENUMPROCW
+	type DATEFMT_ENUMPROCEX as DATEFMT_ENUMPROCEXW
+	type TIMEFMT_ENUMPROC as TIMEFMT_ENUMPROCW
+	type CALINFO_ENUMPROC as CALINFO_ENUMPROCW
+	type CALINFO_ENUMPROCEX as CALINFO_ENUMPROCEXW
+	type LOCALE_ENUMPROC as LOCALE_ENUMPROCW
 #else
-	#define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCA
-	#define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCA
-	#define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCA
-	#define CODEPAGE_ENUMPROC CODEPAGE_ENUMPROCA
-	#define DATEFMT_ENUMPROC DATEFMT_ENUMPROCA
-	#define DATEFMT_ENUMPROCEX DATEFMT_ENUMPROCEXA
-	#define TIMEFMT_ENUMPROC TIMEFMT_ENUMPROCA
-	#define CALINFO_ENUMPROC CALINFO_ENUMPROCA
-	#define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXA
-	#define LOCALE_ENUMPROC LOCALE_ENUMPROCA
+	type LANGUAGEGROUP_ENUMPROC as LANGUAGEGROUP_ENUMPROCA
+	type LANGGROUPLOCALE_ENUMPROC as LANGGROUPLOCALE_ENUMPROCA
+	type UILANGUAGE_ENUMPROC as UILANGUAGE_ENUMPROCA
+	type CODEPAGE_ENUMPROC as CODEPAGE_ENUMPROCA
+	type DATEFMT_ENUMPROC as DATEFMT_ENUMPROCA
+	type DATEFMT_ENUMPROCEX as DATEFMT_ENUMPROCEXA
+	type TIMEFMT_ENUMPROC as TIMEFMT_ENUMPROCA
+	type CALINFO_ENUMPROC as CALINFO_ENUMPROCA
+	type CALINFO_ENUMPROCEX as CALINFO_ENUMPROCEXA
+	type LOCALE_ENUMPROC as LOCALE_ENUMPROCA
 #endif
 
 type _FILEMUIINFO
@@ -896,8 +896,8 @@ declare function CompareStringW(byval Locale as LCID, byval dwCmpFlags as DWORD,
 declare function FoldStringW(byval dwMapFlags as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
 
 #ifdef UNICODE
-	#define CompareString CompareStringW
-	#define FoldString FoldStringW
+	declare function CompareString alias "CompareStringW"(byval Locale as LCID, byval dwCmpFlags as DWORD, byval lpString1 as PCNZWCH, byval cchCount1 as long, byval lpString2 as PCNZWCH, byval cchCount2 as long) as long
+	declare function FoldString alias "FoldStringW"(byval dwMapFlags as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
 #endif
 
 declare function GetStringTypeExW(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
@@ -908,7 +908,7 @@ declare function GetStringTypeExW(byval Locale as LCID, byval dwInfoType as DWOR
 #endif
 
 #ifdef UNICODE
-	#define GetStringTypeEx GetStringTypeExW
+	declare function GetStringTypeEx alias "GetStringTypeExW"(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
 #endif
 
 declare function GetStringTypeW(byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
@@ -968,13 +968,13 @@ declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 #endif
 
 #ifdef UNICODE
-	#define SetLocaleInfo SetLocaleInfoW
-	#define GetCalendarInfo GetCalendarInfoW
-	#define SetCalendarInfo SetCalendarInfoW
+	declare function SetLocaleInfo alias "SetLocaleInfoW"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCWSTR) as WINBOOL
+	declare function GetCalendarInfo alias "GetCalendarInfoW"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPWSTR, byval cchData as long, byval lpValue as LPDWORD) as long
+	declare function SetCalendarInfo alias "SetCalendarInfoW"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCWSTR) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SetLocaleInfo SetLocaleInfoA
-	#define GetCalendarInfo GetCalendarInfoA
-	#define SetCalendarInfo SetCalendarInfoA
+	declare function SetLocaleInfo alias "SetLocaleInfoA"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCSTR) as WINBOOL
+	declare function GetCalendarInfo alias "GetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPSTR, byval cchData as long, byval lpValue as LPDWORD) as long
+	declare function SetCalendarInfo alias "SetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -986,32 +986,32 @@ declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 #endif
 
 #ifdef UNICODE
-	#define LCMapString LCMapStringW
-	#define GetLocaleInfo GetLocaleInfoW
-	#define GetNumberFormat GetNumberFormatW
-	#define GetCurrencyFormat GetCurrencyFormatW
-	#define EnumCalendarInfo EnumCalendarInfoW
-	#define EnumCalendarInfoEx EnumCalendarInfoExW
-	#define EnumTimeFormats EnumTimeFormatsW
-	#define EnumDateFormats EnumDateFormatsW
-	#define EnumDateFormatsEx EnumDateFormatsExW
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define SetLocaleInfo SetLocaleInfoA
-	#define GetCalendarInfo GetCalendarInfoA
-	#define SetCalendarInfo SetCalendarInfoA
+	declare function LCMapString alias "LCMapStringW"(byval Locale as LCID, byval dwMapFlags as DWORD, byval lpSrcStr as LPCWSTR, byval cchSrc as long, byval lpDestStr as LPWSTR, byval cchDest as long) as long
+	declare function GetLocaleInfo alias "GetLocaleInfoW"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPWSTR, byval cchData as long) as long
+	declare function GetNumberFormat alias "GetNumberFormatW"(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCWSTR, byval lpFormat as const NUMBERFMTW ptr, byval lpNumberStr as LPWSTR, byval cchNumber as long) as long
+	declare function GetCurrencyFormat alias "GetCurrencyFormatW"(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCWSTR, byval lpFormat as const CURRENCYFMTW ptr, byval lpCurrencyStr as LPWSTR, byval cchCurrency as long) as long
+	declare function EnumCalendarInfo alias "EnumCalendarInfoW"(byval lpCalInfoEnumProc as CALINFO_ENUMPROCW, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+	declare function EnumCalendarInfoEx alias "EnumCalendarInfoExW"(byval lpCalInfoEnumProcEx as CALINFO_ENUMPROCEXW, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+	declare function EnumTimeFormats alias "EnumTimeFormatsW"(byval lpTimeFmtEnumProc as TIMEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumDateFormats alias "EnumDateFormatsW"(byval lpDateFmtEnumProc as DATEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumDateFormatsEx alias "EnumDateFormatsExW"(byval lpDateFmtEnumProcEx as DATEFMT_ENUMPROCEXW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function SetLocaleInfo alias "SetLocaleInfoA"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCSTR) as WINBOOL
+	declare function GetCalendarInfo alias "GetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPSTR, byval cchData as long, byval lpValue as LPDWORD) as long
+	declare function SetCalendarInfo alias "SetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
 #endif
 
 #ifndef UNICODE
-	#define CompareString CompareStringA
-	#define LCMapString LCMapStringA
-	#define GetLocaleInfo GetLocaleInfoA
-	#define GetNumberFormat GetNumberFormatA
-	#define GetCurrencyFormat GetCurrencyFormatA
-	#define EnumCalendarInfo EnumCalendarInfoA
-	#define EnumCalendarInfoEx EnumCalendarInfoExA
-	#define EnumTimeFormats EnumTimeFormatsA
-	#define EnumDateFormats EnumDateFormatsA
-	#define EnumDateFormatsEx EnumDateFormatsExA
+	declare function CompareString alias "CompareStringA"(byval Locale as LCID, byval dwCmpFlags as DWORD, byval lpString1 as PCNZCH, byval cchCount1 as long, byval lpString2 as PCNZCH, byval cchCount2 as long) as long
+	declare function LCMapString alias "LCMapStringA"(byval Locale as LCID, byval dwMapFlags as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpDestStr as LPSTR, byval cchDest as long) as long
+	declare function GetLocaleInfo alias "GetLocaleInfoA"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPSTR, byval cchData as long) as long
+	declare function GetNumberFormat alias "GetNumberFormatA"(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCSTR, byval lpFormat as const NUMBERFMTA ptr, byval lpNumberStr as LPSTR, byval cchNumber as long) as long
+	declare function GetCurrencyFormat alias "GetCurrencyFormatA"(byval Locale as LCID, byval dwFlags as DWORD, byval lpValue as LPCSTR, byval lpFormat as const CURRENCYFMTA ptr, byval lpCurrencyStr as LPSTR, byval cchCurrency as long) as long
+	declare function EnumCalendarInfo alias "EnumCalendarInfoA"(byval lpCalInfoEnumProc as CALINFO_ENUMPROCA, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+	declare function EnumCalendarInfoEx alias "EnumCalendarInfoExA"(byval lpCalInfoEnumProcEx as CALINFO_ENUMPROCEXA, byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE) as WINBOOL
+	declare function EnumTimeFormats alias "EnumTimeFormatsA"(byval lpTimeFmtEnumProc as TIMEFMT_ENUMPROCA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumDateFormats alias "EnumDateFormatsA"(byval lpDateFmtEnumProc as DATEFMT_ENUMPROCA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumDateFormatsEx alias "EnumDateFormatsExA"(byval lpDateFmtEnumProcEx as DATEFMT_ENUMPROCEXA, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 declare function GetGeoInfoA(byval Location as GEOID, byval GeoType as GEOTYPE, byval lpGeoData as LPSTR, byval cchData as long, byval LangId as LANGID) as long
@@ -1028,11 +1028,11 @@ declare function GetCPInfoExW(byval CodePage as UINT, byval dwFlags as DWORD, by
 #endif
 
 #ifdef UNICODE
-	#define GetGeoInfo GetGeoInfoW
-	#define GetCPInfoEx GetCPInfoExW
+	declare function GetGeoInfo alias "GetGeoInfoW"(byval Location as GEOID, byval GeoType as GEOTYPE, byval lpGeoData as LPWSTR, byval cchData as long, byval LangId as LANGID) as long
+	declare function GetCPInfoEx alias "GetCPInfoExW"(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXW) as WINBOOL
 #else
-	#define GetGeoInfo GetGeoInfoA
-	#define GetCPInfoEx GetCPInfoExA
+	declare function GetGeoInfo alias "GetGeoInfoA"(byval Location as GEOID, byval GeoType as GEOTYPE, byval lpGeoData as LPSTR, byval cchData as long, byval LangId as LANGID) as long
+	declare function GetCPInfoEx alias "GetCPInfoExA"(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXA) as WINBOOL
 #endif
 
 declare function SetUserGeoID(byval GeoId as GEOID) as WINBOOL
@@ -1073,26 +1073,26 @@ declare function EnumUILanguagesW(byval lpUILanguageEnumProc as UILANGUAGE_ENUMP
 #endif
 
 #ifdef UNICODE
-	#define EnumSystemLocales EnumSystemLocalesW
-	#define EnumSystemLanguageGroups EnumSystemLanguageGroupsW
-	#define EnumLanguageGroupLocales EnumLanguageGroupLocalesW
-	#define EnumUILanguages EnumUILanguagesW
+	declare function EnumSystemLocales alias "EnumSystemLocalesW"(byval lpLocaleEnumProc as LOCALE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumSystemLanguageGroups alias "EnumSystemLanguageGroupsW"(byval lpLanguageGroupEnumProc as LANGUAGEGROUP_ENUMPROCW, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumLanguageGroupLocales alias "EnumLanguageGroupLocalesW"(byval lpLangGroupLocaleEnumProc as LANGGROUPLOCALE_ENUMPROCW, byval LanguageGroup as LGRPID, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumUILanguages alias "EnumUILanguagesW"(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCW, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
 #else
-	#define FoldString FoldStringA
-	#define GetStringTypeEx GetStringTypeExA
-	#define EnumSystemLocales EnumSystemLocalesA
-	#define EnumSystemLanguageGroups EnumSystemLanguageGroupsA
-	#define EnumLanguageGroupLocales EnumLanguageGroupLocalesA
-	#define EnumUILanguages EnumUILanguagesA
+	declare function FoldString alias "FoldStringA"(byval dwMapFlags as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpDestStr as LPSTR, byval cchDest as long) as long
+	declare function GetStringTypeEx alias "GetStringTypeExA"(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCSTR, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
+	declare function EnumSystemLocales alias "EnumSystemLocalesA"(byval lpLocaleEnumProc as LOCALE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
+	declare function EnumSystemLanguageGroups alias "EnumSystemLanguageGroupsA"(byval lpLanguageGroupEnumProc as LANGUAGEGROUP_ENUMPROCA, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumLanguageGroupLocales alias "EnumLanguageGroupLocalesA"(byval lpLangGroupLocaleEnumProc as LANGGROUPLOCALE_ENUMPROCA, byval LanguageGroup as LGRPID, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
+	declare function EnumUILanguages alias "EnumUILanguagesA"(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCA, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
 #endif
 
 declare function EnumSystemCodePagesA(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
 declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define EnumSystemCodePages EnumSystemCodePagesW
+	declare function EnumSystemCodePages alias "EnumSystemCodePagesW"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define EnumSystemCodePages EnumSystemCodePagesA
+	declare function EnumSystemCodePages alias "EnumSystemCodePagesA"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -1129,8 +1129,8 @@ declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMP
 	declare function EnumSystemLocalesEx(byval lpLocaleEnumProcEx as LOCALE_ENUMPROCEX, byval dwFlags as DWORD, byval lParam as LPARAM, byval lpReserved as LPVOID) as WINBOOL
 	declare function ResolveLocaleName(byval lpNameToResolve as LPCWSTR, byval lpLocaleName as LPWSTR, byval cchLocaleName as long) as long
 	declare function IsValidNLSVersion(byval function as NLS_FUNCTION, byval lpLocaleName as LPCWSTR, byval lpVersionInformation as LPNLSVERSIONINFOEX) as DWORD
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define EnumSystemCodePages EnumSystemCodePagesA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function EnumSystemCodePages alias "EnumSystemCodePagesA"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 end extern

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -276,7 +276,7 @@ type _POLICY_AUDIT_LOG_INFO
 	AuditLogPercentFull as ULONG
 	MaximumLogSize as ULONG
 	AuditRetentionPeriod as LARGE_INTEGER
-	AuditLogFullShutdownInProgress as BOOLEAN
+	AuditLogFullShutdownInProgress as WINBOOLEAN
 	TimeToShutdown as LARGE_INTEGER
 	NextAuditRecordId as ULONG
 end type
@@ -285,7 +285,7 @@ type POLICY_AUDIT_LOG_INFO as _POLICY_AUDIT_LOG_INFO
 type PPOLICY_AUDIT_LOG_INFO as _POLICY_AUDIT_LOG_INFO ptr
 
 type _POLICY_AUDIT_EVENTS_INFO
-	AuditingMode as BOOLEAN
+	AuditingMode as WINBOOLEAN
 	EventAuditingOptions as PPOLICY_AUDIT_EVENT_OPTIONS
 	MaximumAuditEventCount as ULONG
 end type
@@ -358,15 +358,15 @@ type POLICY_MODIFICATION_INFO as _POLICY_MODIFICATION_INFO
 type PPOLICY_MODIFICATION_INFO as _POLICY_MODIFICATION_INFO ptr
 
 type _POLICY_AUDIT_FULL_SET_INFO
-	ShutDownOnFull as BOOLEAN
+	ShutDownOnFull as WINBOOLEAN
 end type
 
 type POLICY_AUDIT_FULL_SET_INFO as _POLICY_AUDIT_FULL_SET_INFO
 type PPOLICY_AUDIT_FULL_SET_INFO as _POLICY_AUDIT_FULL_SET_INFO ptr
 
 type _POLICY_AUDIT_FULL_QUERY_INFO
-	ShutDownOnFull as BOOLEAN
-	LogIsFull as BOOLEAN
+	ShutDownOnFull as WINBOOLEAN
+	LogIsFull as WINBOOLEAN
 end type
 
 type POLICY_AUDIT_FULL_QUERY_INFO as _POLICY_AUDIT_FULL_QUERY_INFO
@@ -723,7 +723,7 @@ declare function LsaLookupSids(byval PolicyHandle as LSA_HANDLE, byval Count as 
 declare function LsaEnumerateAccountsWithUserRight(byval PolicyHandle as LSA_HANDLE, byval UserRight as PLSA_UNICODE_STRING, byval Buffer as PVOID ptr, byval CountReturned as PULONG) as NTSTATUS
 declare function LsaEnumerateAccountRights(byval PolicyHandle as LSA_HANDLE, byval AccountSid as PSID, byval UserRights as PLSA_UNICODE_STRING ptr, byval CountOfRights as PULONG) as NTSTATUS
 declare function LsaAddAccountRights(byval PolicyHandle as LSA_HANDLE, byval AccountSid as PSID, byval UserRights as PLSA_UNICODE_STRING, byval CountOfRights as ULONG) as NTSTATUS
-declare function LsaRemoveAccountRights(byval PolicyHandle as LSA_HANDLE, byval AccountSid as PSID, byval AllRights as BOOLEAN, byval UserRights as PLSA_UNICODE_STRING, byval CountOfRights as ULONG) as NTSTATUS
+declare function LsaRemoveAccountRights(byval PolicyHandle as LSA_HANDLE, byval AccountSid as PSID, byval AllRights as WINBOOLEAN, byval UserRights as PLSA_UNICODE_STRING, byval CountOfRights as ULONG) as NTSTATUS
 declare function LsaOpenTrustedDomainByName(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainName as PLSA_UNICODE_STRING, byval DesiredAccess as ACCESS_MASK, byval TrustedDomainHandle as PLSA_HANDLE) as NTSTATUS
 declare function LsaQueryTrustedDomainInfo(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainSid as PSID, byval InformationClass as TRUSTED_INFORMATION_CLASS, byval Buffer as PVOID ptr) as NTSTATUS
 declare function LsaSetTrustedDomainInformation(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainSid as PSID, byval InformationClass as TRUSTED_INFORMATION_CLASS, byval Buffer as PVOID) as NTSTATUS
@@ -733,7 +733,7 @@ declare function LsaSetTrustedDomainInfoByName(byval PolicyHandle as LSA_HANDLE,
 declare function LsaEnumerateTrustedDomainsEx(byval PolicyHandle as LSA_HANDLE, byval EnumerationContext as PLSA_ENUMERATION_HANDLE, byval Buffer as PVOID ptr, byval PreferedMaximumLength as ULONG, byval CountReturned as PULONG) as NTSTATUS
 declare function LsaCreateTrustedDomainEx(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainInformation as PTRUSTED_DOMAIN_INFORMATION_EX, byval AuthenticationInformation as PTRUSTED_DOMAIN_AUTH_INFORMATION, byval DesiredAccess as ACCESS_MASK, byval TrustedDomainHandle as PLSA_HANDLE) as NTSTATUS
 declare function LsaQueryForestTrustInformation(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainName as PLSA_UNICODE_STRING, byval ForestTrustInfo as PLSA_FOREST_TRUST_INFORMATION ptr) as NTSTATUS
-declare function LsaSetForestTrustInformation(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainName as PLSA_UNICODE_STRING, byval ForestTrustInfo as PLSA_FOREST_TRUST_INFORMATION, byval CheckOnly as BOOLEAN, byval CollisionInfo as PLSA_FOREST_TRUST_COLLISION_INFORMATION ptr) as NTSTATUS
+declare function LsaSetForestTrustInformation(byval PolicyHandle as LSA_HANDLE, byval TrustedDomainName as PLSA_UNICODE_STRING, byval ForestTrustInfo as PLSA_FOREST_TRUST_INFORMATION, byval CheckOnly as WINBOOLEAN, byval CollisionInfo as PLSA_FOREST_TRUST_COLLISION_INFORMATION ptr) as NTSTATUS
 declare function LsaStorePrivateData(byval PolicyHandle as LSA_HANDLE, byval KeyName as PLSA_UNICODE_STRING, byval PrivateData as PLSA_UNICODE_STRING) as NTSTATUS
 declare function LsaRetrievePrivateData(byval PolicyHandle as LSA_HANDLE, byval KeyName as PLSA_UNICODE_STRING, byval PrivateData as PLSA_UNICODE_STRING ptr) as NTSTATUS
 declare function LsaNtStatusToWinError(byval Status as NTSTATUS) as ULONG
@@ -815,13 +815,13 @@ type PDOMAIN_PASSWORD_INFORMATION as _DOMAIN_PASSWORD_INFORMATION ptr
 #define _PASSWORD_NOTIFICATION_DEFINED
 type PSAM_PASSWORD_NOTIFICATION_ROUTINE as function cdecl(byval UserName as PUNICODE_STRING, byval RelativeId as ULONG, byval NewPassword as PUNICODE_STRING) as NTSTATUS
 #define SAM_PASSWORD_CHANGE_NOTIFY_ROUTINE "PasswordChangeNotify"
-type PSAM_INIT_NOTIFICATION_ROUTINE as function cdecl() as BOOLEAN
+type PSAM_INIT_NOTIFICATION_ROUTINE as function cdecl() as WINBOOLEAN
 #define SAM_INIT_NOTIFICATION_ROUTINE "InitializeChangeNotify"
 #define SAM_PASSWORD_FILTER_ROUTINE "PasswordFilter"
-type PSAM_PASSWORD_FILTER_ROUTINE as function cdecl(byval AccountName as PUNICODE_STRING, byval FullName as PUNICODE_STRING, byval Password as PUNICODE_STRING, byval SetOperation as BOOLEAN) as BOOLEAN
+type PSAM_PASSWORD_FILTER_ROUTINE as function cdecl(byval AccountName as PUNICODE_STRING, byval FullName as PUNICODE_STRING, byval Password as PUNICODE_STRING, byval SetOperation as WINBOOLEAN) as WINBOOLEAN
 #define MSV1_0_PACKAGE_NAME "MICROSOFT_AUTHENTICATION_PACKAGE_V1_0"
 #define MSV1_0_PACKAGE_NAMEW wstr("MICROSOFT_AUTHENTICATION_PACKAGE_V1_0")
-#define MSV1_0_PACKAGE_NAMEW_LENGTH (sizeof(MSV1_0_PACKAGE_NAMEW) - sizeof(wchar_t))
+#define MSV1_0_PACKAGE_NAMEW_LENGTH (sizeof(MSV1_0_PACKAGE_NAMEW) - sizeof(WCHAR))
 #define MSV1_0_SUBAUTHENTICATION_KEY !"SYSTEM\\CurrentControlSet\\Control\\Lsa\\MSV1_0"
 #define MSV1_0_SUBAUTHENTICATION_VALUE "Auth"
 
@@ -988,7 +988,7 @@ type _MSV1_0_NTLM3_RESPONSE
 	TimeStamp as ULONGLONG
 	ChallengeFromClient(0 to 7) as UCHAR
 	AvPairsOff as ULONG
-	Buffer(0 to 0) as UCHAR
+	Buffer as zstring * 1
 end type
 
 type MSV1_0_NTLM3_RESPONSE as _MSV1_0_NTLM3_RESPONSE
@@ -1041,7 +1041,7 @@ type _MSV1_0_CHANGEPASSWORD_REQUEST
 	AccountName as UNICODE_STRING
 	OldPassword as UNICODE_STRING
 	NewPassword as UNICODE_STRING
-	Impersonating as BOOLEAN
+	Impersonating as WINBOOLEAN
 end type
 
 type MSV1_0_CHANGEPASSWORD_REQUEST as _MSV1_0_CHANGEPASSWORD_REQUEST
@@ -1049,7 +1049,7 @@ type PMSV1_0_CHANGEPASSWORD_REQUEST as _MSV1_0_CHANGEPASSWORD_REQUEST ptr
 
 type _MSV1_0_CHANGEPASSWORD_RESPONSE
 	MessageType as MSV1_0_PROTOCOL_MESSAGE_TYPE
-	PasswordInfoValid as BOOLEAN
+	PasswordInfoValid as WINBOOLEAN
 	DomainPasswordInfo as DOMAIN_PASSWORD_INFORMATION
 end type
 
@@ -1096,15 +1096,17 @@ end type
 
 type MSV1_0_SUBAUTH_RESPONSE as _MSV1_0_SUBAUTH_RESPONSE
 type PMSV1_0_SUBAUTH_RESPONSE as _MSV1_0_SUBAUTH_RESPONSE ptr
-#define RtlGenRandom SystemFunction036
-#define RtlEncryptMemory SystemFunction040
-#define RtlDecryptMemory SystemFunction041
-declare function SystemFunction036 cdecl(byval RandomBuffer as PVOID, byval RandomBufferLength as ULONG) as BOOLEAN
+declare function SystemFunction036 cdecl(byval RandomBuffer as PVOID, byval RandomBufferLength as ULONG) as WINBOOLEAN
+declare function RtlGenRandom cdecl alias "SystemFunction036"(byval RandomBuffer as PVOID, byval RandomBufferLength as ULONG) as WINBOOLEAN
 const RTL_ENCRYPT_MEMORY_SIZE = 8
 const RTL_ENCRYPT_OPTION_CROSS_PROCESS = &h01
 const RTL_ENCRYPT_OPTION_SAME_LOGON = &h02
+
 declare function SystemFunction040 cdecl(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+declare function RtlEncryptMemory cdecl alias "SystemFunction040"(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
 declare function SystemFunction041 cdecl(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+declare function RtlDecryptMemory cdecl alias "SystemFunction041"(byval Memory as PVOID, byval MemorySize as ULONG, byval OptionFlags as ULONG) as NTSTATUS
+
 const KERBEROS_VERSION = 5
 const KERBEROS_REVISION = 6
 const KERB_ETYPE_NULL = 0
@@ -1574,7 +1576,7 @@ type _KERB_CHANGEPASSWORD_REQUEST
 	AccountName as UNICODE_STRING
 	OldPassword as UNICODE_STRING
 	NewPassword as UNICODE_STRING
-	Impersonating as BOOLEAN
+	Impersonating as WINBOOLEAN
 end type
 
 type KERB_CHANGEPASSWORD_REQUEST as _KERB_CHANGEPASSWORD_REQUEST
@@ -1603,7 +1605,7 @@ type _KERB_SETPASSWORD_EX_REQUEST
 	Password as UNICODE_STRING
 	ClientRealm as UNICODE_STRING
 	ClientName as UNICODE_STRING
-	Impersonating as BOOLEAN
+	Impersonating as WINBOOLEAN
 	KdcAddress as UNICODE_STRING
 	KdcAddressType as ULONG
 end type
@@ -1747,45 +1749,57 @@ type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 		nReaderNameOffset as ULONG
 		nContainerNameOffset as ULONG
 		nCSPNameOffset as ULONG
-
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-			bBuffer as wchar_t
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-			bBuffer as byte
-		#endif
+		bBuffer as TCHAR
 	end type
 
 	type KERB_SMARTCARD_CSP_INFO as _KERB_SMARTCARD_CSP_INFO
 	type PKERB_SMARTCARD_CSP_INFO as _KERB_SMARTCARD_CSP_INFO ptr
-	declare function AuditComputeEffectivePolicyBySid(byval pSid as const PSID, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as BOOLEAN
+	declare function AuditComputeEffectivePolicyBySid(byval pSid as const PSID, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as WINBOOLEAN
 	declare sub AuditFree(byval Buffer as PVOID)
-	declare function AuditSetSystemPolicy(byval pAuditPolicy as PCAUDIT_POLICY_INFORMATION, byval PolicyCount as ULONG) as BOOLEAN
-	declare function AuditQuerySystemPolicy(byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as BOOLEAN
-	declare function AuditSetPerUserPolicy(byval pSid as const PSID, byval pAuditPolicy as PCAUDIT_POLICY_INFORMATION, byval PolicyCount as ULONG) as BOOLEAN
-	declare function AuditQueryPerUserPolicy(byval pSid as const PSID, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as BOOLEAN
-	declare function AuditComputeEffectivePolicyByToken(byval hTokenHandle as HANDLE, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as BOOLEAN
-	declare function AuditEnumerateCategories(byval ppAuditCategoriesArray as GUID ptr ptr, byval pCountReturned as PULONG) as BOOLEAN
-	declare function AuditEnumeratePerUserPolicy(byval ppAuditSidArray as PPOLICY_AUDIT_SID_ARRAY ptr) as BOOLEAN
-	declare function AuditEnumerateSubCategories(byval pAuditCategoryGuid as const GUID ptr, byval bRetrieveAllSubCategories as BOOLEAN, byval ppAuditSubCategoriesArray as GUID ptr ptr, byval pCountReturned as PULONG) as BOOLEAN
-	declare function AuditLookupCategoryGuidFromCategoryId(byval AuditCategoryId as POLICY_AUDIT_EVENT_TYPE, byval pAuditCategoryGuid as GUID ptr) as BOOLEAN
-	declare function AuditQuerySecurity(byval SecurityInformation as SECURITY_INFORMATION, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as BOOLEAN
+	declare function AuditSetSystemPolicy(byval pAuditPolicy as PCAUDIT_POLICY_INFORMATION, byval PolicyCount as ULONG) as WINBOOLEAN
+	declare function AuditQuerySystemPolicy(byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as WINBOOLEAN
+	declare function AuditSetPerUserPolicy(byval pSid as const PSID, byval pAuditPolicy as PCAUDIT_POLICY_INFORMATION, byval PolicyCount as ULONG) as WINBOOLEAN
+	declare function AuditQueryPerUserPolicy(byval pSid as const PSID, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as WINBOOLEAN
+	declare function AuditComputeEffectivePolicyByToken(byval hTokenHandle as HANDLE, byval pSubCategoryGuids as const GUID ptr, byval PolicyCount as ULONG, byval ppAuditPolicy as PAUDIT_POLICY_INFORMATION ptr) as WINBOOLEAN
+	declare function AuditEnumerateCategories(byval ppAuditCategoriesArray as GUID ptr ptr, byval pCountReturned as PULONG) as WINBOOLEAN
+	declare function AuditEnumeratePerUserPolicy(byval ppAuditSidArray as PPOLICY_AUDIT_SID_ARRAY ptr) as WINBOOLEAN
+	declare function AuditEnumerateSubCategories(byval pAuditCategoryGuid as const GUID ptr, byval bRetrieveAllSubCategories as WINBOOLEAN, byval ppAuditSubCategoriesArray as GUID ptr ptr, byval pCountReturned as PULONG) as WINBOOLEAN
+	declare function AuditLookupCategoryGuidFromCategoryId(byval AuditCategoryId as POLICY_AUDIT_EVENT_TYPE, byval pAuditCategoryGuid as GUID ptr) as WINBOOLEAN
+	declare function AuditQuerySecurity(byval SecurityInformation as SECURITY_INFORMATION, byval ppSecurityDescriptor as PSECURITY_DESCRIPTOR ptr) as WINBOOLEAN
+	declare function AuditLookupSubCategoryNameA(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define AuditLookupSubCategoryName AuditLookupSubCategoryNameW
-	#define AuditLookupCategoryName AuditLookupCategoryNameW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define AuditLookupSubCategoryName AuditLookupSubCategoryNameA
-	#define AuditLookupCategoryName AuditLookupCategoryNameA
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameA"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
 #if _WIN32_WINNT = &h0602
-	declare function AuditLookupSubCategoryNameA(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as BOOLEAN
-	declare function AuditLookupSubCategoryNameW(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as BOOLEAN
-	declare function AuditLookupCategoryNameA(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as BOOLEAN
-	declare function AuditLookupCategoryNameW(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as BOOLEAN
-	declare function AuditLookupCategoryIdFromCategoryGuid(byval pAuditCategoryGuid as const GUID ptr, byval pAuditCategoryId as PPOLICY_AUDIT_EVENT_TYPE) as BOOLEAN
-	declare function AuditSetSecurity(byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as BOOLEAN
+	declare function AuditLookupSubCategoryNameW(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameW"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function AuditLookupCategoryNameA(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
+#endif
+
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameA"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function AuditLookupCategoryNameW(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameW"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
+#endif
+
+#if _WIN32_WINNT = &h0602
+	declare function AuditLookupCategoryIdFromCategoryGuid(byval pAuditCategoryGuid as const GUID ptr, byval pAuditCategoryId as PPOLICY_AUDIT_EVENT_TYPE) as WINBOOLEAN
+	declare function AuditSetSecurity(byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOLEAN
 #endif
 
 end extern

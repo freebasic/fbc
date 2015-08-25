@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -75,8 +75,8 @@ declare function ber_bvdup(byval pBerVal as BERVAL ptr) as BERVAL ptr
 declare function ber_alloc_t(byval options as INT_) as BerElement ptr
 declare function ber_skip_tag(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr) as ULONG
 declare function ber_peek_tag(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr) as ULONG
-declare function ber_first_element(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr, byval ppOpaque as zstring ptr ptr) as ULONG
-declare function ber_next_element(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr, byval opaque as zstring ptr) as ULONG
+declare function ber_first_element(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr, byval ppOpaque as CHAR ptr ptr) as ULONG
+declare function ber_next_element(byval pBerElement as BerElement ptr, byval pLen as ULONG ptr, byval opaque as CHAR ptr) as ULONG
 declare function ber_flatten(byval pBerElement as BerElement ptr, byval pBerVal as PBERVAL ptr) as INT_
 declare function ber_printf(byval pBerElement as BerElement ptr, byval fmt as PSTR, ...) as INT_
 declare function ber_scanf(byval pBerElement as BerElement ptr, byval fmt as PSTR, ...) as ULONG

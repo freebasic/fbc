@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (C) 2004 Robert Reif
@@ -34,18 +34,18 @@ declare function DXGetErrorString9A(byval hr as HRESULT) as const zstring ptr
 declare function DXGetErrorString9W(byval hr as HRESULT) as const wstring ptr
 
 #ifdef UNICODE
-	#define DXGetErrorString9 DXGetErrorString9W
+	declare function DXGetErrorString9 alias "DXGetErrorString9W"(byval hr as HRESULT) as const wstring ptr
 #else
-	#define DXGetErrorString9 DXGetErrorString9A
+	declare function DXGetErrorString9 alias "DXGetErrorString9A"(byval hr as HRESULT) as const zstring ptr
 #endif
 
 declare function DXGetErrorDescription9A(byval hr as HRESULT) as const zstring ptr
 declare function DXGetErrorDescription9W(byval hr as HRESULT) as const wstring ptr
 
 #ifdef UNICODE
-	#define DXGetErrorDescription9 DXGetErrorDescription9W
+	declare function DXGetErrorDescription9 alias "DXGetErrorDescription9W"(byval hr as HRESULT) as const wstring ptr
 #else
-	#define DXGetErrorDescription9 DXGetErrorDescription9A
+	declare function DXGetErrorDescription9 alias "DXGetErrorDescription9A"(byval hr as HRESULT) as const zstring ptr
 #endif
 
 end extern

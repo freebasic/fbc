@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -318,11 +318,11 @@ type SSL_EMPTY_CACHE_FN_W as function(byval pszTargetName as LPWSTR, byval dwFla
 declare function SslEmptyCacheW(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define SSL_EMPTY_CACHE_FN SSL_EMPTY_CACHE_FN_W
-	#define SslEmptyCache SslEmptyCacheW
+	type SSL_EMPTY_CACHE_FN as SSL_EMPTY_CACHE_FN_W
+	declare function SslEmptyCache alias "SslEmptyCacheW"(byval pszTargetName as LPWSTR, byval dwFlags as DWORD) as WINBOOL
 #else
-	#define SSL_EMPTY_CACHE_FN SSL_EMPTY_CACHE_FN_A
-	#define SslEmptyCache SslEmptyCacheA
+	type SSL_EMPTY_CACHE_FN as SSL_EMPTY_CACHE_FN_A
+	declare function SslEmptyCache alias "SslEmptyCacheA"(byval pszTargetName as LPSTR, byval dwFlags as DWORD) as WINBOOL
 #endif
 
 type _SSL_CREDENTIAL_CERTIFICATE
@@ -424,12 +424,12 @@ declare function SslGetDefaultIssuers(byval pbIssuers as PBYTE, byval pcbIssuers
 #define SSL_CRACK_CERTIFICATE_NAME __TEXT("SslCrackCertificate")
 #define SSL_FREE_CERTIFICATE_NAME __TEXT("SslFreeCertificate")
 
-#ifdef __FB_64BIT__
-	type SSL_CRACK_CERTIFICATE_FN as function(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
-	type SSL_FREE_CERTIFICATE_FN as sub(byval pCertificate as PX509Certificate)
-#elseif (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#ifndef __FB_64BIT__
 	type SSL_CRACK_CERTIFICATE_FN as function stdcall(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
 	type SSL_FREE_CERTIFICATE_FN as sub stdcall(byval pCertificate as PX509Certificate)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+	type SSL_CRACK_CERTIFICATE_FN as function(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
+	type SSL_FREE_CERTIFICATE_FN as sub(byval pCertificate as PX509Certificate)
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -448,9 +448,9 @@ declare function SslGetDefaultIssuers(byval pbIssuers as PBYTE, byval pcbIssuers
 
 	type SecPkgContext_SupportedSignatures as _SecPkgContext_SupportedSignatures
 	type PSecPkgContext_SupportedSignatures as _SecPkgContext_SupportedSignatures ptr
-#elseif (not defined(__FB_64BIT__)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	type SSL_CRACK_CERTIFICATE_FN as function stdcall(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
-	type SSL_FREE_CERTIFICATE_FN as sub stdcall(byval pCertificate as PX509Certificate)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT <= &h0502)
+	type SSL_CRACK_CERTIFICATE_FN as function(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
+	type SSL_FREE_CERTIFICATE_FN as sub(byval pCertificate as PX509Certificate)
 #endif
 
 end extern

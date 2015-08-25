@@ -772,15 +772,17 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
-		'' All have crti.o, except OpenBSD
-		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
-			ldcline += hFindLib( "crti.o" )
-		end if
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+			'' All have crti.o, except OpenBSD and Darwin
+			if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+				ldcline += hFindLib( "crti.o" )
+			end if
 
-		if( fbGetOption( FB_COMPOPT_PIC ) ) then
-			ldcline += hFindLib( "crtbeginS.o" )
-		else
-			ldcline += hFindLib( "crtbegin.o" )
+			if( fbGetOption( FB_COMPOPT_PIC ) ) then
+				ldcline += hFindLib( "crtbeginS.o" )
+			else
+				ldcline += hFindLib( "crtbegin.o" )
+			end if
 		end if
 
 	case FB_COMPTARGET_XBOX
@@ -810,7 +812,9 @@ private function hLinkFiles( ) as integer
 	'' Begin of lib group
 	'' All libraries are passed inside -( -) so we don't need to worry as
 	'' much about their order and/or listing them repeatedly.
-	ldcline += " ""-("""
+	if ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+		ldcline += " ""-("""
+	end if
 
 	'' Add libraries passed by file name
 	scope
@@ -837,14 +841,15 @@ private function hLinkFiles( ) as integer
 		wend
 	end scope
 
-	'' End of lib group
-	ldcline += " ""-)"""
+	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+		'' End of lib group
+		ldcline += " ""-)"""
+	end if
 
 	'' crt end
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_NETBSD
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then
 			ldcline += hFindLib( "crtendS.o" )
 		else
@@ -1582,7 +1587,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		if( arg = "inf" ) then
 			value = FB_ERR_INFINITE
 		else
-			value = valint( arg )
+			value = clng( arg )
 			if( value <= 0 ) then
 				hFatalInvalidOption( arg )
 			end if
@@ -1619,7 +1624,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		if (arg = "max") then
 			value = 3
 		else
-			value = valint(arg)
+			value = clng( arg )
 			if (value < 0) then
 				value = 0
 			elseif (value > 3) then
@@ -1687,7 +1692,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.staticlink = TRUE
 
 	case OPT_T
-		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
+		fbSetOption( FB_COMPOPT_STACKSIZE, clng( arg ) * 1024 )
 
 	case OPT_TARGET
 		dim as integer os, cputype, is_gnu_triplet
@@ -1767,7 +1772,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = -1
 
 		case else
-			value = valint(arg)
+			value = clng( arg )
 		end select
 
 		if( value >= -1 ) then
@@ -2259,12 +2264,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' ignore silently (that might not even be too bad for portability)?
 end sub
 
-'' After command line parsing
-private sub fbcInit2( )
-	''
-	'' Determine base/prefix path
-	''
-
+'' Determine base/prefix path
+private sub fbcDeterminePrefix( )
 	'' Not already set from -prefix command line option?
 	if( len( fbc.prefix ) = 0 ) then
 		'' Then default to exepath() or the hard-coded prefix
@@ -2281,9 +2282,9 @@ private sub fbcInit2( )
 	else
 		fbc.prefix += FB_HOST_PATHDIV
 	end if
+end sub
 
-	''
-	'' Setup compiler paths
+private sub fbcSetupCompilerPaths( )
 	''
 	'' Standalone (classic FB):
 	''
@@ -2358,23 +2359,21 @@ private sub fbcInit2( )
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + fbname
 	fbc.libpath = fbc.prefix + libdirname + FB_HOST_PATHDIV + fbname + FB_HOST_PATHDIV + targetid
 #endif
+end sub
 
-	if( fbc.verbose ) then
-		var s = targetid
-		s += ", " + *fbGetFbcArch( )
-		s += ", " & fbGetBits( ) & "bit"
-		#ifndef ENABLE_STANDALONE
-			if( len( fbc.target ) > 0 ) then
-				s += " (" + fbc.target + ")"
-			end if
-		#endif
-		print "target:", s
-	end if
+private sub fbcPrintTargetInfo( )
+	var s = fbGetTargetId( )
+	s += ", " + *fbGetFbcArch( )
+	s += ", " & fbGetBits( ) & "bit"
+	#ifndef ENABLE_STANDALONE
+		if( len( fbc.target ) > 0 ) then
+			s += " (" + fbc.target + ")"
+		end if
+	#endif
+	print "target:", s
+end sub
 
-	'' Tell the compiler about the default include path (added after
-	'' the command line ones, so those will be searched first)
-	fbAddIncludePath( fbc.incpath )
-
+private sub fbcDetermineMainName( )
 	'' Determine the main module path/name if not given via -m
 	if (len(fbc.mainname) = 0) then
 		'' 1) First input .bas module
@@ -2400,7 +2399,6 @@ private sub fbcInit2( )
 		end if
 		fbc.mainname = hStripExt(fbc.mainname)
 	end if
-
 end sub
 
 '' Build the intermediate file name for the given module and step
@@ -2856,13 +2854,23 @@ private function hAssembleModule( byval module as FBCIOFILE ptr ) as integer
 
 	select case( fbGetCpuFamily( ) )
 	case FB_CPUFAMILY_X86
-		ln += "--32 "
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ln += "-arch i386 "
+		else
+			ln += "--32 "
+		endif
 	case FB_CPUFAMILY_X86_64
-		ln += "--64 "
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ln += "-arch x86_64 "
+		else
+			ln += "--64 "
+		endif
 	end select
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-		ln += "--strip-local-absolute "
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
+			ln += "--strip-local-absolute "
+		endif
 	end if
 	ln += """" + hGetAsmName( module, 2 ) + """ "
 	ln += "-o """ + *module->objfile + """"
@@ -3096,7 +3104,8 @@ private sub hAddDefaultLibs( )
 			fbcAddDefLib( "winmm" )
 
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
+		     FB_COMPTARGET_DARWIN
 
 			#if defined(__FB_LINUX__) or _
 			    defined(__FB_FREEBSD__) or _
@@ -3104,12 +3113,18 @@ private sub hAddDefaultLibs( )
 			    defined(__FB_NETBSD__)
 				fbcAddDefLibPath( "/usr/X11R6/lib" )
 			#endif
+			
+			#if defined(__FB_DARWIN__) and defined(ENABLE_XQUARTZ)
+				fbcAddDefLibPAth( "/opt/X11/lib" )
+			#endif
 
-			fbcAddDefLib( "X11" )
-			fbcAddDefLib( "Xext" )
-			fbcAddDefLib( "Xpm" )
-			fbcAddDefLib( "Xrandr" )
-			fbcAddDefLib( "Xrender" )
+			#if (not defined(__FB_DARWIN__)) or defined(ENABLE_XQUARTZ)
+				fbcAddDefLib( "X11" )
+				fbcAddDefLib( "Xext" )
+				fbcAddDefLib( "Xpm" )
+				fbcAddDefLib( "Xrandr" )
+				fbcAddDefLib( "Xrender" )
+			#endif
 
 		end select
 	end if
@@ -3129,6 +3144,8 @@ private sub hAddDefaultLibs( )
 	case FB_COMPTARGET_DARWIN
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "System" )
+		fbcAddDefLib( "pthread" )
+		fbcAddDefLib( "ncurses" )
 
 	case FB_COMPTARGET_DOS
 		fbcAddDefLib( "gcc" )
@@ -3349,7 +3366,21 @@ end sub
 		fbcEnd( 1 )
 	end if
 
-	fbcInit2( )
+	fbcDeterminePrefix( )
+	fbcSetupCompilerPaths( )
+
+	if( fbc.verbose ) then
+		fbcPrintTargetInfo( )
+	end if
+
+	'' Tell the compiler about the default include path (added after
+	'' the command line ones, so those will be searched first)
+	fbAddIncludePath( fbc.incpath )
+
+	var have_input_files = (listGetHead( @fbc.modules   ) <> NULL) or _
+	                       (listGetHead( @fbc.objlist   ) <> NULL) or _
+	                       (listGetHead( @fbc.libs.list ) <> NULL) or _
+	                       (listGetHead( @fbc.libfiles  ) <> NULL)
 
 	'' Answer -print query, if any, and stop
 	'' The -print option is intended to allow shell scripts, makefiles, etc.
@@ -3361,6 +3392,11 @@ end sub
 		case PRINT_TARGET
 			print fbGetTargetId( )
 		case PRINT_X
+			'' If we have input files, -print x should give the output name that we'd normally get.
+			'' However, a plain "fbc -print x" without input files should just give the .exe extension.
+			if( have_input_files ) then
+				fbcDetermineMainName( )
+			end if
 			hSetOutName( )
 			print fbc.outname
 		case PRINT_FBLIBDIR
@@ -3369,11 +3405,10 @@ end sub
 		fbcEnd( 0 )
 	end if
 
+	fbcDetermineMainName( )
+
 	'' Show help if there are no input files
-	if( (listGetHead( @fbc.modules   ) = NULL) and _
-	    (listGetHead( @fbc.objlist   ) = NULL) and _
-	    (listGetHead( @fbc.libs.list ) = NULL) and _
-	    (listGetHead( @fbc.libfiles  ) = NULL) ) then
+	if( have_input_files = FALSE ) then
 		hPrintOptions( )
 		fbcEnd( 1 )
 	end if

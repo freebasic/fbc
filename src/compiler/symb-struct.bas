@@ -222,8 +222,8 @@ function symbCheckBitField _
 	'' not an integer type?
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
-		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_BOOLEAN
 		return TRUE
 
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -625,6 +625,11 @@ sub symbInsertInnerUDT _
     inner->udt.ns.symtb.tail = NULL
 
     inner->parent = parent
+
+	'' Propagate FB_UDTOPT_HASBITFIELD flag, for the C backend
+	if( symbGetUdtHasBitfield( inner ) ) then
+		symbSetUdtHasBitfield( parent )
+	end if
 
 end sub
 

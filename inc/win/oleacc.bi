@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -51,16 +51,6 @@ extern IID_IAccPropMgrInternal as const GUID
 extern CLSID_AccPropServices as const GUID
 extern IIS_IsOleaccProxy as const GUID
 
-#ifdef UNICODE
-	#define GetRoleText GetRoleTextW
-	#define GetStateText GetStateTextW
-	#define CreateStdAccessibleProxy CreateStdAccessibleProxyW
-#else
-	#define GetRoleText GetRoleTextA
-	#define GetStateText GetStateTextA
-	#define CreateStdAccessibleProxy CreateStdAccessibleProxyA
-#endif
-
 declare function LresultFromObject(byval riid as const IID const ptr, byval wParam as WPARAM, byval punk as LPUNKNOWN) as LRESULT
 declare function ObjectFromLresult(byval lResult as LRESULT, byval riid as const IID const ptr, byval wParam as WPARAM, byval ppvObject as any ptr ptr) as HRESULT
 declare function WindowFromAccessibleObject(byval as IAccessible ptr, byval phwnd as HWND ptr) as HRESULT
@@ -69,13 +59,43 @@ declare function AccessibleObjectFromEvent(byval hwnd as HWND, byval dwId as DWO
 declare function AccessibleObjectFromPoint(byval ptScreen as POINT, byval ppacc as IAccessible ptr ptr, byval pvarChild as VARIANT ptr) as HRESULT
 declare function AccessibleChildren(byval paccContainer as IAccessible ptr, byval iChildStart as LONG, byval cChildren as LONG, byval rgvarChildren as VARIANT ptr, byval pcObtained as LONG ptr) as HRESULT
 declare function GetRoleTextA(byval lRole as DWORD, byval lpszRole as LPSTR, byval cchRoleMax as UINT) as UINT
+
+#ifndef UNICODE
+	declare function GetRoleText alias "GetRoleTextA"(byval lRole as DWORD, byval lpszRole as LPSTR, byval cchRoleMax as UINT) as UINT
+#endif
+
 declare function GetRoleTextW(byval lRole as DWORD, byval lpszRole as LPWSTR, byval cchRoleMax as UINT) as UINT
+
+#ifdef UNICODE
+	declare function GetRoleText alias "GetRoleTextW"(byval lRole as DWORD, byval lpszRole as LPWSTR, byval cchRoleMax as UINT) as UINT
+#endif
+
 declare function GetStateTextA(byval lStateBit as DWORD, byval lpszState as LPSTR, byval cchState as UINT) as UINT
+
+#ifndef UNICODE
+	declare function GetStateText alias "GetStateTextA"(byval lStateBit as DWORD, byval lpszState as LPSTR, byval cchState as UINT) as UINT
+#endif
+
 declare function GetStateTextW(byval lStateBit as DWORD, byval lpszState as LPWSTR, byval cchState as UINT) as UINT
+
+#ifdef UNICODE
+	declare function GetStateText alias "GetStateTextW"(byval lStateBit as DWORD, byval lpszState as LPWSTR, byval cchState as UINT) as UINT
+#endif
+
 declare sub GetOleaccVersionInfo(byval pVer as DWORD ptr, byval pBuild as DWORD ptr)
 declare function CreateStdAccessibleObject(byval hwnd as HWND, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 declare function CreateStdAccessibleProxyA(byval hwnd as HWND, byval pClassName as LPCSTR, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+
+#ifndef UNICODE
+	declare function CreateStdAccessibleProxy alias "CreateStdAccessibleProxyA"(byval hwnd as HWND, byval pClassName as LPCSTR, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+#endif
+
 declare function CreateStdAccessibleProxyW(byval hwnd as HWND, byval pClassName as LPCWSTR, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+
+#ifdef UNICODE
+	declare function CreateStdAccessibleProxy alias "CreateStdAccessibleProxyW"(byval hwnd as HWND, byval pClassName as LPCWSTR, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
+#endif
+
 #define MSAA_MENU_SIG __MSABI_LONG(&hAA0DF00D)
 
 type tagMSAAMENUINFO

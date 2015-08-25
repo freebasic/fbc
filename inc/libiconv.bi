@@ -43,24 +43,24 @@ const _LIBICONV_VERSION_ = &h010E
 #endif
 
 #undef iconv_t
-#define iconv_t libiconv_t
+type iconv_t as libiconv_t
 type libiconv_t as any ptr
-#define iconv_open libiconv_open
 declare function libiconv_open(byval tocode as const zstring ptr, byval fromcode as const zstring ptr) as libiconv_t
-#define iconv libiconv
+declare function iconv_open alias "libiconv_open"(byval tocode as const zstring ptr, byval fromcode as const zstring ptr) as libiconv_t
 declare function libiconv(byval cd as libiconv_t, byval inbuf as const zstring ptr ptr, byval inbytesleft as uinteger ptr, byval outbuf as zstring ptr ptr, byval outbytesleft as uinteger ptr) as uinteger
-#define iconv_close libiconv_close
+declare function iconv alias "libiconv"(byval cd as libiconv_t, byval inbuf as const zstring ptr ptr, byval inbytesleft as uinteger ptr, byval outbuf as zstring ptr ptr, byval outbytesleft as uinteger ptr) as uinteger
 declare function libiconv_close(byval cd as libiconv_t) as long
+declare function iconv_close alias "libiconv_close"(byval cd as libiconv_t) as long
 
 type iconv_allocation_t
 	dummy1(0 to 27) as any ptr
 	dummy2 as mbstate_t
 end type
 
-#define iconv_open_into libiconv_open_into
 declare function libiconv_open_into(byval tocode as const zstring ptr, byval fromcode as const zstring ptr, byval resultp as iconv_allocation_t ptr) as long
-#define iconvctl libiconvctl
+declare function iconv_open_into alias "libiconv_open_into"(byval tocode as const zstring ptr, byval fromcode as const zstring ptr, byval resultp as iconv_allocation_t ptr) as long
 declare function libiconvctl(byval cd as libiconv_t, byval request as long, byval argument as any ptr) as long
+declare function iconvctl alias "libiconvctl"(byval cd as libiconv_t, byval request as long, byval argument as any ptr) as long
 type iconv_unicode_char_hook as sub(byval uc as ulong, byval data as any ptr)
 type iconv_wide_char_hook as sub(byval wc as wchar_t, byval data as any ptr)
 
@@ -90,9 +90,9 @@ const ICONV_GET_DISCARD_ILSEQ = 3
 const ICONV_SET_DISCARD_ILSEQ = 4
 const ICONV_SET_HOOKS = 5
 const ICONV_SET_FALLBACKS = 6
-#define iconvlist libiconvlist
 
 declare sub libiconvlist(byval do_one as function(byval namescount as ulong, byval names as const zstring const ptr ptr, byval data as any ptr) as long, byval data as any ptr)
+declare sub iconvlist alias "libiconvlist"(byval do_one as function(byval namescount as ulong, byval names as const zstring const ptr ptr, byval data as any ptr) as long, byval data as any ptr)
 declare function iconv_canonicalize(byval name as const zstring ptr) as const zstring ptr
 declare sub libiconv_set_relocation_prefix(byval orig_prefix as const zstring ptr, byval curr_prefix as const zstring ptr)
 

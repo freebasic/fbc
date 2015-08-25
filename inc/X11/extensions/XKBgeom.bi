@@ -113,16 +113,8 @@ type XkbShapeDoodadRec as _XkbShapeDoodad
 type XkbShapeDoodadPtr as _XkbShapeDoodad ptr
 #define XkbShapeDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
 #define XkbShapeDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
-#macro XkbSetShapeDoodadColor(g, d, c)
-	scope
-		(d)->color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
-#macro XkbSetShapeDoodadShape(g, d, s)
-	scope
-		(d)->shape_ndx = (s) - @(g)->shapes[0]
-	end scope
-#endmacro
+#define XkbSetShapeDoodadColor(g, d, c) scope : (d)->color_ndx = (c) - (@(g)->colors[0]) : end scope
+#define XkbSetShapeDoodadShape(g, d, s) scope : (d)->shape_ndx = (s) - (@(g)->shapes[0]) : end scope
 
 type _XkbTextDoodad
 	name as XAtom
@@ -141,11 +133,7 @@ end type
 type XkbTextDoodadRec as _XkbTextDoodad
 type XkbTextDoodadPtr as _XkbTextDoodad ptr
 #define XkbTextDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
-#macro XkbSetTextDoodadColor(g, d, c)
-	scope
-		(d)->color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
+#define XkbSetTextDoodadColor(g, d, c) scope : (d)->color_ndx = (c) - (@(g)->colors[0]) : end scope
 
 type _XkbIndicatorDoodad
 	name as XAtom
@@ -164,21 +152,9 @@ type XkbIndicatorDoodadPtr as _XkbIndicatorDoodad ptr
 #define XkbIndicatorDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
 #define XkbIndicatorDoodadOnColor(g, d) (@(g)->colors[(d)->on_color_ndx])
 #define XkbIndicatorDoodadOffColor(g, d) (@(g)->colors[(d)->off_color_ndx])
-#macro XkbSetIndicatorDoodadOnColor(g, d, c)
-	scope
-		(d)->on_color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
-#macro XkbSetIndicatorDoodadOffColor(g, d, c)
-	scope
-		(d)->off_color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
-#macro XkbSetIndicatorDoodadShape(g, d, s)
-	scope
-		(d)->shape_ndx = (s) - @(g)->shapes[0]
-	end scope
-#endmacro
+#define XkbSetIndicatorDoodadOnColor(g, d, c) scope : (d)->on_color_ndx = (c) - (@(g)->colors[0]) : end scope
+#define XkbSetIndicatorDoodadOffColor(g, d, c) scope : (d)->off_color_ndx = (c) - (@(g)->colors[0]) : end scope
+#define XkbSetIndicatorDoodadShape(g, d, s) scope : (d)->shape_ndx = (s) - (@(g)->shapes[0]) : end scope
 
 type _XkbLogoDoodad
 	name as XAtom
@@ -196,16 +172,8 @@ type XkbLogoDoodadRec as _XkbLogoDoodad
 type XkbLogoDoodadPtr as _XkbLogoDoodad ptr
 #define XkbLogoDoodadColor(g, d) (@(g)->colors[(d)->color_ndx])
 #define XkbLogoDoodadShape(g, d) (@(g)->shapes[(d)->shape_ndx])
-#macro XkbSetLogoDoodadColor(g, d, c)
-	scope
-		(d)->color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
-#macro XkbSetLogoDoodadShape(g, d, s)
-	scope
-		(d)->shape_ndx = (s) - @(g)->shapes[0]
-	end scope
-#endmacro
+#define XkbSetLogoDoodadColor(g, d, c) scope : (d)->color_ndx = (c) - (@(g)->colors[0]) : end scope
+#define XkbSetLogoDoodadShape(g, d, s) scope : (d)->shape_ndx = (s) - (@(g)->shapes[0]) : end scope
 
 type _XkbAnyDoodad
 	name as XAtom
@@ -247,16 +215,8 @@ type XkbKeyRec as _XkbKey
 type XkbKeyPtr as _XkbKey ptr
 #define XkbKeyShape(g, k) (@(g)->shapes[(k)->shape_ndx])
 #define XkbKeyColor(g, k) (@(g)->colors[(k)->color_ndx])
-#macro XkbSetKeyShape(g, k, s)
-	scope
-		(k)->shape_ndx = (s) - @(g)->shapes[0]
-	end scope
-#endmacro
-#macro XkbSetKeyColor(g, k, c)
-	scope
-		(k)->color_ndx = (c) - @(g)->colors[0]
-	end scope
-#endmacro
+#define XkbSetKeyShape(g, k, s) scope : (k)->shape_ndx = (s) - (@(g)->shapes[0]) : end scope
+#define XkbSetKeyColor(g, k, c) scope : (k)->color_ndx = (c) - (@(g)->colors[0]) : end scope
 
 type _XkbRow
 	top as short

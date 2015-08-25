@@ -187,7 +187,7 @@ const JIT_TYPE_ULONG_ = 10
 const JIT_TYPE_FLOAT32_ = 11
 const JIT_TYPE_FLOAT64_ = 12
 const JIT_TYPE_NFLOAT_ = 13
-#define JIT_TYPE_MAX_PRIMITIVE JIT_TYPE_NFLOAT_
+const JIT_TYPE_MAX_PRIMITIVE = JIT_TYPE_NFLOAT_
 const JIT_TYPE_STRUCT = 14
 const JIT_TYPE_UNION = 15
 const JIT_TYPE_SIGNATURE = 16
@@ -1508,26 +1508,35 @@ const JIT_OPCODE_OPER_SHR = &h01200000
 const JIT_OPCODE_OPER_SHR_UN = &h01300000
 const JIT_OPCODE_OPER_COPY = &h01400000
 const JIT_OPCODE_OPER_ADDRESS_OF = &h01500000
-#define JIT_OPCODE_DEST_PTR JIT_OPCODE_DEST_INT
-#define JIT_OPCODE_SRC1_PTR JIT_OPCODE_SRC1_INT
-#define JIT_OPCODE_SRC2_PTR JIT_OPCODE_SRC2_INT
+const JIT_OPCODE_DEST_PTR = JIT_OPCODE_DEST_INT
+const JIT_OPCODE_SRC1_PTR = JIT_OPCODE_SRC1_INT
+const JIT_OPCODE_SRC2_PTR = JIT_OPCODE_SRC2_INT
 extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 #define _JIT_OPCODE_COMPAT_H
-#define JIT_OP_FEQ_INV JIT_OP_FEQ
-#define JIT_OP_FNE_INV JIT_OP_FNE
-#define JIT_OP_DEQ_INV JIT_OP_DEQ
-#define JIT_OP_DNE_INV JIT_OP_DNE
-#define JIT_OP_NFEQ_INV JIT_OP_NFEQ
-#define JIT_OP_NFNE_INV JIT_OP_NFNE
-#define JIT_OP_BR_FEQ_INV JIT_OP_BR_FEQ
-#define JIT_OP_BR_FNE_INV JIT_OP_BR_FNE
-#define JIT_OP_BR_DEQ_INV JIT_OP_BR_DEQ
-#define JIT_OP_BR_DNE_INV JIT_OP_BR_DNE
-#define JIT_OP_BR_NFEQ_INV JIT_OP_BR_NFEQ
-#define JIT_OP_BR_NFNE_INV JIT_OP_BR_NFNE
+const JIT_OP_FEQ_INV = JIT_OP_FEQ
+const JIT_OP_FNE_INV = JIT_OP_FNE
+const JIT_OP_DEQ_INV = JIT_OP_DEQ
+const JIT_OP_DNE_INV = JIT_OP_DNE
+const JIT_OP_NFEQ_INV = JIT_OP_NFEQ
+const JIT_OP_NFNE_INV = JIT_OP_NFNE
+const JIT_OP_BR_FEQ_INV = JIT_OP_BR_FEQ
+const JIT_OP_BR_FNE_INV = JIT_OP_BR_FNE
+const JIT_OP_BR_DEQ_INV = JIT_OP_BR_DEQ
+const JIT_OP_BR_DNE_INV = JIT_OP_BR_DNE
+const JIT_OP_BR_NFEQ_INV = JIT_OP_BR_NFEQ
+const JIT_OP_BR_NFNE_INV = JIT_OP_BR_NFNE
 #define _JIT_UNWIND_H
 
-#if defined(__FB_64BIT__) and (defined(__FB_WIN32__) or defined(__FB_LINUX__))
+#if defined(__FB_DOS__) or ((not defined(__FB_64BIT__)) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__)))))
+	#define _JIT_ARCH_X86_H
+	#macro _JIT_ARCH_GET_CURRENT_FRAME(f)
+		scope
+			dim __f as any ptr
+			asm mov dword ptr [__f], ebp
+			f = __f
+		end scope
+	#endmacro
+#elseif defined(__FB_64BIT__) and (defined(__FB_DARWIN__) or defined(__FB_WIN32__) or defined(__FB_CYGWIN__) or ((not defined(__FB_ARM__)) and (defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_NETBSD__))))
 	#define _JIT_ARCH_X86_64_H
 	type _jit_arch_frame_t as _jit_arch_frame
 
@@ -1543,16 +1552,8 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 			f = __f
 		end scope
 	#endmacro
-	#macro _JIT_ARCH_GET_NEXT_FRAME(n, f)
-		scope
-			(n) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->next_frame, 0))
-		end scope
-	#endmacro
-	#macro _JIT_ARCH_GET_RETURN_ADDRESS(r, f)
-		scope
-			(r) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->return_address, 0))
-		end scope
-	#endmacro
+	#define _JIT_ARCH_GET_NEXT_FRAME(n, f) scope : (n) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->next_frame, 0)) : end scope
+	#define _JIT_ARCH_GET_RETURN_ADDRESS(r, f) scope : (r) = cptr(any ptr, iif((f), cptr(_jit_arch_frame_t ptr, (f))->return_address, 0)) : end scope
 	#macro _JIT_ARCH_GET_CURRENT_RETURN(r)
 		scope
 			dim __frame as any ptr
@@ -1561,14 +1562,11 @@ extern jit_opcodes(0 to 438) as const jit_opcode_info_t
 		end scope
 	#endmacro
 #else
-	#define _JIT_ARCH_X86_H
-	#macro _JIT_ARCH_GET_CURRENT_FRAME(f)
-		scope
-			dim __f as any ptr
-			asm mov dword ptr [__f], ebp
-			f = __f
-		end scope
-	#endmacro
+	#define _JIT_ARCH_GENERIC_H
+	#undef _JIT_ARCH_GET_CURRENT_FRAME
+	#undef _JIT_ARCH_GET_NEXT_FRAME
+	#undef _JIT_ARCH_GET_RETURN_ADDRESS
+	#define _JIT_ARCH_GET_CURRENT_RETURN
 #endif
 
 type jit_unwind_context_t
@@ -1590,8 +1588,8 @@ declare function jit_malloc(byval size as ulong) as any ptr
 declare function jit_calloc(byval num as ulong, byval size as ulong) as any ptr
 declare function jit_realloc(byval ptr as any ptr, byval size as ulong) as any ptr
 declare sub jit_free(byval ptr as any ptr)
-#define jit_new(type) cptr(type ptr, jit_malloc(sizeof((type))))
-#define jit_cnew(type) cptr(type ptr, jit_calloc(1, sizeof((type))))
+#define jit_new(type) cptr(type ptr, jit_malloc(sizeof(type)))
+#define jit_cnew(type) cptr(type ptr, jit_calloc(1, sizeof(type)))
 declare function jit_memset(byval dest as any ptr, byval ch as long, byval len as ulong) as any ptr
 declare function jit_memcpy(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
 declare function jit_memmove(byval dest as any ptr, byval src as const any ptr, byval len as ulong) as any ptr
@@ -1691,8 +1689,8 @@ const JIT_FAST_GET_CURRENT_FRAME = 1
 declare function _jit_get_next_frame_address(byval frame as any ptr) as any ptr
 #define jit_get_next_frame_address(frame) _jit_get_next_frame_address(frame)
 declare function _jit_get_return_address(byval frame as any ptr, byval frame0 as any ptr, byval return0 as any ptr) as any ptr
-#define jit_get_return_address(frame) (_jit_get_return_address((frame), 0, 0))
-#define jit_get_current_return() (jit_get_return_address(jit_get_current_frame()))
+#define jit_get_return_address(frame) _jit_get_return_address((frame), 0, 0)
+#define jit_get_current_return() jit_get_return_address(jit_get_current_frame())
 
 type jit_crawl_mark_t
 	mark as any ptr

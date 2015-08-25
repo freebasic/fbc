@@ -1,10 +1,11 @@
-'' FreeBASIC binding for libpng-1.5.21
+'' FreeBASIC binding for libpng-1.5.23
 ''
 '' based on the C header files:
 ''   png.h - header file for PNG reference library
 ''
-''   libpng version 1.5.21 - December 22, 2014
-''   Copyright (c) 1998-2014 Glenn Randers-Pehrson
+''   libpng version 1.5.23, July 23, 2015
+''
+''   Copyright (c) 1998-2015 Glenn Randers-Pehrson
 ''   (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
 ''   (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
 ''
@@ -13,7 +14,7 @@
 ''   Authors and maintainers:
 ''     libpng versions 0.71, May 1995, through 0.88, January 1996: Guy Schalnat
 ''     libpng versions 0.89c, June 1996, through 0.96, May 1997: Andreas Dilger
-''     libpng versions 0.97, January 1998, through 1.5.21 - December 22, 2014: Glenn
+''     libpng versions 0.97, January 1998, through 1.5.23, July 23, 2015: Glenn
 ''     See also "Contributing Authors", below.
 ''
 ''   COPYRIGHT NOTICE, DISCLAIMER, and LICENSE:
@@ -23,20 +24,15 @@
 ''
 ''   This code is released under the libpng license.
 ''
-''   libpng versions 1.2.6, August 15, 2004, through 1.5.21, December 22, 2014, are
-''   Copyright (c) 2004, 2006-2014 Glenn Randers-Pehrson, and are
-''   distributed according to the same disclaimer and license as libpng-1.2.5
-''   with the following individual added to the list of Contributing Authors:
-''
-''      Cosmin Truta
-''
-''   libpng versions 1.0.7, July 1, 2000, through 1.2.5, October 3, 2002, are
-''   Copyright (c) 2000-2002 Glenn Randers-Pehrson, and are
+''   libpng versions 1.0.7, July 1, 2000, through 1.5.23, July 23, 2015, are
+''   Copyright (c) 2000-2002, 2004, 2006-2015 Glenn Randers-Pehrson, and are
 ''   distributed according to the same disclaimer and license as libpng-1.0.6
 ''   with the following individuals added to the list of Contributing Authors:
 ''
 ''      Simon-Pierre Cadieux
 ''      Eric S. Raymond
+''      Mans Rullgard
+''      Cosmin Truta
 ''      Gilles Vollant
 ''
 ''   and with the following additions to the disclaimer:
@@ -49,17 +45,17 @@
 ''      the user.
 ''
 ''   libpng versions 0.97, January 1998, through 1.0.6, March 20, 2000, are
-''   Copyright (c) 1998, 1999, 2000 Glenn Randers-Pehrson, and are
-''   distributed according to the same disclaimer and license as libpng-0.96,
-''   with the following individuals added to the list of Contributing Authors:
+''   Copyright (c) 1998-2000 Glenn Randers-Pehrson, and are distributed according
+''   to the same disclaimer and license as libpng-0.96, with the following
+''   individuals added to the list of Contributing Authors:
 ''
 ''      Tom Lane
 ''      Glenn Randers-Pehrson
 ''      Willem van Schaik
 ''
 ''   libpng versions 0.89, June 1996, through 0.96, May 1997, are
-''   Copyright (c) 1996, 1997 Andreas Dilger
-''   Distributed according to the same disclaimer and license as libpng-0.88,
+''   Copyright (c) 1996-1997 Andreas Dilger, and are
+''   distributed according to the same disclaimer and license as libpng-0.88,
 ''   with the following individuals added to the list of Contributing Authors:
 ''
 ''      John Bowler
@@ -70,7 +66,7 @@
 ''      Tom Tanner
 ''
 ''   libpng versions 0.5, May 1995, through 0.88, January 1996, are
-''   Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.
+''   Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
 ''
 ''   For the purposes of this copyright and license, "Contributing Authors"
 ''   is defined as the following set of individuals:
@@ -98,8 +94,8 @@
 ''     2. Altered versions must be plainly marked as such and must not
 ''        be misrepresented as being the original source.
 ''
-''     3. This Copyright notice may not be removed or altered from
-''        any source or altered source distribution.
+''     3. This Copyright notice may not be removed or altered from any
+''        source or altered source distribution.
 ''
 ''   The Contributing Authors and Group 42, Inc. specifically permit, without
 ''   fee, and encourage the use of this source code as a component to
@@ -134,13 +130,13 @@
 extern "C"
 
 #define PNG_H
-#define PNG_LIBPNG_VER_STRING "1.5.21"
-#define PNG_HEADER_VERSION_STRING !" libpng version 1.5.21 - December 22, 2014\n"
+#define PNG_LIBPNG_VER_STRING "1.5.23"
+#define PNG_HEADER_VERSION_STRING !" libpng version 1.5.23 - July 23, 2015\n"
 const PNG_LIBPNG_VER_SONUM = 15
 const PNG_LIBPNG_VER_DLLNUM = 15
 const PNG_LIBPNG_VER_MAJOR = 1
 const PNG_LIBPNG_VER_MINOR = 5
-const PNG_LIBPNG_VER_RELEASE = 21
+const PNG_LIBPNG_VER_RELEASE = 23
 const PNG_LIBPNG_VER_BUILD = 0
 const PNG_LIBPNG_BUILD_ALPHA = 1
 const PNG_LIBPNG_BUILD_BETA = 2
@@ -150,8 +146,8 @@ const PNG_LIBPNG_BUILD_RELEASE_STATUS_MASK = 7
 const PNG_LIBPNG_BUILD_PATCH = 8
 const PNG_LIBPNG_BUILD_PRIVATE = 16
 const PNG_LIBPNG_BUILD_SPECIAL = 32
-#define PNG_LIBPNG_BUILD_BASE_TYPE PNG_LIBPNG_BUILD_STABLE
-const PNG_LIBPNG_VER_ = 10521
+const PNG_LIBPNG_BUILD_BASE_TYPE = PNG_LIBPNG_BUILD_STABLE
+const PNG_LIBPNG_VER_ = 10523
 #define PNGLCONF_H
 #define PNG_16BIT_SUPPORTED
 #define PNG_ALIGNED_MEMORY_SUPPORTED
@@ -229,8 +225,6 @@ const PNG_LIBPNG_VER_ = 10521
 #define PNG_SAVE_INT_32_SUPPORTED
 #define PNG_SEQUENTIAL_READ_SUPPORTED
 #define PNG_SETJMP_SUPPORTED
-#define PNG_SET_CHUNK_CACHE_LIMIT_SUPPORTED
-#define PNG_SET_CHUNK_MALLOC_LIMIT_SUPPORTED
 #define PNG_SET_USER_LIMITS_SUPPORTED
 #define PNG_STDIO_SUPPORTED
 #define PNG_TEXT_SUPPORTED_
@@ -247,6 +241,7 @@ const PNG_LIBPNG_VER_ = 10521
 #define PNG_WRITE_BGR_SUPPORTED
 #define PNG_WRITE_CHECK_FOR_INVALID_INDEX_SUPPORTED
 #define PNG_WRITE_COMPRESSED_TEXT_SUPPORTED
+#define PNG_WRITE_CUSTOMIZE_COMPRESSION_SUPPORTED
 #define PNG_WRITE_CUSTOMIZE_ZTXT_COMPRESSION_SUPPORTED
 #define PNG_WRITE_FILLER_SUPPORTED
 #define PNG_WRITE_FILTER_SUPPORTED
@@ -310,6 +305,10 @@ const PNG_MAX_GAMMA_8 = 11
 const PNG_QUANTIZE_BLUE_BITS = 5
 const PNG_QUANTIZE_GREEN_BITS = 5
 const PNG_QUANTIZE_RED_BITS = 5
+const PNG_USER_CHUNK_CACHE_MAX = 1000
+const PNG_USER_CHUNK_MALLOC_MAX = 8000000
+const PNG_USER_HEIGHT_MAX = 1000000
+const PNG_USER_WIDTH_MAX = 1000000
 const PNG_WEIGHT_SHIFT = 8
 const PNG_ZBUF_SIZE = 8192
 const PNG_sCAL_PRECISION = 5
@@ -356,9 +355,9 @@ type png_fixed_point_pp as png_fixed_point ptr ptr
 type png_doublepp as double ptr ptr
 type png_charppp as zstring ptr ptr ptr
 type png_alloc_size_t as png_size_t
-#define PNG_LIBPNG_BUILD_TYPE PNG_LIBPNG_BUILD_BASE_TYPE
+const PNG_LIBPNG_BUILD_TYPE = PNG_LIBPNG_BUILD_BASE_TYPE
 #define png_libpng_ver png_get_header_ver(NULL)
-type png_libpng_version_1_5_21 as zstring ptr
+type png_libpng_version_1_5_23 as zstring ptr
 
 type png_color_struct
 	red as png_byte
@@ -492,16 +491,16 @@ const PNG_COLOR_MASK_COLOR = 2
 const PNG_COLOR_MASK_ALPHA = 4
 const PNG_COLOR_TYPE_GRAY = 0
 #define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
-#define PNG_COLOR_TYPE_RGB PNG_COLOR_MASK_COLOR
+const PNG_COLOR_TYPE_RGB = PNG_COLOR_MASK_COLOR
 #define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
-#define PNG_COLOR_TYPE_GRAY_ALPHA PNG_COLOR_MASK_ALPHA
+const PNG_COLOR_TYPE_GRAY_ALPHA = PNG_COLOR_MASK_ALPHA
 #define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
-#define PNG_COLOR_TYPE_GA PNG_COLOR_TYPE_GRAY_ALPHA
+const PNG_COLOR_TYPE_GA = PNG_COLOR_TYPE_GRAY_ALPHA
 const PNG_COMPRESSION_TYPE_BASE = 0
-#define PNG_COMPRESSION_TYPE_DEFAULT PNG_COMPRESSION_TYPE_BASE
+const PNG_COMPRESSION_TYPE_DEFAULT = PNG_COMPRESSION_TYPE_BASE
 const PNG_FILTER_TYPE_BASE = 0
 const PNG_INTRAPIXEL_DIFFERENCING = 64
-#define PNG_FILTER_TYPE_DEFAULT PNG_FILTER_TYPE_BASE
+const PNG_FILTER_TYPE_DEFAULT = PNG_FILTER_TYPE_BASE
 const PNG_INTERLACE_NONE = 0
 const PNG_INTERLACE_ADAM7 = 1
 const PNG_INTERLACE_LAST = 2
@@ -585,7 +584,7 @@ const PNG_TRANSFORM_SWAP_ALPHA = &h0100
 const PNG_TRANSFORM_SWAP_ENDIAN = &h0200
 const PNG_TRANSFORM_INVERT_ALPHA = &h0400
 const PNG_TRANSFORM_STRIP_FILLER = &h0800
-#define PNG_TRANSFORM_STRIP_FILLER_BEFORE PNG_TRANSFORM_STRIP_FILLER
+const PNG_TRANSFORM_STRIP_FILLER_BEFORE = PNG_TRANSFORM_STRIP_FILLER
 const PNG_TRANSFORM_STRIP_FILLER_AFTER = &h1000
 const PNG_TRANSFORM_GRAY_TO_RGB = &h2000
 const PNG_TRANSFORM_EXPAND_16 = &h4000
@@ -654,7 +653,7 @@ declare sub png_set_alpha_mode_fixed(byval png_ptr as png_structp, byval mode as
 const PNG_DEFAULT_sRGB = -1
 const PNG_GAMMA_MAC_18 = -2
 const PNG_GAMMA_sRGB = 220000
-#define PNG_GAMMA_LINEAR PNG_FP_1
+const PNG_GAMMA_LINEAR = PNG_FP_1
 
 declare sub png_set_strip_alpha(byval png_ptr as png_structp)
 declare sub png_set_swap_alpha(byval png_ptr as png_structp)
@@ -930,13 +929,13 @@ const PNG_INTERLACE_ADAM7_PASSES = 7
 #macro png_composite(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_16 = cast(png_uint_16, ((cast(png_uint_16, (fg)) * cast(png_uint_16, (alpha))) + (cast(png_uint_16, (bg)) * cast(png_uint_16, 255 - cast(png_uint_16, (alpha))))) + 128)
-		(composite) = cast(png_byte, ((temp + (temp shr 8)) shr 8))
+		(composite) = cast(png_byte, (temp + (temp shr 8)) shr 8)
 	end scope
 #endmacro
 #macro png_composite_16(composite, fg, alpha, bg)
 	scope
 		dim temp as png_uint_32 = cast(png_uint_32, ((cast(png_uint_32, (fg)) * cast(png_uint_32, (alpha))) + (cast(png_uint_32, (bg)) * (65535 - cast(png_uint_32, (alpha))))) + 32768)
-		(composite) = cast(png_uint_16, ((temp + (temp shr 16)) shr 16))
+		(composite) = cast(png_uint_16, (temp + (temp shr 16)) shr 16)
 	end scope
 #endmacro
 

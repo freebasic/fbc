@@ -358,7 +358,7 @@ enum
 	GTK_UNIT_MM
 end enum
 
-#define GTK_UNIT_PIXEL GTK_UNIT_NONE
+const GTK_UNIT_PIXEL = GTK_UNIT_NONE
 
 type GtkTreeViewGridLines as long
 enum
@@ -975,9 +975,9 @@ declare sub gtk_widget_remove_tick_callback(byval widget as GtkWidget ptr, byval
 
 #define gtk_widget_class_bind_template_callback(widget_class, callback) gtk_widget_class_bind_template_callback_full(GTK_WIDGET_CLASS(widget_class), #callback, G_CALLBACK(callback))
 #define gtk_widget_class_bind_template_child(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, FALSE, G_STRUCT_OFFSET(TypeName, member_name))
-#define gtk_widget_class_bind_template_child_internal(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, TRUE, G_STRUCT_OFFSET(TypeName, member_name))
+#define gtk_widget_class_bind_template_child_internal(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, CTRUE, G_STRUCT_OFFSET(TypeName, member_name))
 #define gtk_widget_class_bind_template_child_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, FALSE, G_PRIVATE_OFFSET(TypeName, member_name))
-#define gtk_widget_class_bind_template_child_internal_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, TRUE, G_PRIVATE_OFFSET(TypeName, member_name))
+#define gtk_widget_class_bind_template_child_internal_private(widget_class, TypeName, member_name) gtk_widget_class_bind_template_child_full(widget_class, #member_name, CTRUE, G_PRIVATE_OFFSET(TypeName, member_name))
 
 declare sub gtk_widget_init_template(byval widget as GtkWidget ptr)
 declare function gtk_widget_get_template_child(byval widget as GtkWidget ptr, byval widget_type as GType, byval name as const zstring ptr) as GObject ptr
@@ -6756,12 +6756,12 @@ declare function gtk_get_interface_age() as guint
 declare function gtk_check_version_ alias "gtk_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const zstring ptr
 declare function gtk_parse_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
-	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_init(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
 	declare function gtk_init_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
+#else
+	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
+	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 #endif
 
 declare function gtk_init_with_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr, byval parameter_string as const zstring ptr, byval entries as const GOptionEntry ptr, byval translation_domain as const zstring ptr, byval error as GError ptr ptr) as gboolean

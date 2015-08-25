@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -361,7 +361,7 @@ type DECIMAL as tagDEC
 #endmacro
 type LPDECIMAL as DECIMAL ptr
 type wireBSTR as FLAGGED_WORD_BLOB ptr
-type BSTR as wstring ptr
+type BSTR as OLECHAR ptr
 type LPBSTR as BSTR ptr
 type VARIANT_BOOL as short
 #define _tagBSTRBLOB_DEFINED

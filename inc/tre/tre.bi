@@ -51,10 +51,6 @@ extern "C"
 const TRE_H = 1
 
 #ifdef TRE_USE_SYSTEM_REGEX_H
-	#define tre_regcomp regcomp
-	#define tre_regexec regexec
-	#define tre_regerror regerror
-	#define tre_regfree regfree
 	const REG_OK = 0
 	type reg_errcode_t as long
 	const REG_LITERAL = &h1000
@@ -113,15 +109,25 @@ const REG_BASIC = 0
 #endif
 
 #define REG_BACKTRACKING_MATCHER (REG_APPROX_MATCHER shl 1)
-#define REG_NOSPEC REG_LITERAL
+
+#ifdef TRE_USE_SYSTEM_REGEX_H
+	const REG_NOSPEC = REG_LITERAL
+#else
+	#define REG_NOSPEC REG_LITERAL
+#endif
+
 #undef RE_DUP_MAX
 const RE_DUP_MAX = 255
 
 #ifdef TRE_USE_SYSTEM_REGEX_H
 	declare function regcomp(byval preg as regex_t ptr, byval regex as const zstring ptr, byval cflags as long) as long
+	declare function tre_regcomp alias "regcomp"(byval preg as regex_t ptr, byval regex as const zstring ptr, byval cflags as long) as long
 	declare function regexec(byval preg as const regex_t ptr, byval string as const zstring ptr, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
+	declare function tre_regexec alias "regexec"(byval preg as const regex_t ptr, byval string as const zstring ptr, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long
 	declare function regerror(byval errcode as long, byval preg as const regex_t ptr, byval errbuf as zstring ptr, byval errbuf_size as uinteger) as uinteger
+	declare function tre_regerror alias "regerror"(byval errcode as long, byval preg as const regex_t ptr, byval errbuf as zstring ptr, byval errbuf_size as uinteger) as uinteger
 	declare sub regfree(byval preg as regex_t ptr)
+	declare sub tre_regfree alias "regfree"(byval preg as regex_t ptr)
 #else
 	declare function tre_regcomp(byval preg as regex_t ptr, byval regex as const zstring ptr, byval cflags as long) as long
 	declare function tre_regexec(byval preg as const regex_t ptr, byval string as const zstring ptr, byval nmatch as uinteger, byval pmatch as regmatch_t ptr, byval eflags as long) as long

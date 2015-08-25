@@ -12,6 +12,8 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects t
 	##**Trans**## selects transparent background as the method for blitting an image buffer.  This is similar to the ##PSET## method, but pixels containing the mask color are skipped.
 	For 8-bit color images, the mask color is palette index 0.  For 16/32-bit color images, the mask color is Magenta, which is ##[[KeyPgRgb RGB]](255, 0, 255)##.  The alpha value is ignored when checking for the mask color in 32-bit images.
 
+	Note: for 32-bit images, the alpha value of pixels may be changed to 0.  This is for efficiency reasons.  To preserve the alpha values, a custom blender may be used, as in the second example below.
+
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/put-trans.bas"}}%%(freebasic)
 '' set up a screen: 320 * 200, 16 bits per pixel
@@ -40,10 +42,51 @@ sleep
 %%
 {{image class="center" title="Put Trans example output" url="/images/trans.png"}}
 
+{{fbdoc item="filename" value="examples/manual/gfx/put-trans-custom.bas"}}%%(freebasic)
+function trans32 ( byval source_pixel as uinteger, byval destination_pixel as uinteger, byval parameter as any ptr ) as uinteger
+	'' returns the source pixel
+	'' unless it is &hff00ff (magenta), then return the destination pixel
+	if (source_pixel and &hffffff) <> &hff00ff then
+	    return source_pixel
+	else
+	    return destination_pixel
+	end if
+end function
+
+'' set up a screen: 320 * 200, 16 bits per pixel
+screenres 320, 200, 32
+
+'' set up an image with the mask color as the background.
+dim img as any ptr = imagecreate( 32, 32, rgb(255, 0, 255) )
+circle img, (16, 16), 15, rgb(255, 255, 0),     ,     , 1, f
+circle img, (10, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+circle img, (23, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+circle img, (16, 18), 10, rgb(  0,   0, 0), 3.14, 6.28
+
+'' Put the image with PSET (gives the exact contents of the image buffer)
+draw string (110, 50 - 4), "Image put with PSET"
+put (60 - 16, 50 - 16), img, pset
+
+'' Put the image with TRANS
+draw string (110, 100 - 4), "Image put with TRANS"
+put (60 - 16, 100 - 16), img, Trans
+
+'' Put the image with TRANS
+draw string (110, 150 - 4), "Image put with trans32"
+put (60 - 16, 150 - 16), img, custom, @trans32
+
+'' free the image memory
+imagedestroy img
+
+'' wait for a keypress
+sleep
+%%
+
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgCustomgfx Custom]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -1719,9 +1719,9 @@ declare sub IEnumOleUndoUnits_Clone_Stub(byval This as IRpcStubBuffer ptr, byval
 declare function IEnumOleUndoUnits_Next_Proxy(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
 declare function IEnumOleUndoUnits_Next_Stub(byval This as IEnumOleUndoUnits ptr, byval cElt as ULONG, byval rgElt as IOleUndoUnit ptr ptr, byval pcEltFetched as ULONG ptr) as HRESULT
 #define __IOleUndoManager_INTERFACE_DEFINED__
-#define SID_SOleUndoManager IID_IOleUndoManager
 type LPOLEUNDOMANAGER as IOleUndoManager ptr
 extern IID_IOleUndoManager as const GUID
+extern SID_SOleUndoManager alias "IID_IOleUndoManager" as const GUID
 
 type IOleUndoManagerVtbl
 	QueryInterface as function(byval This as IOleUndoManager ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT

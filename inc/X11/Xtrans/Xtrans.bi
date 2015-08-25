@@ -60,7 +60,7 @@
 #include once "X11/Xfuncproto.bi"
 #include once "X11/Xos.bi"
 
-#ifdef __FB_LINUX__
+#ifdef __FB_UNIX__
 	#include once "crt/sys/socket.bi"
 	#include once "crt/sys/uio.bi"
 #endif

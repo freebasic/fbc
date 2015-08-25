@@ -62,11 +62,17 @@ type voidpf as any ptr
 type voidp as any ptr
 type z_crc_t as culong
 
+#ifndef SEEK_SET
 const SEEK_SET = 0
+#endif
+#ifndef SEEK_CUR
 const SEEK_CUR = 1
+#endif
+#ifndef SEEK_END
 const SEEK_END = 2
-#define z_off_t clong
-#define z_off64_t z_off_t
+#endif
+type z_off_t as clong
+type z_off64_t as z_off_t
 #define ZLIB_VERSION "1.2.8"
 const ZLIB_VERNUM = &h1280
 const ZLIB_VER_MAJOR = 1
@@ -143,7 +149,7 @@ const Z_FIXED = 4
 const Z_DEFAULT_STRATEGY = 0
 const Z_BINARY = 0
 const Z_TEXT = 1
-#define Z_ASCII Z_TEXT
+const Z_ASCII = Z_TEXT
 const Z_UNKNOWN = 2
 const Z_DEFLATED = 8
 const Z_NULL = 0

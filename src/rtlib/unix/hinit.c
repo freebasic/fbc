@@ -485,7 +485,7 @@ static void hInit( void )
 	if (!tgetflag("am"))
 		return;
 	for (i = 0; i < SEQ_MAX; i++)
-		__fb_con.seq[i] = tgetstr(seq[i], NULL);
+		__fb_con.seq[i] = tgetstr((char*)seq[i], NULL);
 
 	/* !!!TODO!!! detect other OS consoles? (freebsd: 'cons25', etc?) */
 	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))

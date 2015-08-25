@@ -72,6 +72,8 @@ sub	parserEnd( )
 
 	parserCompoundStmtEnd( )
 
+	parserInlineAsmEnd( )
+
 end sub
 
 private sub hEmitCurrentLineText( )

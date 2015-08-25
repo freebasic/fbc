@@ -114,7 +114,7 @@ get_mingww64_toolchain() {
 
 	gccversion=4.9.2
 	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev2.7z
+	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev3.7z
 
 	mkdir -p ../input/MinGW-w64
 	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
@@ -215,7 +215,7 @@ get_fbc_sources() {
 	mv fbc-$fbccommit fbc
 }
 
-bootfb_title=FreeBASIC-1.01.0-$fbtarget
+bootfb_title=FreeBASIC-1.02.1-$fbtarget
 
 case $fbtarget in
 linux*)

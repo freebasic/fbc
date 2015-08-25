@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glibc-2.21
+'' FreeBASIC binding for glibc-2.22
 ''
 '' based on the C header files:
 ''   Copyright (C) 2002-2015 Free Software Foundation, Inc.
@@ -27,7 +27,7 @@
 	#error "target not supported; this header is for GNU/Linux glibc"
 #endif
 
-#ifdef __FB_64BIT__
+#if defined(__FB_64BIT__) and (not defined(__FB_ARM__))
 	#include once "crt/long.bi"
 #endif
 
@@ -75,7 +75,6 @@ end enum
 	#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP ((0, 0, 0, 0, PTHREAD_MUTEX_RECURSIVE_NP, __PTHREAD_SPINS, (0, 0)))
 	#define PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP ((0, 0, 0, 0, PTHREAD_MUTEX_ERRORCHECK_NP, __PTHREAD_SPINS, (0, 0)))
 	#define PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP ((0, 0, 0, 0, PTHREAD_MUTEX_ADAPTIVE_NP, __PTHREAD_SPINS, (0, 0)))
-	#define PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP ((0, 0, 0, 0, PTHREAD_MUTEX_ADAPTIVE_NP, __PTHREAD_SPINS, (0, 0)))
 #else
 	#define PTHREAD_MUTEX_INITIALIZER ((0, 0, 0, 0, 0, (__PTHREAD_SPINS)))
 	#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP ((0, 0, 0, PTHREAD_MUTEX_RECURSIVE_NP, 0, (__PTHREAD_SPINS)))
@@ -89,6 +88,10 @@ enum
 	PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP
 	PTHREAD_RWLOCK_DEFAULT_NP = PTHREAD_RWLOCK_PREFER_READER_NP
 end enum
+
+#if defined(__FB_64BIT__) and defined(__FB_ARM__)
+	const __PTHREAD_RWLOCK_INT_FLAGS_SHARED = 1
+#endif
 
 #define PTHREAD_RWLOCK_INITIALIZER ((0, 0, 0, 0, 0, 0, 0, 0, __PTHREAD_RWLOCK_ELISION_EXTRA, 0, 0))
 
@@ -186,10 +189,14 @@ declare function pthread_cancel(byval __th as pthread_t) as long
 declare sub pthread_testcancel()
 
 type __pthread_unwind_buf_t___cancel_jmp_buf
-	#ifdef __FB_64BIT__
-		__cancel_jmp_buf(0 to 7) as clong
-	#else
+	#if (not defined(__FB_64BIT__)) and (not defined(__FB_ARM__))
 		__cancel_jmp_buf(0 to 5) as long
+	#elseif defined(__FB_64BIT__) and (not defined(__FB_ARM__))
+		__cancel_jmp_buf(0 to 7) as clong
+	#elseif (not defined(__FB_64BIT__)) and defined(__FB_ARM__)
+		__cancel_jmp_buf(0 to 63) as long
+	#else
+		__cancel_jmp_buf(0 to 21) as ulongint
 	#endif
 
 	__mask_was_saved as long
@@ -207,7 +214,7 @@ type __pthread_cleanup_frame
 	__cancel_type as long
 end type
 
-#ifdef __FB_64BIT__
+#if defined(__FB_64BIT__) or defined(__FB_ARM__)
 	declare sub __pthread_register_cancel(byval __buf as __pthread_unwind_buf_t ptr)
 	declare sub __pthread_unregister_cancel(byval __buf as __pthread_unwind_buf_t ptr)
 	declare sub __pthread_register_cancel_defer(byval __buf as __pthread_unwind_buf_t ptr)

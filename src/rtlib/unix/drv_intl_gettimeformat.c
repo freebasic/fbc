@@ -46,6 +46,10 @@ int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
                 pszAdd = "hh";
                 add_len = 2;
                 break;
+            case 'M':
+                pszAdd = "mm";
+                add_len = 2;
+                break;
             case 'p':
                 pszAdd = "tt";
                 add_len = 2;

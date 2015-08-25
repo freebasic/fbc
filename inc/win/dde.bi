@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -25,7 +25,7 @@ extern "Windows"
 
 #define _DDEHEADER_INCLUDED_
 const WM_DDE_FIRST = &h03E0
-#define WM_DDE_INITIATE WM_DDE_FIRST
+const WM_DDE_INITIATE = WM_DDE_FIRST
 #define WM_DDE_TERMINATE (WM_DDE_FIRST + 1)
 #define WM_DDE_ADVISE (WM_DDE_FIRST + 2)
 #define WM_DDE_UNADVISE (WM_DDE_FIRST + 3)

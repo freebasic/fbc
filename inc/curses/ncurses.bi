@@ -41,6 +41,8 @@
 #include once "crt/stdarg.bi"
 
 '' The following symbols have been renamed:
+''     undef TRUE => CTRUE
+''     constant TRUE => CTRUE
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
 ''     undef ERR => ERR_
 ''     constant ERR => ERR_
@@ -69,31 +71,37 @@ const NCURSES_MOUSE_VERSION = 1
 const NCURSES_DLL_H_incl = 1
 #undef NCURSES_DLL
 const NCURSES_ENABLE_STDBOOL_H = 1
-#define NCURSES_ATTR_T long
+type NCURSES_ATTR_T as long
 #undef NCURSES_COLOR_T
-#define NCURSES_COLOR_T short
+type NCURSES_COLOR_T as short
 const NCURSES_OPAQUE = 0
 const NCURSES_REENTRANT = 0
 #undef NCURSES_INTEROP_FUNCS
 const NCURSES_INTEROP_FUNCS = 0
 #undef NCURSES_SIZE_T
-#define NCURSES_SIZE_T short
+type NCURSES_SIZE_T as short
 #undef NCURSES_TPARM_VARARGS
 const NCURSES_TPARM_VARARGS = 1
 #undef NCURSES_CH_T
-#define NCURSES_CH_T chtype
+
+type NCURSES_CH_T as chtype
 type chtype as culong
 type mmask_t as culong
 #undef NCURSES_WIDECHAR
-#undef TRUE
-const TRUE = 1
-#undef FALSE
-const FALSE = 0
+#ifndef CTRUE
+	const CTRUE = 1
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
+#ifndef FALSE
+	const FALSE = 0
+#endif
 type NCURSES_BOOL as ubyte
+
 #define NCURSES_BOOL_ bool
 #define NCURSES_CAST(type, value) cast(type, value)
 #define WA_ATTRIBUTES A_ATTRIBUTES
-#define WA_NORMAL A_NORMAL
 #define WA_STANDOUT A_STANDOUT
 #define WA_UNDERLINE A_UNDERLINE
 #define WA_REVERSE A_REVERSE
@@ -405,13 +413,14 @@ declare function use_window(byval as WINDOW_ ptr, byval as NCURSES_WINDOW_CB, by
 declare function wresize(byval as WINDOW_ ptr, byval as long, byval as long) as long
 declare sub nofilter()
 #undef NCURSES_SP_FUNCS
-
 const NCURSES_SP_FUNCS = 0
 #define NCURSES_SP_NAME(name) name
-#define NCURSES_SP_OUTC NCURSES_OUTC
+type NCURSES_SP_OUTC as NCURSES_OUTC
+
 const NCURSES_ATTR_SHIFT = 8
 #define NCURSES_BITS(mask, shift) ((mask) shl ((shift) + NCURSES_ATTR_SHIFT))
 const A_NORMAL = cast(culong, 1) - cast(culong, 1)
+const WA_NORMAL = A_NORMAL
 #define A_ATTRIBUTES NCURSES_BITS(not (cast(culong, 1) - cast(culong, 1)), 0)
 #define A_CHARTEXT (NCURSES_BITS(cast(culong, 1), 0) - cast(culong, 1))
 #define A_COLOR NCURSES_BITS((cast(culong, 1) shl 8) - cast(culong, 1), 0)
@@ -430,15 +439,35 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #define A_RIGHT NCURSES_BITS(cast(culong, 1), 20)
 #define A_TOP NCURSES_BITS(cast(culong, 1), 21)
 #define A_VERTICAL NCURSES_BITS(cast(culong, 1), 22)
-#define getyx(win,y,x) y = getcury(win) : x = getcurx(win)
-#define getbegyx(win,y,x) y = getbegy(win) : x = getbegx(win)
-#define getmaxyx(win,y,x) y = getmaxy(win) : x = getmaxx(win)
-#define getparyx(win,y,x) y = getpary(win) : x = getparx(win)
+#macro getyx(win, y, x)
+	scope
+		y = getcury(win)
+		x = getcurx(win)
+	end scope
+#endmacro
+#macro getbegyx(win, y, x)
+	scope
+		y = getbegy(win)
+		x = getbegx(win)
+	end scope
+#endmacro
+#macro getmaxyx(win, y, x)
+	scope
+		y = getmaxy(win)
+		x = getmaxx(win)
+	end scope
+#endmacro
+#macro getparyx(win, y, x)
+	scope
+		y = getpary(win)
+		x = getparx(win)
+	end scope
+#endmacro
 #macro getsyx(y, x)
 	if newscr then
 		if is_leaveok(newscr) then
-			(y) = -1
 			(x) = -1
+			(y) = -1
 		else
 			getyx(newscr, (y), (x))
 		end if
@@ -446,8 +475,8 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #endmacro
 #macro setsyx(y, x)
 	if newscr then
-		if (y) = -1 andalso (x) = -1 then
-			leaveok(newscr, TRUE)
+		if ((y) = (-1)) andalso ((x) = (-1)) then
+			leaveok(newscr, CTRUE)
 		else
 			leaveok(newscr, FALSE)
 			wmove(newscr, (y), (x))
@@ -584,7 +613,7 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 #define getbkgd(win) (win)->_bkgd
 #define slk_attr_off_(a, v) iif((v), ERR_, slk_attroff(a))
 #define slk_attr_on_(a, v) iif((v), ERR_, slk_attron(a))
-#define wattr_set(win,a,p,opts) (win)->_attrs = (((a) and not A_COLOR) or cast(attr_t, COLOR_PAIR(p)))
+#define wattr_set(win, a, p, opts) scope : (win)->_attrs = ((a) and (not A_COLOR)) or cast(attr_t, COLOR_PAIR(p)) : end scope
 #macro wattr_get(win,a,p,opts)
 	if a then
 		*(a) = (win)->_attrs
@@ -593,8 +622,8 @@ const A_NORMAL = cast(culong, 1) - cast(culong, 1)
 		*(p) = cshort(PAIR_NUMBER((win)->_attrs))
 	end if
 #endmacro
-#define vw_printw vwprintw
-#define vw_scanw vwscanw
+declare function vw_printw alias "vwprintw"(byval as WINDOW_ ptr, byval as const zstring ptr, byval as va_list) as long
+declare function vw_scanw alias "vwscanw"(byval as WINDOW_ ptr, byval as zstring ptr, byval as va_list) as long
 #define is_cleared(win) iif((win), (win)->_clear, FALSE)
 #define is_idcok(win) iif((win), (win)->_idcok, FALSE)
 #define is_idlok(win) iif((win), (win)->_idlok, FALSE)
@@ -797,8 +826,8 @@ declare function _nc_tracebits() as zstring ptr
 declare function _tracechar(byval as long) as zstring ptr
 declare function _tracechtype(byval as chtype) as zstring ptr
 declare function _tracechtype2(byval as long, byval as chtype) as zstring ptr
-#define _tracech_t _tracechtype
-#define _tracech_t2 _tracechtype2
+declare function _tracech_t alias "_tracechtype"(byval as chtype) as zstring ptr
+declare function _tracech_t2 alias "_tracechtype2"(byval as long, byval as chtype) as zstring ptr
 declare function _tracemouse(byval as const MEVENT ptr) as zstring ptr
 declare sub trace(byval as const ulong)
 

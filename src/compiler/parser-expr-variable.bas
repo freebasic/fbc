@@ -843,7 +843,7 @@ private function cDynamicArrayIndex _
 	'' No longer needed, all places using it should have cloned
 	astDelTree( descexpr )
 
-	if( symbIsDynamic( sym ) ) then
+	if( symbGetIsDynamic( sym ) ) then
 		symbCheckDynamicArrayDimensions( sym, dimension + 1 )
 	end if
 

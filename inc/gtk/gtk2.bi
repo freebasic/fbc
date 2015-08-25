@@ -16,8 +16,8 @@
 ''
 ''   You should have received a copy of the GNU Lesser General Public
 ''   License along with this library; if not, write to the
-''   Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-''   Boston, MA 02111-1307, USA.
+''   Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+''   Boston, MA 02111-1301, USA.
 ''
 '' translated to FreeBASIC by:
 ''   (C) 2011, 2012 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
@@ -25,10 +25,10 @@
 
 #pragma once
 
-#ifdef __FB_WIN32__
-	#inclib "gtk-win32-2.0"
-#else
+#ifdef __FB_UNIX__
 	#inclib "gtk-x11-2.0"
+#else
+	#inclib "gtk-win32-2.0"
 #endif
 
 #include once "gdk/gdk2.bi"
@@ -632,8 +632,8 @@ type _GtkAccelGroupEntry
 	accel_path_quark as GQuark
 end type
 
-#define gtk_accel_group_ref g_object_ref
-#define gtk_accel_group_unref g_object_unref
+declare function gtk_accel_group_ref alias "g_object_ref"(byval object as gpointer) as gpointer
+declare sub gtk_accel_group_unref alias "g_object_unref"(byval object as gpointer)
 #define __GTK_BIN_H__
 #define __GTK_CONTAINER_H__
 #define __GTK_WIDGET_H__
@@ -1030,10 +1030,10 @@ end enum
 
 #define GTK_NOTE(type, action)
 
-#ifdef __FB_WIN32__
-	extern import gtk_debug_flags as guint
-#else
+#ifdef __FB_UNIX__
 	extern gtk_debug_flags as guint
+#else
+	extern import gtk_debug_flags as guint
 #endif
 
 #define GTK_TYPE_OBJECT gtk_object_get_type()
@@ -1055,16 +1055,8 @@ end enum
 
 #define GTK_OBJECT_FLAGS(obj) GTK_OBJECT(obj)->flags
 #define GTK_OBJECT_FLOATING(obj) g_object_is_floating(obj)
-#macro GTK_OBJECT_SET_FLAGS(obj, flag)
-	scope
-		GTK_OBJECT_FLAGS(obj) or= (flag)
-	end scope
-#endmacro
-#macro GTK_OBJECT_UNSET_FLAGS(obj, flag)
-	scope
-		GTK_OBJECT_FLAGS(obj) and= not (flag)
-	end scope
-#endmacro
+#define GTK_OBJECT_SET_FLAGS(obj, flag) scope : GTK_OBJECT_FLAGS(obj) or= (flag) : end scope
+#define GTK_OBJECT_UNSET_FLAGS(obj, flag) scope : GTK_OBJECT_FLAGS(obj) and= not (flag) : end scope
 type GtkObjectClass as _GtkObjectClass
 
 type _GtkObject
@@ -1099,8 +1091,8 @@ declare sub gtk_object_set_data_by_id_full(byval object as GtkObject ptr, byval 
 declare function gtk_object_get_data_by_id(byval object as GtkObject ptr, byval data_id as GQuark) as gpointer
 declare sub gtk_object_remove_data_by_id(byval object as GtkObject ptr, byval data_id as GQuark)
 declare sub gtk_object_remove_no_notify_by_id(byval object as GtkObject ptr, byval key_id as GQuark)
-#define gtk_object_data_try_key g_quark_try_string
-#define gtk_object_data_force_id g_quark_from_string
+declare function gtk_object_data_try_key alias "g_quark_try_string"(byval string as const zstring ptr) as GQuark
+declare function gtk_object_data_force_id alias "g_quark_from_string"(byval string as const zstring ptr) as GQuark
 
 type GtkArgFlags as long
 enum
@@ -1398,23 +1390,19 @@ type _GtkRcStyleClass
 	_gtk_reserved4 as sub()
 end type
 
-#ifdef __FB_WIN32__
-	#define gtk_rc_add_default_file gtk_rc_add_default_file_utf8
-	#define gtk_rc_set_default_files gtk_rc_set_default_files_utf8
-	#define gtk_rc_parse gtk_rc_parse_utf8
-#endif
-
 declare sub _gtk_rc_init()
 declare function _gtk_rc_parse_widget_class_path(byval pattern as const zstring ptr) as GSList ptr
 declare sub _gtk_rc_free_widget_class_path(byval list as GSList ptr)
 declare function _gtk_rc_match_widget_class(byval list as GSList ptr, byval length as gint, byval path as zstring ptr, byval path_reversed as zstring ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_rc_add_default_file_utf8(byval filename as const zstring ptr)
-	declare sub gtk_rc_set_default_files_utf8(byval filenames as zstring ptr ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_rc_add_default_file(byval filename as const zstring ptr)
 	declare sub gtk_rc_set_default_files(byval filenames as zstring ptr ptr)
+#else
+	declare sub gtk_rc_add_default_file_utf8(byval filename as const zstring ptr)
+	declare sub gtk_rc_add_default_file alias "gtk_rc_add_default_file_utf8"(byval filename as const zstring ptr)
+	declare sub gtk_rc_set_default_files_utf8(byval filenames as zstring ptr ptr)
+	declare sub gtk_rc_set_default_files alias "gtk_rc_set_default_files_utf8"(byval filenames as zstring ptr ptr)
 #endif
 
 declare function gtk_rc_get_default_files() as zstring ptr ptr
@@ -1424,10 +1412,11 @@ declare function gtk_rc_reparse_all_for_settings(byval settings as GtkSettings p
 declare sub gtk_rc_reset_styles(byval settings as GtkSettings ptr)
 declare function gtk_rc_find_pixmap_in_path(byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as const zstring ptr) as zstring ptr
 
-#ifdef __FB_WIN32__
-	declare sub gtk_rc_parse_utf8(byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_rc_parse(byval filename as const zstring ptr)
+#else
+	declare sub gtk_rc_parse_utf8(byval filename as const zstring ptr)
+	declare sub gtk_rc_parse alias "gtk_rc_parse_utf8"(byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_rc_parse_string(byval rc_string as const zstring ptr)
@@ -1616,16 +1605,8 @@ end enum
 #define GTK_WIDGET_APP_PAINTABLE(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_APP_PAINTABLE) <> 0)
 #define GTK_WIDGET_RECEIVES_DEFAULT(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_RECEIVES_DEFAULT) <> 0)
 #define GTK_WIDGET_DOUBLE_BUFFERED(wid) ((GTK_WIDGET_FLAGS(wid) and GTK_DOUBLE_BUFFERED) <> 0)
-#macro GTK_WIDGET_SET_FLAGS(wid, flag)
-	scope
-		GTK_WIDGET_FLAGS(wid) or= (flag)
-	end scope
-#endmacro
-#macro GTK_WIDGET_UNSET_FLAGS(wid, flag)
-	scope
-		GTK_WIDGET_FLAGS(wid) and= not (flag)
-	end scope
-#endmacro
+#define GTK_WIDGET_SET_FLAGS(wid, flag) scope : GTK_WIDGET_FLAGS(wid) or= (flag) : end scope
+#define GTK_WIDGET_UNSET_FLAGS(wid, flag) scope : GTK_WIDGET_FLAGS(wid) and= not (flag) : end scope
 #define GTK_TYPE_REQUISITION gtk_requisition_get_type()
 
 type GtkRequisition as _GtkRequisition
@@ -1999,7 +1980,7 @@ declare sub gtk_container_check_resize(byval container as GtkContainer ptr)
 declare sub gtk_container_foreach(byval container as GtkContainer ptr, byval callback as GtkCallback, byval callback_data as gpointer)
 declare sub gtk_container_foreach_full(byval container as GtkContainer ptr, byval callback as GtkCallback, byval marshal as GtkCallbackMarshal, byval callback_data as gpointer, byval notify as GDestroyNotify)
 declare function gtk_container_get_children(byval container as GtkContainer ptr) as GList ptr
-#define gtk_container_children gtk_container_get_children
+declare function gtk_container_children alias "gtk_container_get_children"(byval container as GtkContainer ptr) as GList ptr
 declare sub gtk_container_propagate_expose(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval event as GdkEventExpose ptr)
 declare sub gtk_container_set_focus_chain(byval container as GtkContainer ptr, byval focusable_widgets as GList ptr)
 declare function gtk_container_get_focus_chain(byval container as GtkContainer ptr, byval focusable_widgets as GList ptr ptr) as gboolean
@@ -2030,8 +2011,8 @@ declare sub _gtk_container_clear_resize_widgets(byval container as GtkContainer 
 declare function _gtk_container_child_composite_name(byval container as GtkContainer ptr, byval child as GtkWidget ptr) as zstring ptr
 declare sub _gtk_container_dequeue_resize_handler(byval container as GtkContainer ptr)
 declare function _gtk_container_focus_sort(byval container as GtkContainer ptr, byval children as GList ptr, byval direction as GtkDirectionType, byval old_focus as GtkWidget ptr) as GList ptr
+declare sub gtk_container_border_width alias "gtk_container_set_border_width"(byval container as GtkContainer ptr, byval border_width as guint)
 
-#define gtk_container_border_width gtk_container_set_border_width
 #define GTK_TYPE_BIN gtk_bin_get_type()
 #define GTK_BIN(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_BIN, GtkBin)
 #define GTK_BIN_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_BIN, GtkBinClass)
@@ -2140,11 +2121,6 @@ type _GtkWindowGroupClass
 	_gtk_reserved4 as sub()
 end type
 
-#ifdef __FB_WIN32__
-	#define gtk_window_set_icon_from_file gtk_window_set_icon_from_file_utf8
-	#define gtk_window_set_default_icon_from_file gtk_window_set_default_icon_from_file_utf8
-#endif
-
 declare function gtk_window_get_type() as GType
 declare function gtk_window_new(byval type as GtkWindowType) as GtkWidget ptr
 declare sub gtk_window_set_title(byval window as GtkWindow ptr, byval title as const zstring ptr)
@@ -2204,10 +2180,11 @@ declare function gtk_window_get_icon_list(byval window as GtkWindow ptr) as GLis
 declare sub gtk_window_set_icon(byval window as GtkWindow ptr, byval icon as GdkPixbuf ptr)
 declare sub gtk_window_set_icon_name(byval window as GtkWindow ptr, byval name as const zstring ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_window_set_icon_from_file(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+#else
+	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_icon_from_file alias "gtk_window_set_icon_from_file_utf8"(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare function gtk_window_get_icon(byval window as GtkWindow ptr) as GdkPixbuf ptr
@@ -2218,10 +2195,11 @@ declare sub gtk_window_set_default_icon(byval icon as GdkPixbuf ptr)
 declare sub gtk_window_set_default_icon_name(byval name as const zstring ptr)
 declare function gtk_window_get_default_icon_name() as const zstring ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_window_set_default_icon_from_file(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+#else
+	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_default_icon_from_file alias "gtk_window_set_default_icon_from_file_utf8"(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare sub gtk_window_set_auto_startup_notification(byval setting as gboolean)
@@ -2250,7 +2228,7 @@ declare sub gtk_window_set_keep_below(byval window as GtkWindow ptr, byval setti
 declare sub gtk_window_begin_resize_drag(byval window as GtkWindow ptr, byval edge as GdkWindowEdge, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
 declare sub gtk_window_begin_move_drag(byval window as GtkWindow ptr, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
 declare sub gtk_window_set_policy(byval window as GtkWindow ptr, byval allow_shrink as gint, byval allow_grow as gint, byval auto_shrink as gint)
-#define gtk_window_position gtk_window_set_position
+declare sub gtk_window_position alias "gtk_window_set_position"(byval window as GtkWindow ptr, byval position as GtkWindowPosition)
 declare sub gtk_window_set_default_size(byval window as GtkWindow ptr, byval width as gint, byval height as gint)
 declare sub gtk_window_get_default_size(byval window as GtkWindow ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_window_resize(byval window as GtkWindow ptr, byval width as gint, byval height as gint)
@@ -2676,7 +2654,7 @@ declare function gtk_label_get_single_line_mode(byval label as GtkLabel ptr) as 
 declare function gtk_label_get_current_uri(byval label as GtkLabel ptr) as const zstring ptr
 declare sub gtk_label_set_track_visited_links(byval label as GtkLabel ptr, byval track_links as gboolean)
 declare function gtk_label_get_track_visited_links(byval label as GtkLabel ptr) as gboolean
-#define gtk_label_set gtk_label_set_text
+declare sub gtk_label_set alias "gtk_label_set_text"(byval label as GtkLabel ptr, byval str as const zstring ptr)
 declare sub gtk_label_get(byval label as GtkLabel ptr, byval str as zstring ptr ptr)
 declare function gtk_label_parse_uline(byval label as GtkLabel ptr, byval string as const zstring ptr) as guint
 declare sub _gtk_label_mnemonics_visible_apply_recursively(byval widget as GtkWidget ptr, byval mnemonics_visible as gboolean)
@@ -2717,11 +2695,11 @@ type _GtkAccelLabelClass
 	_gtk_reserved4 as sub()
 end type
 
-#define gtk_accel_label_accelerator_width gtk_accel_label_get_accel_width
 declare function gtk_accel_label_get_type() as GType
 declare function gtk_accel_label_new(byval string as const zstring ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_widget(byval accel_label as GtkAccelLabel ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_width(byval accel_label as GtkAccelLabel ptr) as guint
+declare function gtk_accel_label_accelerator_width alias "gtk_accel_label_get_accel_width"(byval accel_label as GtkAccelLabel ptr) as guint
 declare sub gtk_accel_label_set_accel_widget(byval accel_label as GtkAccelLabel ptr, byval accel_widget as GtkWidget ptr)
 declare sub gtk_accel_label_set_accel_closure(byval accel_label as GtkAccelLabel ptr, byval accel_closure as GClosure ptr)
 declare function gtk_accel_label_refetch(byval accel_label as GtkAccelLabel ptr) as gboolean
@@ -2739,21 +2717,18 @@ type GtkAccelMap as _GtkAccelMap
 type GtkAccelMapClass as _GtkAccelMapClass
 type GtkAccelMapForeach as sub(byval data as gpointer, byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval changed as gboolean)
 
-#ifdef __FB_WIN32__
-	#define gtk_accel_map_load gtk_accel_map_load_utf8
-	#define gtk_accel_map_save gtk_accel_map_save_utf8
-#endif
-
 declare sub gtk_accel_map_add_entry(byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType)
 declare function gtk_accel_map_lookup_entry(byval accel_path as const zstring ptr, byval key as GtkAccelKey ptr) as gboolean
 declare function gtk_accel_map_change_entry(byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval replace as gboolean) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_accel_map_load_utf8(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_save_utf8(byval file_name as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_accel_map_load(byval file_name as const zstring ptr)
 	declare sub gtk_accel_map_save(byval file_name as const zstring ptr)
+#else
+	declare sub gtk_accel_map_load_utf8(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_load alias "gtk_accel_map_load_utf8"(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_save_utf8(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_save alias "gtk_accel_map_save_utf8"(byval file_name as const zstring ptr)
 #endif
 
 declare sub gtk_accel_map_foreach(byval data as gpointer, byval foreach_func as GtkAccelMapForeach)
@@ -3317,8 +3292,8 @@ declare function gtk_binding_set_find(byval set_name as const zstring ptr) as Gt
 declare function gtk_bindings_activate(byval object as GtkObject ptr, byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
 declare function gtk_bindings_activate_event(byval object as GtkObject ptr, byval event as GdkEventKey ptr) as gboolean
 declare function gtk_binding_set_activate(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval object as GtkObject ptr) as gboolean
-#define gtk_binding_entry_add gtk_binding_entry_clear
 declare sub gtk_binding_entry_clear(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
+declare sub gtk_binding_entry_add alias "gtk_binding_entry_clear"(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
 declare function gtk_binding_parse_binding(byval scanner as GScanner ptr) as guint
 declare sub gtk_binding_entry_skip(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
 declare sub gtk_binding_entry_add_signal(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const zstring ptr, byval n_args as guint, ...)
@@ -3526,20 +3501,16 @@ type _GtkImageClass
 	_gtk_reserved4 as sub()
 end type
 
-#ifdef __FB_WIN32__
-	#define gtk_image_new_from_file gtk_image_new_from_file_utf8
-	#define gtk_image_set_from_file gtk_image_set_from_file_utf8
-#endif
-
 declare function gtk_image_get_type() as GType
 declare function gtk_image_new() as GtkWidget ptr
 declare function gtk_image_new_from_pixmap(byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 declare function gtk_image_new_from_image(byval image as GdkImage ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_image_new_from_file_utf8(byval filename as const zstring ptr) as GtkWidget ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_image_new_from_file(byval filename as const zstring ptr) as GtkWidget ptr
+#else
+	declare function gtk_image_new_from_file_utf8(byval filename as const zstring ptr) as GtkWidget ptr
+	declare function gtk_image_new_from_file alias "gtk_image_new_from_file_utf8"(byval filename as const zstring ptr) as GtkWidget ptr
 #endif
 
 declare function gtk_image_new_from_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
@@ -3552,10 +3523,11 @@ declare sub gtk_image_clear(byval image as GtkImage ptr)
 declare sub gtk_image_set_from_pixmap(byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_image_set_from_image(byval image as GtkImage ptr, byval gdk_image as GdkImage ptr, byval mask as GdkBitmap ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_image_set_from_file(byval image as GtkImage ptr, byval filename as const zstring ptr)
+#else
+	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const zstring ptr)
+	declare sub gtk_image_set_from_file alias "gtk_image_set_from_file_utf8"(byval image as GtkImage ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_image_set_from_pixbuf(byval image as GtkImage ptr, byval pixbuf as GdkPixbuf ptr)
@@ -3650,76 +3622,76 @@ declare sub _gtk_button_paint(byval button as GtkButton ptr, byval area as const
 #define __GTK_CALENDAR_H__
 #define __GTK_SIGNAL_H__
 #define __gtk_marshal_MARSHAL_H__
-declare sub gtk_marshal_BOOLEAN__VOID(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__NONE gtk_marshal_BOOLEAN__VOID
-declare sub gtk_marshal_BOOLEAN__POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__POINTER gtk_marshal_BOOLEAN__POINTER
-declare sub gtk_marshal_BOOLEAN__POINTER_POINTER_INT_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__POINTER_POINTER_INT_INT gtk_marshal_BOOLEAN__POINTER_POINTER_INT_INT
-declare sub gtk_marshal_BOOLEAN__POINTER_INT_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__POINTER_INT_INT gtk_marshal_BOOLEAN__POINTER_INT_INT
-declare sub gtk_marshal_BOOLEAN__POINTER_INT_INT_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__POINTER_INT_INT_UINT gtk_marshal_BOOLEAN__POINTER_INT_INT_UINT
-declare sub gtk_marshal_BOOLEAN__POINTER_STRING_STRING_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_BOOL__POINTER_STRING_STRING_POINTER gtk_marshal_BOOLEAN__POINTER_STRING_STRING_POINTER
 
+declare sub gtk_marshal_BOOLEAN__VOID(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__NONE alias "gtk_marshal_BOOLEAN__VOID"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOLEAN__POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__POINTER alias "gtk_marshal_BOOLEAN__POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOLEAN__POINTER_POINTER_INT_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__POINTER_POINTER_INT_INT alias "gtk_marshal_BOOLEAN__POINTER_POINTER_INT_INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOLEAN__POINTER_INT_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__POINTER_INT_INT alias "gtk_marshal_BOOLEAN__POINTER_INT_INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOLEAN__POINTER_INT_INT_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__POINTER_INT_INT_UINT alias "gtk_marshal_BOOLEAN__POINTER_INT_INT_UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOLEAN__POINTER_STRING_STRING_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_BOOL__POINTER_STRING_STRING_POINTER alias "gtk_marshal_BOOLEAN__POINTER_STRING_STRING_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_ENUM__ENUM(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_INT__POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_INT__POINTER_CHAR_CHAR(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-
-#define gtk_marshal_VOID__BOOLEAN g_cclosure_marshal_VOID__BOOLEAN
-#define gtk_marshal_NONE__BOOL gtk_marshal_VOID__BOOLEAN
-#define gtk_marshal_VOID__BOXED g_cclosure_marshal_VOID__BOXED
-#define gtk_marshal_NONE__BOXED gtk_marshal_VOID__BOXED
-#define gtk_marshal_VOID__ENUM g_cclosure_marshal_VOID__ENUM
-#define gtk_marshal_NONE__ENUM gtk_marshal_VOID__ENUM
+declare sub gtk_marshal_VOID__BOOLEAN alias "g_cclosure_marshal_VOID__BOOLEAN"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__BOOL alias "g_cclosure_marshal_VOID__BOOLEAN"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__BOXED alias "g_cclosure_marshal_VOID__BOXED"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__BOXED alias "g_cclosure_marshal_VOID__BOXED"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__ENUM alias "g_cclosure_marshal_VOID__ENUM"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__ENUM alias "g_cclosure_marshal_VOID__ENUM"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__ENUM_FLOAT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__ENUM_FLOAT gtk_marshal_VOID__ENUM_FLOAT
+declare sub gtk_marshal_NONE__ENUM_FLOAT alias "gtk_marshal_VOID__ENUM_FLOAT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__ENUM_FLOAT_BOOLEAN(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__ENUM_FLOAT_BOOL gtk_marshal_VOID__ENUM_FLOAT_BOOLEAN
-#define gtk_marshal_VOID__INT g_cclosure_marshal_VOID__INT
-#define gtk_marshal_NONE__INT gtk_marshal_VOID__INT
+declare sub gtk_marshal_NONE__ENUM_FLOAT_BOOL alias "gtk_marshal_VOID__ENUM_FLOAT_BOOLEAN"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__INT alias "g_cclosure_marshal_VOID__INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__INT alias "g_cclosure_marshal_VOID__INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__INT_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__INT_INT gtk_marshal_VOID__INT_INT
+declare sub gtk_marshal_NONE__INT_INT alias "gtk_marshal_VOID__INT_INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__INT_INT_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__INT_INT_POINTER gtk_marshal_VOID__INT_INT_POINTER
-#define gtk_marshal_VOID__VOID g_cclosure_marshal_VOID__VOID
-#define gtk_marshal_NONE__NONE gtk_marshal_VOID__VOID
-#define gtk_marshal_VOID__OBJECT g_cclosure_marshal_VOID__OBJECT
-#define gtk_marshal_NONE__OBJECT gtk_marshal_VOID__OBJECT
-#define gtk_marshal_VOID__POINTER g_cclosure_marshal_VOID__POINTER
-#define gtk_marshal_NONE__POINTER gtk_marshal_VOID__POINTER
+declare sub gtk_marshal_NONE__INT_INT_POINTER alias "gtk_marshal_VOID__INT_INT_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__VOID alias "g_cclosure_marshal_VOID__VOID"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__NONE alias "g_cclosure_marshal_VOID__VOID"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__OBJECT alias "g_cclosure_marshal_VOID__OBJECT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__OBJECT alias "g_cclosure_marshal_VOID__OBJECT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__POINTER alias "g_cclosure_marshal_VOID__POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__POINTER alias "g_cclosure_marshal_VOID__POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_INT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_INT gtk_marshal_VOID__POINTER_INT
+declare sub gtk_marshal_NONE__POINTER_INT alias "gtk_marshal_VOID__POINTER_INT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_POINTER gtk_marshal_VOID__POINTER_POINTER
+declare sub gtk_marshal_NONE__POINTER_POINTER alias "gtk_marshal_VOID__POINTER_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_POINTER_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_POINTER_POINTER gtk_marshal_VOID__POINTER_POINTER_POINTER
+declare sub gtk_marshal_NONE__POINTER_POINTER_POINTER alias "gtk_marshal_VOID__POINTER_POINTER_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_STRING_STRING(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_STRING_STRING gtk_marshal_VOID__POINTER_STRING_STRING
+declare sub gtk_marshal_NONE__POINTER_STRING_STRING alias "gtk_marshal_VOID__POINTER_STRING_STRING"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_UINT gtk_marshal_VOID__POINTER_UINT
+declare sub gtk_marshal_NONE__POINTER_UINT alias "gtk_marshal_VOID__POINTER_UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_UINT_ENUM(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_UINT_ENUM gtk_marshal_VOID__POINTER_UINT_ENUM
+declare sub gtk_marshal_NONE__POINTER_UINT_ENUM alias "gtk_marshal_VOID__POINTER_UINT_ENUM"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_POINTER_UINT_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_POINTER_UINT_UINT gtk_marshal_VOID__POINTER_POINTER_UINT_UINT
+declare sub gtk_marshal_NONE__POINTER_POINTER_UINT_UINT alias "gtk_marshal_VOID__POINTER_POINTER_UINT_UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_INT_INT_POINTER_UINT_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_INT_INT_POINTER_UINT_UINT gtk_marshal_VOID__POINTER_INT_INT_POINTER_UINT_UINT
+declare sub gtk_marshal_NONE__POINTER_INT_INT_POINTER_UINT_UINT alias "gtk_marshal_VOID__POINTER_INT_INT_POINTER_UINT_UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__POINTER_UINT_UINT(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__POINTER_UINT_UINT gtk_marshal_VOID__POINTER_UINT_UINT
-#define gtk_marshal_VOID__STRING g_cclosure_marshal_VOID__STRING
-#define gtk_marshal_NONE__STRING gtk_marshal_VOID__STRING
+declare sub gtk_marshal_NONE__POINTER_UINT_UINT alias "gtk_marshal_VOID__POINTER_UINT_UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__STRING alias "g_cclosure_marshal_VOID__STRING"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__STRING alias "g_cclosure_marshal_VOID__STRING"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__STRING_INT_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__STRING_INT_POINTER gtk_marshal_VOID__STRING_INT_POINTER
-#define gtk_marshal_VOID__UINT g_cclosure_marshal_VOID__UINT
-#define gtk_marshal_NONE__UINT gtk_marshal_VOID__UINT
+declare sub gtk_marshal_NONE__STRING_INT_POINTER alias "gtk_marshal_VOID__STRING_INT_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_VOID__UINT alias "g_cclosure_marshal_VOID__UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_marshal_NONE__UINT alias "g_cclosure_marshal_VOID__UINT"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__UINT_POINTER_UINT_ENUM_ENUM_POINTER(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__UINT_POINTER_UINT_ENUM_ENUM_POINTER gtk_marshal_VOID__UINT_POINTER_UINT_ENUM_ENUM_POINTER
+declare sub gtk_marshal_NONE__UINT_POINTER_UINT_ENUM_ENUM_POINTER alias "gtk_marshal_VOID__UINT_POINTER_UINT_ENUM_ENUM_POINTER"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__UINT_POINTER_UINT_UINT_ENUM(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__UINT_POINTER_UINT_UINT_ENUM gtk_marshal_VOID__UINT_POINTER_UINT_UINT_ENUM
+declare sub gtk_marshal_NONE__UINT_POINTER_UINT_UINT_ENUM alias "gtk_marshal_VOID__UINT_POINTER_UINT_UINT_ENUM"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
 declare sub gtk_marshal_VOID__UINT_STRING(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
-#define gtk_marshal_NONE__UINT_STRING gtk_marshal_VOID__UINT_STRING
-#define gtk_signal_default_marshaller g_cclosure_marshal_VOID__VOID
+declare sub gtk_marshal_NONE__UINT_STRING alias "gtk_marshal_VOID__UINT_STRING"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+declare sub gtk_signal_default_marshaller alias "g_cclosure_marshal_VOID__VOID"(byval closure as GClosure ptr, byval return_value as GValue ptr, byval n_param_values as guint, byval param_values as const GValue ptr, byval invocation_hint as gpointer, byval marshal_data as gpointer)
+
 #define GTK_SIGNAL_OFFSET G_STRUCT_OFFSET
 #define gtk_signal_lookup(name, object_type) g_signal_lookup((name), (object_type))
 #define gtk_signal_name(signal_id) g_signal_name(signal_id)
@@ -4551,8 +4523,8 @@ declare function gtk_toggle_button_get_active(byval toggle_button as GtkToggleBu
 declare sub gtk_toggle_button_toggled(byval toggle_button as GtkToggleButton ptr)
 declare sub gtk_toggle_button_set_inconsistent(byval toggle_button as GtkToggleButton ptr, byval setting as gboolean)
 declare function gtk_toggle_button_get_inconsistent(byval toggle_button as GtkToggleButton ptr) as gboolean
+declare sub gtk_toggle_button_set_state alias "gtk_toggle_button_set_active"(byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)
 
-#define gtk_toggle_button_set_state gtk_toggle_button_set_active
 #define GTK_TYPE_CHECK_BUTTON gtk_check_button_get_type()
 #define GTK_CHECK_BUTTON(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_CHECK_BUTTON, GtkCheckButton)
 #define GTK_CHECK_BUTTON_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_CHECK_BUTTON, GtkCheckButtonClass)
@@ -4676,7 +4648,7 @@ declare sub _gtk_menu_item_popup_submenu(byval menu_item as GtkWidget ptr, byval
 declare sub _gtk_menu_item_popdown_submenu(byval menu_item as GtkWidget ptr)
 declare sub gtk_menu_item_remove_submenu(byval menu_item as GtkMenuItem ptr)
 
-#define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), TRUE)
+#define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified((menu_item), CTRUE)
 #define GTK_TYPE_CHECK_MENU_ITEM gtk_check_menu_item_get_type()
 #define GTK_CHECK_MENU_ITEM(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_CHECK_MENU_ITEM, GtkCheckMenuItem)
 #define GTK_CHECK_MENU_ITEM_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_CHECK_MENU_ITEM, GtkCheckMenuItemClass)
@@ -4716,8 +4688,8 @@ declare function gtk_check_menu_item_get_inconsistent(byval check_menu_item as G
 declare sub gtk_check_menu_item_set_draw_as_radio(byval check_menu_item as GtkCheckMenuItem ptr, byval draw_as_radio as gboolean)
 declare function gtk_check_menu_item_get_draw_as_radio(byval check_menu_item as GtkCheckMenuItem ptr) as gboolean
 declare sub gtk_check_menu_item_set_show_toggle(byval menu_item as GtkCheckMenuItem ptr, byval always as gboolean)
+declare sub gtk_check_menu_item_set_state alias "gtk_check_menu_item_set_active"(byval check_menu_item as GtkCheckMenuItem ptr, byval is_active as gboolean)
 
-#define gtk_check_menu_item_set_state gtk_check_menu_item_set_active
 #define __GTK_CLIPBOARD_H__
 #define __GTK_SELECTION_H__
 #define __GTK_TEXT_ITER_H__
@@ -6253,41 +6225,36 @@ declare sub gtk_file_chooser_set_create_folders(byval chooser as GtkFileChooser 
 declare function gtk_file_chooser_get_create_folders(byval chooser as GtkFileChooser ptr) as gboolean
 declare sub gtk_file_chooser_set_current_name(byval chooser as GtkFileChooser ptr, byval name as const zstring ptr)
 
-#ifdef __FB_WIN32__
-	#define gtk_file_chooser_get_filename gtk_file_chooser_get_filename_utf8
-	#define gtk_file_chooser_set_filename gtk_file_chooser_set_filename_utf8
-	#define gtk_file_chooser_select_filename gtk_file_chooser_select_filename_utf8
-	#define gtk_file_chooser_unselect_filename gtk_file_chooser_unselect_filename_utf8
-	#define gtk_file_chooser_get_filenames gtk_file_chooser_get_filenames_utf8
-	#define gtk_file_chooser_set_current_folder gtk_file_chooser_set_current_folder_utf8
-	#define gtk_file_chooser_get_current_folder gtk_file_chooser_get_current_folder_utf8
-	#define gtk_file_chooser_get_preview_filename gtk_file_chooser_get_preview_filename_utf8
-	#define gtk_file_chooser_add_shortcut_folder gtk_file_chooser_add_shortcut_folder_utf8
-	#define gtk_file_chooser_remove_shortcut_folder gtk_file_chooser_remove_shortcut_folder_utf8
-	#define gtk_file_chooser_list_shortcut_folders gtk_file_chooser_list_shortcut_folders_utf8
-
-	declare function gtk_file_chooser_get_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-	declare function gtk_file_chooser_set_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_select_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare sub gtk_file_chooser_unselect_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
 	declare function gtk_file_chooser_set_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_select_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare sub gtk_file_chooser_unselect_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
+#else
+	declare function gtk_file_chooser_get_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_get_filename alias "gtk_file_chooser_get_filename_utf8"(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_set_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_set_filename alias "gtk_file_chooser_set_filename_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_select_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_select_filename alias "gtk_file_chooser_select_filename_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare sub gtk_file_chooser_unselect_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
+	declare sub gtk_file_chooser_unselect_filename alias "gtk_file_chooser_unselect_filename_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_file_chooser_select_all(byval chooser as GtkFileChooser ptr)
 declare sub gtk_file_chooser_unselect_all(byval chooser as GtkFileChooser ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_get_filenames_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
-	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_filenames(byval chooser as GtkFileChooser ptr) as GSList ptr
 	declare function gtk_file_chooser_set_current_folder(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_get_current_folder(byval chooser as GtkFileChooser ptr) as zstring ptr
+#else
+	declare function gtk_file_chooser_get_filenames_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
+	declare function gtk_file_chooser_get_filenames alias "gtk_file_chooser_get_filenames_utf8"(byval chooser as GtkFileChooser ptr) as GSList ptr
+	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_set_current_folder alias "gtk_file_chooser_set_current_folder_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
+	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_get_current_folder alias "gtk_file_chooser_get_current_folder_utf8"(byval chooser as GtkFileChooser ptr) as zstring ptr
 #endif
 
 declare function gtk_file_chooser_get_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
@@ -6311,10 +6278,11 @@ declare function gtk_file_chooser_get_preview_widget_active(byval chooser as Gtk
 declare sub gtk_file_chooser_set_use_preview_label(byval chooser as GtkFileChooser ptr, byval use_label as gboolean)
 declare function gtk_file_chooser_get_use_preview_label(byval chooser as GtkFileChooser ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_get_preview_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_preview_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
+#else
+	declare function gtk_file_chooser_get_preview_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_get_preview_filename alias "gtk_file_chooser_get_preview_filename_utf8"(byval chooser as GtkFileChooser ptr) as zstring ptr
 #endif
 
 declare function gtk_file_chooser_get_preview_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
@@ -6327,14 +6295,17 @@ declare function gtk_file_chooser_list_filters(byval chooser as GtkFileChooser p
 declare sub gtk_file_chooser_set_filter(byval chooser as GtkFileChooser ptr, byval filter as GtkFileFilter ptr)
 declare function gtk_file_chooser_get_filter(byval chooser as GtkFileChooser ptr) as GtkFileFilter ptr
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_chooser_add_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	declare function gtk_file_chooser_remove_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	declare function gtk_file_chooser_list_shortcut_folders_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_chooser_add_shortcut_folder(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
 	declare function gtk_file_chooser_remove_shortcut_folder(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
 	declare function gtk_file_chooser_list_shortcut_folders(byval chooser as GtkFileChooser ptr) as GSList ptr
+#else
+	declare function gtk_file_chooser_add_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_add_shortcut_folder alias "gtk_file_chooser_add_shortcut_folder_utf8"(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_remove_shortcut_folder_utf8(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_remove_shortcut_folder alias "gtk_file_chooser_remove_shortcut_folder_utf8"(byval chooser as GtkFileChooser ptr, byval folder as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function gtk_file_chooser_list_shortcut_folders_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
+	declare function gtk_file_chooser_list_shortcut_folders alias "gtk_file_chooser_list_shortcut_folders_utf8"(byval chooser as GtkFileChooser ptr) as GSList ptr
 #endif
 
 declare function gtk_file_chooser_add_shortcut_folder_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
@@ -7116,11 +7087,6 @@ type _GtkIconFactoryClass
 	_gtk_reserved4 as sub()
 end type
 
-#ifdef __FB_WIN32__
-	#define gtk_icon_source_set_filename gtk_icon_source_set_filename_utf8
-	#define gtk_icon_source_get_filename gtk_icon_source_get_filename_utf8
-#endif
-
 declare function gtk_icon_factory_get_type() as GType
 declare function gtk_icon_factory_new() as GtkIconFactory ptr
 declare sub gtk_icon_factory_add(byval factory as GtkIconFactory ptr, byval stock_id as const zstring ptr, byval icon_set as GtkIconSet ptr)
@@ -7148,19 +7114,21 @@ declare function gtk_icon_source_new() as GtkIconSource ptr
 declare function gtk_icon_source_copy(byval source as const GtkIconSource ptr) as GtkIconSource ptr
 declare sub gtk_icon_source_free(byval source as GtkIconSource ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_icon_source_set_filename(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
+#else
+	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
+	declare sub gtk_icon_source_set_filename alias "gtk_icon_source_set_filename_utf8"(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
 #endif
 
 declare sub gtk_icon_source_set_icon_name(byval source as GtkIconSource ptr, byval icon_name as const zstring ptr)
 declare sub gtk_icon_source_set_pixbuf(byval source as GtkIconSource ptr, byval pixbuf as GdkPixbuf ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_icon_source_get_filename(byval source as const GtkIconSource ptr) as const zstring ptr
+#else
+	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const zstring ptr
+	declare function gtk_icon_source_get_filename alias "gtk_icon_source_get_filename_utf8"(byval source as const GtkIconSource ptr) as const zstring ptr
 #endif
 
 declare function gtk_icon_source_get_icon_name(byval source as const GtkIconSource ptr) as const zstring ptr
@@ -7223,31 +7191,26 @@ enum
 end enum
 
 declare function gtk_icon_theme_error_quark() as GQuark
-
-#ifdef __FB_WIN32__
-	#define gtk_icon_theme_set_search_path gtk_icon_theme_set_search_path_utf8
-	#define gtk_icon_theme_get_search_path gtk_icon_theme_get_search_path_utf8
-	#define gtk_icon_theme_append_search_path gtk_icon_theme_append_search_path_utf8
-	#define gtk_icon_theme_prepend_search_path gtk_icon_theme_prepend_search_path_utf8
-	#define gtk_icon_info_get_filename gtk_icon_info_get_filename_utf8
-#endif
-
 declare function gtk_icon_theme_get_type() as GType
 declare function gtk_icon_theme_new() as GtkIconTheme ptr
 declare function gtk_icon_theme_get_default() as GtkIconTheme ptr
 declare function gtk_icon_theme_get_for_screen(byval screen as GdkScreen ptr) as GtkIconTheme ptr
 declare sub gtk_icon_theme_set_screen(byval icon_theme as GtkIconTheme ptr, byval screen as GdkScreen ptr)
 
-#ifdef __FB_WIN32__
-	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
-	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_icon_theme_set_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
 	declare sub gtk_icon_theme_get_search_path(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
 	declare sub gtk_icon_theme_append_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
 	declare sub gtk_icon_theme_prepend_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+#else
+	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_set_search_path alias "gtk_icon_theme_set_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_get_search_path alias "gtk_icon_theme_get_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_append_search_path alias "gtk_icon_theme_append_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_prepend_search_path alias "gtk_icon_theme_prepend_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
 #endif
 
 declare sub gtk_icon_theme_set_custom_theme(byval icon_theme as GtkIconTheme ptr, byval theme_name as const zstring ptr)
@@ -7268,10 +7231,11 @@ declare sub gtk_icon_info_free(byval icon_info as GtkIconInfo ptr)
 declare function gtk_icon_info_new_for_pixbuf(byval icon_theme as GtkIconTheme ptr, byval pixbuf as GdkPixbuf ptr) as GtkIconInfo ptr
 declare function gtk_icon_info_get_base_size(byval icon_info as GtkIconInfo ptr) as gint
 
-#ifdef __FB_WIN32__
-	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_icon_info_get_filename(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+#else
+	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+	declare function gtk_icon_info_get_filename alias "gtk_icon_info_get_filename_utf8"(byval icon_info as GtkIconInfo ptr) as const zstring ptr
 #endif
 
 declare function gtk_icon_info_get_builtin_pixbuf(byval icon_info as GtkIconInfo ptr) as GdkPixbuf ptr
@@ -7662,13 +7626,13 @@ declare sub gtk_link_button_set_visited(byval link_button as GtkLinkButton ptr, 
 #define __GTK_MAIN_H__
 #define GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
 #define GTK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
-#define GTK_PRIORITY_HIGH G_PRIORITY_HIGH
+const GTK_PRIORITY_HIGH = G_PRIORITY_HIGH
 #define GTK_PRIORITY_INTERNAL GTK_PRIORITY_REDRAW
-#define GTK_PRIORITY_DEFAULT G_PRIORITY_DEFAULT_IDLE
-#define GTK_PRIORITY_LOW G_PRIORITY_LOW
+const GTK_PRIORITY_DEFAULT = G_PRIORITY_DEFAULT_IDLE
+const GTK_PRIORITY_LOW = G_PRIORITY_LOW
 type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event as GdkEventKey ptr, byval func_data as gpointer) as gint
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	extern import gtk_major_version_ alias "gtk_major_version" as const guint
 	extern import gtk_minor_version_ alias "gtk_minor_version" as const guint
 	extern import gtk_micro_version_ alias "gtk_micro_version" as const guint
@@ -7685,18 +7649,18 @@ type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event
 declare function gtk_check_version_ alias "gtk_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const zstring ptr
 declare function gtk_parse_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 
-#ifdef __FB_WIN32__
-	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
-	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_init(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
 	declare function gtk_init_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
+#else
+	declare sub gtk_init_ alias "gtk_init"(byval argc as long ptr, byval argv as zstring ptr ptr ptr)
+	declare function gtk_init_check_ alias "gtk_init_check"(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 #endif
 
 declare function gtk_init_with_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval parameter_string as const zstring ptr, byval entries as GOptionEntry ptr, byval translation_domain as const zstring ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_get_option_group(byval open_default_display as gboolean) as GOptionGroup ptr
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	declare sub gtk_init_abi_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval num_checks as long, byval sizeof_GtkWindow as uinteger, byval sizeof_GtkBox as uinteger)
 	declare function gtk_init_check_abi_check(byval argc as long ptr, byval argv as zstring ptr ptr ptr, byval num_checks as long, byval sizeof_GtkWindow as uinteger, byval sizeof_GtkBox as uinteger) as gboolean
 	#define gtk_init(argc, argv) gtk_init_abi_check(argc, argv, 2, sizeof(GtkWindow), sizeof(GtkBox))
@@ -8219,9 +8183,9 @@ declare function gtk_notebook_get_tab_detachable(byval notebook as GtkNotebook p
 declare sub gtk_notebook_set_tab_detachable(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval detachable as gboolean)
 declare function gtk_notebook_get_action_widget(byval notebook as GtkNotebook ptr, byval pack_type as GtkPackType) as GtkWidget ptr
 declare sub gtk_notebook_set_action_widget(byval notebook as GtkNotebook ptr, byval widget as GtkWidget ptr, byval pack_type as GtkPackType)
+declare function gtk_notebook_current_page alias "gtk_notebook_get_current_page"(byval notebook as GtkNotebook ptr) as gint
+declare sub gtk_notebook_set_page alias "gtk_notebook_set_current_page"(byval notebook as GtkNotebook ptr, byval page_num as gint)
 
-#define gtk_notebook_current_page gtk_notebook_get_current_page
-#define gtk_notebook_set_page gtk_notebook_set_current_page
 #define __GTK_OFFSCREEN_WINDOW_H__
 #define GTK_TYPE_OFFSCREEN_WINDOW gtk_offscreen_window_get_type()
 #define GTK_OFFSCREEN_WINDOW(o) G_TYPE_CHECK_INSTANCE_CAST((o), GTK_TYPE_OFFSCREEN_WINDOW, GtkOffscreenWindow)
@@ -8911,8 +8875,8 @@ declare function gtk_radio_button_new_with_mnemonic(byval group as GSList ptr, b
 declare function gtk_radio_button_new_with_mnemonic_from_widget(byval radio_group_member as GtkRadioButton ptr, byval label as const zstring ptr) as GtkWidget ptr
 declare function gtk_radio_button_get_group(byval radio_button as GtkRadioButton ptr) as GSList ptr
 declare sub gtk_radio_button_set_group(byval radio_button as GtkRadioButton ptr, byval group as GSList ptr)
+declare function gtk_radio_button_group alias "gtk_radio_button_get_group"(byval radio_button as GtkRadioButton ptr) as GSList ptr
 
-#define gtk_radio_button_group gtk_radio_button_get_group
 #define __GTK_RADIO_MENU_ITEM_H__
 #define GTK_TYPE_RADIO_MENU_ITEM gtk_radio_menu_item_get_type()
 #define GTK_RADIO_MENU_ITEM(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItem)
@@ -8945,8 +8909,8 @@ declare function gtk_radio_menu_item_new_with_mnemonic_from_widget(byval group a
 declare function gtk_radio_menu_item_new_with_label_from_widget(byval group as GtkRadioMenuItem ptr, byval label as const zstring ptr) as GtkWidget ptr
 declare function gtk_radio_menu_item_get_group(byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
 declare sub gtk_radio_menu_item_set_group(byval radio_menu_item as GtkRadioMenuItem ptr, byval group as GSList ptr)
+declare function gtk_radio_menu_item_group alias "gtk_radio_menu_item_get_group"(byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
 
-#define gtk_radio_menu_item_group gtk_radio_menu_item_get_group
 #define __GTK_RADIO_TOOL_BUTTON_H__
 #define __GTK_TOGGLE_TOOL_BUTTON_H__
 #define GTK_TYPE_TOGGLE_TOOL_BUTTON gtk_toggle_tool_button_get_type()
@@ -9618,8 +9582,8 @@ declare function gtk_spin_button_get_wrap(byval spin_button as GtkSpinButton ptr
 declare sub gtk_spin_button_set_snap_to_ticks(byval spin_button as GtkSpinButton ptr, byval snap_to_ticks as gboolean)
 declare function gtk_spin_button_get_snap_to_ticks(byval spin_button as GtkSpinButton ptr) as gboolean
 declare sub gtk_spin_button_update(byval spin_button as GtkSpinButton ptr)
+declare function gtk_spin_button_get_value_as_float alias "gtk_spin_button_get_value"(byval spin_button as GtkSpinButton ptr) as gdouble
 
-#define gtk_spin_button_get_value_as_float gtk_spin_button_get_value
 #define __GTK_SPINNER_H__
 #define GTK_TYPE_SPINNER gtk_spinner_get_type()
 #define GTK_SPINNER(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_SPINNER, GtkSpinner)
@@ -10868,10 +10832,6 @@ enum
 	GTK_UI_MANAGER_POPUP_WITH_ACCELS = 1 shl 9
 end enum
 
-#ifdef __FB_WIN32__
-	#define gtk_ui_manager_add_ui_from_file gtk_ui_manager_add_ui_from_file_utf8
-#endif
-
 declare function gtk_ui_manager_get_type() as GType
 declare function gtk_ui_manager_new() as GtkUIManager ptr
 declare sub gtk_ui_manager_set_add_tearoffs(byval self as GtkUIManager ptr, byval add_tearoffs as gboolean)
@@ -10885,10 +10845,11 @@ declare function gtk_ui_manager_get_toplevels(byval self as GtkUIManager ptr, by
 declare function gtk_ui_manager_get_action(byval self as GtkUIManager ptr, byval path as const zstring ptr) as GtkAction ptr
 declare function gtk_ui_manager_add_ui_from_string(byval self as GtkUIManager ptr, byval buffer as const zstring ptr, byval length as gssize, byval error as GError ptr ptr) as guint
 
-#ifdef __FB_WIN32__
-	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_ui_manager_add_ui_from_file(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
+#else
+	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
+	declare function gtk_ui_manager_add_ui_from_file alias "gtk_ui_manager_add_ui_from_file_utf8"(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
 #endif
 
 declare sub gtk_ui_manager_add_ui(byval self as GtkUIManager ptr, byval merge_id as guint, byval path as const zstring ptr, byval name as const zstring ptr, byval action as const zstring ptr, byval type as GtkUIManagerItemType, byval top as gboolean)
@@ -11083,16 +11044,8 @@ end enum
 #define GTK_IS_CLIST_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_CLIST)
 #define GTK_CLIST_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_CLIST, GtkCListClass)
 #define GTK_CLIST_FLAGS(clist) GTK_CLIST(clist)->flags
-#macro GTK_CLIST_SET_FLAG(clist, flag)
-	scope
-		GTK_CLIST_FLAGS(clist) or= (GTK_##flag)
-	end scope
-#endmacro
-#macro GTK_CLIST_UNSET_FLAG(clist, flag)
-	scope
-		GTK_CLIST_FLAGS(clist) and= not (GTK_##flag)
-	end scope
-#endmacro
+#define GTK_CLIST_SET_FLAG(clist, flag) scope : GTK_CLIST_FLAGS(clist) or= GTK_##flag : end scope
+#define GTK_CLIST_UNSET_FLAG(clist, flag) scope : GTK_CLIST_FLAGS(clist) and= not GTK_##flag : end scope
 #define GTK_CLIST_IN_DRAG(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_IN_DRAG)
 #define GTK_CLIST_ROW_HEIGHT_SET(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_ROW_HEIGHT_SET)
 #define GTK_CLIST_SHOW_TITLES(clist) (GTK_CLIST_FLAGS(clist) and GTK_CLIST_SHOW_TITLES)
@@ -11685,31 +11638,28 @@ type _GtkFileSelectionClass
 	_gtk_reserved4 as sub()
 end type
 
-#ifdef __FB_WIN32__
-	#define gtk_file_selection_get_filename gtk_file_selection_get_filename_utf8
-	#define gtk_file_selection_set_filename gtk_file_selection_set_filename_utf8
-	#define gtk_file_selection_get_selections gtk_file_selection_get_selections_utf8
-#endif
-
 declare function gtk_file_selection_get_type() as GType
 declare function gtk_file_selection_new(byval title as const zstring ptr) as GtkWidget ptr
 
-#ifdef __FB_WIN32__
-	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
-	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const zstring ptr
-#else
+#ifdef __FB_UNIX__
 	declare sub gtk_file_selection_set_filename(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
 	declare function gtk_file_selection_get_filename(byval filesel as GtkFileSelection ptr) as const zstring ptr
+#else
+	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
+	declare sub gtk_file_selection_set_filename alias "gtk_file_selection_set_filename_utf8"(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
+	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const zstring ptr
+	declare function gtk_file_selection_get_filename alias "gtk_file_selection_get_filename_utf8"(byval filesel as GtkFileSelection ptr) as const zstring ptr
 #endif
 
 declare sub gtk_file_selection_complete(byval filesel as GtkFileSelection ptr, byval pattern as const zstring ptr)
 declare sub gtk_file_selection_show_fileop_buttons(byval filesel as GtkFileSelection ptr)
 declare sub gtk_file_selection_hide_fileop_buttons(byval filesel as GtkFileSelection ptr)
 
-#ifdef __FB_WIN32__
-	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
-#else
+#ifdef __FB_UNIX__
 	declare function gtk_file_selection_get_selections(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+#else
+	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+	declare function gtk_file_selection_get_selections alias "gtk_file_selection_get_selections_utf8"(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
 #endif
 
 declare sub gtk_file_selection_set_select_multiple(byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)

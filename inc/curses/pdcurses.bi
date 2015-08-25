@@ -30,6 +30,7 @@
 #endif
 
 '' The following symbols have been renamed:
+''     constant TRUE => CTRUE
 ''     constant ERR => ERR_
 ''     typedef WINDOW => WINDOW_
 ''     struct SCREEN => SCREEN_
@@ -48,8 +49,15 @@ const XOPEN = 1
 const SYSVcurses = 1
 const BSDcurses = 1
 const CHTYPE_LONG = 1
-const FALSE = 0
-const TRUE = 1
+#ifndef FALSE
+	const FALSE = 0
+#endif
+#ifndef CTRUE
+	const CTRUE = 1
+#endif
+#ifndef TRUE
+	const TRUE = 1
+#endif
 const ERR_ = -1
 const OK = 0
 type bool as ubyte
@@ -137,9 +145,9 @@ type MEVENT
 	bstate as mmask_t
 end type
 
-#define BUTTON_SHIFT PDC_BUTTON_SHIFT
-#define BUTTON_CONTROL PDC_BUTTON_CONTROL
-#define BUTTON_ALT PDC_BUTTON_ALT
+const BUTTON_SHIFT = PDC_BUTTON_SHIFT
+const BUTTON_CONTROL = PDC_BUTTON_CONTROL
+const BUTTON_ALT = PDC_BUTTON_ALT
 
 type _win
 	_cury as long
@@ -603,8 +611,8 @@ const KEY_ALT_R = &h221
 const KEY_RESIZE = &h222
 const KEY_SUP = &h223
 const KEY_SDOWN = &h224
-#define KEY_MIN KEY_BREAK
-#define KEY_MAX KEY_SDOWN
+const KEY_MIN = KEY_BREAK
+const KEY_MAX = KEY_SDOWN
 #define KEY_F(n) (KEY_F0 + (n))
 
 declare function addch(byval as const chtype) as long
@@ -1042,14 +1050,34 @@ declare function PDC_save_key_modifiers(byval as bool) as long
 #define ungetch(ch) PDC_ungetch(ch)
 #define COLOR_PAIR(n) ((cast(chtype, (n)) shl PDC_COLOR_SHIFT) and A_COLOR)
 #define PAIR_NUMBER(n) (((n) and A_COLOR) shr PDC_COLOR_SHIFT)
-#define getbegyx(w, y, x) y = getbegy(w) : x = getbegx(w))
-#define getmaxyx(w, y, x) y = getmaxy(w) : x = getmaxx(w))
-#define getparyx(w, y, x) y = getpary(w) : x = getparx(w))
-#define getyx(w, y, x) y = getcury(w) : x = getcurx(w))
+#macro getbegyx(w, y, x)
+	scope
+		y = getbegy(w)
+		x = getbegx(w)
+	end scope
+#endmacro
+#macro getmaxyx(w, y, x)
+	scope
+		y = getmaxy(w)
+		x = getmaxx(w)
+	end scope
+#endmacro
+#macro getparyx(w, y, x)
+	scope
+		y = getpary(w)
+		x = getparx(w)
+	end scope
+#endmacro
+#macro getyx(w, y, x)
+	scope
+		y = getcury(w)
+		x = getcurx(w)
+	end scope
+#endmacro
 #macro getsyx(y, x)
-	if (curscr->_leaveit) then
-		(y) = -1
+	if curscr->_leaveit then
 		(x) = -1
+		(y) = -1
 	else
 		getyx(curscr, (y), (x))
 	end if

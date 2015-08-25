@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -21,8 +21,18 @@
 #define GlobalLockPtr(lp) cast(WINBOOL, GlobalLock(GlobalPtrHandle(lp)))
 #define GlobalUnlockPtr(lp) GlobalUnlock(GlobalPtrHandle(lp))
 #define GlobalAllocPtr(flags, cb) GlobalLock(GlobalAlloc((flags), (cb)))
-'' TODO: #define GlobalReAllocPtr(lp,cbNew,flags) (GlobalUnlockPtr(lp),GlobalLock(GlobalReAlloc(GlobalPtrHandle(lp) ,(cbNew),(flags))))
-'' TODO: #define GlobalFreePtr(lp) (GlobalUnlockPtr(lp),(WINBOOL)(ULONG_PTR)GlobalFree(GlobalPtrHandle(lp)))
+#macro GlobalReAllocPtr(lp, cbNew, flags)
+	scope
+		GlobalUnlockPtr(lp)
+		GlobalLock(GlobalReAlloc(GlobalPtrHandle(lp), (cbNew), (flags)))
+	end scope
+#endmacro
+#macro GlobalFreePtr(lp)
+	scope
+		GlobalUnlockPtr(lp)
+		cast(WINBOOL, cast(ULONG_PTR, GlobalFree(GlobalPtrHandle(lp))))
+	end scope
+#endmacro
 #define DeletePen(hpen) DeleteObject(cast(HGDIOBJ, cast(HPEN, (hpen))))
 #define SelectPen(hdc, hpen) cast(HPEN, SelectObject((hdc), cast(HGDIOBJ, cast(HPEN, (hpen)))))
 #define GetStockPen(i) cast(HPEN, GetStockObject(i))
@@ -64,10 +74,20 @@
 #define IsRButtonDown() (GetKeyState(VK_RBUTTON) < 0)
 #define IsMButtonDown() (GetKeyState(VK_MBUTTON) < 0)
 #define SubclassDialog(hwndDlg, lpfn) SetWindowLongPtr(hwndDlg, DWLP_DLGPROC, cast(LPARAM, (lpfn)))
-
 '' TODO: #define SetDlgMsgResult(hwnd,msg,result) (((msg)==WM_CTLCOLORMSGBOX || (msg)==WM_CTLCOLOREDIT || (msg)==WM_CTLCOLORLISTBOX || (msg)==WM_CTLCOLORBTN || (msg)==WM_CTLCOLORDLG || (msg)==WM_CTLCOLORSCROLLBAR || (msg)==WM_CTLCOLORSTATIC || (msg)==WM_COMPAREITEM || (msg)==WM_VKEYTOITEM || (msg)==WM_CHARTOITEM || (msg)==WM_QUERYDRAGICON || (msg)==WM_INITDIALOG) ? (WINBOOL)(result) : (SetWindowLongPtr((hwnd),DWLP_MSGRESULT,(LPARAM)(LRESULT)(result)),TRUE))
-'' TODO: #define DefDlgProcEx(hwnd,msg,wParam,lParam,pfRecursion) (*(pfRecursion) = TRUE,DefDlgProc(hwnd,msg,wParam,lParam))
-'' TODO: #define CheckDefDlgRecursion(pfRecursion) if (*(pfRecursion)) { *(pfRecursion) = FALSE; return FALSE; }
+#macro DefDlgProcEx(hwnd, msg, wParam, lParam, pfRecursion)
+	scope
+		(*(pfRecursion)) = CTRUE
+		DefDlgProc(hwnd, msg, wParam, lParam)
+	end scope
+#endmacro
+#macro CheckDefDlgRecursion(pfRecursion)
+	if *(pfRecursion) then
+		(*(pfRecursion)) = FALSE
+		return FALSE
+	end if
+#endmacro
+
 '' TODO: #define HANDLE_MSG(hwnd,message,fn) case (message): return HANDLE_##message((hwnd),(wParam),(lParam),(fn))
 '' TODO: #define HANDLE_WM_COMPACTING(hwnd,wParam,lParam,fn) ((fn)((hwnd),(UINT)(wParam)),(LRESULT)0)
 '' TODO: #define FORWARD_WM_COMPACTING(hwnd,compactRatio,fn) (void)(fn)((hwnd),WM_COMPACTING,(WPARAM)(UINT)(compactRatio),(LPARAM)0)
@@ -355,17 +375,22 @@
 #define Button_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)
 #define Button_SetText(hwndCtl, lpsz) SetWindowText((hwndCtl), (lpsz))
 #define Button_GetCheck(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), BM_GETCHECK, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define Button_SetCheck(hwndCtl, check) SNDMSG((hwndCtl), BM_SETCHECK, cast(WPARAM, clng((check))), cast(LPARAM, 0))
+#define Button_SetCheck(hwndCtl, check) SNDMSG((hwndCtl), BM_SETCHECK, cast(WPARAM, clng(check)), cast(LPARAM, 0))
 #define Button_GetState(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), BM_GETSTATE, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define Button_SetState(hwndCtl, state) cast(UINT, cast(DWORD, SNDMSG((hwndCtl), BM_SETSTATE, cast(WPARAM, clng((state))), cast(LPARAM, 0))))
-#define Button_SetStyle(hwndCtl, style, fRedraw) SNDMSG((hwndCtl), BM_SETSTYLE, cast(WPARAM, LOWORD(style)), MAKELPARAM(iif((fRedraw), TRUE, FALSE), 0))
+#define Button_SetState(hwndCtl, state) cast(UINT, cast(DWORD, SNDMSG((hwndCtl), BM_SETSTATE, cast(WPARAM, clng(state)), cast(LPARAM, 0))))
+#define Button_SetStyle(hwndCtl, style, fRedraw) SNDMSG((hwndCtl), BM_SETSTYLE, cast(WPARAM, LOWORD(style)), MAKELPARAM(iif((fRedraw), CTRUE, FALSE), 0))
 #define Edit_Enable(hwndCtl, fEnable) EnableWindow((hwndCtl), (fEnable))
 #define Edit_GetText(hwndCtl, lpch, cchMax) GetWindowText((hwndCtl), (lpch), (cchMax))
 #define Edit_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)
 #define Edit_SetText(hwndCtl, lpsz) SetWindowText((hwndCtl), (lpsz))
 #define Edit_LimitText(hwndCtl, cchMax) SNDMSG((hwndCtl), EM_LIMITTEXT, cast(WPARAM, (cchMax)), cast(LPARAM, 0))
 #define Edit_GetLineCount(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETLINECOUNT, cast(WPARAM, 0), cast(LPARAM, 0))))
-'' TODO: #define Edit_GetLine(hwndCtl,line,lpch,cchMax) ((*((int *)(lpch)) = (cchMax)),((int)(DWORD)SNDMSG((hwndCtl),EM_GETLINE,(WPARAM)(int)(line),(LPARAM)(LPTSTR)(lpch))))
+#macro Edit_GetLine(hwndCtl, line, lpch, cchMax)
+	scope
+		(*cptr(long ptr, (lpch))) = (cchMax)
+		clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETLINE, cast(WPARAM, clng(line)), cast(LPARAM, cast(LPTSTR, (lpch))))))
+	end scope
+#endmacro
 #define Edit_GetRect(hwndCtl, lprc) SNDMSG((hwndCtl), EM_GETRECT, cast(LPARAM, 0), cast(LPARAM, cptr(RECT ptr, (lprc))))
 #define Edit_SetRect(hwndCtl, lprc) SNDMSG((hwndCtl), EM_SETRECT, cast(LPARAM, 0), cast(LPARAM, cptr(const RECT ptr, (lprc))))
 #define Edit_SetRectNoPaint(hwndCtl, lprc) SNDMSG((hwndCtl), EM_SETRECTNP, cast(LPARAM, 0), cast(LPARAM, cptr(const RECT ptr, (lprc))))
@@ -375,27 +400,21 @@
 #define Edit_GetModify(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_GETMODIFY, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetModify(hwndCtl, fModified) SNDMSG((hwndCtl), EM_SETMODIFY, cast(WPARAM, cast(UINT, (fModified))), cast(LPARAM, 0))
 #define Edit_ScrollCaret(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_SCROLLCARET, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define Edit_LineFromChar(hwndCtl, ich) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINEFROMCHAR, cast(WPARAM, clng((ich))), cast(LPARAM, 0))))
-#define Edit_LineIndex(hwndCtl, line) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINEINDEX, cast(WPARAM, clng((line))), cast(LPARAM, 0))))
-#define Edit_LineLength(hwndCtl, line) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINELENGTH, cast(WPARAM, clng((line))), cast(LPARAM, 0))))
+#define Edit_LineFromChar(hwndCtl, ich) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINEFROMCHAR, cast(WPARAM, clng(ich)), cast(LPARAM, 0))))
+#define Edit_LineIndex(hwndCtl, line) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINEINDEX, cast(WPARAM, clng(line)), cast(LPARAM, 0))))
+#define Edit_LineLength(hwndCtl, line) clng(cast(DWORD, SNDMSG((hwndCtl), EM_LINELENGTH, cast(WPARAM, clng(line)), cast(LPARAM, 0))))
 #define Edit_Scroll(hwndCtl, dv, dh) SNDMSG((hwndCtl), EM_LINESCROLL, cast(WPARAM, (dh)), cast(LPARAM, (dv)))
 #define Edit_CanUndo(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_CANUNDO, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_Undo(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_UNDO, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_EmptyUndoBuffer(hwndCtl) SNDMSG((hwndCtl), EM_EMPTYUNDOBUFFER, cast(WPARAM, 0), cast(LPARAM, 0))
 #define Edit_SetPasswordChar(hwndCtl, ch) SNDMSG((hwndCtl), EM_SETPASSWORDCHAR, cast(WPARAM, cast(UINT, (ch))), cast(LPARAM, 0))
-#define Edit_SetTabStops(hwndCtl, cTabs, lpTabs) SNDMSG((hwndCtl), EM_SETTABSTOPS, cast(WPARAM, clng((cTabs))), cast(LPARAM, cptr(const long ptr, (lpTabs))))
+#define Edit_SetTabStops(hwndCtl, cTabs, lpTabs) SNDMSG((hwndCtl), EM_SETTABSTOPS, cast(WPARAM, clng(cTabs)), cast(LPARAM, cptr(const long ptr, (lpTabs))))
 #define Edit_FmtLines(hwndCtl, fAddEOL) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_FMTLINES, cast(WPARAM, cast(WINBOOL, (fAddEOL))), cast(LPARAM, 0))))
 #define Edit_GetHandle(hwndCtl) cast(HLOCAL, cast(UINT_PTR, SNDMSG((hwndCtl), EM_GETHANDLE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetHandle(hwndCtl, h) SNDMSG((hwndCtl), EM_SETHANDLE, cast(WPARAM, cast(UINT_PTR, cast(HLOCAL, (h)))), cast(LPARAM, 0))
 #define Edit_GetFirstVisibleLine(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETFIRSTVISIBLELINE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetReadOnly(hwndCtl, fReadOnly) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), EM_SETREADONLY, cast(WPARAM, cast(WINBOOL, (fReadOnly))), cast(LPARAM, 0))))
-
-#ifdef UNICODE
-	#define Edit_GetPasswordChar(hwndCtl) cast(wchar_t, cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
-#else
-	#define Edit_GetPasswordChar(hwndCtl) cbyte(cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
-#endif
-
+#define Edit_GetPasswordChar(hwndCtl) cast(TCHAR, cast(DWORD, SNDMSG((hwndCtl), EM_GETPASSWORDCHAR, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Edit_SetWordBreakProc(hwndCtl, lpfnWordBreak) SNDMSG((hwndCtl), EM_SETWORDBREAKPROC, cast(LPARAM, 0), cast(LPARAM, cast(EDITWORDBREAKPROC, (lpfnWordBreak))))
 #define Edit_GetWordBreakProc(hwndCtl) cast(EDITWORDBREAKPROC, SNDMSG((hwndCtl), EM_GETWORDBREAKPROC, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define ScrollBar_Enable(hwndCtl, flags) EnableScrollBar((hwndCtl), SB_CTL, (flags))
@@ -408,69 +427,69 @@
 #define ListBox_GetCount(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETCOUNT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ListBox_ResetContent(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), LB_RESETCONTENT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ListBox_AddString(hwndCtl, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), LB_ADDSTRING, cast(LPARAM, 0), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
-#define ListBox_InsertString(hwndCtl, index, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), LB_INSERTSTRING, cast(WPARAM, clng((index))), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
+#define ListBox_InsertString(hwndCtl, index, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), LB_INSERTSTRING, cast(WPARAM, clng(index)), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
 #define ListBox_AddItemData(hwndCtl, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_ADDSTRING, cast(LPARAM, 0), cast(LPARAM, (data)))))
-#define ListBox_InsertItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_INSERTSTRING, cast(WPARAM, clng((index))), cast(LPARAM, (data)))))
-#define ListBox_DeleteString(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_DELETESTRING, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ListBox_GetTextLen(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETTEXTLEN, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ListBox_GetText(hwndCtl, index, lpszBuffer) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETTEXT, cast(WPARAM, clng((index))), cast(LPARAM, cast(LPCTSTR, (lpszBuffer))))))
-#define ListBox_GetItemData(hwndCtl, index) cast(LRESULT, cast(ULONG_PTR, SNDMSG((hwndCtl), LB_GETITEMDATA, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ListBox_SetItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETITEMDATA, cast(WPARAM, clng((index))), cast(LPARAM, (data)))))
-#define ListBox_FindString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
-#define ListBox_FindItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, (data)))))
+#define ListBox_InsertItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_INSERTSTRING, cast(WPARAM, clng(index)), cast(LPARAM, (data)))))
+#define ListBox_DeleteString(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_DELETESTRING, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ListBox_GetTextLen(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETTEXTLEN, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ListBox_GetText(hwndCtl, index, lpszBuffer) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETTEXT, cast(WPARAM, clng(index)), cast(LPARAM, cast(LPCTSTR, (lpszBuffer))))))
+#define ListBox_GetItemData(hwndCtl, index) cast(LRESULT, cast(ULONG_PTR, SNDMSG((hwndCtl), LB_GETITEMDATA, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ListBox_SetItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETITEMDATA, cast(WPARAM, clng(index)), cast(LPARAM, (data)))))
+#define ListBox_FindString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
+#define ListBox_FindItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, (data)))))
 #define ListBox_SetSel(hwndCtl, fSelect, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETSEL, cast(WPARAM, cast(WINBOOL, (fSelect))), cast(LPARAM, (index)))))
 #define ListBox_SelItemRange(hwndCtl, fSelect, first, last) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SELITEMRANGE, cast(WPARAM, cast(WINBOOL, (fSelect))), MAKELPARAM((first), (last)))))
 #define ListBox_GetCurSel(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETCURSEL, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ListBox_SetCurSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETCURSEL, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ListBox_SelectString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SELECTSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
-#define ListBox_SelectItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SELECTSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, (data)))))
-#define ListBox_GetSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETSEL, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
+#define ListBox_SetCurSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETCURSEL, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ListBox_SelectString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SELECTSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
+#define ListBox_SelectItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SELECTSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, (data)))))
+#define ListBox_GetSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETSEL, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
 #define ListBox_GetSelCount(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETSELCOUNT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ListBox_GetTopIndex(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETTOPINDEX, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ListBox_GetSelItems(hwndCtl, cItems, lpItems) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETSELITEMS, cast(WPARAM, clng((cItems))), cast(LPARAM, cptr(long ptr, (lpItems))))))
-#define ListBox_SetTopIndex(hwndCtl, indexTop) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETTOPINDEX, cast(WPARAM, clng((indexTop))), cast(LPARAM, 0))))
-#define ListBox_SetColumnWidth(hwndCtl, cxColumn) SNDMSG((hwndCtl), LB_SETCOLUMNWIDTH, cast(WPARAM, clng((cxColumn))), cast(LPARAM, 0))
+#define ListBox_GetSelItems(hwndCtl, cItems, lpItems) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETSELITEMS, cast(WPARAM, clng(cItems)), cast(LPARAM, cptr(long ptr, (lpItems))))))
+#define ListBox_SetTopIndex(hwndCtl, indexTop) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETTOPINDEX, cast(WPARAM, clng(indexTop)), cast(LPARAM, 0))))
+#define ListBox_SetColumnWidth(hwndCtl, cxColumn) SNDMSG((hwndCtl), LB_SETCOLUMNWIDTH, cast(WPARAM, clng(cxColumn)), cast(LPARAM, 0))
 #define ListBox_GetHorizontalExtent(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETHORIZONTALEXTENT, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ListBox_SetHorizontalExtent(hwndCtl, cxExtent) SNDMSG((hwndCtl), LB_SETHORIZONTALEXTENT, cast(WPARAM, clng((cxExtent))), cast(LPARAM, 0))
-#define ListBox_SetTabStops(hwndCtl, cTabs, lpTabs) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), LB_SETTABSTOPS, cast(WPARAM, clng((cTabs))), cast(LPARAM, cptr(long ptr, (lpTabs))))))
-#define ListBox_GetItemRect(hwndCtl, index, lprc) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETITEMRECT, cast(WPARAM, clng((index))), cast(LPARAM, cptr(RECT ptr, (lprc))))))
-#define ListBox_SetCaretIndex(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETCARETINDEX, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
+#define ListBox_SetHorizontalExtent(hwndCtl, cxExtent) SNDMSG((hwndCtl), LB_SETHORIZONTALEXTENT, cast(WPARAM, clng(cxExtent)), cast(LPARAM, 0))
+#define ListBox_SetTabStops(hwndCtl, cTabs, lpTabs) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), LB_SETTABSTOPS, cast(WPARAM, clng(cTabs)), cast(LPARAM, cptr(long ptr, (lpTabs))))))
+#define ListBox_GetItemRect(hwndCtl, index, lprc) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETITEMRECT, cast(WPARAM, clng(index)), cast(LPARAM, cptr(RECT ptr, (lprc))))))
+#define ListBox_SetCaretIndex(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETCARETINDEX, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
 #define ListBox_GetCaretIndex(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETCARETINDEX, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ListBox_FindStringExact(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRINGEXACT, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
-#define ListBox_SetItemHeight(hwndCtl, index, cy) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETITEMHEIGHT, cast(WPARAM, clng((index))), MAKELPARAM((cy), 0))))
-#define ListBox_GetItemHeight(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETITEMHEIGHT, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
+#define ListBox_FindStringExact(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), LB_FINDSTRINGEXACT, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
+#define ListBox_SetItemHeight(hwndCtl, index, cy) clng(cast(DWORD, SNDMSG((hwndCtl), LB_SETITEMHEIGHT, cast(WPARAM, clng(index)), MAKELPARAM((cy), 0))))
+#define ListBox_GetItemHeight(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), LB_GETITEMHEIGHT, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
 #define ListBox_Dir(hwndCtl, attrs, lpszFileSpec) clng(cast(DWORD, SNDMSG((hwndCtl), LB_DIR, cast(WPARAM, cast(UINT, (attrs))), cast(LPARAM, cast(LPCTSTR, (lpszFileSpec))))))
 #define ComboBox_Enable(hwndCtl, fEnable) EnableWindow((hwndCtl), (fEnable))
 #define ComboBox_GetText(hwndCtl, lpch, cchMax) GetWindowText((hwndCtl), (lpch), (cchMax))
 #define ComboBox_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)
 #define ComboBox_SetText(hwndCtl, lpsz) SetWindowText((hwndCtl), (lpsz))
-#define ComboBox_LimitText(hwndCtl, cchLimit) clng(cast(DWORD, SNDMSG((hwndCtl), CB_LIMITTEXT, cast(WPARAM, clng((cchLimit))), cast(LPARAM, 0))))
+#define ComboBox_LimitText(hwndCtl, cchLimit) clng(cast(DWORD, SNDMSG((hwndCtl), CB_LIMITTEXT, cast(WPARAM, clng(cchLimit)), cast(LPARAM, 0))))
 #define ComboBox_GetEditSel(hwndCtl) cast(DWORD, SNDMSG((hwndCtl), CB_GETEDITSEL, cast(WPARAM, 0), cast(LPARAM, 0)))
 #define ComboBox_SetEditSel(hwndCtl, ichStart, ichEnd) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETEDITSEL, cast(LPARAM, 0), MAKELPARAM((ichStart), (ichEnd)))))
 #define ComboBox_GetCount(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETCOUNT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ComboBox_ResetContent(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), CB_RESETCONTENT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ComboBox_AddString(hwndCtl, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), CB_ADDSTRING, cast(LPARAM, 0), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
-#define ComboBox_InsertString(hwndCtl, index, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), CB_INSERTSTRING, cast(WPARAM, clng((index))), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
+#define ComboBox_InsertString(hwndCtl, index, lpsz) clng(cast(DWORD, SNDMSG((hwndCtl), CB_INSERTSTRING, cast(WPARAM, clng(index)), cast(LPARAM, cast(LPCTSTR, (lpsz))))))
 #define ComboBox_AddItemData(hwndCtl, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_ADDSTRING, cast(LPARAM, 0), cast(LPARAM, (data)))))
-#define ComboBox_InsertItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_INSERTSTRING, cast(WPARAM, clng((index))), cast(LPARAM, (data)))))
-#define ComboBox_DeleteString(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_DELETESTRING, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ComboBox_GetLBTextLen(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETLBTEXTLEN, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ComboBox_GetLBText(hwndCtl, index, lpszBuffer) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETLBTEXT, cast(WPARAM, clng((index))), cast(LPARAM, cast(LPCTSTR, (lpszBuffer))))))
-#define ComboBox_GetItemData(hwndCtl, index) cast(LRESULT, cast(ULONG_PTR, SNDMSG((hwndCtl), CB_GETITEMDATA, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ComboBox_SetItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETITEMDATA, cast(WPARAM, clng((index))), cast(LPARAM, (data)))))
-#define ComboBox_FindString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
-#define ComboBox_FindItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, (data)))))
+#define ComboBox_InsertItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_INSERTSTRING, cast(WPARAM, clng(index)), cast(LPARAM, (data)))))
+#define ComboBox_DeleteString(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_DELETESTRING, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ComboBox_GetLBTextLen(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETLBTEXTLEN, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ComboBox_GetLBText(hwndCtl, index, lpszBuffer) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETLBTEXT, cast(WPARAM, clng(index)), cast(LPARAM, cast(LPCTSTR, (lpszBuffer))))))
+#define ComboBox_GetItemData(hwndCtl, index) cast(LRESULT, cast(ULONG_PTR, SNDMSG((hwndCtl), CB_GETITEMDATA, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ComboBox_SetItemData(hwndCtl, index, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETITEMDATA, cast(WPARAM, clng(index)), cast(LPARAM, (data)))))
+#define ComboBox_FindString(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
+#define ComboBox_FindItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, (data)))))
 #define ComboBox_GetCurSel(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETCURSEL, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ComboBox_SetCurSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETCURSEL, cast(WPARAM, clng((index))), cast(LPARAM, 0))))
-#define ComboBox_SelectString(hwndCtl, indexStart, lpszSelect) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SELECTSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszSelect))))))
-#define ComboBox_SelectItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SELECTSTRING, cast(WPARAM, clng((indexStart))), cast(LPARAM, (data)))))
+#define ComboBox_SetCurSel(hwndCtl, index) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETCURSEL, cast(WPARAM, clng(index)), cast(LPARAM, 0))))
+#define ComboBox_SelectString(hwndCtl, indexStart, lpszSelect) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SELECTSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszSelect))))))
+#define ComboBox_SelectItemData(hwndCtl, indexStart, data) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SELECTSTRING, cast(WPARAM, clng(indexStart)), cast(LPARAM, (data)))))
 #define ComboBox_Dir(hwndCtl, attrs, lpszFileSpec) clng(cast(DWORD, SNDMSG((hwndCtl), CB_DIR, cast(WPARAM, cast(UINT, (attrs))), cast(LPARAM, cast(LPCTSTR, (lpszFileSpec))))))
 #define ComboBox_ShowDropdown(hwndCtl, fShow) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), CB_SHOWDROPDOWN, cast(WPARAM, cast(WINBOOL, (fShow))), cast(LPARAM, 0))))
-#define ComboBox_FindStringExact(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRINGEXACT, cast(WPARAM, clng((indexStart))), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
+#define ComboBox_FindStringExact(hwndCtl, indexStart, lpszFind) clng(cast(DWORD, SNDMSG((hwndCtl), CB_FINDSTRINGEXACT, cast(WPARAM, clng(indexStart)), cast(LPARAM, cast(LPCTSTR, (lpszFind))))))
 #define ComboBox_GetDroppedState(hwndCtl) cast(WINBOOL, cast(DWORD, SNDMSG((hwndCtl), CB_GETDROPPEDSTATE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ComboBox_GetDroppedControlRect(hwndCtl, lprc) SNDMSG((hwndCtl), CB_GETDROPPEDCONTROLRECT, cast(LPARAM, 0), cast(LPARAM, cptr(RECT ptr, (lprc))))
 #define ComboBox_GetItemHeight(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), CB_GETITEMHEIGHT, cast(WPARAM, 0), cast(LPARAM, 0))))
-#define ComboBox_SetItemHeight(hwndCtl, index, cyItem) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETITEMHEIGHT, cast(WPARAM, clng((index))), cast(LPARAM, clng(cyItem)))))
+#define ComboBox_SetItemHeight(hwndCtl, index, cyItem) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETITEMHEIGHT, cast(WPARAM, clng(index)), cast(LPARAM, clng(cyItem)))))
 #define ComboBox_GetExtendedUI(hwndCtl) cast(UINT, cast(DWORD, SNDMSG((hwndCtl), CB_GETEXTENDEDUI, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define ComboBox_SetExtendedUI(hwndCtl, flags) clng(cast(DWORD, SNDMSG((hwndCtl), CB_SETEXTENDEDUI, cast(WPARAM, cast(UINT, (flags))), cast(LPARAM, 0))))
 #define GET_WPARAM(wp, lp) (wp)
@@ -481,13 +500,7 @@
 #define GET_WM_ACTIVATE_FMINIMIZED(wp, lp) cast(WINBOOL, HIWORD(wp))
 #define GET_WM_ACTIVATE_HWND(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_ACTIVATE_MPS(s,fmin,hwnd) (WPARAM)MAKELONG((s),(fmin)),(LPARAM)(hwnd)
-
-#ifdef UNICODE
-	#define GET_WM_CHARTOITEM_CHAR(wp, lp) cast(wchar_t, LOWORD(wp))
-#else
-	#define GET_WM_CHARTOITEM_CHAR(wp, lp) cbyte(LOWORD(wp))
-#endif
-
+#define GET_WM_CHARTOITEM_CHAR(wp, lp) cast(TCHAR, LOWORD(wp))
 #define GET_WM_CHARTOITEM_POS(wp, lp) HIWORD(wp)
 #define GET_WM_CHARTOITEM_HWND(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_CHARTOITEM_MPS(ch,pos,hwnd) (WPARAM)MAKELONG((pos),(ch)),(LPARAM)(hwnd)
@@ -510,13 +523,7 @@ const WM_CTLCOLOR = &h0019
 #define GET_WM_MDIACTIVATE_HWNDACTIVATE(wp, lp) cast(HWND, (lp))
 '' TODO: #define GET_WM_MDIACTIVATE_MPS(f,hwndD,hwndA) (WPARAM)(hwndA),0
 '' TODO: #define GET_WM_MDISETMENU_MPS(hmenuF,hmenuW) (WPARAM)hmenuF,(LPARAM)hmenuW
-
-#ifdef UNICODE
-	#define GET_WM_MENUCHAR_CHAR(wp, lp) cast(wchar_t, LOWORD(wp))
-#else
-	#define GET_WM_MENUCHAR_CHAR(wp, lp) cbyte(LOWORD(wp))
-#endif
-
+#define GET_WM_MENUCHAR_CHAR(wp, lp) cast(TCHAR, LOWORD(wp))
 #define GET_WM_MENUCHAR_HMENU(wp, lp) cast(HMENU, (lp))
 #define GET_WM_MENUCHAR_FMENU(wp, lp) cast(WINBOOL, HIWORD(wp))
 '' TODO: #define GET_WM_MENUCHAR_MPS(ch,hmenu,f) (WPARAM)MAKELONG(ch,f),(LPARAM)(hmenu)

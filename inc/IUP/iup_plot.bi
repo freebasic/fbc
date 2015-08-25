@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.13
+'' FreeBASIC binding for iup-3.15
 ''
 '' based on the C header files:
 ''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
@@ -26,6 +26,8 @@
 ''   Copyright © 2015 FreeBASIC development team
 
 #pragma once
+
+#inclib "iup_plot"
 
 extern "C"
 

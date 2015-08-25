@@ -76,6 +76,13 @@
 ''    * For non-x86, there's no need to emit cdecl/stdcall/... at all because
 ''      they don't exist (on x86_64 or ARM etc.) and gcc ignores the attributes.
 ''
+'' - "boolean" is implemented as int8, instead of C99's _Bool type (even though
+''   FB's boolean is supposed to be compatible with C's _Bool), because that way
+''   we can avoid undefined behaviour if values other than 0/1 are stored in the
+''   boolean, and get the same behaviour as with the ASM backend. Of course that
+''   also means we have to add code for converting int/float to 0/1 when casting
+''   them to boolean.
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -221,6 +228,7 @@ dim shared as IRHLCCTX ctx
 dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
 	@"void"     , _ '' void
+	@"boolean"  , _ '' boolean
 	@"int8"     , _ '' byte
 	@"uint8"    , _ '' ubyte
 	NULL        , _ '' char
@@ -681,12 +689,31 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
 
+	'' We're emitting procptr subtypes as typedefs, instead of expanding them in-place,
+	'' because that way we can keep doing the "type id" syntax for local vars, parameters, etc.,
+	'' while when expanding procptrs it would become more complicated ("returntype (*id)(parameters)").
 	case FB_SYMBCLASS_PROC
 		if( symbGetIsFuncPtr( s ) ) then
-			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ) + ";" )
-			symbSetIsEmitted( s )
-		end if
+			'' While emitting a procptr typedef, we may emit a UDT that references this procptr typedef.
+			'' For example:
+			''     type FBSYMBOL_ as FBSYMBOL
+			''     type FBRTLCALLBACK as function(byval as FBSYMBOL_ ptr) as integer
+			''     type FBSYMBOL
+			''         callback as FBRTLCALLBACK
+			''     end type
+			''     dim callback as FBRTLCALLBACK
+			'' In a case like that, we should take care not to emit the typedef twice, because that
+			'' isn't allowed by older gcc versions.
 
+			'' 1. Build the procedure declaration and emit its dependencies...
+			var decl = hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR )
+
+			'' 2. Emit this procptr typedef if it wasn't emitted by step 1
+			if( symbGetIsEmitted( s ) = FALSE ) then
+				hWriteLine( "typedef " + decl + ";" )
+				symbSetIsEmitted( s )
+			end if
+		end if
 	end select
 
 	sectionReturn( section )
@@ -976,7 +1003,10 @@ private sub hEmitStructWithFields( byval s as FBSYMBOL ptr )
 				'' that are already packed to the same alignment,
 				'' gcc would show a warning in that case.
 				if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-					skip or= (align >= symbGetUDTAlign( subtype ))
+					var fieldudtalign = symbGetUDTAlign( subtype )
+					if( fieldudtalign > 0 ) then
+						skip or= (align >= fieldudtalign)
+					end if
 				end if
 
 				if( skip = FALSE ) then
@@ -1229,6 +1259,7 @@ private function _emitBegin( ) as integer
 	else
 		hWriteLine( "typedef struct { char *data; int32 len; int32 size; } FBSTRING;", TRUE )
 	end if
+	hWriteLine( "typedef int8 boolean;", TRUE )
 
 	'' body
 	sectionBegin( )
@@ -1621,19 +1652,16 @@ private function exprNewCAST _
 		byval l as EXPRNODE ptr _
 	) as EXPRNODE ptr
 
-	dim as EXPRNODE ptr n = any
-
 	'' Don't add a CAST if l already has the desired type
 	if( (dtype = l->dtype) and (subtype = l->subtype) ) then
 		return l
 	end if
 
 	'' Don't cast if l has a compatible type (e.g. 32bit int vs. 32bit long)
-	'' (same class, same size, same signedness, and no pointers involved)
-	if( (typeGetClass( l->dtype ) = typeGetClass( dtype )) and _
-	    (typeIsSigned( l->dtype ) = typeIsSigned( dtype )) and _
-	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) and _
-	    (typeGetSize( l->dtype ) = typeGetSize( dtype )) ) then
+	'' (same class, same size, same signedness, no pointers involved,
+	'' both booleans or none)
+	if( (typeGetSizeType( l->dtype ) = typeGetSizeType( dtype )) and _
+	    (not typeIsPtr( l->dtype )) and (not typeIsPtr( dtype )) ) then
 		return l
 	end if
 
@@ -1647,9 +1675,8 @@ private function exprNewCAST _
 		end if
 	end if
 
-	n = exprNew( EXPRCLASS_CAST, dtype, subtype )
+	var n = exprNew( EXPRCLASS_CAST, dtype, subtype )
 	n->l = l
-
 	function = n
 end function
 
@@ -2196,6 +2223,33 @@ private function hUopToStr _
 
 end function
 
+private sub hImm2Text( byref s as string, byval n as EXPRNODE ptr )
+	if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
+		s += hEmitFloat( n->dtype, n->val.f )
+	else
+		assert( (n->dtype <> FB_DATATYPE_BOOLEAN) orelse ((n->val.i = 1) or (n->val.i = 0)) )
+		s += hEmitInt( n->dtype, n->val.i )
+	end if
+end sub
+
+private sub hSym2Text( byref s as string, byval sym as FBSYMBOL ptr )
+	'' String literal?
+	if( symbGetIsLiteral( sym ) ) then
+		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+			hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
+		else
+			hBuildStrLit( s, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
+		end if
+	else
+		if( symbIsLabel( sym ) ) then
+			s += "&&"
+		elseif( symbIsProc( sym ) ) then
+			s += "&"
+		end if
+		s += *symbGetMangledName( sym )
+	end if
+end sub
+
 '' Builds up final expression text, walking the EXPRNODE tree
 private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 	dim as EXPRNODE ptr l = any
@@ -2207,30 +2261,10 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		ctx.exprtext += *n->text
 
 	case EXPRCLASS_IMM
-		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			ctx.exprtext += hEmitFloat( n->dtype, n->val.f )
-		else
-			ctx.exprtext += hEmitInt( n->dtype, n->val.i )
-		end if
+		hImm2Text( ctx.exprtext, n )
 
 	case EXPRCLASS_SYM
-		sym = n->sym
-
-		'' String literal?
-		if( symbGetIsLiteral( sym ) ) then
-			if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
-				hBuildWstrLit( ctx.exprtext, hUnescapeW( symbGetVarLitTextW( sym ) ), symbGetWstrLen( sym ) )
-			else
-				hBuildStrLit( ctx.exprtext, hUnescape( symbGetVarLitText( sym ) ), symbGetStrLen( sym ) )
-			end if
-		else
-			if( symbIsLabel( sym ) ) then
-				ctx.exprtext += "&&"
-			elseif( symbIsProc( sym ) ) then
-				ctx.exprtext += "&"
-			end if
-			ctx.exprtext += *symbGetMangledName( sym )
-		end if
+		hSym2Text( ctx.exprtext, n->sym )
 
 	case EXPRCLASS_CAST
 		'' (type)l
@@ -2310,46 +2344,39 @@ private sub exprDump( byval n as EXPRNODE ptr )
 
 	level += 1
 
+	'' Indentation
+	s += space( (level - 1) * 4 )
+
+	static names(0 to ...) as zstring ptr => { _
+		@"TEXT", _ '' EXPRCLASS_TEXT
+		@"IMM" , _ '' EXPRCLASS_IMM
+		@"SYM" , _ '' EXPRCLASS_SYM
+		@"CAST", _ '' EXPRCLASS_CAST
+		@"UOP" , _ '' EXPRCLASS_UOP
+		@"BOP"   _ '' EXPRCLASS_BOP
+	}
+
+	s += *names(n->class)
+	s += typeDump( n->dtype, n->subtype )
+	s += " "
+
 	select case as const( n->class )
 	case EXPRCLASS_TEXT
-		s = "TEXT( " + *n->text + " )"
+		s += *n->text
 
 	case EXPRCLASS_IMM
-		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			s = "IMM( " + hEmitFloat( n->dtype, n->val.f ) + " )"
-		else
-			s = "IMM( " + hEmitInt( n->dtype, n->val.i ) + " )"
-		end if
+		hImm2Text( s, n )
 
 	case EXPRCLASS_SYM
-		s = "SYM( "
-
-		'' String literal?
-		if( symbGetIsLiteral( n->sym ) ) then
-			if( symbGetType( n->sym ) = FB_DATATYPE_WCHAR ) then
-				hBuildWstrLit( s, hUnescapeW( symbGetVarLitTextW( n->sym ) ), symbGetWstrLen( n->sym ) )
-			else
-				hBuildStrLit( s, hUnescape( symbGetVarLitText( n->sym ) ), symbGetStrLen( n->sym ) )
-			end if
-		else
-			if( symbIsLabel( n->sym ) ) then
-				s += "&&"
-			elseif( symbIsProc( n->sym ) ) then
-				s += "&"
-			end if
-			s += *symbGetMangledName( n->sym )
-		end if
-
-		s += " )"
+		hSym2Text( s, n->sym )
 
 	case EXPRCLASS_CAST
-		s = "CAST( " + hEmitType( n->dtype, n->subtype ) + " )"
+		s += hEmitType( n->dtype, n->subtype )
 
 	case EXPRCLASS_UOP
-		s = "UOP( " + *hUopToStr( n->op, n->dtype, FALSE ) + " )"
+		s += *hUopToStr( n->op, n->dtype, FALSE )
 
 	case EXPRCLASS_BOP
-		s = "BOP( "
 		select case( n->op )
 		case AST_OP_ATAN2
 			if( n->dtype = FB_DATATYPE_SINGLE ) then
@@ -2360,13 +2387,10 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		case else
 			s += *hBopToStr( n->op )
 		end select
-		s += " )"
 
 	end select
 
-	s += " as " + typeDump( n->dtype, n->subtype )
-
-	print str( level ), string( level, " " ) + s
+	print s
 
 	select case( n->class )
 	case EXPRCLASS_CAST, EXPRCLASS_UOP
@@ -2551,6 +2575,8 @@ private function exprNewVREG _
 		dtype = vreg->dtype
 		if( typeGetClass( dtype ) = FB_DATACLASS_FPOINT ) then
 			l = exprNewIMMf( vreg->value.f, dtype )
+		elseif( dtype = FB_DATATYPE_BOOLEAN ) then
+			l = exprNewIMMi( iif( vreg->value.i, 1, 0 ) )
 		else
 			l = exprNewIMMi( vreg->value.i, dtype )
 		end if
@@ -2690,9 +2716,13 @@ private sub _emitBop _
 
 	select case as const( op )
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
-		'' Must work-around C's boolean logic values and convert the "boolean"
-		'' 1 to -1 while 0 stays 0 to match FB.
-		l = exprNewUOP( AST_OP_NEG, exprNewBOP( op, l, r ) )
+		l = exprNewBOP( op, l, r )
+
+		'' comparisons returning a boolean produce 0/1,
+		'' comparisons returning an integer produce 0/-1.
+		if( vr->dtype <> FB_DATATYPE_BOOLEAN ) then
+			l = exprNewUOP( AST_OP_NEG, l )
+		end if
 
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
 	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
@@ -2718,12 +2748,24 @@ private sub _emitBop _
 		l = exprNewBOP( op, l, r )
 
 	case AST_OP_EQV
-		'' vr = ~(v1 ^ v2)
-		l = exprNewUOP( AST_OP_NOT, exprNewBOP( AST_OP_XOR, l, r ) )
+		l = exprNewBOP( AST_OP_XOR, l, r )
+		if( vr->dtype = FB_DATATYPE_BOOLEAN ) then
+			'' vr = (v1 xor v2) xor 1
+			l = exprNewBOP( AST_OP_XOR, l, exprNewIMMi( 1 ) )
+		else
+			'' vr = not (v1 xor v2)
+			l = exprNewUOP( AST_OP_NOT, l )
+		end if
 
 	case AST_OP_IMP
-		'' vr = ~v1 | v2
-		l = exprNewBOP( AST_OP_OR, exprNewUOP( AST_OP_NOT, l ), r )
+		if( vr->dtype = FB_DATATYPE_BOOLEAN ) then
+			'' vr = (v1 xor 1) or v2
+			l = exprNewBOP( AST_OP_XOR, l, exprNewIMMi( 1 ) )
+		else
+			'' vr = (not v1) or v2
+			l = exprNewUOP( AST_OP_NOT, l )
+		end if
+		l = exprNewBOP( AST_OP_OR, l, r )
 
 	end select
 
@@ -2741,23 +2783,57 @@ private sub _emitUop _
 		vr = v1
 	end if
 
-	exprSTORE( vr, exprNewUOP( op, exprNewVREG( v1 ) ) )
+	var expr = exprNewVREG( v1 )
+
+	'' boolean NOT?
+	if( (op = AST_OP_NOT) and (vr->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' booleans store 0/1, and a boolean NOT is supposed to produce
+		'' the inverse 1/0 boolean. Thus it can't be implemented as
+		'' bitwise NOT.
+		'' Do: <expr == 0>
+		'' We could also do <!expr>, but we don't support emitting the
+		'' ! operator at the moment.
+		expr = exprNewBOP( AST_OP_EQ, expr, exprNewIMMi( 0 ) )
+	else
+		expr = exprNewUOP( op, expr )
+	end if
+
+	exprSTORE( vr, expr )
 
 end sub
 
-'' v1 = cast( <v1's type>, v2 )
+'' v1 = cast( <v1's dtype>, v2 )
 private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
-	dim as integer dtype = any
-	dim as EXPRNODE ptr expr = any
-	dim as string s
+	var r = exprNewVREG( v2 )
 
-	expr = exprNewVREG( v2 )
+	'' float/int := bool?
+	if( (v1->dtype <> FB_DATATYPE_BOOLEAN) and (r->dtype = FB_DATATYPE_BOOLEAN) ) then
+		'' 0/-1 := 0/1
+		if( r->class = EXPRCLASS_IMM ) then
+			r->val.i = (r->val.i <> 0)
+			r->dtype = FB_DATATYPE_LONG
+		else
+			r = exprNewUOP( AST_OP_NEG, r )
+		end if
 
-	'' Converting float to int? Needs special treatment to achieve FB's rounding behaviour
-	if( (typeGetClass( v2->dtype ) = FB_DATACLASS_FPOINT) and _
-	    (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) ) then
+	'' bool := float/int?
+	elseif( (v1->dtype = FB_DATATYPE_BOOLEAN) and (r->dtype <> FB_DATATYPE_BOOLEAN) ) then
+		'' 0/1 := zero/non-zero
+		if( r->class = EXPRCLASS_IMM ) then
+			'' (FB's <> 0 produces 0/-1 so we have to negate to get 0/1)
+			r->val.i = - iif( typeGetClass( r->dtype ) = FB_DATACLASS_FPOINT, _
+			                  r->val.f <> 0, r->val.i <> 0 )
+			r->dtype = FB_DATATYPE_LONG
+		else
+			'' (expr != 0) (C's != produces the 0/1 we want)
+			r = exprNewBOP( AST_OP_NE, r, exprNewIMMi( 0 ) )
+		end if
 
-		'' ((type)fb_F2I( l ))
+	'' int := float? Needs special treatment to achieve FB's rounding behaviour
+	elseif( (typeGetClass( v1->dtype ) = FB_DATACLASS_INTEGER) and _
+	        (typeGetClass( r->dtype ) = FB_DATACLASS_FPOINT) ) then
+
+		'' ((type)fb_F2I( r ))
 		''
 		'' If converting to integer <= int32: use fb_*2I()
 		'' If converting to integer >= uint32: use fb_*2L()
@@ -2767,27 +2843,27 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
 		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
 
+		dim s as string, tempdtype as integer
 		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
-			if( v2->dtype = FB_DATATYPE_SINGLE ) then
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
 			else
 				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
 			end if
-			dtype = FB_DATATYPE_LONG
+			tempdtype = FB_DATATYPE_LONG
 		else
-			if( v2->dtype = FB_DATATYPE_SINGLE ) then
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
 			else
 				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
 			end if
-			dtype = FB_DATATYPE_LONGINT
+			tempdtype = FB_DATATYPE_LONGINT
 		end if
-		s += "( " + exprFlush( expr ) + " )"
-
-		expr = exprNewTEXT( dtype, NULL, s )
+		s += "( " + exprFlush( r ) + " )"
+		r = exprNewTEXT( tempdtype, NULL, s )
 	end if
 
-	exprSTORE( v1, expr )
+	exprSTORE( v1, r )
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -3307,7 +3383,7 @@ private sub _emitVarIniPad( byval bytes as longint )
 	'' aswell as add padding between fields etc. where needed.
 end sub
 
-private sub _emitVarIniScopeBegin( )
+private sub _emitVarIniScopeBegin( byval sym as FBSYMBOL ptr, byval is_array as integer )
 	ctx.variniscopelevel += 1
 	ctx.varini += "{ "
 end sub

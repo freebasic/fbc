@@ -2,7 +2,7 @@
 Returns the horizontal (left to right) position of the text cursor
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pos** [[KeyPgOverload overload]] ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pos** ( ) [[KeyPgAs as]] [[KeyPgLong long]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pos** ( [[KeyPgByval byval]] //dummy// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
 ##
 {{fbdoc item="usage"}}##

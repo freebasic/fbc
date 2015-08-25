@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -21,6 +21,10 @@
 #include once "crt/sys/time.bi"
 #include once "_bsd_types.bi"
 #include once "inaddr.bi"
+
+'' The following symbols have been renamed:
+''     procedure select => select_
+''     procedure socket => socket_
 
 extern "Windows"
 
@@ -55,11 +59,7 @@ declare function __WSAFDIsSet(byval as SOCKET, byval as FD_SET ptr) as long
 		wend
 	end scope
 #endmacro
-#macro FD_ZERO(set)
-	scope
-		cptr(fd_set ptr, set)->fd_count = 0
-	end scope
-#endmacro
+#define FD_ZERO(set) scope : cptr(FD_SET ptr, (set))->fd_count = 0 : end scope
 #define FD_ISSET(fd, set) __WSAFDIsSet(cast(SOCKET, (fd)), cptr(FD_SET ptr, (set)))
 #define _FD_SET_WINSOCK_DEFINED
 #macro FD_SET_(fd, set)
@@ -94,14 +94,14 @@ type SERVENT
 	s_name as zstring ptr
 	s_aliases as zstring ptr ptr
 
-	#ifndef __FB_64BIT__
-		s_port as short
+	#ifdef __FB_64BIT__
+		s_proto as zstring ptr
 	#endif
 
-	s_proto as zstring ptr
+	s_port as short
 
-	#ifdef __FB_64BIT__
-		s_port as short
+	#ifndef __FB_64BIT__
+		s_proto as zstring ptr
 	#endif
 end type
 
@@ -197,8 +197,8 @@ const IOC_OUT = &h40000000
 const IOC_IN = &h80000000
 #define IOC_INOUT (IOC_IN or IOC_OUT)
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
-#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
-#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof((t))) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
+#define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
 #define FIONREAD _IOR(asc("f"), 127, u_long)
 #define FIONBIO _IOW(asc("f"), 126, u_long)
 #define FIOASYNC _IOW(asc("f"), 125, u_long)
@@ -246,17 +246,17 @@ const IPPORT_RESERVED = 1024
 const IMPLINK_IP = 155
 const IMPLINK_LOWEXPER = 156
 const IMPLINK_HIGHEXPER = 158
-#define IN_CLASSA(i) ((clng((i)) and &h80000000) = 0)
+#define IN_CLASSA(i) ((clng(i) and &h80000000) = 0)
 const IN_CLASSA_NET = &hff000000
 const IN_CLASSA_NSHIFT = 24
 const IN_CLASSA_HOST = &h00ffffff
 const IN_CLASSA_MAX = 128
-#define IN_CLASSB(i) ((clng((i)) and &hc0000000) = &h80000000)
+#define IN_CLASSB(i) ((clng(i) and &hc0000000) = &h80000000)
 const IN_CLASSB_NET = &hffff0000
 const IN_CLASSB_NSHIFT = 16
 const IN_CLASSB_HOST = &h0000ffff
 const IN_CLASSB_MAX = 65536
-#define IN_CLASSC(i) ((clng((i)) and &he0000000) = &hc0000000)
+#define IN_CLASSC(i) ((clng(i) and &he0000000) = &hc0000000)
 const IN_CLASSC_NET = &hffffff00
 const IN_CLASSC_NSHIFT = 8
 const IN_CLASSC_HOST = &h000000ff
@@ -325,7 +325,7 @@ const AF_CHAOS = 5
 const AF_IPX = 6
 const AF_NS = 6
 const AF_ISO = 7
-#define AF_OSI AF_ISO
+const AF_OSI = AF_ISO
 const AF_ECMA = 8
 const AF_DATAKIT = 9
 const AF_CCITT = 10
@@ -341,30 +341,30 @@ const AF_FIREFOX = 19
 const AF_UNKNOWN1 = 20
 const AF_BAN = 21
 const AF_MAX = 22
-#define PF_UNSPEC AF_UNSPEC
-#define PF_UNIX AF_UNIX
-#define PF_INET AF_INET
-#define PF_IMPLINK AF_IMPLINK
-#define PF_PUP AF_PUP
-#define PF_CHAOS AF_CHAOS
-#define PF_NS AF_NS
-#define PF_IPX AF_IPX
-#define PF_ISO AF_ISO
-#define PF_OSI AF_OSI
-#define PF_ECMA AF_ECMA
-#define PF_DATAKIT AF_DATAKIT
-#define PF_CCITT AF_CCITT
-#define PF_SNA AF_SNA
-#define PF_DECnet AF_DECnet
-#define PF_DLI AF_DLI
-#define PF_LAT AF_LAT
-#define PF_HYLINK AF_HYLINK
-#define PF_APPLETALK AF_APPLETALK
-#define PF_VOICEVIEW AF_VOICEVIEW
-#define PF_FIREFOX AF_FIREFOX
-#define PF_UNKNOWN1 AF_UNKNOWN1
-#define PF_BAN AF_BAN
-#define PF_MAX AF_MAX
+const PF_UNSPEC = AF_UNSPEC
+const PF_UNIX = AF_UNIX
+const PF_INET = AF_INET
+const PF_IMPLINK = AF_IMPLINK
+const PF_PUP = AF_PUP
+const PF_CHAOS = AF_CHAOS
+const PF_NS = AF_NS
+const PF_IPX = AF_IPX
+const PF_ISO = AF_ISO
+const PF_OSI = AF_OSI
+const PF_ECMA = AF_ECMA
+const PF_DATAKIT = AF_DATAKIT
+const PF_CCITT = AF_CCITT
+const PF_SNA = AF_SNA
+const PF_DECnet = AF_DECnet
+const PF_DLI = AF_DLI
+const PF_LAT = AF_LAT
+const PF_HYLINK = AF_HYLINK
+const PF_APPLETALK = AF_APPLETALK
+const PF_VOICEVIEW = AF_VOICEVIEW
+const PF_FIREFOX = AF_FIREFOX
+const PF_UNKNOWN1 = AF_UNKNOWN1
+const PF_BAN = AF_BAN
+const PF_MAX = AF_MAX
 const SOL_SOCKET = &hffff
 const SOMAXCONN = 5
 const MSG_OOB = &h1
@@ -406,11 +406,13 @@ declare function ntohs(byval netshort as u_short) as u_short
 declare function recv(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long) as long
 declare function recvfrom(byval s as SOCKET, byval buf as zstring ptr, byval len as long, byval flags as long, byval from as SOCKADDR ptr, byval fromlen as long ptr) as long
 declare function select_ alias "select"(byval nfds as long, byval readfds as FD_SET ptr, byval writefds as FD_SET ptr, byval exceptfds as FD_SET ptr, byval timeout as const PTIMEVAL) as long
+#define selectsocket select_
 declare function send(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long) as long
 declare function sendto(byval s as SOCKET, byval buf as const zstring ptr, byval len as long, byval flags as long, byval to as const SOCKADDR ptr, byval tolen as long) as long
 declare function setsockopt(byval s as SOCKET, byval level as long, byval optname as long, byval optval as const zstring ptr, byval optlen as long) as long
 declare function shutdown(byval s as SOCKET, byval how as long) as long
-declare function socket(byval af as long, byval type as long, byval protocol as long) as SOCKET
+declare function socket_ alias "socket"(byval af as long, byval type as long, byval protocol as long) as SOCKET
+#define opensocket socket_
 declare function gethostbyaddr(byval addr as const zstring ptr, byval len as long, byval type as long) as HOSTENT ptr
 declare function gethostbyname(byval name as const zstring ptr) as HOSTENT ptr
 declare function gethostname(byval name as zstring ptr, byval namelen as long) as long

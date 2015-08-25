@@ -121,16 +121,8 @@ const XIBarrierPointerReleased = 1 shl 0
 const XIBarrierDeviceIsGrabbed = 1 shl 1
 const XIDirectTouch = 1
 const XIDependentTouch = 2
-#macro XISetMask(ptr, event)
-	scope
-		cptr(ubyte ptr, (ptr))[(event) shr 3] or= (1 shl ((event) and 7))
-	end scope
-#endmacro
-#macro XIClearMask(ptr, event)
-	scope
-		cptr(ubyte ptr, (ptr))[(event) shr 3] and= not (1 shl ((event) and 7))
-	end scope
-#endmacro
+#define XISetMask(ptr, event) scope : cptr(ubyte ptr, (ptr))[((event) shr 3)] or= 1 shl ((event) and 7) : end scope
+#define XIClearMask(ptr, event) scope : cptr(ubyte ptr, (ptr))[((event) shr 3)] and= not (1 shl ((event) and 7)) : end scope
 #define XIMaskIsSet(ptr, event) (cptr(ubyte ptr, (ptr))[((event) shr 3)] and (1 shl ((event) and 7)))
 #define XIMaskLen(event) (((event) shr 3) + 1)
 const XIAllDevices = 0
@@ -161,7 +153,7 @@ const XI_RawTouchUpdate = 23
 const XI_RawTouchEnd = 24
 const XI_BarrierHit = 25
 const XI_BarrierLeave = 26
-#define XI_LASTEVENT XI_BarrierLeave
+const XI_LASTEVENT = XI_BarrierLeave
 #define XI_DeviceChangedMask (1 shl XI_DeviceChanged)
 #define XI_KeyPressMask (1 shl XI_KeyPress)
 #define XI_KeyReleaseMask (1 shl XI_KeyRelease)

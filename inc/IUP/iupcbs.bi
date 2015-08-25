@@ -1,4 +1,4 @@
-'' FreeBASIC binding for iup-3.13
+'' FreeBASIC binding for iup-3.15
 ''
 '' based on the C header files:
 ''   Copyright (C) 1994-2015 Tecgraf, PUC-Rio.
@@ -51,8 +51,8 @@ type IFniiiiii as function(byval as Ihandle ptr, byval as long, byval as long, b
 type IFnff as function(byval as Ihandle ptr, byval as single, byval as single) as long
 type IFniff as function(byval as Ihandle ptr, byval as long, byval as single, byval as single) as long
 type IFnfiis as function(byval as Ihandle ptr, byval as single, byval as long, byval as long, byval as zstring ptr) as long
-type IFnsCi as function(byval as Ihandle ptr, byval as zstring ptr, byval as any ptr, byval as long) as long
-type IFnsCiii as function(byval as Ihandle ptr, byval as zstring ptr, byval as any ptr, byval as long, byval as long, byval as long) as long
+type IFnsVi as function(byval as Ihandle ptr, byval as zstring ptr, byval as any ptr, byval as long) as long
+type IFnsViii as function(byval as Ihandle ptr, byval as zstring ptr, byval as any ptr, byval as long, byval as long, byval as long) as long
 type IFnsiii as function(byval as Ihandle ptr, byval as zstring ptr, byval as long, byval as long, byval as long) as long
 type IFnnii as function(byval as Ihandle ptr, byval as Ihandle ptr, byval as long, byval as long) as long
 type IFnnn as function(byval as Ihandle ptr, byval as Ihandle ptr, byval as Ihandle ptr) as long
@@ -76,7 +76,7 @@ type IFniiff as function(byval as Ihandle ptr, byval as long, byval as long, byv
 type IFniiffi as function(byval as Ihandle ptr, byval as long, byval as long, byval as single, byval as single, byval as long) as long
 type IFniidd as function(byval as Ihandle ptr, byval as long, byval as long, byval as double, byval as double) as long
 type IFniiddi as function(byval as Ihandle ptr, byval as long, byval as long, byval as double, byval as double, byval as long) as long
-type IFniiffff as function(byval as Ihandle ptr, byval as long, byval as long, byval as single, byval as single, byval as single ptr, byval as single ptr) as long
+type IFniiffFF as function(byval as Ihandle ptr, byval as long, byval as long, byval as single, byval as single, byval as single ptr, byval as single ptr) as long
 type IFniiffs as function(byval as Ihandle ptr, byval as long, byval as long, byval as single, byval as single, byval as zstring ptr) as long
 type IFniidds as function(byval as Ihandle ptr, byval as long, byval as long, byval as double, byval as double, byval as zstring ptr) as long
 type IFndds as function(byval as Ihandle ptr, byval as double, byval as double, byval as zstring ptr) as long
@@ -84,6 +84,6 @@ type sIFnii as function(byval as Ihandle ptr, byval as long, byval as long) as z
 type sIFni as function(byval as Ihandle ptr, byval as long) as zstring ptr
 type sIFniis as function(byval as Ihandle ptr, byval as long, byval as long, byval as zstring ptr) as zstring ptr
 type dIFnii as function(byval as Ihandle ptr, byval as long, byval as long) as double
-type IFniid as sub(byval as Ihandle ptr, byval as long, byval as long, byval as double)
+type IFniid as function(byval as Ihandle ptr, byval as long, byval as long, byval as double) as long
 
 end extern

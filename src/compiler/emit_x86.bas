@@ -3,7 +3,7 @@
 '' chng: sep/2004 written [v1ctor]
 ''  	 mar/2005 longint support added [v1ctor]
 ''  	 may/2008 SSE/SSE2 instructions [Bryan Stoeberl]
-
+''       may/2008 boolean support added [jeffm]
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -51,6 +51,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
 		( 0, "void ptr"  ), _ '' void
+		( 0, "byte ptr"  ), _ '' boolean
 		( 0, "byte ptr"  ), _ '' byte
 		( 0, "byte ptr"  ), _ '' ubyte
 		( 0, "byte ptr"  ), _ '' char
@@ -74,70 +75,6 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 		( 0, "byte ptr"  ), _ '' fwd-ref
 		( 2, "dword ptr" ), _ '' pointer
 		( 3, "xmmword ptr" ) _ '' 128-bit
-	}
-
-const EMIT_MAXKEYWORDS = 600
-
-	dim shared keywordTb(0 to EMIT_MAXKEYWORDS-1) as const zstring ptr => _
-	{ _
-		@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
-		@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
-		@"xmm0", @"xmm1", @"xmm2", @"xmm3", @"xmm4", @"xmm5", @"xmm6", @"xmm7", _
-		@"byte", @"word", @"dword", @"qword", _
-		@"ptr", @"offset", _
-		@"aaa", @"aad", @"aam", @"aas", @"adc", @"add", @"addpd", @"addps", @"addsd", @"addss", @"and", @"andpd", @"andps", _
-		@"andnpd", @"andnps", @"arpl", @"bound", @"bsf", @"bsr", @"bswap", @"bt", @"btc", @"btr", @"bts", @"call", @"cbw", _
-		@"cwde", @"cdq", @"clc", @"cld", @"clflush", @"cli", @"clts", @"cmc", @"cmova", @"cmovae", @"cmovb", @"cmovbe", _
-		@"cmovc", @"cmove", @"cmovg", @"cmovge", @"cmovl", @"cmovle", @"cmovna", @"cmovnae", @"cmovnb", @"cmovnbe", _
-		@"cmovnc", @"cmovne", @"cmovng", @"cmovnge", @"cmovnl", @"cmovnle", @"cmovno", @"cmovnp", @"cmovns", @"cmovnz", _
-		@"cmovo", @"cmovp", @"cmovpe", @"cmovpe", @"cmovpo", @"cmovs", @"cmovz", @"cmp", @"cmppd", @"cmpps", @"cmps", _
-		@"cmpsb", @"cmpsw", @"cmpsd", @"cmpss", @"cmpxchg", @"cmpxchg8b", @"comisd", @"comiss", @"cpuid", @"cvtdq2pd", _
-		@"cvtdq2ps", @"cvtpd2dq", @"cvtpd2pi", @"cvtpd2ps", @"cvtpi2pd", @"cvtpi2ps", @"cvtps2dq", @"cvtps2pd", _
-		@"cvtps2pi", @"cvtsd2si", @"cvtsd2ss", @"cvtsi2sd", @"cvtsi2ss", @"cvtss2sd", @"cvtss2si", @"cvttpd2pi", _
-		@"cvttpd2dq", @"cvttps2dq", @"cvttps2pi", @"cvttsd2si", @"cvttss2si", @"cwd", @"daa", @"das", @"dec", @"div", _
-		@"divpd", @"divps", @"divss", @"emms", @"enter", @"f2xm1", @"fabs", @"fadd", @"faddp", @"fiadd", @"fbld", _
-		@"fbstp", @"fchs", @"fclex", @"fnclex", @"fcmovb", @"fcmove", @"fcmovbe", @"fcmovu", @"fcmovnb", @"fcmovne", _
-		@"fcmovnbe", @"fcmovnu", @"fcom", @"fcomp", @"fcompp", @"fcomi", @"fcomip", @"fucomi", @"fucomip", @"fcos", _
-		@"fdecstp", @"fdiv", @"fdivp", @"fidiv", @"fdivr", @"fdivrp", @"fidivr", @"ffree", @"ficom", @"ficomp", _
-		@"fild", @"fincstp", @"finit", @"fninit", @"fist", @"fistp", @"fld", @"fld1", @"fldl2t", @"fldl2e", @"fldpi", _
-		@"fldlg2", @"fldln2", @"fldz", @"fldcw", @"fldenv", @"fmul", @"fmulp", @"fimul", @"fnop", @"fpatan", @"fprem", _
-		@"fprem1", @"fptan", @"frndint", @"frstor", @"fsave", @"fnsave", @"fscale", @"fsin", @"fsincos", @"fsqrt", _
-		@"fst", @"fstp", @"fstcw", @"fnstcw", @"fstenv", @"fnstenv", @"fstsw", @"fnstsw", @"fsub", @"fsubp", @"fisub", _
-		@"fsubr", @"fsubrp", @"fisubr", @"ftst", @"fucom", @"fucomp", @"fucompp", @"fwait", @"fxam", @"fxch", @"fxrstor", _
-		@"fxsave", @"fxtract", @"fyl2x", @"fyl2xp1", @"hlt", @"idiv", @"imul", @"in", @"inc", @"ins", @"insb", @"insw", _
-		@"insd", @"int", @"into", @"invd", @"invlpg", @"iret", @"iretd", @"ja", @"jae", @"jb", @"jbe", @"jc", @"jcxz", _
-		@"jecxz", @"je", @"jg", @"jge", @"jl", @"jle", @"jna", @"jnae", @"jnb", @"jnbe", @"jnc", @"jne", @"jng", @"jnge", _
-		@"jnl", @"jnle", @"jno", @"jnp", @"jns", @"jnz", @"jo", @"jp", @"jpe", @"jpo", @"js", @"jz", @"jmp", @"lahf", @"lar", _
-		@"ldmxcsr", @"lds", @"les", @"lfs", @"lgs", @"lss", @"lea", @"leave", @"lfence", @"lgdt", @"lidt", @"lldt", @"lmsw", _
-		@"lock", @"lods", @"lodsb", @"lodsw", @"lodsd", @"loop", @"loope", @"loopz", @"loopne", @"loopnz", @"lsl", @"ltr", _
-		@"maskmovdqu", @"maskmovq", @"maxpd", @"maxps", @"maxsd", @"maxss", @"mfence", @"minpd", @"minps", @"minsd", _
-		@"minss", @"mov", @"movapd", @"movaps", @"movd", @"movdqa", @"movdqu", @"movdq2q", @"movhlps", @"movhpd", _
-		@"movhps", @"movlhps", @"movlpd", @"movlps", @"movmskpd", @"movmskps", @"movntdq", @"movnti", @"movntpd", _
-		@"movntps", @"movntq", @"movq", @"movq2dq", @"movs", @"movsb", @"movsw", @"movsd", @"movss", @"movsx", @"movupd", _
-		@"movups", @"movzx", @"mul", @"mulpd", @"mulps", @"mulsd", @"mulss", @"neg", @"nop", @"not", @"or", @"orpd", _
-		@"orps", @"out", @"outs", @"outsb", @"outsw", @"outsd", @"packsswb", @"packssdw", @"packuswb", @"paddb", _
-		@"paddw", @"paddd", @"paddq", @"paddsb", @"paddsw", @"paddusb", @"paddusw", @"pand", @"pandn", @"pause", _
-		@"pavgb", @"pavgw", @"pcmpeqb", @"pcmpeqw", @"pcmpeqd", @"pcmpgtb", @"pcmpgtw", @"pcmpgtd", @"pextrw", _
-		@"pinsrw", @"pmaddwd", @"pmaxsw", @"pmaxub", @"pminsw", @"pminub", @"pmovmskb", @"pmulhuv", @"pmulhw", _
-		@"pmullw", @"pmuludq", @"pop", @"popa", @"popad", @"popf", @"popfd", @"por", @"prefetcht0", @"prefetcht1", _
-		@"prefetcht2", @"prefetchnta", @"psadbw", @"pshufd", @"pshufhw", @"pshuflw", @"pshufw", @"psllw", @"pslld", _
-		@"psllq", @"psraw", @"psrad", @"psrldq", @"psrlw", @"psrld", @"psrlq", @"psubb", @"psubw", @"psubd", @"psubq", _
-		@"psubsb", @"psubsw", @"psubusb", @"psubusw", @"punpckhbw", @"punpckhwd", @"punpckhdq", @"punpckhqdq", _
-		@"punpcklbw", @"punpcklwd", @"punpckldq", @"punpcklqdq", @"push", @"pusha", @"pushad", @"pushf", @"pushfd", _
-		@"pxor", @"rcl", @"rcr", @"rol", @"ror", @"rcpps", @"rcpss", @"rdmsr", @"rdpmc", @"rdtsc", @"rep", @"repe", _
-		@"repz", @"repne", @"repnz", @"ret", @"rsm", @"rsqrtps", @"rsqrtss", @"sahf", @"sal", @"sar", @"shl", @"shr", _
-		@"sbb", @"scas", @"scasb", @"scasw", @"scasd", @"seta", @"setae", @"setb", @"setbe", @"setc", @"sete", @"setg", _
-		@"setge", @"setl", @"setle", @"setna", @"setnae", @"setnb", @"setnbe", @"setnc", @"setne", @"setng", @"setnge", _
-		@"setnl", @"setnle", @"setno", @"setnp", @"setns", @"setnz", @"seto", @"setp", @"setpe", @"setpo", @"sets", _
-		@"setz", @"sfence", @"sgdt", @"sidt", @"shld", @"shrd", @"shufpd", @"shufps", @"sldt", @"smsw", @"sqrtpd", _
-		@"sqrtps", @"sqrtsd", @"sqrtss", @"stc", @"std", @"sti", @"stmxcsr", @"stos", @"stosb", @"stosw", @"stosd", _
-		@"str", @"sub", @"subpd", @"subps", @"subsd", @"subss", @"sysenter", @"sysexit", @"test", @"ucomisd", _
-		@"ucomiss", @"ud2", @"unpckhpd", @"unpckhps", @"unpcklpd", @"unpcklps", @"verr", @"verw", @"wait", @"wbinvd", _
-		@"wrmsr", @"xadd", @"xchg", @"xlat", @"xlatb", @"xor", @"xorpd", @"xorps", _
-		@"pavgusb", @"pfadd", @"pfsub", @"pfsubr", @"pfacc", @"pfcmpge", @"pfcmpgt", @"pfcmpeq", @"pfmin", @"pfmax", _
-		@"pi2fw", @"pi2fd", @"pf2iw", @"pf2id", @"pfrcp", @"pfrsqrt", @"pfmul", @"pfrcpit1", @"pfrsqit1", @"pfrcpit2", _
-		@"pmulhrw", @"pswapw", @"femms", @"prefetch", @"prefetchw", @"pfnacc", @"pfpnacc", @"pswapd", @"pmulhuw", _
-		NULL _
 	}
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -531,10 +468,24 @@ sub hPrepOperand _
 		end if
 
 	case IR_VREGTYPE_IMM
+		dim i as longint
 		if( isaux = FALSE ) then
-			operand = str( vreg->value.i )
+			i = vreg->value.i
 		else
-			operand = str( vreg->vaux->value.i )
+			i = vreg->vaux->value.i
+		end if
+
+		if( dtype = FB_DATATYPE_BOOLEAN ) then
+			'' Currently the compiler stores boolean constant values as 0/-1 internally,
+			'' in the FBVALUE.i field which is a longint (i.e. an int, not a bool),
+			'' so we have to convert to 0/1 manually here.
+			if( i ) then
+				operand = "1"
+			else
+				operand = "0"
+			end if
+		else
+			operand = str( i )
 		end if
 
 	case else
@@ -808,45 +759,6 @@ private sub hEndRegTB
 	for i = 0 to EMIT_REGCLASSES-1
 		regDelClass( emit.regTB(i) )
 	next
-
-end sub
-
-'':::::
-private sub hInitKeywordsTB
-    dim as integer t, i
-
-	hashInit( @emit.keyhash, EMIT_MAXKEYWORDS )
-
-	'' add reg names
-	for t = 0 to EMIT_MAXRTABLES-1
-		for i = 0 to EMIT_MAXRNAMES-1
-			if( len( rnameTB(t,i) ) > 0 ) then
-				hashAdd( @emit.keyhash, @rnameTB(t,i), cast( any ptr, INVALID ), INVALID )
-			end if
-		next
-	next
-
-	'' add asm keywords
-	for i = 0 to EMIT_MAXKEYWORDS-1
-		if( keywordTb(i) = NULL ) then
-			exit for
-		end if
-
-		hashAdd( @emit.keyhash, keywordTb(i), cast( any ptr, INVALID ), INVALID )
-	next
-
-	emit.keyinited = TRUE
-
-end sub
-
-'':::::
-private sub hEndKeywordsTB
-
-	if( emit.keyinited ) then
-		hashEnd( @emit.keyhash )
-	end if
-
-	emit.keyinited = FALSE
 
 end sub
 
@@ -3967,7 +3879,11 @@ private sub _emitEQVI _
 	ostr = "xor " + dst + COMMA + src
 	outp ostr
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+	else
+		ostr = "not " + dst
+	end if
 	outp ostr
 
 end sub
@@ -4012,7 +3928,11 @@ private sub _emitIMPI _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+	else
+		ostr = "not " + dst
+	end if
 	outp ostr
 
 	ostr = "or " + dst + COMMA + src
@@ -4221,17 +4141,23 @@ private sub hCMPI _
 			outp ostr
 		end if
 
-		'' convert 1 to -1 (TRUE in QB/FB)
-		ostr = "shr " + rname + ", 1"
-		outp ostr
+		if( rvreg->dtype <> FB_DATATYPE_BOOLEAN ) then 
+			'' convert 1 to -1 (TRUE in QB/FB)
+			ostr = "shr " + rname + ", 1"
+			outp ostr
 
-		ostr = "sbb " + rname + COMMA + rname
-		outp ostr
+			ostr = "sbb " + rname + COMMA + rname
+			outp ostr
+		end if
 
 	'' old (and slow) boolean set
 	else
 
-		ostr = "mov " + rname + ", -1"
+		if( rvreg->dtype = FB_DATATYPE_BOOLEAN ) then 
+			ostr = "mov " + rname + ", 1"
+		else
+			ostr = "mov " + rname + ", -1"
+		end if
 		outp ostr
 
 		ostr = "j" + *mnemonic
@@ -4762,7 +4688,13 @@ private sub _emitNOTI _
 
 	hPrepOperand( dvreg, dst )
 
-	ostr = "not " + dst
+	if( dvreg->dtype = FB_DATATYPE_BOOLEAN ) then
+		ostr = "xor " + dst + COMMA + "1"
+
+	else
+		ostr = "not " + dst
+	end if
+	
 	outp ostr
 
 end sub
@@ -6107,6 +6039,455 @@ private sub _emitSCOPEEND _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' boolean
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+''
+'' Load/store b2b, b2i, i2b
+''
+'' Basic rules: booleans store 0/1 to be g++-compatible, but we produce 0/-1
+'' when converting to integers to be FB-compatible.
+''
+
+private sub _emitLOADB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	'' Assumes that booleans are stored as 0|1 only, and any other value
+	'' is undefined.  Also assume src and dst are always same size.
+	
+	dim as string dst, src
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	hMOV( dst, src )
+
+end sub
+
+private sub _emitSTORB2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	'' storing boolean to boolean same as loading to boolean.  See LOADB2B 
+	'' for assumptions
+	_emitLOADB2B( dvreg, svreg )
+end sub
+
+private sub _emitLOADB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string src, dst
+	
+	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst, "-1" )
+		else
+			hMOV( dst, "0" )
+		end if
+
+		exit sub
+	end if
+
+	'' copy the 0|1
+	if( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) ) then
+		outp( "movzx " + dst + ", " + src )
+	else
+		hMOV( dst, src )
+	end if
+
+	'' convert 0|1 to 0|-1
+	outp( "neg " + dst )
+
+end sub
+
+private sub _emitSTORB2I( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	'' storing boolean to integer same as loading to integer and LOADB2I
+	'' takes care of the zero-extension
+	_emitLOADB2I( dvreg, svreg )
+end sub
+
+private sub _emitLOADI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string src, dst, dst8
+	dim as integer ddsize = any
+	
+	hPrepOperand( svreg, src )
+	hPrepOperand( dvreg, dst )
+
+	ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+	assert( (ddsize = 1) or (ddsize = 4) )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst, "1" )
+		else
+			hMOV( dst, "0" )
+		end if
+
+	'' 1-byte boolean? (then we can "setne" directly into it)
+	elseif( ddsize = 1 ) then
+		'' int8 to boolean
+		'' if src is non-zero, produce 0|1 and store it into dst
+		outp( "cmp " + src + ", 0" )
+		outp( "setne " + dst )
+
+	'' 4-byte booleans: dst is register with 8-bit accessor? (then we can "setne" directly into it)
+	elseif( irIsREG( dvreg ) and (dvreg->reg <> EMIT_REG_ESI) and (dvreg->reg <> EMIT_REG_EDI) ) then
+		'' int to boolean reg
+		dst8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+		outp( "cmp " + src + ", 0" )
+		outp( "setne " + dst8 )
+		outp( "movzx " + dst + ", " + dst8 )
+
+	'' 4-byte booleans: do it the hard way .. with an extra reg
+	else
+		dim as string aux, aux8
+		dim as integer reg, isfree
+
+		reg = hFindRegNotInVreg( dvreg, TRUE )
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+		aux = *hGetRegName( dvreg->dtype, reg )
+
+		isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		'' is src zero ?
+		outp "cmp " + src + COMMA + "0"
+
+		'' set byte to one (1) if src not equal to zero
+		outp "setne " + aux8
+
+		if( irIsREG( dvreg ) ) then
+			outp "movzx " + dst + COMMA + aux8
+		else
+			outp "movzx " + aux + COMMA + aux8
+			outp "mov " + dst + COMMA + aux
+		end if
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+	end if
+
+end sub
+
+private sub _emitSTORI2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	'' storing integer to boolean same as loading to boolean and LOADI2B
+	'' takes care of the ESI/DSI as byte reg stuff
+	_emitLOADI2B( dvreg, svreg )
+end sub
+
+''
+'' Load/store f2b or b2f
+''
+''
+
+private sub _emitLOADF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+    dim as string dst, src
+    dim as integer ddsize = any
+	dim as integer isfree = any
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ddsize = typeGetSize( dvreg->dtype )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isfree orelse= hIsRegInVreg( dvreg, EMIT_REG_EAX )
+
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		outp "fld " + src
+	end if
+	
+	if( isfree = FALSE ) then
+		outp "push eax"
+	end if
+
+	outp "ftst"
+	outp "fnstsw ax"
+	
+	#if 1
+	outp "sahf"
+	outp "setnz al"
+	#else
+	outp "test ah, 0b01000000"
+	outp "setz al"
+	#endif
+	
+	outp "fstp st(0)"
+
+	if( ddsize = 1 ) then
+		outp "mov " + dst + ", al"
+	else
+		outp "movzx " + dst + ", al"
+	end if
+
+	if( isfree = FALSE ) then
+		outp "pop eax"
+	end if
+
+end sub
+
+private sub _emitSTORF2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	_emitLOADF2B(dvreg, svreg)
+end sub
+
+private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	
+	dim as string src, dst
+	dim as integer sdsize = any
+	
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	sdsize = typeGetSize( svreg->dtype )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			outp "fld1"
+			outp "fchs"
+		else
+			outp "fldz"
+		end if
+		exit sub
+	end if
+
+	'' byte source? damn..
+	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer isfree, reg
+
+		reg = hFindRegNotInVreg( svreg )
+
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		outp "movzx " + aux + COMMA + src
+
+		hPUSH aux
+		outp "fild dword ptr [esp]"
+		outp "fchs"
+		outp "add esp, 4"
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+	else
+		outp "fild " + src
+	end if
+	outp "fchs"
+
+end sub
+
+private sub _emitSTORB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string src, dst
+	dim as integer sdsize = any
+	
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	sdsize = typeGetSize( svreg->dtype )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			outp "fld1"
+			outp "fchs"
+		else
+			outp "fldz"
+		end if
+		outp "fstp " + dst
+		exit sub
+	end if
+
+	'' byte source? damn..
+	if( sdsize = 1 ) then
+    	dim as string aux
+    	dim as integer isfree, reg
+
+		reg = hFindRegNotInVreg( svreg )
+
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		outp "movzx " + aux + COMMA + src
+
+		hPUSH aux
+		outp "fild dword ptr [esp]"
+		outp "add esp, 4"
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+	else
+		outp "fild " + src
+	end if
+
+	outp "fchs"
+	outp "fstp " + dst
+
+end sub
+
+
+''
+'' Load/store b2l or l2b
+'' (same rules as _emitLOADB2I())
+''
+
+private sub _emitLOADB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string dst1, dst2
+	hPrepOperand64( dvreg, dst1, dst2 )
+
+	assert( svreg->dtype = FB_DATATYPE_BOOLEAN )
+
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst1, "-1" )
+			hMOV( dst2, "-1" )
+		else
+			hMOV( dst1, "0" )
+			hMOV( dst2, "0" )
+		end if
+	else
+		dim as string src
+		hPrepOperand( svreg, src )
+
+		'' copy the 0|1 into the low dword
+		assert( typeGetSize( dvreg->dtype ) > typeGetSize( svreg->dtype ) )
+		outp( "movzx " + dst1 + ", " + src )
+
+		'' convert 0|1 to 0|-1
+		outp( "neg " + dst1 )
+
+		'' copy 0|-1 into upper dword too
+		hMOV( dst2, dst1 )
+	end if
+
+end sub
+
+private sub _emitSTORB2L( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	_emitLOADB2L(dvreg, svreg)
+end sub
+
+private sub _emitLOADL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string dst
+	dim as integer ddsize
+	dim as string src1, src2
+	dim as string aux, aux8
+
+	hPrepOperand64( svreg, src1, src2 )
+	hPrepOperand( dvreg, dst )
+
+	ddsize = typeGetSize( FB_DATATYPE_BOOLEAN )
+
+	assert( dvreg->dtype = FB_DATATYPE_BOOLEAN )
+	assert( (ddsize = 1) or (ddsize = 4) )
+
+	'' immediate?
+	if( irIsIMM( svreg ) ) then
+		if( svreg->value.i ) then
+			hMOV( dst, "1" )
+		else
+			hMOV( dst, "0" )
+		end if
+
+	'' destine is register with 8-bit accessor? use it
+	elseif( irIsREG( dvreg ) and (dvreg->reg <> EMIT_REG_ESI) and (dvreg->reg <> EMIT_REG_EDI) ) then
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, dvreg->reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
+
+		hMOV( aux, src1 )
+		outp( "or " + aux + ", " + src2 )
+		outp( "cmp " + aux + ", 0" )
+		outp( "setne " + aux8 )
+		if( ddsize <> 1 ) then
+			outp( "movzx " + aux + ", " + aux8 )
+		end if
+	
+	'' use an extra reg
+	else
+
+		dim as integer reg, isfree = FALSE
+
+		reg = hFindRegNotInVreg( dvreg, TRUE )
+
+		aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+		isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
+		if( isfree = FALSE ) then
+			hPUSH aux
+		end if
+
+		'' source is also a reg?
+		if( irIsREG( svreg ) ) then
+			'' combine high/low dwords (check is source is already has one of the dwords)
+			if( reg = svreg->reg ) then
+				'' reg already has src1
+				outp( "or " + aux + ", " + src2 )
+			elseif( reg = svreg->vaux->reg ) then
+				'' reg already has src2
+				outp( "or " + aux + ", " + src1 )
+			else
+				hMOV( aux, src1 )
+				outp( "or " + aux + ", " + src2 )
+			end if
+		else
+			'' combine high/low dwords
+			hMOV( aux, src1 )
+			outp( "or " + aux + ", " + src2 )
+		end if
+	
+		'' if (src1 or src2) is non-zero, produce 0|1 and store it into dst
+		outp( "cmp " + aux + ", 0" )
+		outp( "setne " + aux8 )
+		if( ddsize = 1 ) then
+			hMOV( dst, aux8 )
+		else
+			outp( "movzx " + aux + ", " + aux8 )
+			hMOV( dst, aux )
+		end if
+
+		if( isfree = FALSE ) then
+			hPOP aux
+		end if
+
+	end if
+
+end sub
+
+private sub _emitSTORL2B( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	_emitLOADL2B(dvreg, svreg)
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' initializers
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -6204,13 +6585,15 @@ end sub
 	{ _
 		EMIT_CBENTRY(NOP), _
 		_
-		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
-		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), _
-		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), _
-        _
-		EMIT_CBENTRY(STORI2I), EMIT_CBENTRY(STORF2I), EMIT_CBENTRY(STORL2I), _
-		EMIT_CBENTRY(STORI2F), EMIT_CBENTRY(STORF2F), EMIT_CBENTRY(STORL2F), _
-		EMIT_CBENTRY(STORI2L), EMIT_CBENTRY(STORF2L), EMIT_CBENTRY(STORL2L), _
+		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), EMIT_CBENTRY(LOADB2I), _
+		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), EMIT_CBENTRY(LOADB2F), _
+		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), EMIT_CBENTRY(LOADB2L), _
+		EMIT_CBENTRY(LOADI2B), EMIT_CBENTRY(LOADF2B), EMIT_CBENTRY(LOADL2B), EMIT_CBENTRY(LOADB2B), _
+		_
+		EMIT_CBENTRY(STORI2I), EMIT_CBENTRY(STORF2I), EMIT_CBENTRY(STORL2I), EMIT_CBENTRY(STORB2I), _
+		EMIT_CBENTRY(STORI2F), EMIT_CBENTRY(STORF2F), EMIT_CBENTRY(STORL2F), EMIT_CBENTRY(STORB2F), _
+		EMIT_CBENTRY(STORI2L), EMIT_CBENTRY(STORF2L), EMIT_CBENTRY(STORL2L), EMIT_CBENTRY(STORB2L), _
+		EMIT_CBENTRY(STORI2B), EMIT_CBENTRY(STORF2B), EMIT_CBENTRY(STORL2B), EMIT_CBENTRY(STORB2B), _
         _
 		EMIT_CBENTRY(MOVI), EMIT_CBENTRY(MOVF), EMIT_CBENTRY(MOVL), _
 		EMIT_CBENTRY(ADDI), EMIT_CBENTRY(ADDF), EMIT_CBENTRY(ADDL), _
@@ -6311,9 +6694,6 @@ private function _init _
 	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar)
 
 	''
-	emit.keyinited 	= FALSE
-
-	''
 	emit.lastsection = INVALID
 	emit.lastpriority = INVALID
 
@@ -6342,8 +6722,6 @@ private sub _end
 
 	''
 	hEndRegTB( )
-
-    hEndKeywordsTB( )
 
 end sub
 
@@ -6500,20 +6878,6 @@ private function _getFreePreservedReg _
 			function = EMIT_REG_EDI
 		end if
 	end if
-
-end function
-
-'':::::
-private function _isKeyword _
-	( _
-		byval text as zstring ptr _
-	) as integer static
-
-	if( emit.keyinited = FALSE ) then
-		hInitKeywordsTB( )
-	end if
-
-	function = (hashLookup( @emit.keyhash, text ) <> NULL)
 
 end function
 
@@ -6721,7 +7085,7 @@ end sub
 
 private function _getTypeString( byval dtype as integer ) as const zstring ptr
 	select case as const typeGet( dtype )
-	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
+	case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE, FB_DATATYPE_BOOLEAN
 		function = @".byte"
 	case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
 		function = @".short"
@@ -6844,7 +7208,6 @@ function emitGasX86_ctor _
 		@_getOptionValue, _
 		@_open, _
 		@_close, _
-		@_isKeyword, _
 		@_isRegPreserved, _
 		@_getFreePreservedReg, _
 		@_getResultReg, _

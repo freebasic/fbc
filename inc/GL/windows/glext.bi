@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   Copyright (c) 2013-2014 The Khronos Group Inc.
@@ -26,6 +26,8 @@
 ''   Copyright © 2015 FreeBASIC development team
 
 #pragma once
+
+#include once "GL/windows/gl.bi"
 
 extern "Windows"
 

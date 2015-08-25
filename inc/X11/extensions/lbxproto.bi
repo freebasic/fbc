@@ -612,12 +612,12 @@ type xLbxPolyArcReq as xLbxPolyPointReq
 type xLbxPolyFillRectangleReq as xLbxPolyPointReq
 type xLbxPolyFillArcReq as xLbxPolyPointReq
 
-#define sz_xLbxPolyLineReq sz_xLbxPolyPointReq
-#define sz_xLbxPolySegmentReq sz_xLbxPolyPointReq
-#define sz_xLbxPolyRectangleReq sz_xLbxPolyPointReq
-#define sz_xLbxPolyArcReq sz_xLbxPolyPointReq
-#define sz_xLbxPolyFillRectangleReq sz_xLbxPolyPointReq
-#define sz_xLbxPolyFillArc sz_xLbxPolyPointReq
+const sz_xLbxPolyLineReq = sz_xLbxPolyPointReq
+const sz_xLbxPolySegmentReq = sz_xLbxPolyPointReq
+const sz_xLbxPolyRectangleReq = sz_xLbxPolyPointReq
+const sz_xLbxPolyArcReq = sz_xLbxPolyPointReq
+const sz_xLbxPolyFillRectangleReq = sz_xLbxPolyPointReq
+const sz_xLbxPolyFillArc = sz_xLbxPolyPointReq
 
 type _LbxFillPoly
 	reqType as CARD8

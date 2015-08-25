@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -55,7 +55,7 @@
 extern "Windows"
 
 #define _INC_OLE
-#define OLE_LPCSTR LPCSTR
+type OLE_LPCSTR as LPCSTR
 #define OT_LINK __MSABI_LONG(1)
 #define OT_EMBEDDED __MSABI_LONG(2)
 #define OT_STATIC __MSABI_LONG(3)

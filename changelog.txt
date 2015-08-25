@@ -1,3 +1,66 @@
+Version 1.04.0
+
+[changed]
+- FileAttr() now returns an Integer instead of a Long, and now supports returning OS handles on 64bit
+- #750: The gfxlib is now cleaned-up by END (which also happens automatically at the end of the implicit main function), instead of the FB runtime's global destructor. This should fix the "hang on exit on Windows 10" issues. The reason is that the gfxlib clean-up needs to wait for the background thread to exit, which cannot safely be done in a global destructor on Windows, due to the loader lock. This means it is definitely not safe anymore to use FB graphics commands during global variable destructors or module-level destructors.
+- Windows API binding: The BOOLEAN typedef has been renamed to WINBOOLEAN due to the addition of built-in Boolean type to FB. You can #undef Boolean before #including windows.bi to get the Windows API BOOLEAN typedef again.
+- Many bindings now declare CTRUE (1) instead of TRUE (1), to avoid conflicting with the new built-in True (-1) keyword. You can #undef True before #including them to get their old TRUE (1) again.
+
+[added]
+- BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.
+- TRUE/FALSE built-in constants (programs may still declare them manually, but a warning will be shown)
+- CBOOL()
+- Boolean support for PRINT, INPUT, DATA, WRITE etc. Booleans are represented as "true"/"false" strings (case-insensitive).
+- DIM|VAR BYREF id AS datatype, for creating local references to other objects, similar to BYREF parameters
+- exepath() now works on FreeBSD, NetBSD, Darwin and Solaris
+- The FB gfxlib can now be built on OS X using XQuartz by passing ENABLE_XQUARTZ=1 to make
+- Redundant float constant declarations are now also allowed
+- Updated Mesa OpenGL binding to 10.6.4
+- Updated Windows API binding to MinGW-w64 4.0.4
+- Updated IUP binding to 3.15
+- Updated CD binding to 5.8.2
+- Updated FreeType binding to 2.6
+- Updated Lua binding to 5.3.1
+- Updated LLVM/clang bindings to 3.6.2
+- Updated some CRT/glibc bindings to glibc 2.22
+- Updated curl binding to 7.44.0
+- Updated libffi binding to 3.2.1
+- Updated libpng bindings to 1.5.23 and 1.6.18
+- Updated libzip binding to 1.0.1
+
+[fixed]
+- False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
+- Adjusted "ambigious sizeof" warning message for the case when it could refer to a forward reference or a variable
+- 1.03.0 regression: Compiler crash during error recovery in case a CONST declaration was a duplicate definition
+- 1.02.0 regression: zlib.bi couldn't be #included behind crt.bi due to the declarations for SEEK_SET & co
+- Typedefs allowed the data type or forward reference identifier to be omitted (e.g. "type T as")
+- Typedefs allowed forward references named after keywords, even though no such type alias or UDT can be declared (only quirk keywords are allowed as type names, not "core" keywords though)
+- #747: SPC(n) only allowed skipping into the next line, and truncated bigger values of n. Now it can skip multiple lines if n is big enough.
+- IUP binding: added various missing #inclibs
+- #782: C backend: inline ASM keywords were turned into references to previously declared FB variables/procedures/labels, if those were named after ASM keywords. Inline ASM keywords will now be left untouched (using the same heuristic, a list of ASM keywords, as used by the ASM backend).
+- __FB_ASM__ wasn't #defined for x86_64 even though the -asm option can be used on x86_64 too
+- C backend: UDTs using Field=N were emitted incorrectly (causing gcc errors), if they contained a field of type of another UDT that didn't use Field=N.
+- False-positive "ambigious sizeof" warnings if the identifier could refer to a type or variable of that type (in this case the size is obviously the same, and it doesn't matter which one is used)
+- C backend: Procedure pointers having a circular dependency on themselves could result in duplicate typedefs being emitted, causing gcc errors with older gcc versions.
+- rtlib & gfxlib compilation was broken on NetBSD, Darwin and Solaris (header & include-path issues)
+- On Darwin, linking with rtlib failed due to __fb_errmsg being discarded
+- Correctly implemented fb_hGetExeName for FreeBSD, NetBSD, Darwin and Solaris (needed by gfxlib2)
+- The FB makefile can now detect the OS when building on Solaris
+- fbc will now pass the proper parameters to "as" on OS X
+- 1.02.0 regression: NULL was declared with pointer type in updated bindings (Windows API, SDL, etc.), and is now just an integer constant again, so it can be passed to things like WPARAM/LPARAM without triggering a compiler warning.
+- Open Com on Windows didn't invoke GetCommState() properly, meaning it could "randomly" fail. Also, the port was not always opened for exclusive access, even though MSDN says that is the only possibility.
+- 1.03.0 regression: OpenAL binding: The ALboolean and ALCboolean typedefs were incorrectly expanded and translated as zstring in some places
+- format(now(), "ttttt") now works as expected under unix-like systems
+- -profile now works on win64; the compiler generated calls to "mcount" which doesn't exist on win64; it's named "_mcount" instead. (with MinGW-w64's libgmon at least)
+- 1.02.0 regression: CHAR/WCHAR typedefs (and others) in the Windows API bindings were translated as zstring/wstring; they're now translated as byte/wchar_t again (and accordingly in some cases where fields/parameters use them as type and clearly don't want a zero-terminated string), to allow them to refer to a single char again.
+- 1.01.0 regression: CGUI binding: InitCgui*() macros were all broken, not just InitCgui() (that was fixed before)
+- GdiPlus binding: Fixed GdipMeasureCharacterRanges() declaration (wrong parameter type)
+- RETURN in BYREF-result functions could erronously try to construct a result object, if the result UDT had constructor overloads taking a pointer
+- LLVM backend: Accesses to fixed-length strings now use the proper types
+- LLVM backend: Structs using FIELD=1 are now emitted as packed structs
+- Many bindings and especially the Windows API binding now use more proper Const/Type/Extern/Sub/Function declarations instead of #defines, allowing many identifiers (such as "LoadImage" which is also a Windows API function) to be used for custom functions in namespaces, even if the file #includes windows.bi or others.
+
+
 Version 1.03.0
 
 [changed]
@@ -5,33 +68,28 @@ Version 1.03.0
 - non-standalone builds: -target <gcctarget> no longer searches libs in lib/freebasic/<gcctarget>, but rather in the normal lib/freebasic/<fbtarget> directory. I.e. the directory layout for native or cross compiling is the same, making packaging and distribution easier.
 
 [added]
-- Dim/Var Byref for creating local references to other objects, similar to Byref parameters
-- Package name + version to all the new/updated bindings
-- Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
-- Windows API binding updated to mingw-w64 4.0.1
 - IUP binding updated to 3.13
 - #742: fbc can now use lib64/freebasic/... instead of lib/freebasic/ if built with ENABLE_LIB64=1
 - -print fblibdir option
 - All the recently updated bindings now have copyright/license information
 - New libbzip2 binding (64bit-capable)
+- New libcaca binding (64bit-capable), libcaca-0.99.beta19
+- New BASS 2.4 & BASSMOD 2.0 bindings (64bit-capable)
+- New OpenAL (openal-soft-1.16.0) and freealut (1.1.0) bindings (64bit-capable)
+- New ASpell 0.60.6.1 binding (64bit-capable)
+- New libbfd binding (64bit-capable), supporting all binutils versions from 2.16 to 2.25
+- New CanvasDraw 5.8.1 binding (64bit-capable)
+- Updated CGUI binding to 2.0.4 (from CGUI project's CVS)
 - Redundant constant declarations (CONST A = 1 : CONST A = 1) are now allowed, just like redundant #defines
-- 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
 - logic operation optimization: x <> 0 => x if x is a comparison operation already, and <comparison> = 0 => <inverted-comparison>, and NOT <comparison> => <inverted-comparison>
 - ASM backend: slightly better code generation: Integer operand register will be re-used as Long result registers now (and vice-versa), which is ok since this is 32bit-only
+- len/sizeof/typeof will now warn if the given identifier is ambigious (i.e. if it could refer to both a type or a procedure/variable symbol), because currently the type will be preferred, which is typically unexpected, at least for len() on strings.
+- crt/longdouble.bi: ARM support
+- LLVM backend: global variable initializers
+- LLVM backend: fixed-size array variables/fields
 
 [fixed]
-- 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
-- 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
-- 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing; wsprintf/wvsprintf declarations were missing; ole2.bi couldn't be included directly/alone anymore.
-- bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
-- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too), some #defines were missing (e.g. lstrcpy/lstrcat), shlwapi.bi #includes shlobj.bi again (for backwards compatibility).
-- crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
-- #767: Illegal byref result assignments will now cause a proper error message, not just a warning
-- Using the -asm att|intel option for non-x86[_64] targets now triggers an error
-- C backend: -masm=... will now only be passed to gcc for x86[_64] targets
-- Screen didn't return an error code if it failed
-- Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
-- "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
+- Windows API binding: win/ntddndis.bi and win/olectlid.bi headers were missing their content (and thus, the dependencies of ntddndis were missing too)
 - LLVM backend: local vars were emitted twice
 - LLVM backend: the signature emitted for calls will now use the same param dtypes as in the declaration, as required by LLVM
 - LLVM backend: self-BOPs, and the self negation UOP, weren't working
@@ -40,6 +98,46 @@ Version 1.03.0
 - 1.00.0 regression: compiler crash on assignments with a dereferenced constant on the left side
 - 1.00.0 regression: C backend: bad code for pointer array parameter accesses (resulting in gcc error reports)
 - Better error recovery after byref function result assignment type mismatch errors
+- 1.01.0/1.02.0 regression: Various bindings: some macros using sizeof() were badly translated (doing sizeof((T)), which doesn't compile, instead of sizeof(T))
+- Various bindings: macros whose body is a scope block with just one statement are now translated as single-line statements, so that they can be used with single-line IF blocks
+- 1.01.0 regression: CGUI binding: InitCgui() macro was broken
+- 1.01.0 regression: GLib binding: G_N_ELEMENTS() macro was broken
+- Windows API binding: added #inclib "msimg32" to wingdi.bi, for using functions like GradientFill()
+- C backend: Bitfields in nested anonymous Types/Unions should no longer cause __fb_struct_size errors - fbc now uses the same work-around for them as for Types with bitfields at the toplevel, i.e. such Types are emitted as byte arrays, because fbc's/gcc's bitfield layout rules differ.
+- 1.02.0 regression: Windows API binding: The select() function from winsock headers is now renamed to select_() again, as before
+- 1.02.0 regression: Windows API binding: opensocket/selectsocket aliases for the socket_/select_ functions were missing
+- 1.02.0 regression: Windows API binding: can be used with MinGW.org again, for the most part, although some individual functions still won't work as they use MinGW-w64-specific helper functions
+- Various bindings: Some trivial "inline" functions are now turned into macros; fixed some cases of missing information about renamed symbols (e.g. in SDL2 binding)
+- Some built-in functions with wstring parameters (e.g. Val(), Left(), Right()) accepted integers and pointers in place of the wstring (e.g. Val(0)). This triggers an error now.
+- #772: Types with the same name but in different namespaces compared as equal in #if typeof(...) = typeof(...) checks and #print typeof(...) output, because the namespace prefix was not included in textual typeof()'s result string.
+- For dynamic array parameters with specified number of dimensions (e.g. <(any) as integer> instead of <() as integer>), the number of dimensions in accesses and REDIMs is now checked at compile-time, like dynamic array variables
+- 1.00.0 regression: Arrays declared with unknown dimensions ("()") could no longer be accessed with inconsistent dimension counts. This is now allowed again. If precise dimension count checking is wanted, the array should be declared using the "myArray(any, any, ...)" syntax.
+- 1.02.0 regression: GL/glext.bi on Windows no longer automatically #included GL/gl.bi
+
+
+Version 1.02.1
+
+[changed]
+
+[added]
+- Package name + version to all the new/updated bindings
+- Windows API binding: strsafe.bi and windowsx.bi; COBJMACROS declarations (COM helper macros)
+- Windows API binding updated to mingw-w64 4.0.1
+- 1.01.0 regression: Allegro 4 binding didn't have #inclibs for Win32 static linking or Linux X11 libs
+
+[fixed]
+- 1.02.0 regression: win/winuser.bi: Renamed INPUT typedef to INPUT_ to avoid conflicts with the quirk keyword (due to bug #730)
+- 1.02.0 regression: OpenGL binding: glGetString() and some others use ZString Ptr instead of GLubyte Ptr again
+- 1.02.0 regression: Windows API binding: REFIID and some other REF* types were missing; wsprintf/wvsprintf declarations were missing; ole2.bi couldn't be included directly/alone anymore.
+- bindings: Various previously untranslated (or wrongly translated) #defines in SDL2, X11, crt/pthread, Windows API
+- Windows API binding: DirectX headers missed some declarations and some didn't compile, win/commdlg.bi couldn't be #included behind windows.bi without WIN_INCLUDEALL because of missing #includes; re-added the undocumented ENUMWINDOWSPROC type; shlwapi.bi #includes shlobj.bi again (for backwards compatibility), some #defines were missing (e.g. lstrcpy/lstrcat).
+- crt/string.bi, crt/mem.bi: Added CONSTs to function declarations
+- #767: Illegal byref result assignments will now cause a proper error message, not just a warning
+- Using the -asm att|intel option for non-x86[_64] targets now triggers an error
+- C backend: -masm=... will now only be passed to gcc for x86[_64] targets
+- Screen didn't return an error code if it failed
+- Bad code generated for temporary variable destruction in static variable initialization: temporary strings or UDTs with destructors could be destroyed before even being initialized
+- "BASE.field" accesses in expressions (not at the start of a line) allowed any token behind "BASE" instead of the ".", for example "BASE : field", or even EOL.
 
 
 Version 1.02.0

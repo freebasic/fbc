@@ -84,7 +84,7 @@ const xvmc_CreateSubpicture = 6
 const xvmc_DestroySubpicture = 7
 const xvmc_ListSubpictureTypes = 8
 const xvmc_GetDRInfo = 9
-#define xvmc_LastRequest xvmc_GetDRInfo
+const xvmc_LastRequest = xvmc_GetDRInfo
 #define xvmcNumRequest (xvmc_LastRequest + 1)
 
 type xvmcSurfaceInfo_

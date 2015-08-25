@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -600,7 +600,7 @@ const GL_COLOR_ARRAY_POINTER_EXT = &h8090
 const GL_INDEX_ARRAY_POINTER_EXT = &h8091
 const GL_TEXTURE_COORD_ARRAY_POINTER_EXT = &h8092
 const GL_EDGE_FLAG_ARRAY_POINTER_EXT = &h8093
-#define GL_DOUBLE_EXT GL_DOUBLE
+const GL_DOUBLE_EXT = GL_DOUBLE
 const GL_BGR_EXT = &h80E0
 const GL_BGRA_EXT = &h80E1
 const GL_COLOR_TABLE_FORMAT_EXT = &h80D8
@@ -622,8 +622,8 @@ const GL_MAX_ELEMENTS_INDICES_WIN = &h80E9
 const GL_PHONG_WIN = &h80EA
 const GL_PHONG_HINT_WIN = &h80EB
 const GL_FOG_SPECULAR_TEXTURE_WIN = &h80EC
-#define GL_LOGIC_OP GL_INDEX_LOGIC_OP
-#define GL_TEXTURE_COMPONENTS GL_TEXTURE_INTERNAL_FORMAT
+const GL_LOGIC_OP = GL_INDEX_LOGIC_OP
+const GL_TEXTURE_COMPONENTS = GL_TEXTURE_INTERNAL_FORMAT
 
 declare sub glAccum(byval op as GLenum, byval value as GLfloat)
 declare sub glAlphaFunc(byval func as GLenum, byval ref as GLclampf)

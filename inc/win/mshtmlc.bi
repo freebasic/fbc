@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   DISCLAIMER
@@ -579,8 +579,6 @@ extern CGID_EditStateCommands as const GUID
 extern SID_SHTMLEditHost as const GUID
 extern SID_SHTMLEditServices as const GUID
 
-#define SID_SHTMLWindow IID_IHTMLWindow2
-#define SID_SElementBehaviorFactory IID_IElementBehaviorFactory
 const COOKIEACTION_NONE = &h00000000
 const COOKIEACTION_ACCEPT = &h00000001
 const COOKIEACTION_REJECT = &h00000002
@@ -2750,6 +2748,7 @@ declare function IElementBehavior_Detach_Proxy(byval This as IElementBehavior pt
 declare sub IElementBehavior_Detach_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IElementBehaviorFactory_INTERFACE_DEFINED__
 extern IID_IElementBehaviorFactory as const IID
+extern SID_SElementBehaviorFactory alias "IID_IElementBehaviorFactory" as const IID
 type IElementBehaviorFactory as IElementBehaviorFactory_
 
 type IElementBehaviorFactoryVtbl
@@ -16678,6 +16677,7 @@ declare function IHTMLFramesCollection2_get_length_Proxy(byval This as IHTMLFram
 declare sub IHTMLFramesCollection2_get_length_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IHTMLWindow2_INTERFACE_DEFINED__
 extern IID_IHTMLWindow2 as const IID
+extern SID_SHTMLWindow alias "IID_IHTMLWindow2" as const IID
 type IHTMLScreen as IHTMLScreen_
 
 type IHTMLWindow2Vtbl
@@ -22131,8 +22131,8 @@ type IMarkupPointerVtbl
 	MoveAdjacentToElement as function(byval This as IMarkupPointer ptr, byval pElement as IHTMLElement ptr, byval eAdj as ELEMENT_ADJACENCY) as HRESULT
 	MoveToPointer as function(byval This as IMarkupPointer ptr, byval pPointer as IMarkupPointer ptr) as HRESULT
 	MoveToContainer as function(byval This as IMarkupPointer ptr, byval pContainer as IMarkupContainer ptr, byval fAtStart as WINBOOL) as HRESULT
-	Left as function(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
-	Right as function(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
+	Left as function(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
+	Right as function(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
 	CurrentScope as function(byval This as IMarkupPointer ptr, byval ppElemCurrent as IHTMLElement ptr ptr) as HRESULT
 	IsLeftOf as function(byval This as IMarkupPointer ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
 	IsLeftOfOrEqualTo as function(byval This as IMarkupPointer ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
@@ -22140,7 +22140,7 @@ type IMarkupPointerVtbl
 	IsRightOfOrEqualTo as function(byval This as IMarkupPointer ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
 	IsEqualTo as function(byval This as IMarkupPointer ptr, byval pPointerThat as IMarkupPointer ptr, byval pfAreEqual as WINBOOL ptr) as HRESULT
 	MoveUnit as function(byval This as IMarkupPointer ptr, byval muAction as MOVEUNIT_ACTION) as HRESULT
-	FindText as function(byval This as IMarkupPointer ptr, byval pchFindText as wstring ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
+	FindText as function(byval This as IMarkupPointer ptr, byval pchFindText as OLECHAR ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
 end type
 
 type IMarkupPointer_
@@ -22194,9 +22194,9 @@ declare function IMarkupPointer_MoveToPointer_Proxy(byval This as IMarkupPointer
 declare sub IMarkupPointer_MoveToPointer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupPointer_MoveToContainer_Proxy(byval This as IMarkupPointer ptr, byval pContainer as IMarkupContainer ptr, byval fAtStart as WINBOOL) as HRESULT
 declare sub IMarkupPointer_MoveToContainer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupPointer_Left_Proxy(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
+declare function IMarkupPointer_Left_Proxy(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
 declare sub IMarkupPointer_Left_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupPointer_Right_Proxy(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
+declare function IMarkupPointer_Right_Proxy(byval This as IMarkupPointer ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
 declare sub IMarkupPointer_Right_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupPointer_CurrentScope_Proxy(byval This as IMarkupPointer ptr, byval ppElemCurrent as IHTMLElement ptr ptr) as HRESULT
 declare sub IMarkupPointer_CurrentScope_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -22212,7 +22212,7 @@ declare function IMarkupPointer_IsEqualTo_Proxy(byval This as IMarkupPointer ptr
 declare sub IMarkupPointer_IsEqualTo_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupPointer_MoveUnit_Proxy(byval This as IMarkupPointer ptr, byval muAction as MOVEUNIT_ACTION) as HRESULT
 declare sub IMarkupPointer_MoveUnit_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupPointer_FindText_Proxy(byval This as IMarkupPointer ptr, byval pchFindText as wstring ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
+declare function IMarkupPointer_FindText_Proxy(byval This as IMarkupPointer ptr, byval pchFindText as OLECHAR ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupPointer_FindText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IMarkupContainer_INTERFACE_DEFINED__
 extern IID_IMarkupContainer as const IID
@@ -22402,7 +22402,7 @@ type IHTMLCaretVtbl
 	IsVisible as function(byval This as IHTMLCaret ptr, byval pIsVisible as WINBOOL ptr) as HRESULT
 	Show as function(byval This as IHTMLCaret ptr, byval fScrollIntoView as WINBOOL) as HRESULT
 	Hide as function(byval This as IHTMLCaret ptr) as HRESULT
-	InsertText as function(byval This as IHTMLCaret ptr, byval pText as wstring ptr, byval lLen as LONG) as HRESULT
+	InsertText as function(byval This as IHTMLCaret ptr, byval pText as OLECHAR ptr, byval lLen as LONG) as HRESULT
 	ScrollIntoView as function(byval This as IHTMLCaret ptr) as HRESULT
 	GetLocation as function(byval This as IHTMLCaret ptr, byval pPoint as POINT ptr, byval fTranslate as WINBOOL) as HRESULT
 	GetCaretDirection as function(byval This as IHTMLCaret ptr, byval peDir as CARET_DIRECTION ptr) as HRESULT
@@ -22443,7 +22443,7 @@ declare function IHTMLCaret_Show_Proxy(byval This as IHTMLCaret ptr, byval fScro
 declare sub IHTMLCaret_Show_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLCaret_Hide_Proxy(byval This as IHTMLCaret ptr) as HRESULT
 declare sub IHTMLCaret_Hide_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IHTMLCaret_InsertText_Proxy(byval This as IHTMLCaret ptr, byval pText as wstring ptr, byval lLen as LONG) as HRESULT
+declare function IHTMLCaret_InsertText_Proxy(byval This as IHTMLCaret ptr, byval pText as OLECHAR ptr, byval lLen as LONG) as HRESULT
 declare sub IHTMLCaret_InsertText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLCaret_ScrollIntoView_Proxy(byval This as IHTMLCaret ptr) as HRESULT
 declare sub IHTMLCaret_ScrollIntoView_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -22884,7 +22884,7 @@ type ISecureUrlHostVtbl
 	QueryInterface as function(byval This as ISecureUrlHost ptr, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 	AddRef as function(byval This as ISecureUrlHost ptr) as ULONG
 	Release as function(byval This as ISecureUrlHost ptr) as ULONG
-	ValidateSecureUrl as function(byval This as ISecureUrlHost ptr, byval pfAllow as WINBOOL ptr, byval pchUrlInQuestion as wstring ptr, byval dwFlags as DWORD) as HRESULT
+	ValidateSecureUrl as function(byval This as ISecureUrlHost ptr, byval pfAllow as WINBOOL ptr, byval pchUrlInQuestion as OLECHAR ptr, byval dwFlags as DWORD) as HRESULT
 end type
 
 type ISecureUrlHost_
@@ -22895,7 +22895,7 @@ end type
 #define ISecureUrlHost_AddRef(This) (This)->lpVtbl->AddRef(This)
 #define ISecureUrlHost_Release(This) (This)->lpVtbl->Release(This)
 #define ISecureUrlHost_ValidateSecureUrl(This, pfAllow, pchUrlInQuestion, dwFlags) (This)->lpVtbl->ValidateSecureUrl(This, pfAllow, pchUrlInQuestion, dwFlags)
-declare function ISecureUrlHost_ValidateSecureUrl_Proxy(byval This as ISecureUrlHost ptr, byval pfAllow as WINBOOL ptr, byval pchUrlInQuestion as wstring ptr, byval dwFlags as DWORD) as HRESULT
+declare function ISecureUrlHost_ValidateSecureUrl_Proxy(byval This as ISecureUrlHost ptr, byval pfAllow as WINBOOL ptr, byval pchUrlInQuestion as OLECHAR ptr, byval dwFlags as DWORD) as HRESULT
 declare sub ISecureUrlHost_ValidateSecureUrl_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #define __IMarkupServices_INTERFACE_DEFINED__
 extern IID_IMarkupServices as const IID
@@ -22907,15 +22907,15 @@ type IMarkupServicesVtbl
 	Release as function(byval This as IMarkupServices ptr) as ULONG
 	CreateMarkupPointer as function(byval This as IMarkupServices ptr, byval ppPointer as IMarkupPointer ptr ptr) as HRESULT
 	CreateMarkupContainer as function(byval This as IMarkupServices ptr, byval ppMarkupContainer as IMarkupContainer ptr ptr) as HRESULT
-	CreateElement as function(byval This as IMarkupServices ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as wstring ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
+	CreateElement as function(byval This as IMarkupServices ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as OLECHAR ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
 	CloneElement as function(byval This as IMarkupServices ptr, byval pElemCloneThis as IHTMLElement ptr, byval ppElementTheClone as IHTMLElement ptr ptr) as HRESULT
 	InsertElement as function(byval This as IMarkupServices ptr, byval pElementInsert as IHTMLElement ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	RemoveElement as function(byval This as IMarkupServices ptr, byval pElementRemove as IHTMLElement ptr) as HRESULT
 	Remove as function(byval This as IMarkupServices ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	Copy as function(byval This as IMarkupServices ptr, byval pPointerSourceStart as IMarkupPointer ptr, byval pPointerSourceFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
 	Move as function(byval This as IMarkupServices ptr, byval pPointerSourceStart as IMarkupPointer ptr, byval pPointerSourceFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
-	InsertText as function(byval This as IMarkupServices ptr, byval pchText as wstring ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
-	ParseString as function(byval This as IMarkupServices ptr, byval pchHTML as wstring ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
+	InsertText as function(byval This as IMarkupServices ptr, byval pchText as OLECHAR ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
+	ParseString as function(byval This as IMarkupServices ptr, byval pchHTML as OLECHAR ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
 	ParseGlobal as function(byval This as IMarkupServices ptr, byval hglobalHTML as HGLOBAL, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	IsScopedElement as function(byval This as IMarkupServices ptr, byval pElement as IHTMLElement ptr, byval pfScoped as WINBOOL ptr) as HRESULT
 	GetElementTagId as function(byval This as IMarkupServices ptr, byval pElement as IHTMLElement ptr, byval ptagId as ELEMENT_TAG_ID ptr) as HRESULT
@@ -22923,7 +22923,7 @@ type IMarkupServicesVtbl
 	GetNameForTagID as function(byval This as IMarkupServices ptr, byval tagId as ELEMENT_TAG_ID, byval pbstrName as BSTR ptr) as HRESULT
 	MovePointersToRange as function(byval This as IMarkupServices ptr, byval pIRange as IHTMLTxtRange ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	MoveRangeToPointers as function(byval This as IMarkupServices ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr, byval pIRange as IHTMLTxtRange ptr) as HRESULT
-	BeginUndoUnit as function(byval This as IMarkupServices ptr, byval pchTitle as wstring ptr) as HRESULT
+	BeginUndoUnit as function(byval This as IMarkupServices ptr, byval pchTitle as OLECHAR ptr) as HRESULT
 	EndUndoUnit as function(byval This as IMarkupServices ptr) as HRESULT
 end type
 
@@ -22959,7 +22959,7 @@ declare function IMarkupServices_CreateMarkupPointer_Proxy(byval This as IMarkup
 declare sub IMarkupServices_CreateMarkupPointer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_CreateMarkupContainer_Proxy(byval This as IMarkupServices ptr, byval ppMarkupContainer as IMarkupContainer ptr ptr) as HRESULT
 declare sub IMarkupServices_CreateMarkupContainer_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupServices_CreateElement_Proxy(byval This as IMarkupServices ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as wstring ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
+declare function IMarkupServices_CreateElement_Proxy(byval This as IMarkupServices ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as OLECHAR ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
 declare sub IMarkupServices_CreateElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_CloneElement_Proxy(byval This as IMarkupServices ptr, byval pElemCloneThis as IHTMLElement ptr, byval ppElementTheClone as IHTMLElement ptr ptr) as HRESULT
 declare sub IMarkupServices_CloneElement_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -22973,9 +22973,9 @@ declare function IMarkupServices_Copy_Proxy(byval This as IMarkupServices ptr, b
 declare sub IMarkupServices_Copy_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_Move_Proxy(byval This as IMarkupServices ptr, byval pPointerSourceStart as IMarkupPointer ptr, byval pPointerSourceFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupServices_Move_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupServices_InsertText_Proxy(byval This as IMarkupServices ptr, byval pchText as wstring ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
+declare function IMarkupServices_InsertText_Proxy(byval This as IMarkupServices ptr, byval pchText as OLECHAR ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupServices_InsertText_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupServices_ParseString_Proxy(byval This as IMarkupServices ptr, byval pchHTML as wstring ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
+declare function IMarkupServices_ParseString_Proxy(byval This as IMarkupServices ptr, byval pchHTML as OLECHAR ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupServices_ParseString_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_ParseGlobal_Proxy(byval This as IMarkupServices ptr, byval hglobalHTML as HGLOBAL, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 declare sub IMarkupServices_ParseGlobal_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -22991,7 +22991,7 @@ declare function IMarkupServices_MovePointersToRange_Proxy(byval This as IMarkup
 declare sub IMarkupServices_MovePointersToRange_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_MoveRangeToPointers_Proxy(byval This as IMarkupServices ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr, byval pIRange as IHTMLTxtRange ptr) as HRESULT
 declare sub IMarkupServices_MoveRangeToPointers_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-declare function IMarkupServices_BeginUndoUnit_Proxy(byval This as IMarkupServices ptr, byval pchTitle as wstring ptr) as HRESULT
+declare function IMarkupServices_BeginUndoUnit_Proxy(byval This as IMarkupServices ptr, byval pchTitle as OLECHAR ptr) as HRESULT
 declare sub IMarkupServices_BeginUndoUnit_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMarkupServices_EndUndoUnit_Proxy(byval This as IMarkupServices ptr) as HRESULT
 declare sub IMarkupServices_EndUndoUnit_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
@@ -23005,15 +23005,15 @@ type IMarkupServices2Vtbl
 	Release as function(byval This as IMarkupServices2 ptr) as ULONG
 	CreateMarkupPointer as function(byval This as IMarkupServices2 ptr, byval ppPointer as IMarkupPointer ptr ptr) as HRESULT
 	CreateMarkupContainer as function(byval This as IMarkupServices2 ptr, byval ppMarkupContainer as IMarkupContainer ptr ptr) as HRESULT
-	CreateElement as function(byval This as IMarkupServices2 ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as wstring ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
+	CreateElement as function(byval This as IMarkupServices2 ptr, byval tagID as ELEMENT_TAG_ID, byval pchAttributes as OLECHAR ptr, byval ppElement as IHTMLElement ptr ptr) as HRESULT
 	CloneElement as function(byval This as IMarkupServices2 ptr, byval pElemCloneThis as IHTMLElement ptr, byval ppElementTheClone as IHTMLElement ptr ptr) as HRESULT
 	InsertElement as function(byval This as IMarkupServices2 ptr, byval pElementInsert as IHTMLElement ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	RemoveElement as function(byval This as IMarkupServices2 ptr, byval pElementRemove as IHTMLElement ptr) as HRESULT
 	Remove as function(byval This as IMarkupServices2 ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	Copy as function(byval This as IMarkupServices2 ptr, byval pPointerSourceStart as IMarkupPointer ptr, byval pPointerSourceFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
 	Move as function(byval This as IMarkupServices2 ptr, byval pPointerSourceStart as IMarkupPointer ptr, byval pPointerSourceFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
-	InsertText as function(byval This as IMarkupServices2 ptr, byval pchText as wstring ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
-	ParseString as function(byval This as IMarkupServices2 ptr, byval pchHTML as wstring ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
+	InsertText as function(byval This as IMarkupServices2 ptr, byval pchText as OLECHAR ptr, byval cch as long, byval pPointerTarget as IMarkupPointer ptr) as HRESULT
+	ParseString as function(byval This as IMarkupServices2 ptr, byval pchHTML as OLECHAR ptr, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval ppPointerStart as IMarkupPointer ptr, byval ppPointerFinish as IMarkupPointer ptr) as HRESULT
 	ParseGlobal as function(byval This as IMarkupServices2 ptr, byval hglobalHTML as HGLOBAL, byval dwFlags as DWORD, byval ppContainerResult as IMarkupContainer ptr ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	IsScopedElement as function(byval This as IMarkupServices2 ptr, byval pElement as IHTMLElement ptr, byval pfScoped as WINBOOL ptr) as HRESULT
 	GetElementTagId as function(byval This as IMarkupServices2 ptr, byval pElement as IHTMLElement ptr, byval ptagId as ELEMENT_TAG_ID ptr) as HRESULT
@@ -23021,7 +23021,7 @@ type IMarkupServices2Vtbl
 	GetNameForTagID as function(byval This as IMarkupServices2 ptr, byval tagId as ELEMENT_TAG_ID, byval pbstrName as BSTR ptr) as HRESULT
 	MovePointersToRange as function(byval This as IMarkupServices2 ptr, byval pIRange as IHTMLTxtRange ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	MoveRangeToPointers as function(byval This as IMarkupServices2 ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr, byval pIRange as IHTMLTxtRange ptr) as HRESULT
-	BeginUndoUnit as function(byval This as IMarkupServices2 ptr, byval pchTitle as wstring ptr) as HRESULT
+	BeginUndoUnit as function(byval This as IMarkupServices2 ptr, byval pchTitle as OLECHAR ptr) as HRESULT
 	EndUndoUnit as function(byval This as IMarkupServices2 ptr) as HRESULT
 	ParseGlobalEx as function(byval This as IMarkupServices2 ptr, byval hglobalHTML as HGLOBAL, byval dwFlags as DWORD, byval pContext as IMarkupContainer ptr, byval ppContainerResult as IMarkupContainer ptr ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr) as HRESULT
 	ValidateElements as function(byval This as IMarkupServices2 ptr, byval pPointerStart as IMarkupPointer ptr, byval pPointerFinish as IMarkupPointer ptr, byval pPointerTarget as IMarkupPointer ptr, byval pPointerStatus as IMarkupPointer ptr, byval ppElemFailBottom as IHTMLElement ptr ptr, byval ppElemFailTop as IHTMLElement ptr ptr) as HRESULT
@@ -23105,8 +23105,8 @@ type IMarkupPointer2Vtbl
 	MoveAdjacentToElement as function(byval This as IMarkupPointer2 ptr, byval pElement as IHTMLElement ptr, byval eAdj as ELEMENT_ADJACENCY) as HRESULT
 	MoveToPointer as function(byval This as IMarkupPointer2 ptr, byval pPointer as IMarkupPointer ptr) as HRESULT
 	MoveToContainer as function(byval This as IMarkupPointer2 ptr, byval pContainer as IMarkupContainer ptr, byval fAtStart as WINBOOL) as HRESULT
-	Left as function(byval This as IMarkupPointer2 ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
-	Right as function(byval This as IMarkupPointer2 ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as wstring ptr) as HRESULT
+	Left as function(byval This as IMarkupPointer2 ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
+	Right as function(byval This as IMarkupPointer2 ptr, byval fMove as WINBOOL, byval pContext as MARKUP_CONTEXT_TYPE ptr, byval ppElement as IHTMLElement ptr ptr, byval pcch as long ptr, byval pchText as OLECHAR ptr) as HRESULT
 	CurrentScope as function(byval This as IMarkupPointer2 ptr, byval ppElemCurrent as IHTMLElement ptr ptr) as HRESULT
 	IsLeftOf as function(byval This as IMarkupPointer2 ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
 	IsLeftOfOrEqualTo as function(byval This as IMarkupPointer2 ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
@@ -23114,7 +23114,7 @@ type IMarkupPointer2Vtbl
 	IsRightOfOrEqualTo as function(byval This as IMarkupPointer2 ptr, byval pPointerThat as IMarkupPointer ptr, byval pfResult as WINBOOL ptr) as HRESULT
 	IsEqualTo as function(byval This as IMarkupPointer2 ptr, byval pPointerThat as IMarkupPointer ptr, byval pfAreEqual as WINBOOL ptr) as HRESULT
 	MoveUnit as function(byval This as IMarkupPointer2 ptr, byval muAction as MOVEUNIT_ACTION) as HRESULT
-	FindText as function(byval This as IMarkupPointer2 ptr, byval pchFindText as wstring ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
+	FindText as function(byval This as IMarkupPointer2 ptr, byval pchFindText as OLECHAR ptr, byval dwFlags as DWORD, byval pIEndMatch as IMarkupPointer ptr, byval pIEndSearch as IMarkupPointer ptr) as HRESULT
 	IsAtWordBreak as function(byval This as IMarkupPointer2 ptr, byval pfAtBreak as WINBOOL ptr) as HRESULT
 	GetMarkupPosition as function(byval This as IMarkupPointer2 ptr, byval plMP as long ptr) as HRESULT
 	MoveToMarkupPosition as function(byval This as IMarkupPointer2 ptr, byval pContainer as IMarkupContainer ptr, byval lMP as long) as HRESULT
@@ -23534,13 +23534,7 @@ type IHTMLComputedStyleVtbl
 	get_explicitFace as function(byval This as IHTMLComputedStyle ptr, byval p as VARIANT_BOOL ptr) as HRESULT
 	get_fontWeight as function(byval This as IHTMLComputedStyle ptr, byval p as long ptr) as HRESULT
 	get_fontSize as function(byval This as IHTMLComputedStyle ptr, byval p as long ptr) as HRESULT
-
-	#ifdef UNICODE
-		get_fontName as function(byval This as IHTMLComputedStyle ptr, byval p as wstring ptr) as HRESULT
-	#else
-		get_fontName as function(byval This as IHTMLComputedStyle ptr, byval p as zstring ptr) as HRESULT
-	#endif
-
+	get_fontName as function(byval This as IHTMLComputedStyle ptr, byval p as TCHAR ptr) as HRESULT
 	get_hasBgColor as function(byval This as IHTMLComputedStyle ptr, byval p as VARIANT_BOOL ptr) as HRESULT
 	get_textColor as function(byval This as IHTMLComputedStyle ptr, byval p as DWORD ptr) as HRESULT
 	get_backgroundColor as function(byval This as IHTMLComputedStyle ptr, byval p as DWORD ptr) as HRESULT
@@ -23598,13 +23592,7 @@ declare function IHTMLComputedStyle_get_fontWeight_Proxy(byval This as IHTMLComp
 declare sub IHTMLComputedStyle_get_fontWeight_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLComputedStyle_get_fontSize_Proxy(byval This as IHTMLComputedStyle ptr, byval p as long ptr) as HRESULT
 declare sub IHTMLComputedStyle_get_fontSize_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
-
-#ifdef UNICODE
-	declare function IHTMLComputedStyle_get_fontName_Proxy(byval This as IHTMLComputedStyle ptr, byval p as wstring ptr) as HRESULT
-#else
-	declare function IHTMLComputedStyle_get_fontName_Proxy(byval This as IHTMLComputedStyle ptr, byval p as zstring ptr) as HRESULT
-#endif
-
+declare function IHTMLComputedStyle_get_fontName_Proxy(byval This as IHTMLComputedStyle ptr, byval p as TCHAR ptr) as HRESULT
 declare sub IHTMLComputedStyle_get_fontName_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IHTMLComputedStyle_get_hasBgColor_Proxy(byval This as IHTMLComputedStyle ptr, byval p as VARIANT_BOOL ptr) as HRESULT
 declare sub IHTMLComputedStyle_get_hasBgColor_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)

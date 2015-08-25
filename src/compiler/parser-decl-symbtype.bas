@@ -74,9 +74,79 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
 end function
 
+private function hGetTokenDescription( byval tk as integer ) as string
+	select case( tk )
+	case FB_TK_TYPEOF : function = "typeof"
+	case FB_TK_LEN    : function = "len"
+	case else         : function = "sizeof"
+	end select
+end function
+
+type AmbigiousSizeofInfo
+	as FBSYMBOL ptr typ, nontype
+	declare sub checkSymChain( byval chain_ as FBSYMCHAIN ptr )
+	declare sub maybeWarn( byval tk as integer, byval refers_to_type as integer )
+end type
+
+'' Walk the symchain and check whether it contains types and non-type symbols,
+'' specifically vars/consts.
+'' This is useful to check whether one identifier refers to both a type and
+'' another kind of symbol (which is possible in FB because types are in a
+'' separate namespace). However, we're only checking for variables/constants
+'' and not procedures because an identifier referring to the latter can't appear
+'' by itself in a sizeof() anyways (only as part of a function call or
+'' address-of operation). Also, for types it looks like we only have to check
+'' structs/typedefs/fwdrefs, but not enums, because it's not allowed to declare
+'' vars with the same name as enums anyways.
+sub AmbigiousSizeofInfo.checkSymChain( byval chain_ as FBSYMCHAIN ptr )
+	do
+		var sym = chain_->sym
+
+		do
+			select case( sym->class )
+			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
+				if( typ = NULL ) then
+					typ = sym
+				end if
+			case FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST
+				if( nontype = NULL ) then
+					nontype = sym
+				end if
+			end select
+
+			sym = sym->hash.next
+		loop while( sym )
+
+		chain_ = symbChainGetNext( chain_ )
+	loop while( chain_ )
+end sub
+
+sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as integer )
+	if( (typ = NULL) or (nontype = NULL) ) then exit sub
+
+	'' Don't warn if it's a type and a var of that type, because then the
+	'' len() or sizeof() would return the same value in either case.
+	if( symbIsVar( nontype ) and _
+	    (symbGetType( nontype ) = FB_DATATYPE_STRUCT) and _
+	    (nontype->subtype = typ) ) then
+		exit sub
+	end if
+
+	var sym1 = typ
+	var sym2 = nontype
+	if( refers_to_type = FALSE ) then
+		swap sym1, sym2
+	end if
+
+	var msg = "Ambigious " + hGetTokenDescription( tk ) + "()"
+	msg += ", referring to " + symbDumpPretty( sym1 )
+	msg += ", instead of " + symbDumpPretty( sym2 )
+	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
+end sub
+
 function cTypeOrExpression _
 	( _
-		byval is_len as integer, _
+		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint _
@@ -100,6 +170,19 @@ function cTypeOrExpression _
 
 	maybe_type = TRUE
 
+	'' If a simple identifier is given to sizeof/len, then collect
+	'' information about the symbols which it could refer to. If it could
+	'' refer to both a type and a non-type symbol, we may want to show a
+	'' warning later.
+	dim ambigioussizeof as AmbigiousSizeofInfo
+	if( (lexGetToken( ) = FB_TK_ID) and (lexGetLookAhead( 1 ) = CHAR_RPRNT) ) then
+		var chain_ = lexGetSymChain( )
+		'' Known symbol(s)?
+		if( chain_ ) then
+			ambigioussizeof.checkSymChain( chain_ )
+		end if
+	end if
+
 	'' Token followed by an operator except '*' / '<'?
 	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR) andalso _
 	    (lexGetLookAhead( 1 ) <> CHAR_TIMES) andalso _
@@ -122,7 +205,7 @@ function cTypeOrExpression _
 	end if
 
 	'' QB quirk: LEN() only takes expressions
-	if( maybe_type and is_len and fbLangIsSet( FB_LANG_QB ) ) then
+	if( maybe_type and (tk = FB_TK_LEN) and fbLangIsSet( FB_LANG_QB ) ) then
 		maybe_type = FALSE
 	end if
 
@@ -130,9 +213,12 @@ function cTypeOrExpression _
 		'' Parse as type
 		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) ) then
 			'' Successful -- it's a type, not an expression
+			ambigioussizeof.maybeWarn( tk, TRUE )
 			return NULL
 		end if
 	end if
+
+	ambigioussizeof.maybeWarn( tk, FALSE )
 
 	'' Parse as expression, allowing NIDXARRAYs
 	expr = cExpressionWithNIDXARRAY( TRUE )
@@ -155,7 +241,7 @@ sub cTypeOf _
 	dim as ASTNODE ptr expr = any
 
 	'' Type or an Expression
-	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt )
 
 	'' Was it a type?
 	if( expr = NULL ) then
@@ -204,6 +290,7 @@ end function
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
 ''				      ANY
+''				  |   BOOLEAN (BYTE|INTEGER)?
 ''				  |   CHAR|BYTE
 ''				  |	  SHORT|WORD
 ''				  |	  INTEGER|LONG|DWORD
@@ -268,6 +355,10 @@ function cSymbolType _
 		case FB_TK_ANY
 			lexSkipToken( )
 			dtype = FB_DATATYPE_VOID
+
+		case FB_TK_BOOLEAN
+			lexSkipToken( )
+			dtype = FB_DATATYPE_BOOLEAN
 
 		case FB_TK_BYTE
 			lexSkipToken( )

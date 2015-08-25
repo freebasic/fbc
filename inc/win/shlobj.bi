@@ -1,4 +1,4 @@
-'' FreeBASIC binding for mingw-w64-v4.0.1
+'' FreeBASIC binding for mingw-w64-v4.0.4
 ''
 '' based on the C header files:
 ''   This Software is provided under the Zope Public License (ZPL) Version 2.1.
@@ -51,6 +51,10 @@
 #inclib "shell32"
 
 #include once "crt/long.bi"
+#include once "rpc.bi"
+#include once "rpcndr.bi"
+#include once "wtypesbase.bi"
+#include once "wincrypt.bi"
 #include once "winapifamily.bi"
 #include once "_mingw_unicode.bi"
 #include once "ole2.bi"
@@ -120,13 +124,13 @@ end type
 type LPEXTRACTICONW as IExtractIconW ptr
 
 #ifdef UNICODE
-	#define IExtractIcon IExtractIconW
-	#define IExtractIconVtbl IExtractIconWVtbl
-	#define LPEXTRACTICON LPEXTRACTICONW
+	type IExtractIcon as IExtractIconW
+	type IExtractIconVtbl as IExtractIconWVtbl
+	type LPEXTRACTICON as LPEXTRACTICONW
 #else
-	#define IExtractIcon IExtractIconA
-	#define IExtractIconVtbl IExtractIconAVtbl
-	#define LPEXTRACTICON LPEXTRACTICONA
+	type IExtractIcon as IExtractIconA
+	type IExtractIconVtbl as IExtractIconAVtbl
+	type LPEXTRACTICON as LPEXTRACTICONA
 #endif
 
 type IShellIconOverlayIdentifierVtbl as IShellIconOverlayIdentifierVtbl_
@@ -184,9 +188,9 @@ declare function SHGetIconOverlayIndexA(byval pszIconPath as LPCSTR, byval iIcon
 declare function SHGetIconOverlayIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long) as long
 
 #ifdef UNICODE
-	#define SHGetIconOverlayIndex SHGetIconOverlayIndexW
+	declare function SHGetIconOverlayIndex alias "SHGetIconOverlayIndexW"(byval pszIconPath as LPCWSTR, byval iIconIndex as long) as long
 #else
-	#define SHGetIconOverlayIndex SHGetIconOverlayIndexA
+	declare function SHGetIconOverlayIndex alias "SHGetIconOverlayIndexA"(byval pszIconPath as LPCSTR, byval iIconIndex as long) as long
 #endif
 
 type SHELL_LINK_DATA_FLAGS as long
@@ -204,7 +208,7 @@ enum
 	SLDF_HAS_EXP_SZ = &h00000200
 	SLDF_RUN_IN_SEPARATE = &h00000400
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		SLDF_HAS_LOGO3ID = &h00000800
 	#endif
 
@@ -355,11 +359,11 @@ type IShellExecuteHookWVtbl_ field = 1
 end type
 
 #ifdef UNICODE
-	#define IShellExecuteHook IShellExecuteHookW
-	#define IShellExecuteHookVtbl IShellExecuteHookWVtbl
+	type IShellExecuteHook as IShellExecuteHookW
+	type IShellExecuteHookVtbl as IShellExecuteHookWVtbl
 #else
-	#define IShellExecuteHook IShellExecuteHookA
-	#define IShellExecuteHookVtbl IShellExecuteHookAVtbl
+	type IShellExecuteHook as IShellExecuteHookA
+	type IShellExecuteHookVtbl as IShellExecuteHookAVtbl
 #endif
 
 type IURLSearchHookVtbl as IURLSearchHookVtbl_
@@ -431,11 +435,11 @@ type INewShortcutHookWVtbl_ field = 1
 end type
 
 #ifdef UNICODE
-	#define INewShortcutHook INewShortcutHookW
-	#define INewShortcutHookVtbl INewShortcutHookWVtbl
+	type INewShortcutHook as INewShortcutHookW
+	type INewShortcutHookVtbl as INewShortcutHookWVtbl
 #else
-	#define INewShortcutHook INewShortcutHookA
-	#define INewShortcutHookVtbl INewShortcutHookAVtbl
+	type INewShortcutHook as INewShortcutHookA
+	type INewShortcutHookVtbl as INewShortcutHookAVtbl
 #endif
 
 type ICopyHookAVtbl as ICopyHookAVtbl_
@@ -462,13 +466,13 @@ end type
 type LPCOPYHOOKW as ICopyHookW ptr
 
 #ifdef UNICODE
-	#define ICopyHook ICopyHookW
-	#define ICopyHookVtbl ICopyHookWVtbl
-	#define LPCOPYHOOK LPCOPYHOOKW
+	type ICopyHook as ICopyHookW
+	type ICopyHookVtbl as ICopyHookWVtbl
+	type LPCOPYHOOK as LPCOPYHOOKW
 #else
-	#define ICopyHook ICopyHookA
-	#define ICopyHookVtbl ICopyHookAVtbl
-	#define LPCOPYHOOK LPCOPYHOOKA
+	type ICopyHook as ICopyHookA
+	type ICopyHookVtbl as ICopyHookAVtbl
+	type LPCOPYHOOK as LPCOPYHOOKA
 #endif
 
 #if _WIN32_WINNT = &h0400
@@ -530,11 +534,11 @@ type LPCOPYHOOKW as ICopyHookW ptr
 #endif
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0400)
-	#define IFileViewer IFileViewerW
-	#define LPFILEVIEWER LPFILEVIEWERW
+	type IFileViewer as IFileViewerW
+	type LPFILEVIEWER as LPFILEVIEWERW
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
-	#define IFileViewer IFileViewerA
-	#define LPFILEVIEWER LPFILEVIEWERA
+	type IFileViewer as IFileViewerA
+	type LPFILEVIEWER as LPFILEVIEWERA
 #endif
 
 const FCIDM_SHVIEWFIRST = &h0000
@@ -570,7 +574,7 @@ const PANE_SSL = 4
 const PANE_NAVIGATION = 5
 const PANE_PROGRESS = 6
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	const PANE_PRIVACY = 7
 #endif
 
@@ -596,15 +600,15 @@ declare function ILCreateFromPathA(byval pszPath as PCSTR) as LPITEMIDLIST
 declare function ILCreateFromPathW(byval pszPath as PCWSTR) as LPITEMIDLIST
 
 #ifdef UNICODE
-	#define ILCreateFromPath ILCreateFromPathW
+	declare function ILCreateFromPath alias "ILCreateFromPathW"(byval pszPath as PCWSTR) as LPITEMIDLIST
 #else
-	#define ILCreateFromPath ILCreateFromPathA
+	declare function ILCreateFromPath alias "ILCreateFromPathA"(byval pszPath as PCSTR) as LPITEMIDLIST
 #endif
 
 declare function SHILCreateFromPath(byval pszPath as PCWSTR, byval ppidl as LPITEMIDLIST ptr, byval rgfInOut as DWORD ptr) as HRESULT
 #define VOID_OFFSET(pv, cb) cptr(any ptr, cptr(UBYTE ptr, (pv)) + (cb))
-#define ILCloneFull ILClone
-#define ILCloneChild ILCloneFirst
+declare function ILCloneFull alias "ILClone"(byval pidl as LPCITEMIDLIST) as LPITEMIDLIST
+declare function ILCloneChild alias "ILCloneFirst"(byval pidl as LPCITEMIDLIST) as LPITEMIDLIST
 #define ILSkip(P, C) cast(PUIDLIST_RELATIVE, VOID_OFFSET((P), (C)))
 #define ILNext(P) ILSkip(P, (P)->mkid.cb)
 #define ILIsAligned(P) ((cast(DWORD_PTR, (P)) and (sizeof(any ptr) - 1)) = 0)
@@ -631,19 +635,19 @@ declare function SHCreateDirectoryExA(byval hwnd as HWND, byval pszPath as LPCST
 declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
 
 #ifdef UNICODE
-	#define SHGetPathFromIDList SHGetPathFromIDListW
-	#define SHCreateDirectoryEx SHCreateDirectoryExW
+	declare function SHGetPathFromIDList alias "SHGetPathFromIDListW"(byval pidl as LPCITEMIDLIST, byval pszPath as LPWSTR) as WINBOOL
+	declare function SHCreateDirectoryEx alias "SHCreateDirectoryExW"(byval hwnd as HWND, byval pszPath as LPCWSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SHGetPathFromIDList SHGetPathFromIDListA
-	#define SHCreateDirectoryEx SHCreateDirectoryExA
+	declare function SHGetPathFromIDList alias "SHGetPathFromIDListA"(byval pidl as LPCITEMIDLIST, byval pszPath as LPSTR) as WINBOOL
+	declare function SHCreateDirectoryEx alias "SHCreateDirectoryExA"(byval hwnd as HWND, byval pszPath as LPCSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
 #endif
 
 #if _WIN32_WINNT = &h0602
 	const OFASI_EDIT = &h0001
 	const OFASI_OPENDESKTOP = &h0002
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define SHGetPathFromIDList SHGetPathFromIDListA
-	#define SHCreateDirectoryEx SHCreateDirectoryExA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function SHGetPathFromIDList alias "SHGetPathFromIDListA"(byval pidl as LPCITEMIDLIST, byval pszPath as LPSTR) as WINBOOL
+	declare function SHCreateDirectoryEx alias "SHCreateDirectoryExA"(byval hwnd as HWND, byval pszPath as LPCSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
 #endif
 
 declare function SHOpenFolderAndSelectItems(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval dwFlags as DWORD) as HRESULT
@@ -660,7 +664,7 @@ const CSIDL_RECENT = &h0008
 const CSIDL_SENDTO = &h0009
 const CSIDL_BITBUCKET = &h000a
 const CSIDL_STARTMENU = &h000b
-#define CSIDL_MYDOCUMENTS CSIDL_PERSONAL
+const CSIDL_MYDOCUMENTS = CSIDL_PERSONAL
 const CSIDL_DESKTOPDIRECTORY = &h0010
 const CSIDL_DRIVES = &h0011
 const CSIDL_NETWORK = &h0012
@@ -702,6 +706,7 @@ const CSIDL_COMMON_OEM_LINKS = &h003a
 const CSIDL_CDBURN_AREA = &h003b
 const CSIDL_COMPUTERSNEARME = &h003d
 const CSIDL_FLAG_DONT_VERIFY = &h4000
+const CSIDL_FLAG_PFTI_TRACKTARGET = CSIDL_FLAG_DONT_VERIFY
 const CSIDL_FLAG_DONT_UNEXPAND = &h2000
 const CSIDL_FLAG_NO_ALIAS = &h1000
 const CSIDL_FLAG_PER_USER_INIT = &h0800
@@ -720,15 +725,15 @@ declare function SHGetFolderPathAndSubDirA(byval hwnd as HWND, byval csidl as lo
 declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCWSTR, byval pszPath as LPWSTR) as HRESULT
 
 #ifdef UNICODE
-	#define SHGetSpecialFolderPath SHGetSpecialFolderPathW
-	#define SHGetFolderPath SHGetFolderPathW
-	#define SHSetFolderPath SHSetFolderPathW
-	#define SHGetFolderPathAndSubDir SHGetFolderPathAndSubDirW
+	declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathW"(byval hwnd as HWND, byval pszPath as LPWSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
+	declare function SHGetFolderPath alias "SHGetFolderPathW"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPWSTR) as HRESULT
+	declare function SHSetFolderPath alias "SHSetFolderPathW"(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCWSTR) as HRESULT
+	declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirW"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCWSTR, byval pszPath as LPWSTR) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define SHGetSpecialFolderPath SHGetSpecialFolderPathA
-	#define SHGetFolderPath SHGetFolderPathA
-	#define SHSetFolderPath SHSetFolderPathA
-	#define SHGetFolderPathAndSubDir SHGetFolderPathAndSubDirA
+	declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathA"(byval hwnd as HWND, byval pszPath as LPSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
+	declare function SHGetFolderPath alias "SHGetFolderPathA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPSTR) as HRESULT
+	declare function SHSetFolderPath alias "SHSetFolderPathA"(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCSTR) as HRESULT
+	declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCSTR, byval pszPath as LPSTR) as HRESULT
 #endif
 
 #if _WIN32_WINNT = &h0602
@@ -751,11 +756,11 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	declare function SHSetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval pszPath as PCWSTR) as HRESULT
 	declare function SHGetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval ppszPath as PWSTR ptr) as HRESULT
 	declare function SHGetKnownFolderItem(byval rfid as const KNOWNFOLDERID const ptr, byval flags as KNOWN_FOLDER_FLAG, byval hToken as HANDLE, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
-#elseif (not defined(UNICODE)) and ((_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502))
-	#define SHGetSpecialFolderPath SHGetSpecialFolderPathA
-	#define SHGetFolderPath SHGetFolderPathA
-	#define SHSetFolderPath SHSetFolderPathA
-	#define SHGetFolderPathAndSubDir SHGetFolderPathAndSubDirA
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+	declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathA"(byval hwnd as HWND, byval pszPath as LPSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
+	declare function SHGetFolderPath alias "SHGetFolderPathA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPSTR) as HRESULT
+	declare function SHSetFolderPath alias "SHSetFolderPathA"(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCSTR) as HRESULT
+	declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCSTR, byval pszPath as LPSTR) as HRESULT
 #endif
 
 const FCS_READ = &h00000001
@@ -826,13 +831,13 @@ type PBROWSEINFOW as _browseinfoW ptr
 type LPBROWSEINFOW as _browseinfoW ptr
 
 #ifdef UNICODE
-	#define BROWSEINFO BROWSEINFOW
-	#define PBROWSEINFO PBROWSEINFOW
-	#define LPBROWSEINFO LPBROWSEINFOW
+	type BROWSEINFO as BROWSEINFOW
+	type PBROWSEINFO as PBROWSEINFOW
+	type LPBROWSEINFO as LPBROWSEINFOW
 #else
-	#define BROWSEINFO BROWSEINFOA
-	#define PBROWSEINFO PBROWSEINFOA
-	#define LPBROWSEINFO LPBROWSEINFOA
+	type BROWSEINFO as BROWSEINFOA
+	type PBROWSEINFO as PBROWSEINFOA
+	type LPBROWSEINFO as LPBROWSEINFOA
 #endif
 
 const BIF_RETURNONLYFSDIRS = &h00000001
@@ -868,15 +873,15 @@ declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 declare function SHBrowseForFolderW(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
 
 #ifdef UNICODE
-	#define SHBrowseForFolder SHBrowseForFolderW
+	declare function SHBrowseForFolder alias "SHBrowseForFolderW"(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
 	#define BFFM_SETSTATUSTEXT BFFM_SETSTATUSTEXTW
 	#define BFFM_SETSELECTION BFFM_SETSELECTIONW
-	#define BFFM_VALIDATEFAILED BFFM_VALIDATEFAILEDW
+	const BFFM_VALIDATEFAILED = BFFM_VALIDATEFAILEDW
 #else
-	#define SHBrowseForFolder SHBrowseForFolderA
+	declare function SHBrowseForFolder alias "SHBrowseForFolderA"(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 	#define BFFM_SETSTATUSTEXT BFFM_SETSTATUSTEXTA
 	#define BFFM_SETSELECTION BFFM_SETSELECTIONA
-	#define BFFM_VALIDATEFAILED BFFM_VALIDATEFAILEDA
+	const BFFM_VALIDATEFAILED = BFFM_VALIDATEFAILEDA
 #endif
 
 declare function SHLoadInProc(byval rclsid as const IID const ptr) as HRESULT
@@ -891,7 +896,7 @@ enum
 	#endif
 end enum
 
-#define CMDID_INTSHORTCUTCREATE ISHCUTCMDID_INTSHORTCUTCREATE
+const CMDID_INTSHORTCUTCREATE = ISHCUTCMDID_INTSHORTCUTCREATE
 #define STR_PARSE_WITH_PROPERTIES wstr("ParseWithProperties")
 #define STR_PARSE_PARTIAL_IDLIST wstr("ParseOriginalItem")
 declare function SHGetDesktopFolder(byval ppshf as IShellFolder ptr ptr) as HRESULT
@@ -947,7 +952,7 @@ enum
 	ACLO_FAVORITES = 8
 	ACLO_FILESYSONLY = 16
 
-	#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+	#if _WIN32_WINNT >= &h0502
 		ACLO_FILESYSDIRS = 32
 	#endif
 
@@ -1121,7 +1126,7 @@ const ISFB_STATE_BTNMINSIZE = &h00000100
 const ISFBVIEWMODE_SMALLICONS = &h0001
 const ISFBVIEWMODE_LARGEICONS = &h0002
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const ISFBVIEWMODE_LOGOS = &h0003
 #endif
 
@@ -1347,11 +1352,11 @@ type FILEDESCRIPTORW as _FILEDESCRIPTORW
 type LPFILEDESCRIPTORW as _FILEDESCRIPTORW ptr
 
 #ifdef UNICODE
-	#define FILEDESCRIPTOR FILEDESCRIPTORW
-	#define LPFILEDESCRIPTOR LPFILEDESCRIPTORW
+	type FILEDESCRIPTOR as FILEDESCRIPTORW
+	type LPFILEDESCRIPTOR as LPFILEDESCRIPTORW
 #else
-	#define FILEDESCRIPTOR FILEDESCRIPTORA
-	#define LPFILEDESCRIPTOR LPFILEDESCRIPTORA
+	type FILEDESCRIPTOR as FILEDESCRIPTORA
+	type LPFILEDESCRIPTOR as LPFILEDESCRIPTORA
 #endif
 
 type _FILEGROUPDESCRIPTORA field = 1
@@ -1371,11 +1376,11 @@ type FILEGROUPDESCRIPTORW as _FILEGROUPDESCRIPTORW
 type LPFILEGROUPDESCRIPTORW as _FILEGROUPDESCRIPTORW ptr
 
 #ifdef UNICODE
-	#define FILEGROUPDESCRIPTOR FILEGROUPDESCRIPTORW
-	#define LPFILEGROUPDESCRIPTOR LPFILEGROUPDESCRIPTORW
+	type FILEGROUPDESCRIPTOR as FILEGROUPDESCRIPTORW
+	type LPFILEGROUPDESCRIPTOR as LPFILEGROUPDESCRIPTORW
 #else
-	#define FILEGROUPDESCRIPTOR FILEGROUPDESCRIPTORA
-	#define LPFILEGROUPDESCRIPTOR LPFILEGROUPDESCRIPTORA
+	type FILEGROUPDESCRIPTOR as FILEGROUPDESCRIPTORA
+	type LPFILEGROUPDESCRIPTOR as LPFILEGROUPDESCRIPTORA
 #endif
 
 type _DROPFILES field = 1
@@ -1465,11 +1470,11 @@ const SHCNF_FLUSHNOWAIT = &h3000
 const SHCNF_NOTIFYRECURSIVE = &h10000
 
 #ifdef UNICODE
-	#define SHCNF_PATH SHCNF_PATHW
-	#define SHCNF_PRINTER SHCNF_PRINTERW
+	const SHCNF_PATH = SHCNF_PATHW
+	const SHCNF_PRINTER = SHCNF_PRINTERW
 #else
-	#define SHCNF_PATH SHCNF_PATHA
-	#define SHCNF_PRINTER SHCNF_PRINTERA
+	const SHCNF_PATH = SHCNF_PATHA
+	const SHCNF_PRINTER = SHCNF_PRINTERA
 #endif
 
 declare sub SHChangeNotify(byval wEventId as LONG, byval uFlags as UINT, byval dwItem1 as LPCVOID, byval dwItem2 as LPCVOID)
@@ -1545,9 +1550,9 @@ end enum
 #endif
 
 #ifdef UNICODE
-	#define SHARD_PATH SHARD_PATHW
+	const SHARD_PATH = SHARD_PATHW
 #else
-	#define SHARD_PATH SHARD_PATHA
+	const SHARD_PATH = SHARD_PATHA
 #endif
 
 declare sub SHAddToRecentDocs(byval uFlags as UINT, byval pv as LPCVOID)
@@ -1588,9 +1593,9 @@ declare sub SHUpdateImageA(byval pszHashItem as LPCSTR, byval iIndex as long, by
 declare sub SHUpdateImageW(byval pszHashItem as LPCWSTR, byval iIndex as long, byval uFlags as UINT, byval iImageIndex as long)
 
 #ifdef UNICODE
-	#define SHUpdateImage SHUpdateImageW
+	declare sub SHUpdateImage alias "SHUpdateImageW"(byval pszHashItem as LPCWSTR, byval iIndex as long, byval uFlags as UINT, byval iImageIndex as long)
 #else
-	#define SHUpdateImage SHUpdateImageA
+	declare sub SHUpdateImage alias "SHUpdateImageA"(byval pszHashItem as LPCSTR, byval iIndex as long, byval uFlags as UINT, byval iImageIndex as long)
 #endif
 
 declare function SHChangeNotifyRegister(byval hwnd as HWND, byval fSources as long, byval fEvents as LONG, byval wMsg as UINT, byval cEntries as long, byval pshcne as const SHChangeNotifyEntry ptr) as ULONG
@@ -1650,9 +1655,9 @@ declare function SHGetDataFromIDListA(byval psf as IShellFolder ptr, byval pidl 
 declare function SHGetDataFromIDListW(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval nFormat as long, byval pv as any ptr, byval cb as long) as HRESULT
 
 #ifdef UNICODE
-	#define SHGetDataFromIDList SHGetDataFromIDListW
+	declare function SHGetDataFromIDList alias "SHGetDataFromIDListW"(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval nFormat as long, byval pv as any ptr, byval cb as long) as HRESULT
 #else
-	#define SHGetDataFromIDList SHGetDataFromIDListA
+	declare function SHGetDataFromIDList alias "SHGetDataFromIDListA"(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval nFormat as long, byval pv as any ptr, byval cb as long) as HRESULT
 #endif
 
 const PRF_VERIFYEXISTS = &h1
@@ -1717,9 +1722,9 @@ declare function PathIsSlowA(byval pszFile as LPCSTR, byval dwAttr as DWORD) as 
 declare function PathIsSlowW(byval pszFile as LPCWSTR, byval dwAttr as DWORD) as WINBOOL
 
 #ifdef UNICODE
-	#define PathIsSlow PathIsSlowW
+	declare function PathIsSlow alias "PathIsSlowW"(byval pszFile as LPCWSTR, byval dwAttr as DWORD) as WINBOOL
 #else
-	#define PathIsSlow PathIsSlowA
+	declare function PathIsSlow alias "PathIsSlowA"(byval pszFile as LPCSTR, byval dwAttr as DWORD) as WINBOOL
 #endif
 
 const PCS_FATAL = &h80000000
@@ -1831,7 +1836,7 @@ enum
 	REST_NORESOLVETRACK = &h4000001a
 	REST_FORCECOPYACLWITHFILE = &h4000001b
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NOLOGO3CHANNELNOTIFY = &h4000001c
 	#endif
 
@@ -1935,20 +1940,20 @@ enum
 	REST_REVERTWEBVIEWSECURITY = &h40000084
 	REST_INHERITCONSOLEHANDLES = &h40000086
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_SORTMAXITEMCOUNT = &h40000087
 	#endif
 
 	REST_NOREMOTERECURSIVEEVENTS = &h40000089
 	REST_NOREMOTECHANGENOTIFY = &h40000091
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NOSIMPLENETIDLIST = &h40000092
 	#endif
 
 	REST_NOENUMENTIRENETWORK = &h40000093
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_NODETAILSTHUMBNAILONNETWORK = &h40000094
 	#endif
 
@@ -1963,7 +1968,7 @@ enum
 	REST_NOFILEASSOCIATE = &h41000003
 	REST_ALLOWCOMMENTTOGGLE = &h41000004
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+	#if _WIN32_WINNT <= &h0502
 		REST_USEDESKTOPINICACHE = &h41000005
 	#endif
 end enum
@@ -1974,7 +1979,7 @@ declare sub PathGetShortPath(byval pszLongPath as PWSTR)
 declare function PathYetAnotherMakeUniqueName(byval pszUniqueName as PWSTR, byval pszPath as PCWSTR, byval pszShort as PCWSTR, byval pszFileSpec as PCWSTR) as WINBOOL
 declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
+#if _WIN32_WINNT <= &h0502
 	const PPCF_ADDQUOTES = &h00000001
 	const PPCF_ADDARGUMENTS = &h00000003
 	const PPCF_NODIRECTORIES = &h00000010
@@ -1986,10 +1991,10 @@ declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 declare function SHRestricted(byval rest as RESTRICTIONS) as DWORD
 declare function SignalFileOpen(byval pidl as LPCITEMIDLIST) as WINBOOL
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	declare function SHLoadOLE(byval lParam as LPARAM) as HRESULT
-#else
+#if _WIN32_WINNT = &h0602
 	declare function AssocGetDetailsOfPropKey(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval pkey as const PROPERTYKEY ptr, byval pv as VARIANT ptr, byval pfFoundPropKey as WINBOOL ptr) as HRESULT
+#else
+	declare function SHLoadOLE(byval lParam as LPARAM) as HRESULT
 #endif
 
 declare function SHStartNetConnectionDialogA(byval hwnd as HWND, byval pszRemoteName as LPCSTR, byval dwType as DWORD) as HRESULT
@@ -1998,11 +2003,11 @@ declare function SHDefExtractIconA(byval pszIconFile as LPCSTR, byval iIndex as 
 declare function SHDefExtractIconW(byval pszIconFile as LPCWSTR, byval iIndex as long, byval uFlags as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 
 #ifdef UNICODE
-	#define SHStartNetConnectionDialog SHStartNetConnectionDialogW
-	#define SHDefExtractIcon SHDefExtractIconW
+	declare function SHStartNetConnectionDialog alias "SHStartNetConnectionDialogW"(byval hwnd as HWND, byval pszRemoteName as LPCWSTR, byval dwType as DWORD) as HRESULT
+	declare function SHDefExtractIcon alias "SHDefExtractIconW"(byval pszIconFile as LPCWSTR, byval iIndex as long, byval uFlags as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 #else
-	#define SHStartNetConnectionDialog SHStartNetConnectionDialogA
-	#define SHDefExtractIcon SHDefExtractIconA
+	declare function SHStartNetConnectionDialog alias "SHStartNetConnectionDialogA"(byval hwnd as HWND, byval pszRemoteName as LPCSTR, byval dwType as DWORD) as HRESULT
+	declare function SHDefExtractIcon alias "SHDefExtractIconA"(byval pszIconFile as LPCSTR, byval iIndex as long, byval uFlags as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 #endif
 
 type tagOPEN_AS_INFO_FLAGS as long
@@ -2040,9 +2045,9 @@ declare function Shell_GetImageLists(byval phiml as HIMAGELIST ptr, byval phimlS
 	declare function Shell_GetCachedImageIndexA(byval pszIconPath as LPCSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	declare function Shell_GetCachedImageIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	#ifdef UNICODE
-		#define Shell_GetCachedImageIndex Shell_GetCachedImageIndexW
+		declare function Shell_GetCachedImageIndex alias "Shell_GetCachedImageIndexW"(byval pszIconPath as LPCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	#else
-		#define Shell_GetCachedImageIndex Shell_GetCachedImageIndexA
+		declare function Shell_GetCachedImageIndex alias "Shell_GetCachedImageIndexA"(byval pszIconPath as LPCSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	#endif
 #else
 	declare function Shell_GetCachedImageIndex(byval pwszIconPath as PCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
@@ -2062,11 +2067,11 @@ const VALIDATEUNC_CONNECT = &h0001
 const VALIDATEUNC_NOUI = &h0002
 const VALIDATEUNC_PRINT = &h0004
 
-#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-	const VALIDATEUNC_VALID = &h0007
-#else
+#if _WIN32_WINNT = &h0602
 	const VALIDATEUNC_PERSIST = &h0008
 	const VALIDATEUNC_VALID = &h000f
+#else
+	const VALIDATEUNC_VALID = &h0007
 #endif
 
 declare function SHValidateUNC(byval hwndOwner as HWND, byval pszFile as PWSTR, byval fConnect as UINT) as WINBOOL
@@ -2256,7 +2261,7 @@ end type
 
 type ITEMSPACING as _ITEMSPACING
 const SFVSOC_INVALIDATE_ALL = &h00000001
-#define SFVSOC_NOSCROLL LVSICF_NOSCROLL
+const SFVSOC_NOSCROLL = LVSICF_NOSCROLL
 const SFVS_SELECT_NONE = &h0
 const SFVS_SELECT_ALLITEMS = &h1
 const SFVS_SELECT_INVERT = &h2
@@ -2329,9 +2334,9 @@ declare function SHOpenPropSheetA(byval pszCaption as LPCSTR, byval ahkeys as HK
 declare function SHOpenPropSheetW(byval pszCaption as LPCWSTR, byval ahkeys as HKEY ptr, byval ckeys as UINT, byval pclsidDefault as const CLSID ptr, byval pdtobj as IDataObject ptr, byval psb as IShellBrowser ptr, byval pStartPage as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
-	#define SHOpenPropSheet SHOpenPropSheetW
+	declare function SHOpenPropSheet alias "SHOpenPropSheetW"(byval pszCaption as LPCWSTR, byval ahkeys as HKEY ptr, byval ckeys as UINT, byval pclsidDefault as const CLSID ptr, byval pdtobj as IDataObject ptr, byval psb as IShellBrowser ptr, byval pStartPage as LPCWSTR) as WINBOOL
 #else
-	#define SHOpenPropSheet SHOpenPropSheetA
+	declare function SHOpenPropSheet alias "SHOpenPropSheetA"(byval pszCaption as LPCSTR, byval ahkeys as HKEY ptr, byval ckeys as UINT, byval pclsidDefault as const CLSID ptr, byval pdtobj as IDataObject ptr, byval psb as IShellBrowser ptr, byval pStartPage as LPCSTR) as WINBOOL
 #endif
 
 type DFMICS
@@ -2543,11 +2548,11 @@ const SHELLSTATEVERSION_IE4 = 9
 const SHELLSTATEVERSION_WIN2K = 10
 
 #ifdef UNICODE
-	#define SHELLSTATE SHELLSTATEW
-	#define LPSHELLSTATE LPSHELLSTATEW
+	type SHELLSTATE as SHELLSTATEW
+	type LPSHELLSTATE as LPSHELLSTATEW
 #else
-	#define SHELLSTATE SHELLSTATEA
-	#define LPSHELLSTATE LPSHELLSTATEA
+	type SHELLSTATE as SHELLSTATEA
+	type LPSHELLSTATE as LPSHELLSTATEA
 #endif
 
 #define SHELLSTATE_SIZE_WIN95 FIELD_OFFSET(SHELLSTATE, lParamSort)
@@ -2576,12 +2581,12 @@ type SHELLFLAGSTATE field = 1
 	fShowInfoTip : 1 as WINBOOL
 	fHideIcons : 1 as WINBOOL
 
-	#if (_WIN32_WINNT = &h0400) or (_WIN32_WINNT = &h0502)
-		fRestFlags : 3 as UINT
-	#else
+	#if _WIN32_WINNT = &h0602
 		fAutoCheckSelect : 1 as WINBOOL
 		fIconsOnly : 1 as WINBOOL
 		fRestFlags : 1 as UINT
+	#else
+		fRestFlags : 3 as UINT
 	#endif
 end type
 
@@ -2628,17 +2633,17 @@ declare function SHBindToParent(byval pidl as LPCITEMIDLIST, byval riid as const
 
 private function IDListContainerIsConsistent cdecl(byval p as LPCITEMIDLIST, byval sz as UINT) as WINBOOL
 	dim c as UINT = sizeof(p->mkid.cb)
-	while c <= sz andalso p->mkid.cb >= sizeof(p->mkid.cb) andalso p->mkid.cb <= (sz - c)
+	while ((c <= sz) andalso (p->mkid.cb >= sizeof(p->mkid.cb))) andalso (p->mkid.cb <= (sz - c))
 		c += p->mkid.cb
-		p = ILNext(p)
+		p = cast(LPITEMIDLIST, cptr(any ptr, cptr(UBYTE ptr, p) + p->mkid.cb))
 	wend
 	return -((c <= sz) andalso (p->mkid.cb = 0))
 end function
 
 declare function SHParseDisplayName(byval pszName as PCWSTR, byval pbc as IBindCtx ptr, byval ppidl as LPITEMIDLIST ptr, byval sfgaoIn as SFGAOF, byval psfgaoOut as SFGAOF ptr) as HRESULT
 const SHPPFW_NONE = &h00000000
-#define SHPPFW_DEFAULT SHPPFW_DIRCREATE
 const SHPPFW_DIRCREATE = &h00000001
+const SHPPFW_DEFAULT = SHPPFW_DIRCREATE
 const SHPPFW_ASKDIRCREATE = &h00000002
 const SHPPFW_IGNOREFILENAME = &h00000004
 const SHPPFW_NOWRITECHECK = &h00000008
@@ -2647,9 +2652,9 @@ declare function SHPathPrepareForWriteA(byval hwnd as HWND, byval punkEnableModl
 declare function SHPathPrepareForWriteW(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 
 #ifdef UNICODE
-	#define SHPathPrepareForWrite SHPathPrepareForWriteW
+	declare function SHPathPrepareForWrite alias "SHPathPrepareForWriteW"(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
 #else
-	#define SHPathPrepareForWrite SHPathPrepareForWriteA
+	declare function SHPathPrepareForWrite alias "SHPathPrepareForWriteA"(byval hwnd as HWND, byval punkEnableModless as IUnknown ptr, byval pszPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 #endif
 
 type INamedPropertyBagVtbl as INamedPropertyBagVtbl_
@@ -2672,9 +2677,9 @@ declare function SHCreateFileExtractIconA(byval pszFile as LPCSTR, byval dwFileA
 declare function SHCreateFileExtractIconW(byval pszFile as LPCWSTR, byval dwFileAttributes as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 
 #ifdef UNICODE
-	#define SHCreateFileExtractIcon SHCreateFileExtractIconW
+	declare function SHCreateFileExtractIcon alias "SHCreateFileExtractIconW"(byval pszFile as LPCWSTR, byval dwFileAttributes as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #else
-	#define SHCreateFileExtractIcon SHCreateFileExtractIconA
+	declare function SHCreateFileExtractIcon alias "SHCreateFileExtractIconA"(byval pszFile as LPCSTR, byval dwFileAttributes as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 
 declare function SHLimitInputEdit(byval hwndEdit as HWND, byval psf as IShellFolder ptr) as HRESULT
@@ -2721,7 +2726,7 @@ type LPAASHELLMENUITEM as tagAASHELLMENUITEM ptr
 	type IESHORTCUTFLAGS as tagIESHORTCUTFLAGS
 #endif
 
-#if (_WIN32_WINNT = &h0502) or (_WIN32_WINNT = &h0602)
+#if _WIN32_WINNT >= &h0502
 	declare function ImportPrivacySettings(byval pszFilename as PCWSTR, byval pfParsePrivacyPreferences as WINBOOL ptr, byval pfParsePerSiteRules as WINBOOL ptr) as WINBOOL
 	declare function DoPrivacyDlg(byval hwndOwner as HWND, byval pszUrl as PCWSTR, byval pPrivacyEnum as IEnumPrivacyRecords ptr, byval fReportAllSites as WINBOOL) as HRESULT
 #endif

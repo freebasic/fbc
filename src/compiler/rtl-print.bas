@@ -21,6 +21,18 @@
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
+		/' sub fb_PrintBool( byval fnum as long = 0, byval x as boolean, byval mask as long ) '/ _
+		( _
+			@FB_RTL_PRINTBOOL, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
 		/' sub fb_PrintByte( byval fnum as long = 0, byval x as byte, byval mask as long ) '/ _
 		( _
 			@FB_RTL_PRINTBYTE, NULL, _
@@ -173,6 +185,18 @@
 			2, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
+		/' sub fb_LPrintBool( byval fnum as long = 0, byval x as boolean, byval mask as long ) '/ _
+		( _
+			@FB_RTL_LPRINTBOOL, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+	 		@rtlPrinter_cb, FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -350,6 +374,18 @@
 			2, _
 			{ _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
+		/' sub fb_WriteBool( byval fnum as long = 0, byval x as boolean, byval mask as long ) '/ _
+		( _
+			@FB_RTL_WRITEBOOL, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -579,6 +615,18 @@
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
+		/' function fb_PrintUsingBoolean( byval fnum as long, byval v as boolean, byval mask as long ) as long '/ _
+		( _
+			@FB_RTL_PRINTUSG_BOOL, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_BOOLEAN, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_PrintUsingEnd( byval fnum as long ) as long '/ _
 		( _
 			@FB_RTL_PRINTUSGEND, NULL, _
@@ -649,14 +697,14 @@ function rtlPrint _
 			if( expr = NULL ) then
 				exit function
 			end if
+		case else
+			'' Convert pointer to uinteger
+			if( typeIsPtr( astGetFullType( expr ) ) ) then
+				expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+			end if
 		end select
 
-		'' Convert pointer to uinteger
-		if( typeIsPtr( astGetFullType( expr ) ) ) then
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
-		end if
-
-		select case as const typeGet( astGetDataType( expr ) )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSTR )
@@ -669,6 +717,13 @@ function rtlPrint _
 				f = PROCLOOKUP( LPRINTWSTR )
 			else
 				f = PROCLOOKUP( PRINTWSTR )
+			end if
+
+		case FB_DATATYPE_BOOLEAN
+			if( islprint ) then
+				f = PROCLOOKUP( LPRINTBOOL )
+			else
+				f = PROCLOOKUP( PRINTBOOL )
 			end if
 
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
@@ -853,19 +908,22 @@ function rtlWrite _
 			if( expr = NULL ) then
 				exit function
 			end if
+		case else
+			'' Convert pointer to uinteger
+			if( typeIsPtr( astGetFullType( expr ) ) ) then
+				expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
+			end if
 		end select
 
-		'' Convert pointer to uinteger
-		if( typeIsPtr( astGetFullType( expr ) ) ) then
-			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
-		end if
-
-		select case as const typeGet( astGetDataType( expr ) )
+		select case as const astGetDataType( expr )
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
 
 		case FB_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
+
+		case FB_DATATYPE_BOOLEAN
+			f = PROCLOOKUP( WRITEBOOL )
 
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
@@ -1047,6 +1105,10 @@ function rtlPrintUsing _
 	    FB_DATATYPE_UBYTE
 
 		f = PROCLOOKUP( PRINTUSG_ULL )
+
+	case FB_DATATYPE_BOOLEAN
+
+		f = PROCLOOKUP( PRINTUSG_BOOL )
 
 	case else
 		f = PROCLOOKUP( PRINTUSG_DBL )
