@@ -105,6 +105,9 @@ type IExtractIconA field = 1
 end type
 
 type IExtractIconAVtbl_ field = 1
+	QueryInterface as function(byval This as IExtractIconA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IExtractIconA ptr) as ULONG
+	Release as function(byval This as IExtractIconA ptr) as ULONG
 	GetIconLocation as function(byval This as IExtractIconA ptr, byval uFlags as UINT, byval pszIconFile as PSTR, byval cchMax as UINT, byval piIndex as long ptr, byval pwFlags as UINT ptr) as HRESULT
 	Extract as function(byval This as IExtractIconA ptr, byval pszFile as PCSTR, byval nIconIndex as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 end type
@@ -117,6 +120,9 @@ type IExtractIconW field = 1
 end type
 
 type IExtractIconWVtbl_ field = 1
+	QueryInterface as function(byval This as IExtractIconW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IExtractIconW ptr) as ULONG
+	Release as function(byval This as IExtractIconW ptr) as ULONG
 	GetIconLocation as function(byval This as IExtractIconW ptr, byval uFlags as UINT, byval pszIconFile as PWSTR, byval cchMax as UINT, byval piIndex as long ptr, byval pwFlags as UINT ptr) as HRESULT
 	Extract as function(byval This as IExtractIconW ptr, byval pszFile as PCWSTR, byval nIconIndex as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 end type
@@ -140,6 +146,9 @@ type IShellIconOverlayIdentifier field = 1
 end type
 
 type IShellIconOverlayIdentifierVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlayIdentifier ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlayIdentifier ptr) as ULONG
+	Release as function(byval This as IShellIconOverlayIdentifier ptr) as ULONG
 	IsMemberOf as function(byval This as IShellIconOverlayIdentifier ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD) as HRESULT
 	GetOverlayInfo as function(byval This as IShellIconOverlayIdentifier ptr, byval pwszIconFile as PWSTR, byval cchMax as long, byval pIndex as long ptr, byval pdwFlags as DWORD ptr) as HRESULT
 	GetPriority as function(byval This as IShellIconOverlayIdentifier ptr, byval pIPriority as long ptr) as HRESULT
@@ -154,6 +163,9 @@ type IShellIconOverlayManager field = 1
 end type
 
 type IShellIconOverlayManagerVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlayManager ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlayManager ptr) as ULONG
+	Release as function(byval This as IShellIconOverlayManager ptr) as ULONG
 	GetFileOverlayInfo as function(byval This as IShellIconOverlayManager ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD, byval pIndex as long ptr, byval dwflags as DWORD) as HRESULT
 	GetReservedOverlayInfo as function(byval This as IShellIconOverlayManager ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD, byval pIndex as long ptr, byval dwflags as DWORD, byval iReservedID as long) as HRESULT
 	RefreshOverlayImages as function(byval This as IShellIconOverlayManager ptr, byval dwFlags as DWORD) as HRESULT
@@ -174,6 +186,9 @@ type IShellIconOverlay field = 1
 end type
 
 type IShellIconOverlayVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlay ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlay ptr) as ULONG
+	Release as function(byval This as IShellIconOverlay ptr) as ULONG
 	GetOverlayIndex as function(byval This as IShellIconOverlay ptr, byval pidl as LPCITEMIDLIST, byval pIndex as long ptr) as HRESULT
 	GetOverlayIconIndex as function(byval This as IShellIconOverlay ptr, byval pidl as LPCITEMIDLIST, byval pIconIndex as long ptr) as HRESULT
 end type
@@ -345,6 +360,9 @@ type IShellExecuteHookA field = 1
 end type
 
 type IShellExecuteHookAVtbl_ field = 1
+	QueryInterface as function(byval This as IShellExecuteHookA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellExecuteHookA ptr) as ULONG
+	Release as function(byval This as IShellExecuteHookA ptr) as ULONG
 	Execute as function(byval This as IShellExecuteHookA ptr, byval pei as LPSHELLEXECUTEINFOA) as HRESULT
 end type
 
@@ -355,6 +373,9 @@ type IShellExecuteHookW field = 1
 end type
 
 type IShellExecuteHookWVtbl_ field = 1
+	QueryInterface as function(byval This as IShellExecuteHookW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellExecuteHookW ptr) as ULONG
+	Release as function(byval This as IShellExecuteHookW ptr) as ULONG
 	Execute as function(byval This as IShellExecuteHookW ptr, byval pei as LPSHELLEXECUTEINFOW) as HRESULT
 end type
 
@@ -373,6 +394,9 @@ type IURLSearchHook field = 1
 end type
 
 type IURLSearchHookVtbl_ field = 1
+	QueryInterface as function(byval This as IURLSearchHook ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IURLSearchHook ptr) as ULONG
+	Release as function(byval This as IURLSearchHook ptr) as ULONG
 	Translate as function(byval This as IURLSearchHook ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD) as HRESULT
 end type
 
@@ -383,6 +407,9 @@ type ISearchContext field = 1
 end type
 
 type ISearchContextVtbl_ field = 1
+	QueryInterface as function(byval This as ISearchContext ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ISearchContext ptr) as ULONG
+	Release as function(byval This as ISearchContext ptr) as ULONG
 	GetSearchUrl as function(byval This as ISearchContext ptr, byval pbstrSearchUrl as BSTR ptr) as HRESULT
 	GetSearchText as function(byval This as ISearchContext ptr, byval pbstrSearchText as BSTR ptr) as HRESULT
 	GetSearchStyle as function(byval This as ISearchContext ptr, byval pdwSearchStyle as DWORD ptr) as HRESULT
@@ -395,6 +422,10 @@ type IURLSearchHook2 field = 1
 end type
 
 type IURLSearchHook2Vtbl_ field = 1
+	QueryInterface as function(byval This as IURLSearchHook2 ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IURLSearchHook2 ptr) as ULONG
+	Release as function(byval This as IURLSearchHook2 ptr) as ULONG
+	Translate as function(byval This as IURLSearchHook2 ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD) as HRESULT
 	TranslateWithSearchContext as function(byval This as IURLSearchHook2 ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD, byval pSearchContext as ISearchContext ptr) as HRESULT
 end type
 
@@ -449,6 +480,9 @@ type ICopyHookA field = 1
 end type
 
 type ICopyHookAVtbl_ field = 1
+	QueryInterface as function(byval This as ICopyHookA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICopyHookA ptr) as ULONG
+	Release as function(byval This as ICopyHookA ptr) as ULONG
 	CopyCallback as function(byval This as ICopyHookA ptr, byval hwnd as HWND, byval wFunc as UINT, byval wFlags as UINT, byval pszSrcFile as PCSTR, byval dwSrcAttribs as DWORD, byval pszDestFile as PCSTR, byval dwDestAttribs as DWORD) as UINT
 end type
 
@@ -460,6 +494,9 @@ type ICopyHookW field = 1
 end type
 
 type ICopyHookWVtbl_ field = 1
+	QueryInterface as function(byval This as ICopyHookW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICopyHookW ptr) as ULONG
+	Release as function(byval This as ICopyHookW ptr) as ULONG
 	CopyCallback as function(byval This as ICopyHookW ptr, byval hwnd as HWND, byval wFunc as UINT, byval wFlags as UINT, byval pszSrcFile as PCWSTR, byval dwSrcAttribs as DWORD, byval pszDestFile as PCWSTR, byval dwDestAttribs as DWORD) as UINT
 end type
 
@@ -483,6 +520,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerSiteVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerSite ptr) as ULONG
+		Release as function(byval This as IFileViewerSite ptr) as ULONG
 		SetPinnedWindow as function(byval This as IFileViewerSite ptr, byval hwnd as HWND) as HRESULT
 		GetPinnedWindow as function(byval This as IFileViewerSite ptr, byval phwnd as HWND ptr) as HRESULT
 	end type
@@ -512,6 +552,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerAVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerA ptr) as ULONG
+		Release as function(byval This as IFileViewerA ptr) as ULONG
 		ShowInitialize as function(byval This as IFileViewerA ptr, byval lpfsi as LPFILEVIEWERSITE) as HRESULT
 		Show as function(byval This as IFileViewerA ptr, byval pvsi as LPFVSHOWINFO) as HRESULT
 		PrintTo as function(byval This as IFileViewerA ptr, byval pszDriver as PSTR, byval fSuppressUI as WINBOOL) as HRESULT
@@ -525,6 +568,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerWVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerW ptr) as ULONG
+		Release as function(byval This as IFileViewerW ptr) as ULONG
 		ShowInitialize as function(byval This as IFileViewerW ptr, byval lpfsi as LPFILEVIEWERSITE) as HRESULT
 		Show as function(byval This as IFileViewerW ptr, byval pvsi as LPFVSHOWINFO) as HRESULT
 		PrintTo as function(byval This as IFileViewerW ptr, byval pszDriver as PWSTR, byval fSuppressUI as WINBOOL) as HRESULT
@@ -907,6 +953,9 @@ type IShellDetails field = 1
 end type
 
 type IShellDetailsVtbl_ field = 1
+	QueryInterface as function(byval This as IShellDetails ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellDetails ptr) as ULONG
+	Release as function(byval This as IShellDetails ptr) as ULONG
 	GetDetailsOf as function(byval This as IShellDetails ptr, byval pidl as LPCITEMIDLIST, byval iColumn as UINT, byval pDetails as SHELLDETAILS ptr) as HRESULT
 	ColumnClick as function(byval This as IShellDetails ptr, byval iColumn as UINT) as HRESULT
 end type
@@ -918,6 +967,9 @@ type IObjMgr field = 1
 end type
 
 type IObjMgrVtbl_ field = 1
+	QueryInterface as function(byval This as IObjMgr ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IObjMgr ptr) as ULONG
+	Release as function(byval This as IObjMgr ptr) as ULONG
 	Append as function(byval This as IObjMgr ptr, byval punk as IUnknown ptr) as HRESULT
 	Remove as function(byval This as IObjMgr ptr, byval punk as IUnknown ptr) as HRESULT
 end type
@@ -929,6 +981,9 @@ type ICurrentWorkingDirectory field = 1
 end type
 
 type ICurrentWorkingDirectoryVtbl_ field = 1
+	QueryInterface as function(byval This as ICurrentWorkingDirectory ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICurrentWorkingDirectory ptr) as ULONG
+	Release as function(byval This as ICurrentWorkingDirectory ptr) as ULONG
 	GetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PWSTR, byval cchSize as DWORD) as HRESULT
 	SetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PCWSTR) as HRESULT
 end type
@@ -940,6 +995,9 @@ type IACList field = 1
 end type
 
 type IACListVtbl_ field = 1
+	QueryInterface as function(byval This as IACList ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IACList ptr) as ULONG
+	Release as function(byval This as IACList ptr) as ULONG
 	Expand as function(byval This as IACList ptr, byval pszExpand as PCWSTR) as HRESULT
 end type
 
@@ -969,6 +1027,10 @@ type IACList2 field = 1
 end type
 
 type IACList2Vtbl_ field = 1
+	QueryInterface as function(byval This as IACList2 ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IACList2 ptr) as ULONG
+	Release as function(byval This as IACList2 ptr) as ULONG
+	Expand as function(byval This as IACList2 ptr, byval pszExpand as PCWSTR) as HRESULT
 	SetOptions as function(byval This as IACList2 ptr, byval dwFlag as DWORD) as HRESULT
 	GetOptions as function(byval This as IACList2 ptr, byval pdwFlag as DWORD ptr) as HRESULT
 end type
@@ -999,6 +1061,9 @@ type IProgressDialog field = 1
 end type
 
 type IProgressDialogVtbl_ field = 1
+	QueryInterface as function(byval This as IProgressDialog ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IProgressDialog ptr) as ULONG
+	Release as function(byval This as IProgressDialog ptr) as ULONG
 	StartProgressDialog as function(byval This as IProgressDialog ptr, byval hwndParent as HWND, byval punkEnableModless as IUnknown ptr, byval dwFlags as DWORD, byval pvResevered as LPCVOID) as HRESULT
 	StopProgressDialog as function(byval This as IProgressDialog ptr) as HRESULT
 	SetTitle as function(byval This as IProgressDialog ptr, byval pwzTitle as PCWSTR) as HRESULT
@@ -1018,6 +1083,11 @@ type IDockingWindowSite field = 1
 end type
 
 type IDockingWindowSiteVtbl_ field = 1
+	QueryInterface as function(byval This as IDockingWindowSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDockingWindowSite ptr) as ULONG
+	Release as function(byval This as IDockingWindowSite ptr) as ULONG
+	GetWindow as function(byval This as IDockingWindowSite ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDockingWindowSite ptr, byval fEnterMode as WINBOOL) as HRESULT
 	GetBorderDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval prcBorder as RECT ptr) as HRESULT
 	RequestBorderSpaceDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval pbw as LPCBORDERWIDTHS) as HRESULT
 	SetBorderSpaceDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval pbw as LPCBORDERWIDTHS) as HRESULT
@@ -1036,6 +1106,11 @@ type IDockingWindowFrame field = 1
 end type
 
 type IDockingWindowFrameVtbl_ field = 1
+	QueryInterface as function(byval This as IDockingWindowFrame ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDockingWindowFrame ptr) as ULONG
+	Release as function(byval This as IDockingWindowFrame ptr) as ULONG
+	GetWindow as function(byval This as IDockingWindowFrame ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDockingWindowFrame ptr, byval fEnterMode as WINBOOL) as HRESULT
 	AddToolbar as function(byval This as IDockingWindowFrame ptr, byval punkSrc as IUnknown ptr, byval pwszItem as PCWSTR, byval dwAddFlags as DWORD) as HRESULT
 	RemoveToolbar as function(byval This as IDockingWindowFrame ptr, byval punkSrc as IUnknown ptr, byval dwRemoveFlags as DWORD) as HRESULT
 	FindToolbar as function(byval This as IDockingWindowFrame ptr, byval pwszItem as PCWSTR, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -1048,6 +1123,9 @@ type IThumbnailCapture field = 1
 end type
 
 type IThumbnailCaptureVtbl_ field = 1
+	QueryInterface as function(byval This as IThumbnailCapture ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IThumbnailCapture ptr) as ULONG
+	Release as function(byval This as IThumbnailCapture ptr) as ULONG
 	CaptureThumbnail as function(byval This as IThumbnailCapture ptr, byval pMaxSize as const SIZE ptr, byval pHTMLDoc2 as IUnknown ptr, byval phbmThumbnail as HBITMAP ptr) as HRESULT
 end type
 
@@ -1151,6 +1229,9 @@ type IShellFolderBand field = 1
 end type
 
 type IShellFolderBandVtbl_ field = 1
+	QueryInterface as function(byval This as IShellFolderBand ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderBand ptr) as ULONG
+	Release as function(byval This as IShellFolderBand ptr) as ULONG
 	InitializeSFB as function(byval This as IShellFolderBand ptr, byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 	SetBandInfoSFB as function(byval This as IShellFolderBand ptr, byval pbi as PBANDINFOSFB) as HRESULT
 	GetBandInfoSFB as function(byval This as IShellFolderBand ptr, byval pbi as PBANDINFOSFB) as HRESULT
@@ -1167,6 +1248,11 @@ type IDeskBarClient field = 1
 end type
 
 type IDeskBarClientVtbl_ field = 1
+	QueryInterface as function(byval This as IDeskBarClient ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDeskBarClient ptr) as ULONG
+	Release as function(byval This as IDeskBarClient ptr) as ULONG
+	GetWindow as function(byval This as IDeskBarClient ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDeskBarClient ptr, byval fEnterMode as WINBOOL) as HRESULT
 	SetDeskBarSite as function(byval This as IDeskBarClient ptr, byval punkSite as IUnknown ptr) as HRESULT
 	SetModeDBC as function(byval This as IDeskBarClient ptr, byval dwMode as DWORD) as HRESULT
 	UIActivateDBC as function(byval This as IDeskBarClient ptr, byval dwState as DWORD) as HRESULT
@@ -1485,6 +1571,9 @@ type IShellChangeNotify field = 1
 end type
 
 type IShellChangeNotifyVtbl_ field = 1
+	QueryInterface as function(byval This as IShellChangeNotify ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellChangeNotify ptr) as ULONG
+	Release as function(byval This as IShellChangeNotify ptr) as ULONG
 	OnChange as function(byval This as IShellChangeNotify ptr, byval lEvent as LONG, byval pidl1 as LPCITEMIDLIST, byval pidl2 as LPCITEMIDLIST) as HRESULT
 end type
 
@@ -1495,6 +1584,9 @@ type IQueryInfo field = 1
 end type
 
 type IQueryInfoVtbl_ field = 1
+	QueryInterface as function(byval This as IQueryInfo ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IQueryInfo ptr) as ULONG
+	Release as function(byval This as IQueryInfo ptr) as ULONG
 	GetInfoTip as function(byval This as IQueryInfo ptr, byval dwFlags as DWORD, byval ppwszTip as PWSTR ptr) as HRESULT
 	GetInfoFlags as function(byval This as IQueryInfo ptr, byval pdwFlags as DWORD ptr) as HRESULT
 end type
@@ -1775,6 +1867,9 @@ declare function SHReplaceFromPropSheetExtArray(byval hpsxa as HPSXA, byval uPag
 	end type
 
 	type IDefViewFrameVtbl_ field = 1
+		QueryInterface as function(byval This as IDefViewFrame ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IDefViewFrame ptr) as ULONG
+		Release as function(byval This as IDefViewFrame ptr) as ULONG
 		GetWindowLV as function(byval This as IDefViewFrame ptr, byval phwnd as HWND ptr) as HRESULT
 		ReleaseWindowLV as function(byval This as IDefViewFrame ptr) as HRESULT
 		GetShellFolder as function(byval This as IDefViewFrame ptr, byval ppsf as IShellFolder ptr ptr) as HRESULT
@@ -2060,6 +2155,9 @@ type IDocViewSite field = 1
 end type
 
 type IDocViewSiteVtbl_ field = 1
+	QueryInterface as function(byval This as IDocViewSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDocViewSite ptr) as ULONG
+	Release as function(byval This as IDocViewSite ptr) as ULONG
 	OnSetTitle as function(byval This as IDocViewSite ptr, byval pvTitle as VARIANTARG ptr) as HRESULT
 end type
 
@@ -2122,6 +2220,9 @@ type IInitializeObject field = 1
 end type
 
 type IInitializeObjectVtbl_ field = 1
+	QueryInterface as function(byval This as IInitializeObject ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IInitializeObject ptr) as ULONG
+	Release as function(byval This as IInitializeObject ptr) as ULONG
 	Initialize as function(byval This as IInitializeObject ptr) as HRESULT
 end type
 
@@ -2137,6 +2238,9 @@ type IBanneredBar field = 1
 end type
 
 type IBanneredBarVtbl_ field = 1
+	QueryInterface as function(byval This as IBanneredBar ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IBanneredBar ptr) as ULONG
+	Release as function(byval This as IBanneredBar ptr) as ULONG
 	SetIconSize as function(byval This as IBanneredBar ptr, byval iIcon as DWORD) as HRESULT
 	GetIconSize as function(byval This as IBanneredBar ptr, byval piIcon as DWORD ptr) as HRESULT
 	SetBitmap as function(byval This as IBanneredBar ptr, byval hBitmap as HBITMAP) as HRESULT
@@ -2151,6 +2255,9 @@ type IShellFolderViewCB field = 1
 end type
 
 type IShellFolderViewCBVtbl_ field = 1
+	QueryInterface as function(byval This as IShellFolderViewCB ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderViewCB ptr) as ULONG
+	Release as function(byval This as IShellFolderViewCB ptr) as ULONG
 	MessageSFVCB as function(byval This as IShellFolderViewCB ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 end type
 
@@ -2272,6 +2379,9 @@ type IShellFolderView
 end type
 
 type IShellFolderViewVtbl_
+	QueryInterface as function(byval This as IShellFolderView ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderView ptr) as ULONG
+	Release as function(byval This as IShellFolderView ptr) as ULONG
 	Rearrange as function(byval This as IShellFolderView ptr, byval lParamSort as LPARAM) as HRESULT
 	GetArrangeParam as function(byval This as IShellFolderView ptr, byval plParamSort as LPARAM ptr) as HRESULT
 	ArrangeGrid as function(byval This as IShellFolderView ptr) as HRESULT
@@ -2664,6 +2774,9 @@ type INamedPropertyBag field = 1
 end type
 
 type INamedPropertyBagVtbl_ field = 1
+	QueryInterface as function(byval This as INamedPropertyBag ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as INamedPropertyBag ptr) as ULONG
+	Release as function(byval This as INamedPropertyBag ptr) as ULONG
 	ReadPropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR, byval pVar as PROPVARIANT ptr) as HRESULT
 	WritePropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR, byval pVar as PROPVARIANT ptr) as HRESULT
 	RemovePropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR) as HRESULT
