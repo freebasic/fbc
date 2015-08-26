@@ -199,7 +199,9 @@ private function hCheckUDTSize _
 
 	if( n > &h7FFFFFFFull ) then
 		function = FALSE
-		errReport( FB_ERRMSG_UDTTOOBIG )
+		#ifndef __FB_DEBUG__
+			errReport( FB_ERRMSG_UDTTOOBIG )
+		#endif
 	else
 		function = TRUE
 	end if
