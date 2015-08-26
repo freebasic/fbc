@@ -59,6 +59,7 @@ Version 1.04.0
 - LLVM backend: Structs using FIELD=1 are now emitted as packed structs
 - Many bindings and especially the Windows API binding now use more proper Const/Type/Extern/Sub/Function declarations instead of #defines, allowing many identifiers (such as "LoadImage" which is also a Windows API function) to be used for custom functions in namespaces, even if the file #includes windows.bi or others.
 - 1.02.0 regression: Windows API binding: COM interfaces in win/shlobj.bi were missing vtable entries
+- #761: crt/string.bi and win/shlwapi.bi can now be used together - they use #undefs to override each-other (e.g. strcpy() vs StrCpy()), whichever is #included last wins.
 
 
 Version 1.03.0

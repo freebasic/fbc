@@ -162,25 +162,73 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	declare function StrCmpICW(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
 #endif
 
-#ifdef UNICODE
-	#if _WIN32_WINNT = &h0602
-		declare function StrCmpIC alias "StrCmpICW"(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
-	#endif
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	declare function StrCmpIC alias "StrCmpICW"(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	declare function StrCmpIC alias "StrCmpICA"(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
+#endif
 
+#undef StrChr
+
+#ifdef UNICODE
 	declare function StrChr alias "StrChrW"(byval lpStart as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
+#else
+	declare function StrChr alias "StrChrA"(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
+#endif
+
+#undef StrRChr
+
+#ifdef UNICODE
 	declare function StrRChr alias "StrRChrW"(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 	declare function StrChrI alias "StrChrIW"(byval lpStart as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 	declare function StrRChrI alias "StrRChrIW"(byval lpStart as LPCWSTR, byval lpEnd as LPCWSTR, byval wMatch as WCHAR) as LPWSTR
 	declare function StrCmpN alias "StrCmpNW"(byval lpStr1 as LPCWSTR, byval lpStr2 as LPCWSTR, byval nChar as long) as long
 	declare function StrCmpNI alias "StrCmpNIW"(byval lpStr1 as LPCWSTR, byval lpStr2 as LPCWSTR, byval nChar as long) as long
+#else
+	declare function StrRChr alias "StrRChrA"(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
+	declare function StrChrI alias "StrChrIA"(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
+	declare function StrRChrI alias "StrRChrIA"(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
+	declare function StrCmpN alias "StrCmpNA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
+	declare function StrCmpNI alias "StrCmpNIA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
+#endif
+
+#undef StrStr
+
+#ifdef UNICODE
 	declare function StrStr alias "StrStrW"(byval lpFirst as LPCWSTR, byval lpSrch as LPCWSTR) as LPWSTR
 	declare function StrStrI alias "StrStrIW"(byval lpFirst as LPCWSTR, byval lpSrch as LPCWSTR) as LPWSTR
 	declare function StrDup alias "StrDupW"(byval lpSrch as LPCWSTR) as LPWSTR
 	declare function StrRStrI alias "StrRStrIW"(byval lpSource as LPCWSTR, byval lpLast as LPCWSTR, byval lpSrch as LPCWSTR) as LPWSTR
+#else
+	declare function StrStr alias "StrStrA"(byval lpFirst as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
+	declare function StrStrI alias "StrStrIA"(byval lpFirst as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
+	declare function StrDup alias "StrDupA"(byval lpSrch as LPCSTR) as LPSTR
+	declare function StrRStrI alias "StrRStrIA"(byval lpSource as LPCSTR, byval lpLast as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
+#endif
+
+#undef StrCSpn
+
+#ifdef UNICODE
 	declare function StrCSpn alias "StrCSpnW"(byval lpStr as LPCWSTR, byval lpSet as LPCWSTR) as long
 	declare function StrCSpnI alias "StrCSpnIW"(byval lpStr as LPCWSTR, byval lpSet as LPCWSTR) as long
+#else
+	declare function StrCSpn alias "StrCSpnA"(byval lpStr as LPCSTR, byval lpSet as LPCSTR) as long
+	declare function StrCSpnI alias "StrCSpnIA"(byval lpStr as LPCSTR, byval lpSet as LPCSTR) as long
+#endif
+
+#undef StrSpn
+
+#ifdef UNICODE
 	declare function StrSpn alias "StrSpnW"(byval psz as LPCWSTR, byval pszSet as LPCWSTR) as long
 	declare function StrToInt alias "StrToIntW"(byval lpSrc as LPCWSTR) as long
+#else
+	declare function StrSpn alias "StrSpnA"(byval psz as LPCSTR, byval pszSet as LPCSTR) as long
+	declare function StrToInt alias "StrToIntA"(byval lpSrc as LPCSTR) as long
+#endif
+
+#undef StrPBrk
+
+#ifdef UNICODE
 	declare function StrPBrk alias "StrPBrkW"(byval psz as LPCWSTR, byval pszSet as LPCWSTR) as LPWSTR
 	declare function StrToIntEx alias "StrToIntExW"(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 
@@ -193,36 +241,12 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIW
 	declare function StrFormatByteSize alias "StrFormatByteSizeW"(byval qdw as LONGLONG, byval szBuf as LPWSTR, byval uiBufSize as UINT) as LPWSTR
 	declare function StrFormatKBSize alias "StrFormatKBSizeW"(byval qdw as LONGLONG, byval szBuf as LPWSTR, byval uiBufSize as UINT) as LPWSTR
-	#define StrNCat StrNCatW
-	declare function StrTrim alias "StrTrimW"(byval psz as LPWSTR, byval pszTrimChars as LPCWSTR) as WINBOOL
-	declare function StrCatBuff alias "StrCatBuffW"(byval pszDest as LPWSTR, byval pszSrc as LPCWSTR, byval cchDestBuffSize as long) as LPWSTR
-	declare function ChrCmpI alias "ChrCmpIW"(byval w1 as WCHAR, byval w2 as WCHAR) as WINBOOL
-	declare function wvnsprintf alias "wvnsprintfW"(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, byval arglist as va_list) as long
-	declare function wnsprintf cdecl alias "wnsprintfW"(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, ...) as long
-	declare function StrIsIntlEqual alias "StrIsIntlEqualW"(byval fCaseSens as WINBOOL, byval lpString1 as LPCWSTR, byval lpString2 as LPCWSTR, byval nChar as long) as WINBOOL
-	declare function StrFormatByteSize64 alias "StrFormatByteSizeW"(byval qdw as LONGLONG, byval szBuf as LPWSTR, byval uiBufSize as UINT) as LPWSTR
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	declare function StrCmpIC alias "StrCmpICA"(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
+#else
+	declare function StrPBrk alias "StrPBrkA"(byval psz as LPCSTR, byval pszSet as LPCSTR) as LPSTR
+	declare function StrToIntEx alias "StrToIntExA"(byval pszString as LPCSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 #endif
 
 #ifndef UNICODE
-	declare function StrChr alias "StrChrA"(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
-	declare function StrRChr alias "StrRChrA"(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
-	declare function StrChrI alias "StrChrIA"(byval lpStart as LPCSTR, byval wMatch as WORD) as LPSTR
-	declare function StrRChrI alias "StrRChrIA"(byval lpStart as LPCSTR, byval lpEnd as LPCSTR, byval wMatch as WORD) as LPSTR
-	declare function StrCmpN alias "StrCmpNA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
-	declare function StrCmpNI alias "StrCmpNIA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
-	declare function StrStr alias "StrStrA"(byval lpFirst as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
-	declare function StrStrI alias "StrStrIA"(byval lpFirst as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
-	declare function StrDup alias "StrDupA"(byval lpSrch as LPCSTR) as LPSTR
-	declare function StrRStrI alias "StrRStrIA"(byval lpSource as LPCSTR, byval lpLast as LPCSTR, byval lpSrch as LPCSTR) as LPSTR
-	declare function StrCSpn alias "StrCSpnA"(byval lpStr as LPCSTR, byval lpSet as LPCSTR) as long
-	declare function StrCSpnI alias "StrCSpnIA"(byval lpStr as LPCSTR, byval lpSet as LPCSTR) as long
-	declare function StrSpn alias "StrSpnA"(byval psz as LPCSTR, byval pszSet as LPCSTR) as long
-	declare function StrToInt alias "StrToIntA"(byval lpSrc as LPCSTR) as long
-	declare function StrPBrk alias "StrPBrkA"(byval psz as LPCSTR, byval pszSet as LPCSTR) as LPSTR
-	declare function StrToIntEx alias "StrToIntExA"(byval pszString as LPCSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
-
 	#if _WIN32_WINNT >= &h0502
 		declare function StrToInt64Ex alias "StrToInt64ExA"(byval pszString as LPCSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 	#endif
@@ -232,6 +256,20 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	#define StrIntlEqNI StrIntlEqNIA
 	declare function StrFormatByteSize alias "StrFormatByteSizeA"(byval dw as DWORD, byval szBuf as LPSTR, byval uiBufSize as UINT) as LPSTR
 	declare function StrFormatKBSize alias "StrFormatKBSizeA"(byval qdw as LONGLONG, byval szBuf as LPSTR, byval uiBufSize as UINT) as LPSTR
+#endif
+
+#undef StrNCat
+
+#ifdef UNICODE
+	#define StrNCat StrNCatW
+	declare function StrTrim alias "StrTrimW"(byval psz as LPWSTR, byval pszTrimChars as LPCWSTR) as WINBOOL
+	declare function StrCatBuff alias "StrCatBuffW"(byval pszDest as LPWSTR, byval pszSrc as LPCWSTR, byval cchDestBuffSize as long) as LPWSTR
+	declare function ChrCmpI alias "ChrCmpIW"(byval w1 as WCHAR, byval w2 as WCHAR) as WINBOOL
+	declare function wvnsprintf alias "wvnsprintfW"(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, byval arglist as va_list) as long
+	declare function wnsprintf cdecl alias "wnsprintfW"(byval lpOut as LPWSTR, byval cchLimitIn as long, byval lpFmt as LPCWSTR, ...) as long
+	declare function StrIsIntlEqual alias "StrIsIntlEqualW"(byval fCaseSens as WINBOOL, byval lpString1 as LPCWSTR, byval lpString2 as LPCWSTR, byval nChar as long) as WINBOOL
+	declare function StrFormatByteSize64 alias "StrFormatByteSizeW"(byval qdw as LONGLONG, byval szBuf as LPWSTR, byval uiBufSize as UINT) as LPWSTR
+#else
 	#define StrNCat StrNCatA
 	declare function StrTrim alias "StrTrimA"(byval psz as LPSTR, byval pszTrimChars as LPCSTR) as WINBOOL
 	declare function StrCatBuff alias "StrCatBuffA"(byval pszDest as LPSTR, byval pszSrc as LPCSTR, byval cchDestBuffSize as long) as LPSTR
@@ -282,27 +320,47 @@ declare function StrCpyNA alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpSt
 
 #ifdef UNICODE
 	declare function StrToLong alias "StrToIntW"(byval lpSrc as LPCWSTR) as long
+#else
+	declare function StrToLong alias "StrToIntA"(byval lpSrc as LPCSTR) as long
+#endif
+
+#undef StrNCmp
+
+#ifdef UNICODE
 	declare function StrNCmp alias "StrCmpNW"(byval lpStr1 as LPCWSTR, byval lpStr2 as LPCWSTR, byval nChar as long) as long
 	declare function StrNCmpI alias "StrCmpNIW"(byval lpStr1 as LPCWSTR, byval lpStr2 as LPCWSTR, byval nChar as long) as long
 #else
-	declare function StrToLong alias "StrToIntA"(byval lpSrc as LPCSTR) as long
 	declare function StrNCmp alias "StrCmpNA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
 	declare function StrNCmpI alias "StrCmpNIA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
 #endif
 
+#undef StrNCpy
 #define StrCatN StrNCat
+#undef StrCat
 
 #ifdef UNICODE
 	#define StrCat StrCatW
+#else
+	#define StrCat lstrcatA
+#endif
+
+#undef StrCmp
+
+#ifdef UNICODE
 	declare function StrCmp alias "StrCmpW"(byval psz1 as LPCWSTR, byval psz2 as LPCWSTR) as long
 	declare function StrCmpI alias "StrCmpIW"(byval psz1 as LPCWSTR, byval psz2 as LPCWSTR) as long
+#else
+	declare function StrCmp alias "lstrcmpA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
+	declare function StrCmpI alias "lstrcmpiA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
+#endif
+
+#undef StrCpy
+
+#ifdef UNICODE
 	#define StrCpy StrCpyW
 	declare function StrCpyN alias "StrCpyNW"(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cchMax as long) as LPWSTR
 	declare function StrNCpy alias "StrCpyNW"(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cchMax as long) as LPWSTR
 #else
-	#define StrCat lstrcatA
-	declare function StrCmp alias "lstrcmpA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
-	declare function StrCmpI alias "lstrcmpiA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
 	#define StrCpy lstrcpyA
 	declare function StrCpyN alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpString2 as LPCSTR, byval iMaxLength as long) as LPSTR
 	declare function StrNCpy alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpString2 as LPCSTR, byval iMaxLength as long) as LPSTR
