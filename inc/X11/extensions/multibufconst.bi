@@ -55,6 +55,6 @@ const MultibufferClobberNotifyMask = &h02000000
 const MultibufferUpdateNotifyMask = &h04000000
 const MultibufferClobberNotify = 0
 const MultibufferUpdateNotify = 1
-#define MultibufferNumberEvents (MultibufferUpdateNotify + 1)
+const MultibufferNumberEvents = MultibufferUpdateNotify + 1
 const MultibufferBadBuffer = 0
-#define MultibufferNumberErrors (MultibufferBadBuffer + 1)
+const MultibufferNumberErrors = MultibufferBadBuffer + 1

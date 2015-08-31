@@ -39,7 +39,7 @@ const XagWindowTypeMacintosh = 1
 const XagWindowTypeWin32 = 2
 const XagWindowTypeWin16 = 3
 const XagBadAppGroup = 0
-#define XagNumberErrors (XagBadAppGroup + 1)
+const XagNumberErrors = XagBadAppGroup + 1
 const XagNsingleScreen = 7
 const XagNdefaultRoot = 1
 const XagNrootVisual = 2

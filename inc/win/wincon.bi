@@ -359,7 +359,7 @@ declare function GenerateConsoleCtrlEvent(byval dwCtrlEvent as DWORD, byval dwPr
 declare function AllocConsole() as WINBOOL
 declare function FreeConsole() as WINBOOL
 declare function AttachConsole(byval dwProcessId as DWORD) as WINBOOL
-#define ATTACH_PARENT_PROCESS cast(DWORD, -1)
+const ATTACH_PARENT_PROCESS = cast(DWORD, -1)
 declare function GetConsoleTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 
 #ifndef UNICODE

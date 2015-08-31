@@ -247,42 +247,42 @@ end type
 #endif
 
 #define ttytype (*cptr(zstring ptr, @__ttytype))
-#define A_NORMAL cast(chtype, 0)
-#define A_ALTCHARSET cast(chtype, &h00010000)
-#define A_RIGHTLINE cast(chtype, &h00020000)
-#define A_LEFTLINE cast(chtype, &h00040000)
-#define A_INVIS cast(chtype, &h00080000)
-#define A_UNDERLINE cast(chtype, &h00100000)
-#define A_REVERSE cast(chtype, &h00200000)
-#define A_BLINK cast(chtype, &h00400000)
-#define A_BOLD cast(chtype, &h00800000)
-#define A_ATTRIBUTES cast(chtype, &hffff0000)
-#define A_CHARTEXT cast(chtype, &h0000ffff)
-#define A_COLOR cast(chtype, &hff000000)
-#define A_ITALIC A_INVIS
-#define A_PROTECT ((A_UNDERLINE or A_LEFTLINE) or A_RIGHTLINE)
+const A_NORMAL = cast(chtype, 0)
+const A_ALTCHARSET = cast(chtype, &h00010000)
+const A_RIGHTLINE = cast(chtype, &h00020000)
+const A_LEFTLINE = cast(chtype, &h00040000)
+const A_INVIS = cast(chtype, &h00080000)
+const A_UNDERLINE = cast(chtype, &h00100000)
+const A_REVERSE = cast(chtype, &h00200000)
+const A_BLINK = cast(chtype, &h00400000)
+const A_BOLD = cast(chtype, &h00800000)
+const A_ATTRIBUTES = cast(chtype, &hffff0000)
+const A_CHARTEXT = cast(chtype, &h0000ffff)
+const A_COLOR = cast(chtype, &hff000000)
+const A_ITALIC = A_INVIS
+const A_PROTECT = (A_UNDERLINE or A_LEFTLINE) or A_RIGHTLINE
 const PDC_ATTR_SHIFT = 19
 const PDC_COLOR_SHIFT = 24
-#define A_STANDOUT (A_REVERSE or A_BOLD)
-#define A_DIM A_NORMAL
-#define CHR_MSK A_CHARTEXT
-#define ATR_MSK A_ATTRIBUTES
-#define ATR_NRM A_NORMAL
-#define WA_ALTCHARSET A_ALTCHARSET
-#define WA_BLINK A_BLINK
-#define WA_BOLD A_BOLD
-#define WA_DIM A_DIM
-#define WA_INVIS A_INVIS
-#define WA_LEFT A_LEFTLINE
-#define WA_PROTECT A_PROTECT
-#define WA_REVERSE A_REVERSE
-#define WA_RIGHT A_RIGHTLINE
-#define WA_STANDOUT A_STANDOUT
-#define WA_UNDERLINE A_UNDERLINE
-#define WA_HORIZONTAL A_NORMAL
-#define WA_LOW A_NORMAL
-#define WA_TOP A_NORMAL
-#define WA_VERTICAL A_NORMAL
+const A_STANDOUT = A_REVERSE or A_BOLD
+const A_DIM = A_NORMAL
+const CHR_MSK = A_CHARTEXT
+const ATR_MSK = A_ATTRIBUTES
+const ATR_NRM = A_NORMAL
+const WA_ALTCHARSET = A_ALTCHARSET
+const WA_BLINK = A_BLINK
+const WA_BOLD = A_BOLD
+const WA_DIM = A_DIM
+const WA_INVIS = A_INVIS
+const WA_LEFT = A_LEFTLINE
+const WA_PROTECT = A_PROTECT
+const WA_REVERSE = A_REVERSE
+const WA_RIGHT = A_RIGHTLINE
+const WA_STANDOUT = A_STANDOUT
+const WA_UNDERLINE = A_UNDERLINE
+const WA_HORIZONTAL = A_NORMAL
+const WA_LOW = A_NORMAL
+const WA_TOP = A_NORMAL
+const WA_VERTICAL = A_NORMAL
 #define ACS_PICK(w, n) (cast(chtype, w) or A_ALTCHARSET)
 #define ACS_ULCORNER ACS_PICK(asc("l"), asc("+"))
 #define ACS_LLCORNER ACS_PICK(asc("m"), asc("+"))
@@ -378,9 +378,9 @@ const COLOR_BLACK = 0
 const COLOR_BLUE = 1
 const COLOR_GREEN = 2
 const COLOR_RED = 4
-#define COLOR_CYAN (COLOR_BLUE or COLOR_GREEN)
-#define COLOR_MAGENTA (COLOR_RED or COLOR_BLUE)
-#define COLOR_YELLOW (COLOR_RED or COLOR_GREEN)
+const COLOR_CYAN = COLOR_BLUE or COLOR_GREEN
+const COLOR_MAGENTA = COLOR_RED or COLOR_BLUE
+const COLOR_YELLOW = COLOR_RED or COLOR_GREEN
 const COLOR_WHITE = 7
 const KEY_CODE_YES = &h100
 const KEY_BREAK = &h101

@@ -310,8 +310,8 @@ declare function IntlStrEqWorkerW(byval fCaseSens as WINBOOL, byval lpString1 as
 
 #define PathIsHTMLFileA(pszPath) PathIsContentTypeA(pszPath, SZ_CONTENTTYPE_HTMLA)
 #define PathIsHTMLFileW(pszPath) PathIsContentTypeW(pszPath, SZ_CONTENTTYPE_HTMLW)
-#define STIF_DEFAULT __MSABI_LONG(&h00000000)
-#define STIF_SUPPORT_HEX __MSABI_LONG(&h00000001)
+const STIF_DEFAULT = &h00000000
+const STIF_SUPPORT_HEX = &h00000001
 #define StrCatA lstrcatA
 declare function StrCmpA alias "lstrcmpA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
 declare function StrCmpIA alias "lstrcmpiA"(byval lpString1 as LPCSTR, byval lpString2 as LPCSTR) as long
@@ -334,7 +334,6 @@ declare function StrCpyNA alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpSt
 	declare function StrNCmpI alias "StrCmpNIA"(byval lpStr1 as LPCSTR, byval lpStr2 as LPCSTR, byval nChar as long) as long
 #endif
 
-#undef StrNCpy
 #define StrCatN StrNCat
 #undef StrCat
 
@@ -359,10 +358,16 @@ declare function StrCpyNA alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpSt
 #ifdef UNICODE
 	#define StrCpy StrCpyW
 	declare function StrCpyN alias "StrCpyNW"(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cchMax as long) as LPWSTR
-	declare function StrNCpy alias "StrCpyNW"(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cchMax as long) as LPWSTR
 #else
 	#define StrCpy lstrcpyA
 	declare function StrCpyN alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpString2 as LPCSTR, byval iMaxLength as long) as LPSTR
+#endif
+
+#undef StrNCpy
+
+#ifdef UNICODE
+	declare function StrNCpy alias "StrCpyNW"(byval psz1 as LPWSTR, byval psz2 as LPCWSTR, byval cchMax as long) as LPWSTR
+#else
 	declare function StrNCpy alias "lstrcpynA"(byval lpString1 as LPSTR, byval lpString2 as LPCSTR, byval iMaxLength as long) as LPSTR
 #endif
 
@@ -949,8 +954,8 @@ declare function SHSetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byv
 	const SRRF_RT_REG_DWORD = &h00000010
 	const SRRF_RT_REG_MULTI_SZ = &h00000020
 	const SRRF_RT_REG_QWORD = &h00000040
-	#define SRRF_RT_DWORD (SRRF_RT_REG_BINARY or SRRF_RT_REG_DWORD)
-	#define SRRF_RT_QWORD (SRRF_RT_REG_BINARY or SRRF_RT_REG_QWORD)
+	const SRRF_RT_DWORD = SRRF_RT_REG_BINARY or SRRF_RT_REG_DWORD
+	const SRRF_RT_QWORD = SRRF_RT_REG_BINARY or SRRF_RT_REG_QWORD
 	const SRRF_RT_ANY = &h0000ffff
 	const SRRF_RM_ANY = &h00000000
 	const SRRF_RM_NORMAL = &h00010000
@@ -1074,7 +1079,7 @@ const SHREGSET_HKCU = &h00000001
 const SHREGSET_FORCE_HKCU = &h00000002
 const SHREGSET_HKLM = &h00000004
 const SHREGSET_FORCE_HKLM = &h00000008
-#define SHREGSET_DEFAULT (SHREGSET_FORCE_HKCU or SHREGSET_HKLM)
+const SHREGSET_DEFAULT = SHREGSET_FORCE_HKCU or SHREGSET_HKLM
 type HUSKEY as HANDLE
 type PHUSKEY as HUSKEY ptr
 
@@ -1346,10 +1351,10 @@ declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode a
 	const SHGVSPB_INHERIT = &h00000010
 	const SHGVSPB_ROAM = &h00000020
 	const SHGVSPB_NOAUTODEFAULTS = &h80000000
-	#define SHGVSPB_FOLDER (SHGVSPB_PERUSER or SHGVSPB_PERFOLDER)
-	#define SHGVSPB_FOLDERNODEFAULTS ((SHGVSPB_PERUSER or SHGVSPB_PERFOLDER) or SHGVSPB_NOAUTODEFAULTS)
-	#define SHGVSPB_USERDEFAULTS (SHGVSPB_PERUSER or SHGVSPB_ALLFOLDERS)
-	#define SHGVSPB_GLOBALDEAFAULTS (SHGVSPB_ALLUSERS or SHGVSPB_ALLFOLDERS)
+	const SHGVSPB_FOLDER = SHGVSPB_PERUSER or SHGVSPB_PERFOLDER
+	const SHGVSPB_FOLDERNODEFAULTS = (SHGVSPB_PERUSER or SHGVSPB_PERFOLDER) or SHGVSPB_NOAUTODEFAULTS
+	const SHGVSPB_USERDEFAULTS = SHGVSPB_PERUSER or SHGVSPB_ALLFOLDERS
+	const SHGVSPB_GLOBALDEAFAULTS = SHGVSPB_ALLUSERS or SHGVSPB_ALLFOLDERS
 	declare function SHGetViewStatePropertyBag(byval pidl as LPCITEMIDLIST, byval pszBagName as LPCWSTR, byval dwFlags as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 

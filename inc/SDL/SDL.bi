@@ -291,7 +291,7 @@ const SDL_BYTEORDER = SDL_LIL_ENDIAN
 #define SDL_SwapBE64(X) SDL_Swap64(X)
 #define _SDL_mutex_h
 const SDL_MUTEX_TIMEDOUT = 1
-#define SDL_MUTEX_MAXWAIT (not cast(Uint32, 0))
+const SDL_MUTEX_MAXWAIT = not cast(Uint32, 0)
 type SDL_mutex as SDL_mutex_
 declare function SDL_CreateMutex() as SDL_mutex ptr
 #define SDL_LockMutex(m) SDL_mutexP(m)
@@ -793,10 +793,10 @@ enum
 	KMOD_RESERVED = &h8000
 end enum
 
-#define KMOD_CTRL (KMOD_LCTRL or KMOD_RCTRL)
-#define KMOD_SHIFT (KMOD_LSHIFT or KMOD_RSHIFT)
-#define KMOD_ALT (KMOD_LALT or KMOD_RALT)
-#define KMOD_META (KMOD_LMETA or KMOD_RMETA)
+const KMOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
+const KMOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
+const KMOD_ALT = KMOD_LALT or KMOD_RALT
+const KMOD_META = KMOD_LMETA or KMOD_RMETA
 
 type SDL_keysym
 	scancode as Uint8
@@ -1090,10 +1090,10 @@ const SDL_HAT_UP = &h01
 const SDL_HAT_RIGHT = &h02
 const SDL_HAT_DOWN = &h04
 const SDL_HAT_LEFT = &h08
-#define SDL_HAT_RIGHTUP (SDL_HAT_RIGHT or SDL_HAT_UP)
-#define SDL_HAT_RIGHTDOWN (SDL_HAT_RIGHT or SDL_HAT_DOWN)
-#define SDL_HAT_LEFTUP (SDL_HAT_LEFT or SDL_HAT_UP)
-#define SDL_HAT_LEFTDOWN (SDL_HAT_LEFT or SDL_HAT_DOWN)
+const SDL_HAT_RIGHTUP = SDL_HAT_RIGHT or SDL_HAT_UP
+const SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT or SDL_HAT_DOWN
+const SDL_HAT_LEFTUP = SDL_HAT_LEFT or SDL_HAT_UP
+const SDL_HAT_LEFTDOWN = SDL_HAT_LEFT or SDL_HAT_DOWN
 
 declare function SDL_JoystickGetHat(byval joystick as SDL_Joystick ptr, byval hat as long) as Uint8
 declare function SDL_JoystickGetBall(byval joystick as SDL_Joystick ptr, byval ball as long, byval dx as long ptr, byval dy as long ptr) as long

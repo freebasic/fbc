@@ -44,7 +44,7 @@ const XSecurityTimeout = 1 shl 0
 const XSecurityTrustLevel = 1 shl 1
 const XSecurityGroup = 1 shl 2
 const XSecurityEventMask = 1 shl 3
-#define XSecurityAllAuthorizationAttributes (((XSecurityTimeout or XSecurityTrustLevel) or XSecurityGroup) or XSecurityEventMask)
+const XSecurityAllAuthorizationAttributes = ((XSecurityTimeout or XSecurityTrustLevel) or XSecurityGroup) or XSecurityEventMask
 const XSecurityAuthorizationRevokedMask = 1 shl 0
 const XSecurityAllEventMasks = XSecurityAuthorizationRevokedMask
 const XSecurityAuthorizationRevoked = 0

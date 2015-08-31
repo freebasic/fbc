@@ -74,7 +74,7 @@ type XrmResourceList as XrmResource ptr
 type XtVersionType as culong
 const XT_VERSION = 11
 const XT_REVISION = 6
-#define XtVersion ((XT_VERSION * 1000) + XT_REVISION)
+const XtVersion = (XT_VERSION * 1000) + XT_REVISION
 const XtVersionDontCheck = 0
 
 type XtProc as sub()

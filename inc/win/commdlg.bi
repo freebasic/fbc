@@ -458,16 +458,16 @@ type LPOFNOTIFYEXW as _OFNOTIFYEXW ptr
 const CDN_FIRST = culng(0u - 601u)
 const CDN_LAST = culng(0u - 699u)
 const CDN_INITDONE = CDN_FIRST
-#define CDN_SELCHANGE culng(CDN_FIRST - 1)
-#define CDN_FOLDERCHANGE culng(CDN_FIRST - 2)
-#define CDN_SHAREVIOLATION culng(CDN_FIRST - 3)
-#define CDN_HELP culng(CDN_FIRST - 4)
-#define CDN_FILEOK culng(CDN_FIRST - 5)
-#define CDN_TYPECHANGE culng(CDN_FIRST - 6)
-#define CDN_INCLUDEITEM culng(CDN_FIRST - 7)
-#define CDM_FIRST (WM_USER + 100)
-#define CDM_LAST (WM_USER + 200)
-#define CDM_GETSPEC CDM_FIRST
+const CDN_SELCHANGE = culng(CDN_FIRST - 1)
+const CDN_FOLDERCHANGE = culng(CDN_FIRST - 2)
+const CDN_SHAREVIOLATION = culng(CDN_FIRST - 3)
+const CDN_HELP = culng(CDN_FIRST - 4)
+const CDN_FILEOK = culng(CDN_FIRST - 5)
+const CDN_TYPECHANGE = culng(CDN_FIRST - 6)
+const CDN_INCLUDEITEM = culng(CDN_FIRST - 7)
+const CDM_FIRST = WM_USER + 100
+const CDM_LAST = WM_USER + 200
+const CDM_GETSPEC = CDM_FIRST
 #define CommDlg_OpenSave_GetSpecA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETSPEC, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
 #define CommDlg_OpenSave_GetSpecW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETSPEC, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
 
@@ -477,7 +477,7 @@ const CDN_INITDONE = CDN_FIRST
 	#define CommDlg_OpenSave_GetSpec CommDlg_OpenSave_GetSpecA
 #endif
 
-#define CDM_GETFILEPATH (CDM_FIRST + 1)
+const CDM_GETFILEPATH = CDM_FIRST + 1
 #define CommDlg_OpenSave_GetFilePathA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFILEPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
 #define CommDlg_OpenSave_GetFilePathW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFILEPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
 
@@ -487,7 +487,7 @@ const CDN_INITDONE = CDN_FIRST
 	#define CommDlg_OpenSave_GetFilePath CommDlg_OpenSave_GetFilePathA
 #endif
 
-#define CDM_GETFOLDERPATH (CDM_FIRST + 2)
+const CDM_GETFOLDERPATH = CDM_FIRST + 2
 #define CommDlg_OpenSave_GetFolderPathA(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPSTR, _psz))))
 #define CommDlg_OpenSave_GetFolderPathW(_hdlg, _psz, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERPATH, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPWSTR, _psz))))
 
@@ -497,13 +497,13 @@ const CDN_INITDONE = CDN_FIRST
 	#define CommDlg_OpenSave_GetFolderPath CommDlg_OpenSave_GetFolderPathA
 #endif
 
-#define CDM_GETFOLDERIDLIST (CDM_FIRST + 3)
+const CDM_GETFOLDERIDLIST = CDM_FIRST + 3
 #define CommDlg_OpenSave_GetFolderIDList(_hdlg, _pidl, _cbmax) clng(SNDMSG(_hdlg, CDM_GETFOLDERIDLIST, cast(WPARAM, _cbmax), cast(LPARAM, cast(LPVOID, _pidl))))
-#define CDM_SETCONTROLTEXT (CDM_FIRST + 4)
+const CDM_SETCONTROLTEXT = CDM_FIRST + 4
 #define CommDlg_OpenSave_SetControlText(_hdlg, _id, _text) SNDMSG(_hdlg, CDM_SETCONTROLTEXT, cast(WPARAM, _id), cast(LPARAM, cast(LPSTR, _text)))
-#define CDM_HIDECONTROL (CDM_FIRST + 5)
+const CDM_HIDECONTROL = CDM_FIRST + 5
 #define CommDlg_OpenSave_HideControl(_hdlg, _id) SNDMSG(_hdlg, CDM_HIDECONTROL, cast(WPARAM, _id), 0)
-#define CDM_SETDEFEXT (CDM_FIRST + 6)
+const CDM_SETDEFEXT = CDM_FIRST + 6
 #define CommDlg_OpenSave_SetDefExt(_hdlg, _pszext) SNDMSG(_hdlg, CDM_SETDEFEXT, 0, cast(LPARAM, cast(LPSTR, _pszext)))
 
 #ifdef __FB_64BIT__
@@ -812,35 +812,35 @@ declare function ChooseFontW(byval as LPCHOOSEFONTW) as WINBOOL
 
 const CF_SCREENFONTS = &h1
 const CF_PRINTERFONTS = &h2
-#define CF_BOTH (CF_SCREENFONTS or CF_PRINTERFONTS)
-#define CF_SHOWHELP __MSABI_LONG(&h4)
-#define CF_ENABLEHOOK __MSABI_LONG(&h8)
-#define CF_ENABLETEMPLATE __MSABI_LONG(&h10)
-#define CF_ENABLETEMPLATEHANDLE __MSABI_LONG(&h20)
-#define CF_INITTOLOGFONTSTRUCT __MSABI_LONG(&h40)
-#define CF_USESTYLE __MSABI_LONG(&h80)
-#define CF_EFFECTS __MSABI_LONG(&h100)
-#define CF_APPLY __MSABI_LONG(&h200)
-#define CF_ANSIONLY __MSABI_LONG(&h400)
-#define CF_SCRIPTSONLY CF_ANSIONLY
-#define CF_NOVECTORFONTS __MSABI_LONG(&h800)
-#define CF_NOOEMFONTS CF_NOVECTORFONTS
-#define CF_NOSIMULATIONS __MSABI_LONG(&h1000)
-#define CF_LIMITSIZE __MSABI_LONG(&h2000)
-#define CF_FIXEDPITCHONLY __MSABI_LONG(&h4000)
-#define CF_WYSIWYG __MSABI_LONG(&h8000)
-#define CF_FORCEFONTEXIST __MSABI_LONG(&h10000)
-#define CF_SCALABLEONLY __MSABI_LONG(&h20000)
-#define CF_TTONLY __MSABI_LONG(&h40000)
-#define CF_NOFACESEL __MSABI_LONG(&h80000)
-#define CF_NOSTYLESEL __MSABI_LONG(&h100000)
-#define CF_NOSIZESEL __MSABI_LONG(&h200000)
-#define CF_SELECTSCRIPT __MSABI_LONG(&h400000)
-#define CF_NOSCRIPTSEL __MSABI_LONG(&h800000)
-#define CF_NOVERTFONTS __MSABI_LONG(&h1000000)
+const CF_BOTH = CF_SCREENFONTS or CF_PRINTERFONTS
+const CF_SHOWHELP = &h4
+const CF_ENABLEHOOK = &h8
+const CF_ENABLETEMPLATE = &h10
+const CF_ENABLETEMPLATEHANDLE = &h20
+const CF_INITTOLOGFONTSTRUCT = &h40
+const CF_USESTYLE = &h80
+const CF_EFFECTS = &h100
+const CF_APPLY = &h200
+const CF_ANSIONLY = &h400
+const CF_SCRIPTSONLY = CF_ANSIONLY
+const CF_NOVECTORFONTS = &h800
+const CF_NOOEMFONTS = CF_NOVECTORFONTS
+const CF_NOSIMULATIONS = &h1000
+const CF_LIMITSIZE = &h2000
+const CF_FIXEDPITCHONLY = &h4000
+const CF_WYSIWYG = &h8000
+const CF_FORCEFONTEXIST = &h10000
+const CF_SCALABLEONLY = &h20000
+const CF_TTONLY = &h40000
+const CF_NOFACESEL = &h80000
+const CF_NOSTYLESEL = &h100000
+const CF_NOSIZESEL = &h200000
+const CF_SELECTSCRIPT = &h400000
+const CF_NOSCRIPTSEL = &h800000
+const CF_NOVERTFONTS = &h1000000
 
 #if _WIN32_WINNT = &h0602
-	#define CF_INACTIVEFONTS __MSABI_LONG(&h02000000)
+	const CF_INACTIVEFONTS = &h02000000
 #endif
 
 const SIMULATED_FONTTYPE = &h8000
@@ -857,9 +857,9 @@ const TYPE1_FONTTYPE = &h40000
 	const SYMBOL_FONTTYPE = &h80000
 #endif
 
-#define WM_CHOOSEFONT_GETLOGFONT (WM_USER + 1)
-#define WM_CHOOSEFONT_SETLOGFONT (WM_USER + 101)
-#define WM_CHOOSEFONT_SETFLAGS (WM_USER + 102)
+const WM_CHOOSEFONT_GETLOGFONT = WM_USER + 1
+const WM_CHOOSEFONT_SETLOGFONT = WM_USER + 101
+const WM_CHOOSEFONT_SETFLAGS = WM_USER + 102
 #define LBSELCHSTRINGA "commdlg_LBSelChangedNotify"
 #define SHAREVISTRINGA "commdlg_ShareViolation"
 #define FILEOKSTRINGA "commdlg_FileNameOK"
@@ -1239,7 +1239,7 @@ const PD_CURRENTPAGE = &h400000
 const PD_NOCURRENTPAGE = &h800000
 const PD_EXCLUSIONFLAGS = &h1000000
 const PD_USELARGETEMPLATE = &h10000000
-#define PD_EXCL_COPIESANDCOLLATE (DM_COPIES or DM_COLLATE)
+const PD_EXCL_COPIESANDCOLLATE = DM_COPIES or DM_COLLATE
 const START_PAGE_GENERAL = &hffffffff
 const PD_RESULT_CANCEL = 0
 const PD_RESULT_PRINT = 1
@@ -1266,12 +1266,12 @@ type LPDEVNAMES as tagDEVNAMES ptr
 const DN_DEFAULTPRN = &h1
 declare function CommDlgExtendedError() as DWORD
 const WM_PSD_PAGESETUPDLG = WM_USER
-#define WM_PSD_FULLPAGERECT (WM_USER + 1)
-#define WM_PSD_MINMARGINRECT (WM_USER + 2)
-#define WM_PSD_MARGINRECT (WM_USER + 3)
-#define WM_PSD_GREEKTEXTRECT (WM_USER + 4)
-#define WM_PSD_ENVSTAMPRECT (WM_USER + 5)
-#define WM_PSD_YAFULLPAGERECT (WM_USER + 6)
+const WM_PSD_FULLPAGERECT = WM_USER + 1
+const WM_PSD_MINMARGINRECT = WM_USER + 2
+const WM_PSD_MARGINRECT = WM_USER + 3
+const WM_PSD_GREEKTEXTRECT = WM_USER + 4
+const WM_PSD_ENVSTAMPRECT = WM_USER + 5
+const WM_PSD_YAFULLPAGERECT = WM_USER + 6
 type LPPAGEPAINTHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 type LPPAGESETUPHOOK as function(byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as UINT_PTR
 

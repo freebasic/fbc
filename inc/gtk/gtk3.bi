@@ -6746,7 +6746,7 @@ declare function gtk_lock_button_new(byval permission as GPermission ptr) as Gtk
 declare function gtk_lock_button_get_permission(byval button as GtkLockButton ptr) as GPermission ptr
 declare sub gtk_lock_button_set_permission(byval button as GtkLockButton ptr, byval permission as GPermission ptr)
 #define __GTK_MAIN_H__
-#define GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
+const GTK_PRIORITY_RESIZE = G_PRIORITY_HIGH_IDLE + 10
 type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event as GdkEventKey ptr, byval func_data as gpointer) as gint
 declare function gtk_get_major_version() as guint
 declare function gtk_get_minor_version() as guint
@@ -9219,7 +9219,7 @@ enum
 	GTK_TEXT_VIEW_LAYER_ABOVE
 end enum
 
-#define GTK_TEXT_VIEW_PRIORITY_VALIDATE (GDK_PRIORITY_REDRAW + 5)
+const GTK_TEXT_VIEW_PRIORITY_VALIDATE = GDK_PRIORITY_REDRAW + 5
 type GtkTextView as _GtkTextView
 type GtkTextViewPrivate as _GtkTextViewPrivate
 type GtkTextViewClass as _GtkTextViewClass

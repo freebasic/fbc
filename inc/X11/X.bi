@@ -223,8 +223,8 @@ const SyncKeyboard = 4
 const ReplayKeyboard = 5
 const AsyncBoth = 6
 const SyncBoth = 7
-#define RevertToNone clng(None)
-#define RevertToPointerRoot clng(PointerRoot)
+const RevertToNone = clng(None)
+const RevertToPointerRoot = clng(PointerRoot)
 const RevertToParent = 2
 const Success = 0
 const BadRequest = 1

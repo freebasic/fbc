@@ -79,13 +79,13 @@ const X_RenderCreateSolidFill = 33
 const X_RenderCreateLinearGradient = 34
 const X_RenderCreateRadialGradient = 35
 const X_RenderCreateConicalGradient = 36
-#define RenderNumberRequests (X_RenderCreateConicalGradient + 1)
+const RenderNumberRequests = X_RenderCreateConicalGradient + 1
 const BadPictFormat = 0
 const BadPicture = 1
 const BadPictOp = 2
 const BadGlyphSet = 3
 const BadGlyph = 4
-#define RenderNumberErrors (BadGlyph + 1)
+const RenderNumberErrors = BadGlyph + 1
 const PictTypeIndexed = 0
 const PictTypeDirect = 1
 const PictOpMinimum = 0

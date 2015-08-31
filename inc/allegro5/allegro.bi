@@ -180,7 +180,7 @@ const ALLEGRO_RELEASE_NUMBER = 1
 #define ALLEGRO_VERSION_STR "5.0.11"
 #define ALLEGRO_DATE_STR "2015"
 const ALLEGRO_DATE = 20150111
-#define ALLEGRO_VERSION_INT ((((ALLEGRO_VERSION shl 24) or (ALLEGRO_SUB_VERSION shl 16)) or (ALLEGRO_WIP_VERSION shl 8)) or ALLEGRO_RELEASE_NUMBER)
+const ALLEGRO_VERSION_INT = (((ALLEGRO_VERSION shl 24) or (ALLEGRO_SUB_VERSION shl 16)) or (ALLEGRO_WIP_VERSION shl 8)) or ALLEGRO_RELEASE_NUMBER
 declare function al_get_allegro_version() as ulong
 declare function al_run_main(byval argc as long, byval argv as zstring ptr ptr, byval as function(byval as long, byval as zstring ptr ptr) as long) as long
 const ALLEGRO_PI = 3.14159265358979323846

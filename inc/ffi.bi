@@ -185,7 +185,7 @@ const FFI_CLOSURES = 1
 		const AARCH64_FFI_WITH_V_BIT = 0
 		const AARCH64_N_XREG = 32
 		const AARCH64_N_VREG = 32
-		#define AARCH64_CALL_CONTEXT_SIZE ((AARCH64_N_XREG * 8) + (AARCH64_N_VREG * 16))
+		const AARCH64_CALL_CONTEXT_SIZE = (AARCH64_N_XREG * 8) + (AARCH64_N_VREG * 16)
 	#elseif defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 		const FFI_NO_RAW_API = 1
 	#endif

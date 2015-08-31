@@ -62,7 +62,7 @@ extern "C"
 
 #define STR_MYDOCS_CLSID "{450D8FBA-AD25-11D0-98A8-0800361B1103}"
 #define PSGUID_INTERNETSHORTCUT (&h000214a0, 0, 0, &hc0, 0, 0, 0, 0, 0, 0, &h46)
-#define PSGUID_INTERNETSITE (__MSABI_LONG(&h000214a1), 0, 0, &hc0, 0, 0, 0, 0, 0, 0, &h46)
+#define PSGUID_INTERNETSITE (&h000214a1, 0, 0, &hc0, 0, 0, 0, 0, 0, 0, &h46)
 type IDefViewID as IUnknown
 
 extern CLSID_NetworkDomain as const GUID
@@ -280,10 +280,10 @@ const PID_CONTROLPANEL_CATEGORY = 2
 #define PSGUID_SHARE (&hd8c3986f, &h813b, &h449c, &h84, &h5d, &h87, &hb9, &h5d, &h67, &h4a, &hde)
 #define PSGUID_LINK (&hb9b4b3fc, &h2b51, &h4a42, &hb5, &hd8, &h32, &h41, &h46, &haf, &hcf, &h25)
 #define PSGUID_QUERY_D (&h49691c90, &h7e17, &h101a, &ha9, &h1c, &h08, &h00, &h2b, &h2e, &hcd, &ha9)
-#define PSGUID_SUMMARYINFORMATION (__MSABI_LONG(&hf29f85e0), &h4ff9, &h1068, &hab, &h91, &h08, &h00, &h2b, &h27, &hb3, &hd9)
-#define PSGUID_DOCUMENTSUMMARYINFORMATION (__MSABI_LONG(&hd5cdd502), &h2e9c, &h101b, &h93, &h97, &h08, &h00, &h2b, &h2c, &hf9, &hae)
-#define PSGUID_MEDIAFILESUMMARYINFORMATION (__MSABI_LONG(&h64440492), &h4c8b, &h11d1, &h8b, &h70, &h08, &h00, &h36, &hb1, &h1a, &h03)
-#define PSGUID_IMAGESUMMARYINFORMATION (__MSABI_LONG(&h6444048f), &h4c8b, &h11d1, &h8b, &h70, &h8, &h00, &h36, &hb1, &h1a, &h03)
+#define PSGUID_SUMMARYINFORMATION (&hf29f85e0, &h4ff9, &h1068, &hab, &h91, &h08, &h00, &h2b, &h27, &hb3, &hd9)
+#define PSGUID_DOCUMENTSUMMARYINFORMATION (&hd5cdd502, &h2e9c, &h101b, &h93, &h97, &h08, &h00, &h2b, &h2c, &hf9, &hae)
+#define PSGUID_MEDIAFILESUMMARYINFORMATION (&h64440492, &h4c8b, &h11d1, &h8b, &h70, &h08, &h00, &h36, &hb1, &h1a, &h03)
+#define PSGUID_IMAGESUMMARYINFORMATION (&h6444048f, &h4c8b, &h11d1, &h8b, &h70, &h8, &h00, &h36, &hb1, &h1a, &h03)
 const PID_VOLUME_FREE = 2
 const PID_VOLUME_CAPACITY = 3
 const PID_VOLUME_FILESYSTEM = 4

@@ -287,7 +287,7 @@ type _TMConvertRec
 end type
 
 type TMConvertRec as _TMConvertRec
-#define _XtEventTimerEventType cast(TMLongCard, not cast(clong, 0))
+const _XtEventTimerEventType = cast(TMLongCard, not cast(clong, 0))
 const KeysymModMask = cast(clong, 1) shl 27
 const AnyButtonMask = cast(clong, 1) shl 28
 
@@ -333,7 +333,7 @@ end type
 type ActionHookRec as _ActionHookRec
 type ActionHook as _ActionHookRec ptr
 const TMKEYCACHELOG2 = 6
-#define TMKEYCACHESIZE (1 shl TMKEYCACHELOG2)
+const TMKEYCACHESIZE = 1 shl TMKEYCACHELOG2
 
 type _KeyCacheRec
 	modifiers_return(0 to 255) as ubyte

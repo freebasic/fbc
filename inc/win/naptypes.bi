@@ -70,15 +70,15 @@ const maxSoHAttributeSize = 4000
 const minNetworkSoHSize = 12
 const maxNetworkSoHSize = 4000
 #define maxDwordCountPerSoHAttribute (maxSoHAttributeSize / sizeof(DWORD))
-#define maxIpv4CountPerSoHAttribute (maxSoHAttributeSize / 4)
-#define maxIpv6CountPerSoHAttribute (maxSoHAttributeSize / 16)
+const maxIpv4CountPerSoHAttribute = maxSoHAttributeSize / 4
+const maxIpv6CountPerSoHAttribute = maxSoHAttributeSize / 16
 const maxStringLength = 1024
 #define maxStringLengthInBytes ((maxStringLength + 1) * sizeof(WCHAR))
 const maxSystemHealthEntityCount = 20
 const maxEnforcerCount = 20
 const maxPrivateDataSize = 200
 const maxConnectionCountPerEnforcer = 20
-#define maxCachedSoHCount ((maxSystemHealthEntityCount * maxEnforcerCount) * maxConnectionCountPerEnforcer)
+const maxCachedSoHCount = (maxSystemHealthEntityCount * maxEnforcerCount) * maxConnectionCountPerEnforcer
 const failureCategoryCount = 5
 const ComponentTypeEnforcementClientSoH = &h1
 const ComponentTypeEnforcementClientRp = &h2

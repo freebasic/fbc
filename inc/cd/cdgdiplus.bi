@@ -39,9 +39,9 @@
 	#define cdInitGdiPlus() 0
 #endif
 
-#define CD_SPLINE (CD_POLYCUSTOM + 0)
-#define CD_FILLSPLINE (CD_POLYCUSTOM + 1)
-#define CD_FILLGRADIENT (CD_POLYCUSTOM + 2)
+const CD_SPLINE = CD_POLYCUSTOM + 0
+const CD_FILLSPLINE = CD_POLYCUSTOM + 1
+const CD_FILLGRADIENT = CD_POLYCUSTOM + 2
 
 #ifdef __FB_WIN32__
 	end extern

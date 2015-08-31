@@ -1103,7 +1103,7 @@ enum
 	GTK_ARG_CHILD_ARG = 1 shl 4
 end enum
 
-#define GTK_ARG_READWRITE (GTK_ARG_READABLE or GTK_ARG_WRITABLE)
+const GTK_ARG_READWRITE = GTK_ARG_READABLE or GTK_ARG_WRITABLE
 declare sub gtk_object_get(byval object as GtkObject ptr, byval first_property_name as const zstring ptr, ...)
 declare sub gtk_object_set(byval object as GtkObject ptr, byval first_property_name as const zstring ptr, ...)
 declare sub gtk_object_add_arg_type(byval arg_name as const zstring ptr, byval arg_type as GType, byval arg_flags as guint, byval arg_id as guint)
@@ -7624,10 +7624,10 @@ declare function gtk_link_button_get_visited(byval link_button as GtkLinkButton 
 declare sub gtk_link_button_set_visited(byval link_button as GtkLinkButton ptr, byval visited as gboolean)
 
 #define __GTK_MAIN_H__
-#define GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
-#define GTK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+const GTK_PRIORITY_RESIZE = G_PRIORITY_HIGH_IDLE + 10
+const GTK_PRIORITY_REDRAW = G_PRIORITY_HIGH_IDLE + 20
 const GTK_PRIORITY_HIGH = G_PRIORITY_HIGH
-#define GTK_PRIORITY_INTERNAL GTK_PRIORITY_REDRAW
+const GTK_PRIORITY_INTERNAL = GTK_PRIORITY_REDRAW
 const GTK_PRIORITY_DEFAULT = G_PRIORITY_DEFAULT_IDLE
 const GTK_PRIORITY_LOW = G_PRIORITY_LOW
 type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event as GdkEventKey ptr, byval func_data as gpointer) as gint
@@ -10168,7 +10168,7 @@ enum
 	GTK_TEXT_WINDOW_BOTTOM
 end enum
 
-#define GTK_TEXT_VIEW_PRIORITY_VALIDATE (GDK_PRIORITY_REDRAW + 5)
+const GTK_TEXT_VIEW_PRIORITY_VALIDATE = GDK_PRIORITY_REDRAW + 5
 type GtkTextView as _GtkTextView
 type GtkTextViewClass as _GtkTextViewClass
 type GtkTextWindow as _GtkTextWindow

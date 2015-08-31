@@ -137,7 +137,7 @@ const CD_CLIPON = CD_CLIPAREA
 const CD_CENTER_BASE = CD_BASE_CENTER
 const CD_LEFT_BASE = CD_BASE_LEFT
 const CD_RIGHT_BASE = CD_BASE_RIGHT
-#define CD_ITALIC_BOLD CD_BOLD_ITALIC
+const CD_ITALIC_BOLD = CD_BOLD_ITALIC
 declare sub cdScrollImage alias "cdScrollArea"(byval xmin as long, byval xmax as long, byval ymin as long, byval ymax as long, byval dx as long, byval dy as long)
 #define cdCanvas2Raster(x, y) scope : cdUpdateYAxis(y) : end scope
 

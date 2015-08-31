@@ -121,7 +121,7 @@ const EnableMultiBatteryDisplay = &h02
 const EnablePasswordLogon = &h04
 const EnableWakeOnRing = &h08
 const EnableVideoDimDisplay = &h10
-#define NEWSCHEME cast(UINT, -1)
+const NEWSCHEME = cast(UINT, -1)
 type PWRSCHEMESENUMPROC as function(byval as UINT, byval as DWORD, byval as LPTSTR, byval as DWORD, byval as LPTSTR, byval as PPOWER_POLICY, byval as LPARAM) as WINBOOLEAN
 type PFNNTINITIATEPWRACTION as function(byval as POWER_ACTION, byval as SYSTEM_POWER_STATE, byval as ULONG, byval as WINBOOLEAN) as WINBOOLEAN
 

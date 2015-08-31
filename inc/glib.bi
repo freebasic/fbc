@@ -178,15 +178,15 @@ type guint as ulong
 type gfloat as single
 type gdouble as double
 
-#define G_MININT8 cast(gint8, &h80)
-#define G_MAXINT8 cast(gint8, &h7f)
-#define G_MAXUINT8 cast(guint8, &hff)
-#define G_MININT16 cast(gint16, &h8000)
-#define G_MAXINT16 cast(gint16, &h7fff)
-#define G_MAXUINT16 cast(guint16, &hffff)
-#define G_MININT32 cast(gint32, &h80000000)
-#define G_MAXINT32 cast(gint32, &h7fffffff)
-#define G_MAXUINT32 cast(guint32, &hffffffff)
+const G_MININT8 = cast(gint8, &h80)
+const G_MAXINT8 = cast(gint8, &h7f)
+const G_MAXUINT8 = cast(guint8, &hff)
+const G_MININT16 = cast(gint16, &h8000)
+const G_MAXINT16 = cast(gint16, &h7fff)
+const G_MAXUINT16 = cast(guint16, &hffff)
+const G_MININT32 = cast(gint32, &h80000000)
+const G_MAXINT32 = cast(gint32, &h7fffffff)
+const G_MAXUINT32 = cast(guint32, &hffffffff)
 #define G_MININT64 cast(gint64, G_GINT64_CONSTANT(&h8000000000000000))
 #define G_MAXINT64 G_GINT64_CONSTANT(&h7fffffffffffffff)
 #define G_MAXUINT64 G_GINT64_CONSTANT(&hffffffffffffffffu)
@@ -2480,7 +2480,7 @@ enum
 	G_LOG_LEVEL_MASK = not (G_LOG_FLAG_RECURSION or G_LOG_FLAG_FATAL)
 end enum
 
-#define G_LOG_FATAL_MASK (G_LOG_FLAG_RECURSION or G_LOG_LEVEL_ERROR)
+const G_LOG_FATAL_MASK = G_LOG_FLAG_RECURSION or G_LOG_LEVEL_ERROR
 type GLogFunc as sub(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval message as const zstring ptr, byval user_data as gpointer)
 declare function g_log_set_handler(byval log_domain as const zstring ptr, byval log_levels as GLogLevelFlags, byval log_func as GLogFunc, byval user_data as gpointer) as guint
 declare sub g_log_remove_handler(byval log_domain as const zstring ptr, byval handler_id as guint)

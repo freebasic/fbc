@@ -296,7 +296,7 @@ declare sub XtTranslateKey(byval as Display ptr, byval as KeyCode, byval as Modi
 declare sub XtSetKeyTranslator(byval as Display ptr, byval as XtKeyProc)
 declare sub XtRegisterCaseConverter(byval as Display ptr, byval as XtCaseProc, byval as KeySym, byval as KeySym)
 declare sub XtConvertCase(byval as Display ptr, byval as KeySym, byval as KeySym ptr, byval as KeySym ptr)
-#define XtAllEvents cast(EventMask, -cast(clong, 1))
+const XtAllEvents = cast(EventMask, -cast(clong, 1))
 declare sub XtAddEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
 declare sub XtRemoveEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
 declare sub XtAddRawEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
@@ -337,7 +337,7 @@ const XtIMXEvent = 1
 const XtIMTimer = 2
 const XtIMAlternateInput = 4
 const XtIMSignal = 8
-#define XtIMAll (((XtIMXEvent or XtIMTimer) or XtIMAlternateInput) or XtIMSignal)
+const XtIMAll = ((XtIMXEvent or XtIMTimer) or XtIMAlternateInput) or XtIMSignal
 
 declare function XtPending() as byte
 declare function XtAppPending(byval as XtAppContext) as XtInputMask
@@ -461,10 +461,10 @@ declare sub XtVaGetSubvalues(byval as XtPointer, byval as XtResourceList, byval 
 declare sub XtGetResourceList(byval as WidgetClass, byval as XtResourceList ptr, byval as Cardinal ptr)
 declare sub XtGetConstraintResourceList(byval as WidgetClass, byval as XtResourceList ptr, byval as Cardinal ptr)
 
-#define XtUnspecifiedPixmap cast(Pixmap, 2)
+const XtUnspecifiedPixmap = cast(Pixmap, 2)
 const XtUnspecifiedShellInt = -1
-#define XtUnspecifiedWindow cast(Window, 2)
-#define XtUnspecifiedWindowGroup cast(Window, 3)
+const XtUnspecifiedWindow = cast(Window, 2)
+const XtUnspecifiedWindowGroup = cast(Window, 3)
 #define XtCurrentDirectory "XtCurrentDirectory"
 #define XtDefaultForeground "XtDefaultForeground"
 #define XtDefaultBackground "XtDefaultBackground"
@@ -534,7 +534,7 @@ declare sub XtCallbackReleaseCacheRefList(byval as Widget, byval as XtPointer, b
 declare sub XtSetWMColormapWindows(byval as Widget, byval as Widget ptr, byval as Cardinal)
 declare function XtFindFile(byval as const zstring ptr, byval as Substitution, byval as Cardinal, byval as XtFilePredicate) as String_
 declare function XtResolvePathname(byval as Display ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as Substitution, byval as Cardinal, byval as XtFilePredicate) as String_
-#define XT_CONVERT_FAIL cast(XAtom, &h80000001)
+const XT_CONVERT_FAIL = cast(XAtom, &h80000001)
 declare sub XtDisownSelection(byval as Widget, byval as XAtom, byval as Time)
 declare sub XtGetSelectionValue(byval as Widget, byval as XAtom, byval as XAtom, byval as XtSelectionCallbackProc, byval as XtPointer, byval as Time)
 declare sub XtGetSelectionValues(byval as Widget, byval as XAtom, byval as XAtom ptr, byval as long, byval as XtSelectionCallbackProc, byval as XtPointer ptr, byval as Time)

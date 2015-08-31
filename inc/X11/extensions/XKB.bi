@@ -62,7 +62,7 @@ const X_kbGetDeviceInfo = 24
 const X_kbSetDeviceInfo = 25
 const X_kbSetDebuggingFlags = 101
 const XkbEventCode = 0
-#define XkbNumberEvents (XkbEventCode + 1)
+const XkbNumberEvents = XkbEventCode + 1
 const XkbNewKeyboardNotify = 0
 const XkbMapNotify = 1
 const XkbStateNotify = 2
@@ -107,7 +107,6 @@ const XkbAXN_BKAcceptMask = cast(clong, 1) shl 4
 const XkbAXN_BKRejectMask = cast(clong, 1) shl 5
 const XkbAXN_AXKWarningMask = cast(clong, 1) shl 6
 const XkbAllAccessXEventsMask = &h7f
-#define XkbAllMapEventsMask XkbAllMapComponentsMask
 const XkbAllBellEventsMask = cast(clong, 1) shl 0
 const XkbAllActionMessagesMask = cast(clong, 1) shl 0
 const XkbKeyboard = 0
@@ -157,7 +156,7 @@ const XkbInternalModsMask = cast(clong, 1) shl 28
 const XkbIgnoreLockModsMask = cast(clong, 1) shl 29
 const XkbPerKeyRepeatMask = cast(clong, 1) shl 30
 const XkbControlsEnabledMask = cast(clong, 1) shl 31
-#define XkbAccessXOptionsMask (XkbStickyKeysMask or XkbAccessXFeedbackMask)
+const XkbAccessXOptionsMask = XkbStickyKeysMask or XkbAccessXFeedbackMask
 const XkbAllBooleanCtrlsMask = &h00001FFF
 const XkbAllControlsMask = &hF8001FFF
 const XkbAllControlEventsMask = XkbAllControlsMask
@@ -199,7 +198,7 @@ const XkbNoModifierMask = 0
 const XkbAllModifiersMask = &hff
 const XkbAllVirtualModsMask = &hffff
 const XkbNumKbdGroups = 4
-#define XkbMaxKbdGroup (XkbNumKbdGroups - 1)
+const XkbMaxKbdGroup = XkbNumKbdGroups - 1
 const XkbMaxMouseKeysBtn = 4
 const XkbGroup1Index = 0
 const XkbGroup2Index = 1
@@ -274,9 +273,9 @@ const XkbSA_DeviceBtn = &h12
 const XkbSA_LockDeviceBtn = &h13
 const XkbSA_DeviceValuator = &h14
 const XkbSA_LastAction = XkbSA_DeviceValuator
-#define XkbSA_NumActions (XkbSA_LastAction + 1)
+const XkbSA_NumActions = XkbSA_LastAction + 1
 const XkbSA_XFree86Private = &h86
-#define XkbSA_BreakLatch (((((((((((1 shl XkbSA_NoAction) or (1 shl XkbSA_PtrBtn)) or (1 shl XkbSA_LockPtrBtn)) or (1 shl XkbSA_Terminate)) or (1 shl XkbSA_SwitchScreen)) or (1 shl XkbSA_SetControls)) or (1 shl XkbSA_LockControls)) or (1 shl XkbSA_ActionMessage)) or (1 shl XkbSA_RedirectKey)) or (1 shl XkbSA_DeviceBtn)) or (1 shl XkbSA_LockDeviceBtn))
+const XkbSA_BreakLatch = ((((((((((1 shl XkbSA_NoAction) or (1 shl XkbSA_PtrBtn)) or (1 shl XkbSA_LockPtrBtn)) or (1 shl XkbSA_Terminate)) or (1 shl XkbSA_SwitchScreen)) or (1 shl XkbSA_SetControls)) or (1 shl XkbSA_LockControls)) or (1 shl XkbSA_ActionMessage)) or (1 shl XkbSA_RedirectKey)) or (1 shl XkbSA_DeviceBtn)) or (1 shl XkbSA_LockDeviceBtn)
 #define XkbIsModAction(a) (((a)->type >= Xkb_SASetMods) andalso ((a)->type <= XkbSA_LockMods))
 #define XkbIsGroupAction(a) (((a)->type >= XkbSA_SetGroup) andalso ((a)->type <= XkbSA_LockGroup))
 #define XkbIsPtrAction(a) (((a)->type >= XkbSA_MovePtr) andalso ((a)->type <= XkbSA_SetPtrDflt))
@@ -290,8 +289,8 @@ const XkbKB_Overlay2 = &h04
 const XkbKB_RGAllowNone = &h80
 const XkbMinLegalKeyCode = 8
 const XkbMaxLegalKeyCode = 255
-#define XkbMaxKeyCount ((XkbMaxLegalKeyCode - XkbMinLegalKeyCode) + 1)
-#define XkbPerKeyBitArraySize ((XkbMaxLegalKeyCode + 1) / 8)
+const XkbMaxKeyCount = (XkbMaxLegalKeyCode - XkbMinLegalKeyCode) + 1
+const XkbPerKeyBitArraySize = (XkbMaxLegalKeyCode + 1) / 8
 #define XkbIsLegalKeycode(k) ((k) >= XkbMinLegalKeyCode)
 const XkbNumModifiers = 8
 const XkbNumVirtualMods = 16
@@ -301,7 +300,7 @@ const XkbAllIndicatorEventsMask = XkbAllIndicatorsMask
 const XkbMaxRadioGroups = 32
 const XkbAllRadioGroupsMask = &hffffffff
 const XkbMaxShiftLevel = 63
-#define XkbMaxSymsPerKey (XkbMaxShiftLevel * XkbNumKbdGroups)
+const XkbMaxSymsPerKey = XkbMaxShiftLevel * XkbNumKbdGroups
 const XkbRGMaxMembers = 12
 const XkbActionMessageLength = 6
 const XkbKeyNameLength = 4
@@ -315,7 +314,7 @@ const XkbTwoLevelIndex = 1
 const XkbAlphabeticIndex = 2
 const XkbKeypadIndex = 3
 const XkbLastRequiredType = XkbKeypadIndex
-#define XkbNumRequiredTypes (XkbLastRequiredType + 1)
+const XkbNumRequiredTypes = XkbLastRequiredType + 1
 const XkbMaxKeyTypes = 255
 const XkbOneLevelMask = 1 shl 0
 const XkbTwoLevelMask = 1 shl 1
@@ -345,9 +344,10 @@ const XkbKeyActionsMask = 1 shl 4
 const XkbKeyBehaviorsMask = 1 shl 5
 const XkbVirtualModsMask = 1 shl 6
 const XkbVirtualModMapMask = 1 shl 7
-#define XkbAllClientInfoMask ((XkbKeyTypesMask or XkbKeySymsMask) or XkbModifierMapMask)
-#define XkbAllServerInfoMask ((((XkbExplicitComponentsMask or XkbKeyActionsMask) or XkbKeyBehaviorsMask) or XkbVirtualModsMask) or XkbVirtualModMapMask)
-#define XkbAllMapComponentsMask (XkbAllClientInfoMask or XkbAllServerInfoMask)
+const XkbAllClientInfoMask = (XkbKeyTypesMask or XkbKeySymsMask) or XkbModifierMapMask
+const XkbAllServerInfoMask = (((XkbExplicitComponentsMask or XkbKeyActionsMask) or XkbKeyBehaviorsMask) or XkbVirtualModsMask) or XkbVirtualModMapMask
+const XkbAllMapComponentsMask = XkbAllClientInfoMask or XkbAllServerInfoMask
+const XkbAllMapEventsMask = XkbAllMapComponentsMask
 const XkbSI_AutoRepeat = 1 shl 0
 const XkbSI_LockingKey = 1 shl 1
 const XkbSI_LevelOneOnly = &h80
@@ -366,8 +366,8 @@ const XkbIM_UseLocked = cast(clong, 1) shl 2
 const XkbIM_UseEffective = cast(clong, 1) shl 3
 const XkbIM_UseCompat = cast(clong, 1) shl 4
 const XkbIM_UseNone = 0
-#define XkbIM_UseAnyGroup (((XkbIM_UseBase or XkbIM_UseLatched) or XkbIM_UseLocked) or XkbIM_UseEffective)
-#define XkbIM_UseAnyMods (XkbIM_UseAnyGroup or XkbIM_UseCompat)
+const XkbIM_UseAnyGroup = ((XkbIM_UseBase or XkbIM_UseLatched) or XkbIM_UseLocked) or XkbIM_UseEffective
+const XkbIM_UseAnyMods = XkbIM_UseAnyGroup or XkbIM_UseCompat
 const XkbSymInterpMask = 1 shl 0
 const XkbGroupCompatMask = 1 shl 1
 const XkbAllCompatMask = &h3
@@ -393,7 +393,7 @@ const XkbGBN_TypesMask = cast(clong, 1) shl 0
 const XkbGBN_CompatMapMask = cast(clong, 1) shl 1
 const XkbGBN_ClientSymbolsMask = cast(clong, 1) shl 2
 const XkbGBN_ServerSymbolsMask = cast(clong, 1) shl 3
-#define XkbGBN_SymbolsMask (XkbGBN_ClientSymbolsMask or XkbGBN_ServerSymbolsMask)
+const XkbGBN_SymbolsMask = XkbGBN_ClientSymbolsMask or XkbGBN_ServerSymbolsMask
 const XkbGBN_IndicatorMapMask = cast(clong, 1) shl 4
 const XkbGBN_KeyNamesMask = cast(clong, 1) shl 5
 const XkbGBN_GeometryMask = cast(clong, 1) shl 6

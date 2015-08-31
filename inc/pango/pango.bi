@@ -445,9 +445,9 @@ declare function pango_font_get_metrics(byval font as PangoFont ptr, byval langu
 declare sub pango_font_get_glyph_extents(byval font as PangoFont ptr, byval glyph as PangoGlyph, byval ink_rect as PangoRectangle ptr, byval logical_rect as PangoRectangle ptr)
 declare function pango_font_get_font_map(byval font as PangoFont ptr) as PangoFontMap ptr
 
-#define PANGO_GLYPH_EMPTY cast(PangoGlyph, &h0FFFFFFF)
-#define PANGO_GLYPH_INVALID_INPUT cast(PangoGlyph, &hFFFFFFFF)
-#define PANGO_GLYPH_UNKNOWN_FLAG cast(PangoGlyph, &h10000000)
+const PANGO_GLYPH_EMPTY = cast(PangoGlyph, &h0FFFFFFF)
+const PANGO_GLYPH_INVALID_INPUT = cast(PangoGlyph, &hFFFFFFFF)
+const PANGO_GLYPH_UNKNOWN_FLAG = cast(PangoGlyph, &h10000000)
 #define PANGO_GET_UNKNOWN_GLYPH(wc) (cast(PangoGlyph, (wc)) or PANGO_GLYPH_UNKNOWN_FLAG)
 type PangoColor as _PangoColor
 

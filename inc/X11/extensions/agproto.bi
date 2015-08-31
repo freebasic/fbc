@@ -69,12 +69,12 @@ end type
 
 const sz_xXagQueryVersionReply = 32
 const XagSingleScreenMask = 1 shl 0
-#define XagDefaultRootMask (1 shl XagNdefaultRoot)
-#define XagRootVisualMask (1 shl XagNrootVisual)
-#define XagDefaultColormapMask (1 shl XagNdefaultColormap)
-#define XagBlackPixelMask (1 shl XagNblackPixel)
-#define XagWhitePixelMask (1 shl XagNwhitePixel)
-#define XagAppGroupLeaderMask (1 shl XagNappGroupLeader)
+const XagDefaultRootMask = 1 shl XagNdefaultRoot
+const XagRootVisualMask = 1 shl XagNrootVisual
+const XagDefaultColormapMask = 1 shl XagNdefaultColormap
+const XagBlackPixelMask = 1 shl XagNblackPixel
+const XagWhitePixelMask = 1 shl XagNwhitePixel
+const XagAppGroupLeaderMask = 1 shl XagNappGroupLeader
 
 type _XagCreate
 	reqType as CARD8

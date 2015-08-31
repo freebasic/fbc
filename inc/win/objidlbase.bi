@@ -993,8 +993,8 @@ enum
 end enum
 
 type EOLE_AUTHENTICATION_CAPABILITIES as tagEOLE_AUTHENTICATION_CAPABILITIES
-#define COLE_DEFAULT_PRINCIPAL cptr(OLECHAR ptr, cast(INT_PTR, -1))
-#define COLE_DEFAULT_AUTHINFO cptr(any ptr, cast(INT_PTR, -1))
+const COLE_DEFAULT_PRINCIPAL = cptr(OLECHAR ptr, cast(INT_PTR, -1))
+const COLE_DEFAULT_AUTHINFO = cptr(any ptr, cast(INT_PTR, -1))
 
 type tagSOLE_AUTHENTICATION_INFO
 	dwAuthnSvc as DWORD

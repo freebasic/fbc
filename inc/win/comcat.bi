@@ -68,6 +68,7 @@ extern CLSID_StdComponentCategoriesMgr as const CLSID
 
 type CATID as GUID
 type REFCATID as const GUID const ptr
+type IEnumGUID as IEnumGUID_
 type IEnumCLSID as IEnumGUID
 type LPENUMCLSID as LPENUMGUID
 extern CATID_NULL alias "GUID_NULL" as const IID
@@ -93,7 +94,6 @@ extern CATID_InternetAware as const CATID
 extern CATID_DesignTimeUIActivatableControl as const CATID
 #define _LPENUMGUID_DEFINED
 #define __IEnumGUID_INTERFACE_DEFINED__
-type IEnumGUID as IEnumGUID_
 type LPENUMGUID as IEnumGUID ptr
 extern IID_IEnumGUID as const GUID
 extern IID_IEnumCLSID alias "IID_IEnumGUID" as const GUID

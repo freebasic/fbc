@@ -1293,7 +1293,7 @@ declare function ICreateObject_CreateObject_Proxy(byval This as ICreateObject pt
 declare sub ICreateObject_CreateObject_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 const PKEY_PIDSTR_MAX = 10
 const GUIDSTRING_MAX = 39
-#define PKEYSTR_MAX ((GUIDSTRING_MAX + 1) + PKEY_PIDSTR_MAX)
+const PKEYSTR_MAX = (GUIDSTRING_MAX + 1) + PKEY_PIDSTR_MAX
 
 declare function PSCoerceToCanonicalValue(byval key as const PROPERTYKEY const ptr, byval ppropvar as PROPVARIANT ptr) as HRESULT
 declare function PSCreateAdapterFromPropertyStore(byval pps as IPropertyStore ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT

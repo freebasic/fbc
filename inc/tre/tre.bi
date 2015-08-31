@@ -86,36 +86,30 @@ const TRE_H = 1
 	end enum
 
 	const REG_EXTENDED = 1
-	#define REG_ICASE (REG_EXTENDED shl 1)
-	#define REG_NEWLINE (REG_ICASE shl 1)
-	#define REG_NOSUB (REG_NEWLINE shl 1)
+	const REG_ICASE = REG_EXTENDED shl 1
+	const REG_NEWLINE = REG_ICASE shl 1
+	const REG_NOSUB = REG_NEWLINE shl 1
 #endif
 
 const REG_BASIC = 0
 
 #ifndef TRE_USE_SYSTEM_REGEX_H
-	#define REG_LITERAL (REG_NOSUB shl 1)
+	const REG_LITERAL = REG_NOSUB shl 1
 #endif
 
-#define REG_RIGHT_ASSOC (REG_LITERAL shl 1)
-#define REG_UNGREEDY (REG_RIGHT_ASSOC shl 1)
+const REG_RIGHT_ASSOC = REG_LITERAL shl 1
+const REG_UNGREEDY = REG_RIGHT_ASSOC shl 1
 
 #ifdef TRE_USE_SYSTEM_REGEX_H
 	const REG_APPROX_MATCHER = &h1000
 #else
 	const REG_NOTBOL = 1
-	#define REG_NOTEOL (REG_NOTBOL shl 1)
-	#define REG_APPROX_MATCHER (REG_NOTEOL shl 1)
+	const REG_NOTEOL = REG_NOTBOL shl 1
+	const REG_APPROX_MATCHER = REG_NOTEOL shl 1
 #endif
 
-#define REG_BACKTRACKING_MATCHER (REG_APPROX_MATCHER shl 1)
-
-#ifdef TRE_USE_SYSTEM_REGEX_H
-	const REG_NOSPEC = REG_LITERAL
-#else
-	#define REG_NOSPEC REG_LITERAL
-#endif
-
+const REG_BACKTRACKING_MATCHER = REG_APPROX_MATCHER shl 1
+const REG_NOSPEC = REG_LITERAL
 #undef RE_DUP_MAX
 const RE_DUP_MAX = 255
 

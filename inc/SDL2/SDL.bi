@@ -348,7 +348,7 @@ end function
 #define SDL_SwapFloatBE(X) SDL_SwapFloat(X)
 #define _SDL_mutex_h
 const SDL_MUTEX_TIMEDOUT = 1
-#define SDL_MUTEX_MAXWAIT (not cast(Uint32, 0))
+const SDL_MUTEX_MAXWAIT = not cast(Uint32, 0)
 type SDL_mutex as SDL_mutex_
 declare function SDL_CreateMutex() as SDL_mutex ptr
 #define SDL_mutexP(m) SDL_LockMutex(m)
@@ -558,7 +558,7 @@ const AUDIO_F32SYS = AUDIO_F32LSB
 const SDL_AUDIO_ALLOW_FREQUENCY_CHANGE = &h00000001
 const SDL_AUDIO_ALLOW_FORMAT_CHANGE = &h00000002
 const SDL_AUDIO_ALLOW_CHANNELS_CHANGE = &h00000004
-#define SDL_AUDIO_ALLOW_ANY_CHANGE ((SDL_AUDIO_ALLOW_FREQUENCY_CHANGE or SDL_AUDIO_ALLOW_FORMAT_CHANGE) or SDL_AUDIO_ALLOW_CHANNELS_CHANGE)
+const SDL_AUDIO_ALLOW_ANY_CHANGE = (SDL_AUDIO_ALLOW_FREQUENCY_CHANGE or SDL_AUDIO_ALLOW_FORMAT_CHANGE) or SDL_AUDIO_ALLOW_CHANNELS_CHANGE
 type SDL_AudioCallback as sub(byval userdata as any ptr, byval stream as Uint8 ptr, byval len as long)
 
 type SDL_AudioSpec
@@ -1588,10 +1588,10 @@ enum
 	KMOD_RESERVED = &h8000
 end enum
 
-#define KMOD_CTRL (KMOD_LCTRL or KMOD_RCTRL)
-#define KMOD_SHIFT (KMOD_LSHIFT or KMOD_RSHIFT)
-#define KMOD_ALT (KMOD_LALT or KMOD_RALT)
-#define KMOD_GUI (KMOD_LGUI or KMOD_RGUI)
+const KMOD_CTRL = KMOD_LCTRL or KMOD_RCTRL
+const KMOD_SHIFT = KMOD_LSHIFT or KMOD_RSHIFT
+const KMOD_ALT = KMOD_LALT or KMOD_RALT
+const KMOD_GUI = KMOD_LGUI or KMOD_RGUI
 
 type SDL_Keysym
 	scancode as SDL_Scancode
@@ -1693,10 +1693,10 @@ const SDL_HAT_UP = &h01
 const SDL_HAT_RIGHT = &h02
 const SDL_HAT_DOWN = &h04
 const SDL_HAT_LEFT = &h08
-#define SDL_HAT_RIGHTUP (SDL_HAT_RIGHT or SDL_HAT_UP)
-#define SDL_HAT_RIGHTDOWN (SDL_HAT_RIGHT or SDL_HAT_DOWN)
-#define SDL_HAT_LEFTUP (SDL_HAT_LEFT or SDL_HAT_UP)
-#define SDL_HAT_LEFTDOWN (SDL_HAT_LEFT or SDL_HAT_DOWN)
+const SDL_HAT_RIGHTUP = SDL_HAT_RIGHT or SDL_HAT_UP
+const SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT or SDL_HAT_DOWN
+const SDL_HAT_LEFTUP = SDL_HAT_LEFT or SDL_HAT_UP
+const SDL_HAT_LEFTDOWN = SDL_HAT_LEFT or SDL_HAT_DOWN
 
 declare function SDL_JoystickGetHat(byval joystick as SDL_Joystick ptr, byval hat as long) as Uint8
 declare function SDL_JoystickGetBall(byval joystick as SDL_Joystick ptr, byval ball as long, byval dx as long ptr, byval dy as long ptr) as long
@@ -1800,7 +1800,7 @@ type SDL_Finger
 	pressure as single
 end type
 
-#define SDL_TOUCH_MOUSEID cast(Uint32, -1)
+const SDL_TOUCH_MOUSEID = cast(Uint32, -1)
 declare function SDL_GetNumTouchDevices() as long
 declare function SDL_GetTouchDevice(byval index as long) as SDL_TouchID
 declare function SDL_GetNumTouchFingers(byval touchID as SDL_TouchID) as long
@@ -2623,7 +2623,7 @@ const SDL_INIT_HAPTIC = &h00001000
 const SDL_INIT_GAMECONTROLLER = &h00002000
 const SDL_INIT_EVENTS = &h00004000
 const SDL_INIT_NOPARACHUTE = &h00100000
-#define SDL_INIT_EVERYTHING ((((((SDL_INIT_TIMER or SDL_INIT_AUDIO) or SDL_INIT_VIDEO) or SDL_INIT_EVENTS) or SDL_INIT_JOYSTICK) or SDL_INIT_HAPTIC) or SDL_INIT_GAMECONTROLLER)
+const SDL_INIT_EVERYTHING = (((((SDL_INIT_TIMER or SDL_INIT_AUDIO) or SDL_INIT_VIDEO) or SDL_INIT_EVENTS) or SDL_INIT_JOYSTICK) or SDL_INIT_HAPTIC) or SDL_INIT_GAMECONTROLLER
 
 declare function SDL_Init(byval flags as Uint32) as long
 declare function SDL_InitSubSystem(byval flags as Uint32) as long

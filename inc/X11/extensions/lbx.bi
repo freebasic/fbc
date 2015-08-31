@@ -47,7 +47,7 @@ const LbxReleaseCmapEvent = 8
 const LbxFreeCellsEvent = 9
 const LbxImageCompressNone = 0
 const BadLbxClient = 0
-#define LbxNumberErrors (BadLbxClient + 1)
+const LbxNumberErrors = BadLbxClient + 1
 const LbxTagTypeModmap = 1
 const LbxTagTypeKeymap = 2
 const LbxTagTypeProperty = 3

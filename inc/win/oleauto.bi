@@ -88,16 +88,16 @@ const VARIANT_CALENDAR_GREGORIAN = &h40
 const VARIANT_USE_NLS = &h80
 declare function VectorFromBstr(byval bstr as BSTR, byval ppsa as SAFEARRAY ptr ptr) as HRESULT
 declare function BstrFromVector(byval psa as SAFEARRAY ptr, byval pbstr as BSTR ptr) as HRESULT
-#define VAR_TIMEVALUEONLY cast(DWORD, &h00000001)
-#define VAR_DATEVALUEONLY cast(DWORD, &h00000002)
-#define VAR_VALIDDATE cast(DWORD, &h00000004)
-#define VAR_CALENDAR_HIJRI cast(DWORD, &h00000008)
-#define VAR_LOCALBOOL cast(DWORD, &h00000010)
-#define VAR_FORMAT_NOSUBSTITUTE cast(DWORD, &h00000020)
-#define VAR_FOURDIGITYEARS cast(DWORD, &h00000040)
+const VAR_TIMEVALUEONLY = cast(DWORD, &h00000001)
+const VAR_DATEVALUEONLY = cast(DWORD, &h00000002)
+const VAR_VALIDDATE = cast(DWORD, &h00000004)
+const VAR_CALENDAR_HIJRI = cast(DWORD, &h00000008)
+const VAR_LOCALBOOL = cast(DWORD, &h00000010)
+const VAR_FORMAT_NOSUBSTITUTE = cast(DWORD, &h00000020)
+const VAR_FOURDIGITYEARS = cast(DWORD, &h00000040)
 const LOCALE_USE_NLS = &h10000000
-#define VAR_CALENDAR_THAI cast(DWORD, &h00000080)
-#define VAR_CALENDAR_GREGORIAN cast(DWORD, &h00000100)
+const VAR_CALENDAR_THAI = cast(DWORD, &h00000080)
+const VAR_CALENDAR_GREGORIAN = cast(DWORD, &h00000100)
 const VTDATEGRE_MAX = 2958465
 const VTDATEGRE_MIN = -657434
 
@@ -419,18 +419,18 @@ const NUMPRS_USE_ALL = &h1000
 const NUMPRS_STD = &h1FFF
 const NUMPRS_NEG = &h10000
 const NUMPRS_INEXACT = &h20000
-#define VTBIT_I1 (1 shl VT_I1)
-#define VTBIT_UI1 (1 shl VT_UI1)
-#define VTBIT_I2 (1 shl VT_I2)
-#define VTBIT_UI2 (1 shl VT_UI2)
-#define VTBIT_I4 (1 shl VT_I4)
-#define VTBIT_UI4 (1 shl VT_UI4)
-#define VTBIT_I8 (1 shl VT_I8)
-#define VTBIT_UI8 (1 shl VT_UI8)
-#define VTBIT_R4 (1 shl VT_R4)
-#define VTBIT_R8 (1 shl VT_R8)
-#define VTBIT_CY (1 shl VT_CY)
-#define VTBIT_DECIMAL (1 shl VT_DECIMAL)
+const VTBIT_I1 = 1 shl VT_I1
+const VTBIT_UI1 = 1 shl VT_UI1
+const VTBIT_I2 = 1 shl VT_I2
+const VTBIT_UI2 = 1 shl VT_UI2
+const VTBIT_I4 = 1 shl VT_I4
+const VTBIT_UI4 = 1 shl VT_UI4
+const VTBIT_I8 = 1 shl VT_I8
+const VTBIT_UI8 = 1 shl VT_UI8
+const VTBIT_R4 = 1 shl VT_R4
+const VTBIT_R8 = 1 shl VT_R8
+const VTBIT_CY = 1 shl VT_CY
+const VTBIT_DECIMAL = 1 shl VT_DECIMAL
 
 declare function VarParseNumFromStr(byval strIn as wstring ptr, byval lcid as LCID, byval dwFlags as ULONG, byval pnumprs as NUMPARSE ptr, byval rgbDig as UBYTE ptr) as HRESULT
 declare function VarNumFromParseNum(byval pnumprs as NUMPARSE ptr, byval rgbDig as UBYTE ptr, byval dwVtBits as ULONG, byval pvar as VARIANT ptr) as HRESULT
@@ -544,7 +544,7 @@ end enum
 type REGKIND as tagREGKIND
 const LOAD_TLB_AS_32BIT = &h20
 const LOAD_TLB_AS_64BIT = &h40
-#define MASK_TO_RESET_TLB_BITS (not (LOAD_TLB_AS_32BIT or LOAD_TLB_AS_64BIT))
+const MASK_TO_RESET_TLB_BITS = not (LOAD_TLB_AS_32BIT or LOAD_TLB_AS_64BIT)
 
 declare function LoadTypeLibEx(byval szFile as LPCOLESTR, byval regkind as REGKIND, byval pptlib as ITypeLib ptr ptr) as HRESULT
 declare function LoadRegTypeLib(byval rguid as const GUID const ptr, byval wVerMajor as WORD, byval wVerMinor as WORD, byval lcid as LCID, byval pptlib as ITypeLib ptr ptr) as HRESULT

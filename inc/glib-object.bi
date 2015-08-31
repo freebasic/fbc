@@ -479,7 +479,7 @@ declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as cons
 		iif(cptr(GValue ptr, vl)->g_type = gt, _
 			CTRUE, _
 			g_type_check_value_holds(cptr(GValue ptr, vl), gt)))
-#define G_TYPE_FLAG_RESERVED_ID_BIT cast(GType, 1 shl 0)
+const G_TYPE_FLAG_RESERVED_ID_BIT = cast(GType, 1 shl 0)
 #define __G_VALUE_H__
 #define G_TYPE_IS_VALUE(type) g_type_check_is_value_type(type)
 #define G_IS_VALUE(value) G_TYPE_CHECK_VALUE(value)
@@ -548,7 +548,7 @@ enum
 	G_PARAM_DEPRECATED = 1 shl 31
 end enum
 
-#define G_PARAM_STATIC_STRINGS ((G_PARAM_STATIC_NAME or G_PARAM_STATIC_NICK) or G_PARAM_STATIC_BLURB)
+const G_PARAM_STATIC_STRINGS = (G_PARAM_STATIC_NAME or G_PARAM_STATIC_NICK) or G_PARAM_STATIC_BLURB
 const G_PARAM_MASK = &h000000ff
 const G_PARAM_USER_SHIFT = 8
 
@@ -777,7 +777,7 @@ enum
 end enum
 
 const G_SIGNAL_MATCH_MASK = &h3f
-#define G_SIGNAL_TYPE_STATIC_SCOPE G_TYPE_FLAG_RESERVED_ID_BIT
+const G_SIGNAL_TYPE_STATIC_SCOPE = G_TYPE_FLAG_RESERVED_ID_BIT
 
 type _GSignalInvocationHint
 	signal_id as guint

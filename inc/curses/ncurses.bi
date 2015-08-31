@@ -41,10 +41,8 @@
 #include once "crt/stdarg.bi"
 
 '' The following symbols have been renamed:
-''     undef TRUE => CTRUE
 ''     constant TRUE => CTRUE
 ''     #define NCURSES_BOOL => NCURSES_BOOL_
-''     undef ERR => ERR_
 ''     constant ERR => ERR_
 ''     typedef SCREEN => SCREEN_
 ''     typedef WINDOW => WINDOW_
@@ -847,7 +845,7 @@ const TRACE_CCALLS = &h0400
 const TRACE_DATABASE = &h0800
 const TRACE_ATTRS = &h1000
 const TRACE_SHIFT = 13
-#define TRACE_MAXIMUM ((1 shl TRACE_SHIFT) - 1)
+const TRACE_MAXIMUM = (1 shl TRACE_SHIFT) - 1
 const NCURSES_UNCTRL_H_incl = 1
 #undef NCURSES_VERSION
 #define NCURSES_VERSION "5.9"

@@ -479,22 +479,22 @@ type png_infop as png_info ptr
 type png_const_infop as const png_info ptr
 type png_infopp as png_info ptr ptr
 
-#define PNG_UINT_31_MAX cast(png_uint_32, cast(clong, &h7fffffff))
-#define PNG_UINT_32_MAX cast(png_uint_32, -1)
-#define PNG_SIZE_MAX cast(png_size_t, -1)
+const PNG_UINT_31_MAX = cast(png_uint_32, cast(clong, &h7fffffff))
+const PNG_UINT_32_MAX = cast(png_uint_32, -1)
+const PNG_SIZE_MAX = cast(png_size_t, -1)
 const PNG_FP_1 = 100000
 const PNG_FP_HALF = 50000
-#define PNG_FP_MAX cast(png_fixed_point, cast(clong, &h7fffffff))
-#define PNG_FP_MIN (-PNG_FP_MAX)
+const PNG_FP_MAX = cast(png_fixed_point, cast(clong, &h7fffffff))
+const PNG_FP_MIN = -PNG_FP_MAX
 const PNG_COLOR_MASK_PALETTE = 1
 const PNG_COLOR_MASK_COLOR = 2
 const PNG_COLOR_MASK_ALPHA = 4
 const PNG_COLOR_TYPE_GRAY = 0
-#define PNG_COLOR_TYPE_PALETTE (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE)
+const PNG_COLOR_TYPE_PALETTE = PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_PALETTE
 const PNG_COLOR_TYPE_RGB = PNG_COLOR_MASK_COLOR
-#define PNG_COLOR_TYPE_RGB_ALPHA (PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA)
+const PNG_COLOR_TYPE_RGB_ALPHA = PNG_COLOR_MASK_COLOR or PNG_COLOR_MASK_ALPHA
 const PNG_COLOR_TYPE_GRAY_ALPHA = PNG_COLOR_MASK_ALPHA
-#define PNG_COLOR_TYPE_RGBA PNG_COLOR_TYPE_RGB_ALPHA
+const PNG_COLOR_TYPE_RGBA = PNG_COLOR_TYPE_RGB_ALPHA
 const PNG_COLOR_TYPE_GA = PNG_COLOR_TYPE_GRAY_ALPHA
 const PNG_COMPRESSION_TYPE_BASE = 0
 const PNG_COMPRESSION_TYPE_DEFAULT = PNG_COMPRESSION_TYPE_BASE
@@ -679,7 +679,7 @@ declare sub png_set_scale_16(byval png_ptr as png_structp)
 #define PNG_READ_16_TO_8 SUPPORTED
 declare sub png_set_strip_16(byval png_ptr as png_structp)
 declare sub png_set_quantize(byval png_ptr as png_structp, byval palette as png_colorp, byval num_palette as long, byval maximum_colors as long, byval histogram as png_const_uint_16p, byval full_quantize as long)
-#define PNG_GAMMA_THRESHOLD (PNG_GAMMA_THRESHOLD_FIXED * .00001)
+const PNG_GAMMA_THRESHOLD = PNG_GAMMA_THRESHOLD_FIXED * .00001
 
 declare sub png_set_gamma(byval png_ptr as png_structp, byval screen_gamma as double, byval override_file_gamma as double)
 declare sub png_set_gamma_fixed(byval png_ptr as png_structp, byval screen_gamma as png_fixed_point, byval override_file_gamma as png_fixed_point)
@@ -713,7 +713,7 @@ const PNG_FILTER_SUB = &h10
 const PNG_FILTER_UP = &h20
 const PNG_FILTER_AVG = &h40
 const PNG_FILTER_PAETH = &h80
-#define PNG_ALL_FILTERS ((((PNG_FILTER_NONE or PNG_FILTER_SUB) or PNG_FILTER_UP) or PNG_FILTER_AVG) or PNG_FILTER_PAETH)
+const PNG_ALL_FILTERS = (((PNG_FILTER_NONE or PNG_FILTER_SUB) or PNG_FILTER_UP) or PNG_FILTER_AVG) or PNG_FILTER_PAETH
 const PNG_FILTER_VALUE_NONE = 0
 const PNG_FILTER_VALUE_SUB = 1
 const PNG_FILTER_VALUE_UP = 2

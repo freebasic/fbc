@@ -416,7 +416,7 @@ declare function gdk_device_get_core_pointer() as GdkDevice ptr
 
 #define GDK_TYPE_EVENT gdk_event_get_type()
 const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
-#define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+const GDK_PRIORITY_REDRAW = G_PRIORITY_HIGH_IDLE + 20
 
 type GdkEventAny as _GdkEventAny
 type GdkEventExpose as _GdkEventExpose

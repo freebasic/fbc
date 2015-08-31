@@ -201,14 +201,14 @@ type IN6_PKTINFO
 	ipi6_ifindex as UINT
 end type
 
-#define EAI_AGAIN WSATRY_AGAIN
-#define EAI_BADFLAGS WSAEINVAL
-#define EAI_FAIL WSANO_RECOVERY
-#define EAI_FAMILY WSAEAFNOSUPPORT
-#define EAI_MEMORY WSA_NOT_ENOUGH_MEMORY
-#define EAI_NONAME WSAHOST_NOT_FOUND
-#define EAI_SERVICE WSATYPE_NOT_FOUND
-#define EAI_SOCKTYPE WSAESOCKTNOSUPPORT
+const EAI_AGAIN = WSATRY_AGAIN
+const EAI_BADFLAGS = WSAEINVAL
+const EAI_FAIL = WSANO_RECOVERY
+const EAI_FAMILY = WSAEAFNOSUPPORT
+const EAI_MEMORY = WSA_NOT_ENOUGH_MEMORY
+const EAI_NONAME = WSAHOST_NOT_FOUND
+const EAI_SERVICE = WSATYPE_NOT_FOUND
+const EAI_SOCKTYPE = WSAESOCKTNOSUPPORT
 const EAI_NODATA = 11004
 
 type addrinfo
@@ -339,10 +339,8 @@ const NI_NUMERICSERV = &h08
 const NI_DGRAM = &h10
 
 #if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	#define addrinfoEx addrinfoExW
 	type PADDRINFOEX as PADDRINFOEXW
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	#define addrinfoEx addrinfoExA
 	type PADDRINFOEX as PADDRINFOEXA
 #endif
 
@@ -360,7 +358,13 @@ const NI_DGRAM = &h10
 		ai_provider as LPGUID
 		ai_next as addrinfoexA ptr
 	end type
+#endif
 
+#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+	type addrinfoEx as ADDRINFOEXA
+#endif
+
+#if _WIN32_WINNT = &h0602
 	type PADDRINFOEXA as ADDRINFOEXA ptr
 
 	type ADDRINFOEXW
@@ -376,7 +380,13 @@ const NI_DGRAM = &h10
 		ai_provider as LPGUID
 		ai_next as addrinfoexW ptr
 	end type
+#endif
 
+#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+	type addrinfoEx as ADDRINFOEXW
+#endif
+
+#if _WIN32_WINNT = &h0602
 	type PADDRINFOEXW as ADDRINFOEXW ptr
 	type LPLOOKUPSERVICE_COMPLETION_ROUTINE as PVOID
 #endif

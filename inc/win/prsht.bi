@@ -62,10 +62,7 @@ const PSPCB_CREATE = 2
 #define PROPSHEETPAGEW_V1_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEW, pcRefParent)
 #define PROPSHEETPAGEA_V2_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEA, pszHeaderSubTitle)
 #define PROPSHEETPAGEW_V2_SIZE CCSIZEOF_STRUCT(PROPSHEETPAGEW, pszHeaderSubTitle)
-
 type PROPSHEETPAGE_RESOURCE as LPCDLGTEMPLATE
-type _PROPSHEETPAGEA_V3 as _PROPSHEETPAGEA
-type _PROPSHEETPAGEW_V3 as _PROPSHEETPAGEW
 
 #ifdef __FB_64BIT__
 	type _PROPSHEETPAGEA_V1
@@ -223,6 +220,7 @@ type LPCPROPSHEETPAGEA_V2 as const PROPSHEETPAGEA_V2 ptr
 	end type
 #endif
 
+type _PROPSHEETPAGEA_V3 as _PROPSHEETPAGEA
 type PROPSHEETPAGEA_V3 as _PROPSHEETPAGEA
 type LPPROPSHEETPAGEA_V3 as _PROPSHEETPAGEA ptr
 type LPCPROPSHEETPAGEA_V3 as const PROPSHEETPAGEA_V3 ptr
@@ -383,6 +381,7 @@ type LPCPROPSHEETPAGEW_V2 as const PROPSHEETPAGEW_V2 ptr
 	end type
 #endif
 
+type _PROPSHEETPAGEW_V3 as _PROPSHEETPAGEW
 type PROPSHEETPAGEW_V3 as _PROPSHEETPAGEW
 type LPPROPSHEETPAGEW_V3 as _PROPSHEETPAGEW ptr
 type LPCPROPSHEETPAGEW_V3 as const PROPSHEETPAGEW_V3 ptr
@@ -686,59 +685,59 @@ type PSHNOTIFY as _PSHNOTIFY
 type LPPSHNOTIFY as _PSHNOTIFY ptr
 const PSN_FIRST = culng(0u - 200u)
 const PSN_LAST = culng(0u - 299u)
-#define PSN_SETACTIVE culng(PSN_FIRST - 0)
-#define PSN_KILLACTIVE culng(PSN_FIRST - 1)
-#define PSN_APPLY culng(PSN_FIRST - 2)
-#define PSN_RESET culng(PSN_FIRST - 3)
-#define PSN_HELP culng(PSN_FIRST - 5)
-#define PSN_WIZBACK culng(PSN_FIRST - 6)
-#define PSN_WIZNEXT culng(PSN_FIRST - 7)
-#define PSN_WIZFINISH culng(PSN_FIRST - 8)
-#define PSN_QUERYCANCEL culng(PSN_FIRST - 9)
-#define PSN_GETOBJECT culng(PSN_FIRST - 10)
-#define PSN_TRANSLATEACCELERATOR culng(PSN_FIRST - 12)
-#define PSN_QUERYINITIALFOCUS culng(PSN_FIRST - 13)
+const PSN_SETACTIVE = culng(PSN_FIRST - 0)
+const PSN_KILLACTIVE = culng(PSN_FIRST - 1)
+const PSN_APPLY = culng(PSN_FIRST - 2)
+const PSN_RESET = culng(PSN_FIRST - 3)
+const PSN_HELP = culng(PSN_FIRST - 5)
+const PSN_WIZBACK = culng(PSN_FIRST - 6)
+const PSN_WIZNEXT = culng(PSN_FIRST - 7)
+const PSN_WIZFINISH = culng(PSN_FIRST - 8)
+const PSN_QUERYCANCEL = culng(PSN_FIRST - 9)
+const PSN_GETOBJECT = culng(PSN_FIRST - 10)
+const PSN_TRANSLATEACCELERATOR = culng(PSN_FIRST - 12)
+const PSN_QUERYINITIALFOCUS = culng(PSN_FIRST - 13)
 const PSNRET_NOERROR = 0
 const PSNRET_INVALID = 1
 const PSNRET_INVALID_NOCHANGEPAGE = 2
 const PSNRET_MESSAGEHANDLED = 3
-#define PSM_SETCURSEL (WM_USER + 101)
+const PSM_SETCURSEL = WM_USER + 101
 #define PropSheet_SetCurSel(hDlg, hpage, index) SNDMSG(hDlg, PSM_SETCURSEL, cast(WPARAM, index), cast(LPARAM, hpage))
-#define PSM_REMOVEPAGE (WM_USER + 102)
+const PSM_REMOVEPAGE = WM_USER + 102
 #define PropSheet_RemovePage(hDlg, index, hpage) SNDMSG(hDlg, PSM_REMOVEPAGE, index, cast(LPARAM, hpage))
-#define PSM_ADDPAGE (WM_USER + 103)
+const PSM_ADDPAGE = WM_USER + 103
 #define PropSheet_AddPage(hDlg, hpage) SNDMSG(hDlg, PSM_ADDPAGE, 0, cast(LPARAM, hpage))
-#define PSM_CHANGED (WM_USER + 104)
+const PSM_CHANGED = WM_USER + 104
 #define PropSheet_Changed(hDlg, hwnd) SNDMSG(hDlg, PSM_CHANGED, cast(WPARAM, hwnd), cast(LPARAM, 0))
-#define PSM_RESTARTWINDOWS (WM_USER + 105)
+const PSM_RESTARTWINDOWS = WM_USER + 105
 #define PropSheet_RestartWindows(hDlg) SNDMSG(hDlg, PSM_RESTARTWINDOWS, cast(WPARAM, 0), cast(LPARAM, 0))
-#define PSM_REBOOTSYSTEM (WM_USER + 106)
+const PSM_REBOOTSYSTEM = WM_USER + 106
 #define PropSheet_RebootSystem(hDlg) SNDMSG(hDlg, PSM_REBOOTSYSTEM, cast(WPARAM, 0), cast(LPARAM, 0))
-#define PSM_CANCELTOCLOSE (WM_USER + 107)
+const PSM_CANCELTOCLOSE = WM_USER + 107
 #define PropSheet_CancelToClose(hDlg) PostMessage(hDlg, PSM_CANCELTOCLOSE, cast(WPARAM, 0), cast(LPARAM, 0))
-#define PSM_QUERYSIBLINGS (WM_USER + 108)
+const PSM_QUERYSIBLINGS = WM_USER + 108
 #define PropSheet_QuerySiblings(hDlg, wParam, lParam) SNDMSG(hDlg, PSM_QUERYSIBLINGS, wParam, lParam)
-#define PSM_UNCHANGED (WM_USER + 109)
+const PSM_UNCHANGED = WM_USER + 109
 #define PropSheet_UnChanged(hDlg, hwnd) SNDMSG(hDlg, PSM_UNCHANGED, cast(WPARAM, hwnd), cast(LPARAM, 0))
-#define PSM_APPLY (WM_USER + 110)
+const PSM_APPLY = WM_USER + 110
 #define PropSheet_Apply(hDlg) SNDMSG(hDlg, PSM_APPLY, cast(WPARAM, 0), cast(LPARAM, 0))
-#define PSM_SETTITLEA (WM_USER + 111)
-#define PSM_SETTITLEW (WM_USER + 120)
+const PSM_SETTITLEA = WM_USER + 111
+const PSM_SETTITLEW = WM_USER + 120
 
 #ifdef UNICODE
-	#define PSM_SETTITLE PSM_SETTITLEW
+	const PSM_SETTITLE = PSM_SETTITLEW
 #else
-	#define PSM_SETTITLE PSM_SETTITLEA
+	const PSM_SETTITLE = PSM_SETTITLEA
 #endif
 
 #define PropSheet_SetTitle(hDlg, wStyle, lpszText) SNDMSG(hDlg, PSM_SETTITLE, wStyle, cast(LPARAM, cast(LPCTSTR, (lpszText))))
-#define PSM_SETWIZBUTTONS (WM_USER + 112)
+const PSM_SETWIZBUTTONS = WM_USER + 112
 #define PropSheet_SetWizButtons(hDlg, dwFlags) PostMessage(hDlg, PSM_SETWIZBUTTONS, cast(WPARAM, 0), cast(LPARAM, dwFlags))
 const PSWIZB_BACK = &h00000001
 const PSWIZB_NEXT = &h00000002
 const PSWIZB_FINISH = &h00000004
 const PSWIZB_DISABLEDFINISH = &h00000008
-#define PSM_PRESSBUTTON (WM_USER + 113)
+const PSM_PRESSBUTTON = WM_USER + 113
 #define PropSheet_PressButton(hDlg, iButton) PostMessage(hDlg, PSM_PRESSBUTTON, cast(WPARAM, iButton), cast(LPARAM, 0))
 const PSBTN_BACK = 0
 const PSBTN_NEXT = 1
@@ -748,64 +747,64 @@ const PSBTN_APPLYNOW = 4
 const PSBTN_CANCEL = 5
 const PSBTN_HELP = 6
 const PSBTN_MAX = 6
-#define PSM_SETCURSELID (WM_USER + 114)
+const PSM_SETCURSELID = WM_USER + 114
 #define PropSheet_SetCurSelByID(hDlg, id) SNDMSG(hDlg, PSM_SETCURSELID, 0, cast(LPARAM, id))
-#define PSM_SETFINISHTEXTA (WM_USER + 115)
-#define PSM_SETFINISHTEXTW (WM_USER + 121)
+const PSM_SETFINISHTEXTA = WM_USER + 115
+const PSM_SETFINISHTEXTW = WM_USER + 121
 
 #ifdef UNICODE
-	#define PSM_SETFINISHTEXT PSM_SETFINISHTEXTW
+	const PSM_SETFINISHTEXT = PSM_SETFINISHTEXTW
 #else
-	#define PSM_SETFINISHTEXT PSM_SETFINISHTEXTA
+	const PSM_SETFINISHTEXT = PSM_SETFINISHTEXTA
 #endif
 
 #define PropSheet_SetFinishText(hDlg, lpszText) SNDMSG(hDlg, PSM_SETFINISHTEXT, 0, cast(LPARAM, lpszText))
-#define PSM_GETTABCONTROL (WM_USER + 116)
+const PSM_GETTABCONTROL = WM_USER + 116
 #define PropSheet_GetTabControl(hDlg) cast(HWND, SNDMSG(hDlg, PSM_GETTABCONTROL, 0, 0))
-#define PSM_ISDIALOGMESSAGE (WM_USER + 117)
+const PSM_ISDIALOGMESSAGE = WM_USER + 117
 #define PropSheet_IsDialogMessage(hDlg, pMsg) cast(WINBOOL, SNDMSG(hDlg, PSM_ISDIALOGMESSAGE, 0, cast(LPARAM, pMsg)))
-#define PSM_GETCURRENTPAGEHWND (WM_USER + 118)
+const PSM_GETCURRENTPAGEHWND = WM_USER + 118
 #define PropSheet_GetCurrentPageHwnd(hDlg) cast(HWND, SNDMSG(hDlg, PSM_GETCURRENTPAGEHWND, cast(WPARAM, 0), cast(LPARAM, 0)))
-#define PSM_INSERTPAGE (WM_USER + 119)
+const PSM_INSERTPAGE = WM_USER + 119
 #define PropSheet_InsertPage(hDlg, index, hpage) SNDMSG(hDlg, PSM_INSERTPAGE, cast(WPARAM, (index)), cast(LPARAM, (hpage)))
-#define PSM_SETHEADERTITLEA (WM_USER + 125)
-#define PSM_SETHEADERTITLEW (WM_USER + 126)
+const PSM_SETHEADERTITLEA = WM_USER + 125
+const PSM_SETHEADERTITLEW = WM_USER + 126
 
 #ifdef UNICODE
-	#define PSM_SETHEADERTITLE PSM_SETHEADERTITLEW
+	const PSM_SETHEADERTITLE = PSM_SETHEADERTITLEW
 #else
-	#define PSM_SETHEADERTITLE PSM_SETHEADERTITLEA
+	const PSM_SETHEADERTITLE = PSM_SETHEADERTITLEA
 #endif
 
 #define PropSheet_SetHeaderTitle(hDlg, index, lpszText) SNDMSG(hDlg, PSM_SETHEADERTITLE, cast(WPARAM, (index)), cast(LPARAM, (lpszText)))
-#define PSM_SETHEADERSUBTITLEA (WM_USER + 127)
-#define PSM_SETHEADERSUBTITLEW (WM_USER + 128)
+const PSM_SETHEADERSUBTITLEA = WM_USER + 127
+const PSM_SETHEADERSUBTITLEW = WM_USER + 128
 
 #ifdef UNICODE
-	#define PSM_SETHEADERSUBTITLE PSM_SETHEADERSUBTITLEW
+	const PSM_SETHEADERSUBTITLE = PSM_SETHEADERSUBTITLEW
 #else
-	#define PSM_SETHEADERSUBTITLE PSM_SETHEADERSUBTITLEA
+	const PSM_SETHEADERSUBTITLE = PSM_SETHEADERSUBTITLEA
 #endif
 
 #define PropSheet_SetHeaderSubTitle(hDlg, index, lpszText) SNDMSG(hDlg, PSM_SETHEADERSUBTITLE, cast(WPARAM, (index)), cast(LPARAM, (lpszText)))
-#define PSM_HWNDTOINDEX (WM_USER + 129)
+const PSM_HWNDTOINDEX = WM_USER + 129
 #define PropSheet_HwndToIndex(hDlg, hwnd) clng(SNDMSG(hDlg, PSM_HWNDTOINDEX, cast(WPARAM, (hwnd)), 0))
-#define PSM_INDEXTOHWND (WM_USER + 130)
+const PSM_INDEXTOHWND = WM_USER + 130
 #define PropSheet_IndexToHwnd(hDlg, i) cast(HWND, SNDMSG(hDlg, PSM_INDEXTOHWND, cast(WPARAM, (i)), 0))
-#define PSM_PAGETOINDEX (WM_USER + 131)
+const PSM_PAGETOINDEX = WM_USER + 131
 #define PropSheet_PageToIndex(hDlg, hpage) clng(SNDMSG(hDlg, PSM_PAGETOINDEX, 0, cast(LPARAM, (hpage))))
-#define PSM_INDEXTOPAGE (WM_USER + 132)
+const PSM_INDEXTOPAGE = WM_USER + 132
 #define PropSheet_IndexToPage(hDlg, i) cast(HPROPSHEETPAGE, SNDMSG(hDlg, PSM_INDEXTOPAGE, cast(WPARAM, (i)), 0))
-#define PSM_IDTOINDEX (WM_USER + 133)
+const PSM_IDTOINDEX = WM_USER + 133
 #define PropSheet_IdToIndex(hDlg, id) clng(SNDMSG(hDlg, PSM_IDTOINDEX, 0, cast(LPARAM, (id))))
-#define PSM_INDEXTOID (WM_USER + 134)
+const PSM_INDEXTOID = WM_USER + 134
 #define PropSheet_IndexToId(hDlg, i) SNDMSG(hDlg, PSM_INDEXTOID, cast(WPARAM, (i)), 0)
-#define PSM_GETRESULT (WM_USER + 135)
+const PSM_GETRESULT = WM_USER + 135
 #define PropSheet_GetResult(hDlg) SNDMSG(hDlg, PSM_GETRESULT, 0, 0)
-#define PSM_RECALCPAGESIZES (WM_USER + 136)
+const PSM_RECALCPAGESIZES = WM_USER + 136
 #define PropSheet_RecalcPageSizes(hDlg) SNDMSG(hDlg, PSM_RECALCPAGESIZES, 0, 0)
 const ID_PSRESTARTWINDOWS = &h2
-#define ID_PSREBOOTSYSTEM (ID_PSRESTARTWINDOWS or &h1)
+const ID_PSREBOOTSYSTEM = ID_PSRESTARTWINDOWS or &h1
 const WIZ_CXDLG = 276
 const WIZ_CYDLG = 140
 const WIZ_CXBMP = 80

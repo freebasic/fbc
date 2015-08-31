@@ -56,8 +56,8 @@ const X_XIDeleteProperty = 58
 const X_XIGetProperty = 59
 const X_XIGetSelectedEvents = 60
 const X_XIBarrierReleasePointer = 61
-#define XI2REQUESTS ((X_XIBarrierReleasePointer - X_XIQueryPointer) + 1)
-#define XI2EVENTS (XI_LASTEVENT + 1)
+const XI2REQUESTS = (X_XIBarrierReleasePointer - X_XIQueryPointer) + 1
+const XI2EVENTS = XI_LASTEVENT + 1
 type FP1616 as long
 
 type FP3232

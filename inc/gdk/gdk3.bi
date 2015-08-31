@@ -695,9 +695,9 @@ declare function gdk_drag_drop_succeeded(byval context as GdkDragContext ptr) as
 #define GDK_TYPE_EVENT gdk_event_get_type()
 #define GDK_TYPE_EVENT_SEQUENCE gdk_event_sequence_get_type()
 const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
-#define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+const GDK_PRIORITY_REDRAW = G_PRIORITY_HIGH_IDLE + 20
 const GDK_EVENT_PROPAGATE = FALSE
-#define GDK_EVENT_STOP CTRUE
+const GDK_EVENT_STOP = CTRUE
 const GDK_BUTTON_PRIMARY = 1
 const GDK_BUTTON_MIDDLE = 2
 const GDK_BUTTON_SECONDARY = 3

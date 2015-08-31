@@ -68,7 +68,7 @@ type xvEncodingInfo_
 	rate as xvRational_
 end type
 
-#define sz_xvEncodingInfo (12 + sz_xvRational)
+const sz_xvEncodingInfo = 12 + sz_xvRational
 
 type xvFormat_
 	visual as CARD32
@@ -145,7 +145,7 @@ const xv_QueryImageAttributes = 17
 const xv_PutImage = 18
 const xv_ShmPutImage = 19
 const xv_LastRequest = xv_ShmPutImage
-#define xvNumRequests (xv_LastRequest + 1)
+const xvNumRequests = xv_LastRequest + 1
 
 type xvQueryExtensionReq
 	reqType as CARD8

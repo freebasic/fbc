@@ -56,7 +56,7 @@ declare function DXTraceW(byval strFile as const zstring ptr, byval dwLine as DW
 	#define DXTrace DXTraceA
 #endif
 
-#define DXTRACE_MSG(str) __MSABI_LONG(0)
+#define DXTRACE_MSG(str) 0
 #define DXTRACE_ERR(str, hr) (hr)
 #define DXTRACE_ERR_NOMSGBOX(str, hr) (hr)
 
