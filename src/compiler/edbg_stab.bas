@@ -50,10 +50,11 @@ declare function hGetDataType _
 	dim shared ctx as EDBGCTX
 
 	'' same order as FB_DATATYPE
+	'' Mapping dtype => stabs type tag (t*) as declared in the strings in the stabsTb()
 	dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 	{ _
 		 7, _									'' void
-		15, _                                   '' boolean
+		16, _                                   '' boolean
 		 2, _                                   '' byte
 		 3, _                                   '' ubyte
 		 4, _                                   '' char
