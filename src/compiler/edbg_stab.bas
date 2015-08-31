@@ -74,7 +74,7 @@ declare function hGetDataType _
 		14 _                                    '' fix-len string
 	}
 
-	dim shared stabsTb(0 to 16) as const zstring ptr = _
+	dim shared stabsTb(0 to ...) as const zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
