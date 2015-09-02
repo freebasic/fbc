@@ -26,15 +26,14 @@
 
 #pragma once
 
+#include once "crt/long.bi"
+
 extern "C"
 
-#define CHIPMUNK_UNSAFE_H
-declare sub cpCircleShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
-declare sub cpCircleShapeSetOffset(byval shape as cpShape ptr, byval offset as cpVect)
-declare sub cpSegmentShapeSetEndpoints(byval shape as cpShape ptr, byval a as cpVect, byval b as cpVect)
-declare sub cpSegmentShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
-declare sub cpPolyShapeSetVerts(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr, byval transform as cpTransform)
-declare sub cpPolyShapeSetVertsRaw(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr)
-declare sub cpPolyShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
+declare function cpHastySpaceNew() as cpSpace ptr
+declare sub cpHastySpaceFree(byval space as cpSpace ptr)
+declare sub cpHastySpaceSetThreads(byval space as cpSpace ptr, byval threads as culong)
+declare function cpHastySpaceGetThreads(byval space as cpSpace ptr) as culong
+declare sub cpHastySpaceStep(byval space as cpSpace ptr, byval dt as cpFloat)
 
 end extern

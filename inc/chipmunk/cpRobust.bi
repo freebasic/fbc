@@ -28,13 +28,6 @@
 
 extern "C"
 
-#define CHIPMUNK_UNSAFE_H
-declare sub cpCircleShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
-declare sub cpCircleShapeSetOffset(byval shape as cpShape ptr, byval offset as cpVect)
-declare sub cpSegmentShapeSetEndpoints(byval shape as cpShape ptr, byval a as cpVect, byval b as cpVect)
-declare sub cpSegmentShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
-declare sub cpPolyShapeSetVerts(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr, byval transform as cpTransform)
-declare sub cpPolyShapeSetVertsRaw(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr)
-declare sub cpPolyShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
+declare function cpCheckSignedArea(byval a as const cpVect, byval b as const cpVect, byval c as const cpVect) as cpBool
 
 end extern
