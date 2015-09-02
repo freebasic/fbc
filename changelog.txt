@@ -31,6 +31,7 @@ Version 1.04.0
 - Updated cgi-util binding to 2.2.1, with 64bit support
 - New binding for Chipmunk 7.0.1, with 64bit support
 - New binding for cryptlib (cl343_beta), with 64bit support
+- New binding for DevIL 1.7.8, with 64bit support
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
