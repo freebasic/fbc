@@ -65,7 +65,7 @@ type _ObjectPart
 	widget_class as WidgetClass
 	parent as Widget
 	xrm_name as XrmName
-	being_destroyed as byte
+	being_destroyed as XBoolean
 	destroy_callbacks as XtCallbackList
 	constraints as XtPointer
 end type
@@ -93,10 +93,10 @@ type _ObjectClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	obj4 as byte
+	obj4 as XBoolean
 	obj5 as XtEnum
-	obj6 as byte
-	obj7 as byte
+	obj6 as XBoolean
+	obj7 as XBoolean
 	destroy as XtWidgetProc
 	obj8 as XtProc
 	obj9 as XtProc

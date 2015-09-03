@@ -66,9 +66,9 @@ type _RectObjPart
 	width as Dimension
 	height as Dimension
 	border_width as Dimension
-	managed as byte
-	sensitive as byte
-	ancestor_sensitive as byte
+	managed as XBoolean
+	sensitive as XBoolean
+	ancestor_sensitive as XBoolean
 end type
 
 type RectObjPart as _RectObjPart
@@ -95,10 +95,10 @@ type _RectObjClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	rect4 as byte
+	rect4 as XBoolean
 	rect5 as XtEnum
-	rect6 as byte
-	rect7 as byte
+	rect6 as XBoolean
+	rect7 as XBoolean
 	destroy as XtWidgetProc
 	resize as XtWidgetProc
 	expose as XtExposeProc

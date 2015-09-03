@@ -73,7 +73,7 @@ type _CorePart
 	widget_class as WidgetClass
 	parent as Widget
 	xrm_name as XrmName
-	being_destroyed as byte
+	being_destroyed as XBoolean
 	destroy_callbacks as XtCallbackList
 	constraints as XtPointer
 	x as Position
@@ -81,9 +81,9 @@ type _CorePart
 	width as Dimension
 	height as Dimension
 	border_width as Dimension
-	managed as byte
-	sensitive as byte
-	ancestor_sensitive as byte
+	managed as XBoolean
+	sensitive as XBoolean
+	ancestor_sensitive as XBoolean
 	event_table as XtEventTable
 	tm as XtTMRec
 	accelerators as XtTranslations
@@ -98,8 +98,8 @@ type _CorePart
 	depth as Cardinal
 	background_pixel as Pixel
 	background_pixmap as Pixmap
-	visible as byte
-	mapped_when_managed as byte
+	visible as XBoolean
+	mapped_when_managed as XBoolean
 end type
 
 type CorePart as _CorePart
@@ -126,10 +126,10 @@ type _CoreClassPart
 	resources as XtResourceList
 	num_resources as Cardinal
 	xrm_class as XrmClass
-	compress_motion as byte
+	compress_motion as XBoolean
 	compress_exposure as XtEnum
-	compress_enterleave as byte
-	visible_interest as byte
+	compress_enterleave as XBoolean
+	visible_interest as XBoolean
 	destroy as XtWidgetProc
 	resize as XtWidgetProc
 	expose as XtExposeProc

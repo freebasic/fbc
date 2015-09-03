@@ -76,7 +76,7 @@ type TMShortInt as short
 type TMTypeMatch as _TMTypeMatchRec ptr
 type TMModifierMatch as _TMModifierMatchRec ptr
 type TMEventPtr as _TMEventRec ptr
-type MatchProc as function(byval typeMatch as TMTypeMatch, byval modMatch as TMModifierMatch, byval eventSeq as TMEventPtr) as byte
+type MatchProc as function(byval typeMatch as TMTypeMatch, byval modMatch as TMModifierMatch, byval eventSeq as TMEventPtr) as XBoolean
 
 type _ModToKeysymTable
 	mask as Modifiers
@@ -128,7 +128,7 @@ type _TMModifierMatchRec
 	modifiers as TMLongCard
 	modifierMask as TMLongCard
 	lateModifiers as LateBindingsPtr
-	standard as byte
+	standard as XBoolean
 end type
 
 type TMModifierMatchRec as _TMModifierMatchRec
@@ -299,7 +299,7 @@ type _EventRec
 	eventCode as TMLongCard
 	eventCodeMask as TMLongCard
 	matchEvent as MatchProc
-	standard as byte
+	standard as XBoolean
 end type
 
 type Event as _EventRec
@@ -364,7 +364,7 @@ type _TMGlobalRec
 	numModMatches as TMShortCard
 	numModMatchSegments as TMShortCard
 	modMatchSegmentTblSize as TMShortCard
-	newMatchSemantics as byte
+	newMatchSemantics as XBoolean
 end type
 
 type TMGlobalRec as _TMGlobalRec
@@ -384,15 +384,15 @@ const TM_TYPE_SEGMENT_SIZE = 16
 	end if
 #endmacro
 
-declare sub _XtPopup(byval as Widget, byval as XtGrabKind, byval as byte)
-declare function _XtPrintXlations(byval as Widget, byval as XtTranslations, byval as Widget, byval as byte) as String_
+declare sub _XtPopup(byval as Widget, byval as XtGrabKind, byval as XBoolean)
+declare function _XtPrintXlations(byval as Widget, byval as XtTranslations, byval as Widget, byval as XBoolean) as String_
 declare sub _XtRegisterGrabs(byval as Widget)
-declare function _XtInitializeActionData(byval as _XtActionsRec ptr, byval as Cardinal, byval as byte) as XtPointer
+declare function _XtInitializeActionData(byval as _XtActionsRec ptr, byval as Cardinal, byval as XBoolean) as XtPointer
 declare sub _XtAddEventSeqToStateTree(byval as EventSeqPtr, byval as TMParseStateTree)
-declare function _XtMatchUsingStandardMods(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as byte
-declare function _XtMatchUsingDontCareMods(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as byte
-declare function _XtRegularMatch(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as byte
-declare function _XtMatchAtom(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as byte
+declare function _XtMatchUsingStandardMods(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as XBoolean
+declare function _XtMatchUsingDontCareMods(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as XBoolean
+declare function _XtRegularMatch(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as XBoolean
+declare function _XtMatchAtom(byval as TMTypeMatch, byval as TMModifierMatch, byval as TMEventPtr) as XBoolean
 declare sub _XtTranslateEvent(byval as Widget, byval as XEvent ptr)
 declare sub _XtBuildKeysymTables(byval dpy as Display ptr, byval pd as XtPerDisplay)
 declare sub _XtDisplayTranslations(byval as Widget, byval as XEvent ptr, byval as String_ ptr, byval as Cardinal ptr)
@@ -400,9 +400,9 @@ declare sub _XtDisplayAccelerators(byval as Widget, byval as XEvent ptr, byval a
 declare sub _XtDisplayInstalledAccelerators(byval as Widget, byval as XEvent ptr, byval as String_ ptr, byval as Cardinal ptr)
 declare sub _XtPopupInitialize(byval as XtAppContext)
 declare sub _XtBindActions(byval as Widget, byval as XtTM)
-declare function _XtComputeLateBindings(byval as Display ptr, byval as LateBindingsPtr, byval as Modifiers ptr, byval as Modifiers ptr) as byte
+declare function _XtComputeLateBindings(byval as Display ptr, byval as LateBindingsPtr, byval as Modifiers ptr, byval as Modifiers ptr) as XBoolean
 declare function _XtCreateXlations(byval as TMStateTree ptr, byval as TMShortCard, byval as XtTranslations, byval as XtTranslations) as XtTranslations
-declare function _XtCvtMergeTranslations(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
+declare function _XtCvtMergeTranslations(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
 declare sub _XtRemoveStateTreeByIndex(byval as XtTranslations, byval as TMShortCard)
 declare sub _XtFreeTranslations(byval as XtAppContext, byval as XrmValuePtr, byval as XtPointer, byval as XrmValuePtr, byval as Cardinal ptr)
 declare function _XtGetModifierIndex(byval as Event ptr) as TMShortCard
@@ -419,7 +419,7 @@ declare function _XtParseTreeToStateTree(byval as TMParseStateTree) as TMStateTr
 declare function _XtPrintActions(byval as ActionRec ptr, byval as XrmQuark ptr) as String_
 declare function _XtPrintState(byval as TMStateTree, byval as TMBranchHead) as String_
 declare function _XtPrintEventSeq(byval as EventSeqPtr, byval as Display ptr) as String_
-type _XtTraversalProc as function(byval as StatePtr, byval as XtPointer) as byte
+type _XtTraversalProc as function(byval as StatePtr, byval as XtPointer) as XBoolean
 declare sub _XtTraverseStateTree(byval as TMStateTree, byval as _XtTraversalProc, byval as XtPointer)
 declare sub _XtTranslateInitialize()
 declare sub _XtAddTMConverters(byval as ConverterTable)

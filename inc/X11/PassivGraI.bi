@@ -118,8 +118,8 @@ type XtPerDisplayInput as XtPerDisplayInputRec ptr
 #define IsPseudoGrab(g) (g = XtPseudoPassiveServerGrab)
 
 declare sub _XtDestroyServerGrabs(byval as Widget, byval as XtPointer, byval as XtPointer)
-declare function _XtGetPerWidgetInput(byval as Widget, byval as byte) as XtPerWidgetInput
-declare function _XtCheckServerGrabsOnWidget(byval as XEvent ptr, byval as Widget, byval as byte) as XtServerGrabPtr
+declare function _XtGetPerWidgetInput(byval as Widget, byval as XBoolean) as XtPerWidgetInput
+declare function _XtCheckServerGrabsOnWidget(byval as XEvent ptr, byval as Widget, byval as XBoolean) as XtServerGrabPtr
 #define _XtGetGrabList(pdi) (@(pdi)->grabList)
 declare sub _XtFreePerWidgetInput(byval as Widget, byval as XtPerWidgetInput)
 declare function _XtProcessKeyboardEvent(byval as XKeyEvent ptr, byval as Widget, byval as XtPerDisplayInput) as Widget

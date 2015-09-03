@@ -93,8 +93,8 @@ type CompositeClassExtensionRec
 	record_type as XrmQuark
 	version as clong
 	record_size as Cardinal
-	accepts_objects as byte
-	allows_change_managed_set as byte
+	accepts_objects as XBoolean
+	allows_change_managed_set as XBoolean
 end type
 
 type CompositeClassExtension as CompositeClassExtensionRec ptr
